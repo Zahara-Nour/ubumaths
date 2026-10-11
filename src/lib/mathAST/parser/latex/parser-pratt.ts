@@ -277,6 +277,12 @@ class PrattParser {
 	private previousToken: Token | undefined;
 
 	/**
+	 * Profondeur d'indice : dans un indice, `i` est une variable (`u_i`,
+	 * `x_{i+1}`), jamais l'unité imaginaire — même règle que le parseur custom.
+	 */
+	private subscriptDepth: number = 0;
+
+	/**
 	 * Advance to the next token, skipping whitespace
 	 */
 	private advance(): Token {
@@ -689,12 +695,18 @@ class PrattParser {
 	// =========================================================================
 
 	/**
-	 * La lettre déjà consommée : `e` est la constante d'Euler, sauf suivie d'un
-	 * indice (`e_1`, `e_n` : variable indicée). Mêmes règles dans les quatre
-	 * parseurs (LaTeX et custom, pratt et rd).
+	 * La lettre déjà consommée : `e` est la constante d'Euler et `i` l'unité
+	 * imaginaire `complex(0, 1)`, sauf suivies d'un indice (`e_1`, `i_n` :
+	 * variables indicées) ; `i` DANS un indice reste une variable (`u_i`).
+	 * Mêmes règles dans les quatre parseurs (LaTeX et custom, pratt et rd).
 	 */
 	private eulerOrVariable(letter: string): MathNode {
-		return letter === 'e' && !this.check('UNDERSCORE') ? euler() : MathAST.variable(letter);
+		if (this.check('UNDERSCORE')) return MathAST.variable(letter);
+		if (letter === 'e') return euler();
+		if (letter === 'i' && this.subscriptDepth === 0) {
+			return complex(MathAST.number('0'), MathAST.number('1'));
+		}
+		return MathAST.variable(letter);
 	}
 
 	/**
@@ -1562,6 +1574,15 @@ class PrattParser {
 	 * But left-to-right for mixed: x^2_1 → (x^2)_1
 	 */
 	private parseSubscriptOperand(): MathNode {
+		this.subscriptDepth++;
+		try {
+			return this.parseSubscriptOperandContent();
+		} finally {
+			this.subscriptDepth--;
+		}
+	}
+
+	private parseSubscriptOperandContent(): MathNode {
 		if (this.check('LBRACE')) {
 			return this.parseBraceGroup();
 		}

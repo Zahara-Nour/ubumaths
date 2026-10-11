@@ -24,6 +24,13 @@ vi.mock('$lib/server/riddle-auto-select', () => ({
 	checkAndAutoSelectToday: vi.fn()
 }));
 
+// Client service : `serviceRpc` délègue au `rpc` du mock de chaque test, mais reste un
+// espion distinct — il prouve que la soumission passe par le serveur, pas par l'élève.
+const serviceRpc = vi.fn();
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => ({ rpc: serviceRpc })
+}));
+
 vi.mock('$lib/server/buddy-xp-service', () => ({
 	addBuddyXpFromExercise: vi.fn().mockResolvedValue(null)
 }));
@@ -71,6 +78,7 @@ describe('POST /api/riddles/[id]/submit', () => {
 			from: vi.fn(),
 			rpc: vi.fn()
 		} as unknown as SupabaseClient;
+		serviceRpc.mockImplementation((...args: unknown[]) => (mockSupabase.rpc as Mock)(...args));
 	});
 
 	it('should reject unauthenticated requests', async () => {
@@ -536,6 +544,8 @@ describe('POST /api/riddles/[id]/submit', () => {
 			p_submitted_answer: { value: mockAnswer },
 			p_is_correct: true
 		});
+		// La justesse est écrite par le client service, jamais par le client de l'élève.
+		expect(serviceRpc).toHaveBeenCalledWith('submit_riddle_attempt', expect.anything());
 	});
 });
 

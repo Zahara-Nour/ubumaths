@@ -287,51 +287,39 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		{ glob: 'src/lib/components/ChatBot.svelte', note: 'tuteur IA (Groq, RAG)' },
 		{
 			glob: 'src/routes/+layout.svelte',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
+			note: 'coquille de l’app, caches'
 		},
 		{
 			glob: 'src/routes/(protected)/+layout.svelte',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
-		},
-		{
-			glob: 'src/routes/(protected)/dashboard/*',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
+			note: 'coquille de l’app, caches'
 		},
 		{
 			glob: 'src/routes/(protected)/dashboard/{admin,student,teacher}/*',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
+			note: 'coquille de l’app, caches'
 		},
 		{
 			glob: 'src/lib/components/{Header,Sidebar,InfoPanel,LoadingDashboard,LoadingTable,ExerciseSkeleton,FlipCard,FontSelector,Wheel}.svelte',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
+			note: 'coquille de l’app, caches'
 		},
 		{
-			glob: 'src/lib/components/{navigation,skeleton,modals}/**',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
-		},
-		{
-			glob: 'src/lib/config/dashboard-nav.ts',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
+			glob: 'src/lib/components/{skeleton,modals}/**',
+			note: 'coquille de l’app, caches'
 		},
 		{
 			glob: 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,activityStore,mobile,modalStack,input-capability,auth}.svelte.ts',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
+			note: 'coquille de l’app, caches'
 		},
 		{
 			glob: 'src/lib/types/{student-cache,teacher-cache,cache-context}.ts',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
+			note: 'coquille de l’app, caches'
 		},
 		{
 			glob: 'src/lib/utils/cache-sync.ts',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
+			note: 'coquille de l’app, caches'
 		},
 		{
 			glob: 'src/routes/(protected)/dashboard/teacher/{wheel,recherche,documents}/**',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
-		},
-		{
-			glob: 'src/routes/(public)/+page.svelte',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
+			note: 'coquille de l’app, caches'
 		},
 		{
 			glob: 'src/routes/api/{errors,bug-reports,health,search,openapi.json}/**',
@@ -489,10 +477,6 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		{ glob: 'src/lib/seo/SeoHead.svelte', note: 'divers (utilitaires, démos, SEO, éditeur riche)' },
 		{ glob: 'src/lib/seo/site.ts', note: 'divers (utilitaires, démos, SEO, éditeur riche)' },
 		{
-			glob: 'src/lib/seo/sitemap-pages.ts',
-			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
-		},
-		{
 			glob: 'src/lib/stores/listNumbering.svelte.ts',
 			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
 		},
@@ -596,6 +580,18 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		},
 		{
 			glob: 'src/routes/(public)/test-cadres/+page.svelte',
+			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
+		},
+		{
+			glob: 'src/routes/(public)/test-structure/+page.svelte',
+			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
+		},
+		{
+			glob: 'src/routes/(public)/test-structure/*.svelte',
+			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
+		},
+		{
+			glob: 'src/routes/(public)/test-structure/*.ts',
 			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
 		},
 		{

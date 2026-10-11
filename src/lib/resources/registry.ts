@@ -190,7 +190,7 @@ export const RESOURCE_REGISTRY: Record<ResourceKind, ResourceKindDefinition> = {
 		}
 	},
 	assessment: {
-		label: 'Évaluation',
+		label: 'Contrôle',
 		icon: ClipboardCheck,
 		routes: {
 			// No read-only page exists; the edit page is the canonical entry point.

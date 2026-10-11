@@ -111,7 +111,8 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'record_game_reward(p_student_id uuid, p_game_type text, p_game_id uuid, p_theoretical_reward numeric, p_school_id uuid)':
 		{
 			categorie: 'compte-appelant',
-			justification: 'refuse si auth.uid() <> p_student_id ; élève seulement'
+			justification:
+				'refuse sauf client service ou auth.uid() = p_student_id (20261016100200) ; EXECUTE retiré à authenticated après le deploy'
 		},
 	'record_listing_views_batch(p_listing_ids uuid[], p_user_id uuid)': {
 		categorie: 'compte-appelant',
@@ -128,7 +129,8 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'submit_riddle_attempt(p_riddle_id uuid, p_student_id uuid, p_submitted_answer jsonb, p_is_correct boolean)':
 		{
 			categorie: 'compte-appelant',
-			justification: 'refuse si auth.uid() <> p_student_id'
+			justification:
+				'refuse sauf client service ou auth.uid() = p_student_id (20261016090200) ; EXECUTE retiré à authenticated après le deploy'
 		},
 	'toggle_message_star(p_message_id uuid, p_user_id uuid)': {
 		categorie: 'compte-appelant',
@@ -774,6 +776,16 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'get_class_journal_by_share_token(p_token text)': {
 		categorie: 'jeton',
 		justification: 'jeton de partage du cahier de textes (16 à 64 caractères)',
+		anon: true
+	},
+	'get_class_course_by_share_token(p_token text)': {
+		categorie: 'jeton',
+		justification: 'jeton du cours (table distincte du cahier), classe active, contenus publiés',
+		anon: true
+	},
+	'get_course_worksheet_by_share_token(p_token text, p_worksheet_id uuid)': {
+		categorie: 'jeton',
+		justification: 'jeton du cours + fiche publiée dans un chapitre visible et distribuée',
 		anon: true
 	},
 	'get_consent_info(p_token uuid)': {

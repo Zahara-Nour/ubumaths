@@ -25,6 +25,7 @@
 	import { goto } from '$app/navigation';
 	import { z } from 'zod';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import VariationEditor from '$lib/components/exercises/VariationEditor.svelte';
@@ -32,7 +33,7 @@
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, Check, X, Loader2, AlertTriangle } from '@lucide/svelte';
+	import { Check, X, Loader2, AlertTriangle } from '@lucide/svelte';
 	import type { ExerciseVariation } from '$lib/exercises/types';
 
 	// Types
@@ -289,10 +290,11 @@
 
 <div class="container mx-auto max-w-7xl py-6">
 	<!-- Header -->
-	<div class="mb-6 flex items-start gap-4">
-		<Button variant="ghost" size="icon" onclick={navigateToReportsList} class="mt-1">
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-6">
+		<BackLink
+			href={`/dashboard/teacher/contenu/worksheets/${data.worksheetId}/assignments/${data.assignmentId}/reports`}
+			label="Retour aux signalements"
+		/>
 		<div>
 			<h1 class="text-3xl font-bold">Signalement</h1>
 			<p class="mt-1 text-muted-foreground">

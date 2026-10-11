@@ -27,7 +27,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Diagnostic data describes the CURRENT session (real admin or elevated teacher).
 	const { user, profile } = locals;
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	return {

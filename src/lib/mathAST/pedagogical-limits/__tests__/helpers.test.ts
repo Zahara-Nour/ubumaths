@@ -4,15 +4,13 @@
  * Coverage:
  * - `evaluateAtPoint` returns correct numeric values for polynomial,
  *   rational, transcendental, and unsupported nodes.
- * - `isRootAt` detects polynomial roots within tolerance.
  * - `asPolynomial` extracts coefficients for canonical polynomials and
  *   refuses non-polynomial input.
- * - `syntheticDivide` returns correct quotient + remainder for the iconic
- *   `(x²−4)/(x−2)` and similar Tle-spé cases ; flags non-roots via the
- *   remainder.
+ * - `divideByCommonRoot` divise N et D par (x − a), exactement (noyau
+ *   `factor/`), point négatif compris ; refuse si a n'est pas racine des deux.
  * - `polyToNode` round-trips coefficients to MathNode and the result
  *   evaluates back to the polynomial value.
- * - `formatApproachShort`, `formatLinearFactor`, `buildLinearFactor`,
+ * - `formatApproachShort`, `formatLinearFactor`,
  *   `classifyApproach`, `normalizeDirection` cover the formatting / direction
  *   utilities.
  */
@@ -31,20 +29,21 @@ import {
 } from '../../factory';
 import {
 	asPolynomial,
-	buildLinearFactor,
 	classifyApproach,
+	divideByCommonRoot,
 	evaluateAtPoint,
 	findConjugate,
 	formatApproachShort,
 	formatLinearFactor,
 	getSqrtArg,
 	isAtInfinity,
-	isRootAt,
 	isSqrt,
 	normalizeDirection,
-	polyToNode,
-	syntheticDivide
+	polyToNode
 } from '../helpers';
+import { parseLatex } from '../../parser';
+import { toLatex } from '../../latex-generator';
+import { fromInteger, rational } from '../../normal/rational';
 
 describe('helpers — evaluateAtPoint', () => {
 	it('returns the value of a polynomial at a point', () => {
@@ -97,28 +96,6 @@ describe('helpers — evaluateAtPoint', () => {
 	});
 });
 
-describe('helpers — isRootAt', () => {
-	it('detects x² − 4 has a root at x = 2', () => {
-		const expr = subtract(power(variable('x'), number('2')), number('4'));
-		expect(isRootAt(expr, 'x', 2)).toBe(true);
-	});
-
-	it('detects x² − 4 has a root at x = −2', () => {
-		const expr = subtract(power(variable('x'), number('2')), number('4'));
-		expect(isRootAt(expr, 'x', -2)).toBe(true);
-	});
-
-	it('detects x² − 4 is NOT zero at x = 1', () => {
-		const expr = subtract(power(variable('x'), number('2')), number('4'));
-		expect(isRootAt(expr, 'x', 1)).toBe(false);
-	});
-
-	it('detects x − 2 is zero at x = 2', () => {
-		const expr = subtract(variable('x'), number('2'));
-		expect(isRootAt(expr, 'x', 2)).toBe(true);
-	});
-});
-
 describe('helpers — asPolynomial', () => {
 	it('reads x as [0, 1]', () => {
 		expect(asPolynomial(variable('x'), 'x')).toEqual([0, 1]);
@@ -158,28 +135,24 @@ describe('helpers — asPolynomial', () => {
 	});
 });
 
-describe('helpers — syntheticDivide', () => {
-	it('divides x² − 4 by (x − 2) → quotient x + 2, remainder 0', () => {
-		const result = syntheticDivide([-4, 0, 1], 2);
-		expect(result.quotient).toEqual([2, 1]);
-		expect(result.remainder).toBeCloseTo(0);
+describe('helpers — divideByCommonRoot', () => {
+	const divideAt = (n: string, d: string, a: number) =>
+		divideByCommonRoot(parseLatex(n), parseLatex(d), 'x', fromInteger(a));
+
+	it('divise x² − 9 et x + 3 par (x + 3) en −3 : x − 3 et 1', () => {
+		const result = divideAt('x^2-9', 'x+3', -3);
+		expect(result && toLatex(result.numerator)).toBe('x - 3');
+		expect(result && toLatex(result.denominator)).toBe('1');
 	});
 
-	it('divides x³ − 8 by (x − 2) → quotient x² + 2x + 4, remainder 0', () => {
-		const result = syntheticDivide([-8, 0, 0, 1], 2);
-		expect(result.quotient).toEqual([4, 2, 1]);
-		expect(result.remainder).toBeCloseTo(0);
+	it('divise 2x³ − 6x + 4 par (x − 1) une seule fois (racine double)', () => {
+		const result = divideAt('2x^3-6x+4', 'x^2-1', 1);
+		expect(result && toLatex(result.numerator)).toBe('2 x^2 + 2 x - 4');
+		expect(result && toLatex(result.denominator)).toBe('x + 1');
 	});
 
-	it('flags non-root via remainder ≠ 0', () => {
-		const result = syntheticDivide([-4, 0, 1], 1); // x²−4 at x=1 → remainder = -3
-		expect(result.remainder).toBeCloseTo(-3);
-	});
-
-	it('handles empty polynomial', () => {
-		const result = syntheticDivide([], 5);
-		expect(result.quotient).toEqual([]);
-		expect(result.remainder).toBe(0);
+	it('refuse quand a n’est pas racine des deux', () => {
+		expect(divideAt('x^2-4', 'x-1', 2)).toBeNull();
 	});
 });
 
@@ -241,16 +214,10 @@ describe('helpers — approach formatting', () => {
 	});
 
 	it('formatLinearFactor', () => {
-		expect(formatLinearFactor('x', 0)).toBe('x');
-		expect(formatLinearFactor('x', 2)).toBe('(x − 2)');
-		expect(formatLinearFactor('x', -3)).toBe('(x + 3)');
-	});
-
-	it('buildLinearFactor produces correct AST', () => {
-		const f = buildLinearFactor('x', 2);
-		expect(f.type).toBe('subtraction');
-		const fNeg = buildLinearFactor('x', -3);
-		expect(fNeg.type).toBe('addition');
+		expect(formatLinearFactor('x', fromInteger(0))).toBe('x');
+		expect(formatLinearFactor('x', fromInteger(2))).toBe('(x − 2)');
+		expect(formatLinearFactor('x', fromInteger(-3))).toBe('(x + 3)');
+		expect(formatLinearFactor('x', rational(1n, 2n))).toBe('(x − 1/2)');
 	});
 });
 

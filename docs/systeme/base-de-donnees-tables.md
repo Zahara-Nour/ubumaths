@@ -254,7 +254,7 @@ Liens : `created_by` → `profiles`
 
 ### `exercises`
 
-`category` · `created_at` · `created_by` · `distribution_mode` · `generic_functions?` · `grades?` · `id` · `is_public` · `resources?` · `shared?` · `slug?` · `source?` · `source_type_id?` · `title?` · `topic?` · `updated_at` · `variables` · `variations?`
+`category` · `created_at` · `created_by` · `distribution_mode` · `generic_functions?` · `grades?` · `id` · `is_public` · `resources?` · `search_indexed` · `shared?` · `slug?` · `source?` · `source_type_id?` · `title?` · `topic?` · `updated_at` · `variables` · `variations?`
 
 Liens : `created_by` → `profiles` · `source_type_id` → `source_types`
 
@@ -442,7 +442,7 @@ Liens : `assignment_id` → `worksheet_assignments` · `student_id` → `profile
 
 ### `worksheet_assignments`
 
-`assigned_at` · `available_from?` · `closes_at?` · `correction_release_at?` · `correction_release_mode?` · `created_at` · `created_by` · `id` · `individualized?` · `instructions?` · `show_corrections?` · `status?` · `title?` · `updated_at` · `worksheet_id`
+`assigned_at` · `available_from?` · `closes_at?` · `correction_release_at?` · `correction_release_mode?` · `created_at` · `created_by` · `guidance_level` · `id` · `individualized?` · `instructions?` · `show_corrections?` · `status?` · `title?` · `updated_at` · `worksheet_id`
 
 Liens : `created_by` → `profiles` · `worksheet_id` → `worksheets`
 

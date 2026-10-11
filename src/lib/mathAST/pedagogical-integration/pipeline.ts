@@ -28,17 +28,37 @@
  *    `sin(2x)` without the leading `2·`) are handled by the same composite
  *    detectors via an implicit `1/u'` rebalancing factor.
  *
- * 3. Underlying calculations (`powerRule`, `expRule`, `sinRule`, …) are
+ * 3. Underlying calculations (`powerRule`, `sinRule`, `lnAbsRule`, …) are
  *    delegated to `integration/rules.ts` — we don't reimplement primitive
- *    formulas, only their orchestration.
+ *    formulas, only their orchestration. Sauf l'exponentielle : `expRule`
+ *    écrit `\exp(u)` et divise par a ; ici e^{u} est construit directement
+ *    (`superscript(euler(), u)`), le facteur 1/u′ venant de la forme composée.
+ *
+ * 4. La primitive brute (la méthode) est suivie d'une étape « On simplifie »
+ *    (`tidyTerms`) sauf quand il n'y a rien à simplifier. Quand tous les termes
+ *    portent la même exponentielle e^{u}, cette étape développe puis met e^{u}
+ *    en facteur, par les stratégies de `factoriser` (lot 4 de l'ADR 0024).
  *
  * @module mathAST/pedagogical-integration/pipeline
  */
 
 import type { MathNode } from '../types';
-import { cos, func, number, opposite, sin, subtract, variable as variableNode } from '../factory';
+import {
+	add,
+	cos,
+	divide,
+	euler,
+	multiply,
+	number,
+	opposite,
+	parentheses,
+	sin,
+	subtract,
+	superscript,
+	variable as variableNode
+} from '../factory';
 import { detectVariable } from '../integration/classify';
-import { cosRule, expRule, lnAbsRule, powerRule, sinRule, tanRule } from '../integration/rules';
+import { cosRule, lnAbsRule, powerRule, sinRule, tanRule } from '../integration/rules';
 import { differentiate } from '../differentiation';
 import { evaluate } from '../eval/evaluate';
 import { isEvalValue } from '../eval/types';
@@ -49,7 +69,27 @@ import {
 	simplifiedMultiply,
 	simplifiedPower
 } from '../common/simplify';
-import { numericNode } from '../common/numeric';
+import { extractExactRational, numericNode, rationalToNode } from '../common/numeric';
+import {
+	absBigInt,
+	absRational,
+	isNegative as isNegativeRational,
+	isOne as isOneRational,
+	mulRational,
+	negRational,
+	ONE
+} from '../normal/rational';
+import type { Rational } from '../normal/types';
+import { toLatex } from '../latex-generator';
+import { linearFactorNode } from '../factor';
+import { tidyTerms } from '../tidy/terms';
+import { flattenProductShallow } from '../flatten';
+import { isEulerConstant } from '../guards';
+import { nodesEqual } from '../normal/hash';
+import { areEquivalent } from '../equivalence';
+import { generatePedagogicalSimplifySteps } from '../pedagogical-simplify/pipeline';
+import { PedagogicalSimplifyNotImplemented } from '../pedagogical-simplify/types';
+import { mapNode } from '../transforms';
 import {
 	buildStep,
 	checkAbort,
@@ -215,8 +255,9 @@ function generateIndefiniteSteps(
 		);
 	}
 
-	const { antiderivative, steps: coreSteps } = integrateNode(integrand, ctx);
+	const { antiderivative: raw, steps: coreSteps } = integrateNode(integrand, ctx);
 	steps.push(...coreSteps);
+	const antiderivative = pushSimplifyStep(steps, raw, ctx);
 
 	if (ctx.strategy.includeAddConstant) {
 		steps.push(
@@ -253,8 +294,9 @@ function generateDefiniteSteps(
 
 	// Compute the antiderivative pedagogically — without `add-constant`
 	// (the constant cancels in F(b) - F(a)).
-	const { antiderivative, steps: coreSteps } = integrateNode(integrand, ctx);
+	const { antiderivative: raw, steps: coreSteps } = integrateNode(integrand, ctx);
 	steps.push(...coreSteps);
+	const antiderivative = pushSimplifyStep(steps, raw, ctx);
 
 	// Fundamental theorem : ∫_a^b f(x) dx = [F(x)]_a^b.
 	steps.push(
@@ -298,6 +340,211 @@ function generateDefiniteSteps(
 	);
 
 	return { antiderivative, value, steps };
+}
+
+/**
+ * L'étape « On simplifie » (décision de David du 2026-10-11, comme
+ * `withTidyStep` des dérivées) : les règles laissent la primitive brute
+ * (`3\dfrac{x^3}{3}`, `\ln(x)\,x`) — c'est la méthode, qu'on garde visible ;
+ * la ligne suivante l'écrit simplement avec `tidyTerms`. Aucune étape quand il
+ * n'y a rien à simplifier (`singleCoefficientTerm`) ni quand la mise au
+ * propre ne change pas l'écriture. Rend la primitive à retenir.
+ */
+function pushSimplifyStep(
+	steps: PedagogicalIntegrationStep[],
+	raw: MathNode,
+	ctx: DispatchContext
+): MathNode {
+	const single = singleCoefficientTerm(raw);
+	if (single?.canonical) return raw;
+	const rewriting = single ? null : developAndFactor(raw, ctx);
+	if (rewriting) {
+		steps.push(
+			buildStep(ctx, {
+				rule: 'simplify-result',
+				before: raw,
+				after: rewriting.result,
+				variable: ctx.variable,
+				// `developed` : ligne montrée par le rendu ; `exponential` : nommée par l'explication
+				bindings: rewriting.bindings
+			})
+		);
+		return rewriting.result;
+	}
+	// Coefficient à réduire (`\dfrac{2}{4}e^x` → `\dfrac{1}{2}e^x`) : on le réduit
+	// en gardant la forme « k · fonction » ; sinon, `tidy`
+	const tidied = single ? withRationalCoefficient(single.k, single.fn) : tidyTerms(raw);
+	if (toLatex(tidied) === toLatex(raw)) return raw;
+	steps.push(
+		buildStep(ctx, {
+			rule: 'simplify-result',
+			before: raw,
+			after: tidied,
+			variable: ctx.variable
+		})
+	);
+	return tidied;
+}
+
+interface SimplifyRewriting {
+	readonly result: MathNode;
+	readonly bindings: IntegrationBindings;
+}
+
+/**
+ * Lot 4 de l'ADR 0024 (décision de David du 2026-10-11, V17-V18) : la primitive
+ * est développée (`developper` de pedagogical-simplify), puis l'exponentielle
+ * e^{u} que portent au moins deux termes est mise en facteur sur ces termes
+ * (`factoriser`) : `x^2e^x-2(xe^x-e^x)` → `(x^2-2x+2)e^x`, et
+ * `\dfrac{1}{2}x^2e^{2x}-(…)+\dfrac{x^2}{2}` → `(…)e^{2x}+\dfrac{x^2}{2}`. Sans
+ * exponentielle partagée, la forme développée et rangée (`tidy`) quand la
+ * primitive brute garde une parenthèse d'IPP (`-x^2\cos x+2(x\sin x+\cos x)`) ;
+ * sinon `null`, et la primitive passe par `tidy` seul. Pas de moteur propre.
+ */
+function developAndFactor(raw: MathNode, ctx: DispatchContext): SimplifyRewriting | null {
+	const developed = runSimplifyIntent(raw, 'developper', ctx);
+	if (!developed) return null;
+	const terms = flattenSum(developed);
+	const exponential = sharedExponential(terms.map(({ term }) => term));
+	if (exponential) {
+		const carries = (term: MathNode) =>
+			exponentialFactors(term).some((f) => sameExponential(f, exponential));
+		const carrying = terms.filter(({ term }) => carries(term));
+		const others = terms.filter(({ term }) => !carries(term));
+		const group = runSimplifyIntent(
+			others.length === 0 ? developed : signedSum(carrying),
+			'factoriser',
+			ctx
+		);
+		if (group && hasFactor(group, exponential)) {
+			const rest = others.map(({ term, sign }) => ({ term: tidyTerms(term), sign }));
+			// Une seule écriture de l'exposant dans l'étape : celle de la primitive brute
+			const result = withExponential(appendTerms(group, rest), exponential);
+			const shown = toLatex(developed) !== toLatex(raw);
+			return {
+				result,
+				bindings: shown
+					? { developed: withExponential(developed, exponential), exponential }
+					: { exponential }
+			};
+		}
+	}
+	if (!hasGroupedSum(raw)) return null;
+	return { result: tidyTerms(developed), bindings: {} };
+}
+
+/**
+ * Une intention de pedagogical-simplify ; `null` sur un refus attendu
+ * (`PedagogicalSimplifyNotImplemented`). Toute autre erreur remonte.
+ */
+function runSimplifyIntent(
+	node: MathNode,
+	intent: 'developper' | 'factoriser',
+	ctx: DispatchContext
+): MathNode | null {
+	try {
+		return generatePedagogicalSimplifySteps(node, { intent, schoolLevel: ctx.level }).result;
+	} catch (error) {
+		if (error instanceof PedagogicalSimplifyNotImplemented) return null;
+		throw error;
+	}
+}
+
+type SignedTerm = { readonly term: MathNode; readonly sign: 1 | -1 };
+
+/** La somme des termes signés, dans l'ordre. */
+function signedSum(terms: readonly SignedTerm[]): MathNode {
+	const [first, ...others] = terms;
+	return appendTerms(first.sign === 1 ? first.term : opposite(first.term), others);
+}
+
+function appendTerms(start: MathNode, terms: readonly SignedTerm[]): MathNode {
+	return terms.reduce<MathNode>(
+		(acc, { term, sign }) => (sign === 1 ? add(acc, term) : subtract(acc, term)),
+		start
+	);
+}
+
+/**
+ * Une somme entre parenthèses multipliée au plus par un nombre, termes et
+ * signes traversés : la parenthèse de `- ∫ v du` (`-2(x\sin x+\cos x)`). Pas
+ * celle d'un facteur littéral (`(2x+1)\cos x`), ni sous une puissance.
+ */
+function hasGroupedSum(node: MathNode): boolean {
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+			// `a - (b - c)` : la somme de droite est entre parenthèses, nœud ou pas
+			return isSum(node.right) || hasGroupedSum(node.left) || hasGroupedSum(node.right);
+		case 'opposite':
+		case 'positive':
+		case 'delimiter': {
+			const inner = node.type === 'delimiter' ? node.content : node.operand;
+			return isSum(inner) || hasGroupedSum(inner);
+		}
+		case 'multiplication': {
+			const literal = flattenProductShallow(node)
+				.map(({ factor }) => factor)
+				.filter((factor) => extractExactRational(factor) === null);
+			return literal.length === 1 && (isSum(literal[0]) || hasGroupedSum(literal[0]));
+		}
+		default:
+			return false;
+	}
+}
+
+function isSum(node: MathNode): boolean {
+	return node.type === 'addition' || node.type === 'subtraction';
+}
+
+/** Remplace chaque e^{u} équivalente à `exponential` par elle (même exposant écrit). */
+function withExponential(node: MathNode, exponential: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		n.type === 'superscript' && isEulerConstant(n.base) && sameExponential(n, exponential)
+			? exponential
+			: n
+	);
+}
+
+/** Les facteurs e^{u} d'un terme (`\dfrac{1}{2} x e^{2x}`, `\dfrac{x e^x}{2}`). */
+function exponentialFactors(term: MathNode): MathNode[] {
+	const product = term.type === 'division' ? term.numerator : term;
+	return flattenProductShallow(product)
+		.map(({ factor }) => factor)
+		.filter((factor) => factor.type === 'superscript' && isEulerConstant(factor.base));
+}
+
+/** La première exponentielle que portent au moins deux termes. */
+function sharedExponential(terms: readonly MathNode[]): MathNode | null {
+	if (terms.length < 2) return null;
+	for (const candidate of terms.flatMap(exponentialFactors)) {
+		const count = terms.filter((term) =>
+			exponentialFactors(term).some((f) => sameExponential(f, candidate))
+		).length;
+		if (count >= 2) return candidate;
+	}
+	return null;
+}
+
+/** `factor` est un facteur du produit `node` (signe en tête compris). */
+function hasFactor(node: MathNode, factor: MathNode): boolean {
+	const { inner } = unwrapSign(node);
+	return flattenProductShallow(inner).some((f) => sameExponential(f.factor, factor));
+}
+
+/**
+ * Même exponentielle, quelle que soit l'écriture de l'exposant : `-2x` est
+ * `opposite(2)·x` ou `opposite(2·x)` selon qui l'a construit (README § Invariants, 4).
+ */
+function sameExponential(a: MathNode, b: MathNode): boolean {
+	if (nodesEqual(a, b)) return true;
+	return (
+		a.type === 'superscript' &&
+		b.type === 'superscript' &&
+		isEulerConstant(a.base) &&
+		isEulerConstant(b.base) &&
+		areEquivalent(a.superscript, b.superscript)
+	);
 }
 
 /**
@@ -582,7 +829,8 @@ function integrateKnownPrimitive(
 	let antiderivative: MathNode;
 	switch (fnName) {
 		case 'exp':
-			antiderivative = expRule(arg);
+			// ∫ e^x dx = e^x, écrit e^{x} (jamais `\exp(x)`, décision du 2026-10-11)
+			antiderivative = superscript(euler(), arg);
 			break;
 		case 'sin':
 			antiderivative = sinRule(arg);
@@ -617,7 +865,8 @@ function integrateComposite(
 		case 'composite-exp':
 			// e^u, pas `expRule(u)` : celui-ci calcule ∫ e^{ax} dx = e^{ax}/a, et
 			// `constantFactor` rééquilibre déjà par 1/u' (`∫ e^{2x} dx` rendait e^{2x}/4)
-			baseAntiderivative = func('exp', [u]);
+			// écrit e^{u}, jamais `\exp(u)` (décision de David du 2026-10-11)
+			baseAntiderivative = superscript(euler(), u);
 			rule = 'apply-composite-exp';
 			break;
 		case 'composite-ln':
@@ -647,13 +896,14 @@ function integrateComposite(
 		}
 	}
 
-	let antiderivative = baseAntiderivative;
-	if (match.constantFactor !== undefined && match.constantFactor !== 1) {
-		// Expose the rebalancing factor as a multiplicative coefficient. For
-		// `∫sin(2x) dx` this is 1/2 ; the renderer can frame this as a
-		// composite-with-implicit-rebalancing.
-		antiderivative = simplifiedMultiply(numericNode(match.constantFactor), antiderivative);
-	}
+	// Expose the rebalancing factor as a multiplicative coefficient. For
+	// `∫sin(2x) dx` this is 1/2 ; the renderer can frame this as a
+	// composite-with-implicit-rebalancing. Fraction exacte : `\dfrac{1}{2}`,
+	// jamais `0.5`.
+	const antiderivative =
+		match.constantFactor === undefined
+			? baseAntiderivative
+			: withRationalCoefficient(match.constantFactor, baseAntiderivative);
 
 	const step = buildStep(ctx, {
 		rule,
@@ -663,6 +913,71 @@ function integrateComposite(
 		bindings
 	});
 	return { antiderivative, steps: [step] };
+}
+
+/**
+ * `k·F` écrit comme sur une copie : le signe devant, puis la fraction, puis la
+ * fonction — `-\dfrac{1}{3}\cos(3x+1)` et non `\dfrac{1}{3}(-\cos(3x+1))`.
+ * C'est la forme finale d'un terme « coefficient × une seule fonction » (aucune
+ * étape « On simplifie » ne la reprend, décision de David du 2026-10-11).
+ */
+function withRationalCoefficient(k: Rational, base: MathNode): MathNode {
+	const baseNegative = base.type === 'opposite';
+	const inner = base.type === 'opposite' ? base.operand : base;
+	const negative = isNegativeRational(k) !== baseNegative;
+	const magnitude = absRational(k);
+	const product = isOneRational(magnitude)
+		? inner
+		: simplifiedMultiply(rationalToNode(magnitude), inner);
+	return negative ? opposite(product) : product;
+}
+
+/**
+ * Un seul terme « coefficient rationnel × une seule fonction » (`\dfrac{1}{2}e^{2x}`,
+ * `-\dfrac{1}{3}\cos(3x+1)`, `5e^x`, `\ln\lvert x\rvert`) : il n'y a rien à
+ * simplifier, la primitive reste telle quelle (décision de David du 2026-10-11).
+ *
+ * Règle exacte : sous un signe `-` éventuel, soit une fonction seule, soit le
+ * produit d'un coefficient ÉCRIT EN CHIFFRES (entier `3`, ou fraction d'entiers
+ * `\dfrac{2}{4}`) par une fonction seule. « Fonction seule » = un appel (`\ln`,
+ * `\sin`, `\cos`…) ou une puissance (`e^{u}`, `u^n`). Un quotient, un produit,
+ * une somme ou un opposé à l'intérieur n'en est pas une :
+ * `\dfrac{1}{4}\dfrac{x^2}{2}` et `\dfrac{1}{2}\dfrac{(2x+1)^4}{4}` ont un
+ * coefficient pas encore calculé, et passent par `tidy` (rend `null`).
+ *
+ * Rend le terme décomposé ; `canonical` dit si le coefficient est déjà réduit
+ * (entier, ou fraction irréductible de dénominateur > 1) — sinon
+ * (`\dfrac{2}{4}`, `\dfrac{6}{3}`) il reste à le réduire (revue du 2026-10-11).
+ */
+interface SingleCoefficientTerm {
+	readonly k: Rational;
+	readonly fn: MathNode;
+	readonly canonical: boolean;
+}
+
+function isIntegerLiteral(n: MathNode): boolean {
+	return n.type === 'number' && /^\d+$/.test(n.value);
+}
+
+function singleCoefficientTerm(node: MathNode): SingleCoefficientTerm | null {
+	const negative = node.type === 'opposite';
+	const term = node.type === 'opposite' ? node.operand : node;
+	const isSingleFunction = (n: MathNode): boolean =>
+		n.type === 'function' || n.type === 'superscript';
+	const sign = (r: Rational): Rational => (negative ? negRational(r) : r);
+	if (isSingleFunction(term)) return { k: sign(ONE), fn: term, canonical: true };
+	if (term.type !== 'multiplication' || !isSingleFunction(term.right)) return null;
+	const left = term.left;
+	const literal =
+		isIntegerLiteral(left) ||
+		(left.type === 'division' &&
+			isIntegerLiteral(left.numerator) &&
+			isIntegerLiteral(left.denominator));
+	if (!literal) return null;
+	const k = extractExactRational(left);
+	if (k === null || k.n === 0n) return null;
+	const canonical = toLatex(rationalToNode(k)) === toLatex(left) && !isOneRational(k);
+	return { k: sign(k), fn: term.right, canonical };
 }
 
 function integrateLinearity(integrand: MathNode, ctx: DispatchContext): DispatchResult {
@@ -799,7 +1114,7 @@ function integrateByParts(
 		);
 	}
 
-	const uv = simplifiedMultiply(u, v);
+	const uv = coefficientFirstProduct(u, v);
 	const antiderivative = subtract(uv, vduSub.antiderivative);
 
 	const identify = buildStep(ctx, {
@@ -821,10 +1136,35 @@ function integrateByParts(
 		before: integrand,
 		after: antiderivative,
 		variable: ctx.variable,
-		bindings: { u, v, du },
+		// `uv` et `vdu` : le rendu écrit uv − ∫ v du avant de le calculer
+		bindings: { u, v, du, uv, vdu: vDu, result: antiderivative },
 		subSteps: vduSub.steps
 	});
 	return { antiderivative, steps: [identify, choose, apply] };
+}
+
+/**
+ * Le produit u·v de l'IPP, coefficient numérique DEVANT : `\\dfrac{1}{2}xe^{2x}`,
+ * `-\\dfrac{3}{2}xe^{-2x}`, et non `x\\dfrac{1}{2}e^{2x}` ni `3x\\left(-\\dfrac{1}{2}e^{-2x}\\right)`
+ * (revue du lot 4 de l'ADR 0024 : l'IPP sur e^{ax+b} rendait v = \\dfrac{1}{a}e^{ax+b}).
+ * k = −1 met le signe devant (`-x^2e^{-x}`, pas `x^2\\left(-e^{-x}\\right)`) ; k = 1
+ * garde `simplifiedMultiply(u, v)`.
+ */
+function coefficientFirstProduct(u: MathNode, v: MathNode): MathNode {
+	let k: Rational = ONE;
+	const rest: MathNode[] = [];
+	for (const operand of [u, v]) {
+		const { sign, inner } = unwrapSign(operand);
+		if (sign === -1) k = negRational(k);
+		for (const { factor } of flattenProductShallow(inner)) {
+			const value = extractExactRational(factor);
+			if (value === null) rest.push(factor);
+			else k = mulRational(k, value);
+		}
+	}
+	if (isOneRational(k) || rest.length === 0) return simplifiedMultiply(u, v);
+	const product = rest.reduce((acc, factor) => simplifiedMultiply(acc, factor));
+	return withRationalCoefficient(k, product);
 }
 
 /**
@@ -986,7 +1326,9 @@ function integrateCyclicIPP(integrand: MathNode, ctx: DispatchContext): Dispatch
 		before: integrand,
 		after: subtract(u0v0, f1),
 		variable: ctx.variable,
-		bindings: { u: u0, v: v0, du: du0 }
+		// Pas de `result` : l'intégrale restante n'est pas calculée ici, le
+		// rendu écrit u₀v₀ − ∫ f₁ dx (et non u₀v₀ − f₁, qui serait faux)
+		bindings: { u: u0, v: v0, du: du0, uv: u0v0, vdu: f1 }
 	});
 	const choose2 = buildStep(ctx, {
 		rule: 'choose-u-dv',
@@ -1020,23 +1362,22 @@ function integratePartialFractions(
 	match: PartialFractionsMatch,
 	ctx: DispatchContext
 ): DispatchResult {
-	const variableNd = variableNode(ctx.variable);
-	const r1Nd = numericNode(match.r1);
-	const r2Nd = numericNode(match.r2);
-	const ANd = numericNode(match.A);
-	const BNd = numericNode(match.B);
+	const r1Nd = rationalToNode(match.r1);
+	const r2Nd = rationalToNode(match.r2);
+	const ANd = rationalToNode(match.A);
+	const BNd = rationalToNode(match.B);
 
-	// `x - r₁` and `x - r₂` (kept structural for nice rendering ; if rᵢ is
-	// negative, the renderer / latex layer prints `x + |rᵢ|`).
-	const xMinusR1 = subtract(variableNd, r1Nd);
-	const xMinusR2 = subtract(variableNd, r2Nd);
+	// `x - r₁` and `x - r₂`, exacts : `x + 1` quand r = −1
+	const xMinusR1 = linearFactorNode(ctx.variable, match.r1);
+	const xMinusR2 = linearFactorNode(ctx.variable, match.r2);
 
 	// Decomposition `A/(x-r₁) + B/(x-r₂)` for the « before → after » of the
-	// `decompose-rational` step. We use the unscaled coefficients here ; the
-	// final antiderivative folds them into the logarithm coefficients.
-	const term1 = simplifiedDivide(ANd, xMinusR1);
-	const term2 = simplifiedDivide(BNd, xMinusR2);
-	const decomposition = simplifiedAdd(term1, term2);
+	// `decompose-rational` step, A = p/q écrit `p/(q(x − r))`. The final
+	// antiderivative folds the coefficients into the logarithms.
+	const first = simpleElement(match.A, xMinusR1);
+	const decomposition = isNegativeRational(match.B)
+		? subtract(first, simpleElement(negRational(match.B), xMinusR2))
+		: simplifiedAdd(first, simpleElement(match.B, xMinusR2));
 
 	// Antiderivative `A·ln|x-r₁| + B·ln|x-r₂|`.
 	const ln1 = ln(abs(xMinusR1));
@@ -1069,6 +1410,16 @@ function integratePartialFractions(
 	});
 
 	return { antiderivative, steps: [decomposeStep, applyStep] };
+}
+
+/** L'élément simple A/(x − r) : `\frac{3}{2(x - 1)}` pour A = 3/2, `-\frac{1}{x - 2}` pour A = −1 */
+function simpleElement(coefficient: Rational, linear: MathNode): MathNode {
+	const denominator =
+		coefficient.d === 1n
+			? linear
+			: multiply(number(coefficient.d.toString()), parentheses(linear), 'implicit');
+	const magnitude = divide(number(absBigInt(coefficient.n).toString()), denominator, 'fraction');
+	return coefficient.n < 0n ? opposite(magnitude) : magnitude;
 }
 
 // =============================================================================

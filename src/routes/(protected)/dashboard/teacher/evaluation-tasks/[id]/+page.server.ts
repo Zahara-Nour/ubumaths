@@ -59,7 +59,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 		.maybeSingle();
 
 	if (taskErr) throw error(500, `Erreur de chargement : ${taskErr.message}`);
-	if (!task) throw error(404, 'Tâche introuvable');
+	if (!task) throw error(404, 'Observation introuvable');
 
 	// 2. Classes du prof pour le selecteur
 	const { data: classes, error: classesError } = await locals.supabase
@@ -74,7 +74,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 		console.error('Enrichissement illisible :', classesError);
 	}
 
-	// 3. Toutes les compétences math + sous-dimensions + observables (lecture publique)
+	// 3. Toutes les compétences math + composantes + observables (lecture publique)
 	const { data: competences, error: compErr } = await locals.supabase
 		.from('math_competences')
 		.select(
@@ -190,7 +190,7 @@ export const actions: Actions = {
 			})
 			.eq('id', params.id);
 		if (updErr) return fail(500, { message: updErr.message });
-		return { success: true, message: 'Tâche mise à jour' };
+		return { success: true, message: 'Observation mise à jour' };
 	},
 
 	save_perimeter: async ({ locals, request, params }) => {
@@ -208,7 +208,7 @@ export const actions: Actions = {
 			return fail(500, { message: 'Lecture impossible' });
 		}
 		if (!task) {
-			return fail(404, { message: 'Tâche introuvable' });
+			return fail(404, { message: 'Observation introuvable' });
 		}
 
 		const formData = await request.formData();

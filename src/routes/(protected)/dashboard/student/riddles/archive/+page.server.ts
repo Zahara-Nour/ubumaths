@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.select(
 			`
 			*,
-			riddle:riddles(*)
+			riddle:riddles(id, riddle_number, title, genre, difficulty)
 		`
 		)
 		// La table porte `date`, pas `assignment_date`.

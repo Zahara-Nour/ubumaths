@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import {
@@ -223,10 +224,8 @@
 <div class="container mx-auto max-w-6xl px-4 py-8">
 	<!-- Header -->
 	<div class="mb-8 flex items-center justify-between">
-		<div class="flex items-center gap-4">
-			<Button variant="ghost" size="icon" onclick={handleBackToSelection}>
-				<ArrowLeft class="h-5 w-5" />
-			</Button>
+		<div>
+			<BackLink href="/automaths" label="Retour aux automatismes" />
 			<div>
 				<h1 class="flex items-center gap-3 text-3xl font-bold tracking-tight">
 					<ShoppingCart class="h-8 w-8" />
@@ -306,7 +305,7 @@
 							<div class="text-center">
 								<div class="font-semibold">Enregistrer comme série</div>
 								<div class="text-xs font-normal opacity-80">
-									Pour en faire une évaluation pour vos {lore.entities.class}s
+									Pour en faire un contrôle pour vos {lore.entities.class}s
 								</div>
 							</div>
 						</Button>

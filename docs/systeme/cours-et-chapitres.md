@@ -321,9 +321,10 @@ invalide, expiré ou révoqué → **même 404**.
 
 ## Écarts connus
 
-1. **« Publier » a un quatrième sens** : `class_journal_entries.is_published` (booléen, plus
-   `entry_date <= current_date` dans la policy élève), absent du tableau de
-   [CONTEXT.md](../../CONTEXT.md) qui n'en compte que trois.
+1. **Le cahier de texte publie autrement que le reste** : `class_journal_entries.is_published` a le
+   **troisième sens** de « publier » de [CONTEXT.md](../../CONTEXT.md) (mis à disposition des élèves),
+   mais par un booléen, plus `entry_date <= current_date` dans la policy élève, et non par une date
+   `published_at` testée `<= now()` comme le veut l'[ADR 0005](../adr/0005-publication-par-element-acces-herite-de-la-classe.md).
 2. **Les modèles n'emportent ni sections ni séries** : `TemplateContentSnapshot` ne connaît que
    documents, objectifs, exercices, fiches. Instancier un modèle range tout en « non classé » et
    perd les séries, ce que la [spec des sections](../archive/wip/chapitre-sections-spec.md)

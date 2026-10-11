@@ -40,6 +40,35 @@ describe('/+page.svelte', () => {
 		await expect.element(heading).toBeInTheDocument();
 	});
 
+	it('Père Ubu mène au Tour du Royaume ; le lien texte a quitté l’accueil', async () => {
+		const screen = await renderWith(5);
+		const ubu = screen.container.querySelector('figure a');
+		expect(ubu?.getAttribute('href')).toMatch(/\/royaume$/);
+		expect(ubu?.getAttribute('aria-label')).toMatch(/Royaume/);
+		expect(screen.container.textContent).not.toMatch(/Visiter le Royaume/);
+	});
+
+	it('la roue des publics flotte près de Père Ubu, pour le visiteur anonyme', async () => {
+		const screen = await renderWith(5);
+		const wheel = screen.container.querySelector('[data-testid="audience-wheel"]');
+		expect(wheel).not.toBeNull();
+		expect(wheel?.closest('.ubu')).not.toBeNull();
+		expect(screen.container.textContent).toMatch(/Tu es… \?/);
+	});
+
+	it('pas de roue pour un élève connecté : il sait qui il est', async () => {
+		const screen = await render(Page, {
+			props: { data: { ambianceMonth: 5, shtam: null, user: { id: 'u' } } } as never
+		});
+		expect(screen.container.querySelector('[data-testid="audience-wheel"]')).toBeNull();
+	});
+
+	it('Père Ubu ne mène plus à la messagerie entre élèves (écart V15)', async () => {
+		const screen = await renderWith(5);
+		const hrefs = [...screen.container.querySelectorAll('a')].map((a) => a.getAttribute('href'));
+		expect(hrefs.some((h) => /dashboard/.test(h ?? ''))).toBe(false);
+	});
+
 	it('le mot « verte » reste en couleur primaire', async () => {
 		const screen = await renderWith(5);
 		const verte = screen.container.querySelector('h1 .text-primary');

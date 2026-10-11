@@ -29,8 +29,12 @@
 import type { MathNode } from '../../types';
 import { getVariables } from '../../eval/substitute';
 import { variable } from '../../factory';
-import { isEulerConstant, isGreek, isSubscript, isVariable } from '../../guards';
-import { EULER_NOT_A_VARIABLE } from '../../common/euler-variable';
+import { isEulerConstant, isGreek, isImaginaryUnit, isSubscript, isVariable } from '../../guards';
+import {
+	EULER_NOT_A_VARIABLE,
+	IMAGINARY_NOT_A_VARIABLE,
+	reservedLetterMessage
+} from '../../common/reserved-letters';
 import { toLatex } from '../../latex-generator';
 import { mapNode } from '../../transforms';
 import { parse, type PipelineOptions } from './pipeline';
@@ -49,8 +53,8 @@ const VARIABLE_NAME = /^\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9+-
 
 /**
  * Noms que l'expression contient mais qu'on ne propose pas comme autre
- * variable : `e` (Euler), `i` (imaginaire), `pi`. Nommer `e` après `;` est refusé :
- * `e` est la constante d'Euler, jamais une variable de calcul.
+ * variable : `e` (Euler), `i` (imaginaire), `pi`. Nommer `e` ou `i` après `;`
+ * est refusé : ce sont des constantes, jamais des variables de calcul.
  */
 const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 
@@ -362,6 +366,9 @@ export function chosenVariable(
 	if (parsed !== undefined && isEulerConstant(parsed)) {
 		return { ok: false, message: EULER_NOT_A_VARIABLE };
 	}
+	if (parsed !== undefined && isImaginaryUnit(parsed)) {
+		return { ok: false, message: IMAGINARY_NOT_A_VARIABLE };
+	}
 	const name = parsed === undefined ? null : variableNameOf(parsed);
 	if (name === null) return { ok: false, message: `« ${typed} » n'est pas une variable.` };
 	return { ok: true, variable: name };
@@ -625,12 +632,14 @@ function applyKeyword(
 		return null;
 	}
 	switch (keyword) {
-		case 'pour':
-			if (value === 'e') return EULER_NOT_A_VARIABLE;
+		case 'pour': {
+			const reserved = reservedLetterMessage(value);
+			if (reserved !== null) return reserved;
 			if (!VARIABLE_NAME.test(value)) return `« ${value} » n'est pas une variable.`;
 			if (result.variable !== null) return 'La variable est donnée deux fois.';
 			result.variable = value;
 			return null;
+		}
 		case 'ordre':
 			if (!ORDER.test(value)) return `L'ordre est un entier : « ordre 3 », pas « ordre ${value} ».`;
 			result.order = parseInt(value, 10);

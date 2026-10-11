@@ -322,7 +322,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 				{
 					success: false,
 					error:
-						'Ce modèle a déjà servi à des élèves (évaluation ou révisions) : il ne peut plus être supprimé. Passe-le en brouillon.'
+						'Ce modèle a déjà servi à des élèves (contrôle ou révisions) : il ne peut plus être supprimé. Passe-le en brouillon.'
 				},
 				{ status: 409 }
 			);

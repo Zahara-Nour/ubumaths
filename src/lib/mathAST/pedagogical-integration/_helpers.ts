@@ -14,9 +14,18 @@ import { differentiate } from '../differentiation';
 import { containsVariable } from '../common/contains-variable';
 import { isNumber, isVariable, isOne, isZero } from '../guards';
 import { hashMathNode } from '../normal/hash';
-import { findProportionalityConstant } from '../integration/patterns';
+import { findProportionalityRatio } from '../integration/patterns';
+import { number } from '../factory';
+import type { Rational } from '../normal/types';
 import { getNumericValue } from '../common/numeric';
-import { extractQuadraticCoefficients as extractQuadraticCoefficientsImpl } from '../solve/solvers/quadratic';
+import { evalPoly, quadraticRootParts, toPolynomial } from '../factor';
+import {
+	divRational,
+	isNegative,
+	isZero as isZeroRational,
+	mulRational,
+	subRational
+} from '../normal/rational';
 import { normalize as normalizeMathNode } from '../normal/normalize';
 import { denormalize as denormalizeMathNode } from '../normal/denormalize';
 import type {
@@ -348,6 +357,9 @@ export function tryExtractConstant(
  *   factor is `1/2` (because u = 2x, u' = 2, and the integrand lacks a `2` to
  *   match the canonical `u'·sin(u)` form). Renderers display this as a
  *   `1/u'` coefficient on the antiderivative.
+ *
+ * Le facteur est un rationnel EXACT : un flottant s'affichait `0.5` ou
+ * `0.3333333333333333` devant la primitive (décision de David, 2026-10-11).
  */
 export interface CompositeMatch {
 	readonly kind:
@@ -358,7 +370,7 @@ export interface CompositeMatch {
 		| 'composite-power';
 	readonly u: MathNode;
 	readonly n?: MathNode;
-	readonly constantFactor?: number;
+	readonly constantFactor?: Rational;
 }
 
 /**
@@ -409,11 +421,10 @@ function safeDifferentiate(u: MathNode, variable: string): MathNode | null {
  * numeric constant. Returns the constant value (1/u') as the rebalancing
  * factor, or `null` if u' depends on the variable or is zero.
  */
-function bareCompositeFactor(uPrime: MathNode, variable: string): number | null {
+function bareCompositeFactor(uPrime: MathNode, variable: string): Rational | null {
 	if (containsVariable(uPrime, variable)) return null;
-	const value = getNumericValue(uPrime);
-	if (value === null || value === 0) return null;
-	return 1 / value;
+	// 1 = c·u′ : c = 1/u′, en rationnel exact (u′ = 0 n'a pas de c)
+	return findProportionalityRatio(number('1'), uPrime);
 }
 
 /**
@@ -451,7 +462,7 @@ export function tryDetectCompositeExp(
 			const other = right;
 			const uPrime = safeDifferentiate(leftU, variable);
 			if (uPrime === null) return null;
-			const factor = findProportionalityConstant(other, uPrime);
+			const factor = findProportionalityRatio(other, uPrime);
 			if (factor !== null) {
 				return { kind: 'composite-exp', u: leftU, constantFactor: factor };
 			}
@@ -460,7 +471,7 @@ export function tryDetectCompositeExp(
 			const other = left;
 			const uPrime = safeDifferentiate(rightU, variable);
 			if (uPrime === null) return null;
-			const factor = findProportionalityConstant(other, uPrime);
+			const factor = findProportionalityRatio(other, uPrime);
 			if (factor !== null) {
 				return { kind: 'composite-exp', u: rightU, constantFactor: factor };
 			}
@@ -515,7 +526,7 @@ export function tryDetectCompositeLn(integrand: MathNode, variable: string): Com
 		return { kind: 'composite-ln', u, constantFactor: factor };
 	}
 
-	const factor = findProportionalityConstant(num, uPrime);
+	const factor = findProportionalityRatio(num, uPrime);
 	if (factor === null) return null;
 	return { kind: 'composite-ln', u, constantFactor: factor };
 }
@@ -568,13 +579,13 @@ function tryDetectCompositeUnary(
 		if (leftU !== null) {
 			const uPrime = safeDifferentiate(leftU, variable);
 			if (uPrime === null) return null;
-			const factor = findProportionalityConstant(right, uPrime);
+			const factor = findProportionalityRatio(right, uPrime);
 			if (factor !== null) return { kind: matchKind, u: leftU, constantFactor: factor };
 		}
 		if (rightU !== null) {
 			const uPrime = safeDifferentiate(rightU, variable);
 			if (uPrime === null) return null;
-			const factor = findProportionalityConstant(left, uPrime);
+			const factor = findProportionalityRatio(left, uPrime);
 			if (factor !== null) return { kind: matchKind, u: rightU, constantFactor: factor };
 		}
 	}
@@ -648,7 +659,7 @@ export function tryDetectCompositePower(
 		if (leftBase !== null) {
 			const uPrime = safeDifferentiate(leftBase.u, variable);
 			if (uPrime === null) return null;
-			const factor = findProportionalityConstant(integrand.right, uPrime);
+			const factor = findProportionalityRatio(integrand.right, uPrime);
 			if (factor !== null) {
 				return {
 					kind: 'composite-power',
@@ -661,7 +672,7 @@ export function tryDetectCompositePower(
 		if (rightBase !== null) {
 			const uPrime = safeDifferentiate(rightBase.u, variable);
 			if (uPrime === null) return null;
-			const factor = findProportionalityConstant(integrand.left, uPrime);
+			const factor = findProportionalityRatio(integrand.left, uPrime);
 			if (factor !== null) {
 				return {
 					kind: 'composite-power',
@@ -684,7 +695,7 @@ export function tryDetectCompositePower(
  * Result of IPP detection : the chosen `u` and `dv` factors.
  *
  * The pedagogical IPP V1 covers ONLY the simple « LIATE-like » template:
- *   - polynomial × (e^x | sin(x) | cos(x))   → u = polynomial, dv = transcendental
+ *   - polynomial × (e^{ax+b} | sin(x) | cos(x)) → u = polynomial, dv = transcendental
  *   - polynomial × ln(x)                     → u = ln(x), dv = polynomial
  *   - bare ln(x)                             → u = ln(x), dv = 1·dx
  *
@@ -724,7 +735,7 @@ export function tryDetectParts(integrand: MathNode, variable: string): PartsMatc
 		return { u: left, dv: right };
 	}
 
-	// Template B : polynomial × transcendental(e^x | sin(x) | cos(x)).
+	// Template B : polynomial × transcendental(e^{ax+b} | sin(x) | cos(x)).
 	if (isPolynomialOf(left, variable) && isTranscendentalOfVariable(right, variable)) {
 		return { u: left, dv: right };
 	}
@@ -788,11 +799,18 @@ function isTranscendentalOfVariable(node: MathNode, variable: string): boolean {
 	if (node.type === 'superscript') {
 		const base = node.base;
 		const isE = base.type === 'constant' && base.constant === 'euler';
-		if (isE && isExactVariable(node.superscript, variable)) {
+		// e^{ax+b} (lot 4 de l'ADR 0024) : v = e^{ax+b}/a par la forme composée
+		if (isE && isAffineOf(node.superscript, variable)) {
 			return true;
 		}
 	}
 	return false;
+}
+
+/** `ax + b`, a ≠ 0 rationnel (`x`, `2x`, `-x`, `2x + 1`). */
+function isAffineOf(node: MathNode, variable: string): boolean {
+	const poly = toPolynomial(node, variable);
+	return poly !== null && poly.length === 2;
 }
 
 // =============================================================================
@@ -801,20 +819,20 @@ function isTranscendentalOfVariable(node: MathNode, variable: string): boolean {
 
 /**
  * Result of partial-fractions detection : `∫ P(x)/Q(x) dx` where Q is
- * quadratic with two distinct real roots r₁, r₂ and deg(P) < deg(Q) = 2.
+ * quadratic with two distinct rational roots r₁, r₂ and deg(P) < deg(Q) = 2.
  *
  * The decomposition is `P/Q = A/(x-r₁) + B/(x-r₂)` with coefficients computed
  * via the « method of roots » : `A = P(r₁) / (aQ·(r₁-r₂))`,
  * `B = P(r₂) / (aQ·(r₂-r₁))`, where `aQ` is the leading coefficient of Q.
+ * Tout est EXACT (noyau `factor/`, ADR 0024).
  */
 export interface PartialFractionsMatch {
 	readonly numerator: MathNode;
 	readonly denominator: MathNode;
-	readonly r1: number;
-	readonly r2: number;
-	readonly A: number;
-	readonly B: number;
-	readonly aQ: number; // leading coefficient of Q (typically 1, sometimes -1)
+	readonly r1: Rational;
+	readonly r2: Rational;
+	readonly A: Rational;
+	readonly B: Rational;
 }
 
 /**
@@ -837,8 +855,8 @@ export function tryDetectPartialFractions(
 ): PartialFractionsMatch | null {
 	if (integrand.type !== 'division') return null;
 
-	// Expand P, Q via normalize/denormalize so factored forms like
-	// `(x-1)(x+1)` get folded to `x² - 1` before coefficient extraction.
+	// P et Q développés (normalize/denormalize) : la forme montrée dans les
+	// liaisons de l'étape, `(x-1)(x+1)` écrit `x² - 1`.
 	let P = integrand.numerator;
 	let Q = integrand.denominator;
 	try {
@@ -850,83 +868,26 @@ export function tryDetectPartialFractions(
 
 	if (!containsVariable(Q, variable)) return null;
 
-	// Q must be quadratic with numeric coefficients.
-	const Qcoeffs = quadraticCoefs(Q, variable);
-	if (!Qcoeffs) return null;
-	const { a: aQ, b: bQ, c: cQ } = Qcoeffs;
-	if (aQ === 0) return null; // not actually quadratic
+	// Q trinôme à deux racines rationnelles distinctes, P de degré ≤ 1, lus et
+	// tranchés EXACTEMENT par le noyau `factor/` (ADR 0024). Racines
+	// irrationnelles refusées : la primitive contiendrait √Δ.
+	const q = toPolynomial(Q, variable);
+	const p = toPolynomial(P, variable);
+	if (q === null || p === null || q.length !== 3 || p.length > 2) return null;
+	const aQ = q[2];
+	const parts = quadraticRootParts(aQ, q[1], q[0], 0n);
+	if (parts.kind !== 'rational') return null;
+	// r₁ = (−b + √Δ)/2a d'abord : l'ordre des termes de la décomposition
+	const [r1, r2] = isNegative(aQ) ? parts.roots : [parts.roots[1], parts.roots[0]];
 
-	// Discriminant Δ = b² - 4ac. Must be > 0 for two distinct real roots.
-	const delta = bQ * bQ - 4 * aQ * cQ;
-	if (delta <= 0) return null;
-	const sqrtDelta = Math.sqrt(delta);
+	// Méthode des racines : A = P(r₁)/(aQ·(r₁ − r₂)), B = P(r₂)/(aQ·(r₂ − r₁))
+	const A = divRational(evalPoly(p, r1), mulRational(aQ, subRational(r1, r2)));
+	const B = divRational(evalPoly(p, r2), mulRational(aQ, subRational(r2, r1)));
 
-	// Reject irrational roots in V2 simple : the antiderivative would contain
-	// `√Δ` numerically, which we don't render cleanly. Allow only roots that
-	// round-trip exactly through Number.isInteger(2·root·aQ).
-	const r1 = (-bQ + sqrtDelta) / (2 * aQ);
-	const r2 = (-bQ - sqrtDelta) / (2 * aQ);
-	if (!isRationalLike(r1) || !isRationalLike(r2)) return null;
+	// Un coefficient nul : la fraction se simplifie, une autre règle s'en charge
+	if (isZeroRational(A) || isZeroRational(B)) return null;
 
-	// P must be a polynomial in `variable` of degree ≤ 1. We allow constant
-	// numerators (deg 0) and linear numerators (deg 1).
-	const Pcoeffs = quadraticCoefs(P, variable);
-	if (!Pcoeffs) return null;
-	const { a: aP, b: bP, c: cP } = Pcoeffs;
-	if (aP !== 0) return null; // deg(P) >= 2 — out of V2 scope
-
-	// Coefficients via the method of roots :
-	//   P/Q = A/(x-r₁) + B/(x-r₂)
-	//   A = P(r₁) / (aQ · (r₁ - r₂))
-	//   B = P(r₂) / (aQ · (r₂ - r₁))
-	const Pr1 = bP * r1 + cP;
-	const Pr2 = bP * r2 + cP;
-	const A = Pr1 / (aQ * (r1 - r2));
-	const B = Pr2 / (aQ * (r2 - r1));
-
-	// Reject degenerate cases (one coefficient near zero — the rational
-	// simplifies and another rule would handle it).
-	if (Math.abs(A) < 1e-12 || Math.abs(B) < 1e-12) return null;
-
-	return { numerator: P, denominator: Q, r1, r2, A, B, aQ };
-}
-
-/**
- * Extract numeric quadratic coefficients (a, b, c) from a polynomial in
- * `variable` of degree ≤ 2. Returns null if any coefficient is non-numeric
- * (parametric) or if the expression has a term of degree > 2.
- *
- * Internal helper for `tryDetectPartialFractions`. Wraps
- * `extractQuadraticCoefficients` from `solve/solvers/quadratic.ts` and
- * resolves each coefficient to a JavaScript number.
- */
-function quadraticCoefs(
-	expr: MathNode,
-	variable: string
-): { a: number; b: number; c: number } | null {
-	const coeffs = extractQuadraticCoefficientsImpl(expr, variable);
-	if (!coeffs) return null;
-	const a = getNumericValue(coeffs.a);
-	const b = getNumericValue(coeffs.b);
-	const c = getNumericValue(coeffs.c);
-	if (a === null || b === null || c === null) return null;
-	return { a, b, c };
-}
-
-/**
- * Numeric heuristic : a value is « rational-like » when it has a small
- * denominator after rounding. Cuts off at 10⁻⁶ for the rounding tolerance and
- * 1000 for the max denominator. Used to reject irrational roots in
- * partial-fractions decomposition.
- */
-function isRationalLike(value: number): boolean {
-	if (!Number.isFinite(value)) return false;
-	const tolerance = 1e-6;
-	for (let den = 1; den <= 1000; den++) {
-		const num = Math.round(value * den);
-		if (Math.abs(value * den - num) < tolerance) return true;
-	}
-	return false;
+	return { numerator: P, denominator: Q, r1, r2, A, B };
 }
 
 // =============================================================================

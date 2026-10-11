@@ -22,7 +22,9 @@
  * @module mathAST/pedagogical-integration/renderer
  */
 
+import type { MathNode } from '../types';
 import { toLatex } from '../latex-generator';
+import { withExplicitNumberProducts } from '../pedagogical-differentiation/tidy-step';
 import type {
 	PedagogicalRenderOptions,
 	RenderedStep,
@@ -105,10 +107,14 @@ function lookupExplanation(
  * - `simplify-bounds-result` : same as standard but with no `\int` (we're
  *   simplifying a numeric expression at this point).
  *
- * - `identify-parts` / `choose-u-dv` / `apply-parts-formula` for IPP :
- *   the standard format with the integrand on top and the antiderivative
- *   below. The pedagogical narrative around `u`, `dv`, `du`, `v` lives in
- *   the title and explanation.
+ * - `identify-parts` / `choose-u-dv` : the integral alone (nothing is
+ *   computed yet — no `= <integrand>` line). `apply-parts-formula` : the
+ *   standard format. The pedagogical narrative around `u`, `dv`, `du`, `v`
+ *   lives in the title and explanation.
+ *
+ * - `simplify-result` (« On simplifie ») : one line, `raw = tidied` ; quand
+ *   l'exponentielle est mise en facteur et que la forme développée diffère de la
+ *   brute, trois lignes : brute, `= développée`, `= factorisée`.
  *
  * - `add-constant` and `identify-integrand` : single-line render (no
  *   transformation, just narration).
@@ -120,8 +126,11 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 
 	switch (step.rule) {
 		case 'identify-integrand':
-		case 'identify-definite-integral': {
-			// Pure narration — show only the integral form.
+		case 'identify-definite-integral':
+		case 'identify-parts':
+		case 'choose-u-dv': {
+			// Pure narration — show only the integral form. Pour l'IPP, pas de
+			// « = <intégrande> » : rien n'est encore calculé (décision du 2026-10-11)
 			const integralLhs = step.definite
 				? `\\int_{${toLatex(step.definite.lower)}}^{${toLatex(step.definite.upper)}} ${beforeLatex}${dx}`
 				: `\\int ${beforeLatex}${dx}`;
@@ -150,6 +159,34 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 			);
 		}
 
+		case 'apply-parts-formula': {
+			// uv − ∫ v du, l'intégrale restante ÉCRITE ; puis, quand elle est
+			// calculée (`result`), la primitive. Sans cela, l'IPP cyclique
+			// affichait u₀v₀ − f₁, une égalité fausse (revue du 2026-10-11).
+			const uv = step.bindings?.uv;
+			const vdu = step.bindings?.vdu;
+			if (!uv || !vdu) return formatStandard(step, beforeLatex, afterLatex, dx);
+			const result = step.bindings?.result;
+			const lines = [
+				`  & \\textcolor{blue}{\\int ${beforeLatex}${dx}}`,
+				`  & = ${toLatex(uv)} - \\int ${integrandLatex(vdu)}${dx}`,
+				...(result ? [`  & = ${toLatex(result)}`] : [])
+			];
+			return `\\begin{aligned}\n${lines.join(' \\\\\n')}\n\\end{aligned}`;
+		}
+
+		case 'simplify-result': {
+			// Une ligne, comme « On simplifie » des dérivées : brute = rangée
+			const raw = toLatex(withExplicitNumberProducts(step.before));
+			// Exponentielle mise en facteur (lot 4 de l'ADR 0024) : brute = développée = factorisée
+			const developed = step.bindings?.developed;
+			if (developed && toLatex(developed) !== beforeLatex) {
+				const lines = [`  & ${raw}`, `  & = ${toLatex(developed)}`, `  & = ${afterLatex}`];
+				return `\\begin{aligned}\n${lines.join(' \\\\\n')}\n\\end{aligned}`;
+			}
+			return `${raw} = ${afterLatex}`;
+		}
+
 		case 'add-constant': {
 			// Single-line narrative : antiderivative + C.
 			return `\\textcolor{blue}{${afterLatex} + C}`;
@@ -168,19 +205,35 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 			);
 		}
 
-		default: {
-			// Standard 2-line render : integral on top, antiderivative below.
-			const integralLhs = step.definite
-				? `\\int_{${toLatex(step.definite.lower)}}^{${toLatex(step.definite.upper)}} ${beforeLatex}${dx}`
-				: `\\int ${beforeLatex}${dx}`;
-			return (
-				`\\begin{aligned}\n` +
-				`  & \\textcolor{blue}{${integralLhs}} \\\\\n` +
-				`  & = ${afterLatex}\n` +
-				`\\end{aligned}`
-			);
-		}
+		default:
+			return formatStandard(step, beforeLatex, afterLatex, dx);
 	}
+}
+
+/** Un intégrande somme ou opposé, entre parenthèses : `\\int \\left( -\\cos x \\right)\\,dx`. */
+function integrandLatex(node: MathNode): string {
+	const latex = toLatex(node);
+	return node.type === 'addition' || node.type === 'subtraction' || node.type === 'opposite'
+		? `\\left( ${latex} \\right)`
+		: latex;
+}
+
+/** Standard 2-line render : integral on top, antiderivative below. */
+function formatStandard(
+	step: PedagogicalIntegrationStep,
+	beforeLatex: string,
+	afterLatex: string,
+	dx: string
+): string {
+	const integralLhs = step.definite
+		? `\\int_{${toLatex(step.definite.lower)}}^{${toLatex(step.definite.upper)}} ${beforeLatex}${dx}`
+		: `\\int ${beforeLatex}${dx}`;
+	return (
+		`\\begin{aligned}\n` +
+		`  & \\textcolor{blue}{${integralLhs}} \\\\\n` +
+		`  & = ${afterLatex}\n` +
+		`\\end{aligned}`
+	);
 }
 
 // =============================================================================

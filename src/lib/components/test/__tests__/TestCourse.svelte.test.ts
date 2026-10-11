@@ -24,6 +24,13 @@ function session(): TestSession {
 	};
 }
 
+/** Lien « Quitter » de l'en-tête (un vrai lien : la destination est écrite dedans) */
+function quitLink(container: HTMLElement): HTMLAnchorElement | undefined {
+	return [...container.querySelectorAll<HTMLAnchorElement>('a')].find(
+		(link) => link.textContent?.trim() === 'Quitter'
+	);
+}
+
 async function finish(inEvaluation: boolean) {
 	const screen = await render(TestCourse, {
 		session: session(),
@@ -34,6 +41,24 @@ async function finish(inEvaluation: boolean) {
 	await page.getByRole('button', { name: 'Terminer' }).click();
 	await expect.element(page.getByText(/bonnes réponses/)).toBeInTheDocument();
 	return screen;
+}
+
+/** Clique le lien « Quitter » ; rend true si le lien a annulé la navigation */
+function clickQuit(container: HTMLElement): boolean {
+	const link = quitLink(container);
+	if (!link) throw new Error('lien « Quitter » introuvable');
+	let cancelledByLink = false;
+	// Écouteur posé après celui du lien : relève sa décision, puis bloque la vraie navigation
+	link.ownerDocument.addEventListener(
+		'click',
+		(event) => {
+			cancelledByLink = event.defaultPrevented;
+			event.preventDefault();
+		},
+		{ once: true }
+	);
+	link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+	return cancelledByLink;
 }
 
 describe('TestCourse — fin de la course', () => {
@@ -50,15 +75,24 @@ describe('TestCourse — fin de la course', () => {
 		expect(container.querySelector('a[href="/dashboard/student/assessments"]')).not.toBeNull();
 	});
 
-	it('évaluation : le bouton retour de l’en-tête ne mène pas au panier', async () => {
+	it('évaluation : « Quitter » dans l’en-tête mène à « Mes contrôles », pas au panier', async () => {
 		const { container } = await render(TestCourse, {
 			session: session(),
 			onComplete: vi.fn(),
 			onBack: vi.fn(),
 			inEvaluation: true
 		});
-		expect(container.querySelector('[aria-label="Retour au panier"]')).toBeNull();
-		expect(container.querySelector('[aria-label="Mes évaluations"]')).not.toBeNull();
+		expect(quitLink(container)?.getAttribute('href')).toBe('/dashboard/student/assessments');
+	});
+
+	it('hors évaluation : « Quitter » dans l’en-tête mène au panier', async () => {
+		const { container } = await render(TestCourse, {
+			session: session(),
+			onComplete: vi.fn(),
+			onBack: vi.fn(),
+			inEvaluation: false
+		});
+		expect(quitLink(container)?.getAttribute('href')).toBe('/automaths/panier');
 	});
 });
 
@@ -137,6 +171,35 @@ describe('TestCourse — évaluation, réponses non validées', () => {
 
 		expect(confirmSpy).toHaveBeenCalledTimes(1);
 		expect(confirmSpy.mock.calls[0][0]).toMatch(/Il reste 1 question non répondue/);
+		confirmSpy.mockRestore();
+	});
+});
+
+describe('TestCourse — quitter en cours de route', () => {
+	it('contrôle : « Quitter » demande confirmation, un refus garde l’élève sur la course', async () => {
+		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+		const { container } = await render(TestCourse, {
+			session: session(),
+			onComplete: vi.fn(),
+			onBack: vi.fn(),
+			inEvaluation: true,
+			collectOnly: true
+		});
+		expect(clickQuit(container)).toBe(true);
+		expect(confirmSpy).toHaveBeenCalledWith(expect.stringContaining('le temps continue de courir'));
+		confirmSpy.mockRestore();
+	});
+
+	it('entraînement : « Quitter » part sans question', async () => {
+		const confirmSpy = vi.spyOn(window, 'confirm');
+		const { container } = await render(TestCourse, {
+			session: session(),
+			onComplete: vi.fn(),
+			onBack: vi.fn(),
+			inEvaluation: false
+		});
+		expect(clickQuit(container)).toBe(false);
+		expect(confirmSpy).not.toHaveBeenCalled();
 		confirmSpy.mockRestore();
 	});
 });

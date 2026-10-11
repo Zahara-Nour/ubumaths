@@ -27,7 +27,6 @@
  * @module mathAST/pedagogical-simplify/pipeline
  */
 
-import { tidy } from '../tidy';
 import type { MathNode } from '../types';
 import type { Rule } from '../pattern/types';
 import { applyRule, applyRulesDeepOnceTracked } from '../pattern/rule';
@@ -38,6 +37,11 @@ import type { SchoolLevel } from '../common/step-renderer-base';
 import { getPedagogicalSimplifyRuleDescription } from './descriptions-fr';
 import { commonContentFactorRules } from '../pattern/rule-sets/common-factor';
 import { categorizeRule, selectRulesForIntent } from './intent-rules';
+import {
+	flattenGroupedProducts,
+	runFactoriserStrategies,
+	tidyWithoutReordering
+} from './factor-strategies';
 import {
 	PedagogicalSimplifyNotImplemented,
 	type PedagogicalSimplifyOptions,
@@ -372,14 +376,6 @@ export function generatePedagogicalSimplifySteps(
 		}
 
 		if (!useNormalize) {
-			// ⚠️ Couper `normalize` ne veut pas dire ne RIEN mettre au propre.
-			// `factoriser` le coupe à juste titre — il défferait la factorisation
-			// — mais rien ne le remplaçait, et les coefficients restaient bruts :
-			// `(2/4)x + x` rendait `(2/4 + 1)x` au lieu de `(3/2)x`.
-			//
-			// `tidy` est exactement l'outil qui manque : il met au propre sans
-			// jamais DÉVELOPPER, donc sans défaire ce que la phase A vient de
-			// factoriser. C'est tout son contrat.
 			// ⚠️ La mise en facteur du CONTENU — numérique et monôme — s'applique
 			// aux sommes MAXIMALES seulement, et après la phase A.
 			//
@@ -394,20 +390,54 @@ export function generatePedagogicalSimplifySteps(
 			// chance sur la somme entière, et ce qui reste est un contenu à
 			// sortir. On relance ensuite la phase A pour que les identités voient
 			// la somme intérieure — c'est ce qui donne `3x² + 6x + 3 → 3(x+1)²`.
-			const withContent = extractCommonContentInMaximalSums(phaseA.result, makeStep);
-			const afterContent = withContent.changed
-				? runPatternLoop(withContent.result, rules, maxIterations, effectiveSignal, makeStep)
-				: null;
+			const patternStage = (start: MathNode, first?: typeof phaseA) => {
+				const a = first ?? runPatternLoop(start, rules, maxIterations, effectiveSignal, makeStep);
+				const withContent = extractCommonContentInMaximalSums(a.result, makeStep);
+				const afterContent = withContent.changed
+					? runPatternLoop(withContent.result, rules, maxIterations, effectiveSignal, makeStep)
+					: null;
+				// Sans parenthèses doubles `3((2x−1)(2x+1))`, dans le résultat comme dans les étapes
+				const flat = flattenGroupedProducts;
+				const steps = [...a.steps, ...withContent.steps, ...(afterContent?.steps ?? [])];
+				return {
+					result: flat(afterContent?.result ?? withContent.result),
+					steps: steps.map((step) => ({
+						...step,
+						after: flat(step.after),
+						...(step.globalBefore && { globalBefore: flat(step.globalBefore) }),
+						...(step.globalAfter && { globalAfter: flat(step.globalAfter) })
+					}))
+				};
+			};
 
-			const factored = afterContent?.result ?? withContent.result;
-			const steps = [...phaseA.steps, ...withContent.steps, ...(afterContent?.steps ?? [])];
+			// Puis les stratégies qui racontent (ADR 0024) : facteurs réduits,
+			// racines du trinôme, racine évidente, développer en dernier recours.
+			const outcome = runFactoriserStrategies(node, {
+				level: options.schoolLevel,
+				patternStage: (start) => patternStage(start, start === node ? phaseA : undefined),
+				develop: (start) =>
+					generatePedagogicalSimplifySteps(start, { ...options, intent: 'developper' }),
+				makeStep
+			});
 
 			// Couper `normalize` ne veut pas dire ne RIEN mettre au propre.
 			// `factoriser` le coupe à juste titre — il défferait la factorisation
 			// — mais rien ne le remplaçait, et les coefficients restaient bruts :
 			// `(2/4)x + x` rendait `(2/4 + 1)x` au lieu de `(3/2)x`. `tidy` met au
-			// propre sans jamais DÉVELOPPER : c'est tout son contrat.
-			return { result: tidyWithoutReordering(factored), steps };
+			// propre sans jamais DÉVELOPPER : c'est tout son contrat. Le rendu du
+			// noyau, lui, est déjà propre (et `tidy` y réordonnerait `x − 1 − √2`).
+			const result = outcome.clean ? outcome.result : tidyWithoutReordering(outcome.result);
+			// La dernière ligne affichée EST le résultat : la mise au propre finale
+			// (ordre du noyau, `tidy`) se fait dans la dernière étape, pas en silence
+			// Ids renumérotés : les étapes jetées (stratégie 6) ont consommé le compteur
+			const last = outcome.steps.length - 1;
+			const steps = outcome.steps.map((step, index) => ({
+				...step,
+				id: index + 1,
+				...(index === last &&
+					!nodesEqual(step.globalAfter ?? step.after, result) && { globalAfter: result })
+			}));
+			return { result, steps };
 		}
 
 		const phaseB = runNormalizePass(phaseA.result, effectiveSignal, makeStep);
@@ -426,32 +456,6 @@ export function generatePedagogicalSimplifySteps(
 	} finally {
 		dispose();
 	}
-}
-
-/**
- * Met au propre **sans réordonner** un produit déjà factorisé.
- *
- * `tidy` range les facteurs dans son ordre canonique : `(x+1)e^x` y devient
- * `e^x(x+1)`. Les deux écritures sont justes, mais c'est la première qu'on
- * écrit au tableau pour une dérivée, et l'ordre vient ici d'une factorisation
- * que l'élève vient de suivre — le moteur n'a pas à la rebattre.
- *
- * On met donc chaque facteur au propre séparément, en gardant l'ordre. Tout ce
- * qui n'est pas un produit passe par `tidy` entier : `√8` devient `2√2`,
- * `2x + 3x` devient `5x`.
- */
-function tidyWithoutReordering(node: MathNode): MathNode {
-	if (node.type !== 'multiplication') return tidy(node);
-	const left = tidyWithoutReordering(node.left);
-	const right = tidyWithoutReordering(node.right);
-	// Deux nombres côte à côte ne sont pas une factorisation à préserver : ils
-	// viennent d'une identité qui a rendu un nombre (`2\ln(e)` → `2 × 1`,
-	// `3\ln(e^2)` → `3 × 2`). Aucune règle de `factoriser` ne décompose un
-	// entier, donc on peut les calculer sans rien défaire.
-	if (left.type === 'number' && right.type === 'number') {
-		return tidy({ ...node, left, right });
-	}
-	return { ...node, left, right };
 }
 
 /**

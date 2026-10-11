@@ -217,7 +217,7 @@ async function loadSeriesTemplates(
 
 	if (error) {
 		console.error('[evaluation-attempts] Modèles illisibles :', error);
-		throw new EvaluationError(500, "Impossible de préparer l'évaluation, réessaie dans un instant");
+		throw new EvaluationError(500, 'Impossible de préparer le contrôle, réessaie dans un instant');
 	}
 	return ((data ?? []) as QuestionTemplateRow[]).map(toQuestionTemplate);
 }
@@ -349,7 +349,7 @@ export async function startEvaluationAttempt(
 	const randomInt = actors.randomInt ?? cryptoRandomInt;
 
 	const found = await getAssignmentWithEvaluation(userClient, assignmentId);
-	if (!found) throw new EvaluationError(404, 'Évaluation introuvable');
+	if (!found) throw new EvaluationError(404, 'Contrôle introuvable');
 	const { assignment, evaluation } = found;
 
 	const recipient = await isAssignmentRecipient(userClient, assignment, userId);
@@ -365,9 +365,9 @@ export async function startEvaluationAttempt(
 				evaluation: { ...summary(evaluation), categories: evaluation.series.categories }
 			};
 		}
-		throw new EvaluationError(404, 'Évaluation introuvable');
+		throw new EvaluationError(404, 'Contrôle introuvable');
 	}
-	if (evaluation.status !== 'published') throw new EvaluationError(404, 'Évaluation introuvable');
+	if (evaluation.status !== 'published') throw new EvaluationError(404, 'Contrôle introuvable');
 
 	// Q34 : une tentative en cours se reprend, sans en compter une nouvelle (même
 	// après la date limite : commencée avant, elle peut finir après, Q37)
@@ -427,7 +427,7 @@ export async function startEvaluationAttempt(
 	if (generated.length === 0) {
 		throw new EvaluationError(
 			409,
-			"Cette évaluation n'a aucune question disponible, préviens ton professeur"
+			"Ce contrôle n'a aucune question disponible, préviens ton professeur"
 		);
 	}
 
@@ -447,10 +447,7 @@ export async function startEvaluationAttempt(
 
 	if (sessionError || !session) {
 		console.error('[evaluation-attempts] Séance non créée :', sessionError);
-		throw new EvaluationError(
-			500,
-			"Impossible de commencer l'évaluation, réessaie dans un instant"
-		);
+		throw new EvaluationError(500, 'Impossible de commencer le contrôle, réessaie dans un instant');
 	}
 
 	// Q42 : l'instance complète (réponses attendues comprises) est FIGÉE ici,
@@ -469,10 +466,7 @@ export async function startEvaluationAttempt(
 		console.error('[evaluation-attempts] Questions non enregistrées :', questionsError);
 		// Une séance sans questions ne doit pas coûter une tentative
 		await deleteRows(service, 'test_sessions', [session.id], 'questions non enregistrées');
-		throw new EvaluationError(
-			500,
-			"Impossible de commencer l'évaluation, réessaie dans un instant"
-		);
+		throw new EvaluationError(500, 'Impossible de commencer le contrôle, réessaie dans un instant');
 	}
 
 	// Double démarrage simultané (double clic, deux onglets) : la plus ancienne
@@ -482,7 +476,7 @@ export async function startEvaluationAttempt(
 		if (!(await deleteRows(service, 'test_sessions', [session.id], 'double démarrage'))) {
 			throw new EvaluationError(
 				500,
-				"Impossible de commencer l'évaluation, réessaie dans un instant"
+				'Impossible de commencer le contrôle, réessaie dans un instant'
 			);
 		}
 		const questions = await regenerateAttempt(service, oldest.id);

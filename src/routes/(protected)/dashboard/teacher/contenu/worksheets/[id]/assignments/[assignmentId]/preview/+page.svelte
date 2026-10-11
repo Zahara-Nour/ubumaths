@@ -11,6 +11,7 @@
 	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -23,7 +24,6 @@
 	import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
-		ArrowLeft,
 		Eye,
 		User,
 		Users,
@@ -173,7 +173,7 @@
 			case 'worksheet':
 				return { icon: FileText, label: 'Fiche de travail' };
 			case 'assessment':
-				return { icon: ClipboardList, label: 'Evaluation' };
+				return { icon: ClipboardList, label: 'Contrôle' };
 			case 'exam':
 				return { icon: GraduationCap, label: lore.learning.exam };
 			case 'quiz':
@@ -327,14 +327,11 @@
 	<!-- Header with back button and student selector -->
 	<div class="mb-6 space-y-4">
 		<div class="flex items-center justify-between">
-			<Button
-				variant="ghost"
-				href="/dashboard/teacher/contenu/worksheets/{data.worksheetId}"
-				class="gap-2 pl-2"
-			>
-				<ArrowLeft class="h-4 w-4" />
-				Retour a la feuille
-			</Button>
+			<BackLink
+				href={`/dashboard/teacher/contenu/worksheets/${data.worksheetId}`}
+				label="Retour à la fiche"
+				class="mb-0"
+			/>
 
 			<!-- Preview mode badge -->
 			<Badge variant={previewMode === 'teacher' ? 'default' : 'secondary'} class="gap-1">

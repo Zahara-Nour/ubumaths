@@ -309,3 +309,33 @@ B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
   interrupteur distinct à documenter.
 - `db:types` régénéré dans #1079. La vue `riddle_progress` n'a plus de lecteur : `REVOKE` de
   `authenticated` possible dans une PR à part (le `DROP VIEW`, destructif, attendra David).
+
+## Triche aux énigmes, vue du classement, Drive (David, 2026-10-11 : recos retenues)
+
+- **Drive** ne fait pas partie de Classroom : routes `api/whiteboard/drive/*` laissées actives,
+  consigné dans `outils-prof.md` (#1132).
+- **#1132 (mergée, migration `20261016090200` en prod, vérifiée)** : la route de soumission
+  appelle `submit_riddle_attempt` par le client service (justesse calculée par le serveur) ;
+  policy d'insertion directe de l'élève supprimée ; `riddle_progress` fermée ; garde de la
+  fonction explicite (client service ou l'élève lui-même — un appel sans `auth.uid()` passait).
+- ⏳ **Étape 2, APRÈS le `deploy:prod` qui livre #1132** : migration
+  `REVOKE EXECUTE ON FUNCTION submit_riddle_attempt(uuid,uuid,jsonb,boolean) FROM authenticated`
+  (l'ancienne route en prod l'appelle encore avec le client de l'élève). Pas écrite d'avance :
+  un `db push --include-all` d'une autre session l'appliquerait trop tôt.
+- **Constats de l'audit de #1132 — recos retenues par David (2026-10-12)** :
+  - **#1147 (mergée, migration `20261016100200` en prod, vérifiée : md5 e322477f…, anon
+    refusé)** : 2048 et Mathémo appellent `record_game_reward` par le client service ; garde
+    explicite (client service ou l'élève lui-même ; un appel sans `auth.uid()` passait).
+  - **#1149 (mergée, code seul)** : les pages élève des énigmes n'envoient plus au navigateur
+    ni `answer.value` ni `correction` (`toStudentRiddle`) ; `RiddleCard` ne corrige plus
+    côté client. Prod : 1 énigme publiée, avec correction, 0 avec réponse automatique.
+- ⏳ **Étape 2 bis, APRÈS le `deploy:prod` qui livre #1147** : `REVOKE EXECUTE ON FUNCTION
+record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migration que
+  l'étape 2 possible). L'appel imbriqué par `submit_riddle_attempt` garde son droit (DEFINER).
+- ❓ **À trancher par David** : `riddles.answer` et `riddles.correction` restent lisibles en
+  base par l'élève (requête directe, énigme du jour ou assignée). Options : table à part
+  lisible prof/admin seulement, ou REVOKE de colonne (pages prof et route de soumission à
+  passer par le client service).
+- Notés, hors périmètre : `upsert_mathemo_score` encore appelée avec le client de l'élève
+  (stats de classement déclarées par le navigateur, comme le score 2048) ; `RiddleCard` reste
+  sur « Réponse envoyée » si la soumission échoue (préexistant).

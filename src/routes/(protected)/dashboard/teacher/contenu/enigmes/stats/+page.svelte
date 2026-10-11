@@ -5,6 +5,7 @@
 -->
 
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { lore } from '$lib/config/lore';
 	import type { PageData } from './$types';
 	import { asRiddleDifficulty, getDifficultyLabel, getDifficultyColor } from '$lib/types/riddle';
@@ -44,6 +45,7 @@
 <div class="container mx-auto max-w-7xl p-4 sm:p-6">
 	<!-- Header -->
 	<div class="mb-6">
+		<BackLink href="/dashboard/teacher/contenu/enigmes" label="Retour aux énigmes" />
 		<h1 class="flex items-center gap-2 text-3xl font-bold">
 			<BarChart3 class="h-8 w-8 text-primary" />
 			Statistiques des Énigmes

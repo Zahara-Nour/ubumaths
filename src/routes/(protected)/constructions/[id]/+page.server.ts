@@ -54,14 +54,14 @@ export const load: PageServerLoad = async ({ params, parent, locals: { supabase 
 
 	if (constructionError || !construction) {
 		if (constructionError?.code === 'PGRST116') {
-			throw error(404, 'Construction non trouvee');
+			throw error(404, 'Construction introuvable');
 		}
 		console.error('Error fetching construction:', constructionError);
 		throw error(500, 'Erreur lors du chargement de la construction');
 	}
 
 	if (construction.author_id !== user.id && !construction.is_public) {
-		throw error(403, 'Acces refuse a cette construction');
+		throw error(403, 'Accès refusé à cette construction');
 	}
 
 	return {

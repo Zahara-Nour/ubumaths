@@ -27,7 +27,7 @@
  * // In API endpoint
  * const result = checkProfanity(userMessage);
  * if (result.isProfane) {
- *   return error(400, 'Message contains inappropriate content');
+ *   return error(400, 'Le message contient des mots inappropriés');
  * }
  * ```
  *

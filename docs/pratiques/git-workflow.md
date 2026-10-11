@@ -18,6 +18,7 @@
      git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs → branche + PR" || echo "✅ docs pur → commit direct"
      ```
      Une seule ligne hors `docs/` ou `*.md` (`.github/`, `package.json`, un `.sql`…) fait basculer sur le circuit normal.
+   - ⚠️ **Avant de pousser : `git pull --rebase`, jamais un `git pull` qui fusionne.** Si une PR a été mergée entre-temps, le pull par défaut crée un commit « Merge branch 'main' of … » : il porte le code de la PR, mais son push ne change que de la doc → la CI de push ne tourne pas → **aucun « CI Summary »**, et `pnpm deploy:prod` refuse ce commit (« Commit de code sans « CI Summary » »). Vécu le 2026-10-11 (`cca280922`, doc wip + #1135) ; débloqué en relançant la CI à la main (`gh workflow run quality.yml --ref main`). Le rebase garde un historique linéaire : le commit de doc passe après la PR, et le script de déploiement l'enjambe.
 4. **Conventional commits** (`feat()`, `fix()`, `chore()`, `refactor()`, `perf()`, `docs()`, `test()`). **Aucune mention Claude/Anthropic.**
 
 ## 2. Nommage des branches

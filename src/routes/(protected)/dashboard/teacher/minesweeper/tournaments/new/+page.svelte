@@ -8,6 +8,7 @@
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
@@ -17,7 +18,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, AlertTriangle, Trophy } from '@lucide/svelte';
+	import { AlertTriangle, Trophy } from '@lucide/svelte';
 	import { DIFFICULTY_LABELS, type Difficulty } from '$lib/types/minesweeper';
 	import type { PageData } from './$types';
 
@@ -201,10 +202,8 @@
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
 	<!-- Header -->
-	<div class="mb-8 flex items-center gap-4">
-		<Button variant="ghost" size="icon" onclick={handleBack}>
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-8">
+		<BackLink href="/dashboard/teacher/minesweeper/tournaments" label="Retour aux tournois" />
 		<div>
 			<h1 class="text-3xl font-bold tracking-tight">Nouveau Tournoi</h1>
 			<p class="mt-2 text-muted-foreground">

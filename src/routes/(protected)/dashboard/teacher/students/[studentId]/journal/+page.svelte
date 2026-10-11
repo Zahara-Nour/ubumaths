@@ -7,7 +7,7 @@
 
 	FEATURES:
 	- Student info header with avatar and name
-	- Breadcrumb navigation
+	- Lien de retour vers les classes, ou vers l'accueil s'il a été ouvert de là
 	- Reuses RewardEventCard and RewardJournalFilters from Phase 5
 	- Same layout and UX as student journal
 
@@ -23,23 +23,20 @@
 	import RewardEventCard from '$lib/components/rewards/RewardEventCard.svelte';
 	import RewardJournalFilters from '$lib/components/rewards/RewardJournalFilters.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { studentJournalReturn } from '$lib/navigation/return-links';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Card from '$lib/components/ui/card';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import {
-		RefreshCw,
-		ChevronDown,
-		AlertCircle,
-		Inbox,
-		ChevronLeft,
-		ChevronRight,
-		Users
-	} from '@lucide/svelte';
+	import { RefreshCw, ChevronDown, AlertCircle, Inbox } from '@lucide/svelte';
 	import type { RewardType } from '$lib/types/reward-journal';
 	import type { PageData } from './$types';
 
 	// Props from server load
 	let { data }: { data: PageData } = $props();
+
+	// Ouvert depuis l'accueil (`?depuis=accueil`) ou depuis les classes
+	let back = $derived(studentJournalReturn($page.url.searchParams));
 
 	// Local state for filter
 	let selectedRewardType = $state<RewardType | null>(null);
@@ -98,36 +95,12 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-6">
-	<!-- Breadcrumb Navigation -->
-	<nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
-		<a
-			href="/dashboard/teacher/gamification/rewards"
-			class="flex items-center gap-1 transition-colors hover:text-foreground"
-		>
-			<Users class="h-4 w-4" />
-			<span>Eleves</span>
-		</a>
-		<ChevronRight class="h-4 w-4" />
-		<span class="text-foreground">{studentName}</span>
-		<ChevronRight class="h-4 w-4" />
-		<span class="text-foreground">Journal</span>
-	</nav>
+	<BackLink href={back.href} label={back.label} />
 
 	<!-- Header with Student Info -->
 	<div class="mb-6">
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-4">
-				<!-- Back Button -->
-				<Button
-					variant="ghost"
-					size="icon"
-					href="/dashboard/teacher/gamification/rewards"
-					class="shrink-0"
-				>
-					<ChevronLeft class="h-5 w-5" />
-					<span class="sr-only">Retour</span>
-				</Button>
-
 				<!-- Student Avatar -->
 				<UserAvatar
 					avatar_url={student?.avatar_url}

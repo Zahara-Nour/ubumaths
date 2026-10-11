@@ -35,7 +35,10 @@ import {
 	subtract,
 	variable as makeVariable
 } from '../factory';
-import { numericNode } from '../common/numeric';
+import { extractExactRational, numericNode } from '../common/numeric';
+import type { Rational } from '../normal/types';
+import { absRational, isNegative, isZero } from '../normal/rational';
+import { divideOutRoot, rationalPolynomialNode, toPolynomial } from '../factor';
 
 // =============================================================================
 // Approach classification
@@ -78,10 +81,9 @@ export function isAtInfinity(approach: MathNode): boolean {
  * to check whether direct substitution yields a finite result, and to
  * estimate the value of complex sub-expressions.
  *
- * Walks the AST recursively. Mirrors `evaluateSimple` in
- * `limits/algebraic.ts` (which is private) — replicating it here avoids a
- * dependency on a private function and lets us extend the supported node
- * types over time without touching the algorithmic module.
+ * Walks the AST recursively. (L'ancien jumeau `evaluateSimple` de
+ * `limits/algebraic.ts` a été supprimé au lot 3a de l'ADR 0024 : ce module
+ * est le seul à évaluer ainsi.)
  */
 export function evaluateAtPoint(expr: MathNode, varName: string, value: number): number | null {
 	// Transparent unwrap of delimiter nodes (parens emitted by the custom parser).
@@ -178,14 +180,6 @@ export function evaluateAtPoint(expr: MathNode, varName: string, value: number):
 		default:
 			return null;
 	}
-}
-
-/**
- * `true` if `expr` evaluates (numerically) to zero at `varName = a`.
- */
-export function isRootAt(expr: MathNode, varName: string, a: number): boolean {
-	const v = evaluateAtPoint(expr, varName, a);
-	return v !== null && Math.abs(v) < 1e-10;
 }
 
 // =============================================================================
@@ -311,27 +305,29 @@ function trimPoly(coeffs: number[]): number[] {
 }
 
 /**
- * Synthetic division of `poly` by `(x - a)`. Returns the quotient
- * coefficients and the remainder (as a number).
+ * Divise N et D une fois par (x − a), exactement (noyau `factor/`, ADR 0024) :
+ * les deux quotients écrits (négatifs en soustractions), ou `null` si l'un
+ * n'est pas un polynôme en `varName` ou n'a pas `a` pour racine.
  *
- * If `Math.abs(remainder) < 1e-10`, the divisor is a true factor of `poly`.
- *
- * Example : `[−4, 0, 1] ÷ (x − 2)` (i.e. `(x²−4)/(x−2)`) returns
- * `{ quotient: [2, 1], remainder: 0 }` ↔ `x + 2`.
+ * Exemple : (x² − 9, x + 3) en a = −3 → (x − 3, 1).
  */
-export function syntheticDivide(
-	poly: PolynomialCoeffs,
-	a: number
-): { quotient: number[]; remainder: number } {
-	if (poly.length === 0) return { quotient: [], remainder: 0 };
-	// Horner-style: walk highest-degree coefficient down.
-	const reversed = [...poly].reverse(); // highest degree first
-	const out: number[] = [reversed[0]];
-	for (let i = 1; i < reversed.length; i++) {
-		out.push(reversed[i] + a * out[i - 1]);
-	}
-	const remainder = out.pop() ?? 0;
-	return { quotient: trimPoly(out.reverse()), remainder };
+export function divideByCommonRoot(
+	numerator: MathNode,
+	denominator: MathNode,
+	varName: string,
+	a: Rational
+): { numerator: MathNode; denominator: MathNode } | null {
+	const num = toPolynomial(numerator, varName);
+	const den = toPolynomial(denominator, varName);
+	if (num === null || den === null) return null;
+	const n = divideOutRoot(num, a, 1);
+	const d = divideOutRoot(den, a, 1);
+	if (n.multiplicity === 0 || d.multiplicity === 0) return null;
+	const x = makeVariable(varName);
+	return {
+		numerator: rationalPolynomialNode(n.quotient, x),
+		denominator: rationalPolynomialNode(d.quotient, x)
+	};
 }
 
 /**
@@ -383,26 +379,23 @@ export function formatApproachShort(approach: MathNode): string {
 	if (isNumber(approach)) return approach.value;
 	if (isVariable(approach)) return approach.name;
 	if (isOpposite(approach) && isNumber(approach.operand)) return `−${approach.operand.value}`;
+	const exact = extractExactRational(approach);
+	if (exact !== null) return `${isNegative(exact) ? '−' : ''}${formatRational(absRational(exact))}`;
 	return '?';
 }
 
 /**
- * Format the linear factor `(x − a)` (or `(x + |a|)` when `a < 0`) for
- * human-readable titles.
+ * Le facteur `(x − a)` (ou `(x + |a|)` quand a < 0) pour les titres :
+ * `(x − 2)`, `(x + 3)`, `(x − 1/2)`.
  */
-export function formatLinearFactor(varName: string, a: number): string {
-	if (a === 0) return varName;
-	if (a > 0) return `(${varName} − ${a})`;
-	return `(${varName} + ${-a})`;
+export function formatLinearFactor(varName: string, a: Rational): string {
+	if (isZero(a)) return varName;
+	const text = formatRational(absRational(a));
+	return isNegative(a) ? `(${varName} + ${text})` : `(${varName} − ${text})`;
 }
 
-/**
- * Build the linear factor `(x − a)` as a `MathNode`. When `a < 0`, returns
- * `(x + |a|)` for cleaner display.
- */
-export function buildLinearFactor(varName: string, a: number): MathNode {
-	if (a >= 0) return subtract(makeVariable(varName), numericNode(a));
-	return add(makeVariable(varName), numericNode(-a));
+function formatRational(r: Rational): string {
+	return r.d === 1n ? `${r.n}` : `${r.n}/${r.d}`;
 }
 
 // =============================================================================

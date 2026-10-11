@@ -18,12 +18,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	// Check authentication
 	if (!user || !profile) {
-		throw error(401, 'Not authenticated');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Check teacher role
 	if (!['teacher', 'admin'].includes(profile.role)) {
-		throw error(403, 'Access denied');
+		throw error(403, 'Accès refusé');
 	}
 
 	// Fetch all data in parallel

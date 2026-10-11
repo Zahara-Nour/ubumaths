@@ -39,7 +39,7 @@
 			<Compass class="mx-auto mb-3 h-10 w-10 opacity-40" />
 			<p class="mb-1 font-medium text-foreground">Pas encore d'observation.</p>
 			<p class="text-sm">
-				Ton {lore.entities.teacher} remplira cette page lors de tâches dédiées : problèmes ouverts, modélisation,
+				Ton {lore.entities.teacher} remplira cette page lors d'observations : problèmes ouverts, modélisation,
 				débats mathématiques.
 			</p>
 		</Card.Content>

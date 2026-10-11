@@ -60,6 +60,6 @@ describe('ChapterSeriesCard', () => {
 
 	it('ne parle jamais de note', async () => {
 		const { container } = await render(ChapterSeriesCard, { series: serie() });
-		expect(texte(container as HTMLElement)).not.toMatch(/note|évaluation/i);
+		expect(texte(container as HTMLElement)).not.toMatch(/note|évaluation|contrôle/i);
 	});
 });

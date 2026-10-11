@@ -16,6 +16,7 @@ import type { MathNode } from '$lib/mathAST/types';
 import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
+import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
 import {
@@ -59,6 +60,8 @@ import {
 import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps, type SolvedSteps } from './solve-steps';
+import { readNaturalQuantities, singleLetterHint, type NaturalReading } from './natural-quantities';
+import { quantityProblem } from '$lib/mathAST/cli/quantities';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
 import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
@@ -121,7 +124,13 @@ export interface Alternative {
 /** Ce qu'une saisie a produit. */
 export type CalcResult =
 	| { readonly kind: 'vide' }
-	| { readonly kind: 'definition'; readonly name: string; readonly object: AtelierObject }
+	| {
+			readonly kind: 'definition';
+			readonly name: string;
+			readonly object: AtelierObject;
+			/** Une aide sur l'écriture (`5 m` avec une valeur `m`, lot C des grandeurs) */
+			readonly note?: string;
+	  }
 	| {
 			readonly kind: 'calcul';
 			readonly input: string;
@@ -135,6 +144,8 @@ export type CalcResult =
 			 */
 			readonly ast?: MathNode;
 			readonly alternative?: Alternative;
+			/** Une aide sur l'écriture (`5km` collé, lot C des grandeurs) */
+			readonly note?: string;
 	  }
 	| {
 			readonly kind: 'commande';
@@ -220,7 +231,9 @@ const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
 	// Les mots-clés (`de … à`, `en`, `ordre`…) mal écrits : la forme attendue
 	'COMMAND_SYNTAX',
 	// `.domaine sqrt(sin(x))` : le domaine n'a pas pu être établi (#963)
-	'DOMAIN_UNRESOLVED'
+	'DOMAIN_UNRESOLVED',
+	// `5[m]+3[s]`, `.convertir kg` après une longueur (phase 0 grandeurs, lot A)
+	'QUANTITY_ERROR'
 ]);
 
 /**
@@ -451,15 +464,69 @@ function bracketedListRefusal(name: string, body: string): string | null {
  * ⚠️ Une définition qu'on ne sait pas lire crée quand même l'objet (§2 E1) :
  * il porte son erreur, et l'élève voit son travail plutôt qu'un refus sec.
  */
+/**
+ * Une valeur ARRONDIE (mode décimal) s'écrit avec `≈` à l'écran comme dans le
+ * texte : `≈ 0,7071` (décision Q3 de David, la règle du bouton ≈).
+ */
+function approximatedLatex(result: ReplExecutionResult, latex: string): string {
+	return result.success && result.output.startsWith('≈ ') ? `\\approx ${latex}` : latex;
+}
+
+/** Le refus qui parle d'un nombre sans unité : c'est là qu'une lettre lue comme unité est en cause. */
+const UNITLESS = 'un nombre sans unité';
+
+/**
+ * Une lettre lue comme unité (`3 t`, lot C des grandeurs) qui rend la saisie
+ * impossible : mêlée à une variable libre (`3 a + 2 b`), ou dans une somme
+ * avec un nombre (`3 t + 2`). Le refus, avec l'aide « pour 3 × t, écris 3t »
+ * seulement quand la lettre en est la cause (revue : `5 kg + 3 m` l'affichait).
+ */
+function naturalReadingRefusal(atelier: Atelier, reading: NaturalReading): CalcResult | null {
+	if (reading.singleLetters.length === 0) return null;
+	const ast = astOf(reading.text, 'url', atelier.functionNames);
+	if (ast === null) return null;
+	const hint = singleLetterHint(reading.singleLetters);
+	const free = [...getVariables(ast)].filter((v) => !atelier.names.includes(v));
+	if (free.length > 0) {
+		return {
+			kind: 'refus',
+			message: 'Une grandeur ne se combine pas avec une lettre.',
+			...notesOf(hint)
+		};
+	}
+	const problem = quantityProblem(ast);
+	if (problem === null) return null;
+	return { kind: 'refus', message: problem, ...notesOf(problem.includes(UNITLESS) ? hint : null) };
+}
+
 function defineObject(
 	session: CalcSession,
 	name: string,
 	parameter: string | undefined,
-	body: string,
+	typedBody: string,
 	provenance: Provenance
 ): CalcResult {
 	const { atelier } = session;
 	const existing = atelier.get(name);
+	let body = typedBody;
+
+	// Une VALEUR tapée dans Calcul s'écrit naturellement : `d = 5 km` (lot C des
+	// grandeurs) — jamais une fonction ni une suite, où une lettre est une variable
+	let notes: readonly string[] = [];
+	if (
+		parameter === undefined &&
+		provenance === 'text' &&
+		kindOf(undefined, typedBody) === 'value'
+	) {
+		const reading = readNaturalQuantities(
+			body,
+			atelier.names.filter((n) => n !== name)
+		);
+		const refused = naturalReadingRefusal(atelier, reading);
+		if (refused !== null) return refused;
+		body = reading.text;
+		notes = reading.notes;
+	}
 
 	// Le type rangé ne change pas (règle de l'atelier) : une liste tapée sur le
 	// nom d'un autre objet le laissait en erreur, sans un mot (revue)
@@ -510,7 +577,12 @@ function defineObject(
 		// garde son état — retiré du graphique, il ne revient pas en douce.
 		if (tracedOnCreation(created.object.kind)) atelier.setPlotted(name, true);
 		// Relu APRÈS le tracé : l'objet rendu doit dire qu'il est tracé (revue)
-		return { kind: 'definition', name, object: atelier.get(name) ?? created.object };
+		return {
+			kind: 'definition',
+			name,
+			object: atelier.get(name) ?? created.object,
+			...notesOf(...notes)
+		};
 	}
 
 	// Seule une fonction a une lettre : `u(n) = …` ne la touche pas
@@ -521,7 +593,7 @@ function defineObject(
 		existing.kind === 'function' ? letter : undefined
 	);
 	if (!updated.ok) return { kind: 'refus', message: updated.message };
-	return { kind: 'definition', name, object: updated.object };
+	return { kind: 'definition', name, object: updated.object, ...notesOf(...notes) };
 }
 
 /**
@@ -1193,6 +1265,19 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		};
 	}
 
+	// `.convertir` : même exception — son `result.ast` est la grandeur égale à sa
+	// conversion (`12,3 km = 12300 m`, phase 0 grandeurs, lot A)
+	if (name === 'convert' && result.success && result.ast !== undefined) {
+		return {
+			kind: 'commande',
+			input,
+			output: rendered.text,
+			latex: displayUnitsInLatex(toLatex(result.ast)),
+			...solutionsAlternative(result),
+			...noted
+		};
+	}
+
 	// `.intégrer` : même exception — son `result.ast` est la PRIMITIVE, ou la
 	// VALEUR d'une intégrale définie (voir `integrate.command.ts`). Sans lui, la
 	// ligne montrait le texte du terminal, « ∫ x^2 dx = {1/3}x^3 + C » (2026-10-08).
@@ -1283,7 +1368,8 @@ function resultWithDecimalComma(result: CalcResult): CalcResult {
 				...result,
 				output: decimalCommaText(result.output),
 				...(result.latex !== undefined && { latex: decimalCommaLatex(result.latex) }),
-				...alternativeWithDecimalComma(result.alternative)
+				...alternativeWithDecimalComma(result.alternative),
+				...(result.note !== undefined && { note: decimalCommaProse(result.note) })
 			};
 		case 'commande':
 			return {
@@ -1451,17 +1537,34 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	const rank = decimalRankMessage(session.atelier, withTerms.text);
 	if (rank !== null) return { kind: 'refus', message: rank };
 
-	const result = session.engine.execute(
-		expandInput(session.atelier, withPiCommand(decimalCommaInput(withTerms.text)))
-	);
+	// « un nombre, une espace, une unité » est une grandeur (lot C des grandeurs)
+	const reading = readNaturalQuantities(decimalCommaInput(withTerms.text), session.atelier.names);
+	const misread = naturalReadingRefusal(session.atelier, reading);
+	if (misread !== null) return misread;
+	const result = session.engine.execute(expandInput(session.atelier, withPiCommand(reading.text)));
+	// Des grandeurs qui ne se combinent pas : un refus, en français (lot A),
+	// avec l'aide d'une lettre lue comme unité (`3 t + 2`)
+	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {
+		const message = result.error?.message ?? UNREADABLE_COMMAND;
+		return {
+			kind: 'refus',
+			message,
+			...notesOf(message.includes(UNITLESS) ? singleLetterHint(reading.singleLetters) : null)
+		};
+	}
 	const rendered = renderResult(result);
 	return {
 		kind: 'calcul',
 		input,
 		output: rendered.text,
-		...(rendered.latex && { latex: rendered.latex }),
-		...(result.success && result.ast !== undefined && { ast: result.ast }),
-		...calculationAlternative(result)
+		...(rendered.latex && { latex: approximatedLatex(result, rendered.latex) }),
+		// « Garder » range la grandeur exacte, pas son écriture juxtaposée (`2 h 30 min`)
+		...(result.success &&
+			(result.quantityAst ?? result.ast) !== undefined && {
+				ast: result.quantityAst ?? result.ast
+			}),
+		...calculationAlternative(result),
+		...notesOf(...reading.notes)
 	};
 }
 
@@ -1600,7 +1703,7 @@ function computeAction(
 		return {
 			ok: true,
 			output: rendered.text,
-			...(rendered.latex && { latex: rendered.latex }),
+			...(rendered.latex && { latex: approximatedLatex(result, rendered.latex) }),
 			...calculationAlternative(result)
 		};
 	}

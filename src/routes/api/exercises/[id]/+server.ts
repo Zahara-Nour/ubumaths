@@ -11,6 +11,10 @@ import { getExercise, updateExercise, deleteExercise } from '$lib/server/exercis
 import type { Database } from '$lib/types/database';
 import { validateUpdateExercise } from '$lib/server/validation';
 import { requireRole } from '$lib/server/middleware/auth';
+import {
+	SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE,
+	isSearchIndexedViolation
+} from '$lib/server/exercise-search-indexed';
 
 type ExerciseUpdate = Database['public']['Tables']['exercises']['Update'];
 type ZodIssue = { path: (string | number)[]; message: string };
@@ -50,6 +54,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const validation = validateUpdateExercise(body);
 
 	if (!validation.success) {
+		// « Privé + Google » : le message français seul, lisible tel quel par le professeur
+		if (validation.error.issues.some((i) => i.message === SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE)) {
+			throw error(400, SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE);
+		}
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
@@ -67,6 +75,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		}
 		if (result.error.message === 'Exercise not found') {
 			throw error(404, 'Exercise not found');
+		}
+		// « Privé + Google » : refus métier ou contrainte de la base (23514)
+		if (isSearchIndexedViolation(result.error)) {
+			throw error(400, SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE);
 		}
 		console.error('Failed to update exercise:', result.error);
 		throw error(500, 'Failed to update exercise');

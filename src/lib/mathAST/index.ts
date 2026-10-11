@@ -187,6 +187,7 @@ export {
 
 	// Complex numbers
 	complex,
+	imaginaryUnit,
 
 	// Boolean and logical
 	boolean,
@@ -261,6 +262,7 @@ export {
 	isHole,
 	isMathConstant,
 	isEulerConstant,
+	isImaginaryUnit,
 	isPiConstant,
 	isAddition,
 	isSubtraction,
@@ -1002,22 +1004,11 @@ export {
 	containsRadical,
 	isRationalIn,
 	calculateComplexity,
-	// Polynomial analysis
-	analyzePolynomial,
-	getPolynomialCoefficients,
-	isMonomial,
-	isBinomial,
-	isTrinomial,
-	getTermCount,
 	// Algebraic structure detection
-	detectStructure,
 	isDifferenceOfSquares,
 	isPerfectSquareTrinomial,
 	isSumOfCubes,
 	isDifferenceOfCubes,
-	isQuadraticForm,
-	isFactoredForm,
-	hasCommonFactor,
 	// Symmetry detection
 	detectSymmetry,
 	isEven,
@@ -1066,9 +1057,6 @@ export type {
 	// Expression classification
 	ExpressionCategory,
 	ExpressionClassification,
-	// Polynomial analysis
-	MonomialInfo,
-	PolynomialAnalysis,
 	// Algebraic structures
 	StructureType,
 	DetectedStructure,
@@ -1076,9 +1064,6 @@ export type {
 	PerfectSquareTrinomialInfo,
 	SumOfCubesInfo,
 	DifferenceOfCubesInfo,
-	QuadraticFormInfo,
-	FactoredFormInfo,
-	CommonFactorInfo,
 	// Symmetry
 	SymmetryType,
 	SymmetryResult,

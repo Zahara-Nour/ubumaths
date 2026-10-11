@@ -180,6 +180,11 @@ points neufs d'un niveau), `src/lib/server/curriculum-coverage.ts`,
 - `exercises` (+ `exercise_curriculum_points`, `exercise_classifications`) ; `exercise_assignments`
   (à un élève ou une classe), `exercise_completions`, `student_exercise_mastery` (auto-évaluation
   maîtrisé / à revoir).
+  - `exercises.search_indexed` (« Afficher sur Google », depuis `20261016100000`) : case distincte de
+    `is_public`, fausse par défaut ; elle décidera seule si un exercice public entre dans le sitemap
+    et perd sa balise `noindex` (code à venir, après `db:types`). CHECK `exercises_search_indexed_requires_public` (23514) : un exercice privé ne peut
+    pas être affiché sur Google, et dépublier exige de décocher Google dans la même mise à jour. La
+    colonne suit les droits de la ligne (aucune policy ni GRANT propre).
 - `migration_*` : outillage de la migration des questions TinyMath.
 
 Accès : les modèles **publiés** sont lisibles par tous les élèves (et `anon`), les autres par le
@@ -215,6 +220,14 @@ dans la classe (`is_class_student`) et si le contenu est publié. `chapter_works
 parallèle. L'élève lit les séances publiées et passées des classes dont il est membre ; les activités
 et la couverture d'une séance sont réservées au professeur.
 
+**Lecture par lien, sans compte** : le cahier (`class_journal_share_tokens`) et le cours
+(`class_course_share_tokens`, [ADR 0025](../adr/0025-cours-lisible-par-lien-sans-compte.md)) ont
+chacun leur jeton, un seul actif par classe. `anon` ne lit aucune de ces tables : il passe par des
+fonctions `SECURITY DEFINER` qui refont les gardes élève. Pour le cours :
+`get_class_course_by_share_token` (plan, documents sans chemin, checklists, séries, fiches publiées
+**et** distribuées à la classe) et `get_course_worksheet_by_share_token` ;
+`get_course_document_by_share_token`, qui rend le chemin du fichier, est réservée au `service_role`.
+
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
 `journal_entry_points` depuis les activités, sans toucher aux lignes `manual` : la couverture
 s'allume quand le contenu est tagué après coup. Une évaluation se résout en points par ses
@@ -232,6 +245,10 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
 - `worksheets` (`status` = rédaction terminée ou non) → `worksheet_sections`, `worksheet_exercises`.
 - `worksheet_assignments` (distribution) → `worksheet_assignment_classes`,
   `worksheet_assignment_students`, `worksheet_assignment_exercise_settings`.
+  `worksheet_assignments.guidance_level` : **niveau de guidage** des exercices pour cette
+  affectation (`guided` par défaut, `intermediate`, `autonomous`) — [ADR 0023](../adr/0023-copie-d-une-fiche-niveau-de-guidage-par-affectation.md).
+  L'élève visé lit celui de sa propre affectation, jamais celui d'un autre groupe (test :
+  `tests/integration/worksheet-assignment-guidance-level.test.ts`).
 - `worksheet_instances` : exercices générés par élève (graine déterministe).
 
 **L'accès est hérité, jamais distribué** : `student_has_worksheet_access` part de
@@ -256,7 +273,7 @@ des fiches : [pratiques/fiches-exercices.md](../pratiques/fiches-exercices.md).
   ([ADR 0015](../adr/0015-evaluation-notee-correction-serveur.md)) — aucun droit pour `anon` ni
   `authenticated`, `service_role` seul.
 - `test_sessions` / `test_answers` : passages de séries. Une policy RESTRICTIVE interdit à un
-  compte connecté d'écrire une session d'évaluation (`evaluation_id`, note, points) : c'est le serveur
+  compte connecté d'écrire une séance de contrôle (`evaluation_id`, note, points) : c'est le serveur
   qui les écrit.
 - `evaluation_tasks` / `evaluation_task_perimeter` : tâches évaluées par compétences (observables).
 - `parody_evaluations` : les « presques-évaluations », publiques.
@@ -360,6 +377,9 @@ VIP, récompenses hebdomadaires). Détail : [jeux-et-economie.md](jeux-et-econom
 Le solde vit dans `profiles.gidouilles` / `vip_cards`. L'élève lit ses propres traces, le professeur
 celles de tous les élèves ; les classements passent par `game_leaderboard`, borné à l'école
 (énigmes : `riddle_school_leaderboard`, prénom et score seulement, migration `20261015090800`).
+Une tentative d'énigme ne s'écrit que par le serveur (`submit_riddle_attempt` via le client
+service ; plus de policy d'insertion pour l'élève) et `riddle_progress` est fermée à anon et
+`authenticated` (migration `20261016090200`).
 `mathemo_scores`, `minesweeper_student_achievements`, `minesweeper_player_stats`,
 `marketplace_listing_views`, `game_2048_scores` : lecture par soi seul, prof et admin compris
 (migration `20261015090600`, test `tests/integration/lectures-ouvertes-fermees.test.ts`).
@@ -465,4 +485,4 @@ Le schéma part du baseline `20260616220000_baseline_schema.sql` (anciennes migr
 
 ---
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-11.

@@ -99,7 +99,8 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 - Professeur : `src/routes/(protected)/dashboard/teacher/contenu/worksheets/` — liste, `new/`,
   `[id]/` (édition + `PdfPreview`), `templates/` (gabarits perso), `[id]/assignments/[assignmentId]/`
   (`preview/` vue élève, `progress/`, `reports/` signalements).
-- Élève : `src/routes/(protected)/dashboard/student/worksheets/` (liste, `[assignmentId]/`).
+- Élève : `src/routes/(protected)/dashboard/student/worksheets/` (liste, `[assignmentId]/`). La liste
+  s'ouvre depuis « Mon travail » (« Toutes mes fiches ») et y revient par « Retour à Mon travail ».
 - Public sans compte : `src/routes/(public)/cahier/[token]/fiche/[id]/` — une fiche **citée** dans
   une séance visible du cahier partagé (`resolveWorksheetByShareToken`, `security definer`) ; même
   404 pour tout refus.
@@ -115,7 +116,8 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 `ExerciseList.svelte`, `MetadataCards.svelte` (config, dont la langue),
 `WorksheetAssignmentForm.svelte`, `UntranslatedExercisesNotice.svelte`, `TemplateSelector.svelte`,
 `TypstEditor.svelte` ; côté élève `src/lib/components/student/worksheets/WorksheetHeader.svelte`
-(bouton PDF).
+(bouton PDF ; en tête, « Quitter » vers la liste des fiches, ou « Retour aux fiches » quand la fiche
+est en consultation seule, `read_only` — [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)).
 
 ## Le modèle d'une fiche
 
@@ -123,20 +125,21 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 worksheets (type, status, config jsonb, translations, template_id, school_id)
  ├── worksheet_sections (title, instructions, position, translations)
  ├── worksheet_exercises (exercise_id → exercises, section_id?, position, points,
- │                        custom_instructions, variation_index?, variant_mode/config,
+ │                        custom_instructions, variation_index?, variant_mode/config (plus lus),
  │                        correction_visible, is_essential, translations)
  ├── worksheet_templates (template_content Typst, placeholders)   ← via template_id
  ├── worksheet_assignments (status, available_from, closes_at, show_corrections,
- │    │                     correction_release_mode / _at, individualized)
+ │    │                     correction_release_mode / _at, individualized, guidance_level)
  │    ├── worksheet_assignment_classes (class_id)        ← une ligne par classe
  │    ├── worksheet_assignment_students (student_id)     ← élève désigné, sans condition de classe
  │    └── worksheet_assignment_exercise_settings (show_correction par exercice)
- ├── worksheet_instances (student_id, variant_seed, variant_version, instance_data jsonb)
+ ├── worksheet_instances (… instance_data jsonb) ← vide, sans écrivain (ADR 0023 : copie recalculée)
  └── worksheet_error_reports (signalement d'un élève sur un exercice → gidouille si validé)
 ```
 
 - **Types** : `worksheet`, `assessment`, `exam`, `quiz`, `homework` (`WORKSHEET_TYPES`) ; statut
-  `draft` / `published` / `archived`.
+  `draft` / `published` / `archived`. `assessment` s'affiche **« Contrôle »**, à l'écran comme sur le PDF
+  (garde : `src/lib/utils/__tests__/type-de-fiche-controle.test.ts`).
 - **Config** (`WorksheetConfig`, JSONB validé par `worksheetConfigSchema`) : `language`, options
   d'affichage `show_*` (absentes = affichées), `numbering_style`, `shuffle_*`, `page_layout`,
   `font_size`, `margins`.
@@ -164,6 +167,38 @@ worksheets (type, status, config jsonb, translations, template_id, school_id)
   même copie pour la classe), créés par script (`scripts/create-automatismes-evolutions-1spe.ts`) —
   [ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md),
   [pratiques § 2 bis](../pratiques/fiches-exercices.md).
+
+## La copie d'un élève
+
+[ADR 0023](../adr/0023-copie-d-une-fiche-niveau-de-guidage-par-affectation.md) : **une seule
+fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élève
+(`api/student/worksheets/[assignmentId]`), aperçu d'affectation (`.../preview`), corrigé du prof
+(`.../correction`, `CorrectionManager.svelte`), aperçu, lot ZIP et correction générale
+(`PdfPreview.svelte`), cahier de texte public.
+
+- **Version** d'un exercice = son **niveau de guidage**, choisi à l'affectation
+  (`worksheet_assignments.guidance_level`, guidé par défaut), **jamais tiré** :
+  `guidanceVariationIndex` (`src/lib/worksheets/student-copy.ts`) prend le niveau demandé, sinon le
+  plus proche du côté le plus guidé. `worksheet_exercises.variation_index`, s'il est posé, prime.
+- **Valeurs tirées** (exercices à variables) : `copySeed` — affectation (fiche hors affectation), +
+  élève si l'affectation est individualisée (`individualized`, NULL = oui), + `worksheet_exercises.id`
+  (réordonner la fiche ne change rien). Non individualisée : même copie pour toute la classe.
+- `resolveCopyExercise` produit l'exercice ; `src/lib/worksheets/worksheet-copy.ts` l'applique à la
+  fiche entière et lit le niveau (inconnu → guidé). Génération en échec : le texte brut de la MÊME
+  version.
+- Hors affectation : guidé par défaut ; l'aperçu du prof a un choix « Niveau à imprimer » (absent du
+  cahier public). Le lot ZIP de la page de la fiche donne donc la même copie à chaque élève, à son nom.
+- Le corrigé du prof est la copie commune ; affectation individualisée avec variables : la réponse
+  porte `per_student_values_notice`, affiché par `CorrectionManager`.
+- Le signalement d'erreur d'un élève enregistre la version et la graine de SA copie
+  (`worksheetExerciseSeed`, 31 bits, tient dans `worksheet_error_reports.seed`).
+- Groupes de niveau : la même fiche affectée plusieurs fois, chaque affectation visant ses élèves
+  nommément ; un élève ne lit pas l'affectation d'un autre groupe.
+- Le réglage par exercice « Mode de variante » (`variant_mode`) est retiré de l'interface et n'est
+  plus lu par les chemins vivants.
+
+Tests : `src/lib/worksheets/__tests__/student-copy.test.ts`, `worksheet-copy.test.ts`, `copie.test.ts`
+des trois routes, `PdfPreview-copie.svelte.test.ts`, `tests/integration/worksheet-assignment-guidance-level.test.ts`.
 
 ## La production PDF
 
@@ -321,15 +356,14 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
 
 ## Écarts connus
 
-1. **Le lot ZIP du professeur ne varie pas par élève.** `PdfPreview.svelte` construit chaque
-   instance par sa fonction locale `generateSimpleInstance`, qui prend la **variation 0** de chaque
-   exercice : la graine par élève n'est qu'une étiquette. Les copies ne diffèrent que par le nom
-   (contrairement à ce que dit l'ADR 0004, « lot déterministe par élève »).
-2. **Trois tirages différents** pour « l'instance d'un élève » : `generateWorksheetInstance`
-   (respecte `variant_mode`), l'API élève (graine individuelle toujours, `variant_mode` ignoré) et
-   `PdfPreview` (variation 0). Le PDF élève et la feuille imprimée par le prof peuvent donc différer.
-3. **`worksheet_instances` n'a pas d'écrivain en service** : seul `POST /api/worksheets/[id]/instances`
-   en crée, appelé par `VariantPreview.svelte`, qu'aucune page n'importe.
+1. **Plus de copie individuelle à imprimer pour une affectation individualisée** : le lot ZIP vit sur
+   la page de la fiche, hors affectation (même copie pour tous). Sans effet aujourd'hui (aucun
+   exercice à variables en prod, mesuré le 2026-10-11).
+2. **Restes du tirage d'avant l'ADR 0023, sans appelant vivant** : `generateWorksheetInstance`
+   (`src/lib/server/worksheets/instance-generator.ts`, lit `variant_mode`), routes
+   `api/worksheets/[id]/instances`, `[id]/preview`, `[id]/pdf*`, `VariantPreview.svelte`. Ménage à part.
+3. **`worksheet_instances` vide (0 ligne) et sans écrivain**, encore lue par `correction-release.ts`
+   (décompte, toujours 0). Sa suppression est destructive : décision de David.
 4. **Routes PDF serveur mortes** : `src/routes/api/worksheets/[id]/pdf/+server.ts` exige le Typst
    CLI (`exec`) et répond 501 en son absence ; `pdf/batch/+server.ts` importe typst.ts avec des WASM
    non épinglés. Aucun appelant dans `src/`.
@@ -345,5 +379,8 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
 8. **Polices** : le rendu dépend des polices embarquées par le bundle typst.ts, non listées dans le
    dépôt ; `compile-prod.mjs` ajoute STIX Two Math depuis un chemin macOS — témoin local et
    production peuvent donc différer sur un glyphe.
+9. **Libellés des types recopiés** : la table type → libellé existe en neuf exemplaires (constantes,
+   `getTypeLabel`, cartes et en-têtes élève, pages prof), avec des variantes (« Feuille d'exercices »,
+   « Fiche de travail », « Corvées Domestiques »). Seul « Contrôle » est tenu par un test.
 
 Vérifié contre le code le 2026-10-11.

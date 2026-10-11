@@ -62,8 +62,6 @@ const DEV_COMMANDS = [
 	'inv',
 	'réciproque',
 	'auto',
-	'unitmode',
-	'mode-unités',
 	'export',
 	'exporter'
 ];

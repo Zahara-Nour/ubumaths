@@ -32,14 +32,14 @@
 		getTrackedExternalImages
 	} from '$lib/ubumark/generators/typst-generator';
 	import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
-	import type {
-		WorksheetWithRelations,
-		InstanceData,
-		InstanceSection,
-		WorksheetExerciseWithExercise
-	} from '$lib/types/worksheets';
-	import { localizedText, worksheetLocale } from '$lib/types/worksheets';
-	import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
+	import type { WorksheetWithRelations, InstanceData } from '$lib/types/worksheets';
+	import { worksheetLocale } from '$lib/types/worksheets';
+	import { buildWorksheetCopy, GUIDANCE_LEVEL_ITEMS } from '$lib/worksheets/worksheet-copy';
+	import {
+		DEFAULT_GUIDANCE_LEVEL,
+		isGuidanceLevel,
+		type GuidanceLevel
+	} from '$lib/worksheets/student-copy';
 	import JSZip from 'jszip';
 	import { correctionForPrint } from '$lib/questions/correction-detail';
 	import {
@@ -89,6 +89,13 @@
 	// le mode retomberait sur « fiche ».
 	const mode = $derived(estLecteur ? ('worksheet' as const) : modeChoisi);
 	let selectedStudentId = $state<string | undefined>(undefined);
+
+	// Niveau de guidage imprimé hors affectation (ADR 0023) : guidé par défaut.
+	// Le lecteur du cahier public n'a pas le choix : toujours guidé.
+	let niveauChoisi = $state<string>(DEFAULT_GUIDANCE_LEVEL);
+	const printLevel = $derived<GuidanceLevel>(
+		!estLecteur && isGuidanceLevel(niveauChoisi) ? niveauChoisi : DEFAULT_GUIDANCE_LEVEL
+	);
 	let isGenerating = $state(false);
 	let pdfUrl = $state<string | null>(null);
 	let pdfBlob = $state<Blob | null>(null);
@@ -162,80 +169,27 @@
 	// ============================================================================
 
 	/**
-	 * Generate a simple instance from worksheet exercises
-	 * This creates the data structure needed for Typst generation
+	 * La copie imprimée hors affectation (ADR 0023) : le calcul de toutes les
+	 * copies, au niveau choisi, avec la graine de la fiche — la même pour tous
+	 * les élèves du lot, et pour la correction générale.
 	 */
-	function generateSimpleInstance(ws: WorksheetWithRelations, studentId?: string): InstanceData {
-		const exercises = ws.exercises || [];
-
-		// Sort exercises by position
-		const sortedExercises = [...exercises].sort((a, b) => a.position - b.position);
-
-		// Map to resolved exercises (using variations as source of truth).
-		// Title, points, section and custom instructions must be carried over:
-		// without them the PDF shows no title, no section, and the exercise
-		// position instead of its points.
-		// The worksheet language drives the exercise content too, not just the chrome.
-		const locale = worksheetLocale(worksheet.config);
-		const resolvedExercises = sortedExercises.map((we: WorksheetExerciseWithExercise) => {
-			const content = we.exercise
-				? getExerciseContentSafe(we.exercise as Exercise, 0, locale)
-				: { statement_md: '', solution_md: '' };
-			return {
-				exercise_id: we.exercise_id,
-				title: we.exercise?.title ?? null,
-				position: we.position,
-				points: we.points,
-				section_id: we.section_id ?? null,
-				custom_instructions: localizedText(
-					we.custom_instructions,
-					we.translations,
-					'custom_instructions',
-					locale
-				),
-				parameters: {},
-				statement: content.statement_md,
-				solution: content.solution_md,
-				// Fonctions déclarées : sans elles, `C'(x)` s'imprime en erreur dans le PDF.
-				generic_functions: we.exercise?.generic_functions
-			};
+	function generateSimpleInstance(ws: WorksheetWithRelations): InstanceData {
+		return buildWorksheetCopy(ws, {
+			assignmentId: null,
+			worksheetId: ws.id,
+			level: printLevel,
+			individualized: false,
+			locale: worksheetLocale(ws.config)
 		});
-
-		// Sections, so the PDF groups exercises the way the worksheet does
-		const sections: InstanceSection[] = (ws.sections ?? [])
-			.slice()
-			.sort((a, b) => a.position - b.position)
-			.map((s) => ({
-				id: s.id,
-				title: localizedText(s.title, s.translations, 'title', locale) ?? s.title,
-				instructions: localizedText(s.instructions, s.translations, 'instructions', locale),
-				position: s.position
-			}));
-
-		// Generate a deterministic seed based on student ID if provided
-		const seed = studentId ? hashString(ws.id + studentId) : Math.floor(Math.random() * 1000000);
-
-		return {
-			exercises: resolvedExercises,
-			sections: sections.length > 0 ? sections : undefined,
-			variant_info: {
-				seed,
-				version: studentId ? 'student' : 'preview'
-			}
-		};
 	}
 
 	/**
-	 * Simple hash function for deterministic seed generation
+	 * Changer le niveau à imprimer (onglet Aperçu ou Lot) refait l'aperçu. Une
+	 * génération en cours le rattrape en finissant (voir `generatePreview`).
 	 */
-	function hashString(str: string): number {
-		let hash = 0;
-		for (let i = 0; i < str.length; i++) {
-			const char = str.charCodeAt(i);
-			hash = (hash << 5) - hash + char;
-			hash = hash & hash; // Convert to 32bit integer
-		}
-		return Math.abs(hash);
+	function handlePrintLevelChange(level: string) {
+		niveauChoisi = level;
+		generatePreview();
 	}
 
 	// ============================================================================
@@ -247,6 +201,8 @@
 
 		isGenerating = true;
 		svgContent = '';
+		// Le niveau de CETTE génération : changé entre-temps, on recommence
+		const levelAtStart = printLevel;
 
 		// Clean up previous PDF
 		if (pdfUrl) {
@@ -264,7 +220,7 @@
 				: undefined;
 
 			// Generate instance data
-			const instanceData = generateSimpleInstance(worksheet, studentId);
+			const instanceData = generateSimpleInstance(worksheet);
 
 			// Generate markdown content for display
 			const mdParts: string[] = [];
@@ -336,6 +292,10 @@
 		} finally {
 			isGenerating = false;
 		}
+		// Niveau changé pendant la génération : le changement n'est pas perdu
+		if (printLevel !== levelAtStart) {
+			generatePreview();
+		}
 	}
 
 	async function downloadSinglePdf() {
@@ -390,7 +350,7 @@
 			clearTrackedExternalImages();
 
 			// Generate sample Typst to collect external image URLs
-			const sampleInstance = generateSimpleInstance(worksheet, students[0].id);
+			const sampleInstance = generateSimpleInstance(worksheet);
 			generateWorksheetTypst({
 				worksheet,
 				instance: sampleInstance,
@@ -420,7 +380,7 @@
 				batchProgress = i;
 
 				// Generate instance for this student
-				const instanceData = generateSimpleInstance(worksheet, student.id);
+				const instanceData = generateSimpleInstance(worksheet);
 
 				// Clear tracked images (to avoid memory accumulation, images are already mapped)
 				clearTrackedExternalImages();
@@ -685,6 +645,19 @@ INFORMATIONS
 							</div>
 						{/if}
 
+						{#if !estLecteur}
+							<div class="space-y-2">
+								<Label>Niveau à imprimer</Label>
+								<MySelect
+									type="single"
+									bind:value={niveauChoisi}
+									items={GUIDANCE_LEVEL_ITEMS}
+									triggerAriaLabel="Niveau à imprimer"
+									onValueChange={handlePrintLevelChange}
+								/>
+							</div>
+						{/if}
+
 						{#if students.length > 0}
 							<div class="space-y-2">
 								<Label>Eleve</Label>
@@ -839,8 +812,8 @@ INFORMATIONS
 									</Badge>
 								</div>
 								<p class="text-sm text-muted-foreground">
-									Generez un PDF personnalise pour chaque eleve. Les PDFs seront telecharges dans un
-									fichier ZIP.
+									Un PDF par élève, à son nom (même copie pour tous, au niveau choisi), téléchargés
+									dans un fichier ZIP.
 								</p>
 							</div>
 						</div>
@@ -855,6 +828,17 @@ INFORMATIONS
 									{ value: 'worksheet', label: 'Feuilles de travail' },
 									{ value: 'correction', label: 'Corrections' }
 								]}
+							/>
+						</div>
+
+						<div class="space-y-2">
+							<Label>Niveau à imprimer</Label>
+							<MySelect
+								type="single"
+								bind:value={niveauChoisi}
+								items={GUIDANCE_LEVEL_ITEMS}
+								triggerAriaLabel="Niveau à imprimer"
+								onValueChange={handlePrintLevelChange}
 							/>
 						</div>
 

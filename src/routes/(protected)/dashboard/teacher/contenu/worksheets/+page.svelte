@@ -123,7 +123,7 @@
 	const typeOptions = [
 		{ value: '', label: 'Tous les types' },
 		{ value: 'worksheet', label: `Feuille de ${lore.learning.exercise}s` },
-		{ value: 'assessment', label: 'Evaluation' },
+		{ value: 'assessment', label: 'Contrôle' },
 		{ value: 'exam', label: lore.learning.exam },
 		{ value: 'quiz', label: 'Quiz' },
 		{ value: 'homework', label: 'Corvées Domestiques' }
@@ -132,7 +132,7 @@
 	// Type label map
 	const typeLabels: Record<WorksheetType, string> = {
 		worksheet: 'Feuille',
-		assessment: 'Evaluation',
+		assessment: 'Contrôle',
 		exam: lore.learning.exam,
 		quiz: 'Quiz',
 		homework: 'Corvées Domestiques'

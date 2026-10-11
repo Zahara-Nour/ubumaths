@@ -2,6 +2,7 @@
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import EvaluationCard from '$lib/components/assessments/EvaluationCard.svelte';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { FileQuestion } from '@lucide/svelte';
 	import type { PageData } from './$types';
@@ -26,15 +27,16 @@
 </script>
 
 <svelte:head>
-	<title>Mes Évaluations | Chiphre</title>
+	<title>Mes contrôles | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->
 	<div class="mb-8">
-		<h1 class="text-3xl font-bold tracking-tight">Mes Évaluations</h1>
+		<BackLink href="/dashboard/student/work" label="Retour à Mon travail" />
+		<h1 class="text-3xl font-bold tracking-tight">Mes contrôles</h1>
 		<p class="mt-2 text-muted-foreground">
-			Vos évaluations assignées par vos {lore.entities.teacher}s
+			Vos contrôles assignés par vos {lore.entities.teacher}s
 		</p>
 	</div>
 
@@ -94,9 +96,9 @@
 			<Card.Content class="flex min-h-96 items-center justify-center p-12">
 				<div class="text-center">
 					<FileQuestion class="mx-auto mb-4 h-16 w-16 text-muted-foreground/50" />
-					<h2 class="text-xl font-semibold text-muted-foreground">Aucune évaluation</h2>
+					<h2 class="text-xl font-semibold text-muted-foreground">Aucun contrôle</h2>
 					<p class="mt-2 text-sm text-muted-foreground">
-						Vos {lore.entities.teacher}s n'ont pas encore assigné d'évaluations
+						Vos {lore.entities.teacher}s n'ont pas encore assigné de contrôles
 					</p>
 				</div>
 			</Card.Content>

@@ -35,7 +35,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.single();
 
 	if (schoolError || !school) {
-		throw error(404, 'School not found');
+		throw error(404, 'École introuvable');
 	}
 
 	// Fetch all school years for this school

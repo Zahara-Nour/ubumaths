@@ -12,10 +12,10 @@
 	import { lore } from '$lib/config/lore';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import {
-		ArrowLeft,
 		Calendar,
 		CheckCircle,
 		FileText,
@@ -38,6 +38,8 @@
 	}
 
 	let { worksheet }: Props = $props();
+
+	let readOnly = $derived(worksheet.read_only === true);
 
 	// PDF download state
 	let isPdfLoading = $state(false);
@@ -88,7 +90,7 @@
 			case 'worksheet':
 				return { icon: FileText, label: 'Fiche de travail' };
 			case 'assessment':
-				return { icon: ClipboardList, label: 'Evaluation' };
+				return { icon: ClipboardList, label: 'Contrôle' };
 			case 'exam':
 				return { icon: GraduationCap, label: lore.learning.exam };
 			case 'quiz':
@@ -173,11 +175,13 @@
 </script>
 
 <div class="space-y-4">
-	<!-- Back Button -->
-	<Button variant="ghost" href="/dashboard/student/worksheets" class="gap-2 pl-2">
-		<ArrowLeft class="h-4 w-4" />
-		Retour aux fiches
-	</Button>
+	<!-- Fiche en cours : « Quitter » ; consultation seule : simple retour -->
+	<BackLink
+		href="/dashboard/student/worksheets"
+		label={readOnly ? 'Retour aux fiches' : 'Quitter'}
+		kind={readOnly ? 'back' : 'quit'}
+		class="mb-0"
+	/>
 
 	<!-- Header Card -->
 	<Card.Root>

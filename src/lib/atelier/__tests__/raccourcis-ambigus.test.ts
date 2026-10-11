@@ -68,6 +68,9 @@ describe('le catalogue tranche, y compris à l’exécution', () => {
 				for (const [name, definition] of Object.entries(command.exampleSetup ?? {})) {
 					s.atelier.create({ kind: 'list', name, definition });
 				}
+				// `.convertir` exprime la DERNIÈRE grandeur calculée : sans elle, son
+				// refus en français (« Il n'y a pas de grandeur à convertir ») est juste
+				if (command.name === 'convert') runInput(s, '12[km]+300[m]');
 				const result = runInput(s, `.${alias} ${argument}`);
 				expect(result.kind, `.${alias}`).toBe('commande');
 				const vide =

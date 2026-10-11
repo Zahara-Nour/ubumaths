@@ -82,7 +82,7 @@ describe('la mise au propre ne défait pas la factorisation', () => {
 	});
 
 	it.each([
-		['x^2-1', '\\left( x + 1 \\right) \\left( x - 1 \\right)'],
+		['x^2-1', '\\left( x - 1 \\right) \\left( x + 1 \\right)'],
 		['x^2+2x+1', '\\left( x + 1 \\right)^2']
 	])('%s reste factorisé : %s', (source, attendu) => {
 		expect(factoriser(source)).toBe(attendu);

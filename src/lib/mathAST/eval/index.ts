@@ -89,17 +89,12 @@ export type {
 	EvalValue,
 	ComplexValueResult,
 	IndeterminateForm,
-	SubstituteOptions,
-	// Unit-aware evaluation types
-	UnitConversionMode,
-	EvalWithUnitsOptions,
-	EvalResultWithUnit
+	SubstituteOptions
 } from './types';
 
 export {
 	DEFAULT_EVAL_OPTIONS,
 	DEFAULT_SUBSTITUTE_OPTIONS,
-	DEFAULT_EVAL_WITH_UNITS_OPTIONS,
 	// Type guards for EvalResult
 	isEvalValue,
 	isEvalIndeterminate,
@@ -157,12 +152,6 @@ export {
 // =============================================================================
 
 export { compareNumericNodes } from './compare-numeric';
-
-// =============================================================================
-// Unit-Aware Evaluation
-// =============================================================================
-
-export { evaluateWithUnits, DimensionalEvaluationError } from './evaluate-with-units';
 
 // =============================================================================
 // Zod Validation Schemas

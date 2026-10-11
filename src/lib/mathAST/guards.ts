@@ -284,6 +284,21 @@ export function isComplex(node: MathNode): node is ComplexNode {
 }
 
 /**
+ * L'unité imaginaire `complex(0, 1)` : ce que les parseurs lisent pour la
+ * lettre `i` (hors indice) et pour `\imaginaryI`. Pas une garde de type : un
+ * `false` ne dit pas que le nœud n'est pas un complexe.
+ */
+export function isImaginaryUnit(node: MathNode): boolean {
+	return (
+		isComplex(node) &&
+		isNumber(node.real) &&
+		node.real.value === '0' &&
+		isNumber(node.imaginary) &&
+		node.imaginary.value === '1'
+	);
+}
+
+/**
  * Type guard for InfinityNode
  */
 export function isInfinity(node: MathNode): node is InfinityNode {

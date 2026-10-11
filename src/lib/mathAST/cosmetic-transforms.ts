@@ -24,16 +24,17 @@ import {
 	add,
 	subtract,
 	percentage,
-	variable,
 	superscript,
 	func,
 	sqrt,
-	euler
+	euler,
+	imaginaryUnit
 } from './factory';
 import {
 	isComplex,
 	isDivision,
 	isEulerConstant,
+	isImaginaryUnit,
 	isMultiplication,
 	isNumber,
 	isOpposite,
@@ -955,31 +956,18 @@ export interface CheckFormOptions {
  * Build the ordered AST transformer pipeline, binding bracket-stripping to the
  * supplied options (e.g. `allowFirstNegative`).
  */
-/** `complex(0, 1)` : l'unité imaginaire telle que le parseur lit `\imaginaryI` */
-function isImaginaryUnitNode(node: MathNode): boolean {
-	return (
-		isComplex(node) &&
-		isNumber(node.real) &&
-		node.real.value === '0' &&
-		isNumber(node.imaginary) &&
-		node.imaginary.value === '1'
-	);
-}
-
 /**
  * Une seule écriture du nombre e pour comparer les formes : la constante
  * `euler()` (les parseurs y lisent la lettre `e` comme `\exponentialE`), et
  * `\exp(u)` (notation du programme) devient `e^{u}`. Ce sont des notations, pas
  * des formes : aucune pénalité (décision de David du 2026-10-02).
  *
- * De même pour l'unité imaginaire : `\imaginaryI` (MathLive, « ii » ou la variante
- * « i imaginaire » de la touche i), que le parseur lit `complex(0, 1)`, devient la
- * lettre `i` (`\mathrm{i}` l'était déjà). Avant : `2-3\imaginaryI` pour `2-3i`
- * était « pas sous la forme demandée » (décision de David du 2026-10-05).
+ * L'unité imaginaire n'a plus rien à unifier : les parseurs lisent la lettre `i`,
+ * `\mathrm{i}` et `\imaginaryI` (MathLive) en un seul nœud, `complex(0, 1)`
+ * (décisions de David du 2026-10-05 et du 2026-10-11).
  */
 export function unifyEulerNotationAST(ast: MathNode): MathNode {
 	return mapNode(ast, (node) => {
-		if (isImaginaryUnitNode(node)) return variable('i');
 		if (node.type === 'function' && node.name === 'exp' && node.args.length === 1) {
 			return superscript(euler(), node.args[0]);
 		}
@@ -1065,14 +1053,9 @@ function unifyPiAngleNotationAST(ast: MathNode): MathNode {
 	});
 }
 
-/** La lettre `i` (unité imaginaire ; `\imaginaryI` y est déjà ramené par `unifyEulerNotationAST`) */
-function isImaginaryLetter(node: MathNode): boolean {
-	return isVariable(node) && node.name === 'i';
-}
-
-/** Constante réelle écrite : aucune lettre (ni `i`, ni variable) */
+/** Constante réelle écrite : aucune lettre (ni variable, ni unité imaginaire `i`) */
 function isLetterFree(node: MathNode): boolean {
-	return findNodes(node, isVariable).length === 0;
+	return findNodes(node, (n) => isVariable(n) || isComplex(n)).length === 0;
 }
 
 /**
@@ -1081,16 +1064,20 @@ function isLetterFree(node: MathNode): boolean {
  */
 export function imaginaryProductRest(node: MathNode): MathNode | null | undefined {
 	const factors = flattenProductShallow(node);
-	const imaginary = factors.filter((f) => isImaginaryLetter(f.factor));
+	const imaginary = factors.filter((f) => isImaginaryUnit(f.factor));
 	if (imaginary.length !== 1) return undefined;
-	const rest = factors.filter((f) => !isImaginaryLetter(f.factor));
+	const rest = factors.filter((f) => !isImaginaryUnit(f.factor));
 	if (!rest.every((f) => isLetterFree(f.factor))) return undefined;
 	return unflattenProduct(rest.map((f, k) => (k === 0 ? { ...f, style: 'implicit' } : f)));
 }
 
 /** `\frac{R}{d}i` (`\frac{1}{d}i` pour `R` absent) */
 function imaginaryOverDenominator(rest: MathNode | null, denominator: MathNode): MathNode {
-	return multiply(divide(rest ?? number('1'), denominator, 'fraction'), variable('i'), 'implicit');
+	return multiply(
+		divide(rest ?? number('1'), denominator, 'fraction'),
+		imaginaryUnit(),
+		'implicit'
+	);
 }
 
 /**

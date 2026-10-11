@@ -255,7 +255,21 @@ au-delà de 10⁹, ni pour un nombre déjà écrit (`3`, `2,5`), une expression 
 déjà sa valeur approchée). Quand les ÉTAPES donnent la réponse, le bouton approche leurs solutions
 (`SolvedSteps.approximate`), dans leur ordre et leur forme — pas celles du moteur, triées. Mêmes
 boutons sur l'image d'un nombre et « Résoudre f(x) = 0 » des cartes.
-⚠️ `.mode décimal` écrit encore 15 chiffres : l'aligner sur cette règle est une PR à part.
+`.mode décimal` suit la même règle (2026-10-11) : 4 décimales, `≈` à l'écran comme dans le texte
+seulement si la valeur est arrondie (`≈ 0,7071`, `0,25`) ; « Garder » range la valeur pleine
+précision (`quantityAst`). Le texte d'un résultat exact est mis au propre comme l'écran (`\pi/3`,
+plus `{1/3}\pi`) — `/cas` compris.
+
+**Complétion des fonctions et des lettres grecques** (PR 3, `src/lib/atelier/completion.ts`) :
+règle unique — la liste s'ouvre quand le mot qui finit au CURSEUR (lettres seulement, curseur relu
+au moment de décider) a au moins 2 lettres et est le début d'une proposition (`si` → `sin(`,
+`sinh(`, `sign(`, `σ` ; `al` → `α` ; `pi` → `π`). Propositions tirées des listes uniques du moteur :
+`SHOWN_FUNCTIONS` (tokenizer) et `GREEK_LETTERS` (variantes exceptées), insérées en symbole — pas le
+module de complétion de `/cas`, qui insère `\alpha`. Rien dans le nom d'une commande (liste des
+commandes), ni dans une saisie en LaTeX (`\frac{co`). Pas de nom du panneau : un nom d'objet fait une lettre. Clavier : ↑ / ↓
+surlignent, **Tab ou un clic insère**, **Entrée calcule** même liste ouverte (`3ta` = 3·t·a, décision
+de David), Échap ferme jusqu'à la frappe suivante. Garde : chaque proposition, tapée dans un calcul,
+est acceptée par Calcul (`completion.test.ts`).
 
 **Actions de carte** : `actionsFor` (`src/lib/atelier/actions.ts`) donne par type les actions
 (fonction : Tracer, Dériver, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
@@ -337,15 +351,17 @@ L'état « en attente » reste pour un nom cité _avant_ d'être défini ; seule
 L'atelier ne calcule presque rien lui-même : il choisit le bon module et met la réponse en forme.
 Doc du moteur : [mathast/README.md](mathast/README.md).
 
-| Geste de l'élève               | Module appelé                                                                          |
-| ------------------------------ | -------------------------------------------------------------------------------------- |
-| calculs, commandes du registre | `WebReplEngine` (`src/lib/mathAST/cli/web/web-repl-engine.ts`)                         |
-| `.simplifier`                  | `generatePedagogicalSimplifySteps`, intention `auto` (ADR 0007)                        |
-| `.factoriser`                  | même pipeline, intention `factoriser` ; aucun repli moteur : « je n'ai pas su » se dit |
-| `.dériver`, « Dériver », `f′`  | `src/lib/mathAST/pedagogical-differentiation/` (règle nommée, sous-étapes)             |
-| `.résoudre`, « Résoudre »      | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`               |
-| `.variations`, « Variations »  | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau    |
-| syntaxe des commandes          | `src/lib/mathAST/cli/core/variable-argument.ts`                                        |
+| Geste de l'élève                        | Module appelé                                                                                                                                                                  |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| calculs, commandes du registre          | `WebReplEngine` (`src/lib/mathAST/cli/web/web-repl-engine.ts`)                                                                                                                 |
+| écrire une grandeur (`5 km`)            | `readNaturalQuantities` (`src/lib/atelier/natural-quantities.ts`) : « un nombre, une espace, une unité », calculs et valeurs seulement                                         |
+| calcul avec des grandeurs, `.convertir` | `computeQuantity` / `convertQuantity` (`src/lib/mathAST/cli/quantities.ts`) : `tidy`, unité écrite d'abord — comme `{{eval}}`                                                  |
+| `.simplifier`                           | `generatePedagogicalSimplifySteps`, intention `auto` (ADR 0007)                                                                                                                |
+| `.factoriser`                           | même pipeline, intention `factoriser`, niveau lycée (stratégies de l'ADR 0024 : identités à coefficients, Δ, racine évidente) ; aucun repli moteur : « je n'ai pas su » se dit |
+| `.dériver`, « Dériver », `f′`           | `src/lib/mathAST/pedagogical-differentiation/` (règle nommée, sous-étapes)                                                                                                     |
+| `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                                                                       |
+| `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                                                                            |
+| syntaxe des commandes                   | `src/lib/mathAST/cli/core/variable-argument.ts`                                                                                                                                |
 
 Statistiques : `summarizeList` / `summarizeTable` (`src/lib/statistics/describe.ts`), et
 `src/lib/statistics/` pour l'ajustement (`fit.ts`), le bivarié, la simulation, les fractions et
@@ -376,7 +392,10 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
 8. **Plafonds D8** : `MAX_LIST_VALUES` (200) par liste, `MAX_LISTS` (8) listes,
    `MAX_DEFINITION_LENGTH` à la saisie — pour qu'un atelier tienne dans une URL.
 9. **Visible et désactivé avec sa raison**, jamais caché : actions de carte et commandes.
-10. **On ne reparse jamais la sortie texte du moteur** (`render.ts`).
+10. **On ne reparse jamais la sortie texte du moteur** (`render.ts`). Un **calcul** s'écrit depuis
+    son arbre, mis au propre par `tidy` (π/3, √2/2 ; un résultat qui porte un décimal ou une variable
+    libre est laissé tel quel — `x/x` ne devient pas 1), unités traduites par `displayUnitsInLatex` ; seule une **commande** peut encore montrer
+    son texte s'il ne contient que du LaTeX sûr (lot B des grandeurs, 2026-10-11).
     La constante d'Euler y arrive écrite `e` : `toCustom` l'écrit ainsi et tous les
     parseurs la relisent comme Euler (depuis le 2026-10-10 ; `withPlainEuler` et le
     remplacement de `\euler` dans `render.ts` sont retirés). `e` n'est jamais une variable :

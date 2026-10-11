@@ -2,6 +2,7 @@
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
@@ -13,7 +14,7 @@
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
 	import TemplateSelector from '$lib/components/worksheets/TemplateSelector.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ArrowLeft, ChevronDown, ChevronUp, Loader2, Save, FileText } from '@lucide/svelte';
+	import { ChevronDown, ChevronUp, Loader2, Save, FileText } from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import type {
 		WorksheetType,
@@ -52,7 +53,7 @@
 	// Type options
 	const typeOptions = [
 		{ value: 'worksheet', label: `Feuille de ${lore.learning.exercise}s` },
-		{ value: 'assessment', label: 'Evaluation' },
+		{ value: 'assessment', label: 'Contrôle' },
 		{ value: 'exam', label: lore.learning.exam },
 		{ value: 'quiz', label: 'Quiz' },
 		{ value: 'homework', label: 'Corvées Domestiques' }
@@ -145,10 +146,8 @@
 
 <div class="container mx-auto max-w-3xl py-6">
 	<!-- Header -->
-	<div class="mb-6 flex items-center gap-4">
-		<Button variant="ghost" size="icon" href="/dashboard/teacher/contenu/worksheets">
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-6">
+		<BackLink href="/dashboard/teacher/contenu/worksheets" label="Retour aux fiches" />
 		<div>
 			<h1 class="text-3xl font-bold">Nouvelle feuille</h1>
 			<p class="text-muted-foreground">Creez une nouvelle feuille de {lore.learning.exercise}s</p>

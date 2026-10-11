@@ -37,7 +37,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 		.single();
 
 	if (profileError || !profileData) {
-		throw error(403, 'Profil non trouve');
+		throw error(403, 'Profil introuvable');
 	}
 
 	if (profileData.role !== 'teacher') {

@@ -48,7 +48,8 @@
 		CheckCircle2,
 		Circle,
 		LifeBuoy,
-		ChevronRight
+		ChevronRight,
+		Puzzle
 	} from '@lucide/svelte';
 	// import AchievementsWidget from '$lib/components/game/minesweeper/AchievementsWidget.svelte';
 	// import { Button } from '$lib/components/ui/button';
@@ -104,9 +105,9 @@
 		{@const comps = data.progression.competences.stats}
 		<a
 			href="/dashboard/student/progression"
-			class="block rounded-lg transition-colors hover:bg-accent/50 focus:bg-accent focus:outline-none"
+			class="group block rounded-xl focus-visible:ring-4 focus-visible:ring-ring/30 focus-visible:outline-none"
 		>
-			<Card.Root>
+			<Card.Root class="transition-colors group-hover:bg-accent/50">
 				<Card.Content class="p-4">
 					<div class="mb-3 flex items-center gap-2">
 						<TrendingUp class="h-5 w-5 text-primary" />
@@ -194,6 +195,32 @@
 			</Card.Root>
 		</a>
 	{/if}
+
+	<!--
+		TUILE « ÉNIGMES » : seule entrée vers les énigmes (#1121). Le libellé ne promet
+		pas d'énigme du jour : certains jours n'en ont pas.
+		Survol et focus : la carte, opaque, recouvre le fond du lien ; le survol
+		colore donc la carte (group-hover) et le focus est un anneau autour du lien.
+	-->
+	<a
+		href="/dashboard/student/riddles"
+		class="group block rounded-xl focus-visible:ring-4 focus-visible:ring-ring/30 focus-visible:outline-none"
+	>
+		<Card.Root class="transition-colors group-hover:bg-accent/50">
+			<Card.Content class="flex items-center gap-2 p-4">
+				<Puzzle class="h-5 w-5 text-primary" />
+				<h3 class="font-semibold">Énigmes</h3>
+				<span class="text-sm text-muted-foreground">
+					{#if data.riddlesSolved > 0}
+						{data.riddlesSolved} résolue{data.riddlesSolved > 1 ? 's' : ''}
+					{:else}
+						Découvre les énigmes
+					{/if}
+				</span>
+				<ChevronRight class="ml-auto h-4 w-4 text-muted-foreground" />
+			</Card.Content>
+		</Card.Root>
+	</a>
 
 	<!-- REWARDS BLOCK -->
 	<!--

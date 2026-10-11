@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Articles du test : un paru, un futur, un brouillon
 vi.mock('$lib/server/shtam/articles', async (importOriginal) => {
@@ -13,7 +13,42 @@ vi.mock('$lib/server/shtam/articles', async (importOriginal) => {
 	return { ...original, allArticles: () => articles };
 });
 
+// Exercices : le client anonyme est simulé ; `rows` / `failure` règlent sa réponse.
+const exercisesQuery = {
+	rows: [] as { id: string; slug: string | null; updated_at: string }[],
+	failure: null as { code: string; message: string } | null,
+	filters: [] as [string, unknown][]
+};
+
+vi.mock('$lib/server/anonymous-supabase', () => ({
+	createAnonymousSupabase: () => ({
+		from: () => {
+			const chain = {
+				select: () => chain,
+				eq: (column: string, value: unknown) => {
+					exercisesQuery.filters.push([column, value]);
+					return chain;
+				},
+				order: () => chain,
+				limit: () =>
+					Promise.resolve(
+						exercisesQuery.failure
+							? { data: null, error: exercisesQuery.failure }
+							: { data: exercisesQuery.rows, error: null }
+					)
+			};
+			return chain;
+		}
+	})
+}));
+
 const { GET } = await import('../+server');
+
+beforeEach(() => {
+	exercisesQuery.rows = [];
+	exercisesQuery.failure = null;
+	exercisesQuery.filters = [];
+});
 
 afterEach(() => {
 	vi.useRealTimers();
@@ -52,5 +87,48 @@ describe('sitemap.xml', () => {
 	it('ne date pas les pages fixes du jour de la requête', async () => {
 		const xml = await sitemapAt('2026-10-05T10:00:00Z');
 		expect(xml).not.toContain('<lastmod>2026-10-05</lastmod>');
+	});
+
+	it('liste les exercices affichés sur Google, datés de leur dernière modification', async () => {
+		exercisesQuery.rows = [
+			{
+				id: '550e8400-e29b-41d4-a716-446655440003',
+				slug: 'pythagore-zz',
+				updated_at: '2026-10-02T08:15:00+00:00'
+			},
+			{
+				id: '550e8400-e29b-41d4-a716-446655440004',
+				slug: null,
+				updated_at: '2026-09-30T23:00:00+00:00'
+			}
+		];
+		const xml = await sitemapAt('2026-10-05T10:00:00Z');
+		expect(xml).toMatch(
+			/<loc>https:\/\/www\.chiph\.re\/exercice\/pythagore-zz<\/loc>\s*<lastmod>2026-10-02<\/lastmod>/
+		);
+		// Sans slug, la page accepte l'id
+		expect(xml).toMatch(
+			/<loc>https:\/\/www\.chiph\.re\/exercice\/550e8400-e29b-41d4-a716-446655440004<\/loc>\s*<lastmod>2026-09-30<\/lastmod>/
+		);
+	});
+
+	it('ne demande que les exercices publics ET cochés « Afficher sur Google »', async () => {
+		await sitemapAt('2026-10-05T10:00:00Z');
+		expect(exercisesQuery.filters).toEqual(
+			expect.arrayContaining([
+				['is_public', true],
+				['search_indexed', true]
+			])
+		);
+	});
+
+	it('une panne de la base sert le plan sans les exercices, jamais un 500', async () => {
+		exercisesQuery.failure = { code: '500', message: 'panne' };
+		const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+		const xml = await sitemapAt('2026-10-05T10:00:00Z');
+		expect(xml).toContain('<loc>https://www.chiph.re/</loc>');
+		expect(xml).not.toContain('/exercice/');
+		expect(error).toHaveBeenCalled();
+		error.mockRestore();
 	});
 });

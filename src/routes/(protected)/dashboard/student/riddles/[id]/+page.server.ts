@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import type { DbRiddleAttempt } from '$lib/types/riddle';
-import { toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
+import { toDbRiddle, toDbRiddleAttempt, toStudentRiddle } from '$lib/types/riddle';
 import { error, redirect } from '@sveltejs/kit';
 import { validateUuidParam } from '$lib/server/validation/params';
 
@@ -48,7 +48,8 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		attempts && attempts.length > 0 ? toDbRiddleAttempt(attempts[0]) : null;
 
 	return {
-		riddle: toDbRiddle(riddle),
+		// Sans la réponse attendue ni la correction : le serveur juge la réponse.
+		riddle: toStudentRiddle(toDbRiddle(riddle)),
 		studentAttempt
 	};
 };

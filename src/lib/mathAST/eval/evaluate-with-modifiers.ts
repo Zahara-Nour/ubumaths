@@ -375,7 +375,7 @@ function hasQuantity(node: MathNode): boolean {
 }
 
 /** Valeur exacte d'un nombre, d'un opposé ou d'un quotient de nombres ; `null` sinon */
-function rationalOf(node: MathNode): Rational | null {
+export function rationalOf(node: MathNode): Rational | null {
 	if (node.type === 'opposite') {
 		const inner = rationalOf(node.operand);
 		return inner === null ? null : negRational(inner);
@@ -389,7 +389,7 @@ function rationalOf(node: MathNode): Rational | null {
 }
 
 /** `x` exprimé en `unit` : un nombre (quotient par `1[unit]`), ou `null` si la dimension diffère */
-function valueIn(ast: MathNode, unit: string): Rational | null {
+export function valueIn(ast: MathNode, unit: string): Rational | null {
 	const parsed = parseUnit(unit);
 	if (parsed === null) throw new Error(`Unité inconnue : [${unit}]`);
 	const ratio = tidy(divide(ast, withUnit(number(1), parsed), 'fraction'), {

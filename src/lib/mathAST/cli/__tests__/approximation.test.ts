@@ -124,3 +124,16 @@ describe('la valeur exacte d’un calcul fait en mode décimal', () => {
 		expect(result.exactLatex).toBeUndefined();
 	});
 });
+
+// Mesuré avant (2026-10-11) : rien — la fraction exacte a des termes de plus de
+// 10³⁰⁸ (3001 chiffres pour la suite qui tend vers e), leur conversion débordait
+describe('le bouton ≈ sur une fraction aux termes géants', () => {
+	it.each([
+		['\\left(1+\\frac{1}{1000}\\right)^{1000}', '\\approx 2.7169'],
+		['1000\\left(1+\\frac{0.03}{12}\\right)^{360}', '\\approx 2456.8422'],
+		['1.01^{365}', '\\approx 37.7834'],
+		['0.99^{365}', '\\approx 0.0255']
+	])('%s → %s', (latex, expected) => {
+		expect(approx(latex)).toBe(expected);
+	});
+});

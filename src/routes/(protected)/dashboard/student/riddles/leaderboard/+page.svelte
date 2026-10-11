@@ -5,12 +5,12 @@
 -->
 
 <script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import type { PageData } from './$types';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Trophy, ArrowLeft, Crown } from '@lucide/svelte';
+	import { Trophy, Crown } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	let { data }: { data: PageData } = $props();
@@ -37,10 +37,7 @@
 <div class="container mx-auto max-w-4xl p-4 sm:p-6">
 	<!-- Header -->
 	<div class="mb-6">
-		<Button variant="ghost" href="/dashboard/student/riddles" class="mb-4">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour aux énigmes
-		</Button>
+		<BackLink href="/dashboard/student/riddles" label="Retour aux énigmes" />
 
 		<h1 class="flex items-center gap-2 text-3xl font-bold">
 			<Trophy class="h-8 w-8 text-primary" />

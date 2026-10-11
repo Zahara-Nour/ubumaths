@@ -7,8 +7,7 @@
  * - SI prefixes on derived units (kN, mJ, μF, MΩ, kHz, etc.)
  * - recognizeDerivedUnit() — turns a normalized SI base unit into its
  *   derived-symbol equivalent (or null if not recognized)
- * - Pipeline integration: evaluateWithUnits in 'best' mode prefers
- *   derived units over composite SI base forms
+ * - (l'intégration au calcul est testée dans `cli/__tests__/grandeurs.test.ts`)
  *
  * Architecture notes:
  * - Project's mass baseSymbol is `g` (not `kg`), so a Newton's coefficient
@@ -23,43 +22,11 @@ import { parse } from '../parser';
 import { resolveUnit } from '../definitions';
 import { unit, fromComponents } from '../factory';
 import { recognizeDerivedUnit } from '../conversion';
-import { evaluateWithUnits } from '../../eval/evaluate-with-units';
-import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
-import { multiply, divide, withUnit } from '../../factory';
-import { numericNode } from '../../common/numeric';
 import { UnitAST } from '../factory';
-import type { EvalValue, ComplexValueResult } from '../../eval/types';
-import type { MathNode } from '../../types';
 
 // =============================================================================
 // Helpers
 // =============================================================================
-
-function quantity(value: string, unitStr: string) {
-	const u = UnitAST.unit(unitStr);
-	if (!u) throw new Error(`Invalid unit: ${unitStr}`);
-	return withUnit(numericNode(value), u);
-}
-
-function isMathNode(value: EvalValue): value is MathNode {
-	return typeof value === 'object' && 'type' in value;
-}
-
-function isComplex(value: EvalValue): value is ComplexValueResult {
-	return typeof value === 'object' && 'real' in value && 'imag' in value;
-}
-
-function toNumber(value: EvalValue): number {
-	if (isComplex(value)) {
-		if (value.imag !== 0) throw new Error('Complex value');
-		return value.real;
-	}
-	if (isMathNode(value)) {
-		return evaluateNodeToApproximatedNumber(value);
-	}
-	if (typeof value === 'boolean') throw new Error('Boolean value');
-	return value;
-}
 
 // =============================================================================
 // A. Catalog presence — resolveUnit returns the correct definition
@@ -395,85 +362,6 @@ describe('recognizeDerivedUnit', () => {
 });
 
 // =============================================================================
-// E. Pipeline integration — 'best' mode prefers derived units
-// =============================================================================
-
-describe('evaluateWithUnits - best mode prefers derived units', () => {
-	it('5 kg × 3 m / (1 s)² → 15 N', () => {
-		// (5 kg) * (3 m) / (1 s)² — using parsed units, mode 'best'
-		const num = multiply(quantity('5', 'kg'), quantity('3', 'm'), 'implicit');
-		const denom = multiply(quantity('1', 's'), quantity('1', 's'), 'implicit');
-		const expr = divide(num, denom, 'fraction');
-		const result = evaluateWithUnits(expr, { conversionMode: 'best' });
-		expect(toNumber(result.value)).toBeCloseTo(15, 6);
-		// The result unit should be N (derived) — checked via the original symbol or signature
-		expect(result.unit.original).toBe('N');
-	});
-
-	it('2 N × 3 m → 6 J', () => {
-		const expr = multiply(quantity('2', 'N'), quantity('3', 'm'), 'implicit');
-		const result = evaluateWithUnits(expr, { conversionMode: 'best' });
-		expect(toNumber(result.value)).toBeCloseTo(6, 6);
-		expect(result.unit.original).toBe('J');
-	});
-
-	it('100 kg·m/s² → 100 N', () => {
-		const u = UnitAST.fromComponents(
-			new Map([
-				['g', 1],
-				['m', 1],
-				['s', -2]
-			]),
-			1000
-		);
-		const expr = withUnit(numericNode('100'), u);
-		const result = evaluateWithUnits(expr, { conversionMode: 'best' });
-		expect(toNumber(result.value)).toBeCloseTo(100, 6);
-		expect(result.unit.original).toBe('N');
-	});
-
-	it('non-derived velocity (10 m/s) stays composite in best mode', () => {
-		const expr = divide(quantity('10', 'm'), quantity('1', 's'), 'fraction');
-		const result = evaluateWithUnits(expr, { conversionMode: 'best' });
-		expect(result.unit.original === 'N' || result.unit.original === 'J').toBe(false);
-	});
-});
-
-// =============================================================================
-// F. Pipeline integration — recognizeDerived flag in non-best modes
-// =============================================================================
-
-describe('evaluateWithUnits - recognizeDerived flag', () => {
-	it('first mode with recognizeDerived: true → recognizes N', () => {
-		const num = multiply(quantity('5', 'kg'), quantity('3', 'm'), 'implicit');
-		const denom = multiply(quantity('1', 's'), quantity('1', 's'), 'implicit');
-		const expr = divide(num, denom, 'fraction');
-		const result = evaluateWithUnits(expr, {
-			conversionMode: 'first',
-			recognizeDerived: true
-		});
-		expect(result.unit.original).toBe('N');
-	});
-
-	it('first mode without flag → keeps composite form', () => {
-		const num = multiply(quantity('5', 'kg'), quantity('3', 'm'), 'implicit');
-		const denom = multiply(quantity('1', 's'), quantity('1', 's'), 'implicit');
-		const expr = divide(num, denom, 'fraction');
-		const result = evaluateWithUnits(expr, { conversionMode: 'first' });
-		expect(result.unit.original).not.toBe('N');
-	});
-
-	it('si mode with recognizeDerived: true → recognizes J', () => {
-		const expr = multiply(quantity('2', 'N'), quantity('3', 'm'), 'implicit');
-		const result = evaluateWithUnits(expr, {
-			conversionMode: 'si',
-			recognizeDerived: true
-		});
-		expect(result.unit.original).toBe('J');
-	});
-});
-
-// =============================================================================
 // G. Edge cases (suggested by code review)
 // =============================================================================
 
@@ -514,20 +402,5 @@ describe('Derived units - edge cases', () => {
 		const second = recognizeDerivedUnit(first)!;
 		expect(second.original).toBe('Hz');
 		expect(second.coefficient).toBeCloseTo(first.coefficient, 12);
-	});
-
-	it("first mode + recognizeDerived: true on '1000 ms^-1' yields 1 Hz", () => {
-		// 1000 ms⁻¹ — but ms parses to (s, coef 0.001). The reciprocal in
-		// composite form yields a (s⁻¹) signature with coefficient 1/0.001 = 1000
-		// when applied to value 1000, the SI-base value is 1000 × 1000 = 1e6 Hz.
-		// Simpler: build (s⁻¹) directly with value 5.
-		const u = UnitAST.unitWithPower('s', -1)!;
-		const expr = withUnit(numericNode('5'), u);
-		const result = evaluateWithUnits(expr, {
-			conversionMode: 'first',
-			recognizeDerived: true
-		});
-		expect(result.unit.original).toBe('Hz');
-		expect(toNumber(result.value)).toBeCloseTo(5, 6);
 	});
 });

@@ -270,17 +270,9 @@
 
 							<Card.Content>
 								<!-- Statistics -->
-								<div class="grid grid-cols-2 gap-4">
-									<div>
-										<p class="text-sm text-muted-foreground">Cartes</p>
-										<p class="text-2xl font-bold">{deck.stats?.total_cards || 0}</p>
-									</div>
-									<div>
-										<p class="text-sm text-muted-foreground">Rétention</p>
-										<p class="text-2xl font-bold">
-											{Math.round((deck.config?.desiredRetention || 0.9) * 100)}%
-										</p>
-									</div>
+								<div>
+									<p class="text-sm text-muted-foreground">Cartes</p>
+									<p class="text-2xl font-bold">{deck.stats?.total_cards || 0}</p>
 								</div>
 							</Card.Content>
 						</Card.Root>

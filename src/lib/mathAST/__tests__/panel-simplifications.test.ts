@@ -118,8 +118,8 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 	describe('Termes semblables', () => {
 		it.each([
 			['2x+3x', '5 x', '5 x', '5 x', '5 x', '5 x'],
-			['x+x', '2 x', '2 x', '2 x', '2 x', 'x 2'],
-			['x-x', '0', '0', '0', '0', 'x 0'],
+			['x+x', '2 x', '2 x', '2 x', '2 x', '2 x'],
+			['x-x', '0', '0', '0', '0', '0'],
 			['3x+2y+x-y', '4 x + y', '4 x + y', '4 x + y', '4 x + y', '4 x + y']
 		])('%s', (entree, attenduSimplify, auto, reduire, developper, factoriser) => {
 			expect(parSimplify(entree)).toBe(attenduSimplify);
@@ -174,7 +174,7 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 				'x^2 - 1',
 				'x^2 - 1',
 				'x^2 - 1',
-				'\\left( x + 1 \\right) \\left( x - 1 \\right)'
+				'\\left( x - 1 \\right) \\left( x + 1 \\right)'
 			],
 			[
 				'x^2+2x+1',

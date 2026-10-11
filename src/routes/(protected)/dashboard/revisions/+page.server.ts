@@ -37,7 +37,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession,
 	const { user } = await safeGetSession();
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Les chapitres sont lus aux droits de l'appelant : réservé à l'élève (un

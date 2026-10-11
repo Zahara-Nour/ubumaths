@@ -5,6 +5,9 @@
  * - Public exercises (is_public=true)
  * - Private exercises via share token (?token=...)
  * - URL params for variation and seed (?variation=...&seed=...)
+ *
+ * `noindex` : vrai sauf pour un exercice public coché « Afficher sur Google »
+ * ouvert sans jeton — la page pose alors `<meta name="robots" content="noindex">`.
  */
 
 import { error } from '@sveltejs/kit';
@@ -113,10 +116,16 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 	const initialSeed = seedParam ? parseInt(seedParam, 10) : undefined;
 	const initialVariation = variationParam || undefined;
 
+	// Google : seulement un exercice public coché « Afficher sur Google », ouvert
+	// par son adresse publique. Une adresse à jeton n'est jamais indexée, même
+	// cochée : le jeton de partage ne doit pas finir dans les résultats.
+	const noindex = !(dbExercise.is_public && dbExercise.search_indexed === true) || !!token;
+
 	return {
 		exercise,
 		initialVariation,
 		initialSeed: Number.isNaN(initialSeed) ? undefined : initialSeed,
-		hasToken: !!token
+		hasToken: !!token,
+		noindex
 	};
 };

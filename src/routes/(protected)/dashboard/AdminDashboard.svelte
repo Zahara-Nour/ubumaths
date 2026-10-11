@@ -377,7 +377,7 @@
 							</div>
 							<div>
 								<p class="text-2xl font-bold text-foreground">{stats.content.assessments}</p>
-								<p class="text-xs text-muted-foreground">Évaluations</p>
+								<p class="text-xs text-muted-foreground">Contrôles</p>
 							</div>
 							<div>
 								<p class="text-2xl font-bold text-foreground">{stats.content.riddles}</p>

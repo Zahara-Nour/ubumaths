@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
-	import { ArrowLeft } from '@lucide/svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { submitAction } from '$lib/utils/form-action';
 	import EvaluationConfigForm from '$lib/components/assessments/EvaluationConfigForm.svelte';
@@ -47,7 +47,7 @@
 				toaster.error(outcome.message);
 				return;
 			}
-			toaster.success(status === 'published' ? 'Évaluation publiée' : 'Brouillon enregistré');
+			toaster.success(status === 'published' ? 'Contrôle publié' : 'Brouillon enregistré');
 			goto('/dashboard/teacher/assessments').then(() => {});
 		} finally {
 			isSubmitting = false;
@@ -56,16 +56,14 @@
 </script>
 
 <svelte:head>
-	<title>Nouvelle évaluation | Chiphre</title>
+	<title>Nouveau contrôle | Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">
-	<div class="mb-8 flex items-center gap-4">
-		<Button variant="ghost" size="icon" onclick={handleBack} aria-label="Retour aux séries">
-			<ArrowLeft class="h-5 w-5" />
-		</Button>
+	<div class="mb-8">
+		<BackLink href="/dashboard/teacher/series" label="Retour aux séries" />
 		<div>
-			<h1 class="text-3xl font-bold tracking-tight">Nouvelle évaluation</h1>
+			<h1 class="text-3xl font-bold tracking-tight">Nouveau contrôle</h1>
 			<p class="mt-2 text-muted-foreground">
 				Série « {data.series.title} » · {data.series.grade} · {questionsCount} question{questionsCount >
 				1

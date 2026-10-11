@@ -39,9 +39,9 @@ import { differentiate } from '../differentiation/differentiate';
 import { matchKnownLimit, getKnownLimitValue } from '../limits/known-limits';
 import {
 	asPolynomial,
-	buildLinearFactor,
 	classifyApproach,
 	divide,
+	divideByCommonRoot,
 	evaluateAtPoint,
 	findConjugate,
 	formatApproachShort,
@@ -53,10 +53,11 @@ import {
 	normalizeDirection,
 	number,
 	numericNode,
-	polyToNode,
-	syntheticDivide
+	polyToNode
 } from './helpers';
-import type { PolynomialCoeffs } from './helpers';
+import { extractExactRational } from '../common/numeric';
+import { rationalToNumber } from '../normal/rational';
+import { linearFactorNode } from '../factor';
 import { PedagogicalLimitNotImplemented, STRATEGIES_LIMITS } from './types';
 import type {
 	LimitBindings,
@@ -305,10 +306,8 @@ function emitIdentifyLimit(ctx: PipelineContext, expression: MathNode): Pedagogi
 function tryDirectSubstitution(expression: MathNode, ctx: PipelineContext): StrategyResult {
 	// Skip when approaching infinity — direct substitution makes no sense.
 	if (isAtInfinity(ctx.approach)) return null;
-	if (!isNumber(ctx.approach)) return null;
-
-	const aValue = parseFloat(ctx.approach.value);
-	if (!Number.isFinite(aValue)) return null;
+	const aValue = approachNumber(ctx.approach);
+	if (aValue === null) return null;
 
 	const value = evaluateAtPoint(expression, ctx.variable, aValue);
 	if (value === null || !Number.isFinite(value)) return null;
@@ -317,7 +316,7 @@ function tryDirectSubstitution(expression: MathNode, ctx: PipelineContext): Stra
 
 	const step = makeStep(ctx, {
 		rule: 'apply-direct-substitution',
-		description: `Substitution directe : on remplace ${ctx.variable} par ${ctx.approach.value}`,
+		description: `Substitution directe : on remplace ${ctx.variable} par ${formatApproachShort(ctx.approach)}`,
 		before: expression,
 		after: valueNode,
 		verbosityLevel: 'summarized',
@@ -378,30 +377,27 @@ function tryFactorisation(
 	depth = 0
 ): StrategyResult {
 	if (!isDivision(expression)) return null;
-	if (!isNumber(ctx.approach)) return null;
-	const a = parseFloat(ctx.approach.value);
-	if (!Number.isFinite(a)) return null;
-
-	const numCoeffs = asPolynomial(expression.numerator, ctx.variable);
-	const denCoeffs = asPolynomial(expression.denominator, ctx.variable);
-	if (!numCoeffs || !denCoeffs) return null;
+	const a = extractExactRational(ctx.approach);
+	if (a === null) return null;
 
 	// Both must have `a` as a root (consistent with 0/0 indForm).
-	if (!isPolynomialRoot(numCoeffs, a) || !isPolynomialRoot(denCoeffs, a)) return null;
+	const quotients = divideByCommonRoot(
+		expression.numerator,
+		expression.denominator,
+		ctx.variable,
+		a
+	);
+	if (quotients === null) return null;
 
-	const { quotient: numQuot } = syntheticDivide(numCoeffs, a);
-	const { quotient: denQuot } = syntheticDivide(denCoeffs, a);
-
-	const numAfter = polyToNode(numQuot, ctx.variable);
-	const denAfter = polyToNode(denQuot, ctx.variable);
-	const factor = buildLinearFactor(ctx.variable, a);
+	const { numerator: numAfter, denominator: denAfter } = quotients;
+	const factor = linearFactorNode(ctx.variable, a);
 
 	// Sub-step: factor the numerator
 	const factorNumStep = makeStep(ctx, {
 		rule: 'factor-numerator',
 		description: `Factorisation du numérateur : ${formatLinearFactor(ctx.variable, a)} est un facteur`,
 		before: expression.numerator,
-		after: multiply(factor, numAfter, 'implicit'),
+		after: timesFactor(factor, numAfter),
 		verbosityLevel: 'detailed',
 		bindings: { factor }
 	});
@@ -411,7 +407,7 @@ function tryFactorisation(
 		rule: 'factor-denominator',
 		description: `Factorisation du dénominateur : ${formatLinearFactor(ctx.variable, a)} est un facteur`,
 		before: expression.denominator,
-		after: multiply(factor, denAfter, 'implicit'),
+		after: timesFactor(factor, denAfter),
 		verbosityLevel: 'detailed',
 		bindings: { factor }
 	});
@@ -427,7 +423,7 @@ function tryFactorisation(
 	});
 
 	// Parent: simplify-common-factor
-	const simplified: MathNode = divide(numAfter, denAfter, 'fraction');
+	const simplified = overDenominator(numAfter, denAfter);
 	const parentStep = makeStep(ctx, {
 		rule: 'simplify-common-factor',
 		description: `Simplification : on divise numérateur et dénominateur par ${formatLinearFactor(ctx.variable, a)}`,
@@ -450,11 +446,24 @@ function tryFactorisation(
 	};
 }
 
-function isPolynomialRoot(coeffs: PolynomialCoeffs, a: number): boolean {
-	// Horner: evaluate the polynomial at `a` and check if the result is 0.
-	let acc = 0;
-	for (let i = coeffs.length - 1; i >= 0; i--) acc = acc * a + coeffs[i];
-	return Math.abs(acc) < 1e-10;
+/** (x − a)·q, sans le facteur 1 */
+function timesFactor(factor: MathNode, quotient: MathNode): MathNode {
+	return isOneNode(quotient) ? factor : multiply(factor, quotient, 'implicit');
+}
+
+/** n/d, sans le dénominateur 1 */
+function overDenominator(numerator: MathNode, denominator: MathNode): MathNode {
+	return isOneNode(denominator) ? numerator : divide(numerator, denominator, 'fraction');
+}
+
+/** Valeur du point d'approche rationnel (négatif compris : un `opposite`, L26), ou null */
+function approachNumber(approach: MathNode): number | null {
+	const a = extractExactRational(approach);
+	return a === null ? null : rationalToNumber(a);
+}
+
+function isOneNode(node: MathNode): boolean {
+	return isNumber(node) && node.value === '1';
 }
 
 // =============================================================================
@@ -490,9 +499,8 @@ function tryRationalisation(
 	depth = 0
 ): StrategyResult {
 	if (!isDivision(expression)) return null;
-	if (!isNumber(ctx.approach)) return null;
-	const a = parseFloat(ctx.approach.value);
-	if (!Number.isFinite(a)) return null;
+	const a = extractExactRational(ctx.approach);
+	if (a === null) return null;
 
 	const conjugateInfo = findConjugate(expression.numerator);
 	if (!conjugateInfo) return null;
@@ -504,17 +512,13 @@ function tryRationalisation(
 	// (originalDenom · conjugate)` is typically still 0/0 at x = a (both
 	// `expanded(a)` and `originalDenom(a)` are 0), and the polynomial-only
 	// factorisation strategy can't help (denominator contains a sqrt).
-	const expandedCoeffs = asPolynomial(expanded, ctx.variable);
-	const originalDenomCoeffs = asPolynomial(expression.denominator, ctx.variable);
-	if (!expandedCoeffs || !originalDenomCoeffs) return null;
-	if (!isPolynomialRoot(expandedCoeffs, a)) return null;
-	if (!isPolynomialRoot(originalDenomCoeffs, a)) return null;
+	const quotients = divideByCommonRoot(expanded, expression.denominator, ctx.variable, a);
+	if (quotients === null) return null;
 
-	const { quotient: expandedQuot } = syntheticDivide(expandedCoeffs, a);
-	const { quotient: originalDenomQuot } = syntheticDivide(originalDenomCoeffs, a);
-
-	const newNum = polyToNode(expandedQuot, ctx.variable);
-	const newDen = multiply(polyToNode(originalDenomQuot, ctx.variable), conjugate, 'implicit');
+	const newNum = quotients.numerator;
+	const newDen = isOneNode(quotients.denominator)
+		? conjugate
+		: multiply(quotients.denominator, conjugate, 'implicit');
 	const simplified = divide(newNum, newDen, 'fraction');
 
 	// detect-indeterminate-form (informational decoration)
@@ -776,9 +780,8 @@ const ONE_SIDED_EPSILON = 1e-6;
  *   finie. Très improbable en pratique.
  */
 function tryOneSided(expression: MathNode, ctx: PipelineContext): StrategyResult {
-	if (!isNumber(ctx.approach)) return null;
-	const a = parseFloat(ctx.approach.value);
-	if (!Number.isFinite(a)) return null;
+	const a = approachNumber(ctx.approach);
+	if (a === null) return null;
 
 	// Defined at the approach point ? Direct substitution would have caught
 	// it ; declining lets the upstream throw NotImplemented for genuinely
@@ -974,9 +977,8 @@ const SQUEEZE_CONVERGENCE_THRESHOLD = 1e-2;
  *   threshold de boundedness).
  */
 function trySqueeze(expression: MathNode, ctx: PipelineContext): StrategyResult {
-	if (!isNumber(ctx.approach)) return null;
-	const a = parseFloat(ctx.approach.value);
-	if (!Number.isFinite(a)) return null;
+	const a = approachNumber(ctx.approach);
+	if (a === null) return null;
 
 	// Direct-sub doit avoir échoué upstream (sinon on ne tombe pas ici).
 	const valAtA = evaluateAtPoint(expression, ctx.variable, a);

@@ -49,7 +49,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// comme un entraînement libre, sans assignation.
 		if (assignmentId) {
 			return json(
-				{ error: "Une évaluation s'enregistre par l'envoi de l'évaluation, pas ici" },
+				{ error: "Un contrôle s'enregistre par l'envoi du contrôle, pas ici" },
 				{ status: 400 }
 			);
 		}

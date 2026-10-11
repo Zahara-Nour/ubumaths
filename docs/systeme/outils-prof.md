@@ -29,7 +29,7 @@ couvre:
 
 > Six outils périphériques, sans doc jusqu'ici. Écrit depuis le code, le schéma
 > (`supabase/migrations/20260616220000_baseline_schema.sql` et suivantes) et un comptage
-> en lecture seule de la prod. Vérifié contre le code le 2026-10-10.
+> en lecture seule de la prod. Vérifié contre le code le 2026-10-11.
 
 ## État d'un coup d'œil
 
@@ -57,7 +57,7 @@ annotations, export PNG / SVG / PDF, modèles de page.
 
 | Fichier                                                | Rôle                                                                                                                                                                                                                                                            |
 | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/routes/(protected)/whiteboard/+page.svelte`       | Page : monte `<Whiteboard />` ; le `+page.server.ts` admet élève, prof et admin                                                                                                                                                                                 |
+| `src/routes/(protected)/whiteboard/+page.svelte`       | Page : monte `<Whiteboard />` ; le `+page.server.ts` admet le prof et l'admin (élève refusé, D5)                                                                                                                                                                |
 | `src/lib/whiteboard/index.ts`                          | Point d'entrée public du module                                                                                                                                                                                                                                 |
 | `src/lib/whiteboard/components/Whiteboard.svelte`      | Composant racine (outils, calques, panneaux)                                                                                                                                                                                                                    |
 | `src/lib/whiteboard/stores/whiteboard.svelte.ts`       | `whiteboardStore` (≈ 5 700 lignes, runes) : document, outils, sélection, historique, autosave                                                                                                                                                                   |
@@ -67,7 +67,7 @@ annotations, export PNG / SVG / PDF, modèles de page.
 | `src/lib/whiteboard/utils/`                            | `file-operations.ts` (`.ubw`), `pdf-loader.ts`, `image-loader.ts`, `sync-state.ts` (état Drive)                                                                                                                                                                 |
 | `src/lib/whiteboard/services/`                         | `template-service.ts` (modèles), `drive-sync.ts` (Google Drive)                                                                                                                                                                                                 |
 | `src/lib/whiteboard/components/InstrumentLayer.svelte` | Instruments — **importés de l'ancien `src/lib/constructions/`** (voir §5)                                                                                                                                                                                       |
-| `src/lib/whiteboard/components/FileDrawer.svelte`      | Tiroir de fichiers : local, Drive, export Classroom (masqué par le drapeau)                                                                                                                                                                                     |
+| `src/lib/whiteboard/components/FileDrawer.svelte`      | Tiroir de fichiers : local, Drive et export Classroom (tous deux masqués par le drapeau, sans appel aux routes Google)                                                                                                                                          |
 | `src/routes/api/whiteboard/`                           | `templates/` (modèles, favoris), `drive/` (list, load, save, folder, autosave, thumbnail), `classes-for-drawer`, `classes-with-course`, `export-to-classroom`                                                                                                   |
 
 ### Modèle et persistance
@@ -133,20 +133,42 @@ défilement automatique. ≠ le **Deck** de révision SRS (voir CONTEXT.md).
   montée par `QuestionPreviewTabs.svelte` et `/automaths/test`.
 - `src/routes/slides/test-transitions/+page.svelte` — page de démonstration des transitions,
   sans lien.
+- `src/routes/slides/demo/+page.svelte` et `src/routes/slides/demo-embedded/+page.svelte` —
+  démonstrations de tout le moteur (transitions, fragments, arrière-plans, code, UbuMark, QCM en
+  `FlashCard`, annotation, tableau blanc), plein écran et embarquée dans une page ; sans lien.
 
-`AnnotatableSlide`, `WhiteboardSlide` et `slideAnnotationStore` ne sont montés par **aucun**
-consommateur hors du module.
+**Annotation des diapositives.** `AnnotatableSlide` (couche de dessin sur n'importe quelle
+diapositive) et `WhiteboardSlide` (une page du tableau blanc en diapositive, annotable) sont les
+**seuls** à allumer la barre d'annotation (`slideAnnotationStore.setAvailable(true)`) ;
+`Deck.svelte` ne l'affiche que si elle est allumée. Seules les deux démos les montent : ni les
+carnets ni les séries en classe ne proposent l'annotation. Ce n'est **pas du code mort** (décision
+de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la barre, du store et de
+`SlideAnnotationLayer`.
 
 ### Invariants
 
 - Une touche tapée dans un champ éditable ne déplace jamais le diaporama
   (`isFromEditableField`, testé par `inputFilter.svelte.test.ts`).
+- Les flèches de navigation du `Deck` suivent le thème : flèche `--color-foreground` sur une
+  pastille `--color-background`, visibles sur le fond du thème (carnets, séries en classe) comme
+  sur une diapositive sombre (testé par `Deck.fleches.svelte.test.ts`).
+- Le contenu d'une `UbuMarkSlide` a la couleur du thème (`--color-foreground`), comme ses
+  paragraphes : sur le fond du thème (présentation des carnets), une formule en bloc reste lisible
+  en clair comme en sombre. Un fond sombre imposé à une `UbuMarkSlide` rend donc le texte illisible
+  en thème clair (testé par `UbuMarkSlide.couleur.svelte.test.ts`).
+- Quand la barre d'annotation disparaît (on quitte la diapositive annotable), le focus revient au
+  deck si le dernier focus était dans la barre et qu'il n'est allé nulle part ailleurs (`<body>`) :
+  le clavier pilote toujours le diaporama, et un champ focalisé hors de la barre garde son focus
+  (`returnFocusOnRemove`, testé par `Deck.annotation.svelte.test.ts`).
 - Pas de persistance : la position vit dans le store et l'URL.
 
 ### Tests
 
 `src/lib/slides/stores/__tests__/` (`deckStore`, `autoSlideTimer`),
 `src/lib/slides/core/__tests__/Deck.autoSlide.svelte.test.ts`,
+`src/lib/slides/core/__tests__/Deck.annotation.svelte.test.ts`,
+`src/lib/slides/core/__tests__/UbuMarkSlide.couleur.svelte.test.ts`,
+`src/lib/slides/core/__tests__/Deck.fleches.svelte.test.ts`,
 `src/lib/slides/actions/__tests__/inputFilter.svelte.test.ts`.
 
 ---
@@ -302,7 +324,9 @@ rediriger vers `/dashboard` les pages `dashboard/teacher/settings/google`,
 `/dashboard/teacher/google` redirige vers les réglages (`src/hooks.server.ts`). Les routes
 `/api/google/**` et `api/whiteboard/export-to-classroom` répondent 403
 (`assertGoogleClassroomEnabled()`), sauf `auth/disconnect` et
-`auth/status` (B8 ; une intégration reste enregistrée en prod). Tables, routes et dialogues
+`auth/status` (B8 ; une intégration reste enregistrée en prod). **Drive n'en fait pas partie**
+(décision de David, 2026-10-11) : les routes `api/whiteboard/drive/*` et le bouton Drive du
+`FileDrawer` restent actifs, interrupteur coupé ou non. Tables, routes et dialogues
 `src/lib/components/google/` sont conservés : remettre le drapeau à `true` rallume tout. La connexion Google (`GOOGLE_LOGIN_ENABLED`, autre drapeau)
 est décrite dans [auth.md](auth.md).
 
@@ -364,10 +388,14 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
 2. **Tableur — alias sans fonction** : `FUNCTION_ALIASES` nomme COUNTBLANK, STDEV, VAR,
    MEDIAN, MODE, TODAY, NOW, YEAR, MONTH, DAY, VLOOKUP, HLOOKUP, INDEX, MATCH, qu'aucun
    fichier n'implémente → `#NAME?`.
-3. **Tableau blanc** : la route admet les élèves, le lien n'est montré qu'au prof ; le
-   panneau Drive reste visible alors que la connexion Google est éteinte.
+3. **Tableau blanc** : réservé au prof et à l'admin depuis le 2026-10-11 (D5, décision de David :
+   outil de projection mono-utilisateur ; test `src/routes/(protected)/whiteboard/__tests__/page.server.test.ts`).
+   Le panneau de fichiers ne propose plus rien de Google quand le drapeau est éteint (V5, test
+   `src/lib/whiteboard/__tests__/panneau-sans-google.svelte.test.ts`). Un tableau partagé en direct
+   pour les élèves (chat, visio) serait une autre fonctionnalité, à penser avec le projet visio.
 4. **Google** : les routes `/api/google/**` ne testent pas le drapeau (seules les pages le
    font) ; `class_google_classroom_links` n'est lue nulle part dans `src/`.
 5. **Kanban** : l'en-tête de `src/lib/server/kanban.ts` cite une migration d'avant le baseline.
-6. **Diaporamas** : `AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore` exportés
-   mais sans consommateur.
+6. **Diaporamas** : l'annotation (`AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore`)
+   n'est montée que par les démos `/slides/demo{,-embedded}` (remises en place le 2026-10-11) ;
+   la brancher dans les carnets ou les séries en classe serait un choix de produit.

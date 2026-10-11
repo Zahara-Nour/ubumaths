@@ -166,7 +166,7 @@ const FR: DocumentLabels = {
 	skill: 'Compétence évaluée',
 	observations: 'Observations',
 
-	assessment: 'ÉVALUATION',
+	assessment: 'CONTRÔLE',
 	exam: 'EXAMEN',
 	homework: 'DEVOIRS',
 	quiz: 'QUIZ',
@@ -188,7 +188,7 @@ const FR: DocumentLabels = {
 	by: 'Par',
 	honourStatement:
 		"Je soussigné(e) atteste sur l'honneur avoir pris connaissance du règlement de l'examen et m'engage à le respecter.",
-	skillsAssessment: 'Évaluation de compétences mathématiques',
+	skillsAssessment: 'Compétences mathématiques',
 	generatedOn: 'Document généré le',
 	markingScale: 'Barème de notation',
 	totalPoints: 'Total des points',
@@ -203,7 +203,7 @@ const FR: DocumentLabels = {
 	academicYear: 'Année académique',
 	semester: 'Semestre',
 	learningObjectives: 'Objectifs pédagogiques',
-	objectivesIntro: 'Cette évaluation vise à mesurer les compétences suivantes :',
+	objectivesIntro: 'Ce contrôle vise à mesurer les compétences suivantes :',
 	objectiveEquations: "Résolution d'équations algébriques",
 	objectiveTheorems: 'Application des théorèmes fondamentaux',
 	objectiveReasoning: 'Raisonnement logique et démonstration',
@@ -212,7 +212,7 @@ const FR: DocumentLabels = {
 	criterionClarity: 'Clarté de la démarche',
 	criterionRigour: 'Rigueur mathématique',
 	criterionPresentation: 'Présentation',
-	markingGrid: "Grille d'évaluation",
+	markingGrid: 'Grille de notation',
 	examinerOnly: "réservé à l'examinateur",
 	skillAlgebra: 'Calcul algébrique',
 	skillEquations: "Résolution d'équations",
@@ -235,7 +235,7 @@ const FR: DocumentLabels = {
 	anyOrder: "Les exercices peuvent être traités dans n'importe quel ordre.",
 
 	typeWorksheet: "Feuille d'exercices",
-	typeAssessment: 'Évaluation',
+	typeAssessment: 'Contrôle',
 	typeExam: 'Examen',
 	typeQuiz: 'Quiz',
 	typeHomework: 'Devoirs'
@@ -384,7 +384,7 @@ function toSnakeCase(key: string): string {
 export const STUDENT_TYPE_LABELS: Record<ContentLocale, Record<string, string>> = {
 	fr: {
 		worksheet: 'Fiche de travail',
-		assessment: 'Évaluation',
+		assessment: 'Contrôle',
 		exam: 'Examen',
 		quiz: 'Quiz',
 		homework: 'Devoir'

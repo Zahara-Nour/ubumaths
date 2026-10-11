@@ -142,6 +142,10 @@
 
 <style>
 	.ubumark-slide {
+		/* Le rendu UbuMark colore ses paragraphes avec le thème (text-foreground) : tout le
+		   contenu suit, sinon une formule en bloc hérite du blanc de Slide et disparaît
+		   sur un fond clair */
+		color: var(--color-foreground);
 		width: 100%;
 		height: 100%;
 		display: flex;

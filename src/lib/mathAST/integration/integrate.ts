@@ -31,7 +31,7 @@ import {
 	isSuperscript,
 	isFunction
 } from '../guards';
-import { EULER_NOT_A_VARIABLE, refusesEulerVariable } from '../common/euler-variable';
+import { reservedVariableRefusal } from '../common/reserved-letters';
 import { mapNode, findNodes, getChildren } from '../transforms';
 import {
 	AbortError,
@@ -725,9 +725,10 @@ function integrateInternal(
  * ```
  */
 export function integrate(rawExpr: MathNode, options?: IntegrateOptions): IntegrateResult {
-	// `e` est la constante d'Euler : intégrer « par rapport à e » est refusé
-	if (refusesEulerVariable(options?.variable, rawExpr)) {
-		return oversizedResult('e', EULER_NOT_A_VARIABLE);
+	// `e` (Euler) et `i` (unité imaginaire) : intégrer « par rapport à » eux est refusé
+	const refusal = reservedVariableRefusal(options?.variable, rawExpr);
+	if (refusal !== null) {
+		return oversizedResult(options?.variable ?? 'x', refusal);
 	}
 	// Premier appel (non imbriqué) : le budget repart de zéro, et TOUT le
 	// calcul — mise en forme finale comprise — est placé sous le signal ambiant
@@ -951,8 +952,8 @@ export function integrateDefinite(
 	// First, find the indefinite integral
 	const indefiniteResult = integrate(expr, options);
 
-	// Refus sans repli numérique : `e` n'est pas une variable
-	if (refusesEulerVariable(options?.variable, expr)) {
+	// Refus sans repli numérique : `e` et `i` ne sont pas des variables
+	if (reservedVariableRefusal(options?.variable, expr) !== null) {
 		return { ...indefiniteResult, lowerBound: lower, upperBound: upper, value: null };
 	}
 

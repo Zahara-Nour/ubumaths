@@ -25,7 +25,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-10.
+> Vérifié contre le code le 2026-10-11.
 
 ## À quoi ça sert
 
@@ -60,7 +60,7 @@ le SRS ([srs.md](srs.md)).
 | `units/`                                                         | Grandeurs : tokenizer, parser, `dimensional.ts`, `validator.ts` (`validateQuantityAnswer`), `student-input.ts`, durées composées (`composite-duration.ts`, `hms.ts`).                                                                                                                                                                                               |
 | `combinatorics/`                                                 | Clavier du dénombrement ; la notation non calculée est jugée par `combinatorial-notation.ts`.                                                                                                                                                                                                                                                                       |
 | `parser/color-parser.ts`, `colors.ts`                            | Couleurs dans les énoncés (palettes ; `colors.ts` sert aussi l'atelier).                                                                                                                                                                                                                                                                                            |
-| `src/lib/questions/required-form-validator.ts`                   | `requiredForm` : `checkRequiredForm`, `requiredFormVerdict` (`ok` / `acceptable` / `violated`), `REQUIRED_FORM_FEEDBACK`. Formes complexes : `complex-forms.ts` (base de `re^{iθ}` : la constante `euler()`).                                                                                                                                                       |
+| `src/lib/questions/required-form-validator.ts`                   | `requiredForm` : `checkRequiredForm`, `requiredFormVerdict` (`ok` / `acceptable` / `violated`), `REQUIRED_FORM_FEEDBACK`. Formes complexes : `complex-forms.ts` (base de `re^{iθ}` : la constante `euler()` ; `i` : le nœud `complex(0, 1)`, lettre comme `\imaginaryI`).                                                                                           |
 | `src/lib/questions/validation-rule-evaluator.ts`                 | `validationRules` : `evaluateRule`, `evaluateRules`, `createEvaluationContext`.                                                                                                                                                                                                                                                                                     |
 | `src/lib/questions/constraint-validators.ts`                     | Ancien jeu de contrôles cosmétiques sur le LaTeX brut. **En service : `checkUnit` et `checkReducedFractions` seulement** (voir « Écarts connus »).                                                                                                                                                                                                                  |
 | `src/lib/questions/feedback.ts`, `constraint-constants.ts`       | Messages français des contraintes (`CONSTRAINT_FEEDBACK`), libellés et modes proposés à l'éditeur (`CONSTRAINT_IDS`, `CONSTRAINT_LABELS`).                                                                                                                                                                                                                          |
@@ -95,6 +95,13 @@ syntaxe `{{}}` d'ubumark), leur export Typst (`typst/exercise-typst-generator.ts
 export validé par Zod (`validation.ts`, `markdown-frontmatter.ts`), la traduction
 (`translation-status.ts`, `translation-draft.ts`), les images (`services/`) et l'avertissement
 `bare-greek-warnings.ts` (`~2pi~` lu 2 × p × i). Démarche d'écriture : [fiches-exercices](../pratiques/fiches-exercices.md).
+
+Visibilité (`Exercise.is_public`, `Exercise.search_indexed`) : un exercice public est lisible par
+son lien (`/exercice/[slug]`) ; il n'est proposé à Google (sitemap, pas de `noindex`) que si le
+professeur coche « Afficher sur Google » (`ExerciseVisibilityFields.svelte`, fenêtre d'alerte avant
+de cocher). La case exige « public » : contrainte en base (23514), refine Zod, et toute écriture qui
+rend un exercice privé écrit `search_indexed: false` dans la même requête
+(`src/lib/server/exercise-search-indexed.ts` ; formulaire, restauration, import).
 
 ### `src/lib/validation/` — schémas partagés client / serveur
 

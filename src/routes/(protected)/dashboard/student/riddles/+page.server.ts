@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
-import type { DbRiddle, DbRiddleAttempt } from '$lib/types/riddle';
-import { toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
+import type { DbRiddleAttempt, StudentRiddle } from '$lib/types/riddle';
+import { toDbRiddle, toDbRiddleAttempt, toStudentRiddle } from '$lib/types/riddle';
 import { error, redirect } from '@sveltejs/kit';
 
 /**
@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	let studentAttempt: DbRiddleAttempt | null = null;
-	let riddleOfTheDay: DbRiddle | null = null;
+	let riddleOfTheDay: StudentRiddle | null = null;
 	// Le RPC interroge CURRENT_DATE : la date affichée est donc celle du jour.
 	let riddleOfTheDayDate: string | null = null;
 
@@ -49,7 +49,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		}
 
 		if (riddle) {
-			riddleOfTheDay = toDbRiddle(riddle);
+			riddleOfTheDay = toStudentRiddle(toDbRiddle(riddle));
 			riddleOfTheDayDate = new Date().toISOString().slice(0, 10);
 
 			// Fetch student's latest attempt for this riddle
@@ -96,10 +96,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 		riddleOfTheDayDate,
 		studentAttempt,
 		// `difficulty` et `status` sont des colonnes permissives, `answer` du jsonb :
-		// converties ici plutôt qu'affirmées dans la carte d'affichage.
+		// converties ici plutôt qu'affirmées dans la carte d'affichage. Réponse attendue
+		// et correction ne partent pas au navigateur.
 		assignments: (assignments || []).map((a) => ({
 			...a,
-			riddle: a.riddle ? toDbRiddle(a.riddle) : null
+			riddle: a.riddle ? toStudentRiddle(toDbRiddle(a.riddle)) : null
 		}))
 	};
 };

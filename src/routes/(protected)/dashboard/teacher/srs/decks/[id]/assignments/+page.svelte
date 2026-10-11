@@ -14,21 +14,13 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import {
-		ArrowLeft,
-		Users,
-		CheckCircle2,
-		XCircle,
-		RefreshCw,
-		Calendar,
-		Target
-	} from '@lucide/svelte';
+	import { Users, CheckCircle2, XCircle, RefreshCw, Calendar, Target } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	interface Student {
@@ -74,13 +66,6 @@
 	const totalAssignments = $derived(data.assignments.length);
 	const successfulCopies = $derived(data.assignments.filter((a) => a.studentDeck !== null).length);
 	const failedCopies = $derived(data.assignments.filter((a) => a.studentDeck === null).length);
-
-	/**
-	 * Navigate back
-	 */
-	function goBack() {
-		goto('/dashboard/teacher/srs/decks').then(() => {});
-	}
 
 	/**
 	 * Format date
@@ -129,10 +114,7 @@
 <div class="assignments-page">
 	<!-- Header -->
 	<div class="mb-6">
-		<Button onclick={goBack} variant="ghost" class="mb-4">
-			<ArrowLeft class="mr-2 h-4 w-4" />
-			Retour
-		</Button>
+		<BackLink href="/dashboard/teacher/srs/decks" label="Retour aux decks" />
 
 		<h1 class="mb-2 text-3xl font-bold">Attributions du deck</h1>
 		<p class="text-muted-foreground">
