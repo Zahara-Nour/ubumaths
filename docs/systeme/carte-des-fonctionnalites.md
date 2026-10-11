@@ -29,7 +29,8 @@ fonctions du professeur ne sont donc **pas** un argument de vitrine pour d'autre
 ## Sans compte (visiteur)
 
 « Menu » = barre latérale d'un visiteur (`src/lib/components/Sidebar.svelte:30-60`). « Sitemap » =
-`src/lib/seo/sitemap-pages.ts`.
+`src/lib/seo/sitemap-pages.ts` (la même liste nourrit « Tu cherchais peut-être… » de la
+[page d'erreur](page-erreur.md)).
 
 | Libellé dans l'interface                   | Route                                              | Ce que ça fait                                                                                                                                                                 | Menu                    | Sitemap |
 | ------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | ------- |

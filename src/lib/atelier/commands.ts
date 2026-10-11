@@ -486,14 +486,6 @@ const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 		}
 	],
 	[
-		'unitmode',
-		{
-			french: 'mode-unités',
-			description: 'Choisir comment les unités se combinent',
-			advanced: true
-		}
-	],
-	[
 		'export',
 		{ french: 'exporter', description: 'Exporter la session', advanced: true, runsAlone: true }
 	]

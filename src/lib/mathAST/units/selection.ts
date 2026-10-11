@@ -1,7 +1,7 @@
 /**
  * Le choix de l'unité adaptée à l'ordre de grandeur.
  *
- * Déplacé depuis `eval/evaluate-with-units.ts` (où il était privé) pour que
+ * Déplacé depuis l'ancien `eval/evaluate-with-units.ts` (retiré le 2026-10-11) pour que
  * `tidy` s'en serve aussi (§D.3 de `docs/systeme/mathast/tidy-spec.md`). Le seuil bas
  * est un paramètre : l'évaluation garde le sien (0,1), `tidy` demande le sien.
  *
@@ -17,7 +17,7 @@ import { unit as namedUnit } from './factory';
 // Constantes
 // =============================================================================
 
-/** Plancher de lisibilité de l'évaluation (`evaluateWithUnits`, mode `best`). */
+/** Plancher de lisibilité par défaut (l'ancien `evaluateWithUnits`, mode `best`). */
 const MIN_READABLE = 0.1;
 
 /** Plafond de lisibilité : au-delà, on passe à l'unité supérieure. */

@@ -12,6 +12,8 @@
 export interface SitemapPage {
 	/** Chemin absolu, tel qu'il apparaîtra dans le plan. */
 	path: string;
+	/** Nom court, affiché par la page d'erreur dans « Tu cherchais peut-être… ». */
+	title: string;
 	/** Priorité relative, entre 0 et 1 (protocole sitemaps.org). */
 	priority: number;
 	/** Fréquence de mise à jour annoncée aux robots. */
@@ -31,31 +33,61 @@ export interface SitemapPage {
  * filles existent. Le test associé vérifie ce point sur le disque.
  */
 export const SITEMAP_PAGES: SitemapPage[] = [
-	{ path: '/', priority: 1.0, changefreq: 'weekly' },
-	{ path: '/royaume', priority: 0.9, changefreq: 'monthly' },
-	{ path: '/automaths', priority: 0.9, changefreq: 'weekly' },
-	{ path: '/python', priority: 0.8, changefreq: 'monthly' },
-	{ path: '/games', priority: 0.8, changefreq: 'monthly' },
-	{ path: '/glossaire', priority: 0.7, changefreq: 'monthly' },
-	{ path: '/calc', priority: 0.6, changefreq: 'monthly' },
-	{ path: '/upsilon', priority: 0.6, changefreq: 'monthly' },
-	{ path: '/presques-evaluations', priority: 0.4, changefreq: 'monthly' },
-	{ path: '/pere-ubu', priority: 0.4, changefreq: 'yearly' },
-	{ path: '/almanach', priority: 0.4, changefreq: 'daily' },
-	{ path: '/chiffrement', priority: 0.7, changefreq: 'monthly' },
-	{ path: '/chiffrement/depeches', priority: 0.6, changefreq: 'monthly' },
-	{ path: '/chiffrement/cesar', priority: 0.6, changefreq: 'monthly' },
-	{ path: '/chiffrement/atbash', priority: 0.5, changefreq: 'monthly' },
-	{ path: '/chiffrement/substitution', priority: 0.6, changefreq: 'monthly' },
-	{ path: '/chiffrement/scytale', priority: 0.5, changefreq: 'monthly' },
-	{ path: '/chiffrement/polybe', priority: 0.5, changefreq: 'monthly' },
-	{ path: '/chiffrement/vigenere', priority: 0.6, changefreq: 'monthly' },
-	{ path: '/chiffrement/affine', priority: 0.6, changefreq: 'monthly' },
-	{ path: '/chiffrement/hill', priority: 0.6, changefreq: 'monthly' },
-	{ path: '/chiffrement/rsa', priority: 0.6, changefreq: 'monthly' },
-	{ path: '/shtam', priority: 0.7, changefreq: 'daily' },
-	{ path: '/a-propos', priority: 0.5, changefreq: 'yearly' },
-	{ path: '/legal/mentions-legales', priority: 0.3, changefreq: 'yearly' },
-	{ path: '/legal/confidentialite', priority: 0.3, changefreq: 'yearly' },
-	{ path: '/legal/cgu', priority: 0.3, changefreq: 'yearly' }
+	{ path: '/', title: 'Accueil', priority: 1.0, changefreq: 'weekly' },
+	{ path: '/royaume', title: 'Le Tour du Royaume', priority: 0.9, changefreq: 'monthly' },
+	{ path: '/automaths', title: 'Automaths', priority: 0.9, changefreq: 'weekly' },
+	{ path: '/python', title: 'Python', priority: 0.8, changefreq: 'monthly' },
+	{ path: '/games', title: 'Jeux', priority: 0.8, changefreq: 'monthly' },
+	{ path: '/glossaire', title: 'Glossaire', priority: 0.7, changefreq: 'monthly' },
+	{ path: '/calc', title: 'Calculatrice', priority: 0.6, changefreq: 'monthly' },
+	{
+		path: '/upsilon',
+		title: 'Calculatrice graphique Upsilon',
+		priority: 0.6,
+		changefreq: 'monthly'
+	},
+	{
+		path: '/presques-evaluations',
+		title: 'Les presques évaluations',
+		priority: 0.4,
+		changefreq: 'monthly'
+	},
+	{ path: '/pere-ubu', title: 'Père Ubu', priority: 0.4, changefreq: 'yearly' },
+	{ path: '/almanach', title: 'L’Almanach des Chiphres', priority: 0.4, changefreq: 'daily' },
+	{ path: '/chiffrement', title: 'Le Cabinet Noir', priority: 0.7, changefreq: 'monthly' },
+	{
+		path: '/chiffrement/depeches',
+		title: 'Le Cabinet Noir : dépêches',
+		priority: 0.6,
+		changefreq: 'monthly'
+	},
+	{ path: '/chiffrement/cesar', title: 'Chiffre de César', priority: 0.6, changefreq: 'monthly' },
+	{ path: '/chiffrement/atbash', title: 'Chiffre Atbash', priority: 0.5, changefreq: 'monthly' },
+	{
+		path: '/chiffrement/substitution',
+		title: 'Chiffre par substitution',
+		priority: 0.6,
+		changefreq: 'monthly'
+	},
+	{ path: '/chiffrement/scytale', title: 'Scytale', priority: 0.5, changefreq: 'monthly' },
+	{ path: '/chiffrement/polybe', title: 'Carré de Polybe', priority: 0.5, changefreq: 'monthly' },
+	{
+		path: '/chiffrement/vigenere',
+		title: 'Chiffre de Vigenère',
+		priority: 0.6,
+		changefreq: 'monthly'
+	},
+	{ path: '/chiffrement/affine', title: 'Chiffre affine', priority: 0.6, changefreq: 'monthly' },
+	{ path: '/chiffrement/hill', title: 'Chiffre de Hill', priority: 0.6, changefreq: 'monthly' },
+	{ path: '/chiffrement/rsa', title: 'RSA', priority: 0.6, changefreq: 'monthly' },
+	{ path: '/shtam', title: 'Le Shtam', priority: 0.7, changefreq: 'daily' },
+	{ path: '/a-propos', title: 'Chiphre, c’est quoi ?', priority: 0.5, changefreq: 'yearly' },
+	{
+		path: '/legal/mentions-legales',
+		title: 'Mentions légales',
+		priority: 0.3,
+		changefreq: 'yearly'
+	},
+	{ path: '/legal/confidentialite', title: 'Confidentialité', priority: 0.3, changefreq: 'yearly' },
+	{ path: '/legal/cgu', title: 'Conditions d’utilisation', priority: 0.3, changefreq: 'yearly' }
 ];

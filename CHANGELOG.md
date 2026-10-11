@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.22.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.21.0...v0.22.0) (2026-10-11)
+
+### ✨ Features
+
+- **atelier:** complétion des fonctions et des lettres grecques dans Calcul ([fec9fc6](https://github.com/Zahara-Nour/ubumaths/commit/fec9fc69550dc5dd1c7d91509aa839dc7a6d7c62))
+- **fiches:** niveau de guidage d'une affectation, colonne additive (ADR 0023) ([6e41a78](https://github.com/Zahara-Nour/ubumaths/commit/6e41a785bb69d20cb767990ee450b562175507fc))
+- **fiches:** resolveCopyExercise — un exercice de la copie, d'après le niveau et la graine ([af78f81](https://github.com/Zahara-Nour/ubumaths/commit/af78f81eb7f27f38863602e2ebcbe6e1ce33eba3))
+- **fiches:** une seule copie par affectation, au niveau de guidage choisi (ADR 0023) ([6fbd98d](https://github.com/Zahara-Nour/ubumaths/commit/6fbd98d94cce2e993ad8e7f40859ecccdd8292fa))
+- **fiches:** version d'après le niveau de guidage et graine de la copie (ADR 0023) ([d532b64](https://github.com/Zahara-Nour/ubumaths/commit/d532b647c3e36b6d79ba0db8020eb31e60a11288))
+
+### 🐛 Bug Fixes
+
+- **atelier:** complétion — curseur relu au moment de décider, rien dans une saisie LaTeX ([b655e21](https://github.com/Zahara-Nour/ubumaths/commit/b655e21bdc1f4aa7bbc3e44581f964324b1027e0))
+- **fiches:** signalement à la version de la copie, aperçu PDF synchronisé (revue) ([4e13981](https://github.com/Zahara-Nour/ubumaths/commit/4e13981086019682b7699d86f9a503e18ed3db6f))
+- **mathast:** la lettre i est l'unité imaginaire dans les quatre parseurs ([c835186](https://github.com/Zahara-Nour/ubumaths/commit/c8351865d0a481008e4f525993f3da2faa0dfcfe))
+- **tidy:** e, i et π rangés devant toute lettre latine ou grecque ([49ad984](https://github.com/Zahara-Nour/ubumaths/commit/49ad98428522e54ed9b69db27ef4fd6b0a0b3118))
+
+### 📚 Documentation
+
+- **adr:** 0023 révisée — le niveau est une colonne de l'affectation (Q4) ([540fbee](https://github.com/Zahara-Nour/ubumaths/commit/540fbeedcf272c97508fdbe1f757b1c285f97555))
+- **atelier:** complétion dans la doc système, journal de la PR 3 ([28a7f84](https://github.com/Zahara-Nour/ubumaths/commit/28a7f84f3e43e9bf5ba932140333eceef443b35f))
+- **atelier:** la PR 2 marquée livrée dans la phase 0 ([7cf04dc](https://github.com/Zahara-Nour/ubumaths/commit/7cf04dc13f6b901a8fd66df93e95bbba7fd806de))
+- **atelier:** phase 0 /cas — les trois PR livrées ([#1080](https://github.com/Zahara-Nour/ubumaths/issues/1080), [#1086](https://github.com/Zahara-Nour/ubumaths/issues/1086), [#1094](https://github.com/Zahara-Nour/ubumaths/issues/1094)) ([c01cfba](https://github.com/Zahara-Nour/ubumaths/commit/c01cfbacf64ba3e6d76dbc4866de7770d71fd74b))
+- **bdd:** niveau de guidage d'une affectation ([b57ffba](https://github.com/Zahara-Nour/ubumaths/commit/b57ffba6f9bbaa426dcee875f29ab134f512f376))
+- **cours:** l'écart du cahier de texte est un écart à l'ADR 0005, pas un 4e sens de publier ([4454213](https://github.com/Zahara-Nour/ubumaths/commit/44542133f48e6e31207152e24effe716271cc2b1))
+- **extern:** ajoute l'ancien site UbuMaths (new-tinymath) aux dépôts tiers ([e50bdf1](https://github.com/Zahara-Nour/ubumaths/commit/e50bdf193b518f7fac5caa0c44f5640ad24f5aa1))
+- **fiches:** la copie d'un élève (ADR 0023) ; K1 retiré des écarts ([8c73105](https://github.com/Zahara-Nour/ubumaths/commit/8c73105cd67f4c3a88d7776a78517e648115b3b3))
+- **grandeurs:** analyse des grandeurs dans l'atelier — mesures, causes, plan, décisions ([d554961](https://github.com/Zahara-Nour/ubumaths/commit/d554961237cf8b08fb63d16d6dc35da3a713edfa))
+- **grandeurs:** décisions de David et phase 0 des lots A et B ([b0835f5](https://github.com/Zahara-Nour/ubumaths/commit/b0835f5f9f5f6a30c546ea749d06f527a5ae50eb))
+- **grandeurs:** phase 0 validée, avec unité dérivée nommée et tidy sur les résultats ([6928c50](https://github.com/Zahara-Nour/ubumaths/commit/6928c5056c2701e2e47faf98b238f2de0e9095bb))
+- **vitrine:** carte des fonctionnalités, lore en vitrine, écarts d'exposition (K19) ([73f9b0e](https://github.com/Zahara-Nour/ubumaths/commit/73f9b0e0225fa0623ae77ee6ff84ae3504593d04))
+- **wip:** chantier K1 prêt pour la PR ([0edc25a](https://github.com/Zahara-Nour/ubumaths/commit/0edc25aae2ea652f50c1af577d34234c5279583f))
+- **wip:** copie d'une fiche livrée ([#1095](https://github.com/Zahara-Nour/ubumaths/issues/1095), [#1097](https://github.com/Zahara-Nour/ubumaths/issues/1097)), journal archivé ([88c1678](https://github.com/Zahara-Nour/ubumaths/commit/88c167849be21d16f903fcb766e5636a2586ff3c))
+- **wip:** journal de la lettre i archivé ([#1096](https://github.com/Zahara-Nour/ubumaths/issues/1096)) ([0676d69](https://github.com/Zahara-Nour/ubumaths/commit/0676d69f31e00d6fe88c9b8004807abbbf62d8d0))
+- **wip:** journal du chantier lettre i unité imaginaire ([2d61816](https://github.com/Zahara-Nour/ubumaths/commit/2d6181617c7217aeae727d4356da8a5b8321cfd6))
+- **wip:** progression K1, copie d'une fiche (ADR 0023) ([c2782bf](https://github.com/Zahara-Nour/ubumaths/commit/c2782bf862bd3eb8058a1d3936179a928467ba32))
+
 ## [0.21.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.20.0...v0.21.0) (2026-10-11)
 
 ### ✨ Features

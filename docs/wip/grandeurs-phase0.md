@@ -102,3 +102,30 @@ déjà décidée.
 
 Une PR par lot : **A** (moteur, `.convertir`, erreurs, `.mode décimal` des grandeurs, retrait de
 `.mode-unités` et `evaluateWithUnits`), puis **B** (affichage, « Garder », bouton ≈).
+
+## Journal
+
+- 2026-10-11 — lot A codé sur `feat/grandeurs-calcul` : `mathAST/cli/quantities.ts`
+  (`computeQuantity`, `convertQuantity`) branché dans `WebReplEngine` ; `evaluateWithUnits` et
+  `.unitmode` retirés (et leurs tests) ; code d'erreur `QUANTITY_ERROR` (refus en français dans
+  l'atelier) ; `render.ts` traduit les unités de l'arbre (`displayUnitsInLatex`) — sans quoi
+  l'arbre muni de son unité aurait affiché `\unit` en rouge. `sqrt(9[m^2])` : `tidy` ne réduit
+  pas la racine, repli sur la forme normale (`denormalize(normalize(…))`).
+- 2026-10-11 — revue `code-reviewer` du lot A, corrigés : une racine de grandeur prise dans un
+  produit restait non calculée (`sqrt(9[km^2])/1[h]`) ; racine, valeur absolue, fonction d'un
+  angle, comparaison passent par un **repli exact** (chaque grandeur ramenée à ses unités de base,
+  coefficient exact, π compris) ; **règle d'unité** : une unité tapée par l'élève (seule, en
+  puissance, ou deux combinées) quand la valeur y tombe juste (`3[kW]*2[h]` → `6 kW.h = 21600000 J`,
+  `sqrt(9[km^2])` → `3 km`), sinon celle de `tidy` (`7[h]/3` → `140 min`), sinon l'écriture la plus
+  courte ; `.convertir` des températures (`20 °C = 293.15 K`) et des angles (`180 ° = π rad`) ;
+  bouton ≈ et bascule de `/cas` rétablis ; `≈` dans l'arbre en mode décimal ; noms de dimensions
+  (force, énergie, puissance, masse volumique…) ; analyse dimensionnelle : l'indice d'une racine
+  (`\sqrt[3]{…}`) n'était pas lu (m^1,5 pour une racine cubique de km³).
+- 2026-10-11 — lot A mergé (#1099). Lot B codé sur `feat/grandeurs-affichage` : `render.ts` écrit un
+  calcul depuis l'arbre passé par `tidy` (π/3, √2/2, π²/6), sauf s'il porte un décimal (mode
+  décimal : `tidy` aurait écrit 3/10 pour 0,3 — mesuré) ; l'heuristique de l'antislash ne sert
+  plus qu'aux commandes. « Garder » une grandeur gardait déjà son unité depuis le lot A (test).
+- 2026-10-11 — revue du lot B : DÉCISION DE DAVID (« ok pour A ») — `tidy` seulement pour un résultat
+  SANS variable libre (π, √, e, ln) : `x/x` n'est pas simplifié en 1, `3-2x+x^2` garde son ordre,
+  `3x/4` reste en ligne comme avant (la ligne `3x/4` empilée de la phase 0 est abandonnée). Corrigé :
+  le bouton « Valeur exacte » en mode décimal écrivait ⅓ π.
