@@ -92,6 +92,26 @@ function clickButton(root: HTMLElement, label: string) {
 	flushSync();
 }
 
+/** Clique le lien « Quitter » ; rend true si le lien a annulé la navigation */
+function clickQuit(container: HTMLElement): boolean {
+	const link = [...container.querySelectorAll<HTMLAnchorElement>('a')].find(
+		(candidate) => candidate.textContent?.trim() === 'Quitter'
+	);
+	if (!link) throw new Error('lien « Quitter » introuvable');
+	let cancelledByLink = false;
+	// Écouteur posé après celui du lien : relève sa décision, puis bloque la vraie navigation
+	link.ownerDocument.addEventListener(
+		'click',
+		(event) => {
+			cancelledByLink = event.defaultPrevented;
+			event.preventDefault();
+		},
+		{ once: true }
+	);
+	link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+	return cancelledByLink;
+}
+
 describe('TestInteractive — Entraînement', () => {
 	beforeEach(() => {
 		vi.useFakeTimers({
@@ -220,6 +240,23 @@ describe('TestInteractive — Entraînement', () => {
 
 		const evaluation = await open([item('Énoncé A', 10)], true, true);
 		expect(quitHref(evaluation.container)).toBe('/dashboard/student/assessments');
+	});
+
+	it('contrôle : « Quitter » demande confirmation (réponses perdues) ; entraînement : non', async () => {
+		const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+
+		const evaluation = await open([item('Énoncé A', 10)], true, true);
+		expect(clickQuit(evaluation.container)).toBe(true);
+		expect(confirmSpy).toHaveBeenCalledWith(
+			expect.stringContaining('réponses tapées seront perdues')
+		);
+		await evaluation.unmount();
+
+		confirmSpy.mockClear();
+		const training = await open([item('Énoncé A', 10)]);
+		expect(clickQuit(training.container)).toBe(false);
+		expect(confirmSpy).not.toHaveBeenCalled();
+		confirmSpy.mockRestore();
 	});
 
 	it('évaluation : ni « Recommencer » ni « Retour au panier », mais « Mes évaluations »', async () => {

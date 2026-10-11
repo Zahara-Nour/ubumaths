@@ -32,6 +32,7 @@
 	import TestResults from './TestResults.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { automathsQuitLink } from '$lib/navigation/return-links';
 	import * as Card from '$lib/components/ui/card';
 	import { CheckCircle2, ArrowUp } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
@@ -56,8 +57,8 @@
 		unitKeys = []
 	}: Props = $props();
 
-	// « Quitter » : un contrôle ramène à « Mes contrôles », un entraînement au panier
-	const quitHref = $derived(inEvaluation ? '/dashboard/student/assessments' : '/automaths/panier');
+	// « Quitter » : « Mes contrôles » (avec confirmation) en contrôle, le panier sinon
+	const quit = $derived(automathsQuitLink({ inEvaluation, timed: true }));
 
 	// State
 	let answers = $state<Map<number, AnswerData>>(new Map());
@@ -212,7 +213,13 @@
 					<div class="flex flex-wrap items-center justify-between gap-4">
 						<!-- Left: Back button and title -->
 						<div>
-							<BackLink href={quitHref} label="Quitter" kind="quit" class="mb-0" />
+							<BackLink
+								href={quit.href}
+								label="Quitter"
+								kind="quit"
+								confirmLeave={quit.confirmLeave}
+								class="mb-0"
+							/>
 							<div>
 								<h1 class="font-bold">Course aux nombres</h1>
 								<p class="text-sm text-muted-foreground">
