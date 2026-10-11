@@ -161,9 +161,20 @@
 				: undefined
 	);
 
-	/** Retenir où est le curseur : c'est lui qui désigne le mot en cours. */
+	/**
+	 * Retenir où est le curseur : c'est lui qui désigne le mot en cours.
+	 *
+	 * ⚠️ Relu aussi en tête de `handleKeydown` et d'`insert` : Cmd+← (Mac) ne
+	 * donne aucun relâchement de touche, une sélection à la souris peut finir
+	 * hors du champ — Tab insérait alors à l'ancienne place (revue).
+	 */
 	function syncCaret() {
 		if (field !== null) caret = field.selectionStart ?? desk.draft.length;
+	}
+
+	/** Le curseur bougé autrement (souris, Cmd+←) : la liste affichée le suit. */
+	function handleSelectionChange() {
+		if (field !== null && document.activeElement === field) syncCaret();
 	}
 
 	/**
@@ -179,6 +190,7 @@
 
 	/** Remplacer le mot en cours par la proposition, curseur juste après. */
 	async function insert(proposal: Proposal) {
+		syncCaret();
 		const next = insertProposal(desk.draft, caret, proposal);
 		desk.draft = next.draft;
 		caret = next.caret;
@@ -244,6 +256,7 @@
 		// faux, mais le code 229
 		const composing = event.isComposing || event.keyCode === 229;
 		if (composing || event.altKey || event.ctrlKey || event.metaKey) return;
+		syncCaret();
 
 		if (listOpen) {
 			if (event.key === 'Escape') {
@@ -382,6 +395,8 @@
 		setTimeout(() => URL.revokeObjectURL(url), 1000);
 	}
 </script>
+
+<svelte:document onselectionchange={handleSelectionChange} />
 
 <div class="calcul">
 	<div class="export" role="group" aria-label="Exporter l’historique">
@@ -532,7 +547,7 @@
 			class="commandes propositions"
 			id="{uid}-propositions"
 			role="listbox"
-			aria-label="Fonctions et lettres grecques"
+			aria-label="Fonctions et lettres grecques : Tab pour insérer, Entrée calcule"
 		>
 			{#each proposals as proposal, index (proposal.insert)}
 				<li role="none">
@@ -542,6 +557,7 @@
 						id="{uid}-proposition-{index}"
 						tabindex="-1"
 						aria-selected={proposal === activeProposal}
+						aria-label={proposal.label}
 						class:surlignee={proposal === activeProposal}
 						onclick={() => insert(proposal)}
 					>

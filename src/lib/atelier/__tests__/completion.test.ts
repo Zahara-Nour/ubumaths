@@ -49,7 +49,7 @@ describe('ce qui est proposé', () => {
 		expect(offered('co + 1', 2)).toEqual(['cos(', 'cosh(']);
 	});
 
-	it('rien quand choisir ne changerait rien, ni pour un mot inconnu', () => {
+	it('rien pour un mot inconnu', () => {
 		expect(offered('zz')).toEqual([]);
 	});
 
@@ -71,10 +71,19 @@ describe('ce qui est proposé', () => {
 		expect(offered('\\al')).toEqual([]);
 	});
 
-	it('au plus 8 propositions', () => {
-		for (const prefix of ['ar', 'co', 'si', 'ta', 'ph', 'ps']) {
-			expect(offered(prefix).length).toBeLessThanOrEqual(8);
-		}
+	// Revue : `\frac{co` proposait `cos(` — une saisie mêlée, que Calcul refuse (#911)
+	it('rien dans une saisie en LaTeX', () => {
+		expect(offered('\\frac{co')).toEqual([]);
+		expect(offered('\\sqrt{2}+si')).toEqual([]);
+	});
+
+	// La phase 0 promet « au plus 8 » : la liste des fonctions et des lettres
+	// grecques le tient d'elle-même — ce test la garde, préfixe par préfixe
+	it('au plus 8 propositions, pour tout début de 2 lettres', () => {
+		const prefixes = new Set(PROPOSALS.map((p) => p.label.slice(0, 2)));
+		const crowded = [...prefixes].filter((prefix) => offered(prefix).length > 8);
+
+		expect(crowded).toEqual([]);
 	});
 });
 

@@ -3,8 +3,8 @@
  *
  * Phase 0 `docs/wip/atelier-cas-phase0.md`, PR 3 (décisions de David du
  * 2026-10-11). **Règle unique** : la liste s'ouvre quand le mot en cours
- * (lettres seulement) a au moins 2 lettres, est le début d'une proposition,
- * et que la choisir changerait le champ.
+ * (lettres seulement) a au moins 2 lettres et est le début d'une proposition
+ * — la choisir change toujours le champ.
  *
  * Les propositions viennent des listes UNIQUES du moteur — les fonctions d'un
  * élève (`SHOWN_FUNCTIONS`) et les lettres grecques (`GREEK_LETTERS`) — et non
@@ -36,9 +36,6 @@ export interface Proposal {
 // =============================================================================
 // Constantes
 // =============================================================================
-
-/** Au plus autant de propositions : la liste des commandes en montre autant. */
-const MAX_PROPOSALS = 8;
 
 /**
  * Le symbole de chaque lettre de `GREEK_LETTERS` — les variantes (`varphi`…)
@@ -104,24 +101,29 @@ const isLetter = (char: string | undefined) => char !== undefined && /^[A-Za-z]$
  * Le mot en cours : les lettres qui finissent au curseur, ou `null`.
  *
  * Pas de mot dans le nom d'une commande (`.dé` : c'est la liste des
- * commandes), ni derrière une barre oblique inverse (`\al` est déjà du LaTeX).
+ * commandes), ni dans une saisie en LaTeX : `\frac{co` → `cos(` serait une
+ * saisie mêlée, que Calcul refuse (#911, revue).
  */
 function wordAt(draft: string, caret: number): { word: string; start: number } | null {
+	if (draft.includes('\\')) return null;
 	let start = caret;
 	while (isLetter(draft[start - 1])) start--;
 	if (start === caret) return null;
-	if (draft[start - 1] === '\\') return null;
 	if (draft.startsWith('.') && !draft.slice(0, start).includes(' ')) return null;
 	return { word: draft.slice(start, caret), start };
 }
 
-/** Les propositions pour le mot qui finit au curseur, au plus 8. */
+/**
+ * Les propositions pour le mot qui finit au curseur.
+ *
+ * Choisir change toujours le champ : une fonction ajoute sa parenthèse, une
+ * lettre grecque devient symbole. Au plus 8 — la liste le tient d'elle-même,
+ * un test le garde.
+ */
 export function proposalsFor(draft: string, caret: number): Proposal[] {
 	const current = wordAt(draft, caret);
 	if (current === null || current.word.length < 2) return [];
-	return PROPOSALS.filter(
-		(p) => p.label.startsWith(current.word) && p.insert !== current.word
-	).slice(0, MAX_PROPOSALS);
+	return PROPOSALS.filter((p) => p.label.startsWith(current.word));
 }
 
 /** Le brouillon où la proposition remplace le mot en cours, et le curseur après elle. */

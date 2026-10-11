@@ -83,19 +83,19 @@ Chapeau du chantier : [atelier-progress.md](atelier-progress.md).
 **Règle unique** : la liste s'ouvre quand le mot en cours (lettres seulement) a **au moins 2 lettres**, est
 le **début** d'une proposition, et que choisir cette proposition **changerait** le champ.
 
-| Cas                                         | Attendu                                                                        |
-| ------------------------------------------- | ------------------------------------------------------------------------------ |
-| `si`                                        | propose `sin(` (et `sinh(` si Calcul l'accepte)                                |
-| `al`                                        | propose `α` (le symbole, pas `\alpha`)                                         |
-| `pi`                                        | propose `π` (`pi` en lettres est refusé depuis #896)                           |
-| Panneau avec `aire = 12`, l'élève tape `ai` | propose `aire`                                                                 |
-| `f`, `x`, `a` (une lettre)                  | rien                                                                           |
-| `3ta` avec `t` et `a` dans le panneau       | `tan(` proposé ; **Entrée calcule** 3·t·a = 30                                 |
-| Tab ou clic                                 | remplace le mot par la proposition ; `sin(` met le curseur après la parenthèse |
-| Échap                                       | ferme la liste                                                                 |
-| `.dériver si` (après la commande)           | propose `sin(` comme ailleurs                                                  |
-| Sur le nom de la commande (`.dé`)           | c'est la liste des commandes (PR 1), pas celle-ci                              |
-| Au plus 8 propositions                      | les noms du panneau d'abord, puis fonctions, puis lettres grecques             |
+| Cas                                   | Attendu                                                                        |
+| ------------------------------------- | ------------------------------------------------------------------------------ |
+| `si`                                  | propose `sin(` (et `sinh(` si Calcul l'accepte)                                |
+| `al`                                  | propose `α` (le symbole, pas `\alpha`)                                         |
+| `pi`                                  | propose `π` (`pi` en lettres est refusé depuis #896)                           |
+| ~~Panneau avec `aire = 12`, `ai`~~    | ~~propose `aire`~~ — faux : un nom d'objet fait une lettre (voir le journal)   |
+| `f`, `x`, `a` (une lettre)            | rien                                                                           |
+| `3ta` avec `t` et `a` dans le panneau | `tan(` proposé ; **Entrée calcule** 3·t·a = 30                                 |
+| Tab ou clic                           | remplace le mot par la proposition ; `sin(` met le curseur après la parenthèse |
+| Échap                                 | ferme la liste                                                                 |
+| `.dériver si` (après la commande)     | propose `sin(` comme ailleurs                                                  |
+| Sur le nom de la commande (`.dé`)     | c'est la liste des commandes (PR 1), pas celle-ci                              |
+| Au plus 8 propositions                | fonctions d'abord, puis lettres grecques, puis π                               |
 
 **Garde-fou** : un test insère chaque proposition dans une saisie type (`sin(` → `sin(1)`, `α` → `2α`…)
 et exige que Calcul l'**accepte** ; une proposition refusée fait échouer le test. Raison : le module de
@@ -106,7 +106,8 @@ syntaxe maison — une saisie mêlée que Calcul refuse depuis #911.
 
 Part : la route `src/routes/(public)/cas/`, `src/lib/components/cas/` (dont `AstDrawer` et
 `AstTreeViewer`, jamais montés), `src/lib/stores/repl.svelte.ts`. Restent : `WebReplEngine` (moteur
-de l'atelier) et `mathAST/cli/completion` (utilisé par la PR 3). Aucun lien ne pointe vers `/cas`,
+de l'atelier) et `mathAST/cli/completion` (la PR 3 ne l'utilise pas : `atelier/completion.ts` part
+des listes du moteur — à retirer avec `/cas` s'il n'a pas d'autre usage). Aucun lien ne pointe vers `/cas`,
 absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inventaire à part.
 
 ## Journal
@@ -152,6 +153,13 @@ absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inv
   `atelier/completion.ts` (règle, propositions, insertion), liste « Fonctions et lettres grecques »
   dans `CalculView.svelte`. Preuves rouges par mutation : curseur au milieu, Entrée qui insérerait,
   proposition refusée (`lim(`).
+- 2026-10-11 — revue `code-reviewer` de la PR 3 : corrigés le curseur retenu périmé (Cmd+← sur Mac,
+  sélection à la souris finie hors du champ : Tab insérait à l'ancienne place — curseur relu au
+  moment de décider, et `selectionchange`), `\frac{co` qui proposait `cos(` (aucune proposition dans
+  une saisie en LaTeX), deux tests qui ne prouvaient rien (« au plus 8 » devient une garde sur tous
+  les débuts de 2 lettres ; condition « choisir changerait le champ » retirée, toujours vraie),
+  options annoncées par leur nom. Mesuré : unités (`cm`, `km`, `min`, `h`) et listes qualitatives
+  n'ouvrent rien ; `si`, `de`, `et` ouvrent une liste qu'Entrée ignore.
 
 ## Mis de côté (David, 2026-10-11 : « on verra après »)
 

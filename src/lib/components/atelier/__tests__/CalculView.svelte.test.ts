@@ -813,6 +813,51 @@ describe('la complétion des fonctions et des lettres grecques', () => {
 		expect(field.selectionStart).toBe(4);
 	});
 
+	// Revue : Cmd+← (Mac) ne donne pas de relâchement de touche, une sélection
+	// à la souris peut finir hors du champ — le curseur RETENU était périmé, et
+	// Tab insérait à l'ancienne place. Le curseur déplacé sans frappe ni clic :
+	it('Tab complète le mot du curseur réel, même déplacé sans touche ni clic', async () => {
+		const { field } = await typing('co + si');
+
+		field.setSelectionRange(2, 2);
+		await userEvent.keyboard('{Tab}');
+		await settle();
+
+		expect(field.value).toBe('cos( + si');
+	});
+
+	it('la liste suit un curseur déplacé sans touche ni clic', async () => {
+		const { field, container } = await typing('co + 1');
+		expect(container.querySelector('.propositions')).toBeNull();
+
+		field.setSelectionRange(2, 2);
+		await settle();
+
+		expect(proposals(container)).toEqual(['cos(', 'cosh(']);
+	});
+
+	it('Retour arrière rouvre la liste sur le mot raccourci', async () => {
+		const { container } = await typing('cox');
+		expect(container.querySelector('.propositions')).toBeNull();
+
+		await userEvent.keyboard('{Backspace}');
+		await settle();
+
+		expect(proposals(container)).toEqual(['cos(', 'cosh(']);
+	});
+
+	it('après un clic sur une proposition, le champ a la main, curseur après l’insertion', async () => {
+		const { field, container } = await typing('co + 1{Home}{ArrowRight}{ArrowRight}');
+		const cos = container.querySelector('.propositions [role="option"]') as HTMLElement;
+
+		await userEvent.click(cos);
+		await settle();
+
+		expect(field.value).toBe('cos( + 1');
+		expect(document.activeElement).toBe(field);
+		expect(field.selectionStart).toBe(4);
+	});
+
 	it('dans le nom d’une commande, c’est la liste des commandes', async () => {
 		const { container } = await typing('.si');
 
