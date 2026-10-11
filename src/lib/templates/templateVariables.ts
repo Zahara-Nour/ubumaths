@@ -96,7 +96,7 @@ export const ASSESSMENT_VARIABLES: TemplateVariable[] = [
 	},
 	{
 		name: 'assessment_type',
-		label: "Type d'évaluation",
+		label: 'Type de contrôle',
 		example: 'Devoir Maison',
 		description: 'Type: Devoir Maison, Interrogation, etc.'
 	},

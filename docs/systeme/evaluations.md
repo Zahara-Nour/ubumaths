@@ -109,6 +109,14 @@ le `mode` de l'URL est ignoré) ; `?categories=…` sans `mode` → le panier ; 
 → démarrage direct. `SeriesLinkShare` fabrique ces liens. Visiteur non connecté : la série se joue,
 rien n'est enregistré.
 
+**Quitter** ([composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)) : pendant la série, l'en-tête porte un lien « Quitter »
+(`BackLink kind="quit"`). Entraînement et course y mènent au panier, ou à « Mes contrôles »
+(`/dashboard/student/assessments`) en contrôle : `automathsQuitLink` (`src/lib/navigation/return-links.ts`).
+En contrôle **avec une tentative ouverte**, le lien demande confirmation : les réponses tapées seront
+perdues (voir « Démarrer », étape 3) et, en course, le temps continue de courir (`remainingSeconds`).
+Pas de confirmation en entraînement ni dans l'aperçu du prof. « En classe » et les flash-cards (jamais
+en contrôle) quittent vers le panier. Les boutons de l'écran de fin gardent `onBack`.
+
 Séance libre enregistrée : `POST /api/tests/save` écrit `test_sessions` puis `test_answers` et appelle
 `recordSeriesReviews` (`src/lib/server/srs/record-series-reviews.ts`) avec le **verdict du navigateur**.
 Le score envoyé par le client est gardé, sauf s'il y a des cartes de cours : il est alors recalculé
@@ -309,4 +317,4 @@ assignés (`src/lib/server/students.ts` et cinq pages prof).
 
 ---
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-11.

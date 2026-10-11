@@ -160,6 +160,8 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 
 **6. Types dérivés dans `database-helpers.ts`** — `database.ts` est auto-généré (`pnpm db:types`), **ne JAMAIS y ajouter de type**. `Database`/`Tables`/`Json` → `$lib/types/database` ; alias, unions, composites → `$lib/types/database-helpers`.
 
+**7. Bouton retour = `BackLink`** (règle tranchée le 2026-10-11) — il mène à la **page parente lue dans l'adresse** (jamais `history.back()` ni `goto()` au clic ; deux parents possibles → `?depuis=`), se place **au-dessus du titre**, dit où il va (« Retour aux séries ») ; « Quitter » (`kind="quit"`) sur une page en pleine activité ; aucun sur une page de la navigation ni sur une page-carrefour. → [composants-ui.md](docs/pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)
+
 ---
 
 ## Base de données
@@ -246,7 +248,7 @@ src/routes/{(public),(protected),api}/            (protected) = auth requise ; a
 | [skills-claude.md](docs/pratiques/skills-claude.md)                           | **Mode d'emploi** des skills et commandes              |
 | [commandes.md](docs/pratiques/commandes.md)                                   | Scripts pnpm                                           |
 | [svelte-typescript.md](docs/pratiques/svelte-typescript.md)                   | Svelte 5, TypeScript                                   |
-| [composants-ui.md](docs/pratiques/composants-ui.md)                           | Shadcn, MySelect, Tailwind                             |
+| [composants-ui.md](docs/pratiques/composants-ui.md)                           | Shadcn, MySelect, BackLink, Tailwind                   |
 | [pratiques/base-de-donnees.md](docs/pratiques/base-de-donnees.md)             | Supabase, migrations                                   |
 | [qualite.md](docs/pratiques/qualite.md) · [tests.md](docs/pratiques/tests.md) | Linting, Zod · architecture des tests + TDD            |
 | [rls-echecs-silencieux.md](docs/pratiques/rls-echecs-silencieux.md)           | **La RLS échoue en silence**                           |
