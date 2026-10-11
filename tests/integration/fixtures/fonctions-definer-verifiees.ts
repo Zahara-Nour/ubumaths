@@ -111,7 +111,8 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'record_game_reward(p_student_id uuid, p_game_type text, p_game_id uuid, p_theoretical_reward numeric, p_school_id uuid)':
 		{
 			categorie: 'compte-appelant',
-			justification: 'refuse si auth.uid() <> p_student_id ; élève seulement'
+			justification:
+				'refuse sauf client service ou auth.uid() = p_student_id (20261016100200) ; EXECUTE retiré à authenticated après le deploy'
 		},
 	'record_listing_views_batch(p_listing_ids uuid[], p_user_id uuid)': {
 		categorie: 'compte-appelant',

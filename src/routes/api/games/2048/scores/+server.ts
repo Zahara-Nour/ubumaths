@@ -221,7 +221,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			if (schoolId) {
 				// Record reward via atomic RPC (handles daily cap per game type)
 				const gameUuid = crypto.randomUUID();
-				const { data: rewardData, error: rewardError } = await supabase
+				// Client service : la base retire cette fonction aux comptes connectés —
+				// un élève s'attribuerait sinon la récompense de chaque jeu sans jouer.
+				// L'identité vient de la session ; le montant est calculé ici, depuis le score.
+				const { data: rewardData, error: rewardError } = await createServiceRoleClient()
 					.rpc('record_game_reward', {
 						p_student_id: user.id,
 						p_game_type: '2048',
