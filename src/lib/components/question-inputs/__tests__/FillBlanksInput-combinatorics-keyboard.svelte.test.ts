@@ -65,17 +65,41 @@ async function openKeyboard(grades: GradeLevel[] = ['T_SPE']): Promise<Mathfield
 	return mathField;
 }
 
-/** Clic réel sur l'onglet « n! » de la barre d'onglets du clavier */
+/**
+ * Attend le prochain frame : un rappel `requestAnimationFrame` posé maintenant passe
+ * APRÈS ceux déjà en attente.
+ */
+async function nextFrame(): Promise<void> {
+	await new Promise((resolve) => requestAnimationFrame(resolve));
+}
+
+/**
+ * Clic réel sur l'onglet « n! » de la barre d'onglets du clavier.
+ *
+ * ⚠️ Chaque affectation de `layouts` (le composant en fait une à chaque entrée et
+ * sortie du focus, et l'ouverture du clavier fait sortir puis rentrer le focus) appelle
+ * `rebuild()` de MathLive : il note l'onglet visible SUR LE MOMENT, puis reconstruit le
+ * clavier au frame suivant en rétablissant cet onglet. Un clic d'onglet tombé entre les
+ * deux est annulé (échec CI du 2026-10-11, PR #872 : « expected null to be truthy » sur
+ * la touche, l'onglet par défaut était revenu ; les frames d'une page de test en CI peuvent
+ * être très espacés). D'où le frame attendu AVANT le clic, puis l'onglet relu.
+ */
 async function openCombinatoricsTab(): Promise<void> {
+	await nextFrame();
 	await expect.poll(() => document.querySelector(TAB_SELECTOR)).toBeTruthy();
-	await userEvent.click(document.querySelector<HTMLElement>(TAB_SELECTOR)!);
-	await settle();
+	const tab = document.querySelector<HTMLElement>(TAB_SELECTOR)!;
+	const layerId = tab.closest('[data-layer]')?.getAttribute('data-layer');
+	expect(layerId).toBeTruthy();
+	await userEvent.click(tab);
+	await expect
+		.poll(() => document.querySelector('.MLK__layer.is-visible')?.id, { timeout: 10_000 })
+		.toBe(layerId);
 }
 
 /** Touche visible de l'onglet, par son nom accessible */
 async function key(name: string): Promise<HTMLElement> {
 	const selector = `.MLK__layer.is-visible [aria-label="${name}"]`;
-	await expect.poll(() => document.querySelector(selector)).toBeTruthy();
+	await expect.poll(() => document.querySelector(selector), { timeout: 10_000 }).toBeTruthy();
 	return document.querySelector<HTMLElement>(selector)!;
 }
 
