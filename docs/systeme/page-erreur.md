@@ -3,6 +3,7 @@ couvre:
   - src/routes/+error.svelte
   - 'src/lib/error-page/**'
   - 'src/lib/components/error-page/**'
+  - 'src/routes/(public)/test-erreur/**'
 ---
 
 # Page d'erreur (404, 403, 500…)
@@ -29,15 +30,20 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
 1. La spirale de π (thème clair ou sombre), Père Ubu au centre, immobile. Sur grand écran (`lg`),
    deux colonnes — spirale à gauche, texte à droite — pour tout voir sans défiler.
 2. « Erreur 404 », le titre (`<h1>`) et une explication propres au code
-   (`describeError`, `src/lib/error-page/error-copy.ts`).
-3. Le message précis d'une erreur 4xx (`error(404, 'Exercice introuvable')`), **sauf** s'il répète le
-   titre ou n'est qu'une formule générique (« Not Found », « Unauthorized », « Accès refusé »…,
-   liste `GENERIC_MESSAGES`, comparée sans casse ni accents).
-4. Pour un code de la table : « Le nombre 404, lui, se trouve toujours : il apparaît pour la
-   première fois à la 1 272ᵉ décimale de π », et l'extrait des décimales autour.
-5. Pour une 404 : « Tu cherchais peut-être : » et jusqu'à trois pages proches.
-6. Les boutons : « Se connecter » (401), « Réessayer » (5xx, 408, 429), « Retour à l'accueil »
-   (toujours), « Page précédente » (seulement si elle ramène sur Chiphre).
+   (`describeError`, `src/lib/error-page/error-copy.ts`) — pas d'explication pour une 404 : le
+   titre, la phrase sur π et les suggestions suffisent.
+3. Pour une erreur 4xx, le message précis (`error(404, 'Exercice introuvable')`) **remplace le
+   titre** (« Exercice introuvable » au lieu de « Page introuvable », onglet compris), sauf s'il
+   n'est qu'une formule générique (« Not Found », « Unauthorized », « Accès refusé »…, liste
+   `GENERIC_MESSAGES`, comparée sans casse ni accents) : le titre français reste alors.
+4. Pour un code de la table : « Le nombre 404 apparaît à la 1 272ᵉ décimale de π, mais la page,
+   elle, reste introuvable. » (la fin « mais la page… » pour une 404 seulement). Pas d'extrait des
+   décimales en clair : le code est déjà coloré dans la spirale.
+5. Pour une 404 : une phrase « Tu cherchais peut-être A, B ou C ? », jusqu'à trois pages proches
+   en liens.
+6. Un seul bouton plein : « Se connecter » (401) ou « Réessayer » (5xx, 408, 429), sinon « Retour
+   à l'accueil » (toujours présent) ; « ← Page précédente » en simple lien, seulement s'il ramène
+   sur Chiphre.
 7. Repliés sous « Détails techniques » : le message et le début de la pile d'une erreur
    inattendue côté client (`App.Error.detail`), ou le message d'une erreur 5xx — il peut venir
    brut de la base (noms de tables) et n'a pas à s'afficher en grand devant un élève.
@@ -88,7 +94,17 @@ suit le rayon. L'angle entre deux chiffres est donc constant et l'écart entre d
 proportionnel aux chiffres : rien ne se chevauche. Réglages (`DEFAULT_SPIRAL_OPTIONS`) choisis pour
 que le 404 tombe vers la mi-rayon, encore lisible, et que la spirale s'arrête autour du disque
 de Père Ubu (~1 660 chiffres). Les codes situés au-delà (500 : 6 238ᵉ décimale) ne sont pas
-colorés dans la spirale ; la phrase et l'extrait restent affichés.
+colorés dans la spirale ; la phrase reste affichée.
+
+## Page de démonstration
+
+`/test-erreur` (`src/routes/(public)/test-erreur/`) liste tous les cas, chacun avec ce qu'on doit
+voir : fautes de frappe et suggestions, message précis en titre, chaque code de la table, repli
+sur la famille, message brut d'une 5xx. `/test-erreur/<code>?message=…` lève une vraie erreur
+HTTP (code 400-599 et message validés par Zod). `/test-erreur/plantage` lève une exception
+inattendue, **en dev seulement** (404 en prod, pour ne pas polluer le journal des erreurs) : suivi
+depuis la démo, il montre la pile sous « Détails techniques » ; en chargement complet, le rendu
+serveur sans pile. Exclue par `robots.txt`, `noindex`.
 
 ## Comment étendre
 
