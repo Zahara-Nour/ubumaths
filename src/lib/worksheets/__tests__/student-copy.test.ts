@@ -3,7 +3,13 @@
  * graine de l'affectation — une seule fonction pour tous les chemins.
  */
 import { describe, it, expect } from 'vitest';
-import { copySeed, guidanceVariationIndex, isGuidanceLevel } from '../student-copy';
+import {
+	copySeed,
+	guidanceVariationIndex,
+	isGuidanceLevel,
+	resolveCopyExercise
+} from '../student-copy';
+import type { Exercise } from '$lib/exercises/types';
 
 describe('guidanceVariationIndex : la version d’après le niveau, jamais au hasard', () => {
 	const GA = ['guided', 'autonomous'];
@@ -104,5 +110,91 @@ describe('isGuidanceLevel', () => {
 		expect(['guided', 'intermediate', 'autonomous'].every(isGuidanceLevel)).toBe(true);
 		expect(isGuidanceLevel('expert')).toBe(false);
 		expect(isGuidanceLevel(undefined)).toBe(false);
+	});
+});
+
+/** Exercice de la forme réelle : deux niveaux de guidage, une variable tirée */
+function twoLevels(variables = true): Exercise {
+	return {
+		id: 'ex',
+		title: 'Proportionnalité',
+		category: 'application',
+		tags: [],
+		shared: variables
+			? {
+					variables: [
+						{ name: 'a', expression: '{{2..9}}' },
+						{ name: 't', expression: '{{eval:3*{{a}}}}' }
+					]
+				}
+			: undefined,
+		variations: [
+			{
+				label: 'guided',
+				statement_md: 'Guidé : calcule {{a}} fois 3.',
+				solution_md: 'Guidé : {{t}}'
+			},
+			{
+				label: 'autonomous',
+				statement_md: 'Autonome : triple de {{a}} ?',
+				solution_md: 'Autonome : {{t}}'
+			}
+		],
+		created_at: '',
+		updated_at: '',
+		created_by: 'test'
+	} as unknown as Exercise;
+}
+
+describe('resolveCopyExercise : un exercice de la copie', () => {
+	it('la version suit le niveau', () => {
+		expect(resolveCopyExercise(twoLevels(), { level: 'guided', seed: 1 }).statement).toMatch(
+			/^Guidé/
+		);
+		expect(resolveCopyExercise(twoLevels(), { level: 'autonomous', seed: 1 }).statement).toMatch(
+			/^Autonome/
+		);
+		expect(
+			resolveCopyExercise(twoLevels(), { level: 'intermediate', seed: 1 }).variationIndex
+		).toBe(0);
+	});
+
+	it('la version imposée par la fiche prime sur le niveau', () => {
+		const copy = resolveCopyExercise(twoLevels(), {
+			level: 'guided',
+			seed: 1,
+			forcedVariationIndex: 1
+		});
+		expect(copy.statement).toMatch(/^Autonome/);
+	});
+
+	it('les variables sont tirées : énoncé et corrigé cohérents, plus de {{…}}', () => {
+		const copy = resolveCopyExercise(twoLevels(), { level: 'guided', seed: 7 });
+		const a = Number(/calcule (\d) fois/.exec(copy.statement)?.[1]);
+		expect(a).toBeGreaterThanOrEqual(2);
+		expect(copy.solution).toBe(`Guidé : ${3 * a}`);
+		expect(copy.statement + copy.solution).not.toContain('{{');
+	});
+
+	it('même graine, même copie ; même graine, même valeur aux deux niveaux', () => {
+		const one = resolveCopyExercise(twoLevels(), { level: 'guided', seed: 42 });
+		expect(resolveCopyExercise(twoLevels(), { level: 'guided', seed: 42 })).toEqual(one);
+	});
+
+	it('génération en échec : le texte brut de la version choisie, pas de la première', () => {
+		const broken = twoLevels(false);
+		// Variable non déclarée : la génération échoue
+		const copy = resolveCopyExercise(
+			{
+				...broken,
+				variations: broken.variations!.map((v) => ({
+					...v,
+					statement_md: v.statement_md + ' {{inconnue}}'
+				}))
+			} as Exercise,
+			{ level: 'autonomous', seed: 1 }
+		);
+		expect(copy.variationIndex).toBe(1);
+		expect(copy.statement).toMatch(/^Autonome/);
 	});
 });

@@ -18,12 +18,36 @@
  * @module worksheets/student-copy
  */
 
+import type { ContentLocale } from '$lib/types/locale';
+import type { Exercise, ExerciseHint, GuidanceLabel } from '$lib/exercises/types';
+import { getExerciseContentSafe } from '$lib/exercises/types';
+import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
+
 // ============================================================================
 // TYPES
 // ============================================================================
 
-/** Niveau de guidage d'une affectation (`worksheet_assignments.guidance_level`) */
-export type GuidanceLevel = 'guided' | 'intermediate' | 'autonomous';
+/**
+ * Niveau de guidage d'une affectation (`worksheet_assignments.guidance_level`) :
+ * les étiquettes des versions d'un exercice (`GuidanceLabel`).
+ */
+export type GuidanceLevel = GuidanceLabel;
+
+export interface CopyExerciseOptions {
+	level: GuidanceLevel;
+	seed: number;
+	locale?: ContentLocale;
+	/** Version imposée par la fiche (`worksheet_exercises.variation_index`) : prime sur le niveau */
+	forcedVariationIndex?: number | null;
+}
+
+/** Un exercice de la copie : la version donnée, ses valeurs tirées */
+export interface CopyExercise {
+	statement: string;
+	solution: string;
+	hints?: ExerciseHint[];
+	variationIndex: number;
+}
 
 export interface CopySeedParts {
 	/** Absent : copie hors affectation (page de la fiche, cahier public) */
@@ -92,4 +116,39 @@ export function copySeed(parts: CopySeedParts): number {
 		: `fiche:${parts.worksheetId}`;
 	const student = parts.individualized && parts.studentId ? `:eleve:${parts.studentId}` : '';
 	return hash32(`${scope}${student}:exercice:${parts.worksheetExerciseId}`);
+}
+
+/**
+ * Un exercice de la copie : la version d'après le niveau (ou celle qu'impose
+ * la fiche), ses variables tirées avec la graine. Génération en échec : le
+ * texte brut de LA MÊME version, jamais une autre.
+ */
+export function resolveCopyExercise(
+	exercise: Exercise,
+	options: CopyExerciseOptions
+): CopyExercise {
+	const labels = (exercise.variations ?? []).map((variation) => variation.label);
+	const variationIndex =
+		options.forcedVariationIndex ?? guidanceVariationIndex(labels, options.level);
+	const result = generateExerciseInstance(exercise, {
+		seed: options.seed,
+		parseAST: false,
+		variationIndex,
+		locale: options.locale
+	});
+	if (result.success && result.instance) {
+		return {
+			statement: result.instance.statement_md,
+			solution: result.instance.solution_md ?? '',
+			hints: result.instance.resolvedHints,
+			variationIndex
+		};
+	}
+	const content = getExerciseContentSafe(exercise, variationIndex, options.locale ?? 'fr');
+	return {
+		statement: content.statement_md,
+		solution: content.solution_md,
+		hints: content.hints,
+		variationIndex
+	};
 }
