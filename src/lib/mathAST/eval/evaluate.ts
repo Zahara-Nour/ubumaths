@@ -57,7 +57,7 @@ import {
 } from '../normal/rational';
 import { integerNthRoot } from '../normal/radical';
 import { number, divide, opposite, boolean as booleanNode } from '../factory';
-import { numericNode } from '../common/numeric';
+import { numericNode, rationalToNode } from '../common/numeric';
 import { normalize } from '../normal/normalize';
 import { denormalize } from '../normal/denormalize';
 import { normalizeExtended } from '../normal/normalize-extended';
@@ -980,6 +980,52 @@ function reduceMultiArgFunctions(node: MathNode): MathNode {
 }
 
 /**
+ * Un exposant fait de nombres et d'opérations rationnelles seulement
+ * (`2 \times 1`, `1^2`, `-0`, `\frac{3}{2}+1`) : son calcul est exact.
+ */
+function isRationalArithmetic(node: MathNode): boolean {
+	switch (node.type) {
+		case 'number':
+			return true;
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return isRationalArithmetic(node.left) && isRationalArithmetic(node.right);
+		case 'division':
+			return isRationalArithmetic(node.numerator) && isRationalArithmetic(node.denominator);
+		case 'opposite':
+		case 'positive':
+			return isRationalArithmetic(node.operand);
+		case 'delimiter':
+			return isRationalArithmetic(node.content);
+		case 'superscript':
+			return isRationalArithmetic(node.base) && isRationalArithmetic(node.superscript);
+		default:
+			return false;
+	}
+}
+
+/**
+ * Calcule un exposant rationnel écrit comme un calcul : `e^{2 \times 1}` → `e^{2}`,
+ * `e^{1^2}` → `e`, `2^{1+1}` → `4`. `normalize` ne lit qu'un exposant LITTÉRAL :
+ * le reste devenait une puissance opaque, et la valeur d'une intégrale définie
+ * s'affichait `-\dfrac{1}{2}e^{2 \times 0}+\dfrac{1}{2}e^{2 \times 1}` (revue du
+ * 2026-10-11). Un exposant déjà littéral, ou non rationnel (`\ln 2`, `\pi`),
+ * n'est pas touché.
+ */
+function reduceComputedExponents(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (n.type !== 'superscript' || n.superscript.type === 'number') return n;
+		if (!isRationalArithmetic(n.superscript)) return n;
+		try {
+			return { ...n, superscript: rationalToNode(evaluateToRational(n.superscript)) };
+		} catch {
+			return n;
+		}
+	});
+}
+
+/**
  * Evaluates rounding functions (floor, ceil, round) in an AST when their
  * arguments can be computed to a numeric value.
  *
@@ -1285,7 +1331,7 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 
 			// Standard exact mode: use regular normalize/denormalize
 			// min, max, gcd, mod : normalize ne les calcule pas → réduits d'abord
-			const normalForm = normalize(reduceMultiArgFunctions(processedNode));
+			const normalForm = normalize(reduceComputedExponents(reduceMultiArgFunctions(processedNode)));
 			let simplifiedNode = denormalize(normalForm);
 
 			// Post-process to evaluate rounding functions (floor, ceil, round, abs)

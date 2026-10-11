@@ -281,6 +281,20 @@ Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
   rationnelle) ; granularité par les tables `STRATEGIES`, `STRATEGIES_QUADRATIC`,
   `STRATEGIES_RATIONAL`. `generateEquationSteps` relève le niveau insuffisant
   (`primaire` → `college` pour le 1er degré, jusqu'à `lycee` pour le 2nd).
+- **Dérivées et primitives finissent par « On simplifie ».** Les règles laissent le
+  résultat brut (la méthode, qu'on garde visible) ; une dernière étape l'écrit avec
+  `tidyTerms` (`tidy/terms.ts`). Dérivées : `withTidyStep`
+  (`pedagogical-differentiation/tidy-step.ts`), ajouté par l'appelant. Primitives :
+  `pushSimplifyStep` (`pedagogical-integration/pipeline.ts`) émet l'étape
+  `simplify-result` avant le `+ C` (ou avant le théorème fondamental), **sauf** quand la
+  primitive est un seul terme « coefficient en chiffres × une seule fonction » sous un `-`
+  éventuel (`singleCoefficientTerm` : `\dfrac{1}{2}e^{2x}`, `-\dfrac{1}{3}\cos(3x+1)`),
+  gardé tel quel si le coefficient est réduit (un `\dfrac{2}{4}e^x` devient
+  `\dfrac{1}{2}e^x` par l'étape) ; un coefficient pas encore calculé
+  (`\dfrac{1}{4}\dfrac{x^2}{2}`) passe par `tidy`. L'étape d'IPP écrit `uv - \int v\,du`,
+  l'intégrale restante en toutes lettres, avant sa valeur (pas de « = » faux). Le facteur 1/u′ des formes composées est un rationnel exact
+  (`findProportionalityRatio`), et l'exponentielle s'écrit `e^{u}`
+  (`superscript(euler(), u)`), jamais `\exp(u)` (décisions de David du 2026-10-11).
 - ⚠️ Les étapes de `normalize` sont du calcul interne, pas une leçon : elles arrivent
   pourtant dans `auto`/`reduire`/`developper` via `runNormalizePass` (ADR 0007 veut les
   retirer du chemin élève).

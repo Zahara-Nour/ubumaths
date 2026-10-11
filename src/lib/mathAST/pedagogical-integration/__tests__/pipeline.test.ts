@@ -496,13 +496,14 @@ describe('pedagogical-integration pipeline — V1.1 cyclic IPP', () => {
 		const result = generatePedagogicalIntegrationSteps(integrand, { level: 'superieur' });
 		const ruleSeq = rules(result.steps);
 		// Exact expected sequence: identify-parts, choose-u-dv, apply-parts-formula,
-		// choose-u-dv, apply-cyclic-ipp.
+		// choose-u-dv, apply-cyclic-ipp, puis « On simplifie » (2026-10-11).
 		expect(ruleSeq).toEqual([
 			'identify-parts',
 			'choose-u-dv',
 			'apply-parts-formula',
 			'choose-u-dv',
-			'apply-cyclic-ipp'
+			'apply-cyclic-ipp',
+			'simplify-result'
 		]);
 	});
 
