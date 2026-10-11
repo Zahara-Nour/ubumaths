@@ -188,7 +188,7 @@ const FR: DocumentLabels = {
 	by: 'Par',
 	honourStatement:
 		"Je soussigné(e) atteste sur l'honneur avoir pris connaissance du règlement de l'examen et m'engage à le respecter.",
-	skillsAssessment: 'Évaluation de compétences mathématiques',
+	skillsAssessment: 'Compétences mathématiques',
 	generatedOn: 'Document généré le',
 	markingScale: 'Barème de notation',
 	totalPoints: 'Total des points',
@@ -212,7 +212,7 @@ const FR: DocumentLabels = {
 	criterionClarity: 'Clarté de la démarche',
 	criterionRigour: 'Rigueur mathématique',
 	criterionPresentation: 'Présentation',
-	markingGrid: "Grille d'évaluation",
+	markingGrid: 'Grille de notation',
 	examinerOnly: "réservé à l'examinateur",
 	skillAlgebra: 'Calcul algébrique',
 	skillEquations: "Résolution d'équations",

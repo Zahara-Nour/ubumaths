@@ -1470,7 +1470,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
 
 #v(1.5cm)
 
-// Grille d'évaluation (pour l'examinateur)
+// Grille de notation (pour l'examinateur)
 #text(size: 12pt, weight: "bold")[4. {{label_marking_grid}}]
 #text(size: 9pt, style: "italic", fill: rgb("#6b7280"))[ ({{label_examiner_only}})]
 #v(0.3cm)
