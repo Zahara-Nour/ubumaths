@@ -21,7 +21,7 @@
  * `\htmlData` ; jamais `{base}^{…}` (accolades autour de la base) mais
  * `base^{…}`.
  */
-import { func } from '../factory';
+import { func, multiply } from '../factory';
 import { flattenRelationChain, flipSign, type Sign } from '../flatten';
 import { isHole } from '../guards';
 import {
@@ -33,6 +33,7 @@ import {
 	withoutScientificNumbers
 } from '../latex-generator';
 import { parseLatexSafe } from '../parser';
+import type { ParseResult } from '../parser/types';
 import { findFirst } from '../transforms';
 import type {
 	DelimiterNode,
@@ -101,18 +102,27 @@ const ENCLOSING_FUNCTIONS: Partial<Record<string, readonly [string, string]>> = 
 /**
  * Structure d'une expression saisie en LaTeX (MathLive). Ne lève pas : une
  * saisie vide rend `empty`, une saisie non reconnue ou incomplète (erreur de
- * lecture, case vide `\placeholder{}`) rend `unrecognized`.
+ * lecture, case vide `\placeholder{}`) rend `unrecognized`. Une exception de
+ * `buildStructure` (défaut du module) est signalée par `console.error`.
  */
 export function structureFromLatex(input: string): StructureResult {
 	if (input.trim() === '') return EMPTY;
+	let parsed: ParseResult;
 	try {
-		const parsed = parseLatexSafe(input);
-		if (parsed.errors.length > 0) return UNRECOGNIZED;
-		if (!parsed.ast) return EMPTY;
-		if (findFirst(parsed.ast, isHole)) return UNRECOGNIZED;
-		return { status: 'ok', structure: buildStructure(parsed.ast) };
+		parsed = parseLatexSafe(input);
 	} catch {
-		// Plafonds de sécurité du parseur, nœud inattendu : rien à montrer
+		// Plafonds de sécurité du parseur : une saisie, pas un défaut
+		return UNRECOGNIZED;
+	}
+	if (parsed.errors.length > 0) return UNRECOGNIZED;
+	if (!parsed.ast) return EMPTY;
+	if (findFirst(parsed.ast, isHole)) return UNRECOGNIZED;
+	try {
+		return { status: 'ok', structure: buildStructure(parsed.ast) };
+	} catch (error) {
+		// Un défaut du module, pas de la saisie : signalé, mais la page (publique,
+		// élèves) reste en vie au lieu de casser sur une expression lue
+		console.error('[structure] buildStructure a échoué sur', input, error);
 		return UNRECOGNIZED;
 	}
 }
@@ -169,6 +179,10 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 			case 'delimiter':
 				return buildParentheses(n, parent, role);
 			case 'superscript': {
+				// Angle en degrés (`90^\circ`) : un bloc, pas une puissance
+				if (n.superscript.type === 'symbol' && n.superscript.symbol === 'circ') {
+					return leaf(n, parent, role, 'other');
+				}
 				const id = register(parent, role, n, { kind: 'power' });
 				const base = wrapIf(build(n.base, id, 'base'), needsParenthesesAsPowerBase(n.base));
 				// Pas d'accolades autour de la base : `{x}^{2}` est un atome ordinaire, qui
@@ -224,7 +238,11 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 		return mark(id, parts.join(''));
 	}
 
-	function buildQuotient(n: DivisionNode, parent: number | null, role: StructureRole | null) {
+	function buildQuotient(
+		n: DivisionNode,
+		parent: number | null,
+		role: StructureRole | null
+	): string {
 		const id = register(parent, role, n, { kind: 'quotient' });
 		if (n.displayStyle === 'fraction') {
 			const numerator = build(n.numerator, id, 'numerator');
@@ -237,7 +255,11 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 		return mark(id, `${dividend} ${n.displayStyle === 'ratio' ? ':' : '/'} ${divisor}`);
 	}
 
-	function buildParentheses(n: DelimiterNode, parent: number | null, role: StructureRole | null) {
+	function buildParentheses(
+		n: DelimiterNode,
+		parent: number | null,
+		role: StructureRole | null
+	): string {
 		// Intervalle, ensemble, vecteur… : un bloc
 		if (n.semantic && n.semantic !== 'grouping') return leaf(n, parent, role, 'other');
 		const id = register(parent, role, n, { kind: 'parentheses' });
@@ -245,7 +267,11 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 		return mark(id, `${open} ${build(n.content, id, 'content')} ${close}`);
 	}
 
-	function buildFunction(n: FunctionNode, parent: number | null, role: StructureRole | null) {
+	function buildFunction(
+		n: FunctionNode,
+		parent: number | null,
+		role: StructureRole | null
+	): string {
 		const single = n.args.length === 1 && !n.power && !n.base;
 
 		// Valeur absolue, partie entière : l'argument entre ses barres ou crochets
@@ -293,7 +319,11 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 		return mark(id, `${head}\\left( ${args} \\right)`);
 	}
 
-	function buildRelation(n: RelationNode, parent: number | null, role: StructureRole | null) {
+	function buildRelation(
+		n: RelationNode,
+		parent: number | null,
+		role: StructureRole | null
+	): string {
 		const chain = flattenRelationChain(n);
 		const id = register(parent, role, n, { kind: 'relation', relations: chain.relations });
 		const twoSides = chain.operands.length === 2;
@@ -342,7 +372,36 @@ function collectTerms(node: MathNode, sign: Sign, leading: boolean, out: Collect
 		});
 		return;
 	}
+	// Coefficient négatif en tête (`−3x² + 2`) : le « − » va à la somme (Q2), le
+	// terme est `3x²`. Ailleurs, toLatex parenthèse le facteur : `2 + (−3)x` reste.
+	const unsigned = leading ? withoutLeadingOpposite(node) : null;
+	if (unsigned) {
+		out.push({ sign: flipSign(sign), term: unsigned, wrapped: false });
+		return;
+	}
 	out.push({ sign, term: node, wrapped: false });
+}
+
+/**
+ * Produit dont le facteur le plus à gauche est un opposé (`(−3)·x²`, forme du
+ * parseur pour `-3x^2`) : le même produit sans ce signe, ou `null`. Seulement si
+ * l'écriture est inchangée (`-` + toLatex du nouveau terme = toLatex du terme) :
+ * le séparateur d'un produit implicite dépend de son facteur de gauche.
+ */
+function withoutLeadingOpposite(node: MathNode): MathNode | null {
+	if (node.type !== 'multiplication') return null;
+	const stripped = stripLeftmostOpposite(node);
+	if (!stripped || `-${toLatex(stripped)}` !== toLatex(node)) return null;
+	return stripped;
+}
+
+function stripLeftmostOpposite(node: MathNode): MathNode | null {
+	if (node.type === 'opposite') {
+		return needsParenthesesUnderOpposite(node.operand) ? null : node.operand;
+	}
+	if (node.type !== 'multiplication' || binaryOperandWraps(node)?.left) return null;
+	const left = stripLeftmostOpposite(node.left);
+	return left ? multiply(left, node.right, node.displayStyle) : null;
 }
 
 /** Aplatit un produit, avec le signe d'opération que `toLatex` écrit entre deux facteurs */

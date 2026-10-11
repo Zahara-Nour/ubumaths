@@ -151,7 +151,13 @@ const SPEC_EXAMPLES = [
 	'e^{2x}',
 	String.raw`\pi r^2`,
 	String.raw`x^2\times3`,
-	String.raw`\left[x-1\right]^2`
+	String.raw`\left[x-1\right]^2`,
+	'-3x^2+2',
+	String.raw`y=-\frac{1}{2}x+3`,
+	'2+(-3)x',
+	'-3x',
+	String.raw`90^\circ`,
+	String.raw`x+30^\circ`
 ];
 
 describe('LaTeX marqué : le rendu ne bouge pas', () => {
@@ -238,16 +244,64 @@ describe('somme (A2-A4) : aplatie, le signe appartient à la somme', () => {
 		expect(describeChildren(structure, node)).toEqual(['number:5', 'parentheses']);
 	});
 
-	it('−4 × (5 − x)² + 1 : somme d’un produit et de 1 ; le produit commence par l’opposé de 4', () => {
+	it('−4 × (5 − x)² + 1 : le « − » du coefficient va à la somme, le terme est 4 × (5 − x)²', () => {
 		const structure = structureOf(String.raw`-4\times(5-x)^2+1`);
 		const sum = root(structure);
 		expect(sum.kind).toBe('sum');
+		expect(sum.kind === 'sum' && sum.signs).toEqual(['-', '+']);
 		expect(describeChildren(structure, sum)).toEqual(['product', 'number:1']);
 		const product = childrenOf(structure, sum)[0];
-		expect(describeChildren(structure, product)).toEqual(['opposite', 'power']);
+		expect(describeChildren(structure, product)).toEqual(['number:4', 'power']);
 		const power = childrenOf(structure, product)[1];
 		expect(describeChildren(structure, power)).toEqual(['parentheses', 'number:2']);
 		expect(childrenOf(structure, power).map((c) => c.role)).toEqual(['base', 'exponent']);
+	});
+
+	it('−3x² + 2 : signes −, + ; termes 3x² et 2 ; le « − » est hors du marqueur du terme', () => {
+		const structure = structureOf('-3x^2+2');
+		const sum = root(structure);
+		expect(sum.kind).toBe('sum');
+		expect(sum.kind === 'sum' && sum.signs).toEqual(['-', '+']);
+		expect(describeChildren(structure, sum)).toEqual(['product', 'number:2']);
+		const product = childrenOf(structure, sum)[0];
+		expect(describeChildren(structure, product)).toEqual(['number:3', 'power']);
+		expect(sum.latex.startsWith(String.raw`-\class{`)).toBe(true);
+	});
+
+	it('−x² + 2 : signes −, + ; termes x² et 2', () => {
+		const structure = structureOf('-x^2+2');
+		const sum = root(structure);
+		expect(sum.kind === 'sum' && sum.signs).toEqual(['-', '+']);
+		expect(describeChildren(structure, sum)).toEqual(['power', 'number:2']);
+	});
+
+	it('y = −½x + 3 : le membre de droite est une somme de signes −, +', () => {
+		const structure = structureOf(String.raw`y=-\frac{1}{2}x+3`);
+		const right = childrenOf(structure, root(structure))[1];
+		expect(right.kind).toBe('sum');
+		expect(right.kind === 'sum' && right.signs).toEqual(['-', '+']);
+		const product = childrenOf(structure, right)[0];
+		expect(describeChildren(structure, product)).toEqual(['quotient', 'letter:x']);
+	});
+
+	it('2 + (−3)x : parenthèses visibles, le facteur reste (−3)', () => {
+		const structure = structureOf('2+(-3)x');
+		const sum = root(structure);
+		expect(sum.kind === 'sum' && sum.signs).toEqual(['+', '+']);
+		const product = childrenOf(structure, sum)[1];
+		expect(describeChildren(structure, product)).toEqual(['parentheses', 'letter:x']);
+	});
+
+	it('hors somme, −3x reste un produit dont le premier facteur est l’opposé de 3', () => {
+		for (const [latex, pick] of [
+			['-3x', (s: ExpressionStructure) => root(s)],
+			['-3x=6', (s: ExpressionStructure) => childrenOf(s, root(s))[0]]
+		] as const) {
+			const structure = structureOf(latex);
+			const product = pick(structure);
+			expect(product.kind).toBe('product');
+			expect(describeChildren(structure, product)).toEqual(['opposite', 'letter:x']);
+		}
 	});
 });
 
@@ -345,6 +399,22 @@ describe('puissances et racines', () => {
 		const node = root(structure);
 		expect(node.kind).toBe('root');
 		expect(childrenOf(structure, node).map((c) => c.role)).toEqual(['radicand', 'index']);
+	});
+});
+
+describe('angles en degrés', () => {
+	it('90° : un bloc, pas une puissance', () => {
+		const structure = structureOf(String.raw`90^\circ`);
+		expect(root(structure).kind).toBe('other');
+		expect(root(structure).children).toEqual([]);
+	});
+
+	it('x + 30° : le terme 30° est un bloc', () => {
+		const structure = structureOf(String.raw`x+30^\circ`);
+		expect(describeChildren(structure, root(structure))).toEqual([
+			'letter:x',
+			String.raw`other:30^\circ`
+		]);
 	});
 });
 
