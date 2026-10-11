@@ -7,9 +7,11 @@
  * - le sens inverse : survoler un mot de la lecture encadre sa sous-expression ;
  * - le message « 6e ou avant » masque encadré et lecture ; jamais pour un visiteur.
  */
-import { beforeAll, describe, it, expect, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, it, expect, vi } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
+// Comme la page : polices et classes du rendu MathLive (le rendu local = celui de la CI)
+import '$lib/utils/mathlive-styles';
 import { stripMarkers, structureFromLatex } from '$lib/mathAST/structure';
 import StructureExplorerHarness from './StructureExplorerHarness.svelte';
 import StructureReadingHarness from './StructureReadingHarness.svelte';
@@ -26,6 +28,38 @@ beforeAll(async () => {
 	// MathLive : import dynamique dans les tests client (docs/pratiques/tests.md § Pièges)
 	await import('mathlive');
 });
+
+/**
+ * Le pointeur reste où le test précédent l'a laissé : sur un mot de la lecture
+ * qu'un nouveau rendu replace sous lui, il encadre sa sous-expression sans
+ * survol voulu. Chaque test part le pointeur garé dans un coin, hors de la lecture.
+ */
+let parking: HTMLElement;
+beforeEach(async () => {
+	parking = document.body.appendChild(document.createElement('div'));
+	parking.style.cssText = 'position: fixed; right: 0; bottom: 0; width: 4px; height: 4px;';
+	await userEvent.hover(page.elementLocator(parking));
+});
+afterEach(() => parking.remove());
+
+type ExplorerProps = { latex: string; readerGrade: string | null; frameLeaves?: boolean };
+
+/**
+ * Rendu de l'explorateur, formules MathLive rendues (shadow DOM rempli) :
+ * le rendu local est celui de la CI, où MathLive peut déjà avoir rendu
+ * quand le test interagit.
+ */
+async function renderExplorer(props: ExplorerProps) {
+	const result = await render(StructureExplorerHarness, props);
+	await expect
+		.poll(() =>
+			[...result.container.querySelectorAll('math-span')].every(
+				(m) => (m.shadowRoot?.childElementCount ?? 0) > 0
+			)
+		)
+		.toBe(true);
+	return result;
+}
 
 function lexiconButtons(container: HTMLElement): string[] {
 	return [...container.querySelectorAll('button.lexicon-term')].map((b) => b.textContent ?? '');
@@ -48,7 +82,7 @@ function nodeIdOf(latex: string, written: string): number {
 
 describe('lecture de l’expression entière (Q10)', () => {
 	it('B1 : la lecture de 2+3y est affichée en permanence, sans survol', async () => {
-		const { container } = await render(StructureExplorerHarness, {
+		const { container } = await renderExplorer({
 			latex: '2+3y',
 			readerGrade: null
 		});
@@ -58,7 +92,7 @@ describe('lecture de l’expression entière (Q10)', () => {
 	});
 
 	it('les formules de la lecture sont rendues comme formules', async () => {
-		const { container } = await render(StructureExplorerHarness, {
+		const { container } = await renderExplorer({
 			latex: '2+3y',
 			readerGrade: null
 		});
@@ -67,7 +101,7 @@ describe('lecture de l’expression entière (Q10)', () => {
 	});
 
 	it('les mots du dictionnaire sont des mots cliquables, même pour un visiteur', async () => {
-		const { container } = await render(StructureExplorerHarness, {
+		const { container } = await renderExplorer({
 			latex: '2+3y',
 			readerGrade: null
 		});
@@ -75,19 +109,19 @@ describe('lecture de l’expression entière (Q10)', () => {
 	});
 
 	it('un mot absent du dictionnaire s’affiche sans lien, sans erreur', async () => {
-		const { container } = await render(StructureExplorerHarness, {
+		const { container } = await renderExplorer({
 			latex: String.raw`\sqrt[3]{x}`,
 			readerGrade: '3'
 		});
 		// Le dictionnaire est chargé (un autre mot de la page est souligné) : l'absence prouve le refus
-		const other = await render(StructureExplorerHarness, { latex: '2+3y', readerGrade: '3' });
+		const other = await renderExplorer({ latex: '2+3y', readerGrade: '3' });
 		await expect.poll(() => lexiconButtons(other.container)).toContain('somme');
 		expect(wholeReading(container)?.textContent).toContain('racine cubique');
 		expect(lexiconButtons(container)).not.toContain('racine cubique');
 	});
 
 	it('un clic sur « somme » ouvre la fiche du dictionnaire au niveau de l’élève', async () => {
-		await render(StructureExplorerHarness, { latex: '2+3y', readerGrade: '4' });
+		await renderExplorer({ latex: '2+3y', readerGrade: '4' });
 		await page.getByRole('button', { name: 'somme', exact: true }).click();
 		await expect.element(page.getByRole('dialog', { name: 'somme' })).toBeInTheDocument();
 		await expect.element(page.getByText(/Résultat d'une addition/)).toBeInTheDocument();
@@ -96,7 +130,7 @@ describe('lecture de l’expression entière (Q10)', () => {
 
 describe('sens inverse : survoler la lecture encadre la sous-expression (Q10)', () => {
 	it('survoler « produit » encadre 3y dans la formule', async () => {
-		const { container } = await render(StructureExplorerHarness, {
+		const { container } = await renderExplorer({
 			latex: '2+3y',
 			readerGrade: null
 		});
@@ -110,23 +144,20 @@ describe('sens inverse : survoler la lecture encadre la sous-expression (Q10)', 
 	});
 
 	it('survoler une formule de la lecture encadre sa sous-expression', async () => {
-		const { container } = await render(StructureExplorerHarness, {
+		const { container } = await renderExplorer({
 			latex: '2+3y',
 			readerGrade: null
 		});
 		const stage = container.querySelector<HTMLElement>('.structure-stage');
-		const y = [...(wholeReading(container)?.querySelectorAll('math-span') ?? [])].find(
-			(f) => f.textContent === 'y'
-		);
-		if (!y) throw new Error('formule y absente de la lecture');
-		await userEvent.hover(page.elementLocator(y));
+		// Le segment par son rôle et son nom : le rendu MathLive répète « y » (texte, MathML)
+		await userEvent.hover(page.getByRole('button', { name: 'y', exact: true }));
 		await expect.poll(() => stage?.dataset.framedId).toBe(String(nodeIdOf('2+3y', 'y')));
 	});
 });
 
 describe('élève de 6e ou avant (section C)', () => {
 	it('C1 : élève de 6e, 5−3+x → message ; encadré et lecture masqués', async () => {
-		const { container } = await render(StructureExplorerHarness, {
+		const { container } = await renderExplorer({
 			latex: '5-3+x',
 			readerGrade: '6'
 		});
@@ -136,7 +167,7 @@ describe('élève de 6e ou avant (section C)', () => {
 	});
 
 	it('C2 : élève de CM2, −3+x → message avec son exemple en formule', async () => {
-		const { container } = await render(StructureExplorerHarness, {
+		const { container } = await renderExplorer({
 			latex: '-3+x',
 			readerGrade: 'CM2'
 		});
@@ -146,7 +177,7 @@ describe('élève de 6e ou avant (section C)', () => {
 	});
 
 	it('C3 : élève de 6e, 2+3+4 → pas de message, lecture visible', async () => {
-		const { container } = await render(StructureExplorerHarness, {
+		const { container } = await renderExplorer({
 			latex: '2+3+4',
 			readerGrade: '6'
 		});
@@ -156,7 +187,7 @@ describe('élève de 6e ou avant (section C)', () => {
 
 	it('C4 : visiteur ou élève de 5e, 5−3+x → jamais de message', async () => {
 		for (const readerGrade of [null, '5']) {
-			const { container } = await render(StructureExplorerHarness, {
+			const { container } = await renderExplorer({
 				latex: '5-3+x',
 				readerGrade
 			});
@@ -183,7 +214,7 @@ describe('corpus : lecture courte sans lien (revue du lot 4)', () => {
 
 describe('clavier sur la lecture principale (revue du lot 4)', () => {
 	it('Tab atteint texte et formules, nommés par leur texte, et encadre leur sous-expression', async () => {
-		const { container } = await render(StructureExplorerHarness, {
+		const { container } = await renderExplorer({
 			latex: '2+3y',
 			readerGrade: null
 		});
@@ -203,7 +234,7 @@ describe('clavier sur la lecture principale (revue du lot 4)', () => {
 	});
 
 	it('Entrée sur « produit » ouvre la fiche ; l’encadré de 3y reste tant qu’elle est ouverte', async () => {
-		const { container } = await render(StructureExplorerHarness, {
+		const { container } = await renderExplorer({
 			latex: '2+3y',
 			readerGrade: null
 		});
@@ -224,19 +255,16 @@ describe('clavier sur la lecture principale (revue du lot 4)', () => {
 
 describe('réglage « nombres et lettres seuls » (revue du lot 4)', () => {
 	it('décoché : survoler « 2 » dans la lecture n’encadre rien ; « produit » encadre 3y', async () => {
-		const { container } = await render(StructureExplorerHarness, {
+		const { container } = await renderExplorer({
 			latex: '2+3y',
 			readerGrade: null,
 			frameLeaves: false
 		});
 		const stage = container.querySelector<HTMLElement>('.structure-stage');
-		const two = [...(wholeReading(container)?.querySelectorAll('math-span') ?? [])].find(
-			(f) => f.textContent === '2'
-		);
-		if (!two) throw new Error('formule 2 absente de la lecture');
-		await userEvent.hover(page.elementLocator(two));
+		const two = page.getByRole('button', { name: '2', exact: true });
+		await userEvent.hover(two);
 		// Le survol a bien eu lieu (segment survolé), mais rien n'est encadré
-		await expect.poll(() => two.closest('.reading-segment')?.matches(':hover')).toBe(true);
+		await expect.poll(() => two.element().matches(':hover')).toBe(true);
 		expect(stage?.dataset.framedId).toBeUndefined();
 		expect(container.querySelectorAll('.structure-frame')).toHaveLength(0);
 		await expect.poll(() => lexiconButtons(container)).toContain('produit');
