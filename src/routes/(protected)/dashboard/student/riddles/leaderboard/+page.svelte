@@ -139,7 +139,7 @@
 		<Card.Content>
 			{#if data.leaderboard.length > 0}
 				<div class="space-y-2">
-					{#each data.leaderboard as entry (entry.student_id)}
+					{#each data.leaderboard as entry, index (index)}
 						<div
 							class={cn(
 								'flex items-center justify-between rounded-lg border p-3 transition-colors',

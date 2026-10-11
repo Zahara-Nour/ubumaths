@@ -24,7 +24,16 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		throw error(500, 'Impossible de charger le classement');
 	}
 
-	const leaderboard = data ?? [];
+	// Prénom et score seulement : l'identifiant des camarades ne part pas au navigateur.
+	const leaderboard = (data ?? []).map(
+		({ rank, firstname, riddles_gidouilles, riddles_completed, is_me }) => ({
+			rank,
+			firstname,
+			riddles_gidouilles,
+			riddles_completed,
+			is_me
+		})
+	);
 	const currentUserRank = leaderboard.find((entry) => entry.is_me)?.rank ?? null;
 
 	return { leaderboard, currentUserRank };
