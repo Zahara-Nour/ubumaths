@@ -48,6 +48,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'/api/errors/cleanup',
 	// Profil créé à la connexion Google : valeurs imposées par le serveur
 	'/auth/callback',
+	// Inscription par code de classe : résolution du code par une RPC réservée à
+	// service_role, derrière les limites de débit (pas d'énumération des codes)
+	'/auth/register/+page.server',
 	// Consentement parental : IP et navigateur relevés par le serveur, pas par le client
 	'/consent/',
 	// Question d'âge en 2nde : la base refuse à l'élève l'écriture de sa réponse

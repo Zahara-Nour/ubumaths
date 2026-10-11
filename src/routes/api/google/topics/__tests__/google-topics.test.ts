@@ -17,6 +17,11 @@ import { createMockSupabase } from '$tests/helpers';
  */
 
 // Mock middleware
+// Les routes sont gardées par l'interrupteur (B8) : on teste leur comportement allumé.
+vi.mock('$lib/config/google-classroom', () => ({
+	GOOGLE_CLASSROOM_ENABLED: true
+}));
+
 vi.mock('$lib/server/middleware/auth', () => ({
 	requireRole: vi.fn()
 }));

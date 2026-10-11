@@ -51,6 +51,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import type { TablesUpdate } from '$lib/types/database';
@@ -70,6 +71,8 @@ import {
  * Supports pagination and filtering by class, course, and visibility
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can list shared materials
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -272,6 +275,8 @@ export const GET: RequestHandler = async ({ locals, url }) => {
  * Creates shared_materials records for material+class combinations
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -424,6 +429,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
  * Deletes shared_materials records (idempotent)
  */
 export const DELETE: RequestHandler = async ({ request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -494,6 +501,8 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
  * Updates visibility, category, or custom description
  */
 export const PATCH: RequestHandler = async ({ locals, request }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can update shared materials
 	await requireRole(locals, 'teacher');
 

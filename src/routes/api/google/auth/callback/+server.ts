@@ -23,6 +23,7 @@
  */
 
 import { error, redirect } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { exchangeCodeForTokens, validateToken } from '$lib/server/google/oauth';
 import { encryptToken } from '$lib/server/google/encryption';
@@ -41,6 +42,8 @@ import { requireRole } from '$lib/server/middleware/auth';
  * Redirects to: /dashboard/teacher/settings/google?connected=true
  */
 export const GET: RequestHandler = async ({ url, locals, cookies }) => {
+	assertGoogleClassroomEnabled();
+
 	// 1. Verify user is authenticated and has teacher role
 	const { user } = await requireRole(locals, 'teacher');
 

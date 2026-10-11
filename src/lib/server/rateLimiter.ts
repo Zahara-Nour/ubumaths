@@ -122,6 +122,12 @@ interface RateLimitConfig {
 	key: string;
 	maxAttempts: number;
 	windowSeconds: number;
+	/**
+	 * En cas de panne (erreur RPC, réponse vide, exception) : refuser au lieu de laisser
+	 * passer. Réservé à l'élévation admin (B8) : une panne ne doit pas ouvrir le forçage
+	 * du mot de passe admin, alors qu'elle ne doit pas bloquer la connexion des élèves.
+	 */
+	failClosed?: boolean;
 }
 
 export interface RateLimitResult {
@@ -131,6 +137,12 @@ export interface RateLimitResult {
 }
 
 type UserRole = Database['public']['Enums']['user_role'];
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const ELEVATION_UNAVAILABLE_MESSAGE = 'Élévation indisponible. Réessayez plus tard.';
 
 // ============================================================================
 // CORE RATE LIMITING LOGIC
@@ -146,7 +158,8 @@ type UserRole = Database['public']['Enums']['user_role'];
  *
  * **Fail-Open Strategy**: Database errors return `limited: false` (allows
  * request) to prevent DoS attacks where an attacker crashes the database to
- * block legitimate users.
+ * block legitimate users. Exception : `failClosed` (élévation admin) refuse en
+ * cas de panne, pendant toute la fenêtre.
  *
  * **Nullability note**: the generated Database type marks `current_count` and
  * `expires_at` as non-null, but the SQL function's blocked branch re-fetches
@@ -156,8 +169,12 @@ type UserRole = Database['public']['Enums']['user_role'];
 async function checkRateLimit(
 	config: RateLimitConfig
 ): Promise<{ limited: boolean; expiresAt: Date | null }> {
-	const { key, maxAttempts, windowSeconds } = config;
+	const { key, maxAttempts, windowSeconds, failClosed = false } = config;
 	const supabase = getServiceRoleClient();
+	const onFailure = () =>
+		failClosed
+			? { limited: true, expiresAt: new Date(Date.now() + windowSeconds * 1000) }
+			: { limited: false, expiresAt: null };
 
 	try {
 		const { data, error } = await supabase.rpc('check_and_increment_rate_limit', {
@@ -168,13 +185,13 @@ async function checkRateLimit(
 
 		if (error) {
 			logger.error('Rate limit RPC error:', error);
-			return { limited: false, expiresAt: null }; // Fail open
+			return onFailure();
 		}
 
 		const row = data?.[0];
 		if (!row) {
 			logger.error('Rate limit RPC returned no data', { key: maskKey(key) });
-			return { limited: false, expiresAt: null }; // Fail open
+			return onFailure();
 		}
 
 		if (row.allowed) {
@@ -195,7 +212,7 @@ async function checkRateLimit(
 		};
 	} catch (error) {
 		logger.error('Rate limit error:', error);
-		return { limited: false, expiresAt: null }; // Fail open on exceptions
+		return onFailure();
 	}
 }
 
@@ -206,15 +223,17 @@ async function checkRateLimit(
  * @param maxAttempts - Maximum allowed attempts within window
  * @param windowSeconds - Time window in seconds
  * @param message - User-friendly French error message to return if rate limited
+ * @param failClosed - Refuser en cas de panne (voir {@link RateLimitConfig.failClosed})
  * @returns RateLimitResult with allowed flag, message, and retryAfter
  */
 async function checkRateLimitWithMessage(
 	key: string,
 	maxAttempts: number,
 	windowSeconds: number,
-	message: string
+	message: string,
+	failClosed = false
 ): Promise<RateLimitResult> {
-	const result = await checkRateLimit({ key, maxAttempts, windowSeconds });
+	const result = await checkRateLimit({ key, maxAttempts, windowSeconds, failClosed });
 
 	if (result.limited && result.expiresAt) {
 		const retryAfter = Math.ceil((result.expiresAt.getTime() - Date.now()) / 1000);
@@ -452,7 +471,7 @@ export async function checkLoginRateLimitByEmail(email: string): Promise<RateLim
 export async function checkElevationRateLimitByIP(ip: string): Promise<RateLimitResult> {
 	if (!ip) {
 		logger.warn('Missing IP address for elevation rate limit check');
-		return { allowed: true }; // Fail open rather than blocking legitimate users
+		return { allowed: false, message: ELEVATION_UNAVAILABLE_MESSAGE }; // Fermé (B8)
 	}
 
 	const key = `ratelimit:elevate:ip:${ip}`;
@@ -460,7 +479,8 @@ export async function checkElevationRateLimitByIP(ip: string): Promise<RateLimit
 		key,
 		5,
 		900, // 15 minutes
-		'Trop de tentatives. Réessayez dans 15 minutes.'
+		'Trop de tentatives. Réessayez dans 15 minutes.',
+		true // Fermé en cas de panne (B8)
 	);
 
 	if (!result.allowed) {
@@ -490,7 +510,7 @@ export async function checkElevationRateLimitByIP(ip: string): Promise<RateLimit
 export async function checkElevationRateLimitByEmail(email: string): Promise<RateLimitResult> {
 	if (!email) {
 		logger.warn('Missing email for elevation rate limit check');
-		return { allowed: true }; // Fail open
+		return { allowed: false, message: ELEVATION_UNAVAILABLE_MESSAGE }; // Fermé (B8)
 	}
 
 	// Normalize email to lowercase for consistent tracking
@@ -501,7 +521,8 @@ export async function checkElevationRateLimitByEmail(email: string): Promise<Rat
 		key,
 		3,
 		900, // 15 minutes
-		'Trop de tentatives pour cet email. Réessayez dans 15 minutes.'
+		'Trop de tentatives pour cet email. Réessayez dans 15 minutes.',
+		true // Fermé en cas de panne (B8)
 	);
 
 	if (!result.allowed) {
