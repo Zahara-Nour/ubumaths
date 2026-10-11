@@ -802,6 +802,6 @@ accepté pour l'instant.
       primitive `(x-1)e^x`.
 - [x] Vérifications : pedagogical-integration, integration, pedagogical-simplify (44 fichiers,
       2 083 tests), atelier (100 fichiers, 2 025 tests) ; `pnpm test:server src/lib/mathAST
-  src/lib/questions/generator` une fois : 498 fichiers, 20 745 tests verts ;
+src/lib/questions/generator` une fois : 498 fichiers, 20 745 tests verts ;
       `check:incremental` 0 ; `types:cliquet` tenu (0 erreur, fichier existant) ; `lint:fast` rien.
 - [ ] code-reviewer · [ ] PR
