@@ -52,10 +52,16 @@ type TermOrderKey = {
 // Constantes
 // =============================================================================
 
-/** Rang de la catégorie d'une base dans un produit. */
-const CATEGORY_SYMBOL = 0;
-const CATEGORY_FUNCTION = 1;
-const CATEGORY_OTHER = 2;
+/**
+ * Rang de la catégorie d'une base dans un produit. Les constantes `e`, `i`, `π`
+ * forment la PREMIÈRE catégorie : devant toute lettre, latine (minuscule ou
+ * majuscule) ou grecque. Comparées comme du texte, leurs clés (`\euler`, `\i`,
+ * `\pi`) passaient derrière `A` et `\alpha` (`A\pi`, `\alpha \imaginaryI`).
+ */
+const CATEGORY_CONSTANT = 0;
+const CATEGORY_SYMBOL = 1;
+const CATEGORY_FUNCTION = 2;
+const CATEGORY_OTHER = 3;
 
 /** La constante d'Euler dans une clé d'ordre (voir `writtenForm`). */
 const EULER_ORDER_KEY: MathNode = variable('\\euler');
@@ -77,9 +83,9 @@ const IMAGINARY_ORDER_KEY: MathNode = variable('\\i');
  * `e`, qui la rangerait parmi les lettres (`a e`). Le nom `\euler` ne sert qu'à
  * la clé : il n'est jamais affiché ni relu.
  *
- * L'unité imaginaire de même, sous `\i` : devant les lettres (`i x`), après
- * `e` et devant `\pi` et les lettres grecques (`i\pi`, `i\theta`, l'écriture
- * de `e^{i\pi}`).
+ * L'unité imaginaire de même, sous `\i`. Entre constantes (catégorie à part,
+ * voir `categoryOf`), l'ordre des clés donne `e`, `i`, `π` (`e i`, `i\pi`,
+ * l'écriture de `e^{i\pi}`).
  */
 function writtenForm(node: MathNode): string {
 	try {
@@ -94,11 +100,12 @@ function writtenForm(node: MathNode): string {
 }
 
 function categoryOf(base: MathNode): number {
-	if (isImaginaryUnit(base)) return CATEGORY_SYMBOL;
+	if (isImaginaryUnit(base)) return CATEGORY_CONSTANT;
 	switch (base.type) {
+		case 'constant':
+			return CATEGORY_CONSTANT;
 		case 'variable':
 		case 'greek':
-		case 'constant':
 		case 'symbol':
 		case 'hole':
 		case 'subscript':

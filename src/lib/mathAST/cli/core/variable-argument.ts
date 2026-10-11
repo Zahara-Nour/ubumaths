@@ -632,12 +632,14 @@ function applyKeyword(
 		return null;
 	}
 	switch (keyword) {
-		case 'pour':
-			if (reservedLetterMessage(value) !== null) return reservedLetterMessage(value);
+		case 'pour': {
+			const reserved = reservedLetterMessage(value);
+			if (reserved !== null) return reserved;
 			if (!VARIABLE_NAME.test(value)) return `« ${value} » n'est pas une variable.`;
 			if (result.variable !== null) return 'La variable est donnée deux fois.';
 			result.variable = value;
 			return null;
+		}
 		case 'ordre':
 			if (!ORDER.test(value)) return `L'ordre est un entier : « ordre 3 », pas « ordre ${value} ».`;
 			result.order = parseInt(value, 10);

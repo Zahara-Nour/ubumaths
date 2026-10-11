@@ -55,12 +55,23 @@ describe('toCustom écrit i, que parseCustom relit à l’identique', () => {
 	});
 });
 
-// Ordre choisi : i se range comme π et e, devant les lettres (`x\pi` → `\pi x`).
-describe('tidy : i devant les lettres, comme π', () => {
+// Ordre choisi : les constantes e, i, π, dans cet ordre, devant TOUTE lettre, latine
+// (minuscule ou majuscule) ou grecque (`x\pi` → `\pi x`, `\alpha i` → `i\alpha`).
+describe('tidy : e, i, π devant toutes les lettres', () => {
 	it.each([
 		['x i', '\\imaginaryI x'],
 		['x\\pi', '\\pi x'],
-		['3 x i', '3 \\imaginaryI x']
+		['3 x i', '3 \\imaginaryI x'],
+		['i\\theta', '\\imaginaryI \\theta'],
+		['i\\beta', '\\imaginaryI \\beta'],
+		['i\\Delta', '\\imaginaryI \\Delta'],
+		['iA', '\\imaginaryI A'],
+		['e^{i\\alpha}', '\\exponentialE^{\\imaginaryI \\alpha}'],
+		['\\alpha\\pi', '\\pi \\alpha'],
+		['A\\pi', '\\pi A'],
+		['\\pi i', '\\imaginaryI \\pi'],
+		['i e', '\\exponentialE \\imaginaryI'],
+		['\\pi e', '\\exponentialE \\pi']
 	])('%s → %s', (input, expected) => {
 		expect(toLatex(tidy(parseLatex(input)))).toBe(expected);
 	});
