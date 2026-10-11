@@ -150,7 +150,7 @@
 		"pg": "^8.23.1",
 		"playwright": "^1.64.0",
 		"prettier": "3.4.2",
-		"prettier-plugin-svelte": "3.3.3",
+		"prettier-plugin-svelte": "4.1.1",
 		"prettier-plugin-tailwindcss": "^0.6.14",
 		"rollup-plugin-visualizer": "^7.1.1",
 		"shadcn-svelte": "^1.7.0",
