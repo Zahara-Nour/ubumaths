@@ -79,7 +79,10 @@
 	<section class="mb-10 flex flex-col gap-3" aria-labelledby="propose">
 		<h2 id="propose" class="font-semibold">Ce que Chiphre propose</h2>
 		<ul class="flex list-disc flex-col gap-1.5 ps-6 marker:text-muted-foreground">
-			<li>Un suivi de progression personnalisé, accessible aux parents.</li>
+			<li>
+				Un suivi de progression personnalisé pour l’élève ; pour les parents, le cahier de textes de
+				la classe (séances et devoirs), par un lien que donne le professeur.
+			</li>
 			<li>Une préparation conforme au programme français.</li>
 			<li>Conformité RGPD : l’utilisation de vos données personnelles est encadrée.</li>
 			<li>Un décor savoureux ; une pédagogie rigoureuse.</li>
