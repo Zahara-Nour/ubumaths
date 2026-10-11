@@ -239,7 +239,11 @@ Tout ce qui met deux élèves en relation est borné par `my_school()` / `same_s
 
 ⚠️ Classement des énigmes (`riddle_progress`, vue invoker) : pas de fuite — un élève ne voit que les
 profils de ses camarades/amis et ses propres tentatives —, mais le classement est **faux** (les
-autres à 0). Bug fonctionnel, à traiter à part.
+autres à 0). Correction décidée par David (2026-10-11) : `riddle_school_leaderboard(p_limit)`,
+SECURITY DEFINER bornée à `my_school()`, hors comptes de test, ne rend que prénom, gidouilles
+des énigmes, énigmes réussies, rang et `is_me` (migration `20261015090800`, test
+`tests/integration/classement-enigmes-ecole.test.ts`). La page la lira dans une PR suivante
+(`db:types` génère depuis la prod).
 
 ## Comment étendre
 
@@ -299,7 +303,7 @@ autres à 0). Bug fonctionnel, à traiter à part.
 - ✅ File multijoueur et scores 2048 : bornés / privés le 2026-10-10 (D18, voir « L'école est la
   frontière sociale »).
 - **Classement des énigmes** : vue `riddle_progress` lue avec les droits de l'élève — pas de fuite,
-  mais classement faux (les autres à 0).
+  mais classement faux (les autres à 0) ; remplacée par `riddle_school_leaderboard` (voir plus haut).
 - **Sans appelant applicatif** : `process_weekly_rewards`, `award_weekly_reward`,
   `purchase_shop_item`, `calculate_daily_challenge_gidouilles` (défis quotidiens supprimés).
 - **Navadra** : routes vivantes mais hors catalogue, quatre liens morts dans le hub, gains de combat
