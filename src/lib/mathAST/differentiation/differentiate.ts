@@ -47,6 +47,8 @@ import {
 	atanhRule,
 	simplifiedMultiply
 } from './rules';
+import { segmentHasName } from '../common/segment-names';
+import { one } from '../common/simplify';
 import { substitute } from '../eval/substitute';
 import {
 	derivativeFunc,
@@ -181,8 +183,11 @@ function differentiateNode(
 			return constantRule();
 
 		case 'segmentLength':
+			// Une longueur est une inconnue : d/dAB(AB) = d/dAB(BA) = 1, constante sinon
+			return segmentHasName(node, variable) ? one() : constantRule();
+
 		case 'figureName':
-			// Longueur `AB` et nom de figure `ABC` : des constantes pour la dérivation
+			// Un nom de figure (`ABC`) n'est pas une inconnue : constante
 			return constantRule();
 
 		case 'addition': {
