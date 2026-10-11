@@ -50,6 +50,9 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'diff-cubes-numeric': 'Factorisation : a³ - b³ = (a-b)(a² + ab + b²)',
 	'common-factor-products': 'Factorisation par facteur commun : a·c + b·c = (a+b)·c',
 	'common-factor-bare-term': 'Factorisation par facteur commun : c + b·c = (b+1)·c',
+	// Le contenu : facteur numérique, monôme, ou non polynomial (eˣ, (x+1)…).
+	'common-factor-content-add': 'Factorisation par facteur commun : k·a + k·b = k(a+b)',
+	'common-factor-content-sub': 'Factorisation par facteur commun : k·a - k·b = k(a-b)',
 
 	// ---- valeur absolue -------------------------------------------------------
 	'abs-negation': 'Simplification : |-x| = |x|',
@@ -161,6 +164,8 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'diff-cubes-symbolic': () => 'On factorise a³ - b³',
 	'common-factor-products': () => 'On met le facteur commun en évidence',
 	'common-factor-bare-term': () => 'On met le facteur commun en évidence',
+	'common-factor-content-add': () => 'On met le facteur commun en évidence',
+	'common-factor-content-sub': () => 'On met le facteur commun en évidence',
 	// trig
 	pythagorean: () => 'On utilise sin²(x) + cos²(x) = 1',
 	'sin-negative': () => 'sin est impaire : sin(-x) = -sin(x)',
@@ -202,6 +207,8 @@ const COLLEGE_TITLES: RuleFnMap<TitleFn> = {
 	'perfect-square-trinomial': () => 'On reconnaît a² ± 2ab + b² = (a±b)²',
 	'common-factor-products': () => 'On met en facteur ce qui est commun',
 	'common-factor-bare-term': () => 'On met en facteur ce qui est commun',
+	'common-factor-content-add': () => 'On met en facteur ce qui est commun',
+	'common-factor-content-sub': () => 'On met en facteur ce qui est commun',
 	'combine-like-terms': () => 'On regroupe les termes en x',
 	'simplify-fraction': () => 'On simplifie la fraction'
 };
@@ -223,6 +230,8 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'perfect-square-trinomial': () => 'Trinôme carré parfait',
 	'common-factor-products': () => 'Facteur commun',
 	'common-factor-bare-term': () => 'Facteur commun',
+	'common-factor-content-add': () => 'Facteur commun',
+	'common-factor-content-sub': () => 'Facteur commun',
 	pythagorean: () => 'Pythagore',
 	'sin-negative': () => 'Imparité de sin',
 	'cos-negative': () => 'Parité de cos',
@@ -258,6 +267,10 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		'Les deux termes ont un facteur commun : on l’écrit une seule fois, devant la somme de ce qui reste — a·c + b·c = (a+b)·c.',
 	'common-factor-bare-term': () =>
 		'Le facteur commun est écrit seul dans l’un des termes : il y compte donc pour 1, et c’est de là que vient le 1 de la parenthèse — c + b·c = (b+1)·c.',
+	'common-factor-content-add': () =>
+		'Tous les termes ont un facteur commun : on l’écrit une seule fois, et la parenthèse garde ce qui reste de chaque terme — k·a + k·b = k(a+b).',
+	'common-factor-content-sub': () =>
+		'Tous les termes ont un facteur commun : on l’écrit une seule fois, et la parenthèse garde ce qui reste de chaque terme — k·a - k·b = k(a-b).',
 	pythagorean: () => 'L’identité fondamentale : pour tout x réel, sin²(x) + cos²(x) = 1.',
 	'sin-negative': () => 'La fonction sinus est impaire : sin(-x) = -sin(x).',
 	'cos-negative': () => 'La fonction cosinus est paire : cos(-x) = cos(x).',
@@ -286,7 +299,11 @@ const COLLEGE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'common-factor-products': () =>
 		'Le même facteur se trouve dans les deux termes : on l’écrit une fois devant la parenthèse.',
 	'common-factor-bare-term': () =>
-		'Le facteur commun est seul dans l’un des termes : il compte pour 1 dans la parenthèse.'
+		'Le facteur commun est seul dans l’un des termes : il compte pour 1 dans la parenthèse.',
+	'common-factor-content-add': () =>
+		'Le même facteur se trouve dans tous les termes : on l’écrit une fois, à côté de la parenthèse.',
+	'common-factor-content-sub': () =>
+		'Le même facteur se trouve dans tous les termes : on l’écrit une fois, à côté de la parenthèse.'
 };
 
 const PRIMAIRE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
