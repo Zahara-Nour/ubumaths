@@ -215,7 +215,7 @@ if (!v.success) throw error(400, v.error.issues[0].message);
 - [ ] Tests ajoutés ou touchés : `pnpm types:cliquet` tenu (un nouveau test naît typé ; une erreur corrigée → `--maj`)
 - [ ] `code-reviewer` (+ `security-auditor` si applicable)
 - [ ] Zod sur les entrées · pas de `any` · MySelect/MyCheckbox · runes only
-- [ ] **Doc à jour dans la même PR** : chaque doc dont le `couvre:` touche un fichier modifié est mise à jour (skill `doc-a-jour`), sinon une ligne `Doc-inchangée: <raison>` dans un commit. Garde : `pnpm docs:check-a-jour`.
+- [ ] **Doc à jour dans la même PR** : chaque doc dont le `couvre:` touche un fichier modifié est mise à jour (skill `doc-a-jour`), sinon une ligne `Doc-inchangée: <raison>` dans un commit. Zone sans doc touchée (`trous`) : la doc d'abord, ou `Doc-reportée: <raison>` si David reporte. Garde : `pnpm docs:check-a-jour --depuis origin/main` (sans `--depuis`, elle ne vérifie rien).
 
 ---
 

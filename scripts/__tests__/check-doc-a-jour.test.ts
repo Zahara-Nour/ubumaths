@@ -7,7 +7,10 @@
  * - qu'une PR qui modifie un fichier couvert modifie aussi la doc qui le couvre,
  *   sauf exemption explicite `Doc-inchangée: <raison>` dans un commit ;
  * - que chaque fichier de code soit couvert par une doc, exclu, ou listé comme
- *   trou (zone sans doc, connue).
+ *   trou (zone sans doc, connue) ;
+ * - « doc d'abord » : qu'une PR qui touche un trou écrive la doc de la zone, sauf
+ *   report explicite `Doc-reportée: <raison>` (zone trop grosse, David tranche) ;
+ * - qu'un trou dont la zone a sa doc sorte de la liste.
  *
  * Ce qui est gardé ici : la lecture de l'en-tête, le calcul des docs à mettre à
  * jour, l'exemption, la couverture. Aucun test ne lit docs/ : tout est en chaînes.
@@ -19,6 +22,9 @@ import {
 	parseIndexe,
 	docsToUpdate,
 	hasDocExemption,
+	hasDocDeferral,
+	holesTouched,
+	staleHoles,
 	uncoveredFiles,
 	type DocCoverage,
 	type CoverageConfig
@@ -166,6 +172,131 @@ describe('uncoveredFiles — chaque fichier de code a sa doc', () => {
 				CONFIG
 			)
 		).toEqual([]);
+	});
+});
+
+// Trous de fixture : une zone sans doc (legacy), un fichier seulement INDEXÉ par
+// serveur.md (indexer n'est pas décrire), une zone de deux globs sous la même
+// note, et une zone que atelier.md décrit déjà (trou périmé).
+const HOLES_CONFIG: CoverageConfig = {
+	...CONFIG,
+	trous: [
+		{ glob: 'src/lib/legacy/**', note: 'ancien code' },
+		{ glob: 'src/lib/server/chapters.ts', note: 'cours' },
+		{ glob: 'src/routes/(protected)/cours/**', note: 'cours' },
+		{ glob: 'src/lib/atelier/vieux/**', note: 'atelier ancien' }
+	]
+};
+
+describe('holesTouched — doc d’abord : les zones sans doc qu’une PR touche', () => {
+	it('signale une zone sans doc touchée, fichiers groupés par zone', () => {
+		expect(
+			holesTouched(
+				['src/lib/legacy/a.ts', 'src/lib/legacy/b.ts', 'src/lib/atelier/c.ts'],
+				DOCS,
+				HOLES_CONFIG
+			)
+		).toEqual([{ note: 'ancien code', files: ['src/lib/legacy/a.ts', 'src/lib/legacy/b.ts'] }]);
+	});
+
+	it('réunit les globs d’une même zone', () => {
+		expect(
+			holesTouched(
+				['src/lib/server/chapters.ts', 'src/routes/(protected)/cours/+page.svelte'],
+				DOCS,
+				HOLES_CONFIG
+			)
+		).toEqual([
+			{
+				note: 'cours',
+				files: ['src/lib/server/chapters.ts', 'src/routes/(protected)/cours/+page.svelte']
+			}
+		]);
+	});
+
+	it('compte un fichier seulement indexé comme sans doc', () => {
+		expect(holesTouched(['src/lib/server/chapters.ts'], DOCS, HOLES_CONFIG)).toEqual([
+			{ note: 'cours', files: ['src/lib/server/chapters.ts'] }
+		]);
+	});
+
+	it('ignore un fichier qu’une doc décrit déjà, même listé en trou', () => {
+		expect(holesTouched(['src/lib/atelier/vieux/x.ts'], DOCS, HOLES_CONFIG)).toEqual([]);
+	});
+
+	it('ignore les tests et le hors périmètre', () => {
+		// Un trou qui déborde du périmètre : seul le contrôle de `scope` écarte scripts/
+		const config = {
+			...HOLES_CONFIG,
+			trous: [...HOLES_CONFIG.trous, { glob: '**/legacy*', note: 'x' }]
+		};
+		expect(
+			holesTouched(['src/lib/legacy/__tests__/a.test.ts', 'scripts/legacy.ts'], DOCS, config)
+		).toEqual([]);
+	});
+});
+
+describe('hasDocDeferral — le report décidé par David', () => {
+	it('reconnaît la ligne Doc-reportée avec une raison', () => {
+		expect(
+			hasDocDeferral(['fix(x): y\n\nDoc-reportée: zone cours trop grosse, accord de David'])
+		).toBe(true);
+	});
+
+	it('refuse un report sans raison', () => {
+		expect(hasDocDeferral(['fix: x\n\nDoc-reportée:'])).toBe(false);
+	});
+
+	it('ne prend pas une exemption Doc-inchangée pour un report', () => {
+		expect(hasDocDeferral(['fix: x\n\nDoc-inchangée: renommage interne'])).toBe(false);
+	});
+});
+
+describe('staleHoles — un trou dont la zone a sa doc sort de la liste', () => {
+	const FILES = [
+		'src/lib/legacy/a.ts',
+		'src/lib/server/chapters.ts',
+		'src/routes/(protected)/cours/+page.svelte',
+		'src/lib/atelier/vieux/x.ts'
+	];
+
+	it('signale un trou qu’une doc décrit entièrement', () => {
+		expect(staleHoles(FILES, DOCS, HOLES_CONFIG)).toEqual([
+			{ glob: 'src/lib/atelier/vieux/**', note: 'atelier ancien' }
+		]);
+	});
+
+	it('signale un trou qui ne désigne plus aucun fichier gardé', () => {
+		const files = FILES.filter((f) => !f.startsWith('src/lib/legacy/')).concat(
+			'src/lib/legacy/__tests__/a.test.ts'
+		);
+		expect(staleHoles(files, DOCS, HOLES_CONFIG).map((t) => t.glob)).toEqual([
+			'src/lib/legacy/**',
+			'src/lib/atelier/vieux/**'
+		]);
+	});
+
+	it('garde un trou dont un fichier n’est qu’indexé', () => {
+		expect(staleHoles(FILES, DOCS, HOLES_CONFIG).map((t) => t.glob)).not.toContain(
+			'src/lib/server/chapters.ts'
+		);
+	});
+});
+
+describe('COVERAGE_CONFIG — chaque trou nomme sa zone', () => {
+	it('porte une note, affichée quand une PR touche la zone', () => {
+		const sansNote = COVERAGE_CONFIG.trous.filter((t) => !t.note?.trim()).map((t) => t.glob);
+		expect(sansNote).toEqual([]);
+	});
+
+	it('range un fichier dans la zone précise quand un glob large la contient', () => {
+		// Le premier trou qui correspond gagne : trier `trous` rangerait ces fichiers
+		// sous la zone large. Aucune doc ici (aucun test ne lit docs/).
+		const noteOf = (file: string) => holesTouched([file], [], COVERAGE_CONFIG)[0]?.note;
+		expect(noteOf('src/routes/api/admin/exercises/x/+server.ts')).toMatch(/^exercices/);
+		expect(noteOf('src/routes/api/admin/users/+server.ts')).toMatch(/^classes, élèves/);
+		expect(noteOf('src/routes/api/students/s1/warnings/+server.ts')).toMatch(/^messagerie/);
+		expect(noteOf('src/routes/api/students/s1/+server.ts')).toMatch(/^classes, élèves/);
 	});
 });
 
