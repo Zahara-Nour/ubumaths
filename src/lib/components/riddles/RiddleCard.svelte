@@ -13,7 +13,8 @@
 	Props:
 	- riddle: StudentRiddle - The riddle, without expected answer nor correction
 	- mode: 'display' | 'interactive' - Display only or allow interaction
-	- onSubmit: (answer) => void - Callback for answer submission
+	- onSubmit: (answer) => Promise<boolean> | void - Callback; resolves false when the
+	  submission failed, so the student can try again
 	- size: 'sm' | 'md' | 'lg' - Card size
 	- studentAttempt?: DbRiddleAttempt - Student's latest attempt (if any)
 -->
@@ -46,7 +47,7 @@
 	interface Props {
 		riddle: StudentRiddle;
 		mode?: 'display' | 'interactive';
-		onSubmit?: (answer: unknown) => void;
+		onSubmit?: (answer: unknown) => Promise<boolean> | void;
 		size?: 'sm' | 'md' | 'lg';
 		studentAttempt?: DbRiddleAttempt | null;
 		loading?: boolean;
@@ -116,7 +117,7 @@
 	// HANDLERS
 	// ============================================================================
 
-	function handleSubmit() {
+	async function handleSubmit() {
 		if (!canSubmit) return;
 
 		let answer: unknown;
@@ -144,7 +145,11 @@
 
 		// Le verdict vient du serveur : la page n'a pas la réponse attendue.
 		isSubmitted = true;
-		onSubmit?.(answer);
+		const accepted = await onSubmit?.(answer);
+		// Envoi refusé ou échoué (erreur serveur, réseau) : l'élève reprend la main.
+		if (accepted === false) {
+			isSubmitted = false;
+		}
 	}
 
 	// ============================================================================

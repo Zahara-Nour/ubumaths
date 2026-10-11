@@ -261,7 +261,7 @@ une 2ᵉ migration, après le `deploy:prod` qui livre la route. Test :
 les pages `dashboard/student/riddles/**` passent l'énigme par `toStudentRiddle`
 (`src/lib/types/riddle.ts`), qui ne garde de `answer` que le type de saisie et, pour un QCM, les
 choix. `RiddleCard` ne corrige donc plus dans le navigateur : le verdict vient de la route de
-soumission. Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`. La colonne
+soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`. La colonne
 `riddles.answer` reste lisible par la base pour l'élève (énigme du jour ou assignée) : la fermer
 demande une décision sur la lecture côté prof.
 
