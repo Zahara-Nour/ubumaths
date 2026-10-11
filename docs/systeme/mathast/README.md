@@ -190,12 +190,14 @@ racine évidente) branchées sur l'intention `factoriser`. Livraison par lots : 
 migration des appelants internes (`limits`, `integration`, `domain`, `normalize`) et suppression
 du code mort → écriture des primitives (V18).
 
-**État au 2026-10-11 : lot 1 (le noyau), lot 2 (les stratégies, branchées sur l'intention
-`factoriser`, donc sur l'atelier), lot 3a (limites et intégration, voir
-[§ Les appelants](#les-appelants-migrés-lot-3a)) et lot 3b (le ménage, voir
-[§ Le ménage](#le-ménage-lot-3b)) écrits ; lot 4 (l'exponentielle commune d'une primitive mise
-en facteur, voir « Dérivées et primitives finissent par « On simplifie » » plus bas) écrit.** `normalize` et `solve` factorisent encore comme
-avant (ADR 0006 : `normalize` est sur le chemin du décideur).
+**État au 2026-10-12 : chantier clos.** Lot 1, le noyau (#1127) ; lot 2, les stratégies branchées
+sur l'intention `factoriser`, donc sur l'atelier (#1134) ; lot 3a, limites et intégration (#1136,
+[§ Les appelants](#les-appelants-migrés-lot-3a)) ; lot 3b, le ménage (#1141,
+[§ Le ménage](#le-ménage-lot-3b)) ; lot 4, l'exponentielle commune d'une primitive mise en facteur
+(#1143, voir « Dérivées et primitives finissent par « On simplifie » » plus bas). `normalize` et
+`solve` factorisent encore comme avant (ADR 0006 : `normalize` est sur le chemin du décideur) :
+leurs doublons sont rattachés à K3. Journal :
+[moteur-factorisation-progress.md](../../archive/wip/mathAST/moteur-factorisation-progress.md).
 
 ### Carte du code
 

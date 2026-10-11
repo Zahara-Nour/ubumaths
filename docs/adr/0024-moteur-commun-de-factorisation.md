@@ -1,11 +1,12 @@
 # 0024 — Un moteur commun de factorisation : un noyau exact, des stratégies qui racontent
 
-- **Statut** : acceptée — amende l'ADR 0007 pour l'intention `factoriser`
+- **Statut** : acceptée — amende l'ADR 0007 pour l'intention `factoriser` ; mise en œuvre close le
+  2026-10-12 (lots 1 à 4 : #1127, #1134, #1136, #1141, #1143)
 - **Date** : 2026-10-11 · **Décidée par** : David
 
 ## Contexte
 
-État des lieux mesuré le 2026-10-11 (journal `docs/wip/moteur-factorisation-progress.md`, panel de
+État des lieux mesuré le 2026-10-11 (journal `docs/archive/wip/mathAST/moteur-factorisation-progress.md`, panel de
 31 expressions) : une dizaine de lieux de mathAST factorisent, chacun à sa façon. Aucune valeur
 fausse, mais :
 

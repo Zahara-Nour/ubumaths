@@ -484,7 +484,7 @@ La mise en facteur **par motifs** (A1, A3) ne dépend d'aucune variable ; les li
 
 ## 4. Décisions (ADR 0024)
 
-David a tranché le 2026-10-11 : [ADR 0024](../adr/0024-moteur-commun-de-factorisation.md),
+David a tranché le 2026-10-11 : [ADR 0024](../../../adr/0024-moteur-commun-de-factorisation.md),
 acceptée, amende l'ADR 0007 pour l'intention `factoriser`.
 
 - Un module `mathAST/factor/` en deux couches : un **noyau exact sur ℚ** sans étapes (contenu,
