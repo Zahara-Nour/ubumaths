@@ -34,6 +34,8 @@ export type ErrorCode =
 	| 'UNKNOWN_UNIT'
 	| 'DIMENSION_MISMATCH'
 	| 'MATH_ERROR'
+	/** Grandeurs qui ne se combinent pas, conversion impossible : message en français, destiné à l'élève */
+	| 'QUANTITY_ERROR'
 	/** Ce qui suit le « ; » n'est pas une variable : message en français, destiné à l'élève */
 	| 'AMBIGUOUS_VARIABLE'
 	/** Mots-clés d'une commande mal écrits (`de … à`, `en x=3`, `ordre`…) : message en français, destiné à l'élève */

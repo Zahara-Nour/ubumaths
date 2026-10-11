@@ -20,6 +20,7 @@ import {
 	extractNumericValue
 } from '../analyzer';
 import type { DimensionalContext } from '../types';
+import { parseLatex } from '$lib/mathAST/parser';
 import {
 	number,
 	variable,
@@ -1507,5 +1508,28 @@ describe('Dimensional Analyzer', () => {
 				expect(result).toBe(5);
 			});
 		});
+	});
+});
+
+/**
+ * L'indice d'une racine (revue du lot A des grandeurs, 2026-10-11) : il était
+ * ignoré, `\sqrt[3]{8~\unit{km^3}}` rendait des m^1,5 au lieu de m.
+ */
+describe('racine d’indice n', () => {
+	const strict = {
+		variables: new Map(),
+		options: { strictMode: true, allowDimensionlessMix: false, allowFractionalExponents: true }
+	};
+	const componentsOf = (latex: string) => {
+		const result = analyzeDimensions(parseLatex(latex), strict);
+		return result.resultUnit === null ? null : Object.fromEntries(result.resultUnit.components);
+	};
+
+	it('une racine cubique divise les exposants par 3', () => {
+		expect(componentsOf('\\sqrt[3]{8~\\unit{km^3}}')).toEqual({ m: 1 });
+	});
+
+	it('une racine carrée sans indice les divise par 2', () => {
+		expect(componentsOf('\\sqrt{9~\\unit{m^2}}')).toEqual({ m: 1 });
 	});
 });

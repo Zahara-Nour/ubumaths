@@ -16,6 +16,7 @@ import type { MathNode } from '$lib/mathAST/types';
 import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
+import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
 import {
@@ -220,7 +221,9 @@ const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
 	// Les mots-clés (`de … à`, `en`, `ordre`…) mal écrits : la forme attendue
 	'COMMAND_SYNTAX',
 	// `.domaine sqrt(sin(x))` : le domaine n'a pas pu être établi (#963)
-	'DOMAIN_UNRESOLVED'
+	'DOMAIN_UNRESOLVED',
+	// `5[m]+3[s]`, `.convertir kg` après une longueur (phase 0 grandeurs, lot A)
+	'QUANTITY_ERROR'
 ]);
 
 /**
@@ -1193,6 +1196,19 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		};
 	}
 
+	// `.convertir` : même exception — son `result.ast` est la grandeur égale à sa
+	// conversion (`12,3 km = 12300 m`, phase 0 grandeurs, lot A)
+	if (name === 'convert' && result.success && result.ast !== undefined) {
+		return {
+			kind: 'commande',
+			input,
+			output: rendered.text,
+			latex: displayUnitsInLatex(toLatex(result.ast)),
+			...solutionsAlternative(result),
+			...noted
+		};
+	}
+
 	// `.intégrer` : même exception — son `result.ast` est la PRIMITIVE, ou la
 	// VALEUR d'une intégrale définie (voir `integrate.command.ts`). Sans lui, la
 	// ligne montrait le texte du terminal, « ∫ x^2 dx = {1/3}x^3 + C » (2026-10-08).
@@ -1454,6 +1470,10 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	const result = session.engine.execute(
 		expandInput(session.atelier, withPiCommand(decimalCommaInput(withTerms.text)))
 	);
+	// Des grandeurs qui ne se combinent pas : un refus, en français (lot A)
+	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {
+		return { kind: 'refus', message: result.error?.message ?? UNREADABLE_COMMAND };
+	}
 	const rendered = renderResult(result);
 	return {
 		kind: 'calcul',
