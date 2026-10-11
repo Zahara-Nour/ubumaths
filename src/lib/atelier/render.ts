@@ -16,6 +16,7 @@
  */
 
 import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
+import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { toLatex } from '$lib/mathAST/latex-generator';
 
 // =============================================================================
@@ -151,8 +152,10 @@ export function renderResult(
 
 	if (options?.fromCommand === true) return { text };
 
+	// Une grandeur s'écrit `5~\unit{km}`, que MathLive ne connaît pas : on la
+	// traduit comme les énoncés (`displayUnitsInLatex`, `5~\mathrm{km}`)
 	if (result.ast !== undefined) {
-		return { latex: toLatex(result.ast), text };
+		return { latex: displayUnitsInLatex(toLatex(result.ast)), text };
 	}
 
 	return { text };

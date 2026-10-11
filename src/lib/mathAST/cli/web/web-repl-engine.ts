@@ -26,16 +26,9 @@ import {
 import { toCustom, getVariables, hasAllBindings, evaluate, substitute, toLatex } from '../../index';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { normalize, normalFormsEquivalent } from '../../normal';
-import { evaluateWithUnits, DimensionalEvaluationError } from '../../eval/evaluate-with-units';
-import type {
-	EvalResultWithUnit,
-	UnitConversionMode,
-	EvalValue,
-	ComplexValueResult
-} from '../../eval/types';
+import type { EvalValue, ComplexValueResult } from '../../eval/types';
+import { computeQuantity, convertQuantity, type QuantityOutcome } from '../quantities';
 import { isUnit, isVariable } from '../../guards';
-import { parse as parseUnit } from '../../units/parser';
-import { getConversionFactor } from '../../units/conversion';
 import { summarizeList, summarizeTable } from '../../../statistics/describe';
 import { formatSummary } from '../../../statistics/format';
 import {
@@ -136,8 +129,8 @@ export class WebReplEngine {
 	private inputMode: ReplInputMode = 'auto';
 	private lastAst: MathNode | undefined;
 	private evalState: EvalState;
-	private unitConversionMode: UnitConversionMode = 'first';
-	private lastUnitResult: EvalResultWithUnit | undefined;
+	/** La dernière grandeur calculée, exacte : celle que `.convert` reprend. */
+	private lastQuantity: MathNode | null = null;
 	private historyRef: ReadonlyArray<ReplHistoryEntry> = [];
 
 	constructor() {
@@ -306,27 +299,6 @@ export class WebReplEngine {
 	}
 
 	/**
-	 * Get the unit conversion mode for unit-aware evaluation.
-	 *
-	 * @returns Current unit conversion mode ('first', 'si', or 'best')
-	 */
-	getUnitConversionMode(): UnitConversionMode {
-		return this.unitConversionMode;
-	}
-
-	/**
-	 * Set the unit conversion mode for unit-aware evaluation.
-	 *
-	 * @param mode - The conversion mode to use:
-	 *   - 'first': Convert to the first unit encountered (default)
-	 *   - 'si': Normalize to SI base units
-	 *   - 'best': Choose the most human-readable unit
-	 */
-	setUnitConversionMode(mode: UnitConversionMode): void {
-		this.unitConversionMode = mode;
-	}
-
-	/**
 	 * Set the history reference for export functionality.
 	 *
 	 * Should be called by the REPL store before each execute() call
@@ -336,17 +308,6 @@ export class WebReplEngine {
 	 */
 	setHistory(history: ReadonlyArray<ReplHistoryEntry>): void {
 		this.historyRef = history;
-	}
-
-	/**
-	 * Get the last unit-aware evaluation result.
-	 *
-	 * Used by the .convert command to convert the last result to a different unit.
-	 *
-	 * @returns Last unit evaluation result, or undefined if none
-	 */
-	getLastUnitResult(): EvalResultWithUnit | undefined {
-		return this.lastUnitResult;
 	}
 
 	// ===========================================================================
@@ -402,31 +363,6 @@ export class WebReplEngine {
 				success: true,
 				output: 'Mode: decimal',
 				outputHtml: 'Mode: <span class="text-yellow-400">decimal</span>'
-			};
-		}
-
-		// Handle unit conversion mode commands
-		if (cmdName === 'unitmode') {
-			const mode = args.toLowerCase();
-			if (mode === 'first' || mode === 'si' || mode === 'best') {
-				this.unitConversionMode = mode;
-				return {
-					success: true,
-					output: `Unit conversion mode: ${mode}`,
-					outputHtml: `Unit conversion mode: <span class="text-blue-400">${mode}</span>`
-				};
-			}
-			return {
-				success: false,
-				output: 'Usage: .unitmode first|si|best',
-				outputHtml: formatErrorHtml({
-					code: 'INVALID_OPTIONS',
-					message: 'Usage: .unitmode first|si|best'
-				}),
-				error: {
-					code: 'INVALID_OPTIONS',
-					message: 'Invalid unit mode. Use: first, si, or best'
-				}
 			};
 		}
 
@@ -905,8 +841,10 @@ export class WebReplEngine {
 			const hasUnits = this.expressionHasUnits(substituted);
 
 			if (hasUnits) {
-				// Use unit-aware evaluation (keeps detailed output for units)
-				return this.createUnitAwareResult(substituted, '');
+				// Une grandeur : calculée par `tidy`, unité écrite d'abord (lot A)
+				return this.quantityResult(
+					computeQuantity(substituted, this.evalState.mode === 'decimal' ? 'decimal' : 'exact')
+				);
 			}
 
 			// Boolean result: colored output, no exact/decimal toggle
@@ -951,7 +889,7 @@ export class WebReplEngine {
 				mode: 'decimal',
 				functions: this.evalState.functions
 			});
-			this.lastUnitResult = undefined; // Clear last unit result
+			this.lastQuantity = null; // Un nombre : plus de grandeur à convertir
 
 			// Non-value result (indeterminate / unevaluable): surface via the catch
 			if (exactResult.status !== 'value') {
@@ -1020,11 +958,6 @@ export class WebReplEngine {
 				...approximationFields(currentMode, exactResult.node, canToggle)
 			};
 		} catch (err) {
-			// Handle dimensional errors with pedagogical messages
-			if (err instanceof DimensionalEvaluationError) {
-				return this.createDimensionalErrorResult(err);
-			}
-
 			const message = err instanceof Error ? err.message : 'Unknown error during evaluation';
 			return {
 				success: false,
@@ -1041,129 +974,29 @@ export class WebReplEngine {
 		}
 	}
 
-	/**
-	 * Execute the .convert command to convert the last result to a different unit.
-	 */
+	/** `.convert` : la dernière grandeur exprimée dans une autre unité, exactement. */
 	private executeConvertCommand(targetUnitStr: string): ReplExecutionResult {
-		// Check if we have a last unit result
-		if (!this.lastUnitResult) {
+		const mode = this.evalState.mode === 'decimal' ? 'decimal' : 'exact';
+		return this.quantityResult(convertQuantity(this.lastQuantity, targetUnitStr, mode));
+	}
+
+	/** La réponse de la console pour un calcul ou une conversion de grandeurs. */
+	private quantityResult(outcome: QuantityOutcome): ReplExecutionResult {
+		if (!outcome.ok) {
 			return {
 				success: false,
-				output:
-					"Aucune expression avec unites a convertir. Evaluez d'abord une expression avec des unites.",
-				outputHtml: formatErrorHtml({
-					code: 'NO_AST',
-					message: 'Aucune expression avec unites a convertir',
-					suggestion: "Evaluez d'abord une expression avec des unites, ex: 5 km + 3000 m"
-				}),
-				error: {
-					code: 'NO_AST',
-					message: 'No unit result to convert'
-				}
+				output: outcome.message,
+				outputHtml: formatErrorHtml({ code: 'QUANTITY_ERROR', message: outcome.message }),
+				error: { code: 'QUANTITY_ERROR', message: outcome.message }
 			};
 		}
-
-		if (!targetUnitStr.trim()) {
-			return {
-				success: false,
-				output: 'Usage: .convert <unite>\nExemple: .convert m',
-				outputHtml: formatErrorHtml({
-					code: 'INVALID_OPTIONS',
-					message: 'Usage: .convert <unite>',
-					suggestion: 'Exemple: .convert m'
-				}),
-				error: {
-					code: 'INVALID_OPTIONS',
-					message: 'Target unit is required'
-				}
-			};
-		}
-
-		try {
-			// Parse the target unit
-			const targetUnit = parseUnit(targetUnitStr.trim());
-
-			if (!targetUnit) {
-				return {
-					success: false,
-					output: `Unite inconnue: ${targetUnitStr}`,
-					outputHtml: formatErrorHtml({
-						code: 'UNKNOWN_UNIT',
-						message: `Unite inconnue: ${targetUnitStr}`,
-						suggestion: 'Utilisez un symbole valide comme m, km, s, kg, etc.'
-					}),
-					error: {
-						code: 'UNKNOWN_UNIT',
-						message: `Unknown unit: ${targetUnitStr}`
-					}
-				};
-			}
-
-			// Check dimensional compatibility
-			const factor = getConversionFactor(this.lastUnitResult.unit, targetUnit);
-
-			if (factor === null) {
-				// Incompatible units
-				const sourceUnitStr =
-					this.lastUnitResult.unit.original || this.formatUnitComponents(this.lastUnitResult.unit);
-				return {
-					success: false,
-					output: `Impossible de convertir ${sourceUnitStr} en ${targetUnitStr}: dimensions incompatibles`,
-					outputHtml: formatErrorHtml({
-						code: 'DIMENSION_MISMATCH',
-						message: `Impossible de convertir ${sourceUnitStr} en ${targetUnitStr}`,
-						suggestion:
-							'Les unites doivent avoir des dimensions compatibles (ex: longueur vers longueur)'
-					}),
-					error: {
-						code: 'DIMENSION_MISMATCH',
-						message: 'Incompatible dimensions'
-					}
-				};
-			}
-
-			// Convert the value
-			const sourceValue = this.getNumericValue(this.lastUnitResult.value);
-
-			const convertedValue = sourceValue * factor;
-			const resultStr = `${convertedValue} ${targetUnitStr}`;
-
-			// Build output
-			const sourceUnitStr =
-				this.lastUnitResult.unit.original || this.formatUnitComponents(this.lastUnitResult.unit);
-			const lines = [
-				`Converted: ${sourceValue} ${sourceUnitStr} → ${resultStr}`,
-				`Factor: ${factor}`
-			];
-			const output = lines.join('\n');
-
-			// HTML output
-			const htmlLines = [
-				`<strong>Converted:</strong> <span class="text-gray-400">${sourceValue} ${this.escapeHtml(sourceUnitStr)}</span> → <span class="text-cyan-400">${this.escapeHtml(resultStr)}</span>`,
-				`<span class="text-gray-400">Factor:</span> ${factor}`
-			];
-			const outputHtml = htmlLines.join('<br>');
-
-			return {
-				success: true,
-				output,
-				outputHtml
-			};
-		} catch (err) {
-			const message = err instanceof Error ? err.message : 'Unknown error during conversion';
-			return {
-				success: false,
-				output: `Conversion error: ${message}`,
-				outputHtml: formatErrorHtml({
-					code: 'PARSE_ERROR',
-					message: `Conversion error: ${message}`
-				}),
-				error: {
-					code: 'PARSE_ERROR',
-					message
-				}
-			};
-		}
+		this.lastQuantity = outcome.quantity;
+		return {
+			success: true,
+			output: outcome.text,
+			outputHtml: `<span class="text-cyan-400">${this.escapeHtml(outcome.text)}</span>`,
+			ast: outcome.node
+		};
 	}
 
 	// ===========================================================================
@@ -1204,138 +1037,6 @@ export class WebReplEngine {
 			default:
 				return false;
 		}
-	}
-
-	/**
-	 * Create evaluation result for expression with units.
-	 * Computes both exact and decimal representations for toggle support.
-	 */
-	private createUnitAwareResult(ast: MathNode, _bindingsStr: string): ReplExecutionResult {
-		// Evaluate with units in BOTH modes
-		// Pass user-defined functions from evalState
-		const exactEvalResult = evaluateWithUnits(ast, {
-			mode: 'exact',
-			conversionMode: this.unitConversionMode,
-			functions: this.evalState.functions
-		});
-		const decimalEvalResult = evaluateWithUnits(ast, {
-			mode: 'decimal',
-			conversionMode: this.unitConversionMode,
-			functions: this.evalState.functions
-		});
-
-		// Store for .convert command (use current mode)
-		const currentMode = this.evalState.mode;
-		this.lastUnitResult = currentMode === 'exact' ? exactEvalResult : decimalEvalResult;
-
-		// Format unit string (same for both modes)
-		const unitStr =
-			exactEvalResult.unit.original || this.formatUnitComponents(exactEvalResult.unit);
-
-		// Format exact result - preserve fraction format if Rational
-		const exactValueStr = this.formatValueForDisplay(exactEvalResult.value, true);
-		const exactResultStr = `${exactValueStr} ${unitStr}`;
-		const exactOutput = exactResultStr;
-		const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactResultStr)}</span>`;
-
-		// Format decimal result - always as decimal number
-		const decimalValueNum = this.getNumericValue(decimalEvalResult.value);
-		const decimalResultStr = `${decimalValueNum} ${unitStr}`;
-		const decimalPrefix = decimalEvalResult.exact ? '' : '≈ ';
-		const decimalOutput = `${decimalPrefix}${decimalResultStr}`;
-		let decimalOutputHtml: string;
-		if (decimalEvalResult.exact) {
-			decimalOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(decimalResultStr)}</span>`;
-		} else {
-			decimalOutputHtml = `<span class="text-muted-foreground">≈</span> <span class="text-cyan-400">${this.escapeHtml(decimalResultStr)}</span>`;
-		}
-
-		// Determine if toggle makes sense (results are different)
-		const canToggle = exactResultStr !== decimalResultStr;
-
-		// Use current mode to determine primary output
-		const output = currentMode === 'exact' ? exactOutput : decimalOutput;
-		const outputHtml = currentMode === 'exact' ? exactOutputHtml : decimalOutputHtml;
-
-		return {
-			success: true,
-			output,
-			outputHtml,
-			ast: currentMode === 'exact' ? exactEvalResult.node : decimalEvalResult.node,
-			// Toggle support fields
-			exactOutput,
-			exactOutputHtml,
-			decimalOutput,
-			decimalOutputHtml,
-			canToggle
-		};
-	}
-
-	/**
-	 * Format unit components as string (fallback when no original).
-	 */
-	private formatUnitComponents(unit: { components: ReadonlyMap<string, number> }): string {
-		const parts: string[] = [];
-		const negativeParts: string[] = [];
-
-		for (const [symbol, exponent] of unit.components) {
-			if (exponent > 0) {
-				parts.push(exponent === 1 ? symbol : `${symbol}^${exponent}`);
-			} else if (exponent < 0) {
-				negativeParts.push(exponent === -1 ? symbol : `${symbol}^${-exponent}`);
-			}
-		}
-
-		if (negativeParts.length === 0) {
-			return parts.join('·') || '1';
-		}
-		if (parts.length === 0) {
-			return `1/${negativeParts.join('·')}`;
-		}
-		return `${parts.join('·')}/${negativeParts.join('·')}`;
-	}
-
-	/**
-	 * Create pedagogical error result for dimensional errors.
-	 */
-	private createDimensionalErrorResult(err: DimensionalEvaluationError): ReplExecutionResult {
-		const mainMessage = err.message;
-
-		// Build pedagogical suggestions
-		const suggestions: string[] = [];
-		for (const e of err.errors) {
-			if (e.code === 'DIMENSION_MISMATCH') {
-				suggestions.push('💡 Verifiez que les unites sont compatibles pour cette operation.');
-				suggestions.push(
-					'   Par exemple: on peut additionner des metres et des kilometres, mais pas des metres et des secondes.'
-				);
-			} else if (e.code === 'INCOMPATIBLE_DIMENSIONS') {
-				suggestions.push(`💡 ${e.message}`);
-			} else {
-				suggestions.push(`💡 ${e.message}`);
-			}
-		}
-
-		const output = [mainMessage, '', ...suggestions].join('\n');
-
-		// HTML output with styling
-		const htmlLines = [
-			`<span class="text-red-400 font-bold">Erreur dimensionnelle</span>`,
-			`<span class="text-red-300">${this.escapeHtml(mainMessage)}</span>`,
-			'<br>',
-			...suggestions.map((s) => `<span class="text-yellow-400">${this.escapeHtml(s)}</span>`)
-		];
-		const outputHtml = htmlLines.join('<br>');
-
-		return {
-			success: false,
-			output,
-			outputHtml,
-			error: {
-				code: 'DIMENSION_ERROR',
-				message: mainMessage
-			}
-		};
 	}
 
 	/**
@@ -1434,37 +1135,6 @@ export class WebReplEngine {
 		}
 		// MathNode - evaluate to number
 		return evaluateNodeToApproximatedNumber(value);
-	}
-
-	/**
-	 * Format a value for display, preserving exact form if exact mode.
-	 *
-	 * @param value - EvalValue (MathNode, number, or ComplexValueResult) to format
-	 * @param preserveExact - If true, format MathNode as LaTeX instead of decimal
-	 */
-	private formatValueForDisplay(value: EvalValue, preserveExact: boolean): string {
-		if (typeof value === 'number' || typeof value === 'boolean') {
-			return String(value);
-		}
-
-		// Complex value
-		if (this.isComplexValue(value)) {
-			const { real, imag } = value;
-			if (imag === 0) return String(real);
-			if (real === 0) return imag === 1 ? 'i' : imag === -1 ? '-i' : `${imag}i`;
-			const sign = imag >= 0 ? '+' : '';
-			const imagPart = imag === 1 ? 'i' : imag === -1 ? '-i' : `${imag}i`;
-			return `${real}${sign}${imagPart}`;
-		}
-
-		// It's a MathNode
-		if (preserveExact) {
-			// Format as LaTeX for exact representation
-			return toLatex(value);
-		}
-
-		// Convert to number
-		return String(evaluateNodeToApproximatedNumber(value));
 	}
 
 	/**

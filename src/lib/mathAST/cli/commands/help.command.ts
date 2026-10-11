@@ -231,9 +231,6 @@ export class HelpCommand extends BaseCommand {
 		htmlParts.push(
 			'<div class="pl-2"><span class="text-cyan-400">.convert m</span> <span class="text-foreground/70">- Convertir le dernier resultat</span></div>'
 		);
-		htmlParts.push(
-			'<div class="pl-2"><span class="text-cyan-400">.unitmode first|si|best</span> <span class="text-foreground/70">- Mode de conversion</span></div>'
-		);
 
 		// Utilities
 		htmlParts.push('<div class="text-yellow-500 font-medium mt-3">Utilitaires</div>');
