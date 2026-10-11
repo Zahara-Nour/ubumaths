@@ -32,8 +32,8 @@ describe('un nombre, une espace, une unité : une grandeur', () => {
 	});
 
 	it('deux grandeurs collées s’ajoutent : une durée composée', () => {
-		expect(read('2 h 30 min')).toBe('2[h]+30[min]');
-		expect(read('1 h 5 min 30 s')).toBe('1[h]+5[min]+30[s]');
+		expect(read('2 h 30 min')).toBe('(2[h]+30[min])');
+		expect(read('1 h 5 min 30 s')).toBe('(1[h]+5[min]+30[s])');
 	});
 });
 
@@ -67,7 +67,7 @@ describe('les aides', () => {
 
 	it('une unité qui est aussi le nom d’une valeur du panneau', () => {
 		expect(readNaturalQuantities('5 m', ['m']).notes).toEqual([
-			'm est aussi une valeur du panneau : pour 5 × m, écris 5m.'
+			'm est aussi un nom du panneau : pour 5 × m, écris 5m.'
 		]);
 	});
 

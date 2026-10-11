@@ -68,8 +68,15 @@ const GLUED_QUANTITY = new RegExp(
 	'g'
 );
 
-/** Deux grandeurs séparées seulement par des espaces : `2[h] 30[min]`. */
-const JUXTAPOSED = /\][ \t]+(?=\(?\d[\d.,/]*\)?\[)/g;
+/** Une grandeur déjà écrite entre crochets : `2[h]`, `(1/2)[m]`. */
+const QUANTITY_TOKEN = String.raw`(?:\(\d[\d.,]*\/\d[\d.,]*\)|\d[\d.,]*)\[[^\]]+\]`;
+
+/**
+ * Des grandeurs séparées seulement par des espaces : `2[h] 30[min]`. Leur
+ * somme est mise entre parenthèses — c'est UN nombre : `1 h 30 min * 2` vaut
+ * 3 h, pas 2 h (revue du lot C).
+ */
+const JUXTAPOSED = new RegExp(`${QUANTITY_TOKEN}(?:[ \\t]+${QUANTITY_TOKEN})+`, 'g');
 
 // =============================================================================
 // Fonctions
@@ -86,7 +93,7 @@ export function readNaturalQuantities(
 	text: string,
 	objectNames: readonly string[]
 ): NaturalReading {
-	const notes: string[] = [];
+	const notes = new Set<string>();
 	const singleLetters: SingleLetterUnit[] = [];
 
 	const spaced = text.replace(
@@ -94,8 +101,8 @@ export function readNaturalQuantities(
 		(whole, numerator: string, denominator: string | undefined, _space, writing: string) => {
 			if (parseUnit(writing) === null) return whole;
 			if (objectNames.includes(writing)) {
-				notes.push(
-					`${writing} est aussi une valeur du panneau : pour ${numerator} × ${writing}, écris ${numerator}${writing}.`
+				notes.add(
+					`${writing} est aussi un nom du panneau : pour ${numerator} × ${writing}, écris ${numerator}${writing}.`
 				);
 			}
 			if (/^[A-Za-z]$/.test(writing)) {
@@ -106,14 +113,19 @@ export function readNaturalQuantities(
 		}
 	);
 
+	const glued = new Set<string>();
 	for (const [, number, letters] of spaced.matchAll(GLUED_QUANTITY)) {
 		if (parseUnit(letters) === null) continue;
+		// Une aide par unité : `5km + 3km` ne la répète pas (revue)
+		if (glued.has(letters)) continue;
+		glued.add(letters);
 		// Des lettres qui sont toutes des valeurs du panneau : un produit voulu
 		if ([...letters].every((letter) => objectNames.includes(letter))) continue;
-		notes.push(`Pour une grandeur, écris ${number} ${letters} (avec une espace).`);
+		notes.add(`Pour une grandeur, écris ${number} ${letters} (avec une espace).`);
 	}
 
-	return { text: spaced.replace(JUXTAPOSED, ']+'), notes, singleLetters };
+	const summed = spaced.replace(JUXTAPOSED, (run) => `(${run.split(/[ \t]+/).join('+')})`);
+	return { text: summed, notes: [...notes], singleLetters };
 }
 
 /** L'aide d'un refus de dimension où une lettre a été lue comme unité. */

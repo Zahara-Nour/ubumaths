@@ -60,7 +60,8 @@ import {
 import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps, type SolvedSteps } from './solve-steps';
-import { readNaturalQuantities, singleLetterHint } from './natural-quantities';
+import { readNaturalQuantities, singleLetterHint, type NaturalReading } from './natural-quantities';
+import { quantityProblem } from '$lib/mathAST/cli/quantities';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
 import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
@@ -463,6 +464,33 @@ function bracketedListRefusal(name: string, body: string): string | null {
  * ⚠️ Une définition qu'on ne sait pas lire crée quand même l'objet (§2 E1) :
  * il porte son erreur, et l'élève voit son travail plutôt qu'un refus sec.
  */
+/** Le refus qui parle d'un nombre sans unité : c'est là qu'une lettre lue comme unité est en cause. */
+const UNITLESS = 'un nombre sans unité';
+
+/**
+ * Une lettre lue comme unité (`3 t`, lot C des grandeurs) qui rend la saisie
+ * impossible : mêlée à une variable libre (`3 a + 2 b`), ou dans une somme
+ * avec un nombre (`3 t + 2`). Le refus, avec l'aide « pour 3 × t, écris 3t »
+ * seulement quand la lettre en est la cause (revue : `5 kg + 3 m` l'affichait).
+ */
+function naturalReadingRefusal(atelier: Atelier, reading: NaturalReading): CalcResult | null {
+	if (reading.singleLetters.length === 0) return null;
+	const ast = astOf(reading.text, 'url', atelier.functionNames);
+	if (ast === null) return null;
+	const hint = singleLetterHint(reading.singleLetters);
+	const free = [...getVariables(ast)].filter((v) => !atelier.names.includes(v));
+	if (free.length > 0) {
+		return {
+			kind: 'refus',
+			message: 'Une grandeur ne se combine pas avec une lettre.',
+			...notesOf(hint)
+		};
+	}
+	const problem = quantityProblem(ast);
+	if (problem === null) return null;
+	return { kind: 'refus', message: problem, ...notesOf(problem.includes(UNITLESS) ? hint : null) };
+}
+
 function defineObject(
 	session: CalcSession,
 	name: string,
@@ -486,6 +514,8 @@ function defineObject(
 			body,
 			atelier.names.filter((n) => n !== name)
 		);
+		const refused = naturalReadingRefusal(atelier, reading);
+		if (refused !== null) return refused;
 		body = reading.text;
 		notes = reading.notes;
 	}
@@ -1501,14 +1531,17 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 
 	// « un nombre, une espace, une unité » est une grandeur (lot C des grandeurs)
 	const reading = readNaturalQuantities(decimalCommaInput(withTerms.text), session.atelier.names);
+	const misread = naturalReadingRefusal(session.atelier, reading);
+	if (misread !== null) return misread;
 	const result = session.engine.execute(expandInput(session.atelier, withPiCommand(reading.text)));
 	// Des grandeurs qui ne se combinent pas : un refus, en français (lot A),
 	// avec l'aide d'une lettre lue comme unité (`3 t + 2`)
 	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {
+		const message = result.error?.message ?? UNREADABLE_COMMAND;
 		return {
 			kind: 'refus',
-			message: result.error?.message ?? UNREADABLE_COMMAND,
-			...notesOf(singleLetterHint(reading.singleLetters))
+			message,
+			...notesOf(message.includes(UNITLESS) ? singleLetterHint(reading.singleLetters) : null)
 		};
 	}
 	const rendered = renderResult(result);

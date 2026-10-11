@@ -77,8 +77,10 @@ export function definitionFromField(kind: ObjectKind, latex: string): string {
 	if (readNumber(decimal) !== null) return decimal;
 	// « un nombre, une espace, une unité » (lot C des grandeurs) : l'espace tapée
 	// arrive `\,` (`mathModeSpace` du champ) — `5\,m` est une grandeur, `5m` un produit
-	if (/\d\\,\s*[^\d\s\\]/.test(typed)) {
-		const spaced = normalizeStudentQuantity(typed);
+	// (sur `decimal` : la virgule de MathLive `2{,}5` cachait le chiffre — revue)
+	if (/\d\\,\s*[^\d\s\\]/.test(decimal)) {
+		// La virgule redevient celle de MathLive (`2{,}5`) : nue, le LaTeX la refuse
+		const spaced = normalizeStudentQuantity(decimal).replace(/(\d),(\d)/g, '$1{,}$2');
 		const read = parseDefinition('value', spaced, 'keyboard');
 		if (read.error === undefined && read.unit !== undefined) return spaced;
 	}

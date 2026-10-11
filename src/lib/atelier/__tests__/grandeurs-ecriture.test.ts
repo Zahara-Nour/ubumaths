@@ -87,7 +87,7 @@ describe('les aides', () => {
 		const result = runInput(s, '5 m');
 
 		expect(latexOf(result)).toBe('5~\\mathrm{m}');
-		expect(noteOf(result)).toBe('m est aussi une valeur du panneau : pour 5 × m, écris 5m.');
+		expect(noteOf(result)).toBe('m est aussi un nom du panneau : pour 5 × m, écris 5m.');
 	});
 
 	it('3 t + 2 : le refus dit comment écrire le produit', () => {
@@ -96,6 +96,55 @@ describe('les aides', () => {
 		expect(result.kind).toBe('refus');
 		expect(noteOf(result)).toBe(
 			'« 3 t » se lit comme une grandeur (t est une unité) : pour 3 × t, écris 3t.'
+		);
+	});
+});
+
+/** Revue du lot C (2026-10-11). */
+describe('une durée composée est UN nombre : parenthèses implicites', () => {
+	it.each([
+		['3 h - 1 h 30 min', '1 h 30 min'],
+		['1 h 30 min * 2', '3 h'],
+		['2 * 1 h 30 min', '3 h'],
+		['1 h 30 min / 2', '45 min'],
+		['2 h 30 min - 2 h 30 min', '0 h'],
+		['-2 h 30 min', '-2 h 30 min']
+	])('%s → %s', (input, expected) => {
+		expect(outputOf(runInput(session(), input))).toBe(expected);
+	});
+});
+
+describe('une lettre lue comme unité : refus et aide justes', () => {
+	it('une valeur qui ne se calcule pas est refusée, avec l’aide', () => {
+		const result = runInput(session(), 'd = 3 t + 2');
+
+		expect(result.kind).toBe('refus');
+		expect(noteOf(result)).toBe(
+			'« 3 t » se lit comme une grandeur (t est une unité) : pour 3 × t, écris 3t.'
+		);
+	});
+
+	it('pas d’aide quand le refus a une autre cause', () => {
+		const result = runInput(session(), '5 kg + 3 m');
+
+		expect(result.kind).toBe('refus');
+		expect(noteOf(result)).toBeUndefined();
+	});
+
+	it('une grandeur mêlée à une variable libre : refus et aide', () => {
+		const result = runInput(session(), '3 a + 2 b');
+
+		expect(result.kind).toBe('refus');
+		expect(noteOf(result)).toBe(
+			'« 3 a » se lit comme une grandeur (a est une unité) : pour 3 × a, écris 3a.'
+		);
+	});
+});
+
+describe('les aides ne se répètent pas', () => {
+	it('une seule aide pour deux fois la même écriture', () => {
+		expect(noteOf(runInput(session(), '5km + 3km'))).toBe(
+			'Pour une grandeur, écris 5 km (avec une espace).'
 		);
 	});
 });

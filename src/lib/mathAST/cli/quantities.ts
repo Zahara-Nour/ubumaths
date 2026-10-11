@@ -498,7 +498,8 @@ function compositeDuration(ast: MathNode, quantity: MathNode): Shown | null {
 		parts.push(withUnit(number(count.toString()), { ...unit, original: symbol }));
 		words.push(`${count} ${symbol}`);
 	}
-	if (parts.length < 2) return null;
+	// `1 h 30 min / 2` → 45 min : une seule partie suffit, l'élève a écrit h et min
+	if (parts.length === 0) return null;
 	const product = parts.reduce((left, right) => multiply(left, right, 'implicit'));
 	const node = negative ? opposite(delimiter('parentheses', product)) : product;
 	const text = `${negative ? '-' : ''}${words.join(' ')}`;
@@ -516,6 +517,16 @@ function answered(shown: Shown, mode: QuantityMode, quantity: MathNode): Quantit
 		approximate: mode === 'exact' ? shown.approximate : null,
 		quantity
 	};
+}
+
+/**
+ * Ce qui empêche de calculer ces grandeurs, en français, ou `null` — le même
+ * refus que `computeQuantity`, sans calculer (une valeur de l'atelier, lot C).
+ */
+export function quantityProblem(ast: MathNode): string | null {
+	if (multipliesTemperature(ast)) return TEMPERATURE_PRODUCT_MESSAGE;
+	const dimensions = checkDimensions(ast);
+	return 'message' in dimensions ? dimensions.message : null;
 }
 
 /**
