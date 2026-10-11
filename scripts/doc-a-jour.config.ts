@@ -330,10 +330,6 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 			note: 'tableaux de bord, coquille de l’app, navigation, caches'
 		},
 		{
-			glob: 'src/routes/(public)/+page.svelte',
-			note: 'tableaux de bord, coquille de l’app, navigation, caches'
-		},
-		{
 			glob: 'src/routes/api/{errors,bug-reports,health,search,openapi.json}/**',
 			note: 'surveillance d’erreurs, bug reports, santé, docs admin'
 		},
@@ -488,10 +484,6 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		{ glob: 'src/lib/seo/JsonLd.svelte', note: 'divers (utilitaires, démos, SEO, éditeur riche)' },
 		{ glob: 'src/lib/seo/SeoHead.svelte', note: 'divers (utilitaires, démos, SEO, éditeur riche)' },
 		{ glob: 'src/lib/seo/site.ts', note: 'divers (utilitaires, démos, SEO, éditeur riche)' },
-		{
-			glob: 'src/lib/seo/sitemap-pages.ts',
-			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
-		},
 		{
 			glob: 'src/lib/stores/listNumbering.svelte.ts',
 			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
