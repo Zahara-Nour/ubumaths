@@ -74,7 +74,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 		console.error('Enrichissement illisible :', classesError);
 	}
 
-	// 3. Toutes les compétences math + sous-dimensions + observables (lecture publique)
+	// 3. Toutes les compétences math + composantes + observables (lecture publique)
 	const { data: competences, error: compErr } = await locals.supabase
 		.from('math_competences')
 		.select(

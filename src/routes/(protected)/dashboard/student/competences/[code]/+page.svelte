@@ -106,13 +106,13 @@
 		</Card.Root>
 	{/if}
 
-	<!-- Observables groupés par sous-dimension -->
+	<!-- Observables groupés par composante -->
 	<Card.Root>
 		<Card.Header>
 			<h2 class="text-lg font-semibold">Observables détaillés</h2>
 			<p class="text-sm text-muted-foreground">
-				Tes observables groupés par sous-dimension. Un observable est <em>acquis</em> si ≥ 2 réussites
-				dont une dominance sur les non-réussites.
+				Tes observables groupés par composante. Un observable est <em>acquis</em> si ≥ 2 réussites dont
+				une dominance sur les non-réussites.
 			</p>
 		</Card.Header>
 		<Card.Content class="space-y-5">
