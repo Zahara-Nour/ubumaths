@@ -4,8 +4,8 @@
  * Mono-prof : la classe n'est plus assignée à un prof (colonne `teacher_id`
  * supprimée) ; le prof unique possède toutes les classes. La garde de rôle
  * suffit donc à l'autorisation. Utilisé par les endpoints
- * `/api/teacher/classes/[classId]/analytics/*`, l'export des compétences et la
- * page analytique.
+ * `/api/teacher/classes/[classId]/analytics/*` et `…/anti-fraud/*`, l'export
+ * des compétences et la page analytique.
  *
  * Le compte admin est refusé, comme par le layout `dashboard/teacher` (décision
  * D1, 2026-10-11) : le prof qui a besoin de l'admin s'élève depuis son compte

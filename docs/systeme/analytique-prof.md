@@ -9,7 +9,7 @@ couvre:
 
 # Analytique prof — la page « analytics » d'une classe
 
-> Vérifié contre le code le 2026-10-10. Historique du chantier (V2.0, juin 2026) :
+> Vérifié contre le code le 2026-10-11. Historique du chantier (V2.0, juin 2026) :
 > [teacher-analytics-progress.md](../archive/wip/teacher-analytics-progress.md) (archivé, ne décrit
 > pas le code actuel).
 
@@ -33,7 +33,7 @@ les commentaires « famille A » : c'est le **vocabulaire du référentiel aband
 **Accès** : `requireTeacherOfClass(locals, classId)` (`src/lib/server/stats/teacher-class-auth.ts`)
 = `requireRole('teacher')` puis existence de la classe (404 sinon) ; la page elle-même passe
 d'abord par le layout du tableau de bord prof, réservé au rôle `teacher`. Le compte admin est refusé
-partout, page comme endpoints (décision du 2026-10-11) : David enseigne avec son compte prof et
+partout, page comme endpoints (analytique et anti-triche ; décision du 2026-10-11) : David enseigne avec son compte prof et
 s'élève quand il a besoin de l'admin ; l'élévation laisse le rôle de session à `teacher`
 ([auth.md](auth.md)). Mono-prof : aucun
 `teacher_id` de classe n'entre en jeu ([ADR 0002](../adr/0002-mono-professeur-ecole-frontiere-sociale.md)).

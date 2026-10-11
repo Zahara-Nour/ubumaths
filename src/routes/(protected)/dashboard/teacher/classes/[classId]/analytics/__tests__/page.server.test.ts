@@ -31,6 +31,8 @@ function makeLocals(flagsResult: Result): App.Locals {
 			order: () => chain,
 			single: async () => result,
 			maybeSingle: async () => result,
+			// Requêtes attendues sans .single() (membres, thèmes, compteur) : la chaîne doit être awaitable.
+			// oxlint-disable-next-line unicorn/no-thenable
 			then: (resolve: (r: Result) => unknown) => Promise.resolve(result).then(resolve)
 		};
 		return chain;

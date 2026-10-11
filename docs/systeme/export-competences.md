@@ -8,7 +8,7 @@ couvre:
 
 # Export des compétences vers l'ENT
 
-> Vérifié contre le code le 2026-10-10 (sauf les marches à suivre côté Pronote / EcoleDirecte /
+> Vérifié contre le code le 2026-10-11 (sauf les marches à suivre côté Pronote / EcoleDirecte /
 > Sacoche : elles décrivent des logiciels tiers, relevées en juin 2026, non vérifiables dans ce
 > dépôt). Étude et journal : [export-competences-study.md](../archive/wip/export-competences-study.md),
 > [export-competences-progress.md](../archive/wip/export-competences-progress.md) (archivés).
