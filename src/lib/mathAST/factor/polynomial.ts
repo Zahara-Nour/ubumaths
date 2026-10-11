@@ -15,6 +15,7 @@ import {
 	ONE,
 	addRational,
 	mulRational,
+	divRational,
 	negRational,
 	isZero,
 	isInteger,
@@ -106,6 +107,25 @@ export function deflate(p: Poly, r: Rational): Poly {
 	return trimPoly(out);
 }
 
+/**
+ * Divise `p` par (x − r) tant que `r` en est racine, `limit` fois au plus :
+ * le quotient exact et le nombre de divisions faites (la multiplicité de `r`
+ * quand `limit` ne coupe pas). Sert aux limites `0/0`, où la racine est connue.
+ */
+export function divideOutRoot(
+	p: Poly,
+	r: Rational,
+	limit = Number.POSITIVE_INFINITY
+): { quotient: Poly; multiplicity: number } {
+	let quotient = trimPoly(p);
+	let multiplicity = 0;
+	while (multiplicity < limit && quotient.length > 1 && isZero(evalPoly(quotient, r))) {
+		quotient = deflate(quotient, r);
+		multiplicity++;
+	}
+	return { quotient, multiplicity };
+}
+
 /** Coefficients multipliés par le PPCM des dénominateurs : des entiers, même signe. */
 export function integerCoefficients(p: Poly): bigint[] {
 	let common = 1n;
@@ -151,6 +171,18 @@ function rfDegreeOk(a: RationalFunction): boolean {
 export function toRationalFunction(expr: MathNode, variable: string): RationalFunction | null {
 	const result = toRF(expr, variable);
 	return result && rfDegreeOk(result) ? result : null;
+}
+
+/**
+ * Lit `expr` comme un POLYNÔME en `variable` (fraction rationnelle de
+ * dénominateur constant), coefficients exacts ; `null` sinon.
+ */
+export function toPolynomial(expr: MathNode, variable: string): Poly | null {
+	const rf = toRationalFunction(expr, variable);
+	if (rf === null) return null;
+	const den = trimPoly(rf.den);
+	if (den.length !== 1) return null;
+	return trimPoly(rf.num.map((c) => divRational(c, den[0])));
 }
 
 function toRF(expr: MathNode, variable: string): RationalFunction | null {

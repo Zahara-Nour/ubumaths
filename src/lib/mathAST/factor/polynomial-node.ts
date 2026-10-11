@@ -9,8 +9,20 @@
  */
 
 import type { MathNode } from '../types';
-import { add, multiply, number, opposite, power, subtract } from '../factory';
-import { absBigInt } from '../normal/rational';
+import type { Rational } from '../normal/types';
+import {
+	add,
+	multiply,
+	number,
+	opposite,
+	parentheses,
+	power,
+	subtract,
+	variable as variableNode
+} from '../factory';
+import { absBigInt, isNegative, isZero, lcm, negRational, rational } from '../normal/rational';
+import { rationalToNode } from '../common/numeric';
+import { type Poly, integerCoefficients } from './polynomial';
 
 /** Le nœud d'un entier signé. */
 export function integerNode(value: bigint): MathNode {
@@ -59,4 +71,28 @@ export function polynomialNode(coefficients: readonly bigint[], variable: MathNo
 
 	// Le polynôme nul s'écrit 0 : la fonction reste totale.
 	return result ?? number('0');
+}
+
+/**
+ * Un polynôme à coefficients RATIONNELS : `polynomialNode` s'ils sont entiers,
+ * sinon `(1/L)·(L·P)` avec L le PPCM des dénominateurs (`\frac{1}{4}(4x^2 - 1)`).
+ */
+export function rationalPolynomialNode(p: Poly, variable: MathNode): MathNode {
+	const integers = integerCoefficients(p);
+	const scale = p.reduce((acc, c) => lcm(acc, c.d), 1n);
+	if (scale === 1n) return polynomialNode(integers, variable);
+	return multiply(
+		rationalToNode(rational(1n, scale)),
+		parentheses(polynomialNode(integers, variable)),
+		'implicit'
+	);
+}
+
+/** Le facteur x − r écrit au plus simple : `x` si r = 0, `x + 3` si r = −3. */
+export function linearFactorNode(variable: string, root: Rational): MathNode {
+	const x = variableNode(variable);
+	if (isZero(root)) return x;
+	return isNegative(root)
+		? add(x, rationalToNode(negRational(root)))
+		: subtract(x, rationalToNode(root));
 }

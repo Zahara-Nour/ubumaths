@@ -43,9 +43,12 @@
 import type { MathNode } from '../types';
 import {
 	cos,
+	divide,
 	euler,
+	multiply,
 	number,
 	opposite,
+	parentheses,
 	sin,
 	subtract,
 	superscript,
@@ -65,6 +68,7 @@ import {
 } from '../common/simplify';
 import { extractExactRational, numericNode, rationalToNode } from '../common/numeric';
 import {
+	absBigInt,
 	absRational,
 	isNegative as isNegativeRational,
 	isOne as isOneRational,
@@ -73,6 +77,7 @@ import {
 } from '../normal/rational';
 import type { Rational } from '../normal/types';
 import { toLatex } from '../latex-generator';
+import { linearFactorNode } from '../factor';
 import { tidyTerms } from '../tidy/terms';
 import {
 	buildStep,
@@ -1147,23 +1152,22 @@ function integratePartialFractions(
 	match: PartialFractionsMatch,
 	ctx: DispatchContext
 ): DispatchResult {
-	const variableNd = variableNode(ctx.variable);
-	const r1Nd = numericNode(match.r1);
-	const r2Nd = numericNode(match.r2);
-	const ANd = numericNode(match.A);
-	const BNd = numericNode(match.B);
+	const r1Nd = rationalToNode(match.r1);
+	const r2Nd = rationalToNode(match.r2);
+	const ANd = rationalToNode(match.A);
+	const BNd = rationalToNode(match.B);
 
-	// `x - r₁` and `x - r₂` (kept structural for nice rendering ; if rᵢ is
-	// negative, the renderer / latex layer prints `x + |rᵢ|`).
-	const xMinusR1 = subtract(variableNd, r1Nd);
-	const xMinusR2 = subtract(variableNd, r2Nd);
+	// `x - r₁` and `x - r₂`, exacts : `x + 1` quand r = −1
+	const xMinusR1 = linearFactorNode(ctx.variable, match.r1);
+	const xMinusR2 = linearFactorNode(ctx.variable, match.r2);
 
 	// Decomposition `A/(x-r₁) + B/(x-r₂)` for the « before → after » of the
-	// `decompose-rational` step. We use the unscaled coefficients here ; the
-	// final antiderivative folds them into the logarithm coefficients.
-	const term1 = simplifiedDivide(ANd, xMinusR1);
-	const term2 = simplifiedDivide(BNd, xMinusR2);
-	const decomposition = simplifiedAdd(term1, term2);
+	// `decompose-rational` step, A = p/q écrit `p/(q(x − r))`. The final
+	// antiderivative folds the coefficients into the logarithms.
+	const first = simpleElement(match.A, xMinusR1);
+	const decomposition = isNegativeRational(match.B)
+		? subtract(first, simpleElement(negRational(match.B), xMinusR2))
+		: simplifiedAdd(first, simpleElement(match.B, xMinusR2));
 
 	// Antiderivative `A·ln|x-r₁| + B·ln|x-r₂|`.
 	const ln1 = ln(abs(xMinusR1));
@@ -1196,6 +1200,16 @@ function integratePartialFractions(
 	});
 
 	return { antiderivative, steps: [decomposeStep, applyStep] };
+}
+
+/** L'élément simple A/(x − r) : `\frac{3}{2(x - 1)}` pour A = 3/2, `-\frac{1}{x - 2}` pour A = −1 */
+function simpleElement(coefficient: Rational, linear: MathNode): MathNode {
+	const denominator =
+		coefficient.d === 1n
+			? linear
+			: multiply(number(coefficient.d.toString()), parentheses(linear), 'implicit');
+	const magnitude = divide(number(absBigInt(coefficient.n).toString()), denominator, 'fraction');
+	return coefficient.n < 0n ? opposite(magnitude) : magnitude;
 }
 
 // =============================================================================
