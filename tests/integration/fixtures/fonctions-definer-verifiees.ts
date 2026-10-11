@@ -782,11 +782,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		justification: 'jeton du cours (table distincte du cahier), classe active, contenus publiés',
 		anon: true
 	},
-	'get_course_document_by_share_token(p_token text, p_document_id uuid)': {
-		categorie: 'jeton',
-		justification: 'jeton du cours + document publié dans un chapitre visible de sa classe',
-		anon: true
-	},
 	'get_course_worksheet_by_share_token(p_token text, p_worksheet_id uuid)': {
 		categorie: 'jeton',
 		justification: 'jeton du cours + fiche publiée dans un chapitre visible et distribuée',

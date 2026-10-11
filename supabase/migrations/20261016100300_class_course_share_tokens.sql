@@ -14,7 +14,8 @@
 --   · le plan : titre, description, couleur, icône et ordre des chapitres, et
 --     les sections — seulement celles qui portent au moins un contenu renvoyé ;
 --   · les documents : leurs métadonnées, SANS `storage_path` (le fichier
---     s'obtient par une RPC dédiée, puis une URL signée courte côté serveur) ;
+--     s'obtient côté SERVEUR par une RPC réservée au service role, puis une URL
+--     signée courte : le visiteur ne voit jamais le chemin de stockage) ;
 --   · les fiches : identifiant et titre — uniquement si publiées dans le chapitre
 --     ET distribuées à CETTE classe (affectation active, ouverte). Miroir de
 --     `student_has_worksheet_access` : publier sans distribuer ne montre rien ;
@@ -72,9 +73,6 @@ comment on table public.class_course_share_tokens is
 create unique index if not exists idx_class_course_share_tokens_active_class
 	on public.class_course_share_tokens (class_id)
 	where is_active;
-
-create index if not exists idx_class_course_share_tokens_token
-	on public.class_course_share_tokens (token);
 
 -- ---------------------------------------------------------------------------
 -- 2. RLS : la table n'est JAMAIS lue directement par un visiteur
@@ -451,11 +449,16 @@ revoke all on function public.get_course_worksheet_by_share_token(text, uuid) fr
 grant execute on function public.get_course_worksheet_by_share_token(text, uuid) to anon, authenticated;
 
 -- ---------------------------------------------------------------------------
--- 5. Un document du cours
+-- 5. Un document du cours — RÉSERVÉE AU SERVICE ROLE
 -- ---------------------------------------------------------------------------
--- Rend ce qu'il faut pour servir le fichier : le serveur signera ensuite une URL
--- courte avec le client service. `storage_path` ne sort QUE par ici, document
--- par document, et seulement s'il est publié dans un chapitre visible.
+-- Rend ce qu'il faut pour servir le fichier : le serveur l'appelle avec le
+-- client service role (après validation Zod du jeton), puis signe une URL
+-- courte. `storage_path` ne sort QUE par ici, document par document, et
+-- seulement s'il est publié dans un chapitre visible.
+--
+-- Ni `anon` ni `authenticated` ne l'exécutent : le chemin de stockage ne doit
+-- jamais atteindre un navigateur, même avec un jeton valide. La garde par jeton
+-- reste dans le corps : le serveur ne fait que relayer ce que le jeton ouvre.
 create or replace function public.get_course_document_by_share_token(
 	p_token text,
 	p_document_id uuid
@@ -509,7 +512,9 @@ end;
 $$;
 
 comment on function public.get_course_document_by_share_token(text, uuid) is
-	'Document ouvert par le lien de « Mon cours » : storage_path, nom, type, source, URL Drive — seulement s''il est publié (published_at <= now()) dans un chapitre visible de la classe du jeton. NULL sinon, sans distinguer.';
+	'Document ouvert par le lien de « Mon cours » : storage_path, nom, type, source, URL Drive — seulement s''il est publié (published_at <= now()) dans un chapitre visible de la classe du jeton. NULL sinon, sans distinguer. RÉSERVÉE au service role : le serveur signe ensuite une URL courte.';
 
-revoke all on function public.get_course_document_by_share_token(text, uuid) from public;
-grant execute on function public.get_course_document_by_share_token(text, uuid) to anon, authenticated;
+-- `revoke from public` ne suffit pas : le baseline accorde aussi EXECUTE par
+-- défaut à anon et authenticated (ALTER DEFAULT PRIVILEGES).
+revoke all on function public.get_course_document_by_share_token(text, uuid) from public, anon, authenticated;
+grant execute on function public.get_course_document_by_share_token(text, uuid) to service_role;

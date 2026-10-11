@@ -100,7 +100,7 @@ type Loose = {
 	rpc: (
 		fn: string,
 		args: Record<string, unknown>
-	) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+	) => PromiseLike<{ data: unknown; error: { message: string; code?: string } | null }>;
 };
 
 const loose = (client: unknown) => client as unknown as Loose;
@@ -145,6 +145,12 @@ describe('« Mon cours » partageable par lien', () => {
 		ficheNonDistribuee: '',
 		ficheHorsChapitre: '',
 		ficheMasquee: '',
+		// Une fiche par garde : chacune ne viole QU'UNE condition.
+		fichePreparee: '',
+		ficheProgrammee: '',
+		ficheAffectationBrouillon: '',
+		ficheOuverteDemain: '',
+		ficheDistribueeAuxB: '',
 		ficheB: '',
 		itemPublie: '',
 		itemNull: '',
@@ -175,13 +181,21 @@ describe('« Mon cours » partageable par lien', () => {
 		return id;
 	}
 
-	async function distribuer(ficheId: string, classe: string): Promise<void> {
-		const affectation = await insert('worksheet_assignments', {
+	async function distribuer(
+		ficheId: string,
+		classe: string,
+		affectation: { status?: string; available_from?: string } = {}
+	): Promise<void> {
+		const affectationId = await insert('worksheet_assignments', {
 			worksheet_id: ficheId,
-			status: 'active',
+			status: affectation.status ?? 'active',
+			available_from: affectation.available_from ?? null,
 			created_by: teacherId
 		});
-		await insert('worksheet_assignment_classes', { assignment_id: affectation, class_id: classe });
+		await insert('worksheet_assignment_classes', {
+			assignment_id: affectationId,
+			class_id: classe
+		});
 	}
 
 	async function purgerJetons(): Promise<void> {
@@ -212,11 +226,12 @@ describe('« Mon cours » partageable par lien', () => {
 		return data as { id: string } | null;
 	}
 
+	/** Réservée au service role : c'est le serveur qui l'appelle, jamais le navigateur. */
 	async function ouvrirDocument(
 		token: string | null,
 		documentId: string
 	): Promise<{ storage_path: string | null; file_name: string | null } | null> {
-		const { data, error } = await loose(anonClient()).rpc('get_course_document_by_share_token', {
+		const { data, error } = await loose(service).rpc('get_course_document_by_share_token', {
 			p_token: token,
 			p_document_id: documentId
 		});
@@ -321,6 +336,33 @@ describe('« Mon cours » partageable par lien', () => {
 		await distribuer(ids.ficheDistribuee, classA);
 		await distribuer(ids.ficheHorsChapitre, classA);
 		await distribuer(ids.ficheMasquee, classA);
+
+		// Gardes de fiche, une par fiche, toutes rangées dans le chapitre VISIBLE.
+		ids.fichePreparee = await fiche('Fiche préparée (published_at NULL)');
+		ids.ficheProgrammee = await fiche('Fiche programmée (published_at demain)');
+		ids.ficheAffectationBrouillon = await fiche('Fiche à affectation brouillon');
+		ids.ficheOuverteDemain = await fiche('Fiche ouverte demain');
+		ids.ficheDistribueeAuxB = await fiche('Fiche distribuée seulement aux B');
+		await distribuer(ids.fichePreparee, classA);
+		await distribuer(ids.ficheProgrammee, classA);
+		await distribuer(ids.ficheAffectationBrouillon, classA, { status: 'draft' });
+		await distribuer(ids.ficheOuverteDemain, classA, { available_from: demain });
+		await distribuer(ids.ficheDistribueeAuxB, classB);
+		const gardes: [string, string | null][] = [
+			[ids.fichePreparee, null],
+			[ids.ficheProgrammee, demain],
+			[ids.ficheAffectationBrouillon, passe],
+			[ids.ficheOuverteDemain, passe],
+			[ids.ficheDistribueeAuxB, passe]
+		];
+		for (const [ficheId, publication] of gardes) {
+			await insert('chapter_worksheets', {
+				chapter_id: ids.chapitreVisible,
+				worksheet_id: ficheId,
+				display_order: 10,
+				published_at: publication
+			});
+		}
 		await insert('chapter_worksheets', {
 			chapter_id: ids.chapitreVisible,
 			worksheet_id: ids.ficheDistribuee,
@@ -590,6 +632,22 @@ describe('« Mon cours » partageable par lien', () => {
 		expect(await ouvrirFiche(COURSE_A, ids.ficheHorsChapitre)).toBeNull();
 	});
 
+	// Une garde par test : chacun tombe si la ligne correspondante disparaît,
+	// dans le plan OU dans la RPC de la fiche.
+	it.each([
+		['rattachement préparé (published_at NULL)', 'fichePreparee'],
+		['rattachement programmé (published_at demain)', 'ficheProgrammee'],
+		["affectation au statut ≠ 'active' (draft)", 'ficheAffectationBrouillon'],
+		['affectation ouverte demain (available_from)', 'ficheOuverteDemain'],
+		['fiche publiée chez A mais distribuée SEULEMENT aux B', 'ficheDistribueeAuxB']
+	] as const)('%s : absente du plan et refusée', async (_cas, cle) => {
+		const ficheId = ids[cle];
+		const chapitre = chapitreVisible(await lireCours(COURSE_A));
+
+		expect(chapitre.worksheets.map((f) => f.worksheet_id)).not.toContain(ficheId);
+		expect(await ouvrirFiche(COURSE_A, ficheId)).toBeNull();
+	});
+
 	// ========================================================================
 	// 10. Ce que le lien n'ouvre jamais
 	// ========================================================================
@@ -621,6 +679,18 @@ describe('« Mon cours » partageable par lien', () => {
 		expect(texte).not.toContain(STORAGE_PATH);
 		expect(texte).not.toMatch(/progress|completed/i);
 		expect(texte).not.toContain(ids.exercice);
+	});
+
+	it('anon et un élève connecté ne peuvent pas appeler la RPC du document (42501)', async () => {
+		// Le chemin de stockage ne sort que par le serveur (service role).
+		for (const client of [anonClient(), eleve]) {
+			const { data, error } = await loose(client).rpc('get_course_document_by_share_token', {
+				p_token: COURSE_A,
+				p_document_id: ids.docPublie
+			});
+			expect(data).toBeNull();
+			expect(error?.code).toBe('42501');
+		}
 	});
 
 	it('anon ne lit pas la table des jetons du cours', async () => {
