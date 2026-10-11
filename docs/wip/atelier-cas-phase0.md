@@ -1,7 +1,7 @@
 ---
 title: Atelier — ce qui manque avant de retirer /cas (phase 0)
 date: 2026-10-11
-status: phase 0 validée par David (2026-10-11) ; PR 1 (#1080) et PR 2 (#1086) livrées ; PR 3 en cours (branche feat/atelier-completion)
+status: PR 1 (#1080), PR 2 (#1086) et PR 3 (#1094) livrées le 2026-10-11 ; PR 4 (retrait de /cas) suspendue ; restent les points mis de côté
 ---
 
 # Atelier — ce qui manque avant de retirer `/cas`
@@ -78,7 +78,7 @@ Chapeau du chantier : [atelier-progress.md](atelier-progress.md).
 | `.mode décimal` actif                        | la ligne arrive en décimal ; le bouton montre la valeur exacte                                                     |
 | Export, rejeu, « Garder »                    | ignorent le bouton : on exporte et on garde la valeur EXACTE                                                       |
 
-### PR 3 — la complétion des fonctions et des lettres grecques (en cours)
+### PR 3 — la complétion des fonctions et des lettres grecques (✅ #1094)
 
 **Règle unique** : la liste s'ouvre quand le mot en cours (lettres seulement) a **au moins 2 lettres**, est
 le **début** d'une proposition, et que choisir cette proposition **changerait** le champ.
@@ -160,6 +160,7 @@ absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inv
   les débuts de 2 lettres ; condition « choisir changerait le champ » retirée, toujours vraie),
   options annoncées par leur nom. Mesuré : unités (`cm`, `km`, `min`, `h`) et listes qualitatives
   n'ouvrent rien ; `si`, `de`, `et` ouvrent une liste qu'Entrée ignore.
+- 2026-10-11 — PR 3 mergée (#1094). Les trois PR de la phase 0 sont livrées.
 
 ## Mis de côté (David, 2026-10-11 : « on verra après »)
 
