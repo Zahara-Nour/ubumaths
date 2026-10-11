@@ -18,7 +18,9 @@
 		plain,
 		type AtelierCommand
 	} from '$lib/atelier/commands';
+	import { tick } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
+	import { insertProposal, proposalsFor, type Proposal } from '$lib/atelier/completion';
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
 	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
@@ -137,6 +139,64 @@
 		listOpen && active !== null ? `${uid}-commande-${suggestions.indexOf(active)}` : undefined
 	);
 
+	/**
+	 * La complétion des fonctions et des lettres grecques (phase 0
+	 * `atelier-cas-phase0.md`, PR 3). Le mot en cours est celui du CURSEUR :
+	 * `caret` suit la frappe, les flèches et le clic. La liste des commandes a
+	 * la priorité — une seule liste ouverte à la fois.
+	 */
+	let caret = $state(0);
+	let highlightedProposal = $state<string | null>(null);
+
+	const proposals = $derived(suggestions.length > 0 ? [] : proposalsFor(desk.draft, caret));
+	const proposalsOpen = $derived(proposals.length > 0 && !dismissed);
+	const activeProposal = $derived(
+		proposals.find((p) => p.insert === highlightedProposal) ?? proposals[0] ?? null
+	);
+	const activeDescendant = $derived(
+		listOpen
+			? activeId
+			: proposalsOpen && activeProposal !== null
+				? `${uid}-proposition-${proposals.indexOf(activeProposal)}`
+				: undefined
+	);
+
+	/** Retenir où est le curseur : c'est lui qui désigne le mot en cours. */
+	function syncCaret() {
+		if (field !== null) caret = field.selectionStart ?? desk.draft.length;
+	}
+
+	/**
+	 * Les touches qui DÉPLACENT le curseur : le mot en cours change avec lui.
+	 * Pas les autres — le relâchement de Tab arriverait avant l'insertion, et
+	 * relirait un curseur périmé.
+	 */
+	const CARET_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'Home', 'End']);
+
+	function handleKeyup(event: KeyboardEvent) {
+		if (CARET_KEYS.has(event.key)) syncCaret();
+	}
+
+	/** Remplacer le mot en cours par la proposition, curseur juste après. */
+	async function insert(proposal: Proposal) {
+		const next = insertProposal(desk.draft, caret, proposal);
+		desk.draft = next.draft;
+		caret = next.caret;
+		highlightedProposal = null;
+		// La valeur changée par script met le curseur à la FIN du champ : au
+		// milieu (`co| + 1`), il faut le replacer après l'insertion
+		await tick();
+		field?.focus();
+		field?.setSelectionRange(next.caret, next.caret);
+	}
+
+	/** Déplacer le surlignage parmi les propositions, en boucle. */
+	function moveProposal(step: 1 | -1) {
+		if (activeProposal === null) return;
+		const next = (proposals.indexOf(activeProposal) + step + proposals.length) % proposals.length;
+		highlightedProposal = proposals[next].insert;
+	}
+
 	/** La commande dont l'élève tape la suite, et son modèle sous le champ. */
 	const writing = $derived(commandBeingWritten(catalog, desk.draft));
 	const model = $derived(
@@ -153,6 +213,8 @@
 	function handleInput() {
 		dismissed = false;
 		highlightedName = null;
+		highlightedProposal = null;
+		syncCaret();
 	}
 
 	/** Le nom tapé après le point est-il exactement une graphie de cette commande ? */
@@ -205,6 +267,27 @@
 			return;
 		}
 
+		// Liste des fonctions et lettres grecques : elle s'est ouverte toute
+		// seule au milieu d'un calcul, elle ne détourne donc PAS Entrée, qui
+		// calcule (décision de David : `3ta` donne 3·t·a) ; Tab ou un clic choisit
+		if (proposalsOpen && activeProposal !== null) {
+			if (event.key === 'Escape') {
+				event.preventDefault();
+				dismissed = true;
+				return;
+			}
+			if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+				event.preventDefault();
+				moveProposal(event.key === 'ArrowDown' ? 1 : -1);
+				return;
+			}
+			if (event.key === 'Tab' && !event.shiftKey) {
+				event.preventDefault();
+				void insert(activeProposal);
+				return;
+			}
+		}
+
 		// Le curseur se place seul à la fin de la ligne rappelée : la norme HTML
 		// l'y met quand un script change la valeur d'un champ (mesuré : un
 		// `setSelectionRange` ajouté ne changeait rien au test qui le vérifie)
@@ -213,6 +296,7 @@
 			event.preventDefault();
 			if (event.key === 'ArrowUp') desk.recallPrevious();
 			else desk.recallNext();
+			caret = desk.draft.length;
 			// Une ligne rappelée qui commence par un point rouvrirait la liste, et
 			// ↑ / ↓ y resteraient pris (`.pose` : rien à surligner, revue) — elle
 			// revient à la frappe suivante
@@ -442,6 +526,33 @@
 		</ul>
 	{/if}
 
+	{#if proposalsOpen}
+		<!-- Même motif que la liste des commandes ; Entrée n'y choisit pas -->
+		<ul
+			class="commandes propositions"
+			id="{uid}-propositions"
+			role="listbox"
+			aria-label="Fonctions et lettres grecques"
+		>
+			{#each proposals as proposal, index (proposal.insert)}
+				<li role="none">
+					<button
+						type="button"
+						role="option"
+						id="{uid}-proposition-{index}"
+						tabindex="-1"
+						aria-selected={proposal === activeProposal}
+						class:surlignee={proposal === activeProposal}
+						onclick={() => insert(proposal)}
+					>
+						<span class="nom">{proposal.insert}</span>
+						<span class="quoi">{proposal.label}</span>
+					</button>
+				</li>
+			{/each}
+		</ul>
+	{/if}
+
 	{#if model !== null}
 		<p class="modele" id="{uid}-modele">Modèle : <code>{model}</code></p>
 	{/if}
@@ -455,11 +566,17 @@
 			spellcheck="false"
 			role="combobox"
 			aria-autocomplete="list"
-			aria-expanded={listOpen}
-			aria-controls={listOpen ? `${uid}-commandes` : undefined}
-			aria-activedescendant={activeId}
+			aria-expanded={listOpen || proposalsOpen}
+			aria-controls={listOpen
+				? `${uid}-commandes`
+				: proposalsOpen
+					? `${uid}-propositions`
+					: undefined}
+			aria-activedescendant={activeDescendant}
 			aria-describedby={model !== null ? `${uid}-modele` : undefined}
 			onkeydown={handleKeydown}
+			onkeyup={handleKeyup}
+			onclick={syncCaret}
 			oninput={handleInput}
 			aria-label="Calcul, définition ou commande"
 			placeholder="f(x) = x^2 − 3x + 1, ou 12 km + 300 m, ou un point pour les commandes"
