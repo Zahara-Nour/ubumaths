@@ -56,61 +56,8 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 	// Retirer une zone quand sa doc est écrite (et lui donner son `couvre:`).
 	trous: [
 		{
-			glob: 'src/lib/server/{chapter*,chapters*,class-sessions,curriculum*,journal*}.ts'
-		},
-		{
-			glob: 'src/lib/server/validation/{chapter*,chapters,curriculum,journal,academic}.ts'
-		},
-		{
-			glob: 'src/lib/components/{cours,journal,templates,progression}/**'
-		},
-		{
-			glob: 'src/lib/types/{chapter*,chapters,journal,academic_periods_types}.ts'
-		},
-		{
-			glob: 'src/lib/utils/{academic-period,class-sessions,schedule,timetable,week-config,timeMatching}.ts'
-		},
-		{
-			glob: 'src/routes/api/teacher/{chapters,chapter-templates,curriculum,periods}/**'
-		},
-		{
-			glob: 'src/routes/api/student/{chapters,checklist}/**'
-		},
-		{
-			glob: 'src/routes/(protected)/dashboard/{teacher,student}/{cours,cahier-texte,avancement,programme,journal,progression}/**'
-		},
-		{
-			glob: 'src/routes/(public)/cahier/**'
-		},
-		{
-			glob: 'src/lib/server/progression/**'
-		},
-		{
-			glob: 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte'
-		},
-		{
-			glob: 'src/routes/(protected)/dashboard/{teacher,student}/{assessments,evaluation-tasks,presques-evaluations,competences,work,reports}/**'
-		},
-		{
-			glob: 'src/routes/api/{evaluations,tests,test-mode,series}/**'
-		},
-		{
-			glob: 'src/lib/components/{test,assessments,series}/**'
-		},
-		{
-			glob: 'src/lib/server/validation/{evaluations,tests,parody-evaluations,grades}.ts'
-		},
-		{
-			glob: 'src/lib/types/{evaluation*,test,grades,skills}.ts'
-		},
-		{
-			glob: 'src/lib/utils/{test-launch,test-score,grades}.ts'
-		},
-		{
-			glob: 'src/routes/(public)/presques-evaluations/**'
-		},
-		{
-			glob: 'src/lib/components/teacher/TestModeToggle.svelte'
+			glob: 'src/lib/components/templates/{FiltersHelp,TagsInput,VariableAutocomplete}.svelte',
+			note: 'messagerie, modération, notifications, avertissements, amitiés'
 		},
 		{
 			glob: 'src/routes/api/exercises/**',

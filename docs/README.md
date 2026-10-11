@@ -21,8 +21,14 @@ code qu'elle **recense** seulement (`indexe:`). La garde `pnpm docs:check-a-jour
 
 - **sur chaque PR** : toute doc dont le `couvre:` touche un fichier modifié est modifiée aussi, sinon
   une ligne `Doc-inchangée: <raison>` dans un commit (skill `doc-a-jour`) ;
+- **sur chaque PR, doc d'abord** : une PR qui touche une zone listée en trou écrit d'abord la doc de
+  la zone et la retire de la liste. Si la zone est trop grosse au regard du changement, David
+  tranche ; s'il reporte, une ligne `Doc-reportée: <raison>` dans un commit ;
 - **partout** : chaque fichier de code est couvert ou indexé par une doc, ou listé comme trou connu
-  dans `scripts/doc-a-jour.config.ts` (les zones sans doc, à documenter).
+  dans `scripts/doc-a-jour.config.ts` (les zones sans doc, à documenter) ; un trou dont la zone est
+  déjà décrite, ou qui ne désigne plus aucun fichier, sort de la liste.
+
+Indexer n'est pas décrire : un fichier seulement recensé par `indexe:` reste un trou.
 
 ## Gabarit d'une doc système
 
