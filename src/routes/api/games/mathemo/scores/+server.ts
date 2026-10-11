@@ -114,8 +114,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				)
 			: 0;
 
-		// Upsert score stats
-		const { data: upsertData, error: upsertError } = await supabase
+		// Client service : la base retire cette fonction aux comptes connectés — un
+		// élève y ajouterait sinon n'importe quel score à son total. L'identité vient
+		// de la session ; le score est calculé et borné ici.
+		const { data: upsertData, error: upsertError } = await createServiceRoleClient()
 			.rpc('upsert_mathemo_score', {
 				p_user_id: user.id,
 				p_word_length: word_length,

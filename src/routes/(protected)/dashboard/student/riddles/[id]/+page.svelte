@@ -22,9 +22,9 @@
 	 * 1. Submit answer to API
 	 * 2. If correct answer: update cache with earned gidouilles (AFTER API confirms)
 	 * 3. Navigate back to riddles list (no page reload)
-	 * 4. On error: show error message, stay on page
+	 * 4. On error: show error message, resolve false — the card returns to the input
 	 */
-	async function handleSubmit(answer: string | number) {
+	async function handleSubmit(answer: string | number): Promise<boolean> {
 		try {
 			const response = await fetch(`/api/riddles/${data.riddle.id}/submit`, {
 				method: 'POST',
@@ -59,12 +59,14 @@
 				setTimeout(() => {
 					_goto('/dashboard/student/riddles');
 				}, 2000);
-			} else {
-				toaster.error(result.message || 'Erreur lors de la soumission');
+				return true;
 			}
+			toaster.error(result.message || 'Erreur lors de la soumission');
+			return false;
 		} catch (err) {
 			console.error('Submit error:', err);
 			toaster.error('Erreur de connexion');
+			return false;
 		}
 	}
 </script>

@@ -994,6 +994,12 @@ function analyzeNode(
 			// Holes and mathematical constants (e, π) are dimensionless
 			return createDimensionlessUnit();
 
+		case 'segmentLength':
+		case 'figureName':
+			// Longueur et nom de figure : sans dimension pour l'instant (lot 2 : une
+			// longueur a la dimension d'une longueur)
+			return createDimensionlessUnit();
+
 		case 'composition':
 			// Composition (f composed with g) - treat as a functional composition
 			// The result unit depends on what the composed functions do

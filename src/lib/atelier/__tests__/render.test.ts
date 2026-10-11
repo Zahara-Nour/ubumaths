@@ -160,3 +160,23 @@ describe('ce qui ne regarde pas l’élève', () => {
 		expect(render('(x^2-1)/(x+1)').text).not.toContain('variables:');
 	});
 });
+
+// Décision a de David (2026-10-12) : à l'écran, la notation scientifique du collège.
+// `tidy` ne doit pas recalculer `3 × 10²⁰` en 300000000000000000000
+describe('la notation scientifique à l’écran (mode décimal)', () => {
+	function decimal(input: string) {
+		const engine = new WebReplEngine();
+		engine.execute('.mode decimal');
+		return renderResult(engine.execute(input)).latex;
+	}
+
+	it('une valeur arrondie', () => {
+		expect(decimal('\\pi^{20}')).toBe('8.7700 \\times 10^9');
+		expect(decimal('1/7000000')).toBe('1.4286 \\times 10^{-7}');
+		expect(decimal('-\\pi^{20}')).toBe('-8.7700 \\times 10^9');
+	});
+
+	it('une valeur exacte n’est pas recalculée', () => {
+		expect(decimal('3*10^20')).toBe('3 \\times 10^{20}');
+	});
+});

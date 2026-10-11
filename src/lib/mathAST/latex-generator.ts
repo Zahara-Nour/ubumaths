@@ -41,6 +41,7 @@ import type {
 	GreekLetter,
 	NodeMetadata
 } from './types';
+import { formatPointNames } from './common/point-names';
 import { flattenRelationChain } from './flatten';
 import { divide, multiply, number, opposite, parentheses, superscript } from './factory';
 import { transformAST } from './visitor';
@@ -732,6 +733,11 @@ export class LatexGenerator {
 				this.emit(node.constant === 'euler' ? '\\exponentialE' : '\\pi', node.metadata);
 				break;
 
+			case 'segmentLength':
+			case 'figureName':
+				this.emit(formatPointNames(node.points), node.metadata);
+				break;
+
 			case 'composition':
 				this.visitCompositionSpans(node);
 				break;
@@ -1274,6 +1280,10 @@ export class LatexGenerator {
 			case 'constant':
 				this.emit(node.constant === 'euler' ? '\\exponentialE' : '\\pi', effectiveMeta);
 				break;
+			case 'segmentLength':
+			case 'figureName':
+				this.emit(formatPointNames(node.points), effectiveMeta);
+				break;
 			default:
 				// For complex nodes, use normal visitWithSpans
 				// (they will handle their own metadata)
@@ -1345,6 +1355,10 @@ export class LatexGenerator {
 				break;
 			case 'constant':
 				content = node.constant === 'euler' ? '\\exponentialE' : '\\pi';
+				break;
+			case 'segmentLength':
+			case 'figureName':
+				content = formatPointNames(node.points);
 				break;
 			case 'composition':
 				content = this.generateComposition(node);

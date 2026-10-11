@@ -8,6 +8,7 @@ couvre:
   - 'src/lib/components/google/**'
   - 'src/lib/server/google/**'
   - src/lib/server/kanban.ts
+  - src/lib/server/spreadsheet-access.ts
   - 'src/lib/server/validation/{kanban,spreadsheet,google,whiteboard-drive,whiteboard-templates}.ts'
   - src/lib/types/google.ts
   - 'src/routes/(protected)/whiteboard/**'
@@ -202,6 +203,10 @@ voir [atelier.md](atelier.md).)
 
 Table `spreadsheets` : `user_id`, `name`, `description`, `data` (jsonb : `cells`,
 `version`, `metadata`). RLS : chacun ne lit et n'écrit que ses tableurs (`auth.uid() = user_id`).
+Accès : élèves et prof, par une garde unique `requireSpreadsheetUser`
+(`src/lib/server/spreadsheet-access.ts`) sur les deux pages et les cinq méthodes de l'API ; le
+compte admin est refusé (décision du 2026-10-12). La suppression vérifie les lignes rendues :
+0 ligne supprimée → 404, jamais un faux succès.
 Une valeur calculée est une union `number | string | boolean | error | empty` ; codes
 d'erreur `#REF!`, `#DIV/0!`, `#VALUE!`, `#NAME?`, `#CIRC!`, `#NUM!`.
 
@@ -225,7 +230,9 @@ Clavier : flèches, Entrée, Tab / Maj+Tab, Échap, F2, Suppr, Ctrl/Cmd+B et +I
 ### Tests
 
 `src/lib/spreadsheet/__tests__/` : lexer, parser, evaluator, functions, dependency-graph,
-csv, types-import.
+csv, types-import. Accès : `src/lib/server/__tests__/spreadsheet-access.test.ts` et
+`src/routes/api/spreadsheets/__tests__/server.test.ts` (prof et élève acceptés, admin refusé),
+`src/routes/api/spreadsheets/[id]/__tests__/server.test.ts` (suppression sans ligne → 404).
 
 ---
 
@@ -382,12 +389,13 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
 
 ## Écarts connus
 
-1. **Tableur — un prof ne peut rien faire** : les routes `/spreadsheet` et
-   `/api/spreadsheets` appellent `requireRole(locals, 'student')`, qui exige le rôle
-   **exact** ; un commentaire annonce « Both students and teachers », un prof reçoit 403.
+1. **Tableur — accès du prof** : corrigé le 2026-10-12 (le prof recevait 403 ; voir « Modèle »).
 2. **Tableur — alias sans fonction** : `FUNCTION_ALIASES` nomme COUNTBLANK, STDEV, VAR,
    MEDIAN, MODE, TODAY, NOW, YEAR, MONTH, DAY, VLOOKUP, HLOOKUP, INDEX, MATCH, qu'aucun
-   fichier n'implémente → `#NAME?`.
+   fichier n'implémente → `#NAME?`. Plan retenu par David le 2026-10-12, **après** la décision
+   A/B du tableur de l'atelier : implémenter MEDIANE, MODE, ECARTYPE (n − 1, comme Excel),
+   ECARTYPEP (n), VAR, NB.VIDE en branchant `src/lib/statistics/`, retirer les alias de dates et
+   de recherche ; l'alias s'écrit aujourd'hui `ECARTTYPE` (deux T), à corriger en `ECARTYPE`.
 3. **Tableau blanc** : réservé au prof et à l'admin depuis le 2026-10-11 (D5, décision de David :
    outil de projection mono-utilisateur ; test `src/routes/(protected)/whiteboard/__tests__/page.server.test.ts`).
    Le panneau de fichiers ne propose plus rien de Google quand le drapeau est éteint (V5, test

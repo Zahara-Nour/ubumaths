@@ -57,6 +57,7 @@ toute nouvelle page publique qui n'est dans aucune des trois listes.
 | Chiphre, c'est quoi ?                      | `/a-propos`                                        | Le manifeste, pour les parents                                                                                                                                                 | non (panneau « Infos ») | oui      |
 | Exercice partagé                           | `/exercice/[slug]`                                 | Variantes, graine partageable, export PDF, solution ; le tuteur seulement pour un élève connecté. Indexé seulement si coché « Afficher sur Google » (sinon `noindex`)          | non (lien partagé)      | si coché |
 | Cahier de textes public                    | `/cahier/[token]`                                  | Séances et devoirs d'une classe, par lien                                                                                                                                      | non (lien du prof)      | non      |
+| Cours public                               | `/cours/[token]`                                   | Cours publié d'une classe (chapitres, documents, fiches, objectifs, séries), par lien                                                                                          | non (lien du prof)      | non      |
 | Le Trône Royal (Père Ubu)                  | `/pere-ubu`                                        | Père Ubu et ses répliques ; **son chat exige un compte** (écart, voir plus bas)                                                                                                | non                     | oui      |
 
 ## Avec un compte élève
@@ -96,7 +97,8 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
   `src/routes/api/chat/+server.ts:178`) et Hugging Face aux USA. Dire « base de données hébergée à
   Paris », qui est exact.
 - **Un suivi « accessible aux parents »** : aucun rôle parent ni vue de progression pour eux ; le
-  seul accès famille est le lien du cahier de textes. (`/a-propos` le promet : écart.)
+  seul accès famille est le lien du cahier de textes et celui du cours (ADR 0025). (`/a-propos` le
+  promet : écart.)
 - **Une interface multilingue** : l'interface est en français seulement ; seuls certains contenus
   (fiches) existent en anglais.
 - **Parler à Père Ubu sans compte** : le chat de `/pere-ubu` exige un compte.
@@ -171,8 +173,8 @@ aiguillage, Élève / Parent / Professeur, vers trois vues courtes : `/eleves`, 
   toujours ». Le niveau est dit partout : du CM1 à la Terminale.
 - **Le registre** : élèves tutoyés ; parents et professeurs vouvoyés (les descriptions du Tour,
   qui tutoient, sont réécrites pour les professeurs).
-- **Les parents** lisent franchement : pas de compte parent (le lien du cahier de textes, par le
-  professeur), et le tuteur passe par un prestataire aux États-Unis.
+- **Les parents** lisent franchement : pas de compte parent (les liens du cahier de textes et du
+  cours, par le professeur), et le tuteur passe par un prestataire aux États-Unis.
 
 **Comment étendre** : un bloc → une entrée de `blocks` dans `views.ts` (son icône dans `ViewIcon`
 et dans `AudienceView.svelte`) ; un lien → une page publique qui existe (le test le vérifie).

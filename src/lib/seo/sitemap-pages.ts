@@ -180,6 +180,7 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 		reason: 'lance la série décrite par l’adresse ; sans elle, renvoie au panier'
 	},
 	{ pattern: '/cahier/[token]/**', reason: 'cahier de textes ouvert par le jeton du professeur' },
+	{ pattern: '/cours/[token]/**', reason: 'cours d’une classe ouvert par le jeton du professeur' },
 	{ pattern: '/python-exercises/mine', reason: LOGIN_REQUIRED },
 	{ pattern: '/python-exercises/my-progress', reason: LOGIN_REQUIRED },
 	{ pattern: '/python-exercises/new', reason: LOGIN_REQUIRED },

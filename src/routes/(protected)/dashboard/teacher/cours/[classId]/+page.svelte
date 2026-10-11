@@ -14,7 +14,7 @@
 
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
-	import { navigating } from '$app/stores';
+	import { navigating, page } from '$app/state';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -26,6 +26,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { CourseShareLinkCard } from '$lib/components/cours/teacher';
 	import { CHAPTER_ICONS } from '$lib/types/chapters';
 	import {
 		Plus,
@@ -79,9 +80,14 @@
 	let editIcon = $state('');
 	let editIsVisible = $state(false);
 
+	/** URL complète du lien du cours (ADR 0025), celle qu'on colle dans un carnet ou un mail. */
+	let courseShareUrl = $derived(
+		data.courseShareToken ? `${page.url.origin}/cours/${data.courseShareToken.token}` : null
+	);
+
 	// Loading state
 	let isSubmitting = $state(false);
-	let isNavigating = $derived(!!$navigating);
+	let isNavigating = $derived(!!navigating.to);
 
 	// Color options for MySelect
 	// Icon options for MySelect
@@ -114,6 +120,10 @@
 				selectedChapter = null;
 			} else if (form.action === 'toggleVisibility') {
 				toaster.success('Visibilite mise a jour');
+			} else if (form.action === 'shareCourseLink') {
+				toaster.success('Lien du cours prêt');
+			} else if (form.action === 'revokeCourseLink') {
+				toaster.success('Lien du cours révoqué');
 			} else if (form.action === 'instantiateFromTemplate') {
 				toaster.success('Chapitre cree depuis le template');
 				showTemplateDialog = false;
@@ -191,6 +201,13 @@
 			</Button>
 		</div>
 	</div>
+
+	<!-- Lien du cours : les élèves sans compte n'ont pas d'autre accès (ADR 0025) -->
+	<CourseShareLinkCard
+		shareUrl={courseShareUrl}
+		expiresAt={data.courseShareToken?.expires_at ?? null}
+		accessCount={data.courseShareToken?.access_count ?? 0}
+	/>
 
 	<!-- Loading state -->
 	{#if isNavigating}

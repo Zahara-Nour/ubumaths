@@ -327,15 +327,15 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
 
 ## Les nœuds
 
-29 variantes dans `types.ts`, discriminées par `type` :
+31 variantes dans `types.ts`, discriminées par `type` :
 
-| Famille    | `type`                                                                                                    |
-| ---------- | --------------------------------------------------------------------------------------------------------- |
-| feuilles   | `number`, `variable`, `greek`, `symbol`, `constant` (`euler`, `pi`), `hole` (trou d'exercice)             |
-| opérations | `addition`, `subtraction`, `multiplication`, `division`, `opposite`, `positive`                           |
-| structure  | `delimiter`, `subscript`, `superscript`, `function`                                                       |
-| relations  | `relation`, `boolean`, `logical`, `logical-not`                                                           |
-| domaines   | `unit`, `percentage`, `matrix`, `composition`, `complex`, `infinity`, `signed-zero`, `limit`, `piecewise` |
+| Famille    | `type`                                                                                                                                      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| feuilles   | `number`, `variable`, `greek`, `symbol`, `constant` (`euler`, `pi`), `hole` (trou d'exercice), `segmentLength` (`AB`), `figureName` (`ABC`) |
+| opérations | `addition`, `subtraction`, `multiplication`, `division`, `opposite`, `positive`                                                             |
+| structure  | `delimiter`, `subscript`, `superscript`, `function`                                                                                         |
+| relations  | `relation`, `boolean`, `logical`, `logical-not`                                                                                             |
+| domaines   | `unit`, `percentage`, `matrix`, `composition`, `complex`, `infinity`, `signed-zero`, `limit`, `piecewise`                                   |
 
 - `multiplication.displayStyle` : `'implicit' | 'dot' | 'cross' | 'star'` ;
   `division.displayStyle` : `'fraction' | 'inline' | 'ratio'`. Le style ne change pas la
@@ -344,6 +344,21 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   mathématique ; rendues par `LatexGenerator` avec `renderMetadata: true`.
 - `function` porte `name`, `args`, et en option `power` (`\sin^2 x`) et `base`
   (indice de racine `\sqrt[3]{x}`, base de logarithme).
+- **Longueurs de segments** (2026-10-12, lot 1 de `docs/wip/longueurs-segments-progress.md`) :
+  `segmentLength` porte deux `PointName` (`{ letter, primes, index? }` : `A`, `A'`, `A_1`) dans
+  l'ordre écrit ; `figureName` (`ABC`, trois points ou plus) s'affiche tel quel et ne se calcule
+  pas. Le parseur LaTeX (Pratt et rd) les lit selon l'option **`capitalPairs`**, transmise aussi
+  par `areEquivalent` (`math/index.ts`) et `checkForm` : `'product'` (défaut,
+  `DEFAULT_CAPITAL_PAIRS`, décision Q-M : seuls les questions et `/test-structure` demandent la
+  longueur) — l'arbre d'avant, à l'identique ; `'length'` — deux majuscules **collées dans la source**, primes
+  et indices compris (`AB`, `A'B'`, `A^{\prime}B^{\prime}`, `A_1B_1`) ; `A B` (espace), `x_{AB}`
+  (indice) et les minuscules restent des produits (empreinte de 4 122 chaînes, dont environ 2 400 formules, `parser/latex/__tests__/capital-pairs-empreinte.test.ts`). Lecture
+  sur les jetons : `parser/latex/point-names.ts`, qui fournit aussi `separateSpacedCapitals` :
+  `stripLatexSpacing` et `removeSpaces` gardent une espace entre deux majuscules (`A\,B` reste
+  un produit). `toLatex` écrit `AB`, `A'_{1}B` (relu à
+  l'identique). **Pas encore** : la syntaxe maison (lit toujours un produit), le calcul
+  (la longueur reste un facteur opaque de `normalize` ; `AB` = `BA` ne tient que par l'empreinte
+  `hashMathNode`), la lecture française — lots suivants.
 
 ## Invariants structurels non évidents
 
@@ -421,6 +436,17 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     `Number(n) / Number(d)`** (NaN dès que les termes dépassent 10³⁰⁸), toujours `rationalToNumber`
     (`normal/rational.ts`), qui calcule alors le quotient en entiers (mesuré le 2026-10-11 : la
     suite qui tend vers e, les intérêts composés et π²⁰ rendaient NaN ou Infinity).
+    Une puissance entière est exacte jusqu'à l'exposant 1000 (`MAX_EXACT_INTEGER_EXPONENT`,
+    `eval/evaluate.ts`) ; au-delà, par le flottant, et une valeur qui en sort (0 pour une base
+    non nulle, ±Infinity) est refusée (« Valeur hors d'échelle… ») plutôt que rendue comme 0.
+    ⚠️ Ne pas relever ce plafond tant que le pgcd est celui d'Euclide : à 10 000, e et π (fractions
+    de 16 chiffres) donnaient des fractions de centaines de milliers de bits, puis des pgcd de
+    plusieurs secondes (`.variations e^{-2x^2}` : 5,7 s ; mesuré le 2026-10-12). Le pgcd de deux
+    entiers de 40 000 chiffres coûte 1,5 s : `normalize` (puissance par multiplications réduites),
+    `tidy` et `rational()` en calculent sur les grandes fractions. `powRational` calcule `nᵏ / dᵏ`
+    par la puissance native de BigInt : une fraction irréductible élevée à une puissance le reste
+    ((101/100)¹⁰⁰⁰⁰⁰ : 194 s avant, 2 ms). Les pôles de tan, sec, csc, cot sont refusés (le
+    flottant de π/2 donnait tan = 1,6331 × 10¹⁶).
 
 ## Le moteur de réécriture et les étapes
 

@@ -17,6 +17,12 @@ export function containsVariable(node: MathNode, varName: string): boolean {
 		case 'constant':
 			return false;
 
+		// Longueur `AB`, nom de figure `ABC` : pas la variable cherchée (lot 2 :
+		// une longueur se dérive-t-elle, se résout-elle comme une inconnue ?)
+		case 'segmentLength':
+		case 'figureName':
+			return false;
+
 		case 'variable':
 			return node.name === varName;
 
