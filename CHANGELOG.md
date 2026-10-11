@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.20.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.19.0...v0.20.0) (2026-10-11)
+
+### ✨ Features
+
+- **ubumark:** encadrés et détails en ligne d'une correction mis en forme au PDF ([59e6284](https://github.com/Zahara-Nour/ubumaths/commit/59e6284ebccee06fd346f56c7b5fad02dbc7e8ae))
+
+### 🐛 Bug Fixes
+
+- **rgpd:** critère d'activité réelle pour la purge des comptes (retour security-auditor) ([b15a1a9](https://github.com/Zahara-Nour/ubumaths/commit/b15a1a94c58b982a27eb73d8da982c6cd4e63eab))
+- **rgpd:** données de jeu privées, constructions aux connectés, fonctions mortes retirées ([231df91](https://github.com/Zahara-Nour/ubumaths/commit/231df914a8e527738efff16094b6c2cd07d63895))
+- **rgpd:** durées de conservation appliquées par la purge (C11) ([94bd8d4](https://github.com/Zahara-Nour/ubumaths/commit/94bd8d4b53403ac95d6af06ce0bc3da8fcd4046c))
+- **rgpd:** export avec les inférences du tuteur ; mention Groq non vérifiable retirée ([f4f0c01](https://github.com/Zahara-Nour/ubumaths/commit/f4f0c0179e0e588c57a7a402ffb7f050fbf89c96))
+- **rgpd:** export complet (tuteur, âge), sous-traitants déclarés, avertissement IA (C10, C12, C13) ([3ed0fa0](https://github.com/Zahara-Nour/ubumaths/commit/3ed0fa0b4fe7e070684c4e0205b52f6ff3bf30be))
+- **securite:** élévation fermée en panne, interrupteur Google côté API (B8) ([62a192e](https://github.com/Zahara-Nour/ubumaths/commit/62a192e6b71a19827b9b0919193caa4ad8c7e619))
+- **securite:** export du tableau blanc vers Classroom gardé par l'interrupteur ([d2eeac6](https://github.com/Zahara-Nour/ubumaths/commit/d2eeac61e8292f2b3f07943f0f8f7738dfa61310))
+- **ubumark:** un détail en ligne collé à « ( », « [ » ou « .x » ne casse plus la fiche (revue) ([34949e1](https://github.com/Zahara-Nour/ubumaths/commit/34949e1ec3afd7596b979d1d317a62193f616747))
+
+### ⚡ Performance Improvements
+
+- préchargement réservé au CSS, cache de static/, CSS MathLive par Vite ([9485dad](https://github.com/Zahara-Nour/ubumaths/commit/9485dad8cfb17fe094053a3f83861a8f69bfe57c))
+
+### 📚 Documentation
+
+- **architecture:** préchargement CSS seul, CSS MathLive par Vite, cache de static/ ([3c48137](https://github.com/Zahara-Nour/ubumaths/commit/3c481371ff1531efb5da8f7407fe937a68383251))
+- **base:** lectures par soi seul et constructions réservées aux comptes connectés ([7629b6e](https://github.com/Zahara-Nour/ubumaths/commit/7629b6e52c70eb9a3d55b62e11fb533fcc9bc397))
+- **serveur:** élévation fermée en panne, /auth/register en liste blanche ([8a2aadb](https://github.com/Zahara-Nour/ubumaths/commit/8a2aadb215ac985b6dcec143904efeb0e40f1039))
+- **ubumark:** encadrés et détails au PDF ; écart L18 (titres écran en français) ([e4d6ab5](https://github.com/Zahara-Nour/ubumaths/commit/e4d6ab5891928e08d71b60c928fc08f15bc6ac03))
+- **wip:** arbre des notions — étape 2 bis, règles validées par David ([ec9a922](https://github.com/Zahara-Nour/ubumaths/commit/ec9a922b730d9f35335ba73b1f0d03d4b55bf5e0))
+- **wip:** arbre des notions — scission des points des tables validée par David ([b51572e](https://github.com/Zahara-Nour/ubumaths/commit/b51572e79958d6b81e50f445cdb53c7c94697704))
+- **wip:** encadrés au PDF livrés ([#1072](https://github.com/Zahara-Nour/ubumaths/issues/1072)), journal archivé ([fa666e6](https://github.com/Zahara-Nour/ubumaths/commit/fa666e6b7bc2439ea1719c4827399d74fecd9c2f))
+- **wip:** progression RGPD — bloc C clos ([d2af536](https://github.com/Zahara-Nour/ubumaths/commit/d2af53636df0ee9d77dc6d1ee3b07820f8181e7a))
+- **wip:** rgpd — questions ouvertes tranchées, [#1075](https://github.com/Zahara-Nour/ubumaths/issues/1075) et [#1076](https://github.com/Zahara-Nour/ubumaths/issues/1076) livrées, constat énigmes ([564762d](https://github.com/Zahara-Nour/ubumaths/commit/564762db32bfa18ba8eae6e082d2b9ff2305096c))
+
 ## [0.19.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.18.2...v0.19.0) (2026-10-11)
 
 ### ✨ Features
