@@ -39,8 +39,8 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
 4. Pour un code de la table : « Le nombre 404 apparaît à la 1 272ᵉ décimale de π, mais la page,
    elle, reste introuvable. » Le verbe et la chute viennent de `describeError` (`piVerb`,
    `piTwist`, ponctuation comprise) : 401 « Le nombre 401 se présente à la 1 197ᵉ décimale de π ;
-   ta page, elle, voudrait que tu en fasses autant. » ; 403 « Le nombre 403 a ses entrées à la
-   723ᵉ décimale de π ; ta page, elle, ne t'ouvre pas les siennes. » ;
+   ta page, elle, voudrait que tu en fasses autant. » ; 403 « Le nombre 403 a été autorisé à
+   s'installer à la 723ᵉ décimale de π ; toi, sur cette page, tu ne l'es pas. » ;
    les codes sans chute finissent sur « de π. ». Pas d'extrait des décimales en clair : le code est
    déjà coloré dans la spirale.
 5. Pour une 404 : une phrase « Tu cherchais peut-être A, B ou C ? », jusqu'à trois pages proches

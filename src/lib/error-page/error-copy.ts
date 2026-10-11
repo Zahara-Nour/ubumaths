@@ -49,8 +49,8 @@ const COPY_BY_STATUS: Readonly<Record<number, Copy>> = {
 	403: {
 		title: 'Accès refusé',
 		explanation: null,
-		piVerb: 'a ses entrées',
-		piTwist: '\u00a0; ta page, elle, ne t’ouvre pas les siennes'
+		piVerb: 'a été autorisé à s’installer',
+		piTwist: '\u00a0; toi, sur cette page, tu ne l’es pas'
 	},
 	404: {
 		title: 'Page introuvable',

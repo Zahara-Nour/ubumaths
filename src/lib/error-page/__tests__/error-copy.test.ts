@@ -33,8 +33,8 @@ describe('describeError', () => {
 		expect(describeError(404, undefined).piTwist).toBe(', mais la page, elle, reste introuvable');
 		expect(describeError(403, undefined)).toMatchObject({
 			explanation: null,
-			piVerb: 'a ses entrées',
-			piTwist: '\u00a0; ta page, elle, ne t’ouvre pas les siennes'
+			piVerb: 'a été autorisé à s’installer',
+			piTwist: '\u00a0; toi, sur cette page, tu ne l’es pas'
 		});
 		expect(describeError(410, undefined)).toMatchObject({ piVerb: 'apparaît', piTwist: null });
 	});
