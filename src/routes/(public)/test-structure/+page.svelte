@@ -7,10 +7,12 @@
 	(nombre, terme, facteur, parenthèses, somme…). Sur un écran tactile, un toucher
 	encadre, un nouveau toucher dans le cadre passe à la sous-expression qui la contient.
 
-	La structure vient de `$lib/mathAST/structure` (intitulés : `structure-latex.ts`) ; MathLive affiche des
-	marqueurs `\class` sans effet sur le rendu ; le survol et l'encadré sont dans
-	`StructureFormula.svelte`, utilisé pour la formule saisie et pour chaque
-	expression du corpus.
+	La structure et sa lecture en français viennent de `$lib/mathAST/structure` ;
+	MathLive affiche des marqueurs `\class` sans effet sur le rendu ; le survol et
+	l'encadré sont dans `StructureFormula.svelte`, la lecture (mots cliquables,
+	sens inverse) et le message « 6e ou avant » dans `StructureExplorer.svelte`.
+	Chaque expression du corpus est survolable, avec la lecture courte de la
+	sous-expression survolée.
 -->
 <script lang="ts">
 	import '$lib/utils/mathlive-styles';
@@ -20,8 +22,11 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	// Lecture seule : le corpus des tests de parité, une saisie par ligne
 	import corpusText from '$lib/mathAST/structure/__tests__/fixtures/corpus-saisies.txt?raw';
+	import { readingOf, structureFromLatex, type StructureResult } from '$lib/mathAST/structure';
+	import StructureExplorer from './StructureExplorer.svelte';
 	import StructureFormula from './StructureFormula.svelte';
-	import { demoStructure, type DemoStructure, type StructureInfo } from './structure-latex';
+	import StructureReading from './StructureReading.svelte';
+	import { provideStructureLexicon } from './structure-lexicon.svelte';
 
 	// Types
 	interface Example {
@@ -31,7 +36,7 @@
 
 	interface CorpusEntry {
 		latex: string;
-		result: DemoStructure;
+		result: StructureResult;
 	}
 
 	// Constantes
@@ -51,53 +56,27 @@
 		.split('\n')
 		.map((line) => line.trim())
 		.filter((line) => line !== '')
-		.map((latex) => ({ latex, result: demoStructure(latex) }));
+		.map((latex) => ({ latex, result: structureFromLatex(latex) }));
 
 	// Variables
 	let latex = $state(EXAMPLES[0].latex);
 	let frameLeaves = $state(true);
 	let showAncestors = $state(false);
-	let selectedId = $state<number | null>(null);
 	/** Sous-expression survolée de chaque formule du corpus */
 	let corpusSelection = $state<(number | null)[]>(CORPUS.map(() => null));
 	let mathfield = $state<MathfieldElement>();
 
-	// Le signe « − » appartient à la somme (décision Q2) : plus d'option
-	const result = $derived(demoStructure(latex));
-	const structure = $derived(result.status === 'ok' ? result.structure : null);
-	const selected = $derived(
-		structure && selectedId !== null ? (structure.nodes[selectedId] ?? null) : null
-	);
-	const chain = $derived(selected && structure ? ancestorsOf(selected, structure.nodes) : []);
+	// Mots de la lecture : fiche du dictionnaire au niveau de l'élève connecté
+	provideStructureLexicon();
 
 	// Fonctions
-	function ancestorsOf(node: StructureInfo, nodes: readonly StructureInfo[]): StructureInfo[] {
-		const result = [node];
-		let current = node;
-		while (current.parent !== null) {
-			current = nodes[current.parent];
-			result.push(current);
-		}
-		return result;
-	}
-
-	/** Intitulé de la sous-expression survolée d'une formule du corpus */
-	function corpusCaption(entry: CorpusEntry, id: number | null): string {
-		if (entry.result.status !== 'ok' || id === null) return '';
-		const info = entry.result.structure.nodes[id];
-		if (!info) return '';
-		return info.role ? `${info.label} — ${info.role}` : info.label;
-	}
-
 	function loadExample(example: Example) {
 		latex = example.latex;
 		if (mathfield) mathfield.value = example.latex;
-		selectedId = null;
 	}
 
 	function handleOptionChange() {
-		// Le réglage change ce qui s'encadre : les encadrés sont à recalculer
-		selectedId = null;
+		// Le réglage change ce qui s'encadre : les encadrés du corpus sont à recalculer
 		corpusSelection = CORPUS.map(() => null);
 	}
 
@@ -106,7 +85,6 @@
 		element.value = latex;
 		const update = () => {
 			latex = element.value;
-			selectedId = null;
 		};
 		element.addEventListener('input', update);
 		// Action plutôt qu'attachment : prettier-plugin-svelte 3.3 ne lit pas `{@attach}`
@@ -124,8 +102,9 @@
 		<h1 class="text-2xl font-bold">La structure d'une expression</h1>
 		<div class="text-muted-foreground">
 			Promenez la souris sur l'expression : la plus petite sous-expression sous le pointeur est
-			encadrée (nombre, terme, facteur, parenthèses…). Sur un écran tactile, touchez l'expression,
-			puis touchez à nouveau dans le cadre pour passer à la sous-expression qui la contient.
+			encadrée et lue en français. Sur un écran tactile, touchez l'expression, puis touchez à
+			nouveau dans le cadre pour passer à la sous-expression qui la contient. Survolez un mot de la
+			lecture : sa sous-expression s'encadre ; cliquez-le pour ouvrir sa fiche du dictionnaire.
 		</div>
 	</header>
 
@@ -156,34 +135,10 @@
 		</div>
 	</section>
 
-	{#if structure}
-		<StructureFormula {structure} bind:selectedId {frameLeaves} {showAncestors} />
-
-		<div class="structure-info" aria-live="polite">
-			{#if selected}
-				<!-- Des div, pas des p : `main p` impose sa taille de police (!important) -->
-				<div class="text-lg font-semibold">
-					{selected.label}
-					{#if selected.role}
-						<span class="font-normal text-muted-foreground">— {selected.role}</span>
-					{/if}
-				</div>
-				<div class="selected-math"><math-span>{selected.latex}</math-span></div>
-				<ol class="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
-					{#each [...chain].reverse() as node, i (node.id)}
-						<li>
-							{#if i > 0}<span aria-hidden="true">›</span>{/if}
-							<span class:font-semibold={node.id === selected.id}>{node.label}</span>
-						</li>
-					{/each}
-				</ol>
-			{:else}
-				<div class="text-muted-foreground">Survolez l'expression.</div>
-			{/if}
-		</div>
-	{:else if result.status === 'unrecognized'}
-		<div class="text-muted-foreground">Expression non reconnue ou incomplète.</div>
-	{/if}
+	<!-- Une nouvelle expression : sélection et lecture repartent de zéro -->
+	{#key latex}
+		<StructureExplorer {latex} {frameLeaves} {showAncestors} />
+	{/key}
 
 	<section class="space-y-3" aria-labelledby="corpus-title">
 		<h2 id="corpus-title" class="text-xl font-semibold">Corpus ({CORPUS.length} expressions)</h2>
@@ -194,6 +149,7 @@
 			{#each CORPUS as entry, i (i)}
 				<li class="corpus-item" data-corpus-index={i}>
 					{#if entry.result.status === 'ok'}
+						{@const hovered = corpusSelection[i]}
 						<StructureFormula
 							structure={entry.result.structure}
 							bind:selectedId={corpusSelection[i]}
@@ -202,7 +158,11 @@
 							compact
 							label={`Expression ${i + 1} du corpus`}
 						/>
-						<div class="corpus-caption">{corpusCaption(entry, corpusSelection[i])}</div>
+						<div class="corpus-caption">
+							{#if hovered !== null && entry.result.structure.nodes[hovered]}
+								<StructureReading reading={readingOf(entry.result.structure, hovered)} />
+							{/if}
+						</div>
 					{:else}
 						<code class="corpus-raw">{entry.latex}</code>
 						<div class="corpus-caption text-destructive">non reconnue</div>
@@ -220,14 +180,6 @@
 		padding: 0.25rem 0.5rem;
 	}
 
-	.structure-info {
-		min-height: 7rem;
-	}
-
-	.selected-math {
-		font-size: 1.5rem;
-	}
-
 	.corpus-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
@@ -242,7 +194,7 @@
 	}
 
 	.corpus-caption {
-		min-height: 1.25rem;
+		min-height: 2.5rem;
 		font-size: 0.8rem;
 		line-height: 1.25rem;
 		color: var(--color-muted-foreground);

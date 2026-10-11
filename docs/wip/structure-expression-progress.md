@@ -153,3 +153,10 @@ Tests d'abord (rouges) à chaque lot ; `code-reviewer` en fin de lot.
 - 2026-10-11 — lot 2, décisions Q16, Q17, Q20 appliquées à la lecture (`reading.ts`). Q16
   précisée : un exposant lettre seule garde la forme simple (`x^n` → « x puissance n »,
   `e^x` → « e puissance x ») ; Q21, Q22 consignées.
+- 2026-10-11 — lot 4 : page `/test-structure` branchée sur la lecture. `StructureExplorer.svelte`
+  (formule, lecture de l'expression entière en permanence, lecture de la dernière sous-expression
+  survolée, message « 6e ou avant » qui remplace encadré et lecture), `StructureReading.svelte`
+  (formules en `math-span`, mots en `LexiconTerm`, sens inverse au survol ou au focus),
+  `StructureFormula` accepte une sous-expression imposée (`highlightId`) ; corpus : lecture courte
+  sous chaque expression ; `structure-latex.ts` (anciens intitulés) supprimé. Visiteur : fiches du
+  dictionnaire lues au niveau 5e (`structure-lexicon.svelte.ts`).

@@ -595,7 +595,11 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
 		},
 		{
-			glob: 'src/routes/(public)/test-structure/structure-latex.ts',
+			glob: 'src/routes/(public)/test-structure/*.svelte',
+			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
+		},
+		{
+			glob: 'src/routes/(public)/test-structure/*.ts',
 			note: 'divers (utilitaires, démos, SEO, éditeur riche)'
 		},
 		{

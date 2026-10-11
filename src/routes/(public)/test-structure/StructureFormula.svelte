@@ -11,22 +11,26 @@
 	caractères (pas de `\enclose`) : la formule ne bouge jamais. Les zones des
 	sous-expressions sont mesurées au premier survol (pas au chargement : la page
 	affiche tout le corpus) et remesurées après un redimensionnement.
+
+	Sens inverse (Q10) : `highlightId`, imposé de l'extérieur (survol d'un mot de
+	la lecture), encadre sa sous-expression avec le même cadre, à la place de
+	la sous-expression survolée. MathLive est chargé par la page.
 -->
 <script lang="ts">
-	import '$lib/utils/mathlive-styles';
-	import 'mathlive';
 	import {
-		markerId,
+		markerIdFromClasses,
 		MARKER_PREFIX,
-		type StructuredLatex,
-		type StructureInfo
-	} from './structure-latex';
+		type ExpressionStructure,
+		type StructureNode
+	} from '$lib/mathAST/structure';
 
 	// Types
 	interface Props {
-		structure: StructuredLatex;
-		/** Sous-expression encadrée (lisible et réinitialisable par le parent) */
+		structure: ExpressionStructure;
+		/** Sous-expression survolée ou touchée (lisible et réinitialisable par le parent) */
 		selectedId?: number | null;
+		/** Sous-expression imposée de l'extérieur (sens inverse) : encadrée à la place de la survolée */
+		highlightId?: number | null;
 		/** Encadrer aussi un nombre ou une lettre seuls */
 		frameLeaves?: boolean;
 		/** Encadrer aussi les sous-expressions englobantes */
@@ -58,6 +62,7 @@
 	let {
 		structure,
 		selectedId = $bindable(null),
+		highlightId = null,
 		frameLeaves = true,
 		showAncestors = false,
 		compact = false,
@@ -68,11 +73,13 @@
 	/** Zones mesurées des sous-expressions (pas d'état réactif : un cache de mesures) */
 	let rectCache: { latex: string; rects: Map<number, DOMRect> } | null = null;
 
-	// Les mesures ne sont lues qu'une fois une sous-expression choisie (donc après un survol)
-	const frames = $derived(computeFrames(selectedId, showAncestors));
+	/** Sous-expression encadrée : l'imposée d'abord, sinon la survolée */
+	const framedId = $derived(highlightId ?? selectedId);
+	// Les mesures ne sont lues qu'une fois une sous-expression choisie (survol de la formule ou de la lecture)
+	const frames = $derived(computeFrames(framedId, showAncestors));
 
 	// Fonctions
-	function ancestorsOf(node: StructureInfo, nodes: readonly StructureInfo[]): StructureInfo[] {
+	function ancestorsOf(node: StructureNode, nodes: readonly StructureNode[]): StructureNode[] {
 		const result = [node];
 		let current = node;
 		while (current.parent !== null) {
@@ -94,7 +101,7 @@
 		if (!root || !stage) return rects;
 		const origin = stage.getBoundingClientRect();
 		for (const element of root.querySelectorAll(`[class*="${MARKER_PREFIX}"]`)) {
-			const id = markerId(element);
+			const id = markerIdFromClasses(element.classList);
 			const rect = id === null ? null : contentRect(element);
 			if (id === null || !rect) continue;
 			rects.set(
@@ -134,11 +141,16 @@
 		rectCache = null;
 	}
 
+	/** Nombre, lettre : sans sous-structure */
+	function isLeaf(node: StructureNode): boolean {
+		return node.children.length === 0;
+	}
+
 	/** Un nombre ou une lettre seuls ne s'encadrent pas si le réglage est décoché */
 	function frameable(id: number | null): number | null {
 		if (id === null) return null;
 		const node = structure.nodes[id];
-		if (!frameLeaves && node.isLeaf && node.parent !== null) return node.parent;
+		if (!frameLeaves && isLeaf(node) && node.parent !== null) return node.parent;
 		return id;
 	}
 
@@ -174,7 +186,7 @@
 			const rect = rects.get(subId);
 			if (!rect) return;
 			const pad = PADDING + rank * PADDING_STEP;
-			const padX = rank === 0 && structure.nodes[subId].isLeaf ? LEAF_PADDING_X : pad;
+			const padX = rank === 0 && isLeaf(structure.nodes[subId]) ? LEAF_PADDING_X : pad;
 			result.push({
 				key: `rang-${rank}`,
 				left: rect.left - padX,
@@ -227,6 +239,7 @@
 	class:compact
 	role="application"
 	aria-label={label}
+	data-framed-id={framedId ?? undefined}
 	onpointerenter={invalidateRects}
 	onpointermove={handlePointerMove}
 	onpointerleave={handlePointerLeave}
