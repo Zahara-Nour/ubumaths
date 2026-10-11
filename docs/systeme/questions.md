@@ -335,6 +335,12 @@ Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\det
 12. **Mode B échoue en silence** : une exception dans `generateCorrection` est journalisée
     (`console.warn`) et l'instance part sans `_renderedSteps` — l'élève voit la correction sans
     étapes plutôt qu'une erreur.
+13. **Un nombre JS ne se réinjecte jamais par `String(n)` dans une expression relue** : le parseur
+    LaTeX ne lit plus la notation scientifique (`3e-7` = 3e − 7, `e` constante d'Euler), alors que
+    `String(3e-7)` vaut `'3e-7'`. La réponse numérique de l'élève et les variables substituées
+    dans une règle de validation (`validation-rule-evaluator.ts`), comme une durée composée
+    (`units/composite-duration.ts`), passent par `numberToLatexSafe` (`mathAST/common/numeric.ts`,
+    décimal développé). Les règles d'écriture de `{{eval:…}}` : [ubumark.md](ubumark.md).
 
 ## Comment étendre
 
