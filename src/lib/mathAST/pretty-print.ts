@@ -21,6 +21,7 @@ import type {
 	MatrixNode,
 	CompositionNode
 } from './types';
+import { formatPointNames } from './common/point-names';
 import { format as formatUnit } from './units/formatter';
 
 // =============================================================================
@@ -229,6 +230,14 @@ function printNode(node: MathNode, ctx: PrintContext, prefix: string, childPrefi
 
 		case 'constant':
 			addLine(ctx, prefix, `Constant: ${node.constant}`, node.metadata);
+			break;
+
+		case 'segmentLength':
+			addLine(ctx, prefix, `SegmentLength: ${formatPointNames(node.points)}`, node.metadata);
+			break;
+
+		case 'figureName':
+			addLine(ctx, prefix, `FigureName: ${formatPointNames(node.points)}`, node.metadata);
 			break;
 
 		// =========================================================================

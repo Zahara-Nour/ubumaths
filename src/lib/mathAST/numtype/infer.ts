@@ -237,6 +237,8 @@ function inferTypeUncached(node: MathNode, ctx: TypeContext): MathType {
 		case 'symbol':
 		case 'hole':
 		case 'constant':
+		case 'segmentLength':
+		case 'figureName':
 			// If we reach here, inferLiteralType returned null unexpectedly
 			return UNKNOWN_TYPE;
 

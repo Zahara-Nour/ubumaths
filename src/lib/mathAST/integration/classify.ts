@@ -96,6 +96,8 @@ export function detectVariable(expr: MathNode): string | null {
 			case 'symbol':
 			case 'hole':
 			case 'constant':
+			case 'segmentLength':
+			case 'figureName':
 				// These don't contain variables
 				break;
 
@@ -306,7 +308,9 @@ export function classifyIntegrand(expr: MathNode, variable: string): IntegrandTy
 
 		case 'greek':
 		case 'symbol':
-			// Greek letters and symbols are constants
+		case 'segmentLength':
+		case 'figureName':
+			// Greek letters and symbols are constants (longueurs et noms de figure aussi)
 			return 'polynomial';
 
 		case 'composition':

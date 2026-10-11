@@ -57,6 +57,9 @@ export type {
 	MathNode,
 	NumberNode,
 	VariableNode,
+	PointName,
+	SegmentLengthNode,
+	FigureNameNode,
 	GreekLetterNode,
 	SymbolNode,
 	HoleNode,
@@ -105,6 +108,9 @@ export {
 	greek,
 	symbol,
 	hole,
+	pointName,
+	segmentLength,
+	figureName,
 
 	// Mathematical constants
 	mathConstant,
@@ -258,6 +264,8 @@ export {
 	isNumber,
 	isVariable,
 	isGreek,
+	isSegmentLength,
+	isFigureName,
 	isSymbol,
 	isHole,
 	isMathConstant,

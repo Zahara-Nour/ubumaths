@@ -991,6 +991,10 @@ function analyzeNode(
 
 		case 'hole':
 		case 'constant':
+		// Longueur et nom de figure : sans dimension pour l'instant (lot 2 : une
+		// longueur a la dimension d'une longueur)
+		case 'segmentLength':
+		case 'figureName':
 			// Holes and mathematical constants (e, π) are dimensionless
 			return createDimensionlessUnit();
 
