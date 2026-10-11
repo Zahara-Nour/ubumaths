@@ -1,6 +1,6 @@
 # Bouton retour — uniformisation
 
-Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire).
+Chantier ouvert et clos le 2026-10-11 (#1115 → #1118, puis les suites ci-dessous). Règle : [composants-ui.md § BackLink](../../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire).
 
 ## Décisions de David (2026-10-11)
 
@@ -75,3 +75,14 @@ Chantier ouvert le 2026-10-11. Règle : [composants-ui.md § BackLink](../pratiq
   - **Création d'un exercice Python** (`python-exercises/new`) : retour vers « Mes exercices Python » (entrée de la navigation), alors que `/python-exercises` y mène aussi.
   - **Énigme du jour** (`student/riddles/[id]`) : traitée comme une page de détail (« Retour aux énigmes »), pas comme une activité (« Quitter »).
   - Aucun lien trouvé vers : `consent`, `documents`, `google`, `message-templates`, `notifications`, `presques-evaluations`, `wheel` (menus, liens construits, ou pages mortes ?).
+
+## Cas tranchés par David (2026-10-11) — suites livrées
+
+1. **Pages-carrefours** : pas de bouton retour (critère ajouté à la règle). Le vrai manque — des listes sans aucune entrée (énigmes, fiches, contrôles côté élève) — part en ticket.
+2. **Journal d'un élève** : retour vers les classes, ou vers l'accueil s'il a été ouvert de là (`?depuis=accueil`). L'ancien retour menait aux récompenses, qui ne lient jamais vers le journal.
+3. **Quitter un contrôle noté** : confirmation (réponses tapées perdues ; chrono qui court en course). Pas en entraînement.
+4. **Flash-cards** : « Quitter » vers le panier pendant la série.
+5. **Session de révision** : « Quitter » ramène au deck, ou au Programme (`?depuis=programme`).
+6. **Shtam et Cabinet Noir** : liens éditoriaux gardés, exception écrite dans la règle.
+
+Restent sans retour, conformément au critère des carrefours : les pages-carrefours listées plus haut, et l'exercice Python partagé (ouvert par un lien, sans parent).

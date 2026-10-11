@@ -83,6 +83,7 @@
 
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
+	import { studentJournalHref } from '$lib/navigation/return-links';
 	import * as Table from '$lib/components/ui/table';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Badge } from '$lib/components/ui/badge';
@@ -582,7 +583,7 @@
 									{/if}
 								</span>
 								<a
-									href="/dashboard/teacher/students/{student.id}/journal"
+									href={studentJournalHref(student.id, 'accueil')}
 									title="Voir l'historique des récompenses"
 									class="ml-auto text-muted-foreground transition-colors hover:text-foreground"
 								>

@@ -36,6 +36,7 @@
 	import { Progress } from '$lib/components/ui/progress';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { automathsQuitLink } from '$lib/navigation/return-links';
 	import * as Card from '$lib/components/ui/card';
 	import { ArrowLeft, LogIn } from '@lucide/svelte';
 	import { SvelteMap } from 'svelte/reactivity';
@@ -71,8 +72,10 @@
 	}: Props = $props();
 
 	let backLabel = $derived(inEvaluation ? 'Mes contrôles' : 'Retour au panier');
-	// « Quitter » : un contrôle ramène à « Mes contrôles », un entraînement au panier
-	const quitHref = $derived(inEvaluation ? '/dashboard/student/assessments' : '/automaths/panier');
+	// « Quitter » : « Mes contrôles » (avec confirmation) en contrôle, le panier sinon
+	const quit = $derived(
+		automathsQuitLink({ inEvaluation, attemptOpen: collectOnly, timed: false })
+	);
 
 	// Variables
 	let currentIndex = $state(0);
@@ -200,7 +203,7 @@
 		<div class="space-y-3">
 			<div class="flex items-center justify-between">
 				<div>
-					<BackLink href={quitHref} label="Quitter" kind="quit" />
+					<BackLink href={quit.href} label="Quitter" kind="quit" confirmLeave={quit.confirmLeave} />
 					<div>
 						<h1 class="text-2xl font-bold">
 							{#if assessmentTitle}

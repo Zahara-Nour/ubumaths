@@ -7,7 +7,7 @@
 
 	FEATURES:
 	- Student info header with avatar and name
-	- Lien de retour vers les récompenses
+	- Lien de retour vers les classes, ou vers l'accueil s'il a été ouvert de là
 	- Reuses RewardEventCard and RewardJournalFilters from Phase 5
 	- Same layout and UX as student journal
 
@@ -24,6 +24,7 @@
 	import RewardJournalFilters from '$lib/components/rewards/RewardJournalFilters.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import { studentJournalReturn } from '$lib/navigation/return-links';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import * as Card from '$lib/components/ui/card';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
@@ -33,6 +34,9 @@
 
 	// Props from server load
 	let { data }: { data: PageData } = $props();
+
+	// Ouvert depuis l'accueil (`?depuis=accueil`) ou depuis les classes
+	let back = $derived(studentJournalReturn($page.url.searchParams));
 
 	// Local state for filter
 	let selectedRewardType = $state<RewardType | null>(null);
@@ -91,7 +95,7 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-4xl px-4 py-6">
-	<BackLink href="/dashboard/teacher/gamification/rewards" label="Retour aux récompenses" />
+	<BackLink href={back.href} label={back.label} />
 
 	<!-- Header with Student Info -->
 	<div class="mb-6">

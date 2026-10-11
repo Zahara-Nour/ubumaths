@@ -8,6 +8,7 @@
 	 * Cf. docs/systeme/srs.md §5.2
 	 */
 
+	import { studySessionHref } from '$lib/navigation/return-links';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
@@ -99,7 +100,7 @@
 				{@const iconClass = sectionColorMap[section.badge]}
 				{@const stateFilter = sectionStateFilter[section.badge]}
 				{@const sessionHref = data.deckId
-					? `/dashboard/revisions/decks/${data.deckId}/study${stateFilter ? `?states=${stateFilter}` : ''}`
+					? studySessionHref(data.deckId, { states: stateFilter, from: 'programme' })
 					: '#'}
 				<section>
 					<div class="mb-3 flex items-center justify-between">

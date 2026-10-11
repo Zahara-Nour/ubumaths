@@ -23,6 +23,7 @@
 	import { tick } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { Button } from '$lib/components/ui/button';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Progress } from '$lib/components/ui/progress';
 	import { computeTestScore } from '$lib/utils/test-score';
@@ -196,6 +197,8 @@
 			</Card.Content>
 		</Card.Root>
 	{:else if currentInstance}
+		<!-- Flash-cards : entraînement seulement, jamais en contrôle → toujours le panier -->
+		<BackLink href="/automaths/panier" label="Quitter" kind="quit" class="mb-0" />
 		<div class="space-y-2">
 			<p class="text-sm text-muted-foreground" data-testid="flash-position">
 				Carte {position + 1} / {round.length}

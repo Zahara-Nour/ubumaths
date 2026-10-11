@@ -7,6 +7,7 @@
 	 * à une section.
 	 */
 
+	import { studySessionHref } from '$lib/navigation/return-links';
 	import { invalidateAll, goto } from '$app/navigation';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
@@ -144,7 +145,7 @@
 	}
 
 	function startStudy() {
-		goto(`/dashboard/revisions/decks/${data.deck.id}/study`).then(() => {});
+		goto(studySessionHref(data.deck.id)).then(() => {});
 	}
 </script>
 

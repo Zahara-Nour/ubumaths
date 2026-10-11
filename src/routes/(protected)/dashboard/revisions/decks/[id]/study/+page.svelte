@@ -15,9 +15,14 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import ReviewSession from '$lib/components/srs/ReviewSession.svelte';
+	import { studySessionReturnHref } from '$lib/navigation/return-links';
 
 	const deckId = $derived(page.params.id);
 	const states = $derived(page.url.searchParams.get('states') ?? undefined);
+	// « Quitter » ramène là où la session a commencé : la page du deck, ou le Programme
+	const quitHref = $derived(
+		deckId ? studySessionReturnHref(deckId, page.url.searchParams) : '/dashboard/revisions'
+	);
 
 	/**
 	 * Handle session completion
@@ -46,7 +51,7 @@
 
 <div class="study-session-page">
 	<h1 class="sr-only">Session de révision</h1>
-	<BackLink href="/dashboard/revisions" label="Quitter" kind="quit" class="mb-6" />
+	<BackLink href={quitHref} label="Quitter" kind="quit" class="mb-6" />
 
 	<!-- Review Session -->
 	{#if deckId}
