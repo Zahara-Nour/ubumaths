@@ -54,7 +54,7 @@
 - [ ] Mentions légales : éditeur « [A COMPLETER] » (responsable, statut, adresse), en prod —
       à remplir par David avant la mise en ligne des vues.
 - [ ] Lien vers `/royaume` depuis la vue élève.
-- [ ] Mouvement continu (dérive, flamme) et critère WCAG 2.2.2 : arbitrage de David en attente.
+- [x] Mouvement continu et WCAG 2.2.2 (D19) : tout se pose au bout d'une minute (David, 2026-10-11).
 - [ ] Tests : `drift.ts` (bornes, flanc vs tour complet), roue (survol, clic, clavier, tactile,
       Échap, anonyme seulement sur l'accueil), accueil (test « Visiter le Royaume » à remplacer).
 - [ ] Sitemap, doc (`carte-des-fonctionnalites.md`, CONTEXT.md), revue, PR.
