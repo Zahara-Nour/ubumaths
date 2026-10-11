@@ -6,7 +6,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { requireRole } from '$lib/server/middleware/auth';
+import { requireSpreadsheetUser } from '$lib/server/spreadsheet-access';
 import {
 	createSpreadsheetSchema,
 	listSpreadsheetsSchema
@@ -18,7 +18,7 @@ import {
  * Students and teachers can access their own spreadsheets
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { user } = await requireRole(locals, 'student'); // Both students and teachers
+	const { user } = await requireSpreadsheetUser(locals);
 
 	// Validate query parameters
 	const paramsValidation = listSpreadsheetsSchema.safeParse({
@@ -65,7 +65,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
  * Students and teachers can create spreadsheets
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { user } = await requireRole(locals, 'student');
+	const { user } = await requireSpreadsheetUser(locals);
 
 	// Parse and validate request body
 	const body = await request.json();
