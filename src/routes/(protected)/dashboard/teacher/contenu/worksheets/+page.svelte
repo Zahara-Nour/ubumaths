@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_OPTIONS } from '$lib/utils/worksheet-constants';
 	import { lore } from '$lib/config/lore';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -120,23 +121,7 @@
 	];
 
 	// Type filter options
-	const typeOptions = [
-		{ value: '', label: 'Tous les types' },
-		{ value: 'worksheet', label: `Feuille de ${lore.learning.exercise}s` },
-		{ value: 'assessment', label: 'Contrôle' },
-		{ value: 'exam', label: lore.learning.exam },
-		{ value: 'quiz', label: 'Quiz' },
-		{ value: 'homework', label: 'Corvées Domestiques' }
-	];
-
-	// Type label map
-	const typeLabels: Record<WorksheetType, string> = {
-		worksheet: 'Feuille',
-		assessment: 'Contrôle',
-		exam: lore.learning.exam,
-		quiz: 'Quiz',
-		homework: 'Corvées Domestiques'
-	};
+	const typeOptions = [{ value: '', label: 'Tous les types' }, ...WORKSHEET_TYPE_OPTIONS];
 
 	// Type icon map
 	const typeIcons: Record<WorksheetType, typeof FileText> = {
@@ -336,7 +321,7 @@
 								<Table.Cell>
 									<div class="flex items-center gap-2">
 										<TypeIcon class="h-4 w-4 text-muted-foreground" />
-										<span>{typeLabels[worksheetType]}</span>
+										<span>{WORKSHEET_TYPE_LABELS[worksheetType]}</span>
 									</div>
 								</Table.Cell>
 								<Table.Cell>

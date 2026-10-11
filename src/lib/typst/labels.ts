@@ -15,6 +15,7 @@
  */
 
 import type { ContentLocale } from '$lib/types/locale';
+import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 
 export interface DocumentLabels {
 	// --- Identity block -------------------------------------------------------
@@ -170,7 +171,7 @@ const FR: DocumentLabels = {
 	exam: 'EXAMEN',
 	homework: 'DEVOIRS',
 	quiz: 'QUIZ',
-	worksheet: "Feuille d'exercices",
+	worksheet: "Fiche d'exercices",
 
 	studentInfo: 'Info Élève',
 	edition: 'Édition',
@@ -234,11 +235,11 @@ const FR: DocumentLabels = {
 	answersOnPaper: "Les réponses doivent être rédigées sur la copie d'examen.",
 	anyOrder: "Les exercices peuvent être traités dans n'importe quel ordre.",
 
-	typeWorksheet: "Feuille d'exercices",
-	typeAssessment: 'Contrôle',
-	typeExam: 'Examen',
-	typeQuiz: 'Quiz',
-	typeHomework: 'Devoirs'
+	typeWorksheet: WORKSHEET_TYPE_LABELS.worksheet,
+	typeAssessment: WORKSHEET_TYPE_LABELS.assessment,
+	typeExam: WORKSHEET_TYPE_LABELS.exam,
+	typeQuiz: WORKSHEET_TYPE_LABELS.quiz,
+	typeHomework: WORKSHEET_TYPE_LABELS.homework
 };
 
 const EN: DocumentLabels = {
@@ -375,20 +376,11 @@ function toSnakeCase(key: string): string {
 }
 
 /**
- * Document type as named on the *student* sheet.
- *
- * Deliberately worded differently from the teacher document ("Fiche de travail"
- * rather than "Feuille d'exercices"): changing that wording is not part of
- * adding English, so the French strings stay exactly as they were.
+ * Document type as named on the *student* sheet — the same words as the
+ * screen and the teacher document (one table, worksheet-type-labels.ts).
  */
 export const STUDENT_TYPE_LABELS: Record<ContentLocale, Record<string, string>> = {
-	fr: {
-		worksheet: 'Fiche de travail',
-		assessment: 'Contrôle',
-		exam: 'Examen',
-		quiz: 'Quiz',
-		homework: 'Devoir'
-	},
+	fr: WORKSHEET_TYPE_LABELS,
 	en: {
 		worksheet: 'Worksheet',
 		assessment: 'Assessment',

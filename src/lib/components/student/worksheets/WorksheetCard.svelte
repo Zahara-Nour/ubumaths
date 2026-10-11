@@ -8,6 +8,7 @@
 -->
 
 <script lang="ts">
+	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 	import { lore } from '$lib/config/lore';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -37,15 +38,15 @@
 	function getTypeInfo(type: WorksheetType): { icon: typeof FileText; label: string } {
 		switch (type) {
 			case 'worksheet':
-				return { icon: FileText, label: 'Fiche de travail' };
+				return { icon: FileText, label: WORKSHEET_TYPE_LABELS.worksheet };
 			case 'assessment':
-				return { icon: ClipboardList, label: 'Contrôle' };
+				return { icon: ClipboardList, label: WORKSHEET_TYPE_LABELS.assessment };
 			case 'exam':
-				return { icon: GraduationCap, label: lore.learning.exam };
+				return { icon: GraduationCap, label: WORKSHEET_TYPE_LABELS.exam };
 			case 'quiz':
-				return { icon: FileQuestion, label: 'Quiz' };
+				return { icon: FileQuestion, label: WORKSHEET_TYPE_LABELS.quiz };
 			case 'homework':
-				return { icon: PenLine, label: lore.learning.homework };
+				return { icon: PenLine, label: WORKSHEET_TYPE_LABELS.homework };
 			default:
 				return { icon: BookOpen, label: 'Fiche' };
 		}
