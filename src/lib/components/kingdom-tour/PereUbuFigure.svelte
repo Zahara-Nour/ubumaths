@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * Père Ubu dans le halo du mois de l'Almanach : le dessin de l'accueil, partagé avec le
-	 * Tour du Royaume. Taille : variable CSS `--ubu-size` posée par la page (15rem sinon).
+	 * Tour du Royaume. Taille : propriété `size` (une longueur CSS, 15rem par défaut).
 	 *
 	 * Halo et traits prennent l'ambiance du mois. Pas de light-dark() ici : il serait relu
 	 * dans les @keyframes, ce que Safari ne gère pas avant 17.5. Les teintes sont résolues
@@ -12,13 +12,16 @@
 	let {
 		ambiance,
 		href,
-		label
+		label,
+		size = '15rem'
 	}: {
 		ambiance: MonthPalette;
 		/** Père Ubu cliquable : où il mène */
 		href?: string;
 		/** Nom accessible du lien (obligatoire avec `href`) */
 		label?: string;
+		/** Côté du dessin : toute longueur CSS (`clamp()`, `var()` d'une variable de la page…) */
+		size?: string;
 	} = $props();
 </script>
 
@@ -186,6 +189,7 @@
 {/snippet}
 
 <figure
+	style:--ubu-size={size}
 	style:--halo-1-light={ambiance.light.h1}
 	style:--halo-2-light={ambiance.light.h2}
 	style:--halo-3-light={ambiance.light.h3}
@@ -228,8 +232,8 @@
 	}
 	figure svg,
 	.img-bg {
-		width: var(--ubu-size, 15rem);
-		height: var(--ubu-size, 15rem);
+		width: var(--ubu-size);
+		height: var(--ubu-size);
 	}
 	.img-bg {
 		@apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[50px] transition-all;

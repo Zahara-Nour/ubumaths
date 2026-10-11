@@ -53,6 +53,7 @@
 		{ambiance}
 		href={resolve('/(public)/royaume')}
 		label="Père Ubu : visiter le Royaume avec lui"
+		size="var(--home-ubu)"
 	/>
 
 	{#if data.shtam}
@@ -79,7 +80,7 @@
 		container-type: size;
 	}
 	.zone :global(figure) {
-		--ubu-size: clamp(5rem, calc(100cqh - 15rem), 15rem);
+		--home-ubu: clamp(5rem, calc(100cqh - 15rem), 15rem);
 	}
 	.visite {
 		@apply rounded-md px-2 py-0.5 text-sm text-foreground underline decoration-primary decoration-2 underline-offset-4 transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none;
@@ -109,7 +110,7 @@
 			@apply text-2xl;
 		}
 		.zone :global(figure) {
-			--ubu-size: clamp(5rem, calc(100cqh - 12.5rem), 15rem);
+			--home-ubu: clamp(5rem, calc(100cqh - 12.5rem), 15rem);
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {

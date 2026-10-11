@@ -167,7 +167,11 @@
 					Cornegidouille, un visiteur&nbsp;! Suis‑Nous, Galopin&nbsp;: Nous allons te faire visiter
 					Notre Royaume.
 				</span>
-				<PereUbuFigure {ambiance} label="Père Ubu, Roi de Pologne" />
+				<PereUbuFigure
+					{ambiance}
+					label="Père Ubu, Roi de Pologne"
+					size="clamp(10rem, 30vw, 17rem)"
+				/>
 			</div>
 		</div>
 	</section>
@@ -355,6 +359,8 @@
 	/* --accent-text : l'orange du thème est à 2,2:1 sur fond clair ; en texte, un orange brûlé
 	   (≈ 6,9:1 sur #fafafa). En sombre, le jaune du thème suffit (8:1). */
 	.tour {
+		/* Retard d'apparition : 0 par défaut, l'action `reveal` le pose sur un bloc */
+		--reveal-delay: 0ms;
 		--accent-text: #8f4000;
 		--glow-1: var(--glow-1-light);
 		--glow-2: var(--glow-2-light);
@@ -491,7 +497,6 @@
 	}
 	.hero-ubu {
 		@apply flex flex-col items-center gap-4;
-		--ubu-size: clamp(10rem, 30vw, 17rem);
 	}
 	.bubble {
 		@apply relative max-w-xs rounded-2xl border border-border bg-card px-4 py-3 text-center shadow-md;
@@ -721,7 +726,7 @@
 		transition:
 			opacity 0.7s ease,
 			translate 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-		transition-delay: var(--reveal-delay, 0ms);
+		transition-delay: var(--reveal-delay);
 	}
 	.tour :global([data-reveal='pending']) {
 		opacity: 0;
