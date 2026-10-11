@@ -10,7 +10,9 @@
 --
 -- Décision de David (2026-10-11) : une fonction serveur bornée à l'école ; les camarades
 -- de la même école voient le prénom et le score des énigmes (gidouilles gagnées,
--- énigmes réussies). Ni nom, ni avatar, ni tentatives. Les comptes de test sont exclus.
+-- énigmes réussies). Ni nom, ni avatar, ni tentatives. Les comptes de test sont exclus, et
+-- seuls apparaissent les élèves qui ont tenté au moins une énigme (comme les autres
+-- classements : pas d'annuaire de l'école).
 --
 -- Qui gagne quoi : un compte connecté lit, pour les élèves de SA école, prénom,
 -- gidouilles des énigmes et nombre d'énigmes réussies — qu'il ne pouvait pas lire avant.
@@ -59,6 +61,7 @@ BEGIN
 		  AND coalesce(p.is_test, false) = false
 		  AND p.school_id = v_school
 		GROUP BY p.id, p.firstname
+		HAVING count(ra.id) > 0  -- pas d'annuaire : seuls les élèves qui ont tenté une énigme
 	)
 	SELECT rank() OVER (ORDER BY s.gidouilles DESC)::int,
 	       s.id,

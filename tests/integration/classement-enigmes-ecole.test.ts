@@ -11,7 +11,8 @@
  *
  * Ce que le fichier prouve :
  *   1. un élève voit le vrai score de ses camarades de la même école ;
- *   2. il ne voit aucun élève d'une autre école, ni les comptes de test ;
+ *   2. il ne voit aucun élève d'une autre école, ni les comptes de test, ni un camarade
+ *      qui n'a tenté aucune énigme (pas d'annuaire) ; un élève sans école ne voit rien ;
  *   3. la fonction ne rend que prénom, score, rang et `is_me` ;
  *   4. anon ne peut pas l'appeler.
  *
@@ -116,6 +117,8 @@ describe('classement des énigmes borné à l’école', () => {
 	let a2: { id: string; email: string };
 	let aTest: { id: string; email: string };
 	let b1: { id: string; email: string };
+	let aSansTentative: { id: string; email: string };
+	let sansEcole: { id: string; email: string };
 
 	beforeAll(async () => {
 		await cleanupAllTestData();
@@ -133,6 +136,10 @@ describe('classement des énigmes borné à l’école', () => {
 		a2 = await eleve(a, riddleId, 30);
 		aTest = await eleve(a, riddleId, 99, true);
 		b1 = await eleve(b, riddleId, 50);
+		aSansTentative = await TestData.profile().withRole('student').create();
+		await pg.query('update profiles set school_id = $1 where id = $2', [a, aSansTentative.id]);
+		sansEcole = await TestData.profile().withRole('student').create();
+		await pg.query('update profiles set school_id = null where id = $1', [sansEcole.id]);
 	});
 
 	afterAll(async () => {
@@ -156,7 +163,12 @@ describe('classement des énigmes borné à l’école', () => {
 		const ids = (await classement(await clientFor(a1.email))).map((l) => l.student_id);
 		expect(ids).not.toContain(b1.id);
 		expect(ids).not.toContain(aTest.id);
+		expect(ids).not.toContain(aSansTentative.id);
 		expect(ids.sort()).toEqual([a1.id, a2.id].sort());
+	});
+
+	it('un élève sans école ne voit rien', async () => {
+		expect(await classement(await clientFor(sansEcole.email))).toEqual([]);
 	});
 
 	it('prénom et score seulement', async () => {
