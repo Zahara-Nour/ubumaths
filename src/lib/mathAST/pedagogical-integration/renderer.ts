@@ -23,6 +23,7 @@
  */
 
 import { toLatex } from '../latex-generator';
+import { withExplicitNumberProducts } from '../pedagogical-differentiation/tidy-step';
 import type {
 	PedagogicalRenderOptions,
 	RenderedStep,
@@ -105,10 +106,12 @@ function lookupExplanation(
  * - `simplify-bounds-result` : same as standard but with no `\int` (we're
  *   simplifying a numeric expression at this point).
  *
- * - `identify-parts` / `choose-u-dv` / `apply-parts-formula` for IPP :
- *   the standard format with the integrand on top and the antiderivative
- *   below. The pedagogical narrative around `u`, `dv`, `du`, `v` lives in
- *   the title and explanation.
+ * - `identify-parts` / `choose-u-dv` : the integral alone (nothing is
+ *   computed yet — no `= <integrand>` line). `apply-parts-formula` : the
+ *   standard format. The pedagogical narrative around `u`, `dv`, `du`, `v`
+ *   lives in the title and explanation.
+ *
+ * - `simplify-result` (« On simplifie ») : one line, `raw = tidied`.
  *
  * - `add-constant` and `identify-integrand` : single-line render (no
  *   transformation, just narration).
@@ -120,8 +123,11 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 
 	switch (step.rule) {
 		case 'identify-integrand':
-		case 'identify-definite-integral': {
-			// Pure narration — show only the integral form.
+		case 'identify-definite-integral':
+		case 'identify-parts':
+		case 'choose-u-dv': {
+			// Pure narration — show only the integral form. Pour l'IPP, pas de
+			// « = <intégrande> » : rien n'est encore calculé (décision du 2026-10-11)
 			const integralLhs = step.definite
 				? `\\int_{${toLatex(step.definite.lower)}}^{${toLatex(step.definite.upper)}} ${beforeLatex}${dx}`
 				: `\\int ${beforeLatex}${dx}`;
@@ -148,6 +154,12 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 				`  & = ${afterLatex}\n` +
 				`\\end{aligned}`
 			);
+		}
+
+		case 'simplify-result': {
+			// Une ligne, comme « On simplifie » des dérivées : brute = rangée
+			const raw = toLatex(withExplicitNumberProducts(step.before));
+			return `${raw} = ${afterLatex}`;
 		}
 
 		case 'add-constant': {

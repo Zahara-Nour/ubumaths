@@ -28,17 +28,31 @@
  *    `sin(2x)` without the leading `2·`) are handled by the same composite
  *    detectors via an implicit `1/u'` rebalancing factor.
  *
- * 3. Underlying calculations (`powerRule`, `expRule`, `sinRule`, …) are
+ * 3. Underlying calculations (`powerRule`, `sinRule`, `lnAbsRule`, …) are
  *    delegated to `integration/rules.ts` — we don't reimplement primitive
- *    formulas, only their orchestration.
+ *    formulas, only their orchestration. Sauf l'exponentielle : `expRule`
+ *    écrit `\exp(u)` et divise par a ; ici e^{u} est construit directement
+ *    (`superscript(euler(), u)`), le facteur 1/u′ venant de la forme composée.
+ *
+ * 4. La primitive brute (la méthode) est suivie d'une étape « On simplifie »
+ *    (`tidyTerms`) sauf quand il n'y a rien à simplifier.
  *
  * @module mathAST/pedagogical-integration/pipeline
  */
 
 import type { MathNode } from '../types';
-import { cos, func, number, opposite, sin, subtract, variable as variableNode } from '../factory';
+import {
+	cos,
+	euler,
+	number,
+	opposite,
+	sin,
+	subtract,
+	superscript,
+	variable as variableNode
+} from '../factory';
 import { detectVariable } from '../integration/classify';
-import { cosRule, expRule, lnAbsRule, powerRule, sinRule, tanRule } from '../integration/rules';
+import { cosRule, lnAbsRule, powerRule, sinRule, tanRule } from '../integration/rules';
 import { differentiate } from '../differentiation';
 import { evaluate } from '../eval/evaluate';
 import { isEvalValue } from '../eval/types';
@@ -49,7 +63,15 @@ import {
 	simplifiedMultiply,
 	simplifiedPower
 } from '../common/simplify';
-import { numericNode } from '../common/numeric';
+import { extractExactRational, numericNode, rationalToNode } from '../common/numeric';
+import {
+	absRational,
+	isNegative as isNegativeRational,
+	isOne as isOneRational
+} from '../normal/rational';
+import type { Rational } from '../normal/types';
+import { toLatex } from '../latex-generator';
+import { tidyTerms } from '../tidy/terms';
 import {
 	buildStep,
 	checkAbort,
@@ -215,8 +237,9 @@ function generateIndefiniteSteps(
 		);
 	}
 
-	const { antiderivative, steps: coreSteps } = integrateNode(integrand, ctx);
+	const { antiderivative: raw, steps: coreSteps } = integrateNode(integrand, ctx);
 	steps.push(...coreSteps);
+	const antiderivative = pushSimplifyStep(steps, raw, ctx);
 
 	if (ctx.strategy.includeAddConstant) {
 		steps.push(
@@ -253,8 +276,9 @@ function generateDefiniteSteps(
 
 	// Compute the antiderivative pedagogically — without `add-constant`
 	// (the constant cancels in F(b) - F(a)).
-	const { antiderivative, steps: coreSteps } = integrateNode(integrand, ctx);
+	const { antiderivative: raw, steps: coreSteps } = integrateNode(integrand, ctx);
 	steps.push(...coreSteps);
+	const antiderivative = pushSimplifyStep(steps, raw, ctx);
 
 	// Fundamental theorem : ∫_a^b f(x) dx = [F(x)]_a^b.
 	steps.push(
@@ -298,6 +322,33 @@ function generateDefiniteSteps(
 	);
 
 	return { antiderivative, value, steps };
+}
+
+/**
+ * L'étape « On simplifie » (décision de David du 2026-10-11, comme
+ * `withTidyStep` des dérivées) : les règles laissent la primitive brute
+ * (`3\dfrac{x^3}{3}`, `\ln(x)\,x`) — c'est la méthode, qu'on garde visible ;
+ * la ligne suivante l'écrit simplement avec `tidyTerms`. Aucune étape quand il
+ * n'y a rien à simplifier (`isSingleCoefficientTerm`) ni quand la mise au
+ * propre ne change pas l'écriture. Rend la primitive à retenir.
+ */
+function pushSimplifyStep(
+	steps: PedagogicalIntegrationStep[],
+	raw: MathNode,
+	ctx: DispatchContext
+): MathNode {
+	if (isSingleCoefficientTerm(raw)) return raw;
+	const tidied = tidyTerms(raw);
+	if (toLatex(tidied) === toLatex(raw)) return raw;
+	steps.push(
+		buildStep(ctx, {
+			rule: 'simplify-result',
+			before: raw,
+			after: tidied,
+			variable: ctx.variable
+		})
+	);
+	return tidied;
 }
 
 /**
@@ -582,7 +633,8 @@ function integrateKnownPrimitive(
 	let antiderivative: MathNode;
 	switch (fnName) {
 		case 'exp':
-			antiderivative = expRule(arg);
+			// ∫ e^x dx = e^x, écrit e^{x} (jamais `\exp(x)`, décision du 2026-10-11)
+			antiderivative = superscript(euler(), arg);
 			break;
 		case 'sin':
 			antiderivative = sinRule(arg);
@@ -617,7 +669,8 @@ function integrateComposite(
 		case 'composite-exp':
 			// e^u, pas `expRule(u)` : celui-ci calcule ∫ e^{ax} dx = e^{ax}/a, et
 			// `constantFactor` rééquilibre déjà par 1/u' (`∫ e^{2x} dx` rendait e^{2x}/4)
-			baseAntiderivative = func('exp', [u]);
+			// écrit e^{u}, jamais `\exp(u)` (décision de David du 2026-10-11)
+			baseAntiderivative = superscript(euler(), u);
 			rule = 'apply-composite-exp';
 			break;
 		case 'composite-ln':
@@ -647,13 +700,14 @@ function integrateComposite(
 		}
 	}
 
-	let antiderivative = baseAntiderivative;
-	if (match.constantFactor !== undefined && match.constantFactor !== 1) {
-		// Expose the rebalancing factor as a multiplicative coefficient. For
-		// `∫sin(2x) dx` this is 1/2 ; the renderer can frame this as a
-		// composite-with-implicit-rebalancing.
-		antiderivative = simplifiedMultiply(numericNode(match.constantFactor), antiderivative);
-	}
+	// Expose the rebalancing factor as a multiplicative coefficient. For
+	// `∫sin(2x) dx` this is 1/2 ; the renderer can frame this as a
+	// composite-with-implicit-rebalancing. Fraction exacte : `\dfrac{1}{2}`,
+	// jamais `0.5`.
+	const antiderivative =
+		match.constantFactor === undefined
+			? baseAntiderivative
+			: withRationalCoefficient(match.constantFactor, baseAntiderivative);
 
 	const step = buildStep(ctx, {
 		rule,
@@ -663,6 +717,46 @@ function integrateComposite(
 		bindings
 	});
 	return { antiderivative, steps: [step] };
+}
+
+/**
+ * `k·F` écrit comme sur une copie : le signe devant, puis la fraction, puis la
+ * fonction — `-\dfrac{1}{3}\cos(3x+1)` et non `\dfrac{1}{3}(-\cos(3x+1))`.
+ * C'est la forme finale d'un terme « coefficient × une seule fonction » (aucune
+ * étape « On simplifie » ne la reprend, décision de David du 2026-10-11).
+ */
+function withRationalCoefficient(k: Rational, base: MathNode): MathNode {
+	const baseNegative = base.type === 'opposite';
+	const inner = base.type === 'opposite' ? base.operand : base;
+	const negative = isNegativeRational(k) !== baseNegative;
+	const magnitude = absRational(k);
+	const product = isOneRational(magnitude)
+		? inner
+		: simplifiedMultiply(rationalToNode(magnitude), inner);
+	return negative ? opposite(product) : product;
+}
+
+/**
+ * Un seul terme « coefficient rationnel × une seule fonction » (`\dfrac{1}{2}e^{2x}`,
+ * `-\dfrac{1}{3}\cos(3x+1)`, `5e^x`, `\ln\lvert x\rvert`) : il n'y a rien à
+ * simplifier, la primitive reste telle quelle (décision de David du 2026-10-11).
+ *
+ * Règle exacte : sous un signe `-` éventuel, soit une fonction seule, soit le
+ * produit d'un rationnel littéral POSITIF (`3`, `\dfrac{1}{2}`) par une fonction
+ * seule. « Fonction seule » = un appel (`\ln`, `\sin`, `\cos`…) ou une
+ * puissance (`e^{u}`, `u^n`). Un quotient, un produit, une somme ou un
+ * opposé à l'intérieur n'en est pas une : `\dfrac{1}{4}\dfrac{x^2}{2}` et
+ * `\dfrac{1}{2}\dfrac{(2x+1)^4}{4}` ont un coefficient pas encore calculé, et
+ * passent par `tidy`.
+ */
+function isSingleCoefficientTerm(node: MathNode): boolean {
+	const term = node.type === 'opposite' ? node.operand : node;
+	const isSingleFunction = (n: MathNode): boolean =>
+		n.type === 'function' || n.type === 'superscript';
+	if (isSingleFunction(term)) return true;
+	if (term.type !== 'multiplication') return false;
+	const k = extractExactRational(term.left);
+	return k !== null && !isNegativeRational(k) && isSingleFunction(term.right);
 }
 
 function integrateLinearity(integrand: MathNode, ctx: DispatchContext): DispatchResult {

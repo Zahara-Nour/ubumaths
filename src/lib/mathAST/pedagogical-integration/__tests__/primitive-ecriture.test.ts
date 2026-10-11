@@ -1,0 +1,211 @@
+/**
+ * L'écriture de la primitive que voit l'élève (décisions de David du 2026-10-11)
+ *
+ * Les primitives étaient justes mais mal écrites : `0.5 \exp(2x)`,
+ * `3\dfrac{x^3}{3}+2\dfrac{x^2}{2}+x`, `\ln(x)\,x - x`. Contrat :
+ * - la primitive FINALE (dernière étape) est écrite simplement ;
+ * - l'étape brute d'avant reste (la méthode se voit), puis « On simplifie » ;
+ * - coefficients exacts (jamais `0.5` ni `0.333…`), `e^{u}` jamais `\exp(u)` ;
+ * - les étapes « Intégration par parties » / « Choix de u et dv » montrent
+ *   l'intégrale seule, sans un faux `= <intégrande>` ;
+ * - VALEUR : F′ = f à chaque étape (aucune réécriture ne change la primitive).
+ *
+ * Écriture réelle de `toLatex` : la constante d'Euler s'écrit
+ * `\exponentialE` (MathLive l'affiche `e`), `\ln x` s'écrit
+ * `\ln\left( x \right)` et `\ln\lvert u\rvert` s'écrit
+ * `\ln\left( \left| u \right| \right)`.
+ */
+import { describe, expect, it } from 'vitest';
+import type { RenderedStep } from '../../common/step-renderer-base';
+import type { Verbosity } from '../../common/verbosity';
+import { compile } from '../../eval/compile';
+import { parseLatex } from '../../parser';
+import type { MathNode } from '../../types';
+import { generatePedagogicalIntegrationSteps, PedagogicalIntegrationRenderer } from '..';
+import type { IntegrationSchoolLevel, PedagogicalIntegrationStep } from '..';
+
+const renderer = new PedagogicalIntegrationRenderer();
+const LEVELS: readonly IntegrationSchoolLevel[] = ['lycee', 'superieur'];
+const VERBOSITIES: readonly Verbosity[] = ['summarized', 'detailed'];
+
+/** Points d'évaluation : x > 0 et loin des pôles (2x + 1 = 0, x³ = 7). */
+const POINTS = [0.3, 0.8, 1.4, 2.6];
+
+interface Case {
+	readonly integrand: string;
+	/** Primitive finale attendue, dans l'écriture réelle de `toLatex`. */
+	readonly expected: string;
+}
+
+// Tableau des attendus du journal docs/wip/primitive-ecriture-progress.md
+const DEMO_CASES: readonly Case[] = [
+	{ integrand: 'e^{2x}', expected: '\\dfrac{1}{2} \\exponentialE^{2 x}' },
+	{ integrand: 'e^{3x + 1}', expected: '\\dfrac{1}{3} \\exponentialE^{3 x + 1}' },
+	{
+		integrand: '\\dfrac{1}{2x + 1}',
+		expected: '\\dfrac{1}{2} \\ln\\left( \\left| 2 x + 1 \\right| \\right)'
+	},
+	{ integrand: '5 e^x', expected: '5 \\exponentialE^x' },
+	{ integrand: '2x e^{x^2}', expected: '\\exponentialE^{x^2}' },
+	{ integrand: '3x^2 + 2x + 1', expected: 'x^3 + x^2 + x' },
+	{ integrand: '\\dfrac{x}{4}', expected: '\\dfrac{x^2}{8}' },
+	{ integrand: 'x \\sin(x)', expected: '-x \\cos\\left( x \\right) + \\sin\\left( x \\right)' },
+	{ integrand: '\\ln(x)', expected: 'x \\ln\\left( x \\right) - x' },
+	{
+		integrand: '3 \\sin(x) + 2 \\cos(x)',
+		// ordre de `tidy` gardé (décision de David du 2026-10-11)
+		expected: '2 \\sin\\left( x \\right) - 3 \\cos\\left( x \\right)'
+	}
+];
+
+// Cas lycée courants traités par le moteur
+const LYCEE_CASES: readonly Case[] = [
+	{ integrand: '\\dfrac{1}{x}', expected: '\\ln\\left( \\left| x \\right| \\right)' },
+	{ integrand: 'e^{-x}', expected: '-\\exponentialE^{-x}' },
+	{ integrand: '4e^{-2x}', expected: '-2 \\exponentialE^{-2 x}' },
+	{ integrand: '\\cos(2x)', expected: '\\dfrac{1}{2} \\sin\\left( 2 x \\right)' },
+	{
+		integrand: '\\sin(3x + 1)',
+		expected: '-\\dfrac{1}{3} \\cos\\left( 3 x + 1 \\right)'
+	},
+	{ integrand: '(2x + 1)^3', expected: '\\dfrac{\\left( 2 x + 1 \\right)^4}{8}' }
+];
+
+const ALL_CASES = [...DEMO_CASES, ...LYCEE_CASES];
+
+/** Toutes les étapes rendues, sous-étapes comprises, à plat. */
+function flatten(steps: readonly RenderedStep[]): RenderedStep[] {
+	return steps.flatMap((s) => [s, ...flatten(s.subSteps ?? [])]);
+}
+
+function flattenRaw(steps: readonly PedagogicalIntegrationStep[]): PedagogicalIntegrationStep[] {
+	return steps.flatMap((s) => [s, ...flattenRaw(s.subSteps ?? [])]);
+}
+
+/** La primitive écrite dans la DERNIÈRE étape rendue. */
+function finalPrimitiveLatex(rendered: readonly RenderedStep[]): string {
+	const last = rendered.at(-1);
+	const latex = last?.expressionLatex ?? '';
+	if (last?.rule === 'add-constant') {
+		const m = /^\\textcolor\{blue\}\{(.*) \+ C\}$/s.exec(latex);
+		return m ? m[1] : latex;
+	}
+	const afterEquals = latex.slice(latex.lastIndexOf('= ') + 2);
+	return afterEquals.replace(/\s*\\end\{aligned\}\s*$/, '').trim();
+}
+
+function run(integrand: string, level: IntegrationSchoolLevel, verbosity: Verbosity) {
+	const result = generatePedagogicalIntegrationSteps(parseLatex(integrand), {
+		level,
+		verbosity
+	});
+	const rendered = renderer.renderAll(result.steps, { schoolLevel: level, verbosity });
+	return { result, rendered };
+}
+
+/** F′ = f numériquement (différence finie centrée). */
+function expectDerivativeMatches(F: MathNode, integrand: string): void {
+	const f = compile(parseLatex(integrand));
+	const Fc = compile(F);
+	const h = 1e-5;
+	for (const x of POINTS) {
+		const slope = (Fc({ x: x + h }) - Fc({ x: x - h })) / (2 * h);
+		expect(slope).toBeCloseTo(f({ x }), 4);
+	}
+}
+
+const METHOD_EXCLUDED = new Set([
+	'identify-integrand',
+	'identify-definite-integral',
+	'simplify-result',
+	'add-constant'
+]);
+
+describe('écriture de la primitive finale', () => {
+	for (const level of LEVELS) {
+		it.each(ALL_CASES)(
+			`${level} — ∫ $integrand dx s'écrit $expected`,
+			({ integrand, expected }) => {
+				const { result, rendered } = run(integrand, level, 'summarized');
+				expect(finalPrimitiveLatex(rendered)).toBe(expected);
+				expect(result.antiderivative).toBeDefined();
+			}
+		);
+	}
+});
+
+describe('la méthode reste visible avant « On simplifie »', () => {
+	it.each(ALL_CASES)('∫ $integrand dx', ({ integrand }) => {
+		const { rendered } = run(integrand, 'lycee', 'summarized');
+		// Au moins une étape de méthode (règle, forme composée, IPP, linéarité…)
+		expect(rendered.some((s) => !METHOD_EXCLUDED.has(s.rule))).toBe(true);
+		const simplifyIndex = rendered.findIndex((s) => s.rule === 'simplify-result');
+		if (simplifyIndex !== -1) {
+			expect(METHOD_EXCLUDED.has(rendered[simplifyIndex - 1].rule)).toBe(false);
+			expect(rendered[simplifyIndex].title).toBe('On simplifie');
+		}
+	});
+
+	it('∫ 3x^2 + 2x + 1 dx : la ligne brute est gardée, puis simplifiée', () => {
+		const { rendered } = run('3x^2 + 2x + 1', 'lycee', 'summarized');
+		const simplify = rendered.find((s) => s.rule === 'simplify-result');
+		expect(simplify?.expressionLatex).toContain('\\dfrac{x^3}{3}');
+		expect(simplify?.expressionLatex).toContain('= x^3 + x^2 + x');
+	});
+});
+
+describe('rien à simplifier : pas d’étape « On simplifie »', () => {
+	it.each([
+		'e^{2x}',
+		'e^{3x + 1}',
+		'\\dfrac{1}{2x + 1}',
+		'\\cos(2x)',
+		'\\sin(3x + 1)',
+		'5 e^x',
+		'e^{-x}'
+	])('∫ %s dx', (integrand) => {
+		const { rendered } = run(integrand, 'lycee', 'summarized');
+		expect(rendered.some((s) => s.rule === 'simplify-result')).toBe(false);
+	});
+
+	it.each(['\\dfrac{x}{4}', '(2x + 1)^3', '3x^2 + 2x + 1'])(
+		'∫ %s dx : un coefficient pas encore calculé garde l’étape',
+		(integrand) => {
+			const { rendered } = run(integrand, 'lycee', 'summarized');
+			expect(rendered.some((s) => s.rule === 'simplify-result')).toBe(true);
+		}
+	);
+});
+
+describe('ni \\exp, ni nombre décimal, ni faux « = » d’IPP, dans aucune étape', () => {
+	for (const level of LEVELS) {
+		for (const verbosity of VERBOSITIES) {
+			it.each(ALL_CASES)(`${level}/${verbosity} — ∫ $integrand dx`, ({ integrand }) => {
+				const { rendered } = run(integrand, level, verbosity);
+				for (const step of flatten(rendered)) {
+					const text = `${step.title} ${step.explanation ?? ''} ${step.expressionLatex ?? ''}`;
+					// `\exponentialE` (la constante e) est permis, pas `\exp(…)`
+					expect(text).not.toMatch(/\\exp(?!onentialE)/);
+					expect(text).not.toMatch(/\d\.\d/);
+					if (step.rule === 'identify-parts' || step.rule === 'choose-u-dv') {
+						expect(step.expressionLatex ?? '').not.toMatch(/=/);
+					}
+				}
+			});
+		}
+	}
+});
+
+describe('F′ = f : aucune réécriture ne change la valeur', () => {
+	it.each(ALL_CASES)('∫ $integrand dx', ({ integrand }) => {
+		const { result } = run(integrand, 'lycee', 'summarized');
+		expectDerivativeMatches(result.antiderivative, integrand);
+		// Les deux côtés de « On simplifie » : la ligne brute et la ligne rangée
+		for (const step of flattenRaw(result.steps)) {
+			if (step.rule === 'simplify-result') {
+				expectDerivativeMatches(step.before, integrand);
+				expectDerivativeMatches(step.after, integrand);
+			}
+		}
+	});
+});

@@ -14,7 +14,9 @@ import { differentiate } from '../differentiation';
 import { containsVariable } from '../common/contains-variable';
 import { isNumber, isVariable, isOne, isZero } from '../guards';
 import { hashMathNode } from '../normal/hash';
-import { findProportionalityConstant } from '../integration/patterns';
+import { findProportionalityRatio } from '../integration/patterns';
+import { number } from '../factory';
+import type { Rational } from '../normal/types';
 import { getNumericValue } from '../common/numeric';
 import { extractQuadraticCoefficients as extractQuadraticCoefficientsImpl } from '../solve/solvers/quadratic';
 import { normalize as normalizeMathNode } from '../normal/normalize';
@@ -348,6 +350,9 @@ export function tryExtractConstant(
  *   factor is `1/2` (because u = 2x, u' = 2, and the integrand lacks a `2` to
  *   match the canonical `u'·sin(u)` form). Renderers display this as a
  *   `1/u'` coefficient on the antiderivative.
+ *
+ * Le facteur est un rationnel EXACT : un flottant s'affichait `0.5` ou
+ * `0.3333333333333333` devant la primitive (décision de David, 2026-10-11).
  */
 export interface CompositeMatch {
 	readonly kind:
@@ -358,7 +363,7 @@ export interface CompositeMatch {
 		| 'composite-power';
 	readonly u: MathNode;
 	readonly n?: MathNode;
-	readonly constantFactor?: number;
+	readonly constantFactor?: Rational;
 }
 
 /**
@@ -409,11 +414,10 @@ function safeDifferentiate(u: MathNode, variable: string): MathNode | null {
  * numeric constant. Returns the constant value (1/u') as the rebalancing
  * factor, or `null` if u' depends on the variable or is zero.
  */
-function bareCompositeFactor(uPrime: MathNode, variable: string): number | null {
+function bareCompositeFactor(uPrime: MathNode, variable: string): Rational | null {
 	if (containsVariable(uPrime, variable)) return null;
-	const value = getNumericValue(uPrime);
-	if (value === null || value === 0) return null;
-	return 1 / value;
+	// 1 = c·u′ : c = 1/u′, en rationnel exact (u′ = 0 n'a pas de c)
+	return findProportionalityRatio(number('1'), uPrime);
 }
 
 /**
@@ -451,7 +455,7 @@ export function tryDetectCompositeExp(
 			const other = right;
 			const uPrime = safeDifferentiate(leftU, variable);
 			if (uPrime === null) return null;
-			const factor = findProportionalityConstant(other, uPrime);
+			const factor = findProportionalityRatio(other, uPrime);
 			if (factor !== null) {
 				return { kind: 'composite-exp', u: leftU, constantFactor: factor };
 			}
@@ -460,7 +464,7 @@ export function tryDetectCompositeExp(
 			const other = left;
 			const uPrime = safeDifferentiate(rightU, variable);
 			if (uPrime === null) return null;
-			const factor = findProportionalityConstant(other, uPrime);
+			const factor = findProportionalityRatio(other, uPrime);
 			if (factor !== null) {
 				return { kind: 'composite-exp', u: rightU, constantFactor: factor };
 			}
@@ -515,7 +519,7 @@ export function tryDetectCompositeLn(integrand: MathNode, variable: string): Com
 		return { kind: 'composite-ln', u, constantFactor: factor };
 	}
 
-	const factor = findProportionalityConstant(num, uPrime);
+	const factor = findProportionalityRatio(num, uPrime);
 	if (factor === null) return null;
 	return { kind: 'composite-ln', u, constantFactor: factor };
 }
@@ -568,13 +572,13 @@ function tryDetectCompositeUnary(
 		if (leftU !== null) {
 			const uPrime = safeDifferentiate(leftU, variable);
 			if (uPrime === null) return null;
-			const factor = findProportionalityConstant(right, uPrime);
+			const factor = findProportionalityRatio(right, uPrime);
 			if (factor !== null) return { kind: matchKind, u: leftU, constantFactor: factor };
 		}
 		if (rightU !== null) {
 			const uPrime = safeDifferentiate(rightU, variable);
 			if (uPrime === null) return null;
-			const factor = findProportionalityConstant(left, uPrime);
+			const factor = findProportionalityRatio(left, uPrime);
 			if (factor !== null) return { kind: matchKind, u: rightU, constantFactor: factor };
 		}
 	}
@@ -648,7 +652,7 @@ export function tryDetectCompositePower(
 		if (leftBase !== null) {
 			const uPrime = safeDifferentiate(leftBase.u, variable);
 			if (uPrime === null) return null;
-			const factor = findProportionalityConstant(integrand.right, uPrime);
+			const factor = findProportionalityRatio(integrand.right, uPrime);
 			if (factor !== null) {
 				return {
 					kind: 'composite-power',
@@ -661,7 +665,7 @@ export function tryDetectCompositePower(
 		if (rightBase !== null) {
 			const uPrime = safeDifferentiate(rightBase.u, variable);
 			if (uPrime === null) return null;
-			const factor = findProportionalityConstant(integrand.left, uPrime);
+			const factor = findProportionalityRatio(integrand.left, uPrime);
 			if (factor !== null) {
 				return {
 					kind: 'composite-power',

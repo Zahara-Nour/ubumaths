@@ -13,7 +13,18 @@ Branche `fix/primitive-ecriture`, worktree `../ubumaths-wt-primitive`. Le moteur
    `∫ \ln x\,dx = \ln x`.
 5. Forme : `\dfrac{1}{2}e^{2x}`, `\dfrac{1}{2}\ln\lvert 2x+1\rvert` (méthode « k·e^u »).
 
-Hors périmètre (écart à noter) : `\ln\lvert x^2+1\rvert` garde sa valeur absolue alors que x²+1 > 0.
+Deuxième arbitrage (2026-10-11, après le constat que `tidy` écrit `\dfrac{e^{2x}}{2}`) :
+
+6. **Pas d'étape « On simplifie » quand il n'y a rien à simplifier** : un seul terme
+   « coefficient rationnel × une seule fonction » (k·e^u, k·ln|u|, k·sin u, k·cos u…) reste tel
+   quel (`\dfrac{1}{2}\sin 2x`, `-\dfrac{1}{3}\cos(3x+1)` : extension sin/cos validée). Les
+   sommes, et tout ce que `tidy` change vraiment, gardent l'étape. Règle retenue
+   (`isSingleCoefficientTerm`) : sous un `-` éventuel, une fonction seule (appel ou puissance) ou
+   un rationnel littéral positif × une fonction seule ; un quotient ou un produit à l'intérieur
+   (`\dfrac{1}{4}\dfrac{x^2}{2}`, `\dfrac{1}{2}\dfrac{(2x+1)^4}{4}`) passe par `tidy`.
+7. **Ordre de `tidy` gardé** : `3\sin x+2\cos x` → `2\sin x - 3\cos x`.
+
+Hors périmètre (écarts V14, V15 de [ecarts-a-trier.md](ecarts-a-trier.md)) : `\ln\lvert x^2+1\rvert` garde sa valeur absolue alors que x²+1 > 0 (V14) ; IPP cyclique rangée lourde, `\dfrac{-\cos x\,e^x+\sin x\,e^x}{2}` (V15).
 
 ## Attendus (cas de la démo)
 
@@ -27,10 +38,10 @@ Hors périmètre (écart à noter) : `\ln\lvert x^2+1\rvert` garde sa valeur abs
 | `x/4`               | `\dfrac{1}{4}\dfrac{x^2}{2}`        | `\dfrac{x^2}{8}`                   |
 | `x\sin x`           | `x(-\cos x)-(-\sin x)`              | `-x\cos x+\sin x`                  |
 | `\ln x`             | `\ln(x)\,x - x`                     | `x\ln x - x`                       |
-| `3\sin x+2\cos x`   | `3(-\cos x)+2\sin x`                | `-3\cos x+2\sin x`                 |
+| `3\sin x+2\cos x`   | `3(-\cos x)+2\sin x`                | `2\sin x-3\cos x`                  |
 
 ## Fait
 
-- [ ] Tests vus rouges
-- [ ] Implémentation
+- [x] Tests vus rouges (`__tests__/primitive-ecriture.test.ts` : 79 rouges sur HEAD)
+- [x] Implémentation (tests verts, snapshots relus, suite serveur 0 échec, doc README mathAST)
 - [ ] Doc, code-reviewer, PR
