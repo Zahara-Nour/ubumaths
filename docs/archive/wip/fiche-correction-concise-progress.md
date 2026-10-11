@@ -10,4 +10,4 @@ Branche `feat/fiche-correction-concise`, worktree `../ubumaths-wt-fiche-concise`
 - [x] Tests rouges : `src/lib/worksheets/__tests__/correction-imprimee.test.ts`.
 - [x] `correctionForPrint`, réglage (type, Zod, lecture, UI), PDF prof + élève, API élève, série.
 - [x] Écrans : corrigés d'exercice via `detailedCorrection`.
-- [x] Doc (`fiches-et-pdf.md`, `CONTEXT.md` si besoin), écarts (D4) ; check, revue, PR.
+- [x] Doc (`fiches-et-pdf.md`, `CONTEXT.md` si besoin), écarts (D4) ; check, revue, PR #1069 mergée (2026-10-11).
