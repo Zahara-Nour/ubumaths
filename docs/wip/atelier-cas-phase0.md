@@ -1,7 +1,7 @@
 ---
 title: Atelier — ce qui manque avant de retirer /cas (phase 0)
 date: 2026-10-11
-status: phase 0 validée par David (2026-10-11) ; PR 1 en cours (branche feat/atelier-calcul-clavier)
+status: phase 0 validée par David (2026-10-11) ; PR 1 livrée (#1080) ; PR 2 en cours (branche feat/atelier-bouton-approche)
 ---
 
 # Atelier — ce qui manque avant de retirer `/cas`
@@ -28,7 +28,7 @@ Chapeau du chantier : [atelier-progress.md](atelier-progress.md).
 
 ## Trois PR (le retrait est suspendu)
 
-### PR 1 — le clavier de Calcul et le modèle de la commande (en cours)
+### PR 1 — le clavier de Calcul et le modèle de la commande (✅ #1080)
 
 **Rappel des saisies**
 
@@ -125,3 +125,29 @@ absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inv
   d'une seule Entrée. Marqueur explicite `runsAlone` dans le catalogue (aide, valeurs, fonctions,
   exact, décimal, auto, exporter) : « sans exemple » ne suffisait pas, `.arbre` n'en a pas et attend
   une expression. Garde : chacune répond tapée seule.
+- 2026-10-11 — PR 1 mergée (#1080).
+- 2026-10-11 — PR 2, mesuré avant de coder : `.mode décimal` écrit 15 chiffres (`0,707106781186547`)
+  et met `≈` devant une valeur exacte (`≈ 0,250000000000000`, `≈ 3`) ; `.résoudre` ignore le mode.
+  DÉCISIONS DE DAVID (« ok pour tes recos ») : le bouton ≈ montre **4 décimales** (`≈ 0,7071`) ;
+  une valeur dont l'écriture décimale tient dans l'arrondi s'écrit avec **=** sans zéros inutiles
+  (1/4 → `= 0,25`) ; pas de bouton sur un résultat déjà entier ou décimal ; **aligner `.mode décimal`
+  sur la même règle, dans une PR à part**.
+- 2026-10-11 — PR 2 codée sur `feat/atelier-bouton-approche` : règle unique
+  `mathAST/cli/approximation.ts` ; le moteur rend `approximateLatex` / `exactLatex` (calcul) et
+  `approximateLatex` (`.solve`, `solutionsApproximationLatex`) ; `Alternative` dans `calcul.ts`, sur
+  les calculs, `.résoudre`, l'image et « Résoudre » des cartes ; bouton « Valeur approchée / Valeur
+  exacte » dans `CalculView.svelte`. Mesuré : une grandeur ne reçoit jamais de valeur approchée du
+  moteur (branche des unités) — la garde « rendu depuis l'arbre » ajoutée ne changeait rien, retirée.
+- 2026-10-11 — revue `code-reviewer` de la PR 2 : corrigés un « = » faux pour un grand irrationnel
+  (`= 485165195,4098` pour e²⁰ : l'exactitude se décide désormais sur le RATIONNEL,
+  `evaluateNodeToRational`, et rien au-delà de 10⁹), les zéros retirés d'une valeur approchée
+  (`≈ 5,099` → `≈ 5,0990`, décision « 4 décimales »), l'ordre et la forme des solutions (le bouton
+  approche les solutions que les ÉTAPES affichent, `SolvedSteps.approximate`, pas celles du moteur
+  triées : `-x^2+x+1=0`, `(x-√2)^2=0`), `.résoudre … dans [a ; b]` sans bouton.
+
+## Mis de côté (David, 2026-10-11 : « on verra après »)
+
+- `π/3` s'affiche `{1/3}π` dans Calcul (accolades visibles dans le LaTeX) — reste connu
+  « accolades dans Calcul » (`{1/3}x^3`).
+- Aligner `.mode décimal` sur la règle du bouton ≈ (4 décimales, `=` quand c'est exact) — PR à part,
+  après la PR 2.

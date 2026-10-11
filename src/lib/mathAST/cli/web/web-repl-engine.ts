@@ -71,6 +71,7 @@ import {
 } from '../../../ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '../../../ubumark/utils/stat-chart-text';
 import { STAT_CHART_LIMITS } from '../../../ubumark/types/stat-chart';
+import { approximateValueLatex } from '../approximation';
 
 // =============================================================================
 // Constants
@@ -82,6 +83,25 @@ const LINREG_PLACES = 3;
 // =============================================================================
 // Web REPL Engine
 // =============================================================================
+
+/**
+ * Le pendant d'un calcul pour le bouton ≈ de l'atelier : sa valeur approchée
+ * en mode exact, sa valeur exacte en mode décimal (décisions de David,
+ * 2026-10-11). Rien quand les deux écritures ne diffèrent pas.
+ */
+function approximationFields(
+	mode: string,
+	exact: MathNode,
+	canToggle: boolean
+): { approximateLatex?: string; exactLatex?: string } {
+	if (mode === 'exact') {
+		const approximate = approximateValueLatex(exact);
+		return approximate === null ? {} : { approximateLatex: approximate };
+	}
+	// En mode décimal, la ligne montre déjà la valeur décimale : le bouton rend
+	// l'exacte, sauf si c'est un nombre déjà écrit (« ≈ 3 » vaut 3)
+	return canToggle && approximateValueLatex(exact) !== null ? { exactLatex: toLatex(exact) } : {};
+}
 
 /**
  * Browser-safe REPL execution engine.
@@ -996,7 +1016,8 @@ export class WebReplEngine {
 				exactOutputHtml,
 				decimalOutput,
 				decimalOutputHtml,
-				canToggle
+				canToggle,
+				...approximationFields(currentMode, exactResult.node, canToggle)
 			};
 		} catch (err) {
 			// Handle dimensional errors with pedagogical messages
@@ -1496,6 +1517,7 @@ export class WebReplEngine {
 			decimalOutputHtml?: string;
 			canToggle?: boolean;
 			showDecimalInitially?: boolean;
+			approximateLatex?: string;
 		},
 		ast?: MathNode
 	): ReplExecutionResult {
@@ -1524,6 +1546,9 @@ export class WebReplEngine {
 				outputHtml: cmdResult.outputHtml,
 				ast: cmdResult.ast || ast,
 				...(cmdResult.latex !== undefined && { latex: cmdResult.latex }),
+				...(cmdResult.approximateLatex !== undefined && {
+					approximateLatex: cmdResult.approximateLatex
+				}),
 				// Pass through toggle fields if present
 				exactOutput: cmdResult.exactOutput,
 				exactOutputHtml: cmdResult.exactOutputHtml,
@@ -1553,6 +1578,9 @@ export class WebReplEngine {
 			outputHtml,
 			ast: cmdResult.ast || ast,
 			...(cmdResult.latex !== undefined && { latex: cmdResult.latex }),
+			...(cmdResult.approximateLatex !== undefined && {
+				approximateLatex: cmdResult.approximateLatex
+			}),
 			// Pass through toggle fields if present
 			exactOutput: cmdResult.exactOutput,
 			exactOutputHtml: cmdResult.exactOutputHtml,

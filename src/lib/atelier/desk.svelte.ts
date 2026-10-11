@@ -22,6 +22,7 @@ import {
 	runAction,
 	promote,
 	derivativeNote,
+	type Alternative,
 	type CalcResult,
 	type CalcSession
 } from './calcul';
@@ -89,6 +90,11 @@ export interface Entry {
 	 * (`.dériver t^2` : « Calcul par rapport à x… »).
 	 */
 	readonly note?: string;
+	/**
+	 * L'autre écriture de la réponse (valeur approchée ou exacte), montrée par
+	 * le bouton de la ligne. Affichage seul : l'export et le rejeu l'ignorent.
+	 */
+	readonly alternative?: Alternative;
 	/** Présent seulement pour une saisie : c'est ce que « Garder » consomme. */
 	readonly result?: CalcResult;
 	/**
@@ -262,6 +268,9 @@ export class CalcDesk {
 			label: `${displayName(name)}(${value.trim()})`,
 			text,
 			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
+			...(outcome.ok && outcome.alternative !== undefined
+				? { alternative: outcome.alternative }
+				: {}),
 			failed: !outcome.ok
 		});
 		return { text, failed: !outcome.ok };
@@ -336,6 +345,10 @@ export class CalcDesk {
 			...(result.kind === 'commande' && result.steps !== undefined ? { steps: result.steps } : {}),
 			...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
 			...(result.kind === 'commande' && result.table !== undefined ? { table: result.table } : {}),
+			...((result.kind === 'calcul' || result.kind === 'commande') &&
+			result.alternative !== undefined
+				? { alternative: result.alternative }
+				: {}),
 			...((result.kind === 'commande' || result.kind === 'refus') && result.note !== undefined
 				? { note: result.note }
 				: {}),
@@ -832,6 +845,9 @@ export class CalcDesk {
 			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
 			...(outcome.ok && outcome.steps !== undefined ? { steps: outcome.steps } : {}),
 			...(outcome.ok && outcome.table !== undefined ? { table: outcome.table } : {}),
+			...(outcome.ok && outcome.alternative !== undefined
+				? { alternative: outcome.alternative }
+				: {}),
 			failed: !outcome.ok
 		});
 		this.notice = null;

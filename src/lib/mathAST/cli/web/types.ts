@@ -95,6 +95,16 @@ export interface ReplExecutionResult {
 	/** Initial display mode (true = show decimal first, false = show exact first) */
 	readonly showDecimalInitially?: boolean;
 
+	/**
+	 * La valeur approchée d'un résultat exact (`\approx 0.7071`, `= 0.25`),
+	 * pour le bouton ≈ de l'atelier — mode exact seulement
+	 * (`approximation.ts`).
+	 */
+	readonly approximateLatex?: string;
+
+	/** La valeur exacte d'un calcul fait en mode décimal, en LaTeX. */
+	readonly exactLatex?: string;
+
 	// =========================================================================
 	// Export Support
 	// =========================================================================

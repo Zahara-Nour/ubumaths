@@ -37,6 +37,7 @@ import { getVariables } from '../../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { tidy } from '../../tidy';
 import { tidyCriticalAbscissa } from '../../variations/critical-points';
+import { approximateSolutionsLatex } from '../approximation';
 
 /** Plus grand coefficient de période écrit (`1000k\pi`) : au-delà, la famille n’est pas écrite. */
 const MAX_PERIOD_INTEGER = 1000;
@@ -359,6 +360,26 @@ export function solutionsLatex(result: SolveResult): string | null {
 		default:
 			return null;
 	}
+}
+
+/**
+ * Les solutions en valeurs approchées, pour le bouton ≈ de l'atelier :
+ * `S \approx \left\{ -1.4142 \,;\, 1.4142 \right\}`, `x = 0.5` (règle de
+ * `approximation.ts` : 4 décimales, « = » quand l'écriture décimale est exacte).
+ *
+ * `null` quand il n'y a rien à montrer : solutions déjà entières ou décimales,
+ * famille périodique, paramètre, ensemble infini, seuil qui donne déjà sa
+ * valeur approchée (`n > \dfrac{\ln…}{\ln…} \approx 10{,}32`).
+ */
+export function solutionsApproximationLatex(result: SolveResult): string | null {
+	if (result.status !== 'unique' && result.status !== 'multiple') return null;
+	if (result.solutions.length === 0 || result.periodicSolutions !== undefined) return null;
+	if (periodicLatex(result) !== null) return null;
+
+	// Dans l'ordre et la forme de `solutionsLatex` : la ligne qu'elles accompagnent
+	const values = sorted(result.solutions).map((s) => tidyValue(s.value));
+	if (values.length === 1 && logarithmicValueLatex(values[0]) !== null) return null;
+	return approximateSolutionsLatex(result.variable, values, values.length > 1);
 }
 
 /** Une borne d'intervalle : `+\infty`, `-\infty`, sinon la valeur mise au propre. */

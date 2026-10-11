@@ -78,7 +78,7 @@ function sameSet(a: readonly number[], b: readonly number[]): boolean {
 // =============================================================================
 
 /** Les solutions que la dernière étape annonce, ou `null` si elle ne conclut pas. */
-function concludedSolutions(last: EquationStep): readonly MathNode[] | null {
+export function concludedSolutions(last: EquationStep): readonly MathNode[] | null {
 	const op = last.operation;
 	if (op?.kind === 'read-solution') return [op.value];
 	if (op?.kind === 'read-solutions') return op.solutions;

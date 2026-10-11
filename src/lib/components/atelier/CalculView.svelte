@@ -83,6 +83,12 @@
 	 */
 	let unfolded = $state<number[]>([]);
 
+	/**
+	 * Les lignes qui montrent leur autre écriture (phase 0 `atelier-cas-phase0.md`,
+	 * PR 2). Affichage seul, ligne par ligne : ni sauvegardé, ni exporté.
+	 */
+	let toggled = $state<number[]>([]);
+
 	function toggleSteps(id: number) {
 		unfolded = unfolded.includes(id) ? unfolded.filter((x) => x !== id) : [...unfolded, id];
 	}
@@ -221,12 +227,29 @@
 	 * n'affiche pas du markup à moitié construit.
 	 */
 	function markupOf(entry: Entry): string | null {
-		if (entry.latex === undefined || entry.failed) return null;
+		if (entry.failed) return null;
+		// Le bouton de la ligne a basculé : on montre l'autre écriture
+		const latex =
+			entry.alternative !== undefined && toggled.includes(entry.id)
+				? entry.alternative.latex
+				: entry.latex;
+		if (latex === undefined) return null;
 		try {
-			return convertLatexToMarkup(entry.latex, { defaultMode: 'inline-math' });
+			return convertLatexToMarkup(latex, { defaultMode: 'inline-math' });
 		} catch {
 			return null;
 		}
+	}
+
+	function toggleAlternative(id: number) {
+		toggled = toggled.includes(id) ? toggled.filter((x) => x !== id) : [...toggled, id];
+	}
+
+	/** Ce que dit le bouton : l'écriture qu'il va montrer. */
+	function toggleLabel(entry: Entry): string {
+		if (entry.alternative === undefined) return '';
+		if (!toggled.includes(entry.id)) return entry.alternative.label;
+		return entry.alternative.label === 'Valeur approchée' ? 'Valeur exacte' : 'Valeur approchée';
 	}
 
 	function submit(event: SubmitEvent) {
@@ -329,6 +352,16 @@
 					{#if entry.note !== undefined}
 						<!-- Montrée même quand la réponse est composée en mathématiques -->
 						<span class="note">{entry.note}</span>
+					{/if}
+					{#if entry.alternative !== undefined && !entry.failed}
+						<Button
+							variant="ghost"
+							size="sm"
+							class="bascule"
+							onclick={() => toggleAlternative(entry.id)}
+						>
+							{toggleLabel(entry)}
+						</Button>
 					{/if}
 					{#if canKeep(entry)}
 						<Button variant="ghost" size="sm" class="garder" onclick={() => desk.keep(entry)}>

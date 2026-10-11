@@ -24,6 +24,7 @@ import type { CommandContext, CommandResult, ErrorCode } from '../types';
 import { toCustom } from '../../custom-generator';
 import {
 	solutionsLatex,
+	solutionsApproximationLatex,
 	periodicSolutionsText,
 	inequalitySolutionLatex,
 	inequalityThresholdText,
@@ -50,6 +51,7 @@ import { toLatex } from '../../latex-generator';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { getVariables } from '../../eval/substitute';
 import { evaluate } from '../../eval/evaluate';
+import { approximateSolutionsLatex } from '../approximation';
 import {
 	bareFunctionMessage,
 	bareFunctionName,
@@ -1019,7 +1021,14 @@ export class SolveCommand extends BaseCommand {
 			// Les solutions en LaTeX, bâties sur le résultat STRUCTURÉ : le texte
 			// (`{1/2}sqrt(2)`) ne se relit pas, et `ast` ne porte que la première
 			const latex = solutionsLatex(result);
-			return this.withHint(latex === null ? formatted : { ...formatted, latex }, hint);
+			// Leurs valeurs approchées, pour le bouton ≈ de l'atelier
+			const approximateLatex = latex === null ? null : solutionsApproximationLatex(result);
+			return this.withHint(
+				latex === null
+					? formatted
+					: { ...formatted, latex, ...(approximateLatex !== null && { approximateLatex }) },
+				hint
+			);
 		} catch (err) {
 			if (err instanceof SolveError) {
 				const message = err.details ? `${err.message}: ${err.details}` : err.message;
@@ -1210,7 +1219,13 @@ export class SolveCommand extends BaseCommand {
 								`${variable} = ${(only && logarithmicValueText(only.value, only.approximate)) ?? toCustom(v)}`
 						)
 						.join(' ou ');
-		return { success: true, output, latex };
+		// Leurs valeurs approchées, pour le bouton ≈ de l'atelier — sauf une solution
+		// en ln, qui donne déjà la sienne
+		const approximateLatex =
+			only !== null && logarithmicValueLatex(only.value, only.approximate) !== null
+				? null
+				: approximateSolutionsLatex(variable, values, values.length > 1);
+		return { success: true, output, latex, ...(approximateLatex !== null && { approximateLatex }) };
 	}
 
 	/**

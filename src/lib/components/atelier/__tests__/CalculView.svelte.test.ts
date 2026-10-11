@@ -664,3 +664,54 @@ describe('le clavier de Calcul', () => {
 		});
 	});
 });
+
+/**
+ * Le bouton exact ⇄ décimal de chaque ligne (phase 0
+ * `docs/wip/atelier-cas-phase0.md`, PR 2). Un VRAI clic (`userEvent.click`).
+ */
+describe('le bouton valeur approchée', () => {
+	const lastLine = (container: HTMLElement) =>
+		[...container.querySelectorAll('.historique > li')].at(-1)!;
+	const toggle = (line: Element) =>
+		[...line.querySelectorAll('button')].find((b) =>
+			/Valeur (approchée|exacte)/.test(b.textContent ?? '')
+		);
+
+	it('montre la valeur approchée, puis revient à l’exacte', async () => {
+		const { submit, container } = await open();
+		await submit('\\sqrt{2}/2');
+		const line = lastLine(container);
+		const exact = line.querySelector('.reponse')!.textContent;
+
+		const button = toggle(line)!;
+		expect(button.textContent).toContain('Valeur approchée');
+		await userEvent.click(button);
+		await settle();
+		expect(line.querySelector('.reponse')!.textContent).toMatch(/0,7071/);
+		expect(toggle(line)!.textContent).toContain('Valeur exacte');
+
+		await userEvent.click(toggle(line)!);
+		await settle();
+		expect(line.querySelector('.reponse')!.textContent).toBe(exact);
+	});
+
+	it('pas de bouton sur un entier', async () => {
+		const { submit, container } = await open();
+		await submit('1+2');
+
+		expect(toggle(lastLine(container))).toBeUndefined();
+	});
+
+	it('chaque ligne bascule seule', async () => {
+		const { submit, container } = await open();
+		await submit('\\sqrt{2}');
+		await submit('\\sqrt{3}');
+		const [first, second] = [...container.querySelectorAll('.historique > li')];
+
+		await userEvent.click(toggle(second)!);
+		await settle();
+
+		expect(second.querySelector('.reponse')!.textContent).toMatch(/1,7321/);
+		expect(first.querySelector('.reponse')!.textContent).not.toMatch(/1,4142/);
+	});
+});

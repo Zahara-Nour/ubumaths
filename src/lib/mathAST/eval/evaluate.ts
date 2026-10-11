@@ -764,6 +764,18 @@ export function evaluateNodeToApproximatedNumber(
 	return applyPrecisionToRational(rationalResult, precision);
 }
 
+/**
+ * La valeur d'une expression numérique en RATIONNEL, sans passer par un
+ * flottant — pour décider qu'une écriture décimale est exacte (1/4 = 0,25)
+ * sans tolérance. Une fonction transcendante y entre par son flottant : sa
+ * valeur rationnelle n'a alors jamais un dénominateur court.
+ *
+ * @throws comme `evaluateNodeToApproximatedNumber`, si le nœud n'est pas numérique
+ */
+export function evaluateNodeToRational(node: MathNode): Rational {
+	return evaluateToRational(node, 0);
+}
+
 // =============================================================================
 // Validation for Evaluable Expressions
 // =============================================================================
