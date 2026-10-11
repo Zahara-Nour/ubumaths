@@ -149,6 +149,10 @@ de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la bar
 
 - Une touche tapée dans un champ éditable ne déplace jamais le diaporama
   (`isFromEditableField`, testé par `inputFilter.svelte.test.ts`).
+- Le contenu d'une `UbuMarkSlide` a la couleur du thème (`--color-foreground`), comme ses
+  paragraphes : sur le fond du thème (présentation des carnets), une formule en bloc reste lisible
+  en clair comme en sombre. Un fond sombre imposé à une `UbuMarkSlide` rend donc le texte illisible
+  en thème clair (testé par `UbuMarkSlide.couleur.svelte.test.ts`).
 - Quand la barre d'annotation disparaît (on quitte la diapositive annotable), le focus revient au
   deck si le dernier focus était dans la barre et qu'il n'est allé nulle part ailleurs (`<body>`) :
   le clavier pilote toujours le diaporama, et un champ focalisé hors de la barre garde son focus
@@ -160,6 +164,7 @@ de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la bar
 `src/lib/slides/stores/__tests__/` (`deckStore`, `autoSlideTimer`),
 `src/lib/slides/core/__tests__/Deck.autoSlide.svelte.test.ts`,
 `src/lib/slides/core/__tests__/Deck.annotation.svelte.test.ts`,
+`src/lib/slides/core/__tests__/UbuMarkSlide.couleur.svelte.test.ts`,
 `src/lib/slides/actions/__tests__/inputFilter.svelte.test.ts`.
 
 ---
