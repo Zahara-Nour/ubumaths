@@ -49,6 +49,7 @@ import type {
 	RelationType,
 	NodeMetadata
 } from './types';
+import { formatPointNames } from './common/point-names';
 import { flattenRelationChain } from './flatten';
 import { isImaginaryUnit } from './guards';
 import { GREEK_LETTERS } from './types';
@@ -305,6 +306,12 @@ function shouldWrapForFraction(node: MathNode): boolean {
 		case 'logical':
 		case 'logical-not':
 		case 'piecewise':
+			return true;
+
+		// Longueur `AB`, nom de figure `ABC` : la syntaxe maison les lit encore comme
+		// des produits (lot 5) — accolades pour garder le groupe
+		case 'segmentLength':
+		case 'figureName':
 			return true;
 
 		case 'boolean':
@@ -652,6 +659,11 @@ export class CustomGenerator {
 			case 'constant':
 				// In custom syntax, use e (read back as Euler by parseCustom) or \pi
 				this.emit(node.constant === 'euler' ? 'e' : '\\pi', node.metadata);
+				break;
+
+			case 'segmentLength':
+			case 'figureName':
+				this.emit(formatPointNames(node.points), node.metadata);
 				break;
 
 			case 'composition':
@@ -1110,6 +1122,10 @@ export class CustomGenerator {
 			case 'constant':
 				this.emit(node.constant === 'euler' ? 'e' : '\\pi', effectiveMeta);
 				break;
+			case 'segmentLength':
+			case 'figureName':
+				this.emit(formatPointNames(node.points), effectiveMeta);
+				break;
 			default:
 				// For complex nodes, use normal visitWithSpans
 				this.visitWithSpans(node);
@@ -1180,6 +1196,10 @@ export class CustomGenerator {
 				break;
 			case 'constant':
 				content = node.constant === 'euler' ? 'e' : '\\pi';
+				break;
+			case 'segmentLength':
+			case 'figureName':
+				content = formatPointNames(node.points);
 				break;
 			case 'composition':
 				content = this.generateComposition(node);

@@ -18,8 +18,8 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 
 const removeCardSchema = z.object({
-	studentId: z.string().uuid('Invalid student ID format'),
-	cardId: z.string().min(1, 'Card ID is required'),
+	studentId: z.string().uuid('Identifiant d’élève invalide'),
+	cardId: z.string().min(1, 'Identifiant de carte VIP requis'),
 	reason: z.string().optional()
 });
 
@@ -28,7 +28,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
 
 	if (profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Only teachers can remove student VIP cards');
+		throw error(403, 'Seul le professeur peut retirer une carte VIP à un élève');
 	}
 
 	const body = await request.json();
@@ -42,7 +42,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 	if (!hasAccess) {
-		throw error(403, 'You can only remove cards for students in your classes');
+		throw error(403, 'Tu ne peux retirer des cartes VIP qu’aux élèves de tes classes');
 	}
 
 	const { data: result, error: rpcError } = await supabase.rpc('remove_vip_card', {
@@ -54,7 +54,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (rpcError) {
 		console.error('[remove-card] RPC error:', rpcError);
-		throw error(500, 'Failed to remove card');
+		throw error(500, 'Impossible de retirer la carte VIP');
 	}
 
 	const rpcResult = result as {
@@ -65,12 +65,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	};
 
 	if (!rpcResult.success) {
-		throw error(400, rpcResult.error || 'Failed to remove card');
+		throw error(400, rpcResult.error || 'Impossible de retirer la carte VIP');
 	}
 
 	return json({
 		success: true,
-		message: 'Card removed successfully',
+		message: 'Carte VIP retirée',
 		cardName: rpcResult.cardName,
 		instanceId: rpcResult.instanceId
 	});

@@ -9,8 +9,13 @@
  * des chargements de page (`+page.ts`, `+layout.server.ts`…) et des fonctions
  * serveur communes qu'ils appellent (`src/lib/server`).
  *
- * Hors champ : les `+server.ts` (API), dont la réponse part en JSON et
- * n'atteint jamais la page d'erreur.
+ * Les `+server.ts` (API) n'atteignent jamais la page d'erreur : leur réponse
+ * part en JSON. Mais la plupart des pages relancent ce message puis l'affichent
+ * tel quel dans une notification (`formatUserError`, src/lib/utils/errors.ts).
+ * Les dossiers d'API de `TRANSLATED_API_DIRS` sont donc vérifiés aussi, tous
+ * statuts confondus (un 500 « Failed to… » s'affiche autant qu'un 400), sous
+ * les trois formes `error(…, 'm')`, `{ error: 'm' }` et `{ message: 'm' }`.
+ * La liste grandit par lots (relevé du 2026-10-12 : ~460 messages affichés).
  *
  * Détection par listes de mots : un mot anglais courant d'un message d'erreur,
  * ou un mot français écrit sans son accent (« trouvee », « acces »). Les
@@ -64,7 +69,18 @@ const ENGLISH_WORDS = [
 	'exercise',
 	'school',
 	'game',
-	'error'
+	'error',
+	'unexpected',
+	'fetch',
+	'endpoint',
+	'belong',
+	'card',
+	'cards',
+	'student',
+	'students',
+	'insufficient',
+	'already',
+	'this'
 ];
 
 /** Mots français écrits sans leur accent. */
@@ -92,6 +108,18 @@ const BAD_WORD = new RegExp(`\\b(?:${[...ENGLISH_WORDS, ...UNACCENTED_WORDS].joi
 /** `error(4xx, 'message')` ou `error(4xx, { message: 'message' })`, guillemets au choix. */
 const ERROR_4XX = /\berror\(\s*4\d\d\s*,\s*(?:\{\s*message:\s*)?(['"`])((?:\\.|(?!\1)[\s\S])*?)\1/g;
 
+/** Message d'API sous l'une des trois formes, quel que soit le statut. */
+const API_MESSAGE =
+	/(?:\berror\(\s*\d{3}\s*,\s*(?:\{\s*message:\s*)?|(?<=[{,]\s*)(?:error|message):\s*)(['"`])((?:\\.|(?!\1)[\s\S])*?)\1/g;
+
+/** Dossiers d'API dont les messages sont traduits ; lot A : ce que voient les élèves. */
+const TRANSLATED_API_DIRS = [
+	'src/routes/api/vip-cards',
+	'src/routes/api/srs',
+	'src/routes/api/student/bonus-history',
+	'src/routes/api/student/gidouilles-activity'
+];
+
 // ============================================================================
 // FONCTIONS
 // ============================================================================
@@ -118,8 +146,8 @@ function filesReachingErrorPage(): string[] {
 }
 
 /** Les messages fautifs d'un source, sous la forme `fichier:ligne « message »`. */
-function badMessages(file: string, source: string): string[] {
-	return [...source.matchAll(ERROR_4XX)]
+function badMessages(file: string, source: string, pattern = ERROR_4XX): string[] {
+	return [...source.matchAll(pattern)]
 		.filter((match) => BAD_WORD.test(match[2].replace(/\$\{[^}]*\}/g, '')))
 		.map((match) => {
 			const line = source.slice(0, match.index).split('\n').length;
@@ -149,5 +177,29 @@ describe('messages d’erreur 4xx des pages : en français correct', () => {
 			[]
 		);
 		expect(badMessages('a.ts', "error(404, 'Deck introuvable')")).toEqual([]);
+	});
+});
+
+describe('messages des API affichés aux élèves : en français correct', () => {
+	it('aucun message anglais ni sans accent dans les dossiers d’API traduits', () => {
+		const offenders = TRANSLATED_API_DIRS.flatMap((dir) =>
+			walk(dir, (name) => name === '+server.ts')
+		).flatMap((file) => badMessages(file, readFileSync(file, 'utf-8'), API_MESSAGE));
+		expect(offenders).toEqual([]);
+	});
+
+	it('la règle reconnaît les trois formes, tous statuts confondus', () => {
+		const check = (source: string) => badMessages('a.ts', source, API_MESSAGE);
+		expect(check("error(500, 'Failed to fetch bonus history')")).toHaveLength(1);
+		expect(check("json({ error: 'Card not found' }, { status: 404 })")).toHaveLength(1);
+		expect(check("json({ success: false, message: 'Invalid card ID' })")).toHaveLength(1);
+	});
+
+	it('la règle laisse passer le français et les variables', () => {
+		const check = (source: string) => badMessages('a.ts', source, API_MESSAGE);
+		expect(check("json({ error: 'Carte introuvable' }, { status: 404 })")).toEqual([]);
+		expect(check('json({ error: validation.error.issues[0].message })')).toEqual([]);
+		expect(check("const { data, error: fetchError } = await supabase.from('x')")).toEqual([]);
+		expect(check("console.error('[approve-card] RPC error:', rpcError)")).toEqual([]);
 	});
 });

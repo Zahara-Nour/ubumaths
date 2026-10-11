@@ -10,6 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { WebReplEngine } from '../web-repl-engine';
+import { toCustom } from '../../../index';
 
 function decimal(input: string) {
 	const engine = new WebReplEngine();
@@ -65,11 +66,73 @@ describe('des calculs d’élèves aux fractions géantes', () => {
 	])('%s → %s', (input, expected) => {
 		expect(decimal(input).output).toBe(expected);
 	});
+});
 
-	// Hors de l'échelle de l'arrondi : l'écriture du moteur (sa forme définitive
-	// est une décision à part), mais plus Infinity ni NaN
-	it('π^20 et e^30 : une valeur, plus Infinity ni NaN', () => {
-		expect(decimal('\\pi^{20}').output).toMatch(/^≈ 8769956796\.08/);
-		expect(decimal('e^{30}').output).toMatch(/^≈ 10686474581524\.4/);
+// Décisions a, b, c, d de David (2026-10-12) : la notation scientifique hors de [10⁻⁶ ; 10⁹[,
+// écrite dans le texte comme elle se retape (`8.7700*10^9`). Avant : le flottant brut du moteur
+// (`≈ 8769956796.08269`, `≈ 1.42857142857143e-7`, `18446744073709552000` faux et sans ≈)
+describe('hors de l’échelle : la notation scientifique', () => {
+	it.each([
+		['\\pi^{20}', '≈ 8.7700*10^9'],
+		['-\\pi^{20}', '≈ -8.7700*10^9'],
+		['e^{30}', '≈ 1.0686*10^13'],
+		['1/7000000', '≈ 1.4286*10^-7'],
+		['1/8000000', '1.25*10^-7'],
+		['2^{64}', '≈ 1.8447*10^19'],
+		['3*10^20', '3*10^20'],
+		['10^15+1', '≈ 1.0000*10^15'],
+		['10^14+1', '100000000000001'],
+		['0.3^1000', '≈ 1.3221*10^-523'],
+		['0.5^2000', '≈ 8.7098*10^-603'],
+		['1.5^2000', '≈ 1.5224*10^352']
+	])('%s → %s', (input, expected) => {
+		expect(decimal(input).output).toBe(expected);
+	});
+
+	it('le texte se retape dans la console', () => {
+		expect(new WebReplEngine().execute('8.7700*10^9').output).toBe('8770000000');
+		expect(new WebReplEngine().execute('1.4286*10^-7').output).toBe('7143/50000000000');
+	});
+
+	// Au-delà du plafond des puissances exactes, le calcul décimal du moteur échoue
+	// honnêtement : la console garde la valeur, lue sur le résultat exact
+	it('au-delà du plafond des puissances exactes : la valeur, pas une erreur', () => {
+		expect(decimal('0.5^20000').output).toBe('≈ 2.5124*10^-6021');
+		expect(new WebReplEngine().execute('1.5^2000').success).toBe(true);
+	});
+});
+
+// Revue de la reco 2 (2026-10-12)
+describe('ce que la console range et montre quand le flottant ne suit pas', () => {
+	it('« Garder » range la valeur exacte quand le flottant est sorti de sa plage', () => {
+		const big = decimal('e^{1000}');
+		const tiny = decimal('10^{-400}');
+
+		expect(big.output).toBe('≈ 1.9701*10^434');
+		expect(toCustom(big.quantityAst!)).not.toContain('Infinity');
+		expect(tiny.output).toBe('1*10^-400');
+		expect(toCustom(tiny.quantityAst!)).not.toBe('0');
+	});
+
+	it('une valeur ordinaire garde la pleine précision du moteur', () => {
+		expect(toCustom(decimal('\\pi^{20}').quantityAst!)).toMatch(/^8769956796\.08/);
+	});
+
+	// Le flottant de π/2 n'annule pas cos : le bouton ≈ affichait 1,6331 × 10¹⁶
+	it('tan(π/2) n’a pas de valeur approchée', () => {
+		const exact = new WebReplEngine().execute('\\tan(\\pi/2)');
+
+		expect(exact.approximateLatex).toBeUndefined();
+		expect(decimal('\\tan(\\pi/2)').success).toBe(false);
+		expect(decimal('\\tan(\\pi/4)').output).toBe('1');
+		expect(decimal('\\tan(1.5707963)').output).toBe('≈ 37320539.6344');
+	});
+
+	// Le calcul décimal du moteur refuse (nombres complexes, factorielle trop grande) :
+	// la valeur se lit désormais sur le résultat exact (avant : une erreur)
+	it('ce que le calcul décimal refusait se lit sur le résultat exact', () => {
+		expect(decimal('i^2').output).toBe('-1');
+		expect(decimal('(1+i)(1-i)').output).toBe('2');
+		expect(decimal('100!').output).toBe('≈ 9.3326*10^157');
 	});
 });

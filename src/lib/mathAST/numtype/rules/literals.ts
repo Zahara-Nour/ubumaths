@@ -296,6 +296,12 @@ export function inferLiteralType(node: MathNode, ctx: TypeContext): MathType | n
 		case 'symbol':
 			return UNKNOWN_TYPE;
 
+		// Longueur et nom de figure : type inconnu pour l'instant (lot 2 : une
+		// longueur est un réel positif ; un nom de figure n'est pas un nombre)
+		case 'segmentLength':
+		case 'figureName':
+			return UNKNOWN_TYPE;
+
 		default:
 			// Not a literal node
 			return null;

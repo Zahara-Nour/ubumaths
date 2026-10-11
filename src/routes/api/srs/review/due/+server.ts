@@ -61,7 +61,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck not found or access denied' }, { status: 404 });
+			return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 		}
 
 		// Get due cards using helper function
@@ -78,7 +78,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (dueCardsError) {
 			console.error('Error fetching due cards:', dueCardsError);
-			return json({ error: 'Failed to fetch due cards' }, { status: 500 });
+			return json({ error: 'Impossible de charger les cartes à réviser' }, { status: 500 });
 		}
 
 		console.log(`[SRS] RPC returned ${dueCards?.length || 0} due cards`);
@@ -149,7 +149,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 						skipped.push({
 							cardId: dueCard.card_id,
 							templateId: dueCard.template_id,
-							reason: 'template introuvable'
+							reason: 'modèle introuvable'
 						});
 						continue;
 					}
@@ -237,6 +237,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		return json({ cards: reviewCards, skipped: skipped.length } satisfies DueCardsResponse);
 	} catch (error) {
 		console.error('Unexpected error in GET /api/srs/review/due:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

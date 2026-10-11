@@ -50,11 +50,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (cardError || !card) {
-			return json({ error: 'Card not found' }, { status: 404 });
+			return json({ error: 'Carte de révision introuvable' }, { status: 404 });
 		}
 
 		if (card.deck_id !== body.deckId) {
-			return json({ error: 'Card does not belong to specified deck' }, { status: 400 });
+			return json({ error: 'Cette carte n’appartient pas au deck indiqué' }, { status: 400 });
 		}
 
 		const { data: deck, error: deckError } = await supabase
@@ -65,7 +65,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (deckError || !deck) {
-			return json({ error: 'Deck not found or access denied' }, { status: 404 });
+			return json({ error: 'Deck introuvable ou accès refusé' }, { status: 404 });
 		}
 
 		// Référence carte : template ou custom
@@ -73,7 +73,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const cardReferenceId = card.card_type === 'template' ? card.template_id : card.id;
 
 		if (!cardReferenceId) {
-			return json({ error: 'Invalid card reference' }, { status: 400 });
+			return json({ error: 'Référence de carte invalide' }, { status: 400 });
 		}
 
 		// FSRS toujours instancié avec la config par défaut (PO 2026-06-10 :
@@ -94,7 +94,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		} catch (upsertError) {
 			console.error('[srs/review/submit] UPSERT stats failed:', upsertError);
-			return json({ error: 'Failed to update card statistics' }, { status: 500 });
+			return json({ error: 'Impossible d’enregistrer ta révision' }, { status: 500 });
 		}
 
 		// ----- NOUVEAU : INSERT skill_attempts pour cartes template-based -----
@@ -194,6 +194,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 	} catch (error) {
 		console.error('Unexpected error in POST /api/srs/review/submit:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

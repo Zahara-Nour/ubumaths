@@ -183,3 +183,31 @@ export function getNavLinks(
 
 	return [...common, ...footerLinks];
 }
+
+/**
+ * Liens de la barre latérale qui restent surlignés au-delà de leur propre adresse,
+ * avec les débuts d'adresse qui les allument. Une rubrique l'est sur ses sous-pages ;
+ * « Mon travail » l'est aussi sur les listes complètes de fiches et de contrôles,
+ * qui s'ouvrent depuis lui et y reviennent (#1121).
+ */
+const ACTIVE_PREFIXES: Record<string, string[]> = {
+	'/dashboard/admin/debug/database': ['/dashboard/admin/debug'],
+	'/dashboard/admin/docs': ['/dashboard/admin/docs'],
+	'/dashboard/admin/bug-reports': ['/dashboard/admin/bug-reports'],
+	'/dashboard/teacher/contenu': ['/dashboard/teacher/contenu'],
+	'/dashboard/teacher/gamification': ['/dashboard/teacher/gamification'],
+	'/dashboard/teacher/moderation': ['/dashboard/teacher/moderation'],
+	'/dashboard/student/work': [
+		'/dashboard/student/work',
+		'/dashboard/student/worksheets',
+		'/dashboard/student/assessments'
+	],
+	'/dashboard/bug-reports': ['/dashboard/bug-reports']
+};
+
+/** Le lien `href` de la barre latérale est-il celui de la page `pathname` ? */
+export function isNavLinkActive(href: string, pathname: string): boolean {
+	const prefixes = ACTIVE_PREFIXES[href];
+	if (prefixes) return prefixes.some((prefix) => pathname.startsWith(prefix));
+	return pathname === href;
+}

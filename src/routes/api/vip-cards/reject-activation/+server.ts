@@ -18,8 +18,8 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 
 const rejectActivationSchema = z.object({
-	instanceId: z.string().uuid('Invalid instance ID format'),
-	studentId: z.string().uuid('Invalid student ID format')
+	instanceId: z.string().uuid('Identifiant de carte VIP invalide'),
+	studentId: z.string().uuid('Identifiant d’élève invalide')
 });
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -27,7 +27,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const supabase = locals.supabase;
 
 	if (profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Only teachers can reject VIP card activations');
+		throw error(403, 'Seul le professeur peut refuser l’activation d’une carte VIP');
 	}
 
 	const body = await request.json();
@@ -41,7 +41,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 	if (!hasAccess) {
-		throw error(403, 'You can only reject activations for students in your classes');
+		throw error(403, 'Tu ne peux refuser que les activations des élèves de tes classes');
 	}
 
 	const { data: result, error: rpcError } = await supabase.rpc('reject_vip_card', {
@@ -51,18 +51,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (rpcError) {
 		console.error('[reject-activation] RPC error:', rpcError);
-		throw error(500, 'Failed to reject activation');
+		throw error(500, 'Impossible de refuser l’activation');
 	}
 
 	const rpcResult = result as { success: boolean; error?: string; cardName?: string };
 
 	if (!rpcResult.success) {
-		throw error(400, rpcResult.error || 'Failed to reject activation');
+		throw error(400, rpcResult.error || 'Impossible de refuser l’activation');
 	}
 
 	return json({
 		success: true,
-		message: 'Activation request rejected successfully',
+		message: 'Demande d’activation refusée',
 		cardName: rpcResult.cardName
 	});
 };

@@ -20,6 +20,7 @@ import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { tidy } from '$lib/mathAST/tidy';
 import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
+import { isScientificNotation } from '$lib/mathAST/cli/approximation';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { findNodes } from '$lib/mathAST/transforms';
 import { isUnit } from '$lib/mathAST/guards';
@@ -139,6 +140,9 @@ function readable(ast: MathNode): MathNode {
 	// Un décimal (mode décimal, `0.1+0.2`, `3.5`) reste tel quel : `tidy` le
 	// réécrirait en fraction (`3/10`)
 	if (hasDecimalLiteral(ast)) return ast;
+	// Une notation scientifique (mode décimal) aussi : `tidy` recalculerait `3 × 10²⁰`
+	// en 300000000000000000000
+	if (isScientificNotation(ast)) return ast;
 	// Une expression à variables libres aussi : `tidy` y simplifierait `x/x` en 1
 	// (faux en 0, et autre chose que ce que « Garder » range) et réordonnerait
 	// `3-2x+x^2` (revue du lot B). Sa cible est π, √, e, ln — sans variable

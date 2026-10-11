@@ -54,7 +54,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	// ✅ SECURITY: Validate UUID parameter
 	const paramValidation = uuidParamSchema.safeParse(params);
 	if (!paramValidation.success) {
-		return json({ error: 'Invalid deck ID' }, { status: 400 });
+		return json({ error: 'Identifiant de deck invalide' }, { status: 400 });
 	}
 
 	const { id: deckId } = paramValidation.data;
@@ -70,7 +70,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			.single();
 
 		if (deckError || !sourceDeck) {
-			return json({ error: 'Source deck not found' }, { status: 404 });
+			return json({ error: 'Deck source introuvable' }, { status: 404 });
 		}
 
 		// ✅ SECURITY: Validate input with Zod
@@ -107,12 +107,12 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 			if (membersError) {
 				console.error('Error fetching class members:', membersError);
-				return json({ error: 'Failed to fetch class members' }, { status: 500 });
+				return json({ error: 'Impossible de charger les élèves des classes' }, { status: 500 });
 			}
 
 			if (!members || members.length === 0) {
-				console.error('No students found in specified classes');
-				return json({ error: 'No students found in specified classes' }, { status: 400 });
+				console.error('Aucun élève dans les classes choisies');
+				return json({ error: 'Aucun élève dans les classes choisies' }, { status: 400 });
 			}
 
 			// Remove duplicates (students in multiple classes)
@@ -121,8 +121,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		if (studentIds.length === 0) {
-			console.error('No students found for assignment');
-			return json({ error: 'No students found for assignment' }, { status: 400 });
+			console.error('Aucun élève à qui assigner ce deck');
+			return json({ error: 'Aucun élève à qui assigner ce deck' }, { status: 400 });
 		}
 
 		// Get all cards from source deck
@@ -181,7 +181,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 		if (decksError || !createdDecks) {
 			console.error('Failed to batch-create decks:', decksError);
-			return json({ error: 'Failed to create deck copies' }, { status: 500 });
+			return json({ error: 'Impossible de créer les copies du deck' }, { status: 500 });
 		}
 
 		console.log(`✓ Created ${createdDecks.length} deck copies`);
@@ -227,7 +227,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 						'id',
 						createdDecks.map((d) => d.id)
 					);
-				return json({ error: 'Failed to copy deck sections' }, { status: 500 });
+				return json({ error: 'Impossible de copier les sections du deck' }, { status: 500 });
 			}
 
 			for (const [cle, id] of indexCopiedSections(sectionsCreees)) {
@@ -288,7 +288,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 						'id',
 						createdDecks.map((d) => d.id)
 					);
-				return json({ error: 'Failed to copy cards' }, { status: 500 });
+				return json({ error: 'Impossible de copier les cartes' }, { status: 500 });
 			}
 
 			console.log(`✓ Inserted ${insertedCards.length} cards`);
@@ -325,7 +325,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 					'id',
 					createdDecks.map((d) => d.id)
 				);
-			return json({ error: 'Failed to record deck assignments' }, { status: 500 });
+			return json({ error: 'Impossible d’enregistrer l’assignation du deck' }, { status: 500 });
 		}
 
 		console.log(`✓ Inserted ${assignmentsToCreate.length} assignment records`);
@@ -390,11 +390,11 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 		return json({
 			success: true,
-			message: `Deck assigned to ${results.successCount} students`,
+			message: `Deck assigné à ${results.successCount} élève(s)`,
 			results
 		});
 	} catch (error) {
 		console.error('Unexpected error in POST /api/srs/decks/[id]/assign:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

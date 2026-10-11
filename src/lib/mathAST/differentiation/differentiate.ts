@@ -180,6 +180,11 @@ function differentiateNode(
 			// Note: d/dx(e) = 0 and d/dx(π) = 0
 			return constantRule();
 
+		case 'segmentLength':
+		case 'figureName':
+			// Longueur `AB` et nom de figure `ABC` : des constantes pour la dérivation
+			return constantRule();
+
 		case 'addition': {
 			const df = differentiateNode(node.left, variable, simplify, functions);
 			const dg = differentiateNode(node.right, variable, simplify, functions);

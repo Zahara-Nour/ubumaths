@@ -61,10 +61,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (isTeacher) {
 		const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 		if (!hasAccess) {
-			throw error(403, 'You can only activate cards for students in your classes');
+			throw error(403, 'Tu ne peux activer des cartes VIP que pour les élèves de tes classes');
 		}
 	} else if (!isStudent) {
-		throw error(403, 'You can only activate cards for yourself');
+		throw error(403, 'Tu ne peux activer que tes propres cartes VIP');
 	}
 
 	// Fetch student's VIP cards
@@ -76,24 +76,24 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (fetchError) {
 		console.error('[activate-add-gidouilles] Error fetching profile:', fetchError);
-		throw error(500, `Failed to fetch student profile: ${fetchError.message}`);
+		throw error(500, `Impossible de charger le profil de l’élève : ${fetchError.message}`);
 	}
 
 	const vipCards = asStudentVipCards(studentProfile.vip_cards);
 	const instance = vipCards[instanceId];
 
 	if (!instance) {
-		throw error(404, 'VIP card instance not found');
+		throw error(404, 'Carte VIP introuvable');
 	}
 
 	if (instance.usedAt) {
-		throw error(400, 'This card has already been used');
+		throw error(400, 'Cette carte VIP a déjà été utilisée');
 	}
 
 	// Fetch template early (needed for action.context check)
 	const template = await getTemplateById(supabase, instance.cardId);
 	if (!template) {
-		throw error(404, 'Card template not found');
+		throw error(404, 'Modèle de carte VIP introuvable');
 	}
 
 	// Student flow: require teacher approval OR valid activation context
@@ -105,12 +105,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				throw error(400, 'Cette carte ne peut être activée que dans un contexte spécifique');
 			}
 		} else {
-			throw error(400, "This card hasn't been approved by a teacher yet");
+			throw error(400, 'Ton professeur n’a pas encore validé cette carte VIP');
 		}
 	}
 
 	if (!template.action || template.action.type !== 'add_gidouilles') {
-		throw error(400, "This card doesn't have an add_gidouilles action");
+		throw error(400, 'Cette carte VIP ne donne pas de gidouilles');
 	}
 
 	const amount = template.action.amount;
@@ -134,7 +134,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	if (!membership) {
-		throw error(400, 'Student is not in any active class');
+		throw error(400, 'L’élève n’est dans aucune classe active');
 	}
 
 	// Mark card as used FIRST via use_vip_card RPC (safer: prevents double-spend if gidouilles fails)
@@ -149,13 +149,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (rpcError) {
 		console.error('[activate-add-gidouilles] RPC error:', rpcError);
-		throw error(500, 'Failed to mark card as used');
+		throw error(500, 'Impossible d’utiliser la carte VIP');
 	}
 
 	const rpcData = rpcResult as { success: boolean; error?: string };
 	if (!rpcData.success) {
 		console.error('[activate-add-gidouilles] RPC failed:', rpcData.error);
-		throw error(500, 'Failed to mark card as used');
+		throw error(500, 'Impossible d’utiliser la carte VIP');
 	}
 
 	// Add gidouilles via RPC (card is already consumed, so no double-spend risk)
@@ -170,7 +170,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (gidouillesError) {
 		console.error('[activate-add-gidouilles] Error adding gidouilles:', gidouillesError);
 		// Card was consumed but gidouilles failed - log for manual recovery
-		throw error(500, 'Failed to add gidouilles. Please contact your teacher.');
+		throw error(500, 'Impossible d’ajouter les gidouilles. Préviens ton professeur.');
 	}
 
 	// Audit trail for card consumption is handled by the use_vip_card RPC

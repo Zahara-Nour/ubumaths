@@ -197,6 +197,13 @@ function buildServiceRoleClient(): TrackerClient {
 			}
 		},
 		rpc: {
+			upsert_mathemo_score: () => ({
+				games_played: 1,
+				games_won: 1,
+				best_word_length: 5,
+				first_try_count: 1,
+				is_new_best_length: true
+			}),
 			update_student_gidouilles: () => null,
 			record_game_reward: () => ({
 				actual_reward: 0.5,
@@ -298,5 +305,30 @@ describe('POST /api/games/mathemo/scores - milestone inserts use service-role cl
 		const appels = serviceRoleMock.rpc.mock.calls.filter((c) => c[0] === 'record_game_reward');
 		expect(appels).toHaveLength(1);
 		expect((appels[0][1] as { p_student_id: string }).p_student_id).toBe(TEST_IDS.student);
+	});
+
+	it('enregistre les statistiques via le client service, pour l’élève de la SESSION', async () => {
+		const { POST } = await import('../+server');
+
+		const request = new Request('http://localhost/api/games/mathemo/scores', {
+			method: 'POST',
+			body: JSON.stringify(milestoneBody),
+			headers: { 'Content-Type': 'application/json' }
+		});
+
+		const locals = {
+			supabase: authClient,
+			user: { id: TEST_IDS.student },
+			profile: studentProfile
+		};
+
+		await POST({ request, locals } as any);
+
+		expect(authClient.rpc.mock.calls.filter((c) => c[0] === 'upsert_mathemo_score')).toHaveLength(
+			0
+		);
+		const appels = serviceRoleMock.rpc.mock.calls.filter((c) => c[0] === 'upsert_mathemo_score');
+		expect(appels).toHaveLength(1);
+		expect((appels[0][1] as { p_user_id: string }).p_user_id).toBe(TEST_IDS.student);
 	});
 });

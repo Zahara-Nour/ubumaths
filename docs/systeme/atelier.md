@@ -247,9 +247,12 @@ autre écriture porte un bouton qui bascule, ligne par ligne, sans rien sauvegar
 (`Alternative` dans `calcul.ts`, `Entry.alternative`). Règle unique, `mathAST/cli/approximation.ts`
 (décisions de David du 2026-10-11) : **4 décimales, zéros compris** (`≈ 5,0990`) ; **=** sans zéros
 inutiles quand l'écriture décimale tient dans l'arrondi (1/4 → `= 0,25`) — décidé sur le RATIONNEL
-(`evaluateNodeToRational`), jamais à une tolérance près ; 4 chiffres significatifs sous 10⁻⁴ ; rien
-au-delà de 10⁹, ni pour un nombre déjà écrit (`3`, `2,5`), une expression littérale, une grandeur
-(le moteur la calcule par une autre branche). Le moteur fournit `approximateLatex` (mode exact) ou
+(`evaluateNodeToRational`), jamais à une tolérance près ; 4 chiffres significatifs sous 10⁻⁴ ; hors
+de [10⁻⁶ ; 10⁹[, la **notation scientifique** du collège, 4 décimales sur la mantisse, calculée sur la
+fraction exacte (`≈ 8,7700 × 10⁹` pour π²⁰, `= 1,25 × 10⁻⁷` exact, `≈ 1,3221 × 10⁻⁵²³` pour 0,3¹⁰⁰⁰ —
+décisions a, b, c du 2026-10-12) ; un entier exact s'écrit en entier jusqu'à 15 chiffres (2⁴⁰), en
+notation scientifique au-delà (2⁶⁴ ≈ 1,8447 × 10¹⁹) ; rien pour un nombre déjà écrit (`3`, `2,5`), une
+expression littérale, une grandeur (le moteur la calcule par une autre branche). Le moteur fournit `approximateLatex` (mode exact) ou
 `exactLatex` (mode décimal) pour un calcul, et `approximateLatex` pour `.solve`, intervalle compris
 (`S ≈ {−1,4142 ; 1,4142}` ; rien pour une famille périodique, une inéquation, un seuil en ln qui dit
 déjà sa valeur approchée). Quand les ÉTAPES donnent la réponse, le bouton approche leurs solutions
@@ -257,7 +260,12 @@ déjà sa valeur approchée). Quand les ÉTAPES donnent la réponse, le bouton a
 boutons sur l'image d'un nombre et « Résoudre f(x) = 0 » des cartes.
 `.mode décimal` suit la même règle (2026-10-11) : 4 décimales, `≈` à l'écran comme dans le texte
 seulement si la valeur est arrondie (`≈ 0,7071`, `0,25`) ; « Garder » range la valeur pleine
-précision (`quantityAst`). Le texte d'un résultat exact est mis au propre comme l'écran (`\pi/3`,
+précision (`quantityAst`). Depuis le 2026-10-12, plus aucun repli sur l'écriture du flottant du
+moteur (`e+30`, 15 chiffres, 2⁶⁴ écrit `18446744073709552000` faux et sans `≈`) : l'écriture se lit
+toujours sur le résultat exact, le calcul décimal du moteur ne sert qu'à une valeur non réelle et à
+« Garder ». Le texte d'une notation scientifique se retape dans la console (`8.7700*10^9`,
+`1.4286*10^-7`) ; à l'écran, `isScientificNotation` la protège de `tidy` (qui recalculerait
+`3 × 10²⁰`). Mêmes règles pour une grandeur (`9,4607 × 10¹⁵ m`). Le texte d'un résultat exact est mis au propre comme l'écran (`\pi/3`,
 plus `{1/3}\pi`) — `/cas` compris.
 
 **Complétion des fonctions et des lettres grecques** (PR 3, `src/lib/atelier/completion.ts`) :

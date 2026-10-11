@@ -2,6 +2,7 @@
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import EvaluationCard from '$lib/components/assessments/EvaluationCard.svelte';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { FileQuestion } from '@lucide/svelte';
 	import type { PageData } from './$types';
@@ -32,6 +33,7 @@
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<!-- Header -->
 	<div class="mb-8">
+		<BackLink href="/dashboard/student/work" label="Retour à Mon travail" />
 		<h1 class="text-3xl font-bold tracking-tight">Mes contrôles</h1>
 		<p class="mt-2 text-muted-foreground">
 			Vos contrôles assignés par vos {lore.entities.teacher}s

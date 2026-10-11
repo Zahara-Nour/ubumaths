@@ -269,6 +269,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 				? { objectives: objectivesProgression, competences: competencesProgression }
 				: null;
 
+		// Une lecture en échec compte 0 : la tuile « Énigmes » dit alors « Découvre les
+		// énigmes », jamais un faux total
+		if (riddleCount.error)
+			console.error('Lecture des énigmes résolues impossible :', riddleCount.error);
 		riddlesSolved = riddleCount.count || 0;
 		recentExercises = (exercisesData.data || []) as typeof recentExercises;
 

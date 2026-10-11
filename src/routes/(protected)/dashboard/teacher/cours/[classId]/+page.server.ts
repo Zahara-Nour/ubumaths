@@ -25,6 +25,14 @@ import {
 import { instantiateTemplateSchema } from '$lib/server/validation/chapter-templates';
 import type { ChapterSummary } from '$lib/types/chapters';
 import type { TemplateSummary } from '$lib/types/chapter-templates';
+import { z } from 'zod';
+import {
+	getActiveCourseShareToken,
+	revokeCourseShareToken,
+	rotateCourseShareToken
+} from '$lib/server/course-share-tokens';
+
+const classIdSchema = z.string().uuid('Identifiant de classe invalide');
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	// Only teachers can view this page
@@ -108,15 +116,64 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		console.error('Enrichissement illisible :', templatesError);
 	}
 
+	// Lien du cours (ADR 0025) : les élèves sans compte n'ont pas d'autre accès.
+	// Une panne de lecture n'empêche pas de gérer les chapitres ; elle est journalisée.
+	const { token: courseShareToken } = await getActiveCourseShareToken(locals.supabase, classId);
+
 	return {
 		classData,
 		chapters: chapters.sort((a, b) => a.displayOrder - b.displayOrder) as ChapterSummary[],
 		students: studentList,
-		templates: (templates || []) as TemplateSummary[]
+		templates: (templates || []) as TemplateSummary[],
+		courseShareToken
 	};
 };
 
 export const actions: Actions = {
+	/**
+	 * Créer / renouveler le lien du cours (ADR 0025).
+	 *
+	 * `requireRole` est refait dans chaque action : le `load` ne protège pas les
+	 * actions, qui sont des points d'entrée à part entière.
+	 */
+	shareCourseLink: async ({ locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+
+		const parsed = classIdSchema.safeParse(params.classId);
+		if (!parsed.success) return fail(400, { error: 'Classe invalide', action: 'shareCourseLink' });
+
+		const { error: rotateError } = await rotateCourseShareToken(
+			locals.supabase,
+			parsed.data,
+			user.id
+		);
+		if (rotateError) return fail(500, { error: rotateError, action: 'shareCourseLink' });
+
+		return { success: true, action: 'shareCourseLink' };
+	},
+
+	/**
+	 * Révoquer le lien du cours. Zéro ligne désactivée n'est pas un succès : la
+	 * RLS échoue en silence, et le professeur croirait le lien coupé.
+	 */
+	revokeCourseLink: async ({ locals, params }) => {
+		await requireRole(locals, 'teacher');
+
+		const parsed = classIdSchema.safeParse(params.classId);
+		if (!parsed.success) return fail(400, { error: 'Classe invalide', action: 'revokeCourseLink' });
+
+		const { revoked, error: revokeError } = await revokeCourseShareToken(
+			locals.supabase,
+			parsed.data
+		);
+		if (revokeError) return fail(500, { error: revokeError, action: 'revokeCourseLink' });
+		if (revoked === 0) {
+			return fail(404, { error: 'Aucun lien actif à révoquer', action: 'revokeCourseLink' });
+		}
+
+		return { success: true, action: 'revokeCourseLink' };
+	},
+
 	/**
 	 * Create a new chapter
 	 */

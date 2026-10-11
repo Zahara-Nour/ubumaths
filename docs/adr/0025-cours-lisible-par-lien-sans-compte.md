@@ -1,7 +1,7 @@
 # 0025 — Le cours d'une classe est lisible par lien, sans compte
 
-- **Statut** : acceptée — amende l'ADR 0005 (accès hérité de la classe) ; mise en œuvre en cours
-  (journal `docs/wip/cours-partageable-progress.md`)
+- **Statut** : acceptée — amende l'ADR 0005 (accès hérité de la classe) ; mise en œuvre close le
+  2026-10-12 (#1150, #1158 ; journal `docs/archive/wip/cours-partageable-progress.md`)
 - **Date** : 2026-10-12 · **Décidée par** : David
 
 ## Contexte

@@ -24,13 +24,15 @@ export type {
 	ParseErrorCode,
 	KnownCommand,
 	GenericFunctionConfig,
-	ErrorContext
+	ErrorContext,
+	CapitalPairs
 } from './types';
 
 export {
 	DEFAULT_PARSER_OPTIONS,
 	DEFAULT_GENERIC_FUNCTIONS,
 	DEFAULT_GENERIC_FUNCTION_NAMES,
+	DEFAULT_CAPITAL_PAIRS,
 	KNOWN_COMMANDS,
 	FUNCTION_COMMANDS,
 	GREEK_COMMANDS,
@@ -74,9 +76,15 @@ export {
 // =============================================================================
 
 import type { MathNode } from '../types';
-import type { ParseResult, ParseError, ParserOptions, GenericFunctionConfig } from './types';
+import type {
+	CapitalPairs,
+	ParseResult,
+	ParseError,
+	ParserOptions,
+	GenericFunctionConfig
+} from './types';
 import type { ParserSecurityOptions } from './security';
-import { DEFAULT_GENERIC_FUNCTIONS } from './types';
+import { DEFAULT_CAPITAL_PAIRS, DEFAULT_GENERIC_FUNCTIONS } from './types';
 import { parsePratt, parsePrattSafe } from './latex';
 import { parseRD, parseRDSafe } from './latex';
 
@@ -112,6 +120,11 @@ export interface LatexParserOptions {
 	 * Uses sensible defaults if not specified.
 	 */
 	security?: ParserSecurityOptions;
+	/**
+	 * Sens de deux majuscules collées : `'length'` (longueur `AB`) ou `'product'`
+	 * (`A·B`). Absent : `DEFAULT_CAPITAL_PAIRS`.
+	 */
+	capitalPairs?: CapitalPairs;
 }
 
 /**
@@ -157,6 +170,7 @@ export function parseLatex(input: string, options?: LatexParserOptions): MathNod
 
 	const parserOptions: Partial<ParserOptions> = {
 		mode,
+		capitalPairs: options?.capitalPairs ?? DEFAULT_CAPITAL_PAIRS,
 		...(genericFunctions && { genericFunctions }),
 		...(options?.security && { security: options.security })
 	};
@@ -219,6 +233,7 @@ export function parseLatexSafe(input: string, options?: LatexParserOptions): Par
 
 	const parserOptions: Partial<ParserOptions> = {
 		mode,
+		capitalPairs: options?.capitalPairs ?? DEFAULT_CAPITAL_PAIRS,
 		...(genericFunctions && { genericFunctions }),
 		...(options?.security && { security: options.security })
 	};
