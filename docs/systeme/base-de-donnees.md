@@ -180,6 +180,11 @@ points neufs d'un niveau), `src/lib/server/curriculum-coverage.ts`,
 - `exercises` (+ `exercise_curriculum_points`, `exercise_classifications`) ; `exercise_assignments`
   (à un élève ou une classe), `exercise_completions`, `student_exercise_mastery` (auto-évaluation
   maîtrisé / à revoir).
+  - `exercises.search_indexed` (« Afficher sur Google », depuis `20261016100000`) : case distincte de
+    `is_public`, fausse par défaut ; elle décidera seule si un exercice public entre dans le sitemap
+    et perd sa balise `noindex` (code à venir, après `db:types`). CHECK `exercises_search_indexed_requires_public` (23514) : un exercice privé ne peut
+    pas être affiché sur Google, et dépublier exige de décocher Google dans la même mise à jour. La
+    colonne suit les droits de la ligne (aucune policy ni GRANT propre).
 - `migration_*` : outillage de la migration des questions TinyMath.
 
 Accès : les modèles **publiés** sont lisibles par tous les élèves (et `anon`), les autres par le
