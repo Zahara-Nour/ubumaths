@@ -182,14 +182,6 @@ export function evaluateAtPoint(expr: MathNode, varName: string, value: number):
 	}
 }
 
-/**
- * `true` if `expr` evaluates (numerically) to zero at `varName = a`.
- */
-export function isRootAt(expr: MathNode, varName: string, a: number): boolean {
-	const v = evaluateAtPoint(expr, varName, a);
-	return v !== null && Math.abs(v) < 1e-10;
-}
-
 // =============================================================================
 // Polynomial helpers (Horner-style synthetic division)
 // =============================================================================
