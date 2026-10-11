@@ -19,7 +19,7 @@ couvre:
 
 > Remplace les sept fichiers de [`srs/`](../archive/systeme-2026-06/srs/README.md) (juin 2026, archivés), écrits au temps de la
 > « famille A » du référentiel, abandonnée ([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)).
-> Vérifié contre le code le 2026-10-10.
+> Vérifié contre le code le 2026-10-11.
 
 ## À quoi ça sert
 
@@ -96,7 +96,7 @@ Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, 
 
 - Élève, `src/routes/(protected)/dashboard/revisions/` : liste des paquets + une entrée par chapitre
   visible (`+page.server.ts`), `create/`, `decks/[id]/` (sections et cartes), `decks/[id]/study/`
-  (séance, `?states=`), `decks/programme/` (Programme en 4 sections), `chapitres/[chapterId]/`.
+  (séance, `?states=`, `?depuis=programme`), `decks/programme/` (Programme en 4 sections), `chapitres/[chapterId]/`.
 - Prof, `src/routes/(protected)/dashboard/teacher/srs/decks/` : `create/`, `[id]/edit/`,
   `[id]/assign/`, `[id]/assignments/` (copie de chaque élève par `findAssignedDeckCopy`).
 
@@ -191,6 +191,12 @@ dans la requête.
 modèle), envoie la note par `submitRequest`. Côté paquet, `srs_review_sessions` cumule par jour
 cartes revues, bonnes réponses (note ≥ 3) et temps ; une panne de ces statistiques n'annule pas
 la révision.
+
+« Quitter », en tête de séance (`BackLink kind="quit"`, [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)), ramène là
+où elle a commencé : la page du paquet, ou le Programme si elle en part (`?depuis=programme`, posé par
+`studySessionHref` et relu par `studySessionReturnHref`, `src/lib/navigation/return-links.ts`). Une
+révision de chapitre quitte vers le chapitre du cours. Le bouton de fin de séance de `ReviewSession`
+(`onBack`) mène à la liste des paquets (séance d'un paquet) ou au chapitre.
 
 ## Anti-triche
 
@@ -314,4 +320,4 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
 
 ---
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-11.

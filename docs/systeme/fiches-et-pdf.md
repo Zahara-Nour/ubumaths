@@ -115,7 +115,8 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 `ExerciseList.svelte`, `MetadataCards.svelte` (config, dont la langue),
 `WorksheetAssignmentForm.svelte`, `UntranslatedExercisesNotice.svelte`, `TemplateSelector.svelte`,
 `TypstEditor.svelte` ; côté élève `src/lib/components/student/worksheets/WorksheetHeader.svelte`
-(bouton PDF).
+(bouton PDF ; en tête, « Quitter » vers la liste des fiches, ou « Retour aux fiches » quand la fiche
+est en consultation seule, `read_only` — [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)).
 
 ## Le modèle d'une fiche
 
