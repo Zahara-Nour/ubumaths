@@ -140,3 +140,79 @@ describe('.unitmode n’existe plus', () => {
 		expect(run('.unitmode si').success).toBe(false);
 	});
 });
+
+/**
+ * Revue du lot A (2026-10-11) : ce que `tidy` ne réduit pas (racine, valeur
+ * absolue, fonction d'un angle, comparaison) et l'unité écrite préférée.
+ */
+describe('ce que tidy ne réduit pas : le repli exact, dans une unité tapée', () => {
+	it.each([
+		['sqrt(9[km^2])', '3 km'],
+		['sqrt(9[km^2])/1[h]', '3 km/h'],
+		['sqrt(16[cm^2])*1[cm]', '4 cm^2'],
+		['\\sqrt[3]{8~\\unit{km^3}}', '2 km'],
+		['abs(-3[m])', '3 m'],
+		['sqrt(4[m^2]/1[s^2])', '2 m/s'],
+		['sqrt(2[km^2])', 'sqrt(2) km']
+	])('%s → %s', (input, expected) => {
+		expect(run(input).output).toBe(expected);
+	});
+
+	it('une unité tapée l’emporte quand la valeur y tombe juste', () => {
+		expect(run('3[kW]*2[h]').output).toBe('6 kW.h = 21600000 J');
+	});
+
+	it('des unités qui s’annulent dans une fonction ou une comparaison : un calcul de nombres', () => {
+		expect(run('sin(30[°])').output).toBe('1/2');
+		expect(run('5[km]>3[m]').output).toBe('true');
+	});
+});
+
+describe('températures', () => {
+	it('une somme de deux températures absolues est refusée, avec la règle', () => {
+		expect(run('20[°C]+30[°C]').output).toBe(
+			'Ce calcul de températures n’a pas de sens : on soustrait deux températures (l’écart est en K), ou on ajoute un écart en K à une température, par exemple 20[°C]+5[K].'
+		);
+	});
+
+	it('.convert passe d’une échelle à l’autre', () => {
+		const engine = new WebReplEngine();
+		engine.execute('20[°C]');
+
+		expect(engine.execute('.convert K').output).toBe('20 °C = 293.15 K');
+	});
+});
+
+describe('.convert entre degrés et radians', () => {
+	it('180 ° = π rad, exactement', () => {
+		const engine = new WebReplEngine();
+		engine.execute('180[°]');
+
+		expect(engine.execute('.convert rad').output).toBe('180 ° = \\pi rad');
+	});
+});
+
+describe('le bouton ≈ et la bascule exact ⇄ décimal', () => {
+	it('une grandeur non décimale propose sa valeur approchée', () => {
+		const result = run('10[km]/3');
+
+		expect(result.approximateLatex).toBe('\\approx 3.3333~\\mathrm{km}');
+		expect(result.canToggle).toBe(true);
+		expect(result.decimalOutput).toBe('≈ 3.3333 km');
+	});
+
+	it('une grandeur décimale n’en propose pas', () => {
+		expect(run('12[km]+300[m]').approximateLatex).toBeUndefined();
+	});
+
+	// Revue : l'arbre dessinait « = » entre deux valeurs arrondies
+	it('en mode décimal, une conversion arrondie s’écrit ≈ jusque dans l’arbre', () => {
+		const engine = new WebReplEngine();
+		engine.execute('.mode decimal');
+		engine.execute('10[km]/4[h]');
+		const result = engine.execute('.convert m/s');
+
+		expect(result.output).toBe('2.5 km/h ≈ 0.6944 m/s');
+		expect(result.ast?.type === 'relation' && result.ast.relation).toBe('≈');
+	});
+});

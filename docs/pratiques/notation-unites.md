@@ -126,6 +126,12 @@ sans son coefficient (`10[km]/1[h]` → « 10 m/s »).
 | `9.81[m/s^2]*2[kg]` | `19.62 m.kg/s^2 = 19.62 N` (Calcul : l'unité dérivée nommée suit) |
 | `5[m]+3[s]`         | « On ne peut pas ajouter une longueur et une durée. »             |
 
+Calcul et `/cas` ajoutent deux règles (revue du lot A) : une **unité tapée** par l'élève (seule,
+en puissance, ou deux combinées) l'emporte quand la valeur y tombe juste (`3[kW]*2[h]` →
+`6 kW.h = 21600000 J`) ; ce que `tidy` ne réduit pas (racine, valeur absolue, fonction d'un angle,
+comparaison) passe par un repli exact, unités ramenées à leurs unités de base
+(`sqrt(9[km^2])` → `3 km`, `sin(30[°])` → `1/2`).
+
 `.convertir` (Calcul) exprime la dernière grandeur dans l'unité donnée, exactement :
 `12,3 km = 12300 m`. La réponse est un arbre qui garde son unité, affiché par `displayUnitsInLatex`
 comme un énoncé.

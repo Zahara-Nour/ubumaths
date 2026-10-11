@@ -1204,6 +1204,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			input,
 			output: rendered.text,
 			latex: displayUnitsInLatex(toLatex(result.ast)),
+			...solutionsAlternative(result),
 			...noted
 		};
 	}

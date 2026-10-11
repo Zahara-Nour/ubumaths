@@ -111,3 +111,13 @@ Une PR par lot : **A** (moteur, `.convertir`, erreurs, `.mode décimal` des gran
   l'atelier) ; `render.ts` traduit les unités de l'arbre (`displayUnitsInLatex`) — sans quoi
   l'arbre muni de son unité aurait affiché `\unit` en rouge. `sqrt(9[m^2])` : `tidy` ne réduit
   pas la racine, repli sur la forme normale (`denormalize(normalize(…))`).
+- 2026-10-11 — revue `code-reviewer` du lot A, corrigés : une racine de grandeur prise dans un
+  produit restait non calculée (`sqrt(9[km^2])/1[h]`) ; racine, valeur absolue, fonction d'un
+  angle, comparaison passent par un **repli exact** (chaque grandeur ramenée à ses unités de base,
+  coefficient exact, π compris) ; **règle d'unité** : une unité tapée par l'élève (seule, en
+  puissance, ou deux combinées) quand la valeur y tombe juste (`3[kW]*2[h]` → `6 kW.h = 21600000 J`,
+  `sqrt(9[km^2])` → `3 km`), sinon celle de `tidy` (`7[h]/3` → `140 min`), sinon l'écriture la plus
+  courte ; `.convertir` des températures (`20 °C = 293.15 K`) et des angles (`180 ° = π rad`) ;
+  bouton ≈ et bascule de `/cas` rétablis ; `≈` dans l'arbre en mode décimal ; noms de dimensions
+  (force, énergie, puissance, masse volumique…) ; analyse dimensionnelle : l'indice d'une racine
+  (`\sqrt[3]{…}`) n'était pas lu (m^1,5 pour une racine cubique de km³).

@@ -51,6 +51,17 @@ describe('une erreur de dimension, en français', () => {
 	});
 });
 
+describe('le bouton ≈ d’une grandeur', () => {
+	it('10[km]/3 propose ≈ 3,3333 km', () => {
+		const result = runInput(session(), '10[km]/3');
+
+		expect(result.kind === 'calcul' && result.alternative).toEqual({
+			label: 'Valeur approchée',
+			latex: '\\approx 3{,}3333~\\mathrm{km}'
+		});
+	});
+});
+
 describe('.convertir', () => {
 	it('écrit la grandeur égale à sa conversion, en mathématiques', () => {
 		const s = session();

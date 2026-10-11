@@ -28,6 +28,7 @@ import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { normalize, normalFormsEquivalent } from '../../normal';
 import type { EvalValue, ComplexValueResult } from '../../eval/types';
 import { computeQuantity, convertQuantity, type QuantityOutcome } from '../quantities';
+import { displayUnitsInLatex } from '../../units/display';
 import { isUnit, isVariable } from '../../guards';
 import { summarizeList, summarizeTable } from '../../../statistics/describe';
 import { formatSummary } from '../../../statistics/format';
@@ -982,7 +983,7 @@ export class WebReplEngine {
 
 	/** La réponse de la console pour un calcul ou une conversion de grandeurs. */
 	private quantityResult(outcome: QuantityOutcome): ReplExecutionResult {
-		if (!outcome.ok) {
+		if (outcome.ok === false) {
 			return {
 				success: false,
 				output: outcome.message,
@@ -990,12 +991,34 @@ export class WebReplEngine {
 				error: { code: 'QUANTITY_ERROR', message: outcome.message }
 			};
 		}
+		// Les unités se sont simplifiées : un calcul de nombres comme un autre
+		if (outcome.ok === 'plain') {
+			this.lastQuantity = null;
+			return this.createAutoEvaluationResult(outcome.node);
+		}
 		this.lastQuantity = outcome.quantity;
+		const html = (text: string) => `<span class="text-cyan-400">${this.escapeHtml(text)}</span>`;
+		const approximate =
+			outcome.approximate === null
+				? undefined
+				: displayUnitsInLatex(
+						outcome.approximate.type === 'relation'
+							? toLatex(outcome.approximate)
+							: `\\approx ${toLatex(outcome.approximate)}`
+					);
 		return {
 			success: true,
-			output: outcome.text,
-			outputHtml: `<span class="text-cyan-400">${this.escapeHtml(outcome.text)}</span>`,
-			ast: outcome.node
+			output: outcome.answer.text,
+			outputHtml: html(outcome.answer.text),
+			ast: outcome.answer.node,
+			// La bascule exact ⇄ décimal de `/cas`, comme pour un nombre
+			exactOutput: outcome.exact.text,
+			exactOutputHtml: html(outcome.exact.text),
+			decimalOutput: outcome.decimal.text,
+			decimalOutputHtml: html(outcome.decimal.text),
+			canToggle: outcome.exact.text !== outcome.decimal.text,
+			// Le bouton ≈ de l'atelier (#1086), écrit pour l'affichage
+			...(approximate !== undefined && { approximateLatex: approximate })
 		};
 	}
 

@@ -35,13 +35,11 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			expect(result.output).not.toContain('Mode:');
 		});
 
-		it('evaluates expression with units using evaluateWithUnits', () => {
-			// Use LaTeX unit syntax: 5~\unit{km}
+		it('evaluates expression with units as a quantity (tidy, written unit first)', () => {
 			const result = engine.execute('5~\\unit{km}');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('5');
-			expect(result.output).toContain('km');
+			expect(result.output).toBe('5 km');
 		});
 
 		it('evaluates complex expression without units using standard evaluation', () => {
@@ -62,23 +60,23 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			const result = engine.execute('5~\\unit{km} + 3000~\\unit{m}');
 
 			expect(result.success).toBe(true);
-			// Result should be 8 km (in first mode by default)
-			expect(result.output).toContain('8');
+			// L'unité écrite d'abord (phase 0 grandeurs) : pas 8000 m
+			expect(result.output).toBe('8 km');
 		});
 
 		it('adds quantities with same unit: 3 m + 2 m', () => {
 			const result = engine.execute('3~\\unit{m} + 2~\\unit{m}');
 
 			expect(result.success).toBe(true);
-			expect(result.output).toContain('5');
-			expect(result.output).toContain('m');
+			expect(result.output).toBe('5 m');
 		});
 
 		it('adds time units: 1 h + 30 min', () => {
 			const result = engine.execute('1~\\unit{h} + 30~\\unit{min}');
 
 			expect(result.success).toBe(true);
-			// Default mode is 'first', so result should be in hours (1.5 h)
+			// L'unité écrite où la valeur tombe juste : 1,5 h
+			expect(result.output).toBe('1.5 h');
 		});
 	});
 
@@ -87,7 +85,7 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 	// ===========================================================================
 
 	describe('addition with incompatible units', () => {
-		it('returns DimensionalEvaluationError for incompatible units: 5 m + 3 s', () => {
+		it('refuses incompatible units in French: 5 m + 3 s', () => {
 			const result = engine.execute('5~\\unit{m} + 3~\\unit{s}');
 
 			expect(result.success).toBe(false);
