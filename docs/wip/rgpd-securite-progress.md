@@ -322,9 +322,20 @@ B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
   `REVOKE EXECUTE ON FUNCTION submit_riddle_attempt(uuid,uuid,jsonb,boolean) FROM authenticated`
   (l'ancienne route en prod l'appelle encore avec le client de l'élève). Pas écrite d'avance :
   un `db push --include-all` d'une autre session l'appliquerait trop tôt.
-- **Nouveaux constats (audit de #1132), antérieurs, à soumettre à David** :
-  1. `riddles.answer` lisible par l'élève (droit de colonne `authenticated`) : il peut lire la
-     réponse attendue d'une énigme à correction automatique. Prod : 0 énigme avec réponse.
-  2. `record_game_reward` exécutable par `authenticated`, garde `auth.uid() = p_student_id`
-     seulement : un élève peut s'attribuer la récompense du jour de chaque type de jeu
-     (2048 et Mathémo l'appellent avec le client de l'élève).
+- **Constats de l'audit de #1132 — recos retenues par David (2026-10-12)** :
+  - **#1147 (mergée, migration `20261016100200` en prod, vérifiée : md5 e322477f…, anon
+    refusé)** : 2048 et Mathémo appellent `record_game_reward` par le client service ; garde
+    explicite (client service ou l'élève lui-même ; un appel sans `auth.uid()` passait).
+  - **#1149 (mergée, code seul)** : les pages élève des énigmes n'envoient plus au navigateur
+    ni `answer.value` ni `correction` (`toStudentRiddle`) ; `RiddleCard` ne corrige plus
+    côté client. Prod : 1 énigme publiée, avec correction, 0 avec réponse automatique.
+- ⏳ **Étape 2 bis, APRÈS le `deploy:prod` qui livre #1147** : `REVOKE EXECUTE ON FUNCTION
+record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migration que
+  l'étape 2 possible). L'appel imbriqué par `submit_riddle_attempt` garde son droit (DEFINER).
+- ❓ **À trancher par David** : `riddles.answer` et `riddles.correction` restent lisibles en
+  base par l'élève (requête directe, énigme du jour ou assignée). Options : table à part
+  lisible prof/admin seulement, ou REVOKE de colonne (pages prof et route de soumission à
+  passer par le client service).
+- Notés, hors périmètre : `upsert_mathemo_score` encore appelée avec le client de l'élève
+  (stats de classement déclarées par le navigateur, comme le score 2048) ; `RiddleCard` reste
+  sur « Réponse envoyée » si la soumission échoue (préexistant).
