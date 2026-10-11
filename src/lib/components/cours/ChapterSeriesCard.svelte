@@ -21,7 +21,8 @@
 	import type { ChapterSeries } from '$lib/types/chapters';
 
 	interface Props {
-		series: ChapterSeries;
+		/** Ce que la carte affiche — le lien du cours (ADR 0025) n'a rien de plus. */
+		series: Pick<ChapterSeries, 'title' | 'form' | 'questionCount' | 'launchHref'>;
 	}
 
 	let { series }: Props = $props();
