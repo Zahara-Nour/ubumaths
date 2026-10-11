@@ -153,7 +153,7 @@ const SYMBOL_MAP: Record<MathSymbol, string> = {
 	odot: '\\odot'
 };
 
-const RELATION_MAP: Record<RelationType, string> = {
+export const RELATION_MAP: Record<RelationType, string> = {
 	'=': '=',
 	'<': '<',
 	'>': '>',
@@ -306,7 +306,7 @@ function containsScientificNumber(value: unknown): boolean {
  * Ces retouches ne portent que sur un nombre réécrit : le reste de
  * l'arbre garde exactement son écriture.
  */
-function withoutScientificNumbers(node: MathNode): MathNode {
+export function withoutScientificNumbers(node: MathNode): MathNode {
 	if (!containsScientificNumber(node)) return node;
 	const expanded = new WeakSet<MathNode>();
 	return transformAST(node, {
@@ -360,7 +360,7 @@ function withoutScientificNumbers(node: MathNode): MathNode {
  * immuables) : elles sont mémorisées, sinon les parcours de bords gauche et
  * droit se répètent à chaque niveau.
  */
-interface OperandWraps {
+export interface OperandWraps {
 	readonly left: boolean;
 	readonly right: boolean;
 }
@@ -403,7 +403,7 @@ function containsExposedLimit(node: MathNode): boolean {
  * différence, produit, quotient `/` ou `:`), limites comprises. Null pour tout
  * autre nœud (`\dfrac` groupe déjà).
  */
-function binaryOperandWraps(node: MathNode): OperandWraps | null {
+export function binaryOperandWraps(node: MathNode): OperandWraps | null {
 	const cached = operandWrapsCache.get(node);
 	if (cached !== undefined) return cached;
 	let left: MathNode;
@@ -1906,7 +1906,7 @@ export class LatexGenerator {
  * produit implicite). Une espace ORDINAIRE entre `\unit{h}` et `56` est ignorée en mode
  * math (« 3 h56 min ») : l'espace doit être insécable, `~`, comme entre valeur et unité.
  */
-function juxtaposesQuantities(node: MultiplicationNode): boolean {
+export function juxtaposesQuantities(node: MultiplicationNode): boolean {
 	let left: MathNode = node.left;
 	while (isMultiplication(left) && left.displayStyle === 'implicit') left = left.right;
 	return isUnit(left) && isUnit(node.right);
@@ -1928,7 +1928,7 @@ function juxtaposesQuantities(node: MultiplicationNode): boolean {
  * de `2^x` sur la carte f′ et le bouton « Dériver ») ne se relit pas — l'oracle
  * des dérivées l'a relevé. `\ln(2) × 2^x` se lit sans ambiguïté.
  */
-function juxtaposesDigits(node: MultiplicationNode): boolean {
+export function juxtaposesDigits(node: MultiplicationNode): boolean {
 	if (needsParenthesesUnderSign(node.left) || needsParenthesesAsRightFactor(node.right)) {
 		return false;
 	}
