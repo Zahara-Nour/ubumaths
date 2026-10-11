@@ -33,6 +33,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 
@@ -44,6 +45,8 @@ import { requireRole } from '$lib/server/middleware/auth';
  * Returns array of synced courses for current teacher, sorted by most recent update
  */
 export const GET: RequestHandler = async ({ locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can list courses
 	const { user } = await requireRole(locals, 'teacher');
 

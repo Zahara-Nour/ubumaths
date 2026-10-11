@@ -12,7 +12,11 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { updateSectionSchema } from '$lib/server/validation/srs';
+import { z } from 'zod';
 import type { TablesUpdate } from '$lib/types/database';
+
+/** Paramètres de la route : deux uuid. */
+const sectionParamsSchema = z.object({ id: z.string().uuid(), sectionId: z.string().uuid() });
 
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	const { user } = await requireAuth(locals);
@@ -86,11 +90,17 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const { user } = await requireAuth(locals);
 
+	const paramsValidation = sectionParamsSchema.safeParse(params);
+	if (!paramsValidation.success) {
+		return json({ error: 'Identifiant invalide' }, { status: 400 });
+	}
+	const { id: deckId, sectionId } = paramsValidation.data;
+
 	// P2 defense in depth : vérif ownership explicite
 	const { data: deck, error: deckError } = await locals.supabase
 		.from('srs_decks')
 		.select('id')
-		.eq('id', params.id)
+		.eq('id', deckId)
 		.eq('owner_id', user.id)
 		.maybeSingle();
 
@@ -104,11 +114,12 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		return json({ error: 'Deck not found or access denied' }, { status: 404 });
 	}
 
-	const { error: deleteErr } = await locals.supabase
+	const { data: deletedSections, error: deleteErr } = await locals.supabase
 		.from('srs_deck_sections')
 		.delete()
-		.eq('id', params.sectionId)
-		.eq('deck_id', params.id);
+		.eq('id', sectionId)
+		.eq('deck_id', deckId)
+		.select('id');
 
 	if (deleteErr) {
 		if (deleteErr.code === '42501') {
@@ -116,6 +127,25 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 		console.error('[sections/DELETE] failed:', deleteErr);
 		return json({ error: deleteErr.message }, { status: 500 });
+	}
+
+	// 0 ligne : soit la section n'existe pas (suppression idempotente, 200 comme avant),
+	// soit la RLS a refusé EN SILENCE (paquet assigné ou géré automatiquement) — la route
+	// annonçait alors un succès (constat E20, 2026-10-10). On distingue par une lecture.
+	if (!deletedSections || deletedSections.length === 0) {
+		const { data: encore, error: lectureErr } = await locals.supabase
+			.from('srs_deck_sections')
+			.select('id')
+			.eq('id', sectionId)
+			.eq('deck_id', deckId)
+			.maybeSingle();
+		if (lectureErr) {
+			console.error('[sections/DELETE] contrôle impossible :', lectureErr);
+			return json({ error: 'Impossible de vérifier la suppression' }, { status: 500 });
+		}
+		if (encore) {
+			return json({ error: 'Cette section ne peut pas être supprimée.' }, { status: 403 });
+		}
 	}
 
 	return json({ success: true });

@@ -218,6 +218,27 @@
 							<td>Authentification, Classroom</td>
 							<td>USA</td>
 						</tr>
+						<tr>
+							<td>Brevo</td>
+							<td>Envoi des e-mails (consentement parental, comptes)</td>
+							<td>Union Europeenne (France)</td>
+						</tr>
+						<tr>
+							<td>Groq</td>
+							<td>
+								Tuteur IA : messages et images saisis par l'eleve, sans nom ni e-mail ajoute par
+								Chiphre
+							</td>
+							<td>USA</td>
+						</tr>
+						<tr>
+							<td>Hugging Face</td>
+							<td>
+								Recherche dans les cours pour le tuteur (quand elle est activee) : le texte de la
+								question de l'eleve lui est envoye pour etre converti en vecteur
+							</td>
+							<td>USA</td>
+						</tr>
 					</tbody>
 				</table>
 			</div>
@@ -239,12 +260,20 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>Profil utilisateur</td>
-							<td>Duree de la scolarite + 5 ans</td>
+							<td>Profil utilisateur (eleve)</td>
+							<td>Supprime apres 5 ans sans activite</td>
 						</tr>
 						<tr>
 							<td>Donnees pedagogiques</td>
-							<td>5 ans apres la derniere activite</td>
+							<td>Supprimees avec le profil, apres 5 ans sans activite</td>
+						</tr>
+						<tr>
+							<td>Conversations avec le tuteur IA</td>
+							<td>1 an apres le dernier message</td>
+						</tr>
+						<tr>
+							<td>Pre-inscriptions non activees</td>
+							<td>1 an</td>
 						</tr>
 						<tr>
 							<td>Messages</td>
@@ -252,7 +281,7 @@
 						</tr>
 						<tr>
 							<td>Logs techniques</td>
-							<td>90 jours</td>
+							<td>30 jours</td>
 						</tr>
 					</tbody>
 				</table>

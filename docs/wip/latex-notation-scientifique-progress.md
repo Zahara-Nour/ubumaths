@@ -26,7 +26,7 @@ scientifique reste en syntaxe custom (`1e5`).
 - [x] Revue (2026-10-11) : `numberToLatexSafe` (`mathAST/common/numeric.ts`) dans les règles
       `custom` (`substitutedValue`, `substituteVariable`), les tirages (`variable-resolver.ts`),
       `composite-duration.ts` ; `evalResultToNumber` relit `10^{-7}` ; résultat non fini → erreur ;
-      `;sci` sur grandeur / `;hms` / littéral ; `10^{-7} \times 2` à gauche ; L17 dans
+      `;sci` sur grandeur / `;hms` / littéral ; `10^{-7} \times 2` à gauche ; L20 dans
       `ecarts-a-trier.md`. 20 tests vus rouges.
 - [ ] PR
 - `2e3` : refusé comme `2e 3` (« nombre écrit après un facteur »), pas 2·e·3 — aligné.
@@ -75,6 +75,6 @@ APPROCHÉ ≥ 10¹⁵ passe en notation scientifique. `;sci` la force toujours. 
 - [x] Revue (2026-10-11) : `numberToLatexSafe` (`mathAST/common/numeric.ts`) dans les règles
       `custom` (`substitutedValue`, `substituteVariable`), les tirages (`variable-resolver.ts`),
       `composite-duration.ts` ; `evalResultToNumber` relit `10^{-7}` ; résultat non fini → erreur ;
-      `;sci` sur grandeur / `;hms` / littéral ; `10^{-7} \times 2` à gauche ; L17 dans
+      `;sci` sur grandeur / `;hms` / littéral ; `10^{-7} \times 2` à gauche ; L20 dans
       `ecarts-a-trier.md`. 20 tests vus rouges.
 - [ ] PR

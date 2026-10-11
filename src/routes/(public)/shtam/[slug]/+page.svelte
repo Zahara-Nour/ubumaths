@@ -5,7 +5,14 @@
 	import ShtamFooter from '../ShtamFooter.svelte';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import JsonLd from '$lib/seo/JsonLd.svelte';
-	import { DEFAULT_OG_IMAGE, SITE_NAME, SITE_URL, absoluteUrl, toPlainText } from '$lib/seo/site';
+	import {
+		DEFAULT_OG_IMAGE,
+		SITE_LOGO,
+		SITE_NAME,
+		SITE_URL,
+		absoluteUrl,
+		toPlainText
+	} from '$lib/seo/site';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -27,7 +34,7 @@
 			'@type': 'Organization',
 			name: SITE_NAME,
 			url: SITE_URL,
-			logo: { '@type': 'ImageObject', url: absoluteUrl('/apple-touch-icon.png') }
+			logo: { '@type': 'ImageObject', url: absoluteUrl(SITE_LOGO) }
 		},
 		isPartOf: { '@type': 'Periodical', name: 'Le Shtam', url: absoluteUrl('/shtam') }
 	});

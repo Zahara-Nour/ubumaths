@@ -43,7 +43,9 @@ import {
 	checkOAuthRateLimitByIP,
 	checkNotificationCreateRateLimit,
 	checkNotificationMarkRateLimit,
-	checkNotificationDeleteRateLimit
+	checkNotificationDeleteRateLimit,
+	checkElevationRateLimitByIP,
+	checkElevationRateLimitByEmail
 } from '../rateLimiter';
 
 // ============================================================================
@@ -65,6 +67,12 @@ const rateLimits = new Map<
 		expires_at: string;
 	}
 >();
+
+/**
+ * Panne simulée de la base (B8) : lue par le faux `rpc`, quel que soit le client mis en
+ * cache par le module. `'error'` = la RPC rend une erreur, `'throw'` = elle lève.
+ */
+let rpcFailure: 'error' | 'throw' | null = null;
 
 /**
  * Build a mock Supabase client whose `rpc('check_and_increment_rate_limit')`
@@ -127,6 +135,12 @@ function createMockSupabase() {
 			if (fn !== 'check_and_increment_rate_limit') {
 				throw new Error(`Unexpected RPC: ${fn}`);
 			}
+			if (rpcFailure === 'error') {
+				return Promise.resolve({ data: null, error: { message: 'panne simulée' } });
+			}
+			if (rpcFailure === 'throw') {
+				return Promise.reject(new Error('panne simulée'));
+			}
 			return handleCheckAndIncrement(args);
 		}
 	} as unknown as SupabaseClient<Database>;
@@ -155,6 +169,7 @@ describe('Rate Limiter (Database-backed)', () => {
 	beforeEach(() => {
 		// Clear the in-memory storage
 		rateLimits.clear();
+		rpcFailure = null;
 
 		// Reset the singleton service role client
 		const globalForSupabase = globalThis as unknown as {
@@ -1262,6 +1277,37 @@ describe('Rate Limiter (Database-backed)', () => {
 			expect(rateLimits.get(`ratelimit:login:ip:${testIP2}`)?.count).toBeLessThanOrEqual(5);
 			expect(rateLimits.get(`ratelimit:login:email:${testEmail1}`)?.count).toBeLessThanOrEqual(3);
 			expect(rateLimits.get(`notification_create:${userId1}`)?.count).toBeLessThanOrEqual(10);
+		});
+	});
+	describe('Panne de la base (B8) : élévation fermée, connexion ouverte', () => {
+		it.each(['error', 'throw'] as const)(
+			'RPC en panne (%s) : l’élévation est refusée, par IP comme par e-mail',
+			async (mode) => {
+				rpcFailure = mode;
+				expect((await checkElevationRateLimitByIP('192.0.2.10')).allowed).toBe(false);
+				expect((await checkElevationRateLimitByEmail('admin@example.com')).allowed).toBe(false);
+			}
+		);
+
+		it.each(['error', 'throw'] as const)(
+			'RPC en panne (%s) : la connexion passe toujours',
+			async (mode) => {
+				rpcFailure = mode;
+				expect((await checkLoginRateLimitByIP('192.0.2.10')).allowed).toBe(true);
+				expect((await checkLoginRateLimitByEmail('eleve@example.com')).allowed).toBe(true);
+			}
+		);
+
+		it('IP ou e-mail absent : l’élévation est refusée', async () => {
+			expect((await checkElevationRateLimitByIP('')).allowed).toBe(false);
+			expect((await checkElevationRateLimitByEmail('')).allowed).toBe(false);
+		});
+
+		it('base disponible : l’élévation passe sous la limite, puis bloque au-delà', async () => {
+			for (let i = 0; i < 3; i++) {
+				expect((await checkElevationRateLimitByEmail('admin@example.com')).allowed).toBe(true);
+			}
+			expect((await checkElevationRateLimitByEmail('admin@example.com')).allowed).toBe(false);
 		});
 	});
 });

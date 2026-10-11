@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	/**
 	 * Le champ de définition d'une carte : `f(x) =` puis un champ MathLive.
 	 *

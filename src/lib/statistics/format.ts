@@ -14,6 +14,7 @@
 import type { Summary } from './describe';
 import type { Fraction } from './fraction';
 import type { RandomVariableLaw } from './random-variable';
+import { roundNumber } from './rounding';
 
 // =============================================================================
 // Types
@@ -40,9 +41,12 @@ export function formatStatNumber(value: number, locale: StatLocale): string {
 	return v < 0 ? `−${decimal}` : decimal;
 }
 
-/** `= 15,75` si la valeur est exacte à 2 décimales, sinon `≈ 14,44` (Q13). */
+/**
+ * `= 15,75` si la valeur est exacte à 2 décimales, sinon `≈ 14,44` (Q13).
+ * Arrondi : la règle unique de `statistics/rounding` (−0,125 → −0,13).
+ */
 export function formatApproxValue(value: number, locale: StatLocale): string {
-	const rounded = Math.round(value * 100) / 100;
+	const rounded = roundNumber(value, 2);
 	const exact = Math.abs(rounded - value) <= 1e-9 * Math.max(1, Math.abs(value));
 	return `${exact ? '=' : '≈'} ${formatStatNumber(rounded, locale)}`;
 }
@@ -55,7 +59,7 @@ export function formatApproxValue(value: number, locale: StatLocale): string {
 export function formatLawApproxValue(value: number, locale: StatLocale): string {
 	if (value === 0 || Math.abs(value) >= 0.01) return formatApproxValue(value, locale);
 	const places = Math.min(20, 1 - Math.floor(Math.log10(Math.abs(value))));
-	const rounded = Number(value.toFixed(places));
+	const rounded = roundNumber(value, places);
 	const exact = Math.abs(rounded - value) <= 1e-9 * Math.abs(value);
 	const digits = Math.abs(rounded)
 		.toFixed(places)

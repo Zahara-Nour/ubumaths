@@ -30,6 +30,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import {
@@ -46,6 +47,8 @@ import {
  * Creates or updates a shared_coursework record
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can share coursework
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -188,6 +191,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
  * - For materials: ?materialId=xxx&classId=xxx
  */
 export const DELETE: RequestHandler = async ({ locals, url }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can unshare coursework/materials
 	const { user } = await requireRole(locals, 'teacher');
 

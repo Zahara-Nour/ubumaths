@@ -133,7 +133,7 @@ Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue da
 | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
 | **Classements unifiés** (2048, Mathémo, Démineur) | `src/routes/(protected)/games/leaderboards/+page.server.ts` → `game_leaderboard`, `minesweeper_scoped_leaderboard` ; constantes `src/lib/games/leaderboards.ts` | portée `class` / `grade` / `school`, toutes bornées par `my_school()` |
 | Tournoi                                           | `src/routes/api/games/minesweeper/tournaments/[id]/standings/+server.ts`                                                                                        | classes du tournoi                                                    |
-| Énigmes                                           | `src/routes/(protected)/dashboard/student/riddles/leaderboard/+page.server.ts` (vue `riddle_progress`)                                                          | voir Doutes                                                           |
+| Énigmes                                           | `src/routes/(protected)/dashboard/student/riddles/leaderboard/+page.server.ts` (`riddle_school_leaderboard`)                                                    | voir Doutes                                                           |
 | Succès                                            | `src/routes/api/achievements/leaderboard/+server.ts` → `get_achievement_leaderboard`                                                                            | —                                                                     |
 
 Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_leaderboard_union_order_by.sql`.
@@ -239,7 +239,11 @@ Tout ce qui met deux élèves en relation est borné par `my_school()` / `same_s
 
 ⚠️ Classement des énigmes (`riddle_progress`, vue invoker) : pas de fuite — un élève ne voit que les
 profils de ses camarades/amis et ses propres tentatives —, mais le classement est **faux** (les
-autres à 0). Bug fonctionnel, à traiter à part.
+autres à 0). Correction décidée par David (2026-10-11) : `riddle_school_leaderboard(p_limit)`,
+SECURITY DEFINER bornée à `my_school()`, hors comptes de test, ne rend que prénom, gidouilles
+des énigmes, énigmes réussies, rang et `is_me` (migration `20261015090800`, test
+`tests/integration/classement-enigmes-ecole.test.ts`). La page du classement la lit ; seuls les
+élèves qui ont tenté une énigme apparaissent, sans nom ni photo.
 
 ## Comment étendre
 
@@ -299,9 +303,13 @@ autres à 0). Bug fonctionnel, à traiter à part.
 - ✅ File multijoueur et scores 2048 : bornés / privés le 2026-10-10 (D18, voir « L'école est la
   frontière sociale »).
 - **Classement des énigmes** : vue `riddle_progress` lue avec les droits de l'élève — pas de fuite,
-  mais classement faux (les autres à 0).
-- **Sans appelant applicatif** : `process_weekly_rewards`, `award_weekly_reward`,
-  `purchase_shop_item`, `calculate_daily_challenge_gidouilles` (défis quotidiens supprimés).
+  mais classement faux (les autres à 0) ; remplacée par `riddle_school_leaderboard` (voir plus haut).
+- **Sans appelant applicatif** : `award_weekly_reward`, `calculate_daily_challenge_gidouilles`
+  (défis quotidiens supprimés). `process_weekly_rewards`, `purchase_shop_item` et
+  `get_2048_user_rank` ont été **supprimées** le 2026-10-11 (migration `20261015090700`).
+- **Données de jeu privées** (2026-10-11, migration `20261015090600`) : `mathemo_scores`,
+  `minesweeper_student_achievements`, `minesweeper_player_stats`, `marketplace_listing_views` —
+  chacun ne lit que les siennes (avant : `using (true)` pour tout compte, toutes écoles).
 - **Navadra** : routes vivantes mais hors catalogue, quatre liens morts dans le hub, gains de combat
   hors journal. **Evoland** : page sans lien.
 - `scripts/simulate-vip-economy.ts` simule l'ancienne économie (cap partagé) : périmé.

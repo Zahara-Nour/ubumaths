@@ -19,6 +19,7 @@
 	@module components/markdown/nodes/VariationTable
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 	import type {
 		VariationTableNode,

@@ -158,7 +158,19 @@ Routes :
 `profiles.status` (enum `user_status` : `pending | approved | rejected`) :
 
 - `(protected)/+layout.server.ts` est **deny-by-default** : `pending` → `/auth/pending-approval` ;
-  tout autre statut que `approved` → `signOut()` + `/auth/login?error=Accès refusé.`
+  tout autre statut que `approved` → `signOut()` + `/auth/login?error=Accès refusé.` — mais il ne
+  garde que les **pages**.
+- **`accountStatusHandle`** (`src/lib/server/accountStatusHandle.ts`, dans le hook juste après le
+  chargement du profil ; B6, 2026-10-10) : un compte non approuvé reçoit **403 sur toute API et
+  toute écriture** (actions de formulaire comprises). Le test porte sur `event.route.id`, jamais sur
+  le chemin brut (SvelteKit route sur le chemin décodé : `/%61pi/…` atteint `/api/…`). Restent
+  ouverts : déconnexion, connexion, inscription, `update-password`, `/consent/[token]`,
+  `/api/errors/log`, `/api/account/export` et `/api/account/delete` (droits RGPD).
+- **La base ignore le statut, par décision** (David, 2026-10-11) : avec son jeton, un compte en
+  attente garde via PostgREST ce qu'a un élève sans école ni classe — écrire ses propres données,
+  écrire au prof. Aucun accès à un mineur (amitiés et conversations bornées à l'école ; données de
+  jeu privées depuis le 2026-10-11). Garder le statut dans chaque policy coûterait cher pour un gain
+  faible ; le garde du hook ferme l'application.
 - Le prof et l'admin approuvent ou refusent via `api/admin/pending-users` et
   `api/admin/users/[id]/status` (motif dans `rejection_reason`).
 
@@ -176,7 +188,10 @@ Trois branches, dans cet ordre :
 2. **Élève pré-importé** (`pending_students` non activé, même e-mail) — import par l'admin
    (`dashboard/admin/import-students`) : profil pré-rempli **`approved`**, inscrit dans ses
    `class_ids`, ligne `pending_students` marquée activée.
-3. **Défaut** : `student`, `pending` si l'e-mail finit par `@voltairedoha.com`, sinon `approved`.
+3. **Défaut** : `student`, **toujours `pending`** (B7, décision de David du 2026-10-10 ; avant :
+   `approved` d'office hors `@voltairedoha.com`) — un `signUp` GoTrue direct ou une première
+   connexion Google sans code ni pré-inscription attend l'approbation du prof. Migration
+   `20261015090400`, test `tests/integration/inscription-sans-code-en-attente.test.ts`.
 
 Le trigger **ne lit jamais** `role`, `status`, `school_id` ni `grade` dans les métadonnées
 (contrôlées par l'attaquant). Il **avale ses erreurs** (`RAISE WARNING`) : un compte peut donc
@@ -223,7 +238,8 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
 
 1. `POST /api/admin/elevate` (prof ou admin connecté) : Zod (`adminElevateSchema`, mot de passe
    seul) → limites dédiées (`checkElevationRateLimitByIP` / `ByEmail`, distinctes du login) →
-   e-mail de l'admin retrouvé côté serveur → `signInWithPassword` sur un client **éphémère**
+   e-mail de l'admin retrouvé côté serveur **par le client service** (aucune policy ne montre le
+   profil admin au prof : sans lui, l'élévation échouait en 500 — B5, 2026-10-10) → `signInWithPassword` sur un client **éphémère**
    (`createEphemeralAuthClient` : ne persiste rien, n'écrit aucun cookie) → rôle `admin`
    relu en base → cookie posé.
 2. **Cookie `ubu-admin-elevation`** : base64url de
@@ -254,8 +270,10 @@ Un élève reçoit 403.
 
 ## Processus 2 — l'autorisation Google Classroom
 
-Désactivée (`GOOGLE_CLASSROOM_ENABLED = false` : points d'entrée de l'interface masqués),
-plomberie conservée. `api/google/auth/connect` (prof) crée un `state` et un vérificateur PKCE,
+Désactivée (`GOOGLE_CLASSROOM_ENABLED = false` : points d'entrée de l'interface masqués, et
+toute route `/api/google/**` répond 403 par `assertGoogleClassroomEnabled()` — sauf
+`auth/disconnect`, pour révoquer, et `auth/status`, en lecture ; B8, test
+`src/routes/api/google/__tests__/interrupteur-google.test.ts`), plomberie conservée. `api/google/auth/connect` (prof) crée un `state` et un vérificateur PKCE,
 stockés en cookies `httpOnly` (`google_oauth_state`, `google_code_verifier`) ; `callback`
 vérifie le `state`, échange le code, chiffre les jetons (`encryptToken`, AES-256-GCM, clé
 `GOOGLE_TOKEN_ENCRYPTION_KEY`) et les range dans `google_integrations`. Ce n'est **pas** une
@@ -345,7 +363,8 @@ test unitaire ne couvre `(protected)/+layout.server.ts` ni `userProfileHandle`.
   distinct joint par élévation, école = frontière sociale.
 - [ADR 0003](../adr/0003-donnees-hebergees-en-ue.md) — données (dont Auth) hébergées en UE.
 - Décisions sans ADR, toujours en vigueur : `getUser()` seul ; rôle lu en base ; import
-  dynamique de `@supabase/ssr` ; limites de débit fail-open ; élévation sans jeton de
+  dynamique de `@supabase/ssr` ; limites de débit fail-open, sauf l'élévation admin, fermée en cas de panne de la base
+  ou d'IP / e-mail absent (B8 : une panne n'ouvre pas le forçage du mot de passe admin) ; élévation sans jeton de
   rafraîchissement, fuite ≤ 1 h acceptée ; connexion Google et Classroom coupées par drapeau,
   plomberie gardée. Historique : [élévation](../archive/wip/admin-elevation-progress.md),
   [mono-prof](../archive/wip/single-teacher-refactor.md),

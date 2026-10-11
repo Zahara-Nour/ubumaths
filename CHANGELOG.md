@@ -2,6 +2,92 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.20.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.19.0...v0.20.0) (2026-10-11)
+
+### ✨ Features
+
+- **ubumark:** encadrés et détails en ligne d'une correction mis en forme au PDF ([59e6284](https://github.com/Zahara-Nour/ubumaths/commit/59e6284ebccee06fd346f56c7b5fad02dbc7e8ae))
+
+### 🐛 Bug Fixes
+
+- **rgpd:** critère d'activité réelle pour la purge des comptes (retour security-auditor) ([b15a1a9](https://github.com/Zahara-Nour/ubumaths/commit/b15a1a94c58b982a27eb73d8da982c6cd4e63eab))
+- **rgpd:** données de jeu privées, constructions aux connectés, fonctions mortes retirées ([231df91](https://github.com/Zahara-Nour/ubumaths/commit/231df914a8e527738efff16094b6c2cd07d63895))
+- **rgpd:** durées de conservation appliquées par la purge (C11) ([94bd8d4](https://github.com/Zahara-Nour/ubumaths/commit/94bd8d4b53403ac95d6af06ce0bc3da8fcd4046c))
+- **rgpd:** export avec les inférences du tuteur ; mention Groq non vérifiable retirée ([f4f0c01](https://github.com/Zahara-Nour/ubumaths/commit/f4f0c0179e0e588c57a7a402ffb7f050fbf89c96))
+- **rgpd:** export complet (tuteur, âge), sous-traitants déclarés, avertissement IA (C10, C12, C13) ([3ed0fa0](https://github.com/Zahara-Nour/ubumaths/commit/3ed0fa0b4fe7e070684c4e0205b52f6ff3bf30be))
+- **securite:** élévation fermée en panne, interrupteur Google côté API (B8) ([62a192e](https://github.com/Zahara-Nour/ubumaths/commit/62a192e6b71a19827b9b0919193caa4ad8c7e619))
+- **securite:** export du tableau blanc vers Classroom gardé par l'interrupteur ([d2eeac6](https://github.com/Zahara-Nour/ubumaths/commit/d2eeac61e8292f2b3f07943f0f8f7738dfa61310))
+- **ubumark:** un détail en ligne collé à « ( », « [ » ou « .x » ne casse plus la fiche (revue) ([34949e1](https://github.com/Zahara-Nour/ubumaths/commit/34949e1ec3afd7596b979d1d317a62193f616747))
+
+### ⚡ Performance Improvements
+
+- préchargement réservé au CSS, cache de static/, CSS MathLive par Vite ([9485dad](https://github.com/Zahara-Nour/ubumaths/commit/9485dad8cfb17fe094053a3f83861a8f69bfe57c))
+
+### 📚 Documentation
+
+- **architecture:** préchargement CSS seul, CSS MathLive par Vite, cache de static/ ([3c48137](https://github.com/Zahara-Nour/ubumaths/commit/3c481371ff1531efb5da8f7407fe937a68383251))
+- **base:** lectures par soi seul et constructions réservées aux comptes connectés ([7629b6e](https://github.com/Zahara-Nour/ubumaths/commit/7629b6e52c70eb9a3d55b62e11fb533fcc9bc397))
+- **serveur:** élévation fermée en panne, /auth/register en liste blanche ([8a2aadb](https://github.com/Zahara-Nour/ubumaths/commit/8a2aadb215ac985b6dcec143904efeb0e40f1039))
+- **ubumark:** encadrés et détails au PDF ; écart L18 (titres écran en français) ([e4d6ab5](https://github.com/Zahara-Nour/ubumaths/commit/e4d6ab5891928e08d71b60c928fc08f15bc6ac03))
+- **wip:** arbre des notions — étape 2 bis, règles validées par David ([ec9a922](https://github.com/Zahara-Nour/ubumaths/commit/ec9a922b730d9f35335ba73b1f0d03d4b55bf5e0))
+- **wip:** arbre des notions — scission des points des tables validée par David ([b51572e](https://github.com/Zahara-Nour/ubumaths/commit/b51572e79958d6b81e50f445cdb53c7c94697704))
+- **wip:** encadrés au PDF livrés ([#1072](https://github.com/Zahara-Nour/ubumaths/issues/1072)), journal archivé ([fa666e6](https://github.com/Zahara-Nour/ubumaths/commit/fa666e6b7bc2439ea1719c4827399d74fecd9c2f))
+- **wip:** progression RGPD — bloc C clos ([d2af536](https://github.com/Zahara-Nour/ubumaths/commit/d2af53636df0ee9d77dc6d1ee3b07820f8181e7a))
+- **wip:** rgpd — questions ouvertes tranchées, [#1075](https://github.com/Zahara-Nour/ubumaths/issues/1075) et [#1076](https://github.com/Zahara-Nour/ubumaths/issues/1076) livrées, constat énigmes ([564762d](https://github.com/Zahara-Nour/ubumaths/commit/564762db32bfa18ba8eae6e082d2b9ff2305096c))
+
+## [0.19.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.18.2...v0.19.0) (2026-10-11)
+
+### ✨ Features
+
+- **fiches:** la fiche choisit sa correction imprimée, concise ou détaillée (ADR 0017, lot 3) ([b9d1222](https://github.com/Zahara-Nour/ubumaths/commit/b9d122222bd0b3abf05c3f9164a6d970c6df9316))
+- **programme:** page Programme en consultation sur les points neufs ([c6f3837](https://github.com/Zahara-Nour/ubumaths/commit/c6f3837657dcf14a24378f42708ba400a995aa34))
+- **stats:** la loi normale se simule comme les autres lois (inversion, μ ± 3σ) ([3c28eae](https://github.com/Zahara-Nour/ubumaths/commit/3c28eae451f7f9e54d21448eeb7f20ab4e96011e))
+
+### 🐛 Bug Fixes
+
+- **auth:** comptes non approuvés bloqués sur API et écritures ; inscription sans code en attente ([f01d40e](https://github.com/Zahara-Nour/ubumaths/commit/f01d40ebfdd887ddd9b6f6820531c01f012b9c5b))
+- **auth:** garde par identifiant de route, flux d'un compte en attente ouverts ([c153946](https://github.com/Zahara-Nour/ubumaths/commit/c1539461933a9c6a65abaf6fea5baeb852bf6e93))
+- **auth:** l'élévation admin lit l'e-mail de l'admin par le client service (B5) ([f5b414c](https://github.com/Zahara-Nour/ubumaths/commit/f5b414c346a1a91b1b047034014f1e7adf9289af))
+- **fiches:** l'aperçu transmet le réglage ; PDF d'exercice seul détaillé (revue) ([2302c75](https://github.com/Zahara-Nour/ubumaths/commit/2302c75487cb1c8e787132a28ed200e5bc5b8921))
+- **mathast:** calcul par rapport à e refusé, e indicé variable, limite d'applyRules ([ec47cb7](https://github.com/Zahara-Nour/ubumaths/commit/ec47cb70a016eb7912269b83604596eb4cecef57))
+- **mathast:** corrections de la revue (pile, e indicé, E, primitive de e^{ax}) ([9420c2c](https://github.com/Zahara-Nour/ubumaths/commit/9420c2ccf9e174ada2ffa0b740a2f8698e32191d))
+- **mathast:** la lettre e est la constante d'Euler dans le parseur LaTeX ([5913e0d](https://github.com/Zahara-Nour/ubumaths/commit/5913e0d5a8dff4038307f29cccb99af1e3f7b820))
+- **mathast:** profondeur d'imbrication vérifiée avant l'analyse ([a64f7b5](https://github.com/Zahara-Nour/ubumaths/commit/a64f7b594aaebc32a118fbd2dddf70dade5fcdab))
+- **moderation:** la suppression d'un message aboutit, et ne ment plus ([af123a1](https://github.com/Zahara-Nour/ubumaths/commit/af123a1c0756b67d96b1eed8ac7932837470d250))
+- **moderation:** le prof ne supprime que des messages d'élèves ([f56c020](https://github.com/Zahara-Nour/ubumaths/commit/f56c020922907886b2be5b6d4404a02a6a76510c))
+- **programme:** suites de revue — nœuds archivés, libellés, test RLS ([5f2cee3](https://github.com/Zahara-Nour/ubumaths/commit/5f2cee30a69dc90733fc1165d5918e0126347862))
+- **questions:** créer publié dans une catégorie occupée est refusé, plus de décalage de niveau ([5c18706](https://github.com/Zahara-Nour/ubumaths/commit/5c187068a94310a21ffd8a0d8444a98b5bb49e2f))
+- **questions:** dialogue de niveau sans « automatiquement », message de refus vérifié en entier ([447259a](https://github.com/Zahara-Nour/ubumaths/commit/447259aa121c198879400c9a8c5c125141a1e5c6))
+- **rgpd:** page de stats du démineur sur le classement d'école ; fonction de rang retirée ([1e2a6c9](https://github.com/Zahara-Nour/ubumaths/commit/1e2a6c91f01d02843215d96f2d7afb4c2aaa8ba5))
+- **rgpd:** parties de démineur privées, rang calculé par le serveur (D16) ([0680ae8](https://github.com/Zahara-Nour/ubumaths/commit/0680ae8653be3c418220be852c86c224f316beca))
+- **rgpd:** scores 2048 privés, multijoueur borné à l'école (D18) ([ce30fc9](https://github.com/Zahara-Nour/ubumaths/commit/ce30fc9acdc53806ccc5a398f52af5e9de821159))
+- **srs:** section inexistante, suppression idempotente ; refus de la RLS en 403 ([590215b](https://github.com/Zahara-Nour/ubumaths/commit/590215b290bf102ecafc3313479b62bd19526da7))
+- **srs:** une suppression refusée par la RLS n'est plus annoncée comme réussie (E20) ([a035fb8](https://github.com/Zahara-Nour/ubumaths/commit/a035fb8989e5e970f54adc79c55d02028cdc88d1))
+- **stats:** bords de la normale écrits comme les classes ; messages et Φ⁻¹ symétrique (revue) ([b7b89cf](https://github.com/Zahara-Nour/ubumaths/commit/b7b89cfc23bfe970bedfd11f8e4044e191d57c36))
+- **stats:** pas de −0 dans le repli de roundNumber ; arrondi vérifié sur le rendu d'une série ([4cb9834](https://github.com/Zahara-Nour/ubumaths/commit/4cb98341617da31745a0590ec6f55c8c282cbe67))
+- **stats:** une seule règle d'arrondi d'affichage, demi sur la valeur absolue, sans erreur flottante ([041437c](https://github.com/Zahara-Nour/ubumaths/commit/041437ca6434ebf3e6a8bf32e3cc0e0734945889))
+- **ubumark:** formule ~…~ dans une cellule de tableau, à l'écran et au PDF ([8b43985](https://github.com/Zahara-Nour/ubumaths/commit/8b439852842599c670aaff02f7a58dcb2d63deb0))
+- **ubumark:** un \~ d'auteur reste un tilde de texte en cellule ; ~~…~~ non lu en ligne ([5d23f57](https://github.com/Zahara-Nour/ubumaths/commit/5d23f5726b7a6c2848b88bf7ec2dfcb23a8eb88e))
+
+### 📚 Documentation
+
+- **conformite:** C9, C10, C15 alignés sur le code (décisions de David) ([c4fcfb8](https://github.com/Zahara-Nour/ubumaths/commit/c4fcfb8ece75cc8cf8a5d2b11081c70e28fe2fe7))
+- **fiches:** corrigé imprimé concis ou détaillé ; D4 retiré, nouvel écart available_from ([1031db4](https://github.com/Zahara-Nour/ubumaths/commit/1031db49aff6e5028b0ecab80ec9737a61ef8dbb))
+- **jeux:** renvoi vers la route 2048 supprimée retiré ([a6033ac](https://github.com/Zahara-Nour/ubumaths/commit/a6033acdd702995048ed80112048c1df2091801c))
+- **mathast:** e constante d'Euler, profondeur avant analyse, limite d'applyRules ([102e7ff](https://github.com/Zahara-Nour/ubumaths/commit/102e7ff0fce305197136482fc75f36a30d1d088b))
+- **stats:** simulation de la loi normale ; D7 et K5 retirés des écarts ([4d0f590](https://github.com/Zahara-Nour/ubumaths/commit/4d0f59040d8e90e96e7c187bb03351f12bfe42a6))
+- **stats:** une seule règle d'arrondi (rounding.ts) ; V6 retiré, D7 décidé, M16 vers K17 ([05ab159](https://github.com/Zahara-Nour/ubumaths/commit/05ab159b3842f58c327f795e325c1c08097bc74a))
+- **ubumark:** formules ~…~ en cellule de tableau ; V10 corrigé, V11 reclassé latent ([7fe2821](https://github.com/Zahara-Nour/ubumaths/commit/7fe28216f4e2822c6760bd96e9cc403d08b32f18))
+- **wip:** corrigé imprimé concis ou détaillé livré ([#1069](https://github.com/Zahara-Nour/ubumaths/issues/1069)), journal archivé ([2f7e74c](https://github.com/Zahara-Nour/ubumaths/commit/2f7e74c9d582776b4f8b0177477a0390e53c9528))
+- **wip:** écart L17 (available_from) ; lot 3 consigné ; reformatage parasite retiré ([a5d5ede](https://github.com/Zahara-Nour/ubumaths/commit/a5d5edefbaebde132ad75560c4c45f1a39c4ecd0))
+- **wip:** écarts — K6 ([#1056](https://github.com/Zahara-Nour/ubumaths/issues/1056)) et refus de catégorie à la création ([#1059](https://github.com/Zahara-Nour/ubumaths/issues/1059)) consignés ([b9699d3](https://github.com/Zahara-Nour/ubumaths/commit/b9699d3387c6c64d64496c8d7ee277354b8d02b8))
+- **wip:** progression RGPD — B5, B6, B7, E20 livrés ([d6f079f](https://github.com/Zahara-Nour/ubumaths/commit/d6f079faadc29cce4134dba2ffbd45fb8eefe30d))
+- **wip:** progression RGPD — D18 livré ([f558616](https://github.com/Zahara-Nour/ubumaths/commit/f558616201dcece20a4a2a8a52bb5d2d0b6b88f4))
+- **wip:** progression RGPD — modération et D16 livrés ([8ec1b7b](https://github.com/Zahara-Nour/ubumaths/commit/8ec1b7b5b711016159bf61c2fdc0f32c0ac754e7))
+- **wip:** rgpd-securite-progress formaté (prettier bloquait la CI des PR) ([b6394f9](https://github.com/Zahara-Nour/ubumaths/commit/b6394f94c847fb96b72664cff3f53080fccf9ea9))
+- **wip:** rgpd-securite-progress remis à l'identique (reformatage parasite d'un hook) ([ed9372c](https://github.com/Zahara-Nour/ubumaths/commit/ed9372cb496a3c1ee6e1f94d2fb2662eb1f0d4fe))
+- **wip:** simulation de la loi normale livrée ([#1068](https://github.com/Zahara-Nour/ubumaths/issues/1068)), journal archivé ([8f9550e](https://github.com/Zahara-Nour/ubumaths/commit/8f9550e0e9bf2c8f6fd8eada9e6ba17f6b7f8e56))
+
 ## [0.18.2](https://github.com/Zahara-Nour/ubumaths/compare/v0.18.1...v0.18.2) (2026-10-10)
 
 ### 🐛 Bug Fixes

@@ -304,9 +304,10 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
   le passe (`decks/[id]/study` ne transmet que `states`).
 - **`chapter_decks` sans écran** : table, policies et tests d'intégration existent, aucune route
   ni page ne la lit ou ne l'écrit.
-- **Suppressions sans `.select()`** : `DELETE` de `api/srs/cards/[id]`, `api/srs/decks/[id]` et
-  `…/sections/[sectionId]` ne vérifient pas les lignes supprimées. Sur le Programme, la RLS
-  refuse en silence (0 ligne) et la route répond quand même « supprimé ».
+- ✅ **Suppressions sans `.select()`** (corrigé le 2026-10-10, E20) : les trois `DELETE` vérifient
+  désormais les lignes supprimées et répondent 403 quand la RLS refuse en silence (paquet assigné
+  ou géré automatiquement — Programme, chapitre). Test :
+  `src/routes/api/srs/__tests__/suppressions-silencieuses.test.ts`.
 - Des en-têtes de code (renvois corrigés par la PR #1027) parlent encore de
   « famille A » (`capacity-badge.ts`, `programme-deck.ts`, `decks/programme/+page.server.ts`,
   `api/skill-attempts`).

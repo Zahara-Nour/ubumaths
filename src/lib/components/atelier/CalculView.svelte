@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	/**
 	 * La vue Calcul de l'atelier.
 	 *
@@ -11,7 +12,12 @@
 	 */
 	import { convertLatexToMarkup } from 'mathlive';
 	import type { CalcDesk, Entry } from '$lib/atelier/desk.svelte';
-	import { commandCatalog, plain, type AtelierCommand } from '$lib/atelier/commands';
+	import {
+		commandBeingWritten,
+		commandCatalog,
+		plain,
+		type AtelierCommand
+	} from '$lib/atelier/commands';
 	import { Button } from '$lib/components/ui/button';
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
 	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
@@ -81,6 +87,8 @@
 		unfolded = unfolded.includes(id) ? unfolded.filter((x) => x !== id) : [...unfolded, id];
 	}
 
+	const catalog = $derived(commandCatalog(desk.session.engine));
+
 	/**
 	 * Les commandes à proposer, filtrées par ce qui est déjà tapé (§5 N1, N2).
 	 *
@@ -94,12 +102,117 @@
 		// Un espace signifie que la commande est choisie : on ne propose plus rien.
 		if (desk.draft.slice(1).includes(' ')) return [] as AtelierCommand[];
 		const typed = plain(desk.draft.slice(1).split(' ')[0]).toLowerCase();
-		return commandCatalog(desk.session.engine)
+		return catalog
 			.filter((c) =>
 				[c.french, c.name, ...c.aliases].some((form) => plain(form).toLowerCase().startsWith(typed))
 			)
 			.slice(0, 8);
 	});
+
+	/** Préfixe des ids : deux vues Calcul montées ne doivent pas se confondre. */
+	const uid = $props.id();
+
+	/**
+	 * La liste des commandes au clavier (phase 0 `atelier-cas-phase0.md`, PR 1).
+	 *
+	 * Échap la ferme jusqu'à la frappe suivante, comme un rappel par ↑ / ↓. Le
+	 * surlignage est retenu par NOM, et toute frappe le remet sur la première
+	 * commande disponible.
+	 */
+	let dismissed = $state(false);
+	let highlightedName = $state<string | null>(null);
+
+	const listOpen = $derived(suggestions.length > 0 && !dismissed);
+	const available = $derived(suggestions.filter((c) => c.unavailable === undefined));
+	const active = $derived(
+		available.find((c) => c.name === highlightedName) ?? available[0] ?? null
+	);
+	const activeId = $derived(
+		listOpen && active !== null ? `${uid}-commande-${suggestions.indexOf(active)}` : undefined
+	);
+
+	/** La commande dont l'élève tape la suite, et son modèle sous le champ. */
+	const writing = $derived(commandBeingWritten(catalog, desk.draft));
+	const model = $derived(
+		writing === null || writing.unavailable !== undefined
+			? null
+			: (writing.example ?? writing.description)
+	);
+
+	/**
+	 * Une frappe rouvre la liste et remet le surlignage sur la première
+	 * commande disponible : sans ça, effacer puis retaper `.d` gardait la
+	 * commande surlignée avant (revue).
+	 */
+	function handleInput() {
+		dismissed = false;
+		highlightedName = null;
+	}
+
+	/** Le nom tapé après le point est-il exactement une graphie de cette commande ? */
+	function typedInFull(command: AtelierCommand): boolean {
+		const typed = plain(desk.draft.slice(1)).toLowerCase();
+		return [command.french, command.name, ...command.aliases].some(
+			(form) => plain(form).toLowerCase() === typed
+		);
+	}
+
+	/** Déplacer le surlignage parmi les commandes disponibles, en boucle. */
+	function move(step: 1 | -1) {
+		if (active === null) return;
+		const next = (available.indexOf(active) + step + available.length) % available.length;
+		highlightedName = available[next].name;
+	}
+
+	/**
+	 * Entrée dans la liste des commandes CHOISIT (une commande incomplète ne
+	 * calcule rien) ; Tab aussi. Liste fermée, ↑ / ↓ rappellent les saisies.
+	 *
+	 * ⚠️ `preventDefault` avant tout : Entrée enverrait le formulaire, Tab
+	 * ferait quitter le champ.
+	 */
+	function handleKeydown(event: KeyboardEvent) {
+		// Safari envoie l'Entrée qui valide une saisie IME avec `isComposing`
+		// faux, mais le code 229
+		const composing = event.isComposing || event.keyCode === 229;
+		if (composing || event.altKey || event.ctrlKey || event.metaKey) return;
+
+		if (listOpen) {
+			if (event.key === 'Escape') {
+				event.preventDefault();
+				dismissed = true;
+				return;
+			}
+			// Une liste sans commande disponible (`.pose`) : Entrée calcule, et
+			// le moteur dit pourquoi
+			if (active === null) return;
+			if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+				event.preventDefault();
+				move(event.key === 'ArrowDown' ? 1 : -1);
+			} else if (event.key === 'Enter' && typedInFull(active) && active.runsAlone === true) {
+				// `.aide` tapée en entier : rien à choisir, Entrée calcule (décision
+				// de David, 2026-10-11) — le formulaire part comme sans la liste
+			} else if (event.key === 'Enter' || (event.key === 'Tab' && !event.shiftKey)) {
+				event.preventDefault();
+				complete(active);
+			}
+			return;
+		}
+
+		// Le curseur se place seul à la fin de la ligne rappelée : la norme HTML
+		// l'y met quand un script change la valeur d'un champ (mesuré : un
+		// `setSelectionRange` ajouté ne changeait rien au test qui le vérifie)
+		// Maj+↑ / Maj+↓ sélectionnent le texte : on les laisse au navigateur
+		if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && !event.shiftKey) {
+			event.preventDefault();
+			if (event.key === 'ArrowUp') desk.recallPrevious();
+			else desk.recallNext();
+			// Une ligne rappelée qui commence par un point rouvrirait la liste, et
+			// ↑ / ↓ y resteraient pris (`.pose` : rien à surligner, revue) — elle
+			// revient à la frappe suivante
+			dismissed = true;
+		}
+	}
 
 	/**
 	 * Le rendu mathématique d'une ligne, ou `null` s'il n'y en a pas de sûr.
@@ -124,6 +237,7 @@
 	/** Remplacer la commande en cours par celle que l'élève vient de choisir. */
 	function complete(command: AtelierCommand) {
 		desk.draft = `.${command.french} `;
+		highlightedName = null;
 		// Rendre la main au champ : l'élève vient de choisir dans une liste, il
 		// veut taper la suite, pas recliquer.
 		field?.focus();
@@ -266,12 +380,23 @@
 	-->
 	<p class="retour" aria-live="polite" class:vide={desk.notice === null}>{desk.notice ?? ''}</p>
 
-	{#if suggestions.length > 0}
-		<ul class="commandes" aria-label="Commandes disponibles">
-			{#each suggestions as command (command.name)}
-				<li>
+	{#if listOpen}
+		<!--
+			Le motif « combobox » : le focus reste dans le champ, l'élément
+			surligné est annoncé par `aria-activedescendant`. Les boutons gardent
+			le clic (et le toucher) ; `tabindex="-1"` les sort du parcours au Tab.
+		-->
+		<ul class="commandes" id="{uid}-commandes" role="listbox" aria-label="Commandes disponibles">
+			{#each suggestions as command, index (command.name)}
+				<li role="none">
 					<button
 						type="button"
+						role="option"
+						id="{uid}-commande-{index}"
+						tabindex="-1"
+						aria-selected={command === active}
+						aria-disabled={command.unavailable !== undefined}
+						class:surlignee={command === active}
 						onclick={() => complete(command)}
 						disabled={command.unavailable !== undefined}
 						title={command.unavailable ?? command.example ?? ''}
@@ -284,6 +409,10 @@
 		</ul>
 	{/if}
 
+	{#if model !== null}
+		<p class="modele" id="{uid}-modele">Modèle : <code>{model}</code></p>
+	{/if}
+
 	<form onsubmit={submit}>
 		<input
 			bind:this={field}
@@ -291,6 +420,14 @@
 			type="text"
 			autocomplete="off"
 			spellcheck="false"
+			role="combobox"
+			aria-autocomplete="list"
+			aria-expanded={listOpen}
+			aria-controls={listOpen ? `${uid}-commandes` : undefined}
+			aria-activedescendant={activeId}
+			aria-describedby={model !== null ? `${uid}-modele` : undefined}
+			onkeydown={handleKeydown}
+			oninput={handleInput}
 			aria-label="Calcul, définition ou commande"
 			placeholder="f(x) = x^2 − 3x + 1, ou 12 km + 300 m, ou un point pour les commandes"
 		/>
@@ -415,8 +552,19 @@
 		text-align: left;
 		border-radius: 0.25rem;
 	}
-	.commandes button:hover:not(:disabled) {
+	.commandes button:hover:not(:disabled),
+	.commandes button.surlignee {
 		background: var(--color-muted);
+	}
+
+	.modele {
+		margin: 0;
+		font-size: 0.8125rem;
+		color: var(--color-muted-foreground);
+	}
+	.modele code {
+		font-family: var(--font-mono, monospace);
+		color: var(--color-foreground);
 	}
 	.commandes button:disabled {
 		opacity: 0.55;

@@ -218,7 +218,9 @@ export type SimulatedNamedLaw =
 	| { family: 'geometric'; p: string; upTo: number }
 	| { family: 'uniform'; a: number; b: number }
 	| { family: 'uniform-density'; a: string; b: string; classes: number }
-	| { family: 'exponential'; lambda: string; classes: number };
+	| { family: 'exponential'; lambda: string; classes: number }
+	/** N(μ ; σ²), σ² écrit comme dans ```loi (D7, 2026-10-11) */
+	| { family: 'normal'; mu: string; variance: string; classes: number };
 
 export interface SimulationData {
 	/** Une lettre majuscule, autre que P */

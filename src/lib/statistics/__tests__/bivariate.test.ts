@@ -14,10 +14,10 @@ import {
 	predictX,
 	predictY,
 	readExactValue,
-	roundFraction,
 	isInterpolation,
 	toSafeNumber
 } from '../bivariate';
+import { roundFraction } from '../rounding';
 import { fitAffine } from '../fit';
 import { Fraction } from '../fraction';
 

@@ -19,7 +19,6 @@
  */
 import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { isCourseCard, type QuestionInstance, type QuestionTemplate } from '$lib/questions/types';
-import { detailedCorrection } from '$lib/questions/correction-detail';
 import { templateGenericFunctions } from '$lib/questions/generic-functions';
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { toLatex } from '$lib/mathAST';
@@ -115,11 +114,10 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 	// Formules maison lues avec les fonctions DE CE MODÈLE (cf. en-tête)
 	const fonctions = templateGenericFunctions(template.shared?.genericFunctions);
 	const enLatex = (texte: string) => customMathToLatex(texte, fonctions, template.id);
-	// Version détaillée (ADR 0017) : un marqueur `\detail{` brut ferait échouer
-	// Typst pour toute la fiche. Le réglage concise / détaillée viendra au lot 3.
-	const etapes = (instance.correction?.steps ?? []).map((step) =>
-		enLatex(detailedCorrection(step))
-	);
+	// Marqueurs de détail GARDÉS (ADR 0017, lot 3) : la fiche choisit concise ou
+	// détaillée à l'impression (`correctionForPrint`), même après la création de
+	// la série ; les écrans montrent la détaillée (`detailedCorrection`)
+	const etapes = (instance.correction?.steps ?? []).map((step) => enLatex(step));
 	// Correction générée (mode B) : ses étapes ne sont rendues qu'à l'écran ; la
 	// figer demanderait generateCorrection — refuser plutôt que d'en perdre le texte
 	if (etapes.length === 0 && instance.correction?.generatedSteps) {

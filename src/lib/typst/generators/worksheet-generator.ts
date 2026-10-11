@@ -53,6 +53,7 @@ import { formatNumber } from '../utils';
 import { SECTION_COLOR, exerciseBadge } from '../worksheet-palette';
 // Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
 import '$lib/ubumark/generators/figure-typst-setup';
+import { correctionForPrint } from '$lib/questions/correction-detail';
 
 // ============================================================================
 // TYPES
@@ -640,7 +641,10 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			content += '  #text(weight: "bold", fill: rgb(0, 100, 0))[Solution :]\n';
 			content += '  #v(0.3em)\n';
 
-			const solutionAst = parseMarkdown(exercise.solution);
+			// Concise ou détaillée selon la fiche (D11), avant Typst
+			const solutionAst = parseMarkdown(
+				correctionForPrint(exercise.solution, this.worksheetConfig.correction_detail)
+			);
 			const solutionTypst = generateTypst(solutionAst, {
 				includeSetup: false,
 				language: this.locale,
@@ -829,7 +833,10 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
   #v(0.3em)
 `;
 
-			const solutionAst = parseMarkdown(exercise.solution);
+			// Concise ou détaillée selon la fiche (D11), avant Typst
+			const solutionAst = parseMarkdown(
+				correctionForPrint(exercise.solution, this.worksheetConfig.correction_detail)
+			);
 			const solutionTypst = generateTypst(solutionAst, {
 				includeSetup: false,
 				language: this.locale,

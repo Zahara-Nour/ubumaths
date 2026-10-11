@@ -208,6 +208,104 @@ masquage — faille antérieure relevée par security-auditor) ; toast multijoue
   est bloqué un commit en retard par deux fichiers régénérés non commités (identiques à
   `origin/main`) — en attente de l'accord de David pour les annuler.
 
+- **D18 (#1062, mergée, migration en prod)** : `game_2048_scores` lisible par soi seul (route
+  `/api/games/2048/leaderboard`, sans appelant, supprimée) ; `join_multiplayer_queue` bornée à l'école
+  (vérifié en prod). Classement des énigmes : pas de fuite, mais classement faux (autres à 0) —
+  bug fonctionnel à traiter à part. Mineur : `get_2048_user_rank` (sans appelant) calcule un rang
+  toutes écoles. Le test `Q160` (rpc-lot4) apparie désormais deux élèves de la même école.
+- **Règle de David (2026-10-11)** : un DROP POLICY sans perte de donnée suit les 4 conditions comme
+  une migration additive ; arrêt toujours sur DROP TABLE/COLUMN, DELETE, perte de donnée.
+- Branches locales mergées laissées (`git branch -D` bloqué par les permissions) :
+  `fix/rgpd-frontiere-ecole`.
+
 ### Reste, dans l'ordre validé
 
-D18 (frontière d'école), B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
+B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
+
+## B6 / B7 (branche `fix/rgpd-comptes-non-approuves`)
+
+- Décisions de David (2026-10-10) : B7 « tous en attente » (compte sans code ni pré-inscription) ;
+  B6 « un seul garde dans le hook ».
+- Mesure prod : 1 compte refusé, 0 en attente ; 2 élèves approuvés sans classe (laissés tels quels).
+- Garde `accountStatusHandle` par **identifiant de route** (security-auditor : `/%61pi/…` contournait
+  un test sur le chemin brut) ; routes ouvertes : déconnexion, connexion, inscription,
+  `update-password`, consentement parental, journal d'erreurs, export et suppression de compte.
+- **Nouveau constat (hors branche)** : la base ignore `profiles.status` — un compte en attente garde
+  via PostgREST ce qu'a un élève sans école (écrire ses données, écrire au prof, lire des stats de
+  jeu pseudonymes en `using (true)` : `mathemo_scores`, `minesweeper_player_stats`,
+  `minesweeper_student_achievements`, `marketplace_listing_views`). Aucun accès à un mineur. À
+  proposer à David.
+
+## Point d'étape — 2026-10-11
+
+| Constat                                  | PR    | En prod                       |
+| ---------------------------------------- | ----- | ----------------------------- |
+| B6 comptes non approuvés (garde du hook) | #1065 | code : au `deploy:prod`       |
+| B7 inscription sans code → en attente    | #1065 | ✅ migration `20261015090400` |
+| E20 suppressions SRS silencieuses        | #1066 | code : au `deploy:prod`       |
+| B5 élévation admin cassée (500)          | #1067 | code : au `deploy:prod`       |
+
+- E20 : une section inexistante reste une suppression idempotente (200, contrat de
+  `sections-crud`) ; 0 ligne sur une section existante → 403.
+- B5 : mesuré — le prof voyait 0 profil admin (policies identiques local/prod), l'élévation
+  répondait 500 à chaque tentative. Corrigé par le client service.
+
+### Questions ouvertes pour David
+
+- **B8** : limites de débit qui échouent ouvertes ; `api/google/auth/*` sans test de
+  `GOOGLE_CLASSROOM_ENABLED` ; `/auth/register` hors `ALLOWED_SERVICE_ROLE_PATHS` (simple
+  avertissement en dev). (Le cookie d'élévation non chiffré est une décision du 2026-06-18.)
+- **D17** : `anon` lit 11 exercices et 9 constructions `is_public` (aucune d'un élève ; seul
+  l'identifiant du prof auteur est visible) — voulu ?
+- **Base qui ignore `profiles.status`** (relevé pendant B6) : fermer en base aussi ?
+- **Classement des énigmes faux** (autres élèves à 0) ; **`get_2048_user_rank`** sans appelant,
+  rang toutes écoles ; **fonctions mortes** `process_weekly_rewards`, `purchase_shop_item`.
+- **C9 → C15** : point par point (aligner le code ou les documents).
+
+## C — promesses RGPD sans code (décisions de David, 2026-10-11)
+
+| Point                           | Décision                                               | État                                                           |
+| ------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------- |
+| C9 « qui a accédé ? »           | aligner les documents                                  | ✅ rgpd.md, audit-trail.md (60 j, pas de lecture tracée)       |
+| C10 Groq                        | aligner les documents (+ avertissement dans le tuteur) | ✅ registre ; avertissement #1070                              |
+| C11 conservation                | aligner le code (purge)                                | ✅ #1071, migration en prod (accord explicite de David)        |
+| C12 export                      | aligner le code (tuteur, déclaration d'âge)            | ✅ #1070 (+ inférences du tuteur, art. 15)                     |
+| C13 page de confidentialité     | compléter (Brevo, Groq, HuggingFace ; 30 j)            | ✅ #1070 (« Groq : aucune conservation » retiré, invérifiable) |
+| C14 messages après suppression  | —                                                      | ✅ réglé par A1 (messages supprimés avec le compte)            |
+| C15 registre (rôle parent, âge) | aligner les documents                                  | ✅ registre-traitements.md                                     |
+
+### C11 — détail
+
+- `run_retention_c11()` (appelée en tête de `run_cleanup_expired_data`, hebdomadaire) : comptes
+  élèves sans **activité** depuis 5 ans (connexion, session rafraîchie, présence — l'audit a montré
+  que `last_sign_in_at` seul supprimait un élève resté connecté), conversations du tuteur 1 an après
+  le dernier message, pré-inscriptions non activées après 1 an. Mesuré : le 1er passage ne supprime
+  rien ; premières conversations vers le 13/12/2026, premiers comptes au plus tôt en 2030.
+- **À faire avant 2030** : une tâche qui retire du storage les fichiers d'un compte purgé (chemins
+  dans `account_deletion_audit.cleanup_result`, aucun consommateur aujourd'hui).
+- Le bloc C est clos : C9, C10, C15 (documents), C11, C12, C13 (code), C14 (réglé par A1).
+
+## Questions ouvertes tranchées (David, 2026-10-11) — toutes les recommandations retenues
+
+| Point                                     | Décision                                      | État                                                                               |
+| ----------------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Données de jeu en `using (true)`          | lecture par soi seul (prof et admin compris)  | ✅ #1075, migration `20261015090600` en prod (vérifiée)                            |
+| Base qui ignore `profiles.status`         | documenter seulement                          | ✅ #1075 (auth.md)                                                                 |
+| D17 exercices / constructions `is_public` | exercices publics ; constructions → connectés | ✅ #1075 (constructions `TO authenticated`)                                        |
+| Fonctions mortes                          | DROP (accord explicite)                       | ✅ #1075, migration `20261015090700` en prod (vérifiée)                            |
+| B8 limites de débit                       | élévation fermée en panne, le reste ouvert    | ✅ #1076 (code : au `deploy:prod`)                                                 |
+| B8 interrupteur Google                    | 403 côté API sauf `disconnect` / `status`     | ✅ #1076, + `whiteboard/export-to-classroom` (audit)                               |
+| B8 `/auth/register`                       | dans `ALLOWED_SERVICE_ROLE_PATHS`             | ✅ #1076                                                                           |
+| Classement des énigmes                    | fonction bornée à l'école, prénom + score     | ✅ #1077 (migration `20261015090800` en prod, vérifiée) + #1079 (page, `db:types`) |
+
+- #1077 : seuls les élèves ayant tenté une énigme apparaissent (pas d'annuaire de l'école).
+- **Nouveau constat (audit #1077), à soumettre à David** : `submit_riddle_attempt` prend
+  `p_is_correct` de l'appelant et reste exécutable par `authenticated` ; la policy
+  « Students can create own attempts » laisse aussi l'élève insérer une tentative à sa guise.
+  Un élève peut donc s'attribuer des gidouilles d'énigme (et la tête du classement). Intégrité,
+  pas confidentialité ; prod : `riddle_attempts` vide.
+- **Drive du tableau blanc** (`api/whiteboard/drive/*`) : utilise le jeton Google sans le garde
+  Classroom ; bouton volontairement hors du `{#if}`. À trancher : Drive = Classroom, ou
+  interrupteur distinct à documenter.
+- `db:types` régénéré dans #1079. La vue `riddle_progress` n'a plus de lecteur : `REVOKE` de
+  `authenticated` possible dans une PR à part (le `DROP VIEW`, destructif, attendra David).

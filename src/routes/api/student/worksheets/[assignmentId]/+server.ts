@@ -499,6 +499,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				) ?? worksheet.title,
 			// Drives both the exercise content and the chrome of the student PDF.
 			language: locale,
+			// Corrigé imprimé concis ou détaillé (réglage de la fiche, D11)
+			correction_detail: asWorksheetConfig(worksheet.config).correction_detail,
 			description: worksheet.description,
 			type: worksheet.type as WorksheetType,
 			instructions: assignment.instructions,

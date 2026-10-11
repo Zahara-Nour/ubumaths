@@ -236,29 +236,31 @@ src/routes/{(public),(protected),api}/            (protected) = auth requise ; a
 > **Carte complète : [docs/README.md](docs/README.md)** — chaque module de `src/lib` → sa doc. `docs/systeme/` décrit ce que fait le code ; `docs/pratiques/` décrit comment travailler ; `docs/wip/` = chantiers vivants seulement ; `docs/archive/` = le reste.
 > **Fin de chantier = versement** : ce qui est durable passe dans `docs/systeme/`, puis le journal wip est archivé.
 
-| Doc                                                                           | Contenu                                            |
-| ----------------------------------------------------------------------------- | -------------------------------------------------- |
-| [CONTEXT.md](CONTEXT.md)                                                      | **Glossaire du domaine** (unique)                  |
-| [docs/adr/](docs/adr/)                                                        | **Décisions d'architecture figées**                |
-| [git-workflow.md](docs/pratiques/git-workflow.md)                             | **Workflow git OBLIGATOIRE**                       |
-| [worktrees.md](docs/pratiques/worktrees.md)                                   | **Worktrees** : règles + verrous partagés          |
-| [skills-claude.md](docs/pratiques/skills-claude.md)                           | **Mode d'emploi** des skills et commandes          |
-| [commandes.md](docs/pratiques/commandes.md)                                   | Scripts pnpm                                       |
-| [svelte-typescript.md](docs/pratiques/svelte-typescript.md)                   | Svelte 5, TypeScript                               |
-| [composants-ui.md](docs/pratiques/composants-ui.md)                           | Shadcn, MySelect, Tailwind                         |
-| [pratiques/base-de-donnees.md](docs/pratiques/base-de-donnees.md)             | Supabase, migrations                               |
-| [qualite.md](docs/pratiques/qualite.md) · [tests.md](docs/pratiques/tests.md) | Linting, Zod · architecture des tests + TDD        |
-| [rls-echecs-silencieux.md](docs/pratiques/rls-echecs-silencieux.md)           | **La RLS échoue en silence**                       |
-| [notation-unites.md](docs/pratiques/notation-unites.md)                       | **Écrire une grandeur** : `~3[m.s^-1]~`, affichage |
-| [fiches-exercices.md](docs/pratiques/fiches-exercices.md)                     | **Créer des fiches** : démarche, choix, pièges PDF |
-| [observabilite-erreurs-prod.md](docs/pratiques/observabilite-erreurs-prod.md) | **Lire les erreurs de prod** (Vercel, 7 j)         |
-| [warning-svelte.md](docs/pratiques/warning-svelte.md)                         | `svelte-ignore` légitime vs dette a11y             |
-| [css-color-tokens.md](docs/pratiques/css-color-tokens.md)                     | `var(--color-*)`, jamais `hsl(var(--x))`           |
-| [architecture-generale.md](docs/systeme/architecture-generale.md)             | Structure, routing, perf                           |
-| [systeme/base-de-donnees.md](docs/systeme/base-de-donnees.md)                 | Schéma de la base                                  |
-| [panel-simplifications.md](docs/systeme/mathast/panel-simplifications.md)     | **Ce que `simplify` et les 4 intentions rendent**  |
-| [convention-equivalence.md](docs/systeme/mathast/convention-equivalence.md)   | **Ce que `areEquivalent` veut dire** (domaines)    |
-| [realtime.md](docs/systeme/realtime.md)                                       | Realtime, chat, présence                           |
+| Doc                                                                           | Contenu                                                |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [CONTEXT.md](CONTEXT.md)                                                      | **Glossaire du domaine** (unique)                      |
+| [docs/adr/](docs/adr/)                                                        | **Décisions d'architecture figées**                    |
+| [git-workflow.md](docs/pratiques/git-workflow.md)                             | **Workflow git OBLIGATOIRE**                           |
+| [worktrees.md](docs/pratiques/worktrees.md)                                   | **Worktrees** : règles + verrous partagés              |
+| [environnement-de-dev.md](docs/pratiques/environnement-de-dev.md)             | **Carte de l'outillage** : hooks, CI, Vercel, pourquoi |
+| [skills-claude.md](docs/pratiques/skills-claude.md)                           | **Mode d'emploi** des skills et commandes              |
+| [commandes.md](docs/pratiques/commandes.md)                                   | Scripts pnpm                                           |
+| [svelte-typescript.md](docs/pratiques/svelte-typescript.md)                   | Svelte 5, TypeScript                                   |
+| [composants-ui.md](docs/pratiques/composants-ui.md)                           | Shadcn, MySelect, Tailwind                             |
+| [pratiques/base-de-donnees.md](docs/pratiques/base-de-donnees.md)             | Supabase, migrations                                   |
+| [qualite.md](docs/pratiques/qualite.md) · [tests.md](docs/pratiques/tests.md) | Linting, Zod · architecture des tests + TDD            |
+| [rls-echecs-silencieux.md](docs/pratiques/rls-echecs-silencieux.md)           | **La RLS échoue en silence**                           |
+| [notation-unites.md](docs/pratiques/notation-unites.md)                       | **Écrire une grandeur** : `~3[m.s^-1]~`, affichage     |
+| [fiches-exercices.md](docs/pratiques/fiches-exercices.md)                     | **Créer des fiches** : démarche, choix, pièges PDF     |
+| [observabilite-erreurs-prod.md](docs/pratiques/observabilite-erreurs-prod.md) | **Lire les erreurs de prod** (Vercel, 7 j)             |
+| [core-web-vitals.md](docs/pratiques/core-web-vitals.md)                       | **Vitesse réelle** : relevé mensuel, diagnostic        |
+| [warning-svelte.md](docs/pratiques/warning-svelte.md)                         | `svelte-ignore` légitime vs dette a11y                 |
+| [css-color-tokens.md](docs/pratiques/css-color-tokens.md)                     | `var(--color-*)`, jamais `hsl(var(--x))`               |
+| [architecture-generale.md](docs/systeme/architecture-generale.md)             | Structure, routing, perf                               |
+| [systeme/base-de-donnees.md](docs/systeme/base-de-donnees.md)                 | Schéma de la base                                      |
+| [panel-simplifications.md](docs/systeme/mathast/panel-simplifications.md)     | **Ce que `simplify` et les 4 intentions rendent**      |
+| [convention-equivalence.md](docs/systeme/mathast/convention-equivalence.md)   | **Ce que `areEquivalent` veut dire** (domaines)        |
+| [realtime.md](docs/systeme/realtime.md)                                       | Realtime, chat, présence                               |
 
 ---
 

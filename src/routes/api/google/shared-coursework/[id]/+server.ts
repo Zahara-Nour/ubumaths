@@ -30,6 +30,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import type { TablesUpdate } from '$lib/types/database';
@@ -46,6 +47,8 @@ import {
  * Updates visibility, category, or description override
  */
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can update shared coursework
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -276,6 +279,8 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
  * Removes a single shared coursework record
  */
 export const DELETE: RequestHandler = async ({ params, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can delete shared coursework
 	await requireRole(locals, 'teacher');
 

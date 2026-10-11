@@ -23,6 +23,8 @@ export class ProfileBuilder {
 			email: generateTestEmail('user'),
 			role: 'student',
 			full_name: 'Test User',
+			// Explicite : un compte sans code de classe naît « en attente » (B7, 2026-10-10).
+			status: 'approved',
 			created_at: new Date().toISOString()
 		};
 	}

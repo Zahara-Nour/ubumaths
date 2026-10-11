@@ -26,6 +26,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import {
@@ -39,6 +40,8 @@ import {
  * Share a course work material with one or more classes
  */
 export const POST: RequestHandler = async ({ params, request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 
@@ -136,6 +139,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
  * Unshare a material from one or more classes
  */
 export const DELETE: RequestHandler = async ({ params, request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 

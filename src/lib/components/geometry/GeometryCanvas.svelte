@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import ElementPopover from './ElementPopover.svelte';
 	import SliderControl from './SliderControl.svelte';
 	import type { InlineNode } from '$lib/ubumark';

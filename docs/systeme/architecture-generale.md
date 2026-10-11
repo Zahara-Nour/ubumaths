@@ -4,6 +4,7 @@ couvre:
   - src/hooks.client.ts
   - src/app.d.ts
   - src/app.html
+  - src/lib/utils/mathlive-styles.ts
   - src/routes/+layout.server.ts
   - src/routes/+layout.ts
   - 'src/routes/(protected)/+layout.server.ts'
@@ -114,6 +115,23 @@ Le chunk du layout racine doit rester **< 100 Ko**, sinon iPad/Safari lève
   `102400` octets.
 
 Détail : [safari-webkit-tdz.md](../pratiques/safari-webkit-tdz.md).
+
+### Premier affichage : préchargement et CSS
+
+- **Seul le CSS est préchargé.** Le premier handle de `src/hooks.server.ts` passe
+  `preload: ({ type }) => type === 'css'` à `resolve` : sans lui, l'en-tête HTTP `Link` de
+  chaque page préchargeait aussi ~94 chunks JS (189 Ko brotli sur l'accueil) qui disputaient la
+  bande passante aux CSS bloquantes (FCP p75 de l'accueil 3,4 s pour un TTFB de 0,5 s, octobre
+  2026). Le JS arrive ensuite en cascade d'imports : hydratation un peu plus tardive, mesurée à
+  +0,1 à +0,3 s en labo pour un FCP divisé par 3 à 7 sur réseau lent.
+- **Le CSS de MathLive n'est plus chargé sur toutes les pages.** `src/app.html` ne le référence
+  plus ; `src/lib/utils/mathlive-styles.ts` importe `mathlive/static.css` depuis le paquet (à
+  jour, haché, immuable), et chaque composant qui rend des maths importe ce module. Les polices
+  KaTeX restent déclarées dans le document, comme `<math-field>` l'exige à son montage. Le
+  plugin Vite `mathliveFontDisplay` (`vite.config.ts`) corrige le `font-display:"swap"` entre
+  guillemets que MathLive écrit (invalide : le texte restait invisible jusqu'à 3 s).
+- **Cache de `static/`** : règles `headers` de `vercel.json` (polices 30 j, images, sons et CSS
+  1 j, avec `stale-while-revalidate`) ; ces fichiers étaient revalidés à chaque visite.
 
 ## Motif : UI optimiste + envoi groupé
 

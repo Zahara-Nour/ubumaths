@@ -33,3 +33,32 @@ describe('intertitres des pages légales, accentués', () => {
 		await expect.element(screen.getByRole('heading', { level: niveau, name: titre })).toBeVisible();
 	});
 });
+
+// C13 (décision de David, 2026-10-11) : la page citait Supabase, Vercel et Google seulement,
+// et annonçait des journaux gardés 90 jours (purgés à 30 par run_cleanup_expired_data).
+describe('confidentialité : sous-traitants et durées réelles', () => {
+	it.each(['Brevo', 'Groq', 'Hugging Face'])('le sous-traitant %s est cité', async (nom) => {
+		const screen = await render(Confidentialite);
+		await expect.element(screen.getByRole('cell', { name: nom, exact: true })).toBeVisible();
+	});
+
+	it('les journaux techniques sont annoncés à 30 jours', async () => {
+		const screen = await render(Confidentialite);
+		const ligne = screen.getByRole('row', { name: /Logs techniques/ });
+		await expect.element(ligne).toHaveTextContent('30 jours');
+	});
+});
+
+// C11 (décisions de David, 2026-10-11) : les durées annoncées sont celles de la purge.
+describe('confidentialité : durées de conservation appliquées', () => {
+	it.each([
+		['Profil utilisateur (eleve)', 'Supprime apres 5 ans sans activite'],
+		['Conversations avec le tuteur IA', '1 an apres le dernier message'],
+		['Pre-inscriptions non activees', '1 an']
+	])('%s : %s', async (type, duree) => {
+		const screen = await render(Confidentialite);
+		await expect
+			.element(screen.getByRole('row', { name: new RegExp(type.replace(/[()]/g, '\\$&')) }))
+			.toHaveTextContent(duree);
+	});
+});

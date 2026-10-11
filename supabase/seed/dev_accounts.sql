@@ -85,9 +85,11 @@ BEGIN
         )
         ON CONFLICT (provider, provider_id) DO NOTHING;
 
-        INSERT INTO public.profiles (id, email, role, full_name)
-        VALUES (a.id, a.email, a.role::public.user_role, a.full_name)
-        ON CONFLICT (id) DO UPDATE SET role = EXCLUDED.role, full_name = EXCLUDED.full_name;
+        -- status explicite : un compte sans code de classe naît « en attente » (B7).
+        INSERT INTO public.profiles (id, email, role, full_name, status)
+        VALUES (a.id, a.email, a.role::public.user_role, a.full_name, 'approved')
+        ON CONFLICT (id) DO UPDATE SET role = EXCLUDED.role, full_name = EXCLUDED.full_name,
+            status = EXCLUDED.status;
     END LOOP;
 END $dev_accounts$;
 

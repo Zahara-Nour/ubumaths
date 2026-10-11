@@ -42,9 +42,9 @@ import {
 	bivariateFit,
 	invalidValueReason,
 	readExactValue,
-	roundFraction,
 	toSafeNumber
 } from '../../../statistics/bivariate';
+import { roundFraction } from '../../../statistics/rounding';
 import type { Fraction } from '../../../statistics/fraction';
 import {
 	changeDomainProblem,

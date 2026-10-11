@@ -58,6 +58,13 @@ export interface AtelierCommand {
 	readonly exampleSetup?: Readonly<Record<string, string>>;
 	/** La rubrique de `.aide` ; absente = commande de développeur. */
 	readonly section?: HelpSection;
+	/**
+	 * Se lance sans argument (`.aide`, `.exact`) : tapée en entier, une seule
+	 * Entrée la lance au lieu de la choisir dans la liste (décision de David,
+	 * 2026-10-11). ⚠️ « Sans exemple » ne suffit pas à le dire : `.arbre` n'a
+	 * pas d'exemple et attend une expression.
+	 */
+	readonly runsAlone?: boolean;
 }
 
 // =============================================================================
@@ -73,6 +80,7 @@ interface Translation {
 	readonly unavailable?: string;
 	readonly exampleSetup?: Readonly<Record<string, string>>;
 	readonly section?: HelpSection;
+	readonly runsAlone?: boolean;
 }
 
 /**
@@ -340,8 +348,14 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
 		}
 	],
-	['vars', { french: 'valeurs', description: 'Lister les valeurs connues du moteur' }],
-	['fns', { french: 'fonctions', description: 'Lister les fonctions connues du moteur' }],
+	[
+		'vars',
+		{ french: 'valeurs', description: 'Lister les valeurs connues du moteur', runsAlone: true }
+	],
+	[
+		'fns',
+		{ french: 'fonctions', description: 'Lister les fonctions connues du moteur', runsAlone: true }
+	],
 	[
 		'inv',
 		{
@@ -369,7 +383,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 			example: '.mode exact'
 		}
 	],
-	['help', { french: 'aide', description: 'Afficher les commandes disponibles' }],
+	['help', { french: 'aide', description: 'Afficher les commandes disponibles', runsAlone: true }],
 	// Avancées : elles restent tapables, mais ne s'affichent pas en premier.
 	[
 		'normal',
@@ -460,9 +474,17 @@ const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 			example: '.ajustement 1 ; 2 ; 3 ; 4 ; 5 ; 6 : 12 ; 15 ; 19 ; 22 ; 27 ; 30 en x = 8'
 		}
 	],
-	['exact', { french: 'exact', description: 'Passer aux valeurs exactes' }],
-	['decimal', { french: 'décimal', description: 'Passer aux valeurs décimales' }],
-	['auto', { french: 'auto', description: 'Laisser l’atelier deviner la syntaxe', advanced: true }],
+	['exact', { french: 'exact', description: 'Passer aux valeurs exactes', runsAlone: true }],
+	['decimal', { french: 'décimal', description: 'Passer aux valeurs décimales', runsAlone: true }],
+	[
+		'auto',
+		{
+			french: 'auto',
+			description: 'Laisser l’atelier deviner la syntaxe',
+			advanced: true,
+			runsAlone: true
+		}
+	],
 	[
 		'unitmode',
 		{
@@ -471,7 +493,10 @@ const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 			advanced: true
 		}
 	],
-	['export', { french: 'exporter', description: 'Exporter la session', advanced: true }]
+	[
+		'export',
+		{ french: 'exporter', description: 'Exporter la session', advanced: true, runsAlone: true }
+	]
 ]);
 
 /**
@@ -524,7 +549,8 @@ export function commandCatalog(engine: WebReplEngine): AtelierCommand[] {
 			...(t.advanced && { advanced: true }),
 			...(t.unavailable && { unavailable: t.unavailable }),
 			...(t.exampleSetup && { exampleSetup: t.exampleSetup }),
-			...(t.section && { section: t.section })
+			...(t.section && { section: t.section }),
+			...(t.runsAlone && { runsAlone: true })
 		});
 	};
 
@@ -547,6 +573,28 @@ export function commandCatalog(engine: WebReplEngine): AtelierCommand[] {
 		...catalog.filter((c) => c.advanced !== true),
 		...catalog.filter((c) => c.advanced === true)
 	];
+}
+
+/**
+ * La commande dont l'élève écrit la suite : `.taylor sin(x)` → `.taylor`.
+ *
+ * Reconnue dès l'espace qui suit son nom, sous toutes ses graphies (français,
+ * sans accent, nom moteur, raccourci) : c'est elle dont la vue montre le
+ * modèle sous le champ (phase 0 `atelier-cas-phase0.md`, PR 1). Avant
+ * l'espace, l'élève choisit encore dans la liste.
+ */
+export function commandBeingWritten(
+	catalog: readonly AtelierCommand[],
+	draft: string
+): AtelierCommand | null {
+	const match = /^\.(\S+)\s/.exec(draft);
+	if (match === null) return null;
+	const typed = plain(match[1]).toLowerCase();
+	return (
+		catalog.find((c) =>
+			[c.french, c.name, ...c.aliases].some((form) => plain(form).toLowerCase() === typed)
+		) ?? null
+	);
 }
 
 /** Le nom moteur d'une commande écrite en français, s'il y en a un. */

@@ -12,8 +12,9 @@
  *     and (if terms_version present) a terms_acceptances row.
  *   - class missing / inactive / closed         → pending student, NOT enrolled,
  *     no terms_acceptances.
- * The pre-existing pending_students and default (domain-based) branches must be
- * preserved verbatim.
+ * The pre-existing pending_students branch must be preserved verbatim. The default
+ * branch (no code, not pre-registered) is ALWAYS pending since B7 (2026-10-10) — it
+ * used to be domain-based (approved outside @voltairedoha.com).
  *
  * We drive the trigger via the admin API (`auth.admin.createUser` with
  * `email_confirm: true`), whose `user_metadata` feeds raw_user_meta_data. Then
@@ -366,12 +367,14 @@ describe('Student self-registration by class code - Integration Tests', () => {
 	// ------------------------------------------------------------------
 	// 7. Regression: default branch (no class_id, non-voltaire, not pending)
 	// ------------------------------------------------------------------
-	it('regression: default branch (no class_id, non-voltaire email, not in pending_students) → approved, not enrolled', async () => {
+	// B7 (décision de David, 2026-10-10) : la branche par défaut met le compte en attente
+	// (avant : approuvé d'office hors @voltairedoha.com).
+	it('regression: default branch (no class_id, non-voltaire email, not in pending_students) → pending, not enrolled', async () => {
 		const { id } = await signUp({}); // @test.com email, no metadata
 
 		const profile = await getProfile(id);
 		expect(profile!.role).toBe('student');
-		expect(profile!.status).toBe('approved'); // non-voltaire default → approved
+		expect(profile!.status).toBe('pending'); // sans code ni pré-inscription → en attente (B7)
 		expect(await getMemberships(id)).toHaveLength(0);
 		expect(await getTerms(id)).toHaveLength(0);
 	});

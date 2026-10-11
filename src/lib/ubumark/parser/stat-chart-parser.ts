@@ -357,7 +357,7 @@ const EXPONENTIAL_REGEX = /^([A-Z])\s*(?:~|suit)\s*(?:E|Exp)\s*\(\s*(.+?)\s*\)$/
  */
 const NORMAL_REGEX = /^([A-Z])\s*(?:~|suit)\s*N\s*\(\s*(.+?)\s*(?:;|,\s+)\s*(.+?)\s*\)$/;
 
-const DENSITY_CDF_ONLY = 'seulement avec une loi à densité (X ~ U([a ; b]) ou E(λ))';
+const DENSITY_CDF_ONLY = 'seulement avec une loi à densité (X ~ U([a ; b]), E(λ) ou N(μ ; σ²))';
 
 /** Tableau d'une loi géométrique : k = 1 à 10 par défaut, puis « … » */
 const GEOMETRIC_TABLE_VALUES = 10;
@@ -2232,15 +2232,6 @@ function checkSimulatedNamedLaw(
 			simulation: { ...common, values: checked.law.values, named: { family: 'uniform', a, b } }
 		};
 	}
-	// La loi normale ne se simule pas (hors périmètre du 2026-10-09)
-	if (named.family === 'normal') {
-		return {
-			error: {
-				message: `Ligne ${named.line} : la loi normale ne se simule pas : utiliser un bloc \`\`\`loi`,
-				line: named.line
-			}
-		};
-	}
 	const checked = checkDensity(named, options, optionLines);
 	if ('error' in checked) return checked;
 	const classes = options.simulationClasses ?? STAT_CHART_LIMITS.simulationClasses.default;
@@ -2251,7 +2242,9 @@ function checkSimulatedNamedLaw(
 			named:
 				named.family === 'uniform-density'
 					? { family: 'uniform-density', a: named.a, b: named.b, classes }
-					: { family: 'exponential', lambda: named.lambda, classes }
+					: named.family === 'normal'
+						? { family: 'normal', mu: named.mu, variance: named.variance, classes }
+						: { family: 'exponential', lambda: named.lambda, classes }
 		}
 	};
 }
@@ -3262,7 +3255,7 @@ export function parseStatChartContent(kind: StatChartKind, source: string): Stat
 		const line = optionLines.classes ?? 0;
 		if (!isDensity || options.simulationMode !== 'tirages') {
 			errors.push({
-				message: `Ligne ${line} : classes : seulement pour une loi à densité (U([a ; b]) ou E(λ)) en mode tirages`,
+				message: `Ligne ${line} : classes : seulement pour une loi à densité (U([a ; b]), E(λ) ou N(μ ; σ²)) en mode tirages`,
 				line
 			});
 		}

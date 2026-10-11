@@ -77,6 +77,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { courseIdParamSchema } from '$lib/server/validation';
@@ -89,6 +90,8 @@ import { courseIdParamSchema } from '$lib/server/validation';
  * Returns course with all coursework items and their sharing status
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
+	assertGoogleClassroomEnabled();
+
 	// Only teachers can access course details
 	const { user } = await requireRole(locals, 'teacher');
 

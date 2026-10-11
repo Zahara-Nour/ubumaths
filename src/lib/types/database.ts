@@ -14737,14 +14737,6 @@ export type Database = {
         }
         Returns: number
       }
-      get_2048_user_rank: {
-        Args: { p_user_id: string }
-        Returns: {
-          total_players: number
-          user_rank: number
-          user_score: number
-        }[]
-      }
       get_accessible_kanban_boards: {
         Args: { p_cursor?: string; p_limit?: number }
         Returns: {
@@ -15656,31 +15648,9 @@ export type Database = {
         }
         Returns: Json
       }
-      process_weekly_rewards: {
-        Args: {
-          p_class_ids?: string[]
-          p_week_end: string
-          p_week_start: string
-        }
-        Returns: {
-          awarded: boolean
-          class_id: string
-          reason: string
-          student_id: string
-        }[]
-      }
       promote_user_to_admin: {
         Args: { user_email: string }
         Returns: undefined
-      }
-      purchase_shop_item: {
-        Args: {
-          p_purchase_context?: Json
-          p_quantity?: number
-          p_student_id: string
-          p_template_id: string
-        }
-        Returns: Json
       }
       purchase_vip_card: {
         Args: { p_card_id: string; p_student_id: string }
@@ -15868,11 +15838,23 @@ export type Database = {
         }
         Returns: undefined
       }
+      riddle_school_leaderboard: {
+        Args: { p_limit?: number }
+        Returns: {
+          firstname: string
+          is_me: boolean
+          rank: number
+          riddles_completed: number
+          riddles_gidouilles: number
+          student_id: string
+        }[]
+      }
       run_cleanup_all: { Args: never; Returns: undefined }
       run_cleanup_expired_data: { Args: never; Returns: undefined }
       run_daily_summaries: { Args: never; Returns: undefined }
       run_flag_stale_python_rechecks: { Args: never; Returns: undefined }
       run_recalculate_minesweeper_ref_times: { Args: never; Returns: undefined }
+      run_retention_c11: { Args: never; Returns: Json }
       run_weekly_best_bonuses: { Args: never; Returns: undefined }
       run_weekly_rewards: { Args: never; Returns: undefined }
       same_school: { Args: { p_other: string }; Returns: boolean }

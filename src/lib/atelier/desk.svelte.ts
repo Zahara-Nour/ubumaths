@@ -30,7 +30,8 @@ import { formatLawIndicators, formatStatNumber, formatSummary } from '$lib/stati
 import { categoryCounts } from './chart';
 import { randomVariable } from '$lib/statistics/random-variable';
 import { fitAffine } from '$lib/statistics/fit';
-import { bivariateFit, roundFraction, type BivariateFit } from '$lib/statistics/bivariate';
+import { bivariateFit, type BivariateFit } from '$lib/statistics/bivariate';
+import { roundFraction } from '$lib/statistics/rounding';
 import type { Fraction } from '$lib/statistics/fraction';
 import {
 	affineExpression,
@@ -219,6 +220,19 @@ export class CalcDesk {
 	/** La dernière suppression, pour rejouer une annulation. */
 	#lastRemoval: RemovedWithDependents | null = null;
 
+	/**
+	 * Les saisies TAPÉES, pour ↑ / ↓ (phase 0 `atelier-cas-phase0.md`, PR 1) :
+	 * jamais une ligne écrite par un bouton du panneau, même quand il passe par
+	 * `submit` (« Comparer avec M »).
+	 */
+	#typed: string[] = [];
+
+	/** L'indice, dans `#typed`, de la saisie rappelée ; `null` hors rappel. */
+	#recalled: number | null = null;
+
+	/** Ce que le champ contenait avant le premier ↑ : ↓ le rend au bout. */
+	#draftBeforeRecall = '';
+
 	constructor(atelier: Atelier, engine: WebReplEngine = new WebReplEngine()) {
 		this.atelier = atelier;
 		this.session = { atelier, engine };
@@ -259,13 +273,61 @@ export class CalcDesk {
 		this.#lastRemoval = null;
 		this.entries = [];
 		this.notice = null;
+		this.#typed = [];
+		this.#recalled = null;
+	}
+
+	/**
+	 * ↑ : la saisie précédente. Sur la plus ancienne, rien ne bouge.
+	 *
+	 * Une ligne rappelée que l'élève a modifiée n'est pas perdue : ↑ repart de
+	 * la plus récente, et ↓ rendra la modification au bout.
+	 */
+	recallPrevious(): void {
+		if (this.#typed.length === 0) return;
+		if (this.#recalled === null || this.draft !== this.#typed[this.#recalled]) {
+			this.#draftBeforeRecall = this.draft;
+			this.#recalled = this.#typed.length - 1;
+		} else if (this.#recalled > 0) {
+			this.#recalled--;
+		}
+		this.draft = this.#typed[this.#recalled];
+	}
+
+	/** ↓ : la saisie suivante ; après la plus récente, le brouillon d'avant ↑. */
+	recallNext(): void {
+		if (this.#recalled === null) return;
+		// L'élève corrige la ligne rappelée : ↓ ne l'écrase pas
+		if (this.draft !== this.#typed[this.#recalled]) {
+			this.#recalled = null;
+			return;
+		}
+		if (this.#recalled < this.#typed.length - 1) {
+			this.#recalled++;
+			this.draft = this.#typed[this.#recalled];
+			return;
+		}
+		this.#recalled = null;
+		this.draft = this.#draftBeforeRecall;
 	}
 
 	/** Traiter ce que l'élève vient de taper. */
 	submit(text: string): void {
+		this.#submit(text, true);
+	}
+
+	/** `typed` : tapée par l'élève (rappelable par ↑), ou écrite par un bouton. */
+	#submit(text: string, typed: boolean): void {
 		const result = runInput(this.session, text, 'text');
 		if (result.kind === 'vide') return;
 		this.#gesture = { kind: 'saisie', input: text };
+		// Seule une saisie tapée clôt le rappel : « Comparer » rend le brouillon
+		// intact, ↓ doit encore pouvoir revenir à celui d'avant ↑ (revue)
+		if (typed) {
+			this.#recalled = null;
+			// Deux saisies identiques de suite : rappelées une seule fois
+			if (this.#typed.at(-1) !== text) this.#typed.push(text);
+		}
 
 		this.#push({
 			label: text,
@@ -338,7 +400,9 @@ export class CalcDesk {
 	#replayStep(step: ReplayStep, rows: readonly number[], graph?: GrapheurStore): string | null {
 		switch (step.kind) {
 			case 'saisie':
-				this.submit(step.input);
+				// Un rejeu est un chargement : comme au rechargement, rien à rappeler
+				// par ↑ (« Comparer avec M » y est rejoué comme une saisie)
+				this.#submit(step.input, false);
 				return null;
 			case 'action':
 				if (step.action === 'image') this.image(step.name, step.value ?? '');
@@ -704,7 +768,7 @@ export class CalcDesk {
 		// ⚠️ Le brouillon de l'élève survit au clic : `submit` le vide (revue)
 		if (root === 'compare' && partner !== undefined) {
 			const { draft, notice } = this;
-			this.submit(`.comparer ${name} ${partner}`);
+			this.#submit(`.comparer ${name} ${partner}`, false);
 			this.draft = draft;
 			this.notice = notice;
 			return 'ok';

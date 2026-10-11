@@ -246,15 +246,16 @@ DPA disponible sur demande via le dashboard Brevo.
 
 #### Donnees traitees
 
-- Messages envoyes au tuteur IA
-- Contexte pedagogique (exercice en cours, niveau)
-- **Pas de donnees d'identification directe** envoyees
+- Messages envoyes au tuteur IA, **tels que saisis par l'eleve** (texte libre et images) : s'il y
+  ecrit son nom ou une information personnelle, elle est transmise
+- Contexte pedagogique ajoute par l'application : niveau scolaire, extraits de cours (RAG)
 
 #### Mesures de minimisation
 
-- Pas d'envoi de noms/emails a l'API
+- L'application n'ajoute ni nom, ni email, ni identifiant de compte a la requete
 - Pas de retention des conversations par Groq (zero data retention policy)
-- Contexte anonymise avant envoi
+- **Pas d'anonymisation du texte libre** (realigne le 2026-10-11, decision de David, constat C10) :
+  un avertissement dans le tuteur invite l'eleve a ne pas ecrire d'information personnelle
 
 #### Localisation
 

@@ -156,8 +156,10 @@ async function creerEleves(db: pg.Client): Promise<number> {
 			[id, email]
 		);
 		await db.query(
-			`insert into public.profiles (id, email, role, full_name) values ($1, $2, 'student', $3)
-			 on conflict (id) do nothing`,
+			// status explicite : le trigger crée un compte sans code « en attente » (B7).
+			`insert into public.profiles (id, email, role, full_name, status)
+			 values ($1, $2, 'student', $3, 'approved')
+			 on conflict (id) do update set status = 'approved'`,
 			[id, email, nom]
 		);
 		if (n <= NB_ELEVES && classes.length > 0) {
