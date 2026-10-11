@@ -62,7 +62,7 @@ Règle et exemple : [qualite.md § Input Validation with Zod](../pratiques/quali
 
 - **Par défaut : `locals.supabase`**, client de l'appelant ; la RLS fait le travail ([base-de-donnees.md § 1](base-de-donnees.md#1-le-modèle-daccès)). Une écriture refusée rend **zéro ligne, pas d'erreur** : `.select()` après `update`/`delete` et vérifier ([rls-echecs-silencieux.md](../pratiques/rls-echecs-silencieux.md)).
 - **Admin élevé : `locals.adminSupabase`** ([auth.md § Élévation admin](auth.md#élévation-admin)).
-- **Service role : `createServiceRoleClient()`** (`src/lib/server/serviceRoleClient.ts`), qui contourne la RLS. Seulement quand la base refuse légitimement l'écriture à l'utilisateur, **après** la garde d'identité, et en ajoutant le chemin à `ALLOWED_SERVICE_ROLE_PATHS` dans ce même fichier. Le contrôle de la liste est un `console.warn` **en dev seulement**. Appelants (2026-10-10) : 17 endpoints, 4 pages, 11 fichiers de `src/lib/server/`.
+- **Service role : `createServiceRoleClient()`** (`src/lib/server/serviceRoleClient.ts`), qui contourne la RLS. Seulement quand la base refuse légitimement l'écriture à l'utilisateur, **après** la garde d'identité, et en ajoutant le chemin à `ALLOWED_SERVICE_ROLE_PATHS` dans ce même fichier. Le contrôle de la liste est un `console.warn` **en dev seulement**. Appelants (2026-10-10) : 17 endpoints, 4 pages, 11 fichiers de `src/lib/server/` ; + `api/riddles/[id]/submit` (2026-10-11 : la justesse d'une tentative d'énigme vient du serveur, jamais du navigateur).
 - `src/lib/server/rateLimiter.ts` crée **son propre** client service role (`createClient`) au lieu de passer par `serviceRoleClient.ts` (table `rate_limits` réservée à `service_role`).
 
 ### 1.4 Erreurs
