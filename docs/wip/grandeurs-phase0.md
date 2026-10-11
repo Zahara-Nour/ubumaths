@@ -125,3 +125,7 @@ Une PR par lot : **A** (moteur, `.convertir`, erreurs, `.mode décimal` des gran
   calcul depuis l'arbre passé par `tidy` (π/3, √2/2, π²/6), sauf s'il porte un décimal (mode
   décimal : `tidy` aurait écrit 3/10 pour 0,3 — mesuré) ; l'heuristique de l'antislash ne sert
   plus qu'aux commandes. « Garder » une grandeur gardait déjà son unité depuis le lot A (test).
+- 2026-10-11 — revue du lot B : DÉCISION DE DAVID (« ok pour A ») — `tidy` seulement pour un résultat
+  SANS variable libre (π, √, e, ln) : `x/x` n'est pas simplifié en 1, `3-2x+x^2` garde son ordre,
+  `3x/4` reste en ligne comme avant (la ligne `3x/4` empilée de la phase 0 est abandonnée). Corrigé :
+  le bouton « Valeur exacte » en mode décimal écrivait ⅓ π.
