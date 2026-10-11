@@ -50,8 +50,19 @@ de la console. Questions :
 ## Plus tard (questions, pas des recos)
 
 - Mode exact : `(1+1/1000)^1000` affiche une fraction de 3001 chiffres.
+- Revue de la reco 1, pour la reco 2 : une valeur non nulle qui tombe à 0 en flottant passe la
+  garde de taille d'`approximateDigitsOf` (`0.3^1000` → « ≈ 0.0000 ») ; `0.3^600` sort par le
+  repli brut (« ≈ 1.87392770387848e-314 »). L'exposant d'une valeur sous 10⁻³⁰⁸ ne se lit que
+  sur le rationnel, pas sur le flottant.
+- Hors reco 1 (comportement antérieur) : un exposant > 1000 passe par `Math.pow` —
+  `0.5^{2000}` au bouton ≈ donne « = 0 » (marqué exact), `1.5^{2000}` « Cannot convert Infinity
+  to Rational ».
 - Avertissement pour `1e-7` (lu e − 7, e = Euler).
 
 ## Journal
 
-- 2026-10-11 — reco 1 codée sur `fix/conversion-rationnel` ; suite mathAST verte (472 fichiers).
+- 2026-10-11 — reco 1 codée sur `fix/conversion-rationnel` ; suite serveur complète verte.
+- 2026-10-11 — revue `code-reviewer` : rien de bloquant. Corrigés : la valeur dénormale (2^-shift
+  d'un seul tenant sous-dépassait vers 0 — testé, le commentaire se trompait de côté) ; arrondi
+  correct par bit collant (2⁵³ + 1 + ε → 2⁵³ + 2) ; tests du signe en bas et de la division par
+  zéro. Les deux nouveaux tests échouent sur le code sans ces protections (mutant mesuré).

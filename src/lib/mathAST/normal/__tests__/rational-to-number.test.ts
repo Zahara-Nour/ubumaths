@@ -33,10 +33,13 @@ describe('rationalToNumber : des termes géants, une valeur ordinaire', () => {
 		expect(relativeGap(rationalToNumber({ n, d }), expected)).toBeLessThan(1e-14);
 	});
 
-	it('le signe est gardé', () => {
-		const value = rationalToNumber({ n: -power(1001n, 1000n), d: power(1000n, 1000n) });
+	it('le signe est gardé, qu’il soit en haut ou en bas', () => {
+		const n = power(1001n, 1000n);
+		const d = power(1000n, 1000n);
 
-		expect(relativeGap(value, -2.7169239322358925)).toBeLessThan(1e-14);
+		expect(relativeGap(rationalToNumber({ n: -n, d }), -2.7169239322358925)).toBeLessThan(1e-14);
+		expect(relativeGap(rationalToNumber({ n, d: -d }), -2.7169239322358925)).toBeLessThan(1e-14);
+		expect(relativeGap(rationalToNumber({ n: -n, d: -d }), 2.7169239322358925)).toBeLessThan(1e-14);
 	});
 
 	// `Number(10³⁰⁰) / Number(10⁴⁰⁰)` = 1e300 / Infinity = 0
@@ -44,6 +47,22 @@ describe('rationalToNumber : des termes géants, une valeur ordinaire', () => {
 		const value = rationalToNumber({ n: power(10n, 300n), d: power(10n, 400n) });
 
 		expect(relativeGap(value, 1e-100)).toBeLessThan(1e-14);
+	});
+
+	// Revue : 2^-shift d'un seul tenant sous-dépasse vers 0 sous ~2⁻¹⁰¹⁰
+	it('une valeur dénormale n’est pas 0', () => {
+		expect(
+			relativeGap(rationalToNumber({ n: power(10n, 95n), d: power(10n, 400n) }), 1e-305)
+		).toBeLessThan(1e-14);
+		const k = power(3n, 700n);
+		expect(rationalToNumber({ n: k, d: k * power(2n, 1074n) })).toBe(Number.MIN_VALUE);
+	});
+
+	// Revue : troncature puis arrondi donnait 2⁵³ (égalité apparente) au lieu de 2⁵³ + 2
+	it('l’arrondi est correct : 2⁵³ + 1 + ε → 2⁵³ + 2', () => {
+		const k = power(2n, 1100n);
+
+		expect(rationalToNumber({ n: (power(2n, 53n) + 1n) * k + 1n, d: k })).toBe(2 ** 53 + 2);
 	});
 });
 
@@ -57,6 +76,12 @@ describe('rationalToNumber : un vrai débordement reste un débordement', () => 
 	it('en deçà du plus petit flottant : 0', () => {
 		expect(rationalToNumber({ n: 1n, d: power(10n, 400n) })).toBe(0);
 		expect(rationalToNumber({ n: power(10n, 400n), d: power(10n, 900n) })).toBe(0);
+	});
+
+	it('une division par zéro ne change pas (et ne lève pas)', () => {
+		expect(rationalToNumber({ n: power(10n, 400n), d: 0n })).toBe(Infinity);
+		expect(rationalToNumber({ n: -1n, d: 0n })).toBe(-Infinity);
+		expect(rationalToNumber({ n: 0n, d: 0n })).toBeNaN();
 	});
 
 	it('les cas ordinaires ne changent pas', () => {

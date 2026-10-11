@@ -513,7 +513,10 @@ export function isInteger(r: Rational): boolean {
 // Conversion
 // =============================================================================
 
-/** Les bits du quotient entier calculé quand les termes ne tiennent pas dans un flottant (53 suffisent). */
+/**
+ * Les bits du quotient entier calculé quand les termes ne tiennent pas dans un
+ * flottant : au moins 54, plus un bit « collant » pour un arrondi correct.
+ */
 const QUOTIENT_BITS = 64;
 
 /** Le nombre de bits d'un entier positif. */
@@ -551,9 +554,14 @@ export function rationalToNumber(r: Rational): number {
 	// La valeur vaut environ 2^magnitude ; q = n·2^shift / d porte environ QUOTIENT_BITS bits
 	const magnitude = bitLength(n) - bitLength(d);
 	const shift = QUOTIENT_BITS - magnitude;
-	const q = shift >= 0 ? (n << BigInt(shift)) / d : n / (d << BigInt(-shift));
-	// valeur = q · 2^-shift, en deux facteurs : 2^-shift seul déborderait pour une
-	// valeur proche des limites du flottant
+	const numerator = shift >= 0 ? n << BigInt(shift) : n;
+	const denominator = shift >= 0 ? d : d << BigInt(-shift);
+	let q = numerator / denominator;
+	// Bit collant : un reste non nul départage une égalité apparente (2⁵³ + 1 + ε
+	// s'arrondit à 2⁵³ + 2, pas à 2⁵³) — sans lui, troncature puis arrondi = 1 ulp d'écart
+	if (numerator % denominator !== 0n) q |= 1n;
+	// valeur = q · 2^-shift, en deux facteurs : sous ~2⁻¹⁰¹⁰, 2^-shift seul
+	// sous-dépasserait vers 0 (shift > 1074) et la valeur, dénormale, serait perdue
 	const half = Math.trunc(-shift / 2);
 	const value = Number(q) * 2 ** half * 2 ** (-shift - half);
 	return negative ? -value : value;
