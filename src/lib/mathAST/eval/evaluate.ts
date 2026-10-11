@@ -43,6 +43,7 @@ import {
 } from '../guards';
 import { substituteFunction } from './function-bindings';
 import { formatPointNames } from '../common/point-names';
+import { pointNamesEvaluationRefusal, unknownSegmentMessage } from '../common/segment-names';
 import {
 	rational,
 	fromInteger,
@@ -748,7 +749,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 
 	// Longueur `AB`, nom de figure `ABC` : un message lisible par un élève, s'il remonte
 	if (isSegmentLength(node)) {
-		throw new Error(`On ne connaît pas la valeur de la longueur ${formatPointNames(node.points)}.`);
+		throw new Error(unknownSegmentMessage(node));
 	}
 	if (isFigureName(node)) {
 		throw new Error(
@@ -1303,6 +1304,13 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 			node: booleanNode(boolResult),
 			exact: true
 		};
+	}
+
+	// 1c. Nom de figure (refusé, Q-A) ou longueur sans valeur : un message en français,
+	// avant la liste générique des variables libres
+	const pointNamesRefusal = pointNamesEvaluationRefusal(processedNode);
+	if (pointNamesRefusal !== null) {
+		return { status: 'unevaluable', reason: pointNamesRefusal };
 	}
 
 	// 2. Check for free variables (exclude known constants)

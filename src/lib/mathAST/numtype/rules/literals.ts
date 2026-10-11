@@ -22,8 +22,9 @@ import type { IntervalDomain } from '$lib/math/intervals/types';
 import { intervalSet, closedInterval } from '$lib/math/intervals';
 import { isNegativeInfinityEndpoint, isPositiveInfinityEndpoint } from '$lib/math/intervals';
 import { compareNumericNodes } from '../../eval/compare-numeric';
-import { number } from '../../factory';
+import { number, variable } from '../../factory';
 import { numericNode } from '../../common/numeric';
+import { segmentName } from '../../common/segment-names';
 
 // =============================================================================
 // Helper: Sign deduction from bounds
@@ -296,9 +297,12 @@ export function inferLiteralType(node: MathNode, ctx: TypeContext): MathType | n
 		case 'symbol':
 			return UNKNOWN_TYPE;
 
-		// Longueur et nom de figure : type inconnu pour l'instant (lot 2 : une
-		// longueur est un réel positif ; un nom de figure n'est pas un nombre)
+		// Une longueur est une inconnue réelle, typée comme la variable de son nom écrit
+		// (`AB`), hypothèses comprises ; sa positivité viendra plus tard (Q-F)
 		case 'segmentLength':
+			return inferVariableType(variable(segmentName(node)), ctx);
+
+		// Un nom de figure (`ABC`) n'est pas un nombre
 		case 'figureName':
 			return UNKNOWN_TYPE;
 

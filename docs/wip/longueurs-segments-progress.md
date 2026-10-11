@@ -525,7 +525,7 @@ et `removeSpaces` (`checkForm`) retiraient le `\,` et collaient les lettres : il
 désormais une espace entre deux majuscules (`separateSpacedCapitals`,
 `parser/latex/point-names.ts`), donc, en mode longueur, `A\,B` ≡ `A\times B` et `A\,B` ≢ `AB`.
 
-**Renvoyé au lot 2** (traitements provisoires du lot 1, au plus sûr) :
+**Renvoyé au lot 2** (traitements provisoires du lot 1, au plus sûr — traités au lot 2, voir plus bas) :
 
 - `normalize` : longueur et nom de figure passent par `normalizeOpaqueNode` (facteur opaque) ;
   à décider : variable polynomiale de clé canonique (Pythagore, `solve`).
@@ -541,6 +541,42 @@ désormais une espace entre deux majuscules (`separateSpacedCapitals`,
 - `integration/classify` la classe en constante (`polynomial`).
 - Syntaxe maison (lot 5) : `toCustom` écrit `AB` et `{AB}/{CD}`, que `parseCustom` relit encore
   comme un produit.
+
+## Lot 2 — fait (2026-10-12) : calcul et correction
+
+Tout en mode `capitalPairs: 'length'` explicite ; sans option, rien ne change (empreinte).
+Tests : `src/lib/mathAST/__tests__/segment-length-calcul.test.ts` (38 cas, 18 rouges avant le
+code : les 20 autres, équivalences et `tidy`, tenaient déjà grâce à l'empreinte canonique du lot 1
+et restent comme gardes).
+
+- **`normalize`** : la longueur reste un **facteur symbolique opaque** (`normalizeOpaqueNode`), dont
+  l'identité est l'empreinte canonique (`hashMathNode`, paire de points triée). C'est un monôme
+  comme `α` : `3AB+2BA` → `5AB`, `(AB+BC)^2` se développe, Pythagore et Thalès se comparent dans
+  n'importe quel ordre de points. Pas besoin d'en faire une variable polynomiale.
+- **`solve`** : une équation dont l'inconnue est une longueur (`variable: 'AB'`, ou la seule
+  inconnue) remplace la longueur (`AB` ou `BA`) par la variable `AB` puis résout :
+  `AB^2 = 25` → `{-5 ; 5}` (positivité plus tard, Q-F), `3BA = 12` → `{4}`. Les étapes affichent
+  la variable `\mathit{AB}`, pas la longueur (à reprendre si les étapes sont montrées).
+- **`getVariables`** rend la longueur sous son **nom écrit** (`AB`, et `BA` si les deux ordres
+  sont écrits) ; `containsVariable`/`hasVariable` la reconnaissent sous `AB` ou `BA` ;
+  **`substitute`** prend sa valeur sous `AB` ou `BA` ; **`differentiate`** : d/dAB(AB) = 1,
+  constante pour x ; **`numtype`** : un réel, typé comme la variable de son nom (hypothèses
+  comprises) ; **`dimensional`** : l'unité déclarée sous `AB` ou `BA`, sinon erreur comme une
+  variable inconnue ; **`integration/classify`** : une constante (inchangé, juste).
+- **`evaluate()`** : une longueur sans valeur est `unevaluable`, raison « On ne connaît pas la
+  valeur de la longueur AB. » (au lieu d'un renvoi silencieux).
+- **`checkForm`** : nouvelle étape de notation `unifySegmentNotationAST` (sans pénalité) — ordre
+  canonique des points (`3BA` a la forme de `3AB`) et parenthèses autour d'une longueur seule
+  retirées sans faute (`(AB)^2` a la forme de `AB^2`, même en `brackets: 'strict'`).
+  `isSimpleElement` reste tel quel : retirer `(AB)` n'est pas « à tort » dans le pipeline, où
+  l'arbre reste une longueur ; c'était la faute `brackets` qui était à tort, et l'unification
+  passe avant.
+- **`tidy`/`simplify`** : la longueur garde l'ordre de sa **première** écriture :
+  `3AB+2BA` → `5AB`, `2BA+3AB` → `5BA`.
+- **Nom de figure (Q-A)** : `figureNameRefusal` (`common/segment-names.ts`) rend « ABC n’est pas
+  une longueur : une longueur se nomme avec deux points (AB). Pour un produit, écris A×B×C. » ;
+  `areEquivalent` est faux dès qu'un côté contient un nom de figure (même `ABC` contre `ABC`) ;
+  `evaluate()` le refuse avec ce message ; `checkForm` aussi (`messages`).
 
 ## Journal
 
@@ -559,3 +595,5 @@ désormais une espace entre deux majuscules (`separateSpacedCapitals`,
   français d'`evaluate`, compte réel de l'empreinte.
 - 2026-10-12 — décisions Q-M (b) et Q-N (a) : défaut du parseur `'product'`, option `capitalPairs`
   transmise par `areEquivalent` et `checkForm` ; raccourcis MathLive au plan du lot 3.
+- 2026-10-12 — lot 2 fait : calcul et correction des longueurs (équivalence, `solve`, `substitute`,
+  `evaluate`, `checkForm`, refus de `ABC`) ; suites vertes.

@@ -41,6 +41,7 @@ import {
 	isPercentage,
 	isPiConstant,
 	isPositive,
+	isSegmentLength,
 	isSymbol,
 	isVariable
 } from './guards';
@@ -62,6 +63,7 @@ import {
 } from './flatten';
 import { parseLatexSafe, type CapitalPairs, type GenericFunctionConfig } from './parser';
 import { separateSpacedCapitals } from './parser/latex/point-names';
+import { canonicalSegment, figureNameRefusal } from './common/segment-names';
 import { bareDecimalCommaToPoint } from './decimal-comma';
 import { toLatex } from './latex-generator';
 import { compareNodes } from './normal';
@@ -964,6 +966,26 @@ export interface CheckFormOptions {
  * supplied options (e.g. `allowFirstNegative`).
  */
 /**
+ * Longueurs : l'ordre des points est libre (`BA` a la forme de `AB`, décision Q2 du
+ * 2026-10-11) et des parenthèses autour d'une longueur seule (`(AB)^2`) ne sont pas une
+ * faute — l'élève groupe les deux lettres pour dire « une longueur ». Notation, pas
+ * forme : aucune pénalité.
+ */
+export function unifySegmentNotationAST(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (isSegmentLength(node)) return canonicalSegment(node);
+		if (
+			node.type === 'delimiter' &&
+			node.delimiters === 'parentheses' &&
+			isSegmentLength(node.content)
+		) {
+			return canonicalSegment(node.content);
+		}
+		return node;
+	});
+}
+
+/**
  * Une seule écriture du nombre e pour comparer les formes : la constante
  * `euler()` (les parseurs y lisent la lettre `e` comme `\exponentialE`), et
  * `\exp(u)` (notation du programme) devient `e^{u}`. Ce sont des notations, pas
@@ -1459,6 +1481,7 @@ function unifyNegativeExponentialNotationAST(ast: MathNode): MathNode {
 
 function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 	return [
+		{ transform: unifySegmentNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyEulerNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyInfinityNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyPiAngleNotationAST, constraintId: null }, // notation, pas forme
@@ -1768,6 +1791,12 @@ export function checkForm(
 			violations: [],
 			messages: ['Parse error on answer']
 		};
+	}
+
+	// Un nom de figure (`ABC`) n'est pas une réponse : refusé, avec le message (Q-A)
+	const figureRefusal = figureNameRefusal(answerParse.ast);
+	if (figureRefusal !== null) {
+		return { valid: false, status: 'bad_form', violations: [], messages: [figureRefusal] };
 	}
 
 	let answerAST = answerParse.ast;

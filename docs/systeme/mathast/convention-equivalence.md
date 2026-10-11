@@ -401,6 +401,15 @@ expertes (`scripts/questions/complexes-expertes/`), corrigées point par point :
   variable refusée. Jamais d'intervalle complexe. Ensembles réels inchangés. Mesure (même corpus) : 37 973 verdicts, 15 changés, tous synthétiques
   (ensembles de complexes) ; 0 sur les cases intervalles réelles.
 
+## Longueurs de segments (`AB`), en mode `capitalPairs: 'length'`
+
+Une longueur est une inconnue dont l'identité est la **paire de points triée** : `BA` ≡ `AB`,
+`BA^2=CA^2+CB^2` ≡ `AB^2=AC^2+BC^2`, `\frac{MA}{BA}=\frac{NA}{CA}` ≡
+`\frac{AM}{AB}=\frac{AN}{AC}`. Une longueur n'est **pas** le produit de ses lettres :
+`AB` ≢ `A\times B`. Un **nom de figure** (`ABC`) n'est équivalent à rien, pas même à lui-même :
+c'est un refus (message de `figureNameRefusal`), pas une valeur. Sans l'option (défaut du
+parseur), `AB` reste le produit `A·B`, comme avant. Suivi : `docs/wip/longueurs-segments-progress.md`.
+
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 
 Une case `answerKind: "intervalles"` juge l'ENSEMBLE (`questions/intervals/interval-answer.ts`) :

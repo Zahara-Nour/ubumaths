@@ -126,6 +126,7 @@ import { applyRules, RuleIterationLimitError } from '../pattern/rule';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
 import { getBindingNode } from '../pattern/types';
+import { containsSegmentNamed, segmentAsVariable } from '../common/segment-names';
 // Import direct, pas le baril `rule-sets/index.ts` (cycle de chunk documenté
 // dans `common-factor.ts`).
 import { commonFactorRules } from '../pattern/rule-sets/common-factor';
@@ -1742,6 +1743,20 @@ function filterSolutionsByDomain(
  * result.steps.forEach(step => console.log(step.description));
  * ```
  */
+/**
+ * La longueur à chercher : celle que nomme `variable` si l'équation la contient, sinon,
+ * sans variable imposée, la seule inconnue de l'équation si c'est une longueur. `null`
+ * s'il n'y a pas de longueur à chercher.
+ */
+function segmentUnknownOf(equation: RelationNode, variable: string | undefined): string | null {
+	if (variable !== undefined) return containsSegmentNamed(equation, variable) ? variable : null;
+	const unknowns = [...getVariables(equation)];
+	const [only] = unknowns;
+	return unknowns.length === 1 && only !== undefined && containsSegmentNamed(equation, only)
+		? only
+		: null;
+}
+
 export function solve(equation: RelationNode, options?: SolveOptions): SolveResult {
 	// Merge options with defaults
 	const opts = {
@@ -1760,6 +1775,16 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 			'unknown',
 			`Relation recue: ${equation.relation}`
 		);
+	}
+
+	// Équation en une longueur (`AB^2 = 25`, `3BA = 12`) : la longueur devient la
+	// variable cherchée, sous le nom demandé (`AB` ou `BA`), puis on résout
+	const segmentTarget = segmentUnknownOf(equation, opts.variable);
+	if (segmentTarget !== null) {
+		const asVariable = segmentAsVariable(equation, segmentTarget);
+		if (isRelation(asVariable)) {
+			return solve(asVariable, { ...options, variable: segmentTarget });
+		}
 	}
 
 	const refusal = reservedVariableRefusal(opts.variable, equation);

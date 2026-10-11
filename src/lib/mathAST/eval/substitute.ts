@@ -11,7 +11,8 @@ import type { EvalBindings, BindingValue, SubstituteOptions } from './types';
 import type { FunctionBindings } from './function-bindings';
 import { DEFAULT_SUBSTITUTE_OPTIONS } from './types';
 import { mapNode } from '../transforms';
-import { isVariable, isGreek } from '../guards';
+import { isVariable, isGreek, isSegmentLength } from '../guards';
+import { segmentBinding, segmentHasName, segmentName } from '../common/segment-names';
 import { multiply } from '../factory';
 import { numericNode } from '../common/numeric';
 import { parseLatex } from '../parser';
@@ -79,6 +80,8 @@ function hasSubstitutableVariables(node: MathNode, bindings: EvalBindings): bool
 		if (isVariable(n) && n.name in bindings) {
 			hasVar = true;
 		} else if (isGreek(n) && n.letter in bindings) {
+			hasVar = true;
+		} else if (isSegmentLength(n) && segmentBinding(n, bindings) !== undefined) {
 			hasVar = true;
 		}
 
@@ -166,6 +169,14 @@ function substituteOnce(node: MathNode, bindings: EvalBindings): MathNode {
 		// Substitute Greek letters
 		if (isGreek(n)) {
 			const value = bindings[n.letter];
+			if (value !== undefined) {
+				return bindingToNode(value);
+			}
+		}
+
+		// Longueur : sa valeur sous `AB` ou sous `BA`
+		if (isSegmentLength(n)) {
+			const value = segmentBinding(n, bindings);
 			if (value !== undefined) {
 				return bindingToNode(value);
 			}
@@ -283,6 +294,9 @@ export function getVariables(node: MathNode): Set<string> {
 			variables.add(n.name);
 		} else if (isGreek(n)) {
 			variables.add(n.letter);
+		} else if (isSegmentLength(n)) {
+			// Une longueur est une inconnue, nommée comme elle est écrite (`AB`)
+			variables.add(segmentName(n));
 		}
 		return n;
 	});
@@ -311,6 +325,8 @@ export function hasVariable(node: MathNode, variableName: string): boolean {
 		if (isVariable(n) && n.name === variableName) {
 			found = true;
 		} else if (isGreek(n) && n.letter === variableName) {
+			found = true;
+		} else if (isSegmentLength(n) && segmentHasName(n, variableName)) {
 			found = true;
 		}
 
