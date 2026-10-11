@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Sparkles, Palette, FileText, Gamepad2, Presentation, Circle } from '@lucide/svelte';

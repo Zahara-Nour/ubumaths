@@ -20,6 +20,7 @@
 -->
 
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import MathField from '$lib/components/MathField.svelte';
 
 	interface Props {

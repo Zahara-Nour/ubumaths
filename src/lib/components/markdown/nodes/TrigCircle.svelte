@@ -19,6 +19,7 @@
 	@module components/markdown/nodes/TrigCircle
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import { resolveAuthorColor } from '$lib/theme/author-color';
 	import 'mathlive';
 	import type {

@@ -19,6 +19,7 @@
 	@deprecated Use MathInline.svelte instead
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 
 	interface Props {

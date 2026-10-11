@@ -21,6 +21,7 @@
 	@module components/markdown/nodes/NumberLine
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 	import type {
 		NumberLineNode,

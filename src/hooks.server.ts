@@ -43,7 +43,17 @@ const requestIdHandle: Handle = async ({ event, resolve }) => {
 	const requestId = crypto.randomUUID().slice(0, 8);
 	event.locals.requestId = requestId;
 
-	const response = await resolve(event);
+	// Préchargement limité au CSS. Par défaut SvelteKit précharge aussi tout le JS
+	// de la page (`rel="modulepreload"` dans l'en-tête HTTP `Link`) : 94 chunks,
+	// 189 Ko brotli sur l'accueil (prod, octobre 2026), qui disputaient la bande
+	// passante aux CSS bloquantes — FCP/LCP p75 à 3,4 s pour un TTFB de 0,5 s.
+	// Mesuré en labo (HTTP/2, 1,5 Mb/s) : FCP de l'accueil 2,2 s → 0,6 s, pour une
+	// hydratation retardée de ~0,1 à 0,4 s (le JS arrive en cascade d'imports).
+	// Placé dans le PREMIER handle : `sequence()` retient le `preload` du premier
+	// handle qui le définit.
+	const response = await resolve(event, {
+		preload: ({ type }) => type === 'css'
+	});
 
 	// Add request ID to response headers for client correlation
 	response.headers.set('X-Request-ID', requestId);

@@ -21,6 +21,7 @@
 	</script>
 -->
 <script lang="ts">
+	import '$lib/utils/mathlive-styles';
 	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Editor } from '@tiptap/core';
