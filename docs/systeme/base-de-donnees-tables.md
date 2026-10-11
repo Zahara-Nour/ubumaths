@@ -4,7 +4,7 @@
 > (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
-221 tables · 25 vues · 315 fonctions. Colonne suivie de `?` : peut être nulle.
+222 tables · 25 vues · 315 fonctions. Colonne suivie de `?` : peut être nulle.
 
 ## Établissement et personnes (20)
 
@@ -810,7 +810,7 @@ Liens : `offered_by` → `profiles` · `trade_id` → `marketplace_trades`
 
 Liens : `initiator_id` → `profiles` · `last_offer_by` → `profiles` · `listing_id` → `marketplace_listings` · `partner_id` → `profiles` · `proposal_id` → `marketplace_proposals`
 
-## Jeux, défis et récompenses (48)
+## Jeux, défis et récompenses (49)
 
 ### `achievement_events`
 
@@ -1023,6 +1023,12 @@ Liens : `riddle_id` → `riddles` · `student_id` → `profiles` · `validated_b
 `auto_selected` · `created_at` · `date` · `id` · `riddle_id` · `selected_by?`
 
 Liens : `riddle_id` → `riddles` · `selected_by` → `profiles`
+
+### `riddle_solutions`
+
+`answer?` · `correction` · `riddle_id` · `updated_at`
+
+Liens : `riddle_id` → `riddles`
 
 ### `riddles`
 
