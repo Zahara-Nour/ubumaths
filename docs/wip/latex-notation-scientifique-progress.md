@@ -29,3 +29,29 @@ scientifique reste en syntaxe custom (`1e5`).
 - Hors périmètre, relevé : le parseur rd ne connaît pas `\exponentialE`.
 - ⚠️ OUVERT : `{{eval:…}}` rend `1e-7` / `1e+22` (`formatNumber` de
   `eval/evaluate-with-modifiers.ts`) ; `areEquivalent('1e-7', '10^{-7}')` = false désormais.
+
+## Décisions de David (2026-10-11) — `{{eval:…}}` sans notation JS
+
+1. Plus jamais de notation JS (`3e-7`, `1e+22`, `1.2089258196146292e+24`) dans une chaîne produite
+   par `{{eval:…}}`, avec ou sans modificateur.
+2. `;d` garantit l'écriture décimale DÉVELOPPÉE (`0{,}0000003`), jamais de notation scientifique.
+3. `;sci` (nouveau) : toujours la notation scientifique `3 \times 10^{-7}`, `3{,}2 \times 10^{5}`
+   (mantisse 1 ≤ |m| < 10 ; mantisse 1 → `10^{-7}`).
+4. Sans modificateur (valeurs qui sortent déjà en décimal ; une fraction exacte reste une fraction) :
+   décimal développé si 10⁻⁶ ≤ |x| ; tous les chiffres d'un entier tant que |x| < 10¹⁵. Hors bornes :
+   notation scientifique si le MODÈLE est de 4e ou plus (toutes ses `grades` ≥ 4e), sinon décimal
+   développé. Le niveau = `template.grades`, pas l'élève connecté.
+5. checkTemplate (50 tirages) : modèle dont toutes les grades < 4e et dont un tirage produit, sans
+   `;sci`, un nombre hors bornes (< 10⁻⁶ ou entier ≥ 10¹⁵) → refusé, message clair en français.
+6. Pas de détection de « puissance simple » (1 000 000 reste 1 000 000).
+
+### État (2026-10-11)
+
+- [x] 1, 2, 3, 6 + bornes de 4 : `evaluateAstWithModifiers(…, { scientificOutOfRange })`,
+      `;sci` (`EvalModifiers.scientific`), constantes `MIN_EXPANDED_MAGNITUDE` / `MAX_EXPANDED_MAGNITUDE`.
+      21 tests vus rouges. Résultat littéral (`toCustom`) qui porterait `1e-7` → `toLatex`.
+- [ ] Niveau du modèle jusqu'au formatage : ARRÊTÉ avant de coder (≈ 30 appels à traverser),
+      chemin à trancher. Défaut actuel : hors bornes → développé (comportement « petits »).
+- [ ] 5 (checkTemplate) : dépend du chemin retenu.
+- Référence trouvée : programme 2016 = notation scientifique en 4e ; nouveau programme de cycle 4
+  = repoussée en 3e (`docs/wip/arbre-notions/programmes-ecarts-cycle4.md`, `seed-cycle4.md` 3-006).

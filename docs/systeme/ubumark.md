@@ -231,6 +231,24 @@ collée à un marqueur (`\dfrac{{{a}}…}`) est lue comme groupe LaTeX
 résolvent dans l'ordre de déclaration (`resolveVariables`) ; `detectCircularDependencies` et
 `validateVariables` refusent les cycles et références inconnues.
 
+**Écriture d'un nombre calculé** (`{{eval:…}}`, `evaluateAstWithModifiers` dans
+`src/lib/mathAST/eval/evaluate-with-modifiers.ts` ; décisions de David du 2026-10-11). Jamais la
+notation JS (`3e-7`, `1e+22`) : le parseur LaTeX lit `e` comme la constante d'Euler. Le séparateur
+décimal reste le point (la virgule est posée au rendu, `toFrenchDecimal`).
+
+| Modificateur | `0.0000001*3`                    | `320000`            |
+| ------------ | -------------------------------- | ------------------- |
+| aucun        | exact, ou décimal (voir bornes)  | `320000`            |
+| `;d`         | `0.0000003` (toujours développé) | `320000`            |
+| `;sci`       | `3 \times 10^{-7}`               | `3.2 \times 10^{5}` |
+
+Sans modificateur, un résultat décimal s'écrit développé dans les bornes
+(`MIN_EXPANDED_MAGNITUDE` = 10⁻⁶ ≤ |x|, `MAX_EXPANDED_MAGNITUDE` = 10¹⁵ > |x|) ; hors bornes,
+notation scientifique si `scientificOutOfRange` (option d'écriture, prévue pour un modèle dont
+toutes les classes sont en 4e ou au-delà), développé sinon. Une fraction exacte reste une fraction ;
+`1 000 000` reste `1000000` (pas de détection de puissance simple). Mantisse 1 : `10^{-7}`. Tests :
+`src/lib/mathAST/eval/__tests__/evaluate-with-modifiers-sans-notation-js.test.ts`.
+
 ## Le pipeline
 
 ```

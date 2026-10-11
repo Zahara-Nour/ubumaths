@@ -50,22 +50,91 @@ function isComplex(value: EvalValue): value is ComplexValueResult {
 	return typeof value === 'object' && 'real' in value && 'imag' in value;
 }
 
+// =============================================================================
+// Écriture d'un nombre décimal (décisions de David du 2026-10-11)
+// =============================================================================
+// Jamais la notation JS (`3e-7`, `1e+22`) : le parseur LaTeX lit `e` comme la constante
+// d'Euler, et l'élève ne l'a jamais apprise. Le séparateur reste le point : la virgule
+// `{,}` est posée au rendu (`toFrenchDecimal`), comme pour tout résultat de `{{eval:…}}`.
+
 /**
- * Formats a numeric result as a string.
- *
- * Handles integer vs decimal formatting appropriately.
+ * En dessous (en valeur absolue, hors 0), l'écriture développée aligne plus de six zéros
+ * après la virgule (`0,0000003`) : hors bornes, notation scientifique à partir de la 4e.
  */
-function formatNumber(value: number): string {
-	// Check if it's effectively an integer
-	if (Number.isInteger(value)) {
-		return value.toString();
+export const MIN_EXPANDED_MAGNITUDE = 1e-6;
+
+/**
+ * À partir de là, un entier n'est plus écrit en entier : les flottants ne portent que
+ * 15 à 16 chiffres significatifs exacts (2⁵³ ≈ 9·10¹⁵), les chiffres suivants seraient
+ * faux. Hors bornes, notation scientifique à partir de la 4e.
+ */
+export const MAX_EXPANDED_MAGNITUDE = 1e15;
+
+/** Chiffres significatifs gardés, comme l'ancien `toPrecision(15)` */
+const SIGNIFICANT_DIGITS = 15;
+
+/** Options d'écriture qui ne viennent pas du modèle de calcul mais du MODÈLE de question */
+export interface EvalWritingOptions {
+	/**
+	 * Hors bornes (|x| < 10⁻⁶ ou ≥ 10¹⁵), écrire la notation scientifique
+	 * (`3 \times 10^{-7}`) plutôt que l'écriture développée : vrai quand toutes les
+	 * classes du modèle sont en 4e ou au-delà (programme de 4e : puissances de 10,
+	 * notation scientifique).
+	 */
+	scientificOutOfRange?: boolean;
+}
+
+/** Le nombre sort-il des bornes de l'écriture développée ? */
+export function isOutOfExpandedRange(value: number): boolean {
+	const magnitude = Math.abs(value);
+	return (
+		magnitude !== 0 && (magnitude < MIN_EXPANDED_MAGNITUDE || magnitude >= MAX_EXPANDED_MAGNITUDE)
+	);
+}
+
+/** Mantisse (chiffres sans zéros finaux, signe à part) et exposant décimal de `value` */
+function decimalParts(value: number): { negative: boolean; digits: string; exponent: number } {
+	const [mantissa, exponentText] = Math.abs(value)
+		.toExponential(SIGNIFICANT_DIGITS - 1)
+		.split('e');
+	const digits = mantissa.replace('.', '').replace(/0+$/, '') || '0';
+	return { negative: value < 0, digits, exponent: Number(exponentText) };
+}
+
+/** Écriture décimale développée : `0.0000003`, `10000000000000000000000`, `-2.5` */
+function expandedDecimal(value: number): string {
+	if (value === 0) return '0';
+	if (Number.isInteger(value) && Math.abs(value) < 1e21) return value.toString();
+	const { negative, digits, exponent } = decimalParts(value);
+	let text: string;
+	if (exponent < 0) {
+		text = `0.${'0'.repeat(-exponent - 1)}${digits}`;
+	} else if (digits.length <= exponent + 1) {
+		text = digits + '0'.repeat(exponent + 1 - digits.length);
+	} else {
+		text = `${digits.slice(0, exponent + 1)}.${digits.slice(exponent + 1)}`;
 	}
+	return negative ? `-${text}` : text;
+}
 
-	// Use reasonable precision for decimals, removing trailing zeros
-	const formatted = value.toPrecision(15);
+/** Notation scientifique : `3 \times 10^{-7}`, `3.2 \times 10^{5}`, mantisse 1 → `10^{-7}` */
+function scientificNotation(value: number): string {
+	if (value === 0) return '0';
+	const { negative, digits, exponent } = decimalParts(value);
+	const mantissa = digits.length === 1 ? digits : `${digits[0]}.${digits.slice(1)}`;
+	const power = `10^{${exponent}}`;
+	const text = mantissa === '1' ? power : `${mantissa} \\times ${power}`;
+	return negative ? `-${text}` : text;
+}
 
-	// Parse and re-stringify to remove trailing zeros
-	return parseFloat(formatted).toString();
+/**
+ * Écriture d'un résultat décimal : développée dans les bornes ; hors bornes, notation
+ * scientifique si `scientific` (modèle de 4e et plus), développée sinon.
+ */
+function formatNumber(value: number, scientific = false): string {
+	return scientific && isOutOfExpandedRange(value)
+		? scientificNotation(value)
+		: expandedDecimal(value);
 }
 
 /**
@@ -79,7 +148,11 @@ function literalWriting(node: MathNode): string {
 		if (n.type === 'division') hasDivision = true;
 		return n;
 	});
-	return hasDivision ? toLatex(node) : toCustom(node);
+	if (hasDivision) return toLatex(node);
+	const custom = toCustom(node);
+	// `toCustom` garde un nombre `1e-7` (la syntaxe maison le lit) ; inséré dans une formule
+	// LaTeX, il se relirait 1·e − 7 : `toLatex` l'écrit `10^{-7}`
+	return /\d[eE][+-]?\d/.test(custom) ? toLatex(node) : custom;
 }
 
 /** Une division dont le dénominateur se calcule et vaut 0 */
@@ -274,15 +347,17 @@ function foldIntegerExponents(node: MathNode): MathNode {
  * Décimal si le calcul contient un décimal, ou si la forme exacte ne se calcule
  * pas ou ne vaut pas la valeur décimale (garde-fou : jamais de valeur fausse).
  */
-function formatExact(ast: MathNode, numValue: number): string {
-	if (Number.isInteger(numValue) || hasDecimalLiteral(ast)) return formatNumber(numValue);
+function formatExact(ast: MathNode, numValue: number, scientific: boolean): string {
+	if (Number.isInteger(numValue) || hasDecimalLiteral(ast))
+		return formatNumber(numValue, scientific);
 	try {
 		const exact = evaluate(foldIntegerExponents(ast), { mode: 'exact' });
-		if (exact.status !== 'value' || !isMathNode(exact.value)) return formatNumber(numValue);
-		if (!matchesValue(exact.value, numValue)) return formatNumber(numValue);
+		if (exact.status !== 'value' || !isMathNode(exact.value))
+			return formatNumber(numValue, scientific);
+		if (!matchesValue(exact.value, numValue)) return formatNumber(numValue, scientific);
 		return toLatex(schoolExactWriting(ast, exact.value));
 	} catch {
-		return formatNumber(numValue);
+		return formatNumber(numValue, scientific);
 	}
 }
 
@@ -547,7 +622,8 @@ function evaluateQuantity(ast: MathNode, modifiers: EvalModifiers): string {
 export function evaluateAstWithModifiers(
 	ast: MathNode,
 	modifiers: EvalModifiers = {},
-	literalLetters: ReadonlySet<string> = new Set()
+	literalLetters: ReadonlySet<string> = new Set(),
+	writing: EvalWritingOptions = {}
 ): string {
 	// Grandeurs : `evaluate` ignore l'unité par construction — le calcul passe par `tidy`.
 	// Un calcul littéral (lettres tirées) garde son chemin ci-dessous.
@@ -592,7 +668,14 @@ export function evaluateAstWithModifiers(
 	}
 
 	// Format the output : exact par défaut (comme TinyMath), décimal avec `;d`
-	let formattedOutput = modifiers.decimal ? formatNumber(numValue) : formatExact(ast, numValue);
+	// `;sci` : toujours la notation scientifique ; `;d` : toujours développé ; sinon exact,
+	// et un décimal hors bornes suit le niveau du modèle (`writing.scientificOutOfRange`)
+	const scientific = writing.scientificOutOfRange === true;
+	let formattedOutput = modifiers.scientific
+		? scientificNotation(numValue)
+		: modifiers.decimal
+			? formatNumber(numValue)
+			: formatExact(ast, numValue, scientific);
 
 	// Apply formatting modifiers
 	// `>= 0` : 0 s'écrit « +0 », sinon `y{{c;+}}` donne « y0 », lu comme un produit

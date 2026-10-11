@@ -238,8 +238,8 @@ Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
      parenthèses se décident sur la forme écrite : `\left( 10^{-7} \right)^2`, plus deux cas
      posés par la passe — facteur de droite d'un produit implicite, `\pi \left( 10^{-7} \right)`,
      et dénominateur d'une division en ligne, `\pi / \left( 1.5 \times 10^{-7} \right)`) ;
-     `toCustom` garde `1e-7`. ⚠️ `evaluateAstWithModifiers` (`eval/evaluate-with-modifiers.ts`,
-     `formatNumber`) rend encore `1e-7` / `1e+22` en chaîne pour `{{eval:…}}` : non corrigé.
+     `toCustom` garde `1e-7`. `{{eval:…}}` (`evaluateAstWithModifiers`) n'écrit pas non plus la
+     notation JS : voir [ubumark.md](../ubumark.md#paramétrage-modèles-de-question).
      Toujours tester une règle ou une analyse **sur une entrée parsée**.
 7. **Plafonds du parseur** (`parser/security.ts`) : 10 000 caractères **avant** l'analyse ;
    profondeur d'AST 100 et 10 000 nœuds **après**. Une imbrication de quelques milliers de
