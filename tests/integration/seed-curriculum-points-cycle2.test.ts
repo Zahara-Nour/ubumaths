@@ -9,7 +9,10 @@
  * points se rattachent à l'arbre 2026-10-07.13 tel quel. Puis la passe « puces et
  * points » (migration `20261011080000_passe_puces_points_cycle2`, validée le
  * 2026-10-08, docs/wip/arbre-notions/passe-cycle2.md) : 16 puces scindées (+17 points),
- * 9 points spécifiés → 244 points (72 CP + 89 CE1 + 83 CE2).
+ * 9 points spécifiés → 244 points (72 CP + 89 CE1 + 83 CE2). Puis la scission des tables
+ * (migration `20261016090000_scission_points_tables`, libellés validés par David) : les cinq
+ * points « dans les deux sens » deviennent sens direct + opération à trou (+5 points) → 249
+ * points (73 CP + 91 CE1 + 85 CE2).
  *
  * La preuve est INTÉGRALE, pas un échantillon : chaque point de la fixture
  * (générée depuis le document validé) doit se retrouver en base avec TOUS ses
@@ -159,15 +162,15 @@ describe('Seed des points du cycle 2 (curriculum_points → classification_nodes
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (244 points après la passe)', () => {
+	it('la fixture est bien celle du document validé (249 points après la passe et la scission)', () => {
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
-		expect(fixture.points).toHaveLength(244);
-		expect(fixture.points.filter((p) => p.grade === 'CP')).toHaveLength(72);
-		expect(fixture.points.filter((p) => p.grade === 'CE1')).toHaveLength(89);
-		expect(fixture.points.filter((p) => p.grade === 'CE2')).toHaveLength(83);
+		expect(fixture.points).toHaveLength(249);
+		expect(fixture.points.filter((p) => p.grade === 'CP')).toHaveLength(73);
+		expect(fixture.points.filter((p) => p.grade === 'CE1')).toHaveLength(91);
+		expect(fixture.points.filter((p) => p.grade === 'CE2')).toHaveLength(85);
 	});
 
-	it('les 244 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 249 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -182,7 +185,7 @@ describe('Seed des points du cycle 2 (curriculum_points → classification_nodes
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(244);
+		expect(pointRows).toHaveLength(249);
 	});
 
 	it('architecture cible : objective_id NULL et rang NULL sur tout le seed', () => {
@@ -194,7 +197,7 @@ describe('Seed des points du cycle 2 (curriculum_points → classification_nodes
 
 	it('le régime suit la décision : fluence = tout le calcul mental, rien d’autre', () => {
 		const fluents = pointRows.filter((r) => r.regime_acquisition === 'fluence');
-		expect(fluents).toHaveLength(34);
+		expect(fluents).toHaveLength(39);
 		expect(fluents.every((r) => (r.rubrique ?? '').endsWith('> Le calcul mental'))).toBe(true);
 	});
 

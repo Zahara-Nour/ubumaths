@@ -239,7 +239,20 @@
 			"code": "CP-018",
 			"grade": "CP",
 			"display_order": 19,
-			"name": "Connaitre dans les deux sens les tables d'addition.",
+			"name": "Connaître les tables d'addition : donner la somme de deux nombres (3 + 4 = ?).",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : addition et soustraction",
+			"sous_notion": "tables"
+		},
+		{
+			"code": "CP-073",
+			"grade": "CP",
+			"display_order": 20,
+			"name": "Connaître les tables d'addition dans l'autre sens : trouver le terme manquant d'une addition (3 + ? = 7).",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "fluence",
@@ -251,7 +264,7 @@
 		{
 			"code": "CP-019",
 			"grade": "CP",
-			"display_order": 20,
+			"display_order": 21,
 			"name": "Connaitre les doubles et les moitiés de nombres usuels.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -264,7 +277,7 @@
 		{
 			"code": "CP-020",
 			"grade": "CP",
-			"display_order": 21,
+			"display_order": 22,
 			"name": "Ajouter ou soustraire 1 ou 2 à un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -277,7 +290,7 @@
 		{
 			"code": "CP-021",
 			"grade": "CP",
-			"display_order": 22,
+			"display_order": 23,
 			"name": "Ajouter ou soustraire 10 à un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -290,7 +303,7 @@
 		{
 			"code": "CP-022",
 			"grade": "CP",
-			"display_order": 23,
+			"display_order": 24,
 			"name": "Ajouter ou soustraire 20, 30, 40, 50, 60, 70, 80 ou 90 à un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -303,7 +316,7 @@
 		{
 			"code": "CP-023",
 			"grade": "CP",
-			"display_order": 24,
+			"display_order": 25,
 			"name": "Trouver le complément d'un nombre à la dizaine supérieure.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -316,7 +329,7 @@
 		{
 			"code": "CP-024",
 			"grade": "CP",
-			"display_order": 25,
+			"display_order": 26,
 			"name": "Ajouter un nombre inférieur à 9 à un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -329,7 +342,7 @@
 		{
 			"code": "CP-025",
 			"grade": "CP",
-			"display_order": 26,
+			"display_order": 27,
 			"name": "Ajouter 9 à un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -342,7 +355,7 @@
 		{
 			"code": "CP-026",
 			"grade": "CP",
-			"display_order": 27,
+			"display_order": 28,
 			"name": "Ajouter deux nombres inférieurs à 100.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -355,7 +368,7 @@
 		{
 			"code": "CP-027",
 			"grade": "CP",
-			"display_order": 28,
+			"display_order": 29,
 			"name": "Déterminer la moitié d'un nombre pair.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -368,7 +381,7 @@
 		{
 			"code": "CP-028",
 			"grade": "CP",
-			"display_order": 29,
+			"display_order": 30,
 			"name": "Soustraire un nombre inférieur à 10 à un nombre entier de dizaines.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -381,7 +394,7 @@
 		{
 			"code": "CP-029",
 			"grade": "CP",
-			"display_order": 30,
+			"display_order": 31,
 			"name": "Résoudre des problèmes additifs en une étape du type parties-tout.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -394,7 +407,7 @@
 		{
 			"code": "CP-030",
 			"grade": "CP",
-			"display_order": 31,
+			"display_order": 32,
 			"name": "Résoudre des problèmes additifs en deux étapes (champ numérique inférieur ou égal à 30).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -407,7 +420,7 @@
 		{
 			"code": "CP-031",
 			"grade": "CP",
-			"display_order": 32,
+			"display_order": 33,
 			"name": "Résoudre des problèmes multiplicatifs en une étape (champ numérique inférieur ou égal à 30).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -420,7 +433,7 @@
 		{
 			"code": "CP-032",
 			"grade": "CP",
-			"display_order": 33,
+			"display_order": 34,
 			"name": "Utiliser le lexique spécifique associé aux longueurs : long, court, près, loin.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -433,7 +446,7 @@
 		{
 			"code": "CP-033",
 			"grade": "CP",
-			"display_order": 34,
+			"display_order": 35,
 			"name": "Comparer des objets selon leur longueur.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -446,7 +459,7 @@
 		{
 			"code": "CP-034",
 			"grade": "CP",
-			"display_order": 35,
+			"display_order": 36,
 			"name": "Comparer des segments selon leur longueur.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -459,7 +472,7 @@
 		{
 			"code": "CP-035",
 			"grade": "CP",
-			"display_order": 36,
+			"display_order": 37,
 			"name": "Savoir mesurer la longueur d'un segment en utilisant une règle graduée.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -472,7 +485,7 @@
 		{
 			"code": "CP-036",
 			"grade": "CP",
-			"display_order": 37,
+			"display_order": 38,
 			"name": "Connaitre et utiliser les unités mètre et centimètre et les symboles associés (m et cm).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -485,7 +498,7 @@
 		{
 			"code": "CP-037",
 			"grade": "CP",
-			"display_order": 38,
+			"display_order": 39,
 			"name": "Connaitre quelques longueurs de référence.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -498,7 +511,7 @@
 		{
 			"code": "CP-038",
 			"grade": "CP",
-			"display_order": 39,
+			"display_order": 40,
 			"name": "Savoir qu'un mètre est égal à cent centimètres.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -511,7 +524,7 @@
 		{
 			"code": "CP-039",
 			"grade": "CP",
-			"display_order": 40,
+			"display_order": 41,
 			"name": "Utiliser le lexique associé aux masses : lourd, léger.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -524,7 +537,7 @@
 		{
 			"code": "CP-040",
 			"grade": "CP",
-			"display_order": 41,
+			"display_order": 42,
 			"name": "Comparer des objets selon leur masse.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -537,7 +550,7 @@
 		{
 			"code": "CP-041",
 			"grade": "CP",
-			"display_order": 42,
+			"display_order": 43,
 			"name": "Utiliser le lexique spécifique lié à la monnaie : plus cher, moins cher, rendre la monnaie, billet, pièce, somme, reste, euros.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -550,7 +563,7 @@
 		{
 			"code": "CP-042",
 			"grade": "CP",
-			"display_order": 43,
+			"display_order": 44,
 			"name": "Comparer les valeurs de deux ensembles constitués de pièces de monnaie ou de deux ensembles constitués de pièces et de billets.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -563,7 +576,7 @@
 		{
 			"code": "CP-043",
 			"grade": "CP",
-			"display_order": 44,
+			"display_order": 45,
 			"name": "Déterminer la valeur en euro d'un ensemble constitué de pièces et de billets.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -576,7 +589,7 @@
 		{
 			"code": "CP-044",
 			"grade": "CP",
-			"display_order": 45,
+			"display_order": 46,
 			"name": "Constituer une somme d'argent donnée avec des pièces et des billets.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -589,7 +602,7 @@
 		{
 			"code": "CP-045",
 			"grade": "CP",
-			"display_order": 46,
+			"display_order": 47,
 			"name": "Simuler des achats en manipulant des pièces et des billets fictifs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -602,7 +615,7 @@
 		{
 			"code": "CP-071",
 			"grade": "CP",
-			"display_order": 47,
+			"display_order": 48,
 			"name": "Rendre la monnaie.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -615,7 +628,7 @@
 		{
 			"code": "CP-046",
 			"grade": "CP",
-			"display_order": 48,
+			"display_order": 49,
 			"name": "Lire sur une horloge à aiguilles une heure donnée en heures entières.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -628,7 +641,7 @@
 		{
 			"code": "CP-047",
 			"grade": "CP",
-			"display_order": 49,
+			"display_order": 50,
 			"name": "Positionner les aiguilles d'une horloge correspondant à une heure donnée (uniquement des heures entières inférieures ou égales à douze).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -641,7 +654,7 @@
 		{
 			"code": "CP-048",
 			"grade": "CP",
-			"display_order": 50,
+			"display_order": 51,
 			"name": "Associer une heure à un moment de la journée.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -654,7 +667,7 @@
 		{
 			"code": "CP-049",
 			"grade": "CP",
-			"display_order": 51,
+			"display_order": 52,
 			"name": "Reconnaitre les solides usuels suivants : cube, boule, cône, cylindre, pavé.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -667,7 +680,7 @@
 		{
 			"code": "CP-050",
 			"grade": "CP",
-			"display_order": 52,
+			"display_order": 53,
 			"name": "Nommer un cube, un pavé et une boule.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -680,7 +693,7 @@
 		{
 			"code": "CP-051",
 			"grade": "CP",
-			"display_order": 53,
+			"display_order": 54,
 			"name": "Décrire un cube ou un pavé en utilisant le terme « face ».",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -693,7 +706,7 @@
 		{
 			"code": "CP-052",
 			"grade": "CP",
-			"display_order": 54,
+			"display_order": 55,
 			"name": "Connaitre le nombre et la nature des faces d'un cube et d'un pavé.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -706,7 +719,7 @@
 		{
 			"code": "CP-053",
 			"grade": "CP",
-			"display_order": 55,
+			"display_order": 56,
 			"name": "Construire des cubes et des pavés.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -719,7 +732,7 @@
 		{
 			"code": "CP-054",
 			"grade": "CP",
-			"display_order": 56,
+			"display_order": 57,
 			"name": "Reconnaitre des formes planes (disque, carré, rectangle et triangle) dans un assemblage et dans son environnement proche.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -732,7 +745,7 @@
 		{
 			"code": "CP-055",
 			"grade": "CP",
-			"display_order": 57,
+			"display_order": 58,
 			"name": "Nommer le disque, le carré, le rectangle et le triangle.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -745,7 +758,7 @@
 		{
 			"code": "CP-056",
 			"grade": "CP",
-			"display_order": 58,
+			"display_order": 59,
 			"name": "Donner une première description du carré, du rectangle, du triangle en utilisant les termes « sommet » et « côté ».",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -758,7 +771,7 @@
 		{
 			"code": "CP-057",
 			"grade": "CP",
-			"display_order": 59,
+			"display_order": 60,
 			"name": "Repérer visuellement des alignements.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -771,7 +784,7 @@
 		{
 			"code": "CP-058",
 			"grade": "CP",
-			"display_order": 60,
+			"display_order": 61,
 			"name": "Utiliser la règle pour repérer ou vérifier des alignements.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -784,7 +797,7 @@
 		{
 			"code": "CP-059",
 			"grade": "CP",
-			"display_order": 61,
+			"display_order": 62,
 			"name": "Utiliser la règle comme instrument de tracé.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -797,7 +810,7 @@
 		{
 			"code": "CP-060",
 			"grade": "CP",
-			"display_order": 62,
+			"display_order": 63,
 			"name": "Construire un carré, un rectangle, un triangle ou un assemblage de ces figures sur du papier quadrillé ou pointé.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -810,7 +823,7 @@
 		{
 			"code": "CP-061",
 			"grade": "CP",
-			"display_order": 63,
+			"display_order": 64,
 			"name": "Connaitre et utiliser le vocabulaire lié aux positions relatives : gauche, droite ; sur, sous, entre, devant, derrière, au-dessus, en dessous.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -823,7 +836,7 @@
 		{
 			"code": "CP-062",
 			"grade": "CP",
-			"display_order": 64,
+			"display_order": 65,
 			"name": "Situer des personnes ou des objets les uns par rapport aux autres ou par rapport à d'autres repères dans la classe.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -836,7 +849,7 @@
 		{
 			"code": "CP-063",
 			"grade": "CP",
-			"display_order": 65,
+			"display_order": 66,
 			"name": "Construire et utiliser des représentations de la classe pour localiser, mémoriser ou communiquer un emplacement.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -849,7 +862,7 @@
 		{
 			"code": "CP-064",
 			"grade": "CP",
-			"display_order": 66,
+			"display_order": 67,
 			"name": "Construire et reproduire des assemblages de solides à partir d'un modèle en trois dimensions ou de représentations planes.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -862,7 +875,7 @@
 		{
 			"code": "CP-065",
 			"grade": "CP",
-			"display_order": 67,
+			"display_order": 68,
 			"name": "Se déplacer et décrire des déplacements dans la classe en s'orientant et en utilisant des repères.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -875,7 +888,7 @@
 		{
 			"code": "CP-066",
 			"grade": "CP",
-			"display_order": 68,
+			"display_order": 69,
 			"name": "Construire et utiliser un plan de la classe pour communiquer un déplacement.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -888,7 +901,7 @@
 		{
 			"code": "CP-067",
 			"grade": "CP",
-			"display_order": 69,
+			"display_order": 70,
 			"name": "Utiliser et produire une suite d'instructions qui codent un déplacement en utilisant un vocabulaire spatial précis.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -901,7 +914,7 @@
 		{
 			"code": "CP-068",
 			"grade": "CP",
-			"display_order": 70,
+			"display_order": 71,
 			"name": "Collecter des données et présenter ces données sous forme d'un tableau.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -914,7 +927,7 @@
 		{
 			"code": "CP-072",
 			"grade": "CP",
-			"display_order": 71,
+			"display_order": 72,
 			"name": "Présenter des données collectées sous forme d'un diagramme en barres.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -927,7 +940,7 @@
 		{
 			"code": "CP-069",
 			"grade": "CP",
-			"display_order": 72,
+			"display_order": 73,
 			"name": "Construire et compléter un tableau à double entrée.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1266,7 +1279,20 @@
 			"code": "CE1-026",
 			"grade": "CE1",
 			"display_order": 26,
-			"name": "Connaitre dans les deux sens les tables d'addition.",
+			"name": "Connaître les tables d'addition : donner la somme de deux nombres (3 + 4 = ?).",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : addition et soustraction",
+			"sous_notion": "tables"
+		},
+		{
+			"code": "CE1-090",
+			"grade": "CE1",
+			"display_order": 27,
+			"name": "Connaître les tables d'addition dans l'autre sens : trouver le terme manquant d'une addition (3 + ? = 7).",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "fluence",
@@ -1278,8 +1304,21 @@
 		{
 			"code": "CE1-027",
 			"grade": "CE1",
-			"display_order": 27,
-			"name": "Connaitre dans les deux sens les tables de multiplication.",
+			"display_order": 28,
+			"name": "Connaître les tables de multiplication : donner le produit de deux nombres (3 × 4 = ?).",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : multiplication",
+			"sous_notion": "tables"
+		},
+		{
+			"code": "CE1-091",
+			"grade": "CE1",
+			"display_order": 29,
+			"name": "Connaître les tables de multiplication dans l'autre sens : trouver le facteur manquant d'un produit (3 × ? = 12).",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "fluence",
@@ -1291,7 +1330,7 @@
 		{
 			"code": "CE1-028",
 			"grade": "CE1",
-			"display_order": 28,
+			"display_order": 30,
 			"name": "Connaitre des faits multiplicatifs usuels : les doubles et les moitiés.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1304,7 +1343,7 @@
 		{
 			"code": "CE1-083",
 			"grade": "CE1",
-			"display_order": 29,
+			"display_order": 31,
 			"name": "Connaitre des faits multiplicatifs usuels : les multiples de 25 (1 × 25, 2 × 25, 3 × 25, 4 × 25).",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1317,7 +1356,7 @@
 		{
 			"code": "CE1-029",
 			"grade": "CE1",
-			"display_order": 30,
+			"display_order": 32,
 			"name": "Ajouter ou soustraire un nombre entier de dizaines à un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1330,7 +1369,7 @@
 		{
 			"code": "CE1-084",
 			"grade": "CE1",
-			"display_order": 31,
+			"display_order": 33,
 			"name": "Ajouter ou soustraire un nombre entier de centaines à un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1343,7 +1382,7 @@
 		{
 			"code": "CE1-030",
 			"grade": "CE1",
-			"display_order": 32,
+			"display_order": 34,
 			"name": "Multiplier par 10 un nombre inférieur à 100.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1356,7 +1395,7 @@
 		{
 			"code": "CE1-031",
 			"grade": "CE1",
-			"display_order": 33,
+			"display_order": 35,
 			"name": "Ajouter 9, 19 ou 29 à un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1369,7 +1408,7 @@
 		{
 			"code": "CE1-032",
 			"grade": "CE1",
-			"display_order": 34,
+			"display_order": 36,
 			"name": "Soustraire 9 à un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1382,7 +1421,7 @@
 		{
 			"code": "CE1-033",
 			"grade": "CE1",
-			"display_order": 35,
+			"display_order": 37,
 			"name": "Soustraire un nombre inférieur à 9 à un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1395,7 +1434,7 @@
 		{
 			"code": "CE1-034",
 			"grade": "CE1",
-			"display_order": 36,
+			"display_order": 38,
 			"name": "Déterminer la moitié d'un nombre pair.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1408,7 +1447,7 @@
 		{
 			"code": "CE1-035",
 			"grade": "CE1",
-			"display_order": 37,
+			"display_order": 39,
 			"name": "Calculer le produit d'un nombre compris entre 11 et 19 par un nombre inférieur à 10 en décomposant le plus grand des deux facteurs en la somme de deux nombres (propriété de distributivité de la multiplication par rapport à l'addition).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1421,7 +1460,7 @@
 		{
 			"code": "CE1-036",
 			"grade": "CE1",
-			"display_order": 38,
+			"display_order": 40,
 			"name": "Résoudre des problèmes additifs en une étape de type parties-tout.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1434,7 +1473,7 @@
 		{
 			"code": "CE1-037",
 			"grade": "CE1",
-			"display_order": 39,
+			"display_order": 41,
 			"name": "Résoudre des problèmes additifs de comparaison en une étape.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1447,7 +1486,7 @@
 		{
 			"code": "CE1-038",
 			"grade": "CE1",
-			"display_order": 40,
+			"display_order": 42,
 			"name": "Résoudre des problèmes additifs en deux étapes.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1460,7 +1499,7 @@
 		{
 			"code": "CE1-039",
 			"grade": "CE1",
-			"display_order": 41,
+			"display_order": 43,
 			"name": "Résoudre des problèmes multiplicatifs en une étape.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1473,7 +1512,7 @@
 		{
 			"code": "CE1-040",
 			"grade": "CE1",
-			"display_order": 42,
+			"display_order": 44,
 			"name": "Résoudre des problèmes mixtes en deux étapes (une étape additive et une étape multiplicative).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1486,7 +1525,7 @@
 		{
 			"code": "CE1-041",
 			"grade": "CE1",
-			"display_order": 43,
+			"display_order": 45,
 			"name": "Connaitre et utiliser les unités mètre, centimètre, kilomètre et les symboles associés (m, cm et km).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1499,7 +1538,7 @@
 		{
 			"code": "CE1-042",
 			"grade": "CE1",
-			"display_order": 44,
+			"display_order": 46,
 			"name": "Choisir l'unité la mieux adaptée pour exprimer une longueur.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1512,7 +1551,7 @@
 		{
 			"code": "CE1-043",
 			"grade": "CE1",
-			"display_order": 45,
+			"display_order": 47,
 			"name": "Connaitre les relations entre les unités de longueur usuelles.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1525,7 +1564,7 @@
 		{
 			"code": "CE1-044",
 			"grade": "CE1",
-			"display_order": 46,
+			"display_order": 48,
 			"name": "Savoir mesurer la longueur d'un segment en utilisant une règle graduée.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1538,7 +1577,7 @@
 		{
 			"code": "CE1-045",
 			"grade": "CE1",
-			"display_order": 47,
+			"display_order": 49,
 			"name": "Comparer des longueurs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1551,7 +1590,7 @@
 		{
 			"code": "CE1-046",
 			"grade": "CE1",
-			"display_order": 48,
+			"display_order": 50,
 			"name": "Connaitre quelques longueurs de référence.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1564,7 +1603,7 @@
 		{
 			"code": "CE1-047",
 			"grade": "CE1",
-			"display_order": 49,
+			"display_order": 51,
 			"name": "Estimer la longueur d'un objet du quotidien.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1577,7 +1616,7 @@
 		{
 			"code": "CE1-048",
 			"grade": "CE1",
-			"display_order": 50,
+			"display_order": 52,
 			"name": "Savoir identifier l'objet le plus léger (ou le plus lourd) parmi deux ou trois objets de volumes proches en les soupesant ou en utilisant une balance pour les peser.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1590,7 +1629,7 @@
 		{
 			"code": "CE1-049",
 			"grade": "CE1",
-			"display_order": 51,
+			"display_order": 53,
 			"name": "Connaitre et utiliser les unités gramme et kilogramme et les symboles associés (g, kg).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1603,7 +1642,7 @@
 		{
 			"code": "CE1-050",
 			"grade": "CE1",
-			"display_order": 52,
+			"display_order": 54,
 			"name": "Savoir que 1 kg est égal à 1 000 g.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1616,7 +1655,7 @@
 		{
 			"code": "CE1-051",
 			"grade": "CE1",
-			"display_order": 53,
+			"display_order": 55,
 			"name": "Comparer des masses.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1629,7 +1668,7 @@
 		{
 			"code": "CE1-052",
 			"grade": "CE1",
-			"display_order": 54,
+			"display_order": 56,
 			"name": "Disposer de quelques masses de référence.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1642,7 +1681,7 @@
 		{
 			"code": "CE1-085",
 			"grade": "CE1",
-			"display_order": 55,
+			"display_order": 57,
 			"name": "Estimer la masse d'objets du quotidien en gramme ou en kilogramme.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1655,7 +1694,7 @@
 		{
 			"code": "CE1-053",
 			"grade": "CE1",
-			"display_order": 56,
+			"display_order": 58,
 			"name": "Connaitre le lien entre les euros et les centimes.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1668,7 +1707,7 @@
 		{
 			"code": "CE1-054",
 			"grade": "CE1",
-			"display_order": 57,
+			"display_order": 59,
 			"name": "Comparer les valeurs en euro de deux ensembles constitués de pièces et de billets.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1681,7 +1720,7 @@
 		{
 			"code": "CE1-055",
 			"grade": "CE1",
-			"display_order": 58,
+			"display_order": 60,
 			"name": "Déterminer la valeur en euro et centime d'euro d'un ensemble constitué de pièces et de billets.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1694,7 +1733,7 @@
 		{
 			"code": "CE1-056",
 			"grade": "CE1",
-			"display_order": 59,
+			"display_order": 61,
 			"name": "Constituer avec des euros et des centimes d'euro une somme d'argent d'une valeur donnée.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1707,7 +1746,7 @@
 		{
 			"code": "CE1-057",
 			"grade": "CE1",
-			"display_order": 60,
+			"display_order": 62,
 			"name": "Simuler des achats en manipulant des pièces et des billets fictifs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1720,7 +1759,7 @@
 		{
 			"code": "CE1-086",
 			"grade": "CE1",
-			"display_order": 61,
+			"display_order": 63,
 			"name": "Rendre la monnaie.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1733,7 +1772,7 @@
 		{
 			"code": "CE1-058",
 			"grade": "CE1",
-			"display_order": 62,
+			"display_order": 64,
 			"name": "Connaitre le sens de l'écriture à virgule d'une somme d'argent.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1746,7 +1785,7 @@
 		{
 			"code": "CE1-059",
 			"grade": "CE1",
-			"display_order": 63,
+			"display_order": 65,
 			"name": "Lire l'heure sur une horloge à aiguilles (lorsque l'heure est donnée en heures entières, en heures et demi-heure ou en heures et quarts d'heure).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1759,7 +1798,7 @@
 		{
 			"code": "CE1-060",
 			"grade": "CE1",
-			"display_order": 64,
+			"display_order": 66,
 			"name": "Positionner les aiguilles d'une horloge correspondant à une heure donnée en heures entières, en heures et demi-heure ou en heures et quart d'heure.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1772,7 +1811,7 @@
 		{
 			"code": "CE1-061",
 			"grade": "CE1",
-			"display_order": 65,
+			"display_order": 67,
 			"name": "Connaitre, utiliser et distinguer les heures du matin et celles de l'après-midi.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1785,7 +1824,7 @@
 		{
 			"code": "CE1-062",
 			"grade": "CE1",
-			"display_order": 66,
+			"display_order": 68,
 			"name": "Connaitre les unités de mesure de durée, heure et minute, et les symboles associés (h et min).",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1798,7 +1837,7 @@
 		{
 			"code": "CE1-063",
 			"grade": "CE1",
-			"display_order": 67,
+			"display_order": 69,
 			"name": "Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (pour des intervalles de temps situés dans une même journée, avec des heures données en heures entières, en heures et demi-heure ou en heures et quarts d'heure).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1811,7 +1850,7 @@
 		{
 			"code": "CE1-064",
 			"grade": "CE1",
-			"display_order": 68,
+			"display_order": 70,
 			"name": "Reconnaitre les solides usuels suivants : cube, boule, cône, pyramide, cylindre, pavé.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1824,7 +1863,7 @@
 		{
 			"code": "CE1-065",
 			"grade": "CE1",
-			"display_order": 69,
+			"display_order": 71,
 			"name": "Nommer un cube, une boule, un pavé, un cône ou une pyramide.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1837,7 +1876,7 @@
 		{
 			"code": "CE1-066",
 			"grade": "CE1",
-			"display_order": 70,
+			"display_order": 72,
 			"name": "Décrire un cube, un pavé ou une pyramide en utilisant les termes « face », « sommet » et « arête ».",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1850,7 +1889,7 @@
 		{
 			"code": "CE1-067",
 			"grade": "CE1",
-			"display_order": 71,
+			"display_order": 73,
 			"name": "Connaitre le nombre et la nature des faces d'un cube ou d'un pavé.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1863,7 +1902,7 @@
 		{
 			"code": "CE1-068",
 			"grade": "CE1",
-			"display_order": 72,
+			"display_order": 74,
 			"name": "Construire un cube, un pavé droit ou une pyramide.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1876,7 +1915,7 @@
 		{
 			"code": "CE1-069",
 			"grade": "CE1",
-			"display_order": 73,
+			"display_order": 75,
 			"name": "Utiliser le vocabulaire géométrique usuel : carré, rectangle, triangle, triangle rectangle, côté, sommet, angle, disque, cercle, centre ; point, droite, segment, milieu d'un segment ; angle droit, angle aigu, angle obtus.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1889,7 +1928,7 @@
 		{
 			"code": "CE1-070",
 			"grade": "CE1",
-			"display_order": 74,
+			"display_order": 76,
 			"name": "Reconnaitre, nommer et décrire un cercle, un carré, un rectangle, un triangle, un triangle rectangle en utilisant le vocabulaire approprié.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1902,7 +1941,7 @@
 		{
 			"code": "CE1-071",
 			"grade": "CE1",
-			"display_order": 75,
+			"display_order": 77,
 			"name": "Connaitre les propriétés des angles et des égalités de longueur pour les carrés et les rectangles.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1915,7 +1954,7 @@
 		{
 			"code": "CE1-072",
 			"grade": "CE1",
-			"display_order": 76,
+			"display_order": 78,
 			"name": "Reproduire ou construire un carré, un rectangle, un triangle, un triangle rectangle et un cercle ou un assemblage de ces figures.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1928,7 +1967,7 @@
 		{
 			"code": "CE1-073",
 			"grade": "CE1",
-			"display_order": 77,
+			"display_order": 79,
 			"name": "Utiliser la règle pour vérifier des alignements.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1941,7 +1980,7 @@
 		{
 			"code": "CE1-087",
 			"grade": "CE1",
-			"display_order": 78,
+			"display_order": 80,
 			"name": "Utiliser l'équerre pour vérifier qu'un angle est droit.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1954,7 +1993,7 @@
 		{
 			"code": "CE1-074",
 			"grade": "CE1",
-			"display_order": 79,
+			"display_order": 81,
 			"name": "Utiliser la règle graduée, l'équerre et le compas comme instruments de tracé.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1967,7 +2006,7 @@
 		{
 			"code": "CE1-075",
 			"grade": "CE1",
-			"display_order": 80,
+			"display_order": 82,
 			"name": "Connaitre et utiliser le code pour les angles droits.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1980,7 +2019,7 @@
 		{
 			"code": "CE1-076",
 			"grade": "CE1",
-			"display_order": 81,
+			"display_order": 83,
 			"name": "Connaitre et utiliser le vocabulaire lié aux positions relatives : à gauche, à droite ; sur, sous, entre, devant, derrière, au-dessus, en dessous ; près, loin.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1993,7 +2032,7 @@
 		{
 			"code": "CE1-077",
 			"grade": "CE1",
-			"display_order": 82,
+			"display_order": 84,
 			"name": "Situer des personnes ou des objets les uns par rapport aux autres ou par rapport à d'autres repères dans un espace familier.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2006,7 +2045,7 @@
 		{
 			"code": "CE1-078",
 			"grade": "CE1",
-			"display_order": 83,
+			"display_order": 85,
 			"name": "Construire et utiliser des représentations d'un espace familier pour localiser, mémoriser ou communiquer un emplacement.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2019,7 +2058,7 @@
 		{
 			"code": "CE1-079",
 			"grade": "CE1",
-			"display_order": 84,
+			"display_order": 86,
 			"name": "Construire des assemblages de cubes et de pavés.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2032,7 +2071,7 @@
 		{
 			"code": "CE1-080",
 			"grade": "CE1",
-			"display_order": 85,
+			"display_order": 87,
 			"name": "Comprendre, utiliser et produire une suite d'instructions qui codent un déplacement en utilisant un vocabulaire spatial précis.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2045,7 +2084,7 @@
 		{
 			"code": "CE1-081",
 			"grade": "CE1",
-			"display_order": 86,
+			"display_order": 88,
 			"name": "Produire un tableau pour présenter des données recueillies.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2058,7 +2097,7 @@
 		{
 			"code": "CE1-088",
 			"grade": "CE1",
-			"display_order": 87,
+			"display_order": 89,
 			"name": "Produire un diagramme en barres pour présenter des données recueillies.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2071,7 +2110,7 @@
 		{
 			"code": "CE1-082",
 			"grade": "CE1",
-			"display_order": 88,
+			"display_order": 90,
 			"name": "Lire et interpréter les données d'un diagramme en barres.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2084,7 +2123,7 @@
 		{
 			"code": "CE1-089",
 			"grade": "CE1",
-			"display_order": 89,
+			"display_order": 91,
 			"name": "Lire et interpréter les données d'un tableau à double entrée.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2345,7 +2384,20 @@
 			"code": "CE2-020",
 			"grade": "CE2",
 			"display_order": 20,
-			"name": "Connaitre dans les deux sens les tables d'addition.",
+			"name": "Connaître les tables d'addition : donner la somme de deux nombres (3 + 4 = ?).",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : addition et soustraction",
+			"sous_notion": "tables"
+		},
+		{
+			"code": "CE2-084",
+			"grade": "CE2",
+			"display_order": 21,
+			"name": "Connaître les tables d'addition dans l'autre sens : trouver le terme manquant d'une addition (3 + ? = 7).",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "fluence",
@@ -2357,8 +2409,21 @@
 		{
 			"code": "CE2-021",
 			"grade": "CE2",
-			"display_order": 21,
-			"name": "Connaitre dans les deux sens les tables de multiplication.",
+			"display_order": 22,
+			"name": "Connaître les tables de multiplication : donner le produit de deux nombres (3 × 4 = ?).",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+			"branche": "Nombres et calculs",
+			"notion": "Entiers : multiplication",
+			"sous_notion": "tables"
+		},
+		{
+			"code": "CE2-085",
+			"grade": "CE2",
+			"display_order": 23,
+			"name": "Connaître les tables de multiplication dans l'autre sens : trouver le facteur manquant d'un produit (3 × ? = 12).",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "fluence",
@@ -2370,7 +2435,7 @@
 		{
 			"code": "CE2-022",
 			"grade": "CE2",
-			"display_order": 22,
+			"display_order": 24,
 			"name": "Connaitre des faits multiplicatifs usuels : les doubles et les moitiés.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2383,7 +2448,7 @@
 		{
 			"code": "CE2-077",
 			"grade": "CE2",
-			"display_order": 23,
+			"display_order": 25,
 			"name": "Connaitre des faits multiplicatifs usuels : les multiples de 25 (1 × 25, 2 × 25, 3 × 25, 4 × 25).",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2396,7 +2461,7 @@
 		{
 			"code": "CE2-078",
 			"grade": "CE2",
-			"display_order": 24,
+			"display_order": 26,
 			"name": "Connaitre des faits multiplicatifs usuels : les décompositions multiplicatives de 60.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2409,7 +2474,7 @@
 		{
 			"code": "CE2-023",
 			"grade": "CE2",
-			"display_order": 25,
+			"display_order": 27,
 			"name": "Multiplier un nombre entier par 10 ou 100.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2422,7 +2487,7 @@
 		{
 			"code": "CE2-024",
 			"grade": "CE2",
-			"display_order": 26,
+			"display_order": 28,
 			"name": "Ajouter 8, 9, 18, 19, 28, 29, 38 ou 39 à un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2435,7 +2500,7 @@
 		{
 			"code": "CE2-025",
 			"grade": "CE2",
-			"display_order": 27,
+			"display_order": 29,
 			"name": "Soustraire 9, 19, 29 ou 39 à un nombre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2448,7 +2513,7 @@
 		{
 			"code": "CE2-026",
 			"grade": "CE2",
-			"display_order": 28,
+			"display_order": 30,
 			"name": "Multiplier un nombre entier par 4 ou par 8.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2461,7 +2526,7 @@
 		{
 			"code": "CE2-027",
 			"grade": "CE2",
-			"display_order": 29,
+			"display_order": 31,
 			"name": "Multiplier un nombre inférieur à 10 par un nombre entier de dizaines.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2474,7 +2539,7 @@
 		{
 			"code": "CE2-028",
 			"grade": "CE2",
-			"display_order": 30,
+			"display_order": 32,
 			"name": "Calculer le produit d'un nombre compris entre 11 et 99 par un nombre inférieur à 10 en décomposant le plus grand des deux facteurs en la somme de deux nombres (propriété de distributivité de la multiplication par rapport à l'addition).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2487,7 +2552,7 @@
 		{
 			"code": "CE2-029",
 			"grade": "CE2",
-			"display_order": 31,
+			"display_order": 33,
 			"name": "Résoudre des problèmes additifs en une étape de type parties-tout.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2500,7 +2565,7 @@
 		{
 			"code": "CE2-079",
 			"grade": "CE2",
-			"display_order": 32,
+			"display_order": 34,
 			"name": "Résoudre des problèmes additifs de comparaison en une étape.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2513,7 +2578,7 @@
 		{
 			"code": "CE2-030",
 			"grade": "CE2",
-			"display_order": 33,
+			"display_order": 35,
 			"name": "Résoudre des problèmes additifs en deux étapes.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2526,7 +2591,7 @@
 		{
 			"code": "CE2-031",
 			"grade": "CE2",
-			"display_order": 34,
+			"display_order": 36,
 			"name": "Résoudre des problèmes multiplicatifs en une étape.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2539,7 +2604,7 @@
 		{
 			"code": "CE2-032",
 			"grade": "CE2",
-			"display_order": 35,
+			"display_order": 37,
 			"name": "Résoudre des problèmes mixtes en deux ou trois étapes.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2552,7 +2617,7 @@
 		{
 			"code": "CE2-033",
 			"grade": "CE2",
-			"display_order": 36,
+			"display_order": 38,
 			"name": "Résoudre des problèmes de comparaison multiplicative en une étape.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2565,7 +2630,7 @@
 		{
 			"code": "CE2-034",
 			"grade": "CE2",
-			"display_order": 37,
+			"display_order": 39,
 			"name": "Résoudre des problèmes mettant en jeu des produits cartésiens.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2578,7 +2643,7 @@
 		{
 			"code": "CE2-035",
 			"grade": "CE2",
-			"display_order": 38,
+			"display_order": 40,
 			"name": "Connaitre et utiliser les unités mètre, décimètre, centimètre, millimètre, kilomètre et les symboles associés (m, dm, cm, mm, km).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2591,7 +2656,7 @@
 		{
 			"code": "CE2-036",
 			"grade": "CE2",
-			"display_order": 39,
+			"display_order": 41,
 			"name": "Connaitre les relations entre les unités de longueur.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2604,7 +2669,7 @@
 		{
 			"code": "CE2-037",
 			"grade": "CE2",
-			"display_order": 40,
+			"display_order": 42,
 			"name": "Choisir l'unité la mieux adaptée pour exprimer une longueur.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2617,7 +2682,7 @@
 		{
 			"code": "CE2-038",
 			"grade": "CE2",
-			"display_order": 41,
+			"display_order": 43,
 			"name": "Comparer des longueurs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2630,7 +2695,7 @@
 		{
 			"code": "CE2-039",
 			"grade": "CE2",
-			"display_order": 42,
+			"display_order": 44,
 			"name": "Tracer un segment de longueur donnée.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2643,7 +2708,7 @@
 		{
 			"code": "CE2-040",
 			"grade": "CE2",
-			"display_order": 43,
+			"display_order": 45,
 			"name": "Disposer de quelques longueurs de référence.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2656,7 +2721,7 @@
 		{
 			"code": "CE2-041",
 			"grade": "CE2",
-			"display_order": 44,
+			"display_order": 46,
 			"name": "Estimer la longueur d'un objet ou une distance.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2669,7 +2734,7 @@
 		{
 			"code": "CE2-042",
 			"grade": "CE2",
-			"display_order": 45,
+			"display_order": 47,
 			"name": "Savoir ce qu'est le périmètre d'une figure plane.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2682,7 +2747,7 @@
 		{
 			"code": "CE2-043",
 			"grade": "CE2",
-			"display_order": 46,
+			"display_order": 48,
 			"name": "Comparer le périmètre de plusieurs polygones sans règle graduée, en utilisant un compas.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2695,7 +2760,7 @@
 		{
 			"code": "CE2-044",
 			"grade": "CE2",
-			"display_order": 47,
+			"display_order": 49,
 			"name": "Déterminer le périmètre d'un polygone en utilisant une règle graduée.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2708,7 +2773,7 @@
 		{
 			"code": "CE2-045",
 			"grade": "CE2",
-			"display_order": 48,
+			"display_order": 50,
 			"name": "Connaitre et utiliser les unités gramme, kilogramme et tonne et les symboles associés (g, kg, t).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2721,7 +2786,7 @@
 		{
 			"code": "CE2-046",
 			"grade": "CE2",
-			"display_order": 49,
+			"display_order": 51,
 			"name": "Choisir l'unité la mieux adaptée pour exprimer une masse.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2734,7 +2799,7 @@
 		{
 			"code": "CE2-047",
 			"grade": "CE2",
-			"display_order": 50,
+			"display_order": 52,
 			"name": "Connaitre les relations entre les unités de masse usuelles.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2747,7 +2812,7 @@
 		{
 			"code": "CE2-048",
 			"grade": "CE2",
-			"display_order": 51,
+			"display_order": 53,
 			"name": "Comparer des masses.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2760,7 +2825,7 @@
 		{
 			"code": "CE2-049",
 			"grade": "CE2",
-			"display_order": 52,
+			"display_order": 54,
 			"name": "Disposer de quelques masses de référence.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2773,7 +2838,7 @@
 		{
 			"code": "CE2-050",
 			"grade": "CE2",
-			"display_order": 53,
+			"display_order": 55,
 			"name": "Estimer la masse d'un objet.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2786,7 +2851,7 @@
 		{
 			"code": "CE2-051",
 			"grade": "CE2",
-			"display_order": 54,
+			"display_order": 56,
 			"name": "Comparer les contenances de différents objets.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2799,7 +2864,7 @@
 		{
 			"code": "CE2-052",
 			"grade": "CE2",
-			"display_order": 55,
+			"display_order": 57,
 			"name": "Connaitre et utiliser les unités litre, décilitre et centilitre et les symboles associés (L, dL et cL).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2812,7 +2877,7 @@
 		{
 			"code": "CE2-053",
 			"grade": "CE2",
-			"display_order": 56,
+			"display_order": 58,
 			"name": "Savoir que 1 L est égal à 10 dL et également à 100 cL.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2825,7 +2890,7 @@
 		{
 			"code": "CE2-054",
 			"grade": "CE2",
-			"display_order": 57,
+			"display_order": 59,
 			"name": "Simuler des achats en manipulant des pièces et des billets fictifs.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2838,7 +2903,7 @@
 		{
 			"code": "CE2-080",
 			"grade": "CE2",
-			"display_order": 58,
+			"display_order": 60,
 			"name": "Rendre la monnaie.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2851,7 +2916,7 @@
 		{
 			"code": "CE2-055",
 			"grade": "CE2",
-			"display_order": 59,
+			"display_order": 61,
 			"name": "Poser et effectuer des additions de montants en euro.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2864,7 +2929,7 @@
 		{
 			"code": "CE2-056",
 			"grade": "CE2",
-			"display_order": 60,
+			"display_order": 62,
 			"name": "Poser et effectuer des soustractions de montants en euro.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2877,7 +2942,7 @@
 		{
 			"code": "CE2-057",
 			"grade": "CE2",
-			"display_order": 61,
+			"display_order": 63,
 			"name": "Lire l'heure sur une horloge à aiguilles.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2890,7 +2955,7 @@
 		{
 			"code": "CE2-058",
 			"grade": "CE2",
-			"display_order": 62,
+			"display_order": 64,
 			"name": "Positionner les aiguilles d'une horloge correspondant à une heure donnée en heures entières ou en heures et minutes.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2903,7 +2968,7 @@
 		{
 			"code": "CE2-059",
 			"grade": "CE2",
-			"display_order": 63,
+			"display_order": 65,
 			"name": "Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (pour des intervalles de temps situés dans une même journée).",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2916,7 +2981,7 @@
 		{
 			"code": "CE2-060",
 			"grade": "CE2",
-			"display_order": 64,
+			"display_order": 66,
 			"name": "Résoudre des problèmes à une ou deux étapes impliquant des durées.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2929,7 +2994,7 @@
 		{
 			"code": "CE2-061",
 			"grade": "CE2",
-			"display_order": 65,
+			"display_order": 67,
 			"name": "Nommer un cube, une boule, un pavé, un cône, une pyramide ou un cylindre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2942,7 +3007,7 @@
 		{
 			"code": "CE2-062",
 			"grade": "CE2",
-			"display_order": 66,
+			"display_order": 68,
 			"name": "Décrire un cube, un pavé ou une pyramide en utilisant les termes « face », « sommet » et « arête ».",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2955,7 +3020,7 @@
 		{
 			"code": "CE2-063",
 			"grade": "CE2",
-			"display_order": 67,
+			"display_order": 69,
 			"name": "Connaitre le nombre et la nature des faces d'un cube ou d'un pavé.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2968,7 +3033,7 @@
 		{
 			"code": "CE2-064",
 			"grade": "CE2",
-			"display_order": 68,
+			"display_order": 70,
 			"name": "Connaitre la nature des faces d'une pyramide.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2981,7 +3046,7 @@
 		{
 			"code": "CE2-065",
 			"grade": "CE2",
-			"display_order": 69,
+			"display_order": 71,
 			"name": "Construire un cube, un pavé ou une pyramide.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2994,7 +3059,7 @@
 		{
 			"code": "CE2-066",
 			"grade": "CE2",
-			"display_order": 70,
+			"display_order": 72,
 			"name": "Construire un cube à partir d'un patron.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3007,7 +3072,7 @@
 		{
 			"code": "CE2-067",
 			"grade": "CE2",
-			"display_order": 71,
+			"display_order": 73,
 			"name": "Utiliser le vocabulaire géométrique usuel : polygone, triangle, quadrilatère, pentagone et hexagone ; carré, rectangle, losange, triangle, triangle rectangle, côté, sommet, angle ; diagonale (pour un quadrilatère), longueur du rectangle, largeur du rectangle ; disque, cercle, centre, rayon, diamètre ; point, droite, segment, milieu d'un segment ; angle droit, angle aigu, angle obtus.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3020,7 +3085,7 @@
 		{
 			"code": "CE2-068",
 			"grade": "CE2",
-			"display_order": 72,
+			"display_order": 74,
 			"name": "Reconnaitre, nommer et décrire le carré, le rectangle, le triangle, le triangle rectangle et le losange.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3033,7 +3098,7 @@
 		{
 			"code": "CE2-069",
 			"grade": "CE2",
-			"display_order": 73,
+			"display_order": 75,
 			"name": "Connaitre les propriétés des angles et les égalités de longueur pour les carrés, les rectangles et les losanges.",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -3046,7 +3111,7 @@
 		{
 			"code": "CE2-070",
 			"grade": "CE2",
-			"display_order": 74,
+			"display_order": 76,
 			"name": "Reproduire ou construire un carré, un rectangle, un triangle, un triangle rectangle et un cercle ou des assemblages de ces figures sur tout support (papier quadrillé ou pointé ou papier uni), avec une règle graduée, une équerre ou un compas.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3059,7 +3124,7 @@
 		{
 			"code": "CE2-071",
 			"grade": "CE2",
-			"display_order": 75,
+			"display_order": 77,
 			"name": "Connaitre et utiliser le codage d'un angle droit.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3072,7 +3137,7 @@
 		{
 			"code": "CE2-081",
 			"grade": "CE2",
-			"display_order": 76,
+			"display_order": 78,
 			"name": "Connaitre et utiliser le codage qui indique que des segments ont la même longueur.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3085,7 +3150,7 @@
 		{
 			"code": "CE2-072",
 			"grade": "CE2",
-			"display_order": 77,
+			"display_order": 79,
 			"name": "Reconnaitre si une figure possède un ou plusieurs axes de symétrie en utilisant des pliages ou du papier calque.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3098,7 +3163,7 @@
 		{
 			"code": "CE2-073",
 			"grade": "CE2",
-			"display_order": 78,
+			"display_order": 80,
 			"name": "Compléter, sur une feuille quadrillée ou pointée, une figure simple pour la rendre symétrique par rapport à un axe donné.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3111,7 +3176,7 @@
 		{
 			"code": "CE2-074",
 			"grade": "CE2",
-			"display_order": 79,
+			"display_order": 81,
 			"name": "Produire un tableau pour présenter des données recueillies.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3124,7 +3189,7 @@
 		{
 			"code": "CE2-082",
 			"grade": "CE2",
-			"display_order": 80,
+			"display_order": 82,
 			"name": "Produire un diagramme en barres pour présenter des données recueillies.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3137,7 +3202,7 @@
 		{
 			"code": "CE2-075",
 			"grade": "CE2",
-			"display_order": 81,
+			"display_order": 83,
 			"name": "Lire et interpréter les données d'un tableau à double entrée.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3150,7 +3215,7 @@
 		{
 			"code": "CE2-083",
 			"grade": "CE2",
-			"display_order": 82,
+			"display_order": 84,
 			"name": "Lire et interpréter les données d'un diagramme en barres.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -3163,7 +3228,7 @@
 		{
 			"code": "CE2-076",
 			"grade": "CE2",
-			"display_order": 83,
+			"display_order": 85,
 			"name": "Résoudre des problèmes en utilisant les données d'un tableau à double entrée ou d'un diagramme en barre.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
