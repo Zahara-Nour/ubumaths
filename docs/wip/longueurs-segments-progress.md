@@ -50,6 +50,16 @@ pour la correction ; Q3 **`ABC` refusé** avec un message ; Q4 `\overline`, `\wi
 `\overrightarrow` **plus tard** ; Q6 **`ab` reste un produit**. Q5 : `AB²` → « le carré de la
 longueur AB », `AB` → « **la longueur AB** » (toujours préciser).
 
+**2026-10-12, nuance de Q1 « partout »** : le sens de deux majuscules collées se décide, **dans
+l'ordre** :
+
+1. **la déclaration de l'auteur** quand elle existe (« A, B, C sont des points » → longueur ;
+   « A, B sont des matrices » / « des expressions » → produit) ;
+2. sinon **le contexte** (thème, domaine, niveau de la question, ou option posée par l'appelant,
+   ex. questions de matrices) ;
+3. sinon **longueur par défaut**. Sur `/test-structure` (aucun contexte) : longueur, avec une case
+   pour lire un produit.
+
 État du code : `mathAST` n'a **aucun nœud longueur ni angle** (`MathNode`, `types.ts`) ; `\angle`
 n'existe que comme symbole. `geometry-core` (DSL de géométrie) connaît segments et angles, mais
 `mathAST` ne s'en sert pas.
@@ -160,9 +170,72 @@ la base de prod.
 - Aucune formule à majuscules collées dans `chapter_templates`, `srs_cards`, `riddles`,
   `worksheet_templates`.
 
+### Déclarer et contextualiser : ce qui existe déjà (2026-10-12)
+
+- **Les fonctions déclarées (`genericFunctions`) : le précédent exact.** Un modèle déclare « `P`,
+  `C` sont des fonctions » dans `shared.genericFunctions` (3 modèles en base) ; un exercice dans la
+  colonne `exercises.generic_functions` (11 exercices). La déclaration est **copiée sur l'instance**
+  (`QuestionInstance.genericFunctions`, `instance-generator.ts` l. 755), traduite par
+  `templateGenericFunctions` (`questions/generic-functions.ts`) en option `GenericFunctionConfig`
+  du parseur, et **descend jusqu'à lui partout** : correction (`answer-validator.ts` :
+  `formOptionsOf` → `checkForm`, règles `equivalent`, `requiredForm`), correction rédigée
+  (`correction-generator.ts`), affichage (`MarkdownRenderer` → `MathInline` →
+  `expressionToLatex` → `parseCustomSafe(…, { genericFunctions })`, 18 passages de la prop dans les
+  `.svelte`), PDF Typst. C'est **le rail naturel** d'une déclaration sur des lettres, et il
+  atteint déjà la syntaxe maison des exercices (`~ABC~`).
+- **Les hypothèses de l'énoncé (`options.answerAssumptions`, ADR 0012, `mathAST/assumptions.ts`)** :
+  par lettre, vocabulaire fermé (`positive`, `nonnegative`, `nonzero`, `integer`, `natural`),
+  éditeur dédié (`AnswerAssumptionsEditor.svelte`), schéma Zod et contrôle de collision avec les
+  variables du gabarit (`questions/answer-assumptions.ts`). Mais elles agissent **après** le
+  parseur (`areEquivalent` les reçoit), jamais sur la lecture ; aucun modèle n'en a en base. Bon
+  modèle d'éditeur, mauvais endroit pour un « sens de lecture ».
+- `validationRules`, `requiredForm`, `blankDefaults`, `templateVariables` : rien sur le **type**
+  d'une lettre (les variables du gabarit sont tirées puis remplacées dans le texte).
+- **Le contexte** : chaque modèle a `theme`, `domain`, `subdomain`, `level`, `grades`,
+  `classification_node_id`, **copiés sur l'instance** (`QuestionInstance.theme`, `.domain`…).
+  Les 12 modèles de matrices sont tous `theme = 'Graphes et matrices'` (domaines `Matrices`,
+  `Graphes`, `Chaînes de Markov`), T_EXP. Un exercice a `topic` (`Géométrie`, `Géométrie repérée`,
+  `Probabilités`…), `grades`, `category`.
+- **Aucun appelant ne passe aujourd'hui d'option de sens au parseur** : `parseLatex` ne reçoit que
+  `mode`, `parser`, `genericFunctions`, `security`.
+
 ## Conception proposée
 
-### Option A — un nœud dédié (recommandée)
+### Qui décide du sens (2026-10-12)
+
+**Une option du parseur, `capitalPairs: 'length' | 'product'`, défaut `'length'`**, dans
+`LatexParserOptions` et `CustomParserOptions`, à côté de `genericFunctions`.
+
+- `'length'` : deux majuscules collées → nœud longueur ; trois ou plus → selon Q-A.
+- `'product'` : **comportement d'aujourd'hui, à l'identique** (`AB` = `A·B`, `ABC` = `A·B·C`,
+  aucun refus). Le nœud longueur n'existe que dans le mode `'length'`.
+- **Qui la pose** : une seule fonction de résolution côté questions (ex.
+  `capitalPairsFor({ declaration, theme, domain })` dans `questions/`), qui applique l'ordre de
+  David : déclaration → contexte → `'length'`. Le résultat est **copié sur l'instance** comme
+  `genericFunctions` et suit le même rail (correction, correction rédigée, affichage, PDF).
+- **Sans contexte** (atelier, grapheur, `pnpm math`, DSL de géométrie, chat) : défaut `'length'`.
+  `/test-structure` : `'length'`, et la case « lire AB comme un produit » passe `'product'`.
+
+Deux variantes pour **la déclaration** :
+
+- **V1 — un interrupteur par modèle** : `shared.capitalPairs: 'length' | 'product'`
+  (« les majuscules collées sont des longueurs / des produits »), et pour les exercices une
+  colonne `exercises.capital_pairs` (migration additive) ou rien (contexte seul, voir Q-J).
+  Simple, calqué sur `genericFunctions`, une ligne dans l'éditeur.
+- **V2 — par lettre** : `shared.letterKinds: { A: 'point', B: 'point' }` / `{ A: 'matrix' }`,
+  à la manière d'`answerAssumptions`. Plus proche des mots de David, permet de mélanger points et
+  matrices dans un même modèle ; mais il faut une règle pour les lettres non déclarées et une
+  paire mixte (`AM` avec A point, M matrice), et un éditeur par lettre.
+
+**Recommandation : V1.** Aucun cas en base ne mélange points et matrices ; V2 reste possible plus
+tard sans changer l'option du parseur (elle se résoudrait en `'length'`/`'product'` par modèle).
+
+**Contexte** : une table unique, minimale, dans la fonction de résolution : `theme = 'Graphes et
+matrices'` → `'product'`. Rien d'autre au départ (voir Q-I).
+
+### Le nœud
+
+#### Option A — un nœud dédié (recommandée)
 
 ```
 SegmentLengthNode { type: 'segmentLength', points: readonly [PointName, PointName] }
@@ -170,7 +243,8 @@ PointName = { letter: 'A'…'Z', primes: 0|1|2…, index?: string }   // A, A', 
 ```
 
 - **Lecture du parseur** : dans les deux tokenizers, deux majuscules **collées dans la source**
-  (avec leurs primes et indices) → un jeton `SEGMENT` ; trois points ou plus → refus (voir Q-A).
+  (avec leurs primes et indices) → un jeton `SEGMENT` **en mode `'length'` seulement** ; trois
+  points ou plus → selon Q-A. En mode `'product'`, les jetons restent des lettres.
   Les quatre parseurs reçoivent le jeton et appellent la fabrique `segmentLength(…)` (pas de
   littéral hors `factory.ts`, invariant 2).
 - **Écriture** : `toLatex` → `AB` (sans espace, sans `\mathit`), `A'B'`, `A_1B_1` ; `toCustom` →
@@ -187,7 +261,7 @@ PointName = { letter: 'A'…'Z', primes: 0|1|2…, index?: string }   // A, A', 
   `type === 'variable'` à auditer : les branches `default` ignorent le nœud **en silence**, le plus
   souvent sans fausse réponse — une règle ne s'applique pas).
 
-### Option B — une variable au nom de deux points
+#### Option B — une variable au nom de deux points
 
 `variable('AB')` : le sens est porté par la **forme du nom**. Tout marche aussitôt comme une
 variable (`tidy`, `normalize`, `solve`, `compile`). Contre : convention implicite (« astuce ») ;
@@ -201,24 +275,26 @@ longueur « par hasard » et que le compilateur montre chaque endroit à décide
 
 ## Questions (ouvertes, à trancher par David)
 
-**Q-A. `ABC` refusé : où ?** Les 298 `~ABC~`, `~ABCD~`, `~GGGG~` des exercices sont des **noms de
-figure** ou des **chemins**, affichés. (a) Refus partout, et migration des 30 exercices de
-`~ABC~` vers `$ABC$` (données de prod, sur ton accord) ; l'auteur qui écrit `~ABC~` voit le message.
-(b) Le parseur garde `ABC` comme **nom de figure** (nœud non calculable, affiché `ABC`, lu « ABC »)
-et le **refus avec message** a lieu au calcul et à la correction (`areEquivalent`, `evaluate`,
-`checkForm`). (c) Refus seulement en LaTeX (saisie élève), produit conservé en syntaxe maison.
-**Recommandation : (b)** — ton intention (« ABC n'est pas une longueur ») est tenue pour l'élève,
-et aucun document n'affiche d'erreur.
+**Q-A. `ABC` en mode longueur : où le refuser ?** (Avec la décision du 12/10, en mode
+`'product'` `ABC` reste le produit d'aujourd'hui, sans refus.) En mode `'length'`, les 298
+`~ABC~`, `~ABCD~`, `~DEF~` des exercices de géométrie sont des **noms de figure**, affichés.
+(a) Refus partout, et migration des exercices de `~ABC~` vers `$ABC$` (données de prod, sur ton
+accord) ; l'auteur qui écrit `~ABC~` voit le message. (b) Le parseur garde `ABC` comme **nom de
+figure** (nœud non calculable, affiché `ABC`, lu « ABC ») et le **refus avec message** a lieu au
+calcul et à la correction (`areEquivalent`, `evaluate`, `checkForm`). (c) Refus seulement en LaTeX
+(saisie élève), produit conservé en syntaxe maison. **Recommandation : (b)** — l'élève reçoit le
+message, aucun document n'affiche d'erreur.
 
-**Q-B. Matrices (T_EXP).** `AB`, `AX = B`, `LA` y sont des produits de matrices. (a) Longueur
-partout, sans exception (les énoncés matriciels ne sont pas lus aujourd'hui) ; (b) idem, plus une
-**option du parseur** `segmentLengths: false` créée dès le lot 1, qu'un futur trou matriciel
-activera ; (c) détection par le contexte. **Recommandation : (b)** (coût quasi nul, pas de
-détection magique).
+**Q-B. Matrices (T_EXP)** — **tranchée par la décision du 12/10** : déclaration de l'auteur, sinon
+contexte `theme = 'Graphes et matrices'` → `'product'`. Reste ouvert : voir Q-I (la table de
+contexte) et Q-H (la forme de la déclaration).
 
-**Q-C. Chemins de probabilité** (`~GD~`, `~DG~`) : deviendraient « la longueur GD » à la lecture
-(affichage inchangé). (a) Accepter (lecture fausse, rare, outil de lecture seul concerné) ;
-(b) écrire les chemins en texte. **Recommandation : (a)**, avec (b) au fil des relectures.
+**Q-C. Chemins de probabilité** (`~GD~`, `~GGGG~`, topic `Probabilités`) : en mode `'length'`,
+`GD` se lirait « la longueur GD » (affichage inchangé), `GGGG` suivrait Q-A ; en mode `'product'`,
+« le produit de G par D » — faux aussi. (a) Laisser le défaut (`'length'`) ; (b) mettre
+`Probabilités` dans la table de contexte (`'product'`) ; (c) écrire les chemins en texte.
+**Recommandation : (a)**, avec (c) au fil des relectures : aucun des deux sens n'est juste, et
+avec Q-A (b) rien ne s'affiche en erreur.
 
 **Q-D. Points primés et indicés** (`A'B'`, `A_1B_1`, `OM_n`) : aujourd'hui `A'B'` **échoue**.
 Dans le même chantier (lot 1) ou plus tard ? **Recommandation : lot 1** (Thalès et
@@ -233,7 +309,31 @@ re-mesurer dans Chromium au lot 1). **Recommandation : (b)**, règle simple sur 
 (a) Oui, au lot `solve` ; (b) plus tard. **Recommandation : (b)**, hors de ce chantier.
 
 **Q-G. Écriture `toLatex`** : `AB` (italique, comme les manuels et MathLive) ou `\mathrm{AB}`
-(droit) ? **Recommandation : `AB`**, relu tel quel par le parseur.
+(droit) ? **Recommandation : `AB`**, relu tel quel par le parseur (en mode `'length'`).
+
+**Q-H. Forme de la déclaration** : (V1) un interrupteur par modèle, `shared.capitalPairs`
+(« longueurs » / « produits ») ; (V2) une déclaration par lettre (`A: 'point'`, `A: 'matrix'`).
+**Recommandation : V1** (calquée sur `genericFunctions`, aucun mélange points/matrices en base ;
+V2 possible plus tard sans toucher au parseur).
+
+**Q-I. Table de contexte** : (a) `theme = 'Graphes et matrices'` → produit, rien d'autre ;
+(b) plus large (tout T_EXP, `Probabilités`, physique…). **Recommandation : (a)** — un thème
+vérifié en base (12 modèles), le reste se déclare au cas par cas.
+
+**Q-J. Déclaration pour les exercices rédigés** (`~…~`, table `exercises`, sans `shared`) :
+(a) contexte seul (`topic`), pas de déclaration ; (b) colonne `exercises.capital_pairs`
+(migration **additive**, question d'accès : aucune lecture nouvelle, même RLS que la ligne).
+**Recommandation : (a)** tant qu'aucun exercice n'en a besoin, (b) le jour où il en faut un. Mesuré :
+aucun exercice de produit de matrices en base (les 24 exercices à `pmatrix` sont des coordonnées
+de vecteurs, en géométrie, où `HE^2=PE^2-PH^2` est bien une égalité de longueurs).
+
+**Q-K. Où se résout le sens** : (a) à la génération de l'instance, copié dessus comme
+`genericFunctions` (une seule résolution, le PDF et l'affichage voient la même chose) ;
+(b) à chaque appel du parseur, depuis `theme`/`domain`. **Recommandation : (a)**.
+
+**Q-L. Changer le sens d'un modèle déjà servi** : une instance déjà tirée (feuille en cours)
+garde-t-elle l'ancien sens ? **Recommandation : oui**, comme `genericFunctions` aujourd'hui
+(copié à la génération).
 
 ## Spécification (à valider)
 
@@ -286,9 +386,26 @@ Notation : « comprend » = arbre ; « écrit » = `toLatex` ; « lit » = lectu
 | `AA`                             | longueur AA (gardée telle quelle, pas de 0 automatique)                            |
 | `(AB)`                           | longueur AB entre parenthèses (la droite viendra avec les notations « plus tard ») |
 | `\pi R^2`, `Ce^{2x}`             | inchangés (une seule majuscule)                                                    |
-| `AX_n`                           | longueur A X_n (selon Q-B : option pour les matrices)                              |
+| `AX_n` (sans contexte)           | longueur A X_n ; produit en contexte matrices (ci-dessous)                         |
 | unités (`5\unit{kWh}`, `12[MW]`) | inchangées                                                                         |
 | gabarits `{{eval:XU*XV}}`        | inchangés (noms remplacés avant le parseur)                                        |
+
+### Sens selon la déclaration et le contexte
+
+| Situation                                                        | Sens retenu | `AB^2`        | `ABC`          | Lit `AB`              |
+| ---------------------------------------------------------------- | ----------- | ------------- | -------------- | --------------------- |
+| Modèle déclaré « longueurs » (`shared.capitalPairs`), tout thème | longueur    | carré de AB   | selon Q-A      | la longueur AB        |
+| Modèle déclaré « produits », même en géométrie                   | produit     | `A·B²` (auj.) | `A·B·C` (auj.) | le produit de A par B |
+| Thème `Graphes et matrices`, sans déclaration                    | produit     | `A·B²`        | `A·B·C`        | le produit de A par B |
+| Thème `Graphes et matrices`, déclaré « longueurs »               | longueur    | carré de AB   | selon Q-A      | la longueur AB        |
+| Aucun contexte (atelier, grapheur, `pnpm math`, DSL, chat)       | longueur    | carré de AB   | selon Q-A      | la longueur AB        |
+| `/test-structure`, case décochée (défaut)                        | longueur    | carré de AB   | selon Q-A      | la longueur AB        |
+| `/test-structure`, case « lire AB comme un produit » cochée      | produit     | `A·B²`        | `A·B·C`        | le produit de A par B |
+
+En mode produit, **tout est identique à aujourd'hui** (arbre, écriture `A B`, équivalence
+`AB ≡ A\times B`, `AB^2 ≢ BA^2`). Le sens retenu vaut pour **toute** l'instance : énoncé,
+réponse de l'élève, réponse attendue, correction rédigée, PDF. Une réponse attendue et une réponse
+élève sont toujours lues dans le **même** sens.
 
 ### Erreurs
 
@@ -304,23 +421,35 @@ Chaque lot : tests d'abord (rouges, **sur des entrées parsées**, coefficient �
 `check:incremental`, `code-reviewer`. Agents : `mathast-expert` (Opus) sauf mention.
 
 1. **Lot 1 — le nœud et le parseur LaTeX** : `SegmentLengthNode` + fabrique + gardes de type ;
-   jeton `SEGMENT` dans le tokenizer LaTeX, Pratt et `rd` ; refus/nom de figure (Q-A) ; primes et
-   indices (Q-D) ; option `segmentLengths` (Q-B) ; `toLatex`/`toCustom`/`prettyPrint` ; traitement
-   de tous les `switch` exhaustifs ; audit listé des branches `default` (`case 'variable'`).
+   option `capitalPairs` (défaut `'length'`) ; jeton `SEGMENT` dans le tokenizer LaTeX, Pratt et
+   `rd`, en mode `'length'` seulement ; nom de figure ou refus (Q-A) ; primes et indices (Q-D) ;
+   `toLatex`/`toCustom`/`prettyPrint` ; tous les `switch` exhaustifs ; audit listé des branches
+   `default` (`case 'variable'`). Test : en mode `'product'`, arbres identiques à aujourd'hui.
 2. **Lot 2 — calcul et correction** : `normalize` (clé canonique), `denormalize`, `equivalenceForm`,
-   `getVariables`/`substitute`/`evaluate`/`compile`, `checkForm` (ordre des points libre),
-   `tidy`/`simplify`. Panel des simplifications et convention d'équivalence mis à jour.
-3. **Lot 3 — lecture** : `structure/` (« la longueur AB », « le carré de la longueur AB ») ;
-   `mathast-expert` + `pedagogy-expert` pour les formulations.
-4. **Lot 4 — syntaxe maison** : tokenizer custom, Pratt et `rd` ; relance des suites
+   `getVariables`/`substitute`/`evaluate`/`compile`, `checkForm` (ordre des points libre, option
+   `capitalPairs` dans `CheckFormOptions`), `tidy`/`simplify`. Panel des simplifications et
+   convention d'équivalence mis à jour.
+3. **Lot 3 — déclaration et contexte (questions)** : `shared.capitalPairs` (schéma Zod strict,
+   éditeur de modèle), fonction de résolution déclaration → contexte → défaut, copie sur
+   l'instance, passage par le rail de `genericFunctions` (`answer-validator.ts`,
+   `correction-generator.ts`, `MarkdownRenderer`/`MathInline`, Typst). `pedagogy-expert` (Opus),
+   `mathast-expert` en relecture. Pas de migration si Q-J = (a).
+4. **Lot 4 — lecture** : `structure/` (« la longueur AB », « le carré de la longueur AB ») et la
+   case « lire AB comme un produit » de `/test-structure` ; `mathast-expert` + `pedagogy-expert`
+   (formulations) + `frontend-developer` (la case, `MyCheckbox`).
+5. **Lot 5 — syntaxe maison** : tokenizer custom, Pratt et `rd` ; relance des suites
    `geometry-core` (`geometry-expert` en relecture) et des rendus d'exercices ; si Q-A = (a),
-   migration des 30 exercices (données de prod, sur accord explicite).
-5. **Plus tard** : positivité (Q-F), `\overline`, `\widehat`, `\overrightarrow`, droite `(AB)` et
-   segment `[AB]`. Terme « longueur (d'un segment) » à verser dans `CONTEXT.md` (attention :
-   « point » y désigne déjà le **point du programme**).
+   migration des exercices (données de prod, sur accord explicite).
+6. **Plus tard** : positivité (Q-F), déclaration par lettre (V2), `\overline`, `\widehat`,
+   `\overrightarrow`, droite `(AB)` et segment `[AB]`. Terme « longueur (d'un segment) » à verser
+   dans `CONTEXT.md` (attention : « point » y désigne déjà le **point du programme**).
 
 ## Journal
 
 - 2026-10-11 — préparation : mesure du parseur et des questions en base ; questions de phase 0.
 - 2026-10-11 — enquête de phase 0 (parseurs, consommateurs, base de prod), conception (option A
   recommandée), questions Q-A à Q-G, spécification à valider. Aucun code, aucun test.
+- 2026-10-12 — décision de David (déclaration → contexte → longueur par défaut) ; enquête sur les
+  déclarations existantes (`genericFunctions` = rail à copier) ; option `capitalPairs`, V1
+  recommandée ; Q-A et Q-C ajustées, Q-B tranchée, Q-H à Q-L ajoutées ; spécification et plan
+  mis à jour. Aucun code, aucun test.
