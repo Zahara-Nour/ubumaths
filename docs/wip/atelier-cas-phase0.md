@@ -120,5 +120,8 @@ absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inv
   point qui rouvrait la liste (`.pose` bloquait ↑/↓), « Comparer » en plein rappel qui perdait le
   brouillon, un historique rejoué rappelable (« Comparer » compris), le surlignage gardé après
   effacement, Maj+↑/↓, l'Entrée IME de Safari (code 229), les ids fixes (`$props.id()`), « Modèle »
-  affiché pour une commande indisponible. Ouvert pour David : les commandes sans argument (`.aide`,
-  `.exact`…) demandent deux Entrée.
+  affiché pour une commande indisponible.
+- 2026-10-11 — DÉCISION DE DAVID (« oui ») : une commande sans argument tapée en entier se lance
+  d'une seule Entrée. Marqueur explicite `runsAlone` dans le catalogue (aide, valeurs, fonctions,
+  exact, décimal, auto, exporter) : « sans exemple » ne suffisait pas, `.arbre` n'en a pas et attend
+  une expression. Garde : chacune répond tapée seule.

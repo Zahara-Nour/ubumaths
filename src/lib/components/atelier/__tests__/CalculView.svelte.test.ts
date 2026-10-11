@@ -554,6 +554,38 @@ describe('le clavier de Calcul', () => {
 			expect(container.querySelector('.commandes')).toBeNull();
 		});
 
+		// Décision de David (2026-10-11) : une commande complète qui se lance
+		// sans argument ne demande pas deux Entrée
+		it('Entrée lance une commande sans argument tapée en entier', async () => {
+			const { field, container } = await typing('.aide');
+
+			await userEvent.keyboard('{Enter}');
+			await settle();
+
+			expect(lines(container)).toBe(1);
+			expect(field.value).toBe('');
+		});
+
+		it('mais choisit tant que son nom n’est pas complet', async () => {
+			const { field, container } = await typing('.ai');
+
+			await userEvent.keyboard('{Enter}');
+			await settle();
+
+			expect(field.value).toBe('.aide ');
+			expect(lines(container)).toBe(0);
+		});
+
+		it('et choisit toujours une commande qui attend la suite, même tapée en entier', async () => {
+			const { field, container } = await typing('.dériver');
+
+			await userEvent.keyboard('{Enter}');
+			await settle();
+
+			expect(field.value).toBe('.dériver ');
+			expect(lines(container)).toBe(0);
+		});
+
 		it('Tab choisit aussi, et le champ garde la main', async () => {
 			const { field } = await typing('.dér');
 

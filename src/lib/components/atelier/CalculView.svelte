@@ -149,6 +149,14 @@
 		highlightedName = null;
 	}
 
+	/** Le nom tapé après le point est-il exactement une graphie de cette commande ? */
+	function typedInFull(command: AtelierCommand): boolean {
+		const typed = plain(desk.draft.slice(1)).toLowerCase();
+		return [command.french, command.name, ...command.aliases].some(
+			(form) => plain(form).toLowerCase() === typed
+		);
+	}
+
 	/** Déplacer le surlignage parmi les commandes disponibles, en boucle. */
 	function move(step: 1 | -1) {
 		if (active === null) return;
@@ -181,6 +189,9 @@
 			if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
 				event.preventDefault();
 				move(event.key === 'ArrowDown' ? 1 : -1);
+			} else if (event.key === 'Enter' && typedInFull(active) && active.runsAlone === true) {
+				// `.aide` tapée en entier : rien à choisir, Entrée calcule (décision
+				// de David, 2026-10-11) — le formulaire part comme sans la liste
 			} else if (event.key === 'Enter' || (event.key === 'Tab' && !event.shiftKey)) {
 				event.preventDefault();
 				complete(active);

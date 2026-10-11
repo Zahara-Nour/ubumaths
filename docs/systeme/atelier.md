@@ -230,7 +230,8 @@ Chemin d'une commande dans `runCommand` (`calcul.ts`), dans cet ordre :
 décisions de David du 2026-10-11) :
 
 - après un point, la liste des commandes (8 au plus) est un **combobox** : ↑ / ↓ surlignent (les
-  indisponibles sont sautées, la liste boucle), **Entrée ou Tab choisit** (`.dériver `), Échap ferme
+  indisponibles sont sautées, la liste boucle), **Entrée ou Tab choisit** (`.dériver `) — sauf une
+  commande marquée `runsAlone` (`.aide`, `.exact`…) tapée en entier, qu'Entrée lance —, Échap ferme
   jusqu'à la frappe suivante. Une liste sans commande disponible (`.pose`) laisse Entrée calculer ;
 - liste fermée, **↑ / ↓ rappellent les saisies tapées** (`CalcDesk.recallPrevious` /
   `recallNext`) : jamais une ligne écrite par un bouton, même « Comparer avec M » qui passe par

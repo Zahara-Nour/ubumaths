@@ -325,3 +325,32 @@ describe('la commande en cours d’écriture', () => {
 		expect(missing).toEqual([]);
 	});
 });
+
+/**
+ * Les commandes qui se lancent sans argument (décision de David, 2026-10-11) :
+ * tapées en entier, une seule Entrée les lance — la liste ne les « choisit » pas.
+ */
+describe('les commandes qui se lancent seules', () => {
+	const catalog = commandCatalog(new WebReplEngine());
+	const alone = catalog.filter((c) => c.runsAlone === true);
+
+	it('sont celles qu’on attend', () => {
+		expect(alone.map((c) => c.french).sort()).toEqual(
+			['aide', 'auto', 'décimal', 'exact', 'exporter', 'fonctions', 'valeurs'].sort()
+		);
+	});
+
+	// Sinon une seule Entrée enverrait une commande incomplète
+	it('répondent vraiment, tapées seules', () => {
+		for (const command of alone) {
+			const result = runInput(
+				{ atelier: new Atelier(), engine: new WebReplEngine() },
+				`.${command.french}`
+			);
+			expect({ commande: command.french, kind: result.kind }).toEqual({
+				commande: command.french,
+				kind: 'commande'
+			});
+		}
+	});
+});
