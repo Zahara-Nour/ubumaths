@@ -97,11 +97,22 @@ describe('les grandeurs gardent leur unité', () => {
  * commandes qui posent des attributs HTML (`\htmlStyle`, `\class`, `\cssId`).
  */
 describe('le texte promu en LaTeX est bridé', () => {
+	it('un calcul ne promeut jamais son texte, même anodin', () => {
+		const rendered = renderResult({ success: true, output: '{1/3}\\pi' } as never);
+
+		expect(rendered.latex).toBeUndefined();
+	});
+
+	// Seule une COMMANDE promeut son texte en LaTeX : un calcul s'écrit depuis
+	// son arbre (phase 0 grandeurs, lot B)
 	it('laisse passer ce qui écrit un nombre avec son unité', () => {
-		const rendered = renderResult({
-			success: true,
-			output: '\\dfrac{123}{10} km'
-		} as never);
+		const rendered = renderResult(
+			{
+				success: true,
+				output: '\\dfrac{123}{10} km'
+			} as never,
+			{ fromCommand: true }
+		);
 
 		expect(rendered.latex).toBe('\\dfrac{123}{10} km');
 	});
@@ -113,7 +124,9 @@ describe('le texte promu en LaTeX est bridé', () => {
 			'\\cssId{y}{1}',
 			'\\href{javascript:alert(1)}{1}'
 		]) {
-			const rendered = renderResult({ success: true, output: hostile } as never);
+			const rendered = renderResult({ success: true, output: hostile } as never, {
+				fromCommand: true
+			});
 			expect(rendered.latex, hostile).toBeUndefined();
 			// Et le texte reste affiché, échappé par Svelte
 			expect(rendered.text, hostile).toBe(hostile);

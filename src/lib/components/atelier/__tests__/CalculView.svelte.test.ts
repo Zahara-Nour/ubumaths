@@ -871,3 +871,28 @@ describe('la complétion des fonctions et des lettres grecques', () => {
 		expect(container.querySelector('.propositions')).toBeNull();
 	});
 });
+
+/**
+ * L'écriture d'une réponse à l'écran (phase 0 `docs/wip/grandeurs-phase0.md`,
+ * lot B) : mesuré avant, `π/3` s'affichait « 1/3π » en ligne et `5[km]` « 5 ».
+ */
+describe('une réponse s’écrit comme en mathématiques', () => {
+	const lastAnswer = (container: HTMLElement) =>
+		[...container.querySelectorAll('.historique > li .reponse')].at(-1)!;
+
+	it('π/3 : une fraction empilée', async () => {
+		const { submit, container } = await open();
+		await submit('π/3');
+
+		// π DANS la fraction : ⅓ π serait aussi une fraction empilée, mais sans π
+		const fraction = lastAnswer(container).querySelector('.ML__mfrac');
+		expect(fraction?.textContent).toContain('π');
+	});
+
+	it('5[km] : l’unité est affichée', async () => {
+		const { submit, container } = await open();
+		await submit('5[km]');
+
+		expect(lastAnswer(container).textContent?.replace(/\s+/g, '')).toContain('km');
+	});
+});
