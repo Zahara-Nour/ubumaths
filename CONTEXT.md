@@ -27,15 +27,17 @@ Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLA
 
 ## Les personnes et les frontières
 
-| Terme             | Sens                                                                                         | Code / note                                          |
-| ----------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| **Professeur**    | Le **seul** enseignant de la plateforme (David). Voit tous les élèves.                       | `role = 'teacher'`, trigger `enforce_single_teacher` |
-| **Admin**         | Compte distinct ; le prof y accède par **élévation** (mot de passe admin, cookie court).     | `requireAdmin(locals)`                               |
-| **Élève**         | Utilisateur mineur. Données sous RGPD.                                                       | `role = 'student'`                                   |
-| **École**         | **Frontière sociale / safeguarding** : un élève n'interagit qu'avec des élèves de son école. | `my_school()`, `same_school()`                       |
-| **Classe**        | Sous-groupe d'**organisation** (un dossier), **pas** une frontière d'accès pour le prof.     | `classes`, `class_members`                           |
-| Élève hors-classe | Élève sans classe active ; le prof le voit (rubrique « Non assignés »).                      |                                                      |
-| Élève archivé     | Retiré d'une classe : relit ce qu'il a reçu, ne reçoit plus rien.                            | `class_members.left_at` (posé par trigger)           |
+| Terme             | Sens                                                                                                             | Code / note                                          |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| **Professeur**    | Le **seul** enseignant de la plateforme (David). Voit tous les élèves.                                           | `role = 'teacher'`, trigger `enforce_single_teacher` |
+| **Admin**         | Compte distinct ; le prof y accède par **élévation** (mot de passe admin, cookie court).                         | `requireAdmin(locals)`                               |
+| **Élève**         | Utilisateur mineur. Données sous RGPD.                                                                           | `role = 'student'`                                   |
+| **École**         | **Frontière sociale / safeguarding** : un élève n'interagit qu'avec des élèves de son école.                     | `my_school()`, `same_school()`                       |
+| **Classe**        | Sous-groupe d'**organisation** (un dossier), **pas** une frontière d'accès pour le prof.                         | `classes`, `class_members`                           |
+| Élève hors-classe | Élève sans classe active ; le prof le voit (rubrique « Non assignés »).                                          |                                                      |
+| Élève archivé     | Retiré d'une classe : relit ce qu'il a reçu, ne reçoit plus rien.                                                | `class_members.left_at` (posé par trigger)           |
+| Élève de test     | Compte fictif servant à essayer l'application ; ses résultats ne se mêlent jamais aux vrais.                     | `profiles.is_test`                                   |
+| **Mode test**     | Interrupteur du prof : voir les élèves de test **ou** les vrais, jamais les deux. ≠ `TestMode` (forme de série). | `user_preferences.test_mode_enabled`                 |
 
 → [ADR 0002](docs/adr/0002-mono-professeur-ecole-frontiere-sociale.md)
 
@@ -125,6 +127,7 @@ code de migration.
 | **Tentative**          | Une réponse d'élève enregistrée.                                                                                                                                                                                    | `skill_attempts`                                                                                                                  |
 | **Auto-évaluation**    | Réponse jugée par l'élève lui-même (flash-cards, carte de cours) ; en FSRS, un seul résultat par jour et par question, le meilleur.                                                                                 | tentative `source: 'student_self'` → [ADR 0016](docs/adr/0016-auto-evaluation-meilleur-resultat-du-jour.md)                       |
 | **Évaluation**         | Série assignée par le prof à des élèves, sous forme d'Entraînement ou de Course aux nombres ; tirage propre à chaque élève (graine enregistrée) ; les réponses sont enregistrées, vérifiées, puis donnent une note. | `evaluations` (`form`, `time_limit`), `evaluation_assignments` → [ADR 0015](docs/adr/0015-evaluation-notee-correction-serveur.md) |
+| **Presque évaluation** | Évaluation **pour rire** : PDF parodique déposé par le prof, à imprimer et à ne surtout pas rendre ; lisible par tous, même sans compte. Jamais notée.                                                              | `parody_evaluations`, `/presques-evaluations`                                                                                     |
 
 La **correction des réponses est côté client** : les statistiques sont un outil pour l'élève, jamais
 une note. → [ADR 0001](docs/adr/0001-correction-cote-client.md)
