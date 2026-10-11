@@ -41,6 +41,7 @@ import {
 	isPercentage,
 	isPiConstant,
 	isPositive,
+	isSegmentLength,
 	isSymbol,
 	isVariable
 } from './guards';
@@ -62,6 +63,7 @@ import {
 } from './flatten';
 import { parseLatexSafe, type CapitalPairs, type GenericFunctionConfig } from './parser';
 import { separateSpacedCapitals } from './parser/latex/point-names';
+import { canonicalSegment, figureNameRefusal } from './common/segment-names';
 import { bareDecimalCommaToPoint } from './decimal-comma';
 import { toLatex } from './latex-generator';
 import { compareNodes } from './normal';
@@ -963,6 +965,48 @@ export interface CheckFormOptions {
  * Build the ordered AST transformer pipeline, binding bracket-stripping to the
  * supplied options (e.g. `allowFirstNegative`).
  */
+/** Le dernier facteur d'un produit (`2AN` → `AN`), l'expression elle-même sinon. */
+function rightmostFactor(node: MathNode): MathNode {
+	return node.type === 'multiplication' ? rightmostFactor(node.right) : node;
+}
+
+/** Le premier facteur d'un produit, ou la base d'une puissance (`AB^2` → `AB`). */
+function leftmostFactor(node: MathNode): MathNode {
+	if (node.type === 'multiplication') return leftmostFactor(node.left);
+	if (node.type === 'superscript') return leftmostFactor(node.base);
+	return node;
+}
+
+/**
+ * Longueurs : l'ordre des points est libre (`BA` a la forme de `AB`, décision Q2 du
+ * 2026-10-11) et des parenthèses autour d'une longueur seule (`(AB)^2`) ne sont pas une
+ * faute — l'élève groupe les deux lettres pour dire « une longueur » ; un `×` ou un `·`
+ * entre deux longueurs (`AN×AB`) non plus. Notation, pas forme : aucune pénalité.
+ */
+export function unifySegmentNotationAST(ast: MathNode): MathNode {
+	return mapNode(ast, (node) => {
+		if (isSegmentLength(node)) return canonicalSegment(node);
+		// `AN×AB`, `AN·AB` : le signe entre deux longueurs est une notation (l'élève
+		// sépare deux noms de segments), écrit comme le produit implicite `AN AB`
+		if (
+			node.type === 'multiplication' &&
+			node.displayStyle !== 'implicit' &&
+			isSegmentLength(rightmostFactor(node.left)) &&
+			isSegmentLength(leftmostFactor(node.right))
+		) {
+			return multiply(node.left, node.right, 'implicit', { metadata: node.metadata });
+		}
+		if (
+			node.type === 'delimiter' &&
+			node.delimiters === 'parentheses' &&
+			isSegmentLength(node.content)
+		) {
+			return canonicalSegment(node.content);
+		}
+		return node;
+	});
+}
+
 /**
  * Une seule écriture du nombre e pour comparer les formes : la constante
  * `euler()` (les parseurs y lisent la lettre `e` comme `\exponentialE`), et
@@ -1459,6 +1503,7 @@ function unifyNegativeExponentialNotationAST(ast: MathNode): MathNode {
 
 function buildASTPipeline(options: CheckFormOptions = {}): TransformerStep[] {
 	return [
+		{ transform: unifySegmentNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyEulerNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyInfinityNotationAST, constraintId: null }, // notation, pas forme
 		{ transform: unifyPiAngleNotationAST, constraintId: null }, // notation, pas forme
@@ -1768,6 +1813,12 @@ export function checkForm(
 			violations: [],
 			messages: ['Parse error on answer']
 		};
+	}
+
+	// Un nom de figure (`ABC`) n'est pas une réponse : refusé, avec le message (Q-A)
+	const figureRefusal = figureNameRefusal(answerParse.ast);
+	if (figureRefusal !== null) {
+		return { valid: false, status: 'bad_form', violations: [], messages: [figureRefusal] };
 	}
 
 	let answerAST = answerParse.ast;

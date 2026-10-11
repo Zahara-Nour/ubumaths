@@ -364,9 +364,17 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   sur les jetons : `parser/latex/point-names.ts`, qui fournit aussi `separateSpacedCapitals` :
   `stripLatexSpacing` et `removeSpaces` gardent une espace entre deux majuscules (`A\,B` reste
   un produit). `toLatex` écrit `AB`, `A'_{1}B` (relu à
-  l'identique). **Pas encore** : la syntaxe maison (lit toujours un produit), le calcul
-  (la longueur reste un facteur opaque de `normalize` ; `AB` = `BA` ne tient que par l'empreinte
-  `hashMathNode`), la lecture française — lots suivants.
+  l'identique). **Calcul** (lot 2, toujours en mode `'length'`) : la longueur
+  est un facteur symbolique de `normalize` dont l'identité est la paire de points triée
+  (`hashMathNode`) — `AB` = `BA`, `3AB+2BA` → `5AB` (ordre de la première écriture gardé) ;
+  `getVariables` la nomme une fois, comme sa première écriture ; `substitute`/`containsVariable`/
+  `differentiate` l'acceptent sous `AB` ou `BA` ; `solve` change toutes les longueurs en variables
+  (paire triée) puis les rend écrites comme l'élève (Thalès, Pythagore littéraux) ; sans valeur, `evaluate()` la dit
+  `unevaluable` en français ; `checkForm` laisse libre l'ordre des points, les parenthèses
+  autour d'une longueur seule et le `×` entre deux longueurs (`unifySegmentNotationAST`). Un nom de figure (`ABC`) n'est équivalent qu'à la même
+  écriture et est refusé par `evaluate()` et `checkForm`, avec le message de `figureNameRefusal`
+  (`common/segment-names.ts`). **Pas encore** : la syntaxe maison (lit toujours un produit), la
+  lecture française — lots suivants.
 
 ## Invariants structurels non évidents
 
