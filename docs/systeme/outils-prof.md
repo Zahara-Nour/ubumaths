@@ -205,7 +205,8 @@ Table `spreadsheets` : `user_id`, `name`, `description`, `data` (jsonb : `cells`
 `version`, `metadata`). RLS : chacun ne lit et n'écrit que ses tableurs (`auth.uid() = user_id`).
 Accès : élèves et prof, par une garde unique `requireSpreadsheetUser`
 (`src/lib/server/spreadsheet-access.ts`) sur les deux pages et les cinq méthodes de l'API ; le
-compte admin est refusé (décision du 2026-10-12).
+compte admin est refusé (décision du 2026-10-12). La suppression vérifie les lignes rendues :
+0 ligne supprimée → 404, jamais un faux succès.
 Une valeur calculée est une union `number | string | boolean | error | empty` ; codes
 d'erreur `#REF!`, `#DIV/0!`, `#VALUE!`, `#NAME?`, `#CIRC!`, `#NUM!`.
 
@@ -230,7 +231,8 @@ Clavier : flèches, Entrée, Tab / Maj+Tab, Échap, F2, Suppr, Ctrl/Cmd+B et +I
 
 `src/lib/spreadsheet/__tests__/` : lexer, parser, evaluator, functions, dependency-graph,
 csv, types-import. Accès : `src/lib/server/__tests__/spreadsheet-access.test.ts` et
-`src/routes/api/spreadsheets/__tests__/server.test.ts` (prof et élève acceptés, admin refusé).
+`src/routes/api/spreadsheets/__tests__/server.test.ts` (prof et élève acceptés, admin refusé),
+`src/routes/api/spreadsheets/[id]/__tests__/server.test.ts` (suppression sans ligne → 404).
 
 ---
 

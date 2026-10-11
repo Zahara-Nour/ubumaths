@@ -9,6 +9,8 @@ import { GET } from '../+server';
 type Role = 'student' | 'teacher' | 'admin';
 
 // Supabase simulé : `profiles` rend le profil, `spreadsheets` un tableur.
+const eqCalls: [string, unknown][] = [];
+
 function makeLocals(role: Role): App.Locals {
 	const from = (table: string) => {
 		const result =
@@ -17,7 +19,10 @@ function makeLocals(role: Role): App.Locals {
 				: { data: [{ id: 's1', name: 'Relevés' }], error: null, count: 1 };
 		const chain = {
 			select: () => chain,
-			eq: () => chain,
+			eq: (column: string, value: unknown) => {
+				eqCalls.push([column, value]);
+				return chain;
+			},
 			order: () => chain,
 			single: async () => result,
 			range: async () => result
@@ -40,6 +45,8 @@ describe('GET /api/spreadsheets', () => {
 		const response = await callGet('teacher');
 		expect(response.status).toBe(200);
 		expect((await response.json()).spreadsheets).toHaveLength(1);
+		// La liste est bornée à SES tableurs, en plus de la RLS.
+		expect(eqCalls).toContainEqual(['user_id', 'u1']);
 	});
 
 	it("liste les tableurs de l'élève", async () => {

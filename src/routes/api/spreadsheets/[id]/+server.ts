@@ -90,15 +90,22 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { user } = await requireSpreadsheetUser(locals);
 
 	// Delete spreadsheet
-	const { error: dbError } = await locals.supabase
+	const { data: deleted, error: dbError } = await locals.supabase
 		.from('spreadsheets')
 		.delete()
 		.eq('id', id)
-		.eq('user_id', user.id); // Explicit ownership check
+		.eq('user_id', user.id) // Explicit ownership check
+		.select('id');
 
 	if (dbError) {
 		console.error('Error deleting spreadsheet:', dbError);
 		throw error(500, 'Erreur lors de la suppression de la feuille de calcul');
+	}
+
+	// Un refus de la RLS ou le tableur d'un autre suppriment 0 ligne SANS erreur :
+	// seules les lignes rendues disent si la suppression a eu lieu.
+	if (!deleted || deleted.length === 0) {
+		throw error(404, 'Feuille de calcul non trouvée');
 	}
 
 	return json({ success: true });
