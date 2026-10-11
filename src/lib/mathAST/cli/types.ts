@@ -118,6 +118,12 @@ export interface CommandResult {
 
 	/** Initial display mode (true = show decimal first, false = show exact first) */
 	readonly showDecimalInitially?: boolean;
+
+	/**
+	 * Les solutions en valeurs approchées (`.solve` : `S \approx \{…\}`), pour
+	 * le bouton ≈ de l'atelier (`solutionsApproximationLatex`).
+	 */
+	readonly approximateLatex?: string;
 }
 
 // =============================================================================

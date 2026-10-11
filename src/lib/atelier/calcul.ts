@@ -15,6 +15,7 @@ import type { AtelierObject, ObjectKind } from './types';
 import type { MathNode } from '$lib/mathAST/types';
 import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
 import {
@@ -105,6 +106,18 @@ export interface CalcSession {
 	readonly seed?: () => number;
 }
 
+/**
+ * L'autre écriture d'une réponse, montrée par le bouton de la ligne : la
+ * valeur approchée d'un résultat exact, ou l'exacte d'un calcul fait en mode
+ * décimal (phase 0 `atelier-cas-phase0.md`, PR 2). Affichage seul : ni l'export,
+ * ni le rejeu, ni « Garder » ne la lisent.
+ */
+export interface Alternative {
+	/** Ce que dit le bouton : ce qu'il va montrer. */
+	readonly label: 'Valeur approchée' | 'Valeur exacte';
+	readonly latex: string;
+}
+
 /** Ce qu'une saisie a produit. */
 export type CalcResult =
 	| { readonly kind: 'vide' }
@@ -121,6 +134,7 @@ export type CalcResult =
 			 * interdit, mesures à l'appui.
 			 */
 			readonly ast?: MathNode;
+			readonly alternative?: Alternative;
 	  }
 	| {
 			readonly kind: 'commande';
@@ -142,6 +156,8 @@ export type CalcResult =
 			 * (« Calcul par rapport à x… », décision de David, 2026-10-06).
 			 */
 			readonly note?: string;
+			/** Les solutions de `.résoudre` en valeurs approchées */
+			readonly alternative?: Alternative;
 	  }
 	| {
 			readonly kind: 'refus';
@@ -168,6 +184,8 @@ export type ActionOutcome =
 			 * Absent = repli : la ligne garde le bloc texte du moteur.
 			 */
 			readonly table?: VariationTableNode;
+			/** Les solutions de « Résoudre » en valeurs approchées, comme `.résoudre` */
+			readonly alternative?: Alternative;
 	  }
 	| { readonly ok: false; readonly message: string };
 
@@ -733,6 +751,29 @@ function randomSeed(): number {
 }
 
 /** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
+/** Les valeurs approchées des solutions que le moteur a trouvées, s'il y en a. */
+function solutionsAlternative(result: ReplExecutionResult): { alternative?: Alternative } {
+	return result.success && result.approximateLatex !== undefined
+		? { alternative: { label: 'Valeur approchée', latex: result.approximateLatex } }
+		: {};
+}
+
+/**
+ * L'autre écriture d'un calcul : la valeur approchée en mode exact, l'exacte en
+ * mode décimal. Une grandeur n'en a pas : le moteur la calcule par une autre
+ * branche, qui ne la donne pas (mesuré : `10[km]/3`, `5[m]/7[s]`).
+ */
+function calculationAlternative(result: ReplExecutionResult): { alternative?: Alternative } {
+	if (!result.success) return {};
+	if (result.approximateLatex !== undefined) {
+		return { alternative: { label: 'Valeur approchée', latex: result.approximateLatex } };
+	}
+	if (result.exactLatex !== undefined) {
+		return { alternative: { label: 'Valeur exacte', latex: result.exactLatex } };
+	}
+	return {};
+}
+
 function runCommand(session: CalcSession, input: string): CalcResult {
 	const { engine } = session;
 	const resolved = resolveCommand(input);
@@ -1094,6 +1135,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			output: rendered.text,
 			latex: solved.answer,
 			steps: solved.steps,
+			...solutionsAlternative(result),
 			...noted
 		};
 	}
@@ -1115,7 +1157,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// Sans lui, la ligne montrait le texte du terminal,
 	// « x = 0 ou x = {1/2}sqrt(2) ou x = -{1/2}sqrt(2) » (2026-10-08).
 	if (name === 'solve' && result.success && result.latex !== undefined) {
-		return { kind: 'commande', input, output: rendered.text, latex: result.latex, ...noted };
+		return {
+			kind: 'commande',
+			input,
+			output: rendered.text,
+			latex: result.latex,
+			...solutionsAlternative(result),
+			...noted
+		};
 	}
 
 	// Le moteur a échoué SANS RIEN DIRE (erreur de lecture) : une ligne vide ne
@@ -1226,7 +1275,8 @@ function resultWithDecimalComma(result: CalcResult): CalcResult {
 			return {
 				...result,
 				output: decimalCommaText(result.output),
-				...(result.latex !== undefined && { latex: decimalCommaLatex(result.latex) })
+				...(result.latex !== undefined && { latex: decimalCommaLatex(result.latex) }),
+				...alternativeWithDecimalComma(result.alternative)
 			};
 		case 'commande':
 			return {
@@ -1235,7 +1285,8 @@ function resultWithDecimalComma(result: CalcResult): CalcResult {
 				...(result.latex !== undefined && { latex: decimalCommaLatex(result.latex) }),
 				...(result.steps !== undefined && { steps: result.steps.map(decimalCommaStep) }),
 				...(result.table !== undefined && { table: decimalCommaDeep(result.table) }),
-				...(result.note !== undefined && { note: decimalCommaProse(result.note) })
+				...(result.note !== undefined && { note: decimalCommaProse(result.note) }),
+				...alternativeWithDecimalComma(result.alternative)
 			};
 		// La commande que cite un refus se relit avec ses virgules
 		// (`decimalCommaInput`) : il les écrit, comme le reste de la ligne
@@ -1250,6 +1301,15 @@ function resultWithDecimalComma(result: CalcResult): CalcResult {
 	}
 }
 
+/** L'autre écriture d'une ligne, décimaux à la française comme la ligne elle-même. */
+function alternativeWithDecimalComma(alternative: Alternative | undefined): {
+	alternative?: Alternative;
+} {
+	return alternative === undefined
+		? {}
+		: { alternative: { ...alternative, latex: decimalCommaLatex(alternative.latex) } };
+}
+
 /** Une action, décimaux à la française — même règle que `resultWithDecimalComma`. */
 function outcomeWithDecimalComma(outcome: ActionOutcome): ActionOutcome {
 	if (!outcome.ok) return outcome;
@@ -1258,7 +1318,8 @@ function outcomeWithDecimalComma(outcome: ActionOutcome): ActionOutcome {
 		output: decimalCommaText(outcome.output),
 		...(outcome.latex !== undefined && { latex: decimalCommaLatex(outcome.latex) }),
 		...(outcome.steps !== undefined && { steps: outcome.steps.map(decimalCommaStep) }),
-		...(outcome.table !== undefined && { table: decimalCommaDeep(outcome.table) })
+		...(outcome.table !== undefined && { table: decimalCommaDeep(outcome.table) }),
+		...alternativeWithDecimalComma(outcome.alternative)
 	};
 }
 
@@ -1392,7 +1453,8 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		input,
 		output: rendered.text,
 		...(rendered.latex && { latex: rendered.latex }),
-		...(result.success && result.ast !== undefined && { ast: result.ast })
+		...(result.success && result.ast !== undefined && { ast: result.ast }),
+		...calculationAlternative(result)
 	};
 }
 
@@ -1527,7 +1589,13 @@ function computeAction(
 			return { ok: false, message: `Impossible de calculer ${name}(${argument}).` };
 		}
 		const rendered = renderResult(result);
-		return { ok: true, output: rendered.text, ...(rendered.latex && { latex: rendered.latex }) };
+		// La ligne de l'image a son bouton ≈, comme `f(2)` tapé
+		return {
+			ok: true,
+			output: rendered.text,
+			...(rendered.latex && { latex: rendered.latex }),
+			...calculationAlternative(result)
+		};
 	}
 
 	const build = ACTION_COMMANDS[actionId];
@@ -1550,11 +1618,22 @@ function computeAction(
 	if (actionId === 'solve') {
 		const solved = solveSteps(`${substituted.expression}=0`);
 		if (solved !== null) {
-			return { ok: true, output: rendered.text, latex: solved.answer, steps: solved.steps };
+			return {
+				ok: true,
+				output: rendered.text,
+				latex: solved.answer,
+				steps: solved.steps,
+				...solutionsAlternative(result)
+			};
 		}
 		// Pas d'étapes : les solutions du moteur en LaTeX, comme `.résoudre`
 		if (result.success && result.latex !== undefined) {
-			return { ok: true, output: rendered.text, latex: result.latex };
+			return {
+				ok: true,
+				output: rendered.text,
+				latex: result.latex,
+				...solutionsAlternative(result)
+			};
 		}
 	}
 

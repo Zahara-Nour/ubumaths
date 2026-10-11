@@ -24,6 +24,7 @@ import type { CommandContext, CommandResult, ErrorCode } from '../types';
 import { toCustom } from '../../custom-generator';
 import {
 	solutionsLatex,
+	solutionsApproximationLatex,
 	periodicSolutionsText,
 	inequalitySolutionLatex,
 	inequalityThresholdText,
@@ -1019,7 +1020,14 @@ export class SolveCommand extends BaseCommand {
 			// Les solutions en LaTeX, bâties sur le résultat STRUCTURÉ : le texte
 			// (`{1/2}sqrt(2)`) ne se relit pas, et `ast` ne porte que la première
 			const latex = solutionsLatex(result);
-			return this.withHint(latex === null ? formatted : { ...formatted, latex }, hint);
+			// Leurs valeurs approchées, pour le bouton ≈ de l'atelier
+			const approximateLatex = latex === null ? null : solutionsApproximationLatex(result);
+			return this.withHint(
+				latex === null
+					? formatted
+					: { ...formatted, latex, ...(approximateLatex !== null && { approximateLatex }) },
+				hint
+			);
 		} catch (err) {
 			if (err instanceof SolveError) {
 				const message = err.details ? `${err.message}: ${err.details}` : err.message;
