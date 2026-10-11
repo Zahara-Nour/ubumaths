@@ -16,6 +16,11 @@
  * concerne l'intention `auto`, pas `factoriser`, qui est une demande
  * explicite.
  *
+ * ⚠️ **Le facteur non polynomial sort aussi** (2026-10-11) : `x·eˣ − eˣ`
+ * donne `(x − 1)eˣ`, `(x+1)² − (x+1)` donne `x(x+1)`. Sans lui, une primitive
+ * de `x²eˣ` ne pouvait pas s'écrire `(x² − 2x + 2)eˣ`. Il s'écrit APRÈS la
+ * parenthèse, comme au tableau.
+ *
  * Le PGCD se calcule ici sur une décomposition en monômes
  * (`{ coefficient, exposants }`) et non via `analysis/structures.ts`
  * (`hasCommonFactor`) : celui-ci ne voit que le PGCD numérique des
@@ -68,6 +73,7 @@ import {
 	negRational
 } from '../../normal/rational';
 import { extractRational } from '../../common/numeric';
+import { hashMathNode } from '../../normal/hash';
 // Import direct : `rule-sets/index.ts` ré-exporte ce module, et passer par le
 // baril créerait un cycle de chunk avec `algebraic-identities.ts`.
 
@@ -178,6 +184,33 @@ const factorCommonWithBareTerm = lazyRule('common-factor-bare-term', () =>
 interface Monomial {
 	readonly coefficient: Rational;
 	readonly powers: ReadonlyMap<string, number>;
+	/** Les facteurs non polynomiaux (eˣ, sin x, (x+1)…), par clé structurelle. */
+	readonly atoms: ReadonlyMap<string, Atom>;
+}
+
+/**
+ * Un facteur non polynomial, élevé à une puissance entière : `eˣ` est
+ * `{ base: eˣ, exponent: 1 }`, `(x+1)²` est `{ base: (x+1), exponent: 2 }`.
+ *
+ * C'est ce qui permet de sortir `eˣ` de `x·eˣ − eˣ` : le PGCD le traite comme
+ * une variable de plus, dont la clé est la structure du nœud.
+ */
+interface Atom {
+	readonly base: MathNode;
+	readonly exponent: number;
+}
+
+const NO_POWERS: ReadonlyMap<string, number> = new Map();
+const NO_ATOMS: ReadonlyMap<string, Atom> = new Map();
+
+/** Le monôme réduit à un facteur non polynomial. */
+function atomMonomial(base: MathNode, exponent: number): Monomial {
+	const key = hashMathNode(isDelimiter(base) ? base.content : base);
+	return {
+		coefficient: RATIONAL_ONE,
+		powers: NO_POWERS,
+		atoms: new Map([[key, { base, exponent }]])
+	};
 }
 
 /** Le produit de deux monômes : coefficients multipliés, exposants ajoutés. */
@@ -186,12 +219,17 @@ function mulMonomial(a: Monomial, b: Monomial): Monomial {
 	for (const [name, exponent] of b.powers) {
 		powers.set(name, (powers.get(name) ?? 0) + exponent);
 	}
-	return { coefficient: mulRational(a.coefficient, b.coefficient), powers };
+	const atoms = new Map(a.atoms);
+	for (const [key, atom] of b.atoms) {
+		const existing = atoms.get(key);
+		atoms.set(key, { base: atom.base, exponent: (existing?.exponent ?? 0) + atom.exponent });
+	}
+	return { coefficient: mulRational(a.coefficient, b.coefficient), powers, atoms };
 }
 
 /** L'opposé d'un monôme. */
 function negateMonomial(m: Monomial): Monomial {
-	return { coefficient: negRational(m.coefficient), powers: m.powers };
+	return { ...m, coefficient: negRational(m.coefficient) };
 }
 
 /**
@@ -204,41 +242,51 @@ function negateMonomial(m: Monomial): Monomial {
  * déjà factorisé un bout de chaîne. Mais `(x+1)(x-1)` a DEUX facteurs somme :
  * le décomposer serait développer, ce que l'intention `factoriser` interdit.
  * On rend `null`.
+ *
+ * Ce qui n'est pas polynomial — `eˣ`, `sin x`, `√x`, une lettre grecque — est
+ * un **facteur** (`Atom`), comparé par sa structure. Avec `sumsAsAtoms`, une
+ * somme entre parenthèses l'est aussi au lieu d'être développée : c'est ce
+ * qui voit `(x+1)` dans `(x+1)² − (x+1)`.
  */
-function toMonomials(node: MathNode): Monomial[] | null {
+function toMonomials(node: MathNode, sumsAsAtoms: boolean): Monomial[] | null {
+	const recurse = (child: MathNode) => toMonomials(child, sumsAsAtoms);
 	const rat = extractRational(node);
-	if (rat !== null) return [{ coefficient: rat, powers: new Map() }];
+	if (rat !== null) return [{ coefficient: rat, powers: NO_POWERS, atoms: NO_ATOMS }];
 
-	// Les lettres grecques sont écartées : `powersNode` les reconstruirait en
-	// variables ordinaires, et `\alpha` deviendrait le mot « alpha ».
+	// Les lettres grecques ne passent pas ici : `powersNode` les reconstruirait
+	// en variables ordinaires, et `\alpha` deviendrait le mot « alpha ». Elles
+	// tombent dans le cas général, comme facteurs gardés tels quels.
 	if (isVariable(node)) {
-		return [{ coefficient: RATIONAL_ONE, powers: new Map([[node.name, 1]]) }];
+		return [{ coefficient: RATIONAL_ONE, powers: new Map([[node.name, 1]]), atoms: NO_ATOMS }];
 	}
 
 	if (isOpposite(node)) {
-		const inner = toMonomials(node.operand);
+		const inner = recurse(node.operand);
 		return inner === null ? null : inner.map(negateMonomial);
 	}
 
-	if (isPositive(node)) return toMonomials(node.operand);
+	if (isPositive(node)) return recurse(node.operand);
 
-	if (isDelimiter(node)) return toMonomials(node.content);
+	if (isDelimiter(node)) {
+		if (sumsAsAtoms && isSum(node.content)) return [atomMonomial(node, 1)];
+		return recurse(node.content);
+	}
 
 	if (isAddition(node)) {
-		const left = toMonomials(node.left);
-		const right = toMonomials(node.right);
+		const left = recurse(node.left);
+		const right = recurse(node.right);
 		return left === null || right === null ? null : [...left, ...right];
 	}
 
 	if (isSubtraction(node)) {
-		const left = toMonomials(node.left);
-		const right = toMonomials(node.right);
+		const left = recurse(node.left);
+		const right = recurse(node.right);
 		return left === null || right === null ? null : [...left, ...right.map(negateMonomial)];
 	}
 
 	if (isMultiplication(node)) {
-		const left = toMonomials(node.left);
-		const right = toMonomials(node.right);
+		const left = recurse(node.left);
+		const right = recurse(node.right);
 		if (left === null || right === null) return null;
 		// Deux facteurs somme : développer. Interdit.
 		if (left.length > 1 && right.length > 1) return null;
@@ -249,28 +297,38 @@ function toMonomials(node: MathNode): Monomial[] | null {
 
 	if (isDivision(node)) {
 		const denominator = extractRational(node.denominator);
-		if (denominator === null || denominator.n === 0n) return null;
-		const numerator = toMonomials(node.numerator);
+		if (denominator !== null && denominator.n === 0n) return null;
+		// Un dénominateur non numérique : la fraction entière est un facteur.
+		if (denominator === null) return [atomMonomial(node, 1)];
+		const numerator = recurse(node.numerator);
 		if (numerator === null) return null;
-		return numerator.map((m) => ({
-			coefficient: divRational(m.coefficient, denominator),
-			powers: m.powers
-		}));
+		return numerator.map((m) => ({ ...m, coefficient: divRational(m.coefficient, denominator) }));
 	}
 
 	if (isSuperscript(node)) {
 		const exponent = extractRational(node.superscript);
-		if (exponent === null || exponent.d !== 1n || exponent.n <= 0n || exponent.n > 16n) return null;
-		const base = toMonomials(node.base);
+		// Un exposant non entier (`eˣ`, `x^{1/2}`) : la puissance entière est un
+		// facteur. `e²ˣ` n'est donc PAS vu comme `(eˣ)²`.
+		if (exponent === null || exponent.d !== 1n || exponent.n <= 0n || exponent.n > 16n) {
+			return [atomMonomial(node, 1)];
+		}
+		const base = recurse(node.base);
+		if (base === null) return null;
 		// `(x+1)²` est une somme élevée à une puissance : la développer serait
-		// défaire une factorisation.
-		if (base === null || base.length !== 1) return null;
+		// défaire une factorisation. Sa base est un facteur, à l'exposant près.
+		if (base.length !== 1) return [atomMonomial(node.base, Number(exponent.n))];
 		let result = base[0];
 		for (let i = 1n; i < exponent.n; i++) result = mulMonomial(result, base[0]);
 		return [result];
 	}
 
-	return null;
+	// Tout le reste — fonction, racine, lettre grecque… — est un facteur entier.
+	return [atomMonomial(node, 1)];
+}
+
+/** Le nœud est-il une somme (ou une différence) ? */
+function isSum(node: MathNode): boolean {
+	return isAddition(node) || isSubtraction(node);
 }
 
 /**
@@ -301,9 +359,17 @@ function commonContent(monomials: readonly Monomial[]): Monomial {
 		if (min > 0) powers.set(name, min);
 	}
 
+	const atoms = new Map<string, Atom>();
+	for (const [key, atom] of first.atoms) {
+		let min = atom.exponent;
+		for (const other of others) min = Math.min(min, other.atoms.get(key)?.exponent ?? 0);
+		if (min > 0) atoms.set(key, { base: atom.base, exponent: min });
+	}
+
 	return {
 		coefficient: fromInteger(numericGcd === null || numericGcd === 0n ? 1n : numericGcd),
-		powers
+		powers,
+		atoms
 	};
 }
 
@@ -315,12 +381,18 @@ function divideByContent(m: Monomial, content: Monomial): Monomial {
 		if (rest === 0) powers.delete(name);
 		else powers.set(name, rest);
 	}
-	return { coefficient: divRational(m.coefficient, content.coefficient), powers };
+	const atoms = new Map(m.atoms);
+	for (const [key, atom] of content.atoms) {
+		const rest = (atoms.get(key)?.exponent ?? 0) - atom.exponent;
+		if (rest === 0) atoms.delete(key);
+		else atoms.set(key, { base: atom.base, exponent: rest });
+	}
+	return { coefficient: divRational(m.coefficient, content.coefficient), powers, atoms };
 }
 
 /** Le contenu vaut-il 1 ? Alors il n'y a rien à sortir. */
 function isTrivialContent(content: Monomial): boolean {
-	return isOne(content.coefficient) && content.powers.size === 0;
+	return isOne(content.coefficient) && content.powers.size === 0 && content.atoms.size === 0;
 }
 
 /** Le produit des variables d'un monôme, `x²y` pour `{ x: 2, y: 1 }`. */
@@ -340,10 +412,27 @@ function powersNode(powers: ReadonlyMap<string, number>): MathNode | null {
  */
 function monomialNode(m: Monomial): MathNode {
 	const magnitude = absRational(m.coefficient);
-	const vars = powersNode(m.powers);
+	const vars = joinFactors(powersNode(m.powers), atomsNode(m.atoms));
 	if (vars === null) return rationalNode(magnitude);
 	if (isOne(magnitude)) return vars;
 	return multiply(rationalNode(magnitude), vars, 'implicit');
+}
+
+/** Le produit des facteurs non polynomiaux, `eˣ·sin x`. */
+function atomsNode(atoms: ReadonlyMap<string, Atom>): MathNode | null {
+	let node: MathNode | null = null;
+	for (const { base, exponent } of atoms.values()) {
+		const factor = exponent === 1 ? base : superscript(base, number(String(exponent)));
+		node = joinFactors(node, factor);
+	}
+	return node;
+}
+
+/** Le produit implicite de deux facteurs, l'un ou l'autre pouvant manquer. */
+function joinFactors(left: MathNode | null, right: MathNode | null): MathNode | null {
+	if (left === null) return right;
+	if (right === null) return left;
+	return multiply(left, right, 'implicit');
 }
 
 /** Un rationnel positif rendu en nœud : entier, ou fraction. */
@@ -378,12 +467,19 @@ function isNegativeRational(r: Rational): boolean {
  * `x + y` reste `x + y`.
  */
 function factorCommonContent(node: MathNode): MathNode | null {
+	// D'abord en développant les sommes d'un seul facteur (`2(x+1)` → `2x + 2`),
+	// ce qui permet de factoriser au bon niveau ; sinon en les gardant comme
+	// facteurs, ce qui sort `(x+1)` de `(x+1)² − (x+1)`.
+	return factorCommonContentWith(node, false) ?? factorCommonContentWith(node, true);
+}
+
+function factorCommonContentWith(node: MathNode, sumsAsAtoms: boolean): MathNode | null {
 	const terms = flattenSumShallow(node);
 	if (terms.length < 2) return null;
 
 	const monomials: Monomial[] = [];
 	for (const { sign, term } of terms) {
-		const decomposed = toMonomials(term);
+		const decomposed = toMonomials(term, sumsAsAtoms);
 		if (decomposed === null || decomposed.length === 0) return null;
 		for (const m of decomposed) {
 			if (isZero(m.coefficient)) return null;
@@ -407,7 +503,7 @@ function factorCommonContent(node: MathNode): MathNode | null {
 	if (isTrivialContent(content) && !allNegative) return null;
 
 	const signedContent: Monomial = allNegative
-		? { coefficient: negRational(content.coefficient), powers: content.powers }
+		? { ...content, coefficient: negRational(content.coefficient) }
 		: content;
 
 	const remainder = monomials.map((m) => divideByContent(m, signedContent));
@@ -415,8 +511,12 @@ function factorCommonContent(node: MathNode): MathNode | null {
 
 	// Un contenu dont la valeur absolue vaut 1 et qui ne porte aucune variable
 	// n'a rien à écrire : `−x − 1` donne `−(x + 1)`, pas `−1(x + 1)`.
+	// Le facteur non polynomial s'écrit APRÈS la parenthèse, comme au tableau :
+	// `(x − 1)eˣ`, `3(x + 2)e²ˣ`. Le nombre et les variables restent devant.
+	const lead: Monomial = { ...content, atoms: NO_ATOMS };
 	const bare = isOne(absRational(content.coefficient)) && content.powers.size === 0;
-	const product = bare ? inner : multiply(monomialNode(content), inner, 'implicit');
+	const front = bare ? inner : multiply(monomialNode(lead), inner, 'implicit');
+	const product = joinFactors(front, atomsNode(content.atoms)) ?? front;
 
 	return allNegative ? opposite(product) : product;
 }

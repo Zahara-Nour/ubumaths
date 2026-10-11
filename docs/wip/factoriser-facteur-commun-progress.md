@@ -29,7 +29,28 @@ refactoriser » (point 3, pour K3) attendent.
 
 ## Avancement
 
-- [ ] tests rouges
-- [ ] implémentation
+- [x] tests rouges — `pedagogical-simplify/__tests__/facteur-commun-non-polynomial.test.ts`,
+      8 rouges sur 19 avant l'implémentation (5 rendus + 3 étapes : `common-factor-content-*`
+      n'avait AUCUNE description, l'élève lisait « Règle: common-factor-content-add »).
+- [x] implémentation — `pattern/rule-sets/common-factor.ts` : le monôme porte des `atoms`
+      (facteurs non polynomiaux, clé `hashMathNode`) ; deuxième essai où une somme entre
+      parenthèses est un facteur (`(x+1)² − (x+1)`). Le facteur non polynomial s'écrit après la
+      parenthèse. Descriptions FR ajoutées (`descriptions-fr.ts`).
 - [ ] code-reviewer
 - [ ] PR
+
+## Mesure d'arrivée (intention `factoriser`, lycée)
+
+| Entrée                                 | Rendu                                             |
+| -------------------------------------- | ------------------------------------------------- |
+| `xe^x-e^x`                             | `(x-1)e^x`                                        |
+| `x^2e^x-2xe^x+2e^x`                    | `(x^2-2x+2)e^x`                                   |
+| `3xe^{2x}+6e^{2x}`                     | `3(x+2)e^{2x}` (déjà juste avant)                 |
+| `\frac{1}{2}xe^{2x}-\frac{1}{4}e^{2x}` | `(\frac{x}{2}-\frac{1}{4})e^{2x}` (relevé)        |
+| `(x+1)^2-(x+1)`                        | `x(x+1)`                                          |
+| `e^x+e^{2x}`, `e^{2x}-e^x`             | inchangés (e²ˣ n'est pas vu comme (eˣ)²)          |
+| `xe^x+\sin x`, `3xe^x`                 | inchangés                                         |
+| `-2xe^x+4e^x`                          | `2(2-x)e^x` (inchangé : signes mêlés, à trancher) |
+
+Tests : pedagogical-simplify + pattern 1336 verts ; `src/lib/mathAST` entier 19 258 verts ;
+atelier 2025 verts ; questions/generator 813 verts. Aucun snapshot changé.

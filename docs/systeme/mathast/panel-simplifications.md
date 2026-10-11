@@ -15,13 +15,13 @@ couvre:
 
 ## Ce que chaque colonne veut dire
 
-| colonne      | ce qui est appelé                                                                                                                                                           |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `simplify`   | `simplify(node)` — `tidy` → règles → « développer seulement si moins cher » → `tidy`                                                                                        |
-| `auto`       | `generatePedagogicalSimplifySteps`, intention `auto` : `reduire` ∪ factorisation symbolique                                                                                 |
-| `reduire`    | identités, puissances, racines. Ni factorisation ni développement                                                                                                           |
-| `developper` | règles de développement + identités, puis `normalize`                                                                                                                       |
-| `factoriser` | factorisation + identités, puis extraction du contenu, puis `tidy` facteur par facteur (deux nombres côte à côte sont calculés : `2\times 3` → `6`). **Pas** de `normalize` |
+| colonne      | ce qui est appelé                                                                                                                                                                                                                                                                  |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `simplify`   | `simplify(node)` — `tidy` → règles → « développer seulement si moins cher » → `tidy`                                                                                                                                                                                               |
+| `auto`       | `generatePedagogicalSimplifySteps`, intention `auto` : `reduire` ∪ factorisation symbolique                                                                                                                                                                                        |
+| `reduire`    | identités, puissances, racines. Ni factorisation ni développement                                                                                                                                                                                                                  |
+| `developper` | règles de développement + identités, puis `normalize`                                                                                                                                                                                                                              |
+| `factoriser` | factorisation + identités, puis extraction du contenu (numérique, monôme, ou non polynomial : `x\exponentialE^x - \exponentialE^x` → `(x-1)\exponentialE^x`), puis `tidy` facteur par facteur (deux nombres côte à côte sont calculés : `2\times 3` → `6`). **Pas** de `normalize` |
 
 ⚠️ **Les quatre intentions sont mesurées à `schoolLevel: 'lycee'`.** Les
 identités trigonométriques et exponentielles sont coupées en dessous — c'est un
