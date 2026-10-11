@@ -381,7 +381,5 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
 9. **Libellés des types recopiés** : la table type → libellé existe en neuf exemplaires (constantes,
    `getTypeLabel`, cartes et en-têtes élève, pages prof), avec des variantes (« Feuille d'exercices »,
    « Fiche de travail », « Corvées Domestiques »). Seul « Contrôle » est tenu par un test.
-10. **Nom du modèle système « Evaluation »** : la liste des modèles le lit en base
-    (`worksheet_templates`), pas dans `default-templates.ts` ; il n'est pas renommé.
 
 Vérifié contre le code le 2026-10-11.
