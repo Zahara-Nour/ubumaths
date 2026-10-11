@@ -300,7 +300,8 @@ a quitté le domaine Google Workspace. Le drapeau masque les entrées de l'inter
 rediriger vers `/dashboard` les pages `dashboard/teacher/settings/google`,
 `dashboard/student/classroom`, `dashboard/student/devoirs`, `dashboard/student/materials`.
 `/dashboard/teacher/google` redirige vers les réglages (`src/hooks.server.ts`). Les routes
-`/api/google/**` répondent 403 (`assertGoogleClassroomEnabled()`), sauf `auth/disconnect` et
+`/api/google/**` et `api/whiteboard/export-to-classroom` répondent 403
+(`assertGoogleClassroomEnabled()`), sauf `auth/disconnect` et
 `auth/status` (B8 ; une intégration reste enregistrée en prod). Tables, routes et dialogues
 `src/lib/components/google/` sont conservés : remettre le drapeau à `true` rallume tout. La connexion Google (`GOOGLE_LOGIN_ENABLED`, autre drapeau)
 est décrite dans [auth.md](auth.md).

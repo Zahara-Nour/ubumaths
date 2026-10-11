@@ -23,6 +23,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
@@ -69,6 +70,8 @@ function generateFilename(joinCode: string, date: string, counter: number): stri
  * Export whiteboard PDF to Google Classroom
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
+	assertGoogleClassroomEnabled();
+
 	// Require teacher role
 	const { user } = await requireRole(locals, 'teacher');
 

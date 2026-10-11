@@ -2,6 +2,7 @@
  * Interrupteur Google Classroom côté API (constat B8)
  *
  * Avec `GOOGLE_CLASSROOM_ENABLED = false` (valeur réelle), toute route `/api/google/**`
+ * (et l'export du tableau blanc vers Classroom)
  * répond 403 avant même de vérifier la session, sauf `auth/disconnect` (révoquer
  * l'accès) et `auth/status` (lecture). Le test parcourt les fichiers : une route ajoutée
  * sans garde le fait échouer.
@@ -13,7 +14,13 @@ import { isHttpError } from '@sveltejs/kit';
 const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const;
 const OPEN_ROUTES = ['/auth/disconnect/+server.ts', '/auth/status/+server.ts'];
 
-const modules = import.meta.glob<Record<string, unknown>>('../**/+server.ts', { eager: true });
+const modules = {
+	...import.meta.glob<Record<string, unknown>>('../**/+server.ts', { eager: true }),
+	// Export du tableau blanc vers Classroom : hors de /api/google, même interrupteur
+	...import.meta.glob<Record<string, unknown>>('../../whiteboard/export-to-classroom/+server.ts', {
+		eager: true
+	})
+};
 
 const handlers = Object.entries(modules)
 	.filter(([path]) => !OPEN_ROUTES.some((open) => path.endsWith(open)))
@@ -25,7 +32,7 @@ const handlers = Object.entries(modules)
 
 describe('interrupteur Google Classroom coupé', () => {
 	it('le parcours trouve les routes gardées', () => {
-		expect(handlers.length).toBeGreaterThanOrEqual(23);
+		expect(handlers.length).toBeGreaterThanOrEqual(24);
 	});
 
 	it.each(handlers)('%s répond 403', async (_name, handler) => {
