@@ -12,7 +12,7 @@ couvre:
 
 # Carte des fonctionnalités : ce que Chiphre offre, à qui, par où
 
-> Vérifié contre le code le 2026-10-11 (branche `feat/roue-des-publics`). Inventaire **vu de l'utilisateur** :
+> Vérifié contre le code le 2026-10-11 (branche `feat/sitemap-complet`). Inventaire **vu de l'utilisateur** :
 > chaque fonctionnalité sous son libellé réel, sa route, son accès, et la preuve de ses points forts.
 > Le fonctionnement de chaque système est dans sa propre doc (carte : [docs/README.md](../README.md)) ;
 > le lore utilisable en vitrine est dans [univers-chiphre.md](univers-chiphre.md#le-lore-en-vitrine).
@@ -35,10 +35,16 @@ fonctions du professeur ne sont donc **pas** un argument de vitrine pour d'autre
 `src/lib/seo/sitemap-pages.ts` (la même liste nourrit « Tu cherchais peut-être… » de la
 [page d'erreur](page-erreur.md)).
 
+Toute page hors `(protected)` est soit dans `SITEMAP_PAGES`, soit générée par une source dynamique
+(`SITEMAP_DYNAMIC_ROUTES` : les articles du Shtam parus), soit dans `SITEMAP_EXCLUSIONS` avec sa
+raison (démos, parcours d'authentification, pages à compte ou à jeton, routes dynamiques sans
+source). La garde `src/lib/seo/__tests__/sitemap-pages.test.ts` parcourt le disque et échoue sur
+toute nouvelle page publique qui n'est dans aucune des trois listes.
+
 | Libellé dans l'interface                   | Route                                              | Ce que ça fait                                                                                                                                                                 | Menu                    | Sitemap |
 | ------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | ------- |
 | Automaths                                  | `/automaths` → `/automaths/panier`                 | Banque de questions ; une série se lance en **En classe**, **Entraînement**, **Course aux nombres** ou **Flash-cards** (`src/lib/components/test/TestModeDialog.svelte:48-73`) | **non**                 | oui     |
-| Atelier (vues Calcul, Graphe, Données)     | `/atelier` (`/grapheur` y mène)                    | Calcul formel en français avec étapes, grapheur, statistiques et probabilités ; partage par lien. Rien ne quitte le navigateur (`src/routes/(public)/atelier/+page.svelte:6`)  | oui                     | **non** |
+| Atelier (vues Calcul, Graphe, Données)     | `/atelier` (`/grapheur` y mène)                    | Calcul formel en français avec étapes, grapheur, statistiques et probabilités ; partage par lien. Rien ne quitte le navigateur (`src/routes/(public)/atelier/+page.svelte:6`)  | oui                     | oui     |
 | Chiffrement — le Cabinet Noir de Turingrad | `/chiffrement`, 9 établis, `/chiffrement/depeches` | Chiffrer, déchiffrer, décrypter (César → RSA), calculs pas à pas ; campagne des 9 Dépêches du Czar (`src/lib/ciphers/dispatches.ts`). 100 % navigateur                         | oui                     | oui     |
 | Upsilon                                    | `/upsilon`                                         | Simulateur de la calculatrice graphique Upsilon                                                                                                                                | oui                     | oui     |
 | Python Playground                          | `/python`                                          | Python dans le navigateur (Pyodide), débogueur pas à pas, diagramme mémoire (`src/lib/components/python/debug/`)                                                               | **non** (élève, prof)   | oui     |
@@ -231,7 +237,9 @@ V15 corrigé par le Tour du Royaume, D19 par la chandelle qui se pose au bout d'
 
 - Le chat de `/pere-ubu` répond par une erreur à un visiteur, alors que la page est au sitemap.
 - `/a-propos` promet un suivi « accessible aux parents ».
-- Automaths, Glossaire, Shtam, Almanach : absents du menu ; l'Atelier, absent du sitemap.
+- Automaths, Glossaire, Shtam, Almanach : absents du menu.
+- `/calc` reste au sitemap (avant le 2026-10-11) alors que « Ne pas mettre en avant » le range en
+  héritage remplacé par l'Atelier ; `/cas` et `/games/evoland` en sont exclus pour cette raison.
 - « Géométrie » au menu mène à `/geometry-demo`, exclue par `robots.txt` et titrée en anglais.
 - `/test-cadres` et `/slides` ne sont pas exclus par `robots.txt`.
 - Accessibilité, tout le site : anneau de focus clair à 2:1 (D16), `muted-foreground` à 4,4:1 sur fonds
