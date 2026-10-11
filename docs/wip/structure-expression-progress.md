@@ -167,14 +167,15 @@ Tests d'abord (rouges) à chaque lot ; `code-reviewer` en fin de lot.
   logarithme décimal) et Q25 (saisie par la page d'administration ou migration). Limite connue :
   `AB²` lu comme un produit par le parseur (Q18, chantier séparé).
 
-## Lot 5 — définitions proposées (à valider par David)
+## Lot 5 — mots ajoutés au dictionnaire (validés par David le 2026-10-11)
 
-Mots produits par la lecture et absents du dictionnaire (ils s'affichent sans lien). Niveaux non
-vérifiés dans les programmes.
+Niveaux vérifiés contre les points des programmes en base. Ajout par migration de données
+(`20261016090300_dictionnaire_mots_lecture.sql`), question d'accès tranchée : lecture publique,
+comme les autres entrées, rien d'autre.
 
-| Mot                | Définition proposée                                                                                                                                | Niveau proposé            |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| différent          | Se dit de deux quantités qui n'ont pas la même valeur. Symbole : $\neq$. Ex : $3 + 4 \neq 8$.                                                      | 6e                        |
-| racine cubique     | $\sqrt[3]{a}$ est le nombre dont le cube vaut $a$. Ex : $\sqrt[3]{8} = 2$ car $2^3 = 8$.                                                           | Terminale, maths complém. |
-| racine n-ième      | Pour $a \geq 0$ et $n$ entier non nul, $\sqrt[n]{a}$ est le nombre positif dont la puissance $n$ vaut $a$. Ex : $\sqrt[4]{81} = 3$ car $3^4 = 81$. | Terminale, maths complém. |
-| logarithme décimal | Fonction notée $\log$, définie par $\log(x) = \dfrac{\ln x}{\ln 10}$. Elle vérifie $\log(10^n) = n$. Ex : $\log(1000) = 3$.                        | Terminale, spécialité     |
+| Mot                | Niveau   | Programmes                                                     |
+| ------------------ | -------- | -------------------------------------------------------------- |
+| différent          | CE1      | symbole absent du BO ; `=`, `<`, `>` du CP au CE1              |
+| racine cubique     | 2        | 2-344, fonction cube : résoudre $f(x) = k$                     |
+| racine n-ième      | T_EXP    | TEXP-257 à 269, racines $n$-ièmes (complexes)                  |
+| logarithme décimal | T_TECHNO | TTECHNO-040, unique solution de $10^x = b$, définition sans ln |
