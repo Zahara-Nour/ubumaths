@@ -1,0 +1,118 @@
+---
+title: Lenteur des grandes fractions — phase 0
+date: 2026-10-12
+status: phase 0 à valider par David (lot à part décidé le 2026-10-12, voir mode-decimal-progress.md)
+---
+
+# Lenteur des grandes fractions — phase 0
+
+Lot ouvert par décision de David (2026-10-12, « lot à part ») après la reco 2 du mode décimal
+(#1155). Worktree : `ubumaths-wt-grandes-fractions`, branche `perf/grandes-fractions`.
+
+## Mesures (2026-10-12, console de Calcul, `main` après #1155)
+
+### Où passe le temps — `(1+1/10000)^10000`
+
+| Étape                                        | Durée                                |
+| -------------------------------------------- | ------------------------------------ |
+| calcul exact (`evaluate`, `normalize`)       | 3,7 s — fait **deux fois** (booléen) |
+| lecture de l'arrondi (`approximateDigitsOf`) | 1,9 s — faite **deux fois**          |
+| mise au propre (`tidy`)                      | 2,7 s — refaite au rendu (1,65 s)    |
+| **console, mode exact + rendu**              | **13 s**                             |
+| **console, mode décimal**                    | **16 s**                             |
+
+Le résultat exact affiché fait **80 003 caractères**. `(1+1/100000)^100000` bloque le navigateur
+plus de 200 s.
+
+**Cause** : le pgcd d'Euclide, quadratique — 1,5 à 1,8 s pour deux nombres de 40 000 chiffres ;
+la puissance du calcul exact (`powPolynomial`) élève au carré en réduisant à chaque produit.
+
+### Un pgcd plus rapide ne suffit pas
+
+Prototype de Lehmer (0 écart sur 3 000 paires comparées à Euclide) : 4,6 fois plus rapide
+(1,8 s → 0,4 s à 40 000 chiffres). Branché dans mathAST : `(1+1/10000)^10000` passe de 13 s à
+3 s. Mais l'écran porterait toujours 80 003 caractères, et `n = 100 000` (un million de chiffres)
+resterait hors de portée — le coût est quadratique.
+
+### Longueur des résultats exacts d'élèves (mode exact, aujourd'hui)
+
+| Saisie                                                   | Caractères | Saisie                 | Caractères |
+| -------------------------------------------------------- | ---------- | ---------------------- | ---------- |
+| `2^64`, `30!`, `2^100`                                   | 20 à 33    | `1.01^365`             | 1 464      |
+| `100!` ; `200!`                                          | 158 ; 375  | `1.5^2000`             | 1 559      |
+| `2^1000`                                                 | 302        | `1000*(1+0.03/12)^360` | 1 873      |
+| `(1+1/100)^100`                                          | 403        | `(1+1/1000)^1000`      | 6 003      |
+| `1000!`, `\binom{1000}{500}` : **déjà gardés** (`1000!`) | —          | `2^100000`             | 30 103     |
+
+Précédent : la factorielle garde déjà son écriture quand elle est trop grande (`1000!` reste
+`1000!` en mode exact) — mais son mode décimal répond une erreur (« result too large to stay
+exact ») au lieu de ≈ 4,0239 × 10²⁵⁶⁷.
+
+## Diagnostic
+
+1. On **calcule et affiche des résultats exacts illisibles** : au-delà de quelques centaines de
+   chiffres, une fraction n'apprend rien à l'élève, et son calcul fige la page.
+2. Le pgcd d'Euclide est quadratique (accélérable ×4,6, pas plus).
+3. La console fait plusieurs fois le même calcul (exact ×2, arrondi ×2, `tidy` ×2).
+
+## Question à David — le résultat exact trop long (produit)
+
+| Option                                  | Ce que voit l'élève pour `(1+1/1000)^1000`                                                                             |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **A (recommandée)** — garder l'écriture | mode exact : `(1+1/1000)^{1000}` tel que tapé, + bouton ≈ 2,7169 ; mode décimal : ≈ 2,7169 — comme `1000!` aujourd'hui |
+| B — tout afficher                       | 6 003 caractères ; plus rapide avec Lehmer, mais `n = 100 000` reste bloqué                                            |
+| C — tronquer                            | « 2716923932… (3 001 chiffres) / 1000… » : il faut quand même tout calculer                                            |
+
+**Seuil proposé : 1 000 caractères** — `2^1000`, `200!`, `(1+1/100)^100` restent écrits en
+entier ; les intérêts composés, `1.01^365`, `1.5^2000`, `(1+1/1000)^1000`, `2^100000` gardent leur
+écriture. La taille se **prévoit avant de calculer** (une puissance de base a/b et d'exposant k fait
+environ k × (chiffres de a + chiffres de b)), sinon le garde-fou arriverait après le blocage.
+
+## Comportements attendus (si A)
+
+| Saisie                  | Mode exact                    | Bouton ≈ / mode décimal            | Temps                            |
+| ----------------------- | ----------------------------- | ---------------------------------- | -------------------------------- |
+| `2^1000` ; `200!`       | inchangé (en entier)          | inchangé                           | inchangé                         |
+| `(1+1/100)^100`         | inchangé (fraction, 403 car.) | ≈ 2,7048                           | inchangé                         |
+| `1.01^365`              | `1.01^{365}`                  | ≈ 37,7834                          | < 1 s (test)                     |
+| `1000*(1+0.03/12)^360`  | `1000 × (1+0.03/12)^{360}`    | ≈ 2456,8422                        | < 1 s                            |
+| `(1+1/1000)^1000`       | `(1+1/1000)^{1000}`           | ≈ 2,7169                           | < 1 s                            |
+| `(1+1/10000)^10000`     | `(1+1/10000)^{10000}`         | ≈ 2,7181                           | **< 1 s** (13 s)                 |
+| `(1+1/100000)^100000`   | `(1+1/100000)^{100000}`       | ≈ 2,7183                           | **< 1 s** (bloqué)               |
+| `1.5^2000`              | `1.5^{2000}`                  | ≈ 1,5224 × 10³⁵²                   | < 1 s                            |
+| `2^100000`              | `2^{100000}`                  | ≈ 9,9900 × 10³⁰¹⁰²                 | < 1 s                            |
+| `1000!`                 | `1000!` (inchangé)            | ≈ 4,0239 × 10²⁵⁶⁷ (était : erreur) | < 1 s                            |
+| `.variations e^{-2x^2}` | inchangé                      | inchangé                           | inchangé (non-régression, 16 ms) |
+
+Une note sous la ligne dit pourquoi : « Valeur exacte trop longue (environ 3 000 chiffres) : voici
+sa valeur approchée. »
+
+## Comment (si A)
+
+- **Garde-fou de taille dans la console** : avant le calcul exact, une estimation de la taille du
+  résultat (puissances à base numérique, factorielles, coefficients binomiaux) ; au-delà du seuil,
+  le mode exact garde l'écriture tapée — rien n'est développé, rien ne bloque.
+- **La valeur approchée d'une écriture gardée** se calcule sur l'expression (`evaluateToRational`) :
+  le plafond des puissances exactes passe de « exposant ≤ 1000 » à « exposant ≤ 1000 **ou** résultat
+  ≤ 100 000 bits » (puissance native, sans pgcd) — `1.5^2000` exact ; e et π (fractions de
+  16 chiffres) gardent la limite d'aujourd'hui, donc pas de retour de la lenteur de
+  `.variations e^{-2x^2}`. Au-delà, le flottant (`Math.pow(1.00001, 100000)` = 2,71826…). Même budget
+  pour la factorielle et le coefficient binomial (1000! = 8 530 bits).
+- **Ne plus calculer en double** : le calcul exact une seule fois (le test du booléen réutilise le
+  résultat), la lecture de l'arrondi une seule fois (ligne et bouton ≈).
+- **Pas de pgcd de Lehmer dans ce lot** : une fois le garde-fou posé, la console ne manipule plus
+  de fractions géantes ; gain mesuré ×4,6, gardé en réserve si un autre chemin le demande.
+
+## Tests (écrits avant le code, rouges sur `main`)
+
+- Console (`cli/web/__tests__/`) : chaque ligne du tableau — texte du mode exact, bouton ≈, mode
+  décimal — et le temps (< 1 s) pour les lignes marquées.
+- Estimation de taille : bornes du seuil (999 / 1 001 caractères), puissance, factorielle, produit.
+- Non-régression : `.variations`/`.signe` identiques à `main` (comparaison de sorties, comme #1155),
+  suites `atelier`, `cli`, `eval`.
+- Revue `code-reviewer` en fin de lot.
+
+## Journal
+
+- 2026-10-12 — mesures et phase 0 (ci-dessus). En attente de la décision de David (A, B ou C, et le
+  seuil).
