@@ -67,9 +67,23 @@ parenthèses (CM1-049, CM2-054). D'où la frontière « 6e ou avant ».
 | B12 | `2x + 3 = 7`              | la somme du produit de 2 par x et de 3 est égale à 7             |
 | B13 | `f(x)`, `\sin x`, `\ln x` | l'image de x par f ; le sinus de x ; le logarithme népérien de x |
 | B14 | `(2 + x)²`                | le carré de la somme de 2 et x                                   |
+| B15 | `−3y + x`                 | la somme de l'opposé du produit de 3 par y et de x               |
 
+- B15 (décision de David, 2026-10-11) : dans une somme, un terme précédé de « − » se lit
+  « l'opposé de <terme> », SAUF un nombre seul, lu signé (B4, B5). `−3x` seul : « l'opposé du
+  produit de 3 par x ». Un nombre négatif hors somme se lit signé aussi (`2 × (−3)` : « le produit
+  de 2 par −3 »).
 - Nombres en chiffres, rendus comme formules ; contractions gérées (« du », « des », « de la »,
-  « de l' »).
+  « de l' », « au », « aux »). Énumération : dès qu'un élément commence par un article, chacun est
+  introduit par « de » (B1 « de 2 et du produit », B12 « du produit … et de 3 ») ; sinon seul le
+  premier (B2 « de a, b et c »).
+- Inégalités : « est strictement inférieur(e) à », « est inférieur(e) ou égal(e) à », idem
+  supérieur ; « est différent(e) de ». Encadrement : « 1 est strictement inférieur à x, qui est
+  strictement inférieur à 3 ». Autres relations (∈, ≈…) : la relation entière en formule.
+- Bloc sans lecture prévue (`90°`, `n!`, limite, `max`, `\log_2`, `\sin^{-1}`…) : lu comme
+  formule, sans mot.
+- Puissance : 2 → carré, 3 → cube, sinon « x puissance n », exposant en formule (négatif compris) ;
+  `(−1)ⁿ` garde ses parenthèses (« (−1) puissance n », sinon confondu avec `−1ⁿ`).
 - Accord : « la somme … est **égale** à », « le produit … est **égal** à ».
 - Lecture de la sous-expression survolée dans le panneau, lecture de l'expression entière en
   permanence ; survoler un mot de la lecture encadre sa sous-expression.
@@ -120,3 +134,7 @@ Tests d'abord (rouges) à chaque lot ; `code-reviewer` en fin de lot.
   « − » en tête sans parenthèses visibles porte sur tout le produit ou le quotient en ligne qui suit
   (le parseur rend `(−3)·x`, la structure réassocie). Hors somme : opposé du produit ; dans une
   somme : signe à la somme. Inchangé : `(−3)x`, `2 × (−3)`, `−3`, `−3²` (opposé de 3²).
+- 2026-10-11 — lot 2 : `structure/reading.ts` (`readingOf`, `readingPlainText`). Lecture
+  structurée en segments texte / formule / mot, chacun rattaché à l'id de sa sous-expression ; clé
+  d'un mot = `termId` du dictionnaire (`carré (puissance)`, `image (fonction)`…), passée telle
+  quelle à `LexiconTerm` au lot 4. B15 et précisions ajoutées à la section B.
