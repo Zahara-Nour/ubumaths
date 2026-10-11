@@ -39,10 +39,10 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	if (!reportResponse.ok) {
 		if (reportResponse.status === 404) {
-			throw error(404, 'Signalement non trouve');
+			throw error(404, 'Signalement introuvable');
 		}
 		if (reportResponse.status === 403) {
-			throw error(403, 'Acces refuse');
+			throw error(403, 'Accès refusé');
 		}
 		throw error(500, 'Erreur lors du chargement du signalement');
 	}

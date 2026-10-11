@@ -82,12 +82,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
 
 	if (!user || !profile) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Verify user is a teacher (not student or admin accessing this route)
 	if (profile.role !== 'teacher') {
-		throw error(403, 'Only teachers can access this page');
+		throw error(403, 'Page réservée aux professeurs');
 	}
 
 	// Use unified helper to fetch classes with counts and schedules

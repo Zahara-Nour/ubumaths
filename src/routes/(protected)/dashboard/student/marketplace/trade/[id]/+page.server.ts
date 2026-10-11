@@ -62,7 +62,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.single();
 
 	if (tradeError || !trade) {
-		error(404, 'Echange non trouve');
+		error(404, 'Échange introuvable');
 	}
 
 	// Check that user is a participant

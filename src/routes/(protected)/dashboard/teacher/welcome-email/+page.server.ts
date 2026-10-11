@@ -59,7 +59,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
 	if (studentError || !student) {
 		console.error('[Welcome Email] Error fetching student:', studentError);
-		throw error(404, 'Eleve non trouve');
+		throw error(404, 'Élève introuvable');
 	}
 
 	// Check the transactional email service (Brevo) is configured. The email is sent

@@ -15,13 +15,13 @@
  * // Verify teacher teaches student (admin bypass)
  * const hasAccess = await verifyTeacherStudent(teacherId, studentId, supabase);
  * if (!hasAccess) {
- *   throw error(403, 'You can only access students you teach');
+ *   throw error(403, 'Cet élève n’est pas dans tes classes');
  * }
  *
  * // With profile object (checks admin role)
  * const hasAccess = await verifyTeacherStudentWithRole(teacherId, studentId, profile, supabase);
  * if (!hasAccess) {
- *   throw error(403, 'Not authorized');
+ *   throw error(403, 'Accès refusé');
  * }
  * ```
  *
@@ -83,7 +83,7 @@ type TypedSupabaseClient = SupabaseClient<Database>;
  *   // Verify teacher teaches this student
  *   const hasAccess = await verifyTeacherStudent(user.id, studentId, locals.supabase);
  *   if (!hasAccess) {
- *     throw error(403, 'You can only access students you teach');
+ *     throw error(403, 'Cet élève n’est pas dans tes classes');
  *   }
  *
  *   // Proceed with logic...
@@ -98,7 +98,7 @@ type TypedSupabaseClient = SupabaseClient<Database>;
  * if (profile.role !== 'admin') {
  *   const hasAccess = await verifyTeacherStudent(user.id, studentId, locals.supabase);
  *   if (!hasAccess) {
- *     throw error(403, 'You can only access students you teach');
+ *     throw error(403, 'Cet élève n’est pas dans tes classes');
  *   }
  * }
  * ```
@@ -128,13 +128,13 @@ type TypedSupabaseClient = SupabaseClient<Database>;
  * });
  *
  * if (!isTeacherOfStudent) {
- *   throw error(403, 'You can only access your own students');
+ *   throw error(403, 'Cet élève n’est pas dans tes classes');
  * }
  *
  * // After (3 lines):
  * const hasAccess = await verifyTeacherStudent(teacherId, studentId, supabase);
  * if (!hasAccess) {
- *   throw error(403, 'You can only access students you teach');
+ *   throw error(403, 'Cet élève n’est pas dans tes classes');
  * }
  * ```
  */
@@ -208,7 +208,7 @@ export async function verifyTeacherStudent(
  *   );
  *
  *   if (!hasAccess) {
- *     throw error(403, 'You can only access students you teach');
+ *     throw error(403, 'Cet élève n’est pas dans tes classes');
  *   }
  *
  *   // Proceed with logic...
@@ -238,7 +238,7 @@ export async function verifyTeacherStudent(
  *   });
  *
  *   if (!teachesStudent) {
- *     throw error(403, 'Not authorized');
+ *     throw error(403, 'Accès refusé');
  *   }
  * }
  * // Admins skip the check
@@ -248,7 +248,7 @@ export async function verifyTeacherStudent(
  *   user.id, studentId, profile, locals.supabase
  * );
  * if (!hasAccess) {
- *   throw error(403, 'You can only access students you teach');
+ *   throw error(403, 'Cet élève n’est pas dans tes classes');
  * }
  * ```
  */

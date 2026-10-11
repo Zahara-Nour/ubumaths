@@ -5,7 +5,7 @@ export const load: PageServerLoad = async ({ url, locals, fetch }) => {
 	const { user } = await locals.safeGetSession();
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Parse filters from URL

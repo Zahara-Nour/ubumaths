@@ -100,12 +100,12 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.single();
 
 	if (chapterError || !chapter) {
-		throw error(404, 'Chapitre non trouve');
+		throw error(404, 'Chapitre introuvable');
 	}
 
 	// Verify class matches
 	if (chapter.class_id !== classId) {
-		throw error(404, 'Chapitre non trouve dans cette classe');
+		throw error(404, 'Chapitre introuvable dans cette classe');
 	}
 
 	// Get class info

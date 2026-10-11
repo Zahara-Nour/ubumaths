@@ -37,7 +37,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	);
 
 	if (templateError || !template) {
-		throw error(404, 'Template non trouvé');
+		throw error(404, 'Modèle introuvable');
 	}
 
 	// Check access: owner only (no inter-teacher sharing)

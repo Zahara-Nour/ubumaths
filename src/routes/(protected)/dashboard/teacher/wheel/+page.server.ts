@@ -7,12 +7,12 @@ export const load: PageServerLoad = async ({ locals, parent: _parent }) => {
 	const { user, profile, supabase } = locals;
 
 	if (!user || !profile) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Only teachers and admins can access the wheel
 	if (profile.role !== 'teacher' && profile.role !== 'admin') {
-		throw error(403, 'Forbidden: Only teachers can access this page');
+		throw error(403, 'Page réservée aux professeurs');
 	}
 
 	// Use unified helper to get classes with students

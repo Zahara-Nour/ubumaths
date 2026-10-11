@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	const { user } = await safeGetSession();
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Fetch game player
@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	}
 
 	if (!gamePlayer) {
-		throw error(404, 'Game profile not found');
+		throw error(404, 'Profil de jeu introuvable');
 	}
 
 	// Fetch available monsters (not dead, spawned in last 24h)
@@ -62,7 +62,7 @@ export const actions: Actions = {
 	// DEBUG: Create a very weak monster for testing (level 1, 1 HP)
 	spawnDebugMonster: async ({ locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();
-		if (!user) throw error(401, 'Unauthorized');
+		if (!user) throw error(401, 'Connexion requise');
 
 		// Create a super weak debug monster
 		const template = getRandomMonsterTemplate('fire', 'common');
@@ -121,7 +121,7 @@ export const actions: Actions = {
 	// Start a new combat with a random or selected monster
 	startCombat: async ({ request, locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();
-		if (!user) throw error(401, 'Unauthorized');
+		if (!user) throw error(401, 'Connexion requise');
 
 		const formData = await request.formData();
 

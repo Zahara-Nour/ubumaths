@@ -63,7 +63,7 @@ export function verifyCronAuth(request: Request): void {
 			console.warn('[CRON AUTH] x-vercel-cron header present but not running on Vercel', {
 				url: request.url
 			});
-			throw error(401, 'Unauthorized: Invalid environment');
+			throw error(401, 'Environnement non autorisé');
 		}
 	}
 
@@ -74,7 +74,7 @@ export function verifyCronAuth(request: Request): void {
 			url: request.url,
 			method: request.method
 		});
-		throw error(401, 'Unauthorized: Missing authentication');
+		throw error(401, 'Authentification manquante');
 	}
 
 	// Validate Bearer token format (case-insensitive)
@@ -85,10 +85,7 @@ export function verifyCronAuth(request: Request): void {
 			url: request.url,
 			format: authHeader.substring(0, 20) // Log first 20 chars only (don't leak full header)
 		});
-		throw error(
-			401,
-			'Unauthorized: Invalid Authorization header format (expected "Bearer <token>")'
-		);
+		throw error(401, 'En-tête Authorization mal formé (attendu : « Bearer <jeton> »)');
 	}
 
 	const providedToken = match[1];
@@ -106,7 +103,7 @@ export function verifyCronAuth(request: Request): void {
 			expected_length: expectedBuffer.length,
 			provided_length: providedBuffer.length
 		});
-		throw error(401, 'Unauthorized: Invalid token');
+		throw error(401, 'Jeton invalide');
 	}
 
 	// Perform constant-time comparison
@@ -115,12 +112,12 @@ export function verifyCronAuth(request: Request): void {
 			console.warn('[CRON AUTH] Invalid token (value mismatch)', {
 				url: request.url
 			});
-			throw error(401, 'Unauthorized: Invalid token');
+			throw error(401, 'Jeton invalide');
 		}
 	} catch (err) {
 		// timingSafeEqual can throw if buffers are invalid
 		console.error('[CRON AUTH] Comparison error:', err);
-		throw error(401, 'Unauthorized: Invalid token');
+		throw error(401, 'Jeton invalide');
 	}
 
 	// Success - log and continue

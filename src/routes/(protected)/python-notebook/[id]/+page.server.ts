@@ -89,7 +89,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	}
 
 	if (!isOwner && !isPublicAndTeacher && !isAssigned) {
-		throw error(403, 'Acces interdit a ce notebook');
+		throw error(403, 'Accès interdit à ce notebook');
 	}
 
 	// Carnet d'élève lu par un autre : rendu restreint, exécution interdite

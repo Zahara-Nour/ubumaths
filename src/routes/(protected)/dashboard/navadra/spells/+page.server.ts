@@ -9,7 +9,7 @@ import { toGameSpell, toGamePlayer } from '$lib/types/game';
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
-	if (!user) throw error(401, 'Unauthorized');
+	if (!user) throw error(401, 'Connexion requise');
 
 	// Fetch player's spells
 	const { data: spells, error: spellsError } = await supabase
@@ -81,7 +81,7 @@ export const actions: Actions = {
 	// Unlock a new spell (for testing - normally unlocked through gameplay)
 	unlockSpell: async ({ request, locals: { safeGetSession, supabase } }) => {
 		const { user } = await safeGetSession();
-		if (!user) throw error(401, 'Unauthorized');
+		if (!user) throw error(401, 'Connexion requise');
 
 		const formData = await request.formData();
 

@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase, safeGetSession: _safeGetSession } = locals;
 
 	if (!user) {
-		throw error(401, 'Unauthorized');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Allow admin and teacher roles (teachers will only see pending users due to RLS)

@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ params, parent, locals: { supabase 
 
 	if (queryError || !construction) {
 		if (queryError?.code === 'PGRST116') {
-			throw error(404, 'Construction non trouvee');
+			throw error(404, 'Construction introuvable');
 		}
 		throw error(500, 'Erreur lors du chargement');
 	}
