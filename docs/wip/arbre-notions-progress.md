@@ -981,3 +981,15 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - Q8 : les codes de points des 397 JSON de `scripts/questions` sont abandonnés (les tags vivent en base).
   - Découpage : PR A migration SQL (4 fonctions lisent encore l'objectif) · B lectures mécaniques · C nouvel arbre du
     programme (prof, admin) · D élève · E suppression éditeur et API · F analytique.
+- **2026-10-11 — Étape 2 bis (tags primaire et collège) : règles validées par David (« je valide tout sauf R4 »).**
+  - Lot préparé : 573 couples (modèle, niveau) de CP à 3e ; 138 à un seul point possible, 362 à choisir, 73 sans point.
+  - R1 : un tag seulement si le point décrit ce que le modèle fait faire ; point de vocabulaire ou de technique voisine
+    = pas de tag (calcul mental cycle 2, triple/tiers, complément, conventions d'écriture 5e, décimaux avec retenue au
+    CM1…). Un point général mais juste se garde (3-044). Aucun point ajouté au BO.
+  - R2 : modèle mal rangé (bon point sur un nœud voisin) → déplacé sur la bonne sous-notion, puis tagué (équations 4e
+    sur la notion, sommes algébriques 5e à une seule opération, 11 cas C).
+  - R3 : niveau déclaré douteux → pas de tag pour ce niveau, niveaux non modifiés (décision « niveaux » à part) ; liste
+    à part sur la page.
+  - R4 (refusée, recadrée par David) : les deux sous-notions « double et moitié » (sous Addition et sous Multiplication)
+    restent. Elles distinguent un modèle dont l'énoncé ou la correction passe par une **somme** de celui qui passe par
+    un **produit** : chaque modèle se range en lisant son contenu en détail, puis se tague selon la règle (a).
