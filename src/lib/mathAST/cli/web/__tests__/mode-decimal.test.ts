@@ -53,3 +53,23 @@ describe('hors de l’échelle de l’arrondi (≥ 10⁹, < 10⁻⁶)', () => {
 		expect(result.ast?.type).not.toBe('division');
 	});
 });
+
+// Mesuré avant (2026-10-11) : « ≈ NaN » — la fraction exacte est juste, mais ses
+// termes dépassent 10³⁰⁸ et leur conversion en flottant débordait
+describe('des calculs d’élèves aux fractions géantes', () => {
+	it.each([
+		['(1+1/1000)^1000', '≈ 2.7169'],
+		['1000*(1+0.03/12)^360', '≈ 2456.8422'],
+		['1.01^365', '≈ 37.7834'],
+		['0.99^365', '≈ 0.0255']
+	])('%s → %s', (input, expected) => {
+		expect(decimal(input).output).toBe(expected);
+	});
+
+	// Hors de l'échelle de l'arrondi : l'écriture du moteur (sa forme définitive
+	// est une décision à part), mais plus Infinity ni NaN
+	it('π^20 et e^30 : une valeur, plus Infinity ni NaN', () => {
+		expect(decimal('\\pi^{20}').output).toMatch(/^≈ 8769956796\.08/);
+		expect(decimal('e^{30}').output).toMatch(/^≈ 10686474581524\.4/);
+	});
+});

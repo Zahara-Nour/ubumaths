@@ -15,7 +15,8 @@ import {
 	isOne as isOneRational,
 	ONE,
 	ZERO,
-	gcd as gcdBigInt
+	gcd as gcdBigInt,
+	rationalToNumber
 } from './rational';
 import { simplifyRadical } from './radical';
 import { sortAlgebraicTerms, equalRadicalArrays, sortRadicals } from './compare';
@@ -784,7 +785,8 @@ export function algebraicToNumber(a: AlgebraicCoefficient): number {
 	if (a.terms.length === 0) return 0;
 
 	return a.terms.reduce((sum, term) => {
-		let value = Number(term.rational.n) / Number(term.rational.d);
+		// Pas `Number(n) / Number(d)` : NaN dès que les termes dépassent 10³⁰⁸
+		let value = rationalToNumber(term.rational);
 		for (const rad of term.radicals) {
 			value *= Math.pow(Number(rad.radicand), 1 / Number(rad.index));
 		}
