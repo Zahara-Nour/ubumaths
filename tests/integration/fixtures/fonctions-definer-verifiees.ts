@@ -801,6 +801,10 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'classement',
 		justification: 'auth.uid() requis, borné à my_school() (classe, niveau, école)'
 	},
+	'riddle_school_leaderboard(p_limit integer)': {
+		categorie: 'classement',
+		justification: 'auth.uid() requis, borné à my_school() ; prénom et score seulement'
+	},
 	'minesweeper_scoped_leaderboard(p_scope text, p_limit integer)': {
 		categorie: 'classement',
 		justification: 'auth.uid() requis, borné à my_school() (classe, niveau, école)'
