@@ -66,7 +66,7 @@ Chapeau du chantier : [atelier-progress.md](atelier-progress.md).
 | Commande sans exemple dans le catalogue                | sa description à la place ; un test exige un exemple pour chaque commande disponible |
 | Alias tapé (`.deriver`, `.diff`)                       | le modèle de la commande, écrit avec son nom français                                |
 
-### PR 2 — le bouton exact ⇄ décimal
+### PR 2 — le bouton exact ⇄ décimal (✅ #1086)
 
 | Cas                                          | Attendu                                                                                                            |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
