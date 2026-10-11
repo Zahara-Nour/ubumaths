@@ -35,6 +35,9 @@ export interface SitemapPage {
 export const SITEMAP_PAGES: SitemapPage[] = [
 	{ path: '/', title: 'Accueil', priority: 1.0, changefreq: 'weekly' },
 	{ path: '/royaume', title: 'Le Tour du Royaume', priority: 0.9, changefreq: 'monthly' },
+	{ path: '/eleves', title: 'Pour les élèves', priority: 0.8, changefreq: 'monthly' },
+	{ path: '/parents', title: 'Pour les parents', priority: 0.8, changefreq: 'monthly' },
+	{ path: '/professeurs', title: 'Pour les professeurs', priority: 0.8, changefreq: 'monthly' },
 	{ path: '/automaths', title: 'Automaths', priority: 0.9, changefreq: 'weekly' },
 	{ path: '/python', title: 'Python', priority: 0.8, changefreq: 'monthly' },
 	{ path: '/games', title: 'Jeux', priority: 0.8, changefreq: 'monthly' },
