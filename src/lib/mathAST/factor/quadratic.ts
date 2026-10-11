@@ -43,6 +43,15 @@ export type QuadraticRootParts =
 	| { readonly kind: 'irrational' };
 
 /**
+ * Le discriminant Δ = b² − 4ac, exact. Seul calcul de Δ sur ℚ du moteur :
+ * `quadraticRootParts` et les stratégies de `factoriser` (« On calcule Δ »)
+ * le partagent.
+ */
+export function discriminant(a: Rational, b: Rational, c: Rational): Rational {
+	return subRational(mulRational(b, b), mulRational(fromInteger(4), mulRational(a, c)));
+}
+
+/**
  * Analyse exacte des racines de a·x² + b·x + c.
  *
  * `maxRadicand` borne l'entier dont on extrait les facteurs carrés (division
@@ -55,7 +64,7 @@ export function quadraticRootParts(
 	c: Rational,
 	maxRadicand?: bigint
 ): QuadraticRootParts {
-	const delta = subRational(mulRational(b, b), mulRational(fromInteger(4), mulRational(a, c)));
+	const delta = discriminant(a, b, c);
 	if (isNegative(delta)) return { kind: 'none' };
 	const twoA = mulRational(fromInteger(2), a);
 	const center = divRational(negRational(b), twoA);

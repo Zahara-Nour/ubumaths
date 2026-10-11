@@ -22,11 +22,11 @@
  * parenthèse, comme au tableau.
  *
  * Le PGCD se calcule ici sur une décomposition en monômes
- * (`{ coefficient, exposants }`) et non via `analysis/structures.ts`
- * (`hasCommonFactor`) : celui-ci ne voit que le PGCD numérique des
- * coefficients de tête, rend `null` dès qu'il vaut 1 — donc jamais `x³ + x²`
- * — et son reste n'est pas développé, ce dont la remise en facteur au bon
- * niveau a besoin.
+ * (`{ coefficient, exposants, facteurs }`) lue sur l'écriture, sans
+ * développer deux sommes entre elles ; ni `gcdMonomials` de `normal/` (forme
+ * normale, toujours développée, sur le chemin du décideur), ni le noyau
+ * `factor/` (un polynôme d'une lettre, sans facteur non polynomial) ne lisent
+ * cette forme (ADR 0024, lot 3b).
  *
  * @module mathAST/pattern/rule-sets/common-factor
  */

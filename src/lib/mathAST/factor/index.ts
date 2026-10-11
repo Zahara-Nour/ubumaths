@@ -38,5 +38,5 @@ export {
 	MAX_DIVISOR_SEARCH,
 	type RationalRootSearch
 } from './rational-roots';
-export { quadraticRootParts, type QuadraticRootParts } from './quadratic';
+export { discriminant, quadraticRootParts, type QuadraticRootParts } from './quadratic';
 export { linearFactorNode, polynomialNode, rationalPolynomialNode } from './polynomial-node';
