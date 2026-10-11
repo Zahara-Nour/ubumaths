@@ -49,6 +49,8 @@
 	/** Le choix se déroule du côté où il y a de la place */
 	let flipX = $state(false);
 	let flipY = $state(false);
+	/** Écran trop bas pour dérouler en hauteur : les choix se rangent en colonne, à côté */
+	let sideways: 'left' | 'right' | null = $state(null);
 	/** Posée : elle a cessé de dériver d'elle-même (l'invitation revient) */
 	let landed = $state(false);
 
@@ -63,8 +65,33 @@
 	/** À la souris, le survol ouvre déjà : un clic ne doit pas refermer sous le pointeur */
 	function onToggle(event: MouseEvent) {
 		const mouse = event instanceof PointerEvent && event.pointerType === 'mouse';
+		if (!open) chooseSide();
 		open = mouse ? true : !open;
 		touched = true;
+	}
+
+	/** Hauteur des choix déroulés (le plus haut, 10,75rem, plus un lien et la marge) */
+	const CHOICES_HEIGHT_REM = 14;
+
+	/**
+	 * À l'ouverture, autour de Père Ubu : vers le haut s'il y a la place, sinon vers le bas ;
+	 * si ni l'un ni l'autre (écran bas, téléphone en paysage), en colonne du côté le plus
+	 * large. La zone de l'accueil coupe ce qui dépasse.
+	 */
+	function chooseSide() {
+		if (placement !== 'orbit' || !root || !around?.parentElement) return;
+		const wheel = root.getBoundingClientRect();
+		const bounds = around.parentElement.getBoundingClientRect();
+		const need = CHOICES_HEIGHT_REM * parseFloat(getComputedStyle(root).fontSize);
+		const above = wheel.top - bounds.top;
+		const below = bounds.bottom - wheel.bottom;
+		flipY = above < need && below >= need;
+		sideways =
+			above >= need || below >= need
+				? null
+				: wheel.left - bounds.left > bounds.right - wheel.right
+					? 'left'
+					: 'right';
 	}
 
 	// À la souris, le survol suffit : la roue s'ouvre en entrant, se referme peu après la
@@ -75,6 +102,7 @@
 	function hoverOpen(event: PointerEvent) {
 		if (event.pointerType !== 'mouse' || dodging) return;
 		clearTimeout(closing);
+		if (!open) chooseSide();
 		open = true;
 		touched = true;
 	}
@@ -145,7 +173,6 @@
 			wheel.style.translate = `${x}px ${y}px`;
 			if (toggle) toggle.style.rotate = `${tilt}deg`;
 			flipX = x < 0;
-			flipY = y < -box.offsetHeight * 0.15;
 		};
 
 		if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -229,10 +256,12 @@
 	class:landed
 	class:flip-x={flipX}
 	class:flip-y={flipY}
+	class:side-left={sideways === 'left'}
+	class:side-right={sideways === 'right'}
 	bind:this={root}
 	data-testid="audience-wheel"
 >
-	<nav id="audience-choices" class="choices" aria-label="Choisir sa visite" inert={!open}>
+	<nav id="{uid}-choices" class="choices" aria-label="Choisir sa visite" inert={!open}>
 		<ul>
 			{#each AUDIENCES as audience, i (audience.id)}
 				{@const Icon = ICONS[audience.id]}
@@ -264,7 +293,7 @@
 		type="button"
 		class="toggle"
 		aria-expanded={open}
-		aria-controls="audience-choices"
+		aria-controls="{uid}-choices"
 		aria-label={open
 			? 'Fermer le choix de la visite'
 			: 'Choisir sa visite : élève, parent ou professeur'}
@@ -274,7 +303,7 @@
 			hoverOpen(event);
 		}}
 		onpointerleave={() => (held = false)}
-		onfocus={() => (held = true)}
+		onfocus={() => (held = toggle?.matches(':focus-visible') ?? false)}
 		onblur={() => (held = false)}
 	>
 		<!-- La chandelle verte (« De par ma chandelle verte ! ») : la flamme est verte, comme
@@ -433,6 +462,29 @@
 	.flip-y .choices li {
 		bottom: auto;
 		top: calc(0.5rem + var(--y));
+	}
+	/* En colonne, à côté de la roue (écran bas) : centrée sur elle, du côté le plus large */
+	.side-left .choices li,
+	.side-right .choices li {
+		top: calc(50% - 1.375rem + (var(--i) - 1) * 3.25rem);
+		bottom: auto;
+		rotate: 0deg;
+	}
+	.side-left .choices li {
+		right: calc(100% + 0.5rem);
+		left: auto;
+		transform-origin: right center;
+		translate: 2rem 0;
+	}
+	.side-right .choices li {
+		left: calc(100% + 0.5rem);
+		right: auto;
+		transform-origin: left center;
+		translate: -2rem 0;
+	}
+	.open.side-left .choices li,
+	.open.side-right .choices li {
+		translate: 0 0;
 	}
 	.choice {
 		@apply flex min-h-11 items-center gap-2 rounded-full border-2 border-foreground/50 bg-card py-1 pr-4 pl-1 font-semibold whitespace-nowrap text-foreground shadow-md transition-colors hover:border-foreground focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:outline-none;

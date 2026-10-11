@@ -142,6 +142,9 @@ aiguillage, Élève / Parent / Professeur, vers trois vues courtes : `/eleves`, 
   Un vrai bouton (`aria-expanded`) et trois liens ordinaires, inertes tant qu'elle est fermée ;
   Échap la referme et rend le focus. **À la souris, le survol l'ouvre** (un clic ne la referme pas) ;
   au doigt et au clavier, on clique. Sans JavaScript, chaque vue garde les deux autres en liens.
+  À l'ouverture autour de Père Ubu, les choix se déroulent vers le haut s'il y a la place, sinon
+  vers le bas, sinon en colonne du côté le plus large (écran bas : la zone coupe ce qui dépasse).
+  Seul un focus **clavier** immobilise la roue (un clic lui laisse le focus sans la figer).
 - **L'emblème** : la chandelle verte à flamme verte (« Viridis Candela »), sans fond ni bord, sur un
   bougeoir de laiton cerné d'encre comme le dessin de Père Ubu. Sa lumière lui est **propre**
   (indépendante du halo du mois) et passe **devant** celui de Père Ubu (la roue est en `z-20`).
