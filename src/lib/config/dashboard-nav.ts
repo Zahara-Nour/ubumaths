@@ -132,6 +132,11 @@ export function getNavLinks(
 				label: 'Observations',
 				icon: ClipboardList
 			},
+			{
+				href: '/dashboard/teacher/competences/export',
+				label: 'Export des compétences',
+				icon: FileText
+			},
 			{ href: '/dashboard/teacher/series', label: 'Séries', icon: ListOrdered },
 			{ href: '/dashboard/teacher/assessments', label: 'Contrôles en ligne', icon: FileCheck },
 			{ href: '/python-exercises/mine', label: 'Mes exercices Python', icon: Code },

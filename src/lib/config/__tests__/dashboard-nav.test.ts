@@ -83,6 +83,11 @@ describe('getNavLinks', () => {
 			expect(cahier?.href).toBe('/dashboard/teacher/cahier-texte');
 		});
 
+		it('ajoute "Export des compétences" pointant vers /dashboard/teacher/competences/export', () => {
+			const exportLink = getNavLinks('teacher').find((l) => l.label === 'Export des compétences');
+			expect(exportLink?.href).toBe('/dashboard/teacher/competences/export');
+		});
+
 		it('expose le badge "Récompenses" quand pendingVipRequestsCount > 0', () => {
 			const recompenses = getNavLinks('teacher', 3).find((l) => l.label === 'Récompenses');
 			expect(recompenses?.badge).toBe(3);

@@ -53,7 +53,7 @@
 		{ value: 'all', label: 'Tous les contextes' },
 		{ value: 'minesweeper', label: 'Demineur' },
 		{ value: 'questions', label: 'Questions' },
-		{ value: 'assessments', label: 'Evaluations' },
+		{ value: 'assessments', label: 'Contrôles' },
 		{ value: 'srs', label: 'Revision espacee' },
 		{ value: 'riddles', label: 'Enigmes' },
 		{ value: 'social', label: 'Social' },

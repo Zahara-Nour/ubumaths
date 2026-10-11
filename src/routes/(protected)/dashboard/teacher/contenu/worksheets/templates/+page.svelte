@@ -35,7 +35,7 @@
 	// Type labels (for default templates)
 	const typeLabels: Record<string, string> = {
 		worksheet: 'Feuille',
-		assessment: 'Evaluation',
+		assessment: 'Contrôle',
 		exam: lore.learning.exam,
 		quiz: 'Quiz',
 		homework: 'Corvées Domestiques'

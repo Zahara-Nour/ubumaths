@@ -117,7 +117,7 @@ describe('formatDateFR', () => {
 describe('getTypeLabel', () => {
 	it('returns correct French labels for worksheet types', () => {
 		expect(getTypeLabel('worksheet')).toBe("Feuille d'exercices");
-		expect(getTypeLabel('assessment')).toBe('Evaluation');
+		expect(getTypeLabel('assessment')).toBe('Contrôle');
 		expect(getTypeLabel('exam')).toBe('Examen');
 		expect(getTypeLabel('quiz')).toBe('Quiz');
 		expect(getTypeLabel('homework')).toBe('Devoirs');

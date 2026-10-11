@@ -13,6 +13,7 @@
 import { describe, expect, it } from 'vitest';
 import { termId } from '$lib/lexicon/linker';
 import { REFERENCE_DICTIONARY } from '../../../../../tests/fixtures/lexique/dictionnaire-reference';
+import { READING_WORDS_2026_10_11 } from '../../../../../tests/fixtures/lexique/mots-lecture-2026-10-11';
 import { READING_WORD_KEYS } from '../reading';
 import {
 	readingOf,
@@ -304,13 +305,16 @@ describe('lecture : « par » emboîtés (Q20)', () => {
 });
 
 describe('lecture : clés des mots et dictionnaire de référence', () => {
-	/** Clés absentes du dictionnaire, connues : leur mot s'affiche sans lien (lot 5) */
-	const KNOWN_MISSING = ['racine cubique', 'racine n-ième', 'logarithme décimal', 'différent'];
+	/**
+	 * Le dictionnaire d'une base fraîche : la référence figée, puis les 4 mots de la
+	 * lecture ajoutés le 2026-10-11 (migration 20261016090300_dictionnaire_mots_lecture).
+	 */
+	const DICTIONARY = [...REFERENCE_DICTIONARY, ...READING_WORDS_2026_10_11];
 
-	it('chaque clé existe dans le dictionnaire, sauf les absentes connues', () => {
-		const ids = new Set(REFERENCE_DICTIONARY.map(termId));
+	it('chaque clé existe dans le dictionnaire', () => {
+		const ids = new Set(DICTIONARY.map(termId));
 		const missing = [...new Set(READING_WORD_KEYS)].filter((key) => !ids.has(key));
-		expect(missing.sort()).toEqual([...KNOWN_MISSING].sort());
+		expect(missing).toEqual([]);
 	});
 
 	it("racine d'indice n : clé dédiée, pas la fiche de la racine carrée", () => {

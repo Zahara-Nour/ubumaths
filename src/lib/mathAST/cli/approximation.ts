@@ -23,6 +23,7 @@ import { isNumber, isOpposite, isUnit } from '../guards';
 import { findNodes } from '../transforms';
 import { getVariables } from '../eval/substitute';
 import { evaluateNodeToRational } from '../eval/evaluate';
+import { rationalToNumber } from '../normal/rational';
 
 // =============================================================================
 // Types
@@ -100,7 +101,9 @@ export function approximateDigitsOf(node: MathNode): ApproximateDigits | null {
 	const rational = rationalOf(node);
 	if (rational === null) return null;
 	const { n, d } = rational;
-	const value = Number(n) / Number(d);
+	// Pas `Number(n) / Number(d)` : NaN dès que les termes dépassent 10³⁰⁸
+	// ((1001/1000)¹⁰⁰⁰ en porte 3001 chiffres, pour une valeur de 2,7169)
+	const value = rationalToNumber(rational);
 	const size = Math.abs(value);
 	if (!Number.isFinite(value) || size >= TOO_LARGE || (size !== 0 && size < TOO_SMALL)) {
 		return null;

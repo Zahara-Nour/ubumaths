@@ -90,7 +90,7 @@
 			case 'worksheet':
 				return { icon: FileText, label: 'Fiche de travail' };
 			case 'assessment':
-				return { icon: ClipboardList, label: 'Evaluation' };
+				return { icon: ClipboardList, label: 'Contrôle' };
 			case 'exam':
 				return { icon: GraduationCap, label: lore.learning.exam };
 			case 'quiz':

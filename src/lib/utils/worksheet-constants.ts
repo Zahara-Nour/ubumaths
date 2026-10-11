@@ -14,7 +14,7 @@ import { FileText, ClipboardCheck, BookOpen, HelpCircle, Home } from '@lucide/sv
  */
 export const WORKSHEET_TYPE_OPTIONS = [
 	{ value: 'worksheet', label: "Feuille d'exercices" },
-	{ value: 'assessment', label: 'Evaluation' },
+	{ value: 'assessment', label: 'Contrôle' },
 	{ value: 'exam', label: 'Examen' },
 	{ value: 'quiz', label: 'Quiz' },
 	{ value: 'homework', label: 'Devoirs' }
@@ -63,7 +63,7 @@ export const WORKSHEET_TYPE_ICONS: Record<WorksheetType, typeof FileText> = {
  */
 export const WORKSHEET_TYPE_LABELS: Record<WorksheetType, string> = {
 	worksheet: "Feuille d'exercices",
-	assessment: 'Evaluation',
+	assessment: 'Contrôle',
 	exam: 'Examen',
 	quiz: 'Quiz',
 	homework: 'Devoirs'
