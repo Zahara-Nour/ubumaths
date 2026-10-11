@@ -1,0 +1,95 @@
+/**
+ * La copie d'un élève (ADR 0023)
+ * ==============================
+ *
+ * Une fiche affectée donne à chaque élève une copie : pour chaque exercice, une
+ * VERSION (son niveau de guidage) et, s'il a des variables, des VALEURS tirées.
+ * Tous les chemins (écran et PDF de l'élève, aperçu d'affectation, aperçu et
+ * lot ZIP du prof, corrigé du prof) passent par ces deux fonctions : une même
+ * affectation montre la même copie partout.
+ *
+ * - Version : choisie par le niveau de guidage de l'affectation, JAMAIS tirée
+ *   au hasard. Niveau absent de l'exercice : le plus proche du côté le plus
+ *   guidé (un élève ne reçoit jamais moins d'aide que demandé).
+ * - Valeurs : graine de l'affectation (de la fiche hors affectation), de
+ *   l'élève si l'affectation est individualisée, et de l'exercice de la fiche
+ *   (son identifiant, pas sa position : réordonner la fiche ne change rien).
+ *
+ * @module worksheets/student-copy
+ */
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+/** Niveau de guidage d'une affectation (`worksheet_assignments.guidance_level`) */
+export type GuidanceLevel = 'guided' | 'intermediate' | 'autonomous';
+
+export interface CopySeedParts {
+	/** Absent : copie hors affectation (page de la fiche, cahier public) */
+	assignmentId?: string | null;
+	worksheetId: string;
+	/** `worksheet_exercises.id` */
+	worksheetExerciseId: string;
+	studentId?: string | null;
+	/** Case « exercices individualisés » de l'affectation */
+	individualized: boolean;
+}
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+/** Du plus guidé au moins guidé */
+export const GUIDANCE_LEVELS: readonly GuidanceLevel[] = ['guided', 'intermediate', 'autonomous'];
+
+export const DEFAULT_GUIDANCE_LEVEL: GuidanceLevel = 'guided';
+
+// ============================================================================
+// FUNCTIONS
+// ============================================================================
+
+export function isGuidanceLevel(value: unknown): value is GuidanceLevel {
+	return GUIDANCE_LEVELS.includes(value as GuidanceLevel);
+}
+
+/**
+ * Index de la version d'un exercice pour le niveau demandé, d'après les
+ * étiquettes de ses versions (`variations[].label`). Une seule version, ou
+ * aucune étiquette de niveau : la première.
+ */
+export function guidanceVariationIndex(
+	labels: readonly (string | null | undefined)[],
+	level: GuidanceLevel
+): number {
+	if (labels.length <= 1) return 0;
+	const indexOf = (rank: number) => labels.indexOf(GUIDANCE_LEVELS[rank]);
+	const wanted = GUIDANCE_LEVELS.indexOf(level);
+	// Le niveau demandé, puis de plus en plus guidé, puis de moins en moins guidé
+	for (let rank = wanted; rank >= 0; rank--) {
+		if (indexOf(rank) !== -1) return indexOf(rank);
+	}
+	for (let rank = wanted + 1; rank < GUIDANCE_LEVELS.length; rank++) {
+		if (indexOf(rank) !== -1) return indexOf(rank);
+	}
+	return 0;
+}
+
+/** Empreinte 32 bits (FNV-1a) d'une chaîne, entier positif */
+function hash32(text: string): number {
+	let hash = 0x811c9dc5;
+	for (let i = 0; i < text.length; i++) {
+		hash ^= text.charCodeAt(i);
+		hash = Math.imul(hash, 0x01000193);
+	}
+	return hash >>> 0;
+}
+
+/** Graine des valeurs tirées d'un exercice de la copie */
+export function copySeed(parts: CopySeedParts): number {
+	const scope = parts.assignmentId
+		? `affectation:${parts.assignmentId}`
+		: `fiche:${parts.worksheetId}`;
+	const student = parts.individualized && parts.studentId ? `:eleve:${parts.studentId}` : '';
+	return hash32(`${scope}${student}:exercice:${parts.worksheetExerciseId}`);
+}
