@@ -345,11 +345,12 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
 - **Longueurs de segments** (2026-10-12, lot 1 de `docs/wip/longueurs-segments-progress.md`) :
   `segmentLength` porte deux `PointName` (`{ letter, primes, index? }` : `A`, `A'`, `A_1`) dans
   l'ordre écrit ; `figureName` (`ABC`, trois points ou plus) s'affiche tel quel et ne se calcule
-  pas. Le parseur LaTeX (Pratt et rd) les lit selon l'option **`capitalPairs`** :
-  `'length'` (défaut, `DEFAULT_CAPITAL_PAIRS`) — deux majuscules **collées dans la source**, primes
+  pas. Le parseur LaTeX (Pratt et rd) les lit selon l'option **`capitalPairs`**, transmise aussi
+  par `areEquivalent` (`math/index.ts`) et `checkForm` : `'product'` (défaut,
+  `DEFAULT_CAPITAL_PAIRS`, décision Q-M : seuls les questions et `/test-structure` demandent la
+  longueur) — l'arbre d'avant, à l'identique ; `'length'` — deux majuscules **collées dans la source**, primes
   et indices compris (`AB`, `A'B'`, `A^{\prime}B^{\prime}`, `A_1B_1`) ; `A B` (espace), `x_{AB}`
-  (indice) et les minuscules restent des produits ; `'product'` — l'arbre d'avant, à l'identique
-  (empreinte de 4 122 chaînes, dont environ 2 400 formules, `parser/latex/__tests__/capital-pairs-empreinte.test.ts`). Lecture
+  (indice) et les minuscules restent des produits (empreinte de 4 122 chaînes, dont environ 2 400 formules, `parser/latex/__tests__/capital-pairs-empreinte.test.ts`). Lecture
   sur les jetons : `parser/latex/point-names.ts`, qui fournit aussi `separateSpacedCapitals` :
   `stripLatexSpacing` et `removeSpaces` gardent une espace entre deux majuscules (`A\,B` reste
   un produit). `toLatex` écrit `AB`, `A'_{1}B` (relu à

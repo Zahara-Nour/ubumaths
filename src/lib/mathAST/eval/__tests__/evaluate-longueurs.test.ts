@@ -9,14 +9,14 @@ import { parseLatex } from '../../parser';
 
 describe('évaluer une longueur ou un nom de figure', () => {
 	it('3AB : la valeur de la longueur AB n’est pas donnée', () => {
-		expect(() => evaluateNodeToApproximatedNumber(parseLatex('3AB'))).toThrow(
-			'On ne connaît pas la valeur de la longueur AB.'
-		);
+		expect(() =>
+			evaluateNodeToApproximatedNumber(parseLatex('3AB', { capitalPairs: 'length' }))
+		).toThrow('On ne connaît pas la valeur de la longueur AB.');
 	});
 
 	it('ABC : un nom de figure n’est pas un nombre', () => {
-		expect(() => evaluateNodeToApproximatedNumber(parseLatex('ABC'))).toThrow(
-			'ABC est le nom d’une figure, pas un nombre : on ne peut pas le calculer.'
-		);
+		expect(() =>
+			evaluateNodeToApproximatedNumber(parseLatex('ABC', { capitalPairs: 'length' }))
+		).toThrow('ABC est le nom d’une figure, pas un nombre : on ne peut pas le calculer.');
 	});
 });

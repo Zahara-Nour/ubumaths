@@ -2,7 +2,9 @@
  * Longueurs de segments : deux majuscules collées (`AB`) dans le parseur LaTeX.
  *
  * Spécification validée par David le 2026-10-12 (`docs/wip/longueurs-segments-progress.md`) :
- * - option `capitalPairs` : `'length'` (défaut) ou `'product'` (comportement d'avant, à l'identique) ;
+ * - option `capitalPairs` : `'length'` ou `'product'` (comportement d'avant, à l'identique, et
+ *   défaut du parseur depuis la décision Q-M du 2026-10-12 : seuls les questions et
+ *   `/test-structure` demandent `'length'`) ;
  * - en mode longueur, deux majuscules COLLÉES dans la source (avec primes et indices) forment la
  *   longueur d'un segment ; trois ou plus, un nom de figure (`ABC`) gardé tel quel ;
  * - une espace ou une commande d'espacement entre les lettres garde le produit (`A B`) ;
@@ -27,9 +29,9 @@ const B = pointName('B');
 const C = pointName('C');
 const D = pointName('D');
 
-/** Lecture en mode longueur, sans passer l'option (le défaut). */
+/** Lecture en mode longueur, demandé explicitement. */
 function read(latex: string): MathNode {
-	return parseLatex(latex);
+	return parseLatex(latex, { capitalPairs: 'length' });
 }
 
 function readAsProduct(latex: string): MathNode {
@@ -44,7 +46,7 @@ function hasPointNames(node: MathNode): boolean {
 // Cas nominaux
 // =============================================================================
 
-describe('longueurs de segments : cas nominaux (mode longueur, défaut)', () => {
+describe('longueurs de segments : cas nominaux (mode longueur)', () => {
 	it('AB est la longueur du segment [AB]', () => {
 		expect(read('AB')).toEqual(segmentLength(A, B));
 	});
@@ -230,7 +232,7 @@ describe('cas limites : ce qui reste un produit', () => {
 	});
 
 	it("A' seul reste une erreur de lecture, comme avant", () => {
-		expect(parseLatexSafe("A'").ast).toBeNull();
+		expect(parseLatexSafe("A'", { capitalPairs: 'length' }).ast).toBeNull();
 	});
 });
 
@@ -239,6 +241,15 @@ describe('cas limites : ce qui reste un produit', () => {
 // =============================================================================
 
 describe("mode 'product' : le comportement d'avant, à l'identique", () => {
+	it('sans option, le parseur lit un produit (défaut, décision Q-M)', () => {
+		expect(parseLatex('AB')).toEqual(
+			implicitMultiply(MathAST.variable('A'), MathAST.variable('B'))
+		);
+		expect(parseLatex('AB', { parser: 'rd' })).toEqual(
+			implicitMultiply(MathAST.variable('A'), MathAST.variable('B'))
+		);
+	});
+
 	it('AB est le produit A·B', () => {
 		expect(readAsProduct('AB')).toEqual(
 			implicitMultiply(MathAST.variable('A'), MathAST.variable('B'))
@@ -330,7 +341,7 @@ describe('parseur rd : mêmes longueurs que Pratt', () => {
 		'x_{AB}',
 		'kAB'
 	])('%s', (latex) => {
-		expect(parseLatex(latex, { parser: 'rd' })).toEqual(parseLatex(latex));
+		expect(parseLatex(latex, { parser: 'rd', capitalPairs: 'length' })).toEqual(read(latex));
 	});
 
 	it("mode 'product' : AB reste le produit A·B", () => {

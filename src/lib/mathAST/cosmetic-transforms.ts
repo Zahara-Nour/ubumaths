@@ -60,7 +60,7 @@ import {
 	unflattenSum,
 	unflattenProduct
 } from './flatten';
-import { parseLatexSafe, type GenericFunctionConfig } from './parser';
+import { parseLatexSafe, type CapitalPairs, type GenericFunctionConfig } from './parser';
 import { separateSpacedCapitals } from './parser/latex/point-names';
 import { bareDecimalCommaToPoint } from './decimal-comma';
 import { toLatex } from './latex-generator';
@@ -906,6 +906,11 @@ export interface CheckFormOptions {
 	 * Absent ou vide : rien ne change.
 	 */
 	assumptions?: AnswerAssumptions;
+	/**
+	 * Sens de deux majuscules collées pour relire la réponse et l'attendu (`AB` :
+	 * longueur ou produit). Absent : défaut du parseur (produit).
+	 */
+	capitalPairs?: CapitalPairs;
 }
 
 /**
@@ -1670,7 +1675,10 @@ export function cosmeticViolations(
 	const answerStr = normalizeDecimalComma(removeSpaces(answerNoZeros));
 
 	// === Parse AST ===
-	const answerParse = parseLatexSafe(answerStr, { genericFunctions: options.genericFunctions });
+	const answerParse = parseLatexSafe(answerStr, {
+		genericFunctions: options.genericFunctions,
+		capitalPairs: options.capitalPairs
+	});
 	if (!answerParse.ast || answerParse.errors.length > 0) {
 		// Can't parse → no cosmetic verdict to give.
 		return violations;
@@ -1748,7 +1756,10 @@ export function checkForm(
 	const answerStr = normalizeDecimalComma(removeSpaces(answerNoZeros));
 
 	// === Parse AST ===
-	const answerParse = parseLatexSafe(answerStr, { genericFunctions: options.genericFunctions });
+	const answerParse = parseLatexSafe(answerStr, {
+		genericFunctions: options.genericFunctions,
+		capitalPairs: options.capitalPairs
+	});
 	if (!answerParse.ast || answerParse.errors.length > 0) {
 		// Can't parse, can't check form — treat as bad_form
 		return {
@@ -1780,7 +1791,8 @@ export function checkForm(
 	// === Same pipeline for expected ===
 	const expectedStr = normalizeDecimalComma(removeSpaces(removeZeros(expectedLatex)));
 	const expectedParse = parseLatexSafe(expectedStr, {
-		genericFunctions: options.genericFunctions
+		genericFunctions: options.genericFunctions,
+		capitalPairs: options.capitalPairs
 	});
 	if (!expectedParse.ast || expectedParse.errors.length > 0) {
 		return {

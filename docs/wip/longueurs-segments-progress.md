@@ -60,6 +60,22 @@ l'ordre** :
 3. sinon **longueur par défaut**. Sur `/test-structure` (aucun contexte) : longueur, avec une case
    pour lire un produit.
 
+**2026-10-12, Q-M (b) et Q-N (a)** :
+
+- **Q-M (b)** : la longueur par défaut vaut **seulement** pour les questions (résolution
+  déclaration → contexte → longueur, lot 3) et pour `/test-structure` (case « produit »).
+  L'atelier, le grapheur, la console `pnpm math` et tout appelant qui ne dit rien gardent le
+  **produit** d'aujourd'hui. Dans les questions, un **thème de physique** compte comme contexte
+  « produit », comme `Graphes et matrices`. Conséquence : le **défaut du parseur est `'product'`**
+  (`DEFAULT_CAPITAL_PAIRS`) ; les questions (lot 3) et `/test-structure` (lot 4) demandent
+  `'length'`. Thèmes réels en base (2026-10-12, 21 thèmes) : **aucun thème de physique**
+  (`Grandeurs`, 45 modèles, est un thème de mathématiques) ; la règle « physique → produit » est
+  donc écrite pour un thème à venir.
+- **Q-N (a)** : au lot 3, couper dans les champs de réponse les raccourcis de MathLive qui
+  transforment une paire de majuscules (`AA` → ∀, `EE` → ∃, `CC` → ℂ, `RR` → ℝ, `NN`, `ZZ`, `QQ`…,
+  liste par défaut à recenser) **quand le sens résolu est « longueur »** ; ils restent actifs
+  ailleurs.
+
 **2026-10-12, validation** : David valide la spécification et le plan, avec **toutes** les
 recommandations Q-A à Q-L (Q-A nom de figure gardé, refus au calcul ; Q-C défaut longueur ; Q-D
 primes et indices au lot 1 ; Q-E `A B` = produit ; Q-F plus tard ; Q-G `AB` ; Q-H interrupteur par
@@ -209,7 +225,7 @@ la base de prod.
 
 ### Qui décide du sens (2026-10-12)
 
-**Une option du parseur, `capitalPairs: 'length' | 'product'`, défaut `'length'`**, dans
+**Une option du parseur, `capitalPairs: 'length' | 'product'`, défaut `'product'` (Q-M)**, dans
 `LatexParserOptions` et `CustomParserOptions`, à côté de `genericFunctions`.
 
 - `'length'` : deux majuscules collées → nœud longueur ; trois ou plus → selon Q-A.
@@ -219,8 +235,10 @@ la base de prod.
   `capitalPairsFor({ declaration, theme, domain })` dans `questions/`), qui applique l'ordre de
   David : déclaration → contexte → `'length'`. Le résultat est **copié sur l'instance** comme
   `genericFunctions` et suit le même rail (correction, correction rédigée, affichage, PDF).
-- **Sans contexte** (atelier, grapheur, `pnpm math`, DSL de géométrie, chat) : défaut `'length'`.
-  `/test-structure` : `'length'`, et la case « lire AB comme un produit » passe `'product'`.
+- **Sans contexte** (atelier, grapheur, `pnpm math`, DSL de géométrie, chat) : défaut
+  `'product'`, le comportement d'avant (Q-M). Les questions résolvent déclaration → contexte
+  (`Graphes et matrices`, physique → produit) → `'length'`. `/test-structure` passe `'length'`, et
+  la case « lire AB comme un produit » passe `'product'`.
 
 Deux variantes pour **la déclaration** :
 
@@ -404,7 +422,9 @@ Notation : « comprend » = arbre ; « écrit » = `toLatex` ; « lit » = lectu
 | Modèle déclaré « produits », même en géométrie                   | produit     | `A·B²` (auj.) | `A·B·C` (auj.) | le produit de A par B |
 | Thème `Graphes et matrices`, sans déclaration                    | produit     | `A·B²`        | `A·B·C`        | le produit de A par B |
 | Thème `Graphes et matrices`, déclaré « longueurs »               | longueur    | carré de AB   | selon Q-A      | la longueur AB        |
-| Aucun contexte (atelier, grapheur, `pnpm math`, DSL, chat)       | longueur    | carré de AB   | selon Q-A      | la longueur AB        |
+| Aucun contexte (atelier, grapheur, `pnpm math`, DSL, chat)       | produit     | `A·B²`        | `A·B·C`        | le produit de A par B |
+| Question sans déclaration, thème de physique (Q-M)               | produit     | `A·B²`        | `A·B·C`        | le produit de A par B |
+| Question sans déclaration ni contexte « produit »                | longueur    | carré de AB   | selon Q-A      | la longueur AB        |
 | `/test-structure`, case décochée (défaut)                        | longueur    | carré de AB   | selon Q-A      | la longueur AB        |
 | `/test-structure`, case « lire AB comme un produit » cochée      | produit     | `A·B²`        | `A·B·C`        | le produit de A par B |
 
@@ -427,7 +447,7 @@ Chaque lot : tests d'abord (rouges, **sur des entrées parsées**, coefficient �
 `check:incremental`, `code-reviewer`. Agents : `mathast-expert` (Opus) sauf mention.
 
 1. **Lot 1 — le nœud et le parseur LaTeX** : `SegmentLengthNode` + fabrique + gardes de type ;
-   option `capitalPairs` (défaut `'length'`) ; jeton `SEGMENT` dans le tokenizer LaTeX, Pratt et
+   option `capitalPairs` (défaut `'product'`, Q-M) ; jeton `SEGMENT` dans le tokenizer LaTeX, Pratt et
    `rd`, en mode `'length'` seulement ; nom de figure ou refus (Q-A) ; primes et indices (Q-D) ;
    `toLatex`/`toCustom`/`prettyPrint` ; tous les `switch` exhaustifs ; audit listé des branches
    `default` (`case 'variable'`). Test : en mode `'product'`, arbres identiques à aujourd'hui.
@@ -438,8 +458,14 @@ Chaque lot : tests d'abord (rouges, **sur des entrées parsées**, coefficient �
 3. **Lot 3 — déclaration et contexte (questions)** : `shared.capitalPairs` (schéma Zod strict,
    éditeur de modèle), fonction de résolution déclaration → contexte → défaut, copie sur
    l'instance, passage par le rail de `genericFunctions` (`answer-validator.ts`,
-   `correction-generator.ts`, `MarkdownRenderer`/`MathInline`, Typst). `pedagogy-expert` (Opus),
-   `mathast-expert` en relecture. Pas de migration si Q-J = (a).
+   `correction-generator.ts`, `MarkdownRenderer`/`MathInline`, Typst) jusqu'à
+   `areEquivalent`/`checkForm` (option `capitalPairs`, déjà acceptée depuis le lot 1). Contexte
+   « produit » : `Graphes et matrices` et tout thème de physique (Q-M). **Q-N** : quand le sens
+   résolu est « longueur », couper dans les champs de réponse les raccourcis de MathLive qui
+   transforment une paire de majuscules (`AA`, `EE`, `CC`, `RR`, `NN`, `ZZ`, `QQ`… — recenser la
+   liste par défaut de MathLive 0.111.1 et la mesurer dans Chromium). `pedagogy-expert` (Opus),
+   `mathast-expert` en relecture, `frontend-developer` pour les champs. Pas de migration si
+   Q-J = (a).
 4. **Lot 4 — lecture** : `structure/` (« la longueur AB », « le carré de la longueur AB ») et la
    case « lire AB comme un produit » de `/test-structure` ; `mathast-expert` + `pedagogy-expert`
    (formulations) + `frontend-developer` (la case, `MyCheckbox`).
@@ -468,10 +494,12 @@ inconnu, donc `AB ≡ AC` était vrai. Les longueurs s'empreintent par leurs poi
 canonique (`AB` = `BA`, décision Q2), les noms de figure dans l'ordre écrit. Même défaut,
 préexistant, pour `signed-zero` et `piecewise` (non corrigé, hors chantier).
 
-**Défaut retenu : `'length'`**. Avec ce défaut, toutes les suites restent vertes (mathAST
-20 242 tests, questions, exercises, geometry-core, utils, ubumark, atelier, grapheur, components,
-constructions, worksheets, math, extensions, migration, statistics : 40 638 tests), et aucune
-réponse attendue en base ne contient de longueur (enquête du 2026-10-11).
+**Défaut du parseur : `'product'`** (décision Q-M du 2026-10-12). Un appel sans option rend
+exactement l'arbre d'avant (empreinte : test « sans option »). Les tests du lot 1 passent
+`capitalPairs: 'length'` explicitement. `areEquivalent` (`math/index.ts`) et `checkForm`
+(`CheckFormOptions`) acceptent l'option et la transmettent au parseur (prouvé par le test Q-E :
+avec `'length'`, `A\,B` ≢ `AB` ; sans option, ils sont le même produit, comme avant). Avant ce
+changement, avec le défaut `'length'`, toutes les suites étaient déjà vertes.
 
 **Ce que contient l'empreinte** (`capital-pairs-empreinte.test.ts`) : 4 122 chaînes, dont 3 315 se
 lisent sans erreur — environ 2 400 formules (200 saisies d'élèves du corpus de `structure/`, 79
@@ -495,7 +523,7 @@ sauf quand la contrainte `spaces` est `off` : dans ce cas, l'espace tapée dispa
 B » devient la longueur `AB` (indiscernable dans la saisie). `stripLatexSpacing` (`math/index.ts`)
 et `removeSpaces` (`checkForm`) retiraient le `\,` et collaient les lettres : ils gardent
 désormais une espace entre deux majuscules (`separateSpacedCapitals`,
-`parser/latex/point-names.ts`), donc `A\,B` ≡ `A\times B` et `A\,B` ≢ `AB`.
+`parser/latex/point-names.ts`), donc, en mode longueur, `A\,B` ≡ `A\times B` et `A\,B` ≢ `AB`.
 
 **Renvoyé au lot 2** (traitements provisoires du lot 1, au plus sûr) :
 
@@ -525,7 +553,9 @@ désormais une espace entre deux majuscules (`separateSpacedCapitals`,
   mis à jour. Aucun code, aucun test.
 - 2026-10-12 — spécification et plan **validés par David** (Q-A à Q-L) ; lancement du lot 1.
 - 2026-10-12 — lot 1 fait : nœuds, option `capitalPairs` (Pratt et rd), écriture, empreinte de
-  4 122 chaînes, bogue `hashMathNode` corrigé ; défaut `'length'`, suites vertes.
+  4 122 chaînes, bogue `hashMathNode` corrigé ; suites vertes.
 - 2026-10-12 — corrections de revue du lot 1 : Q-E sur le chemin des réponses (`A\,B` reste un
   produit, mesure Chromium), `hashMathNode` exhaustif (`signed-zero`, `piecewise`), message
   français d'`evaluate`, compte réel de l'empreinte.
+- 2026-10-12 — décisions Q-M (b) et Q-N (a) : défaut du parseur `'product'`, option `capitalPairs`
+  transmise par `areEquivalent` et `checkForm` ; raccourcis MathLive au plan du lot 3.

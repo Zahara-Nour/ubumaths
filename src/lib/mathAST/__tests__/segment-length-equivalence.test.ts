@@ -15,8 +15,13 @@ import { parseLatex } from '../parser';
 import { tidy } from '../tidy';
 import { toLatex } from '../latex-generator';
 
+/** Lecture en mode longueur, demandé explicitement (défaut du parseur : produit). */
+function read(latex: string) {
+	return parseLatex(latex, { capitalPairs: 'length' });
+}
+
 function equivalent(a: string, b: string): boolean {
-	return areEquivalent(parseLatex(a), parseLatex(b));
+	return areEquivalent(read(a), read(b));
 }
 
 describe('longueurs : deux segments différents ne sont jamais équivalents', () => {
@@ -49,10 +54,10 @@ describe('longueurs : AB = BA', () => {
 	});
 
 	it('tidy(3AB + 2BA) = 5AB', () => {
-		expect(toLatex(tidy(parseLatex('3AB+2BA')))).toBe('5 AB');
+		expect(toLatex(tidy(read('3AB+2BA')))).toBe('5 AB');
 	});
 
 	it('tidy(3AB + 2AC) garde deux termes', () => {
-		expect(toLatex(tidy(parseLatex('3AB+2AC')))).toBe('3 AB + 2 AC');
+		expect(toLatex(tidy(read('3AB+2AC')))).toBe('3 AB + 2 AC');
 	});
 });

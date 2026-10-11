@@ -18,8 +18,9 @@
  * lecture des lettres en dehors des majuscules collées.
  *
  * Ce qui est prouvé :
- * 1. en mode `'product'`, le parseur rend EXACTEMENT l'arbre d'avant, partout ;
- * 2. en mode `'length'` (défaut), seules changent les saisies à majuscules collées, et
+ * 1. en mode `'product'`, et SANS OPTION (défaut du parseur, décision Q-M du 2026-10-12),
+ *    le parseur rend EXACTEMENT l'arbre d'avant, partout ;
+ * 2. en mode `'length'` explicite, seules changent les saisies à majuscules collées, et
  *    elles changent bien (la classe visée est dans le corpus).
  *
  * ⚠️ Si une évolution VOLONTAIRE du parseur change l'un de ces arbres, l'empreinte se
@@ -41,6 +42,9 @@ import type { LatexParserOptions } from '../../index';
 const FIXTURE_PATH = fileURLToPath(
 	new URL('./fixtures/empreinte-majuscules-collees.json', import.meta.url)
 );
+
+/** Le mode longueur, demandé explicitement (questions, `/test-structure`). */
+const LENGTH: LatexParserOptions = { capitalPairs: 'length' };
 
 const FIXTURE: ReadonlyArray<readonly [string, string]> = JSON.parse(
 	readFileSync(FIXTURE_PATH, 'utf-8')
@@ -85,16 +89,23 @@ describe('empreinte des majuscules collées (corpus de 4 122 chaînes)', () => {
 		expect(changed).toEqual([]);
 	});
 
-	it("mode 'length' : aucune saisie sans majuscules collées ne change", () => {
+	it("sans option (défaut du parseur) : chaque arbre est celui d'avant", () => {
+		const changed = FIXTURE.filter(([input, hash]) => fingerprint(input) !== hash).map(
+			([input]) => input
+		);
+		expect(changed).toEqual([]);
+	});
+
+	it("mode 'length' explicite : aucune saisie sans majuscules collées ne change", () => {
 		const changed = FIXTURE.filter(
-			([input, hash]) => !ADJACENT_CAPITALS.test(input) && fingerprint(input) !== hash
+			([input, hash]) => !ADJACENT_CAPITALS.test(input) && fingerprint(input, LENGTH) !== hash
 		).map(([input]) => input);
 		expect(changed).toEqual([]);
 	});
 
-	it("mode 'length' : les longueurs et les noms de figure changent bien", () => {
+	it("mode 'length' explicite : les longueurs et les noms de figure changent bien", () => {
 		const changed = new Set(
-			FIXTURE.filter(([input, hash]) => fingerprint(input) !== hash).map(([input]) => input)
+			FIXTURE.filter(([input, hash]) => fingerprint(input, LENGTH) !== hash).map(([input]) => input)
 		);
 		for (const input of ['AB', 'AB^2', 'AB^2=AC^2+BC^2', 'ABC', "A'B'", 'A_1B_1', 'FG']) {
 			expect(changed.has(input), input).toBe(true);
