@@ -8,6 +8,7 @@ couvre:
   - 'src/lib/components/student/worksheets/**'
   - src/lib/types/worksheets.ts
   - src/lib/types/locale.ts
+  - src/lib/utils/worksheet-type-labels.ts
   - 'src/lib/exercises/typst/**'
   - src/lib/ubumark/generators/typst-generator.ts
   - 'src/routes/(protected)/dashboard/teacher/contenu/worksheets/**'
@@ -300,6 +301,13 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
    Aucun marqueur brut n'atteint Typst. Encadrés et détails en ligne mis en forme au PDF : voir
    [ubumark.md](ubumark.md) (« Détails d'une correction au PDF »). Tests : `src/lib/worksheets/__tests__/correction-imprimee.test.ts`.
 
+10. **Un type de fiche a un seul libellé**, en langage courant (« Fiche d'exercices »,
+    « Contrôle », « Examen », « Quiz », « Devoirs » ; décision de David du 2026-10-12, pas de lore
+    dans les étiquettes de type) : la table `WORKSHEET_TYPE_LABELS` de
+    `src/lib/utils/worksheet-type-labels.ts`, lue par l'écran (prof et élève) et par le PDF
+    français. Garde : `src/lib/utils/__tests__/type-de-fiche-controle.test.ts`, qui refuse aussi
+    toute table recopiée.
+
 ## Comment étendre
 
 - **Un bloc ubumark de plus dans le PDF** : son générateur Typst dans
@@ -379,8 +387,5 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
 8. **Polices** : le rendu dépend des polices embarquées par le bundle typst.ts, non listées dans le
    dépôt ; `compile-prod.mjs` ajoute STIX Two Math depuis un chemin macOS — témoin local et
    production peuvent donc différer sur un glyphe.
-9. **Libellés des types recopiés** : la table type → libellé existe en neuf exemplaires (constantes,
-   `getTypeLabel`, cartes et en-têtes élève, pages prof), avec des variantes (« Feuille d'exercices »,
-   « Fiche de travail », « Corvées Domestiques »). Seul « Contrôle » est tenu par un test.
 
 Vérifié contre le code le 2026-10-11.

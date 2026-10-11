@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
@@ -15,6 +16,7 @@
 	import { Plus, Copy, Trash2, Eye, FileText, Sparkles, Loader2 } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import type { DefaultTemplate } from '$lib/worksheets/default-templates';
+	import type { WorksheetType } from '$lib/types/worksheets';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 	// svelte-ignore state_referenced_locally
@@ -31,15 +33,6 @@
 	let deletingId = $state<string | null>(null);
 	let duplicatingId = $state<string | null>(null);
 	let creatingFromDefault = $state<string | null>(null);
-
-	// Type labels (for default templates)
-	const typeLabels: Record<string, string> = {
-		worksheet: 'Feuille',
-		assessment: 'Contrôle',
-		exam: lore.learning.exam,
-		quiz: 'Quiz',
-		homework: 'Corvées Domestiques'
-	};
 
 	/**
 	 * Apply filters to URL
@@ -332,7 +325,9 @@
 					<Card.Header class="pb-2">
 						<div class="flex items-center justify-between">
 							<Card.Title class="text-base">{template.name}</Card.Title>
-							<Badge variant="outline">{typeLabels[template.type]}</Badge>
+							<Badge variant="outline"
+								>{WORKSHEET_TYPE_LABELS[template.type as WorksheetType] ?? template.type}</Badge
+							>
 						</div>
 					</Card.Header>
 					<Card.Content>

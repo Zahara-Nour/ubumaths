@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { WORKSHEET_TYPE_OPTIONS } from '$lib/utils/worksheet-constants';
 	import { lore } from '$lib/config/lore';
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
@@ -51,13 +52,7 @@
 	let submitting = $state(false);
 
 	// Type options
-	const typeOptions = [
-		{ value: 'worksheet', label: `Feuille de ${lore.learning.exercise}s` },
-		{ value: 'assessment', label: 'Contrôle' },
-		{ value: 'exam', label: lore.learning.exam },
-		{ value: 'quiz', label: 'Quiz' },
-		{ value: 'homework', label: 'Corvées Domestiques' }
-	];
+	const typeOptions = WORKSHEET_TYPE_OPTIONS;
 
 	// Numbering style options
 	const numberingOptions = [

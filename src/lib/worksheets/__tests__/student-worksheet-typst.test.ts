@@ -97,7 +97,7 @@ describe('student worksheet language', () => {
 		);
 
 		expect(typst).toContain('lang: "fr"');
-		expect(typst).toContain('Fiche de travail');
+		expect(typst).toContain("Fiche d'exercices");
 		expect(typst).toContain('Exercices indispensables');
 		expect(typst).toContain('= Corrections');
 	});
@@ -122,7 +122,7 @@ describe('student worksheet language', () => {
 		expect(typst).toContain('Essential exercises');
 		expect(typst).toContain('= Answers');
 		// No French chrome left on an English sheet.
-		expect(typst).not.toContain('Fiche de travail');
+		expect(typst).not.toContain("Fiche d'exercices");
 		expect(typst).not.toContain('Exercices indispensables');
 		expect(typst).not.toContain('= Corrections');
 	});

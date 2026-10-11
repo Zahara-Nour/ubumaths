@@ -3,6 +3,7 @@
  */
 
 import type { WorksheetType, WorksheetStatus } from '$lib/types/worksheets';
+import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_ORDER } from '$lib/utils/worksheet-type-labels';
 import { FileText, ClipboardCheck, BookOpen, HelpCircle, Home } from '@lucide/svelte';
 
 // =============================================================================
@@ -12,13 +13,10 @@ import { FileText, ClipboardCheck, BookOpen, HelpCircle, Home } from '@lucide/sv
 /**
  * Worksheet type options for select dropdowns
  */
-export const WORKSHEET_TYPE_OPTIONS = [
-	{ value: 'worksheet', label: "Feuille d'exercices" },
-	{ value: 'assessment', label: 'Contrôle' },
-	{ value: 'exam', label: 'Examen' },
-	{ value: 'quiz', label: 'Quiz' },
-	{ value: 'homework', label: 'Devoirs' }
-] as const;
+export const WORKSHEET_TYPE_OPTIONS = WORKSHEET_TYPE_ORDER.map((value) => ({
+	value,
+	label: WORKSHEET_TYPE_LABELS[value]
+}));
 
 export type WorksheetTypeOption = (typeof WORKSHEET_TYPE_OPTIONS)[number];
 
@@ -58,16 +56,8 @@ export const WORKSHEET_TYPE_ICONS: Record<WorksheetType, typeof FileText> = {
 	homework: Home
 };
 
-/**
- * Human-readable labels for worksheet types
- */
-export const WORKSHEET_TYPE_LABELS: Record<WorksheetType, string> = {
-	worksheet: "Feuille d'exercices",
-	assessment: 'Contrôle',
-	exam: 'Examen',
-	quiz: 'Quiz',
-	homework: 'Devoirs'
-};
+// Table unique : src/lib/utils/worksheet-type-labels.ts
+export { WORKSHEET_TYPE_LABELS };
 
 /**
  * Badge variants for each worksheet status
