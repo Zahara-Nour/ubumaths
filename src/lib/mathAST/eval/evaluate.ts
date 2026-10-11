@@ -69,8 +69,20 @@ import { rewriteFunctionPower } from '../common/function-power';
 import { compareNumericNodes } from './compare-numeric';
 import { oddDenominatorExponent, realNthRoot } from './real-root';
 
-/** Indice maximal d'une racine entière exacte (comme l'exposant entier, ≤ 1000). */
+/** Indice maximal d'une racine entière exacte. */
 const MAX_EXACT_ROOT_INDEX = 1000n;
+
+/**
+ * Exposant entier maximal d'une puissance calculée exactement (décision de David,
+ * 2026-10-12 : 1000 → 10 000). Au-delà, par le flottant : `1.5^{2000}` y donnait
+ * Infinity, `0.5^{2000}` « = 0 ». (1+1/10000)^10000 porte 40 000 chiffres, calculés
+ * en millisecondes par la puissance native de BigInt (`powRational`).
+ */
+const MAX_EXACT_INTEGER_EXPONENT = 10_000;
+
+/** Le refus d'une puissance qui sort du flottant (0 ou ±Infinity pour une base non nulle). */
+const OUT_OF_SCALE =
+	'Valeur hors d’échelle : cette puissance sort des nombres que le calcul approché représente';
 
 /**
  * base^{exp} pour un exposant non entier : racine exacte si la base est un
@@ -86,7 +98,7 @@ function nonNegativeRationalPower(base: Rational, exp: Rational): Rational {
 		const exactRoot = integerNthRoot(base.n, exp.d);
 		if (exactRoot !== null) {
 			const pNum = Number(exp.n);
-			if (Number.isSafeInteger(pNum) && Math.abs(pNum) <= 1000) {
+			if (Number.isSafeInteger(pNum) && Math.abs(pNum) <= MAX_EXACT_INTEGER_EXPONENT) {
 				return powRational(fromInteger(exactRoot), pNum);
 			}
 		}
@@ -97,7 +109,13 @@ function nonNegativeRationalPower(base: Rational, exp: Rational): Rational {
 	if (baseNum < 0 && !Number.isInteger(expNum)) {
 		throw new Error('Cannot compute non-integer power of negative number');
 	}
-	return floatToRational(Math.pow(baseNum, expNum));
+	const result = Math.pow(baseNum, expNum);
+	// Une base non nulle ne donne ni 0 ni l'infini : c'est le flottant qui en sort.
+	// Jamais « = 0 » ni « Cannot convert Infinity to Rational »
+	if (!Number.isFinite(result) || (result === 0 && baseNum !== 0)) {
+		throw new Error(OUT_OF_SCALE);
+	}
+	return floatToRational(result);
 }
 
 // =============================================================================
@@ -669,7 +687,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		// For integer exponent, use exact Rational power
 		if (isIntegerRational(exp)) {
 			const expNum = Number(exp.n);
-			if (Number.isSafeInteger(expNum) && Math.abs(expNum) <= 1000) {
+			if (Number.isSafeInteger(expNum) && Math.abs(expNum) <= MAX_EXACT_INTEGER_EXPONENT) {
 				return powRational(base, expNum);
 			}
 		}

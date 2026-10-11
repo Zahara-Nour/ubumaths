@@ -11,6 +11,13 @@
  * ⚠️ « Exacte » se décide sur le RATIONNEL, jamais à une tolérance près : un
  * seuil relatif écrivait `= 485165195.4098` pour e²⁰ (revue).
  *
+ * Hors de [10⁻⁶ ; 10⁹[, la **notation scientifique** du collège, 4 décimales sur la
+ * mantisse : `\approx 8.7700 \times 10^{9}` (décisions a, b, c de David, 2026-10-12,
+ * `docs/wip/mode-decimal-progress.md`). Un entier exact s'écrit en entier jusqu'à 15
+ * chiffres. Mantisse et exposant se calculent sur la FRACTION exacte, jamais sur un
+ * flottant : `0.3^{1000}` vaut 1,3221 × 10⁻⁵²³, hors de portée d'un flottant, et
+ * 2⁶⁴ s'écrivait `18446744073709552000` (chiffres du flottant, faux).
+ *
  * Le point décimal reste un point : la vue Calcul écrit la virgule à la
  * française à son point de passage (`decimal-comma.ts`), comme pour le reste.
  *
@@ -19,7 +26,8 @@
 
 import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
-import { isNumber, isOpposite, isUnit } from '../guards';
+import { isMultiplication, isNumber, isOpposite, isSuperscript, isUnit } from '../guards';
+import { multiply, number, opposite, power } from '../factory';
 import { findNodes } from '../transforms';
 import { getVariables } from '../eval/substitute';
 import { evaluateNodeToRational } from '../eval/evaluate';
@@ -31,7 +39,10 @@ import { rationalToNumber } from '../normal/rational';
 
 /** Une valeur écrite en décimal, et si cette écriture est exacte. */
 export interface ApproximateDigits {
+	/** Le nombre décimal, ou la mantisse en notation scientifique, signe compris : `-8.7700`. */
 	readonly digits: string;
+	/** La puissance de 10 de la notation scientifique (`8.7700 × 10⁹` : 9), `null` sinon. */
+	readonly exponent: number | null;
 	readonly exact: boolean;
 }
 
@@ -44,13 +55,17 @@ const PLACES = 4;
 const SCALE = 10n ** BigInt(PLACES);
 
 /**
- * Au-delà, 4 décimales demanderaient plus de chiffres qu'un flottant n'en
- * porte : une fonction transcendante y entre par son flottant.
+ * À partir de 10⁹, la notation scientifique : 4 décimales demanderaient plus de
+ * chiffres qu'un flottant n'en porte (une fonction transcendante y entre par son
+ * flottant), et la mantisse n'en montre que 5.
  */
-const TOO_LARGE = 1e9;
+const SCIENTIFIC_FROM = 10n ** 9n;
 
-/** En deçà, même 4 chiffres significatifs s'écriraient en notation scientifique. */
-const TOO_SMALL = 1e-6;
+/** Sous 10⁻⁶ (10⁶ × valeur < 1), la notation scientifique. */
+const SCIENTIFIC_BELOW_INVERSE = 10n ** 6n;
+
+/** Un entier exact plus petit s'écrit en entier, sans `≈` (décision b : 15 chiffres). */
+const WHOLE_BELOW = 10n ** 15n;
 
 /** Sous 10⁻⁴, 4 décimales donneraient « ≈ 0 » : on garde 4 chiffres significatifs. */
 const BELOW_PLACES = 10 ** -PLACES;
@@ -91,40 +106,134 @@ function withPlaces(q: bigint): string {
 	return `${q < 0n ? '-' : ''}${units}.${decimals}`;
 }
 
+/** Le nombre de bits d'un entier positif. */
+function bitLength(x: bigint): number {
+	return x.toString(2).length;
+}
+
+/** size / d ⩾ 10^k, en entiers. */
+function atLeastPowerOfTen(size: bigint, d: bigint, k: number): boolean {
+	return k >= 0 ? size >= d * 10n ** BigInt(k) : size * 10n ** BigInt(-k) >= d;
+}
+
+/**
+ * L'exposant décimal de size / d > 0 : le k tel que 10^k ⩽ size / d < 10^(k+1).
+ * Estimé par le nombre de bits (à 1 près), puis ajusté en entiers.
+ */
+function decimalExponent(size: bigint, d: bigint): number {
+	let k = Math.floor((bitLength(size) - bitLength(d)) * Math.log10(2));
+	while (!atLeastPowerOfTen(size, d, k)) k -= 1;
+	while (atLeastPowerOfTen(size, d, k + 1)) k += 1;
+	return k;
+}
+
+/**
+ * La notation scientifique de n / d (d > 0) : mantisse arrondie à 4 décimales
+ * (demi loin de zéro), en entiers exacts. Une retenue garde la mantisse sous 10 :
+ * 9,99996 × 10⁹ s'écrit 1,0000 × 10¹⁰.
+ */
+function scientific(n: bigint, d: bigint): ApproximateDigits {
+	const negative = n < 0n;
+	const size = negative ? -n : n;
+	let exponent = decimalExponent(size, d);
+	// mantisse × 10⁴ = size × 10^(4 − exponent) / d
+	const shift = PLACES - exponent;
+	const numerator = shift >= 0 ? size * 10n ** BigInt(shift) : size;
+	const denominator = shift >= 0 ? d : d * 10n ** BigInt(-shift);
+	const remainder = numerator % denominator;
+	let q = numerator / denominator + (2n * remainder >= denominator ? 1n : 0n);
+	if (q === 10n * SCALE) {
+		q = SCALE;
+		exponent += 1;
+	}
+	const mantissa = withPlaces(negative ? -q : q);
+	const exact = remainder === 0n;
+	return { digits: exact ? withoutTrailingZeros(mantissa) : mantissa, exponent, exact };
+}
+
 /**
  * L'écriture décimale d'une expression numérique : arrondie à 4 décimales
- * (demi loin de zéro, en entiers exacts), ou exacte si elle y tient.
- * `null` pour une expression littérale, une grandeur, une valeur non réelle
- * ou hors d'échelle.
+ * (demi loin de zéro, en entiers exacts), ou exacte si elle y tient ; hors de
+ * [10⁻⁶ ; 10⁹[, en notation scientifique. `null` pour une expression littérale,
+ * une grandeur ou une valeur non réelle.
  */
 export function approximateDigitsOf(node: MathNode): ApproximateDigits | null {
 	const rational = rationalOf(node);
 	if (rational === null) return null;
 	const { n, d } = rational;
+	if (n === 0n) return { digits: '0', exponent: null, exact: true };
+	const size = n < 0n ? -n : n;
+	// Décision b : un entier exact jusqu'à 15 chiffres, écrit en entier
+	if (d === 1n && size < WHOLE_BELOW) return { digits: n.toString(), exponent: null, exact: true };
+	if (size >= d * SCIENTIFIC_FROM || size * SCIENTIFIC_BELOW_INVERSE < d) return scientific(n, d);
+
 	// Pas `Number(n) / Number(d)` : NaN dès que les termes dépassent 10³⁰⁸
 	// ((1001/1000)¹⁰⁰⁰ en porte 3001 chiffres, pour une valeur de 2,7169)
 	const value = rationalToNumber(rational);
-	const size = Math.abs(value);
-	if (!Number.isFinite(value) || size >= TOO_LARGE || (size !== 0 && size < TOO_SMALL)) {
-		return null;
-	}
-
-	if (size !== 0 && size < BELOW_PLACES) {
+	if (Math.abs(value) < BELOW_PLACES) {
 		// Exacte si 10 décimales suffisent (1/20000 = 0.00005)
 		const exact = (n * 10n ** 10n) % d === 0n;
 		const significant = value.toPrecision(PLACES);
-		return { digits: exact ? withoutTrailingZeros(significant) : significant, exact };
+		return {
+			digits: exact ? withoutTrailingZeros(significant) : significant,
+			exponent: null,
+			exact
+		};
 	}
 
 	const scaled = n * SCALE;
 	const remainder = scaled % d;
 	if (remainder === 0n) {
-		return { digits: withoutTrailingZeros(withPlaces(scaled / d)), exact: true };
+		return { digits: withoutTrailingZeros(withPlaces(scaled / d)), exponent: null, exact: true };
 	}
 	const half = 2n * (remainder < 0n ? -remainder : remainder) >= d;
 	// Ici |valeur| ⩾ 10⁻⁴ : l'arrondi ne tombe jamais sur « -0.0000 »
 	const q = scaled / d + (half ? (n < 0n ? -1n : 1n) : 0n);
-	return { digits: withPlaces(q), exact: false };
+	return { digits: withPlaces(q), exponent: null, exact: false };
+}
+
+/** Le texte, qui se retape dans la console : `0.25`, `8.7700*10^9`, `1.4286*10^-7`. */
+export function approximationText(approximation: ApproximateDigits): string {
+	const { digits, exponent } = approximation;
+	return exponent === null ? digits : `${digits}*10^${exponent}`;
+}
+
+/** Le LaTeX : `0.25`, `8.7700 \times 10^{9}`. */
+export function approximationLatex(approximation: ApproximateDigits): string {
+	const { digits, exponent } = approximation;
+	return exponent === null ? digits : `${digits} \\times 10^{${exponent}}`;
+}
+
+/** L'arbre, pour l'écran : `8.7700 × 10⁹`, le signe devant. */
+export function approximationNode(approximation: ApproximateDigits): MathNode {
+	const { digits, exponent } = approximation;
+	const negative = digits.startsWith('-');
+	const magnitude = number(negative ? digits.slice(1) : digits);
+	const written =
+		exponent === null
+			? magnitude
+			: multiply(
+					magnitude,
+					power(
+						number('10'),
+						exponent < 0 ? opposite(number(String(-exponent))) : number(String(exponent))
+					),
+					'cross'
+				);
+	return negative ? opposite(written) : written;
+}
+
+/**
+ * Une notation scientifique écrite par `approximationNode` (`3 × 10²⁰`) : à
+ * montrer telle quelle — `tidy` la recalculerait en 300000000000000000000.
+ */
+export function isScientificNotation(node: MathNode): boolean {
+	const written = isOpposite(node) ? node.operand : node;
+	if (!isMultiplication(written) || written.displayStyle !== 'cross') return false;
+	const { left, right } = written;
+	if (!isNumber(left) || !isSuperscript(right)) return false;
+	const exponent = isOpposite(right.superscript) ? right.superscript.operand : right.superscript;
+	return isNumber(right.base) && right.base.value === '10' && isNumber(exponent);
 }
 
 /**
@@ -136,7 +245,7 @@ export function approximateValueLatex(node: MathNode): string | null {
 	if (isWrittenNumber(node)) return null;
 	const approximation = approximateDigitsOf(node);
 	if (approximation === null) return null;
-	return `${approximation.exact ? '=' : '\\approx'} ${approximation.digits}`;
+	return `${approximation.exact ? '=' : '\\approx'} ${approximationLatex(approximation)}`;
 }
 
 /**
@@ -162,8 +271,8 @@ export function approximateSolutionsLatex(
 	}
 	const relation = approximations.every((a) => a.exact) ? '=' : '\\approx';
 	if (approximations.length === 1 && !asSet) {
-		return `${variable} ${relation} ${approximations[0].digits}`;
+		return `${variable} ${relation} ${approximationLatex(approximations[0])}`;
 	}
-	const values = approximations.map((a) => a.digits).join(' \\,;\\, ');
+	const values = approximations.map(approximationLatex).join(' \\,;\\, ');
 	return `S ${relation} \\left\\{ ${values} \\right\\}`;
 }

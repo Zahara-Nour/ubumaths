@@ -1,7 +1,7 @@
 ---
 title: Mode décimal — conversion des grandes fractions et règle d'écriture unique
 date: 2026-10-11
-status: reco 1 livrée (#1138) ; reco 2 — décisions a, b, c, d validées par David (2026-10-12), phase 0 à valider
+status: reco 1 livrée (#1138) ; reco 2 codée sur `feat/mode-decimal-scientifique` (phase 0 validée 2026-10-12) — une clause de lenteur en attente de David
 ---
 
 # Mode décimal — progression
@@ -135,3 +135,16 @@ relisent dans la console. Bouton ≈ en mode exact : `\approx 8.7700 \times 10^{
   mode exact (la console lève l'erreur du calcul décimal) ; dans la console, `0.5^2000` donne
   « ≈ 0.0000 » (le « = 0 » de la revue venait d'`evaluate` appelé directement) ; `powRational`
   réduit la fraction à chaque multiplication (194 s pour 1,01¹⁰⁰⁰⁰⁰, 1,9 ms en puissance native).
+- 2026-10-12 — phase 0 validée (« oui »). Reco 2 codée sur `feat/mode-decimal-scientifique` :
+  `approximateDigitsOf` rend `exponent` (notation scientifique en BigInt, retenue comprise),
+  `approximationText` / `approximationLatex` / `approximationNode` ; console sans repli sur le
+  flottant, tolérante à un échec du calcul décimal ; grandeurs ; `isScientificNotation` dans
+  `render.ts` ; `powRational` natif ; plafond 10 000 ; refus « hors d'échelle ». 34 tests rouges
+  d'abord, pour la bonne raison. Suite serveur complète verte **sauf un test**.
+- ⚠️ 2026-10-12 — **clause de la phase 0 non tenue** : « `(1+1/10000)^10000` en moins d'une
+  seconde ». La puissance native ne suffit pas : 11,7 s (14 s avant). Mesuré : 14 pgcd (Euclide)
+  de nombres de 40 000 chiffres, 1 à 1,5 s chacun — la puissance du mode exact (`normalize`, par
+  multiplications réduites, sans `powRational`), `tidy` (×2), la lecture de l'arrondi (×2), et la
+  console évalue le mode exact deux fois. `(1+1/3000)^3000` : 0,45 s ; `(1+1/100000)^100000` :
+  bloqué plus de 200 s (chemin `normalize`, non touché ici — non mesuré sur `main`). Question posée
+  à David : traiter ici (pgcd plus rapide + calculs en double) ou dans un lot à part.

@@ -65,11 +65,45 @@ describe('des calculs d’élèves aux fractions géantes', () => {
 	])('%s → %s', (input, expected) => {
 		expect(decimal(input).output).toBe(expected);
 	});
+});
 
-	// Hors de l'échelle de l'arrondi : l'écriture du moteur (sa forme définitive
-	// est une décision à part), mais plus Infinity ni NaN
-	it('π^20 et e^30 : une valeur, plus Infinity ni NaN', () => {
-		expect(decimal('\\pi^{20}').output).toMatch(/^≈ 8769956796\.08/);
-		expect(decimal('e^{30}').output).toMatch(/^≈ 10686474581524\.4/);
+// Décisions a, b, c, d de David (2026-10-12) : la notation scientifique hors de [10⁻⁶ ; 10⁹[,
+// écrite dans le texte comme elle se retape (`8.7700*10^9`). Avant : le flottant brut du moteur
+// (`≈ 8769956796.08269`, `≈ 1.42857142857143e-7`, `18446744073709552000` faux et sans ≈)
+describe('hors de l’échelle : la notation scientifique', () => {
+	it.each([
+		['\\pi^{20}', '≈ 8.7700*10^9'],
+		['-\\pi^{20}', '≈ -8.7700*10^9'],
+		['e^{30}', '≈ 1.0686*10^13'],
+		['1/7000000', '≈ 1.4286*10^-7'],
+		['1/8000000', '1.25*10^-7'],
+		['2^{64}', '≈ 1.8447*10^19'],
+		['3*10^20', '3*10^20'],
+		['10^15+1', '≈ 1.0000*10^15'],
+		['10^14+1', '100000000000001'],
+		['0.3^1000', '≈ 1.3221*10^-523'],
+		['0.5^2000', '≈ 8.7098*10^-603'],
+		['1.5^2000', '≈ 1.5224*10^352']
+	])('%s → %s', (input, expected) => {
+		expect(decimal(input).output).toBe(expected);
+	});
+
+	it('le texte se retape dans la console', () => {
+		expect(new WebReplEngine().execute('8.7700*10^9').output).toBe('8770000000');
+		expect(new WebReplEngine().execute('1.4286*10^-7').output).toBe('7143/50000000000');
+	});
+
+	// Au-delà du plafond des puissances exactes, le calcul décimal du moteur échoue
+	// honnêtement : la console garde la valeur, lue sur le résultat exact
+	it('au-delà du plafond des puissances exactes : la valeur, pas une erreur', () => {
+		expect(decimal('0.5^20000').output).toBe('≈ 2.5124*10^-6021');
+		expect(new WebReplEngine().execute('1.5^2000').success).toBe(true);
+	});
+
+	// Mesuré avant : 14 s, navigateur bloqué — la fraction était réduite à chaque multiplication
+	it('(1+1/10000)^10000 se calcule vite', () => {
+		const start = performance.now();
+		expect(decimal('(1+1/10000)^10000').output).toBe('≈ 2.7181');
+		expect(performance.now() - start).toBeLessThan(3000);
 	});
 });

@@ -9,7 +9,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseLatex } from '$lib/mathAST/parser';
-import { approximateValueLatex } from '../approximation';
+import { approximateValueLatex, approximateSolutionsLatex } from '../approximation';
 import { WebReplEngine } from '../web/web-repl-engine';
 
 const approx = (latex: string) => approximateValueLatex(parseLatex(latex));
@@ -34,8 +34,10 @@ describe('la valeur approchée d’un nombre exact', () => {
 		expect(approx('\\frac{1000000}{3}')).toBe('\\approx 333333.3333');
 	});
 
-	it('rien au-delà du milliard : les 4 décimales n’y sont plus sûres', () => {
-		expect(approx('10^{10}\\sqrt{2}')).toBeNull();
+	// Décision a de David (2026-10-12) : au-delà du milliard, la notation scientifique
+	// (était : rien, « les 4 décimales n'y sont plus sûres »)
+	it('au-delà du milliard : la notation scientifique', () => {
+		expect(approx('10^{10}\\sqrt{2}')).toBe('\\approx 1.4142 \\times 10^{10}');
 	});
 
 	it('garde le signe', () => {
@@ -135,5 +137,46 @@ describe('le bouton ≈ sur une fraction aux termes géants', () => {
 		['0.99^{365}', '\\approx 0.0255']
 	])('%s → %s', (latex, expected) => {
 		expect(approx(latex)).toBe(expected);
+	});
+});
+
+// Décisions a, b, c, d de David (2026-10-12, `docs/wip/mode-decimal-progress.md`) : hors de
+// [10⁻⁶ ; 10⁹[, la notation scientifique du collège, 4 décimales sur la mantisse, calculée sur
+// la fraction exacte. Valeurs attendues tirées des fractions exactes (Python `Fraction`).
+describe('hors de l’échelle : la notation scientifique', () => {
+	it.each([
+		['\\pi^{20}', '\\approx 8.7700 \\times 10^{9}'],
+		['-\\pi^{20}', '\\approx -8.7700 \\times 10^{9}'],
+		['e^{30}', '\\approx 1.0686 \\times 10^{13}'],
+		['e^{1000}', '\\approx 1.9701 \\times 10^{434}'],
+		['\\frac{1}{7000000}', '\\approx 1.4286 \\times 10^{-7}'],
+		['2^{64}', '\\approx 1.8447 \\times 10^{19}'],
+		['0.3^{1000}', '\\approx 1.3221 \\times 10^{-523}'],
+		['0.5^{2000}', '\\approx 8.7098 \\times 10^{-603}'],
+		['1.5^{2000}', '\\approx 1.5224 \\times 10^{352}']
+	])('%s → %s', (latex, expected) => {
+		expect(approx(latex)).toBe(expected);
+	});
+
+	it('exacte : « = », zéros de la mantisse retirés', () => {
+		expect(approx('\\frac{1}{8000000}')).toBe('= 1.25 \\times 10^{-7}');
+		expect(approx('3 \\times 10^{20}')).toBe('= 3 \\times 10^{20}');
+	});
+
+	it('la retenue garde la mantisse sous 10 : 9999950000,5 → 1,0000 × 10¹⁰', () => {
+		expect(approx('\\frac{19999900001}{2}')).toBe('\\approx 1.0000 \\times 10^{10}');
+	});
+
+	// Décision b : un entier exact s'écrit en entier jusqu'à 15 chiffres
+	it('un entier exact jusqu’à 15 chiffres : en entier', () => {
+		expect(approx('2^{40}')).toBe('= 1099511627776');
+		expect(approx('10^{14}+1')).toBe('= 100000000000001');
+		expect(approx('10^{15}+1')).toBe('\\approx 1.0000 \\times 10^{15}');
+	});
+
+	it('les solutions aussi', () => {
+		expect(approximateSolutionsLatex('x', [parseLatex('\\frac{1}{7000000}')], false)).toBe(
+			'x \\approx 1.4286 \\times 10^{-7}'
+		);
 	});
 });

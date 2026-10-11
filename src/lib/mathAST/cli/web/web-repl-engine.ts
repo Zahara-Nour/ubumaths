@@ -65,9 +65,14 @@ import {
 } from '../../../ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '../../../ubumark/utils/stat-chart-text';
 import { STAT_CHART_LIMITS } from '../../../ubumark/types/stat-chart';
-import { approximateDigitsOf, approximateValueLatex, isWrittenNumber } from '../approximation';
+import {
+	approximateDigitsOf,
+	approximateValueLatex,
+	approximationNode,
+	approximationText,
+	isWrittenNumber
+} from '../approximation';
 import { hasDecimalLiteral } from '../../tidy/decimal';
-import { number, opposite } from '../../factory';
 import { tidy } from '../../tidy';
 
 // =============================================================================
@@ -119,10 +124,6 @@ function readableExact(node: MathNode): MathNode {
 }
 
 /** `-0.125` en arbre : l'opposé d'un nombre (un nombre ne porte pas de signe). */
-function decimalNodeOf(digits: string): MathNode {
-	return digits.startsWith('-') ? opposite(number(digits.slice(1))) : number(digits);
-}
-
 /**
  * Browser-safe REPL execution engine.
  *
@@ -926,14 +927,6 @@ export class WebReplEngine {
 						: exactResult.reason
 				);
 			}
-			if (decimalResult.status !== 'value') {
-				throw new Error(
-					decimalResult.status === 'indeterminate'
-						? `Indeterminate form: ${decimalResult.form}`
-						: decimalResult.reason
-				);
-			}
-
 			// Format exact result — mis au propre comme à l'écran : `\pi/3`, pas la
 			// forme de calcul `{1/3}\pi` d'`evaluate`
 			const exactStr = toCustom(readableExact(exactResult.node));
@@ -941,13 +934,30 @@ export class WebReplEngine {
 			const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactStr)}</span>`;
 
 			// Format decimal result — la règle du bouton ≈ (décision Q3 de David) :
-			// 4 décimales, `≈` seulement si c'est arrondi (avant : 15 chiffres, `≈ 3`)
+			// 4 décimales, `≈` seulement si c'est arrondi (avant : 15 chiffres, `≈ 3`) ;
+			// hors de [10⁻⁶ ; 10⁹[, la notation scientifique, lue sur la fraction exacte
+			// (décisions a, b, c, 2026-10-12 — avant : le flottant du moteur, `e+30`, et
+			// 2⁶⁴ écrit `18446744073709552000`, chiffres faux, sans ≈).
+			// Le calcul décimal du moteur ne sert plus qu'à une valeur sans écriture
+			// décimale (non réelle) et à « Garder » : au-delà du plafond des puissances
+			// exactes, il refuse honnêtement, et la valeur se lit sur le résultat exact
 			const digits = approximateDigitsOf(exactResult.node);
-			const decimalStr = digits?.digits ?? toCustom(decimalResult.node);
-			// Hors de l'échelle de l'arrondi (≥ 10⁹, < 10⁻⁶) : la valeur décimale du
-			// moteur, et `≈` seulement si elle est arrondie — pas devant 2⁴⁰ (revue)
-			const decimalIsExact =
-				digits?.exact ?? (decimalResult.exact || isWrittenNumber(exactResult.node));
+			const decimalNode = decimalResult.status === 'value' ? decimalResult.node : null;
+			let decimalStr: string;
+			let decimalIsExact: boolean;
+			if (digits !== null) {
+				decimalStr = approximationText(digits);
+				decimalIsExact = digits.exact;
+			} else if (decimalResult.status === 'value') {
+				decimalStr = toCustom(decimalResult.node);
+				decimalIsExact = decimalResult.exact || isWrittenNumber(exactResult.node);
+			} else {
+				throw new Error(
+					decimalResult.status === 'indeterminate'
+						? `Indeterminate form: ${decimalResult.form}`
+						: decimalResult.reason
+				);
+			}
 			const decimalPrefix = decimalIsExact ? '' : '≈ ';
 			const decimalOutput = `${decimalPrefix}${decimalStr}`;
 			let decimalOutputHtml: string;
@@ -988,9 +998,10 @@ export class WebReplEngine {
 					currentMode === 'exact'
 						? exactResult.node
 						: digits === null
-							? decimalResult.node
-							: decimalNodeOf(digits.digits),
-				...(currentMode === 'decimal' && digits !== null && { quantityAst: decimalResult.node }),
+							? (decimalNode ?? exactResult.node)
+							: approximationNode(digits),
+				...(currentMode === 'decimal' &&
+					digits !== null && { quantityAst: decimalNode ?? exactResult.node }),
 				// Toggle support fields
 				exactOutput,
 				exactOutputHtml,
