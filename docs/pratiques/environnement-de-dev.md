@@ -123,7 +123,7 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 | `production-health.yml`     | chaque jour 06:00 UTC ; manuel                                        | appelle les pages publiques du sitemap (`scripts/check-production-health.ts`), ouvre / commente / referme l'issue « Pages publiques en échec ».                                                                                      |
 | `web-vitals.yml`            | le 1er du mois 06:00 UTC ; manuel                                     | relevé Speed Insights 28 j (`scripts/releve-web-vitals.ts`) publié en issue « Core Web Vitals — relevé AAAA-MM ».                                                                                                                    |
 | `release.yml`               | push d'un tag `v*`                                                    | publie la GitHub Release, notes tirées du CHANGELOG.                                                                                                                                                                                 |
-| `dependabot-auto-merge.yml` | PR de Dependabot (`pull_request_target`)                              | active l'auto-merge des montées patch et mineures ; les majeures restent à relire.                                                                                                                                                   |
+| `dependabot-auto-merge.yml` | PR de Dependabot (`pull_request_target`)                              | active l'auto-merge (merge commit) des montées patch et mineures ; les majeures restent à relire. Durci le 2026-10-11 : auteur de la PR et dépôt d'origine vérifiés, `fetch-metadata` épinglé par SHA.                               |
 | `bundle-analyze.yml`        | manuel                                                                | build `ANALYZE=1`, treemap du bundle en artefact.                                                                                                                                                                                    |
 
 - **Raccourci du commit de version** : sur un `chore(release): …` qui ne change que la version et
@@ -135,6 +135,9 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   La branche `production` est protégée : ni force-push, ni suppression.
 - **Dependabot** (`.github/dependabot.yml`) : npm et GitHub Actions, **mensuel** (lundi 06:00 Paris),
   5 PR au plus ; patch + mineures groupées en une PR, chaque majeure à part.
+- **Délai de 3 jours avant toute nouvelle version** (2026-10-11) : `cooldown` de Dependabot et
+  `minimumReleaseAge` de pnpm (`pnpm-workspace.yaml`). Une version piégée est presque toujours
+  retirée en quelques heures. Correctif urgent plus récent : `minimumReleaseAgeExclude`.
 - **Routines cloud claude.ai** (agents sur cron, gérées sur claude.ai/code/routines) : tri des CI
   échouées chaque nuit (03:30 UTC, PR `ci-fix/*` ou issue), audit sécurité / dépendances le lundi (PR
   `deps/security-audit-<date>`), scan de secrets quotidien (issue sans valeur en clair), hygiène des
@@ -202,6 +205,7 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 | 2026-10-10 | `db:seed-riche` : base locale = contenu de prod + élèves fictifs                      | travailler sur des données réalistes sans aucune donnée d'élève.                                                           |
 | 2026-10-11 | **préchargement réservé au CSS** (#1073)                                              | 94 modulepreload volaient la bande passante aux CSS : FCP p75 de l'accueil à 3,4 s pour un TTFB de 0,5 s.                  |
 | 2026-10-11 | **relevé Core Web Vitals mensuel en GitHub Action, pas en routine cloud** (#1074)     | il faut `VERCEL_TOKEN`, et l'environnement cloud n'a pas de secrets.                                                       |
+| 2026-10-11 | **auto-merge Dependabot durci, 3 jours d'âge minimal des versions**                   | le workflow tourne avec un jeton en écriture : `github.actor` se contourne depuis un fork, et un tag d'action se déplace.  |
 
 ## Écarts connus
 
@@ -213,7 +217,6 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 - `quality.yml`, commentaire de `concurrency` : « chaque commit de main part en prod » — vrai avant
   l'ADR 0021, plus maintenant (la règle « jamais annulé » reste juste : chaque commit doit avoir son
   verdict).
-- `dependabot-auto-merge.yml` merge en `--squash`, la règle du dépôt est le merge commit.
 - `.claude/README.md` cite les skills `domain-modeling` et `shtam`, pas `doc-a-jour`.
 - `.versionrc.json` : l'en-tête du CHANGELOG renvoie encore à `standard-version`.
 - `scripts/check-incremental.sh` : les commentaires parlent tour à tour de « guard 2 » et

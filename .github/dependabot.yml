@@ -9,6 +9,12 @@ updates:
       time: '06:00'
       timezone: Europe/Paris
     open-pull-requests-limit: 5
+    # Une version n'est proposée qu'après 3 jours : une version piégée est
+    # presque toujours retirée en quelques heures (audit du 2026-10-11 ; les
+    # patch et mineures sont fusionnées automatiquement). Même délai que
+    # `minimumReleaseAge` de pnpm-workspace.yaml.
+    cooldown:
+      default-days: 3
     groups:
       # One PR for all non-major bumps (patch + minor).
       minor-and-patch:
@@ -30,6 +36,8 @@ updates:
       time: '06:00'
       timezone: Europe/Paris
     open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
     labels:
       - dependencies
       - github-actions

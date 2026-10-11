@@ -1,12 +1,22 @@
 name: Dependabot auto-merge
 
-# Enable auto-merge for Dependabot patch & minor updates once the required
-# status checks pass. Major (breaking) bumps are left for manual review.
+# Active l'auto-merge des montées patch et mineures de Dependabot, une fois les
+# checks requis passés. Les majeures restent à relire.
 #
-# Uses `pull_request_target` so the run gets a write-scoped token (Dependabot
-# PRs otherwise run with a read-only GITHUB_TOKEN, which can't enable auto-merge).
-# This workflow never checks out or executes PR code — it only calls the GitHub
-# API — so it is not exposed to the pull_request_target privilege-escalation risk.
+# `pull_request_target` : le run reçoit un jeton en ÉCRITURE (une PR de
+# Dependabot n'a sinon qu'un jeton en lecture, qui ne peut pas activer
+# l'auto-merge). Ce workflow ne récupère ni n'exécute jamais le code de la PR :
+# il n'appelle que l'API GitHub.
+#
+# Durci le 2026-10-11 (audit), parce que ce jeton peut écrire dans le dépôt :
+# - condition sur l'AUTEUR de la PR et sur son dépôt d'origine, pas sur
+#   `github.actor` : un attaquant peut faire mettre à jour la branche de sa PR
+#   (depuis un fork) par Dependabot, et `github.actor` vaut alors
+#   `dependabot[bot]` ;
+# - `fetch-metadata` épinglé par SHA : il s'exécute avec ce jeton, et un tag se
+#   déplace (cas tj-actions, 2025). Dependabot met le SHA à jour (commentaire
+#   de version en fin de ligne) ;
+# - `--merge` : la règle du dépôt est le merge commit, pas le squash.
 
 on: pull_request_target
 
@@ -18,18 +28,22 @@ jobs:
   auto-merge:
     name: Auto-merge patch/minor
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    if: >-
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
+      # Vérifie aussi, de son côté, l'auteur de la PR, l'auteur du commit et sa
+      # signature : un second verrou, indépendant de la condition ci-dessus.
       - name: Fetch Dependabot metadata
         id: meta
-        uses: dependabot/fetch-metadata@v3
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
 
       - name: Enable auto-merge (patch & minor only)
         if: >-
           steps.meta.outputs.update-type == 'version-update:semver-patch' ||
           steps.meta.outputs.update-type == 'version-update:semver-minor'
-        run: gh pr merge --auto --squash "$PR_URL"
+        run: gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
