@@ -549,6 +549,28 @@ export function commandCatalog(engine: WebReplEngine): AtelierCommand[] {
 	];
 }
 
+/**
+ * La commande dont l'élève écrit la suite : `.taylor sin(x)` → `.taylor`.
+ *
+ * Reconnue dès l'espace qui suit son nom, sous toutes ses graphies (français,
+ * sans accent, nom moteur, raccourci) : c'est elle dont la vue montre le
+ * modèle sous le champ (phase 0 `atelier-cas-phase0.md`, PR 1). Avant
+ * l'espace, l'élève choisit encore dans la liste.
+ */
+export function commandBeingWritten(
+	catalog: readonly AtelierCommand[],
+	draft: string
+): AtelierCommand | null {
+	const match = /^\.(\S+)\s/.exec(draft);
+	if (match === null) return null;
+	const typed = plain(match[1]).toLowerCase();
+	return (
+		catalog.find((c) =>
+			[c.french, c.name, ...c.aliases].some((form) => plain(form).toLowerCase() === typed)
+		) ?? null
+	);
+}
+
 /** Le nom moteur d'une commande écrite en français, s'il y en a un. */
 function engineNameOf(typed: string): string | null {
 	const wanted = plain(typed).toLowerCase();

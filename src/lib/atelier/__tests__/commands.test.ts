@@ -8,7 +8,13 @@
 
 import { describe, it, expect } from 'vitest';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
-import { commandCatalog, resolveCommand, suggestFor, ATELIER_ONLY_COMMANDS } from '../commands';
+import {
+	commandCatalog,
+	commandBeingWritten,
+	resolveCommand,
+	suggestFor,
+	ATELIER_ONLY_COMMANDS
+} from '../commands';
 import { Atelier } from '../atelier.svelte';
 import { runInput } from '../calcul';
 
@@ -277,5 +283,45 @@ describe('quand la commande n’existe pas', () => {
 		const engine = new WebReplEngine();
 
 		expect(suggestFor(engine, 'd').length).toBeLessThanOrEqual(2);
+	});
+});
+
+/**
+ * Le modèle affiché sous le champ une fois la commande choisie (phase 0
+ * `docs/wip/atelier-cas-phase0.md`, PR 1, décision de David du 2026-10-11).
+ */
+describe('la commande en cours d’écriture', () => {
+	const catalog = commandCatalog(new WebReplEngine());
+	const written = (draft: string) => commandBeingWritten(catalog, draft)?.french ?? null;
+
+	it('reconnaît la commande dès l’espace qui suit son nom', () => {
+		expect(written('.taylor ')).toBe('taylor');
+		expect(written('.taylor sin(x) ordre')).toBe('taylor');
+	});
+
+	it('reconnaît un nom sans accent ou un raccourci, sous son nom français', () => {
+		expect(written('.deriver x^2')).toBe('dériver');
+		expect(written('.diff x^2')).toBe('dériver');
+	});
+
+	it('ne reconnaît rien tant que le nom n’est pas suivi d’un espace', () => {
+		expect(written('.taylor')).toBeNull();
+	});
+
+	it('ne reconnaît rien sans point, ni pour une commande inconnue', () => {
+		expect(written('taylor sin(x)')).toBeNull();
+		expect(written('.zz x')).toBeNull();
+		expect(written('')).toBeNull();
+	});
+
+	// Le modèle est l'EXEMPLE : une commande d'élève sans exemple n'aurait que
+	// sa description sous le champ, qui ne dit pas comment écrire la suite
+	it('chaque commande d’élève disponible a un exemple', () => {
+		const missing = catalog
+			.filter((c) => c.section !== undefined && c.unavailable === undefined)
+			.filter((c) => c.example === undefined)
+			.map((c) => c.french);
+
+		expect(missing).toEqual([]);
 	});
 });

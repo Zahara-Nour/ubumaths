@@ -9,8 +9,11 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { tick } from 'svelte';
+import { userEvent } from 'vitest/browser';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { commandCatalog } from '$lib/atelier/commands';
+import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 
 /** Laisser Svelte appliquer ses effets ET le DOM se mettre à jour. */
 async function settle() {
@@ -396,5 +399,175 @@ describe('exporter l’historique', () => {
 			'JSON (pour rejouer)',
 			'ubumark (pour lire)'
 		]);
+	});
+});
+
+/**
+ * Le clavier de Calcul (phase 0 `docs/wip/atelier-cas-phase0.md`, PR 1).
+ *
+ * ⚠️ De VRAIES frappes (`userEvent.keyboard`) : Entrée doit être empêchée
+ * d'envoyer le formulaire, Tab de quitter le champ — un `KeyboardEvent`
+ * fabriqué ne déclenche aucune de ces actions par défaut, et le test
+ * passerait sur une vue qui les laisse faire.
+ */
+describe('le clavier de Calcul', () => {
+	async function typing(keys: string, atelier = new Atelier()) {
+		const opened = await open(atelier);
+		await userEvent.click(opened.field);
+		if (keys !== '') await userEvent.keyboard(keys);
+		await settle();
+		return opened;
+	}
+
+	const lines = (container: HTMLElement) => container.querySelectorAll('.historique > li').length;
+	const highlighted = (container: HTMLElement) =>
+		container.querySelector('.commandes [aria-selected="true"]');
+
+	describe('↑ / ↓ rappellent les saisies', () => {
+		it('↑ rappelle les saisies, ↓ redescend', async () => {
+			const { field, submit } = await typing('');
+			await submit('1+1');
+			await submit('2+2');
+			await userEvent.click(field);
+
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+			expect(field.value).toBe('2+2');
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+			expect(field.value).toBe('1+1');
+			await userEvent.keyboard('{ArrowDown}');
+			await settle();
+			expect(field.value).toBe('2+2');
+		});
+
+		it('le curseur se place à la fin de la ligne rappelée', async () => {
+			const { field, submit } = await typing('');
+			await submit('12+345');
+			await userEvent.click(field);
+
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+
+			expect(field.selectionStart).toBe('12+345'.length);
+			expect(field.selectionEnd).toBe('12+345'.length);
+		});
+	});
+
+	describe('la liste des commandes au clavier', () => {
+		it('le champ annonce la liste, et la première commande est surlignée', async () => {
+			const { field, container } = await typing('.dé');
+
+			expect(field.getAttribute('role')).toBe('combobox');
+			expect(field.getAttribute('aria-expanded')).toBe('true');
+			const first = highlighted(container);
+			expect(first).toBeTruthy();
+			expect(field.getAttribute('aria-activedescendant')).toBe(first!.id);
+		});
+
+		it('↓ parcourt la liste en sautant les commandes indisponibles, et boucle', async () => {
+			const { container } = await typing('.d');
+			const options = [...container.querySelectorAll('.commandes [role="option"]')];
+			const available = options.filter((o) => o.getAttribute('aria-disabled') !== 'true');
+			// Le décor doit contenir une indisponible, sinon on ne prouve rien
+			expect(available.length).toBeLessThan(options.length);
+			expect(available.length).toBeGreaterThan(1);
+
+			const seen: string[] = [];
+			for (let i = 0; i < available.length; i++) {
+				seen.push(highlighted(container)!.id);
+				await userEvent.keyboard('{ArrowDown}');
+				await settle();
+			}
+
+			expect(seen).toEqual(available.map((o) => o.id));
+			// Revenu au début
+			expect(highlighted(container)!.id).toBe(available[0].id);
+		});
+
+		it('↑ dans la liste ne rappelle pas une saisie', async () => {
+			const { field, submit, container } = await typing('');
+			await submit('1+1');
+			await userEvent.click(field);
+			await userEvent.keyboard('.dé');
+			await settle();
+
+			await userEvent.keyboard('{ArrowUp}');
+			await settle();
+
+			expect(field.value).toBe('.dé');
+			expect(highlighted(container)).toBeTruthy();
+		});
+
+		it('Entrée choisit la commande surlignée, sans rien calculer', async () => {
+			const { field, container } = await typing('.dér');
+
+			await userEvent.keyboard('{Enter}');
+			await settle();
+
+			expect(field.value).toBe('.dériver ');
+			expect(lines(container)).toBe(0);
+			expect(container.querySelector('.commandes')).toBeNull();
+		});
+
+		it('Tab choisit aussi, et le champ garde la main', async () => {
+			const { field } = await typing('.dér');
+
+			await userEvent.keyboard('{Tab}');
+			await settle();
+
+			expect(field.value).toBe('.dériver ');
+			expect(document.activeElement).toBe(field);
+		});
+
+		it('Échap ferme la liste sans toucher au champ ; elle revient à la frappe suivante', async () => {
+			const { field, container } = await typing('.dé');
+
+			await userEvent.keyboard('{Escape}');
+			await settle();
+			expect(container.querySelector('.commandes')).toBeNull();
+			expect(field.value).toBe('.dé');
+			expect(field.getAttribute('aria-expanded')).toBe('false');
+
+			await userEvent.keyboard('r');
+			await settle();
+			expect(container.querySelector('.commandes')).toBeTruthy();
+		});
+
+		it('sans commande proposée, Entrée calcule comme avant', async () => {
+			const { container } = await typing('.zz');
+			expect(container.querySelector('.commandes')).toBeNull();
+
+			await userEvent.keyboard('{Enter}');
+			await settle();
+
+			expect(lines(container)).toBe(1);
+		});
+	});
+
+	describe('le modèle de la commande choisie', () => {
+		const taylor = commandCatalog(new WebReplEngine()).find((c) => c.french === 'taylor')!;
+
+		it('s’affiche sous le champ une fois la commande choisie', async () => {
+			const { container } = await typing('.tay{Enter}');
+
+			expect(container.querySelector('.modele')?.textContent).toContain(taylor.example);
+		});
+
+		it('reste pendant qu’on tape la suite, part quand le champ est vidé', async () => {
+			const { container, type } = await typing('.tay{Enter}sin(x)');
+			expect(container.querySelector('.modele')?.textContent).toContain(taylor.example);
+
+			await type('');
+
+			expect(container.querySelector('.modele')).toBeNull();
+		});
+
+		it('apparaît aussi pour une commande tapée en entier, raccourci compris', async () => {
+			const derive = commandCatalog(new WebReplEngine()).find((c) => c.french === 'dériver')!;
+			const { container } = await typing('.diff x');
+
+			expect(container.querySelector('.modele')?.textContent).toContain(derive.example);
+		});
 	});
 });
