@@ -13,4 +13,4 @@ Branche `feat/niveau-guidage-copie`, worktree `../ubumaths-wt-guidage-copie`.
 - [x] Formulaire d'affectation (niveau + aide) + Zod des routes d'affectation.
 - [x] Fenêtre de l'exercice : « Mode de variante » retiré ; badge retiré ; `variant_mode` plus lu.
 - [x] Doc `fiches-et-pdf.md` (§ La copie d'un élève, écarts), écarts K1.
-- [ ] Revue de code + security-auditor, PR.
+- [x] Revue de code + security-auditor (aucun bloquant ; corrections appliquées), PR.
