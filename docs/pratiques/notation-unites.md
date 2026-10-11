@@ -109,6 +109,27 @@ Le parseur LaTeX **ignore** les commandes d'espacement, qui n'ont aucun sens mat
 
 `°C` et `°F` ne se composent pas : `°C` seul, sans exposant (`[°C/s]` est refusé).
 
+## Calculer avec des grandeurs
+
+**Un seul calculateur** : `tidy` avec `unitChoice: 'written'` (l'unité écrite d'abord). Il sert
+`{{eval}}` (`evaluateQuantity`, `src/lib/mathAST/eval/evaluate-with-modifiers.ts`) et, depuis le
+2026-10-11, Calcul et `/cas` (`src/lib/mathAST/cli/quantities.ts` ; phase 0
+`docs/wip/grandeurs-phase0.md`, lot A). L'ancien `evaluateWithUnits` est retiré : il écrivait l'unité
+sans son coefficient (`10[km]/1[h]` → « 10 m/s »).
+
+| Calcul              | Réponse                                                           |
+| ------------------- | ----------------------------------------------------------------- |
+| `10[km]/1[h]`       | `10 km/h`                                                         |
+| `3[h]+20[min]`      | `200 min`                                                         |
+| `3[h]/1[min]`       | `180` (même dimension : un nombre)                                |
+| `10[km]/3`          | `10/3 km` (exact)                                                 |
+| `9.81[m/s^2]*2[kg]` | `19.62 m.kg/s^2 = 19.62 N` (Calcul : l'unité dérivée nommée suit) |
+| `5[m]+3[s]`         | « On ne peut pas ajouter une longueur et une durée. »             |
+
+`.convertir` (Calcul) exprime la dernière grandeur dans l'unité donnée, exactement :
+`12,3 km = 12300 m`. La réponse est un arbre qui garde son unité, affiché par `displayUnitsInLatex`
+comme un énoncé.
+
 ## 3. Comment c'est affiché
 
 Le générateur LaTeX de mathAST écrit une grandeur `3~\unit{m.s^-1}`. C'est la forme **interne** : le parseur LaTeX sait la relire. Mais `\unit` vient de l'extension siunitx, qu'aucun des trois moteurs ne connaît. L'écriture est donc traduite **juste avant l'affichage** par `src/lib/mathAST/units/display.ts` :

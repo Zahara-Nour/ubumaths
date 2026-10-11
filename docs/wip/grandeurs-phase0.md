@@ -102,3 +102,12 @@ déjà décidée.
 
 Une PR par lot : **A** (moteur, `.convertir`, erreurs, `.mode décimal` des grandeurs, retrait de
 `.mode-unités` et `evaluateWithUnits`), puis **B** (affichage, « Garder », bouton ≈).
+
+## Journal
+
+- 2026-10-11 — lot A codé sur `feat/grandeurs-calcul` : `mathAST/cli/quantities.ts`
+  (`computeQuantity`, `convertQuantity`) branché dans `WebReplEngine` ; `evaluateWithUnits` et
+  `.unitmode` retirés (et leurs tests) ; code d'erreur `QUANTITY_ERROR` (refus en français dans
+  l'atelier) ; `render.ts` traduit les unités de l'arbre (`displayUnitsInLatex`) — sans quoi
+  l'arbre muni de son unité aurait affiché `\unit` en rouge. `sqrt(9[m^2])` : `tidy` ne réduit
+  pas la racine, repli sur la forme normale (`denormalize(normalize(…))`).
