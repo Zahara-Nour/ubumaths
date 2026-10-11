@@ -23,8 +23,11 @@ sont à « aucune ».
   une seule version ne change pas.
 - **Différenciation par groupes de niveau** = affecter la même fiche plusieurs fois, chacune à une
   liste d'élèves choisie, avec un niveau différent. Pas de notion de « groupe » à créer.
-- **Le niveau n'est jamais lisible par l'élève** : rangé hors de la ligne d'affectation, lisible
-  par le prof seul.
+- **Le niveau est une colonne de l'affectation.** L'élève peut lire celui de ses propres
+  affectations (il le déduit de toute façon de son sujet et des étiquettes des exercices, qu'il
+  lit) ; il **ne lit pas** les affectations des autres groupes, donc ni leur niveau ni leur
+  composition. Aucun écran élève n'affiche le niveau. Pour des groupes de niveau, le prof vise des
+  élèves nommés, et le titre de l'affectation (visible par ses élèves) reste neutre.
 - La case « exercices individualisés » de l'affectation décide **même copie pour toute la classe**
   (décochée, comme l'ADR 0011) ou **une copie par élève** (cochée) — pour les **valeurs tirées**
   des exercices à variables seulement.
@@ -46,12 +49,21 @@ sont à « aucune ».
 - **Modes « N versions » et « groupe » par exercice** : jamais utilisés, et faux (l'étiquette A/B
   ne suivait pas la graine ; les « groupes » étaient des tranches d'identifiant, sans lien avec les
   groupes de la classe). L'idée des sujets A / B pourra revenir comme réglage de l'affectation.
-- **Niveau lisible par l'élève sur la ligne d'affectation** : un élève ne doit pas pouvoir lire son
-  groupe de niveau.
+- **Cacher à l'élève son propre niveau** (table à part, lue par une fonction privilégiée ou un
+  accès administrateur) : décidé puis abandonné le même jour. Aucune de ces voies ne le cache — les
+  exercices, lisibles par l'élève, portent les étiquettes `guided` / `autonomous` de toutes leurs
+  versions — et toutes protégeaient seulement ce que la règle d'accès aux affectations protège déjà
+  (le niveau des autres groupes).
 
 ## Conséquences
 
-- Une migration additive (le niveau, lisible par le prof seul) précède le code (deux PR).
+- Une migration additive (colonne de niveau sur `worksheet_assignments`) précède le code (deux PR).
 - La table `worksheet_instances` (0 ligne) et les colonnes de mode de variante restent en base ;
   leur suppression est destructive et attend un chantier à part, avec l'accord de David.
 - Glossaire : « niveau de guidage » ≠ « variation » (`CONTEXT.md`).
+
+## Révision
+
+- 2026-10-11, même séance, avant toute implémentation : l'accès au niveau passe de « lisible par le
+  prof seul » à « colonne de l'affectation » (Q4 rouverte par David après vérification des règles
+  d'accès : voir Écarté).
