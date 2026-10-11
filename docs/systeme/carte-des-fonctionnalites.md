@@ -44,21 +44,21 @@ toute nouvelle page publique qui n'est dans aucune des trois listes.
 
 | Libellé dans l'interface                   | Route                                              | Ce que ça fait                                                                                                                                                                 | Menu                    | Sitemap  |
 | ------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | -------- |
-| Automaths                                  | `/automaths` → `/automaths/panier`                 | Banque de questions ; une série se lance en **En classe**, **Entraînement**, **Course aux nombres** ou **Flash-cards** (`src/lib/components/test/TestModeDialog.svelte:48-73`) | **non**                 | oui      |
+| Automaths                                  | `/automaths` → `/automaths/panier`                 | Banque de questions ; une série se lance en **En classe**, **Entraînement**, **Course aux nombres** ou **Flash-cards** (`src/lib/components/test/TestModeDialog.svelte:48-73`) | oui                     | oui      |
 | Atelier (vues Calcul, Graphe, Données)     | `/atelier` (`/grapheur` y mène)                    | Calcul formel en français avec étapes, grapheur, statistiques et probabilités ; partage par lien. Rien ne quitte le navigateur (`src/routes/(public)/atelier/+page.svelte:6`)  | oui                     | oui      |
 | Chiffrement — le Cabinet Noir de Turingrad | `/chiffrement`, 9 établis, `/chiffrement/depeches` | Chiffrer, déchiffrer, décrypter (César → RSA), calculs pas à pas ; campagne des 9 Dépêches du Czar (`src/lib/ciphers/dispatches.ts`). 100 % navigateur                         | oui                     | oui      |
 | Upsilon                                    | `/upsilon`                                         | Simulateur de la calculatrice graphique Upsilon                                                                                                                                | oui                     | oui      |
 | Python Playground                          | `/python`                                          | Python dans le navigateur (Pyodide), débogueur pas à pas, diagramme mémoire (`src/lib/components/python/debug/`)                                                               | **non** (élève, prof)   | oui      |
 | Jeux : Trio, Mathémo, Démineur, 2048       | `/games/*`                                         | Jeux mathématiques ; gidouilles gagnées si l'élève est connecté (`public: true`, `src/routes/(public)/games/+page.svelte`)                                                     | oui                     | oui      |
 | Glossaire Mathématique                     | `/glossaire`                                       | Dictionnaire, définitions par niveau (671 entrées dans la copie figée `tests/fixtures/lexique/dictionnaire-reference.ts` ; la base fait foi)                                   | **non**                 | oui      |
-| Le Shtam                                   | `/shtam`, `/shtam/[slug]`                          | Gazette parodique du Royaume ; chaque article finit par son « Vrai du faux »                                                                                                   | **non**                 | oui      |
+| Le Shtam                                   | `/shtam`, `/shtam/[slug]`                          | Gazette parodique du Royaume ; chaque article finit par son « Vrai du faux »                                                                                                   | oui                     | oui      |
 | L'Almanach des Chiphres                    | `/almanach`                                        | Calendrier pataphysique, date du jour, convertisseur                                                                                                                           | **non**                 | oui      |
 | Zygomatics (« Les presques évaluations »)  | `/presques-evaluations`                            | Parodies d'évaluations en PDF                                                                                                                                                  | oui                     | oui      |
 | Chiphre, c'est quoi ?                      | `/a-propos`                                        | Le manifeste, pour les parents                                                                                                                                                 | non (panneau « Infos ») | oui      |
 | Exercice partagé                           | `/exercice/[slug]`                                 | Variantes, graine partageable, export PDF, solution ; le tuteur seulement pour un élève connecté. Indexé seulement si coché « Afficher sur Google » (sinon `noindex`)          | non (lien partagé)      | si coché |
 | Cahier de textes public                    | `/cahier/[token]`                                  | Séances et devoirs d'une classe, par lien                                                                                                                                      | non (lien du prof)      | non      |
 | Cours public                               | `/cours/[token]`                                   | Cours publié d'une classe (chapitres, documents, fiches, objectifs, séries), par lien                                                                                          | non (lien du prof)      | non      |
-| Le Trône Royal (Père Ubu)                  | `/pere-ubu`                                        | Père Ubu et ses répliques ; **son chat exige un compte** (écart, voir plus bas)                                                                                                | non                     | oui      |
+| Le Trône Royal (Père Ubu)                  | `/pere-ubu`                                        | Père Ubu et ses répliques ; **son chat exige un compte** : un visiteur est invité à se connecter                                                                               | non                     | oui      |
 
 ## Avec un compte élève
 
@@ -97,11 +97,12 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
   `src/routes/api/chat/+server.ts:178`) et Hugging Face aux USA. Dire « base de données hébergée à
   Paris », qui est exact.
 - **Un suivi « accessible aux parents »** : aucun rôle parent ni vue de progression pour eux ; le
-  seul accès famille est le lien du cahier de textes et celui du cours (ADR 0025). (`/a-propos` le
-  promet : écart.)
+  seul accès famille est le lien du cahier de textes et celui du cours (ADR 0025). `/a-propos` dit
+  désormais exactement cela (D12, 2026-10-12).
 - **Une interface multilingue** : l'interface est en français seulement ; seuls certains contenus
   (fiches) existent en anglais.
-- **Parler à Père Ubu sans compte** : le chat de `/pere-ubu` exige un compte.
+- **Parler à Père Ubu sans compte** : le chat de `/pere-ubu` exige un compte ; un visiteur y voit
+  une invitation à se connecter (`?redirectTo=/pere-ubu`), pas le chat.
 - **Des chiffres en dur** (nombre de questions, de définitions) : ils périment. Les compter à la
   requête, ou ne pas les donner.
 
@@ -124,7 +125,8 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
   (pages légales, `/a-propos`) est dans le coin inférieur droit (`src/routes/+layout.svelte`).
 - **En-tête** (`src/lib/components/Header.svelte`) : « Connexion » en haut à droite ; l'inscription
   n'est atteinte que depuis la page de connexion (« Créer un compte »).
-- **Menu** : Accueil, Jeux, Upsilon, Atelier, Chiffrement, Géométrie, Zygomatics.
+- **Menu** : Accueil, Automaths, Jeux, Upsilon, Atelier, Chiffrement, Le Shtam, Zygomatics
+  (D13, D14 : Géométrie retirée, Automaths et le Shtam ajoutés, 2026-10-12).
 
 ## La roue des publics et les trois vues
 
@@ -235,16 +237,13 @@ débord) ; `src/routes/(public)/__tests__/page.svelte.test.ts` (Père Ubu mène 
 
 ## Écarts connus
 
-Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (V14, C16, C17, D12-D18 ; chantier K19 ;
-V15 corrigé par le Tour du Royaume, D19 par la chandelle qui se pose au bout d'une minute) :
+Consignés dans [ecarts-a-trier.md](../wip/ecarts-a-trier.md) (chantier K19 ; V15 corrigé par le Tour du
+Royaume, D19 par la chandelle qui se pose au bout d'une minute ; V14, C16, C17, D12-D15 corrigés le
+2026-10-12) :
 
-- Le chat de `/pere-ubu` répond par une erreur à un visiteur, alors que la page est au sitemap.
-- `/a-propos` promet un suivi « accessible aux parents ».
-- Automaths, Glossaire, Shtam, Almanach : absents du menu.
+- Glossaire et Almanach : absents du menu (décision de David du 2026-10-12 : le menu garde
+  Automaths et le Shtam, les plus vivants).
 - `/calc` reste au sitemap (avant le 2026-10-11) alors que « Ne pas mettre en avant » le range en
   héritage remplacé par l'Atelier ; `/cas` et `/games/evoland` en sont exclus pour cette raison.
-- « Géométrie » au menu mène à `/geometry-demo`, exclue par `robots.txt` et titrée en anglais.
-- `/test-cadres` et `/slides` ne sont pas exclus par `robots.txt`.
 - Accessibilité, tout le site : anneau de focus clair à 2:1 (D16), `muted-foreground` à 4,4:1 sur fonds
   teintés (D17), pas de lien d'évitement (D18).
-- La description SEO de `/games` cite Navadra, retiré du catalogue.
