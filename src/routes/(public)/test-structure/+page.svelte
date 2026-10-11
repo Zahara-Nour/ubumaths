@@ -7,7 +7,7 @@
 	(nombre, terme, facteur, parenthèses, somme…). Sur un écran tactile, un toucher
 	encadre, un nouveau toucher dans le cadre remonte d'un niveau.
 
-	L'arbre vient de mathAST (`structure-latex.ts`) ; MathLive affiche des
+	L'arbre vient de `$lib/mathAST/structure` (intitulés : `structure-latex.ts`) ; MathLive affiche des
 	marqueurs `\class` sans effet sur le rendu ; l'encadré est dessiné PAR-DESSUS,
 	à partir de la position réelle des caractères (pas de `\enclose`) : la formule
 	ne bouge jamais.
@@ -18,8 +18,7 @@
 	import type { MathfieldElement } from 'mathlive';
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { parseLatexSafe } from '$lib/mathAST/parser';
-	import { markerId, MARKER_PREFIX, structuredLatex, type StructureInfo } from './structure-latex';
+	import { demoStructure, markerId, MARKER_PREFIX, type StructureInfo } from './structure-latex';
 
 	// Types
 	interface Example {
@@ -58,7 +57,6 @@
 
 	// Variables
 	let latex = $state(EXAMPLES[0].latex);
-	let signInTerm = $state(true);
 	let frameLeaves = $state(true);
 	let showAncestors = $state(false);
 	let selectedId = $state<number | null>(null);
@@ -68,10 +66,9 @@
 	/** Zones mesurées des nœuds (pas d'état réactif : un cache de mesures) */
 	let rectCache: { latex: string; rects: Map<number, DOMRect> } | null = null;
 
-	const parsed = $derived(parseLatexSafe(latex));
-	const structure = $derived(
-		parsed.ast && parsed.errors.length === 0 ? structuredLatex(parsed.ast, { signInTerm }) : null
-	);
+	// Le signe « − » appartient à la somme (décision Q2) : plus d'option
+	const result = $derived(demoStructure(latex));
+	const structure = $derived(result.status === 'ok' ? result.structure : null);
 	const selected = $derived(
 		structure && selectedId !== null ? (structure.nodes[selectedId] ?? null) : null
 	);
@@ -229,7 +226,7 @@
 	}
 
 	function handleOptionChange() {
-		// Les marqueurs changent (signe dans le terme) : l'encadré est à recalculer
+		// Le réglage change ce qui s'encadre : l'encadré est à recalculer
 		select(null);
 	}
 
@@ -277,11 +274,6 @@
 			{/each}
 		</div>
 		<div class="flex flex-wrap gap-x-6 gap-y-2">
-			<MyCheckbox
-				bind:checked={signInTerm}
-				onCheckedChange={handleOptionChange}
-				label="Le signe « − » appartient au terme (somme algébrique)"
-			/>
 			<MyCheckbox
 				bind:checked={frameLeaves}
 				onCheckedChange={handleOptionChange}
@@ -344,7 +336,7 @@
 				<p class="text-muted-foreground">Survolez l'expression.</p>
 			{/if}
 		</div>
-	{:else}
+	{:else if result.status === 'unrecognized'}
 		<p class="text-muted-foreground">Expression non reconnue ou incomplète.</p>
 	{/if}
 </div>

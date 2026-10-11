@@ -114,3 +114,5 @@ Tests d'abord (rouges) à chaque lot ; `code-reviewer` en fin de lot.
 - 2026-10-11 — démo validée ; Q1-Q15 tranchées ; glossaire à jour (a81a98d56).
 - 2026-10-11 — spécification validée ; page = `/test-structure`. Lot 1 lancé dans le worktree
   `../ubumaths-wt-structure` (branche `feat/demo-structure-expression`).
+- 2026-10-11 — lot 1 : module `src/lib/mathAST/structure/` (arbre, LaTeX marqué, vide / non reconnue) ;
+  la démo s'y branche, l'option « le signe − » disparaît (signe à la somme).
