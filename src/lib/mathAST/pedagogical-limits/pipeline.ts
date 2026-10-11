@@ -34,7 +34,7 @@
 import type { MathNode } from '../types';
 import type { LimitDirection, IndeterminateForm } from '../limits/types';
 import { detectIndeterminateForm } from '../limits/indeterminate';
-import { infinity, variable as makeVariable } from '../factory';
+import { infinity, opposite, variable as makeVariable } from '../factory';
 import { differentiate } from '../differentiation/differentiate';
 import { matchKnownLimit, getKnownLimitValue } from '../limits/known-limits';
 import {
@@ -60,10 +60,13 @@ import { extractExactRational } from '../common/numeric';
 import { tryEvaluateLimitExact, resultToNode } from '../limits/exact-evaluation';
 import { compile } from '../eval/compile';
 import { normalize, denormalize } from '../normal';
-import { rationalToNumber } from '../normal/rational';
+import { mulRational, rational, rationalToNumber } from '../normal/rational';
+import { rationalToNode } from '../common/numeric';
 import {
+	type Poly,
 	divideOutCommonRoot,
 	polynomialNode,
+	primitivePart,
 	rationalPolynomialNode,
 	toPolynomial
 } from '../factor';
@@ -420,15 +423,13 @@ function tryFactorisation(
 
 	const x = makeVariable(ctx.variable);
 	const factor = polynomialNode(division.factor, x);
-	const numAfter = rationalPolynomialNode(division.numerator, x);
-	const denAfter = rationalPolynomialNode(division.denominator, x);
 
 	// Sub-step: factor the numerator
 	const factorNumStep = makeStep(ctx, {
 		rule: 'factor-numerator',
 		description: `Factorisation du numérateur : ${formatLinearFactor(ctx.variable, a)} est un facteur`,
 		before: expression.numerator,
-		after: timesFactor(factor, numAfter),
+		after: timesFactor(factor, division.numerator, x),
 		verbosityLevel: 'detailed',
 		bindings: { factor }
 	});
@@ -438,7 +439,7 @@ function tryFactorisation(
 		rule: 'factor-denominator',
 		description: `Factorisation du dénominateur : ${formatLinearFactor(ctx.variable, a)} est un facteur`,
 		before: expression.denominator,
-		after: timesFactor(factor, denAfter),
+		after: timesFactor(factor, division.denominator, x),
 		verbosityLevel: 'detailed',
 		bindings: { factor }
 	});
@@ -480,14 +481,23 @@ function tryFactorisation(
 	};
 }
 
-/** (x − a)·q, sans le facteur 1 ; un nombre s'écrit DEVANT : `3(2x − 1)`, jamais `(2x − 1)3` */
-function timesFactor(factor: MathNode, quotient: MathNode): MathNode {
-	if (isOneNode(quotient)) return factor;
-	const isConstant =
-		isNumber(quotient) || (quotient.type === 'opposite' && isNumber(quotient.operand));
-	return isConstant
-		? multiply(quotient, factor, 'implicit')
-		: multiply(factor, quotient, 'implicit');
+/**
+ * (q·x − p)·Q écrit comme un élève : la constante DEVANT (`3(2x − 1)`,
+ * `\\dfrac{1}{2}(2x − 1)`), `-(2x − 1)` pour −1, jamais `(1)` ni `-1(…)` ; un
+ * quotient à coefficients rationnels sort son contenu (`\\dfrac{1}{4}(2x − 1)(2x + 1)`).
+ */
+function timesFactor(factor: MathNode, quotient: Poly, x: MathNode): MathNode {
+	const integer = quotient.every((c) => c.d === 1n);
+	const { content, primitive } = integer
+		? { content: rational(1n, 1n), primitive: quotient.map((c) => c.n) }
+		: primitivePart(quotient);
+	const isConstant = primitive.length === 1;
+	// Le nombre total devant : le contenu × la constante entière éventuelle
+	const lead = isConstant ? mulRational(content, rational(primitive[0], 1n)) : content;
+	const body = isConstant ? factor : multiply(factor, polynomialNode(primitive, x), 'implicit');
+	if (lead.n === 1n && lead.d === 1n) return body;
+	if (lead.n === -1n && lead.d === 1n) return opposite(body);
+	return multiply(rationalToNode(lead), body, 'implicit');
 }
 
 /** n/d, sans le dénominateur 1 */

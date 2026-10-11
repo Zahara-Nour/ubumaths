@@ -17,6 +17,7 @@ import { isRelation } from '../../guards';
 import { subtract } from '../../factory';
 import { compile } from '../../eval/compile';
 import type { RelationNode } from '../../types';
+import { toLatex } from '../../latex-generator';
 import type { SolveResult } from '../types';
 
 function parseEquation(latex: string): RelationNode {
@@ -75,5 +76,42 @@ describe('sin²x − cos²x = 0 : différence de carrés puis produit nul', () =
 	it('sin²x − 2cos²x = 0 n’est pas une différence de carrés de même coefficient : pas de factorisation inventée', () => {
 		const result = solve(parseEquation('\\sin^2x-2\\cos^2x=0'));
 		expect(result.steps.some((s) => s.rule === 'difference-of-squares')).toBe(false);
+	});
+});
+
+describe('Un polynôme garde ses étapes : la différence de carrés est réservée au non polynomial', () => {
+	// Étapes relevées sur main (0e1f3c14d), avant la différence de carrés
+	it.each([
+		['(x-1)^2-x^2=0', ['identify-linear-coefficients', 'isolate-variable'], [0.5]],
+		['x^2-(x+1)^2=0', ['identify-linear-coefficients', 'isolate-variable'], [-0.5]],
+		[
+			'(x^2+1)^2-(2x)^2=0',
+			[
+				'identify-quartic',
+				'identify-biquadratic',
+				'biquadratic-substitution',
+				'biquadratic-back-substitution',
+				'isolate-variable',
+				'isolate-variable'
+			],
+			[-1, 1]
+		]
+	] as const)('%s : étapes de main', (latex, rules, values) => {
+		const equation = parseEquation(latex);
+		const result = solve(equation, { verbosity: 'detailed' });
+		expect(result.steps.map((s) => s.rule)).toEqual(rules);
+		const found = result.solutions.map((s) => compile(s.value)({})).sort((a, b) => a - b);
+		expect(found).toHaveLength(values.length);
+		found.forEach((v, i) => expect(v).toBeCloseTo(values[i], 12));
+		const residual = compile(subtract(equation.left, equation.right));
+		for (const v of found) expect(Math.abs(residual({ x: v }))).toBeLessThan(1e-9);
+	});
+
+	it('sin²x − cos²x : les facteurs gardent l’écriture de l’identité', () => {
+		const result = solve(parseEquation('2\\sin^2x-2\\cos^2x=0'));
+		const step = result.steps.find((s) => s.rule === 'difference-of-squares');
+		expect(step && toLatex(step.after)).toBe(
+			'2 \\left( \\sin\\left( x \\right) + \\cos\\left( x \\right) \\right) \\left( \\sin\\left( x \\right) - \\cos\\left( x \\right) \\right)'
+		);
 	});
 });

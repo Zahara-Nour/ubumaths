@@ -201,7 +201,7 @@ leurs doublons sont rattachés à K3. Journal :
 
 Suites (K21, 2026-10-12) : `solve` ne rend plus la racine 0 en double (`4x³ − 2x² = 0` →
 `{0 ; 1/2}`, « On factorise par x^2 », `solvers/polynomial.ts`), et résout en repli une
-**différence de deux carrés** de même coefficient (`sin²x − cos²x = 0`, `2sin²x = 2cos²x` →
+**différence de deux carrés** NON polynomiale (un polynôme garde ses étapes : `(x − 1)² − x² = 0` reste du premier degré), de même coefficient (`sin²x − cos²x = 0`, `2sin²x = 2cos²x` →
 `(a + b)(a − b) = 0`, puis produit nul : π/4 + kπ/2), règle `difference-of-squares` de
 `solve.ts`, motifs `P.*` construits à l'appel (cycle d'imports). Tests :
 `solve/__tests__/{racine-nulle-sans-doublon,difference-de-carres}.test.ts`.

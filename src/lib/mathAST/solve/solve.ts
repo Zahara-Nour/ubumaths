@@ -126,6 +126,7 @@ import { reservedVariableRefusal } from '../common/reserved-letters';
 import { applyRules, RuleIterationLimitError } from '../pattern/rule';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
+import { toPolynomial } from '../factor';
 import { getBindingNode } from '../pattern/types';
 // Import direct, pas le baril `rule-sets/index.ts` (cycle de chunk documenté
 // dans `common-factor.ts`).
@@ -501,8 +502,9 @@ function sumOfSignedTerms(expr: MathNode): MathNode | null {
 function tidySumFactors(product: MathNode): MathNode {
 	if (!isMultiplication(product)) return product;
 	const tidy = (factor: MathNode): MathNode => {
-		if (isDelimiter(factor) && factor.content.type === 'addition') {
-			return parentheses(denormalize(normalize(factor.content)));
+		const content = isDelimiter(factor) ? factor.content : null;
+		if (content && (content.type === 'addition' || content.type === 'subtraction')) {
+			return parentheses(denormalize(normalize(content)));
 		}
 		return tidySumFactors(factor);
 	};
@@ -591,6 +593,9 @@ function tryDifferenceOfSquaresDecomposition(
 	}
 ): SolveResult | null {
 	if (commonFactorDepth >= MAX_COMMON_FACTOR_DEPTH) return null;
+	// Un polynôme garde ses étapes (développer puis résoudre) : `(x − 1)² − x² = 0`
+	// est une équation du premier degré, pas un produit nul.
+	if (toPolynomial(expr, variable) !== null) return null;
 	const patterns = differenceOfSquaresPatterns();
 	const scaled = tryMatch(patterns.scaled, expr);
 	const bindings = scaled ?? tryMatch(patterns.bare, expr);
@@ -601,7 +606,13 @@ function tryDifferenceOfSquaresDecomposition(
 	const factors = multiply(parentheses(add(a, b)), parentheses(subtract(a, b)), 'implicit');
 	const k = scaled === undefined ? null : getBindingNode(scaled, 'k');
 	const product = k ? multiply(k, factors, 'implicit') : factors;
-	return solveFactoredProduct(expr, product, variable, opts, 'difference-of-squares');
+	// Une base qui est une somme laisse `((a₁ + a₂) + b)` : on réduit alors
+	// les facteurs, comme la mise en facteur commun. Sinon l'écriture reste
+	// celle de l'identité, `(sin x + cos x)(sin x − cos x)`.
+	const isSum = (n: MathNode) =>
+		isDelimiter(n) || n.type === 'addition' || n.type === 'subtraction';
+	const written = isSum(a) || isSum(b) ? tidySumFactors(product) : product;
+	return solveFactoredProduct(expr, written, variable, opts, 'difference-of-squares');
 }
 
 /**

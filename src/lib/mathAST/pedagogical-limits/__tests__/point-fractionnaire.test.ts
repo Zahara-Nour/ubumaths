@@ -66,6 +66,26 @@ const CASES: readonly Case[] = [
 		denominator: '2 \\left( x - 1 \\right)',
 		simplified: 'x + 1',
 		factorText: '(x − 1)'
+	},
+	{
+		// Coefficients rationnels : la constante DEVANT, sans « (1) »
+		latex: '\\lim_{x\\to \\frac{1}{2}}\\frac{x^2-\\frac{1}{4}}{x-\\frac{1}{2}}',
+		a: 0.5,
+		value: '1',
+		numerator: '\\dfrac{1}{4} \\left( 2 x - 1 \\right) \\left( 2 x + 1 \\right)',
+		denominator: '\\dfrac{1}{2} \\left( 2 x - 1 \\right)',
+		simplified: '\\dfrac{2 x + 1}{2}',
+		factorText: '(2x − 1)'
+	},
+	{
+		// Quotient −1 : `-(2x − 1)`, jamais `-1(2x − 1)`
+		latex: '\\lim_{x\\to \\frac{1}{2}}\\frac{1-4x^2}{1-2x}',
+		a: 0.5,
+		value: '2',
+		numerator: '\\left( 2 x - 1 \\right) \\left( -2 x - 1 \\right)',
+		denominator: '-\\left( 2 x - 1 \\right)',
+		simplified: '2 x + 1',
+		factorText: '(2x − 1)'
 	}
 ];
 
