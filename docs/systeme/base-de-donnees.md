@@ -232,6 +232,10 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
 - `worksheets` (`status` = rédaction terminée ou non) → `worksheet_sections`, `worksheet_exercises`.
 - `worksheet_assignments` (distribution) → `worksheet_assignment_classes`,
   `worksheet_assignment_students`, `worksheet_assignment_exercise_settings`.
+  `worksheet_assignments.guidance_level` : **niveau de guidage** des exercices pour cette
+  affectation (`guided` par défaut, `intermediate`, `autonomous`) — [ADR 0023](../adr/0023-copie-d-une-fiche-niveau-de-guidage-par-affectation.md).
+  L'élève visé lit celui de sa propre affectation, jamais celui d'un autre groupe (test :
+  `tests/integration/worksheet-assignment-guidance-level.test.ts`).
 - `worksheet_instances` : exercices générés par élève (graine déterministe).
 
 **L'accès est hérité, jamais distribué** : `student_has_worksheet_access` part de
@@ -465,4 +469,4 @@ Le schéma part du baseline `20260616220000_baseline_schema.sql` (anciennes migr
 
 ---
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-11.
