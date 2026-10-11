@@ -83,6 +83,12 @@ describe('le mode décimal à l’écran', () => {
 		expect(latexOf(decimal('\\sqrt{2}/2'))).toBe('\\approx 0{,}7071');
 	});
 
+	// Revue : `\\approx \\dfrac{1}{10000000}`, `\\approx 1099511627776`
+	it('hors de l’échelle : jamais ≈ devant une écriture exacte', () => {
+		expect(latexOf(decimal('2^{40}'))).toBe('1099511627776');
+		expect(latexOf(decimal('1/10^7'))).not.toContain('dfrac');
+	});
+
 	it('une valeur exacte : ni ≈ ni zéros inutiles', () => {
 		expect(latexOf(decimal('1/4'))).toBe('0{,}25');
 	});

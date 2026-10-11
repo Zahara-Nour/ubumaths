@@ -25,7 +25,8 @@ describe('le mode décimal : 4 décimales, ≈ seulement si c’est arrondi', ()
 		['1/4', '0.25'],
 		['0.1+0.2', '0.3'],
 		['3', '3'],
-		['-1/8', '-0.125']
+		['-1/8', '-0.125'],
+		['-sqrt(2)/2', '≈ -0.7071']
 	])('%s → %s', (input, expected) => {
 		expect(decimal(input).output).toBe(expected);
 	});
@@ -37,5 +38,18 @@ describe('le texte d’un résultat exact, mis au propre', () => {
 		['sqrt(2)/2', 'sqrt(2)/2']
 	])('%s → %s', (input, expected) => {
 		expect(new WebReplEngine().execute(input).output).toBe(expected);
+	});
+});
+
+// Revue : hors de l'échelle de l'arrondi, « ≈ » se posait devant un entier exact
+describe('hors de l’échelle de l’arrondi (≥ 10⁹, < 10⁻⁶)', () => {
+	it('un entier exact reste sans ≈', () => {
+		expect(decimal('2^{40}').output).toBe('1099511627776');
+	});
+
+	it('l’arbre affiché est une valeur décimale, pas l’écriture exacte', () => {
+		const result = decimal('1/10^7');
+
+		expect(result.ast?.type).not.toBe('division');
 	});
 });

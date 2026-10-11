@@ -65,7 +65,7 @@ import {
 } from '../../../ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '../../../ubumark/utils/stat-chart-text';
 import { STAT_CHART_LIMITS } from '../../../ubumark/types/stat-chart';
-import { approximateDigitsOf, approximateValueLatex } from '../approximation';
+import { approximateDigitsOf, approximateValueLatex, isWrittenNumber } from '../approximation';
 import { hasDecimalLiteral } from '../../tidy/decimal';
 import { number, opposite } from '../../factory';
 import { tidy } from '../../tidy';
@@ -944,7 +944,10 @@ export class WebReplEngine {
 			// 4 décimales, `≈` seulement si c'est arrondi (avant : 15 chiffres, `≈ 3`)
 			const digits = approximateDigitsOf(exactResult.node);
 			const decimalStr = digits?.digits ?? toCustom(decimalResult.node);
-			const decimalIsExact = digits?.exact ?? decimalResult.exact;
+			// Hors de l'échelle de l'arrondi (≥ 10⁹, < 10⁻⁶) : la valeur décimale du
+			// moteur, et `≈` seulement si elle est arrondie — pas devant 2⁴⁰ (revue)
+			const decimalIsExact =
+				digits?.exact ?? (decimalResult.exact || isWrittenNumber(exactResult.node));
 			const decimalPrefix = decimalIsExact ? '' : '≈ ';
 			const decimalOutput = `${decimalPrefix}${decimalStr}`;
 			let decimalOutputHtml: string;
@@ -982,9 +985,11 @@ export class WebReplEngine {
 				// En mode décimal, l'arbre affiché porte la valeur arrondie ; « Garder »
 				// range la valeur pleine précision (`quantityAst`)
 				ast:
-					currentMode === 'exact' || digits === null
+					currentMode === 'exact'
 						? exactResult.node
-						: decimalNodeOf(digits.digits),
+						: digits === null
+							? decimalResult.node
+							: decimalNodeOf(digits.digits),
 				...(currentMode === 'decimal' && digits !== null && { quantityAst: decimalResult.node }),
 				// Toggle support fields
 				exactOutput,
