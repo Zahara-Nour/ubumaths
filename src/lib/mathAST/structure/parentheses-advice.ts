@@ -22,16 +22,17 @@ export type AdviceSegment =
 
 /**
  * - `chain` : suite de 3 termes ou plus avec une soustraction (C1) ; deux
- *   écritures parenthésées proposées ;
+ *   écritures parenthésées proposées pour 3 termes, `null` au-delà (Q24) ;
  * - `leading-minus` : « − » sans parenthèses devant un nombre ou une lettre (C2,
- *   Q21) ; un exemple quand il commence une somme, `null` ailleurs (Q22).
+ *   Q21) ; un exemple quand il commence une somme, `null` ailleurs (Q22) ;
+ *   devant une parenthèse écrite : texte à part, jamais d'exemple (Q23).
  * `node` : la sous-expression visée.
  */
 export type ParenthesesAdvice =
 	| {
 			readonly reason: 'chain';
 			readonly node: number;
-			readonly proposals: readonly [string, string];
+			readonly proposals: readonly [string, string] | null;
 			readonly segments: readonly AdviceSegment[];
 	  }
 	| {
@@ -44,6 +45,8 @@ export type ParenthesesAdvice =
 // Constantes
 const NBSP = ' ';
 const MINUS_SIGN_TEXT = "Le signe − devant un nombre ou une lettre s'apprend en 5e";
+const MINUS_PARENTHESES_TEXT = "Le signe − devant une parenthèse s'apprend en 5e.";
+const CHAIN_TEXT = "Ajoute des parenthèses pour montrer ce que tu calcules d'abord";
 
 // Fonctions
 /**
@@ -55,10 +58,16 @@ const MINUS_SIGN_TEXT = "Le signe − devant un nombre ou une lettre s'apprend e
 export function parenthesesAdvice(structure: ExpressionStructure): ParenthesesAdvice | null {
 	for (const node of structure.nodes) {
 		if (node.kind === 'sum' || node.kind === 'difference') {
-			if (node.signs[0] === '-') return leadingMinusInSum(structure, node);
+			if (node.signs[0] === '-') {
+				return startsWithParentheses(structure, structure.nodes[node.children[0]])
+					? minusBeforeParenthesesAdvice(node.id)
+					: leadingMinusInSum(structure, node);
+			}
 			if (isChain(node)) return chainAdvice(structure, node);
 		} else if (node.kind === 'opposite' && !isParenthesized(structure, node)) {
-			return leadingMinusAdvice(node.id, null);
+			return startsWithParentheses(structure, structure.nodes[node.children[0]])
+				? minusBeforeParenthesesAdvice(node.id)
+				: leadingMinusAdvice(node.id, null);
 		}
 	}
 	return null;
@@ -69,38 +78,54 @@ function isChain(sum: SumStructureNode): boolean {
 	return sum.signs.length >= 3 && sum.signs.slice(1).includes('-');
 }
 
-/** (5 − 3) + x ou 5 − (3 + x) ; au-delà de 3 termes, tout à gauche ou tout à droite */
+/** 3 termes : (5 − 3) + x ou 5 − (3 + x) ; au-delà, le message seul (Q24) */
 function chainAdvice(structure: ExpressionStructure, sum: SumStructureNode): ParenthesesAdvice {
-	const terms = writtenTerms(structure, sum);
+	if (sum.signs.length > 3) {
+		return {
+			reason: 'chain',
+			node: sum.id,
+			proposals: null,
+			segments: [{ kind: 'text', text: `${CHAIN_TEXT}.` }]
+		};
+	}
+	const [first, second, third] = writtenTerms(structure, sum);
 	const operator = (i: number) => (sum.signs[i] === '-' ? ' - ' : ' + ');
-
-	let leftFirst = terms[0];
-	for (let i = 1; i < terms.length; i++) {
-		const grouped = `${leftFirst}${operator(i)}${terms[i]}`;
-		leftFirst = i === terms.length - 1 ? grouped : `\\left( ${grouped} \\right)`;
-	}
-
-	let rightFirst = terms[terms.length - 1];
-	for (let i = terms.length - 2; i >= 0; i--) {
-		const grouped = `${terms[i]}${operator(i + 1)}${rightFirst}`;
-		rightFirst = i === 0 ? grouped : `\\left( ${grouped} \\right)`;
-	}
-
+	const leftFirst = `\\left( ${first}${operator(1)}${second} \\right)${operator(2)}${third}`;
+	const rightFirst = `${first}${operator(1)}\\left( ${second}${operator(2)}${third} \\right)`;
 	return {
 		reason: 'chain',
 		node: sum.id,
 		proposals: [leftFirst, rightFirst],
 		segments: [
-			{
-				kind: 'text',
-				text: `Ajoute des parenthèses pour montrer ce que tu calcules d'abord${NBSP}: `
-			},
+			{ kind: 'text', text: `${CHAIN_TEXT}${NBSP}: ` },
 			{ kind: 'formula', latex: leftFirst },
 			{ kind: 'text', text: ' ou ' },
 			{ kind: 'formula', latex: rightFirst },
 			{ kind: 'text', text: `${NBSP}?` }
 		]
 	};
+}
+
+/** « − » juste devant une parenthèse écrite : `−(3 + 2)`, `−(2 + x) × 3`, `−(x + 1)²` (Q23) */
+function minusBeforeParenthesesAdvice(node: number): ParenthesesAdvice {
+	return {
+		reason: 'leading-minus',
+		node,
+		example: null,
+		segments: [{ kind: 'text', text: MINUS_PARENTHESES_TEXT }]
+	};
+}
+
+/**
+ * La sous-expression s'écrit-elle en commençant par une parenthèse écrite ?
+ * On descend par la gauche : premier facteur, dividende, base d'une puissance.
+ * Une fraction commence par sa barre, pas par son numérateur.
+ */
+function startsWithParentheses(structure: ExpressionStructure, node: StructureNode): boolean {
+	if (node.kind === 'parentheses') return true;
+	if (node.kind !== 'product' && node.kind !== 'quotient' && node.kind !== 'power') return false;
+	const first = structure.nodes[node.children[0]];
+	return first.role !== 'numerator' && startsWithParentheses(structure, first);
 }
 
 /** `−3 + x` → exemple `(−3) + x` : le premier terme et son signe entre parenthèses */

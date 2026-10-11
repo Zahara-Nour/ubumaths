@@ -52,7 +52,7 @@ describe('virgule décimale', () => {
 
 	it('message : 2,5 − 1,2 + 3', () => {
 		const advice = parenthesesAdvice(structureOf('2{,}5-1{,}2+3'));
-		expect(advice?.reason === 'chain' && advice.proposals[0]).toBe(
+		expect(advice?.reason === 'chain' && advice.proposals?.[0]).toBe(
 			'\\left( 2{,}5 - 1{,}2 \\right) + 3'
 		);
 	});

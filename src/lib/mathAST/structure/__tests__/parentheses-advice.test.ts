@@ -19,6 +19,8 @@ import {
 // Constantes
 const NBSP = ' ';
 const MINUS_MESSAGE = "Le signe − devant un nombre ou une lettre s'apprend en 5e.";
+const MINUS_PARENTHESES_MESSAGE = "Le signe − devant une parenthèse s'apprend en 5e.";
+const CHAIN_MESSAGE = "Ajoute des parenthèses pour montrer ce que tu calcules d'abord.";
 
 // Fonctions
 function adviceOf(latex: string): ParenthesesAdvice | null {
@@ -71,14 +73,19 @@ describe('parenthesesAdvice — C1 : suite de 3 termes ou plus avec une soustrac
 		]);
 	});
 
-	it('plus de 3 termes : de gauche à droite, ou de droite à gauche', () => {
-		const advice = adviceOf('7-2+3x-5');
-		expect(advice?.reason).toBe('chain');
-		if (advice?.reason !== 'chain') return;
-		expect(advice.proposals).toEqual([
-			'\\left( \\left( 7 - 2 \\right) + 3 x \\right) - 5',
-			'7 - \\left( 2 + \\left( 3 x - 5 \\right) \\right)'
-		]);
+	it.each(['7-2+3x-5', '1+2-3+4-5', '10-2-3-1'])(
+		'%s : plus de 3 termes, message sans propositions (Q24)',
+		(latex) => {
+			const advice = adviceOf(latex);
+			expect(advice?.reason).toBe('chain');
+			if (advice?.reason !== 'chain') return;
+			expect(advice.proposals).toBeNull();
+			expect(render(advice.segments)).toBe(CHAIN_MESSAGE);
+		}
+	);
+
+	it('plus de 3 termes dans une somme imbriquée : 2 × (1 + 2 − 3 + 4)', () => {
+		expect(render(adviceOf('2\\times(1+2-3+4)')?.segments ?? [])).toBe(CHAIN_MESSAGE);
 	});
 
 	it('un terme entre parenthèses garde ses parenthèses', () => {
@@ -164,6 +171,34 @@ describe('parenthesesAdvice — C2 (Q21, Q22) : un « − » sans parenthèses',
 		if (result.status !== 'ok') throw new Error(result.status);
 		const advice = parenthesesAdvice(result.structure);
 		expect(advice && result.structure.nodes[advice.node].kind).toBe('opposite');
+	});
+});
+
+describe('parenthesesAdvice — Q23 : un « − » devant une parenthèse écrite', () => {
+	it.each([
+		'-(3+2)+1',
+		'-\\left(3+2\\right)',
+		'2\\times-(x+1)',
+		'-(4+x)',
+		'-(2+x)\\times3+5',
+		'-(x+1)^2',
+		'3x=-(2+x)'
+	])('%s : message à part, sans exemple', (latex) => {
+		const advice = adviceOf(latex);
+		expect(advice?.reason).toBe('leading-minus');
+		if (advice?.reason !== 'leading-minus') return;
+		expect(advice.example).toBeNull();
+		expect(render(advice.segments)).toBe(MINUS_PARENTHESES_MESSAGE);
+	});
+
+	it.each([
+		['-\\frac{2+x}{3}+1', '\\left( -\\frac{2+x}{3} \\right) + 1'],
+		['-2(x+1)+5', '\\left( -2 \\left( x + 1 \\right) \\right) + 5']
+	])("%s : le « − » n'est pas devant la parenthèse, message Q22", (latex) => {
+		const advice = adviceOf(latex);
+		expect(advice?.reason).toBe('leading-minus');
+		if (advice?.reason !== 'leading-minus') return;
+		expect(advice.example).not.toBeNull();
 	});
 });
 
