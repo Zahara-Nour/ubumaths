@@ -264,12 +264,23 @@ B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
 
 ## C — promesses RGPD sans code (décisions de David, 2026-10-11)
 
-| Point                           | Décision                                               | État                                                     |
-| ------------------------------- | ------------------------------------------------------ | -------------------------------------------------------- |
-| C9 « qui a accédé ? »           | aligner les documents                                  | ✅ rgpd.md, audit-trail.md (60 j, pas de lecture tracée) |
-| C10 Groq                        | aligner les documents (+ avertissement dans le tuteur) | ✅ registre ; avertissement : PR à venir                 |
-| C11 conservation                | aligner le code (purge)                                | à faire — question destructive avant migration           |
-| C12 export                      | aligner le code (tuteur, déclaration d'âge)            | à faire                                                  |
-| C13 page de confidentialité     | compléter (Brevo, Groq, HuggingFace ; 30 j)            | à faire — texte montré à David avant livraison           |
-| C14 messages après suppression  | —                                                      | ✅ réglé par A1 (messages supprimés avec le compte)      |
-| C15 registre (rôle parent, âge) | aligner les documents                                  | ✅ registre-traitements.md                               |
+| Point                           | Décision                                               | État                                                           |
+| ------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------- |
+| C9 « qui a accédé ? »           | aligner les documents                                  | ✅ rgpd.md, audit-trail.md (60 j, pas de lecture tracée)       |
+| C10 Groq                        | aligner les documents (+ avertissement dans le tuteur) | ✅ registre ; avertissement #1070                              |
+| C11 conservation                | aligner le code (purge)                                | ✅ #1071, migration en prod (accord explicite de David)        |
+| C12 export                      | aligner le code (tuteur, déclaration d'âge)            | ✅ #1070 (+ inférences du tuteur, art. 15)                     |
+| C13 page de confidentialité     | compléter (Brevo, Groq, HuggingFace ; 30 j)            | ✅ #1070 (« Groq : aucune conservation » retiré, invérifiable) |
+| C14 messages après suppression  | —                                                      | ✅ réglé par A1 (messages supprimés avec le compte)            |
+| C15 registre (rôle parent, âge) | aligner les documents                                  | ✅ registre-traitements.md                                     |
+
+### C11 — détail
+
+- `run_retention_c11()` (appelée en tête de `run_cleanup_expired_data`, hebdomadaire) : comptes
+  élèves sans **activité** depuis 5 ans (connexion, session rafraîchie, présence — l'audit a montré
+  que `last_sign_in_at` seul supprimait un élève resté connecté), conversations du tuteur 1 an après
+  le dernier message, pré-inscriptions non activées après 1 an. Mesuré : le 1er passage ne supprime
+  rien ; premières conversations vers le 13/12/2026, premiers comptes au plus tôt en 2030.
+- **À faire avant 2030** : une tâche qui retire du storage les fichiers d'un compte purgé (chemins
+  dans `account_deletion_audit.cleanup_result`, aucun consommateur aujourd'hui).
+- Le bloc C est clos : C9, C10, C15 (documents), C11, C12, C13 (code), C14 (réglé par A1).
