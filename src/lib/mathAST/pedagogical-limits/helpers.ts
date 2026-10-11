@@ -81,10 +81,9 @@ export function isAtInfinity(approach: MathNode): boolean {
  * to check whether direct substitution yields a finite result, and to
  * estimate the value of complex sub-expressions.
  *
- * Walks the AST recursively. Mirrors `evaluateSimple` in
- * `limits/algebraic.ts` (which is private) — replicating it here avoids a
- * dependency on a private function and lets us extend the supported node
- * types over time without touching the algorithmic module.
+ * Walks the AST recursively. (L'ancien jumeau `evaluateSimple` de
+ * `limits/algebraic.ts` a été supprimé au lot 3a de l'ADR 0024 : ce module
+ * est le seul à évaluer ainsi.)
  */
 export function evaluateAtPoint(expr: MathNode, varName: string, value: number): number | null {
 	// Transparent unwrap of delimiter nodes (parens emitted by the custom parser).
