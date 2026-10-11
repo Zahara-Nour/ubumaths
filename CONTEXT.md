@@ -144,6 +144,13 @@ une note. → [ADR 0001](docs/adr/0001-correction-cote-client.md)
 | **Atelier**       | Outil de calcul et de recherche de l'élève : il pose des objets, les transforme, ne juge pas. | `src/lib/atelier/` (`Atelier`), route `/atelier` |
 | **Carte d'objet** | Affichage d'un objet de l'atelier (fonction, suite, liste…) avec ses actions.                 | `ObjectCard.svelte`                              |
 
+## La structure d'une expression
+
+| Terme                          | Sens                                                                                                                                          | Code / note                                                     |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **Structure d'une expression** | Outil où l'élève explore une expression : la plus petite sous-expression sous le pointeur est encadrée et nommée. Héritier d'Algebria.        | à créer (démo : route `/test-structure`, branche non fusionnée) |
+| **Sous-expression**            | Partie d'une expression qui est elle-même une expression : un terme, un facteur, le contenu de parenthèses, un numérateur… Mot vu de l'élève. | « nœud » dans le code (AST), jamais montré                      |
+
 ## Le moteur mathématique (`src/lib/mathAST/`)
 
 | Terme                      | Sens                                                                                                                                           | Code                                                                                                                                        |
@@ -191,17 +198,18 @@ Seule la **famille B** (compétences mathématiques) est d'actualité ; la famil
 
 ### Termes bannis
 
-| ❌ Ne pas dire                               | ✅ Dire                                                                     |
-| -------------------------------------------- | --------------------------------------------------------------------------- |
-| compétence (seule)                           | **compétence mathématique**, ou **composante**                              |
-| compétence atomique                          | **composante**                                                              |
-| rubrique                                     | **indicateur**                                                              |
-| domaine (au sens Sacoche)                    | **thème**                                                                   |
-| thème / domaine d'un exercice ou d'un modèle | **branche**, **notion** (selon le niveau)                                   |
-| Mode Révision (forme de série)               | **En classe** (≠ révision SRS)                                              |
-| Quiz (forme de série)                        | **Entraînement**                                                            |
-| niveau de détail, palier (d'une correction)  | **correction concise** / **correction détaillée**                           |
-| variation (d'un exercice de fiche)           | **niveau de guidage** (guidé, intermédiaire, autonome)                      |
-| lexique (pour les mots mathématiques)        | **dictionnaire** (« lexique » : celui du lore)                              |
-| carte (seule)                                | **carte de cours**, **carte de révision**, **carte VIP**, **carte d'objet** |
-| capacité (d'un élève, d'une grille)          | **point du programme** (« capacité » : famille A, abandonnée)               |
+| ❌ Ne pas dire                                          | ✅ Dire                                                                     |
+| ------------------------------------------------------- | --------------------------------------------------------------------------- |
+| compétence (seule)                                      | **compétence mathématique**, ou **composante**                              |
+| compétence atomique                                     | **composante**                                                              |
+| rubrique                                                | **indicateur**                                                              |
+| domaine (au sens Sacoche)                               | **thème**                                                                   |
+| thème / domaine d'un exercice ou d'un modèle            | **branche**, **notion** (selon le niveau)                                   |
+| Mode Révision (forme de série)                          | **En classe** (≠ révision SRS)                                              |
+| Quiz (forme de série)                                   | **Entraînement**                                                            |
+| niveau de détail, palier (d'une correction)             | **correction concise** / **correction détaillée**                           |
+| variation (d'un exercice de fiche)                      | **niveau de guidage** (guidé, intermédiaire, autonome)                      |
+| lexique (pour les mots mathématiques)                   | **dictionnaire** (« lexique » : celui du lore)                              |
+| carte (seule)                                           | **carte de cours**, **carte de révision**, **carte VIP**, **carte d'objet** |
+| capacité (d'un élève, d'une grille)                     | **point du programme** (« capacité » : famille A, abandonnée)               |
+| morceau, nœud, niveau (d'une expression, vu de l'élève) | **sous-expression**                                                         |
