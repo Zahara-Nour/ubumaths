@@ -84,6 +84,12 @@ Largeur `max-w-4xl`, sauf le tableau d'échange du marché (`/marketplace/trade/
 largeur. Pendant une navigation, la page se masque derrière un squelette choisi d'après l'adresse
 (`getSkeletonType`, `src/lib/utils/skeleton-detector.ts`).
 
+Son `<main>` porte l'ancre `contenu-principal` (`tabindex="-1"`) : le lien d'évitement « Aller au
+contenu » du layout racine (`src/routes/+layout.svelte`, WCAG 2.4.1, K19 D18 du 2026-10-12) y
+mène, après l'en-tête et la barre latérale du tableau de bord. Hors tableau de bord, c'est le
+`<main>` racine qui porte l'ancre ; sur le tableau de bord il la lui cède (une seule à la fois).
+Test : `src/lib/__tests__/accessibilite-k19.test.ts`.
+
 ## Les trois accueils
 
 `+page.svelte` choisit l'écran d'après `profile.role`, pas d'après le rôle de navigation : un prof
@@ -162,6 +168,7 @@ performance et erreurs, contenu et activité, tâches de fond. Chargée à l'ouv
   entrées des fiches, des contrôles et des énigmes.
 - `src/routes/(protected)/dashboard/__tests__/layout.server.test.ts` : date de l'Almanach.
 - `src/lib/components/navigation/__tests__/` : `BackLink`, `GroupedRouteLayout`.
+- `src/lib/__tests__/accessibilite-k19.test.ts` : lien d'évitement et ancre du contenu.
 
 ## Écarts connus
 
