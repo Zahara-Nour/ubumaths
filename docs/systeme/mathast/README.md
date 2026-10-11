@@ -219,7 +219,7 @@ polynômes : 0 différence).
   dominant > 0 (`IntegerFactor`, coefficients par degré croissant), ou, dans ℝ, `x − (c ± e√m)`
   (`SurdFactor`) ;
 - `rest` : la partie de degré ≥ 3 **sans racine rationnelle**, non décomposée, ou `null` ;
-- `complete` : `false` quand une borne a coupé le travail (le produit reste exact).
+- `complete` : `false` quand une borne a coupé le travail (le produit reste exact). `true` ne veut pas dire « irréductible » : `rest` est sans racine rationnelle, mais peut encore se factoriser (`x^8-1` laisse `x^6+x^4+x^2+1`).
 
 Corps : `Q` (défaut), racines rationnelles seulement ; `R`, un facteur de degré 2 à Δ > 0 non
 carré se scinde (`x^2-2x-1` → `(x-1-√2)(x-1+√2)`, le dominant `a` en constante) ; Δ < 0 reste

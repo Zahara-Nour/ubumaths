@@ -92,14 +92,20 @@ export interface Factorization {
 	/** Facteurs irréductibles dans le corps demandé, avec leur multiplicité. */
 	readonly factors: readonly PolynomialFactor[];
 	/**
-	 * Partie de degré ≥ 3 sans racine rationnelle (coefficients entiers primitifs,
-	 * par degré croissant), non décomposée ; `null` si tout est factorisé.
+	 * Partie de degré ≥ 3 non décomposée (coefficients entiers primitifs, par
+	 * degré croissant) ; `null` si tout est factorisé. Sans racine rationnelle
+	 * quand `complete` vaut `true` — mais pas forcément irréductible : le lot 1
+	 * ne cherche pas de facteur de degré 2 (`x^8-1` laisse `x^6+x^4+x^2+1`).
 	 */
 	readonly rest: readonly bigint[] | null;
 	/**
 	 * `false` quand une borne a coupé le travail (`MAX_RATIONAL_ROOT_CANDIDATES`,
 	 * `MAX_DIVISOR_SEARCH`, `MAX_RADICAND`) : le produit est toujours EXACT, mais
 	 * `rest` ou un facteur pourrait encore se décomposer.
+	 *
+	 * ⚠️ `true` ne veut PAS dire « irréductible » : `rest` peut encore se
+	 * factoriser, et dans ℝ un carré comme `(x^2-2)^2` développé reste entier.
+	 * Ne jamais en conclure « ne se factorise pas » devant l'élève.
 	 */
 	readonly complete: boolean;
 }
