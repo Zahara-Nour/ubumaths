@@ -5,9 +5,9 @@
  * plantait : chaque famille de codes a désormais son titre, son explication et
  * ses actions (se connecter, réessayer).
  *
- * Le message précis de l'erreur (`error(404, 'Exercice introuvable')`) est
- * affiché en plus — replié sous « Détails techniques » pour une 5xx, dont le
- * message peut venir brut de la base —, sauf quand il ne fait que répéter le code (« Not Found »,
+ * Le message précis d'une erreur 4xx (`error(404, 'Exercice introuvable')`)
+ * remplace le titre ; celui d'une 5xx, qui peut venir brut de la base, est
+ * replié sous « Détails techniques ». Sauf quand il ne fait que répéter le code (« Not Found »,
  * « Unauthorized »…) : ces formules génériques, souvent en anglais, n'apprennent
  * rien de plus que le titre.
  *
@@ -18,8 +18,6 @@ export interface ErrorCopy {
 	title: string;
 	/** Phrase sous le titre, ou `null` quand le titre suffit (404). */
 	explanation: string | null;
-	/** Message précis de l'erreur, ou `null` s'il ne dit rien de plus que le titre. */
-	detail: string | null;
 	/**
 	 * Message d'une erreur serveur (5xx), à replier sous « Détails techniques » :
 	 * il peut citer une erreur brute de la base (noms de tables, de colonnes).
@@ -104,7 +102,8 @@ export function describeError(status: number, message: string | undefined): Erro
 
 	return {
 		...copy,
-		detail: status >= 500 ? null : specific,
+		// Erreur 4xx : le message précis (« Exercice introuvable ») remplace le titre générique
+		title: status < 500 && specific !== null ? specific : copy.title,
 		technicalDetail: status >= 500 ? specific : null,
 		offerLogin: status === 401,
 		offerRetry: status >= 500 || status === 408 || status === 429

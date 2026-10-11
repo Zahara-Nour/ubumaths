@@ -31,9 +31,10 @@ regardé à la 2 567 241ème décimale ? » — avec trois changements de fond :
 2. « Erreur 404 », le titre (`<h1>`) et une explication propres au code
    (`describeError`, `src/lib/error-page/error-copy.ts`) — pas d'explication pour une 404 : le
    titre, la phrase sur π et les suggestions suffisent.
-3. Le message précis d'une erreur 4xx (`error(404, 'Exercice introuvable')`), **sauf** s'il répète le
-   titre ou n'est qu'une formule générique (« Not Found », « Unauthorized », « Accès refusé »…,
-   liste `GENERIC_MESSAGES`, comparée sans casse ni accents).
+3. Pour une erreur 4xx, le message précis (`error(404, 'Exercice introuvable')`) **remplace le
+   titre** (« Exercice introuvable » au lieu de « Page introuvable », onglet compris), sauf s'il
+   n'est qu'une formule générique (« Not Found », « Unauthorized », « Accès refusé »…, liste
+   `GENERIC_MESSAGES`, comparée sans casse ni accents) : le titre français reste alors.
 4. Pour un code de la table : « Le nombre 404 apparaît à la 1 272ᵉ décimale de π, mais la page,
    elle, reste introuvable. » (la fin « mais la page… » pour une 404 seulement). Pas d'extrait des
    décimales en clair : le code est déjà coloré dans la spirale.
