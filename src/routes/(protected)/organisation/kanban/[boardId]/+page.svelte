@@ -671,7 +671,11 @@
 <div class="flex h-full flex-col gap-4">
 	<h1 class="sr-only">{boardTitle}</h1>
 	<!-- Header -->
-	<BackLink href={resolve('/organisation/kanban')} label="Retour aux tableaux" class="mb-0" />
+	<BackLink
+		href={resolve('/organisation/kanban')}
+		label="Retour aux tableaux"
+		class="mb-0 self-start"
+	/>
 	<div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 		<div class="flex min-w-0 flex-1 items-center gap-3">
 			<div class="flex min-w-0 flex-1 items-center gap-2">

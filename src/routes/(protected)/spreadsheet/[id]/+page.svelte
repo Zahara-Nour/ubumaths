@@ -1,5 +1,4 @@
 <script lang="ts">
-	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	/**
 	 * Spreadsheet Edit Page
 	 *
@@ -12,6 +11,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import Spreadsheet from '$lib/components/spreadsheet/Spreadsheet.svelte';
 	import { spreadsheetStore } from '$lib/spreadsheet/store.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';

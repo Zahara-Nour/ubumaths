@@ -214,8 +214,6 @@
 		}
 	}
 
-	// Navigate back
-
 	// Handle approve
 	async function handleApprove() {
 		if (!selectedQuestion || isSubmitting) return;

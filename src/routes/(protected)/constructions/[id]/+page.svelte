@@ -78,7 +78,7 @@
 <div class="container mx-auto max-w-6xl p-4 sm:p-6">
 	<div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 		<div class="flex flex-col gap-4">
-			<BackLink href="/constructions" label="Retour aux constructions" class="mb-0" />
+			<BackLink href="/constructions" label="Retour aux constructions" class="mb-0 self-start" />
 
 			<div>
 				<h1 class="text-2xl font-bold sm:text-3xl">{data.construction.title}</h1>
