@@ -409,7 +409,7 @@ Une longueur est une inconnue dont l'identité est la **paire de points triée**
 `AB` ≢ `A\times B`. Un **nom de figure** (`ABC`) ne se calcule pas : une expression qui en contient
 n'est équivalente qu'à la **même écriture** (`ABC` ≡ `ABC`, `ABC` ≢ `ACB`) ; le calcul et la
 forme le refusent avec le message de `figureNameRefusal`. Sans l'option (défaut du
-parseur), `AB` reste le produit `A·B`, comme avant. Suivi : `docs/wip/longueurs-segments-progress.md`.
+parseur), `AB` reste le produit `A·B`, comme avant. Journal du chantier : [longueurs-segments-progress.md](../../archive/wip/longueurs-segments-progress.md).
 
 **Une longueur est strictement positive** (décision de David du 2026-10-12, Q-F) : sans
 hypothèse déclarée, `√(AB²)` ≡ `AB`, `|AB|` ≡ `BA`, `√(9AB²)` ≡ `3AB`. Mécanisme : celui des
@@ -424,6 +424,18 @@ hypothèses (`segmentLength` est dans la liste blanche `isPlainAlgebra`) : une h
 et la forme (`checkForm`) le lit pareil (`correct`, avant : `bad_form`). En revanche, sans
 hypothèse, la comparaison de forme ne lit pas `|AB|` comme `AB` : `|AB|` pour l'attendu `AB` reste
 `bad_form` (décision de David du 2026-10-12).
+
+**Deux choix confirmés par David (2026-10-12)** :
+
+- une hypothèse déclarée sur `AB`, ou un `domain` passé à `solve`, **remplace** la positivité par
+  défaut, elle ne s'y ajoute pas : le moteur fait ce qui est écrit, sans contrainte cachée ;
+- `AB² = 0` n'a **aucune solution** (`AB = 0` est exclu : deux points distincts) ; un exercice qui
+  voudrait une longueur nulle déclare `AB: 'nonnegative'`.
+
+**Hors champ** (décision de David du 2026-10-12, à rouvrir seulement sur un cas réel) : les
+notations `\overline{AB}`, `\widehat{ABC}`, vecteurs, `(AB)`, `[AB]` — aucune réponse attendue en
+base ne les utilise, et l'affichage passe par MathLive ; la déclaration du sens lettre par lettre
+dans l'éditeur de modèle.
 
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 

@@ -1,6 +1,6 @@
 /**
  * Longueurs de segments, lot « positivité » (Q-F, décision de David du 2026-10-12,
- * `docs/wip/longueurs-segments-progress.md`).
+ * `docs/archive/wip/longueurs-segments-progress.md`).
  *
  * - une longueur `AB` (mode longueur) est STRICTEMENT POSITIVE par défaut, par `numtype` ;
  * - une hypothèse déclarée sur `AB` (ou `BA`) par un modèle garde la priorité ;

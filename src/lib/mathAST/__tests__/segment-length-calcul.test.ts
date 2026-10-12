@@ -1,6 +1,6 @@
 /**
  * Longueurs de segments, lot 2 : calcul et correction (spécification validée le 2026-10-12,
- * `docs/wip/longueurs-segments-progress.md`).
+ * `docs/archive/wip/longueurs-segments-progress.md`).
  *
  * - une longueur se calcule comme une inconnue dont l'identité est la paire de points
  *   triée : `AB` = `BA` ;

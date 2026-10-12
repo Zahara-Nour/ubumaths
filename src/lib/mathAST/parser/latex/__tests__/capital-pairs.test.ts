@@ -1,7 +1,7 @@
 /**
  * Longueurs de segments : deux majuscules collées (`AB`) dans le parseur LaTeX.
  *
- * Spécification validée par David le 2026-10-12 (`docs/wip/longueurs-segments-progress.md`) :
+ * Spécification validée par David le 2026-10-12 (`docs/archive/wip/longueurs-segments-progress.md`) :
  * - option `capitalPairs` : `'length'` ou `'product'` (comportement d'avant, à l'identique, et
  *   défaut du parseur depuis la décision Q-M du 2026-10-12 : seuls les questions et
  *   `/test-structure` demandent `'length'`) ;

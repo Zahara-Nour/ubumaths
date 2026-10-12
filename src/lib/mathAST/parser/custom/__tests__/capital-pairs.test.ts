@@ -2,7 +2,7 @@
  * Longueurs de segments dans la syntaxe maison (`parseCustom`, lot 5).
  *
  * Mêmes règles que le parseur LaTeX (`parser/latex/__tests__/capital-pairs.test.ts`),
- * décisions de David du 2026-10-12 (`docs/wip/longueurs-segments-progress.md`) :
+ * décisions de David du 2026-10-12 (`docs/archive/wip/longueurs-segments-progress.md`) :
  * - option `capitalPairs` : `'product'` par défaut (comportement d'avant, à l'identique, Q-M),
  *   `'length'` demandé par les questions ;
  * - en mode longueur, deux majuscules COLLÉES (primes et indices compris) forment une
