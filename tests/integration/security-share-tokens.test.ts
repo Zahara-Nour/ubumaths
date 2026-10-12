@@ -74,4 +74,47 @@ describe('Security — exercise share tokens (H8)', () => {
 			.maybeSingle();
 		expect(invalid).toBeNull();
 	});
+	// Compteur d'accès : chaque ouverture par un jeton valide l'incrémente
+	// (la page du professeur affiche « N accès »). Un jeton révoqué ne compte pas.
+	it('chaque lecture par jeton valide incrémente access_count, pas un jeton révoqué', async () => {
+		// Mono-professeur : un seul compte teacher, celui du test précédent est retiré.
+		await cleanupAllTestData();
+		const svc = createServiceRoleClient();
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const ex = await TestData.exercise(teacher.id).create();
+		const token = `tok${crypto.randomUUID().replace(/-/g, '').slice(0, 20)}`;
+		const revoked = `tok${crypto.randomUUID().replace(/-/g, '').slice(0, 20)}`;
+		const inserted = await svc
+			.from('exercise_share_tokens')
+			.insert([
+				{ token, exercise_id: ex.id, created_by: teacher.id, is_active: true },
+				{ token: revoked, exercise_id: ex.id, created_by: teacher.id, is_active: false }
+			])
+			.select('id');
+		expect(inserted.error).toBeNull();
+		expect(inserted.data).toHaveLength(2);
+
+		const anon = anonClient();
+		for (let i = 0; i < 2; i++) {
+			const { data } = await anon
+				.rpc('get_exercise_by_share_token', { p_token: token })
+				.maybeSingle();
+			expect((data as { id: string } | null)?.id).toBe(ex.id);
+		}
+		const { data: none } = await anon
+			.rpc('get_exercise_by_share_token', { p_token: revoked })
+			.maybeSingle();
+		expect(none).toBeNull();
+
+		const { data: rows, error } = await svc
+			.from('exercise_share_tokens')
+			.select('token, access_count, last_accessed_at')
+			.in('token', [token, revoked]);
+		expect(error).toBeNull();
+		const valid = rows?.find((r) => r.token === token);
+		const dead = rows?.find((r) => r.token === revoked);
+		expect(valid?.access_count).toBe(2);
+		expect(valid?.last_accessed_at).not.toBeNull();
+		expect(dead?.access_count ?? 0).toBe(0);
+	});
 });

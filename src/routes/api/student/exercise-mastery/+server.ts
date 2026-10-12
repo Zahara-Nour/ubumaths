@@ -12,8 +12,11 @@
  * }
  *
  * SECURITY:
- * - RLS policies ensure students only see their own mastery records
- * - No teacher/admin access (mastery is private to student)
+ * - Route réservée à l'élève (`requireRole(locals, 'student')`), filtrée sur
+ *   `student_id = user.id` : elle ne rend que ses propres statuts.
+ * - La RLS laisse aussi le professeur (et l'admin) LIRE la maîtrise des élèves de
+ *   ses classes (`is_teacher_of_student`, migration 20261012120000), pour la page
+ *   « Progression » d'une affectation de fiche — pas par cette route.
  */
 
 import { error, json } from '@sveltejs/kit';

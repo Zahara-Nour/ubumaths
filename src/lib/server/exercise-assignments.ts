@@ -43,7 +43,6 @@ import type {
 	StudentExerciseFilters,
 	TeacherAssignmentFilters,
 	AssignmentStats,
-	ExerciseCompletionStats,
 	PaginationParams,
 	PaginatedResponse,
 	DistributionMode,
@@ -1204,30 +1203,6 @@ export async function getAssignmentStats(
 	return { data: stats, error: null };
 }
 
-/**
- * Get completion statistics for a specific exercise
- *
- * Uses the get_exercise_completion_stats() database function.
- * Returns completion rates, view counts, and engagement metrics.
- *
- * **Important**: This function gets stats for ALL assignments of an exercise,
- * not just a single assignment. Use get_assignment_completion_stats(p_assignment_id)
- * for a specific assignment.
- *
- * @param supabase - Supabase client
- * @param exerciseId - Exercise ID
- * @returns Completion statistics or error
- *
- * @example Get exercise stats
- * ```typescript
- * const result = await getExerciseCompletionStats(supabase, 'ex-123');
- * if (result.data) {
- *   console.log('Completion rate:', result.data.completion_rate + '%');
- *   console.log('Total assigned:', result.data.total_assigned);
- *   console.log('Total completed:', result.data.total_completed);
- * }
- * ```
- */
 /** Stats de complétion d'UNE assignation : ciblés / vus / terminés / taux. */
 export interface AssignmentCompletionStats {
 	total_target_students: number;
@@ -1259,39 +1234,6 @@ export async function getAssignmentCompletionStats(
 
 	const row = Array.isArray(data) ? data[0] : data;
 	return (row as AssignmentCompletionStats | undefined) ?? null;
-}
-
-export async function getExerciseCompletionStats(
-	supabase: TypedSupabaseClient,
-	exerciseId: string
-): Promise<{ data: ExerciseCompletionStats | null; error: string | null }> {
-	// Call the correct RPC function with exercise_id parameter
-	const { data, error } = await supabase.rpc('get_exercise_completion_stats', {
-		p_exercise_id: exerciseId
-	});
-
-	if (error) {
-		console.error('Error fetching completion stats:', error);
-		return { data: null, error: error.message };
-	}
-
-	// ⚠️ Trois des cinq statistiques lisaient un nom que la fonction ne renvoie
-	// pas — `total_assigned`, `total_completed`, `completion_rate` — et valaient
-	// donc TOUJOURS 0 : le professeur voyait « personne n'a rendu » sur tous les
-	// exercices. L'enveloppe `any` empêchait le typage de le dire.
-	//
-	// Noms réels : `total_students`, `completed_count`, `completion_percentage`.
-	const row = data?.[0];
-	const stats: ExerciseCompletionStats = {
-		exercise_id: exerciseId,
-		total_assigned: row?.total_students ?? 0,
-		total_viewed: row?.total_viewed ?? 0,
-		total_completed: row?.completed_count ?? 0,
-		completion_rate: row?.completion_percentage ?? 0,
-		average_view_count: row?.average_view_count ?? 0
-	};
-
-	return { data: stats, error: null };
 }
 
 /**
