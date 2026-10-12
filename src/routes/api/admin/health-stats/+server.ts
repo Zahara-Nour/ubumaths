@@ -88,6 +88,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 		});
 	} catch (err) {
 		console.error('Error fetching health stats:', err);
-		throw error(500, err instanceof Error ? err.message : 'Failed to fetch health stats');
+		throw error(
+			500,
+			err instanceof Error ? err.message : 'Impossible de charger les indicateurs de santé'
+		);
 	}
 };

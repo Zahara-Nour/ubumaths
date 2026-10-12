@@ -108,7 +108,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		});
 	} catch (err) {
 		console.error('Error exporting backup:', err);
-		throw error(500, "Erreur lors de l'export du backup");
+		throw error(500, 'Impossible d’exporter la sauvegarde');
 	}
 };
 
@@ -141,7 +141,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (contentLength) {
 		const size = parseInt(contentLength, 10);
 		if (!isBackupSizeValid(size)) {
-			throw error(413, `Fichier trop volumineux. Taille maximale: ${getMaxFileSizeDisplay()}`);
+			throw error(413, `Fichier trop volumineux (${getMaxFileSizeDisplay()} au maximum)`);
 		}
 	}
 
@@ -150,7 +150,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'JSON invalide');
+		throw error(400, 'Corps de requête illisible');
 	}
 
 	// 5. Validate body structure
@@ -182,6 +182,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json(result);
 	} catch (err) {
 		console.error('Error restoring backup:', err);
-		throw error(500, 'Erreur lors de la restauration du backup');
+		throw error(500, 'Impossible de restaurer la sauvegarde');
 	}
 };

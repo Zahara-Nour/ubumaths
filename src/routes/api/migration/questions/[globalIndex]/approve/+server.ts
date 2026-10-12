@@ -40,7 +40,7 @@ import { generateStableQuestionHash } from '$lib/server/migration/hash-utils';
  * Response: 200 with approval confirmation
  * {
  *   success: true,
- *   message: "Question approved",
+ *   message: "Question approuvée",
  *   data: {
  *     globalIndex: number,
  *     approved: true,
@@ -60,12 +60,12 @@ import { generateStableQuestionHash } from '$lib/server/migration/hash-utils';
 export const POST: RequestHandler = async ({ request, locals, params }) => {
 	// ✅ SECURITY: Authentication check
 	if (!locals.profile) {
-		throw error(401, 'Authentication required');
+		throw error(401, 'Connexion requise');
 	}
 
 	// ✅ SECURITY: Authorization check (admin only)
 	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
+		throw error(403, 'Réservé aux administrateurs');
 	}
 
 	try {
@@ -74,7 +74,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		const globalIndexNum = parseInt(globalIndexStr, 10);
 
 		if (isNaN(globalIndexNum)) {
-			throw error(400, 'Global index must be a valid number');
+			throw error(400, 'Numéro de question invalide');
 		}
 
 		const indexValidation = globalIndexSchema.safeParse(globalIndexNum);
@@ -99,28 +99,28 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		const questionExists = await isValidGlobalIndex(globalIndex);
 
 		if (!questionExists) {
-			throw error(404, `Question with global index ${globalIndex} not found`);
+			throw error(404, `Question n° ${globalIndex} introuvable`);
 		}
 
 		// Load question to verify it can be transformed
 		const questionData = await loadQuestionWithTransform(globalIndex);
 
 		if (!questionData) {
-			throw error(404, `Question with global index ${globalIndex} not found`);
+			throw error(404, `Question n° ${globalIndex} introuvable`);
 		}
 
 		// Check if transformation was successful
 		if (!questionData.transformed) {
 			throw error(
 				400,
-				`Cannot approve question with transformation errors: ${questionData.transformError || 'Unknown error'}`
+				`Transformation en échec, question impossible à approuver : ${questionData.transformError || 'erreur inconnue'}`
 			);
 		}
 
 		// Load original question for hash generation
 		const originalQuestion = await loadQuestionByIndex(globalIndex);
 		if (!originalQuestion) {
-			throw error(404, `Original question not found for index ${globalIndex}`);
+			throw error(404, `Question d’origine introuvable (n° ${globalIndex})`);
 		}
 
 		// Generate hash from original question to check for edits
@@ -184,7 +184,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 		return json({
 			success: true,
-			message: editedJson ? 'Question approved (with edits)' : 'Question approved',
+			message: editedJson ? 'Question approuvée (avec modifications)' : 'Question approuvée',
 			data: approvalData
 		});
 	} catch (err) {
@@ -195,6 +195,6 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 		// Log and return generic error
 		console.error('Error approving question:', err);
-		throw error(500, 'Failed to approve question');
+		throw error(500, 'Impossible d’approuver la question');
 	}
 };

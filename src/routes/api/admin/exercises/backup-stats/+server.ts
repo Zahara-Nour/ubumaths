@@ -36,6 +36,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return json(stats);
 	} catch (err) {
 		console.error('Error fetching backup stats:', err);
-		throw error(500, 'Erreur lors de la recuperation des statistiques');
+		throw error(500, 'Impossible de charger les statistiques');
 	}
 };

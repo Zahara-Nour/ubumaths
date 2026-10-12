@@ -49,7 +49,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 	const configId = parseInt(params.id, 10);
 
 	if (isNaN(configId)) {
-		throw error(400, 'Invalid config ID');
+		throw error(400, 'Identifiant de configuration invalide');
 	}
 
 	try {
@@ -72,11 +72,11 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		if (checkError) {
 			console.error('Error checking config existence:', checkError);
-			throw error(500, 'Failed to check config existence');
+			throw error(500, 'Impossible de vérifier la configuration');
 		}
 
 		if (!existing) {
-			throw error(404, `Config with ID ${configId} not found`);
+			throw error(404, 'Configuration introuvable');
 		}
 
 		// 5. Build update object (convert camelCase to snake_case)
@@ -103,7 +103,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		if (updateError) {
 			console.error('Error updating config:', updateError);
-			throw error(500, 'Failed to update config');
+			throw error(500, 'Impossible de modifier la configuration');
 		}
 
 		// 7. Return updated config (convert snake_case to camelCase)
@@ -117,7 +117,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -143,7 +143,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	const configId = parseInt(params.id, 10);
 
 	if (isNaN(configId)) {
-		throw error(400, 'Invalid config ID');
+		throw error(400, 'Identifiant de configuration invalide');
 	}
 
 	// Typed-confirmation gate: parse the body defensively (a missing/invalid
@@ -169,15 +169,15 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 
 		if (checkError) {
 			console.error('Error checking config existence:', checkError);
-			throw error(500, 'Failed to check config existence');
+			throw error(500, 'Impossible de vérifier la configuration');
 		}
 
 		if (!existing) {
-			throw error(404, `Config with ID ${configId} not found`);
+			throw error(404, 'Configuration introuvable');
 		}
 
 		if (existing.is_active) {
-			throw error(400, 'Cannot delete active config. Deactivate it first.');
+			throw error(400, 'Configuration active : la désactiver avant de la supprimer');
 		}
 
 		// ✅ SECURITY: require the admin to have typed the exact config name.
@@ -191,13 +191,13 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 
 		if (deleteError) {
 			console.error('Error deleting config:', deleteError);
-			throw error(500, 'Failed to delete config');
+			throw error(500, 'Impossible de supprimer la configuration');
 		}
 
 		// 5. Return success
 		return json({
 			success: true,
-			message: `Config "${existing.config_name}" deleted successfully`
+			message: `Configuration « ${existing.config_name} » supprimée`
 		});
 	} catch (err) {
 		console.error('Error in DELETE /api/admin/vip-cards/configs/[id]:', err);
@@ -208,6 +208,6 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

@@ -28,7 +28,7 @@ type ExtendedProfile = Profile & {
 };
 
 // UUID validation schema
-const uuidSchema = z.string().uuid('Invalid user ID format');
+const uuidSchema = z.string().uuid('Identifiant d’utilisateur invalide');
 
 /**
  * PATCH /api/admin/users/[id]/status
@@ -72,7 +72,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 	// Validate UUID format
 	const uuidValidation = uuidSchema.safeParse(userId);
 	if (!uuidValidation.success) {
-		throw error(400, 'Invalid user ID format');
+		throw error(400, 'Identifiant d’utilisateur invalide');
 	}
 
 	try {
@@ -95,11 +95,11 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		if (checkError) {
 			console.error('Error checking user existence:', checkError);
-			throw error(500, 'Failed to check user existence');
+			throw error(500, 'Impossible de vérifier le compte');
 		}
 
 		if (!existingUser) {
-			throw error(404, `User with ID "${userId}" not found`);
+			throw error(404, 'Utilisateur introuvable');
 		}
 
 		// is_test est réservé à l'admin : on le refuse clairement ici plutôt que de
@@ -110,7 +110,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			approverProfile.role !== 'admin' &&
 			!locals.adminSupabase
 		) {
-			throw error(403, "Seul l'administrateur peut changer le statut « compte de test ».");
+			throw error(403, 'Seul l’administrateur peut changer le statut « compte de test »');
 		}
 
 		// Build update object with status fields
@@ -139,7 +139,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		if (updateError) {
 			console.error('Error updating user status:', updateError);
-			throw error(500, 'Failed to update user status');
+			throw error(500, 'Impossible de modifier le statut du compte');
 		}
 
 		// If approving, create notifications
@@ -236,7 +236,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		if (fetchError) {
 			console.error('Error fetching updated profile:', fetchError);
-			throw error(500, 'Failed to fetch updated profile');
+			throw error(500, 'Impossible de recharger le profil');
 		}
 
 		const extendedProfile: ExtendedProfile = updatedProfile;
@@ -253,6 +253,6 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			throw err;
 		}
 
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

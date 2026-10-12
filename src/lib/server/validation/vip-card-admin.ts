@@ -42,10 +42,10 @@ const exchangeReplaceRandomSchema = z.object({
 	mode: z.literal('replace_random'),
 	count: z
 		.number()
-		.int('Count must be an integer')
-		.min(1, 'Count must be at least 1')
-		.max(10, 'Count cannot exceed 10')
-		.finite('Count must be finite')
+		.int('Nombre de cartes : nombre entier attendu')
+		.min(1, 'Nombre de cartes : au moins 1')
+		.max(10, 'Nombre de cartes : 10 au maximum')
+		.finite('Nombre de cartes : nombre fini attendu')
 		.optional()
 });
 
@@ -54,20 +54,20 @@ const exchangeRarityPointsSchema = z.object({
 	targetRarity: vipCardRarityEnum,
 	pointsRequired: z
 		.number()
-		.int('Points must be an integer')
-		.positive('Points must be positive')
-		.finite('Points must be finite')
+		.int('Points : nombre entier attendu')
+		.positive('Points : nombre positif attendu')
+		.finite('Points : nombre fini attendu')
 });
 
 const exchangeDiscardForSpecificSchema = z.object({
 	mode: z.literal('discard_for_specific'),
 	discardCount: z
 		.number()
-		.int('Discard count must be an integer')
-		.min(1, 'Discard count must be at least 1')
-		.max(10, 'Discard count cannot exceed 10')
-		.finite('Discard count must be finite'),
-	targetCardId: z.string().min(1, 'Target card ID is required')
+		.int('Nombre de cartes à défausser : nombre entier attendu')
+		.min(1, 'Nombre de cartes à défausser : au moins 1')
+		.max(10, 'Nombre de cartes à défausser : 10 au maximum')
+		.finite('Nombre de cartes à défausser : nombre fini attendu'),
+	targetCardId: z.string().min(1, 'Carte à obtenir requise')
 });
 
 const exchangeCardActionSchema = z.discriminatedUnion('mode', [
@@ -83,10 +83,10 @@ const drawCardsActionSchema = z.object({
 	type: z.literal('draw_cards'),
 	count: z
 		.number()
-		.int('Count must be an integer')
-		.min(1, 'Count must be at least 1')
-		.max(10, 'Count cannot exceed 10')
-		.finite('Count must be finite'),
+		.int('Nombre de cartes : nombre entier attendu')
+		.min(1, 'Nombre de cartes : au moins 1')
+		.max(10, 'Nombre de cartes : 10 au maximum')
+		.finite('Nombre de cartes : nombre fini attendu'),
 	filters: drawCardsFiltersSchema.optional(),
 	context: activationContextEnum.optional()
 });
@@ -95,10 +95,10 @@ const removeWarningsActionSchema = z.object({
 	type: z.literal('remove_warnings'),
 	count: z
 		.number()
-		.int('Count must be an integer')
-		.min(1, 'Count must be at least 1')
-		.max(5, 'Count cannot exceed 5')
-		.finite('Count must be finite'),
+		.int('Nombre d’avertissements : nombre entier attendu')
+		.min(1, 'Nombre d’avertissements : au moins 1')
+		.max(5, 'Nombre d’avertissements : 5 au maximum')
+		.finite('Nombre d’avertissements : nombre fini attendu'),
 	warningType: warningTypeEnum.optional(),
 	context: activationContextEnum.optional()
 });
@@ -113,10 +113,10 @@ const addGidouillesActionSchema = z.object({
 	type: z.literal('add_gidouilles'),
 	amount: z
 		.number()
-		.int('Amount must be an integer')
-		.min(1, 'Amount must be at least 1')
-		.max(1000, 'Amount cannot exceed 1000')
-		.finite('Amount must be finite'),
+		.int('Gidouilles : nombre entier attendu')
+		.min(1, 'Gidouilles : au moins 1')
+		.max(1000, 'Gidouilles : 1000 au maximum')
+		.finite('Gidouilles : nombre fini attendu'),
 	context: activationContextEnum.optional()
 });
 
@@ -128,17 +128,17 @@ const chooseCardActionSchema = z
 		type: z.literal('choose_card'),
 		count: z
 			.number()
-			.int('Count must be an integer')
-			.min(1, 'Count must be at least 1')
-			.max(10, 'Count cannot exceed 10')
-			.finite('Count must be finite'),
+			.int('Nombre de cartes : nombre entier attendu')
+			.min(1, 'Nombre de cartes : au moins 1')
+			.max(10, 'Nombre de cartes : 10 au maximum')
+			.finite('Nombre de cartes : nombre fini attendu'),
 		// Filter modes (mutually exclusive)
 		filter: z.literal('all').optional(),
 		maxRarity: vipCardRarityEnum.optional(),
 		possibleCardIds: z
-			.array(z.string().min(1, 'Card ID cannot be empty'))
-			.min(1, 'At least one card ID is required when using specific cards filter')
-			.max(20, 'Cannot specify more than 20 cards')
+			.array(z.string().min(1, 'Identifiant de carte vide'))
+			.min(1, 'Au moins une carte requise pour le filtre « cartes précises »')
+			.max(20, '20 cartes au maximum')
 			.optional(),
 		context: activationContextEnum.optional()
 	})
@@ -152,7 +152,7 @@ const chooseCardActionSchema = z
 			return filterCount <= 1;
 		},
 		{
-			message: 'Only one filter mode can be used at a time (filter, maxRarity, or possibleCardIds)'
+			message: 'Un seul filtre à la fois (filter, maxRarity ou possibleCardIds)'
 		}
 	);
 
@@ -200,58 +200,57 @@ export const createTemplateSchema = z
 	.object({
 		id: z
 			.string()
-			.min(1, 'ID is required')
-			.max(50, 'ID must be 50 characters or less')
-			.regex(/^[a-z0-9-]+$/, 'ID must be lowercase alphanumeric with hyphens (kebab-case)'),
-		name: z
-			.string()
-			.min(1, 'Name is required')
-			.max(100, 'Name must be 100 characters or less')
-			.trim(),
+			.min(1, 'Identifiant requis')
+			.max(50, 'Identifiant : 50 caractères au maximum')
+			.regex(
+				/^[a-z0-9-]+$/,
+				'Identifiant : minuscules, chiffres et tirets seulement (ex. super-bonus)'
+			),
+		name: z.string().min(1, 'Nom requis').max(100, 'Nom : 100 caractères au maximum').trim(),
 		description: z
 			.string()
-			.min(1, 'Description is required')
-			.max(500, 'Description must be 500 characters or less')
+			.min(1, 'Description requise')
+			.max(500, 'Description : 500 caractères au maximum')
 			.trim(),
 		rarity: rarityEnum,
 		category: categoryEnum,
 		isEnabled: z.boolean(),
 		imagePath: z
 			.string()
-			.max(255, 'Image path must be 255 characters or less')
+			.max(255, 'Chemin d’image : 255 caractères au maximum')
 			.optional()
 			.default(''),
 		action: actionSchema.optional(),
 		usesTotal: z
 			.number()
-			.int('Uses total must be an integer')
-			.min(1, 'Uses total must be at least 1')
-			.max(99, 'Uses total cannot exceed 99')
-			.finite('Uses total must be finite')
+			.int('Nombre d’utilisations : nombre entier attendu')
+			.min(1, 'Nombre d’utilisations : au moins 1')
+			.max(99, 'Nombre d’utilisations : 99 au maximum')
+			.finite('Nombre d’utilisations : nombre fini attendu')
 			.nullable()
 			.optional()
 			.default(null),
 		sortOrder: z
 			.number()
-			.int('Sort order must be an integer')
-			.min(0, 'Sort order cannot be negative')
-			.max(999, 'Sort order cannot exceed 999')
-			.finite('Sort order must be finite')
+			.int('Ordre d’affichage : nombre entier attendu')
+			.min(0, 'Ordre d’affichage : 0 au minimum')
+			.max(999, 'Ordre d’affichage : 999 au maximum')
+			.finite('Ordre d’affichage : nombre fini attendu')
 			.default(0),
 		basePrice: z
 			.number()
-			.int('Base price must be an integer')
-			.min(0, 'Base price cannot be negative')
-			.max(10000, 'Base price cannot exceed 10000')
-			.finite('Base price must be finite')
+			.int('Prix de base : nombre entier attendu')
+			.min(0, 'Prix de base : 0 au minimum')
+			.max(10000, 'Prix de base : 10000 au maximum')
+			.finite('Prix de base : nombre fini attendu')
 			.default(0),
 		isPurchasable: z.boolean().default(true),
 		maxOwnedPerStudent: z
 			.number()
-			.int('Max owned per student must be an integer')
-			.min(1, 'Max owned per student must be at least 1')
-			.max(100, 'Max owned per student cannot exceed 100')
-			.finite('Max owned per student must be finite')
+			.int('Exemplaires par élève : nombre entier attendu')
+			.min(1, 'Exemplaires par élève : au moins 1')
+			.max(100, 'Exemplaires par élève : 100 au maximum')
+			.finite('Exemplaires par élève : nombre fini attendu')
 			.default(5)
 	})
 	.strict();
@@ -265,14 +264,14 @@ export const updateTemplateSchema = z
 	.object({
 		name: z
 			.string()
-			.min(1, 'Name cannot be empty')
-			.max(100, 'Name must be 100 characters or less')
+			.min(1, 'Nom vide')
+			.max(100, 'Nom : 100 caractères au maximum')
 			.trim()
 			.optional(),
 		description: z
 			.string()
-			.min(1, 'Description cannot be empty')
-			.max(500, 'Description must be 500 characters or less')
+			.min(1, 'Description vide')
+			.max(500, 'Description : 500 caractères au maximum')
 			.trim()
 			.optional(),
 		rarity: rarityEnum.optional(),
@@ -280,44 +279,44 @@ export const updateTemplateSchema = z
 		isEnabled: z.boolean().optional(),
 		imagePath: z
 			.string()
-			.min(1, 'Image path cannot be empty')
-			.max(255, 'Image path must be 255 characters or less')
+			.min(1, 'Chemin d’image vide')
+			.max(255, 'Chemin d’image : 255 caractères au maximum')
 			.optional(),
 		action: actionSchema.nullable().optional(),
 		usesTotal: z
 			.number()
-			.int('Uses total must be an integer')
-			.min(1, 'Uses total must be at least 1')
-			.max(99, 'Uses total cannot exceed 99')
-			.finite('Uses total must be finite')
+			.int('Nombre d’utilisations : nombre entier attendu')
+			.min(1, 'Nombre d’utilisations : au moins 1')
+			.max(99, 'Nombre d’utilisations : 99 au maximum')
+			.finite('Nombre d’utilisations : nombre fini attendu')
 			.nullable()
 			.optional(),
 		sortOrder: z
 			.number()
-			.int('Sort order must be an integer')
-			.min(0, 'Sort order cannot be negative')
-			.max(999, 'Sort order cannot exceed 999')
-			.finite('Sort order must be finite')
+			.int('Ordre d’affichage : nombre entier attendu')
+			.min(0, 'Ordre d’affichage : 0 au minimum')
+			.max(999, 'Ordre d’affichage : 999 au maximum')
+			.finite('Ordre d’affichage : nombre fini attendu')
 			.optional(),
 		basePrice: z
 			.number()
-			.int('Base price must be an integer')
-			.min(0, 'Base price cannot be negative')
-			.max(10000, 'Base price cannot exceed 10000')
-			.finite('Base price must be finite')
+			.int('Prix de base : nombre entier attendu')
+			.min(0, 'Prix de base : 0 au minimum')
+			.max(10000, 'Prix de base : 10000 au maximum')
+			.finite('Prix de base : nombre fini attendu')
 			.optional(),
 		isPurchasable: z.boolean().optional(),
 		maxOwnedPerStudent: z
 			.number()
-			.int('Max owned per student must be an integer')
-			.min(1, 'Max owned per student must be at least 1')
-			.max(100, 'Max owned per student cannot exceed 100')
-			.finite('Max owned per student must be finite')
+			.int('Exemplaires par élève : nombre entier attendu')
+			.min(1, 'Exemplaires par élève : au moins 1')
+			.max(100, 'Exemplaires par élève : 100 au maximum')
+			.finite('Exemplaires par élève : nombre fini attendu')
 			.optional()
 	})
 	.strict()
 	.refine((data) => Object.keys(data).length > 0, {
-		message: 'At least one field must be provided for update'
+		message: 'Aucun champ à modifier'
 	});
 
 /**
@@ -327,15 +326,15 @@ export const updateTemplateSchema = z
 export const uploadImageSchema = z
 	.object({
 		image: z
-			.instanceof(File, { message: 'Image file is required' })
+			.instanceof(File, { message: 'Image requise' })
 			.refine((file) => file.type === 'image/webp', {
-				message: 'Only WebP images are allowed'
+				message: 'Seules les images WebP sont acceptées'
 			})
 			.refine((file) => file.size > 0, {
-				message: 'Image file cannot be empty'
+				message: 'Image vide'
 			})
 			.refine((file) => file.size <= 2 * 1024 * 1024, {
-				message: 'Image must be less than 2MB'
+				message: 'Image trop lourde (2 Mo au maximum)'
 			})
 	})
 	.strict();
@@ -360,47 +359,47 @@ export const createConfigSchema = z
 	.object({
 		configName: z
 			.string()
-			.min(1, 'Config name is required')
-			.max(100, 'Config name must be 100 characters or less')
+			.min(1, 'Nom de la configuration requis')
+			.max(100, 'Nom de la configuration : 100 caractères au maximum')
 			.trim(),
 		commonProbability: z
 			.number()
-			.int('Common probability must be an integer')
-			.min(0, 'Common probability cannot be negative')
-			.max(100, 'Common probability cannot exceed 100')
-			.finite('Common probability must be finite'),
+			.int('Probabilité commune : nombre entier attendu')
+			.min(0, 'Probabilité commune : 0 au minimum')
+			.max(100, 'Probabilité commune : 100 au maximum')
+			.finite('Probabilité commune : nombre fini attendu'),
 		rareProbability: z
 			.number()
-			.int('Rare probability must be an integer')
-			.min(0, 'Rare probability cannot be negative')
-			.max(100, 'Rare probability cannot exceed 100')
-			.finite('Rare probability must be finite'),
+			.int('Probabilité rare : nombre entier attendu')
+			.min(0, 'Probabilité rare : 0 au minimum')
+			.max(100, 'Probabilité rare : 100 au maximum')
+			.finite('Probabilité rare : nombre fini attendu'),
 		epicProbability: z
 			.number()
-			.int('Epic probability must be an integer')
-			.min(0, 'Epic probability cannot be negative')
-			.max(100, 'Epic probability cannot exceed 100')
-			.finite('Epic probability must be finite'),
+			.int('Probabilité épique : nombre entier attendu')
+			.min(0, 'Probabilité épique : 0 au minimum')
+			.max(100, 'Probabilité épique : 100 au maximum')
+			.finite('Probabilité épique : nombre fini attendu'),
 		legendaryProbability: z
 			.number()
-			.int('Legendary probability must be an integer')
-			.min(0, 'Legendary probability cannot be negative')
-			.max(100, 'Legendary probability cannot exceed 100')
-			.finite('Legendary probability must be finite'),
+			.int('Probabilité légendaire : nombre entier attendu')
+			.min(0, 'Probabilité légendaire : 0 au minimum')
+			.max(100, 'Probabilité légendaire : 100 au maximum')
+			.finite('Probabilité légendaire : nombre fini attendu'),
 		description: z
 			.string()
-			.max(500, 'Description must be 500 characters or less')
+			.max(500, 'Description : 500 caractères au maximum')
 			.trim()
 			.optional()
 			.nullable(),
 		validFrom: z
 			.string()
-			.datetime({ message: 'Valid from must be a valid ISO 8601 datetime' })
+			.datetime({ message: 'Date de début invalide (format ISO 8601 attendu)' })
 			.optional()
 			.nullable(),
 		validUntil: z
 			.string()
-			.datetime({ message: 'Valid until must be a valid ISO 8601 datetime' })
+			.datetime({ message: 'Date de fin invalide (format ISO 8601 attendu)' })
 			.optional()
 			.nullable()
 	})
@@ -413,7 +412,7 @@ export const createConfigSchema = z
 				data.legendaryProbability ===
 			100,
 		{
-			message: 'Probabilities must sum to exactly 100%',
+			message: 'La somme des probabilités doit faire exactement 100 %',
 			path: ['commonProbability']
 		}
 	);
@@ -426,58 +425,58 @@ export const updateConfigSchema = z
 	.object({
 		configName: z
 			.string()
-			.min(1, 'Config name cannot be empty')
-			.max(100, 'Config name must be 100 characters or less')
+			.min(1, 'Nom de la configuration vide')
+			.max(100, 'Nom de la configuration : 100 caractères au maximum')
 			.trim()
 			.optional(),
 		commonProbability: z
 			.number()
-			.int('Common probability must be an integer')
-			.min(0, 'Common probability cannot be negative')
-			.max(100, 'Common probability cannot exceed 100')
-			.finite('Common probability must be finite')
+			.int('Probabilité commune : nombre entier attendu')
+			.min(0, 'Probabilité commune : 0 au minimum')
+			.max(100, 'Probabilité commune : 100 au maximum')
+			.finite('Probabilité commune : nombre fini attendu')
 			.optional(),
 		rareProbability: z
 			.number()
-			.int('Rare probability must be an integer')
-			.min(0, 'Rare probability cannot be negative')
-			.max(100, 'Rare probability cannot exceed 100')
-			.finite('Rare probability must be finite')
+			.int('Probabilité rare : nombre entier attendu')
+			.min(0, 'Probabilité rare : 0 au minimum')
+			.max(100, 'Probabilité rare : 100 au maximum')
+			.finite('Probabilité rare : nombre fini attendu')
 			.optional(),
 		epicProbability: z
 			.number()
-			.int('Epic probability must be an integer')
-			.min(0, 'Epic probability cannot be negative')
-			.max(100, 'Epic probability cannot exceed 100')
-			.finite('Epic probability must be finite')
+			.int('Probabilité épique : nombre entier attendu')
+			.min(0, 'Probabilité épique : 0 au minimum')
+			.max(100, 'Probabilité épique : 100 au maximum')
+			.finite('Probabilité épique : nombre fini attendu')
 			.optional(),
 		legendaryProbability: z
 			.number()
-			.int('Legendary probability must be an integer')
-			.min(0, 'Legendary probability cannot be negative')
-			.max(100, 'Legendary probability cannot exceed 100')
-			.finite('Legendary probability must be finite')
+			.int('Probabilité légendaire : nombre entier attendu')
+			.min(0, 'Probabilité légendaire : 0 au minimum')
+			.max(100, 'Probabilité légendaire : 100 au maximum')
+			.finite('Probabilité légendaire : nombre fini attendu')
 			.optional(),
 		description: z
 			.string()
-			.max(500, 'Description must be 500 characters or less')
+			.max(500, 'Description : 500 caractères au maximum')
 			.trim()
 			.optional()
 			.nullable(),
 		validFrom: z
 			.string()
-			.datetime({ message: 'Valid from must be a valid ISO 8601 datetime' })
+			.datetime({ message: 'Date de début invalide (format ISO 8601 attendu)' })
 			.optional()
 			.nullable(),
 		validUntil: z
 			.string()
-			.datetime({ message: 'Valid until must be a valid ISO 8601 datetime' })
+			.datetime({ message: 'Date de fin invalide (format ISO 8601 attendu)' })
 			.optional()
 			.nullable()
 	})
 	.strict()
 	.refine((data) => Object.keys(data).length > 0, {
-		message: 'At least one field must be provided for update'
+		message: 'Aucun champ à modifier'
 	})
 	.refine(
 		(data) => {
@@ -508,7 +507,7 @@ export const updateConfigSchema = z
 			return sum === 100;
 		},
 		{
-			message: 'If updating probabilities, all four must be provided and sum to 100%',
+			message: 'Les quatre probabilités se modifient ensemble, et leur somme doit faire 100 %',
 			path: ['commonProbability']
 		}
 	);
