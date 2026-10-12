@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 					`${(e as { path: string[]; message: string }).path.join('.')}: ${(e as { path: string[]; message: string }).message}`
 			)
 			.join('; ');
-		throw error(400, `Invalid query parameters: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { page, limit, category, tags, topic, grades, search } = queryValidation.data;
@@ -73,7 +73,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	if (result.error) {
 		console.error('Failed to fetch exercises:', result.error);
-		throw error(500, 'Failed to fetch exercises');
+		throw error(500, 'Impossible de charger les exercices');
 	}
 
 	// Validate response
@@ -117,7 +117,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 					`${(e as { path: string[]; message: string }).path.join('.')}: ${(e as { path: string[]; message: string }).message}`
 			)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data as Omit<ExerciseInsert, 'created_by'>;
@@ -131,7 +131,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			throw error(400, SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE);
 		}
 		console.error('Failed to create exercise:', result.error);
-		throw error(500, 'Failed to create exercise');
+		throw error(500, 'Impossible de créer l’exercice');
 	}
 
 	// Validate response

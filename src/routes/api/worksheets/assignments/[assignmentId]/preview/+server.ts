@@ -70,11 +70,11 @@ import type {
 // ============================================================================
 
 const previewQuerySchema = z.object({
-	studentId: z.string().uuid('Invalid student ID format').optional()
+	studentId: z.string().uuid('Identifiant d’élève invalide').optional()
 });
 
 const assignmentParamSchema = z.object({
-	assignmentId: z.string().uuid("ID d'assignation invalide")
+	assignmentId: z.string().uuid('Identifiant d’affectation invalide')
 });
 
 // ============================================================================
@@ -105,7 +105,7 @@ async function verifyTeacherAccess(
 		.single();
 
 	if (fetchError || !assignment) {
-		throw error(404, 'Assignation non trouvee');
+		throw error(404, 'Affectation introuvable');
 	}
 
 	// Check permissions
@@ -119,14 +119,14 @@ async function verifyTeacherAccess(
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
 		console.error('Rôle illisible :', profileError);
-		throw error(500, 'Impossible de vérifier vos droits');
+		throw error(500, 'Impossible de vérifier les droits d’accès');
 	}
 
 	const isCreator = assignment.created_by === userId;
 	const isAdmin = profile?.role === 'admin';
 
 	if (!isCreator && !isAdmin) {
-		throw error(403, 'Acces non autorise');
+		throw error(403, 'Accès refusé');
 	}
 
 	return { assignment };
@@ -140,7 +140,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Auth check
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Validate assignment ID parameter
@@ -189,7 +189,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			// panne doit se distinguer d'un refus mérité.
 			if (individualAccessError) {
 				console.error('Contrôle d’accès impossible :', individualAccessError);
-				throw error(500, 'Impossible de vérifier votre accès');
+				throw error(500, 'Impossible de vérifier l’accès');
 			}
 
 			// If not individually assigned, check class membership
@@ -205,7 +205,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				// panne doit se distinguer d'un refus mérité.
 				if (assignedClassesError) {
 					console.error('Contrôle d’accès impossible :', assignedClassesError);
-					throw error(500, 'Impossible de vérifier votre accès');
+					throw error(500, 'Impossible de vérifier l’accès');
 				}
 
 				if (assignedClasses && assignedClasses.length > 0) {
@@ -225,7 +225,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					// panne doit se distinguer d'un refus mérité.
 					if (membershipError) {
 						console.error('Contrôle d’accès impossible :', membershipError);
-						throw error(500, 'Impossible de vérifier votre accès');
+						throw error(500, 'Impossible de vérifier l’accès');
 					}
 
 					hasClassAccess = !!membership;
@@ -233,7 +233,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			}
 
 			if (!individualAccess && !hasClassAccess) {
-				throw error(400, "Cet eleve n'a pas acces a cette assignation");
+				throw error(400, 'Cet élève n’a pas accès à cette affectation');
 			}
 
 			// Get student name for display
@@ -283,7 +283,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 		if (assignmentError || !fullAssignment) {
 			console.error('[Preview API] Error fetching assignment:', assignmentError);
-			throw error(404, 'Devoir non trouve');
+			throw error(404, 'Affectation introuvable');
 		}
 
 		const getFirstOrSelf = <T>(val: T | T[]): T => (Array.isArray(val) ? val[0] : val);
@@ -334,7 +334,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 		if (exercisesError) {
 			console.error('[Preview API] Error fetching exercises:', exercisesError);
-			throw error(500, 'Erreur lors de la recuperation des exercices');
+			throw error(500, 'Impossible de charger les exercices');
 		}
 
 		// Fetch worksheet sections
@@ -485,6 +485,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		}
 
 		console.error('[Preview API] Unexpected error:', err);
-		throw error(500, 'Une erreur inattendue est survenue');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

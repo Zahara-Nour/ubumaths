@@ -34,7 +34,7 @@ export const PATCH: RequestHandler = async ({ request, params, locals }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		return json({ error: `Validation failed: ${errorMsg}` }, { status: 400 });
+		return json({ error: `Données invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	const updates: Partial<Pick<ExerciseAssignment, 'optional_deadline' | 'notes' | 'is_active'>> =
@@ -100,7 +100,7 @@ export const DELETE: RequestHandler = async ({ params, url, locals }) => {
 	return json(
 		{
 			success,
-			message: hardDelete ? 'Assignment deleted permanently' : 'Assignment deactivated'
+			message: hardDelete ? 'Affectation supprimée définitivement' : 'Affectation désactivée'
 		},
 		{ status: 200 }
 	);

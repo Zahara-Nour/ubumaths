@@ -332,10 +332,17 @@ B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
 - ⏳ **Étape 2 bis, APRÈS le `deploy:prod` qui livre #1147** : `REVOKE EXECUTE ON FUNCTION
 record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migration que
   l'étape 2 possible). L'appel imbriqué par `submit_riddle_attempt` garde son droit (DEFINER).
-- ❓ **À trancher par David** : `riddles.answer` et `riddles.correction` restent lisibles en
-  base par l'élève (requête directe, énigme du jour ou assignée). Options : table à part
-  lisible prof/admin seulement, ou REVOKE de colonne (pages prof et route de soumission à
-  passer par le client service).
-- Notés, hors périmètre : `upsert_mathemo_score` encore appelée avec le client de l'élève
-  (stats de classement déclarées par le navigateur, comme le score 2048) ; `RiddleCard` reste
-  sur « Réponse envoyée » si la soumission échoue (préexistant).
+- **Recos retenues par David (2026-10-12)** :
+  - **#1153 (mergée, migration `20261016100400` en prod, vérifiée)** : `upsert_mathemo_score` par
+    le client service, garde explicite (elle ajoutait `p_score` au total sans borne).
+  - **#1157 (mergée)** : un envoi d'énigme échoué rend la main à l'élève.
+  - **Réponse et correction réservées à l'auteur et à l'admin**, en 3 étapes :
+    - A **#1163 (mergée, `20261016100500` en prod, vérifiée : 2/2 recopiées, RLS, anon
+      fermé)** : table `riddle_solutions` + déclencheur de recopie ;
+    - B0 **#1166 (mergée, `20261016100600` en prod)** : `riddles.correction` vaut '' par défaut ;
+    - B (en cours, branche `feat/enigmes-solutions-lecture`) : tout le code lit et écrit
+      `riddle_solutions`, plus rien sur `riddles.answer/correction` ;
+    - C ⛔ destructive, APRÈS le deploy de B : DROP des deux colonnes + déclencheur — s'arrêter,
+      montrer à David la réconciliation et le grep d'usages.
+- ⏳ **Une migration après le prochain `deploy:prod`** : REVOKE EXECUTE à `authenticated` de
+  `submit_riddle_attempt`, `record_game_reward`, `upsert_mathemo_score`.

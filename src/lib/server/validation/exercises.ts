@@ -45,10 +45,10 @@ export {
  */
 const functionIdentifierSchema = z
 	.string()
-	.min(1, 'Function name cannot be empty')
+	.min(1, 'Le nom de fonction ne peut pas être vide')
 	.regex(
 		/^[a-zA-Z][a-zA-Z0-9_]*$/,
-		'Function name must start with a letter and contain only letters, numbers, or underscores'
+		'Le nom de fonction doit commencer par une lettre et ne contenir que des lettres, des chiffres ou des tirets bas'
 	);
 
 // ============================================================================
@@ -59,8 +59,8 @@ const functionIdentifierSchema = z
  * Schema for exercise variables (used in variations and shared defaults)
  */
 export const variableSchema = z.object({
-	name: z.string().trim().min(1, 'Variable name required').max(50, 'Variable name too long'),
-	expression: z.string().trim().min(1, 'Expression required').max(1000, 'Expression too long'),
+	name: z.string().trim().min(1, 'Nom de variable requis').max(50, 'Nom de variable trop long'),
+	expression: z.string().trim().min(1, 'Expression requise').max(1000, 'Expression trop longue'),
 	displayOptions: z.record(z.string(), z.any()).optional()
 });
 
@@ -75,19 +75,19 @@ export const exerciseHintSchema = z
 		id: z
 			.string()
 			.trim()
-			.min(1, 'Hint ID is required')
-			.max(50, 'Hint ID too long')
+			.min(1, 'Identifiant d’indice requis')
+			.max(50, 'Identifiant d’indice trop long')
 			.regex(
 				/^[a-zA-Z][a-zA-Z0-9_-]*$/,
-				'Hint ID must start with a letter and contain only letters, numbers, dashes, and underscores'
+				'L’identifiant d’indice doit commencer par une lettre et ne contenir que des lettres, des chiffres, des tirets ou des tirets bas'
 			),
 		type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image', 'ubumark'], {
-			message: 'Hint type must be video, pdf, link, geogebra, image, or ubumark'
+			message: 'Type d’indice invalide (video, pdf, link, geogebra, image ou ubumark)'
 		}),
-		url: z.string().url('Invalid URL').max(2000, 'URL too long').optional(),
-		content: z.string().trim().max(5000, 'Content too long').optional(),
-		title: z.string().trim().min(1, 'Title is required').max(200, 'Title too long'),
-		description: z.string().trim().max(500, 'Description too long').optional()
+		url: z.string().url('Adresse invalide').max(2000, 'Adresse trop longue').optional(),
+		content: z.string().trim().max(5000, 'Contenu trop long').optional(),
+		title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long'),
+		description: z.string().trim().max(500, 'Description trop longue').optional()
 	})
 	.refine(
 		(data) => {
@@ -97,7 +97,7 @@ export const exerciseHintSchema = z
 			return data.url && data.url.trim().length > 0;
 		},
 		{
-			message: 'URL is required for non-ubumark hints, content is required for ubumark hints'
+			message: 'Un indice ubumark demande un contenu, les autres indices une adresse'
 		}
 	);
 
@@ -113,25 +113,32 @@ export const exerciseTranslationsSchema = z
 	.object({
 		en: z
 			.object({
-				statement_md: z.string().trim().max(50000, 'Statement too long').optional(),
-				solution_md: z.string().trim().max(50000, 'Solution too long').optional(),
+				statement_md: z.string().trim().max(50000, 'Énoncé trop long').optional(),
+				solution_md: z.string().trim().max(50000, 'Correction trop longue').optional(),
 				// Keyed by hint id, and carrying text only: id/type/url stay in the
 				// French hint so a translation can never break a {{hint:id}} reference.
 				hints: z
 					.record(
 						z
 							.string()
-							.regex(/^[a-zA-Z][a-zA-Z0-9_-]*$/, 'Invalid hint id')
-							.max(50, 'Hint id too long'),
+							.regex(/^[a-zA-Z][a-zA-Z0-9_-]*$/, 'Identifiant d’indice invalide')
+							.max(50, 'Identifiant d’indice trop long'),
 						z
 							.object({
-								title: z.string().trim().max(200, 'Hint title too long').optional(),
-								description: z.string().trim().max(1000, 'Hint description too long').optional(),
-								content: z.string().trim().max(5000, 'Hint content too long').optional()
+								title: z.string().trim().max(200, 'Titre d’indice trop long').optional(),
+								description: z
+									.string()
+									.trim()
+									.max(1000, 'Description d’indice trop longue')
+									.optional(),
+								content: z.string().trim().max(5000, 'Contenu d’indice trop long').optional()
 							})
 							.strict()
 					)
-					.refine((hints) => Object.keys(hints).length <= 20, 'Maximum 20 hints per variation')
+					.refine(
+						(hints) => Object.keys(hints).length <= 20,
+						'20 indices au maximum par niveau de guidage'
+					)
 					.optional()
 			})
 			.strict()
@@ -144,15 +151,21 @@ export const exerciseTranslationsSchema = z
  */
 export const exerciseVariationSchema = z
 	.object({
-		label: z.string().trim().min(1, 'Label is required').max(50, 'Label too long'),
-		statement_md: z
+		label: z.string().trim().min(1, 'Libellé requis').max(50, 'Libellé trop long'),
+		statement_md: z.string().trim().min(1, 'Énoncé requis').max(50000, 'Énoncé trop long'),
+		solution_md: z
 			.string()
 			.trim()
-			.min(1, 'Statement is required')
-			.max(50000, 'Statement too long'),
-		solution_md: z.string().trim().min(1, 'Solution is required').max(50000, 'Solution too long'),
-		variables: z.array(variableSchema).max(100, 'Maximum 100 variables per variation').optional(),
-		hints: z.array(exerciseHintSchema).max(20, 'Maximum 20 hints per variation').optional(),
+			.min(1, 'Correction requise')
+			.max(50000, 'Correction trop longue'),
+		variables: z
+			.array(variableSchema)
+			.max(100, '100 variables au maximum par niveau de guidage')
+			.optional(),
+		hints: z
+			.array(exerciseHintSchema)
+			.max(20, '20 indices au maximum par niveau de guidage')
+			.optional(),
 		translations: exerciseTranslationsSchema.optional()
 	})
 	.refine(
@@ -175,7 +188,7 @@ export const exerciseVariationSchema = z
 
 			return referencedIds.every((id) => hintIds.has(id));
 		},
-		{ message: 'All {{hint:id}} references must have corresponding hints defined' }
+		{ message: 'Chaque référence {{hint:id}} doit renvoyer à un indice défini' }
 	);
 
 /**
@@ -183,9 +196,9 @@ export const exerciseVariationSchema = z
  */
 export const sharedExerciseDefaultsSchema = z
 	.object({
-		variables: z.array(variableSchema).max(100, 'Maximum 100 shared variables').optional(),
-		statement_md: z.string().trim().max(50000, 'Statement too long').optional(),
-		solution_md: z.string().trim().max(50000, 'Solution too long').optional(),
+		variables: z.array(variableSchema).max(100, '100 variables partagées au maximum').optional(),
+		statement_md: z.string().trim().max(50000, 'Énoncé trop long').optional(),
+		solution_md: z.string().trim().max(50000, 'Correction trop longue').optional(),
 		translations: exerciseTranslationsSchema.optional()
 	})
 	.optional();
@@ -193,8 +206,8 @@ export const sharedExerciseDefaultsSchema = z
 // Base schema without refinement (needed for .partial() in Zod v4)
 const exerciseBaseSchema = z.object({
 	// Statement and solution are optional when using variations system
-	statement_md: z.string().trim().max(50000, 'Statement too long').optional(),
-	solution_md: z.string().trim().max(50000, 'Solution too long').optional(),
+	statement_md: z.string().trim().max(50000, 'Énoncé trop long').optional(),
+	solution_md: z.string().trim().max(50000, 'Correction trop longue').optional(),
 	category: z.enum(
 		[
 			'automatisme',
@@ -212,26 +225,29 @@ const exerciseBaseSchema = z.object({
 	slug: z
 		.string()
 		.trim()
-		.min(3, 'Slug must be at least 3 characters')
-		.max(100, 'Slug too long')
-		.regex(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/, 'Slug must be lowercase alphanumeric with dashes')
+		.min(3, 'Le slug doit compter au moins 3 caractères')
+		.max(100, 'Slug trop long')
+		.regex(
+			/^[a-z0-9][a-z0-9-]*[a-z0-9]$/,
+			'Le slug ne doit contenir que des minuscules, des chiffres et des tirets'
+		)
 		.optional()
 		.nullable(),
 	tags: z
 		.array(z.string().trim().min(1).max(50))
-		.max(20, 'Maximum 20 tags allowed')
+		.max(20, '20 mots-clés au maximum')
 		.default([])
 		.optional()
 		.nullable(),
 	grades: z
 		.array(z.string().trim().min(1).max(20))
-		.max(7, 'Maximum 7 grade levels')
+		.max(7, '7 niveaux au maximum')
 		.optional()
 		.nullable()
 		.default([]),
-	topic: z.string().trim().max(100, 'Topic too long').optional().nullable(),
-	source: z.string().trim().max(200, 'Source too long').optional().nullable(),
-	title: z.string().trim().max(200, 'Title too long').optional().nullable(),
+	topic: z.string().trim().max(100, 'Notion trop longue').optional().nullable(),
+	source: z.string().trim().max(200, 'Source trop longue').optional().nullable(),
+	title: z.string().trim().max(200, 'Titre trop long').optional().nullable(),
 	// Legacy variables format (kept for backward compatibility)
 	variables: z
 		.union([z.array(z.any()), z.record(z.string(), z.any())])
@@ -247,14 +263,14 @@ const exerciseBaseSchema = z.object({
 		.array(
 			z.object({
 				type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image'], {
-					message: 'Resource type must be video, pdf, link, geogebra, or image'
+					message: 'Type de ressource invalide (video, pdf, link, geogebra ou image)'
 				}),
-				url: z.string().url('Invalid URL').max(2000, 'URL too long'),
-				title: z.string().trim().min(1, 'Title required').max(200, 'Title too long'),
-				description: z.string().trim().max(500, 'Description too long').optional()
+				url: z.string().url('Adresse invalide').max(2000, 'Adresse trop longue'),
+				title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long'),
+				description: z.string().trim().max(500, 'Description trop longue').optional()
 			})
 		)
-		.max(20, 'Maximum 20 resources')
+		.max(20, '20 ressources au maximum')
 		.optional()
 		.nullable()
 		.default([]),
@@ -270,15 +286,15 @@ const exerciseBaseSchema = z.object({
 	 */
 	generic_functions: z
 		.array(functionIdentifierSchema)
-		.max(50, 'Maximum 50 function names')
+		.max(50, '50 noms de fonction au maximum')
 		.optional()
 		.nullable(),
 	// NEW: Variations system
 	shared: sharedExerciseDefaultsSchema,
 	variations: z
 		.array(exerciseVariationSchema)
-		.min(1, 'At least one variation required')
-		.max(10, 'Maximum 10 variations')
+		.min(1, 'Au moins un niveau de guidage requis')
+		.max(10, '10 niveaux de guidage au maximum')
 		.optional()
 });
 
@@ -298,7 +314,7 @@ export const createExerciseSchema = exerciseBaseSchema
 
 			return hasVariations || hasLegacy;
 		},
-		{ message: 'Must provide either variations or statement_md/solution_md' }
+		{ message: 'Il faut des niveaux de guidage, ou un énoncé et une correction' }
 	)
 	.refine(searchIndexedRequiresPublic.check, searchIndexedRequiresPublic.params)
 	// Non coché à la création tant que le professeur ne le demande pas.
@@ -323,15 +339,15 @@ export const updateExerciseSchema = exerciseBaseSchema
 export const listExercisesQuerySchema = z.object({
 	page: z.coerce
 		.number()
-		.int('Page must be an integer')
-		.positive('Page must be positive')
-		.max(1000, 'Page too high')
+		.int('La page doit être un nombre entier')
+		.positive('La page doit être positive')
+		.max(1000, 'Numéro de page trop grand')
 		.default(1),
 	limit: z.coerce
 		.number()
-		.int('Limit must be an integer')
-		.positive('Limit must be positive')
-		.max(100, 'Maximum 100 items per page')
+		.int('La limite doit être un nombre entier')
+		.positive('La limite doit être positive')
+		.max(100, '100 éléments au maximum par page')
 		.default(50),
 	category: z
 		.enum([
@@ -362,7 +378,7 @@ export const listExercisesQuerySchema = z.object({
 		.pipe(z.array(gradeFlexibleSchema).optional()), // Validates grade codes
 	topic: z.string().trim().max(100).optional(),
 	tags: z.string().max(500).optional(), // Comma-separated
-	search: z.string().trim().max(200, 'Search query too long').optional()
+	search: z.string().trim().max(200, 'Recherche trop longue').optional()
 });
 
 /**
@@ -371,13 +387,16 @@ export const listExercisesQuerySchema = z.object({
 export const bulkAssignSchema = z
 	.object({
 		students: z
-			.array(z.string().uuid('Invalid student ID'))
-			.max(200, 'Maximum 200 students')
+			.array(z.string().uuid('Identifiant d’élève invalide'))
+			.max(200, '200 élèves au maximum')
 			.optional(),
-		classes: z.array(z.string().uuid('Invalid class ID')).max(50, 'Maximum 50 classes').optional(),
+		classes: z
+			.array(z.string().uuid('Identifiant de classe invalide'))
+			.max(50, '50 classes au maximum')
+			.optional(),
 		make_public: z.boolean().optional(),
-		optional_deadline: z.string().datetime('Invalid datetime format').optional().nullable(),
-		notes: z.string().trim().max(1000, 'Notes too long').optional()
+		optional_deadline: z.string().datetime('Date invalide').optional().nullable(),
+		notes: z.string().trim().max(1000, 'Notes trop longues').optional()
 	})
 	.refine(
 		(data) =>
@@ -385,7 +404,7 @@ export const bulkAssignSchema = z
 			(data.classes && data.classes.length > 0) ||
 			data.make_public === true,
 		{
-			message: 'Must specify at least one student, class, or make_public=true'
+			message: 'Choisir au moins un élève ou une classe, ou rendre l’exercice public'
 		}
 	);
 
@@ -395,12 +414,12 @@ export const bulkAssignSchema = z
 export const singleAssignSchema = z
 	.object({
 		assigned_to_type: z.enum(['student', 'class', 'public'], {
-			message: 'Invalid assignment type'
+			message: 'Type d’affectation invalide'
 		}),
-		student_id: z.string().uuid('Invalid student ID').optional(),
-		class_id: z.string().uuid('Invalid class ID').optional(),
-		optional_deadline: z.string().datetime('Invalid datetime format').optional().nullable(),
-		notes: z.string().trim().max(1000, 'Notes too long').optional()
+		student_id: z.string().uuid('Identifiant d’élève invalide').optional(),
+		class_id: z.string().uuid('Identifiant de classe invalide').optional(),
+		optional_deadline: z.string().datetime('Date invalide').optional().nullable(),
+		notes: z.string().trim().max(1000, 'Notes trop longues').optional()
 	})
 	.refine(
 		(data) => {
@@ -409,7 +428,8 @@ export const singleAssignSchema = z
 			return true; // public doesn't need student_id or class_id
 		},
 		{
-			message: 'Must provide student_id for student assignments or class_id for class assignments'
+			message:
+				'Une affectation à un élève demande un élève, une affectation à une classe demande une classe'
 		}
 	);
 
@@ -419,7 +439,7 @@ export const singleAssignSchema = z
 export const assignmentQuerySchema = z.object({
 	type: z
 		.enum(['student', 'class', 'public'], {
-			message: 'Invalid type filter'
+			message: 'Filtre de type invalide'
 		})
 		.optional(),
 	active: z
@@ -452,7 +472,7 @@ export const studentExerciseFiltersSchema = z.object({
 		.string()
 		.optional()
 		.transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
-	search: z.string().trim().max(200, 'Search query too long').optional()
+	search: z.string().trim().max(200, 'Recherche trop longue').optional()
 });
 
 /**
@@ -460,11 +480,11 @@ export const studentExerciseFiltersSchema = z.object({
  */
 export const exportExercisesSchema = z.object({
 	exercise_ids: z
-		.array(z.string().uuid('Invalid exercise ID'))
-		.min(1, 'At least one exercise ID required')
-		.max(100, 'Maximum 100 exercises per export'),
+		.array(z.string().uuid('Identifiant d’exercice invalide'))
+		.min(1, 'Au moins un exercice requis')
+		.max(100, '100 exercices au maximum par export'),
 	format: z.enum(['json', 'markdown'], {
-		message: 'Format must be "json" or "markdown"'
+		message: 'Le format doit être « json » ou « markdown »'
 	}),
 	pretty_print: z.boolean().default(true).optional()
 });
@@ -475,7 +495,7 @@ export const exportExercisesSchema = z.object({
 export const exportSingleExerciseQuerySchema = z.object({
 	format: z
 		.enum(['json', 'markdown'], {
-			message: 'Format must be "json" or "markdown"'
+			message: 'Le format doit être « json » ou « markdown »'
 		})
 		.default('json'),
 	pretty: z
@@ -488,7 +508,7 @@ export const exportSingleExerciseQuerySchema = z.object({
  * Schema for marking exercise as viewed (POST /api/exercises/[id]/view)
  */
 export const viewExerciseSchema = z.object({
-	assignment_id: z.string().uuid('Invalid assignment ID').optional()
+	assignment_id: z.string().uuid('Identifiant d’affectation invalide').optional()
 });
 
 /**
@@ -497,14 +517,14 @@ export const viewExerciseSchema = z.object({
  */
 export const importExercisesSchema = z.object({
 	format: z.enum(['json', 'markdown'], {
-		message: 'Format must be "json" or "markdown"'
+		message: 'Le format doit être « json » ou « markdown »'
 	}),
-	content: z.union([z.string().min(1, 'Content is required'), z.record(z.string(), z.any())]),
+	content: z.union([z.string().min(1, 'Contenu requis'), z.record(z.string(), z.any())]),
 	options: z
 		.object({
 			on_duplicate: z
 				.enum(['skip', 'replace', 'create-copy'], {
-					message: 'on_duplicate must be "skip", "replace", or "create-copy"'
+					message: 'Option de doublon invalide (« skip », « replace » ou « create-copy »)'
 				})
 				.default('skip')
 				.optional(),
@@ -518,12 +538,12 @@ export const importExercisesSchema = z.object({
  */
 export const updateAssignmentSchema = z
 	.object({
-		optional_deadline: z.string().datetime('Invalid datetime format').optional().nullable(),
-		notes: z.string().trim().max(1000, 'Notes too long').optional(),
+		optional_deadline: z.string().datetime('Date invalide').optional().nullable(),
+		notes: z.string().trim().max(1000, 'Notes trop longues').optional(),
 		is_active: z.boolean().optional()
 	})
 	.refine((data) => Object.keys(data).length > 0, {
-		message: 'At least one field must be provided for update'
+		message: 'Aucune modification demandée'
 	});
 
 // ============================================================================
@@ -814,8 +834,8 @@ export const completeExerciseResponseSchema = z.object({
 export const shareTokenQuerySchema = z.object({
 	token: z
 		.string()
-		.length(16, 'Token must be exactly 16 characters')
-		.regex(/^[A-Za-z0-9]+$/, 'Token must be alphanumeric')
+		.length(16, 'Le jeton doit compter exactement 16 caractères')
+		.regex(/^[A-Za-z0-9]+$/, 'Le jeton ne doit contenir que des lettres et des chiffres')
 		.optional()
 });
 
@@ -825,9 +845,9 @@ export const shareTokenQuerySchema = z.object({
 export const createShareTokenSchema = z.object({
 	expires_in_days: z
 		.number()
-		.int('Days must be an integer')
-		.min(1, 'Minimum 1 day')
-		.max(365, 'Maximum 365 days')
+		.int('Le nombre de jours doit être entier')
+		.min(1, '1 jour au minimum')
+		.max(365, '365 jours au maximum')
 		.optional()
 		.nullable()
 });
@@ -836,7 +856,7 @@ export const createShareTokenSchema = z.object({
  * Schema for revoking a share token (DELETE /api/exercises/[id]/share/[tokenId])
  */
 export const revokeShareTokenSchema = z.object({
-	token_id: z.string().uuid('Invalid token ID')
+	token_id: z.string().uuid('Identifiant de jeton invalide')
 });
 
 /**

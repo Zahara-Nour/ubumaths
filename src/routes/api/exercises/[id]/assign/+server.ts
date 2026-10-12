@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 			const errorMsg = validation.error.issues
 				.map((e) => `${(e as ZodIssue).path.join('.')}: ${e.message}`)
 				.join('; ');
-			throw error(400, `Validation failed: ${errorMsg}`);
+			throw error(400, `Données invalides : ${errorMsg}`);
 		}
 
 		const bulkData: BulkAssignmentData = {
@@ -77,7 +77,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 		return json(
 			{
 				count,
-				message: `${count} assignment(s) created successfully`
+				message: `Affectations créées : ${count}`
 			},
 			{ status: 201 }
 		);
@@ -89,7 +89,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const assignmentData: CreateExerciseAssignment = {
@@ -135,7 +135,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		const errorMsg = queryValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${e.message}`)
 			.join('; ');
-		return json({ error: `Invalid query parameters: ${errorMsg}` }, { status: 400 });
+		return json({ error: `Paramètres invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	const filters: TeacherAssignmentFilters = {
@@ -161,7 +161,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 
 	if (fetchError) {
 		console.error('Failed to fetch assignments:', fetchError);
-		return json({ error: 'Failed to fetch assignments' }, { status: 500 });
+		return json({ error: 'Impossible de charger les affectations' }, { status: 500 });
 	}
 
 	return json(assignments);

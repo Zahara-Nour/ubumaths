@@ -384,7 +384,8 @@ service ; plus de policy d'insertion pour l'élève) et `riddle_progress` est fe
 (migration `20261016100500`, test `tests/integration/enigmes-solutions-a-part.test.ts`). En
 transition, `riddles.answer` / `riddles.correction` restent la source (déclencheur
 `trigger_sync_riddle_solution`) et sont encore lisibles par l'élève, jusqu'à leur suppression
-(étape C, après le deploy du code qui lit `riddle_solutions`).
+(étape C, après le deploy du code qui lit `riddle_solutions`) ; `riddles.correction` vaut `''` par
+défaut (`20261016100600`) pour que le code puisse ne plus la nommer.
 `mathemo_scores`, `minesweeper_student_achievements`, `minesweeper_player_stats`,
 `marketplace_listing_views`, `game_2048_scores` : lecture par soi seul, prof et admin compris
 (migration `20261015090600`, test `tests/integration/lectures-ouvertes-fermees.test.ts`).

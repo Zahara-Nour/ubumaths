@@ -47,7 +47,7 @@ describe('common validation schemas', () => {
 				const result = uuidSchema.safeParse(uuid);
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('Invalid UUID');
+					expect(result.error.issues[0].message).toContain('Identifiant invalide');
 				}
 			});
 		});
@@ -345,7 +345,7 @@ describe('common validation schemas', () => {
 
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error).toContain('Invalid UUID');
+				expect(result.error).toContain('Identifiant invalide');
 			}
 		});
 

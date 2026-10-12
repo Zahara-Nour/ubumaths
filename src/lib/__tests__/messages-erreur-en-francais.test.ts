@@ -112,12 +112,17 @@ const ERROR_4XX = /\berror\(\s*4\d\d\s*,\s*(?:\{\s*message:\s*)?(['"`])((?:\\.|(
 const API_MESSAGE =
 	/(?:\berror\(\s*\d{3}\s*,\s*(?:\{\s*message:\s*)?|(?<=[{,]\s*)(?:error|message):\s*)(['"`])((?:\\.|(?!\1)[\s\S])*?)\1/g;
 
-/** Dossiers d'API dont les messages sont traduits ; lot A : ce que voient les élèves. */
+/**
+ * Dossiers d'API dont les messages sont traduits.
+ * Lot A : ce que voient les élèves ; lot B : les fiches et les exercices.
+ */
 const TRANSLATED_API_DIRS = [
 	'src/routes/api/vip-cards',
 	'src/routes/api/srs',
 	'src/routes/api/student/bonus-history',
-	'src/routes/api/student/gidouilles-activity'
+	'src/routes/api/student/gidouilles-activity',
+	'src/routes/api/worksheets',
+	'src/routes/api/exercises'
 ];
 
 // ============================================================================

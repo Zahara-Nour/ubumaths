@@ -10,9 +10,9 @@ import { z } from 'zod';
 
 const slugSchema = z
 	.string()
-	.min(3, 'Slug too short')
-	.max(100, 'Slug too long')
-	.regex(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/, 'Invalid slug format');
+	.min(3, 'Slug trop court')
+	.max(100, 'Slug trop long')
+	.regex(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/, 'Slug invalide');
 
 /**
  * GET /api/exercises/by-slug/[slug]
@@ -25,14 +25,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Validate slug format
 	const validation = slugSchema.safeParse(slug);
 	if (!validation.success) {
-		throw error(400, 'Invalid slug format');
+		throw error(400, 'Slug invalide');
 	}
 
 	// Fetch exercise by slug
 	const result = await getExerciseBySlug(locals.supabase, slug);
 
 	if (result.error || !result.data) {
-		throw error(404, 'Exercise not found');
+		throw error(404, 'Exercice introuvable');
 	}
 
 	const exercise = result.data;
@@ -43,7 +43,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const isPublic = exercise.is_public === true;
 
 	if (!isPublic && !isCreator) {
-		throw error(403, 'This exercise is not public');
+		throw error(403, 'Cet exercice n’est pas public');
 	}
 
 	return json({ exercise });
