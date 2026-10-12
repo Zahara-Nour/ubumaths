@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { isHttpError } from '@sveltejs/kit';
+import { isHttpError, isRedirect } from '@sveltejs/kit';
 import type { Database } from '$lib/types/database';
 
 type ExerciseRow = Database['public']['Tables']['exercises']['Row'];
@@ -62,6 +62,20 @@ async function loadPage(
 		url: new URL(`https://www.chiph.re/exercice/${slug}${query}`)
 	});
 	return result;
+}
+
+/** Redirection levée par le chargement. */
+async function loadRedirect(
+	query: string,
+	slug = 'pythagore-zz'
+): Promise<{ status: number; location: string }> {
+	try {
+		await loadPage(query, slug);
+	} catch (e) {
+		if (isRedirect(e)) return { status: e.status, location: e.location };
+		throw e;
+	}
+	throw new Error('le chargement n’a pas redirigé');
 }
 
 /** Statut de l'erreur HTTP levée par le chargement. */
@@ -120,17 +134,55 @@ describe('/exercice/[slug] — noindex', () => {
 	});
 });
 
-describe('/exercice/[slug] — le jeton doit être celui de l’exercice de l’adresse', () => {
-	it('jeton d’un AUTRE exercice → 404, l’autre exercice n’est pas affiché', async () => {
+describe('/exercice/[slug] — jeton et adresse', () => {
+	it('jeton valide + ancien slug (renommé) → redirection 307 vers le nouveau slug, query gardée', async () => {
+		vi.mocked(getExerciseByShareToken).mockResolvedValue({
+			data: exerciseRow({ slug: 'nouveau-slug', is_public: false }) as never,
+			error: null
+		});
+		expect(await loadRedirect('?token=abc&variation=guided', 'ancien-slug')).toEqual({
+			status: 307,
+			location: '/exercice/nouveau-slug?token=abc&variation=guided'
+		});
+	});
+
+	it('jeton d’un AUTRE exercice → redirection vers l’adresse de cet exercice', async () => {
 		vi.mocked(getExerciseByShareToken).mockResolvedValue({
 			data: exerciseRow({
 				id: '550e8400-e29b-41d4-a716-446655440099',
-				slug: 'autre-exercice',
+				slug: null,
 				is_public: false
 			}) as never,
 			error: null
 		});
-		expect(await loadStatus('?token=abc')).toBe(404);
+		expect(await loadRedirect('?token=abc')).toEqual({
+			status: 307,
+			location: '/exercice/550e8400-e29b-41d4-a716-446655440099?token=abc'
+		});
+	});
+
+	it('exercice A public ouvert avec le jeton de B → redirection vers B (le jeton prime)', async () => {
+		vi.mocked(getExerciseBySlug).mockResolvedValue({ data: exerciseRow(), error: null });
+		vi.mocked(getExerciseByShareToken).mockResolvedValue({
+			data: exerciseRow({
+				id: '550e8400-e29b-41d4-a716-446655440099',
+				slug: 'exercice-b'
+			}) as never,
+			error: null
+		});
+		expect((await loadRedirect('?token=abc')).location).toBe('/exercice/exercice-b?token=abc');
+	});
+
+	it('jeton invalide ou révoqué + exercice public → l’exercice de l’adresse, sans redirection', async () => {
+		vi.mocked(getExerciseByShareToken).mockResolvedValue({ data: null, error: 'Token invalide' });
+		vi.mocked(getExerciseBySlug).mockResolvedValue({ data: exerciseRow(), error: null });
+		expect((await loadPage('?token=abc')).exercise.id).toBe('550e8400-e29b-41d4-a716-446655440003');
+	});
+
+	it('jeton invalide + adresse inconnue → 404', async () => {
+		vi.mocked(getExerciseByShareToken).mockResolvedValue({ data: null, error: 'Token invalide' });
+		vi.mocked(getExerciseBySlug).mockResolvedValue({ data: null, error: null });
+		expect(await loadStatus('?token=abc', 'inconnu')).toBe(404);
 	});
 
 	it('jeton de cet exercice, adresse par slug → affiché', async () => {

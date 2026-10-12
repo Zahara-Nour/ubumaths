@@ -10,7 +10,7 @@
  * ouvert sans jeton — la page pose alors `<meta name="robots" content="noindex">`.
  */
 
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getExerciseBySlug, getExercise } from '$lib/server/exercises';
 import { getExerciseByShareToken } from '$lib/server/exercise-share-tokens';
@@ -70,11 +70,13 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 			// Store error but don't throw yet - exercise might be public
 			tokenError = tokenResult.error;
 		} else if (tokenResult.data) {
-			// Le jeton doit être celui de l'exercice nommé par l'adresse (slug ou
-			// identifiant, cf. buildShareUrl) : sinon `/exercice/A?token=<jeton de B>`
-			// afficherait B sous l'adresse de A.
+			// Le jeton prime : s'il est valide mais que l'adresse ne nomme pas son
+			// exercice (slug renommé depuis la création du lien, ou jeton d'un autre
+			// exercice), on redirige vers l'adresse réelle, query gardée. Un ancien
+			// lien continue de marcher, et l'adresse affichée n'est jamais trompeuse.
 			if (tokenResult.data.slug !== slug && tokenResult.data.id !== slug) {
-				throw error(404, 'Exercice introuvable');
+				const target = encodeURIComponent(tokenResult.data.slug || tokenResult.data.id);
+				throw redirect(307, `/exercice/${target}${url.search}`);
 			}
 			// Cast Exercise back to DB row format for consistency
 			// (getExerciseByShareToken returns Exercise type directly)
