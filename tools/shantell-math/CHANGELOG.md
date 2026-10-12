@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.9.0] - 2026-10-12
+
+### Ajouté
+
+- Script `greek_letters.py` : lettres grecques à la main de Shantell, qui n'a que `π Ω`
+  - reprises de glyphes Shantell de même forme : `Γ П→Π Ф→Φ Ѳ→Θ ѳ→θ к→κ т→τ є→ϵ`, `∆→Δ`, `µ→μ`, `Y→Υ`, `v→ν`, `o→ο`, `V` retourné → `Λ`, `з` en miroir → `ε`, `ф→ϕ`
+  - dessinées au trait des lettres, sur la hauteur d'x, des capitales et des jambages de Shantell : `α β γ δ ζ η ι λ ρ σ υ φ χ ψ ω`, `Ξ Σ Ψ`
+  - minuscules dans Math-Italic ; capitales dans Main-Regular (droites, par défaut) et Math-Italic ; `ξ ϑ ϖ ϱ ς` gardent la forme KaTeX
+- Ordre : après `replace_symbols.py`, avant `build_typst_math_font.py`
+
 ## [1.8.0] - 2026-10-12
 
 ### Ajouté
