@@ -5,7 +5,7 @@
  * @vitest-environment node
  */
 import { describe, it, expect } from 'vitest';
-import { sanitizeForFileName } from '$lib/utils/filename';
+import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 
 describe('sanitizeForFileName', () => {
 	it('retire les accents au lieu de remplacer la lettre', () => {

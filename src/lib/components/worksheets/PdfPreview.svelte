@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { sanitizeForFileName } from '$lib/utils/filename';
+	import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';

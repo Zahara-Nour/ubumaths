@@ -230,6 +230,12 @@ ambre (charte élève) ; sinon `{{exercises}}` en titres gras. En mode corrigé,
 « CORRECTION » est inséré **après** le dernier `#set page(…)` (`endOfLastPageSetup`) : avant, il
 restait seul sur une page 1 vide.
 
+**Noms de fichier** : tout PDF ou ZIP de fiche (fiche, corrigé, lot par élève, dossier et archive
+du lot par classe) est nommé par `sanitizeForFileName` (`src/lib/worksheets/pdf-file-name.ts`) :
+accents retirés (`NFKD`, « Équations » → `Equations`), tout autre caractère que lettres, chiffres,
+`_` et `-` remplacé par `_`. Avant, `[^a-zA-Z0-9]` remplaçait chaque lettre accentuée
+(`_quations.pdf`) et le nom de la classe entrait brut dans l'en-tête `Content-Disposition`.
+
 **Polices** : les gabarits et le PDF élève demandent `"New Computer Modern"` ; aucun code
 n'en charge côté navigateur — ce sont les polices fournies par le bundle typst.ts.
 `scripts/fiches/compile-prod.mjs` charge en plus STIX Two Math (chemin macOS) pour les formules.

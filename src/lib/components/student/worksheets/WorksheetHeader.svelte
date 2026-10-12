@@ -9,7 +9,7 @@
 -->
 
 <script lang="ts">
-	import { sanitizeForFileName } from '$lib/utils/filename';
+	import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';

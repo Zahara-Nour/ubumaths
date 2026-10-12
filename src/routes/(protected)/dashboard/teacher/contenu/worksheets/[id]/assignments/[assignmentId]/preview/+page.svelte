@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-	import { sanitizeForFileName } from '$lib/utils/filename';
+	import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';

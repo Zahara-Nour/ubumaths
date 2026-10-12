@@ -1,4 +1,4 @@
-import { sanitizeForFileName } from '$lib/utils/filename';
+import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 /**
  * PDF Generation API Endpoint
  * ===========================
