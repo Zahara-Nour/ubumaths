@@ -13,7 +13,8 @@
  *   1. un appel sans auth.uid() ni rôle service est refusé (rouge sans la migration) ;
  *   2. l'enregistrement par le client service (chemin des routes 2048 et Mathémo) marche ;
  *   3. un élève n'enregistre pas de récompense pour un autre ;
- *   4. l'élève pour lui-même passe encore : l'étape 1 reste compatible avec le code en prod.
+ *   4. étape 2 (après le deploy de v0.25.0) : un compte connecté n'appelle plus la fonction,
+ *      même pour lui-même (droit EXECUTE retiré, 42501).
  *
  * @vitest-environment node
  */
@@ -93,7 +94,7 @@ describe('jeux : récompense du jour enregistrée par le serveur seulement', () 
 					autre.id,
 					schoolId
 				])
-			).rejects.toThrow(/Unauthorized/);
+			).rejects.toThrow(/Unauthorized|permission denied/);
 		} finally {
 			await pg.query('rollback');
 		}
@@ -120,10 +121,11 @@ describe('jeux : récompense du jour enregistrée par le serveur seulement', () 
 			p_theoretical_reward: 5,
 			p_school_id: schoolId
 		});
-		expect(error?.message).toMatch(/Unauthorized/);
+		// Refusé par le droit (42501) avant même la garde de la fonction.
+		expect(error?.message).toMatch(/Unauthorized|permission denied/);
 	});
 
-	it('l’élève qui s’enregistre lui-même passe encore (code en prod jusqu’au deploy)', async () => {
+	it('l’élève ne s’enregistre plus lui-même : droit retiré aux comptes connectés', async () => {
 		const client = await clientFor(autre.email);
 		const { error } = await client.rpc('record_game_reward', {
 			p_student_id: autre.id,
@@ -132,6 +134,28 @@ describe('jeux : récompense du jour enregistrée par le serveur seulement', () 
 			p_theoretical_reward: 5,
 			p_school_id: schoolId
 		});
-		expect(error).toBeNull();
+		expect(error?.code).toBe('42501');
+	});
+
+	// Le démineur crédite sa récompense en appelant record_game_reward depuis
+	// complete_minesweeper_game : SECURITY DEFINER, elle s'exécute avec les droits de son
+	// propriétaire et garde donc l'appel imbriqué.
+	it('le démineur garde sa récompense : appel imbriqué par une fonction DEFINER', async () => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query<{
+			definer: boolean;
+			auth_peut_appeler: boolean;
+			proprietaire_peut_recompenser: boolean;
+		}>(
+			`select p.prosecdef as definer,
+				has_function_privilege('authenticated', p.oid, 'EXECUTE') as auth_peut_appeler,
+				has_function_privilege(p.proowner,
+					'public.record_game_reward(uuid,text,uuid,numeric,uuid)'::regprocedure,
+					'EXECUTE') as proprietaire_peut_recompenser
+			from pg_proc p where p.proname = 'complete_minesweeper_game'`
+		);
+		expect(rows).toEqual([
+			{ definer: true, auth_peut_appeler: true, proprietaire_peut_recompenser: true }
+		]);
 	});
 });

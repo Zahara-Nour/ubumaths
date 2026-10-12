@@ -121,6 +121,17 @@ describe('énigmes : tentatives écrites par le serveur seulement', () => {
 		expect(data?.[0]?.attempt_id).toEqual(expect.any(String));
 	});
 
+	it('l’élève ne soumet plus lui-même : droit retiré aux comptes connectés', async () => {
+		const client = await clientFor(eleve.email);
+		const { error } = await client.rpc('submit_riddle_attempt', {
+			p_riddle_id: riddleId,
+			p_student_id: eleve.id,
+			p_submitted_answer: { value: 'zz' },
+			p_is_correct: true
+		});
+		expect(error?.code).toBe('42501');
+	});
+
 	it('un élève ne soumet pas pour un autre', async () => {
 		const client = await clientFor(eleve.email);
 		const { error } = await client.rpc('submit_riddle_attempt', {
@@ -143,7 +154,7 @@ describe('énigmes : tentatives écrites par le serveur seulement', () => {
 					riddleId,
 					autre.id
 				])
-			).rejects.toThrow(/Unauthorized/);
+			).rejects.toThrow(/Unauthorized|permission denied/);
 		} finally {
 			await pg.query('rollback');
 		}

@@ -12,7 +12,8 @@
  *   1. un appel sans auth.uid() ni rôle service est refusé (rouge sans la migration) ;
  *   2. l'enregistrement par le client service (chemin de la route) fonctionne ;
  *   3. un élève n'enregistre pas de statistiques pour un autre ;
- *   4. l'élève pour lui-même passe encore : l'étape 1 reste compatible avec le code en prod.
+ *   4. étape 2 (après le deploy de v0.25.0) : un compte connecté n'appelle plus la fonction,
+ *      même pour lui-même (droit EXECUTE retiré, 42501).
  *
  * @vitest-environment node
  */
@@ -80,7 +81,7 @@ describe('Mathémo : statistiques enregistrées par le serveur seulement', () =>
 			await pg.query(`select set_config('request.jwt.claims', '{"role":"authenticated"}', true)`);
 			await expect(
 				pg.query(`select * from upsert_mathemo_score($1, 5, true, true, 999999)`, [autre.id])
-			).rejects.toThrow(/Unauthorized/);
+			).rejects.toThrow(/Unauthorized|permission denied/);
 		} finally {
 			await pg.query('rollback');
 		}
@@ -107,10 +108,11 @@ describe('Mathémo : statistiques enregistrées par le serveur seulement', () =>
 			p_found_first_try: true,
 			p_score: 999999
 		});
-		expect(error?.message).toMatch(/Unauthorized/);
+		// Refusé par le droit (42501) avant même la garde de la fonction.
+		expect(error?.message).toMatch(/Unauthorized|permission denied/);
 	});
 
-	it('l’élève qui s’enregistre lui-même passe encore (code en prod jusqu’au deploy)', async () => {
+	it('l’élève ne s’enregistre plus lui-même : droit retiré aux comptes connectés', async () => {
 		const client = await clientFor(autre.email);
 		const { error } = await client.rpc('upsert_mathemo_score', {
 			p_user_id: autre.id,
@@ -119,6 +121,6 @@ describe('Mathémo : statistiques enregistrées par le serveur seulement', () =>
 			p_found_first_try: false,
 			p_score: 0
 		});
-		expect(error).toBeNull();
+		expect(error?.code).toBe('42501');
 	});
 });
