@@ -158,7 +158,7 @@ export const DEFAULT_GENERIC_FUNCTIONS: GenericFunctionConfig = {
  * - `'length'` : la longueur du segment [AB] ; trois ou plus (`ABC`), un nom de figure ;
  * - `'product'` : le produit `A·B`, comme avant le 2026-10-12.
  * Le sens se décide par la déclaration de l'auteur, sinon le contexte, sinon le défaut
- * (`DEFAULT_CAPITAL_PAIRS`) — cf. `docs/wip/longueurs-segments-progress.md`.
+ * (`DEFAULT_CAPITAL_PAIRS`) — cf. `docs/archive/wip/longueurs-segments-progress.md`.
  */
 export type CapitalPairs = 'length' | 'product';
 

@@ -17,7 +17,7 @@
  * avant ce chantier) garde le défaut du parseur : le produit d'avant (Q-L).
  *
  * Module léger (aucun parseur) : le schéma sert à l'éditeur et à la route.
- * Cf. docs/wip/longueurs-segments-progress.md.
+ * Cf. docs/archive/wip/longueurs-segments-progress.md.
  */
 
 import { z } from 'zod';

@@ -372,7 +372,7 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   mathématique ; rendues par `LatexGenerator` avec `renderMetadata: true`.
 - `function` porte `name`, `args`, et en option `power` (`\sin^2 x`) et `base`
   (indice de racine `\sqrt[3]{x}`, base de logarithme).
-- **Longueurs de segments** (2026-10-12, lot 1 de `docs/wip/longueurs-segments-progress.md`) :
+- **Longueurs de segments** (2026-10-12, chantier clos : [journal](../../archive/wip/longueurs-segments-progress.md)) :
   `segmentLength` porte deux `PointName` (`{ letter, primes, index? }` : `A`, `A'`, `A_1`) dans
   l'ordre écrit ; `figureName` (`ABC`, trois points ou plus) s'affiche tel quel et ne se calcule
   pas. Le parseur LaTeX (Pratt et rd) les lit selon l'option **`capitalPairs`**, transmise aussi

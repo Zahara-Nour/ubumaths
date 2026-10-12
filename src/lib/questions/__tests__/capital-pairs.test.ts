@@ -7,7 +7,7 @@
  * matrices`, thème de physique) → longueur par défaut. L'instance le garde (Q-L) ;
  * une instance déjà servie, sans le champ, garde le sens d'avant : le produit.
  * La réponse de l'élève et la réponse attendue sont toujours lues dans le même sens.
- * Cf. docs/wip/longueurs-segments-progress.md.
+ * Cf. docs/archive/wip/longueurs-segments-progress.md.
  */
 
 import { describe, it, expect } from 'vitest';

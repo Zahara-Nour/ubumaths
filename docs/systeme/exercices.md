@@ -193,7 +193,7 @@ applique la table de contexte des questions — `Graphes et matrices` ou une not
 **saisie**, avant enregistrement) et la page `exercices/[id]` ; le PDF le reçoit par
 `generateTypst({ capitalPairs })` ([ubumark.md](ubumark.md), [fiches-et-pdf.md](fiches-et-pdf.md)).
 Au 2026-10-12 aucune notion d'exercice en base n'est « produit » : tous les exercices sont lus en
-longueur. Journal : [longueurs-segments-progress.md](../wip/longueurs-segments-progress.md).
+longueur. Journal : [longueurs-segments-progress.md](../archive/wip/longueurs-segments-progress.md).
 
 ## Pièges
 

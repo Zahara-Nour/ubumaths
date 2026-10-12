@@ -1,7 +1,9 @@
-# Longueurs de segments (`AB`, `AB²`) dans mathAST — préparation
+# Longueurs de segments (`AB`, `AB²`) dans mathAST — journal (clos)
 
-> Chantier préparé le 2026-10-11, suite de la [structure d'une expression](structure-expression-progress.md)
-> (Q18). Rien n'est décidé : questions de phase 0 ci-dessous, à trancher par David.
+> **Chantier clos le 2026-10-12** (lots 1 à 6 en prod en v0.26.0, positivité #1221). Ce qui dure est
+> versé dans [convention-equivalence.md](../../systeme/mathast/convention-equivalence.md),
+> [mathast/README.md](../../systeme/mathast/README.md) et [exercices.md](../../systeme/exercices.md).
+> Préparé le 2026-10-11, suite de la [structure d'une expression](../../wip/structure-expression-progress.md) (Q18).
 
 ## Le problème
 
@@ -838,11 +840,14 @@ après. Suites `src/lib/mathAST` : 499 fichiers, 20 970 tests verts (2 tests du 
 
 1. ~~Intentions pédagogiques~~ : **alignées** (décision du 2026-10-12, voir les suites).
 2. ~~`checkForm`~~ : **tranché** — `|AB|` pour `AB` reste signalé (`bad_form`, figé par un test).
-3. **Hypothèse déclarée plus faible** (`AB: 'nonzero'` ou `'integer'`) : elle remplace la
+3. ~~Hypothèse déclarée plus faible~~ : **tranché** (David, 2026-10-12) — elle remplace, comme décrit.
+   **Hypothèse déclarée plus faible** (`AB: 'nonzero'` ou `'integer'`) : elle remplace la
    positivité par défaut (choix prudent) au lieu de s'y ajouter.
-4. **`solve` avec un `domain` de l'appelant** : il remplace la positivité (même lecture
+4. ~~`domain` de l'appelant~~ : **tranché** — il remplace.
+   **`solve` avec un `domain` de l'appelant** : il remplace la positivité (même lecture
    « déclaration prioritaire »), il ne s'y ajoute pas.
-5. **`AB^2 = 0`** : `AB = 0` est exclu (strictement positive) → aucune solution.
+5. ~~`AB^2 = 0`~~ : **tranché** — aucune solution.
+   **`AB^2 = 0`** : `AB = 0` est exclu (strictement positive) → aucune solution.
 6. **`numtype` ne propage pas le signe par une puissance réelle** (`AB²` : signe inconnu, `√…` :
    complexe) : préexistant, non touché (changerait les verdicts sous hypothèses déclarées).
 
@@ -904,3 +909,7 @@ après. Suites `src/lib/mathAST` : 499 fichiers, 20 970 tests verts (2 tests du 
 - 2026-10-12 — lot 6 fait : sens de AB des exercices par leur thème (Q-J), écran et PDF ;
   `capital_pairs` transmis à l'élève (le sens, pas le thème) ; empreinte de 1 299 saisies identique
   en produit.
+- 2026-10-12 — positivité mergée (#1221) ; David confirme les choix prudents (hypothèse ou `domain`
+  qui remplace, `AB² = 0` sans solution) et retire du plan les notations (`\overline`, `\widehat`,
+  vecteurs, `(AB)`, `[AB]`) et la déclaration lettre par lettre : à rouvrir sur un cas réel.
+  Chantier clos, versé dans `docs/systeme/`.

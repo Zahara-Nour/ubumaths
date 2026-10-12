@@ -1,6 +1,6 @@
 /**
  * Structure d'une expression — longueurs de segments (lot 4 du chantier
- * « longueurs de segments », `docs/wip/longueurs-segments-progress.md`)
+ * « longueurs de segments », `docs/archive/wip/longueurs-segments-progress.md`)
  * =====================================================================
  *
  * En mode `capitalPairs: 'length'`, `AB` est une longueur : une feuille
