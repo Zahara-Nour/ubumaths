@@ -181,7 +181,7 @@
 				termOffset={adjusted.hasLeadingSpace ? 1 : 0}
 			/>{#if adjusted.hasTrailingSpace}&ensp;{/if}
 		{:else if child.type === 'math-inline'}
-			{#if hasPrompts(child.expression, child.syntax)}
+			{#if hasPrompts(child.expression, child.syntax, writingCapitalPairs())}
 				{#if flashMode}
 					{@const displayExpr = child.expressionName
 						? expressionDisplayMap?.[child.expressionName]

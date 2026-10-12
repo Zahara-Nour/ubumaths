@@ -14,8 +14,7 @@ const contenu = 'Dans le triangle ~ABC~, ~AB^2=AC^2+BC^2~.';
 
 /** LaTeX des formules affichées (<math-span>), dans l'ordre. */
 async function formules(capitalPairs?: CapitalPairs): Promise<string> {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const screen = await render(CapitalPairsProviderHarness as any, {
+	const screen = await render(CapitalPairsProviderHarness, {
 		props: { content: contenu, ...(capitalPairs ? { capitalPairs } : {}) }
 	});
 	const el = screen.container;
@@ -37,5 +36,16 @@ describe('formules en syntaxe maison — sens de AB posé par la carte', () => {
 
 	it('sans sens (instance d’avant, exercices, atelier) : produit, comme avant', async () => {
 		expect(await formules()).toBe(await formules('product'));
+	});
+
+	it('le sens suit l’instance sans remontage (passage d’une carte à l’autre)', async () => {
+		const screen = await render(CapitalPairsProviderHarness, {
+			props: { content: contenu, capitalPairs: 'length' }
+		});
+		const el = screen.container;
+		const latex = () => [...el.querySelectorAll('math-span')].map((m) => m.textContent).join(' | ');
+		await expect.poll(latex).toContain('AB^2');
+		await screen.rerender({ content: contenu, capitalPairs: 'product' });
+		await expect.poll(latex).toContain('A B^2');
 	});
 });

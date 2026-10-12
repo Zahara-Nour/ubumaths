@@ -67,7 +67,10 @@
 	import TableNode from '$lib/components/markdown/nodes/TableNode.svelte';
 	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
-	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import {
+		provideCapitalPairs,
+		readCapitalPairs
+	} from '$lib/components/markdown/content-capital-pairs';
 
 	// Utility functions
 	import {
@@ -146,7 +149,10 @@
 	}: Props = $props();
 
 	// Sens de `AB` pour les formules de l'énoncé rendues sous ce champ (lot 5)
+	const parentCapitalPairs = readCapitalPairs();
 	provideCapitalPairs(() => capitalPairs);
+	/** Sens qui repère les cases : la prop, sinon celui de la carte (`~A'B'=?~`) */
+	const blanksCapitalPairs = () => capitalPairs ?? parentCapitalPairs();
 
 	// When showing correct answers, force disabled
 	let effectiveDisabled = $derived(disabled || showCorrectAnswers);
@@ -154,13 +160,15 @@
 	/** Check if a block node contains blanks or math prompts */
 	function nodeHasBlanks(node: BlockNode): boolean {
 		if (node.type === 'paragraph') {
-			return inlineNodesHaveBlanks(node.children);
+			return inlineNodesHaveBlanks(node.children, blanksCapitalPairs());
 		}
 		if (node.type === 'table') {
-			return tableHasBlanks(node);
+			return tableHasBlanks(node, blanksCapitalPairs());
 		}
 		if (node.type === 'math-block') {
-			return !!node.expressionName || hasPrompts(node.expression, node.syntax);
+			return (
+				!!node.expressionName || hasPrompts(node.expression, node.syntax, blanksCapitalPairs())
+			);
 		}
 		return false;
 	}
@@ -194,7 +202,8 @@
 				sentence.some(
 					(node) =>
 						node.type === 'blank' ||
-						(node.type === 'math-inline' && hasPrompts(node.expression, node.syntax))
+						(node.type === 'math-inline' &&
+							hasPrompts(node.expression, node.syntax, blanksCapitalPairs()))
 				)
 			)
 			.flat();
@@ -212,7 +221,7 @@
 	let structuredAST = $derived.by(() => {
 		const ast = parseMarkdown(statement);
 		if (flashMode) return ast;
-		const augmented = augmentASTForExpressions(ast, expressions);
+		const augmented = augmentASTForExpressions(ast, expressions, blanksCapitalPairs());
 		if (onlyBlanks) {
 			const blanksOnly = augmented.children.filter(nodeHasBlanks);
 			return {
@@ -576,7 +585,7 @@
 	trou, flash, correction, états) ; une cellule sans trou garde le rendu du tableau.
 -->
 {#snippet blankCell(cell: TableCellNode, defaultCell: Snippet<[string]>)}
-	{#if cellHasBlanks(cell.content)}
+	{#if cellHasBlanks(cell.content, blanksCapitalPairs())}
 		<ParagraphNode
 			element="span"
 			class="table-blank-cell"
@@ -619,7 +628,7 @@
 					{genericFunctions}
 				/>
 			{:else if node.type === 'math-block'}
-				{#if node.expressionName || hasPrompts(node.expression, node.syntax)}
+				{#if node.expressionName || hasPrompts(node.expression, node.syntax, blanksCapitalPairs())}
 					{#if flashMode}
 						{@const displayExpr = node.expressionName
 							? expressionDisplayMap?.[node.expressionName]
@@ -692,7 +701,7 @@
 				/>
 			{:else if node.type === 'heading'}
 				<HeadingNode level={node.level} children={node.children} />
-			{:else if node.type === 'table' && tableHasBlanks(node)}
+			{:else if node.type === 'table' && tableHasBlanks(node, blanksCapitalPairs())}
 				<!-- `relative` : les éléments en position absolue des champs MathLive (libellés
 				     pour lecteur d'écran) restent dans le cadre défilant, sinon la page déborde -->
 				<TableNode

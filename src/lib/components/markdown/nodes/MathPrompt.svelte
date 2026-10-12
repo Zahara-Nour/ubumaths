@@ -123,7 +123,7 @@
 	);
 
 	// Extract prompt indices from the expression
-	let promptIndices = $derived(extractPromptIndices(expression, syntax));
+	let promptIndices = $derived(extractPromptIndices(expression, syntax, writingCapitalPairs()));
 
 	let mathField: HTMLElement | undefined = $state();
 
@@ -217,7 +217,7 @@
 	 */
 	$effect(() => {
 		if (!mathField || !isMathfield(mathField)) return;
-		if (capitalPairs === 'length') {
+		if (writingCapitalPairs() === 'length') {
 			if (originalShortcuts) return;
 			originalShortcuts = mathField.inlineShortcuts;
 			mathField.inlineShortcuts = withoutCapitalPairShortcuts(originalShortcuts);

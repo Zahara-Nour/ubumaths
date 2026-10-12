@@ -162,12 +162,23 @@ function findPlaceholderIndices(latex: string): number[] {
  *
  * @param expression - The math expression string
  * @param syntax - The syntax type: 'latex' or 'custom'
+ * @param capitalPairs - Sens de deux majuscules collées (défaut du parseur : produit)
  * @returns Array of unique hole indices, sorted
  */
-export function extractPromptIndices(expression: string, syntax: 'latex' | 'custom'): number[] {
+export function extractPromptIndices(
+	expression: string,
+	syntax: 'latex' | 'custom',
+	capitalPairs?: CapitalPairs
+): number[] {
 	let ast: ReturnType<typeof parseLatexSafe>['ast'] | undefined;
 	try {
-		ast = (syntax === 'latex' ? parseLatexSafe(expression) : parseCustomSafe(expression)).ast;
+		// Le sens de `AB` de la question : en longueur, `A'B'=?` se lit et sa case existe
+		const options = capitalPairs && { capitalPairs };
+		ast = (
+			syntax === 'latex'
+				? parseLatexSafe(expression, options)
+				: parseCustomSafe(expression, options)
+		).ast;
 	} catch {
 		// Le parseur LÈVE au-delà de sa longueur maximale (`SecurityError`) : appelé
 		// au rendu d'un paragraphe, avant tout filtrage, il ferait tomber tout le
@@ -190,8 +201,12 @@ export function extractPromptIndices(expression: string, syntax: 'latex' | 'cust
  * @param syntax - The syntax type: 'latex' or 'custom'
  * @returns true if the expression contains at least one hole node
  */
-export function hasPrompts(expression: string, syntax: 'latex' | 'custom'): boolean {
-	return extractPromptIndices(expression, syntax).length > 0;
+export function hasPrompts(
+	expression: string,
+	syntax: 'latex' | 'custom',
+	capitalPairs?: CapitalPairs
+): boolean {
+	return extractPromptIndices(expression, syntax, capitalPairs).length > 0;
 }
 
 /**

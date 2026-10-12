@@ -9,7 +9,7 @@
  * `content-locale.ts`).
  *
  * Posé par la carte qui affiche une instance (`QuestionCard`, `FlashCard`,
- * `CorrectionCard`…) ou par `MarkdownRenderer` / `InlineMarkdown` (prop `capitalPairs`).
+ * `CorrectionCard`…) ou par `FillBlanksInput` (prop `capitalPairs`).
  * Sans fournisseur : `undefined`, donc le défaut du parseur, le produit (décision Q-M) —
  * l'atelier, le chat, les exercices et les anciennes instances gardent l'écriture d'avant.
  *

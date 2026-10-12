@@ -725,10 +725,18 @@ et restent comme gardes).
   calculatrice (`ResultDisplay`), chat (`TutorChat`), énigmes, `pnpm math`
   (`mathAST/cli`), `condition-evaluator` (conditions sur les variables tirées),
   `parse-student-domain`, `pedagogical-limits`, `migration/answer-latex`, `math/intervals`,
-  `rich-text/markdown-import`, `extensions/math-extension`, `extractPromptIndices` (repère les
-  cases : le sens n'y change rien), `QuestionPreview.svelte` (aperçu de l'éditeur : retiré du lot
+  `rich-text/markdown-import`, `extensions/math-extension`, `QuestionPreview.svelte` (aperçu de l'éditeur : retiré du lot
   parce que la garde `docs:check-a-jour` le range dans la zone « exercices » sans doc ; écriture
   `A B` invisible à l'écran).
+- **Revue** (`code-reviewer` + `geometry-expert`) : aucun bloquant ni important ; empreinte
+  recalculée depuis `origin/main` : 1 299/1 299 identiques ; DSL de géométrie hors d'atteinte
+  (appels `parseCustom(x)` sans option, scanner inchangé sans option). Suites faites :
+  `extractPromptIndices` / `hasPrompts` et les fonctions de `fill-blanks-utils` reçoivent le sens
+  (une case `~A'B'=?~` d'une question en longueur était rendue figée, sans champ ; test vu rouge) ;
+  raccourcis MathLive coupés aussi par le sens du contexte ; test de rendu sans remontage ; source
+  brute du corpus retirée (décision de David).
+- **Décisions de David (2026-10-12)** : contexte Svelte gardé (plutôt qu'une prop) ; exercices
+  (Q-J) dans un **lot 6** à part.
 - **Pas fait — exercices (Q-J)** : ils restent en produit. Pas de donnée en base à toucher, mais
   la vue élève (`StudentExerciseView`, `types/worksheets.ts`) ne porte pas `topic` : il faudrait
   l'ajouter au chargement serveur et à son schéma de réponse, puis poser le sens dans
