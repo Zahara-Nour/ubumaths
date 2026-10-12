@@ -252,7 +252,8 @@ describe('une comparaison passe par le même plafond, membre par membre', () => 
 	it.each([
 		['(1+1/20000)^20000 + 1000000000 > 1000000001', 'true'],
 		['(1+1/20000)^20000*1000000000 > 2718210000', 'true'],
-		['(1+1/20000)^20000 + 10^14 > 100000000000003', 'true'],
+		// 10¹⁴ + 2,718… < 10¹⁴ + 3 (la revue l'avait cru vrai)
+		['(1+1/20000)^20000 + 10^14 > 100000000000003', 'false'],
 		['-(1+1/20000)^20000 - 1000000000 < -1000000001', 'true'],
 		['(1+1/20000)^20000 + 1000000000 < 1000000003', 'true']
 	])('une valeur approchée face à un entier exact : %s', (input, output) => {
@@ -261,6 +262,16 @@ describe('une comparaison passe par le même plafond, membre par membre', () => 
 		// Trancher juste, ou refuser : jamais le sens faux
 		expect(line.output === output || line.success === false).toBe(true);
 		expect(line.output).not.toBe(output === 'true' ? 'false' : 'true');
+	});
+
+	// Revue : un membre lu par le flottant puis presque annulé par une soustraction —
+	// partie entière exacte de (20001/20000)^20000 × 10^16 : 27182138745278830
+	it.each([
+		['(1+1/20000)^20000*10^16 - 27182138745278831 < 0', 'true'],
+		['(1+1/20000)^20000*10^16 - 27182138745278830 > 0', 'true'],
+		['(1+1/20000)^20000 + 1000000000 > 1000000001', 'true']
+	])('encadré au plus juste : %s', (input, output) => {
+		expect(exact(input).output).toBe(output);
 	});
 
 	it('une valeur approchée de grands membres, face à un entier : tranchée quand l’écart est net', () => {

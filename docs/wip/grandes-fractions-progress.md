@@ -193,3 +193,10 @@ sa valeur approchée. »
   refus s'ils se recouvrent ; message propre quand une variable libre bloque. Laissés (refus non
   faux, pas des cas d'élèves) : `2^{100000} + 1 > 2^{100000}` (« trop proches »),
   `2^{10^7} + 1 > 3` (« trop grande »).
+- 2026-10-12 — 2ᵉ revue de #1199 : encore un **sens faux** — un membre lu par le flottant puis
+  presque annulé (`(1+1/20000)^{20000}×10^{16} − 27182138745278831 < 0` → `false`) : une marge
+  relative sur la valeur arrondie ne borne pas l'erreur absolue d'une soustraction. Corrigé
+  autrement : `cli/interval.ts`, encadrements rigoureux (binaires à 256 bits arrondis vers
+  l'extérieur ; test de rigueur aléatoire, rouge si l'arrondi vers le haut est faussé). Au
+  passage, la revue s'était trompée sur un cas (`(1+1/20000)^{20000} + 10^{14} > 10^{14} + 3` est
+  FAUX) : l'encadrement l'a tranché juste.
