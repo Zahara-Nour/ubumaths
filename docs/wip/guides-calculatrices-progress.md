@@ -48,7 +48,12 @@ d'examen / pratique.
   P(k ≤ X ≤ m) (TSPE-510) · plus petit k (TSPE-511/514) · seuil (TSPE-392) · intégrale (V, TSPE-485)
 - **Pièges** (chaque guide) : degrés/radians · `-2²` · fraction sans parenthèses · arrondi ou
   troncature · affichage `1ᴇ-3`
-- Retiré : « conjecturer une limite au tableau de valeurs » (aucun point de Tle spé)
+- **Gardé, décision de David** (2026-10-12) : « conjecturer une limite au tableau de valeurs », que
+  j'avais retiré faute de point de Tle spé explicite
+- ⚠️ **Tous les niveaux de `GradeCode`** (décision de David, 2026-10-12) : CP → CM2, 5e/4e/3e séparés,
+  1re ens. sci., maths expertes, maths complémentaires, 1re/Tle techno. **Liste par niveau :
+  [guides-calculatrices-taches.md](guides-calculatrices-taches.md)** (lue dans les seeds et les BO,
+  introductions comprises). CP-CE2 : pas de calculatrice (BO cycle 2). T_GEN : aucune source.
 
 ## Avancement
 
