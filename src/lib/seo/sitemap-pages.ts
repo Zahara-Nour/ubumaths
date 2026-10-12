@@ -194,6 +194,18 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 		reason: `${LOGIN_REQUIRED} ; progression d’un élève`
 	},
 
+	// Guides calculatrices : tout est « Bientôt » en production tant que David n'a pas relu
+	// les séquences sur la machine (docs/systeme/guides-calculatrices.md). À lister dès la
+	// PR qui publie les premières séquences relues.
+	{
+		pattern: '/calculatrices',
+		reason: 'aucun guide relu sur la machine : la page n’annonce que « Bientôt »'
+	},
+	{
+		pattern: '/calculatrices/**',
+		reason: 'aucun guide relu sur la machine : la page n’annonce que « Bientôt »'
+	},
+
 	// Routes dynamiques sans source dans le plan
 	{
 		pattern: '/python-exercises/[id]',
