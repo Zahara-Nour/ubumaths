@@ -7,6 +7,7 @@ couvre:
   - 'src/routes/(protected)/tuteur/**'
   - 'src/routes/(protected)/dashboard/tutor-stats/**'
   - src/lib/components/ChatBot.svelte
+  - src/lib/utils/chat-request.ts
   - 'src/routes/(public)/pere-ubu/**'
 ---
 
