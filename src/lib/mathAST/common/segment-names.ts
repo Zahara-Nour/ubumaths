@@ -30,6 +30,16 @@ export function segmentHasName(node: SegmentLengthNode, name: string): boolean {
 }
 
 /**
+ * Les deux points de la longueur sont-ils le même point (`AA`, `A'A'`, `A_1A_1`) ? Une
+ * telle longueur vaut 0 : elle n'est pas supposée strictement positive (lot positivité,
+ * 2026-10-12). Le parseur la garde telle quelle, sans la remplacer par 0.
+ */
+export function isDegenerateSegment(node: SegmentLengthNode): boolean {
+	const [from, to] = node.points;
+	return formatPointNames([from]) === formatPointNames([to]);
+}
+
+/**
  * La valeur d'une longueur dans des liaisons : sous son nom écrit, sinon sous le nom
  * inverse (`AB` ou `BA`). `undefined` si aucune.
  */

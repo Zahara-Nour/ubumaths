@@ -76,6 +76,7 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'abs-quotient': 'Distribution : |a/b| = |a|/|b|',
 	'abs-positive': 'Simplification : |x| = x (x positif)',
 	'abs-negative': 'Simplification : |x| = -x (x négatif)',
+	'length-radical': 'Une longueur est positive : √(AB²) = AB',
 	'abs-even-pow': 'Simplification : |xⁿ| = xⁿ (n pair)',
 	'abs-pow-even': 'Simplification : |x|ⁿ = xⁿ (n pair)',
 

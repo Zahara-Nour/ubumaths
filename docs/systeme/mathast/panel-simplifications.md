@@ -188,6 +188,28 @@ travail, et le panel le rend visible.
    (barrière de coût), et le **quotient** `e^{2x}/e^x` n'est réduit par aucune
    colonne.
 
+## Longueurs de segments (mode `capitalPairs: 'length'`)
+
+Une longueur `AB` est strictement positive par défaut (lot Q-F, 2026-10-12). Mesuré le
+2026-10-12, hors panel (le panel lit en mode produit, défaut du parseur) :
+
+| entrée          | `simplify` | `auto` | `reduire` | `developper` | `factoriser` |
+| --------------- | ---------- | ------ | --------- | ------------ | ------------ |
+| `\sqrt{AB^2}`   | `AB`       | `AB`   | `AB`      | `AB`         | `AB`         |
+| `\|AB\|`        | `AB`       | `AB`   | `AB`      | `AB`         | `AB`         |
+| `\sqrt{9AB^2}`  | `3 AB`     | `3 AB` | `3 AB`    | `3 AB`       | `3 AB`       |
+| `\frac{AB}{AB}` | `1`        | `1`    | `1`       | `1`          | `1`          |
+
+Les intentions (`pedagogical-simplify/pipeline.ts`, décision de David du 2026-10-12) commencent
+par une étape `length-radical` (« Une longueur est positive : √(AB²) = AB », catégorie
+`radicaux`) : chaque racine carrée qui **disparaît** quand ses longueurs sont positives
+(`normalize` avec l'oracle des longueurs) est remplacée ; `√(8AB²)` et `√(AA²)` restent à
+l'intention. Non-régression : banc avant/après sur les 4 122 chaînes de l'empreinte —
+3 328 saisies en mode produit et 3 143 sans longueur en mode longueur, `simplify`, `solve`,
+`areEquivalent` et les 4 intentions (résultat et règles des étapes) identiques (une
+différence de `simplify` sur `(x+y+…+d)^8`, due au délai de 300 ms du banc, absente au
+re-tirage).
+
 ## Non couvert
 
 **Les grandeurs avec unités** n'entrent pas dans ce panel : elles ne se lisent

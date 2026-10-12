@@ -411,6 +411,20 @@ n'est équivalente qu'à la **même écriture** (`ABC` ≡ `ABC`, `ABC` ≢ `ACB
 forme le refusent avec le message de `figureNameRefusal`. Sans l'option (défaut du
 parseur), `AB` reste le produit `A·B`, comme avant. Suivi : `docs/wip/longueurs-segments-progress.md`.
 
+**Une longueur est strictement positive** (décision de David du 2026-10-12, Q-F) : sans
+hypothèse déclarée, `√(AB²)` ≡ `AB`, `|AB|` ≡ `BA`, `√(9AB²)` ≡ `3AB`. Mécanisme : celui des
+hypothèses de l'énoncé — `numtype` type `AB` en réel positif, et `areEquivalent` pose l'oracle
+(`assumptionOracle(…, [a, b])`) dès qu'une des deux expressions mentionne une longueur ; il ne
+répond que pour un nœud qui mentionne une longueur (ou une variable déclarée). Restent faux :
+`|AB−CD|` ≡ `AB−CD` (signe inconnu), `|AA|` ≡ `AA` (points identiques : la longueur vaut 0, rien
+n'est supposé). Une hypothèse déclarée sur `AB` (ou `BA`) **garde la priorité**, même si elle dit
+moins : avec `{ AB: 'nonzero' }`, `|AB|` ≢ `AB`. Une longueur n'est plus un nœud qui coupe les
+hypothèses (`segmentLength` est dans la liste blanche `isPlainAlgebra`) : une hypothèse déclarée sur
+`x` s'applique aussi dans une expression qui contient une longueur — `|x|·AB` ≡ `x·AB` sous x > 0,
+et la forme (`checkForm`) le lit pareil (`correct`, avant : `bad_form`). En revanche, sans
+hypothèse, la comparaison de forme ne lit pas `|AB|` comme `AB` : `|AB|` pour l'attendu `AB` reste
+`bad_form` (décision de David du 2026-10-12).
+
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 
 Une case `answerKind: "intervalles"` juge l'ENSEMBLE (`questions/intervals/interval-answer.ts`) :
