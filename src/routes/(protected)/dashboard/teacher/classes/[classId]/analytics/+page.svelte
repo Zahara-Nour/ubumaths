@@ -28,6 +28,7 @@
 	import AntiFraudFlagsList from '$lib/components/teacher/anti-fraud/AntiFraudFlagsList.svelte';
 	import AntiFraudFilters from '$lib/components/teacher/anti-fraud/AntiFraudFilters.svelte';
 	import { Badge } from '$lib/components/ui/badge';
+	import { fetchUnresolvedCount } from '$lib/components/teacher/anti-fraud/unresolved-count';
 
 	let { data }: { data: PageData } = $props();
 
@@ -35,7 +36,7 @@
 	let refreshNonce = $state(0);
 	let activeTab = $state<'knowledge' | 'competence' | 'surveillance'>('knowledge');
 	// svelte-ignore state_referenced_locally
-	// null = compteur illisible côté serveur : le badge affiche « ? ».
+	// null = compteur illisible (chargement ou rafraîchissement) : le badge affiche « ? ».
 	let unresolvedCount = $state<number | null>(data.unresolvedFlagsCount);
 	let showResolved = $state(false);
 	// svelte-ignore state_referenced_locally
@@ -58,15 +59,9 @@
 		anonymized = !anonymized;
 	}
 
+	// Échec → null : le badge affiche « ? » au lieu d'un nombre périmé (écart L30).
 	async function refreshUnresolvedCount() {
-		try {
-			const res = await fetch(`/api/teacher/classes/${data.classId}/anti-fraud/count`);
-			if (!res.ok) return;
-			const body = (await res.json()) as { count?: number };
-			unresolvedCount = body.count ?? 0;
-		} catch {
-			// silent ; gardé à la dernière valeur connue
-		}
+		unresolvedCount = await fetchUnresolvedCount(data.classId);
 	}
 </script>
 
