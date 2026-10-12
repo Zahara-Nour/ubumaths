@@ -185,6 +185,10 @@ describe('somme sans variable : le rationnel en tête', () => {
 		['2i+1', '1 + 2 \\imaginaryI'],
 		['\\pi+1', '1 + \\pi'],
 		['\\sqrt2+\\sqrt3+2', '2 + \\sqrt{2} + \\sqrt{3}'],
+		// une fonction usuelle en un nombre est une constante
+		['2\\sin(1)+1', '1 + 2 \\sin\\left( 1 \\right)'],
+		['\\arctan(2)+1', '1 + \\arctan\\left( 2 \\right)'],
+		['\\sqrt[3]{2}+1', '1 + \\sqrt[3]{2}'],
 		// degré 1 : les négatifs restent derrière, le rationnel passe devant
 		['\\ln(3)-\\ln(2)+1', '1 + \\ln\\left( 3 \\right) - \\ln\\left( 2 \\right)'],
 		// une somme imbriquée sans variable, dans une expression qui en a une
@@ -218,6 +222,17 @@ describe('somme sans variable : le rationnel en tête', () => {
 		['u_0+1', 'u_0 + 1'],
 		['\\alpha+1', '\\alpha + 1'],
 		['3^x+1', '3^x + 1'],
+		['\\sin x+1', '\\sin\\left( x \\right) + 1'],
+		['f(x)+1', 'f\\left( x \\right) + 1'],
+		['\\square+1', '\\square + 1'],
+		['AB+1', 'A B + 1'],
+		['\\exponentialE^{x+1}+1', '\\exponentialE^{x + 1} + 1'],
+		['\\sqrt{x}+1', '\\sqrt{x} + 1'],
+		['\\ln(x)+1', '\\ln\\left( x \\right) + 1'],
+		// une fonction de l'énoncé (f, g, f′, f⁻¹) est une inconnue, même en un nombre
+		['f(2)+1', 'f\\left( 2 \\right) + 1'],
+		["f'(1)+3", "f'\\left( 1 \\right) + 3"],
+		['g(0)+1', 'g\\left( 0 \\right) + 1'],
 		// déjà en tête : inchangé
 		['1-\\sqrt2', '1 - \\sqrt{2}'],
 		['4-\\exponentialE', '4 - \\exponentialE']
@@ -225,11 +240,19 @@ describe('somme sans variable : le rationnel en tête', () => {
 		expect(l(input)).toBe(expected);
 	});
 
-	it.each(['\\sqrt5+1', '-\\sqrt2-1', '-1+\\sqrt2', '\\ln(3)-\\ln(2)+1', '3(-\\sqrt2-1)'])(
-		'tidy(tidy(%s)) stable',
-		(s) => {
-			const once = tidy(parseLatex(s) as MathNode);
-			expect(toLatex(tidy(once))).toBe(toLatex(once));
-		}
-	);
+	it('une grandeur garde son ordre : tidy(1[m]+sqrt(2)[m]) = sqrt(2)[m]+1[m]', () => {
+		expect(t('1[m]+sqrt(2)[m]')).toBe('sqrt(2)[m]+1[m]');
+	});
+
+	it.each([
+		'\\sqrt5+1',
+		'-\\sqrt2-1',
+		'-1+\\sqrt2',
+		'\\ln(3)-\\ln(2)+1',
+		'3(-\\sqrt2-1)',
+		'(-1-\\sqrt2)^2'
+	])('tidy(tidy(%s)) stable', (s) => {
+		const once = tidy(parseLatex(s) as MathNode);
+		expect(toLatex(tidy(once))).toBe(toLatex(once));
+	});
 });

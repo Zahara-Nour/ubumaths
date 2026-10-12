@@ -40,7 +40,9 @@ import {
 import { buildFactor } from './build';
 import { variable } from '../factory';
 import {
+	isDerivativeFunction,
 	isEulerConstant,
+	isFunction,
 	isGreek,
 	isHole,
 	isImaginaryUnit,
@@ -50,6 +52,7 @@ import {
 	isVariable
 } from '../guards';
 import { mapNode } from '../transforms';
+import { isKnownFunctionName } from '../numtype/rules/functions';
 
 // =============================================================================
 // Types
@@ -206,9 +209,10 @@ export function isFirstDegreeSum(terms: readonly TidyTerm[]): boolean {
 
 /**
  * Le nœud contient-il une inconnue ? Les constantes `e`, `i`, `π` n'en sont
- * pas (π est un nœud `constant`, jamais `greek`) ; une lettre, une lettre
- * grecque, un indice (`u_0`), une longueur (`AB`), un trou ou un symbole en
- * sont (prudence : l'ordre ne change alors pas).
+ * pas (π est un nœud `constant`, jamais `greek`), ni une fonction usuelle en un
+ * nombre (`\sin(1)`, `\ln 2`, `\sqrt{2}`). Une lettre, une lettre grecque, un
+ * indice (`u_0`), une longueur (`AB`), un trou, un symbole en sont, et aussi
+ * une fonction de l'énoncé (`f(2)`, `f'(1)`, `g(0)`) : sa valeur est inconnue.
  */
 function containsUnknown(node: MathNode): boolean {
 	let found = false;
@@ -219,7 +223,8 @@ function containsUnknown(node: MathNode): boolean {
 			isSubscript(n) ||
 			isSegmentLength(n) ||
 			isHole(n) ||
-			isSymbol(n)
+			isSymbol(n) ||
+			(isFunction(n) && (!isKnownFunctionName(n.name) || isDerivativeFunction(n)))
 		) {
 			found = true;
 		}
@@ -228,36 +233,49 @@ function containsUnknown(node: MathNode): boolean {
 	return found;
 }
 
+/**
+ * Un terme ordinaire : ni opaque (infini, zéro signé), ni grandeur. Partagé
+ * avec la mise en facteur du signe d'une somme toute négative (`collect.ts`).
+ */
+export function isPlainTerm(term: TidyTerm): boolean {
+	return !term.verbatim && term.unit === null;
+}
+
 /** Un terme qui n'est qu'un nombre rationnel (ni facteur, ni unité). */
 function isRationalTerm(term: TidyTerm): boolean {
-	return term.factors.length === 0 && !term.verbatim && term.unit === null;
+	return term.factors.length === 0 && isPlainTerm(term);
 }
 
 /**
+ * Le rationnel qui doit passer en tête de la somme, ou `null`.
+ *
  * Somme sans variable : le rationnel passe en tête (`1 + √5`). Négatif, il n'y
  * passe que si tous les autres termes le sont aussi (`−1 − √2`, mais `√2 − 1`).
- * Toute somme qui contient une variable, une unité ou un terme opaque est
- * rendue telle quelle.
+ * Une somme qui contient une inconnue, une unité ou un terme opaque : `null`.
+ * Ne dépend que de l'ensemble des termes, pas de leur ordre.
  */
-function rationalFirst(sorted: readonly TidyTerm[]): TidyTerm[] {
-	const index = sorted.findIndex(isRationalTerm);
-	if (index <= 0) return [...sorted];
-	const others = sorted.filter((_, i) => i !== index);
+export function leadingRational(terms: readonly TidyTerm[]): TidyTerm | null {
+	const rational = terms.find(isRationalTerm);
+	if (rational === undefined || terms.length < 2) return null;
+	const others = terms.filter((term) => term !== rational);
 	const plain = others.every(
-		(term) =>
-			!term.verbatim &&
-			term.unit === null &&
-			term.factors.every((factor) => !containsUnknown(factor.base))
+		(term) => isPlainTerm(term) && term.factors.every((factor) => !containsUnknown(factor.base))
 	);
-	if (!plain) return [...sorted];
-	const rational = sorted[index];
+	if (!plain) return null;
 	if (
 		isNegativeRational(rational.coefficient) &&
 		!others.every((term) => isNegativeRational(term.coefficient))
 	) {
-		return [...sorted];
+		return null;
 	}
-	return [rational, ...others];
+	return rational;
+}
+
+/** Met en tête le rationnel désigné par `leadingRational`, l'ordre des autres gardé. */
+export function rationalFirst(terms: readonly TidyTerm[]): TidyTerm[] {
+	const rational = leadingRational(terms);
+	if (rational === null) return [...terms];
+	return [rational, ...terms.filter((term) => term !== rational)];
 }
 
 /** Ordonne les termes d'une somme, quel que soit son niveau d'imbrication. */
