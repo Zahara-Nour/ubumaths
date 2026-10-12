@@ -185,6 +185,13 @@ présent sur une instance neuve, et dans `toPublicQuestion`). Une instance sans 
 avant) est lue comme avant : produit, défaut du parseur. L'éditeur propose « Deux majuscules
 collées (AB) désignent : » et signale une réponse attendue qui contient un nom de figure (`ABC`)
 en mode longueur (`figureNameWarnings`) : elle ne pourrait jamais être acceptée.
+Le même sens vaut pour l'**écriture** (lot 5) : formules `$…$` de l'énoncé, des choix et de la
+correction relues en syntaxe maison (`resolveMarkdownContent`, `resolveCorrectionContent`),
+`expectedAnswerLatex`, formats de réponse, coefficients nettoyés, correction rédigée
+(`generateCorrection`, `readingOf(instance)`) et série figée — `AB^2` s'écrit `AB^2`, `ABC` reste
+`ABC`. À l'écran, les cartes (`QuestionCard`, `FlashCard`, `CorrectionCard`, `CourseCardView`,
+`QuestionPreviewBaseCard`) posent le sens par `provideCapitalPairs` pour les `~…~`. Le
+préremplissage n'est pas relu par le parseur (texte LaTeX tel quel).
 
 Qui génère : le navigateur (Automaths `test`, aperçus, `FlashCard`), le SRS (`src/lib/srs/generator.ts`,
 une graine neuve à chaque révision), le serveur pour les évaluations (graine enregistrée par élève)
@@ -444,10 +451,9 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - **`constraint-validators.ts` est presque mort** : `checkSpaces`, `checkProducts`, `checkBrackets`,
   `checkZeros`, `checkForm`, `checkNullTerms`, `checkFactorOne`, `checkFactorZero`, `checkSigns`
   ne sont appelés que par leurs tests ; le jugement passe par `cosmetic-transforms.ts`.
-- **Sens de `AB` hors de la validation** : l'énoncé, la correction rédigée, la réponse attendue
-  affichée (`expectedAnswerLatex`) et le PDF passent par la syntaxe maison (`parseCustom`), qui ne
-  connaît pas encore `capitalPairs` (lot 5 de `docs/wip/longueurs-segments-progress.md`) : une
-  réponse attendue `AB` s'y écrit `A B`. Les `$…$` LaTeX sont rendus tels quels, sans parseur.
+- **Sens de `AB` dans les exercices rédigés** (table `exercises`, `~…~`) : pas encore résolu par
+  le contexte (Q-J) ; ils s'écrivent en produit (`A B`). Sans effet visible : MathLive ignore
+  l'espace, et le PDF Typst sort `A B` dans les deux sens (mesuré au lot 5).
 - **Évaluations notées** : le serveur régénère l'instance depuis la graine au moment de corriger ;
   une copie commencée avant un changement de sens est corrigée avec le sens nouveau (aucune
   réponse attendue à majuscules collées en base au 2026-10-12 : aucun verdict ne change).

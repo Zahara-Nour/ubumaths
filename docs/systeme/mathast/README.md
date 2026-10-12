@@ -380,8 +380,14 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   (un bloc, comme une lettre), lue « la longueur AB » (mot du dictionnaire `longueur`) ; un nom
   de figure rend `{ status: 'figureName', message }` (message de `figureNameRefusal`), sans
   lecture. En mode produit, lectures identiques à avant (empreinte des 200 saisies du corpus,
-  `structure/__tests__/reading-mode-produit.test.ts`). **Pas encore** : la syntaxe maison (lit
-  toujours un produit) — lot 5.
+  `structure/__tests__/reading-mode-produit.test.ts`). **Syntaxe maison** (lot 5) : `parseCustom`
+  et ses variantes (Pratt et rd) prennent la même option `capitalPairs` (défaut `'product'`), avec
+  les mêmes règles et le même scanner de jetons (`scanPointNames`, réglage
+  `bareMultiDigitIndex` : `A_12B` a l'indice 12, comme `x_12`) ; `toCustom` relu en mode longueur
+  rend le même arbre. Non-régression : empreinte de 1 299 saisies (dont les 678 formules `~…~` à
+  majuscules des exercices de prod, 355 à majuscules collées) identique sans option et en
+  produit, et aucune saisie lisible en produit ne devient une erreur en longueur
+  (`parser/custom/__tests__/capital-pairs-empreinte.test.ts`).
 
 ## Invariants structurels non évidents
 
