@@ -2,15 +2,14 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
-## [1.10.0] - 2026-10-12
+## [1.10.0] - 2026-10-13
 
 ### Modifié
 
-- `greek_letters.py` : minuscules assemblées à partir de morceaux de vraies lettres de Shantell au lieu de courbes calculées, trop régulières à côté des lettres de Shantell
-  - `η` (ŋ), `ι` (pied du l), `λ` (л, jambe prolongée), `ρ ϱ σ φ` (o), `υ ψ ω` (u ; ω : deux u resserrés), `χ` (x étiré), `ζ` (C), `ξ` (3 en miroir), `ς` (c)
-  - `α β γ δ` d'un seul trait souple (les assembler laissait des angles) : courbe de Catmull-Rom par des points relevés sur les lignes centrales de Shantell (ventres du o et du c, hauteur d'x, jambages), épaissie au trait des lettres
-  - raccords : la hampe du p, la barre du t et le crochet du j, pris comme contours entiers ; un morceau réduit retrouve le trait des lettres (`scaled`)
-  - ajoutées : `ξ ϖ ϱ ς` (assemblées) et `ϑ` (dessinée) ; restent dessinées `Ξ Σ Ψ` (traits droits)
+- `greek_letters.py` : minuscules grecques dessinées en traits souples, comme les lettres de Shantell, au lieu de courbes trop régulières (1.9.0) puis de morceaux de lettres raccordés, qui gardaient des angles
+  - `α β γ δ ζ η λ ξ ρ ϱ σ ς φ ψ ω ϖ ϑ` : chaque trait est une courbe de Catmull-Rom par des points relevés sur les lignes centrales de Shantell (ventres du o et du c, hauteur d'x, hampes, jambages), épaissie au trait des lettres avec des bouts ronds ; deux traits qui se chevauchent quand la main se lève (`η ψ ζ λ ϱ ϖ`), comme le n
+  - `ι` (bas du l, avec son pied), `υ` (u), `χ` (x étiré) restent faits d'un morceau de lettre Shantell ; `θ κ μ ν ο τ ε ϵ ϕ` restent des glyphes Shantell repris entiers
+  - ajoutées : `ξ ϖ ϱ ς ϑ`
 
 ### Corrigé
 
