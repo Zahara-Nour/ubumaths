@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.7.0] - 2026-10-12
+
+### Ajouté
+
+- Script `build_typst_math_font.py` : « Shantell Math », une seule police OpenType avec table `MATH`, pour Typst (PDF), construite depuis le jeu KaTeX Shantell
+  - glyphes réunis sans hinting : Math-Italic → italiques mathématiques (U+1D434…, ℎ, grec, π), Main-Regular → droites, chiffres, opérateurs, ponctuation ; AMS → ℕ ℤ ℚ ℝ ℂ, ⩽ ⩾
+  - tailles successives (Main ou Size1, puis Size1…Size4) des délimiteurs, de √ et des grands opérateurs ; assemblages des plus grandes tailles avec les morceaux de Size4 (⎛ ⎜ ⎝…, ⎷ U+E000 U+E001) et les barres de Size1
+  - constantes `MATH` de Computer Modern (métriques KaTeX)
+  - écrit aussi Shantell Sans Light et Bold sous le nom de famille « Shantell Sans » : reconstruites glyphe par glyphe, les instances de `fonts/input/` étant refusées telles quelles par Typst
+  - sortie : `static/fonts/shantell-typst/`
+- Ordre : en dernier, après tous les scripts qui modifient `static/fonts/shantell-katex/`
+
 ## [1.6.0] - 2026-10-12
 
 ### Ajouté

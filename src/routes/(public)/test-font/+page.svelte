@@ -3,12 +3,19 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import { switchMathFonts, getCurrentFontSet, type MathFontSet } from '$lib/utils/mathlive-fonts';
+	import demoExercises from './exercices-demo.json';
+	import { downloadExercisePdf, type PdfFontSet } from './shantell-pdf';
 
 	let isReady = $state(false);
 	let currentFont = $state<MathFontSet>('shantell');
 	let isSwitching = $state(false);
 	let renderKey = $state(0); // Force re-render of mathfields
+	// PDF en cours de compilation : « <id>:<police> »
+	let pendingPdf = $state<string | null>(null);
 
 	// UbuMark examples mixing text and math
 	const ubumarkExamples = [
@@ -127,6 +134,19 @@
 		}
 	}
 
+	async function handleDownloadPdf(exercise: (typeof demoExercises)[number], fonts: PdfFontSet) {
+		if (pendingPdf) return;
+		pendingPdf = `${exercise.id}:${fonts}`;
+		try {
+			await downloadExercisePdf(exercise, fonts);
+		} catch (err) {
+			console.error('PDF de démonstration :', err);
+			toaster.error('La compilation du PDF a échoué');
+		} finally {
+			pendingPdf = null;
+		}
+	}
+
 	onMount(async () => {
 		if (browser) {
 			// Initialize with shantell fonts by default
@@ -195,14 +215,16 @@
 	<h1 class="mb-4 text-2xl font-bold">Test Police ShantellMath</h1>
 
 	<!-- Direct font test without MathLive -->
-	<div class="mb-8 rounded-lg border-2 border-orange-300 bg-orange-50 p-4">
-		<h2 class="mb-4 text-xl font-semibold text-orange-800">
+	<div class="mb-8 rounded-lg border-2 border-orange-300 bg-card p-4">
+		<h2 class="mb-4 text-xl font-semibold text-orange-600">
 			Test direct des polices (sans MathLive)
 		</h2>
 
 		<div class="space-y-4">
-			<div class="rounded bg-white p-4">
-				<div class="mb-1 text-xs font-medium text-gray-500">ShantellMath (fichier original)</div>
+			<div class="rounded bg-card p-4">
+				<div class="mb-1 text-xs font-medium text-muted-foreground">
+					ShantellMath (fichier original)
+				</div>
 				<div class="font-shantell text-3xl">
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 				</div>
@@ -211,8 +233,8 @@
 				</div>
 			</div>
 
-			<div class="rounded bg-white p-4">
-				<div class="mb-1 text-xs font-medium text-gray-500">
+			<div class="rounded bg-card p-4">
+				<div class="mb-1 text-xs font-medium text-muted-foreground">
 					ShantellKaTeX (copie dans shantell-katex/)
 				</div>
 				<div class="font-shantell-katex text-3xl">
@@ -223,8 +245,10 @@
 				</div>
 			</div>
 
-			<div class="rounded bg-white p-4">
-				<div class="mb-1 text-xs font-medium text-gray-500">KaTeX Original (pour comparaison)</div>
+			<div class="rounded bg-card p-4">
+				<div class="mb-1 text-xs font-medium text-muted-foreground">
+					KaTeX Original (pour comparaison)
+				</div>
 				<div class="font-katex-original text-3xl">
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 				</div>
@@ -236,7 +260,7 @@
 	</div>
 
 	<!-- Font switcher -->
-	<div class="mb-6 flex flex-wrap items-center gap-4 rounded-lg bg-gray-100 p-4">
+	<div class="mb-6 flex flex-wrap items-center gap-4 rounded-lg bg-muted p-4">
 		<div class="flex gap-2">
 			<button
 				onclick={() => handleSwitchFont('shantell')}
@@ -244,7 +268,7 @@
 				class="rounded-lg px-4 py-2 font-medium transition-colors disabled:opacity-50 {currentFont ===
 				'shantell'
 					? 'bg-green-500 text-white'
-					: 'bg-gray-300 text-gray-700 hover:bg-gray-400'}"
+					: 'bg-secondary text-secondary-foreground hover:opacity-80'}"
 			>
 				{isSwitching && currentFont !== 'shantell' ? 'Chargement...' : 'ShantellMath'}
 			</button>
@@ -254,12 +278,12 @@
 				class="rounded-lg px-4 py-2 font-medium transition-colors disabled:opacity-50 {currentFont ===
 				'katex'
 					? 'bg-blue-500 text-white'
-					: 'bg-gray-300 text-gray-700 hover:bg-gray-400'}"
+					: 'bg-secondary text-secondary-foreground hover:opacity-80'}"
 			>
 				{isSwitching && currentFont !== 'katex' ? 'Chargement...' : 'KaTeX Standard'}
 			</button>
 		</div>
-		<span class="text-sm text-gray-600">
+		<span class="text-sm text-muted-foreground">
 			Police active: <strong
 				>{currentFont === 'shantell' ? 'ShantellMath (manuscrite)' : 'KaTeX (standard)'}</strong
 			>
@@ -269,18 +293,18 @@
 
 	{#if !isReady}
 		<div class="flex items-center justify-center p-8">
-			<div class="text-gray-500">Chargement de MathLive...</div>
+			<div class="text-muted-foreground">Chargement de MathLive...</div>
 		</div>
 	{:else}
 		{#key renderKey}
 			<div class="mb-8">
 				<h2 class="mb-4 text-xl font-semibold">Éditeur interactif</h2>
-				<div class="rounded-lg border-2 border-gray-300 bg-white p-2">
+				<div class="rounded-lg border-2 border-border bg-card p-2">
 					<math-field style="width: 100%; font-size: 1.5rem; border: none; outline: none;">
 						{showcaseLatex}
 					</math-field>
 				</div>
-				<p class="mt-2 text-sm text-gray-600">
+				<p class="mt-2 text-sm text-muted-foreground">
 					Cliquez pour éditer. Utilisez le clavier ou les raccourcis LaTeX.
 				</p>
 			</div>
@@ -289,9 +313,9 @@
 
 			<div class="grid gap-4 md:grid-cols-2">
 				{#each testFormulas as formula (formula.label)}
-					<div class="rounded-lg border bg-gray-50 p-4">
-						<div class="mb-2 text-sm font-medium text-gray-700">{formula.label}</div>
-						<div class="flex min-h-16 items-center justify-center rounded-lg bg-white p-4">
+					<div class="rounded-lg border bg-muted p-4">
+						<div class="mb-2 text-sm font-medium text-muted-foreground">{formula.label}</div>
+						<div class="flex min-h-16 items-center justify-center rounded-lg bg-card p-4">
 							<math-field
 								read-only
 								style="border: none; background: transparent; font-size: 1.25rem;"
@@ -300,7 +324,7 @@
 							</math-field>
 						</div>
 						<div
-							class="mt-2 overflow-x-auto rounded bg-gray-200 p-2 font-mono text-xs text-gray-600"
+							class="mt-2 overflow-x-auto rounded bg-muted p-2 font-mono text-xs text-muted-foreground"
 						>
 							{formula.latex}
 						</div>
@@ -311,17 +335,59 @@
 			<!-- UbuMark section: text mixed with math -->
 			<div class="mt-8">
 				<h2 class="mb-4 text-xl font-semibold">Texte mixte (UbuMark)</h2>
-				<p class="mb-4 text-sm text-gray-600">
+				<p class="mb-4 text-sm text-muted-foreground">
 					Test de l'harmonie entre le texte normal (Shantell Sans) et les formules mathématiques
 					(KaTeX modifié).
 				</p>
 
 				<div class="space-y-4">
 					{#each ubumarkExamples as example (example.label)}
-						<div class="rounded-lg border bg-white p-4">
-							<div class="mb-2 text-sm font-medium text-gray-500">{example.label}</div>
+						<div class="rounded-lg border bg-card p-4">
+							<div class="mb-2 text-sm font-medium text-muted-foreground">{example.label}</div>
 							<div class="font-shantell-sans text-lg leading-relaxed">
 								<InlineMarkdown content={example.content} />
+							</div>
+						</div>
+					{/each}
+				</div>
+			</div>
+
+			<!-- Exercices réels : copie figée de trois exercices de la base -->
+			<div class="mt-8">
+				<h2 class="mb-2 text-xl font-semibold">Exercices de la base</h2>
+				<p class="mb-4 text-sm text-muted-foreground">
+					Trois exercices réels (énoncé et corrigé), copiés de la base le 2026-10-12. Le PDF est
+					compilé par Typst, comme les fiches, avec Shantell Sans pour le texte et Shantell Math
+					pour les formules ; « PDF standard » montre la même chose avec les polices habituelles.
+				</p>
+
+				<div class="space-y-6">
+					{#each demoExercises as exercise (exercise.id)}
+						<div class="rounded-lg border bg-card p-4">
+							<div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+								<h3 class="text-lg font-semibold">{exercise.title}</h3>
+								<div class="flex gap-2">
+									<Button
+										size="sm"
+										disabled={pendingPdf !== null}
+										onclick={() => handleDownloadPdf(exercise, 'shantell')}
+									>
+										{pendingPdf === `${exercise.id}:shantell` ? 'Compilation…' : 'PDF Shantell'}
+									</Button>
+									<Button
+										size="sm"
+										variant="outline"
+										disabled={pendingPdf !== null}
+										onclick={() => handleDownloadPdf(exercise, 'standard')}
+									>
+										{pendingPdf === `${exercise.id}:standard` ? 'Compilation…' : 'PDF standard'}
+									</Button>
+								</div>
+							</div>
+							<div class="font-shantell-sans">
+								<MarkdownRenderer content={exercise.statement_md} />
+								<h4 class="mt-4 mb-2 font-semibold text-muted-foreground">Corrigé</h4>
+								<MarkdownRenderer content={exercise.solution_md} />
 							</div>
 						</div>
 					{/each}

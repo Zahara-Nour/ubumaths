@@ -13,6 +13,8 @@ couvre:
   - 'src/routes/(public)/test-structure/*.svelte'
   - 'src/routes/(public)/test-structure/*.ts'
   - 'src/routes/(public)/test-font/+page.svelte'
+  - 'src/routes/(public)/test-font/exercices-demo.json'
+  - 'src/routes/(public)/test-font/shantell-pdf.ts'
   - 'src/routes/(public)/upsilon/+page.svelte'
   - src/lib/stores/listNumbering.svelte.ts
   - src/lib/styles/list-numbering.css
@@ -112,7 +114,13 @@ Précisions :
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
   expression de quatre lignes (`\begin{gathered}`) qui réunit tous les symboles de la police,
   petits et grands (opérateurs, délimiteurs empilés, racines, ∑ ∫, AMS) : la regarder suffit pour
-  juger un changement du jeu Shantell (`tools/shantell-math/`).
+  juger un changement du jeu Shantell (`tools/shantell-math/`). En bas, trois **exercices réels**
+  (copie figée de la base, `exercices-demo.json`, image copiée dans `static/test-font/`), affichés en
+  Shantell et téléchargeables en PDF : `shantell-pdf.ts` compile avec un compilateur Typst **à part**
+  (`TypstSnippet.buildLocalCompiler`), qui charge en plus `static/fonts/shantell-typst/` (Shantell
+  Sans Light/Bold, Shantell Math : police OpenType MATH construite depuis le jeu KaTeX par
+  `tools/shantell-math/src/build_typst_math_font.py`). Le compilateur partagé des fiches n'est pas
+  touché.
 - **`/test-cadres`** : garde la trace du choix `\htmlStyle` pour le cadre des solutions
   (`\bbox` perd sa bordure en MathLive 0.111.1, `roundedbox` est décalé).
 
@@ -125,6 +133,9 @@ Précisions :
   `<link>` dans `<head>` et change `MathfieldElement.fontsDirectory` ; la page n'a ni `onDestroy`
   ni retour à `katex`. Après une visite, une navigation côté client garde Shantell partout
   jusqu'au rechargement.
+- **`/test-font` servie en HTTP sur une adresse IP** (dev via Tailscale) : `crypto.randomUUID`
+  n'existe qu'en contexte sécurisé (HTTPS ou `localhost`) ; le rendu ubumark des listes plante.
+  Passer par `localhost` (tunnel) ou HTTPS.
 - Les pages `/demo/**` sont publiques et sans `noindex` : seul `robots.txt` les écarte.
 
 ---
