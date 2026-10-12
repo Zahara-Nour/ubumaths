@@ -1,7 +1,12 @@
 import type { PageServerLoad } from './$types';
 import type { DbRiddleAttempt, StudentRiddle } from '$lib/types/riddle';
-import { toDbRiddle, toDbRiddleAttempt, toStudentRiddle } from '$lib/types/riddle';
+import { RIDDLE_COLUMNS, toDbRiddle, toDbRiddleAttempt, toStudentRiddle } from '$lib/types/riddle';
 import { error, redirect } from '@sveltejs/kit';
+import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+
+/** Ligne `riddles` telle que la lit cette page : sans réponse attendue ni correction. */
+type RiddleRow = Parameters<typeof toDbRiddle>[0];
 
 /**
  * Load riddle of the day for student
@@ -31,14 +36,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	let studentAttempt: DbRiddleAttempt | null = null;
-	let riddleOfTheDay: StudentRiddle | null = null;
+	let riddleOfTheDayRow: RiddleRow | null = null;
 	// Le RPC interroge CURRENT_DATE : la date affichée est donc celle du jour.
 	let riddleOfTheDayDate: string | null = null;
 
 	if (riddleOfTheDayId) {
 		const { data: riddle, error: riddleError } = await supabase
 			.from('riddles')
-			.select('*')
+			.select(RIDDLE_COLUMNS)
 			.eq('id', riddleOfTheDayId)
 			.maybeSingle();
 
@@ -49,7 +54,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		}
 
 		if (riddle) {
-			riddleOfTheDay = toStudentRiddle(toDbRiddle(riddle));
+			riddleOfTheDayRow = riddle;
 			riddleOfTheDayDate = new Date().toISOString().slice(0, 10);
 
 			// Fetch student's latest attempt for this riddle
@@ -79,8 +84,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.select(
 			`
 			*,
-			riddle:riddles(*)
-		`
+			riddle:riddles(${RIDDLE_COLUMNS})
+		` as const
 		)
 		.or(`student_id.eq.${user.id},class_id.in.(${classIds.join(',')})`)
 		.eq('riddles.status', 'published')
@@ -91,8 +96,29 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw error(500, 'Impossible de charger les données');
 	}
 
+	// Le type de saisie et les choix d'un QCM sont rangés avec la réponse attendue, dans
+	// `riddle_solutions`, que l'élève ne lit pas. Le client service la lit, mais SEULEMENT
+	// pour les énigmes que les requêtes de l'élève ci-dessus ont rendues sous sa RLS ; et
+	// `toStudentRiddle` n'en garde ni la valeur attendue ni la correction.
+	const visibleRows = [
+		...(riddleOfTheDayRow ? [riddleOfTheDayRow] : []),
+		...(assignments || []).flatMap((a) => (a.riddle ? [a.riddle] : []))
+	];
+	const { solutions, error: solutionsError } = await fetchRiddleSolutions(
+		createServiceRoleClient(),
+		visibleRows.map((r) => r.id)
+	);
+
+	if (solutionsError) {
+		console.error('Lecture impossible :', solutionsError);
+		throw error(500, 'Impossible de charger les données');
+	}
+
+	const toStudent = (row: RiddleRow): StudentRiddle =>
+		toStudentRiddle(toDbRiddle(row, solutions.get(row.id) ?? null));
+
 	return {
-		riddleOfTheDay,
+		riddleOfTheDay: riddleOfTheDayRow ? toStudent(riddleOfTheDayRow) : null,
 		riddleOfTheDayDate,
 		studentAttempt,
 		// `difficulty` et `status` sont des colonnes permissives, `answer` du jsonb :
@@ -100,7 +126,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// et correction ne partent pas au navigateur.
 		assignments: (assignments || []).map((a) => ({
 			...a,
-			riddle: a.riddle ? toStudentRiddle(toDbRiddle(a.riddle)) : null
+			riddle: a.riddle ? toStudent(a.riddle) : null
 		}))
 	};
 };

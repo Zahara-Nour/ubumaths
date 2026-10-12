@@ -3,7 +3,8 @@ import type { AttemptWithDetails } from '$lib/types/riddle';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { sendValidationResultMessage } from '$lib/server/riddle-messages';
 import { validateUuidParam } from '$lib/server/validation/params';
-import { toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
+import { RIDDLE_COLUMNS, toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
+import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
 
 /**
  * Load validation details
@@ -20,14 +21,14 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		.select(
 			`
 			*,
-			riddle:riddles!inner(*),
+			riddle:riddles!inner(${RIDDLE_COLUMNS}),
 			student:profiles!riddle_attempts_student_id_fkey(
 				id,
 				firstname,
 				lastname,
 				avatar_url
 			)
-		`
+		` as const
 		)
 		.eq('id', params.id)
 		.is('is_correct', null) // Must be pending
@@ -43,12 +44,21 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		throw error(403, 'Vous ne pouvez valider que vos propres énigmes');
 	}
 
-	// Sélection complète de l'énigme, et conversion plutôt que cast : `difficulty`
-	// et `status` sont des colonnes permissives, `answer` et `submitted_answer`
-	// du jsonb.
+	// La page affiche la correction : elle vit dans `riddle_solutions`, que la RLS ouvre
+	// à l'auteur de l'énigme (vérifié juste au-dessus) et à l'admin.
+	const { solutions, error: solutionsError } = await fetchRiddleSolutions(supabase, [
+		attempt.riddle.id
+	]);
+	if (solutionsError) {
+		console.error('Error fetching riddle solution:', solutionsError);
+		throw error(500, 'Impossible de charger la correction de l’énigme');
+	}
+
+	// Conversion plutôt que cast : `difficulty` et `status` sont des colonnes
+	// permissives, `answer` et `submitted_answer` du jsonb.
 	const attemptWithDetails: AttemptWithDetails = {
 		...toDbRiddleAttempt(attempt),
-		riddle: toDbRiddle(attempt.riddle),
+		riddle: toDbRiddle(attempt.riddle, solutions.get(attempt.riddle.id) ?? null),
 		student: {
 			id: attempt.student.id,
 			firstname: attempt.student.firstname,
