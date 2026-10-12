@@ -56,10 +56,7 @@ const CUSTOM_PATTERNS: readonly RegExp[] = [
 	// nth root: sqrt[3](x)
 	/sqrt\[\d+\]/,
 	// Absolute value in custom syntax: \|x\|
-	/\\\|.*\\\|/,
-	// « Différent de » : `2 != 3`. Le LaTeX l'écrit `\ne` et y lisait `factorial(2) = 3` ; le
-	// parseur maison lit `!=` comme ≠ (et `3! = 6`, avec espace, comme une factorielle)
-	/!=/
+	/\\\|.*\\\|/
 	// Functions without backslash: sqrt(, sin(, cos(, tan(, ln(, log(, exp(, abs(
 	// These are custom syntax - LaTeX requires \sqrt, \sin, etc.
 	// Also includes statistical functions: mean, median, variance, stdev, min, max, sum

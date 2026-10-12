@@ -205,3 +205,7 @@ sa valeur approchée. »
   désormais la syntaxe maison dans `input-detector.ts` ; les chaînes `1 < x < 3` sont évaluées
   maillon par maillon (`evaluateToBoolean`) et passent par le plafond (`boundedComparison` les
   change en « et » de maillons : `1 < 1.0001^{30000} < 30` prenait 26,6 s).
+  Revue : `!=` restait une factorielle avec du LaTeX autour (`\frac{1}{2} != 3` → false) — la
+  règle est désormais une réécriture `!=` → `\ne` avant le parseur LaTeX (le motif du détecteur
+  est retiré) ; une chaîne avec un `=` (`1 < 2 = 2`, `2 = 2 = 2`) partait dans
+  `executeEquality` — lue en entier désormais.

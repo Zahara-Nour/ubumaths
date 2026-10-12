@@ -72,3 +72,41 @@ describe('une chaîne de comparaisons : vraie si chaque maillon l’est', () => 
 		expect(line.output).toBe('true');
 	});
 });
+
+// Revue : `!=` restait une factorielle dès que l'entrée portait du LaTeX ; une chaîne avec un `=`
+// partait dans la comparaison de deux membres (un booléen face à un nombre : false)
+describe('les cas de la revue', () => {
+	it.each([
+		['\\frac{1}{2} != 3', 'true'],
+		['\\pi != 3', 'true'],
+		['\\frac{1}{2} != 0.5', 'false']
+	])('!= avec du LaTeX : %s', (input, output) => {
+		expect(run(input).output).toBe(output);
+	});
+
+	it('!= avec du LaTeX et une variable liée', () => {
+		expect(run('x := 4', '\\sqrt{x} != 2').output).toBe('false');
+	});
+
+	it.each([
+		['1 < 2 = 2', 'true'],
+		['2 = 2 < 3', 'true'],
+		['1 < 2 = 3', 'false'],
+		['2 = 2 = 2', 'true'],
+		['2 = 2 = 3', 'false']
+	])('une chaîne avec un = : %s', (input, output) => {
+		expect(run(input).output).toBe(output);
+	});
+
+	it('une chaîne avec un = et une variable liée', () => {
+		expect(run('x := 2', '1 < x = 2').output).toBe('true');
+	});
+
+	it('une chaîne avec un = passe par le plafond de calcul', () => {
+		const start = performance.now();
+		const line = run('1 < 2 = 10^30000/10^29999');
+
+		expect(performance.now() - start).toBeLessThan(300);
+		expect(line.output).toBe('false');
+	});
+});

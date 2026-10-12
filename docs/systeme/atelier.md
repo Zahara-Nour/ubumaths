@@ -296,9 +296,11 @@ fractions », 2026-10-12) :
 
 **Chaînes et « différent de »** (2026-10-12) : `1 < x < 3` est vraie si chaque maillon l'est
 (`evaluateToBoolean`, `eval/evaluate.ts` ; elle répondait « Cannot evaluate boolean expression ») ;
-`2 != 3` est lu par le parseur maison (`cli/core/input-detector.ts` : `!=` désigne la syntaxe
-maison ; le LaTeX, qui l'écrit `\ne`, y lisait `factorial(2) = 3`). `3! = 6`, avec une espace,
-reste une factorielle.
+`2 != 3` se lit « différent de », LaTeX compris (`cli/core/pipeline.ts` réécrit `!=` en `\ne`
+avant le parseur LaTeX, qui lisait `factorial(2) = 3`) ; `3! = 6`, avec une espace, reste une
+factorielle. Une entrée à plusieurs `=` ou dont un membre est une comparaison (`1 < 2 = 2`) est lue
+en entier comme une chaîne : `executeEquality` la coupait au `=` et comparait un booléen à un
+nombre.
 
 Une comparaison ne garde jamais son écriture (elle rend vrai ou faux), mais passe par le même
 plafond **membre par membre** (`mathAST/cli/bounded-comparison.ts`, aussi pour `a = b`, qui suit

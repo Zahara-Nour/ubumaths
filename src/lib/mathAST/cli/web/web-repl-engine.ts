@@ -689,6 +689,12 @@ export class WebReplEngine {
 		const equalityRegex = /(?<![<>!=:])=(?![=>])/;
 		const parts = input.split(equalityRegex);
 
+		// Une chaîne (`2 = 2 = 2`, `1 < 2 = 2`) : lue en entier, maillon par maillon. Coupée au
+		// `=`, elle comparait un booléen à un nombre et répondait `false` (revue, 2026-10-12)
+		if (parts.length > 2 && parts.every((part) => part.trim() !== '')) {
+			return this.executeExpression(input);
+		}
+
 		if (parts.length !== 2) {
 			return {
 				success: false,
@@ -758,6 +764,8 @@ export class WebReplEngine {
 				}
 			};
 		}
+
+		if (isRelation(result1.ast) || isRelation(result2.ast)) return this.executeExpression(input);
 
 		// Substitute bound variables before comparison
 		const bindings = bindingsToRecord(this.evalState.bindings);
