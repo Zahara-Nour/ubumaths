@@ -183,7 +183,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité quadratic inequality with 
     "id": 8,
     "rule": "inequality-conclude-quadratic",
     "schoolLevel": "lycee",
-    "title": "Solution : S = ]2 ; 3[",
+    "title": "Solution : $S = ]2 ; 3[$",
   },
 ]
 `;
@@ -252,7 +252,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité quadratic inequality — p
     "id": 8,
     "rule": "inequality-conclude-quadratic",
     "schoolLevel": "lycee",
-    "title": "Solution : S = ]2 ; 3[",
+    "title": "Solution : $S = ]2 ; 3[$",
   },
 ]
 `;
@@ -305,7 +305,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité rational inequality (palie
     "id": 6,
     "rule": "inequality-conclude-rational",
     "schoolLevel": "lycee",
-    "title": "Solution : S = ]1 ; 3[",
+    "title": "Solution : $S = ]1 ; 3[$",
   },
 ]
 `;
@@ -366,7 +366,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité rational inequality V2 (mu
     "id": 7,
     "rule": "inequality-conclude-rational",
     "schoolLevel": "lycee",
-    "title": "Solution : S = ]-∞ ; 0[ ∪ ]\\dfrac{1}{2} ; 1[",
+    "title": "Solution : $S = ]-\\infty ; 0[ \\cup ]\\dfrac{1}{2} ; 1[$",
   },
 ]
 `;
@@ -752,7 +752,7 @@ exports[`Mode B end-to-end demos > Terminale spécialité rational inequality wi
     "id": 6,
     "rule": "inequality-conclude-rational",
     "schoolLevel": "lycee",
-    "title": "Solution : S = ]-1 ; 0] ∪ ]1 ; +∞[",
+    "title": "Solution : $S = ]-1 ; 0] \\cup ]1 ; +\\infty[$",
   },
 ]
 `;

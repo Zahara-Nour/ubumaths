@@ -7,6 +7,11 @@ import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import GeneratedStepsCorrection from '../GeneratedStepsCorrection.svelte';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import { parseLatex } from '$lib/mathAST/parser';
+import {
+	generatePedagogicalIntegrationSteps,
+	PedagogicalIntegrationRenderer
+} from '$lib/mathAST/pedagogical-integration';
 
 const steps: RenderedStep[] = [
 	{
@@ -62,5 +67,28 @@ describe('GeneratedStepsCorrection — les maths de la prose', () => {
 
 		await expect.poll(() => title?.textContent?.trim()).toBe('Intégration par parties');
 		expect(title?.querySelectorAll('math-span').length).toBe(0);
+	});
+
+	// Les étapes d'un vrai pipeline, pas seulement des textes écrits à la main
+	it('∫ 2xe^{3x} dx (IPP, lycée) : aucun LaTeX visible dans la prose', async () => {
+		const result = generatePedagogicalIntegrationSteps(parseLatex('2xe^{3x}'), {
+			level: 'lycee',
+			verbosity: 'detailed'
+		});
+		const realSteps = new PedagogicalIntegrationRenderer().renderAll(result.steps, {
+			schoolLevel: 'lycee',
+			verbosity: 'detailed'
+		});
+		const screen = await render(GeneratedStepsCorrection, { props: { steps: realSteps } });
+		const texts = () => [...screen.container.querySelectorAll('.step-title, .step-explanation')];
+
+		// L'explication « On pose $u = 2 x$ et $dv = …$ » : ses formules sont rendues
+		await expect
+			.poll(() => texts().reduce((n, el) => n + formulasOf(el).length, 0))
+			.toBeGreaterThan(4);
+		expect(texts().some((el) => proseOf(el).includes('On pose'))).toBe(true);
+		for (const el of texts()) {
+			expect(proseOf(el)).not.toMatch(/[$\\^{}_]/);
+		}
 	});
 });

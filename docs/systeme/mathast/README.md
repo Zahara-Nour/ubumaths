@@ -519,10 +519,17 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   supérieur qui n'est qu'une formule en entier (`$\int u\,dv = uv - \int v\,du$`),
   `$S = \{ 6 \}$`. Hors des `$`, ni `\`, `^`, `_`, `{`, `}`, ni `*` (italique d'ubumark) ni
   `~` (syntaxe maison), jamais `$$` (bloc) ; les descriptions par défaut restent du texte simple.
-  Garde-fou sur un panel (31 intégrales, 18 dérivées, 8 équations et inéquations, à chaque
-  niveau) : `__tests__/prose-maths-delimitees.test.ts`. Les **limites** écrivent encore leur
-  prose en Unicode (`formatPowerShort`, `formatValueShort`), rendue telle quelle ; le reste
-  (`pedagogical-simplify`, second degré, domaine) n'a pas de LaTeX dans sa prose sur ce panel.
+  Garde-fou sur les 11 pipelines que `generateCorrection` appelle (listes et cas de démo, à
+  chaque niveau) : `__tests__/prose-maths-delimitees.test.ts` — il refuse aussi un texte qui
+  commencerait par un marqueur de bloc ubumark (`+`, `-`, `1.`, `#`, `>` : les titres « + » de
+  l'arithmétique s'écrivent `$+$`). Second degré : ensembles de solutions par
+  `domainDescriptionLatex` (`pedagogical-solve/_helpers.ts`), forme standard en `$…$` (plus de
+  backticks) ; domaine : gabarits de `domain/step-descriptions.ts` en `$…$` ; simplification : les
+  propriétés de l'exponentielle et des radicaux de `normal/` réécrites dans
+  `pedagogical-simplify/descriptions-fr.ts`. Les **limites** écrivent encore leur prose en Unicode
+  (`formatPowerShort`, `formatValueShort`), sauf les titres-formules du supérieur
+  (`$\lim_{x \to 0^-}$`). Sous ∫, une constante négative s'écrit entre parenthèses
+  (`\int \left( -3 \right) f(x)\,dx = -3 \int f(x)\,dx`).
   Côté atelier, `decimalCommaProse` écrit `{,}` dans les `$…$` et `historyToUbumark` garde ces
   formules (`$…$`, pas `\$`).
 - La résolution d'équation pédagogique ne rejoue **pas** le solveur algorithmique : elle

@@ -63,7 +63,8 @@ describe('applyDomainRuleTemplate', () => {
 	it('should substitute single value', () => {
 		const result = applyDomainRuleTemplate('sqrt_constraint', { expr: 'x - 2' });
 		expect(result).toContain('x - 2');
-		expect(result).toContain('≥ 0');
+		// Formules entre `$…$` depuis V25 (prose rendue par InlineMarkdown)
+		expect(result).toContain('$x - 2 \\geq 0$');
 	});
 
 	it('should substitute multiple values', () => {

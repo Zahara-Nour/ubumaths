@@ -89,3 +89,18 @@ describe('V24 — choix de u et dv : du = dx, jamais « 1 dx »', () => {
 		}
 	});
 });
+
+describe('V25 (revue) — une constante négative s’écrit entre parenthèses sous ∫', () => {
+	it.each([
+		['-3x^2', 'extract-constant', '\\int \\left( -3 \\right) f(x)\\,dx = -3 \\int f(x)\\,dx'],
+		['-\\dfrac{1}{2}e^x', 'extract-constant', '\\int \\left( -\\dfrac{1}{2} \\right) f(x)\\,dx'],
+		['2x^3', 'extract-constant', '\\int 2 f(x)\\,dx = 2 \\int f(x)\\,dx'],
+		['-x^3', 'extract-constant', '\\int \\left( -1 \\right) f(x)\\,dx = -\\int f(x)\\,dx'],
+		['-3', 'apply-constant-rule', '\\int \\left( -3 \\right)\\,dx = -3 x'],
+		['5', 'apply-constant-rule', '\\int 5\\,dx = 5 x']
+	])('∫%s, %s : « %s »', (latex, rule, expected) => {
+		const explanation = explanationOf(latex, rule);
+		expect(explanation).toContain(`$${expected}`);
+		expect(explanation).not.toMatch(/\\int -/);
+	});
+});

@@ -12,7 +12,13 @@
  * - hors des `$…$`, aucun `\`, `^`, `_`, `{`, `}` (LaTeX), `*` (italique
  *   Markdown d'ubumark) ni `~` (formule en syntaxe maison).
  *
- * Les limites restent en Unicode (`formatPowerShort`), hors de ce panel.
+ * Le panel couvre les 11 pipelines que `generateCorrection` appelle
+ * (arithmétique, premier et second degré, inéquations du premier et du second
+ * degré, rationnelles, dérivation, intégration, simplification, limites,
+ * domaine), à chaque niveau accepté : listes ci-dessous et cas de démo des
+ * modules. Les limites écrivent encore l'essentiel de leur prose en Unicode
+ * (`formatPowerShort`, `formatValueShort`) ; leurs titres du supérieur qui
+ * sont des formules passent en `$…$`.
  */
 
 import { describe, expect, it } from 'vitest';
@@ -29,6 +35,24 @@ import { withTidyStep } from '../pedagogical-differentiation/tidy-step';
 import { generateLinearEquationSteps } from '../pedagogical-solve/linear';
 import { generateLinearInequalitySteps } from '../pedagogical-solve/linear-inequality';
 import { LinearEquationRenderer } from '../pedagogical-solve/linear-renderer';
+import { generateQuadraticEquationSteps } from '../pedagogical-solve/quadratic';
+import { generateQuadraticInequalitySteps } from '../pedagogical-solve/quadratic-inequality';
+import { generateRationalInequalitySteps } from '../pedagogical-solve/rational-inequality';
+import { QuadraticEquationRenderer } from '../pedagogical-solve/quadratic-renderer';
+import { ALL_CATEGORIES as LINEAR_DEMOS } from '../pedagogical-solve/demo-equations';
+import { ALL_CATEGORIES_QUADRATIC as QUADRATIC_DEMOS } from '../pedagogical-solve/demo-equations-quadratic';
+import { generatePedagogicalArithmeticSteps } from '../pedagogical-arithmetic/pipeline';
+import { PedagogicalArithmeticRenderer } from '../pedagogical-arithmetic/renderer';
+import { ALL_CATEGORIES as ARITHMETIC_DEMOS } from '../pedagogical-arithmetic/demo-cases';
+import { generatePedagogicalSimplifySteps } from '../pedagogical-simplify/pipeline';
+import { PedagogicalSimplifyRenderer } from '../pedagogical-simplify/renderer';
+import { ALL_DEMO_CATEGORIES as SIMPLIFY_DEMOS } from '../pedagogical-simplify/demo-cases';
+import { dispatchPedagogicalLimit, PedagogicalLimitRenderer } from '../pedagogical-limits';
+import { ALL_CATEGORIES as LIMIT_DEMOS } from '../pedagogical-limits/demo-cases';
+import { dispatchPedagogicalDomain, PedagogicalDomainRenderer } from '../pedagogical-domain';
+import { ALL_CATEGORIES as DOMAIN_DEMOS } from '../pedagogical-domain/demo-cases';
+import { ALL_CATEGORIES as DERIVATIVE_DEMOS } from '../pedagogical-differentiation/demo-cases';
+import { ALL_CATEGORIES_INTEGRATION as INTEGRATION_DEMOS } from '../pedagogical-integration/demo-cases';
 
 // =============================================================================
 // Types
@@ -113,6 +137,53 @@ const LINEAR: readonly string[] = [
 
 const INEQUALITIES: readonly string[] = ['-\\dfrac{2}{3}x+1<5', '3x-2\\geq x+4', '-2x+5>1'];
 
+const QUADRATIC_INEQUALITIES: readonly string[] = [
+	'x^2-5x+6<0',
+	'2x^2-3x-2\\geq0',
+	'-x^2+4>0',
+	'x^2+x+1>0',
+	'\\dfrac{1}{2}x^2-2\\leq0',
+	'3x^2-2x<0'
+];
+
+const RATIONAL_INEQUALITIES: readonly string[] = [
+	'\\dfrac{2x+1}{x^2-4}<0',
+	'\\dfrac{x-1}{x+3}\\geq0',
+	'\\dfrac{3}{2x-1}>0',
+	'\\dfrac{x^2-1}{x}\\leq0'
+];
+
+const QUADRATIC_EQUATIONS: readonly string[] = [
+	'2x^2-3x+1=0',
+	'x^2+2x+5=0',
+	'3x^2-12=0',
+	'4x^2-4x+1=0'
+];
+
+const LIMITS: ReadonlyArray<readonly [string, string, ('left' | 'right')?]> = [
+	['1/x', '0', 'left'],
+	['1/x', '0', 'right'],
+	['(2x+1)/(x-3)', '3', 'right'],
+	['(3x^2+1)/(2x^2-5)', '\\infty'],
+	['(x^2-4)/(x-2)', '2']
+];
+
+const DOMAINS: readonly string[] = [
+	'\\dfrac{1}{x-2}',
+	'\\dfrac{3}{2x+1}',
+	'\\sqrt{3-x}',
+	'\\ln(2x+1)'
+];
+
+const ALL_LEVELS: readonly SchoolLevel[] = ['primaire', 'college', 'lycee', 'superieur'];
+const UPPER_LEVELS = ['lycee', 'superieur'] as const;
+
+/** Ce qui, en tête de texte, ouvre un bloc ubumark (liste, titre, citation, tableau) */
+const BLOCK_START = /^\s*(([-+*]|\d+[.)])(\s|$)|[>#|])/;
+
+/** Les erreurs de refus (« pas implémenté », hors programme) : comptées, pas des fuites */
+const refusals: string[] = [];
+
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -143,8 +214,10 @@ function defects(text: string): string | null {
 	const dollars = text.split('$').length - 1;
 	if (dollars % 2 !== 0) return '`$` non appariés';
 	const prose = text.replace(/\$[^$]*\$/g, ' ');
-	const leaked = prose.match(/[\\^_{}*~]/);
-	return leaked ? `« ${leaked[0]} » hors des $…$` : null;
+	const leaked = prose.match(/[\\^_{}*~`]/);
+	if (leaked) return `« ${leaked[0]} » hors des $…$`;
+	// En tête de texte, ubumark ouvrirait une liste, un titre ou une citation
+	return BLOCK_START.test(text) ? 'début lu comme un bloc Markdown' : null;
 }
 
 function integrationTexts(): Text[] {
@@ -224,6 +297,264 @@ function linearTexts(): Text[] {
 	return texts;
 }
 
+/** Exécute un cas ; un refus du pipeline n'est pas une fuite de prose */
+function attempt(where: string, run: () => Text[]): Text[] {
+	try {
+		return run();
+	} catch (error) {
+		refusals.push(`${where} : ${error instanceof Error ? error.message : String(error)}`);
+		return [];
+	}
+}
+
+function equationTexts(
+	where: string,
+	steps: Parameters<QuadraticEquationRenderer['renderAll']>[0],
+	level: SchoolLevel
+): Text[] {
+	const renderer = new QuadraticEquationRenderer();
+	return [
+		...renderedTexts(
+			where,
+			renderer.renderAll(steps, { schoolLevel: level, verbosity: 'detailed' })
+		),
+		...descriptions(where, steps)
+	];
+}
+
+function secondDegreeTexts(): Text[] {
+	const texts: Text[] = [];
+	const equations = [
+		...QUADRATIC_EQUATIONS.map((latex) => ({
+			label: latex,
+			node: parseLatex(latex) as RelationNode
+		})),
+		...QUADRATIC_DEMOS.flatMap((c) => c.cases.map((d) => ({ label: d.label, node: d.equation })))
+	];
+	for (const level of UPPER_LEVELS) {
+		for (const { label, node } of equations) {
+			const where = `${label} (${level})`;
+			texts.push(
+				...attempt(where, () =>
+					equationTexts(where, generateQuadraticEquationSteps(node, { level }), level)
+				)
+			);
+		}
+		for (const latex of QUADRATIC_INEQUALITIES) {
+			const where = `${latex} (${level})`;
+			const node = parseLatex(latex) as RelationNode;
+			texts.push(
+				...attempt(where, () =>
+					equationTexts(where, generateQuadraticInequalitySteps(node, { level }), level)
+				)
+			);
+		}
+		for (const latex of RATIONAL_INEQUALITIES) {
+			const where = `${latex} (${level})`;
+			const node = parseLatex(latex) as RelationNode;
+			texts.push(
+				...attempt(where, () =>
+					equationTexts(where, generateRationalInequalitySteps(node, { level }), level)
+				)
+			);
+		}
+	}
+	return texts;
+}
+
+function arithmeticTexts(): Text[] {
+	const renderer = new PedagogicalArithmeticRenderer();
+	const texts: Text[] = [];
+	for (const testCase of ARITHMETIC_DEMOS.flatMap((c) => c.cases)) {
+		for (const schoolLevel of testCase.schoolLevels ?? ALL_LEVELS) {
+			const where = `${testCase.label} (${schoolLevel})`;
+			texts.push(
+				...attempt(where, () => {
+					const result = generatePedagogicalArithmeticSteps(testCase.expression, {
+						schoolLevel,
+						target: testCase.target,
+						verbosity: 'detailed'
+					});
+					return [
+						...renderedTexts(
+							where,
+							renderer.renderAll(result.steps, { schoolLevel, verbosity: 'detailed' })
+						),
+						...descriptions(where, result.steps)
+					];
+				})
+			);
+		}
+	}
+	return texts;
+}
+
+function simplifyTexts(): Text[] {
+	const renderer = new PedagogicalSimplifyRenderer();
+	const texts: Text[] = [];
+	for (const testCase of SIMPLIFY_DEMOS.flatMap((c) => c.cases)) {
+		for (const schoolLevel of testCase.schoolLevels ?? (['college', 'lycee'] as const)) {
+			const where = `${testCase.label} [${testCase.intent}] (${schoolLevel})`;
+			texts.push(
+				...attempt(where, () => {
+					const result = generatePedagogicalSimplifySteps(parseLatex(testCase.latex), {
+						intent: testCase.intent,
+						schoolLevel,
+						verbosity: 'detailed'
+					});
+					return [
+						...renderedTexts(
+							where,
+							renderer.renderAll(result.steps, { schoolLevel, verbosity: 'detailed' })
+						),
+						...descriptions(where, result.steps)
+					];
+				})
+			);
+		}
+	}
+	return texts;
+}
+
+function limitTexts(): Text[] {
+	const renderer = new PedagogicalLimitRenderer();
+	const cases = [
+		...LIMITS.map(([expression, approach, direction]) => ({ expression, approach, direction })),
+		...LIMIT_DEMOS.flatMap((c) => c.cases)
+	];
+	const texts: Text[] = [];
+	for (const testCase of cases) {
+		for (const schoolLevel of UPPER_LEVELS) {
+			const where = `lim ${testCase.expression} → ${testCase.approach} (${schoolLevel})`;
+			texts.push(
+				...attempt(where, () => {
+					const result = dispatchPedagogicalLimit({
+						expression: testCase.expression,
+						variable: 'x',
+						approach: testCase.approach,
+						direction: testCase.direction,
+						schoolLevel,
+						verbosity: 'detailed'
+					});
+					return [
+						...renderedTexts(
+							where,
+							renderer.renderAll(result.steps, { schoolLevel, verbosity: 'detailed' })
+						),
+						...descriptions(where, result.steps)
+					];
+				})
+			);
+		}
+	}
+	return texts;
+}
+
+function domainTexts(): Text[] {
+	const renderer = new PedagogicalDomainRenderer();
+	const expressions = [
+		...DOMAINS,
+		...DOMAIN_DEMOS.flatMap((c) => c.cases.map((d) => d.expression))
+	];
+	const texts: Text[] = [];
+	for (const expression of expressions) {
+		for (const schoolLevel of UPPER_LEVELS) {
+			const where = `D(${expression}) (${schoolLevel})`;
+			texts.push(
+				...attempt(where, () => {
+					const result = dispatchPedagogicalDomain({
+						expression,
+						variable: 'x',
+						schoolLevel,
+						verbosity: 'detailed'
+					});
+					return [
+						...renderedTexts(
+							where,
+							renderer.renderAll(result.steps, { schoolLevel, verbosity: 'detailed' })
+						),
+						...descriptions(where, result.steps)
+					];
+				})
+			);
+		}
+	}
+	return texts;
+}
+
+/** Les cas de démo de la dérivation, de l'intégration et du premier degré, en plus des listes */
+function demoTexts(): Text[] {
+	const derivatives = new PedagogicalDifferentiationRenderer();
+	const integrals = new PedagogicalIntegrationRenderer();
+	const linear = new LinearEquationRenderer();
+	const texts: Text[] = [];
+	for (const schoolLevel of UPPER_LEVELS) {
+		for (const testCase of DERIVATIVE_DEMOS.flatMap((c) => c.cases)) {
+			const where = `(${testCase.latex})' (${schoolLevel})`;
+			texts.push(
+				...attempt(where, () => {
+					const result = generatePedagogicalDifferentiationSteps(parseLatex(testCase.latex), {
+						variable: testCase.variable ?? 'x',
+						schoolLevel,
+						verbosity: 'detailed'
+					});
+					const rendered = derivatives.renderAll(result.steps, {
+						schoolLevel,
+						verbosity: 'detailed'
+					});
+					return [
+						...renderedTexts(where, withTidyStep(rendered, result.derivative).steps),
+						...descriptions(where, result.steps)
+					];
+				})
+			);
+		}
+		for (const testCase of INTEGRATION_DEMOS.flatMap((c) => c.cases)) {
+			const where = `∫ ${testCase.latex} (${schoolLevel})`;
+			texts.push(
+				...attempt(where, () => {
+					const result = generatePedagogicalIntegrationSteps(parseLatex(testCase.latex), {
+						level: schoolLevel,
+						variable: testCase.variable,
+						verbosity: 'detailed',
+						definite: testCase.definite
+							? {
+									lower: parseLatex(testCase.definite.lower),
+									upper: parseLatex(testCase.definite.upper)
+								}
+							: undefined
+					});
+					return [
+						...renderedTexts(
+							where,
+							integrals.renderAll(result.steps, { schoolLevel, verbosity: 'detailed' })
+						),
+						...descriptions(where, result.steps)
+					];
+				})
+			);
+		}
+	}
+	for (const level of ['college', 'lycee', 'superieur'] as const) {
+		for (const testCase of LINEAR_DEMOS.flatMap((c) => c.cases)) {
+			const where = `${testCase.label} (${level})`;
+			texts.push(
+				...attempt(where, () => {
+					const steps = generateLinearEquationSteps(testCase.equation, { level });
+					return [
+						...renderedTexts(
+							where,
+							linear.renderAll(steps, { schoolLevel: level, verbosity: 'detailed' })
+						),
+						...descriptions(where, steps)
+					];
+				})
+			);
+		}
+	}
+	return texts;
+}
+
 function failures(texts: readonly Text[]): string[] {
 	return texts.flatMap(({ where, text }) => {
 		const defect = defects(text);
@@ -245,12 +576,23 @@ describe('prose des étapes : les maths entre $…$ (V25)', () => {
 		expect(defects('3 * 4')).not.toBeNull();
 		expect(defects('environ ~3~')).not.toBeNull();
 		expect(defects('$u = x$$v = 1$')).not.toBeNull();
+		expect(defects('On écrit `x^2`')).not.toBeNull();
+		expect(defects('+ 3 : on ajoute')).not.toBeNull();
+		expect(defects('+')).not.toBeNull();
+		expect(defects('+(-)→-')).toBeNull();
+		expect(defects('$+ C$')).toBeNull();
 	});
 
 	it('le panel est réaliste (il produit des textes à vérifier)', () => {
 		expect(integrationTexts().length).toBeGreaterThan(300);
 		expect(derivativeTexts().length).toBeGreaterThan(100);
 		expect(linearTexts().length).toBeGreaterThan(100);
+		expect(secondDegreeTexts().length).toBeGreaterThan(200);
+		expect(arithmeticTexts().length).toBeGreaterThan(200);
+		expect(simplifyTexts().length).toBeGreaterThan(100);
+		expect(limitTexts().length).toBeGreaterThan(100);
+		expect(domainTexts().length).toBeGreaterThan(50);
+		expect(demoTexts().length).toBeGreaterThan(300);
 	});
 
 	it('intégration : primitives et intégrales définies, lycée et supérieur', () => {
@@ -263,5 +605,29 @@ describe('prose des étapes : les maths entre $…$ (V25)', () => {
 
 	it('premier degré : équations et inéquations, collège, lycée, supérieur', () => {
 		expect(failures(linearTexts())).toEqual([]);
+	});
+
+	it('second degré : équations, inéquations du second degré et rationnelles', () => {
+		expect(failures(secondDegreeTexts())).toEqual([]);
+	});
+
+	it('arithmétique : les cas de démo, à chaque niveau', () => {
+		expect(failures(arithmeticTexts())).toEqual([]);
+	});
+
+	it('simplification : les cas de démo', () => {
+		expect(failures(simplifyTexts())).toEqual([]);
+	});
+
+	it('limites : lycée et supérieur', () => {
+		expect(failures(limitTexts())).toEqual([]);
+	});
+
+	it('domaine de définition : lycée et supérieur', () => {
+		expect(failures(domainTexts())).toEqual([]);
+	});
+
+	it('cas de démo de la dérivation, de l’intégration et du premier degré', () => {
+		expect(failures(demoTexts())).toEqual([]);
 	});
 });

@@ -82,12 +82,28 @@ function differential(bindings: IntegrationBindings, key: string): string {
 	return isSum ? `\\left( ${toLatex(node)} \\right)\\,dx` : `${toLatex(node)}\\,dx`;
 }
 
-/** `c·x` (LaTeX) sans le facteur 1 : `x`, `-x`, `3 \\cdot x` (jamais « 1·x ») */
+/** `cx` (LaTeX) sans le facteur 1 : `x`, `-x`, `3 x` (jamais « 1 x ») */
 function constantTimesX(bindings: IntegrationBindings): string {
 	const dx = differential(bindings, 'c');
 	if (dx === 'dx') return 'x';
 	if (dx === '-dx') return '-x';
-	return `${bind(bindings, 'c')} \\cdot x`;
+	return `${bind(bindings, 'c')} x`;
+}
+
+/**
+ * Une constante écrite juste après `\\int` : entre parenthèses si elle est
+ * négative (`\\int \\left( -3 \\right) f(x)\\,dx`, jamais `\\int -3 …`, revue V25).
+ */
+function constantUnderIntegral(bindings: IntegrationBindings): string {
+	const c = bind(bindings, 'c');
+	return c.startsWith('-') ? `\\left( ${c} \\right)` : c;
+}
+
+/** `\\int c\\,dx` (LaTeX), la constante négative entre parenthèses */
+function constantIntegral(bindings: IntegrationBindings): string {
+	const dx = differential(bindings, 'c');
+	if (dx === 'dx' || dx === '-dx') return `\\int ${dx}`;
+	return `\\int ${constantUnderIntegral(bindings)}\\,dx`;
 }
 
 // =============================================================================
@@ -195,13 +211,13 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'apply-power-rule': (b) =>
 		`$(x^n)' = n x^{n-1}$, donc $\\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}$ avec ${math(`n = ${bind(b, 'n')}`)} (et $n \\neq -1$).`,
 	'apply-constant-rule': (b) =>
-		`Une constante c admet la primitive $c \\cdot x$ : ${math(`\\int ${differential(b, 'c')} = ${constantTimesX(b)}`)}.`,
+		`Une constante c admet la primitive $cx$ : ${math(`${constantIntegral(b)} = ${constantTimesX(b)}`)}.`,
 	'apply-known-primitive': () =>
 		'On reconnaît une primitive de référence (table des primitives usuelles).',
 	'apply-linearity-sum': () =>
 		"L'intégrale est linéaire : $\\int (f+g)\\,dx = \\int f\\,dx + \\int g\\,dx$. On intègre chaque terme séparément.",
 	'extract-constant': (b) =>
-		`Une constante multiplicative sort de l'intégrale : ${math(`\\int ${bind(b, 'c')} \\cdot f(x)\\,dx = ${bind(b, 'c')} \\cdot \\int f(x)\\,dx`)}.`,
+		`Une constante multiplicative sort de l'intégrale : ${math(`\\int ${constantUnderIntegral(b)} f(x)\\,dx = ${bind(b, 'c') === '-1' ? '-' : `${bind(b, 'c')} `}\\int f(x)\\,dx`)}.`,
 	'apply-composite-power': (b) =>
 		`On reconnaît la forme $u'u^n$ avec ${math(`u = ${bind(b, 'u')}`)} et ${math(`n = ${bind(b, 'n')}`)}, dont une primitive est $\\dfrac{u^{n+1}}{n+1}$.`,
 	'apply-composite-ln': (b) =>

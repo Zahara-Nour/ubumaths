@@ -49,7 +49,8 @@ describe('compute.ts instrumentation — sqrt_constraint', () => {
 		computeDomain(expr, 'x', { showSteps: true, recorder });
 		const steps = recorder.getSteps();
 		expect(steps[0].reasoning).toContain('définie');
-		expect(steps[0].reasoning).toContain('≥ 0');
+		// Formules entre `$…$` depuis V25 (prose rendue par InlineMarkdown)
+		expect(steps[0].reasoning).toContain('$x - 2 \\geq 0$');
 	});
 });
 
