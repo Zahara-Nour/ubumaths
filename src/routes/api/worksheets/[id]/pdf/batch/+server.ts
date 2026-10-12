@@ -1,3 +1,4 @@
+import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 /**
  * Batch PDF Generation API Endpoint
  * ==================================
@@ -194,7 +195,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		// Create zip file
 		const zip = new JSZip();
 		const folder = zip.folder(
-			`${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${classData.name}_${mode}`
+			`${sanitizeForFileName(worksheet.title)}_${sanitizeForFileName(classData.name)}_${mode}`
 		);
 
 		if (!folder) {
@@ -235,7 +236,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				const pdfData = await typst.pdf({ mainContent: typstContent });
 
 				// Create filename
-				const filename = `${sanitizeFilename(studentName)}_${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${mode}.pdf`;
+				const filename = `${sanitizeForFileName(studentName)}_${sanitizeForFileName(worksheet.title)}_${mode}.pdf`;
 
 				return { filename, data: pdfData };
 			});
@@ -275,7 +276,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		return new Response(zipData as unknown as BodyInit, {
 			headers: {
 				'Content-Type': 'application/zip',
-				'Content-Disposition': `attachment; filename="${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${classData.name}_${mode}.zip"`
+				'Content-Disposition': `attachment; filename="${sanitizeForFileName(worksheet.title)}_${sanitizeForFileName(classData.name)}_${mode}.zip"`
 			}
 		});
 	} catch (err) {
@@ -374,18 +375,6 @@ function formatStudentName(student: Student): string {
 	} else {
 		return student.email.split('@')[0];
 	}
-}
-
-/**
- * Sanitize filename by removing special characters
- */
-function sanitizeFilename(name: string): string {
-	return name
-		.normalize('NFD')
-		.replace(/[\u0300-\u036f]/g, '') // Remove accents
-		.replace(/[^a-zA-Z0-9_-]/g, '_') // Replace special chars with underscore
-		.replace(/__+/g, '_') // Remove duplicate underscores
-		.trim();
 }
 
 /**

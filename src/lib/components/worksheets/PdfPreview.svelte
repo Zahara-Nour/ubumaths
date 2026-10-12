@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -281,8 +282,8 @@
 			typst.resetShadow();
 
 			// Set filename
-			const safeName = studentName ? sanitizeFilename(studentName) : 'preview';
-			pdfFilename = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${safeName}_${mode}.pdf`;
+			const safeName = studentName ? sanitizeForFileName(studentName) : 'preview';
+			pdfFilename = `${sanitizeForFileName(worksheet.title)}_${safeName}_${mode}.pdf`;
 
 			toaster.success('PDF genere avec succes');
 		} catch (err) {
@@ -338,7 +339,7 @@
 
 		try {
 			const zip = new JSZip();
-			const folderName = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${mode}`;
+			const folderName = `${sanitizeForFileName(worksheet.title)}_${mode}`;
 			const folder = zip.folder(folderName);
 
 			if (!folder) {
@@ -400,7 +401,7 @@
 				const pdfData = await typst.pdf({ mainContent: typstContent });
 
 				// Add to zip
-				const filename = `${sanitizeFilename(studentName)}_${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${mode}.pdf`;
+				const filename = `${sanitizeForFileName(studentName)}_${sanitizeForFileName(worksheet.title)}_${mode}.pdf`;
 				folder.file(filename, pdfData);
 			}
 
@@ -500,15 +501,6 @@ INFORMATIONS
 		const firstName = student.first_name || '';
 		const lastName = student.last_name || '';
 		return `${lastName} ${firstName}`.trim() || 'Eleve';
-	}
-
-	function sanitizeFilename(name: string): string {
-		return name
-			.normalize('NFD')
-			.replace(/[\u0300-\u036f]/g, '') // Remove accents
-			.replace(/[^a-zA-Z0-9_-]/g, '_') // Replace special chars with underscore
-			.replace(/__+/g, '_') // Remove duplicate underscores
-			.trim();
 	}
 
 	// ============================================================================

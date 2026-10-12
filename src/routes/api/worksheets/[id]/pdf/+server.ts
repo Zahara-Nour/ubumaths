@@ -1,3 +1,4 @@
+import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 /**
  * PDF Generation API Endpoint
  * ===========================
@@ -184,7 +185,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		return json({
 			success: true,
 			pdf: base64,
-			filename: `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${mode}.pdf`
+			filename: `${sanitizeForFileName(worksheet.title)}_${mode}.pdf`
 		});
 	} catch (err) {
 		console.error('PDF generation error:', err);
