@@ -132,10 +132,19 @@ const LINEAR: readonly string[] = [
 	'\\dfrac{2}{3}x+1=5',
 	'-4x+3=11',
 	'5x-2=\\dfrac{1}{2}',
-	'2x+\\dfrac{3}{4}=x-1'
+	'2x+\\dfrac{3}{4}=x-1',
+	// V38 : coefficient fonction d'une constante
+	'x\\ln 2=1'
 ];
 
-const INEQUALITIES: readonly string[] = ['-\\dfrac{2}{3}x+1<5', '3x-2\\geq x+4', '-2x+5>1'];
+const INEQUALITIES: readonly string[] = [
+	'-\\dfrac{2}{3}x+1<5',
+	'3x-2\\geq x+4',
+	'-2x+5>1',
+	// V38 : coefficient négatif fonction d'une constante (cos 2, ln 2 − 1)
+	'x\\cos 2>1',
+	'x\\ln 2-x>1'
+];
 
 const QUADRATIC_INEQUALITIES: readonly string[] = [
 	'x^2-5x+6<0',
@@ -150,7 +159,9 @@ const RATIONAL_INEQUALITIES: readonly string[] = [
 	'\\dfrac{2x+1}{x^2-4}<0',
 	'\\dfrac{x-1}{x+3}\\geq0',
 	'\\dfrac{3}{2x-1}>0',
-	'\\dfrac{x^2-1}{x}\\leq0'
+	'\\dfrac{x^2-1}{x}\\leq0',
+	// V38
+	'\\frac{1}{x\\ln 2}>1'
 ];
 
 const QUADRATIC_EQUATIONS: readonly string[] = [

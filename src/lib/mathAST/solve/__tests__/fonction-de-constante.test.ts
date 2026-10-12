@@ -46,7 +46,8 @@ function solvedValues(latex: string): number[] {
 	const result = solve(relation, { variable: 'x' });
 	expect(result.error, latex).toBeUndefined();
 	const values = result.solutions
-		.map((s) => s.approximate ?? evaluateNodeToApproximatedNumber(s.value))
+		// La forme EXACTE est évaluée, pas `approximate` : c'est elle qu'on affiche
+		.map((s) => evaluateNodeToApproximatedNumber(s.value))
 		.sort((a, b) => a - b);
 	for (const v of values) {
 		const gap = valueAt(relation.left, v) - valueAt(relation.right, v);
@@ -167,6 +168,36 @@ describe('V38 — inéquations', () => {
 // =============================================================================
 
 describe('V38 — témoins transcendants', () => {
+	// Mixtes : l'inconnue à la fois dans une fonction et hors d'elle — inchangés
+	it.each(['\\ln x+x=2', '2^x=x+3', 'x^{\\ln 2}=3'])('%s : toujours non résolue', (latex) => {
+		const result = solve(relationOf(latex), { variable: 'x' });
+		expect(result.status).toBe('no-solution');
+		expect(result.solutions).toHaveLength(0);
+		expect(result.error).toBeDefined();
+	});
+
+	it('e^x ln 2 = 1 → −ln(ln 2)', () => {
+		const result = solve(relationOf('e^x\\ln 2=1'), { variable: 'x' });
+		expect(result.equationType).toBe('exponential');
+		expect(result.solutions.map((s) => toLatex(s.value))).toEqual([
+			'-\\ln\\left( \\ln\\left( 2 \\right) \\right)'
+		]);
+		expect(solvedValues('e^x\\ln 2=1')).toEqual([expect.closeTo(-Math.log(Math.LN2), 9)]);
+	});
+
+	it('cos(x) ln 2 = 0 → ±π/2', () => {
+		const result = solve(relationOf('\\cos(x)\\ln 2=0'), { variable: 'x' });
+		expect(result.equationType).toBe('trigonometric');
+		expect(result.solutions.map((s) => toLatex(s.value))).toEqual([
+			'\\dfrac{1}{2} \\pi',
+			'-\\dfrac{1}{2} \\pi'
+		]);
+		expect(solvedValues('\\cos(x)\\ln 2=0')).toEqual([
+			expect.closeTo(-Math.PI / 2, 9),
+			expect.closeTo(Math.PI / 2, 9)
+		]);
+	});
+
 	it('\\ln x = 2 → e²', () => {
 		const result = solve(relationOf('\\ln x=2'), { variable: 'x' });
 		expect(result.equationType).toBe('logarithmic');
