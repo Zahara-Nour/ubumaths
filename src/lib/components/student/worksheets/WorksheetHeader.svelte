@@ -9,6 +9,7 @@
 -->
 
 <script lang="ts">
+	import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -69,7 +70,7 @@
 		showPdfDialog = false;
 		isPdfLoading = true;
 
-		const filename = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+		const filename = `${sanitizeForFileName(worksheet.title)}.pdf`;
 		const result = await generateAndDownloadPdf(
 			() => generateStudentWorksheetTypst(worksheet, includeSolution),
 			filename

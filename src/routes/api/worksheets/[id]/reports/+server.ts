@@ -80,7 +80,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Validate worksheet ID
 	const worksheetId = params.id;
 	if (!worksheetId || !z.string().uuid().safeParse(worksheetId).success) {
-		throw error(400, 'Format UUID invalide pour la feuille');
+		throw error(400, 'Identifiant de fiche invalide');
 	}
 
 	// Validate query parameters
@@ -103,7 +103,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		.single();
 
 	if (worksheetError || !worksheet) {
-		throw error(404, 'Feuille de travail non trouvee');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	if (worksheet.created_by !== user.id) {
@@ -118,11 +118,11 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
 			console.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier vos droits');
+			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		if (profile?.role !== 'admin') {
-			throw error(403, 'Acces non autorise a cette feuille de travail');
+			throw error(403, 'Accès refusé à cette fiche');
 		}
 	}
 
@@ -146,7 +146,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 		if (assignmentsError) {
 			console.error('[API] Error fetching assignments:', assignmentsError);
-			throw error(500, 'Erreur lors de la recuperation des devoirs');
+			throw error(500, 'Impossible de charger les affectations');
 		}
 
 		if (!assignments || assignments.length === 0) {
@@ -195,7 +195,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 		if (countError) {
 			console.error('[API] Error counting reports:', countError);
-			throw error(500, 'Erreur lors du comptage des signalements');
+			throw error(500, 'Impossible de compter les signalements');
 		}
 
 		// Calculate counts
@@ -244,7 +244,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 		if (fetchError) {
 			console.error('[API] Error fetching reports:', fetchError);
-			throw error(500, 'Erreur lors de la recuperation des signalements');
+			throw error(500, 'Impossible de charger les signalements');
 		}
 
 		// Step 4: Get exercise positions
@@ -308,6 +308,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		}
 
 		console.error('[API] Unexpected error in GET /api/worksheets/[id]/reports:', err);
-		throw error(500, 'Une erreur inattendue est survenue');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

@@ -1,5 +1,6 @@
 import type { PageServerLoad, Actions } from './$types';
-import type { DbRiddle } from '$lib/types/riddle';
+import { RIDDLE_COLUMNS, toDbRiddle } from '$lib/types/riddle';
+import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
 
@@ -15,12 +16,24 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	// Fetch teacher's riddles
 	const { data: riddles, error: riddlesError } = await supabase
 		.from('riddles')
-		.select('*')
+		.select(RIDDLE_COLUMNS)
 		.eq('created_by', user.id)
 		.order('riddle_number', { ascending: false });
 
 	if (riddlesError) {
 		console.error('Error fetching riddles:', riddlesError);
+		throw error(500, 'Erreur lors du chargement des énigmes');
+	}
+
+	// La liste affiche si l'énigme se valide seule (réponse attendue présente) : la
+	// réponse vit dans `riddle_solutions`, que la RLS ouvre à l'auteur.
+	const { solutions, error: solutionsError } = await fetchRiddleSolutions(
+		supabase,
+		(riddles || []).map((r) => r.id)
+	);
+
+	if (solutionsError) {
+		console.error('Error fetching riddle solutions:', solutionsError);
 		throw error(500, 'Erreur lors du chargement des énigmes');
 	}
 
@@ -36,12 +49,12 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
 	// Merge riddles with their stats
 	const riddlesWithStats = (riddles || []).map((riddle) => ({
-		...riddle,
+		...toDbRiddle(riddle, solutions.get(riddle.id) ?? null),
 		stats: stats?.find((s) => s.riddle_id === riddle.id)
 	}));
 
 	return {
-		riddles: riddlesWithStats as unknown as DbRiddle[]
+		riddles: riddlesWithStats
 	};
 };
 

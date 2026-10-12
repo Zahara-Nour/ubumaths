@@ -32,7 +32,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const errorMsg = queryValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Invalid query parameters: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { page, limit, status, type, search } = queryValidation.data;
@@ -75,7 +75,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	if (dbError) {
 		console.error('Failed to fetch worksheets:', dbError);
-		throw error(500, 'Failed to fetch worksheets');
+		throw error(500, 'Impossible de charger les fiches');
 	}
 
 	// Les étiquettes ne sont plus une colonne de `worksheets` (migration
@@ -139,7 +139,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateCreateWorksheet(body);
@@ -147,7 +147,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data;
@@ -175,7 +175,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 	if (dbError) {
 		console.error('Failed to create worksheet:', dbError);
-		throw error(500, 'Failed to create worksheet');
+		throw error(500, 'Impossible de créer la fiche');
 	}
 
 	// Les tags vivent dans `resource_tags`, plus dans une colonne de la fiche.

@@ -18,6 +18,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { canAccessCorrections } from '$lib/server/worksheets/correction-release';
 import {
@@ -52,12 +53,12 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 	// Check authentication
 	const { user } = await locals.safeGetSession();
 	if (!user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	const assignmentId = params.assignmentId;
 	if (!assignmentId) {
-		throw error(400, "ID de l'assignation requis");
+		throw error(400, 'Identifiant d’affectation requis');
 	}
 
 	// Validate query parameters
@@ -99,7 +100,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			.single();
 
 		if (assignmentError || !assignment) {
-			throw error(404, 'Assignation non trouvee');
+			throw error(404, 'Affectation introuvable');
 		}
 
 		// Check if user is a student with access to this assignment
@@ -119,7 +120,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
 			console.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier vos droits');
+			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		const isTeacher = profile?.role === 'teacher' || profile?.role === 'admin';
@@ -142,7 +143,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		if (accessError) {
 			console.error('Droits sur l’affectation illisibles :', accessError.message);
-			throw error(500, 'Impossible de vérifier vos droits');
+			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		const isStudentInClass = hasAccess === true;
@@ -158,7 +159,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		// Teachers/admins/creators can always access, students need to be in the class
 		if (!isTeacher && !isAssignmentCreator && !isStudentInClass) {
-			throw error(403, 'Acces non autorise a cette assignation');
+			throw error(403, 'Accès refusé à cette affectation');
 		}
 
 		// For students, check if corrections are released
@@ -193,7 +194,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		const perStudentValuesNotice = hasPerStudentValues(worksheet, copyScope)
 			? PER_STUDENT_VALUES_NOTICE
 			: null;
-		const studentName = 'Apercu enseignant';
+		const studentName = 'Aperçu professeur';
 
 		// Les classes visées, lues dans la jonction : l'en-tête du PDF nomme celles
 		// que le LECTEUR a le droit de voir — toutes pour le professeur, la sienne
@@ -242,7 +243,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		});
 
 		// Return Typst source (PDF generation must be done client-side)
-		const filename = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_correction${studentName ? '_' + studentName.replace(/[^a-zA-Z0-9]/g, '_') : ''}.pdf`;
+		const filename = `${sanitizeForFileName(worksheet.title)}_correction_${sanitizeForFileName(studentName)}.pdf`;
 
 		return json({
 			success: true,
@@ -263,6 +264,6 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			throw err;
 		}
 
-		throw error(500, 'Erreur lors de la generation de la correction');
+		throw error(500, 'Impossible de générer la correction');
 	}
 };

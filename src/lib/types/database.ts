@@ -9804,6 +9804,42 @@ export type Database = {
           },
         ]
       }
+      riddle_solutions: {
+        Row: {
+          answer: Json | null
+          correction: string
+          riddle_id: string
+          updated_at: string
+        }
+        Insert: {
+          answer?: Json | null
+          correction?: string
+          riddle_id: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: Json | null
+          correction?: string
+          riddle_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "riddle_solutions_riddle_id_fkey"
+            columns: ["riddle_id"]
+            isOneToOne: true
+            referencedRelation: "riddle_stats"
+            referencedColumns: ["riddle_id"]
+          },
+          {
+            foreignKeyName: "riddle_solutions_riddle_id_fkey"
+            columns: ["riddle_id"]
+            isOneToOne: true
+            referencedRelation: "riddles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       riddles: {
         Row: {
           answer: Json | null
@@ -9822,7 +9858,7 @@ export type Database = {
         }
         Insert: {
           answer?: Json | null
-          correction: string
+          correction?: string
           created_at?: string
           created_by: string
           difficulty: number

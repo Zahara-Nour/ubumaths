@@ -36,11 +36,20 @@ describe('Sidebar (Outils libres)', () => {
 
 		// G1 (décision de David, 2026-10-04) : l'atelier est l'entrée unique —
 		// `/grapheur` reste une adresse valable, mais n'a plus d'entrée à lui
-		it('affiche Géométrie, et plus d’entrée Grapheur', async () => {
+		it('n’a plus d’entrée Grapheur', async () => {
 			const { container } = await render(Sidebar, { profile: null });
 
-			await expect.element(page.getByText('Géométrie', { exact: true })).toBeInTheDocument();
 			expect(container.textContent).not.toContain('Grapheur');
+		});
+
+		// D13, D14 (décisions de David, 2026-10-12) : la démo de géométrie, page de mise
+		// au point exclue par robots.txt, quitte le menu ; Automaths et le Shtam y entrent.
+		it('affiche Automaths et le Shtam, plus Géométrie', async () => {
+			const { container } = await render(Sidebar, { profile: null });
+
+			await expect.element(page.getByText('Automaths', { exact: true })).toBeInTheDocument();
+			await expect.element(page.getByText('Le Shtam', { exact: true })).toBeInTheDocument();
+			expect(container.textContent).not.toContain('Géométrie');
 		});
 
 		it('pointe vers les bonnes routes', async () => {
@@ -48,7 +57,9 @@ describe('Sidebar (Outils libres)', () => {
 
 			expect(container.querySelector('a[href="/atelier"]')).not.toBeNull();
 			expect(container.querySelector('a[href="/grapheur"]')).toBeNull();
-			expect(container.querySelector('a[href="/geometry-demo"]')).not.toBeNull();
+			expect(container.querySelector('a[href="/geometry-demo"]')).toBeNull();
+			expect(container.querySelector('a[href="/automaths"]')).not.toBeNull();
+			expect(container.querySelector('a[href="/shtam"]')).not.toBeNull();
 		});
 
 		// Le Cabinet Noir de Turingrad, à côté de l'atelier (décision de David, 2026-10-06)
@@ -65,7 +76,7 @@ describe('Sidebar (Outils libres)', () => {
 
 			// Une icône Lucide manquante ne casse pas le rendu : le lien s'afficherait
 			// sans son SVG. On vérifie donc explicitement sa présence.
-			for (const href of ['/atelier', '/chiffrement', '/geometry-demo']) {
+			for (const href of ['/atelier', '/chiffrement', '/automaths', '/shtam']) {
 				const link = container.querySelector(`a[href="${href}"]`);
 				expect(link?.querySelector('svg')).not.toBeNull();
 			}

@@ -9,7 +9,8 @@
 		Calculator,
 		Laugh,
 		FlaskConical,
-		Shapes,
+		Zap,
+		Newspaper,
 		KeyRound
 	} from '@lucide/svelte';
 	import type { LucideIcon } from '@lucide/svelte';
@@ -29,6 +30,8 @@
 		profile = null,
 		items = [
 			{ label: 'Accueil', href: '/', icon: Home },
+			// D14 (décision de David, 2026-10-12) : les deux pages publiques les plus vivantes
+			{ label: 'Automaths', href: '/automaths', icon: Zap },
 			{ label: 'Jeux', href: '/games', icon: Gamepad2 },
 			{
 				label: 'Python',
@@ -37,14 +40,14 @@
 				roles: ['student', 'teacher']
 			},
 			{ label: 'Upsilon', href: '/upsilon', icon: Calculator },
-			// Sans `roles` : l'atelier et les démos de géométrie ne lisent aucune
-			// donnée serveur, ils sont donc ouverts, y compris hors connexion.
+			// Sans `roles` : l'atelier, Automaths et le Shtam ne lisent aucune donnée serveur
+			// réservée, ils sont donc ouverts, y compris hors connexion.
 			// L'atelier est l'entrée unique du grapheur (`/grapheur` y mène encore,
 			// ouvert sur le Graphe) : décision G1 de David, 2026-10-04.
 			{ label: 'Atelier', href: '/atelier', icon: FlaskConical },
 			// Le Cabinet Noir de Turingrad : public, aucune donnée serveur
 			{ label: 'Chiffrement', href: '/chiffrement', icon: KeyRound },
-			{ label: 'Géométrie', href: '/geometry-demo', icon: Shapes },
+			{ label: 'Le Shtam', href: '/shtam', icon: Newspaper },
 			{
 				label: 'Whiteboard',
 				href: '/whiteboard',

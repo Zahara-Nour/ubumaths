@@ -24,7 +24,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	// Validate URL parameter
 	const paramValidation = validateWorksheetId(params);
 	if (!paramValidation.success) {
-		throw error(400, 'Invalid worksheet ID');
+		throw error(400, 'Identifiant de fiche invalide');
 	}
 
 	const { id: worksheetId } = paramValidation.data;
@@ -37,13 +37,13 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		.single();
 
 	if (fetchError || !original) {
-		throw error(404, 'Worksheet not found');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	// Verify access (user must be creator or admin from same school)
 	if (original.created_by !== user.id) {
 		if (profile.role !== 'admin' || original.school_id !== profile.school_id) {
-			throw error(403, 'Access denied');
+			throw error(403, 'Accès refusé');
 		}
 	}
 
@@ -80,7 +80,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 
 	if (createError) {
 		console.error('Failed to duplicate worksheet:', createError);
-		throw error(500, 'Failed to duplicate worksheet');
+		throw error(500, 'Impossible de dupliquer la fiche');
 	}
 
 	// Duplicate sections

@@ -11,10 +11,13 @@
  * pédagogique (`pedagogical-limits/`), qui annoncent le même facteur.
  */
 
+import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
+import { variable as variableNode } from '../factory';
 import { divRational, isZero, rational } from '../normal/rational';
 import { type Poly, divideOutRoot, trimPoly } from './polynomial';
 import { primitivePart } from './factor';
+import { polynomialNode } from './polynomial-node';
 
 export interface CommonRootDivision {
 	/** Le facteur entier primitif `q·x − p`, coefficients par degré croissant */
@@ -31,6 +34,14 @@ export interface CommonRootDivision {
 /** `q·x − p` pour a = p/q (q > 0) : le facteur entier primitif de la racine a. */
 export function integerLinearFactor(a: Rational): readonly bigint[] {
 	return [-a.n, a.d];
+}
+
+/**
+ * Le facteur entier primitif `q·x − p` de la racine a = p/q, en nœud :
+ * `2x - 1` pour 1/2, `3x + 2` pour −2/3, `x - 3` pour 3, `x` pour 0.
+ */
+export function integerLinearFactorNode(variable: string, a: Rational): MathNode {
+	return polynomialNode(integerLinearFactor(a), variableNode(variable));
 }
 
 /**

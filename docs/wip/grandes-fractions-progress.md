@@ -1,7 +1,7 @@
 ---
 title: Lenteur des grandes fractions — phase 0
 date: 2026-10-12
-status: phase 0 à valider par David (lot à part décidé le 2026-10-12, voir mode-decimal-progress.md)
+status: phase 0 validée par David (« je suis tes reco » : option A, seuil 1 000, 2026-10-12) — codé sur `perf/grandes-fractions`
 ---
 
 # Lenteur des grandes fractions — phase 0
@@ -116,3 +116,25 @@ sa valeur approchée. »
 
 - 2026-10-12 — mesures et phase 0 (ci-dessus). En attente de la décision de David (A, B ou C, et le
   seuil).
+- 2026-10-12 — **David : « je suis tes reco »** (option A, seuil 1 000 caractères). Codé sur
+  `perf/grandes-fractions` : `cli/exact-size.ts` (taille prévue : puissance, factorielle, coefficient
+  binomial ; jamais pour une comparaison) ; console : écriture gardée (`exactTooLong`, texte écrit
+  comme tapé — une division tapée `1/1000`, en ligne, s'écrivait `1:/1000`), calcul exact une fois
+  (le booléen le réutilise), arrondi lu une fois ; `render.ts` ne la passe pas à `tidy` ; note dans
+  Calcul (espace fine insécable dans « 6 000 ») ; budget de taille dans `evaluateNodeToRational`
+  seulement (le calcul décimal général garde ses bornes, dont la factorielle en `number` exact).
+  Tests rouges d'abord (13 échecs pour la bonne raison ; `(1+1/100000)^100000` exclu du passage rouge,
+  il bloque — mesuré > 200 s). Mesuré après : `(1+1/10000)^10000` et `(1+1/100000)^100000` ≈ 1 ms.
+  Comparaison de la console avant/après sur 46 saisies × 2 modes : seuls `1000!` et
+  `\binom{1000}{500}` changent (valeur approchée au lieu d'une erreur). Écart de forme : à l'écran,
+  la division tapée `/` reste en ligne (`\left( 1 + 1 / 1000 \right)^{1000}`), comme ailleurs dans
+  Calcul.
+- 2026-10-12 — revue `code-reviewer` : rien de bloquant. **Corrigé** : les fonctions de
+  l'utilisateur échappaient au garde-fou (`.def u(n) = (1+1/n)^n` : `u(6000)` 2 s, `u(100000)` figeait
+  la page) — l'estimation se fait désormais sur les fonctions développées ; une écriture gardée sans
+  aucune valeur est une erreur (`(1/0)^{2000}` réussissait) ; `f(2^{5000})` avec `f(x) = x > 2`
+  redonne `true` ; test du bouton « valeur exacte » en mode décimal. **Laissés (mineurs, mesurés)** :
+  une base irrationnelle échappe au seuil sans figer (`\sqrt{2}^{100000}` : 15 052 caractères en
+  1 ms) ; faux positifs rares où l'estimation additionne avant simplification
+  (`10^{600}×10^{-598}` garde son écriture, note « environ 1 200 chiffres ») ; sommes de grandes
+  puissances chacune dans le budget (≈ 0,9 s, pas un cas d'élève).

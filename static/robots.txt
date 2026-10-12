@@ -12,8 +12,8 @@ Disallow: /api/
 Disallow: /demo
 Disallow: /geometry-demo
 Disallow: /construction-demo
-Disallow: /test-font
-Disallow: /test-erreur
+Disallow: /test-
+Disallow: /slides/
 Disallow: /api-docs
 Disallow: /blockly
 

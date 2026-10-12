@@ -112,7 +112,10 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 		"IPP cyclique : on retrouve l'intégrale de départ, on résout l'équation",
 	'decompose-rational': (b) =>
 		`Décomposition en éléments simples : on cherche A et B tels que la fraction se décompose en A/(${bind(b, 'factor1')}) + B/(${bind(b, 'factor2')})`,
-	'apply-partial-fractions': () => 'Intégration de chaque terme : ∫A/(x − r) dx = A·ln|x − r|',
+	'apply-partial-fractions': (b) =>
+		b.p
+			? 'Intégration de chaque terme : ∫A/(px + q) dx = (A/p)·ln|px + q|'
+			: 'Intégration de chaque terme : ∫A/(x − r) dx = A·ln|x − r|',
 	// ---- Final ----
 	'add-constant': () => "On ajoute la constante d'intégration C",
 	'simplify-result': () => 'On simplifie'
@@ -142,8 +145,14 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'choose-u-dv': (b) => `u = ${bind(b, 'u')},\\ dv = ${bind(b, 'dv')}`,
 	'apply-parts-formula': () => '\\int u\\,dv = uv - \\int v\\,du',
 	'apply-cyclic-ipp': () => 'I\\,(1 - k) = u_0 v_0 - u_1 v_1',
-	'decompose-rational': () => '\\dfrac{P(x)}{Q(x)} = \\dfrac{A}{x-r_1} + \\dfrac{B}{x-r_2}',
-	'apply-partial-fractions': () => '\\int \\dfrac{A}{x-r}\\,dx = A\\ln|x-r|',
+	'decompose-rational': (b) =>
+		b.p
+			? '\\dfrac{P(x)}{Q(x)} = \\dfrac{A}{p_1x+q_1} + \\dfrac{B}{p_2x+q_2}'
+			: '\\dfrac{P(x)}{Q(x)} = \\dfrac{A}{x-r_1} + \\dfrac{B}{x-r_2}',
+	'apply-partial-fractions': (b) =>
+		b.p
+			? '\\int \\dfrac{A}{px+q}\\,dx = \\dfrac{A}{p}\\ln|px+q|'
+			: '\\int \\dfrac{A}{x-r}\\,dx = A\\ln|x-r|',
 	'add-constant': () => '+ C',
 	'simplify-result': () => 'Simplification'
 };
@@ -200,8 +209,16 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		"Après deux IPP successives, l'intégrale de départ I réapparaît dans le second membre. On obtient une équation du type I = expression − k·I, qu'on résout pour I : I = expression / (1 − k).",
 	'decompose-rational': (b) =>
 		`On factorise le dénominateur : ${bind(b, 'denominator')} = ${bind(b, 'factoredDenominator')}. Puis on décompose P(x)/Q(x) = A/(${bind(b, 'factor1')}) + B/(${bind(b, 'factor2')}). On trouve A = ${bind(b, 'A')} et B = ${bind(b, 'B')} (méthode des racines : substituer x = ${bind(b, 'r1')} et x = ${bind(b, 'r2')}).`,
-	'apply-partial-fractions': () =>
-		"Chaque terme A/(x − r) s'intègre en A·ln|x − r|. La somme des deux logarithmes donne la primitive cherchée.",
+	'apply-partial-fractions': (b) =>
+		`${
+			b.p
+				? "Chaque terme A/(px + q) s'intègre en (A/p)·ln|px + q|."
+				: "Chaque terme A/(x − r) s'intègre en A·ln|x − r|."
+		} ${
+			bind(b, 'A') === '0' || bind(b, 'B') === '0'
+				? 'Le seul terme non nul donne la primitive cherchée.'
+				: 'La somme des deux logarithmes donne la primitive cherchée.'
+		}`,
 	'simplify-result': (b) =>
 		b.exponential
 			? b.developed

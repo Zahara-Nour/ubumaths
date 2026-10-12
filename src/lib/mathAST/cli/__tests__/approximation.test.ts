@@ -157,9 +157,10 @@ describe('hors de l’échelle : la notation scientifique', () => {
 		expect(approx(latex)).toBe(expected);
 	});
 
-	// Au-delà du plafond des puissances exactes (1000), l'expression tapée passe par le
-	// flottant, qui en sort : le bouton reçoit le RÉSULTAT EXACT, comme dans la console
-	it('au-delà du plafond : lue sur le résultat exact', () => {
+	// Au-delà de l'exposant 1000 : sur le résultat exact, ou sur l'expression tapée dans le
+	// budget de taille (lot « lenteur des grandes fractions » : une écriture gardée trouve
+	// ainsi sa valeur approchée ; avant ce lot, l'expression tapée ne donnait rien)
+	it('au-delà de l’exposant 1000 : sur le résultat exact ou dans le budget de taille', () => {
 		const ofExact = (latex: string) => {
 			const result = evaluate(parseLatex(latex), { mode: 'exact' });
 			return result.status === 'value' ? approximateValueLatex(result.node) : null;
@@ -167,7 +168,7 @@ describe('hors de l’échelle : la notation scientifique', () => {
 
 		expect(ofExact('0.5^{2000}')).toBe('\\approx 8.7098 \\times 10^{-603}');
 		expect(ofExact('1.5^{2000}')).toBe('\\approx 1.5224 \\times 10^{352}');
-		expect(approx('1.5^{2000}')).toBeNull();
+		expect(approx('1.5^{2000}')).toBe('\\approx 1.5224 \\times 10^{352}');
 	});
 
 	it('exacte : « = », zéros de la mantisse retirés', () => {

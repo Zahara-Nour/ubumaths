@@ -8,6 +8,7 @@
 -->
 
 <script lang="ts">
+	import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
@@ -152,7 +153,7 @@
 		// Capture worksheet in a local const so the closure doesn't see the reactive null state
 		const capturedWorksheet = worksheet;
 		const suffix = previewStudentName ? `_${previewStudentName.replace(/\s+/g, '_')}` : '';
-		const filename = `${capturedWorksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}${suffix}.pdf`;
+		const filename = `${sanitizeForFileName(capturedWorksheet.title)}${suffix}.pdf`;
 
 		const result = await generateAndDownloadPdf(
 			() => generateStudentWorksheetTypst(capturedWorksheet, includeSolution),

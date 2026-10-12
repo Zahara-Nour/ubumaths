@@ -27,7 +27,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Verify user is authenticated
 	const session = await locals.safeGetSession();
 	if (!session.user) {
-		throw error(401, 'Non authentifie');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Parse and validate request body
@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	// Verify it's valid (should always be, but just in case)
 	if (!isValidSlug(slug)) {
-		throw error(500, 'Erreur lors de la generation du slug');
+		throw error(500, 'Impossible de générer le slug');
 	}
 
 	return json({ slug });

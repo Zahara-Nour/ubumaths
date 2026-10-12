@@ -1,6 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { redirect, fail } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { RIDDLE_COLUMNS } from '$lib/types/riddle';
 
 /**
  * Load riddle of the day management data
@@ -23,9 +24,16 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		console.error('Contexte illisible :', currentRiddleIdError);
 	}
 
+	// La page n'affiche ni la réponse attendue ni la correction : colonnes nommées, sans
+	// elles (elles vivent dans `riddle_solutions`).
 	const currentRiddle = currentRiddleId
-		? ((await supabase.from('riddles').select('*').eq('id', currentRiddleId).maybeSingle()).data ??
-			null)
+		? ((
+				await supabase
+					.from('riddles')
+					.select(RIDDLE_COLUMNS)
+					.eq('id', currentRiddleId)
+					.maybeSingle()
+			).data ?? null)
 		: null;
 
 	// Get history of past riddles of the day
@@ -34,8 +42,8 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.select(
 			`
 			*,
-			riddle:riddles(*)
-		`
+			riddle:riddles(${RIDDLE_COLUMNS})
+		` as const
 		)
 		// La table porte `date`, pas `assignment_date`.
 		.order('date', { ascending: false })

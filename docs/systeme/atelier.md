@@ -268,6 +268,18 @@ toujours sur le résultat exact, le calcul décimal du moteur ne sert qu'à une 
 `3 × 10²⁰`). Mêmes règles pour une grandeur (`9,4607 × 10¹⁵ m`). Le texte d'un résultat exact est mis au propre comme l'écran (`\pi/3`,
 plus `{1/3}\pi`) — `/cas` compris.
 
+**Résultat exact trop long** (lot « lenteur des grandes fractions », option A de David du 2026-10-12,
+`mathAST/cli/exact-size.ts`) : au-delà de **1 000 caractères**, le mode exact **garde l'écriture
+tapée** (`(1+1/1000)^{1000}`, `1.01^{365}`, `2^{100000}`) — comme `1000!` le faisait déjà — avec une
+note (« Valeur exacte trop longue (environ 6 000 chiffres) : elle reste écrite telle quelle. ») ; la
+valeur approchée reste au bouton ≈ et en mode décimal. La taille est **prévue avant le calcul**
+(puissance de base a/b : environ k × (chiffres de a + chiffres de b) ; factorielle, coefficient
+binomial par Stirling) : avant, `(1+1/10000)^10000` prenait 13 s pour afficher 80 003 caractères,
+et `(1+1/100000)^100000` bloquait la page plus de 200 s (maintenant ~1 ms). Jamais pour une
+comparaison (vrai ou faux). Le résultat porte `exactTooLong` ; le rendu ne passe pas l'écriture
+gardée à `tidy`, qui la développerait. La console ne calcule plus le résultat exact deux fois (le
+test du booléen le réutilise), ni l'arrondi deux fois (ligne et bouton ≈).
+
 **Complétion des fonctions et des lettres grecques** (PR 3, `src/lib/atelier/completion.ts`) :
 règle unique — la liste s'ouvre quand le mot qui finit au CURSEUR (lettres seulement, curseur relu
 au moment de décider) a au moins 2 lettres et est le début d'une proposition (`si` → `sin(`,

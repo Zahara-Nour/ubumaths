@@ -1,3 +1,4 @@
+import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
 /**
  * PDF Generation API Endpoint
  * ===========================
@@ -94,12 +95,12 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (fetchError || !worksheet) {
-			throw error(404, 'Feuille de travail introuvable');
+			throw error(404, 'Fiche introuvable');
 		}
 
 		// Check permissions (only teachers who created the worksheet or admins)
 		if (worksheet.created_by !== user.id && profile.role !== 'admin') {
-			throw error(403, 'Non autorisé');
+			throw error(403, 'Accès refusé');
 		}
 
 		// Get or generate instance data
@@ -161,7 +162,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		if (!typstAvailable) {
 			throw error(
 				501,
-				'La génération de PDF côté serveur nécessite Typst CLI. Utilisez la prévisualisation client-side.'
+				'La génération du PDF sur le serveur demande Typst CLI : passer par l’aperçu dans le navigateur.'
 			);
 		}
 
@@ -184,7 +185,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		return json({
 			success: true,
 			pdf: base64,
-			filename: `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_${mode}.pdf`
+			filename: `${sanitizeForFileName(worksheet.title)}_${mode}.pdf`
 		});
 	} catch (err) {
 		console.error('PDF generation error:', err);
@@ -195,7 +196,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			throw err;
 		}
 
-		throw error(500, 'Erreur lors de la génération du PDF');
+		throw error(500, 'Impossible de générer le PDF');
 	}
 };
 
@@ -317,5 +318,5 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	// This could be implemented to retrieve stored PDFs from a cache
 	// For now, redirect to POST
-	throw error(405, 'Use POST to generate PDFs');
+	throw error(405, 'La génération de PDF passe par une requête POST');
 };
