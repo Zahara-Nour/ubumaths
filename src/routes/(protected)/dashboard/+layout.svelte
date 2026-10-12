@@ -476,7 +476,11 @@
 		<!-- For /dashboard, this renders +page.svelte which shows role-specific dashboards -->
 		<!-- For /dashboard/classes, this would render classes/+page.svelte, etc. -->
 		<!-- NOTE: min-h-0 is required for overflow-y-auto to work in a flex container -->
-		<main class="dashboard-content min-h-0 flex-1 overflow-y-auto bg-background">
+		<main
+			id="contenu-principal"
+			tabindex="-1"
+			class="dashboard-content min-h-0 flex-1 overflow-y-auto bg-background focus:outline-none"
+		>
 			<!-- Notification Banner (sticky at top) -->
 			{#if !isFullWidthRoute}
 				<NotificationBanner />

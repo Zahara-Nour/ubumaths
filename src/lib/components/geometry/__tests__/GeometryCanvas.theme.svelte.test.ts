@@ -116,7 +116,7 @@ describe('GeometryCanvas — habillage', () => {
 	it('les graduations suivent le texte atténué (lisibles en sombre)', async () => {
 		const svg = await renderFigure('A = point(0, 0)');
 		const grad = inBothModes(() => getComputedStyle(one(svg, 'text.graduation')).fill);
-		expect(grad.light).toBe('rgb(115, 115, 115)');
+		expect(grad.light).toBe('rgb(102, 102, 102)');
 		expect(grad.dark).toBe('rgb(158, 158, 158)');
 	});
 });
