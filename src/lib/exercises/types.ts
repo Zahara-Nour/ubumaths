@@ -1182,6 +1182,11 @@ export interface ExerciseExportV2 {
 	// Variations system
 	variations?: ExerciseVariation[];
 	shared?: SharedExerciseDefaults;
+
+	// Réglages de l'exercice (le slug n'est pas exporté : il doit rester unique)
+	generic_functions?: string[] | null;
+	resources?: ExerciseResource[] | null;
+	distribution_mode?: DistributionMode;
 }
 
 /**
