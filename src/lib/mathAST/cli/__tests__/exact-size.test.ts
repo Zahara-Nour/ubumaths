@@ -84,3 +84,30 @@ describe('la longueur réelle d’un résultat calculé', () => {
 		).toBe(30);
 	});
 });
+
+// Un produit, un quotient de puissances : les exposants d'un même facteur premier se compensent
+// avant de compter (`10^{6000}×10^{-5998}` = 100 était prévu à 12 000 caractères et gardé tel
+// quel, sans calcul — le dernier faux positif de #1182)
+describe('un produit se prévoit après simplification', () => {
+	it.each([
+		['10^{6000}\\times10^{-5998}', 3],
+		['\\frac{10^{6000}}{10^{5998}}', 3],
+		['2^{100000}\\times2^{-99990}', 4],
+		['\\frac{6^{30000}}{2^{30000}}', 14314],
+		['\\frac{2^{40000}\\times3^{20000}}{6^{20000}}', 6022]
+	])('%s : environ %i caractères', (latex, expected) => {
+		expect(Math.abs(digits(latex) - expected)).toBeLessThan(5);
+	});
+
+	it.each(['10^{6000}\\times10^{-5998}', '\\frac{10^{60000}}{10^{59990}}'])(
+		'%s n’atteint pas le plafond de calcul',
+		(latex) => {
+			expect(isTooLongToCompute(parseLatex(latex))).toBe(false);
+		}
+	);
+
+	it('ce qui ne se simplifie pas reste long', () => {
+		expect(isTooLongToCompute(parseLatex('\\frac{10^{30000}}{3}'))).toBe(true);
+		expect(isTooLongToCompute(parseLatex('2^{40000}\\times3^{40000}'))).toBe(true);
+	});
+});

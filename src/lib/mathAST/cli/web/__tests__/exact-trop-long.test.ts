@@ -187,3 +187,15 @@ describe('le plafond de calcul couvre aussi', () => {
 		expect(exact('(1+sqrt(2))^20000').exactTooLong).toBe(15320);
 	});
 });
+
+describe('un produit de puissances qui se compensent', () => {
+	it.each([
+		['10^6000*10^-5998', '100'],
+		['10^60000/10^59990', '10000000000']
+	])('%s = %s', (input, output) => {
+		const line = exact(input);
+
+		expect(line.output).toBe(output);
+		expect(line.exactTooLong).toBeUndefined();
+	});
+});

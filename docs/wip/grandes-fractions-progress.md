@@ -161,3 +161,9 @@ sa valeur approchée. »
   « réduit » tenu par un commentaire (garde en test jugée coûteuse) ; mesure sur `toCustom` et non
   sur l'écriture mise au propre (quelques caractères au seuil) ; `1000!/999!` s'écrit
   `factorial(1000)/factorial(999)` en mode exact (antérieur, le moteur garde les factorielles).
+- 2026-10-12 — **David : « corrige ce faux positif `10^6000 × 10^-5998` »**. Un produit ou un
+  quotient de puissances de bases rationnelles courtes se prévoit après compensation : chaque base
+  décomposée (premiers < 1 000, le reste compté comme un facteur), exposants additionnés, puis
+  chiffres comptés. `10^{6000}×10^{-5998}` : 3 caractères prévus (12 000 avant) ;
+  `10^{60000}/10^{59990}` répond `10000000000` au lieu de garder l'écriture. Reste une borne : deux
+  restes sans petit diviseur qui partagent un facteur se comptent deux fois.
