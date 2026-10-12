@@ -17,7 +17,8 @@ import { describe, it, expect } from 'vitest';
 import { generateLinearInequalitySteps } from '../linear-inequality';
 import { generateQuadraticInequalitySteps } from '../quadratic-inequality';
 import { LinearEquationRenderer } from '../linear-renderer';
-import { quadraticSignTableGrid } from '../quadratic-renderer';
+import { quadraticSignTableGrid, QuadraticEquationRenderer } from '../quadratic-renderer';
+import { InequalityNotSolvable } from '../../solve/inequality/types';
 import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
 import { solveInequality } from '../../solve/inequality';
@@ -219,6 +220,76 @@ describe('V36 — tableau de signes du second degré : signe de a lu sur sa vale
 			if (op?.kind !== 'quadratic-sign-table') throw new Error('pas de tableau de signes');
 			const grid = quadraticSignTableGrid(op);
 			expect(grid?.rows[0].intervals).toEqual(intervals);
+		});
+	}
+});
+
+// =============================================================================
+// Revue V36 — prose exacte, LaTeX du tableau, sommes de constantes, indécidable
+// =============================================================================
+
+describe('V36 — la prose du changement de sens, mot pour mot', () => {
+	const CASES: readonly { latex: string; coefficient: string }[] = [
+		{ latex: '-\\dfrac{2}{3}x+1<5', coefficient: '-\\dfrac{2}{3}' },
+		{ latex: '-0.5x<2', coefficient: '-\\dfrac{1}{2}' },
+		{ latex: '-\\sqrt2x<1', coefficient: '-\\sqrt{2}' },
+		{ latex: '\\frac{-3}{4}x\\ge1', coefficient: '-\\dfrac{3}{4}' }
+	];
+	for (const { latex, coefficient } of CASES) {
+		for (const level of LEVELS) {
+			it(`${level} : ${latex} — « changement de sens car $${coefficient}$ est négatif »`, () => {
+				const steps = generateLinearInequalitySteps(ineq(latex), { level });
+				const prose = renderedProse(steps, level);
+				// Collège : « On divise … par » ; lycée et supérieur : « On simplifie le coefficient ».
+				expect(prose).toMatch(/changement de sens( car \$[^$]+\$ est négatif)?\)/);
+				if (level === 'college') {
+					expect(prose).toContain(`changement de sens car $${coefficient}$ est négatif`);
+					expect(prose).toContain(`Comme $${coefficient}$ est négatif`);
+				}
+				expect(prose).not.toContain('est positif');
+			});
+		}
+	}
+});
+
+describe('V36 — le LaTeX du tableau de signes du second degré', () => {
+	const CASES: readonly { latex: string; body: string }[] = [
+		{ latex: '-\\frac12x^2+x+4\\le0', body: 'P(x) & & - & 0 & + & 0 & - &' },
+		{ latex: '\\frac12x^2-x-4\\le0', body: 'P(x) & & + & 0 & - & 0 & + &' }
+	];
+	for (const { latex, body } of CASES) {
+		it(`lycée : ${latex}`, () => {
+			const steps = generateQuadraticInequalitySteps(ineq(latex), { level: 'lycee' });
+			const rendered = flattenRendered(
+				new QuadraticEquationRenderer().renderAll(steps, {
+					schoolLevel: 'lycee',
+					verbosity: 'detailed'
+				})
+			).find((s) => s.signTable !== undefined);
+			expect(rendered?.expressionLatex).toContain('\\begin{array}');
+			expect(rendered?.expressionLatex).toContain(body);
+		});
+	}
+});
+
+describe('V36 — coefficient somme de constantes (valeur approchée hors marge)', () => {
+	for (const latex of ['(1-\\sqrt2)x<1', 'x-\\sqrt2x>1', '(\\sqrt2-1)x<1']) {
+		for (const level of LEVELS) {
+			it(`${level} : ${latex} — conclusion = solution de solve`, () => {
+				const input = ineq(latex);
+				const final = conclusion(generateLinearInequalitySteps(input, { level }));
+				expect(solutionSet(final)).toBe(solutionSet(input));
+			});
+		}
+	}
+});
+
+describe('V36 — constante de signe indécidable : refus, pas de S = ∅ deviné', () => {
+	for (const level of LEVELS) {
+		it(`${level} : x+\\sqrt2-1.4142135623>x lève InequalityNotSolvable`, () => {
+			expect(() =>
+				generateLinearInequalitySteps(ineq('x+\\sqrt2-1.4142135623>x'), { level })
+			).toThrow(InequalityNotSolvable);
 		});
 	}
 });

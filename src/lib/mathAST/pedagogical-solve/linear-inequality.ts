@@ -409,14 +409,22 @@ function buildConcludeStep(constantIneq: RelationNode, id: number): EquationStep
  * Evaluate a constant inequality (both sides numeric) into a boolean truth
  * value, from the sign of `lhs − rhs` read on its VALUE (`constantSign`) :
  * `0 < \frac23` est vraie (écart V36 : seuls les entiers étaient lus, et une
- * constante fractionnaire rendait « contradiction »). Defensively returns
- * `false` (contradiction-like) when the sign cannot be established — that
- * should not happen in practice because the caller only invokes this on
- * inequalities that have already been reduced.
+ * constante fractionnaire rendait « contradiction »).
+ *
+ * @throws InequalityNotSolvable quand le signe ne peut pas être établi
+ *   (`\sqrt2 - 1.4142135623`, trop proche de 0) : mieux vaut aucune
+ *   correction pédagogique qu'un « S = ∅ » deviné — même règle que
+ *   `divideBothSidesWithFlip`.
  */
 function evaluateConstantInequality(rel: RelationNode): boolean {
-	const sign = constantSign(canon(add(rel.left, opposite(rel.right))));
-	if (sign === null) return false;
+	const difference = canon(add(rel.left, opposite(rel.right)));
+	const sign = constantSign(difference);
+	if (sign === null) {
+		throw new InequalityNotSolvable(
+			`Signe indécidable : ${toLatex(difference)}`,
+			'La constante est trop proche de 0 pour comparer ses deux membres.'
+		);
+	}
 	switch (rel.relation) {
 		case '<':
 			return sign < 0;

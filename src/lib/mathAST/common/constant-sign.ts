@@ -33,6 +33,12 @@ const SIGN_MARGIN = 1e-9;
  *
  * Rend `null` quand le signe ne peut pas être établi : expression non
  * constante, non évaluable, ou valeur approchée trop proche de 0.
+ *
+ * ⚠️ Un zéro exact écrit comme une SOMME (`\sqrt2 - \sqrt2`, `1 - \frac22`)
+ * n'est pas un rationnel lisible par l'étape 1 : sa valeur approchée tombe
+ * dans la marge et le résultat est `null`, pas 0. Les appelants passent donc
+ * d'abord l'expression par `canon` (`normalize ∘ denormalize`), qui réduit ces
+ * sommes à `0`.
  */
 export function constantSign(node: MathNode): ConstantSign | null {
 	const exact = extractExactRational(node);
