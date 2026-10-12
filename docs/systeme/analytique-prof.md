@@ -18,11 +18,11 @@ couvre:
 Une page par classe, `/dashboard/teacher/classes/[classId]/analytics`, ouverte depuis la liste des
 classes du prof. Elle montre l'état de la classe sous trois onglets :
 
-| Onglet           | Ce qu'il montre                                                                             | Sources                                                                                   |
-| ---------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| 📘 Connaissances | Mémorisation (FSRS) des **points du programme** travaillés, activité, notes de révision     | `skill_attempts`, `question_template_points` → `curriculum_points`, `srs_card_stats`      |
-| 🎯 Compétences   | Niveaux des six **compétences mathématiques** et observables à consolider                   | `math_competences`, `student_competence_level`, `student_observable_state`, `observables` |
-| Surveillance     | Drapeaux anti-triche non résolus (badge = leur nombre ; « ? » si le compteur est illisible) | `srs_anti_fraud_flags` — voir [srs.md](srs.md) (anti-triche éteint en prod)               |
+| Onglet           | Ce qu'il montre                                                                                                                                              | Sources                                                                                   |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| 📘 Connaissances | Mémorisation (FSRS) des **points du programme** travaillés, activité, notes de révision                                                                      | `skill_attempts`, `question_template_points` → `curriculum_points`, `srs_card_stats`      |
+| 🎯 Compétences   | Niveaux des six **compétences mathématiques** et observables à consolider                                                                                    | `math_competences`, `student_competence_level`, `student_observable_state`, `observables` |
+| Surveillance     | Drapeaux anti-triche non résolus (badge = leur nombre ; « ? » si le compteur est illisible, au chargement comme au rafraîchissement : `unresolved-count.ts`) | `srs_anti_fraud_flags` — voir [srs.md](srs.md) (anti-triche éteint en prod)               |
 
 Termes ([CONTEXT.md](../../CONTEXT.md)) : Point du programme, compétences mathématiques. ⚠️ Le code
 et l'interface disent encore « **capacité** » (`ClassCapacityGrid`, « Top capacités à remédier ») et
