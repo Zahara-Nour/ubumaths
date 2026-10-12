@@ -837,3 +837,25 @@ Elles sont déjà couvertes au-dessus ou sont de l'arithmétique simple :
 - T_COMP : Euler, rectangles, trapèzes, voir Python (22) ;
 - T_TECHNO : somme des carrés des écarts, listes (C23) ;
 - T_TECHNO : asymptotes, Grapheur (19).
+
+---
+
+## Vérifications dans le code source d'Epsilon (2026-10-12)
+
+Dépôt officiel cloné dans `extern/numworks-epsilon` du dépôt principal (ignoré par git). `master` =
+branche `version-26` ; une branche par version majeure (`origin/version-19` … `version-26`), les
+étiquettes s'arrêtent à 23.2.3. Comparer deux versions : `git diff origin/version-23
+origin/version-26 -- '*.fr.i18n'`.
+
+| Doute                    | Verdict                                                                                                    | Preuve                                                                          |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Bouton du mode examen    | « Activer le mode examen FR » (existe aussi « Activer le mode examen » générique)                          | `*.fr.i18n` : `ActivateFrenchExamMode`                                          |
+| Ce que bloque le mode FR | **Aucune application ni fonction** : seules les données deviennent inaccessibles (Python reste ouvert)     | `poincare/include/poincare/exam_mode.h` : `French` absent de tous les `forbid*` |
+| `invbinom(a,n,p)`        | **Plus petit k tel que P(X ≤ k) ≥ a** — recalculé : (0,95 ; 100 ; 0,42) → 50, P(X≤49)=0,935, P(X≤50)=0,957 | `poincare/test/approximation/probability.cpp` l. 13-18                          |
+| Ordre de `binomcdfrange` | `binomcdfrange(a,b,n,p)`                                                                                   | `epsilon/apps/shared.universal.i18n` l. 115                                     |
+| Loi exponentielle        | `expcdf(m,λ)` — **nouveau en v26** (absent des branches version-24 et 25)                                  | `shared.universal.i18n` l. 134 ; `git grep` par branche                         |
+| Lois géométrique         | `geompdf(m,p)`, `geomcdf(m,p)`                                                                             | `shared.universal.i18n` l. 154-156                                              |
+| `!`                      | `[alpha] [.]` ; `?` = `[alpha] [0]` ; espace = `[alpha] [−]`                                               | `shared/ion/include/ion/keyboard/epsilon/ion/keys.inc` l. 41-43                 |
+| Régressions              | « Affine » = y = ax+b (`Linear`), « Linéaire » = y = ax (`Proportional`)                                   | `*.fr.i18n`                                                                     |
+| Point moyen              | libellé « Point moyen » existe (`MeanDot`)                                                                 | `*.fr.i18n`                                                                     |
+| Nombre dérivé            | « Valeur dérivée 1ère » (`FirstDerivativeValue`)                                                           | `*.fr.i18n`                                                                     |

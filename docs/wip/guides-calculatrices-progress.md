@@ -58,7 +58,9 @@ d'examen / pratique.
 ## Avancement
 
 - [x] Périmètre, décisions, liste vérifiée contre les programmes
-- [ ] Séquences NumWorks sourcées (doc officielle) — agent de recherche lancé le 2026-10-12
+- [x] Séquences NumWorks sourcées : [guides-calculatrices-numworks.md](guides-calculatrices-numworks.md)
+      (manuel v20 + notes de version + **code d'Epsilon cloné dans `extern/numworks-epsilon`**, branches
+      `version-NN`) — reste la relecture sur machine
 - [ ] Phase 0 : spécification du code (données, page, PDF) — à valider par David
 - [ ] Code du pilote (tests d'abord)
 - [ ] Page à cocher : relecture des séquences NumWorks par David sur la machine
