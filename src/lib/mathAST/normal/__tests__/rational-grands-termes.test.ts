@@ -72,11 +72,16 @@ describe('le pgcd sur de grands entiers', () => {
 		expect(gcd(f, g)).toBe(1n);
 	});
 
-	// Mesuré : Euclide 1,7 s, Lehmer 357 ms (Mac mini M6) ; la marge couvre une CI plus lente
-	it('deux nombres de 40 000 chiffres en moins de 1 200 ms', () => {
+	// Mesuré : Euclide 1,7 s, Lehmer 357 ms (Mac mini M6). La CI est 3 à 5 fois plus lente
+	// (1 265 ms et 1 626 ms relevés le 2026-10-12 sous l'ancien plafond de 1 200 ms) : le
+	// plafond de 3 000 ms y laisse passer Lehmer et refuserait Euclide (~7 s au même facteur).
+	// Les deux nombres sont construits hors du chronomètre, qui ne mesure que le pgcd.
+	it('deux nombres de 40 000 chiffres en moins de 3 000 ms', () => {
+		const a = 10001n ** 10000n;
+		const b = 10000n ** 10000n;
 		const start = performance.now();
-		expect(gcd(10001n ** 10000n, 10000n ** 10000n)).toBe(1n);
-		expect(performance.now() - start).toBeLessThan(1200);
+		expect(gcd(a, b)).toBe(1n);
+		expect(performance.now() - start).toBeLessThan(3000);
 	});
 });
 
