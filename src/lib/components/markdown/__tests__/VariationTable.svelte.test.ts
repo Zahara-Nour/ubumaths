@@ -10,7 +10,7 @@
  */
 
 import { page } from 'vitest/browser';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import VariationTable from '../nodes/VariationTable.svelte';
 import type {
@@ -592,6 +592,53 @@ describe('VariationTable Component', () => {
 
 			const downArrows = document.querySelectorAll('.vt-arrow-down');
 			expect(downArrows.length).toBe(1);
+		});
+	});
+
+	// =========================================================================
+	// Marker IDs
+	// =========================================================================
+
+	describe('Identifiants des pointes de flèche', () => {
+		function tableWithArrow(): VariationTableNode {
+			const node = createBasicTable();
+			node.rows.push(
+				createVariationRow('f(x)', {
+					'-\\infty': { expression: '-\\infty', position: 'bottom' },
+					'0': { expression: '3', position: 'top' }
+				})
+			);
+			return node;
+		}
+
+		afterEach(() => {
+			// Rend crypto.randomUUID retiré par le test du contexte non sécurisé
+			Reflect.deleteProperty(crypto, 'randomUUID');
+		});
+
+		it('se dessine sans crypto.randomUUID (HTTP sur une adresse IP)', async () => {
+			// Hors HTTPS et localhost, le navigateur ne fournit pas crypto.randomUUID
+			Object.defineProperty(crypto, 'randomUUID', { value: undefined, configurable: true });
+
+			await renderTable({ node: tableWithArrow() });
+
+			expect(document.querySelectorAll('marker').length).toBeGreaterThan(0);
+		});
+
+		it('deux tableaux sur la page ont chacun leurs pointes', async () => {
+			await renderTable({ node: tableWithArrow() });
+			await renderTable({ node: tableWithArrow() });
+
+			const ids = [...document.querySelectorAll('marker')].map((marker) => marker.id);
+			expect(new Set(ids).size).toBe(ids.length);
+
+			// Chaque flèche renvoie à une pointe de SON tableau
+			for (const table of document.querySelectorAll('.variation-table')) {
+				for (const arrow of table.querySelectorAll('[marker-end]')) {
+					const id = arrow.getAttribute('marker-end')?.match(/url\(#(.+)\)/)?.[1];
+					expect(id && table.querySelector(`marker[id="${id}"]`)).toBeTruthy();
+				}
+			}
 		});
 	});
 });
