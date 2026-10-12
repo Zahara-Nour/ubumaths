@@ -788,7 +788,7 @@ export const transcendentalSolver: EquationSolver = {
 	name: 'transcendental',
 
 	canSolve(expr: MathNode, variable: string): boolean {
-		return containsTranscendental(expr) && getVariables(expr).has(variable);
+		return containsTranscendental(expr, variable);
 	},
 
 	solve(
@@ -799,7 +799,7 @@ export const transcendentalSolver: EquationSolver = {
 		},
 		recorder: SolveStepRecorder
 	): SolveResult {
-		const transcType = getTranscendentalType(expr);
+		const transcType = getTranscendentalType(expr, variable);
 
 		// Try specific solver based on type
 		let result: SolveResult | null = null;

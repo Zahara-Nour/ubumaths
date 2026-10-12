@@ -213,6 +213,17 @@ le solveur affine (division par 5 oui, par π non) ne le lisaient : zéros non r
 inconnu, ensemble ∅ (statut `partial`). Tests :
 `solve/inequality/__tests__/denominateur-constant.test.ts` (bornes et échantillonnage de points).
 
+Écart V38 (2026-10-12) : **une fonction dont l'argument ne contient pas l'inconnue est une
+constante pour le classement**. `containsTranscendental` et `getTranscendentalType`
+(`analysis/expression-classify.ts`) prennent une inconnue facultative : avec elle, `\ln 3`,
+`\cos(1)`, `\log_{10}2` ne comptent plus, et `getPolynomialDegree` lit une puissance sans
+l'inconnue (`2^π`) comme une constante (degré 0). `classifyEquation` et le solveur transcendant
+passent l'inconnue ; sans elle, le comportement public est inchangé. Avant, `x = \ln 3`,
+`x\ln 2 = 1`, `x^2 = \ln 5`, `\frac{1}{x} = \ln 2` répondaient « transcendante non supporte » et
+`x < \frac{1}{\ln 2}` rendait ∅. Tests : `solve/__tests__/fonction-de-constante.test.ts`
+(forme exacte, vérification numérique, échantillonnage des inéquations, témoins `\ln x = 2`,
+`\cos x = \frac12`, `e^x = 3`).
+
 ### Carte du code
 
 | Fichier              | Rôle                                                                                                                                                                                                                                                              |
@@ -800,10 +811,6 @@ Doublons qui restent, chacun pour un autre besoin :
   (`getVariables` rend la base `x`) ; `e_1+1=3` et `i_1+1=3` aussi (le refus « constante
   d'Euler » / « unité imaginaire » ne s'applique pas quand l'arbre contient une variable `e`
   ou `i`, base d'une variable indicée : `reservedVariableRefusal`).
-- `solve` lit `ln` (ou `cos`) d'une **constante** comme une équation transcendante :
-  `x = \ln 3`, `x\ln 2 = 1`, `x\cos(1) = 1` répondent « Type d'equation transcendante non
-  supporte », donc `x < \frac{1}{\ln 2}` rend ∅ (statut `partial`). Mesuré le 2026-10-12, non
-  corrigé (cause distincte de V37 : le classement, pas le dénominateur).
 - Les filtres de noms qui écartent `e` et `i` de `getVariables` (`atelier/solve-steps.ts`,
   `questions/calculus/calculus-reading.ts`, `CONSTANT_NAMES` de `cli/core/variable-argument.ts`)
   ne servent plus que pour `e_1`, `i_1`, `u_i`, qu'ils traitent à tort comme des constantes.

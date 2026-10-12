@@ -9,7 +9,7 @@
  * inconnu partout → ∅, statut « partial ». `\frac{3x-2}{5}` passait : le
  * dénominateur y est un nombre.
  *
- * `1/ln 2` échoue pour une autre raison (voir plus bas).
+ * `1/ln 2` échouait pour une autre raison (V38, voir plus bas).
  *
  * Chaque ensemble est vérifié deux fois : bornes (LaTeX, valeur, crochets)
  * et un échantillonnage de points (x ∈ S ⇔ l'inéquation est vraie en x).
@@ -185,8 +185,8 @@ describe('V37 — borne en 2/π', () => {
 // Cas frères : même cause, autre constante au dénominateur
 // =============================================================================
 
-// `1/ln 2` n'en est pas : `x = \ln 3` échoue déjà (le classement lit `ln`
-// d'une constante comme une équation transcendante) — autre cause, signalée à part.
+// `1/ln 2` n'en est pas : `ln` d'une constante était lu comme transcendant,
+// autre cause (V38), testée dans `solve/__tests__/fonction-de-constante.test.ts`.
 describe('V37 — cas frères (e, √2/π, π + 1, second degré)', () => {
 	it('x < 1/e', () => {
 		const { relation, result } = solveCase('x<\\frac{1}{e}');
