@@ -97,6 +97,10 @@ export class TeacherDashboardCache {
 	 * Get student basic info for a class
 	 * Auto-fetches if cache expired or missing
 	 *
+	 * Un échec de lecture n'est JAMAIS mis en cache (vaut aussi pour les
+	 * récompenses et les avertissements) : la dernière valeur connue, même
+	 * expirée, est rendue si elle existe, sinon du vide ; l'accès suivant relit.
+	 *
 	 * @param classId - The class ID
 	 * @returns Promise resolving to array of basic student data
 	 */
@@ -120,6 +124,11 @@ export class TeacherDashboardCache {
 
 		// Fetch from API
 		const students = await this.fetchStudentBasic(classId);
+		if (students === null) {
+			// Échec : rien n'est stocké, l'accès suivant refera la lecture.
+			// On rend la dernière valeur connue, même expirée, sinon du vide.
+			return cached?.students ?? [];
+		}
 		this.studentsCache.set(classId, { students, fetchedAt: now });
 
 		const elapsed = (performance.now() - startTime).toFixed(2);
@@ -154,6 +163,10 @@ export class TeacherDashboardCache {
 
 		// Fetch from API
 		const rewards = await this.fetchStudentRewards(classId);
+		if (rewards === null) {
+			// Échec : rien n'est stocké (voir getStudentBasic)
+			return cached?.rewards ?? new SvelteMap();
+		}
 		this.rewardsCache.set(classId, { rewards, fetchedAt: now });
 
 		const elapsed = (performance.now() - startTime).toFixed(2);
@@ -196,6 +209,10 @@ export class TeacherDashboardCache {
 
 		// Fetch from API
 		const warnings = await this.fetchStudentWarnings(classId, periodId);
+		if (warnings === null) {
+			// Échec : rien n'est stocké (voir getStudentBasic)
+			return cached?.warnings ?? new SvelteMap();
+		}
 		this.warningsCache.set(key, { warnings, fetchedAt: now });
 
 		const elapsed = (performance.now() - startTime).toFixed(2);
@@ -665,36 +682,39 @@ export class TeacherDashboardCache {
 
 	/**
 	 * Fetch student basic info from API
+	 * Rend null en cas d'échec (réseau, HTTP), pour que l'appelant ne le stocke pas
 	 * @private
 	 */
-	private async fetchStudentBasic(classId: string): Promise<BasicStudent[]> {
+	private async fetchStudentBasic(classId: string): Promise<BasicStudent[] | null> {
 		try {
 			const response = await fetch(`/api/classes/${classId}/students`, {
 				credentials: 'include'
 			});
 			if (!response.ok) {
-				throw new Error(`Failed to fetch students: ${response.statusText}`);
+				throw new Error(`Impossible de charger les élèves : ${response.statusText}`);
 			}
 			const data = await response.json();
 			return data.students || [];
 		} catch (error) {
 			console.error('[Cache] Error fetching student basic:', error);
-			return [];
+			return null;
 		}
 	}
 
 	/**
 	 * Fetch student rewards from API
-	 * Returns SvelteMap for reactive data
+	 * Returns SvelteMap for reactive data, ou null en cas d'échec
 	 * @private
 	 */
-	private async fetchStudentRewards(classId: string): Promise<SvelteMap<string, StudentRewards>> {
+	private async fetchStudentRewards(
+		classId: string
+	): Promise<SvelteMap<string, StudentRewards> | null> {
 		try {
 			const response = await fetch(`/api/classes/${classId}/gidouilles`, {
 				credentials: 'include'
 			});
 			if (!response.ok) {
-				throw new Error(`Failed to fetch rewards: ${response.statusText}`);
+				throw new Error(`Impossible de charger les récompenses : ${response.statusText}`);
 			}
 			const data = await response.json();
 			const rewardsMap = new SvelteMap<string, StudentRewards>();
@@ -710,25 +730,25 @@ export class TeacherDashboardCache {
 			return rewardsMap;
 		} catch (error) {
 			console.error('[Cache] Error fetching rewards:', error);
-			return new SvelteMap();
+			return null;
 		}
 	}
 
 	/**
 	 * Fetch student warnings from API
-	 * Returns SvelteMap for reactive data
+	 * Returns SvelteMap for reactive data, ou null en cas d'échec
 	 * @private
 	 */
 	private async fetchStudentWarnings(
 		classId: string,
 		periodId: string
-	): Promise<SvelteMap<string, StudentWarningCounts>> {
+	): Promise<SvelteMap<string, StudentWarningCounts> | null> {
 		try {
 			const response = await fetch(`/api/classes/${classId}/warnings?period_id=${periodId}`, {
 				credentials: 'include'
 			});
 			if (!response.ok) {
-				throw new Error(`Failed to fetch warnings: ${response.statusText}`);
+				throw new Error(`Impossible de charger les avertissements : ${response.statusText}`);
 			}
 			const data = await response.json();
 			const warningsMap = new SvelteMap<string, StudentWarningCounts>();
@@ -740,7 +760,7 @@ export class TeacherDashboardCache {
 			return warningsMap;
 		} catch (error) {
 			console.error('[Cache] Error fetching warnings:', error);
-			return new SvelteMap();
+			return null;
 		}
 	}
 
@@ -752,7 +772,9 @@ export class TeacherDashboardCache {
 	 */
 	private async fetchClassInfo(_classId: string): Promise<ClassInfo> {
 		console.warn('[Cache] fetchClassInfo not implemented yet - use hydration instead');
-		throw new Error('Class info fetch not implemented - use hydrateClassInfo() instead');
+		throw new Error(
+			'Chargement des informations de classe non disponible : utiliser hydrateClassInfo()'
+		);
 	}
 
 	/**
@@ -763,7 +785,9 @@ export class TeacherDashboardCache {
 	 */
 	private async fetchSchoolInfo(_schoolId: string): Promise<SchoolInfo> {
 		console.warn('[Cache] fetchSchoolInfo not implemented yet - use hydration instead');
-		throw new Error('School info fetch not implemented - use hydrateSchoolInfo() instead');
+		throw new Error(
+			'Chargement des informations d’établissement non disponible : utiliser hydrateSchoolInfo()'
+		);
 	}
 
 	// ========================================================================
@@ -867,9 +891,17 @@ export class TeacherDashboardCache {
 	 *
 	 * Accepts ClassWithData array and hydrates Cache 3 for each class
 	 *
+	 * La liste est COMPLÈTE : une classe en cache absente de la liste (supprimée,
+	 * désactivée) est retirée. Ne pas appeler avec une liste issue d'une lecture
+	 * en échec.
+	 *
 	 * @param classes - Array of class data to cache
 	 */
 	hydrateAllClasses(classes: ClassWithData[]): void {
+		const ids = new Set(classes.map((c) => c.id));
+		for (const cachedId of Array.from(this.classesCache.keys())) {
+			if (!ids.has(cachedId)) this.classesCache.delete(cachedId);
+		}
 		for (const classData of classes) {
 			this.hydrateClassInfo(classData.id, classData);
 		}

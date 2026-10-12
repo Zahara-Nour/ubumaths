@@ -206,7 +206,7 @@
 			const response = await fetch('/api/google/courses');
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch courses');
+				throw new Error('Impossible de charger les cours');
 			}
 
 			const data = await response.json();
@@ -233,7 +233,7 @@
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || 'Sync failed');
+				throw new Error(errorData.message || 'Échec de la synchronisation');
 			}
 
 			const result: SyncResult = await response.json();
@@ -280,7 +280,7 @@
 			const response = await fetch(`/api/google/courses/${courseId}`);
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch coursework');
+				throw new Error('Impossible de charger les devoirs');
 			}
 
 			const data: CourseDetails = await response.json();

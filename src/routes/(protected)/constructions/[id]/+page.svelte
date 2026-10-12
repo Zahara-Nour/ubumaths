@@ -41,7 +41,7 @@
 			});
 
 			if (response.ok) {
-				toaster.success('Construction supprimee');
+				toaster.success('Construction supprimée');
 				goto('/constructions');
 			} else {
 				const result = await response.json();

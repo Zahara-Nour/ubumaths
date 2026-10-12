@@ -120,7 +120,7 @@
 
 			const response = await fetch(`/api/tutor/stats?${params}`);
 			if (!response.ok) {
-				throw new Error('Failed to fetch stats');
+				throw new Error('Impossible de charger les statistiques');
 			}
 
 			stats = await response.json();

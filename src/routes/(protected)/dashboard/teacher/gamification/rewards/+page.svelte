@@ -233,7 +233,7 @@
 					await response.json();
 					const studentCount = teacherCache.getStudentsSync(classId).length;
 					toaster.success(
-						`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} pour ${studentCount} eleve${studentCount > 1 ? 's' : ''}`
+						`${accumulatedDelta > 0 ? '+' : ''}${accumulatedDelta} gidouille${Math.abs(accumulatedDelta) > 1 ? 's' : ''} pour ${studentCount} élève${studentCount > 1 ? 's' : ''}`
 					);
 				} else {
 					// Rollback all students

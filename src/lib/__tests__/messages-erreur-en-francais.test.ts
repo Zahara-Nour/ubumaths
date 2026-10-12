@@ -220,3 +220,69 @@ describe('messages des API affichés aux élèves : en français correct', () =>
 		expect(check("console.error('[approve-card] RPC error:', rpcError)")).toEqual([]);
 	});
 });
+
+/**
+ * Messages de services serveur renvoyés tels quels au client (`result.errors` de
+ * la synchronisation Google, schémas du tirage de cartes VIP, sauvegarde des
+ * exercices). Toute phrase littérale compte, hors `console.*`.
+ */
+const TRANSLATED_SERVER_FILES = [
+	'src/lib/server/google/sync.ts',
+	'src/lib/server/validation/draw-vip-cards.ts',
+	'src/lib/server/admin/exercise-backup.ts'
+];
+
+/** Une phrase littérale : commence par une majuscule et contient une espace. */
+const SENTENCE = /(['"`])([A-Z][^'"`\n]*\s[^'"`\n]*)\1/g;
+
+/**
+ * Texte affiché par une page : notification, erreur relancée, texte de repli
+ * (`|| 'Failed to load'`, `?? 'Unknown error'`). Un repli d'un seul mot est une
+ * valeur (`role || 'student'`), pas un message : il doit contenir une espace.
+ */
+const CLIENT_MESSAGE =
+	/(?:\bthrow new Error\(\s*|\btoaster\.\w+\(\s*|(?:\|\||\?\?)\s*(?=['"`][^'"`\n]*\s[^'"`\n]*['"`]))(['"`])((?:\\.|(?!\1)[\s\S])*?)\1/g;
+
+/** Les pages, composants et stores : là où un texte de repli finit à l'écran. */
+function clientFiles(): string[] {
+	const svelte = (name: string) => name.endsWith('.svelte') || name.endsWith('.svelte.ts');
+	return [
+		...walk('src/routes', svelte),
+		...walk('src/lib/components', svelte),
+		...walk('src/lib/stores', (name) => name.endsWith('.ts') && !name.endsWith('.test.ts'))
+	];
+}
+
+/** Le source sans ses lignes `console.*` ni ses commentaires (numéros de ligne conservés). */
+function withoutConsole(source: string): string {
+	return source
+		.split('\n')
+		.map((line) => (/\bconsole\.\w+\(|^\s*(?:\/\/|\*|\/\*)/.test(line) ? '' : line))
+		.join('\n');
+}
+
+describe('messages des services serveur et textes de repli des pages : en français', () => {
+	it('aucune phrase anglaise dans les services serveur traduits', () => {
+		const offenders = TRANSLATED_SERVER_FILES.flatMap((file) =>
+			badMessages(file, withoutConsole(readFileSync(file, 'utf-8')), SENTENCE)
+		);
+		expect(offenders).toEqual([]);
+	});
+
+	it('aucun texte de repli anglais dans les pages, composants et stores', () => {
+		const offenders = clientFiles().flatMap((file) =>
+			badMessages(file, withoutConsole(readFileSync(file, 'utf-8')), CLIENT_MESSAGE)
+		);
+		expect(offenders).toEqual([]);
+	});
+
+	it('la règle des pages reconnaît notification, erreur relancée et repli', () => {
+		const check = (source: string) => badMessages('a.svelte', source, CLIENT_MESSAGE);
+		expect(check("toaster.error('Failed to remove card')")).toHaveLength(1);
+		expect(check("throw new Error(body.message || 'Failed to fetch due cards')")).toHaveLength(1);
+		expect(check("const message = err?.message ?? 'Unknown error'")).toHaveLength(1);
+		expect(check("toaster.success('Carte retirée')")).toEqual([]);
+		expect(check("const role = profile.role || 'student'")).toEqual([]);
+		expect(check("console.error('Failed to load', err)")).toHaveLength(0);
+	});
+});

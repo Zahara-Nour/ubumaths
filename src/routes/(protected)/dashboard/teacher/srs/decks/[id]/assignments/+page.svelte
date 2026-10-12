@@ -95,7 +95,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to resend deck');
+				throw new Error('Impossible de renvoyer le deck');
 			}
 
 			toaster.success('Deck renvoyé avec succès');

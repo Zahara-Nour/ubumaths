@@ -19,6 +19,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
+	GoogleNotConnectedError,
 	GoogleTokenExpiredError,
 	GoogleInsufficientPermissionsError
 } from '$lib/server/google/errors';
@@ -183,7 +184,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Handle specific Google API errors
 		if (err instanceof Error) {
-			if (err.message.includes('No Google integration')) {
+			if (err instanceof GoogleNotConnectedError) {
 				throw error(401, 'Compte Google non connecté : à connecter dans les Paramètres');
 			}
 			if (err instanceof GoogleTokenExpiredError || err.message.includes('401')) {

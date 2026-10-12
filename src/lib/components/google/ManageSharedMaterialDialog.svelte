@@ -109,7 +109,7 @@
 			);
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch shared materials');
+				throw new Error('Impossible de charger les supports partagés');
 			}
 
 			const data = await response.json();
@@ -156,7 +156,7 @@
 		try {
 			const response = await fetch(`/api/teacher/categories/${classId}`);
 			if (!response.ok) {
-				throw new Error('Failed to fetch categories');
+				throw new Error('Impossible de charger les catégories');
 			}
 
 			const data = await response.json();
@@ -192,7 +192,7 @@
 
 				if (!response.ok) {
 					const error = await response.json();
-					throw new Error(error.message || 'Failed to update');
+					throw new Error(error.message || 'Impossible de mettre à jour le partage');
 				}
 
 				return response.json();
@@ -227,7 +227,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to unshare');
+				throw new Error('Impossible d’annuler le partage');
 			}
 
 			// Remove from map

@@ -110,7 +110,7 @@
 		try {
 			const response = await fetch(`/api/messages/drafts/${draftId}`);
 			if (!response.ok) {
-				throw new Error('Draft not found');
+				throw new Error('Brouillon introuvable');
 			}
 
 			const data = await response.json();
@@ -290,7 +290,7 @@
 				data: { user }
 			} = await data.supabase.auth.getUser();
 			if (!user) {
-				throw new Error('User not authenticated');
+				throw new Error('Utilisateur non connecté');
 			}
 
 			const attachmentRecords = attachmentData.map((att) => ({

@@ -85,11 +85,11 @@ class SupabaseRealtimeManager {
 	 */
 	createChannel(channelName: string, options: { private?: boolean } = {}): RealtimeChannel {
 		if (!browser) {
-			throw new Error('Cannot create channel on server');
+			throw new Error('Impossible de créer un canal côté serveur');
 		}
 
 		if (!this.supabase) {
-			throw new Error('Realtime manager not initialized. Call init() first.');
+			throw new Error('Gestionnaire temps réel non initialisé : appeler init() d’abord.');
 		}
 
 		// Return existing channel if already created
@@ -99,7 +99,7 @@ class SupabaseRealtimeManager {
 			// rouvrirait en silence ce que les policies ferment.
 			if (this.channelPrivacy.get(channelName) !== isPrivate) {
 				throw new Error(
-					`Channel "${channelName}" already exists as ${isPrivate ? 'public' : 'private'}; remove it before recreating it as ${isPrivate ? 'private' : 'public'}.`
+					`Le canal "${channelName}" existe déjà en ${isPrivate ? 'public' : 'privé'} ; le retirer avant de le recréer en ${isPrivate ? 'privé' : 'public'}.`
 				);
 			}
 			logger.info(`Channel "${channelName}" already exists, returning existing instance`);
@@ -132,7 +132,9 @@ class SupabaseRealtimeManager {
 
 		const channel = this.channels.get(channelName);
 		if (!channel) {
-			throw new Error(`Channel "${channelName}" not found. Create it first with createChannel().`);
+			throw new Error(
+				`Canal "${channelName}" introuvable : le créer d’abord avec createChannel().`
+			);
 		}
 
 		return new Promise((resolve, reject) => {

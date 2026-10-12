@@ -18,8 +18,8 @@ export const drawCardsFiltersSchema = z
 		forceRarity: rarityEnum.optional(),
 		minRarity: rarityEnum.optional(),
 		excludeCardIds: z
-			.array(z.string().min(1, 'Card ID cannot be empty'))
-			.max(50, 'Cannot exclude more than 50 cards')
+			.array(z.string().min(1, 'L’identifiant de carte ne peut pas être vide'))
+			.max(50, 'Impossible d’exclure plus de 50 cartes')
 			.optional(),
 		onlyCardsWithActions: z.boolean().optional()
 	})
@@ -30,7 +30,7 @@ export const drawCardsFiltersSchema = z
 			return !(data.forceRarity && data.minRarity);
 		},
 		{
-			message: 'Cannot use both forceRarity and minRarity filters together'
+			message: 'Les filtres forceRarity et minRarity ne peuvent pas être combinés'
 		}
 	);
 
@@ -43,20 +43,20 @@ export type DrawCardsFiltersInput = z.infer<typeof drawCardsFiltersSchema>;
  * Schema for drawing VIP cards with gidouilles payment (with optional filters)
  */
 const gidouillesPaymentSchema = z.object({
-	studentId: z.string().uuid('Invalid student ID'),
+	studentId: z.string().uuid('Identifiant d’élève invalide'),
 	count: z
 		.number()
-		.int('Card count must be an integer')
-		.min(1, 'Must draw at least 1 card')
-		.max(10, 'Cannot draw more than 10 cards at once')
-		.finite('Card count must be a finite number'),
+		.int('Le nombre de cartes doit être un entier')
+		.min(1, 'Il faut tirer au moins 1 carte')
+		.max(10, 'Impossible de tirer plus de 10 cartes à la fois')
+		.finite('Le nombre de cartes doit être un nombre fini'),
 	paymentMethod: z.literal('gidouilles'),
 	gidouillesCost: z
 		.number()
-		.int('Gidouilles cost must be an integer')
-		.min(0, 'Gidouilles cost cannot be negative')
-		.max(100, 'Gidouilles cost cannot exceed 100')
-		.finite('Gidouilles cost must be a finite number'),
+		.int('Le coût en gidouilles doit être un entier')
+		.min(0, 'Le coût en gidouilles ne peut pas être négatif')
+		.max(100, 'Le coût en gidouilles ne peut pas dépasser 100')
+		.finite('Le coût en gidouilles doit être un nombre fini'),
 	vipCardInstanceId: z.never().optional(),
 	filters: drawCardsFiltersSchema.optional()
 });
@@ -65,15 +65,15 @@ const gidouillesPaymentSchema = z.object({
  * Schema for drawing VIP cards with VIP card payment (with optional filters)
  */
 const vipCardPaymentSchema = z.object({
-	studentId: z.string().uuid('Invalid student ID'),
+	studentId: z.string().uuid('Identifiant d’élève invalide'),
 	count: z
 		.number()
-		.int('Card count must be an integer')
-		.min(1, 'Must draw at least 1 card')
-		.max(10, 'Cannot draw more than 10 cards at once')
-		.finite('Card count must be a finite number'),
+		.int('Le nombre de cartes doit être un entier')
+		.min(1, 'Il faut tirer au moins 1 carte')
+		.max(10, 'Impossible de tirer plus de 10 cartes à la fois')
+		.finite('Le nombre de cartes doit être un nombre fini'),
 	paymentMethod: z.literal('vip_card'),
-	vipCardInstanceId: z.string().uuid('Invalid VIP card instance ID'),
+	vipCardInstanceId: z.string().uuid('Identifiant de carte VIP invalide'),
 	gidouillesCost: z.never().optional(),
 	filters: drawCardsFiltersSchema.optional()
 });

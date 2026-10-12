@@ -47,7 +47,7 @@ segment(A, B)
 
 			if (response.ok) {
 				const result = await response.json();
-				toaster.success('Construction creee');
+				toaster.success('Construction créée');
 				goto(`/constructions/${result.construction.id}`);
 			} else {
 				const result = await response.json();

@@ -1700,7 +1700,7 @@ class ChatStore {
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-				throw new Error(errorData.message || 'Failed to report message');
+				throw new Error(errorData.message || 'Impossible de signaler le message');
 			}
 
 			logger.info('Message reported:', messageId, reason);
