@@ -97,7 +97,8 @@ const WORDS = {
 	root: { text: 'racine', key: 'racine n-ième', gender: 'f' },
 	image: { text: 'image', key: 'image (fonction)', gender: 'f' },
 	numerator: { text: 'numérateur', key: 'numérateur', gender: 'm' },
-	denominator: { text: 'dénominateur', key: 'dénominateur', gender: 'm' }
+	denominator: { text: 'dénominateur', key: 'dénominateur', gender: 'm' },
+	length: { text: 'longueur', key: 'longueur', gender: 'f' }
 } as const satisfies Record<string, Word>;
 
 /** Fonctions usuelles lues par leur nom : « le sinus de x » */
@@ -183,6 +184,9 @@ function createReader(structure: ExpressionStructure): (id: number) => Phrase {
 			case 'constant':
 			case 'other':
 				return formula(latexOf(node), id);
+			case 'length':
+				// « la longueur AB » : mot et formule désignent la longueur (un bloc)
+				return headed(WORDS.length, id, [text(' ', id), ...formula(latexOf(node), id).body]);
 			case 'parentheses':
 				// B11 : les parenthèses ne se lisent pas
 				return read(children[0]);

@@ -104,7 +104,10 @@ Précisions :
   dictionnaire cliquables), `StructureExplorer.svelte` (les deux réunis, message « 6e ou
   avant »), `structure-lexicon.svelte.ts` (fiches du dictionnaire au niveau de l'élève, 5e pour
   un visiteur). Spécification : `docs/wip/structure-expression-progress.md`. Le moteur est décrit
-  dans [mathast/README.md](mathast/README.md).
+  dans [mathast/README.md](mathast/README.md). Deux majuscules collées se lisent comme une
+  **longueur** (« la longueur AB », `capitalPairs: 'length'`) ; la case « Lire AB comme un
+  produit » repasse en mode produit, pour la formule principale et le corpus. Un nom de figure
+  (`ABC`) affiche son message à la place de la formule et de la lecture.
 - **`/test-font`** : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`.
 - **`/test-cadres`** : garde la trace du choix `\htmlStyle` pour le cadre des solutions

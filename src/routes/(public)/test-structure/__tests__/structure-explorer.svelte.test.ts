@@ -42,7 +42,12 @@ beforeEach(async () => {
 });
 afterEach(() => parking.remove());
 
-type ExplorerProps = { latex: string; readerGrade: string | null; frameLeaves?: boolean };
+type ExplorerProps = {
+	latex: string;
+	readerGrade: string | null;
+	frameLeaves?: boolean;
+	capitalPairs?: 'length' | 'product';
+};
 
 /**
  * Rendu de l'explorateur, formules MathLive rendues (shadow DOM rempli) :
@@ -270,5 +275,42 @@ describe('réglage « nombres et lettres seuls » (revue du lot 4)', () => {
 		await expect.poll(() => lexiconButtons(container)).toContain('produit');
 		await userEvent.hover(page.getByRole('button', { name: 'produit', exact: true }));
 		await expect.poll(() => stage?.dataset.framedId).toBe(String(nodeIdOf('2+3y', '3y')));
+	});
+});
+
+describe('longueurs de segments (chantier « longueurs », lot 4)', () => {
+	function readingText(container: HTMLElement): string | undefined {
+		return wholeReading(container)?.textContent?.replace(/\s+/g, ' ').trim();
+	}
+
+	it('mode longueur : 3AB² se lit avec « longueur », mot cliquable', async () => {
+		const { container } = await renderExplorer({
+			latex: '3AB^2',
+			readerGrade: null,
+			capitalPairs: 'length'
+		});
+		expect(readingText(container)).toBe('le produit de 3 par le carré de la longueur AB');
+		await expect.poll(() => lexiconButtons(container)).toContain('longueur');
+	});
+
+	it('mode produit : 3AB² se lit comme avant', async () => {
+		const { container } = await renderExplorer({
+			latex: '3AB^2',
+			readerGrade: null,
+			capitalPairs: 'product'
+		});
+		expect(readingText(container)).toBe('le produit de 3, de A et du carré de B');
+	});
+
+	it('mode longueur : un nom de figure affiche le message, sans formule ni lecture', async () => {
+		const { container } = await renderExplorer({
+			latex: 'ABC',
+			readerGrade: null,
+			capitalPairs: 'length'
+		});
+		expect(container.querySelector('[data-figure-name]')?.textContent).toBe(
+			'ABC n’est pas une longueur : une longueur se nomme avec deux points (AB). Pour un produit, écris A×B×C.'
+		);
+		expect(wholeReading(container)).toBeNull();
 	});
 });
