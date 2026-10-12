@@ -191,11 +191,35 @@ describe('le plafond de calcul couvre aussi', () => {
 describe('un produit de puissances qui se compensent', () => {
 	it.each([
 		['10^6000*10^-5998', '100'],
-		['10^60000/10^59990', '10000000000']
-	])('%s = %s', (input, output) => {
+		['10^60000/10^59990', '10000000000'],
+		['(1+1/100000)^100000*(1+1/100000)^-100000', '1'],
+		['2^100000000*2^-99999999', '2'],
+		['2^100000000/2^99999999', '2']
+	])('%s = %s, en moins de 300 ms', (input, output) => {
+		const start = performance.now();
 		const line = exact(input);
 
+		expect(performance.now() - start).toBeLessThan(300);
 		expect(line.output).toBe(output);
 		expect(line.exactTooLong).toBeUndefined();
+	});
+
+	// Revue : mesurés à 2,9 s et 4,3 s (puis « Maximum BigInt size exceeded »)
+	it.each(['(1+1/10000)^10000*(1+1/10000)^-9999', '2^(10^20+1)*2^-(10^20)'])(
+		'%s : en moins de 300 ms, sans erreur de BigInt',
+		(input) => {
+			const start = performance.now();
+			const line = exact(input);
+
+			expect(performance.now() - start).toBeLessThan(300);
+			expect(line.output).not.toContain('BigInt');
+		}
+	);
+
+	it('un produit compensé encore trop long garde son écriture, longueur réelle', () => {
+		const line = exact('6^30000/2^30000');
+
+		expect(line.output).toBe('{6^30000}/{2^30000}');
+		expect(line.exactTooLong).toBe(14314);
 	});
 });

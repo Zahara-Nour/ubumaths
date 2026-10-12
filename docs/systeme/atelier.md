@@ -277,11 +277,14 @@ fractions », 2026-10-12) :
 
 - la taille **prévue avant le calcul** (puissance de base a/b : environ k × (chiffres de a +
   chiffres de b) ; factorielle, coefficient binomial par Stirling ; ailleurs, les tailles
-  s'ajoutent, sauf dans un produit ou un quotient de puissances, dont les facteurs premiers se
-  compensent d'abord — `10^{6000}×10^{-5998}` vaut 100 ; base irrationnelle — racines et nombres — par sa « hauteur », à un facteur 2
+  s'ajoutent, sans compensation : le moteur calcule chaque puissance avant de simplifier ; base
+  irrationnelle — racines et nombres — par sa « hauteur », à un facteur 2
   près) ne sert qu'à ne pas figer la page : au-delà de **20 000 caractères prévus**, rien n'est
   calculé (`\sqrt{2}^{40000000}` et `2^{2^{100}}` répondent « Valeur hors d'échelle » au lieu de
-  bloquer 2,5 s). Avant, `(1+1/10000)^10000` prenait 13 s pour afficher 80 003 caractères, et
+  bloquer 2,5 s). Exception : un **produit ou quotient de puissances** de bases rationnelles
+  courtes se calcule sur ses facteurs premiers compensés (`productValue`), sans les puissances
+  intermédiaires — `10^{60000}/10^{59990}` répond 10¹⁰, et
+  `(1+1/100000)^{100000}×(1+1/100000)^{-100000}` répond 1 au lieu de bloquer 305 s ; Avant, `(1+1/10000)^10000` prenait 13 s pour afficher 80 003 caractères, et
   `(1+1/100000)^100000` bloquait la page plus de 200 s (maintenant ~1 ms) ;
 - en deçà, le résultat est calculé (moins de 130 ms au pire mesuré), et la règle des 1 000
   caractères se lit sur sa **longueur réelle** (`exactCharacters`) : une base irrationnelle

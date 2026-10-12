@@ -10,7 +10,12 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseLatex } from '$lib/mathAST/parser';
-import { estimatedExactDigits, exactCharacters, isTooLongToCompute } from '../exact-size';
+import {
+	estimatedExactDigits,
+	exactCharacters,
+	isTooLongToCompute,
+	productValue
+} from '../exact-size';
 
 const digits = (latex: string) => estimatedExactDigits(parseLatex(latex));
 
@@ -86,28 +91,50 @@ describe('la longueur réelle d’un résultat calculé', () => {
 });
 
 // Un produit, un quotient de puissances : les exposants d'un même facteur premier se compensent
-// avant de compter (`10^{6000}×10^{-5998}` = 100 était prévu à 12 000 caractères et gardé tel
-// quel, sans calcul — le dernier faux positif de #1182)
-describe('un produit se prévoit après simplification', () => {
+// (`10^{60000}/10^{59990}` vaut 10¹⁰ mais gardait son écriture, sans calcul). ⚠️ Le PLAFOND, lui,
+// garde la taille non compensée : le moteur calcule chaque puissance avant de compenser
+// (`(1+1/100000)^{100000}×(1+1/100000)^{-100000}` = 1 prenait 305 s — revue). La valeur
+// compensée se calcule directement sur les facteurs (`productValue`).
+describe('un produit de puissances, après compensation', () => {
 	it.each([
-		['10^{6000}\\times10^{-5998}', 3],
-		['\\frac{10^{6000}}{10^{5998}}', 3],
+		['\\frac{10^{60000}}{10^{59990}}', 11],
 		['2^{100000}\\times2^{-99990}', 4],
 		['\\frac{6^{30000}}{2^{30000}}', 14314],
 		['\\frac{2^{40000}\\times3^{20000}}{6^{20000}}', 6022]
-	])('%s : environ %i caractères', (latex, expected) => {
+	])('%s : la note annonce environ %i caractères', (latex, expected) => {
 		expect(Math.abs(digits(latex) - expected)).toBeLessThan(5);
 	});
 
-	it.each(['10^{6000}\\times10^{-5998}', '\\frac{10^{60000}}{10^{59990}}'])(
-		'%s n’atteint pas le plafond de calcul',
-		(latex) => {
-			expect(isTooLongToCompute(parseLatex(latex))).toBe(false);
-		}
-	);
+	it('le plafond garde la taille non compensée (le moteur calcule chaque puissance)', () => {
+		expect(isTooLongToCompute(parseLatex('\\frac{10^{60000}}{10^{59990}}'))).toBe(true);
+		expect(
+			isTooLongToCompute(
+				parseLatex(
+					'\\left(1+\\frac{1}{100000}\\right)^{100000}\\times\\left(1+\\frac{1}{100000}\\right)^{-100000}'
+				)
+			)
+		).toBe(true);
+	});
 
-	it('ce qui ne se simplifie pas reste long', () => {
-		expect(isTooLongToCompute(parseLatex('\\frac{10^{30000}}{3}'))).toBe(true);
-		expect(isTooLongToCompute(parseLatex('2^{40000}\\times3^{40000}'))).toBe(true);
+	it.each([
+		['\\frac{10^{60000}}{10^{59990}}', { n: 10n ** 10n, d: 1n }],
+		['2^{100000000}\\times2^{-99999999}', { n: 2n, d: 1n }],
+		[
+			'\\left(1+\\frac{1}{100000}\\right)^{100000}\\times\\left(1+\\frac{1}{100000}\\right)^{-99999}',
+			{ n: 100001n, d: 100000n }
+		],
+		['\\frac{6^{3}}{-4^{2}}', { n: -27n, d: 2n }]
+	])('%s : valeur calculée sur les facteurs', (latex, value) => {
+		expect(productValue(parseLatex(latex))).toEqual(value);
+	});
+
+	it.each([
+		'\\frac{10^{30000}}{3}',
+		'2^{10^{20}+1}\\times2^{-10^{20}}',
+		'2^{10^{300}}\\times2^{-10^{300}}',
+		'2^{100}+1',
+		'\\pi^{2}\\times2'
+	])('%s : pas de valeur par les facteurs', (latex) => {
+		expect(productValue(parseLatex(latex))).toBeNull();
 	});
 });

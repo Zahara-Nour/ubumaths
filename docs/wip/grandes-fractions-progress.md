@@ -161,9 +161,13 @@ sa valeur approchée. »
   « réduit » tenu par un commentaire (garde en test jugée coûteuse) ; mesure sur `toCustom` et non
   sur l'écriture mise au propre (quelques caractères au seuil) ; `1000!/999!` s'écrit
   `factorial(1000)/factorial(999)` en mode exact (antérieur, le moteur garde les factorielles).
-- 2026-10-12 — **David : « corrige ce faux positif `10^6000 × 10^-5998` »**. Un produit ou un
-  quotient de puissances de bases rationnelles courtes se prévoit après compensation : chaque base
-  décomposée (premiers < 1 000, le reste compté comme un facteur), exposants additionnés, puis
-  chiffres comptés. `10^{6000}×10^{-5998}` : 3 caractères prévus (12 000 avant) ;
-  `10^{60000}/10^{59990}` répond `10000000000` au lieu de garder l'écriture. Reste une borne : deux
-  restes sans petit diviseur qui partagent un facteur se comptent deux fois.
+- 2026-10-12 — **David : « corrige ce faux positif `10^6000 × 10^-5998` »**. Erreur de mon
+  compte rendu : ce cas répondait déjà 100 (12 000 prévus, sous le plafond) ; le vrai faux positif
+  est `10^{60000}/10^{59990}`. Premier essai (prévision compensée dans le plafond) refusé par la
+  revue : le moteur calcule chaque puissance AVANT de compenser —
+  `(1+1/100000)^{100000}×(1+1/100000)^{-100000}` = 1 prenait 305 s, `2^{100000000}×2^{-99999999}`
+  19 s. Retenu : le plafond garde la taille non compensée ; au-delà, un produit ou quotient de
+  puissances de bases rationnelles courtes se calcule sur ses facteurs (`productValue` : bases
+  décomposées sur les premiers < 1 000, exposants entiers sûrs additionnés, signe suivi, valeur
+  compensée bornée à 20 000 caractères). Tous ces cas répondent en moins de 300 ms ; la note
+  compte la taille compensée.

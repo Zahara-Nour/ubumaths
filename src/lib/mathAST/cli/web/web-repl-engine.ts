@@ -78,8 +78,10 @@ import {
 	MAX_EXACT_CHARACTERS,
 	estimatedExactDigits,
 	exactCharacters,
-	isTooLongToCompute
+	isTooLongToCompute,
+	productValue
 } from '../exact-size';
+import { rationalToNode } from '../../common/numeric';
 import {
 	approximateDigitsOf,
 	approximateLatexOf,
@@ -950,12 +952,21 @@ export class WebReplEngine {
 			// … prévu sur les fonctions de l'utilisateur DÉVELOPPÉES : `u(100000)` avec
 			// `u(n) = (1+1/n)^n` (la suite de limite e) échappait au garde-fou (revue)
 			const expanded = withFunctionsExpanded(substituted, this.evalState.functions);
-			const notComputed = isTooLongToCompute(expanded) ? estimatedExactDigits(expanded) : null;
+			const tooLongToCompute = isTooLongToCompute(expanded);
+			// … sauf un produit de puissances, calculé sur ses facteurs compensés
+			// (`10^{60000}/10^{59990}` = 10¹⁰ ; le moteur, puissance par puissance, mettait
+			// 305 s pour `(1+1/100000)^{100000}×(1+1/100000)^{-100000}` = 1)
+			const byFactors = tooLongToCompute ? productValue(expanded) : null;
+			const factorsNode = byFactors === null ? null : rationalToNode(byFactors);
+			const notComputed =
+				tooLongToCompute && factorsNode === null ? estimatedExactDigits(expanded) : null;
 			// Le calcul exact, UNE fois : le test du booléen le refaisait en entier
 			const computed: EvalResult =
-				notComputed === null
-					? evaluate(substituted, { mode: 'exact', functions: this.evalState.functions })
-					: { status: 'value', value: expanded, node: expanded, exact: true };
+				factorsNode !== null
+					? { status: 'value', value: factorsNode, node: factorsNode, exact: true }
+					: notComputed === null
+						? evaluate(substituted, { mode: 'exact', functions: this.evalState.functions })
+						: { status: 'value', value: expanded, node: expanded, exact: true };
 			// En deçà, la règle des 1 000 caractères se lit sur le résultat calculé : la
 			// prévision ignorait une base irrationnelle (`\sqrt{2}^{100000}`, 15 052
 			// caractères affichés) et les simplifications (`10^{600}×10^{-598}` = 100)
