@@ -10,7 +10,7 @@
  *   - RPC jobs: "rpc:cleanup_stale_trades" (pg_cron functions)
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { assertTypedConfirmation } from '$lib/server/confirmAction';
@@ -40,7 +40,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête illisible');
 	}
 
 	const validation = cronTriggerBodySchema.safeParse(body);
@@ -59,10 +59,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 
 	if (lastTrigger && now - lastTrigger < RATE_LIMIT_MS) {
 		const waitSeconds = Math.ceil((RATE_LIMIT_MS - (now - lastTrigger)) / 1000);
-		throw error(
-			429,
-			`Rate limit exceeded. Please wait ${waitSeconds} seconds before triggering this job again.`
-		);
+		throw error(429, `Tâche lancée il y a peu : attendre ${waitSeconds} s avant de la relancer`);
 	}
 
 	try {
@@ -77,7 +74,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 		// HTTP job - requires CRON_SECRET
 		const env = getEnv();
 		if (!env.CRON_SECRET) {
-			throw error(503, 'CRON trigger disabled: CRON_SECRET not configured');
+			throw error(503, 'Lancement manuel désactivé : CRON_SECRET n’est pas configuré');
 		}
 
 		// Build the full URL for the CRON endpoint
@@ -103,7 +100,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 
 			const triggerResponse: CronTriggerResponse = {
 				success: false,
-				message: `Job execution failed: ${response.status} ${response.statusText}`,
+				message: `Échec de la tâche : ${response.status} ${response.statusText}`,
 				job_path,
 				triggered_at: new Date().toISOString()
 			};
@@ -123,7 +120,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 
 		const triggerResponse: CronTriggerResponse = {
 			success: true,
-			message: 'Job triggered successfully',
+			message: 'Tâche lancée',
 			job_path,
 			triggered_at: new Date().toISOString()
 		};
@@ -136,11 +133,12 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 	} catch (err) {
 		console.error(`[CRON Trigger] Failed to trigger job ${job_path}:`, err);
 
-		if (err instanceof Response) throw err;
+		// Une erreur SvelteKit (`error(503, …)`) n'est pas une `Response` : la relancer telle quelle.
+		if (isHttpError(err)) throw err;
 
 		const triggerResponse: CronTriggerResponse = {
 			success: false,
-			message: err instanceof Error ? err.message : 'Failed to trigger job',
+			message: err instanceof Error ? err.message : 'Impossible de lancer la tâche',
 			job_path,
 			triggered_at: new Date().toISOString()
 		};
@@ -171,7 +169,7 @@ async function triggerRpcJob(
 
 		const triggerResponse: CronTriggerResponse = {
 			success: false,
-			message: `RPC job failed: ${rpcError.message}`,
+			message: `Échec de la tâche (RPC) : ${rpcError.message}`,
 			job_path,
 			triggered_at: new Date().toISOString()
 		};
@@ -183,7 +181,7 @@ async function triggerRpcJob(
 
 	const triggerResponse: CronTriggerResponse = {
 		success: true,
-		message: 'RPC job triggered successfully',
+		message: 'Tâche lancée (RPC)',
 		job_path,
 		triggered_at: new Date().toISOString()
 	};

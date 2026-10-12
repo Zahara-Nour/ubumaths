@@ -67,7 +67,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (jobsError) {
 			console.error('[CRON Jobs API] Query error:', jobsError);
-			throw error(500, 'Failed to fetch job runs');
+			throw error(500, 'Impossible de charger les exécutions des tâches');
 		}
 
 		// Fetch stats for the period (separate query for aggregates)
@@ -83,7 +83,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (statsError) {
 			console.error('[CRON Jobs API] Stats query error:', statsError);
-			throw error(500, 'Failed to fetch job stats');
+			throw error(500, 'Impossible de charger les statistiques des tâches');
 		}
 
 		// Calculate stats
@@ -130,6 +130,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	} catch (err) {
 		if (err instanceof Response) throw err;
 		console.error('[CRON Jobs API] Unexpected error:', err);
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

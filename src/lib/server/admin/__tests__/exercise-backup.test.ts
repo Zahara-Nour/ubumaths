@@ -381,7 +381,7 @@ describe('Backup Validation', () => {
 
 			const result = validateBackup(invalidBackup);
 			expect(result.success).toBe(false);
-			expect(result.error).toContain('UUID');
+			expect(result.error).toContain('Identifiant invalide');
 		});
 	});
 });
@@ -415,7 +415,7 @@ describe('Size Validation', () => {
 	describe('getMaxFileSizeDisplay', () => {
 		it('should return human-readable size', () => {
 			const display = getMaxFileSizeDisplay();
-			expect(display).toBe('50 MB');
+			expect(display).toBe('50 Mo');
 		});
 	});
 });

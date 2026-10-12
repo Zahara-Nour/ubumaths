@@ -63,7 +63,7 @@ import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
 import { decimalString } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
-import { isFirstDegreeSum, sortFactors, sortTerms } from './order';
+import { isFirstDegreeSum, isPlainTerm, rationalFirst, sortFactors, sortTerms } from './order';
 
 // =============================================================================
 // Types internes
@@ -705,9 +705,7 @@ function positiveFirstDegreeSum(node: MathNode, acc: Accumulator): MathNode | nu
 	if (!isSumNode(node)) return null;
 	const terms = toSumTerms(node, undefined, acc.unitChoice);
 	if (terms.length < 2) return null;
-	const plain = terms.every(
-		(term) => !term.verbatim && term.unit === null && isNegativeRational(term.coefficient)
-	);
+	const plain = terms.every((term) => isPlainTerm(term) && isNegativeRational(term.coefficient));
 	if (!plain || !isFirstDegreeSum(terms)) return null;
 	return buildSum(sortTerms(terms.map(negateTerm)));
 }
@@ -1316,6 +1314,10 @@ function narrateSum(
 				: 'tidy-collect-like-terms';
 	step(grouping, materialise(collected, unitChoice));
 
+	// Somme sans variable : le nombre passe d'abord en tête (sa propre phrase),
+	// puis les autres termes se rangent — l'étape de rangement ne s'attribue
+	// pas un déplacement qui n'est pas « par degré décroissant ».
+	step('tidy-number-first', buildSum(rationalFirst(unitedCollected)));
 	return step('tidy-sort-terms', buildSum(sortTerms(unitedCollected)));
 }
 

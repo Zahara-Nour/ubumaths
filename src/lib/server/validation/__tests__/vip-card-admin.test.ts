@@ -264,7 +264,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('at least 1');
+					expect(result.error.issues[0].message).toContain('au moins 1');
 				}
 			});
 
@@ -303,7 +303,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('cannot exceed 10');
+					expect(result.error.issues[0].message).toContain('10 au maximum');
 				}
 			});
 
@@ -324,7 +324,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('integer');
+					expect(result.error.issues[0].message).toContain('nombre entier');
 				}
 			});
 
@@ -531,7 +531,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('at least 1');
+					expect(result.error.issues[0].message).toContain('au moins 1');
 				}
 			});
 
@@ -570,7 +570,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('cannot exceed 5');
+					expect(result.error.issues[0].message).toContain('5 au maximum');
 				}
 			});
 
@@ -591,7 +591,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('integer');
+					expect(result.error.issues[0].message).toContain('nombre entier');
 				}
 			});
 
@@ -734,7 +734,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(false);
 					if (!result.success) {
-						expect(result.error.issues[0].message).toContain('at least 1');
+						expect(result.error.issues[0].message).toContain('au moins 1');
 					}
 				});
 
@@ -758,7 +758,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(false);
 					if (!result.success) {
-						expect(result.error.issues[0].message).toContain('cannot exceed 10');
+						expect(result.error.issues[0].message).toContain('10 au maximum');
 					}
 				});
 
@@ -804,7 +804,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(false);
 					if (!result.success) {
-						expect(result.error.issues[0].message).toContain('integer');
+						expect(result.error.issues[0].message).toContain('nombre entier');
 					}
 				});
 			});
@@ -912,7 +912,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(false);
 					if (!result.success) {
-						expect(result.error.issues[0].message).toContain('positive');
+						expect(result.error.issues[0].message).toContain('positif');
 					}
 				});
 
@@ -1002,7 +1002,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(false);
 					if (!result.success) {
-						expect(result.error.issues[0].message).toContain('integer');
+						expect(result.error.issues[0].message).toContain('nombre entier');
 					}
 				});
 			});
@@ -1087,7 +1087,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(false);
 					if (!result.success) {
-						expect(result.error.issues[0].message).toContain('at least 1');
+						expect(result.error.issues[0].message).toContain('au moins 1');
 					}
 				});
 
@@ -1112,7 +1112,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(false);
 					if (!result.success) {
-						expect(result.error.issues[0].message).toContain('cannot exceed 10');
+						expect(result.error.issues[0].message).toContain('10 au maximum');
 					}
 				});
 
@@ -1158,7 +1158,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(false);
 					if (!result.success) {
-						expect(result.error.issues[0].message).toContain('required');
+						expect(result.error.issues[0].message).toContain('requise');
 					}
 				});
 
@@ -1183,7 +1183,7 @@ describe('VIP Card Action Validation', () => {
 					});
 					expect(result.success).toBe(false);
 					if (!result.success) {
-						expect(result.error.issues[0].message).toContain('integer');
+						expect(result.error.issues[0].message).toContain('nombre entier');
 					}
 				});
 			});
@@ -1320,7 +1320,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('at least 1');
+					expect(result.error.issues[0].message).toContain('au moins 1');
 				}
 			});
 
@@ -1359,7 +1359,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('cannot exceed 1000');
+					expect(result.error.issues[0].message).toContain('1000 au maximum');
 				}
 			});
 
@@ -1380,7 +1380,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('integer');
+					expect(result.error.issues[0].message).toContain('nombre entier');
 				}
 			});
 
@@ -1645,7 +1645,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('at least 1');
+					expect(result.error.issues[0].message).toContain('au moins 1');
 				}
 			});
 
@@ -1686,7 +1686,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('cannot exceed 10');
+					expect(result.error.issues[0].message).toContain('10 au maximum');
 				}
 			});
 
@@ -1708,7 +1708,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('integer');
+					expect(result.error.issues[0].message).toContain('nombre entier');
 				}
 			});
 
@@ -1752,7 +1752,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('one filter mode');
+					expect(result.error.issues[0].message).toContain('Un seul filtre');
 				}
 			});
 
@@ -1775,7 +1775,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('one filter mode');
+					expect(result.error.issues[0].message).toContain('Un seul filtre');
 				}
 			});
 
@@ -1798,7 +1798,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('one filter mode');
+					expect(result.error.issues[0].message).toContain('Un seul filtre');
 				}
 			});
 
@@ -1822,7 +1822,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('one filter mode');
+					expect(result.error.issues[0].message).toContain('Un seul filtre');
 				}
 			});
 		});
@@ -1846,7 +1846,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('At least one card ID');
+					expect(result.error.issues[0].message).toContain('Au moins une carte');
 				}
 			});
 
@@ -1869,7 +1869,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('more than 20');
+					expect(result.error.issues[0].message).toContain('20 cartes au maximum');
 				}
 			});
 
@@ -1891,7 +1891,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('cannot be empty');
+					expect(result.error.issues[0].message).toContain('vide');
 				}
 			});
 		});

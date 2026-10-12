@@ -67,11 +67,11 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		if (checkError) {
 			console.error('Error checking template existence:', checkError);
-			throw error(500, 'Failed to check template existence');
+			throw error(500, 'Impossible de vérifier le modèle de carte VIP');
 		}
 
 		if (!existing) {
-			throw error(404, `Template with ID "${templateId}" not found`);
+			throw error(404, `Modèle de carte VIP introuvable : ${templateId}`);
 		}
 
 		// 5. Build update object (convert camelCase to snake_case)
@@ -101,7 +101,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		if (updateError) {
 			console.error('Error updating template:', updateError);
-			throw error(500, 'Failed to update template');
+			throw error(500, 'Impossible de modifier le modèle de carte VIP');
 		}
 
 		// 7. Return updated template (convert snake_case to camelCase)
@@ -115,7 +115,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -161,11 +161,11 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 
 		if (checkError) {
 			console.error('Error checking template existence:', checkError);
-			throw error(500, 'Failed to check template existence');
+			throw error(500, 'Impossible de vérifier le modèle de carte VIP');
 		}
 
 		if (!existing) {
-			throw error(404, `Template with ID "${templateId}" not found`);
+			throw error(404, `Modèle de carte VIP introuvable : ${templateId}`);
 		}
 
 		// ✅ SECURITY: require the admin to have typed the exact template name.
@@ -179,13 +179,13 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 
 		if (countError) {
 			console.error('Error checking template instances:', countError);
-			throw error(500, 'Failed to check template usage');
+			throw error(500, 'Impossible de vérifier si le modèle de carte VIP est utilisé');
 		}
 
 		if (count && count > 0) {
 			throw error(
 				409,
-				`Cannot delete template with ${count} existing instance(s). Disable it instead.`
+				`Ce modèle a déjà servi à ${count} carte(s) VIP : le désactiver au lieu de le supprimer`
 			);
 		}
 
@@ -197,13 +197,13 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 
 		if (deleteError) {
 			console.error('Error deleting template:', deleteError);
-			throw error(500, 'Failed to delete template');
+			throw error(500, 'Impossible de supprimer le modèle de carte VIP');
 		}
 
 		// 6. Return success
 		return json({
 			success: true,
-			message: `Template "${templateId}" deleted successfully`
+			message: `Modèle de carte VIP « ${templateId} » supprimé`
 		});
 	} catch (err) {
 		console.error('Error in DELETE /api/admin/vip-cards/templates/[id]:', err);
@@ -214,6 +214,6 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

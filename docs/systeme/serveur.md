@@ -66,7 +66,8 @@ Règle et exemple : [qualite.md § Input Validation with Zod](../pratiques/quali
 
 ### 1.4 Erreurs
 
-- **Lever** : `throw error(status, message)` de `@sveltejs/kit` — 400 (Zod), 401, 403, 404. Message en français pour l'utilisateur, jamais le message Postgres brut.
+- **Lever** : `throw error(status, message)` de `@sveltejs/kit` — 400 (Zod), 401, 403, 404. Message en français pour l'utilisateur, jamais le message Postgres brut : les pages l'affichent tel quel dans une notification. Les dossiers d'API déjà traduits sont vérifiés par `src/lib/__tests__/messages-erreur-en-francais.test.ts` (`TRANSLATED_API_DIRS`, tous statuts confondus).
+- **Relancer depuis un `catch`** : l'`HttpError` levée par `error()` n'est ni une `Error` ni une `Response` ; un `catch` qui l'enveloppe doit la relancer avec `if (isHttpError(err)) throw err`, sinon elle finit en 500 générique (cas de `api/admin/cron/trigger`, corrigé le 2026-10-12).
 - **Assainir une erreur Postgres / RPC** : `sanitizePostgresError(err, context)` et `sanitizeRPCError(err, fn)` dans `src/lib/server/utils/error-handler.ts` — loguent le détail côté serveur, traduisent le code (`23505`, `PGRST116`…) en message neutre, lèvent l'`HttpError` (25 endpoints). `src/lib/server/curriculum.ts` fait la même chose pour le programme.
 - **Actions de formulaire** : `return fail(400, { … })` (45 fichiers d'actions). ⚠️ `fail()` répond HTTP **200** au `fetch` : côté client, passer par `submitAction` (`src/lib/utils/form-action.ts`).
 - **Erreurs non rattrapées** : `errorMonitoringHandle` (dans `src/hooks.server.ts`) les enregistre via `logError` de `src/lib/server/errorMonitoring.ts` (table d'erreurs, page `/dashboard/admin/errors`). Lecture des erreurs de prod : [observabilite-erreurs-prod.md](../pratiques/observabilite-erreurs-prod.md).

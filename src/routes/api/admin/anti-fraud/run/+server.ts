@@ -26,7 +26,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		try {
 			bodyJson = JSON.parse(text);
 		} catch {
-			throw error(400, 'Invalid JSON body');
+			throw error(400, 'Corps de requête illisible');
 		}
 	}
 

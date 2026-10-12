@@ -35,7 +35,7 @@ export const MAX_RECORDS = {
 // ============================================================================
 
 /** UUID schema */
-const uuidSchema = z.string().uuid('Invalid UUID format');
+const uuidSchema = z.string().uuid('Identifiant invalide');
 
 /** ISO 8601 datetime schema */
 const datetimeSchema = z.string().datetime({ offset: true }).or(z.string().datetime());
@@ -327,7 +327,7 @@ export function validateRestoreOptions(data: unknown): {
 		if (validated.reassign_orphans_to_admin && !validated.admin_id) {
 			return {
 				success: false,
-				error: 'admin_id is required when reassign_orphans_to_admin is true'
+				error: 'admin_id requis pour rattacher les exercices orphelins à l’administrateur'
 			};
 		}
 
@@ -355,5 +355,5 @@ export function isBackupSizeValid(sizeBytes: number): boolean {
  * Get human-readable max file size
  */
 export function getMaxFileSizeDisplay(): string {
-	return `${MAX_BACKUP_SIZE_BYTES / (1024 * 1024)} MB`;
+	return `${MAX_BACKUP_SIZE_BYTES / (1024 * 1024)} Mo`;
 }

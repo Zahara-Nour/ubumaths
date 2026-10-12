@@ -84,7 +84,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (countError) {
 			console.error('Error counting pending users:', countError);
-			throw error(500, 'Failed to count pending users');
+			throw error(500, 'Impossible de compter les comptes en attente');
 		}
 
 		const total = count ?? 0;
@@ -118,7 +118,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (fetchError) {
 			console.error('Error fetching pending users:', fetchError);
-			throw error(500, 'Failed to fetch pending users');
+			throw error(500, 'Impossible de charger les comptes en attente');
 		}
 
 		const extendedProfiles: ExtendedProfile[] = users || [];
@@ -140,6 +140,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw err;
 		}
 
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

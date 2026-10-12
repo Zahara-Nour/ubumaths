@@ -45,7 +45,7 @@ export const optionalUaiSchema = z
 const requiredText = (label: string, max: number) =>
 	z.preprocess(
 		(v) => (typeof v === 'string' ? v.trim() : ''),
-		z.string().min(1, `${label} requis`).max(max, `${label} trop long (max ${max})`)
+		z.string().min(1, `${label} : champ requis`).max(max, `${label} : ${max} caractères au maximum`)
 	);
 
 /** Optional trimmed text: empty/absent → null. */

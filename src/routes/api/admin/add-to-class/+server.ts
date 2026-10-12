@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: reactivationError.message }, { status: 400 });
 		}
 	} else if (existing) {
-		return json({ error: 'User is already in this class' }, { status: 400 });
+		return json({ error: 'Cet utilisateur est déjà inscrit dans cette classe' }, { status: 400 });
 	}
 
 	// Add to class_members table
