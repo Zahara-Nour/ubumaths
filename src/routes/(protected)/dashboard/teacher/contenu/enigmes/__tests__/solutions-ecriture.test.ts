@@ -84,7 +84,7 @@ function supabaseMock() {
 	};
 }
 
-function riddleForm(): FormData {
+function riddleForm(overrides: Record<string, string> = {}): FormData {
 	const fd = new FormData();
 	fd.set('title', 'Les trois portes');
 	fd.set('genre', '');
@@ -94,12 +94,17 @@ function riddleForm(): FormData {
 	fd.set('correction', 'La correction');
 	fd.set('answer', JSON.stringify(ANSWER));
 	fd.set('status', 'draft');
+	for (const [k, v] of Object.entries(overrides)) {
+		// Valeur vide = champ absent, comme l'envoient les pages pour un genre ou une image vides.
+		if (v === '') fd.delete(k);
+		else fd.set(k, v);
+	}
 	return fd;
 }
 
-function event(extra: Record<string, unknown> = {}) {
+function event(extra: Record<string, unknown> = {}, form: Record<string, string> = {}) {
 	return {
-		request: new Request('http://localhost', { method: 'POST', body: riddleForm() }),
+		request: new Request('http://localhost', { method: 'POST', body: riddleForm(form) }),
 		locals: { supabase: supabaseMock() },
 		params: { id: RIDDLE_ID },
 		...extra
@@ -199,4 +204,120 @@ describe('édition d’une énigme', () => {
 		expect(result).toMatchObject({ status: 404 });
 		expect(writesTo('riddle_solutions')).toEqual([]);
 	});
+});
+
+// Une réponse attendue mal formée s'enregistrait en silence (JSON illisible avalé,
+// valeur vide) : la correction automatique comptait ensuite faux les bonnes réponses.
+describe('réponse attendue validée avant toute écriture', () => {
+	const INVALID: [string, string][] = [
+		['JSON illisible', '{"type":'],
+		['nombre absent', JSON.stringify({ type: 'numerical', value: null })],
+		['texte vide', JSON.stringify({ type: 'text', value: '  ' })],
+		['type inconnu', JSON.stringify({ type: 'devinette', value: 'x' })],
+		[
+			'QCM : bonne réponse hors des choix',
+			JSON.stringify({ type: 'qcm', value: 3, options: { choices: ['a', 'b', 'c'] } })
+		],
+		['QCM sans choix', JSON.stringify({ type: 'qcm', value: 0, options: { choices: [] } })]
+	];
+
+	for (const [label, answer] of INVALID) {
+		it(`édition refusée (400), rien d’écrit : ${label}`, async () => {
+			const result = await editActions.default(event({}, { answer }));
+
+			expect(result).toMatchObject({ status: 400 });
+			expect(calls).toEqual([]);
+		});
+
+		it(`création refusée (400), rien d’écrit : ${label}`, async () => {
+			const result = await createActions.default(event({}, { answer }));
+
+			expect(result).toMatchObject({ status: 400 });
+			expect(calls).toEqual([]);
+		});
+	}
+
+	it('édition : titre trop long refusé comme à la création', async () => {
+		const result = await editActions.default(event({}, { title: 'x'.repeat(201) }));
+
+		expect(result).toMatchObject({ status: 400 });
+		expect(calls).toEqual([]);
+	});
+
+	// Les pages n'envoient ni genre ni image quand ils sont vides : le schéma les
+	// exigeait, et toute création sans genre ou sans image échouait (400).
+	it('création acceptée sans genre ni image (champs absents)', async () => {
+		results['riddles:insert'] = { data: RIDDLE_ROW, error: null };
+		results['riddle_solutions:upsert'] = { data: [{ riddle_id: RIDDLE_ID }], error: null };
+
+		const result = await createActions.default(event({}, { genre: '', image_url: '' }));
+
+		expect(result).toMatchObject({ success: true });
+		const inserted = (writesTo('riddles')[0].payload as Record<string, unknown>[])[0];
+		expect(inserted).toMatchObject({ genre: null, image_url: null });
+	});
+
+	it('édition acceptée sans genre ni image (champs absents)', async () => {
+		results['riddles:update'] = { data: [{ id: RIDDLE_ID }], error: null };
+		results['riddle_solutions:upsert'] = { data: [{ riddle_id: RIDDLE_ID }], error: null };
+
+		const result = await editActions.default(event({}, { genre: '', image_url: '' }));
+
+		expect(result).toMatchObject({ success: true });
+		expect(writesTo('riddles')[0].payload).toMatchObject({ genre: null, image_url: null });
+	});
+
+	it('le refus porte un message lisible par la page', async () => {
+		const result = await editActions.default(
+			event({}, { answer: JSON.stringify({ type: 'numerical', value: null }) })
+		);
+
+		expect(result).toMatchObject({ status: 400, data: { message: expect.any(String) } });
+	});
+
+	// [libellé, envoyé, enregistré]
+	const VALID: [string, unknown, unknown][] = [
+		['validation à la main', null, null],
+		...(
+			[
+				['nombre', { type: 'numerical', value: 42, options: { tolerance: 0.01 } }],
+				['texte', { type: 'text', value: 'Paris', options: { caseSensitive: false } }],
+				['expression', { type: 'math', value: '2x+1', options: { exactMatch: true } }],
+				['QCM à une réponse', { type: 'qcm', value: 1, options: { choices: ['a', 'b'] } }]
+			] as [string, unknown][]
+		).map(([label, a]): [string, unknown, unknown] => [label, a, a]),
+		[
+			// L'éditeur écrit les indices en texte mais ne relit que des nombres.
+			'QCM à plusieurs réponses : indices enregistrés en nombres',
+			{
+				type: 'qcm',
+				value: ['0', '2'],
+				options: { choices: ['a', 'b', 'c'], multipleAnswers: true }
+			},
+			{
+				type: 'qcm',
+				value: [0, 2],
+				options: { choices: ['a', 'b', 'c'], multipleAnswers: true }
+			}
+		],
+		[
+			'clé inconnue retirée',
+			{ type: 'text', value: 'Paris', intrus: 'x'.repeat(5000) },
+			{ type: 'text', value: 'Paris' }
+		]
+	];
+
+	for (const [label, sent, stored] of VALID) {
+		it(`édition acceptée : ${label}`, async () => {
+			results['riddles:update'] = { data: [{ id: RIDDLE_ID }], error: null };
+			results['riddle_solutions:upsert'] = { data: [{ riddle_id: RIDDLE_ID }], error: null };
+
+			const result = await editActions.default(event({}, { answer: JSON.stringify(sent) }));
+
+			expect(result).toMatchObject({ success: true });
+			expect((writesTo('riddle_solutions')[0].payload as { answer: unknown }).answer).toStrictEqual(
+				stored
+			);
+		});
+	}
 });

@@ -15,6 +15,8 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		throw redirect(303, '/auth/login');
 	}
 
+	const id = validateUuidParam(params.id);
+
 	// Fetch attempt with details
 	const { data: attempt, error: attemptError } = await supabase
 		.from('riddle_attempts')
@@ -30,7 +32,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			)
 		` as const
 		)
-		.eq('id', params.id)
+		.eq('id', id)
 		.is('is_correct', null) // Must be pending
 		.single();
 
@@ -114,7 +116,7 @@ export const actions: Actions = {
 				riddle:riddles!inner(riddle_number, title)
 			`
 			)
-			.eq('id', params.id)
+			.eq('id', id)
 			.single();
 
 		// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne

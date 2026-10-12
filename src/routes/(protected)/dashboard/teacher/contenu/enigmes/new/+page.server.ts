@@ -1,6 +1,6 @@
 import type { PageServerLoad, Actions } from './$types';
 import { redirect, fail } from '@sveltejs/kit';
-import { validateFormData, riddleFormSchema } from '$lib/server/validation';
+import { validateFormData, riddleFormSchema, parseRiddleAnswerField } from '$lib/server/validation';
 import { requireRoles } from '$lib/server/middleware/auth';
 import type { TablesInsert } from '$lib/types/database';
 import { RIDDLE_COLUMNS } from '$lib/types/riddle';
@@ -31,21 +31,18 @@ export const actions: Actions = {
 
 		const validation = validateFormData(riddleFormSchema, formData);
 		if (!validation.success) {
-			return fail(400, { errors: validation.errors });
+			const [firstError] = Object.values(validation.errors).flat();
+			return fail(400, { message: firstError, errors: validation.errors });
 		}
 
-		// Parse answer config (JSON)
-		let answer = null;
-		const answerStr = validation.data.answer;
-		if (answerStr && answerStr !== 'null') {
-			try {
-				answer = JSON.parse(answerStr);
-			} catch (e) {
-				console.error('Error parsing answer config:', e);
-				return fail(400, {
-					errors: { answer: ['Format JSON invalide pour la réponse'] }
-				});
-			}
+		// Réponse attendue contrôlée avant toute écriture : mal formée, elle ferait
+		// compter faux les réponses des élèves.
+		const parsedAnswer = parseRiddleAnswerField(validation.data.answer);
+		if (!parsedAnswer.ok) {
+			return fail(400, {
+				message: parsedAnswer.message,
+				errors: { answer: [parsedAnswer.message] }
+			});
 		}
 
 		// Le type d'insertion généré exprime l'absence par `null` (Postgres), là où
@@ -75,7 +72,7 @@ export const actions: Actions = {
 
 		// `answer` part dans une colonne jsonb, d'où la conversion explicite.
 		const saved = await saveRiddleSolution(supabase, newRiddle.id, {
-			answer: toJson(answer),
+			answer: toJson(parsedAnswer.answer),
 			correction: validation.data.correction
 		});
 
