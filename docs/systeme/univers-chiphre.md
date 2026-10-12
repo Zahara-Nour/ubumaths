@@ -169,7 +169,9 @@ Les fonctionnalités à présenter, et ce qu'il ne faut pas en promettre :
   leaderboard, émojis 🔥💯🚀, le « mauvais Disney » (« Le voyage de tes rêves commence ici »).
 - **Le Czar** n'est jamais rattaché à un pays réel (ni Russie, ni Moscou, ni « russe »).
 - **Le Shtam** ne parodie ni personne vivante ni institution réelle nommée.
-- **Les jurons hors canon** du code (« Hornphynance », « Hornstrompe », « palotron ») : écart D15.
+- **Des jurons hors canon** (« Hornphynance », « Hornstrompe », « palotron » ; le mot de Jarry est
+  « palotin ») : retirés du code le 2026-10-12 (D15), garde
+  `src/lib/config/__tests__/jurons-canon.test.ts`.
 
 **En suspens dans le Compendium** (ne pas s'en servir avant décision) : les « Patanautes Yllustres »
 (présentés comme remplaçants des Patacesseurs, mais classés « non libre » plus loin), Mousched-Gogh
