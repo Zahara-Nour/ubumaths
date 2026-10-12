@@ -8,6 +8,7 @@ import { GUIDE_GRADES, ancestorsOf, type GuideGrade } from '../levels';
 import { MODELS } from '../models';
 import { TASKS } from '../tasks';
 import { parseStep } from '../guide';
+import type { CalculatorTask } from '../types';
 
 const TASK_IDS = new Set<string>(TASKS.map((task) => task.id));
 
@@ -21,7 +22,9 @@ describe('la liste des tâches', () => {
 	});
 
 	it('justifie par le programme toute tâche qui n’est pas « pratique »', () => {
-		const unjustified = TASKS.filter(
+		// Type élargi : sur la liste `as const`, TypeScript sait déjà qu'aucune n'est vide ;
+		// le test garde la règle pour les tâches à venir
+		const unjustified = (TASKS as readonly CalculatorTask[]).filter(
 			(task) => task.status !== 'pratique' && task.boRefs.length === 0
 		);
 		expect(unjustified.map((task) => task.id)).toEqual([]);

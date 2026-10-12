@@ -68,11 +68,15 @@ d'examen / pratique.
       guide, routing, typst, models/), `src/lib/components/calculatrices/`, pages
       `src/routes/(public)/calculatrices/`. Tests serveur + rendu (GuideTaskCard). PDF = bouton
       « Télécharger la fiche PDF » (typst.ts, chargé au clic)
-- [ ] Contenu NumWorks dans `models/numworks.ts`, vérifié au **simulateur** (agent en cours)
-- [ ] Compiler chaque guide NumWorks avec le compilateur de prod (typst.ts 0.6.1-rc5) : harnais
+- [x] Contenu NumWorks dans `models/numworks.ts` : 84 séquences + 13 pièges, 81 + 13 rejoués au simulateur
+- [x] Les 12 guides NumWorks compilent avec le compilateur de prod (typst.ts 0.6.1-rc5) : harnais
       `compile.mjs` + `generate-guides.mts` (scratchpad de session, à recréer si perdu : voir
       mémoire `reference_pdf-compilateur-production`)
-- [ ] Page à cocher : relecture des séquences NumWorks par David sur la machine
+- [x] Revue code-reviewer : contenu non relu dans le JS client → `load` serveur (`page-data.ts`,
+      mesuré absent du bundle client), Typst en chaînes littérales, rappels T_EXP dans l'ordre, contenu
+- [ ] **Page à cocher publiée** : https://claude.ai/artifact/FwwkUtt4t6nRwdbwFcELLJ (collection
+      `relecture`, doc par fiche `seq-<taskId>` / `piege-<id>`, `{statut: 'ok'|'a-revoir',
+commentaire}`) — David relit sur sa NumWorks ; ensuite `verifiedOnDevice: true` dans une 2ᵉ PR
 - [ ] PR pilote
 - [ ] Modèles suivants
 
