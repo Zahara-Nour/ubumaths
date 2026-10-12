@@ -77,6 +77,11 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'/api/admin/elevate/+server',
 	// Énigmes : la justesse d'une tentative est calculée par le serveur, jamais par l'élève
 	'/api/riddles/[id]/submit/+server',
+	// Énigmes : type de saisie et choix d'un QCM, rangés avec la réponse attendue dans
+	// `riddle_solutions` que l'élève ne lit pas ; lus seulement pour les énigmes que sa
+	// RLS lui a déjà rendues, et jamais envoyés avec la valeur ni la correction
+	'/dashboard/student/riddles/+page.server',
+	'/dashboard/student/riddles/[id]/+page.server',
 	// Marché : verrous des cartes d'une proposition et compteur de l'annonce
 	'lib/server/marketplace/proposal-locks.ts',
 	'lib/server/marketplace/acceptance.ts',

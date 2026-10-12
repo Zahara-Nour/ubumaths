@@ -2,7 +2,8 @@ import type { PageServerLoad } from './$types';
 import type { AttemptWithDetails } from '$lib/types/riddle';
 import { error, redirect } from '@sveltejs/kit';
 import { getTeacherTestMode } from '$lib/server/test-mode';
-import { toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
+import { RIDDLE_COLUMNS, toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
+import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
 
 /**
  * Load pending manual validations for teacher
@@ -19,12 +20,12 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	// Fetch pending validations for teacher's riddles, filtered by test mode
 	const { data: attempts, error: attemptsError } = await supabase
 		.from('riddle_attempts')
-		// Sélection complète de l'énigme : le type métier `DbRiddle` décrit la ligne
-		// entière, et l'écran de validation affiche l'énoncé comme la correction.
+		// Colonnes nommées : réponse attendue et correction vivent dans `riddle_solutions`,
+		// lue à part ci-dessous (le type métier `DbRiddle` les porte).
 		.select(
 			`
 			*,
-			riddle:riddles!inner(*),
+			riddle:riddles!inner(${RIDDLE_COLUMNS}),
 			student:profiles!riddle_attempts_student_id_fkey(
 				id,
 				firstname,
@@ -32,7 +33,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 				avatar_url,
 				is_test
 			)
-		`
+		` as const
 		)
 		.is('is_correct', null) // Only pending validations
 		.eq('riddles.created_by', user.id) // Only teacher's riddles
@@ -44,12 +45,22 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		throw error(500, 'Erreur lors du chargement des validations en attente');
 	}
 
+	const { solutions, error: solutionsError } = await fetchRiddleSolutions(
+		supabase,
+		(attempts || []).map((a) => a.riddle.id)
+	);
+
+	if (solutionsError) {
+		console.error('Error fetching riddle solutions:', solutionsError);
+		throw error(500, 'Erreur lors du chargement des validations en attente');
+	}
+
 	// Transform to AttemptWithDetails
 	const pendingValidations: AttemptWithDetails[] = (attempts || []).map((attempt) => ({
 		// `difficulty`, `status` et `answer` sont plus permissifs en base qu'en
 		// type métier : convertis plutôt qu'affirmés.
 		...toDbRiddleAttempt(attempt),
-		riddle: toDbRiddle(attempt.riddle),
+		riddle: toDbRiddle(attempt.riddle, solutions.get(attempt.riddle.id) ?? null),
 		student: {
 			id: attempt.student.id,
 			firstname: attempt.student.firstname,

@@ -11,6 +11,16 @@ import { describe, it, expect, vi } from 'vitest';
 import { load as loadRiddle } from '../[id]/+page.server';
 import { load as loadList } from '../+page.server';
 
+// Réponse attendue et correction vivent dans `riddle_solutions`, que l'élève ne lit pas :
+// les pages les lisent par le client service (type de saisie et choix d'un QCM).
+const serviceFrom = vi.fn((table: string) => {
+	if (table !== 'riddle_solutions') throw new Error(`table inattendue : ${table}`);
+	return chain({ data: [SOLUTION_ROW], error: null });
+});
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => ({ from: serviceFrom })
+}));
+
 // ============================================================================
 // CONSTANTES
 // ============================================================================
@@ -19,6 +29,16 @@ const RIDDLE_ID = '11111111-1111-4111-8111-111111111111';
 const SECRET_VALUE = 'valeur-secrète-42';
 const SECRET_CORRECTION = 'correction-secrète';
 
+const ANSWER = {
+	type: 'qcm',
+	value: SECRET_VALUE,
+	options: { choices: ['A', 'B', 'C'], multipleAnswers: false, caseSensitive: true }
+};
+
+const SOLUTION_ROW = { riddle_id: RIDDLE_ID, answer: ANSWER, correction: SECRET_CORRECTION };
+
+// La ligne `riddles` porte encore ses deux colonnes jusqu'à l'étape C : si une page les
+// recopiait, le test le verrait.
 const RIDDLE_ROW = {
 	id: RIDDLE_ID,
 	riddle_number: 7,
@@ -28,11 +48,7 @@ const RIDDLE_ROW = {
 	statement: 'Énoncé',
 	correction: SECRET_CORRECTION,
 	image_url: null,
-	answer: {
-		type: 'qcm',
-		value: SECRET_VALUE,
-		options: { choices: ['A', 'B', 'C'], multipleAnswers: false, caseSensitive: true }
-	},
+	answer: ANSWER,
 	created_by: '22222222-2222-4222-8222-222222222222',
 	status: 'published',
 	created_at: '2026-10-01T00:00:00Z',
