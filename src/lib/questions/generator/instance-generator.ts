@@ -54,6 +54,7 @@ import { resolveVariableConditionals } from './variable-conditionals';
 import { buildCorrectionContext, resolveCorrectionContent } from './correction-resolver';
 import { generateCorrection } from './correction-generator';
 import { declaredGenericFunctions, templateGenericFunctions } from '../generic-functions';
+import { resolveCapitalPairs } from '../capital-pairs';
 import { cleanCoefficientsCustom } from '../clean-coefficients';
 import { expectedIntervalsLatex } from '../intervals/interval-answer';
 import { expectedVectorLatex } from '../vectors/vector-answer';
@@ -336,6 +337,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		// Sans déclaration, `undefined` partout → défauts du parseur, rien ne change.
 		const genericFunctionNames = declaredGenericFunctions(template.shared?.genericFunctions);
 		const genericFunctions = templateGenericFunctions(genericFunctionNames);
+		// Sens de `AB` (longueur ou produit), résolu UNE fois ici (Q-K) : déclaration du
+		// modèle → contexte (thème) → longueur. Porté par l'instance jusqu'au parseur.
+		const { capitalPairs } = resolveCapitalPairs({
+			declaration: template.shared?.capitalPairs,
+			theme: template.theme
+		});
 		// Coefficients nettoyés (`1x-1y+0` → `x-y`) : strictement `true`, sinon rien ne change
 		const cleanCoefficients = template.shared?.cleanCoefficients === true;
 
@@ -753,6 +760,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			exerciseInstruction: template.exerciseInstruction,
 			options: template.options,
 			...(genericFunctionNames && { genericFunctions: genericFunctionNames }),
+			capitalPairs,
 			grades: template.grades,
 			theme: template.theme,
 			domain: template.domain,

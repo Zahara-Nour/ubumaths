@@ -18,7 +18,9 @@
 	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 	import type { InputState } from '$lib/ubumark';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { MathfieldElement } from 'mathlive';
+	import { withoutCapitalPairShortcuts } from '$lib/questions/capital-pairs';
 	import { expressionToLatex, extractPromptIndices } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
 	import { isRefusedRestrictedFormula, readRestrictedRendering } from '../restricted-rendering';
@@ -60,6 +62,11 @@
 		genericFunctions?: GenericFunctionConfig | null;
 		/** LaTeX to insert when Space is pressed in math mode (e.g. '\\,' for thin space) */
 		mathModeSpace?: string;
+		/**
+		 * Sens de `AB` dans la question : en mode `'length'`, les raccourcis MathLive qui
+		 * transforment deux majuscules collées (`AA` → ∀, `RR` → ℝ…) sont coupés (Q-N)
+		 */
+		capitalPairs?: CapitalPairs;
 	}
 
 	let {
@@ -73,7 +80,8 @@
 		prefilledValues,
 		class: className = '',
 		genericFunctions,
-		mathModeSpace
+		mathModeSpace,
+		capitalPairs
 	}: Props = $props();
 
 	// Langue du contenu (séparateur décimal), posée par MarkdownRenderer
@@ -180,6 +188,20 @@
 		} catch (error) {
 			console.error('MathPrompt: Error setting correct values:', error);
 		}
+	});
+
+	/** Champ MathLive (garde de type, sans importer mathlive à l'exécution ici) */
+	function isMathfield(element: HTMLElement): element is MathfieldElement {
+		return element.tagName === 'MATH-FIELD';
+	}
+
+	/**
+	 * Mode longueur (Q-N) : `AA'` reste la longueur AA', pas `∀'`. Posé au montage,
+	 * avant toute saisie (une option posée sur un champ focalisé referme le clavier).
+	 */
+	$effect(() => {
+		if (!mathField || capitalPairs !== 'length' || !isMathfield(mathField)) return;
+		mathField.inlineShortcuts = withoutCapitalPairShortcuts(mathField.inlineShortcuts);
 	});
 
 	/**

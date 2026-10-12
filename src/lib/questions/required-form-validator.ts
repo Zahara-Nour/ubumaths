@@ -12,11 +12,17 @@
 
 import type { MathNode } from '$lib/mathAST/types';
 import type { RequiredForm } from './types';
-import { DEFAULT_GENERIC_FUNCTION_NAMES, type GenericFunctionConfig } from '$lib/mathAST/parser';
+import {
+	DEFAULT_GENERIC_FUNCTION_NAMES,
+	type CapitalPairs,
+	type GenericFunctionConfig
+} from '$lib/mathAST/parser';
 
 /** Lecture de la réponse : fonctions déclarées par le modèle (`C(2)`), défauts sinon */
 export interface RequiredFormOptions {
 	genericFunctions?: GenericFunctionConfig;
+	/** Sens de `AB` (longueur ou produit) ; absent : produit, comme avant */
+	capitalPairs?: CapitalPairs;
 }
 import {
 	parseLatex,
@@ -575,7 +581,10 @@ export function checkRequiredForm(
 
 		try {
 			// Parse the LaTeX
-			const node = parseLatex(latex, { genericFunctions: options.genericFunctions });
+			const node = parseLatex(latex, {
+				genericFunctions: options.genericFunctions,
+				capitalPairs: options.capitalPairs
+			});
 
 			// Strip unnecessary brackets before checking form
 			// This ensures (2×3) is treated the same as 2×3

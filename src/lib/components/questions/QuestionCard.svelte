@@ -338,6 +338,7 @@
 								mathModeSpace={(instance.options?.constraints?.spaces ?? 'warn') !== 'off'
 									? '\\,'
 									: undefined}
+								capitalPairs={instance.capitalPairs}
 								{unitKeys}
 								{genericFunctions}
 								grades={instance.grades}
