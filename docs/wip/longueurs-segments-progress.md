@@ -790,7 +790,11 @@ et restent comme gardes).
   GD », Q-C (a) déjà décidée pour les questions, appliquée ici) ; (2) l'aperçu d'affectation pose
   le sens de l'exercice ouvert pour toute la page (titres de la liste compris) — sans effet tant que
   tous les thèmes sont en longueur ; (3) le chat du tuteur reste en produit dans la fenêtre d'un
-  exercice (choix prudent, Q-M) ; (4) un exercice sans thème (1 en base) est lu en longueur.
+  exercice (choix prudent, Q-M) ; (4) un exercice sans thème (1 en base) est lu en longueur. (5) **garde `docs:check-a-jour` en
+  échec** : la zone « exercices » (sans doc, `trous`) est touchée par `exercises/ExerciseDisplay`,
+  `ExerciseForm` et la page `exercices/[id]` (trois `provideCapitalPairs`). Écrire la doc de la zone
+  avant la PR, ou `Doc-reportée:` si David reporte — les retirer laisserait l'écran prof et la page
+  publique en produit alors que leur PDF passe en longueur.
 
 ## Journal
 
