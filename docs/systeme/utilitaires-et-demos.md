@@ -13,6 +13,8 @@ couvre:
   - 'src/routes/(public)/test-structure/*.svelte'
   - 'src/routes/(public)/test-structure/*.ts'
   - 'src/routes/(public)/test-font/+page.svelte'
+  - 'src/routes/(public)/test-font/exercices-demo.json'
+  - 'src/routes/(public)/test-font/shantell-pdf.ts'
   - 'src/routes/(public)/upsilon/+page.svelte'
   - src/lib/stores/listNumbering.svelte.ts
   - src/lib/styles/list-numbering.css
