@@ -1,0 +1,121 @@
+{
+	"tidy 2x+3x": "5 x",
+	"simplify 2x+3x": "5 x",
+	"vars 2x+3x": ["x"],
+	"tidy (x+1)^2-x^2": "\\left( x + 1 \\right)^2 - x^2",
+	"simplify (x+1)^2-x^2": "2 x + 1",
+	"vars (x+1)^2-x^2": ["x"],
+	"tidy \\frac{6x}{4}": "\\dfrac{3 x}{2}",
+	"simplify \\frac{6x}{4}": "\\dfrac{3 x}{2}",
+	"vars \\frac{6x}{4}": ["x"],
+	"tidy ab+ba": "2 a b",
+	"simplify ab+ba": "2 a b",
+	"vars ab+ba": ["a", "b"],
+	"tidy 2\\pi R": "2 \\pi R",
+	"simplify 2\\pi R": "2 \\pi R",
+	"vars 2\\pi R": ["R"],
+	"tidy \\sqrt{8}+\\sqrt{2}": "3 \\sqrt{2}",
+	"simplify \\sqrt{8}+\\sqrt{2}": "3 \\sqrt{2}",
+	"vars \\sqrt{8}+\\sqrt{2}": [],
+	"tidy x^2+2x+1": "x^2 + 2 x + 1",
+	"simplify x^2+2x+1": "\\left( x + 1 \\right)^2",
+	"vars x^2+2x+1": ["x"],
+	"tidy 5y-2y+3": "3 y + 3",
+	"simplify 5y-2y+3": "3 y + 3",
+	"vars 5y-2y+3": ["y"],
+	"tidy 3(x+2)": "3 \\left( x + 2 \\right)",
+	"simplify 3(x+2)": "3 \\left( x + 2 \\right)",
+	"vars 3(x+2)": ["x"],
+	"tidy AB+BA": "2 A B",
+	"simplify AB+BA": "2 A B",
+	"vars AB+BA": ["A", "B"],
+	"tidy 3AB^2-AB^2": "2 A B^2",
+	"simplify 3AB^2-AB^2": "2 A B^2",
+	"vars 3AB^2-AB^2": ["A", "B"],
+	"tidy ABC": "A B C",
+	"simplify ABC": "A B C",
+	"vars ABC": ["A", "B", "C"],
+	"tidy 2AB\\times CD": "2 A B C D",
+	"simplify 2AB\\times CD": "2 A B C D",
+	"vars 2AB\\times CD": ["A", "B", "C", "D"],
+	"solve x^2=9": {
+		"status": "multiple",
+		"variable": "x",
+		"solutions": ["3", "-3"]
+	},
+	"solve 3x-6=0": {
+		"status": "unique",
+		"variable": "x",
+		"solutions": ["2"]
+	},
+	"solve 2x+1=x+4": {
+		"status": "unique",
+		"variable": "x",
+		"solutions": ["3"]
+	},
+	"solve AB=6": {
+		"status": "no-solution",
+		"variable": "",
+		"solutions": []
+	},
+	"solve A^2=16": {
+		"status": "multiple",
+		"variable": "A",
+		"solutions": ["4", "-4"]
+	},
+	"solve 5y=20": {
+		"status": "unique",
+		"variable": "y",
+		"solutions": ["4"]
+	},
+	"form 3x | 3x": {
+		"valid": true,
+		"status": "correct",
+		"violations": []
+	},
+	"form x3 | 3x": {
+		"valid": false,
+		"status": "bad_form",
+		"violations": []
+	},
+	"form 2\\times x | 2x": {
+		"valid": true,
+		"status": "unoptimal_form",
+		"violations": ["products"]
+	},
+	"form (x)+1 | x+1": {
+		"valid": true,
+		"status": "unoptimal_form",
+		"violations": ["brackets"]
+	},
+	"form BA | AB": {
+		"valid": true,
+		"status": "correct",
+		"violations": []
+	},
+	"form A\\,B | AB": {
+		"valid": true,
+		"status": "correct",
+		"violations": []
+	},
+	"form (AB)^2 | AB^2": {
+		"valid": false,
+		"status": "bad_form",
+		"violations": []
+	},
+	"form ABC | ABC": {
+		"valid": true,
+		"status": "correct",
+		"violations": []
+	},
+	"form \\frac{4}{6} | \\frac{2}{3}": {
+		"valid": true,
+		"status": "unoptimal_form",
+		"violations": ["reducedFractions"]
+	},
+	"form AN\\times AB | AN AB": {
+		"valid": true,
+		"status": "unoptimal_form",
+		"violations": ["products"]
+	}
+}

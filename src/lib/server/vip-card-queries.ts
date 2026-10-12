@@ -9,7 +9,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
-import type { VipCardCategory, VipCardRarity } from '$lib/types/vip-card';
+import { asVipCardAction, type VipCardCategory, type VipCardRarity } from '$lib/types/vip-card';
 
 /**
  * Get all VIP card templates from database
@@ -183,7 +183,9 @@ export async function getTemplatesWithActions(
 		throw error;
 	}
 
-	return (data as VipCardTemplate[]) || [];
+	// Le filtre `.not('action', 'is', null)` fait typer `action` en `Json` non nul
+	// par postgrest-js : on le valide au lieu de forcer le type de la ligne.
+	return (data ?? []).map((row) => ({ ...row, action: asVipCardAction(row.action) }));
 }
 
 /**

@@ -58,7 +58,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			try {
 				data = JSON.parse(content);
 			} catch (_e) {
-				throw error(400, 'Invalid JSON content');
+				throw error(400, 'Contenu JSON invalide');
 			}
 		} else {
 			data = content;
@@ -86,7 +86,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	} else {
 		// Markdown import
 		if (typeof content !== 'string') {
-			throw error(400, 'Markdown content must be a string');
+			throw error(400, 'Le contenu Markdown doit être du texte');
 		}
 
 		const result = await importExerciseFromMarkdown(

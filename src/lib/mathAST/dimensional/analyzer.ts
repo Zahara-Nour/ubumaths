@@ -42,6 +42,8 @@ import type {
 	FunctionRule
 } from './types';
 import { getFunctionRule } from './rules';
+import { segmentNameIn } from '../common/segment-names';
+import { variable } from '../factory';
 
 // =============================================================================
 // Helper Functions
@@ -995,9 +997,17 @@ function analyzeNode(
 			return createDimensionlessUnit();
 
 		case 'segmentLength':
+			// Une longueur est une inconnue : son unité est celle déclarée sous `AB` ou
+			// `BA`, sinon comme une variable inconnue (erreur en mode strict)
+			return analyzeVariable(
+				variable(segmentNameIn(node, context.variables)),
+				context,
+				errors,
+				warnings
+			);
+
 		case 'figureName':
-			// Longueur et nom de figure : sans dimension pour l'instant (lot 2 : une
-			// longueur a la dimension d'une longueur)
+			// Un nom de figure (`ABC`) n'est pas une grandeur : sans dimension
 			return createDimensionlessUnit();
 
 		case 'composition':

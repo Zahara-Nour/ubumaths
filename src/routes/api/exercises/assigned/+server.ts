@@ -36,7 +36,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const errorMsg = queryValidation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		return json({ error: `Invalid query parameters: ${errorMsg}` }, { status: 400 });
+		return json({ error: `Paramètres invalides : ${errorMsg}` }, { status: 400 });
 	}
 
 	// Build filters
@@ -69,7 +69,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	if (fetchError) {
 		console.error('Failed to fetch assigned exercises:', fetchError);
-		return json({ error: 'Failed to fetch exercises' }, { status: 500 });
+		return json({ error: 'Impossible de charger les exercices' }, { status: 500 });
 	}
 
 	return json(exercises);

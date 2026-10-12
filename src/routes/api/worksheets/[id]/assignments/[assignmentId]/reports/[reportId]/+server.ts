@@ -44,11 +44,11 @@ async function verifyTeacherWorksheetAccess(
 		.single();
 
 	if (worksheetError || !worksheet) {
-		throw error(404, 'Feuille de travail non trouvee');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	if (worksheet.created_by !== userId) {
-		throw error(403, 'Acces non autorise a cette feuille de travail');
+		throw error(403, 'Accès refusé à cette fiche');
 	}
 
 	return worksheet;
@@ -80,7 +80,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		reportId: params.reportId
 	});
 	if (!paramsValidation.success) {
-		throw error(400, 'Format UUID invalide');
+		throw error(400, 'Identifiant invalide');
 	}
 
 	const { id: worksheetId, assignmentId, reportId } = paramsValidation.data;
@@ -129,7 +129,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 		if (reportError || !reportData) {
 			console.error('[API] Error fetching report:', reportError);
-			throw error(404, 'Signalement non trouve');
+			throw error(404, 'Signalement introuvable');
 		}
 
 		// Extract nested data safely
@@ -142,14 +142,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			: worksheetExerciseData;
 
 		if (!worksheetExercise) {
-			throw error(500, 'Exercice du signalement non trouve');
+			throw error(500, 'Exercice du signalement introuvable');
 		}
 
 		const exerciseData = worksheetExercise.exercise;
 		const exercise = Array.isArray(exerciseData) ? exerciseData[0] : exerciseData;
 
 		if (!exercise) {
-			throw error(500, "Donnees de l'exercice non trouvees");
+			throw error(500, 'Données de l’exercice introuvables');
 		}
 
 		// Step 2: Find next pending report for this assignment (for navigation)
@@ -172,7 +172,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		const studentName =
 			student?.firstname && student?.lastname
 				? `${student.firstname} ${student.lastname}`
-				: (student?.firstname ?? student?.lastname ?? 'Etudiant inconnu');
+				: (student?.firstname ?? student?.lastname ?? 'Élève inconnu');
 
 		const reportView = {
 			id: reportData.id,
@@ -236,7 +236,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			'[API] Unexpected error in GET /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]:',
 			err
 		);
-		throw error(500, 'Une erreur inattendue est survenue');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -281,7 +281,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		reportId: params.reportId
 	});
 	if (!paramsValidation.success) {
-		throw error(400, 'Format UUID invalide');
+		throw error(400, 'Identifiant invalide');
 	}
 
 	const { id: worksheetId, assignmentId, reportId } = paramsValidation.data;
@@ -291,7 +291,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const bodyValidation = validateReviewErrorReport(body);
@@ -332,12 +332,12 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (fetchError || !existingReport) {
-			throw error(404, 'Signalement non trouve');
+			throw error(404, 'Signalement introuvable');
 		}
 
 		// Check that report is still pending
 		if (existingReport.status !== 'pending') {
-			throw error(400, 'Ce signalement a deja ete traite');
+			throw error(400, 'Ce signalement a déjà été traité');
 		}
 
 		// Step 2: Get exercise data (position and exercise_id)
@@ -349,7 +349,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 		if (worksheetExerciseError || !worksheetExerciseData) {
 			console.error('[API] Error fetching worksheet exercise:', worksheetExerciseError);
-			throw error(500, 'Exercice du signalement non trouve');
+			throw error(500, 'Exercice du signalement introuvable');
 		}
 
 		const exerciseId = worksheetExerciseData.exercise_id;
@@ -434,7 +434,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 				if (fetchExerciseError || !currentExercise) {
 					console.error('[API] Error fetching exercise:', fetchExerciseError);
-					throw error(500, "Erreur lors de la recuperation de l'exercice");
+					throw error(500, 'Impossible de charger l’exercice');
 				}
 
 				const existingVariations =
@@ -455,7 +455,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 					};
 				}
 			} else {
-				throw error(400, "Les variations ou l'enonce corrige sont requis");
+				throw error(400, 'Les niveaux de guidage ou l’énoncé corrigé sont requis');
 			}
 
 			const { error: exerciseUpdateError } = await locals.supabase
@@ -466,7 +466,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 			if (exerciseUpdateError) {
 				console.error('[API] Error updating exercise variations:', exerciseUpdateError);
-				throw error(500, "Erreur lors de la mise a jour de l'exercice");
+				throw error(500, 'Impossible de modifier l’exercice');
 			}
 
 			// Step 5 : la gidouille, si l'élève appartient bien à l'une des classes
@@ -528,7 +528,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 		if (updateError || !updatedReport) {
 			console.error('[API] Error updating report:', updateError);
-			throw error(500, 'Erreur lors de la mise a jour du signalement');
+			throw error(500, 'Impossible de modifier le signalement');
 		}
 
 		// Step 7: Create notification for student
@@ -589,6 +589,6 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			'[API] Unexpected error in PUT /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]:',
 			err
 		);
-		throw error(500, 'Une erreur inattendue est survenue');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
