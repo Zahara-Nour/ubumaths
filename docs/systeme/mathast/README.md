@@ -497,7 +497,10 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     plafond membre par membre (`cli/bounded-comparison.ts`) : produit de puissances par ses
     facteurs, sinon encadrements rigoureux (`cli/interval.ts` : binaires à 256 bits arrondis
     vers l'extérieur, `+ − × ÷` et puissances entières), refus s'ils se recouvrent. ⚠️ Jamais
-    la valeur approchée du bouton ≈ pour trancher : elle a donné des sens faux.
+    la valeur approchée du bouton ≈ pour trancher : elle a donné des sens faux. Une chaîne `a < b < c` est
+    vraie si chaque maillon l'est (`evaluateToBoolean`), et passe par le plafond maillon par
+    maillon. La console réécrit `!=` en `\ne` avant le parseur LaTeX (`cli/core/pipeline.ts`), et
+    lit en entier une entrée à plusieurs `=` ou dont un membre est une comparaison.
 
 ## Le moteur de réécriture et les étapes
 

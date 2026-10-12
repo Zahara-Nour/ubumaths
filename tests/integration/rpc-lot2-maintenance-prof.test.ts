@@ -162,7 +162,6 @@ describe('RPC lot 2 : maintenance et actions réservées au prof', () => {
 		enigme = await insert('riddles', {
 			title: 'Énigme RPC lot 2',
 			statement: 'Énoncé',
-			correction: 'Correction',
 			difficulty: 1,
 			created_by: profId,
 			status: 'published'

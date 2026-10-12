@@ -1,3 +1,4 @@
+import '$lib/zod-locale';
 import { accountStatusHandle } from '$lib/server/accountStatusHandle';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { supabaseCspSource } from '$lib/server/csp';

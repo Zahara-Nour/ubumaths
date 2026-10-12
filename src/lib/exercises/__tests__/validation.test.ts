@@ -59,7 +59,7 @@ describe('validateExerciseExport', () => {
 		expect(result.success).toBe(false);
 		expect(result.error).toBeDefined();
 		// Union schema errors are generic "Invalid input"
-		expect(result.error).toContain('Invalid');
+		expect(result.error).toContain('invalide');
 	});
 
 	it('should reject invalid category', () => {
@@ -78,7 +78,7 @@ describe('validateExerciseExport', () => {
 		expect(result.success).toBe(false);
 		expect(result.error).toBeDefined();
 		// Union schema errors are generic "Invalid input" when any branch fails to match
-		expect(result.error).toContain('Invalid');
+		expect(result.error).toContain('invalide');
 	});
 
 	it('should reject empty statement', () => {
@@ -206,7 +206,7 @@ describe('validateExercisesArray', () => {
 
 		expect(result.success).toBe(false);
 		expect(result.error).toBeDefined();
-		expect(result.error).toContain('array');
+		expect(result.error).toContain('tableau attendu');
 	});
 
 	it('should reject array with invalid exercise', () => {
