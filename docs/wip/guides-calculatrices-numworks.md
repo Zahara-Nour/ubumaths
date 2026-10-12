@@ -859,3 +859,71 @@ origin/version-26 -- '*.fr.i18n'`.
 | Régressions              | « Affine » = y = ax+b (`Linear`), « Linéaire » = y = ax (`Proportional`)                                   | `*.fr.i18n`                                                                     |
 | Point moyen              | libellé « Point moyen » existe (`MeanDot`)                                                                 | `*.fr.i18n`                                                                     |
 | Nombre dérivé            | « Valeur dérivée 1ère » (`FirstDerivativeValue`)                                                           | `*.fr.i18n`                                                                     |
+
+---
+
+## Vérifications au simulateur (2026-10-12)
+
+Simulateur officiel Epsilon **v26** compilé depuis le code source
+(`extern/numworks-epsilon/epsilon/output/release/macos/arm64/epsilon.bin --headless`), langue fr,
+pays France (réglage par défaut). Chaque scénario rejoue les touches de la séquence, puis l'écran
+final est relu sur la capture. Scénarios et captures (hors dépôt) :
+`scratchpad/numworks-sim/<id-de-tâche>/`. Le simulateur fait foi sur le manuel v20 ; les séquences
+de `src/lib/calculatrices/models/numworks.ts` portent `checkedInSimulator: '2026-10-12'` quand
+elles sont conformes ou corrigées. **Rien n'est relu sur la vraie machine** (`verifiedOnDevice: false`
+partout).
+
+### Corrections apportées au brouillon
+
+| Tâche                                                           | Le brouillon disait                                  | Le simulateur montre                                                                                                                                                           |
+| --------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| clear-input (1)                                                 | flèche haut jusqu'à l'expression, puis [OK]          | [▲] sélectionne d'abord le **résultat** ([OK] recopie le résultat) ; [◀] passe sur le calcul                                                                                   |
+| euclidean-division (3), méthode 2                               | les « … » donnent la division euclidienne de p par q | ils divisent la **fraction simplifiée** : 50/45 → « 10=9×1+1 ». Méthode retirée, devenue un piège                                                                              |
+| square-root (11)                                                | (rien)                                               | une flèche droite après 3² **ferme la racine** : √(3²)+4² = 19. Ne pas sortir avant la fin                                                                                     |
+| settings (17), complex-numbers (C13)                            | Forme complexe : « a+ib », « re^iθ »                 | libellés « **Algébrique** » et « **Exponentielle** » ; Chiffres significatifs = 10 au départ                                                                                   |
+| exam-mode (16)                                                  | « Activer le mode examen FR » ?                      | pays France : « **Activer le mode examen** », puis Annuler / **Valider** ; un chapeau de diplômé apparaît en haut                                                              |
+| graph-analysis (20)                                             | « Intersection »                                     | « **Point d'intersection** », seulement avec deux courbes ; menu Rechercher : Antécédent, Maximum, Minimum, Zéros, Tangente, Intégrale                                         |
+| binomial (31), exponential-law (C12)                            | « Valider » après n et p                             | le bouton s'appelle « **Suivant** » ; le type de bornes est l'icône à gauche du calcul                                                                                         |
+| sequences (23)                                                  | taper l'expression, puis le premier terme dessous    | la case d'une récurrente contient **déjà uₙ** (effacer : [shift] [⌫]) ; u₀ vaut 1 par défaut, se change par [OK] [▼] [⌫]                                                       |
+| python-basics (22)                                              | « icône de réglages » à côté du script               | ce sont les « **…** » : Exécuter le script, Renommer, Importation auto, Supprimer le script                                                                                    |
+| modular (C6)                                                    | `pow(a,k,n)` en Python (non vérifié)                 | **refusé** (`TypeError: function takes 2 positional arguments`) ; `a**k % n` marche                                                                                            |
+| real-power (C7), decimal-log (C8), integral, derivative-tangent | gabarits de la boîte à outils non décrits            | l'ordre de saisie des cases : ⁿ√ curseur sous la racine puis [◀] pour l'indice ; logₐ base puis [▶][▶] ; ∫ borne du bas, [▲] borne du haut, [▶] f(x) ; dérivée f(x) puis [▶]×3 |
+| one-variable-stats (21)                                         | « Écart type »                                       | l'écran écrit « Ecart type », « Etendue » (sans accent)                                                                                                                        |
+| quadratic-roots (25)                                            | app « Équations »                                    | l'écran d'accueil écrit « **Equations** » (sans accent, chaîne `SolverApp`)                                                                                                    |
+| loan-annuity (optionnelle)                                      | non traitée                                          | application **Finance** > Intérêts composés > Pmt : 10 000 à 3 % sur 60 mois → −179.69                                                                                         |
+
+Confirmations utiles du brouillon : `80+20%` = 96 (affiché `80↗20%`), `80−20%` = 64 ; sur ligne
+vide, [+] [×] [÷] reprennent le résultat, [−] commence un négatif ; [EXE] sur ligne vide refait le
+dernier calcul (donc `3×Ans+1` itère une suite, et `randint` retire) ; `-2²` = −(2²) = −4 ;
+`rem(−7,3)` = 2 ; `invbinom(0.95,20,0.3)` = 9 ; `geomcdf(3,0.2)` = 0.488 (X ≥ 1) ;
+`expcdf(2,0.5)` = 0.632 ; quartiles « France » (Q1 = 12, Q3 = 15 sur la série d'essai) ; en
+Python, `17%5` = 2 et `log(10)` = 2.302585 (ln) ; `random()<0.3` rend True/False.
+
+### Résultat par tâche
+
+| Tâches                                                                                                                                                                                                                   | Résultat                                                                                                    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| basic-operations, fraction-to-decimal, last-answer, percentage, round-display, negative-number, parentheses-priorities, fraction-input, square-cube, pi, percentage-evolution-5                                          | conforme                                                                                                    |
+| table-of-values, mean, relative-products, fraction-simplify, multiplier-coefficient, median-range, random-simulation, equation-by-table                                                                                  | conforme                                                                                                    |
+| negative-exponents, scientific-notation, prime-factorization, trigonometry-degrees, linear-function-image, quartiles-college, percentage-evolution-3                                                                     | conforme                                                                                                    |
+| define-function, plot-function, one-variable-stats, evolution-rates, average-rate, sequence-terms-gen, regression-gen, sequence-limit, quadratic-roots, random-variable, exponential, radians                            | conforme                                                                                                    |
+| python-lists (console), sequence-terms-techno, scan-solution, derivative-techno, regression-techno, expectation-techno, bernoulli-simulation                                                                             | conforme                                                                                                    |
+| natural-log, factorial-combinations, binomial-inverse, threshold-tspe, sequence-limit-tspe, complex-roots, arithmetic, matrices, markov                                                                                  | conforme                                                                                                    |
+| recurrent-sequence-comp, log-exp-comp, solve-approx-comp, binomial-comp, geometric-law, regression-comp, variable-change-comp, integral-comp, index-base-100, real-power-techno, variable-change-techno, binomial-techno | conforme                                                                                                    |
+| clear-input, euclidean-division, square-root, settings, graph-analysis, binomial, exponential-law, sequences, complex-numbers, modular, real-power, decimal-log, integral, derivative-tangent                            | corrigé (voir le tableau des corrections)                                                                   |
+| loan-annuity                                                                                                                                                                                                             | ajouté (Finance), conforme                                                                                  |
+| exam-mode                                                                                                                                                                                                                | **partiel** : activation conforme ; la sortie (câble USB) et la diode ne se vérifient pas au simulateur     |
+| python-basics                                                                                                                                                                                                            | **partiel** : menu « … » et console vérifiés ; création et édition d'un script non rejouées (saisie longue) |
+| threshold-python                                                                                                                                                                                                         | **non vérifiable** dans le temps imparti : script complet à saisir lettre par lettre                        |
+| block-programming                                                                                                                                                                                                        | sans objet sur NumWorks (tâche optionnelle omise)                                                           |
+
+### Ce qui reste douteux
+
+- Les **libellés imprimés** des touches (retour, accueil, boîte à outils, ×10ˣ) : le simulateur
+  n'affiche pas le clavier. Libellés descriptifs dans `keys`, à confirmer sur la machine.
+- La **diode** du mode examen et sa sortie par USB.
+- Les scénarios rejouent des événements déjà traduits (`Percent`, `UpperX`…) : la combinaison
+  physique ([alpha] [⌫] pour %, [shift] [alpha] + lettre pour une capitale) vient de la table
+  `layout_events.cpp`, pas du rejeu.
+- [▶] sur « Zéros » pour passer au zéro suivant : la capture prise juste après ne montrait pas
+  encore le déplacement ; l'étape a été retirée des séquences.

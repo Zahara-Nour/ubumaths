@@ -69,6 +69,11 @@ export interface TaskSequence {
 	 * production (phase 0, point 8) : mieux vaut un trou qu'une erreur recopiée.
 	 */
 	verifiedOnDevice: boolean;
+	/**
+	 * Date ISO de la vérification au simulateur officiel (Epsilon compilé), absente si la
+	 * séquence n'a pas pu y être rejouée. Ne remplace pas `verifiedOnDevice`.
+	 */
+	checkedInSimulator?: string;
 }
 
 /** Un piège propre au modèle (`80+20%` = 96 sur NumWorks). */
@@ -80,6 +85,8 @@ export interface Pitfall {
 	explanation: string;
 	sources: readonly SequenceSource[];
 	verifiedOnDevice: boolean;
+	/** Date ISO de la vérification au simulateur officiel, absente si non rejoué */
+	checkedInSimulator?: string;
 }
 
 export type ModelFamily = 'college' | 'lycee';
