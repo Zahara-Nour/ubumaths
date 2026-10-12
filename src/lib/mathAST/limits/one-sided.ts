@@ -13,6 +13,7 @@ import type { LimitStepRecorder } from './step-recorder';
 import { isNumber, isInfinity, isFunction } from '../guards';
 import { classifyLimitValue } from './indeterminate';
 import { structurallyEqual } from './known-limits';
+import { writeLimitValue } from './exact-evaluation';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { computeDomain } from '../domain/compute';
@@ -162,7 +163,13 @@ export function analyzeDiscontinuity(
 		};
 	}
 
-	if (functionValue !== null && left.value && !structurallyEqual(functionValue, left.value)) {
+	// La limite rendue est écrite par `writeLimitValue` (`1 - \\sin a`) ; la
+	// valeur au point, non : on compare les deux sous la même écriture.
+	if (
+		functionValue !== null &&
+		left.value &&
+		!structurallyEqual(writeLimitValue(functionValue), writeLimitValue(left.value))
+	) {
 		return {
 			type: 'removable',
 			leftLimit: left.value,

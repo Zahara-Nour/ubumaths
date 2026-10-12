@@ -107,7 +107,8 @@ import {
 	resultToFiniteNode,
 	resultToNode,
 	isIndeterminateResult,
-	isInfinityResult
+	isInfinityResult,
+	writeLimitValue
 } from './exact-evaluation';
 import { getNumericValue, ZERO_TOLERANCE } from '../common';
 
@@ -354,7 +355,7 @@ export function evaluateLimit(
 	);
 	const expression = isLimit(expr) ? expr.expression : expr;
 	const twoSided = oddRootTwoSided(expr, variable, approach, options, result, expression);
-	return withInfiniteStatus(writeLikeInput(twoSided ?? result, expression));
+	return withInfiniteStatus(writeValue(writeLikeInput(twoSided ?? result, expression)));
 }
 
 /**
@@ -520,6 +521,12 @@ function writeLikeInput(result: LimitResult, expression: MathNode): LimitResult 
 	if (text === null) return result;
 	const magnitude = number(text);
 	return { ...result, value: isNegative(value) ? opposite(magnitude) : magnitude };
+}
+
+/** La valeur rendue, mise au propre (signe devant la fraction ; un décimal le reste). */
+function writeValue(result: LimitResult): LimitResult {
+	if (result.value === null) return result;
+	return { ...result, value: writeLimitValue(result.value) };
 }
 
 /** Calcul de la limite ; valeur exacte en entier ou fraction réduite. */

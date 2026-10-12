@@ -94,8 +94,10 @@ const INFINITY_CASES = [
 	['\\frac{\\pi x+1}{2x}', '\\dfrac{\\pi}{2}', '\\dfrac{\\pi}{2}'],
 	['\\frac{x+1}{\\pi x}', '\\dfrac{1}{\\pi}', '\\dfrac{1}{\\pi}'],
 	['\\sqrt{2}x^3', '+\\infty', '-\\infty'],
-	// Quotient irrationnel réduit comme le moteur, pas `\\dfrac{1}{-\\sqrt{2}}`
-	['\\frac{x}{-\\sqrt{2}x}', '\\dfrac{-\\sqrt{2}}{2}', '\\dfrac{-\\sqrt{2}}{2}'],
+	// Quotient irrationnel réduit comme le moteur, signe devant la fraction :
+	// ni `\\dfrac{1}{-\\sqrt{2}}`, ni `\\dfrac{-\\sqrt{2}}{2}`
+	['\\frac{x}{-\\sqrt{2}x}', '-\\dfrac{\\sqrt{2}}{2}', '-\\dfrac{\\sqrt{2}}{2}'],
+	['\\frac{-3x}{2x}', '-\\dfrac{3}{2}', '-\\dfrac{3}{2}'],
 	['\\frac{2x}{\\frac{x}{\\sqrt{2}}}', '2 \\sqrt{2}', '2 \\sqrt{2}']
 ] as const;
 
@@ -138,7 +140,8 @@ describe('limite pédagogique en ±∞ — valeur exacte, égale à celle du mot
 	// pédagogique est celle qu'il rend en +∞ (même degré, même quotient).
 	for (const [expression, expected] of [
 		['\\frac{\\sqrt{2}x^2+1}{x^2}', '\\sqrt{2}'],
-		['\\frac{\\pi x^2}{\\sqrt{2}x^2}', '\\dfrac{\\sqrt{2} \\pi}{2}']
+		// Ordre des facteurs de `tidy` : π avant le radical
+		['\\frac{\\pi x^2}{\\sqrt{2}x^2}', '\\dfrac{\\pi \\sqrt{2}}{2}']
 	] as const) {
 		it(`${expression} → ${expected} en +∞ comme en −∞ (le moteur ne conclut qu’en +∞)`, () => {
 			for (const approach of ['+\\infty', '-\\infty']) {

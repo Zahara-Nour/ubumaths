@@ -57,7 +57,7 @@ import {
 	numericNode
 } from './helpers';
 import { extractExactRational } from '../common/numeric';
-import { tryEvaluateLimitExact, resultToNode } from '../limits/exact-evaluation';
+import { tryEvaluateLimitExact, resultToNode, writeLimitValue } from '../limits/exact-evaluation';
 import { compile } from '../eval/compile';
 import { normalize, denormalize, hashNormalForm } from '../normal';
 import type { NormalForm, NormalTerm, Rational } from '../normal';
@@ -931,11 +931,12 @@ function exactQuotient(
 			return denormalize(normalize(rationalToNode(divRational(num.rational, den.rational))));
 		}
 		// Réduit d'abord par la forme normale (1/(−√2) → −½√2), puis réécrit par
-		// l'évaluation exacte, comme le moteur : `\\dfrac{-\\sqrt{2}}{2}`, `2\\sqrt{2}`.
+		// l'évaluation exacte et écrit comme la valeur du moteur (`writeLimitValue`),
+		// signe devant la fraction : `-\\dfrac{\\sqrt{2}}{2}`, `2\\sqrt{2}`.
 		const quotient = denormalize(normalize(divide(num.coefficient, den.coefficient, 'fraction')));
 		const result = tryEvaluateLimitExact(quotient, ctx.variable, ctx.approach, 'both');
 		const node = result === null ? null : resultToNode(result);
-		return node === null || node.type === 'infinity' ? null : node;
+		return node === null || node.type === 'infinity' ? null : writeLimitValue(node);
 	} catch {
 		return null;
 	}

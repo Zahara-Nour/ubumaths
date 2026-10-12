@@ -19,6 +19,8 @@ import { mapNode } from '../transforms';
 import { isSubtraction, isAddition, isVariable, isOpposite, isInfinity } from '../guards';
 import { getNumericValue, numericNode } from '../common/numeric';
 import { exactConstantNode } from './generalized-degree';
+import { tidy } from '../tidy';
+import { hasDecimalLiteral } from '../tidy/decimal';
 
 // =============================================================================
 // Result Type Predicates
@@ -399,6 +401,25 @@ export function resultToNode(result: ExtendedNormalizeResult): MathNode | null {
 	} catch {
 		return null;
 	}
+}
+
+/**
+ * Écriture d'une valeur de limite RENDUE (à l'élève, à la correction) : mise au
+ * propre par `tidy`, qui place le signe devant la fraction et le radical au
+ * numérateur — `-\\dfrac{\\sqrt{2}}{2}` et non `\\dfrac{-\\sqrt{2}}{2}` (forme
+ * de `denormalize`), `\\dfrac{\\sqrt{3}}{2}` et non `\\dfrac{1}{2}\\sqrt{3}`.
+ *
+ * Une valeur décimale le reste (`0.5`, jamais `\\dfrac{1}{2}`) : `tidy`
+ * réécrirait le décimal en fraction. Ce décimal vient de l'énoncé
+ * (`writeLikeInput` d'`evaluate.ts`) ou d'un calcul en flottants (composée √ du
+ * suivi de signe : `\\sqrt{\\frac{x^2+1}{4x^2}}` en −∞ rend `0.5`).
+ *
+ * Réservée aux valeurs rendues : les calculs intermédiaires gardent la forme
+ * de `resultToNode`.
+ */
+export function writeLimitValue(value: MathNode): MathNode {
+	if (isInfinity(value) || hasDecimalLiteral(value)) return value;
+	return tidy(value);
 }
 
 /**
