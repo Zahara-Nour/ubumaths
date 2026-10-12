@@ -223,3 +223,84 @@ describe('un produit de puissances qui se compensent', () => {
 		expect(line.exactTooLong).toBe(14314);
 	});
 });
+
+// Revue de #1184 : une comparaison échappait au plafond de calcul — `2^{30000000}/2^{29999999} = 2`
+// prenait 3,5 s, `(1+1/20000)^{20000}×(1+1/20000)^{-20000} = 1` 10 s, `1.0001^{30000} > 20`
+// 16,7 s. Un membre au-delà du plafond : un produit de puissances par ses facteurs, sinon les
+// valeurs arrondies (l'arrondi garde l'ordre), refus si elles ne départagent pas
+describe('une comparaison passe par le même plafond, membre par membre', () => {
+	it.each([
+		['2^30000000/2^29999999 = 2', 'true'],
+		['(1+1/20000)^20000*(1+1/20000)^-20000 = 1', 'true'],
+		['(1+1/100000)^100000*(1+1/100000)^-100000 < 1', 'false'],
+		['1.0001^30000 > 20', 'true'],
+		['(1+1/20000)^20000 > 2', 'true'],
+		['(1+1/20000)^20000 + 1 < 3.7183', 'true'],
+		['(1+1/20000)^20000 = 3', 'false'],
+		['2^100000 > 3^60000', 'true'],
+		['1.0001^30000 <= 1.0001^20000', 'false']
+	])('%s : %s, en moins de 300 ms', (input, output) => {
+		const start = performance.now();
+		const line = exact(input);
+
+		expect(performance.now() - start).toBeLessThan(300);
+		expect(line.output).toBe(output);
+	});
+
+	// Revue : entre 10⁹ et 10¹⁵, un entier exact s'écrit en entier, une valeur approchée en
+	// notation scientifique à 5 chiffres — deux grilles : comparer les arrondis rendait `false`
+	it.each([
+		['(1+1/20000)^20000 + 1000000000 > 1000000001', 'true'],
+		['(1+1/20000)^20000*1000000000 > 2718210000', 'true'],
+		// 10¹⁴ + 2,718… < 10¹⁴ + 3 (la revue l'avait cru vrai)
+		['(1+1/20000)^20000 + 10^14 > 100000000000003', 'false'],
+		['-(1+1/20000)^20000 - 1000000000 < -1000000001', 'true'],
+		['(1+1/20000)^20000 + 1000000000 < 1000000003', 'true']
+	])('une valeur approchée face à un entier exact : %s', (input, output) => {
+		const line = exact(input);
+
+		// Trancher juste, ou refuser : jamais le sens faux
+		expect(line.output === output || line.success === false).toBe(true);
+		expect(line.output).not.toBe(output === 'true' ? 'false' : 'true');
+	});
+
+	// Revue : un membre lu par le flottant puis presque annulé par une soustraction —
+	// partie entière exacte de (20001/20000)^20000 × 10^16 : 27182138745278830
+	it.each([
+		['(1+1/20000)^20000*10^16 - 27182138745278831 < 0', 'true'],
+		['(1+1/20000)^20000*10^16 - 27182138745278830 > 0', 'true'],
+		['(1+1/20000)^20000 + 1000000000 > 1000000001', 'true']
+	])('encadré au plus juste : %s', (input, output) => {
+		expect(exact(input).output).toBe(output);
+	});
+
+	it('une valeur approchée de grands membres, face à un entier : tranchée quand l’écart est net', () => {
+		expect(exact('(1+1/20000)^20000 + 1000000000 > 999000000').output).toBe('true');
+		expect(exact('(1+1/20000)^20000*1000000000 > 2718000000').output).toBe('true');
+	});
+
+	it('avec une variable libre, le refus le dit', () => {
+		const line = exact('(1+1/20000)^20000 + x = x + (1+1/20000)^20000');
+
+		expect(line.success).toBe(false);
+		expect(line.output).toContain('variable');
+	});
+
+	it('deux membres que l’arrondi ne départage pas : refus immédiat', () => {
+		const start = performance.now();
+		const line = exact('(1+1/20000)^20000 = (1+1/20000)^20000');
+
+		expect(performance.now() - start).toBeLessThan(300);
+		expect(line.success).toBe(false);
+		expect(line.output).toContain('trop proches');
+	});
+
+	it.each([
+		['2^5000 > 3^3000', 'true'],
+		['2^50000 > 3^30000', 'true'],
+		['(1+1/1000)^1000 < 3', 'true'],
+		['1/3 + 1/6 = 1/2', 'true']
+	])('en deçà, rien ne change : %s', (input, output) => {
+		expect(exact(input).output).toBe(output);
+	});
+});

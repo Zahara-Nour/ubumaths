@@ -38,7 +38,8 @@ import { normalize, normalFormsEquivalent } from '../../normal';
 import type { EvalValue, ComplexValueResult, EvalResult } from '../../eval/types';
 import { computeQuantity, convertQuantity, type QuantityOutcome } from '../quantities';
 import { displayUnitsInLatex } from '../../units/display';
-import { isUnit, isVariable } from '../../guards';
+import { isBoolean, isRelation, isUnit, isVariable } from '../../guards';
+import { relation } from '../../factory';
 import { summarizeList, summarizeTable } from '../../../statistics/describe';
 import { formatSummary } from '../../../statistics/format';
 import {
@@ -82,6 +83,7 @@ import {
 	productValue
 } from '../exact-size';
 import { rationalToNode } from '../../common/numeric';
+import { boundedComparison } from '../bounded-comparison';
 import {
 	approximateDigitsOf,
 	approximateLatexOf,
@@ -759,10 +761,36 @@ export class WebReplEngine {
 
 		// Substitute bound variables before comparison
 		const bindings = bindingsToRecord(this.evalState.bindings);
-		const substituted1 =
+		let substituted1 =
 			Object.keys(bindings).length > 0 ? substitute(result1.ast, bindings) : result1.ast;
-		const substituted2 =
+		let substituted2 =
 			Object.keys(bindings).length > 0 ? substitute(result2.ast, bindings) : result2.ast;
+
+		// Le plafond de calcul, membre par membre (`boundedComparison`) :
+		// `2^{30000000}/2^{29999999} = 2` prenait 3,5 s, et
+		// `(1+1/100000)^{100000}×(1+1/100000)^{-100000} = 1` plus de 300 s
+		try {
+			const bounded = boundedComparison(
+				relation(
+					'=',
+					withFunctionsExpanded(substituted1, this.evalState.functions),
+					withFunctionsExpanded(substituted2, this.evalState.functions)
+				)
+			);
+			if (bounded !== null && isBoolean(bounded)) return this.createEqualityResult(bounded.value);
+			if (bounded !== null && isRelation(bounded)) {
+				substituted1 = bounded.left;
+				substituted2 = bounded.right;
+			}
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Erreur lors de la comparaison';
+			return {
+				success: false,
+				output: message,
+				outputHtml: formatErrorHtml({ code: 'PARSE_ERROR', message }),
+				error: { code: 'PARSE_ERROR', message }
+			};
+		}
 
 		// Try numeric evaluation first if both sides can be fully evaluated
 		try {
@@ -960,12 +988,17 @@ export class WebReplEngine {
 			const factorsNode = byFactors === null ? null : rationalToNode(byFactors);
 			const notComputed =
 				tooLongToCompute && factorsNode === null ? estimatedExactDigits(expanded) : null;
-			// Le calcul exact, UNE fois : le test du booléen le refaisait en entier
+			// Le calcul exact, UNE fois : le test du booléen le refaisait en entier. Une
+			// comparaison passe par le même plafond, membre par membre (`boundedComparison` :
+			// `1.0001^{30000} > 20` prenait 16,7 s)
 			const computed: EvalResult =
 				factorsNode !== null
 					? { status: 'value', value: factorsNode, node: factorsNode, exact: true }
 					: notComputed === null
-						? evaluate(substituted, { mode: 'exact', functions: this.evalState.functions })
+						? evaluate(boundedComparison(expanded) ?? substituted, {
+								mode: 'exact',
+								functions: this.evalState.functions
+							})
 						: { status: 'value', value: expanded, node: expanded, exact: true };
 			// En deçà, la règle des 1 000 caractères se lit sur le résultat calculé : la
 			// prévision ignorait une base irrationnelle (`\sqrt{2}^{100000}`, 15 052

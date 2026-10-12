@@ -178,3 +178,25 @@ sa valeur approchée. »
   avant) : deux restes > 1 000 qui partagent un facteur ne se compensent pas
   (`1022117^{2000}/(1009×1013)^{2000}` = 1 garde son écriture) ; un facteur 0 abandonne la
   décomposition (`0×2^{100000}` garde son écriture, note de 30 105 caractères).
+- 2026-10-12 — **David : « Oui »** (corriger les comparaisons hors plafond). Mesuré : les
+  puissances ENTIÈRES se comparent vite (`2^{100000} > 3^{60000}` : 19 ms — un refus aurait été une
+  régression) ; ce sont les puissances de fractions et de décimaux qui coûtent (`1.0001^{30000} >
+20` 16,7 s, `(1+1/20000)^{20000} > 2` 8,8 s). `cli/bounded-comparison.ts` : un membre au-delà
+  du plafond prend sa valeur exacte s'il est un produit de puissances (`productValue`), sinon la
+  relation (`= < > ≤ ≥`) se tranche sur les valeurs arrondies (monotones), refus si égales. Branché
+  dans l'évaluation ET dans `executeEquality` (`a = b` y suit son propre chemin). Les chaînes
+  (`1 < x < 3`) ne sont pas prises en charge par la console (antérieur) ; `a != b` se lit
+  `a! = b` (antérieur).
+- 2026-10-12 — revue de #1199 : **sens faux** (bloquant) — comparer les arrondis supposait leur
+  ordre préservé, faux entre 10⁹ et 10¹⁵ (`(1+1/20000)^{20000} + 10^9 > 10^9 + 1` → `false`).
+  Corrigé : intervalles (demi-pas + 10⁻¹² ; point seulement pour un membre calculé exactement),
+  refus s'ils se recouvrent ; message propre quand une variable libre bloque. Laissés (refus non
+  faux, pas des cas d'élèves) : `2^{100000} + 1 > 2^{100000}` (« trop proches »),
+  `2^{10^7} + 1 > 3` (« trop grande »).
+- 2026-10-12 — 2ᵉ revue de #1199 : encore un **sens faux** — un membre lu par le flottant puis
+  presque annulé (`(1+1/20000)^{20000}×10^{16} − 27182138745278831 < 0` → `false`) : une marge
+  relative sur la valeur arrondie ne borne pas l'erreur absolue d'une soustraction. Corrigé
+  autrement : `cli/interval.ts`, encadrements rigoureux (binaires à 256 bits arrondis vers
+  l'extérieur ; test de rigueur aléatoire, rouge si l'arrondi vers le haut est faussé). Au
+  passage, la revue s'était trompée sur un cas (`(1+1/20000)^{20000} + 10^{14} > 10^{14} + 3` est
+  FAUX) : l'encadrement l'a tranché juste.
