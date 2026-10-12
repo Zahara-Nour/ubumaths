@@ -124,8 +124,8 @@ describe('classement des énigmes borné à l’école', () => {
 		const pg = await getPostgresClient();
 		const auteur = await TestData.profile().withRole('teacher').create();
 		const { rows } = await pg.query<{ id: string }>(
-			`insert into riddles (title, difficulty, statement, correction, created_by, status)
-			 values ('zz-énigme classement', 1, 'zz', 'zz', $1, 'published') returning id`,
+			`insert into riddles (title, difficulty, statement, created_by, status)
+			 values ('zz-énigme classement', 1, 'zz', $1, 'published') returning id`,
 			[auteur.id]
 		);
 		riddleId = rows[0].id;
