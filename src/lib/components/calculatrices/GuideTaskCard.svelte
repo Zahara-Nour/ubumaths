@@ -22,8 +22,8 @@ de quelle version (point 9) ; en local, une séquence non relue sur machine est 
 </script>
 
 <article class="rounded-lg border bg-card p-4" aria-labelledby="tache-{task.id}">
-	<header class="mb-2 flex flex-wrap items-center gap-2">
-		<h3 id="tache-{task.id}" class="text-base font-semibold">{task.title}</h3>
+	<div class="mb-2 flex flex-wrap items-center gap-2">
+		<h3 id="tache-{task.id}" class="text-lg font-semibold">{task.title}</h3>
 		{#if sequence.app}
 			<Badge variant="secondary">Application {sequence.app}</Badge>
 		{/if}
@@ -32,7 +32,7 @@ de quelle version (point 9) ; en local, une séquence non relue sur machine est 
 				>Non relu sur la machine</Badge
 			>
 		{/if}
-	</header>
+	</div>
 
 	{#if task.status === 'verifier'}
 		<p
