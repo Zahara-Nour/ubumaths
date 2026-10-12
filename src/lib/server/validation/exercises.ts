@@ -265,7 +265,13 @@ const exerciseBaseSchema = z.object({
 				type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image'], {
 					message: 'Type de ressource invalide (video, pdf, link, geogebra ou image)'
 				}),
-				url: z.string().url('Adresse invalide').max(2000, 'Adresse trop longue'),
+				// http(s) seulement : `url()` accepte `javascript:` et `mailto:`, et la
+				// ressource est rendue en lien.
+				url: z
+					.string()
+					.url('Adresse invalide')
+					.max(2000, 'Adresse trop longue')
+					.refine((url) => /^https?:\/\//i.test(url), 'Adresse http(s) attendue'),
 				title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long'),
 				description: z.string().trim().max(500, 'Description trop longue').optional()
 			})

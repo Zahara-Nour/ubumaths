@@ -65,6 +65,15 @@ describe('DELETE /api/exercises/[id]', () => {
 		expect(status).toBe(403);
 	});
 
+	it('identifiant non UUID → 400, sans appel à la base', async () => {
+		const status = await failureStatus(() =>
+			(deleteExerciseRoute as Handler)({ locals: { supabase: {} }, params: { id: 'pas-un-uuid' } })
+		);
+
+		expect(status).toBe(400);
+		expect(deleteExercise).not.toHaveBeenCalled();
+	});
+
 	it('suppression effective → succès', async () => {
 		vi.mocked(deleteExercise).mockResolvedValue({ error: null });
 

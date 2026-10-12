@@ -16,6 +16,7 @@ import {
 import type { Database } from '$lib/types/database';
 import { validateUpdateExercise } from '$lib/server/validation';
 import { requireRole } from '$lib/server/middleware/auth';
+import { validateUuidParam } from '$lib/server/validation/params';
 import {
 	SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE,
 	isSearchIndexedViolation
@@ -98,9 +99,8 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
  * Only the creator can delete
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
+	const id = validateUuidParam(params.id);
 	const { user } = await requireRole(locals, 'teacher');
-
-	const { id } = params;
 
 	// Delete exercise
 	const result = await deleteExercise(locals.supabase, id, user.id);

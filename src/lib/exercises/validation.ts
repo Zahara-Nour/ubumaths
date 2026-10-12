@@ -105,8 +105,9 @@ const sharedExerciseDefaultsSchema = z.object({
 });
 
 /**
- * Ressource jointe à un exercice exporté : mêmes règles que l'API d'écriture
- * (adresse http(s) seulement, pas de `javascript:`).
+ * Ressource jointe à un exercice exporté : mêmes règles que le schéma d'écriture
+ * (`src/lib/server/validation/exercises.ts`) — adresse http(s) seulement, ce qui
+ * refuse `javascript:` et `mailto:` que `z.string().url()` seul accepte.
  */
 const exportResourceSchema = z.object({
 	type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image']),
