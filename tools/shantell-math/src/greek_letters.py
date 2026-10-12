@@ -8,11 +8,12 @@ replace_symbols.py); the other letters are
   is з mirrored);
 - assembled from pieces of real Shantell letters, cut, moved or mirrored and
   joined by overlapping (a hand-drawn curve, even at the right stroke width,
-  stands out next to Shantell's letters): α from the bowl of c closed by x, β
-  from B, γ from v (its left arm turned down as the tail), δ from ð without its
-  bar and topped by the top of f, η from ŋ, ι from the foot of l, λ from л,
+  stands out next to Shantell's letters): η from ŋ, ι from the foot of l, λ from л,
   ρ ϱ σ φ from o, ψ υ ω from u, χ from x, ζ from C, ξ from a mirrored 3, ς from
   c; the stem of p, the bar of t and the hook of j are the joints and tails;
+- drawn in one smooth stroke (α β γ δ): a Catmull-Rom curve through points
+  taken on the centre lines of Shantell's letters (bowls of o and c, x-height,
+  descender), so that joins have no corner;
 - drawn as centre lines stroked with the width of Shantell's letters when no
   piece fits: Ξ Σ Ψ (straight strokes) and ϑ.
 
@@ -33,7 +34,6 @@ overwritten that way on 2026-01-20.
 from __future__ import annotations
 
 import argparse
-import math
 import sys
 from pathlib import Path
 from typing import Callable, Dict, Tuple
@@ -171,30 +171,9 @@ def mirror_y(path: pathops.Path, axis: float) -> pathops.Path:
     return moved(path, (1, 0, 0, -1, 0, 2 * axis))
 
 
-def rotated(path: pathops.Path, degrees: float, centre: Point) -> pathops.Path:
-    angle = math.radians(degrees)
-    cos_a, sin_a = math.cos(angle), math.sin(angle)
-    cx, cy = centre
-    return moved(path, (cos_a, sin_a, -sin_a, cos_a, cx - cos_a * cx + sin_a * cy, cy - sin_a * cx - cos_a * cy))
-
-
 def cap(x: float, y: float) -> pathops.Path:
     """Un bout rond, au trait des lettres."""
     return stroked(to_path([("M", (x, y)), ("L", (x + 0.5, y))]))
-
-
-def thickened(path: pathops.Path, amount: float) -> pathops.Path:
-    """Épaissit chaque trait de amount : un morceau réduit retrouve le trait des lettres."""
-    border = pathops.Path()
-    border.addPath(path)
-    border.stroke(amount, pathops.LineCap.ROUND_CAP, pathops.LineJoin.ROUND_JOIN, 4)
-    border.convertConicsToQuads()
-    return merged(path, border)
-
-
-def scaled(path: pathops.Path, factor: float) -> pathops.Path:
-    """Réduit un morceau en gardant le trait des lettres."""
-    return thickened(moved(path, (factor, 0, 0, factor, 0, 0)), STROKE * (1 - factor))
 
 
 def tail_below(source: TTFont, path: pathops.Path, box: Box) -> pathops.Path:
@@ -237,41 +216,6 @@ def stroke_centre(path: pathops.Path, y: float, from_right: bool = False) -> flo
                 break
         was_inside = now_inside
     return (crossings[0] + crossings[1]) / 2
-
-
-def assembled_alpha(source: TTFont) -> pathops.Path:
-    # Le ventre du c de Shantell, refermé par le x : ses bras de gauche
-    # rejoignent les bouts du c, ses bras de droite font les deux queues croisées
-    bowl = keep(glyph(source, "c"), (-100, -100, 260, 600))
-    arms = keep(shift(glyph(source, "x"), 200, 0), (240, -100, 900, 600))
-    return merged(bowl, arms)
-
-
-def assembled_beta(source: TTFont) -> pathops.Path:
-    # Le B de Shantell sans l'amorce de son sommet, sa hampe prolongée sous la
-    # ligne par le bas de la hampe du p
-    b = drop(glyph(source, "B"), (-100, 600, 105, 800))
-    descender = keep(p_stem(source), (-100, -400, 400, 120))
-    join_y = 110
-    dx = stroke_centre(b, join_y) - stroke_centre(descender, join_y)
-    return merged(b, shift(descender, dx, 0))
-
-
-def assembled_delta(source: TTFont) -> pathops.Path:
-    # Le ð de Shantell sans sa barre ; le haut de son trait est remplacé par le
-    # haut du f, penché dans le sens du trait, qui s'enroule vers la droite
-    stroke = stroke_of(source, "ð", 0)
-    cut_y = 540
-    body = drop(stroke, (-100, cut_y, 800, 900))
-    low, high = cut_y - 120, cut_y - 10
-    lean = math.degrees(math.atan2(stroke_centre(body, high) - stroke_centre(body, low), high - low))
-    top = keep(stroke_of(source, "f", 0), (-100, 450, 800, 900))
-    base = (stroke_centre(top, top.bounds[1] + 4), top.bounds[1])
-    top = rotated(top, -lean, base)
-    join_y = cut_y - 40
-    dx = stroke_centre(body, join_y) - stroke_centre(top, top.bounds[1] + 20)
-    placed_top = shift(top, dx, join_y - top.bounds[1] - 20)
-    return merged(body, placed_top)
 
 
 def assembled_eta(source: TTFont) -> pathops.Path:
@@ -418,20 +362,67 @@ def assembled_varpi(source: TTFont) -> pathops.Path:
     return merged(omega, shift(bar, omega.bounds[0] - bar.bounds[0], omega.bounds[3] - bar.bounds[3] + 30))
 
 
-def assembled_gamma(source: TTFont) -> pathops.Path:
-    # Le v de Shantell ; son bras gauche, retourné sous la pointe, descend vers
-    # la gauche dans le prolongement du bras droit : la queue du γ, d'un seul trait
-    v = glyph(source, "v")
-    tip = stroke_centre(v, 30)
-    left_arm = keep(v, (-100, -100, tip, 600))
-    tail = keep(mirror_y(left_arm, 0), (-100, DESCENDER, 900, 100))
-    return merged(v, tail, cap(stroke_centre(tail, DESCENDER + 4), DESCENDER))
+# --- Lettres d'un seul trait : courbe lisse par des points ---
+#
+# Les assemblages gardent des angles aux raccords. Ces lettres-ci sont un seul
+# trait souple, comme celles de Shantell : une courbe sans cassure (spline de
+# Catmull-Rom) passe par des points relevés sur les lignes centrales des lettres
+# de Shantell (ventres du o et du c, hauteur d'x, jambages), puis elle est
+# épaissie au trait des lettres, bouts ronds.
+
+
+def smooth(points) -> list:
+    """Commandes d'une courbe lisse passant par les points (Catmull-Rom)."""
+    padded = [points[0]] + list(points) + [points[-1]]
+    commands = [("M", points[0])]
+    for i in range(1, len(padded) - 2):
+        p0, p1, p2, p3 = padded[i - 1], padded[i], padded[i + 1], padded[i + 2]
+        c1 = (p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6)
+        c2 = (p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6)
+        commands.append(("C", (*c1, *c2, *p2)))
+    return commands
+
+
+def one_stroke(points) -> pathops.Path:
+    return stroked(to_path(smooth(points)))
+
+
+def curvy_alpha(source: TTFont) -> pathops.Path:
+    # Queue du haut, croisement, ventre du c (gauche 96, bas 24, haut 455),
+    # retour par le croisement, queue du bas
+    return one_stroke([
+        (605, 480), (530, 395), (455, 245), (398, 100), (300, 26), (175, 52), (106, 158),
+        (97, 255), (124, 354), (198, 433), (300, 457), (396, 396), (455, 245), (522, 95), (608, 16),
+    ])
+
+
+def curvy_beta(source: TTFont) -> pathops.Path:
+    # La hampe monte du jambage, deux ventres, le second revient vers la hampe
+    return one_stroke([
+        (110, DESCENDER), (104, 40), (100, 330), (108, 570), (150, 695), (245, 726), (345, 700),
+        (392, 622), (358, 530), (262, 480), (205, 466), (275, 456), (390, 420), (462, 310),
+        (465, 175), (405, 62), (290, 18), (180, 32), (112, 90),
+    ])
+
+
+def curvy_gamma(source: TTFont) -> pathops.Path:
+    # Bras gauche courbe, boucle en goutte sous la ligne, bras droit qui remonte
+    return one_stroke([
+        (25, 425), (85, X_HEIGHT), (160, 380), (225, 180), (262, 20), (300, -105), (292, -205),
+        (240, DESCENDER), (192, -175), (205, -70), (262, 25), (345, 210), (420, 380), (478, X_HEIGHT),
+    ])
+
+
+def curvy_delta(source: TTFont) -> pathops.Path:
+    # L'enroulement du haut descend dans le ventre du o, qui fait le tour
+    return one_stroke([
+        (440, 680), (385, ASCENDER), (290, ASCENDER + 5), (215, 700), (220, 630), (305, 565),
+        (420, 470), (478, 330), (470, 180), (400, 60), (292, 22), (170, 40), (100, 130),
+        (92, 250), (130, 360), (220, 435), (330, 455), (420, 420),
+    ])
 
 
 ASSEMBLED: Dict[str, Callable[[TTFont], pathops.Path]] = {
-    "α": assembled_alpha,
-    "β": assembled_beta,
-    "δ": assembled_delta,
     "η": assembled_eta,
     "ι": assembled_iota,
     "λ": assembled_lambda,
@@ -441,7 +432,12 @@ ASSEMBLED: Dict[str, Callable[[TTFont], pathops.Path]] = {
     "φ": assembled_varphi,
     "χ": assembled_chi,
     "ψ": assembled_psi,
-    "γ": assembled_gamma,
+}
+CURVY: Dict[str, Callable[[TTFont], pathops.Path]] = {
+    "α": curvy_alpha,
+    "β": curvy_beta,
+    "γ": curvy_gamma,
+    "δ": curvy_delta,
     "ζ": assembled_zeta,
     "ξ": assembled_xi,
     "ς": assembled_final_sigma,
@@ -556,6 +552,8 @@ def borrowed_path(source: TTFont, char: str) -> pathops.Path:
 
 
 def letter_path(source: TTFont, char: str) -> pathops.Path:
+    if char in CURVY:
+        return CURVY[char](source)
     if char in ASSEMBLED:
         return ASSEMBLED[char](source)
     if char in BORROWED:
