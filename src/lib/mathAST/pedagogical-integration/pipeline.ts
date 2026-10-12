@@ -128,6 +128,7 @@ import { arcsinRule, arctanRule } from '../integration/rules';
 import { PedagogicalIntegrationNotImplemented } from './types';
 import type {
 	IntegrationBindings,
+	PedagogicalDefiniteIntegrationResult,
 	PedagogicalIntegrationOptions,
 	PedagogicalIntegrationResult,
 	PedagogicalIntegrationStep
@@ -165,8 +166,16 @@ import type {
  */
 export function generatePedagogicalIntegrationSteps(
 	integrand: MathNode,
+	options: PedagogicalIntegrationOptions & { readonly definite?: undefined }
+): PedagogicalIntegrationResult;
+export function generatePedagogicalIntegrationSteps(
+	integrand: MathNode,
 	options: PedagogicalIntegrationOptions
-): PedagogicalIntegrationResult {
+): PedagogicalDefiniteIntegrationResult;
+export function generatePedagogicalIntegrationSteps(
+	integrand: MathNode,
+	options: PedagogicalIntegrationOptions
+): PedagogicalDefiniteIntegrationResult {
 	const resolvedVariable = options.variable ?? resolveIntegrationVariable(integrand);
 	const ctx = createContext(options, resolvedVariable);
 
@@ -281,7 +290,7 @@ function generateDefiniteSteps(
 	integrand: MathNode,
 	ctx: DispatchContext,
 	definite: { readonly lower: MathNode; readonly upper: MathNode }
-): PedagogicalIntegrationResult {
+): PedagogicalDefiniteIntegrationResult {
 	const steps: PedagogicalIntegrationStep[] = [];
 
 	if (ctx.strategy.includeIdentify) {
@@ -298,16 +307,10 @@ function generateDefiniteSteps(
 
 	// Valeur interdite de f dans [a ; b] (bornes comprises) : l'intégrale n'est
 	// pas définie, aucune valeur (V28 : ∫₁² 5/(4x² − 9) rendait un nombre à
-	// travers le pôle 3/2). La primitive reste calculée — sans ses étapes —
-	// pour `result.antiderivative`.
-	const forbidden = forbiddenValueOnInterval(
-		integrand,
-		ctx.variable,
-		definite.lower,
-		definite.upper
-	);
-	if (forbidden !== null) {
-		const { antiderivative: rawPrimitive } = integrateNode(integrand, ctx);
+	// travers le pôle 3/2). Contrôle AVANT la primitive : le refus s'affiche
+	// même quand le pipeline ne sait pas l'écrire (∫₀¹ 4/(3x − 2)²).
+	const check = forbiddenValueOnInterval(integrand, ctx.variable, definite.lower, definite.upper);
+	if (check.kind === 'forbidden') {
 		steps.push(
 			buildStep(ctx, {
 				rule: 'integrand-undefined-on-interval',
@@ -315,14 +318,18 @@ function generateDefiniteSteps(
 				after: integrand,
 				variable: ctx.variable,
 				definite,
-				bindings: { point: forbidden }
+				bindings: { point: check.value }
 			})
 		);
-		return {
-			antiderivative: pushSimplifyStep([], rawPrimitive, ctx),
-			undefinedAt: forbidden,
-			steps
-		};
+		return { undefinedAt: check.value, steps };
+	}
+	// Domaine non résolu (eˣ − 2 ≠ 0) et bornes numériques : aucun nombre
+	// publié sans savoir si f est définie sur [a ; b] — repli sur le mode A
+	if (check.kind === 'unchecked' && check.reason === 'unresolved-domain') {
+		throw new PedagogicalIntegrationNotImplemented(
+			integrand,
+			'Intégrale définie : domaine de la fonction non résolu, valeur non garantie'
+		);
 	}
 
 	// Compute the antiderivative pedagogically — without `add-constant`

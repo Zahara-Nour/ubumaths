@@ -8,7 +8,12 @@
 
 import { describe, expect, it } from 'vitest';
 import { add, exp, implicitMultiply, ln, number, power, sin, variable } from '../../factory';
-import { generatePedagogicalIntegrationSteps, PedagogicalIntegrationRenderer } from '..';
+import {
+	generatePedagogicalIntegrationSteps,
+	PedagogicalIntegrationNotImplemented,
+	PedagogicalIntegrationRenderer
+} from '..';
+import { integrateDefinite } from '../../integration/integrate';
 import { parseLatex } from '../../parser';
 import { compile } from '../../eval/compile';
 import { toLatex } from '../../latex-generator';
@@ -313,7 +318,14 @@ describe('intégrale définie : valeur interdite dans [a ; b] (V28)', () => {
 		['\\frac{3}{2x-1}', '0', '1', 'x = \\dfrac{1}{2}', '\\left[ 0 ; 1 \\right]'],
 		['\\frac{3}{x}', '-1', '1', 'x = 0', '\\left[ -1 ; 1 \\right]'],
 		// exclusion périodique : premier point interdit de [0 ; 2]
-		['\\tan(x)', '0', '2', 'x = \\dfrac{\\pi}{2}', '\\left[ 0 ; 2 \\right]']
+		['\\tan(x)', '0', '2', 'x = \\dfrac{\\pi}{2}', '\\left[ 0 ; 2 \\right]'],
+		// exclusion périodique, borne négative et k ≠ 0 : fraction unique
+		['\\tan(x)', '-2', '-1', 'x = -\\dfrac{\\pi}{2}', '\\left[ -2 ; -1 \\right]'],
+		['\\tan(x)', '3', '5', 'x = \\dfrac{3 \\pi}{2}', '\\left[ 3 ; 5 \\right]'],
+		// primitive que le pipeline ne sait pas calculer : le refus s'affiche quand même
+		['\\frac{4}{(3x-2)^2}', '0', '1', 'x = \\dfrac{2}{3}', '\\left[ 0 ; 1 \\right]'],
+		['\\tan(2x)', '0', '1', 'x = \\dfrac{\\pi}{4}', '\\left[ 0 ; 1 \\right]'],
+		['\\ln(2x-1)', '0', '1', 'x = 0', '\\left[ 0 ; 1 \\right]']
 	])(
 		'∫ %s sur [%s ; %s] : une étape dit que l’intégrale n’est pas définie, aucune valeur',
 		(integrand, lower, upper, point, interval) => {
@@ -330,9 +342,10 @@ describe('intégrale définie : valeur interdite dans [a ; b] (V28)', () => {
 			expect(refusal.expressionLatex).toContain(
 				'\\text{l’intégrale n’est pas définie sur cet intervalle.}'
 			);
-			// aucune valeur calculée, nulle part dans la correction
+			// aucune valeur calculée, nulle part dans la correction (hors intégrande)
+			const integrandLatex = toLatex(parseLatex(integrand));
 			for (const step of rendered) {
-				expect(step.expressionLatex).not.toContain('\\ln');
+				expect((step.expressionLatex ?? '').replaceAll(integrandLatex, '')).not.toContain('\\ln');
 			}
 		}
 	);
@@ -374,5 +387,34 @@ describe('intégrale définie : valeur interdite dans [a ; b] (V28)', () => {
 		const { result, rendered } = renderDefinite('\\frac{1}{x}', '1', 'a');
 		expect(rendered.map((s) => s.rule)).not.toContain('integrand-undefined-on-interval');
 		expect(result.value).toBeDefined();
+	});
+});
+
+describe('intégrale définie : refus, suites de la revue de V28', () => {
+	it('une somme sous ∫ est entre parenthèses dans l’étape de refus', () => {
+		const { rendered } = renderDefinite('\\frac{2}{x}+3x', '-1', '1');
+		expect(rendered[rendered.length - 1].expressionLatex).toContain(
+			'\\int_{-1}^{1} \\left( \\dfrac{2}{x} + 3 x \\right)\\,dx'
+		);
+	});
+
+	it('domaine non résolu, bornes numériques : aucun nombre publié (repli sur le mode A)', () => {
+		// pôle ln 2 ∈ [0 ; 1] que `domain/` ne sait pas résoudre (eˣ − 2 ≠ 0)
+		expect(() => renderDefinite('\\frac{e^x}{e^x-2}', '0', '1')).toThrow(
+			PedagogicalIntegrationNotImplemented
+		);
+		// le mode A (moteur) refuse aussi
+		const engine = integrateDefinite(
+			parseLatex('\\frac{e^x}{e^x-2}'),
+			parseLatex('0'),
+			parseLatex('1'),
+			{ variable: 'x' }
+		);
+		expect(engine.value).toBeNull();
+	});
+
+	it('un refus ne calcule pas la primitive : `antiderivative` absent', () => {
+		const { result } = renderDefinite('\\frac{4}{(3x-2)^2}', '0', '1');
+		expect(result.antiderivative).toBeUndefined();
 	});
 });

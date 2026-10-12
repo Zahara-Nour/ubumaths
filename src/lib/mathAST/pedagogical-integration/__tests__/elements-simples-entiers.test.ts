@@ -134,7 +134,9 @@ describe('intégration pédagogique — éléments simples à facteurs entiers',
 	it('\\frac{3x+1}{6x^2-x-1} = 1/(2x − 1) : primitive en ln|2x − 1|', () => {
 		const { result } = run('\\frac{3x+1}{6x^2-x-1}');
 		expect(toLatex(result.antiderivative)).not.toMatch(/\\left\| [^|]*\\dfrac/);
-		expect(toLatex(result.antiderivative)).toContain(LN('2 x - 1'));
+		const primitive = result.antiderivative;
+		if (!primitive) throw new Error('pas de primitive');
+		expect(toLatex(primitive)).toContain(LN('2 x - 1'));
 	});
 
 	it('\\frac{x}{4x^2-1} reste juste, sans fraction dans la valeur absolue', () => {
@@ -210,6 +212,8 @@ describe('intégration pédagogique — éléments simples à facteurs entiers',
 		if (!value) throw new Error('pas de valeur');
 		expect(toLatex(value)).not.toMatch(/\d\.\d/);
 		expect(compile(value)({})).toBeCloseTo(Math.log(9 / 5) / 4, 12);
-		expect(toLatex(result.antiderivative)).toContain(LN('2 x - 1'));
+		const primitive = result.antiderivative;
+		if (!primitive) throw new Error('pas de primitive');
+		expect(toLatex(primitive)).toContain(LN('2 x - 1'));
 	});
 });

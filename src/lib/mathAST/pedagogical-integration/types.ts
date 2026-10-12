@@ -194,7 +194,9 @@ export interface PedagogicalIntegrationStep extends BaseStep<PedagogicalIntegrat
 /**
  * Output of running the pedagogical integration pipeline.
  *
- * - `antiderivative` is always populated (the F(x) such that F'(x) = f(x)).
+ * - `antiderivative` is always populated (the F(x) such that F'(x) = f(x)),
+ *   except for a definite integral refused because of a forbidden value
+ *   (see `PedagogicalDefiniteIntegrationResult`).
  * - `value` is populated only for definite integrals (the numeric value of
  *   F(b) - F(a)).
  */
@@ -217,6 +219,16 @@ export interface PedagogicalIntegrationResult {
 
 	/** Recorded steps (top-level entries; subSteps live inside each entry) */
 	readonly steps: readonly PedagogicalIntegrationStep[];
+}
+
+/**
+ * Résultat d'une intégrale définie : comme `PedagogicalIntegrationResult`,
+ * mais sans primitive quand f a une valeur interdite dans [a ; b]
+ * (`undefinedAt`) — le refus ne la calcule pas (V28).
+ */
+export interface PedagogicalDefiniteIntegrationResult
+	extends Omit<PedagogicalIntegrationResult, 'antiderivative'> {
+	readonly antiderivative?: MathNode;
 }
 
 // =============================================================================

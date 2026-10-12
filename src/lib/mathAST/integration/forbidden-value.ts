@@ -9,9 +9,12 @@
  *
  * Valeurs examinées : les points exclus (pôles, dénominateurs nuls), les
  * extrémités des intervalles du domaine (ln x sur [−1 ; 1] : 0), les bornes
- * elles-mêmes, et le premier point d'une exclusion périodique (tan). Un domaine
- * non résolu (dénominateur e^x − 2) ou des bornes littérales : null, le
- * comportement reste celui d'avant (V28).
+ * elles-mêmes, et le premier point d'une exclusion périodique (tan).
+ *
+ * Trois issues (`IntervalCheck`) : f définie sur [a ; b] ; valeur interdite
+ * trouvée ; contrôle impossible — bornes littérales (comportement d'avant :
+ * la valeur reste symbolique) ou domaine non résolu (dénominateur e^x − 2 :
+ * l'appelant ne doit publier aucun nombre).
  *
  * @module mathAST/integration/forbidden-value
  */
@@ -26,6 +29,7 @@ import { add, divide, multiply } from '../factory';
 import { numericNode } from '../common/numeric';
 import { isDivision } from '../guards';
 import { mapNode } from '../transforms';
+import { tidyTerms } from '../tidy/terms';
 
 // =============================================================================
 // Constantes
@@ -39,7 +43,7 @@ const BOUND_TOLERANCE = 1e-12;
 // =============================================================================
 
 /** Valeur numérique d'une constante (π, √2 compris), NaN si littérale */
-function numericValue(node: MathNode): number {
+export function numericValue(node: MathNode): number {
 	try {
 		return compile(node)({});
 	} catch {
@@ -47,11 +51,14 @@ function numericValue(node: MathNode): number {
 	}
 }
 
-/** Forme exacte réduite (`π/2 + 1·π` → `3π/2`), ou le nœud tel quel */
+/**
+ * Forme exacte réduite, écrite comme à la main : `π/2 + 1·π` → `\dfrac{3\pi}{2}`
+ * (`evaluate` seul rend `\dfrac{3}{2}\pi`), ou le nœud tel quel
+ */
 function reduced(node: MathNode): MathNode {
 	try {
 		const result = evaluate(node, { mode: 'exact' });
-		if (isEvalValue(result)) return result.node;
+		if (isEvalValue(result)) return tidyTerms(result.node);
 	} catch {
 		/* forme brute */
 	}
@@ -95,37 +102,47 @@ function candidatesOf(domain: Domain, lo: number): MathNode[] {
 // Point d'entrée
 // =============================================================================
 
+/** Issue du contrôle de f sur [a ; b] */
+export type IntervalCheck =
+	| { readonly kind: 'defined' }
+	| { readonly kind: 'forbidden'; readonly value: MathNode }
+	| { readonly kind: 'unchecked'; readonly reason: 'literal-bounds' | 'unresolved-domain' };
+
 /**
  * Première valeur de [a ; b] (bornes comprises, dans un sens ou dans l'autre)
- * où `integrand` n'est pas défini, en écriture exacte ; null si f est définie
- * sur tout [a ; b], ou si le contrôle est impossible (bornes littérales,
- * domaine non résolu).
+ * où `integrand` n'est pas défini, en écriture exacte (`forbidden`) ;
+ * `defined` si f est définie sur tout [a ; b] ; `unchecked` si le contrôle est
+ * impossible (bornes littérales, domaine non résolu ou non calculable).
  *
  * @example
  * forbiddenValueOnInterval(parseLatex('\\frac{5}{4x^2-9}'), 'x', number('1'), number('2'))
- * // → 3/2
+ * // → { kind: 'forbidden', value: 3/2 }
  */
 export function forbiddenValueOnInterval(
 	integrand: MathNode,
 	variable: string,
 	lower: MathNode,
 	upper: MathNode
-): MathNode | null {
+): IntervalCheck {
 	const a = numericValue(lower);
 	const b = numericValue(upper);
-	if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+	if (!Number.isFinite(a) || !Number.isFinite(b)) {
+		return { kind: 'unchecked', reason: 'literal-bounds' };
+	}
 	const lo = Math.min(a, b);
 	const hi = Math.max(a, b);
 
 	let domain: Domain;
 	try {
 		const result = computeDomain(integrand, variable);
-		if (result.unresolved && result.unresolved.length > 0) return null;
+		if (result.unresolved && result.unresolved.length > 0) {
+			return { kind: 'unchecked', reason: 'unresolved-domain' };
+		}
 		domain = result.domain;
 	} catch {
-		return null;
+		return { kind: 'unchecked', reason: 'unresolved-domain' };
 	}
-	if (domain.kind === 'universal') return null;
+	if (domain.kind === 'universal') return { kind: 'defined' };
 
 	const margin = BOUND_TOLERANCE * Math.max(1, Math.abs(lo), Math.abs(hi));
 	const inside = [lower, upper, ...candidatesOf(domain, lo)]
@@ -134,5 +151,7 @@ export function forbiddenValueOnInterval(
 		.sort((p, q) => p.value - q.value);
 
 	const forbidden = inside.find(({ value }) => !containsValue(domain, value));
-	return forbidden ? asFractions(forbidden.node) : null;
+	return forbidden
+		? { kind: 'forbidden', value: asFractions(forbidden.node) }
+		: { kind: 'defined' };
 }
