@@ -796,6 +796,58 @@ et restent comme gardes).
   avant la PR, ou `Doc-reportée:` si David reporte — les retirer laisserait l'écran prof et la page
   publique en produit alors que leur PDF passe en longueur.
 
+## Lot positivité — fait (2026-10-12) : une longueur est strictement positive (Q-F)
+
+Décision de David : en mode longueur, `AB > 0` par défaut, par les hypothèses / `numtype` et le
+domaine de `solve` ; une hypothèse déclarée sur `AB` garde la priorité ; `AA` (points identiques)
+n'est pas supposé positif. Tests : `src/lib/mathAST/__tests__/segment-length-positivite.test.ts`
+(30 cas, 14 rouges avant le code ; les 16 autres — mode produit, minuscules, `AA`, `|AB−CD|` —
+gardent l'existant).
+
+- **`numtype`** (`inferSegmentLengthType`) : réel positif, sauf `AB`/`BA` déclaré (le type
+  déclaré, même s'il dit moins : `nonzero`, `integer`), points identiques (`isDegenerateSegment`,
+  `common/segment-names.ts`) ou `ctx.strict` (comportement d'avant).
+- **`areEquivalent`** : `assumptionOracle(assumptions, [a, b])` existe dès qu'une expression
+  mentionne une longueur, et ne répond que pour un nœud qui en mentionne une (ou une variable
+  déclarée) ; `segmentLength` entre dans la liste blanche `isPlainAlgebra`.
+- **`simplify`** : le `normalize` du post-traitement reçoit `segmentLengthOracle(ctx, [node])`.
+- **`solve`** : longueur inconnue (points distincts, pas de `domain` de l'appelant) → solutions
+  hors de ]0 ; +∞[ exclues (numériques : `containsNode` ; littérales : `numtype` négatif ou nul ;
+  signe inconnu gardé, `10 − BC`), avec une étape `domain-exclusion` ; `a·L² + c = 0` → `√(−c/a)`.
+
+| Saisie (mode longueur)               | Avant                        | Après          |
+| ------------------------------------ | ---------------------------- | -------------- |
+| `\sqrt{AB^2}` simplifié              | `\sqrt{AB^2}` (pas `\|AB\|`) | `AB`           |
+| `\|AB\|` simplifié                   | `\|AB\|`                     | `AB`           |
+| `AB^2=9` résolu                      | `±3`                         | `3`            |
+| `(2AB)^2=36`                         | `±3`                         | `3`            |
+| Pythagore littéral en AB             | `±½√(4AC²+4BC²)`             | `√(AC² + BC²)` |
+| `\sqrt{AB^2}` ≡ `AB` (« à mesurer ») | **faux**                     | vrai           |
+| `\sqrt{9AB^2}` simplifié             | `\sqrt{9AB^2}`               | `3AB`          |
+| `\frac{AB}{AB}`                      | `1`                          | `1`            |
+| `x^2=9`, `\|AA\|`, mode produit      | —                            | inchangés      |
+
+**Non-régression** : banc avant/après (copie de `origin/main` contre la branche) sur les 4 122
+chaînes de l'empreinte du lot 1 + 12 cas : `simplify`, `solve` (relations `=`) et `areEquivalent`
+(paires consécutives) — **3 327 saisies en mode produit : 0 différence ; 3 143 sans longueur en
+mode longueur : 0 différence** (187 à longueur exclues) ; témoin `√(AB²) ≡ AB` faux avant, vrai
+après. Suites `src/lib/mathAST` : 499 fichiers, 20 970 tests verts (2 tests du lot 2 mis à jour :
+`AB^2 = 25` et Pythagore littéral ne rendent plus que la valeur positive).
+
+**À trancher par David** :
+
+1. **Intentions pédagogiques** : `auto`/`reduire`/`developper` rendent `3|AB|` pour `√(9AB²)`,
+   `developper` rend `|AB|` pour `√(AB²)` (leur `normalize` n'a pas l'oracle). Aligner sur
+   `simplify` ? (ADR 0007.)
+2. **`checkForm`** non touché : `|AB|` pour l'attendu `AB` garde sa valeur absolue (forme).
+3. **Hypothèse déclarée plus faible** (`AB: 'nonzero'` ou `'integer'`) : elle remplace la
+   positivité par défaut (choix prudent) au lieu de s'y ajouter.
+4. **`solve` avec un `domain` de l'appelant** : il remplace la positivité (même lecture
+   « déclaration prioritaire »), il ne s'y ajoute pas.
+5. **`AB^2 = 0`** : `AB = 0` est exclu (strictement positive) → aucune solution.
+6. **`numtype` ne propage pas le signe par une puissance réelle** (`AB²` : signe inconnu, `√…` :
+   complexe) : préexistant, non touché (changerait les verdicts sous hypothèses déclarées).
+
 ## Journal
 
 - 2026-10-11 — préparation : mesure du parseur et des questions en base ; questions de phase 0.

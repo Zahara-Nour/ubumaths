@@ -188,6 +188,22 @@ travail, et le panel le rend visible.
    (barrière de coût), et le **quotient** `e^{2x}/e^x` n'est réduit par aucune
    colonne.
 
+## Longueurs de segments (mode `capitalPairs: 'length'`)
+
+Une longueur `AB` est strictement positive par défaut (lot Q-F, 2026-10-12). Mesuré le
+2026-10-12, hors panel (le panel lit en mode produit, défaut du parseur) :
+
+| entrée          | `simplify` | `auto`                  | `reduire`               | `developper`            | `factoriser`    |
+| --------------- | ---------- | ----------------------- | ----------------------- | ----------------------- | --------------- |
+| `\sqrt{AB^2}`   | `AB`       | `AB`                    | `AB`                    | `\left\| AB \right\|`   | `\sqrt{AB^2}`   |
+| `\|AB\|`        | `AB`       | `AB`                    | `AB`                    | `AB`                    | `AB`            |
+| `\sqrt{9AB^2}`  | `3 AB`     | `3 \left\| AB \right\|` | `3 \left\| AB \right\|` | `3 \left\| AB \right\|` | `\sqrt{9 AB^2}` |
+| `\frac{AB}{AB}` | `1`        | `1`                     | `1`                     | `1`                     | `1`             |
+
+Les intentions (`pedagogical-simplify`) n'ont pas l'oracle des longueurs : seule leur règle de
+motif `|x| → x` (contrainte `P.isPositive`) voit la positivité, par `numtype` ; leur `normalize`
+ne la voit pas, d'où `3|AB|`. Écart connu, à trancher (ADR 0007 : un seul moteur, décidé, pas fait).
+
 ## Non couvert
 
 **Les grandeurs avec unités** n'entrent pas dans ce panel : elles ne se lisent
