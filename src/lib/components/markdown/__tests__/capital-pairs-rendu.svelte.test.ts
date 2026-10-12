@@ -8,6 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import CapitalPairsProviderHarness from './CapitalPairsProviderHarness.svelte';
+import InlineCapitalPairsHarness from './InlineCapitalPairsHarness.svelte';
 import type { CapitalPairs } from '$lib/mathAST/parser/types';
 
 const contenu = 'Dans le triangle ~ABC~, ~AB^2=AC^2+BC^2~.';
@@ -62,5 +63,13 @@ describe('clearCapitalPairs : un rendu enfant revient au produit', () => {
 				.join(' | ');
 		await expect.poll(() => latexIn('exercise')).toContain('AB^2');
 		await expect.poll(() => latexIn('chat')).toContain('A B^2');
+	});
+
+	it('InlineMarkdown : le sens passé en prop l’emporte sur celui de la page (titres d’une liste)', async () => {
+		const screen = await render(InlineCapitalPairsHarness, {
+			props: { content: 'Exercice ~AB^2~', pageCapitalPairs: 'length', capitalPairs: 'product' }
+		});
+		const el = screen.container;
+		await expect.poll(() => el.querySelector('math-span')?.textContent ?? '').toContain('A B^2');
 	});
 });

@@ -25,6 +25,13 @@ import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 /**
  * Parameters for generating a worksheet instance
  */
+/**
+ * Champs de l'exercice lus par les routes qui génèrent les copies (`/instances`,
+ * `/preview`) : tout ce que `resolveExercise` lit doit y être. Sans `topic`, le sens
+ * de `AB` serait résolu sans thème (longueur) et stocké tel quel (`instance_data`).
+ */
+export const GENERATION_EXERCISE_FIELDS = 'id, title, variables, shared, variations, topic';
+
 export interface GenerateInstanceParams {
 	worksheetId: string;
 	studentId: string;
