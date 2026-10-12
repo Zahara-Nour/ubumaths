@@ -2,15 +2,20 @@
 	GeneratedStepsCorrection
 	========================
 
-	Renders a pre-computed `RenderedStep[]` produced by the mathAST pedagogical
-	pipelines (`pedagogical-arithmetic` / `pedagogical-solve/linear`). Used by
-	`CorrectionCard.svelte` when an instance carries Mode B steps
-	(`correction._renderedSteps`).
+	Affiche les `RenderedStep[]` produits par les pipelines pédagogiques de
+	mathAST (arithmétique, premier et second degré, dérivation, intégration,
+	simplification, limites, domaine…). Monté par `CorrectionCard` (étapes du
+	mode B, `correction._renderedSteps`), `CourseCardBack`, la vue Calcul de
+	l'atelier (`CalculView`) et la page de debug `correction-mode-b`.
 
 	V1 layout (passive) :
 	- Vertical numbered list, one block per step.
 	- Each block shows the rule's title (per-level vocabulary already baked
 	  into the RenderedStep by the pedagogical renderer).
+	- Titre et explication passent par `InlineMarkdown` (ubumark) : leurs
+	  formules sont écrites entre `$…$` par les pipelines et s'affichent en
+	  maths, le reste en texte (V25). Garde-fou côté moteur :
+	  `mathAST/__tests__/prose-maths-delimitees.test.ts`.
 	- The transformation `\begin{aligned}...\end{aligned}` LaTeX is rendered
 	  via the existing MarkdownRenderer wrapped in `$$...$$`.
 	- Explanations are displayed only when `verbosity === 'detailed'` AND the
@@ -26,6 +31,7 @@
 <script lang="ts">
 	import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
 	import { signTableNode } from '$lib/ubumark/builders/sign-table';
 
@@ -41,7 +47,7 @@
 	<li class="generated-step" class:nested={depth > 0}>
 		<div class="step-header">
 			<span class="step-number">Étape {index + 1}</span>
-			<span class="step-title">{step.title}</span>
+			<span class="step-title"><InlineMarkdown content={step.title} /></span>
 		</div>
 
 		<!--
@@ -61,7 +67,7 @@
 		{/if}
 
 		{#if verbosity === 'detailed' && step.explanation}
-			<div class="step-explanation">{step.explanation}</div>
+			<div class="step-explanation"><InlineMarkdown content={step.explanation} /></div>
 		{/if}
 
 		{#if step.subSteps && step.subSteps.length > 0}

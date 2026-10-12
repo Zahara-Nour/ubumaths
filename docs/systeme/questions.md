@@ -117,7 +117,8 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   `MultipleChoiceInput.svelte`, `src/lib/components/markdown/nodes/BlankInput.svelte` (case de texte `[_]`).
 - Affichage et correction : `src/lib/components/questions/` — `QuestionCard.svelte` et
   `FlashCard.svelte` (appellent `validateAnswer`), `CorrectionCard.svelte`, `CorrectionView.svelte`,
-  `ExpectedResultView.svelte`, `GeneratedStepsCorrection.svelte`, `CourseCardView.svelte`,
+  `ExpectedResultView.svelte`, `GeneratedStepsCorrection.svelte` (étapes générées : titre et
+  explication rendus par `InlineMarkdown`, formules entre `$…$` depuis V25), `CourseCardView.svelte`,
   `TestSpecEditor.svelte`.
 - Éditeur : `src/lib/components/QuestionTemplateForm.svelte`, `SharedFieldsEditor.svelte`,
   `exercises/VariationEditor.svelte`.

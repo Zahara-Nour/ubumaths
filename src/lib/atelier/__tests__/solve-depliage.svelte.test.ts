@@ -81,7 +81,8 @@ describe('le dépliage des étapes', () => {
 		await tick();
 
 		expect(racine.textContent).toContain(TITRE);
-		expect(racine.textContent).toContain('On divise les deux membres par 3');
+		// Une formule `$…$` du titre est précédée d'une espace demi-cadratin (V25)
+		expect(racine.textContent?.replace(/\s+/g, ' ')).toContain('On divise les deux membres par 3');
 	});
 
 	it('recliquer les replie', async () => {
@@ -107,7 +108,8 @@ describe('le dépliage des étapes', () => {
 		await tick();
 
 		expect(racine.textContent).toContain('Inéquation du premier degré');
-		expect(racine.textContent).toContain('On divise les deux membres par 2');
+		// Une formule `$…$` du titre est précédée d'une espace demi-cadratin (V25)
+		expect(racine.textContent?.replace(/\s+/g, ' ')).toContain('On divise les deux membres par 2');
 	});
 
 	it('une commande sans étapes n’offre pas le bouton', () => {

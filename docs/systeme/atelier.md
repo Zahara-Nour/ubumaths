@@ -381,7 +381,9 @@ Bouton « Exporter » de la vue Calcul (`history-export.ts`) :
 - **JSON** (`historyToJson`, format `HISTORY_FORMAT` = `chiphre-calcul`) pour rejouer : chaque
   entrée garde son **geste** (`ReplayStep` : `saisie`, `action`, `supprimer`, `annuler`, `garder`)
   et sa réponse ;
-- **ubumark** (`historyToUbumark`) pour recopier dans une fiche, formules en `$…$` LaTeX.
+- **ubumark** (`historyToUbumark`) pour recopier dans une fiche, formules en `$…$` LaTeX. Le
+  titre d'une étape garde ses formules `$…$` (V25 : les pipelines pédagogiques y écrivent leurs
+  maths) ; le texte autour est neutralisé (`*` → `×`, `\$`, `\~`).
 
 Rejeu (`CalcDesk.replay`) : le fichier vient de dehors, donc `readHistory` le valide (Zod) et le
 borne (`MAX_HISTORY_BYTES`, `MAX_HISTORY_ENTRIES`) avant tout. Chaque geste est refait **par le
@@ -459,7 +461,8 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
     remplacement de `\euler` dans `render.ts` sont retirés). `e` n'est jamais une variable :
     `.dériver 3e^2 ; e` est refusé (« e est la constante d'Euler, pas une variable »).
 11. **Seul l'affichage passe à la virgule décimale** : le moteur, l'arbre gardé et le rejeu
-    restent en `0.5` (`decimal-comma.ts`).
+    restent en `0.5` (`decimal-comma.ts`). Dans le titre ou l'explication d'une étape,
+    `decimalCommaProse` écrit `0,5` dans la phrase et `0{,}5` dans une formule `$…$` (V25).
 12. **On ne valide pas** les réponses de l'élève (décision figée n° 2).
 
 ---

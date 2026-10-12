@@ -55,7 +55,8 @@ import {
 	isConstantCoefficient,
 	isZero,
 	makeStep,
-	renumberSteps
+	renumberSteps,
+	domainDescriptionLatex
 } from './_helpers';
 import {
 	_buildStandardizeStep,
@@ -137,7 +138,7 @@ function buildConcludeFromIsolatedSquareStep(
 	return makeStep({
 		id: idGen(),
 		rule: 'inequality-conclude-from-isolated-square',
-		description: `Solution : ${solutionDescription}`,
+		description: `Solution : $${domainDescriptionLatex(solutionDescription)}$`,
 		before: originalIneq,
 		after: originalIneq,
 		operation: {
@@ -347,7 +348,7 @@ function buildConcludeStep(
 	return makeStep({
 		id: idGen(),
 		rule: 'inequality-conclude-quadratic',
-		description: `Solution : ${solutionDescription}`,
+		description: `Solution : $${domainDescriptionLatex(solutionDescription)}$`,
 		before: originalIneq,
 		after: originalIneq,
 		operation: {

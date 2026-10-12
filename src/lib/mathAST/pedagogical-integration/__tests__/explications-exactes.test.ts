@@ -51,7 +51,7 @@ describe('V22 — décomposition en éléments simples : le dénominateur factor
 	for (const c of CASES) {
 		it(`${c.latex} : « ${c.equality} », égalité vérifiée numériquement`, () => {
 			const explanation = explanationOf(c.latex, 'decompose-rational');
-			expect(explanation).toContain(`On factorise le dénominateur : ${c.equality}.`);
+			expect(explanation).toContain(`On factorise le dénominateur : $${c.equality}$.`);
 
 			const [left, right] = c.equality.split(' = ').map((side) => compile(parseLatex(side)));
 			for (const x of [-2.5, -0.3, 0.7, 3.1]) {
@@ -73,18 +73,34 @@ describe('V24 — choix de u et dv : du = dx, jamais « 1 dx »', () => {
 		['x\\cos x', 'du = dx'],
 		['-xe^x', 'du = -dx'],
 		['(1-x)e^x', 'du = -dx'],
-		['3xe^x', 'du = 3 dx'],
-		['x^2e^x', 'du = 2 x dx']
+		['3xe^x', 'du = 3\\,dx'],
+		['x^2e^x', 'du = 2 x\\,dx']
 	])('∫%s : « %s »', (latex, expected) => {
 		const explanation = explanationOf(latex, 'choose-u-dv');
-		expect(explanation).toContain(`${expected} et v =`);
+		expect(explanation).toContain(`$${expected}$ et $v =`);
 	});
 
 	it('aucune explication n’écrit « 1 dx », « -1 dx » ni « 1 x »', () => {
 		for (const latex of ['xe^{2x}', 'xe^x', '(1-x)e^x', '-xe^x', 'x^2e^x', '\\ln x', 'x\\ln x']) {
 			for (const step of renderedSteps(latex)) {
-				expect(step.explanation ?? '').not.toMatch(/(^|[^\d.])1 (dx|x)\b/);
+				// `\,dx` en LaTeX depuis V25 (les maths de la prose sont entre `$…$`)
+				expect(step.explanation ?? '').not.toMatch(/(^|[^\d.])1( |\\,| \\cdot )(dx|x)\b/);
 			}
 		}
+	});
+});
+
+describe('V25 (revue) — une constante négative s’écrit entre parenthèses sous ∫', () => {
+	it.each([
+		['-3x^2', 'extract-constant', '\\int \\left( -3 \\right) f(x)\\,dx = -3 \\int f(x)\\,dx'],
+		['-\\dfrac{1}{2}e^x', 'extract-constant', '\\int \\left( -\\dfrac{1}{2} \\right) f(x)\\,dx'],
+		['2x^3', 'extract-constant', '\\int 2 f(x)\\,dx = 2 \\int f(x)\\,dx'],
+		['-x^3', 'extract-constant', '\\int \\left( -1 \\right) f(x)\\,dx = -\\int f(x)\\,dx'],
+		['-3', 'apply-constant-rule', '\\int \\left( -3 \\right)\\,dx = -3 x'],
+		['5', 'apply-constant-rule', '\\int 5\\,dx = 5 x']
+	])('∫%s, %s : « %s »', (latex, rule, expected) => {
+		const explanation = explanationOf(latex, rule);
+		expect(explanation).toContain(`$${expected}`);
+		expect(explanation).not.toMatch(/\\int -/);
 	});
 });

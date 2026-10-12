@@ -189,7 +189,8 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 
 const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	// At supérieur the audience is assumed familiar — keep it tight.
-	'identify-limit': (s) => `Calcul de \\lim_{${s.variable} \\to ${approachLabel(s)}}`,
+	// Formule entre `$…$` : la prose est rendue par `InlineMarkdown` (V25)
+	'identify-limit': (s) => `Calcul de $\\lim_{${s.variable} \\to ${approachLabel(s)}}$`,
 	'detect-indeterminate-form': (s) => `Forme indéterminée ${formLabel(s.indeterminateForm)}`,
 	'apply-direct-substitution': () => `Continuité : substitution directe`,
 	'apply-known-limit': (s) => s.description,
@@ -205,8 +206,8 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'limits-of-terms': () => `Limites des termes`,
 	'apply-growth-comparison': () => `Croissances comparées`,
 	'compute-asymptotic-equivalent': () => `Équivalent asymptotique`,
-	'analyze-left-limit': (s) => `\\lim_{${s.variable} \\to ${approachLabel(s)}^-}`,
-	'analyze-right-limit': (s) => `\\lim_{${s.variable} \\to ${approachLabel(s)}^+}`,
+	'analyze-left-limit': (s) => `$\\lim_{${s.variable} \\to ${approachLabel(s)}^-}$`,
+	'analyze-right-limit': (s) => `$\\lim_{${s.variable} \\to ${approachLabel(s)}^+}$`,
 	'compare-one-sided': () => `Comparaison gauche/droite`,
 	'identify-bounds': () => `Encadrement`,
 	// Vocab : « théorème d'encadrement (squeeze) » au sup, pas « gendarmes »
