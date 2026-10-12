@@ -98,6 +98,54 @@ function refuseTrigPole(name: string, denominator: number, argument: number): vo
  */
 const MAX_EXACT_INTEGER_EXPONENT = 1000;
 
+/**
+ * Le budget de taille de la lecture de l'arrondi (`evaluateNodeToRational`), au-delà de
+ * l'exposant 1000 et de la borne des factorielles (lot « lenteur des grandes fractions »,
+ * phase 0 validée par David le 2026-10-12). Une écriture gardée (`1.5^{2000}`, `1000!`) y trouve
+ * sa valeur approchée, exacte puis arrondie. Le plus petit des deux termes reste sous
+ * 30 000 bits : c'est leur pgcd (Euclide, quadratique) qui coûte — e et π, fractions de
+ * 16 chiffres, gardent donc la limite de l'exposant 1000. Le plus grand reste sous
+ * 500 000 bits (2^{100000}, 10000! y tiennent ; une puissance native, sans pgcd).
+ */
+const BUDGET_SMALLER_TERM_BITS = 30_000;
+const BUDGET_LARGER_TERM_BITS = 500_000;
+
+/**
+ * Vrai pendant `evaluateNodeToRational` seulement : le calcul décimal général (`evaluate`,
+ * `evaluateNodeToApproximatedNumber`, une quarantaine d'appelants) garde ses bornes — sa
+ * factorielle rend un entier exact en `number`, et une puissance hors du flottant y est refusée.
+ */
+let withinSizeBudget = false;
+
+/** log₂ d'un entier positif, même au-delà des flottants. */
+function log2Of(x: bigint): number {
+	if (x <= 1n) return 0;
+	return x < 2n ** 53n ? Math.log2(Number(x)) : x.toString(2).length;
+}
+
+/** log₂(n!), par la formule de Stirling. */
+function log2Factorial(n: number): number {
+	if (n < 2) return 0;
+	return (n * Math.log(n) - n + 0.5 * Math.log(2 * Math.PI * n)) / Math.LN2;
+}
+
+/** base^k se calcule exactement : exposant ≤ 1000, ou, dans le budget, une taille raisonnable. */
+function exactPowerAllowed(base: Rational, k: number): boolean {
+	if (Math.abs(k) <= MAX_EXACT_INTEGER_EXPONENT) return true;
+	if (!withinSizeBudget) return false;
+	const numerator = log2Of(base.n < 0n ? -base.n : base.n) * Math.abs(k);
+	const denominator = log2Of(base.d) * Math.abs(k);
+	return (
+		Math.min(numerator, denominator) <= BUDGET_SMALLER_TERM_BITS &&
+		Math.max(numerator, denominator) <= BUDGET_LARGER_TERM_BITS
+	);
+}
+
+/** Une factorielle (`log₂` de son résultat) que le budget autorise. */
+function budgetedLog2(log2: number, name: string): void {
+	if (log2 > BUDGET_LARGER_TERM_BITS) throw new Error(`${name}: result too large to stay exact`);
+}
+
 /** Le refus d'une puissance qui sort du flottant (0 ou ±Infinity pour une base non nulle). */
 const OUT_OF_SCALE =
 	'Valeur hors d’échelle : cette puissance sort des nombres que le calcul approché représente';
@@ -555,13 +603,24 @@ function evaluateFunctionToRational(
 			break;
 		case 'factorial': {
 			if (numArgs.length !== 1) throw new Error('factorial requires exactly 1 argument');
-			return fromInteger(exactFactorial(naturalArgument(rationalArgs[0], 'factorial')));
+			const factorialN = naturalArgument(rationalArgs[0], 'factorial');
+			if (withinSizeBudget) {
+				budgetedLog2(log2Factorial(Number(factorialN)), 'factorial');
+				return fromInteger(exactFactorial(factorialN, false));
+			}
+			return fromInteger(exactFactorial(factorialN));
 		}
 		case 'binom': {
 			if (numArgs.length !== 2) throw new Error('binom requires exactly 2 arguments');
 			const binomN = naturalArgument(rationalArgs[0], 'binom');
 			const binomK = rationalArgs[1];
 			if (!isIntegerRational(binomK)) throw new Error('binom requires integer arguments');
+			if (withinSizeBudget) {
+				const n = Number(binomN);
+				const k = Math.min(Math.max(Number(binomK.n), 0), n);
+				budgetedLog2(log2Factorial(n) - log2Factorial(k) - log2Factorial(n - k), 'binom');
+				return fromInteger(exactBinomial(binomN, binomK.n, false));
+			}
 			return fromInteger(exactBinomial(binomN, binomK.n));
 		}
 		case 'gcd': {
@@ -712,7 +771,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		// For integer exponent, use exact Rational power
 		if (isIntegerRational(exp)) {
 			const expNum = Number(exp.n);
-			if (Number.isSafeInteger(expNum) && Math.abs(expNum) <= MAX_EXACT_INTEGER_EXPONENT) {
+			if (Number.isSafeInteger(expNum) && exactPowerAllowed(base, expNum)) {
 				return powRational(base, expNum);
 			}
 		}
@@ -832,7 +891,13 @@ export function evaluateNodeToApproximatedNumber(
  * @throws comme `evaluateNodeToApproximatedNumber`, si le nœud n'est pas numérique
  */
 export function evaluateNodeToRational(node: MathNode): Rational {
-	return evaluateToRational(node, 0);
+	const previous = withinSizeBudget;
+	withinSizeBudget = true;
+	try {
+		return evaluateToRational(node, 0);
+	} finally {
+		withinSizeBudget = previous;
+	}
 }
 
 // =============================================================================

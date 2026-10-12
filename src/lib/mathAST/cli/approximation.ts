@@ -256,7 +256,11 @@ export function isScientificNotation(node: MathNode): boolean {
 export function approximateValueLatex(node: MathNode): string | null {
 	if (isWrittenNumber(node)) return null;
 	const approximation = approximateDigitsOf(node);
-	if (approximation === null) return null;
+	return approximation === null ? null : approximateLatexOf(approximation);
+}
+
+/** `\\approx 0.7071`, `= 0.25` : une valeur décimale déjà lue, avec sa relation. */
+export function approximateLatexOf(approximation: ApproximateDigits): string {
 	return `${approximation.exact ? '=' : '\\approx'} ${approximationLatex(approximation)}`;
 }
 

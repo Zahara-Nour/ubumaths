@@ -92,6 +92,13 @@ export interface ReplExecutionResult {
 	/** Whether user can toggle between exact and decimal display */
 	readonly canToggle?: boolean;
 
+	/**
+	 * Le résultat exact aurait ce nombre de caractères (environ) : trop long, il garde
+	 * l'écriture tapée (option A de David, 2026-10-12, seuil 1 000) — `ast` est alors
+	 * l'écriture, à ne pas développer (`tidy` la recalculerait).
+	 */
+	readonly exactTooLong?: number;
+
 	/** Initial display mode (true = show decimal first, false = show exact first) */
 	readonly showDecimalInitially?: boolean;
 

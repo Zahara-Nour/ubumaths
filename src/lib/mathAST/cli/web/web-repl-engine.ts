@@ -65,9 +65,10 @@ import {
 } from '../../../ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '../../../ubumark/utils/stat-chart-text';
 import { STAT_CHART_LIMITS } from '../../../ubumark/types/stat-chart';
+import { estimatedExactDigits, isTooLongExact } from '../exact-size';
 import {
 	approximateDigitsOf,
-	approximateValueLatex,
+	approximateLatexOf,
 	approximationNode,
 	approximationText,
 	isWrittenNumber,
@@ -75,6 +76,7 @@ import {
 } from '../approximation';
 import { hasDecimalLiteral } from '../../tidy/decimal';
 import { tidy } from '../../tidy';
+import { mapNode } from '../../transforms';
 
 // =============================================================================
 // Constants
@@ -95,17 +97,21 @@ const LINREG_PLACES = 3;
 function approximationFields(
 	mode: string,
 	exact: MathNode,
-	canToggle: boolean
+	canToggle: boolean,
+	digits: ApproximateDigits | null,
+	keptWriting: boolean
 ): { approximateLatex?: string; exactLatex?: string } {
+	// L'arrondi déjà lu par la console : le relire coûtait autant que le calcul exact
+	const approximate = isWrittenNumber(exact) || digits === null ? null : approximateLatexOf(digits);
 	if (mode === 'exact') {
-		const approximate = approximateValueLatex(exact);
 		return approximate === null ? {} : { approximateLatex: approximate };
 	}
 	// En mode décimal, la ligne montre déjà la valeur décimale : le bouton rend
 	// l'exacte, sauf si c'est un nombre déjà écrit (« ≈ 3 » vaut 3)
-	// … écrite par `tidy`, comme la ligne en mode exact : π/3, pas ⅓ π (revue du lot B)
-	return canToggle && approximateValueLatex(exact) !== null
-		? { exactLatex: toLatex(tidy(exact)) }
+	// … écrite par `tidy`, comme la ligne en mode exact : π/3, pas ⅓ π (revue du lot B) —
+	// sauf une écriture gardée, que `tidy` développerait (`(1+1/1000)^{1000}`)
+	return canToggle && approximate !== null
+		? { exactLatex: toLatex(keptWriting ? exact : tidy(exact)) }
 		: {};
 }
 
@@ -122,6 +128,17 @@ function readableExact(node: MathNode): MathNode {
 	} catch {
 		return node;
 	}
+}
+
+/**
+ * L'écriture tapée, pour le texte d'un résultat exact trop long : une division tapée
+ * `1/1000` est une division EN LIGNE, que `toCustom` écrit `1:/1000` — juste et relisible,
+ * mais l'élève a tapé `/`. Même valeur, écrite comme tapée.
+ */
+function typedWriting(node: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		n.type === 'division' && n.displayStyle === 'inline' ? { ...n, displayStyle: 'fraction' } : n
+	);
 }
 
 /**
@@ -892,13 +909,19 @@ export class WebReplEngine {
 				);
 			}
 
+			// Un résultat exact trop long garde son écriture (option A de David,
+			// 2026-10-12) : décidé AVANT le calcul, qui figeait la page — 13 s pour les
+			// 80 003 caractères de `(1+1/10000)^10000`, plus de 200 s pour n = 100 000
+			const tooLong = isTooLongExact(substituted) ? estimatedExactDigits(substituted) : null;
+			// Le calcul exact, UNE fois : le test du booléen le refaisait en entier
+			const exactResult: EvalResult =
+				tooLong === null
+					? evaluate(substituted, { mode: 'exact', functions: this.evalState.functions })
+					: { status: 'value', value: substituted, node: substituted, exact: true };
+
 			// Boolean result: colored output, no exact/decimal toggle
-			const boolCheck = evaluate(substituted, {
-				mode: 'exact',
-				functions: this.evalState.functions
-			});
-			if (boolCheck.status === 'value' && boolCheck.node.type === 'boolean') {
-				const boolValue = boolCheck.value as boolean;
+			if (exactResult.status === 'value' && exactResult.node.type === 'boolean') {
+				const boolValue = exactResult.value as boolean;
 				const resultStr = String(boolValue);
 				const colorClass = boolValue ? 'text-green-400' : 'text-red-400';
 				let outputHtml = `<span class="${colorClass} font-bold">${resultStr}</span>`;
@@ -920,16 +943,12 @@ export class WebReplEngine {
 					success: true,
 					output: resultStr,
 					outputHtml,
-					ast: boolCheck.node
+					ast: exactResult.node
 				};
 			}
 
 			// Evaluate in BOTH modes to enable toggle
 			// Pass user-defined functions from evalState
-			const exactResult = evaluate(substituted, {
-				mode: 'exact',
-				functions: this.evalState.functions
-			});
 			const decimalResult = evaluate(substituted, {
 				mode: 'decimal',
 				functions: this.evalState.functions
@@ -946,7 +965,9 @@ export class WebReplEngine {
 			}
 			// Format exact result — mis au propre comme à l'écran : `\pi/3`, pas la
 			// forme de calcul `{1/3}\pi` d'`evaluate`
-			const exactStr = toCustom(readableExact(exactResult.node));
+			const exactStr = toCustom(
+				tooLong === null ? readableExact(exactResult.node) : typedWriting(substituted)
+			);
 			const exactOutput = exactStr;
 			const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactStr)}</span>`;
 
@@ -1033,7 +1054,8 @@ export class WebReplEngine {
 				...(decimalOutput !== undefined && { decimalOutput }),
 				...(decimalOutputHtml !== undefined && { decimalOutputHtml }),
 				canToggle,
-				...approximationFields(currentMode, exactResult.node, canToggle)
+				...approximationFields(currentMode, exactResult.node, canToggle, digits, tooLong !== null),
+				...(tooLong !== null && { exactTooLong: Math.round(tooLong) })
 			};
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Unknown error during evaluation';
