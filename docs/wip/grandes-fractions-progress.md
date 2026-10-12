@@ -171,3 +171,10 @@ sa valeur approchée. »
   décomposées sur les premiers < 1 000, exposants entiers sûrs additionnés, signe suivi, valeur
   compensée bornée à 20 000 caractères). Tous ces cas répondent en moins de 300 ms ; la note
   compte la taille compensée.
+- 2026-10-12 — #1184 mergée. Seconde revue : bloquant levé (les cas lents en ≤ 6 ms, signes
+  justes). **Ouvert, hors de ce lot** : une **comparaison** échappe au plafond
+  (`isTooLongToCompute` rend `false` pour une relation) — `2^{30000000}/2^{29999999} = 2` prend
+  3,5 s, `(1+1/20000)^{20000}×(1+1/20000)^{-20000} = 1` prend 10 s. Mineurs (exotiques, comme
+  avant) : deux restes > 1 000 qui partagent un facteur ne se compensent pas
+  (`1022117^{2000}/(1009×1013)^{2000}` = 1 garde son écriture) ; un facteur 0 abandonne la
+  décomposition (`0×2^{100000}` garde son écriture, note de 30 105 caractères).
