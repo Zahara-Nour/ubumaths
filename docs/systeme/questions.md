@@ -455,9 +455,9 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - **`constraint-validators.ts` est presque mort** : `checkSpaces`, `checkProducts`, `checkBrackets`,
   `checkZeros`, `checkForm`, `checkNullTerms`, `checkFactorOne`, `checkFactorZero`, `checkSigns`
   ne sont appelés que par leurs tests ; le jugement passe par `cosmetic-transforms.ts`.
-- **Sens de `AB` dans les exercices rédigés** (table `exercises`, `~…~`) : pas encore résolu par
-  le contexte (Q-J) ; ils s'écrivent en produit (`A B`). Sans effet visible : MathLive ignore
-  l'espace, et le PDF Typst sort `A B` dans les deux sens (mesuré au lot 5).
+- **Sens de `AB` dans les exercices rédigés** : résolu par leur thème depuis le lot 6
+  (`exerciseCapitalPairs`, voir [exercices.md](exercices.md)) ; une copie de fiche stockée avant
+  garde le produit (Q-L).
 - **Évaluations notées** : le serveur régénère l'instance depuis la graine au moment de corriger ;
   une copie commencée avant un changement de sens est corrigée avec le sens nouveau (aucune
   réponse attendue à majuscules collées en base au 2026-10-12 : aucun verdict ne change).
