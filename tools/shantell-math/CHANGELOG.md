@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.4.0] - 2026-10-12
+
+### Ajouté
+
+- Script `replace_radicals.py` : racines redessinées au geste du √ de Shantell (drapeau court qui monte, descente raide, fond arrondi) ; le √ de Shantell est une petite coche sans la branche qui doit rejoindre la barre de MathLive, il ne peut pas être copié
+  - Main et Size1-4 : branche montante qui finit au coin où MathLive commence la barre
+  - racine empilée (Size4 : ⎷, U+E000, U+E001) : même verticale pour les trois morceaux, coupés net à leurs bords de raccord ; le morceau du haut finit en un bout aussi fin que la barre (0,04 em)
+- Script `replace_delimiters.py` : grands délimiteurs redessinés en ligne centrale au trait des lettres (68), dans la boîte du glyphe KaTeX
+  - Size1-4 : `( ) [ ] { } ⟨ ⟩ ⌈ ⌉ ⌊ ⌋ / \`
+  - morceaux empilés de Size4 (`⎛ ⎜ ⎝ ⎞ ⎟ ⎠ ⎡ ⎢ ⎣ ⎤ ⎥ ⎦ ⎧ ⎨ ⎩ ⎪ ⎫ ⎬ ⎭`) et barres de Size1 (`∣ ∥ ‖ ⏐`) : verticale du morceau répété KaTeX, coupe nette aux bords de raccord
+- Ordre de génération complet : `roughen_extras.py` → `replace_big_operators.py` → `replace_delimiters.py` → `replace_radicals.py` (polices Size et AMS) ; `replace_symbols.py` → `round_x.py` → `replace_radicals.py` (police principale)
+
 ## [1.3.0] - 2026-10-12
 
 ### Ajouté
