@@ -52,7 +52,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	// Validate ID parameter
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'Invalid shared material ID: ' + idValidation.error.issues[0].message);
+		throw error(400, 'Identifiant de support partagé invalide');
 	}
 
 	const sharedMaterialId = idValidation.data;
@@ -68,10 +68,10 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (fetchError || !existingRecord) {
 		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Shared material not found or access denied');
+			throw error(404, 'Support partagé introuvable ou accès refusé');
 		}
 		console.error('[Delete Shared Material] Record verification error:', fetchError);
-		throw error(403, 'You do not have permission to delete this record');
+		throw error(403, 'Ce partage appartient à un autre professeur');
 	}
 
 	// Delete the record (idempotent)
@@ -83,12 +83,12 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (deleteError) {
 		console.error('[Delete Shared Material] Delete error:', deleteError);
-		throw error(500, 'Failed to delete shared material');
+		throw error(500, 'Impossible de supprimer le support partagé');
 	}
 
 	return json({
 		success: true,
-		message: 'Shared material deleted successfully'
+		message: 'Support partagé supprimé'
 	});
 };
 
@@ -108,7 +108,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	// Validate ID parameter
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'Invalid shared material ID: ' + idValidation.error.issues[0].message);
+		throw error(400, 'Identifiant de support partagé invalide');
 	}
 
 	const sharedMaterialId = idValidation.data;
@@ -118,7 +118,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		requestBody = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON in request body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = updateSharedMaterialByIdSchema.safeParse(requestBody);
@@ -139,10 +139,10 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 
 	if (fetchError || !existingRecord) {
 		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Shared material not found or access denied');
+			throw error(404, 'Support partagé introuvable ou accès refusé');
 		}
 		console.error('[Update Shared Material] Record verification error:', fetchError);
-		throw error(403, 'You do not have permission to update this record');
+		throw error(403, 'Ce partage appartient à un autre professeur');
 	}
 
 	// If categoryId is being updated and is not null, verify it belongs to teacher (via class)
@@ -154,7 +154,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (categoryError || !category) {
-			throw error(400, 'Category not found');
+			throw error(400, 'Catégorie introuvable');
 		}
 
 		// Verify the category's class is accessible (mono-teacher: RLS-scoped)
@@ -165,7 +165,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (categoryClassError || !categoryClass) {
-			throw error(400, 'Category does not belong to one of your classes');
+			throw error(400, 'Cette catégorie n’appartient à aucune classe du professeur');
 		}
 	}
 
@@ -178,7 +178,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (topicError || !topic) {
-			throw error(400, 'Topic not found');
+			throw error(400, 'Sujet Classroom introuvable');
 		}
 
 		// Verify topic belongs to a course owned by teacher
@@ -190,7 +190,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (topicCourseError || !topicCourse) {
-			throw error(400, 'Topic does not belong to one of your courses');
+			throw error(400, 'Ce sujet Classroom n’appartient à aucun cours Classroom du professeur');
 		}
 	}
 
@@ -238,7 +238,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 
 	if (updateError) {
 		console.error('[Update Shared Material] Update error:', updateError);
-		throw error(500, 'Failed to update shared material');
+		throw error(500, 'Impossible de modifier le support partagé');
 	}
 
 	// Transform to camelCase

@@ -13,6 +13,10 @@
 	sens inverse) et le message « 6e ou avant » dans `StructureExplorer.svelte`.
 	Chaque expression du corpus est survolable, avec la lecture courte de la
 	sous-expression survolée.
+
+	Deux majuscules collées (`AB`) se lisent comme une longueur (« la longueur AB »),
+	sauf si la case « Lire AB comme un produit » est cochée : tout est alors lu
+	comme avant les longueurs. Le réglage vaut aussi pour le corpus.
 -->
 <script lang="ts">
 	import '$lib/utils/mathlive-styles';
@@ -22,6 +26,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	// Lecture seule : le corpus des tests de parité, une saisie par ligne
 	import corpusText from '$lib/mathAST/structure/__tests__/fixtures/corpus-saisies.txt?raw';
+	import type { CapitalPairs } from '$lib/mathAST/parser';
 	import { readingOf, structureFromLatex, type StructureResult } from '$lib/mathAST/structure';
 	import StructureExplorer from './StructureExplorer.svelte';
 	import StructureFormula from './StructureFormula.svelte';
@@ -51,19 +56,27 @@
 		{ label: 'Relatifs', latex: String.raw`-4\times(5-x)^2+1` },
 		{ label: 'Racine', latex: String.raw`\sqrt{x^2+1}` }
 	];
-	/** Structures calculées une fois ; les zones, elles, se mesurent au premier survol */
-	const CORPUS: CorpusEntry[] = corpusText
+	const CORPUS_LATEX: string[] = corpusText
 		.split('\n')
 		.map((line) => line.trim())
-		.filter((line) => line !== '')
-		.map((latex) => ({ latex, result: structureFromLatex(latex) }));
+		.filter((line) => line !== '');
 
 	// Variables
 	let latex = $state(EXAMPLES[0].latex);
 	let frameLeaves = $state(true);
 	let showAncestors = $state(false);
+	/** Case « Lire AB comme un produit » : décochée, `AB` est une longueur */
+	let readAsProduct = $state(false);
+	const capitalPairs: CapitalPairs = $derived(readAsProduct ? 'product' : 'length');
+	/** Structures calculées une fois par sens ; les zones, elles, se mesurent au premier survol */
+	const corpus: CorpusEntry[] = $derived(
+		CORPUS_LATEX.map((entry) => ({
+			latex: entry,
+			result: structureFromLatex(entry, { capitalPairs })
+		}))
+	);
 	/** Sous-expression survolée de chaque formule du corpus */
-	let corpusSelection = $state<(number | null)[]>(CORPUS.map(() => null));
+	let corpusSelection = $state<(number | null)[]>(CORPUS_LATEX.map(() => null));
 	let mathfield = $state<MathfieldElement>();
 
 	// Mots de la lecture : fiche du dictionnaire au niveau de l'élève connecté
@@ -77,7 +90,7 @@
 
 	function handleOptionChange() {
 		// Le réglage change ce qui s'encadre : les encadrés du corpus sont à recalculer
-		corpusSelection = CORPUS.map(() => null);
+		corpusSelection = CORPUS_LATEX.map(() => null);
 	}
 
 	function initMathfield(element: MathfieldElement) {
@@ -132,21 +145,26 @@
 				onCheckedChange={handleOptionChange}
 				label="Montrer aussi les sous-expressions englobantes"
 			/>
+			<MyCheckbox
+				bind:checked={readAsProduct}
+				onCheckedChange={handleOptionChange}
+				label="Lire AB comme un produit"
+			/>
 		</div>
 	</section>
 
-	<!-- Une nouvelle expression : sélection et lecture repartent de zéro -->
-	{#key latex}
-		<StructureExplorer {latex} {frameLeaves} {showAncestors} />
+	<!-- Une nouvelle expression ou un autre sens de AB : sélection et lecture repartent de zéro -->
+	{#key `${capitalPairs}:${latex}`}
+		<StructureExplorer {latex} {frameLeaves} {showAncestors} {capitalPairs} />
 	{/key}
 
 	<section class="space-y-3" aria-labelledby="corpus-title">
-		<h2 id="corpus-title" class="text-xl font-semibold">Corpus ({CORPUS.length} expressions)</h2>
+		<h2 id="corpus-title" class="text-xl font-semibold">Corpus ({corpus.length} expressions)</h2>
 		<div class="text-sm text-muted-foreground">
 			Les saisies du corpus de test, chacune survolable.
 		</div>
 		<ul class="corpus-grid">
-			{#each CORPUS as entry, i (i)}
+			{#each corpus as entry, i (i)}
 				<li class="corpus-item" data-corpus-index={i}>
 					{#if entry.result.status === 'ok'}
 						{@const hovered = corpusSelection[i]}
@@ -166,6 +184,9 @@
 								/>
 							{/if}
 						</div>
+					{:else if entry.result.status === 'figureName'}
+						<code class="corpus-raw">{entry.latex}</code>
+						<div class="corpus-caption">{entry.result.message}</div>
 					{:else}
 						<code class="corpus-raw">{entry.latex}</code>
 						<div class="corpus-caption text-destructive">non reconnue</div>

@@ -61,7 +61,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const errorMsg = queryResult.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Parametres de requete invalides: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { page, limit, includeAssigned, onlyMine } = queryResult.data;
@@ -99,7 +99,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	if (queryError) {
 		console.error('Error fetching python files:', queryError);
-		throw error(500, 'Erreur lors de la recuperation des fichiers Python');
+		throw error(500, 'Impossible de charger les fichiers Python');
 	}
 
 	// If student and includeAssigned is true, also fetch assigned files
@@ -197,7 +197,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = createPythonFileSchema.safeParse(body);
@@ -206,7 +206,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation echouee: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { title, description, code, is_public } = validation.data;
@@ -219,14 +219,11 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 	if (countError) {
 		console.error('Error counting python files:', countError);
-		throw error(500, 'Erreur lors de la verification de la limite de fichiers');
+		throw error(500, 'Impossible de vérifier le nombre de fichiers Python');
 	}
 
 	if (count !== null && count >= MAX_PYTHON_FILES_PER_USER) {
-		throw error(
-			400,
-			`Limite atteinte: vous ne pouvez pas avoir plus de ${MAX_PYTHON_FILES_PER_USER} fichiers Python`
-		);
+		throw error(400, `Limite atteinte : ${MAX_PYTHON_FILES_PER_USER} fichiers Python au maximum`);
 	}
 
 	// Insert file
@@ -245,12 +242,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	if (insertError) {
 		console.error('Error creating python file:', insertError);
 		if (insertError.message?.includes('maximum limit')) {
-			throw error(
-				400,
-				`Limite atteinte: vous ne pouvez pas avoir plus de ${MAX_PYTHON_FILES_PER_USER} fichiers Python`
-			);
+			throw error(400, `Limite atteinte : ${MAX_PYTHON_FILES_PER_USER} fichiers Python au maximum`);
 		}
-		throw error(500, 'Erreur lors de la creation du fichier Python');
+		throw error(500, 'Impossible de créer le fichier Python');
 	}
 
 	return json({ file: data }, { status: 201 });

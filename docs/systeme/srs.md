@@ -3,6 +3,7 @@ couvre:
   - 'src/lib/srs/**'
   - 'src/lib/server/srs/**'
   - 'src/lib/server/anti-fraud/**'
+  - src/lib/server/course-card-attempts.ts
   - 'src/lib/server/validation/{srs,skill-attempts,anti-fraud}.ts'
   - 'src/lib/components/srs/**'
   - 'src/lib/components/teacher/anti-fraud/**'
@@ -66,6 +67,14 @@ Quatre sortes de paquets :
 | `chapter-deck.ts`          | Paquet calculé d'un chapitre : `loadChapterDeck`, `loadChapterDecks`, `selectChapterSession`, `summarizeChapterDecks`, `CHAPTER_SESSION_NEW_LIMIT` (10).            |
 | `deck-copy.ts`             | Copie d'un paquet assigné : `planDeckCopies`, `planSectionCopies`, `resolveCardSection`, `findAssignedDeckCopy` (par `source_deck_id`, jamais par le nom).          |
 | `capacity-badge.ts`        | Badge de mémoire d'un point du programme : `templateToBadge`, `worstBadge`, `aggregateBadge` (purs), `computePointBadges` (lit la base).                            |
+
+Hors du dossier, `src/lib/server/course-card-attempts.ts` dit si une tentative porte sur une carte
+de cours, en lisant la base (`question_templates.options`), jamais l'instance envoyée par le
+client : `attemptSourceForTemplate` (source `student_self` ou `auto`, `api/skill-attempts`) ;
+`fetchCourseCardTemplateIds` (`api/tests/save`, au client service : la RLS cacherait à l'élève une
+carte repassée en brouillon) réessaie deux fois (150 puis 400 ms), puis lève
+`CourseCardLookupError` et la route répond 503 avant toute écriture ; `schoolDay` donne le jour
+civil à Paris, celui de `best-of-day.ts`.
 
 Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, `submitReviewSchema`,
 `dueCardsQuerySchema`, `chapterReviewSubmitSchema`…) et `src/lib/server/validation/skill-attempts.ts`.
@@ -317,6 +326,8 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
   désormais les lignes supprimées et répondent 403 quand la RLS refuse en silence (paquet assigné
   ou géré automatiquement — Programme, chapitre). Test :
   `src/routes/api/srs/__tests__/suppressions-silencieuses.test.ts`.
+- `reviewedToday` (`src/lib/server/course-card-attempts.ts`) n'a aucun appelant hors de ses tests
+  (relevé du 2026-10-12).
 - Des en-têtes de code (renvois corrigés par la PR #1027) parlent encore de
   « famille A » (`capacity-badge.ts`, `programme-deck.ts`, `decks/programme/+page.server.ts`,
   `api/skill-attempts`).

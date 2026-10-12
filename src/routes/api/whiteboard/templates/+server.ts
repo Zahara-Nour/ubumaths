@@ -76,7 +76,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (templatesResult.error) {
 			console.error('[Whiteboard Templates] Query error:', templatesResult.error);
-			throw error(500, 'Erreur lors de la recuperation des templates');
+			throw error(500, 'Impossible de charger les modèles');
 		}
 
 		// Build a Set of favorite template IDs for fast lookup
@@ -100,7 +100,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		console.error('[Whiteboard Templates] Error:', err);
-		throw error(500, 'Une erreur interne est survenue');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -119,7 +119,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = createWhiteboardTemplateSchema.safeParse(body);
@@ -148,12 +148,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (insertError) {
 			console.error('[Whiteboard Templates] Insert error:', insertError);
-			throw error(500, 'Erreur lors de la creation du template');
+			throw error(500, 'Impossible de créer le modèle');
 		}
 
 		const validatedRow = toWhiteboardTemplateRow(row);
 		if (!validatedRow) {
-			throw error(500, 'Template créé avec une géométrie de page invalide');
+			throw error(500, 'Modèle créé avec une géométrie de page invalide');
 		}
 		const template = rowToTemplate(validatedRow);
 
@@ -165,6 +165,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		console.error('[Whiteboard Templates] Error:', err);
-		throw error(500, 'Une erreur interne est survenue');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

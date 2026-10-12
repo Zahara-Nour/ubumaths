@@ -104,7 +104,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const errorMsg = queryResult.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Parametres de requete invalides: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { author_id, is_public, limit, offset } = queryResult.data;
@@ -140,7 +140,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// Validate author_id is UUID
 		const authorIdValidation = uuidSchema.safeParse(author_id);
 		if (!authorIdValidation.success) {
-			throw error(400, 'author_id invalide');
+			throw error(400, 'Identifiant d’auteur invalide');
 		}
 		query = query.eq('author_id', author_id);
 	}
@@ -153,7 +153,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	if (queryError) {
 		console.error('Error fetching python notebooks:', queryError);
-		throw error(500, 'Erreur lors de la recuperation des notebooks Python');
+		throw error(500, 'Impossible de charger les carnets');
 	}
 
 	// If student, also fetch assigned notebooks
@@ -239,7 +239,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = createNotebookSchema.safeParse(body);
@@ -248,7 +248,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation echouee: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { title, description, is_public } = validation.data;
@@ -261,14 +261,11 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 	if (countError) {
 		console.error('Error counting python notebooks:', countError);
-		throw error(500, 'Erreur lors de la verification de la limite de notebooks');
+		throw error(500, 'Impossible de vérifier le nombre de carnets');
 	}
 
 	if (count !== null && count >= MAX_NOTEBOOKS_PER_USER) {
-		throw error(
-			400,
-			`Limite atteinte: vous ne pouvez pas avoir plus de ${MAX_NOTEBOOKS_PER_USER} notebooks Python`
-		);
+		throw error(400, `Limite atteinte : ${MAX_NOTEBOOKS_PER_USER} carnets au maximum`);
 	}
 
 	// Create initial notebook content with one empty code cell
@@ -314,12 +311,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	if (insertError) {
 		console.error('Error creating python notebook:', insertError);
 		if (insertError.message?.includes('maximum limit')) {
-			throw error(
-				400,
-				`Limite atteinte: vous ne pouvez pas avoir plus de ${MAX_NOTEBOOKS_PER_USER} notebooks Python`
-			);
+			throw error(400, `Limite atteinte : ${MAX_NOTEBOOKS_PER_USER} carnets au maximum`);
 		}
-		throw error(500, 'Erreur lors de la creation du notebook Python');
+		throw error(500, 'Impossible de créer le carnet');
 	}
 
 	return json({ notebook: data }, { status: 201 });

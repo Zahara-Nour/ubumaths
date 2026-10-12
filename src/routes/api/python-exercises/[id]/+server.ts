@@ -48,12 +48,12 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	if (fetchError) {
 		console.error('Failed to fetch exercise:', fetchError);
-		throw error(500, "Erreur lors de la récupération de l'exercice");
+		throw error(500, 'Impossible de charger la corvée Python');
 	}
 
 	if (!exercise) {
 		// Either does not exist OR not visible to caller via RLS — same response
-		throw error(404, 'Exercice introuvable');
+		throw error(404, 'Corvée Python introuvable');
 	}
 
 	// Fetch tags from the junction. RLS on the junction allows SELECT for everyone,
@@ -85,7 +85,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Verify teacher role
@@ -96,7 +96,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Seuls les enseignants peuvent modifier des exercices');
+		throw error(403, 'Réservé aux professeurs');
 	}
 
 	// Check if exercise exists and user is the author
@@ -107,11 +107,11 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (fetchError || !existingExercise) {
-		throw error(404, 'Exercice introuvable');
+		throw error(404, 'Corvée Python introuvable');
 	}
 
 	if (existingExercise.author_id !== user.id) {
-		throw error(403, 'Vous ne pouvez modifier que vos propres exercices');
+		throw error(403, 'Seul l’auteur peut modifier cette corvée Python');
 	}
 
 	// Parse and validate request body
@@ -122,7 +122,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation échouée: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const {
@@ -152,7 +152,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	if (updateError) {
 		console.error('Failed to update exercise:', updateError);
-		throw error(500, "Erreur lors de la mise à jour de l'exercice");
+		throw error(500, 'Impossible de modifier la corvée Python');
 	}
 
 	// Sync tags via the junction if the caller sent any.
@@ -163,7 +163,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			await syncResourceTags(supabase, 'python_exercise', exerciseId, tagsUpdate);
 		} catch (e) {
 			console.error('Failed to sync tags on update:', e);
-			throw error(500, 'Erreur lors de la synchronisation des tags');
+			throw error(500, 'Impossible d’enregistrer les tags');
 		}
 	}
 
@@ -186,7 +186,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Verify teacher role
@@ -197,7 +197,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.single();
 
 	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Seuls les enseignants peuvent supprimer des exercices');
+		throw error(403, 'Réservé aux professeurs');
 	}
 
 	// Check if exercise exists and user is the author
@@ -208,11 +208,11 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.single();
 
 	if (fetchError || !existingExercise) {
-		throw error(404, 'Exercice introuvable');
+		throw error(404, 'Corvée Python introuvable');
 	}
 
 	if (existingExercise.author_id !== user.id) {
-		throw error(403, 'Vous ne pouvez supprimer que vos propres exercices');
+		throw error(403, 'Seul l’auteur peut supprimer cette corvée Python');
 	}
 
 	// Delete exercise (CASCADE will delete assignments and submissions)
@@ -223,7 +223,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (deleteError) {
 		console.error('Failed to delete exercise:', deleteError);
-		throw error(500, "Erreur lors de la suppression de l'exercice");
+		throw error(500, 'Impossible de supprimer la corvée Python');
 	}
 
 	return json({ success: true });

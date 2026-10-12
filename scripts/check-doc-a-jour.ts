@@ -22,8 +22,10 @@
  *   zone est déjà décrite par une doc (ou qui ne désigne plus rien) sort de la
  *   liste.
  *
- * Un trou marque du code qu'aucune doc ne DÉCRIT : une doc qui ne fait que
- * l'indexer (`indexe:`) ne le referme pas.
+ * Seul `couvre:` compte : une doc qui cite un fichier dans un index sans le
+ * décrire ne le couvre pas. Jusqu'au 2026-10-12, une clé `indexe:` comptait
+ * pour la couverture : un glob d'index (`src/lib/server/*.ts`) avalait en silence
+ * chaque module neuf, que « doc d'abord » ne voyait jamais.
  *
  * La garde dit qu'une doc a été revue au moment du changement ; qu'elle dise
  * vrai relève du skill doc-a-jour et de la relecture.
@@ -45,8 +47,6 @@ export interface DocCoverage {
 	doc: string;
 	/** Le code que la doc DÉCRIT : une PR qui le modifie modifie la doc. */
 	couvre: string[];
-	/** Le code que la doc RECENSE seulement (un index) : compte pour la couverture. */
-	indexe?: string[];
 }
 
 export interface CoverageConfig {
@@ -86,8 +86,9 @@ const DEFERRAL = /^Doc-reportée:[ \t]*\S/m;
 const matchesAny = (file: string, globs: string[]): boolean =>
 	globs.some((glob) => matchesGlob(file, glob));
 
-/** Liste `<clé>:` de l'en-tête YAML d'une doc (forme bloc ou en ligne). */
-function parseList(markdown: string, key: string): string[] {
+/** Le code qu'une doc décrit : liste `couvre:` de son en-tête YAML (forme bloc ou en ligne). */
+export function parseCouvre(markdown: string): string[] {
+	const key = 'couvre';
 	const header = markdown.match(/^---\n([\s\S]*?)\n---/);
 	if (!header) return [];
 	const lines = header[1].split('\n');
@@ -105,11 +106,11 @@ function parseList(markdown: string, key: string): string[] {
 	return globs;
 }
 
-/** Le code qu'une doc décrit (`couvre:`). */
-export const parseCouvre = (markdown: string): string[] => parseList(markdown, 'couvre');
-
-/** Le code qu'une doc recense sans le décrire (`indexe:`). */
-export const parseIndexe = (markdown: string): string[] => parseList(markdown, 'indexe');
+/** Ce que l'en-tête d'une doc déclare, tel que la garde le lit. */
+export const readDoc = (doc: string, markdown: string): DocCoverage => ({
+	doc,
+	couvre: parseCouvre(markdown)
+});
 
 const isGuarded = (file: string, config: CoverageConfig): boolean =>
 	matchesAny(file, config.scope) && !matchesAny(file, config.excluded);
@@ -138,7 +139,7 @@ export function hasDocDeferral(commitMessages: string[]): boolean {
 	return commitMessages.some((m) => DEFERRAL.test(m));
 }
 
-/** Fichier gardé qu'aucune doc ne décrit (l'indexer ne suffit pas). */
+/** Fichier gardé qu'aucune doc ne décrit. */
 const isUndescribed = (file: string, docs: DocCoverage[], config: CoverageConfig): boolean =>
 	isGuarded(file, config) && !docs.some((d) => matchesAny(file, d.couvre));
 
@@ -166,19 +167,14 @@ export function staleHoles(files: string[], docs: DocCoverage[], config: Coverag
 	return config.trous.filter((t) => !undescribed.some((f) => matchesGlob(f, t.glob)));
 }
 
-/** Fichiers de code couverts par aucune doc, hors exclus et trous connus. */
+/** Fichiers de code qu'aucune doc ne décrit, hors exclus et trous connus. */
 export function uncoveredFiles(
 	files: string[],
 	docs: DocCoverage[],
 	config: CoverageConfig
 ): string[] {
 	const trous = config.trous.map((t) => t.glob);
-	return files.filter(
-		(f) =>
-			isGuarded(f, config) &&
-			!matchesAny(f, trous) &&
-			!docs.some((d) => matchesAny(f, [...d.couvre, ...(d.indexe ?? [])]))
-	);
+	return files.filter((f) => isUndescribed(f, docs, config) && !matchesAny(f, trous));
 }
 
 function git(root: string, args: string[]): string {
@@ -189,11 +185,8 @@ function loadDocs(root: string): DocCoverage[] {
 	return git(root, ['ls-files', '-z', '--', ...DOC_ROOTS])
 		.split('\0')
 		.filter((f) => f.endsWith('.md') && existsSync(resolve(root, f)))
-		.map((doc) => {
-			const markdown = readFileSync(resolve(root, doc), 'utf-8');
-			return { doc, couvre: parseCouvre(markdown), indexe: parseIndexe(markdown) };
-		})
-		.filter((d) => d.couvre.length > 0 || d.indexe.length > 0);
+		.map((doc) => readDoc(doc, readFileSync(resolve(root, doc), 'utf-8')))
+		.filter((d) => d.couvre.length > 0);
 }
 
 function main(): void {

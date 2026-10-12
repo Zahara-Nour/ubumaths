@@ -17,7 +17,6 @@ couvre:
   - src/lib/stores/listNumbering.svelte.ts
   - src/lib/styles/list-numbering.css
   - src/lib/types/list-numbering.ts
-indexe:
   - src/lib/components/ClassStatsCard.svelte
   - src/lib/components/CodeViewer.svelte
   - src/lib/components/DynamicMathField.svelte
@@ -56,6 +55,7 @@ indexe:
 
 > Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8).
 > Ce fichier **recense** : il dit ce que fait chaque fichier, qui l'appelle, et s'il est mort.
+> Chaque fichier de l'index est dans le `couvre:` : une PR qui le modifie relit sa ligne.
 > Il ne remplace pas la doc du domaine qui l'utilise ; quand elle existe, elle est citée.
 > Voisins : [seo.md](seo.md), [editeur-riche.md](editeur-riche.md),
 > [carte-des-fonctionnalites.md](carte-des-fonctionnalites.md), [serveur.md](serveur.md).
@@ -104,7 +104,10 @@ Précisions :
   dictionnaire cliquables), `StructureExplorer.svelte` (les deux réunis, message « 6e ou
   avant »), `structure-lexicon.svelte.ts` (fiches du dictionnaire au niveau de l'élève, 5e pour
   un visiteur). Spécification : `docs/wip/structure-expression-progress.md`. Le moteur est décrit
-  dans [mathast/README.md](mathast/README.md).
+  dans [mathast/README.md](mathast/README.md). Deux majuscules collées se lisent comme une
+  **longueur** (« la longueur AB », `capitalPairs: 'length'`) ; la case « Lire AB comme un
+  produit » repasse en mode produit, pour la formule principale et le corpus. Un nom de figure
+  (`ABC`) affiche son message à la place de la formule et de la lecture.
 - **`/test-font`** : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`.
 - **`/test-cadres`** : garde la trace du choix `\htmlStyle` pour le cadre des solutions

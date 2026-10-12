@@ -49,7 +49,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Validate notebook ID
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'ID de notebook invalide');
+		throw error(400, 'Identifiant de carnet invalide');
 	}
 
 	const notebookId = idValidation.data;
@@ -63,14 +63,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	if (fetchError || !notebook) {
 		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Notebook introuvable');
+			throw error(404, 'Carnet introuvable');
 		}
 		console.error('Error fetching notebook:', fetchError);
-		throw error(500, 'Erreur lors de la verification du notebook');
+		throw error(500, 'Impossible de vérifier le carnet');
 	}
 
 	if (notebook.author_id !== user.id) {
-		throw error(403, "Seul l'auteur peut voir les partages de ce notebook");
+		throw error(403, 'Seul l’auteur peut voir les partages de ce carnet');
 	}
 
 	// Fetch all assignments for this notebook
@@ -94,7 +94,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	if (assignmentsError) {
 		console.error('Error fetching notebook assignments:', assignmentsError);
-		throw error(500, 'Erreur lors du chargement des partages');
+		throw error(500, 'Impossible de charger les partages');
 	}
 
 	// Validate and transform the response to include class info directly

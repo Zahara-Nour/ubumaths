@@ -658,6 +658,37 @@ et restent comme gardes).
   réponses attendues (texte et LaTeX) comparés au sens d'avant : **0 changement**. Témoin : un
   modèle synthétique `ABC` change bien de verdict (correct → `bad_form`).
 
+## Lot 4 — fait (2026-10-12) : lecture
+
+- **`structureFromLatex(latex, { capitalPairs })`** (`mathAST/structure/`) : l'option descend au
+  parseur ; sans option, l'appel d'avant (produit, Q-M). Une longueur est une **feuille** de genre
+  `length` : un seul marqueur, donc un seul bloc au survol, au sens inverse et dans le conseil de
+  parenthèses (`-AB+3` → exemple `(−AB) + 3`, message « devant un nombre, une lettre ou une longueur »,
+  décision de David du 2026-10-12, Q22 étendue). `A'B'`, `A_1B_1` s'affichent comme `toLatex` les écrit (`A'B'`, `A_{1}B_{1}`).
+- **Lecture** : « la longueur AB » ; mot `longueur` (clé `longueur`, présente dans le dictionnaire
+  de référence : mot cliquable, rien créé en base). Les six lignes de la colonne « Lit » sont
+  lues comme écrites dans la spécification, sans conflit avec Q1-Q24. Choix non spécifiés :
+  `AB^4` → « la puissance 4 de la longueur AB » (une longueur n'est pas « une lettre seule »
+  pour Q16) ; `AB=5` → « la longueur AB est égale à 5 » (accord au féminin). **Validés par
+  David le 2026-10-12.**
+- **Revue** (`code-reviewer`) : aucun bloquant ni important ; fichier figé du mode produit
+  régénéré depuis `origin/main`, identique (200/200). Suites : message du signe − étendu aux
+  longueurs ; test de rendu ajouté (survoler « longueur » dans `2A'B'^2` encadre `A'B'` d'un
+  seul bloc).
+- **Nom de figure** : `{ status: 'figureName', message }` (message de `figureNameRefusal`, avec
+  le vrai nom : « EFGH n’est pas une longueur : … (EF). Pour un produit, écris E×F×G×H. ») ; la
+  page l'affiche à la place de la formule et de la lecture (encadré du message « 6e ou avant »),
+  le corpus sous la saisie brute.
+- **`/test-structure`** : case `MyCheckbox` « Lire AB comme un produit », décochée par défaut
+  (mode longueur) ; le mode vaut pour la formule principale et le corpus (structures recalculées,
+  sélections du corpus remises à zéro).
+- **Tests** : `structure/__tests__/segment-length-reading.test.ts` (27 cas, 25 rouges avant le
+  code ; les 2 du mode produit décrivent l'existant) ; `reading-mode-produit.test.ts` : empreinte
+  figée AVANT le code (`fixtures/lectures-mode-produit.json`) de la lecture de chaque
+  sous-expression, du LaTeX marqué et des nœuds des **200 saisies du corpus** : **200/200
+  identiques** en mode `'product'` et sans option ; témoin : Pythagore change en mode longueur.
+  Client (`structure-explorer.svelte.test.ts`) : 3 cas, 2 rouges avec l'ancien explorateur.
+
 ## Journal
 
 - 2026-10-11 — préparation : mesure du parseur et des questions en base ; questions de phase 0.
@@ -683,3 +714,6 @@ et restent comme gardes).
 - 2026-10-12 — lot 3 fait : `shared.capitalPairs`, résolution déclaration → contexte → longueur,
   descente jusqu'au parseur dans la correction, éditeur, garde auteur, raccourcis MathLive ;
   0 verdict changé sur 99 modèles de prod.
+- 2026-10-12 — lot 4 fait : lecture des longueurs dans `structure/`, refus des noms de figure,
+  case « Lire AB comme un produit » de `/test-structure` ; 200/200 lectures du corpus identiques
+  en mode produit.

@@ -26,12 +26,12 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	const cellIdValidation = cellIdSchema.safeParse(params.cell_id);
 	if (!cellIdValidation.success) {
-		throw error(400, 'cell_id invalide');
+		throw error(400, 'Identifiant de cellule invalide');
 	}
 
 	const { data: run, error: dbError } = await supabase
@@ -43,10 +43,10 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 
 	if (dbError) {
 		if (dbError.code === '42501') {
-			throw error(403, 'Accès refusé à ce notebook');
+			throw error(403, 'Accès refusé à ce carnet');
 		}
 		console.error('Failed to mark checkpoint hint as revealed:', dbError);
-		throw error(500, "Erreur lors de l'enregistrement de l'indice");
+		throw error(500, 'Impossible d’enregistrer l’indice');
 	}
 
 	return json({ run });

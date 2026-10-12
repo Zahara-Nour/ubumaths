@@ -16,6 +16,10 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import {
+	GoogleTokenExpiredError,
+	GoogleInsufficientPermissionsError
+} from '$lib/server/google/errors';
 import { requireRole } from '$lib/server/middleware/auth';
 import { GoogleDriveClient } from '$lib/server/google/drive-api';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
@@ -33,7 +37,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = createFolderRequestSchema.safeParse(body);
@@ -67,18 +71,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Handle specific Google API errors
 		if (err instanceof Error) {
 			if (err.message.includes('No Google integration')) {
-				throw error(401, 'Google account not connected. Please connect in Settings.');
+				throw error(401, 'Compte Google non connecté : à connecter dans les Paramètres');
 			}
-			if (err.message.includes('Token expired') || err.message.includes('401')) {
-				throw error(401, 'Google session expired. Please reconnect your Google account.');
+			if (err instanceof GoogleTokenExpiredError || err.message.includes('401')) {
+				throw error(401, 'Session Google expirée : reconnecter le compte Google');
 			}
-			if (err.message.includes('403') || err.message.includes('Insufficient')) {
-				throw error(403, 'Insufficient permissions. Please reconnect with Drive access.');
+			if (err instanceof GoogleInsufficientPermissionsError || err.message.includes('403')) {
+				throw error(
+					403,
+					'Droits insuffisants : reconnecter le compte Google avec l’accès à Google Drive'
+				);
 			}
 		}
 
 		console.error('[Whiteboard Drive] Create folder error:', err);
-		const message = err instanceof Error ? err.message : 'Unknown error';
-		throw error(500, `Failed to create folder: ${message}`);
+		const message = err instanceof Error ? err.message : 'erreur inconnue';
+		throw error(500, `Impossible de créer le dossier : ${message}`);
 	}
 };

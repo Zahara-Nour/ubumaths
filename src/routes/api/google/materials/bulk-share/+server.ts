@@ -60,11 +60,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (materialsError) {
 		console.error('[Bulk Material Share] Error fetching materials:', materialsError);
-		throw error(500, 'Failed to fetch materials');
+		throw error(500, 'Impossible de charger les supports');
 	}
 
 	if (!materials || materials.length !== materialIds.length) {
-		throw error(404, 'One or more materials not found');
+		throw error(404, 'Un ou plusieurs supports introuvables');
 	}
 
 	// Verify ALL materials belong to the teacher
@@ -83,7 +83,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			`[Bulk Material Share] Unauthorized material access attempt by teacher ${user.id}:`,
 			invalidMaterials.map((m) => m.id)
 		);
-		throw error(403, 'You do not own all selected materials');
+		throw error(403, 'Accès refusé à certains des supports choisis');
 	}
 
 	// Verify all classes exist and are active. Mono-teacher: the sole teacher owns
@@ -97,11 +97,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (classesError) {
 		console.error('[Bulk Material Share] Error fetching classes:', classesError);
-		throw error(500, 'Failed to verify class ownership');
+		throw error(500, 'Impossible de vérifier les classes');
 	}
 
 	if (!classes || classes.length !== classIds.length) {
-		throw error(400, 'One or more classes not found or inactive');
+		throw error(400, 'Une ou plusieurs classes introuvables ou inactives');
 	}
 
 	// Create shared_materials records for all combinations
@@ -128,7 +128,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (insertError) {
 		console.error('[Bulk Material Share] Error sharing materials:', insertError);
-		throw error(500, 'Failed to share materials');
+		throw error(500, 'Impossible de partager les supports');
 	}
 
 	return json({

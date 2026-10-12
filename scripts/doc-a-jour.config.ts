@@ -94,6 +94,10 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
 		},
 		{
+			glob: 'src/lib/server/{exercises,exercise-assignments,exercise-import-export,exercise-share-tokens,resource-tags}.ts',
+			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
+		},
+		{
 			glob: 'src/lib/server/validation/{exercises,exercise-mastery,image-upload,tags,latex}.ts',
 			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
 		},
@@ -154,6 +158,10 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 			note: 'messagerie, modération, notifications, avertissements, amitiés'
 		},
 		{
+			glob: 'src/lib/server/{notifications,auto-notifications,warnings,student-inbox,profanity-filter}.ts',
+			note: 'messagerie, modération, notifications, avertissements, amitiés'
+		},
+		{
 			glob: 'src/lib/server/validation/{messages,moderation,notifications,warnings,message-templates}.ts',
 			note: 'messagerie, modération, notifications, avertissements, amitiés'
 		},
@@ -196,6 +204,10 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		},
 		{
 			glob: 'src/routes/(protected)/dashboard/profile/**',
+			note: 'classes, élèves, écoles, comptes (admin et prof)'
+		},
+		{
+			glob: 'src/lib/server/{students,staff-directory}.ts',
 			note: 'classes, élèves, écoles, comptes (admin et prof)'
 		},
 		{
@@ -253,6 +265,10 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		},
 		{
 			glob: 'src/lib/types/bug-reports.ts',
+			note: 'surveillance d’erreurs, bug reports, santé, docs admin'
+		},
+		{
+			glob: 'src/lib/server/{errorMonitoring,healthStats,bug-report-export,bug-report-screenshots,docs-scanner,markdown-parser,search}.ts',
 			note: 'surveillance d’erreurs, bug reports, santé, docs admin'
 		},
 		{

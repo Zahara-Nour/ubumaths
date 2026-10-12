@@ -62,7 +62,7 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 	}
 
 	if (!code) {
-		throw error(400, 'Missing authorization code from Google');
+		throw error(400, 'Code d’autorisation Google manquant');
 	}
 
 	// 4. Validate CSRF state parameter
@@ -71,12 +71,12 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 
 	if (!storedState || state !== storedState) {
 		console.error('[Google OAuth] CSRF validation failed');
-		throw error(400, 'Invalid state parameter (CSRF protection failed)');
+		throw error(400, 'Paramètre de sécurité invalide : relancer la connexion à Google');
 	}
 
 	if (!storedVerifier) {
 		console.error('[Google OAuth] Missing code verifier');
-		throw error(400, 'Missing PKCE code verifier');
+		throw error(400, 'Vérificateur de sécurité manquant : relancer la connexion à Google');
 	}
 
 	try {
@@ -87,7 +87,7 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 			console.error('[Google OAuth] No refresh token received');
 			throw error(
 				500,
-				'No refresh token received from Google. Please disconnect and reconnect your account.'
+				'Google n’a pas transmis de jeton de renouvellement : déconnecter puis reconnecter le compte Google'
 			);
 		}
 
@@ -107,7 +107,7 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 			console.warn('[Google OAuth] No email in token info');
 			throw error(
 				400,
-				"Google n'a pas transmis l'adresse du compte. Vérifiez que l'autorisation inclut votre adresse e-mail, puis réessayez."
+				'Google n’a pas transmis l’adresse du compte : vérifier que l’autorisation inclut l’adresse e-mail, puis réessayer'
 			);
 		}
 
@@ -132,7 +132,7 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 
 		if (dbError) {
 			console.error('[Google OAuth] Database error:', dbError);
-			throw error(500, 'Failed to save Google integration. Please try again.');
+			throw error(500, 'Impossible d’enregistrer la connexion à Google');
 		}
 
 		// 8. Clear OAuth cookies
@@ -155,7 +155,8 @@ export const GET: RequestHandler = async ({ url, locals, cookies }) => {
 
 		// Log and handle other errors
 		console.error('[Google OAuth] Token exchange error:', err);
-		const message = err instanceof Error ? err.message : 'Unknown error during OAuth callback';
+		const message =
+			err instanceof Error ? err.message : 'Erreur inconnue pendant la connexion à Google';
 		throw redirect(303, `/dashboard/teacher/settings/google?error=${encodeURIComponent(message)}`);
 	}
 };

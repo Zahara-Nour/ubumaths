@@ -33,8 +33,9 @@ import {
 	toLatex,
 	withoutScientificNumbers
 } from '../latex-generator';
+import { figureNameRefusal } from '../common/segment-names';
 import { parseLatexSafe } from '../parser';
-import type { ParseResult } from '../parser/types';
+import type { CapitalPairs, ParseResult } from '../parser/types';
 import { findFirst } from '../transforms';
 import type {
 	DelimiterNode,
@@ -89,6 +90,15 @@ interface CollectedFactor {
 	readonly separator: string;
 }
 
+/** Options de `structureFromLatex` */
+export interface StructureOptions {
+	/**
+	 * Sens de deux majuscules collées (`AB`) : longueur ou produit. Absent : le
+	 * défaut du parseur (produit, décision Q-M).
+	 */
+	readonly capitalPairs?: CapitalPairs;
+}
+
 // Constantes
 const EMPTY: StructureResult = { status: 'empty' };
 const UNRECOGNIZED: StructureResult = { status: 'unrecognized' };
@@ -105,12 +115,16 @@ const ENCLOSING_FUNCTIONS: Partial<Record<string, readonly [string, string]>> = 
  * saisie vide rend `empty`, une saisie non reconnue ou incomplète (erreur de
  * lecture, case vide `\placeholder{}`) rend `unrecognized`. Une exception de
  * `buildStructure` (défaut du module) est signalée par `console.error`.
+ * En mode longueur, un nom de figure (`ABC`) rend `figureName` et son message.
  */
-export function structureFromLatex(input: string): StructureResult {
+export function structureFromLatex(input: string, options?: StructureOptions): StructureResult {
 	if (input.trim() === '') return EMPTY;
 	let parsed: ParseResult;
 	try {
-		parsed = parseLatexSafe(input);
+		// Sans option, l'appel d'avant (parseur dans son mode par défaut)
+		parsed = options?.capitalPairs
+			? parseLatexSafe(input, { capitalPairs: options.capitalPairs })
+			: parseLatexSafe(input);
 	} catch {
 		// Plafonds de sécurité du parseur : une saisie, pas un défaut
 		return UNRECOGNIZED;
@@ -118,6 +132,8 @@ export function structureFromLatex(input: string): StructureResult {
 	if (parsed.errors.length > 0) return UNRECOGNIZED;
 	if (!parsed.ast) return EMPTY;
 	if (findFirst(parsed.ast, isHole)) return UNRECOGNIZED;
+	const refusal = figureNameRefusal(parsed.ast);
+	if (refusal) return { status: 'figureName', message: refusal };
 	try {
 		return { status: 'ok', structure: buildStructure(parsed.ast) };
 	} catch (error) {
@@ -169,6 +185,9 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 				return leaf(n, parent, role, 'letter');
 			case 'constant':
 				return leaf(n, parent, role, 'constant');
+			case 'segmentLength':
+				// Un bloc, comme une lettre : `AB` ne se découpe pas en A et B
+				return leaf(n, parent, role, 'length');
 			case 'addition':
 			case 'subtraction':
 			case 'opposite':

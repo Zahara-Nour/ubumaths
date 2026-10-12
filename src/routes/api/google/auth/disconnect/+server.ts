@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 
 		if (deleteError) {
 			console.error('[Google OAuth] Database deletion error:', deleteError);
-			throw error(500, 'Failed to disconnect Google Classroom. Please try again.');
+			throw error(500, 'Impossible de déconnecter Google Classroom');
 		}
 
 		console.log(`[Google OAuth] Successfully disconnected Google account for teacher ${user.id}`);
@@ -96,6 +96,6 @@ export const POST: RequestHandler = async ({ locals }) => {
 
 		// Handle other errors
 		console.error('[Google OAuth] Disconnect error:', err);
-		throw error(500, 'An error occurred while disconnecting Google Classroom');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

@@ -21,7 +21,7 @@ export const shareCourseworkRequestSchema = z.object({
 	categoryId: uuidSchema.nullable().optional(),
 	customDescription: z
 		.string()
-		.max(2000, 'Description cannot exceed 2000 characters')
+		.max(2000, 'Description : 2000 caractères au maximum')
 		.nullable()
 		.optional()
 });
@@ -36,12 +36,12 @@ export const updateSharedCourseworkSchema = z
 		categoryId: uuidSchema.nullable().optional(),
 		customDescription: z
 			.string()
-			.max(2000, 'Description cannot exceed 2000 characters')
+			.max(2000, 'Description : 2000 caractères au maximum')
 			.nullable()
 			.optional()
 	})
 	.refine((data) => Object.keys(data).length > 0, {
-		message: 'At least one field must be provided'
+		message: 'Aucune modification demandée'
 	});
 
 /**
@@ -93,7 +93,7 @@ export const listStudentSharedCourseworkSchema = paginationSchema.extend({
  * Schema for material ID parameter validation
  */
 export const materialIdParamSchema = z.object({
-	id: z.string().uuid('Invalid material ID format')
+	id: z.string().uuid('Identifiant de support invalide')
 });
 
 /**
@@ -103,13 +103,13 @@ export const materialIdParamSchema = z.object({
 export const shareMaterialSchema = z.object({
 	classIds: z
 		.array(z.string().uuid())
-		.min(1, 'At least one class must be selected')
-		.max(50, 'Cannot share with more than 50 classes at once'),
+		.min(1, 'Choisir au moins une classe')
+		.max(50, '50 classes au maximum par partage'),
 	categoryId: z.string().uuid().nullable().optional(),
 	topicId: z.string().uuid().nullable().optional(),
 	descriptionOverride: z
 		.string()
-		.max(2000, 'Description cannot exceed 2000 characters')
+		.max(2000, 'Description : 2000 caractères au maximum')
 		.nullable()
 		.optional(),
 	visible: z.boolean().default(true)
@@ -122,8 +122,8 @@ export const shareMaterialSchema = z.object({
 export const unshareMaterialSchema = z.object({
 	classIds: z
 		.array(z.string().uuid())
-		.min(1, 'At least one class must be selected')
-		.max(50, 'Cannot share with more than 50 classes at once')
+		.min(1, 'Choisir au moins une classe')
+		.max(50, '50 classes au maximum par partage')
 });
 
 /**
@@ -133,17 +133,17 @@ export const unshareMaterialSchema = z.object({
 export const bulkShareMaterialsSchema = z.object({
 	materialIds: z
 		.array(z.string().uuid())
-		.min(1, 'At least one material must be selected')
-		.max(50, 'Cannot share more than 50 materials at once'),
+		.min(1, 'Choisir au moins un support')
+		.max(50, '50 supports au maximum par partage'),
 	classIds: z
 		.array(z.string().uuid())
-		.min(1, 'At least one class must be selected')
-		.max(50, 'Cannot share with more than 50 classes at once'),
+		.min(1, 'Choisir au moins une classe')
+		.max(50, '50 classes au maximum par partage'),
 	categoryId: z.string().uuid().nullable().optional(),
 	topicId: z.string().uuid().nullable().optional(),
 	descriptionOverride: z
 		.string()
-		.max(2000, 'Description cannot exceed 2000 characters')
+		.max(2000, 'Description : 2000 caractères au maximum')
 		.nullable()
 		.optional(),
 	visible: z.boolean().default(true)
@@ -190,12 +190,12 @@ export const updateSharedMaterialSchema = z
 		categoryId: uuidSchema.nullable().optional(),
 		customDescription: z
 			.string()
-			.max(2000, 'Description cannot exceed 2000 characters')
+			.max(2000, 'Description : 2000 caractères au maximum')
 			.nullable()
 			.optional()
 	})
 	.refine((data) => Object.keys(data).length > 0, {
-		message: 'At least one field must be provided'
+		message: 'Aucune modification demandée'
 	});
 
 /**
@@ -219,14 +219,14 @@ export const shareSingleMaterialSchema = z.object({
 	materialId: uuidSchema,
 	classIds: z
 		.array(uuidSchema)
-		.min(1, 'At least one class must be selected')
-		.max(50, 'Cannot share with more than 50 classes at once'),
+		.min(1, 'Choisir au moins une classe')
+		.max(50, '50 classes au maximum par partage'),
 	visible: z.boolean().default(true),
 	categoryId: uuidSchema.nullable().optional(),
 	topicId: uuidSchema.nullable().optional(),
 	descriptionOverride: z
 		.string()
-		.max(2000, 'Description cannot exceed 2000 characters')
+		.max(2000, 'Description : 2000 caractères au maximum')
 		.nullable()
 		.optional()
 });
@@ -239,8 +239,8 @@ export const bulkUnshareMaterialSchema = z.object({
 	materialId: uuidSchema,
 	classIds: z
 		.array(uuidSchema)
-		.min(1, 'At least one class must be specified')
-		.max(50, 'Cannot unshare from more than 50 classes at once')
+		.min(1, 'Choisir au moins une classe')
+		.max(50, '50 classes au maximum par retrait de partage')
 });
 
 /**
@@ -254,12 +254,12 @@ export const updateSharedMaterialByIdSchema = z
 		topicId: uuidSchema.nullable().optional(),
 		descriptionOverride: z
 			.string()
-			.max(2000, 'Description cannot exceed 2000 characters')
+			.max(2000, 'Description : 2000 caractères au maximum')
 			.nullable()
 			.optional()
 	})
 	.refine((data) => Object.keys(data).length > 0, {
-		message: 'At least one field must be provided'
+		message: 'Aucune modification demandée'
 	});
 
 // ============================================================================
@@ -274,14 +274,14 @@ export const shareSingleCourseworkSchema = z.object({
 	courseworkId: uuidSchema,
 	classIds: z
 		.array(uuidSchema)
-		.min(1, 'At least one class must be selected')
-		.max(50, 'Cannot share with more than 50 classes at once'),
+		.min(1, 'Choisir au moins une classe')
+		.max(50, '50 classes au maximum par partage'),
 	visible: z.boolean().default(true),
 	categoryId: uuidSchema.nullable().optional(),
 	topicId: uuidSchema.nullable().optional(),
 	descriptionOverride: z
 		.string()
-		.max(2000, 'Description cannot exceed 2000 characters')
+		.max(2000, 'Description : 2000 caractères au maximum')
 		.nullable()
 		.optional()
 });
@@ -294,8 +294,8 @@ export const bulkUnshareCourseworkSchema = z.object({
 	courseworkId: uuidSchema,
 	classIds: z
 		.array(uuidSchema)
-		.min(1, 'At least one class must be specified')
-		.max(50, 'Cannot unshare from more than 50 classes at once')
+		.min(1, 'Choisir au moins une classe')
+		.max(50, '50 classes au maximum par retrait de partage')
 });
 
 /**
@@ -326,12 +326,12 @@ export const updateSharedCourseworkByIdSchema = z
 		topicId: uuidSchema.nullable().optional(),
 		descriptionOverride: z
 			.string()
-			.max(2000, 'Description cannot exceed 2000 characters')
+			.max(2000, 'Description : 2000 caractères au maximum')
 			.nullable()
 			.optional()
 	})
 	.refine((data) => Object.keys(data).length > 0, {
-		message: 'At least one field must be provided'
+		message: 'Aucune modification demandée'
 	});
 
 /**
@@ -349,17 +349,17 @@ export const sharedCourseworkIdParamSchema = z.object({
 export const bulkShareCourseworkSchema = z.object({
 	courseworkIds: z
 		.array(z.string().uuid())
-		.min(1, 'At least one coursework must be selected')
-		.max(50, 'Cannot share more than 50 coursework items at once'),
+		.min(1, 'Choisir au moins un devoir Classroom')
+		.max(50, '50 devoirs Classroom au maximum par partage'),
 	classIds: z
 		.array(z.string().uuid())
-		.min(1, 'At least one class must be selected')
-		.max(50, 'Cannot share with more than 50 classes at once'),
+		.min(1, 'Choisir au moins une classe')
+		.max(50, '50 classes au maximum par partage'),
 	categoryId: z.string().uuid().nullable().optional(),
 	topicId: z.string().uuid().nullable().optional(),
 	descriptionOverride: z
 		.string()
-		.max(2000, 'Description cannot exceed 2000 characters')
+		.max(2000, 'Description : 2000 caractères au maximum')
 		.nullable()
 		.optional(),
 	visible: z.boolean().default(true)

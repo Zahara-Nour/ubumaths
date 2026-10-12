@@ -375,8 +375,13 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   `unevaluable` en français ; `checkForm` laisse libre l'ordre des points, les parenthèses
   autour d'une longueur seule et le `×` entre deux longueurs (`unifySegmentNotationAST`). Un nom de figure (`ABC`) n'est équivalent qu'à la même
   écriture et est refusé par `evaluate()` et `checkForm`, avec le message de `figureNameRefusal`
-  (`common/segment-names.ts`). **Pas encore** : la syntaxe maison (lit toujours un produit), la
-  lecture française — lots suivants.
+  (`common/segment-names.ts`). **Lecture** (lot 4) : `structureFromLatex(latex, { capitalPairs })`
+  (sans option : le parseur par défaut, produit) ; une longueur est une feuille de genre `length`
+  (un bloc, comme une lettre), lue « la longueur AB » (mot du dictionnaire `longueur`) ; un nom
+  de figure rend `{ status: 'figureName', message }` (message de `figureNameRefusal`), sans
+  lecture. En mode produit, lectures identiques à avant (empreinte des 200 saisies du corpus,
+  `structure/__tests__/reading-mode-produit.test.ts`). **Pas encore** : la syntaxe maison (lit
+  toujours un produit) — lot 5.
 
 ## Invariants structurels non évidents
 
@@ -479,7 +484,10 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     (`evaluate`, `evaluateNodeToApproximatedNumber`) garde ses bornes. La taille d'un résultat
     exact se **prévoit** sans le calculer : `cli/exact-size.ts` (`estimatedExactDigits`, une borne
     qui ignore les simplifications ; la console n'en tire que son plafond de calcul,
-    `isTooLongToCompute`, et mesure la longueur réelle par `exactCharacters`).
+    `isTooLongToCompute`, et mesure la longueur réelle par `exactCharacters`). Au-delà du
+    plafond, un produit ou quotient de puissances se calcule sur ses facteurs premiers compensés
+    (`productValue`) : le moteur, lui, calcule chaque puissance avant de compenser
+    (`(1+1/100000)^{100000}×(1+1/100000)^{-100000}` : 305 s).
 
 ## Le moteur de réécriture et les étapes
 
