@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseCookieHeader, serializeCookieHeader } from '@supabase/ssr';
+import { parseCookieHeader, serializeCookieHeader, type CookieOptions } from '@supabase/ssr';
 import { MAX_SESSION_AGE, browserCookieMethods, capSessionCookieOptions } from '../session-cookies';
 
 const FOUR_HUNDRED_DAYS = 400 * 24 * 60 * 60;
@@ -34,7 +34,9 @@ describe('capSessionCookieOptions', () => {
 	});
 
 	it("n'ajoute pas de durée à un cookie qui n'en a pas", () => {
-		expect(capSessionCookieOptions({ path: '/' })).toEqual({ path: '/' });
+		// Type réel des options que rend @supabase/ssr
+		const options: CookieOptions = { path: '/' };
+		expect(capSessionCookieOptions(options)).toEqual({ path: '/' });
 	});
 });
 
