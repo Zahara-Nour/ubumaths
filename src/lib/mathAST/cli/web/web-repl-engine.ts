@@ -38,7 +38,7 @@ import { normalize, normalFormsEquivalent } from '../../normal';
 import type { EvalValue, ComplexValueResult, EvalResult } from '../../eval/types';
 import { computeQuantity, convertQuantity, type QuantityOutcome } from '../quantities';
 import { displayUnitsInLatex } from '../../units/display';
-import { isBoolean, isRelation, isUnit, isVariable } from '../../guards';
+import { isBoolean, isLogical, isLogicalNot, isRelation, isUnit, isVariable } from '../../guards';
 import { relation } from '../../factory';
 import { summarizeList, summarizeTable } from '../../../statistics/describe';
 import { formatSummary } from '../../../statistics/format';
@@ -765,7 +765,14 @@ export class WebReplEngine {
 			};
 		}
 
-		if (isRelation(result1.ast) || isRelation(result2.ast)) return this.executeExpression(input);
+		// … ou d'une expression logique (`2 > 1 && 3 = 3`) : lue en entier
+		if (
+			[result1.ast, result2.ast].some(
+				(ast) => isRelation(ast) || isLogical(ast) || isLogicalNot(ast)
+			)
+		) {
+			return this.executeExpression(input);
+		}
 
 		// Substitute bound variables before comparison
 		const bindings = bindingsToRecord(this.evalState.bindings);
@@ -1185,10 +1192,10 @@ export class WebReplEngine {
 			const message = err instanceof Error ? err.message : 'Unknown error during evaluation';
 			return {
 				success: false,
-				output: `Evaluation error: ${message}`,
+				output: `Erreur de calcul : ${message}`,
 				outputHtml: formatErrorHtml({
 					code: 'PARSE_ERROR',
-					message: `Evaluation error: ${message}`
+					message: `Erreur de calcul : ${message}`
 				}),
 				error: {
 					code: 'PARSE_ERROR',

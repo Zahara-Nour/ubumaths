@@ -296,12 +296,17 @@ fractions », 2026-10-12) :
 
 **Chaînes et « différent de »** (2026-10-12) : `1 < x < 3` est vraie si chaque maillon l'est
 (`evaluateToBoolean`, `eval/evaluate.ts` ; elle répondait « Cannot evaluate boolean expression ») ;
-`2 != 3` se lit « différent de », LaTeX compris (`cli/core/pipeline.ts` réécrit `!=` en `\ne`
-avant le parseur LaTeX, qui lisait `factorial(2) = 3`) ; `3! = 6`, avec une espace, reste une
-factorielle. Une entrée à plusieurs `=` ou dont un membre est une comparaison (`1 < 2 = 2`) est lue
+Les opérateurs logiques et d'égalité se tapent comme en programmation ou en toutes lettres
+(`cli/core/pipeline.ts`, `withLogicOperators`) : `&&`/`and`/`et`, `||`/`or`/`ou`,
+`!`/`not`/`non`, `==`/`===` (=), `!=`/`!==` (≠) — réécrits en `\land`, `\lor`, `\lnot`, `\ne`
+pour le LaTeX (qui lisait `2 != 3` comme `factorial(2) = 3`). Une factorielle reste collée à son
+nombre (`3! = 6`) ; un mot n'est lu que seul (`\not`, `\beta` intacts). Une entrée à plusieurs `=` ou dont un membre est une comparaison (`1 < 2 = 2`) est lue
 en entier comme une chaîne : `executeEquality` la coupait au `=` et comparait un booléen à un
 nombre. Une chaîne de grandeurs (`5[m] < 600[cm] < 7[m]`) passe maillon par maillon par le chemin
-des grandeurs.
+des grandeurs. Une comparaison entre parenthèses (`\lnot (2 > 1)`) s'évalue ; une relation que le
+calcul ne tranche pas répond en français (« Relation « ≈ » non évaluable : seules = ≠ < > ≤ ≥ se
+tranchent »), et les erreurs de la console commencent par « Erreur de calcul : » (« Evaluation
+error: » avant).
 
 Une comparaison ne garde jamais son écriture (elle rend vrai ou faux), mais passe par le même
 plafond **membre par membre** (`mathAST/cli/bounded-comparison.ts`, aussi pour `a = b`, qui suit

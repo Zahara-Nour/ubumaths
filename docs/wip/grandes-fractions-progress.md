@@ -209,3 +209,8 @@ sa valeur approchée. »
   règle est désormais une réécriture `!=` → `\ne` avant le parseur LaTeX (le motif du détecteur
   est retiré) ; une chaîne avec un `=` (`1 < 2 = 2`, `2 = 2 = 2`) partait dans
   `executeEquality` — lue en entier désormais.
+- 2026-10-12 — #1203 mergée. **David : « ok corrige ça »** (`!==`, `not`/`and`, message anglais) :
+  `withLogicOperators` (pipeline de la console) réécrit `&& || ! and or not et ou non == === !=
+!==` dans la notation de chaque parseur ; `evaluateToBoolean` traverse les parenthèses
+  (`\lnot (2 > 1)`) ; message français pour une relation non tranchée (≈, ∈…) ; préfixe des
+  erreurs de la console « Erreur de calcul : ».

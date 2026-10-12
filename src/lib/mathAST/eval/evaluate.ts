@@ -1237,7 +1237,33 @@ function evaluateRoundingFunctions(node: MathNode): MathNode {
  * Checks if a node is a boolean expression (boolean, relation, logical, logical-not).
  */
 function isBooleanExpression(node: MathNode): boolean {
+	// `(2 > 1)`, `\lnot (2 > 1)` : des parenthèses autour d'une comparaison
+	if (isDelimiter(node)) return isBooleanExpression(node.content);
 	return isBoolean(node) || isRelation(node) || isLogical(node) || isLogicalNot(node);
+}
+
+/** Les relations que le calcul tranche ; les autres (≈, ∈, ⊂…) ne sont pas évaluables. */
+const DECIDABLE_RELATIONS: ReadonlySet<string> = new Set([
+	'=',
+	'≡',
+	'!=',
+	'≢',
+	'<',
+	'>',
+	'<=',
+	'>='
+]);
+
+/** La première relation que le calcul ne tranche pas, ou `undefined`. */
+function undecidableRelation(node: MathNode): string | undefined {
+	if (isDelimiter(node)) return undecidableRelation(node.content);
+	if (isRelation(node)) {
+		if (!DECIDABLE_RELATIONS.has(node.relation)) return node.relation;
+		return undecidableRelation(node.left);
+	}
+	if (isLogical(node)) return undecidableRelation(node.left) ?? undecidableRelation(node.right);
+	if (isLogicalNot(node)) return undecidableRelation(node.operand);
+	return undefined;
 }
 
 /**
@@ -1258,6 +1284,8 @@ function evaluateToBoolean(node: MathNode): boolean | undefined {
 	if (isBoolean(node)) {
 		return node.value;
 	}
+
+	if (isDelimiter(node)) return evaluateToBoolean(node.content);
 
 	if (isRelation(node)) {
 		const rel = node.relation;
@@ -1411,10 +1439,14 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 	if (isBooleanExpression(processedNode)) {
 		const boolResult = evaluateToBoolean(processedNode);
 		if (boolResult === undefined) {
+			// En français : la console de Calcul montre ce message à l'élève (2026-10-12)
+			const relation = undecidableRelation(processedNode);
 			return {
 				status: 'unevaluable',
 				reason:
-					'Cannot evaluate boolean expression (may contain free variables or unsupported relations)'
+					relation === undefined
+						? 'Comparaison non évaluable (une variable sans valeur ?)'
+						: `Relation « ${relation} » non évaluable : seules = ≠ < > ≤ ≥ se tranchent`
 			};
 		}
 		return {

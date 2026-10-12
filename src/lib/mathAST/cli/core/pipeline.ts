@@ -101,6 +101,32 @@ export function getParserOptions(state?: EvalState): LatexParserOptions {
  * }
  * ```
  */
+/** Ce qui précède un « non » préfixe : rien, une espace, une parenthèse, un opérateur. */
+const NOT_PREFIX = /(^|[\s(,&|])!(?!=)/g;
+
+/**
+ * Les opérateurs logiques et d'égalité tapés comme en programmation ou en toutes lettres,
+ * réécrits dans la notation du parseur (2026-10-12) : `&&`, `and`, `et` → et ; `||`, `or`, `ou`
+ * → ou ; `!`, `not`, `non` → non ; `==`, `===` → = ; `!=`, `!==` → ≠. Ils répondaient
+ * « Unexpected token », ou se lisaient lettre par lettre (« Nombre écrit après un facteur »).
+ * Le LaTeX n'a que `\land`, `\lor`, `\lnot`, `\ne` ; il lisait `2 != 3` comme
+ * `factorial(2) = 3`. Une factorielle reste collée à son nombre (`3! = 6`, `(2+1)!`) ; un mot
+ * n'est lu que seul (`\not`, `\beta`, `2et` restent intacts).
+ */
+function withLogicOperators(input: string, format: 'latex' | 'custom'): string {
+	const latex = format === 'latex';
+	const word = (names: string): RegExp => new RegExp(`(?<![\\\\\\w])(?:${names})(?!\\w)`, 'g');
+	return input
+		.replace(/!==?/g, latex ? ' \\ne ' : '!=')
+		.replace(/={2,3}/g, '=')
+		.replace(/&&/g, latex ? ' \\land ' : '&&')
+		.replace(/\|\|/g, latex ? ' \\lor ' : '||')
+		.replace(NOT_PREFIX, latex ? '$1\\lnot ' : '$1!')
+		.replace(word('and|et'), latex ? ' \\land ' : ' && ')
+		.replace(word('or|ou'), latex ? ' \\lor ' : ' || ')
+		.replace(word('not|non'), latex ? ' \\lnot ' : ' !');
+}
+
 export function parse(input: string, options?: PipelineOptions): PipelineResult {
 	const trimmedInput = input.trim();
 
@@ -123,7 +149,9 @@ export function parse(input: string, options?: PipelineOptions): PipelineResult 
 
 	// Parse based on detected format
 	if (detection.format === 'custom') {
-		const result = parseCustomSafe(trimmedInput, { mode: 'tolerant' });
+		const result = parseCustomSafe(withLogicOperators(trimmedInput, 'custom'), {
+			mode: 'tolerant'
+		});
 
 		// Convert parser errors to pipeline errors
 		for (const err of result.errors) {
@@ -144,10 +172,7 @@ export function parse(input: string, options?: PipelineOptions): PipelineResult 
 	// Parse as LaTeX (default)
 	// Get parser options from evaluation state (includes generic function names)
 	const parserOptions = getParserOptions(options?.evalState);
-	// « Différent de » tapé `!=` : le LaTeX l'écrit `\ne`, et lisait `2 != 3` comme
-	// `factorial(2) = 3`. Même lecture que le parseur maison (`x!=3` : ≠) ; `3! = 6`, avec
-	// une espace, reste une factorielle
-	const result = parseLatexSafe(trimmedInput.replace(/!=/g, '\\ne '), {
+	const result = parseLatexSafe(withLogicOperators(trimmedInput, 'latex'), {
 		mode: 'tolerant',
 		...parserOptions
 	});
