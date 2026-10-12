@@ -112,8 +112,9 @@ Précisions :
   (`ABC`) affiche son message à la place de la formule et de la lecture.
 - **`/test-font`** : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
-  expression de quatre lignes (`\begin{gathered}`) qui réunit tous les symboles de la police,
-  petits et grands (opérateurs, délimiteurs empilés, racines, ∑ ∫, AMS) : la regarder suffit pour
+  expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles
+  de la police, petits et grands (ponctuation, opérateurs, ensembles, flèches, vecteurs,
+  délimiteurs empilés, racines, ∑ ∫, AMS) : la regarder suffit pour
   juger un changement du jeu Shantell (`tools/shantell-math/`). En bas, trois **exercices réels**
   (copie figée de la base, `exercices-demo.json`, image copiée dans `static/test-font/`), affichés en
   Shantell et téléchargeables en PDF : `shantell-pdf.ts` compile avec un compilateur Typst **à part**

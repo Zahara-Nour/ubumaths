@@ -64,14 +64,19 @@
 	// Expression de l'éditeur : tous les symboles de la police, petits et grands,
 	// une famille par ligne
 	const showcaseLines = [
+		// Ponctuation et prime
+		"x=1{,}5\\quad I=]2;5]\\quad n!\\quad a:b\\quad f'(x)\\quad f''(x)\\quad x\\ne 2",
 		// Opérateurs et petits délimiteurs
 		'f(x)=(2x+1)(x-3)-|x-2|\\times 3\\div 4\\pm 1\\quad a/b\\approx 0{,}5\\quad\\{1;2;3\\}',
 		// Comparaisons et flèches
 		'a<b\\leq c\\quad d>e\\geq f\\quad a\\leqslant b\\geqslant c\\quad A\\rightarrow B\\leftarrow C\\leftrightarrow D',
 		// Logique
-		'P\\Rightarrow Q\\quad P\\implies Q\\quad P\\Leftrightarrow Q\\quad P\\iff Q',
+		'P\\Rightarrow Q\\quad P\\implies Q\\quad P\\Leftrightarrow Q\\quad P\\iff Q\\quad f:x\\mapsto x^2',
 		// Ensembles
 		'x\\in[0;1]\\cup]2;+\\infty[\\quad A\\cap B=\\emptyset\\quad C=\\varnothing\\quad\\mathbb{N}\\subset\\mathbb{Z}\\subset\\mathbb{Q}\\subset\\mathbb{R}\\subset\\mathbb{C}',
+		'x\\notin E\\quad A\\subseteq B\\supseteq C\\quad A\\subsetneq B\\supsetneq C\\quad A\\nsubseteq B\\nsupseteq C\\quad D\\supset E',
+		// Vecteurs
+		'\\vec{u}+\\vec{v}=\\vec{AB}\\quad\\vec{u}\\cdot\\vec{n}=0',
 		// Lettres-symboles
 		'2\\pi r\\quad\\frac{\\partial f}{\\partial x}\\quad\\Omega\\quad x\\times y',
 		// Grands opérateurs

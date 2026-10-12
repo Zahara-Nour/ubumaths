@@ -50,6 +50,10 @@ TARGETS = {
         ("+−=<>≤≥±×÷≈→←↔∞∅", OPERATOR),
         ("()[]{}|/", DELIMITER),
         ("∂Ω", LETTER),
+        # Ponctuation : virgule décimale, point-virgule des intervalles, factorielle…
+        (".,;:!?", LETTER),
+        # ′ : MathLive le pose en exposant, à la taille du ′ de KaTeX, bien plus grand
+        ("′", DELIMITER),
     ],
     "KaTeX_Math-Italic": [("πΩ", LETTER)],
     # \varnothing : le ∅ rond

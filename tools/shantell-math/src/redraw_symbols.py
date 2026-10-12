@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """
 Redraw, in Shantell's hand, symbols that Shantell Sans does not have:
-∈ ∪ ∩ ⇒ ⟹ ⇔ ⟺ (KaTeX_Main-Regular) and the number sets ℕ ℤ ℚ ℝ ℂ
-(\\mathbb letters of KaTeX_AMS-Regular).
+∈ ∉ ∪ ∩ ⊂ ⊃ ⊆ ⊇ ⇒ ⟹ ⇔ ⟺ ↦, the slash of \\not (≠) and the arrow of \\vec
+(KaTeX_Main-Regular), ⊊ ⊋ ⊈ ⊉ and the number sets ℕ ℤ ℚ ℝ ℂ (KaTeX_AMS-Regular).
 
 - ∈ is the centre line of Shantell's c (see round_x.py) closed by a bar;
+  ⊂ ⊃ ⊆ ⊇ ⊊ ⊋ ⊈ ⊉ are the same c, with a bar under it, cut or struck through;
+- ≠ ∉ ⊈ ⊉ share the straight slash of \\not; ∉ is missing from KaTeX and is added;
+- ↦ is Shantell's → (already in the font), lengthened, with a bar;
 - ∪ ∩ are a hand-drawn U and its mirror image;
 - ⇒ ⟹ ⇔ ⟺ have two shafts and the short open head of Shantell's →;
 - ℕ ℤ ℚ ℝ ℂ are Shantell's N Z Q R C with one stroke doubled, as they are
@@ -33,6 +36,7 @@ import pathops
 from fontTools.pens.pointInsidePen import PointInsidePen
 from fontTools.pens.recordingPen import DecomposingRecordingPen
 from fontTools.pens.transformPen import TransformPen
+from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib import TTFont
 
 # Les scripts voisins, même lancé en mode isolé (python -I)
@@ -48,6 +52,14 @@ SHANTELL = REPO_ROOT / "tools" / "shantell-math" / "fonts" / "input" / "shantell
 
 # Écart entre la ligne centrale d'un trait et celle de son double (ℝ, ℕ…)
 DOUBLE_GAP = 2.6 * STROKE
+# ⊂ de KaTeX : hauteur ; ⊆ de KaTeX : haut du c et bas de la barre
+SUBSET_HEIGHT = 580
+SUBSET_EQ_TOP = 636
+SUBSET_EQ_BOTTOM = -138
+# Demi-hauteur de la pointe de la flèche de \vec
+VECTOR_HEAD = 105
+# Écart ajouté entre la flèche de \vec et le haut de la lettre
+VECTOR_LIFT = 30
 # Marge minimale entre une lettre resserrée et le bord de sa place
 SIDE_MARGIN = 20
 
@@ -57,26 +69,79 @@ Point = Tuple[float, float]
 # --- ∈ ∪ ∩ ---
 
 
-def element_of(source: TTFont, f: Frame) -> pathops.Path:
-    """∈ : le c de Shantell, fermé par une barre à mi-hauteur."""
+def c_shape(source: TTFont, f: Frame, mirror: bool = False) -> pathops.Path:
+    """La ligne centrale du c de Shantell, étirée dans le cadre (retournée pour ⊃)."""
     c_line = c_centre_line(source, STROKE)
     c_left = min(x for x, _ in c_line)
     c_right = max(x for x, _ in c_line)
     c_bottom = min(y for _, y in c_line)
     c_top = max(y for _, y in c_line)
-    fitted = [
-        (
-            f.left + (x - c_left) / (c_right - c_left) * (f.right - f.left),
-            f.bottom + (y - c_bottom) / (c_top - c_bottom) * f.height,
+    fitted = []
+    for x, y in c_line:
+        t = (x - c_left) / (c_right - c_left)
+        fitted.append(
+            (
+                f.left + (1 - t if mirror else t) * (f.right - f.left),
+                f.bottom + (y - c_bottom) / (c_top - c_bottom) * f.height,
+            )
         )
-        for x, y in c_line
-    ]
     path = pathops.Path()
     path.moveTo(*fitted[0])
     for point in fitted[1:]:
         path.lineTo(*point)
-    bar = to_path([("M", (f.left, f.middle)), ("L", (f.right, f.middle))])
-    return pathops.op(stroked(path), stroked(bar), pathops.PathOp.UNION)
+    return stroked(path)
+
+
+def line(start: Point, end: Point) -> pathops.Path:
+    return stroked(to_path([("M", start), ("L", end)]))
+
+
+def union(*paths: pathops.Path) -> pathops.Path:
+    result = paths[0]
+    for path in paths[1:]:
+        result = pathops.op(result, path, pathops.PathOp.UNION)
+    return result
+
+
+def element_of(source: TTFont, f: Frame) -> pathops.Path:
+    """∈ : le c de Shantell, fermé par une barre à mi-hauteur."""
+    return union(c_shape(source, f), line((f.left, f.middle), (f.right, f.middle)))
+
+
+def subset(source: TTFont, box, mirror: bool, bar: str = "") -> pathops.Path:
+    """⊂ ⊃ et leurs variantes : le c (retourné pour ⊃), une barre dessous si
+    demandée, barrée d'un petit trait (⊊) ou d'un grand (⊈).
+
+    Le c garde la hauteur du ⊂ de KaTeX (SUBSET_HEIGHT), posé en haut de la boîte ;
+    la barre est à la place de celle du ⊆ de KaTeX."""
+    f = Frame(box)
+    if not bar:
+        return c_shape(source, f, mirror)
+    c_frame = Frame((box[0], SUBSET_EQ_TOP - SUBSET_HEIGHT, box[2], SUBSET_EQ_TOP))
+    bar_y = SUBSET_EQ_BOTTOM + STROKE / 2
+    parts = [c_shape(source, c_frame, mirror), line((f.left, bar_y), (f.right, bar_y))]
+    centre_x = (f.left + f.right) / 2
+    if bar == "neq":
+        # ⊊ : un petit trait penché qui coupe la barre
+        rise = bar_y - f.bottom
+        parts.append(line((centre_x - 0.45 * rise, f.bottom), (centre_x + 0.45 * rise, bar_y + rise)))
+    elif bar == "not":
+        # ⊈ : le trait du « non » sur toute la hauteur
+        parts.append(not_slash(Frame((centre_x - 150, box[1], centre_x + 150, box[3]))))
+    return union(*parts)
+
+
+def not_slash(f: Frame) -> pathops.Path:
+    """Le trait penché du « non » (≠, ∉, ⊈) : la barre oblique de Shantell, droite."""
+    return line((f.left, f.bottom), (f.right, f.top))
+
+
+def not_element_of(source: TTFont, element_box, slash_box) -> pathops.Path:
+    """∉ : le ∈ et le trait du « non », centré dessus."""
+    centre_x = (element_box[0] + element_box[2]) / 2
+    half_width = (slash_box[2] - slash_box[0]) / 2
+    slash = Frame((centre_x - half_width, slash_box[1], centre_x + half_width, slash_box[3]))
+    return union(element_of(source, Frame(element_box)), not_slash(slash))
 
 
 def cup(f: Frame, upside_down: bool) -> pathops.Path:
@@ -122,6 +187,63 @@ def double_arrow(f: Frame, both_ends: bool) -> pathops.Path:
             ("L", (f.left + head_length, f.middle - head_height)),
         ]
     return stroked(to_path(commands))
+
+
+def maps_to(font: TTFont, f: Frame) -> pathops.Path:
+    """↦ : la flèche → de Shantell (déjà dans la police), prolongée jusqu'au bord
+    gauche de la boîte de KaTeX, où se dresse la barre.
+
+    La flèche de Shantell est plus courte que celle de KaTeX : la barre posée
+    juste à son départ la tassait en « ⊢> »."""
+    arrow = glyph_path(font, ord("→"))
+    x_min, y_min, _, y_max = arrow.bounds
+    shaft_y = (y_min + y_max) / 2
+    half_bar = (y_max - y_min) / 2 - STROKE / 2
+    return union(
+        arrow,
+        line((f.left, shaft_y), (x_min + 2 * STROKE, shaft_y)),
+        line((f.left, shaft_y - half_bar), (f.left, shaft_y + half_bar)),
+    )
+
+
+def vector_arrow(f: Frame) -> pathops.Path:
+    """La flèche de \\vec : un trait et la pointe courte de la flèche de Shantell.
+
+    Le cadre de KaTeX est trop bas pour un trait de lettre : la pointe déborde
+    vers le haut, du côté où il n'y a rien."""
+    head_height = VECTOR_HEAD
+    shaft_y = f.bottom + VECTOR_LIFT + head_height
+    head_length = 0.9 * head_height
+    commands = [
+        ("M", (f.left, shaft_y)),
+        ("L", (f.right - 0.3 * head_length, shaft_y)),
+        ("M", (f.right - head_length, shaft_y + head_height)),
+        ("L", (f.right, shaft_y)),
+        ("L", (f.right - head_length, shaft_y - head_height)),
+    ]
+    return stroked(to_path(commands))
+
+
+def glyph_path(font: TTFont, codepoint: int) -> pathops.Path:
+    glyph_set = font.getGlyphSet()
+    recording = DecomposingRecordingPen(glyph_set)
+    glyph_set[font.getBestCmap()[codepoint]].draw(recording)
+    path = pathops.Path()
+    recording.replay(path.getPen())
+    path.simplify()
+    return path
+
+
+def add_glyph(font: TTFont, codepoint: int, glyph_name: str) -> None:
+    """Ajoute à la police un glyphe vide pour un caractère qu'elle n'a pas."""
+    if codepoint in font.getBestCmap():
+        return
+    font.setGlyphOrder(font.getGlyphOrder() + [glyph_name])
+    font["glyf"][glyph_name] = TTGlyphPen(None).glyph()
+    font["hmtx"][glyph_name] = (0, 0)
+    for table in font["cmap"].tables:
+        if table.isUnicode():
+            table.cmap[codepoint] = glyph_name
 
 
 # --- ℕ ℤ ℚ ℝ ℂ ---
@@ -228,9 +350,23 @@ def main() -> None:
     for char, draw in drawers.items():
         box, advance = reference_glyph(reference, ord(char))
         put_glyph(font, ord(char), draw(Frame(box)), advance)
+    for char, mirror, bar in [("⊂", False, ""), ("⊃", True, ""), ("⊆", False, "eq"), ("⊇", True, "eq")]:
+        box, advance = reference_glyph(reference, ord(char))
+        put_glyph(font, ord(char), subset(source, box, mirror, bar), advance)
+    # \not (≠, et tout ce que MathLive barre) : glyphe privé posé sur le symbole
+    slash_box, slash_advance = reference_glyph(reference, 0xE020)
+    put_glyph(font, 0xE020, not_slash(Frame(slash_box)), slash_advance)
+    # ∉ : absent de KaTeX, ajouté avec la chasse du ∈
+    element_box, element_advance = reference_glyph(reference, ord("∈"))
+    add_glyph(font, ord("∉"), "notelement")
+    put_glyph(font, ord("∉"), not_element_of(source, element_box, slash_box), element_advance)
+    box, advance = reference_glyph(reference, ord("↦"))
+    put_glyph(font, ord("↦"), maps_to(font, Frame(box)), advance)
+    box, advance = reference_glyph(reference, 0x20D7)
+    put_glyph(font, 0x20D7, vector_arrow(Frame(box)), advance)
     font.flavor = "woff2"
     font.save(path)
-    print(f"{name}: {' '.join(drawers)} -> {path.relative_to(REPO_ROOT)}")
+    print(f"{name}: {' '.join(drawers)} ⊂ ⊃ ⊆ ⊇ ≠ ∉ ↦ \\vec -> {path.relative_to(REPO_ROOT)}")
 
     name = "KaTeX_AMS-Regular"
     path = OUTPUT_DIR / f"{name}.woff2"
@@ -239,9 +375,12 @@ def main() -> None:
     for char in "NZQRC":
         box, advance = reference_glyph(reference, ord(char))
         put_glyph(font, ord(char), blackboard_letter(source, char, box, advance), advance)
+    for char, mirror, bar in [("⊊", False, "neq"), ("⊋", True, "neq"), ("⊈", False, "not"), ("⊉", True, "not")]:
+        box, advance = reference_glyph(reference, ord(char))
+        put_glyph(font, ord(char), subset(source, box, mirror, bar), advance)
     font.flavor = "woff2"
     font.save(path)
-    print(f"{name}: ℕ ℤ ℚ ℝ ℂ -> {path.relative_to(REPO_ROOT)}")
+    print(f"{name}: ℕ ℤ ℚ ℝ ℂ ⊊ ⊋ ⊈ ⊉ -> {path.relative_to(REPO_ROOT)}")
 
 
 if __name__ == "__main__":
