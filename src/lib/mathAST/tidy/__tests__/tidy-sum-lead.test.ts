@@ -256,3 +256,117 @@ describe('somme sans variable : le rationnel en tête', () => {
 		expect(toLatex(tidy(once))).toBe(toLatex(once));
 	});
 });
+
+/**
+ * Un nombre complexe s'écrit sous sa forme algébrique a + ib, la partie réelle
+ * en tête, même négative (décision de David, 2026-10-12) : `−2 + 3i`,
+ * `−1 + i√3`. La partie réelle est l'ensemble des termes sans `i` ; elle peut
+ * être irrationnelle (`−√2 + i`, `π + i`). Les réels gardent la règle
+ * précédente (`√2 − 1`), une somme avec une inconnue ne bouge pas (`x + iy`).
+ */
+describe('complexe : la partie réelle en tête, même négative', () => {
+	const l = (s: string) => toLatex(tidy(parseLatex(s) as MathNode));
+
+	const cases: [string, string][] = [
+		['-2+3i', '-2 + 3 \\imaginaryI'],
+		['3i-2', '-2 + 3 \\imaginaryI'],
+		['3\\imaginaryI-2', '-2 + 3 \\imaginaryI'],
+		['-1+i\\sqrt3', '-1 + \\imaginaryI \\sqrt{3}'],
+		['-1+i', '-1 + \\imaginaryI'],
+		['i-1', '-1 + \\imaginaryI'],
+		['-1-i', '-1 - \\imaginaryI'],
+		['-i-1', '-1 - \\imaginaryI'],
+		// l'écriture de la partie imaginaire ne change pas : i√3/2
+		['-\\dfrac12+\\dfrac{\\sqrt3}{2}i', '-\\dfrac{1}{2} + \\dfrac{\\imaginaryI \\sqrt{3}}{2}'],
+		['\\dfrac{\\sqrt3}{2}i-\\dfrac12', '-\\dfrac{1}{2} + \\dfrac{\\imaginaryI \\sqrt{3}}{2}'],
+		// partie réelle irrationnelle
+		['\\sqrt2+i', '\\sqrt{2} + \\imaginaryI'],
+		['i+\\sqrt2', '\\sqrt{2} + \\imaginaryI'],
+		['i-\\sqrt2', '-\\sqrt{2} + \\imaginaryI'],
+		['i+\\pi', '\\pi + \\imaginaryI'],
+		// partie réelle de plusieurs termes : rangée comme un réel
+		['i-1+\\sqrt2', '\\sqrt{2} - 1 + \\imaginaryI'],
+		['i-1-\\sqrt2', '-1 - \\sqrt{2} + \\imaginaryI'],
+		['i+\\sqrt5+1', '1 + \\sqrt{5} + \\imaginaryI'],
+		// dans un facteur, une fraction, une puissance
+		['3(i-2)', '3 \\left( -2 + \\imaginaryI \\right)'],
+		['\\dfrac{i\\sqrt3-1}{2}', '\\dfrac{-1 + \\imaginaryI \\sqrt{3}}{2}'],
+		['(3i-2)^2', '\\left( -2 + 3 \\imaginaryI \\right)^2']
+	];
+
+	it.each(cases)('tidy(%s) = %s', (input, expected) => {
+		expect(l(input)).toBe(expected);
+	});
+
+	it.each([
+		// déjà sous forme algébrique
+		['1+i', '1 + \\imaginaryI'],
+		['2-3i', '2 - 3 \\imaginaryI'],
+		['-2-3i', '-2 - 3 \\imaginaryI'],
+		// réels : la règle du rationnel en tête ne change pas
+		['\\sqrt2-1', '\\sqrt{2} - 1'],
+		['-1+\\sqrt2', '\\sqrt{2} - 1'],
+		// imaginaire pur
+		['3i', '3 \\imaginaryI'],
+		// une inconnue : l'ordre ne change pas
+		['x+iy', '\\imaginaryI y + x'],
+		['z-1', 'z - 1'],
+		['i x-2', '\\imaginaryI x - 2'],
+		// i ailleurs qu'en facteur d'un terme : pas une forme algébrique
+		['\\exponentialE^{i\\pi/3}-1', '\\exponentialE^{\\dfrac{\\imaginaryI \\pi}{3}} - 1']
+	])('témoin : tidy(%s) = %s', (input, expected) => {
+		expect(l(input)).toBe(expected);
+	});
+
+	it.each([...cases.map(([input]) => input), '-2-3i', 'x+iy'])('tidy(tidy(%s)) stable', (s) => {
+		const once = tidy(parseLatex(s) as MathNode);
+		expect(toLatex(tidy(once))).toBe(toLatex(once));
+	});
+});
+
+/**
+ * Un `−` devant un complexe : `tidy` ne distribue pas le signe (`−(x − 2)`
+ * inchangé, contrat). Mettre la partie réelle négative en tête y produirait un
+ * double signe, `−(−2 + i)` : la somme garde alors l'ordre d'avant la règle a + ib.
+ */
+describe('complexe opérande d’un − : pas de double signe', () => {
+	const l = (s: string) => toLatex(tidy(parseLatex(s) as MathNode));
+
+	const cases: [string, string][] = [
+		['-(i-2)', '-\\left( \\imaginaryI - 2 \\right)'],
+		['-(-2+i)', '-\\left( \\imaginaryI - 2 \\right)'],
+		['\\frac{3i-2}{-1}', '-\\left( 3 \\imaginaryI - 2 \\right)'],
+		['2-(i-2)', '2 - \\left( \\imaginaryI - 2 \\right)'],
+		['-3(i-2)', '-3 \\left( \\imaginaryI - 2 \\right)'],
+		['-(i-2)^2', '-\\left( \\imaginaryI - 2 \\right)^2'],
+		// partie réelle positive ou tous négatifs : pas de double signe à éviter
+		['-(i+2)', '-\\left( 2 + \\imaginaryI \\right)'],
+		['-(2-i)', '-\\left( 2 - \\imaginaryI \\right)'],
+		['-(-2-i)', '-\\left( -2 - \\imaginaryI \\right)'],
+		// sans le −, la règle a + ib s'applique
+		['3(i-2)', '3 \\left( -2 + \\imaginaryI \\right)']
+	];
+
+	it.each(cases)('tidy(%s) = %s', (input, expected) => {
+		expect(l(input)).toBe(expected);
+	});
+
+	it.each(cases.map(([input]) => input))('tidy(tidy(%s)) stable', (s) => {
+		const once = tidy(parseLatex(s) as MathNode);
+		expect(toLatex(tidy(once))).toBe(toLatex(once));
+	});
+});
+
+describe('complexe : témoins de l’ordre des facteurs et des termes', () => {
+	const l = (s: string) => toLatex(tidy(parseLatex(s) as MathNode));
+
+	it.each([
+		['i^2-1', '\\imaginaryI^2 - 1'],
+		['\\frac{1}{i}-1', '-1 + \\dfrac{1}{\\imaginaryI}'],
+		['|1+i|-2', '\\left| 1 + \\imaginaryI \\right| - 2'],
+		// les facteurs se rangent par leur écriture : `-2 + i` passe devant `1 - i`
+		['(1-i)(-2+i)', '\\left( -2 + \\imaginaryI \\right) \\left( 1 - \\imaginaryI \\right)']
+	])('tidy(%s) = %s', (input, expected) => {
+		expect(l(input)).toBe(expected);
+	});
+});
