@@ -35,6 +35,8 @@
  */
 
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+// Module sans dépendance : son import statique ne crée pas de chaîne (Safari TDZ)
+import { browserCookieMethods } from '$lib/utils/session-cookies';
 import type { LayoutLoad } from './$types';
 
 // =============================================================================
@@ -121,7 +123,13 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	// module from having a complex static dependency chain that triggers
 	// WebKit's TDZ bug with the 'universal' export.
 	// See: https://bugs.webkit.org/show_bug.cgi?id=242740
-	const { createBrowserClient, createServerClient, isBrowser } = await import('@supabase/ssr');
+	const {
+		createBrowserClient,
+		createServerClient,
+		isBrowser,
+		parseCookieHeader,
+		serializeCookieHeader
+	} = await import('@supabase/ssr');
 
 	/**
 	 * Create a Supabase client appropriate for the environment
@@ -139,7 +147,13 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 		? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 				global: {
 					fetch // Use SvelteKit's fetch for better performance
-				}
+				},
+				// SECURITY (findings H3, A1) : quand le navigateur rafraîchit la session,
+				// il réécrit le cookie ; sans ces méthodes, pour 400 jours au lieu de 30.
+				cookies: browserCookieMethods({
+					parse: parseCookieHeader,
+					serialize: serializeCookieHeader
+				})
 			})
 		: createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 				global: {
