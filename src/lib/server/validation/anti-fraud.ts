@@ -46,7 +46,7 @@ export const flagsListQuerySchema = z.object({
 // ----------------------------------------------------------------------------
 
 export const flagIdParamSchema = z.object({
-	flagId: z.string().uuid('Invalid flag ID')
+	flagId: z.string().uuid('Identifiant de signalement invalide')
 });
 
 export const markResolvedBodySchema = z

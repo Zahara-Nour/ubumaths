@@ -63,7 +63,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 	// Validate UUID format for userId
 	const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 	if (!uuidRegex.test(userId)) {
-		throw error(400, 'Invalid user ID format');
+		throw error(400, 'Identifiant d’utilisateur invalide');
 	}
 
 	try {
@@ -86,11 +86,11 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		if (checkError) {
 			console.error('Error checking user existence:', checkError);
-			throw error(500, 'Failed to check user existence');
+			throw error(500, 'Impossible de vérifier le compte');
 		}
 
 		if (!existing) {
-			throw error(404, `User with ID "${userId}" not found`);
+			throw error(404, 'Utilisateur introuvable');
 		}
 
 		// Single-teacher invariant: never promote another account to teacher.
@@ -144,7 +144,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			if (updateError.code === '23514' || /mono-professeur/i.test(updateError.message)) {
 				throw error(400, 'Un seul professeur est autorisé.');
 			}
-			throw error(500, 'Failed to update profile');
+			throw error(500, 'Impossible de modifier le profil');
 		}
 
 		console.log('✅ [API] Profile updated successfully');
@@ -164,7 +164,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 
 		if (fetchError) {
 			console.error('❌ [API] Error fetching updated profile:', fetchError);
-			throw error(500, 'Failed to fetch updated profile');
+			throw error(500, 'Impossible de recharger le profil');
 		}
 
 		console.log('📥 [API] Fetched updated profile:', {
@@ -195,6 +195,6 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

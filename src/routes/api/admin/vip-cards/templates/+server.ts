@@ -65,11 +65,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (checkError) {
 			console.error('Error checking template existence:', checkError);
-			throw error(500, 'Failed to check template existence');
+			throw error(500, 'Impossible de vérifier le modèle de carte VIP');
 		}
 
 		if (existing) {
-			throw error(400, `Template with ID "${data.id}" already exists`);
+			throw error(400, `Un modèle de carte VIP porte déjà l’identifiant « ${data.id} »`);
 		}
 
 		// 5. Insert template (convert camelCase to snake_case)
@@ -95,7 +95,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (insertError) {
 			console.error('Error creating template:', insertError);
-			throw error(500, 'Failed to create template');
+			throw error(500, 'Impossible de créer le modèle de carte VIP');
 		}
 
 		// 6. Return created template (convert snake_case to camelCase)
@@ -109,7 +109,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -139,7 +139,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		if (fetchError) {
 			console.error('Error fetching templates:', fetchError);
-			throw error(500, 'Failed to fetch templates');
+			throw error(500, 'Impossible de charger les modèles de cartes VIP');
 		}
 
 		// 4. Convert to camelCase and return
@@ -155,6 +155,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

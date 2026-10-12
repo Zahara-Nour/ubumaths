@@ -36,7 +36,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		if (fetchError) {
 			console.error('Error fetching pending users:', fetchError);
-			throw error(500, 'Erreur lors de la récupération des utilisateurs en attente');
+			throw error(500, 'Impossible de charger les comptes en attente');
 		}
 
 		// Transform to include class_ids array
@@ -56,6 +56,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw err;
 		}
 
-		throw error(500, 'Erreur interne du serveur');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

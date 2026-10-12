@@ -78,7 +78,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		if (queryError) {
 			console.error('[GET /api/admin/class-students] Error fetching students:', queryError);
-			throw error(500, `Failed to fetch class students: ${queryError.message}`);
+			throw error(500, `Impossible de charger les élèves de la classe : ${queryError.message}`);
 		}
 
 		// Transform the nested structure to flat user objects
@@ -109,6 +109,6 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		}
 
 		// Generic error for unexpected issues
-		throw error(500, 'Erreur interne du serveur');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

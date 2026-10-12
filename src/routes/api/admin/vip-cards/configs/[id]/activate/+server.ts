@@ -38,7 +38,7 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 	const configId = parseInt(params.id, 10);
 
 	if (isNaN(configId)) {
-		throw error(400, 'Invalid config ID');
+		throw error(400, 'Identifiant de configuration invalide');
 	}
 
 	try {
@@ -51,11 +51,11 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 
 		if (checkError) {
 			console.error('Error checking config existence:', checkError);
-			throw error(500, 'Failed to check config existence');
+			throw error(500, 'Impossible de vérifier la configuration');
 		}
 
 		if (!targetConfig) {
-			throw error(404, `Config with ID ${configId} not found`);
+			throw error(404, 'Configuration introuvable');
 		}
 
 		// 4. Deactivate all configs
@@ -66,7 +66,7 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 
 		if (deactivateError) {
 			console.error('Error deactivating configs:', deactivateError);
-			throw error(500, 'Failed to deactivate existing configs');
+			throw error(500, 'Impossible de désactiver les autres configurations');
 		}
 
 		// 5. Activate target config
@@ -79,7 +79,7 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 
 		if (activateError) {
 			console.error('Error activating config:', activateError);
-			throw error(500, 'Failed to activate config');
+			throw error(500, 'Impossible d’activer la configuration');
 		}
 
 		// 6. Return activated config (convert snake_case to camelCase)
@@ -93,6 +93,6 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

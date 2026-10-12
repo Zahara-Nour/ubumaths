@@ -50,11 +50,11 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 		if (checkError) {
 			console.error('Error checking template existence:', checkError);
-			throw error(500, 'Failed to check template existence');
+			throw error(500, 'Impossible de vérifier le modèle de carte VIP');
 		}
 
 		if (!existing) {
-			throw error(404, `Template with ID "${templateId}" not found`);
+			throw error(404, `Modèle de carte VIP introuvable : ${templateId}`);
 		}
 
 		// 4. Parse multipart/form-data
@@ -62,21 +62,21 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		const imageFile = formData.get('image');
 
 		if (!imageFile || !(imageFile instanceof File)) {
-			throw error(400, 'Image file is required');
+			throw error(400, 'Image requise');
 		}
 
 		// 5. Validate file type (accept JPG, PNG, WebP)
 		if (!ACCEPTED_TYPES.includes(imageFile.type)) {
-			throw error(400, 'Only JPG, PNG, and WebP images are allowed');
+			throw error(400, 'Formats acceptés : JPG, PNG et WebP');
 		}
 
 		// 6. Validate file size (max 2MB)
 		if (imageFile.size === 0) {
-			throw error(400, 'Image file cannot be empty');
+			throw error(400, 'Image vide');
 		}
 
 		if (imageFile.size > 2 * 1024 * 1024) {
-			throw error(400, 'Image must be less than 2MB');
+			throw error(400, 'Image trop lourde (2 Mo au maximum)');
 		}
 
 		// 7. Convert to WebP and validate actual file format
@@ -88,7 +88,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			const metadata = await sharp(rawBuffer).metadata();
 
 			if (!metadata.format || !['jpeg', 'png', 'webp'].includes(metadata.format)) {
-				throw error(400, 'Invalid image format detected');
+				throw error(400, 'Format d’image non reconnu');
 			}
 
 			if (metadata.format === 'webp') {
@@ -100,7 +100,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			if (err && typeof err === 'object' && 'status' in err) {
 				throw err;
 			}
-			throw error(400, 'Invalid image file - unable to process');
+			throw error(400, 'Image illisible');
 		}
 
 		// 8. Generate storage key
@@ -117,7 +117,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 		if (uploadError) {
 			console.error('Error uploading image:', uploadError);
-			throw error(500, `Failed to upload image: ${uploadError.message}`);
+			throw error(500, `Impossible d’envoyer l’image : ${uploadError.message}`);
 		}
 
 		// 10. Get public URL
@@ -126,7 +126,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			.getPublicUrl(storageKey);
 
 		if (!publicUrlData?.publicUrl) {
-			throw error(500, 'Failed to get public URL for uploaded image');
+			throw error(500, 'Impossible d’obtenir l’adresse publique de l’image');
 		}
 
 		// 11. Update template image_path (use full Supabase Storage URL)
@@ -139,7 +139,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 		if (updateError) {
 			console.error('Error updating template image_path:', updateError);
-			throw error(500, 'Failed to update template image path');
+			throw error(500, 'Impossible d’enregistrer l’image du modèle de carte VIP');
 		}
 
 		// 12. Return success response
@@ -158,6 +158,6 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

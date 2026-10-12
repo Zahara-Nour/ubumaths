@@ -77,7 +77,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (insertError) {
 			console.error('Error creating config:', insertError);
-			throw error(500, 'Failed to create config');
+			throw error(500, 'Impossible de créer la configuration');
 		}
 
 		// 5. Return created config (convert snake_case to camelCase)
@@ -91,7 +91,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -121,7 +121,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		if (fetchError) {
 			console.error('Error fetching configs:', fetchError);
-			throw error(500, 'Failed to fetch configs');
+			throw error(500, 'Impossible de charger les configurations');
 		}
 
 		// 4. Convert to camelCase and return
@@ -137,6 +137,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 
 		// Catch-all for unexpected errors
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

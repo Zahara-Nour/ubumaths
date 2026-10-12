@@ -49,12 +49,12 @@ import { loadQuestionWithTransform } from '$lib/migration/question-data-loader';
 export const GET: RequestHandler = async ({ locals, params }) => {
 	// ✅ SECURITY: Authentication check
 	if (!locals.profile) {
-		throw error(401, 'Authentication required');
+		throw error(401, 'Connexion requise');
 	}
 
 	// ✅ SECURITY: Authorization check (admin only)
 	if (locals.profile.role !== 'admin') {
-		throw error(403, 'Admin access required');
+		throw error(403, 'Réservé aux administrateurs');
 	}
 
 	try {
@@ -63,7 +63,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		const globalIndexNum = parseInt(globalIndexStr, 10);
 
 		if (isNaN(globalIndexNum)) {
-			throw error(400, 'Global index must be a valid number');
+			throw error(400, 'Numéro de question invalide');
 		}
 
 		const validation = globalIndexSchema.safeParse(globalIndexNum);
@@ -78,7 +78,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		const questionData = await loadQuestionWithTransform(globalIndex);
 
 		if (!questionData) {
-			throw error(404, `Question with global index ${globalIndex} not found`);
+			throw error(404, `Question n° ${globalIndex} introuvable`);
 		}
 
 		// Return structured response
@@ -94,6 +94,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 		// Log and return generic error
 		console.error('Error loading question:', err);
-		throw error(500, 'Failed to load question data');
+		throw error(500, 'Impossible de charger la question');
 	}
 };

@@ -97,7 +97,7 @@ describe('weekConfigSchema', () => {
 			const result = weekConfigSchema.safeParse(invalidConfig);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('school_days and weekend_days');
+				expect(result.error.issues[0].message).toContain('jours de classe et de week-end');
 			}
 		});
 
@@ -129,7 +129,7 @@ describe('weekConfigSchema', () => {
 			const result = weekConfigSchema.safeParse(invalidConfig);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('school_days and weekend_days');
+				expect(result.error.issues[0].message).toContain('jours de classe et de week-end');
 			}
 		});
 
@@ -161,7 +161,7 @@ describe('weekConfigSchema', () => {
 			const result = weekConfigSchema.safeParse(invalidConfig);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('school_days');
+				expect(result.error.issues[0].message).toContain('Au moins un jour de classe');
 			}
 		});
 
@@ -193,7 +193,7 @@ describe('weekConfigSchema', () => {
 			const result = weekConfigSchema.safeParse(invalidConfig);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('first_day');
+				expect(result.error.issues[0].message).toContain('premier jour');
 			}
 		});
 
@@ -445,7 +445,7 @@ describe('updateSchoolConfigSchema', () => {
 			const result = updateSchoolConfigSchema.safeParse(invalidInput);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('Invalid timezone');
+				expect(result.error.issues[0].message).toContain('Fuseau horaire invalide');
 			}
 		});
 
@@ -569,7 +569,7 @@ describe('partialSchoolConfigSchema', () => {
 			const result = partialSchoolConfigSchema.safeParse({});
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('At least one field');
+				expect(result.error.issues[0].message).toContain('Fuseau horaire ou semaine requis');
 			}
 		});
 

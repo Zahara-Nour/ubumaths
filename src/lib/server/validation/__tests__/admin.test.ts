@@ -38,7 +38,7 @@ describe('admin validation schemas', () => {
 			const result = addToClassSchema.safeParse(data);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('Invalid user ID');
+				expect(result.error.issues[0].message).toContain('Identifiant d’utilisateur invalide');
 			}
 		});
 
@@ -51,7 +51,7 @@ describe('admin validation schemas', () => {
 			const result = addToClassSchema.safeParse(data);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('Invalid class ID');
+				expect(result.error.issues[0].message).toContain('Identifiant de classe invalide');
 			}
 		});
 
@@ -383,7 +383,7 @@ describe('admin validation schemas', () => {
 			const result = schoolFormSchema.safeParse(data);
 			expect(result.success).toBe(false);
 			if (!result.success) {
-				expect(result.error.issues[0].message).toContain('max 200');
+				expect(result.error.issues[0].message).toContain('200 caractères au maximum');
 			}
 		});
 
