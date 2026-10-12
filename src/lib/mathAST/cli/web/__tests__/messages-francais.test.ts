@@ -62,3 +62,53 @@ describe('les erreurs de lecture courantes, en français', () => {
 		expect(run('2+3').output).toBe('5');
 	});
 });
+
+// Revue : la traduction passait sur le HTML final (balises avalées, saisie recopiée réécrite)
+// et la formule générique écrasait des messages déjà français ou leur consigne
+describe('la traduction ne touche que le message', () => {
+	it('2+3) : le HTML garde ses balises et la saisie recopiée', () => {
+		const html = run('2+3)').outputHtml ?? '';
+
+		expect(html).toContain('« ) » inattendu ici</span>');
+		expect(html).toContain('2+3)');
+		expect(html).not.toMatch(/« \)<\/span>/);
+	});
+
+	it('x + Unknown) : la saisie recopiée n’est pas réécrite', () => {
+		expect(run('x + Unknown)').outputHtml ?? '').toContain('x + Unknown)');
+	});
+
+	it('(2+3 : le HTML traduit aussi, malgré les guillemets échappés', () => {
+		expect(run('(2+3').outputHtml ?? '').toMatch(/Il manque « \) »/);
+	});
+
+	it('f(x : il manque « ) »', () => {
+		expect(run('f(x').output).toMatch(/Il manque « \) »/);
+	});
+
+	it('un message déjà français n’est pas écrasé', () => {
+		expect(run('Invalid(2)').output).toMatch(/Fonctions disponibles/);
+	});
+
+	it.each([
+		['.mode zz', /exact/],
+		['.taylor sin(x)', /Forme attendue/],
+		['.def-deriv f 2x', /Commande inconnue/]
+	])('%s : la consigne reste, en français', (input, expected) => {
+		const line = run(input);
+		// L'atelier lit `error.message` quand la sortie est vide (une commande)
+		const shown = line.output || line.error?.message || '';
+
+		expect(shown).toMatch(expected);
+		expect(shown).not.toMatch(ENGLISH);
+		expect(shown).not.toMatch(/\b(Use|Usage|Type \.help|Example)\b/);
+	});
+
+	it('.unknown : le même nom de commande dans la sortie et dans le message', () => {
+		const line = run('.unknown');
+
+		expect(line.output).toMatch(/Commande inconnue : \.unknown/);
+		expect(line.error?.message).toMatch(/Commande inconnue : \.unknown/);
+		expect(line.outputHtml ?? '').not.toMatch(/Hint|Type \.help/);
+	});
+});

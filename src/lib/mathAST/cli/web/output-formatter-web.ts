@@ -41,7 +41,7 @@ const CSS_CLASSES = {
  * Escape HTML special characters to prevent XSS.
  * Uses simple string replacement for browser and Node compatibility.
  */
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
 	return text
 		.replace(/&/g, '&amp;')
 		.replace(/</g, '&lt;')

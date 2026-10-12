@@ -319,7 +319,10 @@ error: » avant). **Tous les messages d'erreur de la console sont traduits à sa
 (`mathAST/cli/web/french-errors.ts`, `withFrenchErrors` dans `execute`) : une table pour les
 fréquents (« Unexpected token: EOF » → « Expression incomplète », « Unknown command: \foo » →
 « Commande inconnue : \foo », « Division by zero » → « Division par zéro »…), « Écriture non
-reconnue » pour le reste — jamais l'anglais. Les parseurs gardent leurs messages (une cinquantaine
+reconnue » pour une ligne qui COMMENCE par un mot anglais (un message déjà français reste
+entier ; une consigne « Use: »/« Usage: » reste, sous « Forme attendue : »). ⚠️ On traduit le
+message seul, puis on le remplace dans la sortie et, échappé, dans le HTML de /cas : traduit sur
+le HTML final, il avalait des balises et réécrivait la saisie recopiée (revue). Les parseurs gardent leurs messages (une cinquantaine
 de tests les vérifient). Une sortie d'erreur VIDE reste vide : l'atelier y répond « Je n'ai pas
 su lire… ».
 
