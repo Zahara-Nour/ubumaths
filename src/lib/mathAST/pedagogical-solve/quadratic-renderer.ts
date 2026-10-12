@@ -21,6 +21,7 @@ import type {
 } from '../common/step-renderer-base';
 import { toLatex } from '../latex-generator';
 import { computeNumericValue } from '../solve/numeric-value';
+import { constantSign } from '../common/constant-sign';
 import type { MathNode } from '../types';
 import type { SignMark, SignTableGrid, SignTableRow } from './sign-table-grid';
 import type { EquationStep, EquationOperation, QuadraticSchoolLevel } from './types';
@@ -703,8 +704,11 @@ function formatSolveEachFactor(op: EquationOperation & { kind: 'solve-each-facto
 export function quadraticSignTableGrid(
 	op: EquationOperation & { kind: 'quadratic-sign-table' }
 ): SignTableGrid | null {
-	const aValue = computeNumericValueLite(op.a);
-	const aSign: '+' | '-' = aValue !== null && aValue < 0 ? '-' : '+';
+	// Signe de a lu sur sa VALEUR : `-\frac12` est négatif (écart V36 — la
+	// lecture sur `number` / `opposite(number)` seulement le voyait positif).
+	const aSignValue = constantSign(op.a);
+	if (aSignValue === null || aSignValue === 0) return null;
+	const aSign: '+' | '-' = aSignValue < 0 ? '-' : '+';
 	const oppSign: '+' | '-' = aSign === '+' ? '-' : '+';
 	const label = formatQuadraticPolynomialLabel(op);
 
@@ -817,22 +821,9 @@ function formatQuadraticPolynomialLabel(
 	return `P(${op.variable})`;
 }
 
-/**
- * Lightweight numeric extraction — returns `null` if the node isn't a simple
- * integer/decimal/opposite. Avoids importing the full `computeNumericValue`
- * machinery since we only need to decide the SIGN of `a`.
- */
-function computeNumericValueLite(node: MathNode): number | null {
-	if (node.type === 'number') return parseFloat(node.value);
-	if (node.type === 'opposite' && (node as { operand: MathNode }).operand.type === 'number') {
-		return -parseFloat(((node as { operand: MathNode }).operand as { value: string }).value);
-	}
-	return null;
-}
-
 /** Sort roots by approximate numeric value (smallest first). Uses the full
  *  `computeNumericValue` so irrational forms like `(1 + \sqrt{5}) / 2` are
- *  ordered correctly — `computeNumericValueLite` only handles integers. */
+ *  ordered correctly. */
 function sortRoots(roots: readonly MathNode[]): MathNode[] {
 	const withVals = roots.map((r) => ({
 		node: r,

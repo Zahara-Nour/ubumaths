@@ -36,6 +36,7 @@ import { flattenSumShallow, unflattenSum } from '../flatten';
 import type { SignedTerm } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
 import { getNumericValue } from '../common/numeric';
+import { constantSign } from '../common/constant-sign';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import { getVariables } from '../eval/substitute';
 import {
@@ -406,25 +407,27 @@ function buildConcludeStep(constantIneq: RelationNode, id: number): EquationStep
 
 /**
  * Evaluate a constant inequality (both sides numeric) into a boolean truth
- * value. Defensively returns `false` (contradiction-like) when one side is
- * non-numeric — that should not happen in practice because the caller only
- * invokes this on inequalities that have already been reduced.
+ * value, from the sign of `lhs − rhs` read on its VALUE (`constantSign`) :
+ * `0 < \frac23` est vraie (écart V36 : seuls les entiers étaient lus, et une
+ * constante fractionnaire rendait « contradiction »). Defensively returns
+ * `false` (contradiction-like) when the sign cannot be established — that
+ * should not happen in practice because the caller only invokes this on
+ * inequalities that have already been reduced.
  */
 function evaluateConstantInequality(rel: RelationNode): boolean {
-	const lhs = getNumericValue(rel.left);
-	const rhs = getNumericValue(rel.right);
-	if (lhs === null || rhs === null) return false;
+	const sign = constantSign(canon(add(rel.left, opposite(rel.right))));
+	if (sign === null) return false;
 	switch (rel.relation) {
 		case '<':
-			return lhs < rhs;
+			return sign < 0;
 		case '>':
-			return lhs > rhs;
+			return sign > 0;
 		case '<=':
-			return lhs <= rhs;
+			return sign <= 0;
 		case '>=':
-			return lhs >= rhs;
+			return sign >= 0;
 		case '!=':
-			return lhs !== rhs;
+			return sign !== 0;
 		default:
 			return false;
 	}

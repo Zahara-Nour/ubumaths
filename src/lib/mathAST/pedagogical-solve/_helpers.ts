@@ -20,7 +20,8 @@ import { flattenSumShallow } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
 import { unwrapGroupingMembers } from '../solve/classify';
 import { denormalize, normalize } from '../normal';
-import { getNumericValue } from '../common/numeric';
+import { constantSign } from '../common/constant-sign';
+import { InequalityNotSolvable } from '../solve/inequality/types';
 import { getVariables } from '../eval/substitute';
 import { toLatex } from '../latex-generator';
 import type { EquationOperation, EquationStep } from './types';
@@ -106,27 +107,33 @@ export function divideBothSides(eq: RelationNode, divisor: MathNode): RelationNo
 
 /**
  * Divide both sides by `divisor` and, for inequalities, flip the operator if
- * the divisor is a numerically negative scalar. Returns the resulting
- * relation along with a `flipped` flag indicating whether the operator was
- * inverted (`<` → `>`, etc.). For `=` and `!=` the flag is always `false`.
+ * the divisor is negative. Returns the resulting relation along with a
+ * `flipped` flag indicating whether the operator was inverted (`<` → `>`,
+ * etc.). For `=` and `!=` the flag is always `false`.
  *
- * If `divisor` is symbolic (no numeric value extractable), `flipped` defaults
- * to `false` — the caller is expected to either ensure `divisor` is numeric
- * or to call `divideBothSides` directly. This is the V1 pedagogical
- * inequality flow which only handles numeric coefficients.
+ * Le signe se lit sur la VALEUR du diviseur (`constantSign`), pas sur la forme
+ * de son nœud : `-\frac23`, `\frac{-3}{4}`, `-\sqrt2` sont négatifs (écart V36,
+ * où seuls `number` / `opposite(number)` étaient vus). Signe indécidable
+ * (diviseur symbolique) sur `<`, `>`, `<=`, `>=` → `InequalityNotSolvable` :
+ * mieux vaut aucune correction pédagogique qu'un sens deviné.
  */
 export function divideBothSidesWithFlip(
 	ineq: RelationNode,
 	divisor: MathNode
 ): { result: RelationNode; flipped: boolean } {
-	const numeric = getNumericValue(divisor);
-	const shouldFlip =
-		numeric !== null &&
-		numeric < 0 &&
-		(ineq.relation === '<' ||
-			ineq.relation === '>' ||
-			ineq.relation === '<=' ||
-			ineq.relation === '>=');
+	const ordering =
+		ineq.relation === '<' ||
+		ineq.relation === '>' ||
+		ineq.relation === '<=' ||
+		ineq.relation === '>=';
+	const sign = ordering ? constantSign(divisor) : null;
+	if (ordering && sign === null) {
+		throw new InequalityNotSolvable(
+			`Signe du diviseur indécidable : ${toLatex(divisor)}`,
+			'Le sens de l’inégalité dépend du signe du diviseur.'
+		);
+	}
+	const shouldFlip = sign === -1;
 
 	const newRelation = shouldFlip ? flipRelation(ineq.relation) : ineq.relation;
 	const result = canonEquation(
