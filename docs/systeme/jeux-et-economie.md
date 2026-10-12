@@ -154,8 +154,8 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
    type de jeu** (`daily_game_rewards.is_first_win_of_day`), `0` ensuite. ⚠️ L'ancienne doc disait
    le cap « partagé entre jeux » : c'est faux depuis l'ajout de 2048 et Mathémo (commentaire de la
    fonction : « 1 gidouille/day PER GAME TYPE »). Elle n'accepte que le **serveur** (client
-   service : routes 2048 et Mathémo ; appel imbriqué par `complete_minesweeper_game`, SECURITY
-   DEFINER), refuse l'appel sans identité (`20261016100200`), exige le rôle `student` et une
+   service : routes 2048 et Mathémo ; appels imbriqués par `complete_minesweeper_game` et
+   `submit_riddle_attempt`, SECURITY DEFINER), refuse l'appel sans identité (`20261016100200`), exige le rôle `student` et une
    récompense théorique entre 0 et 1000. L'EXECUTE est retiré à `authenticated`
    (`20261016100700`) : un élève ne s'attribue plus la gidouille du jour de chaque type sans
    jouer. La

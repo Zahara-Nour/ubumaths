@@ -10,8 +10,9 @@
 -- Mesuré en prod le 2026-10-12 : droit EXECUTE à postgres, authenticated et service_role
 -- seulement (ni anon ni PUBLIC). Appelants dans src : client service uniquement
 -- (api/riddles/[id]/submit, api/games/2048/scores, api/games/mathemo/scores).
--- Appel imbriqué : complete_minesweeper_game (SECURITY DEFINER) appelle record_game_reward
--- avec les droits de son propriétaire ; il n'est pas touché.
+-- Appels imbriqués : complete_minesweeper_game et submit_riddle_attempt (SECURITY DEFINER,
+-- propriétaire postgres) appellent record_game_reward avec les droits de leur propriétaire ;
+-- ils ne sont pas touchés, et la garde de record_game_reward s'y applique toujours.
 --
 -- Accès : aucun gagné ; les comptes connectés perdent l'appel direct de ces trois fonctions.
 -- Aucune donnée touchée.

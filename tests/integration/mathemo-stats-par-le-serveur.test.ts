@@ -73,19 +73,28 @@ describe('Mathémo : statistiques enregistrées par le serveur seulement', () =>
 		await cleanupAllTestData();
 	});
 
-	it('un appel sans auth.uid() ni rôle service est refusé', async () => {
-		const pg = await getPostgresClient();
-		await pg.query('begin');
-		try {
-			await pg.query(`set local role authenticated`);
-			await pg.query(`select set_config('request.jwt.claims', '{"role":"authenticated"}', true)`);
-			await expect(
-				pg.query(`select * from upsert_mathemo_score($1, 5, true, true, 999999)`, [autre.id])
-			).rejects.toThrow(/Unauthorized|permission denied/);
-		} finally {
-			await pg.query('rollback');
-		}
-	});
+	// Garde du corps de la fonction, testée sous `postgres` (qui garde EXECUTE) : sous le
+	// rôle `authenticated`, le droit retiré refuserait avant la garde et le test passerait
+	// même sans elle. Elle sert encore aux appels imbriqués (démineur, énigmes).
+	for (const [cas, claims] of [
+		['sans identité', () => ({ role: 'authenticated' })],
+		['avec l’identité d’un autre élève', () => ({ role: 'authenticated', sub: eleve.id })]
+	] as const) {
+		it(`la garde refuse un appel ${cas}`, async () => {
+			const pg = await getPostgresClient();
+			await pg.query('begin');
+			try {
+				await pg.query(`select set_config('request.jwt.claims', $1, true)`, [
+					JSON.stringify(claims())
+				]);
+				await expect(
+					pg.query(`select * from upsert_mathemo_score($1, 5, true, true, 999999)`, [autre.id])
+				).rejects.toThrow(/Unauthorized/);
+			} finally {
+				await pg.query('rollback');
+			}
+		});
+	}
 
 	it('l’enregistrement par le client service fonctionne (chemin de la route)', async () => {
 		const { data, error } = await createServiceRoleClient().rpc('upsert_mathemo_score', {
@@ -108,8 +117,8 @@ describe('Mathémo : statistiques enregistrées par le serveur seulement', () =>
 			p_found_first_try: true,
 			p_score: 999999
 		});
-		// Refusé par le droit (42501) avant même la garde de la fonction.
-		expect(error?.message).toMatch(/Unauthorized|permission denied/);
+		// Refusé par le droit (42501), avant la garde (testée plus haut sous `postgres`).
+		expect(error?.code).toBe('42501');
 	});
 
 	it('l’élève ne s’enregistre plus lui-même : droit retiré aux comptes connectés', async () => {
