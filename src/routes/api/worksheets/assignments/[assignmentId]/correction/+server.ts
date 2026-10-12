@@ -18,6 +18,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { sanitizeForFileName } from '$lib/utils/filename';
 import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
 import { canAccessCorrections } from '$lib/server/worksheets/correction-release';
 import {
@@ -242,8 +243,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		});
 
 		// Return Typst source (PDF generation must be done client-side)
-		// Suffixe écrit en ASCII : le filtre remplacerait le « ç » d'« Aperçu » par « _ ».
-		const filename = `${worksheet.title.replace(/[^a-zA-Z0-9]/g, '_')}_correction_Apercu_professeur.pdf`;
+		const filename = `${sanitizeForFileName(worksheet.title)}_correction_${sanitizeForFileName(studentName)}.pdf`;
 
 		return json({
 			success: true,
