@@ -41,19 +41,45 @@ describe('un « non » sans parenthèses porte sur toute la comparaison', () => 
 });
 
 describe('valeurs absolues et « ou »', () => {
-	it('| 2 || 3 | n’est pas un « ou »', () => {
-		const output = run('| 2 || 3 |').output;
+	// `| 2 || 3 |` n'a pas de sens : il reste refusé, comme avant (erreur de lecture)
+	it('| 2 || 3 | : refusé, sans « ou » dans la valeur absolue', () => {
+		const line = run('| 2 || 3 |');
 
-		expect(output).not.toMatch(/Cannot|boolean|logique/i);
+		expect(line.success).toBe(false);
+		expect(line.output).not.toMatch(/Cannot evaluate boolean/);
 	});
 
-	it('|2| || |3| n’est pas un « ou »', () => {
-		expect(run('|2| || |3|').output).not.toMatch(/Comparaison non évaluable|Cannot/);
+	it('|2| || |3| : un « ou » entre deux nombres, refusé en français', () => {
+		expect(run('|2| || |3|').output).toMatch(/non évaluable/);
 	});
 
 	it('un « ou » entre deux comparaisons reste un « ou »', () => {
 		expect(run('2 > 1 || 1 > 2').output).toBe('true');
 		expect(run('|2| > 1 || 1 > 2').output).toBe('true');
+	});
+});
+
+// Revue : exiger une comparaison cassait les variables booléennes (justes sur main)
+describe('des variables booléennes', () => {
+	it.each([
+		['b || c', 'true'],
+		['b && !c', 'true'],
+		['!(b) && c', 'false'],
+		['b && c || b', 'true']
+	])('b := 2 > 1, c := 1 > 2 : %s = %s', (input, output) => {
+		expect(run('b := 2 > 1', 'c := 1 > 2', input).output).toBe(output);
+	});
+});
+
+describe('les « non » collés ou doublés', () => {
+	it.each([
+		['\\lnot2>1', 'false'],
+		['2>1\\land\\lnot3>2', 'false'],
+		['\\lnot\\lnot 2 > 1', 'true'],
+		['!!2 > 1', 'true'],
+		['! ! 2 > 1', 'true']
+	])('%s : %s', (input, output) => {
+		expect(run(input).output).toBe(output);
 	});
 });
 

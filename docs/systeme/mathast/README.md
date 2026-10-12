@@ -506,7 +506,7 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     vers l'extérieur, `+ − × ÷` et puissances entières), refus s'ils se recouvrent. ⚠️ Jamais
     la valeur approchée du bouton ≈ pour trancher : elle a donné des sens faux. Une chaîne `a < b < c` est
     vraie si chaque maillon l'est (`evaluateToBoolean`), et passe par le plafond maillon par
-    maillon. La console réécrit les opérateurs logiques et d'égalité (`&&`, `and`, `!=`, `==`…) dans la notation du parseur (`cli/core/pipeline.ts`, `withLogicOperators`) — au plus près : seulement s'il y a une comparaison, `||` hors d'une valeur absolue, un « non » sans parenthèses enveloppant toute la comparaison qui le suit ; `.def` ne dérive pas une définition booléenne, et
+    maillon. La console réécrit les opérateurs logiques et d'égalité (`&&`, `and`, `!=`, `==`…) dans la notation du parseur (`cli/core/pipeline.ts`, `withLogicOperators`) — au plus près : mots et « non » seulement s'il y a une comparaison ou un opérateur logique, `||` hors d'une valeur absolue, un « non » sans parenthèses enveloppant toute la comparaison qui le suit ; `.def` ne dérive pas une définition booléenne, et
     lit en entier une entrée à plusieurs `=` ou dont un membre est une comparaison.
 
 ## Le moteur de réécriture et les étapes

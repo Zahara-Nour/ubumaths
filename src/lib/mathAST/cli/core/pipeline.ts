@@ -111,10 +111,10 @@ const NOT_BEFORE_PAREN = new RegExp(BEFORE_NOT + String.raw`(?:!|not|non)(?=\s*\
  * Un « non » sans parenthèses, suivi de ce qu'il nie : `not 2 > 1`, `! 2 > 1`, `!2 < 1`. Un mot
  * suivi d'un opérateur (`non > 1`) parle d'une variable.
  */
-const BARE_NOT = new RegExp(BEFORE_NOT + String.raw`(?:!\s*|(?:not|non|\\lnot)\s+)(?=[\w\\])`);
+const BARE_NOT = new RegExp(BEFORE_NOT + String.raw`(?:!\s*|\\lnot\s*|(?:not|non)\s+)(?=[\w\\!])`);
 
-/** Une comparaison dans l'entrée. */
-const RELATION = /[<>=≤≥≠]|\\(?:ne|neq|le|leq|ge|geq|lt|gt)(?![a-z])/;
+/** Une comparaison ou un opérateur logique dans l'entrée (`b && !c`, `b || c` avec b := 2 > 1). */
+const LOGICAL_CONTEXT = /[<>=≤≥≠]|\\(?:ne|neq|le|leq|ge|geq|lt|gt|land|lor|lnot)(?![a-z])|&&|\|\|/;
 
 /** « et », « ou » en toutes lettres : entourés d'espaces seulement (`et := 3`, `ou*2` intacts). */
 const AND_WORD = /(?<=\s)(?:and|et)(?=\s)/g;
@@ -138,7 +138,9 @@ function withBareNotsWrapped(text: string, not: string, markers: readonly string
 		let depth = 0;
 		while (end < result.length) {
 			const char = result[end];
-			if (depth === 0 && (char === ',' || markers.some((m) => result.startsWith(m, end)))) break;
+			if (depth === 0 && (',;'.includes(char) || markers.some((m) => result.startsWith(m, end)))) {
+				break;
+			}
 			if ('([{'.includes(char)) depth += 1;
 			if (')]}'.includes(char)) {
 				if (depth === 0) break;
@@ -148,6 +150,7 @@ function withBareNotsWrapped(text: string, not: string, markers: readonly string
 		}
 		const operand = result.slice(start, end).trimEnd();
 		const before = match.index + match[1].length + match[2].length;
+		// `!!2 > 1`, `\\lnot\\lnot 2 > 1` : le « non » suivant est enveloppé au tour d'après
 		result = `${result.slice(0, before)}${not}(${operand})${result.slice(start + operand.length)}`;
 	}
 	return result;
@@ -160,10 +163,10 @@ function withBareNotsWrapped(text: string, not: string, markers: readonly string
  * répondaient « Unexpected token », ou se lisaient lettre par lettre. Le LaTeX n'a que `\land`,
  * `\lor`, `\lnot`, `\ne` ; il lisait `2 != 3` comme `factorial(2) = 3`.
  *
- * ⚠️ Au plus près, sans rien changer de ce qui se lisait déjà (revues) : les mots, `||` et le
- * « non » seulement dans une COMPARAISON (`non + 1`, `x et y`, `|2| || |3|` parlent d'autre
- * chose) ; `||` et les mots entourés d'espaces, et `||` hors d'une valeur absolue (`||-2||`,
- * `| 2 || 3 |`) ; un « non » seulement en tête, après `(`, `,` ou un « et »/« ou » (`5 !`,
+ * ⚠️ Au plus près, sans rien changer de ce qui se lisait déjà (revues) : les mots et le « non »
+ * seulement s'il y a une comparaison ou un opérateur logique (`non + 1`, `x et y` parlent de
+ * variables ; `b && !c` de booléens) ; `||` et les mots entourés d'espaces, `||` hors d'une
+ * valeur absolue (`||-2||`, `| 2 || 3 |`) ; un « non » seulement en tête, après `(`, `,` ou un « et »/« ou » (`5 !`,
  * `|-3|!` sont des factorielles) ; aucun mot dans `\text{…}`.
  */
 function withLogicOperators(input: string, format: 'latex' | 'custom'): string {
@@ -174,12 +177,12 @@ function withLogicOperators(input: string, format: 'latex' | 'custom'): string {
 	let text = input
 		.replace(/!==?/g, latex ? ' \\ne ' : '!=')
 		.replace(/(?<![=!<>:])={2,3}(?!=)/g, '=')
-		.replace(/&&/g, ` ${and} `);
-	if (!RELATION.test(text)) return text;
+		.replace(/&&/g, ` ${and} `)
+		.replace(/\s\|\|\s/g, (bars, offset: number, whole: string) =>
+			insideAbsoluteValue(whole, offset) ? bars : ` ${or} `
+		);
+	if (!LOGICAL_CONTEXT.test(text)) return text;
 
-	text = text.replace(/\s\|\|\s/g, (bars, offset: number, whole: string) =>
-		insideAbsoluteValue(whole, offset) ? bars : ` ${or} `
-	);
 	if (!/\\(?:text|operatorname)/.test(text)) {
 		text = text.replace(AND_WORD, and).replace(OR_WORD, or);
 	}

@@ -302,8 +302,8 @@ Les opérateurs logiques et d'égalité se tapent comme en programmation ou en t
 pour le LaTeX (qui lisait `2 != 3` comme `factorial(2) = 3`). Une factorielle reste collée à son
 nombre (`3! = 6`). Un « non » sans parenthèses porte sur toute la comparaison qui le suit
 (`not 2 > 1` = non(2 > 1), jusqu'au prochain « et »/« ou » ; le `\lnot` du LaTeX lie plus fort).
-⚠️ Au plus près (revues) : les mots, `||` et le « non » seulement s'il y a une comparaison
-(`non + 1`, `x et y`, `|2| || |3|` parlent d'autre chose) ; `||` et les mots entourés d'espaces,
+⚠️ Au plus près (revues) : les mots et le « non » seulement s'il y a une comparaison ou un
+opérateur logique (`non + 1`, `x et y` parlent de variables ; `b && !c` de booléens) ; `||` et les mots entourés d'espaces,
 `||` hors d'une valeur absolue (`||-2||`, `| 2 || 3 |`) ; un « non » seulement en tête, après `(`,
 `,` ou un « et »/« ou » (`5 !`, `|-3|!` sont des factorielles), un mot `non` seulement suivi de ce
 qu'il nie (`non > 1` est une variable) ; aucun mot dans `\text{…}`. `.def f(x) = x == 2` ne tente
