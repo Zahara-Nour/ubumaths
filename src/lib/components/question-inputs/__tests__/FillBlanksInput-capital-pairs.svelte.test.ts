@@ -47,7 +47,7 @@ async function typed(keys: string, capitalPairs?: CapitalPairs): Promise<string>
 	const mathField = await focusedMathField();
 	await userEvent.keyboard(keys);
 	const value = mathField.getPromptValue('0');
-	unmount();
+	await unmount();
 	return value;
 }
 
