@@ -12,6 +12,11 @@
  *   passent derrière les positifs, chaque groupe gardant l'ordre ci-dessus —
  *   `1 − x`, `3 − 2x`, `x − 3`, `b − a`. De degré ≥ 2, l'ordre décroissant
  *   reste, signes compris : `−x² + x + 1`.
+ * - **Somme sans variable** (décision de David, 2026-10-12) : le nombre
+ *   rationnel passe en tête, comme dans les manuels — `1 + √5`, `3 + 2√2`,
+ *   `1 + ln 2`, `1 + π`. `e`, `i`, `π` sont des constantes. Un rationnel
+ *   négatif n'y passe que si tous les autres termes sont négatifs (`−1 − √2`) :
+ *   sinon `√2 − 1` évite le signe − en tête.
  *
  * L'écriture d'un terme est calculée **une fois par terme** avant le tri, pas
  * à chaque comparaison.
@@ -34,8 +39,20 @@ import {
 } from '../normal/rational';
 import { buildFactor } from './build';
 import { variable } from '../factory';
-import { isEulerConstant, isImaginaryUnit } from '../guards';
+import {
+	isDerivativeFunction,
+	isEulerConstant,
+	isFunction,
+	isGreek,
+	isHole,
+	isImaginaryUnit,
+	isSegmentLength,
+	isSubscript,
+	isSymbol,
+	isVariable
+} from '../guards';
 import { mapNode } from '../transforms';
+import { isKnownFunctionName } from '../numtype/rules/functions';
 
 // =============================================================================
 // Types
@@ -190,6 +207,77 @@ export function isFirstDegreeSum(terms: readonly TidyTerm[]): boolean {
 	return degree !== null && equalRational(degree, ONE);
 }
 
+/**
+ * Le nœud contient-il une inconnue ? Les constantes `e`, `i`, `π` n'en sont
+ * pas (π est un nœud `constant`, jamais `greek`), ni une fonction usuelle en un
+ * nombre (`\sin(1)`, `\ln 2`, `\sqrt{2}`). Une lettre, une lettre grecque, un
+ * indice (`u_0`), une longueur (`AB`), un trou, un symbole en sont, et aussi
+ * une fonction de l'énoncé (`f(2)`, `f'(1)`, `g(0)`) : sa valeur est inconnue.
+ */
+function containsUnknown(node: MathNode): boolean {
+	let found = false;
+	mapNode(node, (n) => {
+		if (
+			isVariable(n) ||
+			isGreek(n) ||
+			isSubscript(n) ||
+			isSegmentLength(n) ||
+			isHole(n) ||
+			isSymbol(n) ||
+			(isFunction(n) && (!isKnownFunctionName(n.name) || isDerivativeFunction(n)))
+		) {
+			found = true;
+		}
+		return n;
+	});
+	return found;
+}
+
+/**
+ * Un terme ordinaire : ni opaque (infini, zéro signé), ni grandeur. Partagé
+ * avec la mise en facteur du signe d'une somme toute négative (`collect.ts`).
+ */
+export function isPlainTerm(term: TidyTerm): boolean {
+	return !term.verbatim && term.unit === null;
+}
+
+/** Un terme qui n'est qu'un nombre rationnel (ni facteur, ni unité). */
+function isRationalTerm(term: TidyTerm): boolean {
+	return term.factors.length === 0 && isPlainTerm(term);
+}
+
+/**
+ * Le rationnel qui doit passer en tête de la somme, ou `null`.
+ *
+ * Somme sans variable : le rationnel passe en tête (`1 + √5`). Négatif, il n'y
+ * passe que si tous les autres termes le sont aussi (`−1 − √2`, mais `√2 − 1`).
+ * Une somme qui contient une inconnue, une unité ou un terme opaque : `null`.
+ * Ne dépend que de l'ensemble des termes, pas de leur ordre.
+ */
+export function leadingRational(terms: readonly TidyTerm[]): TidyTerm | null {
+	const rational = terms.find(isRationalTerm);
+	if (rational === undefined || terms.length < 2) return null;
+	const others = terms.filter((term) => term !== rational);
+	const plain = others.every(
+		(term) => isPlainTerm(term) && term.factors.every((factor) => !containsUnknown(factor.base))
+	);
+	if (!plain) return null;
+	if (
+		isNegativeRational(rational.coefficient) &&
+		!others.every((term) => isNegativeRational(term.coefficient))
+	) {
+		return null;
+	}
+	return rational;
+}
+
+/** Met en tête le rationnel désigné par `leadingRational`, l'ordre des autres gardé. */
+export function rationalFirst(terms: readonly TidyTerm[]): TidyTerm[] {
+	const rational = leadingRational(terms);
+	if (rational === null) return [...terms];
+	return [rational, ...terms.filter((term) => term !== rational)];
+}
+
 /** Ordonne les termes d'une somme, quel que soit son niveau d'imbrication. */
 export function sortTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 	const decorated = terms.map((term) => ({ term, key: termOrderKey(term) }));
@@ -197,10 +285,13 @@ export function sortTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 	const sorted = decorated.map((entry) => entry.term);
 
 	const degree = sumDegree(decorated.map((entry) => entry.key));
-	if (degree === null || !equalRational(degree, ONE)) return sorted;
+	if (degree === null || !equalRational(degree, ONE)) return rationalFirst(sorted);
 
 	// Degré 1 : les positifs devant, les négatifs derrière, l'ordre gardé dans
 	// chaque groupe. Idempotent : trier à nouveau redonne les mêmes groupes.
 	const isNegativeTerm = (term: TidyTerm) => isNegativeRational(term.coefficient);
-	return [...sorted.filter((term) => !isNegativeTerm(term)), ...sorted.filter(isNegativeTerm)];
+	return rationalFirst([
+		...sorted.filter((term) => !isNegativeTerm(term)),
+		...sorted.filter(isNegativeTerm)
+	]);
 }

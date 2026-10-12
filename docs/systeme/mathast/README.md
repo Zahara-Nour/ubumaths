@@ -646,7 +646,7 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   la valeur de `evaluateLimit` et le quotient dominant pédagogique passent par `tidy` — signe
   devant la fraction (`-\dfrac{\sqrt{2}}{2}`, plus `\dfrac{-\sqrt{2}}{2}` de `denormalize`),
   radical au numérateur (`\dfrac{\sqrt{3}}{2}`, plus `\dfrac{1}{2}\sqrt{3}`), ordre canonique
-  (`\sqrt{2} + 1`). Une valeur qui contient un décimal reste telle quelle (`0.5`, jamais
+  (somme sans variable : le rationnel en tête, `1 + \sqrt{2}`, depuis le 2026-10-12). Une valeur qui contient un décimal reste telle quelle (`0.5`, jamais
   `\dfrac{1}{2}`) : décimal de l'énoncé (`writeLikeInput`) ou des flottants du suivi de signe
   (`\sqrt{\frac{x^2+1}{4x^2}}` en −∞ rend `0.5` par la composée √). Les calculs intermédiaires
   gardent la forme de `resultToNode` ; `analyzeDiscontinuity` (`limits/one-sided.ts`) compare la

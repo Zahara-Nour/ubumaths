@@ -154,3 +154,105 @@ describe('dérivées mises au propre : (1 − x) reste (1 − x)', () => {
 		expect(toCustom(tidyTerms(derivative('-3x^2+2x')))).toBe('2-6x');
 	});
 });
+
+/**
+ * Une somme SANS variable : le nombre rationnel passe en tête, comme dans les
+ * manuels (décision de David, 2026-10-12) — `1 + √5`, `3 + 2√2`, `1 + ln 2`.
+ * `e`, `i`, `π` sont des constantes, pas des variables.
+ *
+ * Un rationnel NÉGATIF ne passe en tête que si tous les autres termes sont
+ * négatifs aussi : `√2 − 1` garde son écriture (pas de signe − en tête quand on
+ * peut l'éviter), `−√2 − 1` devient `−1 − √2`.
+ *
+ * Une somme qui contient une variable garde l'ordre ci-dessus (`x + 1`).
+ */
+describe('somme sans variable : le rationnel en tête', () => {
+	const l = (s: string) => toLatex(tidy(parseLatex(s) as MathNode));
+
+	it.each([
+		['\\sqrt5+1', '1 + \\sqrt{5}'],
+		['1+\\sqrt5', '1 + \\sqrt{5}'],
+		['\\dfrac{\\sqrt5+1}{2}', '\\dfrac{1 + \\sqrt{5}}{2}'],
+		['2\\sqrt2+3', '3 + 2 \\sqrt{2}'],
+		['\\ln2+1', '1 + \\ln\\left( 2 \\right)'],
+		['-\\dfrac3e+2', '2 - \\dfrac{3}{\\exponentialE}'],
+		['\\sqrt3+\\dfrac12', '\\dfrac{1}{2} + \\sqrt{3}'],
+		['2\\pi+3', '3 + 2 \\pi'],
+		['\\exponentialE^2+1', '1 + \\exponentialE^2'],
+		['2\\imaginaryI+1', '1 + 2 \\imaginaryI'],
+		// `e` et `i` saisis comme des lettres : ce sont des constantes
+		['e^2+1', '1 + \\exponentialE^2'],
+		['2i+1', '1 + 2 \\imaginaryI'],
+		['\\pi+1', '1 + \\pi'],
+		['\\sqrt2+\\sqrt3+2', '2 + \\sqrt{2} + \\sqrt{3}'],
+		// une fonction usuelle en un nombre est une constante
+		['2\\sin(1)+1', '1 + 2 \\sin\\left( 1 \\right)'],
+		['\\arctan(2)+1', '1 + \\arctan\\left( 2 \\right)'],
+		['\\sqrt[3]{2}+1', '1 + \\sqrt[3]{2}'],
+		// degré 1 : les négatifs restent derrière, le rationnel passe devant
+		['\\ln(3)-\\ln(2)+1', '1 + \\ln\\left( 3 \\right) - \\ln\\left( 2 \\right)'],
+		// une somme imbriquée sans variable, dans une expression qui en a une
+		['x\\ln(\\sqrt2+1)', 'x \\ln\\left( 1 + \\sqrt{2} \\right)'],
+		// tous négatifs dans un facteur : le signe sort, puis le rationnel en tête
+		['3(-\\sqrt2-1)', '-3 \\left( 1 + \\sqrt{2} \\right)'],
+		['\\dfrac{-1-\\sqrt5}{2}', '-\\dfrac{1 + \\sqrt{5}}{2}']
+	])('tidy(%s) = %s', (input, expected) => {
+		expect(l(input)).toBe(expected);
+	});
+
+	it.each([
+		// rationnel négatif, un autre terme positif : pas de − en tête
+		['-1+\\sqrt2', '\\sqrt{2} - 1'],
+		['\\sqrt2-1', '\\sqrt{2} - 1'],
+		['\\dfrac{-1+\\sqrt5}{2}', '\\dfrac{\\sqrt{5} - 1}{2}'],
+		['\\sqrt2-1+\\sqrt3', '\\sqrt{2} + \\sqrt{3} - 1'],
+		// rationnel négatif, tous les autres négatifs : il passe en tête
+		['-\\sqrt2-1', '-1 - \\sqrt{2}'],
+		['-1-\\sqrt2', '-1 - \\sqrt{2}']
+	])('rationnel négatif : tidy(%s) = %s', (input, expected) => {
+		expect(l(input)).toBe(expected);
+	});
+
+	it.each([
+		// témoins : une variable, l'ordre ne change pas
+		['x^2+1', 'x^2 + 1'],
+		['1+x', 'x + 1'],
+		['\\sqrt2 x+1', 'x \\sqrt{2} + 1'],
+		['x+\\sqrt2+1', '\\sqrt{2} + x + 1'],
+		['u_0+1', 'u_0 + 1'],
+		['\\alpha+1', '\\alpha + 1'],
+		['3^x+1', '3^x + 1'],
+		['\\sin x+1', '\\sin\\left( x \\right) + 1'],
+		['f(x)+1', 'f\\left( x \\right) + 1'],
+		['\\square+1', '\\square + 1'],
+		['AB+1', 'A B + 1'],
+		['\\exponentialE^{x+1}+1', '\\exponentialE^{x + 1} + 1'],
+		['\\sqrt{x}+1', '\\sqrt{x} + 1'],
+		['\\ln(x)+1', '\\ln\\left( x \\right) + 1'],
+		// une fonction de l'énoncé (f, g, f′, f⁻¹) est une inconnue, même en un nombre
+		['f(2)+1', 'f\\left( 2 \\right) + 1'],
+		["f'(1)+3", "f'\\left( 1 \\right) + 3"],
+		['g(0)+1', 'g\\left( 0 \\right) + 1'],
+		// déjà en tête : inchangé
+		['1-\\sqrt2', '1 - \\sqrt{2}'],
+		['4-\\exponentialE', '4 - \\exponentialE']
+	])('témoin : tidy(%s) = %s', (input, expected) => {
+		expect(l(input)).toBe(expected);
+	});
+
+	it('une grandeur garde son ordre : tidy(1[m]+sqrt(2)[m]) = sqrt(2)[m]+1[m]', () => {
+		expect(t('1[m]+sqrt(2)[m]')).toBe('sqrt(2)[m]+1[m]');
+	});
+
+	it.each([
+		'\\sqrt5+1',
+		'-\\sqrt2-1',
+		'-1+\\sqrt2',
+		'\\ln(3)-\\ln(2)+1',
+		'3(-\\sqrt2-1)',
+		'(-1-\\sqrt2)^2'
+	])('tidy(tidy(%s)) stable', (s) => {
+		const once = tidy(parseLatex(s) as MathNode);
+		expect(toLatex(tidy(once))).toBe(toLatex(once));
+	});
+});

@@ -41,6 +41,7 @@ export type TidyRule =
 	| 'tidy-add-fractions'
 	| 'tidy-collect-like-terms'
 	| 'tidy-sort-terms'
+	| 'tidy-number-first'
 	| 'tidy-choose-unit';
 
 /** Une étape de mise au propre. */
@@ -60,6 +61,7 @@ export const TIDY_RULE_DESCRIPTIONS: Readonly<Record<TidyRule, string>> = {
 	'tidy-add-fractions': 'On met au même dénominateur et on calcule',
 	'tidy-collect-like-terms': 'On regroupe les termes semblables',
 	'tidy-sort-terms': 'On range par degré décroissant',
+	'tidy-number-first': 'On écrit le nombre en tête',
 	'tidy-choose-unit': "On choisit l'unité adaptée"
 };
 
