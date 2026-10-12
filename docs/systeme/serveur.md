@@ -107,11 +107,11 @@ Une route sensible accessible sans compte → `rateLimiter.ts` (le seul qui tien
 
 Mesure : `git grep` des imports `$lib/server/<module>` (et relatifs dans `src/lib/server/`), tests exclus, le 2026-10-10. « Routes `api/` » = premiers segments sous `src/routes/api/`. « Ailleurs » = pages (`src/routes` hors `api`), hooks, autres modules. Les sous-dossiers `__tests__/` ne sont pas listés.
 
-Cet index cite chaque module sans le décrire : il ne le couvre pas pour la garde `docs:check-a-jour`. Un module que décrit une doc est dans son `couvre:` (colonne « Doc », ou une section de ce fichier) ; les autres attendent la doc de leur zone dans `trous` (`scripts/doc-a-jour.config.ts`), et une PR qui les modifie l'écrit d'abord ([docs/README.md](../README.md)). Jusqu'au 2026-10-12, une clé `indexe: src/lib/server/*.ts` les comptait comme couverts : un module neuf passait sans doc ni trou, sans qu'aucune garde le dise (neuf modules arrivés depuis le 2026-10-10 manquaient aussi à cet index).
+Cet index cite chaque module sans le décrire : il ne le couvre pas pour la garde `docs:check-a-jour`. Seul le `couvre:` des en-têtes dit qui décrit un module ; la colonne « Voir aussi » renvoie à la doc du domaine sans le garantir. Les modules qu'aucune doc ne décrit attendent la doc de leur zone dans `trous` (`scripts/doc-a-jour.config.ts`), et une PR qui les modifie l'écrit d'abord ([docs/README.md](../README.md)). Jusqu'au 2026-10-12, une clé `indexe: src/lib/server/*.ts` les comptait comme couverts : un module neuf passait sans doc ni trou, sans qu'aucune garde le dise (neuf modules arrivés depuis le 2026-10-10 manquaient aussi à cet index).
 
 ### Transverse (auth, sécurité, plomberie)
 
-| Module                   | Rôle                                                                                    | Routes `api/`                                                                                               | Ailleurs                                                               | Doc                                                         |
+| Module                   | Rôle                                                                                    | Routes `api/`                                                                                               | Ailleurs                                                               | Voir aussi                                                  |
 | ------------------------ | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------- |
 | `middleware/`            | Gardes d'API : auth/rôles, accès prof→élève, consentement, débit mémoire                | **317 endpoints**, presque toutes les familles                                                              | 94 pages                                                               | [auth.md](auth.md)                                          |
 | `validation/`            | Schémas Zod par domaine + utilitaires (§ 1.2)                                           | **281 endpoints**                                                                                           | 62 pages, des modules de `src/lib`                                     | [qualite.md](../pratiques/qualite.md)                       |
@@ -144,7 +144,7 @@ Cet index cite chaque module sans le décrire : il ne le couvre pas pour la gard
 
 ### Personnes, classes, communication
 
-| Module                      | Rôle                                                                   | Routes `api/`                                                                                  | Ailleurs                                         | Doc                                      |
+| Module                      | Rôle                                                                   | Routes `api/`                                                                                  | Ailleurs                                         | Voir aussi                               |
 | --------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------- |
 | `students.ts`               | Lecture des élèves d'une classe, filtre du mode test                   | `classes`, `teacher/classes`                                                                   | 10 pages prof                                    | [base-de-donnees.md](base-de-donnees.md) |
 | `staff-directory.ts`        | Annuaire du personnel (nom, avatar) lisible par un élève               | —                                                                                              | 3 pages élève, `kanban.ts`, `notifications.ts`   | —                                        |
@@ -160,7 +160,7 @@ Cet index cite chaque module sans le décrire : il ne le couvre pas pour la gard
 
 ### Cours, cahier de texte, programme
 
-| Module                         | Rôle                                                                  | Routes `api/`                                               | Ailleurs                                              | Doc                                            |
+| Module                         | Rôle                                                                  | Routes `api/`                                               | Ailleurs                                              | Voir aussi                                     |
 | ------------------------------ | --------------------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------- | ---------------------------------------------- |
 | `chapters.ts`                  | Chapitres de classe : documents, checklist, exercices                 | `teacher/chapters`, `student/chapters`, `student/checklist` | pages `cours`                                         | [base-de-donnees.md](base-de-donnees.md)       |
 | `chapter-sections.ts`          | Sections d'un chapitre (rangement par moment du cours)                | `teacher/chapters`                                          | `/dashboard/teacher/cours/[classId]/[chapterId]`      | —                                              |
@@ -190,7 +190,7 @@ Cet index cite chaque module sans le décrire : il ne le couvre pas pour la gard
 
 ### Exercices, séries, évaluations, révisions
 
-| Module                       | Rôle                                                               | Routes `api/`                                                   | Ailleurs                                                              | Doc                                      |
+| Module                       | Rôle                                                               | Routes `api/`                                                   | Ailleurs                                                              | Voir aussi                               |
 | ---------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------- |
 | `exercises.ts`               | Banque d'exercices : liste, filtres, CRUD                          | `exercises/*`, `teacher/exercises`                              | `/dashboard/teacher/contenu/exercices`, `/exercice/[slug]`            | [questions.md](questions.md)             |
 | `exercise-assignments.ts`    | Assignation d'exercices (mode entraînement, non noté)              | `exercises/[id]`, `exercises/assigned`, `exercises/assignments` | `…/exercices/[id]/assign`                                             | —                                        |
@@ -217,7 +217,7 @@ Cet index cite chaque module sans le décrire : il ne le couvre pas pour la gard
 
 ### Jeux, récompenses, économie
 
-| Module                      | Rôle                                                                                      | Routes `api/`                                             | Ailleurs                               | Doc                                        |
+| Module                      | Rôle                                                                                      | Routes `api/`                                             | Ailleurs                               | Voir aussi                                 |
 | --------------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------- | -------------------------------------- | ------------------------------------------ |
 | `achievements/`             | Succès : attribution, crédit de gidouilles                                                | `achievements/*`, `games/2048`, `games/mathemo`           | store realtime des succès              | [jeux-et-economie.md](jeux-et-economie.md) |
 | `games/`                    | Récompenses des jeux 2048 et Mathémo                                                      | `games/2048`, `games/mathemo`                             | —                                      | [jeux-et-economie.md](jeux-et-economie.md) |
