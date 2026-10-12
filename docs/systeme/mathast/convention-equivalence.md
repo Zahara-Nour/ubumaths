@@ -411,6 +411,16 @@ n'est équivalente qu'à la **même écriture** (`ABC` ≡ `ABC`, `ABC` ≢ `ACB
 forme le refusent avec le message de `figureNameRefusal`. Sans l'option (défaut du
 parseur), `AB` reste le produit `A·B`, comme avant. Suivi : `docs/wip/longueurs-segments-progress.md`.
 
+**Une longueur est strictement positive** (décision de David du 2026-10-12, Q-F) : sans
+hypothèse déclarée, `√(AB²)` ≡ `AB`, `|AB|` ≡ `BA`, `√(9AB²)` ≡ `3AB`. Mécanisme : celui des
+hypothèses de l'énoncé — `numtype` type `AB` en réel positif, et `areEquivalent` pose l'oracle
+(`assumptionOracle(…, [a, b])`) dès qu'une des deux expressions mentionne une longueur ; il ne
+répond que pour un nœud qui mentionne une longueur (ou une variable déclarée). Restent faux :
+`|AB−CD|` ≡ `AB−CD` (signe inconnu), `|AA|` ≡ `AA` (points identiques : la longueur vaut 0, rien
+n'est supposé). Une hypothèse déclarée sur `AB` (ou `BA`) **garde la priorité**, même si elle dit
+moins : avec `{ AB: 'nonzero' }`, `|AB|` ≢ `AB`. La comparaison de forme (`checkForm`) n'est pas
+touchée : `|AB|` pour `AB` y garde sa valeur absolue.
+
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 
 Une case `answerKind: "intervalles"` juge l'ENSEMBLE (`questions/intervals/interval-answer.ts`) :

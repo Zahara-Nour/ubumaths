@@ -52,6 +52,7 @@ import type { MathNode, RelationNode, SegmentLengthNode } from '../types';
 import type {
 	SolveResult,
 	SolveOptions,
+	SolvingVerbosity,
 	ClassificationResult,
 	SolvingStrategy,
 	EquationSolver
@@ -67,7 +68,8 @@ import {
 	toStandardForm,
 	detectVariable,
 	unwrapGrouping,
-	unwrapGroupingMembers
+	unwrapGroupingMembers,
+	getPolynomialDegree
 } from './classify';
 import { createStepRecorder } from './step-recorder';
 import { linearSolver } from './solvers/linear';
@@ -131,9 +133,14 @@ import { getBindingNode } from '../pattern/types';
 import {
 	canonicalNameAmong,
 	segmentName,
+	isDegenerateSegment,
 	segmentsAsVariables,
 	variablesAsSegments
 } from '../common/segment-names';
+import { greaterThanInterval, intervalDomain } from '../domain/factory';
+import { isNegativeType, isZeroType } from '../numtype';
+import { extractQuadraticCoefficients } from './solvers/quadratic';
+import { toLatex } from '../latex-generator';
 // Import direct, pas le baril `rule-sets/index.ts` (cycle de chunk documenté
 // dans `common-factor.ts`).
 import { commonFactorRules } from '../pattern/rule-sets/common-factor';
@@ -1803,6 +1810,101 @@ function withSegmentsRestored(
 	};
 }
 
+/** Le domaine d'une longueur : ]0 ; +∞[ (strictement positive, Q-F). */
+const POSITIVE_LENGTH_DOMAIN: Domain = intervalDomain([greaterThanInterval(number('0'))]);
+
+/**
+ * `a·L² + c = 0` en la longueur `L` (pas de terme en `L`) : la seule racine positive,
+ * `√(−c/a)`, écrite simplement (`AB² = AC² + BC²` → `√(AC² + BC²)`, au lieu de la
+ * formule du discriminant `½√(4AC² + 4BC²)`). `null` si l'équation n'a pas cette forme.
+ */
+function positiveSquareRoot(equation: RelationNode, variable: string): MathNode | null {
+	const expanded = denormalize(normalize(toStandardForm(equation)));
+	if (getPolynomialDegree(expanded, variable) !== 2) return null;
+	const coefficients = extractQuadraticCoefficients(expanded, variable);
+	if (coefficients === null || !isZeroNode(denormalize(normalize(coefficients.b)))) return null;
+	const square = denormalize(
+		normalize(divide(opposite(coefficients.c), coefficients.a, 'fraction'))
+	);
+	return denormalize(normalize(func('sqrt', [square])));
+}
+
+/** La valeur approchée d'une solution, `NaN` si elle contient une lettre ou une longueur. */
+function approximateOrNaN(value: MathNode): number {
+	try {
+		return evaluateNodeToApproximatedNumber(value);
+	} catch {
+		// Une longueur sans valeur lève (« On ne connaît pas la valeur de la longueur AC. »)
+		return Number.NaN;
+	}
+}
+
+/**
+ * Ne garde que les valeurs positives d'une longueur inconnue (Q-F) : une solution
+ * numérique hors de ]0 ; +∞[ (le domaine d'une longueur), ou de signe connu négatif ou
+ * nul (`numtype`, où les autres longueurs sont positives), est exclue, avec une étape.
+ * Une solution de signe inconnu (`10 − BC`) est gardée : rien ne permet de l'exclure.
+ * Pour `a·L² + c = 0`, la racine positive est écrite `√(−c/a)`.
+ */
+function keepPositiveLength(
+	result: SolveResult,
+	equation: RelationNode,
+	variable: string,
+	segments: ReadonlyMap<string, SegmentLengthNode>,
+	opts: { readonly verbosity: SolvingVerbosity }
+): SolveResult {
+	if (result.status === 'infinite') return result;
+	const recorder = createStepRecorder();
+	const recordExclusion = (value: MathNode): void => {
+		recorder.recordStep(
+			'domain-exclusion',
+			`${result.variable} = ${toLatex(value)} est exclu : une longueur est positive`,
+			value,
+			value,
+			'summarized'
+		);
+	};
+
+	// a·L² + c = 0 : les deux solutions sont ±√(−c/a), seule la positive reste
+	const root = result.solutions.length === 2 ? positiveSquareRoot(equation, variable) : null;
+	if (root !== null) {
+		const value = variablesAsSegments(root, segments);
+		recordExclusion(variablesAsSegments(opposite(root), segments));
+		const approximate = Math.max(...result.solutions.map((s) => s.approximate ?? Number.NaN));
+		const solution: Solution = {
+			value,
+			exact: true,
+			...(Number.isFinite(approximate) && { approximate })
+		};
+		return {
+			...result,
+			solutions: [solution],
+			status: 'unique',
+			steps: [...result.steps, ...recorder.getStepsFiltered(opts.verbosity)]
+		};
+	}
+
+	const isExcluded = (value: MathNode): boolean => {
+		if (Number.isFinite(approximateOrNaN(value))) {
+			return !containsNode(POSITIVE_LENGTH_DOMAIN, value);
+		}
+		return isNegativeType(value) || isZeroType(value);
+	};
+	const solutions = result.solutions.filter((solution) => {
+		if (!isExcluded(solution.value)) return true;
+		recordExclusion(solution.value);
+		return false;
+	});
+
+	return {
+		...result,
+		solutions,
+		status:
+			solutions.length === 0 ? 'no-solution' : solutions.length === 1 ? 'unique' : result.status,
+		steps: [...result.steps, ...recorder.getStepsFiltered(opts.verbosity)]
+	};
+}
+
 // =============================================================================
 // Main Solve Function
 // =============================================================================
@@ -1859,7 +1961,14 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 		const variable =
 			opts.variable === undefined ? undefined : canonicalNameAmong(opts.variable, lengths.segments);
 		const result = solve(lengths.node, { ...options, ...(variable !== undefined && { variable }) });
-		return withSegmentsRestored(result, lengths.segments, opts.variable);
+		const restored = withSegmentsRestored(result, lengths.segments, opts.variable);
+		// Une longueur inconnue est strictement positive (Q-F, 2026-10-12), sauf si
+		// l'appelant pose son propre domaine (priorité) ou si ses points sont identiques
+		const unknown = lengths.segments.get(result.variable);
+		if (unknown === undefined || isDegenerateSegment(unknown) || options?.domain !== undefined) {
+			return restored;
+		}
+		return keepPositiveLength(restored, lengths.node, result.variable, lengths.segments, opts);
 	}
 
 	const refusal = reservedVariableRefusal(opts.variable, equation);

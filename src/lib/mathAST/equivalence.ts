@@ -54,7 +54,9 @@ export function areEquivalent(a: MathNode, b: MathNode, options?: EquivalenceOpt
 	// Liste blanche : une limite, un indice, une fonction inconnue… dans l'une des
 	// deux expressions, et les hypothèses sont ignorées (verdict sans hypothèse).
 	const assumptions =
-		isPlainAlgebra(a) && isPlainAlgebra(b) ? assumptionOracle(options?.assumptions) : undefined;
+		isPlainAlgebra(a) && isPlainAlgebra(b)
+			? assumptionOracle(options?.assumptions, [a, b])
+			: undefined;
 	return areEquivalentCore(a, b, {
 		...(options?.signal && { signal: options.signal }),
 		...(options?.timeoutMs !== undefined && { timeoutMs: options.timeoutMs }),

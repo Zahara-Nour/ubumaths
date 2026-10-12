@@ -14,7 +14,8 @@ import type {
 	NumberNode,
 	MathConstantNode,
 	VariableNode,
-	GreekLetterNode
+	GreekLetterNode,
+	SegmentLengthNode
 } from '../../types';
 import type { MathType, ParityInfo, SignInfo, TypeContext } from '../types';
 import { REAL_TYPE, UNKNOWN_TYPE } from '../types';
@@ -24,7 +25,7 @@ import { isNegativeInfinityEndpoint, isPositiveInfinityEndpoint } from '$lib/mat
 import { compareNumericNodes } from '../../eval/compare-numeric';
 import { number, variable } from '../../factory';
 import { numericNode } from '../../common/numeric';
-import { segmentNameIn } from '../../common/segment-names';
+import { isDegenerateSegment, segmentNameIn } from '../../common/segment-names';
 
 // =============================================================================
 // Helper: Sign deduction from bounds
@@ -282,6 +283,27 @@ function declaredNames(ctx: TypeContext): { has(name: string): boolean } {
 }
 
 /**
+ * Le type d'une longueur (`AB`) : une inconnue réelle, typée comme la variable de son
+ * nom, `AB` ou `BA`, celui que connaissent les types et les hypothèses déclarés (une
+ * hypothèse sur `AB` vaut pour `BA`).
+ *
+ * Sans déclaration, une longueur est STRICTEMENT POSITIVE (décision Q-F de David, le
+ * 2026-10-12) : `√(AB²) = AB`, `AB² = 9 ⇒ AB = 3`. Deux exceptions :
+ * - une hypothèse déclarée sur `AB` (ou `BA`) garde la priorité, même si elle dit moins
+ *   (`nonzero`, `integer`) ;
+ * - un segment à points identiques (`AA`) vaut 0 : il n'est pas supposé positif ;
+ * - en mode strict (`ctx.strict`), rien n'est supposé : comportement d'avant.
+ */
+function inferSegmentLengthType(node: SegmentLengthNode, ctx: TypeContext): MathType {
+	const known = declaredNames(ctx);
+	const name = segmentNameIn(node, known);
+	if (known.has(name) || isDegenerateSegment(node) || ctx.strict) {
+		return inferVariableType(variable(name), ctx);
+	}
+	return { base: 'real', sign: 'positive' };
+}
+
+/**
  * Maps literal node types to their inference functions.
  */
 export function inferLiteralType(node: MathNode, ctx: TypeContext): MathType | null {
@@ -302,11 +324,8 @@ export function inferLiteralType(node: MathNode, ctx: TypeContext): MathType | n
 		case 'symbol':
 			return UNKNOWN_TYPE;
 
-		// Une longueur est une inconnue réelle, typée comme la variable de son nom : `AB`
-		// ou `BA`, celui que connaissent les types et les hypothèses déclarés (une
-		// hypothèse sur `AB` vaut pour `BA`) ; sa positivité viendra plus tard (Q-F)
 		case 'segmentLength':
-			return inferVariableType(variable(segmentNameIn(node, declaredNames(ctx))), ctx);
+			return inferSegmentLengthType(node, ctx);
 
 		// Un nom de figure (`ABC`) n'est pas un nombre
 		case 'figureName':

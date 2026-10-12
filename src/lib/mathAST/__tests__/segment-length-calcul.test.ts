@@ -150,12 +150,12 @@ describe('une longueur se dérive et se résout comme une inconnue', () => {
 		);
 	});
 
-	it('AB^2 = 25 : AB = -5 ou AB = 5 (positivité plus tard, Q-F)', () => {
+	it('AB^2 = 25 : AB = 5 (une longueur est positive, lot positivité)', () => {
 		const result = solve(readEquation('AB^2=25'), { variable: 'AB' });
 		const values = result.solutions
 			.map((s) => decimalValue(s.value))
 			.sort((a, b) => (a ?? 0) - (b ?? 0));
-		expect(values).toEqual([-5, 5]);
+		expect(values).toEqual([5]);
 	});
 
 	it('3BA = 12, résolue pour AB : AB = 4', () => {
@@ -274,12 +274,12 @@ describe('solve : plusieurs longueurs, toutes des inconnues', () => {
 		expect(solution).toContain('BA');
 	});
 
-	it('Pythagore littéral : AB^2 = AC^2 + BC^2, en AB → ±√(AC²+BC²) (AC = 3, BC = 4 : ±5)', () => {
+	it('Pythagore littéral : AB^2 = AC^2 + BC^2, en AB → √(AC²+BC²) (AC = 3, BC = 4 : 5)', () => {
 		const result = solve(readEquation('AB^2=AC^2+BC^2'), { variable: 'AB' });
 		const values = result.solutions
 			.map((s) => decimalValue(substitute(s.value, { AC: 3, CB: 4 })))
 			.sort((a, b) => (a ?? 0) - (b ?? 0));
-		expect(values).toEqual([-5, 5]);
+		expect(values).toEqual([5]);
 	});
 
 	it('AB + BC = 10, en AB → AB = 10 - BC', () => {

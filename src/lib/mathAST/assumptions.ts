@@ -11,7 +11,8 @@
  * règles conditionnelles interrogent par ses prédicats (`isPositiveType`…).
  */
 
-import { isFunction, isGreek, isVariable } from './guards';
+import { isDegenerateSegment } from './common/segment-names';
+import { isFunction, isGreek, isSegmentLength, isVariable } from './guards';
 import type { NumericType, TypeContext, VariableAssumption } from './numtype';
 import { isIntegerType, isNonNegativeType, isPositiveType } from './numtype';
 import { isKnownFunctionName } from './numtype/rules/functions';
@@ -194,7 +195,9 @@ const PLAIN_ALGEBRA_NODE_TYPES: ReadonlySet<MathNode['type']> = new Set([
 	'percentage',
 	'delimiter',
 	'superscript',
-	'function'
+	'function',
+	// Une longueur (`AB`) : un réel, positif par défaut (lot positivité, 2026-10-12)
+	'segmentLength'
 ]);
 
 /**
@@ -229,18 +232,61 @@ export function isPlainAlgebra(node: MathNode): boolean {
 }
 
 /**
+ * Vrai si le nœud mentionne une longueur entre deux points distincts (`AB`, pas
+ * `AA`) : une longueur que `numtype` suppose strictement positive sans déclaration.
+ */
+function mentionsPositiveSegment(node: MathNode): boolean {
+	return (
+		findNodes(node, (candidate) => isSegmentLength(candidate) && !isDegenerateSegment(candidate))
+			.length > 0
+	);
+}
+
+/**
  * Les prédicats de `numtype` sur le contexte des hypothèses, gardés par
  * `assumptionApplies`. `undefined` sans hypothèse.
+ *
+ * `compared` : les expressions comparées. Si l'une mentionne une longueur (`AB`),
+ * l'oracle existe même sans hypothèse déclarée : une longueur est strictement
+ * positive par défaut (`numtype`, lot positivité du 2026-10-12), donc `|AB| = AB` et
+ * `√(AB²) = AB`. Il ne répond alors que pour un nœud qui mentionne une longueur ;
+ * une hypothèse déclarée sur `AB` garde la priorité (`numtype`). Sans longueur, rien
+ * ne change.
  */
 export function assumptionOracle(
-	assumptions: AnswerAssumptions | undefined
+	assumptions: AnswerAssumptions | undefined,
+	compared: readonly MathNode[] = []
 ): AssumptionOracle | undefined {
-	const ctx = answerAssumptionsToTypeContext(assumptions);
-	if (!assumptions || !ctx) return undefined;
+	const declared = answerAssumptionsToTypeContext(assumptions);
+	const withSegments = compared.some(mentionsPositiveSegment);
+	if (!declared && !withSegments) return undefined;
+	const ctx: TypeContext = declared ?? {};
 	const names: ReadonlySet<string> = new Set(validEntries(assumptions).map(([name]) => name));
+	const applies = (node: MathNode): boolean =>
+		(declared !== undefined && assumptionApplies(node, names)) ||
+		(withSegments && mentionsPositiveSegment(node));
 	return {
-		isPositive: (node) => assumptionApplies(node, names) && isPositiveType(node, ctx),
-		isNonNegative: (node) => assumptionApplies(node, names) && isNonNegativeType(node, ctx),
-		isInteger: (node) => assumptionApplies(node, names) && isIntegerType(node, ctx)
+		isPositive: (node) => applies(node) && isPositiveType(node, ctx),
+		isNonNegative: (node) => applies(node) && isNonNegativeType(node, ctx),
+		isInteger: (node) => applies(node) && isIntegerType(node, ctx)
+	};
+}
+
+/**
+ * L'oracle des longueurs seules, pour `simplify` : une longueur (`AB`) est strictement
+ * positive par défaut (`numtype`), et `ctx` — le contexte de types de l'appelant — garde
+ * la priorité s'il déclare `AB`. Ne répond que pour un nœud qui mentionne une longueur ;
+ * `undefined` si aucune expression n'en mentionne (rien ne change).
+ */
+export function segmentLengthOracle(
+	ctx: TypeContext | undefined,
+	compared: readonly MathNode[]
+): AssumptionOracle | undefined {
+	if (!compared.some(mentionsPositiveSegment)) return undefined;
+	const typeCtx: TypeContext = ctx ?? {};
+	return {
+		isPositive: (node) => mentionsPositiveSegment(node) && isPositiveType(node, typeCtx),
+		isNonNegative: (node) => mentionsPositiveSegment(node) && isNonNegativeType(node, typeCtx),
+		isInteger: (node) => mentionsPositiveSegment(node) && isIntegerType(node, typeCtx)
 	};
 }
