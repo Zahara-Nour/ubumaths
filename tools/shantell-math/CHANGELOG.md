@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.6.0] - 2026-10-12
+
+### Ajouté
+
+- Script `redraw_symbols.py` : symboles absents de Shantell redessinés à sa main, au trait des lettres (68), dans la boîte du glyphe KaTeX
+  - `∈` : ligne centrale du `c` de Shantell (celle de `round_x.py`) fermée par une barre
+  - `∪ ∩` : U dessiné à la main et son reflet
+  - `⇒ ⟹ ⇔ ⟺` : deux traits et la pointe courte et ouverte de la flèche de Shantell
+  - `ℕ ℤ ℚ ℝ ℂ` (lettres de `\mathbb`, police AMS) : lettres de Shantell avec un trait doublé, mesuré sur la lettre ; la jambe de N et R (droite qui passe au mieux par la jambe sous la boucle), la diagonale de Z (arrêtée au bord droit), l'intérieur gauche de Q et C
+- Importe ses voisins (`replace_delimiters.py`, `round_x.py`), même lancé en `python -I`
+- Ordre : après `roughen_extras.py` et `replace_symbols.py`
+
 ## [1.5.0] - 2026-10-12
 
 ### Ajouté

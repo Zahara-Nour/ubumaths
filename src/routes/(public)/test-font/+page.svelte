@@ -54,12 +54,27 @@
 		}
 	];
 
-	// Expression de l'éditeur : tous les symboles de la police, petits et grands
+	// Expression de l'éditeur : tous les symboles de la police, petits et grands,
+	// une famille par ligne
 	const showcaseLines = [
-		'f(x)=\\left(\\frac{2x+1}{x-3}\\right)^2-|x-2|\\times 3\\div 4\\pm\\sqrt{\\frac{a}{b}}',
-		'x\\in[0;1]\\cup]2;+\\infty[\\quad\\{1;2;3\\}\\quad a/b\\quad\\pi\\approx 3{,}14\\quad\\emptyset',
-		'a\\leq b<c\\quad d\\geq e>f\\quad a\\leqslant b\\geqslant c\\quad A\\rightarrow B\\leftarrow C\\leftrightarrow D',
-		'\\sum_{k=0}^{n}\\binom{n}{k}=2^n\\quad\\prod_{i=1}^{n}i\\quad\\int_0^1 x^2\\,dx=\\frac{1}{3}\\quad\\iint_D f\\quad\\mathbb{R}\\quad\\left[\\frac{\\frac{1}{2}}{\\frac{3}{4}}\\right]\\quad\\left\\{\\frac{a}{b}\\right\\}'
+		// Opérateurs et petits délimiteurs
+		'f(x)=(2x+1)(x-3)-|x-2|\\times 3\\div 4\\pm 1\\quad a/b\\approx 0{,}5\\quad\\{1;2;3\\}',
+		// Comparaisons et flèches
+		'a<b\\leq c\\quad d>e\\geq f\\quad a\\leqslant b\\geqslant c\\quad A\\rightarrow B\\leftarrow C\\leftrightarrow D',
+		// Logique
+		'P\\Rightarrow Q\\quad P\\implies Q\\quad P\\Leftrightarrow Q\\quad P\\iff Q',
+		// Ensembles
+		'x\\in[0;1]\\cup]2;+\\infty[\\quad A\\cap B=\\emptyset\\quad C=\\varnothing\\quad\\mathbb{N}\\subset\\mathbb{Z}\\subset\\mathbb{Q}\\subset\\mathbb{R}\\subset\\mathbb{C}',
+		// Lettres-symboles
+		'2\\pi r\\quad\\frac{\\partial f}{\\partial x}\\quad\\Omega\\quad x\\times y',
+		// Grands opérateurs
+		'\\sum_{k=0}^{n}k\\quad\\prod_{i=1}^{n}i\\quad\\coprod_i A_i\\quad\\int_0^1 x^2\\,dx\\quad\\iint_D f\\quad\\iiint_V g',
+		// Racines
+		'\\sqrt{2}\\quad\\sqrt{\\frac{a}{b}}\\quad\\sqrt{\\frac{\\frac{a}{b}}{c}}\\quad\\sqrt[3]{x}',
+		// Grands délimiteurs
+		'\\left(\\frac{2x+1}{x-3}\\right)^2\\quad\\left[\\frac{\\frac{1}{2}}{\\frac{3}{4}}\\right]\\quad\\left\\{\\frac{a}{b}\\right\\}\\quad\\left\\langle\\frac{a}{b}\\right\\rangle\\quad\\left\\lceil\\frac{a}{b}\\right\\rceil\\quad\\left\\lfloor\\frac{a}{b}\\right\\rfloor\\quad\\left|\\frac{a}{b}\\right|',
+		// Très grands délimiteurs et racine, faits de morceaux empilés
+		'\\left(\\begin{matrix}a\\\\b\\\\c\\\\d\\end{matrix}\\right)\\left[\\begin{matrix}1\\\\2\\\\3\\\\4\\end{matrix}\\right]\\left\\{\\begin{matrix}x\\\\y\\\\z\\\\t\\end{matrix}\\right.\\left\\|\\begin{matrix}u\\\\v\\\\w\\\\s\\end{matrix}\\right\\|\\quad\\sqrt{\\begin{matrix}a\\\\b\\\\c\\\\d\\end{matrix}}'
 	];
 	const showcaseLatex = `\\begin{gathered}${showcaseLines.join('\\\\')}\\end{gathered}`;
 
