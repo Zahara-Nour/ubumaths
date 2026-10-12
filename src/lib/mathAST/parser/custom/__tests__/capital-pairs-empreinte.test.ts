@@ -106,4 +106,13 @@ describe('syntaxe maison : empreinte du corpus (lot 5)', () => {
 		expect(outsideTarget.map(([input]) => input)).toEqual([]);
 		expect(changed.length).toBeGreaterThan(250);
 	});
+
+	it("en mode 'length' : aucune saisie lisible en produit ne devient une erreur (rien en rouge)", () => {
+		const broken = CORPUS.inputs.filter(
+			(input) =>
+				Boolean(parseCustomSafe(input).ast) &&
+				!parseCustomSafe(input, { capitalPairs: 'length' }).ast
+		);
+		expect(broken).toEqual([]);
+	});
 });

@@ -23,6 +23,7 @@ import { resolveVariableExpression } from './variable-resolver';
 import { resolveColorReferences } from '../parser/color-parser';
 import type { RandomSource } from '$lib/utils/random';
 import { parseCustomSafe, toLatex, type GenericFunctionConfig, type MathNode } from '$lib/mathAST';
+import type { CapitalPairs } from '$lib/mathAST/parser/types';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import { cleanCoefficientsAst, latexRelationsToCustom } from '../clean-coefficients';
 
@@ -86,14 +87,18 @@ const NAMED_FORMULA_REGEX = new RegExp(
  */
 function cleanNamedFormula(
 	content: string,
-	genericFunctions?: GenericFunctionConfig
+	genericFunctions?: GenericFunctionConfig,
+	capitalPairs?: CapitalPairs
 ): string | null {
 	const match = NAMED_FORMULA_REGEX.exec(content);
 	if (!match) return null;
 	const [, name, separator, formula] = match;
 	const ast =
-		parseCustomSafe(formula, { genericFunctions }).ast ??
-		parseCustomSafe(latexRelationsToCustom(exactLatexToCustom(formula)), { genericFunctions }).ast;
+		parseCustomSafe(formula, { genericFunctions, capitalPairs }).ast ??
+		parseCustomSafe(latexRelationsToCustom(exactLatexToCustom(formula)), {
+			genericFunctions,
+			capitalPairs
+		}).ast;
 	if (!ast || ast.type !== 'relation') return null;
 	const cleaned = cleanCoefficientsAst(ast);
 	if (cleaned === ast) return null;
@@ -105,24 +110,29 @@ function cleanNamedFormula(
  * réécriture des nombres exacts ; sinon `null` (formule LaTeX, laissée intacte).
  * `genericFunctions` : fonctions déclarées par le modèle (absent : défauts du parseur).
  * `cleanCoefficients` : option du modèle, `1x-1y+0` → `x-y` (cf. clean-coefficients.ts).
+ * `capitalPairs` : sens de `AB` résolu pour l'instance (absent : produit, comme avant).
  */
 function customToLatex(
 	content: string,
 	genericFunctions?: GenericFunctionConfig,
-	cleanCoefficients = false
+	cleanCoefficients = false,
+	capitalPairs?: CapitalPairs
 ): string | null {
 	const render = (ast: MathNode) =>
 		toLatex(cleanCoefficients ? cleanCoefficientsAst(ast) : ast, { preserveHoles: true });
 	// Nom devant la formule (`\\mathcal{P} : …`) : gardé, la formule seule est nettoyée
-	const named = cleanCoefficients ? cleanNamedFormula(content, genericFunctions) : null;
+	const named = cleanCoefficients
+		? cleanNamedFormula(content, genericFunctions, capitalPairs)
+		: null;
 	if (named !== null) return named;
-	const direct = parseCustomSafe(content, { genericFunctions });
+	const direct = parseCustomSafe(content, { genericFunctions, capitalPairs });
 	if (direct.ast) return render(direct.ast);
 	if (cleanCoefficients && latexRelationsToCustom(content) !== content) {
 		// Inégalité écrite en LaTeX (`x^2+1x\\leqslant2`) : relue en syntaxe maison pour
 		// être nettoyée ; rien à nettoyer, le texte d'auteur reste à l'octet près
 		const relation = parseCustomSafe(latexRelationsToCustom(exactLatexToCustom(content)), {
-			genericFunctions
+			genericFunctions,
+			capitalPairs
 		});
 		if (relation.ast) {
 			const cleaned = cleanCoefficientsAst(relation.ast);
@@ -130,7 +140,10 @@ function customToLatex(
 		}
 	}
 	if (!content.includes('\\dfrac') && !content.includes('\\sqrt')) return null;
-	const rewritten = parseCustomSafe(exactLatexToCustom(content), { genericFunctions });
+	const rewritten = parseCustomSafe(exactLatexToCustom(content), {
+		genericFunctions,
+		capitalPairs
+	});
 	return rewritten.ast ? render(rewritten.ast) : null;
 }
 
@@ -153,12 +166,14 @@ function customToLatex(
  * @param content - Content with resolved variables
  * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
  * @param cleanCoefficients - Option du modèle : coefficients nettoyés (`1x` → `x`)
+ * @param capitalPairs - Sens de `AB` résolu pour l'instance (absent : produit)
  * @returns Content with math zones converted to LaTeX
  */
 function convertMathZonesToLatex(
 	content: string,
 	genericFunctions?: GenericFunctionConfig,
-	cleanCoefficients = false
+	cleanCoefficients = false,
+	capitalPairs?: CapitalPairs
 ): string {
 	let result = content;
 
@@ -174,7 +189,12 @@ function convertMathZonesToLatex(
 		}
 
 		// preserveHoles: ? stays as ? (not \placeholder[N]{}) for assignBlankIndices
-		const latex = customToLatex(mathContent.trim(), genericFunctions, cleanCoefficients);
+		const latex = customToLatex(
+			mathContent.trim(),
+			genericFunctions,
+			cleanCoefficients,
+			capitalPairs
+		);
 		// On parse error, return original (will show error at render time)
 		return prefix + (latex ?? mathContent);
 	};
@@ -280,6 +300,7 @@ function textQuantities(text: string): string {
  * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
  * @param cleanCoefficients - Option du modèle : coefficients nettoyés (`1x` → `x`)
+ * @param capitalPairs - Sens de `AB` résolu pour l'instance (absent : produit, comme avant)
  * @returns Resolved markdown ready for rendering
  */
 export function resolveMarkdownContent(
@@ -287,7 +308,8 @@ export function resolveMarkdownContent(
 	resolvedVariables: ResolvedVariable[],
 	random: RandomSource = Math.random,
 	genericFunctions?: GenericFunctionConfig,
-	cleanCoefficients = false
+	cleanCoefficients = false,
+	capitalPairs?: CapitalPairs
 ): ResolvedMarkdown {
 	// Stage 0: conditions sur les variables tirées (`{{if:…}}`) → branche retenue
 	const withoutConditionals = resolveVariableConditionals(String(markdown), resolvedVariables);
@@ -308,7 +330,12 @@ export function resolveMarkdownContent(
 
 	// Stage 3: Convert math zones ($...$, $$...$$) from custom to LaTeX
 	// Note: ~...~ and ~~...~~ remain in custom syntax
-	resolvedContent = convertMathZonesToLatex(resolvedContent, genericFunctions, cleanCoefficients);
+	resolvedContent = convertMathZonesToLatex(
+		resolvedContent,
+		genericFunctions,
+		cleanCoefficients,
+		capitalPairs
+	);
 
 	// Stage 4: grandeurs restées brutes (formule d'auteur, texte)
 	resolvedContent = displayQuantities(resolvedContent);
@@ -373,13 +400,15 @@ export function insertExpressionMarkers(content: string, expressionNames: Set<st
  * @param resolvedVariables - Already resolved variables
  * @param random - Source de hasard de l'instance (consommée), Math.random par défaut
  * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
+ * @param capitalPairs - Sens de `AB` résolu pour l'instance (absent : produit)
  * @returns Resolved answerFormat in LaTeX with ? markers preserved
  */
 export function resolveAnswerFormat(
 	answerFormat: string,
 	resolvedVariables: ResolvedVariable[],
 	random: RandomSource = Math.random,
-	genericFunctions?: GenericFunctionConfig
+	genericFunctions?: GenericFunctionConfig,
+	capitalPairs?: CapitalPairs
 ): string {
 	// Stage 1: Resolve variables and color references
 	let resolved = resolveVariableExpression(answerFormat, resolvedVariables, random);
@@ -387,7 +416,7 @@ export function resolveAnswerFormat(
 
 	// Stage 2: Convert to LaTeX
 	// preserveHoles: ? stays as ? (not \placeholder[N]{}) for assignBlankIndices
-	const parseResult = parseCustomSafe(resolved.trim(), { genericFunctions });
+	const parseResult = parseCustomSafe(resolved.trim(), { genericFunctions, capitalPairs });
 	if (parseResult.ast) {
 		resolved = toLatex(parseResult.ast, { preserveHoles: true });
 	}
@@ -401,14 +430,19 @@ export function resolveAnswerFormat(
  * @param expectedAnswer - Resolved expected answer string (e.g., "5", "10^5")
  * @param genericFunctions - Fonctions déclarées par le modèle (absent : défauts du parseur)
  * @param cleanCoefficients - Option du modèle : coefficients nettoyés (`1x` → `x`)
+ * @param capitalPairs - Sens de `AB` résolu pour l'instance (absent : produit, comme avant)
  * @returns LaTeX string, or undefined if conversion fails
  */
 export function convertToLatex(
 	expression: string,
 	genericFunctions?: GenericFunctionConfig,
-	cleanCoefficients = false
+	cleanCoefficients = false,
+	capitalPairs?: CapitalPairs
 ): string {
-	return customToLatex(expression.trim(), genericFunctions, cleanCoefficients) ?? expression;
+	return (
+		customToLatex(expression.trim(), genericFunctions, cleanCoefficients, capitalPairs) ??
+		expression
+	);
 }
 
 /**
