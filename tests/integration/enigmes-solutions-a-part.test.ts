@@ -63,6 +63,8 @@ async function clientFor(email: string): Promise<SupabaseClient> {
 
 describe('énigmes : solution lisible par l’auteur et l’admin seulement', () => {
 	let riddleId: string;
+	/** Énigme de l'auteur SANS solution : un insert refusé ne l'est pas par la clé primaire. */
+	let riddleSansSolutionId: string;
 	let auteur: { id: string; email: string };
 	let admin: { id: string; email: string };
 	let eleve: { id: string; email: string };
@@ -102,12 +104,18 @@ describe('énigmes : solution lisible par l’auteur et l’admin seulement', ()
 			`insert into riddle_assignments (riddle_id, student_id, assigned_by) values ($1, $2, $3)`,
 			[riddleId, eleve.id, auteur.id]
 		);
+		const sansSolution = await pg.query<{ id: string }>(
+			`insert into riddles (title, difficulty, statement, created_by, status)
+			 values ('zz-énigme sans solution', 1, 'zz', $1, 'published') returning id`,
+			[auteur.id]
+		);
+		riddleSansSolutionId = sansSolution.rows[0].id;
 	});
 
 	afterAll(async () => {
 		const pg = await getPostgresClient();
 		await pg.query('delete from riddle_assignments where riddle_id = $1', [riddleId]);
-		await pg.query('delete from riddles where id = $1', [riddleId]);
+		await pg.query('delete from riddles where id = any($1)', [[riddleId, riddleSansSolutionId]]);
 		await cleanupAllTestData();
 	});
 
@@ -191,12 +199,28 @@ describe('énigmes : solution lisible par l’auteur et l’admin seulement', ()
 		}
 	});
 
-	it('l’élève ne peut pas insérer de solution', async () => {
+	it('l’élève ne peut pas insérer de solution (refus de la RLS, pas de la clé primaire)', async () => {
 		const client = await clientFor(eleve.email);
 		const { error } = await client
 			.from('riddle_solutions')
-			.insert({ riddle_id: riddleId, correction: 'piratée' });
-		expect(error).not.toBeNull();
+			.insert({ riddle_id: riddleSansSolutionId, correction: 'piratée' });
+		expect(error?.code).toBe('42501');
+	});
+
+	it('l’élève ne peut pas supprimer de solution', async () => {
+		const client = await clientFor(eleve.email);
+		const { data } = await client
+			.from('riddle_solutions')
+			.delete()
+			.eq('riddle_id', riddleId)
+			.select('riddle_id');
+		expect(data ?? []).toEqual([]);
+
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query('select 1 from riddle_solutions where riddle_id = $1', [
+			riddleId
+		]);
+		expect(rows).toHaveLength(1);
 	});
 
 	it('l’élève ne peut rien écrire dans la table', async () => {

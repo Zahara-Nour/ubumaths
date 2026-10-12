@@ -20,7 +20,10 @@
 --
 -- Tests : tests/integration/enigmes-solutions-a-part.test.ts
 --
--- Rollback (recrée les colonnes et les remplit depuis riddle_solutions) :
+-- Rollback (recrée les colonnes et les remplit depuis riddle_solutions). ⚠️ Le rejouer
+-- rend de nouveau réponse et correction lisibles par l'élève (énigme du jour, énigme
+-- assignée) : c'est la faille que cette migration ferme.
+--
 --   alter table public.riddles add column answer jsonb;
 --   alter table public.riddles add column correction text not null default '';
 --   update public.riddles r set answer = s.answer, correction = s.correction
