@@ -455,8 +455,9 @@ function evaluateGreekVariableLimit(
  * son `positive`, `-\infty` son `opposite`. Sans cette traduction en nœud
  * `infinity`, aucune stratégie ne voyait une borne infinie : la substitution
  * directe remplaçait x par le symbole et rendait « exact ∞/e^∞ » pour x/eˣ.
+ * Exportée pour la limite pédagogique, qui reçoit la même borne (V26).
  */
-function normalizeApproach(approach: MathNode): MathNode {
+export function normalizeApproach(approach: MathNode): MathNode {
 	if (isDelimiter(approach)) return normalizeApproach(approach.content);
 	if (isSymbol(approach) && approach.symbol === 'infinity') return positiveInfinity();
 	if (isPositive(approach)) {

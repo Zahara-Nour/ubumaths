@@ -16,6 +16,9 @@ import { compile } from '../../eval/compile';
 import { generatePedagogicalLimitSteps } from '../pipeline';
 import { PedagogicalLimitRenderer } from '../renderer';
 import type { RenderedStep } from '../../common/step-renderer-base';
+import { evaluateLimitNode } from '../../limits/evaluate';
+import { dispatchPedagogicalLimit } from '../dispatch';
+import { PedagogicalLimitNotImplemented } from '../types';
 
 function run(latex: string) {
 	const limit = parseLatex(latex);
@@ -64,6 +67,137 @@ describe('limite pédagogique — valeur exacte, jamais un décimal approché', 
 			for (const step of steps) {
 				expect(`${step.title} ${step.expressionLatex ?? ''}`).not.toMatch(/\d\.\d/);
 			}
+		});
+	}
+});
+
+/**
+ * Limite en ±∞ (V26, chantier K21) : le quotient des coefficients dominants
+ * se calculait en flottants (`1.5`, `0.6666666666666666`), les polynômes et
+ * les coefficients irrationnels (π, √2) étaient refusés, et une borne écrite
+ * `+\infty` (nœud du parseur) n'était reconnue par aucune stratégie.
+ *
+ * Oracle : le moteur `limits/` rend la même valeur exacte.
+ */
+const INFINITY_CASES = [
+	// [expression, valeur en +∞, valeur en −∞]
+	['\\frac{3x+1}{2x-5}', '\\dfrac{3}{2}', '\\dfrac{3}{2}'],
+	['\\pi x', '+\\infty', '-\\infty'],
+	['-2x^3+x', '-\\infty', '+\\infty'],
+	['\\frac{x^2+1}{3x}', '+\\infty', '-\\infty'],
+	['\\frac{2x}{x^2+1}', '0', '0'],
+	['\\frac{-4x^2+x}{2x^2-1}', '-2', '-2'],
+	['\\frac{\\frac{1}{3}x+1}{\\frac{1}{2}x-1}', '\\dfrac{2}{3}', '\\dfrac{2}{3}'],
+	['\\frac{x^3-x}{2x^3+1}', '\\dfrac{1}{2}', '\\dfrac{1}{2}'],
+	['\\frac{1}{2}x^2-x', '+\\infty', '+\\infty'],
+	['-x^4+x', '-\\infty', '-\\infty'],
+	['\\frac{\\pi x+1}{2x}', '\\dfrac{\\pi}{2}', '\\dfrac{\\pi}{2}'],
+	['\\frac{x+1}{\\pi x}', '\\dfrac{1}{\\pi}', '\\dfrac{1}{\\pi}'],
+	['\\sqrt{2}x^3', '+\\infty', '-\\infty'],
+	// Quotient irrationnel réduit comme le moteur, pas `\\dfrac{1}{-\\sqrt{2}}`
+	['\\frac{x}{-\\sqrt{2}x}', '\\dfrac{-\\sqrt{2}}{2}', '\\dfrac{-\\sqrt{2}}{2}'],
+	['\\frac{2x}{\\frac{x}{\\sqrt{2}}}', '2 \\sqrt{2}', '2 \\sqrt{2}']
+] as const;
+
+function oracle(latex: string): string | null {
+	const limit = parseLatex(latex);
+	if (limit.type !== 'limit') throw new Error(`pas une limite : ${latex}`);
+	const value = evaluateLimitNode(limit).value;
+	return value === null ? null : toLatex(value);
+}
+
+describe('limite pédagogique en ±∞ — valeur exacte, égale à celle du moteur', () => {
+	for (const [expression, plus, minus] of INFINITY_CASES) {
+		for (const [approach, expected] of [
+			['+\\infty', plus],
+			['-\\infty', minus]
+		] as const) {
+			const latex = `\\lim_{x\\to ${approach}}${expression}`;
+
+			it(`${latex} → ${expected}, comme le moteur`, () => {
+				const { result } = run(latex);
+				expect(result.value).not.toBeNull();
+				if (!result.value) return;
+				expect(toLatex(result.value)).toBe(expected);
+				expect(oracle(latex)).toBe(expected);
+			});
+
+			it(`${latex} : terme dominant puis conclusion ${expected}, sans décimale`, () => {
+				const steps = rendered(latex);
+				expect(steps.map((s) => s.rule)).toContain('identify-dominant-term');
+				const conclusion = steps[steps.length - 1];
+				expect(conclusion.expressionLatex).toContain(`= ${expected}`);
+				for (const step of steps) {
+					expect(`${step.title} ${step.expressionLatex ?? ''}`).not.toMatch(/\d\.\d/);
+				}
+			});
+		}
+	}
+
+	// Le moteur ne conclut qu'en +∞ sur ces deux quotients : en −∞, la valeur
+	// pédagogique est celle qu'il rend en +∞ (même degré, même quotient).
+	for (const [expression, expected] of [
+		['\\frac{\\sqrt{2}x^2+1}{x^2}', '\\sqrt{2}'],
+		['\\frac{\\pi x^2}{\\sqrt{2}x^2}', '\\dfrac{\\sqrt{2} \\pi}{2}']
+	] as const) {
+		it(`${expression} → ${expected} en +∞ comme en −∞ (le moteur ne conclut qu’en +∞)`, () => {
+			for (const approach of ['+\\infty', '-\\infty']) {
+				const { result } = run(`\\lim_{x\\to ${approach}}${expression}`);
+				expect(result.value && toLatex(result.value)).toBe(expected);
+			}
+			expect(oracle(`\\lim_{x\\to +\\infty}${expression}`)).toBe(expected);
+		});
+	}
+
+	it('la conclusion de \\frac{3x+1}{2x-5} en +∞ affiche 3/2', () => {
+		const steps = rendered('\\lim_{x\\to +\\infty}\\frac{3x+1}{2x-5}');
+		expect(steps[steps.length - 1].title).toBe('La limite vaut 3/2');
+	});
+
+	it('par le dispatch (chemin des corrections), (3x+1)/(2x-5) en +∞ → 3/2 exact', () => {
+		const result = dispatchPedagogicalLimit({
+			expression: '(3x+1)/(2x-5)',
+			approach: '+\\infty',
+			schoolLevel: 'lycee'
+		});
+		expect(result.value && toLatex(result.value)).toBe('\\dfrac{3}{2}');
+	});
+
+	it('signe du coefficient dominant non exact ((π − 4)x) : refus propre, pas de décimal', () => {
+		expect(() => run('\\lim_{x\\to +\\infty}\\frac{x^2}{(\\pi-4)x}')).toThrow(
+			PedagogicalLimitNotImplemented
+		);
+	});
+});
+
+describe('limite pédagogique en ±∞ — titres en prose', () => {
+	it('\\frac{\\pi x+1}{2x} en +∞ : « La limite vaut π/2 », sans barre oblique inverse', () => {
+		const steps = rendered('\\lim_{x\\to +\\infty}\\frac{\\pi x+1}{2x}');
+		expect(steps[steps.length - 1].title).toBe('La limite vaut π/2');
+	});
+});
+
+describe('limite pédagogique en ±∞ — fonction constante', () => {
+	for (const [constant, expected, text] of [
+		['5', '5', '5'],
+		['\\pi', '\\pi', 'π']
+	] as const) {
+		const latex = `\\lim_{x\\to +\\infty}${constant}`;
+
+		it(`${latex} : une seule étape, « la fonction est constante », pas de coefficients dominants`, () => {
+			const { result } = run(latex);
+			expect(result.value && toLatex(result.value)).toBe(expected);
+			const descriptions = result.steps.map((s) => s.description);
+			expect(descriptions).toContain(`La fonction est constante : sa limite vaut ${text}.`);
+			expect(descriptions.join(' ')).not.toMatch(/coefficients dominants|degrés/);
+			expect(result.steps.map((s) => s.rule)).not.toContain('identify-dominant-term');
+		});
+
+		it(`${latex} : la conclusion rendue vaut ${expected}`, () => {
+			const steps = rendered(latex);
+			const conclusion = steps[steps.length - 1];
+			expect(conclusion.title).toBe(`La limite vaut ${text}`);
+			expect(conclusion.expressionLatex).toContain(`= ${expected}`);
 		});
 	}
 });

@@ -30,7 +30,6 @@ import {
 	divide,
 	multiply,
 	number,
-	opposite,
 	power,
 	subtract,
 	variable as makeVariable
@@ -184,126 +183,8 @@ export function evaluateAtPoint(expr: MathNode, varName: string, value: number):
 }
 
 // =============================================================================
-// Polynomial helpers (Horner-style synthetic division)
+// Division par une racine commune (noyau `factor/`)
 // =============================================================================
-
-/**
- * Polynomial coefficients indexed by degree (constant first, then x¹, x², …).
- *
- * `[2, 0, 1]` ↔ `2 + x²`. `[]` ↔ zero.
- */
-export type PolynomialCoeffs = readonly number[];
-
-/**
- * Try to extract polynomial coefficients (in `varName`) from a `MathNode`.
- *
- * Returns `null` when:
- * - the expression contains a non-polynomial sub-expression (function call,
- *   transcendental, division-by-non-constant, …)
- * - exponents are non-integer or negative
- *
- * Supports `+`, `-`, `*`, integer `^`, leaf `variable` and `number`. Implicit
- * multiplication and unary minus / plus are handled. Constant subexpressions
- * (e.g. `(2+3)·x`) are folded numerically.
- */
-export function asPolynomial(expr: MathNode, varName: string): PolynomialCoeffs | null {
-	// Transparent unwrap of delimiter nodes.
-	if (expr.type === 'delimiter') return asPolynomial(expr.content, varName);
-
-	switch (expr.type) {
-		case 'number': {
-			const v = parseFloat(expr.value);
-			return Number.isFinite(v) ? [v] : null;
-		}
-		case 'variable': {
-			if (expr.name === varName) return [0, 1];
-			// A different variable folds to a constant only if numerically
-			// resolvable, which is not the case at this level — fail.
-			return null;
-		}
-		case 'opposite': {
-			const inner = asPolynomial(expr.operand, varName);
-			return inner === null ? null : negPolyCoeffs(inner);
-		}
-		case 'positive': {
-			return asPolynomial(expr.operand, varName);
-		}
-		case 'addition': {
-			const l = asPolynomial(expr.left, varName);
-			const r = asPolynomial(expr.right, varName);
-			return l && r ? addPolyCoeffs(l, r) : null;
-		}
-		case 'subtraction': {
-			const l = asPolynomial(expr.left, varName);
-			const r = asPolynomial(expr.right, varName);
-			return l && r ? subPolyCoeffs(l, r) : null;
-		}
-		case 'multiplication': {
-			const l = asPolynomial(expr.left, varName);
-			const r = asPolynomial(expr.right, varName);
-			return l && r ? mulPolyCoeffs(l, r) : null;
-		}
-		case 'superscript': {
-			const base = asPolynomial(expr.base, varName);
-			if (base === null) return null;
-			if (!isNumber(expr.superscript)) return null;
-			const n = parseFloat(expr.superscript.value);
-			if (!Number.isInteger(n) || n < 0) return null;
-			return powPolyCoeffs(base, n);
-		}
-		case 'division': {
-			// Only allowed if the denominator is a non-zero constant.
-			const num = asPolynomial(expr.numerator, varName);
-			const den = asPolynomial(expr.denominator, varName);
-			if (!num || !den) return null;
-			if (den.length !== 1 || den[0] === 0) return null;
-			return num.map((c) => c / den[0]);
-		}
-		default:
-			return null;
-	}
-}
-
-function addPolyCoeffs(a: PolynomialCoeffs, b: PolynomialCoeffs): number[] {
-	const n = Math.max(a.length, b.length);
-	const out = new Array<number>(n).fill(0);
-	for (let i = 0; i < n; i++) out[i] = (a[i] ?? 0) + (b[i] ?? 0);
-	return trimPoly(out);
-}
-
-function subPolyCoeffs(a: PolynomialCoeffs, b: PolynomialCoeffs): number[] {
-	const n = Math.max(a.length, b.length);
-	const out = new Array<number>(n).fill(0);
-	for (let i = 0; i < n; i++) out[i] = (a[i] ?? 0) - (b[i] ?? 0);
-	return trimPoly(out);
-}
-
-function negPolyCoeffs(a: PolynomialCoeffs): number[] {
-	return a.map((c) => -c);
-}
-
-function mulPolyCoeffs(a: PolynomialCoeffs, b: PolynomialCoeffs): number[] {
-	if (a.length === 0 || b.length === 0) return [];
-	const out = new Array<number>(a.length + b.length - 1).fill(0);
-	for (let i = 0; i < a.length; i++) {
-		for (let j = 0; j < b.length; j++) {
-			out[i + j] += a[i] * b[j];
-		}
-	}
-	return trimPoly(out);
-}
-
-function powPolyCoeffs(a: PolynomialCoeffs, n: number): number[] {
-	let result: number[] = [1];
-	for (let i = 0; i < n; i++) result = mulPolyCoeffs(result, a);
-	return result;
-}
-
-function trimPoly(coeffs: number[]): number[] {
-	let n = coeffs.length;
-	while (n > 0 && Math.abs(coeffs[n - 1]) < 1e-12) n--;
-	return coeffs.slice(0, n);
-}
 
 /**
  * Divise N et D une fois par (x − a), exactement (noyau `factor/`, ADR 0024) :
@@ -329,42 +210,6 @@ export function divideByCommonRoot(
 		numerator: rationalPolynomialNode(n.quotient, x),
 		denominator: rationalPolynomialNode(d.quotient, x)
 	};
-}
-
-/**
- * Convert polynomial coefficients back to a `MathNode`.
- *
- * Best-effort cosmetic AST reconstruction (no normalisation pass) — the
- * factor `1` is dropped, integer coefficients are `number()` nodes, and
- * monomials follow the conventional `c · x^n` shape.
- */
-export function polyToNode(coeffs: PolynomialCoeffs, varName: string): MathNode {
-	if (coeffs.length === 0) return number('0');
-
-	const terms: MathNode[] = [];
-	for (let i = coeffs.length - 1; i >= 0; i--) {
-		const c = coeffs[i];
-		if (Math.abs(c) < 1e-12) continue;
-		terms.push(monomial(c, i, varName));
-	}
-
-	if (terms.length === 0) return number('0');
-	if (terms.length === 1) return terms[0];
-
-	let acc = terms[0];
-	for (let k = 1; k < terms.length; k++) {
-		acc = add(acc, terms[k]);
-	}
-	return acc;
-}
-
-function monomial(coeff: number, degree: number, varName: string): MathNode {
-	if (degree === 0) return numericNode(coeff);
-	const x = makeVariable(varName);
-	const xPow = degree === 1 ? x : power(x, number(String(degree)));
-	if (Math.abs(coeff - 1) < 1e-12) return xPow;
-	if (Math.abs(coeff + 1) < 1e-12) return opposite(xPow);
-	return multiply(numericNode(coeff), xPow, 'implicit');
 }
 
 // =============================================================================
@@ -396,7 +241,7 @@ export function formatValueShort(node: MathNode): string {
 	return readableText(node)
 		.replace(/sqrt\((\w+)\)/g, '√$1')
 		.replace(/sqrt\(/g, '√(')
-		.replace(/\bpi\b/g, 'π')
+		.replace(/\\?\bpi\b/g, 'π')
 		.replace(/^-/, '−');
 }
 

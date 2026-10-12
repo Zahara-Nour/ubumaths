@@ -4,12 +4,8 @@
  * Coverage:
  * - `evaluateAtPoint` returns correct numeric values for polynomial,
  *   rational, transcendental, and unsupported nodes.
- * - `asPolynomial` extracts coefficients for canonical polynomials and
- *   refuses non-polynomial input.
  * - `divideByCommonRoot` divise N et D par (x − a), exactement (noyau
  *   `factor/`), point négatif compris ; refuse si a n'est pas racine des deux.
- * - `polyToNode` round-trips coefficients to MathNode and the result
- *   evaluates back to the polynomial value.
  * - `formatApproachShort`, `formatLinearFactor`,
  *   `classifyApproach`, `normalizeDirection` cover the formatting / direction
  *   utilities.
@@ -28,7 +24,6 @@ import {
 	variable
 } from '../../factory';
 import {
-	asPolynomial,
 	classifyApproach,
 	divideByCommonRoot,
 	evaluateAtPoint,
@@ -38,8 +33,7 @@ import {
 	getSqrtArg,
 	isAtInfinity,
 	isSqrt,
-	normalizeDirection,
-	polyToNode
+	normalizeDirection
 } from '../helpers';
 import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
@@ -96,45 +90,6 @@ describe('helpers — evaluateAtPoint', () => {
 	});
 });
 
-describe('helpers — asPolynomial', () => {
-	it('reads x as [0, 1]', () => {
-		expect(asPolynomial(variable('x'), 'x')).toEqual([0, 1]);
-	});
-
-	it('reads x² − 4 as [−4, 0, 1]', () => {
-		const expr = subtract(power(variable('x'), number('2')), number('4'));
-		expect(asPolynomial(expr, 'x')).toEqual([-4, 0, 1]);
-	});
-
-	it('reads x − 2 as [−2, 1]', () => {
-		const expr = subtract(variable('x'), number('2'));
-		expect(asPolynomial(expr, 'x')).toEqual([-2, 1]);
-	});
-
-	it('reads (x − 1)·(x + 2) = x² + x − 2 as [−2, 1, 1]', () => {
-		const expr = multiply(
-			subtract(variable('x'), number('1')),
-			add(variable('x'), number('2')),
-			'implicit'
-		);
-		expect(asPolynomial(expr, 'x')).toEqual([-2, 1, 1]);
-	});
-
-	it('refuses sin(x) (non-polynomial)', () => {
-		const expr: import('../../types').MathNode = {
-			type: 'function',
-			name: 'sin',
-			args: [variable('x')]
-		};
-		expect(asPolynomial(expr, 'x')).toBeNull();
-	});
-
-	it('refuses x^(1/2) (non-integer exponent)', () => {
-		const expr = power(variable('x'), divide(number('1'), number('2'), 'fraction'));
-		expect(asPolynomial(expr, 'x')).toBeNull();
-	});
-});
-
 describe('helpers — divideByCommonRoot', () => {
 	const divideAt = (n: string, d: string, a: number) =>
 		divideByCommonRoot(parseLatex(n), parseLatex(d), 'x', fromInteger(a));
@@ -153,43 +108,6 @@ describe('helpers — divideByCommonRoot', () => {
 
 	it('refuse quand a n’est pas racine des deux', () => {
 		expect(divideAt('x^2-4', 'x-1', 2)).toBeNull();
-	});
-});
-
-describe('helpers — polyToNode', () => {
-	it('converts [2, 1] back to a node evaluating to 2 + x', () => {
-		const node = polyToNode([2, 1], 'x');
-		expect(evaluateAtPoint(node, 'x', 5)).toBeCloseTo(7);
-	});
-
-	it('converts [−4, 0, 1] back to x² − 4', () => {
-		const node = polyToNode([-4, 0, 1], 'x');
-		expect(evaluateAtPoint(node, 'x', 3)).toBeCloseTo(5); // 9 − 4
-	});
-
-	it('converts [0] to number 0', () => {
-		const node = polyToNode([0], 'x');
-		expect(evaluateAtPoint(node, 'x', 5)).toBeCloseTo(0);
-	});
-
-	it('converts empty coeffs to number 0', () => {
-		const node = polyToNode([], 'x');
-		expect(evaluateAtPoint(node, 'x', 5)).toBeCloseTo(0);
-	});
-
-	it('encodes a -1 coefficient monomial as `opposite(...)` (not subtract(0, ...))', () => {
-		// −x² + 2x → the −x² monomial must be `opposite(power(x, 2))`, not
-		// `subtract(0, power(x, 2))`. This anchors the cosmetic AST shape that
-		// the renderer (and any downstream simplifier) expects.
-		const node = polyToNode([0, 2, -1], 'x'); // = 2x − x²
-		// numerical round-trip still holds
-		expect(evaluateAtPoint(node, 'x', 3)).toBeCloseTo(-3); // 6 − 9 = −3
-		// AST shape : the topmost is an addition (2x is first because we
-		// traverse high-degree-first then push, and 2x is degree 1 ; opposite
-		// is built for −x²). Walk the tree to find the `opposite` node.
-		const json = JSON.stringify(node);
-		expect(json).toContain('"opposite"');
-		expect(json).not.toMatch(/"subtraction"[^}]*"left":\{"type":"number","value":"0"/);
 	});
 });
 
