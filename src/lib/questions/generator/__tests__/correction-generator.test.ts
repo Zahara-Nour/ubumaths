@@ -863,7 +863,7 @@ describe("generateCorrection — kind: 'limit'", () => {
 		});
 		const result = generateCorrection(instance);
 		const rules = (result.correction?._renderedSteps ?? []).map((s) => s.rule);
-		expect(rules).toContain('identify-dominant-term');
+		expect(rules).toContain('factor-dominant-term');
 		expect(rules).toContain('conclude');
 	});
 

@@ -471,7 +471,7 @@ describe('Mode B end-to-end demos', () => {
 		expect(steps!.every((s) => s.schoolLevel === 'lycee')).toBe(true);
 
 		const rules = steps!.map((s) => s.rule);
-		expect(rules).toContain('identify-dominant-term');
+		expect(rules).toContain('factor-dominant-term');
 		expect(rules).toContain('conclude');
 
 		const summary = steps!.map(summarize);

@@ -34,11 +34,30 @@
 import type { MathNode } from '../types';
 import type { LimitDirection, IndeterminateForm } from '../limits/types';
 import { detectIndeterminateForm } from '../limits/indeterminate';
-import { infinity, opposite, power, variable as makeVariable } from '../factory';
+import {
+	add,
+	infinity,
+	opposite,
+	parentheses,
+	power,
+	subtract,
+	variable as makeVariable
+} from '../factory';
+import { toLatex } from '../latex-generator';
+import { containsVariable } from '../common/contains-variable';
 import { differentiate } from '../differentiation/differentiate';
 import { matchKnownLimit, getKnownLimitValue } from '../limits/known-limits';
 import { normalizeApproach } from '../limits/evaluate';
-import { isInfinity as isInfinityNode } from '../guards';
+import {
+	isAddition,
+	isDelimiter,
+	isInfinity as isInfinityNode,
+	isOpposite,
+	isPositive,
+	isSubtraction,
+	isSuperscript,
+	isVariable
+} from '../guards';
 import {
 	classifyApproach,
 	divide,
@@ -61,7 +80,13 @@ import { tryEvaluateLimitExact, resultToNode, writeLimitValue } from '../limits/
 import { compile } from '../eval/compile';
 import { normalize, denormalize, hashNormalForm } from '../normal';
 import type { NormalForm, NormalTerm, Rational } from '../normal';
-import { divRational, mulRational, rational, rationalToNumber } from '../normal/rational';
+import {
+	absRational,
+	divRational,
+	mulRational,
+	rational,
+	rationalToNumber
+} from '../normal/rational';
 import { rationalToNode } from '../common/numeric';
 import {
 	type Poly,
@@ -75,6 +100,8 @@ import { PedagogicalLimitNotImplemented, STRATEGIES_LIMITS } from './types';
 import type {
 	LimitBindings,
 	LimitGenerationStrategy,
+	LimitLine,
+	TermLimits,
 	LimitsSchoolLevel,
 	PedagogicalLimitOptions,
 	PedagogicalLimitResult,
@@ -149,6 +176,8 @@ interface StepInit {
 	readonly globalAfter?: MathNode;
 	/** Côté étudié par l'étape, quand il diffère de celui de la limite (à gauche, à droite). */
 	readonly direction?: LimitDirection;
+	/** Limites des termes (étape `limits-of-terms`) */
+	readonly termLimits?: TermLimits;
 }
 
 function makeStep(ctx: PipelineContext, init: StepInit): PedagogicalLimitStep {
@@ -166,6 +195,7 @@ function makeStep(ctx: PipelineContext, init: StepInit): PedagogicalLimitStep {
 		...(init.globalAfter && { globalAfter: init.globalAfter }),
 		...(init.bindings && { bindings: init.bindings }),
 		...(init.indeterminateForm && { indeterminateForm: init.indeterminateForm }),
+		...(init.termLimits && { termLimits: init.termLimits }),
 		...(init.subSteps && init.subSteps.length > 0 && { subSteps: init.subSteps })
 	};
 }
@@ -707,27 +737,41 @@ function tryLhopital(
 }
 
 // =============================================================================
-// Strategy: infinity-analysis
+// Strategy: infinity-analysis — factorisation du terme prépondérant
 // =============================================================================
 
+/**
+ * Limite en ±∞ d'un polynôme ou d'un quotient de polynômes, rédigée comme au
+ * programme de Tle spé (BO 2019 : « la factorisation du terme prépondérant
+ * dans une somme ») :
+ *
+ * 1. forme indéterminée (∞/∞, ou ∞ − ∞ dans une somme), quand il y en a une ;
+ * 2. on développe, si l'expression ne l'est pas ;
+ * 3. on factorise chaque somme par xⁿ (jamais par c·xⁿ) :
+ *    `3x + 1 = x(3 + 1/x)` ;
+ * 4. on simplifie par la plus petite puissance commune (quotient) ;
+ * 5. limites des termes : `c/xᵏ → 0`, donc chaque parenthèse tend vers son
+ *    premier terme ;
+ * 6. limite d'un quotient ou d'un produit, puis conclusion.
+ *
+ * Au supérieur, la même factorisation sans les étapes 5 et 6. Une constante ou
+ * un monôme seul : une seule étape. La VALEUR est calculée comme avant (quotient
+ * exact des coefficients dominants, signe selon la parité) : les étapes ne font
+ * que la rédiger.
+ */
 function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): StrategyResult {
-	// Un polynôme se lit comme le quotient P / 1 : même terme dominant.
-	const numerator = isDivision(expression) ? expression.numerator : expression;
-	const numLead = dominantTerm(numerator, ctx.variable);
-	const denLead = isDivision(expression)
-		? dominantTerm(expression.denominator, ctx.variable)
-		: CONSTANT_ONE_TERM;
-	if (numLead === null || denLead === null) return null;
+	const isQuotient = isDivision(expression);
+	const num = readSide(isQuotient ? expression.numerator : expression, ctx.variable);
+	const den = isQuotient ? readSide(expression.denominator, ctx.variable) : CONSTANT_ONE_SIDE;
+	if (num === null || den === null) return null;
 
-	const numDeg = numLead.degree;
-	const denDeg = denLead.degree;
-	const isPolynomial = !isDivision(expression);
+	const numLead = num.terms[0];
+	const denLead = den.terms[0];
+	const n = num.degree;
+	const m = den.degree;
 
-	// The dominant term node — informational binding.
-	const dominantNode = numDeg >= denDeg ? numLead.node : denLead.node;
-
-	// Une constante (5, π, 5/2) : une seule étape, sans degrés ni coefficients dominants.
-	if (numDeg === 0 && denDeg === 0) {
+	// Une constante (5, π, 5/2) : une seule étape, sans factorisation.
+	if (n === 0 && m === 0) {
 		const constant = exactQuotient(numLead, denLead, ctx);
 		if (constant === null) return null;
 		const step = makeStep(ctx, {
@@ -741,111 +785,205 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 		return { steps: [step], value: constant, status: 'exact', indeterminateForm: 'none' };
 	}
 
-	let value: MathNode;
-	let status: PedagogicalLimitStatus;
-	let conclusionDesc: string;
+	// Valeur EXACTE (V26) : quotient des coefficients dominants, ou 0, ou ±∞.
+	const value = limitValue(num, den, ctx);
+	if (value === null) return null;
+	const status: PedagogicalLimitStatus = value.type === 'infinity' ? 'infinite' : 'exact';
 
-	if (numDeg < denDeg) {
-		// Degré du numérateur plus petit : la limite vaut 0
-		value = number('0');
-		status = 'exact';
-		conclusionDesc = `Le degré du numérateur (${numDeg}) est strictement inférieur à celui du dénominateur (${denDeg}) : la limite vaut 0`;
-	} else if (numDeg > denDeg) {
-		// Limite infinie : son signe dépend des coefficients dominants et du côté (±∞).
-		// Un signe qui ne se lit pas exactement ((π − 4)x) : on s'abstient.
-		if (numLead.sign === null || denLead.sign === null) return null;
-		const sign = signAtInfinity(numLead.sign * denLead.sign, numDeg - denDeg, ctx.approach);
-		value = sign > 0 ? infinity('positive') : infinity('negative');
-		status = 'infinite';
-		const limitText = sign > 0 ? '+∞' : '−∞';
-		conclusionDesc = isPolynomial
-			? `Une fonction polynôme a la même limite à ${formatApproachShort(ctx.approach)} que son terme de plus haut degré (degré ${numDeg}) : la limite est ${limitText}`
-			: `Le degré du numérateur (${numDeg}) dépasse celui du dénominateur (${denDeg}) : la limite est ${limitText}`;
-	} else {
-		// Degrés égaux : quotient EXACT des coefficients dominants (V26).
-		const ratio = exactQuotient(numLead, denLead, ctx);
-		if (ratio === null) return null;
-		value = ratio;
-		status = 'exact';
-		conclusionDesc = `Les degrés sont égaux (${numDeg}) : la limite est le quotient des coefficients dominants ${formatValueShort(numLead.coefficient)} / ${formatValueShort(denLead.coefficient)} = ${formatValueShort(ratio)}`;
+	// Créée en dernier : les identifiants suivent l'ordre des étapes.
+	const conclusion = (): PedagogicalLimitStep =>
+		makeStep(ctx, {
+			rule: status === 'infinite' ? 'conclude-infinite' : 'conclude',
+			description: `La limite vaut ${formatValueShort(value)}`,
+			before: expression,
+			after: value,
+			verbosityLevel: 'summarized',
+			globalAfter: value
+		});
+
+	// Un monôme seul (πx, −3x²) : une seule étape, sans factorisation.
+	if (!isQuotient && num.terms.length === 1) {
+		return { steps: [conclusion()], value, status, indeterminateForm: 'none' };
 	}
 
-	const detectStep = makeStep(ctx, {
-		rule: 'identify-dominant-term',
-		description: isPolynomial
-			? `Étude du comportement à ${formatApproachShort(ctx.approach)} : on identifie le terme de plus haut degré`
-			: `Étude du comportement à ${formatApproachShort(ctx.approach)} : on identifie les termes dominants au numérateur et au dénominateur`,
-		before: expression,
-		after: expression,
-		verbosityLevel: 'detailed',
-		bindings: { dominant: dominantNode }
-	});
+	// Les sommes à écrire exigent des signes lisibles exactement.
+	if (!hasReadableSigns(num) || !hasReadableSigns(den)) return null;
 
-	const conclusionStep = makeStep(ctx, {
-		rule: status === 'infinite' ? 'conclude-infinite' : 'conclude',
-		description: conclusionDesc,
-		before: expression,
-		after: value,
-		verbosityLevel: 'summarized',
-		globalAfter: value
-	});
+	const form: IndeterminateForm =
+		isQuotient && n >= 1 && m >= 1
+			? '∞/∞'
+			: hasOppositeInfinities(num, ctx.approach) || hasOppositeInfinities(den, ctx.approach)
+				? '∞-∞'
+				: 'none';
+	const x = makeVariable(ctx.variable);
+	const compact = ctx.strategy.verbosityCompactConclusion;
+	const steps: PedagogicalLimitStep[] = [];
+	const rebuild = (top: MathNode, bottom: MathNode): MathNode =>
+		isQuotient ? divide(top, bottom, 'fraction') : top;
 
-	return {
-		steps: [detectStep, conclusionStep],
-		value,
-		status,
-		// `∞/∞` is a *true* indeterminate form only when both num and den go to
-		// infinity AND the resolution requires more than dominant-term sniffing.
-		// For `numDeg < denDeg` the limit is trivially 0 (not indeterminate),
-		// for `numDeg === denDeg` it is the ratio of leading coefficients (not
-		// indeterminate). Only the `numDeg > denDeg` case is genuinely `∞/∞`
-		// (the dominant term identification is what resolves it). Un polynôme
-		// n'est pas un quotient : pas de forme `∞/∞`.
-		indeterminateForm: numDeg > denDeg && !isPolynomial ? '∞/∞' : 'none'
-	};
+	// 1. Forme indéterminée
+	if (form !== 'none') {
+		steps.push(
+			makeStep(ctx, {
+				rule: 'detect-indeterminate-form',
+				description: `Forme indéterminée ${form} reconnue`,
+				before: expression,
+				after: expression,
+				verbosityLevel: 'detailed',
+				indeterminateForm: form,
+				bindings: { dominant: xPower(ctx.variable, Math.max(n, m)) }
+			})
+		);
+	}
+
+	// 2. On développe
+	let current = expression;
+	if (!num.expanded || !den.expanded) {
+		const expanded = rebuild(expandedNode(num, x), expandedNode(den, x));
+		steps.push(
+			makeStep(ctx, {
+				rule: 'expand',
+				description: 'On développe',
+				before: current,
+				after: expanded,
+				verbosityLevel: 'detailed'
+			})
+		);
+		current = expanded;
+	}
+
+	// 3. Factorisation du terme prépondérant
+	const numFactored = isSum(num) ? timesPower(x, n, parentheses(bracketNode(num, x))) : num.node;
+	const denFactored = isSum(den) ? timesPower(x, m, parentheses(bracketNode(den, x))) : den.node;
+	if (isSum(num) || isSum(den)) {
+		const factored = rebuild(numFactored, denFactored);
+		steps.push(
+			makeStep(ctx, {
+				rule: 'factor-dominant-term',
+				description: 'On factorise par le terme prépondérant',
+				before: current,
+				after: factored,
+				verbosityLevel: 'summarized',
+				bindings: { dominant: xPower(ctx.variable, Math.max(n, m)) }
+			})
+		);
+		current = factored;
+	}
+
+	// 4. Simplification par x^k (quotient, les deux côtés de degré ≥ 1)
+	const k = isQuotient && n >= 1 && m >= 1 ? Math.min(n, m) : 0;
+	const numPart = k > 0 ? reducedPart(num, n - k, x) : numFactored;
+	const denPart = k > 0 ? reducedPart(den, m - k, x) : denFactored;
+	if (k > 0) {
+		// Deux monômes de même degré : la simplification donne la valeur.
+		const simplified =
+			n === m && !isSum(num) && !isSum(den) ? value : overDenominator(numPart, denPart);
+		steps.push(
+			makeStep(ctx, {
+				rule: 'simplify-common-factor',
+				description: `Simplification par ${formatValueShort(xPower(ctx.variable, k))}`,
+				before: current,
+				after: simplified,
+				verbosityLevel: 'summarized',
+				bindings: { dominant: xPower(ctx.variable, k) }
+			})
+		);
+		current = simplified;
+	}
+
+	if (!compact && containsVariable(current, ctx.variable)) {
+		// 5. Limites des termes
+		const termLimits = limitsOfTerms([num, den], x);
+		if (termLimits !== null) {
+			steps.push(
+				makeStep(ctx, {
+					rule: 'limits-of-terms',
+					description: 'Limites des termes',
+					before: current,
+					after: current,
+					verbosityLevel: 'detailed',
+					termLimits
+				})
+			);
+		}
+
+		// 6. Limite d'un produit ou d'un quotient
+		steps.push(...closingSteps(ctx, { num, den, n, m, k, numPart, denPart, current, value }));
+	}
+
+	steps.push(conclusion());
+	return { steps, value, status, indeterminateForm: form };
 }
 
 /**
- * Terme dominant c·x^d d'un polynôme, coefficient EXACT (V26) :
- * - `rational` : coefficient rationnel, lu par le noyau `factor/` (sur ℚ) ;
- * - sinon `coefficient` est une constante exacte (π, √2, π/2…) lue dans la
- *   forme normale, `rational` vaut `null`.
- * `sign` vaut `null` quand le signe ne se lit pas exactement (π − 4).
+ * Une somme (ou un monôme, une constante) lue comme Σ cᵢ·xⁱ, termes non nuls
+ * par degré décroissant, coefficients EXACTS (V26) : rationnels lus par le
+ * noyau `factor/` (sur ℚ), sinon constantes exactes (π, √2…) lues dans la
+ * forme normale.
  */
-interface DominantTerm {
-	readonly degree: number;
-	readonly coefficient: MathNode;
-	readonly rational: Rational | null;
-	readonly sign: 1 | -1 | null;
-	/** c·x^d, pour la liaison `dominant` */
+interface Side {
 	readonly node: MathNode;
+	readonly degree: number;
+	readonly terms: readonly SideTerm[];
+	/** Écrite comme une somme de monômes de degrés distincts : rien à développer */
+	readonly expanded: boolean;
 }
 
-const CONSTANT_ONE_TERM: DominantTerm = {
+interface SideTerm {
+	readonly degree: number;
+	/** Coefficient signé, exact */
+	readonly coefficient: MathNode;
+	/** Le même, quand il est rationnel (sinon `null`) */
+	readonly rational: Rational | null;
+	/** Signe exact du coefficient, `null` quand il ne se lit pas (π − 4) */
+	readonly sign: 1 | -1 | null;
+	/** Valeur absolue du coefficient (`null` quand le signe ne se lit pas) */
+	readonly magnitude: MathNode | null;
+}
+
+const CONSTANT_ONE_SIDE: Side = {
+	node: number('1'),
 	degree: 0,
-	coefficient: number('1'),
-	rational: rational(1n, 1n),
-	sign: 1,
-	node: number('1')
+	terms: [
+		{
+			degree: 0,
+			coefficient: number('1'),
+			rational: rational(1n, 1n),
+			sign: 1,
+			magnitude: number('1')
+		}
+	],
+	expanded: true
 };
 
-function dominantTerm(expr: MathNode, variable: string): DominantTerm | null {
+function readSide(expr: MathNode, variable: string): Side | null {
+	const terms = sideTerms(expr, variable);
+	if (terms === null || terms.length === 0) return null;
+	return {
+		// Les parenthèses de la saisie autour du tout (`(x^2)/(x+1)`) ne s'écrivent plus
+		node: withoutOuterDelimiters(expr),
+		degree: terms[0].degree,
+		terms,
+		expanded: isExpandedSum(expr, variable, terms.length)
+	};
+}
+
+function sideTerms(expr: MathNode, variable: string): SideTerm[] | null {
 	const poly = toPolynomial(expr, variable);
-	if (poly !== null) {
-		if (poly.length === 0) return null;
-		const degree = poly.length - 1;
-		const lead = poly[degree];
-		const monomial: Rational[] = Array.from({ length: degree + 1 }, () => rational(0n, 1n));
-		monomial[degree] = lead;
-		return {
+	if (poly === null) return irrationalSideTerms(expr, variable);
+	const terms: SideTerm[] = [];
+	for (let degree = poly.length - 1; degree >= 0; degree--) {
+		const c = poly[degree];
+		if (c.n === 0n) continue;
+		terms.push({
 			degree,
-			coefficient: rationalToNode(lead),
-			rational: lead,
-			sign: lead.n < 0n ? -1 : 1,
-			node: rationalPolynomialNode(monomial, makeVariable(variable))
-		};
+			coefficient: rationalToNode(c),
+			rational: c,
+			sign: c.n < 0n ? -1 : 1,
+			magnitude: rationalToNode(absRational(c))
+		});
 	}
-	return irrationalDominantTerm(expr, variable);
+	return terms;
 }
 
 /**
@@ -854,7 +992,7 @@ function dominantTerm(expr: MathNode, variable: string): DominantTerm | null {
  * apparaît, qu'un exposant de x n'est pas un entier naturel, ou que x reste au
  * dénominateur.
  */
-function irrationalDominantTerm(expr: MathNode, variable: string): DominantTerm | null {
+function irrationalSideTerms(expr: MathNode, variable: string): SideTerm[] | null {
 	let form: NormalForm;
 	try {
 		form = normalize(expr);
@@ -877,30 +1015,24 @@ function irrationalDominantTerm(expr: MathNode, variable: string): DominantTerm 
 	const degrees = form.numerator.map(xDegree);
 	const readDegrees = degrees.filter((d): d is number => d !== null);
 	if (readDegrees.length !== degrees.length) return null;
-	const degree = Math.max(...readDegrees);
 
-	const leadTerms: NormalTerm[] = form.numerator
-		.filter((_, k) => degrees[k] === degree)
-		.map((term) => ({
-			coefficient: term.coefficient,
-			monomial: term.monomial.filter((f) => f.base.type !== 'variable')
-		}));
-	const leadForm: NormalForm = {
-		numerator: leadTerms,
-		denominator: form.denominator,
-		hash: ''
-	};
-	const coefficient = denormalize({ ...leadForm, hash: hashNormalForm(leadForm) });
-	const numSign = constantSign(leadTerms);
 	const denSign = constantSign(form.denominator);
-	const sign = numSign === null || denSign === null ? null : numSign === denSign ? 1 : -1;
-	return {
-		degree,
-		coefficient,
-		rational: null,
-		sign,
-		node: degree === 0 ? coefficient : multiply(coefficient, xPower(variable, degree), 'implicit')
-	};
+	const distinct = [...new Set(readDegrees)].sort((a, b) => b - a);
+	return distinct.map((degree) => {
+		const group: NormalTerm[] = form.numerator
+			.filter((_, k) => degrees[k] === degree)
+			.map((term) => ({
+				coefficient: term.coefficient,
+				monomial: term.monomial.filter((f) => f.base.type !== 'variable')
+			}));
+		const groupForm: NormalForm = { numerator: group, denominator: form.denominator, hash: '' };
+		const coefficient = denormalize({ ...groupForm, hash: hashNormalForm(groupForm) });
+		const numSign = constantSign(group);
+		const sign = numSign === null || denSign === null ? null : numSign === denSign ? 1 : -1;
+		const magnitude =
+			sign === null ? null : sign > 0 ? coefficient : denormalize(normalize(opposite(coefficient)));
+		return { degree, coefficient, rational: null, sign, magnitude };
+	});
 }
 
 /**
@@ -912,9 +1044,255 @@ function constantSign(terms: readonly NormalTerm[]): 1 | -1 | null {
 	return terms[0].coefficient.terms[0].rational.n < 0n ? -1 : 1;
 }
 
+/**
+ * Déjà développée : une somme de monômes, autant que de termes (degrés
+ * distincts). `(x + 1)^2`, `x(x + 1)`, `2x + 3x` sont à développer.
+ */
+function isExpandedSum(expr: MathNode, variable: string, termCount: number): boolean {
+	const leaves = sumLeaves(expr);
+	if (leaves.length !== termCount) return false;
+	return leaves.every((leaf) => sideTerms(leaf, variable)?.length === 1);
+}
+
+function withoutOuterDelimiters(expr: MathNode): MathNode {
+	return isDelimiter(expr) ? withoutOuterDelimiters(expr.content) : expr;
+}
+
+/** Termes d'une somme écrite, signes ôtés ; les parenthèses autour du tout ne comptent pas. */
+function sumLeaves(expr: MathNode): MathNode[] {
+	if (isDelimiter(expr)) return sumLeaves(expr.content);
+	if (isAddition(expr) || isSubtraction(expr)) {
+		return [...sumLeaves(expr.left), ...sumLeaves(expr.right)];
+	}
+	if (isOpposite(expr) || isPositive(expr)) return sumLeaves(expr.operand);
+	return [expr];
+}
+
+/** Une somme d'au moins deux termes : c'est elle qu'on factorise. */
+function isSum(side: Side): boolean {
+	return side.terms.length >= 2;
+}
+
+function hasReadableSigns(side: Side): boolean {
+	return side.terms.every((t) => t.sign !== null);
+}
+
+/**
+ * Des termes ÉCRITS qui tendent vers +∞ et d'autres vers −∞ : forme ∞ − ∞.
+ * Une expression non développée (`(x + 1)^2`) n'est pas une différence.
+ */
+function hasOppositeInfinities(side: Side, approach: MathNode): boolean {
+	if (!side.expanded) return false;
+	const negative = classifyApproach(approach) === 'negative-infinity';
+	const signs = side.terms
+		.filter((t) => t.degree >= 1 && t.sign !== null)
+		.map((t) => (t.sign ?? 1) * (negative && t.degree % 2 === 1 ? -1 : 1));
+	return signs.includes(1) && signs.includes(-1);
+}
+
+/** Valeur exacte : quotient des coefficients dominants, 0, ou ±∞ (signe et parité). */
+function limitValue(num: Side, den: Side, ctx: PipelineContext): MathNode | null {
+	const numLead = num.terms[0];
+	const denLead = den.terms[0];
+	if (num.degree < den.degree) return number('0');
+	if (num.degree > den.degree) {
+		// Un signe qui ne se lit pas exactement ((π − 4)x) : on s'abstient.
+		if (numLead.sign === null || denLead.sign === null) return null;
+		const sign = signAtInfinity(numLead.sign * denLead.sign, num.degree - den.degree, ctx.approach);
+		return sign > 0 ? infinity('positive') : infinity('negative');
+	}
+	return exactQuotient(numLead, denLead, ctx);
+}
+
 function xPower(variable: string, degree: number): MathNode {
-	const x = makeVariable(variable);
+	return xPowerOf(makeVariable(variable), degree);
+}
+
+/** xᵈ · facteur, sans x⁰ */
+function timesPower(x: MathNode, degree: number, factor: MathNode): MathNode {
+	if (degree === 0) return factor;
+	return multiply(xPowerOf(x, degree), factor, 'implicit');
+}
+
+function xPowerOf(x: MathNode, degree: number): MathNode {
 	return degree === 1 ? x : power(x, number(String(degree)));
+}
+
+/** Le terme c·xⁱ écrit sans son signe : `x^2`, `2 x`, `\\dfrac{1}{2} x`, `5`. */
+function monomialMagnitude(term: SideTerm, x: MathNode): MathNode {
+	const magnitude = term.magnitude ?? term.coefficient;
+	if (term.degree === 0) return magnitude;
+	if (isOneNode(magnitude)) return xPowerOf(x, term.degree);
+	return multiply(magnitude, xPowerOf(x, term.degree), 'implicit');
+}
+
+/** Σ des termes, les négatifs en soustractions, sans nœud négatif littéral. */
+function signedSum(terms: readonly SideTerm[], write: (t: SideTerm) => MathNode): MathNode {
+	const [first, ...rest] = terms;
+	let sum = first.sign === -1 ? opposite(write(first)) : write(first);
+	for (const term of rest) {
+		sum = term.sign === -1 ? subtract(sum, write(term)) : add(sum, write(term));
+	}
+	return sum;
+}
+
+/** La forme développée : `x^2 + 2 x + 1` */
+function expandedNode(side: Side, x: MathNode): MathNode {
+	return side.expanded ? side.node : signedSum(side.terms, (t) => monomialMagnitude(t, x));
+}
+
+/** cᵢ/x^(n−i) : `\\dfrac{5}{x}`, `\\dfrac{1}{2x^2}` (le dénominateur du coefficient avec x). */
+function vanishingTerm(term: SideTerm, gap: number, x: MathNode): MathNode {
+	const magnitude = term.magnitude ?? term.coefficient;
+	const xPart = xPowerOf(x, gap);
+	if (isDivision(magnitude)) {
+		return divide(
+			magnitude.numerator,
+			multiply(magnitude.denominator, xPart, 'implicit'),
+			'fraction'
+		);
+	}
+	return divide(magnitude, xPart, 'fraction');
+}
+
+/** La parenthèse après factorisation par xⁿ : `3 + \\dfrac{1}{x}`, `-2 + \\dfrac{1}{x^2}` */
+function bracketNode(side: Side, x: MathNode): MathNode {
+	return signedSum(side.terms, (t) =>
+		t.degree === side.degree
+			? (t.magnitude ?? t.coefficient)
+			: vanishingTerm(t, side.degree - t.degree, x)
+	);
+}
+
+/**
+ * Un côté après simplification par x^k : il lui reste x^rest devant sa
+ * parenthèse (une somme) ou son coefficient (un monôme).
+ */
+function reducedPart(side: Side, rest: number, x: MathNode): MathNode {
+	if (isSum(side)) {
+		const bracket = bracketNode(side, x);
+		return rest === 0 ? bracket : timesPower(x, rest, parentheses(bracket));
+	}
+	const lead = side.terms[0];
+	if (rest === 0) return lead.coefficient;
+	const magnitude = lead.magnitude ?? lead.coefficient;
+	const body = isOneNode(magnitude)
+		? xPowerOf(x, rest)
+		: multiply(magnitude, xPowerOf(x, rest), 'implicit');
+	return lead.sign === -1 ? opposite(body) : body;
+}
+
+/**
+ * Limites des termes : chaque c/xᵏ tend vers 0 (une fois chacun), donc chaque
+ * parenthèse tend vers son premier terme. `null` sans parenthèse.
+ */
+function limitsOfTerms(sides: readonly Side[], x: MathNode): TermLimits | null {
+	const vanishing: LimitLine[] = [];
+	const seen = new Set<string>();
+	const factors: LimitLine[] = [];
+	for (const side of sides) {
+		if (!isSum(side)) continue;
+		for (const term of side.terms.slice(1)) {
+			const expression = vanishingTerm(term, side.degree - term.degree, x);
+			const key = toLatex(expression);
+			if (seen.has(key)) continue;
+			seen.add(key);
+			vanishing.push({ expression, value: number('0') });
+		}
+		factors.push({ expression: bracketNode(side, x), value: side.terms[0].coefficient });
+	}
+	return factors.length === 0 ? null : { vanishing, factors };
+}
+
+interface ClosingInput {
+	readonly num: Side;
+	readonly den: Side;
+	readonly n: number;
+	readonly m: number;
+	readonly k: number;
+	readonly numPart: MathNode;
+	readonly denPart: MathNode;
+	readonly current: MathNode;
+	readonly value: MathNode;
+}
+
+/**
+ * Dernière étape avant la conclusion :
+ * - n > m : limite d'un produit, x^(n−m) fois ce qui tend vers a/b ;
+ * - n < m : le dénominateur tend vers ±∞ (produit), puis limite d'un quotient ;
+ * - n = m : limite d'un quotient a/b (rien quand il ne reste qu'une parenthèse).
+ */
+function closingSteps(ctx: PipelineContext, input: ClosingInput): PedagogicalLimitStep[] {
+	const { num, den, n, m, k, numPart, denPart, current, value } = input;
+	const numLead = num.terms[0];
+	const denLead = den.terms[0];
+
+	if (n > m) {
+		// Il ne reste que xᵈ (x²/x) : la conclusion suffit.
+		if (isBarePower(current, ctx.variable)) return [];
+		const rest = exactQuotient(numLead, denLead, ctx);
+		if (rest === null) return [];
+		return [productStep(ctx, current, n - m, rest, value)];
+	}
+
+	if (n < m) {
+		const steps: PedagogicalLimitStep[] = [];
+		const gap = m - k;
+		const denSign = signAtInfinity(denLead.sign ?? 1, gap, ctx.approach);
+		const denLimit = denSign > 0 ? infinity('positive') : infinity('negative');
+		// x seul au dénominateur n'est pas un produit à étudier
+		if (!isBarePower(denPart, ctx.variable)) {
+			steps.push(productStep(ctx, denPart, gap, denLead.coefficient, denLimit));
+		}
+		steps.push(quotientStep(ctx, current, numPart, numLead.coefficient, denLimit, value));
+		return steps;
+	}
+
+	// Mêmes degrés : il reste un quotient a/b, sauf si le dénominateur a disparu.
+	if (!isDivision(current)) return [];
+	return [quotientStep(ctx, current, numPart, numLead.coefficient, denLead.coefficient, value)];
+}
+
+function productStep(
+	ctx: PipelineContext,
+	before: MathNode,
+	degree: number,
+	restLimit: MathNode,
+	value: MathNode
+): PedagogicalLimitStep {
+	const powerLimit =
+		signAtInfinity(1, degree, ctx.approach) > 0 ? infinity('positive') : infinity('negative');
+	return makeStep(ctx, {
+		rule: 'apply-product',
+		description: `Limite d'un produit : ${formatValueShort(value)}`,
+		before,
+		after: value,
+		verbosityLevel: 'detailed',
+		bindings: { power: xPower(ctx.variable, degree), powerLimit, restLimit }
+	});
+}
+
+function quotientStep(
+	ctx: PipelineContext,
+	before: MathNode,
+	numerator: MathNode,
+	numeratorLimit: MathNode,
+	denominatorLimit: MathNode,
+	value: MathNode
+): PedagogicalLimitStep {
+	return makeStep(ctx, {
+		rule: 'apply-quotient',
+		description: `Limite d'un quotient : ${formatValueShort(value)}`,
+		before,
+		after: value,
+		verbosityLevel: 'detailed',
+		bindings: { numerator, numeratorLimit, denominatorLimit }
+	});
+}
+
+function isBarePower(node: MathNode, variable: string): boolean {
+	if (isVariable(node)) return node.name === variable;
+	return isSuperscript(node) && isVariable(node.base) && node.base.name === variable;
 }
 
 /**
@@ -923,8 +1301,8 @@ function xPower(variable: string, degree: number): MathNode {
  * écrit la constante comme le moteur (`\\dfrac{\\pi}{2}`, `\\dfrac{1}{\\pi}`).
  */
 function exactQuotient(
-	num: DominantTerm,
-	den: DominantTerm,
+	num: Pick<SideTerm, 'coefficient' | 'rational'>,
+	den: Pick<SideTerm, 'coefficient' | 'rational'>,
 	ctx: PipelineContext
 ): MathNode | null {
 	try {

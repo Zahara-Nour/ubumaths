@@ -82,8 +82,10 @@ export type PedagogicalLimitRule =
 	// ---- Rationalisation ----
 	| 'multiply-by-conjugate' // « multiplier par le conjugué (√(x+1) + 1) »
 	| 'simplify-after-rationalization' // simplification après produit conjugué
-	// ---- Comportement à l'infini ----
-	| 'identify-dominant-term' // « x² domine devant 1 quand x → +∞ »
+	// ---- Comportement à l'infini (factorisation du terme prépondérant, BO Tle spé) ----
+	| 'expand' // « On développe » une expression non développée
+	| 'factor-dominant-term' // « 3x + 1 = x(3 + 1/x) » : factorisation par xⁿ
+	| 'limits-of-terms' // « lim 1/x = 0, donc lim (3 + 1/x) = 3 »
 	| 'apply-growth-comparison' // « e^x ≫ x^n quand x → +∞ »
 	| 'compute-asymptotic-equivalent' // sup : f(x) ∼ g(x)
 	// ---- Limites unilatérales ----
@@ -146,7 +148,9 @@ export const FACTORISATION_CLUSTER_RULES: ReadonlySet<PedagogicalLimitRule> = ne
  * - `simplify-common-factor`               : `{ factor }`
  * - `multiply-by-conjugate`                : `{ conjugate }`
  * - `simplify-after-rationalization`       : `{}`
- * - `identify-dominant-term`               : `{ dominant }` (e.g. `x²`)
+ * - `factor-dominant-term`                 : `{ dominant }` (la puissance xⁿ mise en facteur)
+ * - `simplify-common-factor` (en ±∞)       : `{ dominant }` (la puissance x^k simplifiée)
+ * - `limits-of-terms`                      : `{}` (le renderer lit `step.termLimits`)
  * - `apply-growth-comparison`              : `{ fast, slow }` (e.g. `{ fast: e^x, slow: x }`)
  * - `compute-asymptotic-equivalent`        : `{ equivalent }`
  * - `analyze-left-limit`, `analyze-right-limit` : `{ side }`
@@ -155,13 +159,31 @@ export const FACTORISATION_CLUSTER_RULES: ReadonlySet<PedagogicalLimitRule> = ne
  * - `apply-squeeze`                        : `{ commonLimit }`
  * - `apply-lhopital`                       : `{ numeratorDerivative, denominatorDerivative }`
  * - `identify-composition`, `apply-composition` : `{ outer, inner, innerLimit }`
- * - `apply-linearity`, `apply-product`, `apply-quotient` : `{ f, g, alpha?, beta? }`
+ * - `apply-linearity`                      : `{ f, g, alpha?, beta? }`
+ * - `apply-product` (en ±∞)                : `{ power, powerLimit, restLimit }` (xᵈ, sa limite, celle de l'autre facteur)
+ * - `apply-quotient` (en ±∞)               : `{ numerator, numeratorLimit, denominatorLimit }`
  * - `conclude`, `conclude-does-not-exist`, `conclude-infinite` : `{ value? }`
  *
  * Bindings are captured at the moment the dispatcher selects a rule, BEFORE
  * recursing into operands. They reflect the input expression, not the result.
  */
 export type LimitBindings = Record<string, MathNode>;
+
+/** Une ligne `\\lim … = valeur` du bloc des limites des termes */
+export interface LimitLine {
+	readonly expression: MathNode;
+	readonly value: MathNode;
+}
+
+/**
+ * Limites des termes après factorisation par le terme prépondérant :
+ * `vanishing` = les quotients c/xᵏ, qui tendent vers 0 ; `factors` = les
+ * parenthèses, qui tendent vers leur premier terme (« donc … et … »).
+ */
+export interface TermLimits {
+	readonly vanishing: readonly LimitLine[];
+	readonly factors: readonly LimitLine[];
+}
 
 // =============================================================================
 // Step
@@ -205,6 +227,9 @@ export interface PedagogicalLimitStep extends BaseStep<PedagogicalLimitRule> {
 	 * and `apply-lhopital` titles.
 	 */
 	readonly indeterminateForm?: IndeterminateForm;
+
+	/** Limites des termes, pour l'étape `limits-of-terms` (bloc de plusieurs lignes) */
+	readonly termLimits?: TermLimits;
 
 	/**
 	 * Optional finer-grained sub-steps (e.g. the factor-numerator /

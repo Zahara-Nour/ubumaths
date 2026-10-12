@@ -626,22 +626,37 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   valeur exacte** de `limits/exact-evaluation.ts` (`tryEvaluateLimitExact`, réduite par
   `normalize`) quand elle retombe sur la valeur flottante : `\dfrac{3}{2}`, `3\sqrt{2}`, plus
   `1.5` (K21, V21) ; titres en texte (`formatValueShort` : « La limite vaut 3/2 », « 3√2 »).
-  **En ±∞** (`tryInfinityAnalysis`, K21, V26), le terme dominant se lit par `toPolynomial`
-  (coefficients sur ℚ) et, à défaut, dans la forme normale (`normalize`) pour un coefficient
-  constant irrationnel (π, √2) ; le quotient des coefficients dominants est exact (`\dfrac{3}{2}`,
-  plus `1.5` ; un quotient irrationnel réduit par `normalize` puis réécrit par
-  `tryEvaluateLimitExact`, puis écrit par `writeLimitValue`, comme le moteur : `\dfrac{\pi}{2}`,
-  `2\sqrt{2}`, `\dfrac{\pi\sqrt{2}}{2}`, `-\dfrac{\sqrt{2}}{2}`). Une constante (`5`, `\pi`) : une seule étape, « La fonction est constante : sa
-  limite vaut 5. » Un polynôme seul (`\pi x`,
-  `-2x^3+x`) est lu comme P / 1. Un signe de coefficient qui ne se lit pas exactement
-  (`(\pi - 4)x`) : refus, jamais un décimal. La borne d'un `\lim` parsé (`positive(∞)`) est
+  **En ±∞** (`tryInfinityAnalysis`, K21, V26, 2026-10-12) : la **factorisation du terme
+  prépondérant**, seule méthode au programme (BO 2019, Tle spé, capacités attendues ; la règle
+  « quotient des termes de plus haut degré » et l'étape `identify-dominant-term` ont disparu). Au
+  lycée, en mode détaillé : forme indéterminée (`∞/∞` pour un quotient de degrés ≥ 1, `∞ − ∞`
+  quand des termes ÉCRITS tendent vers +∞ et −∞) → `expand` (« On développe », si
+  l'expression n'est pas une somme de monômes de degrés distincts : `\dfrac{(x+1)^2}{2x^2}`) →
+  `factor-dominant-term` (chaque somme factorisée par xⁿ, jamais par c·xⁿ :
+  `x\left(3 + \dfrac{1}{x}\right)`, termes négatifs en soustractions) →
+  `simplify-common-factor` (« Simplification par x² », liaison `dominant`) → `limits-of-terms`
+  (bloc `\lim \dfrac{1}{x} = 0`, `\text{donc } \lim (3 + \dfrac{1}{x}) = 3`, champ
+  `termLimits` de l'étape) → `apply-quotient` ou `apply-product` (explication : « Le facteur x³
+  tend vers −∞ et l'autre facteur tend vers −2 : par produit, (−∞) × (−2) = +∞ », « 2 divisé
+  par une quantité qui tend vers +∞ ») → conclusion. Mode résumé : factorisation,
+  simplification, conclusion. Supérieur : la même factorisation sans les limites des termes ni
+  le produit / quotient. Un monôme seul (`\pi x`, `-3x^2`) ou une constante : une seule étape ;
+  deux monômes de même degré (`\dfrac{-3x}{2x}`) : la simplification donne la valeur. Les
+  coefficients se lisent par `toPolynomial` (sur ℚ) et, à défaut, dans la forme normale pour une
+  constante irrationnelle (π, √2) ; la VALEUR ne dépend pas de la rédaction : quotient exact des
+  coefficients dominants (`\dfrac{3}{2}`, plus `1.5` ; un quotient irrationnel réduit par
+  `normalize`, réécrit par `tryEvaluateLimitExact` puis `writeLimitValue`, comme le moteur :
+  `\dfrac{\pi}{2}`, `2\sqrt{2}`, `-\dfrac{\sqrt{2}}{2}`), 0, ou ±∞ selon signe et parité.
+  Une constante (`5`, `\pi`) : « La fonction est constante : sa limite vaut 5. » Un signe de
+  coefficient qui ne se lit pas exactement (`(\pi - 4)x`) : refus, jamais un décimal. La borne
+  d'un `\lim` parsé (`positive(∞)`) est
   traduite en nœud `infinity` par `normalizeApproach` de `limits/evaluate.ts`, comme dans le
   moteur. **Écriture des étapes** (`renderer.ts`, 2026-10-12) : tant que le membre de droite
   dépend de la variable, il reste une limite — `\lim_{x\to 2} \dfrac{3x^2-12}{x-2} = \lim_{x\to 2}
 (3x + 6)`, jamais `= 3x + 6` ; une valeur (nombre, ±∞) s'écrit seule. Les sous-étapes de
   fragment (`factor-numerator`, `factor-denominator`) n'ont `\lim` d'aucun côté. Une étape
-  d'annonce, dont le membre de droite égale le gauche (identification, forme indéterminée, terme
-  dominant, encadrement, comparaison des côtés), s'écrit `\lim_{x\to a} f(x)` seul, sans « = ».
+  d'annonce, dont le membre de droite égale le gauche (identification, forme indéterminée,
+  encadrement, comparaison des côtés), s'écrit `\lim_{x\to a} f(x)` seul, sans « = ».
 - **Valeur rendue par `limits/`** (`writeLimitValue`, `limits/exact-evaluation.ts`, 2026-10-12) :
   la valeur de `evaluateLimit` et le quotient dominant pédagogique passent par `tidy` — signe
   devant la fraction (`-\dfrac{\sqrt{2}}{2}`, plus `\dfrac{-\sqrt{2}}{2}` de `denormalize`),
@@ -685,7 +700,7 @@ Tests : `limits/__tests__/factorisation-noyau.test.ts`,
 `integration/__tests__/denominateur-trinome-noyau.test.ts` (F′ = f par `areEquivalent`),
 `pedagogical-integration/__tests__/elements-simples-exacts.test.ts`, facteurs entiers :
 `{integration,pedagogical-integration}/__tests__/elements-simples-entiers.test.ts` ; K21 :
-`pedagogical-limits/__tests__/{valeur-exacte,point-fractionnaire}.test.ts`,
+`pedagogical-limits/__tests__/{valeur-exacte,point-fractionnaire,terme-preponderant}.test.ts`,
 `pedagogical-integration/__tests__/explications-exactes.test.ts`.
 
 ### Le ménage (lot 3b)

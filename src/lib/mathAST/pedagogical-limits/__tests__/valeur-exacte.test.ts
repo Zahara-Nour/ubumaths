@@ -124,9 +124,14 @@ describe('limite pédagogique en ±∞ — valeur exacte, égale à celle du mot
 				expect(oracle(latex)).toBe(expected);
 			});
 
-			it(`${latex} : terme dominant puis conclusion ${expected}, sans décimale`, () => {
+			it(`${latex} : terme prépondérant (sauf monôme seul) puis conclusion ${expected}, sans décimale`, () => {
 				const steps = rendered(latex);
-				expect(steps.map((s) => s.rule)).toContain('identify-dominant-term');
+				const rules = steps.map((s) => s.rule);
+				// Une somme se factorise, deux monômes se simplifient, un monôme seul
+				// conclut directement (annonce + conclusion).
+				const preponderant =
+					rules.includes('factor-dominant-term') || rules.includes('simplify-common-factor');
+				expect(preponderant || rules.length === 2).toBe(true);
 				const conclusion = steps[steps.length - 1];
 				expect(conclusion.expressionLatex).toContain(`= ${expected}`);
 				for (const step of steps) {
@@ -193,7 +198,7 @@ describe('limite pédagogique en ±∞ — fonction constante', () => {
 			const descriptions = result.steps.map((s) => s.description);
 			expect(descriptions).toContain(`La fonction est constante : sa limite vaut ${text}.`);
 			expect(descriptions.join(' ')).not.toMatch(/coefficients dominants|degrés/);
-			expect(result.steps.map((s) => s.rule)).not.toContain('identify-dominant-term');
+			expect(result.steps.map((s) => s.rule)).toEqual(['identify-limit', 'conclude']);
 		});
 
 		it(`${latex} : la conclusion rendue vaut ${expected}`, () => {
