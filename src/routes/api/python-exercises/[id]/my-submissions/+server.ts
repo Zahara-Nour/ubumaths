@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	const rawLimit = parseInt(url.searchParams.get('limit') ?? '', 10);
@@ -42,7 +42,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 	if (dbErr) {
 		console.error('Failed to read submissions:', dbErr);
-		throw error(500, 'Erreur lors de la lecture des soumissions');
+		throw error(500, 'Impossible de charger les solutions envoyées');
 	}
 
 	return json({ submissions: data ?? [] });

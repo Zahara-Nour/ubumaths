@@ -114,7 +114,8 @@ const API_MESSAGE =
 
 /**
  * Dossiers d'API dont les messages sont traduits.
- * Lot A : ce que voient les élèves ; lot B : les fiches et les exercices.
+ * Lot A : ce que voient les élèves ; lot B : les fiches et les exercices ;
+ * lot C : les outils (constructions, Python, tableau blanc, Google).
  */
 const TRANSLATED_API_DIRS = [
 	'src/routes/api/vip-cards',
@@ -122,7 +123,15 @@ const TRANSLATED_API_DIRS = [
 	'src/routes/api/student/bonus-history',
 	'src/routes/api/student/gidouilles-activity',
 	'src/routes/api/worksheets',
-	'src/routes/api/exercises'
+	'src/routes/api/exercises',
+	'src/routes/api/constructions',
+	'src/routes/api/construction-demo-scripts',
+	'src/routes/api/python-files',
+	'src/routes/api/python-notebooks',
+	'src/routes/api/python-notebook-templates',
+	'src/routes/api/python-exercises',
+	'src/routes/api/whiteboard',
+	'src/routes/api/google'
 ];
 
 // ============================================================================

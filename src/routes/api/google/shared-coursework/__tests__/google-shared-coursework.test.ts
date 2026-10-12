@@ -593,7 +593,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => GET(event), 'Failed to fetch shared coursework');
+				await expectRejectsWithMessage(
+					() => GET(event),
+					'Impossible de charger les devoirs Classroom partagés'
+				);
 			});
 		});
 
@@ -904,7 +907,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => POST(event), 'You do not own this coursework');
+				await expectRejectsWithMessage(
+					() => POST(event),
+					'Ce devoir Classroom appartient à un autre professeur'
+				);
 			});
 
 			it('returns 400 when category does not belong to teacher class', async () => {
@@ -979,7 +985,7 @@ describe('Google Shared Coursework API', () => {
 
 				await expectRejectsWithMessage(
 					() => POST(event),
-					'Category does not belong to one of your classes'
+					'Cette catégorie n’appartient à aucune classe du professeur'
 				);
 			});
 
@@ -1130,7 +1136,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => POST(event), 'Coursework not found or access denied');
+				await expectRejectsWithMessage(
+					() => POST(event),
+					'Devoir Classroom introuvable ou accès refusé'
+				);
 			});
 
 			it('handles database errors gracefully', async () => {
@@ -1150,7 +1159,10 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => POST(event), 'Failed to fetch coursework');
+				await expectRejectsWithMessage(
+					() => POST(event),
+					'Impossible de charger le devoir Classroom'
+				);
 			});
 		});
 	});
@@ -1303,7 +1315,7 @@ describe('Google Shared Coursework API', () => {
 
 				await expectRejectsWithMessage(
 					() => DELETE(event),
-					'Coursework not found or access denied'
+					'Devoir Classroom introuvable ou accès refusé'
 				);
 			});
 
@@ -1336,10 +1348,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(
-					() => DELETE(event),
-					'One or more classes not found or access denied'
-				);
+				await expectRejectsWithMessage(() => DELETE(event), 'Classe introuvable ou accès refusé');
 			});
 
 			it('bulk unshares coursework from multiple classes', async () => {
@@ -1496,7 +1505,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => DELETE(event), 'Failed to verify class ownership');
+				await expectRejectsWithMessage(() => DELETE(event), 'Impossible de vérifier les classes');
 			});
 		});
 	});
@@ -1839,7 +1848,7 @@ describe('Google Shared Coursework API', () => {
 
 				await expectRejectsWithMessage(
 					() => POST(event),
-					'Topic does not belong to one of your courses'
+					'Ce sujet Classroom n’appartient à aucun cours Classroom du professeur'
 				);
 			});
 
@@ -1904,7 +1913,7 @@ describe('Google Shared Coursework API', () => {
 					locals: mockLocals
 				} as unknown as RequestEvent;
 
-				await expectRejectsWithMessage(() => POST(event), 'Topic not found');
+				await expectRejectsWithMessage(() => POST(event), 'Sujet Classroom introuvable');
 			});
 
 			it('rejects invalid topic UUID format', async () => {

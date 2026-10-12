@@ -21,6 +21,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { GoogleTokenExpiredError } from '$lib/server/google/errors';
 import { requireRole } from '$lib/server/middleware/auth';
 import { GoogleDriveClient } from '$lib/server/google/drive-api';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
@@ -118,10 +119,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// Handle specific Google API errors
 		if (err instanceof Error) {
 			if (err.message.includes('No Google integration')) {
-				throw error(401, 'Google account not connected. Please connect in Settings.');
+				throw error(401, 'Compte Google non connecté : à connecter dans les Paramètres');
 			}
-			if (err.message.includes('Token expired') || err.message.includes('401')) {
-				throw error(401, 'Google session expired. Please reconnect your Google account.');
+			if (err instanceof GoogleTokenExpiredError || err.message.includes('401')) {
+				throw error(401, 'Session Google expirée : reconnecter le compte Google');
 			}
 		}
 
@@ -130,7 +131,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			requestedFolderId,
 			userId: user.id
 		});
-		const message = err instanceof Error ? err.message : 'Unknown error';
-		throw error(500, `Failed to list Drive files: ${message}`);
+		const message = err instanceof Error ? err.message : 'erreur inconnue';
+		throw error(500, `Impossible de lister les fichiers Google Drive : ${message}`);
 	}
 };

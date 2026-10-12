@@ -60,11 +60,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (courseworkError) {
 		console.error('[Bulk Coursework Share] Error fetching coursework:', courseworkError);
-		throw error(500, 'Failed to fetch coursework');
+		throw error(500, 'Impossible de charger les devoirs Classroom');
 	}
 
 	if (!coursework || coursework.length !== courseworkIds.length) {
-		throw error(404, 'One or more coursework items not found');
+		throw error(404, 'Un ou plusieurs devoirs Classroom introuvables');
 	}
 
 	// Verify ALL coursework belong to the teacher
@@ -83,7 +83,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			`[Bulk Coursework Share] Unauthorized coursework access attempt by teacher ${user.id}:`,
 			invalidCoursework.map((c) => c.id)
 		);
-		throw error(403, 'You do not own all selected coursework items');
+		throw error(403, 'Accès refusé à certains des devoirs Classroom choisis');
 	}
 
 	// Verify teacher owns all classes
@@ -95,11 +95,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (classesError) {
 		console.error('[Bulk Coursework Share] Error fetching classes:', classesError);
-		throw error(500, 'Failed to verify class ownership');
+		throw error(500, 'Impossible de vérifier les classes');
 	}
 
 	if (!classes || classes.length !== classIds.length) {
-		throw error(400, 'One or more classes not found or inactive');
+		throw error(400, 'Une ou plusieurs classes introuvables ou inactives');
 	}
 
 	// Verify category ownership if provided (SECURITY: Prevent authorization bypass)
@@ -111,7 +111,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (categoryError || !category) {
-			throw error(404, 'Category not found');
+			throw error(404, 'Catégorie introuvable');
 		}
 
 		// Verify category belongs to one of the selected classes
@@ -120,7 +120,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				`[Bulk Coursework Share] Category ${categoryId} does not belong to any selected class`,
 				{ classIds, categoryClassId: category.class_id, teacherId: user.id }
 			);
-			throw error(403, 'Category does not belong to selected classes');
+			throw error(403, 'Cette catégorie n’appartient à aucune des classes choisies');
 		}
 	}
 
@@ -133,7 +133,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (topicError || !topic) {
-			throw error(404, 'Topic not found');
+			throw error(404, 'Sujet Classroom introuvable');
 		}
 
 		// Extract teacher_id from nested course data and verify ownership
@@ -146,7 +146,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				`[Bulk Coursework Share] Unauthorized topic access attempt by teacher ${user.id}:`,
 				{ topicId, topicTeacherId }
 			);
-			throw error(403, 'You do not own this topic');
+			throw error(403, 'Accès refusé à ce sujet Classroom');
 		}
 	}
 
@@ -174,7 +174,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (insertError) {
 		console.error('[Bulk Coursework Share] Error sharing coursework:', insertError);
-		throw error(500, 'Failed to share coursework');
+		throw error(500, 'Impossible de partager les devoirs Classroom');
 	}
 
 	return json({

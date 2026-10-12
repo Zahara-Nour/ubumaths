@@ -77,10 +77,10 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	if (materialError || !material) {
 		if (materialError?.code === 'PGRST116') {
-			throw error(404, 'Material not found');
+			throw error(404, 'Support introuvable');
 		}
 		console.error('[Material Share] Error fetching material:', materialError);
-		throw error(500, 'Failed to fetch material');
+		throw error(500, 'Impossible de charger le support');
 	}
 
 	// Handle nested course data (Supabase JOIN types)
@@ -89,7 +89,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	const teacherId = Array.isArray(courseData) ? courseData[0]?.teacher_id : courseData?.teacher_id;
 
 	if (teacherId !== user.id) {
-		throw error(403, 'You do not own this material');
+		throw error(403, 'Accès refusé à ce support');
 	}
 
 	// Verify teacher owns all classes
@@ -101,11 +101,11 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	if (classesError) {
 		console.error('[Material Share] Error fetching classes:', classesError);
-		throw error(500, 'Failed to verify class ownership');
+		throw error(500, 'Impossible de vérifier les classes');
 	}
 
 	if (!classes || classes.length !== classIds.length) {
-		throw error(400, 'Invalid request');
+		throw error(400, 'Une ou plusieurs classes introuvables ou inactives');
 	}
 
 	// Create shared_materials records
@@ -127,7 +127,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	if (insertError) {
 		console.error('[Material Share] Error sharing material:', insertError);
-		throw error(500, 'Failed to share material');
+		throw error(500, 'Impossible de partager le support');
 	}
 
 	return json({ success: true, classesShared: classIds.length });
@@ -175,10 +175,10 @@ export const DELETE: RequestHandler = async ({ params, request, locals }) => {
 
 	if (materialError || !material) {
 		if (materialError?.code === 'PGRST116') {
-			throw error(404, 'Material not found');
+			throw error(404, 'Support introuvable');
 		}
 		console.error('[Material Unshare] Error fetching material:', materialError);
-		throw error(500, 'Failed to fetch material');
+		throw error(500, 'Impossible de charger le support');
 	}
 
 	// Handle nested course data
@@ -187,7 +187,7 @@ export const DELETE: RequestHandler = async ({ params, request, locals }) => {
 	const teacherId = Array.isArray(courseData) ? courseData[0]?.teacher_id : courseData?.teacher_id;
 
 	if (teacherId !== user.id) {
-		throw error(403, 'Unauthorized');
+		throw error(403, 'Accès refusé à ce support');
 	}
 
 	// Delete shares
@@ -199,7 +199,7 @@ export const DELETE: RequestHandler = async ({ params, request, locals }) => {
 
 	if (deleteError) {
 		console.error('[Material Unshare] Error unsharing material:', deleteError);
-		throw error(500, 'Failed to unshare material');
+		throw error(500, 'Impossible de retirer le partage du support');
 	}
 
 	return json({ success: true, classesUnshared: classIds.length });

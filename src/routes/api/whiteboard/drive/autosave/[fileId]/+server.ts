@@ -31,7 +31,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 	// Validate fileId
 	if (!fileId || !DRIVE_FILE_ID_REGEX.test(fileId)) {
-		throw error(400, 'Invalid file ID');
+		throw error(400, 'Identifiant de fichier invalide');
 	}
 
 	try {
@@ -70,8 +70,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		}
 
 		console.error('[Whiteboard Drive] Autosave lookup error:', err);
-		const message = err instanceof Error ? err.message : 'Unknown error';
-		throw error(500, `Failed to find autosave: ${message}`);
+		const message = err instanceof Error ? err.message : 'erreur inconnue';
+		throw error(500, `Impossible de rechercher la sauvegarde automatique : ${message}`);
 	}
 };
 
@@ -84,7 +84,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	// Validate fileId
 	if (!fileId || !DRIVE_FILE_ID_REGEX.test(fileId)) {
-		throw error(400, 'Invalid file ID');
+		throw error(400, 'Identifiant de fichier invalide');
 	}
 
 	try {
@@ -98,7 +98,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			return json({
 				success: true,
 				deleted: false,
-				message: 'No autosave found'
+				message: 'Aucune sauvegarde automatique'
 			});
 		}
 
@@ -117,7 +117,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 
 		console.error('[Whiteboard Drive] Autosave delete error:', err);
-		const message = err instanceof Error ? err.message : 'Unknown error';
-		throw error(500, `Failed to delete autosave: ${message}`);
+		const message = err instanceof Error ? err.message : 'erreur inconnue';
+		throw error(500, `Impossible de supprimer la sauvegarde automatique : ${message}`);
 	}
 };

@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	const parsed = pythonMasteryQuerySchema.safeParse({
@@ -34,7 +34,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const msg = parsed.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Paramètres invalides: ${msg}`);
+		throw error(400, `Paramètres invalides : ${msg}`);
 	}
 
 	const { student_id, limit } = parsed.data;
@@ -49,7 +49,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	if (dbErr) {
 		console.error('Failed to read mastery rows:', dbErr);
-		throw error(500, 'Erreur lors de la lecture des statuts de maîtrise');
+		throw error(500, 'Impossible de charger les statuts de maîtrise');
 	}
 
 	return json({ mastery: data ?? [] });

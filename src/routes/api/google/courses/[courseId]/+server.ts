@@ -117,10 +117,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		if (courseError) {
 			if (courseError.code === 'PGRST116') {
 				// No rows returned
-				throw error(404, 'Course not found or access denied');
+				throw error(404, 'Cours Classroom introuvable ou accès refusé');
 			}
 			console.error('[Google Course Details] Database error:', courseError);
-			throw error(500, 'Failed to fetch course details');
+			throw error(500, 'Impossible de charger le cours Classroom');
 		}
 
 		// Fetch all coursework for this course
@@ -147,7 +147,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 		if (courseworkError) {
 			console.error('[Google Course Details] Coursework fetch error:', courseworkError);
-			throw error(500, 'Failed to fetch coursework');
+			throw error(500, 'Impossible de charger les devoirs Classroom');
 		}
 
 		// Fetch topics for this course
@@ -302,7 +302,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 				return {
 					classId: shared.class_id,
-					className: className || 'Unknown Class',
+					className: className || 'Classe inconnue',
 					visible: shared.visible,
 					categoryName: categoryData?.name || null
 				};
@@ -363,7 +363,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 				return {
 					classId: shared.class_id,
-					className: className || 'Unknown Class',
+					className: className || 'Classe inconnue',
 					visible: shared.visible,
 					categoryName: categoryData?.name || null
 				};
@@ -408,6 +408,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 		// Handle other errors
 		console.error('[Google Course Details] Error:', err);
-		throw error(500, 'An error occurred while fetching course details');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

@@ -28,7 +28,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = assignPythonFileSchema.safeParse(body);
@@ -37,7 +37,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation echouee: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { class_ids, instructions, due_date } = validation.data;
@@ -51,14 +51,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	if (fileError || !file) {
 		if (fileError?.code === 'PGRST116') {
-			throw error(404, 'Fichier Python non trouve');
+			throw error(404, 'Fichier Python introuvable');
 		}
 		console.error('Error fetching python file:', fileError);
-		throw error(500, 'Erreur lors de la verification du fichier');
+		throw error(500, 'Impossible de vérifier le fichier Python');
 	}
 
 	if (file.owner_id !== user.id) {
-		throw error(403, 'Vous ne pouvez assigner que vos propres fichiers Python');
+		throw error(403, 'Seul l’auteur peut distribuer ce fichier Python');
 	}
 
 	// Verify all specified classes exist
@@ -69,13 +69,13 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	if (classesError) {
 		console.error('Error fetching classes:', classesError);
-		throw error(500, 'Erreur lors de la verification des classes');
+		throw error(500, 'Impossible de vérifier les classes');
 	}
 
 	if (!classes || classes.length !== class_ids.length) {
 		const validClassIds = new Set(classes?.map((c) => c.id) ?? []);
 		const invalidClassIds = class_ids.filter((id) => !validClassIds.has(id));
-		throw error(403, `Certaines classes sont introuvables: ${invalidClassIds.join(', ')}`);
+		throw error(403, `Classes introuvables : ${invalidClassIds.join(', ')}`);
 	}
 
 	// Create assignments (upsert to handle duplicates)
@@ -97,13 +97,13 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	if (insertError) {
 		console.error('Error creating assignments:', insertError);
-		throw error(500, 'Erreur lors de la creation des assignations');
+		throw error(500, 'Impossible de créer les affectations');
 	}
 
 	return json(
 		{
 			success: true,
-			message: `Fichier assigne a ${created?.length ?? 0} classe(s)`,
+			message: `Fichier distribué à ${created?.length ?? 0} classe(s)`,
 			assignments_created: created?.length ?? 0
 		},
 		{ status: 201 }
@@ -128,14 +128,14 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (fileError || !file) {
 		if (fileError?.code === 'PGRST116') {
-			throw error(404, 'Fichier Python non trouve');
+			throw error(404, 'Fichier Python introuvable');
 		}
 		console.error('Error fetching python file:', fileError);
-		throw error(500, 'Erreur lors de la verification du fichier');
+		throw error(500, 'Impossible de vérifier le fichier Python');
 	}
 
 	if (file.owner_id !== user.id) {
-		throw error(403, 'Vous ne pouvez gerer que les assignations de vos propres fichiers');
+		throw error(403, 'Seul l’auteur peut gérer les affectations de ce fichier Python');
 	}
 
 	// Delete all assignments for this file
@@ -147,7 +147,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (deleteError) {
 		console.error('Error deleting assignments:', deleteError);
-		throw error(500, 'Erreur lors de la suppression des assignations');
+		throw error(500, 'Impossible de supprimer les affectations');
 	}
 
 	return json({ success: true });
@@ -171,14 +171,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	if (fileError || !file) {
 		if (fileError?.code === 'PGRST116') {
-			throw error(404, 'Fichier Python non trouve');
+			throw error(404, 'Fichier Python introuvable');
 		}
 		console.error('Error fetching python file:', fileError);
-		throw error(500, 'Erreur lors de la verification du fichier');
+		throw error(500, 'Impossible de vérifier le fichier Python');
 	}
 
 	if (file.owner_id !== user.id) {
-		throw error(403, 'Vous ne pouvez voir que les assignations de vos propres fichiers');
+		throw error(403, 'Seul l’auteur peut voir les affectations de ce fichier Python');
 	}
 
 	// Fetch assignments with class info
@@ -204,7 +204,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	if (assignmentsError) {
 		console.error('Error fetching assignments:', assignmentsError);
-		throw error(500, 'Erreur lors de la recuperation des assignations');
+		throw error(500, 'Impossible de charger les affectations');
 	}
 
 	return json({ assignments: assignments ?? [] });
