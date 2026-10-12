@@ -22,7 +22,6 @@ couvre:
   - 'src/lib/components/{VipCard*,Gidouille*,BonusHistoryModal,StudentVipCardsModal,RewardsBlock}.svelte'
   - 'src/routes/(protected)/dashboard/navadra/**'
   - 'src/routes/(protected)/dashboard/student/{inventory,marketplace,minesweeper,riddles,vip-cards}/**'
-  - 'src/routes/(protected)/dashboard/student/journal/**'
   - 'src/routes/(protected)/dashboard/teacher/{gamification,minesweeper}/**'
   - 'src/routes/(protected)/dashboard/teacher/contenu/enigmes/**'
   - 'src/routes/(protected)/dashboard/admin/vip-cards/**'
@@ -109,20 +108,20 @@ par `src/lib/server/riddle-auto-select.ts` via `src/routes/api/riddles/auto-sele
 
 ### Économie
 
-| Rôle                                  | Où                                                                                                                                                                                                                                                                                                 |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Récompense de partie (cap journalier) | `record_game_reward` (SQL)                                                                                                                                                                                                                                                                         |
-| Bonus hebdomadaires                   | `run_weekly_best_bonuses` → `award_weekly_best_bonuses` ; `run_weekly_rewards` (pg_cron, hors dépôt)                                                                                                                                                                                               |
-| Gestes du prof                        | `src/routes/api/teacher/rewards/` (`update-student`, `update-class`, `grant-specific-vip-card`, `use-vip-card`) ; écran `src/routes/(protected)/dashboard/teacher/gamification/rewards/GidouillesTab.svelte`                                                                                       |
-| Journal des gains                     | `gidouilles_activity` → trigger `trigger_log_gidouilles_to_events` → `reward_events` ; `src/routes/api/rewards/journal/+server.ts`, `src/lib/server/reward-journal-balance.ts` ; lu par `rewardJournalStore` (fenêtre `StudentJournalModal` de l'accueil élève, page `/dashboard/student/journal`) |
-| Succès (achievements)                 | `src/lib/server/achievements/service.ts`, `process_achievement_event` ; versement `src/lib/server/achievements/credit-gidouilles.ts`                                                                                                                                                               |
-| Cartes VIP : boutique, vente          | `src/routes/api/vip-cards/shop/+server.ts`, `purchase/`, `sell/` → `purchase_vip_card`, `sell_vip_card`                                                                                                                                                                                            |
-| Cartes VIP : tirages                  | `src/routes/api/rewards/draw-vip-cards/+server.ts` → `draw_multiple_vip_cards` ; prix `VIP_CARD_COST` dans `src/lib/utils/vip-cards.ts`                                                                                                                                                            |
-| Cartes VIP : activation par le prof   | `request_vip_card_activation`, `approve_vip_card`, `reject_vip_card`, `use_vip_card` ; onglet `ActivationRequestsTab.svelte`                                                                                                                                                                       |
-| Cartes VIP : admin                    | `src/routes/(protected)/dashboard/admin/vip-cards/+page.svelte`, `src/routes/api/admin/vip-cards/` ; Zod `src/lib/server/validation/vip-card-admin.ts`                                                                                                                                             |
-| Inventaire élève                      | `src/routes/(protected)/dashboard/student/inventory/+page.svelte` (`vip-cards/collection` y redirige)                                                                                                                                                                                              |
-| Marché                                | `src/routes/(protected)/dashboard/student/marketplace/`, `src/routes/api/marketplace/`, `src/lib/server/marketplace/`, `src/lib/stores/marketplace.svelte.ts`                                                                                                                                      |
-| Marché (prof)                         | `src/routes/(protected)/dashboard/teacher/gamification/marketplace/+page.svelte`                                                                                                                                                                                                                   |
+| Rôle                                  | Où                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Récompense de partie (cap journalier) | `record_game_reward` (SQL)                                                                                                                                                                                                                                                                                                   |
+| Bonus hebdomadaires                   | `run_weekly_best_bonuses` → `award_weekly_best_bonuses` ; `run_weekly_rewards` (pg_cron, hors dépôt)                                                                                                                                                                                                                         |
+| Gestes du prof                        | `src/routes/api/teacher/rewards/` (`update-student`, `update-class`, `grant-specific-vip-card`, `use-vip-card`) ; écran `src/routes/(protected)/dashboard/teacher/gamification/rewards/GidouillesTab.svelte`                                                                                                                 |
+| Journal des gains                     | `gidouilles_activity` → trigger `trigger_log_gidouilles_to_events` → `reward_events` ; `src/routes/api/rewards/journal/+server.ts`, `src/lib/server/reward-journal-balance.ts` ; lu par `rewardJournalStore` (fenêtre `StudentJournalModal` de l'accueil élève, page prof `/dashboard/teacher/students/[studentId]/journal`) |
+| Succès (achievements)                 | `src/lib/server/achievements/service.ts`, `process_achievement_event` ; versement `src/lib/server/achievements/credit-gidouilles.ts`                                                                                                                                                                                         |
+| Cartes VIP : boutique, vente          | `src/routes/api/vip-cards/shop/+server.ts`, `purchase/`, `sell/` → `purchase_vip_card`, `sell_vip_card`                                                                                                                                                                                                                      |
+| Cartes VIP : tirages                  | `src/routes/api/rewards/draw-vip-cards/+server.ts` → `draw_multiple_vip_cards` ; prix `VIP_CARD_COST` dans `src/lib/utils/vip-cards.ts`                                                                                                                                                                                      |
+| Cartes VIP : activation par le prof   | `request_vip_card_activation`, `approve_vip_card`, `reject_vip_card`, `use_vip_card` ; onglet `ActivationRequestsTab.svelte`                                                                                                                                                                                                 |
+| Cartes VIP : admin                    | `src/routes/(protected)/dashboard/admin/vip-cards/+page.svelte`, `src/routes/api/admin/vip-cards/` ; Zod `src/lib/server/validation/vip-card-admin.ts`                                                                                                                                                                       |
+| Inventaire élève                      | `src/routes/(protected)/dashboard/student/inventory/+page.svelte` (`vip-cards/collection` y redirige)                                                                                                                                                                                                                        |
+| Marché                                | `src/routes/(protected)/dashboard/student/marketplace/`, `src/routes/api/marketplace/`, `src/lib/server/marketplace/`, `src/lib/stores/marketplace.svelte.ts`                                                                                                                                                                |
+| Marché (prof)                         | `src/routes/(protected)/dashboard/teacher/gamification/marketplace/+page.svelte`                                                                                                                                                                                                                                             |
 
 Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue dans
 `vip_card_templates`, les probabilités de tirage dans `vip_card_config`, le journal dans
@@ -139,7 +138,7 @@ Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue da
 
 Les scores qui nourrissent ces classements s'écrivent **par le serveur** : `upsert_2048_score`
 (lot 3, Q141) et `upsert_mathemo_score` (client service depuis `20261016100400` ; garde : client
-service ou l'élève lui-même, EXECUTE retiré à `authenticated` après le deploy — la fonction
+service seul : EXECUTE retiré à `authenticated` par `20261016100700` — la fonction
 ajoute `p_score` au total sans borne, seule la route le calcule et le borne). Le score reste
 déclaré par le navigateur, puisque le jeu tourne côté client.
 
@@ -154,10 +153,11 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
    type de jeu** (`daily_game_rewards.is_first_win_of_day`), `0` ensuite. ⚠️ L'ancienne doc disait
    le cap « partagé entre jeux » : c'est faux depuis l'ajout de 2048 et Mathémo (commentaire de la
    fonction : « 1 gidouille/day PER GAME TYPE »). Elle n'accepte que le **serveur** (client
-   service : routes 2048 et Mathémo) ou l'élève lui-même, refuse l'appel sans identité
-   (`20261016100200`), exige le rôle `student` et une récompense théorique entre 0 et 1000. Tant
-   que l'élève peut l'appeler, il peut s'attribuer la gidouille du jour de chaque type et un
-   meilleur score de semaine forgé : l'EXECUTE est retiré à `authenticated` après le deploy. La
+   service : routes 2048 et Mathémo ; appels imbriqués par `complete_minesweeper_game` et
+   `submit_riddle_attempt`, SECURITY DEFINER), refuse l'appel sans identité (`20261016100200`), exige le rôle `student` et une
+   récompense théorique entre 0 et 1000. L'EXECUTE est retiré à `authenticated`
+   (`20261016100700`) : un élève ne s'attribue plus la gidouille du jour de chaque type sans
+   jouer. La
    date et la semaine sont celles du fuseau et de la `week_config` de l'école
    (`calculate_week_boundaries`).
 2. **La récompense théorique ne sert qu'au bonus hebdomadaire.** Chaque partie gagnée met à jour
@@ -260,8 +260,8 @@ plus de lecteur : fermée à anon et `authenticated` (migration `20261016090200`
 2026-10-11) : la justesse est calculée par `api/riddles/[id]/submit` (`validateRiddleAnswer`), qui
 appelle `submit_riddle_attempt` par le client service — la RPC prend `p_is_correct` de son
 appelant, un élève qui l'appelait lui-même pouvait se déclarer juste. La policy d'insertion
-directe de l'élève est supprimée (`20261016090200`) ; EXECUTE sera retiré à `authenticated` par
-une 2ᵉ migration, après le `deploy:prod` qui livre la route. Test :
+directe de l'élève est supprimée (`20261016090200`) ; EXECUTE est retiré à `authenticated`
+(`20261016100700`, après le `deploy:prod` de v0.25.0). Test :
 `tests/integration/enigmes-tentatives-par-le-serveur.test.ts`.
 
 ⚠️ **La page élève ne reçoit ni la réponse attendue ni la correction** (constat du 2026-10-12) :
@@ -359,10 +359,10 @@ s'affichait en erreur).
 - **Sans appelant applicatif** : `award_weekly_reward`, `calculate_daily_challenge_gidouilles`
   (défis quotidiens supprimés). `process_weekly_rewards`, `purchase_shop_item` et
   `get_2048_user_rank` ont été **supprimées** le 2026-10-11 (migration `20261015090700`).
-- **Page sans entrée** (2026-10-12) : `/dashboard/student/journal` (journal des gains de l'élève)
-  n'a aucun lien qui y mène. L'accueil élève ouvre le même journal en fenêtre
-  (`StudentJournalModal`, même `rewardJournalStore`, mêmes `RewardEventCard`) : doublon probable,
-  garder ou supprimer à décider.
+- ✅ **Page sans entrée supprimée** (2026-10-12, décision de David) : `/dashboard/student/journal`,
+  qu'aucun lien n'a jamais atteint, doublait la fenêtre `StudentJournalModal` de l'accueil élève
+  (même `rewardJournalStore`, mêmes `RewardEventCard`). Ses filtres par type
+  (`RewardJournalFilters`) restent sur la page prof du journal d'un élève.
 - **Données de jeu privées** (2026-10-11, migration `20261015090600`) : `mathemo_scores`,
   `minesweeper_student_achievements`, `minesweeper_player_stats`, `marketplace_listing_views` —
   chacun ne lit que les siennes (avant : `using (true)` pour tout compte, toutes écoles).

@@ -108,12 +108,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'compte-appelant',
 		justification: 'auth.uid() requis et égal à p_student_id'
 	},
-	'record_game_reward(p_student_id uuid, p_game_type text, p_game_id uuid, p_theoretical_reward numeric, p_school_id uuid)':
-		{
-			categorie: 'compte-appelant',
-			justification:
-				'refuse sauf client service ou auth.uid() = p_student_id (20261016100200) ; EXECUTE retiré à authenticated après le deploy'
-		},
 	'record_listing_views_batch(p_listing_ids uuid[], p_user_id uuid)': {
 		categorie: 'compte-appelant',
 		justification: 'garde auth.uid() = p_user_id (lot 4)'
@@ -126,12 +120,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'compte-appelant',
 		justification: 'auth.uid() requis et égal à p_student_id'
 	},
-	'submit_riddle_attempt(p_riddle_id uuid, p_student_id uuid, p_submitted_answer jsonb, p_is_correct boolean)':
-		{
-			categorie: 'compte-appelant',
-			justification:
-				'refuse sauf client service ou auth.uid() = p_student_id (20261016090200) ; EXECUTE retiré à authenticated après le deploy'
-		},
 	'toggle_message_star(p_message_id uuid, p_user_id uuid)': {
 		categorie: 'compte-appelant',
 		justification: 'garde auth.uid() = p_user_id'
@@ -144,12 +132,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		{
 			categorie: 'compte-appelant',
 			justification: 'garde auth.uid() = p_user_id et conversation possédée'
-		},
-	'upsert_mathemo_score(p_user_id uuid, p_word_length integer, p_won boolean, p_found_first_try boolean, p_score numeric)':
-		{
-			categorie: 'compte-appelant',
-			justification:
-				'refuse sauf client service ou auth.uid() = p_user_id (20261016100400) ; EXECUTE retiré à authenticated après le deploy'
 		},
 	'upsert_user_presence(p_user_id uuid, p_status text)': {
 		categorie: 'compte-appelant',

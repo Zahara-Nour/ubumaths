@@ -14,10 +14,10 @@ Vocabulaire du domaine : [CONTEXT.md](../CONTEXT.md) (glossaire unique). Règles
 
 Les **données de travail** lues par des scripts et des tests (corrections, relecture) vivent hors de docs/, sous [`data/`](../data/). [Chiphres/](Chiphres/) est le lore de l'univers (contenu éditorial).
 
-## Doc à jour : `couvre:` et `indexe:`
+## Doc à jour : `couvre:`
 
-Chaque doc déclare dans son en-tête YAML le code qu'elle **décrit** (`couvre:`) et, pour un index, le
-code qu'elle **recense** seulement (`indexe:`). La garde `pnpm docs:check-a-jour` vérifie :
+Chaque doc déclare dans son en-tête YAML le code qu'elle **décrit** (`couvre:`). La garde
+`pnpm docs:check-a-jour` vérifie :
 
 - **sur chaque PR** (`--depuis origin/main` : échec quand on la lance soi-même, simple avertissement en
   CI et au `pre-push`) : toute doc dont le `couvre:` touche un fichier modifié est modifiée aussi, sinon
@@ -25,15 +25,17 @@ code qu'elle **recense** seulement (`indexe:`). La garde `pnpm docs:check-a-jour
 - **sur chaque PR, doc d'abord** : une PR qui touche une zone listée en trou écrit d'abord la doc de
   la zone et la retire de la liste. Si la zone est trop grosse au regard du changement, David
   tranche ; s'il reporte, une ligne `Doc-reportée: <raison>` dans un commit ;
-- **partout** (`--couverture`, bloquant au `pre-push` et en CI) : chaque fichier de code est couvert ou
-  indexé par une doc, ou listé comme trou connu
-  dans `scripts/doc-a-jour.config.ts` (les zones sans doc, à documenter) ; un trou dont la zone est
-  déjà décrite, ou qui ne désigne plus aucun fichier, sort de la liste.
+- **partout** (`--couverture`, bloquant au `pre-push` et en CI) : chaque fichier de code est décrit
+  par une doc, ou listé comme trou connu dans `scripts/doc-a-jour.config.ts` (les zones sans doc, à
+  documenter) ; un trou dont la zone est déjà décrite, ou qui ne désigne plus aucun fichier, sort
+  de la liste.
 
-Indexer n'est pas décrire : un fichier listé en trou y reste même si une doc l'indexe. Mais un
-fichier seulement indexé et hors des trous passe pour couvert : la règle « doc d'abord » ne le voit
-pas (25 fichiers de `src/lib/server/`, indexés par [serveur.md](systeme/serveur.md), relevé du
-2026-10-12).
+Citer n'est pas décrire : un fichier qu'une doc nomme seulement dans un index (comme l'index des
+modules de [serveur.md](systeme/serveur.md)) reste en trou, sous sa zone. Jusqu'au 2026-10-12, une
+clé `indexe:` le comptait comme couvert : 25 modules de `src/lib/server/` échappaient ainsi à
+« doc d'abord », et tout module neuf avec eux ; les 32 fichiers de l'index de
+[utilitaires-et-demos.md](systeme/utilitaires-et-demos.md), qu'il décrit d'une ligne, sont depuis
+dans son `couvre:`.
 
 ## Gabarit d'une doc système
 

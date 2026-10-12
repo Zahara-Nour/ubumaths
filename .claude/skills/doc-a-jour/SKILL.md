@@ -63,7 +63,8 @@ Les docs naissent là où le code bouge, au moment où quelqu'un le connaît.
   Écrire la partie que la PR touche, et laisser le reste en trou, est une réponse possible
   (2026-10-12, #1152). S'il reporte toute la doc : une ligne `Doc-reportée: <raison>` dans un
   commit de la PR, qui fait taire la garde.
-- Un fichier seulement **indexé** (`indexe:`) reste dans sa zone sans doc : indexer n'est pas décrire.
+- Un fichier qu'une doc cite seulement dans un index reste dans sa zone sans doc : citer n'est pas
+  décrire. Seul `couvre:` compte (la clé `indexe:` a disparu le 2026-10-12).
 
 La garde `--depuis` signale ces zones (`⛔ Doc d’abord`, avec la `note` de chaque zone touchée) ;
 avant le 2026-10-12 rien ne les vérifiait, et une PR a touché une zone sans doc sans que personne

@@ -4,6 +4,7 @@ couvre:
   - src/app.d.ts
   - src/lib/server/supabase.ts
   - src/lib/server/auth.ts
+  - src/lib/server/accountStatusHandle.ts
   - 'src/lib/server/auth/**'
   - 'src/lib/server/middleware/**'
   - src/lib/server/adminElevation.ts

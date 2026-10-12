@@ -36,19 +36,19 @@ export const createPythonFileSchema = z.object({
 	title: z
 		.string()
 		.min(1, 'Le titre est requis')
-		.max(MAX_TITLE_LENGTH, `Le titre ne doit pas depasser ${MAX_TITLE_LENGTH} caracteres`),
+		.max(MAX_TITLE_LENGTH, `Le titre ne doit pas dépasser ${MAX_TITLE_LENGTH} caractères`),
 	description: z
 		.string()
 		.max(
 			MAX_DESCRIPTION_LENGTH,
-			`La description ne doit pas depasser ${MAX_DESCRIPTION_LENGTH} caracteres`
+			`La description ne doit pas dépasser ${MAX_DESCRIPTION_LENGTH} caractères`
 		)
 		.optional()
 		.nullable(),
 	code: z
 		.string()
 		.min(1, 'Le code est requis')
-		.max(MAX_CODE_SIZE, `Le code ne doit pas depasser ${MAX_CODE_SIZE} caracteres`),
+		.max(MAX_CODE_SIZE, `Le code ne doit pas dépasser ${MAX_CODE_SIZE} caractères`),
 	is_public: z.boolean().default(false)
 });
 
@@ -59,20 +59,20 @@ export const updatePythonFileSchema = z.object({
 	title: z
 		.string()
 		.min(1, 'Le titre est requis')
-		.max(MAX_TITLE_LENGTH, `Le titre ne doit pas depasser ${MAX_TITLE_LENGTH} caracteres`)
+		.max(MAX_TITLE_LENGTH, `Le titre ne doit pas dépasser ${MAX_TITLE_LENGTH} caractères`)
 		.optional(),
 	description: z
 		.string()
 		.max(
 			MAX_DESCRIPTION_LENGTH,
-			`La description ne doit pas depasser ${MAX_DESCRIPTION_LENGTH} caracteres`
+			`La description ne doit pas dépasser ${MAX_DESCRIPTION_LENGTH} caractères`
 		)
 		.optional()
 		.nullable(),
 	code: z
 		.string()
 		.min(1, 'Le code est requis')
-		.max(MAX_CODE_SIZE, `Le code ne doit pas depasser ${MAX_CODE_SIZE} caracteres`)
+		.max(MAX_CODE_SIZE, `Le code ne doit pas dépasser ${MAX_CODE_SIZE} caractères`)
 		.optional(),
 	is_public: z.boolean().optional()
 });
@@ -103,8 +103,8 @@ export const listPythonFilesQuerySchema = z.object({
 export const studentFilesQuerySchema = z.object({
 	page: z.coerce.number().int().min(1).default(1),
 	limit: z.coerce.number().int().min(1).max(100).default(20),
-	class_id: z.string().uuid('ID de classe invalide').optional(),
-	student_id: z.string().uuid("ID d'etudiant invalide").optional()
+	class_id: z.string().uuid('Identifiant de classe invalide').optional(),
+	student_id: z.string().uuid('Identifiant d’élève invalide').optional()
 });
 
 // =============================================================================
@@ -116,14 +116,14 @@ export const studentFilesQuerySchema = z.object({
  */
 export const assignPythonFileSchema = z.object({
 	class_ids: z
-		.array(z.string().uuid('ID de classe invalide'))
+		.array(z.string().uuid('Identifiant de classe invalide'))
 		.min(1, 'Au moins une classe est requise')
-		.max(50, 'Maximum 50 classes par assignation'),
+		.max(50, '50 classes au maximum par affectation'),
 	instructions: z
 		.string()
 		.max(
 			MAX_INSTRUCTIONS_LENGTH,
-			`Les instructions ne doivent pas depasser ${MAX_INSTRUCTIONS_LENGTH} caracteres`
+			`Les instructions ne doivent pas dépasser ${MAX_INSTRUCTIONS_LENGTH} caractères`
 		)
 		.optional()
 		.nullable(),
@@ -137,7 +137,7 @@ export const assignPythonFileSchema = z.object({
 /**
  * Schema for UUID parameter validation
  */
-export const uuidParamSchema = z.string().uuid('ID invalide');
+export const uuidParamSchema = z.string().uuid('Identifiant invalide');
 
 // =============================================================================
 // TYPE EXPORTS

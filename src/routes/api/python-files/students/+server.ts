@@ -32,7 +32,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const errorMsg = queryResult.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Parametres de requete invalides: ${errorMsg}`);
+		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
 	const { page, limit, class_id, student_id } = queryResult.data;
@@ -60,7 +60,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	if (membersError) {
 		console.error('Error fetching class members:', membersError);
-		throw error(500, 'Erreur lors de la recuperation des membres des classes');
+		throw error(500, 'Impossible de charger les élèves des classes');
 	}
 
 	if (!classMembers || classMembers.length === 0) {
@@ -81,7 +81,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	// Filter by specific student if provided
 	if (student_id) {
 		if (!studentIds.includes(student_id)) {
-			throw error(403, "Cet etudiant n'est pas dans une de vos classes");
+			throw error(403, 'Cet élève n’est inscrit dans aucune classe du professeur');
 		}
 		studentIds = [student_id];
 	}
@@ -116,7 +116,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 	if (filesError) {
 		console.error('Error fetching student files:', filesError);
-		throw error(500, 'Erreur lors de la recuperation des fichiers des etudiants');
+		throw error(500, 'Impossible de charger les fichiers Python des élèves');
 	}
 
 	// Enrich with class information for each student

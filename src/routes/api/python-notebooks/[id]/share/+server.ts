@@ -34,7 +34,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// Validate notebook ID
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
-		throw error(400, 'ID de notebook invalide');
+		throw error(400, 'Identifiant de carnet invalide');
 	}
 
 	const notebookId = idValidation.data;
@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = shareNotebookSchema.safeParse(body);
@@ -53,7 +53,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation echouee: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { class_id, readonly } = validation.data;
@@ -67,21 +67,24 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	if (fetchError || !notebook) {
 		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Notebook introuvable');
+			throw error(404, 'Carnet introuvable');
 		}
 		console.error('Error fetching notebook for sharing:', fetchError);
-		throw error(500, 'Erreur lors de la verification du notebook');
+		throw error(500, 'Impossible de vérifier le carnet');
 	}
 
 	if (notebook.author_id !== user.id) {
-		throw error(403, "Seul l'auteur peut partager ce notebook");
+		throw error(403, 'Seul l’auteur peut partager ce carnet');
 	}
 
 	// Refuse to assign a template to a class — templates are author-side
 	// artefacts meant to be cloned, not consumed directly by students. The
 	// teacher should clone the template first, then share the clone.
 	if (notebook.is_template) {
-		throw error(400, "Un template ne peut pas être partagé directement. Clonez-le d'abord.");
+		throw error(
+			400,
+			'Un modèle de carnet ne se partage pas directement : il faut d’abord le dupliquer'
+		);
 	}
 
 	// Verify the class exists
@@ -96,7 +99,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			throw error(404, 'Classe introuvable');
 		}
 		console.error('Error fetching class for sharing:', classError);
-		throw error(500, 'Erreur lors de la verification de la classe');
+		throw error(500, 'Impossible de vérifier la classe');
 	}
 
 	// Check if already shared with this class
@@ -109,11 +112,11 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	if (existingError) {
 		console.error('Error checking existing assignment:', existingError);
-		throw error(500, "Erreur lors de la verification de l'assignation existante");
+		throw error(500, 'Impossible de vérifier les partages existants');
 	}
 
 	if (existing) {
-		throw error(400, 'Ce notebook est deja partage avec cette classe');
+		throw error(400, 'Ce carnet est déjà partagé avec cette classe');
 	}
 
 	// Create assignment
@@ -132,15 +135,15 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		console.error('Error creating notebook assignment:', insertError);
 		if (insertError.code === '23505') {
 			// Unique constraint violation
-			throw error(400, 'Ce notebook est deja partage avec cette classe');
+			throw error(400, 'Ce carnet est déjà partagé avec cette classe');
 		}
-		throw error(500, 'Erreur lors du partage du notebook');
+		throw error(500, 'Impossible de partager le carnet');
 	}
 
 	return json(
 		{
 			assignment,
-			message: `Notebook "${notebook.title}" partage avec la classe "${teacherClass.name}"`
+			message: `Carnet « ${notebook.title} » partagé avec la classe « ${teacherClass.name} »`
 		},
 		{ status: 201 }
 	);

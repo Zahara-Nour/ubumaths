@@ -32,7 +32,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// Validate UUID parameter
 	const paramValidation = templateIdParamSchema.safeParse(params);
 	if (!paramValidation.success) {
-		throw error(400, 'ID de template invalide');
+		throw error(400, 'Identifiant de modèle invalide');
 	}
 
 	const { id } = paramValidation.data;
@@ -47,15 +47,15 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 		if (dbError) {
 			if (dbError.code === 'PGRST116') {
-				throw error(404, 'Template non trouve');
+				throw error(404, 'Modèle introuvable');
 			}
 			console.error('[Whiteboard Template] Query error:', dbError);
-			throw error(500, 'Erreur lors de la recuperation du template');
+			throw error(500, 'Impossible de charger le modèle');
 		}
 
 		const validatedRow = toWhiteboardTemplateRow(row);
 		if (!validatedRow) {
-			throw error(500, 'Géométrie de page invalide pour ce template');
+			throw error(500, 'Géométrie de page invalide pour ce modèle');
 		}
 		const template = rowToTemplate(validatedRow);
 
@@ -67,7 +67,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		}
 
 		console.error('[Whiteboard Template] Error:', err);
-		throw error(500, 'Une erreur interne est survenue');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -88,7 +88,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	// Validate UUID parameter
 	const paramValidation = templateIdParamSchema.safeParse(params);
 	if (!paramValidation.success) {
-		throw error(400, 'ID de template invalide');
+		throw error(400, 'Identifiant de modèle invalide');
 	}
 
 	const { id } = paramValidation.data;
@@ -103,20 +103,20 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 		if (fetchError) {
 			if (fetchError.code === 'PGRST116') {
-				throw error(404, 'Template non trouve');
+				throw error(404, 'Modèle introuvable');
 			}
 			console.error('[Whiteboard Template] Fetch error:', fetchError);
-			throw error(500, 'Erreur lors de la verification du template');
+			throw error(500, 'Impossible de vérifier le modèle');
 		}
 
 		// Check if system template
 		if (existing.is_system) {
-			throw error(403, 'Les templates systeme ne peuvent pas etre supprimes');
+			throw error(403, 'Un modèle système ne peut pas être supprimé');
 		}
 
 		// Check ownership (admins can delete any non-system template)
 		if (profile.role !== 'admin' && existing.created_by !== user.id) {
-			throw error(403, 'Vous ne pouvez supprimer que vos propres templates');
+			throw error(403, 'Seul l’auteur d’un modèle peut le supprimer');
 		}
 
 		// Delete the template
@@ -127,7 +127,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 		if (deleteError) {
 			console.error('[Whiteboard Template] Delete error:', deleteError);
-			throw error(500, 'Erreur lors de la suppression du template');
+			throw error(500, 'Impossible de supprimer le modèle');
 		}
 
 		return json({ success: true });
@@ -138,6 +138,6 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 
 		console.error('[Whiteboard Template] Error:', err);
-		throw error(500, 'Une erreur interne est survenue');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

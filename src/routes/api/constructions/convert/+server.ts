@@ -20,11 +20,11 @@ const convertRequestSchema = z.object({
 	xml: z
 		.string()
 		.min(1, 'Le contenu XML est requis')
-		.max(5_000_000, 'Le fichier XML est trop volumineux (max 5MB)'),
-	title: z.string().max(200, 'Le titre ne doit pas depasser 200 caracteres').optional(),
+		.max(5_000_000, 'Le fichier XML est trop volumineux (5 Mo au maximum)'),
+	title: z.string().max(200, 'Le titre ne doit pas dépasser 200 caractères').optional(),
 	description: z
 		.string()
-		.max(2000, 'La description ne doit pas depasser 2000 caracteres')
+		.max(2000, 'La description ne doit pas dépasser 2000 caractères')
 		.optional()
 });
 
@@ -46,7 +46,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Corps de requete JSON invalide');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = convertRequestSchema.safeParse(body);
@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${e.path.join('.')}: ${e.message}`)
 			.join('; ');
-		throw error(400, `Validation echouee: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const { xml, title, description } = validation.data;
@@ -69,7 +69,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 		if (!result.success) {
 			// Conversion failed - return 400 with errors
-			throw error(400, `Conversion echouee: ${result.errors.join('; ')}`);
+			throw error(400, `Conversion impossible : ${result.errors.join('; ')}`);
 		}
 
 		// SECURITY: Validate step count to prevent DoS
@@ -77,7 +77,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		if (result.script && result.script.steps.length > MAX_STEPS) {
 			throw error(
 				400,
-				`Le script converti contient trop d'etapes (${result.script.steps.length}). Maximum: ${MAX_STEPS}`
+				`Le script converti contient trop d’étapes (${result.script.steps.length}) : ${MAX_STEPS} au maximum`
 			);
 		}
 
@@ -98,6 +98,6 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 		console.error('Error converting InstrumenPoche XML:', err);
 		const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
-		throw error(500, `Erreur lors de la conversion: ${errorMessage}`);
+		throw error(500, `Impossible de convertir le fichier : ${errorMessage}`);
 	}
 };

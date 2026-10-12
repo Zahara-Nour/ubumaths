@@ -62,7 +62,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		if (fetchError) {
 			console.error('[Google Courses] Database error:', fetchError);
-			throw error(500, 'Failed to fetch Google Classroom courses');
+			throw error(500, 'Impossible de charger les cours Classroom');
 		}
 
 		// Transform to camelCase for response
@@ -92,6 +92,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		// Handle other errors
 		console.error('[Google Courses] Error fetching courses:', err);
-		throw error(500, 'An error occurred while fetching courses');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

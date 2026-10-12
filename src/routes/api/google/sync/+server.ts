@@ -57,10 +57,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 			.single();
 
 		if (fetchError || !integration) {
-			throw error(
-				400,
-				'Google Classroom not connected. Please connect your account in settings first.'
-			);
+			throw error(400, 'Google Classroom n’est pas connecté : le connecter dans les paramètres');
 		}
 
 		console.log(`[Google Sync] Starting full sync for teacher ${user.id}`);
@@ -90,7 +87,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 
 		// Handle other errors
 		console.error('[Google Sync] Sync error:', err);
-		const message = err instanceof Error ? err.message : 'Unknown error during sync';
-		throw error(500, `Sync failed: ${message}`);
+		const message = err instanceof Error ? err.message : 'erreur inconnue';
+		throw error(500, `Impossible de synchroniser Google Classroom : ${message}`);
 	}
 };

@@ -22,7 +22,7 @@ export class GoogleAPIError extends Error {
  */
 export class GoogleTokenExpiredError extends GoogleAPIError {
 	constructor() {
-		super('Access token expired', 401, 'TOKEN_EXPIRED');
+		super('Session Google expirée : reconnecter le compte Google', 401, 'TOKEN_EXPIRED');
 		this.name = 'GoogleTokenExpiredError';
 	}
 }
@@ -34,7 +34,7 @@ export class GoogleRateLimitError extends GoogleAPIError {
 	public retryAfter?: number;
 
 	constructor(retryAfter?: number) {
-		super('Rate limit exceeded', 429, 'RATE_LIMIT');
+		super('Trop de requêtes vers Google : réessayer dans un instant', 429, 'RATE_LIMIT');
 		this.name = 'GoogleRateLimitError';
 		this.retryAfter = retryAfter;
 	}
@@ -44,7 +44,7 @@ export class GoogleRateLimitError extends GoogleAPIError {
  * Error thrown when insufficient permissions
  */
 export class GoogleInsufficientPermissionsError extends GoogleAPIError {
-	constructor(message = 'Insufficient permissions') {
+	constructor(message = 'Autorisations Google insuffisantes') {
 		super(message, 403, 'INSUFFICIENT_PERMISSIONS');
 		this.name = 'GoogleInsufficientPermissionsError';
 	}
@@ -54,7 +54,7 @@ export class GoogleInsufficientPermissionsError extends GoogleAPIError {
  * Error thrown when resource not found
  */
 export class GoogleNotFoundError extends GoogleAPIError {
-	constructor(message = 'Resource not found') {
+	constructor(message = 'Ressource Google introuvable') {
 		super(message, 404, 'NOT_FOUND');
 		this.name = 'GoogleNotFoundError';
 	}
