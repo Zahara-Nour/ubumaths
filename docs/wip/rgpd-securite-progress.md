@@ -329,7 +329,7 @@ B6/B7, E20, B5, B8, D17 (question), C9→C15 (point par point).
   - **#1149 (mergée, code seul)** : les pages élève des énigmes n'envoient plus au navigateur
     ni `answer.value` ni `correction` (`toStudentRiddle`) ; `RiddleCard` ne corrige plus
     côté client. Prod : 1 énigme publiée, avec correction, 0 avec réponse automatique.
-- ⏳ **Étape 2 bis, APRÈS le `deploy:prod` qui livre #1147** : `REVOKE EXECUTE ON FUNCTION
+- ✅ (fait par #1191) **Étape 2 bis, APRÈS le `deploy:prod` qui livre #1147** : `REVOKE EXECUTE ON FUNCTION
 record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migration que
   l'étape 2 possible). L'appel imbriqué par `submit_riddle_attempt` garde son droit (DEFINER).
 - **Recos retenues par David (2026-10-12)** :
