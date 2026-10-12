@@ -12,6 +12,8 @@
  * solution que si a > 0, cos x = 1/a que si |a| ≥ 1), le solveur refuse :
  * un refus honnête plutôt qu'une valeur fausse.
  *
+ * tan u = c a une solution pour tout c : `a\\tan x = 1` est résolue.
+ *
  * Chaque solution est vérifiée NUMÉRIQUEMENT pour plusieurs valeurs du
  * paramètre (elle annule g − d), puis sa forme exacte est fixée.
  */
@@ -80,7 +82,15 @@ describe('V41 — coefficient littéral devant ln : la valeur porte le paramètr
 		['a\\ln(x)=2', '\\exponentialE^{\\dfrac{2}{a}}'],
 		['\\ln(x)\\cdot a=1', '\\exponentialE^{\\dfrac{1}{a}}'],
 		['k\\ln x=1', '\\exponentialE^{\\dfrac{1}{k}}'],
-		['m\\ln x=3', '\\exponentialE^{\\dfrac{3}{m}}']
+		['m\\ln x=3', '\\exponentialE^{\\dfrac{3}{m}}'],
+		// Le signe sort de la fraction, comme -3\\ln x = 1 → e^{-\\frac13}
+		['-a\\ln x=1', '\\exponentialE^{-\\dfrac{1}{a}}'],
+		['a\\ln x+1=0', '\\exponentialE^{-\\dfrac{1}{a}}'],
+		['(a+1)\\ln x=1', '\\exponentialE^{\\dfrac{1}{a + 1}}'],
+		['a^2\\ln x=1', '\\exponentialE^{\\dfrac{1}{a^2}}'],
+		['a\\ln x=\\pi', '\\exponentialE^{\\dfrac{\\pi}{a}}'],
+		['a\\ln(-x)=1', '-\\exponentialE^{\\dfrac{1}{a}}'],
+		['a\\log x=1', '10^{\\dfrac{1}{a}}']
 	])('%s → x = %s', (latex, expected) => {
 		const solutions = solvedForEveryParameter(latex, VALUES);
 		expect(solutions).toEqual([expected]);
@@ -93,13 +103,10 @@ describe('V41 — coefficient littéral devant ln : la valeur porte le paramètr
 		'a\\ln x - 1 = 0',
 		'a\\ln(2x+1)=3',
 		'a\\ln(x-1)=1',
+		'a\\ln(x)-\\ln 2=0',
 		'\\log(x) \\cdot a = 2'
 	])('%s : la solution annule l’équation pour chaque valeur du paramètre', (latex) => {
 		solvedForEveryParameter(latex, VALUES);
-	});
-
-	it('un paramètre au SECOND MEMBRE reste refusé : \\ln x = a (refus inchangé)', () => {
-		expect(isSolverFailure(solve(relationOf('\\ln x = a'), { variable: 'x' }))).toBe(true);
 	});
 
 	it('2\\ln x = 1 reste √e (coefficient numérique, inchangé)', () => {
@@ -109,32 +116,38 @@ describe('V41 — coefficient littéral devant ln : la valeur porte le paramètr
 });
 
 // =============================================================================
-// exp, sin, cos : la valeur dépend du signe ou de la taille du paramètre
+// tan : tan u = c a une solution pour tout c
 // =============================================================================
 
-describe('V41 — cas frères : jamais une valeur fausse', () => {
-	/**
-	 * Une réponse est acceptable si c'est un refus, ou si chaque solution annule
-	 * l'équation pour les valeurs du paramètre où elle a un sens.
-	 */
+describe('V41 — coefficient littéral devant tan : arctan(c) + kπ', () => {
+	it('a\\tan x = 1 → x = arctan(1/a), période π (même forme que 2\\tan x = 1)', () => {
+		const solutions = solvedForEveryParameter('a\\tan x=1', [2, 3, -1.5, 0.25]);
+		expect(solutions).toEqual(['\\arctan\\left( \\dfrac{1}{a} \\right)']);
+		const result = solve(relationOf('a\\tan x=1'), { variable: 'x' });
+		expect(result.periodicSolutions && toLatex(result.periodicSolutions.period)).toBe('\\pi');
+	});
+});
+
+// =============================================================================
+// exp, sin, cos, second membre littéral : l'existence dépend du paramètre
+// =============================================================================
+
+describe('V41 — cas frères refusés plutôt qu’une valeur fausse', () => {
 	it.each([
-		['a e^x=1', [2, 3, 0.5]],
-		['k e^x=2', [2, 3, 0.5]],
-		['a\\exp(x)=1', [2, 3, 0.5]],
-		['a\\cos x=1', [2, 3, -4]],
-		['a\\sin x = 1', [2, 3, -4]],
+		'a e^x=1',
+		'k e^x=2',
+		'a\\exp(x)=1',
+		'a\\cos x=1',
+		'a\\sin x = 1',
+		// Second membre littéral : refus inchangé
+		'\\ln x = a',
+		'a\\ln x+b=1',
 		// ln(ax) est développé en ln a + ln x (a > 0) : pour a < 0, e/a existe
-		['\\ln(ax)=1', [2, 3, -2]],
-		['\\ln(x^a)=1', [2, 3, -2]],
-		['a\\ln(x^2)=1', [2, 3, -2]],
-		['a\\sin(x^2)=1', [2, 3, -4]]
-	] as const)('%s : refus ou valeur juste', (latex, values) => {
-		const relation = relationOf(latex);
-		const result = solve(relation, { variable: 'x' });
-		if (isSolverFailure(result)) {
-			expect(result.solutions, latex).toEqual([]);
-			return;
-		}
-		solvedForEveryParameter(latex, values);
+		'\\ln(ax)=1',
+		'\\ln(x^a)=1',
+		'a\\ln(x^2)=1',
+		'a\\sin(x^2)=1'
+	])('%s : refus', (latex) => {
+		expect(isSolverFailure(solve(relationOf(latex), { variable: 'x' })), latex).toBe(true);
 	});
 });

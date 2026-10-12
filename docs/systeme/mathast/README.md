@@ -231,8 +231,9 @@ rendait ln 2, `a\cos x = 1` rendait 0. Désormais c = −b/a reste symbolique et
 vaut `null` quand le coefficient porte une lettre. Convention suivie, celle de `ax = 1` → 1/a :
 **la valeur porte le paramètre, sans condition sur lui** (aucun solveur n'écrit de condition ; le
 champ `Solution.condition` n'est jamais rempli). ln et log en tirent une valeur juste pour tout
-paramètre non nul (`a\ln x = 1` → e^{1/a}, `a\ln(2x + 1) = 3`), sans `approximate` ; exp, sin,
-cos et les décompositions récursives **refusent** (le signe ou la taille de c décide de
+paramètre non nul (`a\ln x = 1` → e^{1/a}, `-a\ln x = 1` → e^{−1/a}, signe hors de la fraction
+comme e^{−1/3}, `a\ln(2x + 1) = 3`), sans `approximate` ; tan aussi (`a\tan x = 1` → arctan(1/a),
+période π) ; exp, sin, cos et les décompositions récursives **refusent** (le signe ou la taille de c décide de
 l'existence) et le CLI répond « La solution dépend de a : je ne sais pas encore résoudre avec un
 paramètre ». Un second membre littéral (`\ln x = a`) reste refusé : il peut venir du
 développement `\ln(ax)` → ln a + ln x, valable pour a > 0 seulement. `filterSolutionsByDomain`

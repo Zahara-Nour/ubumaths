@@ -51,6 +51,7 @@ import {
 } from '../../factory';
 import { denormalize, normalize } from '../../normal';
 import { getVariables } from '../../eval/substitute';
+import { isDivision, isOpposite } from '../../guards';
 import { extractLinearForm } from '../../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
@@ -188,6 +189,17 @@ function reconstructCoefficient(factors: readonly MathNode[]): MathNode {
 	return result;
 }
 
+/**
+ * Le signe d'un numérateur sorti de la fraction : (−1)/a → −1/a, comme la
+ * branche numérique écrit −1/3 (`-a\ln x = 1` → e^{−1/a}, revue V41).
+ */
+function signOutOfFraction(node: MathNode): MathNode {
+	if (isDivision(node) && isOpposite(node.numerator)) {
+		return opposite(divide(node.numerator.operand, node.denominator, 'fraction'));
+	}
+	return node;
+}
+
 /** Valeur numérique d'un nœud, ou `null` s'il ne s'évalue pas. */
 function tryNumeric(node: MathNode): number | null {
 	try {
@@ -267,7 +279,9 @@ export function extractTranscendentalEquation(
 				constantNode:
 					bNode === null
 						? number('0')
-						: denormalize(normalize(divide(opposite(bNode), signedCoeff, 'fraction'))),
+						: signOutOfFraction(
+								denormalize(normalize(divide(opposite(bNode), signedCoeff, 'fraction')))
+							),
 				constantNumeric: bNode === null ? 0 : null
 			};
 		}
@@ -680,13 +694,13 @@ function solveTrigonometric(
 
 	const { funcName, argument, constantNode, constantNumeric: constant } = extracted;
 
-	// sin u = c avec c paramétré (`a\cos x = 1`) : l'existence dépend de |c| ≤ 1
-	// et les valeurs remarquables ne se lisent pas. Refus (V41).
-	if (constant === null) return null;
+	// sin u = c avec c paramétré (`a\cos x = 1`) : l'existence dépend de |c| ≤ 1.
+	// Refus (V41). tan u = c a une solution pour TOUT c : arctan(c) + kπ.
+	if (constant === null && funcName !== 'tan') return null;
 
 	// Check domain restrictions for sin/cos
 	if (funcName === 'sin' || funcName === 'cos') {
-		if (constant < -1 || constant > 1) {
+		if (constant !== null && (constant < -1 || constant > 1)) {
 			recorder.recordStep(
 				'no-real-solution',
 				`L'equation ${funcName}(x) = ${constant} n'a pas de solution car ${constant} n'est pas dans [-1, 1]`,
@@ -728,7 +742,8 @@ function solveTrigonometric(
 	const basePeriodNumeric = funcName === 'tan' ? Math.PI : 2 * Math.PI;
 	const basePeriodNode: MathNode = funcName === 'tan' ? PI : TWO_PI;
 
-	const uSolutions = computeUSolutions(funcName, constantNode, constant, basePeriodNumeric);
+	// NaN : c paramétré (tan seulement), les valeurs approchées sont omises
+	const uSolutions = computeUSolutions(funcName, constantNode, constant ?? NaN, basePeriodNumeric);
 
 	// Transform from u-space to x-space: x = (u - b) / a
 	const absA = Math.abs(aNumeric);
@@ -760,7 +775,7 @@ function solveTrigonometric(
 
 		return {
 			value: simplified,
-			approximate: xNumeric,
+			...(!Number.isNaN(xNumeric) && { approximate: xNumeric }),
 			exact: true
 		};
 	});
@@ -789,7 +804,7 @@ function solveTrigonometric(
 	// Record steps
 	recorder.recordStep(
 		`apply-${inverseFuncName}`,
-		`On resout ${funcName}(u) = ${constant}`,
+		`On resout ${funcName}(u) = ${constant ?? 'c'}`,
 		expr,
 		expr,
 		'detailed'
