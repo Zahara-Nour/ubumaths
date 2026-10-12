@@ -56,6 +56,10 @@ bouton « Télécharger la fiche PDF »).
   ni titre, ni guillemets typographiques). Compilée avec typst.ts 0.6.1-rc5 pour les 12 guides
   NumWorks le 2026-10-12.
 
+- ⚠️ **Sitemap** : `/calculatrices/**` est exclu (`src/lib/seo/sitemap-pages.ts`) tant que rien
+  n'est relu, pour ne pas montrer à Google des pages « Bientôt ». La PR qui publie les premières
+  séquences relues doit les y lister.
+
 ## Ajouter un modèle
 
 Remplir `models/<modele>.ts` (il est déjà annoncé « Bientôt » dans `models/index.ts`). Le test
