@@ -1,7 +1,7 @@
 ---
 title: Fiches variables aléatoires 1re spé — sections, ajouts, illustrations
 date: 2026-10-12
-status: rédaction en cours
+status: terminé — écrit en base le 2026-10-12, fiches en brouillon
 ---
 
 # Refonte des fiches « Variables aléatoires » (1re spé) — point de reprise
