@@ -292,7 +292,7 @@ describe('DELETE /api/moderation/unrestrict-user - Input Validation', () => {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(400);
 			// Zod will say "Invalid input" for required fields
-			expect(error.body.message).toContain('Invalid input');
+			expect(error.body.message).toContain('Entrée invalide');
 		}
 	});
 });

@@ -136,7 +136,7 @@ describe('Backup Validation', () => {
 
 			const result = validateBackup(invalidBackup);
 			expect(result.success).toBe(false);
-			expect(result.error).toContain('email');
+			expect(result.error).toContain('e-mail');
 		});
 
 		it('should reject missing data field', () => {
