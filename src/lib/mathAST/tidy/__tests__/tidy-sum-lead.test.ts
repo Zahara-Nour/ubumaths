@@ -323,3 +323,50 @@ describe('complexe : la partie réelle en tête, même négative', () => {
 		expect(toLatex(tidy(once))).toBe(toLatex(once));
 	});
 });
+
+/**
+ * Un `−` devant un complexe : `tidy` ne distribue pas le signe (`−(x − 2)`
+ * inchangé, contrat). Mettre la partie réelle négative en tête y produirait un
+ * double signe, `−(−2 + i)` : la somme garde alors l'ordre d'avant la règle a + ib.
+ */
+describe('complexe opérande d’un − : pas de double signe', () => {
+	const l = (s: string) => toLatex(tidy(parseLatex(s) as MathNode));
+
+	const cases: [string, string][] = [
+		['-(i-2)', '-\\left( \\imaginaryI - 2 \\right)'],
+		['-(-2+i)', '-\\left( \\imaginaryI - 2 \\right)'],
+		['\\frac{3i-2}{-1}', '-\\left( 3 \\imaginaryI - 2 \\right)'],
+		['2-(i-2)', '2 - \\left( \\imaginaryI - 2 \\right)'],
+		['-3(i-2)', '-3 \\left( \\imaginaryI - 2 \\right)'],
+		['-(i-2)^2', '-\\left( \\imaginaryI - 2 \\right)^2'],
+		// partie réelle positive ou tous négatifs : pas de double signe à éviter
+		['-(i+2)', '-\\left( 2 + \\imaginaryI \\right)'],
+		['-(2-i)', '-\\left( 2 - \\imaginaryI \\right)'],
+		['-(-2-i)', '-\\left( -2 - \\imaginaryI \\right)'],
+		// sans le −, la règle a + ib s'applique
+		['3(i-2)', '3 \\left( -2 + \\imaginaryI \\right)']
+	];
+
+	it.each(cases)('tidy(%s) = %s', (input, expected) => {
+		expect(l(input)).toBe(expected);
+	});
+
+	it.each(cases.map(([input]) => input))('tidy(tidy(%s)) stable', (s) => {
+		const once = tidy(parseLatex(s) as MathNode);
+		expect(toLatex(tidy(once))).toBe(toLatex(once));
+	});
+});
+
+describe('complexe : témoins de l’ordre des facteurs et des termes', () => {
+	const l = (s: string) => toLatex(tidy(parseLatex(s) as MathNode));
+
+	it.each([
+		['i^2-1', '\\imaginaryI^2 - 1'],
+		['\\frac{1}{i}-1', '-1 + \\dfrac{1}{\\imaginaryI}'],
+		['|1+i|-2', '\\left| 1 + \\imaginaryI \\right| - 2'],
+		// les facteurs se rangent par leur écriture : `-2 + i` passe devant `1 - i`
+		['(1-i)(-2+i)', '\\left( -2 + \\imaginaryI \\right) \\left( 1 - \\imaginaryI \\right)']
+	])('tidy(%s) = %s', (input, expected) => {
+		expect(l(input)).toBe(expected);
+	});
+});

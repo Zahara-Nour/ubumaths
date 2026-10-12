@@ -63,7 +63,14 @@ import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
 import { decimalString } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
-import { isFirstDegreeSum, isPlainTerm, numberFirst, sortFactors, sortTerms } from './order';
+import {
+	isFirstDegreeSum,
+	isPlainTerm,
+	numberFirst,
+	orderUnderMinus,
+	sortFactors,
+	sortTerms
+} from './order';
 
 // =============================================================================
 // Types internes
@@ -847,10 +854,29 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice):
 			terms.push(...toSumTerms(inner, watch, unitChoice));
 			continue;
 		}
-		terms.push(sign === '-' ? negateTerm(collected) : collected);
+		terms.push(withoutDoubleSign(sign === '-' ? negateTerm(collected) : collected, unitChoice));
 	}
 
 	return terms;
+}
+
+/**
+ * Un terme négatif dont un facteur est un complexe : ce facteur garde l'ordre
+ * d'avant la règle a + ib s'il commençait par un signe −, pour ne pas écrire
+ * `−(−2 + i)` (voir `orderUnderMinus`). `−(i − 2)`, `−3(i − 2)`, `(3i − 2)/(−1)`.
+ */
+function withoutDoubleSign(term: TidyTerm, unitChoice: UnitChoice): TidyTerm {
+	if (term.verbatim || !isNegativeRational(term.coefficient)) return term;
+	let changed = false;
+	const factors = term.factors.map((factor) => {
+		if (!isSumNode(factor.base)) return factor;
+		const order = orderUnderMinus(toSumTerms(factor.base, undefined, unitChoice));
+		if (order === null) return factor;
+		changed = true;
+		const base = buildSum(order);
+		return { base, exponent: factor.exponent, key: hashMathNode(base) };
+	});
+	return changed ? { ...term, factors: sortFactors(factors) } : term;
 }
 
 /**

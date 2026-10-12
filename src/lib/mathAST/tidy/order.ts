@@ -342,8 +342,26 @@ export function numberFirst(terms: readonly TidyTerm[]): TidyTerm[] {
 	return [...rationalFirst(parts.real), ...parts.imaginary];
 }
 
-/** Ordonne les termes d'une somme, quel que soit son niveau d'imbrication. */
-export function sortTerms(terms: readonly TidyTerm[]): TidyTerm[] {
+/**
+ * L'ordre d'un complexe placé sous un `−` (`−(i − 2)`, `−3(i − 2)`), ou `null`
+ * s'il n'y a rien à changer. `tidy` ne distribue pas ce signe ; la partie réelle
+ * négative en tête y ferait un double signe, `−(−2 + i)` : la somme garde alors
+ * l'ordre d'avant la règle a + ib (`i − 2`). Partie réelle positive, ou tous
+ * les termes négatifs, l'ordre a + ib reste (`−(2 + i)`, `−(−2 − i)`).
+ */
+export function orderUnderMinus(terms: readonly TidyTerm[]): TidyTerm[] | null {
+	if (algebraicParts(terms) === null) return null;
+	const algebraic = sortTerms(terms);
+	if (!isNegativeRational(algebraic[0].coefficient)) return null;
+	const previous = sortTerms(terms, false);
+	return previous.some((term, index) => term !== algebraic[index]) ? previous : null;
+}
+
+/**
+ * Ordonne les termes d'une somme, quel que soit son niveau d'imbrication.
+ * `realPartFirst` à `false` coupe la règle a + ib (voir `orderUnderMinus`).
+ */
+export function sortTerms(terms: readonly TidyTerm[], realPartFirst = true): TidyTerm[] {
 	const decorated = terms.map((term) => ({ term, key: termOrderKey(term) }));
 	decorated.sort((a, b) => compareOrderKeys(a.key, b.key));
 	const sorted = decorated.map((entry) => entry.term);
@@ -360,7 +378,7 @@ export function sortTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 	// Complexe : la partie réelle, rangée comme un réel, puis la partie
 	// imaginaire dans l'ordre ci-dessus. Le résultat ne dépend que de
 	// l'ensemble des termes : idempotent.
-	const parts = algebraicParts(ordered);
+	const parts = realPartFirst ? algebraicParts(ordered) : null;
 	if (parts !== null) return [...sortTerms(parts.real), ...parts.imaginary];
 	return rationalFirst(ordered);
 }
