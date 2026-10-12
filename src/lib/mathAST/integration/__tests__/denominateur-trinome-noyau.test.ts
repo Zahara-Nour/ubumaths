@@ -1,8 +1,9 @@
 /**
  * Dénominateur trinôme factorisé par le noyau exact (ADR 0024, lot 3a) :
  * `factorQuadratic` lit le dénominateur comme un polynôme exact (produits et
- * parenthèses compris) et en tire les racines par Δ. Le rendu des primitives
- * ne change pas ; deux écritures auparavant refusées passent.
+ * parenthèses compris) et en tire les racines par Δ ; deux écritures
+ * auparavant refusées passent. Coefficient dominant ≠ 1 : facteurs entiers
+ * depuis le 2026-10-12 (`ln|2x - 1|`, plus `ln|x - 1/2|`).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -24,7 +25,7 @@ function primitive(latex: string): string {
 }
 
 describe('intégration — dénominateur trinôme par le noyau', () => {
-	describe('rendu inchangé', () => {
+	describe('rendus figés', () => {
 		const PINNED: ReadonlyArray<readonly [string, string]> = [
 			[
 				'\\frac{1}{x^2-5x+6}',
@@ -36,11 +37,11 @@ describe('intégration — dénominateur trinôme par le noyau', () => {
 			],
 			[
 				'\\frac{1}{4x^2-1}',
-				'\\dfrac{1}{4} \\ln\\left( \\left| x - \\dfrac{1}{2} \\right| \\right) - \\dfrac{1}{4} \\ln\\left( \\left| x + \\dfrac{1}{2} \\right| \\right)'
+				'\\dfrac{1}{4} \\ln\\left( \\left| 2 x - 1 \\right| \\right) - \\dfrac{1}{4} \\ln\\left( \\left| 2 x + 1 \\right| \\right)'
 			],
 			[
 				'\\frac{3}{2x^2+x-3}',
-				'\\dfrac{3}{5} \\ln\\left( \\left| x - 1 \\right| \\right) - \\dfrac{3}{5} \\ln\\left( \\left| x + \\dfrac{3}{2} \\right| \\right)'
+				'\\dfrac{3}{5} \\ln\\left( \\left| x - 1 \\right| \\right) - \\dfrac{3}{5} \\ln\\left( \\left| 2 x + 3 \\right| \\right)'
 			],
 			[
 				'\\frac{1}{-x^2+5x-6}',
@@ -52,7 +53,7 @@ describe('intégration — dénominateur trinôme par le noyau', () => {
 			],
 			[
 				'\\frac{1}{6x^2-5x+1}',
-				'\\ln\\left( \\left| x - \\dfrac{1}{2} \\right| \\right) - \\ln\\left( \\left| x - \\dfrac{1}{3} \\right| \\right)'
+				'\\ln\\left( \\left| 2 x - 1 \\right| \\right) - \\ln\\left( \\left| 3 x - 1 \\right| \\right)'
 			]
 		];
 		for (const [integrand, expected] of PINNED) {

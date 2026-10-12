@@ -2,8 +2,9 @@
  * Dénominateur trinôme NON factorisé (x² − 4x + 3, 2x² − 2, x² − a²) :
  * factorisation par les racines, puis décomposition en éléments simples.
  *
- * - racines rationnelles (Δ carré parfait) : le dénominateur est réécrit
- *   a(x − r₁)(x − r₂) ou a(x − r)², puis confié à la décomposition existante ;
+ * - racines rationnelles (Δ carré parfait) : le dénominateur est réécrit à
+ *   facteurs entiers k(q₁x − p₁)(q₂x − p₂) ou k(qx − p)², puis confié à la
+ *   décomposition existante ;
  * - racines littérales simples (x² − t², t² − x²) : formule des résidus
  *   F = Σ N(rᵢ)/D′(rᵢ) · ln|x − rᵢ| (racines simples) ;
  * - Δ < 0 (décision de David du 2026-10-08) : αx + β = (α/2a)·D′ + k, d'où
@@ -47,7 +48,7 @@ import {
 } from '../../normal/rational';
 import { extractQuadraticCoefficients } from '../../solve/solvers/quadratic';
 import { integerNthRoot } from '../../normal/radical';
-import { linearFactorNode, quadraticRootParts, toPolynomial } from '../../factor';
+import { integerLinearFactorNode, quadraticRootParts, toPolynomial } from '../../factor';
 import { differentiate } from '../../differentiation';
 import { substitute } from '../../eval/substitute';
 import { lnAbsRule } from '../rules';
@@ -165,7 +166,13 @@ export function factorQuadratic(
 	return { kind: 'literal-roots', roots: [t, opposite(t)] };
 }
 
-/** a(x − r₁)(x − r₂) ou a(x − r)² */
+/**
+ * Le dénominateur factorisé à coefficients ENTIERS (ADR 0024, décision de
+ * David du 2026-10-12) : k(q₁x − p₁)(q₂x − p₂) ou k(qx − p)², rᵢ = pᵢ/qᵢ,
+ * k = a/(q₁q₂) — `4x² − 1` s'écrit `(2x - 1)(2x + 1)`, `2x² − 2` s'écrit
+ * `2(x - 1)(x + 1)`. La décomposition (`partial-fractions.ts`) lit ces
+ * facteurs `px + q` et intègre A/(px + q) en (A/p) ln|px + q|.
+ */
 export function factoredDenominator(
 	variable: string,
 	leading: Rational,
@@ -173,15 +180,16 @@ export function factoredDenominator(
 ): MathNode {
 	const product =
 		roots.length === 1
-			? power(linearFactorNode(variable, roots[0]), number('2'))
+			? power(integerLinearFactorNode(variable, roots[0]), number('2'))
 			: multiply(
-					linearFactorNode(variable, roots[0]),
-					linearFactorNode(variable, roots[1]),
+					integerLinearFactorNode(variable, roots[0]),
+					integerLinearFactorNode(variable, roots[1]),
 					'implicit'
 				);
-	return leading.n === 1n && leading.d === 1n
-		? product
-		: multiply(rationalToNode(leading), product, 'implicit');
+	// k = a / Π qᵢ^multiplicité
+	const scale = roots.length === 1 ? roots[0].d * roots[0].d : roots[0].d * roots[1].d;
+	const k = divRational(leading, rational(scale, 1n));
+	return k.n === 1n && k.d === 1n ? product : multiply(rationalToNode(k), product, 'implicit');
 }
 
 // =============================================================================

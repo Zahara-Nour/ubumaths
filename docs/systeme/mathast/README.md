@@ -216,11 +216,13 @@ Suites (K21, 2026-10-12) : `solve` ne rend plus la racine 0 en double (`4x³ −
 | `polynomial.ts`      | `Poly` (coefficients `Rational` par degré croissant), arithmétique, `deflate`, lecteur `toRationalFunction` — repris de `domain/exact-roots.ts` ; `toPolynomial` (dénominateur constant exigé), `divideOutRoot` (division par (x − r) avec multiplicité)          |
 | `rational-roots.ts`  | `extractRationalRoots` : x = 0 puis ±p/q, avec multiplicités — repris de `domain/exact-roots.ts`                                                                                                                                                                  |
 | `quadratic.ts`       | `discriminant` (Δ exact, partagé avec les stratégies) ; `quadraticRootParts` : racine double, racines rationnelles ou `centre ± écart·√m` — repris de `domain/exact-roots.ts`                                                                                     |
-| `polynomial-node.ts` | `polynomialNode`, `monomialNode`, `integerNode` : un polynôme entier en nœud, négatifs en soustractions — repris de `normal/rules/trig-multiple-arcs.ts` ; `rationalPolynomialNode` (coefficients rationnels), `linearFactorNode` (`x - r`, `x + 3` si r = −3)    |
+| `polynomial-node.ts` | `polynomialNode`, `monomialNode`, `integerNode` : un polynôme entier en nœud, négatifs en soustractions — repris de `normal/rules/trig-multiple-arcs.ts` ; `rationalPolynomialNode` (coefficients rationnels)                                                     |
 | `common-root.ts`     | `divideOutCommonRoot` : sortir de N et D le facteur **entier** `q·x − p` de la racine p/q (`2x − 1`, pas `x − 1/2`), fraction restante réduite de son contenu (`(2x + 2)/2` → `x + 1`) ; `linearFactorText` (`(2x − 1)`, `(x − 1)²`, texte sans LaTeX) — K21, V23 |
 
 `factor.ts` exporte aussi `compareFactors` (l'ordre des facteurs, réutilisé par les stratégies) et
-`primitivePart` (contenu et partie primitive entière).
+`primitivePart` (contenu et partie primitive entière). `common-root.ts` exporte aussi
+`integerLinearFactorNode`, le facteur entier `q·x − p` en nœud (`2x - 1`), lu par les éléments
+simples de l'intégration.
 
 `domain/exact-roots.ts` et `normal/rules/trig-multiple-arcs.ts` importent désormais ces pièces de
 `factor/` : aucune copie n'a été ajoutée. Comportement inchangé (877 tests de `domain/` et de
@@ -578,20 +580,35 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   `1.5` (K21, V21) ; titres en texte (`formatValueShort` : « La limite vaut 3/2 », « 3√2 »).
 - **`integration/integrators/quadratic-denominator.ts` `factorQuadratic`** : trinôme lu par
   `toPolynomial` (toute écriture : `x(x-5)+6`, `(2x-1)(2x+1)` passent), racines par
-  `quadraticRootParts`. L'écriture du dénominateur factorisé reste unitaire,
-  `a(x - r₁)(x - r₂)` : la décomposition en éléments simples (`partial-fractions.ts`) ne lit que
-  des facteurs `x ± a`. Le littéral `x² − a²` garde sa lecture par `extractQuadraticCoefficients`.
+  `quadraticRootParts`. Le littéral `x² − a²` garde sa lecture par `extractQuadraticCoefficients`.
+  **`factoredDenominator`** écrit le dénominateur à facteurs entiers (décision de David du
+  2026-10-12), plus d'exception : `k(q₁x − p₁)(q₂x − p₂)`, rᵢ = pᵢ/qᵢ, `k = a/(q₁q₂)`, par
+  `integerLinearFactorNode` (`factor/common-root.ts`) — `4x² − 1` devient `(2x - 1)(2x + 1)`,
+  `2x² − 2` reste `2(x - 1)(x + 1)`. La décomposition (`partial-fractions.ts`, `factorDenominator`
+  cas 7 `integerLinearPower`) lit `px + q` et `(px + q)^n` à coefficients rationnels par
+  `toPolynomial` : les coefficients restent calculés sur la base 1/(x − r)ʲ, la primitive écrit le
+  facteur entier, A/(x − p/q) donnant A ln|qx − p| (et A·q^(j−1)/(1 − j)·(qx − p)^(1−j) pour
+  j ≥ 2). Primitive de 1/(4x² − 1) : `\dfrac{1}{4}\ln|2x - 1| - \dfrac{1}{4}\ln|2x + 1|`, plus
+  `\ln|x - \dfrac{1}{2}|`. Coefficient dominant 1 : rendu inchangé.
 - **`pedagogical-integration/_helpers.ts` `tryDetectPartialFractions`** : racines et
   coefficients A, B exacts (`Rational`) au lieu de flottants « rationnels » ; la décomposition
   s'écrit `\frac{3}{2(x - 1)} + \frac{1}{2(x + 1)}` (plus `\frac{1.5}{x - 1}`), le signe dehors.
   L'explication de `decompose-rational` écrit le dénominateur factorisé par
   `factorizationToNode` : `4x^2 - 1 = (2x - 1)(2x + 1)`, une égalité vraie (K21, V22 : elle
-  annonçait `(x − r₁)(x − r₂)` sans le coefficient dominant).
+  annonçait `(x − r₁)(x − r₂)` sans le coefficient dominant). Depuis le 2026-10-12, la
+  décomposition elle-même porte sur ces facteurs entiers (`integratePartialFractions`,
+  `pipeline.ts`) : `\frac{1}{2(2x - 1)} - \frac{1}{2(2x + 1)}` (A′ = A·q), primitive
+  `\frac{\ln|2x - 1|}{4} - \frac{\ln|2x + 1|}{4}` ; les facteurs annoncés (`factor1`,
+  `factor2`) sont ceux du dénominateur factorisé. Un facteur `px + q`, p ≠ 1, ajoute la liaison
+  `p`, qui fait écrire les formules en `∫A/(px + q) dx = (A/p)·ln|px + q|`. Un coefficient nul
+  (P et Q ont un facteur commun, `(3x + 1)/(6x² − x − 1)`) laisse un seul terme
+  (`\frac{1}{2x - 1}`) au lieu du refus d'avant.
 
 Tests : `limits/__tests__/factorisation-noyau.test.ts`,
 `pedagogical-limits/__tests__/factorisation-noyau.test.ts`,
 `integration/__tests__/denominateur-trinome-noyau.test.ts` (F′ = f par `areEquivalent`),
-`pedagogical-integration/__tests__/elements-simples-exacts.test.ts` ; K21 :
+`pedagogical-integration/__tests__/elements-simples-exacts.test.ts`, facteurs entiers :
+`{integration,pedagogical-integration}/__tests__/elements-simples-entiers.test.ts` ; K21 :
 `pedagogical-limits/__tests__/{valeur-exacte,point-fractionnaire}.test.ts`,
 `pedagogical-integration/__tests__/explications-exactes.test.ts`.
 
