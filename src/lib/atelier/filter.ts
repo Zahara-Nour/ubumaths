@@ -27,8 +27,7 @@ import { formatStatNumber } from '$lib/statistics/format';
 // =============================================================================
 
 export type FilterResult =
-	| { readonly ok: true; readonly text: string }
-	| { readonly ok: false; readonly message: string };
+	{ readonly ok: true; readonly text: string } | { readonly ok: false; readonly message: string };
 
 type Operator = '=' | '≠' | '<' | '>' | '≤' | '≥';
 

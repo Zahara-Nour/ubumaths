@@ -10,7 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseLatex } from '$lib/mathAST/parser';
-import { estimatedExactDigits, isTooLongExact } from '../exact-size';
+import { estimatedExactDigits, exactCharacters, isTooLongToCompute } from '../exact-size';
 
 const digits = (latex: string) => estimatedExactDigits(parseLatex(latex));
 
@@ -40,28 +40,47 @@ describe('la taille prévue d’un résultat exact', () => {
 	});
 });
 
-describe('le seuil : 1 000 caractères', () => {
-	// 2^3318 a 999 chiffres, 2^3325 en a 1 001
+// Depuis le lot « défauts des grandes fractions » (2026-10-12), la prévision ne sert plus qu'à
+// ne pas figer la page : au-delà de 20 000 caractères prévus, rien n'est calculé. En deçà, le
+// résultat est calculé (107 ms au pire mesuré) et la règle des 1 000 caractères se lit sur sa
+// longueur réelle : la prévision additionnait avant de simplifier (`10^{600}×10^{-598}`).
+describe('le plafond du calcul : 20 000 caractères prévus', () => {
+	// 2^66435 a 19 999 chiffres, 2^66445 en a 20 002
 	it('aux bornes', () => {
-		expect(isTooLongExact(parseLatex('2^{3318}'))).toBe(false);
-		expect(isTooLongExact(parseLatex('2^{3325}'))).toBe(true);
+		expect(isTooLongToCompute(parseLatex('2^{66435}'))).toBe(false);
+		expect(isTooLongToCompute(parseLatex('2^{66445}'))).toBe(true);
 	});
 
 	it('les cas d’élèves', () => {
-		for (const latex of ['2^{1000}', '200!', '\\left(1+\\frac{1}{100}\\right)^{100}', '100!']) {
-			expect(isTooLongExact(parseLatex(latex))).toBe(false);
-		}
 		for (const latex of [
-			'1.01^{365}',
-			'1.5^{2000}',
 			'\\left(1+\\frac{1}{1000}\\right)^{1000}',
-			'1000!'
+			'1.01^{365}',
+			'1000!',
+			'10^{600}\\times10^{-598}'
 		]) {
-			expect(isTooLongExact(parseLatex(latex))).toBe(true);
+			expect(isTooLongToCompute(parseLatex(latex))).toBe(false);
+		}
+		for (const latex of ['\\left(1+\\frac{1}{10000}\\right)^{10000}', '2^{100000}', '10000!']) {
+			expect(isTooLongToCompute(parseLatex(latex))).toBe(true);
 		}
 	});
 
 	it('une comparaison n’est jamais « trop longue » (elle rend vrai ou faux)', () => {
-		expect(isTooLongExact(parseLatex('2^{5000} > 3^{3000}'))).toBe(false);
+		expect(isTooLongToCompute(parseLatex('2^{50000} > 3^{30000}'))).toBe(false);
+	});
+});
+
+describe('la longueur réelle d’un résultat calculé', () => {
+	it('celle de l’écriture du résultat', () => {
+		expect(exactCharacters(parseLatex('10^{600}\\times10^{-598}'), '100')).toBe(3);
+		expect(exactCharacters(parseLatex('\\sqrt{2}^{2000}'), '1'.repeat(302))).toBe(302);
+	});
+
+	// Le moteur garde `1000!` tel quel : sa valeur a pourtant 2 568 chiffres
+	it('celle de la valeur, quand le moteur garde une factorielle', () => {
+		expect(exactCharacters(parseLatex('1000!'), 'factorial(1000)')).toBe(2568);
+		expect(
+			exactCharacters(parseLatex('\\frac{1000!}{999!}'), 'factorial(1000)/factorial(999)')
+		).toBe(30);
 	});
 });

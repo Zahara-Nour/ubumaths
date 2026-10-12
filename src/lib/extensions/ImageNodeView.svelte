@@ -424,8 +424,7 @@
 				class:is-invalid={syntaxStatus === 'invalid'}
 				spellcheck="false"
 				autocomplete="off"
-				rows="3"
-			></textarea>
+				rows="3"></textarea>
 			<div class="markdown-hint">
 				<span><kbd>Enter</kbd> valider</span>
 				<span><kbd>Esc</kbd> annuler</span>

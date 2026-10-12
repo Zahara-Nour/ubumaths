@@ -71,8 +71,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const invalidMaterials = materials.filter((m) => {
 		// Handle nested course data (Supabase JOIN types)
 		const courseData = m.google_classroom_courses as unknown as
-			| { teacher_id: string }
-			| { teacher_id: string }[];
+			{ teacher_id: string } | { teacher_id: string }[];
 		const teacherId = Array.isArray(courseData)
 			? courseData[0]?.teacher_id
 			: courseData?.teacher_id;

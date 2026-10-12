@@ -426,7 +426,7 @@ _(Renommage validé depuis « Représenter et lire des données » → aligné s
 | 1    | Lire l'heure (cadran à aiguilles, digital) et connaître les unités de durée et leurs relations | `automatisme`       |
 | 2    | Convertir entre unités de durée (système sexagésimal)                                          | `capacite_attendue` |
 | 3 ⭐ | Calculer la durée entre deux horaires ou un horaire à partir d'une durée                       | `capacite_attendue` |
-| 4    | Résoudre un problème impliquant horaires et durées (avec conversions sexagésimal ↔ décimal)   | `capacite_attendue` |
+| 4    | Résoudre un problème impliquant horaires et durées (avec conversions sexagésimal ↔ décimal)    | `capacite_attendue` |
 
 **Justifications** :
 

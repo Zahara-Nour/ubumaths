@@ -136,9 +136,10 @@ function formatExpressionLatex(step: PedagogicalLimitStep): string {
 // Renderer
 // =============================================================================
 
-export class PedagogicalLimitRenderer
-	implements StepRenderer<PedagogicalLimitStep, PedagogicalRenderOptions>
-{
+export class PedagogicalLimitRenderer implements StepRenderer<
+	PedagogicalLimitStep,
+	PedagogicalRenderOptions
+> {
 	render(step: PedagogicalLimitStep, options: PedagogicalRenderOptions): RenderedStep {
 		const effective = effectiveSchoolLevel(options.schoolLevel);
 

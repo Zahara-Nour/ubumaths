@@ -229,8 +229,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		// Handle nested class data
 		const classData = item.classes as unknown as
-			| { id: string; name: string }
-			| { id: string; name: string }[];
+			{ id: string; name: string } | { id: string; name: string }[];
 		const classInfo = Array.isArray(classData) ? classData[0] : classData;
 
 		// Handle nested category data

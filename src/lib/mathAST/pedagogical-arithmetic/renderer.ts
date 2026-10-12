@@ -39,9 +39,10 @@ import type { PedagogicalArithmeticRule, PedagogicalArithmeticStep } from './typ
 // Renderer
 // =============================================================================
 
-export class PedagogicalArithmeticRenderer
-	implements StepRenderer<PedagogicalArithmeticStep, PedagogicalRenderOptions>
-{
+export class PedagogicalArithmeticRenderer implements StepRenderer<
+	PedagogicalArithmeticStep,
+	PedagogicalRenderOptions
+> {
 	render(step: PedagogicalArithmeticStep, options: PedagogicalRenderOptions): RenderedStep {
 		const rule = ALL_RULES_BY_NAME.get(step.rule);
 		const title = this.titleFor(rule, step, options);

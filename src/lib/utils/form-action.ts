@@ -44,8 +44,7 @@ import { toaster } from '$lib/stores/toaster.svelte';
  * Verdict d'un form action, lu là où il se trouve VRAIMENT.
  */
 export type ActionOutcome<T = Record<string, unknown>> =
-	| { ok: true; data: T | undefined; redirect?: string }
-	| { ok: false; message: string };
+	{ ok: true; data: T | undefined; redirect?: string } | { ok: false; message: string };
 
 // ============================================================================
 // CONSTANTS

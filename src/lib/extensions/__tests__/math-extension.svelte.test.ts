@@ -300,8 +300,7 @@ describe('MathBlock Custom Syntax (~~...~~)', () => {
 
 		const json = getJSON(editor) as DocumentJSON;
 		const mathNode = json.content?.find((node) => node.type === 'mathBlock') as
-			| MathNodeJSON
-			| undefined;
+			MathNodeJSON | undefined;
 
 		expect(mathNode).toBeDefined();
 		expect(mathNode?.attrs?.syntax).toBe('custom');
@@ -317,8 +316,7 @@ describe('MathBlock Custom Syntax (~~...~~)', () => {
 
 		const json = getJSON(editor) as DocumentJSON;
 		const mathNode = json.content?.find((node) => node.type === 'mathBlock') as
-			| MathNodeJSON
-			| undefined;
+			MathNodeJSON | undefined;
 
 		expect(mathNode).toBeDefined();
 		expect(mathNode?.attrs?.syntax).toBe('custom');
@@ -334,8 +332,7 @@ describe('MathBlock Custom Syntax (~~...~~)', () => {
 
 		const json = getJSON(editor) as DocumentJSON;
 		const mathNode = json.content?.find((node) => node.type === 'mathBlock') as
-			| MathNodeJSON
-			| undefined;
+			MathNodeJSON | undefined;
 
 		expect(mathNode).toBeDefined();
 		expect(mathNode?.attrs?.syntax).toBe('custom');
@@ -450,8 +447,7 @@ describe('Math HTML Parsing', () => {
 
 		const json = getJSON(editor) as DocumentJSON;
 		const mathNode = json.content?.find((node) => node.type === 'mathBlock') as
-			| MathNodeJSON
-			| undefined;
+			MathNodeJSON | undefined;
 
 		expect(mathNode?.attrs?.syntax).toBe('custom');
 		expect(mathNode?.attrs?.originalExpression).toBe('sqrt(16)');
@@ -502,8 +498,7 @@ describe('Math Commands', () => {
 
 		const json = getJSON(editor) as DocumentJSON;
 		const mathNode = json.content?.find((node) => node.type === 'mathBlock') as
-			| MathNodeJSON
-			| undefined;
+			MathNodeJSON | undefined;
 
 		expect(mathNode?.attrs?.syntax).toBe('custom');
 		expect(mathNode?.attrs?.originalExpression).toBe('sqrt(16)');
@@ -559,8 +554,7 @@ describe('Math Integration', () => {
 
 		const inlineNode = json.content?.[0]?.content?.find((node) => node.type === 'mathInline');
 		const blockNode = json.content?.find((node) => node.type === 'mathBlock') as
-			| MathNodeJSON
-			| undefined;
+			MathNodeJSON | undefined;
 
 		expect(inlineNode?.attrs?.syntax).toBe('custom');
 		expect(blockNode?.attrs?.syntax).toBe('custom');

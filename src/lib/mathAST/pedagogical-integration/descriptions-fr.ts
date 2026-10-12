@@ -99,6 +99,7 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'apply-fundamental-theorem': () => 'Théorème fondamental du calcul intégral',
 	'substitute-bounds': () => 'Évaluation aux bornes',
 	'simplify-bounds-result': () => 'Calcul de la valeur',
+	'integrand-undefined-on-interval': () => 'Intégrale non définie sur l’intervalle',
 	// ---- u-substitution (sup, mais entrées présentes pour fallback) ----
 	'identify-substitution': (b) => `Changement de variable : on pose u = ${bind(b, 'u')}`,
 	'compute-du': () => 'Calcul de du',
@@ -137,6 +138,8 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'apply-fundamental-theorem': () => '\\int_a^b f\\,dx = \\left[F\\right]_a^b',
 	'substitute-bounds': () => '\\left[F\\right]_a^b = F(b) - F(a)',
 	'simplify-bounds-result': () => 'Valeur',
+	// Prose, pas de formule : le titre s'affiche en texte (V25)
+	'integrand-undefined-on-interval': () => 'Intégrale non définie sur l’intervalle',
 	'identify-substitution': (b) => `u = ${bind(b, 'u')}`,
 	'compute-du': (b) => `du = ${bind(b, 'du')}\\,dx`,
 	'apply-substitution': () => "\\int f(g(x))g'(x)\\,dx = \\int f(u)\\,du",
@@ -199,6 +202,8 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		`On évalue F aux bornes : F(borne haute) − F(borne basse), avec F(x) = ${bind(b, 'primitive')}.`,
 	'simplify-bounds-result': () =>
 		'On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).',
+	'integrand-undefined-on-interval': () =>
+		'Le théorème fondamental ne s’applique qu’à une fonction définie et continue sur tout l’intervalle d’intégration, bornes comprises. Ici la fonction a une valeur interdite dans l’intervalle : on ne calcule pas de valeur.',
 	'identify-parts': () =>
 		"L'intégration par parties s'utilise pour intégrer un produit : ∫u dv = uv − ∫v du.",
 	'choose-u-dv': (b) =>
@@ -256,6 +261,7 @@ const DEFAULT_DESCRIPTIONS: Record<PedagogicalIntegrationRule, string> = {
 	'apply-fundamental-theorem': 'Théorème fondamental du calcul intégral',
 	'substitute-bounds': 'Substitution des bornes',
 	'simplify-bounds-result': 'Calcul de la valeur',
+	'integrand-undefined-on-interval': 'Intégrale non définie sur l’intervalle',
 	'identify-substitution': 'Identification de la substitution',
 	'compute-du': 'Calcul de du',
 	'apply-substitution': 'Substitution',

@@ -102,8 +102,8 @@
 </svelte:head>
 
 <!-- Lien d'évitement (WCAG 2.4.1, D18) : premier élément focusable, hors de l'écran sauf au focus.
-     Caché par translation et non par `sr-only focus:not-sr-only` : la règle `.sr-only` de app.css,
-     hors couche, l'emporte sur toute variante Tailwind (`focus:not-sr-only` n'y fait rien).
+     Caché par translation : choisi quand app.css redéfinissait `.sr-only` hors couche, ce qui
+     annulait `focus:not-sr-only` (doublon retiré depuis, écart V29).
      L'ancre `contenu-principal` est portée par le <main> ci-dessous, ou, sur le tableau de bord,
      par le <main> de dashboard/+layout.svelte (qui saute aussi son en-tête et sa barre latérale). -->
 <a

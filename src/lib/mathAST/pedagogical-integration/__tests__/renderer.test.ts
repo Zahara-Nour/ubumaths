@@ -8,7 +8,15 @@
 
 import { describe, expect, it } from 'vitest';
 import { add, exp, implicitMultiply, ln, number, power, sin, variable } from '../../factory';
-import { generatePedagogicalIntegrationSteps, PedagogicalIntegrationRenderer } from '..';
+import {
+	generatePedagogicalIntegrationSteps,
+	PedagogicalIntegrationNotImplemented,
+	PedagogicalIntegrationRenderer
+} from '..';
+import { integrateDefinite } from '../../integration/integrate';
+import { parseLatex } from '../../parser';
+import { compile } from '../../eval/compile';
+import { toLatex } from '../../latex-generator';
 
 const x = () => variable('x');
 
@@ -272,5 +280,141 @@ describe('PedagogicalIntegrationRenderer — narrative steps', () => {
 		});
 		const addC = rendered.find((s) => s.rule === 'add-constant');
 		expect(addC?.expressionLatex).toContain('+ C');
+	});
+});
+
+// =============================================================================
+// V28 — intégrale définie : valeur interdite dans [a ; b]
+// =============================================================================
+
+/** Intégrale définie pédagogique d'un intégrande saisi, rendue au niveau donné */
+function renderDefinite(
+	integrand: string,
+	lower: string,
+	upper: string,
+	level: 'lycee' | 'superieur' = 'lycee',
+	verbosity: 'summarized' | 'detailed' = 'summarized'
+) {
+	const result = generatePedagogicalIntegrationSteps(parseLatex(integrand), {
+		level,
+		definite: { lower: parseLatex(lower), upper: parseLatex(upper) }
+	});
+	const rendered = new PedagogicalIntegrationRenderer().renderAll(result.steps, {
+		schoolLevel: level,
+		verbosity
+	});
+	return { result, rendered };
+}
+
+describe('intégrale définie : valeur interdite dans [a ; b] (V28)', () => {
+	it.each([
+		// pôle intérieur, coefficient 5 et dénominateur 4x² − 9
+		['\\frac{5}{4x^2-9}', '1', '2', 'x = \\dfrac{3}{2}', '\\left[ 1 ; 2 \\right]'],
+		// bornes dans l'autre sens : même intervalle
+		['\\frac{5}{4x^2-9}', '2', '1', 'x = \\dfrac{3}{2}', '\\left[ 1 ; 2 \\right]'],
+		// pôle en une borne
+		['\\frac{1}{x}', '0', '1', 'x = 0', '\\left[ 0 ; 1 \\right]'],
+		// coefficient ≠ 1, forme u'/u
+		['\\frac{3}{2x-1}', '0', '1', 'x = \\dfrac{1}{2}', '\\left[ 0 ; 1 \\right]'],
+		['\\frac{3}{x}', '-1', '1', 'x = 0', '\\left[ -1 ; 1 \\right]'],
+		// exclusion périodique : premier point interdit de [0 ; 2]
+		['\\tan(x)', '0', '2', 'x = \\dfrac{\\pi}{2}', '\\left[ 0 ; 2 \\right]'],
+		// exclusion périodique, borne négative et k ≠ 0 : fraction unique
+		['\\tan(x)', '-2', '-1', 'x = -\\dfrac{\\pi}{2}', '\\left[ -2 ; -1 \\right]'],
+		['\\tan(x)', '3', '5', 'x = \\dfrac{3 \\pi}{2}', '\\left[ 3 ; 5 \\right]'],
+		// primitive que le pipeline ne sait pas calculer : le refus s'affiche quand même
+		['\\frac{4}{(3x-2)^2}', '0', '1', 'x = \\dfrac{2}{3}', '\\left[ 0 ; 1 \\right]'],
+		['\\tan(2x)', '0', '1', 'x = \\dfrac{\\pi}{4}', '\\left[ 0 ; 1 \\right]'],
+		['\\ln(2x-1)', '0', '1', 'x = 0', '\\left[ 0 ; 1 \\right]']
+	])(
+		'∫ %s sur [%s ; %s] : une étape dit que l’intégrale n’est pas définie, aucune valeur',
+		(integrand, lower, upper, point, interval) => {
+			const { result, rendered } = renderDefinite(integrand, lower, upper);
+			expect(result.value).toBeUndefined();
+			expect(result.steps.map((s) => s.rule)).toEqual([
+				'identify-definite-integral',
+				'integrand-undefined-on-interval'
+			]);
+			const refusal = rendered[rendered.length - 1];
+			expect(refusal.expressionLatex).toContain(
+				`\\text{La fonction n’est pas définie en } ${point} \\text{, qui appartient à } ${interval}`
+			);
+			expect(refusal.expressionLatex).toContain(
+				'\\text{l’intégrale n’est pas définie sur cet intervalle.}'
+			);
+			// aucune valeur calculée, nulle part dans la correction (hors intégrande)
+			const integrandLatex = toLatex(parseLatex(integrand));
+			for (const step of rendered) {
+				expect((step.expressionLatex ?? '').replaceAll(integrandLatex, '')).not.toContain('\\ln');
+			}
+		}
+	);
+
+	it('titre et explication en prose, sans LaTeX brut (V25), aux deux niveaux', () => {
+		for (const level of ['lycee', 'superieur'] as const) {
+			const { rendered } = renderDefinite('\\frac{5}{4x^2-9}', '1', '2', level, 'detailed');
+			const refusal = rendered[rendered.length - 1];
+			expect(refusal.title).toBe('Intégrale non définie sur l’intervalle');
+			expect(refusal.title).not.toContain('\\');
+			expect(refusal.explanation ?? '').not.toContain('\\');
+		}
+	});
+
+	it('∫ 5/(4x² − 9) sur [2 ; 3] : pôle hors de l’intervalle, valeur inchangée', () => {
+		const { result, rendered } = renderDefinite('\\frac{5}{4x^2-9}', '2', '3');
+		expect(rendered.map((s) => s.rule)).not.toContain('integrand-undefined-on-interval');
+		expect(result.value && toLatex(result.value)).toBe(
+			'-\\dfrac{5}{12} \\ln\\left( 3 \\right) + \\dfrac{5}{12} \\ln\\left( 7 \\right)'
+		);
+	});
+
+	it.each([
+		['\\frac{1}{x}', '1', '2', Math.log(2)],
+		// ln|x| : bornes négatives, sans pôle dans l'intervalle
+		['\\frac{2}{x}', '-2', '-1', -2 * Math.log(2)],
+		// intégrande sans valeur interdite
+		['3x^2+1', '0', '2', 10],
+		['e^{2x}', '0', '1', (Math.exp(2) - 1) / 2]
+	])('∫ %s sur [%s ; %s] : valeur inchangée', (integrand, lower, upper, expected) => {
+		const { result, rendered } = renderDefinite(integrand, lower, upper);
+		expect(rendered.map((s) => s.rule)).not.toContain('integrand-undefined-on-interval');
+		expect(result.value).toBeDefined();
+		const value = result.value ? compile(result.value)({}) : Number.NaN;
+		expect(value).toBeCloseTo(expected, 10);
+	});
+
+	it('bornes littérales : pas de contrôle, comportement inchangé', () => {
+		const { result, rendered } = renderDefinite('\\frac{1}{x}', '1', 'a');
+		expect(rendered.map((s) => s.rule)).not.toContain('integrand-undefined-on-interval');
+		expect(result.value).toBeDefined();
+	});
+});
+
+describe('intégrale définie : refus, suites de la revue de V28', () => {
+	it('une somme sous ∫ est entre parenthèses dans l’étape de refus', () => {
+		const { rendered } = renderDefinite('\\frac{2}{x}+3x', '-1', '1');
+		expect(rendered[rendered.length - 1].expressionLatex).toContain(
+			'\\int_{-1}^{1} \\left( \\dfrac{2}{x} + 3 x \\right)\\,dx'
+		);
+	});
+
+	it('domaine non résolu, bornes numériques : aucun nombre publié (repli sur le mode A)', () => {
+		// pôle ln 2 ∈ [0 ; 1] que `domain/` ne sait pas résoudre (eˣ − 2 ≠ 0)
+		expect(() => renderDefinite('\\frac{e^x}{e^x-2}', '0', '1')).toThrow(
+			PedagogicalIntegrationNotImplemented
+		);
+		// le mode A (moteur) refuse aussi
+		const engine = integrateDefinite(
+			parseLatex('\\frac{e^x}{e^x-2}'),
+			parseLatex('0'),
+			parseLatex('1'),
+			{ variable: 'x' }
+		);
+		expect(engine.value).toBeNull();
+	});
+
+	it('un refus ne calcule pas la primitive : `antiderivative` absent', () => {
+		const { result } = renderDefinite('\\frac{4}{(3x-2)^2}', '0', '1');
+		expect(result.antiderivative).toBeUndefined();
 	});
 });

@@ -147,19 +147,19 @@ Hors panel (2026-10-05) : `normalize` calcule `factorial` / `binom` à arguments
 
 Mesuré sur le panel ci-dessus : **11 lignes sur 49** (mis à jour le 2026-10-10 : la lettre `e` est la constante d'Euler, `ln(e^x)` ne diverge plus).
 
-| entrée                   | `simplify`                                    | `auto`                               | nature                                                                                                                  |
+| entrée | `simplify` | `auto` | nature |
 | ------------------------ | --------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------------------ |
-| `\frac{6}{8}x`           | `\dfrac{3 x}{4}`                              | `\dfrac{3}{4} x`                     | écriture — même valeur                                                                                                  |
-| `\frac{1}{\sqrt{2}}`     | `\dfrac{\sqrt{2}}{2}`                         | `\dfrac{1}{2} \sqrt{2}`              | écriture — même valeur                                                                                                  |
-| `\sqrt{x^2}`             | `\sqrt{x^2}`                                  | `\left                               | x \right                                                                                                                | `   | ⚠️ **capacité** — `simplify` ne réduit pas |
-| `\sqrt[3]{x}\sqrt[3]{x}` | `\sqrt[3]{x}^2`                               | `\sqrt[3]{x^2}`                      | écriture — même valeur                                                                                                  |
-| `(x+1)^2`                | `\left( x + 1 \right)^2`                      | `x^2 + 2 x + 1`                      | **décision** — barrière de coût de `simplify`                                                                           |
-| `(2x-3)(x+4)`            | `\left( 2 x - 3 \right) \left( x + 4 \right)` | `2 x^2 + 5 x - 12`                   | **décision** — même barrière de coût                                                                                    |
-| `x^2+2x+1`               | `\left( x + 1 \right)^2`                      | `x^2 + 2 x + 1`                      | **décision opposée** — l'un factorise, l'autre développe                                                                |
-| `\frac{(x+y)^2}{x+2y}`   | `\dfrac{\left( x + y \right)^2}{x + 2 y}`     | `\dfrac{2 x y + x^2 + y^2}{x + 2 y}` | **décision** — `auto` développe le numérateur                                                                           |
-| `(e^{x})^{3}`            | `\left( \exponentialE^x \right)^3`            | `\exponentialE^{3 x}`                | ⚠️ **capacité** — `simplify` garde la puissance (barrière de coût) ; `developper` combine depuis `fix/normalize-ln-exp` |
-| `x^{a}x^{b}`             | `x^a x^b`                                     | `x^{a + b}`                          | ⚠️ **capacité** — `auto` sait depuis la PR #394, `simplify` non                                                         |
-| `-(x+1)`                 | `-\left( x + 1 \right)`                       | `-x - 1`                             | écriture — `simplify` garde le signe devant                                                                             |
+| `\frac{6}{8}x` | `\dfrac{3 x}{4}` | `\dfrac{3}{4} x` | écriture — même valeur |
+| `\frac{1}{\sqrt{2}}` | `\dfrac{\sqrt{2}}{2}` | `\dfrac{1}{2} \sqrt{2}` | écriture — même valeur |
+| `\sqrt{x^2}` | `\sqrt{x^2}` | `\left                               | x \right                                                                                                                | ` | ⚠️ **capacité** — `simplify` ne réduit pas |
+| `\sqrt[3]{x}\sqrt[3]{x}` | `\sqrt[3]{x}^2` | `\sqrt[3]{x^2}` | écriture — même valeur |
+| `(x+1)^2` | `\left( x + 1 \right)^2` | `x^2 + 2 x + 1` | **décision** — barrière de coût de `simplify` |
+| `(2x-3)(x+4)` | `\left( 2 x - 3 \right) \left( x + 4 \right)` | `2 x^2 + 5 x - 12` | **décision** — même barrière de coût |
+| `x^2+2x+1` | `\left( x + 1 \right)^2` | `x^2 + 2 x + 1` | **décision opposée** — l'un factorise, l'autre développe |
+| `\frac{(x+y)^2}{x+2y}` | `\dfrac{\left( x + y \right)^2}{x + 2 y}` | `\dfrac{2 x y + x^2 + y^2}{x + 2 y}` | **décision** — `auto` développe le numérateur |
+| `(e^{x})^{3}` | `\left( \exponentialE^x \right)^3` | `\exponentialE^{3 x}` | ⚠️ **capacité** — `simplify` garde la puissance (barrière de coût) ; `developper` combine depuis `fix/normalize-ln-exp` |
+| `x^{a}x^{b}` | `x^a x^b` | `x^{a + b}` | ⚠️ **capacité** — `auto` sait depuis la PR #394, `simplify` non |
+| `-(x+1)` | `-\left( x + 1 \right)` | `-x - 1` | écriture — `simplify` garde le signe devant |
 
 **Écriture** : les deux sont justes, la forme diffère.
 **Décision** : `simplify` compare les coûts et garde la forme la moins chère, là

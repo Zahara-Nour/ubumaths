@@ -400,8 +400,7 @@
 					placeholder="Nom de la carte"
 					rows="1"
 					use:autoFocus
-					aria-label="Modifier le nom de la carte"
-				></textarea>
+					aria-label="Modifier le nom de la carte"></textarea>
 			{:else}
 				<button
 					type="button"
@@ -430,8 +429,7 @@
 					placeholder="Description de la carte"
 					rows="2"
 					use:autoFocus
-					aria-label="Modifier la description de la carte"
-				></textarea>
+					aria-label="Modifier la description de la carte"></textarea>
 			{:else}
 				<button
 					type="button"

@@ -308,9 +308,10 @@ const EXPLANATIONS: Record<
  * subSteps so the dual-rendering Phase 1 `RenderedStep.subSteps` field
  * is populated end-to-end.
  */
-export class LinearEquationRenderer
-	implements StepRenderer<EquationStep, PedagogicalRenderOptions>
-{
+export class LinearEquationRenderer implements StepRenderer<
+	EquationStep,
+	PedagogicalRenderOptions
+> {
 	render(step: EquationStep, options: PedagogicalRenderOptions): RenderedStep {
 		const title = this.resolveTitle(step, options.schoolLevel);
 		const explanation =

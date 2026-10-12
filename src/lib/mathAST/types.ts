@@ -345,10 +345,7 @@ export interface DivisionNode extends BaseNode {
  * Union of all binary operation node types
  */
 export type BinaryOperationNode =
-	| AdditionNode
-	| SubtractionNode
-	| MultiplicationNode
-	| DivisionNode;
+	AdditionNode | SubtractionNode | MultiplicationNode | DivisionNode;
 
 // =============================================================================
 // Unary Operation Nodes

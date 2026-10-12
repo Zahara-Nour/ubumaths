@@ -124,8 +124,8 @@ describe('D18 — lien d’évitement « Aller au contenu »', () => {
 	});
 
 	it('est hors de l’écran hors focus, et y revient au focus', () => {
-		// Pas `sr-only focus:not-sr-only` : la règle `.sr-only` de app.css, hors couche,
-		// l'emporte sur la variante `focus:` (constaté dans le navigateur le 2026-10-12)
+		// Caché par translation : choisi quand app.css redéfinissait `.sr-only` hors couche,
+		// ce qui annulait `focus:not-sr-only` (doublon retiré depuis, écart V29)
 		expect(skipLink?.[0]).toMatch(/\bfixed\b/);
 		expect(skipLink?.[0]).toMatch(/-translate-y-\[200%\]/);
 		expect(skipLink?.[0]).toMatch(/focus:translate-y-0/);

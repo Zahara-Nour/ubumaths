@@ -77,11 +77,11 @@ de dépendances ; aucun drag direct possible sur eux (`draggable: false`).
 
 `α = angle(s1, s2)` retourne un `GeoAngle` visible. 3 cas :
 
-| Cas | Configuration                        | Vertex                                                                              | `p1`                                                                | `p2`                                  |
+| Cas | Configuration | Vertex | `p1` | `p2` |
 | --- | ------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------- | ----------------------- |
-| (a) | extrémité commune `P`                | `P` (réutilisé)                                                                     | autre extrémité de `s1`                                             | autre extrémité de `s2`               |
-| (b) | segments sécants en `I`              | point synthétique à `I` (calculé via `intersectLL` projeté sur les droites support) | extrémité de `s1` la plus loin de `I` (point synthétique si besoin) | extrémité de `s2` la plus loin de `I` |
-| (c) | segments **parallèles** ou confondus | —                                                                                   | —                                                                   | —                                     | **→ `DslRuntimeError`** |
+| (a) | extrémité commune `P` | `P` (réutilisé) | autre extrémité de `s1` | autre extrémité de `s2` |
+| (b) | segments sécants en `I` | point synthétique à `I` (calculé via `intersectLL` projeté sur les droites support) | extrémité de `s1` la plus loin de `I` (point synthétique si besoin) | extrémité de `s2` la plus loin de `I` |
+| (c) | segments **parallèles** ou confondus | — | — | — | **→ `DslRuntimeError`** |
 
 **Erreur structurée** pour (c) :
 
@@ -108,10 +108,10 @@ support des segments (pas l'intersection des segments eux-mêmes, qui peut
 **angle aigu** s'applique : la mesure retournée par `mesure(α)` est dans
 `[0, π/2]`.
 
-| Cas | Configuration                        | Vertex                                      | `p1`                               | `p2`                                                                                      |
+| Cas | Configuration | Vertex | `p1` | `p2` |
 | --- | ------------------------------------ | ------------------------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------- |
-| (a) | droites sécantes en `I`              | point synthétique à `I` (via `intersectLL`) | point synthétique à `I + unit(d1)` | point synthétique à `I + unit(d2)`, **swappé en `I - unit(d2)` si la mesure naïve > π/2** |
-| (b) | droites **parallèles** ou confondues | —                                           | —                                  | —                                                                                         | **→ `DslRuntimeError`** |
+| (a) | droites sécantes en `I` | point synthétique à `I` (via `intersectLL`) | point synthétique à `I + unit(d1)` | point synthétique à `I + unit(d2)`, **swappé en `I - unit(d2)` si la mesure naïve > π/2** |
+| (b) | droites **parallèles** ou confondues | — | — | — | **→ `DslRuntimeError`** |
 
 **Swap pour angle aigu** (cas a) : après construction initiale, si
 `acos((u1 · u2) / 1) > π/2`, alors on remplace `p2 = I - unit(d2)` pour

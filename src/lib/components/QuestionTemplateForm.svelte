@@ -2044,8 +2044,7 @@
 														class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
 														bind:value={variationExtras[index].validationRulesJson}
 														rows={3}
-														placeholder="[]"
-													></textarea>
+														placeholder="[]"></textarea>
 													<p class="text-xs text-muted-foreground">
 														Format JSON (tableau de regles)
 													</p>
@@ -2058,8 +2057,7 @@
 														class="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
 														bind:value={variationExtras[index].answerFormatsJson}
 														rows={3}
-														placeholder={'{}'}
-													></textarea>
+														placeholder={'{}'}></textarea>
 													<p class="text-xs text-muted-foreground">
 														Format JSON (cle = nom de variable, valeur = format)
 													</p>

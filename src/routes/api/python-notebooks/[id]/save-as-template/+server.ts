@@ -114,20 +114,18 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		// Regenerate cell IDs in the template too: any future clone will
 		// regenerate them anyway, but stable distinct IDs across template/
 		// source make debugging less confusing.
-		cells: sourceContent.cells.map(
-			(cell: NotebookCell): NotebookCell => ({
-				...cell,
-				id: generateCellId(),
-				execution_count: null,
-				outputs: [],
-				state: 'idle',
-				metadata: cell.metadata
-					? Object.fromEntries(
-							Object.entries(cell.metadata).filter(([k]) => k !== 'last_executed_source')
-						)
-					: undefined
-			})
-		)
+		cells: sourceContent.cells.map((cell: NotebookCell): NotebookCell => ({
+			...cell,
+			id: generateCellId(),
+			execution_count: null,
+			outputs: [],
+			state: 'idle',
+			metadata: cell.metadata
+				? Object.fromEntries(
+						Object.entries(cell.metadata).filter(([k]) => k !== 'last_executed_source')
+					)
+				: undefined
+		}))
 	};
 
 	const insertPayload = {

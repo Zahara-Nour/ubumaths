@@ -188,7 +188,9 @@ describe('RLS — /automaths, lecture anonyme des templates', () => {
 	it('un professeur lit toujours les brouillons', async () => {
 		// La migration a restreint les policies existantes TO authenticated :
 		// elle ne doit rien retirer aux comptes connectés.
-		const { data, error } = await (await clientFor(teacherEmail))
+		const { data, error } = await (
+			await clientFor(teacherEmail)
+		)
 			.from('question_templates')
 			.select('id, status')
 			.eq('id', DRAFT_ID);
@@ -210,7 +212,9 @@ describe('RLS — /automaths, lecture anonyme des templates', () => {
 	});
 
 	it('un administrateur peut toujours modifier un template', async () => {
-		const { error } = await (await clientFor(adminEmail))
+		const { error } = await (
+			await clientFor(adminEmail)
+		)
 			.from('question_templates')
 			.update({ description: 'modifié par admin' })
 			.eq('id', PUBLISHED_ID);

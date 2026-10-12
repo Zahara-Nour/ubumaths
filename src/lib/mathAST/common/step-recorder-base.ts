@@ -125,9 +125,10 @@ export interface BaseStepRecorder<S extends BaseStep<R>, R extends string = stri
  * }
  * ```
  */
-export abstract class StepRecorderBase<S extends BaseStep<R>, R extends string = string>
-	implements BaseStepRecorder<S, R>
-{
+export abstract class StepRecorderBase<
+	S extends BaseStep<R>,
+	R extends string = string
+> implements BaseStepRecorder<S, R> {
 	/** Internal storage for recorded steps */
 	protected steps: S[] = [];
 

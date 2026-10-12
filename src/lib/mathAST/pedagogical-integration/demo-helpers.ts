@@ -203,7 +203,12 @@ export function presentIntegral(testCase: DemoCase, format: DemoFormat = 'latex'
 					if (raw === undefined) continue;
 					lines.push(...indentStep({ rendered: r, raw, depth: 0, format }));
 				}
-				lines.push(`Antiderivative: ${formatNode(result.antiderivative, format)}`);
+				if (result.antiderivative) {
+					lines.push(`Antiderivative: ${formatNode(result.antiderivative, format)}`);
+				}
+				if (result.undefinedAt) {
+					lines.push(`Undefined at: ${formatNode(result.undefinedAt, format)}`);
+				}
 				if (result.value) {
 					lines.push(`Value: ${formatNode(result.value, format)}`);
 				}

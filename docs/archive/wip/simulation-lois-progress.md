@@ -11,7 +11,7 @@ Décisions Q160-Q163 (`outils-statistiques-v2-progress.md`). Spec validée par D
 - `tirages`, U([a ; b]) et E(λ) : histogramme des tirages EN DENSITÉ (fréquence / amplitude),
   10 classes égales (U : [a ; b] ; E : [0 ; joli arrondi de ln(100)/λ], dernière classe = tout
   ce qui dépasse, dit sous la figure) ; courbe de densité superposée (couleur du bloc ```loi) ;
-résumé « 1 000 tirages ; moyenne observée ≈ … (E(X) = 2) » puis la graine ; `classes: N`
+  résumé « 1 000 tirages ; moyenne observée ≈ … (E(X) = 2) » puis la graine ; `classes: N`
   (2 ⩽ N ⩽ 50, un NOMBRE ; une liste de bornes → « un nombre de classes »).
 - `moyenne` et `échantillons` : inchangés pour les quatre lois (E, σ ; μ ± 2σ/√n) ; plafonds
   actuels (10 000 tirages, N × n ⩽ 100 000).

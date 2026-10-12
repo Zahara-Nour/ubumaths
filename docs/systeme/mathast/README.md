@@ -462,11 +462,17 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     Une puissance entière est exacte jusqu'à l'exposant 1000 (`MAX_EXACT_INTEGER_EXPONENT`,
     `eval/evaluate.ts`) ; au-delà, par le flottant, et une valeur qui en sort (0 pour une base
     non nulle, ±Infinity) est refusée (« Valeur hors d'échelle… ») plutôt que rendue comme 0.
-    ⚠️ Ne pas relever ce plafond tant que le pgcd est celui d'Euclide : à 10 000, e et π (fractions
-    de 16 chiffres) donnaient des fractions de centaines de milliers de bits, puis des pgcd de
-    plusieurs secondes (`.variations e^{-2x^2}` : 5,7 s ; mesuré le 2026-10-12). Le pgcd de deux
-    entiers de 40 000 chiffres coûte 1,5 s : `normalize` (puissance par multiplications réduites),
-    `tidy` et `rational()` en calculent sur les grandes fractions. `powRational` calcule `nᵏ / dᵏ`
+    ⚠️ Ne pas relever ce plafond : à 10 000, e et π (fractions de 16 chiffres) donnaient des
+    fractions de centaines de milliers de bits, puis des pgcd de plusieurs secondes
+    (`.variations e^{-2x^2}` : 5,7 s ; mesuré le 2026-10-12, pgcd d'Euclide). Le pgcd (`gcd`,
+    `normal/rational.ts`) est celui de **Lehmer** au-delà de 64 bits (Knuth, algorithme L) : 1,7 s
+    → 0,4 s pour deux entiers de 40 000 chiffres, toujours quadratique. `normalize`, `tidy` et
+    `rational()` en calculent sur les grandes fractions. Le calcul en fractions d'`evaluate`
+    (`evaluateToRational`) additionne et multiplie par `addReduced`, `mulReduced`… (Henrici, Knuth
+    4.5.1 : le pgcd porte sur les termes, pas sur le résultat) — ⚠️ **seulement sur des fractions
+    déjà réduites** : le dépôt construit des rationnels à la main sans les réduire, et
+    `addRational` & co. gardent leur réduction complète. Une somme de cinq fractions de 9 000
+    chiffres : 4,1 s → 71 ms. `powRational` calcule `nᵏ / dᵏ`
     par la puissance native de BigInt : une fraction irréductible élevée à une puissance le reste
     ((101/100)¹⁰⁰⁰⁰⁰ : 194 s avant, 2 ms). Les pôles de tan, sec, csc, cot sont refusés (le
     flottant de π/2 donnait tan = 1,6331 × 10¹⁶).
@@ -476,7 +482,9 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     n'en profitent pas, leurs fractions font 16 chiffres) ; une factorielle ou un coefficient
     binomial dépasse alors la borne 2⁵³ dans le même budget (`1000!`). Le calcul décimal général
     (`evaluate`, `evaluateNodeToApproximatedNumber`) garde ses bornes. La taille d'un résultat
-    exact se **prévoit** sans le calculer : `cli/exact-size.ts` (`estimatedExactDigits`).
+    exact se **prévoit** sans le calculer : `cli/exact-size.ts` (`estimatedExactDigits`, une borne
+    qui ignore les simplifications ; la console n'en tire que son plafond de calcul,
+    `isTooLongToCompute`, et mesure la longueur réelle par `exactCharacters`).
 
 ## Le moteur de réécriture et les étapes
 
@@ -521,6 +529,25 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   l'intégrale restante en toutes lettres, avant sa valeur (pas de « = » faux). Le facteur 1/u′ des formes composées est un rationnel exact
   (`findProportionalityRatio`), et l'exponentielle s'écrit `e^{u}`
   (`superscript(euler(), u)`), jamais `\exp(u)` (décisions de David du 2026-10-11).
+- **Intégrale définie : aucune valeur à travers une valeur interdite.** Version pédagogique
+  (V28, 2026-10-12) : avant tout calcul, **primitive comprise**, `forbiddenValueOnInterval`
+  (`integration/forbidden-value.ts`) lit le domaine exact de f (`computeDomain` : points exclus,
+  extrémités des intervalles, premier point d'une exclusion périodique, écrit `\dfrac{3\pi}{2}`)
+  et rend la première valeur interdite de [a ; b], **bornes comprises**. Si elle existe, les
+  étapes s'arrêtent à `integrand-undefined-on-interval` (« La fonction n'est pas définie en
+  x = 3/2, qui appartient à [1 ; 2] : l'intégrale n'est pas définie sur cet intervalle. », mots en
+  `\text{}`), sans `value` ni `antiderivative` (type `PedagogicalDefiniteIntegrationResult`) ;
+  `result.undefinedAt` porte la valeur. Le refus s'affiche donc même pour une primitive que le
+  pipeline ne sait pas écrire (∫₀¹ 4/(3x − 2)²). Bornes littérales : pas de contrôle, valeur
+  symbolique comme avant. **Domaine non résolu** (`unresolved`, dénominateur `e^x - 2`) avec des
+  bornes numériques : `PedagogicalIntegrationNotImplemented`, aucun nombre publié, et
+  `correction-generator` se replie sur le mode A. Sous ∫, une somme ou un opposé s'écrit entre
+  parenthèses dans toutes les étapes (`integralLatex`, `renderer.ts`). Moteur
+  (`integrateDefinite`) : contrôle **numérique** de la continuité de F sur [a ; b]
+  (`integration/singularity.ts`, revue de #947) ; refus = `status: 'unsupported'`,
+  `value: null`, `error` en français (∫₀¹ eˣ/(eˣ − 2) compris). Il accepte une intégrale impropre
+  convergente (∫₀¹ 1/√x = 2) que la version pédagogique refuserait (borne interdite) si elle
+  savait calculer la primitive.
 - ⚠️ Les étapes de `normalize` sont du calcul interne, pas une leçon : elles arrivent
   pourtant dans `auto`/`reduire`/`developper` via `runNormalizePass` (ADR 0007 veut les
   retirer du chemin élève).
@@ -590,6 +617,16 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   valeur exacte** de `limits/exact-evaluation.ts` (`tryEvaluateLimitExact`, réduite par
   `normalize`) quand elle retombe sur la valeur flottante : `\dfrac{3}{2}`, `3\sqrt{2}`, plus
   `1.5` (K21, V21) ; titres en texte (`formatValueShort` : « La limite vaut 3/2 », « 3√2 »).
+  **En ±∞** (`tryInfinityAnalysis`, K21, V26), le terme dominant se lit par `toPolynomial`
+  (coefficients sur ℚ) et, à défaut, dans la forme normale (`normalize`) pour un coefficient
+  constant irrationnel (π, √2) ; le quotient des coefficients dominants est exact (`\dfrac{3}{2}`,
+  plus `1.5` ; un quotient irrationnel réduit par `normalize` puis réécrit par
+  `tryEvaluateLimitExact`, comme le moteur : `\dfrac{\pi}{2}`, `2\sqrt{2}`, `\dfrac{\sqrt{2}\pi}{2}`). Une constante (`5`, `\pi`) : une seule étape, « La fonction est constante : sa
+  limite vaut 5. » Un polynôme seul (`\pi x`,
+  `-2x^3+x`) est lu comme P / 1. Un signe de coefficient qui ne se lit pas exactement
+  (`(\pi - 4)x`) : refus, jamais un décimal. La borne d'un `\lim` parsé (`positive(∞)`) est
+  traduite en nœud `infinity` par `normalizeApproach` de `limits/evaluate.ts`, comme dans le
+  moteur.
 - **`integration/integrators/quadratic-denominator.ts` `factorQuadratic`** : trinôme lu par
   `toPolynomial` (toute écriture : `x(x-5)+6`, `(2x-1)(2x+1)` passent), racines par
   `quadraticRootParts`. Le littéral `x² − a²` garde sa lecture par `extractQuadraticCoefficients`.
@@ -650,9 +687,8 @@ Doublons qui restent, chacun pour un autre besoin :
   `divideUnivariate` (coefficients algébriques, utilisée aussi par `partial-fractions.ts` et le
   grapheur) et `exactDividePolynomials` (multivariée), toutes deux dans `normal/`.
 - **Extracteurs de coefficients** : `toPolynomial` / `toRationalFunction` (noyau, exacts) ;
-  `asPolynomial` (`pedagogical-limits/helpers.ts`, **flottants**, degré non borné, pour la
-  comparaison des termes dominants en ±∞ : passer au noyau changerait le degré lisible et
-  l'écriture du quotient) ; `toUnivariateView` (`normal/`) ;
+  `toUnivariateView` (`normal/`) ; (`asPolynomial` et `polyToNode`, lecteur en flottants de
+  `pedagogical-limits/helpers.ts`, supprimés après V26 : le terme dominant en ±∞ passe au noyau) ;
   `extract{Quadratic,Cubic,Quartic}Coefficients` (`solve/`, coefficients `MathNode`).
 - **Δ** : un seul calcul exact sur ℚ, `discriminant` (`factor/quadratic.ts`). Les autres
   calculent en `MathNode` pour l'afficher (`pedagogical-solve/quadratic.ts`, `solve/`) ou en

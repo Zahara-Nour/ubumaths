@@ -25,11 +25,7 @@ import { fetchInChunks } from '$lib/server/utils/chunked-in';
 type SB = SupabaseClient<Database>;
 
 export type CapacityBadge =
-	| 'a_remedier'
-	| 'a_renforcer'
-	| 'acquise_en_memoire'
-	| 'en_apprentissage'
-	| 'non_commencee';
+	'a_remedier' | 'a_renforcer' | 'acquise_en_memoire' | 'en_apprentissage' | 'non_commencee';
 
 type CardState = 'new' | 'learning' | 'review' | 'relearning';
 

@@ -56,7 +56,7 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 | `src/lib/worksheets/exercise-numbering.ts`                        | **La** règle du numéro affiché : `groupExercisesForDisplay`, `orderExercisesForDisplay`, `displayNumberOf`, `exerciseAtDisplayNumber`. Utilisée par la page élève, le générateur PDF et le serveur.        |
 | `src/lib/worksheets/student-worksheet-typst.ts`                   | `generateStudentWorksheetTypst` : le PDF **élève** (et l'aperçu « vue élève » du prof), mise en page codée en dur, depuis la vue déjà résolue (`StudentWorksheetView`).                                    |
 | `src/lib/worksheets/serie-automatismes.ts`                        | `buildSerie` : une **série figée** d'instances de modèles de question devient un exercice ordinaire ([ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md)). Toute anomalie lève une exception. |
-| `src/lib/worksheets/exercise-edit-link.ts`                        | `exerciseEditHref`, `worksheetReturnHref` : aller-retour fiche ↔ exercice par `?fiche=<uuid>` (Zod : UUID seulement).                                                                                     |
+| `src/lib/worksheets/exercise-edit-link.ts`                        | `exerciseEditHref`, `worksheetReturnHref` : aller-retour fiche ↔ exercice par `?fiche=<uuid>` (Zod : UUID seulement).                                                                                      |
 | `typst-compiler.ts`, `typst-generator.ts`, `default-templates.ts` | **Ré-exports dépréciés** de `src/lib/typst/` (avertissement console en dev). `PdfPreview.svelte` et les routes `pdf/` les importent encore.                                                                |
 
 ### `src/lib/typst/` — de la fiche au PDF

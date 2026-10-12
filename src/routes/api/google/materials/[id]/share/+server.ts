@@ -85,8 +85,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 	// Handle nested course data (Supabase JOIN types)
 	const courseData = material.google_classroom_courses as unknown as
-		| { teacher_id: string }
-		| { teacher_id: string }[];
+		{ teacher_id: string } | { teacher_id: string }[];
 	const teacherId = Array.isArray(courseData) ? courseData[0]?.teacher_id : courseData?.teacher_id;
 
 	if (teacherId !== user.id) {
@@ -184,8 +183,7 @@ export const DELETE: RequestHandler = async ({ params, request, locals }) => {
 
 	// Handle nested course data
 	const courseData = material.google_classroom_courses as unknown as
-		| { teacher_id: string }
-		| { teacher_id: string }[];
+		{ teacher_id: string } | { teacher_id: string }[];
 	const teacherId = Array.isArray(courseData) ? courseData[0]?.teacher_id : courseData?.teacher_id;
 
 	if (teacherId !== user.id) {

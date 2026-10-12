@@ -51,7 +51,7 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `src/lib/components/markdown/lexicon-context.ts`                      | `provideLexicon`, `provideQuestionLexicon` : qui active les mots cliquables              |
 | `src/lib/components/markdown/nodes/LexiconTerm.svelte`                | Le mot souligné et sa fiche (dialogue accessible)                                        |
 | `src/lib/dictionary/consistency.ts`                                   | `checkDictionary`, `newProblems` : règles de cohérence (enregistrement admin et tests)   |
-| `src/lib/dictionary/admin-draft.ts`                                   | Brouillon d'une entrée sur la page d'admin ↔ saisie envoyée au serveur                  |
+| `src/lib/dictionary/admin-draft.ts`                                   | Brouillon d'une entrée sur la page d'admin ↔ saisie envoyée au serveur                   |
 | `src/lib/server/dictionary/admin.ts`                                  | `loadAdminDictionary`, `createEntry`, `updateEntry`, `loadVersions`                      |
 | `src/routes/api/admin/dictionnaire/`                                  | `GET`/`POST` (liste, création), `PATCH [id]` (modifier, masquer), `GET [id]/versions`    |
 | `src/routes/(protected)/dashboard/admin/dictionnaire/`                | Page d'admin : recherche, fiche (`EntryEditor.svelte`), masquer, historique              |

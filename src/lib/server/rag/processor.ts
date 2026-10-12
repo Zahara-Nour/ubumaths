@@ -14,11 +14,7 @@ import { chunkText, chunkMarkdown, chunkExercise, type Chunk } from './chunker';
 import { createHash } from 'crypto';
 
 export type SourceType =
-	| 'question_template'
-	| 'exercise'
-	| 'markdown_doc'
-	| 'google_drive'
-	| 'manual_upload';
+	'question_template' | 'exercise' | 'markdown_doc' | 'google_drive' | 'manual_upload';
 
 export interface DocumentInput {
 	sourceType: SourceType;

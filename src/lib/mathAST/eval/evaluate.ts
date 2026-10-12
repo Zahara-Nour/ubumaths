@@ -47,10 +47,10 @@ import { pointNamesEvaluationRefusal, unknownSegmentMessage } from '../common/se
 import {
 	rational,
 	fromInteger,
-	addRational,
-	subRational,
-	mulRational,
-	divRational,
+	addReduced,
+	subReduced,
+	mulReduced,
+	divReduced,
 	negRational,
 	powRational,
 	rationalToNumber,
@@ -717,25 +717,29 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		throw new Error('Cannot evaluate expression with holes');
 	}
 
+	// Les quatre opérations sur des fractions réduites (Henrici) : chaque valeur d'ici sort de
+	// `rational()`, `fromInteger`, `floatToRational` ou `powRational`. Une somme de cinq
+	// fractions de 9 000 chiffres prenait 4,1 s (le pgcd sur le résultat entier, 2026-10-12)
+
 	// AdditionNode
 	if (isAddition(node)) {
 		const left = evaluateToRational(node.left, depth + 1);
 		const right = evaluateToRational(node.right, depth + 1);
-		return addRational(left, right);
+		return addReduced(left, right);
 	}
 
 	// SubtractionNode
 	if (isSubtraction(node)) {
 		const left = evaluateToRational(node.left, depth + 1);
 		const right = evaluateToRational(node.right, depth + 1);
-		return subRational(left, right);
+		return subReduced(left, right);
 	}
 
 	// MultiplicationNode
 	if (isMultiplication(node)) {
 		const left = evaluateToRational(node.left, depth + 1);
 		const right = evaluateToRational(node.right, depth + 1);
-		return mulRational(left, right);
+		return mulReduced(left, right);
 	}
 
 	// DivisionNode
@@ -745,7 +749,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 		if (isZeroRational(den)) {
 			throw new Error('Division by zero');
 		}
-		return divRational(num, den);
+		return divReduced(num, den);
 	}
 
 	// OppositeNode (negation)
@@ -761,7 +765,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 
 	// PercentageNode : `20 %` = 20/100, exact
 	if (isPercentage(node)) {
-		return divRational(evaluateToRational(node.operand, depth + 1), { n: 100n, d: 1n });
+		return divReduced(evaluateToRational(node.operand, depth + 1), { n: 100n, d: 1n });
 	}
 
 	// SuperscriptNode (power)

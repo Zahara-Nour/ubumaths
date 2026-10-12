@@ -28,11 +28,7 @@ type SB = SupabaseClient<Database>;
  * addressable.
  */
 export type TaggableKind =
-	| ResourceKind
-	| 'python_exercise'
-	| 'construction'
-	| 'worksheet'
-	| 'parody_evaluation';
+	ResourceKind | 'python_exercise' | 'construction' | 'worksheet' | 'parody_evaluation';
 
 /** Les types que `resource_tags` accepte, pour valider une entrée non fiable. */
 export const TAGGABLE_KINDS = [

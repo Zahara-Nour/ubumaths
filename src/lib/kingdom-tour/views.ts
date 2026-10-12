@@ -18,14 +18,7 @@ import { PARENT_FACTS, PLACES, type PlaceId, type TourLink } from './tour';
 
 /** L'icône d'un élément, choisie par la page (lucide) */
 export type ViewIcon =
-	| PlaceId
-	| 'cabinet'
-	| 'tutor'
-	| 'review'
-	| 'rewards'
-	| 'steps'
-	| 'words'
-	| 'printable';
+	PlaceId | 'cabinet' | 'tutor' | 'review' | 'rewards' | 'steps' | 'words' | 'printable';
 
 export interface ViewItem {
 	icon: ViewIcon;

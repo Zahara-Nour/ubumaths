@@ -21,8 +21,7 @@
 	type Direction = 'to-almanach' | 'to-gregorian';
 
 	type Conversion =
-		| { ok: true; gregorian: string; date: PataphysicalDate }
-		| { ok: false; message: string };
+		{ ok: true; gregorian: string; date: PataphysicalDate } | { ok: false; message: string };
 
 	type ReverseConversion = { ok: true; label: string } | { ok: false; message: string };
 

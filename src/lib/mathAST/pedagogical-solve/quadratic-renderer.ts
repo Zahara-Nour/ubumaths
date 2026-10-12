@@ -360,9 +360,10 @@ function signTableOf(step: EquationStep): SignTableGrid | null {
 // Renderer
 // =============================================================================
 
-export class QuadraticEquationRenderer
-	implements StepRenderer<EquationStep, PedagogicalRenderOptions>
-{
+export class QuadraticEquationRenderer implements StepRenderer<
+	EquationStep,
+	PedagogicalRenderOptions
+> {
 	render(step: EquationStep, options: PedagogicalRenderOptions): RenderedStep {
 		assertSupportedLevel(options.schoolLevel);
 		const level = options.schoolLevel;

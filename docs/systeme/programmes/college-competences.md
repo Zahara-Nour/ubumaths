@@ -407,10 +407,10 @@ Insuffisante (◯) : niveau résiduel.
 
 #### C — Convertir et mettre en relation
 
-| Code   | Énoncé élève                                                                                     | Grille enseignant                                                                                                                                     |
-| ------ | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Code   | Énoncé élève                                                                                     | Grille enseignant                                                                                                                                  |
+| ------ | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **C1** | Je passe d'une représentation à une autre du même objet.                                         | Convertit une représentation en une autre du même objet, sans en altérer le sens (formule ↔ courbe, tableau ↔ graphique, figure ↔ coordonnées...). |
-| **C2** | Je mets en relation plusieurs représentations du même objet et je contrôle qu'elles s'accordent. | Fait correspondre plusieurs représentations du même objet et vérifie leur cohérence mutuelle.                                                         |
+| **C2** | Je mets en relation plusieurs représentations du même objet et je contrôle qu'elles s'accordent. | Fait correspondre plusieurs représentations du même objet et vérifie leur cohérence mutuelle.                                                      |
 
 #### D — Choisir et exploiter
 
@@ -449,7 +449,7 @@ C'est la confusion la plus fréquente du référentiel.
 
 |                     | **Modéliser**                                                                                               | **Représenter**                                                                                                   |
 | ------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Frontière           | franchit la **frontière réel ↔ math**                                                                      | reste **à l'intérieur des maths**                                                                                 |
+| Frontière           | franchit la **frontière réel ↔ math**                                                                       | reste **à l'intérieur des maths**                                                                                 |
 | Geste               | traduire une situation **concrète** en objet mathématique, puis revenir au réel pour interpréter et valider | passer d'un **registre** à un autre d'un **même objet mathématique** (au sens des registres sémiotiques de Duval) |
 | Question            | _« Comment capter cette situation en maths, et le résultat a-t-il un sens dans la situation ? »_            | _« Comment exprimer cet objet sous différentes formes et passer de l'une à l'autre ? »_                           |
 | Critère de fidélité | au **réel**                                                                                                 | à l'**objet ou aux données**                                                                                      |

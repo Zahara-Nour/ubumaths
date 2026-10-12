@@ -294,9 +294,7 @@ export const Video = Node.create({
 
 		// Video element with source child
 		const videoElement: (
-			| string
-			| Record<string, unknown>
-			| (string | Record<string, unknown>)[]
+			string | Record<string, unknown> | (string | Record<string, unknown>)[]
 		)[] = ['video', videoAttrs];
 
 		if (src) {

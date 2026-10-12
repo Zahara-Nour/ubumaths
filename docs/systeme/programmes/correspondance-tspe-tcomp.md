@@ -45,37 +45,37 @@ Tous les codes TSPE cités ont été vérifiés dans `ref-T_SPE.md`. Les codes `
 
 ### 1.2 Fonctions : continuité, dérivabilité, limites, représentation graphique
 
-| TCOMP     | Point (abrégé)                                                 | Correspondance | TSPE                         | Note                                                                                            |
-| --------- | -------------------------------------------------------------- | -------------- | ---------------------------- | ----------------------------------------------------------------------------------------------- |
+| TCOMP     | Point (abrégé)                                                 | Correspondance | TSPE                         | Note                                                                                           |
+| --------- | -------------------------------------------------------------- | -------------- | ---------------------------- | ---------------------------------------------------------------------------------------------- |
 | TCOMP-018 | Limite d'une fonction, continuité, asymptotes                  | socle commun   | TSPE-126, TSPE-127, TSPE-132 | Lien limite ↔ asymptote partagé ; continuité définie par les limites (TSPE-154) réservée TSPE. |
-| TCOMP-019 | Limites des fonctions de référence                             | identique      | TSPE-128, TSPE-170           | Mêmes six fonctions ; croissances comparées hors TCOMP.                                         |
-| TCOMP-020 | TVI admis, cas strictement monotone                            | identique      | TSPE-157, TSPE-158           | Énoncé et lecture identiques.                                                                   |
-| TCOMP-021 | Réciproque d'une fonction strictement monotone, graphique      | socle commun   | TSPE-171                     | Symétrie par rapport à $y = x$ partagée pour $\ln$/$\exp$ ; cas carré/racine réservé TCOMP.     |
-| TCOMP-022 | $\ln$, réciproque de $\exp$                                    | identique      | TSPE-167                     | $e^{\ln x} = x$, $\ln(e^x) = x$.                                                                |
-| TCOMP-023 | Limites et courbe de $\ln$                                     | identique      | TSPE-170                     | Limites en $0$ et $+\infty$, allure.                                                            |
-| TCOMP-024 | Équation fonctionnelle de $\ln$                                | identique      | TSPE-168                     | $\ln(ab)$, $\ln\frac{a}{b}$, $\ln a^n$ ; $\ln\sqrt{a}$ à vérifier côté TCOMP.                   |
-| TCOMP-025 | Dérivée de $\ln$                                               | identique      | TSPE-169                     | $\ln' = \frac{1}{x}$.                                                                           |
-| TCOMP-026 | Dérivées de $f(ax+b)$, $e^{u}$, $\ln u$, $u^2$                 | socle commun   | TSPE-137, TSPE-142           | Les quatre formes partagées ; $(v \circ u)'$ général, $\sqrt{u}$, $u^n$ réservés TSPE.          |
-| TCOMP-027 | Calculer une fonction dérivée                                  | socle commun   | TSPE-142, TSPE-143           | Partagé hors composées générales et trigonométrie (TSPE seule).                                 |
-| TCOMP-028 | Calculer des limites                                           | socle commun   | TSPE-130, TSPE-131, TSPE-144 | Partagé hors croissances comparées (TSPE-133, TSPE-172), réservées TSPE.                        |
-| TCOMP-029 | Dresser un tableau de variation                                | socle commun   | TSPE-145                     | Partagé pour polynômes, $\exp$, $\ln$ ; fonctions trigonométriques réservées TSPE.              |
-| TCOMP-030 | Utiliser le calcul des limites en problème                     | socle commun   | TSPE-131                     | Carte d'interprétation (« valeur à long terme ») partageable ; problème complet non cartable.   |
-| TCOMP-031 | Allure des courbes de référence en problème                    | socle commun   | TSPE-170, TSPE-171           | Partie $\ln$ partagée ; autres courbes = acquis 2de / 1SPE-099.                                 |
-| TCOMP-032 | Tableau de variation → nombre de solutions de $f(x) = k$       | identique      | TSPE-159                     | Même lecture ; rédaction TVI exigée identiquement.                                              |
-| TCOMP-033 | Tableau de variation → inéquation $f(x) \leqslant k$           | propre à TCOMP | —                            | Aucun point TSPE ; geste de 2de mobilisé en spé. Cf. question 1.                                |
-| TCOMP-034 | Valeurs approchées, encadrement d'une solution                 | identique      | TSPE-159                     | Encadrement à la calculatrice ou par tableau de valeurs.                                        |
-| TCOMP-035 | Équation fonctionnelle $\exp$/$\ln$ : transformer une écriture | identique      | TSPE-173                     | Intitulé BO identique.                                                                          |
-| TCOMP-036 | Équation fonctionnelle : résoudre équation, inéquation         | identique      | TSPE-174                     | Intitulé BO identique.                                                                          |
-| TCOMP-037 | $\ln q^n = n\ln q$ pour un seuil                               | identique      | TSPE-174, TSPE-175           | Résoudre $0{,}8^n < 0{,}05$ : même carte ; attention au sens si $\ln q < 0$.                    |
-| TCOMP-038 | $\ln(ab) = \ln a + \ln b$ (démonstration)                      | non cartable   | —                            | Démonstration possible ; propriété cartée via TCOMP-024.                                        |
-| TCOMP-039 | $\ln\frac{1}{a} = -\ln a$ (démonstration)                      | non cartable   | —                            | Démonstration possible.                                                                         |
-| TCOMP-040 | Dérivée de $\ln$ (démonstration)                               | non cartable   | TSPE-176                     | Démonstration ; exigée en TSPE, possible en TCOMP.                                              |
-| TCOMP-041 | Dérivée de $\ln u$ (démonstration)                             | non cartable   | —                            | Démonstration possible.                                                                         |
-| TCOMP-042 | Dérivée de $\exp u$ (démonstration)                            | non cartable   | —                            | Démonstration possible.                                                                         |
-| TCOMP-043 | Balayage                                                       | non cartable   | —                            | Algorithme ; absent du BO TSPE (acquis 2de).                                                    |
-| TCOMP-044 | Dichotomie                                                     | non cartable   | TSPE-161                     | Algorithme.                                                                                     |
-| TCOMP-045 | Méthode de Newton                                              | non cartable   | TSPE-162, TSPE-124           | Algorithme.                                                                                     |
-| TCOMP-046 | Algorithme de Briggs                                           | non cartable   | TSPE-178                     | Algorithme.                                                                                     |
+| TCOMP-019 | Limites des fonctions de référence                             | identique      | TSPE-128, TSPE-170           | Mêmes six fonctions ; croissances comparées hors TCOMP.                                        |
+| TCOMP-020 | TVI admis, cas strictement monotone                            | identique      | TSPE-157, TSPE-158           | Énoncé et lecture identiques.                                                                  |
+| TCOMP-021 | Réciproque d'une fonction strictement monotone, graphique      | socle commun   | TSPE-171                     | Symétrie par rapport à $y = x$ partagée pour $\ln$/$\exp$ ; cas carré/racine réservé TCOMP.    |
+| TCOMP-022 | $\ln$, réciproque de $\exp$                                    | identique      | TSPE-167                     | $e^{\ln x} = x$, $\ln(e^x) = x$.                                                               |
+| TCOMP-023 | Limites et courbe de $\ln$                                     | identique      | TSPE-170                     | Limites en $0$ et $+\infty$, allure.                                                           |
+| TCOMP-024 | Équation fonctionnelle de $\ln$                                | identique      | TSPE-168                     | $\ln(ab)$, $\ln\frac{a}{b}$, $\ln a^n$ ; $\ln\sqrt{a}$ à vérifier côté TCOMP.                  |
+| TCOMP-025 | Dérivée de $\ln$                                               | identique      | TSPE-169                     | $\ln' = \frac{1}{x}$.                                                                          |
+| TCOMP-026 | Dérivées de $f(ax+b)$, $e^{u}$, $\ln u$, $u^2$                 | socle commun   | TSPE-137, TSPE-142           | Les quatre formes partagées ; $(v \circ u)'$ général, $\sqrt{u}$, $u^n$ réservés TSPE.         |
+| TCOMP-027 | Calculer une fonction dérivée                                  | socle commun   | TSPE-142, TSPE-143           | Partagé hors composées générales et trigonométrie (TSPE seule).                                |
+| TCOMP-028 | Calculer des limites                                           | socle commun   | TSPE-130, TSPE-131, TSPE-144 | Partagé hors croissances comparées (TSPE-133, TSPE-172), réservées TSPE.                       |
+| TCOMP-029 | Dresser un tableau de variation                                | socle commun   | TSPE-145                     | Partagé pour polynômes, $\exp$, $\ln$ ; fonctions trigonométriques réservées TSPE.             |
+| TCOMP-030 | Utiliser le calcul des limites en problème                     | socle commun   | TSPE-131                     | Carte d'interprétation (« valeur à long terme ») partageable ; problème complet non cartable.  |
+| TCOMP-031 | Allure des courbes de référence en problème                    | socle commun   | TSPE-170, TSPE-171           | Partie $\ln$ partagée ; autres courbes = acquis 2de / 1SPE-099.                                |
+| TCOMP-032 | Tableau de variation → nombre de solutions de $f(x) = k$       | identique      | TSPE-159                     | Même lecture ; rédaction TVI exigée identiquement.                                             |
+| TCOMP-033 | Tableau de variation → inéquation $f(x) \leqslant k$           | propre à TCOMP | —                            | Aucun point TSPE ; geste de 2de mobilisé en spé. Cf. question 1.                               |
+| TCOMP-034 | Valeurs approchées, encadrement d'une solution                 | identique      | TSPE-159                     | Encadrement à la calculatrice ou par tableau de valeurs.                                       |
+| TCOMP-035 | Équation fonctionnelle $\exp$/$\ln$ : transformer une écriture | identique      | TSPE-173                     | Intitulé BO identique.                                                                         |
+| TCOMP-036 | Équation fonctionnelle : résoudre équation, inéquation         | identique      | TSPE-174                     | Intitulé BO identique.                                                                         |
+| TCOMP-037 | $\ln q^n = n\ln q$ pour un seuil                               | identique      | TSPE-174, TSPE-175           | Résoudre $0{,}8^n < 0{,}05$ : même carte ; attention au sens si $\ln q < 0$.                   |
+| TCOMP-038 | $\ln(ab) = \ln a + \ln b$ (démonstration)                      | non cartable   | —                            | Démonstration possible ; propriété cartée via TCOMP-024.                                       |
+| TCOMP-039 | $\ln\frac{1}{a} = -\ln a$ (démonstration)                      | non cartable   | —                            | Démonstration possible.                                                                        |
+| TCOMP-040 | Dérivée de $\ln$ (démonstration)                               | non cartable   | TSPE-176                     | Démonstration ; exigée en TSPE, possible en TCOMP.                                             |
+| TCOMP-041 | Dérivée de $\ln u$ (démonstration)                             | non cartable   | —                            | Démonstration possible.                                                                        |
+| TCOMP-042 | Dérivée de $\exp u$ (démonstration)                            | non cartable   | —                            | Démonstration possible.                                                                        |
+| TCOMP-043 | Balayage                                                       | non cartable   | —                            | Algorithme ; absent du BO TSPE (acquis 2de).                                                   |
+| TCOMP-044 | Dichotomie                                                     | non cartable   | TSPE-161                     | Algorithme.                                                                                    |
+| TCOMP-045 | Méthode de Newton                                              | non cartable   | TSPE-162, TSPE-124           | Algorithme.                                                                                    |
+| TCOMP-046 | Algorithme de Briggs                                           | non cartable   | TSPE-178                     | Algorithme.                                                                                    |
 
 ### 1.3 Primitives et équations différentielles
 
@@ -309,7 +309,7 @@ Deux nuances :
    _Recommandation_ : cartes partagées sur chemins, symétrie, triangle de Pascal, $\binom{n}{0}$, $\binom{n}{1}$, $\binom{n}{n}$ ; formule factorielle et $\binom{n}{2}$ en spé seule.
 5. **Rattacher une carte de savoir-faire à un point TSPE de contenu** — TCOMP-051, 054, 077 n'ont en TSPE qu'un `[C]` (TSPE-192, 193, 208). Acceptable ?
    _Recommandation_ : oui ; le point TSPE de contenu est le seul porteur de la notion, et l'alternative est de ne pas partager une carte identique.
-6. **Notation $\left[F(x)\right]_a^b$** — explicite en TSPE-203, absente de TCOMP-074.
+6. **Notation $\left[F(x)\right]\_a^b$** — explicite en TSPE-203, absente de TCOMP-074.
    _Recommandation_ : l'utiliser dans les corrections des cartes partagées, ne jamais l'exiger dans la réponse.
 7. **Grain inégal** — TCOMP-055/056 coupés, TSPE-195 d'un bloc. Faut-il couper TSPE-195 ?
    _Recommandation_ : non ; une carte vise un point TCOMP et TSPE-195, le suivi spé reste au grain actuel.

@@ -24,6 +24,7 @@
 
 import type { MathNode } from '../types';
 import { toLatex } from '../latex-generator';
+import { numericValue } from '../integration/forbidden-value';
 import { withExplicitNumberProducts } from '../pedagogical-differentiation/tidy-step';
 import type {
 	PedagogicalRenderOptions,
@@ -131,10 +132,7 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 		case 'choose-u-dv': {
 			// Pure narration — show only the integral form. Pour l'IPP, pas de
 			// « = <intégrande> » : rien n'est encore calculé (décision du 2026-10-11)
-			const integralLhs = step.definite
-				? `\\int_{${toLatex(step.definite.lower)}}^{${toLatex(step.definite.upper)}} ${beforeLatex}${dx}`
-				: `\\int ${beforeLatex}${dx}`;
-			return `\\textcolor{blue}{${integralLhs}}`;
+			return `\\textcolor{blue}{${integralLatex(step, dx)}}`;
 		}
 
 		case 'substitute-bounds': {
@@ -159,13 +157,25 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 			);
 		}
 
+		case 'integrand-undefined-on-interval': {
+			// L'intégrale, puis la phrase du refus : mots dans \text{}, valeurs en
+			// mathématiques ; l'intervalle écrit dans l'ordre croissant (V28)
+			const point = step.bindings?.point ? toLatex(step.bindings.point) : '?';
+			const lines = [
+				`  & \\textcolor{blue}{${integralLatex(step, dx)}}`,
+				`  & \\text{La fonction n’est pas définie en } ${step.variable} = ${point} \\text{, qui appartient à } ${closedIntervalLatex(step)} \\text{ :}`,
+				`  & \\text{l’intégrale n’est pas définie sur cet intervalle.}`
+			];
+			return `\\begin{aligned}\n${lines.join(' \\\\\n')}\n\\end{aligned}`;
+		}
+
 		case 'apply-parts-formula': {
 			// uv − ∫ v du, l'intégrale restante ÉCRITE ; puis, quand elle est
 			// calculée (`result`), la primitive. Sans cela, l'IPP cyclique
 			// affichait u₀v₀ − f₁, une égalité fausse (revue du 2026-10-11).
 			const uv = step.bindings?.uv;
 			const vdu = step.bindings?.vdu;
-			if (!uv || !vdu) return formatStandard(step, beforeLatex, afterLatex, dx);
+			if (!uv || !vdu) return formatStandard(step, afterLatex, dx);
 			const result = step.bindings?.result;
 			const lines = [
 				`  & \\textcolor{blue}{\\int ${beforeLatex}${dx}}`,
@@ -199,15 +209,38 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 			const b = step.definite ? toLatex(step.definite.upper) : '?';
 			return (
 				`\\begin{aligned}\n` +
-				`  & \\textcolor{blue}{\\int_{${a}}^{${b}} ${beforeLatex}${dx}} \\\\\n` +
+				`  & \\textcolor{blue}{${integralLatex(step, dx)}} \\\\\n` +
 				`  & = \\left[${F}\\right]_{${a}}^{${b}}\n` +
 				`\\end{aligned}`
 			);
 		}
 
 		default:
-			return formatStandard(step, beforeLatex, afterLatex, dx);
+			return formatStandard(step, afterLatex, dx);
 	}
+}
+
+/**
+ * `\\int_{a}^{b} f\\,dx` (ou `\\int f\\,dx` sans bornes), l'intégrande `step.before`
+ * entre parenthèses si c'est une somme ou un opposé (`integrandLatex`)
+ */
+function integralLatex(step: PedagogicalIntegrationStep, dx: string): string {
+	const integrand = integrandLatex(step.before);
+	return step.definite
+		? `\\int_{${toLatex(step.definite.lower)}}^{${toLatex(step.definite.upper)}} ${integrand}${dx}`
+		: `\\int ${integrand}${dx}`;
+}
+
+/**
+ * `\\left[ a ; b \\right]`, bornes dans l'ordre croissant (∫₂¹ porte sur
+ * [1 ; 2]) ; ordre d'écriture gardé quand les bornes sont littérales.
+ */
+function closedIntervalLatex(step: PedagogicalIntegrationStep): string {
+	if (!step.definite) return '?';
+	const { lower, upper } = step.definite;
+	const reversed = numericValue(lower) > numericValue(upper);
+	const [lo, hi] = reversed ? [upper, lower] : [lower, upper];
+	return `\\left[ ${toLatex(lo)} ; ${toLatex(hi)} \\right]`;
 }
 
 /** Un intégrande somme ou opposé, entre parenthèses : `\\int \\left( -\\cos x \\right)\\,dx`. */
@@ -219,18 +252,10 @@ function integrandLatex(node: MathNode): string {
 }
 
 /** Standard 2-line render : integral on top, antiderivative below. */
-function formatStandard(
-	step: PedagogicalIntegrationStep,
-	beforeLatex: string,
-	afterLatex: string,
-	dx: string
-): string {
-	const integralLhs = step.definite
-		? `\\int_{${toLatex(step.definite.lower)}}^{${toLatex(step.definite.upper)}} ${beforeLatex}${dx}`
-		: `\\int ${beforeLatex}${dx}`;
+function formatStandard(step: PedagogicalIntegrationStep, afterLatex: string, dx: string): string {
 	return (
 		`\\begin{aligned}\n` +
-		`  & \\textcolor{blue}{${integralLhs}} \\\\\n` +
+		`  & \\textcolor{blue}{${integralLatex(step, dx)}} \\\\\n` +
 		`  & = ${afterLatex}\n` +
 		`\\end{aligned}`
 	);
@@ -240,9 +265,10 @@ function formatStandard(
 // Renderer
 // =============================================================================
 
-export class PedagogicalIntegrationRenderer
-	implements StepRenderer<PedagogicalIntegrationStep, IntegrationRenderOptions>
-{
+export class PedagogicalIntegrationRenderer implements StepRenderer<
+	PedagogicalIntegrationStep,
+	IntegrationRenderOptions
+> {
 	render(step: PedagogicalIntegrationStep, options: IntegrationRenderOptions): RenderedStep {
 		const effective = effectiveSchoolLevel(options.schoolLevel);
 		const title = lookupTitle(step.rule, effective, step.bindings, step.description);

@@ -85,14 +85,14 @@ Données :
 
 ## Spec des 6 sub-steps
 
-| #   | Kind            | Instrument     | Cible                  | Animation                              |
+| # | Kind | Instrument | Cible | Animation |
 | --- | --------------- | -------------- | ---------------------- | -------------------------------------- | --- | ---------------- |
-| 1   | `compass-draw`  | compass        | V (rayon r)            | arc à V, animé progressivement         |
-| 2   | `compass-draw`  | compass        | V' (rayon r, conservé) | arc à V', animé                        |
-| 3   | `point-fade-in` | —              | —                      | A', B', A'' apparaissent simultanément |
-| 4   | `compass-draw`  | compass        | A'' (rayon `           | A'B'                                   | `)  | arc à A'', animé |
-| 5   | `point-fade-in` | —              | —                      | B'' apparaît                           |
-| 6   | `ruler-trace`   | ruler + pencil | V' → B''               | segment tracé progressivement          |
+| 1 | `compass-draw` | compass | V (rayon r) | arc à V, animé progressivement |
+| 2 | `compass-draw` | compass | V' (rayon r, conservé) | arc à V', animé |
+| 3 | `point-fade-in` | — | — | A', B', A'' apparaissent simultanément |
+| 4 | `compass-draw` | compass | A'' (rayon `          | A'B'                                   |`) | arc à A'', animé |
+| 5 | `point-fade-in` | — | — | B'' apparaît |
+| 6 | `ruler-trace` | ruler + pencil | V' → B'' | segment tracé progressivement |
 
 ## Fichiers à toucher
 

@@ -2,13 +2,7 @@ import type { Database } from './database';
 
 // Achievement context types
 export type AchievementContext =
-	| 'minesweeper'
-	| 'questions'
-	| 'assessments'
-	| 'srs'
-	| 'riddles'
-	| 'social'
-	| 'meta';
+	'minesweeper' | 'questions' | 'assessments' | 'srs' | 'riddles' | 'social' | 'meta';
 
 export type AchievementCategory =
 	| 'speed'

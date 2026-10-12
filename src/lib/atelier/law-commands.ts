@@ -28,8 +28,7 @@ export type LawCommandResult =
 
 /** `P(X ⩽ 3)` tapé seul : la ligne de la probabilité, ou le refus */
 export type LawEventResult =
-	| { readonly ok: true; readonly text: string }
-	| { readonly ok: false; readonly message: string };
+	{ readonly ok: true; readonly text: string } | { readonly ok: false; readonly message: string };
 
 // =============================================================================
 // Constantes

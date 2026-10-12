@@ -151,8 +151,8 @@
 						<Label for="board-class">{lore.entities.class}</Label>
 						{#if classItems.length === 0}
 							<p class="text-sm text-muted-foreground">
-								Vous n'avez aucun {lore.entities.class}. Créez d'abord un {lore.entities.class} pour
-								pouvoir partager un tableau.
+								Vous n'avez aucun {lore.entities.class}. Créez d'abord un {lore.entities.class} pour pouvoir
+								partager un tableau.
 							</p>
 						{:else}
 							<MySelect

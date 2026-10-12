@@ -52,9 +52,10 @@ python src/replace_glyphs.py <katex_font> <shantell_font> -o <output>
 ```
 
 **Options :**
-| Option | Description |
-|--------|-------------|
-| `-o, --output` | Chemin de sortie (requis) |
+
+| Option          | Description                        |
+| --------------- | ---------------------------------- |
+| `-o, --output`  | Chemin de sortie (requis)          |
 | `--chars "ABC"` | Caractères spécifiques à remplacer |
 
 **Exemples :**
@@ -85,11 +86,12 @@ python src/roughen_math.py <input_font> -o <output> [options]
 ```
 
 **Options :**
-| Option | Défaut | Description |
-|--------|--------|-------------|
-| `-o, --output` | - | Chemin de sortie (requis) |
-| `-i, --intensity` | 10 | Niveau de perturbation (5-30) |
-| `-s, --seed` | 42 | Graine aléatoire |
+
+| Option            | Défaut | Description                   |
+| ----------------- | ------ | ----------------------------- |
+| `-o, --output`    | -      | Chemin de sortie (requis)     |
+| `-i, --intensity` | 10     | Niveau de perturbation (5-30) |
+| `-s, --seed`      | 42     | Graine aléatoire              |
 
 **Exemples :**
 

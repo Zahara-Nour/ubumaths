@@ -249,6 +249,7 @@ describe('pedagogical-integration types', () => {
 			'apply-fundamental-theorem',
 			'substitute-bounds',
 			'simplify-bounds-result',
+			'integrand-undefined-on-interval',
 			// u-substitution
 			'identify-substitution',
 			'compute-du',
@@ -270,7 +271,7 @@ describe('pedagogical-integration types', () => {
 		// Count sentinel — matches the union cardinality. Useful as a quick
 		// human-readable check ; the real exhaustiveness guarantee is the
 		// `_MissingFromAllRules` compile-time check below.
-		expect(allRules).toHaveLength(27);
+		expect(allRules).toHaveLength(28);
 
 		// Compile-time exhaustiveness check : if any rule of
 		// `PedagogicalIntegrationRule` is not in `allRules`, the type

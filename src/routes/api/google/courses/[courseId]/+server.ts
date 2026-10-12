@@ -371,9 +371,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 			// Handle nested topic data
 			const topicData = material.google_classroom_topics as unknown as
-				| { id: string; name: string }
-				| { id: string; name: string }[]
-				| null;
+				{ id: string; name: string } | { id: string; name: string }[] | null;
 
 			const topic =
 				topicData && !Array.isArray(topicData)

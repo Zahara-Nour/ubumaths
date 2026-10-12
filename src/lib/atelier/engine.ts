@@ -325,8 +325,7 @@ export function substitutedAstOf(
 	name: string,
 	options?: { readonly forDerivation?: boolean }
 ):
-	| { readonly ok: true; readonly ast: MathNode }
-	| { readonly ok: false; readonly message: string } {
+	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
 	const object = atelier.get(name);
 	if (object === undefined) {
 		return { ok: false, message: `« ${name} » n'existe pas dans l'atelier.` };
@@ -402,8 +401,7 @@ export function derivativeAstOf(
 	atelier: Atelier,
 	name: string
 ):
-	| { readonly ok: true; readonly ast: MathNode }
-	| { readonly ok: false; readonly message: string } {
+	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
 	const result = substitutedAstOf(atelier, name);
 	return result.ok ? { ok: true, ast: tidyTerms(result.ast) } : result;
 }

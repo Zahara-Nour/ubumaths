@@ -13,20 +13,20 @@
 
 ## Statut global
 
-| Phase                                               | Statut        | Commit                                                                       | Tests ajoutés |
-| --------------------------------------------------- | ------------- | ---------------------------------------------------------------------------- | ------------- |
-| Phase 0 — Spécification TDD                         | ✓ livrée      | `e29b7938b` (inclus avec P1)                                                 | —             |
-| Phase 1 — Parser décorateurs en suffixe             | ✓ livrée      | `e29b7938b`                                                                  | 22            |
-| Phase 2 — Registre + résolveur                      | ✓ livrée      | `e4daaca76`                                                                  | 23            |
-| Phase 3 — Wiring ConstructionExecutor               | ✓ livrée      | `2ae801cac`                                                                  | 8             |
-| Améliorations animation (lines/rays)                | ✓ livrées     | `259a09154`, `4b5f57913`, `00adc9f68`, `76a162b7d`, `97b5b52f0`, `20400837c` | 0 (UX only)   |
-| Phase 4 sub-steps + MVP mediatrice — Phase A        | ✓ livrée      | `3c7aa285f` (2026-05-19)                                                     | +0 (refactor) |
-| Phase 4 sub-steps + MVP mediatrice — Phase B        | ✓ livrée      | `3c7aa285f` (2026-05-19)                                                     | +5            |
-| Phase 5 — Gestion visibilité finale                 | ✓ livrée      | `3c7aa285f` (2026-05-19)                                                     | +6            |
-| Phase E — Polish visuel (validation utilisateur)    | ✓ livrée      | `07aac16f4`, `a95daa2be`, `da452898f`, `fd739521a` (2026-05-19/20)           | 0 (fixes UX)  |
-| Phase 4 — Bissectrice (`arcs_egaux` + `arc_milieu`) | ✓ livrée      | `061ee8715`, `e9fa3df6b`, `0cc627e47`, `e8af80a8e` (2026-05-20)              | +6            |
-| Phase V3a — Bissectrice accepte `GeoAngle`          | ✓ livrée      | `c364086e0` (2026-05-20)                                                     | inclus V3a    |
-| Phase A1 — Chorégraphie `transporte @euclide`       | ✓ livrée      | `fe3ae810c`, `55ab0f0e4`, `c2078b213`, `81965ae0e` (2026-05-20)              | +6            |
+| Phase                                               | Statut       | Commit                                                                       | Tests ajoutés |
+| --------------------------------------------------- | ------------ | ---------------------------------------------------------------------------- | ------------- |
+| Phase 0 — Spécification TDD                         | ✓ livrée     | `e29b7938b` (inclus avec P1)                                                 | —             |
+| Phase 1 — Parser décorateurs en suffixe             | ✓ livrée     | `e29b7938b`                                                                  | 22            |
+| Phase 2 — Registre + résolveur                      | ✓ livrée     | `e4daaca76`                                                                  | 23            |
+| Phase 3 — Wiring ConstructionExecutor               | ✓ livrée     | `2ae801cac`                                                                  | 8             |
+| Améliorations animation (lines/rays)                | ✓ livrées    | `259a09154`, `4b5f57913`, `00adc9f68`, `76a162b7d`, `97b5b52f0`, `20400837c` | 0 (UX only)   |
+| Phase 4 sub-steps + MVP mediatrice — Phase A        | ✓ livrée     | `3c7aa285f` (2026-05-19)                                                     | +0 (refactor) |
+| Phase 4 sub-steps + MVP mediatrice — Phase B        | ✓ livrée     | `3c7aa285f` (2026-05-19)                                                     | +5            |
+| Phase 5 — Gestion visibilité finale                 | ✓ livrée     | `3c7aa285f` (2026-05-19)                                                     | +6            |
+| Phase E — Polish visuel (validation utilisateur)    | ✓ livrée     | `07aac16f4`, `a95daa2be`, `da452898f`, `fd739521a` (2026-05-19/20)           | 0 (fixes UX)  |
+| Phase 4 — Bissectrice (`arcs_egaux` + `arc_milieu`) | ✓ livrée     | `061ee8715`, `e9fa3df6b`, `0cc627e47`, `e8af80a8e` (2026-05-20)              | +6            |
+| Phase V3a — Bissectrice accepte `GeoAngle`          | ✓ livrée     | `c364086e0` (2026-05-20)                                                     | inclus V3a    |
+| Phase A1 — Chorégraphie `transporte @euclide`       | ✓ livrée     | `fe3ae810c`, `55ab0f0e4`, `c2078b213`, `81965ae0e` (2026-05-20)              | +6            |
 | Phase 4 — Autres voies (parallele, …)               | ⏸ à démarrer | —                                                                            | —             |
 | Phase 4.5 — `ctx.sub` + `cercle_circonscrit`        | ⏸ à démarrer | —                                                                            | —             |
 | Phase 6 — Documentation auto-générée                | ⏸ à démarrer | —                                                                            | —             |

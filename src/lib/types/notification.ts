@@ -12,14 +12,7 @@ export type Notification = Tables<'notifications'>;
 
 // Notification enums (matching database constraints)
 export type NotificationType =
-	| 'info'
-	| 'warning'
-	| 'success'
-	| 'error'
-	| 'alert'
-	| 'announcement'
-	| 'system'
-	| 'reminder';
+	'info' | 'warning' | 'success' | 'error' | 'alert' | 'announcement' | 'system' | 'reminder';
 
 export type NotificationPriority = 'normal' | 'important' | 'urgent';
 

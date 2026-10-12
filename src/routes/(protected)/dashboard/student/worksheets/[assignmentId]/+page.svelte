@@ -217,8 +217,8 @@
 			<Archive class="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
 			<p class="text-muted-foreground">
 				<span class="font-medium text-foreground">Consultation seule.</span>
-				Cette fiche vient d'une classe que tu as quittée : tu peux la relire, mais tu ne peux plus y
-				répondre ni signaler une erreur.
+				Cette fiche vient d'une classe que tu as quittée : tu peux la relire, mais tu ne peux plus y répondre
+				ni signaler une erreur.
 			</p>
 		</div>
 	{/if}

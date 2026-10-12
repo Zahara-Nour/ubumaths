@@ -76,7 +76,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/engine.ts`         | Remet `WebReplEngine` en accord avec les objets (`syncEngine`), expansion des noms dans une saisie        |
 | `src/lib/atelier/plot-sync.ts`      | Reporte les objets tracés vers le `GrapheurStore` (`syncPlots`), à sens unique                            |
 | `src/lib/atelier/display.ts`        | Schémas Zod des réglages de courbe et de suite (carte, sauvegarde, lien : une seule règle)                |
-| `src/lib/atelier/mathfield.ts`      | Passage texte ↔ LaTeX pour le champ MathLive d'une carte                                                 |
+| `src/lib/atelier/mathfield.ts`      | Passage texte ↔ LaTeX pour le champ MathLive d'une carte                                                  |
 | `src/lib/atelier/paste.ts`          | Collage réécrit en LaTeX, annulable (`insertPasted`)                                                      |
 
 **Vue Calcul** (saisie, commandes, historique) :
@@ -115,7 +115,7 @@ Ceux du code et de l'interface :
 | ----------------------------------- | ------------------------------------------------------------------------------------------------ |
 | `src/lib/atelier/persistence.ts`    | Ranger / relire le `localStorage` (`loadAtelier`, `saveAtelier`, `readForeignWrite`), schéma Zod |
 | `src/lib/atelier/session.ts`        | Cycle de vie (`openSession`) : chargement, sauvegarde différée, autres onglets                   |
-| `src/lib/atelier/url.ts`            | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                            |
+| `src/lib/atelier/url.ts`            | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                             |
 | `src/lib/atelier/grapheur-link.ts`  | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`               |
 | `src/lib/atelier/merge.ts`          | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                        |
 | `src/lib/atelier/history-export.ts` | Export de l'historique de Calcul : JSON rejouable, ubumark lisible                               |
@@ -272,11 +272,25 @@ plus `{1/3}\pi`) — `/cas` compris.
 `mathAST/cli/exact-size.ts`) : au-delà de **1 000 caractères**, le mode exact **garde l'écriture
 tapée** (`(1+1/1000)^{1000}`, `1.01^{365}`, `2^{100000}`) — comme `1000!` le faisait déjà — avec une
 note (« Valeur exacte trop longue (environ 6 000 chiffres) : elle reste écrite telle quelle. ») ; la
-valeur approchée reste au bouton ≈ et en mode décimal. La taille est **prévue avant le calcul**
-(puissance de base a/b : environ k × (chiffres de a + chiffres de b) ; factorielle, coefficient
-binomial par Stirling) : avant, `(1+1/10000)^10000` prenait 13 s pour afficher 80 003 caractères,
-et `(1+1/100000)^100000` bloquait la page plus de 200 s (maintenant ~1 ms). Jamais pour une
-comparaison (vrai ou faux). Le résultat porte `exactTooLong` ; le rendu ne passe pas l'écriture
+valeur approchée reste au bouton ≈ et en mode décimal. Deux temps (lot « défauts des grandes
+fractions », 2026-10-12) :
+
+- la taille **prévue avant le calcul** (puissance de base a/b : environ k × (chiffres de a +
+  chiffres de b) ; factorielle, coefficient binomial par Stirling ; ailleurs, les tailles
+  s'ajoutent ; base irrationnelle — racines et nombres — par sa « hauteur », à un facteur 2
+  près) ne sert qu'à ne pas figer la page : au-delà de **20 000 caractères prévus**, rien n'est
+  calculé (`\sqrt{2}^{40000000}` et `2^{2^{100}}` répondent « Valeur hors d'échelle » au lieu de
+  bloquer 2,5 s). Avant, `(1+1/10000)^10000` prenait 13 s pour afficher 80 003 caractères, et
+  `(1+1/100000)^100000` bloquait la page plus de 200 s (maintenant ~1 ms) ;
+- en deçà, le résultat est calculé (moins de 130 ms au pire mesuré), et la règle des 1 000
+  caractères se lit sur sa **longueur réelle** (`exactCharacters`) : une base irrationnelle
+  échappait à la prévision (`\sqrt{2}^{100000}` affichait 15 052 caractères), et la prévision
+  ignore les simplifications (`10^{600}×10^{-598}` gardait son écriture pour 100). Une factorielle
+  que le moteur garde (`1000!`) compte par sa valeur (2 568 chiffres) ; `1000!/999!` n'est plus
+  annoncé « environ 5 000 chiffres ». L'arrondi se lit alors sur le résultat calculé (√2 tapé
+  n'entre en fraction que par son flottant, dont la puissance déborde).
+
+Jamais pour une comparaison (vrai ou faux). Le résultat porte `exactTooLong` ; le rendu ne passe pas l'écriture
 gardée à `tidy`, qui la développerait. La console ne calcule plus le résultat exact deux fois (le
 test du booléen le réutilise), ni l'arrondi deux fois (ligne et bouton ≈).
 

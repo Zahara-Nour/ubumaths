@@ -824,8 +824,7 @@ function visitNodeInternal(node: MathNode, visitor: ASTVisitor, context: Visitor
 	const methodName = getMethodNameForNode(node);
 	const enterMethod = `enter${methodName}` as keyof ASTVisitor;
 	const typeSpecificEnter = visitor[enterMethod] as
-		| ((node: MathNode, context: VisitorContext) => EnterResult)
-		| undefined;
+		((node: MathNode, context: VisitorContext) => EnterResult) | undefined;
 	const typeResult = typeSpecificEnter?.(node, context);
 
 	// Determine if we should skip children
@@ -848,8 +847,7 @@ function visitNodeInternal(node: MathNode, visitor: ASTVisitor, context: Visitor
 	// Call type-specific leave
 	const leaveMethod = `leave${methodName}` as keyof ASTVisitor;
 	const typeSpecificLeave = visitor[leaveMethod] as
-		| ((node: MathNode, context: VisitorContext) => void)
-		| undefined;
+		((node: MathNode, context: VisitorContext) => void) | undefined;
 	typeSpecificLeave?.(node, context);
 
 	// Call generic leave
@@ -936,8 +934,7 @@ function transformNodeInternal(
 	const methodName = getMethodNameForNode(currentNode);
 	const enterMethod = `enter${methodName}` as keyof TransformVisitor;
 	const typeSpecificEnter = visitor[enterMethod] as
-		| ((node: MathNode, context: VisitorContext) => TransformEnterResult)
-		| undefined;
+		((node: MathNode, context: VisitorContext) => TransformEnterResult) | undefined;
 
 	const typeResult = typeSpecificEnter?.(currentNode, context);
 	const typeParsed = parseEnterResult(typeResult, currentNode);
@@ -951,8 +948,7 @@ function transformNodeInternal(
 		const newMethodName = getMethodNameForNode(currentNode);
 		const newEnterMethod = `enter${newMethodName}` as keyof TransformVisitor;
 		const newTypeEnter = visitor[newEnterMethod] as
-			| ((node: MathNode, context: VisitorContext) => TransformEnterResult)
-			| undefined;
+			((node: MathNode, context: VisitorContext) => TransformEnterResult) | undefined;
 
 		const newResult = newTypeEnter?.(currentNode, context);
 		const newParsed = parseEnterResult(newResult, currentNode);
@@ -994,8 +990,7 @@ function transformNodeInternal(
 	// This ensures type safety - leaveAddition always receives what was originally an addition
 	const leaveMethod = `leave${originalMethodName}` as keyof TransformVisitor;
 	const typeSpecificLeave = visitor[leaveMethod] as
-		| ((node: MathNode, context: VisitorContext) => TransformLeaveResult)
-		| undefined;
+		((node: MathNode, context: VisitorContext) => TransformLeaveResult) | undefined;
 
 	const leaveTypeResult = typeSpecificLeave?.(transformedNode, context);
 	if (leaveTypeResult !== undefined) {

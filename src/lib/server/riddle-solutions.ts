@@ -21,9 +21,7 @@ import type { RiddleSolution } from '$lib/types/riddle';
 type Client = SupabaseClient<Database>;
 
 export type SaveRiddleSolutionResult =
-	| { ok: true }
-	| { ok: false; reason: 'error'; error: unknown }
-	| { ok: false; reason: 'no-row' };
+	{ ok: true } | { ok: false; reason: 'error'; error: unknown } | { ok: false; reason: 'no-row' };
 
 // ============================================================================
 // FUNCTIONS

@@ -58,20 +58,7 @@ export interface DslPropertyAccess extends DslExprPos {
 export interface DslBinaryExpr extends DslExprPos {
 	readonly kind: 'binary';
 	readonly op:
-		| '+'
-		| '-'
-		| '*'
-		| '/'
-		| '%'
-		| '^'
-		| '=='
-		| '!='
-		| '<'
-		| '>'
-		| '<='
-		| '>='
-		| 'et'
-		| 'ou';
+		'+' | '-' | '*' | '/' | '%' | '^' | '==' | '!=' | '<' | '>' | '<=' | '>=' | 'et' | 'ou';
 	readonly left: DslExpr;
 	readonly right: DslExpr;
 	readonly line: number;

@@ -426,8 +426,8 @@
 		</Card.Header>
 		<Card.Content class="text-sm text-blue-800">
 			<p class="mb-2">
-				<strong>Article 8 du RGPD</strong> : Le consentement parental est requis pour les mineurs de
-				moins de 15 ans en France.
+				<strong>Article 8 du RGPD</strong> : Le consentement parental est requis pour les mineurs de moins
+				de 15 ans en France.
 			</p>
 			<ul class="ml-4 list-disc space-y-1">
 				<li>
