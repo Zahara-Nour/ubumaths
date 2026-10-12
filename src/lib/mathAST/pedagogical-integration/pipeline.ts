@@ -73,6 +73,7 @@ import { extractExactRational, numericNode, rationalToNode } from '../common/num
 import {
 	absBigInt,
 	absRational,
+	divRational,
 	isNegative as isNegativeRational,
 	isOne as isOneRational,
 	isZero as isZeroRational,
@@ -359,22 +360,14 @@ function pushSimplifyStep(
 ): MathNode {
 	const single = singleCoefficientTerm(raw);
 	if (single?.canonical) return raw;
-	// Somme de logarithmes : coefficient devant, comme pour un terme seul
-	const logarithms = lnCoefficientSum(raw);
-	if (logarithms) {
-		if (toLatex(logarithms) === toLatex(raw)) return raw;
-		steps.push(
-			buildStep(ctx, {
-				rule: 'simplify-result',
-				before: raw,
-				after: logarithms,
-				variable: ctx.variable
-			})
-		);
-		return logarithms;
-	}
-	const rewriting = single ? null : developAndFactor(raw, ctx);
+	const developed = single ? null : developAndFactor(raw, ctx);
+	// Somme de ln regroupée puis rangée : chaque ln garde son coefficient devant
+	const rewriting = developed && {
+		...developed,
+		result: lnCoefficientForm(developed.result) ?? developed.result
+	};
 	if (rewriting) {
+		if (toLatex(rewriting.result) === toLatex(raw)) return raw;
 		steps.push(
 			buildStep(ctx, {
 				rule: 'simplify-result',
@@ -389,7 +382,11 @@ function pushSimplifyStep(
 	}
 	// Coefficient à réduire (`\dfrac{2}{4}e^x` → `\dfrac{1}{2}e^x`) : on le réduit
 	// en gardant la forme « k · fonction » ; sinon, `tidy`
-	const tidied = single ? withRationalCoefficient(single.k, single.fn) : tidyTerms(raw);
+	const tidy = (node: MathNode): MathNode => {
+		const tidiedSum = tidyTerms(node);
+		return lnCoefficientForm(tidiedSum) ?? tidiedSum;
+	};
+	const tidied = single ? withRationalCoefficient(single.k, single.fn) : tidy(raw);
 	if (toLatex(tidied) === toLatex(raw)) return raw;
 	steps.push(
 		buildStep(ctx, {
@@ -972,26 +969,40 @@ interface SingleCoefficientTerm {
 }
 
 /**
- * Une somme d'au moins deux termes « coefficient rationnel × ln » écrite comme
- * un terme seul (`withRationalCoefficient`) : le coefficient DEVANT, le signe
- * entre les termes — `\dfrac{1}{4}\ln|2x-1|-\dfrac{1}{4}\ln|2x+1|`, comme le
- * moteur et `\dfrac{1}{2}e^{2x}` (décision de David du 2026-10-11), et non
- * `\dfrac{\ln|2x-1|}{4}` que rendait `tidy`. null sinon.
+ * La somme RANGÉE par `tidy` (ln semblables regroupés, terme positif en tête)
+ * dont chaque terme est « coefficient rationnel × ln », réécrite coefficient
+ * DEVANT (`withRationalCoefficient`), dans le même ordre et avec les mêmes
+ * signes : `\dfrac{1}{3}\ln|3x+1| - 2\ln|x|`, comme le moteur et
+ * `\dfrac{1}{2}e^{2x}` (décision de David du 2026-10-11), et non
+ * `\dfrac{\ln|3x+1|}{3}` qu'écrit `tidy`. null si un terme n'est pas de
+ * cette forme ou s'il y a moins de deux termes.
  */
-function lnCoefficientSum(raw: MathNode): MathNode | null {
-	const terms = flattenSum(raw);
+function lnCoefficientForm(tidied: MathNode): MathNode | null {
+	const terms = flattenSum(tidied);
 	if (terms.length < 2) return null;
 	const parts: SignedTerm[] = [];
 	for (const { term, sign } of terms) {
-		const single = singleCoefficientTerm(term);
-		if (!single || single.fn.type !== 'function' || single.fn.name !== 'ln') return null;
-		const k = sign === 1 ? single.k : negRational(single.k);
+		const ln = lnTerm(term);
+		if (ln === null) return null;
+		const k = sign === 1 ? ln.k : negRational(ln.k);
 		parts.push({
-			term: withRationalCoefficient(absRational(k), single.fn),
+			term: withRationalCoefficient(absRational(k), ln.fn),
 			sign: isNegativeRational(k) ? -1 : 1
 		});
 	}
 	return signedSum(parts);
+}
+
+/** `k·\ln u`, `\ln u`, `\dfrac{\ln u}{m}` ou `\dfrac{n\ln u}{m}` (n, m entiers écrits) : k et le ln */
+function lnTerm(term: MathNode): { readonly k: Rational; readonly fn: MathNode } | null {
+	const isLn = (n: MathNode): boolean => n.type === 'function' && n.name === 'ln';
+	const single = singleCoefficientTerm(term);
+	if (single) return isLn(single.fn) ? { k: single.k, fn: single.fn } : null;
+	if (term.type !== 'division' || !isIntegerLiteral(term.denominator)) return null;
+	const top = singleCoefficientTerm(term.numerator);
+	const m = extractExactRational(term.denominator);
+	if (!top || !isLn(top.fn) || m === null || m.n === 0n) return null;
+	return { k: divRational(top.k, m), fn: top.fn };
 }
 
 function isIntegerLiteral(n: MathNode): boolean {
@@ -1399,8 +1410,8 @@ function integrateCyclicIPP(integrand: MathNode, ctx: DispatchContext): Dispatch
  * 2026-10-12) : la racine r = p/q donne le facteur `qx − p`, l'élément simple
  * A/(x − r) s'écrit A'/(qx − p) avec A' = A·q, et s'intègre en
  * (A'/q)·ln|qx − p| = A·ln|qx − p| : `4x² − 1 = (2x − 1)(2x + 1)`,
- * primitive `\dfrac{\ln|2x - 1|}{4} - …`. Coefficient dominant 1 : rien ne
- * change (`x - 3`).
+ * primitive `\dfrac{1}{4}\ln|2x - 1| - \dfrac{1}{4}\ln|2x + 1|`, coefficient
+ * devant comme le moteur. Coefficient dominant 1 : facteurs inchangés (`x - 3`).
  */
 function integratePartialFractions(
 	integrand: MathNode,
@@ -1437,18 +1448,21 @@ function integratePartialFractions(
 		);
 
 	// Antiderivative `A·ln|q₁x − p₁| + B·ln|q₂x − p₂|` (A = A'/q₁), coefficient
-	// devant et signe entre les termes : `\dfrac{1}{4}\ln|2x-1| - \dfrac{1}{4}\ln|2x+1|`
-	const antiderivative = signedSum(
-		[
-			{ coefficient: match.A, factor: factor1 },
-			{ coefficient: match.B, factor: factor2 }
-		]
-			.filter((e) => !isZeroRational(e.coefficient))
-			.map((e) => ({
-				term: withRationalCoefficient(absRational(e.coefficient), ln(abs(e.factor))),
-				sign: isNegativeRational(e.coefficient) ? -1 : 1
-			}))
-	);
+	// devant, signe entre les termes, terme positif en tête (comme le moteur) :
+	// `\dfrac{1}{4}\ln|2x-1| - \dfrac{1}{4}\ln|2x+1|`
+	const logarithms: SignedTerm[] = [
+		{ coefficient: match.A, factor: factor1 },
+		{ coefficient: match.B, factor: factor2 }
+	]
+		.filter((e) => !isZeroRational(e.coefficient))
+		.map((e) => ({
+			term: withRationalCoefficient(absRational(e.coefficient), ln(abs(e.factor))),
+			sign: isNegativeRational(e.coefficient) ? -1 : 1
+		}));
+	const antiderivative = signedSum([
+		...logarithms.filter((t) => t.sign === 1),
+		...logarithms.filter((t) => t.sign === -1)
+	]);
 
 	// Q factorisé par le noyau, coefficient dominant compris : `4x² − 1 =
 	// (2x − 1)(2x + 1)`, jamais `(x − 1/2)(x + 1/2)` qui serait faux (V22)

@@ -1,8 +1,10 @@
 /**
  * Éléments simples à facteurs ENTIERS dans la version pédagogique (ADR 0024,
  * décision de David du 2026-10-12) : 1/(4x² − 1) se décompose sur
- * (2x − 1)(2x + 1), la primitive s'écrit `\dfrac{\ln|2x - 1|}{4} - …`,
- * jamais `\ln\left|x - \dfrac{1}{2}\right|`. Chaque étape part de la
+ * (2x − 1)(2x + 1), la primitive s'écrit `\dfrac{1}{4}\ln|2x - 1| - …`,
+ * coefficient devant comme le moteur, jamais `\ln\left|x - \dfrac{1}{2}\right|`
+ * ni `\dfrac{\ln|2x - 1|}{4}`. Une somme de ln (linéarité) garde ses ln
+ * semblables regroupés et son terme positif en tête. Chaque étape part de la
  * précédente, chaque égalité affichée est vraie (vérifiée en nombres).
  * Coefficient dominant 1 : rendu inchangé.
  */
@@ -149,7 +151,17 @@ describe('intégration pédagogique — éléments simples à facteurs entiers',
 				'\\frac{1}{2x}+\\frac{1}{3x+1}',
 				`\\dfrac{1}{2} ${LN('2 x')} + \\dfrac{1}{3} ${LN('3 x + 1')}`
 			],
-			['\\frac{3}{x}+\\frac{2}{x+1}', `3 ${LN('x')} + 2 ${LN('x + 1')}`]
+			['\\frac{3}{x}+\\frac{2}{x+1}', `3 ${LN('x')} + 2 ${LN('x + 1')}`],
+			// ln semblables regroupés (revue du 2026-10-12 : la mise en forme les laissait côte à côte)
+			['\\frac{1}{x}-\\frac{1}{x}', '0'],
+			['\\frac{1}{x}+\\frac{1}{x}', `2 ${LN('x')}`],
+			['\\frac{2}{x}+\\frac{3}{x}', `5 ${LN('x')}`],
+			['\\frac{3}{x}-\\frac{1}{x}', `2 ${LN('x')}`],
+			['\\frac{1}{2x}+\\frac{1}{2x}', LN('2 x')],
+			['\\frac{1}{x}+\\frac{1}{x+1}+\\frac{1}{x}', `${LN('x + 1')} + 2 ${LN('x')}`],
+			// pas de moins en tête : le terme positif d'abord, comme le moteur
+			['\\frac{-2}{x}+\\frac{1}{3x+1}', `\\dfrac{1}{3} ${LN('3 x + 1')} - 2 ${LN('x')}`],
+			['\\frac{x-2}{x^2-1}', `\\dfrac{3}{2} ${LN('x + 1')} - \\dfrac{1}{2} ${LN('x - 1')}`]
 		];
 		for (const [latex, expected] of CASES) {
 			it(latex, () => {
