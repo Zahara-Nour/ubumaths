@@ -444,6 +444,39 @@ describe('POST /api/riddles/[id]/submit', () => {
 		).rejects.toThrow();
 	});
 
+	it('énigme cachée par la RLS : 404, et le client service ne lit aucune solution', async () => {
+		mockRequest = new Request(`http://localhost/api/riddles/${RIDDLE_UUID}/submit`, {
+			method: 'POST',
+			body: JSON.stringify({ answer: 42 })
+		});
+
+		(mockSupabase.from as Mock).mockReturnValueOnce(makeProfileMock());
+		// La lecture de l'élève ne rend rien : brouillon, énigme d'un autre, non assignée.
+		(mockSupabase.from as Mock).mockReturnValueOnce({
+			select: vi.fn().mockReturnValue({
+				eq: vi.fn().mockReturnValue({
+					single: vi.fn().mockResolvedValue({
+						data: null,
+						error: { code: 'PGRST116', message: 'no rows' }
+					})
+				})
+			})
+		});
+
+		await expect(
+			submitHandler.POST({
+				params: { id: RIDDLE_UUID },
+				request: mockRequest,
+				locals: {
+					supabase: mockSupabase,
+					safeGetSession: async () => mockSession
+				}
+			} as never)
+		).rejects.toMatchObject({ status: 404 });
+		expect(serviceFrom).not.toHaveBeenCalled();
+		expect(serviceRpc).not.toHaveBeenCalled();
+	});
+
 	it('should handle RPC submission errors', async () => {
 		const mockRiddle = {
 			id: 'riddle-123',
