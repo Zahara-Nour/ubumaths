@@ -38,6 +38,7 @@
  *   individualisée). Rien n'est lu dans `worksheet_instances`.
  */
 
+import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
@@ -186,6 +187,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					variations,
 					resources,
 					generic_functions,
+					topic,
 					tags
 				)
 			`
@@ -273,6 +275,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			if (exerciseData.generic_functions) {
 				exerciseView.generic_functions = exerciseData.generic_functions;
 			}
+
+			// Sens de `AB` (longueur ou produit) résolu ici depuis le thème (Q-J) :
+			// la vue reçoit le sens, pas le thème.
+			exerciseView.capital_pairs = exerciseCapitalPairs(exerciseData.topic);
 
 			// Add hints if present (from the version given)
 			if (hints && hints.length > 0) {

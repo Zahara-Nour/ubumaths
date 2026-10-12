@@ -10,6 +10,7 @@ import { uuidSchema } from './common';
 import { exerciseHintSchema } from './exercises';
 import { gradeCodeSchema } from './grades';
 import { CONTENT_LOCALES } from '$lib/types/locale';
+import { capitalPairsSchema } from '$lib/questions/capital-pairs';
 
 // ============================================================================
 // ENUM SCHEMAS
@@ -686,7 +687,10 @@ export const worksheetExerciseWithDataResponseSchema = worksheetExerciseResponse
 			variations: z.array(z.unknown()).nullable(),
 			// Lettres déclarées comme fonctions : sans cette clé, le schéma la
 			// retire en silence et le PDF imprime `C'(x)` en erreur.
-			generic_functions: z.array(z.string()).nullable().optional()
+			generic_functions: z.array(z.string()).nullable().optional(),
+			// Thème : décide du sens de `AB` dans le PDF (Q-J). Même piège que
+			// ci-dessus : sans la clé, le schéma la retire en silence.
+			topic: z.string().nullable().optional()
 		})
 		.nullable()
 		.optional()
@@ -983,7 +987,13 @@ export const studentExerciseViewSchema = z.object({
 	 * Lettres déclarées comme fonctions par l'exercice. Sans cette clé, le schéma
 	 * la retire en silence et le PDF imprime `C'(x)` en erreur.
 	 */
-	generic_functions: z.array(z.string()).nullable().optional()
+	generic_functions: z.array(z.string()).nullable().optional(),
+	/**
+	 * Sens de deux majuscules collées (`AB`), résolu par le serveur depuis le thème
+	 * de l'exercice (Q-J). Sans cette clé, le schéma la retire en silence et l'élève
+	 * lit `AB` comme un produit.
+	 */
+	capital_pairs: capitalPairsSchema.optional()
 });
 
 /**
@@ -1358,7 +1368,9 @@ export const getErrorReportDetailResponseSchema = z.object({
 		slug: z.string(),
 		variations: z.array(exerciseVariationSchema),
 		shared: z.unknown().nullable(),
-		generic_functions: z.array(z.string()).nullable()
+		generic_functions: z.array(z.string()).nullable(),
+		// Thème : décide du sens de `AB` (Q-J) ; sans la clé, le schéma la retire en silence
+		topic: z.string().nullable().optional()
 	}),
 	context: z.object({
 		worksheet_title: z.string(),

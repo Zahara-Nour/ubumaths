@@ -19,6 +19,7 @@
 	import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import type { StudentExerciseView } from '$lib/types/worksheets';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 
 	interface Props {
 		exercise: StudentExerciseView;
@@ -26,6 +27,9 @@
 	}
 
 	let { exercise, index }: Props = $props();
+
+	// Sens de `AB` (longueur ou produit), résolu par le serveur depuis le thème (Q-J)
+	provideCapitalPairs(() => exercise.capital_pairs);
 
 	// Fonctions déclarées par l'exercice (`P(x)`, `C'(x)`) : sans elles, `P(x)` se lit comme un produit
 	let exerciseFunctions = $derived(genericFunctionsConfig(exercise.generic_functions));

@@ -48,6 +48,7 @@
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import type {
 		StudentWorksheetView,
 		StudentExerciseView,
@@ -284,6 +285,9 @@
 	let currentExercise = $derived(visualOrderExercises[currentExerciseIndex] ?? null);
 	// Fonctions déclarées par l'exercice (`P(x)`, `C'(x)`) : sans elles, `P(x)` se lit comme un produit
 	let exerciseFunctions = $derived(genericFunctionsConfig(currentExercise?.generic_functions));
+	// Sens de `AB` (longueur ou produit) de l'exercice ouvert, résolu par le serveur (Q-J).
+	// Posé pour la page : les titres de la liste le suivent aussi.
+	provideCapitalPairs(() => currentExercise?.capital_pairs);
 	let hasCorrection = $derived(
 		currentExercise?.correction_visible && currentExercise?.correction !== null
 	);

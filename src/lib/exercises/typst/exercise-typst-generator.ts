@@ -33,7 +33,8 @@ import { parseMarkdown } from '$lib/ubumark';
 import { detailedCorrection } from '$lib/questions/correction-detail';
 import { createLogger } from '$lib/utils/logger';
 import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 // Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
 import '$lib/ubumark/generators/figure-typst-setup';
 
@@ -128,6 +129,8 @@ export async function generateExerciseTypst(
 
 	// Fonctions déclarées par l'exercice (`C'(x)`), lues comme à l'écran
 	const genericFunctions = genericFunctionsConfig(exercise.generic_functions);
+	// Sens de `AB` (longueur ou produit) : le thème de l'exercice décide (Q-J), comme à l'écran
+	const capitalPairs = exerciseCapitalPairs(exercise.topic);
 
 	logger.info('generateExerciseTypst started', {
 		exerciseId: exercise.id,
@@ -172,14 +175,14 @@ export async function generateExerciseTypst(
 		logger.info('Generating statement...', {
 			statementPreview: instance.statement_md?.slice(0, 100)
 		});
-		typst += generateStatement(instance.statement_md, genericFunctions);
+		typst += generateStatement(instance.statement_md, genericFunctions, capitalPairs);
 		logger.info('Statement generated');
 
 		if (includeSolution && instance.solution_md) {
 			logger.info('Generating solution...', {
 				solutionPreview: instance.solution_md?.slice(0, 100)
 			});
-			typst += generateSolution(instance.solution_md, genericFunctions);
+			typst += generateSolution(instance.solution_md, genericFunctions, capitalPairs);
 			logger.info('Solution generated');
 		} else {
 			logger.info('Solution skipped', { includeSolution, hasSolution: !!instance.solution_md });
@@ -345,7 +348,8 @@ function generateHeader(
  */
 function generateStatement(
 	markdown: string,
-	genericFunctions: GenericFunctionConfig | undefined
+	genericFunctions: GenericFunctionConfig | undefined,
+	capitalPairs: CapitalPairs
 ): string {
 	logger.info('generateStatement: parsing markdown', { length: markdown?.length });
 	const ast = parseMarkdown(markdown);
@@ -355,7 +359,7 @@ function generateStatement(
 	});
 
 	logger.info('generateStatement: generating typst');
-	const typstContent = generateTypst(ast, { includeSetup: false, genericFunctions });
+	const typstContent = generateTypst(ast, { includeSetup: false, genericFunctions, capitalPairs });
 	logger.info('generateStatement: typst generated', { typstLength: typstContent?.length });
 
 	return typstContent + '\n\n';
@@ -368,7 +372,8 @@ function generateStatement(
  */
 function generateSolution(
 	markdown: string,
-	genericFunctions: GenericFunctionConfig | undefined
+	genericFunctions: GenericFunctionConfig | undefined,
+	capitalPairs: CapitalPairs
 ): string {
 	logger.info('generateSolution: starting', { markdownLength: markdown?.length });
 
@@ -385,7 +390,7 @@ function generateSolution(
 	});
 
 	logger.info('generateSolution: generating typst');
-	const typstOutput = generateTypst(ast, { includeSetup: false, genericFunctions });
+	const typstOutput = generateTypst(ast, { includeSetup: false, genericFunctions, capitalPairs });
 	logger.info('generateSolution: typst generated', { typstLength: typstOutput?.length });
 
 	content += typstOutput;

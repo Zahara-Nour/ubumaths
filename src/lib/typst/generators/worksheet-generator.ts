@@ -616,7 +616,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const statementTypst = generateTypst(statementAst, {
 			includeSetup: false,
 			language: this.locale,
-			genericFunctions: genericFunctionsConfig(exercise.generic_functions)
+			genericFunctions: genericFunctionsConfig(exercise.generic_functions),
+			capitalPairs: exercise.capital_pairs
 		});
 
 		// Indent the statement content
@@ -648,7 +649,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			const solutionTypst = generateTypst(solutionAst, {
 				includeSetup: false,
 				language: this.locale,
-				genericFunctions: genericFunctionsConfig(exercise.generic_functions)
+				genericFunctions: genericFunctionsConfig(exercise.generic_functions),
+				capitalPairs: exercise.capital_pairs
 			});
 
 			// Indent the solution content
@@ -806,7 +808,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const statementTypst = generateTypst(statementAst, {
 			includeSetup: false,
 			language: this.locale,
-			genericFunctions: genericFunctionsConfig(exercise.generic_functions)
+			genericFunctions: genericFunctionsConfig(exercise.generic_functions),
+			capitalPairs: exercise.capital_pairs
 		});
 
 		// Indent the statement content
@@ -840,7 +843,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			const solutionTypst = generateTypst(solutionAst, {
 				includeSetup: false,
 				language: this.locale,
-				genericFunctions: genericFunctionsConfig(exercise.generic_functions)
+				genericFunctions: genericFunctionsConfig(exercise.generic_functions),
+				capitalPairs: exercise.capital_pairs
 			});
 
 			const indentedSolution = solutionTypst

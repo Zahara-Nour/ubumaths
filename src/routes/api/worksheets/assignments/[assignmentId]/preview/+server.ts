@@ -37,6 +37,7 @@
  * - If studentId provided, must be a valid student in the assignment
  */
 
+import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
@@ -325,6 +326,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					variations,
 					resources,
 					generic_functions,
+					topic,
 					tags
 				)
 			`
@@ -412,6 +414,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			if (exerciseData.generic_functions) {
 				exerciseView.generic_functions = exerciseData.generic_functions;
 			}
+
+			// Sens de `AB` (longueur ou produit) résolu ici depuis le thème (Q-J) :
+			// la vue reçoit le sens, pas le thème.
+			exerciseView.capital_pairs = exerciseCapitalPairs(exerciseData.topic);
 
 			if (resolved.hints && resolved.hints.length > 0) {
 				exerciseView.hints = resolved.hints;

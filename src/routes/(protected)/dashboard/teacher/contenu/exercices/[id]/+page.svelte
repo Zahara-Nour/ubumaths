@@ -49,6 +49,8 @@
 	import type { ExerciseShareToken } from '$lib/exercises/types';
 	import { getExerciseContentSafe } from '$lib/exercises/types';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -173,6 +175,8 @@
 
 	// Fonctions déclarées par l'exercice : même config que la fiche élève et le PDF
 	let genericFunctionsConfig = $derived(toGenericFunctionsConfig(data.exercise.generic_functions));
+	// Sens de `AB` (longueur ou produit) : le thème de l'exercice décide (Q-J)
+	provideCapitalPairs(() => exerciseCapitalPairs(data.exercise.topic));
 
 	/**
 	 * Copy JSON to clipboard

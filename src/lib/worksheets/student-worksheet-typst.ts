@@ -28,7 +28,7 @@ import {
 } from '$lib/ubumark/generators/typst-generator';
 import { parseMarkdown } from '$lib/ubumark';
 import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
 import { exerciseBadge } from '$lib/typst/worksheet-palette';
 // Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
 import '$lib/ubumark/generators/figure-typst-setup';
@@ -149,9 +149,12 @@ export function generateStudentWorksheetTypst(
 		title: string | null | undefined;
 		correction: string;
 		genericFunctions: GenericFunctionConfig | undefined;
+		capitalPairs: CapitalPairs | undefined;
 	}[] = [];
 
 	for (const exercise of sortedExercises) {
+		// Sens de `AB` (longueur ou produit), résolu par le serveur ; absent : produit (Q-J)
+		const capitalPairs = exercise.capital_pairs;
 		// Check if we're entering a new section
 		if (exercise.section_id !== currentSectionId) {
 			currentSectionId = exercise.section_id;
@@ -175,7 +178,7 @@ export function generateStudentWorksheetTypst(
 		// En-tête : numéro blanc sur carré ambre (charte partagée avec la fiche enseignant), titre en gras
 		// Use processTableCellContent to handle math expressions in titles
 		const titlePart = exercise.title
-			? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(exercise.title, locale)}]`
+			? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(exercise.title, locale, undefined, capitalPairs)}]`
 			: '';
 
 		// Star prefix for essential exercises
@@ -204,8 +207,12 @@ export function generateStudentWorksheetTypst(
 		// Fonctions déclarées par l'exercice : sans elles, `C'(x)` s'imprime en erreur.
 		const genericFunctions = genericFunctionsConfig(exercise.generic_functions);
 		exerciseContent +=
-			generateTypst(statementAst, { includeSetup: false, genericFunctions, language: locale }) +
-			'\n\n';
+			generateTypst(statementAst, {
+				includeSetup: false,
+				genericFunctions,
+				capitalPairs,
+				language: locale
+			}) + '\n\n';
 
 		// Wrap essential exercises with orange left border
 		if (exercise.is_essential) {
@@ -221,7 +228,8 @@ ${exerciseContent}]\n`;
 				number: exerciseNumber,
 				title: exercise.title,
 				correction: exercise.correction,
-				genericFunctions
+				genericFunctions,
+				capitalPairs
 			});
 		}
 
@@ -233,9 +241,9 @@ ${exerciseContent}]\n`;
 		typst += `#pagebreak()\n\n`;
 		typst += `= ${labels.corrections}\n\n`;
 
-		for (const { number, title, correction, genericFunctions } of corrections) {
+		for (const { number, title, correction, genericFunctions, capitalPairs } of corrections) {
 			const titlePart = title
-				? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(title, locale)}]`
+				? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(title, locale, undefined, capitalPairs)}]`
 				: '';
 
 			// Sticky header inside the panel: same reason as the exercises above
@@ -249,6 +257,7 @@ ${exerciseContent}]\n`;
 			typst += generateTypst(correctionAst, {
 				includeSetup: false,
 				genericFunctions,
+				capitalPairs,
 				language: locale
 			});
 			typst += `\n]\n\n#v(1em)\n`;

@@ -48,6 +48,7 @@
 	import { createLogger } from '$lib/utils/logger';
 	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
 	import type { JSONContent } from '@tiptap/core';
+	import { clearCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 
 	const logger = createLogger('TutorChat');
 
@@ -74,6 +75,10 @@
 		assignmentId,
 		onConversationCreated
 	}: Props = $props();
+
+	// Le chat garde l'écriture d'avant pour `AB` (produit, décision Q-M), même ouvert à
+	// côté d'un exercice qui pose « longueur » (lot 6 des longueurs)
+	clearCapitalPairs();
 
 	// Message types
 	interface TextContent {

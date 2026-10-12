@@ -896,3 +896,44 @@ describe('fonctions déclarées de l’exercice', () => {
 		expect(render(instanceWithC(undefined), false)).toContain('Unexpected token');
 	});
 });
+
+// Sens de deux majuscules collées (lot 6 des longueurs, Q-J) : résolu à la génération de
+// l'instance depuis le thème de l'exercice et copié dessus ; absent (instance d'avant) :
+// produit, l'écriture d'avant (Q-L).
+describe('sens de AB de l’exercice (capital_pairs)', () => {
+	const instanceWithPrimes = (capitalPairs: 'length' | 'product' | undefined): InstanceData =>
+		createMockInstance({
+			exercises: [
+				{
+					exercise_id: 'ex-ab',
+					title: 'Thalès',
+					position: 1,
+					parameters: {},
+					statement: "Calculer ~A'B'~.",
+					solution: "On trouve ~A'B'=5~.",
+					...(capitalPairs && { capital_pairs: capitalPairs })
+				}
+			]
+		});
+
+	const render = (instance: InstanceData): string =>
+		generateWorksheetTypst({
+			worksheet: createMockWorksheet(),
+			instance,
+			config: createMockConfig(),
+			mode: 'correction',
+			template: null
+		});
+
+	it('longueur : énoncé et corrigé sans erreur', () => {
+		const typst = render(instanceWithPrimes('length'));
+		expect(typst).not.toContain('Unexpected token');
+		expect(typst).toContain('On trouve');
+	});
+
+	it('absent ou produit : écriture d’avant, identique (témoin)', () => {
+		const before = render(instanceWithPrimes(undefined));
+		expect(before).toContain('Unexpected token');
+		expect(render(instanceWithPrimes('product'))).toBe(before);
+	});
+});

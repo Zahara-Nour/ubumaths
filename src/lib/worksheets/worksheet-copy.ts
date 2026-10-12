@@ -13,6 +13,7 @@
 
 import type { ContentLocale } from '$lib/types/locale';
 import type { Exercise, ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
+import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 import {
 	localizedText,
 	type InstanceData,
@@ -60,6 +61,8 @@ export interface ExerciseContentRow {
 	title?: string | null;
 	shared?: SharedExerciseDefaults | null;
 	variations?: ExerciseVariation[] | null;
+	/** Thème : décide du sens de `AB` (longueur ou produit, Q-J) */
+	topic?: string | null;
 }
 
 /** Un exercice de la fiche (`worksheet_exercises`) et son contenu */
@@ -212,7 +215,9 @@ export function buildWorksheetCopy(worksheet: WorksheetForCopy, scope: CopyScope
 			hints: copy.hints,
 			selectedVariationIndex: copy.variationIndex,
 			// Fonctions déclarées : sans elles, `C'(x)` s'imprime en erreur dans le PDF.
-			generic_functions: we.exercise?.generic_functions
+			generic_functions: we.exercise?.generic_functions,
+			// Sens de `AB` (longueur ou produit) : le thème de l'exercice décide (Q-J)
+			capital_pairs: exerciseCapitalPairs(we.exercise?.topic)
 		};
 	});
 

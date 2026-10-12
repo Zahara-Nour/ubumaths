@@ -35,6 +35,8 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Check, X, Loader2, AlertTriangle } from '@lucide/svelte';
 	import type { ExerciseVariation } from '$lib/exercises/types';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 
 	// Types
 	interface ReportData {
@@ -60,6 +62,7 @@
 		variations: ExerciseVariation[];
 		shared: unknown;
 		generic_functions: string[] | null;
+		topic?: string | null;
 	}
 
 	interface ContextData {
@@ -78,6 +81,8 @@
 	// Cast for type safety
 	const report = initialData.report as ReportData;
 	const exercise = initialData.exercise as ExerciseData;
+	// Sens de `AB` (longueur ou produit) : le thème de l'exercice décide (Q-J)
+	provideCapitalPairs(() => exerciseCapitalPairs(exercise.topic));
 	const context = initialData.context as ContextData;
 	const nextPendingReportId = initialData.nextPendingReportId as string | null;
 

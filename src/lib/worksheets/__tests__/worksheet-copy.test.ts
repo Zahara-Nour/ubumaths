@@ -234,3 +234,18 @@ describe('hasPerStudentValues : le corrigé de la classe vaut-il pour tous ?', (
 		expect(buildWorksheetCopy(orphan, individual).exercises[0].statement).toBe('');
 	});
 });
+
+// Sens de deux majuscules collées (lot 6 des longueurs, Q-J) : le thème de l'exercice
+describe('buildWorksheetCopy : sens de AB selon le thème de l’exercice', () => {
+	const scope = assignmentCopyScope(ASSIGNMENT);
+	const withTopic = (topic: string | null | undefined) =>
+		worksheetOf([{ ...row(), exercise: { ...row().exercise, topic } }]);
+
+	it.each([
+		['Géométrie', 'length'],
+		[null, 'length'],
+		['Graphes et matrices', 'product']
+	] as const)('thème %s → %s', (topic, expected) => {
+		expect(buildWorksheetCopy(withTopic(topic), scope).exercises[0].capital_pairs).toBe(expected);
+	});
+});

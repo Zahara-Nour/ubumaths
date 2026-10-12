@@ -49,3 +49,18 @@ describe('formules en syntaxe maison — sens de AB posé par la carte', () => {
 		await expect.poll(latex).toContain('A B^2');
 	});
 });
+
+// Lot 6 : le chat du tuteur, ouvert dans la fenêtre d'un exercice en « longueur », garde
+// l'écriture d'avant (produit, Q-M) grâce à `clearCapitalPairs`.
+describe('clearCapitalPairs : un rendu enfant revient au produit', () => {
+	it('l’exercice écrit AB^2, le rendu qui coupe le sens écrit A B^2', async () => {
+		const { default: Harness } = await import('./CapitalPairsClearHarness.svelte');
+		const screen = await render(Harness, { props: { content: '~AB^2=9~' } });
+		const latexIn = (id: string) =>
+			[...screen.container.querySelectorAll(`[data-testid="${id}"] math-span`)]
+				.map((m) => m.textContent ?? '')
+				.join(' | ');
+		await expect.poll(() => latexIn('exercise')).toContain('AB^2');
+		await expect.poll(() => latexIn('chat')).toContain('A B^2');
+	});
+});

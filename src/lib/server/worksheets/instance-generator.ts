@@ -20,6 +20,7 @@ import type { Exercise } from '$lib/exercises/types';
 import { generateExerciseInstance } from '$lib/exercises/generator/instance-generator';
 import { worksheetLocale } from '$lib/types/worksheets';
 import type { ContentLocale } from '$lib/types/locale';
+import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 
 /**
  * Parameters for generating a worksheet instance
@@ -255,7 +256,9 @@ function resolveExercise(
 		// Suit l'exercice jusqu'au PDF : sans elle, `C'(x)` s'y imprime en erreur.
 		...(exercise.exercise.generic_functions != null && {
 			generic_functions: exercise.exercise.generic_functions
-		})
+		}),
+		// Sens de `AB` (longueur ou produit) : résolu une fois, depuis le thème (Q-J, Q-K)
+		capital_pairs: exerciseCapitalPairs(exercise.exercise.topic)
 	};
 }
 

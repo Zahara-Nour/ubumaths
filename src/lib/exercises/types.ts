@@ -20,7 +20,7 @@
 import type { Variable, ResolvedVariable, DocumentNode } from '$lib/ubumark';
 import type { GradeCode } from '$lib/types/grades';
 import type { ContentLocale, TranslatedLocale } from '$lib/types/locale';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 // ============================================================================
 // EXERCISE CATEGORY
@@ -1108,17 +1108,25 @@ export interface TypstTranspilerOptions {
 	 * - une configuration : ces lettres-là (`C'(x)` devient lisible).
 	 */
 	genericFunctions?: GenericFunctionConfig | null;
+
+	/**
+	 * Sens de deux majuscules collées dans les formules `~…~` (`AB`) : longueur ou
+	 * produit, résolu depuis le thème de l'exercice (lot 6 des longueurs, Q-J).
+	 * Absent : défaut du parseur, le produit — l'écriture d'avant.
+	 */
+	capitalPairs?: CapitalPairs;
 }
 
 /**
- * Options une fois les défauts appliqués. `genericFunctions` reste optionnel :
+ * Options une fois les défauts appliqués. `genericFunctions` et `capitalPairs`
+ * restent optionnels :
  * son absence a un sens (« défauts du parseur ») distinct de `null`, qu'un
  * `Required<>` effacerait.
  */
 export type ResolvedTypstTranspilerOptions = Required<
-	Omit<TypstTranspilerOptions, 'genericFunctions'>
+	Omit<TypstTranspilerOptions, 'genericFunctions' | 'capitalPairs'>
 > &
-	Pick<TypstTranspilerOptions, 'genericFunctions'>;
+	Pick<TypstTranspilerOptions, 'genericFunctions' | 'capitalPairs'>;
 
 // Note: RenderOptions, ParseResult, and MathPlaceholder are re-exported from $lib/ubumark
 

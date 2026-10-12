@@ -31,6 +31,8 @@
 	import { EXERCISE_CATEGORIES } from '$lib/exercises/types';
 	import type { Variable } from '$lib/ubumark';
 	import { Save, Loader2 } from '@lucide/svelte';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 
 	type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -67,6 +69,8 @@
 	let category = $state<ExerciseCategory | ''>(initialExercise?.category || '');
 	let tags = $state<string[]>(initialExercise?.tags || []);
 	let topic = $state(initialExercise?.topic || '');
+	// Aperçus des versions : sens de `AB` selon le thème saisi (Q-J), comme à l'affichage
+	provideCapitalPairs(() => exerciseCapitalPairs(topic));
 	let gradeLevels = $state<GradeCode[]>((initialExercise?.grades as GradeCode[]) || []);
 	let resources = $state<ExerciseResource[]>(
 		(initialExercise?.resources as unknown as ExerciseResource[]) || []
