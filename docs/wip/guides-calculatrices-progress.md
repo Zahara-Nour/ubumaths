@@ -64,7 +64,14 @@ d'examen / pratique.
 - [x] Phase 0 **validée par David le 2026-10-12** (13 comportements, voir § Phase 0) :
       séquence non relue sur machine = **masquée en prod** ; guides **à partir de la 6e** (CM reporté,
       CP-CE2 sans guide) ; niveaux en **noms lisibles** dans l'adresse (`seconde`, `maths-complementaires`)
-- [ ] Code du pilote (tests d'abord)
+- [x] Code du pilote, tests d'abord (2026-10-12) : `src/lib/calculatrices/` (types, levels, tasks,
+      guide, routing, typst, models/), `src/lib/components/calculatrices/`, pages
+      `src/routes/(public)/calculatrices/`. Tests serveur + rendu (GuideTaskCard). PDF = bouton
+      « Télécharger la fiche PDF » (typst.ts, chargé au clic)
+- [ ] Contenu NumWorks dans `models/numworks.ts`, vérifié au **simulateur** (agent en cours)
+- [ ] Compiler chaque guide NumWorks avec le compilateur de prod (typst.ts 0.6.1-rc5) : harnais
+      `compile.mjs` + `generate-guides.mts` (scratchpad de session, à recréer si perdu : voir
+      mémoire `reference_pdf-compilateur-production`)
 - [ ] Page à cocher : relecture des séquences NumWorks par David sur la machine
 - [ ] PR pilote
 - [ ] Modèles suivants
@@ -88,3 +95,19 @@ Typst depuis les mêmes données, compilé dans le navigateur.
 11. CP-CE2 (BO : pas de calculatrice) et CM (reporté) : page d'explication, pas de page vide
 12. modèle ou niveau inconnu : 404
 13. tests : tâche inexistante, étape vide, séquence sans source, niveau hors `GradeCode` → refusés
+
+## Simulateur NumWorks (2026-10-12, accord de David pour Homebrew et la compilation)
+
+- Dépôt `extern/numworks-epsilon` (dépôt principal), SDK installé par `tools/setup.sh --only-simulator`.
+- Compilation : `export PATH="$(brew --prefix make)/libexec/gnubin:$PATH"; source .venv/bin/activate;
+make -j6 PLATFORM=simulator epsilon.app` (≈ 50 s).
+- Binaire : `epsilon/output/release/macos/arm64/epsilon.bin --headless --load-state-file s.nwt
+--take-screenshot s.png` (ou `--take-all-screenshots dossier/`).
+- Scénario texte : `NWST` / `**.**.**` / `epsilon` / `fr` / `light`, puis un événement par ligne
+  (`events_names.inc`). ⚠️ Événements DÉJÀ traduits : `Alpha`+`Backspace` n'est pas rejoué en `%`,
+  écrire `Percent`. Le simulateur vérifie ce que FAIT la machine, pas les libellés imprimés.
+- Constats : unité d'angle par défaut « rad » ; `80+20%` → `80↗20%` = 96 ; ligne vide : `[+]`
+  reprend le résultat, `[−]` commence un négatif ; `-2²` = -4 affiché `-(2²)` ; après `[÷]`, `→`
+  pour sortir du dénominateur.
+- Licence : aucun fichier de licence dans le dépôt actuel (historiquement CC BY-NC-SA) → captures
+  pour VÉRIFIER seulement ; publication à trancher avec David.
