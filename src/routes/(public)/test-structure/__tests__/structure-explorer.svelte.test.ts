@@ -75,8 +75,8 @@ function wholeReading(container: HTMLElement): HTMLElement | null {
 }
 
 /** Identifiant de la sous-expression écrite `written` (LaTeX sans marqueurs ni espaces) */
-function nodeIdOf(latex: string, written: string): number {
-	const result = structureFromLatex(latex);
+function nodeIdOf(latex: string, written: string, capitalPairs?: 'length' | 'product'): number {
+	const result = structureFromLatex(latex, capitalPairs && { capitalPairs });
 	if (result.status !== 'ok') throw new Error(`structure attendue pour ${latex}`);
 	const node = result.structure.nodes.find(
 		(n) => stripMarkers(n.latex).replace(/\s+/g, '') === written
@@ -291,6 +291,22 @@ describe('longueurs de segments (chantier « longueurs », lot 4)', () => {
 		});
 		expect(readingText(container)).toBe('le produit de 3 par le carré de la longueur AB');
 		await expect.poll(() => lexiconButtons(container)).toContain('longueur');
+	});
+
+	it('mode longueur : survoler « longueur » encadre A′B′ d’un seul bloc', async () => {
+		const latex = "2A'B'^2";
+		const { container } = await renderExplorer({
+			latex,
+			readerGrade: null,
+			capitalPairs: 'length'
+		});
+		const stage = container.querySelector<HTMLElement>('.structure-stage');
+		await expect.poll(() => lexiconButtons(container)).toContain('longueur');
+		await userEvent.hover(page.getByRole('button', { name: 'longueur', exact: true }));
+		const lengthId = nodeIdOf(latex, "A'B'", 'length');
+		await expect.poll(() => stage?.dataset.framedId).toBe(String(lengthId));
+		// Un seul encadré dessiné : la longueur n'est pas coupée en A′ et B′
+		await expect.poll(() => container.querySelectorAll('.structure-frame').length).toBe(1);
 	});
 
 	it('mode produit : 3AB² se lit comme avant', async () => {

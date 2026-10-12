@@ -663,13 +663,18 @@ et restent comme gardes).
 - **`structureFromLatex(latex, { capitalPairs })`** (`mathAST/structure/`) : l'option descend au
   parseur ; sans option, l'appel d'avant (produit, Q-M). Une longueur est une **feuille** de genre
   `length` : un seul marqueur, donc un seul bloc au survol, au sens inverse et dans le conseil de
-  parenthèses (`-AB+3` → exemple `(−AB) + 3`, message « devant un nombre ou une lettre »
-  inchangé). `A'B'`, `A_1B_1` s'affichent comme `toLatex` les écrit (`A'B'`, `A_{1}B_{1}`).
+  parenthèses (`-AB+3` → exemple `(−AB) + 3`, message « devant un nombre, une lettre ou une longueur »,
+  décision de David du 2026-10-12, Q22 étendue). `A'B'`, `A_1B_1` s'affichent comme `toLatex` les écrit (`A'B'`, `A_{1}B_{1}`).
 - **Lecture** : « la longueur AB » ; mot `longueur` (clé `longueur`, présente dans le dictionnaire
   de référence : mot cliquable, rien créé en base). Les six lignes de la colonne « Lit » sont
   lues comme écrites dans la spécification, sans conflit avec Q1-Q24. Choix non spécifiés :
   `AB^4` → « la puissance 4 de la longueur AB » (une longueur n'est pas « une lettre seule »
-  pour Q16) ; `AB=5` → « la longueur AB est égale à 5 » (accord au féminin).
+  pour Q16) ; `AB=5` → « la longueur AB est égale à 5 » (accord au féminin). **Validés par
+  David le 2026-10-12.**
+- **Revue** (`code-reviewer`) : aucun bloquant ni important ; fichier figé du mode produit
+  régénéré depuis `origin/main`, identique (200/200). Suites : message du signe − étendu aux
+  longueurs ; test de rendu ajouté (survoler « longueur » dans `2A'B'^2` encadre `A'B'` d'un
+  seul bloc).
 - **Nom de figure** : `{ status: 'figureName', message }` (message de `figureNameRefusal`, avec
   le vrai nom : « EFGH n’est pas une longueur : … (EF). Pour un produit, écris E×F×G×H. ») ; la
   page l'affiche à la place de la formule et de la lecture (encadré du message « 6e ou avant »),

@@ -18,7 +18,7 @@ import {
 
 // Constantes
 const NBSP = ' ';
-const MINUS_MESSAGE = "Le signe − devant un nombre ou une lettre s'apprend en 5e.";
+const MINUS_MESSAGE = "Le signe − devant un nombre, une lettre ou une longueur s'apprend en 5e.";
 const MINUS_PARENTHESES_MESSAGE = "Le signe − devant une parenthèse s'apprend en 5e.";
 const CHAIN_MESSAGE = "Ajoute des parenthèses pour montrer ce que tu calcules d'abord.";
 
@@ -39,7 +39,7 @@ function chainMessage(first: string, second: string): string {
 }
 
 function sumLeadingMinusMessage(example: string): string {
-	return `Le signe − devant un nombre ou une lettre s'apprend en 5e${NBSP}: écris-le entre parenthèses, par exemple $${example}$.`;
+	return `Le signe − devant un nombre, une lettre ou une longueur s'apprend en 5e${NBSP}: écris-le entre parenthèses, par exemple $${example}$.`;
 }
 
 describe('parenthesesAdvice — C1 : suite de 3 termes ou plus avec une soustraction', () => {
