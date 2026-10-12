@@ -39,10 +39,11 @@ export {
 	type RationalRootSearch
 } from './rational-roots';
 export { discriminant, quadraticRootParts, type QuadraticRootParts } from './quadratic';
-export { linearFactorNode, polynomialNode, rationalPolynomialNode } from './polynomial-node';
+export { polynomialNode, rationalPolynomialNode } from './polynomial-node';
 export {
 	type CommonRootDivision,
 	divideOutCommonRoot,
 	integerLinearFactor,
+	integerLinearFactorNode,
 	linearFactorText
 } from './common-root';

@@ -9,18 +9,8 @@
  */
 
 import type { MathNode } from '../types';
-import type { Rational } from '../normal/types';
-import {
-	add,
-	multiply,
-	number,
-	opposite,
-	parentheses,
-	power,
-	subtract,
-	variable as variableNode
-} from '../factory';
-import { absBigInt, isNegative, isZero, lcm, negRational, rational } from '../normal/rational';
+import { add, multiply, number, opposite, parentheses, power, subtract } from '../factory';
+import { absBigInt, lcm, rational } from '../normal/rational';
 import { rationalToNode } from '../common/numeric';
 import { type Poly, integerCoefficients } from './polynomial';
 
@@ -86,13 +76,4 @@ export function rationalPolynomialNode(p: Poly, variable: MathNode): MathNode {
 		parentheses(polynomialNode(integers, variable)),
 		'implicit'
 	);
-}
-
-/** Le facteur x − r écrit au plus simple : `x` si r = 0, `x + 3` si r = −3. */
-export function linearFactorNode(variable: string, root: Rational): MathNode {
-	const x = variableNode(variable);
-	if (isZero(root)) return x;
-	return isNegative(root)
-		? add(x, rationalToNode(negRational(root)))
-		: subtract(x, rationalToNode(root));
 }

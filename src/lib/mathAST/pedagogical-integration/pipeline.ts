@@ -75,13 +75,15 @@ import {
 	absRational,
 	isNegative as isNegativeRational,
 	isOne as isOneRational,
+	isZero as isZeroRational,
 	mulRational,
 	negRational,
-	ONE
+	ONE,
+	rational
 } from '../normal/rational';
 import type { Rational } from '../normal/types';
 import { toLatex } from '../latex-generator';
-import { factorPolynomial, factorizationToNode, linearFactorNode } from '../factor';
+import { factorPolynomial, factorizationToNode, integerLinearFactorNode } from '../factor';
 import { tidyTerms } from '../tidy/terms';
 import { flattenProductShallow } from '../flatten';
 import { isEulerConstant } from '../guards';
@@ -357,6 +359,20 @@ function pushSimplifyStep(
 ): MathNode {
 	const single = singleCoefficientTerm(raw);
 	if (single?.canonical) return raw;
+	// Somme de logarithmes : coefficient devant, comme pour un terme seul
+	const logarithms = lnCoefficientSum(raw);
+	if (logarithms) {
+		if (toLatex(logarithms) === toLatex(raw)) return raw;
+		steps.push(
+			buildStep(ctx, {
+				rule: 'simplify-result',
+				before: raw,
+				after: logarithms,
+				variable: ctx.variable
+			})
+		);
+		return logarithms;
+	}
 	const rewriting = single ? null : developAndFactor(raw, ctx);
 	if (rewriting) {
 		steps.push(
@@ -955,6 +971,29 @@ interface SingleCoefficientTerm {
 	readonly canonical: boolean;
 }
 
+/**
+ * Une somme d'au moins deux termes « coefficient rationnel × ln » écrite comme
+ * un terme seul (`withRationalCoefficient`) : le coefficient DEVANT, le signe
+ * entre les termes — `\dfrac{1}{4}\ln|2x-1|-\dfrac{1}{4}\ln|2x+1|`, comme le
+ * moteur et `\dfrac{1}{2}e^{2x}` (décision de David du 2026-10-11), et non
+ * `\dfrac{\ln|2x-1|}{4}` que rendait `tidy`. null sinon.
+ */
+function lnCoefficientSum(raw: MathNode): MathNode | null {
+	const terms = flattenSum(raw);
+	if (terms.length < 2) return null;
+	const parts: SignedTerm[] = [];
+	for (const { term, sign } of terms) {
+		const single = singleCoefficientTerm(term);
+		if (!single || single.fn.type !== 'function' || single.fn.name !== 'ln') return null;
+		const k = sign === 1 ? single.k : negRational(single.k);
+		parts.push({
+			term: withRationalCoefficient(absRational(k), single.fn),
+			sign: isNegativeRational(k) ? -1 : 1
+		});
+	}
+	return signedSum(parts);
+}
+
 function isIntegerLiteral(n: MathNode): boolean {
 	return n.type === 'number' && /^\d+$/.test(n.value);
 }
@@ -1351,11 +1390,17 @@ function integrateCyclicIPP(integrand: MathNode, ctx: DispatchContext): Dispatch
  * V2 — Partial fractions decomposition for `∫ P(x)/Q(x) dx` where Q is
  * quadratic with two distinct real roots and deg(P) < 2.
  *
- * The decomposition `P/Q = A/(x-r₁) + B/(x-r₂)` is computed via the « method
- * of roots » in `tryDetectPartialFractions` ; here we emit the two
- * pedagogical steps :
+ * The decomposition is computed via the « method of roots » in
+ * `tryDetectPartialFractions` ; here we emit the two pedagogical steps :
  *   1. `decompose-rational` — show the partial-fraction decomposition
- *   2. `apply-partial-fractions` — integrate each term as `A·ln|x-rᵢ|`
+ *   2. `apply-partial-fractions` — integrate each term
+ *
+ * Facteurs à coefficients ENTIERS (ADR 0024, décision de David du
+ * 2026-10-12) : la racine r = p/q donne le facteur `qx − p`, l'élément simple
+ * A/(x − r) s'écrit A'/(qx − p) avec A' = A·q, et s'intègre en
+ * (A'/q)·ln|qx − p| = A·ln|qx − p| : `4x² − 1 = (2x − 1)(2x + 1)`,
+ * primitive `\dfrac{\ln|2x - 1|}{4} - …`. Coefficient dominant 1 : rien ne
+ * change (`x - 3`).
  */
 function integratePartialFractions(
 	integrand: MathNode,
@@ -1364,35 +1409,60 @@ function integratePartialFractions(
 ): DispatchResult {
 	const r1Nd = rationalToNode(match.r1);
 	const r2Nd = rationalToNode(match.r2);
-	const ANd = rationalToNode(match.A);
-	const BNd = rationalToNode(match.B);
 
-	// `x - r₁` and `x - r₂`, exacts : `x + 1` quand r = −1
-	const xMinusR1 = linearFactorNode(ctx.variable, match.r1);
-	const xMinusR2 = linearFactorNode(ctx.variable, match.r2);
+	// `qx − p` pour r = p/q : `2x - 1` pour 1/2, `x + 1` pour −1
+	const factor1 = integerLinearFactorNode(ctx.variable, match.r1);
+	const factor2 = integerLinearFactorNode(ctx.variable, match.r2);
+	// A' = A·q₁, B' = B·q₂ : coefficients de 1/(q₁x − p₁) et 1/(q₂x − p₂)
+	const A = mulRational(match.A, rational(match.r1.d, 1n));
+	const B = mulRational(match.B, rational(match.r2.d, 1n));
+	const ANd = rationalToNode(A);
+	const BNd = rationalToNode(B);
 
-	// Decomposition `A/(x-r₁) + B/(x-r₂)` for the « before → after » of the
-	// `decompose-rational` step, A = p/q écrit `p/(q(x − r))`. The final
-	// antiderivative folds the coefficients into the logarithms.
-	const first = simpleElement(match.A, xMinusR1);
-	const decomposition = isNegativeRational(match.B)
-		? subtract(first, simpleElement(negRational(match.B), xMinusR2))
-		: simplifiedAdd(first, simpleElement(match.B, xMinusR2));
+	// Decomposition `A'/(q₁x − p₁) + B'/(q₂x − p₂)` for the « before → after »
+	// of the `decompose-rational` step, A' = p/q écrit `p/(q(…))`. Un
+	// coefficient nul (P et Q ont un facteur commun) ne s'écrit pas.
+	const elements: Array<{ readonly coefficient: Rational; readonly factor: MathNode }> = [
+		{ coefficient: A, factor: factor1 },
+		{ coefficient: B, factor: factor2 }
+	].filter((e) => !isZeroRational(e.coefficient));
+	const decomposition = elements
+		.slice(1)
+		.reduce<MathNode>(
+			(acc, e) =>
+				isNegativeRational(e.coefficient)
+					? subtract(acc, simpleElement(negRational(e.coefficient), e.factor))
+					: simplifiedAdd(acc, simpleElement(e.coefficient, e.factor)),
+			simpleElement(elements[0].coefficient, elements[0].factor)
+		);
 
-	// Antiderivative `A·ln|x-r₁| + B·ln|x-r₂|`.
-	const ln1 = ln(abs(xMinusR1));
-	const ln2 = ln(abs(xMinusR2));
-	const result1 = simplifiedMultiply(ANd, ln1);
-	const result2 = simplifiedMultiply(BNd, ln2);
-	const antiderivative = simplifiedAdd(result1, result2);
+	// Antiderivative `A·ln|q₁x − p₁| + B·ln|q₂x − p₂|` (A = A'/q₁), coefficient
+	// devant et signe entre les termes : `\dfrac{1}{4}\ln|2x-1| - \dfrac{1}{4}\ln|2x+1|`
+	const antiderivative = signedSum(
+		[
+			{ coefficient: match.A, factor: factor1 },
+			{ coefficient: match.B, factor: factor2 }
+		]
+			.filter((e) => !isZeroRational(e.coefficient))
+			.map((e) => ({
+				term: withRationalCoefficient(absRational(e.coefficient), ln(abs(e.factor))),
+				sign: isNegativeRational(e.coefficient) ? -1 : 1
+			}))
+	);
 
 	// Q factorisé par le noyau, coefficient dominant compris : `4x² − 1 =
 	// (2x − 1)(2x + 1)`, jamais `(x − 1/2)(x + 1/2)` qui serait faux (V22)
 	const factorization = factorPolynomial(match.denominator, ctx.variable);
 	const factoredDenominator =
 		factorization === null
-			? multiply(parentheses(xMinusR1), parentheses(xMinusR2), 'implicit')
+			? multiply(parentheses(factor1), parentheses(factor2), 'implicit')
 			: factorizationToNode(factorization);
+
+	// Un facteur `qx − p`, q ≠ 1 : les formules l'écrivent `px + q` (p = q₁ ou q₂)
+	const scaled = match.r1.d !== 1n || match.r2.d !== 1n;
+	const scaleBinding: IntegrationBindings = scaled
+		? { p: number((match.r1.d !== 1n ? match.r1.d : match.r2.d).toString()) }
+		: {};
 
 	const decomposeStep = buildStep(ctx, {
 		rule: 'decompose-rational',
@@ -1403,12 +1473,13 @@ function integratePartialFractions(
 			numerator: match.numerator,
 			denominator: match.denominator,
 			factoredDenominator,
-			factor1: xMinusR1,
-			factor2: xMinusR2,
+			factor1,
+			factor2,
 			r1: r1Nd,
 			r2: r2Nd,
 			A: ANd,
-			B: BNd
+			B: BNd,
+			...scaleBinding
 		}
 	});
 
@@ -1417,13 +1488,13 @@ function integratePartialFractions(
 		before: decomposition,
 		after: antiderivative,
 		variable: ctx.variable,
-		bindings: { A: ANd, B: BNd, r1: r1Nd, r2: r2Nd }
+		bindings: { A: ANd, B: BNd, r1: r1Nd, r2: r2Nd, ...scaleBinding }
 	});
 
 	return { antiderivative, steps: [decomposeStep, applyStep] };
 }
 
-/** L'élément simple A/(x − r) : `\frac{3}{2(x - 1)}` pour A = 3/2, `-\frac{1}{x - 2}` pour A = −1 */
+/** L'élément simple A/(qx − p) : `\frac{3}{2(x - 1)}` pour A = 3/2, `-\frac{1}{x - 2}` pour A = −1 */
 function simpleElement(coefficient: Rational, linear: MathNode): MathNode {
 	const denominator =
 		coefficient.d === 1n

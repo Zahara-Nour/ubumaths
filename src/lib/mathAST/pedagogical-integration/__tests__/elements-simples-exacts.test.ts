@@ -1,7 +1,8 @@
 /**
  * Éléments simples de la version pédagogique : racines et coefficients
  * EXACTS (noyau `factor/`, ADR 0024 lot 3a), plus de décimaux approchés ni
- * de `x - (-1)` dans les étapes. La primitive finale ne change pas.
+ * de `x - (-1)` dans les étapes. Facteurs entiers (`2x - 1`) depuis le
+ * 2026-10-12 : voir `elements-simples-entiers.test.ts`.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -27,28 +28,29 @@ const CASES: ReadonlyArray<{
 		latex: '\\frac{2x+1}{x^2-1}',
 		decomposition: '\\dfrac{3}{2 \\left( x - 1 \\right)} + \\dfrac{1}{2 \\left( x + 1 \\right)}',
 		antiderivative:
-			'\\dfrac{3 \\ln\\left( \\left| x - 1 \\right| \\right)}{2} + \\dfrac{\\ln\\left( \\left| x + 1 \\right| \\right)}{2}'
+			'\\dfrac{3}{2} \\ln\\left( \\left| x - 1 \\right| \\right) + \\dfrac{1}{2} \\ln\\left( \\left| x + 1 \\right| \\right)'
 	},
 	{
+		// Facteurs entiers depuis le 2026-10-12 : (2x − 1)(2x + 1), plus x ± 1/2
 		latex: '\\frac{1}{4x^2-1}',
 		decomposition:
-			'\\dfrac{1}{4 \\left( x - \\dfrac{1}{2} \\right)} - \\dfrac{1}{4 \\left( x + \\dfrac{1}{2} \\right)}',
+			'\\dfrac{1}{2 \\left( 2 x - 1 \\right)} - \\dfrac{1}{2 \\left( 2 x + 1 \\right)}',
 		antiderivative:
-			'\\dfrac{\\ln\\left( \\left| x - \\dfrac{1}{2} \\right| \\right)}{4} - \\dfrac{\\ln\\left( \\left| x + \\dfrac{1}{2} \\right| \\right)}{4}'
+			'\\dfrac{1}{4} \\ln\\left( \\left| 2 x - 1 \\right| \\right) - \\dfrac{1}{4} \\ln\\left( \\left| 2 x + 1 \\right| \\right)'
 	},
 	{
 		// A = 5/3 : la primitive s'écrivait 16666666666666667/10¹⁶ (flottant)
 		latex: '\\frac{2x+3}{x^2+x-2}',
 		decomposition: '\\dfrac{5}{3 \\left( x - 1 \\right)} + \\dfrac{1}{3 \\left( x + 2 \\right)}',
 		antiderivative:
-			'\\dfrac{5 \\ln\\left( \\left| x - 1 \\right| \\right)}{3} + \\dfrac{\\ln\\left( \\left| x + 2 \\right| \\right)}{3}'
+			'\\dfrac{5}{3} \\ln\\left( \\left| x - 1 \\right| \\right) + \\dfrac{1}{3} \\ln\\left( \\left| x + 2 \\right| \\right)'
 	},
 	{
+		// Facteurs entiers depuis le 2026-10-12 : (x − 1)(2x + 3), plus x + 3/2
 		latex: '\\frac{3}{2x^2+x-3}',
-		decomposition:
-			'\\dfrac{3}{5 \\left( x - 1 \\right)} - \\dfrac{3}{5 \\left( x + \\dfrac{3}{2} \\right)}',
+		decomposition: '\\dfrac{3}{5 \\left( x - 1 \\right)} - \\dfrac{6}{5 \\left( 2 x + 3 \\right)}',
 		antiderivative:
-			'\\dfrac{3 \\ln\\left( \\left| x - 1 \\right| \\right)}{5} - \\dfrac{3 \\ln\\left( \\left| x + \\dfrac{3}{2} \\right| \\right)}{5}'
+			'\\dfrac{3}{5} \\ln\\left( \\left| x - 1 \\right| \\right) - \\dfrac{3}{5} \\ln\\left( \\left| 2 x + 3 \\right| \\right)'
 	}
 ];
 

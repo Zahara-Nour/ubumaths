@@ -844,8 +844,7 @@ export interface PartialFractionsMatch {
  *  - rational roots only (V2 simple — irrational roots could be matched but
  *    produce ugly antiderivatives ; we reject them and let the user fall to
  *    the algorithmic integrator)
- *  - no cancellation between P and Q (else the form should reduce to a
- *    composite-ln or a simpler primitive)
+ *  - P ≠ 0 ; a common factor of P and Q leaves a single non-zero term
  *
  * Returns `null` when the form does not match.
  */
@@ -884,8 +883,10 @@ export function tryDetectPartialFractions(
 	const A = divRational(evalPoly(p, r1), mulRational(aQ, subRational(r1, r2)));
 	const B = divRational(evalPoly(p, r2), mulRational(aQ, subRational(r2, r1)));
 
-	// Un coefficient nul : la fraction se simplifie, une autre règle s'en charge
-	if (isZeroRational(A) || isZeroRational(B)) return null;
+	// Un coefficient nul : P et Q ont un facteur commun ((3x + 1)/(6x² − x − 1)
+	// = 1/(2x − 1)) ; la décomposition garde le seul terme non nul. Aucune autre
+	// règle ne prenait ce cas (refus avant le 2026-10-12).
+	if (isZeroRational(A) && isZeroRational(B)) return null;
 
 	return { numerator: P, denominator: Q, r1, r2, A, B };
 }
