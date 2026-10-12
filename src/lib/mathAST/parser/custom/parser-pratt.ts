@@ -31,6 +31,8 @@ import type {
 } from '../../types';
 import { GREEK_LETTERS } from '../../types';
 import type { ParserOptions, ParseResult, ParseError, ParseErrorCode } from '../types';
+import { DEFAULT_CAPITAL_PAIRS } from '../types';
+import { scanPointNames, type PointNamesSyntax } from '../latex/point-names';
 import {
 	CustomTokenizer,
 	KNOWN_FUNCTION_NAMES,
@@ -148,6 +150,9 @@ export class ParseException extends Error {
 // =============================================================================
 // Pratt Parser Class
 // =============================================================================
+
+/** Syntaxe maison : `A_12` est l'indice 12 (comme `x_12`). */
+const CUSTOM_POINT_NAMES_SYNTAX: PointNamesSyntax = { bareMultiDigitIndex: true };
 
 /**
  * Pratt parser for custom syntax to MathAST conversion.
@@ -721,6 +726,12 @@ class CustomPrattParser {
 		const token = this.currentToken;
 		const letter = token.value;
 
+		// Deux majuscules collées ou plus : longueur `AB`, nom de figure `ABC` (mode
+		// longueur, hors indice). Avant les fonctions génériques : `FG` est une
+		// longueur, `F(x)` reste une fonction. Mêmes règles que les parseurs LaTeX.
+		const pointNames = this.parsePointNames();
+		if (pointNames) return pointNames;
+
 		// Reserved constants: 'e' for Euler's number, 'i' for imaginary unit
 		// `e_1`, `i_n` : variables indicées (même règle que les parseurs LaTeX)
 		if (letter === 'e') {
@@ -744,6 +755,31 @@ class CustomPrattParser {
 		// Regular variable
 		this.advance();
 		return this.applyColor(MathAST.variable(letter));
+	}
+
+	/**
+	 * Points nommés collés à partir du jeton courant (`AB`, `A'B'`, `A_1B_1`, `ABC`) : la
+	 * longueur d'un segment pour deux points, un nom de figure au-delà. `null` en mode
+	 * produit (défaut), dans un indice (`x_{AB}`), ou s'il n'y a pas deux points collés.
+	 */
+	private parsePointNames(): MathNode | null {
+		const mode = this.options.capitalPairs ?? DEFAULT_CAPITAL_PAIRS;
+		if (mode !== 'length' || this.subscriptDepth > 0) return null;
+
+		const scan = scanPointNames(
+			(offset) => (offset === 0 ? this.currentToken : this.tokenizer.peekAt(offset - 1)),
+			CUSTOM_POINT_NAMES_SYNTAX
+		);
+		if (!scan) return null;
+
+		// Les jetons lus sont collés : rien à sauter entre eux
+		for (let i = 0; i < scan.tokenCount; i++) this.advance();
+
+		const [from, to] = scan.points;
+		if (scan.points.length === 2 && from && to) {
+			return this.applyColor(MathAST.segmentLength(from, to));
+		}
+		return this.applyColor(MathAST.figureName(scan.points));
 	}
 
 	/**
