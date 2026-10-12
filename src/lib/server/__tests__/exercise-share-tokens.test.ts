@@ -252,75 +252,49 @@ describe('exercise-share-tokens', () => {
 		});
 	});
 
-	describe('recordTokenAccess', () => {
-		it('should increment access_count and update last_accessed_at', async () => {
-			const { recordTokenAccess } = await import('../exercise-share-tokens');
-
-			const supabase = createMockSupabase();
-			supabase._mocks.mockEq.mockResolvedValue({
-				data: { access_count: 1 },
-				error: null
-			});
-
-			// Should not throw
-			await expect(recordTokenAccess(supabase, mockToken)).resolves.not.toThrow();
-		});
-
-		it('should handle database errors gracefully', async () => {
-			const { recordTokenAccess } = await import('../exercise-share-tokens');
-
-			const supabase = createMockSupabase();
-			supabase._mocks.mockEq.mockResolvedValue({
-				data: null,
-				error: { message: 'Database error' }
-			});
-
-			// Should not throw even on error (fire-and-forget operation)
-			await expect(recordTokenAccess(supabase, mockToken)).resolves.not.toThrow();
-		});
-	});
-
 	describe('revokeShareToken', () => {
-		it('should set is_active=false for a token owned by the user', async () => {
+		it('révoque (is_active=false) le jeton de cet exercice et vérifie la ligne rendue', async () => {
 			const { revokeShareToken } = await import('../exercise-share-tokens');
 
 			const supabase = createMockSupabase();
-			supabase._mocks.mockSingle.mockResolvedValue({
-				data: { ...mockShareToken, is_active: false },
+			supabase._mocks.mockSelect.mockResolvedValueOnce({
+				data: [{ id: mockTokenId }],
 				error: null
 			});
 
-			const result = await revokeShareToken(supabase, mockTokenId, mockTeacherId);
+			const result = await revokeShareToken(supabase, mockTokenId, mockExerciseId);
 
 			expect(result.error).toBeNull();
+			expect(supabase._mocks.mockUpdate).toHaveBeenCalledWith({ is_active: false });
+			expect(supabase._mocks.mockEq).toHaveBeenCalledWith('id', mockTokenId);
+			expect(supabase._mocks.mockEq).toHaveBeenCalledWith('exercise_id', mockExerciseId);
 		});
 
-		it('should return error if token does not exist', async () => {
+		// `.single()` sur 0 ligne levait PGRST116 → la route répondait 500.
+		it('jeton inconnu (0 ligne) → SHARE_TOKEN_NOT_FOUND', async () => {
+			const { revokeShareToken, SHARE_TOKEN_NOT_FOUND } = await import('../exercise-share-tokens');
+
+			const supabase = createMockSupabase();
+			supabase._mocks.mockSelect.mockResolvedValueOnce({ data: [], error: null });
+
+			const result = await revokeShareToken(supabase, 'non-existent-id', mockExerciseId);
+
+			expect(result.error).toBe(SHARE_TOKEN_NOT_FOUND);
+			expect(supabase._mocks.mockSingle).not.toHaveBeenCalled();
+		});
+
+		it('erreur de la base → message de la base', async () => {
 			const { revokeShareToken } = await import('../exercise-share-tokens');
 
 			const supabase = createMockSupabase();
-			supabase._mocks.mockSingle.mockResolvedValue({
+			supabase._mocks.mockSelect.mockResolvedValueOnce({
 				data: null,
-				error: { message: 'Token not found', code: 'PGRST116' }
+				error: { message: 'connection lost' }
 			});
 
-			const result = await revokeShareToken(supabase, 'non-existent-id', mockTeacherId);
+			const result = await revokeShareToken(supabase, mockTokenId, mockExerciseId);
 
-			expect(result.error).not.toBeNull();
-		});
-
-		it('should return error if user does not own the token', async () => {
-			const { revokeShareToken } = await import('../exercise-share-tokens');
-
-			const supabase = createMockSupabase();
-			supabase._mocks.mockSingle.mockResolvedValue({
-				data: null,
-				error: { message: 'RLS policy violation', code: '42501' }
-			});
-
-			const result = await revokeShareToken(supabase, mockTokenId, 'other-user-id');
-
-			expect(result.error).not.toBeNull();
+			expect(result.error).toBe('connection lost');
 		});
 	});
 

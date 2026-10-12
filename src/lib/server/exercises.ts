@@ -472,6 +472,9 @@ export async function updateExercise(
 	return { data: data ? { ...data, tags: tagsUpdate ?? existing.tags ?? [] } : data, error: null };
 }
 
+/** Message d'erreur de `deleteExercise` quand la base n'a supprimé aucune ligne. */
+export const EXERCISE_NOT_DELETED = 'Exercise not deleted';
+
 /**
  * Delete an exercise
  * Only the creator can delete their own exercise
@@ -492,12 +495,23 @@ export async function deleteExercise(
 		return { error: new Error('Unauthorized') };
 	}
 
-	// Delete the exercise
-	const { error } = await supabase.from('exercises').delete().eq('id', id).eq('created_by', userId); // Double-check ownership via RLS
+	// Suppression, avec `.select()` : un refus RLS ne rend pas d'erreur mais
+	// zéro ligne (docs/pratiques/rls-echecs-silencieux.md).
+	const { data: deleted, error } = await supabase
+		.from('exercises')
+		.delete()
+		.eq('id', id)
+		.eq('created_by', userId)
+		.select('id');
 
 	if (error) {
 		console.error('Error deleting exercise:', error);
 		return { error };
+	}
+
+	if (!deleted || deleted.length === 0) {
+		console.error('Exercise not deleted (0 row):', id);
+		return { error: new Error(EXERCISE_NOT_DELETED) };
 	}
 
 	return { error: null };
