@@ -178,3 +178,12 @@ sa valeur approchée. »
   avant) : deux restes > 1 000 qui partagent un facteur ne se compensent pas
   (`1022117^{2000}/(1009×1013)^{2000}` = 1 garde son écriture) ; un facteur 0 abandonne la
   décomposition (`0×2^{100000}` garde son écriture, note de 30 105 caractères).
+- 2026-10-12 — **David : « Oui »** (corriger les comparaisons hors plafond). Mesuré : les
+  puissances ENTIÈRES se comparent vite (`2^{100000} > 3^{60000}` : 19 ms — un refus aurait été une
+  régression) ; ce sont les puissances de fractions et de décimaux qui coûtent (`1.0001^{30000} >
+20` 16,7 s, `(1+1/20000)^{20000} > 2` 8,8 s). `cli/bounded-comparison.ts` : un membre au-delà
+  du plafond prend sa valeur exacte s'il est un produit de puissances (`productValue`), sinon la
+  relation (`= < > ≤ ≥`) se tranche sur les valeurs arrondies (monotones), refus si égales. Branché
+  dans l'évaluation ET dans `executeEquality` (`a = b` y suit son propre chemin). Les chaînes
+  (`1 < x < 3`) ne sont pas prises en charge par la console (antérieur) ; `a != b` se lit
+  `a! = b` (antérieur).

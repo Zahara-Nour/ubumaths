@@ -223,3 +223,45 @@ describe('un produit de puissances qui se compensent', () => {
 		expect(line.exactTooLong).toBe(14314);
 	});
 });
+
+// Revue de #1184 : une comparaison échappait au plafond de calcul — `2^{30000000}/2^{29999999} = 2`
+// prenait 3,5 s, `(1+1/20000)^{20000}×(1+1/20000)^{-20000} = 1` 10 s, `1.0001^{30000} > 20`
+// 16,7 s. Un membre au-delà du plafond : un produit de puissances par ses facteurs, sinon les
+// valeurs arrondies (l'arrondi garde l'ordre), refus si elles ne départagent pas
+describe('une comparaison passe par le même plafond, membre par membre', () => {
+	it.each([
+		['2^30000000/2^29999999 = 2', 'true'],
+		['(1+1/20000)^20000*(1+1/20000)^-20000 = 1', 'true'],
+		['(1+1/100000)^100000*(1+1/100000)^-100000 < 1', 'false'],
+		['1.0001^30000 > 20', 'true'],
+		['(1+1/20000)^20000 > 2', 'true'],
+		['(1+1/20000)^20000 + 1 < 3.7183', 'true'],
+		['(1+1/20000)^20000 = 3', 'false'],
+		['2^100000 > 3^60000', 'true'],
+		['1.0001^30000 <= 1.0001^20000', 'false']
+	])('%s : %s, en moins de 300 ms', (input, output) => {
+		const start = performance.now();
+		const line = exact(input);
+
+		expect(performance.now() - start).toBeLessThan(300);
+		expect(line.output).toBe(output);
+	});
+
+	it('deux membres que l’arrondi ne départage pas : refus immédiat', () => {
+		const start = performance.now();
+		const line = exact('(1+1/20000)^20000 = (1+1/20000)^20000');
+
+		expect(performance.now() - start).toBeLessThan(300);
+		expect(line.success).toBe(false);
+		expect(line.output).toContain('trop proches');
+	});
+
+	it.each([
+		['2^5000 > 3^3000', 'true'],
+		['2^50000 > 3^30000', 'true'],
+		['(1+1/1000)^1000 < 3', 'true'],
+		['1/3 + 1/6 = 1/2', 'true']
+	])('en deçà, rien ne change : %s', (input, output) => {
+		expect(exact(input).output).toBe(output);
+	});
+});

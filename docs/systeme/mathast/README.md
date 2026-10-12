@@ -493,7 +493,10 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     `isTooLongToCompute`, et mesure la longueur réelle par `exactCharacters`). Au-delà du
     plafond, un produit ou quotient de puissances se calcule sur ses facteurs premiers compensés
     (`productValue`) : le moteur, lui, calcule chaque puissance avant de compenser
-    (`(1+1/100000)^{100000}×(1+1/100000)^{-100000}` : 305 s).
+    (`(1+1/100000)^{100000}×(1+1/100000)^{-100000}` : 305 s). Une comparaison passe par le même
+    plafond membre par membre (`cli/bounded-comparison.ts`) : produit de puissances par ses
+    facteurs, sinon valeurs arrondies comparées (l'arrondi d'`approximateDigitsOf` est monotone,
+    bornes de notation comprises), refus si elles sont égales.
 
 ## Le moteur de réécriture et les étapes
 

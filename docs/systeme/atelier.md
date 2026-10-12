@@ -294,7 +294,13 @@ fractions », 2026-10-12) :
   annoncé « environ 5 000 chiffres ». L'arrondi se lit alors sur le résultat calculé (√2 tapé
   n'entre en fraction que par son flottant, dont la puissance déborde).
 
-Jamais pour une comparaison (vrai ou faux). Le résultat porte `exactTooLong` ; le rendu ne passe pas l'écriture
+Une comparaison ne garde jamais son écriture (elle rend vrai ou faux), mais passe par le même
+plafond **membre par membre** (`mathAST/cli/bounded-comparison.ts`, aussi pour `a = b`, qui suit
+son propre chemin `executeEquality`) : un membre au-delà du plafond prend sa valeur exacte s'il
+est un produit de puissances, sinon la relation se tranche sur les **valeurs arrondies** (l'arrondi
+garde l'ordre) ; arrondis égaux → refus (« Membres trop proches pour être départagés »). Avant,
+`1.0001^{30000} > 20` prenait 16,7 s, `(1+1/100000)^{100000}×(1+1/100000)^{-100000} < 1` plus de
+300 s. `2^{100000} > 3^{60000}` répond toujours `true`. Le résultat porte `exactTooLong` ; le rendu ne passe pas l'écriture
 gardée à `tidy`, qui la développerait. La console ne calcule plus le résultat exact deux fois (le
 test du booléen le réutilise), ni l'arrondi deux fois (ligne et bouton ≈).
 
