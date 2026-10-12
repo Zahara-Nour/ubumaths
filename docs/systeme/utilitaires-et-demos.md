@@ -114,7 +114,7 @@ Précisions :
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles
   de la police, petits et grands (ponctuation, opérateurs, ensembles, flèches, vecteurs,
-  délimiteurs empilés, racines, ∑ ∫, AMS) : la regarder suffit pour
+  délimiteurs empilés, racines, ∑ ∫, lettres grecques, AMS) : la regarder suffit pour
   juger un changement du jeu Shantell (`tools/shantell-math/`). En bas, trois **exercices réels**
   (copie figée de la base, `exercices-demo.json`, image copiée dans `static/test-font/`), affichés en
   Shantell et téléchargeables en PDF : `shantell-pdf.ts` compile avec un compilateur Typst **à part**
@@ -134,9 +134,6 @@ Précisions :
   `<link>` dans `<head>` et change `MathfieldElement.fontsDirectory` ; la page n'a ni `onDestroy`
   ni retour à `katex`. Après une visite, une navigation côté client garde Shantell partout
   jusqu'au rechargement.
-- **`/test-font` servie en HTTP sur une adresse IP** (dev via Tailscale) : `crypto.randomUUID`
-  n'existe qu'en contexte sécurisé (HTTPS ou `localhost`) ; le rendu ubumark des listes plante.
-  Passer par `localhost` (tunnel) ou HTTPS.
 - Les pages `/demo/**` sont publiques et sans `noindex` : seul `robots.txt` les écarte.
 
 ---

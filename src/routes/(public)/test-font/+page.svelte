@@ -77,6 +77,8 @@
 		'x\\notin E\\quad A\\subseteq B\\supseteq C\\quad A\\subsetneq B\\supsetneq C\\quad A\\nsubseteq B\\nsupseteq C\\quad D\\supset E',
 		// Vecteurs
 		'\\vec{u}+\\vec{v}=\\vec{AB}\\quad\\vec{u}\\cdot\\vec{n}=0',
+		// Lettres grecques
+		'\\alpha\\beta\\gamma\\delta\\varepsilon\\zeta\\eta\\theta\\iota\\kappa\\lambda\\mu\\nu\\rho\\sigma\\tau\\upsilon\\varphi\\phi\\chi\\psi\\omega\\quad\\Gamma\\Delta\\Theta\\Lambda\\Xi\\Pi\\Sigma\\Upsilon\\Phi\\Psi',
 		// Lettres-symboles
 		'2\\pi r\\quad\\frac{\\partial f}{\\partial x}\\quad\\Omega\\quad x\\times y',
 		// Grands opérateurs
