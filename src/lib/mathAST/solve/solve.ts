@@ -1634,7 +1634,7 @@ function tryReducedForm(
  * rationnelle ne regarde que les dénominateurs qui contiennent l'inconnue,
  * et le solveur affine ne lit pas une division par π (par 5, oui : le
  * coefficient reste un nombre). Zéros non résolus, signe inconnu partout :
- * l'ensemble rendu était ∅. Même cause pour e, ln 2, √2/π, π + 1 et le
+ * l'ensemble rendu était ∅. Même cause pour e, √2/π, π + 1 et le
  * second degré (`x² < 1/π`).
  *
  * En repli seulement : une équation déjà résolue garde sa résolution (et ses
@@ -2130,7 +2130,7 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Avant elle, le changement de variable (u = sin x, cos x, tan x, ln x,
 	// eˣ) : `sin²x = 1/4` revenait « non supporte ». Lui aussi en repli : une
 	// équation déjà résolue garde sa résolution.
-	// P/c = 0, c constante non nulle (π, e, ln 2, π + 1) : P = 0. Premier
+	// P/c = 0, c constante non nulle (π, e, π + 1) : P = 0. Premier
 	// repli : écart V37, `x < 2/π` mis sous la forme (πx − 2)/π < 0.
 	if (isSolverFailure(result)) {
 		const numeratorOnly = tryConstantDenominator(expr, variable, opts);
