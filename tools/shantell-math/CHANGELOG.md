@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.8.0] - 2026-10-12
+
+### Ajouté
+
+- `replace_symbols.py` : ponctuation `. , ; : ! ?` de Shantell (ajustement « lettre ») et prime `′` (mis à la hauteur du `′` de KaTeX, que MathLive pose en exposant)
+- `redraw_symbols.py` :
+  - `⊂ ⊃` : ligne centrale du `c` de Shantell (retournée pour `⊃`) ; `⊆ ⊇` : le même posé en haut de la boîte, une barre dessous ; `⊊ ⊋` (AMS) : la barre coupée d'un petit trait ; `⊈ ⊉` (AMS) : barrés du trait du « non »
+  - `\not` (U+E020, que MathLive pose sur `=` pour `≠`) : un trait penché droit
+  - `∉` : absent de KaTeX, ajouté à Main-Regular (glyphe `notelement`, chasse du `∈`) : le `∈` et le trait du « non »
+  - `↦` : la flèche `→` de Shantell prolongée jusqu'au bord gauche de la boîte, et la barre
+  - flèche de `\vec` (U+20D7) : un trait et la pointe courte de la flèche de Shantell, au trait des lettres ; elle déborde vers le haut de la boîte de KaTeX, trop basse pour ce trait
+
 ## [1.7.0] - 2026-10-12
 
 ### Ajouté
