@@ -63,7 +63,8 @@ view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof 
 - **Jeton de partage** : aucune policy ne l'ouvre (les deux policies « à tout le monde » ont été
   retirées par 20260902101000, finding H8 : elles exposaient tout exercice partagé). L'accès passe
   par la RPC `SECURITY DEFINER` `get_exercise_by_share_token(p_token)`, qui exige le jeton exact,
-  actif et non expiré, et met à jour `last_accessed_at`.
+  actif et non expiré, met à jour `last_accessed_at` et incrémente `access_count` (depuis
+  20261016100800 ; la page `[id]` affiche ce nombre d'accès).
 - **Accès élève hors fiche** : `student_has_exercise_access(p_exercise_id, p_student_id)`
   (dernière version : 20261003230000) = exercice public, ou affectation active directe, à une
   classe dont l'adhésion est **active** (20260912150000 : l'élève archivé perd les exercices de
@@ -74,8 +75,10 @@ view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof 
   de ses classes (`is_teacher_of_student`, migration 20261012120000).
 - **API** : `requireRole(locals, 'teacher')` sur l'écriture et le partage, puis contrôle
   `created_by === user.id` dans le code (`updateExercise`, `deleteExercise`, partage) en plus de
-  la RLS. Routes élève : `requireAuth` ; « terminé » exige en plus le consentement
-  (`requireConsent(profile, 'submit_exercise')`).
+  la RLS. `deleteExercise` relit la ligne supprimée (`.select('id')`) : 0 ligne (refus RLS
+  silencieux) → `EXERCISE_NOT_DELETED`, que la route `DELETE /api/exercises/[id]` et l'action de
+  formulaire rendent en 403, jamais en succès. Routes élève : `requireAuth` ; « terminé » exige
+  en plus le consentement (`requireConsent(profile, 'submit_exercise')`).
 
 ## Côté professeur
 
@@ -113,15 +116,18 @@ réglages d'image (`ImageAttributePanel`, `ImageSizeSelector`, `ImageAlignmentSe
 - `instance` (élève) : graine fixée par `distribution_mode` — `per_student` →
   `generateStudentSeed(exercise.id, userId)`, `per_group` → `generateGroupSeed(exercise.id,
 groupId)`, `on_demand` → nouvelle instance à chaque tirage (bouton « Nouveau problème »). Une
-  prop `seed` explicite l'emporte. Les boutons de tirage ne s'affichent que si la colonne
-  `exercise.variables` (ancien format) est non vide.
+  prop `seed` explicite l'emporte. Les boutons de tirage (« Autres valeurs », « Nouveau
+  problème ») s'affichent dès que l'exercice a des variables, où qu'elles soient
+  (`isParameterized` : `shared.variables`, `variations[].variables`, ou l'ancienne colonne
+  `variables`).
 
 Il fournit aussi aux formules le sens de `AB` (voir plus bas) et les fonctions génériques de
 l'exercice. Ses utilisateurs : liste et aperçus du prof, page publique, page élève.
 
 **Page publique** `(public)/exercice/[slug]` : cherche par jeton (`?token=`), puis par slug, puis
-par identifiant si le paramètre est un UUID. Exercice privé sans jeton valide → 403 (message du
-jeton s'il y en avait un). `?variation=` et `?seed=` fixent le niveau de guidage et la graine.
+par identifiant si le paramètre est un UUID. Le jeton doit être celui de l'exercice de l'adresse
+(son slug ou son identifiant) : sinon 404 « introuvable », jamais l'autre exercice. Exercice privé
+sans jeton valide → 403 (message du jeton s'il y en avait un). `?variation=` et `?seed=` fixent le niveau de guidage et la graine.
 `noindex` partout **sauf** exercice public coché « Afficher sur Google » ouvert **sans** jeton.
 
 **Page élève** `dashboard/student/exercises/` : la liste lit `/api/exercises/assigned`
@@ -134,7 +140,9 @@ l'exercice (`ExerciseDisplay mode="instance"`), enregistre une vue (`POST …/vi
 `POST /api/exercises/[id]/share` (auteur seulement) crée un jeton (`generateShareTokenString` :
 16 caractères tirés par CSPRNG, sans `0 O l I`), expiration 7 / 30 / 90 jours ou aucune, et rend
 l'adresse `/exercice/<slug ou id>?token=…` (`buildShareUrl`). `GET` liste les jetons,
-`DELETE …/share/[tokenId]` révoque (`is_active = false`, avec `.select()` : 0 ligne → erreur).
+`DELETE …/share/[tokenId]` révoque (`is_active = false`, filtré sur l'exercice de l'adresse, avec
+`.select()` sans `.single()` : 0 ligne — jeton inconnu, d'un autre exercice ou refus RLS → 404).
+Le jeton n'ouvre que l'exercice auquel il appartient (voir la page publique).
 La page publique résout le jeton par la RPC ; une adresse à jeton n'est jamais indexée.
 
 ## Étiquettes
@@ -150,10 +158,12 @@ la ligne reste modifiée et l'erreur remonte. `getExercise` / `getExerciseBySlug
 ## Import, export, sauvegarde
 
 `src/lib/server/exercise-import-export.ts` : export JSON **v2.0** (`exerciseToExportV2` : titre,
-source, catégorie, étiquettes, niveaux scolaires, `topic`, `variations`, `shared`, plus
-`statement_md` / `solution_md` recopiés du premier niveau de guidage) ou Markdown ; import JSON
-(v1.0 migré vers les variations) ou Markdown. Doublon = même empreinte SHA-256 de
-`titre:énoncé` parmi les exercices de l'importateur ; `on_duplicate` : `skip` (défaut), `replace`
+source, catégorie, étiquettes, niveaux scolaires, `topic`, `variations`, `shared`,
+`generic_functions`, `resources`, `distribution_mode`, plus `statement_md` / `solution_md`
+recopiés du premier niveau de guidage ; **pas** le slug, qui doit rester unique) ou Markdown ;
+import JSON (v1.0 migré vers les variations, champs relus par Zod : noms de fonction, ressources
+http(s), mode connu) ou Markdown. Doublon = même empreinte SHA-256 de `titre:énoncé` parmi
+**tous** les exercices de l'importateur (lecture paginée par 1 000, ordonnée par `id`) ; `on_duplicate` : `skip` (défaut), `replace`
 (seulement son propre exercice), `create-copy` (titre suffixé « (copie) »). L'import ne porte ni
 `is_public` ni `search_indexed` : un exercice importé naît privé.
 
@@ -195,20 +205,8 @@ longueur. Journal : [longueurs-segments-progress.md](../wip/longueurs-segments-p
 
 ## Écarts connus
 
-- **`access_count` des jetons reste à 0** : la RPC ne met à jour que `last_accessed_at`, et
-  `recordTokenAccess` n'est appelée nulle part ; la page `[id]` affiche « 0 accès ».
-- **Jeton et slug non recoupés** : `/exercice/A?token=<jeton de B>` affiche l'exercice B.
-- **Révocation d'un jeton inconnu** : `.single()` sur 0 ligne rend une erreur, la route répond
-  500 au lieu de 404 (`'Token not found'` n'est jamais atteint).
-- **Doublons à l'import** : `findDuplicateExercise` ne compare qu'aux 100 premiers exercices de
-  l'importateur (`.limit(100)` sans ordre) ; au-delà, un doublon est recréé.
-- **L'export ne porte pas** `generic_functions`, `resources`, `distribution_mode`, `slug` : un
-  aller-retour export → import les perd.
-- **`deleteExercise`** ne vérifie pas la ligne supprimée (pas de `.select()`) ; la vérification
-  d'auteur faite avant rend le cas rare, mais un refus RLS passerait pour un succès.
-- **`ExerciseParameterizationEditor.svelte`** n'est importé nulle part.
-- **Routes sans appelant dans `src/`** (grep du 2026-10-12) : `GET /api/exercises`,
-  `/api/exercises/by-slug/[slug]`, `/api/exercises/[id]/stats`, `/api/exercises/[id]/export`.
-- **Commentaires périmés** : `getExercises` annonce « Teachers can see all exercises » (la RLS ne
-  rend plus que les siens et les publics) ; `GET /api/student/exercise-mastery` annonce « No
-  teacher/admin access » (le prof lit depuis 20261012120000).
+- **`validateShareToken`** (`exercise-share-tokens.ts`) n'est appelée que par ses tests : la page
+  publique passe par la RPC.
+- **`GET /api/exercises`** a un appelant (`ExerciseSelector`, éditeur de fiche) : gardée. Les
+  routes `by-slug/[slug]`, `[id]/stats`, `[id]/export` et `ExerciseParameterizationEditor.svelte`,
+  sans appelant, ont été retirées le 2026-10-12.
