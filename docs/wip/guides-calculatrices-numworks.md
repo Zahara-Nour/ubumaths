@@ -540,3 +540,300 @@ Abréviations des sources :
    - **Statut** : code officiel.
 6. **Point décimal** : la NumWorks écrit `0.75`, pas `0,75`. La touche [,] sépare des arguments.
    - **Statut** : doc officielle (exemples du manuel en `.`).
+
+---
+
+# Compléments niveaux ajoutés
+
+Source des tâches : `docs/wip/guides-calculatrices-taches.md` (niveaux 5e/4e/3e, 1_GEN, 1_SPE, T_SPE, T_COMP, T_EXP, 1_TECHNO, T_TECHNO). Les tâches du CM sont ignorées. Mêmes abréviations (MAN, NV, GH) et mêmes statuts qu'au-dessus.
+
+Source supplémentaire : MAN `regressions/` = https://www.numworks.com/fr/graphique/manuel/regressions/ (v20). Libellés v26 : GH `epsilon/apps/regression/i18n/base.fr.i18n`.
+
+## Pourcentages et évolutions
+
+### (C1) Coefficient multiplicateur, évolutions successives (4e, 3e, 2de, T_TECHNO)
+
+- **Application** : Calculs.
+- **Étapes** :
+  1. Hausse de t % : `valeur×(1+t/100)`. Exemple : `80×1.2` [EXE].
+  2. Baisse de t % : `80×0.85`.
+  3. Évolutions successives : multiplier les coefficients, par exemple `1.2×0.85` [EXE], puis lire le taux global (coefficient − 1).
+  4. Raccourci `%` ([alpha] [⌫]) : `80+20%` = 96 et `80−15%` = 68. Voir (6) : c'est une évolution, pas une addition.
+  5. Taux entre deux valeurs : `(Va−Vd)/Vd` [EXE], puis `Ans×100`.
+- **Source** : (6) au-dessus ; GH `poincare/test/simplification/simplification.cpp` l. 372-391.
+- **Statut** : supposé pour les étapes 1-3 et 5 (arithmétique pure, rien de propre à NumWorks). Code officiel pour `%`.
+- **Remarque** : `80+20%+20%` enchaîne deux hausses de 20 % (test GH : `80×(1+20/100)×(1+20/100)`).
+
+### (C2) Taux d'évolution moyen (1+t)^(1/n) − 1 (1_GEN, T_TECHNO)
+
+- **Étapes** : `(1+0.3)` [xʸ] `(1/5)` puis flèche droite pour sortir de l'exposant, `−1` [EXE]. Ou `root(1.3,5)−1` via [toolbox] > **Racine n-ième**.
+- **Source** : MAN `outils/` (root(x,n)) ; libellé GH `toolbox.fr.i18n` (`NthRoot = "Racine n-ième"`).
+- **Statut** : doc officielle (root). La sortie d'exposant par flèche droite est supposée.
+- **Remarque** : en écriture naturelle, l'exposant est une case : vérifier que `−1` n'y est pas entré.
+
+### (C3) Indice base 100 (T_TECHNO)
+
+- **Étapes** : `Valeur/Valeur_référence×100` [EXE]. Pour toute une série : app **Statistiques** ou **Régressions**, en-tête de colonne > **Remplir avec une formule**, par exemple `Y1/Y1(1)*100`.
+- **Source** : MAN `statistiques/` / `regressions/` (Remplir avec une formule, référence à une autre colonne) ; MAN `calculs/` §1.5.3 (élément d'une liste `L(4)`).
+- **Statut** : supposé : la formule `Y1/Y1(1)*100` dans une colonne n'est pas un exemple de la doc.
+
+## Arithmétique
+
+### (C4) Décomposition en facteurs premiers (3e, T_EXP)
+
+- **Étapes (méthode 1, toolbox)** : [toolbox] > **Arithmétique** > **Décomposition en facteurs premiers** → `factor(n)`. Exemple : `factor(24)` → 2³×3.
+- **Étapes (méthode 2, résultats complémentaires)** :
+  1. Taper l'entier, [EXE].
+  2. Flèche haut sur le résultat, sélectionner les trois points, [OK].
+  3. Lire **Facteurs premiers**.
+- **Source** : MAN `outils/` (factor) ; MAN `calculs/` §1.2 ; libellés GH `toolbox.fr.i18n`, `calculation/i18n/base.fr.i18n`.
+- **Statut** : doc officielle.
+
+### (C5) Quotient et reste ; PGCD (T_EXP)
+
+- **Quotient et reste** : voir (3), `quo(p,q)` et `rem(p,q)`.
+- **PGCD et PPCM** : [toolbox] > **Arithmétique** :
+  - **PGCD de p et q** → `gcd(p,q)` ;
+  - **PPCM de p et q** → `lcm(p,q)`.
+  - Les deux acceptent plus de deux entiers.
+- **Source** : MAN `outils/` (Arithmétique).
+- **Statut** : doc officielle.
+- **Remarque** : la doc ne précise pas `rem` pour un dividende négatif (TEXP) : NON TROUVÉ.
+
+### (C6) Calculs modulo n, aᵏ mod n (T_EXP)
+
+- **Étapes** :
+  1. **Aucune fonction `mod` dans la toolbox** (liste de la section Arithmétique : gcd, lcm, factor, rem, quo) : NON TROUVÉ.
+  2. Utiliser `rem(a^k,n)`.
+  3. Pour de grands exposants, Python : `a**k % n`, ou `pow(a,k,n)`.
+- **Source** : MAN `outils/`.
+- **Statut** : supposé :
+  - jusqu'où les grands entiers exacts restent calculés : non documenté ;
+  - la forme `pow(a,k,n)` en MicroPython sur NumWorks : non vérifiée ;
+  - `%` en Python est l'opérateur modulo standard.
+- **Remarque** : sur la calculatrice, `%` est un **pourcentage** dans Calculs et un **modulo** dans Python. Piège à signaler.
+
+## Puissances et logarithmes
+
+### (C7) x^(1/n), aˣ pour x réel (1_GEN, T_TECHNO)
+
+- **Étapes** :
+  - `a` [xʸ] `x` [EXE] ;
+  - racine n-ième : [toolbox] > **Racine n-ième** → `root(x,n)`, ou `x` [xʸ] `(1/n)`.
+- **Source** : MAN `outils/` (root ; « Vous pouvez donner une valeur non entière à n ») ; GH `layout_events.cpp` ([xʸ] insère `^`).
+- **Statut** : doc officielle et code officiel.
+- **Remarque** : `8^1/3` sans case d'exposant ni parenthèses calcule (8¹)/3.
+
+### (C8) Logarithme décimal `log` ; résoudre aˣ = b, xᵃ = b (T_TECHNO)
+
+- **Étapes** :
+  1. [log] insère `log()` = logarithme **décimal**. [ln] = népérien.
+  2. Autre base : [toolbox] > **Logarithme de base a** → `log(x,a)`.
+  3. aˣ = b : `log(b)/log(a)`, ou `log(b,a)`.
+  4. xᵃ = b (x > 0) : `b^(1/a)`.
+  5. Vérification : app **Équations**, en tapant l'équation.
+- **Source** : GH `layout_events.cpp` (touche `log(`) ; MAN `outils/` (log(x,a)) ; MAN `python/` (« log10(x) … = log(x) », qui identifie `log` au logarithme décimal hors Python) ; MAN `equations/`.
+- **Statut** : doc officielle et code officiel.
+- **Remarque** : en Python, `log(x)` est **ln** et le décimal est `log10(x)`. C'est l'inverse de l'app Calculs.
+
+## Statistique à deux variables
+
+### (C9) Point moyen, droite de régression, r (1_GEN, T_COMP, 1_TECHNO)
+
+- **Application** : **Régressions**.
+- **Étapes** :
+  1. Onglet **Données** : colonnes **X1** et **Y1**.
+  2. Onglet **Graphique** : le nuage s'affiche.
+  3. [OK] ou menu **Régression** sous la barre d'onglets > **Modèle** > **Affine** (y = ax+b).
+  4. Le menu **Régression** donne l'**Équation de la régression**, **Coeff. corrélation** r (modèle affine) et **Coeff. détermination**.
+  5. Interpoler / extrapoler : menu **Régression** > **Prédiction sachant X** (ou **Prédiction sachant Y**), taper la valeur, **Valider**, [OK].
+  6. Point moyen : onglet **Stats** = moyenne des xᵢ et moyenne des yᵢ. Le code v26 a aussi un libellé **Point moyen** dans l'app, mais son emplacement n'est pas documenté : supposé, sur le graphique.
+- **Source** : MAN `regressions/` ; NV `version-23/` (renommage) ; GH `regression/i18n/base.fr.i18n` (`MeanDot = "Point moyen"`, `Linear = "Affine"`, `CorrelationCoeff = "Coeff. corrélation"`, `XPrediction = "Prédiction sachant X"`).
+- **Statut** : doc officielle, plus code officiel pour les libellés v26.
+- **Remarque** : **piège de vocabulaire**. Depuis v23, « Affine » = y = ax+b et « Linéaire » = y = ax. Le manuel v20 dit encore « Linéaire / Proportionnelle ».
+
+### (C10) Changement de variable (ln y, log y, 1/t) puis régression (T_COMP, T_TECHNO)
+
+- **Étapes** :
+  1. App **Régressions**, tableau 2 : en-tête **X2**, [OK] > **Remplir avec une formule** > **Vide**, puis taper `X1`.
+  2. En-tête **Y2** > **Remplir avec une formule** : `ln(Y1)` (ou `log(Y1)`, `1/Y1`).
+  3. Les majuscules s'obtiennent par [shift] [alpha] puis la lettre.
+  4. Sur la série 2 : **Modèle** > **Affine**.
+  5. Alternative directe : modèle **Exponentiel** (deux formes) sur la série 1.
+- **Source** : MAN `regressions/` (« vous pouvez écrire X1/2 pour remplir la colonne Y1 ») ; libellés GH.
+- **Statut** : doc officielle pour le mécanisme. Supposé : la formule `ln(Y1)` exacte (la doc ne donne que `X1/2`), et que la série 1 masque bien la série 2 au tracé.
+- **Remarque** : préciser à l'élève sur quelle série il lit a et b.
+
+## Lois de probabilité
+
+### (C11) Loi géométrique (T_COMP)
+
+- **Application Probabilités** :
+  1. **Loi géométrique**, [OK].
+  2. **Probabilité de succès** p, **Valider**.
+  3. **Type de bornes** : **X=a** ou **X≤a**.
+  4. Saisir a, [OK].
+- **Toolbox** : [toolbox] > **Probabilités** > **Lois de probabilité** > **Loi géométrique** :
+  - `geompdf(m,p)` = P(X=m) ;
+  - `geomcdf(m,p)` = P(X≤m) ;
+  - `geomcdfrange(m,n,p)` ;
+  - `invgeom(a,p)`.
+- **Convention** : X = **nombre d'essais jusqu'au premier succès, k ∈ {1,2,3,…}**, donc P(X=k) = (1−p)^(k−1)p, ce qui correspond au programme.
+- **Source** : MAN `probabilites/` ; MAN `outils/` ; GH `epsilon/apps/distributions/models/distribution/geometric_distribution.h` (commentaire « k number of trials needed to get one success, where k ∈ {1, 2, 3, ...} »).
+- **Statut** : doc officielle, plus code officiel pour la convention.
+
+### (C12) Loi exponentielle (T_COMP)
+
+- **Application Probabilités** :
+  1. **Loi exponentielle**, [OK].
+  2. **Paramètre** λ (réel > 0), **Valider**.
+  3. **Type de bornes** : X≤a, a≤X ou a≤X≤b.
+- **Toolbox** : depuis v26, des lois en plus y apparaissent. Les libellés du code sont « P(X≤m) où X suit Exp(λ) », « P(m≤X≤n) où X suit Exp(λ) » et « m où P(X≤m)=a et X suit Exp(λ) ».
+  - **Nom de la commande insérée : NON TROUVÉ** dans la doc. Supposé `expcdf…`.
+  - Plus simple : `1−e^(−λx)` avec [eˣ].
+- **Source** : MAN `probabilites/` ; NV `version-26/` ; GH `apps/toolbox.fr.i18n` (`ExpCDF`, `ExpCDFRange`, `InvExp`).
+- **Statut** : doc officielle (app). Code officiel pour les libellés toolbox, nom de commande NON TROUVÉ.
+
+## Nombres complexes (T_EXP)
+
+### (C13) Forme algébrique, conjugué, inverse, module, argument ; format d'affichage
+
+- **Réglage** : [home] > **Paramètres** > **Forme complexe** :
+  - **Réel** : les résultats complexes ne sont pas affichés, `√(−1)` → nonreal ;
+  - **a+ib** : forme algébrique ;
+  - **re^iθ** : forme exponentielle.
+- **Saisie** : la touche [i] insère i. Exemple : `(2+3i)×(1−i)` [EXE]. Inverse : `1/(2+3i)`.
+- **Fonctions** : [toolbox] > **Nombres complexes** :
+  - **Module** → `abs(z)` ;
+  - **Argument** → `arg(z)` ;
+  - **Partie réelle** → `re(z)` ;
+  - **Partie imaginaire** → `im(z)` ;
+  - **Conjugué** → `conj(z)`.
+- **Forme trigonométrique** : il n'y a pas de format trigonométrique dédié (NON TROUVÉ). Utiliser la forme exponentielle (réglage re^iθ) ou les **résultats complémentaires**. Ceux-ci donnent module, argument, parties réelle et imaginaire, et depuis v22 la conversion en forme polaire.
+- **Source** : MAN `calculs/` §1.2, §1.3 ; MAN `parametres/` (Forme complexe) ; NV `version-22/` ; GH `layout_events.cpp` (touche `i`).
+- **Statut** : doc officielle.
+- **Remarque** : **l'argument dans la forme exponentielle est toujours en radians**, même en mode degrés (doc). `arg(z)` suit-il l'unité d'angle ? La doc dit « en radians » pour l'exemple : supposé, radians.
+
+### (C14) Racines complexes d'un trinôme (T_EXP)
+
+- **Étapes** :
+  1. Régler **Forme complexe** sur **a+ib**.
+  2. App **Équations**, taper `x^2+x+1=0`, **Résoudre l'équation**.
+- **Source** : MAN `equations/` ; GH `solver/i18n` (« Le polynôme n'admet pas de racine réelle »).
+- **Statut** : supposé : la doc ne dit pas que le réglage a+ib fait afficher les racines complexes. En mode Réel, le message affiché est « Le polynôme n'admet pas de racine réelle ».
+
+### (C15) Suite complexe z(n+1) = a z(n) + b (T_EXP)
+
+- **App Suites** : NON TROUVÉ dans la doc, qui ne parle que de suites réelles (tableau, graphique). Supposé : non géré.
+- **Contournement** :
+  1. Dans Calculs, taper z₀ [EXE].
+  2. Taper `a×Ans+b` [EXE].
+  3. Chaque [EXE] suivant donne le terme suivant (supposé : [EXE] sur une ligne vide relance le dernier calcul ; sinon, rappeler la ligne par flèche haut puis [OK], et [EXE]).
+- **Statut** : supposé.
+
+## Matrices (T_EXP)
+
+### (C16) Saisir une matrice, produit, inverse, puissance, système A⁻¹B, Markov
+
+- **Saisie (méthode 1, clavier)** : `[[1,2][3,4]]`, avec `[` = [shift] [eˣ] et `]` = [shift] [ln].
+- **Saisie (méthode 2, toolbox)** : [toolbox] > **Matrices et vecteurs** > **Nouvelle matrice ou vecteur**.
+- **Stocker** : `[[1,2][3,4]]` [shift] [xʸ] (→) `M1` [EXE]. Pour la majuscule : [shift] [alpha] puis la lettre.
+- **Calculs** :
+  - produit `M1*M2` ;
+  - puissance `M1^5` ;
+  - inverse `M1^(-1)` ou `inverse(M1)` ;
+  - aussi `det`, `transpose`, `identity(n)`, `ref`, `rref`.
+- **Système** : `inverse(A)*B` avec B matrice colonne `[[5][6]]`. Ou bien l'app **Équations**, qui résout les systèmes linéaires exactement (jusqu'à 6 équations).
+- **Markov** : `[[0.5,0.5]]*P^n` (vecteur ligne × puissance de matrice).
+- **Source** : MAN `calculs/` §1.4 ; MAN `outils/` (Matrices et vecteurs) ; MAN `variables/` ; MAN `equations/`.
+- **Statut** : doc officielle. La forme du vecteur colonne `[[5][6]]` et l'exemple Markov sont supposés, par analogie avec la syntaxe documentée.
+
+### (C17) Suite matricielle U(n+1) = A U(n) + C (T_EXP)
+
+- **App Suites** : NON TROUVÉ (supposé non géré).
+- **Contournement** : dans Calculs, U₀ [EXE], puis `A*Ans+C` [EXE] répété. Même réserve que (C15).
+- **Statut** : supposé.
+
+## Suites, limites, encadrements
+
+### (C18) Conjecturer la limite d'une suite au tableau de termes (1_SPE, T_SPE, T_COMP)
+
+- **Application** : Suites.
+- **Étapes** :
+  1. Définir la suite (voir 23).
+  2. Onglet **Tableau** > **Régler l'intervalle**.
+  3. Saisir **N début**, **N fin** et **Pas** (par exemple 0, 1000, 100), puis **Valider**.
+  4. On peut aussi taper un grand n directement dans la colonne n.
+  5. Pour une récurrente : menu de la suite > **Graphique en escalier**.
+- **Source** : MAN `suites/` (§7.4.1, §7.4.2, §7.3.5) ; libellés GH `sequence/i18n/base.fr.i18n` (`NStart = "N début"`, `NEnd = "N fin"`).
+- **Statut** : doc officielle.
+- **Remarque** :
+  - le nombre de chiffres affichés suit **Chiffres significatifs** (10 par défaut depuis v22, NV `version-22/`) ;
+  - une valeur arrondie n'est pas une limite.
+
+### (C19) Somme des termes ; seuil (1_GEN, T_COMP, 1_TECHNO, T_TECHNO)
+
+- **Somme des termes (graphique)** : menu de la suite > **Somme des termes**, choisir le premier puis le dernier terme.
+- **Somme des termes (tableau, v21+)** : option de colonne « Somme des termes » (« A partir du premier terme »).
+- **Somme des termes (calcul)** : [toolbox] > **Analyse** > **Somme** → `sum(f(i),i,m,n)`.
+- **Seuil** : Tableau de la suite, faire défiler jusqu'au premier n qui dépasse la valeur.
+- **Source** : MAN `suites/` §7.3.4 ; NV `version-21/` ; GH `sequence/i18n` (`ShowSumOfTerms`) ; MAN `outils/` (sum).
+- **Statut** : doc officielle. L'emplacement exact de l'option Somme dans le Tableau est supposé : menu de l'en-tête de colonne.
+
+### (C20) Encadrer la solution de f(x) = k par un tableau à pas affiné (4e, T_COMP, 1_TECHNO)
+
+- **Application** : Grapheur, onglet **Tableau**.
+- **Étapes** :
+  1. **Régler l'intervalle** : X début = 0, X fin = 5, Pas = 1. Repérer le changement de f(x) − k de part et d'autre de k, par exemple entre 2 et 3.
+  2. Recommencer avec X début = 2, X fin = 3, Pas = 0.1, puis Pas = 0.01, etc.
+  3. Vérification :
+     - Graphique > **Calcul** > cellule **f(x)** = k, ou **Rechercher** > **Antécédent** ;
+     - ou app **Équations** (solution approchée, avec un **Intervalle de recherche** modifiable depuis v23).
+- **Source** : MAN `grapheur/` §2.4.1, §2.3.5 ; MAN `equations/` ; NV `version-23/`.
+- **Statut** : doc officielle.
+- **Remarque** : le tableau affiche des valeurs arrondies (chiffres significatifs). Pour un encadrement, lire le changement de sens de l'inégalité, pas l'égalité.
+
+## Divers petits ajouts
+
+### (C21) Variable mémoire, substitution (5e, E)
+
+- **Étapes** :
+  1. `5` [shift] [xʸ] (→) [alpha] `a` [EXE] stocke 5 dans a.
+  2. On l'utilise ensuite dans un calcul, par exemple `3a+2` [EXE].
+  3. [var] liste les variables.
+- **Source** : MAN `variables/`.
+- **Statut** : doc officielle.
+
+### (C22) Résoudre x² = a (3e)
+
+- **Étapes** : app **Équations**, taper `x^2=a`, **Résoudre l'équation**. Les solutions exactes ±√a s'affichent (second degré).
+- **Source** : MAN `equations/`.
+- **Statut** : doc officielle.
+
+### (C23) Espérance avec des listes (1_TECHNO, T_TECHNO)
+
+- **Étapes (Calculs)** :
+  1. `{x1,x2,…}` [shift] [xʸ] `X`.
+  2. `{p1,…}` → `P`.
+  3. `sum(X*P)` [EXE]. Le produit de deux listes se fait terme à terme.
+- **Alternative** : voir (26).
+- **Source** : MAN `calculs/` §1.5 (listes, produit terme à terme, sum).
+- **Statut** : doc officielle. Les noms de variables à une lettre majuscule sont supposés autorisés.
+
+### (C24) Déciles (T_COMP, « douteux »)
+
+- **Étapes** : NON TROUVÉ. L'onglet Stats ne donne que les quartiles (doc). Trier la série (**Trier**) et repérer le rang à la main.
+- **Statut** : doc officielle pour l'absence.
+
+### Tâches de la liste sans complément NumWorks
+
+Elles sont déjà couvertes au-dessus ou sont de l'arithmétique simple :
+
+- 5e : π, aire, volume, diviser par un décimal ;
+- 5e : blocs fx-92+, sans objet sur NumWorks ;
+- 4e : grandeurs quotients, quatrième proportionnelle ;
+- 1_GEN : sommet d'une parabole, voir (20) Maximum/Minimum ;
+- 1_GEN : p^k(1−p)^(n−k), calcul direct ;
+- T_COMP : Euler, rectangles, trapèzes, voir Python (22) ;
+- T_TECHNO : somme des carrés des écarts, listes (C23) ;
+- T_TECHNO : asymptotes, Grapheur (19).
