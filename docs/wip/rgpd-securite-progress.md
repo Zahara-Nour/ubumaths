@@ -340,8 +340,8 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
     - A **#1163 (mergée, `20261016100500` en prod, vérifiée : 2/2 recopiées, RLS, anon
       fermé)** : table `riddle_solutions` + déclencheur de recopie ;
     - B0 **#1166 (mergée, `20261016100600` en prod)** : `riddles.correction` vaut '' par défaut ;
-    - B (en cours, branche `feat/enigmes-solutions-lecture`) : tout le code lit et écrit
-      `riddle_solutions`, plus rien sur `riddles.answer/correction` ;
+    - B **#1172 (mergée, code seul)** : tout le code lit et écrit `riddle_solutions`, plus rien
+      sur `riddles.answer/correction` (audit : 31 `from('riddles')` relus, colonnes nommées) ;
     - C ⛔ destructive, APRÈS le deploy de B : DROP des deux colonnes + déclencheur — s'arrêter,
       montrer à David la réconciliation et le grep d'usages.
 - ⏳ **Une migration après le prochain `deploy:prod`** : REVOKE EXECUTE à `authenticated` de
