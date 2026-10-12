@@ -361,14 +361,10 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   - `profile.class_ids` de la liste élève : pas de fuite (la RLS borne, le filtre ne fait
     que restreindre).
 
-- ⏸ **Étape C REPORTÉE par David (2026-10-12)** : accord donné, puis report après le refus,
-  par le classifieur de permissions, d'appliquer le DROP à la base locale partagée.
-  Preuves faites (prod, 2026-10-12) : 2/2 énigmes avec solution identique, aucune
-  orpheline ; zéro usage de `riddles.answer/correction` dans src et dans la base.
-  Travail en cours, non commité, dans le worktree `../ubumaths-wt-drop-enigmes` (branche
-  `fix/enigmes-drop-colonnes`) : `enigmes-solutions-a-part.test.ts` réécrit (2 rouges
-  attendus) et migration `20261016100800_enigmes_colonnes_solution_supprimees.sql` (garde
-  de réconciliation, puis DROP déclencheur, fonction, colonnes). Reste : 8 tests qui
-  écrivent `correction`, suppression de `enigmes-correction-par-defaut.test.ts`, PR,
-  audit, db push, db:types. En attendant, un élève lit encore réponse et correction par
-  requête directe.
+- ✅ **Étape C FAITE (2026-10-12)** : reprise sans toucher à la base locale partagée (vert
+  prouvé par les tests d'intégration de la CI sur Supabase neuf). **#1206 (mergée,
+  `20261016100800` en prod, vérifiée)** : garde de réconciliation (2/2, 0 écart, refaite
+  juste avant le push), puis DROP du déclencheur, de `sync_riddle_solution()`, de
+  `riddles.answer` et `riddles.correction`. Après : 0 colonne, 0 déclencheur, 2 solutions
+  intactes ; aucune erreur dans les journaux Postgres. Un élève ne lit plus réponse ni
+  correction. Types : #1208.
