@@ -300,11 +300,14 @@ Les opérateurs logiques et d'égalité se tapent comme en programmation ou en t
 (`cli/core/pipeline.ts`, `withLogicOperators`) : `&&`/`and`/`et`, `||`/`or`/`ou`,
 `!`/`not`/`non`, `==`/`===` (=), `!=`/`!==` (≠) — réécrits en `\land`, `\lor`, `\lnot`, `\ne`
 pour le LaTeX (qui lisait `2 != 3` comme `factorial(2) = 3`). Une factorielle reste collée à son
-nombre (`3! = 6`). ⚠️ Au plus près (revue) : `||` et les mots seulement entourés d'espaces
-(`||-2||` est une norme, `et := 3` une variable) ; un « non » seulement en tête, après `(`, `,`
-ou un « et »/« ou » (`5 !`, `|-3|!` sont des factorielles) ; aucun mot dans `\text{…}`, ni
-sans comparaison ou opérateur logique dans l'entrée (`non + 1`, `x et y` parlent de variables) ;
-`non`/`not` en toutes lettres seulement devant une parenthèse (`non(2 > 1)`). Le message
+nombre (`3! = 6`). Un « non » sans parenthèses porte sur toute la comparaison qui le suit
+(`not 2 > 1` = non(2 > 1), jusqu'au prochain « et »/« ou » ; le `\lnot` du LaTeX lie plus fort).
+⚠️ Au plus près (revues) : les mots et le « non » seulement s'il y a une comparaison ou un
+opérateur logique (`non + 1`, `x et y` parlent de variables ; `b && !c` de booléens) ; `||` et les mots entourés d'espaces,
+`||` hors d'une valeur absolue (`||-2||`, `| 2 || 3 |`) ; un « non » seulement en tête, après `(`,
+`,` ou un « et »/« ou » (`5 !`, `|-3|!` sont des factorielles), un mot `non` seulement suivi de ce
+qu'il nie (`non > 1` est une variable) ; aucun mot dans `\text{…}`. `.def f(x) = x == 2` ne tente
+plus de dérivée. Le message
 d'une comparaison non évaluable nomme la vraie cause (relation non tranchée, « non » sans
 parenthèses, variable sans valeur). Une entrée à plusieurs `=` ou dont un membre est une comparaison (`1 < 2 = 2`) est lue
 en entier comme une chaîne : `executeEquality` la coupait au `=` et comparait un booléen à un

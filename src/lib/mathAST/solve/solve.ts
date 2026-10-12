@@ -61,7 +61,7 @@ import { trySubstitution } from './substitution';
 import { trySinCosRatio } from './sin-cos-ratio';
 import { tryTrigEquality } from './trig-equality';
 import { mergePeriodicFamilies } from './periodic';
-import { isDelimiter, isMultiplication, isRelation } from '../guards';
+import { isDelimiter, isDivision, isMultiplication, isOpposite, isRelation } from '../guards';
 import {
 	classifyEquation,
 	toStandardForm,
@@ -1626,6 +1626,48 @@ function tryReducedForm(
 }
 
 /**
+ * `P/c = 0`, le dénominateur c sans AUCUNE lettre et non nul : on résout
+ * `P = 0`.
+ *
+ * Écart V37 (mesuré le 2026-10-12) : `solveInequality` ramène `x < 2/π` à
+ * `(πx − 2)/π < 0`, et `solve((πx − 2)/π = 0)` échouait — la décomposition
+ * rationnelle ne regarde que les dénominateurs qui contiennent l'inconnue,
+ * et le solveur affine ne lit pas une division par π (par 5, oui : le
+ * coefficient reste un nombre). Zéros non résolus, signe inconnu partout :
+ * l'ensemble rendu était ∅. Même cause pour e, √2/π, π + 1 et le
+ * second degré (`x² < 1/π`).
+ *
+ * En repli seulement : une équation déjà résolue garde sa résolution (et ses
+ * étapes). L'opposé est traversé (−A = 0 ⇔ A = 0). Un dénominateur qui
+ * contient une autre lettre (paramètre) ou qui vaut 0 (`π − π`) n'est pas
+ * traité : rien ne garantit alors qu'il est non nul.
+ */
+function tryConstantDenominator(
+	expr: MathNode,
+	variable: string,
+	opts: Required<Omit<SolveOptions, 'variable' | 'initialGuesses' | 'domain'>> & {
+		initialGuesses?: readonly number[];
+		domain?: Domain;
+	}
+): SolveResult | null {
+	const core = isOpposite(expr) ? expr.operand : expr;
+	if (!isDivision(core)) return null;
+	if (getVariables(core.denominator).size > 0) return null;
+	let denominator: number;
+	try {
+		denominator = evaluateNodeToApproximatedNumber(core.denominator);
+	} catch {
+		return null;
+	}
+	if (!Number.isFinite(denominator) || Math.abs(denominator) < 1e-12) return null;
+	const result = solve(equals(core.numerator, number('0')), {
+		variable,
+		verbosity: opts.verbosity
+	});
+	return isSolverFailure(result) ? null : result;
+}
+
+/**
  * √u = v, v dépendant de x — la méthode du lycée : √u = v ⇔ v ≥ 0 et u = v².
  *
  * Mesuré le 2026-10-08 : `√x = x − 2` revenait « Type d'equation non
@@ -2088,6 +2130,12 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Avant elle, le changement de variable (u = sin x, cos x, tan x, ln x,
 	// eˣ) : `sin²x = 1/4` revenait « non supporte ». Lui aussi en repli : une
 	// équation déjà résolue garde sa résolution.
+	// P/c = 0, c constante non nulle (π, e, π + 1) : P = 0. Premier
+	// repli : écart V37, `x < 2/π` mis sous la forme (πx − 2)/π < 0.
+	if (isSolverFailure(result)) {
+		const numeratorOnly = tryConstantDenominator(expr, variable, opts);
+		if (numeratorOnly) result = numeratorOnly;
+	}
 	if (isSolverFailure(result)) {
 		const substituted = trySubstitution(expr, variable, opts, solve);
 		if (substituted) result = substituted;

@@ -206,6 +206,13 @@ Suites (K21, 2026-10-12) : `solve` ne rend plus la racine 0 en double (`4x³ −
 `solve.ts`, motifs `P.*` construits à l'appel (cycle d'imports). Tests :
 `solve/__tests__/{racine-nulle-sans-doublon,difference-de-carres}.test.ts`.
 
+Écart V37 (2026-10-12) : `solve` résout en repli **P/c = 0, c constante sans lettre et non nulle**
+(π, e, π + 1, √2/π) comme P = 0 (`tryConstantDenominator`, `solve.ts`). `solveInequality` ramène
+`x < 2/π` à `(πx − 2)/π < 0` ; ni la décomposition rationnelle (dénominateurs en x seulement) ni
+le solveur affine (division par 5 oui, par π non) ne le lisaient : zéros non résolus, signe
+inconnu, ensemble ∅ (statut `partial`). Tests :
+`solve/inequality/__tests__/denominateur-constant.test.ts` (bornes et échantillonnage de points).
+
 ### Carte du code
 
 | Fichier              | Rôle                                                                                                                                                                                                                                                              |
@@ -506,7 +513,7 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     vers l'extérieur, `+ − × ÷` et puissances entières), refus s'ils se recouvrent. ⚠️ Jamais
     la valeur approchée du bouton ≈ pour trancher : elle a donné des sens faux. Une chaîne `a < b < c` est
     vraie si chaque maillon l'est (`evaluateToBoolean`), et passe par le plafond maillon par
-    maillon. La console réécrit les opérateurs logiques et d'égalité (`&&`, `and`, `!=`, `==`…) dans la notation du parseur (`cli/core/pipeline.ts`, `withLogicOperators`), et
+    maillon. La console réécrit les opérateurs logiques et d'égalité (`&&`, `and`, `!=`, `==`…) dans la notation du parseur (`cli/core/pipeline.ts`, `withLogicOperators`) — au plus près : mots et « non » seulement s'il y a une comparaison ou un opérateur logique, `||` hors d'une valeur absolue, un « non » sans parenthèses enveloppant toute la comparaison qui le suit ; `.def` ne dérive pas une définition booléenne, et
     lit en entier une entrée à plusieurs `=` ou dont un membre est une comparaison.
 
 ## Le moteur de réécriture et les étapes
@@ -793,6 +800,10 @@ Doublons qui restent, chacun pour un autre besoin :
   (`getVariables` rend la base `x`) ; `e_1+1=3` et `i_1+1=3` aussi (le refus « constante
   d'Euler » / « unité imaginaire » ne s'applique pas quand l'arbre contient une variable `e`
   ou `i`, base d'une variable indicée : `reservedVariableRefusal`).
+- `solve` lit `ln` (ou `cos`) d'une **constante** comme une équation transcendante :
+  `x = \ln 3`, `x\ln 2 = 1`, `x\cos(1) = 1` répondent « Type d'equation transcendante non
+  supporte », donc `x < \frac{1}{\ln 2}` rend ∅ (statut `partial`). Mesuré le 2026-10-12, non
+  corrigé (cause distincte de V37 : le classement, pas le dénominateur).
 - Les filtres de noms qui écartent `e` et `i` de `getVariables` (`atelier/solve-steps.ts`,
   `questions/calculus/calculus-reading.ts`, `CONSTANT_NAMES` de `cli/core/variable-argument.ts`)
   ne servent plus que pour `e_1`, `i_1`, `u_i`, qu'ils traitent à tort comme des constantes.

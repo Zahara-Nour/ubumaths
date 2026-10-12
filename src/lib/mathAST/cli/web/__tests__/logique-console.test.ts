@@ -108,11 +108,9 @@ describe('ce qui ne devient pas un opérateur logique', () => {
 });
 
 describe('le message d’une comparaison non évaluable dit la vraie cause', () => {
-	it('un « non » appliqué à un nombre : mettre la comparaison entre parenthèses', () => {
-		const line = run('!5 > 1');
-
-		expect(line.output).toMatch(/parenthèses/);
-		expect(line.output).not.toMatch(/variable/);
+	// Depuis la suite du lot : un « non » sans parenthèses porte sur toute la comparaison
+	it('!5 > 1 se lit non(5 > 1)', () => {
+		expect(run('!5 > 1').output).toBe('false');
 	});
 
 	it('sans variable, pas de variable soupçonnée', () => {

@@ -827,7 +827,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 
 	// RelationNode - cannot evaluate to a single value
 	if (isRelation(node)) {
-		throw new Error('Cannot evaluate relation expressions to a numeric value');
+		throw new Error('Une comparaison n’a pas de valeur numérique');
 	}
 
 	// UnitNode - evaluate the expression part (ignore the unit)
@@ -847,7 +847,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 
 	// Boolean/Logical nodes - not numeric
 	if (isBoolean(node) || isLogical(node) || isLogicalNot(node)) {
-		throw new Error('Cannot evaluate boolean/logical expression to a numeric value');
+		throw new Error('Une comparaison ou une expression logique n’a pas de valeur numérique');
 	}
 
 	// Longueur `AB`, nom de figure `ABC` : un message lisible par un élève, s'il remonte
@@ -1020,11 +1020,11 @@ function validateEvaluable(node: MathNode, exactMode: boolean = false): void {
 	}
 
 	if (isRelation(node)) {
-		throw new Error('Cannot evaluate relation expressions to a numeric value');
+		throw new Error('Une comparaison n’a pas de valeur numérique');
 	}
 
 	if (isBoolean(node) || isLogical(node) || isLogicalNot(node)) {
-		throw new Error('Cannot evaluate boolean/logical expressions to a numeric value');
+		throw new Error('Une comparaison ou une expression logique n’a pas de valeur numérique');
 	}
 
 	if (isSubscript(node)) {
