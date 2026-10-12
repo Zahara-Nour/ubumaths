@@ -27,8 +27,11 @@ cœur du système) :
 - **le tuteur** (`tutorMode: true`) : guide sans donner la réponse, prompt construit côté serveur,
   quotas propres, détection de triche, RAG, et conversation enregistrée en base quand l'exercice
   vient d'une feuille assignée ;
-- **le chat libre** (sans `tutorMode`) : le composant `ChatBot.svelte` de la page `/pere-ubu`. Il est
-  **cassé** depuis le durcissement H11 (voir [Écarts connus](#écarts-connus), point 1).
+- **le chat libre** (sans `tutorMode`) : le composant `ChatBot.svelte` de la page `/pere-ubu`. Le
+  navigateur nomme la personnalité (`personality`, `buildChatRequestBody` dans
+  `src/lib/utils/chat-request.ts`) ; le serveur pose lui-même son prompt système, tiré de
+  `src/lib/config/personalities.ts`. Sans personnalité nommée, c'est le Père Ubu : aucun chat ne
+  part sans consignes. Un tour `system` envoyé par le client reste refusé (finding H11).
 
 Le RAG ajoute au prompt du tuteur des extraits de documents déposés par le professeur.
 
@@ -63,8 +66,8 @@ et `USAGE_EXAMPLES.md` du dossier `components/tutor/` sont des notes d'origine, 
   conversations et de messages, élèves actifs, score d'effort moyen, niveau d'aide moyen, tableau
   par élève, thèmes fréquents, répartition des niveaux d'aide 0 à 7. Filtres : classe, période
   (jour, semaine, mois, tout). Données : `GET /api/tutor/stats`. Aucun lien n'y mène.
-  ⚠️ Un compte `teacher` y voit toujours zéro (écart 3) ; `effort_score` et `topics_covered` ne
-  sont jamais écrits (écart 4).
+  ⚠️ Un compte `teacher` y voit toujours zéro (écart 1) ; `effort_score` et `topics_covered` ne
+  sont jamais écrits (écart 2).
 - **Le corpus du RAG** : page `/dashboard/teacher/documents` (hors zone) → `POST
 /api/documents/upload` (PDF, TXT, MD ; 10 Mo ; rôle `teacher` ou `admin`). Aucun lien n'y mène.
 
@@ -224,42 +227,37 @@ conversations (`src/routes/api/account/export/+server.ts:183`).
   rechargement, la valeur enregistrée peut redescendre. `message_count` reçoit de même `messages.length + 1` par-dessus le trigger.
 - Le limiteur du tuteur crée **son propre** client service role (`dotenv` + `process.env`) au lieu
   de `serviceRoleClient.ts`.
-- Aucun test unitaire ne couvre `/api/chat`, `server/tutor/`, `server/rag/` ni `api/tutor/` ; seul
-  `pere-ubu/__tests__/page.svelte.test.ts` teste la page (avec un `ChatBot` factice).
+- Côté tests, seul le chat libre est couvert : `api/chat/__tests__/server.test.ts` (prompt posé par
+  le serveur, personnalité inconnue et tour `system` refusés) et `utils/__tests__/chat-request.test.ts`
+  (le corps envoyé par `ChatBot` passe le schéma du serveur). Le mode tuteur de `/api/chat`,
+  `server/tutor/`, `server/rag/` et `api/tutor/` n'ont aucun test unitaire ;
+  `pere-ubu/__tests__/page.svelte.test.ts` teste la page avec un `ChatBot` factice.
 
 ## Écarts connus
 
-1. **Le chat de `/pere-ubu` ne répond plus.** `ChatBot` envoie en tête un message
-   `{ role: 'system', … }` (`ChatBot.svelte:475`) ; depuis le durcissement H11 (commit `3b99b5886`),
-   `chatRequestSchema` n'accepte que `user` et `assistant` (`validation/chat.ts:57`). Chaque envoi
-   rend 400, l'élève lit « Ma machine à penser pataphysique a rencontré un problème », et la
-   tentative consomme une des 5 requêtes du quart d'heure.
-2. **Le chat libre n'a aucun prompt serveur.** Sans `tutorMode`, `/api/chat` relaie les messages
-   du client à Llama sans persona ni consigne pour mineurs. Tout compte connecté (consentement
-   donné) peut s'en servir comme d'un modèle généraliste, images comprises.
-3. **Statistiques vides pour un professeur.** `TutorChat` n'envoie jamais `classId` à
+1. **Statistiques vides pour un professeur.** `TutorChat` n'envoie jamais `classId` à
    `POST /api/tutor/conversations` : `class_id` reste NULL. `/api/tutor/stats` filtre un `teacher`
    sur `class_id IN (ses classes)` (`stats/+server.ts:165`), et la policy de lecture des messages
    exige aussi un `class_id` : seul un `admin` voit quelque chose.
-4. **`effort_score` et `topics_covered` ne sont jamais écrits** (aucune écriture dans `src`) : les
+2. **`effort_score` et `topics_covered` ne sont jamais écrits** (aucune écriture dans `src`) : les
    colonnes « effort moyen » et « thèmes » des statistiques restent à 0 et vides.
-5. **La RPC `rag_hybrid_search` lit une colonne absente.** Elle utilise `c.content_tsv`
+3. **La RPC `rag_hybrid_search` lit une colonne absente.** Elle utilise `c.content_tsv`
    (`baseline_schema.sql:15080`) ; la colonne de `rag_chunks` s'appelle `search_vector`. Chaque
    recherche hybride échoue et retombe sur le plein texte, après avoir envoyé la question à
    HuggingFace. La RPC ne filtre pas non plus `enabled_for_rag`, et ne rend ni `vector_score` ni
    `fts_score` que `search.ts` attend.
-6. **Les quotas « glissants » ne glissent pas.** `increment_rate_limit` garde une ligne par clé,
+4. **Les quotas « glissants » ne glissent pas.** `increment_rate_limit` garde une ligne par clé,
    ajoute 1 et repousse l'expiration (`baseline_schema.sql:11780-11786`). Une ligne expirée n'est
    lue comme 0 que jusqu'au message suivant : tant que la purge de 02:00 UTC ne l'a pas supprimée,
    l'incrément repart de l'**ancien total**. Le compteur « heure » ne revient donc à zéro qu'à la
    purge de la nuit : 30 messages dans la journée, même espacés, suffisent, et l'élève n'obtient
    ensuite qu'un message par heure. Le compteur « jour » exige 24 h sans message, puis la purge.
-7. `GROQ_MODEL` ignoré (modèle en dur) ; `enabledForRag` du dépôt ignoré (`indexDocument` force
+5. `GROQ_MODEL` ignoré (modèle en dur) ; `enabledForRag` du dépôt ignoré (`indexDocument` force
    `true`).
-8. `/tuteur`, `/dashboard/tutor-stats` et `/dashboard/teacher/documents` : aucun lien n'y mène.
+6. `/tuteur`, `/dashboard/tutor-stats` et `/dashboard/teacher/documents` : aucun lien n'y mène.
    `/pere-ubu` garde un bouton « Retour à l'accueil » (`Button`), pas un `BackLink`.
-9. Code sans appelant : `TutorWidget`, `TutorHelpButton`, `determineMaxHelpLevel`,
+7. Code sans appelant : `TutorWidget`, `TutorHelpButton`, `determineMaxHelpLevel`,
    `shouldEscalate`, `escalate`, `createInitialState` (`help-escalation.ts`),
    `searchSimilarExercises`, `batchIndexDocuments`, `reindexAllDocuments`.
-10. [base-de-donnees.md](base-de-donnees.md) dit que « le professeur lit [les conversations] de tous
-    les élèves » : vrai pour `tutor_conversations`, faux pour `tutor_messages` sans `class_id`.
+8. [base-de-donnees.md](base-de-donnees.md) dit que « le professeur lit [les conversations] de tous
+   les élèves » : vrai pour `tutor_conversations`, faux pour `tutor_messages` sans `class_id`.

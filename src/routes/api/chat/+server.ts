@@ -13,6 +13,7 @@ import { analyzeMessage } from '$lib/server/tutor/cheat-detector';
 import { analyzeStudentMessages, calculateEffortScore } from '$lib/server/tutor/help-escalation';
 import { hybridSearch, formatResultsForPrompt } from '$lib/server/rag';
 import type { GradeCode } from '$lib/types/grades';
+import { personalities } from '$lib/config/personalities';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -314,7 +315,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(400, { message: validation.error.issues[0].message });
 		}
 
-		const { messages } = validation.data;
+		const { messages, personality } = validation.data;
 
 		// Check if API key is configured (type-safe optional check)
 		if (!env.GROQ_API_KEY) {
@@ -329,7 +330,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Strip out any extra properties (like timestamp) and keep only role and content for API
-		const apiMessages = messages.map(({ role, content }) => ({ role, content }));
+		// Le prompt système est posé ici, jamais reçu du client (H11, écart V30).
+		const apiMessages = [
+			{ role: 'system' as const, content: personalities[personality].systemPrompt },
+			...messages.map(({ role, content }) => ({ role, content }))
+		];
 
 		// Detect if any message contains images (array content with image_url type)
 		const hasImages = apiMessages.some(

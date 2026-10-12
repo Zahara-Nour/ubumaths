@@ -3,6 +3,7 @@
  */
 
 import { z } from 'zod';
+import { personalities, type PersonalityKey } from '$lib/config/personalities';
 
 // ============================================================================
 // MESSAGE CONTENT SCHEMAS
@@ -71,6 +72,13 @@ const chatMessageSchema = z.object({
  * - Max 10 content parts per multimodal message (prevents complexity attacks)
  */
 export const chatRequestSchema = z.object({
+	// Personnalité du chat libre : le serveur en pose le prompt système (écart V30).
+	// Absente → le Père Ubu, seule personnalité, pour qu'aucun chat ne parte sans consignes.
+	personality: z
+		.enum(Object.keys(personalities) as [PersonalityKey, ...PersonalityKey[]], {
+			message: 'Personnalité inconnue'
+		})
+		.default('pereUbu'),
 	messages: z
 		.array(chatMessageSchema)
 		.min(1, 'Au moins un message requis')
