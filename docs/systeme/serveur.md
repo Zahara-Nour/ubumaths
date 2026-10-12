@@ -6,6 +6,7 @@ couvre:
   - 'src/lib/server/utils/**'
   - 'src/lib/server/validation/{index,common,params,response-utils,cron}.ts'
   - 'src/lib/utils/{form-action,logger}.ts'
+  - src/lib/zod-locale.ts
   - 'src/routes/(protected)/dashboard/admin/cron/**'
   - 'src/routes/api/admin/cron/**'
 ---
