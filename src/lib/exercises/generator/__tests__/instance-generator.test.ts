@@ -567,6 +567,26 @@ describe('Utility Functions', () => {
 		expect(isParameterized(exercise)).toBe(false);
 	});
 
+	// Ligne de la base : `variables` (ancien format) et `shared` peuvent valoir null.
+	it('isParameterized ne plante pas sur une colonne `variables` à null', () => {
+		// Construit à la main : `createExercise` normalise `variables` en tableau.
+		const exercise = {
+			...createExercise(),
+			variables: null,
+			shared: null
+		} as unknown as Exercise;
+		expect(isParameterized(exercise)).toBe(false);
+	});
+
+	it('isParameterized voit les variables de `shared` et des niveaux de guidage', () => {
+		const exercise = {
+			...createExercise(),
+			variables: null,
+			shared: { variables: [{ name: 'a', expression: '{{1..10}}' }] }
+		} as unknown as Exercise;
+		expect(isParameterized(exercise)).toBe(true);
+	});
+
 	it('isParameterized should return true for exercises with variables', () => {
 		const exercise = createExercise({
 			variables: [{ name: 'a', expression: '{{1..10}}' }]

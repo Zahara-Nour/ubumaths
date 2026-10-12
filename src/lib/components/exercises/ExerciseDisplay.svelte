@@ -30,7 +30,8 @@
 	import {
 		generateExerciseInstance,
 		generateStudentSeed,
-		generateGroupSeed
+		generateGroupSeed,
+		isParameterized
 	} from '$lib/exercises/generator/instance-generator';
 	import type { Exercise, ExerciseInstance } from '$lib/exercises/types';
 	import { getExerciseContentSafe } from '$lib/exercises/types';
@@ -187,6 +188,10 @@
 	 */
 	let genericFunctionsConfig = $derived(toGenericFunctionsConfig(exercise.generic_functions));
 
+	// Variables où qu'elles soient : `shared`, niveaux de guidage, ou colonne
+	// `variables` (ancien format). Décide de l'affichage des boutons de tirage.
+	let hasVariables = $derived(isParameterized(exercise));
+
 	// Sens de `AB` (longueur ou produit) : le thème de l'exercice décide (Q-J)
 	provideCapitalPairs(() => exerciseCapitalPairs(exercise.topic));
 </script>
@@ -202,14 +207,14 @@
 			<div>
 				<h4 class="font-semibold text-blue-900 dark:text-blue-100">Aperçu du template</h4>
 				<p class="text-sm text-blue-700 dark:text-blue-300">
-					{#if exercise.variables && exercise.variables.length > 0}
+					{#if hasVariables}
 						Les {lore.entities.student}s verront des valeurs différentes à chaque instance.
 					{:else}
 						{lore.learning.exercise} statique (sans paramètres).
 					{/if}
 				</p>
 			</div>
-			{#if exercise.variables && exercise.variables.length > 0}
+			{#if hasVariables}
 				<Button
 					onclick={generateInstance}
 					variant="outline"
@@ -226,7 +231,7 @@
 <!-- ============================================================================ -->
 <!-- ON-DEMAND REGENERATION BUTTON (Student Practice) -->
 <!-- ============================================================================ -->
-{#if exercise.distribution_mode === 'on_demand' && mode === 'instance' && exercise.variables && exercise.variables.length > 0}
+{#if exercise.distribution_mode === 'on_demand' && mode === 'instance' && hasVariables}
 	<div class="mb-4 flex justify-end">
 		<Button onclick={generateInstance} variant="outline" size="sm">🎲 Nouveau problème</Button>
 	</div>
@@ -269,7 +274,7 @@
 			{showSolution ? 'Masquer' : 'Afficher'} la solution
 		</Button>
 
-		{#if mode === 'template' && currentInstance && exercise.variables && exercise.variables.length > 0}
+		{#if mode === 'template' && currentInstance && hasVariables}
 			<details class="text-sm">
 				<summary class="cursor-pointer text-muted-foreground hover:text-foreground">
 					Valeurs des variables
