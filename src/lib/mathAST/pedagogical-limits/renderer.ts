@@ -28,6 +28,7 @@
 
 import { toLatex } from '../latex-generator';
 import { isAddition, isSubtraction } from '../guards';
+import { containsVariable } from '../common/contains-variable';
 import type { LimitDirection } from '../limits/types';
 import type { MathNode } from '../types';
 import type {
@@ -90,7 +91,15 @@ function formatLimitSubscript(
  * ```
  * \begin{aligned}
  *   & \textcolor{blue}{\lim_{x \to a} f(x)} \\
- *   & = g(x)
+ *   & = \lim_{x \to a} g(x)   (ou la valeur, quand g ne dépend plus de x)
+ * \end{aligned}
+ * ```
+ *
+ * Quand g = f (étape d'annonce), la limite seule, sans 2ᵉ ligne :
+ *
+ * ```
+ * \begin{aligned}
+ *   & \textcolor{blue}{\lim_{x \to a} f(x)}
  * \end{aligned}
  * ```
  *
@@ -104,14 +113,13 @@ function formatLimitSubscript(
  * lying about the scope — they show `before \Rightarrow after` instead.
  */
 function formatExpressionLatex(step: PedagogicalLimitStep): string {
-	const beforeLatex = toLatex(step.before);
-	const afterLatex = toLatex(step.after);
-
 	// Sub-steps of a factorisation cluster operate on a fragment, not the
 	// whole limit — render them as a transformation arrow rather than a
 	// limit identity. Driven by `FRAGMENT_RULES` so V1.1 cluster extensions
 	// are picked up automatically.
 	if (FRAGMENT_RULES.has(step.rule)) {
+		const beforeLatex = toLatex(step.before);
+		const afterLatex = toLatex(step.after);
 		return (
 			`\\begin{aligned}\n` +
 			`  & \\textcolor{blue}{${beforeLatex}} \\\\\n` +
@@ -120,16 +128,41 @@ function formatExpressionLatex(step: PedagogicalLimitStep): string {
 		);
 	}
 
-	// Une somme sous `\\lim` est parenthésée : `\\lim (x + 2)`, jamais lu (lim x) + 2
-	const isSum = isAddition(step.before) || isSubtraction(step.before);
-	const body = isSum ? `\\left( ${beforeLatex} \\right)` : beforeLatex;
 	const limitSub = formatLimitSubscript(step.variable, step.approach, step.direction);
+	const left = limitLatex(limitSub, step.before);
+	const right = rightHandSideLatex(step, limitSub);
+	// Étape d'annonce (identification, forme indéterminée, terme dominant,
+	// encadrement, comparaison des côtés) : rien ne change, donc pas de « = » —
+	// `\\lim f = \\lim f` serait juste mais redondant. Même arbre ⇒ même LaTeX.
+	if (right === left) {
+		return `\\begin{aligned}\n  & \\textcolor{blue}{${left}}\n\\end{aligned}`;
+	}
 	return (
 		`\\begin{aligned}\n` +
-		`  & \\textcolor{blue}{\\lim_{${limitSub}} ${body}} \\\\\n` +
-		`  & = ${afterLatex}\n` +
+		`  & \\textcolor{blue}{${left}} \\\\\n` +
+		`  & = ${right}\n` +
 		`\\end{aligned}`
 	);
+}
+
+/** `\\lim_{…} f` ; une somme est parenthésée : `\\lim (x + 2)`, jamais lu (lim x) + 2. */
+function limitLatex(limitSub: string, expression: MathNode): string {
+	const latex = toLatex(expression);
+	const isSum = isAddition(expression) || isSubtraction(expression);
+	const body = isSum ? `\\left( ${latex} \\right)` : latex;
+	return `\\lim_{${limitSub}} ${body}`;
+}
+
+/**
+ * Membre de droite d'une étape sur la limite entière : tant que l'expression
+ * dépend encore de la variable, c'est encore une limite — `\\lim f = \\lim g`,
+ * jamais `\\lim f = g(x)` (faux : une limite n'est pas une fonction de x).
+ * Une valeur (nombre, ±∞) s'écrit seule : `\\lim f = 3`.
+ */
+function rightHandSideLatex(step: PedagogicalLimitStep, limitSub: string): string {
+	return containsVariable(step.after, step.variable)
+		? limitLatex(limitSub, step.after)
+		: toLatex(step.after);
 }
 
 // =============================================================================

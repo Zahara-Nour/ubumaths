@@ -57,7 +57,7 @@ import {
 	numericNode
 } from './helpers';
 import { extractExactRational } from '../common/numeric';
-import { tryEvaluateLimitExact, resultToNode } from '../limits/exact-evaluation';
+import { tryEvaluateLimitExact, resultToNode, writeLimitValue } from '../limits/exact-evaluation';
 import { compile } from '../eval/compile';
 import { normalize, denormalize, hashNormalForm } from '../normal';
 import type { NormalForm, NormalTerm, Rational } from '../normal';
@@ -147,6 +147,8 @@ interface StepInit {
 	readonly indeterminateForm?: IndeterminateForm;
 	readonly subSteps?: readonly PedagogicalLimitStep[];
 	readonly globalAfter?: MathNode;
+	/** Côté étudié par l'étape, quand il diffère de celui de la limite (à gauche, à droite). */
+	readonly direction?: LimitDirection;
 }
 
 function makeStep(ctx: PipelineContext, init: StepInit): PedagogicalLimitStep {
@@ -159,7 +161,7 @@ function makeStep(ctx: PipelineContext, init: StepInit): PedagogicalLimitStep {
 		verbosityLevel: init.verbosityLevel ?? 'summarized',
 		variable: ctx.variable,
 		approach: ctx.approach,
-		direction: ctx.direction,
+		direction: init.direction ?? ctx.direction,
 		globalBefore: ctx.globalBefore,
 		...(init.globalAfter && { globalAfter: init.globalAfter }),
 		...(init.bindings && { bindings: init.bindings }),
@@ -931,11 +933,12 @@ function exactQuotient(
 			return denormalize(normalize(rationalToNode(divRational(num.rational, den.rational))));
 		}
 		// Réduit d'abord par la forme normale (1/(−√2) → −½√2), puis réécrit par
-		// l'évaluation exacte, comme le moteur : `\\dfrac{-\\sqrt{2}}{2}`, `2\\sqrt{2}`.
+		// l'évaluation exacte et écrit comme la valeur du moteur (`writeLimitValue`),
+		// signe devant la fraction : `-\\dfrac{\\sqrt{2}}{2}`, `2\\sqrt{2}`.
 		const quotient = denormalize(normalize(divide(num.coefficient, den.coefficient, 'fraction')));
 		const result = tryEvaluateLimitExact(quotient, ctx.variable, ctx.approach, 'both');
 		const node = result === null ? null : resultToNode(result);
-		return node === null || node.type === 'infinity' ? null : node;
+		return node === null || node.type === 'infinity' ? null : writeLimitValue(node);
 	} catch {
 		return null;
 	}
@@ -1021,6 +1024,7 @@ function tryOneSided(expression: MathNode, ctx: PipelineContext): StrategyResult
 				before: expression,
 				after: signNodeFromSign(leftSign),
 				verbosityLevel: 'detailed',
+				direction: 'left',
 				bindings: { side: { type: 'variable', name: 'left' } as MathNode }
 			})
 		: null;
@@ -1031,6 +1035,7 @@ function tryOneSided(expression: MathNode, ctx: PipelineContext): StrategyResult
 				before: expression,
 				after: signNodeFromSign(rightSign),
 				verbosityLevel: 'detailed',
+				direction: 'right',
 				bindings: { side: { type: 'variable', name: 'right' } as MathNode }
 			})
 		: null;

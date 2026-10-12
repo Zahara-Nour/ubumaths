@@ -624,12 +624,30 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   (coefficients sur ℚ) et, à défaut, dans la forme normale (`normalize`) pour un coefficient
   constant irrationnel (π, √2) ; le quotient des coefficients dominants est exact (`\dfrac{3}{2}`,
   plus `1.5` ; un quotient irrationnel réduit par `normalize` puis réécrit par
-  `tryEvaluateLimitExact`, comme le moteur : `\dfrac{\pi}{2}`, `2\sqrt{2}`, `\dfrac{\sqrt{2}\pi}{2}`). Une constante (`5`, `\pi`) : une seule étape, « La fonction est constante : sa
+  `tryEvaluateLimitExact`, puis écrit par `writeLimitValue`, comme le moteur : `\dfrac{\pi}{2}`,
+  `2\sqrt{2}`, `\dfrac{\pi\sqrt{2}}{2}`, `-\dfrac{\sqrt{2}}{2}`). Une constante (`5`, `\pi`) : une seule étape, « La fonction est constante : sa
   limite vaut 5. » Un polynôme seul (`\pi x`,
   `-2x^3+x`) est lu comme P / 1. Un signe de coefficient qui ne se lit pas exactement
   (`(\pi - 4)x`) : refus, jamais un décimal. La borne d'un `\lim` parsé (`positive(∞)`) est
   traduite en nœud `infinity` par `normalizeApproach` de `limits/evaluate.ts`, comme dans le
-  moteur.
+  moteur. **Écriture des étapes** (`renderer.ts`, 2026-10-12) : tant que le membre de droite
+  dépend de la variable, il reste une limite — `\lim_{x\to 2} \dfrac{3x^2-12}{x-2} = \lim_{x\to 2}
+(3x + 6)`, jamais `= 3x + 6` ; une valeur (nombre, ±∞) s'écrit seule. Les sous-étapes de
+  fragment (`factor-numerator`, `factor-denominator`) n'ont `\lim` d'aucun côté. Une étape
+  d'annonce, dont le membre de droite égale le gauche (identification, forme indéterminée, terme
+  dominant, encadrement, comparaison des côtés), s'écrit `\lim_{x\to a} f(x)` seul, sans « = ».
+- **Valeur rendue par `limits/`** (`writeLimitValue`, `limits/exact-evaluation.ts`, 2026-10-12) :
+  la valeur de `evaluateLimit` et le quotient dominant pédagogique passent par `tidy` — signe
+  devant la fraction (`-\dfrac{\sqrt{2}}{2}`, plus `\dfrac{-\sqrt{2}}{2}` de `denormalize`),
+  radical au numérateur (`\dfrac{\sqrt{3}}{2}`, plus `\dfrac{1}{2}\sqrt{3}`), ordre canonique
+  (`\sqrt{2} + 1`). Une valeur qui contient un décimal reste telle quelle (`0.5`, jamais
+  `\dfrac{1}{2}`) : décimal de l'énoncé (`writeLikeInput`) ou des flottants du suivi de signe
+  (`\sqrt{\frac{x^2+1}{4x^2}}` en −∞ rend `0.5` par la composée √). Les calculs intermédiaires
+  gardent la forme de `resultToNode` ; `analyzeDiscontinuity` (`limits/one-sided.ts`) compare la
+  valeur au point et la limite numériquement (repli : `tidy` des deux côtés) — `|x| + 0.5` en 0
+  a pour limite `0.5` et pour valeur `\dfrac{1}{2}`, continue. Les étapes « limite à gauche /
+  à droite » d'une limite bilatérale s'écrivent en `a^-` / `a^+` (côté étudié, pas celui de la
+  limite).
 - **`integration/integrators/quadratic-denominator.ts` `factorQuadratic`** : trinôme lu par
   `toPolynomial` (toute écriture : `x(x-5)+6`, `(2x-1)(2x+1)` passent), racines par
   `quadraticRootParts`. Le littéral `x² − a²` garde sa lecture par `extractQuadraticCoefficients`.
