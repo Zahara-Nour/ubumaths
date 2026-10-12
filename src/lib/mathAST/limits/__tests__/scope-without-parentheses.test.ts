@@ -41,13 +41,13 @@ describe('\\lim sans parenthèses : la limite porte sur toute l’expression', (
 		expect(studentLimit(latex)).toBe(expected);
 	});
 
-	// Ordre de `tidy` (valeur rendue mise au propre) : l'entier en dernier
+	// Ordre de `tidy` (valeur rendue mise au propre) : somme sans variable, l'entier en tête
 	it.each([
-		['\\lim_{x\\to0}\\frac{\\sin x}{x}+\\sqrt{2}', 'exact \\sqrt{2} + 1'],
-		['\\lim_{x\\to0}\\frac{\\sin x}{x}+\\ln 2', 'exact \\ln\\left( 2 \\right) + 1'],
-		['\\lim_{x\\to0}\\frac{\\sin x}{x}+e', 'exact \\exponentialE + 1'],
-		['\\lim_{x\\to0}\\pi+\\sqrt{2}+\\frac{\\sin x}{x}', 'exact \\pi + \\sqrt{2} + 1'],
-		['\\lim_{x\\to0}\\frac{\\ln(1+x)}{x}+\\sqrt2', 'exact \\sqrt{2} + 1']
+		['\\lim_{x\\to0}\\frac{\\sin x}{x}+\\sqrt{2}', 'exact 1 + \\sqrt{2}'],
+		['\\lim_{x\\to0}\\frac{\\sin x}{x}+\\ln 2', 'exact 1 + \\ln\\left( 2 \\right)'],
+		['\\lim_{x\\to0}\\frac{\\sin x}{x}+e', 'exact 1 + \\exponentialE'],
+		['\\lim_{x\\to0}\\pi+\\sqrt{2}+\\frac{\\sin x}{x}', 'exact 1 + \\pi + \\sqrt{2}'],
+		['\\lim_{x\\to0}\\frac{\\ln(1+x)}{x}+\\sqrt2', 'exact 1 + \\sqrt{2}']
 	])(
 		'constante irrationnelle gardée symbolique, jamais une fraction décimale : %s → %s',
 		(latex, expected) => {
