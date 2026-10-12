@@ -39,6 +39,10 @@
 				toaster.error('La fiche PDF n’a pas pu être créée.');
 				console.error('[calculatrices] PDF', result.error);
 			}
+		} catch (cause) {
+			// Import à la volée impossible (hors ligne, nouveau déploiement) : le dire
+			toaster.error('La fiche PDF n’a pas pu être créée. Recharge la page et réessaie.');
+			console.error('[calculatrices] PDF', cause);
 		} finally {
 			isGeneratingPdf = false;
 		}
@@ -88,6 +92,7 @@
 								{GRADE_LABELS[recall.grade]}
 								<ChevronDown
 									class="size-4 transition-transform group-data-[state=open]:rotate-180"
+									aria-hidden="true"
 								/>
 							</Collapsible.Trigger>
 							<Collapsible.Content class="space-y-3 p-3 pt-0">

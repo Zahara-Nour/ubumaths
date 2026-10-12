@@ -3,7 +3,6 @@
  * (phase 0, point 6). Les rappels y sont dépliés : une fiche imprimée ne se replie pas.
  */
 
-import { escapeTypstBrackets } from '$lib/ubumark/generators';
 import { GRADE_LABELS } from './levels';
 import { parseStep, type Guide, type GuideEntry } from './guide';
 import type { CalculatorModel } from './types';
@@ -37,24 +36,31 @@ const PREAMBLE = `#set page(paper: "a4", margin: (x: 1.6cm, y: 1.5cm))
 
 // ===== Fonctions =====
 
-/** Texte de l'élève dans un bloc `[...]` : rien ne doit y devenir du code Typst */
-function escapeText(text: string): string {
-	// `//` ouvre un commentaire en Typst (division entière de Python)
-	return escapeTypstBrackets(text).replace(/\//g, '\\/');
+/**
+ * Un texte du guide, en chaîne Typst `#"…"` : affiché tel quel, sans aucun balisage.
+ * Revue du 2026-10-12 : échapper caractère par caractère laissait passer `~`, les
+ * guillemets droits (rendus typographiques, gênant pour du Python à recopier), `--`, et
+ * un `- `, `= ` ou `1. ` en tête de note, qui devenaient liste ou titre.
+ */
+function typstString(value: string): string {
+	const escaped = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\r?\n/g, '\\n');
+	return `#"${escaped}"`;
 }
 
 function renderStep(step: string, keys: Readonly<Record<string, string>>): string {
 	return parseStep(step, keys)
 		.map((segment) =>
-			segment.kind === 'key' ? `#calc-key[${escapeText(segment.label)}]` : escapeText(segment.text)
+			segment.kind === 'key'
+				? `#calc-key(${typstString(segment.label).slice(1)})`
+				: typstString(segment.text)
 		)
 		.join('');
 }
 
 function renderEntry(entry: GuideEntry, model: GuideTypstModel): string {
 	const { task, sequence } = entry;
-	const lines: string[] = [`#task-card[`, `*${escapeText(task.title)}*`];
-	if (sequence.app) lines.push(` — application ${escapeText(sequence.app)}`);
+	const lines: string[] = [`#task-card[`, `#strong(${typstString(task.title).slice(1)})`];
+	if (sequence.app) lines.push(` — application ${typstString(sequence.app)}`);
 	if (!sequence.verifiedOnDevice) lines.push(` #text(fill: red)[(non relu sur la machine)]`);
 	lines.push('');
 	if (task.status === 'verifier') {
@@ -65,18 +71,18 @@ function renderEntry(entry: GuideEntry, model: GuideTypstModel): string {
 	}
 	if (sequence.noDedicatedFunction) {
 		lines.push(
-			`Pas de fonction dédiée sur la ${escapeText(model.name)} : voici comment faire autrement.`,
+			`Pas de fonction dédiée sur la ${typstString(model.name)} : voici comment faire autrement.`,
 			''
 		);
 	}
 	if (sequence.sinceVersion) {
 		lines.push(
-			`#emph[À partir de la version ${escapeText(sequence.sinceVersion)} du système.]`,
+			`#emph[${typstString(`À partir de la version ${sequence.sinceVersion} du système.`)}]`,
 			''
 		);
 	}
 	for (const step of sequence.steps) lines.push(`+ ${renderStep(step, model.keys)}`);
-	if (sequence.note) lines.push('', `#text(fill: luma(90))[${escapeText(sequence.note)}]`);
+	if (sequence.note) lines.push('', `#text(fill: luma(90))[${typstString(sequence.note)}]`);
 	lines.push(']');
 	return lines.join('\n');
 }
@@ -84,30 +90,30 @@ function renderEntry(entry: GuideEntry, model: GuideTypstModel): string {
 export function generateGuideTypst({ guide, model, gradeLabel }: GuideTypstInput): string {
 	const parts: string[] = [
 		PREAMBLE,
-		`= Guide ${escapeText(model.name)} — ${escapeText(gradeLabel)}`,
+		`= Guide ${typstString(model.name)} — ${typstString(gradeLabel)}`,
 		''
 	];
 	if (model.systemVersion) {
 		parts.push(
-			`#text(fill: luma(90))[Système décrit : version ${escapeText(model.systemVersion)}.]`,
+			`#text(fill: luma(90))[${typstString(`Système décrit : version ${model.systemVersion}.`)}]`,
 			''
 		);
 	}
 	if (guide.own.length > 0) {
-		parts.push(`== Nouveau en ${escapeText(gradeLabel)}`, '');
+		parts.push(`== Nouveau en ${typstString(gradeLabel)}`, '');
 		for (const entry of guide.own) parts.push(renderEntry(entry, model), '');
 	}
 	for (const recall of guide.recalls) {
-		parts.push(`== Rappels : ${escapeText(GRADE_LABELS[recall.grade])}`, '');
+		parts.push(`== Rappels : ${typstString(GRADE_LABELS[recall.grade])}`, '');
 		for (const entry of recall.entries) parts.push(renderEntry(entry, model), '');
 	}
 	if (guide.pitfalls.length > 0) {
 		parts.push('== Les pièges', '');
 		for (const pitfall of guide.pitfalls) {
 			parts.push(
-				`#task-card[*${escapeText(pitfall.title)}*`,
+				`#task-card[#strong(${typstString(pitfall.title).slice(1)})`,
 				'',
-				`${escapeText(pitfall.explanation)}]`,
+				`${typstString(pitfall.explanation)}]`,
 				''
 			);
 		}

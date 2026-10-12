@@ -91,8 +91,9 @@ export const NO_GUIDE_REASONS: Readonly<Record<GradeWithoutGuide, string>> = {
 /**
  * Le niveau précédent de chaque niveau à guide : copie de la table `grade_predecessors`
  * (migration 20261007230000_schema_cible_points.sql), arrêtée à la 6e puisque le CM
- * n'a pas de guide. Seul ajout : les maths expertes se suivent EN MÊME TEMPS que la
- * Tle spécialité, dont l'élève a donc aussi besoin.
+ * n'a pas de guide. Seul écart : les maths expertes se suivent EN MÊME TEMPS que la
+ * Tle spécialité (en base : T_EXP ← 1_SPE) ; on les rattache à la Tle spécialité, qui
+ * mène à la 1re : les rappels vont ainsi du plus proche au plus lointain.
  */
 const PREVIOUS_GRADES: Readonly<Record<GuideGrade, readonly GuideGrade[]>> = {
 	'6': [],
@@ -104,7 +105,7 @@ const PREVIOUS_GRADES: Readonly<Record<GuideGrade, readonly GuideGrade[]>> = {
 	'1_SPE': ['2'],
 	'1_TECHNO': ['2'],
 	T_SPE: ['1_SPE'],
-	T_EXP: ['1_SPE', 'T_SPE'],
+	T_EXP: ['T_SPE'],
 	T_COMP: ['1_SPE'],
 	T_TECHNO: ['1_TECHNO']
 };

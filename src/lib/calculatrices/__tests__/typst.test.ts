@@ -25,14 +25,14 @@ const MODEL: CalculatorModel = {
 		sequence('pi'),
 		sequence('exam-mode'),
 		sequence('python-basics', ['Tape `print(7 // 2)` puis [[exe]] : affiche 3 #python']),
-		sequence('settings', ['Écris [1, 2] et $x$ * 2 @ <b>'])
+		sequence('settings', ['Écris [1, 2] et $x$ * 2 @ <b> ~ "oui" -- \\n'])
 	],
 	pitfalls: [
 		{
 			id: 'degres',
 			grade: '6',
 			title: 'Degrés ou radians',
-			explanation: 'Regarde « rad » en haut à gauche.',
+			explanation: '= 3 selon la machine ; - pas une liste',
 			sources: SOURCE,
 			verifiedOnDevice: true
 		}
@@ -63,14 +63,14 @@ describe('generateGuideTypst', () => {
 
 	it('dessine les touches dans une boîte', () => {
 		const { typst } = render();
-		expect(typst).toContain('#calc-key[EXE]');
+		expect(typst).toContain('#calc-key("EXE")');
 	});
 
-	it('échappe le texte : crochets, $, *, @, <, # et le commentaire //', () => {
+	it('écrit tout texte en chaîne Typst : aucun caractère n’y devient du balisage', () => {
 		const { typst } = render();
-		expect(typst).toContain('Écris \\[1, 2\\] et \\$x\\$ \\* 2 \\@ \\<b\\>');
-		expect(typst).toContain('7 \\/\\/ 2');
-		expect(typst).toContain('\\#python');
-		expect(typst).not.toMatch(/[^\\]\/\/ 2/);
+		expect(typst).toContain('#"Écris [1, 2] et $x$ * 2 @ <b> ~ \\"oui\\" -- \\\\n"');
+		expect(typst).toContain('#"Tape `print(7 // 2)` puis "');
+		// En tête de texte, `=` et `-` restent dans la chaîne : ni titre ni liste
+		expect(typst).toContain('#"= 3 selon la machine ; - pas une liste"');
 	});
 });

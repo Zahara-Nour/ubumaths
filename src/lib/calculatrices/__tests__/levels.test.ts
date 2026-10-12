@@ -38,7 +38,7 @@ describe('filiation', () => {
 		expect(ancestorsOf('T_TECHNO')).toEqual(['1_TECHNO', '2', '3', '4', '5', '6']);
 	});
 
-	it('les maths expertes reprennent la 1re et la Tle spécialité, sans doublon', () => {
-		expect(ancestorsOf('T_EXP')).toEqual(['1_SPE', 'T_SPE', '2', '3', '4', '5', '6']);
+	it('les maths expertes reprennent la Tle puis la 1re spécialité, du plus proche au plus lointain', () => {
+		expect(ancestorsOf('T_EXP')).toEqual(['T_SPE', '1_SPE', '2', '3', '4', '5', '6']);
 	});
 });

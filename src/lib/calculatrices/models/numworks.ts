@@ -880,7 +880,7 @@ const SEQUENCES: readonly TaskSequence[] = [
 		steps: [
 			'« Binomiale », [[ok]].',
 			'Tape n (nombre de répétitions) puis p (probabilité de succès), chacun suivi de [[ok]], puis « Suivant ».',
-			'Le calcul affiche P(X≤ a) : tape a puis [[ok]].',
+			'Le calcul affiche P(X≤a) : tape a puis [[ok]].',
 			'Pour P(X=a), P(a≤X≤b) ou P(X≥a) : [[left]] jusqu’à l’icône de la loi, [[ok]], choisis la forme.',
 			'En calcul : [[toolbox]], « Probabilités », « Lois de probabilité », « Binomiale » : binompdf(m,n,p), binomcdf(m,n,p), binomcdfrange(a,b,n,p).'
 		],
@@ -1010,7 +1010,7 @@ const SEQUENCES: readonly TaskSequence[] = [
 		app: 'Calculs',
 		steps: [
 			'[[toolbox]], « Matrices et vecteurs », « Nouvelle matrice ou vecteur » : une matrice vide s’ouvre.',
-			'Tape les coefficients : [[right]] passe à la colonne suivante ; [[down]] puis [[left]] à la ligne suivante. Les cases grises en trop sont ignorées.',
+			'Tape les coefficients : [[right]] passe à la colonne suivante ; pour la ligne suivante, [[down]] puis [[left]] jusqu’à la première colonne. Les cases grises en trop sont ignorées.',
 			'Sors de la matrice avec [[right]], puis range-la : [[shift]] [[pow]] (→), une lettre capitale (A), [[exe]].',
 			'Calcule : A [[pow]] [[minus]] 1 donne l’inverse, A [[square]] le carré, A×B le produit.'
 		],
@@ -1028,7 +1028,7 @@ const SEQUENCES: readonly TaskSequence[] = [
 		steps: [
 			'Range la matrice de transition dans P (voir « Matrices »).',
 			'Tape l’état initial comme une matrice à une ligne : [[toolbox]], « Matrices et vecteurs », « Nouvelle matrice ou vecteur », 1 [[right]] 0, puis sors avec [[right]].',
-			'Multiplie par P [[pow]] n, puis [[exe]] : la répartition après n étapes.'
+			'Tape [[times]] P [[pow]] n, puis [[exe]] : la répartition après n étapes.'
 		],
 		sources: [manual('calculs/', '§1.4'), manual('outils/', 'Matrices et vecteurs')],
 		verifiedOnDevice: false,
@@ -1066,8 +1066,8 @@ const SEQUENCES: readonly TaskSequence[] = [
 		app: 'Grapheur',
 		steps: [
 			'Définis f, puis « Tracer le graphique ».',
-			'[[ok]], « Rechercher », « Antécédent » : tape k, [[ok]], puis [[ok]] sur « Valider ».',
-			'La solution x s’affiche en bas (x ≈ −1.414214 pour x² = 2).',
+			'[[ok]], « Rechercher », « Antécédent » : tape la valeur de k, [[ok]], puis [[ok]] sur « Valider ».',
+			'La solution x s’affiche en bas. S’il y en a plusieurs, celle trouvée dépend de la position du curseur : pour x² = 2, 1.414214 ou −1.414214.',
 			'Pour encadrer : tableau de valeurs avec un pas de plus en plus petit (« Régler l’intervalle »).'
 		],
 		sources: [manual('grapheur/', '§2.3.5, §2.4.1')],
@@ -1105,7 +1105,6 @@ const SEQUENCES: readonly TaskSequence[] = [
 	{
 		taskId: 'exponential-law',
 		app: 'Probabilités',
-		sinceVersion: '26',
 		steps: [
 			'« Exponentielle », [[ok]] : tape λ, [[ok]], puis « Suivant ».',
 			'Tape a puis [[ok]] : P(X≤a). λ = 0.5 et a = 2 donnent 0.6321206.',
