@@ -38,6 +38,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 
 	interface Props {
 		exercise: Exercise;
@@ -184,6 +186,9 @@
 	 * - ['f', 'P', ...]: Custom list → use those identifiers
 	 */
 	let genericFunctionsConfig = $derived(toGenericFunctionsConfig(exercise.generic_functions));
+
+	// Sens de `AB` (longueur ou produit) : le thème de l'exercice décide (Q-J)
+	provideCapitalPairs(() => exerciseCapitalPairs(exercise.topic));
 </script>
 
 <!-- ============================================================================ -->

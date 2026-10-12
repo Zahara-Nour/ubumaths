@@ -11,6 +11,7 @@ import type {
 	ExerciseResource
 } from '$lib/exercises/types';
 import type { GradeCode } from '$lib/types/grades';
+import type { CapitalPairs } from '$lib/mathAST/parser/types';
 import type { GuidanceLevel } from '$lib/worksheets/student-copy';
 import {
 	DEFAULT_CONTENT_LOCALE,
@@ -224,6 +225,12 @@ export interface ResolvedExercise {
 	 * Les instances stockées avant l'ajout du champ ne l'ont pas.
 	 */
 	generic_functions?: string[] | null;
+	/**
+	 * Sens de deux majuscules collées (`AB`) dans les formules `~…~` de l'exercice :
+	 * longueur ou produit, résolu à la génération depuis son thème (lot 6 des
+	 * longueurs, Q-J). Absent (instance stockée avant) : produit, l'écriture d'avant.
+	 */
+	capital_pairs?: CapitalPairs;
 }
 
 /** Section data for PDF generation */
@@ -591,6 +598,8 @@ export interface WorksheetExerciseWithExercise extends WorksheetExerciseRow {
 		variations?: ExerciseVariation[] | null;
 		/** Lettres déclarées comme fonctions (`C'(x)`, `u(x)`…) ; absent = défauts du parseur */
 		generic_functions?: string[] | null;
+		/** Thème de l'exercice : décide du sens de `AB` (longueur ou produit, Q-J) */
+		topic?: string | null;
 	};
 }
 
@@ -660,6 +669,12 @@ export interface StudentExerciseView {
 	is_essential?: boolean;
 	/** Lettres déclarées comme fonctions par l'exercice ; absent = défauts du parseur */
 	generic_functions?: string[] | null;
+	/**
+	 * Sens de deux majuscules collées (`AB`) : longueur ou produit, résolu par le
+	 * serveur depuis le thème de l'exercice (Q-J) ; le thème lui-même n'est pas
+	 * transmis. Absent : produit, l'écriture d'avant.
+	 */
+	capital_pairs?: CapitalPairs;
 }
 
 /**

@@ -100,7 +100,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				variables,
 				shared,
 				variations,
-				generic_functions
+				generic_functions,
+				topic
 			)
 		`
 		)

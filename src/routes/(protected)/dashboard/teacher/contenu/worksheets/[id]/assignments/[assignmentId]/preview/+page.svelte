@@ -48,6 +48,7 @@
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import type {
 		StudentWorksheetView,
 		StudentExerciseView,
@@ -284,6 +285,9 @@
 	let currentExercise = $derived(visualOrderExercises[currentExerciseIndex] ?? null);
 	// Fonctions déclarées par l'exercice (`P(x)`, `C'(x)`) : sans elles, `P(x)` se lit comme un produit
 	let exerciseFunctions = $derived(genericFunctionsConfig(currentExercise?.generic_functions));
+	// Sens de `AB` (longueur ou produit) de l'exercice ouvert, résolu par le serveur (Q-J).
+	// Chaque titre de la liste passe le sien (absent : produit, l'écriture d'avant).
+	provideCapitalPairs(() => currentExercise?.capital_pairs);
 	let hasCorrection = $derived(
 		currentExercise?.correction_visible && currentExercise?.correction !== null
 	);
@@ -502,6 +506,7 @@
 												{lore.learning.exercise}
 												{visualIndex + 1}{#if exercise.title}:&ensp;<InlineMarkdown
 														content={exercise.title}
+														capitalPairs={exercise.capital_pairs ?? 'product'}
 													/>{/if}
 											</span>
 											{#if exercise.correction_visible && exercise.correction}
@@ -553,7 +558,10 @@
 								{/if}
 								<span class="font-medium">
 									{lore.learning.exercise}
-									{i + 1}{#if exercise.title}:&ensp;<InlineMarkdown content={exercise.title} />{/if}
+									{i + 1}{#if exercise.title}:&ensp;<InlineMarkdown
+											content={exercise.title}
+											capitalPairs={exercise.capital_pairs ?? 'product'}
+										/>{/if}
 								</span>
 								{#if exercise.correction_visible && exercise.correction}
 									<BookOpen

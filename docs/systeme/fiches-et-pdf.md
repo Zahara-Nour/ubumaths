@@ -149,7 +149,12 @@ worksheets (type, status, config jsonb, translations, template_id, school_id)
 - **Exercice ↔ variation** : le contenu vient de `exercises.variations` (énoncé, solution, indices),
   via `getExerciseContentSafe` / `generateExerciseInstance` (`src/lib/exercises/`) ;
   `worksheet_exercises.variation_index` force une variation. Les **fonctions déclarées**
-  (`generic_functions`) suivent l'exercice jusqu'au PDF.
+  (`generic_functions`) suivent l'exercice jusqu'au PDF. Le **sens de `AB`** (longueur ou produit,
+  `capital_pairs`) aussi : résolu depuis le thème de l'exercice (`exerciseCapitalPairs`,
+  `Graphes et matrices` ou physique → produit, sinon longueur), à la génération de l'instance
+  (`instance-generator`, `buildWorksheetCopy`) et par les API qui composent la vue élève
+  (`StudentExerciseView.capital_pairs` : le sens, pas le thème). Une instance stockée sans le
+  champ s'imprime comme avant (produit).
 - **Instance par élève** : à l'ouverture, l'API élève prend la ligne `worksheet_instances` si elle
   existe, sinon résout à la volée avec une graine `hash(worksheet_id, student_id)` + position.
   L'élève ne peut pas écrire d'instance (`tests/integration/worksheet-instance-not-writable-by-student.test.ts`).

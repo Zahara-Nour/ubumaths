@@ -226,6 +226,9 @@ conversations (`src/routes/api/account/export/+server.ts:183`).
 - **Deux écritures de `max_help_level_reached`** : le trigger prend le maximum, puis `/api/chat`
   écrase avec le niveau courant (`api/chat/+server.ts:274`) ; le niveau repartant à 0 au
   rechargement, la valeur enregistrée peut redescendre. `message_count` reçoit de même `messages.length + 1` par-dessus le trigger.
+- **`AB` reste un produit dans le chat**, même ouvert dans la fenêtre d'un exercice lu en
+  « longueur » : `TutorChat` coupe le sens hérité (`clearCapitalPairs`, lot 6 des longueurs de
+  segments, décision Q-M).
 - Le limiteur du tuteur crée **son propre** client service role (`dotenv` + `process.env`) au lieu
   de `serviceRoleClient.ts`.
 - Côté tests, seul le chat libre est couvert : `api/chat/__tests__/server.test.ts` (prompt posé par

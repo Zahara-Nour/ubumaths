@@ -10,8 +10,11 @@
  *
  * Posé par la carte qui affiche une instance (`QuestionCard`, `FlashCard`,
  * `CorrectionCard`…) ou par `FillBlanksInput` (prop `capitalPairs`).
+ * Posé aussi par l'affichage d'un exercice (`ExerciseDisplay` prof et élève,
+ * `ExerciseModal`…), depuis son thème (lot 6, décision Q-J).
  * Sans fournisseur : `undefined`, donc le défaut du parseur, le produit (décision Q-M) —
- * l'atelier, le chat, les exercices et les anciennes instances gardent l'écriture d'avant.
+ * l'atelier, le chat (`clearCapitalPairs`) et les anciennes instances gardent l'écriture
+ * d'avant.
  *
  * @module components/markdown/content-capital-pairs
  */
@@ -31,6 +34,16 @@ type CapitalPairsGetter = () => CapitalPairs | undefined;
 export function provideCapitalPairs(get: () => CapitalPairs | undefined): void {
 	const parent = readCapitalPairs();
 	setContext<CapitalPairsGetter>(CAPITAL_PAIRS_KEY, () => get() ?? parent());
+}
+
+/**
+ * Couper le sens hérité pour les composants descendants : ils reviennent au défaut du
+ * parseur (produit, décision Q-M). Pour un rendu posé DANS une carte d'exercice mais qui
+ * n'en fait pas partie (le chat du tuteur, ouvert à côté de l'énoncé). À appeler pendant
+ * l'initialisation du composant.
+ */
+export function clearCapitalPairs(): void {
+	setContext<CapitalPairsGetter>(CAPITAL_PAIRS_KEY, () => undefined);
 }
 
 /** Le sens que doit suivre un composant ; `undefined` sans fournisseur (produit). */

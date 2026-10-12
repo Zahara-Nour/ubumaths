@@ -61,7 +61,7 @@ Hors périmètre : les **QCM** (choix, mélange) ne sont pas de la notation ubum
 | `nodes/ListNode.svelte`, `nodes/StaticBlockNode.svelte` | Rendent les blocs **dans un item de liste** : chaque nouveau bloc doit y être aussi.                                                                                     |
 | `utils/math-utils.ts`                                   | `expressionToLatex` / `expressionToRawLatex` : `~…~` → LaTeX via `parseCustomSafe` de `mathAST` ; erreur → LaTeX rouge.                                                  |
 | `content-locale.ts`                                     | Langue du document (virgule FR / point EN des décimaux).                                                                                                                 |
-| `content-capital-pairs.ts`                              | Sens de `AB` (longueur ou produit) des formules maison, posé par la carte d'une question.                                                                                |
+| `content-capital-pairs.ts`                              | Sens de `AB` (longueur ou produit) des formules maison, posé par la carte d'une question ou d'un exercice ; `clearCapitalPairs` le coupe (chat).                         |
 | `authoring-errors.ts`                                   | Le prof voit le message d'erreur d'un bloc, l'élève un cadre neutre.                                                                                                     |
 | `render-budget.ts`                                      | `DOCUMENT_FIGURE_LIMITS` : plafond de figures/courbes par document.                                                                                                      |
 | `restricted-rendering.ts`                               | Mode restreint du chat élève (`restrictDocument`, `stripFenceLanguages`).                                                                                                |
@@ -94,7 +94,9 @@ Chaque exemple ci-dessous est **tiré d'un test existant** (cité) ; aucun n'est
 La notation custom est stockée **telle quelle** dans l'AST ; elle n'est convertie en LaTeX qu'au
 rendu (`expressionToLatex` à l'écran, `expressionToRawLatex` puis `convertLatexToTypstMath` au PDF).
 Les lettres-fonctions viennent de `generic_functions` de l'exercice (`genericFunctionsConfig`) :
-une liste déclarée **remplace** les défauts (f, g, h, u, v, w, F, G, H). Règles des unités et des
+une liste déclarée **remplace** les défauts (f, g, h, u, v, w, F, G, H). Le sens de `AB` (longueur
+ou produit) passe au PDF par l'option `capitalPairs` de `generateTypst` (absente : produit, l'écriture
+d'avant) ; à l'écran par le contexte `content-capital-pairs.ts`. Règles des unités et des
 crochets de calcul : [notation-unites](../pratiques/notation-unites.md). Pièges connus (grec sans
 antislash, prime hors `f'`, années groupées « 2 026 ») : `pnpm check:ubumark` les signale.
 

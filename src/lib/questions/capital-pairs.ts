@@ -109,6 +109,16 @@ export function resolveCapitalPairs({
 	return { capitalPairs: 'length', source: 'default' };
 }
 
+/**
+ * Sens de deux majuscules collées dans un EXERCICE rédigé (`~AB^2~`) : le contexte
+ * seul, son thème (`exercises.topic`), sans déclaration (décision Q-J du 2026-10-12).
+ * Même table que les questions : `Graphes et matrices` ou un thème de physique →
+ * produit ; tout autre thème, ou aucun → longueur.
+ */
+export function exerciseCapitalPairs(topic: string | null | undefined): CapitalPairs {
+	return resolveCapitalPairs({ theme: topic }).capitalPairs;
+}
+
 /** « une longueur, par défaut » / « un produit, contexte Graphes et matrices » */
 export function describeCapitalPairs(resolution: CapitalPairsResolution): string {
 	const meaning = MEANING_LABELS[resolution.capitalPairs];

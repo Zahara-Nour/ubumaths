@@ -90,7 +90,8 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 							variables,
 							shared,
 							variations,
-							generic_functions
+							generic_functions,
+							topic
 						)
 					)
 				)

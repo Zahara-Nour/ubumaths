@@ -26,6 +26,7 @@
 	import type { MasteryStatus } from '$lib/types/exercise-mastery';
 	import { MASTERY_LABELS } from '$lib/types/exercise-mastery';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 
 	interface Props {
 		exercises: StudentExerciseView[];
@@ -62,6 +63,9 @@
 	}: Props = $props();
 
 	let exercise = $derived(exercises[currentIndex] ?? null);
+
+	// Sens de `AB` (longueur ou produit), résolu par le serveur depuis le thème (Q-J)
+	provideCapitalPairs(() => exercise?.capital_pairs);
 
 	// Fonctions déclarées par l'exercice (`P(x)`, `C'(x)`) : sans elles, `P(x)` se lit comme un produit
 	let exerciseFunctions = $derived(genericFunctionsConfig(exercise?.generic_functions));

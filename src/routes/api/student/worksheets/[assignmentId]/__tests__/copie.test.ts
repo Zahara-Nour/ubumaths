@@ -73,7 +73,11 @@ function assignmentRow(guidanceLevel: string, individualized: boolean) {
 	};
 }
 
-function supabase(guidanceLevel: string, individualized: boolean): TableMock {
+function supabase(
+	guidanceLevel: string,
+	individualized: boolean,
+	exercise: ReturnType<typeof twoLevelExercise> & { topic?: string | null } = twoLevelExercise()
+): TableMock {
 	return tableMock({
 		worksheet_assignments: { data: assignmentRow(guidanceLevel, individualized), error: null },
 		worksheet_exercises: {
@@ -88,7 +92,7 @@ function supabase(guidanceLevel: string, individualized: boolean): TableMock {
 					variation_index: null,
 					section_id: null,
 					is_essential: false,
-					exercise: twoLevelExercise()
+					exercise
 				}
 			],
 			error: null
@@ -99,7 +103,7 @@ function supabase(guidanceLevel: string, individualized: boolean): TableMock {
 }
 
 interface StudentView {
-	exercises: Array<{ statement: string; correction: string | null }>;
+	exercises: Array<{ statement: string; correction: string | null; capital_pairs?: string }>;
 }
 
 async function fetchCopy(mock: TableMock, studentId: string): Promise<StudentView> {
@@ -178,5 +182,24 @@ describe('API élève : la copie suit l’affectation', () => {
 		const columns = selectedColumns(mock, 'worksheet_assignments');
 		expect(columns).toMatch(/\bguidance_level\b/);
 		expect(columns).toMatch(/\bindividualized\b/);
+	});
+
+	// Lot 6 des longueurs (Q-J) : le sens de AB, résolu depuis le thème de l'exercice.
+	// Donnée nouvelle pour l'élève : « length » ou « product », jamais le thème lui-même.
+	it('le sens de AB suit le thème de l’exercice, lu par le select', async () => {
+		const geometry = await fetchCopy(
+			supabase('guided', false, { ...twoLevelExercise(), topic: 'Géométrie' }),
+			STUDENTS[0]
+		);
+		expect(geometry.exercises[0].capital_pairs).toBe('length');
+		const matrices = supabase('guided', false, {
+			...twoLevelExercise(),
+			topic: 'Graphes et matrices'
+		});
+		expect((await fetchCopy(matrices, STUDENTS[0])).exercises[0].capital_pairs).toBe('product');
+		expect(selectedColumns(matrices, 'worksheet_exercises')).toMatch(/\btopic\b/);
+		expect(JSON.stringify((await fetchCopy(matrices, STUDENTS[0])).exercises[0])).not.toContain(
+			'Graphes et matrices'
+		);
 	});
 });

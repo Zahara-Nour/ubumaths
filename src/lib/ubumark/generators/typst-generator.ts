@@ -128,8 +128,8 @@ const DEFAULT_OPTIONS: ResolvedTypstTranspilerOptions = {
 	includeSetup: true,
 	title: '',
 	author: ''
-	// `genericFunctions` n'a pas de défaut ici : son absence veut dire « défauts
-	// du parseur », comme à l'écran.
+	// `genericFunctions` et `capitalPairs` n'ont pas de défaut ici : leur absence veut
+	// dire « défauts du parseur » (pour `AB` : le produit), comme à l'écran.
 };
 
 // ============================================================================
@@ -400,7 +400,12 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 			// Fractions de premier niveau en taille normale
 			const typstMath =
 				node.syntax === 'custom'
-					? customInlineMathToTypst(node.expression, options.genericFunctions, options.language)
+					? customInlineMathToTypst(
+							node.expression,
+							options.genericFunctions,
+							options.language,
+							options.capitalPairs
+						)
 					: convertLatexToTypstMath(
 							markDisplayFractions(toLocaleDecimal(node.expression, options.language))
 						);
@@ -650,12 +655,12 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 		for (let col = 0; col < node.header.length; col++) {
 			const cells: string[] = [
 				// First cell: header in bold (may contain math like $z_i$)
-				`[*${processTableCellContent(node.header[col].content, options.language, options.genericFunctions)}*]`
+				`[*${processTableCellContent(node.header[col].content, options.language, options.genericFunctions, options.capitalPairs)}*]`
 			];
 			// Data cells from each row (may contain math)
 			for (const row of node.rows) {
 				cells.push(
-					`[${processTableCellContent(row[col]?.content || '', options.language, options.genericFunctions)}]`
+					`[${processTableCellContent(row[col]?.content || '', options.language, options.genericFunctions, options.capitalPairs)}]`
 				);
 			}
 			rows.push(cells.join(', '));
@@ -691,7 +696,8 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 				const content = processTableCellContent(
 					cell.content,
 					options.language,
-					options.genericFunctions
+					options.genericFunctions,
+					options.capitalPairs
 				);
 				if (index === 0) {
 					// Corner cell: bold only if has content
@@ -709,7 +715,8 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 						const content = processTableCellContent(
 							cell.content,
 							options.language,
-							options.genericFunctions
+							options.genericFunctions,
+							options.capitalPairs
 						);
 						return cellIndex === 0 ? `[*${content}*]` : `[${content}]`;
 					})
@@ -747,7 +754,7 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 	const headerCells = node.header
 		.map(
 			(cell: { content: string }) =>
-				`[*${processTableCellContent(cell.content, options.language, options.genericFunctions)}*]`
+				`[*${processTableCellContent(cell.content, options.language, options.genericFunctions, options.capitalPairs)}*]`
 		)
 		.join(', ');
 
@@ -757,7 +764,7 @@ function generateTable(node: TableNode, options: ResolvedTypstTranspilerOptions)
 			row
 				.map(
 					(cell: { content: string }) =>
-						`[${processTableCellContent(cell.content, options.language, options.genericFunctions)}]`
+						`[${processTableCellContent(cell.content, options.language, options.genericFunctions, options.capitalPairs)}]`
 				)
 				.join(', ')
 		)
@@ -817,7 +824,13 @@ const ALIGNMENT_SYMBOL_PATTERN =
 function generateMathBlock(node: MathBlockNode, options: ResolvedTypstTranspilerOptions): string {
 	const latex =
 		node.syntax === 'custom'
-			? expressionToRawLatex(node.expression, 'custom', options.genericFunctions, options.language)
+			? expressionToRawLatex(
+					node.expression,
+					'custom',
+					options.genericFunctions,
+					options.language,
+					options.capitalPairs
+				)
 			: toLocaleDecimal(node.expression, options.language);
 
 	// Check if this is an aligned equation (contains \begin{align} etc.)
@@ -3060,9 +3073,16 @@ function cellText(text: string): string {
 function customInlineMathToTypst(
 	expression: string,
 	genericFunctions: ResolvedTypstTranspilerOptions['genericFunctions'],
-	language: string | undefined
+	language: string | undefined,
+	capitalPairs: ResolvedTypstTranspilerOptions['capitalPairs']
 ): string {
-	const latex = expressionToRawLatex(expression, 'custom', genericFunctions, language);
+	const latex = expressionToRawLatex(
+		expression,
+		'custom',
+		genericFunctions,
+		language,
+		capitalPairs
+	);
 	return convertLatexToTypstMath(markDisplayFractions(latex));
 }
 
@@ -3082,12 +3102,14 @@ function customInlineMathToTypst(
  *
  * @param language - Langue du document (`en` : point décimal ; sinon virgule)
  * @param genericFunctions - Fonctions déclarées de l'exercice (formules `~…~`)
+ * @param capitalPairs - Sens de `AB` de l'exercice (formules `~…~`) ; absent : produit
  * @returns Processed content safe for Typst tables
  */
 export function processTableCellContent(
 	content: string,
 	language?: string,
-	genericFunctions?: ResolvedTypstTranspilerOptions['genericFunctions']
+	genericFunctions?: ResolvedTypstTranspilerOptions['genericFunctions'],
+	capitalPairs?: ResolvedTypstTranspilerOptions['capitalPairs']
 ): string {
 	// `$…$` ou `~…~` (sans retour à la ligne)
 	const parts: string[] = [];
@@ -3102,7 +3124,9 @@ export function processTableCellContent(
 		}
 
 		if (match[2] !== undefined) {
-			parts.push(`$${customInlineMathToTypst(match[2], genericFunctions, language)}$`);
+			parts.push(
+				`$${customInlineMathToTypst(match[2], genericFunctions, language, capitalPairs)}$`
+			);
 			lastIndex = match.index + match[0].length;
 			continue;
 		}

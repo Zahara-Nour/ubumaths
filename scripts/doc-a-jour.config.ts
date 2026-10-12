@@ -62,51 +62,15 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 			note: 'messagerie, modération, notifications, avertissements, amitiés'
 		},
 		{
-			glob: 'src/routes/api/exercises/**',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/routes/api/student/exercise-mastery/**',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/routes/api/teacher/exercises/**',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/routes/api/admin/exercises/**',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
 			glob: 'src/routes/(protected)/dashboard/teacher/contenu/**',
 			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
 		},
 		{
-			glob: 'src/routes/(protected)/dashboard/student/exercises/**',
+			glob: 'src/lib/server/validation/latex.ts',
 			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
 		},
 		{
-			glob: 'src/routes/(public)/exercice/**',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/lib/components/exercises/**',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/lib/server/{exercises,exercise-assignments,exercise-import-export,exercise-share-tokens,resource-tags}.ts',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/lib/server/validation/{exercises,exercise-mastery,image-upload,tags,latex}.ts',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/lib/types/exercise-*.ts',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/routes/api/{tags,latex}/**',
+			glob: 'src/routes/api/latex/**',
 			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
 		},
 		{

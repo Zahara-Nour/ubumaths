@@ -9,7 +9,10 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { generateWorksheetInstance } from '$lib/server/worksheets/instance-generator';
+import {
+	generateWorksheetInstance,
+	GENERATION_EXERCISE_FIELDS
+} from '$lib/server/worksheets/instance-generator';
 import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
 import { toJson } from '$lib/types/database-helpers';
 import { asWorksheetConfig, toWorksheetExerciseRow } from '$lib/types/worksheets';
@@ -113,13 +116,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			.select(
 				`
 				*,
-				exercise:exercises (
-					id,
-					title,
-					variables,
-					shared,
-					variations
-				)
+				exercise:exercises (${GENERATION_EXERCISE_FIELDS})
 			`
 			)
 			.eq('worksheet_id', worksheetId)

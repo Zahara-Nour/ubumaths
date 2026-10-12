@@ -118,7 +118,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 						slug,
 						shared,
 						variations,
-						generic_functions
+						generic_functions,
+						topic
 					)
 				)
 			`
@@ -204,7 +205,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					variables?: unknown[];
 				}>) ?? [],
 			shared: exercise.shared ?? null,
-			generic_functions: (exercise.generic_functions as string[]) ?? null
+			generic_functions: (exercise.generic_functions as string[]) ?? null,
+			// Thème : décide du sens de `AB` dans l'aperçu (Q-J). Page du prof seulement.
+			topic: (exercise.topic as string | null) ?? null
 		};
 
 		const responseData = {

@@ -149,3 +149,27 @@ describe('generateStudentWorksheetTypst — fonctions déclarées', () => {
 		expect(typst).toContain('Unexpected token');
 	});
 });
+
+// Sens de deux majuscules collées (lot 6 des longueurs, Q-J), transmis par la vue élève
+describe('generateStudentWorksheetTypst — sens de AB (capital_pairs)', () => {
+	const worksheetWithPrimes = (capitalPairs: 'length' | 'product' | undefined) => {
+		const worksheet = createWorksheet();
+		worksheet.exercises![0].title = "Le segment ~A'B'~";
+		worksheet.exercises![0].statement = "Calculer ~A'B'~.";
+		worksheet.exercises![0].correction = "On trouve ~A'B'=5~.";
+		if (capitalPairs) worksheet.exercises![0].capital_pairs = capitalPairs;
+		return worksheet;
+	};
+
+	it('longueur : titre, énoncé et corrigé sans erreur', () => {
+		const typst = generateStudentWorksheetTypst(worksheetWithPrimes('length'), true);
+		expect(typst).not.toContain('Unexpected token');
+		expect(typst).toContain('On trouve');
+	});
+
+	it('absent ou produit : écriture d’avant, identique (témoin)', () => {
+		const before = generateStudentWorksheetTypst(worksheetWithPrimes(undefined), true);
+		expect(before).toContain('Unexpected token');
+		expect(generateStudentWorksheetTypst(worksheetWithPrimes('product'), true)).toBe(before);
+	});
+});
