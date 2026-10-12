@@ -402,10 +402,7 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
    1ᵉʳ septembre), `endOfSchoolYear` en a une autre (31 août), les tables `school_years` /
    `academic_periods` une troisième, propre à l'école. Elles concordent pour une école française,
    pas au-delà.
-9. **`dashboard/student/journal/` n'est pas le cahier de texte** : c'est le journal des
-   récompenses (`rewardJournalStore`). Le relevé de couverture l'avait rangé ici ; il est exclu
-   de `couvre:`.
-10. **Chevauchement avec [fiches-et-pdf.md](fiches-et-pdf.md)** : `src/routes/(public)/cahier/*/fiche/**`
-    et `api/teacher/chapters/*/worksheets/**` sont couverts par les deux docs.
-11. L'en-tête de l'éditeur de chapitre (`[classId]/[chapterId]/+page.server.ts`) annonce un
+9. **Chevauchement avec [fiches-et-pdf.md](fiches-et-pdf.md)** : `src/routes/(public)/cahier/*/fiche/**`
+   et `api/teacher/chapters/*/worksheets/**` sont couverts par les deux docs.
+10. L'en-tête de l'éditeur de chapitre (`[classId]/[chapterId]/+page.server.ts`) annonce un
     réordonnancement des documents, objectifs et exercices qui n'a pas d'action.
