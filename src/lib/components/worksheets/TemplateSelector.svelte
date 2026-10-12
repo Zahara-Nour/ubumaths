@@ -21,11 +21,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { FileText, Eye, Sparkles, X } from '@lucide/svelte';
 	import type { WorksheetTemplateRow } from '$lib/types/worksheets';
-	import {
-		DEFAULT_TEMPLATES,
-		renderTemplate,
-		SAMPLE_PREVIEW_DATA
-	} from '$lib/worksheets/default-templates';
+	import { DEFAULT_TEMPLATES, renderTemplate, SAMPLE_PREVIEW_DATA } from '$lib/typst/templates';
 
 	// Props
 	interface Props {

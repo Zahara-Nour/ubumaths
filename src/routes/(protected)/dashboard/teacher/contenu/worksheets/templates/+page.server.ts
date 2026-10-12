@@ -7,7 +7,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
-import { DEFAULT_TEMPLATES } from '$lib/worksheets/default-templates';
+import { DEFAULT_TEMPLATES } from '$lib/typst/templates';
 import { toJson } from '$lib/types/database-helpers';
 
 export const load: PageServerLoad = async ({ locals, url }) => {

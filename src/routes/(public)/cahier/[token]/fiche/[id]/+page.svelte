@@ -7,7 +7,7 @@
 	de l'application, pas de connexion suggérée.
 
 	La composition du PDF se fait DANS LE NAVIGATEUR (Typst.js) : la génération
-	serveur n'existe pas (`api/worksheets/[id]/pdf` répond 501). Ça tombe bien —
+	serveur n'existe pas (l'ancienne route `api/worksheets/[id]/pdf`, qui répondait 501, est retirée). Ça tombe bien —
 	le lecteur n'a pas de compte, et rien n'a besoin d'être calculé pour lui.
 
 	`variant="reader"` : voir et télécharger, rien d'autre. Ce n'est pas qu'une

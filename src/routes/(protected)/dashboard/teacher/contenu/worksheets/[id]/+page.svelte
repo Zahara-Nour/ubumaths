@@ -50,7 +50,7 @@
 	} from '$lib/utils/worksheet-constants';
 	import type { Exercise } from '$lib/exercises/types';
 	import { worksheetLocale } from '$lib/types/worksheets';
-	import { DEFAULT_TEMPLATES } from '$lib/worksheets/default-templates';
+	import { DEFAULT_TEMPLATES } from '$lib/typst/templates';
 	import UntranslatedExercisesNotice from '$lib/components/worksheets/UntranslatedExercisesNotice.svelte';
 	import WorksheetCitationsNotice from '$lib/components/worksheets/WorksheetCitationsNotice.svelte';
 
