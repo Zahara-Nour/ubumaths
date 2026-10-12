@@ -134,9 +134,6 @@ Précisions :
   `<link>` dans `<head>` et change `MathfieldElement.fontsDirectory` ; la page n'a ni `onDestroy`
   ni retour à `katex`. Après une visite, une navigation côté client garde Shantell partout
   jusqu'au rechargement.
-- **`/test-font` servie en HTTP sur une adresse IP** (dev via Tailscale) : `crypto.randomUUID`
-  n'existe qu'en contexte sécurisé (HTTPS ou `localhost`) ; le rendu ubumark des listes plante.
-  Passer par `localhost` (tunnel) ou HTTPS.
 - Les pages `/demo/**` sont publiques et sans `noindex` : seul `robots.txt` les écarte.
 
 ---
