@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.1.0] - 2026-10-12
+
+### Ajouté
+
+- Script `roughen_extras.py` : même tremblé que les symboles de KaTeX_Main (intensité 12, graine 42) sur Size1-4 (grands opérateurs, grands délimiteurs, racines) et AMS (ℝ, ⩽, flèches…)
+  - pièces empilées par MathLive : points proches des bords de raccord laissés fixes
+  - pièces répétées (⎜ ⎢ ⎪ ∣ …) laissées droites : un tremblé recopié N fois devient une rangée de bosses régulières
+  - racines : haut laissé fixe (la barre de MathLive s'y raccorde)
+  - hinting retiré des glyphes modifiés ; une graine par glyphe
+- Lit `static/fonts/katex-original/`, écrit dans `static/fonts/shantell-katex/` (refuse toute autre sortie)
+
 ## [1.0.0] - 2025-01-20
 
 ### Ajouté
