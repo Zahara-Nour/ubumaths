@@ -62,6 +62,7 @@
 	import pereUbuImage from '$lib/assets/images/avatar-pereubu.png';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
+	import { buildChatRequestBody } from '$lib/utils/chat-request';
 
 	interface TextContent {
 		type: 'text';
@@ -466,16 +467,11 @@
 		}, 0);
 
 		try {
-			// Call API with personality system prompt
+			// Le serveur pose le prompt de la personnalité nommée (écart V30)
 			const response = await fetch('/api/chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					messages: [
-						{ role: 'system', content: personality.systemPrompt },
-						...messages.slice(-10) // Keep only last 10 messages for context
-					]
-				})
+				body: JSON.stringify(buildChatRequestBody(personalityKey, messages))
 			});
 
 			if (!response.ok) {
