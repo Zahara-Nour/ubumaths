@@ -18,6 +18,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Switch } from '$lib/components/ui/switch';
 	import { Plus, X, CheckCircle2 } from '@lucide/svelte';
+	import { compactQcmChoices } from './qcm-choices';
 
 	interface Props {
 		config: AnswerConfig | null;
@@ -68,11 +69,13 @@
 				value = answerValue;
 				options.caseSensitive = caseSensitive;
 				break;
-			case 'qcm':
-				value = multipleAnswers ? correctChoices : correctChoices[0];
-				options.choices = qcmChoices.filter((c) => c.trim().length > 0);
+			case 'qcm': {
+				const compact = compactQcmChoices(qcmChoices, correctChoices);
+				value = multipleAnswers ? compact.correct : compact.correct[0];
+				options.choices = compact.choices;
 				options.multipleAnswers = multipleAnswers;
 				break;
+			}
 			case 'math':
 				value = answerValue;
 				options.exactMatch = exactMatch;

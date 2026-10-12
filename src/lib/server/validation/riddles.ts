@@ -69,6 +69,16 @@ export const riddleAnswerConfigSchema = z.discriminatedUnion('type', [
 				(Array.isArray(value) ? value : [value]).every((i) => i < options.choices.length),
 			{ message: 'La bonne réponse du QCM doit être l’un des choix', path: ['value'] }
 		)
+		// L'élève ne coche qu'un choix sans `multipleAnswers` : plusieurs bonnes réponses
+		// attendues, il ne pourrait jamais répondre juste.
+		.refine(
+			({ value, options }) =>
+				options.multipleAnswers === true || !Array.isArray(value) || value.length === 1,
+			{
+				message: 'Plusieurs bonnes réponses demandent un QCM à réponses multiples',
+				path: ['value']
+			}
+		)
 ]);
 
 /**

@@ -218,7 +218,11 @@ describe('réponse attendue validée avant toute écriture', () => {
 			'QCM : bonne réponse hors des choix',
 			JSON.stringify({ type: 'qcm', value: 3, options: { choices: ['a', 'b', 'c'] } })
 		],
-		['QCM sans choix', JSON.stringify({ type: 'qcm', value: 0, options: { choices: [] } })]
+		['QCM sans choix', JSON.stringify({ type: 'qcm', value: 0, options: { choices: [] } })],
+		[
+			'QCM : plusieurs bonnes réponses sans réponses multiples',
+			JSON.stringify({ type: 'qcm', value: [0, 1], options: { choices: ['a', 'b', 'c'] } })
+		]
 	];
 
 	for (const [label, answer] of INVALID) {
