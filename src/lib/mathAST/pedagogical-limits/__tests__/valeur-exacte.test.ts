@@ -93,7 +93,10 @@ const INFINITY_CASES = [
 	['-x^4+x', '-\\infty', '-\\infty'],
 	['\\frac{\\pi x+1}{2x}', '\\dfrac{\\pi}{2}', '\\dfrac{\\pi}{2}'],
 	['\\frac{x+1}{\\pi x}', '\\dfrac{1}{\\pi}', '\\dfrac{1}{\\pi}'],
-	['\\sqrt{2}x^3', '+\\infty', '-\\infty']
+	['\\sqrt{2}x^3', '+\\infty', '-\\infty'],
+	// Quotient irrationnel réduit comme le moteur, pas `\\dfrac{1}{-\\sqrt{2}}`
+	['\\frac{x}{-\\sqrt{2}x}', '\\dfrac{-\\sqrt{2}}{2}', '\\dfrac{-\\sqrt{2}}{2}'],
+	['\\frac{2x}{\\frac{x}{\\sqrt{2}}}', '2 \\sqrt{2}', '2 \\sqrt{2}']
 ] as const;
 
 function oracle(latex: string): string | null {
@@ -131,13 +134,20 @@ describe('limite pédagogique en ±∞ — valeur exacte, égale à celle du mot
 		}
 	}
 
-	it('\\frac{\\sqrt{2}x^2+1}{x^2} → √2 en +∞ comme en −∞ (le moteur ne conclut qu’en +∞)', () => {
-		for (const approach of ['+\\infty', '-\\infty']) {
-			const { result } = run(`\\lim_{x\\to ${approach}}\\frac{\\sqrt{2}x^2+1}{x^2}`);
-			expect(result.value && toLatex(result.value)).toBe('\\sqrt{2}');
-		}
-		expect(oracle('\\lim_{x\\to +\\infty}\\frac{\\sqrt{2}x^2+1}{x^2}')).toBe('\\sqrt{2}');
-	});
+	// Le moteur ne conclut qu'en +∞ sur ces deux quotients : en −∞, la valeur
+	// pédagogique est celle qu'il rend en +∞ (même degré, même quotient).
+	for (const [expression, expected] of [
+		['\\frac{\\sqrt{2}x^2+1}{x^2}', '\\sqrt{2}'],
+		['\\frac{\\pi x^2}{\\sqrt{2}x^2}', '\\dfrac{\\sqrt{2} \\pi}{2}']
+	] as const) {
+		it(`${expression} → ${expected} en +∞ comme en −∞ (le moteur ne conclut qu’en +∞)`, () => {
+			for (const approach of ['+\\infty', '-\\infty']) {
+				const { result } = run(`\\lim_{x\\to ${approach}}${expression}`);
+				expect(result.value && toLatex(result.value)).toBe(expected);
+			}
+			expect(oracle(`\\lim_{x\\to +\\infty}${expression}`)).toBe(expected);
+		});
+	}
 
 	it('la conclusion de \\frac{3x+1}{2x-5} en +∞ affiche 3/2', () => {
 		const steps = rendered('\\lim_{x\\to +\\infty}\\frac{3x+1}{2x-5}');
@@ -165,4 +175,29 @@ describe('limite pédagogique en ±∞ — titres en prose', () => {
 		const steps = rendered('\\lim_{x\\to +\\infty}\\frac{\\pi x+1}{2x}');
 		expect(steps[steps.length - 1].title).toBe('La limite vaut π/2');
 	});
+});
+
+describe('limite pédagogique en ±∞ — fonction constante', () => {
+	for (const [constant, expected, text] of [
+		['5', '5', '5'],
+		['\\pi', '\\pi', 'π']
+	] as const) {
+		const latex = `\\lim_{x\\to +\\infty}${constant}`;
+
+		it(`${latex} : une seule étape, « la fonction est constante », pas de coefficients dominants`, () => {
+			const { result } = run(latex);
+			expect(result.value && toLatex(result.value)).toBe(expected);
+			const descriptions = result.steps.map((s) => s.description);
+			expect(descriptions).toContain(`La fonction est constante : sa limite vaut ${text}.`);
+			expect(descriptions.join(' ')).not.toMatch(/coefficients dominants|degrés/);
+			expect(result.steps.map((s) => s.rule)).not.toContain('identify-dominant-term');
+		});
+
+		it(`${latex} : la conclusion rendue vaut ${expected}`, () => {
+			const steps = rendered(latex);
+			const conclusion = steps[steps.length - 1];
+			expect(conclusion.title).toBe(`La limite vaut ${text}`);
+			expect(conclusion.expressionLatex).toContain(`= ${expected}`);
+		});
+	}
 });

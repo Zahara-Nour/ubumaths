@@ -724,17 +724,32 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 	// The dominant term node — informational binding.
 	const dominantNode = numDeg >= denDeg ? numLead.node : denLead.node;
 
+	// Une constante (5, π, 5/2) : une seule étape, sans degrés ni coefficients dominants.
+	if (numDeg === 0 && denDeg === 0) {
+		const constant = exactQuotient(numLead, denLead, ctx);
+		if (constant === null) return null;
+		const step = makeStep(ctx, {
+			rule: 'conclude',
+			description: `La fonction est constante : sa limite vaut ${formatValueShort(constant)}.`,
+			before: expression,
+			after: constant,
+			verbosityLevel: 'summarized',
+			globalAfter: constant
+		});
+		return { steps: [step], value: constant, status: 'exact', indeterminateForm: 'none' };
+	}
+
 	let value: MathNode;
 	let status: PedagogicalLimitStatus;
 	let conclusionDesc: string;
 
 	if (numDeg < denDeg) {
-		// Goes to 0
+		// Degré du numérateur plus petit : la limite vaut 0
 		value = number('0');
 		status = 'exact';
 		conclusionDesc = `Le degré du numérateur (${numDeg}) est strictement inférieur à celui du dénominateur (${denDeg}) : la limite vaut 0`;
 	} else if (numDeg > denDeg) {
-		// Goes to ±∞ ; sign depends on the leading coefficients and approach sign.
+		// Limite infinie : son signe dépend des coefficients dominants et du côté (±∞).
 		// Un signe qui ne se lit pas exactement ((π − 4)x) : on s'abstient.
 		if (numLead.sign === null || denLead.sign === null) return null;
 		const sign = signAtInfinity(numLead.sign * denLead.sign, numDeg - denDeg, ctx.approach);
@@ -745,7 +760,7 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 			? `Une fonction polynôme a la même limite à ${formatApproachShort(ctx.approach)} que son terme de plus haut degré (degré ${numDeg}) : la limite est ${limitText}`
 			: `Le degré du numérateur (${numDeg}) dépasse celui du dénominateur (${denDeg}) : la limite est ${limitText}`;
 	} else {
-		// Same degree → ratio of leading coefficients, EXACT (V26).
+		// Degrés égaux : quotient EXACT des coefficients dominants (V26).
 		const ratio = exactQuotient(numLead, denLead, ctx);
 		if (ratio === null) return null;
 		value = ratio;
@@ -858,8 +873,9 @@ function irrationalDominantTerm(expr: MathNode, variable: string): DominantTerm 
 	if (form.numerator.length === 0) return null;
 	if (form.denominator.some((term) => xDegree(term) !== 0)) return null;
 	const degrees = form.numerator.map(xDegree);
-	if (degrees.some((d) => d === null)) return null;
-	const degree = Math.max(...(degrees as number[]));
+	const readDegrees = degrees.filter((d): d is number => d !== null);
+	if (readDegrees.length !== degrees.length) return null;
+	const degree = Math.max(...readDegrees);
 
 	const leadTerms: NormalTerm[] = form.numerator
 		.filter((_, k) => degrees[k] === degree)
@@ -914,7 +930,9 @@ function exactQuotient(
 			// Forme réduite, comme la substitution directe : `\\dfrac{3}{2}`, `-2`
 			return denormalize(normalize(rationalToNode(divRational(num.rational, den.rational))));
 		}
-		const quotient = divide(num.coefficient, den.coefficient, 'fraction');
+		// Réduit d'abord par la forme normale (1/(−√2) → −½√2), puis réécrit par
+		// l'évaluation exacte, comme le moteur : `\\dfrac{-\\sqrt{2}}{2}`, `2\\sqrt{2}`.
+		const quotient = denormalize(normalize(divide(num.coefficient, den.coefficient, 'fraction')));
 		const result = tryEvaluateLimitExact(quotient, ctx.variable, ctx.approach, 'both');
 		const node = result === null ? null : resultToNode(result);
 		return node === null || node.type === 'infinity' ? null : node;

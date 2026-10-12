@@ -615,7 +615,9 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   **En ±∞** (`tryInfinityAnalysis`, K21, V26), le terme dominant se lit par `toPolynomial`
   (coefficients sur ℚ) et, à défaut, dans la forme normale (`normalize`) pour un coefficient
   constant irrationnel (π, √2) ; le quotient des coefficients dominants est exact (`\dfrac{3}{2}`,
-  plus `1.5` ; `\dfrac{\pi}{2}` par `tryEvaluateLimitExact`). Un polynôme seul (`\pi x`,
+  plus `1.5` ; un quotient irrationnel réduit par `normalize` puis réécrit par
+  `tryEvaluateLimitExact`, comme le moteur : `\dfrac{\pi}{2}`, `2\sqrt{2}`, `\dfrac{\sqrt{2}\pi}{2}`). Une constante (`5`, `\pi`) : une seule étape, « La fonction est constante : sa
+  limite vaut 5. » Un polynôme seul (`\pi x`,
   `-2x^3+x`) est lu comme P / 1. Un signe de coefficient qui ne se lit pas exactement
   (`(\pi - 4)x`) : refus, jamais un décimal. La borne d'un `\lim` parsé (`positive(∞)`) est
   traduite en nœud `infinity` par `normalizeApproach` de `limits/evaluate.ts`, comme dans le
@@ -680,9 +682,8 @@ Doublons qui restent, chacun pour un autre besoin :
   `divideUnivariate` (coefficients algébriques, utilisée aussi par `partial-fractions.ts` et le
   grapheur) et `exactDividePolynomials` (multivariée), toutes deux dans `normal/`.
 - **Extracteurs de coefficients** : `toPolynomial` / `toRationalFunction` (noyau, exacts) ;
-  `asPolynomial` et `polyToNode` (`pedagogical-limits/helpers.ts`, **flottants**) : sans
-  appelant hors de leurs tests depuis V26 (le terme dominant en ±∞ passe au noyau), à supprimer
-  au prochain ménage ; `toUnivariateView` (`normal/`) ;
+  `toUnivariateView` (`normal/`) ; (`asPolynomial` et `polyToNode`, lecteur en flottants de
+  `pedagogical-limits/helpers.ts`, supprimés après V26 : le terme dominant en ±∞ passe au noyau) ;
   `extract{Quadratic,Cubic,Quartic}Coefficients` (`solve/`, coefficients `MathNode`).
 - **Δ** : un seul calcul exact sur ℚ, `discriminant` (`factor/quadratic.ts`). Les autres
   calculent en `MathNode` pour l'afficher (`pedagogical-solve/quadratic.ts`, `solve/`) ou en
