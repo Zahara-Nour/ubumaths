@@ -19,7 +19,7 @@
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
-import { GoogleTokenExpiredError } from '$lib/server/google/errors';
+import { GoogleNotConnectedError, GoogleTokenExpiredError } from '$lib/server/google/errors';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
 import { GoogleDriveClient } from '$lib/server/google/drive-api';
@@ -103,7 +103,7 @@ export const GET: RequestHandler = async ({ params, locals, setHeaders }) => {
 
 		// Handle specific Google API errors
 		if (err instanceof Error) {
-			if (err.message.includes('No Google integration')) {
+			if (err instanceof GoogleNotConnectedError) {
 				throw error(401, 'Compte Google non connecté');
 			}
 			if (err instanceof GoogleTokenExpiredError || err.message.includes('401')) {

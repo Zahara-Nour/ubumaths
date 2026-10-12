@@ -345,7 +345,7 @@
 			perStudentValuesNotice =
 				typeof data.per_student_values_notice === 'string' ? data.per_student_values_notice : null;
 			const typst = (window as { $typst?: TypstLibrary }).$typst;
-			if (!typst) throw new Error('Typst not loaded');
+			if (!typst) throw new Error('Typst n’est pas chargé');
 			const pdfData = await typst.pdf({ mainContent: data.typst });
 			const blob = new Blob([pdfData as unknown as BlobPart], { type: 'application/pdf' });
 			window.open(URL.createObjectURL(blob), '_blank');

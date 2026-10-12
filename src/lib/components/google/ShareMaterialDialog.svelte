@@ -123,7 +123,7 @@
 		try {
 			const response = await fetch('/api/teacher/classes');
 			if (!response.ok) {
-				throw new Error('Failed to fetch classes');
+				throw new Error('Impossible de charger les classes');
 			}
 
 			const data = await response.json();
@@ -165,7 +165,7 @@
 		try {
 			const response = await fetch(`/api/teacher/categories/${classId}`);
 			if (!response.ok) {
-				throw new Error('Failed to fetch categories');
+				throw new Error('Impossible de charger les catégories');
 			}
 
 			const data = await response.json();
@@ -194,7 +194,7 @@
 		try {
 			const response = await fetch('/api/google/topics');
 			if (!response.ok) {
-				throw new Error('Failed to fetch topics');
+				throw new Error('Impossible de charger les thèmes');
 			}
 
 			const data = await response.json();
@@ -232,7 +232,7 @@
 
 				if (!response.ok) {
 					const error = await response.json();
-					throw new Error(error.message || 'Failed to share');
+					throw new Error(error.message || 'Impossible de partager');
 				}
 
 				return response.json();

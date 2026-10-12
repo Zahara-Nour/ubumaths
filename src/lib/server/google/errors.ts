@@ -59,3 +59,18 @@ export class GoogleNotFoundError extends GoogleAPIError {
 		this.name = 'GoogleNotFoundError';
 	}
 }
+
+/**
+ * Erreur levée quand le professeur n'a pas encore connecté son compte Google.
+ * Les routes la reconnaissent par `instanceof`, jamais par le texte du message.
+ */
+export class GoogleNotConnectedError extends GoogleAPIError {
+	constructor() {
+		super(
+			'Aucun compte Google connecté : autoriser Google Classroom d’abord',
+			401,
+			'NOT_CONNECTED'
+		);
+		this.name = 'GoogleNotConnectedError';
+	}
+}

@@ -327,7 +327,7 @@ class MultiplayerStore {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || 'Failed to join queue');
+				throw new Error(errorData.message || 'Impossible de rejoindre la file d’attente');
 			}
 
 			const rawData = await response.json();
@@ -411,7 +411,7 @@ class MultiplayerStore {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || 'Failed to leave queue');
+				throw new Error(errorData.message || 'Impossible de quitter la file d’attente');
 			}
 
 			this.queue = {
@@ -591,7 +591,7 @@ class MultiplayerStore {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || 'Failed to start match');
+				throw new Error(errorData.message || 'Impossible de lancer le match');
 			}
 
 			this.match.status = 'in_progress';
@@ -682,7 +682,7 @@ class MultiplayerStore {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || 'Failed to complete match');
+				throw new Error(errorData.message || 'Impossible de terminer le match');
 			}
 
 			const rawData = await response.json();
@@ -759,7 +759,7 @@ class MultiplayerStore {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || 'Failed to abandon match');
+				throw new Error(errorData.message || 'Impossible d’abandonner le match');
 			}
 
 			this.match.status = 'abandoned';

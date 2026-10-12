@@ -75,7 +75,7 @@
 				throw new Error(error.message || 'Erreur lors de la suppression');
 			}
 
-			toaster.success('Feuille supprimee');
+			toaster.success('Feuille supprimée');
 			await invalidateAll();
 		} catch (error) {
 			console.error('Delete error:', error);

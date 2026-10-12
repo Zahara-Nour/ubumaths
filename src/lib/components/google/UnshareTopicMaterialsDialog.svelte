@@ -102,7 +102,7 @@
 		try {
 			const response = await fetch('/api/teacher/classes');
 			if (!response.ok) {
-				throw new Error('Failed to fetch classes');
+				throw new Error('Impossible de charger les classes');
 			}
 
 			const data = await response.json();
@@ -144,7 +144,7 @@
 
 				if (!response.ok) {
 					const error = await response.json();
-					throw new Error(error.message || 'Failed to unshare');
+					throw new Error(error.message || 'Impossible d’annuler le partage');
 				}
 
 				return response.json();

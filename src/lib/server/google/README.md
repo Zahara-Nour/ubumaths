@@ -150,7 +150,7 @@ async function getValidAccessToken(supabase, teacherId) {
 		.single();
 
 	if (!data) {
-		throw new Error('No Google integration found');
+		throw new GoogleNotConnectedError();
 	}
 
 	// Check if token needs refresh

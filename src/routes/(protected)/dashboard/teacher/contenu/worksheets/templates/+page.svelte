@@ -217,7 +217,7 @@
 												return async ({ result, update }) => {
 													await update();
 													if (result.type === 'success') {
-														toaster.success('Template duplique');
+														toaster.success('Modèle dupliqué');
 														await invalidateAll();
 													}
 													duplicatingId = null;
@@ -245,7 +245,7 @@
 													return async ({ result, update }) => {
 														await update();
 														if (result.type === 'success') {
-															toaster.success('Template supprime');
+															toaster.success('Modèle supprimé');
 															await invalidateAll();
 														}
 														deletingId = null;

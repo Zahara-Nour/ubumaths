@@ -280,7 +280,7 @@
 					const plural = Math.abs(accumulatedDelta) > 1 ? 's' : '';
 					toaster.success(`${amountStr} gidouille${plural} (${studentName})`);
 				} else {
-					throw new Error('Failed');
+					throw new Error('Échec');
 				}
 			} catch {
 				teacherCache.updateGidouillesOptimistic(classId, studentId, -accumulatedDelta);
@@ -338,7 +338,7 @@
 
 				if (!response.ok) {
 					const errorText = await response.text();
-					throw new Error(errorText || 'Failed to remove VIP card');
+					throw new Error(errorText || 'Impossible de retirer la carte VIP');
 				}
 
 				// Success: Cache already has correct optimistic value
@@ -402,7 +402,7 @@
 					if (response.ok) {
 						toaster.success(`+1 bonus (${student.firstname})`);
 					} else {
-						throw new Error('Failed');
+						throw new Error('Échec');
 					}
 				} catch (_error) {
 					// Rollback optimistic update
@@ -465,7 +465,7 @@
 					const labels = accumulated.map((t: WarningType) => WARNING_TYPE_LABELS[t]).join(', ');
 					toaster.success(`+${labels} (${student.firstname})`);
 				} else {
-					throw new Error('Failed');
+					throw new Error('Échec');
 				}
 			} catch {
 				// Rollback to pre-update snapshot (avoids reading stale cache at error-time)

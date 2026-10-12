@@ -501,7 +501,7 @@
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || `API Error: ${response.status}`);
+				throw new Error(errorData.message || `Erreur du serveur (${response.status})`);
 			}
 
 			const data = await response.json();
@@ -581,7 +581,7 @@
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || 'Failed to clear conversation');
+				throw new Error(errorData.message || 'Impossible d’effacer la conversation');
 			}
 
 			// Clear local state after successful server deletion

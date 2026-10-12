@@ -134,7 +134,7 @@
 			const newSections = [...sections, data.section];
 			onSectionsChange?.(newSections);
 
-			toaster.success('Section creee');
+			toaster.success('Section créée');
 			cancelAdd();
 		} catch (err) {
 			console.error('Error creating section:', err);
@@ -249,7 +249,7 @@
 			const newSections = sections.filter((s) => s.id !== deletingSectionId);
 			onSectionsChange?.(newSections);
 
-			toaster.success('Section supprimee');
+			toaster.success('Section supprimée');
 		} catch (err) {
 			console.error('Error deleting section:', err);
 			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la suppression');

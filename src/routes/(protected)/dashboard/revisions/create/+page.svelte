@@ -70,7 +70,7 @@
 			});
 
 			if (!deckResponse.ok) {
-				throw new Error('Failed to create deck');
+				throw new Error('Impossible de créer le deck');
 			}
 
 			const { deck } = await deckResponse.json();

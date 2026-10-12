@@ -118,7 +118,7 @@
 			);
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch shared coursework');
+				throw new Error('Impossible de charger les devoirs partagés');
 			}
 
 			const data = await response.json();
@@ -169,7 +169,7 @@
 		try {
 			const response = await fetch(`/api/teacher/categories/${classId}`);
 			if (!response.ok) {
-				throw new Error('Failed to fetch categories');
+				throw new Error('Impossible de charger les catégories');
 			}
 
 			const data = await response.json();
@@ -194,7 +194,7 @@
 			// Fetch all topics for the user's courses
 			const response = await fetch('/api/google/topics?page=1&limit=100');
 			if (!response.ok) {
-				throw new Error('Failed to fetch topics');
+				throw new Error('Impossible de charger les thèmes');
 			}
 
 			const data = await response.json();
@@ -231,7 +231,7 @@
 
 				if (!response.ok) {
 					const error = await response.json();
-					throw new Error(error.message || 'Failed to update');
+					throw new Error(error.message || 'Impossible de mettre à jour le partage');
 				}
 
 				return response.json();
@@ -266,7 +266,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to unshare');
+				throw new Error('Impossible d’annuler le partage');
 			}
 
 			// Remove from map

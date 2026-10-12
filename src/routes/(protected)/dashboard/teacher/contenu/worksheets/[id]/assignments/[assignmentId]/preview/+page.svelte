@@ -82,7 +82,7 @@
 		...data.students
 			.map((s) => ({
 				value: s.id,
-				label: [s.first_name, s.last_name].filter(Boolean).join(' ') || 'Eleve sans nom',
+				label: [s.first_name, s.last_name].filter(Boolean).join(' ') || 'Élève sans nom',
 				description: s.class_name || undefined
 			}))
 			.sort((a, b) => a.label.localeCompare(b.label, 'fr'))

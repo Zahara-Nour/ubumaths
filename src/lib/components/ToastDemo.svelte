@@ -7,25 +7,27 @@
 	}
 
 	function showErrorToast() {
-		toaster.error('Error! Something went wrong.');
+		toaster.error('Erreur ! Quelque chose s’est mal passé.');
 	}
 
 	function showWarningToast() {
-		toaster.warning('Warning! Please check your input.');
+		toaster.warning('Attention ! Vérifiez votre saisie.');
 	}
 
 	function showInfoToast() {
-		toaster.info('Information: This is a demo toast notification.');
+		toaster.info('Information : ceci est une notification de démonstration.');
 	}
 
 	function showLongToast() {
 		toaster.info(
-			'Long Message: This is a longer toast message that demonstrates how the toast handles more content.'
+			'Message long : cette notification plus longue montre comment elle affiche davantage de contenu.'
 		);
 	}
 
 	function showPersistentToast() {
-		toaster.message('Persistent Toast: This toast stays until you dismiss it manually!');
+		toaster.message(
+			'Notification persistante : elle reste affichée jusqu’à ce que vous la fermiez !'
+		);
 	}
 </script>
 

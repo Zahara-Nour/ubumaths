@@ -90,7 +90,7 @@
 			});
 
 			if (!updateResponse.ok) {
-				throw new Error('Failed to update deck');
+				throw new Error('Impossible de mettre à jour le deck');
 			}
 
 			toaster.success('Deck mis à jour avec succès');
@@ -124,7 +124,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to add card');
+				throw new Error('Impossible d’ajouter la carte');
 			}
 
 			const { card } = await response.json();
@@ -151,7 +151,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to delete card');
+				throw new Error('Impossible de supprimer la carte');
 			}
 
 			cards.splice(index, 1);
