@@ -135,3 +135,14 @@ describe('sans comparaison, aucun mot logique', () => {
 		expect(run('!5').output).not.toMatch(/comparaison entre parenthèses/);
 	});
 });
+
+// 3ᵉ revue : une variable `non` dans une comparaison
+describe('une variable « non » dans une comparaison', () => {
+	// Lue comme avant (un nom à plusieurs lettres : n·o·n), jamais comme un « non »
+	it.each(['non > 1', 'non + 1 > 2', '(non + 1) > 2'])('non := 2 puis %s', (input) => {
+		const output = run('non := 2', input).output;
+
+		expect(output).toContain('variables: n, o');
+		expect(output).not.toMatch(/« non »|lnot/);
+	});
+});

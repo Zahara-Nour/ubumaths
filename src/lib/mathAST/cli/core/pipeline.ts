@@ -106,7 +106,8 @@ const BEFORE_NOT = String.raw`(^|[(,]|&&|\|\||\\land|\\lor)(\s*)`;
 
 /** Un « non » tapé `!` ou en toutes lettres, suivi de ce qu'il nie. */
 const NOT_SIGN = new RegExp(BEFORE_NOT + String.raw`!(?=\s*[(\w\\])`, 'g');
-const NOT_WORD = new RegExp(BEFORE_NOT + String.raw`(?:not|non)(?=\s*\(|\s+)`, 'g');
+// En toutes lettres, seulement devant une parenthèse : `non(2 > 1)` ; `non > 1` parle d'une variable
+const NOT_WORD = new RegExp(BEFORE_NOT + String.raw`(?:not|non)(?=\s*\()`, 'g');
 
 /** Une comparaison ou un opérateur logique dans l'entrée. */
 const LOGICAL_CONTEXT = /[<>=≤≥≠]|\\(?:ne|neq|le|leq|ge|geq|lt|gt|land|lor)(?![a-z])|&&|\s\|\|\s/;

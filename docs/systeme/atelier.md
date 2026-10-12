@@ -303,7 +303,8 @@ pour le LaTeX (qui lisait `2 != 3` comme `factorial(2) = 3`). Une factorielle re
 nombre (`3! = 6`). ⚠️ Au plus près (revue) : `||` et les mots seulement entourés d'espaces
 (`||-2||` est une norme, `et := 3` une variable) ; un « non » seulement en tête, après `(`, `,`
 ou un « et »/« ou » (`5 !`, `|-3|!` sont des factorielles) ; aucun mot dans `\text{…}`, ni
-sans comparaison ou opérateur logique dans l'entrée (`non + 1`, `x et y` parlent de variables). Le message
+sans comparaison ou opérateur logique dans l'entrée (`non + 1`, `x et y` parlent de variables) ;
+`non`/`not` en toutes lettres seulement devant une parenthèse (`non(2 > 1)`). Le message
 d'une comparaison non évaluable nomme la vraie cause (relation non tranchée, « non » sans
 parenthèses, variable sans valeur). Une entrée à plusieurs `=` ou dont un membre est une comparaison (`1 < 2 = 2`) est lue
 en entier comme une chaîne : `executeEquality` la coupait au `=` et comparait un booléen à un
