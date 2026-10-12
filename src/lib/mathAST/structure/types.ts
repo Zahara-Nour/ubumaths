@@ -25,6 +25,8 @@ export type StructureKind =
 	| 'relation'
 	| 'number'
 	| 'letter'
+	/** Longueur d'un segment (`AB`, mode `capitalPairs: 'length'`) : un bloc, comme une lettre */
+	| 'length'
 	| 'constant'
 	/** Tout le reste (grandeur, indice, factorielle, limite…) : un bloc sans sous-structure */
 	| 'other';
@@ -107,9 +109,12 @@ export interface ExpressionStructure {
 /**
  * - `empty` : rien à montrer (A12) ;
  * - `unrecognized` : expression non reconnue ou incomplète (A13) ;
+ * - `figureName` : un nom de figure (`ABC`, mode longueur) n'a pas de lecture ;
+ *   `message` dit pourquoi (décision Q-A du chantier « longueurs de segments ») ;
  * - `ok` : la structure.
  */
 export type StructureResult =
 	| { readonly status: 'empty' }
 	| { readonly status: 'unrecognized' }
+	| { readonly status: 'figureName'; readonly message: string }
 	| { readonly status: 'ok'; readonly structure: ExpressionStructure };

@@ -23,7 +23,7 @@ export type AdviceSegment =
 /**
  * - `chain` : suite de 3 termes ou plus avec une soustraction (C1) ; deux
  *   écritures parenthésées proposées pour 3 termes, `null` au-delà (Q24) ;
- * - `leading-minus` : « − » sans parenthèses devant un nombre ou une lettre (C2,
+ * - `leading-minus` : « − » sans parenthèses devant un nombre, une lettre ou une longueur (C2,
  *   Q21) ; un exemple quand il commence une somme, `null` ailleurs (Q22) ;
  *   devant une parenthèse écrite : texte à part, jamais d'exemple (Q23).
  * `node` : la sous-expression visée.
@@ -44,7 +44,7 @@ export type ParenthesesAdvice =
 
 // Constantes
 const NBSP = ' ';
-const MINUS_SIGN_TEXT = "Le signe − devant un nombre ou une lettre s'apprend en 5e";
+const MINUS_SIGN_TEXT = "Le signe − devant un nombre, une lettre ou une longueur s'apprend en 5e";
 const MINUS_PARENTHESES_TEXT = "Le signe − devant une parenthèse s'apprend en 5e.";
 const CHAIN_TEXT = "Ajoute des parenthèses pour montrer ce que tu calcules d'abord";
 

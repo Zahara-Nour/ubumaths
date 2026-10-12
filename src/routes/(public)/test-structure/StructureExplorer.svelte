@@ -15,10 +15,13 @@
 	Le niveau vient de `readReaderGrade()` ; le dictionnaire des mots cliquables
 	est posé par la page (`provideStructureLexicon`). MathLive est chargé par la page.
 	Une nouvelle expression : la page remonte le composant (`{#key}`).
+	`capitalPairs` : sens de `AB` (longueur ou produit) ; en mode longueur, un nom
+	de figure (`ABC`) n'a pas de lecture, son message la remplace.
 -->
 <script lang="ts">
 	import { needsParenthesesAdvice } from '$lib/lexicon/parentheses-advice-grade';
 	import { readReaderGrade } from '$lib/lexicon/reader-grade';
+	import type { CapitalPairs } from '$lib/mathAST/parser';
 	import { parenthesesAdvice, readingOf, structureFromLatex } from '$lib/mathAST/structure';
 	import StructureFormula from './StructureFormula.svelte';
 	import StructureReading from './StructureReading.svelte';
@@ -30,10 +33,12 @@
 		frameLeaves?: boolean;
 		/** Encadrer aussi les sous-expressions englobantes */
 		showAncestors?: boolean;
+		/** Sens de deux majuscules collées ; absent : le défaut du parseur (produit) */
+		capitalPairs?: CapitalPairs;
 	}
 
 	// Variables
-	let { latex, frameLeaves = true, showAncestors = false }: Props = $props();
+	let { latex, frameLeaves = true, showAncestors = false, capitalPairs }: Props = $props();
 
 	const readerGrade = readReaderGrade();
 
@@ -44,7 +49,7 @@
 	/** Sous-expression désignée par le segment de lecture survolé (sens inverse) */
 	let highlightId = $state<number | null>(null);
 
-	const result = $derived(structureFromLatex(latex));
+	const result = $derived(structureFromLatex(latex, { capitalPairs }));
 	const structure = $derived(result.status === 'ok' ? result.structure : null);
 	const advice = $derived(
 		structure && needsParenthesesAdvice(readerGrade()) ? parenthesesAdvice(structure) : null
@@ -103,6 +108,8 @@
 			{/if}
 		</div>
 	</div>
+{:else if result.status === 'figureName'}
+	<div class="structure-advice" role="status" data-figure-name>{result.message}</div>
 {:else if result.status === 'unrecognized'}
 	<div class="text-muted-foreground">Expression non reconnue ou incomplète.</div>
 {/if}

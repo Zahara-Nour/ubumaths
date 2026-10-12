@@ -375,8 +375,13 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   `unevaluable` en français ; `checkForm` laisse libre l'ordre des points, les parenthèses
   autour d'une longueur seule et le `×` entre deux longueurs (`unifySegmentNotationAST`). Un nom de figure (`ABC`) n'est équivalent qu'à la même
   écriture et est refusé par `evaluate()` et `checkForm`, avec le message de `figureNameRefusal`
-  (`common/segment-names.ts`). **Pas encore** : la syntaxe maison (lit toujours un produit), la
-  lecture française — lots suivants.
+  (`common/segment-names.ts`). **Lecture** (lot 4) : `structureFromLatex(latex, { capitalPairs })`
+  (sans option : le parseur par défaut, produit) ; une longueur est une feuille de genre `length`
+  (un bloc, comme une lettre), lue « la longueur AB » (mot du dictionnaire `longueur`) ; un nom
+  de figure rend `{ status: 'figureName', message }` (message de `figureNameRefusal`), sans
+  lecture. En mode produit, lectures identiques à avant (empreinte des 200 saisies du corpus,
+  `structure/__tests__/reading-mode-produit.test.ts`). **Pas encore** : la syntaxe maison (lit
+  toujours un produit) — lot 5.
 
 ## Invariants structurels non évidents
 
