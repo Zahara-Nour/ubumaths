@@ -236,7 +236,6 @@ describe('policies classes / class_members ciblées sur authenticated', () => {
 		enigme = await insert('riddles', {
 			title: 'Énigme prépa-anon ZZ',
 			statement: 'Énoncé',
-			correction: 'Correction',
 			difficulty: 1,
 			created_by: profId
 		});
