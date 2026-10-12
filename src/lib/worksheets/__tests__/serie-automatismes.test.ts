@@ -406,3 +406,37 @@ describe('buildSerie — chaque question garde ses fonctions déclarées', () =>
 		).toThrow(/illisible.*2\+\*3/);
 	});
 });
+
+// Longueurs de segments, lot 5 : la série fige les formules maison avec le sens de `AB`
+// résolu pour l'instance (longueur par défaut, produit en `Graphes et matrices`)
+describe('buildSerie — sens de AB (longueurs de segments)', () => {
+	const pythagore = (theme: string) =>
+		({
+			...base,
+			theme,
+			id: `pythagore-${theme}`,
+			variations: [
+				{
+					statement: 'Dans le triangle ~ABC~, on a ~AB^2=AC^2+BC^2~. Combien vaut $?$ ?',
+					blanks: [{ expectedAnswer: '5' }]
+				}
+			]
+		}) as unknown as QuestionTemplate;
+
+	it('longueur (géométrie) : AB^2 et ABC écrits sans espace entre les points', () => {
+		const template = pythagore('Géométrie');
+		const serie = buildSerie(new Map([[template.id, template]]), [
+			{ templateId: template.id, seed: 1 }
+		]);
+		expect(serie.statement).toContain('$ABC$');
+		expect(serie.statement).toContain('AB^2 = AC^2 + BC^2');
+	});
+
+	it('produit (Graphes et matrices) : l’écriture d’avant', () => {
+		const template = pythagore('Graphes et matrices');
+		const serie = buildSerie(new Map([[template.id, template]]), [
+			{ templateId: template.id, seed: 1 }
+		]);
+		expect(serie.statement).toContain('A B^2');
+	});
+});

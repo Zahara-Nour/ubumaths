@@ -23,6 +23,7 @@
 	import { withoutCapitalPairShortcuts } from '$lib/questions/capital-pairs';
 	import { expressionToLatex, extractPromptIndices } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
+	import { readCapitalPairs } from '../content-capital-pairs';
 	import { isRefusedRestrictedFormula, readRestrictedRendering } from '../restricted-rendering';
 
 	/**
@@ -86,10 +87,20 @@
 
 	// Langue du contenu (séparateur décimal), posée par MarkdownRenderer
 	const contentLocale = readContentLocale();
+	// Sens de `AB` pour écrire les formules : la prop (champ de réponse) ou, à défaut, celui
+	// posé par la carte de la question
+	const contextCapitalPairs = readCapitalPairs();
+	const writingCapitalPairs = () => capitalPairs ?? contextCapitalPairs();
 
 	// Convert to LaTeX for rendering, embedding prefilled values in placeholder syntax
 	let latex = $derived.by(() => {
-		let base = expressionToLatex(expression, syntax, genericFunctions, contentLocale());
+		let base = expressionToLatex(
+			expression,
+			syntax,
+			genericFunctions,
+			contentLocale(),
+			writingCapitalPairs()
+		);
 		if (prefilledValues && !correctValues) {
 			for (const [id, value] of Object.entries(prefilledValues)) {
 				base = base.replace(
@@ -112,7 +123,7 @@
 	);
 
 	// Extract prompt indices from the expression
-	let promptIndices = $derived(extractPromptIndices(expression, syntax));
+	let promptIndices = $derived(extractPromptIndices(expression, syntax, writingCapitalPairs()));
 
 	let mathField: HTMLElement | undefined = $state();
 
@@ -206,7 +217,7 @@
 	 */
 	$effect(() => {
 		if (!mathField || !isMathfield(mathField)) return;
-		if (capitalPairs === 'length') {
+		if (writingCapitalPairs() === 'length') {
 			if (originalShortcuts) return;
 			originalShortcuts = mathField.inlineShortcuts;
 			mathField.inlineShortcuts = withoutCapitalPairShortcuts(originalShortcuts);

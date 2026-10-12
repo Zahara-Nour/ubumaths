@@ -22,7 +22,7 @@ import { isCourseCard, type QuestionInstance, type QuestionTemplate } from '$lib
 import { templateGenericFunctions } from '$lib/questions/generic-functions';
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { toLatex } from '$lib/mathAST';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 export type SerieItem = { templateId: string; seed: number };
 /**
@@ -61,14 +61,16 @@ const TOKEN = /\uE000(\d+)\uE000/g;
 
 /**
  * Formules maison → LaTeX, lues avec les fonctions du modèle (absentes : défauts du
- * parseur, comme un exercice sans liste). Même écriture que l'écran et le PDF
+ * parseur, comme un exercice sans liste) et le sens de `AB` de l'instance (absent :
+ * produit). Même écriture que l'écran et le PDF
  * (`toLatex`, nombres au point : la langue s'applique au rendu, comme avant).
  * Le reste du texte est rendu à l'octet près.
  */
 function customMathToLatex(
 	texte: string,
 	genericFunctions: GenericFunctionConfig | undefined,
-	templateId: string
+	templateId: string,
+	capitalPairs?: CapitalPairs
 ): string {
 	const zones: string[] = [];
 	let masque = texte;
@@ -79,7 +81,7 @@ function customMathToLatex(
 				// Une formule maison qui contient une zone déjà masquée n'est pas lisible seule
 				const lue = expression.includes('\uE000')
 					? null
-					: parseCustomSafe(expression.trim(), { genericFunctions });
+					: parseCustomSafe(expression.trim(), { genericFunctions, capitalPairs });
 				if (!lue?.ast) {
 					throw new Error(`${templateId} : formule maison illisible « ${expression.trim()} »`);
 				}
@@ -113,7 +115,10 @@ function reponse(instance: QuestionInstance, index: number, dansFormule: boolean
 function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 	// Formules maison lues avec les fonctions DE CE MODÈLE (cf. en-tête)
 	const fonctions = templateGenericFunctions(template.shared?.genericFunctions);
-	const enLatex = (texte: string) => customMathToLatex(texte, fonctions, template.id);
+	// … et avec le sens de `AB` résolu pour l'instance (longueur ou produit, lot 5 des
+	// longueurs de segments) : la fiche écrit comme l'écran
+	const enLatex = (texte: string) =>
+		customMathToLatex(texte, fonctions, template.id, instance.capitalPairs);
 	// Marqueurs de détail GARDÉS (ADR 0017, lot 3) : la fiche choisit concise ou
 	// détaillée à l'impression (`correctionForPrint`), même après la création de
 	// la série ; les écrans montrent la détaillée (`detailedCorrection`)

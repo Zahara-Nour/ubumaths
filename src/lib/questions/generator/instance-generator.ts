@@ -418,7 +418,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			resolvedVariables,
 			random,
 			genericFunctions,
-			cleanCoefficients
+			cleanCoefficients,
+			capitalPairs
 		);
 
 		// Resolve correctChoiceIndex from explicit value or derive from isCorrect on choices
@@ -468,7 +469,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						rawFormat,
 						resolvedVariables,
 						random,
-						genericFunctions
+						genericFunctions,
+						capitalPairs
 					);
 				}
 			}
@@ -524,7 +526,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					answerKind !== 'vecteur' &&
 					answerKind !== 'matrice';
 				const expectedAnswer = isCleanable
-					? cleanCoefficientsCustom(resolvedExpected, genericFunctions)
+					? cleanCoefficientsCustom(resolvedExpected, genericFunctions, capitalPairs)
 					: resolvedExpected;
 
 				// `i` matches the blank counter assigned by `assignBlankIndices`
@@ -606,7 +608,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 								? expectedVectorLatex(resolved.expectedAnswer)
 								: resolved.answerKind === 'matrice'
 									? expectedMatrixLatex(resolved.expectedAnswer)
-									: convertToLatex(resolved.expectedAnswer, genericFunctions, isCleanable);
+									: convertToLatex(
+											resolved.expectedAnswer,
+											genericFunctions,
+											isCleanable,
+											capitalPairs
+										);
 				}
 				return resolved;
 			});
@@ -626,7 +633,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					}
 					expressionsArray.push({
 						name: exprName,
-						latex: convertToLatex(variable.value, genericFunctions),
+						latex: convertToLatex(variable.value, genericFunctions, false, capitalPairs),
 						displayLatex: variable.displayValue ?? undefined,
 						answerFormat: blankResult.answerFormats?.[exprName],
 						value: variable.value
@@ -660,7 +667,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							resolvedVariables,
 							random,
 							genericFunctions,
-							cleanCoefficients
+							cleanCoefficients,
+							capitalPairs
 						)
 					: resolvedMarkdown(content);
 				// Use choice.isCorrect if set, otherwise derive from correctChoiceIndex
@@ -712,7 +720,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						correctionContext,
 						random,
 						genericFunctions,
-						cleanCoefficients
+						cleanCoefficients,
+						capitalPairs
 					);
 				}
 				if (feedback.incorrect) {
@@ -722,7 +731,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						correctionContext,
 						random,
 						genericFunctions,
-						cleanCoefficients
+						cleanCoefficients,
+						capitalPairs
 					);
 				}
 				if (feedback.partial) {
@@ -732,7 +742,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						correctionContext,
 						random,
 						genericFunctions,
-						cleanCoefficients
+						cleanCoefficients,
+						capitalPairs
 					);
 				}
 			}
@@ -745,7 +756,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						correctionContext,
 						random,
 						genericFunctions,
-						cleanCoefficients
+						cleanCoefficients,
+						capitalPairs
 					)
 				);
 			}

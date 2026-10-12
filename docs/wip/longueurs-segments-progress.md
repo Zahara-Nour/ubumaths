@@ -689,6 +689,62 @@ et restent comme gardes).
   identiques** en mode `'product'` et sans option ; témoin : Pythagore change en mode longueur.
   Client (`structure-explorer.svelte.test.ts`) : 3 cas, 2 rouges avec l'ancien explorateur.
 
+## Lot 5 — fait en partie (2026-10-12) : syntaxe maison
+
+- **Parseur** : `CustomParserOptions.capitalPairs` (défaut `'product'`) dans `parseCustom`,
+  `parseCustomSafe`, Pratt, rd et leurs variantes ; mêmes règles que le LaTeX par le même scanner
+  de jetons (`parser/latex/point-names.ts`, rendu générique sur la forme des jetons ; réglage
+  `bareMultiDigitIndex` : en syntaxe maison `A_12B` a l'indice 12, comme `x_12`).
+  Tests : `parser/custom/__tests__/capital-pairs.test.ts` (16 cas, 12 rouges avant le code).
+- **Non-régression chiffrée** : corpus figé AVANT le code (commit `test(mathast)` du lot) de
+  1 299 saisies — les 678 formules `~…~` à majuscules des 43 exercices de prod (lecture seule,
+  dont 300 à majuscules collées : `~AB=5~`, `~ABC~`, `~GGGG~`, `~(AB)~`), les 365 `~…~` du dépôt,
+  les littéraux `parseCustom…('…')` des tests et ~95 cas à la main. Empreinte (arbre + erreurs Pratt
+  et rd + `toLatex`) : **1 299/1 299 identiques** sans option et en `'product'` ; en `'length'`,
+  seules changent des saisies à majuscules collées (> 250), et **aucune saisie lisible en produit
+  ne devient une erreur** (rien en rouge à l'écran). `geometry-core` + `constructions-v2` :
+  **178 fichiers, 3 904 tests verts** (23 skipped, 7 todo, comme avant).
+- **Branché sur le sens de l'instance** (absent : produit, Q-L) :
+  - serveur : `resolveMarkdownContent` / `resolveCorrectionContent` (formules `$…$` de l'énoncé,
+    des choix, de la correction, relues en syntaxe maison), `resolveAnswerFormat`,
+    `convertToLatex` (`expectedAnswerLatex`, `expressions[].latex`), `cleanCoefficientsCustom`,
+    `generateCorrection` (`readingOf(instance)`), série figée (`serie-automatismes.ts`, écran et
+    PDF des séries) ;
+  - écran : contexte `components/markdown/content-capital-pairs.ts` (même rail que la langue,
+    `content-locale.ts`) posé par `QuestionCard`, `FlashCard`, `CorrectionCard`,
+    `CourseCardView`, `QuestionPreviewBaseCard` et `FillBlanksInput` (sa prop) ; lu par
+    `MathInline`, `MathBlock`, `MathPrompt`, `ParagraphNode` (`expressionToLatex`,
+    `expressionToFlashLatex`, 5ᵉ paramètre). Choisi plutôt que la prop dans 18 composants.
+  - Tests : `questions/__tests__/capital-pairs-affichage.test.ts` (8 cas, 6 rouges avant),
+    `worksheets/__tests__/serie-automatismes.test.ts` (+2, 1 rouge avant),
+    `components/markdown/__tests__/capital-pairs-rendu.svelte.test.ts` (3 cas, 1 rouge avant).
+- **Préremplissage** : rien à faire, il n'est jamais relu par le parseur (LaTeX tel quel).
+- **Laissés en produit** (défaut, Q-M) : DSL `geometry-core` (`math-pure-expr`, `interpreter`,
+  `builtins`, `domain-parser`, `piecewise-parser`…), `constructions-v2`, atelier
+  (`atelier/parse.ts`), grapheur / `ubumark/parser` (`courbe`, `figure`, `number-line`),
+  calculatrice (`ResultDisplay`), chat (`TutorChat`), énigmes, `pnpm math`
+  (`mathAST/cli`), `condition-evaluator` (conditions sur les variables tirées),
+  `parse-student-domain`, `pedagogical-limits`, `migration/answer-latex`, `math/intervals`,
+  `rich-text/markdown-import`, `extensions/math-extension`, `QuestionPreview.svelte` (aperçu de l'éditeur : retiré du lot
+  parce que la garde `docs:check-a-jour` le range dans la zone « exercices » sans doc ; écriture
+  `A B` invisible à l'écran).
+- **Revue** (`code-reviewer` + `geometry-expert`) : aucun bloquant ni important ; empreinte
+  recalculée depuis `origin/main` : 1 299/1 299 identiques ; DSL de géométrie hors d'atteinte
+  (appels `parseCustom(x)` sans option, scanner inchangé sans option). Suites faites :
+  `extractPromptIndices` / `hasPrompts` et les fonctions de `fill-blanks-utils` reçoivent le sens
+  (une case `~A'B'=?~` d'une question en longueur était rendue figée, sans champ ; test vu rouge) ;
+  raccourcis MathLive coupés aussi par le sens du contexte ; test de rendu sans remontage ; source
+  brute du corpus retirée (décision de David).
+- **Décisions de David (2026-10-12)** : contexte Svelte gardé (plutôt qu'une prop) ; exercices
+  (Q-J) dans un **lot 6** à part.
+- **Pas fait — exercices (Q-J)** : ils restent en produit. Pas de donnée en base à toucher, mais
+  la vue élève (`StudentExerciseView`, `types/worksheets.ts`) ne porte pas `topic` : il faudrait
+  l'ajouter au chargement serveur et à son schéma de réponse, puis poser le sens dans
+  `ExerciseDisplay` (prof et élève), `ExerciseModal`, et une option `capitalPairs` de
+  `generateTypst` pour les PDF (`worksheet-generator`, `student-worksheet-typst`,
+  `exercise-typst-generator`). **Sans effet visible aujourd'hui** : MathLive ignore l'espace de
+  `A B`, et `convertLatexToTypstMath` sort `A B` pour `AB` comme pour `A B` (mesuré).
+
 ## Journal
 
 - 2026-10-11 — préparation : mesure du parseur et des questions en base ; questions de phase 0.
@@ -717,3 +773,6 @@ et restent comme gardes).
 - 2026-10-12 — lot 4 fait : lecture des longueurs dans `structure/`, refus des noms de figure,
   case « Lire AB comme un produit » de `/test-structure` ; 200/200 lectures du corpus identiques
   en mode produit.
+- 2026-10-12 — lot 5 fait en partie : option `capitalPairs` de la syntaxe maison, sens de
+  l'instance dans l'écriture des questions (serveur, écran, séries figées) ; empreinte de
+  1 299 saisies identique en produit ; exercices (Q-J) non faits.
