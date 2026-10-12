@@ -85,7 +85,9 @@ describe('ce qui reste refusé, et pour de bonnes raisons', () => {
 		const s = session();
 		s.atelier.create({ kind: 'function', name: 'k', definition: 'x^^2' }, 'text');
 
-		expect(outputOf(runInput(s, "k'"))).not.toMatch(/Unexpected token|Evaluation error/);
+		expect(outputOf(runInput(s, "k'"))).not.toMatch(
+			/Unexpected token|Evaluation error|Erreur de calcul/
+		);
 	});
 });
 
