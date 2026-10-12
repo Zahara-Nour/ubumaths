@@ -149,7 +149,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		if (fetchError) {
 			console.error('[Google Shared Coursework] Database error:', fetchError);
-			throw error(500, 'Failed to fetch shared coursework');
+			throw error(500, 'Impossible de charger les devoirs Classroom partagés');
 		}
 
 		// Get unique Google Course IDs for fetching course IDs (needed for courseId in response)
@@ -255,17 +255,17 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			return {
 				id: item.id,
 				courseworkId: item.coursework_id,
-				courseworkTitle: coursework?.title || 'Untitled',
+				courseworkTitle: coursework?.title || 'Sans titre',
 				courseworkDescription: coursework?.description || null,
 				workType: coursework?.work_type || 'ASSIGNMENT',
 				maxPoints: coursework?.max_points || null,
 				dueDate: coursework?.due_date || null,
 				dueTime: coursework?.due_time || null,
 				courseId: courseId,
-				courseName: item.course_name || 'Unknown Course', // ✅ DENORMALIZED FIELD
-				teacherName: item.teacher_name || 'Unknown Teacher', // ✅ DENORMALIZED FIELD
+				courseName: item.course_name || 'Cours Classroom inconnu', // ✅ DENORMALIZED FIELD
+				teacherName: item.teacher_name || 'Professeur inconnu', // ✅ DENORMALIZED FIELD
 				classId: classId || item.class_id,
-				className: className || 'Unknown Class',
+				className: className || 'Classe inconnue',
 				visible: item.visible,
 				categoryId: item.category_id,
 				categoryName: categoryData?.name || null,
@@ -295,7 +295,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 		// Handle other errors
 		console.error('[Google Shared Coursework] Error fetching data:', err);
-		throw error(500, 'An error occurred while fetching shared coursework');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -338,14 +338,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (courseworkError) {
 			if (courseworkError.code === 'PGRST116') {
-				throw error(404, 'Coursework not found or access denied');
+				throw error(404, 'Devoir Classroom introuvable ou accès refusé');
 			}
 			console.error('[Share Coursework] Error fetching coursework:', courseworkError);
-			throw error(500, 'Failed to fetch coursework');
+			throw error(500, 'Impossible de charger le devoir Classroom');
 		}
 
 		if (!coursework) {
-			throw error(404, 'Coursework not found');
+			throw error(404, 'Devoir Classroom introuvable');
 		}
 
 		// Verify coursework belongs to teacher
@@ -359,7 +359,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			console.error(
 				`[Share Coursework] Unauthorized coursework access attempt by teacher ${user.id}: coursework ${courseworkId}`
 			);
-			throw error(403, 'You do not own this coursework');
+			throw error(403, 'Ce devoir Classroom appartient à un autre professeur');
 		}
 
 		// Verify teacher owns all classes
@@ -371,11 +371,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (classesError) {
 			console.error('[Share Coursework] Error fetching classes:', classesError);
-			throw error(500, 'Failed to verify class ownership');
+			throw error(500, 'Impossible de vérifier les classes');
 		}
 
 		if (!classes || classes.length !== classIds.length) {
-			throw error(400, 'One or more classes not found or inactive');
+			throw error(400, 'Classe introuvable ou inactive');
 		}
 
 		// If categoryId is provided, verify it belongs to one of the teacher's classes
@@ -387,7 +387,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (categoryError || !category) {
-				throw error(400, 'Category not found');
+				throw error(400, 'Catégorie introuvable');
 			}
 
 			// Verify the category's class is accessible (mono-teacher: RLS-scoped)
@@ -398,7 +398,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (categoryClassError || !categoryClass) {
-				throw error(400, 'Category does not belong to one of your classes');
+				throw error(400, 'Cette catégorie n’appartient à aucune classe du professeur');
 			}
 		}
 
@@ -411,7 +411,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (topicError || !topic) {
-				throw error(400, 'Topic not found');
+				throw error(400, 'Sujet Classroom introuvable');
 			}
 
 			// Verify topic belongs to a course owned by teacher
@@ -423,7 +423,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (topicCourseError || !topicCourse) {
-				throw error(400, 'Topic does not belong to one of your courses');
+				throw error(400, 'Ce sujet Classroom n’appartient à aucun cours Classroom du professeur');
 			}
 		}
 
@@ -449,7 +449,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (insertError) {
 			console.error('[Share Coursework] Error sharing coursework:', insertError);
-			throw error(500, 'Failed to share coursework');
+			throw error(500, 'Impossible de partager le devoir Classroom');
 		}
 
 		return json({
@@ -464,7 +464,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Handle other errors
 		console.error('[Share Coursework] Unexpected error:', err);
-		throw error(500, 'An error occurred while sharing coursework');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -501,10 +501,10 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 
 		if (courseworkError || !coursework) {
 			if (courseworkError?.code === 'PGRST116') {
-				throw error(404, 'Coursework not found or access denied');
+				throw error(404, 'Devoir Classroom introuvable ou accès refusé');
 			}
 			console.error('[Unshare Coursework] Coursework verification error:', courseworkError);
-			throw error(403, 'Coursework does not belong to you');
+			throw error(403, 'Ce devoir Classroom appartient à un autre professeur');
 		}
 
 		// Verify teacher owns all classes
@@ -515,11 +515,11 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 
 		if (classesError) {
 			console.error('[Unshare Coursework] Error fetching classes:', classesError);
-			throw error(500, 'Failed to verify class ownership');
+			throw error(500, 'Impossible de vérifier les classes');
 		}
 
 		if (!classes || classes.length !== classIds.length) {
-			throw error(400, 'One or more classes not found or access denied');
+			throw error(400, 'Classe introuvable ou accès refusé');
 		}
 
 		// Delete from shared_coursework (bulk, idempotent - no error if not found)
@@ -533,7 +533,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 
 		if (deleteError) {
 			console.error('[Unshare Coursework] Delete error:', deleteError);
-			throw error(500, 'Failed to unshare coursework');
+			throw error(500, 'Impossible d’arrêter le partage du devoir Classroom');
 		}
 
 		return json({
@@ -548,6 +548,6 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 
 		// Handle other errors
 		console.error('[Unshare Coursework] Unexpected error:', err);
-		throw error(500, 'An error occurred while unsharing coursework');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

@@ -27,7 +27,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user, supabase } = locals;
 
 	if (!user) {
-		throw error(401, 'Non authentifié');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Verify teacher role
@@ -38,7 +38,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (profileError || !profile || profile.role !== 'teacher') {
-		throw error(403, 'Seuls les enseignants peuvent assigner des exercices');
+		throw error(403, 'Réservé aux professeurs');
 	}
 
 	// Verify exercise exists
@@ -49,12 +49,15 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (exerciseError || !exercise) {
-		throw error(404, 'Exercice introuvable');
+		throw error(404, 'Corvée Python introuvable');
 	}
 
 	// Teacher must own the exercise or it must be public
 	if (exercise.author_id !== user.id && !exercise.is_public) {
-		throw error(403, 'Vous ne pouvez assigner que vos exercices ou des exercices publics');
+		throw error(
+			403,
+			'Seule une corvée Python publique ou dont on est l’auteur peut être distribuée'
+		);
 	}
 
 	// Parse and validate request body
@@ -68,14 +71,14 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation échouée: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data as AssignExerciseInput;
 
 	// Validate that exactly one of class_id or student_id is provided
 	if ((data.class_id && data.student_id) || (!data.class_id && !data.student_id)) {
-		throw error(400, 'Vous devez fournir soit class_id soit student_id, mais pas les deux');
+		throw error(400, 'Choisir une classe ou un élève, pas les deux');
 	}
 
 	// If assigning to class, verify the class exists
@@ -103,11 +106,11 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		// panne doit se distinguer d'un refus mérité.
 		if (studentClassesError && studentClassesError.code !== 'PGRST116') {
 			console.error('Contrôle d’accès impossible :', studentClassesError);
-			throw error(500, 'Impossible de vérifier votre accès');
+			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		if (!studentClasses || studentClasses.length === 0) {
-			throw error(404, 'Étudiant introuvable dans une classe');
+			throw error(404, 'Élève introuvable dans les classes');
 		}
 	}
 
@@ -130,10 +133,10 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 		// Check for duplicate assignment
 		if (assignmentError.code === '23505') {
-			throw error(400, 'Cet exercice est déjà assigné à cette classe/étudiant');
+			throw error(400, 'Cette corvée Python est déjà distribuée à cette classe ou à cet élève');
 		}
 
-		throw error(500, "Erreur lors de la création de l'assignation");
+		throw error(500, 'Impossible de créer l’affectation');
 	}
 
 	return json({ assignment }, { status: 201 });

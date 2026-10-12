@@ -21,7 +21,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		if (topicsError) {
 			console.error('[API] Error fetching topics:', topicsError);
-			throw error(500, 'Failed to fetch topics');
+			throw error(500, 'Impossible de charger les thèmes Classroom');
 		}
 
 		// Remove duplicates by database ID (not by name)
@@ -40,6 +40,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return json({ topics: uniqueTopics });
 	} catch (err) {
 		console.error('[API] Error in topics endpoint:', err);
-		throw error(500, 'Internal server error');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

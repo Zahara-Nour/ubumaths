@@ -210,10 +210,10 @@ export const pageFormatSchema = z.enum(PAGE_FORMATS);
  * Schema for template page data
  */
 export const templatePageDataSchema = z.object({
-	elements: z.array(whiteboardElementSchema).max(1000, "Trop d'elements (max 1000)"),
+	elements: z.array(whiteboardElementSchema).max(1000, 'Trop d’éléments (1000 au maximum)'),
 	background: pageBackgroundSchema,
-	width: z.number().positive().max(10000, 'Largeur trop grande (max 10000px)'),
-	height: z.number().positive().max(10000, 'Hauteur trop grande (max 10000px)'),
+	width: z.number().positive().max(10000, 'Largeur trop grande (10 000 px au maximum)'),
+	height: z.number().positive().max(10000, 'Hauteur trop grande (10 000 px au maximum)'),
 	font: templateFontSchema.optional()
 });
 
@@ -231,15 +231,19 @@ export const templateCategorySchema = z.enum(TEMPLATE_CATEGORIES);
  * POST /api/whiteboard/templates
  */
 export const createWhiteboardTemplateSchema = z.object({
-	name: z.string().trim().min(1, 'Nom requis').max(100, 'Nom trop long (max 100 caracteres)'),
+	name: z
+		.string()
+		.trim()
+		.min(1, 'Nom requis')
+		.max(100, 'Nom trop long (100 caractères au maximum)'),
 	description: z
 		.string()
-		.max(500, 'Description trop longue (max 500 caracteres)')
+		.max(500, 'Description trop longue (500 caractères au maximum)')
 		.nullable()
 		.optional(),
 	category: templateCategorySchema,
 	pageData: templatePageDataSchema,
-	thumbnail: z.string().max(500000, 'Thumbnail trop grand').nullable().optional()
+	thumbnail: z.string().max(500000, 'Miniature trop lourde').nullable().optional()
 });
 
 /**
@@ -263,10 +267,14 @@ export const templateIdParamSchema = z.object({
  * POST /api/whiteboard/templates (alternative payload for modal creation)
  */
 export const createTemplateFromModalSchema = z.object({
-	name: z.string().trim().min(1, 'Nom requis').max(100, 'Nom trop long (max 100 caracteres)'),
+	name: z
+		.string()
+		.trim()
+		.min(1, 'Nom requis')
+		.max(100, 'Nom trop long (100 caractères au maximum)'),
 	description: z
 		.string()
-		.max(500, 'Description trop longue (max 500 caracteres)')
+		.max(500, 'Description trop longue (500 caractères au maximum)')
 		.nullable()
 		.optional(),
 	category: templateCategorySchema,
@@ -275,8 +283,8 @@ export const createTemplateFromModalSchema = z.object({
 	backgroundStyle: backgroundStyleSchema,
 	gridSpacing: z
 		.number()
-		.min(5, 'Espacement minimum: 5px')
-		.max(100, 'Espacement maximum: 100px')
+		.min(5, 'Espacement minimum : 5 px')
+		.max(100, 'Espacement maximum : 100 px')
 		.optional(),
 	font: templateFontSchema.optional()
 });

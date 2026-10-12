@@ -55,7 +55,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	// Validate ID parameter
 	const paramValidation = sharedCourseworkIdParamSchema.safeParse(params);
 	if (!paramValidation.success) {
-		throw error(400, 'Invalid shared coursework ID: ' + paramValidation.error.issues[0].message);
+		throw error(400, 'Identifiant de devoir Classroom partagé invalide');
 	}
 
 	const { id: sharedCourseworkId } = paramValidation.data;
@@ -89,10 +89,10 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 		if (fetchError || !existingRecord) {
 			if (fetchError?.code === 'PGRST116') {
-				throw error(404, 'Shared coursework not found or access denied');
+				throw error(404, 'Devoir Classroom partagé introuvable ou accès refusé');
 			}
 			console.error('[Update Shared Coursework] Record verification error:', fetchError);
-			throw error(404, 'Shared coursework not found');
+			throw error(404, 'Devoir Classroom partagé introuvable');
 		}
 
 		// Mono-teacher: the sole teacher owns every class; RLS on shared_coursework
@@ -107,7 +107,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				.single();
 
 			if (categoryError || !category) {
-				throw error(400, 'Category not found');
+				throw error(400, 'Catégorie introuvable');
 			}
 
 			// Verify the category's class is accessible (mono-teacher: RLS-scoped)
@@ -118,7 +118,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				.single();
 
 			if (categoryClassError || !categoryClass) {
-				throw error(400, 'Category does not belong to one of your classes');
+				throw error(400, 'Cette catégorie n’appartient à aucune classe du professeur');
 			}
 		}
 
@@ -131,7 +131,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				.single();
 
 			if (topicError || !topic) {
-				throw error(400, 'Topic not found');
+				throw error(400, 'Sujet Classroom introuvable');
 			}
 
 			// Verify topic belongs to a course owned by teacher
@@ -143,7 +143,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				.single();
 
 			if (topicCourseError || !topicCourse) {
-				throw error(400, 'Topic does not belong to one of your courses');
+				throw error(400, 'Ce sujet Classroom n’appartient à aucun cours Classroom du professeur');
 			}
 		}
 
@@ -206,7 +206,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 		if (updateError) {
 			console.error('[Update Shared Coursework] Update error:', updateError);
-			throw error(500, 'Failed to update shared coursework');
+			throw error(500, 'Impossible de modifier le devoir Classroom partagé');
 		}
 
 		// Handle nested data from JOINs
@@ -241,14 +241,14 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			sharedCoursework: {
 				id: updatedRecord.id,
 				courseworkId: updatedRecord.coursework_id,
-				courseworkTitle: coursework?.title || 'Untitled',
+				courseworkTitle: coursework?.title || 'Sans titre',
 				courseworkDescription: coursework?.description || null,
 				workType: coursework?.work_type || 'ASSIGNMENT',
 				maxPoints: coursework?.max_points || null,
 				dueDate: coursework?.due_date || null,
 				dueTime: coursework?.due_time || null,
 				classId: updatedRecord.class_id,
-				className: className || 'Unknown Class',
+				className: className || 'Classe inconnue',
 				visible: updatedRecord.visible,
 				categoryId: updatedRecord.category_id,
 				categoryName: categoryData?.name || null,
@@ -267,7 +267,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 		// Handle other errors
 		console.error('[Update Shared Coursework] Error updating record:', err);
-		throw error(500, 'An error occurred while updating shared coursework');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
 
@@ -287,7 +287,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	// Validate ID parameter
 	const paramValidation = sharedCourseworkIdParamSchema.safeParse(params);
 	if (!paramValidation.success) {
-		throw error(400, 'Invalid shared coursework ID: ' + paramValidation.error.issues[0].message);
+		throw error(400, 'Identifiant de devoir Classroom partagé invalide');
 	}
 
 	const { id: sharedCourseworkId } = paramValidation.data;
@@ -309,10 +309,10 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 		if (fetchError || !existingRecord) {
 			if (fetchError?.code === 'PGRST116') {
-				throw error(404, 'Shared coursework not found or access denied');
+				throw error(404, 'Devoir Classroom partagé introuvable ou accès refusé');
 			}
 			console.error('[Delete Shared Coursework] Record verification error:', fetchError);
-			throw error(404, 'Shared coursework not found');
+			throw error(404, 'Devoir Classroom partagé introuvable');
 		}
 
 		// Mono-teacher: the sole teacher owns every class; RLS on shared_coursework
@@ -326,7 +326,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 		if (deleteError) {
 			console.error('[Delete Shared Coursework] Delete error:', deleteError);
-			throw error(500, 'Failed to delete shared coursework');
+			throw error(500, 'Impossible de supprimer le devoir Classroom partagé');
 		}
 
 		return json({
@@ -340,6 +340,6 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 		// Handle other errors
 		console.error('[Delete Shared Coursework] Error deleting record:', err);
-		throw error(500, 'An error occurred while deleting shared coursework');
+		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
