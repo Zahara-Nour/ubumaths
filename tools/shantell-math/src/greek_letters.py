@@ -8,10 +8,11 @@ replace_symbols.py); the other letters are
   is з mirrored);
 - assembled from pieces of real Shantell letters, cut, moved or mirrored and
   joined by overlapping (a hand-drawn curve, even at the right stroke width,
-  stands out next to Shantell's letters): α from a, β from ß, δ from ð without
-  its bar, η from ŋ, ι from the foot of l, λ from л, ρ ϱ σ φ from o, ψ υ ω from
-  u, γ from v, χ from x, ζ from C, ξ from a mirrored 3, ς from c; the stem of p,
-  the bar of t and the hook of j are the joints and tails;
+  stands out next to Shantell's letters): α from the bowl of c closed by x, β
+  from B, γ from v (its left arm turned down as the tail), δ from ð without its
+  bar and topped by the top of f, η from ŋ, ι from the foot of l, λ from л,
+  ρ ϱ σ φ from o, ψ υ ω from u, χ from x, ζ from C, ξ from a mirrored 3, ς from
+  c; the stem of p, the bar of t and the hook of j are the joints and tails;
 - drawn as centre lines stroked with the width of Shantell's letters when no
   piece fits: Ξ Σ Ψ (straight strokes) and ϑ.
 
@@ -32,6 +33,7 @@ overwritten that way on 2026-01-20.
 from __future__ import annotations
 
 import argparse
+import math
 import sys
 from pathlib import Path
 from typing import Callable, Dict, Tuple
@@ -169,6 +171,13 @@ def mirror_y(path: pathops.Path, axis: float) -> pathops.Path:
     return moved(path, (1, 0, 0, -1, 0, 2 * axis))
 
 
+def rotated(path: pathops.Path, degrees: float, centre: Point) -> pathops.Path:
+    angle = math.radians(degrees)
+    cos_a, sin_a = math.cos(angle), math.sin(angle)
+    cx, cy = centre
+    return moved(path, (cos_a, sin_a, -sin_a, cos_a, cx - cos_a * cx + sin_a * cy, cy - sin_a * cx - cos_a * cy))
+
+
 def cap(x: float, y: float) -> pathops.Path:
     """Un bout rond, au trait des lettres."""
     return stroked(to_path([("M", (x, y)), ("L", (x + 0.5, y))]))
@@ -231,27 +240,38 @@ def stroke_centre(path: pathops.Path, y: float, from_right: bool = False) -> flo
 
 
 def assembled_alpha(source: TTFont) -> pathops.Path:
-    # Le a de Shantell ; le bas de sa hampe, retourné, la prolonge en haut à
-    # droite : la queue de poisson qui distingue le α du a
-    a = glyph(source, "a")
-    foot = keep(a, (455, -100, 700, 230))
-    flipped = mirror_y(foot, 300)
-    dx = stroke_centre(a, 390, from_right=True) - stroke_centre(flipped, 390, from_right=True)
-    return merged(a, shift(flipped, dx, 0))
+    # Le ventre du c de Shantell, refermé par le x : ses bras de gauche
+    # rejoignent les bouts du c, ses bras de droite font les deux queues croisées
+    bowl = keep(glyph(source, "c"), (-100, -100, 260, 600))
+    arms = keep(shift(glyph(source, "x"), 200, 0), (240, -100, 900, 600))
+    return merged(bowl, arms)
 
 
 def assembled_beta(source: TTFont) -> pathops.Path:
-    # Le ß de Shantell, sa hampe prolongée par le bas de la hampe du p
-    eszett = glyph(source, "ß")
-    descender = keep(p_stem(source), (-100, -400, 400, 80))
-    join_y = 40
-    dx = stroke_centre(eszett, join_y) - stroke_centre(descender, join_y)
-    return merged(eszett, shift(descender, dx, 0))
+    # Le B de Shantell sans l'amorce de son sommet, sa hampe prolongée sous la
+    # ligne par le bas de la hampe du p
+    b = drop(glyph(source, "B"), (-100, 600, 105, 800))
+    descender = keep(p_stem(source), (-100, -400, 400, 120))
+    join_y = 110
+    dx = stroke_centre(b, join_y) - stroke_centre(descender, join_y)
+    return merged(b, shift(descender, dx, 0))
 
 
 def assembled_delta(source: TTFont) -> pathops.Path:
-    # Le ð de Shantell sans sa barre
-    return stroke_of(source, "ð", 0)
+    # Le ð de Shantell sans sa barre ; le haut de son trait est remplacé par le
+    # haut du f, penché dans le sens du trait, qui s'enroule vers la droite
+    stroke = stroke_of(source, "ð", 0)
+    cut_y = 540
+    body = drop(stroke, (-100, cut_y, 800, 900))
+    low, high = cut_y - 120, cut_y - 10
+    lean = math.degrees(math.atan2(stroke_centre(body, high) - stroke_centre(body, low), high - low))
+    top = keep(stroke_of(source, "f", 0), (-100, 450, 800, 900))
+    base = (stroke_centre(top, top.bounds[1] + 4), top.bounds[1])
+    top = rotated(top, -lean, base)
+    join_y = cut_y - 40
+    dx = stroke_centre(body, join_y) - stroke_centre(top, top.bounds[1] + 20)
+    placed_top = shift(top, dx, join_y - top.bounds[1] - 20)
+    return merged(body, placed_top)
 
 
 def assembled_eta(source: TTFont) -> pathops.Path:
@@ -342,15 +362,6 @@ def assembled_psi(source: TTFont) -> pathops.Path:
     return merged(u, shift(shaft, middle - stroke_centre(shaft, 250), 0))
 
 
-def assembled_gamma(source: TTFont) -> pathops.Path:
-    # Le v de Shantell posé sur une petite boucle : le o, réduit, au trait des lettres
-    v = glyph(source, "v")
-    loop = scaled(glyph(source, "o"), 0.42)
-    tip_x = stroke_centre(v, 20)
-    loop_x = (loop.bounds[0] + loop.bounds[2]) / 2
-    return merged(v, shift(loop, tip_x - loop_x, DESCENDER - HALF - loop.bounds[1]))
-
-
 def assembled_zeta(source: TTFont) -> pathops.Path:
     # Le C de Shantell : la barre du t prolonge son sommet, son coin bas-droit
     # plonge sous la ligne
@@ -405,6 +416,16 @@ def assembled_varpi(source: TTFont) -> pathops.Path:
     factor = (omega.bounds[2] - omega.bounds[0]) / (bar.bounds[2] - bar.bounds[0])
     bar = moved(bar, (factor, 0, 0, 1, 0, 0))
     return merged(omega, shift(bar, omega.bounds[0] - bar.bounds[0], omega.bounds[3] - bar.bounds[3] + 30))
+
+
+def assembled_gamma(source: TTFont) -> pathops.Path:
+    # Le v de Shantell ; son bras gauche, retourné sous la pointe, descend vers
+    # la gauche dans le prolongement du bras droit : la queue du γ, d'un seul trait
+    v = glyph(source, "v")
+    tip = stroke_centre(v, 30)
+    left_arm = keep(v, (-100, -100, tip, 600))
+    tail = keep(mirror_y(left_arm, 0), (-100, DESCENDER, 900, 100))
+    return merged(v, tail, cap(stroke_centre(tail, DESCENDER + 4), DESCENDER))
 
 
 ASSEMBLED: Dict[str, Callable[[TTFont], pathops.Path]] = {

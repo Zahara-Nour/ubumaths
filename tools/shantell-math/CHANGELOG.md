@@ -7,7 +7,7 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 ### Modifié
 
 - `greek_letters.py` : minuscules assemblées à partir de morceaux de vraies lettres de Shantell au lieu de courbes calculées, trop régulières à côté des lettres de Shantell
-  - `α` (a, le bas de sa hampe retourné en queue), `β` (ß), `δ` (ð sans sa barre), `η` (ŋ), `ι` (pied du l), `λ` (л, jambe prolongée), `ρ ϱ σ φ` (o), `υ ψ ω` (u ; ω : deux u resserrés), `γ` (v sur un o réduit), `χ` (x étiré), `ζ` (C), `ξ` (3 en miroir), `ς` (c)
+  - `α` (ventre du c refermé par le x : queues croisées), `β` (B, hampe prolongée), `γ` (v, son bras gauche retourné en queue), `δ` (ð sans sa barre, coiffé du haut du f), `η` (ŋ), `ι` (pied du l), `λ` (л, jambe prolongée), `ρ ϱ σ φ` (o), `υ ψ ω` (u ; ω : deux u resserrés), `χ` (x étiré), `ζ` (C), `ξ` (3 en miroir), `ς` (c)
   - raccords : la hampe du p, la barre du t et le crochet du j, pris comme contours entiers ; un morceau réduit retrouve le trait des lettres (`scaled`)
   - ajoutées : `ξ ϖ ϱ ς` (assemblées) et `ϑ` (dessinée) ; restent dessinées `Ξ Σ Ψ` (traits droits)
 
