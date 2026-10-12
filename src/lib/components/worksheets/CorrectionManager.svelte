@@ -9,15 +9,9 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { compileToPdf } from '$lib/typst';
 	import { Eye, Loader2, EyeOff, Settings2, FileText, AlertTriangle } from '@lucide/svelte';
 	import type { WorksheetAssignmentRow, CorrectionReleaseMode } from '$lib/types/worksheets';
-
-	// Typst library type
-	type TypstLibrary = {
-		setCompilerInitOptions: (options: { getModule: () => string }) => void;
-		setRendererInitOptions: (options: { getModule: () => string }) => void;
-		pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
-	};
 
 	interface ExerciseWithVisibility {
 		id: string;
@@ -91,8 +85,6 @@
 	let perStudentValuesNotice = $state<string | null>(null);
 	let isLoadingExercises = $state(false);
 	let isTogglingExercise = $state<string | null>(null);
-	let isTypstLoaded = $state(false);
-	let isTypstLoading = $state(false);
 
 	let exercises = $state<ExerciseWithVisibility[]>([]);
 	let exercisePopoverOpen = $state(false);
@@ -275,68 +267,9 @@
 		}
 	}
 
-	async function loadTypst(): Promise<void> {
-		const existingTypst = (window as { $typst?: TypstLibrary }).$typst;
-		if (existingTypst) {
-			isTypstLoaded = true;
-			return;
-		}
-		if (isTypstLoaded) return;
-		if (isTypstLoading) {
-			await new Promise<void>((resolve) => {
-				const check = setInterval(() => {
-					if (isTypstLoaded || (window as { $typst?: TypstLibrary }).$typst) {
-						clearInterval(check);
-						isTypstLoaded = true;
-						resolve();
-					}
-				}, 100);
-			});
-			return;
-		}
-		isTypstLoading = true;
-		return new Promise((resolve, reject) => {
-			const script = document.createElement('script');
-			script.type = 'module';
-			script.src =
-				'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst.ts/dist/esm/contrib/all-in-one-lite.bundle.js';
-			script.addEventListener('load', () => {
-				setTimeout(() => {
-					const typst = (window as { $typst?: TypstLibrary }).$typst;
-					if (typst) {
-						try {
-							typst.setCompilerInitOptions({
-								getModule: () =>
-									'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm'
-							});
-							typst.setRendererInitOptions({
-								getModule: () =>
-									'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm'
-							});
-						} catch {
-							/* already init */
-						}
-						isTypstLoaded = true;
-						isTypstLoading = false;
-						resolve();
-					} else {
-						isTypstLoading = false;
-						reject(new Error('Typst not available'));
-					}
-				}, 100);
-			});
-			script.addEventListener('error', () => {
-				isTypstLoading = false;
-				reject(new Error('Failed'));
-			});
-			document.head.appendChild(script);
-		});
-	}
-
 	async function handlePreviewCorrection() {
 		isPreviewing = true;
 		try {
-			await loadTypst();
 			const response = await fetch(
 				`/api/worksheets/assignments/${assignment.id}/correction?format=typst`
 			);
@@ -344,9 +277,8 @@
 			if (!response.ok) throw new Error(data.message);
 			perStudentValuesNotice =
 				typeof data.per_student_values_notice === 'string' ? data.per_student_values_notice : null;
-			const typst = (window as { $typst?: TypstLibrary }).$typst;
-			if (!typst) throw new Error('Typst n’est pas chargé');
-			const pdfData = await typst.pdf({ mainContent: data.typst });
+			// Compilateur partagé, versions épinglées (écart T10 : plus de typst.ts « latest »)
+			const pdfData = await compileToPdf(data.typst);
 			const blob = new Blob([pdfData as unknown as BlobPart], { type: 'application/pdf' });
 			window.open(URL.createObjectURL(blob), '_blank');
 		} catch (_err) {

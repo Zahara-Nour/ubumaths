@@ -70,7 +70,7 @@ export const DEFAULT_WORKSPACE_OPTIONS = {
 	// Disable sounds to avoid CSP issues (Blockly loads from external CDN)
 	sounds: false,
 	// Use unpkg CDN for Blockly media files (trashcan, sprites, etc.)
-	media: 'https://unpkg.com/blockly/media/',
+	media: 'https://unpkg.com/blockly@12.5.1/media/',
 	move: {
 		scrollbars: true,
 		drag: true,

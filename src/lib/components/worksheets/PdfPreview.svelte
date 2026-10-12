@@ -27,7 +27,7 @@
 		Copy,
 		FileCode
 	} from '@lucide/svelte';
-	import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
+	import { generateWorksheetTypst } from '$lib/typst/generators';
 	import {
 		clearTrackedExternalImages,
 		getTrackedExternalImages
@@ -48,7 +48,7 @@
 		type TypstCompiler,
 		getCompilerError,
 		resetCompilerState
-	} from '$lib/worksheets/typst-compiler';
+	} from '$lib/typst/compiler';
 
 	// ============================================================================
 	// PROPS AND STATE

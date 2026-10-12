@@ -24,14 +24,14 @@ const captured = vi.hoisted(() => ({
 
 // Le « Typst » factice est le texte des énoncés : le SVG de l'aperçu le montre,
 // le test lit donc ce qui est RENDU, pas seulement la copie calculée.
-vi.mock('$lib/worksheets/typst-generator', () => ({
+vi.mock('$lib/typst/generators', () => ({
 	generateWorksheetTypst: (options: { instance: InstanceData }) => {
 		captured.instances.push(options.instance);
 		return options.instance.exercises.map((exercise) => exercise.statement).join(' | ');
 	}
 }));
 
-vi.mock('$lib/worksheets/typst-compiler', () => ({
+vi.mock('$lib/typst/compiler', () => ({
 	getTypstCompiler: async () => ({
 		svg: async ({ mainContent }: { mainContent: string }) => {
 			if (captured.gate) await captured.gate;
