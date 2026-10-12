@@ -3,12 +3,19 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import { switchMathFonts, getCurrentFontSet, type MathFontSet } from '$lib/utils/mathlive-fonts';
+	import demoExercises from './exercices-demo.json';
+	import { downloadExercisePdf, type PdfFontSet } from './shantell-pdf';
 
 	let isReady = $state(false);
 	let currentFont = $state<MathFontSet>('shantell');
 	let isSwitching = $state(false);
 	let renderKey = $state(0); // Force re-render of mathfields
+	// PDF en cours de compilation : « <id>:<police> »
+	let pendingPdf = $state<string | null>(null);
 
 	// UbuMark examples mixing text and math
 	const ubumarkExamples = [
@@ -124,6 +131,19 @@
 			renderKey++;
 		} finally {
 			isSwitching = false;
+		}
+	}
+
+	async function handleDownloadPdf(exercise: (typeof demoExercises)[number], fonts: PdfFontSet) {
+		if (pendingPdf) return;
+		pendingPdf = `${exercise.id}:${fonts}`;
+		try {
+			await downloadExercisePdf(exercise, fonts);
+		} catch (err) {
+			console.error('PDF de démonstration :', err);
+			toaster.error('La compilation du PDF a échoué');
+		} finally {
+			pendingPdf = null;
 		}
 	}
 
@@ -322,6 +342,48 @@
 							<div class="mb-2 text-sm font-medium text-gray-500">{example.label}</div>
 							<div class="font-shantell-sans text-lg leading-relaxed">
 								<InlineMarkdown content={example.content} />
+							</div>
+						</div>
+					{/each}
+				</div>
+			</div>
+
+			<!-- Exercices réels : copie figée de trois exercices de la base -->
+			<div class="mt-8">
+				<h2 class="mb-2 text-xl font-semibold">Exercices de la base</h2>
+				<p class="mb-4 text-sm text-gray-600">
+					Trois exercices réels (énoncé et corrigé), copiés de la base le 2026-10-12. Le PDF est
+					compilé par Typst, comme les fiches, avec Shantell Sans pour le texte et Shantell Math
+					pour les formules ; « PDF standard » montre la même chose avec les polices habituelles.
+				</p>
+
+				<div class="space-y-6">
+					{#each demoExercises as exercise (exercise.id)}
+						<div class="rounded-lg border bg-white p-4">
+							<div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+								<h3 class="text-lg font-semibold">{exercise.title}</h3>
+								<div class="flex gap-2">
+									<Button
+										size="sm"
+										disabled={pendingPdf !== null}
+										onclick={() => handleDownloadPdf(exercise, 'shantell')}
+									>
+										{pendingPdf === `${exercise.id}:shantell` ? 'Compilation…' : 'PDF Shantell'}
+									</Button>
+									<Button
+										size="sm"
+										variant="outline"
+										disabled={pendingPdf !== null}
+										onclick={() => handleDownloadPdf(exercise, 'standard')}
+									>
+										{pendingPdf === `${exercise.id}:standard` ? 'Compilation…' : 'PDF standard'}
+									</Button>
+								</div>
+							</div>
+							<div class="font-shantell-sans">
+								<MarkdownRenderer content={exercise.statement_md} />
+								<h4 class="mt-4 mb-2 font-semibold text-gray-600">Corrigé</h4>
+								<MarkdownRenderer content={exercise.solution_md} />
 							</div>
 						</div>
 					{/each}
