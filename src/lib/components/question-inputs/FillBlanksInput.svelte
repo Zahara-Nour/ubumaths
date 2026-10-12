@@ -56,6 +56,7 @@
 	import type { BlockNode, InlineNode, TableCellNode } from '$lib/ubumark';
 	import type { Snippet } from 'svelte';
 	import type { GenericFunctionConfig } from '$lib/mathAST';
+	import type { CapitalPairs } from '$lib/mathAST/parser/types';
 
 	// Node components (reuse from MarkdownRenderer)
 	import ParagraphNode from '$lib/components/markdown/nodes/ParagraphNode.svelte';
@@ -109,6 +110,8 @@
 		onSubmit?: () => void;
 		/** LaTeX to insert when Space is pressed in math mode */
 		mathModeSpace?: string;
+		/** Sens de `AB` de l'instance : en mode longueur, raccourcis `AA`, `RR`… coupés (Q-N) */
+		capitalPairs?: CapitalPairs;
 		/**
 		 * Touches de l'onglet « Unités » fournies par l'appelant. Évaluation : le
 		 * navigateur n'a pas la réponse attendue pour les déduire (le serveur les
@@ -135,6 +138,7 @@
 		blankFeedback = [],
 		onSubmit,
 		mathModeSpace,
+		capitalPairs,
 		unitKeys: providedUnitKeys,
 		genericFunctions,
 		grades = []
@@ -583,6 +587,7 @@
 			prefilledValues={flashMode ? mathPrefilledValues : interactivePrefilledValues}
 			{expressionDisplayMap}
 			{mathModeSpace}
+			{capitalPairs}
 			{genericFunctions}
 		/>
 	{:else}
@@ -606,6 +611,7 @@
 					prefilledValues={flashMode ? mathPrefilledValues : interactivePrefilledValues}
 					{expressionDisplayMap}
 					{mathModeSpace}
+					{capitalPairs}
 					{genericFunctions}
 				/>
 			{:else if node.type === 'math-block'}
@@ -641,6 +647,7 @@
 								correctValues={mathCorrectValues}
 								prefilledValues={interactivePrefilledValues}
 								{mathModeSpace}
+								{capitalPairs}
 								{genericFunctions}
 							/>
 						{/key}
