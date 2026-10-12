@@ -77,3 +77,45 @@ describe('une relation que le calcul ne tranche pas : en français', () => {
 		expect(run('(1/0)^2000').output).toMatch(/^Erreur de calcul : /);
 	});
 });
+
+// Revue : la réécriture changeait le sens d'entrées que la console lisait juste
+describe('ce qui ne devient pas un opérateur logique', () => {
+	it.each([
+		['5 !', '120'],
+		['2 + 3 !', '8'],
+		['|-3|!', '6'],
+		['||-2||', '2']
+	])('%s : %s, comme avant', (input, output) => {
+		expect(run(input).output).toBe(output);
+	});
+
+	it('n! ! reste une double factorielle refusée en français', () => {
+		expect(run('n! !').output).toMatch(/factorielle/i);
+	});
+
+	it.each([
+		['et := 3', 'et + 1'],
+		['ou := 3', 'ou*2'],
+		['x := 1', 'or+1'],
+		['x := 1', '\\text{et}']
+	])('un mot collé ou dans \\text : %s puis %s', (first, input) => {
+		expect(run(first, input).output).not.toMatch(/Unknown command|lor|land|lnot/);
+	});
+
+	it('==== n’est pas réécrit', () => {
+		expect(run('2 ==== 2').output).not.toBe('true');
+	});
+});
+
+describe('le message d’une comparaison non évaluable dit la vraie cause', () => {
+	it('un « non » appliqué à un nombre : mettre la comparaison entre parenthèses', () => {
+		const line = run('!5 > 1');
+
+		expect(line.output).toMatch(/parenthèses/);
+		expect(line.output).not.toMatch(/variable/);
+	});
+
+	it('sans variable, pas de variable soupçonnée', () => {
+		expect(run('1/0 > 1').output).not.toMatch(/variable/);
+	});
+});

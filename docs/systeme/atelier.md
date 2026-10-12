@@ -300,7 +300,11 @@ Les opérateurs logiques et d'égalité se tapent comme en programmation ou en t
 (`cli/core/pipeline.ts`, `withLogicOperators`) : `&&`/`and`/`et`, `||`/`or`/`ou`,
 `!`/`not`/`non`, `==`/`===` (=), `!=`/`!==` (≠) — réécrits en `\land`, `\lor`, `\lnot`, `\ne`
 pour le LaTeX (qui lisait `2 != 3` comme `factorial(2) = 3`). Une factorielle reste collée à son
-nombre (`3! = 6`) ; un mot n'est lu que seul (`\not`, `\beta` intacts). Une entrée à plusieurs `=` ou dont un membre est une comparaison (`1 < 2 = 2`) est lue
+nombre (`3! = 6`). ⚠️ Au plus près (revue) : `||` et les mots seulement entourés d'espaces
+(`||-2||` est une norme, `et := 3` une variable) ; un « non » seulement en tête, après `(`, `,`
+ou un « et »/« ou » (`5 !`, `|-3|!` sont des factorielles) ; aucun mot dans `\text{…}`. Le message
+d'une comparaison non évaluable nomme la vraie cause (relation non tranchée, « non » sans
+parenthèses, variable sans valeur). Une entrée à plusieurs `=` ou dont un membre est une comparaison (`1 < 2 = 2`) est lue
 en entier comme une chaîne : `executeEquality` la coupait au `=` et comparait un booléen à un
 nombre. Une chaîne de grandeurs (`5[m] < 600[cm] < 7[m]`) passe maillon par maillon par le chemin
 des grandeurs. Une comparaison entre parenthèses (`\lnot (2 > 1)`) s'évalue ; une relation que le

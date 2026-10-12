@@ -101,30 +101,45 @@ export function getParserOptions(state?: EvalState): LatexParserOptions {
  * }
  * ```
  */
-/** Ce qui précède un « non » préfixe : rien, une espace, une parenthèse, un opérateur. */
-const NOT_PREFIX = /(^|[\s(,&|])!(?!=)/g;
+/** Ce qui précède un « non » : le début, `(`, `,`, ou un « et »/« ou » déjà réécrit. */
+const BEFORE_NOT = String.raw`(^|[(,]|&&|\|\||\\land|\\lor)(\s*)`;
+
+/** Un « non » tapé `!` ou en toutes lettres, suivi de ce qu'il nie. */
+const NOT_SIGN = new RegExp(BEFORE_NOT + String.raw`!(?=\s*[(\w\\])`, 'g');
+const NOT_WORD = new RegExp(BEFORE_NOT + String.raw`(?:not|non)(?=\s*\(|\s+)`, 'g');
+
+/** « et », « ou » en toutes lettres : entourés d'espaces seulement (`et := 3`, `ou*2` intacts). */
+const AND_WORD = /(?<=\s)(?:and|et)(?=\s)/g;
+const OR_WORD = /(?<=\s)(?:or|ou)(?=\s)/g;
 
 /**
  * Les opérateurs logiques et d'égalité tapés comme en programmation ou en toutes lettres,
- * réécrits dans la notation du parseur (2026-10-12) : `&&`, `and`, `et` → et ; `||`, `or`, `ou`
- * → ou ; `!`, `not`, `non` → non ; `==`, `===` → = ; `!=`, `!==` → ≠. Ils répondaient
- * « Unexpected token », ou se lisaient lettre par lettre (« Nombre écrit après un facteur »).
- * Le LaTeX n'a que `\land`, `\lor`, `\lnot`, `\ne` ; il lisait `2 != 3` comme
- * `factorial(2) = 3`. Une factorielle reste collée à son nombre (`3! = 6`, `(2+1)!`) ; un mot
- * n'est lu que seul (`\not`, `\beta`, `2et` restent intacts).
+ * réécrits dans la notation du parseur (2026-10-12) : `&&`, ` and `, ` et ` → et ; ` || `,
+ * ` or `, ` ou ` → ou ; `!`, `not`, `non` → non ; `==`, `===` → = ; `!=`, `!==` → ≠. Ils
+ * répondaient « Unexpected token », ou se lisaient lettre par lettre. Le LaTeX n'a que `\land`,
+ * `\lor`, `\lnot`, `\ne` ; il lisait `2 != 3` comme `factorial(2) = 3`.
+ *
+ * ⚠️ Au plus près, sans rien changer de ce qui se lisait déjà (revue) : `||` et les mots
+ * seulement entourés d'espaces (`||-2||` est une norme, `|2||3|` deux valeurs absolues,
+ * `et := 3` une variable) ; un « non » seulement en tête, après `(`, `,` ou un « et »/« ou »
+ * (`5 !`, `2 + 3 !`, `|-3|!` sont des factorielles) ; aucun mot dans `\text{…}`.
  */
 function withLogicOperators(input: string, format: 'latex' | 'custom'): string {
 	const latex = format === 'latex';
-	const word = (names: string): RegExp => new RegExp(`(?<![\\\\\\w])(?:${names})(?!\\w)`, 'g');
-	return input
+	const and = latex ? ' \\land ' : ' && ';
+	const or = latex ? ' \\lor ' : ' || ';
+	const not = latex ? '\\lnot ' : '!';
+	let text = input
 		.replace(/!==?/g, latex ? ' \\ne ' : '!=')
-		.replace(/={2,3}/g, '=')
-		.replace(/&&/g, latex ? ' \\land ' : '&&')
-		.replace(/\|\|/g, latex ? ' \\lor ' : '||')
-		.replace(NOT_PREFIX, latex ? '$1\\lnot ' : '$1!')
-		.replace(word('and|et'), latex ? ' \\land ' : ' && ')
-		.replace(word('or|ou'), latex ? ' \\lor ' : ' || ')
-		.replace(word('not|non'), latex ? ' \\lnot ' : ' !');
+		.replace(/(?<![=!<>:])={2,3}(?!=)/g, '=')
+		.replace(/&&/g, and)
+		.replace(/\s\|\|\s/g, or);
+	if (!/\\(?:text|operatorname)/.test(text)) {
+		text = text.replace(AND_WORD, and.trim()).replace(OR_WORD, or.trim());
+	}
+	text = text.replace(NOT_SIGN, `$1$2${not}`);
+	if (!/\\(?:text|operatorname)/.test(text)) text = text.replace(NOT_WORD, `$1$2${not}`);
+	return text;
 }
 
 export function parse(input: string, options?: PipelineOptions): PipelineResult {

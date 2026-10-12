@@ -66,7 +66,7 @@ import { normalize } from '../normal/normalize';
 import { denormalize } from '../normal/denormalize';
 import { normalizeExtended } from '../normal/normalize-extended';
 import { denormalizeExtended } from '../normal/denormalize';
-import { mapNode } from '../transforms';
+import { getChildren, mapNode } from '../transforms';
 import { areEquivalentCore } from '../equivalence-core';
 import { getActiveAbortChecker } from '../common/abort';
 import { rewriteFunctionPower } from '../common/function-power';
@@ -1254,6 +1254,27 @@ const DECIDABLE_RELATIONS: ReadonlySet<string> = new Set([
 	'>='
 ]);
 
+/** Un « non » appliqué à autre chose qu'une comparaison (`!5 > 1` : (¬5) > 1). */
+function hasNumericNot(node: MathNode): boolean {
+	if (isLogicalNot(node) && !isBooleanExpression(node.operand)) return true;
+	return getChildren(node).some(hasNumericNot);
+}
+
+/** Pourquoi une expression booléenne ne s'évalue pas — la vraie cause, en français. */
+function booleanRefusal(node: MathNode): string {
+	const relation = undecidableRelation(node);
+	if (relation !== undefined) {
+		return `Relation « ${relation} » non évaluable : seules = ≠ < > ≤ ≥ se tranchent`;
+	}
+	if (hasNumericNot(node)) {
+		return '« non » porte sur une comparaison : mets-la entre parenthèses, non(2 > 1)';
+	}
+	const variables = [...getVariables(node)];
+	return variables.length > 0
+		? `Comparaison non évaluable : ${variables.join(', ')} sans valeur`
+		: 'Comparaison non évaluable';
+}
+
 /** La première relation que le calcul ne tranche pas, ou `undefined`. */
 function undecidableRelation(node: MathNode): string | undefined {
 	if (isDelimiter(node)) return undecidableRelation(node.content);
@@ -1440,14 +1461,7 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 		const boolResult = evaluateToBoolean(processedNode);
 		if (boolResult === undefined) {
 			// En français : la console de Calcul montre ce message à l'élève (2026-10-12)
-			const relation = undecidableRelation(processedNode);
-			return {
-				status: 'unevaluable',
-				reason:
-					relation === undefined
-						? 'Comparaison non évaluable (une variable sans valeur ?)'
-						: `Relation « ${relation} » non évaluable : seules = ≠ < > ≤ ≥ se tranchent`
-			};
+			return { status: 'unevaluable', reason: booleanRefusal(processedNode) };
 		}
 		return {
 			status: 'value',
