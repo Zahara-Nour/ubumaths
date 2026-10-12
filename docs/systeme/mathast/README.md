@@ -465,6 +465,13 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     par la puissance native de BigInt : une fraction irréductible élevée à une puissance le reste
     ((101/100)¹⁰⁰⁰⁰⁰ : 194 s avant, 2 ms). Les pôles de tan, sec, csc, cot sont refusés (le
     flottant de π/2 donnait tan = 1,6331 × 10¹⁶).
+    **Budget de taille** (2026-10-12) : pendant `evaluateNodeToRational` seulement (la lecture de
+    l'arrondi), une puissance au-delà de l'exposant 1000 reste exacte si le plus petit terme du
+    résultat fait au plus 30 000 bits et le plus grand 500 000 (`1.5^{2000}`, `2^{100000}` ; e et π
+    n'en profitent pas, leurs fractions font 16 chiffres) ; une factorielle ou un coefficient
+    binomial dépasse alors la borne 2⁵³ dans le même budget (`1000!`). Le calcul décimal général
+    (`evaluate`, `evaluateNodeToApproximatedNumber`) garde ses bornes. La taille d'un résultat
+    exact se **prévoit** sans le calculer : `cli/exact-size.ts` (`estimatedExactDigits`).
 
 ## Le moteur de réécriture et les étapes
 

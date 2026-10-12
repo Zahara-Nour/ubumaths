@@ -40,7 +40,7 @@ describe('le mode décimal sur des fractions aux termes géants', () => {
 // valeur qui sort du flottant. Plafond des puissances exactes gardé à 1000 (décision du même
 // jour, revue : à 10 000, `.variations e^{-2x^2}` prenait 5,7 s)
 describe('les puissances entières au-delà de 1000', () => {
-	it('1,5^1000 se calcule exactement ; 1,5^2000 passe par le flottant, qui en sort', () => {
+	it('1,5^1000 se calcule exactement ; 1,5^2000, en mode décimal, passe par le flottant', () => {
 		const exact = evaluateNodeToRational(parseLatex('1.5^{1000}'));
 		const beyond = evaluate(parseLatex('1.5^{2000}'), { mode: 'decimal' });
 
@@ -90,5 +90,36 @@ describe('les refus du calcul décimal', () => {
 
 			expect(result.status === 'unevaluable' && result.reason).toMatch(/n’est pas définie/);
 		}
+	});
+});
+
+// Lot « lenteur des grandes fractions » (phase 0 validée par David, 2026-10-12) : la lecture de
+// l'arrondi d'une écriture gardée (`evaluateNodeToRational`) calcule exactement tant que le
+// résultat reste dans un budget de taille ; le calcul décimal général ne change pas
+describe('evaluateNodeToRational : un budget de taille au-delà de l’exposant 1000', () => {
+	it('une puissance au-delà de 1000, dans le budget : exacte', () => {
+		const value = evaluateNodeToRational(parseLatex('1.5^{2000}'));
+		const whole = evaluateNodeToRational(parseLatex('2^{100000}'));
+
+		expect(value.n).toBe(3n ** 2000n);
+		expect(value.d).toBe(2n ** 2000n);
+		expect(whole.n).toBe(2n ** 100000n);
+	});
+
+	it('hors du budget : par le flottant, vite (e et π n’en profitent pas)', () => {
+		const start = performance.now();
+		const value = evaluateNodeToRational(parseLatex('\\left(1+\\frac{1}{100000}\\right)^{100000}'));
+
+		expect(performance.now() - start).toBeLessThan(500);
+		expect(Number(value.n) / Number(value.d)).toBeCloseTo(2.718268237, 8);
+		expect(() => evaluateNodeToRational(parseLatex('e^{-9800}'))).toThrow(/hors d’échelle/);
+	});
+
+	it('une factorielle dans le budget : exacte (le calcul décimal reste borné)', () => {
+		const value = evaluateNodeToRational(parseLatex('1000!'));
+
+		expect(value.d).toBe(1n);
+		expect(value.n.toString().length).toBe(2568);
+		expect(evaluate(parseLatex('1000!'), { mode: 'decimal' }).status).toBe('unevaluable');
 	});
 });

@@ -191,7 +191,10 @@ export function renderResult(
 	// Une grandeur s'écrit `5~\unit{km}`, que MathLive ne connaît pas : on la
 	// traduit comme les énoncés (`displayUnitsInLatex`, `5~\mathrm{km}`)
 	if (result.ast !== undefined) {
-		return { latex: displayUnitsInLatex(toLatex(readable(result.ast))), text };
+		// Une écriture gardée (résultat exact trop long) : `tidy` la développerait — le
+		// calcul de 13 s que le garde-fou évite
+		const ast = result.exactTooLong === undefined ? readable(result.ast) : result.ast;
+		return { latex: displayUnitsInLatex(toLatex(ast)), text };
 	}
 
 	return { text };
