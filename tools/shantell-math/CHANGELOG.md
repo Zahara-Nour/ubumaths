@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.5.0] - 2026-10-12
+
+### Ajouté
+
+- `replace_symbols.py` traite plusieurs polices et un troisième ajustement, « lettre » (taille et ligne de base de Shantell, centré en largeur, resserré seulement s'il déborde) :
+  - Main-Regular : `∞ ∅` (opérateurs), `∂ Ω` (lettres)
+  - Math-Italic : `π Ω` (lettres)
+  - AMS : `∅` de `\varnothing` (opérateur)
+- À lancer après `roughen_extras.py`, qui reconstruit AMS depuis KaTeX d'origine
+
 ## [1.4.0] - 2026-10-12
 
 ### Ajouté
