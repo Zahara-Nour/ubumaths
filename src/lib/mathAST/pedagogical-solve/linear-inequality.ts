@@ -36,6 +36,7 @@ import { flattenSumShallow, unflattenSum } from '../flatten';
 import type { SignedTerm } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
 import { getNumericValue } from '../common/numeric';
+import { constantSign } from '../common/constant-sign';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import { getVariables } from '../eval/substitute';
 import {
@@ -406,25 +407,35 @@ function buildConcludeStep(constantIneq: RelationNode, id: number): EquationStep
 
 /**
  * Evaluate a constant inequality (both sides numeric) into a boolean truth
- * value. Defensively returns `false` (contradiction-like) when one side is
- * non-numeric — that should not happen in practice because the caller only
- * invokes this on inequalities that have already been reduced.
+ * value, from the sign of `lhs − rhs` read on its VALUE (`constantSign`) :
+ * `0 < \frac23` est vraie (écart V36 : seuls les entiers étaient lus, et une
+ * constante fractionnaire rendait « contradiction »).
+ *
+ * @throws InequalityNotSolvable quand le signe ne peut pas être établi
+ *   (`\sqrt2 - 1.4142135623`, trop proche de 0) : mieux vaut aucune
+ *   correction pédagogique qu'un « S = ∅ » deviné — même règle que
+ *   `divideBothSidesWithFlip`.
  */
 function evaluateConstantInequality(rel: RelationNode): boolean {
-	const lhs = getNumericValue(rel.left);
-	const rhs = getNumericValue(rel.right);
-	if (lhs === null || rhs === null) return false;
+	const difference = canon(add(rel.left, opposite(rel.right)));
+	const sign = constantSign(difference);
+	if (sign === null) {
+		throw new InequalityNotSolvable(
+			`Signe indécidable : ${toLatex(difference)}`,
+			'La constante est trop proche de 0 pour comparer ses deux membres.'
+		);
+	}
 	switch (rel.relation) {
 		case '<':
-			return lhs < rhs;
+			return sign < 0;
 		case '>':
-			return lhs > rhs;
+			return sign > 0;
 		case '<=':
-			return lhs <= rhs;
+			return sign <= 0;
 		case '>=':
-			return lhs >= rhs;
+			return sign >= 0;
 		case '!=':
-			return lhs !== rhs;
+			return sign !== 0;
 		default:
 			return false;
 	}
