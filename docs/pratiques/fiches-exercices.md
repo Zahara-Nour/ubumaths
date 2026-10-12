@@ -18,20 +18,22 @@ gardé. On ne passe par l'éditeur qu'ensuite, pour retoucher.
 
 Deux fiches par thème : **Entraînement technique** (catégorie `automatisme`, exercices numérotés,
 sans section) et **Applications** (catégorie `application`, 3 sections, variantes `guided` et
-parfois `autonomous`).
+parfois `autonomous`). Depuis le 2026-10-12, David veut des **sections dans les deux fiches** et des
+**illustrations** dans la fiche d'applications : le thème « Variables aléatoires » a été refait
+ainsi (voir la ligne du tableau) et sert de modèle.
 
-| Thème (topic en base)      | Entraînement technique                                      | Applications                     | Script                                        |
-| -------------------------- | ----------------------------------------------------------- | -------------------------------- | --------------------------------------------- |
-| Second degré               | `b5ca9ed3`                                                  | `d6c03510` (de David, complétée) | `create-fiche-technique-second-degre.ts`      |
-| Suites                     | `f09992e6`                                                  | `2d043bf5`                       | `create-suites-1spe.ts`                       |
-| Fonction exponentielle     | `ad1083a2`                                                  | `18f2252a`                       | `create-exponentielle-1spe.ts`                |
-| Dérivation                 | `139ec069` (12 neufs + 17 existants)                        | `4fea9f37`                       | `create-derivation-1spe.ts`                   |
-| Fonctions trigonométriques | `808e2eee`                                                  | `dde45b26`                       | `create-trigonometrie-1spe.ts`                |
-| Géométrie (produit scal.)  | `c20d4094` (10 neufs + 6 existants)                         | `7d94d681` (7 + 5 existants)     | `create-produit-scalaire-1spe.ts`             |
-| Probabilités               | `570376ab`                                                  | `eaf297d5`                       | `create-probabilites-conditionnelles-1spe.ts` |
-| Variables aléatoires       | `0ef45afb`                                                  | `d720d039`                       | `create-variables-aleatoires-1spe.ts`         |
-| Géométrie repérée          | `6ee9c178` (10 neufs + 2 existants)                         | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`            |
-| Automatismes (évolutions)  | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8 | —                                | `create-automatismes-evolutions-1spe.ts`      |
+| Thème (topic en base)      | Entraînement technique                                      | Applications                     | Script                                                                            |
+| -------------------------- | ----------------------------------------------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
+| Second degré               | `b5ca9ed3`                                                  | `d6c03510` (de David, complétée) | `create-fiche-technique-second-degre.ts`                                          |
+| Suites                     | `f09992e6`                                                  | `2d043bf5`                       | `create-suites-1spe.ts`                                                           |
+| Fonction exponentielle     | `ad1083a2`                                                  | `18f2252a`                       | `create-exponentielle-1spe.ts`                                                    |
+| Dérivation                 | `139ec069` (12 neufs + 17 existants)                        | `4fea9f37`                       | `create-derivation-1spe.ts`                                                       |
+| Fonctions trigonométriques | `808e2eee`                                                  | `dde45b26`                       | `create-trigonometrie-1spe.ts`                                                    |
+| Géométrie (produit scal.)  | `c20d4094` (10 neufs + 6 existants)                         | `7d94d681` (7 + 5 existants)     | `create-produit-scalaire-1spe.ts`                                                 |
+| Probabilités               | `570376ab`                                                  | `eaf297d5`                       | `create-probabilites-conditionnelles-1spe.ts`                                     |
+| Variables aléatoires       | `0ef45afb` (8 sections, 18 ex. dont « Rappels »)            | `d720d039` (5 sections, 11 ex.)  | `create-variables-aleatoires-1spe.ts` puis `refonte-variables-aleatoires-1spe.ts` |
+| Géométrie repérée          | `6ee9c178` (10 neufs + 2 existants)                         | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`                                                |
+| Automatismes (évolutions)  | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8 | —                                | `create-automatismes-evolutions-1spe.ts`                                          |
 
 Seconde : **« Fonctions : généralités »** `41737393` (thème `Fonctions`, 1 fiche, 3 sections : images,
 antécédents par le calcul, lectures graphiques ; 14 neufs + « Calcul d'images » `5b233301`) —
@@ -686,7 +688,14 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
   indentés de 2 espaces) ; 3 épreuves au plus en arbre complet ; sous une sous-question, indenter
   le bloc de 6 espaces.
 - Python : bloc ` ```python ` ; dans le texte, identifiants entre backticks (`` `moyenne(n)` ``).
-- Pas d'image ni de figure : décrire la configuration, conseiller une figure à main levée.
+- **Illustrations** (2026-10-12) : schémas SVG dessinés à la main, convertis en PNG de 1 200 px
+  (Chromium headless de Playwright), fond blanc, version `-en.png` dès qu'il y a du texte ; envoyés
+  dans le bucket `exercise-images` (`<id de David>/va-*.png`) par le script de la fiche. Dans le
+  texte : `![alt](URL){size=large align=center}` — à `size=medium` (50 % d'une colonne) le texte
+  d'un schéma tombe à 3-4 pt imprimé. Une image d'énoncé ne donne aucune réponse ; un graphique
+  qui en donne une va au corrigé. Diagrammes et courbes : blocs natifs ` ```barres `,
+  ` ```courbe `, ` ```simulation ` (pas d'image). Variable aléatoire : lettre parlante (S somme,
+  G gain), jamais P, E ou V.
 - **Couleurs** des blocs ` ```figure `, ` ```courbe `, ` ```stat-chart `, ` ```line ` (droite
   graduée : `points: A=2 bleu`, `segments: [1, 3] vert`) et ` ```trig ` (`color: rouge`) : écrire un
   **nom** de la palette commune (bleu, rouge, vert, orange, violet, jaune, cyan, marron, rose,
@@ -737,7 +746,10 @@ Autres leçons :
 - `jsonb` réordonne les clés : relire une ligne écrite en comparant `JSON.stringify` échoue dès
   qu'une clé est ajoutée — comparer avec des clés triées.
 - `worksheet_sections` a une contrainte d'unicité sur la position : réordonner via une position
-  temporaire.
+  temporaire. Même chose pour `worksheet_exercises`, unique par **(fiche, section, position)** :
+  ranger une fiche existante en sections demande d'abord de passer TOUS ses exercices à des
+  positions provisoires (sinon un ajout heurte un exercice qui n'a pas encore bougé — vu le
+  2026-10-12, défait automatiquement par le script).
 - Un sous-agent qui dit avoir « tué » un test peut laisser un `vitest` orphelin à 100 % CPU :
   `ps -axo pid,ppid,etime,%cpu,command | grep "node .*ubumaths-wt-"`.
 
