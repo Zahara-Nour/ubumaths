@@ -84,6 +84,7 @@ import {
 } from '../exact-size';
 import { rationalToNode } from '../../common/numeric';
 import { boundedComparison } from '../bounded-comparison';
+import { withFrenchErrors } from './french-errors';
 import {
 	approximateDigitsOf,
 	approximateLatexOf,
@@ -249,6 +250,12 @@ export class WebReplEngine {
 	 * @returns Execution result with output, AST, and metadata
 	 */
 	execute(input: string): ReplExecutionResult {
+		// Les messages d'erreur en français, à la sortie : les parseurs et le moteur répondent en
+		// anglais (« Unexpected token: EOF ») — 2026-10-12
+		return withFrenchErrors(this.executeInput(input));
+	}
+
+	private executeInput(input: string): ReplExecutionResult {
 		const trimmedInput = input.trim();
 
 		if (!trimmedInput) {

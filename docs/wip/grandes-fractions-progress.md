@@ -219,3 +219,6 @@ sa valeur approchée. »
   « ou » que s'il y a une comparaison et hors d'une valeur absolue (`| 2 || 3 |`, `|2| || |3|`) ;
   messages « pas de valeur numérique » en français ; `.def` ne dérive plus une définition
   booléenne (avertissement anglais).
+- 2026-10-12 — #1216 mergée. **David : « ok continue »** : messages d'erreur de la console en
+  français, traduits à sa sortie (`cli/web/french-errors.ts`) — table des fréquents + formule
+  générique ; golden des statistiques et un test de `.diff` mis à jour (anglais figé).

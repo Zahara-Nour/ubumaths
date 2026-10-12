@@ -127,7 +127,8 @@ describe('.diff : une virgule hors groupe reste une erreur de lecture (comme sur
 	it('.diff t^2 + t, t', () => {
 		const result = new WebReplEngine().execute('.diff t^2 + t, t');
 		expect(result.success).toBe(false);
-		expect(result.error?.message).toBe('Unexpected token: ,');
+		// En français depuis le 2026-10-12 (`french-errors.ts`) : « Unexpected token: , » avant
+		expect(result.error?.message).toBe('« , » inattendu ici');
 	});
 });
 
