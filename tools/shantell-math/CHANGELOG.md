@@ -2,6 +2,16 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.3.0] - 2026-10-12
+
+### Ajouté
+
+- Script `replace_big_operators.py` : grands opérateurs de Size1 (en ligne) et Size2 (display) pris dans Shantell Sans 300 : `∑ ∏ ∐ ∫ ∬ ∭`
+  - agrandis à la hauteur du glyphe KaTeX (resserrés seulement s'ils débordent), puis rognés sur tout leur pourtour jusqu'au trait des lettres (68) : sans ça, un ∫ display agrandi ×2 aurait un trait de 141
+  - `∐` = `∏` de Shantell retourné ; `∬` et `∭` = deux et trois `∫` de Shantell, espacés comme dans KaTeX
+  - centrés sur la boîte KaTeX, largeur d'avance KaTeX
+- Ordre de génération : `roughen_extras.py` (reconstruit Size1-4 et AMS depuis KaTeX d'origine) **puis** `replace_big_operators.py` ; `replace_symbols.py` puis `round_x.py` pour la police principale
+
 ## [1.2.0] - 2026-10-12
 
 ### Ajouté

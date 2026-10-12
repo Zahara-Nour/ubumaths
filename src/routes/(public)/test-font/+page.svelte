@@ -59,7 +59,7 @@
 		'f(x)=\\left(\\frac{2x+1}{x-3}\\right)^2-|x-2|\\times 3\\div 4\\pm\\sqrt{\\frac{a}{b}}',
 		'x\\in[0;1]\\cup]2;+\\infty[\\quad\\{1;2;3\\}\\quad a/b\\approx 0{,}5',
 		'a\\leq b<c\\quad d\\geq e>f\\quad a\\leqslant b\\geqslant c\\quad A\\rightarrow B\\leftarrow C\\leftrightarrow D',
-		'\\sum_{k=0}^{n}\\binom{n}{k}=2^n\\quad\\int_0^1 x^2\\,dx=\\frac{1}{3}\\quad\\mathbb{R}\\quad\\left[\\frac{\\frac{1}{2}}{\\frac{3}{4}}\\right]\\quad\\left\\{\\frac{a}{b}\\right\\}'
+		'\\sum_{k=0}^{n}\\binom{n}{k}=2^n\\quad\\prod_{i=1}^{n}i\\quad\\int_0^1 x^2\\,dx=\\frac{1}{3}\\quad\\iint_D f\\quad\\mathbb{R}\\quad\\left[\\frac{\\frac{1}{2}}{\\frac{3}{4}}\\right]\\quad\\left\\{\\frac{a}{b}\\right\\}'
 	];
 	const showcaseLatex = `\\begin{gathered}${showcaseLines.join('\\\\')}\\end{gathered}`;
 
