@@ -21,6 +21,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { GoogleClassroomClient } from './classroom-api';
 import { GoogleDriveClient } from './drive-api';
+import { GoogleNotConnectedError } from './errors';
 import { decryptToken, encryptToken } from './encryption';
 import { refreshAccessToken, shouldRefreshToken } from './oauth';
 import { parseGoogleDateTime, extractMaterialData } from './utils';
@@ -86,9 +87,7 @@ export async function getTeacherAccessToken(
 		.single();
 
 	if (error || !integration) {
-		throw new Error(
-			`No Google integration found for teacher ${teacherId}. Teacher must authorize Google Classroom first.`
-		);
+		throw new GoogleNotConnectedError();
 	}
 
 	// Check if token needs refresh (expires in less than 5 minutes)
@@ -115,14 +114,16 @@ export async function getTeacherAccessToken(
 				.eq('teacher_id', teacherId);
 
 			if (updateError) {
-				throw new Error(`Failed to update refreshed token: ${updateError.message}`);
+				throw new Error(
+					`Impossible d’enregistrer le jeton Google renouvelé : ${updateError.message}`
+				);
 			}
 
 			console.log(`[Sync] Token refreshed successfully for teacher ${teacherId}`);
 			return access_token;
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			throw new Error(`Failed to refresh access token: ${message}`);
+			const message = error instanceof Error ? error.message : 'erreur inconnue';
+			throw new Error(`Impossible de renouveler l’accès Google : ${message}`);
 		}
 	}
 
@@ -206,13 +207,15 @@ export async function syncTeacherCourses(
 				);
 
 				if (upsertError) {
-					result.errors.push(`Failed to sync course ${course.name}: ${upsertError.message}`);
+					result.errors.push(
+						`Impossible de synchroniser le cours « ${course.name} » : ${upsertError.message}`
+					);
 				} else {
 					result.synced++;
 				}
 			} catch (error) {
-				const message = error instanceof Error ? error.message : 'Unknown error';
-				result.errors.push(`Failed to sync course ${course.name}: ${message}`);
+				const message = error instanceof Error ? error.message : 'erreur inconnue';
+				result.errors.push(`Impossible de synchroniser le cours « ${course.name} » : ${message}`);
 			}
 		}
 
@@ -225,7 +228,7 @@ export async function syncTeacherCourses(
 				.not('google_course_id', 'in', `(${syncedGoogleCourseIds.join(',')})`);
 
 			if (deleteError) {
-				result.errors.push(`Failed to cleanup old courses: ${deleteError.message}`);
+				result.errors.push(`Impossible de retirer les anciens cours : ${deleteError.message}`);
 			} else if (count && count > 0) {
 				console.log(`[Sync] Cleaned up ${count} old/archived courses for teacher ${teacherId}`);
 			}
@@ -237,7 +240,7 @@ export async function syncTeacherCourses(
 				.eq('teacher_id', teacherId);
 
 			if (deleteError) {
-				result.errors.push(`Failed to cleanup courses: ${deleteError.message}`);
+				result.errors.push(`Impossible de retirer les cours : ${deleteError.message}`);
 			} else if (count && count > 0) {
 				console.log(
 					`[Sync] No active courses found. Cleaned up ${count} courses for teacher ${teacherId}`
@@ -255,8 +258,8 @@ export async function syncTeacherCourses(
 			`[Sync] Synced ${result.synced}/${allCourses.length} active courses for teacher ${teacherId}`
 		);
 	} catch (error) {
-		const message = error instanceof Error ? error.message : 'Unknown error';
-		result.errors.push(`Failed to sync courses: ${message}`);
+		const message = error instanceof Error ? error.message : 'erreur inconnue';
+		result.errors.push(`Impossible de synchroniser les cours : ${message}`);
 		console.error(`[Sync] Error syncing courses for teacher ${teacherId}:`, error);
 	}
 
@@ -330,15 +333,15 @@ export async function syncTopics(
 				);
 
 				if (upsertError) {
-					const errorMsg = `Failed to sync topic ${topic.name}: ${upsertError.message}`;
+					const errorMsg = `Impossible de synchroniser le thème « ${topic.name} » : ${upsertError.message}`;
 					result.errors.push(errorMsg);
 					console.error(`[Sync] ${errorMsg}`);
 				} else {
 					result.synced++;
 				}
 			} catch (error) {
-				const message = error instanceof Error ? error.message : 'Unknown error';
-				const errorMsg = `Failed to sync topic ${topic.name}: ${message}`;
+				const message = error instanceof Error ? error.message : 'erreur inconnue';
+				const errorMsg = `Impossible de synchroniser le thème « ${topic.name} » : ${message}`;
 				result.errors.push(errorMsg);
 				console.error(`[Sync] ${errorMsg}`);
 			}
@@ -353,7 +356,7 @@ export async function syncTopics(
 				.filter('google_topic_id', 'not.in', `(${syncedGoogleTopicIds.join(',')})`);
 
 			if (deleteError) {
-				const errorMsg = `Failed to cleanup old topics: ${deleteError.message}`;
+				const errorMsg = `Impossible de retirer les anciens thèmes : ${deleteError.message}`;
 				result.errors.push(errorMsg);
 				console.error(`[Sync] ${errorMsg}`);
 			} else if (count && count > 0) {
@@ -367,7 +370,7 @@ export async function syncTopics(
 				.eq('google_course_id', courseId);
 
 			if (deleteError) {
-				const errorMsg = `Failed to cleanup topics: ${deleteError.message}`;
+				const errorMsg = `Impossible de retirer les thèmes : ${deleteError.message}`;
 				result.errors.push(errorMsg);
 				console.error(`[Sync] ${errorMsg}`);
 			} else if (count && count > 0) {
@@ -381,8 +384,8 @@ export async function syncTopics(
 			`[Sync] Synced ${result.synced}/${topics.length} topics for course ${googleCourseId}`
 		);
 	} catch (error) {
-		const message = error instanceof Error ? error.message : 'Unknown error';
-		result.errors.push(`Failed to sync topics: ${message}`);
+		const message = error instanceof Error ? error.message : 'erreur inconnue';
+		result.errors.push(`Impossible de synchroniser les thèmes : ${message}`);
 		console.error(`[Sync] Error syncing topics for course ${googleCourseId}:`, error);
 	}
 
@@ -461,7 +464,7 @@ export async function syncCoursework(
 			.eq('google_course_id', courseId);
 
 		if (topicsError) {
-			const errorMsg = `Warning: Failed to fetch topics for course ${googleCourseId}: ${topicsError.message}. Coursework will not link to topics.`;
+			const errorMsg = `Attention : impossible de charger les thèmes du cours ${googleCourseId} (${topicsError.message}) ; les devoirs ne seront pas rattachés à leur thème.`;
 			result.errors.push(errorMsg);
 			console.error(`[Sync] ${errorMsg}`);
 		}
@@ -527,7 +530,7 @@ export async function syncCoursework(
 					.single();
 
 				if (courseworkError) {
-					const errorMsg = `Failed to sync coursework ${work.title}: ${courseworkError.message}`;
+					const errorMsg = `Impossible de synchroniser le devoir « ${work.title} » : ${courseworkError.message}`;
 					result.errors.push(errorMsg);
 					console.error(`[Sync] ${errorMsg}`);
 					continue;
@@ -558,8 +561,8 @@ export async function syncCoursework(
 							});
 						} catch (materialError) {
 							const message =
-								materialError instanceof Error ? materialError.message : 'Unknown error';
-							const errorMsg = `Failed to sync material for ${work.title}: ${message}`;
+								materialError instanceof Error ? materialError.message : 'erreur inconnue';
+							const errorMsg = `Impossible de synchroniser le support du devoir « ${work.title} » : ${message}`;
 							result.errors.push(errorMsg);
 							console.error(`[Sync] ${errorMsg}`);
 						}
@@ -568,8 +571,8 @@ export async function syncCoursework(
 
 				result.synced++;
 			} catch (error) {
-				const message = error instanceof Error ? error.message : 'Unknown error';
-				const errorMsg = `Failed to sync coursework ${work.title}: ${message}`;
+				const message = error instanceof Error ? error.message : 'erreur inconnue';
+				const errorMsg = `Impossible de synchroniser le devoir « ${work.title} » : ${message}`;
 				result.errors.push(errorMsg);
 				console.error(`[Sync] ${errorMsg}`, error);
 			}
@@ -579,8 +582,8 @@ export async function syncCoursework(
 			`[Sync] Synced ${result.synced}/${allCoursework.length} coursework items for course ${googleCourseId}`
 		);
 	} catch (error) {
-		const message = error instanceof Error ? error.message : 'Unknown error';
-		result.errors.push(`Failed to sync coursework: ${message}`);
+		const message = error instanceof Error ? error.message : 'erreur inconnue';
+		result.errors.push(`Impossible de synchroniser les devoirs : ${message}`);
 		console.error(`[Sync] Error syncing coursework for course ${googleCourseId}:`, error);
 	}
 
@@ -655,7 +658,7 @@ export async function syncCourseWorkMaterials(
 			.eq('google_course_id', courseId);
 
 		if (topicsError) {
-			const errorMsg = `Warning: Failed to fetch topics for course ${googleCourseId}: ${topicsError.message}. Materials will not link to topics.`;
+			const errorMsg = `Attention : impossible de charger les thèmes du cours ${googleCourseId} (${topicsError.message}) ; les supports ne seront pas rattachés à leur thème.`;
 			result.errors.push(errorMsg);
 			console.error(`[Sync] ${errorMsg}`);
 		}
@@ -696,7 +699,7 @@ export async function syncCourseWorkMaterials(
 					.single();
 
 				if (materialError) {
-					const errorMsg = `Failed to sync material ${material.title}: ${materialError.message}`;
+					const errorMsg = `Impossible de synchroniser le support « ${material.title} » : ${materialError.message}`;
 					result.errors.push(errorMsg);
 					console.error(`[Sync] ${errorMsg}`);
 					continue;
@@ -732,14 +735,14 @@ export async function syncCourseWorkMaterials(
 							// checked explicitly — mirroring the material upsert above.
 							// Without this, attachment-sync failures were silently swallowed.
 							if (attachmentInsertError) {
-								const errorMsg = `Failed to sync attachment for ${material.title}: ${attachmentInsertError.message}`;
+								const errorMsg = `Impossible de synchroniser la pièce jointe du support « ${material.title} » : ${attachmentInsertError.message}`;
 								result.errors.push(errorMsg);
 								console.error(`[Sync] ${errorMsg}`);
 							}
 						} catch (attachmentError) {
 							const message =
-								attachmentError instanceof Error ? attachmentError.message : 'Unknown error';
-							const errorMsg = `Failed to sync attachment for ${material.title}: ${message}`;
+								attachmentError instanceof Error ? attachmentError.message : 'erreur inconnue';
+							const errorMsg = `Impossible de synchroniser la pièce jointe du support « ${material.title} » : ${message}`;
 							result.errors.push(errorMsg);
 							console.error(`[Sync] ${errorMsg}`);
 						}
@@ -748,8 +751,8 @@ export async function syncCourseWorkMaterials(
 
 				result.synced++;
 			} catch (error) {
-				const message = error instanceof Error ? error.message : 'Unknown error';
-				const errorMsg = `Failed to sync material ${material.title}: ${message}`;
+				const message = error instanceof Error ? error.message : 'erreur inconnue';
+				const errorMsg = `Impossible de synchroniser le support « ${material.title} » : ${message}`;
 				result.errors.push(errorMsg);
 				console.error(`[Sync] ${errorMsg}`, error);
 			}
@@ -759,8 +762,8 @@ export async function syncCourseWorkMaterials(
 			`[Sync] Synced ${result.synced}/${allMaterials.length} course work materials for course ${googleCourseId}`
 		);
 	} catch (error) {
-		const message = error instanceof Error ? error.message : 'Unknown error';
-		result.errors.push(`Failed to sync course work materials: ${message}`);
+		const message = error instanceof Error ? error.message : 'erreur inconnue';
+		result.errors.push(`Impossible de synchroniser les supports : ${message}`);
 		console.error(
 			`[Sync] Error syncing course work materials for course ${googleCourseId}:`,
 			error
@@ -815,7 +818,7 @@ export async function fullSync(
 			.eq('course_state', 'ACTIVE');
 
 		if (coursesError) {
-			result.errors.push(`Failed to fetch courses from database: ${coursesError.message}`);
+			result.errors.push(`Impossible de charger les cours enregistrés : ${coursesError.message}`);
 			return result;
 		}
 
@@ -866,8 +869,8 @@ export async function fullSync(
 				`Errors: ${result.errors.length}`
 		);
 	} catch (error) {
-		const message = error instanceof Error ? error.message : 'Unknown error';
-		result.errors.push(`Full sync failed: ${message}`);
+		const message = error instanceof Error ? error.message : 'erreur inconnue';
+		result.errors.push(`Échec de la synchronisation complète : ${message}`);
 		console.error(`[Sync] Fatal error during full sync for teacher ${teacherId}:`, error);
 	}
 
@@ -925,7 +928,7 @@ export async function syncSingleCourse(
 		);
 
 		if (upsertError) {
-			result.errors.push(`Failed to sync course: ${upsertError.message}`);
+			result.errors.push(`Impossible de synchroniser le cours : ${upsertError.message}`);
 		} else {
 			result.synced = 1;
 
@@ -970,8 +973,8 @@ export async function syncSingleCourse(
 			}
 		}
 	} catch (error) {
-		const message = error instanceof Error ? error.message : 'Unknown error';
-		result.errors.push(`Failed to sync course: ${message}`);
+		const message = error instanceof Error ? error.message : 'erreur inconnue';
+		result.errors.push(`Impossible de synchroniser le cours : ${message}`);
 	}
 
 	return result;

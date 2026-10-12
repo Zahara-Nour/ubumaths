@@ -403,9 +403,9 @@ export function toStudentRiddle(riddle: DbRiddle): StudentRiddle {
  * Colonnes de `riddles` lues par le code, SANS `answer` ni `correction`.
  *
  * Réponse attendue et correction vivent dans `riddle_solutions` (auteur de l'énigme et
- * admin seulement) ; les deux colonnes de `riddles` seront supprimées (étape C). Un
- * `select('*')` ou une jointure `riddles(*)` les lirait encore, puis casserait après
- * leur suppression : on nomme les colonnes.
+ * admin seulement) ; les deux colonnes de `riddles` sont supprimées (étape C,
+ * `20261016100800`). Les colonnes restent nommées : un `select('*')` suivrait en silence
+ * toute colonne ajoutée plus tard.
  */
 export const RIDDLE_COLUMNS =
 	'id, riddle_number, title, genre, difficulty, statement, image_url, created_by, status, created_at, updated_at' as const;
@@ -430,8 +430,8 @@ export interface RiddleSolution {
  * the domain means by it: manual validation required. Sans solution (`null`),
  * l'énigme se valide à la main et sa correction est vide.
  *
- * Les champs sont recopiés un à un : une ligne qui porterait encore `answer` ou
- * `correction` (avant l'étape C) ne peut pas fuir par un `...row`.
+ * Les champs sont recopiés un à un : rien d'autre que ce qui est listé ne peut
+ * fuir par un `...row`.
  */
 export function toDbRiddle(
 	row: {

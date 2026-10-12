@@ -121,7 +121,16 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'sqrt-one': '√1 = 1',
 	'sqrt-zero': '√0 = 0',
 	'sqrt-square': '√(a²) = |a|',
-	'square-sqrt': '(√a)² = a (a positif)'
+	'square-sqrt': '(√a)² = a (a positif)',
+
+	// ---- règles de normalize dont le texte écrit `^` (V25) ---------------------
+	// La prose est rendue par `InlineMarkdown` : un `^` hors des `$…$` s'afficherait
+	// tel quel. Ces entrées passent devant `normal/rule-descriptions-fr.ts`.
+	'euler-identities':
+		"Propriétés de l'exponentielle : $\\ln(e^a) = a$, $e^{\\ln a} = a$, $e^a \\times e^b = e^{a+b}$, $(e^a)^n = e^{an}$",
+	'radical-of-radical': 'Radical de radical : √(√a) = ⁴√a',
+	'sqrt-to-half-power': 'Conversion en exposant fractionnaire : $\\sqrt{a} = a^{\\frac{1}{2}}$',
+	'abs-even-power': 'Puissance paire et valeur absolue : |xⁿ| = xⁿ et |x|ⁿ = xⁿ pour n pair'
 };
 
 /**

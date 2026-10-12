@@ -20,7 +20,8 @@ import { flattenSumShallow } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
 import { unwrapGroupingMembers } from '../solve/classify';
 import { denormalize, normalize } from '../normal';
-import { getNumericValue } from '../common/numeric';
+import { constantSign } from '../common/constant-sign';
+import { InequalityNotSolvable } from '../solve/inequality/types';
 import { getVariables } from '../eval/substitute';
 import { toLatex } from '../latex-generator';
 import type { EquationOperation, EquationStep } from './types';
@@ -106,27 +107,33 @@ export function divideBothSides(eq: RelationNode, divisor: MathNode): RelationNo
 
 /**
  * Divide both sides by `divisor` and, for inequalities, flip the operator if
- * the divisor is a numerically negative scalar. Returns the resulting
- * relation along with a `flipped` flag indicating whether the operator was
- * inverted (`<` → `>`, etc.). For `=` and `!=` the flag is always `false`.
+ * the divisor is negative. Returns the resulting relation along with a
+ * `flipped` flag indicating whether the operator was inverted (`<` → `>`,
+ * etc.). For `=` and `!=` the flag is always `false`.
  *
- * If `divisor` is symbolic (no numeric value extractable), `flipped` defaults
- * to `false` — the caller is expected to either ensure `divisor` is numeric
- * or to call `divideBothSides` directly. This is the V1 pedagogical
- * inequality flow which only handles numeric coefficients.
+ * Le signe se lit sur la VALEUR du diviseur (`constantSign`), pas sur la forme
+ * de son nœud : `-\frac23`, `\frac{-3}{4}`, `-\sqrt2` sont négatifs (écart V36,
+ * où seuls `number` / `opposite(number)` étaient vus). Signe indécidable
+ * (diviseur symbolique) sur `<`, `>`, `<=`, `>=` → `InequalityNotSolvable` :
+ * mieux vaut aucune correction pédagogique qu'un sens deviné.
  */
 export function divideBothSidesWithFlip(
 	ineq: RelationNode,
 	divisor: MathNode
 ): { result: RelationNode; flipped: boolean } {
-	const numeric = getNumericValue(divisor);
-	const shouldFlip =
-		numeric !== null &&
-		numeric < 0 &&
-		(ineq.relation === '<' ||
-			ineq.relation === '>' ||
-			ineq.relation === '<=' ||
-			ineq.relation === '>=');
+	const ordering =
+		ineq.relation === '<' ||
+		ineq.relation === '>' ||
+		ineq.relation === '<=' ||
+		ineq.relation === '>=';
+	const sign = ordering ? constantSign(divisor) : null;
+	if (ordering && sign === null) {
+		throw new InequalityNotSolvable(
+			`Signe du diviseur indécidable : ${toLatex(divisor)}`,
+			'Le sens de l’inégalité dépend du signe du diviseur.'
+		);
+	}
+	const shouldFlip = sign === -1;
 
 	const newRelation = shouldFlip ? flipRelation(ineq.relation) : ineq.relation;
 	const result = canonEquation(
@@ -349,4 +356,55 @@ function formatInterval(int: {
 	const lb = int.lower.type === 'closed' ? '[' : ']';
 	const rb = int.upper.type === 'closed' ? ']' : '[';
 	return `${lb}${lo} ; ${hi}${rb}`;
+}
+
+/**
+ * Échappe les accolades d'ENSEMBLE (`{2}`, `ℝ \ {0}`), jamais celles d'un
+ * groupe LaTeX : une borne `\sqrt{2}` vient de `toLatex`. Les échapper toutes
+ * affichait `]-∞ ; -\sqrt\{2\}[`, soit « √{2} » à l'écran, sur `x² > 2`
+ * (revue, 2026-10-08). Une accolade ouvre un groupe LaTeX quand elle suit
+ * une commande (`\sqrt`), une autre accolade (`\dfrac{a}{b}`), `^` ou `_`.
+ */
+function escapeSetBraces(s: string): string {
+	const opened: boolean[] = [];
+	let out = '';
+	for (let i = 0; i < s.length; i++) {
+		const char = s[i];
+		if (char === '{') {
+			const before = s.slice(0, i);
+			const isGroup = /\\[A-Za-z]+$/.test(before) || /[}^_]$/.test(before);
+			opened.push(!isGroup);
+			out += isGroup ? '{' : '\\{';
+		} else if (char === '}') {
+			out += opened.pop() === true ? '\\}' : '}';
+		} else {
+			out += char;
+		}
+	}
+	return out;
+}
+
+/**
+ * La description d'un ensemble de solutions (`describeDomain`, Unicode : `∅`,
+ * `ℝ \ {0}`, `∪`, `∞`) en LaTeX. Sert au bloc de conclusion et, entre `$…$`,
+ * aux titres et descriptions (V25 : la prose est rendue par `InlineMarkdown`).
+ */
+export function domainDescriptionLatex(s: string): string {
+	// Accolades d'ensemble d'abord (`{2}`, `ℝ \ {0}`) ; celles des bornes
+	// (`\sqrt{2}`) et des macros introduites ensuite restent des groupes.
+	return (
+		escapeSetBraces(s)
+			// ℝ privé de points : `\left\{ a \,;\, b \right\}`, comme le LaTeX
+			// du moteur (`solve-latex.ts`)
+			.replace(
+				/ℝ\s*\\\s*\\\{(.*?)\\\}/g,
+				(_, points: string) =>
+					`\\mathbb{R} \\setminus \\left\\{ ${points.split(' ; ').join(' \\,;\\, ')} \\right\\}`
+			)
+			.replace(/∪/g, '\\cup')
+			.replace(/∅/g, '\\emptyset')
+			.replace(/ℝ\s*\\\s*/g, '\\mathbb{R} \\setminus ')
+			.replace(/ℝ/g, '\\mathbb{R}')
+			.replace(/∞/g, '\\infty')
+	);
 }

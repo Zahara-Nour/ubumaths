@@ -227,6 +227,11 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
 - **`execute_trade` exige les quatre drapeaux** (validation et confirmation des deux côtés) ;
   chaque élève n'écrit que **sa** moitié de l'offre. Faille du 2026-10-04 (vol de cartes et de
   gidouilles) fermée par `supabase/migrations/20261004190000_echanges_garde_base.sql`.
+- **Validation dans le navigateur** : le store (`src/lib/stores/marketplace.svelte.ts`) et
+  `MarketplaceSettings.svelte` valident avec `src/lib/validation/marketplace.ts` et affichent
+  `issues[0].message` dans une notification. Zod y parle anglais (`src/lib/zod-locale.ts` ne
+  règle que le serveur) : chaque schéma porte ses messages, **messages de type compris** (champ
+  vidé → `NaN`). Garde : `src/lib/validation/__tests__/marketplace-messages.test.ts`.
 
 ### L'école est la frontière sociale ([ADR 0002](../adr/0002-mono-professeur-ecole-frontiere-sociale.md))
 
@@ -271,7 +276,7 @@ choix. `RiddleCard` ne corrige donc plus dans le navigateur : le verdict vient d
 soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`.
 
 ⚠️ **Réponse attendue et correction : `riddle_solutions`, plus `riddles`** (étape B, 2026-10-12).
-Aucun code ne lit ni n'écrit plus `riddles.answer` / `riddles.correction` : les requêtes sur
+`riddles.answer` / `riddles.correction` n'existent plus (étape C, `20261016100800`) : les requêtes sur
 `riddles` nomment leurs colonnes (`RIDDLE_COLUMNS`, `src/lib/types/riddle.ts` ; jamais `*` ni
 `riddles(*)`), et `toDbRiddle(ligne, solution)` assemble l'énigme. Le module
 `src/lib/server/riddle-solutions.ts` lit les solutions d'une liste d'énigmes

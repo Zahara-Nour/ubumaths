@@ -125,7 +125,7 @@
 			} else if (form.action === 'revokeCourseLink') {
 				toaster.success('Lien du cours révoqué');
 			} else if (form.action === 'instantiateFromTemplate') {
-				toaster.success('Chapitre cree depuis le template');
+				toaster.success('Chapitre créé depuis le modèle');
 				showTemplateDialog = false;
 				resetTemplateForm();
 			}
@@ -596,7 +596,7 @@
 					id="template-title"
 					name="title"
 					bind:value={templateTitle}
-					placeholder={selectedTemplate?.title || 'Utiliser le titre du template'}
+					placeholder={selectedTemplate?.title || 'Utiliser le titre du modèle'}
 				/>
 				<p class="text-xs text-muted-foreground">Laissez vide pour utiliser le titre du template</p>
 			</div>

@@ -84,7 +84,9 @@ layout racine. En plus, selon le rôle :
 | `dashboard/admin/+layout.svelte`, `+page.svelte` | Bandeau d'élévation et index de la section.                                                                                                                                                                                                                                                   |
 
 Un échec de lecture dans les deux `load` élève et prof n'interrompt pas la page : il est journalisé
-et remplacé par une valeur vide (classes `[]`, récompenses à 0, Palotin `null`).
+et remplacé par une valeur vide (classes `[]`, récompenses à 0, Palotin `null`). Côté prof, le
+`load` rend en plus `classesLoaded` (vrai seulement si la lecture des classes a réussi) : des
+classes `[]` après un échec ne purgent pas le cache et ne vident pas la classe retenue.
 
 ### Un en-tête et une barre latérale publics, pas ceux du tableau de bord
 
@@ -122,19 +124,33 @@ les lit dans un `$derived` se met à jour quand le cache change.
 
 1. **Hydratation par le layout**, dans `onMount` : `hydrateProfile`, `hydrateRewards`,
    `hydrateBuddy` (élève, `student/+layout.svelte:73-98`) ; `hydrateAllClasses`, `setPeriods`
-   (prof, `teacher/+layout.svelte:40-65`). D'autres pages hydratent aussi : `TeacherDashboard`
+   (prof, `teacher/+layout.svelte:21-43`). D'autres pages hydratent aussi : `TeacherDashboard`
    (classes lues dans `/api/teacher/classes` si le cache est vide), `teacher/classes` (classes et
    école), `PalotinQuiz` et `ChangePalotinModal` (Palotin).
 2. **Lecture paresseuse** : `getRewards()`, `getWarnings(periodId)`, `getStudentBasic(classId)`,
    `getStudentRewards(classId)`, `getStudentWarnings(classId, periodId)` rendent l'entrée si elle a
    moins que son TTL, sinon appellent l'API (`/api/student/*`, `/api/classes/[id]/{students,gidouilles,warnings}`)
    et la stockent. Le layout prof les déclenche dans deux `$effect`, à chaque changement de classe
-   ou de période choisie (`teacher/+layout.svelte:69-88`).
+   ou de période choisie (`teacher/+layout.svelte:47-66`).
+
+   **Un échec de lecture n'est jamais stocké** (réseau coupé, réponse HTTP en erreur). Les
+   `fetch*` privés rendent alors `null` ; le getter rend la dernière valeur en cache si elle existe,
+   **même expirée**, sinon la valeur vide (`[]`, `SvelteMap` vide, 0 gidouille, profil vide), sans
+   écrire le cache ni rafraîchir l'horodatage : l'accès suivant relit l'API. Une réponse réussie
+   mais vide (0 gidouille, classe sans élève) est stockée normalement. Tests :
+   `src/lib/stores/__tests__/teacherDashboardCache.test.ts` (« Échec réseau : jamais stocké ») et
+   `studentDashboardCache-echecs.test.ts`.
+
 3. **Mise à jour optimiste** : `update{Gidouilles,Bonus,VipCards,Warnings}Optimistic`,
    `updateBuddyXpOptimistic`. Elles modifient l'entrée sans toucher à son horodatage.
 
 **Lecture synchrone** pour l'affichage : `get*Sync()` rend l'entrée si elle est encore fraîche,
 sinon `null` (ou `[]`). `getRewardsMapReactive(classId)` rend la `SvelteMap` sans contrôle de TTL.
+
+**Purge des classes** : `hydrateAllClasses(classes)` reçoit la liste **complète** des classes du
+prof et retire du cache celles qui n'y sont plus (supprimées, désactivées) ; une liste vide vide le
+cache des classes. Le layout prof ne l'appelle que si `classesLoaded` ; `TeacherDashboard` après une
+lecture réussie de `/api/teacher/classes`.
 
 **Invalidation** : `invalidate*()` vide une entrée ; la lecture suivante relit l'API. Appels réels :
 `invalidateRewards` après une action sur les cartes VIP ou au marché (`marketplace.svelte.ts`,
@@ -160,8 +176,14 @@ l'élève ou pour le prof sur un élève. Il reçoit un `CacheContext`
 
 `selectedClass.svelte.ts` et `selectedPeriod.svelte.ts` : un identifiant en `$state`, recopié dans
 `localStorage` (`teacher_selected_class_id`, `teacher_selected_period_id`) et relu au premier
-appel. Le layout prof choisit la **première classe** si aucune n'est retenue, et la **période en
-cours** si aucune ne l'est. Un identifiant déjà retenu n'est pas comparé aux classes du prof.
+appel. Le layout prof choisit la **période en cours** si aucune n'est retenue. Pour la classe, il
+appelle `reconcileSelectedClass(ids)` dans `onMount` quand `classesLoaded` : un identifiant retenu
+qui figure dans la liste est gardé ; sinon (aucun, ou classe supprimée) il est remplacé par la
+**première classe**, ou vidé (`localStorage` compris) si le prof n'en a aucune. `onMount` est
+déclaré avant les `$effect` de préchargement : la correction a lieu avant qu'ils lisent la classe.
+Test : `src/lib/stores/__tests__/selectedClass-verification.test.ts`. `TeacherDashboard` (page
+`/dashboard`, hors layout prof) garde sa propre logique : première classe si aucune n'est retenue,
+sans vérifier un identifiant déjà retenu.
 
 ### La pile de modales
 
@@ -244,17 +266,9 @@ annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`)
 
 ## Écarts connus
 
-- **Un échec réseau est mis en cache comme une donnée vide.** Les `fetch*` des deux caches
-  rattrapent l'erreur et rendent une valeur vide (`studentDashboardCache.svelte.ts:768`, `798` ;
-  `teacherDashboardCache.svelte.ts:682`, `713`, `743`), que le getter stocke avec un horodatage
-  neuf (`:223`, `:284` ; `:123`, `:157`, `:199`). Une coupure d'une seconde affiche 0 gidouille
-  pendant 10 min, ou une classe sans élèves pendant 2 h.
-- **Classe retenue jamais vérifiée** : un `teacher_selected_class_id` qui ne désigne plus une
-  classe du prof reste choisi ; le layout lance alors les lectures pour cette classe, et leur
-  échec est mis en cache vide (écart précédent).
-- **Cache prof jamais purgé** : `hydrateAllClasses` ajoute ou remplace, ne retire rien, et
-  personne n'appelle `invalidateClass`. Une classe supprimée ou désactivée reste 24 h dans
-  `getAllClassesSync()`, jusqu'au rechargement de la page.
+- **Classe retenue non vérifiée sur `/dashboard`** : `TeacherDashboard` (hors layout prof) ne
+  confronte pas un `teacher_selected_class_id` déjà retenu aux classes lues ; seul le layout prof
+  appelle `reconcileSelectedClass`.
 - **`depends('teacher:classes')` sans effet** (`teacher/+layout.server.ts:56`) : aucun
   `invalidate('teacher:classes')` dans `src/`.
 - **Cache école mal rempli et jamais lu** : `teacher/classes/+page.svelte:126` appelle

@@ -90,7 +90,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to delete deck');
+				throw new Error('Impossible de supprimer le deck');
 			}
 
 			toaster.success('Deck supprimé avec succès');

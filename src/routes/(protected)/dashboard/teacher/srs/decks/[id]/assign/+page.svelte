@@ -138,7 +138,7 @@
 				});
 
 				if (!response.ok) {
-					throw new Error('Failed to assign to students');
+					throw new Error('Impossible d’assigner le deck aux élèves');
 				}
 			}
 
@@ -156,7 +156,7 @@
 				});
 
 				if (!response.ok) {
-					throw new Error('Failed to assign to classes');
+					throw new Error('Impossible d’assigner le deck aux classes');
 				}
 			}
 

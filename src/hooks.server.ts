@@ -1,6 +1,7 @@
+import '$lib/zod-locale';
 import { accountStatusHandle } from '$lib/server/accountStatusHandle';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-import { supabaseCspSource } from '$lib/server/csp';
+import { supabaseConnectSources, supabaseCspSource } from '$lib/server/csp';
 import { handle as supabaseHandle } from '$lib/server/supabase';
 import { maintenanceHandle } from '$lib/server/maintenance';
 import { adminElevationHandle } from '$lib/server/adminElevation';
@@ -467,6 +468,8 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 			"connect-src 'self'",
 			'https://*.supabase.co',
 			'wss://*.supabase.co',
+			// NOTRE projet, nommé : seul effet réel en dev, sur la base locale
+			...supabaseConnectSources(PUBLIC_SUPABASE_URL),
 			'https://cdn.jsdelivr.net',
 			'https://cdn.plot.ly',
 			'https://*.googleapis.com',

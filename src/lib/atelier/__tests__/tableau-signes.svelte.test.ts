@@ -71,6 +71,7 @@ describe('le tableau de signes dans le DOM', () => {
 
 		expect(racine.innerHTML).not.toContain(ERROR_MARKER);
 		expect(racine.querySelectorAll('table').length).toBe(0);
-		expect(racine.textContent).toContain('Solution : x = 3');
+		// La formule `$x = 3$` du titre est précédée d'une espace demi-cadratin (V25)
+		expect(racine.textContent?.replace(/\s+/g, ' ')).toContain('Solution : x = 3');
 	});
 });

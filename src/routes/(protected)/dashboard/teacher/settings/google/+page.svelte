@@ -115,7 +115,7 @@
 			const response = await fetch('/api/google/auth/status');
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch status');
+				throw new Error('Impossible de charger l’état de la connexion Google');
 			}
 
 			status = await response.json();
@@ -139,7 +139,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to connect');
+				throw new Error('Impossible de connecter le compte Google');
 			}
 
 			const data: { url: string } = await response.json();
@@ -166,7 +166,7 @@
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.message || 'Sync failed');
+				throw new Error(errorData.message || 'Échec de la synchronisation');
 			}
 
 			const result: SyncResult = await response.json();
@@ -211,7 +211,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to disconnect');
+				throw new Error('Impossible de déconnecter le compte Google');
 			}
 
 			toaster.success('Compte Google déconnecté avec succès');

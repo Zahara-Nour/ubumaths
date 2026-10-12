@@ -5,7 +5,7 @@
  * and parsing pipeline but adapts output for HTML display.
  */
 
-import type { MathNode } from '../../types';
+import type { MathNode, RelationNode } from '../../types';
 import type { CommandContext, ErrorCode } from '../types';
 import { CommandRegistry, parse, createEvalState, bindingsToRecord, setBinding } from '../core';
 import { getFunctionNames, getFunction } from '../core/eval-state';
@@ -38,7 +38,7 @@ import { normalize, normalFormsEquivalent } from '../../normal';
 import type { EvalValue, ComplexValueResult, EvalResult } from '../../eval/types';
 import { computeQuantity, convertQuantity, type QuantityOutcome } from '../quantities';
 import { displayUnitsInLatex } from '../../units/display';
-import { isBoolean, isRelation, isUnit, isVariable } from '../../guards';
+import { isBoolean, isLogical, isLogicalNot, isRelation, isUnit, isVariable } from '../../guards';
 import { relation } from '../../factory';
 import { summarizeList, summarizeTable } from '../../../statistics/describe';
 import { formatSummary } from '../../../statistics/format';
@@ -689,6 +689,12 @@ export class WebReplEngine {
 		const equalityRegex = /(?<![<>!=:])=(?![=>])/;
 		const parts = input.split(equalityRegex);
 
+		// Une chaîne (`2 = 2 = 2`, `1 < 2 = 2`) : lue en entier, maillon par maillon. Coupée au
+		// `=`, elle comparait un booléen à un nombre et répondait `false` (revue, 2026-10-12)
+		if (parts.length > 2 && parts.every((part) => part.trim() !== '')) {
+			return this.executeExpression(input);
+		}
+
 		if (parts.length !== 2) {
 			return {
 				success: false,
@@ -757,6 +763,15 @@ export class WebReplEngine {
 					message: error?.message || 'parse error'
 				}
 			};
+		}
+
+		// … ou d'une expression logique (`2 > 1 && 3 = 3`) : lue en entier
+		if (
+			[result1.ast, result2.ast].some(
+				(ast) => isRelation(ast) || isLogical(ast) || isLogicalNot(ast)
+			)
+		) {
+			return this.executeExpression(input);
 		}
 
 		// Substitute bound variables before comparison
@@ -955,6 +970,19 @@ export class WebReplEngine {
 	 * Create auto-evaluation result for an expression with all variables bound.
 	 * Computes both exact and decimal representations for toggle support.
 	 */
+	/** Une chaîne `a < b < c` : le premier maillon faux ou en erreur, sinon le dernier (vrai). */
+	private chainResult(chain: RelationNode): ReplExecutionResult {
+		const links: MathNode[] = [];
+		let node: MathNode = chain;
+		while (isRelation(node) && isRelation(node.left)) {
+			links.unshift(relation(node.relation, node.left.right, node.right));
+			node = node.left;
+		}
+		links.unshift(node);
+		const results = links.map((link) => this.createAutoEvaluationResult(link));
+		return results.find((result) => !result.success || result.output !== 'true') ?? results[0];
+	}
+
 	private createAutoEvaluationResult(ast: MathNode): ReplExecutionResult {
 		try {
 			const bindings = bindingsToRecord(this.evalState.bindings);
@@ -965,6 +993,13 @@ export class WebReplEngine {
 
 			// Check if expression contains units
 			const hasUnits = this.expressionHasUnits(substituted);
+
+			// Une chaîne de grandeurs (`5[m] < 6[m] < 7[m]`) : maillon par maillon, chacun par le
+			// chemin des grandeurs — en entier, le premier maillon (un booléen) était comparé à une
+			// longueur (revue, 2026-10-12)
+			if (hasUnits && isRelation(substituted) && isRelation(substituted.left)) {
+				return this.chainResult(substituted);
+			}
 
 			if (hasUnits) {
 				// Une grandeur : calculée par `tidy`, unité écrite d'abord (lot A)
@@ -1157,10 +1192,10 @@ export class WebReplEngine {
 			const message = err instanceof Error ? err.message : 'Unknown error during evaluation';
 			return {
 				success: false,
-				output: `Evaluation error: ${message}`,
+				output: `Erreur de calcul : ${message}`,
 				outputHtml: formatErrorHtml({
 					code: 'PARSE_ERROR',
-					message: `Evaluation error: ${message}`
+					message: `Erreur de calcul : ${message}`
 				}),
 				error: {
 					code: 'PARSE_ERROR',

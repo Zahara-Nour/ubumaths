@@ -20,6 +20,12 @@
  * Fallback chain :
  *   `TITLES[effective][rule] ?? TITLES.lycee[rule] ?? () => step.description`
  *
+ * ⚠️ Prose et maths (V25) : titres et explications sont rendus par
+ * `InlineMarkdown` (ubumark). Toute formule va entre `$…$` (LaTeX) ; hors des
+ * `$`, ni `\\`, `^`, `_`, `{`, `*` ni `~`. Garde-fou :
+ * `mathAST/__tests__/prose-maths-delimitees.test.ts`. Les descriptions par
+ * défaut, elles, restent du texte simple.
+ *
  * @module mathAST/pedagogical-differentiation/descriptions-fr
  */
 
@@ -51,6 +57,16 @@ function bind(bindings: DifferentiationBindings, key: string): string {
 	return toLatex(node);
 }
 
+/** Une formule LaTeX dans la prose : entre `$…$`, rendue en maths par ubumark (V25) */
+function math(latex: string): string {
+	return `$${latex}$`;
+}
+
+/** `u = 3 x + 1` en formule : `$u = 3 x + 1$` */
+function eq(name: string, bindings: DifferentiationBindings, key: string): string {
+	return math(`${name} = ${bind(bindings, key)}`);
+}
+
 // =============================================================================
 // TITLES
 // =============================================================================
@@ -64,11 +80,11 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	sum: () => 'On dérive chaque terme',
 	difference: () => 'On dérive chaque terme',
 	negation: () => "Dérivée de l'opposé",
-	'linear-coefficient': (b) => `On sort la constante ${bind(b, 'c')}`,
+	'linear-coefficient': (b) => `On sort la constante ${math(bind(b, 'c'))}`,
 	'sum-with-constant': () => 'La constante a une dérivée nulle',
 	'diff-with-constant': () => 'La constante a une dérivée nulle',
 	// ---- Powers ----
-	'power-natural': (b) => `Règle de la puissance (${bind(b, 'n')})`,
+	'power-natural': (b) => `Règle de la puissance (${math(bind(b, 'n'))})`,
 	'power-constant-exp': () => 'Règle de la puissance (exposant constant)',
 	'power-constant-base': () => "Règle de l'exponentielle généralisée",
 	'general-power': () => 'Règle générale de la puissance',
@@ -91,8 +107,8 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	// ---- Radical ----
 	sqrt: () => 'Dérivée de la racine carrée',
 	'derivative-of-sqrt': () => 'Dérivée de √x',
-	'nth-root': (b) => `Dérivée de la racine d'indice ${bind(b, 'n')}`,
-	'derivative-of-nth-root': (b) => `Dérivée de la racine d'indice ${bind(b, 'n')} de x`,
+	'nth-root': (b) => `Dérivée de la racine d'indice ${math(bind(b, 'n'))}`,
+	'derivative-of-nth-root': (b) => `Dérivée de la racine d'indice ${math(bind(b, 'n'))} de x`,
 	// ---- Hyperbolic ----
 	sinh: () => 'Dérivée de sinus hyperbolique',
 	cosh: () => 'Dérivée de cosinus hyperbolique',
@@ -103,38 +119,38 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 };
 
 const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
-	sum: () => "(f+g)' = f' + g'",
-	difference: () => "(f-g)' = f' - g'",
-	negation: () => "(-f)' = -f'",
-	'linear-coefficient': () => "(cf)' = cf'",
-	'sum-with-constant': () => "(f+c)' = f'",
-	'diff-with-constant': () => "(f-c)' = f'",
-	'power-natural': () => "(x^n)' = nx^{n-1}",
-	'power-constant-exp': () => "(f^c)' = cf^{c-1}f'",
-	'power-constant-base': () => "(c^f)' = c^f \\ln(c) f'",
-	'general-power': () => "(f^g)' = f^g(g'\\ln f + gf'/f)",
-	product: () => "(uv)' = u'v + uv'",
-	quotient: () => "(u/v)' = (u'v - uv')/v^2",
-	inverse: () => "(1/f)' = -f'/f^2",
-	'derivative-of-inverse': () => "(1/x)' = -1/x^2",
-	sin: () => "(\\sin u)' = \\cos(u)\\,u'",
-	cos: () => "(\\cos u)' = -\\sin(u)\\,u'",
-	tan: () => "(\\tan u)' = u'/\\cos^2(u)",
-	arcsin: () => "(\\arcsin u)' = u'/\\sqrt{1-u^2}",
-	arccos: () => "(\\arccos u)' = -u'/\\sqrt{1-u^2}",
-	arctan: () => "(\\arctan u)' = u'/(1+u^2)",
-	exp: () => "(e^u)' = e^u\\,u'",
-	ln: () => "(\\ln u)' = u'/u",
-	log: () => "(\\log_b u)' = u'/(u\\ln b)",
-	sqrt: () => "(\\sqrt u)' = u'/(2\\sqrt u)",
-	'derivative-of-sqrt': () => "(\\sqrt x)' = 1/(2\\sqrt x)",
-	'nth-root': () => "(\\sqrt[n]{u})' = u'/(n\\sqrt[n]{u^{n-1}})",
-	'derivative-of-nth-root': () => "(\\sqrt[n]{x})' = 1/(n\\sqrt[n]{x^{n-1}})",
-	sinh: () => "(\\sinh u)' = \\cosh(u)\\,u'",
-	cosh: () => "(\\cosh u)' = \\sinh(u)\\,u'",
-	tanh: () => "(\\tanh u)' = u'/\\cosh^2(u)",
-	asinh: () => "(\\operatorname{argsh} u)' = u'/\\sqrt{u^2+1}",
-	acosh: () => "(\\operatorname{argch} u)' = u'/\\sqrt{u^2-1}",
+	sum: () => "$(f+g)' = f' + g'$",
+	difference: () => "$(f-g)' = f' - g'$",
+	negation: () => "$(-f)' = -f'$",
+	'linear-coefficient': () => "$(cf)' = cf'$",
+	'sum-with-constant': () => "$(f+c)' = f'$",
+	'diff-with-constant': () => "$(f-c)' = f'$",
+	'power-natural': () => "$(x^n)' = nx^{n-1}$",
+	'power-constant-exp': () => "$(f^c)' = cf^{c-1}f'$",
+	'power-constant-base': () => "$(c^f)' = c^f \\ln(c) f'$",
+	'general-power': () => "$(f^g)' = f^g(g'\\ln f + gf'/f)$",
+	product: () => "$(uv)' = u'v + uv'$",
+	quotient: () => "$(u/v)' = (u'v - uv')/v^2$",
+	inverse: () => "$(1/f)' = -f'/f^2$",
+	'derivative-of-inverse': () => "$(1/x)' = -1/x^2$",
+	sin: () => "$(\\sin u)' = \\cos(u)\\,u'$",
+	cos: () => "$(\\cos u)' = -\\sin(u)\\,u'$",
+	tan: () => "$(\\tan u)' = u'/\\cos^2(u)$",
+	arcsin: () => "$(\\arcsin u)' = u'/\\sqrt{1-u^2}$",
+	arccos: () => "$(\\arccos u)' = -u'/\\sqrt{1-u^2}$",
+	arctan: () => "$(\\arctan u)' = u'/(1+u^2)$",
+	exp: () => "$(e^u)' = e^u\\,u'$",
+	ln: () => "$(\\ln u)' = u'/u$",
+	log: () => "$(\\log_b u)' = u'/(u\\ln b)$",
+	sqrt: () => "$(\\sqrt u)' = u'/(2\\sqrt u)$",
+	'derivative-of-sqrt': () => "$(\\sqrt x)' = 1/(2\\sqrt x)$",
+	'nth-root': () => "$(\\sqrt[n]{u})' = u'/(n\\sqrt[n]{u^{n-1}})$",
+	'derivative-of-nth-root': () => "$(\\sqrt[n]{x})' = 1/(n\\sqrt[n]{x^{n-1}})$",
+	sinh: () => "$(\\sinh u)' = \\cosh(u)\\,u'$",
+	cosh: () => "$(\\cosh u)' = \\sinh(u)\\,u'$",
+	tanh: () => "$(\\tanh u)' = u'/\\cosh^2(u)$",
+	asinh: () => "$(\\operatorname{argsh} u)' = u'/\\sqrt{u^2+1}$",
+	acosh: () => "$(\\operatorname{argch} u)' = u'/\\sqrt{u^2-1}$",
 	atanh: () => "(\\operatorname{argth} u)' = u'/(1-u^2)"
 };
 
@@ -155,64 +171,68 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	variable: () => 'La dérivée de la variable par rapport à elle-même vaut 1.',
 	'greek-letter': () => 'Cette lettre représente une constante (paramètre), sa dérivée est nulle.',
 	// ---- Linearity ----
-	sum: (b) => `Avec f = ${bind(b, 'f')} et g = ${bind(b, 'g')}, ` + `on a (f+g)' = f' + g'.`,
-	difference: (b) => `Avec f = ${bind(b, 'f')} et g = ${bind(b, 'g')}, ` + `on a (f-g)' = f' - g'.`,
-	negation: (b) => `Avec f = ${bind(b, 'f')}, on a (-f)' = -f'.`,
+	sum: (b) => `Avec ${eq('f', b, 'f')} et ${eq('g', b, 'g')}, ` + `on a $(f+g)' = f' + g'$.`,
+	difference: (b) => `Avec ${eq('f', b, 'f')} et ${eq('g', b, 'g')}, ` + `on a $(f-g)' = f' - g'$.`,
+	negation: (b) => `Avec ${eq('f', b, 'f')}, on a $(-f)' = -f'$.`,
 	'linear-coefficient': (b) =>
-		`La constante ${bind(b, 'c')} sort de la dérivation : ` +
-		`(${bind(b, 'c')} \\times f)' = ${bind(b, 'c')} \\times f'.`,
+		`La constante ${math(bind(b, 'c'))} sort de la dérivation : ` +
+		math(`(${bind(b, 'c')} \\times f)' = ${bind(b, 'c')} \\times f'`) +
+		'.',
 	'sum-with-constant': (b) =>
-		`La constante ${bind(b, 'c')} a une dérivée nulle, ` +
-		`donc seule la dérivée de ${bind(b, 'f')} contribue.`,
+		`La constante ${math(bind(b, 'c'))} a une dérivée nulle, ` +
+		`donc seule la dérivée de ${math(bind(b, 'f'))} contribue.`,
 	'diff-with-constant': (b) =>
-		`La constante ${bind(b, 'c')} a une dérivée nulle, ` +
-		`donc seule la dérivée de ${bind(b, 'f')} contribue (au signe près).`,
+		`La constante ${math(bind(b, 'c'))} a une dérivée nulle, ` +
+		`donc seule la dérivée de ${math(bind(b, 'f'))} contribue (au signe près).`,
 	// ---- Powers ----
-	'power-natural': (b) => `(x^n)' = n x^{n-1} avec n = ${bind(b, 'n')}.`,
+	'power-natural': (b) => `$(x^n)' = n x^{n-1}$ avec ${eq('n', b, 'n')}.`,
 	'power-constant-exp': (b) =>
-		`Avec f = ${bind(b, 'base')} et l'exposant constant ${bind(b, 'exp')}, ` +
-		`on a (f^c)' = c \\times f^{c-1} \\times f'.`,
+		`Avec ${eq('f', b, 'base')} et l'exposant constant ${math(bind(b, 'exp'))}, ` +
+		`on a $(f^c)' = c \\times f^{c-1} \\times f'$.`,
 	'power-constant-base': (b) =>
-		`Avec la base constante ${bind(b, 'base')}, on a ` +
-		`(${bind(b, 'base')}^g)' = ${bind(b, 'base')}^g \\times \\ln(${bind(b, 'base')}) \\times g'.`,
+		`Avec la base constante ${math(bind(b, 'base'))}, on a ` +
+		math(
+			`(${bind(b, 'base')}^g)' = ${bind(b, 'base')}^g \\times \\ln(${bind(b, 'base')}) \\times g'`
+		) +
+		'.',
 	'general-power': (b) =>
-		`Avec f = ${bind(b, 'base')} et g = ${bind(b, 'exp')} dépendant tous deux de la variable, ` +
-		`on applique (f^g)' = f^g \\times (g' \\ln(f) + g f' / f).`,
+		`Avec ${eq('f', b, 'base')} et ${eq('g', b, 'exp')} dépendant tous deux de la variable, ` +
+		`on applique $(f^g)' = f^g \\times (g' \\ln(f) + g f' / f)$.`,
 	// ---- Product / Quotient ----
 	product: (b) =>
-		`Avec u = ${bind(b, 'u')} et v = ${bind(b, 'v')}, ` + `on applique (uv)' = u'v + uv'.`,
+		`Avec ${eq('u', b, 'u')} et ${eq('v', b, 'v')}, ` + `on applique $(uv)' = u'v + uv'$.`,
 	quotient: (b) =>
-		`Avec u = ${bind(b, 'u')} et v = ${bind(b, 'v')}, ` + `on applique (u/v)' = (u'v - uv') / v^2.`,
-	inverse: (b) => `Avec f = ${bind(b, 'f')}, on a (1/f)' = -f'/f^2.`,
-	'derivative-of-inverse': () => `(1/x)' = -1/x^2.`,
+		`Avec ${eq('u', b, 'u')} et ${eq('v', b, 'v')}, ` + `on applique $(u/v)' = (u'v - uv') / v^2$.`,
+	inverse: (b) => `Avec ${eq('f', b, 'f')}, on a $(1/f)' = -f'/f^2$.`,
+	'derivative-of-inverse': () => `$(1/x)' = -1/x^2$.`,
 	// ---- Trigonometric ----
-	sin: (b) => `Avec u = ${bind(b, 'u')}, on a (\\sin u)' = \\cos(u) \\times u'.`,
-	cos: (b) => `Avec u = ${bind(b, 'u')}, on a (\\cos u)' = -\\sin(u) \\times u'.`,
-	tan: (b) => `Avec u = ${bind(b, 'u')}, on a (\\tan u)' = u' / \\cos^2(u).`,
-	arcsin: (b) => `Avec u = ${bind(b, 'u')}, on a (\\arcsin u)' = u' / \\sqrt{1 - u^2}.`,
-	arccos: (b) => `Avec u = ${bind(b, 'u')}, on a (\\arccos u)' = -u' / \\sqrt{1 - u^2}.`,
-	arctan: (b) => `Avec u = ${bind(b, 'u')}, on a (\\arctan u)' = u' / (1 + u^2).`,
+	sin: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\sin u)' = \\cos(u) \\times u'$.`,
+	cos: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\cos u)' = -\\sin(u) \\times u'$.`,
+	tan: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\tan u)' = u' / \\cos^2(u)$.`,
+	arcsin: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\arcsin u)' = u' / \\sqrt{1 - u^2}$.`,
+	arccos: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\arccos u)' = -u' / \\sqrt{1 - u^2}$.`,
+	arctan: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\arctan u)' = u' / (1 + u^2)$.`,
 	// ---- Exponential / Logarithm ----
-	exp: (b) => `Avec u = ${bind(b, 'u')}, on a (e^u)' = e^u \\times u'.`,
-	ln: (b) => `Avec u = ${bind(b, 'u')}, on a (\\ln u)' = u'/u.`,
+	exp: (b) => `Avec ${eq('u', b, 'u')}, on a $(e^u)' = e^u \\times u'$.`,
+	ln: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\ln u)' = u'/u$.`,
 	log: (b) =>
-		`Avec u = ${bind(b, 'u')} et base ${bind(b, 'base')}, ` +
-		`on a (\\log_b u)' = u' / (u \\ln(b)).`,
+		`Avec ${eq('u', b, 'u')} et base ${math(bind(b, 'base'))}, ` +
+		`on a $(\\log_b u)' = u' / (u \\ln(b))$.`,
 	// ---- Radical ----
-	sqrt: (b) => `Avec u = ${bind(b, 'u')}, on a (\\sqrt u)' = u'/(2\\sqrt u).`,
-	'derivative-of-sqrt': () => `(\\sqrt x)' = 1/(2\\sqrt x).`,
+	sqrt: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\sqrt u)' = u'/(2\\sqrt u)$.`,
+	'derivative-of-sqrt': () => `$(\\sqrt x)' = 1/(2\\sqrt x)$.`,
 	'nth-root': (b) =>
-		`Avec u = ${bind(b, 'u')} et n = ${bind(b, 'n')}, ` +
-		`on a (\\sqrt[n]{u})' = u'/(n\\sqrt[n]{u^{n-1}}).`,
+		`Avec ${eq('u', b, 'u')} et ${eq('n', b, 'n')}, ` +
+		`on a $(\\sqrt[n]{u})' = u'/(n\\sqrt[n]{u^{n-1}})$.`,
 	'derivative-of-nth-root': (b) =>
-		`Avec n = ${bind(b, 'n')}, on a (\\sqrt[n]{x})' = 1/(n\\sqrt[n]{x^{n-1}}).`,
+		`Avec ${eq('n', b, 'n')}, on a $(\\sqrt[n]{x})' = 1/(n\\sqrt[n]{x^{n-1}})$.`,
 	// ---- Hyperbolic ----
-	sinh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\sinh u)' = \\cosh(u) \\times u'.`,
-	cosh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\cosh u)' = \\sinh(u) \\times u'.`,
-	tanh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\tanh u)' = u' / \\cosh^2(u).`,
-	asinh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\operatorname{argsh} u)' = u'/\\sqrt{u^2 + 1}.`,
-	acosh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\operatorname{argch} u)' = u'/\\sqrt{u^2 - 1}.`,
-	atanh: (b) => `Avec u = ${bind(b, 'u')}, on a (\\operatorname{argth} u)' = u'/(1 - u^2).`
+	sinh: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\sinh u)' = \\cosh(u) \\times u'$.`,
+	cosh: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\cosh u)' = \\sinh(u) \\times u'$.`,
+	tanh: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\tanh u)' = u' / \\cosh^2(u)$.`,
+	asinh: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\operatorname{argsh} u)' = u'/\\sqrt{u^2 + 1}$.`,
+	acosh: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\operatorname{argch} u)' = u'/\\sqrt{u^2 - 1}$.`,
+	atanh: (b) => `Avec ${eq('u', b, 'u')}, on a $(\\operatorname{argth} u)' = u'/(1 - u^2)$.`
 };
 
 export const EXPLANATIONS: Record<SchoolLevel, RuleFnMap<ExplainFn>> = {

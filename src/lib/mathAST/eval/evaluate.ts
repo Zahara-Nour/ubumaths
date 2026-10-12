@@ -66,7 +66,7 @@ import { normalize } from '../normal/normalize';
 import { denormalize } from '../normal/denormalize';
 import { normalizeExtended } from '../normal/normalize-extended';
 import { denormalizeExtended } from '../normal/denormalize';
-import { mapNode } from '../transforms';
+import { findNodes, getChildren, mapNode } from '../transforms';
 import { areEquivalentCore } from '../equivalence-core';
 import { getActiveAbortChecker } from '../common/abort';
 import { rewriteFunctionPower } from '../common/function-power';
@@ -827,7 +827,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 
 	// RelationNode - cannot evaluate to a single value
 	if (isRelation(node)) {
-		throw new Error('Cannot evaluate relation expressions to a numeric value');
+		throw new Error('Une comparaison n’a pas de valeur numérique');
 	}
 
 	// UnitNode - evaluate the expression part (ignore the unit)
@@ -847,7 +847,7 @@ function evaluateToRational(node: MathNode, depth: number = 0): Rational {
 
 	// Boolean/Logical nodes - not numeric
 	if (isBoolean(node) || isLogical(node) || isLogicalNot(node)) {
-		throw new Error('Cannot evaluate boolean/logical expression to a numeric value');
+		throw new Error('Une comparaison ou une expression logique n’a pas de valeur numérique');
 	}
 
 	// Longueur `AB`, nom de figure `ABC` : un message lisible par un élève, s'il remonte
@@ -1020,11 +1020,11 @@ function validateEvaluable(node: MathNode, exactMode: boolean = false): void {
 	}
 
 	if (isRelation(node)) {
-		throw new Error('Cannot evaluate relation expressions to a numeric value');
+		throw new Error('Une comparaison n’a pas de valeur numérique');
 	}
 
 	if (isBoolean(node) || isLogical(node) || isLogicalNot(node)) {
-		throw new Error('Cannot evaluate boolean/logical expressions to a numeric value');
+		throw new Error('Une comparaison ou une expression logique n’a pas de valeur numérique');
 	}
 
 	if (isSubscript(node)) {
@@ -1237,7 +1237,57 @@ function evaluateRoundingFunctions(node: MathNode): MathNode {
  * Checks if a node is a boolean expression (boolean, relation, logical, logical-not).
  */
 function isBooleanExpression(node: MathNode): boolean {
+	// `(2 > 1)`, `\lnot (2 > 1)` : des parenthèses autour d'une comparaison
+	if (isDelimiter(node)) return isBooleanExpression(node.content);
 	return isBoolean(node) || isRelation(node) || isLogical(node) || isLogicalNot(node);
+}
+
+/** Les relations que le calcul tranche ; les autres (≈, ∈, ⊂…) ne sont pas évaluables. */
+const DECIDABLE_RELATIONS: ReadonlySet<string> = new Set([
+	'=',
+	'≡',
+	'!=',
+	'≢',
+	'<',
+	'>',
+	'<=',
+	'>='
+]);
+
+/** Un « non » appliqué à autre chose qu'une comparaison (`!5 > 1` : (¬5) > 1). */
+function hasNumericNot(node: MathNode): boolean {
+	if (isLogicalNot(node) && !isBooleanExpression(node.operand)) return true;
+	return getChildren(node).some(hasNumericNot);
+}
+
+/** Pourquoi une expression booléenne ne s'évalue pas — la vraie cause, en français. */
+function booleanRefusal(node: MathNode): string {
+	const relation = undecidableRelation(node);
+	if (relation !== undefined) {
+		return `Relation « ${relation} » non évaluable : seules = ≠ < > ≤ ≥ se tranchent`;
+	}
+	if (hasNumericNot(node)) {
+		// `!5 > 1` se lit (non 5) > 1
+		return findNodes(node, isRelation).length > 0
+			? '« non » s’applique ici à un nombre : mets la comparaison entre parenthèses, non(2 > 1)'
+			: '« non » s’applique à une comparaison, pas à un nombre';
+	}
+	const variables = [...getVariables(node)];
+	return variables.length > 0
+		? `Comparaison non évaluable : ${variables.join(', ')} sans valeur`
+		: 'Comparaison non évaluable';
+}
+
+/** La première relation que le calcul ne tranche pas, ou `undefined`. */
+function undecidableRelation(node: MathNode): string | undefined {
+	if (isDelimiter(node)) return undecidableRelation(node.content);
+	if (isRelation(node)) {
+		if (!DECIDABLE_RELATIONS.has(node.relation)) return node.relation;
+		return undecidableRelation(node.left);
+	}
+	if (isLogical(node)) return undecidableRelation(node.left) ?? undecidableRelation(node.right);
+	if (isLogicalNot(node)) return undecidableRelation(node.operand);
+	return undefined;
 }
 
 /**
@@ -1259,8 +1309,20 @@ function evaluateToBoolean(node: MathNode): boolean | undefined {
 		return node.value;
 	}
 
+	if (isDelimiter(node)) return evaluateToBoolean(node.content);
+
 	if (isRelation(node)) {
 		const rel = node.relation;
+
+		// Une chaîne `a < b < c` (arbre `(a < b) < c`) : vraie si chaque maillon l'est —
+		// `a < b`, puis `b < c`. Répondait « Cannot evaluate boolean expression » (2026-10-12)
+		if (isRelation(node.left)) {
+			const first = evaluateToBoolean(node.left);
+			if (first === false) return false;
+			const second = evaluateToBoolean({ ...node, left: node.left.right });
+			if (second === false) return false;
+			return first === undefined || second === undefined ? undefined : true;
+		}
 
 		// Equality and inequality use semantic equivalence
 		if (rel === '=' || rel === '≡' || rel === '!=' || rel === '≢') {
@@ -1401,11 +1463,8 @@ export function evaluate(node: MathNode, options?: EvalOptions): EvalResult {
 	if (isBooleanExpression(processedNode)) {
 		const boolResult = evaluateToBoolean(processedNode);
 		if (boolResult === undefined) {
-			return {
-				status: 'unevaluable',
-				reason:
-					'Cannot evaluate boolean expression (may contain free variables or unsupported relations)'
-			};
+			// En français : la console de Calcul montre ce message à l'élève (2026-10-12)
+			return { status: 'unevaluable', reason: booleanRefusal(processedNode) };
 		}
 		return {
 			status: 'value',

@@ -9,12 +9,14 @@ import { z } from 'zod';
  */
 export const createListingSchema = z
 	.object({
-		listing_type: z.enum(['sell', 'buy']),
+		listing_type: z.enum(['sell', 'buy'], { error: 'Type d’annonce inconnu' }),
 
 		// Offered items (for 'sell' listings)
-		offered_card_ids: z.array(z.string().uuid('ID de carte invalide')).default([]),
+		offered_card_ids: z
+			.array(z.string().uuid('ID de carte invalide'), { error: 'Liste de cartes invalide' })
+			.default([]),
 		offered_gidouilles: z
-			.number()
+			.number({ error: 'Les gidouilles doivent être un nombre' })
 			.int('Les gidouilles doivent être un nombre entier')
 			.min(0, 'Les gidouilles ne peuvent pas être négatives')
 			.max(10000, 'Maximum 10000 gidouilles')
@@ -23,10 +25,12 @@ export const createListingSchema = z
 
 		// Wanted items (for both listing types)
 		wanted_card_template_ids: z
-			.array(z.string().min(1, 'ID de modèle de carte invalide'))
+			.array(z.string().min(1, 'ID de modèle de carte invalide'), {
+				error: 'Liste de cartes demandées invalide'
+			})
 			.default([]),
 		wanted_gidouilles: z
-			.number()
+			.number({ error: 'Les gidouilles doivent être un nombre' })
 			.int('Les gidouilles doivent être un nombre entier')
 			.min(0, 'Les gidouilles ne peuvent pas être négatives')
 			.max(10000, 'Maximum 10000 gidouilles')
@@ -62,7 +66,7 @@ export const updateListingSchema = z.object({
 		.max(10, 'Maximum 10 modèles de cartes peuvent être demandés')
 		.optional(),
 	wanted_gidouilles: z
-		.number()
+		.number({ error: 'Les gidouilles doivent être un nombre' })
 		.int('Les gidouilles doivent être un nombre entier')
 		.min(0, 'Les gidouilles ne peuvent pas être négatives')
 		.max(10000, 'Maximum 10000 gidouilles')
@@ -100,10 +104,12 @@ export const listingsQuerySchema = z.object({
  */
 export const createProposalSchema = z
 	.object({
-		listing_id: z.string().uuid("ID d'annonce invalide"),
-		offered_card_ids: z.array(z.string().uuid('ID de carte invalide')).default([]),
+		listing_id: z.string({ error: 'Annonce manquante' }).uuid("ID d'annonce invalide"),
+		offered_card_ids: z
+			.array(z.string().uuid('ID de carte invalide'), { error: 'Liste de cartes invalide' })
+			.default([]),
 		offered_gidouilles: z
-			.number()
+			.number({ error: 'Les gidouilles doivent être un nombre' })
 			.int('Les gidouilles doivent être un nombre entier')
 			.min(0, 'Les gidouilles ne peuvent pas être négatives')
 			.max(10000, 'Maximum 10000 gidouilles')
@@ -119,7 +125,7 @@ export const createProposalSchema = z
  * Schema for updating a proposal (accept/reject)
  */
 export const updateProposalSchema = z.object({
-	status: z.enum(['accepted', 'rejected']),
+	status: z.enum(['accepted', 'rejected'], { error: 'Réponse inconnue : accepter ou refuser' }),
 	response_message: z.string().max(500, 'Le message ne peut pas dépasser 500 caractères').optional()
 });
 
@@ -131,17 +137,24 @@ export const updateProposalSchema = z.object({
  * Schema for creating a new friend trade
  */
 export const createTradeSchema = z.object({
-	partner_id: z.string().uuid('ID du partenaire invalide'),
-	initial_offer: z.object({
-		cards: z.array(z.string().uuid('ID de carte invalide')).default([]),
-		gidouilles: z
-			.number()
-			.int('Les gidouilles doivent être un nombre entier')
-			.min(0, 'Les gidouilles ne peuvent pas être négatives')
-			.max(10000, 'Maximum 10000 gidouilles')
-			.finite('La valeur doit être un nombre fini')
-			.default(0)
-	})
+	partner_id: z
+		.string({ error: 'Partenaire d’échange manquant' })
+		.uuid('ID du partenaire invalide'),
+	initial_offer: z.object(
+		{
+			cards: z
+				.array(z.string().uuid('ID de carte invalide'), { error: 'Liste de cartes invalide' })
+				.default([]),
+			gidouilles: z
+				.number({ error: 'Les gidouilles doivent être un nombre' })
+				.int('Les gidouilles doivent être un nombre entier')
+				.min(0, 'Les gidouilles ne peuvent pas être négatives')
+				.max(10000, 'Maximum 10000 gidouilles')
+				.finite('La valeur doit être un nombre fini')
+				.default(0)
+		},
+		{ error: 'Offre d’échange manquante' }
+	)
 });
 
 // ============================================================================
@@ -154,19 +167,40 @@ export const createTradeSchema = z.object({
 export const updateConfigSchema = z.object({
 	enabled_for_class: z.boolean().optional(),
 	max_listings_per_student: z
-		.number()
+		.number({ error: 'Le maximum doit être un nombre' })
 		.int('Le maximum doit être un nombre entier')
 		.min(1, 'Le maximum doit être au moins 1')
 		.max(10, 'Le maximum ne peut pas dépasser 10')
 		.finite('La valeur doit être un nombre fini')
 		.optional(),
 	max_trades_per_day: z
-		.number()
+		.number({ error: 'Le maximum doit être un nombre' })
 		.int('Le maximum doit être un nombre entier')
 		.min(1, 'Le maximum doit être au moins 1')
 		.max(20, 'Le maximum ne peut pas dépasser 20')
 		.finite('La valeur doit être un nombre fini')
 		.optional()
+});
+
+/**
+ * Réglages du marché saisis par le professeur (`MarketplaceSettings.svelte`).
+ * Validé dans le navigateur, où Zod parle anglais : chaque refus, y compris un
+ * champ vidé (NaN), porte son message.
+ */
+export const marketplaceSettingsSchema = z.object({
+	enabled_for_class: z.boolean({ error: 'Activer ou désactiver le marché' }),
+	max_listings_per_student: z
+		.number({ error: 'Le nombre d’annonces doit être un nombre' })
+		.int('Doit être un nombre entier')
+		.min(1, 'Minimum 1 annonce')
+		.max(10, 'Maximum 10 annonces')
+		.finite('La valeur doit être un nombre fini'),
+	max_trades_per_day: z
+		.number({ error: 'Le nombre d’échanges doit être un nombre' })
+		.int('Doit être un nombre entier')
+		.min(1, 'Minimum 1 échange')
+		.max(20, 'Maximum 20 échanges')
+		.finite('La valeur doit être un nombre fini')
 });
 
 // ============================================================================

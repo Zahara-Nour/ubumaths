@@ -156,7 +156,8 @@ export const addSameDenominator: PedagogicalArithmeticRule = {
 		primaire: () => 'On additionne les numérateurs',
 		college: () => 'On additionne les numérateurs (même dénominateur)',
 		lycee: () => 'Addition des numérateurs',
-		superieur: () => '+ num.'
+		// `$+$` : un « + » en tête ouvrirait une liste ubumark (V25)
+		superieur: () => '$+$ num.'
 	}
 };
 

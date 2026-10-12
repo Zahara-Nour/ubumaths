@@ -58,7 +58,7 @@
 			return async ({ result, update }) => {
 				isSubmitting = false;
 				if (result.type === 'success' || result.type === 'redirect') {
-					toaster.success('Template créé avec succès');
+					toaster.success('Modèle créé avec succès');
 				}
 				await update();
 			};

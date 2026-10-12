@@ -52,6 +52,9 @@ const EXTENSIONS: Readonly<Record<ExportFormat, string>> = { json: 'json', ubuma
 /** Ce qui, en tête de ligne, ferait une liste, un titre, une citation ou un tableau. */
 const BLOCK_START = /^\s*([-+>#|]|\d+[.)])/;
 
+/** Une formule dans un titre d'étape, `$…$` ; la capture garde le délimiteur (morceaux impairs) */
+const INLINE_MATH = /(\$[^$\n]+\$)/;
+
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -98,7 +101,7 @@ export function historyToUbumark(entries: readonly Entry[], now: Date): string {
 		if (entry.note !== undefined) blocks.push(`*${plainLine(entry.note)}*`);
 		const steps = (entry.steps ?? []).map(
 			(step) =>
-				`- ${plainLine(step.title)}${step.expressionLatex ? ` : $${step.expressionLatex}$` : ''}`
+				`- ${proseWithMath(step.title)}${step.expressionLatex ? ` : $${step.expressionLatex}$` : ''}`
 		);
 		if (steps.length > 0) blocks.push(steps.join('\n'));
 		if (entry.table !== undefined) blocks.push('(tableau de variations : à voir dans l’atelier)');
@@ -132,4 +135,15 @@ function answerOf(entry: Entry): string {
 /** Une ligne de texte qui ne doit rien ouvrir : ni formule, ni italique. */
 function plainLine(text: string): string {
 	return text.replaceAll('*', '×').replaceAll('$', '\\$').replaceAll('~', '\\~');
+}
+
+/**
+ * Un titre d'étape pédagogique : ses formules `$…$` restent des formules (V25,
+ * les pipelines y écrivent leurs maths), le texte autour n'ouvre rien.
+ */
+function proseWithMath(text: string): string {
+	return text
+		.split(INLINE_MATH)
+		.map((part, i) => (i % 2 === 1 ? part : plainLine(part)))
+		.join('');
 }

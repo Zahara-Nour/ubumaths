@@ -475,7 +475,7 @@
 			});
 
 			if (!response.ok) {
-				throw new Error(`API Error: ${response.status}`);
+				throw new Error(`Erreur du serveur (${response.status})`);
 			}
 
 			const data = await response.json();

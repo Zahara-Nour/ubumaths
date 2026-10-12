@@ -9842,8 +9842,6 @@ export type Database = {
       }
       riddles: {
         Row: {
-          answer: Json | null
-          correction: string
           created_at: string
           created_by: string
           difficulty: number
@@ -9857,8 +9855,6 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          answer?: Json | null
-          correction?: string
           created_at?: string
           created_by: string
           difficulty: number
@@ -9872,8 +9868,6 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          answer?: Json | null
-          correction?: string
           created_at?: string
           created_by?: string
           difficulty?: number

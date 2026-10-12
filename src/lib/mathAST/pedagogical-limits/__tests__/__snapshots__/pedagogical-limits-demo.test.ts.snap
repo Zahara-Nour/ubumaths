@@ -872,9 +872,9 @@ Status: infinite, Value: +\\infty
 Status: infinite, Value: +\\infty
 
 ========== SUPERIEUR (summarized) ==========
-- [analyze-left-limit] \\lim_{x \\to 1^-}
+- [analyze-left-limit] $\\lim_{x \\to 1^-}$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1^-} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [analyze-right-limit] \\lim_{x \\to 1^+}
+- [analyze-right-limit] $\\lim_{x \\to 1^+}$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1^+} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison gauche/droite
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
@@ -883,9 +883,9 @@ Status: infinite, Value: +\\infty
 Status: infinite, Value: +\\infty
 
 ========== SUPERIEUR (detailed) ==========
-- [analyze-left-limit] \\lim_{x \\to 1^-}
+- [analyze-left-limit] $\\lim_{x \\to 1^-}$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1^-} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [analyze-right-limit] \\lim_{x \\to 1^+}
+- [analyze-right-limit] $\\lim_{x \\to 1^+}$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1^+} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison gauche/droite
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{1}{\\left( \\left( x - 1 \\right)^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
@@ -924,18 +924,18 @@ Status: does-not-exist, Value: ∅ (does not exist)
 Status: does-not-exist, Value: ∅ (does not exist)
 
 ========== SUPERIEUR (summarized) ==========
-- [analyze-left-limit] \\lim_{x \\to 0^-}
+- [analyze-left-limit] $\\lim_{x \\to 0^-}$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^-} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
-- [analyze-right-limit] \\lim_{x \\to 0^+}
+- [analyze-right-limit] $\\lim_{x \\to 0^+}$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^+} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison gauche/droite
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\end{aligned}
 Status: does-not-exist, Value: ∅ (does not exist)
 
 ========== SUPERIEUR (detailed) ==========
-- [analyze-left-limit] \\lim_{x \\to 0^-}
+- [analyze-left-limit] $\\lim_{x \\to 0^-}$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^-} \\dfrac{1}{x}} \\\\ & = -\\infty \\end{aligned}
-- [analyze-right-limit] \\lim_{x \\to 0^+}
+- [analyze-right-limit] $\\lim_{x \\to 0^+}$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^+} \\dfrac{1}{x}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison gauche/droite
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{x}} \\end{aligned}
@@ -976,9 +976,9 @@ Status: infinite, Value: +\\infty
 Status: infinite, Value: +\\infty
 
 ========== SUPERIEUR (summarized) ==========
-- [analyze-left-limit] \\lim_{x \\to 0^-}
+- [analyze-left-limit] $\\lim_{x \\to 0^-}$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^-} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [analyze-right-limit] \\lim_{x \\to 0^+}
+- [analyze-right-limit] $\\lim_{x \\to 0^+}$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^+} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison gauche/droite
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
@@ -987,9 +987,9 @@ Status: infinite, Value: +\\infty
 Status: infinite, Value: +\\infty
 
 ========== SUPERIEUR (detailed) ==========
-- [analyze-left-limit] \\lim_{x \\to 0^-}
+- [analyze-left-limit] $\\lim_{x \\to 0^-}$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^-} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
-- [analyze-right-limit] \\lim_{x \\to 0^+}
+- [analyze-right-limit] $\\lim_{x \\to 0^+}$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0^+} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}
 - [compare-one-sided] Comparaison gauche/droite
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{1}{\\left( x^2 \\right)}} \\\\ & = +\\infty \\end{aligned}

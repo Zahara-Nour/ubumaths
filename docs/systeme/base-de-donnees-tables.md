@@ -1032,7 +1032,7 @@ Liens : `riddle_id` → `riddles`
 
 ### `riddles`
 
-`answer?` · `correction` · `created_at` · `created_by` · `difficulty` · `genre?` · `id` · `image_url?` · `riddle_number` · `statement` · `status` · `title` · `updated_at`
+`created_at` · `created_by` · `difficulty` · `genre?` · `id` · `image_url?` · `riddle_number` · `statement` · `status` · `title` · `updated_at`
 
 Liens : `created_by` → `profiles`
 

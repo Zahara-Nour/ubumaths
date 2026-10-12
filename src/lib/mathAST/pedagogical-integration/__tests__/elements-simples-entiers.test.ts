@@ -125,8 +125,8 @@ describe('intégration pédagogique — éléments simples à facteurs entiers',
 				expect(factored).toContain(toLatex(factor2));
 
 				const explanation = rendered.find((s) => s.rule === 'apply-partial-fractions')?.explanation;
-				expect(explanation).toContain('(A/p)·ln|px + q|');
-				expect(explanation).not.toContain('A·ln|x − r|');
+				expect(explanation).toContain('$\\dfrac{A}{p}\\ln|px+q|$');
+				expect(explanation).not.toContain('$A\\ln|x-r|$');
 			});
 		});
 	}
@@ -198,7 +198,7 @@ describe('intégration pédagogique — éléments simples à facteurs entiers',
 				expect(toLatex(decompose.after)).toBe(decomposition);
 				expect(toLatex(result.antiderivative)).toBe(antiderivative);
 				const explanation = rendered.find((s) => s.rule === 'apply-partial-fractions')?.explanation;
-				expect(explanation).toContain('A·ln|x − r|');
+				expect(explanation).toContain('$A\\ln|x-r|$');
 			});
 		}
 	});

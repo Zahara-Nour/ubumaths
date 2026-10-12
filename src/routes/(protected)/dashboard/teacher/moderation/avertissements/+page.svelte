@@ -281,7 +281,7 @@
 				});
 
 				if (!response.ok) {
-					throw new Error('Failed to add warnings');
+					throw new Error('Impossible d’ajouter les avertissements');
 				}
 
 				const result = await response.json();
@@ -368,7 +368,7 @@
 				});
 
 				if (!response.ok) {
-					throw new Error('Failed to remove warnings');
+					throw new Error('Impossible de retirer les avertissements');
 				}
 
 				const result = await response.json();

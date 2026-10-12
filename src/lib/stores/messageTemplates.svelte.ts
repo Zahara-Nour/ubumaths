@@ -101,7 +101,7 @@ class MessageTemplatesStore {
 			const response = await fetch(`/api/messages/templates/${id}`);
 
 			if (!response.ok) {
-				throw new Error('Template non trouvé');
+				throw new Error('Modèle introuvable');
 			}
 
 			const data = await response.json();
@@ -216,7 +216,7 @@ class MessageTemplatesStore {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.error || 'Erreur lors de la création du template');
+				throw new Error(errorData.error || 'Erreur lors de la création du modèle');
 			}
 
 			const data = await response.json();
@@ -255,7 +255,7 @@ class MessageTemplatesStore {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.error || 'Erreur lors de la mise à jour du template');
+				throw new Error(errorData.error || 'Erreur lors de la mise à jour du modèle');
 			}
 
 			const data = await response.json();
@@ -287,7 +287,7 @@ class MessageTemplatesStore {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(errorData.error || 'Erreur lors de la suppression du template');
+				throw new Error(errorData.error || 'Erreur lors de la suppression du modèle');
 			}
 
 			// Remove from local state
