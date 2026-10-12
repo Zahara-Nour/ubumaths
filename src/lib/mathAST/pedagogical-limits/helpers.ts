@@ -396,7 +396,7 @@ export function formatValueShort(node: MathNode): string {
 	return readableText(node)
 		.replace(/sqrt\((\w+)\)/g, '√$1')
 		.replace(/sqrt\(/g, '√(')
-		.replace(/\bpi\b/g, 'π')
+		.replace(/\\?\bpi\b/g, 'π')
 		.replace(/^-/, '−');
 }
 
