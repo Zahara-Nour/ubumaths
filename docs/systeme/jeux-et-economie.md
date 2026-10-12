@@ -227,6 +227,11 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
 - **`execute_trade` exige les quatre drapeaux** (validation et confirmation des deux côtés) ;
   chaque élève n'écrit que **sa** moitié de l'offre. Faille du 2026-10-04 (vol de cartes et de
   gidouilles) fermée par `supabase/migrations/20261004190000_echanges_garde_base.sql`.
+- **Validation dans le navigateur** : le store (`src/lib/stores/marketplace.svelte.ts`) et
+  `MarketplaceSettings.svelte` valident avec `src/lib/validation/marketplace.ts` et affichent
+  `issues[0].message` dans une notification. Zod y parle anglais (`src/lib/zod-locale.ts` ne
+  règle que le serveur) : chaque schéma porte ses messages, **messages de type compris** (champ
+  vidé → `NaN`). Garde : `src/lib/validation/__tests__/marketplace-messages.test.ts`.
 
 ### L'école est la frontière sociale ([ADR 0002](../adr/0002-mono-professeur-ecole-frontiere-sociale.md))
 
