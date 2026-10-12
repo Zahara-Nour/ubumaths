@@ -108,6 +108,9 @@ const BEFORE_NOT = String.raw`(^|[(,]|&&|\|\||\\land|\\lor)(\s*)`;
 const NOT_SIGN = new RegExp(BEFORE_NOT + String.raw`!(?=\s*[(\w\\])`, 'g');
 const NOT_WORD = new RegExp(BEFORE_NOT + String.raw`(?:not|non)(?=\s*\(|\s+)`, 'g');
 
+/** Une comparaison ou un opérateur logique dans l'entrée. */
+const LOGICAL_CONTEXT = /[<>=≤≥≠]|\\(?:ne|neq|le|leq|ge|geq|lt|gt|land|lor)(?![a-z])|&&|\s\|\|\s/;
+
 /** « et », « ou » en toutes lettres : entourés d'espaces seulement (`et := 3`, `ou*2` intacts). */
 const AND_WORD = /(?<=\s)(?:and|et)(?=\s)/g;
 const OR_WORD = /(?<=\s)(?:or|ou)(?=\s)/g;
@@ -134,6 +137,9 @@ function withLogicOperators(input: string, format: 'latex' | 'custom'): string {
 		.replace(/(?<![=!<>:])={2,3}(?!=)/g, '=')
 		.replace(/&&/g, and)
 		.replace(/\s\|\|\s/g, or);
+	// Les mots et le « non » seulement dans une comparaison ou une expression logique : sans
+	// elle, `non + 1`, `x et y` parlent d'une variable (2ᵉ revue)
+	if (!LOGICAL_CONTEXT.test(text)) return text;
 	if (!/\\(?:text|operatorname)/.test(text)) {
 		text = text.replace(AND_WORD, and.trim()).replace(OR_WORD, or.trim());
 	}

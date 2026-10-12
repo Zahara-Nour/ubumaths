@@ -66,7 +66,7 @@ import { normalize } from '../normal/normalize';
 import { denormalize } from '../normal/denormalize';
 import { normalizeExtended } from '../normal/normalize-extended';
 import { denormalizeExtended } from '../normal/denormalize';
-import { getChildren, mapNode } from '../transforms';
+import { findNodes, getChildren, mapNode } from '../transforms';
 import { areEquivalentCore } from '../equivalence-core';
 import { getActiveAbortChecker } from '../common/abort';
 import { rewriteFunctionPower } from '../common/function-power';
@@ -1267,7 +1267,10 @@ function booleanRefusal(node: MathNode): string {
 		return `Relation « ${relation} » non évaluable : seules = ≠ < > ≤ ≥ se tranchent`;
 	}
 	if (hasNumericNot(node)) {
-		return '« non » porte sur une comparaison : mets-la entre parenthèses, non(2 > 1)';
+		// `!5 > 1` se lit (non 5) > 1
+		return findNodes(node, isRelation).length > 0
+			? '« non » s’applique ici à un nombre : mets la comparaison entre parenthèses, non(2 > 1)'
+			: '« non » s’applique à une comparaison, pas à un nombre';
 	}
 	const variables = [...getVariables(node)];
 	return variables.length > 0

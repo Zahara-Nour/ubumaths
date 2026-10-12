@@ -119,3 +119,19 @@ describe('le message d’une comparaison non évaluable dit la vraie cause', () 
 		expect(run('1/0 > 1').output).not.toMatch(/variable/);
 	});
 });
+
+// 2ᵉ revue : une variable nommée `non`/`not` en tête devenait un « non » ; le message
+// parlait d'une comparaison absente
+describe('sans comparaison, aucun mot logique', () => {
+	it.each([
+		['non := 2', 'non + 1'],
+		['not := 2', 'not + 1'],
+		['non := 2', '(non + 1)']
+	])('%s puis %s : une variable', (first, input) => {
+		expect(run(first, input).output).not.toMatch(/« non »|lnot/);
+	});
+
+	it('!5 seul : le message ne parle pas de comparaison', () => {
+		expect(run('!5').output).not.toMatch(/comparaison entre parenthèses/);
+	});
+});
