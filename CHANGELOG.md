@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.25.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.24.0...v0.25.0) (2026-10-12)
+
+### ✨ Features
+
+- **questions:** sens de AB résolu par modèle (shared.capitalPairs, contexte, longueur) ([34cf13e](https://github.com/Zahara-Nour/ubumaths/commit/34cf13ec4425e0a5fa74acb6692eed6b90d8d980))
+
+### 🐛 Bug Fixes
+
+- **calcul:** plafond de calcul pour une base irrationnelle et un exposant géant ([a4d86be](https://github.com/Zahara-Nour/ubumaths/commit/a4d86be597da345f20e78fbe72e37b2aeafd317e))
+- **calcul:** règle des 1 000 caractères sur la longueur réelle, sommes de fractions rapides ([3541d2e](https://github.com/Zahara-Nour/ubumaths/commit/3541d2e08f6860a20397bebcb16def7ff64f59b4))
+- **enigmes:** bonne réponse du QCM recalée sur les choix gardés, réponses multiples exigées ([f663945](https://github.com/Zahara-Nour/ubumaths/commit/f663945e49c5aabd798f8395d2d60ddcab828a0b))
+- **enigmes:** réponse attendue validée par Zod, enregistrement lu au format SvelteKit ([5a79c6e](https://github.com/Zahara-Nour/ubumaths/commit/5a79c6e669191a23922d253bd800390857e0665c))
+- **integration:** plus de valeur pour une intégrale définie à travers un pôle ([b1ee2c9](https://github.com/Zahara-Nour/ubumaths/commit/b1ee2c96c534b33c9e5ddde8955be77fbdc7a5ee))
+- **integration:** refus même sans primitive, domaine non résolu sans valeur ([f0588f6](https://github.com/Zahara-Nour/ubumaths/commit/f0588f6d59b1726bbccdbe7e70d5d7cd1784bb20))
+- **questions:** nom de figure lu sur les cases maths seules, raccourcis rétablis ([8e55a7a](https://github.com/Zahara-Nour/ubumaths/commit/8e55a7af67e4e6064284fab0eeefad94d4bb9af6))
+
+### 📚 Documentation
+
+- **ecarts:** écarts trouvés en documentant la coquille et le tuteur ia ([36cffde](https://github.com/Zahara-Nour/ubumaths/commit/36cffde328fc8df5bcb4a1bd5a48a8041f5686a7))
+- **jeux:** réponse attendue d'énigme validée, envoi du formulaire ([84e7b99](https://github.com/Zahara-Nour/ubumaths/commit/84e7b99dac8d577a44c7623a724c6ff7a50f0375))
+- **questions:** sens de AB dans les questions, lot 3 des longueurs ([8c80c17](https://github.com/Zahara-Nour/ubumaths/commit/8c80c17773d163b3fdfce3a88f9f2a0295eae065))
+- **readme:** carte des cinq nouvelles docs système ([ba155c5](https://github.com/Zahara-Nour/ubumaths/commit/ba155c5413f0243ee56d4fa8d30cfbe4ff7df290))
+- **systeme:** coquille, tuteur ia, seo, éditeur riche, utilitaires et démos ([9c75f5c](https://github.com/Zahara-Nour/ubumaths/commit/9c75f5cafeb25dca491a94c736e90dd2fd45e13a))
+- **wip:** validation des réponses d'énigme mergée ([#1178](https://github.com/Zahara-Nour/ubumaths/issues/1178)) ([f3fa7ea](https://github.com/Zahara-Nour/ubumaths/commit/f3fa7ea68a640cc823a17ad6e6f6e363bd82a6d0))
+
 ## [0.24.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.23.0...v0.24.0) (2026-10-12)
 
 ### ✨ Features
