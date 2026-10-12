@@ -82,7 +82,7 @@ async function attachBackupTags(
 		result.errors.push({
 			table: 'resource_tags',
 			record_id: recordId,
-			error: `Failed to attach tags: ${err instanceof Error ? err.message : String(err)}`
+			error: `Impossible de rattacher les étiquettes : ${err instanceof Error ? err.message : String(err)}`
 		});
 	}
 }
@@ -104,7 +104,7 @@ export async function getBackupStats(supabase: SupabaseClientType): Promise<Back
 		.select('*', { count: 'exact', head: true });
 
 	if (exercisesError) {
-		throw new Error(`Failed to count exercises: ${exercisesError.message}`);
+		throw new Error(`Impossible de compter les exercices : ${exercisesError.message}`);
 	}
 
 	// Count templates
@@ -113,7 +113,7 @@ export async function getBackupStats(supabase: SupabaseClientType): Promise<Back
 		.select('*', { count: 'exact', head: true });
 
 	if (templatesError) {
-		throw new Error(`Failed to count templates: ${templatesError.message}`);
+		throw new Error(`Impossible de compter les modèles : ${templatesError.message}`);
 	}
 
 	// Count favorites
@@ -122,7 +122,7 @@ export async function getBackupStats(supabase: SupabaseClientType): Promise<Back
 		.select('*', { count: 'exact', head: true });
 
 	if (favoritesError) {
-		throw new Error(`Failed to count favorites: ${favoritesError.message}`);
+		throw new Error(`Impossible de compter les favoris : ${favoritesError.message}`);
 	}
 
 	// Count share tokens
@@ -131,7 +131,7 @@ export async function getBackupStats(supabase: SupabaseClientType): Promise<Back
 		.select('*', { count: 'exact', head: true });
 
 	if (tokensError) {
-		throw new Error(`Failed to count share tokens: ${tokensError.message}`);
+		throw new Error(`Impossible de compter les liens de partage : ${tokensError.message}`);
 	}
 
 	const exercises = exercisesCount ?? 0;
@@ -173,7 +173,7 @@ export async function exportBackupJSON(
 		.order('created_at', { ascending: true });
 
 	if (exercisesError) {
-		throw new Error(`Failed to fetch exercises: ${exercisesError.message}`);
+		throw new Error(`Impossible de charger les exercices : ${exercisesError.message}`);
 	}
 
 	// Tags depuis `resource_tags`, en une requête groupée pour tout l'export.
@@ -195,7 +195,7 @@ export async function exportBackupJSON(
 		.order('created_at', { ascending: true });
 
 	if (templatesError) {
-		throw new Error(`Failed to fetch templates: ${templatesError.message}`);
+		throw new Error(`Impossible de charger les modèles : ${templatesError.message}`);
 	}
 
 	// Fetch all favorites with user emails
@@ -210,7 +210,7 @@ export async function exportBackupJSON(
 		.order('created_at', { ascending: true });
 
 	if (favoritesError) {
-		throw new Error(`Failed to fetch favorites: ${favoritesError.message}`);
+		throw new Error(`Impossible de charger les favoris : ${favoritesError.message}`);
 	}
 
 	// Fetch all share tokens with creator emails
@@ -225,7 +225,7 @@ export async function exportBackupJSON(
 		.order('created_at', { ascending: true });
 
 	if (tokensError) {
-		throw new Error(`Failed to fetch share tokens: ${tokensError.message}`);
+		throw new Error(`Impossible de charger les liens de partage : ${tokensError.message}`);
 	}
 
 	// Transform to backup format
@@ -558,7 +558,13 @@ export async function restoreFromBackup(
 				exercise_favorites: { imported: 0, skipped: 0, replaced: 0, failed: 0 },
 				exercise_share_tokens: { imported: 0, skipped: 0, replaced: 0, failed: 0 }
 			},
-			errors: [{ table: 'backup', record_id: '', error: backupValidation.error ?? 'Unknown error' }]
+			errors: [
+				{
+					table: 'backup',
+					record_id: '',
+					error: backupValidation.error ?? 'Une erreur inattendue s’est produite'
+				}
+			]
 		};
 	}
 
@@ -574,7 +580,11 @@ export async function restoreFromBackup(
 				exercise_share_tokens: { imported: 0, skipped: 0, replaced: 0, failed: 0 }
 			},
 			errors: [
-				{ table: 'options', record_id: '', error: optionsValidation.error ?? 'Unknown error' }
+				{
+					table: 'options',
+					record_id: '',
+					error: optionsValidation.error ?? 'Une erreur inattendue s’est produite'
+				}
 			]
 		};
 	}
@@ -670,7 +680,7 @@ async function restoreExercises(
 					result.errors.push({
 						table: 'exercises',
 						record_id: record.id,
-						error: `User ${createdBy} does not exist`
+						error: `L’utilisateur ${createdBy} n’existe pas`
 					});
 					continue;
 				}
@@ -797,7 +807,7 @@ async function restoreTemplates(
 					result.errors.push({
 						table: 'exercise_templates',
 						record_id: record.id,
-						error: `User ${createdBy} does not exist`
+						error: `L’utilisateur ${createdBy} n’existe pas`
 					});
 					continue;
 				}
@@ -899,7 +909,7 @@ async function restoreFavorites(
 				result.errors.push({
 					table: 'exercise_favorites',
 					record_id: recordId,
-					error: `User ${record.user_id} does not exist`
+					error: `L’utilisateur ${record.user_id} n’existe pas`
 				});
 				continue;
 			}
@@ -909,7 +919,7 @@ async function restoreFavorites(
 				result.errors.push({
 					table: 'exercise_favorites',
 					record_id: recordId,
-					error: `Exercise ${record.exercise_id} does not exist`
+					error: `L’exercice ${record.exercise_id} n’existe pas`
 				});
 				continue;
 			}
@@ -983,7 +993,7 @@ async function restoreTokens(
 					result.errors.push({
 						table: 'exercise_share_tokens',
 						record_id: record.id,
-						error: `User ${createdBy} does not exist`
+						error: `L’utilisateur ${createdBy} n’existe pas`
 					});
 					continue;
 				}
@@ -994,7 +1004,7 @@ async function restoreTokens(
 				result.errors.push({
 					table: 'exercise_share_tokens',
 					record_id: record.id,
-					error: `Exercise ${record.exercise_id} does not exist`
+					error: `L’exercice ${record.exercise_id} n’existe pas`
 				});
 				continue;
 			}

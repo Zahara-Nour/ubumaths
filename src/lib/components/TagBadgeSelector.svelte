@@ -147,7 +147,7 @@
 			const url = kind ? `${tagsApiPath}?kind=${encodeURIComponent(kind)}` : tagsApiPath;
 			const response = await fetch(url);
 			if (!response.ok) {
-				throw new Error('Failed to fetch tags');
+				throw new Error('Impossible de charger les étiquettes');
 			}
 			const data = await response.json();
 			availableTags = data.tags;
@@ -177,7 +177,7 @@
 
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
-				throw new Error(errorData.message || 'Failed to create tag');
+				throw new Error(errorData.message || 'Impossible de créer l’étiquette');
 			}
 
 			const newTag: Tag = await response.json();

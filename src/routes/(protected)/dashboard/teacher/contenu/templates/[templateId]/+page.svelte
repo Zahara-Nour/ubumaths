@@ -105,11 +105,11 @@
 	$effect(() => {
 		if (form?.success) {
 			if (form.action === 'publish') {
-				toaster.success('Template publié avec succès');
+				toaster.success('Modèle publié avec succès');
 			} else if (form.action === 'archive') {
-				toaster.success('Template archivé');
+				toaster.success('Modèle archivé');
 			} else if (form.action === 'update') {
-				toaster.success('Template mis à jour');
+				toaster.success('Modèle mis à jour');
 			} else if (form.action === 'updateFromChapter') {
 				toaster.success(
 					data.template.status === 'draft'

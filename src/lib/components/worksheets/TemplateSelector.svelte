@@ -196,7 +196,7 @@
 	<Dialog.Content class="max-h-[90vh] max-w-4xl overflow-y-auto">
 		<Dialog.Header>
 			<Dialog.Title>
-				{previewTemplate?.name || 'Apercu du template'}
+				{previewTemplate?.name || 'Aperçu du modèle'}
 			</Dialog.Title>
 			{#if previewTemplate?.description}
 				<Dialog.Description>

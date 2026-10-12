@@ -206,7 +206,7 @@
 
 			// Fallback: fetch from API
 			const response = await fetch(`/api/students/${studentId}/vip-cards`);
-			if (!response.ok) throw new Error('Failed to load cards');
+			if (!response.ok) throw new Error('Impossible de charger les cartes');
 
 			const data = await response.json();
 			const vipCards = data.vipCards as StudentVipCards;

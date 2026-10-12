@@ -89,7 +89,7 @@
 			});
 
 			if (!deckResponse.ok) {
-				throw new Error('Failed to create deck');
+				throw new Error('Impossible de créer le deck');
 			}
 
 			const { deck } = await deckResponse.json();
@@ -165,7 +165,7 @@
 					type: 'template',
 					data: {
 						templateId,
-						title: template?.title || `Template ${templateId.slice(0, 8)}`
+						title: template?.title || `Modèle ${templateId.slice(0, 8)}`
 					}
 				});
 			});

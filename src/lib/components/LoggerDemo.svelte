@@ -51,7 +51,7 @@
 
 	function simulateError() {
 		try {
-			throw new Error('Simulated error for testing');
+			throw new Error('Erreur simulée pour le test');
 		} catch (err) {
 			defaultLogger.error('Caught error in component:', err);
 		}

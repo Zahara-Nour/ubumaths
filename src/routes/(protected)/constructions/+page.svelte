@@ -52,7 +52,7 @@
 			});
 
 			if (response.ok) {
-				toaster.success('Construction supprimee');
+				toaster.success('Construction supprimée');
 				await invalidateAll();
 			} else {
 				const result = await response.json();

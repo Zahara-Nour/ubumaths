@@ -622,7 +622,7 @@
 
 			if (!response.ok) {
 				const error = await response.json();
-				throw new Error(error.error || 'Failed to update profile');
+				throw new Error(error.error || 'Impossible de mettre à jour le profil');
 			}
 
 			const result: { success: boolean; profile: ExtendedProfile } = await response.json();

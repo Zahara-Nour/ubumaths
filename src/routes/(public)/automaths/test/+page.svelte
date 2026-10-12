@@ -205,7 +205,7 @@
 		// Aucun modèle du tout (hors ligne, sans cache) : échec explicite
 		if (templates.length === 0) {
 			throw new Error(
-				'Aucun template disponible. Veuillez vous reconnecter à Internet et recharger la page.'
+				'Aucun modèle disponible. Veuillez vous reconnecter à Internet et recharger la page.'
 			);
 		}
 		return buildSeriesItems(categories, templates, options);

@@ -154,7 +154,7 @@
 			// Generate initial preview
 			generatePreview();
 		} catch (err) {
-			typstError = getCompilerError() || `Initialization error: ${err}`;
+			typstError = getCompilerError() || `Erreur d’initialisation : ${err}`;
 			isTypstLoading = false;
 			console.error('Typst initialization error:', err);
 		}
@@ -343,7 +343,7 @@
 			const folder = zip.folder(folderName);
 
 			if (!folder) {
-				throw new Error('Failed to create zip folder');
+				throw new Error('Impossible de créer le dossier de l’archive zip');
 			}
 
 			// Pre-fetch external images by generating a sample Typst content first

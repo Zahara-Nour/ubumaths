@@ -673,7 +673,7 @@ export class TeacherDashboardCache {
 				credentials: 'include'
 			});
 			if (!response.ok) {
-				throw new Error(`Failed to fetch students: ${response.statusText}`);
+				throw new Error(`Impossible de charger les élèves : ${response.statusText}`);
 			}
 			const data = await response.json();
 			return data.students || [];
@@ -694,7 +694,7 @@ export class TeacherDashboardCache {
 				credentials: 'include'
 			});
 			if (!response.ok) {
-				throw new Error(`Failed to fetch rewards: ${response.statusText}`);
+				throw new Error(`Impossible de charger les récompenses : ${response.statusText}`);
 			}
 			const data = await response.json();
 			const rewardsMap = new SvelteMap<string, StudentRewards>();
@@ -728,7 +728,7 @@ export class TeacherDashboardCache {
 				credentials: 'include'
 			});
 			if (!response.ok) {
-				throw new Error(`Failed to fetch warnings: ${response.statusText}`);
+				throw new Error(`Impossible de charger les avertissements : ${response.statusText}`);
 			}
 			const data = await response.json();
 			const warningsMap = new SvelteMap<string, StudentWarningCounts>();
@@ -752,7 +752,9 @@ export class TeacherDashboardCache {
 	 */
 	private async fetchClassInfo(_classId: string): Promise<ClassInfo> {
 		console.warn('[Cache] fetchClassInfo not implemented yet - use hydration instead');
-		throw new Error('Class info fetch not implemented - use hydrateClassInfo() instead');
+		throw new Error(
+			'Chargement des informations de classe non disponible : utiliser hydrateClassInfo()'
+		);
 	}
 
 	/**
@@ -763,7 +765,9 @@ export class TeacherDashboardCache {
 	 */
 	private async fetchSchoolInfo(_schoolId: string): Promise<SchoolInfo> {
 		console.warn('[Cache] fetchSchoolInfo not implemented yet - use hydration instead');
-		throw new Error('School info fetch not implemented - use hydrateSchoolInfo() instead');
+		throw new Error(
+			'Chargement des informations d’établissement non disponible : utiliser hydrateSchoolInfo()'
+		);
 	}
 
 	// ========================================================================

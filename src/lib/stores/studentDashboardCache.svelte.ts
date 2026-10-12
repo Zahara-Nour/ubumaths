@@ -759,7 +759,7 @@ export class StudentDashboardCache {
 		try {
 			const response = await fetch('/api/student/profile');
 			if (!response.ok) {
-				throw new Error(`Failed to fetch profile: ${response.statusText}`);
+				throw new Error(`Impossible de charger le profil : ${response.statusText}`);
 			}
 			const data = await response.json();
 			return data.profile;
@@ -789,7 +789,7 @@ export class StudentDashboardCache {
 		try {
 			const response = await fetch('/api/student/rewards');
 			if (!response.ok) {
-				throw new Error(`Failed to fetch rewards: ${response.statusText}`);
+				throw new Error(`Impossible de charger les récompenses : ${response.statusText}`);
 			}
 			const data = await response.json();
 			return data.rewards;
@@ -812,7 +812,7 @@ export class StudentDashboardCache {
 		try {
 			const response = await fetch(`/api/student/warnings/${periodId}`);
 			if (!response.ok) {
-				throw new Error(`Failed to fetch warnings: ${response.statusText}`);
+				throw new Error(`Impossible de charger les avertissements : ${response.statusText}`);
 			}
 			const data = await response.json();
 			return data.warnings;

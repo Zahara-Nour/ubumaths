@@ -1016,7 +1016,7 @@ describe('Cache 3: Class Info', () => {
 	describe('Fetch Behavior', () => {
 		it('should throw error when trying to fetch (endpoint not implemented)', async () => {
 			await expect(cache.getClassInfo(classId)).rejects.toThrow(
-				'Class info fetch not implemented - use hydrateClassInfo() instead'
+				'Chargement des informations de classe non disponible : utiliser hydrateClassInfo()'
 			);
 		});
 	});
@@ -1100,7 +1100,7 @@ describe('Cache 4: School Info', () => {
 	describe('Fetch Behavior', () => {
 		it('should throw error when trying to fetch (endpoint not implemented)', async () => {
 			await expect(cache.getSchoolInfo(schoolId)).rejects.toThrow(
-				'School info fetch not implemented - use hydrateSchoolInfo() instead'
+				'Chargement des informations d’établissement non disponible : utiliser hydrateSchoolInfo()'
 			);
 		});
 	});

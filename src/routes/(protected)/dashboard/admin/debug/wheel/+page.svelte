@@ -163,7 +163,7 @@
 			await navigator.clipboard.writeText(generateCode());
 			toaster.success('Code copied to clipboard!');
 		} catch {
-			toaster.error('Failed to copy code');
+			toaster.error('Impossible de copier le code');
 		}
 	};
 
