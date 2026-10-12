@@ -1262,6 +1262,16 @@ function evaluateToBoolean(node: MathNode): boolean | undefined {
 	if (isRelation(node)) {
 		const rel = node.relation;
 
+		// Une chaîne `a < b < c` (arbre `(a < b) < c`) : vraie si chaque maillon l'est —
+		// `a < b`, puis `b < c`. Répondait « Cannot evaluate boolean expression » (2026-10-12)
+		if (isRelation(node.left)) {
+			const first = evaluateToBoolean(node.left);
+			if (first === false) return false;
+			const second = evaluateToBoolean({ ...node, left: node.left.right });
+			if (second === false) return false;
+			return first === undefined || second === undefined ? undefined : true;
+		}
+
 		// Equality and inequality use semantic equivalence
 		if (rel === '=' || rel === '≡' || rel === '!=' || rel === '≢') {
 			const equal = areEquivalentCore(node.left, node.right);

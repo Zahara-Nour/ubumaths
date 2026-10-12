@@ -144,7 +144,10 @@ export function parse(input: string, options?: PipelineOptions): PipelineResult 
 	// Parse as LaTeX (default)
 	// Get parser options from evaluation state (includes generic function names)
 	const parserOptions = getParserOptions(options?.evalState);
-	const result = parseLatexSafe(trimmedInput, {
+	// « Différent de » tapé `!=` : le LaTeX l'écrit `\ne`, et lisait `2 != 3` comme
+	// `factorial(2) = 3`. Même lecture que le parseur maison (`x!=3` : ≠) ; `3! = 6`, avec
+	// une espace, reste une factorielle
+	const result = parseLatexSafe(trimmedInput.replace(/!=/g, '\\ne '), {
 		mode: 'tolerant',
 		...parserOptions
 	});
