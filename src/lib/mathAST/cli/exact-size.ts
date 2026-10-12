@@ -21,6 +21,7 @@
 
 import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
+import { rational } from '../normal/rational';
 import {
 	isAddition,
 	isBoolean,
@@ -179,6 +180,130 @@ function powerCharacters(value: Rational, k: number): number {
 	return value.d === 1n ? numerator : numerator + size * log10Of(value.d) + 2;
 }
 
+/** Les nombres premiers sous 1 000, pour décomposer les bases d'un produit. */
+const SMALL_PRIMES: readonly bigint[] = (() => {
+	const primes: bigint[] = [];
+	for (let n = 2; n < 1000; n++) {
+		if (primes.every((p) => n % Number(p) !== 0)) primes.push(BigInt(n));
+	}
+	return primes;
+})();
+
+/** Facteur → (log₁₀ du facteur, exposant). Un reste sans petit diviseur compte comme un facteur. */
+type Factorization = Map<string, { readonly log10: number; exponent: number }>;
+
+/** Ajoute à `into` les facteurs de x > 0, chacun à l'exposant `exponent`. */
+function addFactors(into: Factorization, x: bigint, exponent: number): void {
+	for (const p of SMALL_PRIMES) {
+		if (x === 1n) return;
+		if (p * p > x) break;
+		let count = 0;
+		while (x % p === 0n) {
+			x /= p;
+			count += 1;
+		}
+		if (count > 0) addFactor(into, p, count * exponent);
+	}
+	if (x > 1n) addFactor(into, x, exponent);
+}
+
+function addFactor(into: Factorization, factor: bigint, exponent: number): void {
+	const key = factor.toString();
+	const entry = into.get(key);
+	if (entry) entry.exponent += exponent;
+	else into.set(key, { log10: log10Of(factor), exponent });
+}
+
+/** Le signe d'un produit en cours de décomposition. */
+interface Sign {
+	negative: boolean;
+}
+
+/**
+ * Les facteurs d'un produit, d'un quotient, de puissances entières de bases rationnelles courtes,
+ * chacun à l'exposant `exponent` ; `false` dès qu'autre chose s'y trouve (une somme développée, π,
+ * une variable…) ou qu'un exposant sort des entiers sûrs (`2^{10^{20}+1}` y perdrait son 1).
+ */
+function factorization(node: MathNode, exponent: number, into: Factorization, sign: Sign): boolean {
+	if (isDelimiter(node)) return factorization(node.content, exponent, into, sign);
+	if (isOpposite(node)) {
+		if (exponent % 2 !== 0) sign.negative = !sign.negative;
+		return factorization(node.operand, exponent, into, sign);
+	}
+	if (isMultiplication(node)) {
+		return (
+			factorization(node.left, exponent, into, sign) &&
+			factorization(node.right, exponent, into, sign)
+		);
+	}
+	if (isDivision(node)) {
+		return (
+			factorization(node.numerator, exponent, into, sign) &&
+			factorization(node.denominator, -exponent, into, sign)
+		);
+	}
+	if (isSuperscript(node)) {
+		const k = integerExponent(node.superscript);
+		if (k === null || !Number.isSafeInteger(k) || !Number.isSafeInteger(exponent * k)) {
+			return false;
+		}
+		return factorization(node.base, exponent * k, into, sign);
+	}
+	if (!isPureRational(node) || estimate(node) > SMALL_BASE_CHARACTERS) return false;
+	const value = smallRational(node);
+	if (value === null || value.n === 0n) return false;
+	if (value.n < 0n && exponent % 2 !== 0) sign.negative = !sign.negative;
+	addFactors(into, value.n < 0n ? -value.n : value.n, exponent);
+	addFactors(into, value.d, -exponent);
+	return true;
+}
+
+/** Un produit, un quotient, une puissance (sous ses parenthèses) : ce que `productValue` lit. */
+function isProductLike(node: MathNode): boolean {
+	if (isDelimiter(node)) return isProductLike(node.content);
+	return isMultiplication(node) || isDivision(node) || isSuperscript(node);
+}
+
+/** Les facteurs compensés d'un produit de puissances, ou `null`. */
+function compensatedFactors(node: MathNode): { factors: Factorization; sign: Sign } | null {
+	if (!isProductLike(node)) return null;
+	const factors: Factorization = new Map();
+	const sign: Sign = { negative: false };
+	return factorization(node, 1, factors, sign) ? { factors, sign } : null;
+}
+
+/** Les caractères d'une fraction donnée par ses facteurs compensés. */
+function factorsCharacters(factors: Factorization): number {
+	let numerator = 0;
+	let denominator = 0;
+	for (const { log10, exponent } of factors.values()) {
+		if (exponent > 0) numerator += exponent * log10;
+		else denominator -= exponent * log10;
+	}
+	return numerator + 1 + (denominator > 0 ? denominator + 2 : 0);
+}
+
+/**
+ * La valeur exacte d'un produit ou d'un quotient de puissances, calculée sur ses facteurs
+ * compensés — sans les puissances intermédiaires, que le moteur calcule une à une :
+ * `(1+1/100000)^{100000}×(1+1/100000)^{-100000}` = 1 y prenait 305 s, `10^{60000}/10^{59990}`
+ * gardait son écriture (revue, 2026-10-12). `null` si ce n'en est pas un, ou si la valeur
+ * compensée dépasse elle-même le plafond de calcul.
+ */
+export function productValue(node: MathNode): Rational | null {
+	const compensated = compensatedFactors(node);
+	if (compensated === null) return null;
+	if (factorsCharacters(compensated.factors) > MAX_PREDICTED_CHARACTERS) return null;
+	let numerator = 1n;
+	let denominator = 1n;
+	for (const [key, { exponent }] of compensated.factors) {
+		if (exponent > 0) numerator *= BigInt(key) ** BigInt(exponent);
+		else if (exponent < 0) denominator *= BigInt(key) ** BigInt(-exponent);
+	}
+	// Deux restes sans petit diviseur peuvent partager un facteur : `rational` réduit
+	return rational(compensated.sign.negative ? -numerator : numerator, denominator);
+}
+
 function estimate(node: MathNode): number {
 	if (isNumber(node)) {
 		const value = smallRational(node);
@@ -214,10 +339,12 @@ function estimate(node: MathNode): number {
 
 /**
  * Le nombre de caractères qu'aurait le résultat exact, à quelques-uns près, sans le calculer
- * (`(1+1/1000)^{1000}` : environ 6 003) — une borne : les simplifications n'y sont pas.
+ * (`(1+1/1000)^{1000}` : environ 6 003) — pour la note. Un produit de puissances y compte après
+ * compensation (`10^{60000}/10^{59990}` : 11) ; ailleurs, une borne sans les simplifications.
  */
 export function estimatedExactDigits(node: MathNode): number {
-	return estimate(node);
+	const compensated = compensatedFactors(node);
+	return compensated === null ? estimate(node) : factorsCharacters(compensated.factors);
 }
 
 /**

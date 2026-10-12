@@ -479,7 +479,10 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     (`evaluate`, `evaluateNodeToApproximatedNumber`) garde ses bornes. La taille d'un résultat
     exact se **prévoit** sans le calculer : `cli/exact-size.ts` (`estimatedExactDigits`, une borne
     qui ignore les simplifications ; la console n'en tire que son plafond de calcul,
-    `isTooLongToCompute`, et mesure la longueur réelle par `exactCharacters`).
+    `isTooLongToCompute`, et mesure la longueur réelle par `exactCharacters`). Au-delà du
+    plafond, un produit ou quotient de puissances se calcule sur ses facteurs premiers compensés
+    (`productValue`) : le moteur, lui, calcule chaque puissance avant de compenser
+    (`(1+1/100000)^{100000}×(1+1/100000)^{-100000}` : 305 s).
 
 ## Le moteur de réécriture et les étapes
 
