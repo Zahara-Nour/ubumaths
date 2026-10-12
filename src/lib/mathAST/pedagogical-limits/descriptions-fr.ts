@@ -39,11 +39,11 @@
 
 import type { MathNode } from '../types';
 import type { IndeterminateForm } from '../limits/types';
-import { isNumber, isSuperscript, isVariable } from '../guards';
+import { isAddition, isSubtraction } from '../guards';
 import { containsVariable } from '../common/contains-variable';
 import type { LimitsSchoolLevel } from './types';
 import type { PedagogicalLimitRule, PedagogicalLimitStep } from './types';
-import { formatValueShort } from './helpers';
+import { formatPowerShort, formatValueShort } from './helpers';
 
 // =============================================================================
 // Function signatures
@@ -78,17 +78,7 @@ function formLabel(form: IndeterminateForm | undefined): string {
 	return form ?? '?';
 }
 
-const SUPERSCRIPT_DIGITS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
-
-/** Une puissance de la variable en texte : `x`, `x²`, `x¹⁰` */
-function powerLabel(node: MathNode): string {
-	if (isVariable(node)) return node.name;
-	if (isSuperscript(node) && isVariable(node.base) && isNumber(node.superscript)) {
-		const digits = [...node.superscript.value].map((d) => SUPERSCRIPT_DIGITS[Number(d)]);
-		return `${node.base.name}${digits.join('')}`;
-	}
-	return formatValueShort(node);
-}
+const powerLabel = formatPowerShort;
 
 /** Facteur d'un produit écrit en texte : `(−∞)`, `(−2)`, `1/3` */
 function factorLabel(node: MathNode): string {
@@ -102,21 +92,43 @@ function simplifyTitle(s: PedagogicalLimitStep, fallback: string): string {
 	return dominant ? `Simplification par ${powerLabel(dominant)}` : fallback;
 }
 
-/** « Le facteur x³ tend vers −∞ et l'autre facteur tend vers −2 : par produit, … » */
+/**
+ * Le facteur restant nommé en mots, jamais en LaTeX (l'explication s'affiche
+ * en texte brut, V25) : « le quotient restant », « la parenthèse ».
+ */
+function restLabel(node: MathNode): string {
+	if (node.type === 'division') return 'le quotient restant';
+	if (isAddition(node) || isSubtraction(node)) return 'la parenthèse';
+	return "l'autre facteur";
+}
+
+/**
+ * « Le facteur x³ tend vers −∞ et le quotient restant tend vers 1 : par
+ * produit, (−∞) × 1 = −∞ » ; un facteur constant : « … et est multiplié par 1/2 ».
+ */
 function productExplanation(s: PedagogicalLimitStep): string | undefined {
-	const { power, powerLimit, restLimit } = s.bindings ?? {};
-	if (!power || !powerLimit || !restLimit) return undefined;
+	const { power, powerLimit, rest, restLimit } = s.bindings ?? {};
+	if (!power || !powerLimit || !rest || !restLimit) return undefined;
+	const other = containsVariable(rest, s.variable)
+		? `${restLabel(rest)} tend vers ${formatValueShort(restLimit)}`
+		: `est multiplié par ${formatValueShort(restLimit)}`;
 	return (
-		`Le facteur ${powerLabel(power)} tend vers ${formatValueShort(powerLimit)} et l'autre facteur ` +
-		`tend vers ${formatValueShort(restLimit)} : par produit, ${factorLabel(powerLimit)} × ` +
-		`${factorLabel(restLimit)} = ${valueLabel(s)}.`
+		`Le facteur ${powerLabel(power)} tend vers ${formatValueShort(powerLimit)} et ${other} : ` +
+		`par produit, ${factorLabel(powerLimit)} × ${factorLabel(restLimit)} = ${valueLabel(s)}.`
 	);
 }
 
 /** « Le numérateur tend vers 3 et le dénominateur vers 2 : … », « 2 divisé par … » */
 function quotientExplanation(s: PedagogicalLimitStep): string | undefined {
-	const { numerator, numeratorLimit, denominatorLimit } = s.bindings ?? {};
-	if (!numerator || !numeratorLimit || !denominatorLimit) return undefined;
+	const { numerator, numeratorLimit, denominatorLimit, denominatorAbsLimit } = s.bindings ?? {};
+	if (!numerator || !numeratorLimit) return undefined;
+	// Signe du dénominateur illisible ((π − 4)x²) : on raisonne en valeur absolue.
+	if (denominatorAbsLimit) {
+		return containsVariable(numerator, s.variable)
+			? `Le numérateur tend vers ${formatValueShort(numeratorLimit)} et le dénominateur, en valeur absolue, vers +∞ : par quotient, la limite vaut ${valueLabel(s)}.`
+			: `${formatValueShort(numeratorLimit)} divisé par une quantité dont la valeur absolue tend vers +∞ : la limite vaut ${valueLabel(s)}.`;
+	}
+	if (!denominatorLimit) return undefined;
 	if (denominatorLimit.type === 'infinity' && !containsVariable(numerator, s.variable)) {
 		return `${formatValueShort(numeratorLimit)} divisé par une quantité qui tend vers ${formatValueShort(denominatorLimit)} : la limite vaut ${valueLabel(s)}.`;
 	}
@@ -165,6 +177,7 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'identify-composition': () => `Identification de la composée`,
 	'apply-composition': () => `Application de la limite d'une composée`,
 	'apply-linearity': () => `Linéarité de la limite`,
+	'apply-sum': () => `Limite d'une somme`,
 	'apply-product': () => `Limite d'un produit`,
 	'apply-quotient': () => `Limite d'un quotient`,
 	// ---- Conclusion ----
@@ -204,6 +217,7 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'identify-composition': () => `Composée f \\circ g`,
 	'apply-composition': () => `Limite d'une composée`,
 	'apply-linearity': () => `Linéarité`,
+	'apply-sum': () => `Somme`,
 	'apply-product': () => `Produit`,
 	'apply-quotient': () => `Quotient`,
 	conclude: (s) => `= ${valueLabel(s)}`,
@@ -224,10 +238,17 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 			return `Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.`;
 		}
 		if (form === '∞/∞') {
-			return `Numérateur et dénominateur tendent vers l'infini : on ne peut pas conclure directement. On factorise par le terme prépondérant.`;
+			const simplifyBy = s.bindings?.simplifyBy;
+			const next = simplifyBy
+				? `On simplifie par ${powerLabel(simplifyBy)}.`
+				: `On factorise par le terme prépondérant.`;
+			return `Numérateur et dénominateur tendent vers l'infini : on ne peut pas conclure directement. ${next}`;
 		}
 		if (form === '∞-∞') {
-			return `On a une différence d'infinis : on ne peut pas conclure directement. On factorise par le terme prépondérant.`;
+			const next = s.bindings?.expandsTo
+				? `On développe.`
+				: `On factorise par le terme prépondérant.`;
+			return `On a une différence d'infinis : on ne peut pas conclure directement. ${next}`;
 		}
 		if (form === '0*∞') {
 			return `On a un produit indéterminé 0 × ∞ : on transforme en quotient.`;
@@ -251,8 +272,15 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		`Dans chaque somme, on met en facteur la plus grande puissance de ${s.variable} : les autres termes deviennent des quotients qui tendent vers 0.`,
 	'limits-of-terms': (s) =>
 		`Un nombre divisé par une puissance de ${s.variable} tend vers 0 : chaque parenthèse tend vers son premier terme.`,
-	'apply-product': productExplanation,
-	'apply-quotient': quotientExplanation,
+	'apply-sum': () => `Pas de forme indéterminée : on conclut par somme des limites.`,
+	'apply-product': (s) =>
+		s.termLimits
+			? `Pas de forme indéterminée : on conclut par produit des limites.`
+			: productExplanation(s),
+	'apply-quotient': (s) =>
+		s.termLimits
+			? `Pas de forme indéterminée : on conclut par quotient des limites.`
+			: quotientExplanation(s),
 	'apply-squeeze': () => `Si f ≤ g ≤ h et f, h tendent vers la même limite ℓ, alors g aussi.`,
 	conclude: () => `On peut maintenant conclure.`,
 	'conclude-infinite': () => `Le résultat est une limite infinie.`,
@@ -263,6 +291,8 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 const SUPERIEUR_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'detect-indeterminate-form': (s) => {
 		// En ±∞ sur un polynôme ou un quotient de polynômes : terme prépondérant
+		if (s.bindings?.expandsTo) return `On développe.`;
+		if (s.bindings?.simplifyBy) return `On simplifie par ${powerLabel(s.bindings.simplifyBy)}.`;
 		if (s.bindings?.dominant) return `On factorise par le terme prépondérant.`;
 		const form = s.indeterminateForm;
 		if (form === '0/0' || form === '∞/∞')

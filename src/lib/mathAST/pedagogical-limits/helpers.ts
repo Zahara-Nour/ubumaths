@@ -245,6 +245,18 @@ export function formatValueShort(node: MathNode): string {
 		.replace(/^-/, '−');
 }
 
+const SUPERSCRIPT_DIGITS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+
+/** Une puissance de la variable en texte, pour les titres et explications : `x`, `x²`, `x¹⁰` */
+export function formatPowerShort(node: MathNode): string {
+	if (isVariable(node)) return node.name;
+	if (isSuperscript(node) && isVariable(node.base) && isNumber(node.superscript)) {
+		const digits = [...node.superscript.value].map((d) => SUPERSCRIPT_DIGITS[Number(d)]);
+		return `${node.base.name}${digits.join('')}`;
+	}
+	return formatValueShort(node);
+}
+
 /**
  * Le facteur entier de la racine a pour les titres, comme un élève l'écrit :
  * `(x − 2)`, `(x + 3)`, `(2x − 1)` en 1/2 (V23).

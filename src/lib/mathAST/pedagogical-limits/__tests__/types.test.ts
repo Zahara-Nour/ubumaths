@@ -401,6 +401,7 @@ describe('pedagogical-limits types', () => {
 			'identify-composition',
 			'apply-composition',
 			'apply-linearity',
+			'apply-sum',
 			'apply-product',
 			'apply-quotient',
 			// Conclusion
@@ -410,7 +411,7 @@ describe('pedagogical-limits types', () => {
 		] as const satisfies readonly PedagogicalLimitRule[];
 
 		// Count sentinel — matches the union cardinality.
-		expect(allRules).toHaveLength(30);
+		expect(allRules).toHaveLength(31);
 
 		// Compile-time exhaustiveness check.
 		type _MissingFromAllRules = Exclude<PedagogicalLimitRule, (typeof allRules)[number]>;

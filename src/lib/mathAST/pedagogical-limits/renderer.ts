@@ -27,7 +27,7 @@
  */
 
 import { toLatex } from '../latex-generator';
-import { isAddition, isSubtraction } from '../guards';
+import { isAddition, isOpposite, isSubtraction } from '../guards';
 import { containsVariable } from '../common/contains-variable';
 import type { LimitDirection } from '../limits/types';
 import type { MathNode } from '../types';
@@ -135,7 +135,7 @@ function formatExpressionLatex(step: PedagogicalLimitStep): string {
 	}
 
 	const limitSub = formatLimitSubscript(step.variable, step.approach, step.direction);
-	if (step.rule === 'limits-of-terms' && step.termLimits) {
+	if (step.termLimits) {
 		return termLimitsLatex(step.termLimits, limitSub);
 	}
 	const left = limitLatex(limitSub, step.before);
@@ -167,10 +167,16 @@ function formatExpressionLatex(step: PedagogicalLimitStep): string {
  * ```
  */
 function termLimitsLatex(termLimits: TermLimits, limitSub: string): string {
-	const line = (l: LimitLine) => `${limitLatex(limitSub, l.expression)} = ${toLatex(l.value)}`;
+	const line = (l: LimitLine) => {
+		// `\\lim (-x^4)`, jamais `\\lim -x^4`
+		const body = isOpposite(l.expression)
+			? `\\lim_{${limitSub}} \\left( ${toLatex(l.expression)} \\right)`
+			: limitLatex(limitSub, l.expression);
+		return `${body} = ${toLatex(l.value)}`;
+	};
 	const rows = [
-		...termLimits.vanishing.map(line),
-		...termLimits.factors.map((l, k) => `\\text{${k === 0 ? 'donc' : 'et'} } ${line(l)}`)
+		...termLimits.premises.map(line),
+		...termLimits.conclusions.map((l, k) => `\\text{${k === 0 ? 'donc' : 'et'} } ${line(l)}`)
 	];
 	return `\\begin{aligned}\n${rows.map((r) => `  & ${r}`).join(' \\\\\n')}\n\\end{aligned}`;
 }
@@ -243,15 +249,16 @@ export class PedagogicalLimitRenderer implements StepRenderer<
 
 /**
  * Étapes cachées en mode résumé : l'annonce (`identify-limit`), la forme
- * indéterminée, et, en ±∞, le développement, les limites des termes et la
- * limite du produit / du quotient — le résumé garde la factorisation, la
- * simplification et la conclusion.
+ * indéterminée, et, en ±∞, les limites des termes et la limite de la somme /
+ * du produit / du quotient — le résumé garde le développement, la
+ * factorisation, la simplification et la conclusion (décision de David,
+ * 2026-10-12).
  */
 const HIDDEN_WHEN_SUMMARIZED: ReadonlySet<PedagogicalLimitRule> = new Set([
 	'identify-limit',
 	'detect-indeterminate-form',
-	'expand',
 	'limits-of-terms',
+	'apply-sum',
 	'apply-product',
 	'apply-quotient'
 ]);

@@ -52,6 +52,7 @@ import {
 	isAddition,
 	isDelimiter,
 	isInfinity as isInfinityNode,
+	isMultiplication,
 	isOpposite,
 	isPositive,
 	isSubtraction,
@@ -68,6 +69,7 @@ import {
 	formatLinearFactor,
 	formatValueShort,
 	isAtInfinity,
+	formatPowerShort,
 	isDivision,
 	isNumber,
 	multiply,
@@ -774,15 +776,49 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 	if (n === 0 && m === 0) {
 		const constant = exactQuotient(numLead, denLead, ctx);
 		if (constant === null) return null;
-		const step = makeStep(ctx, {
-			rule: 'conclude',
-			description: `La fonction est constante : sa limite vaut ${formatValueShort(constant)}.`,
-			before: expression,
-			after: constant,
-			verbosityLevel: 'summarized',
-			globalAfter: constant
-		});
-		return { steps: [step], value: constant, status: 'exact', indeterminateForm: 'none' };
+		// Écrite non développée (`(x+1)^2 - x^2 - 2x`) : la forme ∞ − ∞ s'annonce,
+		// puis on développe, comme pour une somme non constante.
+		const steps: PedagogicalLimitStep[] = [];
+		const form: IndeterminateForm =
+			hasOppositeInfinities(num, ctx) || hasOppositeInfinities(den, ctx) ? '∞-∞' : 'none';
+		if (form !== 'none') {
+			steps.push(
+				makeStep(ctx, {
+					rule: 'detect-indeterminate-form',
+					description: `Forme indéterminée ${form} reconnue`,
+					before: expression,
+					after: expression,
+					verbosityLevel: 'detailed',
+					indeterminateForm: form,
+					// Rien à factoriser : le développement donne la constante
+					bindings: { expandsTo: constant }
+				})
+			);
+		}
+		if (!num.expanded || !den.expanded) {
+			const x = makeVariable(ctx.variable);
+			const top = expandedNode(num, x);
+			steps.push(
+				makeStep(ctx, {
+					rule: 'expand',
+					description: 'On développe',
+					before: expression,
+					after: isQuotient ? overDenominator(top, expandedNode(den, x)) : top,
+					verbosityLevel: 'detailed'
+				})
+			);
+		}
+		steps.push(
+			makeStep(ctx, {
+				rule: 'conclude',
+				description: `La fonction est constante : sa limite vaut ${formatValueShort(constant)}.`,
+				before: expression,
+				after: constant,
+				verbosityLevel: 'summarized',
+				globalAfter: constant
+			})
+		);
+		return { steps, value: constant, status: 'exact', indeterminateForm: form };
 	}
 
 	// Valeur EXACTE (V26) : quotient des coefficients dominants, ou 0, ou ±∞.
@@ -801,20 +837,31 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 			globalAfter: value
 		});
 
-	// Un monôme seul (πx, −3x²) : une seule étape, sans factorisation.
-	if (!isQuotient && num.terms.length === 1) {
+	// Un monôme seul écrit tel quel (πx, −3x²) : une seule étape, sans factorisation.
+	// Écrit autrement (`(x+1)^2 - x^2 - 1`), il faut d'abord développer.
+	if (!isQuotient && num.terms.length === 1 && num.expanded) {
 		return { steps: [conclusion()], value, status, indeterminateForm: 'none' };
 	}
 
-	// Les sommes à écrire exigent des signes lisibles exactement.
-	if (!hasReadableSigns(num) || !hasReadableSigns(den)) return null;
-
+	// Un signe illisible (π − 4) ne compte que s'il décide du résultat (n > m,
+	// refusé par `limitValue`) ; sinon il s'écrit tel quel, sans ligne de signe.
 	const form: IndeterminateForm =
 		isQuotient && n >= 1 && m >= 1
 			? '∞/∞'
-			: hasOppositeInfinities(num, ctx.approach) || hasOppositeInfinities(den, ctx.approach)
+			: hasOppositeInfinities(num, ctx) || hasOppositeInfinities(den, ctx)
 				? '∞-∞'
 				: 'none';
+	// Pas de forme indéterminée : on conclut par les opérations, sans factoriser
+	// (décision de David, 2026-10-12) — `\\lim (x + 1) = +∞`, donc `\\lim \\frac{1}{x+1} = 0`.
+	if (form === 'none') {
+		const direct = operationSteps(expression, value, ctx);
+		if (direct !== null) {
+			return { steps: [...direct, conclusion()], value, status, indeterminateForm: form };
+		}
+	}
+
+	// Deux monômes : rien à factoriser, on simplifie directement par x^min(n, m).
+	const bothMonomials = isQuotient && n >= 1 && m >= 1 && !isSum(num) && !isSum(den);
 	const x = makeVariable(ctx.variable);
 	const compact = ctx.strategy.verbosityCompactConclusion;
 	const steps: PedagogicalLimitStep[] = [];
@@ -831,7 +878,10 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 				after: expression,
 				verbosityLevel: 'detailed',
 				indeterminateForm: form,
-				bindings: { dominant: xPower(ctx.variable, Math.max(n, m)) }
+				bindings: {
+					dominant: xPower(ctx.variable, Math.max(n, m)),
+					...(bothMonomials && { simplifyBy: xPower(ctx.variable, Math.min(n, m)) })
+				}
 			})
 		);
 	}
@@ -881,7 +931,7 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 		steps.push(
 			makeStep(ctx, {
 				rule: 'simplify-common-factor',
-				description: `Simplification par ${formatValueShort(xPower(ctx.variable, k))}`,
+				description: `Simplification par ${formatPowerShort(xPower(ctx.variable, k))}`,
 				before: current,
 				after: simplified,
 				verbosityLevel: 'summarized',
@@ -1028,7 +1078,8 @@ function irrationalSideTerms(expr: MathNode, variable: string): SideTerm[] | nul
 		const groupForm: NormalForm = { numerator: group, denominator: form.denominator, hash: '' };
 		const coefficient = denormalize({ ...groupForm, hash: hashNormalForm(groupForm) });
 		const numSign = constantSign(group);
-		const sign = numSign === null || denSign === null ? null : numSign === denSign ? 1 : -1;
+		const exactSign = numSign === null || denSign === null ? null : numSign === denSign ? 1 : -1;
+		const sign = exactSign ?? numericSign(coefficient);
 		const magnitude =
 			sign === null ? null : sign > 0 ? coefficient : denormalize(normalize(opposite(coefficient)));
 		return { degree, coefficient, rational: null, sign, magnitude };
@@ -1042,6 +1093,23 @@ function irrationalSideTerms(expr: MathNode, variable: string): SideTerm[] | nul
 function constantSign(terms: readonly NormalTerm[]): 1 | -1 | null {
 	if (terms.length !== 1 || terms[0].coefficient.terms.length !== 1) return null;
 	return terms[0].coefficient.terms[0].rational.n < 0n ? -1 : 1;
+}
+
+/** Marge du signe numérique : en deçà, la constante est trop proche de 0 pour trancher. */
+const SIGN_MARGIN = 1e-9;
+
+/**
+ * Signe d'une constante à plusieurs termes (π − 4, √2 − 1) par évaluation
+ * numérique, retenu seulement si |valeur| > 1e-9 ; sinon (ou non évaluable) null.
+ */
+function numericSign(constant: MathNode): 1 | -1 | null {
+	try {
+		const value = compile(constant)({});
+		if (!Number.isFinite(value) || Math.abs(value) <= SIGN_MARGIN) return null;
+		return value > 0 ? 1 : -1;
+	} catch {
+		return null;
+	}
 }
 
 /**
@@ -1073,21 +1141,100 @@ function isSum(side: Side): boolean {
 	return side.terms.length >= 2;
 }
 
-function hasReadableSigns(side: Side): boolean {
-	return side.terms.every((t) => t.sign !== null);
+/**
+ * Des termes ÉCRITS de la somme qui tendent vers +∞ et d'autres vers −∞ :
+ * forme ∞ − ∞, développés ou non (`(x+1)^2 - x^2`). Chaque terme écrit suit
+ * son terme de plus haut degré ; `(x + 1)^2` seul n'est pas une différence.
+ */
+function hasOppositeInfinities(side: Side, ctx: PipelineContext): boolean {
+	const negative = classifyApproach(ctx.approach) === 'negative-infinity';
+	const signs: number[] = [];
+	for (const { leaf, sign } of signedSumLeaves(side.node, 1)) {
+		const lead = sideTerms(leaf, ctx.variable)?.[0];
+		if (!lead || lead.degree === 0 || lead.sign === null) continue;
+		signs.push(sign * lead.sign * (negative && lead.degree % 2 === 1 ? -1 : 1));
+	}
+	return signs.includes(1) && signs.includes(-1);
 }
 
 /**
- * Des termes ÉCRITS qui tendent vers +∞ et d'autres vers −∞ : forme ∞ − ∞.
- * Une expression non développée (`(x + 1)^2`) n'est pas une différence.
+ * Sans forme indéterminée : une étape « limite d'une somme / d'un produit /
+ * d'un quotient » — limites des opérandes qui dépendent de x, donc celle du
+ * tout. `null` quand un opérande cache lui-même une forme ∞ − ∞
+ * (`3(x - x^2)`) ou que sa limite ne se lit pas : on factorise alors.
  */
-function hasOppositeInfinities(side: Side, approach: MathNode): boolean {
-	if (!side.expanded) return false;
-	const negative = classifyApproach(approach) === 'negative-infinity';
-	const signs = side.terms
-		.filter((t) => t.degree >= 1 && t.sign !== null)
-		.map((t) => (t.sign ?? 1) * (negative && t.degree % 2 === 1 ? -1 : 1));
-	return signs.includes(1) && signs.includes(-1);
+function operationSteps(
+	expression: MathNode,
+	value: MathNode,
+	ctx: PipelineContext
+): PedagogicalLimitStep[] | null {
+	const top = withoutOuterDelimiters(expression);
+	let rule: PedagogicalLimitRule;
+	let operands: MathNode[];
+	if (isAddition(top) || isSubtraction(top)) {
+		rule = 'apply-sum';
+		operands = sumLeavesWritten(top);
+	} else if (isDivision(top)) {
+		rule = 'apply-quotient';
+		operands = [top.numerator, top.denominator];
+	} else if (isMultiplication(top)) {
+		rule = 'apply-product';
+		operands = [top.left, top.right];
+	} else if (isSuperscript(top)) {
+		rule = 'apply-product';
+		operands = [top.base, top.superscript];
+	} else {
+		return null;
+	}
+	if (compactStrategy(ctx)) return [];
+
+	const premises: LimitLine[] = [];
+	for (const operand of operands) {
+		if (!containsVariable(operand, ctx.variable)) continue;
+		const side = readSide(operand, ctx.variable);
+		if (side === null || hasOppositeInfinities(side, ctx)) return null;
+		const limit = limitValue(side, CONSTANT_ONE_SIDE, ctx);
+		if (limit === null) return null;
+		premises.push({ expression: side.node, value: limit });
+	}
+	return [
+		makeStep(ctx, {
+			rule,
+			description: `Pas de forme indéterminée : ${formatValueShort(value)} par opérations sur les limites`,
+			before: expression,
+			after: value,
+			verbosityLevel: 'detailed',
+			termLimits: { premises, conclusions: [{ expression, value }] }
+		})
+	];
+}
+
+function compactStrategy(ctx: PipelineContext): boolean {
+	return ctx.strategy.verbosityCompactConclusion;
+}
+
+/** Termes écrits d'une somme, signes compris (`-x^4 + x` → `-x^4`, `x`) */
+function sumLeavesWritten(expr: MathNode): MathNode[] {
+	if (isDelimiter(expr)) return sumLeavesWritten(expr.content);
+	if (isAddition(expr) || isSubtraction(expr)) {
+		return [...sumLeavesWritten(expr.left), ...sumLeavesWritten(expr.right)];
+	}
+	return [expr];
+}
+
+/** Termes écrits d'une somme avec leur signe (`a - (b)` : b compté négatif). */
+function signedSumLeaves(expr: MathNode, sign: 1 | -1): { leaf: MathNode; sign: 1 | -1 }[] {
+	if (isDelimiter(expr)) return signedSumLeaves(expr.content, sign);
+	if (isAddition(expr)) {
+		return [...signedSumLeaves(expr.left, sign), ...signedSumLeaves(expr.right, sign)];
+	}
+	if (isSubtraction(expr)) {
+		const flipped = sign === 1 ? -1 : 1;
+		return [...signedSumLeaves(expr.left, sign), ...signedSumLeaves(expr.right, flipped)];
+	}
+	if (isOpposite(expr)) return signedSumLeaves(expr.operand, sign === 1 ? -1 : 1);
+	if (isPositive(expr)) return signedSumLeaves(expr.operand, sign);
+	return [{ leaf: expr, sign }];
 }
 
 /** Valeur exacte : quotient des coefficients dominants, 0, ou ±∞ (signe et parité). */
@@ -1187,9 +1334,9 @@ function reducedPart(side: Side, rest: number, x: MathNode): MathNode {
  * parenthèse tend vers son premier terme. `null` sans parenthèse.
  */
 function limitsOfTerms(sides: readonly Side[], x: MathNode): TermLimits | null {
-	const vanishing: LimitLine[] = [];
+	const premises: LimitLine[] = [];
 	const seen = new Set<string>();
-	const factors: LimitLine[] = [];
+	const conclusions: LimitLine[] = [];
 	for (const side of sides) {
 		if (!isSum(side)) continue;
 		for (const term of side.terms.slice(1)) {
@@ -1197,11 +1344,11 @@ function limitsOfTerms(sides: readonly Side[], x: MathNode): TermLimits | null {
 			const key = toLatex(expression);
 			if (seen.has(key)) continue;
 			seen.add(key);
-			vanishing.push({ expression, value: number('0') });
+			premises.push({ expression, value: number('0') });
 		}
-		factors.push({ expression: bracketNode(side, x), value: side.terms[0].coefficient });
+		conclusions.push({ expression: bracketNode(side, x), value: side.terms[0].coefficient });
 	}
-	return factors.length === 0 ? null : { vanishing, factors };
+	return conclusions.length === 0 ? null : { premises, conclusions };
 }
 
 interface ClosingInput {
@@ -1224,25 +1371,33 @@ interface ClosingInput {
  */
 function closingSteps(ctx: PipelineContext, input: ClosingInput): PedagogicalLimitStep[] {
 	const { num, den, n, m, k, numPart, denPart, current, value } = input;
+	const x = makeVariable(ctx.variable);
 	const numLead = num.terms[0];
 	const denLead = den.terms[0];
 
 	if (n > m) {
 		// Il ne reste que xᵈ (x²/x) : la conclusion suffit.
 		if (isBarePower(current, ctx.variable)) return [];
-		const rest = exactQuotient(numLead, denLead, ctx);
-		if (rest === null) return [];
-		return [productStep(ctx, current, n - m, rest, value)];
+		const restLimit = exactQuotient(numLead, denLead, ctx);
+		if (restLimit === null) return [];
+		const rest = overDenominator(reducedPart(num, 0, x), reducedPart(den, 0, x));
+		return [productStep(ctx, current, n - m, rest, restLimit, value)];
 	}
 
 	if (n < m) {
-		const steps: PedagogicalLimitStep[] = [];
 		const gap = m - k;
-		const denSign = signAtInfinity(denLead.sign ?? 1, gap, ctx.approach);
+		// Signe illisible ((π − 4)x²) : le dénominateur tend vers l'infini en
+		// valeur absolue, la limite vaut 0 sans ligne de signe.
+		if (denLead.sign === null) {
+			return [quotientStep(ctx, current, numPart, numLead.coefficient, null, value)];
+		}
+		const steps: PedagogicalLimitStep[] = [];
+		const denSign = signAtInfinity(denLead.sign, gap, ctx.approach);
 		const denLimit = denSign > 0 ? infinity('positive') : infinity('negative');
 		// x seul au dénominateur n'est pas un produit à étudier
 		if (!isBarePower(denPart, ctx.variable)) {
-			steps.push(productStep(ctx, denPart, gap, denLead.coefficient, denLimit));
+			const rest = reducedPart(den, 0, x);
+			steps.push(productStep(ctx, denPart, gap, rest, denLead.coefficient, denLimit));
 		}
 		steps.push(quotientStep(ctx, current, numPart, numLead.coefficient, denLimit, value));
 		return steps;
@@ -1257,6 +1412,7 @@ function productStep(
 	ctx: PipelineContext,
 	before: MathNode,
 	degree: number,
+	rest: MathNode,
 	restLimit: MathNode,
 	value: MathNode
 ): PedagogicalLimitStep {
@@ -1268,7 +1424,7 @@ function productStep(
 		before,
 		after: value,
 		verbosityLevel: 'detailed',
-		bindings: { power: xPower(ctx.variable, degree), powerLimit, restLimit }
+		bindings: { power: xPower(ctx.variable, degree), powerLimit, rest, restLimit }
 	});
 }
 
@@ -1277,7 +1433,8 @@ function quotientStep(
 	before: MathNode,
 	numerator: MathNode,
 	numeratorLimit: MathNode,
-	denominatorLimit: MathNode,
+	/** `null` : le dénominateur tend vers l'infini en valeur absolue, signe illisible */
+	denominatorLimit: MathNode | null,
 	value: MathNode
 ): PedagogicalLimitStep {
 	return makeStep(ctx, {
@@ -1286,7 +1443,9 @@ function quotientStep(
 		before,
 		after: value,
 		verbosityLevel: 'detailed',
-		bindings: { numerator, numeratorLimit, denominatorLimit }
+		bindings: denominatorLimit
+			? { numerator, numeratorLimit, denominatorLimit }
+			: { numerator, numeratorLimit, denominatorAbsLimit: infinity('positive') }
 	});
 }
 

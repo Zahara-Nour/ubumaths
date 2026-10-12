@@ -228,7 +228,7 @@ describe('cas 2 — (x²+1)/(3x) : on factorise le numérateur seulement', () =>
 				{ rule: 'conclude-infinite', title: `La limite vaut ${valueText}`, latex: block(L0, value) }
 			]);
 			expect(steps.find((s) => s.rule === 'apply-product')?.explanation).toBe(
-				`Le facteur x tend vers ${label} et l'autre facteur tend vers 1/3 : par produit, (${label}) × 1/3 = ${valueText}.`
+				`Le facteur x tend vers ${label} et le quotient restant tend vers 1/3 : par produit, (${label}) × 1/3 = ${valueText}.`
 			);
 		});
 
@@ -293,7 +293,7 @@ describe("cas 3 — 2x/(x²+1) : le dénominateur tend vers l'infini", () => {
 				{ rule: 'conclude', title: 'La limite vaut 0', latex: block(L0, '0') }
 			]);
 			expect(steps.find((s) => s.rule === 'apply-product')?.explanation).toBe(
-				`Le facteur x tend vers ${label} et l'autre facteur tend vers 1 : par produit, (${label}) × 1 = ${label}.`
+				`Le facteur x tend vers ${label} et la parenthèse tend vers 1 : par produit, (${label}) × 1 = ${label}.`
 			);
 			expect(steps.find((s) => s.rule === 'apply-quotient')?.explanation).toBe(
 				`2 divisé par une quantité qui tend vers ${label} : la limite vaut 0.`
@@ -345,7 +345,7 @@ describe('cas 4 — polynôme −2x³ + x : forme ∞ − ∞, factorisation san
 				{ rule: 'conclude-infinite', title: `La limite vaut ${valueText}`, latex: block(L0, value) }
 			]);
 			expect(steps.find((s) => s.rule === 'apply-product')?.explanation).toBe(
-				`Le facteur x³ tend vers ${xLimit} et l'autre facteur tend vers −2 : par produit, (${xLimit}) × (−2) = ${valueText}.`
+				`Le facteur x³ tend vers ${xLimit} et la parenthèse tend vers −2 : par produit, (${xLimit}) × (−2) = ${valueText}.`
 			);
 			const prose = steps.map((s) => `${s.title} ${s.explanation ?? ''}`).join(' ');
 			expect(prose).not.toMatch(/plus haut degré/);
@@ -456,8 +456,9 @@ describe('cas 7 — (x+1)²/(2x²) : on développe, puis la même mécanique', (
 		]);
 	});
 
-	it('lycée résumé : factorisation, simplification, conclusion', () => {
+	it('lycée résumé : développement, factorisation, simplification, conclusion', () => {
 		expect(render(latex, 'lycee', 'summarized').map((s) => s.rule)).toEqual([
+			'expand',
 			'factor-dominant-term',
 			'simplify-common-factor',
 			'conclude'
@@ -482,6 +483,225 @@ describe('la règle « quotient des termes de plus haut degré » a disparu', ()
 					.map((s) => `${s.title} ${s.explanation ?? ''}`)
 					.join(' ');
 				expect(prose).not.toMatch(/plus haut degré|coefficients dominants|termes dominants/);
+			}
+		});
+	}
+});
+
+// =============================================================================
+// Revue (2026-10-12)
+// =============================================================================
+
+describe('deux monômes : rien à factoriser, on simplifie directement', () => {
+	for (const [expression, approach, power] of [
+		['\\frac{2x^2}{3x^2}', '+\\infty', 'x²'],
+		['\\frac{x^2}{x}', '-\\infty', 'x']
+	] as const) {
+		it(`${expression} en ${approach} : l'annonce ne parle pas de factorisation`, () => {
+			const steps = render(`\\lim_{x\\to ${approach}}${expression}`, 'lycee', 'detailed');
+			expect(steps.map((s) => s.rule)).toEqual([
+				'identify-limit',
+				'detect-indeterminate-form',
+				'simplify-common-factor',
+				expression.includes('2x^2') ? 'conclude' : 'conclude-infinite'
+			]);
+			const detect = steps.find((s) => s.rule === 'detect-indeterminate-form');
+			expect(detect?.explanation).toBe(
+				`Numérateur et dénominateur tendent vers l'infini : on ne peut pas conclure directement. On simplifie par ${power}.`
+			);
+			const prose = steps.map((s) => `${s.title} ${s.explanation ?? ''}`).join(' ');
+			expect(prose).not.toMatch(/factoris/);
+			expect(steps.find((s) => s.rule === 'simplify-common-factor')?.title).toBe(
+				`Simplification par ${power}`
+			);
+		});
+	}
+});
+
+describe('limite d’un produit : le facteur est nommé', () => {
+	it('(x^5 − x)/(x^2 + x) en −∞', () => {
+		const steps = render('\\lim_{x\\to -\\infty}\\frac{x^5-x}{x^2+x}', 'lycee', 'detailed');
+		expect(steps.find((s) => s.rule === 'apply-product')?.explanation).toBe(
+			'Le facteur x³ tend vers −∞ et le quotient restant tend vers 1 : par produit, (−∞) × 1 = −∞.'
+		);
+	});
+});
+
+describe('somme écrite non développée : (x+1)² − x² est une forme ∞ − ∞', () => {
+	it('annonce ∞ − ∞, puis on développe', () => {
+		const latex = '\\lim_{x\\to +\\infty}(x+1)^2-x^2';
+		const steps = render(latex, 'lycee', 'detailed');
+		expect(steps.map((s) => [s.rule, s.title])).toEqual([
+			['identify-limit', "On veut calculer la limite de l'expression quand x tend vers +∞"],
+			['detect-indeterminate-form', 'Forme indéterminée ∞ − ∞ reconnue'],
+			['expand', 'On développe'],
+			['factor-dominant-term', 'On factorise par le terme prépondérant'],
+			['limits-of-terms', 'Limites des termes'],
+			['apply-product', "Limite d'un produit"],
+			['conclude-infinite', 'La limite vaut +∞']
+		]);
+		expect(steps[2].expressionLatex).toContain(
+			'= \\lim_{x \\to +\\infty} \\left( 2 x + 1 \\right)'
+		);
+		expect(run(latex).indeterminateForm).toBe('∞-∞');
+	});
+
+	it('(x+1)² seul en −∞ : un seul terme écrit, pas de forme indéterminée', () => {
+		expect(run('\\lim_{x\\to -\\infty}(x+1)^2').indeterminateForm).toBe('none');
+	});
+});
+
+describe('signe illisible (π − 4) : demandé seulement quand il décide du résultat', () => {
+	for (const [expression, expected] of [
+		['\\frac{x}{(\\pi-4)x^2}', '0'],
+		['\\frac{x+1}{(\\pi-4)x^2}', '0']
+	] as const) {
+		it(`${expression} en +∞ → ${expected}, le dénominateur tend vers −∞ (π − 4 < 0)`, () => {
+			const latex = `\\lim_{x\\to +\\infty}${expression}`;
+			const result = run(latex);
+			expect(result.value && toLatex(result.value)).toBe(expected);
+			const product = render(latex, 'lycee', 'detailed').find((s) => s.rule === 'apply-product');
+			expect(product?.expressionLatex).toContain('= -\\infty');
+		});
+	}
+});
+
+describe('signe d’un coefficient constant à plusieurs termes, lu numériquement', () => {
+	it('x²/((π − 4)x) en +∞ → −∞ (π − 4 < 0)', () => {
+		const result = run('\\lim_{x\\to +\\infty}\\frac{x^2}{(\\pi-4)x}');
+		expect(result.value && toLatex(result.value)).toBe('-\\infty');
+	});
+});
+
+describe('pas de forme indéterminée : on conclut par les opérations, sans factoriser', () => {
+	for (const [expression, approach, sub, rule, title, rowsLatex, conclusion] of [
+		[
+			'\\frac{1}{x+1}',
+			'+\\infty',
+			PLUS,
+			'apply-quotient',
+			"Limite d'un quotient",
+			[
+				`${lim(PLUS, '\\left( x + 1 \\right)')} = +\\infty`,
+				`\\text{donc } ${lim(PLUS, '\\dfrac{1}{x + 1}')} = 0`
+			],
+			'conclude'
+		],
+		[
+			'x^2+1',
+			'-\\infty',
+			MINUS,
+			'apply-sum',
+			"Limite d'une somme",
+			[
+				`${lim(MINUS, 'x^2')} = +\\infty`,
+				`\\text{donc } ${lim(MINUS, '\\left( x^2 + 1 \\right)')} = +\\infty`
+			],
+			'conclude-infinite'
+		],
+		[
+			'\\frac{x^2+1}{3}',
+			'+\\infty',
+			PLUS,
+			'apply-quotient',
+			"Limite d'un quotient",
+			[
+				`${lim(PLUS, '\\left( x^2 + 1 \\right)')} = +\\infty`,
+				`\\text{donc } ${lim(PLUS, '\\dfrac{x^2 + 1}{3}')} = +\\infty`
+			],
+			'conclude-infinite'
+		],
+		[
+			'-x^4+x',
+			'-\\infty',
+			MINUS,
+			'apply-sum',
+			"Limite d'une somme",
+			[
+				`${lim(MINUS, '\\left( -x^4 \\right)')} = -\\infty`,
+				`${lim(MINUS, 'x')} = -\\infty`,
+				`\\text{donc } ${lim(MINUS, '\\left( -x^4 + x \\right)')} = -\\infty`
+			],
+			'conclude-infinite'
+		],
+		[
+			'(x+1)^2',
+			'-\\infty',
+			MINUS,
+			'apply-product',
+			"Limite d'un produit",
+			[
+				`${lim(MINUS, '\\left( x + 1 \\right)')} = -\\infty`,
+				`\\text{donc } ${lim(MINUS, '\\left( x + 1 \\right)^2')} = +\\infty`
+			],
+			'conclude-infinite'
+		]
+	] as const) {
+		const latex = `\\lim_{x\\to ${approach}}${expression}`;
+
+		it(`${expression} en ${approach} : ${title.toLowerCase()}, puis conclusion`, () => {
+			const steps = render(latex, 'lycee', 'detailed');
+			expect(steps.map((s) => s.rule)).toEqual(['identify-limit', rule, conclusion]);
+			expect(steps[1].title).toBe(title);
+			expect(steps[1].expressionLatex).toBe(lines(...rowsLatex));
+			expect(run(latex).indeterminateForm).toBe('none');
+			void sub;
+		});
+
+		it(`${expression} en ${approach} : résumé = la conclusion seule`, () => {
+			expect(render(latex, 'lycee', 'summarized').map((s) => s.rule)).toEqual([conclusion]);
+		});
+	}
+});
+
+describe('somme non développée qui se réduit à une constante', () => {
+	it('(x+1)² − x² − 2x en +∞ : ∞ − ∞, on développe, la fonction est constante', () => {
+		const latex = '\\lim_{x\\to +\\infty}(x+1)^2-x^2-2x';
+		const steps = render(latex, 'lycee', 'detailed');
+		expect(steps.map((s) => [s.rule, s.title])).toEqual([
+			['identify-limit', "On veut calculer la limite de l'expression quand x tend vers +∞"],
+			['detect-indeterminate-form', 'Forme indéterminée ∞ − ∞ reconnue'],
+			['expand', 'On développe'],
+			['conclude', 'La limite vaut 1']
+		]);
+		expect(steps[2].expressionLatex).toContain('= 1');
+		expect(run(latex).steps.at(-1)?.description).toBe(
+			'La fonction est constante : sa limite vaut 1.'
+		);
+		expect(run(latex).indeterminateForm).toBe('∞-∞');
+	});
+});
+
+// Les explications, titres et descriptions s'affichent en TEXTE brut
+// (`GeneratedStepsCorrection.svelte`) : aucun LaTeX (écart V25).
+describe('textes en clair : ni \\, ni {, ni ^', () => {
+	const CASES = [
+		'\\lim_{x\\to +\\infty}\\frac{3x+1}{2x-5}',
+		'\\lim_{x\\to -\\infty}\\frac{x^2+1}{3x}',
+		'\\lim_{x\\to +\\infty}\\frac{2x}{x^2+1}',
+		'\\lim_{x\\to -\\infty}-2x^3+x',
+		'\\lim_{x\\to +\\infty}\\pi x',
+		'\\lim_{x\\to -\\infty}-3x^2',
+		'\\lim_{x\\to +\\infty}5',
+		'\\lim_{x\\to +\\infty}\\frac{(x+1)^2}{2x^2}',
+		'\\lim_{x\\to -\\infty}\\frac{x^5-x}{x^2+x}',
+		'\\lim_{x\\to +\\infty}\\frac{2x^2}{3x^2}',
+		'\\lim_{x\\to +\\infty}(x+1)^2-x^2',
+		'\\lim_{x\\to +\\infty}\\frac{x}{(\\pi-4)x^2}',
+		'\\lim_{x\\to +\\infty}\\frac{1}{x+1}',
+		'\\lim_{x\\to -\\infty}x^2+1',
+		'\\lim_{x\\to +\\infty}\\frac{x^2+1}{3}',
+		'\\lim_{x\\to -\\infty}-x^4+x',
+		'\\lim_{x\\to -\\infty}(x+1)^2'
+	];
+	for (const latex of CASES) {
+		it(latex, () => {
+			for (const level of ['lycee', 'superieur'] as const) {
+				const texts = [
+					...render(latex, level, 'detailed').flatMap((s) => [s.title, s.explanation ?? '']),
+					...run(latex, level).steps.map((s) => s.description)
+				];
+				for (const text of texts) expect(text, `${level} : ${text}`).not.toMatch(/[\\{}^]/);
 			}
 		});
 	}

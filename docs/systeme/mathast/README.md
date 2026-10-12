@@ -630,7 +630,8 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   prépondérant**, seule méthode au programme (BO 2019, Tle spé, capacités attendues ; la règle
   « quotient des termes de plus haut degré » et l'étape `identify-dominant-term` ont disparu). Au
   lycée, en mode détaillé : forme indéterminée (`∞/∞` pour un quotient de degrés ≥ 1, `∞ − ∞`
-  quand des termes ÉCRITS tendent vers +∞ et −∞) → `expand` (« On développe », si
+  quand des termes ÉCRITS de la somme, développés ou non, tendent vers +∞ et −∞ :
+  `(x+1)^2 - x^2`) → `expand` (« On développe », si
   l'expression n'est pas une somme de monômes de degrés distincts : `\dfrac{(x+1)^2}{2x^2}`) →
   `factor-dominant-term` (chaque somme factorisée par xⁿ, jamais par c·xⁿ :
   `x\left(3 + \dfrac{1}{x}\right)`, termes négatifs en soustractions) →
@@ -638,8 +639,12 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   (bloc `\lim \dfrac{1}{x} = 0`, `\text{donc } \lim (3 + \dfrac{1}{x}) = 3`, champ
   `termLimits` de l'étape) → `apply-quotient` ou `apply-product` (explication : « Le facteur x³
   tend vers −∞ et l'autre facteur tend vers −2 : par produit, (−∞) × (−2) = +∞ », « 2 divisé
-  par une quantité qui tend vers +∞ ») → conclusion. Mode résumé : factorisation,
-  simplification, conclusion. Supérieur : la même factorisation sans les limites des termes ni
+  par une quantité qui tend vers +∞ » ; le facteur restant nommé en mots, « le quotient restant », « la parenthèse » : titres et explications sans LaTeX, affichés en texte brut) → conclusion. Mode
+  résumé : développement, factorisation, simplification, conclusion. Deux monômes
+  (`\dfrac{2x^2}{3x^2}`) : pas de factorisation, « On simplifie par x² ». **Sans forme
+  indéterminée** (`\dfrac{1}{x+1}`, `x^2+1`, `(x+1)^2`, `-x^4+x` en −∞), pas de factorisation :
+  une étape `apply-sum` / `apply-product` / `apply-quotient` (limites des opérandes, « donc »
+  celle du tout), puis la conclusion. Supérieur : la même factorisation sans les limites des termes ni
   le produit / quotient. Un monôme seul (`\pi x`, `-3x^2`) ou une constante : une seule étape ;
   deux monômes de même degré (`\dfrac{-3x}{2x}`) : la simplification donne la valeur. Les
   coefficients se lisent par `toPolynomial` (sur ℚ) et, à défaut, dans la forme normale pour une
@@ -647,8 +652,10 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   coefficients dominants (`\dfrac{3}{2}`, plus `1.5` ; un quotient irrationnel réduit par
   `normalize`, réécrit par `tryEvaluateLimitExact` puis `writeLimitValue`, comme le moteur :
   `\dfrac{\pi}{2}`, `2\sqrt{2}`, `-\dfrac{\sqrt{2}}{2}`), 0, ou ±∞ selon signe et parité.
-  Une constante (`5`, `\pi`) : « La fonction est constante : sa limite vaut 5. » Un signe de
-  coefficient qui ne se lit pas exactement (`(\pi - 4)x`) : refus, jamais un décimal. La borne
+  Une constante (`5`, `\pi`) : « La fonction est constante : sa limite vaut 5. » Le signe d'un
+  coefficient à plusieurs termes (π − 4, √2 − 1) se lit par évaluation numérique, retenu si
+  |valeur| > 1e-9 ; sinon refus, jamais un décimal — et seulement quand il décide du résultat
+  (n > m) : `\dfrac{x}{(\pi-4)x^2} = 0`. La borne
   d'un `\lim` parsé (`positive(∞)`) est
   traduite en nœud `infinity` par `normalizeApproach` de `limits/evaluate.ts`, comme dans le
   moteur. **Écriture des étapes** (`renderer.ts`, 2026-10-12) : tant que le membre de droite

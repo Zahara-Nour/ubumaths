@@ -101,6 +101,7 @@ export type PedagogicalLimitRule =
 	| 'identify-composition' // « f(g(x)) avec lim g = b »
 	| 'apply-composition' // « lim f(g(x)) = f(b) »
 	| 'apply-linearity' // « lim(αf + βg) = α lim f + β lim g »
+	| 'apply-sum' // « lim x² = +∞, donc lim (x² + 1) = +∞ » (sans forme indéterminée)
 	| 'apply-product' // « lim(fg) = lim f · lim g »
 	| 'apply-quotient' // « lim(f/g) = lim f / lim g »
 	// ---- Conclusion ----
@@ -151,6 +152,8 @@ export const FACTORISATION_CLUSTER_RULES: ReadonlySet<PedagogicalLimitRule> = ne
  * - `factor-dominant-term`                 : `{ dominant }` (la puissance xⁿ mise en facteur)
  * - `simplify-common-factor` (en ±∞)       : `{ dominant }` (la puissance x^k simplifiée)
  * - `limits-of-terms`                      : `{}` (le renderer lit `step.termLimits`)
+ * - `apply-sum`, `apply-product`, `apply-quotient` sans forme indéterminée : `{}`
+ *   (le renderer lit `step.termLimits` : limites des opérandes, donc celle du tout)
  * - `apply-growth-comparison`              : `{ fast, slow }` (e.g. `{ fast: e^x, slow: x }`)
  * - `compute-asymptotic-equivalent`        : `{ equivalent }`
  * - `analyze-left-limit`, `analyze-right-limit` : `{ side }`
@@ -176,13 +179,14 @@ export interface LimitLine {
 }
 
 /**
- * Limites des termes après factorisation par le terme prépondérant :
- * `vanishing` = les quotients c/xᵏ, qui tendent vers 0 ; `factors` = les
- * parenthèses, qui tendent vers leur premier terme (« donc … et … »).
+ * Bloc de limites sur plusieurs lignes : `premises` = les limites connues (les
+ * quotients c/xᵏ qui tendent vers 0, ou les opérandes d'une opération),
+ * `conclusions` = ce qu'on en déduit (« donc … et … ») : les parenthèses après
+ * factorisation, ou l'expression entière par somme / produit / quotient.
  */
 export interface TermLimits {
-	readonly vanishing: readonly LimitLine[];
-	readonly factors: readonly LimitLine[];
+	readonly premises: readonly LimitLine[];
+	readonly conclusions: readonly LimitLine[];
 }
 
 // =============================================================================

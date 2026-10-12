@@ -475,7 +475,7 @@ Status: exact, Value: 0
   · Un nombre divisé par une puissance de x tend vers 0 : chaque parenthèse tend vers son premier terme.
   \\begin{aligned} & \\lim_{x \\to +\\infty} \\dfrac{1}{x^2} = 0 \\\\ & \\text{donc } \\lim_{x \\to +\\infty} \\left( 1 + \\dfrac{1}{x^2} \\right) = 1 \\end{aligned}
 - [apply-product] Limite d'un produit
-  · Le facteur x tend vers +∞ et l'autre facteur tend vers 1 : par produit, (+∞) × 1 = +∞.
+  · Le facteur x tend vers +∞ et la parenthèse tend vers 1 : par produit, (+∞) × 1 = +∞.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} x \\left( 1 + \\dfrac{1}{x^2} \\right)} \\\\ & = +\\infty \\end{aligned}
 - [apply-quotient] Limite d'un quotient
   · 1 divisé par une quantité qui tend vers +∞ : la limite vaut 0.
@@ -543,7 +543,7 @@ Status: infinite, Value: +\\infty
   · Un nombre divisé par une puissance de x tend vers 0 : chaque parenthèse tend vers son premier terme.
   \\begin{aligned} & \\lim_{x \\to +\\infty} \\dfrac{1}{x} = 0 \\\\ & \\text{donc } \\lim_{x \\to +\\infty} \\left( 1 + \\dfrac{1}{x} \\right) = 1 \\end{aligned}
 - [apply-product] Limite d'un produit
-  · Le facteur x tend vers +∞ et l'autre facteur tend vers 1 : par produit, (+∞) × 1 = +∞.
+  · Le facteur x tend vers +∞ et le quotient restant tend vers 1 : par produit, (+∞) × 1 = +∞.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to +\\infty} \\dfrac{x}{1 + \\dfrac{1}{x}}} \\\\ & = +\\infty \\end{aligned}
 - [conclude-infinite] La limite vaut +∞
   · Le résultat est une limite infinie.
@@ -608,7 +608,7 @@ Status: infinite, Value: +\\infty
   · Un nombre divisé par une puissance de x tend vers 0 : chaque parenthèse tend vers son premier terme.
   \\begin{aligned} & \\lim_{x \\to -\\infty} \\dfrac{1}{x} = 0 \\\\ & \\text{donc } \\lim_{x \\to -\\infty} \\left( 1 + \\dfrac{1}{x} \\right) = 1 \\end{aligned}
 - [apply-product] Limite d'un produit
-  · Le facteur x² tend vers +∞ et l'autre facteur tend vers 1 : par produit, (+∞) × 1 = +∞.
+  · Le facteur x² tend vers +∞ et le quotient restant tend vers 1 : par produit, (+∞) × 1 = +∞.
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to -\\infty} \\dfrac{x^2}{1 + \\dfrac{1}{x}}} \\\\ & = +\\infty \\end{aligned}
 - [conclude-infinite] La limite vaut +∞
   · Le résultat est une limite infinie.
