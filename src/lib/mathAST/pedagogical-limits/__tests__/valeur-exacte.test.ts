@@ -18,7 +18,6 @@ import { PedagogicalLimitRenderer } from '../renderer';
 import type { RenderedStep } from '../../common/step-renderer-base';
 import { evaluateLimitNode } from '../../limits/evaluate';
 import { dispatchPedagogicalLimit } from '../dispatch';
-import { PedagogicalLimitNotImplemented } from '../types';
 
 function run(latex: string) {
 	const limit = parseLatex(latex);
@@ -98,7 +97,9 @@ const INFINITY_CASES = [
 	// ni `\\dfrac{1}{-\\sqrt{2}}`, ni `\\dfrac{-\\sqrt{2}}{2}`
 	['\\frac{x}{-\\sqrt{2}x}', '-\\dfrac{\\sqrt{2}}{2}', '-\\dfrac{\\sqrt{2}}{2}'],
 	['\\frac{-3x}{2x}', '-\\dfrac{3}{2}', '-\\dfrac{3}{2}'],
-	['\\frac{2x}{\\frac{x}{\\sqrt{2}}}', '2 \\sqrt{2}', '2 \\sqrt{2}']
+	['\\frac{2x}{\\frac{x}{\\sqrt{2}}}', '2 \\sqrt{2}', '2 \\sqrt{2}'],
+	// Signe illisible (π − 4) : il ne décide pas du résultat, la limite reste calculée
+	['\\frac{(\\pi-4)x+1}{x}', '\\pi - 4', '\\pi - 4']
 ] as const;
 
 function oracle(latex: string): string | null {
@@ -124,9 +125,16 @@ describe('limite pédagogique en ±∞ — valeur exacte, égale à celle du mot
 				expect(oracle(latex)).toBe(expected);
 			});
 
-			it(`${latex} : terme dominant puis conclusion ${expected}, sans décimale`, () => {
+			it(`${latex} : terme prépondérant (sauf monôme seul) puis conclusion ${expected}, sans décimale`, () => {
 				const steps = rendered(latex);
-				expect(steps.map((s) => s.rule)).toContain('identify-dominant-term');
+				const rules = steps.map((s) => s.rule);
+				// Une somme se factorise, deux monômes se simplifient, un monôme seul
+				// conclut directement (annonce + conclusion) ; sans forme
+				// indéterminée, on conclut par somme des limites.
+				const preponderant = (
+					['factor-dominant-term', 'simplify-common-factor', 'apply-sum'] as const
+				).some((r) => rules.includes(r));
+				expect(preponderant || rules.length === 2).toBe(true);
 				const conclusion = steps[steps.length - 1];
 				expect(conclusion.expressionLatex).toContain(`= ${expected}`);
 				for (const step of steps) {
@@ -141,7 +149,12 @@ describe('limite pédagogique en ±∞ — valeur exacte, égale à celle du mot
 	for (const [expression, expected] of [
 		['\\frac{\\sqrt{2}x^2+1}{x^2}', '\\sqrt{2}'],
 		// Ordre des facteurs de `tidy` : π avant le radical
-		['\\frac{\\pi x^2}{\\sqrt{2}x^2}', '\\dfrac{\\pi \\sqrt{2}}{2}']
+		['\\frac{\\pi x^2}{\\sqrt{2}x^2}', '\\dfrac{\\pi \\sqrt{2}}{2}'],
+		// Signe illisible (π − 4) qui ne décide pas du résultat
+		['\\frac{x}{(\\pi-4)x^2}', '0'],
+		['\\frac{x+1}{(\\pi-4)x^2}', '0'],
+		// Signe de √2 − 1 lu numériquement
+		['\\frac{(\\sqrt{2}-1)x^3}{x}', '+\\infty']
 	] as const) {
 		it(`${expression} → ${expected} en +∞ comme en −∞ (le moteur ne conclut qu’en +∞)`, () => {
 			for (const approach of ['+\\infty', '-\\infty']) {
@@ -166,10 +179,9 @@ describe('limite pédagogique en ±∞ — valeur exacte, égale à celle du mot
 		expect(result.value && toLatex(result.value)).toBe('\\dfrac{3}{2}');
 	});
 
-	it('signe du coefficient dominant non exact ((π − 4)x) : refus propre, pas de décimal', () => {
-		expect(() => run('\\lim_{x\\to +\\infty}\\frac{x^2}{(\\pi-4)x}')).toThrow(
-			PedagogicalLimitNotImplemented
-		);
+	it('signe du coefficient dominant à plusieurs termes ((π − 4)x) : lu numériquement, −∞', () => {
+		const { result } = run('\\lim_{x\\to +\\infty}\\frac{x^2}{(\\pi-4)x}');
+		expect(result.value && toLatex(result.value)).toBe('-\\infty');
 	});
 });
 
@@ -193,7 +205,7 @@ describe('limite pédagogique en ±∞ — fonction constante', () => {
 			const descriptions = result.steps.map((s) => s.description);
 			expect(descriptions).toContain(`La fonction est constante : sa limite vaut ${text}.`);
 			expect(descriptions.join(' ')).not.toMatch(/coefficients dominants|degrés/);
-			expect(result.steps.map((s) => s.rule)).not.toContain('identify-dominant-term');
+			expect(result.steps.map((s) => s.rule)).toEqual(['identify-limit', 'conclude']);
 		});
 
 		it(`${latex} : la conclusion rendue vaut ${expected}`, () => {

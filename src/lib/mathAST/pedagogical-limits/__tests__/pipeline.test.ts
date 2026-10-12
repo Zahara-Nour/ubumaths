@@ -546,7 +546,7 @@ describe('pipeline — infinity-analysis', () => {
 
 		expect(result.status).toBe('exact');
 		expect(result.value).toMatchObject({ type: 'number', value: '3' });
-		expect(flatRules(result.steps)).toContain('identify-dominant-term');
+		expect(flatRules(result.steps)).toContain('factor-dominant-term');
 	});
 
 	it('x²/(x + 1) at x → +∞ → +∞', () => {

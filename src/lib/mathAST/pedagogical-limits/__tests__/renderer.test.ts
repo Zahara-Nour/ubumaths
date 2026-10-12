@@ -213,7 +213,7 @@ describe('renderer — LaTeX format', () => {
 	it('handles infinity in the limit subscript', () => {
 		const synthetic: PedagogicalLimitStep = {
 			id: 1,
-			rule: 'identify-dominant-term',
+			rule: 'factor-dominant-term',
 			description: '',
 			before: variable('x'),
 			after: variable('x'),
@@ -306,11 +306,11 @@ describe('renderer — `\\lim f = \\lim g` tant que g dépend de x', () => {
 		}
 	});
 
-	it('à l’infini : terme dominant annoncé (la limite seule), conclusion `= -\\dfrac{3}{2}` sans `\\lim`', () => {
+	it('à l’infini : forme indéterminée annoncée (la limite seule), conclusion `= -\\dfrac{3}{2}` sans `\\lim`', () => {
 		const steps = renderParsed('\\lim_{x\\to +\\infty}\\frac{-3x+1}{2x}');
-		const dominant = steps.find((s) => s.rule === 'identify-dominant-term');
-		expect(dominant?.expressionLatex).toContain('\\lim_{x \\to +\\infty}');
-		expect(dominant?.expressionLatex).not.toContain('& =');
+		const detect = steps.find((s) => s.rule === 'detect-indeterminate-form');
+		expect(detect?.expressionLatex).toContain('\\lim_{x \\to +\\infty}');
+		expect(detect?.expressionLatex).not.toContain('& =');
 		const conclusion = steps[steps.length - 1];
 		expect(rightHandSide(conclusion.expressionLatex)).toBe('-\\dfrac{3}{2}');
 	});
@@ -349,7 +349,6 @@ describe('renderer — `\\lim f = \\lim g` tant que g dépend de x', () => {
 		const announcing = new Set([
 			'identify-limit',
 			'detect-indeterminate-form',
-			'identify-dominant-term',
 			'identify-bounds',
 			'compare-one-sided'
 		]);
