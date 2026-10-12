@@ -2130,47 +2130,6 @@ export interface AssignmentStats {
 	unique_students_engaged: number;
 }
 
-/**
- * Completion statistics for a specific exercise
- *
- * Tracks student engagement and completion rates for an exercise.
- * Useful for teachers to monitor exercise effectiveness.
- *
- * @example Exercise performance
- * ```typescript
- * const stats: ExerciseCompletionStats = {
- *   exercise_id: 'ex-123',
- *   total_assigned: 30, // Assigned to 30 students
- *   total_viewed: 28, // 28 students viewed it
- *   total_completed: 25, // 25 students completed it
- *   completion_rate: 83.33, // 25/30 = 83.33%
- *   average_view_count: 2.4 // Students viewed it 2.4 times on average
- * };
- * ```
- */
-export interface ExerciseCompletionStats {
-	/** Exercise being tracked */
-	exercise_id: string;
-
-	/** Number of students assigned this exercise */
-	total_assigned: number;
-
-	/** Number of students who viewed the exercise */
-	total_viewed: number;
-
-	/** Number of students who completed the exercise */
-	total_completed: number;
-
-	/**
-	 * Completion percentage: (total_completed / total_assigned) * 100
-	 * Value between 0 and 100
-	 */
-	completion_rate: number;
-
-	/** Average number of times students viewed this exercise */
-	average_view_count: number;
-}
-
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
@@ -2269,25 +2228,6 @@ export function hasDeadline(assignment: ExerciseAssignment): boolean {
  */
 export function isExerciseCompleted(completion?: ExerciseCompletion): boolean {
 	return completion?.completed_at !== null && completion?.completed_at !== undefined;
-}
-
-/**
- * Get completion percentage as rounded integer
- *
- * @param stats - Completion statistics
- * @returns Completion rate as integer (0-100)
- *
- * @example
- * ```typescript
- * const stats: ExerciseCompletionStats = {
- *   // ... fields ...
- *   completion_rate: 83.33333
- * };
- * getCompletionPercentage(stats); // 83
- * ```
- */
-export function getCompletionPercentage(stats: ExerciseCompletionStats): number {
-	return Math.round(stats.completion_rate);
 }
 
 /**

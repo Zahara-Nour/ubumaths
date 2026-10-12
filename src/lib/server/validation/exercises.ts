@@ -759,16 +759,6 @@ export const studentExercisesResponseSchema = z.object({
 });
 
 /**
- * Exercise stats schema
- */
-export const exerciseStatsSchema = z.object({
-	total_assignments: z.number().int().nonnegative(),
-	completed_count: z.number().int().nonnegative(),
-	completion_rate: z.number().min(0).max(100),
-	average_time_minutes: z.number().nonnegative().nullable().optional()
-});
-
-/**
  * Exercise export response schema
  */
 export const exerciseExportResponseSchema = z.object({

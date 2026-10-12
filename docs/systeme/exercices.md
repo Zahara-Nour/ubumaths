@@ -93,7 +93,8 @@ view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof 
 3 à 100 caractères ; proposé par `/api/exercises/generate-slug` à partir du `topic`), source,
 catégorie, notion (`topic`), niveaux (`GradeBadgeSelector`), étiquettes (`TagBadgeSelector`),
 visibilité (`ExerciseVisibilityFields`), un onglet par niveau de guidage (`VariationEditor`, décrit
-par [questions.md](questions.md), avec `BareGreekWarning`), ressources (`ExerciseResourceEditor`),
+par [questions.md](questions.md), avec `BareGreekWarning`), ressources (`ExerciseResourceEditor` ; adresse http(s) seulement, refusée sinon par Zod à
+l'écriture comme à l'import),
 fonctions génériques (`GenericFunctionInput`), import LaTeX (`LaTeXImportDialog`). À l'envoi, le
 formulaire écrit **toujours** `variations` ; `shared` n'est envoyé que s'il porte quelque chose ;
 `search_indexed` vaut `isPublic && searchIndexed`.
@@ -125,9 +126,12 @@ Il fournit aussi aux formules le sens de `AB` (voir plus bas) et les fonctions g
 l'exercice. Ses utilisateurs : liste et aperçus du prof, page publique, page élève.
 
 **Page publique** `(public)/exercice/[slug]` : cherche par jeton (`?token=`), puis par slug, puis
-par identifiant si le paramètre est un UUID. Le jeton doit être celui de l'exercice de l'adresse
-(son slug ou son identifiant) : sinon 404 « introuvable », jamais l'autre exercice. Exercice privé
-sans jeton valide → 403 (message du jeton s'il y en avait un). `?variation=` et `?seed=` fixent le niveau de guidage et la graine.
+par identifiant si le paramètre est un UUID. Le jeton prime : valide mais pour un autre exercice
+que celui de l'adresse (slug renommé depuis le lien, ou jeton d'un autre exercice), il redirige
+(307, query gardée) vers `/exercice/<slug ou id>` de son exercice — un ancien lien marche encore et
+l'adresse affichée n'est jamais trompeuse. Jeton invalide : l'exercice de l'adresse s'il est public,
+sinon 403 (message du jeton) ou 404. `?variation=` et `?seed=` fixent le niveau de guidage et la
+graine.
 `noindex` partout **sauf** exercice public coché « Afficher sur Google » ouvert **sans** jeton.
 
 **Page élève** `dashboard/student/exercises/` : la liste lit `/api/exercises/assigned`
@@ -142,7 +146,7 @@ l'exercice (`ExerciseDisplay mode="instance"`), enregistre une vue (`POST …/vi
 l'adresse `/exercice/<slug ou id>?token=…` (`buildShareUrl`). `GET` liste les jetons,
 `DELETE …/share/[tokenId]` révoque (`is_active = false`, filtré sur l'exercice de l'adresse, avec
 `.select()` sans `.single()` : 0 ligne — jeton inconnu, d'un autre exercice ou refus RLS → 404).
-Le jeton n'ouvre que l'exercice auquel il appartient (voir la page publique).
+Le jeton n'ouvre que l'exercice auquel il appartient, à sa propre adresse (voir la page publique).
 La page publique résout le jeton par la RPC ; une adresse à jeton n'est jamais indexée.
 
 ## Étiquettes
@@ -205,8 +209,6 @@ longueur. Journal : [longueurs-segments-progress.md](../wip/longueurs-segments-p
 
 ## Écarts connus
 
-- **`validateShareToken`** (`exercise-share-tokens.ts`) n'est appelée que par ses tests : la page
-  publique passe par la RPC.
 - **`GET /api/exercises`** a un appelant (`ExerciseSelector`, éditeur de fiche) : gardée. Les
   routes `by-slug/[slug]`, `[id]/stats`, `[id]/export` et `ExerciseParameterizationEditor.svelte`,
   sans appelant, ont été retirées le 2026-10-12.

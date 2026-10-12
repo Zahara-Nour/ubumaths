@@ -181,7 +181,7 @@ describe('/exercice/[slug] — jeton et adresse', () => {
 
 	it('jeton invalide + adresse inconnue → 404', async () => {
 		vi.mocked(getExerciseByShareToken).mockResolvedValue({ data: null, error: 'Token invalide' });
-		vi.mocked(getExerciseBySlug).mockResolvedValue({ data: null, error: null });
+		vi.mocked(getExerciseBySlug).mockResolvedValue({ data: null, error: null } as never);
 		expect(await loadStatus('?token=abc', 'inconnu')).toBe(404);
 	});
 

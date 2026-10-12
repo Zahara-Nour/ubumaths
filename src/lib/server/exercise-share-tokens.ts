@@ -198,57 +198,6 @@ export async function getExerciseShareTokens(
 }
 
 /**
- * Validate a share token for a specific exercise
- *
- * Checks:
- * 1. Token exists
- * 2. Token is active
- * 3. Token is not expired
- * 4. Token belongs to the specified exercise
- *
- * @param supabase - Supabase client
- * @param token - Share token to validate
- * @param exerciseId - Expected exercise ID
- * @returns Validation result with specific error message
- */
-export async function validateShareToken(
-	supabase: SupabaseClient,
-	token: string,
-	exerciseId: string
-): Promise<{ valid: boolean; error?: string }> {
-	const { data: tokenRecord, error } = await supabase
-		.from('exercise_share_tokens')
-		.select('*')
-		.eq('token', token)
-		.maybeSingle();
-
-	if (error) {
-		return { valid: false, error: error.message };
-	}
-
-	if (!tokenRecord) {
-		return { valid: false, error: 'Token invalide' };
-	}
-
-	// Check if token is active
-	if (!tokenRecord.is_active) {
-		return { valid: false, error: 'Token révoqué' };
-	}
-
-	// Check if token is expired
-	if (tokenRecord.expires_at && new Date(tokenRecord.expires_at) < new Date()) {
-		return { valid: false, error: 'Token expiré' };
-	}
-
-	// Check if token belongs to this exercise
-	if (tokenRecord.exercise_id !== exerciseId) {
-		return { valid: false, error: 'Token invalide pour cet exercice' };
-	}
-
-	return { valid: true };
-}
-
-/**
  * Build shareable URL for an exercise with token
  *
  * @param baseUrl - Base URL of the application
