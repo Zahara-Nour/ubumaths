@@ -297,10 +297,14 @@ fractions », 2026-10-12) :
 Une comparaison ne garde jamais son écriture (elle rend vrai ou faux), mais passe par le même
 plafond **membre par membre** (`mathAST/cli/bounded-comparison.ts`, aussi pour `a = b`, qui suit
 son propre chemin `executeEquality`) : un membre au-delà du plafond prend sa valeur exacte s'il
-est un produit de puissances, sinon la relation se tranche sur les **valeurs arrondies** (l'arrondi
-garde l'ordre) ; arrondis égaux → refus (« Membres trop proches pour être départagés »). Avant,
-`1.0001^{30000} > 20` prenait 16,7 s, `(1+1/100000)^{100000}×(1+1/100000)^{-100000} < 1` plus de
-300 s. `2^{100000} > 3^{60000}` répond toujours `true`. Le résultat porte `exactTooLong` ; le rendu ne passe pas l'écriture
+est un produit de puissances, sinon la relation se tranche sur les **valeurs arrondies lues comme
+des intervalles** (un demi-pas de part et d'autre, plus 10⁻¹² pour le flottant ; un point
+seulement pour un membre calculé exactement) : disjoints, le sens est sûr ; sinon refus (« Membres
+trop proches pour être départagés »). ⚠️ Comparer les arrondis eux-mêmes donnait des sens faux :
+entre 10⁹ et 10¹⁵, un entier exact s'écrit en entier, une valeur approchée à 5 chiffres
+significatifs (`(1+1/20000)^{20000} + 10^9 > 10^9 + 1` répondait `false` — revue). Avec une
+variable libre, le refus le dit. Avant, `1.0001^{30000} > 20` prenait 16,7 s,
+`(1+1/100000)^{100000}×(1+1/100000)^{-100000} < 1` plus de 300 s. `2^{100000} > 3^{60000}` répond toujours `true`. Le résultat porte `exactTooLong` ; le rendu ne passe pas l'écriture
 gardée à `tidy`, qui la développerait. La console ne calcule plus le résultat exact deux fois (le
 test du booléen le réutilise), ni l'arrondi deux fois (ligne et bouton ≈).
 

@@ -495,8 +495,9 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     (`productValue`) : le moteur, lui, calcule chaque puissance avant de compenser
     (`(1+1/100000)^{100000}×(1+1/100000)^{-100000}` : 305 s). Une comparaison passe par le même
     plafond membre par membre (`cli/bounded-comparison.ts`) : produit de puissances par ses
-    facteurs, sinon valeurs arrondies comparées (l'arrondi d'`approximateDigitsOf` est monotone,
-    bornes de notation comprises), refus si elles sont égales.
+    facteurs, sinon valeurs arrondies comparées comme des INTERVALLES (l'arrondi
+    d'`approximateDigitsOf` n'est pas monotone entre 10⁹ et 10¹⁵ : entier exact en entier,
+    valeur approchée à 5 chiffres), refus s'ils se recouvrent.
 
 ## Le moteur de réécriture et les étapes
 

@@ -187,3 +187,9 @@ sa valeur approchée. »
   dans l'évaluation ET dans `executeEquality` (`a = b` y suit son propre chemin). Les chaînes
   (`1 < x < 3`) ne sont pas prises en charge par la console (antérieur) ; `a != b` se lit
   `a! = b` (antérieur).
+- 2026-10-12 — revue de #1199 : **sens faux** (bloquant) — comparer les arrondis supposait leur
+  ordre préservé, faux entre 10⁹ et 10¹⁵ (`(1+1/20000)^{20000} + 10^9 > 10^9 + 1` → `false`).
+  Corrigé : intervalles (demi-pas + 10⁻¹² ; point seulement pour un membre calculé exactement),
+  refus s'ils se recouvrent ; message propre quand une variable libre bloque. Laissés (refus non
+  faux, pas des cas d'élèves) : `2^{100000} + 1 > 2^{100000}` (« trop proches »),
+  `2^{10^7} + 1 > 3` (« trop grande »).

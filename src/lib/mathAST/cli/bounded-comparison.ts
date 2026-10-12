@@ -7,10 +7,13 @@
  * Un membre au-delà du plafond :
  * - un produit ou quotient de puissances prend sa valeur exacte, calculée sur ses facteurs
  *   (`productValue`) — la comparaison reste exacte ;
- * - sinon, la relation se tranche sur les VALEURS ARRONDIES des deux membres (la règle du bouton
- *   ≈) : l'arrondi garde l'ordre (une valeur plus petite ne s'arrondit jamais plus haut, passages
- *   de notation compris, leurs bornes étant sur les deux grilles), donc deux arrondis différents
- *   donnent le bon sens. Deux arrondis égaux ne départagent pas : refus, même pour `=`.
+ * - sinon, la relation se tranche sur les valeurs arrondies des deux membres (la règle du bouton
+ *   ≈), lues comme des INTERVALLES : une valeur arrondie couvre un demi-pas de part et d'autre,
+ *   plus une marge relative de 10⁻¹² pour un membre lu par le flottant ; seule la valeur d'un
+ *   membre calculé exactement est un point. Intervalles disjoints : le sens est sûr ; sinon,
+ *   refus. ⚠️ Comparer les arrondis eux-mêmes rendait des sens FAUX : entre 10⁹ et 10¹⁵, un
+ *   entier exact s'écrit en entier, une valeur approchée à 5 chiffres significatifs —
+ *   `(1+1/20000)^{20000} + 10^9 > 10^9 + 1` répondait `false` (revue).
  *
  * Seules `= ≠ < > ≤ ≥` sont tranchées ; une autre relation reste au moteur, comme avant.
  *
@@ -21,6 +24,7 @@ import type { MathNode, RelationType } from '../types';
 import { isLogical, isLogicalNot, isRelation } from '../guards';
 import { boolean } from '../factory';
 import { rationalToNode } from '../common/numeric';
+import { getVariables } from '../eval/substitute';
 import { approximateDigitsOf, type ApproximateDigits } from './approximation';
 import { isTooLongToCompute, productValue } from './exact-size';
 
@@ -34,14 +38,26 @@ const NO_VALUE =
 	'Comparaison trop grande : un membre ne se calcule pas sans figer la page, ni ne se lit en valeur approchée';
 
 const TOO_CLOSE =
-	'Membres trop proches pour être départagés : trop longs à calculer exactement, et leurs valeurs approchées sont égales';
+	'Membres trop proches pour être départagés : trop longs à calculer exactement, et leurs valeurs approchées se recouvrent';
+
+const WITH_VARIABLE =
+	'Comparaison non tentée : un membre est trop grand pour être calculé, et une variable empêche d’en lire une valeur approchée';
+
+/** La marge d'un membre lu par le flottant : 10⁻¹² de sa valeur (le flottant en garde ~10⁻¹⁶). */
+const FLOAT_MARGIN = 10n ** 12n;
 
 // =============================================================================
 // Fonctions
 // =============================================================================
 
+/** Une fraction (dénominateur positif). */
+interface Fraction {
+	readonly n: bigint;
+	readonly d: bigint;
+}
+
 /** La valeur exacte d'une valeur arrondie : `-2.7182` → -27182/10⁴, `9.9900`×10³ → 9990. */
-function digitsValue({ digits, exponent }: ApproximateDigits): { n: bigint; d: bigint } {
+function digitsValue({ digits, exponent }: ApproximateDigits): Fraction {
 	const [whole, decimals = ''] = digits.replace('-', '').split('.');
 	let n = BigInt(whole + decimals) * (digits.startsWith('-') ? -1n : 1n);
 	let d = 10n ** BigInt(decimals.length);
@@ -50,12 +66,40 @@ function digitsValue({ digits, exponent }: ApproximateDigits): { n: bigint; d: b
 	return { n, d };
 }
 
-/** −1, 0 ou 1 : le sens de a par rapport à b. */
-function compareDigits(a: ApproximateDigits, b: ApproximateDigits): number {
-	const x = digitsValue(a);
-	const y = digitsValue(b);
-	const difference = x.n * y.d - y.n * x.d;
-	return difference === 0n ? 0 : difference < 0n ? -1 : 1;
+/** La demi-largeur de l'intervalle d'une valeur arrondie : un demi-pas, plus la marge du flottant. */
+function halfWidth({ digits, exponent }: ApproximateDigits, center: Fraction): Fraction {
+	// Le pas : une unité de la dernière décimale écrite, × 10^exposant
+	const places = BigInt((digits.split('.')[1] ?? '').length) - BigInt(exponent ?? 0);
+	const step = places >= 0n ? { n: 1n, d: 10n ** places } : { n: 10n ** -places, d: 1n };
+	const size = center.n < 0n ? -center.n : center.n;
+	// step/2 + |c|/10¹²
+	const d = 2n * step.d * center.d * FLOAT_MARGIN;
+	return { n: step.n * center.d * FLOAT_MARGIN + 2n * step.d * size, d };
+}
+
+/** a < b, a > b : sur des fractions. */
+function less(a: Fraction, b: Fraction): boolean {
+	return a.n * b.d < b.n * a.d;
+}
+
+function shifted(c: Fraction, w: Fraction, sign: 1n | -1n): Fraction {
+	return { n: c.n * w.d + sign * w.n * c.d, d: c.d * w.d };
+}
+
+/** L'intervalle sûr d'un membre : un point s'il est calculé exactement. */
+function interval(value: ApproximateDigits, computedExactly: boolean): [Fraction, Fraction] {
+	const center = digitsValue(value);
+	if (computedExactly && value.exact) return [center, center];
+	const w = halfWidth(value, center);
+	return [shifted(center, w, -1n), shifted(center, w, 1n)];
+}
+
+/** −1, 0 ou 1 : le sens de a par rapport à b ; `null` si les intervalles se recouvrent. */
+function compareIntervals(a: [Fraction, Fraction], b: [Fraction, Fraction]): number | null {
+	if (less(a[1], b[0])) return -1;
+	if (less(b[1], a[0])) return 1;
+	const points = !less(a[0], a[1]) && !less(b[0], b[1]);
+	return points && !less(a[0], b[0]) && !less(b[0], a[0]) ? 0 : null;
 }
 
 function holds(relation: RelationType, order: number): boolean {
@@ -112,8 +156,11 @@ export function boundedComparison(node: MathNode): MathNode | null {
 
 	const a = approximateDigitsOf(left ?? node.left);
 	const b = approximateDigitsOf(right ?? node.right);
-	if (a === null || b === null) throw new Error(NO_VALUE);
-	const order = compareDigits(a, b);
-	if (order === 0) throw new Error(TOO_CLOSE);
+	if (a === null || b === null) {
+		const free = getVariables(node.left).size > 0 || getVariables(node.right).size > 0;
+		throw new Error(free ? WITH_VARIABLE : NO_VALUE);
+	}
+	const order = compareIntervals(interval(a, left !== null), interval(b, right !== null));
+	if (order === null) throw new Error(TOO_CLOSE);
 	return boolean(holds(node.relation, order));
 }

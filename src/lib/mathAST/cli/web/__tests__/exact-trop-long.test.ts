@@ -247,6 +247,34 @@ describe('une comparaison passe par le même plafond, membre par membre', () => 
 		expect(line.output).toBe(output);
 	});
 
+	// Revue : entre 10⁹ et 10¹⁵, un entier exact s'écrit en entier, une valeur approchée en
+	// notation scientifique à 5 chiffres — deux grilles : comparer les arrondis rendait `false`
+	it.each([
+		['(1+1/20000)^20000 + 1000000000 > 1000000001', 'true'],
+		['(1+1/20000)^20000*1000000000 > 2718210000', 'true'],
+		['(1+1/20000)^20000 + 10^14 > 100000000000003', 'true'],
+		['-(1+1/20000)^20000 - 1000000000 < -1000000001', 'true'],
+		['(1+1/20000)^20000 + 1000000000 < 1000000003', 'true']
+	])('une valeur approchée face à un entier exact : %s', (input, output) => {
+		const line = exact(input);
+
+		// Trancher juste, ou refuser : jamais le sens faux
+		expect(line.output === output || line.success === false).toBe(true);
+		expect(line.output).not.toBe(output === 'true' ? 'false' : 'true');
+	});
+
+	it('une valeur approchée de grands membres, face à un entier : tranchée quand l’écart est net', () => {
+		expect(exact('(1+1/20000)^20000 + 1000000000 > 999000000').output).toBe('true');
+		expect(exact('(1+1/20000)^20000*1000000000 > 2718000000').output).toBe('true');
+	});
+
+	it('avec une variable libre, le refus le dit', () => {
+		const line = exact('(1+1/20000)^20000 + x = x + (1+1/20000)^20000');
+
+		expect(line.success).toBe(false);
+		expect(line.output).toContain('variable');
+	});
+
 	it('deux membres que l’arrondi ne départage pas : refus immédiat', () => {
 		const start = performance.now();
 		const line = exact('(1+1/20000)^20000 = (1+1/20000)^20000');
