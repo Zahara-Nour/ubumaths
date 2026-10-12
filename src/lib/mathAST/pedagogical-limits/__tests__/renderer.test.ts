@@ -372,6 +372,25 @@ describe('renderer — `\\lim f = \\lim g` tant que g dépend de x', () => {
 	});
 });
 
+describe('renderer — côtés d’une limite bilatérale', () => {
+	it('2/x en 0 : la limite à gauche s’écrit en 0^-, la limite à droite en 0^+', () => {
+		const steps = renderParsed('\\lim_{x\\to 0}\\frac{2}{x}');
+		const left = steps.find((s) => s.rule === 'analyze-left-limit');
+		const right = steps.find((s) => s.rule === 'analyze-right-limit');
+		expect(left?.expressionLatex).toContain('\\lim_{x \\to 0^-}');
+		expect(left?.expressionLatex).toContain('= -\\infty');
+		expect(right?.expressionLatex).toContain('\\lim_{x \\to 0^+}');
+		expect(right?.expressionLatex).toContain('= +\\infty');
+	});
+
+	it('la conclusion reste bilatérale', () => {
+		const steps = renderParsed('\\lim_{x\\to 0}\\frac{3}{x^2}');
+		const conclusion = steps[steps.length - 1];
+		expect(conclusion.expressionLatex).toContain('\\lim_{x \\to 0}');
+		expect(conclusion.expressionLatex).not.toMatch(/0\^[+-]/);
+	});
+});
+
 // =============================================================================
 // Verbosity filtering
 // =============================================================================

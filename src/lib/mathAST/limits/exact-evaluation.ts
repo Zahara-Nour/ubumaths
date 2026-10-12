@@ -409,10 +409,14 @@ export function resultToNode(result: ExtendedNormalizeResult): MathNode | null {
  * numérateur — `-\\dfrac{\\sqrt{2}}{2}` et non `\\dfrac{-\\sqrt{2}}{2}` (forme
  * de `denormalize`), `\\dfrac{\\sqrt{3}}{2}` et non `\\dfrac{1}{2}\\sqrt{3}`.
  *
- * Une valeur décimale le reste (`0.5`, jamais `\\dfrac{1}{2}`) : `tidy`
- * réécrirait le décimal en fraction. Ce décimal vient de l'énoncé
- * (`writeLikeInput` d'`evaluate.ts`) ou d'un calcul en flottants (composée √ du
- * suivi de signe : `\\sqrt{\\frac{x^2+1}{4x^2}}` en −∞ rend `0.5`).
+ * Exception : une valeur qui CONTIENT un nombre décimal ressort telle quelle,
+ * car `tidy` le réécrirait en fraction (`0.5` → `\\dfrac{1}{2}`). Ce décimal y
+ * est posé par `writeLikeInput` d'`evaluate.ts` (énoncé décimal ET limite
+ * rationnelle d'écriture décimale finie : `\\frac{0.5x+1}{x}` → `0.5`), ou par
+ * un calcul en flottants (défaut V33 : `\\sqrt{\\frac{x^2+1}{4x^2}}` en −∞ rend
+ * `0.5`). Le critère est la valeur, pas l'énoncé : une limite irrationnelle
+ * d'un énoncé décimal est exacte, donc réécrite (`x + 0.5\\sqrt{2}` en 0 →
+ * `\\dfrac{\\sqrt{2}}{2}`).
  *
  * Réservée aux valeurs rendues : les calculs intermédiaires gardent la forme
  * de `resultToNode`.

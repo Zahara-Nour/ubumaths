@@ -636,7 +636,10 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   `\dfrac{1}{2}`) : décimal de l'énoncé (`writeLikeInput`) ou des flottants du suivi de signe
   (`\sqrt{\frac{x^2+1}{4x^2}}` en −∞ rend `0.5` par la composée √). Les calculs intermédiaires
   gardent la forme de `resultToNode` ; `analyzeDiscontinuity` (`limits/one-sided.ts`) compare la
-  valeur au point et la limite sous la même écriture.
+  valeur au point et la limite numériquement (repli : `tidy` des deux côtés) — `|x| + 0.5` en 0
+  a pour limite `0.5` et pour valeur `\dfrac{1}{2}`, continue. Les étapes « limite à gauche /
+  à droite » d'une limite bilatérale s'écrivent en `a^-` / `a^+` (côté étudié, pas celui de la
+  limite).
 - **`integration/integrators/quadratic-denominator.ts` `factorQuadratic`** : trinôme lu par
   `toPolynomial` (toute écriture : `x(x-5)+6`, `(2x-1)(2x+1)` passent), racines par
   `quadraticRootParts`. Le littéral `x² − a²` garde sa lecture par `extractQuadraticCoefficients`.

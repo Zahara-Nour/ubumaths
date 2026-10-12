@@ -147,6 +147,8 @@ interface StepInit {
 	readonly indeterminateForm?: IndeterminateForm;
 	readonly subSteps?: readonly PedagogicalLimitStep[];
 	readonly globalAfter?: MathNode;
+	/** Côté étudié par l'étape, quand il diffère de celui de la limite (à gauche, à droite). */
+	readonly direction?: LimitDirection;
 }
 
 function makeStep(ctx: PipelineContext, init: StepInit): PedagogicalLimitStep {
@@ -159,7 +161,7 @@ function makeStep(ctx: PipelineContext, init: StepInit): PedagogicalLimitStep {
 		verbosityLevel: init.verbosityLevel ?? 'summarized',
 		variable: ctx.variable,
 		approach: ctx.approach,
-		direction: ctx.direction,
+		direction: init.direction ?? ctx.direction,
 		globalBefore: ctx.globalBefore,
 		...(init.globalAfter && { globalAfter: init.globalAfter }),
 		...(init.bindings && { bindings: init.bindings }),
@@ -1022,6 +1024,7 @@ function tryOneSided(expression: MathNode, ctx: PipelineContext): StrategyResult
 				before: expression,
 				after: signNodeFromSign(leftSign),
 				verbosityLevel: 'detailed',
+				direction: 'left',
 				bindings: { side: { type: 'variable', name: 'left' } as MathNode }
 			})
 		: null;
@@ -1032,6 +1035,7 @@ function tryOneSided(expression: MathNode, ctx: PipelineContext): StrategyResult
 				before: expression,
 				after: signNodeFromSign(rightSign),
 				verbosityLevel: 'detailed',
+				direction: 'right',
 				bindings: { side: { type: 'variable', name: 'right' } as MathNode }
 			})
 		: null;
