@@ -348,6 +348,8 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['sqrt-square', 'radicaux'],
 	['square-sqrt', 'radicaux'],
 	// normalize-side radical steps
+	// √(AB²) = AB : une longueur est positive (lot Q-F, 2026-10-12)
+	['length-radical', 'radicaux'],
 	['radical-simplify', 'radicaux'],
 	['radical-of-radical', 'radicaux'],
 	['sqrt-extract-perfect-square', 'radicaux'],

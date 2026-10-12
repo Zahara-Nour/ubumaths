@@ -834,12 +834,10 @@ mode longueur : 0 différence** (187 à longueur exclues) ; témoin `√(AB²) �
 après. Suites `src/lib/mathAST` : 499 fichiers, 20 970 tests verts (2 tests du lot 2 mis à jour :
 `AB^2 = 25` et Pythagore littéral ne rendent plus que la valeur positive).
 
-**À trancher par David** :
+**À trancher par David** (état après les suites de revue, plus bas) :
 
-1. **Intentions pédagogiques** : `auto`/`reduire`/`developper` rendent `3|AB|` pour `√(9AB²)`,
-   `developper` rend `|AB|` pour `√(AB²)` (leur `normalize` n'a pas l'oracle). Aligner sur
-   `simplify` ? (ADR 0007.)
-2. **`checkForm`** non touché : `|AB|` pour l'attendu `AB` garde sa valeur absolue (forme).
+1. ~~Intentions pédagogiques~~ : **alignées** (décision du 2026-10-12, voir les suites).
+2. ~~`checkForm`~~ : **tranché** — `|AB|` pour `AB` reste signalé (`bad_form`, figé par un test).
 3. **Hypothèse déclarée plus faible** (`AB: 'nonzero'` ou `'integer'`) : elle remplace la
    positivité par défaut (choix prudent) au lieu de s'y ajouter.
 4. **`solve` avec un `domain` de l'appelant** : il remplace la positivité (même lecture
@@ -847,6 +845,30 @@ après. Suites `src/lib/mathAST` : 499 fichiers, 20 970 tests verts (2 tests du 
 5. **`AB^2 = 0`** : `AB = 0` est exclu (strictement positive) → aucune solution.
 6. **`numtype` ne propage pas le signe par une puissance réelle** (`AB²` : signe inconnu, `√…` :
    complexe) : préexistant, non touché (changerait les verdicts sous hypothèses déclarées).
+
+### Suites de revue du lot positivité (2026-10-12)
+
+- **`solve`, carré négatif ou nul** : `AB² = −CD²`, `AB² + CD² = 0`, `3AB² = −2CD² − 5` → aucune
+  solution (`no-solution`, étapes d'exclusion) ; le signe de `−c/a` est lu par `lengthSign`
+  (`solve.ts`, lecture structurelle locale : `numtype` ne sait pas que `CD²` est positif, point 6).
+- **`solve`, rien d'exclu → résultat d'origine** : `AB² = −4` reste `no-real-solution`.
+- **`solve`, racine sans valeur absolue** : la racine `√(−c/a)` est normalisée avec l'oracle des
+  longueurs — `AB² = 9AC²` → `3AC`, `AB² − CD² = 0` → `CD`, `2AB² = CD²` → `½√2·CD`.
+- **Hypothèse déclarée sur `x` avec une longueur** : `segmentLength` dans `isPlainAlgebra` fait
+  appliquer une hypothèse sur `x` à une expression qui contient une longueur — `|x|·AB` ≡ `x·AB`
+  sous x > 0, et `checkForm` rend `correct` (avant : `bad_form`). Juste ; documenté
+  (`convention-equivalence.md`) et testé.
+- **Intentions (décision de David)** : étape `length-radical` en tête des quatre intentions
+  (`pedagogical-simplify/pipeline.ts`, `simplifyLengthRadicals`) : `√(AB²)` → `AB`, `√(9AB²)` →
+  `3AB` partout ; une racine n'est remplacée que si elle disparaît (`√(8AB²)`, `√(AA²)` restent).
+  Les intentions n'ont pas d'option d'hypothèses ni de mode strict : seule l'exception `AA` s'y
+  applique.
+- **`checkForm` (décision de David)** : `|AB|` pour l'attendu `AB` reste `bad_form` (test). Note :
+  c'est `bad_form`, pas `unoptimal_form`.
+- **Non-régression** : banc avant/après étendu aux 4 intentions (résultat + règles des étapes) —
+  3 328 saisies en produit, 3 143 sans longueur en mode longueur : 0 différence réelle (1 écart
+  de `simplify` sur `(x+…+d)^8`, dû au délai du banc, absent au re-tirage). Suites `mathAST` :
+  498 fichiers, 20 996 tests verts.
 
 ## Journal
 

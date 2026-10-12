@@ -16,6 +16,8 @@ import { describe, it, expect } from 'vitest';
 import { areEquivalent } from '../equivalence';
 import { parseLatex } from '../parser';
 import { simplify } from '../simplify';
+import { checkForm } from '../cosmetic-transforms';
+import { generatePedagogicalSimplifySteps } from '../pedagogical-simplify/pipeline';
 import { toLatex } from '../latex-generator';
 import { evaluate } from '../eval/evaluate';
 import { substitute } from '../eval/substitute';
@@ -204,5 +206,111 @@ describe('solve : une longueur inconnue est positive', () => {
 	it('mode produit : inchangé', () => {
 		const result = solve(readEquation('AB^2=9', true), { variable: 'B' });
 		expect(result.solutions).toHaveLength(2);
+	});
+});
+
+// =============================================================================
+// Suites de revue (2026-10-12)
+// =============================================================================
+
+describe('solve : carré d’une longueur égal à une quantité négative ou nulle', () => {
+	it.each(['AB^2=-CD^2', 'AB^2+CD^2=0', '3AB^2=-2CD^2-5'])(
+		'%s, en AB : aucune solution',
+		(latex) => {
+			const result = solve(readEquation(latex), { variable: 'AB' });
+			expect(result.solutions).toEqual([]);
+			expect(result.status).toBe('no-solution');
+			expect(result.steps.some((step) => step.rule === 'domain-exclusion')).toBe(true);
+		}
+	);
+
+	it('AB^2 = -4 : le résultat d’origine, inchangé (no-real-solution)', () => {
+		expect(solve(readEquation('AB^2=-4'), { variable: 'AB' }).status).toBe('no-real-solution');
+	});
+});
+
+describe('solve : pas de valeur absolue sur une longueur dans la racine', () => {
+	it.each([
+		['AB^2=9AC^2', 'AB', '3 AC'],
+		['AB^2-CD^2=0', 'AB', 'CD']
+	])('%s, en %s → %s', (latex, variable, expected) => {
+		const result = solve(readEquation(latex), { variable });
+		expect(result.solutions.map((s) => toLatex(s.value))).toEqual([expected]);
+	});
+
+	it('2AB^2 = CD^2 → une solution sans valeur absolue, égale à CD/√2', () => {
+		const result = solve(readEquation('2AB^2=CD^2'), { variable: 'AB' });
+		expect(result.solutions).toHaveLength(1);
+		const [solution] = result.solutions;
+		expect(solution && toLatex(solution.value)).not.toContain('\\left|');
+		expect(solution && areEquivalent(solution.value, read('\\frac{CD}{\\sqrt{2}}'))).toBe(true);
+	});
+});
+
+describe('hypothèse déclarée sur x dans une expression qui contient une longueur', () => {
+	it('|x|·AB ≡ x·AB sous x > 0 (la longueur ne coupe plus les hypothèses)', () => {
+		expect(areEquivalent(read('|x|AB'), read('xAB'), { assumptions: { x: 'positive' } })).toBe(
+			true
+		);
+	});
+
+	it('checkForm : |x|·AB a la forme de x·AB sous x > 0 (avant : bad_form)', () => {
+		const result = checkForm(
+			'\\left|x\\right|AB',
+			'xAB',
+			{},
+			{
+				...LENGTH,
+				assumptions: { x: 'positive' }
+			}
+		);
+		expect(result.status).toBe('correct');
+	});
+});
+
+describe('checkForm : |AB| pour l’attendu AB reste signalé (décision de David)', () => {
+	it('|AB| n’a pas la forme de AB : bad_form, comme avant le lot', () => {
+		const result = checkForm('\\left|AB\\right|', 'AB', {}, LENGTH);
+		expect(result.status).toBe('bad_form');
+	});
+});
+
+// =============================================================================
+// Intentions pédagogiques (décision de David du 2026-10-12)
+// =============================================================================
+
+const INTENTS = ['auto', 'reduire', 'developper', 'factoriser'] as const;
+
+function byIntent(latex: string, intent: (typeof INTENTS)[number], product = false): string {
+	const node = product ? parseLatex(latex) : read(latex);
+	return toLatex(generatePedagogicalSimplifySteps(node, { intent, schoolLevel: 'lycee' }).result);
+}
+
+describe('intentions : une longueur sort des racines', () => {
+	it.each(INTENTS)('%s : √(AB²) → AB, √(9AB²) → 3AB', (intent) => {
+		expect(byIntent('\\sqrt{AB^2}', intent)).toBe('AB');
+		expect(byIntent('\\sqrt{9AB^2}', intent)).toBe('3 AB');
+	});
+
+	it.each(INTENTS)('%s : une étape dit pourquoi la racine disparaît', (intent) => {
+		const result = generatePedagogicalSimplifySteps(read('\\sqrt{9AB^2}'), {
+			intent,
+			schoolLevel: 'lycee'
+		});
+		expect(result.steps.some((step) => step.rule === 'length-radical')).toBe(true);
+	});
+
+	it.each(INTENTS)(
+		'%s : √(AA²) garde sa racine ou sa valeur absolue (points identiques)',
+		(intent) => {
+			expect(byIntent('\\sqrt{AA^2}', intent)).not.toBe('AA');
+		}
+	);
+
+	it.each(INTENTS)('%s : mode produit et minuscules inchangés', (intent) => {
+		expect(byIntent('\\sqrt{x^2}', intent)).toBe(
+			intent === 'factoriser' ? '\\sqrt{x^2}' : '\\left| x \\right|'
+		);
+		expect(byIntent('\\sqrt{(AB)^2}', intent, true)).not.toBe('A B');
 	});
 });

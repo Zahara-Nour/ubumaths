@@ -32,6 +32,9 @@ import type { Rule } from '../pattern/types';
 import { applyRule, applyRulesDeepOnceTracked } from '../pattern/rule';
 import { nodesEqual } from '../pattern/match';
 import { normalize, denormalize } from '../normal';
+import { segmentLengthOracle } from '../assumptions';
+import { findNodes, mapNode } from '../transforms';
+import { isFunction } from '../guards';
 import { StepRecorder } from '../normal/step-recorder';
 import type { SchoolLevel } from '../common/step-renderer-base';
 import { getPedagogicalSimplifyRuleDescription } from './descriptions-fr';
@@ -325,6 +328,58 @@ function runNormalizePass(
 }
 
 // =============================================================================
+// Longueurs : une longueur est positive (lot Q-F, 2026-10-12)
+// =============================================================================
+
+/** Vrai si le nœud contient une racine ou une valeur absolue. */
+function hasRadicalOrAbsolute(node: MathNode): boolean {
+	return (
+		findNodes(
+			node,
+			(candidate) => isFunction(candidate) && ['sqrt', 'abs'].includes(candidate.name)
+		).length > 0
+	);
+}
+
+/**
+ * Les racines carrées qui DISPARAISSENT parce qu'une longueur est positive
+ * (`√(AB²) = AB`, `√(9AB²) = 3AB`), une étape chacune, avant les intentions.
+ *
+ * Même moteur que `simplify` et `areEquivalent` : `normalize` avec l'oracle des
+ * longueurs (`segmentLengthOracle`, `numtype` : `AB > 0`, `AA` non supposé). Une racine
+ * n'est remplacée que si le résultat n'a plus ni racine ni valeur absolue : `√(8AB²)`
+ * et `√(AA²)` restent, et chaque intention en fait ce qu'elle en faisait. Sans longueur,
+ * rien n'est touché (l'oracle n'existe pas).
+ */
+function simplifyLengthRadicals(
+	node: MathNode,
+	makeStep: StepFactory
+): { result: MathNode; steps: PedagogicalSimplifyStep[] } {
+	const oracle = segmentLengthOracle(undefined, [node]);
+	if (oracle === undefined) return { result: node, steps: [] };
+	const replaced: { before: MathNode; after: MathNode }[] = [];
+	const result = mapNode(node, (candidate) => {
+		if (!isFunction(candidate) || candidate.name !== 'sqrt' || candidate.base !== undefined) {
+			return candidate;
+		}
+		if (candidate.args.length !== 1) return candidate;
+		let after: MathNode;
+		try {
+			after = denormalize(normalize(candidate, { assumptions: oracle }));
+		} catch {
+			return candidate;
+		}
+		if (hasRadicalOrAbsolute(after)) return candidate;
+		replaced.push({ before: candidate, after });
+		return after;
+	});
+	const steps = replaced.map(({ before, after }) =>
+		makeStep('length-radical', before, after, node, result)
+	);
+	return { result, steps };
+}
+
+// =============================================================================
 // Public entry point
 // =============================================================================
 
@@ -350,6 +405,17 @@ export function generatePedagogicalSimplifySteps(
 	options: PedagogicalSimplifyOptions
 ): PedagogicalSimplifyResult {
 	rejectUnsupported(node);
+
+	// Les racines d'une longueur d'abord (`√(9AB²)` → `3AB`), puis l'intention sur le reste
+	const lengths = simplifyLengthRadicals(node, createStepFactory());
+	if (lengths.steps.length > 0) {
+		const rest = generatePedagogicalSimplifySteps(lengths.result, options);
+		const steps = [...lengths.steps, ...rest.steps].map((step, index) => ({
+			...step,
+			id: index + 1
+		}));
+		return { ...rest, steps };
+	}
 
 	const flags = resolveFlags(options.schoolLevel, options);
 	const { rules, useNormalize } = selectRulesForIntent(options.intent, flags);

@@ -418,8 +418,12 @@ hypothèses de l'énoncé — `numtype` type `AB` en réel positif, et `areEquiv
 répond que pour un nœud qui mentionne une longueur (ou une variable déclarée). Restent faux :
 `|AB−CD|` ≡ `AB−CD` (signe inconnu), `|AA|` ≡ `AA` (points identiques : la longueur vaut 0, rien
 n'est supposé). Une hypothèse déclarée sur `AB` (ou `BA`) **garde la priorité**, même si elle dit
-moins : avec `{ AB: 'nonzero' }`, `|AB|` ≢ `AB`. La comparaison de forme (`checkForm`) n'est pas
-touchée : `|AB|` pour `AB` y garde sa valeur absolue.
+moins : avec `{ AB: 'nonzero' }`, `|AB|` ≢ `AB`. Une longueur n'est plus un nœud qui coupe les
+hypothèses (`segmentLength` est dans la liste blanche `isPlainAlgebra`) : une hypothèse déclarée sur
+`x` s'applique aussi dans une expression qui contient une longueur — `|x|·AB` ≡ `x·AB` sous x > 0,
+et la forme (`checkForm`) le lit pareil (`correct`, avant : `bad_form`). En revanche, sans
+hypothèse, la comparaison de forme ne lit pas `|AB|` comme `AB` : `|AB|` pour l'attendu `AB` reste
+`bad_form` (décision de David du 2026-10-12).
 
 ## Réponse « intervalles » : bornes ouvrables (option `openableBounds`)
 

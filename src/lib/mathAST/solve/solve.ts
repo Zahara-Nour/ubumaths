@@ -141,6 +141,7 @@ import { greaterThanInterval, intervalDomain } from '../domain/factory';
 import { isNegativeType, isZeroType } from '../numtype';
 import { extractQuadraticCoefficients } from './solvers/quadratic';
 import { toLatex } from '../latex-generator';
+import { segmentLengthOracle } from '../assumptions';
 // Import direct, pas le baril `rule-sets/index.ts` (cycle de chunk documenté
 // dans `common-factor.ts`).
 import { commonFactorRules } from '../pattern/rule-sets/common-factor';
@@ -1813,20 +1814,96 @@ function withSegmentsRestored(
 /** Le domaine d'une longueur : ]0 ; +∞[ (strictement positive, Q-F). */
 const POSITIVE_LENGTH_DOMAIN: Domain = intervalDomain([greaterThanInterval(number('0'))]);
 
+/** Signe strict connu d'une expression où toute longueur entre points distincts est > 0. */
+type LengthSign = 'positive' | 'negative' | 'zero' | 'unknown';
+
+function flipSign(sign: LengthSign): LengthSign {
+	return sign === 'positive' ? 'negative' : sign === 'negative' ? 'positive' : sign;
+}
+
+function productSign(a: LengthSign, b: LengthSign): LengthSign {
+	if (a === 'zero' || b === 'zero') return 'zero';
+	if (a === 'unknown' || b === 'unknown') return 'unknown';
+	return a === b ? 'positive' : 'negative';
+}
+
+function sumSign(a: LengthSign, b: LengthSign): LengthSign {
+	if (a === 'zero') return b;
+	if (b === 'zero') return a;
+	return a === b ? a : 'unknown';
+}
+
 /**
- * `a·L² + c = 0` en la longueur `L` (pas de terme en `L`) : la seule racine positive,
- * `√(−c/a)`, écrite simplement (`AB² = AC² + BC²` → `√(AC² + BC²)`, au lieu de la
- * formule du discriminant `½√(4AC² + 4BC²)`). `null` si l'équation n'a pas cette forme.
+ * Le signe d'une expression écrite avec des longueurs, chacune strictement positive (Q-F) :
+ * `−CD²` est négatif, `CD² + 5` positif, `AC² − BC²` inconnu. Lecture structurelle et
+ * locale : `numtype` ne transmet pas le signe à travers une puissance d'une base réelle
+ * (`AB²` y est de signe inconnu), et l'y ajouter changerait les verdicts sous hypothèses.
  */
-function positiveSquareRoot(equation: RelationNode, variable: string): MathNode | null {
+function lengthSign(node: MathNode): LengthSign {
+	switch (node.type) {
+		case 'number': {
+			const value = Number(node.value);
+			if (!Number.isFinite(value)) return 'unknown';
+			return value > 0 ? 'positive' : value < 0 ? 'negative' : 'zero';
+		}
+		case 'segmentLength':
+			return isDegenerateSegment(node) ? 'unknown' : 'positive';
+		case 'delimiter':
+			return lengthSign(node.content);
+		case 'opposite':
+			return flipSign(lengthSign(node.operand));
+		case 'addition':
+			return sumSign(lengthSign(node.left), lengthSign(node.right));
+		case 'subtraction':
+			return sumSign(lengthSign(node.left), flipSign(lengthSign(node.right)));
+		case 'multiplication':
+			return productSign(lengthSign(node.left), lengthSign(node.right));
+		case 'division': {
+			const denominator = lengthSign(node.denominator);
+			return denominator === 'zero'
+				? 'unknown'
+				: productSign(lengthSign(node.numerator), denominator);
+		}
+		case 'superscript': {
+			const base = lengthSign(node.base);
+			if (base === 'positive') return 'positive';
+			const exponent = node.superscript;
+			const isEvenInteger =
+				exponent.type === 'number' &&
+				Number.isInteger(Number(exponent.value)) &&
+				Number(exponent.value) % 2 === 0 &&
+				Number(exponent.value) > 0;
+			return base === 'negative' && isEvenInteger ? 'positive' : 'unknown';
+		}
+		default:
+			return 'unknown';
+	}
+}
+
+/**
+ * `a·L² + c = 0` en la longueur `L` (pas de terme en `L`) : le carré `−c/a` et sa racine
+ * positive `√(−c/a)`, écrits avec les longueurs de l'élève (`AB² = AC² + BC²` →
+ * `√(AC² + BC²)`, au lieu de la formule du discriminant `½√(4AC² + 4BC²)`). La racine est
+ * normalisée avec l'oracle des longueurs : `AB² = 9AC²` → `3AC`, pas `3|AC|`. `null` si
+ * l'équation n'a pas cette forme.
+ */
+function positiveSquareRoot(
+	equation: RelationNode,
+	variable: string,
+	segments: ReadonlyMap<string, SegmentLengthNode>
+): { readonly square: MathNode; readonly root: MathNode } | null {
 	const expanded = denormalize(normalize(toStandardForm(equation)));
 	if (getPolynomialDegree(expanded, variable) !== 2) return null;
 	const coefficients = extractQuadraticCoefficients(expanded, variable);
 	if (coefficients === null || !isZeroNode(denormalize(normalize(coefficients.b)))) return null;
-	const square = denormalize(
-		normalize(divide(opposite(coefficients.c), coefficients.a, 'fraction'))
+	const square = variablesAsSegments(
+		denormalize(normalize(divide(opposite(coefficients.c), coefficients.a, 'fraction'))),
+		segments
 	);
-	return denormalize(normalize(func('sqrt', [square])));
+	const radical = func('sqrt', [square]);
+	const assumptions = segmentLengthOracle(undefined, [radical]);
+	const root = denormalize(normalize(radical, assumptions && { assumptions }));
+	return { square, root };
 }
 
 /** La valeur approchée d'une solution, `NaN` si elle contient une lettre ou une longueur. */
@@ -1865,14 +1942,25 @@ function keepPositiveLength(
 		);
 	};
 
-	// a·L² + c = 0 : les deux solutions sont ±√(−c/a), seule la positive reste
-	const root = result.solutions.length === 2 ? positiveSquareRoot(equation, variable) : null;
-	if (root !== null) {
-		const value = variablesAsSegments(root, segments);
-		recordExclusion(variablesAsSegments(opposite(root), segments));
+	// a·L² + c = 0 : les deux solutions sont ±√(−c/a), seule la positive reste ; aucune
+	// si −c/a est négatif ou nul (`AB² = −CD²`, `AB² + CD² = 0`)
+	const pure =
+		result.solutions.length === 2 ? positiveSquareRoot(equation, variable, segments) : null;
+	if (pure !== null) {
+		const squareSign = lengthSign(pure.square);
+		if (squareSign === 'negative' || squareSign === 'zero') {
+			for (const solution of result.solutions) recordExclusion(solution.value);
+			return {
+				...result,
+				solutions: [],
+				status: 'no-solution',
+				steps: [...result.steps, ...recorder.getStepsFiltered(opts.verbosity)]
+			};
+		}
+		recordExclusion(opposite(pure.root));
 		const approximate = Math.max(...result.solutions.map((s) => s.approximate ?? Number.NaN));
 		const solution: Solution = {
-			value,
+			value: pure.root,
 			exact: true,
 			...(Number.isFinite(approximate) && { approximate })
 		};
@@ -1895,6 +1983,8 @@ function keepPositiveLength(
 		recordExclusion(solution.value);
 		return false;
 	});
+	// Rien d'exclu : le résultat d'origine, tel quel (`AB² = −4` reste `no-real-solution`)
+	if (solutions.length === result.solutions.length) return result;
 
 	return {
 		...result,

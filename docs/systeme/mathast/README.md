@@ -383,7 +383,8 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   `segmentLengthOracle`) dès qu'une longueur est mentionnée : `√(AB²)` → `AB`, `|AB|` → `AB` ;
   `solve` ne garde que les valeurs positives d'une longueur inconnue (domaine ]0 ; +∞[, sauf
   domaine passé par l'appelant) et écrit `√(−c/a)` pour `a·L² + c = 0` (Pythagore littéral →
-  `√(AC² + BC²)`). Non-régression : 3 327 saisies du corpus en produit et 3 143 sans longueur
+  `√(AC² + BC²)`, aucune solution si `−c/a` est négatif ou nul : `AB² = −CD²`) ; les quatre
+  intentions pédagogiques commencent par l'étape `length-radical` (`√(9AB²)` → `3AB`). Non-régression : 3 327 saisies du corpus en produit et 3 143 sans longueur
   en mode longueur, `simplify`/`solve`/`areEquivalent` identiques avant/après.
   **Lecture** (lot 4) : `structureFromLatex(latex, { capitalPairs })`
   (sans option : le parseur par défaut, produit) ; une longueur est une feuille de genre `length`
