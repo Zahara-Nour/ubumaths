@@ -864,6 +864,9 @@ function tryTrigRecursiveDecomposition(
 
 	const { funcName, argument, constantNode, constantNumeric } = extracted;
 
+	// c paramétré (`a\sin(x^2) = 1`) : existence et valeurs inconnues, refus (V41)
+	if (constantNumeric === null) return null;
+
 	// Check domain restrictions for sin/cos
 	if ((funcName === 'sin' || funcName === 'cos') && Math.abs(constantNumeric) > 1) {
 		const recorder = createStepRecorder();
@@ -1073,6 +1076,9 @@ function tryExpLogRecursiveDecomposition(
 	if (!extracted || (extracted.kind !== 'exp' && extracted.kind !== 'log')) return null;
 
 	const { kind, funcName, argument, constantNode, constantNumeric } = extracted;
+
+	// c paramétré (`a\ln(x^2) = 1`) : refus plutôt qu'une valeur fausse (V41)
+	if (constantNumeric === null) return null;
 
 	// If argument is linear, let the normal solver handle it
 	const linearForm = extractLinearForm(argument, variable);
@@ -1799,7 +1805,11 @@ function filterSolutionsByDomain(
 
 	const kept: Solution[] = [];
 	for (const sol of result.solutions) {
-		if (!containsNode(domain, sol.value)) {
+		// Une solution qui porte un PARAMÈTRE (`a\ln x = 1` → e^{1/a}) ne se
+		// compare pas aux bornes du domaine : elle est gardée, sans condition sur
+		// le paramètre, comme 1/a pour `ax = 1` (V41 ; l'évaluation levait).
+		const parametric = getVariables(sol.value).size > 0;
+		if (!parametric && !containsNode(domain, sol.value)) {
 			const numericValue = sol.approximate ?? evaluateNodeToApproximatedNumber(sol.value);
 			recorder.recordStep(
 				'domain-exclusion',

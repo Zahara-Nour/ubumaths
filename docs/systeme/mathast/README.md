@@ -224,6 +224,22 @@ passent l'inconnue ; sans elle, le comportement public est inchangé. Avant, `x 
 (forme exacte, vérification numérique, échantillonnage des inéquations, témoins `\ln x = 2`,
 `\cos x = \frac12`, `e^x = 3`).
 
+Écart V41 (2026-10-12) : **un coefficient littéral devant ln, exp, sin, cos n'est plus remplacé
+par 1**. `extractTranscendentalEquation` (`solve/solvers/transcendental.ts`) évaluait le
+coefficient et, faute d'y arriver, le prenait pour 1 : `a\ln x = 1` rendait e, `k e^x = 2`
+rendait ln 2, `a\cos x = 1` rendait 0. Désormais c = −b/a reste symbolique et `constantNumeric`
+vaut `null` quand le coefficient porte une lettre. Convention suivie, celle de `ax = 1` → 1/a :
+**la valeur porte le paramètre, sans condition sur lui** (aucun solveur n'écrit de condition ; le
+champ `Solution.condition` n'est jamais rempli). ln et log en tirent une valeur juste pour tout
+paramètre non nul (`a\ln x = 1` → e^{1/a}, `a\ln(2x + 1) = 3`), sans `approximate` ; exp, sin,
+cos et les décompositions récursives **refusent** (le signe ou la taille de c décide de
+l'existence) et le CLI répond « La solution dépend de a : je ne sais pas encore résoudre avec un
+paramètre ». Un second membre littéral (`\ln x = a`) reste refusé : il peut venir du
+développement `\ln(ax)` → ln a + ln x, valable pour a > 0 seulement. `filterSolutionsByDomain`
+(`solve.ts`) garde une solution à paramètre sans la comparer au domaine (l'évaluation levait).
+Tests : `solve/__tests__/parametre-litteral.test.ts` (vérification numérique pour plusieurs
+valeurs du paramètre).
+
 ### Carte du code
 
 | Fichier              | Rôle                                                                                                                                                                                                                                                              |
