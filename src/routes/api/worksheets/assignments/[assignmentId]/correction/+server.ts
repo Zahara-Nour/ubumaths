@@ -19,7 +19,7 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
-import { generateWorksheetTypst } from '$lib/worksheets/typst-generator';
+import { generateWorksheetTypst } from '$lib/typst/generators';
 import { canAccessCorrections } from '$lib/server/worksheets/correction-release';
 import {
 	fetchAssignmentClasses,

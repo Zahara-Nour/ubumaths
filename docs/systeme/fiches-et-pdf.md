@@ -24,7 +24,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11.
+> Vérifié contre le code le 2026-10-11 ; écarts 4 à 6 le 2026-10-12 (K11).
 
 ## À quoi ça sert
 
@@ -51,13 +51,12 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 
 ### `src/lib/worksheets/` — règles propres aux fiches
 
-| Fichier                                                           | Rôle                                                                                                                                                                                                                                                                                                      |
-| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/worksheets/exercise-numbering.ts`                        | **La** règle du numéro affiché : `groupExercisesForDisplay`, `orderExercisesForDisplay`, `displayNumberOf`, `exerciseAtDisplayNumber`. Utilisée par la page élève, le générateur PDF et le serveur.                                                                                                       |
-| `src/lib/worksheets/student-worksheet-typst.ts`                   | `generateStudentWorksheetTypst` : le PDF **élève** (et l'aperçu « vue élève » du prof), mise en page codée en dur, depuis la vue déjà résolue (`StudentWorksheetView`).                                                                                                                                   |
-| `src/lib/worksheets/serie-automatismes.ts`                        | `buildSerie` : une **série figée** d'instances de modèles de question devient un exercice ordinaire ([ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md)). Toute anomalie lève une exception. Les formules maison sont figées avec les fonctions du modèle et le sens de `AB` de l'instance. |
-| `src/lib/worksheets/exercise-edit-link.ts`                        | `exerciseEditHref`, `worksheetReturnHref` : aller-retour fiche ↔ exercice par `?fiche=<uuid>` (Zod : UUID seulement).                                                                                                                                                                                     |
-| `typst-compiler.ts`, `typst-generator.ts`, `default-templates.ts` | **Ré-exports dépréciés** de `src/lib/typst/` (avertissement console en dev). `PdfPreview.svelte` et les routes `pdf/` les importent encore.                                                                                                                                                               |
+| Fichier                                         | Rôle                                                                                                                                                                                                                                                                                                      |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/worksheets/exercise-numbering.ts`      | **La** règle du numéro affiché : `groupExercisesForDisplay`, `orderExercisesForDisplay`, `displayNumberOf`, `exerciseAtDisplayNumber`. Utilisée par la page élève, le générateur PDF et le serveur.                                                                                                       |
+| `src/lib/worksheets/student-worksheet-typst.ts` | `generateStudentWorksheetTypst` : le PDF **élève** (et l'aperçu « vue élève » du prof), mise en page codée en dur, depuis la vue déjà résolue (`StudentWorksheetView`).                                                                                                                                   |
+| `src/lib/worksheets/serie-automatismes.ts`      | `buildSerie` : une **série figée** d'instances de modèles de question devient un exercice ordinaire ([ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md)). Toute anomalie lève une exception. Les formules maison sont figées avec les fonctions du modèle et le sens de `AB` de l'instance. |
+| `src/lib/worksheets/exercise-edit-link.ts`      | `exerciseEditHref`, `worksheetReturnHref` : aller-retour fiche ↔ exercice par `?fiche=<uuid>` (Zod : UUID seulement).                                                                                                                                                                                     |
 
 ### `src/lib/typst/` — de la fiche au PDF
 
@@ -226,7 +225,7 @@ Trois chemins d'appel, qui n'empruntent pas le même compilateur :
 | ---------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | Élève (`WorksheetHeader.svelte`), aperçu « vue élève » du prof   | `generateStudentWorksheetTypst` | `generateAndDownloadPdf` → `TypstService` (priorité `URGENT`)                                                   |
 | Prof, fiche (`PdfPreview.svelte`, aussi page publique du cahier) | `generateWorksheetTypst`        | `getTypstCompiler()` direct ; lot : une compilation par élève + corrigé général + `00_SOMMAIRE.txt` dans un ZIP |
-| Prof, corrections (`CorrectionManager.svelte`)                   | —                               | charge **sa propre** copie de typst.ts, **non épinglée** (voir écarts)                                          |
+| Prof, corrections (`CorrectionManager.svelte`)                   | —                               | `compileToPdf` du compilateur partagé (version épinglée)                                                        |
 
 **Gabarits** : `WorksheetGenerator` prend le `template_content` de la ligne `worksheet_templates`
 passée, sinon un gabarit intégré par `template_id`, sinon une mise en page par défaut
@@ -286,7 +285,7 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
 1. **Une seule erreur Typst fait échouer tout le PDF** de la fiche
    ([ADR 0004](../adr/0004-pdf-typst-et-jspdf.md)). Un générateur n'émet jamais de Typst invalide ;
    un correctif du générateur se mesure sur le contenu réel (`empreinte-typst.ts`).
-2. **La version de typst.ts est une seule valeur** : `TYPST_VERSION` de `typst-compiler.ts`, la
+2. **La version de typst.ts est une seule valeur** : `TYPST_VERSION` de `typst-compiler.ts` (et, en dur, la page admin `debug/typst-preview`), la
    devDependency `@myriaddreamin/typst-ts-web-compiler` et `@myriaddreamin/typst.ts` dans
    `package.json` (`0.6.1-rc5`). Changer l'une sans les autres rend `fiche:verifier` mensonger.
 3. **Le numéro d'exercice** se calcule par `exercise-numbering.ts`, jamais depuis `position`.
@@ -380,16 +379,16 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
    exercice à variables en prod, mesuré le 2026-10-11).
 2. **Restes du tirage d'avant l'ADR 0023, sans appelant vivant** : `generateWorksheetInstance`
    (`src/lib/server/worksheets/instance-generator.ts`, lit `variant_mode`), routes
-   `api/worksheets/[id]/instances`, `[id]/preview`, `[id]/pdf*`, `VariantPreview.svelte`. Ménage à part.
+   `api/worksheets/[id]/instances`, `[id]/preview`, `VariantPreview.svelte`. Ménage à part.
 3. **`worksheet_instances` vide (0 ligne) et sans écrivain**, encore lue par `correction-release.ts`
    (décompte, toujours 0). Sa suppression est destructive : décision de David.
-4. **Routes PDF serveur mortes** : `src/routes/api/worksheets/[id]/pdf/+server.ts` exige le Typst
-   CLI (`exec`) et répond 501 en son absence ; `pdf/batch/+server.ts` importe typst.ts avec des WASM
-   non épinglés. Aucun appelant dans `src/`.
-5. **`CorrectionManager.svelte` charge typst.ts sans version** (jsDelivr « latest ») : il échappe à
-   l'invariant 2.
-6. **Ré-exports dépréciés encore importés** (`$lib/worksheets/typst-compiler`, `typst-generator`) par
-   `PdfPreview.svelte` et les routes `pdf/` : avertissement console en dev à chaque chargement.
+4. ~~Routes PDF serveur mortes~~ : **corrigé** (K11, 2026-10-12), `api/worksheets/[id]/pdf` et
+   `pdf/batch` retirées.
+5. ~~`CorrectionManager.svelte` charge typst.ts sans version~~ : **corrigé** (K11) : il passe par
+   `compileToPdf` du compilateur partagé. Garde : `src/lib/__tests__/cdn-versions-epinglees.test.ts`
+   (toute URL jsDelivr ou unpkg de `src/` nomme une version).
+6. ~~Ré-exports dépréciés encore importés~~ : **corrigé** (K11) : `$lib/worksheets/typst-compiler`,
+   `typst-generator` et `default-templates` retirés, les appelants importent `$lib/typst`.
 7. **`available_from` nul refusé par la réponse de l'API élève** :
    `studentWorksheetDetailResponseSchema` déclare `available_from` non nullable, alors que la
    colonne l'est (« disponible tout de suite ») ; une telle affectation ferait répondre

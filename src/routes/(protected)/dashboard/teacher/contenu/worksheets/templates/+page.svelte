@@ -15,7 +15,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Plus, Copy, Trash2, Eye, FileText, Sparkles, Loader2 } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
-	import type { DefaultTemplate } from '$lib/worksheets/default-templates';
+	import type { DefaultTemplate } from '$lib/typst/templates';
 	import type { WorksheetType } from '$lib/types/worksheets';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();

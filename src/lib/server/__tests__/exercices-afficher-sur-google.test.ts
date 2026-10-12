@@ -455,12 +455,13 @@ describe('import : search_indexed', () => {
 		const query = {
 			select: vi.fn().mockReturnThis(),
 			eq: vi.fn().mockReturnThis(),
-			limit: vi.fn(),
+			order: vi.fn().mockReturnThis(),
+			range: vi.fn(),
 			insert: vi.fn().mockReturnThis(),
 			update: vi.fn().mockReturnThis(),
 			single: vi.fn()
 		};
-		query.limit.mockResolvedValue({
+		query.range.mockResolvedValue({
 			data: duplicate
 				? [{ id: EXERCISE_ID, title: 'Google ZZ', shared: null, variations: VARIATIONS }]
 				: [],

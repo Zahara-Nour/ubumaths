@@ -2,8 +2,12 @@ import type { PageServerLoad, Actions } from './$types';
 import type { GradeCode } from '$lib/types/grades';
 import type { ExerciseCategory } from '$lib/exercises/types';
 import { error, redirect, fail } from '@sveltejs/kit';
-import { getTeacherExercises, deleteExercise } from '$lib/server/exercises';
+import { z } from 'zod';
+import { getTeacherExercises, deleteExercise, EXERCISE_NOT_DELETED } from '$lib/server/exercises';
 import { requireRoles } from '$lib/server/middleware/auth';
+
+/** Identifiant d'exercice reçu par l'action « delete ». */
+const exerciseIdSchema = z.string().uuid();
 
 /**
  * Load teacher's exercises with optional filters
@@ -111,17 +115,28 @@ export const actions: Actions = {
 		const { user } = await requireRoles(locals, ['teacher', 'admin']);
 
 		const formData = await request.formData();
-		const exerciseId = formData.get('exercise_id')?.toString();
+		const parsed = exerciseIdSchema.safeParse(formData.get('exercise_id'));
 
-		if (!exerciseId) {
-			return fail(400, { message: "ID de l'exercice manquant" });
+		if (!parsed.success) {
+			return fail(400, { message: "ID de l'exercice manquant ou invalide" });
 		}
+		const exerciseId = parsed.data;
 
 		// Delete exercise
 		const result = await deleteExercise(locals.supabase, exerciseId, user.id);
 
 		if (result.error) {
 			console.error('Error deleting exercise:', result.error);
+			if (result.error.message === 'Exercise not found') {
+				return fail(404, { message: 'Exercice introuvable' });
+			}
+			if (result.error.message === 'Unauthorized') {
+				return fail(403, { message: "Seul l'auteur de l'exercice peut le supprimer" });
+			}
+			// La base n'a supprimé aucune ligne (refus RLS silencieux) : jamais un succès.
+			if (result.error.message === EXERCISE_NOT_DELETED) {
+				return fail(403, { message: "La suppression de l'exercice a été refusée" });
+			}
 			return fail(500, { message: "Erreur lors de la suppression de l'exercice" });
 		}
 

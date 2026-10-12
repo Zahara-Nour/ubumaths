@@ -14,7 +14,8 @@ import {
 	createExercise,
 	updateExercise,
 	deleteExercise,
-	getTeacherExercises
+	getTeacherExercises,
+	EXERCISE_NOT_DELETED
 } from '../exercises';
 import type { Database } from '$lib/types/database';
 
@@ -406,25 +407,37 @@ describe('deleteExercise', () => {
 			]
 		};
 
-		// Mock getExercise call - .single() returns the exercise
+		// getExercise : .select('*').eq().single() rend l'exercice
 		mockSupabase.__mockQuery.single.mockResolvedValueOnce({ data: existingExercise, error: null });
-		// Mock delete operation - .eq() needs to be chained, so use mockReturnThis for intermediate calls
-		// Then the final .eq() returns the result
-		let eqCallCount = 0;
-		mockSupabase.__mockQuery.eq.mockImplementation(() => {
-			eqCallCount++;
-			// First eq() is from getExercise - return this to continue chain
-			if (eqCallCount === 1) return mockSupabase.__mockQuery;
-			// Second eq() is first delete eq() - return this to continue chain
-			if (eqCallCount === 2) return mockSupabase.__mockQuery;
-			// Third eq() is final delete eq() - return the result
-			return Promise.resolve({ error: null });
-		});
+		// Suppression : .delete().eq().eq().select('id') rend la ligne supprimée
+		mockSupabase.__mockQuery.select
+			.mockReturnValueOnce(mockSupabase.__mockQuery)
+			.mockResolvedValueOnce({ data: [{ id: 'ex-123' }], error: null });
 
 		const result = await deleteExercise(mockSupabase, 'ex-123', 'user-123');
 
 		expect(mockSupabase.__mockQuery.delete).toHaveBeenCalled();
 		expect(result.error).toBeNull();
+	});
+
+	// RLS silencieuse : un DELETE refusé rend 0 ligne et aucune erreur.
+	it('rend une erreur quand la base ne supprime aucune ligne (refus RLS silencieux)', async () => {
+		const mockSupabase = createMockSupabase() as any;
+		const existingExercise = {
+			id: 'ex-123',
+			created_by: 'user-123',
+			variations: []
+		};
+		mockSupabase.__mockQuery.single.mockResolvedValueOnce({ data: existingExercise, error: null });
+		mockSupabase.__mockQuery.select
+			.mockReturnValueOnce(mockSupabase.__mockQuery)
+			.mockResolvedValueOnce({ data: [], error: null });
+
+		const result = await deleteExercise(mockSupabase, 'ex-123', 'user-123');
+
+		expect(mockSupabase.__mockQuery.delete).toHaveBeenCalled();
+		expect(mockSupabase.__mockQuery.select).toHaveBeenLastCalledWith('id');
+		expect(result.error?.message).toBe(EXERCISE_NOT_DELETED);
 	});
 
 	it('should reject delete from non-owner', async () => {

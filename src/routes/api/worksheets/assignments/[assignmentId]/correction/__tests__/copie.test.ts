@@ -20,8 +20,8 @@ import type { InstanceData } from '$lib/types/worksheets';
 
 // Le rendu Typst réel est passé, la copie qu'il reçoit est captée
 const rendered = vi.hoisted(() => ({ instances: [] as InstanceData[] }));
-vi.mock('$lib/worksheets/typst-generator', async (importOriginal) => {
-	const original = await importOriginal<typeof import('$lib/worksheets/typst-generator')>();
+vi.mock('$lib/typst/generators', async (importOriginal) => {
+	const original = await importOriginal<typeof import('$lib/typst/generators')>();
 	return {
 		...original,
 		generateWorksheetTypst: (options: Parameters<typeof original.generateWorksheetTypst>[0]) => {

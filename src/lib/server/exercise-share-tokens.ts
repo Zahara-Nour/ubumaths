@@ -113,7 +113,8 @@ export async function getExerciseByShareToken(
 	// which requires the exact token and bypasses RLS. The old direct reads of
 	// exercise_share_tokens + exercises relied on two PUBLIC blanket policies that
 	// let anon dump every shared exercise (solution included) and every live token;
-	// those policies are dropped. Access accounting is done inside the RPC.
+	// those policies are dropped. Access accounting (access_count, last_accessed_at)
+	// is done inside the RPC.
 	// A single generic error is returned (never leak whether a token is revoked vs
 	// expired vs unknown).
 	const { data, error: rpcError } = await supabase
@@ -129,62 +130,41 @@ export async function getExerciseByShareToken(
 	return { data: data as Exercise, error: null };
 }
 
-/**
- * Record access via share token
- *
- * Increments access_count and updates last_accessed_at.
- * This is a fire-and-forget operation - errors are ignored.
- *
- * @param supabase - Supabase client
- * @param token - Share token used for access
- */
-export async function recordTokenAccess(supabase: SupabaseClient, token: string): Promise<void> {
-	try {
-		// Use SQL expression for atomic increment via rpc
-		// Fallback: simple update that sets a timestamp (access_count tracked separately)
-		await supabase
-			.from('exercise_share_tokens')
-			.update({
-				last_accessed_at: new Date().toISOString()
-			})
-			.eq('token', token);
-
-		// For atomic increment, we'd use rpc or database triggers
-		// This is a simplified version - in production, use:
-		// await supabase.rpc('increment_token_access_count', { token_value: token });
-	} catch {
-		// Fire and forget - don't throw on errors
-	}
-}
+/** Erreur de `revokeShareToken` quand aucun jeton de cet exercice ne porte cet identifiant. */
+export const SHARE_TOKEN_NOT_FOUND = 'Token not found';
 
 /**
  * Revoke a share token
  *
- * Sets is_active=false. Only the exercise owner can revoke (RLS enforced).
+ * Passe `is_active` à false. Le jeton doit appartenir à l'exercice nommé par
+ * l'adresse ; la RLS réserve l'écriture à l'auteur.
+ *
+ * `.select()` sans `.single()` : 0 ligne (jeton inconnu, d'un autre exercice, ou
+ * refus RLS silencieux) rend `SHARE_TOKEN_NOT_FOUND`, pas une erreur PGRST116.
  *
  * @param supabase - Supabase client
  * @param tokenId - ID of the token to revoke
- * @param userId - ID of the user attempting to revoke
+ * @param exerciseId - Exercice auquel le jeton doit appartenir
  * @returns Error message if failed
  */
 export async function revokeShareToken(
 	supabase: SupabaseClient,
 	tokenId: string,
-	_userId: string
+	exerciseId: string
 ): Promise<{ error: string | null }> {
 	const { data, error } = await supabase
 		.from('exercise_share_tokens')
 		.update({ is_active: false })
 		.eq('id', tokenId)
-		.select()
-		.single();
+		.eq('exercise_id', exerciseId)
+		.select('id');
 
 	if (error) {
 		return { error: error.message };
 	}
 
-	if (!data) {
-		return { error: 'Token not found' };
+	if (!data || data.length === 0) {
+		return { error: SHARE_TOKEN_NOT_FOUND };
 	}
 
 	return { error: null };
@@ -215,57 +195,6 @@ export async function getExerciseShareTokens(
 	}
 
 	return { data: (data || []) as ExerciseShareToken[], error: null };
-}
-
-/**
- * Validate a share token for a specific exercise
- *
- * Checks:
- * 1. Token exists
- * 2. Token is active
- * 3. Token is not expired
- * 4. Token belongs to the specified exercise
- *
- * @param supabase - Supabase client
- * @param token - Share token to validate
- * @param exerciseId - Expected exercise ID
- * @returns Validation result with specific error message
- */
-export async function validateShareToken(
-	supabase: SupabaseClient,
-	token: string,
-	exerciseId: string
-): Promise<{ valid: boolean; error?: string }> {
-	const { data: tokenRecord, error } = await supabase
-		.from('exercise_share_tokens')
-		.select('*')
-		.eq('token', token)
-		.maybeSingle();
-
-	if (error) {
-		return { valid: false, error: error.message };
-	}
-
-	if (!tokenRecord) {
-		return { valid: false, error: 'Token invalide' };
-	}
-
-	// Check if token is active
-	if (!tokenRecord.is_active) {
-		return { valid: false, error: 'Token révoqué' };
-	}
-
-	// Check if token is expired
-	if (tokenRecord.expires_at && new Date(tokenRecord.expires_at) < new Date()) {
-		return { valid: false, error: 'Token expiré' };
-	}
-
-	// Check if token belongs to this exercise
-	if (tokenRecord.exercise_id !== exerciseId) {
-		return { valid: false, error: 'Token invalide pour cet exercice' };
-	}
-
-	return { valid: true };
 }
 
 /**

@@ -265,7 +265,13 @@ const exerciseBaseSchema = z.object({
 				type: z.enum(['video', 'pdf', 'link', 'geogebra', 'image'], {
 					message: 'Type de ressource invalide (video, pdf, link, geogebra ou image)'
 				}),
-				url: z.string().url('Adresse invalide').max(2000, 'Adresse trop longue'),
+				// http(s) seulement : `url()` accepte `javascript:` et `mailto:`, et la
+				// ressource est rendue en lien.
+				url: z
+					.string()
+					.url('Adresse invalide')
+					.max(2000, 'Adresse trop longue')
+					.refine((url) => /^https?:\/\//i.test(url), 'Adresse http(s) attendue'),
 				title: z.string().trim().min(1, 'Titre requis').max(200, 'Titre trop long'),
 				description: z.string().trim().max(500, 'Description trop longue').optional()
 			})
@@ -490,21 +496,6 @@ export const exportExercisesSchema = z.object({
 });
 
 /**
- * Schema for single exercise export query params (GET /api/exercises/[id]/export)
- */
-export const exportSingleExerciseQuerySchema = z.object({
-	format: z
-		.enum(['json', 'markdown'], {
-			message: 'Le format doit être « json » ou « markdown »'
-		})
-		.default('json'),
-	pretty: z
-		.string()
-		.default('true')
-		.transform((val) => val !== 'false')
-});
-
-/**
  * Schema for marking exercise as viewed (POST /api/exercises/[id]/view)
  */
 export const viewExerciseSchema = z.object({
@@ -604,13 +595,6 @@ export function validateStudentExerciseFilters(params: URLSearchParams) {
  */
 export function validateExportExercises(data: unknown) {
 	return exportExercisesSchema.safeParse(data);
-}
-
-/**
- * Validate single exercise export query parameters
- */
-export function validateExportSingleExerciseQuery(params: URLSearchParams) {
-	return exportSingleExerciseQuerySchema.safeParse(Object.fromEntries(params));
 }
 
 /**
@@ -772,23 +756,6 @@ export const assignedExerciseSchema = z.object({
  */
 export const studentExercisesResponseSchema = z.object({
 	exercises: z.array(assignedExerciseSchema)
-});
-
-/**
- * Exercise stats schema
- */
-export const exerciseStatsSchema = z.object({
-	total_assignments: z.number().int().nonnegative(),
-	completed_count: z.number().int().nonnegative(),
-	completion_rate: z.number().min(0).max(100),
-	average_time_minutes: z.number().nonnegative().nullable().optional()
-});
-
-/**
- * Exercise stats response schema (GET /api/exercises/[id]/stats)
- */
-export const exerciseStatsResponseSchema = z.object({
-	stats: exerciseStatsSchema
 });
 
 /**

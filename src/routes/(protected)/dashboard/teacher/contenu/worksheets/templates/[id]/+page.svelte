@@ -10,7 +10,7 @@
 	import { Save, Loader2 } from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import TypstEditor from '$lib/components/worksheets/TypstEditor.svelte';
-	import { COMMON_PLACEHOLDERS, STANDARD_TEMPLATE } from '$lib/worksheets/default-templates';
+	import { COMMON_PLACEHOLDERS, STANDARD_TEMPLATE } from '$lib/typst/templates';
 	import { asTemplatePlaceholders } from '$lib/types/worksheets';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();

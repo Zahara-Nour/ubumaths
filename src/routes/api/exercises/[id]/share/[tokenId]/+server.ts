@@ -10,7 +10,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getExercise } from '$lib/server/exercises';
-import { revokeShareToken } from '$lib/server/exercise-share-tokens';
+import { revokeShareToken, SHARE_TOKEN_NOT_FOUND } from '$lib/server/exercise-share-tokens';
 import { validateUuidParam } from '$lib/server/validation/params';
 
 /**
@@ -36,10 +36,10 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	}
 
 	// Revoke the token
-	const revokeResult = await revokeShareToken(locals.supabase, tokenId, user.id);
+	const revokeResult = await revokeShareToken(locals.supabase, tokenId, exerciseId);
 
 	if (revokeResult.error) {
-		if (revokeResult.error === 'Token not found') {
+		if (revokeResult.error === SHARE_TOKEN_NOT_FOUND) {
 			throw error(404, 'Lien de partage introuvable');
 		}
 		console.error('Failed to revoke share token:', revokeResult.error);

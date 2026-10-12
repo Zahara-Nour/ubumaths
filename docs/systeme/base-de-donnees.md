@@ -191,7 +191,10 @@ Accès : les modèles **publiés** sont lisibles par tous les élèves (et `anon
 professeur ; l'écriture des modèles est admin. Un exercice est lu par son auteur, par un élève qui y a
 accès (`student_has_exercise_access`) ou par tous s'il est `is_public`. L'élève lit et écrit **ses**
 complétions et sa maîtrise ; depuis `20261012120000`, le professeur lit la maîtrise des élèves inscrits
-dans une classe (`is_teacher_of_student`). Les séries : auteur, admin, et élève à qui elle est
+dans une classe (`is_teacher_of_student`). Un exercice privé partagé par lien se lit par la RPC
+`SECURITY DEFINER` `get_exercise_by_share_token` (jeton exact, actif, non expiré), qui incrémente
+aussi `exercise_share_tokens.access_count` depuis `20261016100800` (avant : seul
+`last_accessed_at` bougeait, le compteur restait à 0). Les séries : auteur, admin, et élève à qui elle est
 affectée (`student_can_read_series`).
 
 Code : `src/lib/questions/`, `src/lib/exercises/`, `src/lib/server/` (`exercises.ts`, `series.ts`,

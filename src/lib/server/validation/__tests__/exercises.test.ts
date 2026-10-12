@@ -832,3 +832,27 @@ describe('exercise validation schemas', () => {
 		});
 	});
 });
+
+// Ressources d'un exercice : rendues en lien, donc adresse http(s) seulement.
+// `z.string().url()` seul laissait passer `javascript:alert(1)`.
+describe('ressources : adresse http(s) seulement (écriture)', () => {
+	const base = {
+		category: 'automatisme',
+		variations: [{ label: 'default', statement_md: 'Q', solution_md: 'R' }]
+	};
+	const withUrl = (url: string) => ({
+		...base,
+		resources: [{ type: 'link', url, title: 'Lien' }]
+	});
+
+	it.each(['javascript:alert(1)', 'mailto:prof@example.org'])('refuse %s', (url) => {
+		expect(createExerciseSchema.safeParse(withUrl(url)).success).toBe(false);
+		expect(updateExerciseSchema.safeParse({ resources: withUrl(url).resources }).success).toBe(
+			false
+		);
+	});
+
+	it('accepte https', () => {
+		expect(createExerciseSchema.safeParse(withUrl('https://example.org/cours')).success).toBe(true);
+	});
+});
