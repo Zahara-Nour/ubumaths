@@ -70,3 +70,39 @@ describe('en deçà : rien ne change', () => {
 		expect(exact('2^5000 > 3^3000').output).toBe('true');
 	});
 });
+
+// Revue : les fonctions de l'utilisateur échappaient au garde-fou — `u(6000)` prenait 2 s, et
+// `u(100000)` figeait la page (la suite de limite e, cas de lycée)
+describe('une fonction de l’utilisateur passe par le même garde-fou', () => {
+	it('u(n) = (1+1/n)^n : u(100000) en moins d’une seconde', () => {
+		const engine = new WebReplEngine();
+		engine.execute('.def u(n) = (1+1/n)^n');
+		const start = performance.now();
+		const line = engine.execute('u(100000)');
+
+		expect(performance.now() - start).toBeLessThan(1000);
+		expect(line.exactTooLong).toBeGreaterThan(1000);
+		expect(line.approximateLatex).toBe('\\approx 2.7183');
+	});
+
+	it('une fonction à valeur booléenne reste vraie ou fausse', () => {
+		const engine = new WebReplEngine();
+		engine.execute('.def f(x) = x > 2');
+
+		expect(engine.execute('f(2^5000)').output).toBe('true');
+	});
+});
+
+describe('ce qui n’est pas une écriture gardée', () => {
+	// Revue : `(1/0)^{2000}` réussissait en mode exact, « trop long »
+	it('une erreur reste une erreur', () => {
+		expect(exact('(1/0)^2000').success).toBe(false);
+	});
+
+	it('en mode décimal, le bouton « valeur exacte » montre l’écriture gardée, non développée', () => {
+		const latex = decimal('(1+1/1000)^1000').exactLatex ?? '';
+
+		expect(latex).toContain('1000');
+		expect(latex.length).toBeLessThan(60);
+	});
+});

@@ -23,7 +23,16 @@ import {
 	escapeWithLabel,
 	formatTreeHtml
 } from './output-formatter-web';
-import { toCustom, getVariables, hasAllBindings, evaluate, substitute, toLatex } from '../../index';
+import {
+	toCustom,
+	getVariables,
+	hasAllBindings,
+	evaluate,
+	substitute,
+	substituteFunction,
+	toLatex
+} from '../../index';
+import type { FunctionBindings } from '../../eval/function-bindings';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { normalize, normalFormsEquivalent } from '../../normal';
 import type { EvalValue, ComplexValueResult, EvalResult } from '../../eval/types';
@@ -125,6 +134,16 @@ function readableExact(node: MathNode): MathNode {
 	if (getVariables(node).size > 0 || hasDecimalLiteral(node)) return node;
 	try {
 		return tidy(node);
+	} catch {
+		return node;
+	}
+}
+
+/** Les fonctions de l'utilisateur remplacées par leur définition (l'expression telle quelle sinon). */
+function withFunctionsExpanded(node: MathNode, functions: FunctionBindings | undefined): MathNode {
+	if (functions === undefined) return node;
+	try {
+		return substituteFunction(node, functions);
 	} catch {
 		return node;
 	}
@@ -912,12 +931,15 @@ export class WebReplEngine {
 			// Un résultat exact trop long garde son écriture (option A de David,
 			// 2026-10-12) : décidé AVANT le calcul, qui figeait la page — 13 s pour les
 			// 80 003 caractères de `(1+1/10000)^10000`, plus de 200 s pour n = 100 000
-			const tooLong = isTooLongExact(substituted) ? estimatedExactDigits(substituted) : null;
+			// … estimé sur les fonctions de l'utilisateur DÉVELOPPÉES : `u(100000)` avec
+			// `u(n) = (1+1/n)^n` (la suite de limite e) échappait au garde-fou (revue)
+			const expanded = withFunctionsExpanded(substituted, this.evalState.functions);
+			const tooLong = isTooLongExact(expanded) ? estimatedExactDigits(expanded) : null;
 			// Le calcul exact, UNE fois : le test du booléen le refaisait en entier
 			const exactResult: EvalResult =
 				tooLong === null
 					? evaluate(substituted, { mode: 'exact', functions: this.evalState.functions })
-					: { status: 'value', value: substituted, node: substituted, exact: true };
+					: { status: 'value', value: expanded, node: expanded, exact: true };
 
 			// Boolean result: colored output, no exact/decimal toggle
 			if (exactResult.status === 'value' && exactResult.node.type === 'boolean') {
@@ -966,7 +988,7 @@ export class WebReplEngine {
 			// Format exact result — mis au propre comme à l'écran : `\pi/3`, pas la
 			// forme de calcul `{1/3}\pi` d'`evaluate`
 			const exactStr = toCustom(
-				tooLong === null ? readableExact(exactResult.node) : typedWriting(substituted)
+				tooLong === null ? readableExact(exactResult.node) : typedWriting(expanded)
 			);
 			const exactOutput = exactStr;
 			const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactStr)}</span>`;
@@ -989,7 +1011,9 @@ export class WebReplEngine {
 					str: toCustom(decimalResult.node),
 					exact: decimalResult.exact || isWrittenNumber(exactResult.node)
 				};
-			} else if (currentMode === 'decimal') {
+			} else if (currentMode === 'decimal' || tooLong !== null) {
+				// Une écriture gardée sans aucune valeur est une erreur (`(1/0)^{2000}`), pas un
+				// résultat (revue)
 				throw new Error(
 					decimalResult.status === 'indeterminate'
 						? `Indeterminate form: ${decimalResult.form}`
