@@ -109,7 +109,10 @@ Précisions :
   produit » repasse en mode produit, pour la formule principale et le corpus. Un nom de figure
   (`ABC`) affiche son message à la place de la formule et de la lecture.
 - **`/test-font`** : outil de comparaison des polices de rendu ; décision de ne rien changer à
-  KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`.
+  KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
+  expression de quatre lignes (`\begin{gathered}`) qui réunit tous les symboles de la police,
+  petits et grands (opérateurs, délimiteurs empilés, racines, ∑ ∫, AMS) : la regarder suffit pour
+  juger un changement du jeu Shantell (`tools/shantell-math/`).
 - **`/test-cadres`** : garde la trace du choix `\htmlStyle` pour le cadre des solutions
   (`\bbox` perd sa bordure en MathLive 0.111.1, `roundedbox` est décalé).
 
