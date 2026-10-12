@@ -14,7 +14,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Settings, ShoppingBag, AlertCircle, Info, Check, X } from '@lucide/svelte';
-	import { z } from 'zod';
+	import { marketplaceSettingsSchema } from '$lib/validation/marketplace';
 	// La configuration est celle de la table `marketplace_config`. Le composant en
 	// redéclarait une version locale avec un champ `is_enabled` qui n'existe nulle
 	// part : à l'ouverture, l'interrupteur repartait donc toujours de « désactivé »
@@ -53,23 +53,6 @@
 	let maxTradesPerDay = $state(initialConfig?.max_trades_per_day ?? DEFAULT_MAX_TRADES);
 	let isLoading = $state(false);
 
-	// Validation schema (must match backend validation in src/lib/server/marketplace/validation.ts)
-	const configSchema = z.object({
-		enabled_for_class: z.boolean(),
-		max_listings_per_student: z
-			.number()
-			.int('Doit être un nombre entier')
-			.min(1, 'Minimum 1 annonce')
-			.max(10, 'Maximum 10 annonces')
-			.finite('La valeur doit être un nombre fini'),
-		max_trades_per_day: z
-			.number()
-			.int('Doit être un nombre entier')
-			.min(1, 'Minimum 1 échange')
-			.max(20, 'Maximum 20 échanges')
-			.finite('La valeur doit être un nombre fini')
-	});
-
 	// Track changes - use $derived instead of $effect to avoid updating state from effect
 	let hasChanges = $derived(
 		config
@@ -82,7 +65,7 @@
 	// Save settings
 	async function saveSettings() {
 		// Validate input
-		const validation = configSchema.safeParse({
+		const validation = marketplaceSettingsSchema.safeParse({
 			enabled_for_class: isEnabled,
 			max_listings_per_student: maxListingsPerStudent,
 			max_trades_per_day: maxTradesPerDay
