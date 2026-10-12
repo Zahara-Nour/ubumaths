@@ -69,7 +69,7 @@ test, ~14 000 cas (`it(`/`test(`).
 | `simplify/`                                                                                                                         | `simplify` : `tidy` + règles + « développer seulement si moins cher » (`computeCost`, `costFunction` injectable)                                                                                                                                                                                                                                                                              |
 | `normal/`                                                                                                                           | `normalize` → `NormalForm` (forme normale rationnelle), `denormalize`, `equivalenceForm`, `hashMathNode`, `nodesEqual`                                                                                                                                                                                                                                                                        |
 | `pattern/`                                                                                                                          | motifs (`P`, `tryMatch`), règles, jeux de règles, `verifyForm` — voir [pattern-matching.md](pattern-matching.md)                                                                                                                                                                                                                                                                              |
-| `common/`                                                                                                                           | moteur de réécriture `rewrite`, `numericNode`, interruption (`AbortError`), bases des enregistreurs et rendus d'étapes, constructeurs simplifiants (`common/simplify.ts`), `e`, `i` jamais variables (`common/reserved-letters.ts`)                                                                                                                                                           |
+| `common/`                                                                                                                           | moteur de réécriture `rewrite`, `numericNode`, interruption (`AbortError`), bases des enregistreurs et rendus d'étapes, constructeurs simplifiants (`common/simplify.ts`), `e`, `i` jamais variables (`common/reserved-letters.ts`), signe d'une constante sur sa valeur (`constantSign`, `common/constant-sign.ts`)                                                                          |
 | `numtype/`                                                                                                                          | inférence du type numérique (entier, rationnel, réel…) et `TypeContext`                                                                                                                                                                                                                                                                                                                       |
 | **Calculer**                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                               |
 | `eval/`                                                                                                                             | `substitute`, `evaluate`, `evaluateWithModifiers` (`{{eval}}`, grandeurs comprises), `compile`/`createSafeEvaluator`                                                                                                                                                                                                                                                                          |
@@ -428,6 +428,13 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
      variable », « i est l'unité imaginaire, pas une variable » (`reservedVariableRefusal`,
      `common/reserved-letters.ts`), sauf si l'arbre contient une variable de ce nom (base
      indicée `e_1`, `i_1`, ou `i` dans un indice) ;
+   - **le signe d'une constante se lit sur sa valeur, pas sur son type** : `-\frac23` est
+     `opposite(division)`, `\frac{-3}{4}` une division, `-0.5` devient `-\dfrac12` après
+     `canon`, `-\sqrt2` un opposé de racine. `getNumericValue` ne voit que `number` et
+     `opposite(number)` : pour décider d'un signe (sens d'une inéquation, tableau de signes),
+     `constantSign` (`common/constant-sign.ts` : rationnel exact, sinon valeur approchée hors
+     d'une marge de 10⁻⁹, `null` si indécidable). Écart V36 : `-\dfrac{2}{3}x+1<5` concluait
+     x < −6 ;
    - `\sin^2 x` est une `function` avec `power`, `(\sin x)^2` un `superscript` ;
    - la virgule : MathLive écrit `3{,}14` (lu `3.14`) ; la virgule nue passe par
      `decimal-comma.ts` ;
@@ -497,7 +504,10 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     plafond membre par membre (`cli/bounded-comparison.ts`) : produit de puissances par ses
     facteurs, sinon encadrements rigoureux (`cli/interval.ts` : binaires à 256 bits arrondis
     vers l'extérieur, `+ − × ÷` et puissances entières), refus s'ils se recouvrent. ⚠️ Jamais
-    la valeur approchée du bouton ≈ pour trancher : elle a donné des sens faux.
+    la valeur approchée du bouton ≈ pour trancher : elle a donné des sens faux. Une chaîne `a < b < c` est
+    vraie si chaque maillon l'est (`evaluateToBoolean`), et passe par le plafond maillon par
+    maillon. La console réécrit les opérateurs logiques et d'égalité (`&&`, `and`, `!=`, `==`…) dans la notation du parseur (`cli/core/pipeline.ts`, `withLogicOperators`), et
+    lit en entier une entrée à plusieurs `=` ou dont un membre est une comparaison.
 
 ## Le moteur de réécriture et les étapes
 
@@ -511,6 +521,27 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   `SchoolLevel` (`'primaire' | 'college' | 'lycee' | 'superieur'`). Référence :
   `pedagogical-solve/linear-renderer.ts` (titres par niveau, repli sur `lycee` puis sur la
   description du pas).
+- **Les maths de la prose entre `$…$`** (V25, 2026-10-12). `GeneratedStepsCorrection.svelte`
+  rend le titre et l'explication d'une étape par `InlineMarkdown` (ubumark) : une formule entre
+  `$…$` s'affiche en maths, le reste en texte. L'intégration, la dérivation et le premier degré
+  (équations et inéquations) y écrivent donc leurs formules : « On pose $u = 2 x$ et
+  $dv = \exponentialE^{3 x}$ », « On divise les deux membres par $\dfrac{2}{3}$ », un titre du
+  supérieur qui n'est qu'une formule en entier (`$\int u\,dv = uv - \int v\,du$`),
+  `$S = \{ 6 \}$`. Hors des `$`, ni `\`, `^`, `_`, `{`, `}`, ni `*` (italique d'ubumark) ni
+  `~` (syntaxe maison), jamais `$$` (bloc) ; les descriptions par défaut restent du texte simple.
+  Garde-fou sur les 11 pipelines que `generateCorrection` appelle (listes et cas de démo, à
+  chaque niveau) : `__tests__/prose-maths-delimitees.test.ts` — il refuse aussi un texte qui
+  commencerait par un marqueur de bloc ubumark (`+`, `-`, `1.`, `#`, `>` : les titres « + » de
+  l'arithmétique s'écrivent `$+$`). Second degré : ensembles de solutions par
+  `domainDescriptionLatex` (`pedagogical-solve/_helpers.ts`), forme standard en `$…$` (plus de
+  backticks) ; domaine : gabarits de `domain/step-descriptions.ts` en `$…$` ; simplification : les
+  propriétés de l'exponentielle et des radicaux de `normal/` réécrites dans
+  `pedagogical-simplify/descriptions-fr.ts`. Les **limites** écrivent encore leur prose en Unicode
+  (`formatPowerShort`, `formatValueShort`), sauf les titres-formules du supérieur
+  (`$\lim_{x \to 0^-}$`). Sous ∫, une constante négative s'écrit entre parenthèses
+  (`\int \left( -3 \right) f(x)\,dx = -3 \int f(x)\,dx`).
+  Côté atelier, `decimalCommaProse` écrit `{,}` dans les `$…$` et `historyToUbumark` garde ces
+  formules (`$…$`, pas `\$`).
 - La résolution d'équation pédagogique ne rejoue **pas** le solveur algorithmique : elle
   suit ce que l'élève fait sur papier (`pedagogical-solve/`). Paliers : 1 (équation du
   1er degré), 2a (inéquation du 1er degré), 2b (inéquation du 2nd degré), 3 (inéquation
@@ -643,7 +674,7 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   (bloc `\lim \dfrac{1}{x} = 0`, `\text{donc } \lim (3 + \dfrac{1}{x}) = 3`, champ
   `termLimits` de l'étape) → `apply-quotient` ou `apply-product` (explication : « Le facteur x³
   tend vers −∞ et l'autre facteur tend vers −2 : par produit, (−∞) × (−2) = +∞ », « 2 divisé
-  par une quantité qui tend vers +∞ » ; le facteur restant nommé en mots, « le quotient restant », « la parenthèse » : titres et explications sans LaTeX, affichés en texte brut) → conclusion. Mode
+  par une quantité qui tend vers +∞ » ; le facteur restant nommé en mots, « le quotient restant », « la parenthèse » : titres et explications sans LaTeX, en Unicode — le composant les rend par `InlineMarkdown` depuis V25, sans `$` ils restent du texte) → conclusion. Mode
   résumé : développement, factorisation, simplification, conclusion. Deux monômes
   (`\dfrac{2x^2}{3x^2}`) : pas de factorisation, « On simplifie par x² ». **Sans forme
   indéterminée** (`\dfrac{1}{x+1}`, `x^2+1`, `(x+1)^2`, `-x^4+x` en −∞), pas de factorisation :
@@ -702,7 +733,7 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   `pipeline.ts`) : `\frac{1}{2(2x - 1)} - \frac{1}{2(2x + 1)}` (A′ = A·q), primitive
   `\frac{\ln|2x - 1|}{4} - \frac{\ln|2x + 1|}{4}` ; les facteurs annoncés (`factor1`,
   `factor2`) sont ceux du dénominateur factorisé. Un facteur `px + q`, p ≠ 1, ajoute la liaison
-  `p`, qui fait écrire les formules en `∫A/(px + q) dx = (A/p)·ln|px + q|`. Un coefficient nul
+  `p`, qui fait écrire les formules en `$\int \dfrac{A}{px+q}\,dx = \dfrac{A}{p}\ln|px+q|$`. Un coefficient nul
   (P et Q ont un facteur commun, `(3x + 1)/(6x² − x − 1)`) laisse un seul terme
   (`\frac{1}{2x - 1}`) au lieu du refus d'avant.
 

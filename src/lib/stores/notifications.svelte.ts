@@ -36,7 +36,7 @@ class NotificationStore {
 			const response = await fetch(`/api/notifications/unread?page=1&limit=${this.pageSize}`);
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch notifications');
+				throw new Error('Impossible de charger les notifications');
 			}
 
 			const data = await response.json();
@@ -71,7 +71,7 @@ class NotificationStore {
 			);
 
 			if (!response.ok) {
-				throw new Error('Failed to load more notifications');
+				throw new Error('Impossible de charger plus de notifications');
 			}
 
 			const data = await response.json();
@@ -97,7 +97,7 @@ class NotificationStore {
 			const response = await fetch('/api/notifications/unread-count');
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch unread count');
+				throw new Error('Impossible de compter les notifications non lues');
 			}
 
 			const data = await response.json();
@@ -133,7 +133,7 @@ class NotificationStore {
 		})
 			.then((response) => {
 				if (!response.ok) {
-					throw new Error('Failed to mark notification as read');
+					throw new Error('Impossible de marquer la notification comme lue');
 				}
 			})
 			.catch((err) => {
@@ -172,7 +172,7 @@ class NotificationStore {
 		})
 			.then((response) => {
 				if (!response.ok) {
-					throw new Error('Failed to mark all notifications as read');
+					throw new Error('Impossible de marquer toutes les notifications comme lues');
 				}
 			})
 			.catch((err) => {

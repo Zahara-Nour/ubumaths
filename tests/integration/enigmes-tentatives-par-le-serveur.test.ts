@@ -71,8 +71,8 @@ describe('énigmes : tentatives écrites par le serveur seulement', () => {
 		eleve = await TestData.profile().withRole('student').create();
 		autre = await TestData.profile().withRole('student').create();
 		const { rows } = await pg.query<{ id: string }>(
-			`insert into riddles (title, difficulty, statement, correction, created_by, status)
-			 values ('zz-énigme triche', 1, 'zz', 'zz', $1, 'published') returning id`,
+			`insert into riddles (title, difficulty, statement, created_by, status)
+			 values ('zz-énigme triche', 1, 'zz', $1, 'published') returning id`,
 			[auteur.id]
 		);
 		riddleId = rows[0].id;

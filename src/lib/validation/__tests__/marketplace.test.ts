@@ -135,7 +135,7 @@ describe('createListingSchema', () => {
 		expect(result.success).toBe(false);
 		if (!result.success) {
 			// Zod rejects Infinity at type level with generic "Invalid input" message
-			expect(result.error.issues[0].message).toContain('Invalid input');
+			expect(result.error.issues[0].message).toContain('Entrée invalide');
 		}
 	});
 

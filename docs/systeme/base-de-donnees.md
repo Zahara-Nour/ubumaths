@@ -386,12 +386,9 @@ service ; plus de policy d'insertion pour l'élève) et `riddle_progress` est fe
 `riddle_solutions`, lisible et modifiable par l'auteur de l'énigme et l'admin seulement
 (migration `20261016100500`, test `tests/integration/enigmes-solutions-a-part.test.ts`) ; le
 code ne lit et n'écrit plus qu'elle (`src/lib/server/riddle-solutions.ts`, client service pour
-l'élève). En transition, `riddles.answer` / `riddles.correction` existent encore, ne sont plus
-écrites par le code (le déclencheur `trigger_sync_riddle_solution` ne recopie que les écritures
-qui les nomment, et l'insertion d'une énigme crée sa ligne de solution vide, que le code complète
-ensuite) et restent lisibles par l'élève par une requête directe, jusqu'à leur suppression (étape
-C, après le deploy du code qui lit `riddle_solutions`) ; `riddles.correction` vaut `''` par défaut
-(`20261016100600`) pour que le code puisse ne plus la nommer.
+l'élève). `riddles` ne porte plus ni `answer` ni `correction` : colonnes, déclencheur de
+recopie et sa fonction supprimés (étape C, `20261016100800`, après v0.25.0) ; la migration
+refait la réconciliation et s'annule si une énigme n'a pas sa solution identique.
 `mathemo_scores`, `minesweeper_student_achievements`, `minesweeper_player_stats`,
 `marketplace_listing_views`, `game_2048_scores` : lecture par soi seul, prof et admin compris
 (migration `20261015090600`, test `tests/integration/lectures-ouvertes-fermees.test.ts`).

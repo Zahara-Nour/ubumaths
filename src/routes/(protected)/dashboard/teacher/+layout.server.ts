@@ -58,8 +58,12 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 	try {
 		// Fetch classes with counts using optimized RPC function
 		let classes: ClassWithData[] = [];
+		// Vrai seulement si la liste a été lue : une liste vide après un échec ne doit
+		// ni purger le cache des classes ni vider la classe retenue côté client
+		let classesLoaded = false;
 		try {
 			classes = await getTeacherClassesWithCounts(user.id, supabase);
+			classesLoaded = true;
 			console.log(`[Teacher Layout Server] ✅ Loaded ${classes.length} classes`);
 		} catch (err) {
 			console.error('[Teacher Layout Server] Error fetching classes:', err);
@@ -101,6 +105,7 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 		// The +layout.svelte will call teacherCache.hydrateAllClasses() and setPeriods()
 		return {
 			classes,
+			classesLoaded,
 			currentPeriod,
 			allPeriods
 		};
@@ -109,6 +114,7 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 		// Return minimal data to prevent crashes
 		return {
 			classes: [],
+			classesLoaded: false,
 			currentPeriod: null,
 			allPeriods: []
 		};

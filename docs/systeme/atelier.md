@@ -294,6 +294,26 @@ fractions », 2026-10-12) :
   annoncé « environ 5 000 chiffres ». L'arrondi se lit alors sur le résultat calculé (√2 tapé
   n'entre en fraction que par son flottant, dont la puissance déborde).
 
+**Chaînes et « différent de »** (2026-10-12) : `1 < x < 3` est vraie si chaque maillon l'est
+(`evaluateToBoolean`, `eval/evaluate.ts` ; elle répondait « Cannot evaluate boolean expression ») ;
+Les opérateurs logiques et d'égalité se tapent comme en programmation ou en toutes lettres
+(`cli/core/pipeline.ts`, `withLogicOperators`) : `&&`/`and`/`et`, `||`/`or`/`ou`,
+`!`/`not`/`non`, `==`/`===` (=), `!=`/`!==` (≠) — réécrits en `\land`, `\lor`, `\lnot`, `\ne`
+pour le LaTeX (qui lisait `2 != 3` comme `factorial(2) = 3`). Une factorielle reste collée à son
+nombre (`3! = 6`). ⚠️ Au plus près (revue) : `||` et les mots seulement entourés d'espaces
+(`||-2||` est une norme, `et := 3` une variable) ; un « non » seulement en tête, après `(`, `,`
+ou un « et »/« ou » (`5 !`, `|-3|!` sont des factorielles) ; aucun mot dans `\text{…}`, ni
+sans comparaison ou opérateur logique dans l'entrée (`non + 1`, `x et y` parlent de variables) ;
+`non`/`not` en toutes lettres seulement devant une parenthèse (`non(2 > 1)`). Le message
+d'une comparaison non évaluable nomme la vraie cause (relation non tranchée, « non » sans
+parenthèses, variable sans valeur). Une entrée à plusieurs `=` ou dont un membre est une comparaison (`1 < 2 = 2`) est lue
+en entier comme une chaîne : `executeEquality` la coupait au `=` et comparait un booléen à un
+nombre. Une chaîne de grandeurs (`5[m] < 600[cm] < 7[m]`) passe maillon par maillon par le chemin
+des grandeurs. Une comparaison entre parenthèses (`\lnot (2 > 1)`) s'évalue ; une relation que le
+calcul ne tranche pas répond en français (« Relation « ≈ » non évaluable : seules = ≠ < > ≤ ≥ se
+tranchent »), et les erreurs de la console commencent par « Erreur de calcul : » (« Evaluation
+error: » avant).
+
 Une comparaison ne garde jamais son écriture (elle rend vrai ou faux), mais passe par le même
 plafond **membre par membre** (`mathAST/cli/bounded-comparison.ts`, aussi pour `a = b`, qui suit
 son propre chemin `executeEquality`) : un membre au-delà du plafond prend sa valeur exacte s'il
@@ -372,7 +392,9 @@ Bouton « Exporter » de la vue Calcul (`history-export.ts`) :
 - **JSON** (`historyToJson`, format `HISTORY_FORMAT` = `chiphre-calcul`) pour rejouer : chaque
   entrée garde son **geste** (`ReplayStep` : `saisie`, `action`, `supprimer`, `annuler`, `garder`)
   et sa réponse ;
-- **ubumark** (`historyToUbumark`) pour recopier dans une fiche, formules en `$…$` LaTeX.
+- **ubumark** (`historyToUbumark`) pour recopier dans une fiche, formules en `$…$` LaTeX. Le
+  titre d'une étape garde ses formules `$…$` (V25 : les pipelines pédagogiques y écrivent leurs
+  maths) ; le texte autour est neutralisé (`*` → `×`, `\$`, `\~`).
 
 Rejeu (`CalcDesk.replay`) : le fichier vient de dehors, donc `readHistory` le valide (Zod) et le
 borne (`MAX_HISTORY_BYTES`, `MAX_HISTORY_ENTRIES`) avant tout. Chaque geste est refait **par le
@@ -450,7 +472,8 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
     remplacement de `\euler` dans `render.ts` sont retirés). `e` n'est jamais une variable :
     `.dériver 3e^2 ; e` est refusé (« e est la constante d'Euler, pas une variable »).
 11. **Seul l'affichage passe à la virgule décimale** : le moteur, l'arbre gardé et le rejeu
-    restent en `0.5` (`decimal-comma.ts`).
+    restent en `0.5` (`decimal-comma.ts`). Dans le titre ou l'explication d'une étape,
+    `decimalCommaProse` écrit `0,5` dans la phrase et `0{,}5` dans une formule `$…$` (V25).
 12. **On ne valide pas** les réponses de l'élève (décision figée n° 2).
 
 ---

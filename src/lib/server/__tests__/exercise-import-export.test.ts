@@ -537,7 +537,7 @@ describe('importExerciseFromJSON', () => {
 		expect(result.success).toBe(false);
 		expect(result.error).toBeDefined();
 		// Union validation fails when category is invalid
-		expect(result.error).toContain('Invalid');
+		expect(result.error).toContain('invalide');
 	});
 
 	it('should skip validation when validate is false', async () => {
@@ -735,7 +735,7 @@ describe('importExercisesFromJSON', () => {
 		expect(result.errors).toHaveLength(1);
 		expect(result.errors[0].index).toBe(2);
 		// Union validation fails when category is invalid
-		expect(result.errors[0].error).toContain('Invalid');
+		expect(result.errors[0].error).toContain('invalide');
 	});
 
 	it('should reject non-array input', async () => {

@@ -157,7 +157,8 @@ export const evaluateBinaryAdd: PedagogicalArithmeticRule = {
 		primaire: (b) => `On additionne ${bindingLatex(b, 'a')} et ${bindingLatex(b, 'b')}`,
 		college: () => 'Addition',
 		lycee: () => 'Somme',
-		superieur: () => '+'
+		// `$+$` : un « + » seul ouvrirait une liste ubumark (V25)
+		superieur: () => '$+$'
 	}
 };
 

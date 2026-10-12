@@ -243,7 +243,9 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('both forceRarity and minRarity');
+					expect(result.error.issues[0].message).toContain(
+						'forceRarity et minRarity ne peuvent pas être combinés'
+					);
 				}
 			});
 
@@ -388,7 +390,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('more than 50');
+					expect(result.error.issues[0].message).toContain('plus de 50 cartes');
 				}
 			});
 
@@ -412,7 +414,7 @@ describe('VIP Card Action Validation', () => {
 				});
 				expect(result.success).toBe(false);
 				if (!result.success) {
-					expect(result.error.issues[0].message).toContain('cannot be empty');
+					expect(result.error.issues[0].message).toContain('ne peut pas être vide');
 				}
 			});
 

@@ -200,3 +200,17 @@ sa valeur approchée. »
   l'extérieur ; test de rigueur aléatoire, rouge si l'arrondi vers le haut est faussé). Au
   passage, la revue s'était trompée sur un cas (`(1+1/20000)^{20000} + 10^{14} > 10^{14} + 3` est
   FAUX) : l'encadrement l'a tranché juste.
+- 2026-10-12 — #1199 mergée. **David : « corrige ces limites »** (deux limites antérieures de la
+  console) : `2 != 3` passait au parseur LaTeX (`factorial(2) = 3` → `false`) — `!=` désigne
+  désormais la syntaxe maison dans `input-detector.ts` ; les chaînes `1 < x < 3` sont évaluées
+  maillon par maillon (`evaluateToBoolean`) et passent par le plafond (`boundedComparison` les
+  change en « et » de maillons : `1 < 1.0001^{30000} < 30` prenait 26,6 s).
+  Revue : `!=` restait une factorielle avec du LaTeX autour (`\frac{1}{2} != 3` → false) — la
+  règle est désormais une réécriture `!=` → `\ne` avant le parseur LaTeX (le motif du détecteur
+  est retiré) ; une chaîne avec un `=` (`1 < 2 = 2`, `2 = 2 = 2`) partait dans
+  `executeEquality` — lue en entier désormais.
+- 2026-10-12 — #1203 mergée. **David : « ok corrige ça »** (`!==`, `not`/`and`, message anglais) :
+  `withLogicOperators` (pipeline de la console) réécrit `&& || ! and or not et ou non == === !=
+!==` dans la notation de chaque parseur ; `evaluateToBoolean` traverse les parenthèses
+  (`\lnot (2 > 1)`) ; message français pour une relation non tranchée (≈, ∈…) ; préfixe des
+  erreurs de la console « Erreur de calcul : ».

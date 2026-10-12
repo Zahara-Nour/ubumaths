@@ -25,7 +25,7 @@
 
 import type { MathNode, RelationType } from '../types';
 import { isLogical, isLogicalNot, isRelation } from '../guards';
-import { boolean } from '../factory';
+import { boolean, logical, relation } from '../factory';
 import { rationalToNode } from '../common/numeric';
 import { getVariables } from '../eval/substitute';
 import { compareEnclosures, enclosure } from './interval';
@@ -92,10 +92,14 @@ export function boundedComparison(node: MathNode): MathNode | null {
 		const operand = boundedComparison(node.operand);
 		return operand === null ? null : { ...node, operand };
 	}
-	// Une chaîne (`1 < x < 3`) reste au moteur, comme avant
-	if (!isRelation(node) || isRelation(node.left) || !ORDER_RELATIONS.has(node.relation)) {
-		return null;
+	if (!isRelation(node)) return null;
+	// Une chaîne `a < b < c` : chaque maillon passe par le plafond (`a < b` et `b < c`)
+	if (isRelation(node.left)) {
+		return boundedComparison(
+			logical('and', node.left, relation(node.relation, node.left.right, node.right))
+		);
 	}
+	if (!ORDER_RELATIONS.has(node.relation)) return null;
 	if (!isTooLongToCompute(node.left) && !isTooLongToCompute(node.right)) return null;
 
 	const left = computableSide(node.left);

@@ -122,7 +122,7 @@
 			}
 
 			const { worksheet } = await response.json();
-			toaster.success('Feuille creee avec succes');
+			toaster.success('Feuille créée avec succès');
 			goto(`/dashboard/teacher/contenu/worksheets/${worksheet.id}`);
 		} catch (error) {
 			console.error('Error creating worksheet:', error);

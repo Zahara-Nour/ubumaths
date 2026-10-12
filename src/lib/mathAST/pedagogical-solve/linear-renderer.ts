@@ -54,12 +54,25 @@ function fmt(node: { type: string } & object): string {
 	return toLatex(node as Parameters<typeof toLatex>[0]).replace(/(\d|\})\s+([a-zA-Z\\])/g, '$1$2');
 }
 
-// Helpers to extract operand-ish strings
-function operandStr(op: EquationOperation): string {
+/**
+ * Une formule LaTeX dans la prose : entre `$…$` (V25). Titres et explications
+ * sont rendus par `InlineMarkdown` (ubumark) : `On divise par $\dfrac{2}{3}$`.
+ */
+function math(latex: string): string {
+	return `$${latex}$`;
+}
+
+/** L'opérande en LaTeX brut, sans délimiteurs */
+function operandLatex(op: EquationOperation): string {
 	if (op.kind === 'add-both-sides' || op.kind === 'subtract-both-sides') return fmt(op.operand);
 	if (op.kind === 'multiply-both-sides' || op.kind === 'divide-both-sides') return fmt(op.operand);
 	if (op.kind === 'read-solution') return fmt(op.value);
 	return '';
+}
+
+/** L'opérande dans la prose, entre `$…$` */
+function operandStr(op: EquationOperation): string {
+	return math(operandLatex(op));
 }
 
 /**
@@ -97,7 +110,7 @@ function flipNote(op: EquationOperation): string {
 		op.flipOperator
 	) {
 		const operand = op.kind === 'simplify-coefficient' ? fmt(op.coefficient) : fmt(op.operand);
-		return ` (changement de sens car ${operand} est négatif)`;
+		return ` (changement de sens car ${math(operand)} est négatif)`;
 	}
 	return '';
 }
@@ -137,7 +150,7 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 		'group-constants': () => 'On regroupe les constantes',
 		'reduce-to-canonical': (_op, step) => `On isole ${variableOf(step)}`,
 		'read-solution': (op) =>
-			`Solution : ${(op as { variable: string }).variable} = ${operandStr(op)}`,
+			`Solution : ${math(`${(op as { variable: string }).variable} = ${operandLatex(op)}`)}`,
 		'inequality-conclude-truth': inequalityConcludeTruthTitle
 	},
 	// Lycée : « aux deux membres » devient implicite, notation S = { … } pour la solution.
@@ -158,7 +171,7 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 			`On regroupe les termes en ${(op as { variable: string }).variable}`,
 		'group-constants': () => 'On regroupe les constantes',
 		'reduce-to-canonical': (_op, step) => `On isole ${variableOf(step)}`,
-		'read-solution': (op) => `S = { ${operandStr(op)} }`,
+		'read-solution': (op) => math(`S = \\{ ${operandLatex(op)} \\}`),
 		'inequality-conclude-truth': inequalityConcludeTruthTitle
 	},
 	// Supérieur : vocabulaire identique au lycée — la différence est structurelle
@@ -178,7 +191,7 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 			`On regroupe les termes en ${(op as { variable: string }).variable}`,
 		'group-constants': () => 'On regroupe les constantes',
 		'reduce-to-canonical': (_op, step) => `On isole ${variableOf(step)}`,
-		'read-solution': (op) => `S = { ${operandStr(op)} }`,
+		'read-solution': (op) => math(`S = \\{ ${operandLatex(op)} \\}`),
 		'inequality-conclude-truth': inequalityConcludeTruthTitle
 	}
 };
@@ -252,7 +265,7 @@ const EXPLANATIONS: Record<
 		// L'inconnue de la résolution (`.résoudre 3 = 2t ; t` isole t, pas x)
 		'identify-equation': (op, step) =>
 			isInequalityStep(step)
-				? `Une inéquation du premier degré s'écrit ax + b ⊻ 0 (avec ⊻ ∈ {<, >, ≤, ≥, ≠}). On isole ${unknownOf(op)} étape par étape, en respectant la règle clé : multiplier ou diviser par un nombre négatif retourne l'opérateur.`
+				? `Une inéquation du premier degré s'écrit ax + b ⊻ 0 (avec ⊻ ∈ $\\{<, >, \\leq, \\geq, \\neq\\}$). On isole ${unknownOf(op)} étape par étape, en respectant la règle clé : multiplier ou diviser par un nombre négatif retourne l'opérateur.`
 				: `Une équation du premier degré s'écrit ax + b = 0. On va isoler ${unknownOf(op)} étape par étape.`,
 		'add-both-sides': (op, step) =>
 			`On ajoute ${operandStr(op)} aux deux membres : ${preservedNoun(step)} est préservée car on ajoute la même quantité de chaque côté.`,
@@ -268,7 +281,7 @@ const EXPLANATIONS: Record<
 	lycee: {
 		'identify-equation': (_op, step) =>
 			isInequalityStep(step)
-				? `Forme canonique ax + b ⊻ 0 avec a ≠ 0 et ⊻ ∈ {<, >, ≤, ≥, ≠}. La règle clé : si on divise (ou multiplie) par un négatif, on retourne l'opérateur.`
+				? `Forme canonique ax + b ⊻ 0 avec a ≠ 0 et ⊻ ∈ $\\{<, >, \\leq, \\geq, \\neq\\}$. La règle clé : si on divise (ou multiplie) par un négatif, on retourne l'opérateur.`
 				: 'Forme canonique ax + b = 0 avec a ≠ 0.',
 		'add-both-sides': (op, step) =>
 			isInequalityStep(step)
@@ -280,7 +293,7 @@ const EXPLANATIONS: Record<
 		'multiply-both-sides': multiplyExplanation,
 		'reduce-to-canonical': (_op, step) =>
 			`Réduction à la forme ax ${isInequalityStep(step) ? '⊻' : '='} b par transformations équivalentes successives.`,
-		'read-solution': () => 'Solution unique S = { −b/a }.',
+		'read-solution': () => 'Solution unique $S = \\left\\{ -\\dfrac{b}{a} \\right\\}$.',
 		'inequality-conclude-truth': inequalityConcludeTruthExplanation
 	},
 	superieur: {
@@ -294,7 +307,7 @@ const EXPLANATIONS: Record<
 		'multiply-both-sides': multiplyExplanation,
 		'reduce-to-canonical': (_op, step) =>
 			isInequalityStep(step) ? 'Forme canonique : ax + b ⊻ 0.' : 'Forme canonique : ax + b = 0.',
-		'read-solution': () => 'S = { −b·a⁻¹ }.',
+		'read-solution': () => '$S = \\{ -b a^{-1} \\}$.',
 		'inequality-conclude-truth': inequalityConcludeTruthExplanation
 	}
 };

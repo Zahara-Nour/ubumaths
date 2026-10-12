@@ -67,15 +67,15 @@
 
 			if (!response.ok) {
 				const err = (await response.json().catch(() => null)) as { message?: string } | null;
-				toaster.error(err?.message ?? 'Erreur lors de la création du template');
+				toaster.error(err?.message ?? 'Erreur lors de la création du modèle');
 				return;
 			}
 
-			toaster.success('Template créé');
+			toaster.success('Modèle créé');
 			open = false;
 		} catch (err) {
 			console.error('[SaveAsTemplateDialog] save failed:', err);
-			toaster.error('Erreur réseau lors de la création du template');
+			toaster.error('Erreur réseau lors de la création du modèle');
 		} finally {
 			isSaving = false;
 		}

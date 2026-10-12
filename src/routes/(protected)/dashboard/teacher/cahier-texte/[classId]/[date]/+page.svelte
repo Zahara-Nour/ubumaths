@@ -467,9 +467,9 @@
 		isSaving = false;
 		if (result?.success) {
 			if (result.action === 'create') {
-				toaster.success('Entree creee avec succes');
+				toaster.success('Entrée créée avec succès');
 			} else if (result.action === 'update') {
-				toaster.success('Entree mise a jour');
+				toaster.success('Entrée mise à jour');
 			} else if (result.action === 'publish') {
 				toaster.success(result.isPublished ? 'Entree publiee' : 'Publication retiree');
 			}

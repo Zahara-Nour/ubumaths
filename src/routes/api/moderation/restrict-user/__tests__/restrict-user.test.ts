@@ -316,7 +316,7 @@ describe('POST /api/moderation/restrict-user - Input Validation', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(400);
-			expect(error.body.message).toContain('Invalid option');
+			expect(error.body.message).toContain('Option invalide');
 		}
 	});
 
@@ -341,7 +341,7 @@ describe('POST /api/moderation/restrict-user - Input Validation', () => {
 		} catch (err: unknown) {
 			const error = err as { status: number; body: { message: string } };
 			expect(error.status).toBe(400);
-			expect(error.body.message).toContain('Invalid option');
+			expect(error.body.message).toContain('Option invalide');
 		}
 	});
 

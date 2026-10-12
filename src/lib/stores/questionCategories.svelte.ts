@@ -78,7 +78,7 @@ class QuestionCategoriesStore {
 			const response = await fetch('/api/questions/categories/all');
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch categories');
+				throw new Error('Impossible de charger les catégories');
 			}
 
 			const data = await response.json();

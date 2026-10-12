@@ -86,7 +86,7 @@
 
 			if (!response.ok) {
 				const error = await response.text();
-				throw new Error(error || 'Failed to remove restriction');
+				throw new Error(error || 'Impossible de lever la restriction');
 			}
 
 			toaster.success('Restriction retirée avec succès');

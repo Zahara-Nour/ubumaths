@@ -564,7 +564,7 @@
 				const result = await response.json();
 
 				if (!response.ok) {
-					throw new Error(result.message || 'Failed to remove card');
+					throw new Error(result.message || 'Impossible de retirer la carte');
 				}
 
 				toaster.success(`Carte ${card.name} retirée avec succès`);

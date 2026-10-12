@@ -21,9 +21,11 @@ import type {
 } from '../common/step-renderer-base';
 import { toLatex } from '../latex-generator';
 import { computeNumericValue } from '../solve/numeric-value';
+import { constantSign } from '../common/constant-sign';
 import type { MathNode } from '../types';
 import type { SignMark, SignTableGrid, SignTableRow } from './sign-table-grid';
 import type { EquationStep, EquationOperation, QuadraticSchoolLevel } from './types';
+import { domainDescriptionLatex } from './_helpers';
 
 // =============================================================================
 // Vocabulary tables
@@ -111,8 +113,8 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		},
 		standardize: (_op, step) =>
 			isInequalityStep(step)
-				? 'On met l’inéquation sous la forme `ax² + bx + c ⊻ 0`'
-				: 'On met l’équation sous la forme `ax² + bx + c = 0`',
+				? 'On met l’inéquation sous la forme $ax^2 + bx + c ⊻ 0$'
+				: 'On met l’équation sous la forme $ax^2 + bx + c = 0$',
 		'identify-coefficients': () => 'On identifie les coefficients a, b et c',
 		'compute-discriminant': () => 'On calcule le discriminant Δ = b² − 4ac',
 		'discriminant-positive': (_op, step) =>
@@ -162,14 +164,14 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		'inequality-conclude-quadratic': (op) => {
 			const description = (op as EquationOperation & { kind: 'inequality-conclude-quadratic' })
 				.solutionDescription;
-			return `Solution : S = ${description}`;
+			return `Solution : $S = ${domainDescriptionLatex(description)}$`;
 		},
 		// === Palier 2c — fast path b = 0 ===
 		'inequality-conclude-from-isolated-square': (op) => {
 			const description = (
 				op as EquationOperation & { kind: 'inequality-conclude-from-isolated-square' }
 			).solutionDescription;
-			return `Solution : S = ${description}`;
+			return `Solution : $S = ${domainDescriptionLatex(description)}$`;
 		},
 		// === Palier 3 — Rational inequality ===
 		'combine-fractions': () => 'On réduit au même dénominateur',
@@ -182,7 +184,7 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		'inequality-conclude-rational': (op) => {
 			const description = (op as EquationOperation & { kind: 'inequality-conclude-rational' })
 				.solutionDescription;
-			return `Solution : S = ${description}`;
+			return `Solution : $S = ${domainDescriptionLatex(description)}$`;
 		}
 	},
 	superieur: {
@@ -222,14 +224,14 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		'inequality-conclude-quadratic': (op) => {
 			const description = (op as EquationOperation & { kind: 'inequality-conclude-quadratic' })
 				.solutionDescription;
-			return `S = ${description}`;
+			return `$S = ${domainDescriptionLatex(description)}$`;
 		},
 		// === Palier 2c — fast path b = 0 ===
 		'inequality-conclude-from-isolated-square': (op) => {
 			const description = (
 				op as EquationOperation & { kind: 'inequality-conclude-from-isolated-square' }
 			).solutionDescription;
-			return `S = ${description}`;
+			return `$S = ${domainDescriptionLatex(description)}$`;
 		},
 		// === Palier 3 — Rational inequality ===
 		'combine-fractions': () => 'Réduction au même dénominateur',
@@ -240,7 +242,7 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		'inequality-conclude-rational': (op) => {
 			const description = (op as EquationOperation & { kind: 'inequality-conclude-rational' })
 				.solutionDescription;
-			return `S = ${description}`;
+			return `$S = ${domainDescriptionLatex(description)}$`;
 		}
 	}
 };
@@ -256,7 +258,7 @@ const EXPLANATIONS: Record<
 	lycee: {
 		'identify-equation': (_op, step) =>
 			isInequalityStep(step)
-				? 'Une inéquation du second degré s’écrit ax² + bx + c ⊻ 0 avec a ≠ 0 (où ⊻ ∈ {<, >, ≤, ≥, ≠}). On calcule le discriminant pour déterminer les racines, puis on dresse le tableau de signes pour lire la solution.'
+				? 'Une inéquation du second degré s’écrit ax² + bx + c ⊻ 0 avec a ≠ 0 (où ⊻ ∈ $\\{<, >, \\leq, \\geq, \\neq\\}$). On calcule le discriminant pour déterminer les racines, puis on dresse le tableau de signes pour lire la solution.'
 				: 'Une équation du second degré s’écrit ax² + bx + c = 0 avec a ≠ 0. On va calculer le discriminant pour déterminer le nombre de solutions.',
 		standardize: () =>
 			'On déplace tous les termes dans le membre de gauche : f(x) − g(x) ⊻ 0. La nouvelle relation est équivalente à la précédente.',
@@ -284,7 +286,8 @@ const EXPLANATIONS: Record<
 			isInequalityStep(step)
 				? 'On réduit chaque racine à sa forme canonique.'
 				: 'On réduit chaque solution à sa forme canonique.',
-		'read-solutions': () => 'On donne l’ensemble des solutions sous la forme S = { … }.',
+		'read-solutions': () =>
+			'On donne l’ensemble des solutions sous la forme $S = \\{ \\ldots \\}$.',
 		'no-real-solution': () => 'Dans ℝ, l’équation n’admet aucune solution. On note S = ∅.',
 		'factor-gcd': () =>
 			'Quand les coefficients ont un facteur entier commun, on divise les deux membres par ce PGCD pour simplifier les calculs ; les solutions de l’équation simplifiée sont identiques à celles de l’équation originale.',
@@ -701,8 +704,11 @@ function formatSolveEachFactor(op: EquationOperation & { kind: 'solve-each-facto
 export function quadraticSignTableGrid(
 	op: EquationOperation & { kind: 'quadratic-sign-table' }
 ): SignTableGrid | null {
-	const aValue = computeNumericValueLite(op.a);
-	const aSign: '+' | '-' = aValue !== null && aValue < 0 ? '-' : '+';
+	// Signe de a lu sur sa VALEUR : `-\frac12` est négatif (écart V36 — la
+	// lecture sur `number` / `opposite(number)` seulement le voyait positif).
+	const aSignValue = constantSign(op.a);
+	if (aSignValue === null || aSignValue === 0) return null;
+	const aSign: '+' | '-' = aSignValue < 0 ? '-' : '+';
 	const oppSign: '+' | '-' = aSign === '+' ? '-' : '+';
 	const label = formatQuadraticPolynomialLabel(op);
 
@@ -788,7 +794,7 @@ function formatGridInline(grid: SignTableGrid): string {
 function formatConcludeQuadratic(
 	op: EquationOperation & { kind: 'inequality-conclude-quadratic' }
 ): string {
-	return `S = ${escapeLatexBacktickFreeText(op.solutionDescription)}`;
+	return `S = ${domainDescriptionLatex(op.solutionDescription)}`;
 }
 
 /**
@@ -798,7 +804,7 @@ function formatConcludeQuadratic(
 function formatConcludeFromIsolatedSquare(
 	op: EquationOperation & { kind: 'inequality-conclude-from-isolated-square' }
 ): string {
-	return `S = ${escapeLatexBacktickFreeText(op.solutionDescription)}`;
+	return `S = ${domainDescriptionLatex(op.solutionDescription)}`;
 }
 
 /**
@@ -815,22 +821,9 @@ function formatQuadraticPolynomialLabel(
 	return `P(${op.variable})`;
 }
 
-/**
- * Lightweight numeric extraction — returns `null` if the node isn't a simple
- * integer/decimal/opposite. Avoids importing the full `computeNumericValue`
- * machinery since we only need to decide the SIGN of `a`.
- */
-function computeNumericValueLite(node: MathNode): number | null {
-	if (node.type === 'number') return parseFloat(node.value);
-	if (node.type === 'opposite' && (node as { operand: MathNode }).operand.type === 'number') {
-		return -parseFloat(((node as { operand: MathNode }).operand as { value: string }).value);
-	}
-	return null;
-}
-
 /** Sort roots by approximate numeric value (smallest first). Uses the full
  *  `computeNumericValue` so irrational forms like `(1 + \sqrt{5}) / 2` are
- *  ordered correctly — `computeNumericValueLite` only handles integers. */
+ *  ordered correctly. */
 function sortRoots(roots: readonly MathNode[]): MathNode[] {
 	const withVals = roots.map((r) => ({
 		node: r,
@@ -838,58 +831,6 @@ function sortRoots(roots: readonly MathNode[]): MathNode[] {
 	}));
 	withVals.sort((a, b) => a.value - b.value);
 	return withVals.map((w) => w.node);
-}
-
-/**
- * Échappe les accolades d'ENSEMBLE (`{2}`, `ℝ \ {0}`), jamais celles d'un
- * groupe LaTeX : une borne `\sqrt{2}` vient de `toLatex`. Les échapper toutes
- * affichait `]-∞ ; -\sqrt\{2\}[`, soit « √{2} » à l'écran, sur `x² > 2`
- * (revue, 2026-10-08). Une accolade ouvre un groupe LaTeX quand elle suit
- * une commande (`\sqrt`), une autre accolade (`\dfrac{a}{b}`), `^` ou `_`.
- */
-function escapeSetBraces(s: string): string {
-	const opened: boolean[] = [];
-	let out = '';
-	for (let i = 0; i < s.length; i++) {
-		const char = s[i];
-		if (char === '{') {
-			const before = s.slice(0, i);
-			const isGroup = /\\[A-Za-z]+$/.test(before) || /[}^_]$/.test(before);
-			opened.push(!isGroup);
-			out += isGroup ? '{' : '\\{';
-		} else if (char === '}') {
-			out += opened.pop() === true ? '\\}' : '}';
-		} else {
-			out += char;
-		}
-	}
-	return out;
-}
-
-/**
- * The `solutionDescription` carries Unicode characters like `∅`, `ℝ`, `∪`
- * that are LaTeX-safe in math mode but need a small post-processing pass to
- * harmonise with the rest of the renderer's output. Currently a no-op — kept
- * as a hook for future escaping needs (e.g. converting `∪` to `\cup`).
- */
-function escapeLatexBacktickFreeText(s: string): string {
-	// Accolades d'ensemble d'abord (`{2}`, `ℝ \ {0}`) ; celles des bornes
-	// (`\sqrt{2}`) et des macros introduites ensuite restent des groupes.
-	return (
-		escapeSetBraces(s)
-			// ℝ privé de points : `\left\{ a \,;\, b \right\}`, comme le LaTeX
-			// du moteur (`solve-latex.ts`)
-			.replace(
-				/ℝ\s*\\\s*\\\{(.*?)\\\}/g,
-				(_, points: string) =>
-					`\\mathbb{R} \\setminus \\left\\{ ${points.split(' ; ').join(' \\,;\\, ')} \\right\\}`
-			)
-			.replace(/∪/g, '\\cup')
-			.replace(/∅/g, '\\emptyset')
-			.replace(/ℝ\s*\\\s*/g, '\\mathbb{R} \\setminus ')
-			.replace(/ℝ/g, '\\mathbb{R}')
-			.replace(/∞/g, '\\infty')
-	);
 }
 
 // =============================================================================
@@ -978,7 +919,7 @@ function formatLocateRoots(op: EquationOperation & { kind: 'rational-locate-root
 function formatConcludeRational(
 	op: EquationOperation & { kind: 'inequality-conclude-rational' }
 ): string {
-	return `S = ${escapeLatexBacktickFreeText(op.solutionDescription)}`;
+	return `S = ${domainDescriptionLatex(op.solutionDescription)}`;
 }
 
 /**

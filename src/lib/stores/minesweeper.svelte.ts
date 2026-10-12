@@ -326,7 +326,7 @@ class MinesweeperStore {
 		// Validate against allowed database values
 		if (status !== 'in_progress' && status !== 'won' && status !== 'lost') {
 			logger.error('Invalid database status:', status);
-			throw new Error(`Invalid database status: ${status}`);
+			throw new Error(`État de partie inconnu : ${status}`);
 		}
 
 		return status;
@@ -580,12 +580,12 @@ class MinesweeperStore {
 		// Sanity checks (basic validation, not full Zod)
 		if (dto.rows <= 0 || dto.rows > 100) {
 			logger.error('Invalid rows count:', dto.rows);
-			throw new Error(`Invalid grid rows: ${dto.rows}`);
+			throw new Error(`Nombre de lignes invalide : ${dto.rows}`);
 		}
 
 		if (dto.cols <= 0 || dto.cols > 100) {
 			logger.error('Invalid cols count:', dto.cols);
-			throw new Error(`Invalid grid cols: ${dto.cols}`);
+			throw new Error(`Nombre de colonnes invalide : ${dto.cols}`);
 		}
 
 		if (dto.mines.length > 999) {
@@ -615,7 +615,7 @@ class MinesweeperStore {
 					difficulty: currentDifficulty
 				});
 				throw new Error(
-					`Invalid mine count for ${currentDifficulty}: expected ${expectedMines}, got ${dto.mines.length}`
+					`Nombre de mines invalide pour ${currentDifficulty} : ${expectedMines} attendues, ${dto.mines.length} reçues`
 				);
 			}
 
@@ -626,7 +626,7 @@ class MinesweeperStore {
 					difficulty: currentDifficulty
 				});
 				throw new Error(
-					`Invalid grid size for ${currentDifficulty}: expected ${config.rows}x${config.cols}, got ${dto.rows}x${dto.cols}`
+					`Taille de grille invalide pour ${currentDifficulty} : ${config.rows}x${config.cols} attendue, ${dto.rows}x${dto.cols} reçue`
 				);
 			}
 		}
@@ -2700,11 +2700,11 @@ class MinesweeperStore {
 		difficulty: Difficulty
 	): Promise<TournamentGameStartResponse> {
 		if (!browser) {
-			throw new Error('Cannot start tournament game on server');
+			throw new Error('Impossible de lancer une partie de tournoi côté serveur');
 		}
 
 		if (!this.shouldUseDatabase()) {
-			throw new Error('Must be logged in as student to play tournament');
+			throw new Error('Connecte-toi avec ton compte élève pour jouer au tournoi');
 		}
 
 		this.isLoading = true;
@@ -2803,11 +2803,11 @@ class MinesweeperStore {
 		}
 	): void {
 		if (!browser) {
-			throw new Error('Cannot resume tournament game on server');
+			throw new Error('Impossible de reprendre une partie de tournoi côté serveur');
 		}
 
 		if (!this.shouldUseDatabase()) {
-			throw new Error('Must be logged in as student to play tournament');
+			throw new Error('Connecte-toi avec ton compte élève pour jouer au tournoi');
 		}
 
 		// Stop existing timers
