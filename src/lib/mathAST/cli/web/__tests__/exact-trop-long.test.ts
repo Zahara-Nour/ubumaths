@@ -166,3 +166,24 @@ describe('une somme de grandes fractions ne fige pas la page', () => {
 		expect(line.approximateLatex).toBe('\\approx 6.2914 \\times 10^{-193}');
 	});
 });
+
+// Revue : deux contournements du plafond de calcul — une base irrationnelle n'était pas
+// prévue (`\\sqrt{2}^{40000000}` : 2,6 s), ni un exposant hors des entiers sûrs
+// (`2^{2^{100}}` : 2,4 s, puis « Maximum BigInt size exceeded »)
+describe('le plafond de calcul couvre aussi', () => {
+	it.each(['sqrt(2)^40000000', '(1+sqrt(2))^10000000', '2^(2^100)'])(
+		'%s : répond en moins de 300 ms',
+		(input) => {
+			const start = performance.now();
+			const line = exact(input);
+
+			expect(performance.now() - start).toBeLessThan(300);
+			expect(line.output).not.toContain('BigInt');
+		}
+	);
+
+	it('une base irrationnelle en deçà reste calculée', () => {
+		expect(exact('sqrt(2)^100000').exactTooLong).toBe(15052);
+		expect(exact('(1+sqrt(2))^20000').exactTooLong).toBe(15320);
+	});
+});

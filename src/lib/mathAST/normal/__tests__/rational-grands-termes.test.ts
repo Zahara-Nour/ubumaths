@@ -72,11 +72,11 @@ describe('le pgcd sur de grands entiers', () => {
 		expect(gcd(f, g)).toBe(1n);
 	});
 
-	// Mesuré avant (Euclide) : 1,8 s pour deux nombres de 40 000 chiffres
-	it('deux nombres de 40 000 chiffres en moins de 600 ms', () => {
+	// Mesuré : Euclide 1,7 s, Lehmer 357 ms (Mac mini M6) ; la marge couvre une CI plus lente
+	it('deux nombres de 40 000 chiffres en moins de 1 200 ms', () => {
 		const start = performance.now();
 		expect(gcd(10001n ** 10000n, 10000n ** 10000n)).toBe(1n);
-		expect(performance.now() - start).toBeLessThan(600);
+		expect(performance.now() - start).toBeLessThan(1200);
 	});
 });
 

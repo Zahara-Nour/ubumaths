@@ -152,3 +152,12 @@ sa valeur approchée. »
   saisies × 2 modes : seuls les cas visés changent ; aucune saisie ne ralentit. Reste connu : la
   prévision n'est pas une borne pour une somme de fractions (13 735 prévus, 25 523 réels, calculé
   en 124 ms) ; au-delà de 20 000 prévus, un faux positif reste possible (`10^{6000}×10^{-5998}`).
+- 2026-10-12 — revue `code-reviewer` : rien de bloquant (Lehmer et Henrici égaux à la référence
+  sur des milliers de paires ; contrat « réduit » vérifié source par source). **Corrigé** : seuil
+  du test du pgcd à 1 200 ms (357 ms mesurés, marge CI) ; deux contournements du plafond —
+  base irrationnelle (`\sqrt{2}^{40000000}` 2,6 s, `(1+\sqrt{2})^{10000000}` 3,9 s ; prévue
+  désormais par sa hauteur) et exposant hors des entiers sûrs (`2^{2^{100}}` 2,4 s puis
+  « Maximum BigInt size exceeded ») : « Valeur hors d'échelle » immédiat. **Laissés** : contrat
+  « réduit » tenu par un commentaire (garde en test jugée coûteuse) ; mesure sur `toCustom` et non
+  sur l'écriture mise au propre (quelques caractères au seuil) ; `1000!/999!` s'écrit
+  `factorial(1000)/factorial(999)` en mode exact (antérieur, le moteur garde les factorielles).

@@ -22,14 +22,20 @@
 import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
 import {
+	isAddition,
 	isBoolean,
+	isDelimiter,
+	isDivision,
 	isFunction,
 	isGreek,
 	isLogical,
 	isLogicalNot,
 	isMathConstant,
+	isMultiplication,
 	isNumber,
+	isOpposite,
 	isRelation,
+	isSubtraction,
 	isSuperscript,
 	isSymbol,
 	isVariable
@@ -80,13 +86,61 @@ function smallRational(node: MathNode): Rational | null {
 	}
 }
 
-/** Un exposant entier (`1000`, `-3`), ou `null`. */
+/**
+ * Un exposant entier (`1000`, `-3`), ou `null`. Au-delà des entiers sûrs, sa valeur arrondie
+ * (jusqu'à ±Infinity) : `2^{2^{100}}` passait pour petit, et son calcul prenait 2,4 s avant de
+ * déborder (revue).
+ */
 function integerExponent(node: MathNode): number | null {
 	if (findNodes(node, isVariable).length > 0) return null;
 	const value = smallRational(node);
 	if (value === null || value.d !== 1n) return null;
-	const k = Number(value.n);
-	return Number.isSafeInteger(k) ? k : null;
+	return Number(value.n);
+}
+
+/**
+ * La « hauteur » d'une base algébrique (des nombres, des racines, les quatre opérations) :
+ * environ le nombre de chiffres que chaque puissance ajoute au résultat développé — log₁₀ des
+ * termes de chaque nombre, divisé par l'indice de sa racine, plus log₁₀ 2 par somme. Une borne
+ * à un facteur 2 près (`(1+\sqrt{2})^{k}` : 0,45 k prévus, 0,77 k réels), pour le seul plafond
+ * de calcul : `\sqrt{2}^{40000000}` prenait 2,6 s (revue). `null` pour π, e, une variable, une
+ * autre fonction.
+ */
+function height(node: MathNode): number | null {
+	if (isNumber(node)) {
+		const value = smallRational(node);
+		if (value === null) return null;
+		return log10Of(value.n < 0n ? -value.n : value.n) + log10Of(value.d);
+	}
+	if (
+		isFunction(node) &&
+		(node.name === 'sqrt' || node.name === 'cbrt') &&
+		node.args.length === 1
+	) {
+		const index = node.name === 'cbrt' ? 3 : node.base ? integerExponent(node.base) : 2;
+		const inner = height(node.args[0]);
+		return index === null || index < 2 || inner === null ? null : inner / index;
+	}
+	if (isAddition(node) || isSubtraction(node)) {
+		const [left, right] = [height(node.left), height(node.right)];
+		return left === null || right === null ? null : Math.max(left, right) + Math.LOG10E * Math.LN2;
+	}
+	if (isMultiplication(node)) {
+		const [left, right] = [height(node.left), height(node.right)];
+		return left === null || right === null ? null : left + right;
+	}
+	if (isDivision(node)) {
+		const [top, bottom] = [height(node.numerator), height(node.denominator)];
+		return top === null || bottom === null ? null : top + bottom;
+	}
+	if (isOpposite(node)) return height(node.operand);
+	if (isDelimiter(node)) return height(node.content);
+	if (isSuperscript(node)) {
+		const m = integerExponent(node.superscript);
+		const inner = height(node.base);
+		return m === null || inner === null ? null : Math.abs(m) * inner;
+	}
+	return null;
 }
 
 /** π, e, une variable, un symbole : ce qui ne se calcule pas en fraction. */
@@ -134,8 +188,10 @@ function estimate(node: MathNode): number {
 	if (isSuperscript(node)) {
 		const baseSize = estimate(node.base);
 		const k = integerExponent(node.superscript);
-		if (k === null || Math.abs(k) < 2 || !isPureRational(node.base)) {
-			return baseSize + estimate(node.superscript);
+		if (k === null || Math.abs(k) < 2) return baseSize + estimate(node.superscript);
+		if (!isPureRational(node.base)) {
+			const h = height(node.base);
+			return h === null ? baseSize + estimate(node.superscript) : Math.abs(k) * h;
 		}
 		const value = baseSize <= SMALL_BASE_CHARACTERS ? smallRational(node.base) : null;
 		return value === null ? baseSize * Math.abs(k) : powerCharacters(value, k);
