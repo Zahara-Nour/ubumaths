@@ -67,6 +67,18 @@ describe('FillBlanksInput — raccourcis de deux majuscules (Q-N)', () => {
 		expect(await typed('AA', 'product')).toContain('forall');
 	});
 
+	it('champ monté, longueur puis produit : le raccourci revient (aperçu de l’éditeur)', async () => {
+		const { rerender, unmount } = await render(FillBlanksInput, {
+			props: { statement, blanks: [blank], capitalPairs: 'length' }
+		});
+		await rerender({ statement, blanks: [blank], capitalPairs: 'product' });
+		const mathField = await focusedMathField();
+		await userEvent.keyboard('AA');
+		const value = mathField.getPromptValue('0');
+		await unmount();
+		expect(value).toContain('forall');
+	});
+
 	it('sens non transmis (instance d’avant) : le raccourci reste', async () => {
 		expect(await typed('RR')).toContain('mathbb');
 	});

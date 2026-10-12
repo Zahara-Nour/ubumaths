@@ -7,7 +7,8 @@
  * réponse attendue qui en contient noterait faux tous les élèves, en silence :
  * l'éditeur de modèle la signale à l'auteur.
  *
- * Seules les réponses attendues des cases sont lues ; un gabarit `{{…}}` y est
+ * Seules les réponses attendues des cases MATHS sont lues : une case texte `[_]`
+ * compare des chaînes, `ABC` y est donc accepté. Un gabarit `{{…}}` y est
  * remplacé par un nombre (sa valeur n'existe qu'au tirage). Une réponse illisible
  * n'est pas signalée ici (le test du modèle s'en charge).
  */
@@ -15,6 +16,7 @@
 import { findNodes, isFigureName, parseLatexSafe, type FigureNameNode } from '$lib/mathAST';
 import { formatPointNames } from '$lib/mathAST/common/point-names';
 import { resolveCapitalPairs } from './capital-pairs';
+import { assignBlankIndices } from './generator/assign-blank-indices';
 import type { QuestionTemplate } from './types';
 
 // Constantes
@@ -49,7 +51,12 @@ export function figureNameWarnings(
 
 	const warnings: string[] = [];
 	template.variations.forEach((variation, variationIndex) => {
+		// Type des cases lu dans l'énoncé, comme au tirage (`[_]` = texte)
+		const statement = variation.statement ?? template.shared?.statement ?? '';
+		const answerFormats = variation.answerFormats ?? template.shared?.answerFormats;
+		const { blankTypes } = assignBlankIndices(statement, answerFormats);
 		variation.blanks?.forEach((blank, blankIndex) => {
+			if (blankTypes[blankIndex] === 'text') return;
 			const figure = figureNameIn(blank.expectedAnswer);
 			if (!figure) return;
 			warnings.push(

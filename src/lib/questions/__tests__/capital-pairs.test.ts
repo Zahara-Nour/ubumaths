@@ -294,6 +294,28 @@ describe('figureNameWarnings — un nom de figure attendu est signalé à l’au
 		expect(figureNameWarnings(lengthTemplate('12'))).toEqual([]);
 	});
 
+	it('case texte `[_]` : « ABC » y est comparé comme une chaîne, rien à signaler', () => {
+		const template = lengthTemplate('ABC');
+		template.variations[0].statement = templateMarkdown('Quel triangle est rectangle ? [_]');
+		expect(figureNameWarnings(template)).toEqual([]);
+	});
+
+	it('case texte puis case math : seule la case math est signalée', () => {
+		const template = lengthTemplate('ABC');
+		template.variations[0].statement = templateMarkdown('Le triangle [_] a pour côté $?$');
+		template.variations[0].blanks = [{ expectedAnswer: 'ABC' }, { expectedAnswer: 'ABC' }];
+		const warnings = figureNameWarnings(template);
+		expect(warnings).toHaveLength(1);
+		expect(warnings[0]).toMatch(/Variation 1, case 2/);
+	});
+
+	it('énoncé partagé : le type des cases se lit dans `shared.statement`', () => {
+		const template = lengthTemplate('ABC');
+		template.shared = { statement: templateMarkdown('Quel triangle ? [_]') };
+		template.variations[0].statement = undefined;
+		expect(figureNameWarnings(template)).toEqual([]);
+	});
+
 	it('mode produit (contexte ou déclaration) : rien à signaler', () => {
 		expect(figureNameWarnings(lengthTemplate('ABC', { theme: 'Graphes et matrices' }))).toEqual([]);
 		expect(figureNameWarnings(lengthTemplate('ABC', { capitalPairs: 'product' }))).toEqual([]);

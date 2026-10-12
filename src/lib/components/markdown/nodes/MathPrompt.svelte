@@ -195,13 +195,25 @@
 		return element.tagName === 'MATH-FIELD';
 	}
 
+	/** Raccourcis du champ avant le filtre : remis quand le sens n'est plus « longueur » */
+	let originalShortcuts: MathfieldElement['inlineShortcuts'] | undefined;
+
 	/**
 	 * Mode longueur (Q-N) : `AA'` reste la longueur AA', pas `∀'`. Posé au montage,
 	 * avant toute saisie (une option posée sur un champ focalisé referme le clavier).
+	 * L'aperçu de l'éditeur garde le champ quand l'auteur change de sens : les
+	 * raccourcis d'origine y sont alors rétablis.
 	 */
 	$effect(() => {
-		if (!mathField || capitalPairs !== 'length' || !isMathfield(mathField)) return;
-		mathField.inlineShortcuts = withoutCapitalPairShortcuts(mathField.inlineShortcuts);
+		if (!mathField || !isMathfield(mathField)) return;
+		if (capitalPairs === 'length') {
+			if (originalShortcuts) return;
+			originalShortcuts = mathField.inlineShortcuts;
+			mathField.inlineShortcuts = withoutCapitalPairShortcuts(originalShortcuts);
+		} else if (originalShortcuts) {
+			mathField.inlineShortcuts = originalShortcuts;
+			originalShortcuts = undefined;
+		}
 	});
 
 	/**
