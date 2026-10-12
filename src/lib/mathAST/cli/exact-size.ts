@@ -6,10 +6,15 @@
  * déjà — et donne sa valeur approchée à côté. Mesuré avant : `(1+1/10000)^10000` prenait 13 s
  * pour afficher 80 003 caractères, `(1+1/100000)^100000` bloquait le navigateur plus de 200 s.
  *
- * ⚠️ La décision se prend AVANT le calcul : un garde-fou posé après arriverait après le blocage.
- * Une puissance de base a/b et d'exposant entier k s'écrit en environ k × (chiffres de a +
- * chiffres de b) ; une factorielle, un coefficient binomial, par leur logarithme ; ailleurs, les
- * tailles s'ajoutent (un produit, une somme de fractions : les chiffres s'additionnent au plus).
+ * Deux temps (lot « défauts des grandes fractions », 2026-10-12) :
+ * - la taille PRÉVUE, avant le calcul, sert seulement à ne pas figer la page : au-delà de
+ *   20 000 caractères prévus, rien n'est calculé. Une puissance de base a/b et d'exposant
+ *   entier k s'écrit en environ k × (chiffres de a + chiffres de b) ; une factorielle, un
+ *   coefficient binomial, par leur logarithme ; ailleurs, les tailles s'ajoutent — c'est une
+ *   borne, qui ignore les simplifications (`10^{600}×10^{-598}` : 1 200 prévus pour 100) ;
+ * - en deçà, le résultat est calculé (107 ms au pire mesuré), et la règle des 1 000 caractères
+ *   se lit sur sa longueur RÉELLE. Une base irrationnelle échappait à la prévision
+ *   (`\sqrt{2}^{100000}` : 15 052 caractères affichés).
  *
  * @module mathAST/cli/exact-size
  */
@@ -38,6 +43,13 @@ import { evaluateNodeToRational } from '../eval/evaluate';
 
 /** Au-delà, une valeur exacte n'apprend plus rien à l'élève (décision de David). */
 export const MAX_EXACT_CHARACTERS = 1000;
+
+/**
+ * Au-delà de cette taille prévue, le calcul exact n'est pas tenté. Mesuré en deçà : 107 ms au
+ * pire (`\sqrt{3}^{100000}/2^{30000}`), 85 ms pour `(1+1/2500)^{2500}` (16 992 caractères) ;
+ * au-delà, `(1+1/10000)^{10000}` (80 003) prenait 13 s.
+ */
+const MAX_PREDICTED_CHARACTERS = 20_000;
 
 /** Une base plus courte que cela se calcule pour connaître sa taille exacte. */
 const SMALL_BASE_CHARACTERS = 60;
@@ -77,17 +89,33 @@ function integerExponent(node: MathNode): number | null {
 	return Number.isSafeInteger(k) ? k : null;
 }
 
+/** π, e, une variable, un symbole : ce qui ne se calcule pas en fraction. */
+function isSymbolic(node: MathNode): boolean {
+	return isMathConstant(node) || isVariable(node) || isGreek(node) || isSymbol(node);
+}
+
 /**
  * Une base que le calcul exact développe en fraction : des nombres seulement. π, e, √,
  * une fonction restent des symboles (`e^{1000}` s'écrit `e^{1000}`), sans grossir.
  */
 function isPureRational(node: MathNode): boolean {
+	return findNodes(node, (n) => isSymbolic(n) || isFunction(n)).length === 0;
+}
+
+/** Une valeur rationnelle : des nombres, des factorielles, des coefficients binomiaux. */
+function isRationalValued(node: MathNode): boolean {
 	return (
 		findNodes(
 			node,
-			(n) => isMathConstant(n) || isFunction(n) || isVariable(n) || isGreek(n) || isSymbol(n)
+			(n) => isSymbolic(n) || (isFunction(n) && n.name !== 'factorial' && n.name !== 'binom')
 		).length === 0
 	);
+}
+
+/** Les caractères d'une fraction écrite en entier (`-123/45` : 7). */
+function rationalCharacters(value: Rational): number {
+	const numerator = value.n.toString().length;
+	return value.d === 1n ? numerator : numerator + 1 + value.d.toString().length;
 }
 
 /** Les caractères d'un rationnel élevé à la puissance k (signe compris : `|k|`). */
@@ -130,17 +158,27 @@ function estimate(node: MathNode): number {
 
 /**
  * Le nombre de caractères qu'aurait le résultat exact, à quelques-uns près, sans le calculer
- * (`(1+1/1000)^{1000}` : environ 6 003).
+ * (`(1+1/1000)^{1000}` : environ 6 003) — une borne : les simplifications n'y sont pas.
  */
 export function estimatedExactDigits(node: MathNode): number {
 	return estimate(node);
 }
 
 /**
- * Le résultat exact serait trop long à écrire (> 1 000 caractères). Jamais pour une
- * comparaison ou un test logique : leur résultat est vrai ou faux.
+ * Le résultat exact serait trop long pour être calculé sans figer la page (> 20 000 caractères
+ * prévus). Jamais pour une comparaison ou un test logique : leur résultat est vrai ou faux.
  */
-export function isTooLongExact(node: MathNode): boolean {
+export function isTooLongToCompute(node: MathNode): boolean {
 	if (isRelation(node) || isLogical(node) || isLogicalNot(node) || isBoolean(node)) return false;
-	return estimate(node) > MAX_EXACT_CHARACTERS;
+	return estimate(node) > MAX_PREDICTED_CHARACTERS;
+}
+
+/**
+ * La longueur réelle d'un résultat exact calculé : celle de son écriture `written`, ou celle de
+ * sa valeur quand le moteur garde une factorielle (`1000!` : 2 568, et non 15 pour
+ * `factorial(1000)`). `1000!/999!` vaut 1000 : son écriture, plus longue, fait foi.
+ */
+export function exactCharacters(node: MathNode, written: string): number {
+	const value = isRationalValued(node) ? smallRational(node) : null;
+	return value === null ? written.length : Math.max(written.length, rationalCharacters(value));
 }

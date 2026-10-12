@@ -106,3 +106,63 @@ describe('ce qui n’est pas une écriture gardée', () => {
 		expect(latex.length).toBeLessThan(60);
 	});
 });
+
+// Défauts laissés par #1175 (2026-10-12) : la taille était PRÉVUE seulement. Une base
+// irrationnelle y échappait (`\sqrt{2}^{100000}` : 15 052 caractères affichés), et la prévision
+// additionnait avant de simplifier (`10^{600}×10^{-598}` gardait son écriture, « 1 200 chiffres »,
+// pour 100). La prévision ne sert plus qu'à ne pas figer la page ; la règle des 1 000 caractères
+// se lit sur le résultat calculé.
+describe('la règle des 1 000 caractères se lit sur le résultat calculé', () => {
+	it.each([
+		['sqrt(2)^100000', 15052, '\\approx 3.1607 \\times 10^{15051}'],
+		['(1+sqrt(2))^3000', 2305, '\\approx 2.1235 \\times 10^{1148}'],
+		['(sqrt(2)/3)^2000', 1258, '\\approx 6.1304 \\times 10^{-654}']
+	])('une base irrationnelle : %s garde son écriture', (input, length, approximate) => {
+		const line = exact(input);
+
+		expect(line.output).toBe(input);
+		expect(line.exactTooLong).toBe(length);
+		expect(line.approximateLatex).toBe(approximate);
+	});
+
+	it.each([
+		['sqrt(2)^2000', 302],
+		['(1+sqrt(2))^100', 84]
+	])('une base irrationnelle en deçà : %s s’écrit en entier', (input, length) => {
+		const line = exact(input);
+
+		expect(line.output.length).toBe(length);
+		expect(line.exactTooLong).toBeUndefined();
+	});
+
+	it.each([
+		['10^600*10^-598', '100'],
+		['10^600/10^598', '100']
+	])('ce qui se simplifie : %s = %s', (input, output) => {
+		const line = exact(input);
+
+		expect(line.output).toBe(output);
+		expect(line.exactTooLong).toBeUndefined();
+	});
+
+	it('1000!/999! ne s’annonce plus « environ 5 000 chiffres »', () => {
+		expect(exact('1000!/999!').exactTooLong).toBeUndefined();
+		expect(decimal('1000!/999!').output).toBe('1000');
+	});
+
+	it('la note donne la longueur réelle', () => {
+		expect(exact('(1+1/1000)^1000').exactTooLong).toBe(6003);
+		expect(exact('1.01^365').exactTooLong).toBe(1464);
+	});
+});
+
+// Mesuré avant : 4,1 s — chaque addition double la taille des termes, et Euclide est quadratique
+describe('une somme de grandes fractions ne fige pas la page', () => {
+	it('cinq fractions d’environ 9 000 chiffres en moins d’une seconde', () => {
+		const start = performance.now();
+		const line = exact('(2/3)^18900+(5/7)^10600+(10/11)^8600+(12/13)^8000+(16/17)^7300');
+
+		expect(performance.now() - start).toBeLessThan(1000);
+		expect(line.approximateLatex).toBe('\\approx 6.2914 \\times 10^{-193}');
+	});
+});
