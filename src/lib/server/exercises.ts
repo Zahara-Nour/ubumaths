@@ -122,7 +122,11 @@ function validateVariables(
 
 /**
  * Get exercises with filters and pagination
- * Teachers can see all exercises
+ *
+ * Aucun filtre d'auteur ici : la RLS de `exercises` rend au professeur ses
+ * propres exercices et les exercices publics (`is_public`), pas ceux des autres
+ * (depuis 20260618093000). Appelée par `GET /api/exercises` (sélecteur
+ * d'exercices de l'éditeur de fiche).
  */
 export async function getExercises(
 	supabase: SupabaseClient<Database>,
