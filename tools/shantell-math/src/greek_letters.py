@@ -18,8 +18,9 @@ replace_symbols.py); the other letters are
 Like the other letters, each one keeps Shantell's size and baseline, is centred
 on the KaTeX glyph it replaces and narrowed only when wider than its advance
 (MathLive lays formulas out with the KaTeX metrics, hard-coded). Lowercase
-letters go to KaTeX_Math-Italic, capitals to KaTeX_Main-Regular (upright, the
-default) and KaTeX_Math-Italic (\\varGamma…).
+letters go to KaTeX_Math-Italic and, added, to KaTeX_Main-Regular (MathLive
+sets lowercase Greek upright in French); capitals to KaTeX_Main-Regular (upright,
+the default) and KaTeX_Math-Italic (\\varGamma…).
 
 Run after replace_symbols.py and before build_typst_math_font.py. The script
 works in place on static/fonts/shantell-katex/ and redraws each glyph from the
@@ -43,6 +44,7 @@ from fontTools.ttLib import TTFont
 # Les scripts voisins, même lancé en mode isolé (python -I)
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from redraw_symbols import add_glyph  # noqa: E402
 from replace_delimiters import STROKE, put_glyph, reference_glyph, stroked, to_path  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -80,6 +82,9 @@ BORROWED: Dict[str, Tuple[str, bool, bool]] = {
     "μ": ("µ", False, False),
     "ν": ("v", False, False),
     "ο": ("o", False, False),
+    # π de Shantell lui-même (déjà mis dans Math-Italic par replace_symbols.py) :
+    # ici pour Main-Regular
+    "π": ("π", False, False),
     "τ": ("т", False, False),
     "ϕ": ("ф", False, False),
 }
@@ -486,12 +491,18 @@ DRAWN: Dict[str, Callable[[], list]] = {
     "Ψ": capital_psi,
 }
 
-LOWERCASE = "αβγδεϵζηθϑικλμνξοϖρϱσςτυφϕχψω"
+LOWERCASE = "αβγδεϵζηθϑικλμνξοπϖρϱσςτυφϕχψω"
 CAPITALS = "ΓΔΘΛΞΠΣΥΦΨ"
+# Les minuscules vont aussi dans Main-Regular : en français, MathLive écrit les
+# minuscules grecques droites (letterShapeStyle « french », choisi d'après la
+# langue du navigateur) et les cherche dans la police droite, que KaTeX n'en a
+# pas pourvue ; le navigateur se rabattait sur une police du système
 TARGETS = {
     "KaTeX_Math-Italic": LOWERCASE + CAPITALS,
-    "KaTeX_Main-Regular": CAPITALS,
+    "KaTeX_Main-Regular": CAPITALS + LOWERCASE,
 }
+# Police de référence (boîte, chasse) d'une lettre absente de la police visée
+FALLBACK_REFERENCE = "KaTeX_Math-Italic"
 
 
 # --- Construction ---
@@ -553,8 +564,13 @@ def main() -> None:
             raise SystemExit(f"Sortie refusée hors de {OUTPUT_DIR}: {path}")
         font = TTFont(path)
         reference = TTFont(ORIGINAL_DIR / f"{name}.woff2")
+        fallback = TTFont(ORIGINAL_DIR / f"{FALLBACK_REFERENCE}.woff2")
         for char in chars:
-            box, advance = reference_glyph(reference, ord(char))
+            if ord(char) in reference.getBestCmap():
+                box, advance = reference_glyph(reference, ord(char))
+            else:
+                box, advance = reference_glyph(fallback, ord(char))
+                add_glyph(font, ord(char), f"uni{ord(char):04X}")
             put_glyph(font, ord(char), placed(letter_path(source, char), box, advance), advance)
         font.flavor = "woff2"
         font.save(path)

@@ -134,6 +134,11 @@ Précisions :
   `<link>` dans `<head>` et change `MathfieldElement.fontsDirectory` ; la page n'a ni `onDestroy`
   ni retour à `katex`. Après une visite, une navigation côté client garde Shantell partout
   jusqu'au rechargement.
+- **Navigateur en français : minuscules grecques droites.** MathLive choisit `letterShapeStyle`
+  d'après la langue du navigateur (« french » si elle commence par `fr`) et écrit alors α, π…
+  droits, pris dans KaTeX_Main-Regular. KaTeX n'y a pas de minuscules grecques : le navigateur
+  prend une police du système (le jeu `katex` fait pareil). Le jeu Shantell les ajoute à
+  Main-Regular. Une capture Playwright sans `locale: 'fr-FR'` ne montre pas ce cas.
 - Les pages `/demo/**` sont publiques et sans `noindex` : seul `robots.txt` les écarte.
 
 ---

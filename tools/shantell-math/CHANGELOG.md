@@ -11,6 +11,10 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
   - raccords : la hampe du p, la barre du t et le crochet du j, pris comme contours entiers ; un morceau réduit retrouve le trait des lettres (`scaled`)
   - ajoutées : `ξ ϖ ϱ ς` (assemblées) et `ϑ` (dessinée) ; restent dessinées `Ξ Σ Ψ` (traits droits)
 
+### Corrigé
+
+- Minuscules grecques (et `π`) ajoutées à Main-Regular : dans un navigateur en français, MathLive les écrit droites (`letterShapeStyle` « french ») et les cherche dans la police droite, où KaTeX n'en a pas ; le navigateur prenait une police du système
+
 ## [1.9.0] - 2026-10-12
 
 ### Ajouté
