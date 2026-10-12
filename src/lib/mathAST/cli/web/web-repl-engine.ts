@@ -74,7 +74,12 @@ import {
 } from '../../../ubumark/utils/scatter-lines';
 import { STAT_TEXT } from '../../../ubumark/utils/stat-chart-text';
 import { STAT_CHART_LIMITS } from '../../../ubumark/types/stat-chart';
-import { estimatedExactDigits, isTooLongExact } from '../exact-size';
+import {
+	MAX_EXACT_CHARACTERS,
+	estimatedExactDigits,
+	exactCharacters,
+	isTooLongToCompute
+} from '../exact-size';
 import {
 	approximateDigitsOf,
 	approximateLatexOf,
@@ -137,6 +142,16 @@ function readableExact(node: MathNode): MathNode {
 	} catch {
 		return node;
 	}
+}
+
+/**
+ * La longueur réelle d'un résultat exact calculé, s'il dépasse 1 000 caractères ; `null` sinon
+ * (un booléen, une erreur, un résultat lisible).
+ */
+function measuredTooLong(result: EvalResult, expanded: MathNode): number | null {
+	if (result.status !== 'value' || result.node.type === 'boolean') return null;
+	const length = exactCharacters(expanded, toCustom(result.node));
+	return length > MAX_EXACT_CHARACTERS ? length : null;
 }
 
 /** Les fonctions de l'utilisateur remplacées par leur définition (l'expression telle quelle sinon). */
@@ -929,16 +944,25 @@ export class WebReplEngine {
 			}
 
 			// Un résultat exact trop long garde son écriture (option A de David,
-			// 2026-10-12) : décidé AVANT le calcul, qui figeait la page — 13 s pour les
-			// 80 003 caractères de `(1+1/10000)^10000`, plus de 200 s pour n = 100 000
-			// … estimé sur les fonctions de l'utilisateur DÉVELOPPÉES : `u(100000)` avec
+			// 2026-10-12). Au-delà de 20 000 caractères PRÉVUS, rien n'est calculé : le
+			// calcul figeait la page — 13 s pour les 80 003 caractères de
+			// `(1+1/10000)^10000`, plus de 200 s pour n = 100 000
+			// … prévu sur les fonctions de l'utilisateur DÉVELOPPÉES : `u(100000)` avec
 			// `u(n) = (1+1/n)^n` (la suite de limite e) échappait au garde-fou (revue)
 			const expanded = withFunctionsExpanded(substituted, this.evalState.functions);
-			const tooLong = isTooLongExact(expanded) ? estimatedExactDigits(expanded) : null;
+			const notComputed = isTooLongToCompute(expanded) ? estimatedExactDigits(expanded) : null;
 			// Le calcul exact, UNE fois : le test du booléen le refaisait en entier
-			const exactResult: EvalResult =
-				tooLong === null
+			const computed: EvalResult =
+				notComputed === null
 					? evaluate(substituted, { mode: 'exact', functions: this.evalState.functions })
+					: { status: 'value', value: expanded, node: expanded, exact: true };
+			// En deçà, la règle des 1 000 caractères se lit sur le résultat calculé : la
+			// prévision ignorait une base irrationnelle (`\sqrt{2}^{100000}`, 15 052
+			// caractères affichés) et les simplifications (`10^{600}×10^{-598}` = 100)
+			const tooLong = notComputed ?? measuredTooLong(computed, expanded);
+			const exactResult: EvalResult =
+				tooLong === null || notComputed !== null
+					? computed
 					: { status: 'value', value: expanded, node: expanded, exact: true };
 
 			// Boolean result: colored output, no exact/decimal toggle
@@ -1001,7 +1025,11 @@ export class WebReplEngine {
 			// Le calcul décimal du moteur ne sert plus qu'à une valeur sans écriture
 			// décimale (non réelle) et à « Garder » : au-delà du plafond des puissances
 			// exactes, il refuse honnêtement, et la valeur se lit sur le résultat exact
-			const digits = approximateDigitsOf(exactResult.node);
+			// … lue sur le résultat CALCULÉ, même gardé : `\sqrt{2}^{100000}` n'a pas de valeur
+			// approchée tapé tel quel (√2 y entre par son flottant, dont la puissance déborde)
+			const digits = approximateDigitsOf(
+				computed.status === 'value' ? computed.node : exactResult.node
+			);
 			const currentMode = this.evalState.mode;
 			let decimal: { readonly str: string; readonly exact: boolean } | null = null;
 			if (digits !== null) {

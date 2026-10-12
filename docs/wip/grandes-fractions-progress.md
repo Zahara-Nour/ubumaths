@@ -138,3 +138,26 @@ sa valeur approchée. »
   1 ms) ; faux positifs rares où l'estimation additionne avant simplification
   (`10^{600}×10^{-598}` garde son écriture, note « environ 1 200 chiffres ») ; sommes de grandes
   puissances chacune dans le budget (≈ 0,9 s, pas un cas d'élève).
+- 2026-10-12 — **David : « Corrige les défauts »** (les trois mineurs ci-dessus). Branche
+  `fix/grandes-fractions-mineurs`. Mesuré d'abord : le calcul exact reste rapide jusqu'à ~20 000
+  caractères (107 ms au pire, `\sqrt{3}^{100000}/2^{30000}`) — c'étaient l'arrondi et `tidy` qui
+  coûtaient. Donc : la prévision ne sert plus qu'au **plafond de calcul** (20 000 caractères
+  prévus) ; en deçà, la règle des 1 000 caractères se lit sur la **longueur réelle**
+  (`exactCharacters` ; une factorielle gardée par le moteur compte par sa valeur). Corrige
+  `\sqrt{2}^{100000}`, `(1+\sqrt{2})^{3000}`, `(\sqrt{2}/3)^{2000}` (écriture gardée), et les faux
+  positifs `10^{600}×10^{-598}`, `1000!/999!`. Sommes : la somme de 5 fractions de ~9 000 chiffres
+  prenait **4,1 s** (pire que les 0,9 s notés : le temps croît avec le nombre de termes) — pgcd
+  de **Lehmer** dans `gcd` (979 ms) + opérations de **Henrici** dans `evaluateToRational`
+  (`addReduced`…, fractions réduites seulement) : **71 ms**. Comparaison avant/après sur 69
+  saisies × 2 modes : seuls les cas visés changent ; aucune saisie ne ralentit. Reste connu : la
+  prévision n'est pas une borne pour une somme de fractions (13 735 prévus, 25 523 réels, calculé
+  en 124 ms) ; au-delà de 20 000 prévus, un faux positif reste possible (`10^{6000}×10^{-5998}`).
+- 2026-10-12 — revue `code-reviewer` : rien de bloquant (Lehmer et Henrici égaux à la référence
+  sur des milliers de paires ; contrat « réduit » vérifié source par source). **Corrigé** : seuil
+  du test du pgcd à 1 200 ms (357 ms mesurés, marge CI) ; deux contournements du plafond —
+  base irrationnelle (`\sqrt{2}^{40000000}` 2,6 s, `(1+\sqrt{2})^{10000000}` 3,9 s ; prévue
+  désormais par sa hauteur) et exposant hors des entiers sûrs (`2^{2^{100}}` 2,4 s puis
+  « Maximum BigInt size exceeded ») : « Valeur hors d'échelle » immédiat. **Laissés** : contrat
+  « réduit » tenu par un commentaire (garde en test jugée coûteuse) ; mesure sur `toCustom` et non
+  sur l'écriture mise au propre (quelques caractères au seuil) ; `1000!/999!` s'écrit
+  `factorial(1000)/factorial(999)` en mode exact (antérieur, le moteur garde les factorielles).

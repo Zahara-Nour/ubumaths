@@ -457,11 +457,17 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     Une puissance entière est exacte jusqu'à l'exposant 1000 (`MAX_EXACT_INTEGER_EXPONENT`,
     `eval/evaluate.ts`) ; au-delà, par le flottant, et une valeur qui en sort (0 pour une base
     non nulle, ±Infinity) est refusée (« Valeur hors d'échelle… ») plutôt que rendue comme 0.
-    ⚠️ Ne pas relever ce plafond tant que le pgcd est celui d'Euclide : à 10 000, e et π (fractions
-    de 16 chiffres) donnaient des fractions de centaines de milliers de bits, puis des pgcd de
-    plusieurs secondes (`.variations e^{-2x^2}` : 5,7 s ; mesuré le 2026-10-12). Le pgcd de deux
-    entiers de 40 000 chiffres coûte 1,5 s : `normalize` (puissance par multiplications réduites),
-    `tidy` et `rational()` en calculent sur les grandes fractions. `powRational` calcule `nᵏ / dᵏ`
+    ⚠️ Ne pas relever ce plafond : à 10 000, e et π (fractions de 16 chiffres) donnaient des
+    fractions de centaines de milliers de bits, puis des pgcd de plusieurs secondes
+    (`.variations e^{-2x^2}` : 5,7 s ; mesuré le 2026-10-12, pgcd d'Euclide). Le pgcd (`gcd`,
+    `normal/rational.ts`) est celui de **Lehmer** au-delà de 64 bits (Knuth, algorithme L) : 1,7 s
+    → 0,4 s pour deux entiers de 40 000 chiffres, toujours quadratique. `normalize`, `tidy` et
+    `rational()` en calculent sur les grandes fractions. Le calcul en fractions d'`evaluate`
+    (`evaluateToRational`) additionne et multiplie par `addReduced`, `mulReduced`… (Henrici, Knuth
+    4.5.1 : le pgcd porte sur les termes, pas sur le résultat) — ⚠️ **seulement sur des fractions
+    déjà réduites** : le dépôt construit des rationnels à la main sans les réduire, et
+    `addRational` & co. gardent leur réduction complète. Une somme de cinq fractions de 9 000
+    chiffres : 4,1 s → 71 ms. `powRational` calcule `nᵏ / dᵏ`
     par la puissance native de BigInt : une fraction irréductible élevée à une puissance le reste
     ((101/100)¹⁰⁰⁰⁰⁰ : 194 s avant, 2 ms). Les pôles de tan, sec, csc, cot sont refusés (le
     flottant de π/2 donnait tan = 1,6331 × 10¹⁶).
@@ -471,7 +477,9 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
     n'en profitent pas, leurs fractions font 16 chiffres) ; une factorielle ou un coefficient
     binomial dépasse alors la borne 2⁵³ dans le même budget (`1000!`). Le calcul décimal général
     (`evaluate`, `evaluateNodeToApproximatedNumber`) garde ses bornes. La taille d'un résultat
-    exact se **prévoit** sans le calculer : `cli/exact-size.ts` (`estimatedExactDigits`).
+    exact se **prévoit** sans le calculer : `cli/exact-size.ts` (`estimatedExactDigits`, une borne
+    qui ignore les simplifications ; la console n'en tire que son plafond de calcul,
+    `isTooLongToCompute`, et mesure la longueur réelle par `exactCharacters`).
 
 ## Le moteur de réécriture et les étapes
 
