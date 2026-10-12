@@ -17,6 +17,10 @@
  *   `1 + ln 2`, `1 + π`. `e`, `i`, `π` sont des constantes. Un rationnel
  *   négatif n'y passe que si tous les autres termes sont négatifs (`−1 − √2`) :
  *   sinon `√2 − 1` évite le signe − en tête.
+ * - **Nombre complexe** (décision de David, 2026-10-12) : forme algébrique
+ *   a + ib, la partie réelle (les termes sans `i`) en tête, même négative ou
+ *   irrationnelle — `−2 + 3i`, `−1 + i√3`, `−√2 + i`, `π + i`. La partie réelle
+ *   se range comme un réel (`√2 − 1 + i`).
  *
  * L'écriture d'un terme est calculée **une fois par terme** avant le tri, pas
  * à chaque comparaison.
@@ -44,6 +48,7 @@ import {
 	isEulerConstant,
 	isFunction,
 	isGreek,
+	isComplex,
 	isHole,
 	isImaginaryUnit,
 	isSegmentLength,
@@ -272,10 +277,69 @@ export function leadingRational(terms: readonly TidyTerm[]): TidyTerm | null {
 }
 
 /** Met en tête le rationnel désigné par `leadingRational`, l'ordre des autres gardé. */
-export function rationalFirst(terms: readonly TidyTerm[]): TidyTerm[] {
+function rationalFirst(terms: readonly TidyTerm[]): TidyTerm[] {
 	const rational = leadingRational(terms);
 	if (rational === null) return [...terms];
 	return [rational, ...terms.filter((term) => term !== rational)];
+}
+
+/** Le nœud contient-il un nombre complexe (l'unité `i` comprise) ? */
+function containsComplex(node: MathNode): boolean {
+	let found = false;
+	mapNode(node, (n) => {
+		if (isComplex(n)) found = true;
+		return n;
+	});
+	return found;
+}
+
+/** Un terme de partie imaginaire : `i` en facteur (exposant 1), nulle part ailleurs. */
+function isImaginaryTerm(term: TidyTerm): boolean {
+	const imaginary = term.factors.filter(
+		(factor) => isImaginaryUnit(factor.base) && equalRational(factor.exponent, ONE)
+	);
+	return (
+		imaginary.length === 1 &&
+		term.factors.every((factor) => imaginary.includes(factor) || !containsComplex(factor.base))
+	);
+}
+
+/** Un terme de partie réelle : aucun `i`, nulle part. */
+function isRealTerm(term: TidyTerm): boolean {
+	return term.factors.every((factor) => !containsComplex(factor.base));
+}
+
+/**
+ * Les parties réelle et imaginaire d'une somme écrite a + ib, ou `null`.
+ *
+ * Il en faut une de chaque, chaque terme dans l'une ou l'autre, et aucune
+ * inconnue, unité ni terme opaque : `x + iy` et `e^{iπ/3} − 1` ne sont pas des
+ * formes algébriques au sens de cette règle. L'ordre des termes est gardé.
+ */
+function algebraicParts(
+	terms: readonly TidyTerm[]
+): { real: TidyTerm[]; imaginary: TidyTerm[] } | null {
+	const plain = terms.every(
+		(term) => isPlainTerm(term) && term.factors.every((factor) => !containsUnknown(factor.base))
+	);
+	if (!plain) return null;
+	const real = terms.filter(isRealTerm);
+	const imaginary = terms.filter((term) => !isRealTerm(term));
+	if (real.length === 0 || imaginary.length === 0 || !imaginary.every(isImaginaryTerm)) {
+		return null;
+	}
+	return { real, imaginary };
+}
+
+/**
+ * Le geste « le nombre en tête », l'ordre des autres termes gardé : la partie
+ * réelle d'un complexe (`3i − 2` → `−2 + 3i`), sinon le rationnel d'une somme
+ * sans variable (`√5 + 1` → `1 + √5`).
+ */
+export function numberFirst(terms: readonly TidyTerm[]): TidyTerm[] {
+	const parts = algebraicParts(terms);
+	if (parts === null) return rationalFirst(terms);
+	return [...rationalFirst(parts.real), ...parts.imaginary];
 }
 
 /** Ordonne les termes d'une somme, quel que soit son niveau d'imbrication. */
@@ -285,13 +349,18 @@ export function sortTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 	const sorted = decorated.map((entry) => entry.term);
 
 	const degree = sumDegree(decorated.map((entry) => entry.key));
-	if (degree === null || !equalRational(degree, ONE)) return rationalFirst(sorted);
-
 	// Degré 1 : les positifs devant, les négatifs derrière, l'ordre gardé dans
 	// chaque groupe. Idempotent : trier à nouveau redonne les mêmes groupes.
 	const isNegativeTerm = (term: TidyTerm) => isNegativeRational(term.coefficient);
-	return rationalFirst([
-		...sorted.filter((term) => !isNegativeTerm(term)),
-		...sorted.filter(isNegativeTerm)
-	]);
+	const ordered =
+		degree === null || !equalRational(degree, ONE)
+			? sorted
+			: [...sorted.filter((term) => !isNegativeTerm(term)), ...sorted.filter(isNegativeTerm)];
+
+	// Complexe : la partie réelle, rangée comme un réel, puis la partie
+	// imaginaire dans l'ordre ci-dessus. Le résultat ne dépend que de
+	// l'ensemble des termes : idempotent.
+	const parts = algebraicParts(ordered);
+	if (parts !== null) return [...sortTerms(parts.real), ...parts.imaginary];
+	return rationalFirst(ordered);
 }

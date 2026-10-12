@@ -63,7 +63,7 @@ import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
 import { decimalString } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
-import { isFirstDegreeSum, isPlainTerm, rationalFirst, sortFactors, sortTerms } from './order';
+import { isFirstDegreeSum, isPlainTerm, numberFirst, sortFactors, sortTerms } from './order';
 
 // =============================================================================
 // Types internes
@@ -1314,10 +1314,11 @@ function narrateSum(
 				: 'tidy-collect-like-terms';
 	step(grouping, materialise(collected, unitChoice));
 
-	// Somme sans variable : le nombre passe d'abord en tête (sa propre phrase),
+	// Somme sans variable, ou partie réelle d'un complexe (`3i − 2` → `−2 + 3i`) :
+	// le nombre passe d'abord en tête (sa propre phrase),
 	// puis les autres termes se rangent — l'étape de rangement ne s'attribue
 	// pas un déplacement qui n'est pas « par degré décroissant ».
-	step('tidy-number-first', buildSum(rationalFirst(unitedCollected)));
+	step('tidy-number-first', buildSum(numberFirst(unitedCollected)));
 	return step('tidy-sort-terms', buildSum(sortTerms(unitedCollected)));
 }
 

@@ -88,6 +88,12 @@ describe('tidy raconte — les gestes', () => {
 		]);
 	});
 
+	it('complexe : écrit la partie réelle en tête, avec la phrase du nombre en tête', () => {
+		const { resultat, etapes } = raconte('3i-2');
+		expect(resultat).toBe('-2+3i');
+		expect(etapes).toEqual([{ regle: 'tidy-number-first', avant: '3i-2', apres: '-2+3i' }]);
+	});
+
 	it('met chaque terme au propre avant de regrouper', () => {
 		// Écrit au lot 1, quand `tidy-terms` était le seul geste disponible. Le
 		// lot 2 nomme la famille qui travaille réellement ici : l'extraction des
