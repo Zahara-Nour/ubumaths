@@ -438,6 +438,12 @@ d'écrire le compte d'un autre.
   Ces deux gardes lèvent `42501` et ne sont exécutables que par `service_role` : seules les fonctions
   DEFINER les appellent. Sinon : `REVOKE EXECUTE … FROM PUBLIC, anon, authenticated` (révoquer à
   `anon` seul ne suffit pas, `anon` hérite de `PUBLIC`).
+- **Réservée au serveur, en deux temps** : quand une fonction ne doit plus être appelée que par une
+  route (client service), on pose d'abord la garde et on livre la route ; le `REVOKE … FROM
+authenticated` ne part qu'après le `deploy:prod` qui livre la route (sinon la prod casse
+  entre les deux). Exemple : `submit_riddle_attempt`, `record_game_reward`,
+  `upsert_mathemo_score` (`20261016100700`, après v0.25.0). Un appel imbriqué par une autre
+  fonction DEFINER garde son droit (droits du propriétaire).
 - **`search_path` terminé par `pg_temp`**.
 - **Garde-fou** : toute fonction DEFINER non-trigger exécutable par `authenticated` ou `anon` doit
   figurer, avec la garde **lue** dans son corps, dans

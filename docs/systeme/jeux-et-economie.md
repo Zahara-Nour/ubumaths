@@ -138,7 +138,7 @@ Les cartes possédées vivent dans `profiles.vip_cards` (jsonb), le catalogue da
 
 Les scores qui nourrissent ces classements s'écrivent **par le serveur** : `upsert_2048_score`
 (lot 3, Q141) et `upsert_mathemo_score` (client service depuis `20261016100400` ; garde : client
-service ou l'élève lui-même, EXECUTE retiré à `authenticated` après le deploy — la fonction
+service seul : EXECUTE retiré à `authenticated` par `20261016100700` — la fonction
 ajoute `p_score` au total sans borne, seule la route le calcule et le borne). Le score reste
 déclaré par le navigateur, puisque le jeu tourne côté client.
 
@@ -153,10 +153,11 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
    type de jeu** (`daily_game_rewards.is_first_win_of_day`), `0` ensuite. ⚠️ L'ancienne doc disait
    le cap « partagé entre jeux » : c'est faux depuis l'ajout de 2048 et Mathémo (commentaire de la
    fonction : « 1 gidouille/day PER GAME TYPE »). Elle n'accepte que le **serveur** (client
-   service : routes 2048 et Mathémo) ou l'élève lui-même, refuse l'appel sans identité
-   (`20261016100200`), exige le rôle `student` et une récompense théorique entre 0 et 1000. Tant
-   que l'élève peut l'appeler, il peut s'attribuer la gidouille du jour de chaque type et un
-   meilleur score de semaine forgé : l'EXECUTE est retiré à `authenticated` après le deploy. La
+   service : routes 2048 et Mathémo ; appels imbriqués par `complete_minesweeper_game` et
+   `submit_riddle_attempt`, SECURITY DEFINER), refuse l'appel sans identité (`20261016100200`), exige le rôle `student` et une
+   récompense théorique entre 0 et 1000. L'EXECUTE est retiré à `authenticated`
+   (`20261016100700`) : un élève ne s'attribue plus la gidouille du jour de chaque type sans
+   jouer. La
    date et la semaine sont celles du fuseau et de la `week_config` de l'école
    (`calculate_week_boundaries`).
 2. **La récompense théorique ne sert qu'au bonus hebdomadaire.** Chaque partie gagnée met à jour
@@ -259,8 +260,8 @@ plus de lecteur : fermée à anon et `authenticated` (migration `20261016090200`
 2026-10-11) : la justesse est calculée par `api/riddles/[id]/submit` (`validateRiddleAnswer`), qui
 appelle `submit_riddle_attempt` par le client service — la RPC prend `p_is_correct` de son
 appelant, un élève qui l'appelait lui-même pouvait se déclarer juste. La policy d'insertion
-directe de l'élève est supprimée (`20261016090200`) ; EXECUTE sera retiré à `authenticated` par
-une 2ᵉ migration, après le `deploy:prod` qui livre la route. Test :
+directe de l'élève est supprimée (`20261016090200`) ; EXECUTE est retiré à `authenticated`
+(`20261016100700`, après le `deploy:prod` de v0.25.0). Test :
 `tests/integration/enigmes-tentatives-par-le-serveur.test.ts`.
 
 ⚠️ **La page élève ne reçoit ni la réponse attendue ni la correction** (constat du 2026-10-12) :
