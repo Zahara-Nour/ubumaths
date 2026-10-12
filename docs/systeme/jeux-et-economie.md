@@ -286,6 +286,17 @@ soumission juge avec elle, les pages n'en gardent que ce que `toStudentRiddle` l
 `src/routes/(protected)/dashboard/teacher/contenu/enigmes/__tests__/solutions-ecriture.test.ts`,
 `src/routes/api/riddles/__tests__/api-routes.test.ts`.
 
+**Réponse attendue validée avant toute écriture** (2026-10-12). Création et édition passent par
+`riddleFormSchema` puis `parseRiddleAnswerField` (`src/lib/server/validation/riddles.ts`) : nombre
+fini, texte ou expression non vides, QCM d'au moins deux choix dont la bonne réponse est l'un
+des indices. Une réponse refusée rend `fail(400, { message })` et rien n'est écrit. C'est la
+valeur **validée** qui est enregistrée : clés inconnues retirées, indices de QCM en nombres
+(l'éditeur ne relit que des nombres). Les pages envoient le formulaire par
+`src/lib/components/riddles/submit-riddle-form.ts`, qui le construit (`answer` à `null` pour une
+validation à la main, jamais la chaîne `"undefined"`) et lit la réponse de l'action avec
+`deserialize` (format SvelteKit `{ type, data }` : lu brut, un enregistrement réussi
+s'affichait en erreur).
+
 ## Comment étendre
 
 - **Nouveau jeu qui rapporte** : ajouter son type à la liste blanche de `record_game_reward`
