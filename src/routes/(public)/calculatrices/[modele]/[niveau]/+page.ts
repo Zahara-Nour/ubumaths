@@ -16,7 +16,12 @@ export const load: PageLoad = ({ params }) => {
 
 	const model = address.model;
 	const base = {
-		model: { slug: model.slug, name: model.name, keys: model.keys },
+		model: {
+			slug: model.slug,
+			name: model.name,
+			keys: model.keys,
+			systemVersion: model.systemVersion
+		},
 		gradeLabel: GRADE_LABELS[address.grade],
 		otherGrades: model.grades.map((grade) => ({
 			slug: GRADE_SLUGS[grade],

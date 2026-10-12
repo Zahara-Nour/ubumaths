@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { ChevronDown, TriangleAlert } from '@lucide/svelte';
+	import { page } from '$app/state';
+	import { ChevronDown, FileDown, TriangleAlert } from '@lucide/svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { toaster } from '$lib/stores/toaster.svelte';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import GuideTaskCard from '$lib/components/calculatrices/GuideTaskCard.svelte';
@@ -12,9 +15,34 @@
 	let { data }: PageProps = $props();
 
 	const title = $derived(`${data.model.name} — ${data.gradeLabel}`);
+	let isGeneratingPdf = $state(false);
+
 	const isEmpty = $derived(
 		data.kind === 'guide' && data.guide.own.length === 0 && data.guide.recalls.length === 0
 	);
+
+	/** Fiche PDF : compilée dans le navigateur, chargée au clic seulement (page légère) */
+	async function downloadPdf() {
+		if (data.kind !== 'guide') return;
+		isGeneratingPdf = true;
+		try {
+			const [{ generateGuideTypst }, { generateAndDownloadPdf }] = await Promise.all([
+				import('$lib/calculatrices/typst'),
+				import('$lib/typst/pdf-generator')
+			]);
+			const guide = data.guide;
+			const result = await generateAndDownloadPdf(
+				() => generateGuideTypst({ guide, model: data.model, gradeLabel: data.gradeLabel }),
+				`guide-${data.model.slug}-${page.params.niveau}.pdf`
+			);
+			if (!result.success) {
+				toaster.error('La fiche PDF n’a pas pu être créée.');
+				console.error('[calculatrices] PDF', result.error);
+			}
+		} finally {
+			isGeneratingPdf = false;
+		}
+	}
 </script>
 
 <SeoHead
@@ -26,7 +54,15 @@
 
 <div class="container mx-auto max-w-3xl p-4">
 	<BackLink href="/calculatrices/{data.model.slug}" label="Retour à la {data.model.name}" />
-	<h1 class="mb-4 text-2xl font-bold">{title}</h1>
+	<div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+		<h1 class="text-2xl font-bold">{title}</h1>
+		{#if data.kind === 'guide' && !isEmpty}
+			<Button variant="outline" onclick={downloadPdf} disabled={isGeneratingPdf}>
+				<FileDown class="size-4" aria-hidden="true" />
+				{isGeneratingPdf ? 'Création de la fiche…' : 'Télécharger la fiche PDF'}
+			</Button>
+		{/if}
+	</div>
 
 	{#if data.kind === 'guide'}
 		{#if isEmpty}
