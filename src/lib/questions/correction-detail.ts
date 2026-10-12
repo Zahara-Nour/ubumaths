@@ -380,7 +380,7 @@ function dropEmptyFormulas(text: string): string {
 	const tokens = mathDelimiters(text);
 	let out = '';
 	let last = 0;
-	for (let t = 0; t + 1 < tokens.length; ) {
+	for (let t = 0; t + 1 < tokens.length;) {
 		const [a, b] = [tokens[t], tokens[t + 1]];
 		if (a.token !== b.token) {
 			t++;

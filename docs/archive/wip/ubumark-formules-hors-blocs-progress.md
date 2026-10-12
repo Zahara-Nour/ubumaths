@@ -12,5 +12,5 @@ fermé n'est pas protégé (revue : sinon un `` dans une formule multiligne chan
 - Empreinte : 644 .md ; 2 guides SQL retrouvent ~70 paragraphes, titres, listes et blocs avalés ;
   1 renumérotation interne d'une formule déjà mal découpée (`x§M:0§` → `x§M:1§`), rien de visible.
 - Préexistant, hors champ : code d'un bloc indenté dans une liste qui fuit `§M:n§` ; ```variation
-non fermé suivi de texte → document vide ; garde `firstMultilineMathLine`de #630 désormais trop
-prudente (compte un`$$` situé dans du code).
+  non fermé suivi de texte → document vide ; garde `firstMultilineMathLine`de #630 désormais trop
+  prudente (compte un`$$` situé dans du code).

@@ -32,11 +32,7 @@ import type { Discontinuity, DiscontinuitySource } from './continuity-types';
  *   (e.g., sqrt(x) at x=0, only right derivative exists)
  */
 export type NonDifferentiabilityType =
-	| 'angular'
-	| 'cusp'
-	| 'vertical_tangent'
-	| 'discontinuity'
-	| 'boundary';
+	'angular' | 'cusp' | 'vertical_tangent' | 'discontinuity' | 'boundary';
 
 /**
  * Source/cause of non-differentiability.

@@ -82,11 +82,7 @@ export interface ContextState {
  * Context lifecycle event
  */
 export type ContextEvent =
-	| 'created'
-	| 'reset'
-	| 'destroyed'
-	| 'execution-started'
-	| 'execution-completed';
+	'created' | 'reset' | 'destroyed' | 'execution-started' | 'execution-completed';
 
 /**
  * Context event payload

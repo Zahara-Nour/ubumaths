@@ -467,12 +467,7 @@ export type AntiFraudFlag = Tables<'srs_anti_fraud_flags'>;
 
 /** Type discriminé pour la colonne flag_type (cf. CHECK contrainte SQL). */
 export type AntiFraudFlagType =
-	| 'high_easy_ratio'
-	| 'no_again'
-	| 'fast_timeSpent'
-	| 'burst'
-	| 'srs_vs_quiz_gap'
-	| 'composite';
+	'high_easy_ratio' | 'no_again' | 'fast_timeSpent' | 'burst' | 'srs_vs_quiz_gap' | 'composite';
 
 /** Severity 1..5 (1=info ; 5=critical). */
 export type AntiFraudSeverity = 1 | 2 | 3 | 4 | 5;

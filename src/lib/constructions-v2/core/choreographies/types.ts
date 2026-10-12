@@ -58,11 +58,7 @@ export interface DecoratorTriple {
  *   an arc of this radius at a different center".
  */
 export type SubStepKind =
-	| 'compass-measure'
-	| 'compass-draw'
-	| 'ruler-trace'
-	| 'point-fade-in'
-	| 'line-fade-in';
+	'compass-measure' | 'compass-draw' | 'ruler-trace' | 'point-fade-in' | 'line-fade-in';
 
 /**
  * A single sub-step of a decorated statement's choreography.

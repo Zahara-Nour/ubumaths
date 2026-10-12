@@ -47,7 +47,7 @@ lien).
 
 ## Pièges rencontrés
 
-- Le Prettier du dépôt (plugin Svelte 3.3.3) ne sait pas écrire `{@attach}` : actions `use:`.
+- Le Prettier du dépôt (plugin Svelte 3.3.3) ne savait pas écrire `{@attach}` : actions `use:`. Levé le 2026-10-12 (plugin Svelte 4.1.1).
 - `app.css` impose `1rem !important` à tout ce que contient un `<header>` : pas de `<header>`.
 - Spirale : réglage cherché par calcul (1,5 tour, rayon 160, fin au centre) pour qu'aucun nom ne
   chevauche une étape ou le Trône ; vérifié sur captures, clair/sombre, téléphone/ordinateur.

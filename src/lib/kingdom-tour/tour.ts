@@ -26,12 +26,7 @@ export interface TourLink {
 }
 
 export type ProvinceId =
-	| 'nombrilie'
-	| 'bedonstan'
-	| 'yoyolande'
-	| 'pifometrie'
-	| 'glitchistan'
-	| 'patatovie';
+	'nombrilie' | 'bedonstan' | 'yoyolande' | 'pifometrie' | 'glitchistan' | 'patatovie';
 
 /** Un grand domaine du programme, vu comme une région du Royaume (Compendium § II) */
 export interface Province {
@@ -72,12 +67,7 @@ export interface Place {
 }
 
 export type StrengthId =
-	| 'steps'
-	| 'two-corrections'
-	| 'clickable-words'
-	| 'spaced-review'
-	| 'tutor'
-	| 'printable';
+	'steps' | 'two-corrections' | 'clickable-words' | 'spaced-review' | 'tutor' | 'printable';
 
 /** Un point fort, que le code prouve (voir la carte des fonctionnalités) */
 export interface Strength {

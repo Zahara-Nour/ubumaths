@@ -1622,8 +1622,7 @@ function assignCategory(oldQuestion: QuestionBase): {
 	// _migration metadata is injected by the export script at runtime (not in QuestionBase type).
 	// Cast through unknown to access the dynamic property safely.
 	const migration = (oldQuestion as unknown as Record<string, unknown>)._migration as
-		| { theme: string; domain: string; subdomain?: string; level: number }
-		| undefined;
+		{ theme: string; domain: string; subdomain?: string; level: number } | undefined;
 
 	if (!migration?.theme || !migration?.domain || typeof migration?.level !== 'number') {
 		throw new Error(

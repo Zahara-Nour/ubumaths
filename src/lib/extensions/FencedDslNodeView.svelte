@@ -132,8 +132,7 @@
 			bind:value={draft}
 			class="h-64 w-full resize-y rounded-md border border-input bg-background p-3 font-mono text-sm"
 			spellcheck="false"
-			aria-label="Contenu de {label}"
-		></textarea>
+			aria-label="Contenu de {label}"></textarea>
 
 		{#if draftErrors.length > 0}
 			<ul class="list-inside list-disc text-sm text-destructive">

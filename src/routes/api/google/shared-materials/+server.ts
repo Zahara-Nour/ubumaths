@@ -317,8 +317,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	// Verify material belongs to teacher
 	const courseData = material.google_classroom_courses as unknown as
-		| { teacher_id: string }
-		| { teacher_id: string }[];
+		{ teacher_id: string } | { teacher_id: string }[];
 	const teacherId = Array.isArray(courseData) ? courseData[0]?.teacher_id : courseData?.teacher_id;
 
 	if (teacherId !== user.id) {

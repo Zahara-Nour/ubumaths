@@ -143,8 +143,8 @@
 					la progression, délivrance des récompenses
 				</li>
 				<li>
-					<strong>Suivi pédagogique</strong> : Permettre aux enseignants de suivre la progression de
-					leurs élèves
+					<strong>Suivi pédagogique</strong> : Permettre aux enseignants de suivre la progression de leurs
+					élèves
 				</li>
 				<li><strong>Communication</strong> : Échanges entre élèves et enseignants</li>
 				<li>

@@ -224,9 +224,8 @@ export async function sendWelcomeEmail(
 	fromEmail: string
 ): Promise<EmailSendResult> {
 	// Use shared template for consistency with preview
-	const { WELCOME_EMAIL_SUBJECT, getWelcomeEmailHtml } = await import(
-		'$lib/email-templates/welcome'
-	);
+	const { WELCOME_EMAIL_SUBJECT, getWelcomeEmailHtml } =
+		await import('$lib/email-templates/welcome');
 
 	const subject = WELCOME_EMAIL_SUBJECT;
 	const htmlBody = getWelcomeEmailHtml(studentFirstname);
@@ -260,9 +259,8 @@ export async function sendConsentEmail(
 		expiresAt: Date;
 	}
 ): Promise<EmailSendResult> {
-	const { CONSENT_EMAIL_SUBJECT, getConsentEmailHtml } = await import(
-		'$lib/email-templates/parental-consent'
-	);
+	const { CONSENT_EMAIL_SUBJECT, getConsentEmailHtml } =
+		await import('$lib/email-templates/parental-consent');
 
 	const subject = CONSENT_EMAIL_SUBJECT;
 	const htmlBody = getConsentEmailHtml(data);

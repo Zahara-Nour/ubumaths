@@ -18,8 +18,8 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
 | Version | Contenu                                                              | État                                  |
 | ------- | -------------------------------------------------------------------- | ------------------------------------- |
 | **v1**  | page publique, panneau d'objets, vues Calcul · Graphe · Données, URL | ✅ livrée, `/grapheur` compris (#811) |
-| **v2**  | géométrie à la souris (barre d'outils sur `GeometryCanvas`)          | ⏸ non commencée, aucune phase 0      |
-| **v3**  | Python, banc d'essai de conjecture (lycée, réseau requis)            | ⏸ non commencée, aucune phase 0      |
+| **v2**  | géométrie à la souris (barre d'outils sur `GeometryCanvas`)          | ⏸ non commencée, aucune phase 0       |
+| **v3**  | Python, banc d'essai de conjecture (lycée, réseau requis)            | ⏸ non commencée, aucune phase 0       |
 
 ## Reste à faire
 

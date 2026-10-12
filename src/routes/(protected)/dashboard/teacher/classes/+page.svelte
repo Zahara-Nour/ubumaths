@@ -113,8 +113,7 @@
 				// ClassInfo requires google_classroom_course_id (nullable string)
 				google_classroom_course_id:
 					((classItem as unknown as Record<string, unknown>).google_classroom_course_id as
-						| string
-						| null) ?? null,
+						string | null) ?? null,
 				student_count: classItem.student_count,
 				schedules: classItem.schedules as never
 			};
@@ -295,8 +294,7 @@
 	async function createMathsEntry(classId: string, day: number, time: string) {
 		// Find the period that starts at this time
 		const timetable = data.school?.timetable as
-			| { periods?: Array<{ start_time: string; end_time: string; number: number }> }
-			| undefined;
+			{ periods?: Array<{ start_time: string; end_time: string; number: number }> } | undefined;
 		const period = timetable?.periods?.find((p: { start_time: string }) => p.start_time === time);
 
 		if (!period) {

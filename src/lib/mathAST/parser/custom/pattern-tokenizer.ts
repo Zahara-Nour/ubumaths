@@ -86,12 +86,7 @@ export type PatternTokenType =
  * This type is kept for backwards compatibility with simple constraints.
  */
 export type WildcardConstraintName =
-	| 'number'
-	| 'integer'
-	| 'positive'
-	| 'negative'
-	| 'nonzero'
-	| 'variable';
+	'number' | 'integer' | 'positive' | 'negative' | 'nonzero' | 'variable';
 
 /**
  * Set of valid simple constraint names for fast lookup

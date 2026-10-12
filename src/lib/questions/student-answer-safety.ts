@@ -532,7 +532,7 @@ export function neutralizeStudentLatex(latex: string): string {
 		// (audit du 2026-10-05), `\%` déjà échappé ne l'est pas.
 		.replace(/(?<!\\)((?:\\\\)*)%/g, '$1\\%');
 	// Jusqu'au point fixe : un retrait peut accoler `\text` et `color`
-	for (let previous = ''; previous !== safe; ) {
+	for (let previous = ''; previous !== safe;) {
 		previous = safe;
 		safe = keepAllowedCommands(safe);
 	}

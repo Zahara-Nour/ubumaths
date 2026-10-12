@@ -33,8 +33,8 @@ branche: aucune en cours (tout est sur main)
 | Version | Contenu                                                              | État                                           |
 | ------- | -------------------------------------------------------------------- | ---------------------------------------------- |
 | **v1**  | page publique, panneau d'objets, vues Calcul · Graphe · Données, URL | ✅ livrée — restent les deux points ci-dessous |
-| **v2**  | géométrie à la souris (barre d'outils sur `GeometryCanvas`)          | ⏸ non commencée, aucune phase 0               |
-| **v3**  | Python, banc d'essai de conjecture (lycée, réseau requis)            | ⏸ non commencée, aucune phase 0               |
+| **v2**  | géométrie à la souris (barre d'outils sur `GeometryCanvas`)          | ⏸ non commencée, aucune phase 0                |
+| **v3**  | Python, banc d'essai de conjecture (lycée, réseau requis)            | ⏸ non commencée, aucune phase 0                |
 
 Dans l'ordre de travail du §11, les étapes 1 à 5 sont faites ; la 6 est la v2,
 la 7 la v3.

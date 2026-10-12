@@ -24,8 +24,8 @@ mtexte(2.5, 0.8, "A = {A:.3f}")`;
 			La meme fonction f(x) = x<sup>3</sup> &minus; x avec deux mesures distinctes :
 			<span class="font-semibold text-blue-700">integrale</span> (zone bleue, signee, peut etre
 			negative ou nulle) et <span class="font-semibold text-green-600">aire</span> (zone verte, toujours
-			positive, somme des aires absolues sur les sous-regions). Quand les bornes encadrent le zero x
-			= 0, l'integrale s'annule mais l'aire vaut 0.5.
+			positive, somme des aires absolues sur les sous-regions). Quand les bornes encadrent le zero x =
+			0, l'integrale s'annule mais l'aire vaut 0.5.
 		</p>
 	</div>
 

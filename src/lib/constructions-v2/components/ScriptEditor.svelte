@@ -397,8 +397,7 @@
 						bind:value
 						spellcheck="false"
 						autocomplete="off"
-						aria-label="Editeur DSL (mode degrade)"
-					></textarea>
+						aria-label="Editeur DSL (mode degrade)"></textarea>
 				{/if}
 			</div>
 

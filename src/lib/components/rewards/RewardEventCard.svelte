@@ -77,8 +77,7 @@
 			// New events have deletion_context in metadata
 			const metadata = event.metadata as Record<string, unknown> | null;
 			const deletionContext = metadata?.deletion_context as
-				| { source: string; card_name?: string }
-				| undefined;
+				{ source: string; card_name?: string } | undefined;
 
 			if (deletionContext?.source === 'vip_card' && deletionContext.card_name) {
 				return `Retiré grâce à une carte ${deletionContext.card_name}`;

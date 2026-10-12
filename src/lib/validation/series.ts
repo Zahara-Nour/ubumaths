@@ -77,8 +77,7 @@ export const savedSeriesCategoriesSchema = seriesCategoriesSchema.superRefine((c
 });
 
 export type CategoriesParamResult =
-	| { success: true; data: SeriesCategories }
-	| { success: false; error: string };
+	{ success: true; data: SeriesCategories } | { success: false; error: string };
 
 /**
  * Relit le paramètre `categories` d'un lien de série.

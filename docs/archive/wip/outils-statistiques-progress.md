@@ -333,7 +333,7 @@ découpe sur les virgules : `.stats 12,5` = deux valeurs.
   (`.stats 42` écrit maintenant `Variance = 0` au lieu de taire la dispersion).
 - Atelier : `charts` (SvelteMap) hors `serialize()`, suit rename/remove/restore ; `chart.ts`
   produit un texte ```barres lu par le parseur ubumark (une grammaire, mêmes contrôles) ;
-actions `chart`, `stats:M`, `chart:M` ; diagramme vivant sous la colonne (vue Données).
+  actions `chart`, `stats:M`, `chart:M` ; diagramme vivant sous la colonne (vue Données).
 - ⚠️ **Diagnostic Q39 corrigé** : dans l'écran réel, `ObjectCard.svelte` appelait
   `actionsFor(object)` SANS l'atelier → catalogue de repli : les actions par partenaire
   (« Nuage avec M », revue #339) n'avaient jamais atteint l'écran ; « Nuage de points » (id
@@ -371,7 +371,7 @@ Tour 9 (2026-10-01) — recommandations suivies :
     irréductible (+ « = 3,5 » si décimal exact, « ≈ 2,92 » sinon) ; σ approché, sauf racine
     exacte. Petite arithmétique de fractions dans le module statistique.
 41. Bloc ```loi : `G = -2 ; 0 ; 5`, `P = 1/2 ; 3/10 ; 1/5`, `indicateurs: espérance ;
-    variance ; écart type`, `titre:`; tableau horizontal`gᵢ`/`P(G = gᵢ)` ; somme
+variance ; écart type`, `titre:`; tableau horizontal`gᵢ`/`P(G = gᵢ)` ; somme
     EXACTEMENT 1, probabilités dans [0 ; 1], valeurs distinctes, ≤ 12 valeurs.
 42. `masquer: 5` (probabilité connue, cachée, « case à compléter ») ; `?` = inconnue et cachée,
     indicateurs alors refusés.
@@ -383,7 +383,7 @@ Tour 9 (2026-10-01) — recommandations suivies :
 - `statistics/fraction.ts` (`Fraction` en bigint, `parse`, `fromNumber`, `sqrt` exact),
   `statistics/random-variable.ts` (`randomVariable`, König-Huygens), `formatLawIndicators`.
 - Bloc ```loi (genre `loi`du nœud`stat-chart`) : parseur `checkLaw`, scène `LawScene`,
-Typst (en-têtes `$g_i$`, `$P(G = g_i)$`, case à compléter `box(width: 1.2cm)`), `<table>`
+  Typst (en-têtes `$g_i$`, `$P(G = g_i)$`, case à compléter `box(width: 1.2cm)`), `<table>`
   accessible à l'écran.
 - Atelier : action `law:M` « Loi avec probabilités M » (E, V, σ dans l'historique).
 - Preuves : tests (module : import seulement ; bloc et atelier : assertions) puis verts ;

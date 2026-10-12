@@ -39,8 +39,7 @@
 			<div>
 				<h1 class="text-3xl font-bold tracking-tight">Observations</h1>
 				<p class="text-muted-foreground">
-					{data.tasks.length} observation{data.tasks.length > 1 ? 's' : ''} — Famille B (compétences
-					math)
+					{data.tasks.length} observation{data.tasks.length > 1 ? 's' : ''} — Famille B (compétences math)
 				</p>
 			</div>
 		</div>

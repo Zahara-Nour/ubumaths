@@ -206,12 +206,7 @@ export interface BoundaryLimit {
  * - 'limits': Computing limits at domain boundaries
  */
 export type VariationPhase =
-	| 'derivative'
-	| 'zeros'
-	| 'sign'
-	| 'monotonicity'
-	| 'extrema'
-	| 'limits';
+	'derivative' | 'zeros' | 'sign' | 'monotonicity' | 'extrema' | 'limits';
 
 /**
  * A single step in the variation analysis process (for pedagogical display).

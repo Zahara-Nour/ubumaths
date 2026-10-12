@@ -131,9 +131,8 @@ export async function sendWelcomeEmail(
 	studentFirstname: string,
 	replyToEmail?: string
 ): Promise<EmailSendResult> {
-	const { WELCOME_EMAIL_SUBJECT, getWelcomeEmailHtml, getWelcomeEmailText } = await import(
-		'$lib/email-templates/welcome'
-	);
+	const { WELCOME_EMAIL_SUBJECT, getWelcomeEmailHtml, getWelcomeEmailText } =
+		await import('$lib/email-templates/welcome');
 
 	return sendEmail(
 		toEmail,
@@ -165,9 +164,8 @@ export async function sendConsentEmail(
 	},
 	replyToEmail?: string
 ): Promise<EmailSendResult> {
-	const { CONSENT_EMAIL_SUBJECT, getConsentEmailHtml, getConsentEmailText } = await import(
-		'$lib/email-templates/parental-consent'
-	);
+	const { CONSENT_EMAIL_SUBJECT, getConsentEmailHtml, getConsentEmailText } =
+		await import('$lib/email-templates/parental-consent');
 
 	return sendEmail(
 		toEmail,

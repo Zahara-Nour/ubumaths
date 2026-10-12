@@ -473,8 +473,7 @@
 									: 'border-input'}"
 								bind:value={sharedValidationRulesJson}
 								rows={5}
-								placeholder="[]"
-							></textarea>
+								placeholder="[]"></textarea>
 							{#if validationRulesJsonError}
 								<p class="mt-1 text-xs text-destructive">{validationRulesJsonError}</p>
 							{:else}
@@ -500,8 +499,7 @@
 									: 'border-input'}"
 								bind:value={sharedAnswerFormatsJson}
 								rows={5}
-								placeholder={'{}'}
-							></textarea>
+								placeholder={'{}'}></textarea>
 							{#if answerFormatsJsonError}
 								<p class="mt-1 text-xs text-destructive">{answerFormatsJsonError}</p>
 							{:else}

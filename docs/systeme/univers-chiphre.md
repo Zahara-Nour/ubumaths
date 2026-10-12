@@ -59,12 +59,12 @@ Déchiffrer · Décrypter, `DispatchCampaign.svelte`, une attaque par chiffre du
 
 ### Almanach (`src/lib/almanach/`)
 
-| Fichier                                                 | Rôle                                                                                                                       |
-| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Fichier                                                 | Rôle                                                                                                                      |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `src/lib/almanach/calendar.ts`                          | Grégorien ↔ pataphysique : `civilToPataphysical`, `toPataphysicalDate`, `fromPataphysicalDate`, fêtes (`FEASTS`), formats |
-| `src/lib/almanach/palettes.ts`                          | Ambiance du mois (halo, traits d'Ubu, clair / sombre) : `MONTH_PALETTES`, `paletteCssVars`                                 |
-| `src/routes/(public)/almanach/`                         | Page de l'Almanach + convertisseur (`AlmanachConverter.svelte`)                                                            |
-| `src/lib/components/almanach/AlmanachHeaderDate.svelte` | Date du jour dans l'en-tête du tableau de bord                                                                             |
+| `src/lib/almanach/palettes.ts`                          | Ambiance du mois (halo, traits d'Ubu, clair / sombre) : `MONTH_PALETTES`, `paletteCssVars`                                |
+| `src/routes/(public)/almanach/`                         | Page de l'Almanach + convertisseur (`AlmanachConverter.svelte`)                                                           |
+| `src/lib/components/almanach/AlmanachHeaderDate.svelte` | Date du jour dans l'en-tête du tableau de bord                                                                            |
 
 Appelants : `src/routes/(public)/+page.server.ts` (ambiance de l'accueil),
 `src/routes/(protected)/dashboard/+layout.server.ts` (`almanachToday`), la page `/almanach`.

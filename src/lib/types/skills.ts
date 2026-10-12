@@ -35,12 +35,7 @@ export type Family = 'knowledge' | 'competence';
  * en PL/pgSQL utilise ces codes (cf. décision 69, migration 1.2).
  */
 export type MathCompetenceCode =
-	| 'chercher'
-	| 'modeliser'
-	| 'representer'
-	| 'raisonner'
-	| 'calculer'
-	| 'communiquer';
+	'chercher' | 'modeliser' | 'representer' | 'raisonner' | 'calculer' | 'communiquer';
 
 /**
  * Niveau du socle commun (LSU) pour une compétence math, calculé par règle

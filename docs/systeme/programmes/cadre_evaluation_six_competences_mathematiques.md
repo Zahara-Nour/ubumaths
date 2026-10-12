@@ -870,7 +870,7 @@ Mêmes observables, reformulés de façon opérationnelle pour fiabiliser le cod
 | A2   | Dégage la signification de la représentation — ce qu'elle décrit, sa tendance, sa structure — au-delà de la valeur lue.                                                 |
 | B1   | Produit une représentation correcte sur la forme : codages sur figure, en-têtes et unités d'un tableau, axes / échelle / légende d'un graphique, règles de perspective. |
 | B2   | Produit une représentation fidèle à l'objet ou aux données : ce qui est représenté correspond à ce qui devait l'être.                                                   |
-| C1   | Convertit une représentation en une autre du même objet, sans en altérer le sens (formule ↔ courbe, tableau ↔ graphique, figure ↔ coordonnées...).                   |
+| C1   | Convertit une représentation en une autre du même objet, sans en altérer le sens (formule ↔ courbe, tableau ↔ graphique, figure ↔ coordonnées...).                      |
 | C2   | Fait correspondre plusieurs représentations du même objet et vérifie leur cohérence mutuelle.                                                                           |
 | D1   | Choisit la représentation qui rend le problème le plus traitable, le cas échéant après en avoir comparé plusieurs.                                                      |
 | D2   | Mobilise une représentation comme appui pour progresser (orienter une recherche, conduire un calcul).                                                                   |

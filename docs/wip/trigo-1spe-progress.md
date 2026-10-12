@@ -24,7 +24,7 @@ Aucun modèle n'existait. Décisions validées (« validé » sur mes recommanda
 
 | Lot | Sous-domaines                                                                                |
 | --- | -------------------------------------------------------------------------------------------- |
-| A   | Cercle et radians (degrés ↔ radians, mesure principale), Cosinus et sinus d'un réel         |
+| A   | Cercle et radians (degrés ↔ radians, mesure principale), Cosinus et sinus d'un réel          |
 | B   | Propriétés (angles associés), Fonctions cosinus et sinus (parité, lecture graphique, courbe) |
 | C   | Équations, Inéquations (cercle au corrigé)                                                   |
 
@@ -66,7 +66,7 @@ tirage (±(|a|+|b|+1)) ; A-01 `150^\circ` → correctif moteur (PR `fix/suffixe-
 ## Limites connues (non corrigées)
 
 - Le bloc ```trig étiquette les solutions d'une équation dans [0 ; 2π[ (−π/6 → « 11π/6 ») et ne lit
-pas `cos(pi/5)` ; étiquettes 0, π, π/2 qui chevauchent les graduations ±1 dans le PDF.
+  pas `cos(pi/5)` ; étiquettes 0, π, π/2 qui chevauchent les graduations ±1 dans le PDF.
 - Corrigé de série : un ensemble fini s'affiche « {−π/2} ∪ {π/2} » au lieu de « {−π/2 ; π/2} ».
 - `{{eval:…}}` ne calcule pas d'expression en x (cos/sin d'un angle remarquable : oui depuis #651).
 

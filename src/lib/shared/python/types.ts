@@ -124,10 +124,7 @@ export interface CustomComparison {
 }
 
 export type OutputComparison =
-	| ExactComparison
-	| TextComparison
-	| NumericComparison
-	| CustomComparison;
+	ExactComparison | TextComparison | NumericComparison | CustomComparison;
 
 /**
  * Output test case

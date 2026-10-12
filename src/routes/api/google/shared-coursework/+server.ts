@@ -159,8 +159,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 				(sharedCourseworkList || [])
 					.map((item) => {
 						const courseworkData = item.google_classroom_coursework as unknown as
-							| { google_course_id: string }
-							| { google_course_id: string }[];
+							{ google_course_id: string } | { google_course_id: string }[];
 						const coursework = Array.isArray(courseworkData) ? courseworkData[0] : courseworkData;
 						return coursework?.google_course_id;
 					})
@@ -243,8 +242,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 			// Supabase JOIN types don't reflect !inner modifier, handle both cases defensively
 			const classData = item.classes as unknown as
-				| { id: string; name: string }
-				| { id: string; name: string }[];
+				{ id: string; name: string } | { id: string; name: string }[];
 			const className = Array.isArray(classData) ? classData[0]?.name : classData?.name;
 			const classId = Array.isArray(classData) ? classData[0]?.id : classData?.id;
 
@@ -352,8 +350,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Verify coursework belongs to teacher
 		const courseData = coursework.google_classroom_courses as unknown as
-			| { teacher_id: string }
-			| { teacher_id: string }[];
+			{ teacher_id: string } | { teacher_id: string }[];
 		const teacherId = Array.isArray(courseData)
 			? courseData[0]?.teacher_id
 			: courseData?.teacher_id;

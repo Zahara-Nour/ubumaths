@@ -162,8 +162,8 @@ a = mesure(u, v)`;
 
 	<!-- Display computed scalar values below the DSL demo -->
 	<p class="mt-2 text-sm text-muted-foreground">
-		norme(u) = {vectorScalarFig.symbols.get('n')?.value?.toFixed(2) ?? '?'} | produit_scalaire(u, v)
-		= {vectorScalarFig.symbols.get('p')?.value?.toFixed(2) ?? '?'} | mesure(u, v) = {vectorScalarFig.symbols
+		norme(u) = {vectorScalarFig.symbols.get('n')?.value?.toFixed(2) ?? '?'} | produit_scalaire(u, v) =
+		{vectorScalarFig.symbols.get('p')?.value?.toFixed(2) ?? '?'} | mesure(u, v) = {vectorScalarFig.symbols
 			.get('a')
 			?.value?.toFixed(1) ?? '?'}°
 	</p>

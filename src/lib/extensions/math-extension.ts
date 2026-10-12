@@ -135,8 +135,7 @@ const mathKeyboardNavPlugin = new Plugin({
 			// Helper function to focus a mathfield at a given position
 			const focusMathfield = (nodePos: number, atStart: boolean): boolean => {
 				const domNode = view.nodeDOM(nodePos) as
-					| (HTMLElement & { mathfield?: MathFieldElement })
-					| null;
+					(HTMLElement & { mathfield?: MathFieldElement }) | null;
 
 				// If mathfield reference is on wrapper, use it
 				if (domNode?.mathfield) {

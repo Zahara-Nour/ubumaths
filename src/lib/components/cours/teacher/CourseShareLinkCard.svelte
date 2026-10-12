@@ -52,8 +52,8 @@
 		{#if shareUrl}
 			<p class="text-sm text-muted-foreground">
 				À donner aux élèves sans compte et à leurs familles. Il permet de <strong>lire</strong> le cours
-				publié — chapitres visibles, documents, fiches distribuées, objectifs, séries — rien d'autre
-				; il n'inscrit personne dans la classe. Distinct du lien du cahier de texte.
+				publié — chapitres visibles, documents, fiches distribuées, objectifs, séries — rien d'autre ;
+				il n'inscrit personne dans la classe. Distinct du lien du cahier de texte.
 			</p>
 			<!-- Les contenus sont du texte libre : c'est par eux qu'une donnée
 			     personnelle pourrait sortir, et ça ne se corrige pas en SQL. -->

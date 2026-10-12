@@ -1035,9 +1035,8 @@ describe('Image Generation - Path Resolution', () => {
 	});
 
 	it('should track external image URLs for later fetching', async () => {
-		const { clearTrackedExternalImages, getTrackedExternalImages } = await import(
-			'../typst-generator'
-		);
+		const { clearTrackedExternalImages, getTrackedExternalImages } =
+			await import('../typst-generator');
 
 		const options: ResolvedTypstTranspilerOptions = {
 			paperSize: 'a4',

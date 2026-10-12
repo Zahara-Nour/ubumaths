@@ -74,8 +74,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 	const classes = (studentClasses || []).map((item) => {
 		// Handle Supabase JOIN types
 		const classData = item.classes as unknown as
-			| { id: string; name: string }
-			| { id: string; name: string }[];
+			{ id: string; name: string } | { id: string; name: string }[];
 		const classInfo = Array.isArray(classData) ? classData[0] : classData;
 
 		return {

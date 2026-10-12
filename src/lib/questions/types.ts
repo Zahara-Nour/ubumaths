@@ -236,12 +236,7 @@ export type QuestionVariable = SharedVariable;
  */
 /** Nature d'une réponse qui n'est pas une expression (voir `TemplateBlank.answerKind`) */
 export type AnswerKind =
-	| 'intervalles'
-	| 'equation'
-	| 'vecteur'
-	| 'matrice'
-	| 'primitive'
-	| 'solution-ed';
+	'intervalles' | 'equation' | 'vecteur' | 'matrice' | 'primitive' | 'solution-ed';
 
 /** Valeurs de `AnswerKind` (schémas Zod, éditeur) */
 export const ANSWER_KINDS = [
@@ -1548,13 +1543,7 @@ export interface PredicateRule {
 	type: 'predicate';
 	/** Predicate function to apply */
 	predicate:
-		| 'isPrime'
-		| 'isComposite'
-		| 'isEven'
-		| 'isOdd'
-		| 'isPositive'
-		| 'isNegative'
-		| 'isInteger';
+		'isPrime' | 'isComposite' | 'isEven' | 'isOdd' | 'isPositive' | 'isNegative' | 'isInteger';
 }
 
 /**

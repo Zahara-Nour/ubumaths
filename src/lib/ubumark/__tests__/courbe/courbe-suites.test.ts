@@ -338,8 +338,7 @@ points: A(2 ; 3)`;
 		const doc = parseMarkdown(md);
 		const list = doc.children.find((c: BlockNode): c is ListNode => c.type === 'list');
 		const inner = list?.items[0].children.find((c) => c.type === 'courbe') as
-			| CourbeNode
-			| undefined;
+			CourbeNode | undefined;
 		expect(inner?.spec?.sequences).toHaveLength(2);
 		const out = generateTypst(doc);
 		expect((out.match(/\/\/ terme /g) ?? []).length).toBe(20);
