@@ -268,9 +268,23 @@ une 2ᵉ migration, après le `deploy:prod` qui livre la route. Test :
 les pages `dashboard/student/riddles/**` passent l'énigme par `toStudentRiddle`
 (`src/lib/types/riddle.ts`), qui ne garde de `answer` que le type de saisie et, pour un QCM, les
 choix. `RiddleCard` ne corrige donc plus dans le navigateur : le verdict vient de la route de
-soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`. La colonne
-`riddles.answer` reste lisible par la base pour l'élève (énigme du jour ou assignée) : la fermer
-demande une décision sur la lecture côté prof.
+soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`.
+
+⚠️ **Réponse attendue et correction : `riddle_solutions`, plus `riddles`** (étape B, 2026-10-12).
+Aucun code ne lit ni n'écrit plus `riddles.answer` / `riddles.correction` : les requêtes sur
+`riddles` nomment leurs colonnes (`RIDDLE_COLUMNS`, `src/lib/types/riddle.ts` ; jamais `*` ni
+`riddles(*)`), et `toDbRiddle(ligne, solution)` assemble l'énigme. Le module
+`src/lib/server/riddle-solutions.ts` lit les solutions d'une liste d'énigmes
+(`fetchRiddleSolutions`) et en écrit une (`saveRiddleSolution`, upsert tenu pour échoué si
+`.select()` ne rend aucune ligne). Côté prof, le client de la session suffit (RLS : auteur et
+admin) ; la création insère l'énigme puis sa solution, et **supprime l'énigme** si la solution
+n'est pas écrite ; l'édition vérifie les lignes rendues des deux écritures. Côté élève, qui ne lit
+pas `riddle_solutions`, les pages `dashboard/student/riddles/+page.server.ts` et `[id]/` et la
+route de soumission lisent l'énigme avec le client de l'élève (sa RLS décide de l'accès), puis la
+solution de **ces seules énigmes** par le client service (`ALLOWED_SERVICE_ROLE_PATHS`) : la
+soumission juge avec elle, les pages n'en gardent que ce que `toStudentRiddle` laisse. Tests :
+`src/routes/(protected)/dashboard/teacher/contenu/enigmes/__tests__/solutions-ecriture.test.ts`,
+`src/routes/api/riddles/__tests__/api-routes.test.ts`.
 
 ## Comment étendre
 
