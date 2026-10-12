@@ -42,13 +42,18 @@ function routePatterns(): RegExp[] {
 	return patterns;
 }
 
-/** Cibles littérales de `redirect(3xx, '/...')` */
+/**
+ * Cibles de `redirect(3xx, '/...')` écrites en dur. Dans un gabarit, un `${…}` vaut
+ * un segment de paramètre (`/exercice/${slug}` → `/exercice/x`) : la partie fixe
+ * de l'adresse reste vérifiée.
+ */
 function literalTargets(): { file: string; target: string }[] {
 	const found: { file: string; target: string }[] = [];
-	const re = /redirect\(\s*30\d\s*,\s*['"`](\/[^'"`$?#]*)/g;
+	const re = /redirect\(\s*30\d\s*,\s*['"`](\/(?:[^'"`$?#]|\$\{[^}]*\})*)/g;
 	for (const file of sourceFiles(join(ROOT, 'src'))) {
 		for (const m of readFileSync(file, 'utf8').matchAll(re)) {
-			found.push({ file: relative(ROOT, file), target: m[1] });
+			const target = m[1].replace(/(?:\$\{[^}]*\})+/g, 'x');
+			found.push({ file: relative(ROOT, file), target });
 		}
 	}
 	return found;
