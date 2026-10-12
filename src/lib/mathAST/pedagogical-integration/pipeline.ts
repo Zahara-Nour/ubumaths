@@ -123,6 +123,7 @@ import type {
 } from './_helpers';
 import { abs, ln } from '../factory';
 import { findProportionalityConstant } from '../integration/patterns';
+import { forbiddenValueOnInterval } from '../integration/forbidden-value';
 import { arcsinRule, arctanRule } from '../integration/rules';
 import { PedagogicalIntegrationNotImplemented } from './types';
 import type {
@@ -293,6 +294,35 @@ function generateDefiniteSteps(
 				definite
 			})
 		);
+	}
+
+	// Valeur interdite de f dans [a ; b] (bornes comprises) : l'intégrale n'est
+	// pas définie, aucune valeur (V28 : ∫₁² 5/(4x² − 9) rendait un nombre à
+	// travers le pôle 3/2). La primitive reste calculée — sans ses étapes —
+	// pour `result.antiderivative`.
+	const forbidden = forbiddenValueOnInterval(
+		integrand,
+		ctx.variable,
+		definite.lower,
+		definite.upper
+	);
+	if (forbidden !== null) {
+		const { antiderivative: rawPrimitive } = integrateNode(integrand, ctx);
+		steps.push(
+			buildStep(ctx, {
+				rule: 'integrand-undefined-on-interval',
+				before: integrand,
+				after: integrand,
+				variable: ctx.variable,
+				definite,
+				bindings: { point: forbidden }
+			})
+		);
+		return {
+			antiderivative: pushSimplifyStep([], rawPrimitive, ctx),
+			undefinedAt: forbidden,
+			steps
+		};
 	}
 
 	// Compute the antiderivative pedagogically — without `add-constant`

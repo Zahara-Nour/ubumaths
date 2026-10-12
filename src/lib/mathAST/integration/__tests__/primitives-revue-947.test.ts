@@ -98,7 +98,11 @@ describe('intégrale définie : une singularité dans [a ; b] est refusée', () 
 		['\\frac{1}{\\cos^2(\\pi x)}', '-3', '2'],
 		['\\frac{1}{x}', '-1', '1'],
 		['\\frac{1}{x^2}', '-1', '1'],
-		['\\frac{1}{x}', '0', '1']
+		['\\frac{1}{x}', '0', '1'],
+		// V28 : pôle d'une fraction rationnelle (éléments simples, u'/u), coefficient ≠ 1
+		['\\frac{5}{4x^2-9}', '1', '2'],
+		['\\frac{3}{2x-1}', '0', '1'],
+		['\\frac{3}{x}', '-1', '1']
 	])('∫ %s sur [%s ; %s] : aucune valeur, refus en français', (latex, lower, upper) => {
 		const result = integrateDefinite(parseLatex(latex), parseLatex(lower), parseLatex(upper), {
 			variable: 'x'
@@ -116,7 +120,9 @@ describe('intégrale définie : une singularité dans [a ; b] est refusée', () 
 		['\\frac{1}{\\sqrt{x}}', '0', '1', 2],
 		['\\ln(x)', '1', 'e', 1],
 		['\\sqrt[3]{x}', '-1', '8', 11.25],
-		['e^{x}', '0', '30', Math.exp(30) - 1]
+		['e^{x}', '0', '30', Math.exp(30) - 1],
+		// V28 : pôles ±3/2 hors de [2 ; 3]
+		['\\frac{5}{4x^2-9}', '2', '3', (5 / 12) * Math.log(7 / 3)]
 	])(
 		'∫ %s sur [%s ; %s] : valeur exacte (près d’un pôle, sans le franchir)',
 		(latex, lower, upper, expected) => {

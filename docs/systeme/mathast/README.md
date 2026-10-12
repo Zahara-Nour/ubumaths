@@ -516,6 +516,20 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   l'intégrale restante en toutes lettres, avant sa valeur (pas de « = » faux). Le facteur 1/u′ des formes composées est un rationnel exact
   (`findProportionalityRatio`), et l'exponentielle s'écrit `e^{u}`
   (`superscript(euler(), u)`), jamais `\exp(u)` (décisions de David du 2026-10-11).
+- **Intégrale définie : aucune valeur à travers une valeur interdite.** Version pédagogique
+  (V28, 2026-10-12) : avant tout calcul, `forbiddenValueOnInterval`
+  (`integration/forbidden-value.ts`) lit le domaine exact de f (`computeDomain` : points exclus,
+  extrémités des intervalles, premier point d'une exclusion périodique) et rend la première
+  valeur interdite de [a ; b], **bornes comprises**. Si elle existe, les étapes s'arrêtent à
+  `integrand-undefined-on-interval` (« La fonction n'est pas définie en x = 3/2, qui appartient à
+  [1 ; 2] : l'intégrale n'est pas définie sur cet intervalle. », mots en `\text{}`), sans
+  `value` ; `result.undefinedAt` porte la valeur. Bornes littérales ou domaine non résolu
+  (`unresolved`, dénominateur `e^x - 2`) : pas de contrôle, comportement d'avant. Moteur
+  (`integrateDefinite`) : contrôle **numérique** de la continuité de F sur [a ; b]
+  (`integration/singularity.ts`, revue de #947) ; refus = `status: 'unsupported'`,
+  `value: null`, `error` en français. Il accepte une intégrale impropre convergente
+  (∫₀¹ 1/√x = 2) que la version pédagogique refuserait (borne interdite) si elle savait
+  calculer la primitive.
 - ⚠️ Les étapes de `normalize` sont du calcul interne, pas une leçon : elles arrivent
   pourtant dans `auto`/`reduire`/`developper` via `runNormalizePass` (ADR 0007 veut les
   retirer du chemin élève).

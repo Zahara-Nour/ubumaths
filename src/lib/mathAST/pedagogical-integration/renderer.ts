@@ -24,6 +24,7 @@
 
 import type { MathNode } from '../types';
 import { toLatex } from '../latex-generator';
+import { compile } from '../eval/compile';
 import { withExplicitNumberProducts } from '../pedagogical-differentiation/tidy-step';
 import type {
 	PedagogicalRenderOptions,
@@ -159,6 +160,18 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 			);
 		}
 
+		case 'integrand-undefined-on-interval': {
+			// L'intégrale, puis la phrase du refus : mots dans \text{}, valeurs en
+			// mathématiques ; l'intervalle écrit dans l'ordre croissant (V28)
+			const point = step.bindings?.point ? toLatex(step.bindings.point) : '?';
+			const lines = [
+				`  & \\textcolor{blue}{${definiteIntegralLatex(step, beforeLatex, dx)}}`,
+				`  & \\text{La fonction n’est pas définie en } ${step.variable} = ${point} \\text{, qui appartient à } ${closedIntervalLatex(step)} \\text{ :}`,
+				`  & \\text{l’intégrale n’est pas définie sur cet intervalle.}`
+			];
+			return `\\begin{aligned}\n${lines.join(' \\\\\n')}\n\\end{aligned}`;
+		}
+
 		case 'apply-parts-formula': {
 			// uv − ∫ v du, l'intégrale restante ÉCRITE ; puis, quand elle est
 			// calculée (`result`), la primitive. Sans cela, l'IPP cyclique
@@ -207,6 +220,38 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 
 		default:
 			return formatStandard(step, beforeLatex, afterLatex, dx);
+	}
+}
+
+/** `\\int_{a}^{b} f\\,dx` (ou `\\int f\\,dx` sans bornes) */
+function definiteIntegralLatex(
+	step: PedagogicalIntegrationStep,
+	beforeLatex: string,
+	dx: string
+): string {
+	return step.definite
+		? `\\int_{${toLatex(step.definite.lower)}}^{${toLatex(step.definite.upper)}} ${beforeLatex}${dx}`
+		: `\\int ${beforeLatex}${dx}`;
+}
+
+/**
+ * `\\left[ a ; b \\right]`, bornes dans l'ordre croissant (∫₂¹ porte sur
+ * [1 ; 2]) ; ordre d'écriture gardé quand les bornes sont littérales.
+ */
+function closedIntervalLatex(step: PedagogicalIntegrationStep): string {
+	if (!step.definite) return '?';
+	const { lower, upper } = step.definite;
+	const reversed = numericValue(lower) > numericValue(upper);
+	const [lo, hi] = reversed ? [upper, lower] : [lower, upper];
+	return `\\left[ ${toLatex(lo)} ; ${toLatex(hi)} \\right]`;
+}
+
+/** Valeur numérique d'une borne constante, NaN si littérale */
+function numericValue(node: MathNode): number {
+	try {
+		return compile(node)({});
+	} catch {
+		return Number.NaN;
 	}
 }
 

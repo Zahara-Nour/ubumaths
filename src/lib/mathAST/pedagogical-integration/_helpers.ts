@@ -172,6 +172,8 @@ function defaultDescription(rule: PedagogicalIntegrationRule): string {
 			return 'Substitution des bornes';
 		case 'simplify-bounds-result':
 			return 'Calcul de la valeur';
+		case 'integrand-undefined-on-interval':
+			return 'Intégrale non définie sur l’intervalle';
 		case 'identify-substitution':
 			return 'Identification de la substitution';
 		case 'compute-du':

@@ -86,6 +86,7 @@ export type PedagogicalIntegrationRule =
 	| 'apply-fundamental-theorem' // ∫_a^b f = [F]_a^b
 	| 'substitute-bounds' // [F]_a^b → F(b) - F(a)
 	| 'simplify-bounds-result' // F(b) - F(a) → numeric value
+	| 'integrand-undefined-on-interval' // valeur interdite de f dans [a ; b] : pas de valeur (V28)
 	// ---- Explicit u-substitution (supérieur) ----
 	| 'identify-substitution'
 	| 'compute-du'
@@ -127,6 +128,7 @@ export type PedagogicalIntegrationRule =
  * - `apply-fundamental-theorem`     : `{ primitive }`
  * - `substitute-bounds`             : `{ primitive }`
  * - `simplify-bounds-result`        : `{}`
+ * - `integrand-undefined-on-interval` : `{ point }` (valeur interdite de f dans [a ; b])
  * - `identify-substitution`         : `{ u }`
  * - `compute-du`                    : `{ u, du }`
  * - `apply-substitution`            : `{ u, du, transformed }`
@@ -200,8 +202,18 @@ export interface PedagogicalIntegrationResult {
 	/** Antiderivative F(x) such that F'(x) = f(x) — without the `+ C` */
 	readonly antiderivative: MathNode;
 
-	/** Numeric value of the definite integral (when `options.definite` was set) */
+	/**
+	 * Numeric value of the definite integral (when `options.definite` was set).
+	 * Absent when f has a forbidden value in [a ; b] (`undefinedAt`).
+	 */
 	readonly value?: MathNode;
+
+	/**
+	 * Intégrale définie seulement : valeur de [a ; b] (bornes comprises) où f
+	 * n'est pas définie. L'intégrale n'est alors pas calculée (V28) : ni
+	 * `value`, ni étapes du théorème fondamental.
+	 */
+	readonly undefinedAt?: MathNode;
 
 	/** Recorded steps (top-level entries; subSteps live inside each entry) */
 	readonly steps: readonly PedagogicalIntegrationStep[];
