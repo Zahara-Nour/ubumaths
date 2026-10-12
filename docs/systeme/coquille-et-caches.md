@@ -96,8 +96,10 @@ pose son propre squelette.
 
 Le lien « Aller au contenu » (`+layout.svelte:109-113`, WCAG 2.4.1) est le premier élément
 focusable. Il est caché par une translation (`-translate-y-[200%]`, `focus:translate-y-0`), pas
-par `sr-only focus:not-sr-only` : la règle `.sr-only` de `app.css`, hors couche, l'emporte sur la
-variante Tailwind. Test : `src/lib/__tests__/accessibilite-k19.test.ts`.
+par `sr-only focus:not-sr-only` : choix fait quand `app.css` redéfinissait `.sr-only` hors couche,
+ce qui annulait les variantes Tailwind. Ce doublon est retiré (écart V29) : `sr-only sm:not-sr-only`
+affiche bien les libellés sur grand écran (`src/lib/__tests__/sr-only-variantes.svelte.test.ts`).
+Test du lien : `src/lib/__tests__/accessibilite-k19.test.ts`.
 
 Pendant une navigation hors tableau de bord, la page passe à `opacity-0` et un squelette la
 recouvre, choisi par `getSkeletonType` (`src/lib/utils/skeleton-detector.ts`) : `SkeletonDashboard`,
