@@ -7,9 +7,9 @@
 
 Les deux sessions Claude Code d'origine (2026-01-20) **n'existent plus** : leurs transcripts ont été purgés au bout de 30 jours (`cleanupPeriodDays`). Seuls leurs titres restaient dans l'index des sessions :
 
-| Session                                | Dossier           | Sujet                                                                                                       |
-| -------------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------- |
-| `b318b991-1c5e-4f2c-a18d-e29714856a27` | `ubumaths-extern` | **Création** — « Est-ce qu'on peut utiliser une font personnalisée avec le mathfield de mathlive ? »        |
+| Session                                | Dossier           | Sujet                                                                                                      |
+| -------------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------- |
+| `b318b991-1c5e-4f2c-a18d-e29714856a27` | `ubumaths-extern` | **Création** — « Est-ce qu'on peut utiliser une font personnalisée avec le mathfield de mathlive ? »       |
 | `43a74386-9b13-4bb1-8b64-2a4e0bef1676` | `ubumaths`        | **Bascule KaTeX ↔ Shantell** — les polices KaTeX originales avaient été écrasées par les versions Shantell |
 
 **Tout le travail produit est dans git** (sauf le `venv` Python, à recréer).
