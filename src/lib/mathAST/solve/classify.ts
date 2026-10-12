@@ -138,7 +138,7 @@ export function classifyEquation(equation: RelationNode, variable: string): Clas
 	}
 
 	// Not a polynomial - check for transcendental
-	const transcType = getTranscendentalType(standardForm);
+	const transcType = getTranscendentalType(standardForm, variable);
 
 	if (transcType === 'trigonometric') {
 		return {
@@ -165,7 +165,7 @@ export function classifyEquation(equation: RelationNode, variable: string): Clas
 	}
 
 	// Mixed or unknown type
-	if (containsTranscendental(standardForm)) {
+	if (containsTranscendental(standardForm, variable)) {
 		return {
 			type: 'mixed',
 			variables: uniqueVars,
