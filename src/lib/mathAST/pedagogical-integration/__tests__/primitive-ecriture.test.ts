@@ -558,9 +558,9 @@ describe('une seule écriture de l’exposant dans l’étape « On simplifie »
 
 describe('le texte de « On simplifie » ne promet pas une ligne cachée', () => {
 	it.each([
-		['xe^x', 'On met \\exponentialE^x en facteur.'],
-		['3xe^x', 'On met \\exponentialE^x en facteur.'],
-		['x^2e^x', 'On développe, puis on met \\exponentialE^x en facteur.']
+		['xe^x', 'On met $\\exponentialE^x$ en facteur.'],
+		['3xe^x', 'On met $\\exponentialE^x$ en facteur.'],
+		['x^2e^x', 'On développe, puis on met $\\exponentialE^x$ en facteur.']
 	])('∫ %s dx : « %s »', (integrand, explanation) => {
 		const { rendered } = run(integrand, 'lycee', 'detailed');
 		const simplify = rendered.find((s) => s.rule === 'simplify-result');

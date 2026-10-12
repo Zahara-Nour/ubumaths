@@ -511,6 +511,20 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   `SchoolLevel` (`'primaire' | 'college' | 'lycee' | 'superieur'`). Référence :
   `pedagogical-solve/linear-renderer.ts` (titres par niveau, repli sur `lycee` puis sur la
   description du pas).
+- **Les maths de la prose entre `$…$`** (V25, 2026-10-12). `GeneratedStepsCorrection.svelte`
+  rend le titre et l'explication d'une étape par `InlineMarkdown` (ubumark) : une formule entre
+  `$…$` s'affiche en maths, le reste en texte. L'intégration, la dérivation et le premier degré
+  (équations et inéquations) y écrivent donc leurs formules : « On pose $u = 2 x$ et
+  $dv = \exponentialE^{3 x}$ », « On divise les deux membres par $\dfrac{2}{3}$ », un titre du
+  supérieur qui n'est qu'une formule en entier (`$\int u\,dv = uv - \int v\,du$`),
+  `$S = \{ 6 \}$`. Hors des `$`, ni `\`, `^`, `_`, `{`, `}`, ni `*` (italique d'ubumark) ni
+  `~` (syntaxe maison), jamais `$$` (bloc) ; les descriptions par défaut restent du texte simple.
+  Garde-fou sur un panel (31 intégrales, 18 dérivées, 8 équations et inéquations, à chaque
+  niveau) : `__tests__/prose-maths-delimitees.test.ts`. Les **limites** écrivent encore leur
+  prose en Unicode (`formatPowerShort`, `formatValueShort`), rendue telle quelle ; le reste
+  (`pedagogical-simplify`, second degré, domaine) n'a pas de LaTeX dans sa prose sur ce panel.
+  Côté atelier, `decimalCommaProse` écrit `{,}` dans les `$…$` et `historyToUbumark` garde ces
+  formules (`$…$`, pas `\$`).
 - La résolution d'équation pédagogique ne rejoue **pas** le solveur algorithmique : elle
   suit ce que l'élève fait sur papier (`pedagogical-solve/`). Paliers : 1 (équation du
   1er degré), 2a (inéquation du 1er degré), 2b (inéquation du 2nd degré), 3 (inéquation
@@ -643,7 +657,7 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   (bloc `\lim \dfrac{1}{x} = 0`, `\text{donc } \lim (3 + \dfrac{1}{x}) = 3`, champ
   `termLimits` de l'étape) → `apply-quotient` ou `apply-product` (explication : « Le facteur x³
   tend vers −∞ et l'autre facteur tend vers −2 : par produit, (−∞) × (−2) = +∞ », « 2 divisé
-  par une quantité qui tend vers +∞ » ; le facteur restant nommé en mots, « le quotient restant », « la parenthèse » : titres et explications sans LaTeX, affichés en texte brut) → conclusion. Mode
+  par une quantité qui tend vers +∞ » ; le facteur restant nommé en mots, « le quotient restant », « la parenthèse » : titres et explications sans LaTeX, en Unicode — le composant les rend par `InlineMarkdown` depuis V25, sans `$` ils restent du texte) → conclusion. Mode
   résumé : développement, factorisation, simplification, conclusion. Deux monômes
   (`\dfrac{2x^2}{3x^2}`) : pas de factorisation, « On simplifie par x² ». **Sans forme
   indéterminée** (`\dfrac{1}{x+1}`, `x^2+1`, `(x+1)^2`, `-x^4+x` en −∞), pas de factorisation :
@@ -702,7 +716,7 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   `pipeline.ts`) : `\frac{1}{2(2x - 1)} - \frac{1}{2(2x + 1)}` (A′ = A·q), primitive
   `\frac{\ln|2x - 1|}{4} - \frac{\ln|2x + 1|}{4}` ; les facteurs annoncés (`factor1`,
   `factor2`) sont ceux du dénominateur factorisé. Un facteur `px + q`, p ≠ 1, ajoute la liaison
-  `p`, qui fait écrire les formules en `∫A/(px + q) dx = (A/p)·ln|px + q|`. Un coefficient nul
+  `p`, qui fait écrire les formules en `$\int \dfrac{A}{px+q}\,dx = \dfrac{A}{p}\ln|px+q|$`. Un coefficient nul
   (P et Q ont un facteur commun, `(3x + 1)/(6x² − x − 1)`) laisse un seul terme
   (`\frac{1}{2x - 1}`) au lieu du refus d'avant.
 

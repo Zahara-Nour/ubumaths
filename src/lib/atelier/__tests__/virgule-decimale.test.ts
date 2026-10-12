@@ -16,6 +16,7 @@ import {
 	decimalCommaDeep,
 	decimalCommaInput,
 	decimalCommaLatex,
+	decimalCommaProse,
 	decimalCommaText
 } from '../decimal-comma';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
@@ -129,6 +130,22 @@ describe('la conversion elle-même', () => {
 			'\\left\\{ -1{,}5 \\,;\\, 2{,}5 \\right\\}'
 		);
 	});
+
+	// V25 : les titres et explications des étapes portent leurs formules entre
+	// `$…$` (rendues par ubumark) — la convention LaTeX dedans, la prose dehors
+	it('une phrase mêlée de maths : `{,}` dans les `$…$`, la virgule ailleurs', () => {
+		expect(decimalCommaProse('On sort la constante $0.5$')).toBe('On sort la constante $0{,}5$');
+		expect(decimalCommaProse('On divise par 0.5, puis par $\\dfrac{1.5}{2}$.')).toBe(
+			'On divise par 0,5, puis par $\\dfrac{1{,}5}{2}$.'
+		);
+		expect(decimalCommaProse('$S = \\{ 1.5 \\}$ et $x = 2.25$')).toBe(
+			'$S = \\{ 1{,}5 \\}$ et $x = 2{,}25$'
+		);
+		// Sans maths : la virgule seule, la ponctuation intacte
+		expect(decimalCommaProse('on divise par 0.5, l’égalité est préservée')).toBe(
+			'on divise par 0,5, l’égalité est préservée'
+		);
+	});
 });
 
 describe('chaque commande de la vue Calcul écrit la virgule', () => {
@@ -181,7 +198,7 @@ describe('chaque commande de la vue Calcul écrit la virgule', () => {
 		const result = commande(runInput(session(), '.dériver 0.5x^2'));
 
 		expect(result.output).toBe('d/dx(0,5x^2) = x');
-		expect(result.steps?.[0]?.title).toBe('On sort la constante 0,5');
+		expect(result.steps?.[0]?.title).toBe('On sort la constante $0{,}5$');
 		expectNoDotDecimal(result);
 	});
 

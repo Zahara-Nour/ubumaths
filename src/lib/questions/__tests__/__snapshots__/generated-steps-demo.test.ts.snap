@@ -71,7 +71,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité polynomial differentiation
                 "id": 1,
                 "rule": "power-natural",
                 "schoolLevel": "lycee",
-                "title": "Règle de la puissance (3)",
+                "title": "Règle de la puissance ($3$)",
               },
               {
                 "hasExplanation": true,
@@ -86,10 +86,10 @@ exports[`Mode B end-to-end demos > 1ère spécialité polynomial differentiation
                     "id": 2,
                     "rule": "power-natural",
                     "schoolLevel": "lycee",
-                    "title": "Règle de la puissance (2)",
+                    "title": "Règle de la puissance ($2$)",
                   },
                 ],
-                "title": "On sort la constante 2",
+                "title": "On sort la constante $2$",
               },
             ],
             "title": "On dérive chaque terme",
@@ -100,7 +100,7 @@ exports[`Mode B end-to-end demos > 1ère spécialité polynomial differentiation
             "id": 5,
             "rule": "linear-coefficient",
             "schoolLevel": "lycee",
-            "title": "On sort la constante 5",
+            "title": "On sort la constante $5$",
           },
         ],
         "title": "On dérive chaque terme",
@@ -387,7 +387,7 @@ exports[`Mode B end-to-end demos > 4e linear equation — produces college steps
     "id": 2,
     "rule": "subtract-both-sides",
     "schoolLevel": "college",
-    "title": "On soustrait 5 aux deux membres",
+    "title": "On soustrait $5$ aux deux membres",
   },
   {
     "hasExplanation": true,
@@ -395,7 +395,7 @@ exports[`Mode B end-to-end demos > 4e linear equation — produces college steps
     "id": 3,
     "rule": "divide-both-sides",
     "schoolLevel": "college",
-    "title": "On divise les deux membres par 3",
+    "title": "On divise les deux membres par $3$",
   },
   {
     "hasExplanation": true,
@@ -403,7 +403,7 @@ exports[`Mode B end-to-end demos > 4e linear equation — produces college steps
     "id": 4,
     "rule": "read-solution",
     "schoolLevel": "college",
-    "title": "Solution : x = 3",
+    "title": "Solution : $x = 3$",
   },
 ]
 `;
@@ -424,7 +424,7 @@ exports[`Mode B end-to-end demos > 4e linear inequality with flip — produces c
     "id": 2,
     "rule": "divide-both-sides",
     "schoolLevel": "college",
-    "title": "On divise les deux membres par -2 (changement de sens car -2 est négatif)",
+    "title": "On divise les deux membres par $-2$ (changement de sens car $-2$ est négatif)",
   },
 ]
 `;
@@ -445,7 +445,7 @@ exports[`Mode B end-to-end demos > 4e linear inequality with x on both sides —
     "id": 2,
     "rule": "subtract-both-sides",
     "schoolLevel": "college",
-    "title": "On soustrait x aux deux membres",
+    "title": "On soustrait $x$ aux deux membres",
   },
   {
     "hasExplanation": true,
@@ -453,7 +453,7 @@ exports[`Mode B end-to-end demos > 4e linear inequality with x on both sides —
     "id": 3,
     "rule": "subtract-both-sides",
     "schoolLevel": "college",
-    "title": "On soustrait 1 aux deux membres",
+    "title": "On soustrait $1$ aux deux membres",
   },
 ]
 `;
@@ -560,7 +560,7 @@ exports[`Mode B end-to-end demos > Terminale spécialité composition differenti
         "id": 1,
         "rule": "linear-coefficient",
         "schoolLevel": "lycee",
-        "title": "On sort la constante 3",
+        "title": "On sort la constante $3$",
       },
     ],
     "title": "Dérivée de sinus",
@@ -654,7 +654,7 @@ exports[`Mode B end-to-end demos > Terminale spécialité indefinite integration
             "title": "Règle de la puissance",
           },
         ],
-        "title": "On sort la constante 3",
+        "title": "On sort la constante $3$",
       },
       {
         "hasExplanation": true,
@@ -672,7 +672,7 @@ exports[`Mode B end-to-end demos > Terminale spécialité indefinite integration
             "title": "Règle de la puissance",
           },
         ],
-        "title": "On sort la constante 2",
+        "title": "On sort la constante $2$",
       },
       {
         "hasExplanation": true,

@@ -279,7 +279,7 @@ export function generateLinearEquationSteps(
 			? makeStep({
 					id: id(),
 					rule: 'read-solution',
-					description: `Solution : ${variable} = ${operandPretty(solutionValue)}`,
+					description: `Solution : $${variable} = ${operandLatex(solutionValue)}$`,
 					before: current,
 					after: current,
 					operation: { kind: 'read-solution', variable, value: solutionValue },
@@ -342,7 +342,12 @@ export function generateLinearEquationSteps(
 
 import { toLatex } from '../latex-generator';
 
+/** Un opérande dans la prose (titres de repli) : en LaTeX entre `$…$` (V25) */
 function operandPretty(node: MathNode): string {
+	return `$${operandLatex(node)}$`;
+}
+
+function operandLatex(node: MathNode): string {
 	// `toLatex` emits a literal space for implicit multiplication (`5 x`) for
 	// LaTeX source readability. In our pedagogical operand strings (terminal
 	// demos, plain-text titles) we want the tighter `5x`. Strip the space

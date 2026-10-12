@@ -96,7 +96,7 @@ describe('PedagogicalIntegrationRenderer — composite forms', () => {
 			verbosity: 'detailed'
 		});
 		const composite = rendered.find((s) => s.rule === 'apply-composite-exp');
-		expect(composite?.explanation).toContain("u'·e^u");
+		expect(composite?.explanation).toContain("$u'e^u$");
 		expect(composite?.expressionLatex).toContain('\\int');
 	});
 

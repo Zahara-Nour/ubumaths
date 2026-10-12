@@ -131,7 +131,12 @@ function chooseAddOrSubtract(operand: MathNode): {
 	return { kind: 'add-both-sides', displayOperand: operand };
 }
 
+/** Un opérande dans la prose (titres de repli) : en LaTeX entre `$…$` (V25) */
 function operandPretty(node: MathNode): string {
+	return `$${operandLatex(node)}$`;
+}
+
+function operandLatex(node: MathNode): string {
 	return toLatex(node).replace(/(\d|\})\s+([a-zA-Z\\])/g, '$1$2');
 }
 
