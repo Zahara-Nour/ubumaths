@@ -60,7 +60,11 @@ const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
 	[/Invalid mode '([^']*)'/, 'Mode inconnu : « $1 »'],
 	[/Too many values \(max: (\d+)\)/, 'Trop de valeurs (au plus $1)'],
 	[/X and Y must have same length/, 'Les séries X et Y doivent avoir la même longueur'],
-	[/No expression to differentiate/, 'Aucune expression à dériver'],
+	[/^No expression to differentiate/, 'Rien à dériver : écris une expression après la commande'],
+	[/^No expression to simplify/, 'Rien à simplifier : écris une expression après la commande'],
+	[/^No expression to integrate/, 'Rien à intégrer : écris une expression après la commande'],
+	[/^No equation to solve/, 'Aucune équation à résoudre : écris-la après la commande'],
+	[/^Invalid syntax\.?/, 'Commande incomplète'],
 	[/No AST available/, 'Aucune expression précédente'],
 	[/Empty parentheses not allowed/, 'Parenthèses vides'],
 	[/Empty brackets not allowed/, 'Crochets vides'],
@@ -101,15 +105,34 @@ const HTML_HEADERS: readonly (readonly [RegExp, string])[] = [
 // Fonctions
 // =============================================================================
 
+/** Les noms anglais des paramètres d'une consigne (`<order>`, `[lower upper]`). */
+const USAGE_WORDS: readonly (readonly [RegExp, string])[] = [
+	[/\border\b/g, 'ordre'],
+	[/\bcenter\b/g, 'centre'],
+	[/\blower\b/g, 'borne_inf'],
+	[/\bupper\b/g, 'borne_sup'],
+	[/\bname\b/g, 'nom'],
+	[/\bparams\b/g, 'paramètres'],
+	[/ or /g, ' ou ']
+];
+
 /** Une ligne de message en français. */
 function lineInFrench(line: string): string {
 	const usage = USAGE.exec(line);
 	if (usage !== null) {
 		const head = usage[1].trim() === '' ? INCOMPLETE : lineInFrench(usage[1].trim());
-		return `${head}. Forme attendue : ${usage[2]}`;
+		const form = USAGE_WORDS.reduce(
+			(text, [english, french]) => text.replace(english, french),
+			usage[2]
+		);
+		return `${head}. Forme attendue : ${form}`;
 	}
 	for (const [english, french] of TRANSLATIONS) {
-		if (english.test(line)) return line.replace(english, french);
+		const match = english.exec(line);
+		if (match === null) continue;
+		// Les groupes recopiés à la main : un `$` du message n'est jamais lu comme un motif (revue)
+		const translated = french.replace(/\$(\d)/g, (_, index: string) => match[Number(index)] ?? '');
+		return line.slice(0, match.index) + translated + line.slice(match.index + match[0].length);
 	}
 	return ENGLISH_LINE.test(line) ? GENERIC : line;
 }
@@ -129,12 +152,15 @@ function htmlInFrench(
 	original: string | undefined,
 	french: string | undefined
 ): string {
-	let result = html;
+	// Avant la saisie recopiée seulement (`<br><br>`) : `Hint: 2)` tapé reste tel quel
+	const split = html.indexOf('<br><br>');
+	let head = split === -1 ? html : html.slice(0, split);
+	const tail = split === -1 ? '' : html.slice(split);
 	if (original !== undefined && french !== undefined && original !== '') {
-		result = result.replace(escapeHtml(original), escapeHtml(french));
+		head = head.replace(escapeHtml(original), () => escapeHtml(french));
 	}
-	for (const [english, translated] of HTML_HEADERS) result = result.replace(english, translated);
-	return result;
+	for (const [english, translated] of HTML_HEADERS) head = head.replace(english, translated);
+	return head + tail;
 }
 
 /** Le résultat d'une saisie, ses messages d'erreur en français ; une réussite est rendue telle quelle. */
@@ -149,8 +175,18 @@ export function withFrenchErrors(result: ReplExecutionResult): ReplExecutionResu
 		french !== undefined &&
 		original !== '' &&
 		result.output.includes(original)
-			? inFrench(result.output.replace(original, french))
+			? inFrench(result.output.replace(original, () => french))
 			: inFrench(result.output);
+	// Une sortie déjà française, distincte du message, dit mieux que la traduction d'un message
+	// anglais : `.stats` seul, « Usage : .stats 12 ; 15 ; 9 » plutôt qu'« Écriture non reconnue »
+	const message =
+		french !== undefined &&
+		french !== original &&
+		result.output !== '' &&
+		result.output === inFrench(result.output) &&
+		!result.output.includes(original ?? '')
+			? result.output
+			: french;
 	return {
 		...result,
 		output,
@@ -158,8 +194,8 @@ export function withFrenchErrors(result: ReplExecutionResult): ReplExecutionResu
 			outputHtml: htmlInFrench(result.outputHtml, original, french)
 		}),
 		...(result.error !== undefined &&
-			french !== undefined && {
-				error: { ...result.error, message: french }
+			message !== undefined && {
+				error: { ...result.error, message }
 			})
 	};
 }

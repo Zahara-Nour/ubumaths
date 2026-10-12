@@ -112,3 +112,31 @@ describe('la traduction ne touche que le message', () => {
 		expect(line.outputHtml ?? '').not.toMatch(/Hint|Type \.help/);
 	});
 });
+
+// 2ᵉ revue : « Écriture non reconnue » là où rien n'était écrit, de l'anglais dans les consignes
+describe('les commandes sans argument et les consignes', () => {
+	const shown = (input: string) => {
+		const line = run(input);
+		return {
+			message: line.error?.message ?? '',
+			all: `${line.output}\n${line.error?.message ?? ''}`
+		};
+	};
+
+	it.each(['.stats', '.stats a;b', '.simplify', '.integrate', '.solve', '.taylor sin(x)'])(
+		'%s : ni « Écriture non reconnue », ni anglais',
+		(input) => {
+			const { message, all } = shown(input);
+
+			expect(message).not.toMatch(/Écriture non reconnue/);
+			expect(all).not.toMatch(ENGLISH);
+			expect(all).not.toMatch(/\b(order|center|lower|upper|params|name)\b/);
+		}
+	);
+});
+
+describe('la saisie recopiée garde ses mots', () => {
+	it.each(['Hint: 2)', 'Parse error: 2)'])('%s', (input) => {
+		expect(run(input).outputHtml ?? '').toContain(input.replace(':', ':'));
+	});
+});
