@@ -76,6 +76,30 @@ export function formatUserError(error: unknown): string {
 }
 
 /**
+ * Message lisible d'une réponse d'API en échec
+ *
+ * Lit `{ message }` (erreur SvelteKit, `error(404, '…')`) ou `{ error }`
+ * (`json({ error: '…' })`). Jamais le corps brut : `response.text()` affichait
+ * `{"message":"…"}` accolades comprises dans une notification.
+ *
+ * @param response - Réponse non OK de `fetch`
+ * @returns Le message de l'API, ou « Erreur <statut> » si le corps n'en porte pas
+ *
+ * @example
+ * ```typescript
+ * if (!response.ok) throw new Error(await readApiErrorMessage(response));
+ * ```
+ */
+export async function readApiErrorMessage(response: Response): Promise<string> {
+	const body: unknown = await response.json().catch(() => null);
+	if (body && typeof body === 'object') {
+		if ('message' in body && typeof body.message === 'string') return body.message;
+		if ('error' in body && typeof body.error === 'string') return body.error;
+	}
+	return `Erreur ${response.status}`;
+}
+
+/**
  * Log non-critical errors to console
  *
  * Use this for errors that don't prevent operation but should be logged.

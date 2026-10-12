@@ -49,7 +49,7 @@ interface Student {
 export const POST: RequestHandler = async ({ params, locals, request }) => {
 	// Check authentication
 	if (!locals.user) {
-		throw error(401, 'Non autorisé');
+		throw error(401, 'Connexion requise');
 	}
 
 	// Check role from profile
@@ -63,11 +63,11 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (userProfileError && userProfileError.code !== 'PGRST116') {
 		console.error('Rôle illisible :', userProfileError);
-		throw error(500, 'Impossible de vérifier vos droits');
+		throw error(500, 'Impossible de vérifier les droits d’accès');
 	}
 
 	if (!userProfile || userProfile.role !== 'teacher') {
-		throw error(401, 'Non autorisé - enseignant requis');
+		throw error(401, 'Réservé aux professeurs');
 	}
 
 	const user = { ...locals.user, role: userProfile.role };
@@ -108,7 +108,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (fetchError || !worksheet) {
-			throw error(404, 'Feuille de travail introuvable');
+			throw error(404, 'Fiche introuvable');
 		}
 
 		// Check permissions
@@ -122,7 +122,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		// Le comportement est conservé tel quel : élargir l'accès des admins est
 		// une décision produit, pas une correction de typage.
 		if (worksheet.created_by !== user.id) {
-			throw error(403, 'Non autorisé');
+			throw error(403, 'Accès refusé');
 		}
 
 		// Fetch class information
@@ -156,7 +156,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.eq('status', 'active');
 
 		if (studentsError || !students) {
-			throw error(500, 'Erreur lors de la récupération des élèves');
+			throw error(500, 'Impossible de charger les élèves');
 		}
 
 		// Type the students properly (Supabase returns nested objects)
@@ -198,7 +198,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		);
 
 		if (!folder) {
-			throw error(500, 'Erreur lors de la création du fichier zip');
+			throw error(500, 'Impossible de créer le fichier ZIP');
 		}
 
 		// Process in batches to avoid memory issues
@@ -287,7 +287,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			throw err;
 		}
 
-		throw error(500, 'Erreur lors de la génération des PDFs');
+		throw error(500, 'Impossible de générer les PDF');
 	}
 };
 
@@ -398,13 +398,13 @@ function generateBatchSummary(
 	mode: string
 ): string {
 	const date = new Date().toLocaleString('fr-FR');
-	const modeLabel = mode === 'correction' ? 'Corrections' : 'Feuilles de travail';
+	const modeLabel = mode === 'correction' ? 'Corrections' : 'Fiches';
 
 	return `========================================
-GÉNÉRATION BATCH DE PDFS
+GÉNÉRATION GROUPÉE DE PDF
 ========================================
 
-Feuille de travail : ${worksheet.title}
+Fiche : ${worksheet.title}
 Type : ${worksheet.type}
 Classe : ${className}
 Mode : ${modeLabel}
@@ -422,7 +422,7 @@ INFORMATIONS
 
 - Chaque PDF est personnalisé avec le nom de l'élève
 - Les exercices peuvent être mélangés selon la configuration
-- ${mode === 'correction' ? 'Les solutions sont incluses' : 'Les solutions ne sont pas incluses'}
+- ${mode === 'correction' ? 'Les corrections sont incluses' : 'Les corrections ne sont pas incluses'}
 
 ========================================
 `;

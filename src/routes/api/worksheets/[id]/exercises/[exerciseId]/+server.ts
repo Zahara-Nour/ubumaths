@@ -33,12 +33,12 @@ async function verifyAccess(
 	// Validate UUID formats
 	const worksheetIdValidation = uuidSchema.safeParse(worksheetId);
 	if (!worksheetIdValidation.success) {
-		throw error(400, 'Invalid worksheet ID format');
+		throw error(400, 'Identifiant de fiche invalide');
 	}
 
 	const exerciseIdValidation = uuidSchema.safeParse(exerciseId);
 	if (!exerciseIdValidation.success) {
-		throw error(400, 'Invalid exercise ID format');
+		throw error(400, 'Identifiant d’exercice invalide');
 	}
 
 	// Fetch worksheet
@@ -49,16 +49,16 @@ async function verifyAccess(
 		.single();
 
 	if (worksheetError || !worksheet) {
-		throw error(404, 'Worksheet not found');
+		throw error(404, 'Fiche introuvable');
 	}
 
 	// Verify ownership/authorization
 	if (role === 'teacher' && worksheet.created_by !== userId) {
-		throw error(403, 'Forbidden - Not your worksheet');
+		throw error(403, 'Accès réservé à l’auteur de la fiche');
 	}
 
 	if (role === 'admin' && schoolId && worksheet.school_id !== schoolId) {
-		throw error(403, 'Forbidden - Worksheet belongs to different school');
+		throw error(403, 'Cette fiche appartient à une autre école');
 	}
 
 	// Fetch worksheet exercise
@@ -70,7 +70,7 @@ async function verifyAccess(
 		.single();
 
 	if (exerciseError || !worksheetExercise) {
-		throw error(404, 'Exercise not found in this worksheet');
+		throw error(404, 'Exercice introuvable dans cette fiche');
 	}
 
 	return { worksheet, worksheetExercise };
@@ -121,7 +121,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	if (worksheet.status !== 'draft') {
 		throw error(
 			400,
-			`Cannot modify exercises in worksheet with status '${worksheet.status}'. Only draft worksheets can be modified.`
+			`Impossible de modifier les exercices de cette fiche (statut « ${worksheet.status} ») : seul un brouillon peut être modifié.`
 		);
 	}
 
@@ -130,7 +130,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		body = await request.json();
 	} catch {
-		throw error(400, 'Invalid JSON body');
+		throw error(400, 'Corps de requête JSON invalide');
 	}
 
 	const validation = validateUpdateWorksheetExercise(body);
@@ -138,7 +138,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		const errorMsg = validation.error.issues
 			.map((e) => `${(e as ZodIssue).path.join('.')}: ${(e as ZodIssue).message}`)
 			.join('; ');
-		throw error(400, `Validation failed: ${errorMsg}`);
+		throw error(400, `Données invalides : ${errorMsg}`);
 	}
 
 	const data = validation.data;
@@ -153,7 +153,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (sectionError || !sectionExists) {
-			throw error(404, 'Section not found in this worksheet');
+			throw error(404, 'Section introuvable dans cette fiche');
 		}
 	}
 
@@ -181,7 +181,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 	if (dbError) {
 		console.error('Failed to update exercise:', dbError);
-		throw error(500, 'Failed to update exercise');
+		throw error(500, 'Impossible de modifier l’exercice');
 	}
 
 	const validated = validateJsonResponse(
@@ -213,7 +213,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	if (worksheet.status !== 'draft') {
 		throw error(
 			400,
-			`Cannot remove exercises from worksheet with status '${worksheet.status}'. Only draft worksheets can be modified.`
+			`Impossible de retirer des exercices de cette fiche (statut « ${worksheet.status} ») : seul un brouillon peut être modifié.`
 		);
 	}
 
@@ -226,8 +226,8 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	if (deleteError) {
 		console.error('Failed to remove exercise:', deleteError);
-		throw error(500, 'Failed to remove exercise from worksheet');
+		throw error(500, 'Impossible de retirer l’exercice de la fiche');
 	}
 
-	return json({ success: true, message: 'Exercise removed from worksheet' });
+	return json({ success: true, message: 'Exercice retiré de la fiche' });
 };
