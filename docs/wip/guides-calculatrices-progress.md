@@ -61,8 +61,30 @@ d'examen / pratique.
 - [x] Séquences NumWorks sourcées : [guides-calculatrices-numworks.md](guides-calculatrices-numworks.md)
       (manuel v20 + notes de version + **code d'Epsilon cloné dans `extern/numworks-epsilon`**, branches
       `version-NN`) — reste la relecture sur machine
-- [ ] Phase 0 : spécification du code (données, page, PDF) — à valider par David
+- [x] Phase 0 **validée par David le 2026-10-12** (13 comportements, voir § Phase 0) :
+      séquence non relue sur machine = **masquée en prod** ; guides **à partir de la 6e** (CM reporté,
+      CP-CE2 sans guide) ; niveaux en **noms lisibles** dans l'adresse (`seconde`, `maths-complementaires`)
 - [ ] Code du pilote (tests d'abord)
 - [ ] Page à cocher : relecture des séquences NumWorks par David sur la machine
 - [ ] PR pilote
 - [ ] Modèles suivants
+
+## Phase 0 (validée le 2026-10-12)
+
+Contenu : `src/lib/calculatrices/` (`taches.ts` commun, `modeles/<modele>.ts`) ; filiation des niveaux
+= `grade_predecessors`. Pages publiques `/calculatrices` et `/calculatrices/<modele>/<niveau>` ; PDF
+Typst depuis les mêmes données, compilé dans le navigateur.
+
+1. `/calculatrices` : modèles par Collège / Lycée, « bientôt » si non rédigé
+2. guide d'un niveau : ses tâches d'abord, celles des niveaux hérités en « Rappels » repliés
+3. tâche = titre, application, étapes avec touches dessinées
+4. tâche « vérifier » : bandeau « Pour contrôler ton résultat, pas pour le remplacer »
+5. pièges en fin de guide
+6. PDF = mêmes tâches, même ordre que la page
+7. tâche impossible sur le modèle : jamais omise, « Pas de fonction dédiée » + contournement
+8. séquence non relue sur machine : invisible en prod, visible en local
+9. fonction apparue dans une version du système : « à partir de la vNN »
+10. modèle sans guide pour ce niveau : renvoi vers les niveaux disponibles
+11. CP-CE2 (BO : pas de calculatrice) et CM (reporté) : page d'explication, pas de page vide
+12. modèle ou niveau inconnu : 404
+13. tests : tâche inexistante, étape vide, séquence sans source, niveau hors `GradeCode` → refusés
