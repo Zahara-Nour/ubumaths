@@ -186,6 +186,9 @@ présent sur une instance neuve, et dans `toPublicQuestion`). Une instance sans 
 avant) est lue comme avant : produit, défaut du parseur. L'éditeur propose « Deux majuscules
 collées (AB) désignent : » et signale une réponse attendue qui contient un nom de figure (`ABC`)
 en mode longueur (`figureNameWarnings`) : elle ne pourrait jamais être acceptée.
+Les **exercices rédigés** n'ont pas de déclaration (Q-J) : `exerciseCapitalPairs(topic)` applique la
+même table de contexte à leur thème (écran : `ExerciseDisplay` prof et élève, `ExerciseModal`,
+`ExerciseForm`, aperçu d'affectation, signalements ; PDF : `generateTypst({ capitalPairs })`).
 Le même sens vaut pour l'**écriture** (lot 5) : formules `$…$` de l'énoncé, des choix et de la
 correction relues en syntaxe maison (`resolveMarkdownContent`, `resolveCorrectionContent`),
 `expectedAnswerLatex`, formats de réponse, coefficients nettoyés, correction rédigée

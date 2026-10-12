@@ -745,6 +745,53 @@ et restent comme gardes).
   `exercise-typst-generator`). **Sans effet visible aujourd'hui** : MathLive ignore l'espace de
   `A B`, et `convertLatexToTypstMath` sort `A B` pour `AB` comme pour `A B` (mesuré).
 
+## Lot 6 — fait (2026-10-12) : exercices (Q-J)
+
+- **Résolution** : `exerciseCapitalPairs(topic)` (`questions/capital-pairs.ts`) = `resolveCapitalPairs`
+  sur le thème de l'exercice, sans déclaration (Q-J). Thèmes réels des exercices en base
+  (2026-10-12, lecture seule, 21 valeurs) : **aucun** n'est « produit » → tous les exercices passent
+  en **longueur**.
+- **Données transmises** : `topic` ajouté aux `select` des exercices (API élève, aperçu
+  d'affectation, corrigé, fiche, exercices de la fiche, signalement) — aucune requête d'accès ni RLS
+  changée, aucune migration. **Vue élève** : `StudentExerciseView.capital_pairs` (`'length'` |
+  `'product'`), résolu par le serveur ; le **thème n'est pas transmis** à l'élève (test). Schémas
+  Zod : `studentExerciseViewSchema.capital_pairs`, `exercise.topic` dans
+  `worksheetExerciseWithDataResponseSchema` et `getErrorReportDetailResponseSchema`.
+- **Instance de fiche** (`InstanceExercise.capital_pairs`) : résolu à la génération
+  (`instance-generator`, `buildWorksheetCopy`), comme `generic_functions` (Q-K) ; une instance
+  stockée avant s'imprime en produit (Q-L).
+- **Écran** (`provideCapitalPairs`) : `exercises/ExerciseDisplay` (prof : page publique, page élève
+  d'exercice, aperçus `ExercisePreview` / `ExerciseMarkdownPreview`, liste du prof, debug, test),
+  `student/worksheets/ExerciseDisplay`, `ExerciseModal`, page de l'exercice du prof
+  (`exercices/[id]`), `ExerciseForm` (aperçus des versions, thème saisi en direct), aperçu
+  d'affectation (page entière : les titres de la liste suivent l'exercice ouvert), page de
+  signalement. **Chat du tuteur** : `clearCapitalPairs()` le garde en produit (Q-M) même ouvert
+  dans `ExerciseModal`. Laissés : énigmes (`enigmes/validations`), hors exercices.
+- **PDF** : option `capitalPairs` de `generateTypst` (`TypstTranspilerOptions`, défaut : rien =
+  produit) jusqu'aux formules en ligne, en bloc et des tableaux (`processTableCellContent`,
+  4ᵉ paramètre) ; `worksheet-generator` (4 appels), `student-worksheet-typst` (titres, énoncés,
+  corrigés), `exercise-typst-generator` (thème de l'exercice). `generateStaticExerciseTypst`
+  (sans thème) et le carnet (`notebook-generator`) restent en produit.
+- **Correction des réponses** : aucune — les exercices n'ont pas de réponse d'élève lue par le
+  parseur (rien à brancher).
+- **Tests** (vus rouges avant le code, sauf `exerciseCapitalPairs`, écrit avant ses tests) :
+  `questions/__tests__/capital-pairs-exercices.test.ts` (12, 3 rouges), générateurs PDF (+6,
+  4 rouges), `instance-generator` (+3 rouges), `worksheet-copy` (+3 rouges), route élève (+1 rouge),
+  client `student/worksheets/__tests__/capital-pairs-exercice.svelte.test.ts` (5, 3 rouges),
+  `clearCapitalPairs` (+1, rouge sans l'appel).
+- **Non-régression** (`ubumark/generators/__tests__/capital-pairs-typst-empreinte.test.ts`, corpus
+  des 1 299 saisies du lot 5 dont les 678 formules d'exercices de prod, rendues en Typst — en ligne
+  et en bloc — et en LaTeX d'écran) : **produit explicite = sans option, 1 299/1 299** ; en
+  longueur, **355 changent, toutes à majuscules collées**, dont **17 dans le PDF** (le reste :
+  l'espace de `A B` à l'écran, invisible), **0 erreur nouvelle**, 1 disparaît. Suites serveur
+  `ubumark`, `typst`, `worksheets`, `exercises`, `server/worksheets`, `questions`, routes de fiches :
+  354 fichiers, 11 351 tests verts ; client `markdown`, `student`, `exercises` : 34 fichiers verts.
+- **À trancher par David** : (1) le thème `Probabilités` reste en longueur (`~GD~` lu « la longueur
+  GD », Q-C (a) déjà décidée pour les questions, appliquée ici) ; (2) l'aperçu d'affectation pose
+  le sens de l'exercice ouvert pour toute la page (titres de la liste compris) — sans effet tant que
+  tous les thèmes sont en longueur ; (3) le chat du tuteur reste en produit dans la fenêtre d'un
+  exercice (choix prudent, Q-M) ; (4) un exercice sans thème (1 en base) est lu en longueur.
+
 ## Journal
 
 - 2026-10-11 — préparation : mesure du parseur et des questions en base ; questions de phase 0.
@@ -776,3 +823,6 @@ et restent comme gardes).
 - 2026-10-12 — lot 5 fait en partie : option `capitalPairs` de la syntaxe maison, sens de
   l'instance dans l'écriture des questions (serveur, écran, séries figées) ; empreinte de
   1 299 saisies identique en produit ; exercices (Q-J) non faits.
+- 2026-10-12 — lot 6 fait : sens de AB des exercices par leur thème (Q-J), écran et PDF ;
+  `capital_pairs` transmis à l'élève (le sens, pas le thème) ; empreinte de 1 299 saisies identique
+  en produit.
