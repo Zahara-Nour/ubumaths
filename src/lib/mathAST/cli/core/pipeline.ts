@@ -104,17 +104,54 @@ export function getParserOptions(state?: EvalState): LatexParserOptions {
 /** Ce qui précède un « non » : le début, `(`, `,`, ou un « et »/« ou » déjà réécrit. */
 const BEFORE_NOT = String.raw`(^|[(,]|&&|\|\||\\land|\\lor)(\s*)`;
 
-/** Un « non » tapé `!` ou en toutes lettres, suivi de ce qu'il nie. */
-const NOT_SIGN = new RegExp(BEFORE_NOT + String.raw`!(?=\s*[(\w\\])`, 'g');
-// En toutes lettres, seulement devant une parenthèse : `non(2 > 1)` ; `non > 1` parle d'une variable
-const NOT_WORD = new RegExp(BEFORE_NOT + String.raw`(?:not|non)(?=\s*\()`, 'g');
+/** Un « non » devant une parenthèse : `!(…)`, `non(…)`, `not (…)`. */
+const NOT_BEFORE_PAREN = new RegExp(BEFORE_NOT + String.raw`(?:!|not|non)(?=\s*\()`, 'g');
 
-/** Une comparaison ou un opérateur logique dans l'entrée. */
-const LOGICAL_CONTEXT = /[<>=≤≥≠]|\\(?:ne|neq|le|leq|ge|geq|lt|gt|land|lor)(?![a-z])|&&|\s\|\|\s/;
+/**
+ * Un « non » sans parenthèses, suivi de ce qu'il nie : `not 2 > 1`, `! 2 > 1`, `!2 < 1`. Un mot
+ * suivi d'un opérateur (`non > 1`) parle d'une variable.
+ */
+const BARE_NOT = new RegExp(BEFORE_NOT + String.raw`(?:!\s*|(?:not|non|\\lnot)\s+)(?=[\w\\])`);
+
+/** Une comparaison dans l'entrée. */
+const RELATION = /[<>=≤≥≠]|\\(?:ne|neq|le|leq|ge|geq|lt|gt)(?![a-z])/;
 
 /** « et », « ou » en toutes lettres : entourés d'espaces seulement (`et := 3`, `ou*2` intacts). */
 const AND_WORD = /(?<=\s)(?:and|et)(?=\s)/g;
 const OR_WORD = /(?<=\s)(?:or|ou)(?=\s)/g;
+
+/** Les barres `|` avant une position : un nombre impair, on est dans une valeur absolue. */
+function insideAbsoluteValue(text: string, offset: number): boolean {
+	return (text.slice(0, offset).match(/\|/g)?.length ?? 0) % 2 === 1;
+}
+
+/**
+ * Le « non » sans parenthèses porte sur toute la comparaison qui le suit, jusqu'au prochain
+ * « et »/« ou », à une virgule ou à la parenthèse fermante : `not 2 > 1` est non(2 > 1), pas
+ * (non 2) > 1 — le « non » du LaTeX lie plus fort que la comparaison.
+ */
+function withBareNotsWrapped(text: string, not: string, markers: readonly string[]): string {
+	let result = text;
+	for (let match = BARE_NOT.exec(result); match !== null; match = BARE_NOT.exec(result)) {
+		const start = match.index + match[0].length;
+		let end = start;
+		let depth = 0;
+		while (end < result.length) {
+			const char = result[end];
+			if (depth === 0 && (char === ',' || markers.some((m) => result.startsWith(m, end)))) break;
+			if ('([{'.includes(char)) depth += 1;
+			if (')]}'.includes(char)) {
+				if (depth === 0) break;
+				depth -= 1;
+			}
+			end += 1;
+		}
+		const operand = result.slice(start, end).trimEnd();
+		const before = match.index + match[1].length + match[2].length;
+		result = `${result.slice(0, before)}${not}(${operand})${result.slice(start + operand.length)}`;
+	}
+	return result;
+}
 
 /**
  * Les opérateurs logiques et d'égalité tapés comme en programmation ou en toutes lettres,
@@ -123,30 +160,31 @@ const OR_WORD = /(?<=\s)(?:or|ou)(?=\s)/g;
  * répondaient « Unexpected token », ou se lisaient lettre par lettre. Le LaTeX n'a que `\land`,
  * `\lor`, `\lnot`, `\ne` ; il lisait `2 != 3` comme `factorial(2) = 3`.
  *
- * ⚠️ Au plus près, sans rien changer de ce qui se lisait déjà (revue) : `||` et les mots
- * seulement entourés d'espaces (`||-2||` est une norme, `|2||3|` deux valeurs absolues,
- * `et := 3` une variable) ; un « non » seulement en tête, après `(`, `,` ou un « et »/« ou »
- * (`5 !`, `2 + 3 !`, `|-3|!` sont des factorielles) ; aucun mot dans `\text{…}`.
+ * ⚠️ Au plus près, sans rien changer de ce qui se lisait déjà (revues) : les mots, `||` et le
+ * « non » seulement dans une COMPARAISON (`non + 1`, `x et y`, `|2| || |3|` parlent d'autre
+ * chose) ; `||` et les mots entourés d'espaces, et `||` hors d'une valeur absolue (`||-2||`,
+ * `| 2 || 3 |`) ; un « non » seulement en tête, après `(`, `,` ou un « et »/« ou » (`5 !`,
+ * `|-3|!` sont des factorielles) ; aucun mot dans `\text{…}`.
  */
 function withLogicOperators(input: string, format: 'latex' | 'custom'): string {
 	const latex = format === 'latex';
-	const and = latex ? ' \\land ' : ' && ';
-	const or = latex ? ' \\lor ' : ' || ';
+	const and = latex ? '\\land' : '&&';
+	const or = latex ? '\\lor' : '||';
 	const not = latex ? '\\lnot ' : '!';
 	let text = input
 		.replace(/!==?/g, latex ? ' \\ne ' : '!=')
 		.replace(/(?<![=!<>:])={2,3}(?!=)/g, '=')
-		.replace(/&&/g, and)
-		.replace(/\s\|\|\s/g, or);
-	// Les mots et le « non » seulement dans une comparaison ou une expression logique : sans
-	// elle, `non + 1`, `x et y` parlent d'une variable (2ᵉ revue)
-	if (!LOGICAL_CONTEXT.test(text)) return text;
+		.replace(/&&/g, ` ${and} `);
+	if (!RELATION.test(text)) return text;
+
+	text = text.replace(/\s\|\|\s/g, (bars, offset: number, whole: string) =>
+		insideAbsoluteValue(whole, offset) ? bars : ` ${or} `
+	);
 	if (!/\\(?:text|operatorname)/.test(text)) {
-		text = text.replace(AND_WORD, and.trim()).replace(OR_WORD, or.trim());
+		text = text.replace(AND_WORD, and).replace(OR_WORD, or);
 	}
-	text = text.replace(NOT_SIGN, `$1$2${not}`);
-	if (!/\\(?:text|operatorname)/.test(text)) text = text.replace(NOT_WORD, `$1$2${not}`);
-	return text;
+	text = text.replace(NOT_BEFORE_PAREN, `$1$2${not}`);
+	return withBareNotsWrapped(text, not, [and, or]);
 }
 
 export function parse(input: string, options?: PipelineOptions): PipelineResult {

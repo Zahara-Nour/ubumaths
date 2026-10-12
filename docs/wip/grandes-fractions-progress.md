@@ -214,3 +214,8 @@ sa valeur approchée. »
 !==` dans la notation de chaque parseur ; `evaluateToBoolean` traverse les parenthèses
   (`\lnot (2 > 1)`) ; message français pour une relation non tranchée (≈, ∈…) ; préfixe des
   erreurs de la console « Erreur de calcul : ».
+- 2026-10-12 — #1210 mergée. **David : « corrige les défauts »** : `not 2 > 1` se lit non(2 > 1)
+  (le « non » sans parenthèses enveloppe la comparaison jusqu'au prochain et/ou) ; `||` n'est un
+  « ou » que s'il y a une comparaison et hors d'une valeur absolue (`| 2 || 3 |`, `|2| || |3|`) ;
+  messages « pas de valeur numérique » en français ; `.def` ne dérive plus une définition
+  booléenne (avertissement anglais).
