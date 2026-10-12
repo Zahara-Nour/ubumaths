@@ -344,8 +344,11 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
       sur `riddles.answer/correction` (audit : 31 `from('riddles')` relus, colonnes nommées) ;
     - C ⛔ destructive, APRÈS le deploy de B : DROP des deux colonnes + déclencheur — s'arrêter,
       montrer à David la réconciliation et le grep d'usages.
-- ⏳ **Une migration après le prochain `deploy:prod`** : REVOKE EXECUTE à `authenticated` de
-  `submit_riddle_attempt`, `record_game_reward`, `upsert_mathemo_score`.
+- ✅ **v0.25.0 en prod (2026-10-12)**, puis **#1191 (mergée, `20261016100700` en prod,
+  vérifiée)** : EXECUTE retiré à `authenticated` sur `submit_riddle_attempt`,
+  `record_game_reward`, `upsert_mathemo_score` (ACL = postgres + service_role) ; démineur
+  (`complete_minesweeper_game`, DEFINER) intact. Gardes testées sous `postgres` (rouges sans
+  la garde). #1183 : test de chronométrage du pgcd qui bloquait le deploy.
 - **Recos de David sur les points d'audit restants (2026-10-12)** :
   - parties « gagnées » en boucle : rien à faire (gidouilles = 1/jour/jeu, seul le classement
     se gonfle) ;
