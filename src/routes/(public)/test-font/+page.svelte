@@ -11,6 +11,9 @@
 	import { downloadExercisePdf, type PdfFontSet } from './shantell-pdf';
 
 	let isReady = $state(false);
+	// Le rendu des exercices (tableau de variations, listes) appelle crypto.randomUUID,
+	// absent hors HTTPS et localhost : ouverte par une adresse IP, la page planterait
+	let isSecureContext = $state(true);
 	let currentFont = $state<MathFontSet>('shantell');
 	let isSwitching = $state(false);
 	let renderKey = $state(0); // Force re-render of mathfields
@@ -159,6 +162,7 @@
 			// Initialize with shantell fonts by default
 			await switchMathFonts('shantell');
 			currentFont = getCurrentFontSet() ?? 'shantell';
+			isSecureContext = window.isSecureContext;
 			isReady = true;
 		}
 	});
@@ -368,37 +372,45 @@
 					pour les formules ; « PDF standard » montre la même chose avec les polices habituelles.
 				</p>
 
-				<div class="space-y-6">
-					{#each demoExercises as exercise (exercise.id)}
-						<div class="rounded-lg border bg-card p-4">
-							<div class="mb-3 flex flex-wrap items-center justify-between gap-2">
-								<h3 class="text-lg font-semibold">{exercise.title}</h3>
-								<div class="flex gap-2">
-									<Button
-										size="sm"
-										disabled={pendingPdf !== null}
-										onclick={() => handleDownloadPdf(exercise, 'shantell')}
-									>
-										{pendingPdf === `${exercise.id}:shantell` ? 'Compilation…' : 'PDF Shantell'}
-									</Button>
-									<Button
-										size="sm"
-										variant="outline"
-										disabled={pendingPdf !== null}
-										onclick={() => handleDownloadPdf(exercise, 'standard')}
-									>
-										{pendingPdf === `${exercise.id}:standard` ? 'Compilation…' : 'PDF standard'}
-									</Button>
+				{#if !isSecureContext}
+					<p class="rounded-lg border border-orange-300 bg-card p-4 text-sm">
+						Les exercices ne s'affichent qu'en HTTPS ou sur <code>localhost</code> : leur rendu
+						utilise <code>crypto.randomUUID</code>, que le navigateur refuse sur une adresse IP en
+						HTTP.
+					</p>
+				{:else}
+					<div class="space-y-6">
+						{#each demoExercises as exercise (exercise.id)}
+							<div class="rounded-lg border bg-card p-4">
+								<div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+									<h3 class="text-lg font-semibold">{exercise.title}</h3>
+									<div class="flex gap-2">
+										<Button
+											size="sm"
+											disabled={pendingPdf !== null}
+											onclick={() => handleDownloadPdf(exercise, 'shantell')}
+										>
+											{pendingPdf === `${exercise.id}:shantell` ? 'Compilation…' : 'PDF Shantell'}
+										</Button>
+										<Button
+											size="sm"
+											variant="outline"
+											disabled={pendingPdf !== null}
+											onclick={() => handleDownloadPdf(exercise, 'standard')}
+										>
+											{pendingPdf === `${exercise.id}:standard` ? 'Compilation…' : 'PDF standard'}
+										</Button>
+									</div>
+								</div>
+								<div class="font-shantell-sans">
+									<MarkdownRenderer content={exercise.statement_md} />
+									<h4 class="mt-4 mb-2 font-semibold text-muted-foreground">Corrigé</h4>
+									<MarkdownRenderer content={exercise.solution_md} />
 								</div>
 							</div>
-							<div class="font-shantell-sans">
-								<MarkdownRenderer content={exercise.statement_md} />
-								<h4 class="mt-4 mb-2 font-semibold text-muted-foreground">Corrigé</h4>
-								<MarkdownRenderer content={exercise.solution_md} />
-							</div>
-						</div>
-					{/each}
-				</div>
+						{/each}
+					</div>
+				{/if}
 			</div>
 		{/key}
 	{/if}
