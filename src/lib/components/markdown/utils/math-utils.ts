@@ -12,7 +12,7 @@ import { toLatex, parseLatexSafe } from '$lib/mathAST';
 import { toLocaleDecimal } from '$lib/utils/french-math';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import type { MathNode } from '$lib/mathAST/types';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
 
 /**
  * Configuration du parseur à partir des fonctions déclarées par un exercice
@@ -47,17 +47,22 @@ export function genericFunctionsConfig(
  *   - undefined: Use parser defaults (f, g, h, u, v, w, F, G, H)
  *   - null: Disable generic function parsing entirely
  *   - GenericFunctionConfig: Custom configuration
+ * @param capitalPairs - Sens de `AB` (longueur ou produit) de la question affichée ;
+ *   absent : défaut du parseur, le produit (écriture d'avant)
  * @returns LaTeX string suitable for MathLive rendering
  */
 export function expressionToLatex(
 	expression: string,
 	syntax: 'latex' | 'custom',
 	genericFunctions?: GenericFunctionConfig | null,
-	locale?: string
+	locale?: string,
+	capitalPairs?: CapitalPairs
 ): string {
 	// `\unit` (siunitx) n'existe ni dans MathLive ni dans le préambule de
 	// l'export `.tex` : on l'affiche en LaTeX de base.
-	return displayUnitsInLatex(expressionToRawLatex(expression, syntax, genericFunctions, locale));
+	return displayUnitsInLatex(
+		expressionToRawLatex(expression, syntax, genericFunctions, locale, capitalPairs)
+	);
 }
 
 /**
@@ -69,14 +74,15 @@ export function expressionToRawLatex(
 	expression: string,
 	syntax: 'latex' | 'custom',
 	genericFunctions?: GenericFunctionConfig | null,
-	locale?: string
+	locale?: string,
+	capitalPairs?: CapitalPairs
 ): string {
 	let latex: string;
 
 	if (syntax === 'latex') {
 		latex = expression;
 	} else {
-		const result = parseCustomSafe(expression, { genericFunctions });
+		const result = parseCustomSafe(expression, { genericFunctions, capitalPairs });
 		if (result.ast) {
 			latex = toLatex(result.ast);
 		} else {
@@ -204,9 +210,10 @@ export function expressionToFlashLatex(
 	expression: string,
 	syntax: 'latex' | 'custom',
 	genericFunctions?: GenericFunctionConfig | null,
-	locale?: string
+	locale?: string,
+	capitalPairs?: CapitalPairs
 ): string {
-	const latex = expressionToLatex(expression, syntax, genericFunctions, locale);
+	const latex = expressionToLatex(expression, syntax, genericFunctions, locale, capitalPairs);
 	return latex.replace(/\\placeholder\[\d+\]\{[^}]*\}/g, '\\boxed{?}');
 }
 

@@ -33,6 +33,7 @@
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import AnswerAssumptionsNotice from '$lib/components/questions/AnswerAssumptionsNotice.svelte';
 
@@ -45,6 +46,9 @@
 	let instance = $state<QuestionInstance | null>(null);
 	// Fonctions déclarées par le modèle (`P(x)`) : notation des formules `~…~`
 	const genericFunctions = $derived(templateGenericFunctions(instance?.genericFunctions));
+	// Sens de `AB` de l'instance (longueur ou produit) : posé pour toutes les formules
+	// en syntaxe maison rendues dans cette carte ; absent (instance d'avant) : produit
+	provideCapitalPairs(() => instance?.capitalPairs);
 	let errors = $state<string[]>([]);
 	let isGenerating = $state(false);
 	let seed = $state(Math.floor(Math.random() * 1000000));

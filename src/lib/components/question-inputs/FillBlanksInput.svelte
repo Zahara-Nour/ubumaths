@@ -67,6 +67,7 @@
 	import TableNode from '$lib/components/markdown/nodes/TableNode.svelte';
 	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 
 	// Utility functions
 	import {
@@ -143,6 +144,9 @@
 		genericFunctions,
 		grades = []
 	}: Props = $props();
+
+	// Sens de `AB` pour les formules de l'énoncé rendues sous ce champ (lot 5)
+	provideCapitalPairs(() => capitalPairs);
 
 	// When showing correct answers, force disabled
 	let effectiveDisabled = $derived(disabled || showCorrectAnswers);
@@ -621,16 +625,35 @@
 							? expressionDisplayMap?.[node.expressionName]
 							: undefined}
 						{@const baseLatex =
-							displayExpr ?? expressionToLatex(node.expression, node.syntax, genericFunctions)}
+							displayExpr ??
+							expressionToLatex(
+								node.expression,
+								node.syntax,
+								genericFunctions,
+								undefined,
+								capitalPairs
+							)}
 						{@const flashLatex = mathPrefilledValues
 							? replacePromptsWithPrefilled(baseLatex, mathPrefilledValues)
 							: (displayExpr ??
-								expressionToFlashLatex(node.expression, node.syntax, genericFunctions))}
+								expressionToFlashLatex(
+									node.expression,
+									node.syntax,
+									genericFunctions,
+									undefined,
+									capitalPairs
+								))}
 						{#key flashLatex}
 							<MathBlock expression={flashLatex} syntax="latex" />
 						{/key}
 					{:else if showCorrectAnswers && mathCorrectValues}
-						{@const latex = expressionToLatex(node.expression, node.syntax, genericFunctions)}
+						{@const latex = expressionToLatex(
+							node.expression,
+							node.syntax,
+							genericFunctions,
+							undefined,
+							capitalPairs
+						)}
 						{@const filledLatex = replacePromptsWithValues(latex, mathCorrectValues)}
 						{#key filledLatex}
 							<MathBlock expression={filledLatex} syntax="latex" />
