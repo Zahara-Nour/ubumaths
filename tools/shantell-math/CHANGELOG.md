@@ -2,6 +2,22 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.2.0] - 2026-10-12
+
+### Ajouté
+
+- Script `replace_symbols.py` : opérateurs et délimiteurs de KaTeX_Main-Regular pris dans Shantell Sans (300) : `+ − = < > ≤ ≥ ± × ÷ ≈ → ← ↔ ( ) [ ] { } | /`
+  - chaque glyphe est ajusté dans la boîte du glyphe KaTeX d'origine (MathLive a les métriques KaTeX codées en dur) et garde sa largeur d'avance KaTeX
+  - opérateurs : taille Shantell (trait identique aux lettres), centrés sur la boîte KaTeX, donc sur l'axe mathématique
+  - délimiteurs : mis à la hauteur KaTeX, resserrés seulement s'ils débordent (crochets : 0,69 en largeur)
+- Travaille sur place dans `static/fonts/shantell-katex/KaTeX_Main-Regular.woff2` ; relancer le script donne la même police
+- Script `round_x.py` : `x` minuscule redessiné en « ɔc », comme on l'écrit en maths ; le `x` de Shantell (et ses trois variantes) est une croix qu'on confond avec `×`
+  - construit à partir du `c` de Shantell pour garder le style de la police (arc ample, courbure un peu inégale, bouts ronds sans crochet) : ligne centrale du `c` mesurée par rayons depuis son centre, placée à droite, son reflet à gauche, dos contre dos
+  - retracée au trait des lettres Shantell (68 en 300, 153 en gras, mesuré sur o, l, n, c), bouts ronds, contours fusionnés
+  - boîte et largeur d'avance du `x` de Shantell : l'espacement de MathLive ne change pas
+  - Main-Regular, Main-Italic, Math-Italic (depuis Shantell 300), Main-Bold (depuis Shantell gras) ; relancer le script donne le même glyphe
+  - nouvelle dépendance : `skia-pathops` (tracé du trait et fusion des contours)
+
 ## [1.1.0] - 2026-10-12
 
 ### Ajouté

@@ -54,6 +54,15 @@
 		}
 	];
 
+	// Expression de l'éditeur : tous les symboles de la police, petits et grands
+	const showcaseLines = [
+		'f(x)=\\left(\\frac{2x+1}{x-3}\\right)^2-|x-2|\\times 3\\div 4\\pm\\sqrt{\\frac{a}{b}}',
+		'x\\in[0;1]\\cup]2;+\\infty[\\quad\\{1;2;3\\}\\quad a/b\\approx 0{,}5',
+		'a\\leq b<c\\quad d\\geq e>f\\quad a\\leqslant b\\geqslant c\\quad A\\rightarrow B\\leftarrow C\\leftrightarrow D',
+		'\\sum_{k=0}^{n}\\binom{n}{k}=2^n\\quad\\int_0^1 x^2\\,dx=\\frac{1}{3}\\quad\\mathbb{R}\\quad\\left[\\frac{\\frac{1}{2}}{\\frac{3}{4}}\\right]\\quad\\left\\{\\frac{a}{b}\\right\\}'
+	];
+	const showcaseLatex = `\\begin{gathered}${showcaseLines.join('\\\\')}\\end{gathered}`;
+
 	const testFormulas = [
 		{ label: 'Équation quadratique', latex: 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}' },
 		{ label: 'Intégrale', latex: '\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}' },
@@ -253,7 +262,7 @@
 				<h2 class="mb-4 text-xl font-semibold">Éditeur interactif</h2>
 				<div class="rounded-lg border-2 border-gray-300 bg-white p-2">
 					<math-field style="width: 100%; font-size: 1.5rem; border: none; outline: none;">
-						x = \frac{'{-b \\pm \\sqrt{b^2 - 4ac}}'}{'{2a}'}
+						{showcaseLatex}
 					</math-field>
 				</div>
 				<p class="mt-2 text-sm text-gray-600">
