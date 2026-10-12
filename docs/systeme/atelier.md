@@ -300,7 +300,8 @@ fractions », 2026-10-12) :
 avant le parseur LaTeX, qui lisait `factorial(2) = 3`) ; `3! = 6`, avec une espace, reste une
 factorielle. Une entrée à plusieurs `=` ou dont un membre est une comparaison (`1 < 2 = 2`) est lue
 en entier comme une chaîne : `executeEquality` la coupait au `=` et comparait un booléen à un
-nombre.
+nombre. Une chaîne de grandeurs (`5[m] < 600[cm] < 7[m]`) passe maillon par maillon par le chemin
+des grandeurs.
 
 Une comparaison ne garde jamais son écriture (elle rend vrai ou faux), mais passe par le même
 plafond **membre par membre** (`mathAST/cli/bounded-comparison.ts`, aussi pour `a = b`, qui suit

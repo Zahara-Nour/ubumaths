@@ -110,3 +110,17 @@ describe('les cas de la revue', () => {
 		expect(line.output).toBe('false');
 	});
 });
+
+// Revue : une chaîne de grandeurs répondait « On ne peut pas comparer un nombre sans unité et une
+// longueur » (le premier maillon, booléen, comparé à une longueur)
+describe('une chaîne de grandeurs', () => {
+	it.each([
+		['5[m] < 6[m] < 7[m]', 'true'],
+		['5[m] < 600[cm] < 7[m]', 'true'],
+		['5[m] < 8[m] < 7[m]', 'false'],
+		['6[m] = 600[cm] = 6[m]', 'true'],
+		['6[m] = 600[cm] = 7[m]', 'false']
+	])('%s : %s', (input, output) => {
+		expect(run(input).output).toBe(output);
+	});
+});
