@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
 """
-Replace the operators and delimiters of KaTeX_Main-Regular with the ones of
-Shantell Sans, fitted into the box of the KaTeX glyph they replace.
+Replace symbols of the KaTeX fonts with the ones of Shantell Sans, fitted
+into the box of the KaTeX glyph they replace.
 
 MathLive does not read glyph sizes from the font: it has the KaTeX metrics
 hard-coded (width, height, depth of every glyph) and lays formulas out with
 them. A Shantell glyph copied as is would overflow its neighbours or sit off
-the math axis, so each one is:
+the math axis, so each one is fitted in one of three ways:
 
-- operators (+ = < …): kept at Shantell size, so that their stroke matches
-  the letters, and centred on the KaTeX glyph's box (hence on the math axis);
+- operators (+ = < ∞ ∅ …): kept at Shantell size, so that their stroke
+  matches the letters, and centred on the KaTeX glyph's box (hence on the
+  math axis);
 - delimiters (( [ { | /): scaled to the KaTeX glyph's height, and narrowed
   only when wider than the room MathLive gives them;
-- given the KaTeX advance width, whatever its own.
+- letter-like symbols (π ∂ Ω): kept at Shantell size on Shantell's baseline,
+  like the letters, centred horizontally and narrowed only when too wide;
 
-The script works in place on static/fonts/shantell-katex/KaTeX_Main-Regular.woff2
-(whose letters already come from Shantell): each listed glyph is redrawn from
-scratch, so running it twice gives the same font. Writing to
-static/fonts/KaTeX_*.woff2 is refused: the original KaTeX fonts were
-overwritten that way on 2026-01-20.
+and given the KaTeX advance width, whatever its own.
+
+Run after roughen_extras.py, which rebuilds AMS from the original KaTeX font.
+The script works in place on static/fonts/shantell-katex/: each listed glyph
+is redrawn from the Shantell source, so running it twice gives the same font.
+Writing to static/fonts/KaTeX_*.woff2 is refused: the original KaTeX fonts
+were overwritten that way on 2026-01-20.
 """
 
 from __future__ import annotations
@@ -34,13 +38,25 @@ from fontTools.ttLib import TTFont
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-TARGET = REPO_ROOT / "static" / "fonts" / "shantell-katex" / "KaTeX_Main-Regular.woff2"
+OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "shantell-katex"
+ORIGINAL_DIR = REPO_ROOT / "static" / "fonts" / "katex-original"
 SHANTELL = REPO_ROOT / "tools" / "shantell-math" / "fonts" / "input" / "shantell-sans-300.ttf"
 
-OPERATORS = "+−=<>≤≥±×÷≈→←↔"
-DELIMITERS = "()[]{}|/"
+OPERATOR, DELIMITER, LETTER = "operator", "delimiter", "letter"
 
-# Marge minimale (unités de la police) entre un délimiteur resserré et le bord de sa place
+# Police -> [(caractères, manière de les ajuster)]
+TARGETS = {
+    "KaTeX_Main-Regular": [
+        ("+−=<>≤≥±×÷≈→←↔∞∅", OPERATOR),
+        ("()[]{}|/", DELIMITER),
+        ("∂Ω", LETTER),
+    ],
+    "KaTeX_Math-Italic": [("πΩ", LETTER)],
+    # \varnothing : le ∅ rond
+    "KaTeX_AMS-Regular": [("∅", OPERATOR)],
+}
+
+# Marge minimale (unités de la police) entre un glyphe resserré et le bord de sa place
 SIDE_MARGIN = 20
 
 
@@ -51,7 +67,7 @@ def bounds(font: TTFont, glyph_name: str):
     return pen.bounds
 
 
-def replace_symbol(target: TTFont, source: TTFont, char: str, is_delimiter: bool) -> bool:
+def replace_symbol(target: TTFont, reference: TTFont, source: TTFont, char: str, fit: str) -> bool:
     target_name = target.getBestCmap().get(ord(char))
     source_name = source.getBestCmap().get(ord(char))
     if not target_name or not source_name:
@@ -59,17 +75,17 @@ def replace_symbol(target: TTFont, source: TTFont, char: str, is_delimiter: bool
         return False
 
     # La boîte de référence est celle du glyphe KaTeX d'origine, pas celle d'un passage précédent
-    reference = TTFont(REPO_ROOT / "static" / "fonts" / "katex-original" / "KaTeX_Main-Regular.woff2")
     t_xmin, t_ymin, t_xmax, t_ymax = bounds(reference, target_name)
     advance = reference["hmtx"][target_name][0]
     s_xmin, s_ymin, s_xmax, s_ymax = bounds(source, source_name)
 
-    scale_y = (t_ymax - t_ymin) / (s_ymax - s_ymin) if is_delimiter else 1.0
+    scale_y = (t_ymax - t_ymin) / (s_ymax - s_ymin) if fit == DELIMITER else 1.0
     room = advance - 2 * SIDE_MARGIN
     scale_x = min(scale_y, room / (s_xmax - s_xmin))
 
     dx = (t_xmin + t_xmax) / 2 - scale_x * (s_xmin + s_xmax) / 2
-    dy = (t_ymin + t_ymax) / 2 - scale_y * (s_ymin + s_ymax) / 2
+    # Une lettre garde la ligne de base de Shantell, comme les lettres déjà copiées
+    dy = 0 if fit == LETTER else (t_ymin + t_ymax) / 2 - scale_y * (s_ymin + s_ymax) / 2
 
     glyph_set = source.getGlyphSet()
     recording = DecomposingRecordingPen(glyph_set)
@@ -86,23 +102,24 @@ def replace_symbol(target: TTFont, source: TTFont, char: str, is_delimiter: bool
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Shantell operators and delimiters in KaTeX_Main-Regular")
+    parser = argparse.ArgumentParser(description="Shantell symbols in the KaTeX fonts")
     parser.parse_args()
 
-    if TARGET.parent.name != "shantell-katex":
-        raise SystemExit(f"Sortie refusée hors de static/fonts/shantell-katex: {TARGET}")
-
-    target = TTFont(TARGET)
     source = TTFont(SHANTELL)
-    count = 0
-    for char in OPERATORS:
-        count += replace_symbol(target, source, char, is_delimiter=False)
-    for char in DELIMITERS:
-        count += replace_symbol(target, source, char, is_delimiter=True)
-
-    target.flavor = "woff2"
-    target.save(TARGET)
-    print(f"{count} symboles remplacés -> {TARGET.relative_to(REPO_ROOT)}")
+    for name, groups in TARGETS.items():
+        path = OUTPUT_DIR / f"{name}.woff2"
+        if path.parent.resolve() != OUTPUT_DIR.resolve():
+            raise SystemExit(f"Sortie refusée hors de {OUTPUT_DIR}: {path}")
+        target = TTFont(path)
+        reference = TTFont(ORIGINAL_DIR / f"{name}.woff2")
+        print(name)
+        count = 0
+        for chars, fit in groups:
+            for char in chars:
+                count += replace_symbol(target, reference, source, char, fit)
+        target.flavor = "woff2"
+        target.save(path)
+        print(f"{count} symboles remplacés -> {path.relative_to(REPO_ROOT)}")
 
 
 if __name__ == "__main__":
