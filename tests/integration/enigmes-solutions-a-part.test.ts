@@ -1,19 +1,22 @@
 /**
- * Énigmes : réponse attendue et correction rangées à part (étape A sur 3)
+ * Énigmes : réponse attendue et correction rangées à part (étape C sur 3)
  * =======================================================================
  *
  * Mesuré en prod le 2026-10-12 : un élève lit `riddles.answer` et `riddles.correction` de
  * l'énigme du jour ou d'une énigme assignée, par une requête directe.
  *
  * Décision de David (2026-10-12) : réponse et correction réservées au prof (auteur de
- * l'énigme) et à l'admin. Étape A : table `riddle_solutions`, tenue à jour par un
- * déclencheur tant que le code écrit encore dans `riddles`.
+ * l'énigme) et à l'admin. Étape A : table `riddle_solutions` + déclencheur de recopie ;
+ * étape B : le code n'écrit plus que `riddle_solutions` ; étape C (accord de David du
+ * 2026-10-12) : `riddles.answer`, `riddles.correction` et le déclencheur supprimés.
  *
  * Ce que le fichier prouve :
- *   1. l'élève à qui l'énigme est assignée lit l'énigme, mais pas sa solution ;
- *   2. anon ne lit pas la table ;
- *   3. l'auteur lit et modifie sa solution, l'admin aussi (un seul prof : invariant mono-prof) ;
- *   4. une énigme écrite dans `riddles` (création, modification) est recopiée.
+ *   1. `riddles` ne porte plus ni réponse ni correction : l'élève ne peut plus les demander ;
+ *   2. le déclencheur de recopie et sa fonction ont disparu ;
+ *   3. l'élève à qui l'énigme est assignée lit l'énigme, mais pas sa solution ;
+ *   4. anon ne lit pas la table ;
+ *   5. l'auteur écrit et lit sa solution, l'admin aussi (un seul prof : invariant mono-prof) ;
+ *   6. l'élève n'écrit rien dans la table.
  *
  * @vitest-environment node
  */
@@ -40,8 +43,8 @@ const ANSWER = { type: 'numerical', value: 42 };
 // HELPERS
 // ============================================================================
 
-// La table naît avec cette migration : `database.ts` (généré depuis la prod) ne la
-// connaît qu'après le push. Le client reste donc non typé ici.
+// Client non typé : le test demande volontairement des colonnes supprimées, que
+// `database.ts` (généré depuis la prod) ne connaîtra plus.
 async function clientFor(email: string): Promise<SupabaseClient> {
 	const client = createClient<Database>(SUPABASE_URL, ANON_KEY, {
 		auth: { persistSession: false, autoRefreshToken: false }
@@ -70,7 +73,7 @@ describe('énigmes : solution lisible par l’auteur et l’admin seulement', ()
 		admin = await TestData.profile().withRole('admin').create();
 		eleve = await TestData.profile().withRole('student').create();
 
-		// Création par l'auteur lui-même : le déclencheur tourne avec ses droits.
+		// Comme l'application : l'énigme, puis sa solution, par le client de l'auteur.
 		const client = await clientFor(auteur.email);
 		const { data, error } = await client
 			.from('riddles')
@@ -78,8 +81,6 @@ describe('énigmes : solution lisible par l’auteur et l’admin seulement', ()
 				title: 'zz-énigme solution',
 				difficulty: 1,
 				statement: 'zz',
-				correction: 'zz-correction secrète',
-				answer: ANSWER,
 				created_by: auteur.id,
 				status: 'published'
 			})
@@ -87,6 +88,14 @@ describe('énigmes : solution lisible par l’auteur et l’admin seulement', ()
 			.single();
 		if (error) throw new Error(`création impossible : ${error.message}`);
 		riddleId = data.id;
+
+		const solution = await client
+			.from('riddle_solutions')
+			.upsert({ riddle_id: riddleId, answer: ANSWER, correction: 'zz-correction secrète' })
+			.select('riddle_id');
+		if (solution.error || solution.data?.length !== 1) {
+			throw new Error(`solution non écrite : ${solution.error?.message}`);
+		}
 
 		const pg = await getPostgresClient();
 		await pg.query(
@@ -102,13 +111,27 @@ describe('énigmes : solution lisible par l’auteur et l’admin seulement', ()
 		await cleanupAllTestData();
 	});
 
-	it('la création d’une énigme recopie sa solution', async () => {
+	it('l’élève ne peut plus demander la réponse ni la correction à riddles', async () => {
+		const client = await clientFor(eleve.email);
+		for (const colonne of ['answer', 'correction']) {
+			const { data, error } = await client.from('riddles').select(colonne).eq('id', riddleId);
+			expect(error?.code, colonne).toBe('42703');
+			expect(data).toBeNull();
+		}
+	});
+
+	it('riddles n’a plus les colonnes, ni le déclencheur de recopie, ni sa fonction', async () => {
 		const pg = await getPostgresClient();
 		const { rows } = await pg.query(
-			'select answer, correction from riddle_solutions where riddle_id = $1',
-			[riddleId]
+			`select
+				(select count(*) from information_schema.columns
+				 where table_schema = 'public' and table_name = 'riddles'
+				   and column_name in ('answer', 'correction'))::int as colonnes,
+				(select count(*) from pg_trigger
+				 where tgname = 'trigger_sync_riddle_solution')::int as declencheurs,
+				(select count(*) from pg_proc where proname = 'sync_riddle_solution')::int as fonctions`
 		);
-		expect(rows).toEqual([{ answer: ANSWER, correction: 'zz-correction secrète' }]);
+		expect(rows).toEqual([{ colonnes: 0, declencheurs: 0, fonctions: 0 }]);
 	});
 
 	it('l’élève lit l’énigme assignée, mais pas sa solution', async () => {
@@ -138,47 +161,34 @@ describe('énigmes : solution lisible par l’auteur et l’admin seulement', ()
 			const client = await clientFor(compte.email);
 			const { data, error } = await client
 				.from('riddle_solutions')
-				.select('correction')
+				.select('answer, correction')
 				.eq('riddle_id', riddleId);
 			expect(error).toBeNull();
-			expect(data).toEqual([{ correction: 'zz-correction secrète' }]);
+			expect(data).toEqual([{ answer: ANSWER, correction: 'zz-correction secrète' }]);
 		}
 	});
 
-	it('la modification de l’énigme par l’auteur met la solution à jour', async () => {
-		const client = await clientFor(auteur.email);
-		const { data, error } = await client
-			.from('riddles')
-			.update({ correction: 'zz-nouvelle correction', answer: null })
-			.eq('id', riddleId)
-			.select('id');
-		expect(error).toBeNull();
-		expect(data).toHaveLength(1);
+	it('l’auteur puis l’admin modifient la solution', async () => {
+		for (const [compte, correction] of [
+			[auteur, 'zz-nouvelle correction'],
+			[admin, 'zz-correction admin']
+		] as const) {
+			const client = await clientFor(compte.email);
+			const { data, error } = await client
+				.from('riddle_solutions')
+				.update({ correction, answer: null })
+				.eq('riddle_id', riddleId)
+				.select('riddle_id');
+			expect(error).toBeNull();
+			expect(data).toHaveLength(1);
 
-		const pg = await getPostgresClient();
-		const { rows } = await pg.query(
-			'select answer, correction from riddle_solutions where riddle_id = $1',
-			[riddleId]
-		);
-		expect(rows).toEqual([{ answer: null, correction: 'zz-nouvelle correction' }]);
-	});
-
-	it('l’admin qui modifie l’énigme du prof met aussi la solution à jour', async () => {
-		const client = await clientFor(admin.email);
-		const { data, error } = await client
-			.from('riddles')
-			.update({ correction: 'zz-correction admin' })
-			.eq('id', riddleId)
-			.select('id');
-		expect(error).toBeNull();
-		expect(data).toHaveLength(1);
-
-		const pg = await getPostgresClient();
-		const { rows } = await pg.query(
-			'select correction from riddle_solutions where riddle_id = $1',
-			[riddleId]
-		);
-		expect(rows).toEqual([{ correction: 'zz-correction admin' }]);
+			const pg = await getPostgresClient();
+			const { rows } = await pg.query(
+				'select answer, correction from riddle_solutions where riddle_id = $1',
+				[riddleId]
+			);
+			expect(rows).toEqual([{ answer: null, correction }]);
+		}
 	});
 
 	it('l’élève ne peut pas insérer de solution', async () => {

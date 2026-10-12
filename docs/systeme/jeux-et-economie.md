@@ -271,7 +271,7 @@ choix. `RiddleCard` ne corrige donc plus dans le navigateur : le verdict vient d
 soumission. Si l'envoi échoue, `onSubmit` rend `false` et la carte revient à la saisie. Test : `src/routes/(protected)/dashboard/student/riddles/__tests__/`.
 
 ⚠️ **Réponse attendue et correction : `riddle_solutions`, plus `riddles`** (étape B, 2026-10-12).
-Aucun code ne lit ni n'écrit plus `riddles.answer` / `riddles.correction` : les requêtes sur
+`riddles.answer` / `riddles.correction` n'existent plus (étape C, `20261016100800`) : les requêtes sur
 `riddles` nomment leurs colonnes (`RIDDLE_COLUMNS`, `src/lib/types/riddle.ts` ; jamais `*` ni
 `riddles(*)`), et `toDbRiddle(ligne, solution)` assemble l'énigme. Le module
 `src/lib/server/riddle-solutions.ts` lit les solutions d'une liste d'énigmes
