@@ -184,7 +184,7 @@
 		"@getbrevo/brevo": "^3.0.4",
 		"@myriaddreamin/typst.ts": "0.6.1-rc5",
 		"@neoconfetti/svelte": "^2.2.2",
-		"@supabase/ssr": "^0.7.0",
+		"@supabase/ssr": "^0.12.7",
 		"@supabase/supabase-js": "^2.117.3",
 		"@tiptap/core": "^3.31.4",
 		"@tiptap/extension-code": "^3.31.4",
