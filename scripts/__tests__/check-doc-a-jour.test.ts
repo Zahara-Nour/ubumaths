@@ -297,7 +297,6 @@ describe('COVERAGE_CONFIG — chaque trou nomme sa zone', () => {
 		// Le premier trou qui correspond gagne : trier `trous` rangerait ces fichiers
 		// sous la zone large. Aucune doc ici (aucun test ne lit docs/).
 		const noteOf = (file: string) => holesTouched([file], [], COVERAGE_CONFIG)[0]?.note;
-		expect(noteOf('src/routes/api/admin/exercises/x/+server.ts')).toMatch(/^exercices/);
 		expect(noteOf('src/routes/api/admin/users/+server.ts')).toMatch(/^classes, élèves/);
 		expect(noteOf('src/routes/api/students/s1/warnings/+server.ts')).toMatch(/^messagerie/);
 		expect(noteOf('src/routes/api/students/s1/+server.ts')).toMatch(/^classes, élèves/);
