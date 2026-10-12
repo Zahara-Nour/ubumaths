@@ -17,7 +17,6 @@ couvre:
   - src/lib/stores/listNumbering.svelte.ts
   - src/lib/styles/list-numbering.css
   - src/lib/types/list-numbering.ts
-indexe:
   - src/lib/components/ClassStatsCard.svelte
   - src/lib/components/CodeViewer.svelte
   - src/lib/components/DynamicMathField.svelte
@@ -56,6 +55,7 @@ indexe:
 
 > Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8).
 > Ce fichier **recense** : il dit ce que fait chaque fichier, qui l'appelle, et s'il est mort.
+> Chaque fichier de l'index est dans le `couvre:` : une PR qui le modifie relit sa ligne.
 > Il ne remplace pas la doc du domaine qui l'utilise ; quand elle existe, elle est citée.
 > Voisins : [seo.md](seo.md), [editeur-riche.md](editeur-riche.md),
 > [carte-des-fonctionnalites.md](carte-des-fonctionnalites.md), [serveur.md](serveur.md).

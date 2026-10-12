@@ -9,6 +9,7 @@ couvre:
   - 'src/lib/migration/review/**'
   - 'src/lib/types/{question-display,question-template}.ts'
   - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,grading-budget,corrected-detail}.ts'
+  - src/lib/server/exercise-search-indexed.ts
   - src/lib/server/validation/questions.ts
   - 'src/lib/components/questions/**'
   - 'src/lib/components/question-inputs/**'
