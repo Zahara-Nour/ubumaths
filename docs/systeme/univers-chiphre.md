@@ -6,6 +6,7 @@ couvre:
   - 'src/lib/components/ciphers/**'
   - src/lib/config/lore.ts
   - 'src/lib/server/shtam/**'
+  - src/lib/server/sitemap-exercises.ts
   - 'src/routes/(public)/almanach/**'
   - 'src/routes/(public)/chiffrement/**'
   - 'src/routes/(public)/shtam/**'

@@ -19,7 +19,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	parseCouvre,
-	parseIndexe,
+	readDoc,
 	docsToUpdate,
 	hasDocExemption,
 	hasDocDeferral,
@@ -37,6 +37,12 @@ const CONFIG: CoverageConfig = {
 	trous: [{ glob: 'src/lib/legacy/**', note: 'doc à écrire' }]
 };
 
+// Un index : serveur.md décrit le middleware et cite tout src/lib/server/ dans une
+// table. Jusqu'au 2026-10-12, la clé `indexe:` comptait pour la couverture : le glob
+// avalait en silence chaque module neuf, que « doc d'abord » ne voyait jamais.
+const SERVEUR_MD =
+	'---\ncouvre:\n  - src/lib/server/middleware/**\nindexe:\n  - src/lib/server/*.ts\n---\n';
+
 const DOCS: DocCoverage[] = [
 	{
 		doc: 'docs/systeme/atelier.md',
@@ -47,11 +53,7 @@ const DOCS: DocCoverage[] = [
 		doc: 'docs/systeme/grapheur.md',
 		couvre: ['src/lib/grapheur/**', 'src/lib/atelier/graph-*.ts']
 	},
-	{
-		doc: 'docs/systeme/serveur.md',
-		couvre: ['src/lib/server/middleware/**'],
-		indexe: ['src/lib/server/*.ts']
-	}
+	readDoc('docs/systeme/serveur.md', SERVEUR_MD)
 ];
 
 describe('parseCouvre — l’en-tête d’une doc', () => {
@@ -74,12 +76,12 @@ describe('parseCouvre — l’en-tête d’une doc', () => {
 	});
 });
 
-describe('parseIndexe — le code qu’une doc recense sans le décrire', () => {
-	it('lit la clé indexe à côté de couvre', () => {
-		const md =
-			'---\ncouvre:\n  - src/lib/server/middleware/**\nindexe:\n  - src/lib/server/*.ts\n---\n';
-		expect(parseCouvre(md)).toEqual(['src/lib/server/middleware/**']);
-		expect(parseIndexe(md)).toEqual(['src/lib/server/*.ts']);
+describe('readDoc — seul couvre compte', () => {
+	it('ne retient d’un en-tête que le code décrit, pas un index', () => {
+		expect(readDoc('docs/systeme/serveur.md', SERVEUR_MD)).toEqual({
+			doc: 'docs/systeme/serveur.md',
+			couvre: ['src/lib/server/middleware/**']
+		});
 	});
 });
 
@@ -155,8 +157,10 @@ describe('uncoveredFiles — chaque fichier de code a sa doc', () => {
 		]);
 	});
 
-	it('compte un fichier indexé comme couvert', () => {
-		expect(uncoveredFiles(['src/lib/server/chapters.ts'], DOCS, CONFIG)).toEqual([]);
+	it('signale un fichier qu’une doc ne fait que citer dans un index', () => {
+		expect(uncoveredFiles(['src/lib/server/chapters.ts'], DOCS, CONFIG)).toEqual([
+			'src/lib/server/chapters.ts'
+		]);
 	});
 
 	it('ne signale ni les exclus, ni les trous connus, ni le hors périmètre', () => {
@@ -175,8 +179,8 @@ describe('uncoveredFiles — chaque fichier de code a sa doc', () => {
 	});
 });
 
-// Trous de fixture : une zone sans doc (legacy), un fichier seulement INDEXÉ par
-// serveur.md (indexer n'est pas décrire), une zone de deux globs sous la même
+// Trous de fixture : une zone sans doc (legacy), un fichier que serveur.md cite
+// sans le décrire (indexer n'est pas décrire), une zone de deux globs sous la même
 // note, et une zone que atelier.md décrit déjà (trou périmé).
 const HOLES_CONFIG: CoverageConfig = {
 	...CONFIG,
