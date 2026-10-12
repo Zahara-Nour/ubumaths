@@ -1,10 +1,11 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { validateFormData, riddleFormSchema, parseRiddleAnswerField } from '$lib/server/validation';
 import { requireRoles } from '$lib/server/middleware/auth';
 import type { TablesUpdate } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
-import { asRiddleDifficulty, RIDDLE_COLUMNS, toDbRiddle } from '$lib/types/riddle';
+import { RIDDLE_COLUMNS, toDbRiddle } from '$lib/types/riddle';
 import { fetchRiddleSolutions, saveRiddleSolution } from '$lib/server/riddle-solutions';
 
 /**
@@ -56,34 +57,30 @@ export const actions: Actions = {
 		const id = validateUuidParam(params.id);
 		const formData = await request.formData();
 
-		// Parse answer config (JSON)
-		let answer = null;
-		const answerStr = formData.get('answer')?.toString();
-		if (answerStr && answerStr !== 'null') {
-			try {
-				answer = JSON.parse(answerStr);
-			} catch (e) {
-				console.error('Error parsing answer config:', e);
-			}
+		// Mêmes bornes qu'à la création ; rien n'est écrit tant que tout n'est pas valide.
+		const validation = validateFormData(riddleFormSchema, formData);
+		if (!validation.success) {
+			const [firstError] = Object.values(validation.errors).flat();
+			return fail(400, { message: firstError, errors: validation.errors });
+		}
+		const parsedAnswer = parseRiddleAnswerField(validation.data.answer);
+		if (!parsedAnswer.ok) {
+			return fail(400, {
+				message: parsedAnswer.message,
+				errors: { answer: [parsedAnswer.message] }
+			});
 		}
 
-		// Parse form data
 		// Le type d'écriture généré décrit exactement ce que la table accepte. Réponse
 		// attendue et correction ne s'écrivent plus dans `riddles` : `riddle_solutions`.
 		const updateData: TablesUpdate<'riddles'> = {
-			title: formData.get('title')?.toString() || '',
-			genre: formData.get('genre')?.toString() || null,
-			difficulty: asRiddleDifficulty(parseInt(formData.get('difficulty')?.toString() || '1')),
-			statement: formData.get('statement')?.toString() || '',
-			image_url: formData.get('image_url')?.toString() || null,
-			status: formData.get('status')?.toString() === 'published' ? 'published' : 'draft'
+			title: validation.data.title,
+			genre: validation.data.genre || null,
+			difficulty: validation.data.difficulty,
+			statement: validation.data.statement,
+			image_url: validation.data.image_url || null,
+			status: validation.data.status
 		};
-		const correction = formData.get('correction')?.toString() || '';
-
-		// Validate required fields
-		if (!updateData.title || !updateData.statement || !correction) {
-			return fail(400, { message: 'Titre, énoncé et correction sont obligatoires' });
-		}
 
 		// Update riddle (RLS ensures user can only update their own). Un refus de la RLS
 		// rend zéro ligne sans erreur : seules les lignes rendues prouvent l'écriture.
@@ -104,8 +101,8 @@ export const actions: Actions = {
 
 		// `answer` part dans une colonne jsonb, d'où la conversion explicite.
 		const saved = await saveRiddleSolution(supabase, id, {
-			answer: toJson(answer),
-			correction
+			answer: toJson(parsedAnswer.answer),
+			correction: validation.data.correction
 		});
 		if (!saved.ok) {
 			console.error('[RIDDLE EDIT SERVER] Error saving solution:', saved);

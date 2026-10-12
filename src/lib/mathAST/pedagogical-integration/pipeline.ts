@@ -123,10 +123,12 @@ import type {
 } from './_helpers';
 import { abs, ln } from '../factory';
 import { findProportionalityConstant } from '../integration/patterns';
+import { forbiddenValueOnInterval } from '../integration/forbidden-value';
 import { arcsinRule, arctanRule } from '../integration/rules';
 import { PedagogicalIntegrationNotImplemented } from './types';
 import type {
 	IntegrationBindings,
+	PedagogicalDefiniteIntegrationResult,
 	PedagogicalIntegrationOptions,
 	PedagogicalIntegrationResult,
 	PedagogicalIntegrationStep
@@ -164,8 +166,16 @@ import type {
  */
 export function generatePedagogicalIntegrationSteps(
 	integrand: MathNode,
+	options: PedagogicalIntegrationOptions & { readonly definite?: undefined }
+): PedagogicalIntegrationResult;
+export function generatePedagogicalIntegrationSteps(
+	integrand: MathNode,
 	options: PedagogicalIntegrationOptions
-): PedagogicalIntegrationResult {
+): PedagogicalDefiniteIntegrationResult;
+export function generatePedagogicalIntegrationSteps(
+	integrand: MathNode,
+	options: PedagogicalIntegrationOptions
+): PedagogicalDefiniteIntegrationResult {
 	const resolvedVariable = options.variable ?? resolveIntegrationVariable(integrand);
 	const ctx = createContext(options, resolvedVariable);
 
@@ -280,7 +290,7 @@ function generateDefiniteSteps(
 	integrand: MathNode,
 	ctx: DispatchContext,
 	definite: { readonly lower: MathNode; readonly upper: MathNode }
-): PedagogicalIntegrationResult {
+): PedagogicalDefiniteIntegrationResult {
 	const steps: PedagogicalIntegrationStep[] = [];
 
 	if (ctx.strategy.includeIdentify) {
@@ -292,6 +302,33 @@ function generateDefiniteSteps(
 				variable: ctx.variable,
 				definite
 			})
+		);
+	}
+
+	// Valeur interdite de f dans [a ; b] (bornes comprises) : l'intégrale n'est
+	// pas définie, aucune valeur (V28 : ∫₁² 5/(4x² − 9) rendait un nombre à
+	// travers le pôle 3/2). Contrôle AVANT la primitive : le refus s'affiche
+	// même quand le pipeline ne sait pas l'écrire (∫₀¹ 4/(3x − 2)²).
+	const check = forbiddenValueOnInterval(integrand, ctx.variable, definite.lower, definite.upper);
+	if (check.kind === 'forbidden') {
+		steps.push(
+			buildStep(ctx, {
+				rule: 'integrand-undefined-on-interval',
+				before: integrand,
+				after: integrand,
+				variable: ctx.variable,
+				definite,
+				bindings: { point: check.value }
+			})
+		);
+		return { undefinedAt: check.value, steps };
+	}
+	// Domaine non résolu (eˣ − 2 ≠ 0) et bornes numériques : aucun nombre
+	// publié sans savoir si f est définie sur [a ; b] — repli sur le mode A
+	if (check.kind === 'unchecked' && check.reason === 'unresolved-domain') {
+		throw new PedagogicalIntegrationNotImplemented(
+			integrand,
+			'Intégrale définie : domaine de la fonction non résolu, valeur non garantie'
 		);
 	}
 

@@ -346,3 +346,14 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
       montrer à David la réconciliation et le grep d'usages.
 - ⏳ **Une migration après le prochain `deploy:prod`** : REVOKE EXECUTE à `authenticated` de
   `submit_riddle_attempt`, `record_game_reward`, `upsert_mathemo_score`.
+- **Recos de David sur les points d'audit restants (2026-10-12)** :
+  - parties « gagnées » en boucle : rien à faire (gidouilles = 1/jour/jeu, seul le classement
+    se gonfle) ;
+  - **#1178 (mergée, code seul)** : réponse attendue validée par Zod à la création et à
+    l'édition (valeur validée enregistrée) ; corrigé au passage : succès affiché en erreur
+    (réponse d'action lue sans `deserialize`), création impossible sans genre/image ou en
+    validation à la main (`"undefined"`), bonne réponse QCM décalée par un choix vide,
+    UUID de `validations/[id]` ;
+  - édition non atomique : laissée (erreur visible, réenregistrer suffit) ;
+  - `profile.class_ids` de la liste élève : pas de fuite (la RLS borne, le filtre ne fait
+    que restreindre).

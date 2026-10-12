@@ -611,6 +611,53 @@ et restent comme gardes).
   d'AVANT le chantier (`4c1acc74c`) : 13 expressions, 6 équations, 10 paires de formes, dont les
   mêmes chaînes à majuscules collées lues en produit.
 
+## Lot 3 — fait (2026-10-12) : déclaration et contexte (questions)
+
+- **Résolution** (`questions/capital-pairs.ts`, `resolveCapitalPairs`) : déclaration
+  `shared.capitalPairs` (`'length'` | `'product'`, valeur invalide en base ignorée) → contexte
+  (`Graphes et matrices` ; tout thème contenant « physique », règle écrite pour un thème à venir)
+  → `'length'`. Résolu une fois dans `generateInstance`, copié sur l'instance (toujours présent sur
+  une instance neuve) et dans `toPublicQuestion` / `toDisplayInstance`.
+- **Descente jusqu'au parseur** (`questions/formula-reading.ts`, `readingOf(instance)`) : un seul
+  objet `{ genericFunctions, capitalPairs }` pour `areEquivalent` (`isAnswerMatch`), `checkForm`
+  (`formOptionsOf` : contraintes, nombre simple, forme exigée, angle), `requiredForm`
+  (`RequiredFormOptions.capitalPairs`) et la règle `equivalent` (`EvaluationContext.capitalPairs`).
+  Instance sans le champ → rien de transmis → produit (Q-L, testé).
+- **Pas fait au lot 3, renvoyé au lot 5** : l'affichage (`MarkdownRenderer` → `MathInline`), la
+  correction rédigée, `expectedAnswerLatex` et le PDF ne lisent que la syntaxe maison
+  (`parseCustom`), qui n'a pas l'option ; les `$…$` LaTeX sont rendus sans parseur. Passer la prop
+  dans 18 composants pour un effet nul a été jugé inutile avant le lot 5. Conséquence visible
+  aujourd'hui : une réponse attendue `AB` s'affiche `A B` dans la correction.
+- **Schémas Zod** : `capitalPairsSchema` dans le schéma strict (`template-schema.ts`) et dans la
+  route (`server/validation/questions.ts`, `refineSharedCapitalPairs`, message français).
+- **Éditeur** (`QuestionTemplateForm.svelte`) : `MySelect` « Deux majuscules collées (AB)
+  désignent : » — « Selon le contexte : une longueur, par défaut » / « … un produit, contexte
+  Graphes et matrices », « Une longueur (segment [AB]) », « Un produit (A × B) ». Rien d'écrit
+  dans `shared` sur « selon le contexte ».
+- **Garde auteur (Q-A)** (`questions/figure-name-check.ts`, `figureNameWarnings`) : en mode
+  longueur, une réponse attendue qui contient un nom de figure est signalée sous le sélecteur
+  (« Variation 1, case 1 : « ABC » est un nom de figure, pas une longueur. Aucune réponse d'élève
+  ne pourra être acceptée… »). Les `{{…}}` sont lus comme un nombre.
+- **Raccourcis MathLive (Q-N)** : liste réelle de MathLive 0.111.1 (`INLINE_SHORTCUTS`) : `AA`,
+  `EE`, `!EE`, `NN`, `ZZ`, `QQ`, `RR`, `CC`, `TT`. Retirés au montage du champ (`MathPrompt`,
+  prop `capitalPairs` depuis `QuestionCard` / `FlashCard` → `FillBlanksInput` → `ParagraphNode`)
+  quand le sens est `'length'` ; filtre sur la clé (`/[A-Z]{2}/`), pas une liste figée.
+  **Mesure Chromium** (vitest navigateur, Playwright, frappes réelles,
+  `FillBlanksInput-capital-pairs.svelte.test.ts`) : A, A, ' → `\forall^{\prime}` avant,
+  `AA^{\prime}` après ; R, R → `\mathbb{R}` avant, `RR` après ; en mode produit et sans sens
+  transmis, `AA` → `\forall`, `RR` → `\mathbb{R}` (inchangé).
+- **Tests** : `questions/__tests__/capital-pairs.test.ts` (29 cas ; 19 rouges avant le code, les
+  autres décrivent le comportement d'avant et restent comme gardes — dont `BA=5` pour `AB=5`, déjà
+  juste par commutativité ; preuve rouge de la route faite en retirant le contrôle) et le test
+  client (2 rouges sans le filtre).
+- **Non-régression sur la base de prod** (MCP en lecture seule, 2026-10-12) : 1 005 modèles ; 19
+  `Graphes et matrices` (et non 12) ; aucune réponse attendue à majuscules collées hors noms de
+  variables de gabarit (`{{eval:sqrt(UU)}}`), aucune règle. Mesure : 99 modèles (les 19 matrices,
+  37 à variables tirées contenant des majuscules, 43 autres à majuscules collées dans le texte),
+  20 graines chacun, 1 980 instances (1 600 en longueur, 380 en produit), 3 280 verdicts de
+  réponses attendues (texte et LaTeX) comparés au sens d'avant : **0 changement**. Témoin : un
+  modèle synthétique `ABC` change bien de verdict (correct → `bad_form`).
+
 ## Journal
 
 - 2026-10-11 — préparation : mesure du parseur et des questions en base ; questions de phase 0.
@@ -633,3 +680,6 @@ et restent comme gardes).
 - 2026-10-12 — corrections de revue du lot 2 : `solve` à plusieurs longueurs, `getVariables`
   dédoublonné, `×` entre longueurs, hypothèses `AB`/`BA`, noms de figure identiques, test
   « sans option » contre le code d'avant le chantier.
+- 2026-10-12 — lot 3 fait : `shared.capitalPairs`, résolution déclaration → contexte → longueur,
+  descente jusqu'au parseur dans la correction, éditeur, garde auteur, raccourcis MathLive ;
+  0 verdict changé sur 99 modèles de prod.

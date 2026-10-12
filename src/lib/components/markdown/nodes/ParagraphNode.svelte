@@ -23,7 +23,7 @@
 <script lang="ts">
 	import { sanitizeUrl } from '$lib/utils/sanitize';
 	import type { InlineNode, InputState, InternalLinkReferenceType } from '$lib/ubumark';
-	import type { GenericFunctionConfig } from '$lib/mathAST/parser/types';
+	import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
 	import type { ExerciseHint } from '$lib/exercises/types';
 	import MathInline from './MathInline.svelte';
 	import MathPrompt from './MathPrompt.svelte';
@@ -65,6 +65,8 @@
 		prefilledValues?: Record<string, string>;
 		/** LaTeX to insert when Space is pressed in math mode */
 		mathModeSpace?: string;
+		/** Sens de `AB` (champs de réponse : raccourcis `AA`, `RR`… coupés en mode longueur) */
+		capitalPairs?: CapitalPairs;
 		/** Display LaTeX overrides for expression nodes (e.g., with removeSpaces applied) */
 		expressionDisplayMap?: Record<string, string>;
 		/** Callback when a hashtag is clicked */
@@ -96,6 +98,7 @@
 		correctValues,
 		prefilledValues,
 		mathModeSpace,
+		capitalPairs,
 		expressionDisplayMap,
 		onHashtagClick,
 		onMentionClick,
@@ -217,6 +220,7 @@
 							{prefilledValues}
 							{genericFunctions}
 							{mathModeSpace}
+							{capitalPairs}
 						/>
 					{/key}
 				{/if}

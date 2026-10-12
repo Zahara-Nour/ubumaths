@@ -22,7 +22,7 @@ import type {
 import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
 import { numberToLatexSafe } from '$lib/mathAST/common/numeric';
 import { evalResultToNumber } from '$lib/mathAST/eval';
-import type { GenericFunctionConfig } from '$lib/mathAST/parser';
+import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser';
 import { numbersAreClose } from '$lib/mathAST/common/constants';
 import { isStudentFacingRuleDescription } from './rules-suffice';
 
@@ -44,6 +44,8 @@ export interface EvaluationContext {
 	assumptions?: AnswerAssumptions;
 	/** Fonctions déclarées par le modèle (`P'(2)`), transmises à la comparaison symbolique */
 	genericFunctions?: GenericFunctionConfig;
+	/** Sens de `AB` (longueur ou produit) de l'instance ; absent : produit, comme avant */
+	capitalPairs?: CapitalPairs;
 }
 
 /**
@@ -387,7 +389,8 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		const valid = areEquivalent(ctx.answer, resolvedExpr, {
 			timeoutMs: EQUIVALENCE_BUDGET_MS,
 			assumptions: ctx.assumptions,
-			genericFunctions: ctx.genericFunctions
+			genericFunctions: ctx.genericFunctions,
+			capitalPairs: ctx.capitalPairs
 		});
 		return {
 			valid,
@@ -399,7 +402,8 @@ function evaluateEquivalenceRule(rule: EquivalenceRule, ctx: EvaluationContext):
 		const valid = areEquivalent(ctx.answer, resolvedExpr, {
 			timeoutMs: EQUIVALENCE_BUDGET_MS,
 			assumptions: ctx.assumptions,
-			genericFunctions: ctx.genericFunctions
+			genericFunctions: ctx.genericFunctions,
+			capitalPairs: ctx.capitalPairs
 		});
 		return {
 			valid,
