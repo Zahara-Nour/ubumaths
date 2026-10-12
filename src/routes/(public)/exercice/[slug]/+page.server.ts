@@ -70,6 +70,12 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 			// Store error but don't throw yet - exercise might be public
 			tokenError = tokenResult.error;
 		} else if (tokenResult.data) {
+			// Le jeton doit être celui de l'exercice nommé par l'adresse (slug ou
+			// identifiant, cf. buildShareUrl) : sinon `/exercice/A?token=<jeton de B>`
+			// afficherait B sous l'adresse de A.
+			if (tokenResult.data.slug !== slug && tokenResult.data.id !== slug) {
+				throw error(404, 'Exercice introuvable');
+			}
 			// Cast Exercise back to DB row format for consistency
 			// (getExerciseByShareToken returns Exercise type directly)
 			dbExercise = tokenResult.data as unknown as typeof dbExercise;

@@ -7,6 +7,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { isHttpError } from '@sveltejs/kit';
 import type { Database } from '$lib/types/database';
 
 type ExerciseRow = Database['public']['Tables']['exercises']['Row'];
@@ -49,13 +50,29 @@ function exerciseRow(overrides: Partial<ExerciseRow> = {}): ExerciseRow & { tags
 	};
 }
 
-async function loadPage(query = ''): Promise<{ noindex: boolean }> {
-	const result = await (load as unknown as (e: unknown) => Promise<{ noindex: boolean }>)({
-		params: { slug: 'pythagore-zz' },
+async function loadPage(
+	query = '',
+	slug = 'pythagore-zz'
+): Promise<{ noindex: boolean; exercise: { id: string } }> {
+	const result = await (
+		load as unknown as (e: unknown) => Promise<{ noindex: boolean; exercise: { id: string } }>
+	)({
+		params: { slug },
 		locals: { supabase: {} },
-		url: new URL(`https://www.chiph.re/exercice/pythagore-zz${query}`)
+		url: new URL(`https://www.chiph.re/exercice/${slug}${query}`)
 	});
 	return result;
+}
+
+/** Statut de l'erreur HTTP levée par le chargement. */
+async function loadStatus(query: string, slug = 'pythagore-zz'): Promise<number> {
+	try {
+		await loadPage(query, slug);
+	} catch (e) {
+		if (isHttpError(e)) return e.status;
+		throw e;
+	}
+	throw new Error('le chargement n’a rien refusé');
 }
 
 beforeEach(() => {
@@ -100,5 +117,36 @@ describe('/exercice/[slug] — noindex', () => {
 			error: null
 		});
 		expect((await loadPage()).noindex).toBe(true);
+	});
+});
+
+describe('/exercice/[slug] — le jeton doit être celui de l’exercice de l’adresse', () => {
+	it('jeton d’un AUTRE exercice → 404, l’autre exercice n’est pas affiché', async () => {
+		vi.mocked(getExerciseByShareToken).mockResolvedValue({
+			data: exerciseRow({
+				id: '550e8400-e29b-41d4-a716-446655440099',
+				slug: 'autre-exercice',
+				is_public: false
+			}) as never,
+			error: null
+		});
+		expect(await loadStatus('?token=abc')).toBe(404);
+	});
+
+	it('jeton de cet exercice, adresse par slug → affiché', async () => {
+		vi.mocked(getExerciseByShareToken).mockResolvedValue({
+			data: exerciseRow({ is_public: false }) as never,
+			error: null
+		});
+		expect((await loadPage('?token=abc')).exercise.id).toBe('550e8400-e29b-41d4-a716-446655440003');
+	});
+
+	it('jeton de cet exercice, adresse par identifiant (exercice sans slug) → affiché', async () => {
+		const id = '550e8400-e29b-41d4-a716-446655440003';
+		vi.mocked(getExerciseByShareToken).mockResolvedValue({
+			data: exerciseRow({ is_public: false, slug: null }) as never,
+			error: null
+		});
+		expect((await loadPage('?token=abc', id)).exercise.id).toBe(id);
 	});
 });
