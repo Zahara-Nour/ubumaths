@@ -294,6 +294,12 @@ fractions », 2026-10-12) :
   annoncé « environ 5 000 chiffres ». L'arrondi se lit alors sur le résultat calculé (√2 tapé
   n'entre en fraction que par son flottant, dont la puissance déborde).
 
+**Chaînes et « différent de »** (2026-10-12) : `1 < x < 3` est vraie si chaque maillon l'est
+(`evaluateToBoolean`, `eval/evaluate.ts` ; elle répondait « Cannot evaluate boolean expression ») ;
+`2 != 3` est lu par le parseur maison (`cli/core/input-detector.ts` : `!=` désigne la syntaxe
+maison ; le LaTeX, qui l'écrit `\ne`, y lisait `factorial(2) = 3`). `3! = 6`, avec une espace,
+reste une factorielle.
+
 Une comparaison ne garde jamais son écriture (elle rend vrai ou faux), mais passe par le même
 plafond **membre par membre** (`mathAST/cli/bounded-comparison.ts`, aussi pour `a = b`, qui suit
 son propre chemin `executeEquality`) : un membre au-delà du plafond prend sa valeur exacte s'il

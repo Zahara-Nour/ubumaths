@@ -200,3 +200,8 @@ sa valeur approchée. »
   l'extérieur ; test de rigueur aléatoire, rouge si l'arrondi vers le haut est faussé). Au
   passage, la revue s'était trompée sur un cas (`(1+1/20000)^{20000} + 10^{14} > 10^{14} + 3` est
   FAUX) : l'encadrement l'a tranché juste.
+- 2026-10-12 — #1199 mergée. **David : « corrige ces limites »** (deux limites antérieures de la
+  console) : `2 != 3` passait au parseur LaTeX (`factorial(2) = 3` → `false`) — `!=` désigne
+  désormais la syntaxe maison dans `input-detector.ts` ; les chaînes `1 < x < 3` sont évaluées
+  maillon par maillon (`evaluateToBoolean`) et passent par le plafond (`boundedComparison` les
+  change en « et » de maillons : `1 < 1.0001^{30000} < 30` prenait 26,6 s).
