@@ -21,6 +21,7 @@
 
 import { parseCustomSafe } from '$lib/mathAST';
 import { templateGenericFunctions } from '../generic-functions';
+import { readingOf } from '../formula-reading';
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import type {
 	PedagogicalRenderOptions,
@@ -328,9 +329,7 @@ function renderArithmeticFromBlank({
 	const expr = instance.expressions?.find((e) => e.name === expressionName);
 	if (!expr || !expr.value) return null;
 
-	const parseResult = parseCustomSafe(expr.value.trim(), {
-		genericFunctions: templateGenericFunctions(instance.genericFunctions)
-	});
+	const parseResult = parseCustomSafe(expr.value.trim(), readingOf(instance));
 	const node =
 		parseResult.ast && cleanCoefficients ? cleanCoefficientsAst(parseResult.ast) : parseResult.ast;
 	if (!node) return null;
@@ -881,9 +880,7 @@ function parseExpression(
 	cleanCoefficients: boolean
 ): MathNode | null {
 	const resolved = resolveExpression(template, instance.resolvedVariables ?? []);
-	const parseResult = parseCustomSafe(resolved.trim(), {
-		genericFunctions: templateGenericFunctions(instance.genericFunctions)
-	});
+	const parseResult = parseCustomSafe(resolved.trim(), readingOf(instance));
 	if (!parseResult.ast) return null;
 	return cleanCoefficients ? cleanCoefficientsAst(parseResult.ast) : parseResult.ast;
 }
@@ -899,7 +896,11 @@ function resolveForSteps(
 ): string {
 	const resolved = resolveExpression(template, instance.resolvedVariables ?? []).trim();
 	return cleanCoefficients
-		? cleanCoefficientsCustom(resolved, templateGenericFunctions(instance.genericFunctions))
+		? cleanCoefficientsCustom(
+				resolved,
+				templateGenericFunctions(instance.genericFunctions),
+				instance.capitalPairs
+			)
 		: resolved;
 }
 

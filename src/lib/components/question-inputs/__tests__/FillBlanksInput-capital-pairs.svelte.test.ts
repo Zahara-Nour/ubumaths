@@ -82,4 +82,13 @@ describe('FillBlanksInput — raccourcis de deux majuscules (Q-N)', () => {
 	it('sens non transmis (instance d’avant) : le raccourci reste', async () => {
 		expect(await typed('RR')).toContain('mathbb');
 	});
+
+	it("mode longueur : ~A'B'=?~ a son champ de saisie (Thalès)", async () => {
+		const thales = "Calcule ~A'B'=?~" as ResolvedMarkdown;
+		const { container, unmount } = await render(FillBlanksInput, {
+			props: { statement: thales, blanks: [blank], capitalPairs: 'length' }
+		});
+		await expect.poll(() => container.querySelectorAll('math-field').length).toBe(1);
+		await unmount();
+	});
 });
