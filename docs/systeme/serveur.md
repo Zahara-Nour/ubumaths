@@ -6,6 +6,7 @@ couvre:
   - 'src/lib/server/utils/**'
   - 'src/lib/server/validation/{index,common,params,response-utils,cron}.ts'
   - 'src/lib/utils/{form-action,logger}.ts'
+  - src/lib/zod-locale.ts
   - 'src/routes/(protected)/dashboard/admin/cron/**'
   - 'src/routes/api/admin/cron/**'
 ---
@@ -67,6 +68,7 @@ Règle et exemple : [qualite.md § Input Validation with Zod](../pratiques/quali
 ### 1.4 Erreurs
 
 - **Lever** : `throw error(status, message)` de `@sveltejs/kit` — 400 (Zod), 401, 403, 404. Message en français pour l'utilisateur, jamais le message Postgres brut : les pages l'affichent tel quel dans une notification. Les dossiers d'API déjà traduits sont vérifiés par `src/lib/__tests__/messages-erreur-en-francais.test.ts` (`TRANSLATED_API_DIRS`, tous statuts confondus).
+- **Messages Zod par défaut en français** : `src/lib/zod-locale.ts` (`z.config(z.locales.fr())`), importé en tête de `src/hooks.server.ts` et par `vitest-setup-server.ts` (les tests voient les mêmes textes que la prod). Un schéma sans message explicite rend donc « Entrée invalide : … » ; un message écrit dans le schéma reste prioritaire et vaut mieux (le texte de Zod est raide). Côté navigateur, Zod reste en anglais : aucun import de Zod au démarrage (piège Safari TDZ).
 - **Relancer depuis un `catch`** : l'`HttpError` levée par `error()` n'est ni une `Error` ni une `Response` ; un `catch` qui l'enveloppe doit la relancer avec `if (isHttpError(err)) throw err`, sinon elle finit en 500 générique (cas de `api/admin/cron/trigger`, corrigé le 2026-10-12).
 - **Assainir une erreur Postgres / RPC** : `sanitizePostgresError(err, context)` et `sanitizeRPCError(err, fn)` dans `src/lib/server/utils/error-handler.ts` — loguent le détail côté serveur, traduisent le code (`23505`, `PGRST116`…) en message neutre, lèvent l'`HttpError` (25 endpoints). `src/lib/server/curriculum.ts` fait la même chose pour le programme.
 - **Actions de formulaire** : `return fail(400, { … })` (45 fichiers d'actions). ⚠️ `fail()` répond HTTP **200** au `fetch` : côté client, passer par `submitAction` (`src/lib/utils/form-action.ts`).
