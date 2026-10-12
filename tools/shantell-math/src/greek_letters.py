@@ -3,18 +3,23 @@
 Greek letters in Shantell's hand. Shantell Sans has only π and Ω (see
 replace_symbols.py); the other letters are
 
-- borrowed from Shantell glyphs of the same shape: Cyrillic Г П Ф Ѳ ѳ з є к т,
-  Latin Y V v o, ∆ and µ, mirrored when needed (Λ is V upside down, ε is з
-  mirrored);
-- or drawn as centre lines stroked with the width of Shantell's letters, on
-  Shantell's x-height, cap height and descender: α β γ δ ζ η ι λ ρ σ υ φ χ ψ ω,
-  Ξ Σ Ψ.
+- borrowed whole from Shantell glyphs of the same shape: Cyrillic Г П Ф Ѳ ѳ з
+  є к т ф, Latin Y V v o, ∆ and µ, mirrored when needed (Λ is V upside down, ε
+  is з mirrored);
+- assembled from pieces of real Shantell letters, cut, moved or mirrored and
+  joined by overlapping (a hand-drawn curve, even at the right stroke width,
+  stands out next to Shantell's letters): α from a, β from ß, δ from ð without
+  its bar, η from ŋ, ι from the foot of l, λ from л, ρ ϱ σ φ from o, ψ υ ω from
+  u, γ from v, χ from x, ζ from C, ξ from a mirrored 3, ς from c; the stem of p,
+  the bar of t and the hook of j are the joints and tails;
+- drawn as centre lines stroked with the width of Shantell's letters when no
+  piece fits: Ξ Σ Ψ (straight strokes) and ϑ.
 
 Like the other letters, each one keeps Shantell's size and baseline, is centred
 on the KaTeX glyph it replaces and narrowed only when wider than its advance
 (MathLive lays formulas out with the KaTeX metrics, hard-coded). Lowercase
 letters go to KaTeX_Math-Italic, capitals to KaTeX_Main-Regular (upright, the
-default) and KaTeX_Math-Italic (\\varGamma…). ξ ϑ ϖ ϱ ς keep the KaTeX shape.
+default) and KaTeX_Math-Italic (\\varGamma…).
 
 Run after replace_symbols.py and before build_typst_math_font.py. The script
 works in place on static/fonts/shantell-katex/ and redraws each glyph from the
@@ -80,175 +85,364 @@ BORROWED: Dict[str, Tuple[str, bool, bool]] = {
 }
 
 
+# --- Lettres assemblées : morceaux de vraies lettres de Shantell ---
+#
+# Une courbe calculée, même au bon trait, se voit à côté des lettres de Shantell :
+# hampes trop droites, ventres trop réguliers. Ces lettres sont donc faites de
+# morceaux de glyphes Shantell (découpés, déplacés, retournés), raccordés en se
+# chevauchant ; un bout coupé net reçoit un bout rond, comme les traits de Shantell.
+
+Box = Tuple[float, float, float, float]
+Matrix = Tuple[float, float, float, float, float, float]
+
+
+def glyph(source: TTFont, char: str) -> pathops.Path:
+    glyph_set = source.getGlyphSet()
+    recording = DecomposingRecordingPen(glyph_set)
+    glyph_set[source.getBestCmap()[ord(char)]].draw(recording)
+    path = pathops.Path()
+    recording.replay(path.getPen())
+    path.simplify()
+    return path
+
+
+def stroke_of(source: TTFont, char: str, index: int) -> pathops.Path:
+    """Un trait d'un glyphe Shantell : ses traits sont des contours à part
+    (la barre du t et du ð, la hampe du p)."""
+    glyph_set = source.getGlyphSet()
+    recording = DecomposingRecordingPen(glyph_set)
+    glyph_set[source.getBestCmap()[ord(char)]].draw(recording)
+    path = pathops.Path()
+    recording.replay(path.getPen())
+    contour = pathops.Path()
+    contour.addPath(list(path.contours)[index])
+    contour.simplify()
+    return contour
+
+
+def p_stem(source: TTFont) -> pathops.Path:
+    """La hampe du p de Shantell, avec son coude et ses deux bouts ronds."""
+    return stroke_of(source, "p", 1)
+
+
+def rectangle(box: Box) -> pathops.Path:
+    path = pathops.Path()
+    path.moveTo(box[0], box[1])
+    path.lineTo(box[2], box[1])
+    path.lineTo(box[2], box[3])
+    path.lineTo(box[0], box[3])
+    path.close()
+    return path
+
+
+def keep(path: pathops.Path, box: Box) -> pathops.Path:
+    """La partie du tracé dans la boîte."""
+    return pathops.op(path, rectangle(box), pathops.PathOp.INTERSECTION)
+
+
+def drop(path: pathops.Path, box: Box) -> pathops.Path:
+    """Le tracé sans la partie dans la boîte."""
+    return pathops.op(path, rectangle(box), pathops.PathOp.DIFFERENCE)
+
+
+def moved(path: pathops.Path, matrix: Matrix) -> pathops.Path:
+    result = pathops.Path()
+    path.draw(TransformPen(result.getPen(), matrix))
+    result.simplify()
+    return result
+
+
+def shift(path: pathops.Path, dx: float, dy: float) -> pathops.Path:
+    return moved(path, (1, 0, 0, 1, dx, dy))
+
+
+def mirror_x(path: pathops.Path, axis: float) -> pathops.Path:
+    return moved(path, (-1, 0, 0, 1, 2 * axis, 0))
+
+
+def mirror_y(path: pathops.Path, axis: float) -> pathops.Path:
+    return moved(path, (1, 0, 0, -1, 0, 2 * axis))
+
+
+def cap(x: float, y: float) -> pathops.Path:
+    """Un bout rond, au trait des lettres."""
+    return stroked(to_path([("M", (x, y)), ("L", (x + 0.5, y))]))
+
+
+def thickened(path: pathops.Path, amount: float) -> pathops.Path:
+    """Épaissit chaque trait de amount : un morceau réduit retrouve le trait des lettres."""
+    border = pathops.Path()
+    border.addPath(path)
+    border.stroke(amount, pathops.LineCap.ROUND_CAP, pathops.LineJoin.ROUND_JOIN, 4)
+    border.convertConicsToQuads()
+    return merged(path, border)
+
+
+def scaled(path: pathops.Path, factor: float) -> pathops.Path:
+    """Réduit un morceau en gardant le trait des lettres."""
+    return thickened(moved(path, (factor, 0, 0, factor, 0, 0)), STROKE * (1 - factor))
+
+
+def tail_below(source: TTFont, path: pathops.Path, box: Box) -> pathops.Path:
+    """Le coin bas-droit de la lettre (dans box) retourné sous la ligne de base,
+    prolongé par le crochet du j : au lieu de remonter, le trait plonge en queue
+    (ζ ξ ς). Le coin est retourné autour du milieu du trait du bas, pour que la
+    queue reparte du trait sans cassure."""
+    corner = keep(path, box)
+    x = box[0] + 1
+    inside = [y for y in range(-200, 300) if path.contains((x, y))]
+    axis = (min(inside) + max(inside)) / 2
+    turn = mirror_y(corner, axis)
+    end_x, end_y = turn.bounds[2] - HALF, turn.bounds[1] + HALF
+    # Le crochet s'arrête au jambage : on n'en garde que la hauteur qui manque
+    j_stroke = stroke_of(source, "j", 0)
+    hook_bottom = j_stroke.bounds[1]
+    top = min(-20, hook_bottom + (end_y + 20) - (DESCENDER - HALF))
+    hook = keep(j_stroke, (-200, -400, 400, top))
+    hook_x = stroke_centre(hook, top - 20)
+    return merged(drop(path, box), turn, shift(hook, end_x - hook_x - 10, end_y + 20 - top))
+
+
+def merged(*paths: pathops.Path) -> pathops.Path:
+    result = paths[0]
+    for path in paths[1:]:
+        result = pathops.op(result, path, pathops.PathOp.UNION)
+    return result
+
+
+def stroke_centre(path: pathops.Path, y: float, from_right: bool = False) -> float:
+    """Milieu du premier trait rencontré sur l'horizontale y."""
+    xs = range(1200, -400, -2) if from_right else range(-400, 1200, 2)
+    crossings = []
+    was_inside = False
+    for x in xs:
+        now_inside = path.contains((x, y))
+        if now_inside != was_inside:
+            crossings.append(x)
+            if len(crossings) == 2:
+                break
+        was_inside = now_inside
+    return (crossings[0] + crossings[1]) / 2
+
+
+def assembled_alpha(source: TTFont) -> pathops.Path:
+    # Le a de Shantell ; le bas de sa hampe, retourné, la prolonge en haut à
+    # droite : la queue de poisson qui distingue le α du a
+    a = glyph(source, "a")
+    foot = keep(a, (455, -100, 700, 230))
+    flipped = mirror_y(foot, 300)
+    dx = stroke_centre(a, 390, from_right=True) - stroke_centre(flipped, 390, from_right=True)
+    return merged(a, shift(flipped, dx, 0))
+
+
+def assembled_beta(source: TTFont) -> pathops.Path:
+    # Le ß de Shantell, sa hampe prolongée par le bas de la hampe du p
+    eszett = glyph(source, "ß")
+    descender = keep(p_stem(source), (-100, -400, 400, 80))
+    join_y = 40
+    dx = stroke_centre(eszett, join_y) - stroke_centre(descender, join_y)
+    return merged(eszett, shift(descender, dx, 0))
+
+
+def assembled_delta(source: TTFont) -> pathops.Path:
+    # Le ð de Shantell sans sa barre
+    return stroke_of(source, "ð", 0)
+
+
+def assembled_eta(source: TTFont) -> pathops.Path:
+    # Le ŋ de Shantell sans le crochet du bas : sa jambe droite descend dans le
+    # bas de la hampe du p
+    cut_y = -60
+    upper = drop(glyph(source, "ŋ"), (-100, -400, 800, cut_y))
+    descender = keep(p_stem(source), (-100, -400, 400, cut_y + 60))
+    join_y = cut_y + 20
+    dx = stroke_centre(upper, join_y, from_right=True) - stroke_centre(descender, join_y)
+    return merged(upper, shift(descender, dx, 0))
+
+
+def assembled_iota(source: TTFont) -> pathops.Path:
+    # Le bas du l de Shantell, avec son pied qui part à droite
+    l_glyph = glyph(source, "l")
+    top = X_HEIGHT
+    lower = keep(l_glyph, (-100, -100, 800, top))
+    return merged(lower, cap(stroke_centre(lower, top - 2), top))
+
+
+def assembled_lambda(source: TTFont) -> pathops.Path:
+    # Le л de Shantell, sa jambe droite prolongée vers le haut dans son élan, par
+    # deux copies d'un de ses morceaux
+    el = glyph(source, "л")
+    low, high = 200, 380
+    x_low = stroke_centre(el, low, from_right=True)
+    x_high = stroke_centre(el, high, from_right=True)
+    slope = (x_high - x_low) / (high - low)
+    piece = keep(el, (260, low, 800, high))
+    parts = [el]
+    step = high - low - 20
+    rise = 0.0
+    while high + rise < ASCENDER:
+        rise += step
+        parts.append(shift(piece, slope * rise, rise))
+    top = min(ASCENDER, high + rise)
+    end = drop(merged(*parts), (-100, top, 800, 1000))
+    return merged(end, cap(stroke_centre(end, top - 2, from_right=True), top))
+
+def assembled_rho(source: TTFont) -> pathops.Path:
+    # Le o de Shantell et le bas de la hampe du p, accroché à son flanc gauche
+    o = glyph(source, "o")
+    descender = keep(p_stem(source), (-100, -400, 400, 160))
+    join_y = 120
+    dx = stroke_centre(o, join_y) - stroke_centre(descender, join_y)
+    return merged(o, shift(descender, dx, 0))
+
+
+def assembled_sigma(source: TTFont) -> pathops.Path:
+    # Le o de Shantell et la barre du t, qui part de son sommet vers la droite
+    o = glyph(source, "o")
+    bar = stroke_of(source, "t", 1)
+    return merged(o, shift(bar, 270 - bar.bounds[0], o.bounds[3] - bar.bounds[3]))
+
+
+def assembled_upsilon(source: TTFont) -> pathops.Path:
+    return glyph(source, "u")
+
+
+def assembled_varphi(source: TTFont) -> pathops.Path:
+    # Le o de Shantell ouvert en haut à gauche, traversé par la hampe du p
+    o = glyph(source, "o")
+    opened = drop(o, (0, 300, 255, 600))
+    end_x = stroke_centre(opened, 296)
+    shaft = p_stem(source)
+    shaft = shift(shaft, 0, o.bounds[3] - shaft.bounds[3])
+    middle = (o.bounds[0] + o.bounds[2]) / 2
+    return merged(opened, cap(end_x, 300), shift(shaft, middle - stroke_centre(shaft, 250), 0))
+
+
+def assembled_chi(source: TTFont) -> pathops.Path:
+    # Le x de Shantell, étiré pour descendre sous la ligne comme le χ
+    x = glyph(source, "x")
+    y_min, y_max = x.bounds[1], x.bounds[3]
+    factor = (y_max - (DESCENDER - HALF)) / (y_max - y_min)
+    return moved(x, (1, 0, 0, factor, 0, y_max * (1 - factor)))
+
+
+def assembled_psi(source: TTFont) -> pathops.Path:
+    # Le u de Shantell et la hampe du p, étirée du haut des lettres au jambage
+    u = glyph(source, "u")
+    shaft = p_stem(source)
+    top, bottom = shaft.bounds[3], shaft.bounds[1]
+    factor = (ASCENDER + HALF - bottom) / (top - bottom)
+    shaft = moved(shaft, (1, 0, 0, factor, 0, bottom * (1 - factor)))
+    middle = (u.bounds[0] + u.bounds[2]) / 2
+    return merged(u, shift(shaft, middle - stroke_centre(shaft, 250), 0))
+
+
+def assembled_gamma(source: TTFont) -> pathops.Path:
+    # Le v de Shantell posé sur une petite boucle : le o, réduit, au trait des lettres
+    v = glyph(source, "v")
+    loop = scaled(glyph(source, "o"), 0.42)
+    tip_x = stroke_centre(v, 20)
+    loop_x = (loop.bounds[0] + loop.bounds[2]) / 2
+    return merged(v, shift(loop, tip_x - loop_x, DESCENDER - HALF - loop.bounds[1]))
+
+
+def assembled_zeta(source: TTFont) -> pathops.Path:
+    # Le C de Shantell : la barre du t prolonge son sommet, son coin bas-droit
+    # plonge sous la ligne
+    c = drop(glyph(source, "C"), (420, 300, 800, 900))
+    bar = stroke_of(source, "t", 1)
+    top = shift(bar, 360 - bar.bounds[0], 711 - bar.bounds[3])
+    return merged(tail_below(source, c, (300, -100, 800, 250)), top)
+
+
+def assembled_xi(source: TTFont) -> pathops.Path:
+    # Le 3 de Shantell en miroir, son coin bas-droit plongeant sous la ligne
+    three = glyph(source, "3")
+    mirrored = mirror_x(three, (three.bounds[0] + three.bounds[2]) / 2)
+    return tail_below(source, mirrored, (330, -100, 800, 250))
+
+
+def assembled_final_sigma(source: TTFont) -> pathops.Path:
+    # Le c de Shantell, son bout du bas plongeant sous la ligne
+    return tail_below(source, glyph(source, "c"), (250, -100, 800, 200))
+
+
+def assembled_varrho(source: TTFont) -> pathops.Path:
+    # Le o de Shantell et le bas de la hampe du p en miroir : la queue part à droite
+    o = glyph(source, "o")
+    descender = keep(p_stem(source), (-100, -400, 400, 160))
+    descender = mirror_x(descender, stroke_centre(descender, 120))
+    join_y = 120
+    dx = stroke_centre(o, join_y) - stroke_centre(descender, join_y)
+    return merged(o, shift(descender, dx, 0))
+
+
+def assembled_omega(source: TTFont) -> pathops.Path:
+    # Deux u de Shantell resserrés (le fond, coupé au milieu, se recolle), qui
+    # partagent le bras du milieu, raccourci
+    u = glyph(source, "u")
+    middle = (u.bounds[0] + u.bounds[2]) / 2
+    gap = 50
+    narrow = merged(keep(u, (-100, -100, middle - gap / 2, 600)), shift(keep(u, (middle + gap / 2, -100, 800, 600)), -gap, 0))
+    left_arm = stroke_centre(narrow, 300)
+    right_arm = stroke_centre(narrow, 300, from_right=True)
+    second = shift(narrow, right_arm - left_arm, 0)
+    both = merged(narrow, second)
+    shared_top = 250
+    shared = drop(both, (right_arm - 60, shared_top, right_arm + 60, 900))
+    return merged(shared, cap(right_arm, shared_top - 2))
+
+
+def assembled_varpi(source: TTFont) -> pathops.Path:
+    # Le ω, coiffé de la barre du t étirée sur sa largeur
+    omega = assembled_omega(source)
+    bar = stroke_of(source, "t", 1)
+    factor = (omega.bounds[2] - omega.bounds[0]) / (bar.bounds[2] - bar.bounds[0])
+    bar = moved(bar, (factor, 0, 0, 1, 0, 0))
+    return merged(omega, shift(bar, omega.bounds[0] - bar.bounds[0], omega.bounds[3] - bar.bounds[3] + 30))
+
+
+ASSEMBLED: Dict[str, Callable[[TTFont], pathops.Path]] = {
+    "α": assembled_alpha,
+    "β": assembled_beta,
+    "δ": assembled_delta,
+    "η": assembled_eta,
+    "ι": assembled_iota,
+    "λ": assembled_lambda,
+    "ρ": assembled_rho,
+    "σ": assembled_sigma,
+    "υ": assembled_upsilon,
+    "φ": assembled_varphi,
+    "χ": assembled_chi,
+    "ψ": assembled_psi,
+    "γ": assembled_gamma,
+    "ζ": assembled_zeta,
+    "ξ": assembled_xi,
+    "ς": assembled_final_sigma,
+    "ϱ": assembled_varrho,
+    "ω": assembled_omega,
+    "ϖ": assembled_varpi,
+}
+
+
 # --- Lettres dessinées : lignes centrales, unités de Shantell ---
+#
+# Pour les lettres sans morceau Shantell qui convienne : capitales faites de
+# traits droits (Ξ Σ Ψ), où un trait calculé ne se remarque pas, et ϑ.
 
 
-def alpha() -> list:
-    # Une boucle à gauche, les deux traits de droite se croisent en queue de poisson
+def vartheta() -> list:
+    # ϑ manuscrit : un crochet à gauche, le creux, puis la boucle du haut qui
+    # revient en queue vers la droite
     return [
-        ("M", (470, X_HEIGHT + 10)),
-        ("C", (400, 200, 330, BASE, 220, BASE)),
-        ("C", (110, BASE, 50, 120, 50, 235)),
-        ("C", (50, 360, 120, X_HEIGHT, 225, X_HEIGHT)),
-        ("C", (340, X_HEIGHT, 400, 260, 475, BASE - 10)),
-    ]
-
-
-def beta() -> list:
-    return [
-        ("M", (95, DESCENDER)),
-        ("L", (95, 560)),
-        ("C", (95, 670, 160, ASCENDER, 260, ASCENDER)),
-        ("C", (370, ASCENDER, 420, 650, 420, 570)),
-        ("C", (420, 480, 345, 425, 225, 425)),
-        ("C", (390, 425, 470, 330, 470, 220)),
-        ("C", (470, 90, 375, BASE, 260, BASE)),
-        ("C", (180, BASE, 120, 30, 95, 80)),
-    ]
-
-
-def gamma() -> list:
-    # Deux bras qui se croisent sur la ligne de base, une petite boucle dessous
-    return [
-        ("M", (30, X_HEIGHT - 20)),
-        ("C", (130, X_HEIGHT + 20, 220, 260, 255, 40)),
-        ("C", (340, -90, 330, DESCENDER, 255, DESCENDER)),
-        ("C", (180, DESCENDER, 170, -90, 255, 40)),
-        ("M", (465, X_HEIGHT)),
-        ("L", (255, 40)),
-    ]
-
-
-def delta() -> list:
-    return [
-        ("M", (400, ASCENDER - 20)),
-        ("C", (330, ASCENDER + 10, 160, ASCENDER + 10, 160, 650)),
-        ("C", (160, 570, 455, 470, 455, 230)),
-        ("C", (455, 90, 365, BASE, 250, BASE)),
-        ("C", (130, BASE, 50, 90, 50, 220)),
-        ("C", (50, 350, 150, 440, 300, 470)),
-    ]
-
-
-def iota() -> list:
-    # Le ı de Shantell, avec le crochet du bas qui le distingue d'un 1 ou d'un l
-    return [
-        ("M", (90, X_HEIGHT)),
-        ("L", (90, 130)),
-        ("C", (90, 50, 130, BASE, 200, BASE + 10)),
-    ]
-
-
-def zeta() -> list:
-    return [
-        ("M", (140, ASCENDER - 30)),
-        ("L", (390, ASCENDER - 30)),
-        ("C", (210, 570, 60, 390, 60, 220)),
-        ("C", (60, 60, 160, BASE + 10, 300, BASE + 10)),
-        ("C", (420, BASE + 10, 435, -80, 405, -140)),
-        ("C", (385, -190, 335, DESCENDER, 290, DESCENDER)),
-    ]
-
-
-def eta() -> list:
-    # Le n de Shantell, jambe droite prolongée sous la ligne
-    return [
-        ("M", (80, X_HEIGHT)),
-        ("L", (80, BASE)),
-        ("M", (80, 300)),
-        ("C", (110, 410, 190, X_HEIGHT, 290, X_HEIGHT)),
-        ("C", (400, X_HEIGHT, 460, 400, 460, 300)),
-        ("L", (460, DESCENDER)),
-    ]
-
-
-def lambda_() -> list:
-    return [
-        ("M", (90, ASCENDER - 20)),
-        ("C", (180, ASCENDER + 10, 225, 620, 275, 430)),
-        ("L", (450, BASE)),
-        ("M", (275, 410)),
-        ("L", (60, BASE)),
-    ]
-
-
-def rho() -> list:
-    return [
-        ("M", (90, DESCENDER)),
-        ("L", (90, 230)),
-        ("C", (90, 380, 170, X_HEIGHT, 270, X_HEIGHT)),
-        ("C", (390, X_HEIGHT, 460, 370, 460, 230)),
-        ("C", (460, 90, 380, BASE, 270, BASE)),
-        ("C", (180, BASE, 110, 50, 90, 110)),
-    ]
-
-
-def sigma() -> list:
-    # Un o fermé, et le trait du haut qui part à droite
-    return [
-        ("M", (500, X_HEIGHT)),
-        ("L", (250, X_HEIGHT)),
-        ("C", (120, X_HEIGHT, 50, 360, 50, 230)),
-        ("C", (50, 90, 140, BASE, 250, BASE)),
-        ("C", (370, BASE, 440, 100, 440, 230)),
-        ("C", (440, 360, 370, 445, 270, X_HEIGHT)),
-    ]
-
-
-def upsilon() -> list:
-    return [
-        ("M", (60, X_HEIGHT)),
-        ("L", (60, 230)),
-        ("C", (60, 80, 150, BASE, 260, BASE)),
-        ("C", (390, BASE, 460, 130, 460, 300)),
-        ("C", (460, 400, 440, 450, 410, X_HEIGHT)),
-    ]
-
-
-def varphi() -> list:
-    # La boucle ouverte et la hampe du φ manuscrit
-    return [
-        ("M", (170, X_HEIGHT - 20)),
-        ("C", (60, 400, 40, 250, 60, 150)),
-        ("C", (90, 40, 200, BASE, 290, BASE)),
-        ("C", (420, BASE, 490, 100, 490, 240)),
-        ("C", (490, 380, 400, X_HEIGHT, 330, X_HEIGHT)),
-        ("C", (260, X_HEIGHT, 240, 400, 240, 300)),
-        ("L", (240, DESCENDER)),
-    ]
-
-
-def chi() -> list:
-    return [
-        ("M", (30, X_HEIGHT - 20)),
-        ("C", (90, X_HEIGHT + 10, 140, 440, 200, 300)),
-        ("L", (360, -150)),
-        ("C", (390, -210, 420, DESCENDER, 470, DESCENDER + 20)),
-        ("M", (450, X_HEIGHT)),
-        ("L", (60, DESCENDER)),
-    ]
-
-
-def psi() -> list:
-    return [
-        ("M", (40, X_HEIGHT)),
-        ("L", (40, 260)),
-        ("C", (40, 100, 140, BASE, 260, BASE)),
-        ("C", (380, BASE, 480, 100, 480, 260)),
-        ("L", (480, X_HEIGHT)),
-        ("M", (260, ASCENDER)),
-        ("L", (260, DESCENDER)),
-    ]
-
-
-def omega() -> list:
-    # Deux creux arrondis qui se rejoignent au milieu
-    return [
-        ("M", (90, X_HEIGHT)),
-        ("C", (35, 380, 35, BASE, 165, BASE)),
-        ("C", (245, BASE, 265, 80, 265, 200)),
-        ("C", (265, 80, 285, BASE, 365, BASE)),
-        ("C", (495, BASE, 495, 380, 440, X_HEIGHT)),
+        ("M", (50, 380)),
+        ("C", (60, 440, 90, X_HEIGHT, 120, X_HEIGHT)),
+        ("C", (160, X_HEIGHT, 150, 380, 140, 300)),
+        ("C", (130, 150, 160, BASE, 260, BASE)),
+        ("C", (380, BASE, 430, 150, 440, 300)),
+        ("C", (450, 450, 450, ASCENDER, 360, ASCENDER)),
+        ("C", (280, ASCENDER, 250, 650, 270, 560)),
+        ("C", (300, 440, 400, 380, 500, 390)),
     ]
 
 
@@ -286,27 +480,13 @@ def capital_psi() -> list:
 
 
 DRAWN: Dict[str, Callable[[], list]] = {
-    "α": alpha,
-    "β": beta,
-    "γ": gamma,
-    "δ": delta,
-    "ζ": zeta,
-    "ι": iota,
-    "η": eta,
-    "λ": lambda_,
-    "ρ": rho,
-    "σ": sigma,
-    "υ": upsilon,
-    "φ": varphi,
-    "χ": chi,
-    "ψ": psi,
-    "ω": omega,
+    "ϑ": vartheta,
     "Ξ": capital_xi,
     "Σ": capital_sigma,
     "Ψ": capital_psi,
 }
 
-LOWERCASE = "αβγδεϵζηθικλμνορστυφϕχψω"
+LOWERCASE = "αβγδεϵζηθϑικλμνξοϖρϱσςτυφϕχψω"
 CAPITALS = "ΓΔΘΛΞΠΣΥΦΨ"
 TARGETS = {
     "KaTeX_Math-Italic": LOWERCASE + CAPITALS,
@@ -344,6 +524,8 @@ def borrowed_path(source: TTFont, char: str) -> pathops.Path:
 
 
 def letter_path(source: TTFont, char: str) -> pathops.Path:
+    if char in ASSEMBLED:
+        return ASSEMBLED[char](source)
     if char in BORROWED:
         return borrowed_path(source, char)
     return stroked(to_path(DRAWN[char]()))

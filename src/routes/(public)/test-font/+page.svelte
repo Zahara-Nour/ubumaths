@@ -78,7 +78,7 @@
 		// Vecteurs
 		'\\vec{u}+\\vec{v}=\\vec{AB}\\quad\\vec{u}\\cdot\\vec{n}=0',
 		// Lettres grecques
-		'\\alpha\\beta\\gamma\\delta\\varepsilon\\zeta\\eta\\theta\\iota\\kappa\\lambda\\mu\\nu\\rho\\sigma\\tau\\upsilon\\varphi\\phi\\chi\\psi\\omega\\quad\\Gamma\\Delta\\Theta\\Lambda\\Xi\\Pi\\Sigma\\Upsilon\\Phi\\Psi',
+		'\\alpha\\beta\\gamma\\delta\\varepsilon\\zeta\\eta\\theta\\iota\\kappa\\lambda\\mu\\nu\\rho\\sigma\\tau\\upsilon\\varphi\\phi\\chi\\psi\\omega\\quad\\xi\\vartheta\\varpi\\varrho\\varsigma\\quad\\Gamma\\Delta\\Theta\\Lambda\\Xi\\Pi\\Sigma\\Upsilon\\Phi\\Psi',
 		// Lettres-symboles
 		'2\\pi r\\quad\\frac{\\partial f}{\\partial x}\\quad\\Omega\\quad x\\times y',
 		// Grands opérateurs
