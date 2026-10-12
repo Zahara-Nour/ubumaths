@@ -2,6 +2,67 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.26.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.25.0...v0.26.0) (2026-10-12)
+
+### ✨ Features
+
+- **exercises:** sens de AB des exercices selon leur thème, à l'écran et au PDF ([22f880f](https://github.com/Zahara-Nour/ubumaths/commit/22f880fafe7717994ae1c1356cd9f30f98c4e3ef))
+- **fiches:** variables aléatoires 1re spé en sections, 10 exercices et illustrations ([6010603](https://github.com/Zahara-Nour/ubumaths/commit/60106032000b08501824461d5839aa451af2e440))
+- **limits:** limites à l'infini par factorisation du terme prépondérant ([ccca07c](https://github.com/Zahara-Nour/ubumaths/commit/ccca07c3fad14a379db4e0eaf6e48ac0cbc6eb09))
+- **mathast:** option capitalPairs de la syntaxe maison (parseCustom, Pratt et rd) ([864a717](https://github.com/Zahara-Nour/ubumaths/commit/864a7171b9464856a3eb246352ff985a027a60f8))
+- **questions:** formules en syntaxe maison écrites selon le sens de AB de l'instance ([2fa77ac](https://github.com/Zahara-Nour/ubumaths/commit/2fa77ac994d7a8e77b39632a840fb3c332f84c0f))
+- **questions:** le sens de AB descend dans l'écriture des questions (lot 5) ([c19a8e3](https://github.com/Zahara-Nour/ubumaths/commit/c19a8e34379d1b349127d417b1285502e376cd30))
+- **structure:** lecture des longueurs de segments et case « lire AB comme un produit » ([358da17](https://github.com/Zahara-Nour/ubumaths/commit/358da179019c2ae64dbcbe0b2512c5667f5bb20f))
+- **structure:** signe − devant une longueur, survol d'une longueur primée testé ([015bf2e](https://github.com/Zahara-Nour/ubumaths/commit/015bf2e83379ff959b7436994d6d4af87595b235))
+- **worksheets:** une série d'automatismes fige AB selon le sens de l'instance ([13afe04](https://github.com/Zahara-Nour/ubumaths/commit/13afe04a2c31868c25ea163e2dbe4c7a58152da6))
+
+### 🐛 Bug Fixes
+
+- **a11y:** retirer le doublon .sr-only d'app.css, les libellés sm:not-sr-only réapparaissent ([e3009a0](https://github.com/Zahara-Nour/ubumaths/commit/e3009a086bb8e7b768c7f5dc507a21d02e1ea3a1))
+- **api:** messages d'erreur de l'administration en français ([1d9c1d7](https://github.com/Zahara-Nour/ubumaths/commit/1d9c1d7e22fbf3acbdd24bd4b1eda5be70822918))
+- **api:** messages d'erreur des outils (Python, tableau blanc, Google) en français ([acac3ac](https://github.com/Zahara-Nour/ubumaths/commit/acac3ac9897d7401c47bb04a0abcef9714b765e6))
+- **calcul:** comparer des intervalles, pas des arrondis ([64b3d36](https://github.com/Zahara-Nour/ubumaths/commit/64b3d36139c64c4c94f44ccf17105d05ab46796d))
+- **calcul:** produit de puissances calculé sur ses facteurs, plafond non compensé ([03a1a85](https://github.com/Zahara-Nour/ubumaths/commit/03a1a853d329fca3b64b96596068aec5914236ec))
+- **calcul:** trancher une comparaison sur des encadrements rigoureux ([6279214](https://github.com/Zahara-Nour/ubumaths/commit/6279214d60ddeafaf7a7ed03f2fa09d28de03ce6))
+- **calcul:** un produit de puissances se prévoit après compensation des exposants ([182030a](https://github.com/Zahara-Nour/ubumaths/commit/182030accb5e5229d567b5dd0e2f4c578f80fc76))
+- **calcul:** une comparaison passe par le plafond de calcul, membre par membre ([3dc8578](https://github.com/Zahara-Nour/ubumaths/commit/3dc857859e4e3d91a68025c11820289f55e0cf4a))
+- **chat:** le serveur pose le prompt du père ubu, le chat de /pere-ubu répond à nouveau ([9ad0056](https://github.com/Zahara-Nour/ubumaths/commit/9ad0056810b5c92506bd130076ed1523230d4691))
+- **db:** trois fonctions de jeu et d'énigme réservées au client service ([993f5c2](https://github.com/Zahara-Nour/ubumaths/commit/993f5c277eb2e56890d1129aabb9cd8e296990b9))
+- **docs:** un index ne couvre plus le code qu'il cite ([ed65cb0](https://github.com/Zahara-Nour/ubumaths/commit/ed65cb05b0107b297e29d53be8b3f1b195e62a2b))
+- **limits:** \lim des deux côtés de l'égalité, signe moins devant la fraction ([d431998](https://github.com/Zahara-Nour/ubumaths/commit/d43199891fe00fd1c4c538fb994af88c5e418ea5))
+- **limits:** côté écrit dans les limites à gauche et à droite, continuité comparée en valeur ([d6558a9](https://github.com/Zahara-Nour/ubumaths/commit/d6558a94b1a236bd8c3013807c5be0ac0a415a9a))
+- **limits:** limite pédagogique à l'infini exacte, borne parsée reconnue ([3fe6ef2](https://github.com/Zahara-Nour/ubumaths/commit/3fe6ef21d10a69691d6ae62c5989ce2ff0f5ce42))
+- **limits:** quotient irrationnel réduit, constante, ménage des lecteurs en flottants ([9e8cd89](https://github.com/Zahara-Nour/ubumaths/commit/9e8cd897c7777cb47962d5b3f7cbfa9c68f94104))
+- **limits:** terme prépondérant, suite de la revue et réponses de David ([237cf29](https://github.com/Zahara-Nour/ubumaths/commit/237cf2996f95b978b6860b08b5c4abe8764bec91))
+- **questions:** cases d'une formule à longueurs repérées selon le sens de la question ([d0bb9bf](https://github.com/Zahara-Nour/ubumaths/commit/d0bb9bf77f8be8b7bb36deff6af63aa462c94a61))
+- **tidy:** fonctions de l'énoncé comptées comme inconnues, étape « nombre en tête » ([63689df](https://github.com/Zahara-Nour/ubumaths/commit/63689df517df89293162c43fd3ac9b62a41c0eb8))
+- **tidy:** le nombre rationnel en tête d'une somme sans variable ([b93f14e](https://github.com/Zahara-Nour/ubumaths/commit/b93f14ef29424fab9e912d6be13a84d9d767a438))
+- **tidy:** pas de double signe sous un moins, témoins des complexes ([5e97eee](https://github.com/Zahara-Nour/ubumaths/commit/5e97eeeb16bc6a7f038d6162fd45cf645f68f903))
+- **tidy:** un complexe s'écrit a+ib, partie réelle en tête même négative ([7754f3b](https://github.com/Zahara-Nour/ubumaths/commit/7754f3bddaecd9efbf03d859f081520073fa09ce)), closes [#1195](https://github.com/Zahara-Nour/ubumaths/issues/1195)
+- **worksheets:** thème lu à la génération des copies, titres de l'aperçu dans leur sens ([bb6f826](https://github.com/Zahara-Nour/ubumaths/commit/bb6f8262894caecab3e93428f521f8c45d05abff))
+
+### 📚 Documentation
+
+- aucun changement de doc pour la traduction des messages des outils ([d4ec2ed](https://github.com/Zahara-Nour/ubumaths/commit/d4ec2eddd95039e1bf7bdd0fec8583d3261a4451))
+- **db:** fonction réservée au serveur, retrait du droit en deux temps ([c3a1740](https://github.com/Zahara-Nour/ubumaths/commit/c3a1740a8868a8983326003f5698cd8dd263c215))
+- doc des zones admin reportée (traduction de messages seulement) ([b3b2a47](https://github.com/Zahara-Nour/ubumaths/commit/b3b2a47eb73316c81e34319f24e94fcca3284d20))
+- **ecarts:** d21, devenir du tuteur ia ; v31 en suspens ([902f0fe](https://github.com/Zahara-Nour/ubumaths/commit/902f0fe4a1904191eaaa9c9c401c62ca03268251))
+- **ecarts:** v29 et v30 corrigés, t18 en partie ([5c81c10](https://github.com/Zahara-Nour/ubumaths/commit/5c81c109fc89433a2c3a5b01b6d7eb047ee953e9))
+- **exercices:** doc système de la zone exercices, retirée des trous ([e3a0b2e](https://github.com/Zahara-Nour/ubumaths/commit/e3a0b2e116dc5186c7fc5eae797b9204b29a8dca))
+- **grandes-fractions:** suite de [#1184](https://github.com/Zahara-Nour/ubumaths/issues/1184), comparaisons hors plafond ([272d886](https://github.com/Zahara-Nour/ubumaths/commit/272d88696ce87e6d9fd9fafbf7290c5b5fca49f1))
+- **longueurs:** lot 5, syntaxe maison et écriture des questions ([c5628ef](https://github.com/Zahara-Nour/ubumaths/commit/c5628efed07f95c555b3f685931a462581ebccbf))
+- **longueurs:** lot 6, sens de AB des exercices (écran, PDF, vue élève) ([6305537](https://github.com/Zahara-Nour/ubumaths/commit/63055374db5c2b4f027fc016e38e418838b9ce3e))
+- **longueurs:** lot 6, zone exercices sans doc à trancher ([60d5c5e](https://github.com/Zahara-Nour/ubumaths/commit/60d5c5e9f2452044864ce4a414bad0c3cb0d30f5))
+- **questions:** sens de AB des exercices rédigés résolu par le thème (lot 6) ([a199ee4](https://github.com/Zahara-Nour/ubumaths/commit/a199ee4237b90d16b87d40ce80a5ad00980bd6e9))
+- **serveur:** la colonne de l'index renvoie au domaine, elle ne dit pas qui couvre ([4b46a70](https://github.com/Zahara-Nour/ubumaths/commit/4b46a70dd51cfde810c974693d1a622f40a51a66))
+- **serveur:** relancer une HttpError depuis un catch, garde des messages d'API ([8232803](https://github.com/Zahara-Nour/ubumaths/commit/82328030ecbebb8b4c4e609553a4412dff1209e6))
+- **tuteur-ia:** couvrir chat-request.ts ([4a7a4a3](https://github.com/Zahara-Nour/ubumaths/commit/4a7a4a39312d9939ff6ce06e7d1f8c89dbe14f56))
+- **tuteur:** le chat garde AB en produit dans la fenêtre d'un exercice ([c160371](https://github.com/Zahara-Nour/ubumaths/commit/c16037168e1a3cf8e42cd1f3f5daa4cf2735769d))
+- **wip:** étape 2 bis faite ([2be1132](https://github.com/Zahara-Nour/ubumaths/commit/2be113240c963cf37d35f02d8738d938fce9baaa))
+- **wip:** étape C des énigmes reportée ([5351e6b](https://github.com/Zahara-Nour/ubumaths/commit/5351e6bd041d1c8bf303e35a9cf2fceefac70716))
+- **wip:** fonctions de jeu réservées au serveur, en prod ([c3cb6a8](https://github.com/Zahara-Nour/ubumaths/commit/c3cb6a8bbb1b820150b12a42c9aadcfe6cbadec9))
+- **wip:** journal de la refonte des fiches variables aléatoires ([8a13464](https://github.com/Zahara-Nour/ubumaths/commit/8a13464ad655852fae4999f79dbacb18cf408e63))
+
 ## [0.25.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.24.0...v0.25.0) (2026-10-12)
 
 ### ✨ Features
