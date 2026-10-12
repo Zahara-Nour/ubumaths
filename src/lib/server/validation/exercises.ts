@@ -490,21 +490,6 @@ export const exportExercisesSchema = z.object({
 });
 
 /**
- * Schema for single exercise export query params (GET /api/exercises/[id]/export)
- */
-export const exportSingleExerciseQuerySchema = z.object({
-	format: z
-		.enum(['json', 'markdown'], {
-			message: 'Le format doit être « json » ou « markdown »'
-		})
-		.default('json'),
-	pretty: z
-		.string()
-		.default('true')
-		.transform((val) => val !== 'false')
-});
-
-/**
  * Schema for marking exercise as viewed (POST /api/exercises/[id]/view)
  */
 export const viewExerciseSchema = z.object({
@@ -604,13 +589,6 @@ export function validateStudentExerciseFilters(params: URLSearchParams) {
  */
 export function validateExportExercises(data: unknown) {
 	return exportExercisesSchema.safeParse(data);
-}
-
-/**
- * Validate single exercise export query parameters
- */
-export function validateExportSingleExerciseQuery(params: URLSearchParams) {
-	return exportSingleExerciseQuerySchema.safeParse(Object.fromEntries(params));
 }
 
 /**
@@ -782,13 +760,6 @@ export const exerciseStatsSchema = z.object({
 	completed_count: z.number().int().nonnegative(),
 	completion_rate: z.number().min(0).max(100),
 	average_time_minutes: z.number().nonnegative().nullable().optional()
-});
-
-/**
- * Exercise stats response schema (GET /api/exercises/[id]/stats)
- */
-export const exerciseStatsResponseSchema = z.object({
-	stats: exerciseStatsSchema
 });
 
 /**
