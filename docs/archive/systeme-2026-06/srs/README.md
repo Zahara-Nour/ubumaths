@@ -289,19 +289,19 @@ Refonte SRS / FSRS / Référentiel famille A en 17 commits, livrée en release v
 
 ### Bilan chiffré
 
-| Avant chantier                                                | Après chantier                                |
+| Avant chantier | Après chantier |
 | ------------------------------------------------------------- | --------------------------------------------- | --------------------------------- |
-| `skill_attempts` : 1 row par skill tagué (N rows par attempt) | 1 row par attempt (per-template)              |
-| `skill_id` NOT NULL                                           | nullable (NULL en famille A)                  |
-| `to_review` calculé (seuil 30j arbitraire)                    | Supprimé, remplacé par badge FSRS-derived     |
-| Trigger PG : recompute via `skill_id`                         | recompute via JOIN `question_template_points` |
-| `srs_card_stats` : seulement Monde 2                          | Maintenu aussi par Monde 1                    |
-| Deck Programme                                                | N/A → auto-géré (1 par élève)                 |
-| Sections manuelles                                            | N/A → table `srs_deck_sections` + CRUD        |
-| Pages dashboard revisions                                     | 3 (revisions/, create/, study/)               | 5 (+ programme/, decks/[id]/)     |
-| Audits                                                        | 0                                             | 3 (code review + perf + sécurité) |
-| Tests sur nouveau code                                        | N/A                                           | **0 (dette critique)**            |
-| Documents `docs/systeme/srs/`                                 | 0                                             | 6 (README + 5 docs)               |
+| `skill_attempts` : 1 row par skill tagué (N rows par attempt) | 1 row par attempt (per-template) |
+| `skill_id` NOT NULL | nullable (NULL en famille A) |
+| `to_review` calculé (seuil 30j arbitraire) | Supprimé, remplacé par badge FSRS-derived |
+| Trigger PG : recompute via `skill_id` | recompute via JOIN `question_template_points` |
+| `srs_card_stats` : seulement Monde 2 | Maintenu aussi par Monde 1 |
+| Deck Programme | N/A → auto-géré (1 par élève) |
+| Sections manuelles | N/A → table `srs_deck_sections` + CRUD |
+| Pages dashboard revisions | 3 (revisions/, create/, study/) | 5 (+ programme/, decks/[id]/) |
+| Audits | 0 | 3 (code review + perf + sécurité) |
+| Tests sur nouveau code | N/A | **0 (dette critique)** |
+| Documents `docs/systeme/srs/` | 0 | 6 (README + 5 docs) |
 
 ### Recommandation prochaine session
 

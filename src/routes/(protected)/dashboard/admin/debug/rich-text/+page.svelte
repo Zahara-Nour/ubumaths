@@ -2122,8 +2122,7 @@ Le plus petit titre.`
 							oninput={handleImportChange}
 							placeholder="# Titre&#10;&#10;Texte avec **gras** et *italique*..."
 							spellcheck="false"
-							aria-label="Source Markdown"
-						></textarea>
+							aria-label="Source Markdown"></textarea>
 					</details>
 				</Card.Content>
 			</Card.Root>
@@ -2316,8 +2315,7 @@ Le plus petit titre.`
 								class="h-48 w-full resize-y rounded-md border border-border bg-muted/50 p-4 font-mono text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 								value={exportMarkdown}
 								readonly
-								aria-label="Markdown exporte brut"
-							></textarea>
+								aria-label="Markdown exporte brut"></textarea>
 						{/if}
 					{:else}
 						<!-- Normal view when roundtrip is OK -->
@@ -2325,8 +2323,7 @@ Le plus petit titre.`
 							class="h-48 w-full resize-y rounded-md border border-border bg-muted/50 p-4 font-mono text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
 							value={exportMarkdown}
 							readonly
-							aria-label="Markdown exporte"
-						></textarea>
+							aria-label="Markdown exporte"></textarea>
 					{/if}
 				</Card.Content>
 			</Card.Root>

@@ -155,9 +155,7 @@ interface BroadcastReadReceiptPayload {
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type BroadcastPayload =
-	| BroadcastMessagePayload
-	| BroadcastReactionPayload
-	| BroadcastReadReceiptPayload;
+	BroadcastMessagePayload | BroadcastReactionPayload | BroadcastReadReceiptPayload;
 
 /**
  * Hybrid Chat Store - Uses DUAL subscription strategy for optimal UX and quota management

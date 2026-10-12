@@ -79,8 +79,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 		.map((item) => {
 			// Handle Supabase JOIN types
 			const classData = item.classes as unknown as
-				| { id: string; name: string }
-				| { id: string; name: string }[];
+				{ id: string; name: string } | { id: string; name: string }[];
 			const classInfo = Array.isArray(classData) ? classData[0] : classData;
 
 			// Validate JOIN data exists
@@ -137,8 +136,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 			const topicMap = new Map<string, { id: string; name: string }>();
 			for (const item of topicsData || []) {
 				const topicData = item.google_classroom_topics as unknown as
-					| { id: string; name: string }
-					| { id: string; name: string }[];
+					{ id: string; name: string } | { id: string; name: string }[];
 				const topic = Array.isArray(topicData) ? topicData[0] : topicData;
 
 				// Validate JOIN data exists

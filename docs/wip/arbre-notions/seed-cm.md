@@ -115,10 +115,10 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 
 ### … > Le calcul mental — tout en `fluence` (S5)
 
-| Code    | Énoncé (verbatim BO ; ✂ = scission S2)                                                                                                                          | kind  | rég. | nœud                                                  |
+| Code    | Énoncé (verbatim BO ; ✂ = scission S2)                                                                                                                           | kind  | rég. | nœud                                                  |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ----------------------------------------------------- |
-| CM1-035 | Connaître des faits numériques usuels relatifs aux nombres entiers — répertoire additif ✂                                                                       | conn. | flu. | Entiers : addition et soustraction > tables           |
-| CM1-036 | Connaître des faits numériques usuels relatifs aux nombres entiers — répertoire multiplicatif ✂                                                                 | conn. | flu. | Entiers : multiplication > tables                     |
+| CM1-035 | Connaître des faits numériques usuels relatifs aux nombres entiers — répertoire additif ✂                                                                        | conn. | flu. | Entiers : addition et soustraction > tables           |
+| CM1-036 | Connaître des faits numériques usuels relatifs aux nombres entiers — répertoire multiplicatif ✂                                                                  | conn. | flu. | Entiers : multiplication > tables                     |
 | CM1-037 | Connaître quelques relations entre des fractions usuelles                                                                                                        | conn. | flu. | Fractions : sens et écritures > égalité de fractions  |
 | CM1-038 | Connaître l'écriture décimale de fractions usuelles                                                                                                              | conn. | flu. | Fractions : sens et écritures > forme décimale        |
 | CM1-039 | Ajouter un nombre entier inférieur à 10, d'unités, de dizaines, de centaines, de dixièmes ou de centièmes à un nombre décimal, lorsqu'il n'y a pas de retenue    | s-f   | flu. | Décimaux : calculs > addition                         |
@@ -306,10 +306,10 @@ réellement distincts, chaque scission documentée ici). Son application au cour
 
 ### … > Le calcul mental — tout en `fluence` (S5)
 
-| Code    | Énoncé (verbatim BO ; ✂ = scission S2)                                                                                                                              | kind  | rég. | nœud                                                  |
+| Code    | Énoncé (verbatim BO ; ✂ = scission S2)                                                                                                                               | kind  | rég. | nœud                                                  |
 | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ----------------------------------------------------- |
-| CM2-035 | Connaître des faits numériques usuels avec des entiers — répertoire additif ✂                                                                                       | conn. | flu. | Entiers : addition et soustraction > tables           |
-| CM2-036 | Connaître des faits numériques usuels avec des entiers — répertoire multiplicatif ✂                                                                                 | conn. | flu. | Entiers : multiplication > tables                     |
+| CM2-035 | Connaître des faits numériques usuels avec des entiers — répertoire additif ✂                                                                                        | conn. | flu. | Entiers : addition et soustraction > tables           |
+| CM2-036 | Connaître des faits numériques usuels avec des entiers — répertoire multiplicatif ✂                                                                                  | conn. | flu. | Entiers : multiplication > tables                     |
 | CM2-037 | Connaître la moitié des nombres impairs jusqu'à 15                                                                                                                   | conn. | flu. | Décimaux : calculs > division                         |
 | CM2-038 | Connaître quelques relations entre des fractions usuelles                                                                                                            | conn. | flu. | Fractions : sens et écritures > égalité de fractions  |
 | CM2-039 | Connaître l'écriture décimale de fractions usuelles                                                                                                                  | conn. | flu. | Fractions : sens et écritures > forme décimale        |

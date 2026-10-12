@@ -35,8 +35,7 @@ export type { AdminDictionaryRow, DictionaryVersion };
 
 /** Résultat d'un enregistrement : la ligne écrite, ou les refus en français. */
 export type SaveResult =
-	| { ok: true; row: AdminDictionaryRow }
-	| { ok: false; status: 400 | 404; problems: string[] };
+	{ ok: true; row: AdminDictionaryRow } | { ok: false; status: 400 | 404; problems: string[] };
 
 // ---------------------------------------------------------------------------
 // Constantes

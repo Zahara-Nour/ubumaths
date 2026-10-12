@@ -11,12 +11,7 @@
  */
 
 export type WorkSource =
-	| 'assessment'
-	| 'exercise'
-	| 'worksheet'
-	| 'python'
-	| 'python_notebook'
-	| 'python_file';
+	'assessment' | 'exercise' | 'worksheet' | 'python' | 'python_notebook' | 'python_file';
 
 export type WorkStatus = 'todo' | 'done';
 

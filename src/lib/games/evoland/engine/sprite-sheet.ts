@@ -79,9 +79,7 @@ function getPixelPerfectContext(
 	canvas: OffscreenCanvas | HTMLCanvasElement
 ): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D {
 	const ctx = canvas.getContext('2d') as
-		| CanvasRenderingContext2D
-		| OffscreenCanvasRenderingContext2D
-		| null;
+		CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null;
 	if (!ctx) {
 		throw new Error('Failed to get 2D rendering context');
 	}

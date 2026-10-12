@@ -29,10 +29,7 @@ import { isNumber, isAddition, isSubtraction } from '../guards';
  * Types of algebraic structures
  */
 export type StructureType =
-	| 'difference_of_squares'
-	| 'perfect_square_trinomial'
-	| 'sum_of_cubes'
-	| 'difference_of_cubes';
+	'difference_of_squares' | 'perfect_square_trinomial' | 'sum_of_cubes' | 'difference_of_cubes';
 
 /**
  * Base detected structure

@@ -25,8 +25,7 @@ async function open(options: Record<string, unknown> = {}) {
 
 const buttonNamed = (container: HTMLElement, label: string) =>
 	[...container.querySelectorAll('button')].find((b) => b.textContent?.includes(label)) as
-		| HTMLButtonElement
-		| undefined;
+		HTMLButtonElement | undefined;
 
 describe('partager', () => {
 	it('propose le partage quand on est chez soi', async () => {

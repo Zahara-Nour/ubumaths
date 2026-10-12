@@ -30,9 +30,9 @@
 	<p>
 		Publié par Giovan Battista Bellaso en 1553 et popularisé par Blaise de Vigenère en 1586, ce
 		chiffre fait un César dont le décalage
-		<strong>change à chaque lettre</strong> : il est donné par les lettres d’un mot-clé, répété tout
-		au long du message. Une même lettre claire n’est donc plus toujours chiffrée pareil, et l’analyse
-		de fréquences ne suffit plus. On l’a surnommé « le chiffre indéchiffrable ».
+		<strong>change à chaque lettre</strong> : il est donné par les lettres d’un mot-clé, répété tout au
+		long du message. Une même lettre claire n’est donc plus toujours chiffrée pareil, et l’analyse de
+		fréquences ne suffit plus. On l’a surnommé « le chiffre indéchiffrable ».
 	</p>
 	<p>
 		Il a résisté près de trois siècles, jusqu’à ce que Friedrich Kasiski publie sa méthode en 1863.

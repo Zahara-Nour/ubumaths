@@ -265,9 +265,10 @@ function formatStandard(step: PedagogicalIntegrationStep, afterLatex: string, dx
 // Renderer
 // =============================================================================
 
-export class PedagogicalIntegrationRenderer
-	implements StepRenderer<PedagogicalIntegrationStep, IntegrationRenderOptions>
-{
+export class PedagogicalIntegrationRenderer implements StepRenderer<
+	PedagogicalIntegrationStep,
+	IntegrationRenderOptions
+> {
 	render(step: PedagogicalIntegrationStep, options: IntegrationRenderOptions): RenderedStep {
 		const effective = effectiveSchoolLevel(options.schoolLevel);
 		const title = lookupTitle(step.rule, effective, step.bindings, step.description);

@@ -400,14 +400,7 @@ export function bareFunctionMessage(name: string): string {
 
 /** Les commandes dont l'argument se lit avec des mots-clés. */
 export type KeywordCommand =
-	| 'diff'
-	| 'integrate'
-	| 'solve'
-	| 'eval'
-	| 'equiv'
-	| 'taylor'
-	| 'variations'
-	| 'domain';
+	'diff' | 'integrate' | 'solve' | 'eval' | 'equiv' | 'taylor' | 'variations' | 'domain';
 
 /** Un mot-clé, écrit sans accent (`à` se lit `a`). */
 type Keyword = 'pour' | 'de' | 'en' | 'ordre' | 'dans' | 'et';

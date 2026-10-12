@@ -226,8 +226,10 @@ export interface PedagogicalIntegrationResult {
  * mais sans primitive quand f a une valeur interdite dans [a ; b]
  * (`undefinedAt`) — le refus ne la calcule pas (V28).
  */
-export interface PedagogicalDefiniteIntegrationResult
-	extends Omit<PedagogicalIntegrationResult, 'antiderivative'> {
+export interface PedagogicalDefiniteIntegrationResult extends Omit<
+	PedagogicalIntegrationResult,
+	'antiderivative'
+> {
 	readonly antiderivative?: MathNode;
 }
 

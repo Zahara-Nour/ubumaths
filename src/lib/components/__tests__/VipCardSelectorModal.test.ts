@@ -407,10 +407,7 @@ describe('VipCardSelectorModal - Edge Cases', () => {
 				image_path: `/card-${i}.jpg`,
 				category: 'bonus' as const,
 				rarity: ['common', 'rare', 'epic', 'legendary'][i % 4] as
-					| 'common'
-					| 'rare'
-					| 'epic'
-					| 'legendary',
+					'common' | 'rare' | 'epic' | 'legendary',
 				is_enabled: true,
 				sort_order: i,
 				action: null,

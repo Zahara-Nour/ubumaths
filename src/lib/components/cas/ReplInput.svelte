@@ -472,8 +472,7 @@
 						'text-foreground outline-none placeholder:text-muted-foreground',
 						'focus:ring-0 focus:outline-none',
 						replStore.isSearching && 'opacity-50'
-					)}
-				></textarea>
+					)}></textarea>
 
 				<!-- Completion dropdown -->
 				{#if showCompletions && completions.length > 0}

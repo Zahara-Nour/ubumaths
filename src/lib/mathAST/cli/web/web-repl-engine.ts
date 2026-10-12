@@ -1915,8 +1915,7 @@ function linregLatex(left: string, term: string, slope: Fraction, intercept: Fra
 function readLinregArguments(
 	args: string
 ):
-	| { ok: true; xRaw: string[]; yRaw: string[]; options: string[] }
-	| { ok: false; message: string } {
+	{ ok: true; xRaw: string[]; yRaw: string[]; options: string[] } | { ok: false; message: string } {
 	const colon = args.indexOf(':');
 	const xPart = args.slice(0, colon).trim();
 	const rest = args.slice(colon + 1);

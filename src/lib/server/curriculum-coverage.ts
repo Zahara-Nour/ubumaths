@@ -115,8 +115,7 @@ function readCategories(raw: unknown): SeriesCategoryRef[] {
 	const categories: SeriesCategoryRef[] = [];
 	for (const item of raw) {
 		const category = (item as { category?: unknown } | null)?.category as
-			| Partial<SeriesCategoryRef>
-			| undefined;
+			Partial<SeriesCategoryRef> | undefined;
 		// Une catégorie mal formée est ignorée, pas fatale (même règle que l'ancienne
 		// fonction SQL, qui comparait en texte pour ne pas échouer en entier).
 		if (

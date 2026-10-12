@@ -405,8 +405,8 @@
 			<Dialog.Title>Supprimer ce modèle ?</Dialog.Title>
 			<Dialog.Description>
 				Le modèle « {data.template.title} » et son historique de versions seront effacés définitivement.
-				Le chapitre dont il a été tiré n'est pas touché, et les chapitres déjà créés à partir de lui
-				sont conservés — ils deviennent simplement indépendants.
+				Le chapitre dont il a été tiré n'est pas touché, et les chapitres déjà créés à partir de lui sont
+				conservés — ils deviennent simplement indépendants.
 			</Dialog.Description>
 		</Dialog.Header>
 

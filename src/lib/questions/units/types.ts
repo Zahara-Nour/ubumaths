@@ -394,8 +394,7 @@ export interface SIPrefixDef {
  * };
  */
 export type ConversionResult =
-	| { success: true; value: number; unit: Unit }
-	| { success: false; error: string };
+	{ success: true; value: number; unit: Unit } | { success: false; error: string };
 
 // ============================================================================
 // DIMENSION MAP

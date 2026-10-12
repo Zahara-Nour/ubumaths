@@ -269,14 +269,7 @@ export interface ObjectState {
 	readonly type: ObjectType;
 	/** Original step that created this object */
 	readonly step:
-		| PointStep
-		| MidpointStep
-		| LineStep
-		| ArcStep
-		| CircleStep
-		| TextStep
-		| LabelStep
-		| MarkStep;
+		PointStep | MidpointStep | LineStep | ArcStep | CircleStep | TextStep | LabelStep | MarkStep;
 	/** Current visibility */
 	visible: boolean;
 	/** Current position (for movable objects like points, text, labels, marks) */

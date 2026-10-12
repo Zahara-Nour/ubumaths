@@ -151,8 +151,8 @@ modélisation`, par symétrie.
 | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------------------------- |
 | 1GEN-001 | Deux caractères qualitatifs : exemples d'analyse du croisement de deux caractères par représentation graphique (diagrammes en barres, diagrammes circulaires) | conn. | Tableaux croisés (notion) _(discutable 1)_        |
 | 1GEN-002 | Deux caractères quantitatifs : représentation par un nuage de points                                                                                          | conn. | Statistique à deux variables > nuage de points    |
-| 1GEN-003 | ✂ Ajustement affine                                                                                                                                          | conn. | Statistique à deux variables > ajustement affine  |
-| 1GEN-004 | ✂ Point moyen                                                                                                                                                | conn. | Statistique à deux variables > point moyen        |
+| 1GEN-003 | ✂ Ajustement affine                                                                                                                                           | conn. | Statistique à deux variables > ajustement affine  |
+| 1GEN-004 | ✂ Point moyen                                                                                                                                                 | conn. | Statistique à deux variables > point moyen        |
 | 1GEN-005 | Interpolation, extrapolation                                                                                                                                  | conn. | Statistique à deux variables > ajustement affine  |
 | 1GEN-006 | Utiliser un tableur pour représenter des données sous forme de tableau ou de diagramme                                                                        | s-f   | Représenter des données (notion) _(discutable 2)_ |
 | 1GEN-007 | Déterminer et utiliser un ajustement affine pour interpoler ou extrapoler des valeurs inconnues                                                               | s-f   | Statistique à deux variables > ajustement affine  |
@@ -177,8 +177,8 @@ modélisation`, par symétrie.
 | 1GEN-016 | Suites arithmétiques : représentation graphique                                                                               | conn. | Généralités sur les suites > représentation graphique |
 | 1GEN-017 | Reconnaitre un phénomène discret ou continu de croissance linéaire et savoir le modéliser                                     | s-f   | Modèles d'évolution (notion) _(discutable 3)_         |
 | 1GEN-018 | Calculer un terme de rang donné d'une suite arithmétique définie par une relation fonctionnelle ou une relation de récurrence | s-f   | Suites arithmétiques (notion)                         |
-| 1GEN-019 | ✂ Réaliser et exploiter la représentation graphique des termes d'une suite arithmétique                                      | s-f   | Généralités sur les suites > représentation graphique |
-| 1GEN-020 | ✂ Réaliser et exploiter la représentation graphique d'une fonction affine                                                    | s-f   | Fonctions affines > expression et droite              |
+| 1GEN-019 | ✂ Réaliser et exploiter la représentation graphique des termes d'une suite arithmétique                                       | s-f   | Généralités sur les suites > représentation graphique |
+| 1GEN-020 | ✂ Réaliser et exploiter la représentation graphique d'une fonction affine                                                     | s-f   | Fonctions affines > expression et droite              |
 | 1GEN-021 | Résoudre un problème de seuil dans le cas d'une croissance linéaire                                                           | s-f   | Modèles d'évolution > seuil                           |
 
 ### Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique (branche `Fonctions`)
@@ -189,8 +189,8 @@ modélisation`, par symétrie.
 | 1GEN-023 | Racines et signe d'un polynôme de degré 2 donné sous forme factorisée (le calcul des racines à l'aide du discriminant ne figure pas au programme)                                                   | conn. | Second degré (notion)   |
 | 1GEN-024 | Associer une parabole à une expression algébrique de degré 2, pour les fonctions de la forme $x \mapsto ax^2$, $x \mapsto ax^2 + c$, $x \mapsto a(x - x_1)(x - x_2)$                                | s-f   | Second degré > parabole |
 | 1GEN-025 | Déterminer des éléments caractéristiques de la fonction $x \mapsto ax^2 + bx + c$ (aucune formule n'est attendue ; l'axe de symétrie se détermine par exemple en résolvant $f(x) = c$)              | s-f   | Second degré > parabole |
-| 1GEN-026 | ✂ Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour trouver ses racines                                                                         | s-f   | Second degré > racines  |
-| 1GEN-027 | ✂ Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour étudier son signe                                                                           | s-f   | Second degré > signe    |
+| 1GEN-026 | ✂ Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour trouver ses racines                                                                          | s-f   | Second degré > racines  |
+| 1GEN-027 | ✂ Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour étudier son signe                                                                            | s-f   | Second degré > signe    |
 
 ### Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle (branches `Suites` / `Fonctions` / `Proportionnalité`)
 
@@ -209,8 +209,8 @@ modélisation`, par symétrie.
 | 1GEN-038 | Reconnaitre un phénomène discret ou continu de croissance ou décroissance exponentielle et savoir le modéliser                                                                     | s-f   | Fonction exponentielle > croissance et décroissance exponentielles _(discutable 3)_ |
 | 1GEN-039 | Calculer un terme de rang donné d'une suite géométrique définie par une relation fonctionnelle ou une relation de récurrence                                                       | s-f   | Suites géométriques (notion)                                                        |
 | 1GEN-040 | Calculer un taux d'évolution moyen                                                                                                                                                 | s-f   | `Proportionnalité` Évolutions > taux d'évolution moyen                              |
-| 1GEN-041 | ✂ Réaliser et exploiter la représentation graphique des termes d'une suite géométrique                                                                                            | s-f   | Généralités sur les suites > représentation graphique                               |
-| 1GEN-042 | ✂ Réaliser et exploiter la représentation graphique d'une fonction exponentielle                                                                                                  | s-f   | Fonction exponentielle > fonctions x ↦ aˣ                                           |
+| 1GEN-041 | ✂ Réaliser et exploiter la représentation graphique des termes d'une suite géométrique                                                                                             | s-f   | Généralités sur les suites > représentation graphique                               |
+| 1GEN-042 | ✂ Réaliser et exploiter la représentation graphique d'une fonction exponentielle                                                                                                   | s-f   | Fonction exponentielle > fonctions x ↦ aˣ                                           |
 | 1GEN-043 | Estimer les ordres de grandeur d'une quantité en croissance ou décroissance exponentielle                                                                                          | s-f   | Fonction exponentielle > croissance et décroissance exponentielles _(discutable 4)_ |
 | 1GEN-044 | Résoudre un problème de seuil dans le cas d'une croissance ou décroissance exponentielle par le calcul, à l'aide d'une représentation graphique ou en utilisant un outil numérique | s-f   | Modèles d'évolution > seuil                                                         |
 

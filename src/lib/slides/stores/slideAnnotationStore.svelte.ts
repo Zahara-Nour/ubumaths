@@ -7,14 +7,7 @@
  */
 
 export type SlideAnnotationToolType =
-	| 'pen'
-	| 'marker'
-	| 'highlighter'
-	| 'eraser'
-	| 'line'
-	| 'rectangle'
-	| 'circle'
-	| 'arrow';
+	'pen' | 'marker' | 'highlighter' | 'eraser' | 'line' | 'rectangle' | 'circle' | 'arrow';
 
 export interface AnnotationStyle {
 	color: string;

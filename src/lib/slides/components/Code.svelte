@@ -212,8 +212,8 @@
 	}
 
 	.code-block code {
-		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
-			monospace !important;
+		font-family:
+			ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace !important;
 		display: block !important;
 		font-size: inherit !important;
 		color: #abb2bf !important;

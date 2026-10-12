@@ -164,8 +164,7 @@
 	>
 		<p class="text-sm">
 			<strong>ℹ️ Note :</strong> Une seule configuration peut être active à la fois. Activer une nouvelle
-			configuration désactivera automatiquement l'actuelle. La configuration active ne peut pas être
-			supprimée.
+			configuration désactivera automatiquement l'actuelle. La configuration active ne peut pas être supprimée.
 		</p>
 	</div>
 </div>

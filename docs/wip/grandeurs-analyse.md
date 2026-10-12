@@ -109,12 +109,12 @@ chacune, plusieurs implémentations selon le contexte.
 
 ### Calculer
 
-| Calculateur                                                                                        | Qui s'en sert                                                | État mesuré                                                                     |
-| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| `evaluateWithUnits` (`eval/evaluate-with-units.ts`) + `.convertir`, `.mode-unités` (first/si/best) | **Calcul, `/cas`** (seul usage réel)                         | 9 faux sur 26 ; flottants ; messages anglais                                    |
-| `normalize` / `tidy` (`unitChoice: 'written'` ou scolaire)                                         | `{{eval}}` (`evaluateQuantity`), `simplify`, `areEquivalent` | juste sur 26/26 ; exact (rationnels)                                            |
+| Calculateur                                                                                        | Qui s'en sert                                                | État mesuré                                                                    |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `evaluateWithUnits` (`eval/evaluate-with-units.ts`) + `.convertir`, `.mode-unités` (first/si/best) | **Calcul, `/cas`** (seul usage réel)                         | 9 faux sur 26 ; flottants ; messages anglais                                   |
+| `normalize` / `tidy` (`unitChoice: 'written'` ou scolaire)                                         | `{{eval}}` (`evaluateQuantity`), `simplify`, `areEquivalent` | juste sur 26/26 ; exact (rationnels)                                           |
 | `validator.ts` + `ce-integration.ts` (ComputeEngine)                                               | correction des cases à unité                                 | hors de cette analyse (corrections fréquentes en septembre : °C ↔ K, arrondis) |
-| ~~`questions/units/dimensional.ts`~~                                                               | **personne** (code mort)                                     | seconde analyse dimensionnelle                                                  |
+| ~~`questions/units/dimensional.ts`~~                                                               | **personne** (code mort)                                     | seconde analyse dimensionnelle                                                 |
 
 ### Écrire
 

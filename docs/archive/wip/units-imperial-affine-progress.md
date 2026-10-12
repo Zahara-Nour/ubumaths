@@ -17,26 +17,29 @@ Bénéfice pédagogique : exercices Celsius/Fahrenheit, contextes anglo-saxons (
 ### A. Catalogue impérial — 10 unités via `SPECIAL_UNITS`
 
 **Distance** (baseSymbol `'m'`) :
-| Symbole | Coefficient (m) | Nom |
-|---|---|---|
-| `in` | 0.0254 | inch |
-| `ft` | 0.3048 | foot |
-| `yd` | 0.9144 | yard |
-| `mi` | 1609.344 | mile |
+
+| Symbole | Coefficient (m) | Nom  |
+| ------- | --------------- | ---- |
+| `in`    | 0.0254          | inch |
+| `ft`    | 0.3048          | foot |
+| `yd`    | 0.9144          | yard |
+| `mi`    | 1609.344        | mile |
 
 **Masse** (baseSymbol `'g'`) :
-| Symbole | Coefficient (g) | Nom |
-|---|---|---|
-| `oz` | 28.349523125 | ounce (avoirdupois) |
-| `lb` | 453.59237 | pound (avoirdupois) |
+
+| Symbole | Coefficient (g) | Nom                 |
+| ------- | --------------- | ------------------- |
+| `oz`    | 28.349523125    | ounce (avoirdupois) |
+| `lb`    | 453.59237       | pound (avoirdupois) |
 
 **Volume US uniquement** (baseSymbol `'L'`) :
-| Symbole | Coefficient (L) | Nom |
-|---|---|---|
-| `gal` | 3.785411784 | US gallon |
-| `qt` | 0.946352946 | US quart |
-| `pt` | 0.473176473 | US pint |
-| `floz` | 0.0295735295625 | US fluid ounce |
+
+| Symbole | Coefficient (L) | Nom            |
+| ------- | --------------- | -------------- |
+| `gal`   | 3.785411784     | US gallon      |
+| `qt`    | 0.946352946     | US quart       |
+| `pt`    | 0.473176473     | US pint        |
+| `floz`  | 0.0295735295625 | US fluid ounce |
 
 **Aliases français** : `pouce → in`, `pied → ft`, `livre → lb`.
 

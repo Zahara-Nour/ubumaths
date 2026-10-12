@@ -129,8 +129,7 @@ export interface ResolvedVariable {
  * Used for bounds, digit counts, and exclusion values.
  */
 export type NumberOrVariable =
-	| { type: 'number'; value: number }
-	| { type: 'variable'; name: string };
+	{ type: 'number'; value: number } | { type: 'variable'; name: string };
 
 /**
  * Exclusion pattern for random generation

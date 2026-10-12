@@ -1620,12 +1620,11 @@ describe('Edge Cases & Concurrency', () => {
 		});
 
 		it('should handle response with wrong type', async () => {
-			global.fetch = vi.fn(
-				(): Promise<Response> =>
-					Promise.resolve({
-						ok: true,
-						json: () => Promise.resolve({ students: 'not-an-array' })
-					} as Response)
+			global.fetch = vi.fn((): Promise<Response> =>
+				Promise.resolve({
+					ok: true,
+					json: () => Promise.resolve({ students: 'not-an-array' })
+				} as Response)
 			);
 
 			// Should not crash, though behavior depends on implementation

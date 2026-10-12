@@ -29,8 +29,8 @@
 </script>
 
 <p class="mb-4 text-sm text-muted-foreground">
-	Six façons de faire des maths, les mêmes de la 6<sup>e</sup> à la terminale. Elles s'observent sur
-	des problèmes ouverts, pas sur des exercices d'application.
+	Six façons de faire des maths, les mêmes de la 6<sup>e</sup> à la terminale. Elles s'observent sur des
+	problèmes ouverts, pas sur des exercices d'application.
 </p>
 
 {#if competences.stats.with_data === 0}

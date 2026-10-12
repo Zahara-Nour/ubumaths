@@ -91,9 +91,10 @@ function buildTextDump(step: BaseStep, beforeLatex: string, afterLatex: string):
  * console.log(out.map((s) => s.text).join('\n'));
  * ```
  */
-export class GenericTechnicalRenderer<TStep extends BaseStep>
-	implements StepRenderer<TStep, RenderOptions>
-{
+export class GenericTechnicalRenderer<TStep extends BaseStep> implements StepRenderer<
+	TStep,
+	RenderOptions
+> {
 	render(step: TStep, options: RenderOptions): RenderedStep {
 		const beforeLatex = toLatex(step.before);
 		const afterLatex = toLatex(step.after);

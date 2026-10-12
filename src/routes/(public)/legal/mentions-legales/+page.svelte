@@ -141,9 +141,9 @@
 			<p class="rounded-lg bg-muted p-4">
 				Le site n'utilise <strong>aucun cookie</strong> de mesure d'audience, de publicité ou de
 				suivi. La mesure de performance (Vercel) fonctionne <strong>sans cookie</strong>. Chiphre
-				utilise par ailleurs le <strong>stockage local</strong> du navigateur à des fins strictement
-				fonctionnelles (sauvegarde de vos documents tableur / tableau blanc et préférences d'affichage)
-				; ces données restent sur votre appareil.
+				utilise par ailleurs le <strong>stockage local</strong> du navigateur à des fins strictement fonctionnelles
+				(sauvegarde de vos documents tableur / tableau blanc et préférences d'affichage) ; ces données
+				restent sur votre appareil.
 			</p>
 		</section>
 

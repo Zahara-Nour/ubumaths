@@ -361,8 +361,7 @@
 						class="flex min-h-[150px] w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
 						placeholder="Collez votre code LaTeX ici..."
 						value={latexInput}
-						oninput={handleTextareaInput}
-					></textarea>
+						oninput={handleTextareaInput}></textarea>
 				</div>
 
 				<!-- Split mode selection -->

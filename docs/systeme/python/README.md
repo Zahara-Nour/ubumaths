@@ -211,7 +211,7 @@ Route `/python-notebook/[id]/present` → plein écran cellule-par-cellule via `
 | Type cellule | Slide                                                                                   |
 | ------------ | --------------------------------------------------------------------------------------- |
 | markdown     | `UbuMarkSlide` (rend LaTeX + custom math + variation tables + tables + fragments `->` ) |
-| code         | `NotebookCodeSlide` (PythonEditor read-only + bouton ▶ pour exécution live)            |
+| code         | `NotebookCodeSlide` (PythonEditor read-only + bouton ▶ pour exécution live)             |
 | checkpoint   | `NotebookCheckpointSlide` (wrapper léger autour de `CheckpointCell`)                    |
 
 **`scaleContent: false`** (Option A) — slide remplit le container avec scroll natif, pas de scaling CSS 1920×1080. Choix justifié par : live coding avec outputs imprévisibles + cellules code potentiellement longues + cohérence avec l'éditeur.

@@ -9,9 +9,8 @@ import type { MathTerm } from '$lib/dictionary/model';
 const fetchDictionary = vi.fn<() => Promise<MathTerm[]>>();
 vi.mock('$lib/dictionary/fetch-dictionary', () => ({ fetchDictionary: () => fetchDictionary() }));
 
-const { lexiconRuntime, loadLexiconRuntime, refreshLexiconRuntime } = await import(
-	'../runtime-store.svelte'
-);
+const { lexiconRuntime, loadLexiconRuntime, refreshLexiconRuntime } =
+	await import('../runtime-store.svelte');
 
 function entry(content: string): MathTerm {
 	return {

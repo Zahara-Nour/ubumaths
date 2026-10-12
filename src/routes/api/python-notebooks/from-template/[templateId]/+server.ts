@@ -119,24 +119,22 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			updated_at: now,
 			kernel_info: sourceContent.metadata?.kernel_info
 		},
-		cells: sourceContent.cells.map(
-			(cell: NotebookCell): NotebookCell => ({
-				...cell,
-				id: generateCellId(),
-				// Wipe stale execution state — the clone hasn't been run yet.
-				execution_count: null,
-				outputs: [],
-				state: 'idle',
-				metadata: cell.metadata
-					? // Drop `last_executed_source` so the gutter doesn't draw
-						// a misleading "modified since last run" dot on cells
-						// that were never executed in this notebook.
-						Object.fromEntries(
-							Object.entries(cell.metadata).filter(([k]) => k !== 'last_executed_source')
-						)
-					: undefined
-			})
-		)
+		cells: sourceContent.cells.map((cell: NotebookCell): NotebookCell => ({
+			...cell,
+			id: generateCellId(),
+			// Wipe stale execution state — the clone hasn't been run yet.
+			execution_count: null,
+			outputs: [],
+			state: 'idle',
+			metadata: cell.metadata
+				? // Drop `last_executed_source` so the gutter doesn't draw
+					// a misleading "modified since last run" dot on cells
+					// that were never executed in this notebook.
+					Object.fromEntries(
+						Object.entries(cell.metadata).filter(([k]) => k !== 'last_executed_source')
+					)
+				: undefined
+		}))
 	};
 
 	const insertPayload = {

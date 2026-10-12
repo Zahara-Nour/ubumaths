@@ -365,11 +365,7 @@ export function tryExtractConstant(
  */
 export interface CompositeMatch {
 	readonly kind:
-		| 'composite-exp'
-		| 'composite-ln'
-		| 'composite-sin'
-		| 'composite-cos'
-		| 'composite-power';
+		'composite-exp' | 'composite-ln' | 'composite-sin' | 'composite-cos' | 'composite-power';
 	readonly u: MathNode;
 	readonly n?: MathNode;
 	readonly constantFactor?: Rational;
