@@ -315,7 +315,16 @@ nombre. Une chaîne de grandeurs (`5[m] < 600[cm] < 7[m]`) passe maillon par mai
 des grandeurs. Une comparaison entre parenthèses (`\lnot (2 > 1)`) s'évalue ; une relation que le
 calcul ne tranche pas répond en français (« Relation « ≈ » non évaluable : seules = ≠ < > ≤ ≥ se
 tranchent »), et les erreurs de la console commencent par « Erreur de calcul : » (« Evaluation
-error: » avant).
+error: » avant). **Tous les messages d'erreur de la console sont traduits à sa sortie**
+(`mathAST/cli/web/french-errors.ts`, `withFrenchErrors` dans `execute`) : une table pour les
+fréquents (« Unexpected token: EOF » → « Expression incomplète », « Unknown command: \foo » →
+« Commande inconnue : \foo », « Division by zero » → « Division par zéro »…), « Écriture non
+reconnue » pour une ligne qui COMMENCE par un mot anglais (un message déjà français reste
+entier ; une consigne « Use: »/« Usage: » reste, sous « Forme attendue : »). ⚠️ On traduit le
+message seul, puis on le remplace dans la sortie et, échappé, dans le HTML de /cas : traduit sur
+le HTML final, il avalait des balises et réécrivait la saisie recopiée (revue). Les parseurs gardent leurs messages (une cinquantaine
+de tests les vérifient). Une sortie d'erreur VIDE reste vide : l'atelier y répond « Je n'ai pas
+su lire… ».
 
 Une comparaison ne garde jamais son écriture (elle rend vrai ou faux), mais passe par le même
 plafond **membre par membre** (`mathAST/cli/bounded-comparison.ts`, aussi pour `a = b`, qui suit
