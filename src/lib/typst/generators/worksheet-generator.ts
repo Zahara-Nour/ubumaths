@@ -260,9 +260,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const { worksheet } = input;
 		const mode = this.pdfMode;
 
-		// Generate exercises content for the template. A template opts into the
-		// red-badge numbering by using {{exercises_badge}} instead of {{exercises}};
-		// both keys receive the same content so only the placeholder used matters.
+		// Les exercices du gabarit. Un gabarit qui place {{exercises_badge}} reçoit
+		// les numéros sur carré ambre ; sinon ({{exercises}}) l'en-tête « Exercice N ».
+		// Les deux clés reçoivent le même contenu : seul compte le placeholder utilisé.
 		const layout: ExerciseLayout = templateContent.includes('{{exercises_badge}}')
 			? 'badge'
 			: 'heading';
