@@ -672,6 +672,12 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   rationnelle) ; granularité par les tables `STRATEGIES`, `STRATEGIES_QUADRATIC`,
   `STRATEGIES_RATIONAL`. `generateEquationSteps` relève le niveau insuffisant
   (`primaire` → `college` pour le 1er degré, jusqu'à `lycee` pour le 2nd).
+  **Une inéquation du 2nd degré garde son opérateur à chaque ligne** (2026-10-13) : la forme
+  standard s'écrit `2x^2 - 2 < 0`, pas `= 0` (`buildStandardizeStep` reprend l'opérateur de
+  départ), et les blocs alignés du rendu passent par `RELATION_MAP` (`\leqslant`, `\geqslant`,
+  comme `toLatex`) au lieu de l'opérateur brut `>=`. Tests :
+  `pedagogical-solve/__tests__/inequation-second-degre-relation.test.ts`. Le rendu du 1er degré
+  écrit encore `\leq`/`\geq` dans ses blocs alignés (`relToLatex`), `\leqslant` ailleurs.
 - **Dérivées et primitives finissent par « On simplifie ».** Les règles laissent le
   résultat brut (la méthode, qu'on garde visible) ; une dernière étape l'écrit avec
   `tidyTerms` (`tidy/terms.ts`). Dérivées : `withTidyStep`

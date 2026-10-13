@@ -19,7 +19,7 @@ import type {
 	RenderedStep,
 	SchoolLevel
 } from '../common/step-renderer-base';
-import { toLatex } from '../latex-generator';
+import { toLatex, RELATION_MAP } from '../latex-generator';
 import { computeNumericValue } from '../solve/numeric-value';
 import { constantSign } from '../common/constant-sign';
 import type { MathNode } from '../types';
@@ -535,8 +535,10 @@ function alignedTransformation(step: EquationStep): string {
 	// 2c b=0 fast path divides by `a < 0`), the after-line uses the flipped
 	// operator, while the before-line keeps the original. For non-flip steps,
 	// both relations are equal and the rendering is unchanged.
-	const relBefore = step.before.type === 'relation' ? step.before.relation : '=';
-	const relAfter = step.after.type === 'relation' ? step.after.relation : '=';
+	// ⚠️ L'opérateur passe par `RELATION_MAP`, comme dans `toLatex` : brut, il
+	// s'écrivait `&>=` au lieu de `\geqslant`.
+	const relBefore = step.before.type === 'relation' ? RELATION_MAP[step.before.relation] : '=';
+	const relAfter = step.after.type === 'relation' ? RELATION_MAP[step.after.relation] : '=';
 	const bL = step.before.type === 'relation' ? fmt(step.before.left) : fmt(step.before);
 	const bR = step.before.type === 'relation' ? fmt(step.before.right) : '';
 	const aL = step.after.type === 'relation' ? fmt(step.after.left) : fmt(step.after);
