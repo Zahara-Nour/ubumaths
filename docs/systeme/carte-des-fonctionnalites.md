@@ -109,7 +109,7 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 ## Ne pas mettre en avant
 
 - Démos et pages de mise au point : `/demo/*`, `/geometry-demo/*`, `/construction-demo`,
-  `/test-font`, `/test-cadres`, `/test-erreur`, `/api-docs`, `/blockly/playground`, `/slides/*`.
+  `/test-font`, `/test-cadres`, `/test-erreur`, `/blockly/playground`, `/slides/*`.
 - Héritages remplacés par l'Atelier : `/calc`, `/cas` ([atelier.md](atelier.md)).
 - Routes sans lien ou en sommeil : `/tuteur`, `/calculatrice`, `/games/evoland`, Navadra,
   `/spreadsheet` ([jeux-et-economie.md](jeux-et-economie.md), [outils-prof.md](outils-prof.md)).
