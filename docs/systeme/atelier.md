@@ -60,7 +60,7 @@ Ceux du code et de l'interface :
 
 ## Carte du code
 
-### Modèle — `src/lib/atelier/` (42 fichiers hors tests)
+### Modèle — `src/lib/atelier/` (45 fichiers hors tests)
 
 | Fichier                             | Rôle                                                                                                      |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -95,6 +95,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/solve-steps.ts`       | `.résoudre` par étapes (`solveSteps`)                                                                      |
 | `src/lib/atelier/solve-steps-check.ts` | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                            |
 | `src/lib/atelier/variations-steps.ts`  | `.variations` et « Variations » : tableau et détail (`variationsRendering`)                                |
+| `src/lib/atelier/steps-summary.ts`     | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                          |
 | `src/lib/atelier/tidy-terms.ts`        | Ré-export de `tidyTerms` (vit dans `src/lib/mathAST/tidy/terms.ts`)                                        |
 
 **Statistiques et probabilités** (commandes servies par l'atelier, pas par le moteur) :
@@ -361,11 +362,11 @@ Calcul sans changer de vue** et crée **une carte par objet créé** (G7).
 
 ### Vues
 
-| Vue     | Composant                             | Ce qu'elle projette                                                                 |
-| ------- | ------------------------------------- | ----------------------------------------------------------------------------------- |
-| Calcul  | `CalculView.svelte` + `CalcDesk`      | l'historique ; « Garder » promeut une ligne en objet nommé (`promote`, D5)          |
-| Graphe  | `GrapheurContainer` (`panel={false}`) | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots` |
-| Données | `DataView.svelte`                     | listes en lignes, diagrammes en bâtons / barres / circulaire                        |
+| Vue     | Composant                             | Ce qu'elle projette                                                                                                                 |
+| ------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Calcul  | `CalculView.svelte` + `CalcDesk`      | l'historique ; « Garder » promeut une ligne en objet nommé (`promote`, D5) ; « Comment ? » déplie les étapes, « Résumé / Détaillé » |
+| Graphe  | `GrapheurContainer` (`panel={false}`) | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots`                                                 |
+| Données | `DataView.svelte`                     | listes en lignes, diagrammes en bâtons / barres / circulaire                                                                        |
 
 Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de refaire le travail) :
 
@@ -463,6 +464,22 @@ Une inéquation dont l'écriture a une valeur interdite que la forme canonique e
 second degré la refusent (`rejectForbiddenValues`, V47 puis V48), `solveSteps` rend `null` et
 l'atelier affiche la réponse du moteur sans « Comment ? ».
 
+**« Résumé / Détaillé »** (`steps-summary.ts`, 2026-10-13). Les quatre commandes qui rédigent
+(simplifier, factoriser, dériver, résoudre — tapées ou cliquées sur une carte) rendent le même
+calcul DEUX fois : `steps` en `verbosity: 'detailed'`, `summary` en `'summarized'`. Le moteur
+tourne une fois ; seul `renderAll` est rappelé, et la réponse de la ligne vient du calcul, jamais
+de la rédaction. `summaryOf` compare les deux rendus et rend `undefined` s'ils sont identiques :
+la ligne n'a alors pas d'interrupteur. Mesuré : dans les cinq renderers branchés, la verbosité ne
+gouverne que l'`explanation` de chaque étape — le résumé garde toutes les étapes (valeur interdite
+comprise), titres et calculs, sans le « pourquoi ». `summary` suit `steps` partout (virgule
+décimale, `Entry`) ; l'export de l'historique ne garde que `steps`. `.variations` a sa propre
+rédaction, sans verbosité : pas de `summary`. Dans `CalculView`, l'interrupteur est DANS le
+« Comment ? » déplié (choix segmenté de `SequenceSettings`, `aria-pressed` et coche ✓), une seule
+valeur pour toute la vue, « Détaillé » à l'ouverture, le dernier choix retenu sous
+`chiphre-atelier-etapes` dans `localStorage` (lecture et écriture dans un `try` : la vue marche
+sans). Une préférence d'affichage, pas un objet : elle ne voyage ni dans un lien ni dans une
+fusion.
+
 **Le garde-fou** (`solve-steps-check.ts`) vérifie la conclusion contre les nombres et le moteur
 avant de la montrer ; un désaccord rend `null` (repli sur la réponse du moteur). `S = ℝ` est
 accepté seulement si l'équation tient sur toute une grille ET si `solve` répond `infinite`. Un
@@ -549,7 +566,7 @@ carte, fusion. Prévu pour la v2 (géométrie) et la v3 (Python) ; aucune phase 
 
 ## Tests
 
-- **Modèle et commandes** : `src/lib/atelier/__tests__/` (117 fichiers, dont 23 en
+- **Modèle et commandes** : `src/lib/atelier/__tests__/` (128 fichiers, dont 24 en
   `*.svelte.test.ts` qui tournent dans un vrai navigateur). Les autres tournent en node malgré les
   runes : c'est le **nom du fichier** qui choisit le projet, pas les runes.
 - **Composants** : `src/lib/components/atelier/__tests__/`, harnais

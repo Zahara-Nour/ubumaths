@@ -38,6 +38,7 @@ import {
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { astOf } from './parse';
 import { concludedSolutions, conclusionAgrees } from './solve-steps-check';
+import { summaryOf } from './steps-summary';
 import { approximateSolutionsLatex } from '$lib/mathAST/cli/approximation';
 
 // =============================================================================
@@ -88,6 +89,8 @@ const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 export interface SolvedSteps {
 	/** Les étapes rendues, prêtes pour `GeneratedStepsCorrection`. */
 	readonly steps: readonly RenderedStep[];
+	/** Les mêmes étapes en version résumée, absente si elle ne dit rien de moins. */
+	readonly summary?: readonly RenderedStep[];
 	/** La réponse en LaTeX, jamais vide — la ligne d'historique l'affiche. */
 	readonly answer: string;
 	/**
@@ -250,7 +253,17 @@ export function solveSteps(argument: string): SolvedSteps | null {
 			solutions === null
 				? null
 				: approximateSolutionsLatex(variable, solutions, answer.trimStart().startsWith('S'));
-		return { steps: rendered, answer, ...(approximate !== null && { approximate }) };
+		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
+		const summary = summaryOf(
+			rendered,
+			renderer.renderAll(steps, { schoolLevel, verbosity: 'summarized' })
+		);
+		return {
+			steps: rendered,
+			answer,
+			...(summary !== undefined && { summary }),
+			...(approximate !== null && { approximate })
+		};
 	} catch {
 		// Degré ≥ 3, non-polynomial, coefficients paramétriques, inconnue
 		// introuvable (`b*x+5=14` → « cannot detect a single variable », une

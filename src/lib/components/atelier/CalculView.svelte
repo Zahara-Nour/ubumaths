@@ -35,6 +35,11 @@
 		readHistory,
 		type ImportedHistory
 	} from '$lib/atelier/history-import';
+	import {
+		readStepsVerbosity,
+		writeStepsVerbosity,
+		type StepsVerbosity
+	} from '$lib/atelier/steps-summary';
 
 	/**
 	 * Le pupitre vient du CONTENEUR, pas d'ici : c'est lui qui reçoit les actions
@@ -90,6 +95,38 @@
 	 * PR 2). Affichage seul, ligne par ligne : ni sauvegardé, ni exporté.
 	 */
 	let toggled = $state<number[]>([]);
+
+	/** Un navigateur peut refuser `localStorage` — la page marche sans. */
+	function stepsStorage(): Storage | null {
+		try {
+			return window.localStorage;
+		} catch {
+			return null;
+		}
+	}
+
+	/**
+	 * La rédaction des étapes dépliées : « Détaillé » à l'ouverture, puis le
+	 * dernier choix retenu dans ce navigateur (décision de David, 2026-10-13).
+	 *
+	 * Une seule valeur pour toute la vue, pas une par ligne : c'est une
+	 * préférence de lecture, et deux dépliages ouverts côte à côte ne doivent
+	 * pas se contredire. Basculer ne recalcule rien — les deux rédactions sont
+	 * déjà dans la ligne (`Entry.summary`).
+	 */
+	let stepsVerbosity = $state<StepsVerbosity>(readStepsVerbosity(stepsStorage()));
+
+	function chooseStepsVerbosity(verbosity: StepsVerbosity) {
+		stepsVerbosity = verbosity;
+		writeStepsVerbosity(stepsStorage(), verbosity);
+	}
+
+	/** Les étapes à montrer : le résumé seulement si la ligne en a un. */
+	function shownSteps(entry: Entry, detailed: NonNullable<Entry['steps']>) {
+		return stepsVerbosity === 'summarized' && entry.summary !== undefined
+			? entry.summary
+			: detailed;
+	}
 
 	function toggleSteps(id: number) {
 		unfolded = unfolded.includes(id) ? unfolded.filter((x) => x !== id) : [...unfolded, id];
@@ -482,7 +519,26 @@
 				</div>
 				{#if entry.steps !== undefined && unfolded.includes(entry.id)}
 					<div class="etapes" id="etapes-{entry.id}">
-						<GeneratedStepsCorrection steps={entry.steps} />
+						<!-- Pas d'interrupteur quand le résumé ne dirait rien de moins -->
+						{#if entry.summary !== undefined}
+							<div class="redaction" role="group" aria-label="Rédaction des étapes">
+								<button
+									type="button"
+									class="choix"
+									aria-pressed={stepsVerbosity === 'summarized'}
+									onclick={() => chooseStepsVerbosity('summarized')}
+									><span class="coche" aria-hidden="true">✓</span>Résumé</button
+								>
+								<button
+									type="button"
+									class="choix"
+									aria-pressed={stepsVerbosity === 'detailed'}
+									onclick={() => chooseStepsVerbosity('detailed')}
+									><span class="coche" aria-hidden="true">✓</span>Détaillé</button
+								>
+							</div>
+						{/if}
+						<GeneratedStepsCorrection steps={shownSteps(entry, entry.steps)} />
 					</div>
 				{/if}
 				<!--
@@ -685,6 +741,45 @@
 		padding-left: 0.75rem;
 		border-left: 2px solid var(--color-border);
 		overflow-x: auto;
+	}
+
+	/* L'interrupteur « Résumé / Détaillé » : le choix segmenté de
+	   `SequenceSettings` (nuage / escalier). L'état choisi ne repose pas que sur
+	   un fond pâle (projection) : bordure pleine contrastée et coche ✓. */
+	.redaction {
+		display: flex;
+		gap: 0.25rem;
+		margin-bottom: 0.375rem;
+	}
+	.choix {
+		min-height: 1.75rem;
+		padding: 0.125rem 0.5rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.375rem;
+		background: var(--color-background);
+		font-size: 0.8125rem;
+		cursor: pointer;
+	}
+	.coche {
+		display: none;
+		margin-right: 0.25rem;
+	}
+	.choix[aria-pressed='true'] {
+		background: var(--color-muted);
+		border-color: var(--color-foreground);
+		font-weight: 600;
+	}
+	.choix[aria-pressed='true'] .coche {
+		display: inline;
+	}
+	.choix:focus-visible {
+		outline: 2px solid var(--color-ring, currentColor);
+		outline-offset: 2px;
+	}
+	@media (pointer: coarse) {
+		.choix {
+			min-height: 44px;
+		}
 	}
 
 	/* ⚠️ Pas « .avis » : `AtelierContainer` a déjà une région de ce nom, et deux

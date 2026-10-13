@@ -77,6 +77,12 @@ export interface Entry {
 	 */
 	readonly steps?: readonly RenderedStep[];
 	/**
+	 * Les mêmes étapes en version résumée, pour l'interrupteur « Résumé /
+	 * Détaillé » du dépliage. Absente = pas d'interrupteur : le résumé ne dirait
+	 * rien de moins, ou la ligne n'en a pas (`.variations`).
+	 */
+	readonly summary?: readonly RenderedStep[];
+	/**
 	 * Le tableau de variations, quand l'action ou `.variations` en a produit un.
 	 *
 	 * Il se dessine sous la ligne — le moteur, lui, n'en rendait qu'une
@@ -343,6 +349,9 @@ export class CalcDesk {
 			text: textOf(result),
 			...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
 			...(result.kind === 'commande' && result.steps !== undefined ? { steps: result.steps } : {}),
+			...(result.kind === 'commande' && result.summary !== undefined
+				? { summary: result.summary }
+				: {}),
 			...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
 			...(result.kind === 'commande' && result.table !== undefined ? { table: result.table } : {}),
 			...((result.kind === 'calcul' || result.kind === 'commande') &&
@@ -842,6 +851,7 @@ export class CalcDesk {
 			...(note !== null && { note }),
 			...(outcome.ok && outcome.latex !== undefined ? { latex: outcome.latex } : {}),
 			...(outcome.ok && outcome.steps !== undefined ? { steps: outcome.steps } : {}),
+			...(outcome.ok && outcome.summary !== undefined ? { summary: outcome.summary } : {}),
 			...(outcome.ok && outcome.table !== undefined ? { table: outcome.table } : {}),
 			...(outcome.ok && outcome.alternative !== undefined
 				? { alternative: outcome.alternative }
