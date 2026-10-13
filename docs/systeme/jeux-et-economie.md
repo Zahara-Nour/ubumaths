@@ -97,14 +97,18 @@ par `src/lib/server/riddle-auto-select.ts` via `src/routes/api/riddles/auto-sele
 
 ### Jeux présents mais pas au catalogue
 
+Navadra et Evoland sont **en pause de développement** (décision de David, 2026-10-13) : gardés
+dans le code, hors catalogue, sans travaux tant qu'ils ne reprennent pas.
+
 - **Navadra** (combats de monstres, sorts) : routes `src/routes/(protected)/dashboard/navadra/`
   (hub, `combat/`, `spells/`), tables `game_players`, `game_spells`, `game_combats`,
   `game_monsters`…, stores `src/lib/stores/game/`. Retiré du catalogue (entrée commentée). Le hub
-  renvoie vers `achievements`, `leaderboard`, `profile` et `tutorial`, **routes inexistantes**.
+  ne mène qu'à `combat/` et `spells/` : ses quatre liens vers des routes inexistantes
+  (`achievements`, `leaderboard`, `profile`, `tutorial`) ont été retirés le 2026-10-13.
   Le trigger `trigger_award_gidouilles_on_combat_victory` (fonction `award_gidouilles_on_victory`,
   `xp_gained / 10 + 5`) crédite sans écrire `gidouilles_activity`.
 - **Evoland** (moteur d'aventure, `src/lib/games/evoland/`) : page `src/routes/(public)/games/evoland/+page.svelte`,
-  aucun lien vers elle.
+  aucun lien vers elle ; exclue du plan du site (`src/lib/seo/sitemap-pages.ts`).
 
 ### Économie
 
@@ -371,8 +375,9 @@ s'affichait en erreur).
 - **Données de jeu privées** (2026-10-11, migration `20261015090600`) : `mathemo_scores`,
   `minesweeper_student_achievements`, `minesweeper_player_stats`, `marketplace_listing_views` —
   chacun ne lit que les siennes (avant : `using (true)` pour tout compte, toutes écoles).
-- **Navadra** : routes vivantes mais hors catalogue, quatre liens morts dans le hub, gains de combat
-  hors journal. **Evoland** : page sans lien.
+- **Navadra** (en pause) : routes vivantes mais hors catalogue, gains de combat hors journal
+  (à reprendre avec la réécriture). ✅ Les quatre liens morts du hub sont retirés (2026-10-13).
+  **Evoland** (en pause) : page sans lien, hors plan du site.
 - `scripts/simulate-vip-economy.ts` simule l'ancienne économie (cap partagé) : périmé.
 
 ---
