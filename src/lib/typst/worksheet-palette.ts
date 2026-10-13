@@ -1,9 +1,8 @@
 /**
  * Charte des fiches PDF (enseignant et élève)
  *
- * Source unique des couleurs de numérotation : la fiche enseignant
- * (`generators/worksheet-generator.ts`) et le PDF élève
- * (`worksheets/student-worksheet-typst.ts`) les importent ici pour ne plus diverger.
+ * Source unique des couleurs de numérotation : le rendu d'exercice commun aux
+ * PDF du prof et de l'élève (`worksheets/document/render-exercise.ts`) les importe ici.
  *
  * @module typst/worksheet-palette
  */

@@ -708,6 +708,13 @@ export interface StudentWorksheetView {
 	language?: ContentLocale;
 	/** Corrigé imprimé concis ou détaillé (réglage de la fiche) ; absent : détaillé */
 	correction_detail?: CorrectionDetail;
+	/** Style de numérotation de la fiche (PDF) ; absent : chiffres arabes */
+	numbering_style?: NumberingStyle;
+	/**
+	 * « Afficher les points » de la fiche, résolu par le serveur comme pour le PDF
+	 * du prof (absent dans la config : masqués). Absent de la vue : affichés.
+	 */
+	show_points?: boolean;
 	description: string | null;
 	type: WorksheetType;
 	instructions: string | null;
@@ -984,6 +991,8 @@ export function asWorksheetConfig(value: unknown): WorksheetConfig {
 	if (isContentLocale(raw.language)) config.language = raw.language;
 	if (raw.correction_detail === 'concise' || raw.correction_detail === 'detailed')
 		config.correction_detail = raw.correction_detail;
+	const numbering = NUMBERING_STYLES.find((style) => style === raw.numbering_style);
+	if (numbering) config.numbering_style = numbering;
 
 	for (const flag of [
 		'show_title',
