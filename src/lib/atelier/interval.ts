@@ -312,7 +312,12 @@ export function chosenDomainAnswer(
 	const domain = intervalDomainOf(object);
 	// En erreur (`f(2x)`, ensemble vide) : la commande suit son cours, rien à affirmer
 	if (domain === null || object?.status !== 'ok' || isEmpty(domain)) return null;
-	const chosen = `${displayName(name)} est définie sur ${intervalText(domain)} (ensemble choisi)`;
+	// Sans « sur » à elle, l'ensemble vient des fonctions citées (décision d)
+	const origin =
+		object?.kind === 'function' && object.interval === undefined
+			? 'ensemble hérité'
+			: 'ensemble choisi';
+	const chosen = `${displayName(name)} est définie sur ${intervalText(domain)} (${origin})`;
 	const ast = astOf(expression);
 	const natural = ast === null ? null : computeDomain(ast, INTERNAL_LETTER);
 	if (natural === null || natural.unresolved !== undefined) return `${chosen}.`;
@@ -321,7 +326,7 @@ export function chosenDomainAnswer(
 	const same = isEmpty(difference(a, b)) && isEmpty(difference(b, a));
 	return same
 		? `${chosen}.`
-		: `${chosen} ; sans ce choix, elle le serait sur ${intervalText(natural.domain)}.`;
+		: `${chosen} ; sans ${origin === 'ensemble hérité' ? 'cet héritage' : 'ce choix'}, elle le serait sur ${intervalText(natural.domain)}.`;
 }
 
 /** `f(2x)` quand f a un ensemble : c'est 2x qui devrait y être — pas encore su (décision c). */
@@ -370,7 +375,9 @@ export function intervalLabelOf(object: AtelierObject): string | null {
 export function intervalFieldLatex(object: AtelierObject): string | null {
 	if (object.kind !== 'function' || object.interval === undefined) return null;
 	if (readingMode(object.provenance ?? 'url') === 'latex') return object.interval;
-	const domain = intervalDomainOf(object);
+	// L'ensemble PROPRE, jamais l'héritage (décision d) : le champ relu le rangerait
+	const read = readInterval(object.interval, object.letter ?? INTERNAL_LETTER);
+	const domain = read.ok ? read.domain : null;
 	if (domain === null) return null;
 	return formatInterval(domain)
 		.replace(/∞/g, '\\infty ')

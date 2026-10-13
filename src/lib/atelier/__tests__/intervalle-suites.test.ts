@@ -11,7 +11,13 @@ import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import type { Entry } from '../desk.svelte';
-import { areaRefusal, intervalLabelOf, plotRestrictionOf, tangentRefusal } from '../interval';
+import {
+	areaRefusal,
+	intervalFieldLatex,
+	intervalLabelOf,
+	plotRestrictionOf,
+	tangentRefusal
+} from '../interval';
 import { atelierFromCurves } from '../grapheur-link';
 import { syncPlots } from '../plot-sync';
 import { GrapheurStore } from '$lib/stores/grapheur.svelte';
@@ -222,6 +228,20 @@ describe('d) une fonction qui cite une fonction à intervalle en hérite', () =>
 		d.submit('g(x) = f(x) + 1 sur [-5;-1]');
 		expect(d.atelier.get('g')?.message).toBe(
 			"g n'est définie nulle part : les fonctions qu'elle cite ne le sont que sur [0 ; +∞[."
+		);
+	});
+
+	it('le champ de la carte garde le « sur » de l’élève, pas l’héritage (revue)', () => {
+		const d = desk('f(x) = x^2 sur [0;+∞[', 'g(x) = f(x) + 1 sur [-1;5]');
+		const field = intervalFieldLatex(d.atelier.get('g')!);
+		expect(field).toContain('[-1;5]');
+	});
+
+	it('.domaine g : l’ensemble hérité se dit hérité (revue)', () => {
+		const d = desk('f(x) = x^2 sur [0;+∞[', 'g(x) = f(x) + 1');
+		d.submit('.domaine g');
+		expect(last(d).text).toBe(
+			'g est définie sur [0 ; +∞[ (ensemble hérité) ; sans cet héritage, elle le serait sur ℝ.'
 		);
 	});
 
