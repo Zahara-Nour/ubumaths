@@ -230,7 +230,12 @@ export function intervalDomainOf(object: AtelierObject | undefined): Domain | nu
  */
 export function citedIntervals(
 	objects: readonly AtelierObject[],
-	functionNames: readonly string[]
+	functionNames: readonly string[],
+	/** `g(x) = f⁻¹(x)` : l'ensemble de départ de f⁻¹, pas celui de f (`citedReciprocalInterval`). */
+	withReciprocals?: (
+		text: string,
+		others: (text: string) => CitedInterval | null
+	) => CitedInterval | null
 ): { inherited: Map<string, Domain>; refused: Map<string, string> } {
 	const inherited = new Map<string, Domain>();
 	const refused = new Map<string, string>();
@@ -263,11 +268,9 @@ export function citedIntervals(
 			} else {
 				const text = texts.get(o.name);
 				if (text === undefined) continue;
-				const cited = citedIntervalDomain(
-					(n) => (n === o.name ? undefined : get(n)),
-					text,
-					INTERNAL_LETTER
-				);
+				const others = (typed: string) =>
+					citedIntervalDomain((n) => (n === o.name ? undefined : get(n)), typed, INTERNAL_LETTER);
+				const cited = withReciprocals === undefined ? others(text) : withReciprocals(text, others);
 				if (cited?.kind === 'composed') refused.set(o.name, composedMessage(cited));
 				else if (cited !== null) domain = cited.domain;
 			}

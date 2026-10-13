@@ -90,6 +90,9 @@ Branchement avec l'atelier : `src/lib/atelier/plot-sync.ts` (`syncPlots`) et
 `src/lib/components/atelier/AtelierContainer.svelte` — décrits dans [atelier.md](atelier.md).
 `syncPlots` transmet chaque définition en **LaTeX** (`graphLatexOf`), pas en notation maison :
 le grapheur parse du LaTeX, et `\pi x` collé en `\pix` lui était illisible.
+Il pose aussi une courbe qui n'est pas un objet : la droite y = x (`latex: 'x'`, couleur
+`var(--color-muted-foreground)` hors palette, pointillés, épaisseur 1) quand f et sa carte `f⁻¹`
+sont tracées — le grapheur de l'atelier n'est pas sauvegardé (`GrapheurStore(null)`).
 
 ---
 

@@ -41,7 +41,12 @@ import {
 	reciprocalName,
 	reciprocalOf
 } from './names';
-import { reciprocalOfFunction, type ReciprocalOutcome } from './reciprocal';
+import {
+	citedReciprocalInterval,
+	citesReciprocal,
+	reciprocalOfFunction,
+	type ReciprocalOutcome
+} from './reciprocal';
 import type { Provenance } from './parse';
 import { parseDefinition, readNumber, referencesOf, renameInDefinition } from './parse';
 import { z } from 'zod';
@@ -590,6 +595,20 @@ export class Atelier {
 		}
 		if (base.plotted) this.setPlotted(derived, true);
 		return { ok: true, object: this.get(derived)! };
+	}
+
+	/**
+	 * La réciproque de f telle que `f⁻¹` tapé dans Calcul la calcule, à la volée
+	 * (`engine.ts`) : sur l'intervalle tapé pour la carte `f⁻¹` quand elle
+	 * existe, pour que la carte et `f⁻¹(5)` disent la même chose.
+	 */
+	reciprocalOutcome(base: string): ReciprocalOutcome {
+		const card = this.get(reciprocalName(base));
+		return reciprocalOfFunction(
+			this,
+			base,
+			card !== undefined && isFunction(card) ? card.reciprocalOn : undefined
+		);
 	}
 
 	/**
@@ -1590,7 +1609,9 @@ export class Atelier {
 		const ownError = new Map<string, string | undefined>();
 		const deps = new Map<string, string[]>();
 		// Décision d : l'ensemble hérité des fonctions citées (`g(x) = f(x) + 1`)
-		const intervals = citedIntervals(this.items, this.functionNames);
+		const intervals = citedIntervals(this.items, this.functionNames, (text, others) =>
+			citedReciprocalInterval(this, text, INTERNAL_LETTER, others)
+		);
 		const missing = new Map<string, MissingReference[]>();
 
 		for (const o of this.items) {
@@ -1836,7 +1857,9 @@ export class Atelier {
 	 */
 	#underivable(): void {
 		this.items.forEach((o, i) => {
-			if (o.status !== 'ok' || derivativeOf(o.name) === null) return;
+			// `g(x) = f⁻¹(x)` aussi : f devenue non bijective, g dit pourquoi
+			const follows = derivativeOf(o.name) !== null || citesReciprocal(this, o.definition);
+			if (o.status !== 'ok' || !follows) return;
 			const read = expressionOf(this, o.name);
 			if (!read.ok) {
 				this.items[i] = { ...o, status: 'error', message: read.message } as AtelierObject;

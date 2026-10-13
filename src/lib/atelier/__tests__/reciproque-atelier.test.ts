@@ -282,17 +282,6 @@ describe('les refus : en français, sans carte', () => {
 		}
 	);
 
-	it.each(['.variations f^-1', '.dériver f^{-1}', '.résoudre f^(-1)(x)=2', 'f^-1(5)', 'f⁻¹(5)'])(
-		'%s : refus honnête, jamais 1/f calculé en silence',
-		(input) => {
-			const desk = deskWith('f(x) = 2x+3', '.réciproque f', input);
-			expect(last(desk).failed).toBe(true);
-			expect(last(desk).text).toBe(
-				"f⁻¹ désigne la réciproque de f : sa carte ne se cite pas encore dans Calcul, utilise ses boutons. Pour l'inverse 1/f, écris 1/f(x)."
-			);
-		}
-	);
-
 	it('x^-1, e^-1, f(x)^-1 restent des puissances', () => {
 		const desk = deskWith('f(x) = 2x+3', 'x^-1', 'e^-1', '.simplifier f(x)^-1');
 		expect(desk.entries.slice(-3).every((e) => !e.failed)).toBe(true);

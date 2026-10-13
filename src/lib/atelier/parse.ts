@@ -147,6 +147,10 @@ export function mixedNotationMessage(text: string): string | null {
 /** Les provenances qui sont la saisie de l'élève, virgule décimale et « ; » compris. */
 const STUDENT_TYPED: ReadonlySet<Provenance> = new Set(['text', 'paste', 'command']);
 
+/** Un exposant négatif sans accolades : `^-1`, `^-12`, `^-x` (un nombre ou UNE lettre, pas `^-sin(x)`) ;
+ * jamais suivi d'un autre `^` : `e^-x^2` se lirait (e^{-x})² ici et e^{-x²} dans Calcul. */
+const NEGATIVE_EXPONENT = /\^\s*-\s*(\d+(?:\.\d+)?|[A-Za-z](?![A-Za-z(]))(?!\s*\^)/g;
+
 function parseByProvenance(
 	rawDefinition: string,
 	provenance: Provenance,
@@ -170,7 +174,16 @@ function parseByProvenance(
 	if (detected.format === 'latex' && detected.confidence > 0.5) {
 		return parseLatexSafe(definition, { genericFunctions });
 	}
-	return parseCustomSafe(definition, { genericFunctions });
+	const read = parseCustomSafe(definition, { genericFunctions });
+	// `x^-1`, `f(x)^-1`, `e^-x` : le parseur maison exige `x^{-1}`, alors qu'une
+	// ligne de Calcul les lit. `g(x) = f(x)^-1` créait une g en erreur, et `g(2)`
+	// répondait « Fonction inconnue : g » (constat du lot 3 de la réciproque).
+	// Relu avec l'exposant entre parenthèses, seulement après ce refus-là.
+	if (read.ast === null && read.errors.some((e) => e.code === 'INVALID_SUPERSCRIPT')) {
+		const bracketed = definition.replace(NEGATIVE_EXPONENT, '^(-$1)');
+		if (bracketed !== definition) return parseCustomSafe(bracketed, { genericFunctions });
+	}
+	return read;
 }
 
 /**
