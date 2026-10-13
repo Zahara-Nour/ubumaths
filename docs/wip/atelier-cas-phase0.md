@@ -25,7 +25,9 @@ Chapeau du chantier : [atelier-progress.md](atelier-progress.md).
   `√(x+2)`, `2^x`, `3eˣ−1` dès que le second membre est une lettre.
 - **Les six autres commandes de noms** (`.poser`, `.définir`, `.effacer`, `.oublier`,
   `.oublier-fonction`, `.dérivée-de`) restent hors de l'atelier (2026-10-13) : le panneau fait la même
-  chose. Constat du 2026-10-13 : leur refus n'est montré que dans la liste déroulante ; tapées en
+  chose. David (2026-10-13) : **elles ne doivent pas exister** dans l'atelier — pas de refus
+  particulier, `.effacer` répond comme toute commande inconnue (« n'est pas une commande »), et elles
+  quittent la liste déroulante. Constat du 2026-10-13 : leur refus n'est montré que dans la liste déroulante ; tapées en
   entier, elles partent au moteur (`runCommand` ne lit pas `unavailable`) — `.effacer` désynchronise
   le moteur du panneau, `.définir` crée une fonction invisible.
 - **Entrée dans une liste ouverte** :
