@@ -91,6 +91,15 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
      - `.intégrer \frac1t ; t de -1 à 1` : le message du refus dit « (x ≈ 0) » au lieu de t.
      - `.intégrer … de -1 à 1/2` : le message écrit l'intervalle « [-1 ; 1:/2] ».
      - `.intégrer \frac{1}{x^2-2} de 0 à 2` : « Unable to factor denominator », en anglais.
+   - **Décisions de David du 2026-10-13 (soir), mes recos** — `.intégrer` : I1 titre « On sort la
+     constante k » quand u′ = 1 ; I2 garder $-\left(-e^{-x}\right)$ pour k = −1 ; I3 IPP bornée via
+     primitive gardée, rédaction directe $[uv]_a^b - \int_a^b u'v$ plus tard. `.domaine` : Q1 corriger
+     le moteur (chaque étape montre l'ensemble de SA contrainte) ; Q2 corriger l'écriture des ensembles
+     (périodiques, singleton) ; Q3 valeur interdite irrationnelle → étapes refusées, réponse « ≈ 1,26 » ;
+     Q4 brancher sans la résolution de la contrainte, raccord au tableau de signes plus tard ; Q5 réponse
+     en formule $D = …$ ; Q6 brancher « domaine universel », justification « $x^2+1>0$ » si simple.
+     Découpage : PR 1 moteur (garde `unresolved` aussi pour `correction-generator`, Q1, Q2, Q6) ; PR 2
+     atelier (« Comment ? », garde par ensembles, Q3, Q5).
    - **2c. Commande `.limite`** (aucune aujourd'hui ; `pedagogical-limits` sert aux corrections) :
      syntaxe et limites à gauche / à droite à trancher par David.
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).
