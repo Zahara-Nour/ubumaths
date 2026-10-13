@@ -10,8 +10,9 @@
  * lisibles sans connexion, alors qu'aucune page publique ne les lit.
  *
  * Décisions de David (2026-10-11) : chacun ne lit que ses données de jeu ; les
- * constructions publiques sont réservées aux comptes connectés. Les trois fonctions sans
- * appelant (`get_2048_user_rank`, `process_weekly_rewards`, `purchase_shop_item`) sont
+ * constructions publiques sont réservées aux comptes connectés. Les fonctions sans
+ * appelant (`get_2048_user_rank`, `process_weekly_rewards`, `purchase_shop_item`, puis
+ * `award_weekly_reward` et `calculate_daily_challenge_gidouilles` le 2026-10-13) sont
  * supprimées.
  *
  * @vitest-environment node
@@ -169,15 +170,18 @@ describe('lectures ouvertes fermées', () => {
 		expect(data).toHaveLength(1);
 	});
 
-	it.each(['get_2048_user_rank', 'process_weekly_rewards', 'purchase_shop_item'])(
-		'la fonction sans appelant %s n’existe plus',
-		async (nom) => {
-			const pg = await getPostgresClient();
-			const { rows } = await pg.query(
-				`select 1 from pg_proc where proname = $1 and pronamespace = 'public'::regnamespace`,
-				[nom]
-			);
-			expect(rows).toEqual([]);
-		}
-	);
+	it.each([
+		'get_2048_user_rank',
+		'process_weekly_rewards',
+		'purchase_shop_item',
+		'award_weekly_reward',
+		'calculate_daily_challenge_gidouilles'
+	])('la fonction sans appelant %s n’existe plus', async (nom) => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			`select 1 from pg_proc where proname = $1 and pronamespace = 'public'::regnamespace`,
+			[nom]
+		);
+		expect(rows).toEqual([]);
+	});
 });

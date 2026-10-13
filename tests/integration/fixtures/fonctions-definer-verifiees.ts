@@ -423,11 +423,6 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'prof',
 		justification: 'is_teacher_or_admin, puis élève inscrit'
 	},
-	'award_weekly_reward(p_student_id uuid, p_class_id uuid, p_week_start date, p_week_end date, p_gidouilles integer, p_reason text)':
-		{
-			categorie: 'prof',
-			justification: 'rôle admin, ou teacher et is_teacher_or_admin'
-		},
 	'backfill_tournament_scores(p_tournament_id uuid)': {
 		categorie: 'prof',
 		justification: 'is_teacher_or_admin (lot 4)'

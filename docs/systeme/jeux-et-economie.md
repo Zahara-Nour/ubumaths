@@ -34,7 +34,6 @@ couvre:
   - 'src/routes/api/student/{bonus-history,gidouilles-activity,rewards}/**'
   - 'src/routes/api/students/*/vip-cards/**'
   - 'src/routes/api/classes/*/gidouilles/**'
-  - scripts/simulate-vip-economy.ts
 ---
 
 # Jeux et économie (gidouilles, cartes VIP, marché, classements)
@@ -365,9 +364,11 @@ s'affichait en erreur).
   frontière sociale »).
 - **Classement des énigmes** : vue `riddle_progress` lue avec les droits de l'élève — pas de fuite,
   mais classement faux (les autres à 0) ; remplacée par `riddle_school_leaderboard` (voir plus haut).
-- **Sans appelant applicatif** : `award_weekly_reward`, `calculate_daily_challenge_gidouilles`
-  (défis quotidiens supprimés). `process_weekly_rewards`, `purchase_shop_item` et
-  `get_2048_user_rank` ont été **supprimées** le 2026-10-11 (migration `20261015090700`).
+- ✅ **Fonctions sans appelant supprimées** : `process_weekly_rewards`, `purchase_shop_item` et
+  `get_2048_user_rank` le 2026-10-11 (migration `20261015090700`) ; `award_weekly_reward` et
+  `calculate_daily_challenge_gidouilles` (défis quotidiens supprimés) le 2026-10-13 (migration
+  `20261016101100`, M13). Les bonus hebdomadaires passent par `run_weekly_rewards` et
+  `run_weekly_best_bonuses`.
 - ✅ **Page sans entrée supprimée** (2026-10-12, décision de David) : `/dashboard/student/journal`,
   qu'aucun lien n'a jamais atteint, doublait la fenêtre `StudentJournalModal` de l'accueil élève
   (même `rewardJournalStore`, mêmes `RewardEventCard`). Ses filtres par type
@@ -378,7 +379,6 @@ s'affichait en erreur).
 - **Navadra** (en pause) : routes vivantes mais hors catalogue, gains de combat hors journal
   (à reprendre avec la réécriture). ✅ Les quatre liens morts du hub sont retirés (2026-10-13).
   **Evoland** (en pause) : page sans lien, hors plan du site.
-- `scripts/simulate-vip-economy.ts` simule l'ancienne économie (cap partagé) : périmé.
 
 ---
 
