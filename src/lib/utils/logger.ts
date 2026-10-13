@@ -91,10 +91,19 @@ const ERROR_CODE_PATTERNS = [
 ] as const;
 
 /**
- * Domaine (ou partie locale) qui commence par `majeur.mineur` : une version de paquet (`postgrest-js@1.21.4`,
- * `kit@2.8.0_@sveltejs+…` d'un chemin pnpm), pas une adresse. `163.com` n'en est pas une.
+ * Domaine fait de chiffres et de points : une version de paquet (`postgrest-js@1.21.4`
+ * d'un chemin de pile), pas une adresse. `163.com` ou `12.34.fr` n'en sont pas.
  */
-const PACKAGE_VERSION = /^\d+\.\d+/;
+const PACKAGE_VERSION = /^[\d.]+$/;
+
+/**
+ * Chemin pnpm avec pairs, `kit@2.8.0_@sveltejs+vite-plugin-svelte@4.0.0-next.6_svelte@5.1.0`.
+ * Domaine qui suit une version : `2.8.0_…`, `4.0.0-next.6_svelte` (un `_` n'existe dans
+ * aucun nom de domaine). Pair à portée : partie locale réduite à une version suivie de
+ * `_`, domaine en `scope+nom`.
+ */
+const PNPM_PEER_DOMAIN = /^\d+\.\d+\.\d+(?:-[A-Za-z0-9.]+)?_/;
+const PNPM_PEER_LOCAL = /^\d+\.\d+\.\d+(?:-[A-Za-z0-9.]+)?_$/;
 
 /** Ce qui borne une adresse e-mail : un espace, un autre `@`, un `/` (chemin de pile). */
 function isEmailBoundary(char: string): boolean {
@@ -116,9 +125,10 @@ function redactEmails(value: string): string {
 		while (end < value.length && !isEmailBoundary(value[end])) end++;
 		const local = value.slice(start, at);
 		const domain = value.slice(at + 1, end);
-		// Pair d'un chemin pnpm (`kit@2.8.0_@sveltejs+…`) : la partie locale est la fin
-		// de la version précédente
-		const isPackagePath = PACKAGE_VERSION.test(domain) || PACKAGE_VERSION.test(local);
+		const isPackagePath =
+			PACKAGE_VERSION.test(domain) ||
+			PNPM_PEER_DOMAIN.test(domain) ||
+			(PNPM_PEER_LOCAL.test(local) && domain.includes('+'));
 		if (local === '' || domain === '' || isPackagePath) continue;
 		result += value.slice(copied, start) + '[email@redacted]';
 		copied = end;

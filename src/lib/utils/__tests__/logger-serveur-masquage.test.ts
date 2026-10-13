@@ -169,6 +169,25 @@ describe('createServerLogger — e-mails', () => {
 		expect(logged(frame)[0]).toBe(frame);
 	});
 
+	it('masque une adresse dont la partie locale ou le domaine commence par des chiffres', () => {
+		// Fuites trouvées par sonde lors de l'audit des pairs pnpm : une date de naissance
+		// dans l'adresse ressemble à une version de paquet
+		for (const email of [
+			'1.2@x.fr',
+			'06.12.2010.dupont@gmail.com',
+			'12.5eleve@x.fr',
+			'3.14159@pi.fr',
+			'x@12.34.fr',
+			'x@1.2.example.fr',
+			'x@0.1truc.fr',
+			'1.2.3.4@x.fr'
+		]) {
+			expect(logged(`connexion de ${email}`)[0]).toBe('connexion de [email@redacted]');
+		}
+		expect(loggedText('1.2@x.fr@y.fr')).not.toMatch(/1\.2|x\.fr/);
+		expect(loggedText('kit@2.8.0_@eleve.fr')).not.toContain('eleve.fr');
+	});
+
 	it('garde lisible un chemin de pile pnpm avec pairs (`_@`)', () => {
 		const frame =
 			'at g (/var/task/node_modules/.pnpm/@sveltejs+kit@2.8.0_@sveltejs+vite-plugin-svelte@4.0.0-next.6_svelte@5.1.0__vite@5.4.0/node_modules/@sveltejs/kit/src/runtime/server/index.js:3:4)';
