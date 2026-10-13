@@ -125,6 +125,7 @@ import {
 } from '../domain/algebra';
 import { formatInterval } from '../domain/format';
 import { reservedVariableRefusal } from '../common/reserved-letters';
+import { tryAbsoluteValue } from './absolute-value';
 import { applyRules, RuleIterationLimitError } from '../pattern/rule';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
@@ -2341,6 +2342,12 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// équation déjà résolue garde sa résolution.
 	// P/c = 0, c constante non nulle (π, e, π + 1) : P = 0. Premier
 	// repli : écart V37, `x < 2/π` mis sous la forme (πx − 2)/π < 0.
+	// |u| = c et |u| = |v|, u et v affines (écart V40 : `|x| = π` revenait
+	// « non supporte ») — voir `absolute-value.ts`
+	if (isSolverFailure(result)) {
+		const absolute = tryAbsoluteValue(expr, variable, opts, solve);
+		if (absolute) result = absolute;
+	}
 	if (isSolverFailure(result)) {
 		const numeratorOnly = tryConstantDenominator(expr, variable, opts);
 		if (numeratorOnly) result = numeratorOnly;
