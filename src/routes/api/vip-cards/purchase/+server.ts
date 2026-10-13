@@ -29,6 +29,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { purchaseVipCardBodySchema } from '$lib/server/validation/vip-cards';
 import { purchaseResultSchema } from '$lib/server/validation/vip-card-rpc';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/vip-cards/purchase/+server');
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -72,7 +75,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('[purchase] RPC error:', rpcError);
+		logger.error('[purchase] RPC error:', rpcError);
 		throw error(500, `Impossible d’acheter la carte VIP : ${rpcError.message}`);
 	}
 

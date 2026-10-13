@@ -1,5 +1,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/riddles/auto-select-daily/+server');
 
 /**
  * La sélection automatique vit dans `api/cron/riddle-of-the-day` (cron Vercel quotidien et
@@ -29,7 +32,7 @@ export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 	// PGRST116 = aucune énigme programmée aujourd'hui : c'est précisément la
 	// réponse que cette route est censée donner, pas une panne.
 	if (existingError && existingError.code !== 'PGRST116') {
-		console.error('Énigme du jour illisible :', existingError);
+		logger.error('Énigme du jour illisible :', existingError);
 		throw error(500, 'Impossible de vérifier l’énigme du jour');
 	}
 

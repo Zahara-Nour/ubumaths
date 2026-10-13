@@ -23,6 +23,9 @@ import { GoogleNotConnectedError, GoogleTokenExpiredError } from '$lib/server/go
 import { requireRole } from '$lib/server/middleware/auth';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
 import { GoogleDriveClient } from '$lib/server/google/drive-api';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/drive/thumbnail/[fileId]/+server');
 
 /** Google Drive file ID pattern: alphanumeric with dashes and underscores, 10-50 chars */
 const DRIVE_FILE_ID_REGEX = /^[a-zA-Z0-9_-]{10,50}$/;
@@ -117,7 +120,7 @@ export const GET: RequestHandler = async ({ params, locals, setHeaders }) => {
 			}
 		}
 
-		console.error('[Whiteboard Drive Thumbnail] Error:', err);
+		logger.error('[Whiteboard Drive Thumbnail] Error:', err);
 		const message = err instanceof Error ? err.message : 'erreur inconnue';
 		throw error(500, `Impossible de charger la miniature : ${message}`);
 	}

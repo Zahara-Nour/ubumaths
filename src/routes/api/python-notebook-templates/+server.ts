@@ -13,6 +13,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebook-templates/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const { profile } = await requireAuth(locals);
@@ -50,7 +53,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		.order('updated_at', { ascending: false });
 
 	if (queryError) {
-		console.error('Failed to list notebook templates:', queryError);
+		logger.error('Failed to list notebook templates:', queryError);
 		throw error(500, 'Impossible de charger les modèles de carnet');
 	}
 

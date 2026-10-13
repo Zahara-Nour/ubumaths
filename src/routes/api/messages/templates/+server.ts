@@ -13,6 +13,9 @@ import { validateTemplate } from '$lib/templates/templateEngine';
 import type { MessageTemplateInput } from '$lib/types/messageTemplates';
 import { createMessageTemplateSchema, validateRequest } from '$lib/server/validation';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/templates/+server');
 
 // =====================================================
 // GET - List templates
@@ -37,7 +40,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
+		logger.error('Rôle illisible :', profileError);
 		return error(500, 'Impossible de vérifier vos droits');
 	}
 
@@ -108,7 +111,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (classMembersError && classMembersError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', classMembersError);
+			logger.error('Contrôle d’accès impossible :', classMembersError);
 			return error(500, 'Impossible de vérifier votre accès');
 		}
 
@@ -131,7 +134,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data: templates, error: dbError } = await query;
 
 	if (dbError) {
-		console.error('Error fetching templates:', dbError);
+		logger.error('Error fetching templates:', dbError);
 		return error(500, 'Erreur lors de la récupération des templates');
 	}
 
@@ -170,7 +173,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
+		logger.error('Rôle illisible :', profileError);
 		return error(500, 'Impossible de vérifier vos droits');
 	}
 
@@ -242,7 +245,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (classDataError && classDataError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', classDataError);
+			logger.error('Contrôle d’accès impossible :', classDataError);
 			return error(500, 'Impossible de vérifier votre accès');
 		}
 
@@ -272,7 +275,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (insertError) {
-		console.error('Error creating template:', insertError);
+		logger.error('Error creating template:', insertError);
 		return error(500, 'Erreur lors de la création du template');
 	}
 

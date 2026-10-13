@@ -2,6 +2,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { removeFromClassSchema } from '$lib/server/validation/admin';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/remove-from-class/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	// ✅ SECURITY: admin elevation OR real admin login. Privileged ops run via the
@@ -40,7 +43,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.select('id');
 
 	if (archiveError) {
-		console.error('Archive error:', archiveError);
+		logger.error('Archive error:', archiveError);
 		return json({ error: archiveError.message }, { status: 400 });
 	}
 
@@ -59,7 +62,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (fetchError) {
-		console.error('Fetch error:', fetchError);
+		logger.error('Fetch error:', fetchError);
 		return json({ error: fetchError.message }, { status: 400 });
 	}
 

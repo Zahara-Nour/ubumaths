@@ -113,7 +113,9 @@ de 2nde de répondre une fois à la question d'âge.
   codes de classe). Chaque élève est validé avant toute écriture (`importedStudentsSchema` :
   courriel, prénom et nom de 100 caractères au plus, 20 codes de classe au plus, 1 000 élèves par
   import) et son niveau est ramené à son code (« 6ème » → `6`, `gradeFlexibleSchema`) ; une erreur
-  rend 400 en nommant l'élève (« Élève n° 3 : Courriel invalide »). Un élève dont le profil existe déjà est rattaché directement : `school_id`,
+  rend 400 en nommant l'élève (« Élève n° 3 : Courriel invalide »). Une panne de la base pendant l'import rend 500
+  (« Impossible de vérifier l'état actuel » si la lecture d'un profil existant échoue), jamais
+  « Données invalides », réservé à un JSON illisible. Un élève dont le profil existe déjà est rattaché directement : `school_id`,
   `grade`, adhésions `class_members`. L'activation à la première connexion est décrite dans
   [auth.md](auth.md).
 - Schémas Zod de ces écrans : `src/lib/server/validation/admin.ts`. Les actions des classes
@@ -324,6 +326,7 @@ Intégration (base locale, `pnpm test:integration`) :
 
 Validation des entrées (400 avant toute requête, puis écriture normalisée) :
 `src/routes/(protected)/dashboard/admin/{classes,schools,import-students}/__tests__/validation-entrees.test.ts`.
+Panne du serveur pendant l'import : `import-students/__tests__/panne-serveur.test.ts`.
 Aucun test trouvé pour : le reste de l'import d'élèves (profil existant, doublons), l'envoi du
 courriel de bienvenue, `add-to-class` et `remove-from-class`.
 
@@ -339,9 +342,6 @@ courriel de bienvenue, `add-to-class` et `remove-from-class`.
 
 Constatés le 2026-10-13, **non corrigés**.
 
-- **Import : 500 transformé en 400** : dans l'action `import`, le `throw error(500, …)` est pris
-  par le `catch` final, qui rend « Données invalides » (400). La variable `affectedClassIds` est
-  calculée puis jamais utilisée.
 - **`search-users` masque les pannes** : une erreur de `search_users_unaccent` rend 200 avec
   `users: []`, comme « aucun résultat ».
 - **Code mort** : `getClassStudents` et `getClassStudentCount` (`students.ts`) ;

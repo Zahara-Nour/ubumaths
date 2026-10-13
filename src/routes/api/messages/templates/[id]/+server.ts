@@ -12,6 +12,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { validateTemplate } from '$lib/templates/templateEngine';
 import { updateMessageTemplateSchema, validateRequest } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/templates/[id]/+server');
 
 // =====================================================
 // GET - Get template details
@@ -78,7 +81,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
+		logger.error('Rôle illisible :', profileError);
 		return error(500, 'Impossible de vérifier vos droits');
 	}
 
@@ -180,7 +183,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (classDataError && classDataError.code !== 'PGRST116') {
-				console.error('Contrôle d’accès impossible :', classDataError);
+				logger.error('Contrôle d’accès impossible :', classDataError);
 				return error(500, 'Impossible de vérifier votre accès');
 			}
 
@@ -204,7 +207,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (updateError) {
-		console.error('Error updating template:', updateError);
+		logger.error('Error updating template:', updateError);
 		return error(500, 'Erreur lors de la mise à jour du template');
 	}
 
@@ -235,7 +238,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
+		logger.error('Rôle illisible :', profileError);
 		return error(500, 'Impossible de vérifier vos droits');
 	}
 
@@ -273,7 +276,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { error: deleteError } = await supabase.from('message_templates').delete().eq('id', id);
 
 	if (deleteError) {
-		console.error('Error deleting template:', deleteError);
+		logger.error('Error deleting template:', deleteError);
 		return error(500, 'Erreur lors de la suppression du template');
 	}
 

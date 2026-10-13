@@ -10,6 +10,9 @@ import {
 // TODO: Implement cache invalidation
 // import { invalidateListingCaches } from '$lib/server/marketplace/cache-manager';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/listings/[id]/+server');
 
 // ID validation schema
 const idSchema = z.string().uuid("ID d'annonce invalide");
@@ -82,7 +85,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.order('created_at', { ascending: false });
 
 		if (proposalDataError) {
-			console.error('Lecture impossible :', proposalDataError);
+			logger.error('Lecture impossible :', proposalDataError);
 			throw error(500, 'Impossible de charger les données');
 		}
 
@@ -102,7 +105,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 					.update({ view_count: (listing.view_count ?? 0) + 1 })
 					.eq('id', listingId);
 			} catch (err) {
-				console.error('Error incrementing view count:', err);
+				logger.error('Error incrementing view count:', err);
 			}
 		})();
 	}
@@ -183,7 +186,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		.single();
 
 	if (updateError) {
-		console.error('Error updating listing:', updateError);
+		logger.error('Error updating listing:', updateError);
 		throw error(500, "Erreur lors de la mise à jour de l'annonce");
 	}
 
@@ -243,7 +246,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		.eq('id', listingId);
 
 	if (updateError) {
-		console.error('Error cancelling listing:', updateError);
+		logger.error('Error cancelling listing:', updateError);
 		throw error(500, "Erreur lors de l'annulation de l'annonce");
 	}
 
@@ -258,7 +261,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		.eq('status', 'pending');
 
 	if (proposalsError) {
-		console.error('Lecture impossible :', proposalsError);
+		logger.error('Lecture impossible :', proposalsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

@@ -11,6 +11,9 @@ import { requireSpreadsheetUser } from '$lib/server/spreadsheet-access';
 import { updateSpreadsheetSchema } from '$lib/server/validation/spreadsheet';
 import { validateUuidParam } from '$lib/server/validation/params';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/spreadsheets/[id]/+server');
 
 /**
  * GET /api/spreadsheets/:id
@@ -98,7 +101,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.select('id');
 
 	if (dbError) {
-		console.error('Error deleting spreadsheet:', dbError);
+		logger.error('Error deleting spreadsheet:', dbError);
 		throw error(500, 'Erreur lors de la suppression de la feuille de calcul');
 	}
 

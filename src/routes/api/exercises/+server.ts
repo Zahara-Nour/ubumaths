@@ -20,6 +20,9 @@ import {
 	SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE,
 	isSearchIndexedViolation
 } from '$lib/server/exercise-search-indexed';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/+server');
 
 type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
 
@@ -72,7 +75,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const result = await getExercises(locals.supabase, filters, { page, limit });
 
 	if (result.error) {
-		console.error('Failed to fetch exercises:', result.error);
+		logger.error('Failed to fetch exercises:', result.error);
 		throw error(500, 'Impossible de charger les exercices');
 	}
 
@@ -130,7 +133,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		if (isSearchIndexedViolation(result.error)) {
 			throw error(400, SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE);
 		}
-		console.error('Failed to create exercise:', result.error);
+		logger.error('Failed to create exercise:', result.error);
 		throw error(500, 'Impossible de créer l’exercice');
 	}
 

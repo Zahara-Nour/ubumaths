@@ -17,6 +17,9 @@ import { parseKanbanId, createTagSchema } from '$lib/server/validation/kanban';
 import { assertBoardOwner, rateLimitResponse } from '$lib/server/kanban';
 import { checkKanbanColumnMutationRateLimit } from '$lib/server/rateLimiter';
 import type { KanbanTag, KanbanTagInsert } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/organisation/kanban/boards/[boardId]/tags/+server');
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user } = await requireAuth(locals);
@@ -63,7 +66,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		if (dbError.code === '23514') {
 			throw error(400, 'Limite de 20 tags par tableau atteinte');
 		}
-		console.error('[kanban] create tag failed:', dbError);
+		logger.error('[kanban] create tag failed:', dbError);
 		throw error(500, 'Erreur lors de la création du tag');
 	}
 

@@ -19,6 +19,9 @@ import { z } from 'zod';
 import { CORRECTION_RELEASE_MODES, ASSIGNMENT_STATUSES } from '$lib/types/worksheets';
 import { getCorrectionReleaseStatus } from '$lib/server/worksheets/correction-release';
 import { guidanceLevelSchema } from '$lib/server/validation/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/assignments/+server');
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -114,7 +117,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
+			logger.error('Rôle illisible :', profileError);
 			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
@@ -159,7 +162,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			// Cette liste borne la portée du classement. Vidée par une panne, elle
 			// affiche un classement amputé sans le dire.
 			if (assignmentIdsError) {
-				console.error('Périmètre illisible :', assignmentIdsError);
+				logger.error('Périmètre illisible :', assignmentIdsError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 
@@ -175,7 +178,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		const { data: assignments, error: fetchError } = await query;
 
 		if (fetchError) {
-			console.error('[API] Fetch error:', fetchError);
+			logger.error('[API] Fetch error:', fetchError);
 			throw error(500, 'Impossible de charger les affectations');
 		}
 
@@ -226,7 +229,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 					correctionStatus
 				});
 			} catch (statusErr) {
-				console.error('[API] Error getting correction status for', assignment.id, statusErr);
+				logger.error('[API] Error getting correction status for', assignment.id, statusErr);
 				assignmentsWithStatus.push({
 					...assignment,
 					correctionStatus: null
@@ -239,10 +242,10 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			assignments: assignmentsWithStatus
 		});
 	} catch (err) {
-		console.error('Error fetching assignments:', err);
+		logger.error('Error fetching assignments:', err);
 		if (err instanceof Error) {
-			console.error('Error message:', err.message);
-			console.error('Error stack:', err.stack);
+			logger.error('Error message:', err.message);
+			logger.error('Error stack:', err.stack);
 		}
 
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -305,7 +308,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
+			logger.error('Rôle illisible :', profileError);
 			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
@@ -326,7 +329,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				.in('id', classIds);
 
 			if (classesError) {
-				console.error('Error fetching classes:', classesError);
+				logger.error('Error fetching classes:', classesError);
 				throw error(500, 'Impossible de vérifier les classes');
 			}
 
@@ -362,7 +365,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				.eq('role', 'student');
 
 			if (studentsError) {
-				console.error('Error fetching students:', studentsError);
+				logger.error('Error fetching students:', studentsError);
 				throw error(500, 'Impossible de vérifier les élèves');
 			}
 
@@ -393,13 +396,13 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (createError) {
-			console.error('Error creating assignment:', createError);
+			logger.error('Error creating assignment:', createError);
 			throw error(500, 'Impossible de créer l’affectation');
 		}
 
 		// La RLS refuse en silence : la ligne rendue doit porter ce qu'on a écrit
 		if (!assignment || assignment.guidance_level !== data.guidance_level) {
-			console.error('Affectation non écrite telle que demandée :', assignment?.id);
+			logger.error('Affectation non écrite telle que demandée :', assignment?.id);
 			throw error(500, 'Impossible de créer l’affectation');
 		}
 
@@ -415,7 +418,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				.insert(classInserts);
 
 			if (classInsertError) {
-				console.error('Error inserting class assignments:', classInsertError);
+				logger.error('Error inserting class assignments:', classInsertError);
 				// Rollback: delete the assignment
 				await locals.supabase.from('worksheet_assignments').delete().eq('id', assignment.id);
 				throw error(500, 'Impossible d’affecter la fiche aux classes');
@@ -434,7 +437,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 				.insert(studentInserts);
 
 			if (studentInsertError) {
-				console.error('Error inserting student assignments:', studentInsertError);
+				logger.error('Error inserting student assignments:', studentInsertError);
 				// Rollback: delete the assignment (cascade will clean up classes)
 				await locals.supabase.from('worksheet_assignments').delete().eq('id', assignment.id);
 				throw error(500, 'Impossible d’affecter la fiche aux élèves');
@@ -463,7 +466,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (fetchError) {
-			console.error('Error fetching created assignment:', fetchError);
+			logger.error('Error fetching created assignment:', fetchError);
 			// Assignment was created, just return basic data
 			return json({
 				success: true,
@@ -508,7 +511,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			}
 		});
 	} catch (err) {
-		console.error('Error creating assignment:', err);
+		logger.error('Error creating assignment:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.

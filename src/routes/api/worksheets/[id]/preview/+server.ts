@@ -14,6 +14,9 @@ import {
 } from '$lib/server/worksheets/instance-generator';
 import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
 import { asWorksheetConfig, toWorksheetExerciseRow } from '$lib/types/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/preview/+server');
 
 // Input validation schema
 const previewRequestSchema = z.object({
@@ -52,7 +55,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
+			logger.error('Rôle illisible :', profileError);
 			return error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
@@ -103,7 +106,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			.order('position', { ascending: true });
 
 		if (exercisesError) {
-			console.error('Error fetching exercises:', exercisesError);
+			logger.error('Error fetching exercises:', exercisesError);
 			return error(500, 'Impossible de charger les exercices de la fiche');
 		}
 
@@ -135,7 +138,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 			// laisse une trace.
 			if (studentError) {
-				console.error('Enrichissement illisible :', studentError);
+				logger.error('Enrichissement illisible :', studentError);
 			}
 
 			if (student) {
@@ -176,7 +179,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			}
 		});
 	} catch (err) {
-		console.error('Error generating worksheet preview:', err);
+		logger.error('Error generating worksheet preview:', err);
 		return error(500, err instanceof Error ? err.message : 'Une erreur inattendue s’est produite');
 	}
 };

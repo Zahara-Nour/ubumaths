@@ -15,6 +15,9 @@ import type { RequestHandler } from './$types';
 import { updateCardSchema, uuidParamSchema } from '$lib/server/validation/srs';
 import { requireAuth } from '$lib/server/middleware/auth';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/srs/cards/[id]/+server');
 
 /**
  * GET /api/srs/cards/[id]
@@ -58,7 +61,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (deckError && deckError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', deckError);
+			logger.error('Contrôle d’accès impossible :', deckError);
 			return error(500, 'Impossible de vérifier votre accès');
 		}
 
@@ -68,7 +71,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 		return json({ card });
 	} catch (error) {
-		console.error('Unexpected error in GET /api/srs/cards/[id]:', error);
+		logger.error('Unexpected error in GET /api/srs/cards/[id]:', error);
 		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };
@@ -181,7 +184,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 				// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 				// panne doit se distinguer d'un refus mérité.
 				if (sectionError && sectionError.code !== 'PGRST116') {
-					console.error('Contrôle d’accès impossible :', sectionError);
+					logger.error('Contrôle d’accès impossible :', sectionError);
 					return error(500, 'Impossible de vérifier votre accès');
 				}
 				if (!section) {
@@ -203,13 +206,13 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			.single();
 
 		if (updateError) {
-			console.error('Error updating card:', updateError);
+			logger.error('Error updating card:', updateError);
 			return json({ error: 'Impossible de modifier la carte de révision' }, { status: 500 });
 		}
 
 		return json({ card: updatedCard });
 	} catch (error) {
-		console.error('Unexpected error in PUT /api/srs/cards/[id]:', error);
+		logger.error('Unexpected error in PUT /api/srs/cards/[id]:', error);
 		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };
@@ -276,7 +279,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.select('id');
 
 		if (deleteError) {
-			console.error('Error deleting card:', deleteError);
+			logger.error('Error deleting card:', deleteError);
 			return json({ error: 'Impossible de supprimer la carte de révision' }, { status: 500 });
 		}
 
@@ -289,7 +292,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 		return json({ success: true, message: 'Carte de révision supprimée' });
 	} catch (error) {
-		console.error('Unexpected error in DELETE /api/srs/cards/[id]:', error);
+		logger.error('Unexpected error in DELETE /api/srs/cards/[id]:', error);
 		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

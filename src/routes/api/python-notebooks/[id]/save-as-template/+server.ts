@@ -27,6 +27,9 @@ import { saveAsTemplateSchema } from '$lib/server/validation/notebook-templates'
 import type { NotebookContent, NotebookCell } from '$lib/types/notebook';
 import { asNotebookContent } from '$lib/types/notebook';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebooks/[id]/save-as-template/+server');
 
 const MAX_NOTEBOOKS_PER_USER = 50;
 
@@ -67,7 +70,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.maybeSingle();
 
 	if (fetchError) {
-		console.error('Failed to fetch source notebook:', fetchError);
+		logger.error('Failed to fetch source notebook:', fetchError);
 		throw error(500, 'Impossible de charger le carnet');
 	}
 	if (!source) throw error(404, 'Carnet introuvable');
@@ -86,7 +89,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.select('id', { count: 'exact', head: true })
 		.eq('author_id', user.id);
 	if (countError) {
-		console.error('Quota check failed:', countError);
+		logger.error('Quota check failed:', countError);
 		throw error(500, 'Impossible de vérifier le nombre de carnets');
 	}
 	if (count !== null && count >= MAX_NOTEBOOKS_PER_USER) {
@@ -143,7 +146,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (insertError) {
-		console.error('Failed to insert template:', insertError);
+		logger.error('Failed to insert template:', insertError);
 		throw error(500, 'Impossible de créer le modèle de carnet');
 	}
 

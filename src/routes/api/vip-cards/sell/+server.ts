@@ -28,6 +28,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { sellVipCardBodySchema } from '$lib/server/validation/vip-cards';
 import { sellResultSchema } from '$lib/server/validation/vip-card-rpc';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/vip-cards/sell/+server');
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -65,7 +68,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('[sell] RPC error:', rpcError);
+		logger.error('[sell] RPC error:', rpcError);
 		throw error(500, `Impossible de vendre la carte VIP : ${rpcError.message}`);
 	}
 

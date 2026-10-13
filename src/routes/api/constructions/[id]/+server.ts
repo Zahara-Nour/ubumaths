@@ -10,6 +10,9 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { constructionScriptSchema } from '$lib/constructions';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/constructions/[id]/+server');
 
 // =============================================================================
 // VALIDATION SCHEMAS
@@ -75,7 +78,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		if (queryError?.code === 'PGRST116') {
 			throw error(404, 'Construction introuvable');
 		}
-		console.error('Error fetching construction:', queryError);
+		logger.error('Error fetching construction:', queryError);
 		throw error(500, 'Impossible de charger la construction');
 	}
 
@@ -136,7 +139,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		if (fetchError?.code === 'PGRST116') {
 			throw error(404, 'Construction introuvable');
 		}
-		console.error('Error fetching construction:', fetchError);
+		logger.error('Error fetching construction:', fetchError);
 		throw error(500, 'Impossible de charger la construction');
 	}
 
@@ -153,7 +156,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (updateError) {
-		console.error('Error updating construction:', updateError);
+		logger.error('Error updating construction:', updateError);
 		throw error(500, 'Impossible de modifier la construction');
 	}
 
@@ -185,7 +188,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		if (fetchError?.code === 'PGRST116') {
 			throw error(404, 'Construction introuvable');
 		}
-		console.error('Error fetching construction:', fetchError);
+		logger.error('Error fetching construction:', fetchError);
 		throw error(500, 'Impossible de charger la construction');
 	}
 
@@ -200,7 +203,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('id', params.id);
 
 	if (deleteError) {
-		console.error('Error deleting construction:', deleteError);
+		logger.error('Error deleting construction:', deleteError);
 		throw error(500, 'Impossible de supprimer la construction');
 	}
 

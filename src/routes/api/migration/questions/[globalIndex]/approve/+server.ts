@@ -23,6 +23,9 @@ import {
 } from '$lib/migration/question-data-loader';
 import { MigrationStateManager } from '$lib/server/migration/state-manager';
 import { generateStableQuestionHash } from '$lib/server/migration/hash-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/migration/questions/[globalIndex]/approve/+server');
 
 /**
  * POST /api/migration/questions/[globalIndex]/approve
@@ -141,7 +144,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		// panne prenait le même visage et faisait conclure « rien ici », donc créer
 		// par-dessus ce qu'on n'avait simplement pas su lire.
 		if (editDataError && editDataError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', editDataError);
+			logger.error('Lecture impossible :', editDataError);
 			throw error(500, 'Impossible de vérifier l’état actuel');
 		}
 
@@ -194,7 +197,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Log and return generic error
-		console.error('Error approving question:', err);
+		logger.error('Error approving question:', err);
 		throw error(500, 'Impossible d’approuver la question');
 	}
 };

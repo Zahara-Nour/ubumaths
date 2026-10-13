@@ -8,6 +8,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { uuidSchema } from '$lib/server/validation/common';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebooks/[id]/assignments/+server');
 
 // =============================================================================
 // VALIDATION SCHEMAS
@@ -65,7 +68,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		if (fetchError?.code === 'PGRST116') {
 			throw error(404, 'Carnet introuvable');
 		}
-		console.error('Error fetching notebook:', fetchError);
+		logger.error('Error fetching notebook:', fetchError);
 		throw error(500, 'Impossible de vérifier le carnet');
 	}
 
@@ -93,7 +96,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('created_at', { ascending: false });
 
 	if (assignmentsError) {
-		console.error('Error fetching notebook assignments:', assignmentsError);
+		logger.error('Error fetching notebook assignments:', assignmentsError);
 		throw error(500, 'Impossible de charger les partages');
 	}
 
@@ -102,7 +105,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		// Validate assignment structure
 		const validation = assignmentResponseSchema.safeParse(assignment);
 		if (!validation.success) {
-			console.error('Invalid assignment structure:', validation.error);
+			logger.error('Invalid assignment structure:', validation.error);
 			throw error(500, 'Structure de données invalide');
 		}
 

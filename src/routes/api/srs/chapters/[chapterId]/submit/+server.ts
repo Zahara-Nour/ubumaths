@@ -28,6 +28,9 @@ import { chapterDeckParamsSchema, chapterReviewSubmitSchema } from '$lib/server/
 import { loadChapterDeck, type ChapterDeck } from '$lib/server/srs/chapter-deck';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { recordSrsReviewAttempt } from '$lib/server/srs/srs-attempt';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/srs/chapters/[chapterId]/submit/+server');
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user, profile } = await requireRole(locals, 'student');
@@ -59,7 +62,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	try {
 		deck = await loadChapterDeck(supabase, chapterId, now);
 	} catch (err) {
-		console.error('[srs/chapters/submit] Paquet illisible :', err);
+		logger.error('[srs/chapters/submit] Paquet illisible :', err);
 		throw error(500, 'Impossible de calculer le paquet du chapitre');
 	}
 	if (!deck) throw error(404, 'Chapitre introuvable');
@@ -80,7 +83,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			{ bestOfDay: { now }, verifyWrite: true }
 		);
 	} catch (err) {
-		console.error('[srs/chapters/submit] Mémoire non mise à jour :', err);
+		logger.error('[srs/chapters/submit] Mémoire non mise à jour :', err);
 		throw error(500, 'Impossible d’enregistrer la révision');
 	}
 

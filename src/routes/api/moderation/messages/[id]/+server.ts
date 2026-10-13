@@ -3,6 +3,9 @@ import type { RequestHandler } from './$types';
 import { deleteMessageSchema } from '$lib/server/validation/moderation';
 import { z } from 'zod';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/moderation/messages/[id]/+server');
 
 /**
  * DELETE /api/moderation/messages/[id]
@@ -70,7 +73,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		.maybeSingle();
 
 	if (fetchError) {
-		console.error('Failed to fetch message:', fetchError);
+		logger.error('Failed to fetch message:', fetchError);
 		throw error(500, 'Failed to fetch message');
 	}
 
@@ -102,7 +105,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (membershipError && membershipError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', membershipError);
+			logger.error('Contrôle d’accès impossible :', membershipError);
 			throw error(500, 'Impossible de vérifier votre accès');
 		}
 
@@ -117,7 +120,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (conversationError && conversationError.code !== 'PGRST116') {
-				console.error('Contrôle d’accès impossible :', conversationError);
+				logger.error('Contrôle d’accès impossible :', conversationError);
 				throw error(500, 'Impossible de vérifier votre accès');
 			}
 
@@ -140,7 +143,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (participantsError && participantsError.code !== 'PGRST116') {
-				console.error('Contrôle d’accès impossible :', participantsError);
+				logger.error('Contrôle d’accès impossible :', participantsError);
 				throw error(500, 'Impossible de vérifier votre accès');
 			}
 
@@ -172,7 +175,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 				.maybeSingle();
 
 			if (senderError && senderError.code !== 'PGRST116') {
-				console.error('Contrôle d’accès impossible :', senderError);
+				logger.error('Contrôle d’accès impossible :', senderError);
 				throw error(500, 'Impossible de vérifier votre accès');
 			}
 			if (sender?.role !== 'student') {
@@ -194,11 +197,11 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		.select('id');
 
 	if (updateError) {
-		console.error('Failed to delete message:', updateError);
+		logger.error('Failed to delete message:', updateError);
 		throw error(500, 'Failed to delete message');
 	}
 	if (!deleted || deleted.length !== 1) {
-		console.error('Soft delete touched no row:', { messageId });
+		logger.error('Soft delete touched no row:', { messageId });
 		throw error(500, 'Failed to delete message');
 	}
 
@@ -223,7 +226,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 	});
 
 	if (logError) {
-		console.error('Failed to log moderation action:', logError);
+		logger.error('Failed to log moderation action:', logError);
 		// Don't fail the request if logging fails
 	}
 

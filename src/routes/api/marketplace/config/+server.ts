@@ -3,6 +3,9 @@ import type { RequestHandler } from './$types';
 // Supabase client is now accessed via locals.supabase
 import { updateConfigSchema } from '$lib/server/marketplace/validation';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/config/+server');
 
 // Query schema
 const configQuerySchema = z.object({
@@ -99,7 +102,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				.eq('school_id', profile.school_id);
 
 			if (configsError) {
-				console.error('Error fetching configs:', configsError);
+				logger.error('Error fetching configs:', configsError);
 				throw error(500, 'Erreur lors de la récupération des configurations');
 			}
 
@@ -179,7 +182,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 				);
 
 			if (configsError) {
-				console.error('Error fetching configs:', configsError);
+				logger.error('Error fetching configs:', configsError);
 				throw error(500, 'Erreur lors de la récupération des configurations');
 			}
 
@@ -260,7 +263,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 			// panne prenait le même visage et faisait conclure « rien ici », donc créer
 			// par-dessus ce qu'on n'avait simplement pas su lire.
 			if (existingConfigError && existingConfigError.code !== 'PGRST116') {
-				console.error('Lecture impossible :', existingConfigError);
+				logger.error('Lecture impossible :', existingConfigError);
 				throw error(500, 'Impossible de vérifier l’état actuel');
 			}
 
@@ -277,7 +280,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 					.single();
 
 				if (updateError) {
-					console.error('Error updating config:', updateError);
+					logger.error('Error updating config:', updateError);
 					throw error(500, 'Erreur lors de la mise à jour de la configuration');
 				}
 
@@ -294,7 +297,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 					.single();
 
 				if (createError) {
-					console.error('Error creating config:', createError);
+					logger.error('Error creating config:', createError);
 					throw error(500, 'Erreur lors de la création de la configuration');
 				}
 
@@ -323,7 +326,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 			// panne prenait le même visage et faisait conclure « rien ici », donc créer
 			// par-dessus ce qu'on n'avait simplement pas su lire.
 			if (existingConfigError && existingConfigError.code !== 'PGRST116') {
-				console.error('Lecture impossible :', existingConfigError);
+				logger.error('Lecture impossible :', existingConfigError);
 				throw error(500, 'Impossible de vérifier l’état actuel');
 			}
 
@@ -388,7 +391,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 		// panne prenait le même visage et faisait conclure « rien ici », donc créer
 		// par-dessus ce qu'on n'avait simplement pas su lire.
 		if (existingConfigError && existingConfigError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', existingConfigError);
+			logger.error('Lecture impossible :', existingConfigError);
 			throw error(500, 'Impossible de vérifier l’état actuel');
 		}
 
@@ -406,7 +409,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 				.single();
 
 			if (updateError) {
-				console.error('Error updating school config:', updateError);
+				logger.error('Error updating school config:', updateError);
 				throw error(500, 'Erreur lors de la mise à jour de la configuration');
 			}
 
@@ -424,7 +427,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 				.single();
 
 			if (createError) {
-				console.error('Error creating school config:', createError);
+				logger.error('Error creating school config:', createError);
 				throw error(500, 'Erreur lors de la création de la configuration');
 			}
 

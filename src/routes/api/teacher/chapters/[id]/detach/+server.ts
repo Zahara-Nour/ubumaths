@@ -8,6 +8,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { detachChapterFromTemplate } from '$lib/server/chapter-templates';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/detach/+server');
 
 /**
  * POST /api/teacher/chapters/[id]/detach
@@ -55,7 +58,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (instantiationError && instantiationError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', instantiationError);
+		logger.error('Lecture impossible :', instantiationError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -71,7 +74,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	const result = await detachChapterFromTemplate(chapterId, locals.supabase);
 
 	if (result.error) {
-		console.error('[POST /api/teacher/chapters/[id]/detach] Error:', result.error);
+		logger.error('[POST /api/teacher/chapters/[id]/detach] Error:', result.error);
 		throw error(500, 'Failed to detach chapter from template');
 	}
 

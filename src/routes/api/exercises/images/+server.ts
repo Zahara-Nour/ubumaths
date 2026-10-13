@@ -39,6 +39,9 @@ import {
 	type ImageMetadata
 } from '$lib/server/validation/image-upload';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/images/+server');
 
 // ============================================================================
 // CONSTANTS
@@ -95,7 +98,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		formData = await request.formData();
 	} catch (err) {
-		console.error('Error parsing form data:', err);
+		logger.error('Error parsing form data:', err);
 		throw error(400, 'Formulaire invalide');
 	}
 
@@ -141,7 +144,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const arrayBuffer = await imageFile.arrayBuffer();
 		fileBuffer = new Uint8Array(arrayBuffer);
 	} catch (err) {
-		console.error('Error reading file buffer:', err);
+		logger.error('Error reading file buffer:', err);
 		throw error(400, 'Impossible de lire le fichier image');
 	}
 
@@ -180,7 +183,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const uploadResult = await uploadExerciseImage(locals.supabase, fileForUpload, user.id);
 
 	if (!uploadResult.success) {
-		console.error('Image upload failed:', uploadResult.error);
+		logger.error('Image upload failed:', uploadResult.error);
 		throw error(500, uploadResult.error || 'Impossible d’envoyer l’image');
 	}
 

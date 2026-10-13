@@ -14,6 +14,9 @@ import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import type { UploadImageResponse } from '$lib/types/vip-card-admin';
 import { validateSlugParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/vip-cards/templates/[id]/image/+server');
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -49,7 +52,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			.maybeSingle();
 
 		if (checkError) {
-			console.error('Error checking template existence:', checkError);
+			logger.error('Error checking template existence:', checkError);
 			throw error(500, 'Impossible de vérifier le modèle de carte VIP');
 		}
 
@@ -116,7 +119,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			});
 
 		if (uploadError) {
-			console.error('Error uploading image:', uploadError);
+			logger.error('Error uploading image:', uploadError);
 			throw error(500, `Impossible d’envoyer l’image : ${uploadError.message}`);
 		}
 
@@ -138,7 +141,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			.eq('id', templateId);
 
 		if (updateError) {
-			console.error('Error updating template image_path:', updateError);
+			logger.error('Error updating template image_path:', updateError);
 			throw error(500, 'Impossible d’enregistrer l’image du modèle de carte VIP');
 		}
 
@@ -150,7 +153,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 		return json(response);
 	} catch (err) {
-		console.error('Error in POST /api/admin/vip-cards/templates/[id]/image:', err);
+		logger.error('Error in POST /api/admin/vip-cards/templates/[id]/image:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

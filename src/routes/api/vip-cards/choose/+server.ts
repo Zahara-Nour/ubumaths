@@ -51,6 +51,9 @@ import {
 	grantVipCardsAfterAction,
 	restoreActionCard
 } from '$lib/server/vip-card-grants';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/vip-cards/choose/+server');
 
 // ============================================================================
 // POST HANDLER
@@ -103,7 +106,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (fetchError) {
-		console.error('[choose] Error fetching student profile:', fetchError);
+		logger.error('[choose] Error fetching student profile:', fetchError);
 		throw error(500, `Impossible de charger le profil de l’élève : ${fetchError.message}`);
 	}
 
@@ -184,7 +187,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (useError) {
-		console.error('[choose] RPC use_vip_card error:', useError);
+		logger.error('[choose] RPC use_vip_card error:', useError);
 		throw error(500, `Impossible d’utiliser la carte d’action : ${useError.message}`);
 	}
 

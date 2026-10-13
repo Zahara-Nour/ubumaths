@@ -36,7 +36,12 @@ import type { FunctionBindings } from '../../eval/function-bindings';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { normalize, normalFormsEquivalent } from '../../normal';
 import type { EvalValue, ComplexValueResult, EvalResult } from '../../eval/types';
-import { computeQuantity, convertQuantity, type QuantityOutcome } from '../quantities';
+import {
+	computeQuantity,
+	convertQuantity,
+	type QuantityAnswer,
+	type QuantityOutcome
+} from '../quantities';
 import { displayUnitsInLatex } from '../../units/display';
 import { isBoolean, isLogical, isLogicalNot, isRelation, isUnit, isVariable } from '../../guards';
 import { relation } from '../../factory';
@@ -232,6 +237,8 @@ export class WebReplEngine {
 	private evalState: EvalState;
 	/** La dernière grandeur calculée, exacte : celle que `.convert` reprend. */
 	private lastQuantity: MathNode | null = null;
+	/** Ce que l'élève a vu de `lastQuantity` (une durée composée), pour `.convert` */
+	private lastWritten: QuantityAnswer | undefined = undefined;
 	private historyRef: ReadonlyArray<ReplHistoryEntry> = [];
 
 	constructor() {
@@ -1086,6 +1093,7 @@ export class WebReplEngine {
 				functions: this.evalState.functions
 			});
 			this.lastQuantity = null; // Un nombre : plus de grandeur à convertir
+			this.lastWritten = undefined;
 
 			// Non-value result (indeterminate / unevaluable): surface via the catch
 			if (exactResult.status !== 'value') {
@@ -1215,7 +1223,9 @@ export class WebReplEngine {
 	/** `.convert` : la dernière grandeur exprimée dans une autre unité, exactement. */
 	private executeConvertCommand(targetUnitStr: string): ReplExecutionResult {
 		const mode = this.evalState.mode === 'decimal' ? 'decimal' : 'exact';
-		return this.quantityResult(convertQuantity(this.lastQuantity, targetUnitStr, mode));
+		return this.quantityResult(
+			convertQuantity(this.lastQuantity, targetUnitStr, mode, this.lastWritten)
+		);
 	}
 
 	/** La réponse de la console pour un calcul ou une conversion de grandeurs. */
@@ -1231,9 +1241,11 @@ export class WebReplEngine {
 		// Les unités se sont simplifiées : un calcul de nombres comme un autre
 		if (outcome.ok === 'plain') {
 			this.lastQuantity = null;
+			this.lastWritten = undefined;
 			return this.createAutoEvaluationResult(outcome.node);
 		}
 		this.lastQuantity = outcome.quantity;
+		this.lastWritten = outcome.written;
 		const html = (text: string) => `<span class="text-cyan-400">${this.escapeHtml(text)}</span>`;
 		const approximate =
 			outcome.approximate === null

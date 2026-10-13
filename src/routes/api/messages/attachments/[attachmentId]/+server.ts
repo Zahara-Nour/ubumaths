@@ -12,6 +12,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { getAttachmentDownloadUrl } from '$lib/server/message-attachments';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/attachments/[attachmentId]/+server');
 
 export const GET: RequestHandler = async ({ params, locals }) => {
 	await requireAuth(locals);
@@ -21,7 +24,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	try {
 		url = await getAttachmentDownloadUrl(locals.supabase, createServiceRoleClient(), attachmentId);
 	} catch (err) {
-		console.error('[messages] Pièce jointe illisible :', err);
+		logger.error('[messages] Pièce jointe illisible :', err);
 		throw error(500, 'Pièce jointe indisponible');
 	}
 	if (!url) {

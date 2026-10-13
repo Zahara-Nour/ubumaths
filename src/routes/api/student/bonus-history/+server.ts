@@ -25,6 +25,9 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/bonus-history/+server');
 
 // Validation schema for query parameters
 const getBonusHistorySchema = z.object({
@@ -83,7 +86,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.limit(limit);
 
 		if (fetchError) {
-			console.error('[API] Error fetching bonus history:', fetchError);
+			logger.error('[API] Error fetching bonus history:', fetchError);
 			throw error(500, 'Impossible de charger l’historique des bonus');
 		}
 
@@ -108,7 +111,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/bonus-history:', err);
+		logger.error('[API] Unexpected error in GET /api/student/bonus-history:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

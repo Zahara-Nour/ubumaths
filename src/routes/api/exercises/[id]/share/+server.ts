@@ -19,6 +19,9 @@ import {
 } from '$lib/server/exercise-share-tokens';
 import { validateCreateShareToken } from '$lib/server/validation/exercises';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/[id]/share/+server');
 
 /**
  * POST /api/exercises/[id]/share
@@ -70,7 +73,7 @@ export const POST: RequestHandler = async ({ locals, params, request, url }) => 
 	);
 
 	if (tokenResult.error || !tokenResult.data) {
-		console.error('Failed to create share token:', tokenResult.error);
+		logger.error('Failed to create share token:', tokenResult.error);
 		throw error(500, 'Impossible de créer le lien de partage');
 	}
 
@@ -113,7 +116,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const tokensResult = await getExerciseShareTokens(locals.supabase, exerciseId);
 
 	if (tokensResult.error) {
-		console.error('Failed to fetch share tokens:', tokensResult.error);
+		logger.error('Failed to fetch share tokens:', tokensResult.error);
 		throw error(500, 'Impossible de charger les liens de partage');
 	}
 

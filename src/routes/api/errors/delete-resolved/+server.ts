@@ -20,6 +20,9 @@ import type { RequestHandler } from './$types';
 import { deleteAllResolvedErrors } from '$lib/server/errorMonitoring';
 import { requireRole } from '$lib/server/middleware/auth';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/errors/delete-resolved/+server');
 
 export const POST: RequestHandler = async ({ locals }) => {
 	// SECURITY: Require admin role
@@ -44,7 +47,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 		}
 
 		// Log unexpected errors
-		console.error('Error in /api/errors/delete-resolved:', err);
+		logger.error('Error in /api/errors/delete-resolved:', err);
 		throw error(500, 'Internal server error');
 	}
 };

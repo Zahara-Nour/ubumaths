@@ -7,6 +7,9 @@ import {
 	enrichWithUsernames
 } from '$lib/server/marketplace/helpers';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/trades/[id]/+server');
 
 // ID validation schema
 const idSchema = z.string().uuid("ID d'échange invalide");
@@ -151,7 +154,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		.eq('id', tradeId);
 
 	if (updateError) {
-		console.error('Error cancelling trade:', updateError);
+		logger.error('Error cancelling trade:', updateError);
 		throw error(500, "Erreur lors de l'annulation de l'échange");
 	}
 

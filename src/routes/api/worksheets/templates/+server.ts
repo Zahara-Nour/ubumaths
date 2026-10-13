@@ -14,6 +14,9 @@ import {
 	createTemplateResponseSchema
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/templates/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -58,7 +61,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data: templates, error: dbError, count } = await query;
 
 	if (dbError) {
-		console.error('Failed to fetch templates:', dbError);
+		logger.error('Failed to fetch templates:', dbError);
 		throw error(500, 'Impossible de charger les modèles de fiche');
 	}
 
@@ -123,7 +126,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to create template:', dbError);
+		logger.error('Failed to create template:', dbError);
 		throw error(500, 'Impossible de créer le modèle de fiche');
 	}
 

@@ -10,6 +10,9 @@ import { validateUuidParam } from '$lib/server/validation/params';
 import { addBuddyXpFromExercise } from '$lib/server/buddy-xp-service';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/riddles/[id]/submit/+server');
 
 /**
  * Submit riddle attempt
@@ -50,7 +53,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	]);
 
 	if (solutionError) {
-		console.error('Error fetching riddle solution:', solutionError);
+		logger.error('Error fetching riddle solution:', solutionError);
 		throw error(500, 'Erreur lors de la correction de la réponse');
 	}
 
@@ -81,7 +84,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	});
 
 	if (submitError) {
-		console.error('Error submitting attempt:', submitError);
+		logger.error('Error submitting attempt:', submitError);
 		throw error(500, 'Erreur lors de la soumission de la tentative');
 	}
 
@@ -117,7 +120,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		// panne prenait le même visage et faisait conclure « rien ici », donc créer
 		// par-dessus ce qu'on n'avait simplement pas su lire.
 		if (studentError && studentError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', studentError);
+			logger.error('Lecture impossible :', studentError);
 			throw error(500, 'Impossible de vérifier l’état actuel');
 		}
 
@@ -185,7 +188,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 				(response as Record<string, unknown>).buddy_xp = buddyXp;
 			}
 		} catch (buddyError) {
-			console.error('⚠️ [API] Error awarding buddy XP for riddle:', buddyError);
+			logger.error('⚠️ [API] Error awarding buddy XP for riddle:', buddyError);
 		}
 	}
 

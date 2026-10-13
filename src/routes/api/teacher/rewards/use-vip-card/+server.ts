@@ -11,6 +11,9 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/rewards/use-vip-card/+server');
 
 const schema = z.object({
 	studentId: z.string().uuid(),
@@ -51,7 +54,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('[API] RPC Error:', rpcError);
+		logger.error('[API] RPC Error:', rpcError);
 		throw error(500, 'Failed to use VIP card');
 	}
 

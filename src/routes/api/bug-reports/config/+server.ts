@@ -14,6 +14,9 @@ import { requireAuth, requireRole } from '$lib/server/middleware/auth';
 import { updateBugReportsConfigSchema } from '$lib/server/validation/bug-reports';
 import type { BugReportsConfig } from '$lib/types/bug-reports';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/bug-reports/config/+server');
 
 // =============================================================================
 // GET /api/bug-reports/config - Get current configuration
@@ -32,7 +35,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.single();
 
 		if (queryError) {
-			console.error('[API] Error fetching bug reports config:', queryError);
+			logger.error('[API] Error fetching bug reports config:', queryError);
 			throw error(500, 'Erreur lors de la récupération de la configuration');
 		}
 
@@ -54,7 +57,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[API] Unexpected error in GET /api/bug-reports/config:', err);
+		logger.error('[API] Unexpected error in GET /api/bug-reports/config:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };
@@ -110,7 +113,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (updateError) {
-			console.error('[API] Error updating bug reports config:', updateError);
+			logger.error('[API] Error updating bug reports config:', updateError);
 			throw error(500, 'Erreur lors de la mise à jour de la configuration');
 		}
 
@@ -132,7 +135,7 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[API] Unexpected error in PATCH /api/bug-reports/config:', err);
+		logger.error('[API] Unexpected error in PATCH /api/bug-reports/config:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

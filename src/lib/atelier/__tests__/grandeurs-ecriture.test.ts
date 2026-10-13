@@ -148,3 +148,43 @@ describe('les aides ne se répètent pas', () => {
 		);
 	});
 });
+
+/**
+ * Restes du lot C (2026-10-13) : le membre gauche de `.convertir` répète ce
+ * que l'élève a vu, pas la grandeur recalculée (`2,5 h = 150 min`).
+ */
+describe('.convertir après une durée composée', () => {
+	it.each([
+		['2 h 30 min', 'min', '2 h 30 min = 150 min'],
+		['1 h 30 min + 15 min', 'min', '1 h 45 min = 105 min'],
+		['2 h 30 min', 's', '2 h 30 min = 9000 s'],
+		// Une seule unité écrite : la grandeur telle quelle
+		['2,5 h', 'min', '2,5 h = 150 min']
+	])('%s puis .convertir %s', (input, unit, expected) => {
+		const s = session();
+		runInput(s, input);
+		expect(outputOf(runInput(s, `.convertir ${unit}`))).toBe(expected);
+	});
+
+	it('une deuxième conversion garde la même écriture', () => {
+		const s = session();
+		runInput(s, '2 h 30 min');
+		runInput(s, '.convertir min');
+		expect(outputOf(runInput(s, '.convertir s'))).toBe('2 h 30 min = 9000 s');
+	});
+
+	it('en mode décimal aussi', () => {
+		const s = session();
+		runInput(s, '.mode décimal');
+		runInput(s, '2 h 30 min');
+		expect(outputOf(runInput(s, '.convertir min'))).toBe('2 h 30 min = 150 min');
+	});
+
+	it('l’écriture mathématique aussi', () => {
+		const s = session();
+		runInput(s, '2 h 30 min');
+		expect(latexOf(runInput(s, '.convertir min'))).toBe(
+			'2~\\mathrm{h}~30~\\mathrm{min} = 150~\\mathrm{min}'
+		);
+	});
+});

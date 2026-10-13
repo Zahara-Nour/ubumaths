@@ -26,6 +26,9 @@ import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { getStudentChapters } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/chapters/+server');
 
 /**
  * Query parameters schema
@@ -57,7 +60,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const result = await getStudentChapters(user.id, locals.supabase, classId);
 
 		if (result.error) {
-			console.error('[API] Error fetching student chapters:', result.error);
+			logger.error('[API] Error fetching student chapters:', result.error);
 			throw error(500, 'Failed to fetch chapters');
 		}
 
@@ -71,7 +74,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/chapters:', err);
+		logger.error('[API] Unexpected error in GET /api/student/chapters:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };

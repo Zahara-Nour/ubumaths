@@ -12,6 +12,9 @@ import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import type { ErrorReportStatus } from '$lib/types/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/reports/+server');
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -117,7 +120,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
+			logger.error('Rôle illisible :', profileError);
 			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
@@ -145,7 +148,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			.eq('worksheet_id', worksheetId);
 
 		if (assignmentsError) {
-			console.error('[API] Error fetching assignments:', assignmentsError);
+			logger.error('[API] Error fetching assignments:', assignmentsError);
 			throw error(500, 'Impossible de charger les affectations');
 		}
 
@@ -194,7 +197,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			.in('assignment_id', filteredAssignmentIds);
 
 		if (countError) {
-			console.error('[API] Error counting reports:', countError);
+			logger.error('[API] Error counting reports:', countError);
 			throw error(500, 'Impossible de compter les signalements');
 		}
 
@@ -243,7 +246,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		const { data: reports, error: fetchError, count: totalFiltered } = await query;
 
 		if (fetchError) {
-			console.error('[API] Error fetching reports:', fetchError);
+			logger.error('[API] Error fetching reports:', fetchError);
 			throw error(500, 'Impossible de charger les signalements');
 		}
 
@@ -307,7 +310,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/worksheets/[id]/reports:', err);
+		logger.error('[API] Unexpected error in GET /api/worksheets/[id]/reports:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

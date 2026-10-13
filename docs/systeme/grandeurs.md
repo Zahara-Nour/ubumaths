@@ -37,6 +37,7 @@ octobre). Le symptôme le plus visible : Calcul et `/cas` répondaient `10[km]/1
 | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | Énoncés, `{{eval}}`, données                  | stricte : `5[km]` (`~…~`), `5~\unit{km}` (LaTeX) — l'auteur doit être sans ambiguïté                           | parseur maison (`parser/custom`, `unit-writing.ts`), parseur LaTeX |
 | Atelier : calculs et valeurs                  | **« un nombre, une espace, une unité »** (`5 km`) ; collé (`5m`) ou `*` = produit ; crochets toujours acceptés | `readNaturalQuantities` (`atelier/natural-quantities.ts`)          |
+| Atelier : champ MathLive d'une carte (valeur) | la même règle, sur le LaTeX du champ (`2\,h\,30\,\min`, `\frac{1}{2}\,m`)                                      | `definitionFromField` (`atelier/mathfield.ts`)                     |
 | Atelier : définitions de fonctions, commandes | jamais d'unité naturelle (`.résoudre 2 a = 4` ne lit pas des ares)                                             | —                                                                  |
 | Case à unité d'une question                   | tout ce qui suit le nombre est l'unité (`5km`, `5 km`, MathLive)                                               | `normalizeStudentQuantity` (`questions/units/student-input.ts`)    |
 | Case à unité : durée composée                 | « 2 h 15 min », « 1 h 5 min 30 s »                                                                             | `questions/units/composite-duration.ts`                            |
@@ -57,6 +58,12 @@ Règles de la lecture naturelle (décisions de David du 2026-10-11) :
 - une grandeur combinée à une lettre libre est refusée : « Une grandeur ne se combine pas avec une
   lettre. » (`atelier/calcul.ts`).
 
+Dans la carte, MathLive écrit l'espace tapée `\,` et « min » toujours en opérateur `\min` :
+`definitionFromField` les ramène au texte de Calcul avant `readNaturalQuantities`, et ne garde la
+lecture que si la saisie n'est QU'une grandeur (`\min\left(2,3\right)` reste la fonction). Une durée
+composée rangée revient dans le champ écrite `2 h 30 min`, sans le `+` du rangement
+(`fieldLatexOf`) : elle se relit après retouche (restes du lot C, 2026-10-13).
+
 ### Calculer — `tidy`, unité écrite d'abord
 
 Un seul calculateur : **`tidy(ast, { unitChoice: 'written' })`**, en rationnels exacts
@@ -73,8 +80,9 @@ Ce que fait `computeQuantity` en plus de `tidy` :
 - refus en français, avant de calculer : dimensions incompatibles (« On ne peut pas ajouter une
   longueur et une durée. »), produit de températures ;
 - une unité tapée par l'élève l'emporte quand la valeur y tombe juste (`3[kW]*2[h]`) ;
-- durée composée gardée (`2 h 30 min + 45 min` → 3 h 15 min) ; unité dérivée nommée en égalité
-  (`19.62 m.kg/s^2 = 19.62 N`) ;
+- durée composée gardée (`2 h 30 min + 45 min` → 3 h 15 min) ; `.convertir` la répète telle
+  quelle à gauche (`2 h 30 min = 150 min`, pas `2,5 h`) : l'issue la garde dans `written` ;
+  unité dérivée nommée en égalité (`19.62 m.kg/s^2 = 19.62 N`) ;
 - ce que `tidy` ne réduit pas (racine, valeur absolue, fonction d'un angle) passe par un repli
   exact en unités de base ;
 - mode décimal : la règle du bouton ≈ (4 décimales, « = » quand c'est exact), comme les nombres.

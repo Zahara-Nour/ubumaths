@@ -62,6 +62,9 @@ import {
 	bulkUnshareMaterialSchema,
 	uuidSchema
 } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/shared-materials/+server');
 
 /**
  * List all shared materials for the teacher
@@ -146,7 +149,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const { data: sharedMaterialsList, error: fetchError, count } = await query;
 
 		if (fetchError) {
-			console.error('[Google Shared Materials] Database error:', fetchError);
+			logger.error('[Google Shared Materials] Database error:', fetchError);
 			throw error(500, 'Impossible de charger les supports partagés');
 		}
 
@@ -175,7 +178,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.eq('teacher_id', user.id);
 
 		if (coursesError) {
-			console.error('[Google Shared Materials] Courses fetch error:', coursesError);
+			logger.error('[Google Shared Materials] Courses fetch error:', coursesError);
 		}
 
 		// Create course lookup map
@@ -194,7 +197,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.in('google_material_id', materialIds);
 
 		if (attachmentsError) {
-			console.error('[Google Shared Materials] Attachments fetch error:', attachmentsError);
+			logger.error('[Google Shared Materials] Attachments fetch error:', attachmentsError);
 		}
 
 		// Group attachments by material_id
@@ -262,7 +265,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		}
 
 		// Handle other errors
-		console.error('[Google Shared Materials] Error fetching data:', err);
+		logger.error('[Google Shared Materials] Error fetching data:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
@@ -307,7 +310,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (materialError.code === 'PGRST116') {
 			throw error(404, 'Support introuvable ou accès refusé');
 		}
-		console.error('[Share Material] Error fetching material:', materialError);
+		logger.error('[Share Material] Error fetching material:', materialError);
 		throw error(500, 'Impossible de charger le support');
 	}
 
@@ -321,7 +324,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const teacherId = Array.isArray(courseData) ? courseData[0]?.teacher_id : courseData?.teacher_id;
 
 	if (teacherId !== user.id) {
-		console.error(
+		logger.error(
 			`[Share Material] Unauthorized material access attempt by teacher ${user.id}: material ${materialId}`
 		);
 		throw error(403, 'Ce support appartient à un autre professeur');
@@ -335,7 +338,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.eq('is_active', true);
 
 	if (classesError) {
-		console.error('[Share Material] Error fetching classes:', classesError);
+		logger.error('[Share Material] Error fetching classes:', classesError);
 		throw error(500, 'Impossible de vérifier les classes');
 	}
 
@@ -410,7 +413,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 	if (insertError) {
-		console.error('[Share Material] Error sharing material:', insertError);
+		logger.error('[Share Material] Error sharing material:', insertError);
 		throw error(500, 'Impossible de partager le support');
 	}
 
@@ -454,7 +457,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		if (materialError?.code === 'PGRST116') {
 			throw error(404, 'Support introuvable ou accès refusé');
 		}
-		console.error('[Unshare Material] Material verification error:', materialError);
+		logger.error('[Unshare Material] Material verification error:', materialError);
 		throw error(403, 'Ce support appartient à un autre professeur');
 	}
 
@@ -465,7 +468,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		.in('id', classIds);
 
 	if (classesError) {
-		console.error('[Unshare Material] Error fetching classes:', classesError);
+		logger.error('[Unshare Material] Error fetching classes:', classesError);
 		throw error(500, 'Impossible de vérifier les classes');
 	}
 
@@ -482,7 +485,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		.eq('shared_by', user.id);
 
 	if (deleteError) {
-		console.error('[Unshare Material] Delete error:', deleteError);
+		logger.error('[Unshare Material] Delete error:', deleteError);
 		throw error(500, 'Impossible d’arrêter le partage du support');
 	}
 
@@ -547,7 +550,7 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 			if (fetchError?.code === 'PGRST116') {
 				throw error(404, 'Support partagé introuvable ou accès refusé');
 			}
-			console.error('[Google Shared Materials] Record verification error:', fetchError);
+			logger.error('[Google Shared Materials] Record verification error:', fetchError);
 			throw error(403, 'Ce partage appartient à un autre professeur');
 		}
 
@@ -614,7 +617,7 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 			.single();
 
 		if (updateError) {
-			console.error('[Google Shared Materials] Update error:', updateError);
+			logger.error('[Google Shared Materials] Update error:', updateError);
 			throw error(500, 'Impossible de modifier le support partagé');
 		}
 
@@ -639,7 +642,7 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 		}
 
 		// Handle other errors
-		console.error('[Google Shared Materials] Error updating record:', err);
+		logger.error('[Google Shared Materials] Error updating record:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

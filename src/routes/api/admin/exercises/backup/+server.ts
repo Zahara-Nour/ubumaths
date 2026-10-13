@@ -20,6 +20,9 @@ import {
 	restoreFromBackup
 } from '$lib/server/admin/exercise-backup';
 import { isBackupSizeValid, getMaxFileSizeDisplay } from '$lib/server/validation/backup';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/exercises/backup/+server');
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -107,7 +110,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		});
 	} catch (err) {
-		console.error('Error exporting backup:', err);
+		logger.error('Error exporting backup:', err);
 		throw error(500, 'Impossible d’exporter la sauvegarde');
 	}
 };
@@ -181,7 +184,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return json(result);
 	} catch (err) {
-		console.error('Error restoring backup:', err);
+		logger.error('Error restoring backup:', err);
 		throw error(500, 'Impossible de restaurer la sauvegarde');
 	}
 };

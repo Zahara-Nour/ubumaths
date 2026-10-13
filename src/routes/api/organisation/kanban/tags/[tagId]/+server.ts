@@ -17,6 +17,9 @@ import { parseKanbanId, updateTagSchema } from '$lib/server/validation/kanban';
 import { assertBoardOwner, rateLimitResponse } from '$lib/server/kanban';
 import { checkKanbanColumnMutationRateLimit } from '$lib/server/rateLimiter';
 import type { KanbanTag } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/organisation/kanban/tags/[tagId]/+server');
 
 /**
  * Resolve the board_id of a tag, or null if invisible / missing. Used to
@@ -32,7 +35,7 @@ async function getTagBoardId(
 		.eq('id', tagId)
 		.maybeSingle();
 	if (dbError) {
-		console.error('[kanban] getTagBoardId failed:', dbError);
+		logger.error('[kanban] getTagBoardId failed:', dbError);
 		throw error(500, 'Erreur lors de la lecture du tag');
 	}
 	return data?.board_id ?? null;
@@ -73,7 +76,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		if (dbError.code === '23505') {
 			throw error(409, 'Un tag avec ce nom existe déjà sur ce tableau');
 		}
-		console.error('[kanban] update tag failed:', dbError);
+		logger.error('[kanban] update tag failed:', dbError);
 		throw error(500, 'Erreur lors de la mise à jour du tag');
 	}
 
@@ -95,7 +98,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { error: dbError } = await locals.supabase.from('kanban_tags').delete().eq('id', tagId);
 
 	if (dbError) {
-		console.error('[kanban] delete tag failed:', dbError);
+		logger.error('[kanban] delete tag failed:', dbError);
 		throw error(500, 'Erreur lors de la suppression du tag');
 	}
 

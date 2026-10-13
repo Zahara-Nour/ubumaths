@@ -14,8 +14,22 @@ Chapeau du chantier : [atelier-progress.md](atelier-progress.md).
 - On ajoute à Calcul : **le rappel des saisies (↑/↓)**, **le bouton exact ⇄ décimal par ligne**,
   **la complétion** (commandes ET noms).
 - On **laisse perdre** : l'historique conservé au rechargement (l'export JSON existe), la recherche
-  Ctrl+R, la saisie sur plusieurs lignes, les onglets MathLive de `/cas`, `.inv` et `.def'` (réciproque
-  et dérivée données à la main).
+  Ctrl+R, la saisie sur plusieurs lignes, les onglets MathLive de `/cas`, `.def'` (dérivée donnée à
+  la main).
+- **Rectification (2026-10-13)** : `.inv` figurait ici, mais David ne l'avait pas tranché à part (il
+  était dans l'inventaire couvert par « je valide »). Décision de David du 2026-10-13 : on ne reprend
+  pas `.inv` (réciproque donnée à la main, jamais vérifiée) ; on garde **l'idée d'une vraie réciproque,
+  calculée algébriquement par le moteur**. Nouvelle fonctionnalité, phase 0 à écrire. Mesure du même
+  jour : `solve(y = f(x), x)` sait faire les affines, homographiques, `x³`, `1/x`, `x²` (deux
+  branches, sans condition sur y), mais répond **`no-solution`** (faux) pour `e^{2x+1}`, `ln(x−1)`,
+  `√(x+2)`, `2^x`, `3eˣ−1` dès que le second membre est une lettre.
+- **Les six autres commandes de noms** (`.poser`, `.définir`, `.effacer`, `.oublier`,
+  `.oublier-fonction`, `.dérivée-de`) restent hors de l'atelier (2026-10-13) : le panneau fait la même
+  chose. David (2026-10-13) : **elles ne doivent pas exister** dans l'atelier — pas de refus
+  particulier, `.effacer` répond comme toute commande inconnue (« n'est pas une commande »), et elles
+  quittent la liste déroulante. Constat du 2026-10-13 : leur refus n'est montré que dans la liste déroulante ; tapées en
+  entier, elles partent au moteur (`runCommand` ne lit pas `unavailable`) — `.effacer` désynchronise
+  le moteur du panneau, `.définir` crée une fonction invisible.
 - **Entrée dans une liste ouverte** :
   - liste des **commandes** (après `.`) → Entrée **choisit** (une commande incomplète ne calcule rien) ;
   - liste des **noms et fonctions** (au milieu d'un calcul) → Entrée **calcule** ; Tab ou un clic

@@ -21,6 +21,9 @@ import { requireRoles } from '$lib/server/middleware/auth';
 import { createSystemNotification } from '$lib/server/notifications';
 import type { Database } from '$lib/types/database';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/users/[id]/status/+server');
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type ExtendedProfile = Profile & {
@@ -94,7 +97,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.maybeSingle();
 
 		if (checkError) {
-			console.error('Error checking user existence:', checkError);
+			logger.error('Error checking user existence:', checkError);
 			throw error(500, 'Impossible de vérifier le compte');
 		}
 
@@ -138,7 +141,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.eq('id', userId);
 
 		if (updateError) {
-			console.error('Error updating user status:', updateError);
+			logger.error('Error updating user status:', updateError);
 			throw error(500, 'Impossible de modifier le statut du compte');
 		}
 
@@ -171,7 +174,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 				.eq('student_id', userId);
 
 			if (studentClassesError) {
-				console.error('Lecture impossible :', studentClassesError);
+				logger.error('Lecture impossible :', studentClassesError);
 				throw error(500, 'Impossible de charger les données');
 			}
 
@@ -210,7 +213,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.single();
 
 		if (fetchError) {
-			console.error('Error fetching updated profile:', fetchError);
+			logger.error('Error fetching updated profile:', fetchError);
 			throw error(500, 'Impossible de recharger le profil');
 		}
 
@@ -221,7 +224,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			profile: extendedProfile
 		});
 	} catch (err) {
-		console.error('Error in PATCH /api/admin/users/[id]/status:', err);
+		logger.error('Error in PATCH /api/admin/users/[id]/status:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

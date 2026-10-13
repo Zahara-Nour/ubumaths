@@ -14,6 +14,9 @@ import {
 	type CreateChapterTemplateInput,
 	type ListTemplatesQuery
 } from '$lib/server/validation/chapter-templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapter-templates/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -49,7 +52,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const result = await listChapterTemplates(query, user.id, locals.supabase);
 
 	if (result.error) {
-		console.error('[GET /api/teacher/chapter-templates] Error:', result.error);
+		logger.error('[GET /api/teacher/chapter-templates] Error:', result.error);
 		throw error(500, 'Failed to fetch chapter templates');
 	}
 
@@ -97,7 +100,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const result = await createChapterTemplate(data, user.id, locals.supabase);
 
 	if (result.error) {
-		console.error('[POST /api/teacher/chapter-templates] Error:', result.error);
+		logger.error('[POST /api/teacher/chapter-templates] Error:', result.error);
 		throw error(500, 'Failed to create chapter template');
 	}
 

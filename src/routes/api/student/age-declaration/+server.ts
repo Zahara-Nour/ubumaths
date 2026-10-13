@@ -24,6 +24,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { AGE_QUESTION_GRADE } from '$lib/utils/age-declaration';
 import type { AgeDeclaration } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/age-declaration/+server');
 
 /** Délai de grâce ouvert par un « Non » quand aucun n'est en cours (Q69 : 30 jours). */
 const GRACE_PERIOD_MS = 30 * 24 * 60 * 60 * 1000;
@@ -88,7 +91,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.select('id');
 
 	if (updateError) {
-		console.error('[age-declaration] Écriture impossible :', updateError);
+		logger.error('[age-declaration] Écriture impossible :', updateError);
 		throw error(500, "Impossible d'enregistrer la réponse");
 	}
 

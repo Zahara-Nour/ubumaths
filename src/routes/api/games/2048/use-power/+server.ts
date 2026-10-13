@@ -17,6 +17,9 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/games/2048/use-power/+server');
 
 const usePowerSchema = z.object({
 	power_type: z.enum([
@@ -54,7 +57,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (rpcError.message?.includes('Pas assez')) {
 			throw error(400, 'Pas assez de gidouilles');
 		}
-		console.error('[2048-use-power] RPC error:', rpcError);
+		logger.error('[2048-use-power] RPC error:', rpcError);
 		throw error(500, 'Erreur lors du debit des gidouilles');
 	}
 

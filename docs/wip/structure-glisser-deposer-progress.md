@@ -38,7 +38,21 @@ ni les déplacements refusés ni le retour donné à l'élève.
 | G9  | Pendant le glisser : où peut-on lâcher ? montrer les places possibles (traits entre les termes) ?                                            | Montrer les places permises (un trait) dès que le glisser commence ; rien ailleurs.                              |
 | G10 | Tactile : le toucher sert déjà à encadrer (A11, un toucher remonte d'un cran).                                                               | Appui long puis glisser = déplacer ; toucher bref = encadrer, comme aujourd'hui.                                 |
 
+## Décisions de David (2026-10-13)
+
+| #   | Décision                                                                                                                                                                                                                                                                                            |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| G8  | **Pas de nouvelle ligne** pour l'instant : l'expression change en place.                                                                                                                                                                                                                            |
+| G9  | **Comme Algebria** : pendant le glisser, un **espace s'ouvre** là où l'expression peut être posée, sous forme d'un bloc qui apparaît de façon **fluide** ; **toute l'expression adapte sa taille** ; le bloc **disparaît** si l'on continue à glisser plus loin (il se rouvre à la place suivante). |
+
+Conséquence technique (G9) : MathLive rend une formule figée, sans animation. Piste : rendre de
+nouveau la formule avec un emplacement vide (`\phantom` du terme) à la place visée, et animer le
+passage d'un rendu à l'autre en mesurant la position de chaque sous-expression avant et après (les
+marqueurs `ubs-n<id>` le permettent) puis en les faisant glisser en CSS. À éprouver sur une démo
+jetable (Chromium et WebKit, fractions comprises) avant la spécification.
+
 ## Journal
 
 - 2026-10-13 — ouverture : lecture de l'article Algebria, inventaire de l'existant, questions
   G1-G10. Aucun code, aucun test.
+- 2026-10-13 — G8 et G9 tranchées par David ; G1-G7 et G10 encore ouvertes.

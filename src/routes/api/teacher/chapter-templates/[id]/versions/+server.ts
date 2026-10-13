@@ -14,6 +14,9 @@ import {
 } from '$lib/server/chapter-templates';
 import { updateTemplateContentSchema } from '$lib/server/validation/chapter-templates';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapter-templates/[id]/versions/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -44,7 +47,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Le helper rend `{ data, error }` : sans cette garde, une panne de lecture
 	// se présentait comme un modèle inexistant (404).
 	if (templateError) {
-		console.error('Modèle illisible :', templateError);
+		logger.error('Modèle illisible :', templateError);
 		throw error(500, 'Impossible de vérifier le modèle');
 	}
 	if (!template) {
@@ -59,7 +62,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const result = await getTemplateVersions(templateId, locals.supabase);
 
 	if (result.error) {
-		console.error('[GET /api/teacher/chapter-templates/[id]/versions] Error:', result.error);
+		logger.error('[GET /api/teacher/chapter-templates/[id]/versions] Error:', result.error);
 		throw error(500, 'Failed to fetch template versions');
 	}
 
@@ -102,7 +105,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// Le helper rend `{ data, error }` : sans cette garde, une panne de lecture
 	// se présentait comme un modèle inexistant (404).
 	if (existingError) {
-		console.error('Modèle illisible :', existingError);
+		logger.error('Modèle illisible :', existingError);
 		throw error(500, 'Impossible de vérifier le modèle');
 	}
 	if (!existing) {
@@ -145,7 +148,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	);
 
 	if (result.error) {
-		console.error('[POST /api/teacher/chapter-templates/[id]/versions] Error:', result.error);
+		logger.error('[POST /api/teacher/chapter-templates/[id]/versions] Error:', result.error);
 		throw error(500, 'Failed to create template version');
 	}
 

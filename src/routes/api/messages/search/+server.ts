@@ -2,6 +2,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { searchMessagesQuerySchema } from '$lib/server/validation/messages';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/search/+server');
 
 /**
  * GET /api/messages/search?q=query&searchIn=all&hasAttachments=true&senderName=...&dateFrom=...&dateTo=...
@@ -48,13 +51,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		});
 
 		if (searchError) {
-			console.error('Error searching messages:', searchError);
+			logger.error('Error searching messages:', searchError);
 			throw error(500, 'Erreur lors de la recherche de messages');
 		}
 
 		return json({ messages: messages || [], query: q, total: messages?.length || 0 });
 	} catch (err) {
-		console.error('Error in search API:', err);
+		logger.error('Error in search API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
