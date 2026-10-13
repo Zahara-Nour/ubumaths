@@ -1,6 +1,6 @@
-# Chiphre Math (outils `shantell-math`)
+# Chiphre Math
 
-La police mathématique manuscrite de Chiphre s'appelle **Chiphre Math** (nommée le 2026-10-13). Elle est faite de glyphes de Shantell Sans et de dessins à sa main, calés sur les polices KaTeX, dont MathLive impose les noms de fichiers et de familles (`KaTeX_Main`…) : seul son nom public change. Le dossier garde son nom historique.
+La police mathématique manuscrite de Chiphre s'appelle **Chiphre Math** (nommée le 2026-10-13). Elle est faite de glyphes de Shantell Sans et de dessins à sa main, calés sur les polices KaTeX, dont MathLive impose les noms de fichiers et de familles (`KaTeX_Main`…). Elle s'appelait Shantell Math jusqu'au 2026-10-13 ; ses dossiers aussi (`tools/shantell-math/`, `static/fonts/shantell-katex/`, `static/fonts/shantell-typst/`).
 
 Outils pour créer une version "handwritten" des polices KaTeX pour MathLive.
 
@@ -11,7 +11,7 @@ Remplacer les caractères normaux (A-Z, a-z, 0-9) par ceux de Shantell Sans et a
 ## Installation
 
 ```bash
-cd tools/shantell-math
+cd tools/chiphre-math
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 # ou: venv\Scripts\activate  # Windows
@@ -121,7 +121,7 @@ echo "Done! Police générée: $KATEX_FONTS/ShantellMath-Regular.woff2"
 ## Structure
 
 ```
-shantell-math/
+chiphre-math/
 ├── src/
 │   ├── replace_glyphs.py    # Remplace caractères par Shantell Sans
 │   ├── roughen_math.py      # Effet sketchy sur symboles math

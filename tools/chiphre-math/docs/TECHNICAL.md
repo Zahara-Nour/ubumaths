@@ -146,7 +146,7 @@ MathLive charge ses polices depuis `fontsDirectory` :
 import { MathfieldElement } from 'mathlive';
 
 // Définir AVANT de créer des mathfields
-MathfieldElement.fontsDirectory = '/fonts/shantell-katex';
+MathfieldElement.fontsDirectory = '/fonts/chiphre-math';
 ```
 
 ### Polices requises par MathLive

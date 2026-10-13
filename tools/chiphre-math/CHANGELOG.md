@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.13.0] - 2026-10-13
+
+### Modifié
+
+- Dossiers renommés d'après la police : `tools/shantell-math/` → `tools/chiphre-math/`, `static/fonts/shantell-katex/` → `static/fonts/chiphre-math/` (copies `KaTeX_*` lues par MathLive), `static/fonts/shantell-typst/` → `static/fonts/chiphre-math-typst/` ; chemins mis à jour dans les scripts, la feuille `static/mathlive-fonts-shantell.css`, `mathlive-fonts.ts`, `/test-font` et la doc
+- Un `venv` créé dans l'ancien dossier n'est pas suivi par git et n'est pas déplacé : le recréer dans `tools/chiphre-math/`
+
 ## [1.12.0] - 2026-10-13
 
 ### Modifié

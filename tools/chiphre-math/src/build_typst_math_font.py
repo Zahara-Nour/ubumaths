@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Build « Chiphre Math », a single OpenType math font (with a MATH table) for
-Typst, from the Shantell KaTeX fonts of static/fonts/shantell-katex/.
+Typst, from the Shantell KaTeX fonts of static/fonts/chiphre-math/.
 
 MathLive combines twenty KaTeX fonts and lays formulas out with the KaTeX
 metrics it has hard-coded. Typst needs one font whose MATH table tells it, for
@@ -20,7 +20,7 @@ and writes that table:
   font metrics, i.e. Computer Modern's, which these glyphs were fitted to.
 
 Every glyph is redrawn without hinting; the result is OFL like its sources.
-Output: static/fonts/shantell-typst/ChiphreMath.ttf, plus the text font of the
+Output: static/fonts/chiphre-math-typst/ChiphreMath.ttf, plus the text font of the
 PDF: Shantell Sans Light and Bold, rebuilt from their instances (fonts/input/)
 under one family name, « Shantell Sans » (see write_text_fonts).
 """
@@ -38,10 +38,10 @@ from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib import TTFont, newTable
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-SOURCE_DIR = REPO_ROOT / "static" / "fonts" / "shantell-katex"
-OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "shantell-typst"
+SOURCE_DIR = REPO_ROOT / "static" / "fonts" / "chiphre-math"
+OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "chiphre-math-typst"
 OUTPUT = OUTPUT_DIR / "ChiphreMath.ttf"
-INPUT_DIR = REPO_ROOT / "tools" / "shantell-math" / "fonts" / "input"
+INPUT_DIR = REPO_ROOT / "tools" / "chiphre-math" / "fonts" / "input"
 # Police de texte du PDF : source -> (fichier publié, style)
 TEXT_FONTS = {
     "shantell-sans-300.ttf": ("ShantellSans-Light.ttf", "Light"),

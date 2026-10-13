@@ -193,7 +193,7 @@
 		}
 		@font-face {
 			font-family: 'ShantellKaTeX';
-			src: url('/fonts/shantell-katex/KaTeX_Main-Regular.woff2') format('woff2');
+			src: url('/fonts/chiphre-math/KaTeX_Main-Regular.woff2') format('woff2');
 			font-weight: normal;
 			font-style: normal;
 			font-display: swap;
@@ -212,7 +212,7 @@
 		.font-shantell {
 			font-family: 'ShantellMath', serif;
 		}
-		.font-shantell-katex {
+		.font-chiphre-math {
 			font-family: 'ShantellKaTeX', serif;
 		}
 		.font-katex-original {
@@ -245,12 +245,12 @@
 
 			<div class="rounded bg-card p-4">
 				<div class="mb-1 text-xs font-medium text-muted-foreground">
-					ShantellKaTeX (copie dans shantell-katex/)
+					ShantellKaTeX (copie dans chiphre-math/)
 				</div>
-				<div class="font-shantell-katex text-3xl">
+				<div class="font-chiphre-math text-3xl">
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 				</div>
-				<div class="font-shantell-katex mt-2 text-2xl">
+				<div class="font-chiphre-math mt-2 text-2xl">
 					x² + y² = z² ∫ ∑ ∏ √ ∞ ± × ÷ = ≠ &lt; &gt; ≤ ≥ α β γ δ Γ Δ Θ Σ Ω
 				</div>
 			</div>

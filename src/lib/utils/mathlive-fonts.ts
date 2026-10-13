@@ -39,7 +39,7 @@ const OVERRIDE_LINK_ID = 'mathlive-fonts-css';
 /** Font directories for each set (used by MathLive) */
 const FONT_DIRECTORIES: Record<MathFontSet, string> = {
 	katex: '/fonts/katex-original',
-	shantell: '/fonts/shantell-katex'
+	shantell: '/fonts/chiphre-math'
 };
 
 /** Currently loaded font set */
