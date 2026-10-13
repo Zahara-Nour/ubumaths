@@ -284,3 +284,55 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 		await expect(pg.query('select public.delete_user_account(null)')).rejects.toThrow();
 	});
 });
+
+// Les fichiers d'un compte supprimé sont retirés par une tâche hebdomadaire, qui reprend
+// les suppressions terminées sans `storage_removed_at` (migration 20261016101000).
+describe('audit de suppression : date de retrait des fichiers', () => {
+	it('la colonne existe, nulle par défaut, et la table reste fermée aux comptes', async () => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			`select
+				(select data_type from information_schema.columns
+				 where table_schema = 'public' and table_name = 'account_deletion_audit'
+				   and column_name = 'storage_removed_at') as type,
+				(select column_default from information_schema.columns
+				 where table_schema = 'public' and table_name = 'account_deletion_audit'
+				   and column_name = 'storage_removed_at') as defaut,
+				(select relrowsecurity from pg_class
+				 where oid = 'public.account_deletion_audit'::regclass) as rls,
+				(select count(*) from pg_policy
+				 where polrelid = 'public.account_deletion_audit'::regclass)::int as policies,
+				has_table_privilege('anon', 'public.account_deletion_audit', 'select') as anon_lit`
+		);
+		expect(rows).toEqual([
+			{
+				type: 'timestamp with time zone',
+				defaut: null,
+				rls: true,
+				policies: 0,
+				anon_lit: false
+			}
+		]);
+	});
+
+	// `authenticated` garde le droit SELECT de la table (prod comme local) : la barrière
+	// est la RLS sans policy, qui ne lui rend aucune ligne.
+	it('un compte connecté ne lit aucune ligne, même avec une suppression consignée', async () => {
+		const pg = await getPostgresClient();
+		await pg.query('begin');
+		try {
+			await pg.query(
+				`insert into account_deletion_audit (email_hash, status, cleanup_result)
+				 values ('zz-hash', 'completed', '{"storage_paths": {"chat-attachments": ["zz/a.png"]}}')`
+			);
+			await pg.query(`set local role authenticated`);
+			await pg.query(
+				`select set_config('request.jwt.claims', '{"role":"authenticated","sub":"00000000-0000-4000-8000-000000000001"}', true)`
+			);
+			const { rows } = await pg.query('select id from account_deletion_audit');
+			expect(rows).toEqual([]);
+		} finally {
+			await pg.query('rollback');
+		}
+	});
+});
