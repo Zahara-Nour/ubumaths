@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.20.0] - 2026-10-13
+
+### Modifié
+
+- Script `latin_letters.py` : `P` redessiné aussi dans Main-Bold (`\mathbf{P}`), mêmes lignes centrales que le `P` maigre, au trait de 125 (celui des hampes de `B R D` en gras ; à partir de 140 la panse se bouche), dans la boîte du `P` de Shantell Bold. Écran seulement : la police Typst ne lit pas Main-Bold
+- `replace_delimiters.stroked()` accepte une épaisseur (`width`, par défaut `STROKE`)
+
 ## [1.19.0] - 2026-10-13
 
 ### Modifié

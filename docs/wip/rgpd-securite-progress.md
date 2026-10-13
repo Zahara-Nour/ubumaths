@@ -441,3 +441,8 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   variables Vercel de production, corpus vide (`rag_documents` 0, `rag_chunks` 0). Aucun
   message d'élève n'est parti chez HuggingFace. Latent : définir la clé l'activerait sans
   déclaration du sous-traitant. Suite à trancher par David.
+- **T16 corrigé (#1311, David : option 2)** : `hybridSearch` vérifie qu'un extrait de
+  `rag_chunks` est lisible par l'élève pour son niveau et son thème (même client, mêmes filtres
+  que la RPC `rag_hybrid_search`, SECURITY INVOKER) avant tout appel à HuggingFace ; erreur → rien
+  n'est envoyé. 2 tests rouges sans le garde-fou. Registre des sous-traitants et `tuteur-ia.md` :
+  déclarer HuggingFace avant de définir `HF_API_KEY`.

@@ -2066,6 +2066,11 @@ class PrattParser {
 			return args;
 		}
 
+		// `\max\left(2,x\right)` (MathLive, toLatex) : des arguments, comme `(2,x)` —
+		// lu en délimiteur, la virgule arrêtait la lecture (« Expected \right »)
+		const roundArgs = this.tryParseGenericFunctionArguments();
+		if (roundArgs) return roundArgs;
+
 		if (this.checkCommand('left')) {
 			const delim = this.parseLeftDelimiter();
 			// Extract content from delimiter

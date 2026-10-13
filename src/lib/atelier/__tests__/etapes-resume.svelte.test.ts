@@ -151,3 +151,133 @@ describe('pas d’interrupteur', () => {
 		expect(boutons(racine, 'Résumé')).toHaveLength(0);
 	});
 });
+
+/**
+ * Réglage LIGNE PAR LIGNE (décision de David, 2026-10-13) : basculer une ligne
+ * ne touche pas les autres ; le dernier choix sert d'ouverture aux suivantes.
+ */
+describe('le réglage ligne par ligne', () => {
+	const DEUX_LIGNES = ['.résoudre x^2-5x+6=0', '.factoriser x^2-9'];
+
+	function lignes(racine: HTMLElement): HTMLElement[] {
+		return [...racine.querySelectorAll<HTMLElement>('.historique > li')];
+	}
+
+	async function deplierLigne(ligne: HTMLElement): Promise<void> {
+		cliquer(bouton(ligne, 'Comment ?'));
+		await tick();
+	}
+
+	async function replierLigne(ligne: HTMLElement): Promise<void> {
+		cliquer(bouton(ligne, 'Masquer le détail'));
+		await tick();
+	}
+
+	function enResume(ligne: HTMLElement): boolean {
+		return bouton(ligne, 'Résumé').getAttribute('aria-pressed') === 'true';
+	}
+
+	it('basculer la 1re ligne en résumé ne change pas la 2e', async () => {
+		const racine = afficher(...DEUX_LIGNES);
+		const [premiere, seconde] = lignes(racine);
+		await deplierLigne(premiere);
+		await deplierLigne(seconde);
+
+		cliquer(bouton(premiere, 'Résumé'));
+		await tick();
+
+		expect(enResume(premiere)).toBe(true);
+		expect(premiere.querySelectorAll('.step-explanation')).toHaveLength(0);
+		expect(enResume(seconde)).toBe(false);
+		expect(seconde.querySelectorAll('.step-explanation').length).toBeGreaterThan(0);
+	});
+
+	it('une ligne dépliée ensuite s’ouvre au dernier choix', async () => {
+		const racine = afficher(...DEUX_LIGNES);
+		const [premiere, seconde] = lignes(racine);
+		await deplierLigne(premiere);
+		cliquer(bouton(premiere, 'Résumé'));
+		await tick();
+
+		await deplierLigne(seconde);
+		expect(enResume(seconde)).toBe(true);
+		expect(seconde.querySelectorAll('.step-explanation')).toHaveLength(0);
+	});
+
+	it('replier puis redéplier garde le niveau choisi sur la ligne', async () => {
+		const racine = afficher(...DEUX_LIGNES);
+		const [premiere, seconde] = lignes(racine);
+		await deplierLigne(premiere);
+		cliquer(bouton(premiere, 'Résumé'));
+		await tick();
+		// Un choix plus récent, sur une autre ligne
+		await deplierLigne(seconde);
+		cliquer(bouton(seconde, 'Détaillé'));
+		await tick();
+
+		await replierLigne(premiere);
+		await deplierLigne(premiere);
+		expect(enResume(premiere)).toBe(true);
+		expect(premiere.querySelectorAll('.step-explanation')).toHaveLength(0);
+	});
+
+	it('après un remontage, les lignes s’ouvrent au dernier choix', async () => {
+		let racine = afficher(...DEUX_LIGNES);
+		let [premiere, seconde] = lignes(racine);
+		await deplierLigne(premiere);
+		cliquer(bouton(premiere, 'Détaillé'));
+		await tick();
+		// Le dernier choix est « Résumé » : différent du défaut, sinon le test ne prouve rien
+		await deplierLigne(seconde);
+		cliquer(bouton(seconde, 'Résumé'));
+		await tick();
+		vider();
+
+		racine = afficher(...DEUX_LIGNES);
+		[premiere, seconde] = lignes(racine);
+		await deplierLigne(premiere);
+		await deplierLigne(seconde);
+		// Le choix d'une ligne ne survit pas (la 1re était « Détaillé ») ; le dernier choix, si
+		expect(enResume(premiere)).toBe(true);
+		expect(enResume(seconde)).toBe(true);
+		expect(racine.querySelectorAll('.etapes .step-explanation')).toHaveLength(0);
+	});
+
+	it('une ligne ouverte avant tout choix, repliée puis redépliée, reprend le dernier choix', async () => {
+		const racine = afficher(...DEUX_LIGNES);
+		const [premiere, seconde] = lignes(racine);
+		await deplierLigne(premiere);
+		expect(enResume(premiere)).toBe(false);
+		await deplierLigne(seconde);
+		cliquer(bouton(seconde, 'Résumé'));
+		await tick();
+		// Pas changée sous les yeux
+		expect(enResume(premiere)).toBe(false);
+
+		await replierLigne(premiere);
+		await deplierLigne(premiere);
+		expect(enResume(premiere)).toBe(true);
+		expect(premiere.querySelectorAll('.step-explanation')).toHaveLength(0);
+	});
+
+	it('chaque groupe a un nom accessible distinct, relié à sa ligne', async () => {
+		const racine = afficher(...DEUX_LIGNES);
+		const [premiere, seconde] = lignes(racine);
+		await deplierLigne(premiere);
+		await deplierLigne(seconde);
+
+		const groupes = [premiere, seconde].map((l) => l.querySelector('[role="group"]'));
+		const noms = groupes.map((g) => g?.getAttribute('aria-label'));
+		expect(noms[0]).toBe('Rédaction des étapes de la ligne 1');
+		expect(noms[1]).toBe('Rédaction des étapes de la ligne 2');
+		groupes.forEach((groupe, i) => {
+			const decrit = groupe?.getAttribute('aria-describedby') ?? '';
+			expect(document.getElementById(decrit)?.textContent?.trim()).toBe(DEUX_LIGNES[i]);
+		});
+		// « Comment ? » désigne le bloc déplié de SA ligne
+		[premiere, seconde].forEach((ligne) => {
+			const controle = bouton(ligne, 'Masquer le détail').getAttribute('aria-controls') ?? '';
+			expect(document.getElementById(controle)).toBe(ligne.querySelector('.etapes'));
+		});
+	});
+});
