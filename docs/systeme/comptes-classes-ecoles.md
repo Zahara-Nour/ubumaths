@@ -280,6 +280,8 @@ Unitaires (mocks Supabase) :
   écriture de la configuration.
 - `src/routes/api/admin/users/[id]/status/__tests__/is-test.test.ts` : `is_test` refusé au prof non
   élevé, client admin en élévation.
+- `src/routes/api/admin/users/[id]/status/__tests__/notification-prof.test.ts` : le professeur
+  est prévenu d'un élève approuvé déjà inscrit en classe, sans lire `classes.teacher_id` (supprimée).
 - `src/routes/api/student/age-declaration/__tests__/age-declaration.test.ts` : Oui, Non et délai de
   grâce, 409, 403 hors 2nde, écriture par le client service avec `.select()`.
 - `src/routes/(protected)/dashboard/teacher/classes/__tests__/schedule-write-verdict.test.ts` : une
@@ -321,11 +323,6 @@ Aucun test trouvé pour : l'import d'élèves, l'envoi du courriel de bienvenue,
 
 Constatés le 2026-10-13, **non corrigés**.
 
-- **Approbation d'un compte probablement cassée** : `api/admin/users/[id]/status` lit
-  `classes!inner(id, name, teacher_id)` après l'approbation. La colonne `classes.teacher_id` a été
-  supprimée (migration `20260620090000_drop_class_teacher_id_mono_teacher.sql`) et n'existe plus
-  dans `database.ts`. La requête devrait donc échouer et rendre 500, **après** avoir changé le statut
-  et notifié l'élève. Non vérifié à l'exécution.
 - **Écritures sans `.select()`** : `remove-from-class`, `regenerateJoinCode`,
   `toggleRegistration`, les actions de `dashboard/admin/classes` et l'action `delete` des écoles
   annoncent un succès même si aucune ligne n'a bougé.
