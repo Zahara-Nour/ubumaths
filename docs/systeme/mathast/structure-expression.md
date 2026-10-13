@@ -158,6 +158,19 @@ appliquée (A8) ; cadres englobants en pointillés gris (A10).
 - **Longueurs** : deux majuscules collées se lisent comme une longueur (« la longueur AB »,
   `capitalPairs: 'length'`), voir [convention-equivalence.md](convention-equivalence.md).
 - **Pas dans le chat** : `\class` est interdit en mode restreint.
+- **Déplacer une partie** (glisser-déposer, `rearrange.ts`) : `movableGroupOf` dit dans quel
+  groupe une sous-expression peut se déplacer (terme dans sa somme, facteur dans son produit,
+  membre d'une égalité à deux membres ; rien pour une inégalité ; élève de 6e ou avant : somme
+  figée dès qu'elle contient une soustraction) ; `movedLatex` réécrit le seul contenu du marqueur
+  du groupe, les marqueurs des parties restent (la formule réécrite reste explorable). Le signe
+  suit le terme, un `+` en tête disparaît ; dans un produit, le signe × seulement devant un nombre
+  ou une fraction (même écrit par l'élève) — toujours en 6e ou avant, **provisoire** (extension de
+  E5.4 proposée par Claude, en attente de David) ; un quotient en ligne posé ailleurs qu'en tête
+  d'un produit prend des parenthèses (`12 : 3 × 2` → `2 (12 : 3)` : `2 × 12 : 3` se relirait
+  `(2 × 12) : 3`) ; une parenthèse de l'écriture usuelle (`2 × (−3)` saisi `2×-3`) suit sa partie ;
+  posée à sa place, une partie ne change rien. Un second déplacement repart d'une structure relue. `groupLatex` écrit la ligne pendant le glisser : espaces
+  `\mathord{\class{ubs-gap<k>}{\hspace{…em}\vphantom{…}}}` (largeur animée, hauteur de la
+  partie saisie ; un « − » en tête précédé d'un espace est groupé, sinon il devient binaire).
 
 ## Mots ajoutés au dictionnaire pour la lecture (validés par David le 2026-10-11)
 
@@ -175,5 +188,8 @@ comme les autres entrées, rien d'autre.
 ## Suites décidées, pas commencées
 
 - **L'Atelier** (Q1 : « d'abord un outil dédié, puis l'Atelier ») : phase 0 à ouvrir.
-- **Glisser-déposer** de termes, facteurs et membres, comme dans Algebria (Q6) : pas en v1, phase
-  0 à part.
+- **Glisser-déposer** de termes, facteurs et membres, comme dans Algebria (Q6) : **en cours**.
+  Décisions G1 à G11 et spécification E (validée par David le 2026-10-13) :
+  [structure-glisser-deposer-progress.md](../../wip/structure-glisser-deposer-progress.md). Lot 1
+  (la réécriture, `rearrange.ts`) livré ; lot 2 : un composant réutilisable (un champ de formule
+  avec deux réglages, « structure » et « déplacer », pour l'outil puis l'Atelier ou ailleurs).
