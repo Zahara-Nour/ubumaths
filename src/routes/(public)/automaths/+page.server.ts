@@ -4,6 +4,9 @@ import { generateInstance } from '$lib/questions/generator/instance-generator';
 import type { QuestionTemplate, QuestionInstance } from '$lib/questions/types';
 import { compareCategories } from '$lib/questions/category-order';
 import { PREVIEW_SEED } from '$lib/questions/cart-preview';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/automaths/+page.server');
 
 /**
  * Hierarchical structure for organizing questions
@@ -47,7 +50,7 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 		}) || [];
 
 	if (templatesError) {
-		console.error('Failed to load question templates:', templatesError);
+		logger.error('Failed to load question templates:', templatesError);
 		throw error(500, 'Failed to load questions');
 	}
 
@@ -72,7 +75,7 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 		} else {
 			// Error case - result.success is false, so errors should exist
 			const errors = 'errors' in result ? result.errors : ['Unknown error'];
-			console.warn(`Failed to generate preview for template ${template.id}:`, errors);
+			logger.warn(`Failed to generate preview for template ${template.id}:`, errors);
 		}
 	}
 

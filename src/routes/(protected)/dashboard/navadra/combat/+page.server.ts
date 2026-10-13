@@ -8,6 +8,9 @@ import { generateRandomMonster } from '$lib/utils/game/combat';
 import { getRandomMonsterTemplate, getMonsterImagePaths } from '$lib/data/game/monsters';
 import { startCombatSchema } from '$lib/server/validation/navadra';
 import { toGameMonster, toGamePlayer } from '$lib/types/game';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/navadra/combat/+page.server');
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
 	const { user } = await safeGetSession();
@@ -27,7 +30,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	// Une panne la rendait absente, et l'écran repartait comme pour un joueur
 	// neuf — niveau 1, tutoriel au début.
 	if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
-		console.error('Fiche de joueur illisible :', gamePlayerError);
+		logger.error('Fiche de joueur illisible :', gamePlayerError);
 		throw error(500, 'Impossible de charger votre profil de jeu');
 	}
 
@@ -45,7 +48,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 		.limit(20);
 
 	if (availableMonstersError) {
-		console.error('Lecture impossible :', availableMonstersError);
+		logger.error('Lecture impossible :', availableMonstersError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -164,7 +167,7 @@ export const actions: Actions = {
 			// Une panne la rendait absente, et l'écran repartait comme pour un joueur
 			// neuf — niveau 1, tutoriel au début.
 			if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
-				console.error('Fiche de joueur illisible :', gamePlayerError);
+				logger.error('Fiche de joueur illisible :', gamePlayerError);
 				throw error(500, 'Impossible de charger votre profil de jeu');
 			}
 

@@ -10,6 +10,9 @@ import type { BugReportWithAuthor } from '$lib/types/bug-reports';
 import { signBugReportScreenshots } from '$lib/server/bug-report-screenshots';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { error } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/bug-reports/+page.server');
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Admin gate (admin login OR step-up elevation)
@@ -45,7 +48,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const { data: reports, error: queryError } = await query;
 
 	if (queryError) {
-		console.error('Error fetching bug reports:', queryError);
+		logger.error('Error fetching bug reports:', queryError);
 		return {
 			reports: [] as BugReportWithAuthor[],
 			filters: { status, category, severity },
@@ -59,7 +62,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.select('status, severity, created_at');
 
 	if (allReportsError) {
-		console.error('Lecture impossible :', allReportsError);
+		logger.error('Lecture impossible :', allReportsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

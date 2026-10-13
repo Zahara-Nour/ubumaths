@@ -20,6 +20,9 @@ import {
 	resolveCourseDocumentByShareToken,
 	safeExternalUrl
 } from '$lib/server/course-share-tokens';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/cours/[token]/document/[id]/+server');
 
 /** Durée de validité de l'URL signée : le temps d'ouvrir, pas de la faire circuler. */
 const SIGNED_URL_SECONDS = 60;
@@ -88,7 +91,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		);
 
 	if (signError || !data?.signedUrl) {
-		console.error('[course-share] URL signée impossible:', signError?.message);
+		logger.error('[course-share] URL signée impossible:', signError?.message);
 		throw error(500, 'Document indisponible pour le moment');
 	}
 

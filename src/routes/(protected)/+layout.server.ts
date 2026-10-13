@@ -59,7 +59,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	// User and profile are already loaded in locals by userProfileHandle (hooks.server.ts)
 	const { user, profile } = locals;
 
-	console.log('🎨 [PROTECTED LAYOUT SERVER] Exécution');
+	logger.info('🎨 [PROTECTED LAYOUT SERVER] Exécution');
 
 	// Require authentication for ALL routes in (protected) group
 	// If user is null, requireAuth() throws a redirect to /login
@@ -91,7 +91,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 				}
 			});
 		} catch (logErr) {
-			console.error('[protected layout] Failed to log error:', logErr);
+			logger.error('[protected layout] Failed to log error:', logErr);
 		}
 
 		throw error(

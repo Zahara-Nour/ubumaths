@@ -3,6 +3,9 @@ import { error } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { scanDocumentation, getDocumentContent } from '$lib/server/docs-scanner';
 import { parseMarkdown } from '$lib/server/markdown-parser';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/docs/[...path]/+page.server');
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	// Admin gate (admin login OR step-up elevation)
@@ -43,7 +46,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			searchQuery: null
 		};
 	} catch (err) {
-		console.error('Document load error:', err);
+		logger.error('Document load error:', err);
 		throw error(404, `Document introuvable : ${category}/${docPath}`);
 	}
 };

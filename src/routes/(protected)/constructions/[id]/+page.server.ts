@@ -6,6 +6,9 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/constructions/[id]/+page.server');
 
 export interface ConstructionDetail {
 	id: string;
@@ -56,7 +59,7 @@ export const load: PageServerLoad = async ({ params, parent, locals: { supabase 
 		if (constructionError?.code === 'PGRST116') {
 			throw error(404, 'Construction introuvable');
 		}
-		console.error('Error fetching construction:', constructionError);
+		logger.error('Error fetching construction:', constructionError);
 		throw error(500, 'Erreur lors du chargement de la construction');
 	}
 

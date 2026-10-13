@@ -6,6 +6,9 @@ import {
 	adminClassIdSchema,
 	adminClassUpdateSchema
 } from '$lib/server/validation/admin';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/classes/+page.server');
 
 /** Les champs du formulaire, un champ absent valant `undefined`. */
 function formFields(formData: FormData, names: string[]): Record<string, unknown> {
@@ -23,7 +26,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (schoolsError) {
-		console.error('Error fetching schools:', schoolsError);
+		logger.error('Error fetching schools:', schoolsError);
 		throw error(500, 'Failed to load schools');
 	}
 
@@ -40,7 +43,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (classesError) {
-		console.error('Error fetching classes:', classesError);
+		logger.error('Error fetching classes:', classesError);
 		throw error(500, 'Failed to load classes');
 	}
 
@@ -53,7 +56,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				.contains('class_ids', [classItem.id]);
 
 			if (countError) {
-				console.error(`Error counting students for class ${classItem.id}:`, countError);
+				logger.error(`Error counting students for class ${classItem.id}:`, countError);
 			}
 
 			return {
@@ -96,7 +99,7 @@ export const actions: Actions = {
 			const { data: generatedCode, error: rpcError } = await supabase.rpc('generate_join_code');
 
 			if (rpcError || !generatedCode) {
-				console.error('Error generating join code:', rpcError);
+				logger.error('Error generating join code:', rpcError);
 				return fail(500, { message: 'Failed to generate join code' });
 			}
 
@@ -111,7 +114,7 @@ export const actions: Actions = {
 
 			if (checkError && checkError.code !== 'PGRST116') {
 				// PGRST116 = no rows returned (good, code is unique)
-				console.error('Error checking join code:', checkError);
+				logger.error('Error checking join code:', checkError);
 				return fail(400, { message: 'Error validating join code' });
 			}
 
@@ -131,7 +134,7 @@ export const actions: Actions = {
 		});
 
 		if (insertError) {
-			console.error('Error creating class:', insertError);
+			logger.error('Error creating class:', insertError);
 			return fail(400, { message: insertError.message });
 		}
 
@@ -166,7 +169,7 @@ export const actions: Actions = {
 			.single();
 
 		if (fetchError) {
-			console.error('Error fetching current class:', fetchError);
+			logger.error('Error fetching current class:', fetchError);
 			return fail(400, { message: 'Failed to fetch class' });
 		}
 
@@ -179,7 +182,7 @@ export const actions: Actions = {
 				.single();
 
 			if (checkError && checkError.code !== 'PGRST116') {
-				console.error('Error checking join code:', checkError);
+				logger.error('Error checking join code:', checkError);
 				return fail(400, { message: 'Error validating join code' });
 			}
 
@@ -206,13 +209,13 @@ export const actions: Actions = {
 			.select('id');
 
 		if (updateError) {
-			console.error('Error updating class:', updateError);
+			logger.error('Error updating class:', updateError);
 			return fail(400, { message: updateError.message });
 		}
 
 		// La classe a été lue juste au-dessus : zéro ligne = refus, pas absence.
 		if (!updatedClasses || updatedClasses.length === 0) {
-			console.error('[admin/classes update] Aucune ligne modifiée pour', id);
+			logger.error('[admin/classes update] Aucune ligne modifiée pour', id);
 			return fail(403, { message: 'Classe non modifiée : droits insuffisants' });
 		}
 
@@ -237,7 +240,7 @@ export const actions: Actions = {
 			.select('id');
 
 		if (updateError) {
-			console.error('Error deactivating class:', updateError);
+			logger.error('Error deactivating class:', updateError);
 			return fail(400, { message: updateError.message });
 		}
 
@@ -266,7 +269,7 @@ export const actions: Actions = {
 			.select('id');
 
 		if (updateError) {
-			console.error('Error activating class:', updateError);
+			logger.error('Error activating class:', updateError);
 			return fail(400, { message: updateError.message });
 		}
 

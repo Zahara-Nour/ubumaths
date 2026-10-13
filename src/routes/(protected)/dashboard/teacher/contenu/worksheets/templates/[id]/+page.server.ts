@@ -9,6 +9,11 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/worksheets/templates/[id]/+page.server'
+);
 
 // Validation schema for updating template
 const updateTemplateSchema = z.object({
@@ -46,7 +51,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		if (dbError.code === 'PGRST116') {
 			throw error(404, 'Modèle introuvable');
 		}
-		console.error('Failed to fetch template:', dbError);
+		logger.error('Failed to fetch template:', dbError);
 		throw error(500, 'Failed to fetch template');
 	}
 
@@ -104,7 +109,7 @@ export const actions: Actions = {
 			.single();
 
 		if (dbError) {
-			console.error('Failed to create template:', dbError);
+			logger.error('Failed to create template:', dbError);
 			return fail(500, { message: 'Erreur lors de la creation du template' });
 		}
 
@@ -174,7 +179,7 @@ export const actions: Actions = {
 			.eq('id', params.id);
 
 		if (dbError) {
-			console.error('Failed to update template:', dbError);
+			logger.error('Failed to update template:', dbError);
 			return fail(500, { message: 'Erreur lors de la mise a jour du template' });
 		}
 

@@ -6,6 +6,9 @@
 import { error } from '@sveltejs/kit';
 import { fetchStaffDirectory, soleTeacher } from '$lib/server/staff-directory';
 import type { PageServerLoad } from './$types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/python-notebook/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile } = locals;
@@ -31,7 +34,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('updated_at', { ascending: false });
 
 	if (notebooksError) {
-		console.error('Error loading notebooks:', notebooksError);
+		logger.error('Error loading notebooks:', notebooksError);
 		throw error(500, 'Erreur lors du chargement des notebooks');
 	}
 

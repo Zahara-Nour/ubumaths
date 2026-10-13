@@ -10,6 +10,9 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/classes/composer/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { supabase } = await requireAdmin(locals);
@@ -26,7 +29,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (classesError) {
-		console.error('Lecture des classes impossible :', classesError);
+		logger.error('Lecture des classes impossible :', classesError);
 		throw error(500, 'Impossible de charger les classes');
 	}
 

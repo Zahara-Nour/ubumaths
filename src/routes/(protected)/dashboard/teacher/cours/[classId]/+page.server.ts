@@ -31,6 +31,9 @@ import {
 	revokeCourseShareToken,
 	rotateCourseShareToken
 } from '$lib/server/course-share-tokens';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/cours/[classId]/+page.server');
 
 const classIdSchema = z.string().uuid('Identifiant de classe invalide');
 
@@ -59,7 +62,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	);
 
 	if (chaptersError) {
-		console.error('[Teacher Class Chapters] Error:', chaptersError);
+		logger.error('[Teacher Class Chapters] Error:', chaptersError);
 		throw error(500, 'Erreur lors du chargement des chapitres');
 	}
 
@@ -86,7 +89,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.eq('profiles.is_test', false);
 
 	if (studentsError) {
-		console.error('Lecture impossible :', studentsError);
+		logger.error('Lecture impossible :', studentsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -113,7 +116,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (templatesError) {
-		console.error('Enrichissement illisible :', templatesError);
+		logger.error('Enrichissement illisible :', templatesError);
 	}
 
 	// Lien du cours (ADR 0025) : les élèves sans compte n'ont pas d'autre accès.
@@ -191,7 +194,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
 		// AUTRE panne produisait le même « accès refusé ».
 		if (classDataError && classDataError.code !== 'PGRST116') {
-			console.error('Vérification impossible :', classDataError);
+			logger.error('Vérification impossible :', classDataError);
 			return fail(500, { error: 'Verification impossible' });
 		}
 
@@ -225,7 +228,7 @@ export const actions: Actions = {
 		);
 
 		if (createError) {
-			console.error('[Create Chapter] Error:', createError);
+			logger.error('[Create Chapter] Error:', createError);
 			return fail(500, { error: 'Erreur lors de la creation', action: 'create' });
 		}
 
@@ -252,7 +255,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
 		// AUTRE panne produisait le même « accès refusé ».
 		if (chapterDataError && chapterDataError.code !== 'PGRST116') {
-			console.error('Vérification impossible :', chapterDataError);
+			logger.error('Vérification impossible :', chapterDataError);
 			return fail(500, { error: 'Verification impossible' });
 		}
 
@@ -284,7 +287,7 @@ export const actions: Actions = {
 		const { error: updateError } = await updateChapter(chapterId, validation.data, locals.supabase);
 
 		if (updateError) {
-			console.error('[Update Chapter] Error:', updateError);
+			logger.error('[Update Chapter] Error:', updateError);
 			return fail(500, { error: 'Erreur lors de la mise a jour', action: 'update' });
 		}
 
@@ -311,7 +314,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
 		// AUTRE panne produisait le même « accès refusé ».
 		if (chapterDataError && chapterDataError.code !== 'PGRST116') {
-			console.error('Vérification impossible :', chapterDataError);
+			logger.error('Vérification impossible :', chapterDataError);
 			return fail(500, { error: 'Verification impossible' });
 		}
 
@@ -323,7 +326,7 @@ export const actions: Actions = {
 		const { error: deleteError } = await deleteChapter(chapterId, locals.supabase);
 
 		if (deleteError) {
-			console.error('[Delete Chapter] Error:', deleteError);
+			logger.error('[Delete Chapter] Error:', deleteError);
 			return fail(500, { error: 'Erreur lors de la suppression', action: 'delete' });
 		}
 
@@ -347,7 +350,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
 		// AUTRE panne produisait le même « accès refusé ».
 		if (classDataError && classDataError.code !== 'PGRST116') {
-			console.error('Vérification impossible :', classDataError);
+			logger.error('Vérification impossible :', classDataError);
 			return fail(500, { error: 'Verification impossible' });
 		}
 
@@ -385,7 +388,7 @@ export const actions: Actions = {
 		);
 
 		if (reorderError) {
-			console.error('[Reorder Chapters] Error:', reorderError);
+			logger.error('[Reorder Chapters] Error:', reorderError);
 			return fail(500, { error: 'Erreur lors du reordonnancement', action: 'reorder' });
 		}
 
@@ -413,7 +416,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
 		// AUTRE panne produisait le même « accès refusé ».
 		if (chapterDataError && chapterDataError.code !== 'PGRST116') {
-			console.error('Vérification impossible :', chapterDataError);
+			logger.error('Vérification impossible :', chapterDataError);
 			return fail(500, { error: 'Verification impossible' });
 		}
 
@@ -425,7 +428,7 @@ export const actions: Actions = {
 		const { error: updateError } = await updateChapter(chapterId, { isVisible }, locals.supabase);
 
 		if (updateError) {
-			console.error('[Toggle Visibility] Error:', updateError);
+			logger.error('[Toggle Visibility] Error:', updateError);
 			return fail(500, { error: 'Erreur lors de la mise a jour', action: 'toggleVisibility' });
 		}
 
@@ -449,7 +452,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime. Toute
 		// AUTRE panne produisait le même « accès refusé ».
 		if (classDataError && classDataError.code !== 'PGRST116') {
-			console.error('Vérification impossible :', classDataError);
+			logger.error('Vérification impossible :', classDataError);
 			return fail(500, { error: 'Verification impossible' });
 		}
 
@@ -482,7 +485,7 @@ export const actions: Actions = {
 		);
 
 		if (instError || !result) {
-			console.error('[Instantiate Template] Error:', instError);
+			logger.error('[Instantiate Template] Error:', instError);
 			return fail(500, {
 				error: 'Erreur lors de la creation du chapitre depuis le template',
 				action: 'instantiateFromTemplate'

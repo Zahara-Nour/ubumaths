@@ -1,5 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/riddles/leaderboard/+page.server');
 
 /**
  * Classement des énigmes de l'école de l'élève.
@@ -20,7 +23,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	});
 
 	if (leaderboardError) {
-		console.error('Lecture impossible :', leaderboardError);
+		logger.error('Lecture impossible :', leaderboardError);
 		throw error(500, 'Impossible de charger le classement');
 	}
 

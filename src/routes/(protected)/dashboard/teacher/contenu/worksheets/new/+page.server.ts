@@ -1,5 +1,10 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/worksheets/new/+page.server'
+);
 
 /**
  * Load page data for creating new worksheet
@@ -20,7 +25,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (templatesError) {
-		console.error('Enrichissement illisible :', templatesError);
+		logger.error('Enrichissement illisible :', templatesError);
 	}
 
 	return {

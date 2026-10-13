@@ -68,6 +68,11 @@ import type {
 	ChapterExercise
 } from '$lib/types/chapters';
 import type { ChapterWorksheet } from '$lib/types/chapters';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/cours/[classId]/[chapterId]/+page.server'
+);
 
 /**
  * Une fiche rattachée, avec le peu qu'il faut pour l'afficher.
@@ -117,7 +122,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	// PGRST116 = la classe n'existe pas ; le repli d'affichage existe déjà.
 	if (classDataError && classDataError.code !== 'PGRST116') {
-		console.error('Classe illisible :', classDataError);
+		logger.error('Classe illisible :', classDataError);
 		throw error(500, 'Impossible de charger la classe');
 	}
 
@@ -157,7 +162,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		]);
 
 	if (sectionsResult.error) {
-		console.error('Sections illisibles :', sectionsResult.error);
+		logger.error('Sections illisibles :', sectionsResult.error);
 	}
 
 	const sections: ChapterSection[] = (sectionsResult.data || []).map((s) => ({
@@ -247,7 +252,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
 		if (exerciseDataError) {
-			console.error('Enrichissement illisible :', exerciseDataError);
+			logger.error('Enrichissement illisible :', exerciseDataError);
 		}
 
 		for (const e of exerciseData || []) {
@@ -277,7 +282,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran. Mais elle
 		// ne doit pas se lire « non distribuée », donc on en laisse une trace.
 		if (distribueesError) {
-			console.error('Distribution des fiches illisible :', distribueesError);
+			logger.error('Distribution des fiches illisible :', distribueesError);
 		}
 
 		distributedWorksheetIds = [...(distribuees ?? [])];
@@ -295,7 +300,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.limit(100);
 
 	if (availableWorksheetsError) {
-		console.error('Fiches disponibles illisibles :', availableWorksheetsError);
+		logger.error('Fiches disponibles illisibles :', availableWorksheetsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -321,7 +326,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.limit(100);
 
 	if (availableExercisesError) {
-		console.error('Lecture impossible :', availableExercisesError);
+		logger.error('Lecture impossible :', availableExercisesError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -332,7 +337,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// L'avancement des élèves : une panne le montrerait entièrement à zéro, ce
 	// que le professeur lirait comme « personne n'a rien fait ».
 	if (checklistProgressError) {
-		console.error('Avancement illisible :', checklistProgressError);
+		logger.error('Avancement illisible :', checklistProgressError);
 		throw error(500, 'Impossible de charger l’avancement');
 	}
 
@@ -352,7 +357,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// professeur que personne n'est inscrit — le même symptôme que le filtre
 	// `is_test` mal placé corrigé plus haut.
 	if (studentsError) {
-		console.error('Élèves illisibles :', studentsError);
+		logger.error('Élèves illisibles :', studentsError);
 		throw error(500, 'Impossible de charger les élèves');
 	}
 
@@ -381,7 +386,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (templateInstantiationError) {
-		console.error('Enrichissement illisible :', templateInstantiationError);
+		logger.error('Enrichissement illisible :', templateInstantiationError);
 	}
 
 	return {
@@ -462,7 +467,7 @@ async function rangerSiDemande(
 	const { error: placeError } = await placeInSection(chapterId, cible.data, kind, itemId, supabase);
 
 	if (placeError) {
-		console.error(`[${action}] Rangement impossible :`, placeError);
+		logger.error(`[${action}] Rangement impossible :`, placeError);
 		return { success: true, action, placed: false };
 	}
 
@@ -487,7 +492,7 @@ export const actions: Actions = {
 		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
 		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (chapterError && chapterError.code !== 'PGRST116') {
-			console.error('[addChecklistItem] Lecture impossible :', chapterError);
+			logger.error('[addChecklistItem] Lecture impossible :', chapterError);
 			return fail(500, { error: 'Verification impossible', action: 'addChecklistItem' });
 		}
 
@@ -543,7 +548,7 @@ export const actions: Actions = {
 		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
 		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (itemError && itemError.code !== 'PGRST116') {
-			console.error('[updateChecklistItem] Lecture impossible :', itemError);
+			logger.error('[updateChecklistItem] Lecture impossible :', itemError);
 			return fail(500, { error: 'Verification impossible', action: 'updateChecklistItem' });
 		}
 
@@ -596,7 +601,7 @@ export const actions: Actions = {
 		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
 		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (itemError && itemError.code !== 'PGRST116') {
-			console.error('[deleteChecklistItem] Lecture impossible :', itemError);
+			logger.error('[deleteChecklistItem] Lecture impossible :', itemError);
 			return fail(500, { error: 'Verification impossible', action: 'deleteChecklistItem' });
 		}
 
@@ -645,7 +650,7 @@ export const actions: Actions = {
 		);
 
 		if (publicationError) {
-			console.error('[setPublication] Écriture impossible :', publicationError);
+			logger.error('[setPublication] Écriture impossible :', publicationError);
 			return fail(500, {
 				error: "Impossible de changer l'état de publication",
 				action: 'setPublication'
@@ -673,7 +678,7 @@ export const actions: Actions = {
 		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
 		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (chapterError && chapterError.code !== 'PGRST116') {
-			console.error('[linkExercise] Lecture impossible :', chapterError);
+			logger.error('[linkExercise] Lecture impossible :', chapterError);
 			return fail(500, { error: 'Verification impossible', action: 'linkExercise' });
 		}
 
@@ -725,7 +730,7 @@ export const actions: Actions = {
 		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
 		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (linkError && linkError.code !== 'PGRST116') {
-			console.error('[unlinkExercise] Lecture impossible :', linkError);
+			logger.error('[unlinkExercise] Lecture impossible :', linkError);
 			return fail(500, { error: 'Verification impossible', action: 'unlinkExercise' });
 		}
 
@@ -763,7 +768,7 @@ export const actions: Actions = {
 		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
 		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (chapterError && chapterError.code !== 'PGRST116') {
-			console.error('[linkWorksheet] Lecture impossible :', chapterError);
+			logger.error('[linkWorksheet] Lecture impossible :', chapterError);
 			return fail(500, { error: 'Verification impossible', action: 'linkWorksheet' });
 		}
 
@@ -924,7 +929,7 @@ export const actions: Actions = {
 		// PGRST116 = la ligne n'existe pas ; toute autre panne mérite son propre
 		// message plutôt qu'un « accès refusé » trompeur.
 		if (chapterError && chapterError.code !== 'PGRST116') {
-			console.error('[createTemplate] Lecture impossible :', chapterError);
+			logger.error('[createTemplate] Lecture impossible :', chapterError);
 			return fail(500, { error: 'Verification impossible', action: 'createTemplate' });
 		}
 
@@ -953,7 +958,7 @@ export const actions: Actions = {
 		);
 
 		if (createError || !template) {
-			console.error('[createTemplate] Creation impossible :', createError);
+			logger.error('[createTemplate] Creation impossible :', createError);
 			return fail(500, { error: 'Erreur lors de la creation du modele', action: 'createTemplate' });
 		}
 
@@ -973,7 +978,7 @@ export const actions: Actions = {
 			.single();
 
 		if (linkError && linkError.code !== 'PGRST116') {
-			console.error('[unlinkWorksheet] Lecture impossible :', linkError);
+			logger.error('[unlinkWorksheet] Lecture impossible :', linkError);
 			return fail(500, { error: 'Verification impossible', action: 'unlinkWorksheet' });
 		}
 
@@ -1007,7 +1012,7 @@ export const actions: Actions = {
 		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
 		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (chapterError && chapterError.code !== 'PGRST116') {
-			console.error('[addGoogleDriveDocument] Lecture impossible :', chapterError);
+			logger.error('[addGoogleDriveDocument] Lecture impossible :', chapterError);
 			return fail(500, { error: 'Verification impossible', action: 'addGoogleDriveDocument' });
 		}
 
@@ -1057,7 +1062,7 @@ export const actions: Actions = {
 		);
 
 		if (dbError || !created) {
-			console.error('[addGoogleDriveDocument] Error:', dbError);
+			logger.error('[addGoogleDriveDocument] Error:', dbError);
 			return fail(500, { error: "Erreur lors de l'ajout", action: 'addGoogleDriveDocument' });
 		}
 
@@ -1092,7 +1097,7 @@ export const actions: Actions = {
 		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
 		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (documentError && documentError.code !== 'PGRST116') {
-			console.error('[deleteDocument] Lecture impossible :', documentError);
+			logger.error('[deleteDocument] Lecture impossible :', documentError);
 			return fail(500, { error: 'Verification impossible', action: 'deleteDocument' });
 		}
 
@@ -1107,7 +1112,7 @@ export const actions: Actions = {
 				.remove([document.storage_path]);
 
 			if (storageError) {
-				console.warn('[deleteDocument] Storage delete warning:', storageError);
+				logger.warn('[deleteDocument] Storage delete warning:', storageError);
 				// Continue anyway - DB record deletion is more important
 			}
 		}
@@ -1116,7 +1121,7 @@ export const actions: Actions = {
 		const { error: dbError } = await deleteChapterDocument(documentId, locals.supabase);
 
 		if (dbError) {
-			console.error('[deleteDocument] Error:', dbError);
+			logger.error('[deleteDocument] Error:', dbError);
 			return fail(500, { error: 'Erreur lors de la suppression', action: 'deleteDocument' });
 		}
 
@@ -1140,7 +1145,7 @@ export const actions: Actions = {
 		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
 		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (chapterError && chapterError.code !== 'PGRST116') {
-			console.error('[migrateToVersion] Lecture impossible :', chapterError);
+			logger.error('[migrateToVersion] Lecture impossible :', chapterError);
 			return fail(500, { error: 'Verification impossible', action: 'migrateToVersion' });
 		}
 
@@ -1163,7 +1168,7 @@ export const actions: Actions = {
 		);
 
 		if (migrateError) {
-			console.error('[migrateToVersion] Error:', migrateError);
+			logger.error('[migrateToVersion] Error:', migrateError);
 			return fail(500, { error: 'Erreur lors de la migration', action: 'migrateToVersion' });
 		}
 
@@ -1185,7 +1190,7 @@ export const actions: Actions = {
 		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
 		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (chapterError && chapterError.code !== 'PGRST116') {
-			console.error('[detachFromTemplate] Lecture impossible :', chapterError);
+			logger.error('[detachFromTemplate] Lecture impossible :', chapterError);
 			return fail(500, { error: 'Verification impossible', action: 'detachFromTemplate' });
 		}
 
@@ -1196,7 +1201,7 @@ export const actions: Actions = {
 		const { error: detachError } = await detachChapterFromTemplate(chapterId, locals.supabase);
 
 		if (detachError) {
-			console.error('[detachFromTemplate] Error:', detachError);
+			logger.error('[detachFromTemplate] Error:', detachError);
 			return fail(500, { error: 'Erreur lors du detachement', action: 'detachFromTemplate' });
 		}
 

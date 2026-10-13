@@ -9,6 +9,11 @@ import { fail, redirect } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { DEFAULT_TEMPLATES } from '$lib/typst/templates';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/worksheets/templates/+page.server'
+);
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const { user } = await requireRoles(locals, ['teacher', 'admin']);
@@ -38,7 +43,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const { data: templates, error, count } = await query;
 
 	if (error) {
-		console.error('Failed to fetch templates:', error);
+		logger.error('Failed to fetch templates:', error);
 		return {
 			templates: [],
 			defaultTemplates: DEFAULT_TEMPLATES,
@@ -96,7 +101,7 @@ export const actions: Actions = {
 			.single();
 
 		if (error) {
-			console.error('Failed to create template:', error);
+			logger.error('Failed to create template:', error);
 			return fail(500, { message: 'Failed to create template' });
 		}
 
@@ -146,7 +151,7 @@ export const actions: Actions = {
 			.single();
 
 		if (error) {
-			console.error('Failed to duplicate template:', error);
+			logger.error('Failed to duplicate template:', error);
 			return fail(500, { message: 'Failed to duplicate template' });
 		}
 
@@ -189,7 +194,7 @@ export const actions: Actions = {
 			.eq('template_id', templateId);
 
 		if (countError) {
-			console.error('Failed to check template usage:', countError);
+			logger.error('Failed to check template usage:', countError);
 			return fail(500, { message: 'Failed to check template usage' });
 		}
 
@@ -206,7 +211,7 @@ export const actions: Actions = {
 			.eq('id', templateId);
 
 		if (error) {
-			console.error('Failed to delete template:', error);
+			logger.error('Failed to delete template:', error);
 			return fail(500, { message: 'Failed to delete template' });
 		}
 

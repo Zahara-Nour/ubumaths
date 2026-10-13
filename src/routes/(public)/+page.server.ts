@@ -3,6 +3,9 @@ import { ambianceMonthIndex } from '$lib/almanach/palettes';
 import { allArticles, pickRandomArticle, publishedArticles } from '$lib/server/shtam/articles';
 import { todayIsoInParis } from '$lib/server/shtam/present';
 import type { PageServerLoad } from './$types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/+page.server');
 
 // Jamais prérendue : l'ambiance suit le mois pataphysique du jour de la requête,
 // pas celui du build ; l'article du Shtam est tiré à chaque visite.
@@ -20,7 +23,7 @@ function pickShtamLink(now: Date): { slug: string; title: string } | null {
 		const article = pickRandomArticle(publishedArticles(allArticles(), todayIsoInParis(now)));
 		return article ? { slug: article.slug, title: article.title } : null;
 	} catch (err) {
-		console.error('[accueil] Shtam illisible, lien masqué :', err);
+		logger.error('[accueil] Shtam illisible, lien masqué :', err);
 		return null;
 	}
 }

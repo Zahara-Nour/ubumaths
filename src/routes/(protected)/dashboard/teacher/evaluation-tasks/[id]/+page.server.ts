@@ -13,6 +13,11 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { z } from 'zod';
 import type { MathCompetenceCode, SubdimensionLetter } from '$lib/types/skills';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/evaluation-tasks/[id]/+page.server'
+);
 
 export interface ObservableForPerimeter {
 	skill_id: string;
@@ -71,7 +76,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (classesError) {
-		console.error('Enrichissement illisible :', classesError);
+		logger.error('Enrichissement illisible :', classesError);
 	}
 
 	// 3. Toutes les compétences math + composantes + observables (lecture publique)
@@ -109,7 +114,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<TaskEdit
 		.eq('task_id', params.id);
 
 	if (perimeterError) {
-		console.error('Lecture impossible :', perimeterError);
+		logger.error('Lecture impossible :', perimeterError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -204,7 +209,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la tâche n'existe pas, et le 404 qui suit est légitime.
 		if (taskError && taskError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', taskError);
+			logger.error('Lecture impossible :', taskError);
 			return fail(500, { message: 'Lecture impossible' });
 		}
 		if (!task) {

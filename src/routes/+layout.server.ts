@@ -23,9 +23,12 @@
 import type { LayoutServerLoad } from './$types';
 import { asVipCardAction } from '$lib/types/vip-card';
 import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('+layout.server');
 
 export const load: LayoutServerLoad = async ({ locals, cookies }) => {
-	console.log('🎨 [ROOT LAYOUT SERVER] Exécution');
+	logger.info('🎨 [ROOT LAYOUT SERVER] Exécution');
 
 	// ✅ Seulement les cookies Supabase (pour l'initialisation client)
 	const supabaseAuthCookies = cookies.getAll().filter(
@@ -62,7 +65,7 @@ async function loadVipCardTemplates(supabase: App.Locals['supabase']): Promise<V
 			.order('sort_order', { ascending: true });
 
 		if (error) {
-			console.error('❌ [ROOT LAYOUT SERVER] Error loading VIP card templates:', error);
+			logger.error('❌ [ROOT LAYOUT SERVER] Error loading VIP card templates:', error);
 			return [];
 		}
 		// Le store conserve la ligne telle quelle et ne rétrécit que `action`,
@@ -71,10 +74,10 @@ async function loadVipCardTemplates(supabase: App.Locals['supabase']): Promise<V
 			...row,
 			action: asVipCardAction(row.action)
 		}));
-		console.log(`✅ [ROOT LAYOUT SERVER] Loaded ${templates.length} VIP card templates`);
+		logger.info(`✅ [ROOT LAYOUT SERVER] Loaded ${templates.length} VIP card templates`);
 		return templates;
 	} catch (err) {
-		console.error('❌ [ROOT LAYOUT SERVER] Exception loading VIP card templates:', err);
+		logger.error('❌ [ROOT LAYOUT SERVER] Exception loading VIP card templates:', err);
 		return [];
 	}
 }

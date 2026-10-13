@@ -21,6 +21,9 @@
 
 import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/google/+page.server');
 
 interface Course {
 	id: string;
@@ -44,14 +47,14 @@ export const load: PageServerLoad = async ({ locals, fetch }) => {
 		const response = await fetch('/api/google/courses');
 
 		if (!response.ok) {
-			console.error('[Google Courses SSR] Failed to fetch courses:', response.status);
+			logger.error('[Google Courses SSR] Failed to fetch courses:', response.status);
 			return { courses: [] as Course[] };
 		}
 
 		const data = await response.json();
 		return { courses: data.courses as Course[] };
 	} catch (error) {
-		console.error('[Google Courses SSR] Error fetching courses:', error);
+		logger.error('[Google Courses SSR] Error fetching courses:', error);
 		return { courses: [] as Course[] };
 	}
 };

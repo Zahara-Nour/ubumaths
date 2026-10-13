@@ -41,6 +41,9 @@ import {
 	getActiveSchoolYear,
 	getSchoolYearPeriods
 } from '$lib/server/warnings';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/+layout.server');
 
 type AcademicPeriod = Database['public']['Tables']['academic_periods']['Row'];
 
@@ -64,9 +67,9 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 		try {
 			classes = await getTeacherClassesWithCounts(user.id, supabase);
 			classesLoaded = true;
-			console.log(`[Teacher Layout Server] ✅ Loaded ${classes.length} classes`);
+			logger.info(`[Teacher Layout Server] ✅ Loaded ${classes.length} classes`);
 		} catch (err) {
-			console.error('[Teacher Layout Server] Error fetching classes:', err);
+			logger.error('[Teacher Layout Server] Error fetching classes:', err);
 			// Non-critical - continue with empty classes
 		}
 
@@ -92,11 +95,11 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 					}).catch(() => []);
 				}
 
-				console.log(
+				logger.info(
 					`[Teacher Layout Server] ✅ Loaded periods (current: ${currentPeriod?.name || 'none'}, total: ${allPeriods.length})`
 				);
 			} catch (err) {
-				console.error('[Teacher Layout Server] Error fetching periods:', err);
+				logger.error('[Teacher Layout Server] Error fetching periods:', err);
 				// Non-critical - continue with null/empty
 			}
 		}
@@ -110,7 +113,7 @@ export const load: LayoutServerLoad = async ({ locals, depends }) => {
 			allPeriods
 		};
 	} catch (err) {
-		console.error('[Teacher Layout Server] Unexpected error loading teacher dashboard:', err);
+		logger.error('[Teacher Layout Server] Unexpected error loading teacher dashboard:', err);
 		// Return minimal data to prevent crashes
 		return {
 			classes: [],

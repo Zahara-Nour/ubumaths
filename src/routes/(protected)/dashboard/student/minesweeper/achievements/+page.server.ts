@@ -1,5 +1,10 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/student/minesweeper/achievements/+page.server'
+);
 
 /**
  * Load achievement progress for the authenticated student
@@ -51,7 +56,7 @@ export const load: PageServerLoad = async ({ locals, fetch }) => {
 			throw err;
 		}
 
-		console.error('Error loading achievements:', err);
+		logger.error('Error loading achievements:', err);
 		throw error(500, 'Erreur lors du chargement des succès');
 	}
 };

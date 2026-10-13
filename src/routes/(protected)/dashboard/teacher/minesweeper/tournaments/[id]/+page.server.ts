@@ -8,6 +8,11 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { TournamentWithDetails, TournamentStanding } from '$lib/types/minesweeper';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/minesweeper/tournaments/[id]/+page.server'
+);
 
 export interface TournamentDetailsPageData {
 	tournament: TournamentWithDetails;
@@ -93,7 +98,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch, url }) => {
 		.is('score', null);
 
 	if (gamesWithNullScoreError) {
-		console.error('Lecture impossible :', gamesWithNullScoreError);
+		logger.error('Lecture impossible :', gamesWithNullScoreError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -114,7 +119,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch, url }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
 		if (redistributeResultError) {
-			console.error('Enrichissement illisible :', redistributeResultError);
+			logger.error('Enrichissement illisible :', redistributeResultError);
 		}
 
 		// `rewards_distributed` peut manquer : la fonction rend une table, et une

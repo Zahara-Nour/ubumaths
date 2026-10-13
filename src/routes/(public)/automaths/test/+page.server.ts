@@ -2,6 +2,9 @@ import { error, redirect } from '@sveltejs/kit';
 import { resolveTestLaunch } from '$lib/utils/test-launch';
 import type { PageServerLoad } from './$types';
 import type { QuestionTemplate } from '$lib/questions/types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/automaths/test/+page.server');
 
 /**
  * Load all published question templates for test generation.
@@ -35,7 +38,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.order('created_at', { ascending: false });
 
 	if (templatesError) {
-		console.error('Failed to load question templates:', templatesError);
+		logger.error('Failed to load question templates:', templatesError);
 		throw error(500, 'Failed to load questions');
 	}
 

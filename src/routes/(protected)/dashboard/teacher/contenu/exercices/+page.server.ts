@@ -5,6 +5,9 @@ import { error, redirect, fail } from '@sveltejs/kit';
 import { z } from 'zod';
 import { getTeacherExercises, deleteExercise, EXERCISE_NOT_DELETED } from '$lib/server/exercises';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/contenu/exercices/+page.server');
 
 /** Identifiant d'exercice reçu par l'action « delete ». */
 const exerciseIdSchema = z.string().uuid();
@@ -80,7 +83,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	});
 
 	if (result.error) {
-		console.error('Error fetching exercises:', result.error);
+		logger.error('Error fetching exercises:', result.error);
 		throw error(500, 'Erreur lors du chargement des exercices');
 	}
 
@@ -126,7 +129,7 @@ export const actions: Actions = {
 		const result = await deleteExercise(locals.supabase, exerciseId, user.id);
 
 		if (result.error) {
-			console.error('Error deleting exercise:', result.error);
+			logger.error('Error deleting exercise:', result.error);
 			if (result.error.message === 'Exercise not found') {
 				return fail(404, { message: 'Exercice introuvable' });
 			}

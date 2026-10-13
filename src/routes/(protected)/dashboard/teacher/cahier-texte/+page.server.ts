@@ -20,6 +20,9 @@ import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getJournalEntriesForWeek } from '$lib/server/journal';
 import type { JournalWeekView } from '$lib/types/journal';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/cahier-texte/+page.server');
 
 /**
  * Helper to get Monday of the current week (or specified date)
@@ -51,7 +54,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.order('name');
 
 	if (classesError) {
-		console.error('[Cahier de Texte] Error fetching classes:', classesError);
+		logger.error('[Cahier de Texte] Error fetching classes:', classesError);
 		throw error(500, 'Erreur lors du chargement des classes');
 	}
 
@@ -78,7 +81,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		);
 
 		if (weekError) {
-			console.error('[Cahier de Texte] Error fetching week view:', weekError);
+			logger.error('[Cahier de Texte] Error fetching week view:', weekError);
 			// Don't throw error, just show empty state
 		} else {
 			weekView = data;
