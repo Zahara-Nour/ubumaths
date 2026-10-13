@@ -80,9 +80,10 @@ describe('.intégrer : étapes montrées quand elles disent vrai', () => {
 			'.intégrer e^x\\sin(x)',
 			'\\dfrac{1}{2} \\exponentialE^x \\sin\\left( x \\right) - \\dfrac{1}{2} \\cos\\left( x \\right) \\exponentialE^x + C'
 		],
+		// ln|u| écrit comme dans les étapes : `\\ln\\left| u \\right|` (revue du 2026-10-13)
 		[
 			'.intégrer \\frac{1}{x^2-1}',
-			'\\dfrac{1}{2} \\ln\\left( \\left| x - 1 \\right| \\right) - \\dfrac{1}{2} \\ln\\left( \\left| x + 1 \\right| \\right) + C'
+			'\\dfrac{1}{2} \\ln\\left| x - 1 \\right| - \\dfrac{1}{2} \\ln\\left| x + 1 \\right| + C'
 		]
 	])('%s', (input, answer) => {
 		const entry = lastEntry(input);
@@ -147,13 +148,10 @@ describe('.intégrer : composée à coefficient, expliqué par « On fait appara
 		['.intégrer \\sin(2x)', '-\\dfrac{1}{2} \\cos\\left( 2 x \\right) + C'],
 		['.intégrer xe^{x^2}', '\\dfrac{1}{2} \\exponentialE^{x^2} + C'],
 		['.intégrer \\cos(3x+1)', '\\dfrac{1}{3} \\sin\\left( 3 x + 1 \\right) + C'],
-		[
-			'.intégrer \\frac{1}{2x+1}',
-			'\\dfrac{1}{2} \\ln\\left( \\left| 2 x + 1 \\right| \\right) + C'
-		],
+		['.intégrer \\frac{1}{2x+1}', '\\dfrac{1}{2} \\ln\\left| 2 x + 1 \\right| + C'],
 		['.intégrer e^{-x}', '-\\exponentialE^{-x} + C'],
 		['.intégrer -e^{-x}', '\\exponentialE^{-x} + C'],
-		['.intégrer \\frac3x', '3 \\ln\\left( \\left| x \\right| \\right) + C'],
+		['.intégrer \\frac3x', '3 \\ln\\left| x \\right| + C'],
 		['.intégrer \\frac{x}{x^2+1}', '\\dfrac{1}{2} \\ln\\left( x^2 + 1 \\right) + C'],
 		['.intégrer (2x+1)^3', '\\dfrac{1}{8} \\left( 2 x + 1 \\right)^4 + C'],
 		// IPP : v = ½e^{2x} et ∫ ½e^{2x} dx, chacun avec sa réécriture
@@ -187,15 +185,15 @@ describe('.intégrer : coefficient réellement caché (éléments simples) → p
 		// la ligne écrit (A/2)·ln|2x − 1| (revue du 2026-10-13)
 		[
 			'.intégrer \\frac{1}{(2x-1)(x+1)}',
-			'\\dfrac{1}{3} \\ln\\left( \\left| 2 x - 1 \\right| \\right) - \\dfrac{1}{3} \\ln\\left( \\left| x + 1 \\right| \\right) + C'
+			'\\dfrac{1}{3} \\ln\\left| 2 x - 1 \\right| - \\dfrac{1}{3} \\ln\\left| x + 1 \\right| + C'
 		],
 		[
 			'.intégrer \\frac{3}{2x^2+x-1}',
-			'\\ln\\left( \\left| 2 x - 1 \\right| \\right) - \\ln\\left( \\left| x + 1 \\right| \\right) + C'
+			'\\ln\\left| 2 x - 1 \\right| - \\ln\\left| x + 1 \\right| + C'
 		],
 		[
 			'.intégrer \\frac{1}{4x^2-1}',
-			'\\dfrac{1}{4} \\ln\\left( \\left| 2 x - 1 \\right| \\right) - \\dfrac{1}{4} \\ln\\left( \\left| 2 x + 1 \\right| \\right) + C'
+			'\\dfrac{1}{4} \\ln\\left| 2 x - 1 \\right| - \\dfrac{1}{4} \\ln\\left| 2 x + 1 \\right| + C'
 		]
 	])('%s', (input, answer) => {
 		const entry = lastEntry(input);

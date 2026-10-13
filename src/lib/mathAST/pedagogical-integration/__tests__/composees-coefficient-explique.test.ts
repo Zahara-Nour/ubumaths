@@ -179,6 +179,12 @@ describe('logarithme : |u| général, u sans valeur absolue quand u > 0 est cert
 		expect(text).not.toContain('\\left|');
 	});
 
+	it('`\\frac{1}{x}` de e à 1 : l’intervalle de la phrase dans l’ordre, [1 ; e]', () => {
+		const text = all(render('\\frac{1}{x}', 'detailed', ['e', '1']));
+		expect(text).toContain('$\\left[ 1 ; \\exponentialE \\right]$');
+		expect(text).not.toContain('\\left[ \\exponentialE ; 1 \\right]');
+	});
+
 	it('`\\frac{1}{x}` de −2 à −1 : ln|x| (u < 0)', () => {
 		expect(all(render('\\frac{1}{x}', 'detailed', ['-2', '-1']))).toContain('\\left|');
 	});

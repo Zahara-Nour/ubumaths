@@ -30,7 +30,9 @@
  */
 
 import type { SchoolLevel } from '../common/step-renderer-base';
+import type { MathNode } from '../types';
 import { getVariables } from '../eval/substitute';
+import { numericValue } from '../integration/forbidden-value';
 import { integrationLatex as toLatex } from './latex';
 import type { IntegrationBindings, PedagogicalIntegrationRule } from './types';
 
@@ -132,12 +134,22 @@ export function coefficientPrefix(bindings: IntegrationBindings): string {
 	return k === '-1' ? '-' : `${k} `;
 }
 
+/**
+ * `\\left[ a ; b \\right]`, bornes dans l'ordre croissant (∫ₑ¹ porte sur
+ * [1 ; e]) ; ordre d'écriture gardé si une borne n'est pas un nombre.
+ */
+function sortedInterval(lower: MathNode, upper: MathNode): string {
+	const reversed = numericValue(lower) > numericValue(upper);
+	const [lo, hi] = reversed ? [upper, lower] : [lower, upper];
+	return `\\left[ ${toLatex(lo)} ; ${toLatex(hi)} \\right]`;
+}
+
 /** La phrase « u > 0 » d'une primitive ln u sans valeur absolue, ou '' */
 function positivitySentence(bindings: IntegrationBindings, lnLatex: string): string {
 	if (!bindings.positive) return '';
 	const where =
 		bindings.lower && bindings.upper
-			? `sur ${math(`\\left[ ${bind(bindings, 'lower')} ; ${bind(bindings, 'upper')} \\right]`)}`
+			? `sur ${math(sortedInterval(bindings.lower, bindings.upper))}`
 			: 'pour tout réel';
 	return ` Comme ${math(`${bind(bindings, 'positive')} > 0`)} ${where}, on écrit ${math(lnLatex)} sans valeur absolue.`;
 }

@@ -6,11 +6,17 @@
  * pour tout réel (`x^2+1`), ou sur l'intervalle d'une intégrale définie
  * (`\frac1x` de 1 à e).
  *
- * « Certain » = établi par l'analyse de signe (`analyzeSign`) : domaine ℝ,
- * zéros tous trouvés (`zerosUnresolved` absent), aucun zéro dans l'intervalle,
- * et u > 0 en un point de l'intervalle — u, continue sur ℝ, n'y change donc pas
- * de signe (théorème des valeurs intermédiaires). Dans le doute : `false`, et
- * la valeur absolue reste (toujours juste).
+ * « Certain » = u est un POLYNÔME (coefficients rationnels, `toPolynomial`)
+ * et l'analyse de signe (`analyzeSign`) le prouve : domaine ℝ, zéros tous
+ * résolus (`zerosUnresolved` absent), aucun zéro dans l'intervalle, et u > 0 en
+ * un point de l'intervalle — u, continue, n'y change donc pas de signe
+ * (théorème des valeurs intermédiaires). Pourquoi polynôme seulement :
+ * `analyzeSign` ne liste pas tous les zéros d'une fonction périodique, sans
+ * lever `zerosUnresolved` (revue du 2026-10-13 : cos x déclaré positif sur
+ * [10.9 ; 12], où il s'annule en 7π/2 ≈ 10.9956). Les zéros d'un polynôme,
+ * eux, sont en nombre fini et trouvés par le solveur, ou signalés non résolus.
+ * Dans le doute : `false`, et la valeur absolue reste (toujours juste) —
+ * `e^x + 1` garde donc |…|.
  *
  * @module mathAST/pedagogical-integration/positivity
  */
@@ -19,6 +25,7 @@ import type { MathNode } from '../types';
 import { analyzeSign } from '../sign/analyze';
 import { compile } from '../eval/compile';
 import { numericValue } from '../integration/forbidden-value';
+import { toPolynomial } from '../factor';
 
 /** Un intervalle d'intégration, bornes numériques dans un ordre quelconque. */
 export interface NumericInterval {
@@ -38,6 +45,8 @@ export function isCertainlyPositive(
 	interval?: NumericInterval
 ): boolean {
 	try {
+		// Polynôme seulement : les zéros d'une autre fonction ne sont pas garantis complets
+		if (toPolynomial(u, variable) === null) return false;
 		const analysis = analyzeSign(u, { variable });
 		if (analysis.zerosUnresolved || analysis.domain.kind !== 'universal') return false;
 
