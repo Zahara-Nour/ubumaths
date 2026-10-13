@@ -78,6 +78,11 @@ export async function attachReportErrors(
 		logger.error('Erreurs des signalements illisibles :', error);
 		return;
 	}
+	// Plafond atteint : les signalements les plus anciens de la liste peuvent
+	// paraître sans erreurs. Le dire plutôt que le taire.
+	if ((rows?.length ?? 0) >= MAX_ROWS) {
+		logger.warn(`Erreurs des signalements tronquées à ${MAX_ROWS} lignes`);
+	}
 
 	for (const report of reports) {
 		const end = new Date(report.created_at).getTime();
