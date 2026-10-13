@@ -249,3 +249,13 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
 - 2026-10-13 — **lot 1 mergé : PR #1332** (b03cb0b88), CI verte ; pas en prod. Lot 2 (champ de
   formule réglable) en attente des réponses de David (écrire / manipuler, réglages, E5.4).
 - 2026-10-13 — lot 1 (#1332) en prod avec la v0.29.0 (sans effet visible : pas encore d'interface).
+- 2026-10-13 — **gestes du champ (David)** : un seul mode, pas de bascule écrire / manipuler.
+  Clic court → le curseur se place (on écrit) ; clic tenu puis on bouge → on déplace ; pas de
+  remontée d'un cran ni d'élargissement de cadre : les cadres sont imbriqués, on attrape `2x` sur
+  la bordure de son cadre (hors des cadres de `2` et de `x`). Tactile détecté
+  (`any-pointer: coarse`) : bordures larges et formule écartée autour des parties, seulement si
+  le champ affiche la structure et autorise le déplacement. Essai dans la démo (commit local) :
+  appui armé après 300 ms (bougé avant : rien, ce serait une sélection de texte), bordure par
+  niveau de parties contenues (souris 0,2 em, tactile 0,3 em), curseur placé au même endroit
+  relatif dans le champ. Vérifié Chromium et WebKit ; iPad émulé reconnu tactile. À juger par
+  David, sur Mac et sur iPad.
