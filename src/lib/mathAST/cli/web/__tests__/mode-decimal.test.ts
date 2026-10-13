@@ -1,6 +1,6 @@
 /**
  * Le mode décimal des nombres et l'écriture du texte de la console (décision
- * Q3 de David, 2026-10-11, `docs/wip/grandeurs-analyse.md` : « la règle du
+ * Q3 de David, 2026-10-11, `docs/archive/wip/grandeurs-analyse.md` : « la règle du
  * bouton ≈ » — 4 décimales, « = » sans zéros inutiles quand c'est exact).
  *
  * Mesuré avant : `.mode decimal` puis `sqrt(2)/2` → « ≈ 0.707106781186547 »,

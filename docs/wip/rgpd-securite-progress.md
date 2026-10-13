@@ -397,3 +397,12 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
     les fichiers déposés, consentement `send_message`, 303 `no-store`.
   - **Actif après le prochain `deploy:prod`.** Reste mineur : course sur la limite de 3
     (expéditeur seul, cron), 500 au lieu de 404 si le fichier manque.
+- ⏳ **I4 élargi — #1266 (mergée, migration `20261016101700` PAS ENCORE en prod)** :
+  déclencheur `guard_worksheet_error_report_teacher_fields` ; l'élève ne remplit plus
+  status / reviewed_by / reviewed_at / response, et ne change plus que la description
+  de son signalement en attente. Prod : 14 signalements, aucun forgé. **Push bloqué** :
+  trois migrations d'autres sessions mergées attendent devant elle (messages privés
+  figés, boîte de réception, et `python_recheck_supprime` ⛔ DROP TABLE — pas à moi de
+  la pousser). Pousser dès que ces sessions ont poussé, puis vérifier le déclencheur.
+- Le point 2 (safeguarding de la modération) est traité par une autre session
+  (`fix/messages-prives-non-modifiables`, `fix/ecritures-verifiees`).

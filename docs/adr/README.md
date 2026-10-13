@@ -34,6 +34,7 @@ contourner en silence.
 | 0023 | [Copie d'une fiche : niveau de guidage choisi par affectation, jamais tiré](0023-copie-d-une-fiche-niveau-de-guidage-par-affectation.md) | 2026-10-11 |
 | 0024 | [Un moteur commun de factorisation : noyau exact, stratégies qui racontent](0024-moteur-commun-de-factorisation.md)                      | 2026-10-11 |
 | 0025 | [Le cours d'une classe est lisible par lien, sans compte](0025-cours-lisible-par-lien-sans-compte.md)                                    | 2026-10-12 |
+| 0026 | [Les grandeurs : un seul circuit, et « un nombre, une espace, une unité »](0026-grandeurs-un-contrat-et-l-espace.md)                     | 2026-10-11 |
 
 ## Écrire un ADR
 

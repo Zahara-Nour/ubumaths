@@ -85,7 +85,7 @@ test, ~14 000 cas (`it(`/`test(`).
 | `analysis/`                                                                                                                         | continuité (`analyzeContinuity`), périodicité, symétrie, classification, détecteurs d'identités (`structures.ts`, lus par `algebraicFactoringRules`)                                                                                                                                                                                                                                                                                                   |
 | `piecewise/`                                                                                                                        | `extractPiecewiseBoundaries` : ruptures d'une fonction par morceaux (consommé par `geometry-core`)                                                                                                                                                                                                                                                                                                                                                     |
 | `matrix/`                                                                                                                           | opérations matricielles                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `units/`                                                                                                                            | unités physiques (`parse`, `format`, conversions, `selectBestUnit`) — doc : `units/README.md`, notation : [notation-unites.md](../../pratiques/notation-unites.md)                                                                                                                                                                                                                                                                                     |
+| `units/`                                                                                                                            | unités physiques (`parse`, `format`, conversions, `selectBestUnit`) — doc : `units/README.md`, notation : [notation-unites.md](../../pratiques/notation-unites.md), contrat : [grandeurs.md](../grandeurs.md)                                                                                                                                                                                                                                          |
 | `dimensional/`                                                                                                                      | analyse dimensionnelle                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | **Raconter**                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `pedagogical-simplify/`                                                                                                             | `generatePedagogicalSimplifySteps` : quatre intentions (`SimplifyIntent`)                                                                                                                                                                                                                                                                                                                                                                              |
@@ -284,6 +284,24 @@ garde-fou vérifie `S = ℝ` contre le moteur (`solve-steps-check.ts`, qui ne pr
 du moteur, statut `no-solution` + `error`, pour un ∅). Les modèles de questions n'ont pas encore
 de `generatedSteps.kind` pour la valeur absolue (PR suivante). Tests :
 `pedagogical-solve/__tests__/valeur-absolue.test.ts`, `atelier/__tests__/resoudre-valeur-absolue.test.ts`.
+
+Écart V43 (2026-10-13) : **une identité résolue « dans » un intervalle** rendait tout
+l'intervalle, valeurs interdites comprises (`.résoudre \frac{|x|-2}{|x|-2}=1 dans [-5;5]` →
+`[-5 ; 5]`, `\frac{3x}{3x}=1 dans [-1;1]` → `[-1 ; 1]`). Le domaine de `solve` était exact
+(`ℝ \ {−2 ; 2}`, zéros de |u| − c lus par `invertMonotone` dans `domain/compute.ts`) : c'est la
+branche « identité » de `solveInInterval` (`cli/commands/solve.command.ts`) qui ne le lisait pas.
+Elle rend maintenant le domaine de `solve` intersecté avec l'intervalle, mis en forme par
+`normalizeExcludedPoints` (exporté de `domain/compute.ts` : point hors de l'intervalle effacé,
+point sur une borne qui l'ouvre — `\frac{2x}{2x}=1 dans [0;1]` → `]0 ; 1]`), et refuse
+(« Je ne sais pas encore résoudre ») un domaine à exclusion périodique, qu'`intersect` perdait
+(`\frac{\sin x}{\sin x}=1 dans [-1;3]` gardait 0). Tests :
+`cli/commands/__tests__/identite-dans-intervalle.test.ts`.
+Écart V45 (2026-10-13, en partie) : quand `computeDomain` ne résout pas une contrainte
+(`unresolved` : `x^5 − x + 1 ≠ 0`, deux exclusions périodiques croisées), `solve` le dit dans
+`SolveResult.domainUnresolved` (absent si le domaine est exact) et la console refuse une
+identité sur un tel domaine, avec ou sans `dans`, au lieu de « S = ℝ » ou de tout l'intervalle.
+Reste (V45) : les solutions finies ne sont pas vérifiées contre ces contraintes, et les autres
+lecteurs de `solve` ignorent le champ. Les inéquations ne lisent pas le domaine (V47).
 
 ### Carte du code
 
@@ -918,6 +936,7 @@ Décisions de module, toujours en vigueur (ex-`decisions.md` de juin, revérifi�
 - [convention-equivalence.md](convention-equivalence.md) — ce que `areEquivalent` veut dire.
 - [pattern-matching.md](pattern-matching.md) — le module `pattern`.
 - [notation-unites.md](../../pratiques/notation-unites.md) — écrire une grandeur.
+- [grandeurs.md](../grandeurs.md) — lire, calculer, écrire une grandeur : le contrat unique.
 
 ## Glossaire technique
 

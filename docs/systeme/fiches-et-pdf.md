@@ -197,6 +197,8 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
   porte `per_student_values_notice`, affiché par `CorrectionManager`.
 - Le signalement d'erreur d'un élève enregistre la version et la graine de SA copie
   (`worksheetExerciseSeed`, 31 bits, tient dans `worksheet_error_reports.seed`).
+  Seuls le prof et l'admin traitent le signalement (statut, relu par, date, réponse) : la base le
+  refuse à l'élève (`20261016101700`).
 - Groupes de niveau : la même fiche affectée plusieurs fois, chaque affectation visant ses élèves
   nommément ; un élève ne lit pas l'affectation d'un autre groupe.
 - Le réglage par exercice « Mode de variante » (`variant_mode`) est retiré de l'interface et n'est

@@ -1,5 +1,5 @@
 /**
- * L'écriture d'une réponse de Calcul (phase 0 `docs/wip/grandeurs-phase0.md`,
+ * L'écriture d'une réponse de Calcul (phase 0 `docs/archive/wip/grandeurs-phase0.md`,
  * lot B, validée par David le 2026-10-11).
  *
  * Mesuré avant : `π/3` s'affichait « 1/3π » en ligne — le texte du moteur

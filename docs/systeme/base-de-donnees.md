@@ -252,6 +252,10 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   affectation (`guided` par défaut, `intermediate`, `autonomous`) — [ADR 0023](../adr/0023-copie-d-une-fiche-niveau-de-guidage-par-affectation.md).
   L'élève visé lit celui de sa propre affectation, jamais celui d'un autre groupe (test :
   `tests/integration/worksheet-assignment-guidance-level.test.ts`).
+- `worksheet_error_reports` (signalement d'un élève sur un exercice de fiche) : l'élève le crée en
+  attente et n'en change que la description (pas d'affectation, d'exercice ni d'auteur) ; `status`, `reviewed_by`, `reviewed_at` et `response` sont
+  au prof et à l'admin (déclencheur `guard_worksheet_error_report_teacher_fields`,
+  `20261016101700`, test `tests/integration/signalement-fiche-champs-du-prof.test.ts`).
 - `worksheet_instances` : exercices générés par élève (graine déterministe).
 
 **L'accès est hérité, jamais distribué** : `student_has_worksheet_access` part de
@@ -320,8 +324,9 @@ Exercices, fichiers et carnets Python, exécutés dans le navigateur (Pyodide). 
 - `python_exercises` → `python_exercise_assignments`, `python_exercise_submissions`,
   `python_exercise_mastery` ; `python_files` (+ affectations) ; `python_notebooks` →
   `python_notebook_assignments`, `python_notebook_checkpoint_runs`.
-- `python_submission_server_verdicts` : existe en prod mais **inerte** — la re-vérification serveur a
-  été abandonnée ([ADR 0010](../adr/0010-pas-de-reverification-serveur-python.md)).
+- `python_submission_server_verdicts` (verdicts de la re-vérification serveur, abandonnée par
+  l'[ADR 0010](../adr/0010-pas-de-reverification-serveur-python.md)) : vide et inerte, **supprimée**
+  le 2026-10-13 avec `run_flag_stale_python_rechecks` (migration `20261016101700`).
 
 Accès : l'élève lit et soumet ses propres soumissions, le professeur lit celles de tous les élèves.
 Un carnet est lu par son auteur, par l'élève à qui il est assigné (`is_notebook_assigned_to_student`,
@@ -345,6 +350,11 @@ Deux systèmes distincts, à ne pas confondre :
 Accès : on lit les messages des conversations dont on est participant, et ceux qu'on a envoyés ou
 reçus ; le professeur lit la messagerie pour la modérer et supprime (logiquement) les messages des
 chats de classe ; l'admin lit tout.
+
+Écriture (`20261016101500`, `20261016101600`) : un message envoyé ne se réécrit plus. Les
+rôles de l'API ne peuvent modifier que `private_messages.deleted_by_sender` et
+`message_inbox.read_at` / `deleted` (droits par colonne) ; statut, dossier et étoile passent
+par des fonctions SECURITY DEFINER. Détail : [messagerie-et-moderation.md](messagerie-et-moderation.md).
 
 Pièces jointes de la messagerie (`20261016101300`) : bucket **privé** `message-attachments`
 (10 Mo, comme la contrainte `file_size` de la table ; JPEG, PNG, WebP, HEIC, PDF), **sans policy sur `storage.objects`** : seul le client
@@ -490,7 +500,8 @@ authenticated` ne part qu'après le `deploy:prod` qui livre la route (sinon la p
   sérialisation à clés triées.
 - **Une colonne masquée ne se fait pas par `REVOKE` de colonne** : un rôle sans SELECT au niveau
   table reçoit `42501` sur un `select('*')`, ce qui casse PostgREST. Pour cacher des données à l'élève,
-  une table annexe sans policy élève (c'est ce que fait `python_submission_server_verdicts`).
+  une table annexe sans policy élève (c'était le choix de `python_submission_server_verdicts`, supprimée
+  depuis).
 - **`curriculum_points` : cinq des six clés étrangères qui le visent sont en CASCADE** ; supprimer un
   point effacerait sans un mot la couverture du cahier de texte et l'acquisition des élèves. On
   archive.
