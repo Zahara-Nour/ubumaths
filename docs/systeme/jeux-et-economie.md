@@ -72,9 +72,12 @@ commenté).
 | **Énigmes**          | `src/routes/(protected)/dashboard/student/riddles/+page.svelte` | `src/routes/api/riddles/[id]/submit/+server.ts` ; validation `src/lib/utils/riddle-validator.ts`                                      | oui, par `submit_riddle_attempt`              |
 
 Côté prof, les énigmes se gèrent sous `src/routes/(protected)/dashboard/teacher/contenu/enigmes/`
-(création, énigme du jour, validation des réponses libres, stats). L'énigme du jour est choisie
-par `src/lib/server/riddle-auto-select.ts` via `src/routes/api/riddles/auto-select-daily/+server.ts`
-(appelable par l'admin ; `vercel.json` n'a aucun cron).
+(création, énigme du jour, validation des réponses libres, stats). L'énigme du jour, quand le prof n'en
+a pas programmé, est choisie par `src/lib/server/riddle-auto-select.ts` (énigme publiée, absente
+des 30 derniers jours, difficulté tournante) via `src/routes/api/cron/riddle-of-the-day/+server.ts` :
+cron Vercel chaque jour à 00:05 UTC, ou bouton admin. Elle écrit avec le client service (la
+policy d'INSERT de `riddle_of_the_day` exige `selected_by = auth.uid()`) et ne remplace jamais
+une énigme choisie à la main. `api/riddles/auto-select-daily` ne garde que le GET de statut.
 
 ### Démineur : tournois et multijoueur
 

@@ -230,7 +230,7 @@ Cet index cite chaque module sans le décrire : il ne le couvre pas pour la gard
 | `vip-card-grants.ts`        | Écritures de cartes VIP réservées au serveur                                              | `vip-cards/choose`, `vip-cards/exchange`                  | —                                      | [jeux-et-economie.md](jeux-et-economie.md) |
 | `vip-card-context.ts`       | Une carte est-elle auto-activable dans ce contexte ?                                      | `vip-cards/activate-add-gidouilles`, `choose`, `exchange` | —                                      | [jeux-et-economie.md](jeux-et-economie.md) |
 | `reward-journal-balance.ts` | Solde de gidouilles après chaque événement du journal                                     | `rewards/journal`                                         | —                                      | [jeux-et-economie.md](jeux-et-economie.md) |
-| `riddle-auto-select.ts`     | Choix automatique de l'énigme du jour                                                     | `riddles/auto-select-daily`                               | —                                      | [jeux-et-economie.md](jeux-et-economie.md) |
+| `riddle-auto-select.ts`     | Choix automatique de l'énigme du jour                                                     | `cron/riddle-of-the-day`                                  | —                                      | [jeux-et-economie.md](jeux-et-economie.md) |
 | `riddle-messages.ts`        | Message au prof pour valider une réponse d'énigme                                         | `riddles/[id]`                                            | `…/enigmes/validations/[id]`           | —                                          |
 | `riddle-solutions.ts`       | Solutions des énigmes (`riddle_solutions`) : côté élève, lues au client service seulement | `riddles/[id]/submit`                                     | pages énigmes élève et prof            | [jeux-et-economie.md](jeux-et-economie.md) |
 | `buddy-queries.ts`          | Requêtes du compagnon (Palotin)                                                           | `student/buddy`                                           | `buddy-xp-service.ts`                  | [buddy-palotins.md](buddy-palotins.md)     |
@@ -243,10 +243,12 @@ Cet index cite chaque module sans le décrire : il ne le couvre pas pour la gard
 
 ## 3. Tâches planifiées
 
-**Une seule tâche planifiée côté Vercel** (2026-10-13) : `/api/cron/deleted-account-files`,
+**Deux tâches planifiées côté Vercel** (2026-10-13) : `/api/cron/riddle-of-the-day`, chaque jour
+à 00:05 UTC, qui choisit l'énigme du jour si le prof n'en a pas programmé (`src/lib/server/riddle-auto-select.ts`,
+client service) ; et `/api/cron/deleted-account-files`,
 le dimanche à 04:00 UTC (`vercel.json`), qui retire du storage les fichiers des comptes supprimés
 (`src/lib/server/deleted-account-files.ts`) et les pièces jointes de la messagerie restées sans ligne en base (`sweepOrphanMessageAttachments`) ; le SQL ne peut pas toucher au storage
-(`protect_objects_delete`, pas de `pg_net`). Elle s'authentifie par `Bearer CRON_SECRET` seul
+(`protect_objects_delete`, pas de `pg_net`). Les deux s'authentifient par `Bearer CRON_SECRET` seul
 (`verifyCronAuth`, `src/lib/server/auth/cron.ts`) : Vercel envoie ce jeton à ses crons, et
 l'en-tête `x-vercel-cron`, que n'importe qui peut envoyer, n'ouvre plus rien. Le reste du
 travail périodique vit dans **pg_cron**, programmé **hors migrations** (le baseline crée l'extension et la vue `admin_pg_cron_jobs`, pas les jobs). État en production, lu le 2026-10-10 (`cron.job`, MCP Supabase en lecture seule) :
@@ -270,7 +272,7 @@ Côté GitHub Actions (planifiés, hors application) : `.github/workflows/produc
 
 ## 4. Écarts connus
 
-1. **Énigme du jour : aucun déclencheur automatique, et une sélection qui ne peut pas écrire.** `api/riddles/auto-select-daily` n'est planifié nulle part (pas de cron Vercel, pas de job pg_cron) ; seul le bouton admin l'appelle. Depuis le constat RGPD 9bis, la route exige `Bearer CRON_SECRET` (`verifyCronAuth`, `src/lib/server/auth/cron.ts`) : l'ancienne clé `VITE_RIDDLE_AUTO_SELECT_API_KEY`, absente en prod, laissait passer tout POST, qui écrivait le journal des tâches par le client service. Reste : la sélection écrit `riddle_of_the_day` avec le client de l'appelant et `selected_by = null`, que la policy d'INSERT (`selected_by = auth.uid()`) refuse à tout le monde — mesuré en prod le 2026-10-13, 0 exécution au journal.
+1. ✅ **Énigme du jour** (2026-10-13) : la sélection automatique n'était planifiée nulle part, sa route acceptait tout POST quand `VITE_RIDDLE_AUTO_SELECT_API_KEY` manquait (cas de la prod, constat RGPD 9bis), et son écriture avec le client de l'appelant (`selected_by = null`) était refusée à tous par la policy d'INSERT. Elle vit désormais dans `api/cron/riddle-of-the-day` : cron Vercel quotidien, `Bearer CRON_SECRET`, client service.
 2. ✅ **`run_flag_stale_python_rechecks` supprimé** (2026-10-13, migration `20261016103000`) : jamais programmé, il ne faisait que compter les lignes `pending` de `python_submission_server_verdicts`, table vide que rien n'alimentait (re-vérification Python abandonnée, ADR 0010). Table et fonction supprimées.
 3. ✅ **Liste blanche service role** (2026-10-13) : `'/api/cleanup/'`, sans route, retiré ; `'/api/cron/'` sert de nouveau (`api/cron/deleted-account-files`). Le commentaire de `api/admin/cron/trigger` cite la vraie route HTTP. Le contrôle n'est qu'un avertissement de dev.
 4. **Deux `requireAuth` homonymes** aux signatures différentes : `src/lib/server/auth.ts` (`user`, redirige) et `src/lib/server/middleware/auth.ts` (`locals`, 401). Et 91 endpoints refont une garde à la main au lieu du middleware (§ 1.1).

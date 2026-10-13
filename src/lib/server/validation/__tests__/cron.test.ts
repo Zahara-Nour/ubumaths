@@ -130,7 +130,7 @@ describe('ALLOWED_JOB_PATHS', () => {
 	it('should contain expected job paths', () => {
 		// Cron jobs migrated from HTTP routes (/api/cron/*, /api/cleanup/all) to
 		// pg_cron RPC functions; only the riddle auto-select stays an HTTP endpoint.
-		expect(ALLOWED_JOB_PATHS).toContain('/api/riddles/auto-select-daily');
+		expect(ALLOWED_JOB_PATHS).toContain('/api/cron/riddle-of-the-day');
 		expect(ALLOWED_JOB_PATHS).toContain('rpc:run_daily_summaries');
 		expect(ALLOWED_JOB_PATHS).toContain('rpc:run_cleanup_all');
 	});

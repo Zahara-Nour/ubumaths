@@ -55,7 +55,8 @@ export type CronJobsQuery = z.infer<typeof cronJobsQuerySchema>;
  * - RPC paths: rpc:function_name (pg_cron database functions)
  */
 const ALLOWED_JOB_PATHS = [
-	'/api/riddles/auto-select-daily',
+	// Énigme du jour (cron Vercel quotidien, vercel.json)
+	'/api/cron/riddle-of-the-day',
 	// Fichiers des comptes supprimés (cron Vercel hebdomadaire, vercel.json)
 	'/api/cron/deleted-account-files',
 	// pg_cron jobs (database RPC functions)

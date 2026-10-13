@@ -412,3 +412,9 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   sélection elle-même échoue pour tous (policy d'INSERT `selected_by = auth.uid()`, la route
   écrit `null`), 0 exécution au journal. Correctif : `verifyCronAuth` (code seul, 4 tests
   rouges sans lui). La sélection automatique reste morte : question produit pour David.
+- **Énigme du jour automatique (décision de David, 2026-10-13 : « je veux la garder »)** —
+  branche `fix/enigme-du-jour-auto` : route `api/cron/riddle-of-the-day` (GET cron Vercel
+  quotidien 00:05 UTC, POST bouton admin), `Bearer CRON_SECRET`, sélection par le client
+  service (seule façon d'écrire sans compte ; ne choisit que des énigmes publiées). Prod :
+  1 énigme publiée, 0 énigme du jour jamais posée → la tâche réussira le 1er jour, puis
+  échouera (« Aucune énigme éligible ») 30 jours, faute d'autre énigme publiée.

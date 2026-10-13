@@ -5,7 +5,10 @@
 			"production": true
 		}
 	},
-	"crons": [{ "path": "/api/cron/deleted-account-files", "schedule": "0 4 * * 0" }],
+	"crons": [
+		{ "path": "/api/cron/deleted-account-files", "schedule": "0 4 * * 0" },
+		{ "path": "/api/cron/riddle-of-the-day", "schedule": "5 0 * * *" }
+	],
 	"ignoreCommand": "bash scripts/vercel-ignore-build.sh",
 	"headers": [
 		{
