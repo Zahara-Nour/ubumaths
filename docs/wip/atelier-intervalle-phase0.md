@@ -1,7 +1,7 @@
 ---
 title: Atelier — une fonction définie sur un intervalle (phase 0)
 date: 2026-10-13
-status: lots 1 à 3 livrés (#1305, #1307, #1315, 2026-10-13) ; questions a-g ouvertes
+status: lots 1 à 3 livrés ; décisions a-g du 2026-10-13 à livrer ; c) = futur chantier (composées)
 ---
 
 # Atelier — une fonction définie sur un intervalle
@@ -104,3 +104,15 @@ Puis le lot 3 de la réciproque (carte `f⁻¹` portant son ensemble).
   l'ensemble écartés ; f′ restreinte, tangente non. Questions pour David : (f) l'aire sous la
   courbe (`.intégrer`, carte) reste libre hors de l'ensemble ; (g) le lien de projection
   `?f=x^2 sur [0;+∞[` est refusé (« ne se trace pas ») — `atelierFromCurves` ne lit pas « sur ».
+- 2026-10-13 — **DÉCISIONS DE DAVID** (« je valide pour les intervalles ») :
+  - a) `.domaine f` donne l'intervalle choisi et rappelle l'ensemble naturel s'il diffère (« f est
+    définie sur [0 ; +∞[ (ensemble choisi) ; sans ce choix, elle le serait sur ℝ ») ;
+  - b) `.intégrer f de a à b`, `.évaluer f en x=…` hors de l'ensemble → refus, même message que `f(5)` ;
+  - c) `f(2x)` reste REFUSÉ pour l'instant — ⚠️ **FUTUR CHANTIER demandé par David** : domaine d'une
+    composée f(u(x)) = {x : u(x) ∈ ensemble de f}, règle générale (phase 0 à écrire) ;
+  - d) une fonction qui cite f (`g(x) = f(x) + 1`) HÉRITE de l'intervalle de f (intersection si
+    plusieurs) — corrige l'incohérence `.résoudre g(x)=5` → {−2 ; 2} vs `f(x)+1=5` → 2 ;
+  - e) `.variations … dans [a;b]` gardé ;
+  - f) tangente refusée hors de l'ensemble (acceptée aux bornes fermées) ; aire sous la courbe
+    refusée si [a ; b] sort de l'ensemble ;
+  - g) le lien `?f=… sur …` lit « sur » (petite PR).

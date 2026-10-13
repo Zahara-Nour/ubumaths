@@ -145,3 +145,13 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
   (4) pas de Réciproque sur f′ ni de Dériver sur f⁻¹, OK ? ; (5) refus de sin x qui propose
   [−π/2 ; π/2] sans arcsin (reco : ne pas proposer). Suite : paramètres sans carte (discussion par
   cas, décidée). Constat hors lot : `g(x) = f(x)^-1` puis `g(2)` → « Fonction inconnue : g ».
+- 2026-10-13 — **DÉCISIONS DE DAVID** (« oui ») sur les questions (1)-(5) :
+  - (1) `f⁻¹` / `f^-1` / `f^{-1}` tapé dans Calcul = la réciproque, **calculée à la volée comme
+    `f'`** (`expandDerivatives`, engine.ts) — AUCUNE carte requise ; f non bijective → même refus que
+    `.réciproque f` ; `f⁻¹(5)` hors du départ → refus comme `f(5)` ; `g(x) = f⁻¹(x)` suit f ;
+    l'inverse 1/f s'écrit `1/f(x)`. Remplace le refus honnête provisoire de #1328.
+  - (2) `.réciproque 2x+3` sans carte : ligne seule, gardé.
+  - (3) droite y = x grise en pointillés, tracée d'office quand f ET f⁻¹ sont affichées (pas une carte).
+  - (4) pas de Réciproque sur f′ ni de Dériver sur la carte f⁻¹ (`.dériver f⁻¹` suffit via (1)).
+  - (5) sin : le refus dit la vérité (bijective sur [−π/2 ; π/2], réciproque arcsin, que Chiphre ne
+    sait pas encore calculer) sans proposer une commande qui échouerait.
