@@ -292,7 +292,9 @@ lignes et tient « zéro ligne » pour un 404, jamais pour un succès.
 **Réglages d'affichage.** Le texte enregistré (`dsl_script`) est exactement le contenu d'un bloc
 ` ```figure ` : en-tête, `---`, script. **Sans `---`, script nu** : affichage historique (toile
 520 × 520, 640 × 560 sur la page publique, 40 px par unité, origine au centre, grille et
-graduations de la toile, objets déplaçables). Avec un en-tête, `parseFigureContent(texte,
+graduations de la toile, objets déplaçables). Régler un premier champ du formulaire fait naître
+l'en-tête qui garde cet affichage (`withBareScriptHeader` : `fenetre: -6.5 ; 6.5 ; -6.5 ; 6.5`,
+`taille: grande`, `axes: oui`, `grille: 1 ; 1`, `deplacable: oui`), puis écrit le champ. Avec un en-tête, `parseFigureContent(texte,
 { interactive: true })` (le parseur du bloc, sans doublon) lit `fenetre:` (facultative ici : sans
 elle, origine au centre et 40 px par unité), `taille:`, `axes:`, `grille:`, `graduations:`,
 `description:`, et deux clés **réservées aux figures interactives** : `deplacable: oui|non`
