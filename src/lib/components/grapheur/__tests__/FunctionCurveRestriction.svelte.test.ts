@@ -58,7 +58,14 @@ describe('FunctionCurve — restreinte à un ensemble', () => {
 		const stroke = getComputedStyle(path).stroke;
 		expect(getComputedStyle(closed[0]).fill).toBe(stroke);
 		expect(getComputedStyle(open[0]).stroke).toBe(stroke);
-		expect(getComputedStyle(open[0]).fill).not.toBe(stroke);
+		// L'intérieur du creux vaut le fond du graphe (le noir par défaut d'un cercle SVG ne passe pas)
+		const probe = document.createElement('div');
+		probe.style.color = 'var(--color-graph-bg)';
+		document.body.append(probe);
+		const background = getComputedStyle(probe).color;
+		probe.remove();
+		expect(getComputedStyle(open[0]).fill).toBe(background);
+		expect(background).not.toBe('rgb(0, 0, 0)');
 	});
 
 	it('1/x sur ]0;5] : un seul point, plein, en 5', async () => {

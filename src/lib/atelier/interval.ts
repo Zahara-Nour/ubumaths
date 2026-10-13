@@ -210,7 +210,8 @@ export function intervalDomainOf(object: AtelierObject | undefined): Domain | nu
  */
 export function plotRestrictionOf(object: AtelierObject | undefined): CurvePiece[] | undefined {
 	const domain = intervalDomainOf(object);
-	if (domain === null) return undefined;
+	// `sur ℝ` équivaut à pas d'ensemble : rien à poser
+	if (domain === null || isUniversal(domain)) return undefined;
 	const expanded = expandExcludedPoints(domain);
 	if (expanded.kind !== 'interval_set') return undefined;
 	const pieces = expanded.intervals.map((interval) => ({
