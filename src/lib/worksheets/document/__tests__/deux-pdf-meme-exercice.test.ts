@@ -442,12 +442,25 @@ describe('titre d’exercice : fonctions déclarées et sens de AB de l’exerci
 		expect(typst).toContain("Coût marginal $C'( x )$");
 	});
 
-	it('sens de AB : longueur dans le titre comme dans l’énoncé', () => {
-		const { input } = withTitle("Le segment ~A'B'~", null, "Calculer ~A'B'~.");
-		input.instance.exercises[0].capital_pairs = 'length';
-		const typst = generateWorksheetTypst({ ...input, mode: 'worksheet' });
-		expect(typst).not.toContain('Unexpected token');
-		expect(typst).toContain("Le segment $A'B'$");
+	it('sens de AB : le titre suit le sens de l’exercice, comme l’énoncé', () => {
+		const formulas = (capitalPairs: 'length' | 'product') => {
+			const { input } = withTitle("Le segment ~A'B'C~", null, "Calculer ~A'B'C~.");
+			input.instance.exercises[0].capital_pairs = capitalPairs;
+			const typst = generateWorksheetTypst({ ...input, mode: 'worksheet' });
+			return {
+				title: typst.match(/Le segment (\$[^$]*\$)/)?.[1],
+				statement: typst.match(/Calculer (\$[^$]*\$)/)?.[1]
+			};
+		};
+		const length = formulas('length');
+		const product = formulas('product');
+		expect(length.title).toBeDefined();
+		expect(product.title).toBeDefined();
+		// Chaque sens : le titre comme l'énoncé
+		expect(length.title).toBe(length.statement);
+		expect(product.title).toBe(product.statement);
+		// Et les deux sens s'impriment différemment
+		expect(length.title).not.toBe(product.title);
 	});
 
 	it('titre sans maths : texte simple', () => {
