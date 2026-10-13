@@ -44,6 +44,34 @@ describe('une fonction définie avec max ou min dans Calcul', () => {
 	});
 });
 
+/**
+ * Revue : la virgule n'est convertie que dans la saisie de l'élève. Le texte que
+ * le moteur réécrit (`toCustom` : `max(2,3)`, relu en provenance `'url'`) garde
+ * sa virgule séparatrice — sinon `max(a,b)` valait max(1.2).
+ */
+describe('le texte réécrit par le moteur garde ses séparateurs', () => {
+	it.each([
+		[['a = 1', 'b = 2', 'f(x) = max(a,b)+x'], 'f(0)', '2'],
+		[['g(x) = max(2;3)*x'], 'g(1)', '3'],
+		[['f(x) = x^2'], "max(2;3)+f'(0)", '3'],
+		[['p = 3', 'g(x) = max(p;2)'], 'g(0)', '3'],
+		[['f(x) = gcd(12;18)+x'], 'f(0)', '6']
+	])('%j puis %s répond %s', (lines, call, expected) => {
+		const s = session();
+		for (const line of lines) runInput(s, line);
+
+		expect(answer(s, call)).toBe(expected);
+	});
+
+	// Comme sur une ligne de calcul : un seul argument décimal est refusé
+	it('f(x) = max(1,2)+x est refusée avec la forme à « ; »', () => {
+		const result = runInput(session(), 'f(x) = max(1,2)+x');
+
+		expect(result.kind).toBe('refus');
+		expect(result.kind === 'refus' && result.message).toContain('max(1 ; 2)');
+	});
+});
+
 describe('max et min dans le champ de la carte', () => {
 	/** Le champ d'une fonction définie dans Calcul. */
 	function field(definition: string): string {

@@ -144,6 +144,9 @@ export function mixedNotationMessage(text: string): string | null {
 		: null;
 }
 
+/** Les provenances qui sont la saisie de l'élève, virgule décimale et « ; » compris. */
+const STUDENT_TYPED: ReadonlySet<Provenance> = new Set(['text', 'paste', 'command']);
+
 function parseByProvenance(
 	rawDefinition: string,
 	provenance: Provenance,
@@ -159,7 +162,9 @@ function parseByProvenance(
 	if (readingMode(provenance) === 'latex') {
 		return parseLatexSafe(argumentSemicolonsLatex(typed), { genericFunctions });
 	}
-	const definition = decimalCommaInput(typed);
+	// ⚠️ La saisie de l'élève seulement : `'url'` relit aussi le texte du moteur
+	// (`toCustom` écrit `max(2,3)`), dont la virgule n'est pas décimale (revue)
+	const definition = STUDENT_TYPED.has(provenance) ? decimalCommaInput(typed) : typed;
 
 	const detected = detectInputFormat(definition);
 	if (detected.format === 'latex' && detected.confidence > 0.5) {
