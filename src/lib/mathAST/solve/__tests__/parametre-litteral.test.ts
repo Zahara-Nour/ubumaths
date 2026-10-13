@@ -10,7 +10,8 @@
  * paramètre, SANS condition sur lui (aucun solveur n'en écrit). Quand la
  * valeur dépend du signe ou de la taille du paramètre (e^x = 1/a n'a de
  * solution que si a > 0, cos x = 1/a que si |a| ≥ 1), le solveur refuse :
- * un refus honnête plutôt qu'une valeur fausse.
+ * un refus honnête plutôt qu'une valeur fausse (depuis le 2026-10-13, e^x = 1/a
+ * est résolue avec la condition a > 0 : voir la fin du fichier).
  *
  * tan u = c a une solution pour tout c : `a\\tan x = 1` est résolue.
  *
@@ -134,20 +135,37 @@ describe('V41 — coefficient littéral devant tan : arctan(c) + kπ', () => {
 
 describe('V41 — cas frères refusés plutôt qu’une valeur fausse', () => {
 	it.each([
-		'a e^x=1',
-		'k e^x=2',
-		'a\\exp(x)=1',
 		'a\\cos x=1',
 		'a\\sin x = 1',
-		// Second membre littéral : refus inchangé
-		'\\ln x = a',
 		'a\\ln x+b=1',
-		// ln(ax) est développé en ln a + ln x (a > 0) : pour a < 0, e/a existe
-		'\\ln(ax)=1',
 		'\\ln(x^a)=1',
 		'a\\ln(x^2)=1',
 		'a\\sin(x^2)=1'
 	])('%s : refus', (latex) => {
 		expect(isSolverFailure(solve(relationOf(latex), { variable: 'x' })), latex).toBe(true);
+	});
+});
+
+// =============================================================================
+// Depuis le lot 1 « réciproque » (2026-10-13) : la condition est écrite
+// =============================================================================
+
+describe('second membre ou coefficient littéral : résolu, avec la condition sur le paramètre', () => {
+	// e^x = 1/a n'a de solution que si a > 0 : la solution porte `a > 0`
+	// (`Solution.condition`, voir second-membre-litteral.test.ts). ln x = a et
+	// ln(ax) = 1 (lue sur l'équation écrite : ax = e) n'en ont pas besoin.
+	it.each([
+		['a e^x=1', 'a>0'],
+		['k e^x=2', 'k>0'],
+		['a\\exp(x)=1', 'a>0'],
+		['\\ln x = a', undefined],
+		['\\ln(ax)=1', 'a\\neq0']
+	])('%s : condition %s', (latex, condition) => {
+		const VALUES =
+			condition === undefined || condition.includes('neq') ? [2, 3, -1.5, 0.25] : [2, 3, 0.25];
+		solvedForEveryParameter(latex, VALUES);
+		const result = solve(relationOf(latex), { variable: 'x' });
+		const written = result.solutions[0].condition;
+		expect(written && toLatex(written).replace(/\s+/g, '')).toBe(condition);
 	});
 });

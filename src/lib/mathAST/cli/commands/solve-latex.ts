@@ -326,6 +326,20 @@ export function periodicSolutionsText(result: SolveResult): string | null {
 }
 
 /**
+ * La condition sur les paramètres que portent TOUTES les solutions (x² = y :
+ * y ≥ 0 sur les deux), écrite une seule fois ; `undefined` si aucune ou si
+ * elles diffèrent (chaque solution porte alors la sienne).
+ */
+export function commonCondition(solutions: readonly Solution[]): MathNode | undefined {
+	const [first] = solutions;
+	if (first?.condition === undefined) return undefined;
+	const latex = toLatex(first.condition);
+	return solutions.every((s) => s.condition !== undefined && toLatex(s.condition) === latex)
+		? first.condition
+		: undefined;
+}
+
+/**
  * Le LaTeX des solutions d'un résultat du solveur — ou `null` quand il n'y a
  * rien de sûr à écrire (échec du solveur, statut inconnu) : l'appelant garde
  * alors le texte, qui EXPLIQUE l'échec.
@@ -340,13 +354,20 @@ export function solutionsLatex(result: SolveResult): string | null {
 			// Une famille qu'on ne sait pas écrire : ne pas la faire passer pour
 			// un nombre fini de solutions
 			if (result.periodicSolutions !== undefined) return null;
-			const values = sorted(result.solutions).map((s) => toLatex(tidyValue(s.value)));
+			const ordered = sorted(result.solutions);
+			const common = commonCondition(ordered);
+			const values = ordered.map(
+				(s) =>
+					toLatex(tidyValue(s.value)) +
+					(common === undefined && s.condition ? ` \\text{ si } ${toLatex(s.condition)}` : '')
+			);
+			const suffix = common ? ` \\quad \\text{si } ${toLatex(common)}` : '';
 			if (values.length === 1) {
 				const [only] = result.solutions;
 				const logarithmic = logarithmicValueLatex(only.value, only.approximate);
-				return `${result.variable} = ${logarithmic ?? values[0]}`;
+				return `${result.variable} = ${logarithmic ?? values[0]}${suffix}`;
 			}
-			return `S = \\left\\{ ${values.join(' \\,;\\, ')} \\right\\}`;
+			return `S = \\left\\{ ${values.join(' \\,;\\, ')} \\right\\}${suffix}`;
 		}
 		case 'infinite':
 			// Une identité sur un domaine (`x²/x = x`) : tout le domaine, pas ℝ

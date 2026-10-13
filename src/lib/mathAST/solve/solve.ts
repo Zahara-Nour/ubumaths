@@ -59,6 +59,7 @@ import type {
 } from './types';
 import { DEFAULT_SOLVE_OPTIONS, SolveError, isSolverFailure } from './types';
 import { trySubstitution } from './substitution';
+import { tryLiteralParameter } from './literal-parameter';
 import { trySinCosRatio } from './sin-cos-ratio';
 import { tryTrigEquality } from './trig-equality';
 import { mergePeriodicFamilies } from './periodic';
@@ -1127,14 +1128,16 @@ function tryExpLogRecursiveDecomposition(
 		}
 		uValues.push({ symbolic: inverseNode, numeric: Math.exp(constantNumeric) });
 	} else {
-		// log(u) = c → u = 10^c
+		// log_b(u) = c → u = b^c (b = 10 sans base écrite)
+		const base = extracted.logBase ?? number('10');
+		const baseNumeric = evaluateNodeToApproximatedNumber(base);
 		let inverseNode: MathNode;
 		if (constantNumeric === 0) {
 			inverseNode = number('1');
 		} else {
-			inverseNode = denormalize(normalize(superscript(number('10'), constantNode)));
+			inverseNode = denormalize(normalize(superscript(base, constantNode)));
 		}
-		uValues.push({ symbolic: inverseNode, numeric: Math.pow(10, constantNumeric) });
+		uValues.push({ symbolic: inverseNode, numeric: Math.pow(baseNumeric, constantNumeric) });
 	}
 
 	const recorder = createStepRecorder();
@@ -2352,6 +2355,13 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	if (isSolverFailure(result)) {
 		const numeratorOnly = tryConstantDenominator(expr, variable, opts);
 		if (numeratorOnly) result = numeratorOnly;
+	}
+	// Second membre littéral (`y = e^{2x+1}`) : on ôte une couche (exp, ln,
+	// racine), avec la condition sur le paramètre — voir `literal-parameter.ts`.
+	// Avant le changement de variable, qui lit la VALEUR de ses racines.
+	if (isSolverFailure(result)) {
+		const peeled = tryLiteralParameter(promotedEq, variable, opts, solve);
+		if (peeled) result = peeled;
 	}
 	if (isSolverFailure(result)) {
 		const substituted = trySubstitution(expr, variable, opts, solve);

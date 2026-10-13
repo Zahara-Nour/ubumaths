@@ -27,11 +27,13 @@ import {
 	equals,
 	variable as varNode,
 	sqrt as sqrtNode,
-	power
+	power,
+	greaterThanOrEqual
 } from '../../factory';
 import { denormalize, normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../../normal';
 import { describeCoefficients, describeDiscriminant, describeSolution } from '../descriptions-fr';
 import { computeNumericValue } from '../numeric-value';
+import { parameterCondition } from '../literal-parameter';
 
 // =============================================================================
 // Coefficient Extraction
@@ -317,6 +319,26 @@ export const quadraticSolver: EquationSolver = {
 			};
 		}
 
+		// Discriminant PARAMÉTRÉ (x² = y : Δ = 4y) : les deux racines n'existent
+		// que si Δ ≥ 0, condition portée par chaque solution (vide : aucune)
+		const parameters = getVariables(discriminantSimplified);
+		parameters.delete(variable);
+		const condition =
+			discriminantValue === null && !isDiscriminantZero && parameters.size > 0
+				? parameterCondition([greaterThanOrEqual(discriminantSimplified, number('0'))])
+				: null;
+		if (condition?.kind === 'never') {
+			return {
+				variable,
+				status: 'no-real-solution',
+				solutions: [],
+				equationType: 'quadratic',
+				strategy: 'algebraic',
+				steps: recorder.getStepsFiltered(options.verbosity)
+			};
+		}
+		const conditionField = condition?.kind === 'when' ? { condition: condition.node } : {};
+
 		// Compute solutions
 		const twoA = implicitMultiply(number('2'), a);
 		const negB = opposite(b);
@@ -412,12 +434,14 @@ export const quadraticSolver: EquationSolver = {
 			{
 				value: x1Simplified,
 				exact: true,
-				approximate: x1Approx
+				approximate: x1Approx,
+				...conditionField
 			},
 			{
 				value: x2Simplified,
 				exact: true,
-				approximate: x2Approx
+				approximate: x2Approx,
+				...conditionField
 			}
 		];
 
