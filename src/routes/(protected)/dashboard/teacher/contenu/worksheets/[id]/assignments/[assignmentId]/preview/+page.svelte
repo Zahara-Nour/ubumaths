@@ -85,6 +85,10 @@
 	// Preview metadata from API
 	let previewMode = $state<'teacher' | 'student'>('teacher');
 	let previewStudentName = $state<string | null>(null);
+	// Chaque élève a sa version (valeurs ou ordre, D6) : la vue prof s'appuie
+	// sur la copie d'un élève choisi (premier de la liste par défaut)
+	let perStudentCopies = $state(false);
+	let referenceStudentId = $state<string | undefined>(undefined);
 
 	// Modal state
 	let modalOpen = $state(false);
@@ -106,8 +110,19 @@
 			.sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 	]);
 
+	// Les élèves dont la copie peut servir de vue prof (déjà triés par nom)
+	let referenceStudentItems = $derived(studentOptions.filter((option) => option.value !== ''));
+
+	/** La vue prof montre la copie d'un élève : avertissement à l'écran et dans le PDF */
+	let showsIndividualCopy = $derived(previewMode === 'teacher' && perStudentCopies);
+
+	function handleReferenceStudentChange(value: string) {
+		referenceStudentId = value;
+		fetchPreview();
+	}
+
 	// Fetch preview data when student selection changes
-	async function fetchPreview() {
+	async function fetchPreview(): Promise<void> {
 		loading = true;
 		error = null;
 
@@ -118,6 +133,8 @@
 			);
 			if (selectedStudentId) {
 				url.searchParams.set('studentId', selectedStudentId);
+			} else if (referenceStudentId) {
+				url.searchParams.set('copyOf', referenceStudentId);
 			}
 
 			const response = await fetch(url.toString());
@@ -128,6 +145,19 @@
 			}
 
 			const responseData = await response.json();
+			// Vue prof d'une affectation individualisée sans élève de référence :
+			// on prend le premier de la liste et on redemande sa copie
+			const firstStudent = referenceStudentItems[0]?.value;
+			if (
+				!selectedStudentId &&
+				responseData.per_student_copies === true &&
+				!referenceStudentId &&
+				firstStudent
+			) {
+				referenceStudentId = firstStudent;
+				return fetchPreview();
+			}
+			perStudentCopies = responseData.per_student_copies === true;
 			worksheet = responseData as StudentWorksheetView;
 			previewMode = responseData.preview_mode || 'teacher';
 			previewStudentName = responseData.preview_student_name || null;
@@ -177,8 +207,10 @@
 			previewStudentName || undefined
 		);
 
+		// Copie d'un élève servant de vue prof : avertissement imprimé en tête (D6)
+		const individualCopyNotice = showsIndividualCopy;
 		const result = await generateAndDownloadPdf(
-			() => generateStudentWorksheetTypst(capturedWorksheet, ending),
+			() => generateStudentWorksheetTypst(capturedWorksheet, ending, { individualCopyNotice }),
 			filename
 		);
 
@@ -411,6 +443,25 @@
 						fitContent
 					/>
 				</div>
+				{#if showsIndividualCopy}
+					<!-- Chaque élève a sa version : la vue prof est la copie d'un élève (D6) -->
+					<div class="mt-3 flex flex-col gap-3 border-t pt-3 sm:flex-row sm:items-center">
+						<div class="shrink-0 text-sm font-medium">Copie de référence :</div>
+						<MySelect
+							type="single"
+							value={referenceStudentId}
+							onchange={handleReferenceStudentChange}
+							items={referenceStudentItems}
+							placeholder="Choisir un élève"
+							fitContent
+						/>
+					</div>
+					<p class="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+						<Info class="h-3.5 w-3.5" />
+						Chaque élève a sa propre version de cette fiche : cette vue reprend la copie de l’élève choisi
+						(son nom n’est pas imprimé), et le PDF avertit chaque élève de consulter sa correction personnelle.
+					</p>
+				{/if}
 			</Card.Content>
 		</Card.Root>
 	</div>
