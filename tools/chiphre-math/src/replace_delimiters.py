@@ -17,7 +17,7 @@ metrics, hard-coded):
   pieces join.
 
 Run after roughen_extras.py: this script works in place on
-static/fonts/shantell-katex/ and redraws each glyph from scratch, so running
+static/fonts/chiphre-math/ and redraws each glyph from scratch, so running
 it twice gives the same font. Writing to static/fonts/KaTeX_*.woff2 is
 refused: the original KaTeX fonts were overwritten that way on 2026-01-20.
 """
@@ -36,7 +36,7 @@ from fontTools.ttLib import TTFont
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "shantell-katex"
+OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "chiphre-math"
 ORIGINAL_DIR = REPO_ROOT / "static" / "fonts" / "katex-original"
 
 SIZE_FONTS = ["KaTeX_Size1-Regular", "KaTeX_Size2-Regular", "KaTeX_Size3-Regular", "KaTeX_Size4-Regular"]

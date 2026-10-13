@@ -5,7 +5,7 @@
 ### Installation
 
 ```bash
-cd tools/shantell-math
+cd tools/chiphre-math
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 pip install -r requirements.txt
@@ -36,7 +36,7 @@ python src/roughen_math.py \
 # 4. Convertir en WOFF2 pour le web
 python src/convert_woff2.py convert \
     fonts/output/ShantellMath-Regular-final.ttf \
-    -o ../../static/fonts/shantell-katex/KaTeX_Main-Regular.woff2
+    -o ../../static/fonts/chiphre-math/KaTeX_Main-Regular.woff2
 ```
 
 ---
@@ -177,7 +177,7 @@ font.save('fonts/input/shantell-sans-300.ttf')
 
 ```
 static/fonts/
-├── shantell-katex/           # Polices modifiées pour MathLive
+├── chiphre-math/           # Polices modifiées pour MathLive
 │   ├── KaTeX_Main-Regular.woff2
 │   ├── KaTeX_Main-Italic.woff2
 │   ├── KaTeX_Main-Bold.woff2
@@ -198,7 +198,7 @@ static/fonts/
 		if (browser) {
 			const mathlive = await import('mathlive');
 			// Utiliser les polices manuscrites
-			mathlive.MathfieldElement.fontsDirectory = '/fonts/shantell-katex';
+			mathlive.MathfieldElement.fontsDirectory = '/fonts/chiphre-math';
 		}
 	});
 </script>
