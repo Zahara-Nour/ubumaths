@@ -509,7 +509,7 @@ class MultiplayerStore {
 				if (this.pollErrorCount >= this.QUEUE_POLL_MAX_ERRORS) {
 					this.stopPolling();
 					this.error = 'Impossible de se connecter au serveur';
-					toaster.error('Problème de connexion. Veuillez réessayer.');
+					toaster.error('Problème de connexion. Réessayer.');
 				}
 			}
 		}, this.QUEUE_POLL_INTERVAL_MS);

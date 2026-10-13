@@ -344,7 +344,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({
 				status: 403,
-				body: { message: 'Vous ne pouvez pas faire une proposition sur votre propre annonce' }
+				body: { message: 'Impossible de faire une proposition sur sa propre annonce' }
 			});
 		});
 
@@ -394,7 +394,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({
 				status: 403,
-				body: { message: 'Vous ne possédez pas toutes les cartes spécifiées' }
+				body: { message: 'Certaines des cartes spécifiées manquent dans la collection' }
 			});
 		});
 
@@ -419,7 +419,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({
 				status: 403,
-				body: { message: "Vous n'avez pas assez de gidouilles" }
+				body: { message: 'Gidouilles insuffisantes' }
 			});
 		});
 
@@ -485,7 +485,7 @@ describe('/api/marketplace/listings/[id]/proposals', () => {
 				} as unknown as Parameters<typeof POST>[0])
 			).rejects.toMatchObject({
 				status: 403,
-				body: { message: 'Vous avez déjà une proposition en cours pour cette annonce' }
+				body: { message: 'Une proposition est déjà en cours pour cette annonce' }
 			});
 		});
 	});

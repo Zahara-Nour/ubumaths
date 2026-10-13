@@ -45,7 +45,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 	if (!hasAccess) {
-		throw error(403, 'Tu ne peux retirer des cartes VIP qu’aux élèves de tes classes');
+		throw error(403, 'Retrait de cartes VIP réservé aux élèves des classes du professeur');
 	}
 
 	const { data: result, error: rpcError } = await supabase.rpc('remove_vip_card', {

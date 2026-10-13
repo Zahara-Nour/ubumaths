@@ -500,7 +500,7 @@ describe('Rate Limiter (Database-backed)', () => {
 					// 11th request should be blocked
 					const result = await checkNotificationCreateRateLimit(userId, 'teacher');
 					expect(result.allowed).toBe(false);
-					expect(result.message).toContain('limite de création de notifications');
+					expect(result.message).toContain('Limite de création de notifications');
 					expect(result.retryAfter).toBeDefined();
 					expect(result.retryAfter).toBeGreaterThan(0);
 					expect(result.retryAfter).toBeLessThanOrEqual(3600);
@@ -516,7 +516,7 @@ describe('Rate Limiter (Database-backed)', () => {
 
 					const result = await checkNotificationCreateRateLimit(userId, 'teacher');
 					expect(result.allowed).toBe(false);
-					expect(result.message).toContain('Vous avez atteint la limite');
+					expect(result.message).toContain('Limite de création de notifications atteinte');
 					expect(result.message).toContain('notifications');
 				});
 
@@ -719,7 +719,7 @@ describe('Rate Limiter (Database-backed)', () => {
 					const result = await checkNotificationMarkRateLimit(userId);
 					expect(result.allowed).toBe(false);
 					expect(result.message).toContain('Trop de requêtes de marquage');
-					expect(result.message).toContain('patienter');
+					expect(result.message).toContain('Patienter');
 				});
 
 				it('should return retryAfter value when limit exceeded', async () => {
@@ -844,7 +844,7 @@ describe('Rate Limiter (Database-backed)', () => {
 					// 21st request should be blocked
 					const result = await checkNotificationDeleteRateLimit(userId, 'teacher');
 					expect(result.allowed).toBe(false);
-					expect(result.message).toContain('limite de suppression');
+					expect(result.message).toContain('Limite de suppression');
 					expect(result.retryAfter).toBeDefined();
 					expect(result.retryAfter).toBeGreaterThan(0);
 					expect(result.retryAfter).toBeLessThanOrEqual(3600);
@@ -901,7 +901,7 @@ describe('Rate Limiter (Database-backed)', () => {
 
 					const result = await checkNotificationDeleteRateLimit(userId, 'teacher');
 					expect(result.allowed).toBe(false);
-					expect(result.message).toContain('Vous avez atteint la limite');
+					expect(result.message).toContain('Limite de suppression de notifications atteinte');
 					expect(result.message).toContain('suppression');
 				});
 
@@ -1111,7 +1111,7 @@ describe('Rate Limiter (Database-backed)', () => {
 					const result = await checkNotificationDeleteRateLimit(userId, 'teacher');
 					expect(result.allowed).toBe(false);
 					expect(result.message).toContain('suppression');
-					expect(result.message).toContain('limite');
+					expect(result.message).toContain('Limite');
 				});
 			});
 		});

@@ -106,7 +106,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 		// panne doit se distinguer d'un refus mérité.
 		if (membershipError && membershipError.code !== 'PGRST116') {
 			logger.error('Contrôle d’accès impossible :', membershipError);
-			throw error(500, 'Impossible de vérifier votre accès');
+			throw error(500, 'Impossible de vérifier l’accès');
 		}
 
 		if (!membership) {
@@ -121,7 +121,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			// panne doit se distinguer d'un refus mérité.
 			if (conversationError && conversationError.code !== 'PGRST116') {
 				logger.error('Contrôle d’accès impossible :', conversationError);
-				throw error(500, 'Impossible de vérifier votre accès');
+				throw error(500, 'Impossible de vérifier l’accès');
 			}
 
 			if (!conversation) {
@@ -144,7 +144,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			// panne doit se distinguer d'un refus mérité.
 			if (participantsError && participantsError.code !== 'PGRST116') {
 				logger.error('Contrôle d’accès impossible :', participantsError);
-				throw error(500, 'Impossible de vérifier votre accès');
+				throw error(500, 'Impossible de vérifier l’accès');
 			}
 
 			if (!participants || participants.length !== 2) {
@@ -176,7 +176,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 
 			if (senderError && senderError.code !== 'PGRST116') {
 				logger.error('Contrôle d’accès impossible :', senderError);
-				throw error(500, 'Impossible de vérifier votre accès');
+				throw error(500, 'Impossible de vérifier l’accès');
 			}
 			if (sender?.role !== 'student') {
 				throw error(403, 'You can only delete messages written by students');

@@ -239,7 +239,8 @@ describe('pedagogical-integration types', () => {
 			// Linearity
 			'apply-linearity-sum',
 			'extract-constant',
-			// Composite forms
+			// Composite forms (et la réécriture qui fait apparaître u′)
+			'reveal-derivative',
 			'apply-composite-power',
 			'apply-composite-ln',
 			'apply-composite-exp',
@@ -271,7 +272,7 @@ describe('pedagogical-integration types', () => {
 		// Count sentinel — matches the union cardinality. Useful as a quick
 		// human-readable check ; the real exhaustiveness guarantee is the
 		// `_MissingFromAllRules` compile-time check below.
-		expect(allRules).toHaveLength(28);
+		expect(allRules).toHaveLength(29);
 
 		// Compile-time exhaustiveness check : if any rule of
 		// `PedagogicalIntegrationRule` is not in `allRules`, the type

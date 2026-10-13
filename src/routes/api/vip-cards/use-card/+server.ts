@@ -63,10 +63,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Verify class relationship (admins bypass via verifyTeacherStudentWithRole)
 		const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 		if (!hasAccess) {
-			throw error(403, 'Tu ne peux utiliser des cartes VIP que pour les élèves de tes classes');
+			throw error(403, 'Utilisation de cartes VIP réservée aux élèves des classes du professeur');
 		}
 	} else {
-		throw error(403, 'Action non autorisée pour ton rôle');
+		throw error(403, 'Action non autorisée pour ce rôle');
 	}
 
 	// Call unified use_vip_card RPC

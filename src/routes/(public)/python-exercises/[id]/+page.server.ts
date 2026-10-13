@@ -89,7 +89,7 @@ export const load: PageServerLoad = async ({ params, fetch, locals }) => {
 			// panne doit se distinguer d'un refus mérité.
 			if (ownAssignmentsError && ownAssignmentsError.code !== 'PGRST116') {
 				logger.error('Contrôle d’accès impossible :', ownAssignmentsError);
-				throw error(500, 'Impossible de vérifier votre accès');
+				throw error(500, 'Impossible de vérifier l’accès');
 			}
 			canViewResults = Boolean(ownAssignments && ownAssignments.length > 0);
 		}

@@ -220,7 +220,7 @@ async function loadSeriesTemplates(
 
 	if (error) {
 		logger.error('[evaluation-attempts] Modèles illisibles :', error);
-		throw new EvaluationError(500, 'Impossible de préparer le contrôle, réessaie dans un instant');
+		throw new EvaluationError(500, 'Impossible de préparer le contrôle, réessayer dans un instant');
 	}
 	return ((data ?? []) as QuestionTemplateRow[]).map(toQuestionTemplate);
 }
@@ -264,7 +264,7 @@ async function regenerateAttempt(
 
 	if (error) {
 		logger.error('[evaluation-attempts] Questions de la tentative illisibles :', error);
-		throw new EvaluationError(500, 'Impossible de relire ta tentative, réessaie dans un instant');
+		throw new EvaluationError(500, 'Impossible de relire la tentative, réessayer dans un instant');
 	}
 	const stored = rows ?? [];
 	if (stored.length === 0) {
@@ -282,7 +282,10 @@ async function regenerateAttempt(
 
 		if (templatesError) {
 			logger.error('[evaluation-attempts] Modèles de la tentative illisibles :', templatesError);
-			throw new EvaluationError(500, 'Impossible de relire ta tentative, réessaie dans un instant');
+			throw new EvaluationError(
+				500,
+				'Impossible de relire la tentative, réessayer dans un instant'
+			);
 		}
 		for (const row of (templateRows ?? []) as QuestionTemplateRow[]) {
 			templates.set(row.id, toQuestionTemplate(row));
@@ -301,7 +304,7 @@ async function regenerateAttempt(
 				position: row.position,
 				templateId: row.template_id
 			});
-			throw new EvaluationError(500, 'Impossible de relire ta tentative, préviens ton professeur');
+			throw new EvaluationError(500, 'Impossible de relire la tentative, à signaler au professeur');
 		}
 		return { stored: row, instance: withoutSeed(result.instance) };
 	});
@@ -330,7 +333,7 @@ async function findOpenAttempt(userClient: Db, evaluationId: string, userId: str
 
 	if (error) {
 		logger.error('[evaluation-attempts] Tentatives illisibles :', error);
-		throw new EvaluationError(500, 'Impossible de vérifier tes tentatives précédentes');
+		throw new EvaluationError(500, 'Impossible de vérifier les tentatives précédentes');
 	}
 	return data?.[0] ?? null;
 }
@@ -430,7 +433,7 @@ export async function startEvaluationAttempt(
 	if (generated.length === 0) {
 		throw new EvaluationError(
 			409,
-			"Ce contrôle n'a aucune question disponible, préviens ton professeur"
+			"Ce contrôle n'a aucune question disponible, à signaler au professeur"
 		);
 	}
 
@@ -450,7 +453,10 @@ export async function startEvaluationAttempt(
 
 	if (sessionError || !session) {
 		logger.error('[evaluation-attempts] Séance non créée :', sessionError);
-		throw new EvaluationError(500, 'Impossible de commencer le contrôle, réessaie dans un instant');
+		throw new EvaluationError(
+			500,
+			'Impossible de commencer le contrôle, réessayer dans un instant'
+		);
 	}
 
 	// Q42 : l'instance complète (réponses attendues comprises) est FIGÉE ici,
@@ -469,7 +475,10 @@ export async function startEvaluationAttempt(
 		logger.error('[evaluation-attempts] Questions non enregistrées :', questionsError);
 		// Une séance sans questions ne doit pas coûter une tentative
 		await deleteRows(service, 'test_sessions', [session.id], 'questions non enregistrées');
-		throw new EvaluationError(500, 'Impossible de commencer le contrôle, réessaie dans un instant');
+		throw new EvaluationError(
+			500,
+			'Impossible de commencer le contrôle, réessayer dans un instant'
+		);
 	}
 
 	// Double démarrage simultané (double clic, deux onglets) : la plus ancienne
@@ -479,7 +488,7 @@ export async function startEvaluationAttempt(
 		if (!(await deleteRows(service, 'test_sessions', [session.id], 'double démarrage'))) {
 			throw new EvaluationError(
 				500,
-				'Impossible de commencer le contrôle, réessaie dans un instant'
+				'Impossible de commencer le contrôle, réessayer dans un instant'
 			);
 		}
 		const questions = await regenerateAttempt(service, oldest.id);
@@ -583,7 +592,7 @@ export async function submitEvaluationAttempt(
 
 	if (sessionError) {
 		logger.error('[evaluation-attempts] Séance illisible :', sessionError);
-		throw new EvaluationError(500, 'Impossible de relire ta tentative, réessaie dans un instant');
+		throw new EvaluationError(500, 'Impossible de relire la tentative, réessayer dans un instant');
 	}
 	if (!session || session.user_id !== userId || !session.evaluation_id) {
 		throw new EvaluationError(404, 'Tentative introuvable');
@@ -668,7 +677,7 @@ export async function submitEvaluationAttempt(
 		if (answersError || insertedIds.length !== rows.length) {
 			logger.error('[evaluation-attempts] Réponses non enregistrées :', answersError);
 			await deleteRows(service, 'test_answers', insertedIds, 'réponses partielles');
-			throw new EvaluationError(500, "Ta copie n'a pas pu être enregistrée, réessaie");
+			throw new EvaluationError(500, "La copie n'a pas pu être enregistrée, réessayer");
 		}
 	}
 
@@ -697,7 +706,7 @@ export async function submitEvaluationAttempt(
 		await deleteRows(service, 'test_answers', insertedIds, 'envoi concurrent');
 		if (closeError) {
 			logger.error('[evaluation-attempts] Séance non close :', closeError);
-			throw new EvaluationError(500, "Ta copie n'a pas pu être enregistrée, réessaie");
+			throw new EvaluationError(500, "La copie n'a pas pu être enregistrée, réessayer");
 		}
 		throw new AttemptAlreadySubmittedError(await readSubmittedCopy(actors, attemptId));
 	}

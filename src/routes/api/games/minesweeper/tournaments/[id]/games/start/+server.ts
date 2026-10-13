@@ -78,10 +78,10 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 				throw error(400, 'Ce tournoi est termine');
 			}
 			if (rpcError.message?.includes('not eligible') || rpcError.message?.includes('participer')) {
-				throw error(403, "Vous n'etes pas eligible a participer a ce tournoi");
+				throw error(403, 'Non éligible pour participer à ce tournoi');
 			}
 			if (rpcError.message?.includes('in progress') || rpcError.message?.includes('en cours')) {
-				throw error(400, 'Vous avez deja une partie en cours dans ce tournoi');
+				throw error(400, 'Une partie est déjà en cours dans ce tournoi');
 			}
 
 			sanitizeRPCError(rpcError, 'start_tournament_game');

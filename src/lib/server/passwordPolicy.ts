@@ -204,9 +204,7 @@ export function validatePasswordPolicy(password: string): PasswordValidationResu
 
 	// Check against common passwords
 	if (!requirements.notCommon) {
-		errors.push(
-			'Ce mot de passe est trop commun et facile à deviner. Veuillez en choisir un plus unique'
-		);
+		errors.push('Ce mot de passe est trop commun et facile à deviner : en choisir un plus unique');
 	}
 
 	return {

@@ -62,7 +62,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		// panne doit se distinguer d'un refus mérité.
 		if (deckError && deckError.code !== 'PGRST116') {
 			logger.error('Contrôle d’accès impossible :', deckError);
-			return error(500, 'Impossible de vérifier votre accès');
+			return error(500, 'Impossible de vérifier l’accès');
 		}
 
 		if (!deck) {
@@ -185,7 +185,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 				// panne doit se distinguer d'un refus mérité.
 				if (sectionError && sectionError.code !== 'PGRST116') {
 					logger.error('Contrôle d’accès impossible :', sectionError);
-					return error(500, 'Impossible de vérifier votre accès');
+					return error(500, 'Impossible de vérifier l’accès');
 				}
 				if (!section) {
 					return json({ error: 'Cette section n’appartient pas à ce deck.' }, { status: 400 });

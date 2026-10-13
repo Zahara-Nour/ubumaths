@@ -39,7 +39,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// panne doit se distinguer d'un refus mérité.
 	if (deckError) {
 		logger.error('Contrôle d’accès impossible :', deckError);
-		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
+		return json({ error: 'Impossible de vérifier l’accès' }, { status: 500 });
 	}
 
 	if (!deck) {

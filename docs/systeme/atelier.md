@@ -561,9 +561,14 @@ deux gardes passent (`integrate-steps-check.ts`) :
   est un désaccord : `\ln x` de 0 à 1 (impropre, −1) n'a pas d'étapes ;
 - **aucun coefficient caché** : une forme composée (`apply-composite-exp`, `-ln`, `-sin`, `-cos`,
   `-power`) doit écrire exactement G(u) (e^u, ln|u|, −cos u, sin u, u^(n+1)/(n+1)), comparé
-  numériquement sur la grille. Le pipeline rééquilibre par 1/u′ sans le dire (`e^{2x}` → « ½e^{2x} »
-  sous le titre « e^u ») : un facteur ≠ 1, signe compris (`e^{-x}`, `\frac3x`), refuse. Le contrôle
-  porte aussi sur les sous-étapes : `xe^{2x}` (IPP) est refusé par celle qui intègre ½e^{2x}.
+  numériquement sur la grille — ou k·G(u) quand elle déclare un coefficient `k`. Depuis la PR 2
+  (décisions de David du 2026-10-13), le pipeline n'écrit plus de coefficient sans le dire :
+  l'étape `reveal-derivative` (« On fait apparaître $u'$ ») réécrit `e^{2x} = \dfrac12 \times 2e^{2x}`
+  et sort ½, puis la forme composée intègre `2e^{2x}`. La garde (`revealExplains`) n'accepte un `k`
+  que si l'étape **immédiatement précédente** est cette réécriture, au même k, juste en valeurs
+  (f = k × u′g(u), et la forme composée intègre bien u′g(u)). Un ½ glissé dans la primitive sans
+  cette étape reste refusé. Le contrôle porte aussi sur les sous-étapes (IPP : v = ½e^{2x} est
+  rédigé sous « Choix de u et dv », puis ∫ ½e^{2x} dx sous la formule).
   Les **éléments simples** (`apply-partial-fractions`) doivent écrire A·ln|x − r₁| + B·ln|x − r₂|
   à une constante près, comme le promet leur titre : un facteur non unitaire intègre A/(2x − 1)
   en (A/2)·ln|2x − 1| sans le dire (`\frac{1}{(2x-1)(x+1)}`, `\frac{1}{4x^2-1}`), refusé.
@@ -571,7 +576,8 @@ deux gardes passent (`integrate-steps-check.ts`) :
 
 Refusés aussi : bornes non numériques (`de 0 à a`), toute exception (`\frac{1}{x^2}` :
 `PedagogicalIntegrationNotImplemented`). Montrés : polynômes, eˣ, 1/x, cos/sin, composées
-exactes (`2e^{2x}`, `\frac{2x}{x^2+1}`), IPP, et hors terminale l'IPP cyclique et les éléments
+exactes (`2e^{2x}`, `\frac{2x}{x^2+1}`) et, depuis la PR 2, à coefficient expliqué (`e^{2x}`,
+`\sin(2x)`, `e^{-x}`, `\frac3x`, `\frac{x}{x^2+1}`, `(2x+1)^3`, `xe^{2x}`), IPP, et hors terminale l'IPP cyclique et les éléments
 simples à facteurs x − r (`\frac{1}{x^2-1}`, `\frac{1}{x(x-1)}` de 2 à 3) ; à facteur non unitaire,
 coefficient caché, refusés.
 

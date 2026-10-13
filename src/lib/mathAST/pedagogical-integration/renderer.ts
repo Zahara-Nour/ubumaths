@@ -23,7 +23,7 @@
  */
 
 import type { MathNode } from '../types';
-import { toLatex } from '../latex-generator';
+import { integrationLatex as toLatex } from './latex';
 import { numericValue } from '../integration/forbidden-value';
 import { withExplicitNumberProducts } from '../pedagogical-differentiation/tidy-step';
 import type {
@@ -32,7 +32,7 @@ import type {
 	SchoolLevel,
 	StepRenderer
 } from '../common/step-renderer-base';
-import { EXPLANATIONS, TITLES } from './descriptions-fr';
+import { EXPLANATIONS, TITLES, coefficientPrefix, revealedProduct } from './descriptions-fr';
 import type {
 	IntegrationBindings,
 	PedagogicalIntegrationRule,
@@ -167,6 +167,40 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 				`  & \\text{l’intégrale n’est pas définie sur cet intervalle.}`
 			];
 			return `\\begin{aligned}\n${lines.join(' \\\\\n')}\n\\end{aligned}`;
+		}
+
+		case 'reveal-derivative': {
+			// On fait apparaître u′ (décision de David du 2026-10-13) :
+			// ∫ f dx = ∫ k × u′g(u) dx = k ∫ u′g(u) dx — la réécriture est un calcul,
+			// elle reste en version résumée
+			const bindings = step.bindings ?? {};
+			const revealed = bindings.revealed;
+			if (!revealed || !bindings.k) return formatStandard(step, afterLatex, dx);
+			// Jamais `\\int -…` : un produit qui commence par un signe va entre parenthèses
+			const product = revealedProduct(bindings);
+			const underIntegral = product.startsWith('-') ? `\\left( ${product} \\right)` : product;
+			const lines = [
+				`  & \\textcolor{blue}{\\int ${integrandLatex(step.before)}${dx}}`,
+				`  & = \\int ${underIntegral}${dx}`,
+				`  & = ${coefficientPrefix(bindings)}\\int ${integrandLatex(revealed)}${dx}`
+			];
+			return `\\begin{aligned}\n${lines.join(' \\\\\n')}\n\\end{aligned}`;
+		}
+
+		case 'apply-composite-exp':
+		case 'apply-composite-ln':
+		case 'apply-composite-sin':
+		case 'apply-composite-cos':
+		case 'apply-composite-power': {
+			// Après « On fait apparaître u′ » : k ∫ u′g(u) dx = k·G(u)
+			const bindings = step.bindings ?? {};
+			if (!bindings.k) return formatStandard(step, afterLatex, dx);
+			return (
+				`\\begin{aligned}\n` +
+				`  & \\textcolor{blue}{${coefficientPrefix(bindings)}\\int ${integrandLatex(step.before)}${dx}} \\\\\n` +
+				`  & = ${afterLatex}\n` +
+				`\\end{aligned}`
+			);
 		}
 
 		case 'apply-parts-formula': {

@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
 		logger.error('Rôle illisible :', profileError);
-		throw error(500, 'Impossible de vérifier vos droits');
+		throw error(500, 'Impossible de vérifier les droits');
 	}
 
 	if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {

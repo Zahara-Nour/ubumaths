@@ -132,7 +132,7 @@ class DriveSyncService {
 				const sizeMB = (body.length / (1024 * 1024)).toFixed(1);
 				return {
 					success: false,
-					error: `Le document est trop volumineux (${sizeMB} Mo). Maximum : 4 Mo. Essayez de réduire le nombre de pages ou d'images.`
+					error: `Le document est trop volumineux (${sizeMB} Mo). Maximum : 4 Mo. Essayer de réduire le nombre de pages ou d'images.`
 				};
 			}
 

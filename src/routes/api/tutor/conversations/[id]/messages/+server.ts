@@ -61,7 +61,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	}
 
 	if (conversation.student_id !== user.id) {
-		throw error(403, "Vous n'avez pas accès à cette conversation");
+		throw error(403, 'Accès refusé à cette conversation');
 	}
 
 	// Build query for messages
@@ -116,7 +116,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	}
 
 	if (conversation.student_id !== user.id) {
-		throw error(403, "Vous n'avez pas accès à cette conversation");
+		throw error(403, 'Accès refusé à cette conversation');
 	}
 
 	// Delete all messages from the conversation

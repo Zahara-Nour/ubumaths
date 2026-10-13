@@ -5,10 +5,10 @@ describe('authErrorToFrench', () => {
 	it.each([
 		['same_password', /différent de l’ancien/],
 		['weak_password', /trop faible/],
-		['session_not_found', /lien a expiré/],
-		['session_expired', /lien a expiré/],
-		['otp_expired', /lien a expiré/],
-		['reauthentication_needed', /reconnecte-toi/],
+		['session_not_found', /Lien expiré/],
+		['session_expired', /Lien expiré/],
+		['otp_expired', /Lien expiré/],
+		['reauthentication_needed', /reconnexion nécessaire/],
 		['over_request_rate_limit', /Trop de tentatives/],
 		['over_email_send_rate_limit', /Trop de tentatives/]
 	])('traduit le code %s', (code, expected) => {

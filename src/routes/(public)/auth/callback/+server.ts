@@ -148,7 +148,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 				// Redirect to login with explicit error message so user knows what happened
 				throw redirect(
 					303,
-					`/auth/login?error=${encodeURIComponent("Impossible de créer votre compte. Veuillez réessayer. Si le problème persiste, contactez l'administrateur.")}`
+					`/auth/login?error=${encodeURIComponent("Impossible de créer le compte. Réessayer ; si le problème persiste, voir avec l'administrateur.")}`
 				);
 			}
 
@@ -173,8 +173,8 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 			await supabase.auth.signOut();
 			// Build error message with rejection reason if available
 			const errorMessage = existingProfile.rejection_reason
-				? `Votre accès a été refusé: ${existingProfile.rejection_reason}`
-				: "Votre accès a été refusé. Contactez un administrateur pour plus d'informations.";
+				? `Accès refusé : ${existingProfile.rejection_reason}`
+				: "Accès refusé. Voir avec un administrateur pour plus d'informations.";
 			throw redirect(303, `/auth/login?error=${encodeURIComponent(errorMessage)}`);
 		}
 

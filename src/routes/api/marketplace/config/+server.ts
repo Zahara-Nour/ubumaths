@@ -249,7 +249,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 				.single();
 
 			if (classError || !classData) {
-				throw error(403, 'Vous ne pouvez pas modifier la configuration de cette classe');
+				throw error(403, 'Modification de la configuration de cette classe non autorisée');
 			}
 
 			// Check if config exists
@@ -312,7 +312,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 				.single();
 
 			if (classError || !classData || classData.school_id !== profile.school_id) {
-				throw error(403, "Cette classe n'appartient pas à votre école");
+				throw error(403, 'Cette classe appartient à une autre école');
 			}
 
 			// Similar update/create logic as above
@@ -376,7 +376,7 @@ export const PATCH: RequestHandler = async ({ url, request, locals }) => {
 		}
 
 		if (profile.school_id !== schoolId) {
-			throw error(403, "Vous ne pouvez pas modifier la configuration d'une autre école");
+			throw error(403, "Modification de la configuration d'une autre école non autorisée");
 		}
 
 		// Check if school config exists

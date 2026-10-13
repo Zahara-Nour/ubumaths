@@ -161,7 +161,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 
 			if (!classData || classData.school_id !== profile.school_id) {
-				throw error(403, "Cette classe n'appartient pas à votre école");
+				throw error(403, 'Cette classe appartient à une autre école');
 			}
 
 			const { data: classStudents, error: classStudentsError } = await supabase

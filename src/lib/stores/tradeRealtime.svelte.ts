@@ -522,7 +522,7 @@ class TradeRealtimeStore {
 		} else if (trade.partner_id === this.userId) {
 			this.myRole = 'partner';
 		} else {
-			throw new Error('Tu ne participes pas à cet échange');
+			throw new Error('Accès réservé aux participants de cet échange');
 		}
 
 		// Transform initiator data

@@ -10,6 +10,9 @@ couvre:
   - 'src/routes/api/student/exercise-mastery/**'
   - 'src/routes/api/tags/**'
   - 'src/routes/(protected)/dashboard/teacher/contenu/exercices/**'
+  - 'src/routes/(protected)/dashboard/teacher/contenu/{+layout.svelte,+page.server.ts}'
+  - 'src/lib/components/{TagBadgeSelector,GradeBadgeSelector}.svelte'
+  - src/lib/stores/exerciseFont.svelte.ts
   - 'src/routes/(protected)/dashboard/student/exercises/**'
   - 'src/routes/(public)/exercice/**'
 ---
@@ -81,6 +84,14 @@ view own exercises`, `created_by = auth.uid()`, depuis 20260618093000 : un prof 
   en plus le consentement (`requireConsent(profile, 'submit_exercise')`).
 
 ## Côté professeur
+
+**Le hub « Contenu »** (`dashboard/teacher/contenu/`, vérifié le 2026-10-13) : `+layout.svelte`
+pose cinq onglets (`GroupedRouteLayout`) — Templates (modèles de chapitre,
+[cours-et-chapitres.md](cours-et-chapitres.md#modèles-de-chapitre)), Exercices (ci-dessous),
+Énigmes ([jeux-et-economie.md](jeux-et-economie.md)), Worksheets ([fiches-et-pdf.md](fiches-et-pdf.md)),
+Notebooks ([python/README.md](python/README.md)). `+page.server.ts` redirige (308) vers l'onglet
+Templates. Le hub n'a pas de garde à lui : celle de `dashboard/teacher/+layout.server.ts`
+(prof seul, 403 sinon) s'applique, et certains onglets en ajoutent une.
 
 | Page (`dashboard/teacher/contenu/exercices/`) | Rôle                                                                                                                                                                                                   |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -168,6 +179,16 @@ la ligne reste modifiée et l'erreur remonte. `getExercise` / `getExerciseBySlug
 `tags: string[]` à la ligne lue. `GET /api/tags` (lisible sans compte, `?kind=` place en tête les
 étiquettes déjà utilisées sur ce type) ; `POST /api/tags` : prof ou admin.
 
+Deux sélecteurs partagés vivent à la racine de `src/lib/components/` :
+
+- **`TagBadgeSelector.svelte`** : étiquettes en badges ; lit et crée par `apiPath` (défaut
+  `/api/tags`, seul catalogue depuis la fusion de `python_tags`), `kind` ne fait qu'ordonner.
+  Appelants : `ExerciseForm` (exercices et exercices Python), `MetadataCards` et `worksheets/new`
+  (fiches), pages `presques-evaluations` (prof et publique).
+- **`GradeBadgeSelector.svelte`** : niveaux (`GradeCode`) en badges, fenêtre groupée primaire /
+  collège / lycée ; `restrictTo` limite les niveaux proposés. Mêmes appelants, plus la liste des
+  exercices, les modèles de chapitre (`contenu/templates`) et la liste admin des questions.
+
 ## Import, export, sauvegarde
 
 `src/lib/server/exercise-import-export.ts` : export JSON **v2.0** (`exerciseToExportV2` : titre,
@@ -221,3 +242,9 @@ longueur. Journal : [longueurs-segments-progress.md](../archive/wip/longueurs-se
 - **`GET /api/exercises`** a un appelant (`ExerciseSelector`, éditeur de fiche) : gardée. Les
   routes `by-slug/[slug]`, `[id]/stats`, `[id]/export` et `ExerciseParameterizationEditor.svelte`,
   sans appelant, ont été retirées le 2026-10-12.
+- **`exerciseFont.svelte.ts` sans effet** : le store (police d'affichage des exercices, clé
+  `localStorage` `exerciseFont`, variable CSS `--exercise-font-family` lue par `app.css`) n'a qu'un
+  importeur, `FontSelector.svelte`, lui-même sans importeur
+  ([coquille-et-caches.md](coquille-et-caches.md)) : la police reste celle de `app.css` (Inter).
+- **Libellés du hub sans accents ni français** : « Contenu pedagogique », « Gerez », « Enigmes »,
+  et les onglets « Templates », « Worksheets », « Notebooks ».

@@ -96,7 +96,7 @@ export const actions = {
 
 		if (rpcError) {
 			logger.error('resolve_open_class_by_code failed:', rpcError.message);
-			return fail(500, { error: 'Une erreur est survenue. Réessaie plus tard.', ...echo });
+			return fail(500, { error: 'Une erreur est survenue. Réessayer plus tard.', ...echo });
 		}
 
 		if (!classId) {

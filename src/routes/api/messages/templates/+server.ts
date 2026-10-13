@@ -41,7 +41,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
 		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier vos droits');
+		return error(500, 'Impossible de vérifier les droits');
 	}
 
 	if (!profile) {
@@ -112,7 +112,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// panne doit se distinguer d'un refus mérité.
 		if (classMembersError && classMembersError.code !== 'PGRST116') {
 			logger.error('Contrôle d’accès impossible :', classMembersError);
-			return error(500, 'Impossible de vérifier votre accès');
+			return error(500, 'Impossible de vérifier l’accès');
 		}
 
 		const studentClassIds = classMembers?.map((cm: { class_id: string }) => cm.class_id) || [];
@@ -174,7 +174,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
 		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier vos droits');
+		return error(500, 'Impossible de vérifier les droits');
 	}
 
 	if (!profile) {
@@ -246,11 +246,11 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		// panne doit se distinguer d'un refus mérité.
 		if (classDataError && classDataError.code !== 'PGRST116') {
 			logger.error('Contrôle d’accès impossible :', classDataError);
-			return error(500, 'Impossible de vérifier votre accès');
+			return error(500, 'Impossible de vérifier l’accès');
 		}
 
 		if (!classData) {
-			return error(403, 'Vous ne pouvez créer des templates que pour vos propres classes');
+			return error(403, 'Création de templates réservée aux classes du professeur');
 		}
 	}
 

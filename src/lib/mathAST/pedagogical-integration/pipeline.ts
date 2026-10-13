@@ -48,6 +48,7 @@ import {
 	cos,
 	divide,
 	euler,
+	fraction,
 	multiply,
 	number,
 	opposite,
@@ -122,8 +123,9 @@ import type {
 	PartsMatch
 } from './_helpers';
 import { abs, ln } from '../factory';
-import { findProportionalityConstant } from '../integration/patterns';
-import { forbiddenValueOnInterval } from '../integration/forbidden-value';
+import { findProportionalityConstant, findProportionalityRatio } from '../integration/patterns';
+import { forbiddenValueOnInterval, numericValue } from '../integration/forbidden-value';
+import { isCertainlyPositive } from './positivity';
 import { arcsinRule, arctanRule } from '../integration/rules';
 import { PedagogicalIntegrationNotImplemented } from './types';
 import type {
@@ -332,9 +334,16 @@ function generateDefiniteSteps(
 		);
 	}
 
+	// f définie sur tout [a ; b], bornes numériques : l'intervalle sert à écrire
+	// ln u sans valeur absolue quand u > 0 y est certain
+	const numericBounds =
+		Number.isFinite(numericValue(definite.lower)) && Number.isFinite(numericValue(definite.upper));
+	const innerCtx: DispatchContext =
+		check.kind === 'defined' && numericBounds ? { ...ctx, interval: definite } : ctx;
+
 	// Compute the antiderivative pedagogically — without `add-constant`
 	// (the constant cancels in F(b) - F(a)).
-	const { antiderivative: raw, steps: coreSteps } = integrateNode(integrand, ctx);
+	const { antiderivative: raw, steps: coreSteps } = integrateNode(integrand, innerCtx);
 	steps.push(...coreSteps);
 	const antiderivative = pushSimplifyStep(steps, raw, ctx);
 
@@ -362,7 +371,7 @@ function generateDefiniteSteps(
 				after: symbolicDifference,
 				variable: ctx.variable,
 				definite,
-				bindings: { primitive: antiderivative }
+				bindings: { primitive: antiderivative, lower: definite.lower, upper: definite.upper }
 			})
 		);
 	}
@@ -860,12 +869,16 @@ function integratePower(
 }
 
 function integrateReciprocalVariable(integrand: MathNode, ctx: DispatchContext): DispatchResult {
-	const antiderivative = lnAbsRule(variableNode(ctx.variable));
+	// ln|x|, ou ln x quand x > 0 sur l'intervalle (∫₁ᵉ, décision du 2026-10-13)
+	const x = variableNode(ctx.variable);
+	const positivity = lnPositivity(x, ctx);
+	const antiderivative = positivity ? ln(x) : lnAbsRule(x);
 	const step = buildStep(ctx, {
 		rule: 'apply-known-primitive',
 		before: integrand,
 		after: antiderivative,
-		variable: ctx.variable
+		variable: ctx.variable,
+		...(positivity && { bindings: positivity })
 	});
 	return { antiderivative, steps: [step] };
 }
@@ -907,9 +920,11 @@ function integrateComposite(
 	ctx: DispatchContext
 ): DispatchResult {
 	const u = match.u;
+	// u affiché sans ses parenthèses d'écriture : « u = 2x + 1 », pas « u = (2x + 1) »
+	const bareU = withoutDelimiters(u);
 	let baseAntiderivative: MathNode;
 	let rule: PedagogicalIntegrationStep['rule'];
-	const bindings: IntegrationBindings = { u };
+	const bindings: IntegrationBindings = { u: bareU };
 
 	switch (match.kind) {
 		case 'composite-exp':
@@ -919,10 +934,14 @@ function integrateComposite(
 			baseAntiderivative = superscript(euler(), u);
 			rule = 'apply-composite-exp';
 			break;
-		case 'composite-ln':
-			baseAntiderivative = lnAbsRule(u);
+		case 'composite-ln': {
+			// ln|u|, ou ln u quand u > 0 est certain (décision de David du 2026-10-13)
+			const positivity = lnPositivity(bareU, ctx);
+			baseAntiderivative = positivity ? ln(bareU) : ln(abs(bareU));
+			Object.assign(bindings, positivity);
 			rule = 'apply-composite-ln';
 			break;
+		}
 		case 'composite-sin':
 			baseAntiderivative = opposite(cos(u));
 			rule = 'apply-composite-sin';
@@ -946,23 +965,129 @@ function integrateComposite(
 		}
 	}
 
-	// Expose the rebalancing factor as a multiplicative coefficient. For
-	// `∫sin(2x) dx` this is 1/2 ; the renderer can frame this as a
-	// composite-with-implicit-rebalancing. Fraction exacte : `\dfrac{1}{2}`,
-	// jamais `0.5`.
-	const antiderivative =
-		match.constantFactor === undefined
-			? baseAntiderivative
-			: withRationalCoefficient(match.constantFactor, baseAntiderivative);
+	// Intégrande exactement u′·g(u) : la forme composée s'applique telle quelle
+	const k = match.constantFactor;
+	if (k === undefined || isOneRational(k)) {
+		const step = buildStep(ctx, {
+			rule,
+			before: integrand,
+			after: baseAntiderivative,
+			variable: ctx.variable,
+			bindings
+		});
+		return { antiderivative: baseAntiderivative, steps: [step] };
+	}
 
-	const step = buildStep(ctx, {
-		rule,
+	// Sinon on fait apparaître u′ (décision de David du 2026-10-13) :
+	// f = k × u′·g(u), on sort k, la forme composée s'applique à u′·g(u). Le
+	// coefficient est écrit, plus jamais glissé dans la primitive sans un mot.
+	const du = cleanDerivative(u, ctx.variable);
+	if (du === null) {
+		throw new PedagogicalIntegrationNotImplemented(integrand, "composite: cannot compute u'");
+	}
+	const revealed = revealedIntegrand(match, u, du);
+	const kNode = rationalToNode(k);
+	// Fraction exacte : `\dfrac{1}{2}`, jamais `0.5`
+	const scaled = withRationalCoefficient(k, baseAntiderivative);
+	// Les étapes s'enchaînent (chaque `before` est l'`after` précédent) : la
+	// réécriture rend u′g(u), l'intégrande qu'on intègre ensuite ; la forme
+	// composée rend k·G(u), la primitive de f
+	const reveal = buildStep(ctx, {
+		rule: 'reveal-derivative',
 		before: integrand,
-		after: antiderivative,
+		after: revealed,
 		variable: ctx.variable,
-		bindings
+		bindings: { u: bareU, du, k: kNode, revealed, integrand }
 	});
-	return { antiderivative, steps: [step] };
+	const composite = buildStep(ctx, {
+		rule,
+		before: revealed,
+		after: scaled,
+		variable: ctx.variable,
+		bindings: { ...bindings, k: kNode, scaled }
+	});
+	return { antiderivative: scaled, steps: [reveal, composite] };
+}
+
+/** `(2x + 1)` → `2x + 1` (parenthèses d'écriture seulement). */
+function withoutDelimiters(node: MathNode): MathNode {
+	let n = node;
+	while (n.type === 'delimiter') n = n.content;
+	return n;
+}
+
+/** Un facteur écrit devant un produit : entre parenthèses si c'est une somme. */
+function asFactor(node: MathNode): MathNode {
+	const bare = withoutDelimiters(node);
+	return bare.type === 'addition' || bare.type === 'subtraction' ? parentheses(bare) : bare;
+}
+
+/**
+ * u′ écrit proprement : une constante en fraction exacte (`2`, `-1`,
+ * `\dfrac{1}{2}`, pas `\dfrac{2}{2^2}`), sinon la dérivée rangée par `tidyTerms`.
+ */
+function cleanDerivative(u: MathNode, variable: string): MathNode | null {
+	let du: MathNode;
+	try {
+		du = differentiate(u, { variable });
+	} catch {
+		return null;
+	}
+	if (!containsVariable(du, variable)) {
+		const value = findProportionalityRatio(du, number('1'));
+		return value === null ? null : rationalToNode(value);
+	}
+	try {
+		return tidyTerms(du);
+	} catch {
+		return du;
+	}
+}
+
+/**
+ * L'intégrande EXACTEMENT de la forme u′·g(u) que l'étape « On fait apparaître
+ * u′ » écrit : `2e^{2x}`, `2x e^{x^2}`, `\dfrac{2x}{x^2+1}`, `-e^{-x}`,
+ * `\dfrac{1}{x}` (u′ = 1), `2\left(2x+1\right)^3`.
+ */
+function revealedIntegrand(match: CompositeMatch, u: MathNode, du: MathNode): MathNode {
+	const bareU = withoutDelimiters(u);
+	const negative = du.type === 'opposite';
+	const magnitude = du.type === 'opposite' ? du.operand : du;
+	const isUnit = magnitude.type === 'number' && magnitude.value === '1';
+	const signed = (node: MathNode): MathNode => (negative ? opposite(node) : node);
+
+	if (match.kind === 'composite-ln') {
+		const numerator = isUnit ? number('1') : magnitude;
+		return signed(fraction(numerator, bareU));
+	}
+	let g: MathNode;
+	switch (match.kind) {
+		case 'composite-exp':
+			g = superscript(euler(), u);
+			break;
+		case 'composite-sin':
+			g = sin(u);
+			break;
+		case 'composite-cos':
+			g = cos(u);
+			break;
+		case 'composite-power':
+			g = superscript(asFactor(u), match.n ?? number('1'));
+			break;
+	}
+	return signed(isUnit ? g : multiply(asFactor(magnitude), g, 'implicit'));
+}
+
+/**
+ * u > 0 certain ? Pour tout réel → `{ positive: u }` ; sur l'intervalle d'une
+ * intégrale définie → `{ positive: u, lower, upper }` ; sinon `null` (ln|u|).
+ */
+function lnPositivity(u: MathNode, ctx: DispatchContext): IntegrationBindings | null {
+	if (isCertainlyPositive(u, ctx.variable)) return { positive: u };
+	if (ctx.interval && isCertainlyPositive(u, ctx.variable, ctx.interval)) {
+		return { positive: u, lower: ctx.interval.lower, upper: ctx.interval.upper };
+	}
+	return null;
 }
 
 /**
@@ -1211,12 +1336,15 @@ function integrateByParts(
 		variable: ctx.variable,
 		bindings: { u, dv }
 	});
+	// v = ∫dv écrit avec un coefficient (v = ½e^{2x}) : sa réécriture vient sous
+	// le choix, sinon le ½ tomberait du ciel (décision de David du 2026-10-13)
 	const choose = buildStep(ctx, {
 		rule: 'choose-u-dv',
 		before: integrand,
 		after: integrand,
 		variable: ctx.variable,
-		bindings: { u, dv, du, v }
+		bindings: { u, dv, du, v },
+		...(containsReveal(vSub.steps) && { subSteps: vSub.steps })
 	});
 	const apply = buildStep(ctx, {
 		rule: 'apply-parts-formula',
@@ -1228,6 +1356,13 @@ function integrateByParts(
 		subSteps: vduSub.steps
 	});
 	return { antiderivative, steps: [identify, choose, apply] };
+}
+
+/** Une étape « On fait apparaître u′ », sous-étapes comprises ? */
+function containsReveal(steps: readonly PedagogicalIntegrationStep[]): boolean {
+	return steps.some(
+		(step) => step.rule === 'reveal-derivative' || containsReveal(step.subSteps ?? [])
+	);
 }
 
 /**

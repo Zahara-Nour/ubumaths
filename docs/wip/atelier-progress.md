@@ -59,6 +59,14 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
      Revue : éléments simples à facteur non unitaire refusés (coefficient caché) ; contrôle du v d'IPP
      retiré (aucun cas ne passait que par lui). **Noté pour plus tard** : parenthèses résiduelles dans
      les étapes (`\int \left(2e^{2x}\right)dx` quand l'intégrande vient d'une f(x) définie).
+   - **2b `.intégrer` PR 2 — FAITE (2026-10-13, branche `feat/integration-redaction-composees`, non
+     commitée à la remise de l'agent)** : étape `reveal-derivative` (« On fait apparaître $u'$ ») avant
+     toute composée à coefficient (½, signe, facteur constant), v d'une IPP rédigé sous « Choix » ;
+     `\ln\left| u \right|` dans les étapes, `\ln u` si u > 0 certain (`positivity.ts`) ; « $F(b) - F(a)$ ».
+     Garde : un `k` n'est accepté que si la réécriture le précède (`revealExplains`) ; e^{2x}, sin(2x),
+     e^{-x}, 3/x, x/(x²+1), (2x+1)³, xe^{2x}… passent de refusés à montrés. Restent refusés : éléments
+     simples à facteur non unitaire (même principe à appliquer, non décidé). Tests :
+     `composees-coefficient-explique.test.ts`, `integrer-etapes.test.ts`.
    - **2b `.intégrer` — étapes du refus (2026-10-13, branche `feat/atelier-integrer-pole`)** : l'écart
      ci-dessus est résorbé. `CalcResult` `refus` reçoit `steps?`/`summary?` ; `integrateRefusalSteps`
      les pose pour `INTEGRAL_UNDEFINED` quand les étapes concluent `undefinedAt` et que la valeur citée

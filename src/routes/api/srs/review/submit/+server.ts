@@ -97,7 +97,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		} catch (upsertError) {
 			logger.error('[srs/review/submit] UPSERT stats failed:', upsertError);
-			return json({ error: 'Impossible d’enregistrer ta révision' }, { status: 500 });
+			return json({ error: 'Impossible d’enregistrer la révision' }, { status: 500 });
 		}
 
 		// ----- NOUVEAU : INSERT skill_attempts pour cartes template-based -----

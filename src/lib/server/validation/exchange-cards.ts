@@ -30,7 +30,7 @@ const baseSchema = z.object({
 	cardsToDiscard: z
 		.array(z.string().uuid('Identifiant de carte VIP invalide'))
 		.min(1, 'Défausse au moins une carte VIP')
-		.max(20, 'Tu ne peux pas défausser plus de 20 cartes VIP'),
+		.max(20, 'Impossible de défausser plus de 20 cartes VIP'),
 
 	/** UUID of the action card instance being used to perform this exchange */
 	actionCardInstanceId: z.string().uuid('Identifiant de carte d’action invalide')

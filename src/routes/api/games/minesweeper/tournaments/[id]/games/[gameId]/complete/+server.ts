@@ -97,7 +97,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 				throw error(404, 'Partie introuvable');
 			}
 			if (rpcError.message?.includes('does not belong')) {
-				throw error(403, 'Cette partie ne vous appartient pas');
+				throw error(403, 'Cette partie appartient à un autre joueur');
 			}
 			if (rpcError.message?.includes('not in progress')) {
 				throw error(400, "Cette partie n'est pas en cours");

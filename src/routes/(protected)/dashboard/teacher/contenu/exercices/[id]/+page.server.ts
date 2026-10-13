@@ -29,7 +29,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	// Check ownership
 	if (result.data.created_by !== user.id) {
-		throw error(403, "Vous n'êtes pas autorisé à modifier cet exercice");
+		throw error(403, 'Modification de cet exercice non autorisée');
 	}
 
 	// Fetch assignments count via API

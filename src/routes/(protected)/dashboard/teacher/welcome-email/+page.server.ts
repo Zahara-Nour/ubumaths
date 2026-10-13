@@ -50,7 +50,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	// Verify teacher-student relationship
 	const hasAccess = await verifyTeacherStudent(user.id, student_id, supabase);
 	if (!hasAccess) {
-		throw error(403, "Vous ne pouvez envoyer des emails qu'a vos propres eleves");
+		throw error(403, "Envoi d'emails réservé aux élèves du professeur");
 	}
 
 	// Fetch student profile

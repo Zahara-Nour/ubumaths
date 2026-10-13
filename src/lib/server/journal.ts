@@ -100,7 +100,7 @@ export async function createJournalEntry(
 		logger.error('[createJournalEntry] Class not found:', classError);
 		return {
 			data: null,
-			error: new Error("Vous n'etes pas autorise a creer des entrees pour cette classe")
+			error: new Error("Création d'entrées non autorisée pour cette classe")
 		};
 	}
 
@@ -176,7 +176,7 @@ export async function updateJournalEntry(
 	if (!entry) {
 		return {
 			data: null,
-			error: new Error("Entree introuvable ou vous n'etes pas autorise a la modifier")
+			error: new Error('Entrée introuvable ou modification non autorisée')
 		};
 	}
 

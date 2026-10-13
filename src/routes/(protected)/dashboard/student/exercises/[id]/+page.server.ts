@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const accessData = await accessResponse.json();
 
 	if (!accessData.has_access) {
-		throw error(403, "Vous n'avez pas accès à cet exercice");
+		throw error(403, 'Accès refusé à cet exercice');
 	}
 
 	// Fetch exercise
@@ -80,7 +80,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	// panne doit se distinguer d'un refus mérité.
 	if (classMembershipsError && classMembershipsError.code !== 'PGRST116') {
 		logger.error('Contrôle d’accès impossible :', classMembershipsError);
-		throw error(500, 'Impossible de vérifier votre accès');
+		throw error(500, 'Impossible de vérifier l’accès');
 	}
 
 	const classIds = classMemberships?.map((cm) => cm.class_id) || [];

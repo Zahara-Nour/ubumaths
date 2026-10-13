@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			logger.error('Error fetching thread:', fetchError);
 
 			if (fetchError.message?.includes('do not have access')) {
-				throw error(403, "Vous n'avez pas accès à ce fil de discussion");
+				throw error(403, 'Accès refusé à ce fil de discussion');
 			}
 
 			throw error(500, 'Erreur lors de la récupération du fil de discussion');

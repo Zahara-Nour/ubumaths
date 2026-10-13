@@ -13,7 +13,7 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
 	const { user } = await safeGetSession();
 
 	if (!user) {
-		throw error(401, 'Connecte-toi pour jouer à Navadra');
+		throw error(401, 'Connexion requise pour jouer à Navadra');
 	}
 
 	// Fetch or create game player profile

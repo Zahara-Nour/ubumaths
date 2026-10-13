@@ -117,16 +117,16 @@ export function getSuggestions(code: ParseErrorCode, message: string): string[] 
 
 	switch (code) {
 		case 'MISSING_BRACE':
-			suggestions.push("Avez-vous oublié '}' ?");
+			suggestions.push("'}' oublié ?");
 			break;
 
 		case 'MISSING_DELIMITER':
 			if (message.includes(')')) {
-				suggestions.push("Vérifiez que chaque '(' a sa ')' correspondante");
+				suggestions.push("Vérifier que chaque '(' a sa ')' correspondante");
 			} else if (message.includes(']')) {
-				suggestions.push("Vérifiez que chaque '[' a son ']' correspondant");
+				suggestions.push("Vérifier que chaque '[' a son ']' correspondant");
 			} else {
-				suggestions.push('Vérifiez les délimiteurs (parenthèses, crochets)');
+				suggestions.push('Vérifier les délimiteurs (parenthèses, crochets)');
 			}
 			break;
 
@@ -148,7 +148,7 @@ export function getSuggestions(code: ParseErrorCode, message: string): string[] 
 			break;
 
 		case 'UNBALANCED_DELIMITERS':
-			suggestions.push('Vérifiez que \\left et \\right sont correctement appariés');
+			suggestions.push('Vérifier que \\left et \\right sont correctement appariés');
 			break;
 
 		case 'INVALID_SUBSCRIPT':
@@ -163,7 +163,7 @@ export function getSuggestions(code: ParseErrorCode, message: string): string[] 
 			break;
 
 		case 'INVALID_UNIT':
-			suggestions.push("Vérifiez la syntaxe de l'unité : m, kg, s, etc.");
+			suggestions.push("Vérifier la syntaxe de l'unité : m, kg, s, etc.");
 			break;
 
 		case 'INVALID_COLOR':
@@ -171,7 +171,7 @@ export function getSuggestions(code: ParseErrorCode, message: string): string[] 
 			break;
 
 		case 'UNEXPECTED_EOF':
-			suggestions.push('Expression incomplète - vérifiez les accolades et parenthèses');
+			suggestions.push('Expression incomplète - vérifier les accolades et parenthèses');
 			break;
 	}
 

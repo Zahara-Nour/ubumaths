@@ -423,7 +423,7 @@ function parsePrimary(state: ParserState): ASTNode {
 	if (check(state, 'IDENTIFIER')) {
 		advance(state);
 		throw new ParseException(
-			`Identifiant inconnu : ${token.value}. Verifiez l'orthographe ou utilisez une reference de cellule valide.`,
+			`Identifiant inconnu : ${token.value}. Vérifier l'orthographe ou utiliser une référence de cellule valide.`,
 			token.position,
 			token.value
 		);

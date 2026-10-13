@@ -152,7 +152,7 @@ describe('submitAction', () => {
 
 		const outcome = await submitAction('?/createScheduleEntry', new FormData());
 
-		expect(outcome).toEqual({ ok: false, message: 'Session expirée, reconnectez-vous' });
+		expect(outcome).toEqual({ ok: false, message: 'Session expirée, reconnexion nécessaire' });
 	});
 
 	it('rend un échec sur une réponse qui n’est pas du JSON', async () => {

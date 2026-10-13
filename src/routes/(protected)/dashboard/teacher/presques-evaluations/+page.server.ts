@@ -217,7 +217,7 @@ export const actions: Actions = {
 		if (existing.created_by !== user.id) {
 			return fail(403, {
 				action: 'update',
-				error: 'Vous ne pouvez modifier que vos propres uploads'
+				error: 'Modification réservée à l’auteur de l’upload'
 			});
 		}
 
@@ -267,7 +267,7 @@ export const actions: Actions = {
 		if (existing.created_by !== user.id) {
 			return fail(403, {
 				action: 'delete',
-				error: 'Vous ne pouvez supprimer que vos propres uploads'
+				error: 'Suppression réservée à l’auteur de l’upload'
 			});
 		}
 

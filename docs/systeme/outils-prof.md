@@ -25,6 +25,7 @@ couvre:
   - 'src/routes/api/google/**'
   - 'src/routes/api/constructions/**'
   - 'src/routes/api/student/{shared-coursework,shared-materials}/**'
+  - 'src/routes/api/teacher/categories/**'
 ---
 
 # Outils du prof : tableau blanc, diaporamas, tableur, kanban, anciennes constructions, Google Classroom
@@ -346,16 +347,17 @@ caractères).
 
 ### Carte du code
 
-| Fichier                                                     | Rôle                                                                                                                      |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/server/google/oauth.ts`                            | OAuth 2.0 + PKCE : `getAuthUrl`, `exchangeCodeForTokens`, `refreshAccessToken`, `revokeAccess`, `GOOGLE_CLASSROOM_SCOPES` |
-| `src/lib/server/google/encryption.ts`                       | `encryptToken` / `decryptToken` (AES-256-GCM, clé `GOOGLE_TOKEN_ENCRYPTION_KEY`)                                          |
-| `src/lib/server/google/sync.ts`                             | `getTeacherAccessToken`, `fullSync`, `syncTeacherCourses`, `syncTopics`, `syncCoursework`, `syncCourseWorkMaterials`      |
-| `src/lib/server/google/classroom-api.ts`                    | `GoogleClassroomClient`                                                                                                   |
-| `src/lib/server/google/drive-api.ts`                        | `GoogleDriveClient` (aussi utilisé par le Drive du tableau blanc)                                                         |
-| `src/lib/server/google/schemas.ts`, `errors.ts`, `utils.ts` | Zod des réponses Google, erreurs typées, dates, backoff                                                                   |
-| `src/lib/server/google/gmail.ts`                            | `sendWelcomeEmail`, `sendConsentEmail` — **plus appelés** : l'envoi passe par Brevo (`src/lib/server/email/brevo.ts`)     |
-| `src/routes/api/google/`                                    | `auth/` (connect, callback, status, disconnect), `courses`, `topics`, `sync`, partage de devoirs et de supports           |
+| Fichier                                                     | Rôle                                                                                                                                                                                                                               |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/server/google/oauth.ts`                            | OAuth 2.0 + PKCE : `getAuthUrl`, `exchangeCodeForTokens`, `refreshAccessToken`, `revokeAccess`, `GOOGLE_CLASSROOM_SCOPES`                                                                                                          |
+| `src/lib/server/google/encryption.ts`                       | `encryptToken` / `decryptToken` (AES-256-GCM, clé `GOOGLE_TOKEN_ENCRYPTION_KEY`)                                                                                                                                                   |
+| `src/lib/server/google/sync.ts`                             | `getTeacherAccessToken`, `fullSync`, `syncTeacherCourses`, `syncTopics`, `syncCoursework`, `syncCourseWorkMaterials`                                                                                                               |
+| `src/lib/server/google/classroom-api.ts`                    | `GoogleClassroomClient`                                                                                                                                                                                                            |
+| `src/lib/server/google/drive-api.ts`                        | `GoogleDriveClient` (aussi utilisé par le Drive du tableau blanc)                                                                                                                                                                  |
+| `src/lib/server/google/schemas.ts`, `errors.ts`, `utils.ts` | Zod des réponses Google, erreurs typées, dates, backoff                                                                                                                                                                            |
+| `src/lib/server/google/gmail.ts`                            | `sendWelcomeEmail`, `sendConsentEmail` — **plus appelés** : l'envoi passe par Brevo (`src/lib/server/email/brevo.ts`)                                                                                                              |
+| `src/routes/api/google/`                                    | `auth/` (connect, callback, status, disconnect), `courses`, `topics`, `sync`, partage de devoirs et de supports                                                                                                                    |
+| `src/routes/api/teacher/categories/[classId]/`              | `GET` : `coursework_categories` d'une classe (rubriques de partage), lu par les dialogues de partage de `components/google/` ; prof seul, `classId` validé (UUID), **hors** `assertGoogleClassroomEnabled` (vérifié le 2026-10-13) |
 
 ### Modèle
 

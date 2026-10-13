@@ -58,6 +58,12 @@ export interface DispatchContext {
 	readonly startTime: number;
 	readonly timeoutMs?: number;
 	readonly idGen: { next: number };
+	/**
+	 * Intégrale définie seulement, f définie sur tout [a ; b] et bornes
+	 * numériques : l'intervalle, pour écrire `\ln u` sans valeur absolue quand
+	 * u > 0 y est certain (décision de David, 2026-10-13).
+	 */
+	readonly interval?: { readonly lower: MathNode; readonly upper: MathNode };
 }
 
 export function createContext(
@@ -156,6 +162,8 @@ function defaultDescription(rule: PedagogicalIntegrationRule): string {
 			return 'Linéarité (somme)';
 		case 'extract-constant':
 			return 'Extraction de la constante';
+		case 'reveal-derivative':
+			return "On fait apparaître u'";
 		case 'apply-composite-power':
 			return "Forme u'·uⁿ";
 		case 'apply-composite-ln':

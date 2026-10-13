@@ -70,7 +70,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const isPartner = trade.partner_id === userId;
 
 	if (!isInitiator && !isPartner) {
-		error(403, 'Vous ne participez pas a cet echange');
+		error(403, 'Accès réservé aux participants de cet échange');
 	}
 
 	// Check trade status - only allow access to active trades

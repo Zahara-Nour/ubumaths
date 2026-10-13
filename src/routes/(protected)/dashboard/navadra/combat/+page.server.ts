@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 	// neuf — niveau 1, tutoriel au début.
 	if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
 		logger.error('Fiche de joueur illisible :', gamePlayerError);
-		throw error(500, 'Impossible de charger votre profil de jeu');
+		throw error(500, 'Impossible de charger le profil de jeu');
 	}
 
 	if (!gamePlayer) {
@@ -168,7 +168,7 @@ export const actions: Actions = {
 			// neuf — niveau 1, tutoriel au début.
 			if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
 				logger.error('Fiche de joueur illisible :', gamePlayerError);
-				throw error(500, 'Impossible de charger votre profil de jeu');
+				throw error(500, 'Impossible de charger le profil de jeu');
 			}
 
 			const monsterConfig = generateRandomMonster(gamePlayer?.level || 1);

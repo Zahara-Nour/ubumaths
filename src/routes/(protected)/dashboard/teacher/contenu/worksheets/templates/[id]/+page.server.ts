@@ -135,7 +135,7 @@ export const actions: Actions = {
 
 		// Only owner or admin can update
 		if (existingTemplate.created_by !== user.id && profile.role !== 'admin') {
-			return fail(403, { message: 'Vous ne pouvez modifier que vos propres templates' });
+			return fail(403, { message: 'Modification réservée à l’auteur du template' });
 		}
 
 		const formData = await request.formData();

@@ -36,7 +36,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// AUTRE panne renvoyait l'élève au tableau de bord sans rien expliquer.
 	if (profileError && profileError.code !== 'PGRST116') {
 		logger.error('Profil illisible :', profileError);
-		throw error(500, 'Impossible de vérifier votre profil');
+		throw error(500, 'Impossible de vérifier le profil');
 	}
 
 	if (!profile || profile.role !== 'student') {
@@ -62,7 +62,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		// Des tentatives illisibles ne sont pas « aucune tentative »
 		if (attemptsError) {
 			logger.error('[student results] Tentatives illisibles :', attemptsError);
-			throw error(500, 'Impossible de charger vos résultats');
+			throw error(500, 'Impossible de charger les résultats');
 		}
 
 		return {
