@@ -109,7 +109,10 @@ dans le code, hors catalogue, sans travaux tant qu'ils ne reprennent pas.
   ne mène qu'à `combat/` et `spells/` : ses quatre liens vers des routes inexistantes
   (`achievements`, `leaderboard`, `profile`, `tutorial`) ont été retirés le 2026-10-13.
   Le trigger `trigger_award_gidouilles_on_combat_victory` (fonction `award_gidouilles_on_victory`,
-  `xp_gained / 10 + 5`) crédite sans écrire `gidouilles_activity`.
+  `xp_gained / 10 + 5`) crédite sans écrire `gidouilles_activity`. Les défis du combat
+  (`game_challenges`, écrits par le prof seul) passent par `src/lib/utils/game/challenge-variables.ts` :
+  une expression n'y est évaluée que si elle est purement arithmétique (T5, 2026-10-13), sinon
+  `NaN`.
 - **Evoland** (moteur d'aventure, `src/lib/games/evoland/`) : page `src/routes/(public)/games/evoland/+page.svelte`,
   aucun lien vers elle ; exclue du plan du site (`src/lib/seo/sitemap-pages.ts`).
 

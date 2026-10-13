@@ -47,17 +47,21 @@ function generateRandomValue(min: number, max: number, decimals: number = 0): nu
 	return decimals > 0 ? parseFloat(value.toFixed(decimals)) : Math.floor(value);
 }
 
+// Une classe de caractères, pas d'alternance répétée : temps linéaire. La seule lettre, `e`
+// (notation scientifique), ne laisse atteindre qu'une globale nommée `e` (`e`, `e(1)`, `e++`),
+// qui n'existe pas : ReferenceError → NaN. ⚠️ Ajouter une lettre ici ouvre des identifiants :
+// passer plutôt à `compile()` du moteur de géométrie.
+const ARITHMETIC_ONLY = /^[\d.e+\-*/()\s]*$/;
+
 /**
  * Evaluate mathematical expression with variables
  * Supports basic arithmetic: +, -, *, /, ^, sqrt, parentheses
  */
 function evaluateExpression(expression: string, variables: Record<string, number>): number {
-	// Replace variables
-	let expr = expression;
-	for (const [varName, value] of Object.entries(variables)) {
-		const regex = new RegExp(`\\{${varName}\\}`, 'g');
-		expr = expr.replace(regex, String(value));
-	}
+	// Remplace les variables. Pas de regex bâtie sur le nom : un nom venu de la base comme
+	// `a(` ou `(a+)+` ferait planter ou geler l'onglet. Un nom inconnu reste entre accolades,
+	// et la liste blanche le refuse.
+	let expr = interpolateExpression(expression, variables);
 
 	// Replace sqrt(x) with Math.sqrt(x)
 	expr = expr.replace(/sqrt\s*\(/g, 'Math.sqrt(');
@@ -65,7 +69,11 @@ function evaluateExpression(expression: string, variables: Record<string, number
 	// Replace ^ with ** for exponentiation
 	expr = expr.replace(/\^/g, '**');
 
-	// Evaluate safely using Function constructor
+	// T5 : l'expression vient de la base (`game_challenges`) et s'évalue dans le navigateur
+	// de l'élève. Seule l'arithmétique atteint `new Function` : nombres (notation
+	// scientifique comprise), opérateurs, parenthèses et `Math.sqrt`.
+	if (!ARITHMETIC_ONLY.test(expr.replace(/Math\.sqrt\(/g, '('))) return NaN;
+
 	try {
 		const fn = new Function('return ' + expr);
 		const result = fn();
