@@ -70,6 +70,8 @@
 		worksheet_title: string;
 		student_name: string;
 		exercise_position: number;
+		/** Encore destinataire de l'affectation ? null : inconnu */
+		student_is_recipient: boolean | null;
 	}
 
 	// Props
@@ -321,10 +323,20 @@
 				{context.worksheet_title}
 			</p>
 			<div class="mt-3 flex flex-wrap gap-2">
-				<Button variant="outline" size="sm" href={studentCopyHref} class="gap-2">
-					<Eye class="h-4 w-4" />
-					Voir la copie de {studentFirstName}
-				</Button>
+				{#if context.student_is_recipient === true}
+					<Button variant="outline" size="sm" href={studentCopyHref} class="gap-2">
+						<Eye class="h-4 w-4" />
+						Voir la copie de {studentFirstName}
+					</Button>
+				{:else}
+					<!-- L'aperçu ne montrerait pas SA copie : pas de lien, et on dit pourquoi -->
+					<span class="inline-flex items-center gap-2 text-sm text-muted-foreground">
+						<Eye class="h-4 w-4" />
+						{context.student_is_recipient === false
+							? `Copie de ${studentFirstName} indisponible : n’est plus dans la classe`
+							: `Copie de ${studentFirstName} indisponible pour le moment`}
+					</span>
+				{/if}
 				<Button variant="outline" size="sm" href={exerciseEditorHref} class="gap-2">
 					<Pencil class="h-4 w-4" />
 					Corriger l’exercice

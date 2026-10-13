@@ -20,7 +20,7 @@ const WE_ID = '550e8400-e29b-41d4-a716-446655440012';
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-4466554402e0';
 const REPORT_ID = '550e8400-e29b-41d4-a716-446655440030';
 
-function data(copyNumber: number) {
+function data(copyNumber: number, studentIsRecipient: boolean | null = true) {
 	return {
 		report: {
 			id: REPORT_ID,
@@ -49,7 +49,8 @@ function data(copyNumber: number) {
 		context: {
 			worksheet_title: 'Dérivées',
 			student_name: 'Léa Martin',
-			exercise_position: copyNumber
+			exercise_position: copyNumber,
+			student_is_recipient: studentIsRecipient
 		},
 		nextPendingReportId: null,
 		worksheetId: WORKSHEET_ID,
@@ -84,5 +85,20 @@ describe('page d’un signalement : copie de l’élève et exercice d’origine
 		const text = document.body.textContent ?? '';
 		expect(text).toMatch(new RegExp(`${lore.learning.exercise} :\\s*7(?!\\d)`));
 		expect(text).not.toMatch(new RegExp(`${lore.learning.exercise} :\\s*8(?!\\d)`));
+	});
+
+	it('élève qui a quitté la classe : pas de lien, « Copie de Léa indisponible »', async () => {
+		await render(ReportPage, { props: { data: data(7, false) } as never });
+		expect(link('Voir la copie')).toBeUndefined();
+		expect(document.body.textContent).toContain(
+			'Copie de Léa indisponible : n’est plus dans la classe'
+		);
+	});
+
+	it('destinataire inconnu (lecture en panne) : pas de lien, sans accuser l’élève', async () => {
+		await render(ReportPage, { props: { data: data(7, null) } as never });
+		expect(link('Voir la copie')).toBeUndefined();
+		expect(document.body.textContent).toContain('Copie de Léa indisponible pour le moment');
+		expect(document.body.textContent).not.toContain('n’est plus dans la classe');
 	});
 });

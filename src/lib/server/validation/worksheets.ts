@@ -1393,7 +1393,9 @@ export const getErrorReportDetailResponseSchema = z.object({
 	context: z.object({
 		worksheet_title: z.string(),
 		student_name: z.string(),
-		exercise_position: z.number().int().nonnegative()
+		exercise_position: z.number().int().nonnegative(),
+		// L'auteur est-il encore destinataire ? null : inconnu (lecture en panne)
+		student_is_recipient: z.boolean().nullable()
 	}),
 	next_pending_report_id: z.string().uuid().nullable()
 });

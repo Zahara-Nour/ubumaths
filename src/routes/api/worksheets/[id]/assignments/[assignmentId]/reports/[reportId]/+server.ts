@@ -11,6 +11,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
+import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
 import {
 	validateErrorReportParams,
 	validateReviewErrorReport,
@@ -182,6 +183,21 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			numbering.numberOf(assignmentId, reportData.student_id, reportData.worksheet_exercise_id) ??
 			0;
 
+		// L'auteur est-il encore destinataire de l'affectation ? Sinon, l'aperçu
+		// « vue élève » ne peut pas montrer sa copie : la page ne propose pas le
+		// lien. Lecture en panne : inconnu (null), pas « a quitté la classe ».
+		let studentIsRecipient: boolean | null;
+		try {
+			studentIsRecipient = await isStudentOfAssignment(
+				locals.supabase,
+				assignmentId,
+				reportData.student_id
+			);
+		} catch (recipientError) {
+			logger.error('[API] Destinataires de l’affectation illisibles :', recipientError);
+			studentIsRecipient = null;
+		}
+
 		// Step 4: Build response
 		const studentName =
 			student?.firstname && student?.lastname
@@ -229,7 +245,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			context: {
 				worksheet_title: worksheet.title,
 				student_name: studentName,
-				exercise_position: copyNumber
+				exercise_position: copyNumber,
+				student_is_recipient: studentIsRecipient
 			},
 			next_pending_report_id: nextPendingReportId
 		};

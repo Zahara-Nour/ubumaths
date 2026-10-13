@@ -64,7 +64,7 @@ const VIEW: StudentWorksheetView & { preview_mode: string; preview_student_name:
 	preview_student_name: 'Léa Martin'
 };
 
-function data(initialStudentId: string | null) {
+function data(initialStudentId: string | null, discardedStudent = false) {
 	return {
 		worksheetId: WORKSHEET_ID,
 		assignmentId: ASSIGNMENT_ID,
@@ -77,7 +77,8 @@ function data(initialStudentId: string | null) {
 				class_name: '2nde A'
 			}
 		],
-		initialStudentId
+		initialStudentId,
+		discardedStudent
 	};
 }
 
@@ -148,6 +149,14 @@ describe('aperçu vue élève : élève et exercice lus dans l’adresse', () =>
 		);
 		expect(back?.getAttribute('href')).toBe(
 			`/dashboard/teacher/contenu/worksheets/${WORKSHEET_ID}`
+		);
+	});
+
+	it('élève de l’adresse écarté (plus destinataire) : message explicite, pas d’autre élève en silence', async () => {
+		await render(PreviewPage, { props: { data: data(null, true) } as never });
+		await expect.poll(() => requested.length).toBeGreaterThan(0);
+		expect(document.body.textContent).toContain(
+			'L’élève demandé n’est plus destinataire de cette affectation'
 		);
 	});
 });

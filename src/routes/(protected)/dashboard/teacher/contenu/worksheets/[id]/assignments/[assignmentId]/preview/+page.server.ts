@@ -58,14 +58,19 @@ export const load: PageServerLoad = async ({ params, locals, fetch, url }) => {
 	// Élève présélectionné, lu dans l'adresse (lien « Voir la copie de… » d'un
 	// signalement, D6) : retenu seulement s'il est dans la liste de
 	// l'affectation, que le prof voit déjà ; sinon, vue prof.
-	const requested = studentIdSchema.safeParse(url.searchParams.get('studentId'));
+	const requestedParam = url.searchParams.get('studentId');
+	const requested = studentIdSchema.safeParse(requestedParam);
 	const initialStudentId =
 		requested.success && students.some((s) => s.id === requested.data) ? requested.data : null;
+	// Élève demandé puis écarté (a quitté la classe, identifiant invalide) :
+	// l'écran le dit, plutôt que de montrer en silence une autre copie
+	const discardedStudent = requestedParam !== null && initialStudentId === null;
 
 	return {
 		worksheetId,
 		assignmentId,
 		students,
-		initialStudentId
+		initialStudentId,
+		discardedStudent
 	};
 };

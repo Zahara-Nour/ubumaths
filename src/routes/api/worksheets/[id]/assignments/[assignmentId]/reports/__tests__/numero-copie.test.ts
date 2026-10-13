@@ -108,6 +108,7 @@ function supabase(
 			worksheet_sections: { data: [], error: null },
 			worksheet_error_reports: { data: reports, error: null, count: 1 },
 			worksheet_assignment_classes: { data: [], error: null },
+			worksheet_assignment_students: { data: { id: 'was-1' }, error: null },
 			exercises: { data: null, error: null },
 			...overrides
 		},
@@ -180,6 +181,41 @@ describe('page d’un signalement', () => {
 		expect(body.context.exercise_position).toBe(copyNumber(STUDENT));
 		// L'identifiant de l'exercice d'origine, pour le lien « Corriger l'exercice »
 		expect(body.exercise.id).toBe(EXERCISE_ID);
+	});
+
+	it('l’élève est-il encore destinataire ? (lien « Voir la copie » proposé ou non)', async () => {
+		const { GET } = await import('../[reportId]/+server');
+		const detail = {
+			...report(STUDENT),
+			worksheet_exercise: {
+				id: REPORTED.id,
+				position: REPORTED.position,
+				exercise_id: EXERCISE_ID,
+				exercise: {
+					id: EXERCISE_ID,
+					slug: 'derivee',
+					shared: null,
+					variations: [{ label: 'guided', statement_md: 'Dériver', solution_md: 'x' }],
+					generic_functions: null,
+					topic: null
+				}
+			}
+		};
+		const read = async (overrides: Record<string, object>) => {
+			const response = await GET({
+				locals: locals(supabase(detail, REPORTED, overrides)),
+				params: PARAMS
+			} as never);
+			return ((await response.json()) as { context: { student_is_recipient: boolean | null } })
+				.context.student_is_recipient;
+		};
+		expect(await read({})).toBe(true);
+		// A quitté la classe : ni nommé, ni membre actif d'une classe visée
+		expect(await read({ worksheet_assignment_students: { data: null, error: null } })).toBe(false);
+		// Lecture en panne : inconnu, pas « a quitté la classe »
+		expect(
+			await read({ worksheet_assignment_students: { data: null, error: { message: 'panne' } } })
+		).toBeNull();
 	});
 });
 

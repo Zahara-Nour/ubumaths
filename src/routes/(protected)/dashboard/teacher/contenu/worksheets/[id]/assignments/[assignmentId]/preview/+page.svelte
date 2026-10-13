@@ -427,6 +427,16 @@
 			</Badge>
 		</div>
 
+		{#if data.discardedStudent}
+			<!-- Lien d'un signalement vers un élève qui n'est plus destinataire -->
+			<p
+				class="flex items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100"
+			>
+				<Info class="h-4 w-4 shrink-0" />
+				L’élève demandé n’est plus destinataire de cette affectation : sa copie ne peut pas être affichée.
+			</p>
+		{/if}
+
 		<!-- Student selector -->
 		<Card.Root>
 			<Card.Content class="py-4">

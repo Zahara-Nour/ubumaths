@@ -22,18 +22,30 @@ async function initialStudent(search: string) {
 					students: [{ id: STUDENT_ID, first_name: 'Léa', last_name: 'Martin', class_name: null }]
 				})
 			)
-	} as never)) as { initialStudentId: string | null };
-	return result.initialStudentId;
+	} as never)) as { initialStudentId: string | null; discardedStudent: boolean };
+	return result;
 }
 
 describe('aperçu d’affectation : élève lu dans l’adresse', () => {
 	it('élève de l’affectation : présélectionné', async () => {
-		expect(await initialStudent(`?studentId=${STUDENT_ID}`)).toBe(STUDENT_ID);
+		expect(await initialStudent(`?studentId=${STUDENT_ID}`)).toMatchObject({
+			initialStudentId: STUDENT_ID,
+			discardedStudent: false
+		});
 	});
 
 	it('élève hors de l’affectation, identifiant invalide ou absent : vue prof', async () => {
-		expect(await initialStudent('?studentId=550e8400-e29b-41d4-a716-446655440999')).toBeNull();
-		expect(await initialStudent('?studentId=pas-un-uuid')).toBeNull();
-		expect(await initialStudent('')).toBeNull();
+		// Un élève demandé puis écarté : dit à l'écran, jamais remplacé en silence
+		const discarded = { initialStudentId: null, discardedStudent: true };
+		expect(await initialStudent('?studentId=550e8400-e29b-41d4-a716-446655440999')).toEqual(
+			expect.objectContaining(discarded)
+		);
+		expect(await initialStudent('?studentId=pas-un-uuid')).toEqual(
+			expect.objectContaining(discarded)
+		);
+		expect(await initialStudent('')).toMatchObject({
+			initialStudentId: null,
+			discardedStudent: false
+		});
 	});
 });

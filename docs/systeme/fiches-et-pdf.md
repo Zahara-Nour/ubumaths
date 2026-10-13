@@ -232,7 +232,10 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
   `.../preview?studentId=<élève>&depuis=signalement&signalement=<id>#exercice-<id>`,
   `assignmentPreviewHref` dans `src/lib/navigation/return-links.ts` ; `studentId` retenu seulement
   pour un élève de l'affectation ; le bouton retour de l'aperçu revient alors au signalement,
-  `assignmentPreviewReturn`) et « Corriger l'exercice » (`/dashboard/teacher/contenu/exercices/<id>`).
+  `assignmentPreviewReturn` ; lien proposé seulement si l'auteur est encore destinataire,
+  `context.student_is_recipient`, sinon « Copie de <prénom> indisponible : n'est plus dans la
+  classe », ou « … pour le moment » si la lecture échoue ; un `studentId` écarté est signalé dans
+  l'aperçu, `discardedStudent`, jamais remplacé en silence) et « Corriger l'exercice » (`/dashboard/teacher/contenu/exercices/<id>`).
   Côté élève, ses signalements (onglet de la fiche `api/student/worksheets/[assignmentId]/reports`,
   `api/student/reports`, réponse de `.../exercises/[exerciseId]/report`) portent le numéro de SA
   copie (`fetchCopyNumbering` avec son identifiant), `null` si la fiche lui est illisible (ancien
