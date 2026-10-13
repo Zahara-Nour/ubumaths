@@ -67,6 +67,19 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
      e^{-x}, 3/x, x/(x²+1), (2x+1)³, xe^{2x}… passent de refusés à montrés. Restent refusés : éléments
      simples à facteur non unitaire (même principe à appliquer, non décidé). Tests :
      `composees-coefficient-explique.test.ts`, `integrer-etapes.test.ts`.
+   - **2b `.intégrer` — étapes du refus (2026-10-13, branche `feat/atelier-integrer-pole`)** : l'écart
+     ci-dessus est résorbé. `CalcResult` `refus` reçoit `steps?`/`summary?` ; `integrateRefusalSteps`
+     les pose pour `INTEGRAL_UNDEFINED` quand les étapes concluent `undefinedAt` et que la valeur citée
+     est vérifiée interdite et dans [a ; b] (`citesForbiddenPoint`). Borne = pôle (`\frac1x` de 0 à 1) :
+     concordant (« 0 appartient à [0 ; 1] », le moteur dit « diverge en x = 0 »), étapes montrées.
+     `desk` et `CalculView` : « Comment ? » sur la ligne de refus, rien à changer dans le composant.
+     Tests : `integrer-etapes.test.ts` (refus + garde), `integrer-pole-depliage.svelte.test.ts` (rendu).
+     **Noté** : l'intégrande `\frac{1}{x-2}` s'écrit `\dfrac{1}{\left( x - 2 \right)}` dans les étapes
+     (parenthèses résiduelles, `pedagogical-integration`).
+   - **À faire plus tard — défauts du moteur `integration` relevés (2026-10-13)** :
+     - `.intégrer \frac1t ; t de -1 à 1` : le message du refus dit « (x ≈ 0) » au lieu de t.
+     - `.intégrer … de -1 à 1/2` : le message écrit l'intervalle « [-1 ; 1:/2] ».
+     - `.intégrer \frac{1}{x^2-2} de 0 à 2` : « Unable to factor denominator », en anglais.
    - **2c. Commande `.limite`** (aucune aujourd'hui ; `pedagogical-limits` sert aux corrections) :
      syntaxe et limites à gauche / à droite à trancher par David.
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).

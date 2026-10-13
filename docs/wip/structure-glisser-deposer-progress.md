@@ -44,6 +44,7 @@ ni les déplacements refusés ni le retour donné à l'élève.
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | G8  | **Pas de nouvelle ligne** pour l'instant : l'expression change en place.                                                                                                                                                                                                                            |
 | G9  | **Comme Algebria** : pendant le glisser, un **espace s'ouvre** là où l'expression peut être posée, sous forme d'un bloc qui apparaît de façon **fluide** ; **toute l'expression adapte sa taille** ; le bloc **disparaît** si l'on continue à glisser plus loin (il se rouvre à la place suivante). |
+| G11 | **Option A** : après un déplacement, le signe × seulement où il est obligatoire (devant un nombre, devant une fraction), même si l'élève l'avait écrit ; lâcher une partie à sa place ne change rien. Avant la 5e, pas de calcul littéral : la question ne se pose pas.                             |
 
 ### G9 : comment rendre l'expression malléable pendant le glisser (2026-10-13)
 
@@ -122,12 +123,12 @@ Mesures après ces ajouts (mêmes 8 expressions, en encadrant d'abord le terme v
    | B. Garder les `×` de l'élève | n'ajouter et ne retirer que les `×` obligatoires ; demande de savoir qui a écrit chaque `×`                         |
    | C. Ne jamais retirer un `×`  | ce que fait la démo (par contagion)                                                                                 |
 
-   Reco de Claude : A (sans mémoire, l'écriture attendue en classe : notion `N-ECRIT-PRODUIT`,
+   **Tranché : A** (voir les décisions). Reco de Claude : A (sans mémoire, l'écriture attendue en classe : notion `N-ECRIT-PRODUIT`,
    « suppression du signe × devant une lettre ou une parenthèse, le nombre s'écrit en premier »,
    5e). Sous-question : avant la 5e, garder tous les `×` ?
 
-À demander à David : sa « structure algébrique » est-elle celle-ci (cadres au survol + nom du
-groupe + lecture), ou un arbre dessiné ? Soulever le terme ou le laisser sous le pointeur ?
+Structure algébrique : **les cadres** (confirmé par David le 2026-10-13). Encore à demander :
+soulever le terme ou le laisser sous le pointeur ?
 
 ## Journal
 
@@ -141,3 +142,6 @@ groupe + lecture), ou un arbre dessiné ? Soulever le terme ou le laisser sous l
   8b303bce0). 11 tests verts.
 - 2026-10-13 — survol d'un facteur corrigé (commit local 979180230) ; G11 (politique des `×`)
   posée à David.
+- 2026-10-13 — G11 tranchée (A) ; démo à jour (commit local, `movedLatex`, 13 tests) : `3xy` →
+  `xy × 3` → `3xy` vérifié dans le navigateur.
+- 2026-10-13 — « la structure, c'est bien les cadres » (David).

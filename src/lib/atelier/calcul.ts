@@ -82,7 +82,7 @@ import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
-import { integrateSteps } from './integrate-steps';
+import { integrateRefusalSteps, integrateSteps } from './integrate-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import {
@@ -197,6 +197,14 @@ export type CalcResult =
 			readonly message: string;
 			/** Une indication montrée avec le refus (`.résoudre 2t+1<5` : « écris « ; t » ») */
 			readonly note?: string;
+			/**
+			 * Les étapes qui expliquent le refus, sous « Comment ? ». Seulement
+			 * `.intégrer` avec un pôle dans [a ; b], quand les étapes concordent
+			 * (`integrateRefusalSteps`) ; absentes pour tout autre refus.
+			 */
+			readonly steps?: readonly RenderedStep[];
+			/** Les mêmes étapes en version résumée, comme pour une commande */
+			readonly summary?: readonly RenderedStep[];
 	  };
 
 /** Ce qu'une action attachée à un objet a produit. */
@@ -1192,7 +1200,26 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// montré tel quel, AVANT les étapes — qui, elles, liraient `sin x` autrement —
 	// et pas noyé dans « Je n’ai pas su lire » (revue #880)
 	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {
-		return { kind: 'refus', message: result.error?.message ?? UNREADABLE_COMMAND, ...noted };
+		// `.intégrer \frac1x de -1 à 1` : le refus garde le message du moteur, et
+		// porte les étapes du refus rédigé quand elles concordent (décision de
+		// David, 2026-10-13) — « non définie en x = 0, qui appartient à [−1 ; 1] »
+		const explained =
+			name === 'integrate' &&
+			result.error?.code === 'INTEGRAL_UNDEFINED' &&
+			finalArgs !== null &&
+			finalArgs.bounds !== null
+				? integrateRefusalSteps({
+						expression: finalArgs.expression,
+						variable: finalArgs.variable,
+						bounds: finalArgs.bounds
+					})
+				: null;
+		return {
+			kind: 'refus',
+			message: result.error?.message ?? UNREADABLE_COMMAND,
+			...(explained !== null && { steps: explained.steps, ...summaryField(explained) }),
+			...noted
+		};
 	}
 
 	// ⚠️ **Les étapes remplacent le formateur de terminal, jamais la réponse.**
@@ -1377,7 +1404,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// « Comment ? » : les étapes de `pedagogical-integration`, seulement quand
 	// elles confirment ce que dit le moteur et n'ont aucun coefficient caché
 	// (`integrate-steps.ts`) — sinon la ligne reste celle du moteur, seule.
-	// Un pôle dans [a ; b] sort plus haut, en refus : sans étapes.
+	// Un pôle dans [a ; b] sort plus haut, en refus, avec les étapes du refus
+	// rédigé quand elles concordent (`integrateRefusalSteps`).
 	if (name === 'integrate' && result.success && result.ast !== undefined) {
 		const integrated =
 			finalArgs === null
@@ -1497,7 +1525,9 @@ function resultWithDecimalComma(result: CalcResult): CalcResult {
 			return {
 				...result,
 				message: decimalCommaProse(result.message),
-				...(result.note !== undefined && { note: decimalCommaProse(result.note) })
+				...(result.note !== undefined && { note: decimalCommaProse(result.note) }),
+				...(result.steps !== undefined && { steps: result.steps.map(decimalCommaStep) }),
+				...(result.summary !== undefined && { summary: result.summary.map(decimalCommaStep) })
 			};
 		default:
 			return result;

@@ -79,7 +79,8 @@ Un seul calculateur : **`tidy(ast, { unitChoice: 'written' })`**, en rationnels 
 Ce que fait `computeQuantity` en plus de `tidy` :
 
 - refus en français, avant de calculer : dimensions incompatibles (« On ne peut pas ajouter une
-  longueur et une durée. »), produit de températures ;
+  longueur et une durée. »), produit de températures ; les octets et les bits sont « une quantité
+  de données », un débit (`Mbit/s`) « un débit » (`DIMENSION_NAMES`, `cli/quantities.ts`) ;
 - une unité tapée par l'élève l'emporte quand la valeur y tombe juste (`3[kW]*2[h]`) ;
 - durée composée gardée (`2 h 30 min + 45 min` → 3 h 15 min) ; `.convertir` la répète telle
   quelle à gauche (`2 h 30 min = 150 min`, pas `2,5 h`) : l'issue la garde dans `written` ;

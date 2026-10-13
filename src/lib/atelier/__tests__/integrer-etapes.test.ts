@@ -16,7 +16,11 @@
  *   sans réécriture), des bornes littérales, des étapes qui ne concordent pas
  *   avec le moteur (`\ln x` de 0 à 1), un intégrande que les étapes ne savent
  *   pas rédiger (`\frac{1}{x^2}`).
- * - **pôle dans [a ; b]** : la ligne est un REFUS, qui ne porte pas d'étapes.
+ * - **pôle dans [a ; b]** : la ligne est un REFUS, au message du moteur
+ *   inchangé ; elle porte les étapes du refus rédigé (« non définie en x = 0,
+ *   qui appartient à [−1 ; 1] ») quand elles concluent « non définie » ET que
+ *   la valeur citée est vraiment interdite et dans [a ; b] (décision de David,
+ *   2026-10-13). Les refus des autres commandes restent sans étapes.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -24,7 +28,7 @@ import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { integrateSteps } from '../integrate-steps';
-import { hasUnexplainedCoefficient } from '../integrate-steps-check';
+import { citesForbiddenPoint, hasUnexplainedCoefficient } from '../integrate-steps-check';
 import { parseLatex } from '$lib/mathAST/parser';
 import { superscript, euler, implicitMultiply, number, fraction } from '$lib/mathAST/factory';
 import {
@@ -220,12 +224,129 @@ describe('.intégrer : autres refus', () => {
 		expect(entry.latex).toBe('-\\dfrac{1}{x} + C');
 		expect(entry.steps).toBeUndefined();
 	});
+});
 
-	it('pôle dans [a ; b] : la ligne est un refus, sans étapes', () => {
-		const entry = lastEntry('.intégrer 1/x de -1 à 1');
+// =============================================================================
+// Pôle dans [a ; b] : le refus du moteur, avec les étapes du refus rédigé
+// =============================================================================
+
+describe('.intégrer : pôle dans [a ; b] → refus du moteur + étapes du refus', () => {
+	it.each([
+		// [saisie, message du moteur (inchangé), valeur interdite, intervalle des étapes]
+		[
+			'.intégrer \\frac1x de -1 à 1',
+			"L'intégrale diverge ou n'est pas définie sur [-1 ; 1]",
+			'x = 0',
+			'\\left[ -1 ; 1 \\right]'
+		],
+		[
+			'.intégrer 1/x de -1 à 1',
+			"L'intégrale diverge ou n'est pas définie sur [-1 ; 1]",
+			'x = 0',
+			'\\left[ -1 ; 1 \\right]'
+		],
+		[
+			'.intégrer \\frac{1}{x-2} de 1 à 3',
+			"L'intégrale diverge ou n'est pas définie sur [1 ; 3]",
+			'x = 2',
+			'\\left[ 1 ; 3 \\right]'
+		],
+		// Borne = pôle : les étapes disent « 0 appartient à [0 ; 1] » (bornes
+		// comprises), le moteur « la primitive diverge en x = 0 » : concordants
+		[
+			'.intégrer \\frac1x de 0 à 1',
+			"L'intégrale diverge ou n'est pas définie sur [0 ; 1]",
+			'x = 0',
+			'\\left[ 0 ; 1 \\right]'
+		],
+		// Bornes à l'envers : l'intervalle des étapes est remis dans l'ordre
+		[
+			'.intégrer \\frac1x de 1 à -1',
+			"L'intégrale diverge ou n'est pas définie sur [1 ; -1]",
+			'x = 0',
+			'\\left[ -1 ; 1 \\right]'
+		]
+	])('%s', (input, message, point, interval) => {
+		const entry = lastEntry(input);
+		// Le refus garde son message, mot pour mot
 		expect(entry.failed).toBe(true);
-		expect(entry.text).toContain("L'intégrale diverge ou n'est pas définie sur [-1 ; 1]");
+		expect(entry.text).toContain(message);
+		expect(entry.latex).toBeUndefined();
+		// … et porte les étapes, qui concluent « non définie »
+		expect(entry.steps).toBeDefined();
+		const last = entry.steps![entry.steps!.length - 1];
+		expect(last.rule).toBe('integrand-undefined-on-interval');
+		expect(last.expressionLatex).toContain(point);
+		expect(last.expressionLatex).toContain(interval);
+		// Aucune valeur calculée par les étapes
+		expect(entry.steps!.map((s) => s.rule)).not.toContain('simplify-bounds-result');
+		// Le résumé : mêmes titres, sans les « pourquoi »
+		expect(entry.summary).toBeDefined();
+		expect(entry.summary!.map((s) => s.title)).toEqual(entry.steps!.map((s) => s.title));
+		expect(entry.summary!.every((s) => s.explanation === undefined)).toBe(true);
+	});
+
+	it('décimaux à la française dans les étapes du refus : `de -0.5 à 1`', () => {
+		const entry = lastEntry('.intégrer \\frac1x de -0.5 à 1');
+		expect(entry.failed).toBe(true);
+		const latex = entry.steps!.map((s) => s.expressionLatex ?? '').join(' ');
+		expect(latex).toContain('{,}');
+		expect(latex).not.toMatch(/\d\.\d/);
+	});
+
+	it('refus que la garde bloque : `\\tan x` de 0 à 2 → refus du moteur, sans étapes', () => {
+		// Les étapes citent π/2, mais tan(π/2) se calcule en un nombre fini
+		// (≈ 1,6·10¹⁶) : la valeur n'est pas prouvée interdite, pas d'étapes
+		const entry = lastEntry('.intégrer \\tan x de 0 à 2');
+		expect(entry.failed).toBe(true);
+		expect(entry.text).toContain("L'intégrale diverge ou n'est pas définie sur [0 ; 2]");
 		expect(entry.steps).toBeUndefined();
+		expect(entry.summary).toBeUndefined();
+	});
+
+	it.each([
+		['.dériver |x|', 'la valeur absolue n'],
+		['.dériver x^2 ; ab', '« ab » n']
+	])('non-régression : le refus de `%s` reste sans étapes', (input, message) => {
+		const entry = lastEntry(input);
+		expect(entry.failed).toBe(true);
+		expect(entry.text).toContain(message);
+		expect(entry.steps).toBeUndefined();
+		expect(entry.summary).toBeUndefined();
+	});
+});
+
+describe('citesForbiddenPoint : la valeur citée par le refus, vérifiée', () => {
+	const f = node('1/x');
+	const [a, b] = [node('-1'), node('1')];
+
+	it('0 pour 1/x sur [−1 ; 1] : interdite et dans l’intervalle', () => {
+		expect(citesForbiddenPoint(f, 'x', node('0'), a, b)).toBe(true);
+	});
+
+	it('bornes à l’envers : même intervalle', () => {
+		expect(citesForbiddenPoint(f, 'x', node('0'), b, a)).toBe(true);
+	});
+
+	it('une borne : appartient à [a ; b]', () => {
+		expect(citesForbiddenPoint(f, 'x', node('0'), node('0'), b)).toBe(true);
+	});
+
+	it('hors de l’intervalle : refusée', () => {
+		expect(citesForbiddenPoint(node('1/(x-5)'), 'x', node('5'), a, b)).toBe(false);
+	});
+
+	it('pas une valeur interdite (f y est définie) : refusée', () => {
+		expect(citesForbiddenPoint(node('x^2'), 'x', node('0'), a, b)).toBe(false);
+	});
+
+	it('une autre lettre que la variable : refusée (f ne s’évalue nulle part)', () => {
+		// Sans cette garde, 1/(x − k) vaut NaN partout, donc « interdite » en 0,5
+		expect(citesForbiddenPoint(node('1/(x-k)'), 'x', node('0.5'), a, b)).toBe(false);
+	});
+
+	it('une valeur non numérique : refusée', () => {
+		expect(citesForbiddenPoint(f, 'x', node('k'), a, b)).toBe(false);
 	});
 });
 

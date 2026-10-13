@@ -129,6 +129,31 @@ export function primitivesAgree(steps: MathNode, engine: MathNode, variable: str
 	return differences.every((d) => near(d, differences[0]));
 }
 
+/**
+ * La valeur que cite un refus rédigé (« f n'est pas définie en x = p, qui
+ * appartient à [a ; b] ») est-elle vraie ? Trois vérifications, sans faire
+ * confiance au pipeline (décision de David, 2026-10-13) :
+ * - p est un nombre, et f n'a pas d'autre lettre que la variable (sinon f
+ *   ne s'évalue nulle part, et « interdite » ne prouverait rien) ;
+ * - p appartient à [min(a, b) ; max(a, b)], bornes comprises ;
+ * - f n'a pas de valeur finie en p.
+ */
+export function citesForbiddenPoint(
+	integrand: MathNode,
+	variable: string,
+	point: MathNode,
+	lower: MathNode,
+	upper: MathNode
+): boolean {
+	if (!isNumericBound(point) || !isNumericBound(lower) || !isNumericBound(upper)) return false;
+	if ([...getVariables(integrand)].some((name) => name !== variable)) return false;
+	const p = evalAt(point, {});
+	const [a, b] = [evalAt(lower, {}), evalAt(upper, {})];
+	const [low, high] = a <= b ? [a, b] : [b, a];
+	const inside = (p > low || near(p, low)) && (p < high || near(p, high));
+	return inside && !Number.isFinite(evalAt(integrand, { [variable]: p }));
+}
+
 // =============================================================================
 // Coefficients cachés
 // =============================================================================
