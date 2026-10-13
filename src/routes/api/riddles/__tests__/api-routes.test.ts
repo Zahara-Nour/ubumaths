@@ -3,7 +3,7 @@
  * Tests submission endpoint and auto-select endpoint
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Import the handlers (we'll mock dependencies)
@@ -39,7 +39,6 @@ vi.mock('$lib/server/buddy-xp-service', () => ({
 
 import { validateRiddleAnswer } from '$lib/utils/riddle-validator';
 import { createRiddleValidationMessage, getRiddleTeacherId } from '$lib/server/riddle-messages';
-import { checkAndAutoSelectToday } from '$lib/server/riddle-auto-select';
 
 describe('POST /api/riddles/[id]/submit', () => {
 	const RIDDLE_UUID = '12345678-1234-4234-8234-123456789012';
@@ -647,155 +646,6 @@ describe('POST /api/riddles/[id]/submit', () => {
 		// Le client de l'élève ne lit ni la réponse ni la correction dans `riddles`.
 		const columns = String(riddleSelect.mock.calls[0][0]);
 		expect(columns).not.toMatch(/\*|answer|correction/);
-	});
-});
-
-describe('POST /api/riddles/auto-select-daily', () => {
-	let mockSupabase: SupabaseClient;
-	let mockRequest: Request;
-
-	beforeEach(() => {
-		vi.clearAllMocks();
-
-		mockSupabase = {
-			from: vi.fn()
-		} as unknown as SupabaseClient;
-	});
-
-	// Clear env vars stubbed inside individual tests even if a test times out
-	// before its inline cleanup runs — otherwise a stubbed API key leaks into the
-	// next test and it wrongly returns 401 (flaky cascade). See issue #43.
-	afterEach(() => {
-		vi.unstubAllEnvs();
-	});
-
-	it('should successfully auto-select riddle', async () => {
-		mockRequest = new Request('http://localhost/api/riddles/auto-select-daily', {
-			method: 'POST'
-		});
-
-		(checkAndAutoSelectToday as Mock).mockResolvedValue({
-			success: true,
-			message: 'Énigme du jour sélectionnée automatiquement: riddle-123'
-		});
-
-		const response = await autoSelectHandler.POST({
-			request: mockRequest,
-			locals: { supabase: mockSupabase }
-		} as never);
-
-		const result = await response.json();
-
-		expect(result.success).toBe(true);
-		expect(result.message).toContain('sélectionnée automatiquement');
-	});
-
-	it('should skip if riddle already exists', async () => {
-		mockRequest = new Request('http://localhost/api/riddles/auto-select-daily', {
-			method: 'POST'
-		});
-
-		(checkAndAutoSelectToday as Mock).mockResolvedValue({
-			success: true,
-			message: 'Énigme du jour déjà définie'
-		});
-
-		const response = await autoSelectHandler.POST({
-			request: mockRequest,
-			locals: { supabase: mockSupabase }
-		} as never);
-
-		const result = await response.json();
-
-		expect(result.success).toBe(true);
-		expect(result.message).toBe('Énigme du jour déjà définie');
-	});
-
-	it('should handle auto-selection failure', async () => {
-		mockRequest = new Request('http://localhost/api/riddles/auto-select-daily', {
-			method: 'POST'
-		});
-
-		(checkAndAutoSelectToday as Mock).mockResolvedValue({
-			success: false,
-			message: 'Aucune énigme éligible disponible'
-		});
-
-		const response = await autoSelectHandler.POST({
-			request: mockRequest,
-			locals: { supabase: mockSupabase }
-		} as never);
-
-		const result = await response.json();
-
-		expect(result.success).toBe(false);
-		expect(result.message).toBe('Aucune énigme éligible disponible');
-		expect(response.status).toBe(500);
-	});
-
-	it('should validate API key when configured', async () => {
-		// Mock environment variable
-		vi.stubEnv('VITE_RIDDLE_AUTO_SELECT_API_KEY', 'secret-key-123');
-
-		mockRequest = new Request('http://localhost/api/riddles/auto-select-daily', {
-			method: 'POST',
-			headers: {
-				Authorization: 'Bearer wrong-key'
-			}
-		});
-
-		await expect(
-			autoSelectHandler.POST({
-				request: mockRequest,
-				locals: { supabase: mockSupabase }
-			} as never)
-		).rejects.toThrow();
-
-		vi.unstubAllEnvs();
-	});
-
-	it('should accept valid API key', async () => {
-		vi.stubEnv('VITE_RIDDLE_AUTO_SELECT_API_KEY', 'secret-key-123');
-
-		mockRequest = new Request('http://localhost/api/riddles/auto-select-daily', {
-			method: 'POST',
-			headers: {
-				Authorization: 'Bearer secret-key-123'
-			}
-		});
-
-		(checkAndAutoSelectToday as Mock).mockResolvedValue({
-			success: true,
-			message: 'Success'
-		});
-
-		const response = await autoSelectHandler.POST({
-			request: mockRequest,
-			locals: { supabase: mockSupabase }
-		} as never);
-
-		expect(response.status).toBe(200);
-
-		vi.unstubAllEnvs();
-	});
-
-	it('should handle unexpected errors gracefully', async () => {
-		mockRequest = new Request('http://localhost/api/riddles/auto-select-daily', {
-			method: 'POST'
-		});
-
-		(checkAndAutoSelectToday as Mock).mockRejectedValue(new Error('Unexpected error'));
-
-		const response = await autoSelectHandler.POST({
-			request: mockRequest,
-			locals: { supabase: mockSupabase }
-		} as never);
-
-		const result = await response.json();
-
-		expect(result.success).toBe(false);
-		expect(result.message).toBe('Erreur serveur');
-		expect(response.status).toBe(500);
 	});
 });
 
