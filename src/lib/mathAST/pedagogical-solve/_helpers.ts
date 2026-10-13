@@ -105,8 +105,9 @@ export function prepareLinearRelation(rel: RelationNode, variable: string): Rela
  * `\frac{3x^2}{2x}\geq 0` concluait x ≥ 0 (écart V47, 2026-10-13). Sa
  * conclusion est une forme résolue (`x ≥ 0`), qui ne peut pas exclure un
  * point : il refuse, l'appelant se replie sur `solveInequality`, qui lit le
- * domaine sur l'inéquation écrite. (Le second degré conclut par
- * `solveInequality` : sa conclusion est juste, il n'a pas besoin du refus.)
+ * domaine sur l'inéquation écrite. Le second degré refuse aussi (V48) :
+ * sa conclusion lue sur `solveInequality` était juste, mais ses étapes
+ * rédigeaient `\frac{2x^3}{x}<2` comme 2x² − 2 < 0 sans exclure 0.
  */
 export function rejectForbiddenValues(inequality: RelationNode, variable: string): void {
 	const { domain, unresolved } = computeDomain(

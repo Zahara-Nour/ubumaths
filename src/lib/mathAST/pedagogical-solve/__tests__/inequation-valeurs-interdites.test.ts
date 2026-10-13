@@ -5,8 +5,13 @@
  * `\frac{4x^2}{2x}<6` concluait x < 3, 0 compris — valeur interdite. Le
  * premier degré conclut par une forme résolue, qui ne peut pas exclure un
  * point : il refuse (`InequalityNotSolvable`), l'appelant se replie sur le
- * moteur (`solveInequality`, juste depuis V47). Le second degré conclut par
- * `solveInequality` : sa conclusion est juste, ses étapes restent (V48).
+ * moteur (`solveInequality`, juste depuis V47).
+ *
+ * Écart V48 (2026-10-13, option (c) de David) : le second degré refuse aussi.
+ * `\frac{2x^3}{x}<2` était rédigé comme 2x² − 2 < 0 : conclusion juste (lue
+ * sur `solveInequality`), mais aucune étape n'annonçait l'exclusion de 0, et
+ * la première ligne était fausse en 0. Il refuse désormais, comme le premier
+ * degré : l'atelier affiche la réponse du moteur, sans « Comment ? ».
  */
 
 import { describe, it, expect } from 'vitest';
@@ -33,13 +38,13 @@ describe('valeur interdite effacée par la simplification : refus', () => {
 		);
 	});
 
-	it('second degré : \\frac{2x^3}{x}<2 garde ses étapes, sa conclusion exclut 0', () => {
-		// La conclusion lit `solveInequality` (juste depuis V47) ; le tableau de
-		// signes de 2x² − 2 ne montre pas la valeur interdite (écart V48)
-		const steps = generateQuadraticInequalitySteps(relationOf('\\frac{2x^3}{x}<2'), {
-			level: 'lycee'
-		});
-		expect(steps[steps.length - 1].description).toBe('Solution : $]-1 ; 0[ \\cup ]0 ; 1[$');
+	it.each(['\\frac{2x^3}{x}<2', '\\frac{x^3-1}{x-1}<0'])('second degré : %s', (inequality) => {
+		expect(() =>
+			generateQuadraticInequalitySteps(relationOf(inequality), { level: 'lycee' })
+		).toThrow(InequalityNotSolvable);
+		expect(() => generateInequalitySteps(relationOf(inequality), { level: 'lycee' })).toThrow(
+			InequalityNotSolvable
+		);
 	});
 });
 
@@ -50,9 +55,12 @@ describe('verrous : sans valeur interdite, rien ne change', () => {
 		).toBeGreaterThan(0);
 	});
 
-	it('3x^2-12\\leq 0', () => {
+	it.each(['3x^2-12\\leq 0', '2x^2<2', '-2x^2\\geq -8', 'x^2-1>0'])('%s', (inequality) => {
 		expect(
-			generateQuadraticInequalitySteps(relationOf('3x^2-12\\leq 0'), { level: 'lycee' }).length
+			generateQuadraticInequalitySteps(relationOf(inequality), { level: 'lycee' }).length
+		).toBeGreaterThan(0);
+		expect(
+			generateInequalitySteps(relationOf(inequality), { level: 'lycee' }).length
 		).toBeGreaterThan(0);
 	});
 
