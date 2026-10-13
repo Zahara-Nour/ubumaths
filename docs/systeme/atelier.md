@@ -465,7 +465,7 @@ second degré la refusent (`rejectForbiddenValues`, V47 puis V48), `solveSteps` 
 l'atelier affiche la réponse du moteur sans « Comment ? ».
 
 **« Résumé / Détaillé »** (`steps-summary.ts`, 2026-10-13). Les quatre commandes qui rédigent
-(simplifier, factoriser, dériver, résoudre — tapées ou cliquées sur une carte) rendent le même
+(simplifier, factoriser, dériver, résoudre — tapées, ou Résoudre / Dériver sur une carte) rendent le même
 calcul DEUX fois : `steps` en `verbosity: 'detailed'`, `summary` en `'summarized'`. Le moteur
 tourne une fois ; seul `renderAll` est rappelé, et la réponse de la ligne vient du calcul, jamais
 de la rédaction. `summaryOf` compare les deux rendus et rend `undefined` s'ils sont identiques :
