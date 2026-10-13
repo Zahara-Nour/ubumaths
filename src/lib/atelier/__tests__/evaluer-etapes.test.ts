@@ -235,3 +235,59 @@ describe('refus, décimaux, plusieurs lettres', () => {
 		expect(line('.évaluer a x en x=3', ['a = 2']).steps).toBeUndefined();
 	});
 });
+
+// =============================================================================
+// Revue du 2026-10-14
+// =============================================================================
+
+describe('revue : valeur posée, négatif en tête de produit, parenthèses inutiles', () => {
+	it('une valeur posée tapée après « en » (x=a) : pas d’étapes', () => {
+		expect(line('.évaluer 2x en x=a', ['a = 3']).steps).toBeUndefined();
+	});
+
+	it('f en x=a : la ligne s’écrit f(3) = 10, sans parenthèses doublées', () => {
+		const result = line('.évaluer f en x=a', ['a = 3', 'f(x) = x^2+1']);
+		expect(result.latex?.replace(/\s/g, '')).toBe('f(3)=10');
+		expect(result.output).toBe('f(3) = 10');
+		expect(result.steps).toBeUndefined();
+	});
+
+	it('x(x-1) en x=-2 : le négatif en tête de produit entre parenthèses dès le remplacement', () => {
+		const all = steps('.évaluer x(x-1) en x=-2');
+		expect(flat(all[0])).toBe('(-2)(-2-1)');
+		expect(conclusion(all)).toBe('6');
+	});
+
+	it('x\\cdot x en x=-2 : (−2) × (−2)', () => {
+		const all = steps('.évaluer x\\cdot x en x=-2');
+		expect(flat(all[0])).toBe('(-2)\\times(-2)');
+		expect(conclusion(all)).toBe('4');
+	});
+
+	it('-x^2 en x=-3 : −(−3)² = −9', () => {
+		const all = steps('.évaluer -x^2 en x=-3');
+		expect(flat(all[0])).toBe('-(-3)^2');
+		expect(conclusion(all)).toBe('-9');
+	});
+
+	it('e^x+1 en x=0 : une puissance de e, pas de « Comment ? »', () => {
+		// Mesuré : le pipeline n'y rend que « On calcule » (déjà écarté)
+		expect(line('.évaluer e^x+1 en x=0').steps).toBeUndefined();
+	});
+
+	it.each([
+		['.évaluer e^x+x^2 en x=0'],
+		['.évaluer 2e^x+3x en x=0'],
+		['.évaluer \\ln(x)+x^2 en x=1']
+	])('%s : des opérations autour d’une fonction transcendante, pas de « Comment ? »', (input) => {
+		// Sans la garde, ces lignes montraient e^0 et ln(1) avalés par « On calcule »
+		expect(line(input).steps).toBeUndefined();
+	});
+
+	it('g(x)+1 en x=2 : 2² + 1, puis 2 × 2, sans parenthèses inutiles', () => {
+		const all = steps('.évaluer g(x)+1 en x=2', ['g(x) = x^2']);
+		expect(flat(all[0])).toBe('2^2+1');
+		expect(all.some((s) => flat(s).includes('2\\times2'))).toBe(true);
+		expect(conclusion(all)).toBe('5');
+	});
+});

@@ -679,7 +679,10 @@ négatif compris : `(-3)^2 = (-3) \times (-3) = 9`, « Soustraire $-3$, c'est aj
 `atelier-substitute`) : l'expression où `typedValueNode(valeur)` (la valeur tapée, divisions en
 fractions, partagée avec `typedValueLatex`) a pris la place de la lettre, négatifs entre
 parenthèses (`substitute` + `toLatex`), produit d'un nombre écrit `\times` (`crossProducts` :
-`3x` en −2 sortait `3 * (-2)`) ; pour une fonction de l'atelier, `f(2) = 2^2 + 1` (parenthèses
+`3x` en −2 sortait `3 * (-2)`), négatif en tête de produit entre parenthèses dès le remplacement
+(`parenthesizeLeadingNegatives` : `(-2)(-2-1)`, pas `-2(-2-1)`), parenthèses que l'atelier ajoute
+autour d'une fonction citée retirées quand elles ne servent à rien (`dropUselessParentheses` :
+`g(x)+1` → `2^2 + 1`, développé en `2 \times 2`) ; pour une fonction de l'atelier, `f(2) = 2^2 + 1` (parenthèses
 extérieures de la définition retirées). Le pipeline part de cette même expression. **Résumé** :
 le pipeline ne distingue pas ses étapes par verbosité (seules les explications changent) ; le
 résumé est donc CONSTRUIT : le remplacement, puis « On effectue les calculs »
@@ -694,7 +697,9 @@ décimaux (virgule par `resultWithDecimalComma`, `2 \times 1{,}5 = 3`), mais des
 passent par une fraction sous une réponse décimale (le pipeline récrit `1{,}5^2` en 9/4 et
 `1 + 0{,}5` en 3/2) → pas d'étapes. **Une seule lettre** : une saisie qui cite une autre lettre
 qu'une fonction de l'atelier (`a x` avec `a` posé, que l'atelier remplace avant le moteur) n'a
-pas d'étapes (`citesOtherLetters`, E6 en attente). Les refus (`VALUE_FORBIDDEN`) sortent avant,
+pas d'étapes (`citesOtherLetters`, E6 en attente) ; de même une valeur posée tapée après `en`
+(`en x=a`), dont la ligne s'écrit `f(3) = 10` (`typedValueOf` ôte les parenthèses de
+remplacement). Les refus (`VALUE_FORBIDDEN`) sortent avant,
 sans étapes.
 
 **`.intégrer` en détail** (`integrate-steps.ts`, 2026-10-13). La réponse de la ligne est celle

@@ -16,8 +16,9 @@
  *   n'est offert que si le détaillé a au moins deux opérations — sinon il
  *   dirait la même chose.
  * - **E4** : rien à montrer → pas d'étapes (`evaluate-steps-check.ts`).
- * - **E5** : une réponse décimale garde ses décimaux (la virgule vient de
- *   `resultWithDecimalComma`) ; des étapes qui passent par des fractions
+ * - **E5** : une réponse décimale garde ses décimaux, écrits ici à point :
+ *   la virgule est appliquée ensuite par `calcul.ts` (`resultWithDecimalComma`,
+ *   sur la réponse ET les étapes) ; des étapes qui passent par des fractions
  *   (le pipeline récrit 1 + 0,5 en 3/2) sous une réponse décimale → pas
  *   d'étapes.
  * - Une seule lettre : une expression qui en garde une autre (une valeur
@@ -37,6 +38,7 @@ import { substitute } from '$lib/mathAST/eval';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { mapNode } from '$lib/mathAST/transforms';
+import { parentheses } from '$lib/mathAST/factory';
 import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
 import { generatePedagogicalArithmeticSteps } from '$lib/mathAST/pedagogical-arithmetic/pipeline';
 import { PedagogicalArithmeticRenderer } from '$lib/mathAST/pedagogical-arithmetic/renderer';
@@ -111,7 +113,9 @@ export function evaluateSteps(
 		if (getVariables(typed).size > 0) return null;
 
 		const value = typedValueNode(typed);
-		const replaced = crossProducts(substitute(expression, { [args.assignment.name]: value }));
+		const replaced = crossProducts(
+			substitute(dropUselessParentheses(expression), { [args.assignment.name]: value })
+		);
 		if (hasTranscendental(replaced)) return null;
 
 		const result = generatePedagogicalArithmeticSteps(replaced, {
@@ -126,7 +130,7 @@ export function evaluateSteps(
 		if (!concludesEngineValue(result.finalNode, engineAnswer)) return null;
 		if (hasDecimalLiteral(engineAnswer) && hasFraction(operations)) return null;
 
-		const replacedLatex = toLatex(replaced);
+		const replacedLatex = toLatex(parenthesizeLeadingNegatives(replaced));
 		const head = args.callLatex === null ? '' : `${args.callLatex} = `;
 		const substitution: RenderedStep = {
 			id: -1,
@@ -187,5 +191,59 @@ function startsWithNumber(node: MathNode): boolean {
 			return true;
 		default:
 			return false;
+	}
+}
+
+/**
+ * Un négatif en tête de produit, entre parenthèses (E3) : `x(x-1)` en −2
+ * s'écrivait `-2(-2-1)`, et `(-2)` n'apparaissait qu'à l'étape suivante.
+ * Affichage seul : le pipeline remet lui-même ces parenthèses.
+ */
+function parenthesizeLeadingNegatives(node: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		n.type === 'multiplication' && n.left.type === 'opposite'
+			? { ...n, left: parentheses(n.left) }
+			: n
+	);
+}
+
+/**
+ * Les parenthèses qu'ajoute l'atelier autour d'une fonction citée
+ * (`g(x)+1` → `(x^2)+1`) : sans elles, `2^2 + 1`, que le pipeline développe
+ * (`2 × 2`) au lieu de « On effectue les calculs entre parenthèses ».
+ * Retirées seulement autour d'une puissance, d'un nombre, d'une lettre ou
+ * d'une fonction (et d'un produit dans une somme) — jamais autour d'un opposé
+ * ni d'une somme, ni sur la base d'une puissance.
+ */
+function dropUselessParentheses(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		switch (n.type) {
+			case 'addition':
+			case 'subtraction':
+				return { ...n, left: unwrap(n.left, true), right: unwrap(n.right, true) };
+			case 'multiplication':
+				return { ...n, left: unwrap(n.left, false), right: unwrap(n.right, false) };
+			default:
+				return n;
+		}
+	});
+}
+
+/** Le contenu d'une parenthèse qui ne sert à rien à cette place, sinon le nœud. */
+function unwrap(node: MathNode, inSum: boolean): MathNode {
+	if (node.type !== 'delimiter' || node.semantic !== 'grouping') return node;
+	const content = node.content;
+	switch (content.type) {
+		case 'superscript':
+		case 'number':
+		case 'variable':
+		case 'constant':
+		case 'function':
+			return content;
+		case 'multiplication':
+		case 'division':
+			return inSum ? content : node;
+		default:
+			return node;
 	}
 }

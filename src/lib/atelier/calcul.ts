@@ -1571,7 +1571,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			finalArgs === null ||
 			finalArgs.assignment === null ||
 			result.ast === undefined ||
-			citesOtherLetters(session, typedArgs?.expression ?? null, finalArgs.assignment.name)
+			citesOtherLetters(session, typedArgs?.expression ?? null, finalArgs.assignment.name) ||
+			citesOtherLetters(session, typedArgs?.assignment?.value ?? null, null)
 				? null
 				: evaluateSteps(
 						{
@@ -1632,7 +1633,7 @@ function evaluatedLine(
 					? 'vrai'
 					: 'faux'
 				: `${rounded ? '≈ ' : ''}${toCustom(ast)}`;
-	const value = typedValue === null ? undefined : parseCommandExpression(typedValue).ast;
+	const value = typedValueOf(typedValue);
 	const call = evaluatedCallLatex(functionName, typedValue);
 	if (functionName === null || value === undefined || call === null) {
 		return { text: valueText, latex };
@@ -1644,16 +1645,32 @@ function evaluatedLine(
 
 /**
  * La saisie TAPÉE cite-t-elle une autre lettre que celle qu'on remplace
- * (une valeur posée dans l'atelier, `a` dans `.évaluer a x en x=3`) ? Ses
+ * (une valeur posée dans l'atelier, `a` dans `.évaluer a x en x=3`, ou dans
+ * la valeur, `en x=a` : `letter` vaut alors `null`) ? Ses
  * étapes la feraient disparaître sans le dire : pas d'étapes (E6, plusieurs
  * lettres, en attente). Le nom d'une fonction de l'atelier ne compte pas.
  */
-function citesOtherLetters(session: CalcSession, typed: string | null, letter: string): boolean {
+function citesOtherLetters(
+	session: CalcSession,
+	typed: string | null,
+	letter: string | null
+): boolean {
 	const ast = typed === null ? undefined : parseCommandExpression(typed).ast;
 	if (ast === undefined) return true;
 	return [...getVariables(ast)].some(
 		(name) => name !== letter && session.atelier.get(name)?.kind !== 'function'
 	);
+}
+
+/**
+ * La valeur tapée après `en`, lue. Une valeur posée dans l'atelier (`en x=a`)
+ * arrive remplacée entre parenthèses, `(3)` : sans elles, `f(3)` et non
+ * `f((3))`.
+ */
+function typedValueOf(typedValue: string | null): MathNode | undefined {
+	let value = typedValue === null ? undefined : parseCommandExpression(typedValue).ast;
+	while (value?.type === 'delimiter') value = value.content;
+	return value;
 }
 
 /**
@@ -1663,7 +1680,7 @@ function citesOtherLetters(session: CalcSession, typed: string | null, letter: s
  * (`typedValueLatex`).
  */
 function evaluatedCallLatex(functionName: string | null, typedValue: string | null): string | null {
-	const value = typedValue === null ? undefined : parseCommandExpression(typedValue).ast;
+	const value = typedValueOf(typedValue);
 	if (functionName === null || value === undefined) return null;
 	const argument = typedValueLatex(value);
 	const plain = isNumber(value) || (isOpposite(value) && isNumber(value.operand));
