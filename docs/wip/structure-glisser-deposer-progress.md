@@ -248,3 +248,4 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
   `toLatex(multiply(2, divide(12, 3, 'ratio')))` écrit `2 \times 12 : 3` (à signaler).
 - 2026-10-13 — **lot 1 mergé : PR #1332** (b03cb0b88), CI verte ; pas en prod. Lot 2 (champ de
   formule réglable) en attente des réponses de David (écrire / manipuler, réglages, E5.4).
+- 2026-10-13 — lot 1 (#1332) en prod avec la v0.29.0 (sans effet visible : pas encore d'interface).
