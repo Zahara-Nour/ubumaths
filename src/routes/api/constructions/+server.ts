@@ -12,6 +12,9 @@ import { constructionScriptSchema } from '$lib/constructions';
 import type { TablesInsert } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
 import { syncResourceTags } from '$lib/server/resource-tags';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/constructions/+server');
 
 // =============================================================================
 // VALIDATION SCHEMAS
@@ -116,7 +119,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data, error: queryError, count } = await query;
 
 	if (queryError) {
-		console.error('Error fetching constructions:', queryError);
+		logger.error('Error fetching constructions:', queryError);
 		throw error(500, 'Impossible de charger les constructions');
 	}
 
@@ -183,7 +186,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	}
 
 	if (insertError) {
-		console.error('Error creating construction:', insertError);
+		logger.error('Error creating construction:', insertError);
 		throw error(500, 'Impossible de créer la construction');
 	}
 

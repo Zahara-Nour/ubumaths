@@ -13,6 +13,9 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/questions/templates/all/+server');
 
 /**
  * GET /api/questions/templates/all
@@ -30,7 +33,7 @@ export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 		.eq('status', 'published');
 
 	if (error) {
-		console.error('[GET /api/questions/templates/all] Error fetching templates:', error);
+		logger.error('[GET /api/questions/templates/all] Error fetching templates:', error);
 		// Return empty array on error (fail-safe pattern)
 		return json({ templates: [] });
 	}

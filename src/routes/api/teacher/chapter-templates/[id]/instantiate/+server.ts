@@ -9,6 +9,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { getChapterTemplate, instantiateTemplate } from '$lib/server/chapter-templates';
 import { instantiateTemplateSchema } from '$lib/server/validation/chapter-templates';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapter-templates/[id]/instantiate/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -49,7 +52,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// Le helper rend `{ data, error }` : sans cette garde, une panne de lecture
 	// se présentait comme un modèle inexistant (404).
 	if (templateError) {
-		console.error('Modèle illisible :', templateError);
+		logger.error('Modèle illisible :', templateError);
 		throw error(500, 'Impossible de vérifier le modèle');
 	}
 	if (!template) {
@@ -97,7 +100,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const result = await instantiateTemplate(data, user.id, locals.supabase);
 
 	if (result.error) {
-		console.error('[POST /api/teacher/chapter-templates/[id]/instantiate] Error:', result.error);
+		logger.error('[POST /api/teacher/chapter-templates/[id]/instantiate] Error:', result.error);
 		throw error(500, 'Failed to instantiate template');
 	}
 

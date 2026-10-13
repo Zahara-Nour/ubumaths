@@ -20,6 +20,9 @@ import { globalIndexSchema, saveEditSchema } from '$lib/server/validation/migrat
 import { isValidGlobalIndex, loadQuestionByIndex } from '$lib/migration/question-data-loader';
 import { generateStableQuestionHash } from '$lib/server/migration/hash-utils';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/migration/questions/[globalIndex]/edit/+server');
 
 /**
  * POST /api/migration/questions/[globalIndex]/edit
@@ -120,7 +123,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 
 		if (trackingQueryError && trackingQueryError.code !== 'PGRST116') {
 			// PGRST116 = no rows returned
-			console.error('Error querying migration_tracking:', trackingQueryError);
+			logger.error('Error querying migration_tracking:', trackingQueryError);
 			throw error(500, 'Impossible de lire le suivi de la question');
 		}
 
@@ -148,7 +151,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 				.single();
 
 			if (insertError || !newTracking) {
-				console.error('Error creating migration_tracking record:', insertError);
+				logger.error('Error creating migration_tracking record:', insertError);
 				throw error(500, 'Impossible de créer le suivi de la question');
 			}
 
@@ -175,7 +178,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 			.single();
 
 		if (upsertError || !editRecord) {
-			console.error('Error upserting migration_edits:', upsertError);
+			logger.error('Error upserting migration_edits:', upsertError);
 			throw error(500, 'Impossible d’enregistrer la modification');
 		}
 
@@ -196,7 +199,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Log and return generic error
-		console.error('Error saving question edit:', err);
+		logger.error('Error saving question edit:', err);
 		throw error(500, 'Impossible d’enregistrer la modification');
 	}
 };

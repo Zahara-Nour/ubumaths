@@ -4,6 +4,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { startTournamentGameSchema } from '$lib/server/validation/minesweeper-tournament';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
 import type { TournamentGameStartResponse } from '$lib/types/minesweeper';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/games/minesweeper/tournaments/[id]/games/start/+server');
 
 /**
  * Start a new game in a tournament
@@ -54,7 +57,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 
 		if (rpcError) {
 			// Log the actual error for debugging
-			console.error('[TOURNAMENT_START_GAME] RPC Error:', {
+			logger.error('[TOURNAMENT_START_GAME] RPC Error:', {
 				code: rpcError.code,
 				message: rpcError.message,
 				details: rpcError.details,

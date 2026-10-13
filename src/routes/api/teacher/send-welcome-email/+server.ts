@@ -38,6 +38,9 @@ import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
 import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
 import { sendWelcomeEmail, isBrevoConfigured } from '$lib/server/email/brevo';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/send-welcome-email/+server');
 
 /**
  * Request body schema
@@ -88,7 +91,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (studentError || !student) {
-		console.error('[Send Welcome Email] Error fetching student:', studentError);
+		logger.error('[Send Welcome Email] Error fetching student:', studentError);
 		throw error(404, 'Eleve non trouve');
 	}
 
@@ -105,7 +108,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	);
 
 	if (!result.success) {
-		console.error('[Send Welcome Email] Brevo error:', result.error);
+		logger.error('[Send Welcome Email] Brevo error:', result.error);
 		throw error(500, `Echec de l'envoi de l'email: ${result.error}`);
 	}
 
@@ -118,14 +121,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (insertError) {
 			// Log but don't fail - email was sent successfully
-			console.error('[Send Welcome Email] Failed to record email sent:', insertError);
+			logger.error('[Send Welcome Email] Failed to record email sent:', insertError);
 		}
 	} catch (recordError) {
 		// Log but don't fail - email was sent successfully
-		console.error('[Send Welcome Email] Error recording email:', recordError);
+		logger.error('[Send Welcome Email] Error recording email:', recordError);
 	}
 
-	console.log(
+	logger.info(
 		`[Send Welcome Email] Email sent successfully to student ${student.id} by teacher ${user.id}`
 	);
 

@@ -35,6 +35,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { updateSharedMaterialByIdSchema, uuidSchema } from '$lib/server/validation';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/shared-materials/[id]/+server');
 
 /**
  * Delete shared material record by ID
@@ -70,7 +73,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		if (fetchError?.code === 'PGRST116') {
 			throw error(404, 'Support partagé introuvable ou accès refusé');
 		}
-		console.error('[Delete Shared Material] Record verification error:', fetchError);
+		logger.error('[Delete Shared Material] Record verification error:', fetchError);
 		throw error(403, 'Ce partage appartient à un autre professeur');
 	}
 
@@ -82,7 +85,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('shared_by', user.id);
 
 	if (deleteError) {
-		console.error('[Delete Shared Material] Delete error:', deleteError);
+		logger.error('[Delete Shared Material] Delete error:', deleteError);
 		throw error(500, 'Impossible de supprimer le support partagé');
 	}
 
@@ -141,7 +144,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		if (fetchError?.code === 'PGRST116') {
 			throw error(404, 'Support partagé introuvable ou accès refusé');
 		}
-		console.error('[Update Shared Material] Record verification error:', fetchError);
+		logger.error('[Update Shared Material] Record verification error:', fetchError);
 		throw error(403, 'Ce partage appartient à un autre professeur');
 	}
 
@@ -237,7 +240,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (updateError) {
-		console.error('[Update Shared Material] Update error:', updateError);
+		logger.error('[Update Shared Material] Update error:', updateError);
 		throw error(500, 'Impossible de modifier le support partagé');
 	}
 

@@ -4,6 +4,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { getTournamentSchema } from '$lib/server/validation/minesweeper-tournament';
 import { sanitizeRPCError, sanitizePostgresError } from '$lib/server/utils/error-handler';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/games/minesweeper/tournaments/[id]/+server');
 
 /**
  * Get tournament details
@@ -69,7 +72,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		// panne prenait le même visage et faisait conclure « rien ici », donc créer
 		// par-dessus ce qu'on n'avait simplement pas su lire.
 		if (tournamentCheckError && tournamentCheckError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', tournamentCheckError);
+			logger.error('Lecture impossible :', tournamentCheckError);
 			throw error(500, 'Impossible de vérifier l’état actuel');
 		}
 

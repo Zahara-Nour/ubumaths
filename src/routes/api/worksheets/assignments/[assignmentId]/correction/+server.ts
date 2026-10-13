@@ -33,6 +33,9 @@ import {
 	hasPerStudentValues,
 	type WorksheetForCopy
 } from '$lib/worksheets/worksheet-copy';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/correction/+server');
 
 // Query parameter validation
 // Note: 'pdf' format is not supported server-side (Typst.js requires browser)
@@ -120,7 +123,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
+			logger.error('Rôle illisible :', profileError);
 			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
@@ -143,13 +146,13 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 		);
 
 		if (accessError) {
-			console.error('Droits sur l’affectation illisibles :', accessError.message);
+			logger.error('Droits sur l’affectation illisibles :', accessError.message);
 			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
 		const isStudentInClass = hasAccess === true;
 
-		console.log('[Correction API] Access check:', {
+		logger.info('[Correction API] Access check:', {
 			userId: user.id,
 			role: profile?.role,
 			isTeacher,
@@ -255,10 +258,10 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			per_student_values_notice: perStudentValuesNotice
 		});
 	} catch (err) {
-		console.error('[Correction API] Error:', err);
+		logger.error('[Correction API] Error:', err);
 		if (err instanceof Error) {
-			console.error('[Correction API] Message:', err.message);
-			console.error('[Correction API] Stack:', err.stack);
+			logger.error('[Correction API] Message:', err.message);
+			logger.error('[Correction API] Stack:', err.stack);
 		}
 
 		if (err && typeof err === 'object' && 'status' in err) {

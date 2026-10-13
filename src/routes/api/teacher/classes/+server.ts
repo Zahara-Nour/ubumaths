@@ -1,6 +1,9 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getTeacherClassesWithCounts } from '$lib/server/students';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/classes/+server');
 
 /**
  * GET /api/teacher/classes
@@ -31,7 +34,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			timestamp: Date.now()
 		});
 	} catch (err) {
-		console.error('[API] Error loading teacher classes:', err);
+		logger.error('[API] Error loading teacher classes:', err);
 		throw error(500, 'Failed to load classes');
 	}
 };

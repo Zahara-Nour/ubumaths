@@ -20,6 +20,9 @@ import { upsertCheckpointRunSchema } from '$lib/server/validation/notebook-check
 import { validateUuidParam } from '$lib/server/validation/params';
 import type { CheckpointRun, CheckpointRunStatus } from '$lib/types/database-helpers';
 import { rpcNullable } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebooks/[id]/checkpoint-runs/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -86,7 +89,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		if (dbError.code === '42501') {
 			throw error(403, 'Accès refusé à ce carnet');
 		}
-		console.error('Failed to upsert checkpoint run:', dbError);
+		logger.error('Failed to upsert checkpoint run:', dbError);
 		throw error(500, 'Impossible d’enregistrer le résultat du checkpoint');
 	}
 
@@ -122,7 +125,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('ran_at', { ascending: false });
 
 	if (dbError) {
-		console.error('Failed to fetch checkpoint runs:', dbError);
+		logger.error('Failed to fetch checkpoint runs:', dbError);
 		throw error(500, 'Impossible de charger les résultats des checkpoints');
 	}
 

@@ -28,6 +28,9 @@ import { loadFromDriveParamsSchema } from '$lib/server/validation/whiteboard-dri
 import { GoogleDriveClient } from '$lib/server/google/drive-api';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
 import { validateUbwFile } from '$lib/whiteboard/utils/file-operations';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/drive/load/[fileId]/+server');
 
 /**
  * Load whiteboard document from Google Drive
@@ -63,7 +66,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		// Get file metadata for name and modifiedTime
 		const metadata = await driveClient.getFileMetadata(fileId);
 
-		console.log(`[Whiteboard Drive] Loaded file ${fileId} for teacher ${user.id}`);
+		logger.info(`[Whiteboard Drive] Loaded file ${fileId} for teacher ${user.id}`);
 
 		return json({
 			document: docValidation.document,
@@ -93,7 +96,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			}
 		}
 
-		console.error('[Whiteboard Drive] Load error:', err);
+		logger.error('[Whiteboard Drive] Load error:', err);
 		const message = err instanceof Error ? err.message : 'erreur inconnue';
 		throw error(500, `Impossible de charger depuis Google Drive : ${message}`);
 	}

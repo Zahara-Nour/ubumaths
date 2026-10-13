@@ -31,6 +31,9 @@ import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { getAuthUrl } from '$lib/server/google/oauth';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/auth/connect/+server');
 
 /**
  * Initiate Google OAuth flow
@@ -64,7 +67,7 @@ export const POST: RequestHandler = async ({ locals, cookies }) => {
 	cookies.set('google_oauth_state', state, cookieOptions);
 	cookies.set('google_code_verifier', codeVerifier, cookieOptions);
 
-	console.log('[Google OAuth] Generated authorization URL');
+	logger.info('[Google OAuth] Generated authorization URL');
 
 	return json({ url });
 };

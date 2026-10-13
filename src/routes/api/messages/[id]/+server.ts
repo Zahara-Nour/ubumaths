@@ -3,6 +3,9 @@ import type { RequestHandler } from './$types';
 import { updateMessageSchema } from '$lib/server/validation/messages';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/[id]/+server');
 
 /**
  * GET /api/messages/[id]
@@ -21,7 +24,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		});
 
 		if (fetchError) {
-			console.error('Error fetching message:', fetchError);
+			logger.error('Error fetching message:', fetchError);
 
 			// Check if it's a permission error
 			if (fetchError.message?.includes('do not have access')) {
@@ -43,7 +46,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 		return json({ message: messages[0] });
 	} catch (err) {
-		console.error('Error in get message API:', err);
+		logger.error('Error in get message API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
@@ -83,7 +86,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				});
 
 				if (statusError) {
-					console.error('Error updating status:', statusError);
+					logger.error('Error updating status:', statusError);
 					throw error(500, 'Erreur lors de la mise à jour du statut');
 				}
 				break;
@@ -102,7 +105,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				// panne prenait le même visage et faisait conclure « rien ici », donc créer
 				// par-dessus ce qu'on n'avait simplement pas su lire.
 				if (inboxEntryError && inboxEntryError.code !== 'PGRST116') {
-					console.error('Lecture impossible :', inboxEntryError);
+					logger.error('Lecture impossible :', inboxEntryError);
 					throw error(500, 'Impossible de vérifier l’état actuel');
 				}
 
@@ -119,7 +122,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 					.select('id');
 
 				if (readError) {
-					console.error('Error toggling read:', readError);
+					logger.error('Error toggling read:', readError);
 					throw error(500, 'Erreur lors de la mise à jour du statut de lecture');
 				}
 
@@ -128,7 +131,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 					if (!inboxEntry) {
 						throw error(404, 'Message absent de la boîte de réception');
 					}
-					console.error('[toggleRead] Aucune ligne modifiée pour', messageId);
+					logger.error('[toggleRead] Aucune ligne modifiée pour', messageId);
 					throw error(403, 'Statut de lecture non modifié : droits insuffisants');
 				}
 
@@ -142,7 +145,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				});
 
 				if (starError) {
-					console.error('Error toggling star:', starError);
+					logger.error('Error toggling star:', starError);
 					throw error(500, 'Erreur lors de la mise à jour du favori');
 				}
 
@@ -158,7 +161,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 				});
 
 				if (folderError) {
-					console.error('Error moving to folder:', folderError);
+					logger.error('Error moving to folder:', folderError);
 					throw error(500, 'Erreur lors du déplacement vers le dossier');
 				}
 				break;
@@ -167,7 +170,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 		return json({ success: true });
 	} catch (err) {
-		console.error('Error in update message API:', err);
+		logger.error('Error in update message API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
@@ -207,13 +210,13 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 				.select('id');
 
 			if (deleteError) {
-				console.error('Error deleting message:', deleteError);
+				logger.error('Error deleting message:', deleteError);
 				throw error(500, 'Erreur lors de la suppression du message');
 			}
 
 			// Le message a été lu juste au-dessus : zéro ligne = refus, pas absence.
 			if (!updatedMessages || updatedMessages.length === 0) {
-				console.error('[DELETE message] Aucune ligne modifiée pour', messageId);
+				logger.error('[DELETE message] Aucune ligne modifiée pour', messageId);
 				throw error(403, 'Message non supprimé : droits insuffisants');
 			}
 		} else {
@@ -226,7 +229,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 				.select('id');
 
 			if (deleteError) {
-				console.error('Error deleting inbox entry:', deleteError);
+				logger.error('Error deleting inbox entry:', deleteError);
 				throw error(500, 'Erreur lors de la suppression du message');
 			}
 
@@ -239,7 +242,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 		return json({ success: true });
 	} catch (err) {
-		console.error('Error in delete message API:', err);
+		logger.error('Error in delete message API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}

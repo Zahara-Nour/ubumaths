@@ -11,6 +11,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { reorderChapters } from '$lib/server/chapters';
 import { reorderChaptersSchema } from '$lib/server/validation/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/reorder/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -68,7 +71,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const result = await reorderChapters(classId, orderUpdates, locals.supabase);
 
 	if (result.error) {
-		console.error('[POST /api/teacher/chapters/[id]/reorder] Error:', result.error);
+		logger.error('[POST /api/teacher/chapters/[id]/reorder] Error:', result.error);
 		throw error(500, 'Failed to reorder chapters');
 	}
 

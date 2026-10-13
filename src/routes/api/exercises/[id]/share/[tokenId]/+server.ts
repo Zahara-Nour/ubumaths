@@ -12,6 +12,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { getExercise } from '$lib/server/exercises';
 import { revokeShareToken, SHARE_TOKEN_NOT_FOUND } from '$lib/server/exercise-share-tokens';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/[id]/share/[tokenId]/+server');
 
 /**
  * DELETE /api/exercises/[id]/share/[tokenId]
@@ -42,7 +45,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		if (revokeResult.error === SHARE_TOKEN_NOT_FOUND) {
 			throw error(404, 'Lien de partage introuvable');
 		}
-		console.error('Failed to revoke share token:', revokeResult.error);
+		logger.error('Failed to revoke share token:', revokeResult.error);
 		throw error(500, 'Impossible de révoquer le lien de partage');
 	}
 

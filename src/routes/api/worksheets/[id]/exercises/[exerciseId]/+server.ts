@@ -16,6 +16,9 @@ import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { TablesUpdate } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/exercises/[exerciseId]/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -180,7 +183,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to update exercise:', dbError);
+		logger.error('Failed to update exercise:', dbError);
 		throw error(500, 'Impossible de modifier l’exercice');
 	}
 
@@ -225,7 +228,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('worksheet_id', params.id);
 
 	if (deleteError) {
-		console.error('Failed to remove exercise:', deleteError);
+		logger.error('Failed to remove exercise:', deleteError);
 		throw error(500, 'Impossible de retirer l’exercice de la fiche');
 	}
 

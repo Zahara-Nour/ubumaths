@@ -15,6 +15,9 @@ import type { PythonExercise, PythonExerciseStudentView } from '$lib/types/pytho
 import { validateUuidParam } from '$lib/server/validation/params';
 import { toJson } from '$lib/types/database-helpers';
 import { fetchResourceTagNames, syncResourceTags } from '$lib/server/resource-tags';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-exercises/[id]/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -47,7 +50,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.maybeSingle();
 
 	if (fetchError) {
-		console.error('Failed to fetch exercise:', fetchError);
+		logger.error('Failed to fetch exercise:', fetchError);
 		throw error(500, 'Impossible de charger la corvée Python');
 	}
 
@@ -151,7 +154,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (updateError) {
-		console.error('Failed to update exercise:', updateError);
+		logger.error('Failed to update exercise:', updateError);
 		throw error(500, 'Impossible de modifier la corvée Python');
 	}
 
@@ -162,7 +165,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		try {
 			await syncResourceTags(supabase, 'python_exercise', exerciseId, tagsUpdate);
 		} catch (e) {
-			console.error('Failed to sync tags on update:', e);
+			logger.error('Failed to sync tags on update:', e);
 			throw error(500, 'Impossible d’enregistrer les tags');
 		}
 	}
@@ -222,7 +225,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('id', exerciseId);
 
 	if (deleteError) {
-		console.error('Failed to delete exercise:', deleteError);
+		logger.error('Failed to delete exercise:', deleteError);
 		throw error(500, 'Impossible de supprimer la corvée Python');
 	}
 

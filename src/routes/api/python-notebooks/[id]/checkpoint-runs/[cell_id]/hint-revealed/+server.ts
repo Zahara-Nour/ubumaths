@@ -18,6 +18,11 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'api/python-notebooks/[id]/checkpoint-runs/[cell_id]/hint-revealed/+server'
+);
 
 const cellIdSchema = z.string().min(1).max(100);
 
@@ -45,7 +50,7 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 		if (dbError.code === '42501') {
 			throw error(403, 'Accès refusé à ce carnet');
 		}
-		console.error('Failed to mark checkpoint hint as revealed:', dbError);
+		logger.error('Failed to mark checkpoint hint as revealed:', dbError);
 		throw error(500, 'Impossible d’enregistrer l’indice');
 	}
 

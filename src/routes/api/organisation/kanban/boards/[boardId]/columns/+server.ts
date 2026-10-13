@@ -13,6 +13,9 @@ import { parseKanbanId, createColumnSchema } from '$lib/server/validation/kanban
 import { assertBoardOwner, rateLimitResponse } from '$lib/server/kanban';
 import { checkKanbanColumnMutationRateLimit } from '$lib/server/rateLimiter';
 import type { KanbanColumn, KanbanColumnInsert } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/organisation/kanban/boards/[boardId]/columns/+server');
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const { user } = await requireAuth(locals);
@@ -51,7 +54,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError || !data) {
-		console.error('[kanban] create column failed:', dbError);
+		logger.error('[kanban] create column failed:', dbError);
 		throw error(500, 'Erreur lors de la création de la colonne');
 	}
 

@@ -16,6 +16,9 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/vip-cards/reject-activation/+server');
 
 const rejectActivationSchema = z.object({
 	instanceId: z.string().uuid('Identifiant de carte VIP invalide'),
@@ -50,7 +53,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('[reject-activation] RPC error:', rpcError);
+		logger.error('[reject-activation] RPC error:', rpcError);
 		throw error(500, 'Impossible de refuser l’activation');
 	}
 

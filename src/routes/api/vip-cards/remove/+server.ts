@@ -16,6 +16,9 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/vip-cards/remove/+server');
 
 const removeCardSchema = z.object({
 	studentId: z.string().uuid('Identifiant d’élève invalide'),
@@ -53,7 +56,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('[remove-card] RPC error:', rpcError);
+		logger.error('[remove-card] RPC error:', rpcError);
 		throw error(500, 'Impossible de retirer la carte VIP');
 	}
 

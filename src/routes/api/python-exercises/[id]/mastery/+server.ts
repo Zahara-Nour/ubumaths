@@ -13,6 +13,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { pythonMasterySingleQuerySchema } from '$lib/server/validation/python-exercises';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-exercises/[id]/mastery/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -44,7 +47,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		.maybeSingle();
 
 	if (dbErr) {
-		console.error('Failed to read mastery row:', dbErr);
+		logger.error('Failed to read mastery row:', dbErr);
 		throw error(500, 'Impossible de charger le statut de maîtrise');
 	}
 

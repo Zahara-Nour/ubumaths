@@ -8,6 +8,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { unlinkExercise } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/exercises/[linkId]/+server');
 
 /**
  * Verify the chapter exists and exercise link belongs to it
@@ -74,7 +77,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const result = await unlinkExercise(linkId, locals.supabase);
 
 	if (result.error) {
-		console.error('[DELETE /api/teacher/chapters/[id]/exercises/[linkId]] Error:', result.error);
+		logger.error('[DELETE /api/teacher/chapters/[id]/exercises/[linkId]] Error:', result.error);
 		throw error(500, 'Failed to unlink exercise');
 	}
 

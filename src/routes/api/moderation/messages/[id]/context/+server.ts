@@ -1,5 +1,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/moderation/messages/[id]/context/+server');
 
 /**
  * GET /api/moderation/messages/[id]/context
@@ -55,7 +58,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	);
 
 	if (rpcError) {
-		console.error('Failed to get message context:', rpcError);
+		logger.error('Failed to get message context:', rpcError);
 
 		if (rpcError.message.includes('Permission denied')) {
 			throw error(403, 'Permission denied');

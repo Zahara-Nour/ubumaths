@@ -15,6 +15,9 @@ import { requireAdmin } from '$lib/server/middleware/auth';
 import { createTemplateSchema } from '$lib/server/validation/vip-card-admin';
 import { templateToResponse } from '$lib/types/vip-card-admin';
 import { toVipCardTemplate } from '$lib/types/vip-card-admin';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/vip-cards/templates/+server');
 
 /**
  * POST /api/admin/vip-cards/templates
@@ -64,7 +67,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.maybeSingle();
 
 		if (checkError) {
-			console.error('Error checking template existence:', checkError);
+			logger.error('Error checking template existence:', checkError);
 			throw error(500, 'Impossible de vérifier le modèle de carte VIP');
 		}
 
@@ -94,14 +97,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (insertError) {
-			console.error('Error creating template:', insertError);
+			logger.error('Error creating template:', insertError);
 			throw error(500, 'Impossible de créer le modèle de carte VIP');
 		}
 
 		// 6. Return created template (convert snake_case to camelCase)
 		return json(templateToResponse(toVipCardTemplate(created)), { status: 201 });
 	} catch (err) {
-		console.error('Error in POST /api/admin/vip-cards/templates:', err);
+		logger.error('Error in POST /api/admin/vip-cards/templates:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -138,7 +141,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('name', { ascending: true });
 
 		if (fetchError) {
-			console.error('Error fetching templates:', fetchError);
+			logger.error('Error fetching templates:', fetchError);
 			throw error(500, 'Impossible de charger les modèles de cartes VIP');
 		}
 
@@ -147,7 +150,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		return json(response);
 	} catch (err) {
-		console.error('Error in GET /api/admin/vip-cards/templates:', err);
+		logger.error('Error in GET /api/admin/vip-cards/templates:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

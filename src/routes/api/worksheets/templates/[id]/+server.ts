@@ -16,6 +16,9 @@ import {
 import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/templates/[id]/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -44,7 +47,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		if (dbError.code === 'PGRST116') {
 			throw error(404, 'Modèle de fiche introuvable');
 		}
-		console.error('Failed to fetch template:', dbError);
+		logger.error('Failed to fetch template:', dbError);
 		throw error(500, 'Impossible de charger le modèle de fiche');
 	}
 
@@ -88,7 +91,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		if (fetchError.code === 'PGRST116') {
 			throw error(404, 'Modèle de fiche introuvable');
 		}
-		console.error('Failed to fetch template:', fetchError);
+		logger.error('Failed to fetch template:', fetchError);
 		throw error(500, 'Impossible de charger le modèle de fiche');
 	}
 
@@ -131,7 +134,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to update template:', dbError);
+		logger.error('Failed to update template:', dbError);
 		throw error(500, 'Impossible de modifier le modèle de fiche');
 	}
 
@@ -170,7 +173,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		if (fetchError.code === 'PGRST116') {
 			throw error(404, 'Modèle de fiche introuvable');
 		}
-		console.error('Failed to fetch template:', fetchError);
+		logger.error('Failed to fetch template:', fetchError);
 		throw error(500, 'Impossible de charger le modèle de fiche');
 	}
 
@@ -186,7 +189,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('template_id', params.id);
 
 	if (countError) {
-		console.error('Failed to check template usage:', countError);
+		logger.error('Failed to check template usage:', countError);
 		throw error(500, 'Impossible de vérifier l’usage du modèle');
 	}
 
@@ -204,7 +207,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('id', params.id);
 
 	if (dbError) {
-		console.error('Failed to delete template:', dbError);
+		logger.error('Failed to delete template:', dbError);
 		throw error(500, 'Impossible de supprimer le modèle de fiche');
 	}
 

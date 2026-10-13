@@ -20,6 +20,11 @@ import {
 	removeStudentResponseSchema
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'api/worksheets/[id]/assignments/[assignmentId]/students/+server'
+);
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -118,7 +123,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('created_at', { ascending: false });
 
 	if (fetchError) {
-		console.error('Failed to fetch assigned students:', fetchError);
+		logger.error('Failed to fetch assigned students:', fetchError);
 		throw error(500, 'Impossible de charger les élèves');
 	}
 
@@ -192,7 +197,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.eq('role', 'student');
 
 	if (studentError) {
-		console.error('Failed to verify students:', studentError);
+		logger.error('Failed to verify students:', studentError);
 		throw error(500, 'Impossible de vérifier les élèves');
 	}
 
@@ -215,7 +220,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.select('id');
 
 	if (insertError) {
-		console.error('Failed to add students to assignment:', insertError);
+		logger.error('Failed to add students to assignment:', insertError);
 		throw error(500, 'Impossible d’ajouter les élèves');
 	}
 
@@ -278,7 +283,7 @@ export const DELETE: RequestHandler = async ({ locals, params, request }) => {
 		.eq('student_id', student_id);
 
 	if (deleteError) {
-		console.error('Failed to remove student from assignment:', deleteError);
+		logger.error('Failed to remove student from assignment:', deleteError);
 		throw error(500, 'Impossible de retirer l’élève');
 	}
 

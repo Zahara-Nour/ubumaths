@@ -19,6 +19,9 @@ import { templateToResponse } from '$lib/types/vip-card-admin';
 import { validateSlugParam } from '$lib/server/validation/params';
 import type { TablesUpdate } from '$lib/types/database';
 import { toVipCardTemplate } from '$lib/types/vip-card-admin';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/vip-cards/templates/[id]/+server');
 
 /**
  * Body for the typed-confirmation DELETE: the admin must echo the template name.
@@ -66,7 +69,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.maybeSingle();
 
 		if (checkError) {
-			console.error('Error checking template existence:', checkError);
+			logger.error('Error checking template existence:', checkError);
 			throw error(500, 'Impossible de vérifier le modèle de carte VIP');
 		}
 
@@ -100,14 +103,14 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.single();
 
 		if (updateError) {
-			console.error('Error updating template:', updateError);
+			logger.error('Error updating template:', updateError);
 			throw error(500, 'Impossible de modifier le modèle de carte VIP');
 		}
 
 		// 7. Return updated template (convert snake_case to camelCase)
 		return json(templateToResponse(toVipCardTemplate(updated)));
 	} catch (err) {
-		console.error('Error in PATCH /api/admin/vip-cards/templates/[id]:', err);
+		logger.error('Error in PATCH /api/admin/vip-cards/templates/[id]:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -160,7 +163,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			.maybeSingle();
 
 		if (checkError) {
-			console.error('Error checking template existence:', checkError);
+			logger.error('Error checking template existence:', checkError);
 			throw error(500, 'Impossible de vérifier le modèle de carte VIP');
 		}
 
@@ -178,7 +181,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			.eq('card_id', templateId);
 
 		if (countError) {
-			console.error('Error checking template instances:', countError);
+			logger.error('Error checking template instances:', countError);
 			throw error(500, 'Impossible de vérifier si le modèle de carte VIP est utilisé');
 		}
 
@@ -196,7 +199,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			.eq('id', templateId);
 
 		if (deleteError) {
-			console.error('Error deleting template:', deleteError);
+			logger.error('Error deleting template:', deleteError);
 			throw error(500, 'Impossible de supprimer le modèle de carte VIP');
 		}
 
@@ -206,7 +209,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			message: `Modèle de carte VIP « ${templateId} » supprimé`
 		});
 	} catch (err) {
-		console.error('Error in DELETE /api/admin/vip-cards/templates/[id]:', err);
+		logger.error('Error in DELETE /api/admin/vip-cards/templates/[id]:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

@@ -3,6 +3,9 @@ import type { RequestHandler } from './$types';
 import { getTeacherTestMode } from '$lib/server/test-mode';
 import { getClassGidouillesSchema } from '$lib/server/validation/classes';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/classes/[classId]/students/+server');
 
 /**
  * GET /api/classes/[classId]/students
@@ -54,12 +57,12 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.maybeSingle();
 
 		if (classError) {
-			console.error('[GET /api/classes/students] Error verifying class:', classError);
+			logger.error('[GET /api/classes/students] Error verifying class:', classError);
 			throw error(500, `Failed to verify class: ${classError.message}`);
 		}
 
 		if (!classCheck) {
-			console.error('[GET /api/classes/students] Class not found:', classId);
+			logger.error('[GET /api/classes/students] Class not found:', classId);
 			throw error(404, 'Class not found');
 		}
 
@@ -84,7 +87,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.eq('profiles.is_test', isTestMode);
 
 		if (membersError) {
-			console.error('[GET /api/classes/students] Error fetching students:', membersError);
+			logger.error('[GET /api/classes/students] Error fetching students:', membersError);
 			throw error(500, `Failed to fetch students: ${membersError.message}`);
 		}
 
@@ -117,7 +120,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 		return json({ students });
 	} catch (err) {
-		console.error('[API /api/classes/students] Error:', err);
+		logger.error('[API /api/classes/students] Error:', err);
 
 		// Re-throw SvelteKit errors (they have proper status codes)
 		if (err && typeof err === 'object' && 'status' in err) {

@@ -11,6 +11,9 @@ import { markExerciseAsComplete, markExerciseAsIncomplete } from '$lib/server/ex
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/[id]/complete/+server');
 
 /**
  * POST /api/exercises/[id]/complete
@@ -33,7 +36,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	);
 
 	if (completeError) {
-		console.error('Failed to mark exercise as complete:', completeError);
+		logger.error('Failed to mark exercise as complete:', completeError);
 		return json({ error: 'Impossible de marquer l’exercice comme terminé' }, { status: 500 });
 	}
 
@@ -61,7 +64,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	);
 
 	if (incompleteError) {
-		console.error('Failed to mark exercise as incomplete:', incompleteError);
+		logger.error('Failed to mark exercise as incomplete:', incompleteError);
 		return json({ error: 'Impossible de retirer la marque « terminé »' }, { status: 500 });
 	}
 

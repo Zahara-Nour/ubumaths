@@ -9,6 +9,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { assignPythonFileSchema } from '$lib/server/validation/python-files';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-files/[id]/assign/+server');
 
 // =============================================================================
 // HANDLERS
@@ -53,7 +56,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		if (fileError?.code === 'PGRST116') {
 			throw error(404, 'Fichier Python introuvable');
 		}
-		console.error('Error fetching python file:', fileError);
+		logger.error('Error fetching python file:', fileError);
 		throw error(500, 'Impossible de vérifier le fichier Python');
 	}
 
@@ -68,7 +71,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.in('id', class_ids);
 
 	if (classesError) {
-		console.error('Error fetching classes:', classesError);
+		logger.error('Error fetching classes:', classesError);
 		throw error(500, 'Impossible de vérifier les classes');
 	}
 
@@ -96,7 +99,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.select();
 
 	if (insertError) {
-		console.error('Error creating assignments:', insertError);
+		logger.error('Error creating assignments:', insertError);
 		throw error(500, 'Impossible de créer les affectations');
 	}
 
@@ -130,7 +133,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		if (fileError?.code === 'PGRST116') {
 			throw error(404, 'Fichier Python introuvable');
 		}
-		console.error('Error fetching python file:', fileError);
+		logger.error('Error fetching python file:', fileError);
 		throw error(500, 'Impossible de vérifier le fichier Python');
 	}
 
@@ -146,7 +149,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('assigned_by', user.id);
 
 	if (deleteError) {
-		console.error('Error deleting assignments:', deleteError);
+		logger.error('Error deleting assignments:', deleteError);
 		throw error(500, 'Impossible de supprimer les affectations');
 	}
 
@@ -173,7 +176,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		if (fileError?.code === 'PGRST116') {
 			throw error(404, 'Fichier Python introuvable');
 		}
-		console.error('Error fetching python file:', fileError);
+		logger.error('Error fetching python file:', fileError);
 		throw error(500, 'Impossible de vérifier le fichier Python');
 	}
 
@@ -203,7 +206,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('assigned_at', { ascending: false });
 
 	if (assignmentsError) {
-		console.error('Error fetching assignments:', assignmentsError);
+		logger.error('Error fetching assignments:', assignmentsError);
 		throw error(500, 'Impossible de charger les affectations');
 	}
 

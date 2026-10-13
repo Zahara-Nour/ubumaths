@@ -24,6 +24,9 @@ import {
 } from '$lib/server/validation';
 import { requireRole } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/[id]/assign/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -70,7 +73,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 		);
 
 		if (bulkError) {
-			console.error('Failed to create bulk assignments:', bulkError);
+			logger.error('Failed to create bulk assignments:', bulkError);
 			throw error(400, bulkError);
 		}
 
@@ -108,7 +111,7 @@ export const POST: RequestHandler = async ({ request, params, locals }) => {
 	);
 
 	if (assignmentError) {
-		console.error('Failed to create assignment:', assignmentError);
+		logger.error('Failed to create assignment:', assignmentError);
 		throw error(400, assignmentError);
 	}
 
@@ -160,7 +163,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const fetchError = 'error' in result ? result.error : null;
 
 	if (fetchError) {
-		console.error('Failed to fetch assignments:', fetchError);
+		logger.error('Failed to fetch assignments:', fetchError);
 		return json({ error: 'Impossible de charger les affectations' }, { status: 500 });
 	}
 

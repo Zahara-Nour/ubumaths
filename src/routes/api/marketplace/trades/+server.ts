@@ -12,6 +12,9 @@ import {
 } from '$lib/server/marketplace/helpers';
 import { requireConsent, hasConsentFields } from '$lib/server/middleware/consent';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/trades/+server');
 
 // Query schema - use union with null because url.searchParams.get() returns null, not undefined
 const tradesQuerySchema = z.object({
@@ -102,7 +105,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const { data: trades, error: tradesError, count } = await query;
 
 	if (tradesError) {
-		console.error('Error fetching trades:', tradesError);
+		logger.error('Error fetching trades:', tradesError);
 		throw error(500, 'Erreur lors de la récupération des échanges');
 	}
 
@@ -205,7 +208,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (limitError) {
-		console.error('Error checking trade limit:', limitError);
+		logger.error('Error checking trade limit:', limitError);
 		throw error(500, 'Erreur lors de la vérification de la limite quotidienne');
 	}
 
@@ -215,7 +218,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const limit = dailyTradeLimitSchema.parse(limitCheck);
 
 	if (!limit.success) {
-		console.error('check_daily_trade_limit a échoué:', limit.error);
+		logger.error('check_daily_trade_limit a échoué:', limit.error);
 		throw error(500, 'Erreur lors de la vérification de la limite quotidienne');
 	}
 
@@ -235,14 +238,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	);
 
 	if (partnerLimitError) {
-		console.error('Error checking partner trade limit:', partnerLimitError);
+		logger.error('Error checking partner trade limit:', partnerLimitError);
 		throw error(500, 'Erreur lors de la vérification de la limite quotidienne du partenaire');
 	}
 
 	const partnerLimit = dailyTradeLimitSchema.parse(partnerLimitCheck);
 
 	if (!partnerLimit.success) {
-		console.error('check_daily_trade_limit (partenaire) a échoué:', partnerLimit.error);
+		logger.error('check_daily_trade_limit (partenaire) a échoué:', partnerLimit.error);
 		throw error(500, 'Erreur lors de la vérification de la limite quotidienne du partenaire');
 	}
 
@@ -268,7 +271,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (existingTradeError && existingTradeError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', existingTradeError);
+		logger.error('Lecture impossible :', existingTradeError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -327,7 +330,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (tradeError.message?.includes('Consentement parental requis')) {
 			throw error(403, "Cet échange n'est pas possible pour le moment.");
 		}
-		console.error('Error creating trade:', tradeError);
+		logger.error('Error creating trade:', tradeError);
 		throw error(500, "Erreur lors de la création de l'échange");
 	}
 

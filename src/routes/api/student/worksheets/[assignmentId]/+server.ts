@@ -69,6 +69,9 @@ import type {
 	StudentSectionView,
 	WorksheetType
 } from '$lib/types/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/worksheets/[assignmentId]/+server');
 
 // ============================================================================
 // TYPES
@@ -142,7 +145,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.single();
 
 		if (assignmentError || !assignment) {
-			console.error('[API] Error fetching assignment:', assignmentError);
+			logger.error('[API] Error fetching assignment:', assignmentError);
 			throw error(404, 'Devoir non trouve');
 		}
 
@@ -196,7 +199,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.order('position', { ascending: true });
 
 		if (exercisesError) {
-			console.error('[API] Error fetching exercises:', exercisesError);
+			logger.error('[API] Error fetching exercises:', exercisesError);
 			throw error(500, 'Erreur lors de la recuperation des exercices');
 		}
 
@@ -208,7 +211,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.order('position', { ascending: true });
 
 		if (sectionsError) {
-			console.error('[API] Error fetching sections:', sectionsError);
+			logger.error('[API] Error fetching sections:', sectionsError);
 			// Non-blocking: sections are optional, continue without them
 		}
 
@@ -354,7 +357,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/worksheets/[assignmentId]:', err);
+		logger.error('[API] Unexpected error in GET /api/student/worksheets/[assignmentId]:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

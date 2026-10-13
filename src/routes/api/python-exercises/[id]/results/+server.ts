@@ -7,6 +7,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { exerciseIdParamSchema } from '$lib/server/validation/python-exercises';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-exercises/[id]/results/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -75,7 +78,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (assignmentsError && assignmentsError.code !== 'PGRST116') {
-		console.error('Contrôle d’accès impossible :', assignmentsError);
+		logger.error('Contrôle d’accès impossible :', assignmentsError);
 		throw error(500, 'Impossible de vérifier les droits d’accès');
 	}
 
@@ -142,7 +145,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// Cette liste borne la portée du classement. Vidée par une panne, elle
 		// affiche un classement amputé sans le dire.
 		if (classMembersError) {
-			console.error('Périmètre illisible :', classMembersError);
+			logger.error('Périmètre illisible :', classMembersError);
 			throw error(500, 'Impossible de déterminer les élèves concernés');
 		}
 
@@ -162,7 +165,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// Cette liste borne la portée du classement. Vidée par une panne, elle
 		// affiche un classement amputé sans le dire.
 		if (allClassesError) {
-			console.error('Périmètre illisible :', allClassesError);
+			logger.error('Périmètre illisible :', allClassesError);
 			throw error(500, 'Impossible de déterminer les élèves concernés');
 		}
 
@@ -178,7 +181,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			// Cette liste borne la portée du classement. Vidée par une panne, elle
 			// affiche un classement amputé sans le dire.
 			if (classMembersError) {
-				console.error('Périmètre illisible :', classMembersError);
+				logger.error('Périmètre illisible :', classMembersError);
 				throw error(500, 'Impossible de déterminer les élèves concernés');
 			}
 
@@ -197,7 +200,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const { data: submissions, error: submissionsError } = await query;
 
 	if (submissionsError) {
-		console.error('Failed to fetch submissions:', submissionsError);
+		logger.error('Failed to fetch submissions:', submissionsError);
 		throw error(500, 'Impossible de charger les résultats');
 	}
 

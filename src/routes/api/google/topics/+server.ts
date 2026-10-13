@@ -2,6 +2,9 @@ import { json, error } from '@sveltejs/kit';
 import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/topics/+server');
 
 /**
  * GET /api/google/topics
@@ -20,7 +23,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('name', { ascending: true });
 
 		if (topicsError) {
-			console.error('[API] Error fetching topics:', topicsError);
+			logger.error('[API] Error fetching topics:', topicsError);
 			throw error(500, 'Impossible de charger les thèmes Classroom');
 		}
 
@@ -39,7 +42,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		return json({ topics: uniqueTopics });
 	} catch (err) {
-		console.error('[API] Error in topics endpoint:', err);
+		logger.error('[API] Error in topics endpoint:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

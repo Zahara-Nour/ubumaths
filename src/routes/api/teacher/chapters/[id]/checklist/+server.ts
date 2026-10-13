@@ -10,6 +10,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { addChecklistItem } from '$lib/server/chapters';
 import { createChecklistItemSchema } from '$lib/server/validation/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/checklist/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -56,7 +59,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('display_order', { ascending: true });
 
 	if (itemsError) {
-		console.error('[GET /api/teacher/chapters/[id]/checklist] Error:', itemsError);
+		logger.error('[GET /api/teacher/chapters/[id]/checklist] Error:', itemsError);
 		throw error(500, 'Failed to fetch checklist items');
 	}
 
@@ -108,7 +111,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const result = await addChecklistItem(chapterId, validation.data, locals.supabase);
 
 	if (result.error) {
-		console.error('[POST /api/teacher/chapters/[id]/checklist] Error:', result.error);
+		logger.error('[POST /api/teacher/chapters/[id]/checklist] Error:', result.error);
 		throw error(500, 'Failed to add checklist item');
 	}
 

@@ -27,6 +27,9 @@ import {
 	rowToTemplateWithFavorite,
 	type WhiteboardTemplateWithFavorite
 } from '$lib/whiteboard/types/templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/templates/+server');
 
 /**
  * List whiteboard templates
@@ -75,7 +78,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		]);
 
 		if (templatesResult.error) {
-			console.error('[Whiteboard Templates] Query error:', templatesResult.error);
+			logger.error('[Whiteboard Templates] Query error:', templatesResult.error);
 			throw error(500, 'Impossible de charger les modèles');
 		}
 
@@ -99,7 +102,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw err;
 		}
 
-		console.error('[Whiteboard Templates] Error:', err);
+		logger.error('[Whiteboard Templates] Error:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
@@ -147,7 +150,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (insertError) {
-			console.error('[Whiteboard Templates] Insert error:', insertError);
+			logger.error('[Whiteboard Templates] Insert error:', insertError);
 			throw error(500, 'Impossible de créer le modèle');
 		}
 
@@ -164,7 +167,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw err;
 		}
 
-		console.error('[Whiteboard Templates] Error:', err);
+		logger.error('[Whiteboard Templates] Error:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

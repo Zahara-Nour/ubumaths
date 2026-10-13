@@ -20,6 +20,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { GoogleDriveClient } from '$lib/server/google/drive-api';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
 import { DRIVE_FILE_ID_REGEX } from '$lib/server/validation/whiteboard-drive';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/drive/autosave/[fileId]/+server');
 
 /**
  * Find autosave for a given original file
@@ -69,7 +72,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		console.error('[Whiteboard Drive] Autosave lookup error:', err);
+		logger.error('[Whiteboard Drive] Autosave lookup error:', err);
 		const message = err instanceof Error ? err.message : 'erreur inconnue';
 		throw error(500, `Impossible de rechercher la sauvegarde automatique : ${message}`);
 	}
@@ -104,7 +107,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 		// Delete the autosave
 		await driveClient.deleteFile(autosave.id);
-		console.log(`[Whiteboard Drive] Deleted autosave ${autosave.id} for original ${fileId}`);
+		logger.info(`[Whiteboard Drive] Deleted autosave ${autosave.id} for original ${fileId}`);
 
 		return json({
 			success: true,
@@ -116,7 +119,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		console.error('[Whiteboard Drive] Autosave delete error:', err);
+		logger.error('[Whiteboard Drive] Autosave delete error:', err);
 		const message = err instanceof Error ? err.message : 'erreur inconnue';
 		throw error(500, `Impossible de supprimer la sauvegarde automatique : ${message}`);
 	}

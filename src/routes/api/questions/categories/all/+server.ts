@@ -11,6 +11,9 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/questions/categories/all/+server');
 
 /**
  * GET /api/questions/categories/all
@@ -36,7 +39,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('level');
 
 		if (queryError) {
-			console.error('Error fetching categories:', queryError);
+			logger.error('Error fetching categories:', queryError);
 			throw error(500, 'Failed to fetch categories');
 		}
 
@@ -54,7 +57,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			categories: categories || []
 		});
 	} catch (err) {
-		console.error('Error in GET /api/questions/categories/all:', err);
+		logger.error('Error in GET /api/questions/categories/all:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

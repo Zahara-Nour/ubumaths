@@ -50,6 +50,9 @@ import { requireRoles } from '$lib/server/middleware/auth';
 import { getStudentWarningsSchema } from '$lib/server/validation/warnings';
 import type { Database } from '$lib/types/database';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/students/[id]/warnings/+server');
 
 // Type for warning response
 type WarningRow = Database['public']['Tables']['student_warnings']['Row'];
@@ -90,7 +93,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (fetchError) {
-		console.error('[get-student-warnings] Error fetching warnings:', fetchError);
+		logger.error('[get-student-warnings] Error fetching warnings:', fetchError);
 		throw error(500, `Failed to fetch warnings: ${fetchError.message}`);
 	}
 

@@ -34,6 +34,9 @@ import {
 	shareMaterialSchema,
 	unshareMaterialSchema
 } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/materials/[id]/share/+server');
 
 /**
  * POST /api/google/materials/[id]/share
@@ -79,7 +82,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		if (materialError?.code === 'PGRST116') {
 			throw error(404, 'Support introuvable');
 		}
-		console.error('[Material Share] Error fetching material:', materialError);
+		logger.error('[Material Share] Error fetching material:', materialError);
 		throw error(500, 'Impossible de charger le support');
 	}
 
@@ -100,7 +103,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		.eq('is_active', true);
 
 	if (classesError) {
-		console.error('[Material Share] Error fetching classes:', classesError);
+		logger.error('[Material Share] Error fetching classes:', classesError);
 		throw error(500, 'Impossible de vérifier les classes');
 	}
 
@@ -126,7 +129,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 		});
 
 	if (insertError) {
-		console.error('[Material Share] Error sharing material:', insertError);
+		logger.error('[Material Share] Error sharing material:', insertError);
 		throw error(500, 'Impossible de partager le support');
 	}
 
@@ -177,7 +180,7 @@ export const DELETE: RequestHandler = async ({ params, request, locals }) => {
 		if (materialError?.code === 'PGRST116') {
 			throw error(404, 'Support introuvable');
 		}
-		console.error('[Material Unshare] Error fetching material:', materialError);
+		logger.error('[Material Unshare] Error fetching material:', materialError);
 		throw error(500, 'Impossible de charger le support');
 	}
 
@@ -198,7 +201,7 @@ export const DELETE: RequestHandler = async ({ params, request, locals }) => {
 		.in('class_id', classIds);
 
 	if (deleteError) {
-		console.error('[Material Unshare] Error unsharing material:', deleteError);
+		logger.error('[Material Unshare] Error unsharing material:', deleteError);
 		throw error(500, 'Impossible de retirer le partage du support');
 	}
 

@@ -17,6 +17,9 @@ import { verifyCronAuth } from '$lib/server/auth/cron';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { sweepDeletedAccountFiles } from '$lib/server/deleted-account-files';
 import { sweepOrphanMessageAttachments } from '$lib/server/message-attachments';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/cron/deleted-account-files/+server');
 
 const JOB_NAME = 'deleted_account_files';
 
@@ -28,7 +31,7 @@ const handler: RequestHandler = async ({ request }) => {
 		p_job_name: JOB_NAME
 	});
 	// Le journal sert à l'admin ; son absence ne doit pas empêcher le retrait.
-	if (startError) console.error('[CRON] Journal de la tâche non ouvert :', startError);
+	if (startError) logger.error('[CRON] Journal de la tâche non ouvert :', startError);
 
 	try {
 		const result = await sweepDeletedAccountFiles(serviceClient);
@@ -62,7 +65,7 @@ const handler: RequestHandler = async ({ request }) => {
 				p_error_message: message
 			});
 		}
-		console.error('[CRON] Fichiers des comptes supprimés :', err);
+		logger.error('[CRON] Fichiers des comptes supprimés :', err);
 		throw error(500, 'Retrait des fichiers des comptes supprimés impossible');
 	}
 };

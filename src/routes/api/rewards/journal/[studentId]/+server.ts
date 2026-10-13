@@ -35,6 +35,9 @@ import {
 } from '$lib/server/validation/reward-journal';
 import { attachGidouillesBalances } from '$lib/server/reward-journal-balance';
 import type { RewardEvent, RewardJournalResponse } from '$lib/types/reward-journal';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/rewards/journal/[studentId]/+server');
 
 export const GET: RequestHandler = async ({ params, url, locals }) => {
 	// Require teacher or admin authentication
@@ -111,7 +114,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		const { data: events, count, error: queryError } = await query;
 
 		if (queryError) {
-			console.error('[RewardJournal/Teacher] Query error:', queryError);
+			logger.error('[RewardJournal/Teacher] Query error:', queryError);
 			throw error(500, 'Erreur lors de la récupération du journal des récompenses');
 		}
 
@@ -141,7 +144,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			throw err;
 		}
 
-		console.error('[RewardJournal/Teacher] Unexpected error:', err);
+		logger.error('[RewardJournal/Teacher] Unexpected error:', err);
 		throw error(500, 'Erreur interne du serveur');
 	}
 };

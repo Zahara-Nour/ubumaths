@@ -81,6 +81,9 @@ import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { courseIdParamSchema } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/courses/[courseId]/+server');
 
 /**
  * Get course details with coursework
@@ -119,7 +122,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				// No rows returned
 				throw error(404, 'Cours Classroom introuvable ou accès refusé');
 			}
-			console.error('[Google Course Details] Database error:', courseError);
+			logger.error('[Google Course Details] Database error:', courseError);
 			throw error(500, 'Impossible de charger le cours Classroom');
 		}
 
@@ -146,7 +149,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.order('created_time', { ascending: false });
 
 		if (courseworkError) {
-			console.error('[Google Course Details] Coursework fetch error:', courseworkError);
+			logger.error('[Google Course Details] Coursework fetch error:', courseworkError);
 			throw error(500, 'Impossible de charger les devoirs Classroom');
 		}
 
@@ -158,7 +161,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.order('name', { ascending: true });
 
 		if (topicsError) {
-			console.error('[Google Course Details] Topics fetch error:', topicsError);
+			logger.error('[Google Course Details] Topics fetch error:', topicsError);
 		}
 
 		// Fetch course work materials
@@ -192,7 +195,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.order('created_time', { ascending: false });
 
 		if (courseWorkMaterialsError) {
-			console.error(
+			logger.error(
 				'[Google Course Details] Course work materials fetch error:',
 				courseWorkMaterialsError
 			);
@@ -209,7 +212,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.in('coursework_id', courseworkIds);
 
 		if (materialsError) {
-			console.error('[Google Course Details] Materials fetch error:', materialsError);
+			logger.error('[Google Course Details] Materials fetch error:', materialsError);
 		}
 
 		// Group materials by coursework_id
@@ -238,7 +241,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.in('coursework_id', courseworkIds);
 
 		if (sharedError) {
-			console.error('[Google Course Details] Shared data fetch error:', sharedError);
+			logger.error('[Google Course Details] Shared data fetch error:', sharedError);
 		}
 
 		// Fetch ALL material sharing data in one query
@@ -256,7 +259,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.in('material_id', materialIds);
 
 		if (sharedMaterialsError) {
-			console.error('[Google Course Details] Shared materials fetch error:', sharedMaterialsError);
+			logger.error('[Google Course Details] Shared materials fetch error:', sharedMaterialsError);
 		}
 
 		// Group sharing data by coursework_id
@@ -407,7 +410,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		}
 
 		// Handle other errors
-		console.error('[Google Course Details] Error:', err);
+		logger.error('[Google Course Details] Error:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

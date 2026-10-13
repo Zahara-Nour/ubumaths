@@ -9,6 +9,9 @@ import type { RequestHandler } from './$types';
 import { getErrorLog, resolveError } from '$lib/server/errorMonitoring';
 import { resolveErrorSchema } from '$lib/server/validation/errors';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/errors/[id]/+server');
 
 /**
  * GET /api/errors/[id]
@@ -32,7 +35,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		console.error('Error in GET /api/errors/[id]:', err);
+		logger.error('Error in GET /api/errors/[id]:', err);
 		throw error(500, 'Internal server error');
 	}
 };
@@ -69,7 +72,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			throw err;
 		}
 
-		console.error('Error in PUT /api/errors/[id]:', err);
+		logger.error('Error in PUT /api/errors/[id]:', err);
 		throw error(500, 'Internal server error');
 	}
 };

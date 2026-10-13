@@ -1,6 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { adminTradesQuerySchema } from '$lib/server/marketplace/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/admin/trades/+server');
 
 /**
  * GET /api/marketplace/admin/trades
@@ -77,7 +80,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.select('id');
 
 		if (classesError) {
-			console.error('Error fetching teacher classes:', classesError);
+			logger.error('Error fetching teacher classes:', classesError);
 			throw error(500, 'Erreur lors de la récupération des classes');
 		}
 
@@ -103,7 +106,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.in('class_id', classIds);
 
 		if (membersError) {
-			console.error('Error fetching class members:', membersError);
+			logger.error('Error fetching class members:', membersError);
 			throw error(500, 'Erreur lors de la récupération des élèves');
 		}
 
@@ -140,7 +143,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// AUTRE panne produisait le même 403 : le professeur s'entendait dire qu'il
 			// n'a pas accès à sa propre classe.
 			if (classDataError && classDataError.code !== 'PGRST116') {
-				console.error('Classe illisible :', classDataError);
+				logger.error('Classe illisible :', classDataError);
 				throw error(500, 'Impossible de vérifier la classe');
 			}
 
@@ -157,7 +160,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
 			// affiche « aucune activité » : un constat, pas une absence de donnée.
 			if (classStudentsError) {
-				console.error('Périmètre d’élèves illisible :', classStudentsError);
+				logger.error('Périmètre d’élèves illisible :', classStudentsError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 
@@ -178,7 +181,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.eq('role', 'student');
 
 		if (studentsError) {
-			console.error('Error fetching school students:', studentsError);
+			logger.error('Error fetching school students:', studentsError);
 			throw error(500, 'Erreur lors de la récupération des élèves');
 		}
 
@@ -225,7 +228,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const { data: trades, error: tradesError, count } = await query;
 
 	if (tradesError) {
-		console.error('Error fetching trades:', tradesError);
+		logger.error('Error fetching trades:', tradesError);
 		throw error(500, 'Erreur lors de la récupération des échanges');
 	}
 

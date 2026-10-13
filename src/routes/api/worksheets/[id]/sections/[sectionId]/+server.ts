@@ -15,6 +15,9 @@ import {
 import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/sections/[sectionId]/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -160,7 +163,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to update section:', dbError);
+		logger.error('Failed to update section:', dbError);
 		throw error(500, 'Impossible de modifier la section');
 	}
 
@@ -205,7 +208,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('worksheet_id', params.id);
 
 	if (moveError) {
-		console.error('Failed to move exercises:', moveError);
+		logger.error('Failed to move exercises:', moveError);
 		throw error(500, 'Impossible de sortir les exercices de la section');
 	}
 
@@ -217,7 +220,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('worksheet_id', params.id);
 
 	if (deleteError) {
-		console.error('Failed to delete section:', deleteError);
+		logger.error('Failed to delete section:', deleteError);
 		throw error(500, 'Impossible de supprimer la section');
 	}
 
