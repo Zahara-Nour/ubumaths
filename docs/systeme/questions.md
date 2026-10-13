@@ -330,7 +330,9 @@ d'un QCM (bon / coché à tort / oublié), les remarques de forme. Spécificatio
 **le mode A l'emporte à l'affichage**.
 
 Mode B : `generateCorrection` résout les variables, appelle le pipeline `pedagogical-*` et range
-les étapes dans `correction._renderedSteps`. Le **niveau** (`options.schoolLevel`, défaut `auto`)
+les étapes dans `correction._renderedSteps`. Si le pipeline lève une erreur (expression
+illisible, dénominateur nul du calcul numérique…), `generateCorrection` la journalise et rend
+l'instance **sans** étapes : la question reste affichable, avec son mode A s'il existe. Le **niveau** (`options.schoolLevel`, défaut `auto`)
 vient de `gradeLevelToSchoolLevel(grades)` : le plus haut niveau des `grades`, `lycee` par défaut.
 La **stratégie** (pas atomiques au collège, combinés au lycée…) est choisie **au rendu** par niveau :
 la même suite d'opérations se rédige différemment. `verbosity` : `summarized` | `detailed`.

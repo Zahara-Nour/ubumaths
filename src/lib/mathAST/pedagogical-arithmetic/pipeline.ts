@@ -24,16 +24,18 @@
 import type { MathNode } from '../types';
 import { evaluate } from '../eval/evaluate';
 import { isEvalValue } from '../eval/types';
-import { isDivision, isMultiplication, isNumber, isOpposite } from '../guards';
+import { isNumber, isOpposite } from '../guards';
 import { match, nodesEqual } from '../pattern/match';
 import { applyRule, instantiate } from '../pattern/rule';
 import type { MatchBindings } from '../pattern/types';
 import { mapNode, mapNodeTopDown } from '../transforms';
+import { toLatex } from '../latex-generator';
 import { extractAnswerFragment } from './answer-format-parser';
 import { loadPedagogicalRules } from './pedagogical-rules';
 import {
 	groupMultiplicationsInAddition,
-	groupParentheses
+	groupParentheses,
+	isGroupableMulDivTerm
 } from './pedagogical-rules/basic-operations';
 import { reduceFraction } from './pedagogical-rules/fractions';
 import { toScientificNotation } from './pedagogical-rules/scientific-notation';
@@ -144,16 +146,10 @@ function collectCalculableParens(node: MathNode): readonly MathNode[] {
  */
 function collectNumericMultiplications(node: MathNode): readonly MathNode[] {
 	const found: MathNode[] = [];
-	const isNumericAtom = (x: MathNode): boolean =>
-		isNumber(x) || (isOpposite(x) && isNumber(x.operand));
-	const isOperand = (x: MathNode): boolean => isNumericAtom(x) || isChain(x);
-	const isChain = (x: MathNode): boolean => {
-		if (isMultiplication(x)) return isOperand(x.left) && isOperand(x.right);
-		if (isDivision(x)) return isOperand(x.numerator) && isOperand(x.denominator);
-		return false;
-	};
 	const walk = (n: MathNode): void => {
-		if ((isMultiplication(n) || isDivision(n)) && isChain(n)) {
+		// Mêmes termes que ceux que la règle calcule : une fraction littérale
+		// (`\frac34`) n'est pas un calcul, elle ne se colore pas
+		if (isGroupableMulDivTerm(n)) {
 			found.push(n);
 			return; // chain captured as a unit
 		}
@@ -346,6 +342,50 @@ function findFirstApplication(
 }
 
 // =============================================================================
+// Entrée : refus du dénominateur nul, écriture du produit
+// =============================================================================
+
+/**
+ * Un dénominateur de l'expression vaut 0 : le calcul n'a pas de sens, il n'y
+ * a pas d'étapes à rédiger. Lancée plutôt qu'un arrêt silencieux sur `2/0`
+ * (décision de David, 2026-10-14) ; les appelants retombent sur leur mode
+ * sans étapes (`generateCorrection` l'attrape avec toute autre erreur).
+ */
+export class PedagogicalArithmeticDivisionByZero extends Error {
+	readonly denominator: MathNode;
+
+	constructor(denominator: MathNode) {
+		super(
+			`Calcul impossible : le dénominateur $${toLatex(denominator)}$ vaut 0, on ne divise pas par 0.`
+		);
+		this.name = 'PedagogicalArithmeticDivisionByZero';
+		this.denominator = denominator;
+	}
+}
+
+/** Lance `PedagogicalArithmeticDivisionByZero` au premier dénominateur nul. */
+function assertNoZeroDenominator(node: MathNode): void {
+	mapNode(node, (n) => {
+		if (n.type !== 'division') return n;
+		const value = evaluate(n.denominator, { mode: 'exact' });
+		if (isEvalValue(value) && isNumber(value.node) && Number(value.node.value) === 0) {
+			throw new PedagogicalArithmeticDivisionByZero(n.denominator);
+		}
+		return n;
+	});
+}
+
+/**
+ * Le produit s'écrit `\times` dans les étapes : `3*(-2)` tapé en LaTeX
+ * (style `star`) s'imprimait tel quel, astérisque compris.
+ */
+function normalizeProductStyle(node: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		n.type === 'multiplication' && n.displayStyle === 'star' ? { ...n, displayStyle: 'cross' } : n
+	);
+}
+
+// =============================================================================
 // Pipeline
 // =============================================================================
 
@@ -372,7 +412,11 @@ export function generatePedagogicalArithmeticSteps(
 	const collected: PedagogicalArithmeticStep[] = [];
 	let stepId = 0;
 
-	let workingNode = node;
+	assertNoZeroDenominator(node);
+	// Les parenthèses autour d'un nombre (`(-2)`, `(5)`) ont servi à la
+	// lecture ; les règles ne voient pas au travers. Le renderer les remet là
+	// où l'écriture l'exige (facteur, base de puissance, terme retranché).
+	let workingNode = cleanupTrivialParens(normalizeProductStyle(node));
 
 	// 2a-pre. -------------- Top-level pre-pass for groupParentheses ---------
 	// Computes every calculable `(…)` in one step, collège+ only. Skipped at

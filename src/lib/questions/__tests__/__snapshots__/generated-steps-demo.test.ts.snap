@@ -495,7 +495,7 @@ exports[`Mode B end-to-end demos > CM2 arithmetic — produces primaire steps wi
     "id": 0,
     "rule": "evaluate-binary-mul",
     "schoolLevel": "primaire",
-    "title": "On multiplie 3 par 4",
+    "title": "On multiplie $3$ par $4$",
   },
   {
     "hasExplanation": false,
@@ -503,7 +503,7 @@ exports[`Mode B end-to-end demos > CM2 arithmetic — produces primaire steps wi
     "id": 1,
     "rule": "evaluate-binary-add",
     "schoolLevel": "primaire",
-    "title": "On additionne 2 et 12",
+    "title": "On additionne $2$ et $12$",
   },
   {
     "hasExplanation": false,
@@ -511,7 +511,7 @@ exports[`Mode B end-to-end demos > CM2 arithmetic — produces primaire steps wi
     "id": 2,
     "rule": "evaluate-binary-mul",
     "schoolLevel": "primaire",
-    "title": "On multiplie 5 par 6",
+    "title": "On multiplie $5$ par $6$",
   },
   {
     "hasExplanation": false,
@@ -519,7 +519,7 @@ exports[`Mode B end-to-end demos > CM2 arithmetic — produces primaire steps wi
     "id": 3,
     "rule": "evaluate-binary-add",
     "schoolLevel": "primaire",
-    "title": "On additionne 14 et 30",
+    "title": "On additionne $14$ et $30$",
   },
 ]
 `;
@@ -532,7 +532,7 @@ exports[`Mode B end-to-end demos > CM2 arithmetic-from-blank — produces primai
     "id": 0,
     "rule": "evaluate-binary-mul",
     "schoolLevel": "primaire",
-    "title": "On multiplie 3 par 4",
+    "title": "On multiplie $3$ par $4$",
   },
   {
     "hasExplanation": false,
@@ -540,7 +540,7 @@ exports[`Mode B end-to-end demos > CM2 arithmetic-from-blank — produces primai
     "id": 1,
     "rule": "evaluate-binary-add",
     "schoolLevel": "primaire",
-    "title": "On additionne 2 et 12",
+    "title": "On additionne $2$ et $12$",
   },
 ]
 `;
