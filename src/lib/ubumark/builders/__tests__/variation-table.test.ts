@@ -15,6 +15,7 @@ import { describe, it, expect } from 'vitest';
 import { variationTableNode } from '../variation-table';
 import { computeVariations } from '$lib/mathAST/variations';
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
+import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
 import type { MathNode } from '$lib/mathAST/types';
 import type { SignRow, VariationRow } from '$lib/ubumark/types/variation-table';
 
@@ -211,5 +212,37 @@ describe('Terminale : exponentielle', () => {
 			expression: '-\\dfrac{1}{2 \\exponentialE}',
 			position: 'bottom'
 		});
+	});
+});
+
+/**
+ * Revue de #1307 : seule la PREMIÈRE borne savait être ouverte. Sur `[0 ; 5[`,
+ * la colonne 5 sortait fermée avec 25 en haut — « f(5) = 25 est atteint », faux.
+ */
+describe('borne droite ouverte d’un intervalle d’étude', () => {
+	function tableOn(source: string, written: string) {
+		const read = parseStudentDomain(written, 'x');
+		if (!read.success) throw new Error(`ensemble illisible : ${written}`);
+		return variationTableNode(
+			computeVariations(ast(source), { variable: 'x', domain: read.domain })
+		);
+	}
+
+	it('x² sur [0 ; 5[ : 0 fermé, 5 ouvert', () => {
+		expect(tableOn('x^2', '[0;5[')?.domain).toEqual([
+			{ expression: '0' },
+			{ expression: '5', open: true }
+		]);
+	});
+
+	it('x² sur ]−3 ; 0[ : −3 ouvert, 0 ouvert', () => {
+		expect(tableOn('x^2', ']-3;0[')?.domain).toEqual([
+			{ expression: '-3', open: true },
+			{ expression: '0', open: true }
+		]);
+	});
+
+	it('x² sur [0 ; 5] : les deux bornes fermées', () => {
+		expect(tableOn('x^2', '[0;5]')?.domain).toEqual([{ expression: '0' }, { expression: '5' }]);
 	});
 });
