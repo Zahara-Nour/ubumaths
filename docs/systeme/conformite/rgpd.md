@@ -5,6 +5,8 @@ couvre:
   - 'src/lib/server/email/**'
   - 'src/lib/components/account/**'
   - 'src/routes/api/account/**'
+  - src/lib/server/deleted-account-files.ts
+  - 'src/routes/api/cron/deleted-account-files/**'
   - 'src/routes/(public)/legal/**'
   - 'supabase/migrations/*_security_rgpd_erasure.sql'
   - 'supabase/migrations/*_suppression_compte_art17.sql'

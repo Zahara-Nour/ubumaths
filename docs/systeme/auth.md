@@ -78,7 +78,7 @@ Deux callbacks différents : `/auth/callback` (connexion Google) ≠ `/api/googl
 | `src/lib/server/passwordPolicy.ts`                | `validatePasswordPolicy`, appliquée par les schémas d'inscription et de changement de mot de passe.                             |
 | `src/lib/server/validateRedirectUrl.ts`           | Anti open-redirect pour les paramètres `next`.                                                                                  |
 | `src/lib/server/private-response.ts`              | `mustStayPrivate` / `PRIVATE_NO_STORE` : pas de cache partagé pour une réponse connectée ou qui pose un cookie.                 |
-| `src/lib/server/auth/cron.ts`                     | `verifyCronAuth(request)` : `Authorization: Bearer <CRON_SECRET>` pour `/api/cron/*`.                                           |
+| `src/lib/server/auth/cron.ts`                     | `verifyCronAuth(request)` : `Bearer <CRON_SECRET>` seul pour `/api/cron/*` (`x-vercel-cron`, falsifiable, n'ouvre plus rien).   |
 | `src/lib/server/auth/auth-error-fr.ts`            | `authErrorToFrench` : messages GoTrue traduits.                                                                                 |
 | `src/lib/server/middleware/consent.ts`            | `requireConsent(profile, action)` — voir [conformite/](conformite/).                                                            |
 | `src/lib/server/middleware/student-access.ts`     | `verifyTeacherStudent`, `verifyTeacherStudentWithRole`.                                                                         |
