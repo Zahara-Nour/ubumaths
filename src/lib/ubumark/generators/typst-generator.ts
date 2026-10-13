@@ -2372,8 +2372,9 @@ export function convertLatexToTypstMath(latex: string): string {
 		pmatrix: '"("',
 		bmatrix: '"["',
 		vmatrix: '"|"',
-		Vmatrix: '"||"',
-		matrix: '"none"'
+		// Typst n'accepte qu'un caractère ou none : "||" et "none" faisaient échouer la fiche
+		Vmatrix: '"‖"',
+		matrix: '#none'
 	};
 	const matPrefixes: string[] = [];
 	for (const [env, delim] of Object.entries(matrixDelimiters)) {
