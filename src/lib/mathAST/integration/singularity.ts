@@ -58,11 +58,15 @@ const ROOT_BISECTIONS = 80;
 const POLE_STEP = 1e-5;
 const POLE_RATIO = 100;
 /**
- * Croissance de |f| (entre h et h/100) au-delà de laquelle f n'est pas bornée
- * près de la racine : 100 pour un pôle simple, 10 000 pour un double, 4,6
- * pour 1/∛x (intégrable). Seuil 10 = ordre 1/2 : au doute, refus.
+ * Croissance de |f| entre les distances h et h/100 d'une singularité : 100^p
+ * pour une singularité d'ordre p (|f| ≈ c/|x − z|^p). Non intégrable dès
+ * p ≥ 1 (pôle simple : 100 ; double : 10 000) ; 1/√ donne 10, 1/∛ 4,6.
+ * Seuil 50 (p ≈ 0,85) : nettement entre l'ordre 1/2, très courant
+ * (∫₀¹ x/√(1 − x²)), et le pôle simple — jamais un verdict d'arrondi.
  */
-const POLE_GROWTH = 10;
+const POLE_GROWTH = 50;
+/** Croissance en deçà de laquelle f est tenue pour bornée près de z (saut fini) */
+const BOUNDED_GROWTH = 2;
 
 // =============================================================================
 // Outils
@@ -157,6 +161,47 @@ function blowUpIn(
 // Balayage commun (F, ou f dans le repli numérique)
 // =============================================================================
 
+/** Nature de f près d'un point singulier z */
+type SingularityKind = 'pole' | 'integrable' | 'bounded';
+
+/**
+ * Nature de f près de z (dans [lo ; hi]), par la croissance de |f| entre les
+ * distances h et h/POLE_RATIO de chaque côté :
+ * - `pole` : croissance > POLE_GROWTH d'un côté (ordre ≳ 0,85 : au doute,
+ *   refus), ou f non définie des deux côtés mesurés ;
+ * - `integrable` : f non bornée mais d'ordre < 0,85 (1/√, 1/∛, |·|^−0,6) ;
+ * - `bounded` : f bornée (prolongeable, saut fini).
+ * Un côté où f n'est pas définie (1/x^0,4 pour x < 0 compilé en NaN) ne
+ * compte pas quand l'autre est mesuré.
+ */
+function singularityKind(
+	f: (x: number) => number,
+	z: number,
+	lo: number,
+	hi: number
+): SingularityKind {
+	const h = POLE_STEP * Math.max(1, Math.abs(z));
+	let measured = 0;
+	let undefinedSides = 0;
+	let growth = 0;
+	for (const side of [-1, 1]) {
+		const far = z + side * h;
+		const near = z + (side * h) / POLE_RATIO;
+		if (far < lo || far > hi || near < lo || near > hi) continue;
+		const farValue = Math.abs(f(far));
+		const nearValue = Math.abs(f(near));
+		if (!Number.isFinite(farValue) || !Number.isFinite(nearValue)) {
+			undefinedSides++;
+			continue;
+		}
+		measured++;
+		growth = Math.max(growth, nearValue / Math.max(farValue, Number.MIN_VALUE));
+	}
+	if (measured === 0) return undefinedSides > 0 ? 'pole' : 'bounded';
+	if (growth > POLE_GROWTH) return 'pole';
+	return growth > BOUNDED_GROWTH ? 'integrable' : 'bounded';
+}
+
 /**
  * Raison pour laquelle `fn` n'est pas continue sur [lo ; hi], ou null.
  * `subject` nomme la fonction contrôlée dans les messages.
@@ -204,7 +249,11 @@ function scanDiscontinuity(
 			jumpIn(fn, segment, tolerance) ??
 			blowUpIn(fn, segment, tolerance, -1) ??
 			blowUpIn(fn, segment, tolerance, 1);
-		if (at !== null) return `la fonction a une singularité en x ≈ ${format(at)}`;
+		if (at === null) continue;
+		// f (repli numérique) non bornée mais intégrable (1/√|x³ − 2|) : Simpson
+		// garde sa valeur approchée ; F, elle, ne doit jamais diverger
+		if (subject === 'la fonction' && singularityKind(fn, at, lo, hi) === 'integrable') continue;
+		return `la fonction a une singularité en x ≈ ${format(at)}`;
 	}
 	return null;
 }
@@ -305,28 +354,9 @@ function rootBetween(g: (x: number) => number, left: number, right: number): num
 }
 
 /**
- * f non bornée près de z (dans [lo ; hi]) : |f| croît de plus de POLE_GROWTH
- * entre les distances h et h/POLE_RATIO, d'un côté au moins, ou n'y est pas
- * définie. Une singularité prolongeable ou d'ordre < 1/2 reste bornée ou
- * croît moins.
- */
-function unboundedNear(f: (x: number) => number, z: number, lo: number, hi: number): boolean {
-	const h = POLE_STEP * Math.max(1, Math.abs(z));
-	for (const side of [-1, 1]) {
-		const far = z + side * h;
-		const near = z + (side * h) / POLE_RATIO;
-		if (far < lo || far > hi || near < lo || near > hi) continue;
-		const farValue = Math.abs(f(far));
-		const nearValue = Math.abs(f(near));
-		if (!Number.isFinite(farValue) || !Number.isFinite(nearValue)) return true;
-		if (nearValue > POLE_GROWTH * Math.max(farValue, Number.MIN_VALUE)) return true;
-	}
-	return false;
-}
-
-/**
  * Raison (en français) pour laquelle f a un pôle dans [a ; b] : un de ses
- * dénominateurs y change de signe (ou s'y annule) et f n'y est pas bornée.
+ * dénominateurs y change de signe (ou s'y annule) et f y a un pôle (ordre ≳ 0,85,
+ * `singularityKind`) — 1/√(2 − x) en 2, intégrable, passe.
  * La racine est localisée par bissection : ∛2, ln 3 ou π/2 n'ont pas à être
  * trouvés exactement. null : aucun pôle détecté, ou contrôle impossible
  * (paramètres, bornes non numériques). Une racine double (signe constant)
@@ -355,7 +385,8 @@ export function denominatorPole(
 			const signChange = i + 1 < xs.length && values[i] * values[i + 1] < 0;
 			if (!zero && !signChange) continue;
 			const z = zero ? xs[i] : rootBetween(g, xs[i], xs[i + 1]);
-			if (unboundedNear(f, z, lo, hi)) return `la fonction a une singularité en x ≈ ${format(z)}`;
+			if (singularityKind(f, z, lo, hi) === 'pole')
+				return `la fonction a une singularité en x ≈ ${format(z)}`;
 		}
 	}
 	return null;
