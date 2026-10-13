@@ -114,8 +114,8 @@ Précisions :
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles
   de la police, petits et grands (ponctuation, opérateurs, logique, ensembles, flèches, vecteurs,
-  géométrie, délimiteurs empilés, racines, ∑ ∫, lettres grecques, AMS) : la regarder suffit
-  pour juger un changement du jeu Shantell (`tools/chiphre-math/`). En bas, trois **exercices réels**
+  géométrie, symboles courants, lettres calligraphiques, délimiteurs empilés, racines, ∑ ∫,
+  lettres grecques, AMS) : la regarder suffit pour juger un changement du jeu Shantell (`tools/chiphre-math/`). En bas, trois **exercices réels**
   (copie figée de la base, `exercices-demo.json`, image copiée dans `static/test-font/`), affichés en
   Shantell et téléchargeables en PDF : `shantell-pdf.ts` compile avec le compilateur du **Corrigé
   des fiches** (`src/lib/typst/compiler/correction-fonts-compiler.ts`, `TypstSnippet.buildLocalCompiler`),

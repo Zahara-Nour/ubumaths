@@ -2,6 +2,15 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.15.0] - 2026-10-13
+
+### Ajouté
+
+- Script `calligraphic.py` : capitales calligraphiques (`\\mathcal`) de Caligraphic-Regular, à la main de Shantell, qui n'en a pas : elles suivent les lettres KaTeX (paraphe au départ, boucle à la fin) mais en traits souples au trait des lettres, comme les minuscules grecques, et ne se confondent pas avec les capitales de Shantell (`𝒮` ≠ `S`)
+  - les six lettres utilisées dans Chiphre : `𝒫 𝒞 𝒮 ℒ 𝒟 𝒜` ; les autres gardent la forme KaTeX pour l'instant
+- `build_typst_math_font.py` : les capitales de Caligraphic vont aux points de code « script » (U+1D49C…, `ℬ ℰ ℱ ℋ ℐ ℒ ℳ ℛ`), ceux de `cal()` dans Typst ; le PDF prenait jusqu'ici le `𝒮` d'une autre police
+- Éditeur de `/test-font` : une ligne de lettres calligraphiques
+
 ## [1.14.0] - 2026-10-13
 
 ### Ajouté
