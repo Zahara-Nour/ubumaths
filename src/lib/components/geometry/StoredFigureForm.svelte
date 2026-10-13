@@ -104,12 +104,18 @@
 	}
 
 	async function handleSubmit() {
-		if (!canSave) return;
+		if (isSaving || isDeleting) return;
 		// Contrôle à l'envoi : le script envoyé est celui qui s'exécute, pas l'aperçu
+		// (Entrée dans un champ peut arriver avant la fin de la pause de frappe)
+		clearTimeout(previewTimer);
+		previewScript = script;
 		const check = evaluateFigureScript(script);
 		if (!check.ok) {
-			previewScript = script;
 			toaster.error('Le script contient une erreur : la figure ne peut pas être enregistrée');
+			return;
+		}
+		if (!title.trim()) {
+			toaster.error('Le titre est requis');
 			return;
 		}
 
@@ -122,9 +128,16 @@
 			formData.set('grades', JSON.stringify(grades));
 			formData.set('tags', JSON.stringify(tags));
 			formData.set('is_public', isPublic ? 'true' : 'false');
-			const outcome = await submitAction('?/save', formData);
+			const outcome = await submitAction<{ id?: string; warning?: string }>('?/save', formData);
 			if (!outcome.ok) {
 				toaster.error(outcome.message);
+				return;
+			}
+			// Créée mais sans ses tags : on la rouvre en modification (un nouvel envoi
+			// depuis cette page créerait un doublon)
+			if (outcome.data?.warning && outcome.data.id) {
+				toaster.warning(outcome.data.warning);
+				await goto(`${listHref}/${outcome.data.id}/edit`);
 				return;
 			}
 			toaster.success('Figure enregistrée');

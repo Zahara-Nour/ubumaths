@@ -7,7 +7,11 @@ import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { parseFigureFormData } from '$lib/server/validation/geometry-figures';
-import { createGeometryFigure, GeometryFigureError } from '$lib/server/geometry-figures';
+import {
+	createGeometryFigure,
+	FIGURE_TAGS_NOT_SAVED_MESSAGE,
+	GeometryFigureError
+} from '$lib/server/geometry-figures';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -23,8 +27,15 @@ export const actions: Actions = {
 		}
 
 		try {
-			const figure = await createGeometryFigure(locals.supabase, validation.data, user.id);
-			return { id: figure.id };
+			const { figure, tagsSaved } = await createGeometryFigure(
+				locals.supabase,
+				validation.data,
+				user.id
+			);
+			// Figure créée mais tags perdus : la page renvoie vers la modification, sans doublon
+			return tagsSaved
+				? { id: figure.id }
+				: { id: figure.id, warning: FIGURE_TAGS_NOT_SAVED_MESSAGE };
 		} catch (e) {
 			if (e instanceof GeometryFigureError) return fail(e.status, { message: e.message });
 			throw e;

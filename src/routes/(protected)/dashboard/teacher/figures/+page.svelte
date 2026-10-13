@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { afterNavigate, goto } from '$app/navigation';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
@@ -28,6 +28,15 @@
 	let scope = $state<string>(initialFilters.scope ?? ALL);
 	let q = $state(initialFilters.q ?? '');
 	let tags = $state<string[]>([...initialFilters.tags]);
+
+	// Précédent / Suivant ou le lien du menu réutilisent la page : les champs
+	// reprennent les filtres de la nouvelle adresse
+	afterNavigate(() => {
+		grade = data.filters.grade ?? ALL;
+		scope = data.filters.scope ?? ALL;
+		q = data.filters.q ?? '';
+		tags = [...data.filters.tags];
+	});
 
 	const tagItems = $derived(data.tagNames.map((name) => ({ value: name, label: name })));
 	const hasFilters = $derived(

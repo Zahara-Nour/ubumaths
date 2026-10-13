@@ -117,8 +117,8 @@ describe('Figures géométriques : fonctions serveur contre la base', () => {
 	});
 
 	it('1. le prof crée deux figures, tags compris', async () => {
-		const square = await createGeometryFigure(teacherClient, input(), teacherId);
-		const triangle = await createGeometryFigure(
+		const { figure: square } = await createGeometryFigure(teacherClient, input(), teacherId);
+		const { figure: triangle } = await createGeometryFigure(
 			teacherClient,
 			input({
 				title: `${RUN} triangle à 50%`,
@@ -156,6 +156,10 @@ describe('Figures géométriques : fonctions serveur contre la base', () => {
 		expect(await listedTitles({ q: 'c_rré', tags: [] })).toEqual([]);
 		// Les caractères de la grammaire de .or() ne cassent pas la requête
 		expect(await listedTitles({ q: 'carré),title.ilike.(*', tags: [] })).toEqual([]);
+		// Tentative d'ajouter une branche au filtre : ni erreur, ni figure ajoutée
+		expect(
+			await listedTitles({ q: 'x),is_public.eq.false,title.ilike.(*', scope: 'public', tags: [] })
+		).toEqual([]);
 	});
 
 	it('4. la modification relit sa ligne et remplace les tags', async () => {

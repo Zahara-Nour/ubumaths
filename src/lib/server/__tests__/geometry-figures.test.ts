@@ -179,7 +179,7 @@ describe('createGeometryFigure', () => {
 	it('insère, relit la ligne, puis enregistre les tags', async () => {
 		const fake = createFakeSupabase(() => ({ data: [figureRow()] }));
 
-		const figure = await createGeometryFigure(fake.client, INPUT, AUTHOR);
+		const { figure, tagsSaved } = await createGeometryFigure(fake.client, INPUT, AUTHOR);
 
 		const [query] = fake.on('geometry_figures');
 		expect(methods(query)).toEqual(['insert', 'select']);
@@ -197,6 +197,7 @@ describe('createGeometryFigure', () => {
 			'fractales'
 		]);
 		expect(figure.id).toBe(FIGURE_ID);
+		expect(tagsSaved).toBe(true);
 	});
 
 	it('un refus de la RLS (élève) est un 403 en français', async () => {
@@ -215,12 +216,12 @@ describe('createGeometryFigure', () => {
 		});
 	});
 
-	it('tags non enregistrés : erreur qui dit que la figure, elle, l’est', async () => {
+	it('tags non enregistrés : la figure créée est rendue (pas d’erreur, donc pas de doublon au réessai)', async () => {
 		vi.mocked(syncResourceTags).mockRejectedValue(new Error('panne'));
 		const fake = createFakeSupabase(() => ({ data: [figureRow()] }));
-		await expect(createGeometryFigure(fake.client, INPUT, AUTHOR)).rejects.toMatchObject({
-			message: FIGURE_TAGS_NOT_SAVED_MESSAGE
-		});
+		const { figure, tagsSaved } = await createGeometryFigure(fake.client, INPUT, AUTHOR);
+		expect(figure.id).toBe(FIGURE_ID);
+		expect(tagsSaved).toBe(false);
 	});
 });
 
@@ -242,6 +243,14 @@ describe('updateGeometryFigure', () => {
 		expect(called(query, 'eq', 'id', FIGURE_ID)).toBe(true);
 		expect(methods(query)).toContain('select');
 		expect(syncResourceTags).toHaveBeenCalled();
+	});
+
+	it('tags non enregistrés à la modification : erreur qui le dit', async () => {
+		vi.mocked(syncResourceTags).mockRejectedValue(new Error('panne'));
+		const fake = createFakeSupabase(() => ({ data: [figureRow()] }));
+		await expect(updateGeometryFigure(fake.client, FIGURE_ID, INPUT)).rejects.toMatchObject({
+			message: FIGURE_TAGS_NOT_SAVED_MESSAGE
+		});
 	});
 
 	it('zéro ligne (pas à lui ou inexistante) : 404, et les tags ne sont pas touchés', async () => {

@@ -60,7 +60,7 @@ export const FIGURE_NOT_FOUND_MESSAGE = 'Figure introuvable';
 export const FIGURE_CREATE_FORBIDDEN_MESSAGE =
 	'Seuls les professeurs et les administrateurs créent des figures';
 export const FIGURE_TAGS_NOT_SAVED_MESSAGE =
-	"La figure est enregistrée, mais ses tags n'ont pas pu l'être : réessayer depuis la page de modification";
+	"La figure est enregistrée, mais ses tags n'ont pas pu l'être : les poser à nouveau ici";
 
 // ============================================================================
 // ERREURS
@@ -250,12 +250,18 @@ async function saveTags(
 	}
 }
 
-/** Créer une figure (prof ou admin ; la RLS refuse les autres) */
+/**
+ * Créer une figure (prof ou admin ; la RLS refuse les autres).
+ *
+ * Un échec des tags ne LÈVE pas : la figure existe déjà, et une erreur ferait
+ * croire qu'il faut réessayer — un second envoi créerait un doublon. Il est
+ * rendu (`tagsSaved: false`) pour que la page renvoie vers la modification.
+ */
 export async function createGeometryFigure(
 	supabase: TypedSupabaseClient,
 	input: FigureInput,
 	userId: string
-): Promise<GeometryFigureRow> {
+): Promise<{ figure: GeometryFigureRow; tagsSaved: boolean }> {
 	const { data, error } = await supabase
 		.from('geometry_figures')
 		.insert({
@@ -281,8 +287,12 @@ export async function createGeometryFigure(
 		throw new GeometryFigureError(500, "La figure n'a pas pu être enregistrée");
 	}
 
-	await saveTags(supabase, figure.id, input.tags);
-	return figure;
+	try {
+		await saveTags(supabase, figure.id, input.tags);
+		return { figure, tagsSaved: true };
+	} catch {
+		return { figure, tagsSaved: false };
+	}
 }
 
 /** Modifier une figure de l'utilisateur ; zéro ligne rendue = introuvable ou pas à lui */
