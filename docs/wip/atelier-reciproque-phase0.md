@@ -1,7 +1,7 @@
 ---
 title: Atelier — la réciproque calculée (phase 0)
 date: 2026-10-13
-status: phase 0 validée (2026-10-13) ; Q5 = (b), chantier « carte sur un intervalle » avant le lot 3
+status: chantier livré (#1302, #1304, #1314, #1328, 2026-10-13) ; questions ouvertes au journal ; reste paramètres sans carte
 ---
 
 # Atelier — la réciproque calculée
@@ -137,3 +137,11 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
   aux valeurs actuelles, sinon formule à nombres (`a eˣ` → `ln(x/2)`) recalculée à chaque cran ;
   « Pour a = 0 et b = 3, f est constante : pas de réciproque. » Refus composés en maths dans Calcul
   et sur la carte. Doc : [atelier.md](../systeme/atelier.md) § « La réciproque ».
+- 2026-10-13 — **lot 3 MERGÉ (#1328)** : bouton « Réciproque », `.réciproque f [sur I]` (I CROISÉ avec
+  l'ensemble de f), carte `f⁻¹` (nom interne `f^-1`) qui suit f, ensemble = départ de f⁻¹,
+  paramètres avec curseurs. Deux revues ciblées. **Chantier livré** (lots 1-3 + écriture/refus #1314).
+  **Questions ouvertes à David** : (1) `f^-1` tapé dans Calcul doit-il désigner la carte (aujourd'hui
+  refus honnête) ; (2) `.réciproque 2x+3` sans carte → ligne seule, OK ? ; (3) tracer y = x ? ;
+  (4) pas de Réciproque sur f′ ni de Dériver sur f⁻¹, OK ? ; (5) refus de sin x qui propose
+  [−π/2 ; π/2] sans arcsin (reco : ne pas proposer). Suite : paramètres sans carte (discussion par
+  cas, décidée). Constat hors lot : `g(x) = f(x)^-1` puis `g(2)` → « Fonction inconnue : g ».
