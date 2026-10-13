@@ -61,7 +61,7 @@ function memoryStorage(): Storage {
 
 describe('le mot « sur » coupe la définition', () => {
 	it.each([
-		['x^2 - 2 sur [0;+∞[', 'text', 'x^2 - 2', '[0;+∞['],
+		['x^2 - 2 sur [0;+∞[', 'detect', 'x^2 - 2', '[0;+∞['],
 		['x^2sur[0;+\\infty[', 'latex', 'x^2', '[0;+\\infty['],
 		[
 			'\\ln xsur\\left\\lbrack1;2\\right\\rbrack',
@@ -71,7 +71,7 @@ describe('le mot « sur » coupe la définition', () => {
 		],
 		['x^2\\text{ sur }[0;1]', 'latex', 'x^2', '[0;1]'],
 		['xsurR', 'latex', 'x', 'R'],
-		['x sur', 'text', 'x', '']
+		['x sur', 'detect', 'x', '']
 	] as const)('%s → %s | %s', (typed, mode, body, written) => {
 		expect(splitInterval(typed, mode)).toEqual({ body, written });
 	});
@@ -79,7 +79,7 @@ describe('le mot « sur » coupe la définition', () => {
 	it.each([
 		['surface', 'latex'],
 		['x\\surd', 'latex'],
-		['xsurface', 'text']
+		['xsurface', 'detect']
 	] as const)('%s n’est pas coupé (%s)', (typed, mode) => {
 		expect(splitInterval(typed, mode).written).toBeNull();
 	});
