@@ -203,23 +203,23 @@ exports[`snapshot — regroupement > 4x + 1 = 2x + 5 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] add-both-sides: On ajoute $-2x$ aux deux membres
+[2] subtract-both-sides: On soustrait $2x$ aux deux membres
 [3] subtract-both-sides: On soustrait $1$ aux deux membres
 [4] divide-both-sides: On divise les deux membres par $2$
 [5] read-solution: Solution : $x = 2$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On ajoute $-2x$ aux deux membres
+[2] On soustrait $2x$ aux deux membres
 [3] On soustrait $1$ aux deux membres
 [4] On divise les deux membres par $2$
 [5] Solution : $x = 2$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On ajoute $-2x$ aux deux membres
+[2] On soustrait $2x$ aux deux membres
     │ \\begin{aligned}
-    │   4x + 1 \\textcolor{blue}{+ -2x} &= 2x + 5 \\textcolor{blue}{+ -2x} \\\\
+    │   4x + 1 \\textcolor{blue}{- 2x} &= 2x + 5 \\textcolor{blue}{- 2x} \\\\
     │   2x + 1 &= 5
     │ \\end{aligned}
 [3] On soustrait $1$ aux deux membres
@@ -244,7 +244,7 @@ exports[`snapshot — regroupement > 4x + 1 = 2x + 5 1`] = `
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
     │ \\begin{aligned}
-    │   4x \\textcolor{blue}{+ -2x} &= 5 \\textcolor{blue}{- 1} \\\\
+    │   4x \\textcolor{blue}{- 2x} &= 5 \\textcolor{blue}{- 1} \\\\
     │   2x &= 4
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
@@ -265,7 +265,7 @@ exports[`snapshot — regroupement > 4x + 1 = 2x + 5 1`] = `
     │ \\end{aligned}
     [1] On isole les termes en x dans le membre de gauche
         │ \\begin{aligned}
-        │   4x \\textcolor{blue}{+ -2x} &= 5 \\textcolor{blue}{- 1} \\\\
+        │   4x \\textcolor{blue}{- 2x} &= 5 \\textcolor{blue}{- 1} \\\\
         │   2x &= 4
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
@@ -284,23 +284,23 @@ exports[`snapshot — regroupement > 5 − 2x = 11 + 3x 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] add-both-sides: On ajoute $-3x$ aux deux membres
+[2] subtract-both-sides: On soustrait $3x$ aux deux membres
 [3] subtract-both-sides: On soustrait $5$ aux deux membres
 [4] divide-both-sides: On divise les deux membres par $-5$
 [5] read-solution: Solution : $x = -\\dfrac{6}{5}$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On ajoute $-3x$ aux deux membres
+[2] On soustrait $3x$ aux deux membres
 [3] On soustrait $5$ aux deux membres
 [4] On divise les deux membres par $-5$
 [5] Solution : $x = -\\dfrac{6}{5}$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On ajoute $-3x$ aux deux membres
+[2] On soustrait $3x$ aux deux membres
     │ \\begin{aligned}
-    │   5 - 2x \\textcolor{blue}{+ -3x} &= 11 + 3x \\textcolor{blue}{+ -3x} \\\\
+    │   5 - 2x \\textcolor{blue}{- 3x} &= 11 + 3x \\textcolor{blue}{- 3x} \\\\
     │   -5x + 5 &= 11
     │ \\end{aligned}
 [3] On soustrait $5$ aux deux membres
@@ -325,7 +325,7 @@ exports[`snapshot — regroupement > 5 − 2x = 11 + 3x 1`] = `
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
     │ \\begin{aligned}
-    │   -2x \\textcolor{blue}{+ -3x} &= 11 \\textcolor{blue}{- 5} \\\\
+    │   -2x \\textcolor{blue}{- 3x} &= 11 \\textcolor{blue}{- 5} \\\\
     │   -5x &= 6
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
@@ -346,7 +346,7 @@ exports[`snapshot — regroupement > 5 − 2x = 11 + 3x 1`] = `
     │ \\end{aligned}
     [1] On isole les termes en x dans le membre de gauche
         │ \\begin{aligned}
-        │   -2x \\textcolor{blue}{+ -3x} &= 11 \\textcolor{blue}{- 5} \\\\
+        │   -2x \\textcolor{blue}{- 3x} &= 11 \\textcolor{blue}{- 5} \\\\
         │   -5x &= 6
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
@@ -365,23 +365,23 @@ exports[`snapshot — regroupement-fractions > 2x/3 − 1/2 = x/4 + 1 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] add-both-sides: On ajoute $-\\dfrac{1}{4}x$ aux deux membres
+[2] subtract-both-sides: On soustrait $\\dfrac{1}{4}x$ aux deux membres
 [3] add-both-sides: On ajoute $\\dfrac{1}{2}$ aux deux membres
 [4] divide-both-sides: On divise les deux membres par $\\dfrac{5}{12}$
 [5] read-solution: Solution : $x = \\dfrac{18}{5}$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On ajoute $-\\dfrac{1}{4}x$ aux deux membres
+[2] On soustrait $\\dfrac{1}{4}x$ aux deux membres
 [3] On ajoute $\\dfrac{1}{2}$ aux deux membres
 [4] On divise les deux membres par $\\dfrac{5}{12}$
 [5] Solution : $x = \\dfrac{18}{5}$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On ajoute $-\\dfrac{1}{4}x$ aux deux membres
+[2] On soustrait $\\dfrac{1}{4}x$ aux deux membres
     │ \\begin{aligned}
-    │   \\dfrac{2x}{3} - \\dfrac{1}{2} \\textcolor{blue}{+ -\\dfrac{1}{4}x} &= \\dfrac{x}{4} + 1 \\textcolor{blue}{+ -\\dfrac{1}{4}x} \\\\
+    │   \\dfrac{2x}{3} - \\dfrac{1}{2} \\textcolor{blue}{- \\dfrac{1}{4}x} &= \\dfrac{x}{4} + 1 \\textcolor{blue}{- \\dfrac{1}{4}x} \\\\
     │   \\dfrac{5}{12}x - \\dfrac{1}{2} &= 1
     │ \\end{aligned}
 [3] On ajoute $\\dfrac{1}{2}$ aux deux membres
@@ -406,7 +406,7 @@ exports[`snapshot — regroupement-fractions > 2x/3 − 1/2 = x/4 + 1 1`] = `
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
     │ \\begin{aligned}
-    │   \\dfrac{2x}{3} \\textcolor{blue}{+ -\\dfrac{1}{4}x} &= 1 \\textcolor{blue}{+ \\dfrac{1}{2}} \\\\
+    │   \\dfrac{2x}{3} \\textcolor{blue}{- \\dfrac{1}{4}x} &= 1 \\textcolor{blue}{+ \\dfrac{1}{2}} \\\\
     │   \\dfrac{5}{12}x &= \\dfrac{3}{2}
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
@@ -427,7 +427,7 @@ exports[`snapshot — regroupement-fractions > 2x/3 − 1/2 = x/4 + 1 1`] = `
     │ \\end{aligned}
     [1] On isole les termes en x dans le membre de gauche
         │ \\begin{aligned}
-        │   \\dfrac{2x}{3} \\textcolor{blue}{+ -\\dfrac{1}{4}x} &= 1 \\textcolor{blue}{+ \\dfrac{1}{2}} \\\\
+        │   \\dfrac{2x}{3} \\textcolor{blue}{- \\dfrac{1}{4}x} &= 1 \\textcolor{blue}{+ \\dfrac{1}{2}} \\\\
         │   \\dfrac{5}{12}x &= \\dfrac{3}{2}
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x
@@ -446,23 +446,23 @@ exports[`snapshot — regroupement-fractions > x/2 + 1 = x/3 + 2 1`] = `
 
 ========== TECHNIQUE — pipeline pédagogique (EquationStep) ==========
 [1] identify-equation: Équation du premier degré
-[2] add-both-sides: On ajoute $-\\dfrac{1}{3}x$ aux deux membres
+[2] subtract-both-sides: On soustrait $\\dfrac{1}{3}x$ aux deux membres
 [3] subtract-both-sides: On soustrait $1$ aux deux membres
 [4] divide-both-sides: On divise les deux membres par $\\dfrac{1}{6}$
 [5] read-solution: Solution : $x = 6$
 
 ========== COLLEGE (summarized) ==========
 [1] Équation du premier degré
-[2] On ajoute $-\\dfrac{1}{3}x$ aux deux membres
+[2] On soustrait $\\dfrac{1}{3}x$ aux deux membres
 [3] On soustrait $1$ aux deux membres
 [4] On divise les deux membres par $\\dfrac{1}{6}$
 [5] Solution : $x = 6$
 
 ========== COLLEGE (detailed) ==========
 [1] Équation du premier degré
-[2] On ajoute $-\\dfrac{1}{3}x$ aux deux membres
+[2] On soustrait $\\dfrac{1}{3}x$ aux deux membres
     │ \\begin{aligned}
-    │   \\dfrac{x}{2} + 1 \\textcolor{blue}{+ -\\dfrac{1}{3}x} &= \\dfrac{x}{3} + 2 \\textcolor{blue}{+ -\\dfrac{1}{3}x} \\\\
+    │   \\dfrac{x}{2} + 1 \\textcolor{blue}{- \\dfrac{1}{3}x} &= \\dfrac{x}{3} + 2 \\textcolor{blue}{- \\dfrac{1}{3}x} \\\\
     │   \\dfrac{1}{6}x + 1 &= 2
     │ \\end{aligned}
 [3] On soustrait $1$ aux deux membres
@@ -487,7 +487,7 @@ exports[`snapshot — regroupement-fractions > x/2 + 1 = x/3 + 2 1`] = `
 [1] Équation du premier degré
 [2] On isole les termes en x dans le membre de gauche
     │ \\begin{aligned}
-    │   \\dfrac{x}{2} \\textcolor{blue}{+ -\\dfrac{1}{3}x} &= 2 \\textcolor{blue}{- 1} \\\\
+    │   \\dfrac{x}{2} \\textcolor{blue}{- \\dfrac{1}{3}x} &= 2 \\textcolor{blue}{- 1} \\\\
     │   \\dfrac{1}{6}x &= 1
     │ \\end{aligned}
 [3] On termine en simplifiant le coefficient de x
@@ -508,7 +508,7 @@ exports[`snapshot — regroupement-fractions > x/2 + 1 = x/3 + 2 1`] = `
     │ \\end{aligned}
     [1] On isole les termes en x dans le membre de gauche
         │ \\begin{aligned}
-        │   \\dfrac{x}{2} \\textcolor{blue}{+ -\\dfrac{1}{3}x} &= 2 \\textcolor{blue}{- 1} \\\\
+        │   \\dfrac{x}{2} \\textcolor{blue}{- \\dfrac{1}{3}x} &= 2 \\textcolor{blue}{- 1} \\\\
         │   \\dfrac{1}{6}x &= 1
         │ \\end{aligned}
     [2] On termine en simplifiant le coefficient de x

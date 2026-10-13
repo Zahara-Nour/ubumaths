@@ -684,6 +684,11 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   et de « b = 0 » / « c = 0 » écrivent la vraie relation (`$f(x) - g(x) \geqslant 0$`), plus de `⊻`. Le 1er
   degré écrit aussi ses blocs alignés par `RELATION_MAP` (`\leqslant`/`\geqslant`, plus de
   `\leq`/`\geq`) : `inequation-premier-degre-symboles.test.ts`. Typst les lit (`lt.eq.slant`).
+  **Un terme déplacé s'écrit sans signe moins** (V50, 2026-10-13) : déplacer `-2x` se dit « On
+  soustrait $2x$ », `\textcolor{blue}{- 2x}`, plus « On ajoute −2x » / `+ -2x`. Le signe se lit
+  sur le facteur de tête (`-2x`, `-\dfrac{1}{2}x`, `-5`) par `negativeTermMagnitude` et
+  `chooseAddOrSubtract` (`pedagogical-solve/_helpers.ts`), au collège (équation et inéquation)
+  comme dans le transfert du lycée. Tests : `terme-negatif-deplace.test.ts`.
 - **Dérivées et primitives finissent par « On simplifie ».** Les règles laissent le
   résultat brut (la méthode, qu'on garde visible) ; une dernière étape l'écrit avec
   `tidyTerms` (`tidy/terms.ts`). Dérivées : `withTidyStep`

@@ -35,13 +35,13 @@ import { add, divide, opposite, variable as varNode } from '../factory';
 import { flattenSumShallow, unflattenSum } from '../flatten';
 import type { SignedTerm } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
-import { getNumericValue } from '../common/numeric';
 import { constantSign } from '../common/constant-sign';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import { getVariables } from '../eval/substitute';
 import {
 	canon,
 	addToBothSides,
+	chooseAddOrSubtract,
 	divideBothSidesWithFlip,
 	isOne,
 	isZero,
@@ -117,20 +117,6 @@ function splitSide(
 function extractCoefficientOfX(node: MathNode, variable: string): MathNode | null {
 	if (!containsVariable(node, variable)) return null;
 	return canon(divide(node, varNode(variable), 'fraction'));
-}
-
-function chooseAddOrSubtract(operand: MathNode): {
-	kind: 'add-both-sides' | 'subtract-both-sides';
-	displayOperand: MathNode;
-} {
-	if (operand.type === 'opposite') {
-		return { kind: 'subtract-both-sides', displayOperand: operand.operand };
-	}
-	const numeric = getNumericValue(operand);
-	if (numeric !== null && numeric < 0) {
-		return { kind: 'subtract-both-sides', displayOperand: canon(opposite(operand)) };
-	}
-	return { kind: 'add-both-sides', displayOperand: operand };
 }
 
 /** Un opérande dans la prose (titres de repli) : en LaTeX entre `$…$` (V25) */

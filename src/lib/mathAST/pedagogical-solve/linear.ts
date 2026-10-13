@@ -31,11 +31,11 @@ import { add, divide, opposite, relation, variable as varNode } from '../factory
 import { flattenSumShallow, unflattenSum } from '../flatten';
 import type { SignedTerm } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
-import { getNumericValue } from '../common/numeric';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import {
 	canon,
 	addToBothSides,
+	chooseAddOrSubtract,
 	divideBothSides,
 	isOne,
 	isZero,
@@ -80,36 +80,6 @@ export function splitSide(
 function extractCoefficientOfX(node: MathNode, variable: string): MathNode | null {
 	if (!containsVariable(node, variable)) return null;
 	return canon(divide(node, varNode(variable), 'fraction'));
-}
-
-/**
- * Resolve a "move-to-other-side" operation to either `add-both-sides` or
- * `subtract-both-sides` so the operand is always non-negative for display.
- *
- * Detects negativity in 3 forms :
- * - `opposite(X)` AST wrapper → kind = subtract, displayOperand = X
- * - Numeric value (number literal, simple fraction…) < 0 via `getNumericValue`
- *   → kind = subtract, displayOperand = canon(opposite(operand))
- * - Otherwise → kind = add, displayOperand = operand
- */
-function chooseAddOrSubtract(operand: MathNode): {
-	kind: 'add-both-sides' | 'subtract-both-sides';
-	displayOperand: MathNode;
-} {
-	if (operand.type === 'opposite') {
-		return {
-			kind: 'subtract-both-sides',
-			displayOperand: operand.operand
-		};
-	}
-	const numeric = getNumericValue(operand);
-	if (numeric !== null && numeric < 0) {
-		return {
-			kind: 'subtract-both-sides',
-			displayOperand: canon(opposite(operand))
-		};
-	}
-	return { kind: 'add-both-sides', displayOperand: operand };
 }
 
 // =============================================================================

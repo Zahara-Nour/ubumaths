@@ -23,6 +23,7 @@ import { toCustom } from '../custom-generator';
 import type { MathNode } from '../types';
 import type { EquationStep, EquationOperation, LinearSchoolLevel } from './types';
 import { splitSide } from './linear';
+import { negativeTermMagnitude } from './_helpers';
 
 // =============================================================================
 // Vocabulary (titles + explanations)
@@ -560,19 +561,12 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 
 /**
  * Format an operand for display in a colored `+` / `-` addition. Detects
- * negative operands (number literals or `opposite(...)` AST) and renders them
+ * negative operands (`negativeTermMagnitude` : `-5`, `-2x`, `-\dfrac{1}{2}x`…) and renders them
  * as `\textcolor{blue}{- |X|}` instead of the ugly `\textcolor{blue}{+ -X}`.
  */
 function formatColoredAddend(operand: MathNode): string {
-	if (operand.type === 'opposite') {
-		return `\\textcolor{blue}{- ${fmt(operand.operand)}}`;
-	}
-	if (operand.type === 'number') {
-		const numericValue = parseFloat(operand.value);
-		if (numericValue < 0) {
-			return `\\textcolor{blue}{- ${Math.abs(numericValue)}}`;
-		}
-	}
+	const magnitude = negativeTermMagnitude(operand);
+	if (magnitude !== null) return `\\textcolor{blue}{- ${fmt(magnitude)}}`;
 	return `\\textcolor{blue}{+ ${fmt(operand)}}`;
 }
 
@@ -680,14 +674,7 @@ export function formatTransformationCustom(step: EquationStep): string | null {
  * of `@blue{+ -X}` when the operand is negative.
  */
 function customColoredAddend(operand: MathNode): string {
-	if (operand.type === 'opposite') {
-		return `@blue{- ${toCustom(operand.operand)}}`;
-	}
-	if (operand.type === 'number') {
-		const numericValue = parseFloat(operand.value);
-		if (numericValue < 0) {
-			return `@blue{- ${Math.abs(numericValue)}}`;
-		}
-	}
+	const magnitude = negativeTermMagnitude(operand);
+	if (magnitude !== null) return `@blue{- ${toCustom(magnitude)}}`;
 	return `@blue{+ ${toCustom(operand)}}`;
 }

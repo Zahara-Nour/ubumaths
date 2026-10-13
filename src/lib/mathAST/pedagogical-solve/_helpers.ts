@@ -15,7 +15,7 @@
 import type { MathNode, RelationNode } from '../types';
 import type { Domain, IntervalSet } from '../domain/types';
 import type { Verbosity } from '../common/verbosity';
-import { add, divide, relation, subtract, variable as varNode } from '../factory';
+import { add, divide, opposite, relation, subtract, variable as varNode } from '../factory';
 import { computeDomain } from '../domain/compute';
 import { isUniversal } from '../domain/algebra';
 import { flattenSumShallow } from '../flatten';
@@ -23,6 +23,7 @@ import { containsVariable } from '../common/contains-variable';
 import { unwrapGroupingMembers } from '../solve/classify';
 import { denormalize, normalize } from '../normal';
 import { constantSign } from '../common/constant-sign';
+import { getNumericValue } from '../common/numeric';
 import { InequalityNotSolvable } from '../solve/inequality/types';
 import { getVariables } from '../eval/substitute';
 import { toLatex } from '../latex-generator';
@@ -214,6 +215,55 @@ export function isZero(node: MathNode): boolean {
  */
 export function isConstantCoefficient(coeff: MathNode): boolean {
 	return getVariables(coeff).size === 0;
+}
+
+// =============================================================================
+// Terme déplacé d'un membre à l'autre : son signe
+// =============================================================================
+
+/**
+ * Le terme s'écrit-il avec un signe moins en tête ? `-5`, `-\dfrac{1}{2}`,
+ * `-2x` (produit `(-2)·x`), `-\dfrac{1}{2}x`, `\dfrac{-x}{2}`.
+ *
+ * ⚠️ Lire le signe du seul nombre ou du seul `opposite(…)` laissait passer
+ * `-2x` pour positif : « On ajoute -2x », `\textcolor{blue}{+ -2x}` (V50).
+ */
+function startsWithMinus(term: MathNode): boolean {
+	switch (term.type) {
+		case 'opposite':
+			return true;
+		case 'multiplication':
+			return startsWithMinus(term.left);
+		case 'division':
+			return startsWithMinus(term.numerator);
+		default: {
+			const numeric = getNumericValue(term);
+			return numeric !== null && numeric < 0;
+		}
+	}
+}
+
+/**
+ * Valeur absolue d'un terme à signe moins en tête (`-2x` → `2x`), ou `null`
+ * s'il s'écrit sans signe. Sert à écrire « − 2x » plutôt que « + −2x ».
+ */
+export function negativeTermMagnitude(term: MathNode): MathNode | null {
+	if (term.type === 'opposite') return term.operand;
+	return startsWithMinus(term) ? canon(opposite(term)) : null;
+}
+
+/**
+ * Déplacer un terme vers l'autre membre : on ajoute son opposé, écrit comme
+ * une soustraction quand cet opposé est négatif (« on soustrait 2x »), pour
+ * que l'opérande affiché ne porte jamais de signe moins.
+ */
+export function chooseAddOrSubtract(operand: MathNode): {
+	kind: 'add-both-sides' | 'subtract-both-sides';
+	displayOperand: MathNode;
+} {
+	const magnitude = negativeTermMagnitude(operand);
+	if (magnitude !== null) return { kind: 'subtract-both-sides', displayOperand: magnitude };
+	return { kind: 'add-both-sides', displayOperand: operand };
 }
 
 // =============================================================================
