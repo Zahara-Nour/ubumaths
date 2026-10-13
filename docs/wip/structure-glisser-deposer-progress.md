@@ -127,8 +127,8 @@ Mesures après ces ajouts (mêmes 8 expressions, en encadrant d'abord le terme v
    « suppression du signe × devant une lettre ou une parenthèse, le nombre s'écrit en premier »,
    5e). Sous-question : avant la 5e, garder tous les `×` ?
 
-À demander à David : sa « structure algébrique » est-elle celle-ci (cadres au survol + nom du
-groupe + lecture), ou un arbre dessiné ? Soulever le terme ou le laisser sous le pointeur ?
+Structure algébrique : **les cadres** (confirmé par David le 2026-10-13). Encore à demander :
+soulever le terme ou le laisser sous le pointeur ?
 
 ## Journal
 
@@ -144,3 +144,4 @@ groupe + lecture), ou un arbre dessiné ? Soulever le terme ou le laisser sous l
   posée à David.
 - 2026-10-13 — G11 tranchée (A) ; démo à jour (commit local, `movedLatex`, 13 tests) : `3xy` →
   `xy × 3` → `3xy` vérifié dans le navigateur.
+- 2026-10-13 — « la structure, c'est bien les cadres » (David).
