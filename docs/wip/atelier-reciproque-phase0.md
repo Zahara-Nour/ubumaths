@@ -108,3 +108,20 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
   l'évaluateur > 15 s → PR à part (garde `index < 1`). **Questions à David** : écritures du manuel
   (`2 + √(x+3)` plutôt que `√(4x+12)/2 + 2`) ; intervalle suggéré = morceau monotone le plus à
   droite ; paire `f(a) = f(b)` citée seulement si a, b entiers ; 3ᵉ étape « ensembles » (R4).
+- 2026-10-13 — **DÉCISIONS DE DAVID** (« je valide tout »), à livrer avec le lot 3 :
+  - **Écriture** : `tidy` ne factorise pas (mesuré : `√(4x+12)/2 + 2` et `ln(x/3 + 1/3)` inchangés).
+    Réécritures ciblées sur l'écriture finale de la réciproque seulement : sous une racine, sortir le
+    contenu par **`factorPolynomial`** (noyau de l'ADR 0024, `mathAST/factor/factor.ts` — pas de
+    nouvelle factorisation) puis la racine du carré parfait (`normal/radical.ts`) :
+    `√(4x+12)/2 + 2 → √(x+3) + 2` ; dans un ln, une somme de fractions au même dénominateur :
+    `ln(x/3 + 1/3) → ln((x+1)/3)`.
+  - **f non bijective** : le refus EXPLIQUE (deux antécédents d'une même image → f⁻¹ ne saurait pas
+    choisir) et LISTE les réciproques par morceau monotone : « sur ]−∞ ; 0] : f⁻¹(x) = −√x ; sur
+    [0 ; +∞[ : f⁻¹(x) = √x » (morceau sans formule calculable : cité sans formule), puis
+    « choisis un intervalle ». La paire `f(a) = f(b)` reste citée seulement si a, b entiers.
+  - **3ᵉ étape « ensembles »** (R4) : gardée.
+  - **Paramètres** : (1) lettre qui a une carte (curseur) : formule gardée avec la lettre, condition
+    jugée sur la valeur actuelle ; la carte `f⁻¹` suit le curseur et dit « pour a = 0, f est
+    constante : pas de réciproque » quand c'est le cas ; (2) lettre libre (Calcul) : discussion par
+    cas comme un manuel (« si a ≠ 0 : … ; si a = 0 : f est constante »), en trouvant les valeurs du
+    paramètre qui cassent la bijectivité. (1) d'abord.
