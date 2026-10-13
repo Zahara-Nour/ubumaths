@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	copySeed,
+	copyOrderSeed,
 	guidanceVariationIndex,
 	isGuidanceLevel,
 	resolveCopyExercise
@@ -197,5 +198,27 @@ describe('resolveCopyExercise : un exercice de la copie', () => {
 		);
 		expect(copy.variationIndex).toBe(1);
 		expect(copy.statement).toMatch(/^Autonome/);
+	});
+});
+
+describe('copyOrderSeed : la graine de l’ordre (option « mélanger »)', () => {
+	const base = { assignmentId: 'a1', worksheetId: 'w1', studentId: 's1', sectionId: 'sec1' };
+
+	it('même portée que les valeurs : classe ou élève', () => {
+		expect(copyOrderSeed({ ...base, individualized: false })).toBe(
+			copyOrderSeed({ ...base, studentId: 's2', individualized: false })
+		);
+		expect(copyOrderSeed({ ...base, individualized: true })).not.toBe(
+			copyOrderSeed({ ...base, studentId: 's2', individualized: true })
+		);
+		expect(copyOrderSeed({ ...base, individualized: false })).not.toBe(
+			copyOrderSeed({ ...base, assignmentId: 'a2', individualized: false })
+		);
+	});
+
+	it('dédiée : différente de la graine des valeurs d’un exercice de même identifiant', () => {
+		expect(copyOrderSeed({ ...base, individualized: true })).not.toBe(
+			copySeed({ ...base, worksheetExerciseId: 'sec1', individualized: true })
+		);
 	});
 });

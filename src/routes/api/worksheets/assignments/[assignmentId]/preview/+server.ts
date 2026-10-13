@@ -49,6 +49,7 @@ import {
 import type { ExerciseResource } from '$lib/exercises/types';
 import {
 	assignmentCopyScope,
+	copyExerciseOrder,
 	resolveWorksheetExerciseCopy,
 	type ExerciseContentRow
 } from '$lib/worksheets/worksheet-copy';
@@ -440,6 +441,16 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			exercises.push(exerciseView);
 		}
 
+		// Option « mélanger les exercices » : l'ordre de CETTE copie, tiré comme
+		// celui du PDF du prof (même fonction, même graine). `null` : pas de
+		// mélange, l'ordre des positions comme avant.
+		const shuffledExercises = copyExerciseOrder(
+			exercises,
+			sections ?? [],
+			copyScope,
+			worksheet.config
+		);
+
 		// Build sections array for response
 		const sectionViews: StudentSectionView[] = (sections ?? []).map((s) => ({
 			id: s.id,
@@ -486,7 +497,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			// L'aperçu est le geste du professeur : il n'est jamais en
 			// consultation seule, ce mode ne concerne que l'élève archivé.
 			read_only: false,
-			exercises,
+			...(shuffledExercises ? { shuffled: true } : {}),
+			exercises: shuffledExercises ?? exercises,
 			sections: sectionViews,
 			// Preview metadata
 			preview_mode: isTeacherMode ? 'teacher' : 'student',

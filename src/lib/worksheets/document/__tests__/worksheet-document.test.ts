@@ -206,3 +206,27 @@ describe('garde : correction non visible', () => {
 		expect(doc.display.showPoints).toBe(true);
 	});
 });
+
+// Option « mélanger les exercices » : la vue arrive dans l'ordre de la copie
+describe('vue élève mélangée', () => {
+	function twoInSection(shuffled: boolean | undefined): StudentWorksheetView {
+		const base = view();
+		const [first, second] = [
+			{ ...base.exercises[1], id: 'we-a', title: 'A', position: 1, section_id: 's1' },
+			{ ...base.exercises[1], id: 'we-b', title: 'B', position: 2, section_id: 's1' }
+		];
+		// Ordre tiré : B avant A, dans la même section
+		return { ...base, shuffled, exercises: [second, first, base.exercises[2]] };
+	}
+
+	it('`shuffled` : l’ordre reçu prime sur `position`, numéros continus', () => {
+		const doc = documentFromStudentView(twoInSection(true));
+		expect(doc.exercises.map((e) => e.title)).toEqual(['B', 'A', 'Last']);
+		expect(doc.exercises.map((e) => e.number)).toEqual(['I', 'II', 'III']);
+	});
+
+	it('sans `shuffled` : retri par `position`, comme avant', () => {
+		const doc = documentFromStudentView(twoInSection(undefined));
+		expect(doc.exercises.map((e) => e.title)).toEqual(['A', 'B', 'Last']);
+	});
+});
