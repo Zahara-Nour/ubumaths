@@ -23,6 +23,9 @@ import type { Token, TokenType } from '../types';
 /** Caractères de relation tapés tels quels → commande LaTeX équivalente */
 const UNICODE_RELATIONS: Readonly<Record<string, string>> = { '≤': 'leq', '≥': 'geq', '≠': 'neq' };
 
+/** Commandes lues comme la barre `|` (valeur absolue) */
+const VERTICAL_BAR_COMMANDS: ReadonlySet<string> = new Set(['vert', 'lvert', 'rvert']);
+
 // =============================================================================
 // Tokenizer Class
 // =============================================================================
@@ -191,6 +194,15 @@ export class Tokenizer {
 		// If no letters after backslash, return just the backslash as a command
 		if (commandName === '') {
 			return this.makeToken('COMMAND', '', startPos);
+		}
+
+		// `\vert`, `\lvert`, `\rvert` : la barre `|` de la valeur absolue. La touche
+		// du clavier virtuel de MathLive rend `\left\vert … \right\vert` : sans cette
+		// lecture, la réponse de l'élève était refusée. Lues comme la barre nue, elles
+		// suivent toutes ses règles (`\left`/`\right`, facteur collé `2\vert x\vert`).
+		// `\mid` (divisibilité) et `\Vert`, `\|` (norme) restent hors de cette lecture.
+		if (VERTICAL_BAR_COMMANDS.has(commandName)) {
+			return this.makeToken('PIPE', '|', startPos, this.position - startPos);
 		}
 
 		return this.makeToken('COMMAND', commandName, startPos);
