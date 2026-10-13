@@ -170,6 +170,22 @@ describe('.intégrer : composée à coefficient, expliqué par « On fait appara
 		expect(entry.summary).toBeDefined();
 	});
 
+	// u′ = 1 : l'étape s'appelle « On sort la constante k » (décision de David
+	// du 2026-10-13) ; la garde la reconnaît toujours, le « Comment ? » reste
+	it.each([
+		['.intégrer \\frac3x', 'On sort la constante $3$'],
+		['.intégrer 3(x+1)^2', 'On sort la constante $3$'],
+		['.intégrer \\frac{-2}{x}', 'On sort la constante $-2$'],
+		['.intégrer \\frac{-1}{x}', 'On sort le signe $-$']
+	])('%s : « %s », étapes gardées', (input, title) => {
+		const entry = lastEntry(input);
+		expect(entry.failed).toBe(false);
+		expect(entry.steps).toBeDefined();
+		expect(entry.summary).toBeDefined();
+		const reveal = flatten(entry.steps!).find((s) => s.rule === 'reveal-derivative');
+		expect(reveal?.title).toBe(title);
+	});
+
 	it('en texte aussi : `.intégrer exp(2x)`', () => {
 		expect(lastEntry('.intégrer exp(2x)').steps).toBeDefined();
 	});
@@ -398,6 +414,9 @@ describe('hasUnexplainedCoefficient : expliqué par une réécriture, ou caché'
 	it('la même forme composée SANS l’étape de réécriture : refusée', () => {
 		expect(hasUnexplainedCoefficient(withoutReveal(stepsOf('e^{2x}')))).toBe(true);
 		expect(hasUnexplainedCoefficient(withoutReveal(stepsOf('\\frac{x}{x^2+1}')))).toBe(true);
+		// u′ = 1 : « On sort la constante 3 » retirée, le 3 de 3 ln|x| est caché
+		expect(hasUnexplainedCoefficient(stepsOf('\\frac3x'))).toBe(false);
+		expect(hasUnexplainedCoefficient(withoutReveal(stepsOf('\\frac3x')))).toBe(true);
 	});
 
 	it('une réécriture fausse (e^{2x} = ⅓ × 2e^{2x}) : refusée', () => {

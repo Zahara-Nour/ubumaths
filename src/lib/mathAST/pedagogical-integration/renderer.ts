@@ -33,7 +33,13 @@ import type {
 	SchoolLevel,
 	StepRenderer
 } from '../common/step-renderer-base';
-import { EXPLANATIONS, TITLES, coefficientPrefix, revealedProduct } from './descriptions-fr';
+import {
+	EXPLANATIONS,
+	TITLES,
+	coefficientPrefix,
+	onlyConstantOut,
+	revealedProduct
+} from './descriptions-fr';
 import type {
 	IntegrationBindings,
 	PedagogicalIntegrationRule,
@@ -180,9 +186,11 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 			// Jamais `\\int -…` : un produit qui commence par un signe va entre parenthèses
 			const product = revealedProduct(bindings);
 			const underIntegral = product.startsWith('-') ? `\\left( ${product} \\right)` : product;
+			// u′ = 1 : « On sort la constante k », pas de ligne `k × …` (décision de
+			// David du 2026-10-13) — ∫ 3/x dx = 3 ∫ 1/x dx
 			const lines = [
 				`  & \\textcolor{blue}{\\int ${integrandLatex(step.before)}${dx}}`,
-				`  & = \\int ${underIntegral}${dx}`,
+				...(onlyConstantOut(bindings) ? [] : [`  & = \\int ${underIntegral}${dx}`]),
 				`  & = ${coefficientPrefix(bindings)}\\int ${integrandLatex(revealed)}${dx}`
 			];
 			return `\\begin{aligned}\n${lines.join(' \\\\\n')}\n\\end{aligned}`;
@@ -213,7 +221,7 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 			if (!uv || !vdu) return formatStandard(step, afterLatex, dx);
 			const result = step.bindings?.result;
 			const lines = [
-				`  & \\textcolor{blue}{\\int ${beforeLatex}${dx}}`,
+				`  & \\textcolor{blue}{\\int ${integrandLatex(step.before)}${dx}}`,
 				`  & = ${toLatex(uv)} - \\int ${integrandLatex(vdu)}${dx}`,
 				...(result ? [`  & = ${toLatex(result)}`] : [])
 			];
@@ -313,12 +321,14 @@ function closedIntervalLatex(step: PedagogicalIntegrationStep): string {
 	return `\\left[ ${toLatex(lo)} ; ${toLatex(hi)} \\right]`;
 }
 
-/** Un intégrande somme ou opposé, entre parenthèses : `\\int \\left( -\\cos x \\right)\\,dx`. */
+/**
+ * Un intégrande somme, opposé ou qui commence par un signe (`-3\\sin(x+2)`),
+ * entre parenthèses : `\\int \\left( -\\cos x \\right)\\,dx` — jamais `\\int -…`
+ */
 function integrandLatex(node: MathNode): string {
 	const latex = toLatex(node);
-	return node.type === 'addition' || node.type === 'subtraction' || node.type === 'opposite'
-		? `\\left( ${latex} \\right)`
-		: latex;
+	const wrap = node.type === 'addition' || node.type === 'subtraction' || node.type === 'opposite';
+	return wrap || latex.startsWith('-') ? `\\left( ${latex} \\right)` : latex;
 }
 
 /** Standard 2-line render : integral on top, antiderivative below. */

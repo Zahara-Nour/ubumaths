@@ -763,8 +763,12 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
 - **Composées : le coefficient s'explique** (décisions de David du 2026-10-13). Quand
   l'intégrande n'est pas exactement u′·g(u), `integrateComposite` émet d'abord
   `reveal-derivative` (« On fait apparaître $u'$ ») : `e^{2x} = \dfrac12 \times 2e^{2x}`, ∫ = ½∫2e^{2x}
-  (signe : `e^{-x} = -(-e^{-x})` ; facteur constant : `\dfrac3x = 3 \times \dfrac1x`), puis la forme
-  composée sur `revealed` = u′g(u), qui rend k·G(u) (bindings `k`, `scaled`). La réécriture est un
+  (signe : `e^{-x} = -(-e^{-x})`), puis la forme
+  composée sur `revealed` = u′g(u), qui rend k·G(u) (bindings `k`, `scaled`). **Quand u′ = 1**
+  (`\frac3x`, `3(x+1)^2`, `\frac{-2}{x}`), il n'y a pas de u′ à faire apparaître : la même règle
+  s'intitule « On sort la constante $3$ » (« On sort le signe $-$ » pour k = −1), aux deux niveaux,
+  explication `\int \dfrac3x\,dx = 3\int \dfrac1x\,dx`, sans la ligne `k × …` du calcul
+  (`onlyConstantOut`, `descriptions-fr.ts` ; décision de David du 2026-10-13). La réécriture est un
   calcul : elle reste en version résumée. Les étapes s'enchaînent (`after` de la réécriture =
   `before` de la forme). Dans une IPP, v = ∫dv avec réécriture vient en sous-étapes de
   `choose-u-dv`. u′ s'écrit propre (`cleanDerivative` : constante exacte, sinon `tidyTerms`).

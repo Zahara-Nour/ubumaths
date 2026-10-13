@@ -121,8 +121,9 @@ export type PedagogicalIntegrationRule =
  * - `apply-known-primitive`         : `{}` (renderer reads `step.before`)
  * - `apply-linearity-sum`           : `{ f, g }` (or empty for n>2 terms — renderer reads `step.before`)
  * - `extract-constant`              : `{ c, f }`
- * - `reveal-derivative`             : `{ u, du, k, revealed, integrand }` — `before` = f = k × `revealed`,
- *                                     `after` = `revealed` = u′·g(u) EXACTEMENT ; l'étape composée suit
+ * - `reveal-derivative`             : `{ u, du, k, revealed, integrand, variable }` — `before` = f = k × `revealed`,
+ *                                     `after` = `revealed` = u′·g(u) EXACTEMENT ; l'étape composée suit ;
+ *                                     du = 1 : titre « On sort la constante k » (`onlyConstantOut`)
  * - `apply-composite-power`         : `{ u, n, k?, scaled? }`
  * - `apply-composite-ln`            : `{ u, k?, scaled?, positive? }`
  * - `apply-composite-exp`           : `{ u, k?, scaled? }`
