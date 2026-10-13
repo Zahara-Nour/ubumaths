@@ -37,19 +37,37 @@ function supabase(guidanceLevel: string, individualized: boolean): TableMock {
 	return tableMock(
 		{
 			worksheet_assignments: {
-				data: {
-					id: ASSIGNMENT_ID,
-					worksheet_id: WORKSHEET_ID,
-					guidance_level: guidanceLevel,
-					individualized,
-					worksheets: { id: WORKSHEET_ID, title: 'Fiche', created_by: 'prof' }
-				},
-				error: null
+				// Liste : le numéro de la copie (`fetchCopyNumbering`) ; une ligne : la route
+				data: [
+					{
+						id: ASSIGNMENT_ID,
+						worksheet_id: WORKSHEET_ID,
+						guidance_level: guidanceLevel,
+						individualized
+					}
+				],
+				error: null,
+				single: {
+					data: {
+						id: ASSIGNMENT_ID,
+						worksheet_id: WORKSHEET_ID,
+						guidance_level: guidanceLevel,
+						individualized,
+						worksheets: { id: WORKSHEET_ID, title: 'Fiche', created_by: 'prof' }
+					},
+					error: null
+				}
 			},
 			worksheet_exercises: {
-				data: { id: WE_ID, position: 1, variation_index: null, exercise: EXERCISE },
-				error: null
+				data: [{ id: WE_ID, section_id: null, position: 1 }],
+				error: null,
+				single: {
+					data: { id: WE_ID, position: 1, variation_index: null, exercise: EXERCISE },
+					error: null
+				}
 			},
+			worksheets: { data: { config: {} }, error: null },
+			worksheet_sections: { data: [], error: null },
 			worksheet_instances: { data: null, error: { code: 'PGRST116', message: 'aucune' } },
 			worksheet_error_reports: {
 				data: {
@@ -90,7 +108,8 @@ function inserted(mock: TableMock) {
 describe('Signalement d’erreur : la version que l’élève a vue', () => {
 	it('affectation « autonome » : la version autonome est enregistrée', async () => {
 		const mock = supabase('autonomous', true);
-		await report(mock);
+		const response = await report(mock);
+		expect(response.status).toBe(201);
 		expect(inserted(mock)?.variation_index).toBe(1);
 	});
 

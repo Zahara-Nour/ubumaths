@@ -1287,7 +1287,8 @@ export const studentErrorReportParamSchema = z.object({
 export const studentErrorReportViewSchema = z.object({
 	id: z.string().uuid(),
 	worksheet_exercise_id: z.string().uuid(),
-	exercise_position: z.number().int().nonnegative(),
+	// Numéro dans la copie de l'élève ; null : inconnu (D6)
+	exercise_position: z.number().int().positive().nullable(),
 	description: z.string(),
 	status: errorReportStatusSchema,
 	response: z.string().nullable(),
@@ -1497,7 +1498,8 @@ const studentReportsTimestampSchema = z
 export const studentErrorReportWithDisplaySchema = z.object({
 	id: z.string().uuid(),
 	worksheet_exercise_id: z.string().uuid(),
-	exercise_position: z.number().int().nonnegative(),
+	// Numéro dans la copie de l'élève ; null : inconnu (D6)
+	exercise_position: z.number().int().positive().nullable(),
 	description: z.string(),
 	status: errorReportStatusSchema,
 	response: z.string().nullable(),

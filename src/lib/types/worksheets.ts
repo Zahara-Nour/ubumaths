@@ -103,7 +103,11 @@ export interface StudentErrorReportUpdate {
 export interface StudentErrorReportView {
 	id: string;
 	worksheet_exercise_id: string;
-	exercise_position: number;
+	/**
+	 * Numéro de l'exercice dans la copie de l'élève (ordre mélangé compris,
+	 * D6) ; `null` s'il est inconnu (fiche illisible) — jamais un numéro faux.
+	 */
+	exercise_position: number | null;
 	description: string;
 	status: ErrorReportStatus;
 	response: string | null;
