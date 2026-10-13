@@ -44,6 +44,11 @@ export async function hybridSearch(
 ): Promise<SearchResult[]> {
 	const { limit = 5, grade, topics, vectorWeight = 0.7, ftsWeight = 0.3 } = options;
 
+	// T16 : sans extrait lisible par l'appelant, la recherche (`rag_hybrid_search`, droits
+	// de l'appelant) ne peut rien rendre. Le message de l'élève ne part donc pas chez
+	// HuggingFace (États-Unis) pour rien.
+	if (!(await hasReadableChunk(supabase))) return [];
+
 	// Try to get query embedding
 	const embeddingService = getEmbeddingService();
 	const queryEmbedding = await embeddingService.embedQuery(query);
@@ -62,6 +67,19 @@ export async function hybridSearch(
 		logger.warn('Embeddings unavailable, falling back to FTS-only search');
 		return executeFtsSearch(supabase, query, { limit, grade, topics });
 	}
+}
+
+/**
+ * Au moins un extrait du corpus lisible avec ce client (RLS de `rag_chunks`). En cas
+ * d'erreur : non, pour ne rien envoyer à l'aveugle.
+ */
+async function hasReadableChunk(supabase: SupabaseClient): Promise<boolean> {
+	const { data, error } = await supabase.from('rag_chunks').select('id').limit(1);
+	if (error) {
+		logger.warn('Corpus RAG non vérifié, recherche ignorée :', error);
+		return false;
+	}
+	return (data ?? []).length > 0;
 }
 
 /**

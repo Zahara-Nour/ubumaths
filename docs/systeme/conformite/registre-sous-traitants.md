@@ -3,6 +3,8 @@
 > ⚠️ **DOCUMENT DATÉ (2026-01-16).** À compléter : **HuggingFace** (RAG embeddings) absent, **Groq**
 > désormais actif en prod, **Supabase** maintenant **UE (eu-west-3)**, **Vercel Analytics** sans cookie
 > à détailler. Voir [`README.md`](README.md) §7.
+> HuggingFace : **inactif en prod** au 2026-10-13 (`HF_API_KEY` absente, corpus vide ; aucun message
+> envoyé sans extrait lisible, T16). À déclarer ici **avant** de définir la clé.
 
 > **Article RGPD** : Art. 28 - Sous-traitant
 > **Derniere mise a jour** : 2026-01-16

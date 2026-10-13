@@ -134,7 +134,9 @@ réponse acceptée (`TutorChat.svelte:511`) et l'envoie. Il repart à 0 au recha
 - **Indexation** (`processor.ts`) : empreinte SHA-256 (contenu inchangé → rien), découpe par
   `chunker.ts` (500 caractères, recouvrement 50), embeddings HuggingFace
   `intfloat/multilingual-e5-large` (préfixes `passage:` / `query:`), insertion par lots de 50.
-- **Recherche** (`search.ts`) : `hybridSearch` embarque la question puis appelle la RPC
+- **Recherche** (`search.ts`) : `hybridSearch` vérifie d'abord qu'un extrait de `rag_chunks` est
+  lisible par l'appelant (même RLS que la RPC, qui tourne avec ses droits) ; sinon il rend une liste
+  vide sans appel externe. Ensuite, il embarque la question puis appelle la RPC
   `rag_hybrid_search` (fusion RRF, k = 60, poids 0,7 vecteur / 0,3 plein texte) ; sans embedding ou
   en cas d'erreur, repli sur une recherche plein texte (`textSearch` sur `search_vector`, documents
   `enabled_for_rag` seulement), filtrée par niveau et thème.
@@ -184,9 +186,13 @@ niveau, extraits RAG) et les 10 derniers messages **tels que saisis**, images co
 chat libre. Le code n'ajoute ni nom, ni courriel, ni identifiant de compte. Le texte libre n'est
 pas filtré : seul l'avertissement sous la saisie protège.
 
-**Envoyé à HuggingFace (États-Unis)**, si `HF_API_KEY` est définie (valeur de prod non vérifiée
-ici) : le **dernier message de l'élève** (plus de 10 caractères), pour calculer son embedding — même
-quand le corpus est vide. Et le texte des documents déposés, à l'indexation.
+**Envoyé à HuggingFace (États-Unis)**, si `HF_API_KEY` est définie : le **dernier message de
+l'élève** (plus de 10 caractères), pour calculer son embedding, **seulement s'il peut lire au moins
+un extrait du corpus** (T16, décision de David du 2026-10-13 : `hasReadableChunk` dans
+`search.ts`, sinon la recherche rend vide sans rien envoyer). Et le texte des documents déposés, à
+l'indexation. **En prod au 2026-10-13 : rien ne part** (`HF_API_KEY` absente des variables
+Vercel de production, corpus vide). ⚠️ HuggingFace n'est pas au registre des sous-traitants :
+l'y déclarer **avant** de définir la clé.
 
 **Stocké en base (UE)** :
 
@@ -240,7 +246,8 @@ conversations (`src/routes/api/account/export/+server.ts:183`).
 - Côté tests, seul le chat libre est couvert : `api/chat/__tests__/server.test.ts` (prompt posé par
   le serveur, personnalité inconnue et tour `system` refusés) et `utils/__tests__/chat-request.test.ts`
   (le corps envoyé par `ChatBot` passe le schéma du serveur). Le mode tuteur de `/api/chat`,
-  `server/tutor/`, `server/rag/` et `api/tutor/` n'ont aucun test unitaire ;
+  `server/tutor/` et `api/tutor/` n'ont aucun test unitaire ; pour `server/rag/`, seul
+  `rag/__tests__/search-sans-corpus.test.ts` (rien n'est envoyé sans extrait lisible) ;
   `pere-ubu/__tests__/page.svelte.test.ts` teste la page avec un `ChatBot` factice.
 
 ## Écarts connus
