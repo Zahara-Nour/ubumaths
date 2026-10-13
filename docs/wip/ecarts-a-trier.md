@@ -221,7 +221,7 @@ Absents de [rgpd-securite-constats.md](rgpd-securite-constats.md) ; non classés
 | T2 | Canaux `match:<id>`, présence, notifications, succès publics (seule la RLS des tables filtre les `postgres_changes`). | [realtime.md](../systeme/realtime.md) |
 | T3 | Un canal privé déjà joint le reste jusqu'à la reconnexion ou au rafraîchissement du JWT (~1 h) : un droit retiré n'est pas immédiat. | [realtime.md](../systeme/realtime.md) |
 | T4 | Le drapeau Google n'est testé par **aucune** route `/api/google/**` (les constats B8 ne citent que `api/google/auth/*`). | [outils-prof.md](../systeme/outils-prof.md) #4 |
-| T5 | `src/lib/utils/game/challenge-variables.ts` évalue une chaîne venue de la base par `new Function`. | [geometrie/README.md](../systeme/geometrie/README.md) |
+| ~~T5~~ | ~~`src/lib/utils/game/challenge-variables.ts` évalue une chaîne venue de la base par `new Function`.~~ **Corrigé** (#1327, 2026-10-13) : seule l'arithmétique atteint `new Function` (liste blanche), sinon `NaN` ; noms de variables substitués sans regex. Prod : seul le prof écrit la table, aucun défi de type `expression`. | [geometrie/README.md](../systeme/geometrie/README.md) |
 | T6 | La CSP autorise `unsafe-eval` pour Typst (`src/hooks.server.ts`). | [geometrie/README.md](../systeme/geometrie/README.md) |
 | T7 | Deux `requireAuth` homonymes (`src/lib/server/auth.ts` redirige, `src/lib/server/middleware/auth.ts` répond 401) ; 91 endpoints refont la garde à la main. | [serveur.md](../systeme/serveur.md) #4 |
 | T8 | Trois limiteurs de débit ; `middleware/rateLimit.ts` et la `Map` de `api/admin/cron/trigger` ne tiennent pas entre instances Vercel. | [serveur.md](../systeme/serveur.md) #6 |
