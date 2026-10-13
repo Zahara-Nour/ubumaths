@@ -39,6 +39,7 @@ L'expression s'arrête au **premier mot-clé**. Un mot-clé est un mot entier, e
 | équivalent                        | `.équivalent EXPR et EXPR`                        | `.équivalent (x+1)^2 et x^2+2x+1`                       |
 | taylor                            | `.taylor EXPR ordre N [en A] [pour VAR]`          | `.taylor e^x ordre 3 en 1`                              |
 | variations                        | `.variations EXPR [pour VAR] [dans ENSEMBLE]`     | `.variations x^2 dans [0;+∞[`                           |
+| réciproque                        | `.réciproque FONCTION [sur INTERVALLE]`           | `.réciproque f` · `.réciproque x^2 sur [0;+∞[`          |
 | domaine / simplifier / factoriser | `.commande EXPR [pour VAR]`                       | inchangé (un seul argument)                             |
 
 - `[…]` = facultatif. Ordre des mots-clés libre (`en 1 ordre 3` accepté).
@@ -46,6 +47,10 @@ L'expression s'arrête au **premier mot-clé**. Un mot-clé est un mot entier, e
   comme avant, ou tout ce que lit `parseStudentDomain` — borne infinie (`[0;+∞[`), réunion,
   `ℝ \ {0}` (`studyDomain`, `src/lib/mathAST/domain/study.ts`). L'ensemble d'une fonction de l'atelier
   définie sur un intervalle (`f(x) = x^2 sur [0;+∞[`) passe au moteur par ce mot.
+- **`sur`** (`.réciproque`, lot 3 de la réciproque, 2026-10-13) : le mot de la définition d'une
+  fonction sur un intervalle (`f(x) = x^2 sur [0;+∞[`), pas `dans`. Il REMPLACE l'ensemble de la
+  carte f (pas d'intersection). Sur une fonction de l'atelier, crée ou met à jour la carte `f⁻¹` ;
+  sur une expression, la ligne seule. Sans « sur » : l'ensemble de f, sinon son domaine.
 - **Variable** : voir la question 1 ci-dessous.
 
 ### Commandes de probabilités et de statistiques

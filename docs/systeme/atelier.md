@@ -60,16 +60,17 @@ Ceux du code et de l'interface :
 
 ## Carte du code
 
-### Modèle — `src/lib/atelier/` (46 fichiers hors tests)
+### Modèle — `src/lib/atelier/` (49 fichiers hors tests)
 
 | Fichier                             | Rôle                                                                                                      |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `src/lib/atelier/types.ts`          | Les quatre types d'objets, `ObjectStatus`, `CurveDisplay`, `SequenceDisplay`, plafonds D8, gardes de type |
 | `src/lib/atelier/atelier.svelte.ts` | **La classe `Atelier`** : création, renommage, mise à jour, suppression, états, `serialize`/`restore`     |
-| `src/lib/atelier/names.ts`          | Validation des noms, nommage automatique (`nextName`), noms de dérivées (`derivativeName`)                |
+| `src/lib/atelier/names.ts`          | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)        |
 | `src/lib/atelier/parse.ts`          | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)     |
 | `src/lib/atelier/letter.ts`         | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                              |
 | `src/lib/atelier/interval.ts`       | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)          |
+| `src/lib/atelier/reciprocal.ts`     | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français     |
 | `src/lib/atelier/constant.ts`       | La valeur d'une constante (curseurs, premier terme d'une suite)                                           |
 | `src/lib/atelier/list-cited.ts`     | Refus d'une liste citée comme un nombre (`listCitedMessage`)                                              |
 | `src/lib/atelier/actions.ts`        | Les actions d'une carte selon le type et l'état (`actionsFor`), listes partenaires                        |
@@ -136,6 +137,7 @@ Ceux du code et de l'interface :
 | `CurveSettings.svelte`    | « Sur le graphique » : couleur, trait, tangente, aire, cercle osculateur, longueur        |
 | `SequenceSettings.svelte` | Mode, rang initial, premier terme ; nuage ou escalier                                     |
 | `CalculView.svelte`       | Vue Calcul : champ, historique, « Garder », export / import                               |
+| `FormulaText.svelte`      | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`)   |
 | `DataView.svelte`         | Vue Données : une liste par ligne, valeurs séparées par `;`, diagrammes                   |
 | `ShareBar.svelte`         | Partager (lien `?a=`), recevoir, « Garder dans mon atelier »                              |
 
@@ -167,7 +169,9 @@ le nom apparaît, et pour une lettre seule elle porte une **offre de curseur**
 
 **Noms** (`src/lib/atelier/names.ts`) : une lettre latine, éventuellement indicée ; **un seul
 espace de noms** tous types confondus (D1). Les dérivées s'appellent `f′` (`derivativeName`,
-`isDerivativeName`). Le nommage automatique évite les noms cités par la définition (#329).
+`isDerivativeName`) ; la réciproque se range `f^-1` et s'affiche `f⁻¹` (`reciprocalName`,
+`reciprocalOf`) — une forme qu'aucun élève ne peut taper comme nom (`validateName` la refuse), donc
+sans collision possible ; elle n'est pas citable (absente de `functionNames`). Le nommage automatique évite les noms cités par la définition (#329).
 
 **Fonction définie sur un intervalle** (lot 1 de
 [atelier-intervalle-phase0.md](../wip/atelier-intervalle-phase0.md), I1-I6 validées le 2026-10-13) :
@@ -215,6 +219,30 @@ que sur l'ensemble : point plein à une borne fermée, creux à une borne ouvert
 là où f n'est pas définie (détail : [grapheur.md](grapheur.md)). `f′`, qui hérite, se trace
 restreinte aussi.
 
+**La réciproque** (lot 3 de [atelier-reciproque-phase0.md](../wip/atelier-reciproque-phase0.md),
+R1-R4) : le bouton « Réciproque » de la carte d'une fonction et `.réciproque f [sur I]` donnent la
+MÊME ligne (`reciprocalResult`, `src/lib/atelier/reciprocal.ts`) — réponse `f⁻¹(x) = …, f⁻¹ : départ
+→ arrivée` (R4), étapes de `computeReciprocal` (R3, [mathast/reciproque.md](mathast/reciproque.md))
+— et créent la carte `f⁻¹` (`createReciprocal`), sans changer de vue ; déjà là, elle est mise à
+jour, pas doublée. L'intervalle : celui tapé après « sur » (rangé dans `reciprocalOn`, il
+REMPLACE celui de f), sinon celui de f, sinon son domaine. La carte **suit f** (`#reciprocals`, en
+dernier dans `recomputeAll`) : formule rangée en texte (provenance `text`), `interval` = son
+ensemble de départ f(I) (Q5 : le tracé et les calculs suivent, `ℝ` n'est pas rangé) ; f devenue
+non bijective, constante… → la carte passe en erreur avec le refus, définition vide (rien de
+tracé). Elle dépend de f seule (`#refsOf`) : supprimer f l'emporte, renommer f la renomme, sa
+lettre est celle de f. Pas de « Dériver » ni de « Réciproque » sur `f⁻¹`, ni de « Réciproque » sur
+`f′` (raison affichée : taper la formule). L'image `f⁻¹(5)` de la carte passe par sa formule (le
+moteur lirait `f^-1` comme une puissance). Une **expression** (`.réciproque 2x+3`) donne la ligne
+seule, sans carte. **Paramètres** (cas 1 de David) : f cite des valeurs (`a x + b`, curseurs) →
+la réciproque est jugée avec leurs valeurs actuelles, puis écrite avec leurs lettres quand le
+solveur résout `y = a x + b` et que sa solution coïncide, valeurs remplacées, sur des points du
+départ (`(x − b)/a`) ; sinon la formule garde les nombres (`a eˣ` → `ln(x/2)`, recalculée à chaque
+cran). Un refus le dit avec les valeurs (« Pour a = 0 et b = 3, f est constante : pas de
+réciproque. ») ; la ligne de Calcul dit avec quelles valeurs les étapes sont faites. Les refus
+`not-bijective` citent leurs formules en `$…$` : Calcul et la carte les composent
+(`FormulaText.svelte`, drapeau `formulas` de la ligne). Calculs mis en cache (64 entrées) :
+`recomputeAll` refait la carte à chaque mutation.
+
 **Provenance** (D10, `Provenance` dans `src/lib/atelier/parse.ts`) : c'est _d'où vient_ la
 définition (champ MathLive, clavier, URL, collage, Calcul…) qui choisit le parseur, jamais son
 contenu. Elle est rangée sur l'objet, parce que `recomputeAll` relit toujours la définition.
@@ -225,7 +253,8 @@ contenu. Elle est rangée sur l'objet, parce que `recomputeAll` relit toujours l
 
 ### Ce que fait la classe `Atelier`
 
-- **créer** : `create` (+ `createDerivative` pour `f′`, `createFromOffer` pour un curseur) ;
+- **créer** : `create` (+ `createDerivative` pour `f′`, `createReciprocal` pour `f⁻¹`,
+  `createFromOffer` pour un curseur) ;
 - **modifier** : `update`, `rename` (réécrit les définitions qui citent l'ancien nom),
   `setSlider`, `slideTo`, `setSequence`, `setDisplay`, `setSequenceDisplay`, `setPlotted` ;
 - **supprimer** : `remove`, `removalOf`, `removeWithDependents`, `undoRemoval` ;
@@ -248,11 +277,11 @@ acceptée quand elle est sans ambiguïté. La lecture vit dans `mathAST` :
 
 **Trois sources de commandes**, réunies par `commandCatalog` (`src/lib/atelier/commands.ts`) :
 
-| Source                     | Où                            | Exemples                                                             |
-| -------------------------- | ----------------------------- | -------------------------------------------------------------------- |
-| registre du moteur         | `WebReplEngine.getCommands()` | `.dériver`, `.résoudre`, `.intégrer`, `.variations`, `.taylor`       |
-| branchées hors registre    | table `OFF_REGISTRY`          | `.convertir`, `.stats`, `.ajustement`, `.exact`, `.décimal`          |
-| servies par l'atelier seul | `ATELIER_ONLY_COMMANDS`       | `.factoriser`, `.simuler`, `.croiser`, `.filtrer`, `.comparer`, lois |
+| Source                     | Où                            | Exemples                                                               |
+| -------------------------- | ----------------------------- | ---------------------------------------------------------------------- |
+| registre du moteur         | `WebReplEngine.getCommands()` | `.dériver`, `.résoudre`, `.intégrer`, `.variations`, `.taylor`         |
+| branchées hors registre    | table `OFF_REGISTRY`          | `.convertir`, `.stats`, `.ajustement`, `.exact`, `.décimal`            |
+| servies par l'atelier seul | `ATELIER_ONLY_COMMANDS`       | `.factoriser`, `.réciproque`, `.simuler`, `.croiser`, `.filtrer`, lois |
 
 La table `TRANSLATIONS` donne pour chaque commande son nom français, sa description, son exemple
 et sa rubrique de `.aide` (`HelpSection`) ; **son ordre est l'ordre du catalogue**. Les commandes
@@ -406,7 +435,7 @@ de David), Échap ferme jusqu'à la frappe suivante. Garde : chaque proposition,
 est acceptée par Calcul (`completion.test.ts`).
 
 **Actions de carte** : `actionsFor` (`src/lib/atelier/actions.ts`) donne par type les actions
-(fonction : Tracer, Dériver, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
+(fonction : Tracer, Dériver, Réciproque, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
 liste : Statistiques, diagrammes, nuage, ajustement, loi — par liste partenaire). Une action qui a
 un sens pour le type mais pas pour cet objet reste **visible, désactivée, avec sa raison**
 (`disabledReason`). Le clic passe par `CalcDesk.runFromPanel` : il **écrit une ligne dans
@@ -434,7 +463,10 @@ Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de re
 
 - **Stockage local** (`persistence.ts`) : clé `ATELIER_STORAGE_KEY` (`chiphre-atelier`),
   version `ATELIER_STATE_VERSION`. On range de quoi **reconstruire** (nom, type, définition,
-  tracé, lettre, intervalle, réglages), jamais l'état ni le message — ils se recalculent. Un objet abîmé est
+  tracé, lettre, intervalle, réglages), jamais l'état ni le message — ils se recalculent. La carte
+  `f⁻¹` est rangée sans sa formule ni son ensemble (recalculés depuis f, comme `f′`), avec
+  l'intervalle tapé (`reciprocalOn`) ; un lien ou une fusion la recrée, et une f renommée à
+  l'arrivée (`g`) emmène sa réciproque (`g⁻¹`, `mergeInto`). Un objet abîmé est
   écarté seul (`salvageObjects`), un réglage abîmé est oublié, l'objet gardé ; un intervalle refusé à la relecture (lien, fusion) aussi, la fonction gardée sur son domaine. Un état d'une version
   **plus récente** n'est ni relu ni écrasé. Chaque issue est nommée (`LoadOutcome`,
   `SaveOutcome` : stockage indisponible, quota, trop volumineux…).
@@ -498,6 +530,7 @@ Doc du moteur : [mathast/README.md](mathast/README.md).
 | `.simplifier`                           | `generatePedagogicalSimplifySteps`, intention `auto` (ADR 0007)                                                                                                                                                                                                                                                                                      |
 | `.factoriser`                           | même pipeline, intention `factoriser`, niveau lycée (stratégies de l'ADR 0024 : identités à coefficients, Δ, racine évidente) ; aucun repli moteur : « je n'ai pas su » se dit                                                                                                                                                                       |
 | `.dériver`, « Dériver », `f′`           | `src/lib/mathAST/pedagogical-differentiation/` (règle nommée, sous-étapes)                                                                                                                                                                                                                                                                           |
+| `.réciproque`, « Réciproque », `f⁻¹`    | `computeReciprocal` (`src/lib/mathAST/reciprocal/`, [mathast/reciproque.md](mathast/reciproque.md)) ; lettres des paramètres : `solve` puis `textbookWriting`                                                                                                                                                                                        |
 | `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                                                                                                                                                                                                                                             |
 | `.intégrer`                             | réponse : `integration` (`integrate.command.ts`) ; « Comment ? » : `src/lib/mathAST/pedagogical-integration/` niveau lycée, vérifié par `integrate-steps-check.ts`                                                                                                                                                                                   |
 | `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                                                                                                                                                                                                                                                  |
