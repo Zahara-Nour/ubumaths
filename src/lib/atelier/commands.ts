@@ -42,14 +42,6 @@ export interface AtelierCommand {
 	/** Reléguée : tapable, mais pas proposée en premier (§5 L2). */
 	readonly advanced?: boolean;
 	/**
-	 * Pourquoi cette commande ne peut rien produire ici, si elle ne le peut pas.
-	 *
-	 * Même principe qu'au §3 pour les actions : **visible et désactivée avec sa
-	 * raison**, jamais cachée. Un élève qui ne la voit plus conclut que l'outil
-	 * ne sait pas faire ; un élève qui lit la raison sait à quoi s'en tenir.
-	 */
-	readonly unavailable?: string;
-	/**
 	 * Les listes que cite l'exemple (`.simuler L M 100`) : il se joue dans un
 	 * atelier qui les contient, sur le chemin réel de l'élève (Q79). Un décor
 	 * VIDE (`.binomiale`) déclare une commande qui montre un tableau ou un
@@ -77,7 +69,6 @@ interface Translation {
 	readonly description: string;
 	readonly example?: string;
 	readonly advanced?: boolean;
-	readonly unavailable?: string;
 	readonly exampleSetup?: Readonly<Record<string, string>>;
 	readonly section?: HelpSection;
 	readonly runsAlone?: boolean;
@@ -304,75 +295,12 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		}
 	],
 	[
-		'let',
-		{
-			french: 'poser',
-			description: 'Poser une valeur',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
-		}
-	],
-	[
-		'def',
-		{
-			french: 'définir',
-			description: 'Définir une fonction',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
-		}
-	],
-	[
-		'clear',
-		{
-			french: 'effacer',
-			description: 'Effacer toutes les valeurs',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
-		}
-	],
-	[
-		'unset',
-		{
-			french: 'oublier',
-			description: 'Oublier une valeur',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
-		}
-	],
-	[
-		'undef',
-		{
-			french: 'oublier-fonction',
-			description: 'Oublier une fonction',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
-		}
-	],
-	[
 		'vars',
 		{ french: 'valeurs', description: 'Lister les valeurs connues du moteur', runsAlone: true }
 	],
 	[
 		'fns',
 		{ french: 'fonctions', description: 'Lister les fonctions connues du moteur', runsAlone: true }
-	],
-	[
-		'inv',
-		{
-			french: 'réciproque',
-			description: 'Afficher ou donner la réciproque d’une fonction',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
-		}
-	],
-	[
-		"def'",
-		{
-			french: 'dérivée-de',
-			description: 'Donner soi-même la dérivée d’une fonction',
-			unavailable:
-				'Dans l’atelier, les noms se créent dans le panneau : écris « a = 3 » ou « f(x) = x^2 » sans le point.'
-		}
 	],
 	[
 		'mode',
@@ -389,10 +317,10 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'normal',
 		{ french: 'forme-normale', description: 'Afficher la forme normale détaillée', advanced: true }
 	],
-	['latex', { french: 'latex', description: 'Écrire la réponse en LaTeX', advanced: true }],
+	['latex', { french: 'latex', description: 'Écrire une expression en LaTeX', advanced: true }],
 	[
 		'custom',
-		{ french: 'texte', description: 'Écrire la réponse en syntaxe texte', advanced: true }
+		{ french: 'texte', description: 'Écrire une expression en syntaxe texte', advanced: true }
 	],
 	[
 		'parse',
@@ -403,6 +331,33 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		'hash',
 		{ french: 'empreinte', description: 'Calculer l’empreinte d’une expression', advanced: true }
 	]
+]);
+
+/**
+ * Les commandes du registre qui n'existent PAS dans l'atelier (décision de
+ * David, 2026-10-13 : « elles ne sont pas censées exister »).
+ *
+ * Elles écrivent dans l'`EvalState` du moteur, alors que **l'atelier détient
+ * les noms** (Q1 option B) : le panneau fait la même chose (`a = 3`,
+ * `f(x) = x^2`, supprimer une carte). Hors du catalogue, tapées en entier,
+ * elles répondent comme toute commande inconnue — sans refus particulier.
+ *
+ * ⚠️ Elles étaient d'abord « indisponibles » : grisées dans la liste, mais
+ * exécutées quand on les tapait. Mesuré le 2026-10-13 : `.effacer` vidait le
+ * moteur (`a + 1` rendait « a+1 » avec `a = 3` au panneau), `.définir` créait
+ * une fonction invisible. Ne pas les remettre au catalogue sous une autre forme.
+ *
+ * `inv` : la réciproque donnée à la main, jamais vérifiée. Une vraie
+ * réciproque calculée viendra (`docs/wip/atelier-reciproque-phase0.md`).
+ */
+export const ENGINE_COMMANDS_LEFT_OUT: ReadonlySet<string> = new Set([
+	'let',
+	'def',
+	'clear',
+	'unset',
+	'undef',
+	'inv',
+	"def'"
 ]);
 
 /**
@@ -477,15 +432,6 @@ const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 	['exact', { french: 'exact', description: 'Passer aux valeurs exactes', runsAlone: true }],
 	['decimal', { french: 'décimal', description: 'Passer aux valeurs décimales', runsAlone: true }],
 	[
-		'auto',
-		{
-			french: 'auto',
-			description: 'Laisser l’atelier deviner la syntaxe',
-			advanced: true,
-			runsAlone: true
-		}
-	],
-	[
 		'export',
 		{ french: 'exporter', description: 'Exporter la session', advanced: true, runsAlone: true }
 	]
@@ -539,7 +485,6 @@ export function commandCatalog(engine: WebReplEngine): AtelierCommand[] {
 			description: t.description,
 			...(t.example && { example: t.example }),
 			...(t.advanced && { advanced: true }),
-			...(t.unavailable && { unavailable: t.unavailable }),
 			...(t.exampleSetup && { exampleSetup: t.exampleSetup }),
 			...(t.section && { section: t.section }),
 			...(t.runsAlone && { runsAlone: true })

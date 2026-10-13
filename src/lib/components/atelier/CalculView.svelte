@@ -168,9 +168,8 @@
 	let highlightedName = $state<string | null>(null);
 
 	const listOpen = $derived(suggestions.length > 0 && !dismissed);
-	const available = $derived(suggestions.filter((c) => c.unavailable === undefined));
 	const active = $derived(
-		available.find((c) => c.name === highlightedName) ?? available[0] ?? null
+		suggestions.find((c) => c.name === highlightedName) ?? suggestions[0] ?? null
 	);
 	const activeId = $derived(
 		listOpen && active !== null ? `${uid}-commande-${suggestions.indexOf(active)}` : undefined
@@ -248,11 +247,7 @@
 
 	/** La commande dont l'élève tape la suite, et son modèle sous le champ. */
 	const writing = $derived(commandBeingWritten(catalog, desk.draft));
-	const model = $derived(
-		writing === null || writing.unavailable !== undefined
-			? null
-			: (writing.example ?? writing.description)
-	);
+	const model = $derived(writing === null ? null : (writing.example ?? writing.description));
 
 	/**
 	 * Une frappe rouvre la liste et remet le surlignage sur la première
@@ -274,11 +269,11 @@
 		);
 	}
 
-	/** Déplacer le surlignage parmi les commandes disponibles, en boucle. */
+	/** Déplacer le surlignage parmi les commandes proposées, en boucle. */
 	function move(step: 1 | -1) {
 		if (active === null) return;
-		const next = (available.indexOf(active) + step + available.length) % available.length;
-		highlightedName = available[next].name;
+		const next = (suggestions.indexOf(active) + step + suggestions.length) % suggestions.length;
+		highlightedName = suggestions[next].name;
 	}
 
 	/**
@@ -583,14 +578,12 @@
 						id="{uid}-commande-{index}"
 						tabindex="-1"
 						aria-selected={command === active}
-						aria-disabled={command.unavailable !== undefined}
 						class:surlignee={command === active}
 						onclick={() => complete(command)}
-						disabled={command.unavailable !== undefined}
-						title={command.unavailable ?? command.example ?? ''}
+						title={command.example ?? ''}
 					>
 						<span class="nom">.{command.french}</span>
-						<span class="quoi">{command.unavailable ?? command.description}</span>
+						<span class="quoi">{command.description}</span>
 					</button>
 				</li>
 			{/each}
