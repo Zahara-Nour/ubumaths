@@ -88,13 +88,13 @@ Jusque-là, le bucket n'existait pas en prod et toute pièce jointe échouait en
   liens. L'accès est décidé par `src/lib/server/message-attachments.ts` avec le client de
   l'utilisateur, donc sa RLS :
   - **envoi** — `POST /api/messages/[id]/attachments` : l'utilisateur est l'expéditeur du message,
-    moins de 3 pièces jointes ; le serveur choisit le chemin (`messages/<message>/<uuid>-<nom>`) et
+    moins de 3 pièces jointes **et** moins de 3 fichiers déjà déposés dans le dossier du message, consentement `send_message` ; le serveur choisit le chemin (`messages/<message>/<uuid>-<nom>`) et
     rend un lien d'envoi à usage unique. Le navigateur dépose le fichier directement dans le
     storage (Vercel refuse les corps de plus de 4,5 Mo), puis enregistre la ligne
     `message_attachments_v2`, dont la policy d'insertion exige ce rangement ;
   - **lecture** — `GET /api/messages/attachments/[attachmentId]` : la RLS de
     `message_attachments_v2` rend la ligne (expéditeur, destinataire qui n'a pas supprimé le
-    message, admin), puis redirection vers un lien signé d'une heure ; sinon 404.
+    message, admin), **et** un chemin de la forme exacte du serveur (`isServerAttachmentPath`), puis redirection (`no-store`, sans Referer) vers un lien signé d'une heure ; sinon 404. La ligne est écrite par le navigateur : sans ce contrôle, `%2e%2e` ou `\` dans le chemin sortaient du message, voire du bucket (audit de #1256). La policy d'insertion exige la même forme (`20261016101400`).
 - **Aucun lien public** : `public_url` n'est plus écrit ni lu.
 - **Fin de vie** : la suppression du compte de l'élève retire ses fichiers
   ([conformite/rgpd.md](conformite/rgpd.md)) ; la purge des messages et le retrait d'une pièce

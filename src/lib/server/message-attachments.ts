@@ -15,6 +15,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { sanitizeForStorage } from '$lib/utils/filename';
 import {
+	isServerAttachmentPath,
 	MESSAGE_ATTACHMENT_BUCKET,
 	MESSAGE_ATTACHMENT_MAX_COUNT,
 	MESSAGE_ATTACHMENT_MAX_SIZE,
@@ -92,7 +93,15 @@ export async function createAttachmentUploadUrl(
 	if (countError || count === null) {
 		return { ok: false, status: 500, message: 'Pièces jointes illisibles' };
 	}
-	if (count >= MESSAGE_ATTACHMENT_MAX_COUNT) {
+	// Les lignes ne s'enregistrent qu'APRÈS le dépôt : compter aussi les fichiers déjà
+	// présents, sinon on demanderait des liens et déposerait sans fin (audit de #1256).
+	const { data: stored, error: listError } = await serviceClient.storage
+		.from(MESSAGE_ATTACHMENT_BUCKET)
+		.list(`messages/${messageId}`, { limit: MESSAGE_ATTACHMENT_MAX_COUNT + 1 });
+	if (listError) {
+		return { ok: false, status: 500, message: 'Pièces jointes illisibles' };
+	}
+	if (Math.max(count, stored?.length ?? 0) >= MESSAGE_ATTACHMENT_MAX_COUNT) {
 		return { ok: false, status: 409, message: '3 pièces jointes au plus par message' };
 	}
 
@@ -117,13 +126,16 @@ export async function getAttachmentDownloadUrl(
 ): Promise<string | null> {
 	const { data: attachment, error } = await userClient
 		.from('message_attachments_v2')
-		.select('storage_path, file_name')
+		.select('storage_path, file_name, message_id')
 		.eq('id', attachmentId)
 		.maybeSingle();
 	if (error) {
 		throw new Error(`Pièce jointe illisible : ${error.message}`);
 	}
 	if (!attachment) return null;
+	// Le chemin vient de la ligne, écrite par le navigateur : seule la forme que le
+	// serveur produit est signée (sinon `%2e%2e` sortirait du message, voire du bucket).
+	if (!isServerAttachmentPath(attachment.storage_path, attachment.message_id)) return null;
 
 	const { data, error: signError } = await serviceClient.storage
 		.from(MESSAGE_ATTACHMENT_BUCKET)

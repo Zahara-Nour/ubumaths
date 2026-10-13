@@ -350,7 +350,7 @@ Pièces jointes de la messagerie (`20261016101300`) : bucket **privé** `message
 (10 Mo, comme la contrainte `file_size` de la table ; JPEG, PNG, WebP, HEIC, PDF), **sans policy sur `storage.objects`** : seul le client
 service y dépose et en signe les liens, après avoir vérifié l'accès avec la RLS de
 `message_attachments_v2` (expéditeur, destinataires non supprimés, admin). Le chemin enregistré
-est rangé sous le message (`messages/<message>/…`, aucun segment `..`), 3 par message. La purge des messages
+a la forme exacte que le serveur produit (`messages/<message>/<uuid>-<nom>`, `20261016101400`), 3 par message. La purge des messages
 (3 ans) et le retrait d'une pièce jointe effacent la ligne, pas le fichier :
 `list_orphan_message_attachment_files` (service_role seul) liste les fichiers sans ligne, vieux de
 plus d'un jour, que le cron du dimanche retire.

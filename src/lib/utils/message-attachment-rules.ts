@@ -44,3 +44,16 @@ export function messageAttachmentRefusal(file: { name: string; type: string; siz
 	}
 	return null;
 }
+
+const UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
+
+/**
+ * Forme EXACTE du chemin que le serveur choisit pour une pièce jointe :
+ * `messages/<message>/<uuid>-<nom nettoyé par sanitizeForStorage>`. Seul un chemin de
+ * cette forme est signé : la ligne `message_attachments_v2` est écrite par le navigateur,
+ * et `%2e%2e` ou `\` dans un chemin signé sortaient du message, voire du bucket (audit de
+ * #1256). La policy d'insertion exige la même forme (migration 20261016101400).
+ */
+export function isServerAttachmentPath(path: string, messageId: string): boolean {
+	return new RegExp(`^messages/${messageId}/${UUID}-[A-Za-z0-9._-]{1,200}$`).test(path);
+}

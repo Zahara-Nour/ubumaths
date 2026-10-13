@@ -280,9 +280,9 @@
 										})}
 										target="_blank"
 										rel="noopener noreferrer"
-										aria-label="Ouvrir {attachment.file_name}"
+										aria-label="Télécharger {attachment.file_name}"
 									>
-										<Button variant="ghost" size="sm" title="Ouvrir">
+										<Button variant="ghost" size="sm" title="Télécharger">
 											<Download class="h-4 w-4" />
 										</Button>
 									</a>

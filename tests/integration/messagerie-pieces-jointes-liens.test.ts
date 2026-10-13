@@ -175,4 +175,59 @@ describe('messagerie : liens des pièces jointes', () => {
 		// Le scan enregistré reste ; l'orphelin est parti.
 		expect(rows.map((r) => r.name)).toEqual([chemin]);
 	});
+
+	// Audit de #1256 : le serveur signait le chemin écrit par le navigateur. `%2e%2e` et `\`
+	// passaient la policy d'insertion, puis storage-js les plaçait tels quels dans l'URL de
+	// signature, que Node normalise : lien signé hors du message, voire hors du bucket.
+	it.each([
+		['%2e%2e encodé', (m: string) => `messages/${m}/%2e%2e/%2e%2e/%2e%2e/chapter-documents/x.pdf`],
+		['.%2E mixte', (m: string) => `messages/${m}/.%2E/.%2E/x.pdf`],
+		['barre oblique inverse', (m: string) => `messages/${m}/..\\..\\x.pdf`]
+	])('aucun lien pour un chemin forgé (%s)', async (_cas, chemin) => {
+		const pg = await getPostgresClient();
+		// Insertion par postgres : la policy est testée à part ; ici, la signature elle-même.
+		const { rows } = await pg.query<{ id: string }>(
+			`insert into message_attachments_v2
+			   (message_id, file_name, file_type, file_size, storage_path, uploaded_by)
+			 values ($1, 'x.pdf', 'application/pdf', 1, $2, $3) returning id`,
+			[messageDeLAutre, chemin(messageDeLAutre), autre.id]
+		);
+		try {
+			const client = await createAuthenticatedClient(autre.email);
+			expect(await getAttachmentDownloadUrl(client, service, rows[0].id)).toBeNull();
+		} finally {
+			await pg.query('delete from message_attachments_v2 where id = $1', [rows[0].id]);
+		}
+	});
+
+	// Audit de #1256 : la limite comptait les lignes, enregistrées APRÈS le dépôt. On
+	// pouvait demander des liens et déposer sans fin, à 10 Mo le fichier.
+	it('pas de 4ᵉ lien d’envoi quand 3 fichiers sont déjà déposés, même sans ligne', async () => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query<{ id: string }>(
+			`insert into private_messages (sender_id, subject, content)
+			 values ($1, 'zz-depots', '{}'::jsonb) returning id`,
+			[eleve.id]
+		);
+		const message = rows[0].id;
+		const client = await createAuthenticatedClient(eleve.email);
+		const deposes: string[] = [];
+		try {
+			for (let i = 0; i < 3; i++) {
+				const lien = await createAttachmentUploadUrl(client, service, eleve.id, message, SCAN);
+				expect(lien.ok).toBe(true);
+				if (!lien.ok) return;
+				const envoi = await client.storage
+					.from(MESSAGE_ATTACHMENT_BUCKET)
+					.uploadToSignedUrl(lien.path, lien.token, new Blob([CONTENU], { type: SCAN.file_type }));
+				expect(envoi.error).toBeNull();
+				deposes.push(lien.path);
+			}
+			const quatrieme = await createAttachmentUploadUrl(client, service, eleve.id, message, SCAN);
+			expect(quatrieme).toMatchObject({ ok: false, status: 409 });
+		} finally {
+			if (deposes.length) await service.storage.from(MESSAGE_ATTACHMENT_BUCKET).remove(deposes);
+			await pg.query('delete from private_messages where id = $1', [message]);
+		}
+	});
 });

@@ -11,8 +11,11 @@ import {
 	getAttachmentDownloadUrl
 } from '$lib/server/message-attachments';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { requireConsent } from '$lib/server/middleware/consent';
+import { error } from '@sveltejs/kit';
 
 vi.mock('$lib/server/middleware/auth', () => ({ requireAuth: vi.fn() }));
+vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: vi.fn() }));
 vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => ({}) }));
 vi.mock('$lib/server/message-attachments', async (importOriginal) => {
 	const original = await importOriginal<typeof import('$lib/server/message-attachments')>();
@@ -41,7 +44,11 @@ function get(attachmentId = MESSAGE_ID) {
 
 beforeEach(() => {
 	vi.clearAllMocks();
-	vi.mocked(requireAuth).mockResolvedValue({ user: { id: USER_ID } } as never);
+	vi.mocked(requireAuth).mockResolvedValue({
+		user: { id: USER_ID },
+		profile: { id: USER_ID, role: 'student' }
+	} as never);
+	vi.mocked(requireConsent).mockImplementation(() => {});
 });
 
 describe('POST /api/messages/[id]/attachments', () => {
@@ -77,6 +84,17 @@ describe('POST /api/messages/[id]/attachments', () => {
 		expect(createAttachmentUploadUrl).not.toHaveBeenCalled();
 	});
 
+	// Audit de #1256 : joindre un fichier, c'est envoyer ; même consentement que l'envoi.
+	it('sans consentement d’envoi : 403, sans lien', async () => {
+		vi.mocked(requireConsent).mockImplementation(() => {
+			throw error(403, 'Consentement parental requis');
+		});
+
+		await expect(post(SCAN)).rejects.toMatchObject({ status: 403 });
+		expect(requireConsent).toHaveBeenCalledWith(expect.anything(), 'send_message');
+		expect(createAttachmentUploadUrl).not.toHaveBeenCalled();
+	});
+
 	it('400 pour un identifiant de message invalide', async () => {
 		await expect(post(SCAN, 'pas-un-uuid')).rejects.toMatchObject({ status: 400 });
 	});
@@ -90,13 +108,14 @@ describe('POST /api/messages/[id]/attachments', () => {
 });
 
 describe('GET /api/messages/attachments/[attachmentId]', () => {
-	it('redirige vers le lien signé', async () => {
+	it('redirige vers le lien signé, jamais mis en cache (il porte un jeton d’une heure)', async () => {
 		vi.mocked(getAttachmentDownloadUrl).mockResolvedValue('https://stockage/lien-signe');
 
-		await expect(get()).rejects.toMatchObject({
-			status: 303,
-			location: 'https://stockage/lien-signe'
-		});
+		const response = await get();
+
+		expect(response.status).toBe(303);
+		expect(response.headers.get('location')).toBe('https://stockage/lien-signe');
+		expect(response.headers.get('cache-control')).toContain('no-store');
 	});
 
 	it('404 quand la RLS ne rend pas la pièce jointe', async () => {

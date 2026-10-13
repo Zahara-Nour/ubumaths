@@ -32,6 +32,8 @@ const ANON_KEY =
 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
 const BUCKET = 'message-attachments';
+/** Préfixe de nom que le serveur donne à chaque fichier (`<uuid>-<nom>`). */
+const UUID_NOM = '0b6f1c2e-5a7d-4e8f-9a1b-2c3d4e5f6a7b';
 
 // ============================================================================
 // TESTS
@@ -108,7 +110,7 @@ describe('messagerie : pièces jointes', () => {
 				file_name: 'cahier.jpg',
 				file_type: 'image/jpeg',
 				file_size: 1000,
-				storage_path: `messages/${messageId}/cahier.jpg`,
+				storage_path: `messages/${messageId}/${UUID_NOM}-cahier.jpg`,
 				uploaded_by: eleve.id
 			})
 			.select('id');
@@ -127,7 +129,7 @@ describe('messagerie : pièces jointes', () => {
 				file_name: 'gros-scan.pdf',
 				file_type: 'application/pdf',
 				file_size: 8 * 1024 * 1024,
-				storage_path: `messages/${messageId}/gros-scan.pdf`,
+				storage_path: `messages/${messageId}/${UUID_NOM}-gros-scan.pdf`,
 				uploaded_by: eleve.id
 			})
 			.select('id');
@@ -137,7 +139,11 @@ describe('messagerie : pièces jointes', () => {
 	it.each([
 		['sous le message d’un autre', () => `messages/${messageDeLAutre}/x.jpg`],
 		['avec un segment « .. »', () => `messages/${messageId}/../${messageDeLAutre}/x.jpg`],
-		['hors du dossier messages/', () => `${autre.id}/x.jpg`]
+		['hors du dossier messages/', () => `${autre.id}/x.jpg`],
+		// Audit de #1256 : ces formes passaient le seul refus de « /../ ».
+		['avec %2e%2e encodé', () => `messages/${messageId}/%2e%2e/%2e%2e/x.jpg`],
+		['avec une barre oblique inverse', () => `messages/${messageId}/..\\x.jpg`],
+		['sans le préfixe uuid du serveur', () => `messages/${messageId}/x.jpg`]
 	])('un chemin rangé %s est refusé', async (_cas, chemin) => {
 		const client = await createAuthenticatedClient(eleve.email);
 		const { error } = await client.from('message_attachments_v2').insert({
@@ -171,7 +177,7 @@ describe('messagerie : pièces jointes', () => {
 		// Le bucket existe (test plus haut) : un refus ici vient de l'absence de policy,
 		// pas d'un « Bucket not found ».
 		const service = createServiceRoleClient();
-		const chemin = `messages/${messageId}/cahier.jpg`;
+		const chemin = `messages/${messageId}/${UUID_NOM}-cahier.jpg`;
 		const depot = await service.storage
 			.from(BUCKET)
 			.upload(chemin, new Blob(['zz'], { type: 'image/jpeg' }), { upsert: true });
