@@ -1,7 +1,7 @@
 ---
 title: Atelier — la réciproque calculée (phase 0)
 date: 2026-10-13
-status: phase 0 en attente de validation ; Q5 ouverte
+status: phase 0 validée (2026-10-13) ; Q5 = (b), chantier « carte sur un intervalle » avant le lot 3
 ---
 
 # Atelier — la réciproque calculée
@@ -20,7 +20,7 @@ Contexte : [atelier-cas-phase0.md](atelier-cas-phase0.md). Chapeau : [atelier-pr
   `f⁻¹(x) = (x − 3)/2`.
 - **R4 — Ensembles** : la ligne dit de quel ensemble à quel ensemble : `f⁻¹ : ]0 ; +∞[ → ℝ`.
 
-## Q5 — ouverte : quand la formule de f⁻¹ vaut sur plus large que son ensemble
+## Q5 — tranchée (b) : quand la formule de f⁻¹ vaut sur plus large que son ensemble
 
 `f(x) = √(x+2)` donne `f⁻¹(x) = x² − 2`, **mais seulement sur [0 ; +∞[**. Une carte de fonction ne
 porte aucun intervalle (`FunctionObject`, `atelier/types.ts`) : la carte `f⁻¹` serait tracée sur tout
@@ -34,23 +34,24 @@ porte aucun intervalle (`FunctionObject`, `atelier/types.ts`) : la carte `f⁻¹
 - **(c)** Carte toujours créée, tracée sur tout ℝ, avec l'ensemble écrit sur la ligne. Rejeté d'avance :
   la courbe est fausse.
 
-Reco : **(a) maintenant**, (b) plus tard comme chantier séparé si David le veut ; (a) passera alors
-d'elle-même à « toujours une carte ».
+**Décision de David (2026-10-13) : (b)** — « mathAST gère les domaines ». Les cartes de fonction
+apprendront à porter un intervalle (chantier à part, sa propre phase 0, AVANT le lot 3) ; la carte
+`f⁻¹` est alors toujours créée, avec son ensemble.
 
 ## Comportements attendus (TDD)
 
 ### Cas nominaux
 
-| f                  | Intervalle | Attendu                                                      |
-| ------------------ | ---------- | ------------------------------------------------------------ |
-| `2x + 3`           | —          | `f⁻¹(x) = (x − 3)/2`, `ℝ → ℝ`, carte `f⁻¹`                   |
-| `(2x + 1)/(x − 3)` | —          | `f⁻¹(x) = (3x + 1)/(x − 2)`, `ℝ \ {2} → ℝ \ {3}`             |
-| `x³`               | —          | `f⁻¹(x) = ∛x`, `ℝ → ℝ`                                       |
-| `e^{2x+1}`         | —          | `f⁻¹(x) = (ln x − 1)/2`, `]0 ; +∞[ → ℝ`                      |
-| `ln(x − 1)`        | —          | `f⁻¹(x) = eˣ + 1`, `ℝ → ]1 ; +∞[`                            |
-| `x²`               | `[0;+∞[`   | `f⁻¹(x) = √x`, `[0 ; +∞[ → [0 ; +∞[`                         |
-| `x²`               | `]−∞;0]`   | `f⁻¹(x) = −√x`, `[0 ; +∞[ → ]−∞ ; 0]`                        |
-| `√(x + 2)`         | —          | `f⁻¹(x) = x² − 2`, `[0 ; +∞[ → [−2 ; +∞[` — carte : selon Q5 |
+| f                  | Intervalle | Attendu                                                               |
+| ------------------ | ---------- | --------------------------------------------------------------------- |
+| `2x + 3`           | —          | `f⁻¹(x) = (x − 3)/2`, `ℝ → ℝ`, carte `f⁻¹`                            |
+| `(2x + 1)/(x − 3)` | —          | `f⁻¹(x) = (3x + 1)/(x − 2)`, `ℝ \ {2} → ℝ \ {3}`                      |
+| `x³`               | —          | `f⁻¹(x) = ∛x`, `ℝ → ℝ`                                                |
+| `e^{2x+1}`         | —          | `f⁻¹(x) = (ln x − 1)/2`, `]0 ; +∞[ → ℝ`                               |
+| `ln(x − 1)`        | —          | `f⁻¹(x) = eˣ + 1`, `ℝ → ]1 ; +∞[`                                     |
+| `x²`               | `[0;+∞[`   | `f⁻¹(x) = √x`, `[0 ; +∞[ → [0 ; +∞[`                                  |
+| `x²`               | `]−∞;0]`   | `f⁻¹(x) = −√x`, `[0 ; +∞[ → ]−∞ ; 0]`                                 |
+| `√(x + 2)`         | —          | `f⁻¹(x) = x² − 2`, `[0 ; +∞[ → [−2 ; +∞[` — carte sur `[0 ; +∞[` (Q5) |
 
 Les étapes (R3) écrivent `y = f(x) ⇔ x = …` puis le renommage en x. L'écriture finale passe par la
 mise au propre habituelle de Calcul (ordre de David, virgule décimale).
@@ -81,8 +82,8 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
    (`y > 0`). Vérifier au passage `.résoudre e^(2x+1)=a` dans Calcul. PR à part.
 2. **Le calcul de la réciproque** — résolution, choix de la branche dans l'intervalle, bijectivité,
    ensembles de départ et d'arrivée, étapes ; refus. Testé sans l'atelier.
-3. **L'atelier** — bouton, commande `.réciproque f [sur I]`, carte `f⁻¹` (selon Q5), aide.
+3. **L'atelier** — bouton, commande `.réciproque f [sur I]`, carte `f⁻¹` portant son ensemble (Q5), aide — après le chantier « carte sur un intervalle ».
 
 ## Journal
 
-- 2026-10-13 — phase 0 écrite ; R1-R4 tranchées ; Q5 ouverte.
+- 2026-10-13 — phase 0 écrite ; R1-R4 tranchées ; Q5 = (b) ; phase 0 validée (« ok pour la phase 0 »).
