@@ -33,6 +33,7 @@ import { toLatex } from '$lib/mathAST/latex-generator';
 import { variationTableNode } from '$lib/ubumark/builders/variation-table';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 import { astOf } from './parse';
+import { studyDomain } from '$lib/mathAST/domain/study';
 
 // =============================================================================
 // Types
@@ -83,16 +84,26 @@ const EXTREMUM: Readonly<Record<ExtremumType, string>> = {
  * @param expression - L'expression, noms d'objets DÉJÀ substitués
  * @param name - Le nom de la fonction (`f` par défaut, comme dans un énoncé)
  * @param variable - La variable d'étude
+ * @param within - L'ensemble d'étude écrit après `dans` (celui que reçoit le
+ *   moteur), ou `null` : tout le domaine
  */
 export function variationsRendering(
 	expression: string,
 	name = 'f',
-	variable = 'x'
+	variable = 'x',
+	within: string | null = null
 ): VariationsRendering | null {
 	try {
 		const node = astOf(expression, 'text');
 		if (node === null) return null;
-		const result = computeVariations(node, { variable, includeBoundaryLimits: true });
+		// Le même ensemble que le moteur (`studyDomain`) : la ligne et le tableau disent la même chose
+		const set = within === null ? null : studyDomain(within, node, variable);
+		if (set !== null && !set.ok) return null;
+		const result = computeVariations(node, {
+			variable,
+			includeBoundaryLimits: true,
+			...(set !== null && { domain: set.domain })
+		});
 
 		const f = `${name}(${variable})`;
 		const fPrime = `${name}'(${variable})`;

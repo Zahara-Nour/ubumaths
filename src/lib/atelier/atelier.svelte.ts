@@ -1023,8 +1023,11 @@ export class Atelier {
 			...(isFunction(o) && o.display ? { display: compactDisplay(o.display) } : {}),
 			// La lettre de l'élève (`f(t)`) : absente pour x, qui ne pèse rien
 			...(isFunction(o) && o.letter ? { letter: o.letter } : {}),
-			// L'ensemble écrit après « sur » : absent sans intervalle
-			...(isFunction(o) && o.interval !== undefined ? { interval: o.interval } : {}),
+			// L'ensemble écrit après « sur » : absent sans intervalle. Celui d'une
+			// dérivée se relit sur sa fonction (`#inheritIntervals`)
+			...(isFunction(o) && o.interval !== undefined && derivativeOf(o.name) === null
+				? { interval: o.interval }
+				: {}),
 			// Seulement s'il a été réglé : un curseur par défaut ne pèse rien dans le lien
 			...(isValue(o) && o.slider && !isDefaultSlider(o.slider)
 				? { slider: { min: o.slider.min, max: o.slider.max, step: o.slider.step } }
@@ -1583,8 +1586,26 @@ export class Atelier {
 			return next;
 		});
 
+		this.#inheritIntervals();
 		this.#underivable();
 		this.#sequenceChecks();
+	}
+
+	/**
+	 * La carte `f′` porte l'ensemble de f (lot 2 de
+	 * `docs/wip/atelier-intervalle-phase0.md`) : recopié à chaque recalcul, il
+	 * suit f quand son ensemble change ou disparaît (I6). Jamais sauvegardé.
+	 */
+	#inheritIntervals(): void {
+		this.items.forEach((o, i) => {
+			const derivative = derivativeOf(o.name);
+			if (derivative === null || !isFunction(o)) return;
+			const base = this.get(derivative.base);
+			const inherited = base !== undefined && isFunction(base) ? base.interval : undefined;
+			if (o.interval === inherited) return;
+			const { interval: _dropped, ...rest } = o;
+			this.items[i] = inherited === undefined ? rest : { ...rest, interval: inherited };
+		});
 	}
 
 	/**

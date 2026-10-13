@@ -413,7 +413,7 @@ const COMMAND_KEYWORDS: Readonly<Record<KeywordCommand, readonly Keyword[]>> = {
 	eval: ['en', 'pour'],
 	equiv: ['et'],
 	taylor: ['ordre', 'en', 'pour'],
-	variations: ['pour'],
+	variations: ['pour', 'dans'],
 	domain: ['pour']
 };
 
@@ -461,7 +461,7 @@ export interface CommandArguments {
 	readonly center: number | null;
 	/** `en x=3` / `pour x=3` (`.évaluer`) */
 	readonly assignment: { readonly name: string; readonly value: string } | null;
-	/** `dans INTERVALLE` (`.résoudre`) */
+	/** `dans INTERVALLE` (`.résoudre`, `.variations`) */
 	readonly interval: string | null;
 	/** `et EXPR` (`.équivalent`) */
 	readonly other: string | null;
@@ -733,9 +733,11 @@ export function writeCommandArguments(args: CommandArguments): string {
 	if (args.order !== null) parts.push(`ordre ${args.order}`);
 	if (args.center !== null) parts.push(`en ${args.center}`);
 	if (args.assignment !== null) parts.push(`en ${args.assignment.name}=${args.assignment.value}`);
-	if (args.interval !== null) parts.push(`dans ${args.interval}`);
 	if (args.other !== null) parts.push(`et ${args.other}`);
 	if (args.variable !== null) parts.push(`pour ${args.variable}`);
+	// En dernier : un intervalle semi-ouvert (`[0 ; +∞[`) ne referme pas ses
+	// crochets, et tout ce qui le suit y restait collé (`pour t` compris)
+	if (args.interval !== null) parts.push(`dans ${args.interval}`);
 	return parts.join(' ');
 }
 

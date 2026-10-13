@@ -208,8 +208,13 @@ export function variationTableNode(
 		});
 	}
 
+	// La première borne se lit sur le PREMIER intervalle, point critique compris :
+	// x² étudiée sur [0 ; +∞[ commence par `[0 ; 0]`, et `]0 ; +∞[` marquait 0
+	// exclu (lot 2 de `docs/wip/atelier-intervalle-phase0.md`)
+	const firstOpen =
+		variations.monotonicIntervals[0]?.interval.lower.type === 'open' && intervals[0].lowerOpen;
 	const domain: DomainPoint[] = points.map((expression, index) =>
-		index === 0 && intervals[0].lowerOpen && expression !== MINUS_INFINITY
+		index === 0 && firstOpen && expression !== MINUS_INFINITY
 			? { expression, open: true }
 			: { expression }
 	);

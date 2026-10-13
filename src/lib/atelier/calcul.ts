@@ -37,13 +37,19 @@ import {
 } from './letter';
 import { syncEngine, expressionOf, expandInput, expandCommandArgument, termsOf } from './engine';
 import {
+	citedIntervalDomain,
 	intervalDomainOf,
+	intervalText,
 	ONLY_FUNCTIONS,
 	outsideIntervalMessage,
 	outsideIntervalRefusal,
 	splitInterval
 } from './interval';
-import { containsValue } from '$lib/mathAST/domain/algebra';
+import { containsValue, intersect, isEmpty } from '$lib/mathAST/domain/algebra';
+import { formatInterval } from '$lib/mathAST/domain/format';
+import type { Domain } from '$lib/mathAST/domain/types';
+import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
+import { UNREADABLE_STUDY_DOMAIN } from '$lib/mathAST/domain/study';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import {
@@ -1134,6 +1140,32 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			if (guessed.variable !== 'x') finalArgs = { ...finalArgs, variable: guessed.variable };
 		}
 	}
+	// Lot 2 de l'intervalle : `.résoudre` et `.variations` travaillent sur
+	// l'ensemble des fonctions citées (`f(x) = x^2 sur [0;+∞[`), croisé avec
+	// un `dans` tapé ; le moteur le reçoit par ce mot
+	const cited =
+		(name === 'solve' || name === 'variations') && typedArgs !== null
+			? citedIntervalDomain((n) => session.atelier.get(n), typedArgs.expression)
+			: null;
+	let studied: Domain | null = null;
+	if (cited !== null && finalArgs !== null) {
+		const typedWithin =
+			finalArgs.interval === null
+				? null
+				: parseStudentDomain(finalArgs.interval, finalArgs.variable ?? INTERNAL_LETTER);
+		if (typedWithin !== null && !typedWithin.success) {
+			return { kind: 'refus', message: UNREADABLE_STUDY_DOMAIN, ...notesOf(letterNote) };
+		}
+		studied = typedWithin === null ? cited.domain : intersect(typedWithin.domain, cited.domain);
+		if (isEmpty(studied)) {
+			return {
+				kind: 'refus',
+				message: `Aucun nombre de ${finalArgs.interval ?? ''} n'est dans l'ensemble de définition de ${cited.name}, ${intervalText(cited.domain)}.`,
+				...notesOf(letterNote)
+			};
+		}
+		finalArgs = { ...finalArgs, interval: formatInterval(studied) };
+	}
 	const commandArgument = finalArgs === null ? argument : writeCommandArguments(finalArgs);
 	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${commandArgument}`;
 
@@ -1224,31 +1256,34 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// « decroissante ») : la dérivée en LaTeX, le tableau quand il se dessine,
 	// le détail à déplier — comme le bouton « Variations » (2026-10-09)
 	if (name === 'variations' && result.success) {
-		const studied = variationsRendering(
+		const rendering = variationsRendering(
 			finalArgs?.expression ?? argument,
 			'f',
-			finalArgs?.variable ?? undefined
+			finalArgs?.variable ?? undefined,
+			finalArgs?.interval ?? null
 		);
-		if (studied !== null) {
+		if (rendering !== null) {
 			return {
 				kind: 'commande',
 				input,
 				output: rendered.text,
-				latex: studied.answer,
-				steps: studied.steps,
-				...(studied.table !== undefined && { table: studied.table }),
+				latex: rendering.answer,
+				steps: rendering.steps,
+				...(rendering.table !== undefined && { table: rendering.table }),
 				...noted
 			};
 		}
 	}
 
-	// `dans [a ; b]` : les étapes ne savent pas restreindre, le moteur si
+	// `dans [a ; b]` tapé seul : pas d'étapes, le moteur restreint. L'ensemble
+	// d'une fonction citée (lot 2) : les étapes sur ℝ, puis le tri des solutions
 	const solved =
-		name === 'solve' && finalArgs !== null && finalArgs.interval === null
+		name === 'solve' && finalArgs !== null && (finalArgs.interval === null || studied !== null)
 			? solveSteps(
 					finalArgs.variable === null
 						? finalArgs.expression
-						: `${finalArgs.expression} ; ${finalArgs.variable}`
+						: `${finalArgs.expression} ; ${finalArgs.variable}`,
+					studied ?? undefined
 				)
 			: null;
 	if (solved !== null) {
@@ -1786,7 +1821,10 @@ function computeAction(
 		// I4 : hors de l'ensemble de la fonction, pas d'image
 		const domain = intervalDomainOf(atelier.get(name));
 		if (domain !== null && !containsValue(domain, value)) {
-			return { ok: false, message: outsideIntervalMessage(name, (argument ?? '').trim(), domain) };
+			return {
+				ok: false,
+				message: outsideIntervalMessage(displayName(name), (argument ?? '').trim(), domain)
+			};
 		}
 		// Ici, citer le nom est SÛR et mesuré : `f(2)` rend `-1`. C'est le chemin
 		// d'évaluation, pas une commande symbolique — la substitution du §6 bis ne
@@ -1810,7 +1848,12 @@ function computeAction(
 		return { ok: false, message: `L'action « ${actionId} » n'est pas encore disponible.` };
 	}
 
-	const command = build(substituted.expression);
+	// Lot 2 de l'intervalle : « Résoudre » et « Variations » sur l'ensemble de
+	// la fonction (f′ a celui de f), passé au moteur par `dans`, comme la commande
+	const studied =
+		actionId === 'solve' || actionId === 'variations' ? intervalDomainOf(atelier.get(name)) : null;
+	const within = studied === null ? null : formatInterval(studied);
+	const command = build(substituted.expression) + (within === null ? '' : ` dans ${within}`);
 	const result = engine.execute(command);
 	const rendered = renderResult(result, { fromCommand: true });
 
@@ -1823,7 +1866,7 @@ function computeAction(
 	// On ne conditionne pas au succès du moteur : sur une inéquation il échoue
 	// et ne rend rien, alors que les étapes, elles, existent.
 	if (actionId === 'solve') {
-		const solved = solveSteps(`${substituted.expression}=0`);
+		const solved = solveSteps(`${substituted.expression}=0`, studied ?? undefined);
 		if (solved !== null) {
 			return {
 				ok: true,
@@ -1865,14 +1908,14 @@ function computeAction(
 
 	// Le même rendu que `.variations` tapé : dérivée, détail, tableau
 	if (actionId === 'variations') {
-		const studied = variationsRendering(substituted.expression, name);
-		if (studied !== null) {
+		const rendering = variationsRendering(substituted.expression, name, 'x', within);
+		if (rendering !== null) {
 			return {
 				ok: true,
 				output: rendered.text,
-				latex: studied.answer,
-				steps: studied.steps,
-				...(studied.table !== undefined && { table: studied.table })
+				latex: rendering.answer,
+				steps: rendering.steps,
+				...(rendering.table !== undefined && { table: rendering.table })
 			};
 		}
 	}

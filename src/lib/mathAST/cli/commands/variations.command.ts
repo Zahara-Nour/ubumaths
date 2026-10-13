@@ -40,6 +40,7 @@ import { toCustom } from '../../custom-generator';
 import { readableText, reducedDerivative } from '../../variations/display';
 import { formatEndpointValue as formatBound } from '../../domain/format';
 import { DomainUnresolvedError } from '../../domain/errors';
+import { studyDomain } from '../../domain/study';
 import { formatInterval } from '../../domain/format';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import type { Interval } from '$lib/math/intervals/types';
@@ -153,7 +154,7 @@ export class VariationsCommand extends BaseCommand {
 				error: { code: 'COMMAND_SYNTAX', message: reading.message }
 			};
 		}
-		const { expression, variable: explicitVariable } = reading.args;
+		const { expression, variable: explicitVariable, interval: within } = reading.args;
 
 		// Parse the expression with state-aware parser options
 		const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
@@ -185,12 +186,24 @@ export class VariationsCommand extends BaseCommand {
 		// est devinée ou exigée (décision de David, 2026-10-08, Q1)
 		const hint: string | null = null;
 
+		// `dans [0 ; +∞[` : l'étude sur un ensemble (l'ensemble d'une fonction de
+		// l'atelier y passe aussi)
+		const studied = within === null ? null : studyDomain(within, parseResult.ast, variable);
+		if (studied !== null && !studied.ok) {
+			return {
+				success: false,
+				output: '',
+				error: { code: 'COMMAND_SYNTAX', message: studied.message }
+			};
+		}
+
 		try {
 			// Compute variations
 			const result = computeVariations(parseResult.ast, {
 				variable,
 				verbosity: 'summarized',
-				includeBoundaryLimits: true
+				includeBoundaryLimits: true,
+				...(studied !== null && { domain: studied.domain })
 			});
 
 			// Format output with colors

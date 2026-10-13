@@ -29,18 +29,23 @@ L'expression s'arrête au **premier mot-clé**. Un mot-clé est un mot entier, e
 
 ### Commandes sur une expression
 
-| Commande                                       | Nouvelle écriture                                 | Exemple                                                 |
-| ---------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------- |
-| dériver                                        | `.dériver EXPR [pour VAR]`                        | `.dériver f` · `.dériver a t^2 pour t`                  |
-| intégrer (primitive)                           | `.intégrer EXPR [pour VAR]`                       | `.intégrer x^2`                                         |
-| intégrer (définie)                             | `.intégrer EXPR de A à B [pour VAR]`              | `.intégrer x de 3 à a` · `.intégrer sqrt(x) de 0 à 1/2` |
-| résoudre                                       | `.résoudre ÉQUATION [pour VAR] [dans INTERVALLE]` | `.résoudre sin(x)=0 dans [0;2\pi]`                      |
-| évaluer                                        | `.évaluer EXPR en VAR=VALEUR` (ou `pour`)         | `.évaluer x^2 en x=3`                                   |
-| équivalent                                     | `.équivalent EXPR et EXPR`                        | `.équivalent (x+1)^2 et x^2+2x+1`                       |
-| taylor                                         | `.taylor EXPR ordre N [en A] [pour VAR]`          | `.taylor e^x ordre 3 en 1`                              |
-| variations / domaine / simplifier / factoriser | `.commande EXPR [pour VAR]`                       | inchangé (un seul argument)                             |
+| Commande                          | Nouvelle écriture                                 | Exemple                                                 |
+| --------------------------------- | ------------------------------------------------- | ------------------------------------------------------- |
+| dériver                           | `.dériver EXPR [pour VAR]`                        | `.dériver f` · `.dériver a t^2 pour t`                  |
+| intégrer (primitive)              | `.intégrer EXPR [pour VAR]`                       | `.intégrer x^2`                                         |
+| intégrer (définie)                | `.intégrer EXPR de A à B [pour VAR]`              | `.intégrer x de 3 à a` · `.intégrer sqrt(x) de 0 à 1/2` |
+| résoudre                          | `.résoudre ÉQUATION [pour VAR] [dans INTERVALLE]` | `.résoudre sin(x)=0 dans [0;2\pi]`                      |
+| évaluer                           | `.évaluer EXPR en VAR=VALEUR` (ou `pour`)         | `.évaluer x^2 en x=3`                                   |
+| équivalent                        | `.équivalent EXPR et EXPR`                        | `.équivalent (x+1)^2 et x^2+2x+1`                       |
+| taylor                            | `.taylor EXPR ordre N [en A] [pour VAR]`          | `.taylor e^x ordre 3 en 1`                              |
+| variations                        | `.variations EXPR [pour VAR] [dans ENSEMBLE]`     | `.variations x^2 dans [0;+∞[`                           |
+| domaine / simplifier / factoriser | `.commande EXPR [pour VAR]`                       | inchangé (un seul argument)                             |
 
 - `[…]` = facultatif. Ordre des mots-clés libre (`en 1 ordre 3` accepté).
+- **`dans`** (`.résoudre`, `.variations`, lot 2 de l'intervalle, 2026-10-13) : un intervalle borné
+  comme avant, ou tout ce que lit `parseStudentDomain` — borne infinie (`[0;+∞[`), réunion,
+  `ℝ \ {0}` (`studyDomain`, `src/lib/mathAST/domain/study.ts`). L'ensemble d'une fonction de l'atelier
+  définie sur un intervalle (`f(x) = x^2 sur [0;+∞[`) passe au moteur par ce mot.
 - **Variable** : voir la question 1 ci-dessous.
 
 ### Commandes de probabilités et de statistiques

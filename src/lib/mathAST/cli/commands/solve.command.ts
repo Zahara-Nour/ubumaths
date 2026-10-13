@@ -48,6 +48,7 @@ import { closedEndpoint, interval, intervalSet, openEndpoint } from '../../domai
 import { intersect, isEmpty } from '../../domain/algebra';
 import { normalizeExcludedPoints } from '../../domain/compute';
 import type { Domain } from '../../domain/types';
+import { parseStudentDomain } from '../../domain/validation/parse-student-domain';
 import { toLatex } from '../../latex-generator';
 
 import { flattenSumShallow, unflattenSum } from '../../flatten';
@@ -1129,8 +1130,78 @@ export class SolveCommand extends BaseCommand {
 	}
 
 	/**
-	 * Résoudre dans un intervalle BORNÉ, écrit à la française : `[0 ; 2\pi]`,
-	 * `]0 ; 1]`. Les zéros de `gauche − droite` sur ce domaine, familles
+	 * L'ensemble écrit après `dans`. Un intervalle BORNÉ à la française
+	 * (`[0 ; 2\pi]`) garde son écriture ; sinon, tout ce que lit le parseur
+	 * des réponses d'élève : borne infinie (`[0 ; +∞[`), réunion, `ℝ \ {0}` —
+	 * l'ensemble d'une fonction de l'atelier (lot 2 de
+	 * `docs/wip/atelier-intervalle-phase0.md`).
+	 */
+	private readSolvingDomain(
+		text: string,
+		variable: string,
+		parserOptions: Parameters<typeof parse>[1]
+	):
+		| { ok: true; domain: Domain; intervalLatex: string; intervalText: string }
+		| { ok: false; message: string } {
+		const written = /^([[\]])\s*(.+?)\s*;\s*(.+?)\s*([[\]])$/s.exec(text.trim());
+		const lower = written === null ? undefined : parse(written[2], parserOptions).ast;
+		const upper = written === null ? undefined : parse(written[3], parserOptions).ast;
+		const finite = (node: MathNode | undefined): node is MathNode => {
+			if (node === undefined) return false;
+			const value = evaluate(node, { mode: 'decimal' });
+			return (
+				value.status === 'value' && typeof value.value === 'number' && Number.isFinite(value.value)
+			);
+		};
+		if (written === null || !finite(lower) || !finite(upper)) {
+			// Pas un intervalle borné : le parseur des ensembles d'élève
+			const student = parseStudentDomain(text, variable);
+			if (student.success && !isEmpty(student.domain) && student.domain.kind !== 'universal') {
+				const set = inequalitySolutionLatex(student.domain);
+				if (set !== null) {
+					return {
+						ok: true,
+						domain: student.domain,
+						intervalLatex: set.replace(/^S = /, ''),
+						intervalText: formatInterval(student.domain)
+					};
+				}
+			}
+			return {
+				ok: false,
+				message:
+					written === null
+						? `Écris l'intervalle avec des crochets et « ; » : dans [0 ; 2\\pi], pas « ${text} ».`
+						: `Les bornes de l'intervalle doivent être des nombres : « ${text} ».`
+			};
+		}
+		const lowerNumber = evaluate(lower, { mode: 'decimal' });
+		const upperNumber = evaluate(upper, { mode: 'decimal' });
+		const lowerValue = lowerNumber.status === 'value' ? Number(lowerNumber.value) : NaN;
+		const upperValue = upperNumber.status === 'value' ? Number(upperNumber.value) : NaN;
+		const closed = written[1] === '[' && written[4] === ']';
+		if (lowerValue > upperValue || (lowerValue === upperValue && !closed)) {
+			return {
+				ok: false,
+				message: `Intervalle inversé ou vide : la plus petite borne d'abord, comme dans [${written[3]} ; ${written[2]}].`
+			};
+		}
+		return {
+			ok: true,
+			domain: intervalSet([
+				interval(
+					written[1] === '[' ? closedEndpoint(lower) : openEndpoint(lower),
+					written[4] === ']' ? closedEndpoint(upper) : openEndpoint(upper)
+				)
+			]),
+			intervalLatex: `\\left${written[1]}${toLatex(lower)} ; ${toLatex(upper)}\\right${written[4]}`,
+			intervalText: `${written[1]}${written[2]} ; ${written[3]}${written[4]}`
+		};
+	}
+
+	/**
+	 * Résoudre dans un intervalle (`[0 ; 2\pi]`, `]0 ; 1]`, `[0 ; +∞[`, une
+	 * réunion — `readSolvingDomain`). Les zéros de `gauche − droite` sur ce domaine, familles
 	 * périodiques comprises (`findZerosWithStatus`, celui des tableaux de signes).
 	 */
 	private solveInInterval(
@@ -1144,45 +1215,13 @@ export class SolveCommand extends BaseCommand {
 			output: '',
 			error: { code: 'COMMAND_SYNTAX', message }
 		});
-		const written = /^([[\]])\s*(.+?)\s*;\s*(.+?)\s*([[\]])$/s.exec(text.trim());
-		if (written === null) {
-			return fail(
-				`Écris l'intervalle avec des crochets et « ; » : dans [0 ; 2\\pi], pas « ${text} ».`
-			);
-		}
-		const lower = parse(written[2], parserOptions).ast;
-		const upper = parse(written[3], parserOptions).ast;
-		const finite = (node: MathNode | undefined): boolean => {
-			if (node === undefined) return false;
-			const value = evaluate(node, { mode: 'decimal' });
-			return (
-				value.status === 'value' && typeof value.value === 'number' && Number.isFinite(value.value)
-			);
-		};
-		if (lower === undefined || upper === undefined || !finite(lower) || !finite(upper)) {
-			return fail(`Les bornes de l'intervalle doivent être des nombres : « ${text} ».`);
-		}
-		const lowerNumber = evaluate(lower, { mode: 'decimal' });
-		const upperNumber = evaluate(upper, { mode: 'decimal' });
-		const lowerValue = lowerNumber.status === 'value' ? Number(lowerNumber.value) : NaN;
-		const upperValue = upperNumber.status === 'value' ? Number(upperNumber.value) : NaN;
-		const closed = written[1] === '[' && written[4] === ']';
-		if (lowerValue > upperValue || (lowerValue === upperValue && !closed)) {
-			return fail(
-				`Intervalle inversé ou vide : la plus petite borne d'abord, comme dans [${written[3]} ; ${written[2]}].`
-			);
-		}
-		const domain = intervalSet([
-			interval(
-				written[1] === '[' ? closedEndpoint(lower) : openEndpoint(lower),
-				written[4] === ']' ? closedEndpoint(upper) : openEndpoint(upper)
-			)
-		]);
+		const read = this.readSolvingDomain(text, variable, parserOptions);
+		if (!read.ok) return fail(read.message);
+		const { domain, intervalLatex, intervalText } = read;
 		// Une inéquation : son ensemble solution, restreint à l'intervalle
 		if (equation.relation !== '=') {
 			return this.solveInequalityInInterval(equation, variable, domain);
 		}
-		const intervalLatex = `\\left${written[1]}${toLatex(lower)} ; ${toLatex(upper)}\\right${written[4]}`;
 		// Identité (`x = x`, `0 = 0`) : tout l'intervalle ; impossible : ∅ — comme
 		// sans `dans`, puis restreint à l'intervalle
 		try {
@@ -1211,7 +1250,7 @@ export class SolveCommand extends BaseCommand {
 				if (formatInterval(restricted) === formatInterval(domain)) {
 					return {
 						success: true,
-						output: `Tous les nombres de ${written[1]}${written[2]} ; ${written[3]}${written[4]}`,
+						output: `Tous les nombres de ${intervalText}`,
 						latex: `S = ${intervalLatex}`
 					};
 				}

@@ -24,7 +24,13 @@ import type { MathNode } from '$lib/mathAST/types';
 import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
 import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-domains';
 import { computeDomain } from '$lib/mathAST/domain/compute';
-import { containsValue, difference, isEmpty, isUniversal } from '$lib/mathAST/domain/algebra';
+import {
+	containsValue,
+	difference,
+	intersect,
+	isEmpty,
+	isUniversal
+} from '$lib/mathAST/domain/algebra';
 import { formatEndpointValue, formatInterval } from '$lib/mathAST/domain/format';
 import { evaluate } from '$lib/mathAST/eval';
 import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
@@ -33,6 +39,7 @@ import { toCustom } from '$lib/mathAST/custom-generator';
 import { astOf, readingMode, readNumber, referencesOf, type ReadingMode } from './parse';
 import type { Provenance } from './parse';
 import { INTERNAL_LETTER, renameVariableIn } from './letter';
+import { displayName } from './names';
 
 // =============================================================================
 // Types
@@ -88,8 +95,18 @@ const SET_START =
 /** Seulement des espaces après « sur » : l'élève est en train de l'écrire. */
 const NOTHING_YET = /^(?:\\[,;:! ]|~|\s)*$/;
 
-/** Un appel `f(…)` sans parenthèse dans l'argument — la forme de `TERM` (`calcul.ts`). */
-const CALL = /(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)\(([^()]*)\)/g;
+/**
+ * Un appel `f(…)` sans parenthèse dans l'argument — la forme de `TERM`
+ * (`calcul.ts`) —, dérivée comprise (`f'(5)`, `f′(5)` : f′ hérite de
+ * l'ensemble de f, lot 2).
+ */
+const CALL = /(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)(['′]*)\(([^()]*)\)/g;
+
+/** Un nom de fonction cité, dérivée comprise : `f`, `f'`, `f′`, `f_1`. */
+const CITED_NAME = /(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)(['′]*)/g;
+
+/** Ce qui suit un nom cité : un appel sur une lettre seule (`(x)`, `( t )`). */
+const CALL_ON_LETTER = /^\s*\(\s*[A-Za-z]\s*\)/;
 
 // =============================================================================
 // Fonctions
@@ -227,14 +244,50 @@ export function outsideIntervalRefusal(
 	get: (name: string) => AtelierObject | undefined,
 	input: string
 ): string | null {
-	for (const [, name, argument] of input.matchAll(CALL)) {
+	for (const [, name, primes, argument] of input.matchAll(CALL)) {
 		const domain = intervalDomainOf(get(name));
 		if (domain === null) continue;
 		const value = constantValue(argument, get);
 		if (value === null || containsValue(domain, value)) continue;
-		return outsideIntervalMessage(name, argument.trim(), domain);
+		return outsideIntervalMessage(
+			displayName(name + "'".repeat(primes.length)),
+			argument.trim(),
+			domain
+		);
 	}
 	return null;
+}
+
+/**
+ * Lot 2 : l'ensemble sur lequel une commande étudie les fonctions qu'elle cite
+ * (`.variations f`, `.résoudre f(x) = 4`, `f′` compris) — l'intersection de
+ * leurs ensembles —, ou `null` si aucune n'en a.
+ *
+ * Seule une fonction citée SEULE ou appelée sur une lettre (`f`, `f(x)`,
+ * `f'(t)`) restreint la variable : dans `f(2x) = 4`, c'est 2x qui doit être
+ * dans l'ensemble de f, pas x — l'étude reste alors sur tout le domaine.
+ *
+ * @param typed - L'expression tapée, AVANT le remplacement des noms
+ */
+export function citedIntervalDomain(
+	get: (name: string) => AtelierObject | undefined,
+	typed: string
+): { readonly domain: Domain; readonly name: string } | null {
+	let domain: Domain | null = null;
+	let first: string | null = null;
+	for (const match of typed.matchAll(CITED_NAME)) {
+		const [whole, name, primes] = match;
+		const after = typed.slice(match.index + whole.length);
+		// Un mot plus long (`sin`, `ln`) n'est pas un nom
+		if (/^[A-Za-z0-9_]/.test(after)) continue;
+		// Un appel sur autre chose qu'une lettre seule (`f(2x)`) ne restreint pas
+		if (/^\s*\(/.test(after) && !CALL_ON_LETTER.test(after)) continue;
+		const own = intervalDomainOf(get(name));
+		if (own === null) continue;
+		domain = domain === null ? own : intersect(domain, own);
+		first ??= displayName(name + "'".repeat(primes.length));
+	}
+	return domain === null || first === null ? null : { domain, name: first };
 }
 
 /** « 5 n'est pas dans l'ensemble de définition de f, [0 ; 2]. » */
