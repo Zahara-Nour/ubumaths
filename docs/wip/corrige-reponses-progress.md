@@ -1,7 +1,7 @@
 ---
 title: Corrigés « Réponses » et « Corrigé » des fiches d'exercices
 date: 2026-10-13
-status: lot 1 (code) écrit, à relire (revue, PR)
+status: lots 1 et 2 faits (PR #1268, réponses VA en base) ; reste lot 3 (ADR)
 ---
 
 # Deux corrigés PDF pour les fiches — point de reprise
@@ -32,7 +32,7 @@ status: lot 1 (code) écrit, à relire (revue, PR)
 
 ## État
 
-- [x] lot 1 écrit sur `feat/corrige-reponses` (pas encore poussé) · [ ] lot 2 · [ ] lot 3
+- [x] lot 1 (PR #1268, mergée) · [x] lot 2 : réponses des 29 exercices VA en base le 2026-10-13 (`scripts/reponses-variables-aleatoires-1spe.ts`), PDF montrés à David · [ ] lot 3
 
 ### Lot 1 — ce qui est fait (2026-10-13)
 

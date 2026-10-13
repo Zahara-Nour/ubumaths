@@ -16,8 +16,11 @@
  * correctif du générateur sur des fiches existantes. Aucune écriture en base.
  *
  * Usage : pnpm tsx scripts/fiches/regen-depuis-base.ts <sortie> [--modes worksheet,answers,correction]
- *         [--langues fr,en] (--toutes | <préfixe d'id>...)
+ *         [--langues fr,en] [--variante guided] (--toutes | <préfixe d'id>...)
  * `--toutes` : toutes les fiches en base. Par défaut : les trois PDF, les deux langues.
+ * `--variante <label>` : une seule variante par exercice (ex. `guided`), titre sans étiquette,
+ * comme le PDF de l'application ; sans elle, toutes les variantes, étiquetées.
+ * En anglais, titres de la fiche et des sections traduits (`translations.en.title`).
  * `--modele-de-la-fiche` : le modèle de la fiche (comme en production) au lieu du
  * modèle « fiche élève » ; une fiche en échec de lecture est signalée, pas bloquante.
  */
@@ -56,10 +59,12 @@ let modes: Mode[] = ['worksheet', 'answers', 'correction'];
 let langues: Langue[] = ['fr', 'en'];
 let toutes = false;
 let modeleDeLaFiche = false;
+let variante: string | undefined;
 for (let i = 0; i < args.length; i++) {
 	if (args[i] === '--modes') modes = args[++i].split(',') as Mode[];
 	else if (args[i] === '--langues') langues = args[++i].split(',') as Langue[];
 	else if (args[i] === '--toutes') toutes = true;
+	else if (args[i] === '--variante') variante = args[++i];
 	else if (args[i] === '--modele-de-la-fiche') modeleDeLaFiche = true;
 	else prefixes.push(args[i]);
 }
@@ -164,12 +169,12 @@ async function ecrireFiche(supabase: ReturnType<typeof createClient<Database>>, 
 
 		const { data: w, error: e1 } = await supabase
 			.from('worksheets')
-			.select('title, config, template_id')
+			.select('title, config, template_id, translations')
 			.eq('id', id)
 			.single();
 		const { data: sections, error: e2 } = await supabase
 			.from('worksheet_sections')
-			.select('id, title, position')
+			.select('id, title, position, translations')
 			.eq('worksheet_id', id);
 		const { data: lignes, error: e3 } = await supabase
 			.from('worksheet_exercises')
@@ -188,9 +193,12 @@ async function ecrireFiche(supabase: ReturnType<typeof createClient<Database>>, 
 			for (const mode of modes) {
 				const exercises = ordonnees.flatMap((ligne, i) => {
 					const ex = ligne.exercises as unknown as Exercice;
-					return ex.variations.map((v, k) => ({
+					const gardees = variante
+						? ex.variations.filter((v) => v.label === variante)
+						: ex.variations;
+					return gardees.map((v, k) => ({
 						exercise_id: `${ligne.exercise_id}${k}`,
-						title: `${ex.title} [${v.label}]`,
+						title: variante ? ex.title : `${ex.title} [${v.label}]`,
 						generic_functions: ex.generic_functions,
 						position: i * 10 + k + 1,
 						parameters: {},
@@ -210,15 +218,22 @@ async function ecrireFiche(supabase: ReturnType<typeof createClient<Database>>, 
 					show_points: false,
 					language: langue
 				} as WorksheetConfig;
+				const titreEn = (t: { translations?: unknown; title: string }) =>
+					langue === 'en'
+						? ((t.translations as { en?: { title?: string } } | null)?.en?.title ?? t.title)
+						: t.title;
 				const worksheet = {
 					id,
-					title: w.title,
+					title: titreEn(w),
 					type: 'worksheet',
 					config
 				} as unknown as WorksheetRow;
 				const typst = new WorksheetGenerator(config, {}, { mode }).generate({
 					worksheet,
-					instance: { exercises, sections } as unknown as InstanceData,
+					instance: {
+						exercises,
+						sections: (sections ?? []).map((x) => ({ ...x, title: titreEn(x) }))
+					} as unknown as InstanceData,
 					template: await modeleDe(supabase, w.template_id)
 				}).typstContent;
 				writeFileSync(join(sortie, `${id.slice(0, 8)}-${langue}-${mode}.typ`), typst);
