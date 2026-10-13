@@ -17,6 +17,9 @@ import {
 import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -84,7 +87,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('position', { ascending: true });
 
 	if (sectionsError) {
-		console.error('Failed to fetch sections:', sectionsError);
+		logger.error('Failed to fetch sections:', sectionsError);
 		throw error(500, 'Impossible de charger les sections de la fiche');
 	}
 
@@ -109,7 +112,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('position', { ascending: true });
 
 	if (exercisesError) {
-		console.error('Failed to fetch exercises:', exercisesError);
+		logger.error('Failed to fetch exercises:', exercisesError);
 		throw error(500, 'Impossible de charger les exercices de la fiche');
 	}
 
@@ -229,7 +232,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to update worksheet:', dbError);
+		logger.error('Failed to update worksheet:', dbError);
 		throw error(500, 'Impossible de modifier la fiche');
 	}
 
@@ -273,7 +276,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const { error: dbError } = await locals.supabase.from('worksheets').delete().eq('id', params.id);
 
 	if (dbError) {
-		console.error('Failed to delete worksheet:', dbError);
+		logger.error('Failed to delete worksheet:', dbError);
 		throw error(500, 'Impossible de supprimer la fiche');
 	}
 

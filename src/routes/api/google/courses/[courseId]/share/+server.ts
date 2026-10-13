@@ -38,6 +38,9 @@ import {
 	unshareCourseworkSchema,
 	unshareSingleMaterialSchema
 } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/courses/[courseId]/share/+server');
 
 /**
  * Share coursework with a class
@@ -81,7 +84,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			if (courseworkError?.code === 'PGRST116') {
 				throw error(404, 'Devoir Classroom introuvable ou accès refusé');
 			}
-			console.error('[Google Share] Coursework verification error:', courseworkError);
+			logger.error('[Google Share] Coursework verification error:', courseworkError);
 			throw error(403, 'Accès refusé à ce devoir Classroom');
 		}
 
@@ -96,7 +99,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			if (classError?.code === 'PGRST116') {
 				throw error(404, 'Classe introuvable ou accès refusé');
 			}
-			console.error('[Google Share] Class verification error:', classError);
+			logger.error('[Google Share] Class verification error:', classError);
 			throw error(403, 'Accès refusé à cette classe');
 		}
 
@@ -149,7 +152,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			.single();
 
 		if (upsertError) {
-			console.error('[Google Share] Upsert error:', upsertError);
+			logger.error('[Google Share] Upsert error:', upsertError);
 			throw error(500, 'Impossible de partager le devoir Classroom');
 		}
 
@@ -174,7 +177,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		}
 
 		// Handle other errors
-		console.error('[Google Share] Error sharing coursework:', err);
+		logger.error('[Google Share] Error sharing coursework:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
@@ -233,7 +236,7 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 				if (courseworkError?.code === 'PGRST116') {
 					throw error(404, 'Devoir Classroom introuvable ou accès refusé');
 				}
-				console.error('[Google Unshare] Coursework verification error:', courseworkError);
+				logger.error('[Google Unshare] Coursework verification error:', courseworkError);
 				throw error(403, 'Accès refusé à ce devoir Classroom');
 			}
 
@@ -248,7 +251,7 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 				if (classError?.code === 'PGRST116') {
 					throw error(404, 'Classe introuvable ou accès refusé');
 				}
-				console.error('[Google Unshare] Class verification error:', classError);
+				logger.error('[Google Unshare] Class verification error:', classError);
 				throw error(403, 'Accès refusé à cette classe');
 			}
 
@@ -262,7 +265,7 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 				.eq('shared_by', user.id);
 
 			if (deleteError) {
-				console.error('[Google Unshare] Delete error:', deleteError);
+				logger.error('[Google Unshare] Delete error:', deleteError);
 				throw error(500, 'Impossible de retirer le partage du devoir Classroom');
 			}
 
@@ -277,7 +280,7 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 			}
 
 			// Handle other errors
-			console.error('[Google Unshare] Error unsharing coursework:', err);
+			logger.error('[Google Unshare] Error unsharing coursework:', err);
 			throw error(500, 'Une erreur inattendue s’est produite');
 		}
 	}
@@ -305,7 +308,7 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 				if (materialError?.code === 'PGRST116') {
 					throw error(404, 'Support introuvable ou accès refusé');
 				}
-				console.error('[Google Unshare] Material verification error:', materialError);
+				logger.error('[Google Unshare] Material verification error:', materialError);
 				throw error(403, 'Accès refusé à ce support');
 			}
 
@@ -320,7 +323,7 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 				if (classError?.code === 'PGRST116') {
 					throw error(404, 'Classe introuvable ou accès refusé');
 				}
-				console.error('[Google Unshare] Class verification error:', classError);
+				logger.error('[Google Unshare] Class verification error:', classError);
 				throw error(403, 'Accès refusé à cette classe');
 			}
 
@@ -334,7 +337,7 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 				.eq('shared_by', user.id);
 
 			if (deleteError) {
-				console.error('[Google Unshare] Delete error:', deleteError);
+				logger.error('[Google Unshare] Delete error:', deleteError);
 				throw error(500, 'Impossible de retirer le partage du support');
 			}
 
@@ -349,7 +352,7 @@ export const DELETE: RequestHandler = async ({ locals, url }) => {
 			}
 
 			// Handle other errors
-			console.error('[Google Unshare] Error unsharing material:', err);
+			logger.error('[Google Unshare] Error unsharing material:', err);
 			throw error(500, 'Une erreur inattendue s’est produite');
 		}
 	}

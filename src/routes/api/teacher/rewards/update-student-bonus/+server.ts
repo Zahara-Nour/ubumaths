@@ -9,6 +9,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { awardBonusSchema } from '$lib/server/validation/rewards';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/rewards/update-student-bonus/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user, profile } = locals;
@@ -40,11 +43,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('[API] RPC Error updating bonus:', rpcError);
+		logger.error('[API] RPC Error updating bonus:', rpcError);
 		throw error(500, rpcError.message || 'Failed to update bonus');
 	}
 
-	console.log('[API] Bonus updated successfully:', { studentId, delta, newValue });
+	logger.info('[API] Bonus updated successfully:', { studentId, delta, newValue });
 
 	return json({
 		success: true,

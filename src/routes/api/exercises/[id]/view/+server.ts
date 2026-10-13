@@ -10,6 +10,9 @@ import { markExerciseAsViewed } from '$lib/server/exercise-assignments';
 import { validateViewExercise } from '$lib/server/validation';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/[id]/view/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -49,7 +52,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	);
 
 	if (viewError) {
-		console.error('Failed to track exercise view:', viewError);
+		logger.error('Failed to track exercise view:', viewError);
 		return json({ error: 'Impossible d’enregistrer la consultation' }, { status: 500 });
 	}
 

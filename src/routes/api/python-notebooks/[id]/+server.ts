@@ -11,6 +11,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { updateNotebookSchema } from '$lib/server/validation/notebooks';
 import { uuidSchema } from '$lib/server/validation/common';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebooks/[id]/+server');
 
 // =============================================================================
 // HANDLERS
@@ -59,7 +62,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		if (queryError.code === 'PGRST116') {
 			throw error(404, 'Carnet introuvable');
 		}
-		console.error('Error fetching python notebook:', queryError);
+		logger.error('Error fetching python notebook:', queryError);
 		throw error(500, 'Impossible de charger le carnet');
 	}
 
@@ -84,7 +87,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (assignmentError && assignmentError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', assignmentError);
+			logger.error('Contrôle d’accès impossible :', assignmentError);
 			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
@@ -144,7 +147,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		if (fetchError?.code === 'PGRST116') {
 			throw error(404, 'Carnet introuvable');
 		}
-		console.error('Error fetching notebook for update:', fetchError);
+		logger.error('Error fetching notebook for update:', fetchError);
 		throw error(500, 'Impossible de vérifier le carnet');
 	}
 
@@ -170,7 +173,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (updateError) {
-		console.error('Error updating python notebook:', updateError);
+		logger.error('Error updating python notebook:', updateError);
 		throw error(500, 'Impossible de modifier le carnet');
 	}
 
@@ -204,7 +207,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		if (fetchError?.code === 'PGRST116') {
 			throw error(404, 'Carnet introuvable');
 		}
-		console.error('Error fetching notebook for deletion:', fetchError);
+		logger.error('Error fetching notebook for deletion:', fetchError);
 		throw error(500, 'Impossible de vérifier le carnet');
 	}
 
@@ -219,7 +222,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		.eq('id', notebookId);
 
 	if (deleteError) {
-		console.error('Error deleting python notebook:', deleteError);
+		logger.error('Error deleting python notebook:', deleteError);
 		throw error(500, 'Impossible de supprimer le carnet');
 	}
 

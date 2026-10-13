@@ -25,6 +25,9 @@ import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { bulkShareMaterialsSchema } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/materials/bulk-share/+server');
 
 /**
  * POST /api/google/materials/bulk-share
@@ -59,7 +62,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.in('id', materialIds);
 
 	if (materialsError) {
-		console.error('[Bulk Material Share] Error fetching materials:', materialsError);
+		logger.error('[Bulk Material Share] Error fetching materials:', materialsError);
 		throw error(500, 'Impossible de charger les supports');
 	}
 
@@ -79,7 +82,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (invalidMaterials.length > 0) {
-		console.error(
+		logger.error(
 			`[Bulk Material Share] Unauthorized material access attempt by teacher ${user.id}:`,
 			invalidMaterials.map((m) => m.id)
 		);
@@ -96,7 +99,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.eq('is_active', true);
 
 	if (classesError) {
-		console.error('[Bulk Material Share] Error fetching classes:', classesError);
+		logger.error('[Bulk Material Share] Error fetching classes:', classesError);
 		throw error(500, 'Impossible de vérifier les classes');
 	}
 
@@ -127,7 +130,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 	if (insertError) {
-		console.error('[Bulk Material Share] Error sharing materials:', insertError);
+		logger.error('[Bulk Material Share] Error sharing materials:', insertError);
 		throw error(500, 'Impossible de partager les supports');
 	}
 

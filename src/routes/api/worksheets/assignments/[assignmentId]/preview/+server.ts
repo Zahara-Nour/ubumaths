@@ -65,6 +65,9 @@ import type {
 	StudentWorksheetView,
 	WorksheetType
 } from '$lib/types/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/preview/+server');
 
 // ============================================================================
 // VALIDATION
@@ -119,7 +122,7 @@ async function verifyTeacherAccess(
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
+		logger.error('Rôle illisible :', profileError);
 		throw error(500, 'Impossible de vérifier les droits d’accès');
 	}
 
@@ -189,7 +192,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 			// panne doit se distinguer d'un refus mérité.
 			if (individualAccessError) {
-				console.error('Contrôle d’accès impossible :', individualAccessError);
+				logger.error('Contrôle d’accès impossible :', individualAccessError);
 				throw error(500, 'Impossible de vérifier l’accès');
 			}
 
@@ -205,7 +208,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 				// panne doit se distinguer d'un refus mérité.
 				if (assignedClassesError) {
-					console.error('Contrôle d’accès impossible :', assignedClassesError);
+					logger.error('Contrôle d’accès impossible :', assignedClassesError);
 					throw error(500, 'Impossible de vérifier l’accès');
 				}
 
@@ -225,7 +228,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 					// panne doit se distinguer d'un refus mérité.
 					if (membershipError) {
-						console.error('Contrôle d’accès impossible :', membershipError);
+						logger.error('Contrôle d’accès impossible :', membershipError);
 						throw error(500, 'Impossible de vérifier l’accès');
 					}
 
@@ -246,7 +249,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 			// Le nom n'est qu'un ornement d'affichage : le repli existe déjà.
 			if (studentProfileError && studentProfileError.code !== 'PGRST116') {
-				console.error('Nom illisible :', studentProfileError);
+				logger.error('Nom illisible :', studentProfileError);
 			}
 
 			if (studentProfile) {
@@ -283,7 +286,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			.single();
 
 		if (assignmentError || !fullAssignment) {
-			console.error('[Preview API] Error fetching assignment:', assignmentError);
+			logger.error('[Preview API] Error fetching assignment:', assignmentError);
 			throw error(404, 'Affectation introuvable');
 		}
 
@@ -335,7 +338,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			.order('position', { ascending: true });
 
 		if (exercisesError) {
-			console.error('[Preview API] Error fetching exercises:', exercisesError);
+			logger.error('[Preview API] Error fetching exercises:', exercisesError);
 			throw error(500, 'Impossible de charger les exercices');
 		}
 
@@ -347,7 +350,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			.order('position', { ascending: true });
 
 		if (sectionsError) {
-			console.error('[Preview API] Error fetching sections:', sectionsError);
+			logger.error('[Preview API] Error fetching sections:', sectionsError);
 			// Non-blocking: sections are optional
 		}
 
@@ -493,7 +496,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			throw err;
 		}
 
-		console.error('[Preview API] Unexpected error:', err);
+		logger.error('[Preview API] Unexpected error:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

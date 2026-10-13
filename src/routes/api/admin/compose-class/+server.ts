@@ -31,6 +31,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { composeClassSchema } from '$lib/server/validation/admin';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/compose-class/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { supabase } = await requireAdmin(locals);
@@ -53,7 +56,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// PGRST116 = la classe n'existe pas. Toute AUTRE panne prenait le même
 	// visage et faisait conclure « introuvable » là où on n'avait pas su lire.
 	if (cibleError && cibleError.code !== 'PGRST116') {
-		console.error('Lecture de la classe de destination impossible :', cibleError);
+		logger.error('Lecture de la classe de destination impossible :', cibleError);
 		throw error(500, 'Impossible de vérifier la classe de destination');
 	}
 
@@ -88,7 +91,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.in('id', studentIds);
 
 	if (elevesError) {
-		console.error('Lecture des élèves impossible :', elevesError);
+		logger.error('Lecture des élèves impossible :', elevesError);
 		throw error(500, 'Impossible de vérifier les élèves sélectionnés');
 	}
 
@@ -124,7 +127,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('Composition impossible :', rpcError);
+		logger.error('Composition impossible :', rpcError);
 		throw error(500, 'Impossible d’inscrire les élèves sélectionnés');
 	}
 

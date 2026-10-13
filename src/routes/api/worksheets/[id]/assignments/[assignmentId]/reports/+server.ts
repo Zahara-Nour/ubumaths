@@ -17,6 +17,9 @@ import {
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/assignments/[assignmentId]/reports/+server');
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -117,7 +120,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			.eq('assignment_id', assignmentId);
 
 		if (countError) {
-			console.error('[API] Error counting reports:', countError);
+			logger.error('[API] Error counting reports:', countError);
 			throw error(500, 'Impossible de compter les signalements');
 		}
 
@@ -174,7 +177,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		const { data: reports, error: fetchError, count: totalFiltered } = await query;
 
 		if (fetchError) {
-			console.error('[API] Error fetching reports:', fetchError);
+			logger.error('[API] Error fetching reports:', fetchError);
 			throw error(500, 'Impossible de charger les signalements');
 		}
 
@@ -241,7 +244,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			throw err;
 		}
 
-		console.error(
+		logger.error(
 			'[API] Unexpected error in GET /api/worksheets/[id]/assignments/[assignmentId]/reports:',
 			err
 		);

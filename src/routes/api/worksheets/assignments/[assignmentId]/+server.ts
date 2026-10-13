@@ -23,6 +23,9 @@ import {
 } from '$lib/server/worksheets/correction-release';
 import { CORRECTION_RELEASE_MODES } from '$lib/types/worksheets';
 import { guidanceLevelSchema } from '$lib/server/validation/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/+server');
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -116,7 +119,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		// indiscernable d'un refus mérité — un administrateur pouvait ainsi se voir
 		// fermer la porte sans que rien ne le signale.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
+			logger.error('Rôle illisible :', profileError);
 			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
@@ -167,7 +170,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			correctionStatus
 		});
 	} catch (err) {
-		console.error('Error fetching assignment:', err);
+		logger.error('Error fetching assignment:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
@@ -247,7 +250,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 		// indiscernable d'un refus mérité — un administrateur pouvait ainsi se voir
 		// fermer la porte sans que rien ne le signale.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
+			logger.error('Rôle illisible :', profileError);
 			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
@@ -265,7 +268,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					.in('id', class_ids);
 
 				if (classesError) {
-					console.error('Error fetching classes:', classesError);
+					logger.error('Error fetching classes:', classesError);
 					throw error(500, 'Impossible de vérifier les classes');
 				}
 
@@ -287,7 +290,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			// retirer). Vide par accident, l'écart conclut « rien n'existe encore » et
 			// réaffecte tout ce qui l'était déjà.
 			if (currentClassesError) {
-				console.error('Affectations courantes illisibles :', currentClassesError);
+				logger.error('Affectations courantes illisibles :', currentClassesError);
 				throw error(500, 'Impossible de lire les affectations existantes');
 			}
 
@@ -307,7 +310,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					.in('class_id', toRemove);
 
 				if (deleteError) {
-					console.error('Error removing class assignments:', deleteError);
+					logger.error('Error removing class assignments:', deleteError);
 					throw error(500, 'Impossible de modifier les classes');
 				}
 			}
@@ -324,7 +327,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					.insert(classInserts);
 
 				if (insertError) {
-					console.error('Error adding class assignments:', insertError);
+					logger.error('Error adding class assignments:', insertError);
 					throw error(500, 'Impossible de modifier les classes');
 				}
 			}
@@ -341,7 +344,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					.eq('role', 'student');
 
 				if (studentsError) {
-					console.error('Error fetching students:', studentsError);
+					logger.error('Error fetching students:', studentsError);
 					throw error(500, 'Impossible de vérifier les élèves');
 				}
 
@@ -362,7 +365,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			// retirer). Vide par accident, l'écart conclut « rien n'existe encore » et
 			// réaffecte tout ce qui l'était déjà.
 			if (currentStudentsError) {
-				console.error('Affectations courantes illisibles :', currentStudentsError);
+				logger.error('Affectations courantes illisibles :', currentStudentsError);
 				throw error(500, 'Impossible de lire les affectations existantes');
 			}
 
@@ -382,7 +385,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					.in('student_id', toRemoveStudents);
 
 				if (deleteError) {
-					console.error('Error removing student assignments:', deleteError);
+					logger.error('Error removing student assignments:', deleteError);
 					throw error(500, 'Impossible de modifier les élèves');
 				}
 			}
@@ -399,7 +402,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 					.insert(studentInserts);
 
 				if (insertError) {
-					console.error('Error adding student assignments:', insertError);
+					logger.error('Error adding student assignments:', insertError);
 					throw error(500, 'Impossible de modifier les élèves');
 				}
 			}
@@ -421,7 +424,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 				.single();
 
 			if (updateError) {
-				console.error('Error updating assignment:', updateError);
+				logger.error('Error updating assignment:', updateError);
 				throw error(500, 'Impossible de modifier l’affectation');
 			}
 			// La RLS refuse en silence : la ligne rendue doit porter le niveau écrit
@@ -429,7 +432,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 				updateData.guidance_level !== undefined &&
 				updatedData?.guidance_level !== updateData.guidance_level
 			) {
-				console.error('Niveau de guidage non écrit :', assignmentId);
+				logger.error('Niveau de guidage non écrit :', assignmentId);
 				throw error(500, 'Impossible de modifier l’affectation');
 			}
 			updated = updatedData;
@@ -447,7 +450,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			// PATCH ne portant que `class_ids` passe ici, et avaler l'erreur ferait
 			// répondre 200 avec `assignment: null` à une réaffectation qui a échoué.
 			if (updateError) {
-				console.error('Error updating assignment timestamp:', updateError);
+				logger.error('Error updating assignment timestamp:', updateError);
 				throw error(500, 'Impossible de modifier l’affectation');
 			}
 			updated = updatedData;
@@ -475,7 +478,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			.single();
 
 		if (fullAssignmentError) {
-			console.error('Lecture impossible :', fullAssignmentError);
+			logger.error('Lecture impossible :', fullAssignmentError);
 			throw error(500, 'Impossible de charger les données');
 		}
 
@@ -523,7 +526,7 @@ export const PATCH: RequestHandler = async ({ params, locals, request }) => {
 			assignment: updated
 		});
 	} catch (err) {
-		console.error('Error updating assignment:', err);
+		logger.error('Error updating assignment:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
@@ -600,7 +603,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			// indiscernable d'un refus mérité — un administrateur pouvait ainsi se voir
 			// fermer la porte sans que rien ne le signale.
 			if (profileError && profileError.code !== 'PGRST116') {
-				console.error('Rôle illisible :', profileError);
+				logger.error('Rôle illisible :', profileError);
 				throw error(500, 'Impossible de vérifier les droits d’accès');
 			}
 
@@ -628,7 +631,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			message: 'Affectation supprimée'
 		});
 	} catch (err) {
-		console.error('Error deleting assignment:', err);
+		logger.error('Error deleting assignment:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.

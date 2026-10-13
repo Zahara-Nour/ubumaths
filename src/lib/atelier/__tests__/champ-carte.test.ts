@@ -215,3 +215,41 @@ describe('durées composées et fractions dans la carte', () => {
 		expect(definitionFromField('value', '\\frac{1}{2}m')).toBe('\\frac{1}{2}m');
 	});
 });
+
+/**
+ * Suites des restes du lot C (2026-10-13) : la virgule décimale dans le champ,
+ * une durée composée prise dans un calcul.
+ */
+describe('virgule et durée composée dans un calcul', () => {
+	function roundTrip(definition: string) {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'd', definition }, 'text');
+		const field = fieldLatexOf(atelier.get('d')!, atelier.functionNames);
+		return { field, back: definitionFromField('value', field) };
+	}
+
+	it.each([
+		['2,5[km]', '2{,}5', 'km'],
+		['0,75[kg]*4', '0{,}75', 'kg'],
+		// Revue : la notation scientifique passe par le dernier secours
+		['2,5*10^3[m]', '2{,}5', 'm']
+	])('%s s’affiche avec une virgule et se relit', (definition, shown, unit) => {
+		const { field, back } = roundTrip(definition);
+		expect(field).toContain(shown);
+		expect(field).not.toMatch(/\d\.\d/);
+		expect(parseDefinition('value', back, 'keyboard')).toEqual({ unit });
+	});
+
+	it.each([
+		['(1[h]+30[min])*2', '(1\\unit{h}+30\\unit{min})\\cdot2'],
+		['2*(1[h]+30[min])', '2\\cdot(1\\unit{h}+30\\unit{min})'],
+		['(1[h]+30[min])/3', '\\frac{(1\\unit{h}+30\\unit{min})}{3}']
+	])('%s se relit après retouche', (definition, expected) => {
+		const { back } = roundTrip(definition);
+		expect(parseDefinition('value', back, 'keyboard')).toEqual({ unit: 'h' });
+		const a = astOf(back, 'keyboard', []);
+		const b = astOf(expected, 'keyboard', []);
+		expect(a).not.toBeNull();
+		expect(toLatex(a!)).toBe(toLatex(b!));
+	});
+});

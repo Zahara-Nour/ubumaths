@@ -1,6 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/marketplace/admin/activity/+server');
 
 /**
  * Query schema for marketplace activity feed
@@ -84,7 +87,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
 			// affiche « aucune activité » : un constat, pas une absence de donnée.
 			if (classStudentsError) {
-				console.error('Périmètre d’élèves illisible :', classStudentsError);
+				logger.error('Périmètre d’élèves illisible :', classStudentsError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 			studentIds = classStudents?.map((m: { student_id: string }) => m.student_id) || [];
@@ -98,7 +101,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			// Cette liste borne la portée des statistiques. Vidée par une panne, elle
 			// affiche « aucune activité » : un constat, pas une absence de donnée.
 			if (classMembersError) {
-				console.error('Périmètre d’élèves illisible :', classMembersError);
+				logger.error('Périmètre d’élèves illisible :', classMembersError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 			studentIds = classMembers?.map((m: { student_id: string }) => m.student_id) || [];
@@ -117,7 +120,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// Cette liste borne la portée des statistiques. Vidée par une panne, elle
 		// affiche « aucune activité » : un constat, pas une absence de donnée.
 		if (schoolStudentsError) {
-			console.error('Périmètre d’élèves illisible :', schoolStudentsError);
+			logger.error('Périmètre d’élèves illisible :', schoolStudentsError);
 			throw error(500, 'Impossible de déterminer le périmètre');
 		}
 		studentIds = schoolStudents?.map((s: { id: string }) => s.id) || [];
@@ -174,7 +177,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.limit(limit);
 
 	if (recentListingsError) {
-		console.error('Lecture impossible :', recentListingsError);
+		logger.error('Lecture impossible :', recentListingsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -217,7 +220,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.limit(limit);
 
 	if (recentProposalsError) {
-		console.error('Lecture impossible :', recentProposalsError);
+		logger.error('Lecture impossible :', recentProposalsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -266,7 +269,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.limit(limit);
 
 	if (recentTradesError) {
-		console.error('Lecture impossible :', recentTradesError);
+		logger.error('Lecture impossible :', recentTradesError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

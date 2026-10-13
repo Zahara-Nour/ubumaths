@@ -41,6 +41,9 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { StudentProfile, ClassMembership } from '$lib/types/student-cache';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/profile/+server');
 
 export const GET: RequestHandler = async ({ locals }) => {
 	const { user, profile, supabase } = locals;
@@ -75,7 +78,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('joined_at', { ascending: false });
 
 		if (membershipError) {
-			console.error('[API] Error fetching class memberships:', membershipError);
+			logger.error('[API] Error fetching class memberships:', membershipError);
 			throw error(500, 'Failed to fetch class memberships');
 		}
 
@@ -113,7 +116,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/profile:', err);
+		logger.error('[API] Unexpected error in GET /api/student/profile:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };

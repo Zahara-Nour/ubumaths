@@ -1,108 +1,13 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { verifyCronAuth } from '$lib/server/auth/cron';
-import { checkAndAutoSelectToday } from '$lib/server/riddle-auto-select';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/riddles/auto-select-daily/+server');
 
 /**
- * API endpoint to trigger auto-selection of riddle of the day
- *
- * Can be called by:
- * - Cron job (Vercel Cron, GitHub Actions, etc.)
- * - Admin manually
- * - Scheduled task
- *
- * AUTH : `Bearer CRON_SECRET` seulement (`verifyCronAuth`), comme les autres tâches.
- * L'ancienne clé `VITE_RIDDLE_AUTO_SELECT_API_KEY` n'était exigée que si elle était
- * définie ; absente en prod, la route acceptait tout POST (constat 9bis).
- *
- * Job Tracking: Logs execution to background_job_runs table
+ * La sélection automatique vit dans `api/cron/riddle-of-the-day` (cron Vercel quotidien et
+ * bouton admin) ; cette route ne garde que la lecture du statut.
  */
-export const POST: RequestHandler = async ({ request, locals: { supabase } }) => {
-	verifyCronAuth(request);
-
-	// Create service role client for job logging (bypasses RLS)
-	const serviceClient = createServiceRoleClient();
-	let runId: string | null = null;
-
-	try {
-		// Start job run
-		const { data: startData, error: startError } = await serviceClient.rpc('start_job_run', {
-			p_job_name: 'auto_select_daily_riddle',
-			p_metadata: {}
-		});
-
-		if (startError) {
-			console.error('Failed to start job run:', startError);
-			// Continue anyway (don't block job execution)
-		} else {
-			runId = startData;
-		}
-
-		// Execute job logic
-		const result = await checkAndAutoSelectToday(supabase);
-
-		if (result.success) {
-			// Extract riddle ID from success message if present
-			// Message format: "Énigme du jour sélectionnée automatiquement: <riddle_id>"
-			const riddleIdMatch = result.message.match(/: ([a-f0-9-]{36})/);
-			const riddleId = riddleIdMatch ? riddleIdMatch[1] : null;
-
-			// Complete job run (success)
-			if (runId) {
-				await serviceClient.rpc('complete_job_run', {
-					p_run_id: runId,
-					p_status: 'success',
-					p_metadata: riddleId
-						? { riddle_id: riddleId, message: result.message }
-						: { message: result.message }
-				});
-			}
-
-			return json({
-				success: true,
-				message: result.message
-			});
-		} else {
-			// Complete job run (failed)
-			if (runId) {
-				await serviceClient.rpc('complete_job_run', {
-					p_run_id: runId,
-					p_status: 'failed',
-					p_error_message: result.message,
-					p_metadata: {}
-				});
-			}
-
-			return json(
-				{
-					success: false,
-					message: result.message
-				},
-				{ status: 500 }
-			);
-		}
-	} catch (err) {
-		// Complete job run (failed)
-		if (runId) {
-			await serviceClient.rpc('complete_job_run', {
-				p_run_id: runId,
-				p_status: 'failed',
-				p_error_message: err instanceof Error ? err.message : 'Unknown error',
-				p_metadata: {}
-			});
-		}
-
-		console.error('Error in auto-select endpoint:', err);
-		return json(
-			{
-				success: false,
-				message: 'Erreur serveur'
-			},
-			{ status: 500 }
-		);
-	}
-};
 
 /**
  * GET endpoint to check status
@@ -127,7 +32,7 @@ export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 	// PGRST116 = aucune énigme programmée aujourd'hui : c'est précisément la
 	// réponse que cette route est censée donner, pas une panne.
 	if (existingError && existingError.code !== 'PGRST116') {
-		console.error('Énigme du jour illisible :', existingError);
+		logger.error('Énigme du jour illisible :', existingError);
 		throw error(500, 'Impossible de vérifier l’énigme du jour');
 	}
 

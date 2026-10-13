@@ -12,6 +12,9 @@ import {
 	listPythonFilesQuerySchema,
 	MAX_PYTHON_FILES_PER_USER
 } from '$lib/server/validation/python-files';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-files/+server');
 
 // =============================================================================
 // TYPES
@@ -98,7 +101,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data: files, error: queryError, count } = await query;
 
 	if (queryError) {
-		console.error('Error fetching python files:', queryError);
+		logger.error('Error fetching python files:', queryError);
 		throw error(500, 'Impossible de charger les fichiers Python');
 	}
 
@@ -136,7 +139,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.order('assigned_at', { ascending: false });
 
 		if (assignedError) {
-			console.error('Error fetching assigned files:', assignedError);
+			logger.error('Error fetching assigned files:', assignedError);
 			// Don't fail the whole request, just skip assigned files
 		} else if (assigned) {
 			// Transform assigned files to match the file format
@@ -218,7 +221,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.eq('owner_id', user.id);
 
 	if (countError) {
-		console.error('Error counting python files:', countError);
+		logger.error('Error counting python files:', countError);
 		throw error(500, 'Impossible de vérifier le nombre de fichiers Python');
 	}
 
@@ -240,7 +243,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (insertError) {
-		console.error('Error creating python file:', insertError);
+		logger.error('Error creating python file:', insertError);
 		if (insertError.message?.includes('maximum limit')) {
 			throw error(400, `Limite atteinte : ${MAX_PYTHON_FILES_PER_USER} fichiers Python au maximum`);
 		}

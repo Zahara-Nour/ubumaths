@@ -9,6 +9,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { createTemplateFromChapter } from '$lib/server/chapter-templates';
 import { createTemplateFromChapterSchema } from '$lib/server/validation/chapter-templates';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/create-template/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -75,7 +78,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const result = await createTemplateFromChapter(data, user.id, locals.supabase);
 
 	if (result.error) {
-		console.error('[POST /api/teacher/chapters/[id]/create-template] Error:', result.error);
+		logger.error('[POST /api/teacher/chapters/[id]/create-template] Error:', result.error);
 		throw error(500, 'Failed to create template from chapter');
 	}
 

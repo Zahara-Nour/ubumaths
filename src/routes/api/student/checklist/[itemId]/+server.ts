@@ -36,6 +36,9 @@ import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { toggleChecklistItem } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/checklist/[itemId]/+server');
 
 /**
  * Path parameters schema
@@ -91,7 +94,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			if (result.error.message.includes('foreign key')) {
 				throw error(404, 'Checklist item not found');
 			}
-			console.error('[API] Error toggling checklist item:', result.error);
+			logger.error('[API] Error toggling checklist item:', result.error);
 			throw error(500, 'Failed to update checklist item');
 		}
 
@@ -108,7 +111,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in PATCH /api/student/checklist/[itemId]:', err);
+		logger.error('[API] Unexpected error in PATCH /api/student/checklist/[itemId]:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };

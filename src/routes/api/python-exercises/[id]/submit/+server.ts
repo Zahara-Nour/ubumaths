@@ -14,6 +14,9 @@ import {
 import type { Database } from '$lib/types/database';
 import { requireConsent } from '$lib/server/middleware/consent';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-exercises/[id]/submit/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -96,7 +99,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (assignmentsError && assignmentsError.code !== 'PGRST116') {
-		console.error('Contrôle d’accès impossible :', assignmentsError);
+		logger.error('Contrôle d’accès impossible :', assignmentsError);
 		throw error(500, 'Impossible de vérifier les droits d’accès');
 	}
 
@@ -126,7 +129,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		if (assignment.due_date) {
 			const dueDate = new Date(assignment.due_date);
 			if (dueDate < new Date()) {
-				console.warn(`Student ${user.id} submitting after due date for exercise ${exerciseId}`);
+				logger.warn(`Student ${user.id} submitting after due date for exercise ${exerciseId}`);
 			}
 		}
 
@@ -139,7 +142,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 				.eq('assignment_id', assignment.id);
 
 			if (countError) {
-				console.error('Failed to count submissions:', countError);
+				logger.error('Failed to count submissions:', countError);
 				throw error(500, 'Impossible de vérifier le nombre de tentatives');
 			}
 
@@ -176,7 +179,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (submissionError) {
-		console.error('Failed to create submission:', submissionError);
+		logger.error('Failed to create submission:', submissionError);
 
 		// Check for rate limit error
 		if (submissionError.message?.includes('Limite de taux dépassée')) {
@@ -218,7 +221,7 @@ async function getStudentClassIds(
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (classesError) {
-		console.error('Enrichissement illisible :', classesError);
+		logger.error('Enrichissement illisible :', classesError);
 	}
 
 	if (!classes || classes.length === 0) {

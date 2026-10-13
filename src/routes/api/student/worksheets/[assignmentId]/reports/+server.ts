@@ -36,6 +36,9 @@ import {
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { StudentErrorReportView } from '$lib/types/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/worksheets/[assignmentId]/reports/+server');
 
 export const GET: RequestHandler = async ({ locals, params }) => {
 	// Auth check: Must be a student
@@ -61,7 +64,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (canAccessError && canAccessError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', canAccessError);
+			logger.error('Contrôle d’accès impossible :', canAccessError);
 			throw error(500, 'Impossible de vérifier votre accès');
 		}
 
@@ -77,7 +80,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.single();
 
 		if (assignmentError || !assignment) {
-			console.error('[API] Error fetching assignment:', assignmentError);
+			logger.error('[API] Error fetching assignment:', assignmentError);
 			throw error(404, 'Devoir non trouve');
 		}
 
@@ -104,7 +107,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.order('created_at', { ascending: false });
 
 		if (reportsError) {
-			console.error('[API] Error fetching error reports:', reportsError);
+			logger.error('[API] Error fetching error reports:', reportsError);
 			throw error(500, 'Erreur lors de la recuperation des signalements');
 		}
 
@@ -138,7 +141,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw err;
 		}
 
-		console.error(
+		logger.error(
 			'[API] Unexpected error in GET /api/student/worksheets/[assignmentId]/reports:',
 			err
 		);

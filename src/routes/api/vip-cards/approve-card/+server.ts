@@ -16,6 +16,9 @@ import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { useCardSchema } from '$lib/server/validation/vip-cards';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/vip-cards/approve-card/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user, profile } = await requireAuth(locals);
@@ -49,7 +52,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('[approve-card] RPC error:', rpcError);
+		logger.error('[approve-card] RPC error:', rpcError);
 		throw error(500, 'Impossible de valider la carte VIP');
 	}
 

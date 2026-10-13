@@ -44,6 +44,9 @@ import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { getMyChecklistProgress, getChapterWithContent } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/chapters/[id]/progress/+server');
 
 /**
  * Path parameters schema
@@ -76,7 +79,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			) {
 				throw error(404, 'Chapter not found');
 			}
-			console.error('[API] Error fetching chapter progress:', chapterResult.error);
+			logger.error('[API] Error fetching chapter progress:', chapterResult.error);
 			throw error(500, 'Failed to fetch chapter progress');
 		}
 
@@ -88,7 +91,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		const checklistResult = await getMyChecklistProgress(user.id, chapterId, locals.supabase);
 
 		if (checklistResult.error) {
-			console.error('[API] Error fetching checklist progress:', checklistResult.error);
+			logger.error('[API] Error fetching checklist progress:', checklistResult.error);
 			// Don't fail entirely, just return empty checklist
 		}
 
@@ -102,7 +105,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/chapters/[id]/progress:', err);
+		logger.error('[API] Unexpected error in GET /api/student/chapters/[id]/progress:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };

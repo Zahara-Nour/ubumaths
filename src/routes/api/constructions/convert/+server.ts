@@ -8,6 +8,9 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { convertInstrumenPoche } from '$lib/constructions/converter';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/constructions/convert/+server');
 
 // =============================================================================
 // VALIDATION SCHEMAS
@@ -96,7 +99,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			throw err;
 		}
 
-		console.error('Error converting InstrumenPoche XML:', err);
+		logger.error('Error converting InstrumenPoche XML:', err);
 		const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
 		throw error(500, `Impossible de convertir le fichier : ${errorMessage}`);
 	}

@@ -34,6 +34,9 @@ import {
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { fetchClassesByAssignment } from '$lib/server/worksheets/assignment-classes';
 import type { StudentWorksheetListItem } from '$lib/types/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/worksheets/+server');
 
 export const GET: RequestHandler = async ({ locals, url }) => {
 	// Auth check: Must be a student
@@ -91,7 +94,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			// Ce filtre borne la liste. Vidé par une panne, il affiche un écran vide
 			// qui accuse la base plutôt que la lecture.
 			if (linksError) {
-				console.error('[API] Classes des affectations illisibles :', linksError);
+				logger.error('[API] Classes des affectations illisibles :', linksError);
 				throw error(500, 'Erreur lors de la recuperation des fiches');
 			}
 
@@ -117,7 +120,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			// Ce filtre borne la liste. Vidé par une panne, il afficherait un écran
 			// vide qui accuse le chapitre plutôt que la lecture.
 			if (liensError) {
-				console.error('[API] Fiches du chapitre illisibles :', liensError);
+				logger.error('[API] Fiches du chapitre illisibles :', liensError);
 				throw error(500, 'Erreur lors de la recuperation des fiches');
 			}
 
@@ -135,7 +138,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const { data: assignments, error: dbError, count } = await query;
 
 		if (dbError) {
-			console.error('[API] Error fetching student worksheets:', dbError);
+			logger.error('[API] Error fetching student worksheets:', dbError);
 			throw error(500, 'Erreur lors de la recuperation des fiches');
 		}
 
@@ -174,7 +177,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 			// laisse une trace.
 			if (exerciseCountsError) {
-				console.error('Enrichissement illisible :', exerciseCountsError);
+				logger.error('Enrichissement illisible :', exerciseCountsError);
 			}
 
 			if (exerciseCounts) {
@@ -232,7 +235,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/worksheets:', err);
+		logger.error('[API] Unexpected error in GET /api/student/worksheets:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

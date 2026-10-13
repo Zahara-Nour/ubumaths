@@ -17,6 +17,9 @@ import type { WorksheetExerciseWithExercise } from '$lib/types/worksheets';
 import { toJson } from '$lib/types/database-helpers';
 import { asWorksheetConfig, toWorksheetExerciseRow } from '$lib/types/worksheets';
 import type { TablesInsert } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/instances/+server');
 
 // Input validation schema for POST
 const createInstancesSchema = z.object({
@@ -57,7 +60,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
+			logger.error('Rôle illisible :', profileError);
 			return error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
@@ -153,7 +156,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 		// Cet ensemble sert à CALCULER un écart. Vide par accident, l'écart conclut
 		// « rien n'existe encore » et recrée ce qui existait déjà.
 		if (existingInstancesError) {
-			console.error('État courant illisible :', existingInstancesError);
+			logger.error('État courant illisible :', existingInstancesError);
 			throw error(500, 'Impossible de lire l’état actuel');
 		}
 
@@ -215,7 +218,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			const { error: insertError } = await supabase.from('worksheet_instances').insert(instances);
 
 			if (insertError) {
-				console.error('Error inserting instances:', insertError);
+				logger.error('Error inserting instances:', insertError);
 				return error(500, 'Impossible de créer les copies');
 			}
 		}
@@ -237,7 +240,7 @@ export const POST: RequestHandler = async ({ params, request, locals: { supabase
 			}
 		});
 	} catch (err) {
-		console.error('Error creating worksheet instances:', err);
+		logger.error('Error creating worksheet instances:', err);
 		return error(500, err instanceof Error ? err.message : 'Une erreur inattendue s’est produite');
 	}
 };
@@ -268,7 +271,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 		// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
-			console.error('Rôle illisible :', profileError);
+			logger.error('Rôle illisible :', profileError);
 			return error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
@@ -346,7 +349,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 			// Cette liste borne la portée du classement. Vidée par une panne, elle
 			// affiche un classement amputé sans le dire.
 			if (classStudentsError) {
-				console.error('Périmètre illisible :', classStudentsError);
+				logger.error('Périmètre illisible :', classStudentsError);
 				throw error(500, 'Impossible de déterminer le périmètre');
 			}
 
@@ -361,7 +364,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 		const { data: instances, error: instancesError, count } = await query;
 
 		if (instancesError) {
-			console.error('Error fetching instances:', instancesError);
+			logger.error('Error fetching instances:', instancesError);
 			return error(500, 'Impossible de charger les copies');
 		}
 
@@ -394,7 +397,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, use
 			}
 		});
 	} catch (err) {
-		console.error('Error fetching worksheet instances:', err);
+		logger.error('Error fetching worksheet instances:', err);
 		return error(500, err instanceof Error ? err.message : 'Une erreur inattendue s’est produite');
 	}
 };

@@ -18,6 +18,9 @@ import {
 } from '$lib/server/validation/bug-reports';
 import type { BugReportWithAuthor, ListBugReportsResponse } from '$lib/types/bug-reports';
 import { notifyAdminsOfNewBugReport } from '$lib/server/notifications';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/bug-reports/+server');
 
 // =============================================================================
 // GET /api/bug-reports - List bug reports
@@ -81,7 +84,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		const { data: reports, error: queryError, count } = await query;
 
 		if (queryError) {
-			console.error('[API] Error fetching bug reports:', queryError);
+			logger.error('[API] Error fetching bug reports:', queryError);
 			throw error(500, 'Erreur lors de la récupération des rapports');
 		}
 
@@ -97,7 +100,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[API] Unexpected error in GET /api/bug-reports:', err);
+		logger.error('[API] Unexpected error in GET /api/bug-reports:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };
@@ -140,7 +143,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
 		if (recentErrorsError) {
-			console.error('Enrichissement illisible :', recentErrorsError);
+			logger.error('Enrichissement illisible :', recentErrorsError);
 		}
 
 		// Fetch recent slow requests
@@ -156,7 +159,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
 		if (slowRequestsError) {
-			console.error('Enrichissement illisible :', slowRequestsError);
+			logger.error('Enrichissement illisible :', slowRequestsError);
 		}
 
 		// Build enriched context
@@ -203,7 +206,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (insertError) {
-			console.error('[API] Error creating bug report:', insertError);
+			logger.error('[API] Error creating bug report:', insertError);
 			throw error(500, 'Erreur lors de la création du rapport');
 		}
 
@@ -218,7 +221,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			});
 		} catch (notifyError) {
 			// Don't fail the request if notification fails
-			console.error('[API] Failed to notify admins:', notifyError);
+			logger.error('[API] Failed to notify admins:', notifyError);
 		}
 
 		return json({ success: true, report }, { status: 201 });
@@ -226,7 +229,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[API] Unexpected error in POST /api/bug-reports:', err);
+		logger.error('[API] Unexpected error in POST /api/bug-reports:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

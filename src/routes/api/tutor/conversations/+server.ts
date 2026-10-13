@@ -13,6 +13,9 @@ import {
 } from '$lib/server/validation/chat';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { getExerciseContentSafe, type Exercise } from '$lib/exercises/types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/tutor/conversations/+server');
 
 /**
  * GET /api/tutor/conversations?exerciseId=X&assignmentId=Y
@@ -51,7 +54,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.maybeSingle();
 
 	if (dbError) {
-		console.error('Tutor conversations DB error:', dbError);
+		logger.error('Tutor conversations DB error:', dbError);
 		throw error(500, 'Erreur lors de la recherche de la conversation');
 	}
 
@@ -96,7 +99,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (existingError && existingError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', existingError);
+		logger.error('Lecture impossible :', existingError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -115,7 +118,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (exerciseError && exerciseError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', exerciseError);
+		logger.error('Lecture impossible :', exerciseError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -144,7 +147,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (createError) {
-		console.error('Tutor conversation creation error:', createError);
+		logger.error('Tutor conversation creation error:', createError);
 		throw error(500, 'Erreur lors de la création de la conversation');
 	}
 

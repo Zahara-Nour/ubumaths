@@ -10,6 +10,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { updateChecklistItem, deleteChecklistItem } from '$lib/server/chapters';
 import { updateChecklistItemSchema } from '$lib/server/validation/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/checklist/[itemId]/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -95,7 +98,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const result = await updateChecklistItem(itemId, validation.data, locals.supabase);
 
 	if (result.error) {
-		console.error('[PUT /api/teacher/chapters/[id]/checklist/[itemId]] Error:', result.error);
+		logger.error('[PUT /api/teacher/chapters/[id]/checklist/[itemId]] Error:', result.error);
 		throw error(500, 'Failed to update checklist item');
 	}
 
@@ -130,7 +133,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const result = await deleteChecklistItem(itemId, locals.supabase);
 
 	if (result.error) {
-		console.error('[DELETE /api/teacher/chapters/[id]/checklist/[itemId]] Error:', result.error);
+		logger.error('[DELETE /api/teacher/chapters/[id]/checklist/[itemId]] Error:', result.error);
 		throw error(500, 'Failed to delete checklist item');
 	}
 

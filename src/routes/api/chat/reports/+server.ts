@@ -1,6 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { reportMessageSchema } from '$lib/server/validation/chat';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/chat/reports/+server');
 
 /**
  * POST /api/chat/reports
@@ -73,7 +76,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw error(404, 'Message not found');
 		}
 
-		console.error('Failed to report message:', reportError);
+		logger.error('Failed to report message:', reportError);
 		throw error(500, 'Failed to report message');
 	}
 

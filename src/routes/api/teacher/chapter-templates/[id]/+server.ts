@@ -18,6 +18,9 @@ import {
 	type UpdateChapterTemplateInput
 } from '$lib/server/validation/chapter-templates';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapter-templates/[id]/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -43,7 +46,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const result = await getChapterTemplate(templateId, locals.supabase);
 
 	if (result.error) {
-		console.error('[GET /api/teacher/chapter-templates/[id]] Error:', result.error);
+		logger.error('[GET /api/teacher/chapter-templates/[id]] Error:', result.error);
 		throw error(500, 'Failed to fetch chapter template');
 	}
 
@@ -97,7 +100,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	// Le helper rend `{ data, error }` : sans cette garde, une panne de lecture
 	// se présentait comme un modèle inexistant (404).
 	if (existingError) {
-		console.error('Modèle illisible :', existingError);
+		logger.error('Modèle illisible :', existingError);
 		throw error(500, 'Impossible de vérifier le modèle');
 	}
 	if (!existing) {
@@ -131,7 +134,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	const result = await updateChapterTemplate(templateId, data, user.id, locals.supabase);
 
 	if (result.error) {
-		console.error('[PATCH /api/teacher/chapter-templates/[id]] Error:', result.error);
+		logger.error('[PATCH /api/teacher/chapter-templates/[id]] Error:', result.error);
 
 		// Handle specific error messages
 		if (result.error.message.includes('Cannot update content of published')) {
@@ -172,7 +175,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	// Le helper rend `{ data, error }` : sans cette garde, une panne de lecture
 	// se présentait comme un modèle inexistant (404).
 	if (existingError) {
-		console.error('Modèle illisible :', existingError);
+		logger.error('Modèle illisible :', existingError);
 		throw error(500, 'Impossible de vérifier le modèle');
 	}
 	if (!existing) {
@@ -187,7 +190,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const result = await deleteChapterTemplate(templateId, locals.supabase);
 
 	if (result.error) {
-		console.error('[DELETE /api/teacher/chapter-templates/[id]] Error:', result.error);
+		logger.error('[DELETE /api/teacher/chapter-templates/[id]] Error:', result.error);
 		throw error(500, 'Failed to delete chapter template');
 	}
 

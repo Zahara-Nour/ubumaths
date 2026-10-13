@@ -10,6 +10,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { updateChapterDocument, deleteChapterDocument } from '$lib/server/chapters';
 import { updateDocumentSchema } from '$lib/server/validation/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/documents/[docId]/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -95,7 +98,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const result = await updateChapterDocument(docId, validation.data, locals.supabase);
 
 	if (result.error) {
-		console.error('[PUT /api/teacher/chapters/[id]/documents/[docId]] Error:', result.error);
+		logger.error('[PUT /api/teacher/chapters/[id]/documents/[docId]] Error:', result.error);
 		throw error(500, 'Failed to update document');
 	}
 
@@ -130,7 +133,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const result = await deleteChapterDocument(docId, locals.supabase);
 
 	if (result.error) {
-		console.error('[DELETE /api/teacher/chapters/[id]/documents/[docId]] Error:', result.error);
+		logger.error('[DELETE /api/teacher/chapters/[id]/documents/[docId]] Error:', result.error);
 		throw error(500, 'Failed to delete document');
 	}
 

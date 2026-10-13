@@ -19,6 +19,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { templateFavoriteSchema } from '$lib/server/validation/whiteboard-templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/templates/favorites/+server');
 
 /**
  * List user's favorite template IDs
@@ -36,7 +39,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.order('created_at', { ascending: false });
 
 		if (dbError) {
-			console.error('[Template Favorites] Query error:', dbError);
+			logger.error('[Template Favorites] Query error:', dbError);
 			throw error(500, 'Impossible de charger les favoris');
 		}
 
@@ -50,7 +53,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[Template Favorites] Error:', err);
+		logger.error('[Template Favorites] Error:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
@@ -106,7 +109,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 
 		if (insertError) {
-			console.error('[Template Favorites] Insert error:', insertError);
+			logger.error('[Template Favorites] Insert error:', insertError);
 			throw error(500, 'Impossible d’ajouter le modèle aux favoris');
 		}
 
@@ -115,7 +118,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[Template Favorites] Error:', err);
+		logger.error('[Template Favorites] Error:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
@@ -147,7 +150,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 			.eq('template_id', templateId);
 
 		if (deleteError) {
-			console.error('[Template Favorites] Delete error:', deleteError);
+			logger.error('[Template Favorites] Delete error:', deleteError);
 			throw error(500, 'Impossible de retirer le modèle des favoris');
 		}
 
@@ -156,7 +159,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
-		console.error('[Template Favorites] Error:', err);
+		logger.error('[Template Favorites] Error:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

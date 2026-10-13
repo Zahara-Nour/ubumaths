@@ -42,6 +42,9 @@ import {
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { StudentErrorReportWithDisplay } from '$lib/types/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/student/reports/+server');
 
 /**
  * Une ligne rendue par `get_my_error_reports()`.
@@ -113,7 +116,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			await locals.supabase.rpc('get_my_error_reports');
 
 		if (queryError) {
-			console.error('[API] Error fetching student reports:', queryError);
+			logger.error('[API] Error fetching student reports:', queryError);
 			throw error(500, 'Erreur lors de la recuperation des signalements');
 		}
 
@@ -124,7 +127,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// `student_id = auth.uid()` sans rien apporter.
 		const filtered = allReports.filter((row) => {
 			if (!isReportRow(row)) {
-				console.error('[API] Ligne de signalement inattendue :', row);
+				logger.error('[API] Ligne de signalement inattendue :', row);
 				throw error(500, 'Erreur de structure de donnees');
 			}
 			if (status !== 'all' && row.status !== status) return false;
@@ -175,7 +178,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in GET /api/student/reports:', err);
+		logger.error('[API] Unexpected error in GET /api/student/reports:', err);
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };

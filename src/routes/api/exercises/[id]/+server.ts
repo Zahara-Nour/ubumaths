@@ -21,6 +21,9 @@ import {
 	SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE,
 	isSearchIndexedViolation
 } from '$lib/server/exercise-search-indexed';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/[id]/+server');
 
 type ExerciseUpdate = Database['public']['Tables']['exercises']['Update'];
 type ZodIssue = { path: (string | number)[]; message: string };
@@ -86,7 +89,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		if (isSearchIndexedViolation(result.error)) {
 			throw error(400, SEARCH_INDEXED_REQUIRES_PUBLIC_MESSAGE);
 		}
-		console.error('Failed to update exercise:', result.error);
+		logger.error('Failed to update exercise:', result.error);
 		throw error(500, 'Impossible de modifier l’exercice');
 	}
 
@@ -116,7 +119,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		if (result.error.message === EXERCISE_NOT_DELETED) {
 			throw error(403, 'La suppression de l’exercice a été refusée');
 		}
-		console.error('Failed to delete exercise:', result.error);
+		logger.error('Failed to delete exercise:', result.error);
 		throw error(500, 'Impossible de supprimer l’exercice');
 	}
 

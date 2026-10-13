@@ -9,6 +9,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/rewards/update-class/+server');
 
 const schema = z.object({
 	classId: z.string().uuid(),
@@ -46,7 +49,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		);
 
 		if (rpcError) {
-			console.error('[API] RPC Error:', rpcError);
+			logger.error('[API] RPC Error:', rpcError);
 			throw error(500, rpcError.message || 'Failed to update class gidouilles');
 		}
 
@@ -56,7 +59,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			studentsUpdated
 		});
 	} catch (err) {
-		console.error('[API] Error updating class gidouilles:', err);
+		logger.error('[API] Error updating class gidouilles:', err);
 		throw error(500, 'An error occurred while updating class gidouilles');
 	}
 };

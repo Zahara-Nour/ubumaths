@@ -8,6 +8,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { checkForTemplateUpdates, getMigrationPreview } from '$lib/server/chapter-templates';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/template-updates/+server');
 
 /**
  * GET /api/teacher/chapters/[id]/template-updates
@@ -60,7 +63,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (instantiationError && instantiationError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', instantiationError);
+		logger.error('Lecture impossible :', instantiationError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -72,7 +75,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const result = await checkForTemplateUpdates(chapterId, locals.supabase);
 
 	if (result.error) {
-		console.error('[GET /api/teacher/chapters/[id]/template-updates] Error:', result.error);
+		logger.error('[GET /api/teacher/chapters/[id]/template-updates] Error:', result.error);
 		throw error(500, 'Failed to check for template updates');
 	}
 
@@ -89,7 +92,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (instDataError && instDataError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', instDataError);
+		logger.error('Lecture impossible :', instDataError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 

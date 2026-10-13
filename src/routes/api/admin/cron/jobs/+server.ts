@@ -16,6 +16,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { cronJobsQuerySchema, type CronJobsResponse } from '$lib/server/validation/cron';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/cron/jobs/+server');
 
 // Period to milliseconds mapping
 const PERIOD_MS: Record<string, number> = {
@@ -66,7 +69,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const { data: jobs, error: jobsError, count } = await query.range(offset, offset + limit - 1);
 
 		if (jobsError) {
-			console.error('[CRON Jobs API] Query error:', jobsError);
+			logger.error('[CRON Jobs API] Query error:', jobsError);
 			throw error(500, 'Impossible de charger les exécutions des tâches');
 		}
 
@@ -82,7 +85,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			: await statsQuery;
 
 		if (statsError) {
-			console.error('[CRON Jobs API] Stats query error:', statsError);
+			logger.error('[CRON Jobs API] Stats query error:', statsError);
 			throw error(500, 'Impossible de charger les statistiques des tâches');
 		}
 
@@ -129,7 +132,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		return json(response);
 	} catch (err) {
 		if (err instanceof Response) throw err;
-		console.error('[CRON Jobs API] Unexpected error:', err);
+		logger.error('[CRON Jobs API] Unexpected error:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

@@ -13,6 +13,9 @@ import {
 } from '$lib/server/errorMonitoring';
 import { listErrorsQuerySchema } from '$lib/server/validation/errors';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/errors/+server');
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	await requireRole(locals, 'admin');
@@ -68,7 +71,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			throw err;
 		}
 
-		console.error('Error in /api/errors:', err);
+		logger.error('Error in /api/errors:', err);
 		throw error(500, 'Internal server error');
 	}
 };

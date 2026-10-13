@@ -18,6 +18,9 @@ import { updateConfigSchema } from '$lib/server/validation/vip-card-admin';
 import type { VipCardConfig } from '$lib/types/vip-card-admin';
 import { configToResponse } from '$lib/types/vip-card-admin';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/vip-cards/configs/[id]/+server');
 
 /**
  * Body for the typed-confirmation DELETE: the admin must echo the config name.
@@ -71,7 +74,7 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.maybeSingle();
 
 		if (checkError) {
-			console.error('Error checking config existence:', checkError);
+			logger.error('Error checking config existence:', checkError);
 			throw error(500, 'Impossible de vérifier la configuration');
 		}
 
@@ -102,14 +105,14 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 			.single();
 
 		if (updateError) {
-			console.error('Error updating config:', updateError);
+			logger.error('Error updating config:', updateError);
 			throw error(500, 'Impossible de modifier la configuration');
 		}
 
 		// 7. Return updated config (convert snake_case to camelCase)
 		return json(configToResponse(updated as VipCardConfig));
 	} catch (err) {
-		console.error('Error in PATCH /api/admin/vip-cards/configs/[id]:', err);
+		logger.error('Error in PATCH /api/admin/vip-cards/configs/[id]:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {
@@ -168,7 +171,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			.maybeSingle();
 
 		if (checkError) {
-			console.error('Error checking config existence:', checkError);
+			logger.error('Error checking config existence:', checkError);
 			throw error(500, 'Impossible de vérifier la configuration');
 		}
 
@@ -190,7 +193,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			.eq('id', configId);
 
 		if (deleteError) {
-			console.error('Error deleting config:', deleteError);
+			logger.error('Error deleting config:', deleteError);
 			throw error(500, 'Impossible de supprimer la configuration');
 		}
 
@@ -200,7 +203,7 @@ export const DELETE: RequestHandler = async ({ request, locals, params }) => {
 			message: `Configuration « ${existing.config_name} » supprimée`
 		});
 	} catch (err) {
-		console.error('Error in DELETE /api/admin/vip-cards/configs/[id]:', err);
+		logger.error('Error in DELETE /api/admin/vip-cards/configs/[id]:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

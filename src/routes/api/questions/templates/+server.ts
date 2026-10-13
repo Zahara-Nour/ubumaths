@@ -25,6 +25,9 @@ import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { requireRoles, requireRole } from '$lib/server/middleware/auth';
 import { toJson } from '$lib/types/database-helpers';
 import { templatePublicationErrors } from '$lib/server/template-publication';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/questions/templates/+server');
 
 /**
  * GET /api/questions/templates
@@ -92,7 +95,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const { data: templates, error: queryError, count } = await query;
 
 		if (queryError) {
-			console.error('Error fetching templates:', queryError);
+			logger.error('Error fetching templates:', queryError);
 			throw error(500, 'Failed to fetch templates');
 		}
 
@@ -105,7 +108,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		return json(validated);
 	} catch (err) {
-		console.error('Error in GET /api/questions/templates:', err);
+		logger.error('Error in GET /api/questions/templates:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
@@ -224,7 +227,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (insertError) {
-			console.error('Error inserting template:', insertError);
+			logger.error('Error inserting template:', insertError);
 			throw error(500, 'Failed to create template');
 		}
 
@@ -240,7 +243,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		return json(validated, { status: 201 });
 	} catch (err) {
-		console.error('Error in POST /api/questions/templates:', err);
+		logger.error('Error in POST /api/questions/templates:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

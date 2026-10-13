@@ -13,6 +13,9 @@ import type { RequestHandler } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import type { VipCardConfig } from '$lib/types/vip-card-admin';
 import { configToResponse } from '$lib/types/vip-card-admin';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/vip-cards/configs/[id]/activate/+server');
 
 /**
  * PATCH /api/admin/vip-cards/configs/[id]/activate
@@ -50,7 +53,7 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 			.maybeSingle();
 
 		if (checkError) {
-			console.error('Error checking config existence:', checkError);
+			logger.error('Error checking config existence:', checkError);
 			throw error(500, 'Impossible de vérifier la configuration');
 		}
 
@@ -65,7 +68,7 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 			.neq('id', configId);
 
 		if (deactivateError) {
-			console.error('Error deactivating configs:', deactivateError);
+			logger.error('Error deactivating configs:', deactivateError);
 			throw error(500, 'Impossible de désactiver les autres configurations');
 		}
 
@@ -78,14 +81,14 @@ export const PATCH: RequestHandler = async ({ locals, params }) => {
 			.single();
 
 		if (activateError) {
-			console.error('Error activating config:', activateError);
+			logger.error('Error activating config:', activateError);
 			throw error(500, 'Impossible d’activer la configuration');
 		}
 
 		// 6. Return activated config (convert snake_case to camelCase)
 		return json(configToResponse(activated as VipCardConfig));
 	} catch (err) {
-		console.error('Error in PATCH /api/admin/vip-cards/configs/[id]/activate:', err);
+		logger.error('Error in PATCH /api/admin/vip-cards/configs/[id]/activate:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

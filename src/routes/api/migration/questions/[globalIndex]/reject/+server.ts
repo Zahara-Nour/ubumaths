@@ -19,6 +19,9 @@ import type { RequestHandler } from './$types';
 import { globalIndexSchema, rejectQuestionSchema } from '$lib/server/validation/migration-review';
 import { isValidGlobalIndex, loadQuestionByIndex } from '$lib/migration/question-data-loader';
 import { MigrationStateManager } from '$lib/server/migration/state-manager';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/migration/questions/[globalIndex]/reject/+server');
 
 /**
  * POST /api/migration/questions/[globalIndex]/reject
@@ -151,7 +154,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		}
 
 		// Log and return generic error
-		console.error('Error rejecting question:', err);
+		logger.error('Error rejecting question:', err);
 		throw error(500, 'Impossible de rejeter la question');
 	}
 };

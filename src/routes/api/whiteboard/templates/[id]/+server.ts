@@ -19,6 +19,9 @@ import type { RequestHandler } from './$types';
 import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
 import { templateIdParamSchema } from '$lib/server/validation/whiteboard-templates';
 import { toWhiteboardTemplateRow, rowToTemplate } from '$lib/whiteboard/types/templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/templates/[id]/+server');
 
 /**
  * Get a single whiteboard template by ID
@@ -49,7 +52,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			if (dbError.code === 'PGRST116') {
 				throw error(404, 'Modèle introuvable');
 			}
-			console.error('[Whiteboard Template] Query error:', dbError);
+			logger.error('[Whiteboard Template] Query error:', dbError);
 			throw error(500, 'Impossible de charger le modèle');
 		}
 
@@ -66,7 +69,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		console.error('[Whiteboard Template] Error:', err);
+		logger.error('[Whiteboard Template] Error:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
@@ -105,7 +108,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			if (fetchError.code === 'PGRST116') {
 				throw error(404, 'Modèle introuvable');
 			}
-			console.error('[Whiteboard Template] Fetch error:', fetchError);
+			logger.error('[Whiteboard Template] Fetch error:', fetchError);
 			throw error(500, 'Impossible de vérifier le modèle');
 		}
 
@@ -126,7 +129,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.eq('id', id);
 
 		if (deleteError) {
-			console.error('[Whiteboard Template] Delete error:', deleteError);
+			logger.error('[Whiteboard Template] Delete error:', deleteError);
 			throw error(500, 'Impossible de supprimer le modèle');
 		}
 
@@ -137,7 +140,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			throw err;
 		}
 
-		console.error('[Whiteboard Template] Error:', err);
+		logger.error('[Whiteboard Template] Error:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

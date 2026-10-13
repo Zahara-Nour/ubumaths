@@ -12,6 +12,9 @@ import { uuidSchema } from '$lib/server/validation/common';
 import type { NotebookContent } from '$lib/types/notebook';
 import { z } from 'zod';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebooks/+server');
 
 // =============================================================================
 // CONSTANTS
@@ -152,7 +155,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data: notebooks, error: queryError, count } = await query;
 
 	if (queryError) {
-		console.error('Error fetching python notebooks:', queryError);
+		logger.error('Error fetching python notebooks:', queryError);
 		throw error(500, 'Impossible de charger les carnets');
 	}
 
@@ -188,7 +191,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.order('created_at', { ascending: false });
 
 		if (assignedError) {
-			console.error('Error fetching assigned notebooks:', assignedError);
+			logger.error('Error fetching assigned notebooks:', assignedError);
 			// Don't fail the whole request, just skip assigned notebooks
 		} else if (assigned) {
 			// Transform assigned notebooks to match the notebook format
@@ -260,7 +263,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.eq('author_id', user.id);
 
 	if (countError) {
-		console.error('Error counting python notebooks:', countError);
+		logger.error('Error counting python notebooks:', countError);
 		throw error(500, 'Impossible de vérifier le nombre de carnets');
 	}
 
@@ -309,7 +312,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (insertError) {
-		console.error('Error creating python notebook:', insertError);
+		logger.error('Error creating python notebook:', insertError);
 		if (insertError.message?.includes('maximum limit')) {
 			throw error(400, `Limite atteinte : ${MAX_NOTEBOOKS_PER_USER} carnets au maximum`);
 		}

@@ -1,6 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { unrestrictUserSchema } from '$lib/server/validation/moderation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/moderation/unrestrict-user/+server');
 
 /**
  * DELETE /api/moderation/unrestrict-user
@@ -54,7 +57,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		.maybeSingle();
 
 	if (fetchError) {
-		console.error('Failed to fetch restriction:', fetchError);
+		logger.error('Failed to fetch restriction:', fetchError);
 		throw error(500, 'Failed to fetch restriction');
 	}
 
@@ -80,13 +83,13 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 		.select('id');
 
 	if (deleteError) {
-		console.error('Failed to delete restriction:', deleteError);
+		logger.error('Failed to delete restriction:', deleteError);
 		throw error(500, 'Failed to remove restriction');
 	}
 
 	// La restriction a été lue juste au-dessus : zéro ligne = refus, pas absence.
 	if (!deletedRestrictions || deletedRestrictions.length === 0) {
-		console.error('[unrestrict-user] Aucune ligne supprimée pour', restrictionId);
+		logger.error('[unrestrict-user] Aucune ligne supprimée pour', restrictionId);
 		throw error(403, 'Restriction non levée : droits insuffisants');
 	}
 
@@ -113,7 +116,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (logError) {
-		console.error('Failed to log moderation action:', logError);
+		logger.error('Failed to log moderation action:', logError);
 		// Don't fail the request if logging fails
 	}
 

@@ -26,6 +26,9 @@ import {
 } from '$lib/server/srs/chapter-deck';
 import { generateSRSInstance } from '$lib/srs/generator';
 import { toQuestionTemplate } from '$lib/types/question-template';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/srs/chapters/[chapterId]/due/+server');
 
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const { user } = await requireRole(locals, 'student');
@@ -44,7 +47,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		deck = await loadChapterDeck(supabase, chapterId, now);
 		if (deck) stats = await loadDeckStats(supabase, user.id, deck.templateIds);
 	} catch (err) {
-		console.error('[srs/chapters/due] Paquet illisible :', err);
+		logger.error('[srs/chapters/due] Paquet illisible :', err);
 		throw error(500, 'Impossible de calculer le paquet du chapitre');
 	}
 	if (!deck) throw error(404, 'Chapitre introuvable');
@@ -67,7 +70,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.in('id', ids)
 		.eq('status', 'published');
 	if (templatesError) {
-		console.error('[srs/chapters/due] Modèles illisibles :', templatesError);
+		logger.error('[srs/chapters/due] Modèles illisibles :', templatesError);
 		throw error(500, 'Impossible de charger les questions');
 	}
 
@@ -99,7 +102,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	// Questions écartées : tracées, et leur NOMBRE rendu à l'élève (pas de silence)
 	if (skipped.length > 0) {
-		console.error(`[srs/chapters/due] ${skipped.length} question(s) écartée(s) :`, skipped);
+		logger.error(`[srs/chapters/due] ${skipped.length} question(s) écartée(s) :`, skipped);
 	}
 
 	return json({
