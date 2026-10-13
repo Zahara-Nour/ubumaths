@@ -57,19 +57,22 @@ Une faute de frappe dans une unité reste donc une erreur, jamais un produit sil
 
 Lettres et caractères `€ $ ° μ Ω`, en respectant la **casse** : `2[CM]` est refusé.
 
-| Famille     | Symboles reconnus (extrait)            |
-| ----------- | -------------------------------------- |
-| Longueur    | `mm` `cm` `m` `km` `μm`                |
-| Masse       | `mg` `g` `kg` `t`                      |
-| Volume      | `mL` `cL` `dL` `L` `cm^3` `dm^3` `m^3` |
-| Aire        | `m^2` `a` `ha`                         |
-| Durée       | `ms` `s` `min` `h` `j` `jour` `an`     |
-| Température | `°C` `°F`                              |
-| Angle       | `°` `rad`                              |
-| Monnaie     | `€` `$`                                |
-| Physique    | `N` `J` `W` `kWh` `Pa` `Hz` `Ω` `mol`  |
+| Famille     | Symboles reconnus (extrait)                      |
+| ----------- | ------------------------------------------------ |
+| Longueur    | `mm` `cm` `m` `km` `μm`                          |
+| Masse       | `mg` `g` `kg` `t`                                |
+| Volume      | `mL` `cL` `dL` `L` `cm^3` `dm^3` `m^3`           |
+| Aire        | `m^2` `a` `ha`                                   |
+| Durée       | `ms` `s` `min` `h` `j` `jour` `an`               |
+| Température | `°C` `°F`                                        |
+| Angle       | `°` `rad`                                        |
+| Monnaie     | `€` `$`                                          |
+| Information | `o` `ko` `Mo` `Go` `To` `Kio` `Mio` `bit` `Mbit` |
+| Physique    | `N` `J` `W` `kWh` `Pa` `Hz` `Ω` `mol`            |
 
-Liste complète : `src/lib/mathAST/units/definitions.ts`. `%` n'est **pas** une unité.
+Information (2026-10-13) : multiples décimaux `ko` = 1 000 o et binaires `Kio` = 1 024 o, le bit
+vaut 1/8 d'octet ; aucun sous-multiple (`mo` n'est pas une unité). Liste complète :
+`src/lib/mathAST/units/definitions.ts`. `%` n'est **pas** une unité.
 
 ### Opérateurs
 
