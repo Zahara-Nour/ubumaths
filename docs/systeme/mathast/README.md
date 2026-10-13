@@ -735,14 +735,14 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   décisions de David du 2026-10-14). Plus aucun sous-calcul avalé sous « On calcule »
   (`evaluate-final`) quand une règle existe : `(-3)^2 = (-3) \times (-3) = 9`
   (`expand-small-power` accepte une base négative, et passe avant les multiplications : priorité 105) ; `5 - (-3) = 5 + 3` (`subtract-negative`) ; `-(-3) = 3` (`opposite-of-opposite`) ;
-  `1 + \frac34 = \frac44 + \frac34` (`integer-to-fraction`) ; `\frac12 \times 2 = \frac22`
+  `1 \pm \frac34 = \frac44 \pm \frac34` (`integer-to-fraction`, puis `subtract-same-denominator` pour la différence) ; `\frac12 \times 2 = \frac22`
   (`multiply-fraction-by-integer`, aussi au lycée). Une fraction littérale (`\frac34`) n'est pas
   un calcul : le regroupement « multiplications d'abord » ne la compte ni ne la colore
   (`isGroupableMulDivTerm`). `\sqrt{9}` se titre « $9 = 3^2$, donc $\sqrt{9} = 3$ » (plus
   « on extrait le facteur carré parfait »). Le pipeline retire d'entrée les parenthèses autour
   d'un nombre (les règles ne voient pas au travers) et écrit le produit `\times` (plus
   d'astérisque `3*(-2)`) ; le renderer écrit **les deux lignes** de l'étape par le même
-  parcours, qui parenthèse un facteur négatif des deux côtés (`(-3) \times (-3)`) et remplace
+  parcours, qui parenthèse un facteur ou un diviseur négatif (`12 : (-3)`) des deux côtés (`(-3) \times (-3)`) et remplace
   la juxtaposition devant un nombre (`2 \times 1`, pas `2 1`). Un **dénominateur nul** lève
   `PedagogicalArithmeticDivisionByZero` (message en français) au lieu d'un arrêt silencieux ;
   `generateCorrection` l'attrape comme toute erreur et laisse la question sans étapes. Le lycée

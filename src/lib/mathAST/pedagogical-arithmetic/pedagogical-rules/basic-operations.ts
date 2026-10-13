@@ -185,7 +185,7 @@ export const evaluateBinaryAdd: PedagogicalArithmeticRule = {
 	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
 	priority: 100,
 	descriptions: {
-		primaire: (b) => `On additionne ${bindingLatex(b, 'a')} et ${bindingLatex(b, 'b')}`,
+		primaire: (b) => `On additionne $${bindingLatex(b, 'a')}$ et $${bindingLatex(b, 'b')}$`,
 		college: () => 'Addition',
 		lycee: () => 'Somme',
 		// `$+$` : un « + » seul ouvrirait une liste ubumark (V25)
@@ -206,7 +206,7 @@ export const evaluateBinarySub: PedagogicalArithmeticRule = {
 	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
 	priority: 100,
 	descriptions: {
-		primaire: (b) => `On soustrait ${bindingLatex(b, 'b')} de ${bindingLatex(b, 'a')}`,
+		primaire: (b) => `On soustrait $${bindingLatex(b, 'b')}$ de $${bindingLatex(b, 'a')}$`,
 		college: () => 'Soustraction',
 		lycee: () => 'Différence',
 		superieur: () => '−'
@@ -226,7 +226,7 @@ export const evaluateBinaryMul: PedagogicalArithmeticRule = {
 	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
 	priority: 100,
 	descriptions: {
-		primaire: (b) => `On multiplie ${bindingLatex(b, 'a')} par ${bindingLatex(b, 'b')}`,
+		primaire: (b) => `On multiplie $${bindingLatex(b, 'a')}$ par $${bindingLatex(b, 'b')}$`,
 		college: () => 'Multiplication',
 		lycee: () => 'Produit',
 		superieur: () => '×'
@@ -276,7 +276,7 @@ export const evaluateBinaryDiv: PedagogicalArithmeticRule = {
 	applicableLevels: ['primaire', 'college', 'lycee', 'superieur'],
 	priority: 100,
 	descriptions: {
-		primaire: (b) => `On divise ${bindingLatex(b, 'a')} par ${bindingLatex(b, 'b')}`,
+		primaire: (b) => `On divise $${bindingLatex(b, 'a')}$ par $${bindingLatex(b, 'b')}$`,
 		college: () => 'Division',
 		lycee: () => 'Quotient',
 		superieur: () => '÷'
@@ -455,6 +455,9 @@ function isCalculableParens(node: MathNode): boolean {
 	if (node.type !== 'delimiter') return false;
 	if (node.delimiters !== 'parentheses') return false;
 	if (isAtomLikeNode(node.content)) return false;
+	// `(-(-2))` : un jeu de signes, pas un calcul ; `oppositeOfOpposite` le
+	// rédige (« l'opposé de −2 est 2 ») au lieu de l'avaler ici
+	if (isOpposite(node.content) && isAtomLikeNode(node.content.operand)) return false;
 	const evaluated = evaluateExact(node.content);
 	if (!evaluated || !isAtomLikeNode(evaluated)) return false;
 	return true;

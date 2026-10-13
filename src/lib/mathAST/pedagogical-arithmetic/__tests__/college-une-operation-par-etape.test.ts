@@ -284,3 +284,72 @@ describe('lycée : niveau de détail inchangé', () => {
 		expect(run('5-(-3)', 'lycee').rules).toEqual(['evaluate-binary-sub']);
 	});
 });
+
+// =============================================================================
+// Revue du 2026-10-14 : division, soustraction de fractions, priorités
+// =============================================================================
+
+describe('division : un diviseur négatif ou une somme garde ses parenthèses', () => {
+	it('12 ÷ (−3) ne s’écrit pas « 12 : -3 »', () => {
+		const r = run('12\\div(-3)');
+		expect(r.final).toBe('-4');
+		expect(lines(r.latex[0])[0]).toBe('12:(-3)');
+	});
+
+	it('(−6) ÷ (−2) × 3 : chaque négatif entre parenthèses', () => {
+		const r = run('(-6)\\div(-2)\\times3');
+		expect(r.final).toBe('9');
+		expect(lines(r.latex[0])[0]).toBe('(-6):(-2)\\times3');
+	});
+
+	it('12 ÷ (5 − 8) garde la parenthèse de la somme', () => {
+		const r = run('12\\div(5-8)');
+		expect(r.final).toBe('-4');
+		for (const l of r.latex) expect(lines(l)[0]).not.toMatch(/:5-8/);
+	});
+});
+
+describe('soustraction d’une fraction (collège)', () => {
+	for (const verbosity of VERBOSITIES) {
+		it(`1 − \\frac34 = \\frac44 − \\frac34 = \\frac14 (${verbosity})`, () => {
+			const r = run('1-\\frac34', 'college', verbosity);
+			expect(r.rules).toEqual(['integer-to-fraction', 'subtract-same-denominator']);
+			expect(lines(r.latex[0])[1]).toBe('\\dfrac44-\\dfrac34');
+			expect(r.final).toBe('\\dfrac{1}{4}');
+		});
+	}
+
+	it('\\frac34 − 2 = \\frac34 − \\frac84 = −\\frac54', () => {
+		const r = run('\\frac34-2');
+		expect(r.rules).toEqual(['integer-to-fraction', 'subtract-same-denominator']);
+		expect(r.final).toBe('-\\dfrac{5}{4}');
+	});
+
+	it('\\frac57 − \\frac27 = \\frac37', () => {
+		const r = run('\\frac57-\\frac27');
+		expect(r.rules).toEqual(['subtract-same-denominator']);
+		expect(r.final).toBe('\\dfrac{3}{7}');
+	});
+});
+
+describe('priorités', () => {
+	it('2×3^2 : la puissance avant le produit', () => {
+		const r = run('2\\times3^2');
+		expect(r.rules).toEqual(['expand-small-power', 'evaluate-binary-mul', 'evaluate-binary-mul']);
+		expect(lines(r.latex[0])[1]).toBe('2\\times3\\times3');
+		expect(r.final).toBe('18');
+	});
+});
+
+describe('signes', () => {
+	it('−(−(−2)) : une étape « opposé de l’opposé »', () => {
+		const r = run('-(-(-2))');
+		expect(r.rules).toEqual(['opposite-of-opposite']);
+		expect(r.final).toBe('-2');
+	});
+
+	it('primaire : les nombres du titre sont entre $…$', () => {
+		const r = run('(-3)\\times(-3)', 'primaire');
+		expect(r.titles[0]).toBe('On multiplie $-3$ par $-3$');
+	});
+});

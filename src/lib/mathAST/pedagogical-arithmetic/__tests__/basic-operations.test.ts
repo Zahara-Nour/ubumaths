@@ -53,12 +53,12 @@ describe('basic-operations rules', () => {
 				a: number('2'),
 				b: number('3')
 			});
-			expect(desc).toBe('On additionne 2 et 3');
+			expect(desc).toBe('On additionne $2$ et $3$');
 		});
 
 		it('description with missing binding falls back to "?"', () => {
 			const desc = evaluateBinaryAdd.descriptions.primaire?.({});
-			expect(desc).toBe('On additionne ? et ?');
+			expect(desc).toBe('On additionne $?$ et $?$');
 		});
 
 		it('applies to all 4 levels', () => {

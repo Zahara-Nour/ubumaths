@@ -194,8 +194,8 @@ describe('fractions rules', () => {
 	});
 
 	describe('FRACTION_RULES export', () => {
-		it('contains all 8 rules (incl. toCommonDenominatorMultiply — Track B, integerToFraction, multiplyFractionByInteger)', () => {
-			expect(FRACTION_RULES).toHaveLength(8);
+		it('contains all 9 rules (incl. toCommonDenominatorMultiply — Track B, integerToFraction, subtractSameDenominator, multiplyFractionByInteger)', () => {
+			expect(FRACTION_RULES).toHaveLength(9);
 		});
 
 		it('addSameDenominator and multiplyFractions have priority 110', () => {

@@ -203,8 +203,15 @@ function renderWithHighlights(node: MathNode, fragments: readonly MathNode[]): H
 				};
 			}
 			const op = node.displayStyle === 'ratio' ? ':' : '\\div';
+			// Comme pour un facteur : `12 : (-3)`, `(-6) : (-2)`, jamais `12 : -3`.
+			// Un diviseur produit ou quotient se parenthèse aussi : `a : (b \times c)`
+			const numerator = wrapIf(num.latex, isSignedOrSum(node.numerator));
+			const wrapDen =
+				isSignedOrSum(node.denominator) ||
+				node.denominator.type === 'multiplication' ||
+				(node.denominator.type === 'division' && node.denominator.displayStyle !== 'fraction');
 			return {
-				latex: `${num.latex} ${op} ${den.latex}`,
+				latex: `${numerator} ${op} ${wrapIf(den.latex, wrapDen)}`,
 				matched: num.matched || den.matched
 			};
 		}
