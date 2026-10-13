@@ -356,11 +356,13 @@ function formatServerMessage(
 	const redactedMessage = redactObject(message);
 	const redactedArgs = args.map((arg) => redactObject(arg));
 
-	console[level === 'trace' ? 'log' : level](
-		`${GRAY}${timestamp}${RESET} ${colorCode}${prefix}${RESET}`,
-		redactedMessage,
-		...redactedArgs
-	);
+	// Hors dev, texte nu : les journaux Vercel affichent les codes ANSI en clair
+	// (écart L8, lot 0). En dev, le terminal les interprète : couleurs gardées.
+	const header = dev
+		? `${GRAY}${timestamp}${RESET} ${colorCode}${prefix}${RESET}`
+		: `${timestamp} ${prefix}`;
+
+	console[level === 'trace' ? 'log' : level](header, redactedMessage, ...redactedArgs);
 }
 
 /**
