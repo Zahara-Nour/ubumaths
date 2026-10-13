@@ -161,6 +161,14 @@ describe('isNavLinkActive', () => {
 		);
 	});
 
+	it('le prof atteint ses figures géométriques, surlignées sur leurs sous-pages', () => {
+		const figures = getNavLinks('teacher').find((l) => l.label === 'Figures');
+		expect(figures?.href).toBe('/dashboard/teacher/figures');
+		expect(isNavLinkActive('/dashboard/teacher/figures', '/dashboard/teacher/figures/new')).toBe(
+			true
+		);
+	});
+
 	it('surligne une rubrique sur ses sous-pages', () => {
 		expect(
 			isNavLinkActive('/dashboard/teacher/contenu', '/dashboard/teacher/contenu/enigmes/new')

@@ -37,7 +37,8 @@ import {
 	Search,
 	User as UserIcon,
 	LogOut,
-	LibraryBig
+	LibraryBig,
+	Shapes
 } from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
 import { lore } from '$lib/config/lore';
@@ -140,6 +141,7 @@ export function getNavLinks(
 			{ href: '/dashboard/teacher/series', label: 'Séries', icon: ListOrdered },
 			{ href: '/dashboard/teacher/assessments', label: 'Contrôles en ligne', icon: FileCheck },
 			{ href: '/python-exercises/mine', label: 'Mes exercices Python', icon: Code },
+			{ href: '/dashboard/teacher/figures', label: 'Figures', icon: Shapes },
 			{
 				href: '/dashboard/teacher/gamification',
 				label: 'Récompenses',
@@ -195,6 +197,7 @@ const ACTIVE_PREFIXES: Record<string, string[]> = {
 	'/dashboard/admin/docs': ['/dashboard/admin/docs'],
 	'/dashboard/admin/bug-reports': ['/dashboard/admin/bug-reports'],
 	'/dashboard/teacher/contenu': ['/dashboard/teacher/contenu'],
+	'/dashboard/teacher/figures': ['/dashboard/teacher/figures'],
 	'/dashboard/teacher/gamification': ['/dashboard/teacher/gamification'],
 	'/dashboard/teacher/moderation': ['/dashboard/teacher/moderation'],
 	'/dashboard/student/work': [

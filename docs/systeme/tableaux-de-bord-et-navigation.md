@@ -64,7 +64,7 @@ Couleur de fond selon le rôle du profil (élève, prof, admin).
   marché s'il est ouvert, inventaire, Mes Signalements.
 - **Prof** : accueil, Classes, Mes cours, Cahier de textes, Programme, Avancement, Mes contenus,
   Recherche, observations, export des compétences, Séries, Contrôles en ligne, Mes exercices
-  Python, Gamification (badge : demandes de cartes VIP en attente), Modération, amis, Chat,
+  Python, Figures (figures géométriques stockées), Gamification (badge : demandes de cartes VIP en attente), Modération, amis, Chat,
   Administration. Ce dernier lien renvoie un prof non élevé vers l'écran d'élévation
   (`dashboard/admin/+layout.server.ts`).
 - **Admin** : accueil, Administration et ses pages (écoles, utilisateurs, classes, questions,
@@ -74,7 +74,7 @@ Couleur de fond selon le rôle du profil (élève, prof, admin).
 - **Surlignage** (`isNavLinkActive`) : un lien est surligné sur sa propre adresse, et seulement
   elle. Exception : les entrées de `ACTIVE_PREFIXES` restent surlignées sur toute adresse qui
   commence par l'un de leurs préfixes. Ce sont les rubriques (débogage, docs et signalements de
-  l'admin, Mes contenus, Gamification, Modération, signalements) et **Mon travail**, qui couvre
+  l'admin, Mes contenus, Figures, Gamification, Modération, signalements) et **Mon travail**, qui couvre
   aussi les listes complètes de fiches (`/dashboard/student/worksheets`) et de contrôles
   (`/dashboard/student/assessments`) : elles s'ouvrent depuis lui et y reviennent (#1121).
 

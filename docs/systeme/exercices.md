@@ -172,7 +172,8 @@ La page publique résout le jeton par la RPC ; une adresse à jeton n'est jamais
 ## Étiquettes
 
 `src/lib/server/resource-tags.ts` est la **seule** source des étiquettes de toutes les ressources
-étiquetables (`TAGGABLE_KINDS` : exercice, question, chapitre, fiche, exercice Python…).
+étiquetables (`TAGGABLE_KINDS` : exercice, question, chapitre, fiche, exercice Python, figure
+géométrique stockée `geometry_figure`…).
 `syncResourceTags` remplace l'ensemble (suppression puis upsert) et **lève** en cas d'échec : à la
 création, un échec d'étiquetage **supprime** l'exercice qui vient d'être créé ; à la mise à jour,
 la ligne reste modifiée et l'erreur remonte. `getExercise` / `getExerciseBySlug` rajoutent

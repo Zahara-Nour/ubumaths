@@ -179,6 +179,10 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 	},
 	{ pattern: '/cahier/[token]/**', reason: 'cahier de textes ouvert par le jeton du professeur' },
 	{ pattern: '/cours/[token]/**', reason: 'cours d’une classe ouvert par le jeton du professeur' },
+	{
+		pattern: '/figures/[id]',
+		reason: 'figure géométrique partagée par lien, en noindex (ADR 0027)'
+	},
 	{ pattern: '/python-exercises/mine', reason: LOGIN_REQUIRED },
 	{ pattern: '/python-exercises/my-progress', reason: LOGIN_REQUIRED },
 	{ pattern: '/python-exercises/new', reason: LOGIN_REQUIRED },

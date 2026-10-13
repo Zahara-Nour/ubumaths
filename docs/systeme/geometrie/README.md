@@ -10,6 +10,11 @@ couvre:
   - 'src/routes/(public)/construction-demo/**'
   - 'src/routes/(public)/geometry-demo/**'
   - 'src/routes/api/construction-demo-scripts/**'
+  - 'src/lib/server/geometry-figures.ts'
+  - 'src/lib/server/validation/geometry-figures.ts'
+  - 'src/lib/utils/geometry-figure-script.ts'
+  - 'src/routes/(protected)/dashboard/teacher/figures/**'
+  - 'src/routes/(public)/figures/**'
 ---
 
 # Géométrie : `geometry-core` et `constructions-v2`
@@ -259,7 +264,41 @@ d = mediatrice(A, B) @euclide @arcs_egaux @complet -arcs
 - **Rendu animé** : `ConstructionCanvas` masque dans `GeometryCanvas` les objets en cours de tracé et
   les dessine partiellement (`render-helpers.ts`) sous l'instrument.
 
-## 7. Comment étendre
+## 7. Figures stockées (ADR 0027)
+
+Le prof (ou l'admin) enregistre une figure — un script du DSL — dans la table
+`geometry_figures` ([ADR 0027](../../adr/0027-figures-geometriques-stockees.md)) : titre (1-200),
+description (≤ 2 000, facultative), script (1-100 000 caractères : le flocon de Koch en fait
+77 000), niveaux (codes des exercices), case publique, tags (`resource_tags`, type
+`geometry_figure`).
+
+**Qui fait quoi** (tenu par la RLS, pas par les pages) : une figure publique se lit par tous, même
+sans compte ; une privée, par son auteur seul ; seuls prof et admin créent ; chacun ne modifie et
+ne supprime que SES figures. Une écriture refusée rend zéro ligne : chaque écriture relit ses
+lignes et tient « zéro ligne » pour un 404, jamais pour un succès.
+
+| Fichier                                                  | Rôle                                                                                                                                                                                                                                                         |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/lib/server/validation/geometry-figures.ts`          | Zod : `figureInputSchema` (bornes de la table, niveaux par `gradeCodeSchema`, 20 tags au plus), `parseFigureFormData`, `parseFigureListFilters` (`?grade=&tag=&tag=&q=&scope=mine\|public`)                                                                  |
+| `src/lib/server/geometry-figures.ts`                     | `listGeometryFigures` (filtres combinés en ET, tags « au moins un », texte `ilike` échappé sur titre et description, récentes d'abord, 200 au plus, sans le script), `getOwnGeometryFigure`, `getPublicGeometryFigure`, `create/update/deleteGeometryFigure` |
+| `src/lib/utils/geometry-figure-script.ts`                | `evaluateFigureScript` : exécute le script sans jamais lever ; une erreur rend son message « Ligne N… » et sa ligne ; budget de 200 000 pas (boucles imbriquées démesurées)                                                                                  |
+| `src/lib/components/geometry/StoredFigureForm.svelte`    | Formulaire : champs, script à gauche, aperçu à droite redessiné 400 ms après la frappe ; un script en erreur ne s'enregistre pas (bouton désactivé, réexécution à l'envoi) ; suppression avec confirmation                                                   |
+| `src/lib/components/geometry/StoredFigurePreview.svelte` | `GeometryCanvas` (curseurs compris) ou l'erreur du script                                                                                                                                                                                                    |
+
+**Pages.** `/dashboard/teacher/figures` : liste filtrable (filtres dans l'adresse), lien
+« Figures » de la barre latérale du prof ; `…/new` et `…/[id]/edit` (l'auteur seul : la figure
+publique d'un autre rend 404). `/figures/[id]` : page publique, sans compte, `noindex`, hors
+sitemap, sans tags (`anon` ne lit pas `resource_tags`) et sans bouton retour (aucune page
+parente) ; le filtre `is_public` y est explicite, si bien qu'une figure privée rend la même 404
+qu'une figure inexistante, même pour son auteur. Le script ne s'exécute que dans le navigateur.
+
+**Limites connues.** Le serveur n'exécute pas le script : le refus d'un script en erreur est un
+contrôle du formulaire, pas une garantie. La figure n'enregistre ni centre ni zoom : la toile
+s'ouvre sur le repère par défaut (40 px par unité). La garde du layout prof
+(`dashboard/teacher/+layout.server.ts`) n'admet que le rôle `teacher` : un admin n'atteint pas
+ces pages. La citation d'une figure dans le cahier et le cours est le lot 2.
+
+## 8. Comment étendre
 
 ### Nouveau builtin
 
@@ -284,7 +323,7 @@ Interface + garde `isXxx` + union `GeoElement` dans `types/elements.ts` · branc
 doit faire l'aller-retour · `interaction/` s'il se manipule · `DRAWABLE_TYPES` de `figure-scene.ts`
 s'il doit passer au bloc ` ```figure `.
 
-## 8. Tests
+## 9. Tests
 
 | Où                                        | Fichiers                                               | Cas (`it`/`test`)  |
 | ----------------------------------------- | ------------------------------------------------------ | ------------------ |
@@ -303,7 +342,7 @@ pnpm test:client src/lib/components/geometry/__tests__/GeometryCanvas.theme.svel
 Angles morts connus : `compute-position.ts` n'est testé qu'à travers le DSL ; `rendering/bezier.ts`
 n'a qu'un test (`bezier-monotone.test.ts`) ; `validation/checks.ts` n'a pas d'appelant.
 
-## 9. Décisions
+## 10. Décisions
 
 Pas d'ADR propre à la géométrie ; le PDF suit [ADR 0004](../../adr/0004-pdf-typst-et-jspdf.md)
 (Typst). Décisions de conception encore vraies (avril–mai 2026) :
@@ -328,7 +367,7 @@ Pas d'ADR propre à la géométrie ; le PDF suit [ADR 0004](../../adr/0004-pdf-t
 Abandonné ou jamais fait : machine à états d'outils (création d'objets à la souris), index spatial
 RBush, `validation/` branché sur des exercices.
 
-## 10. Points ouverts
+## 11. Points ouverts
 
 - `src/lib/utils/game/challenge-variables.ts` évalue encore par `new Function` une expression
   venue de `game_challenges` (hors module ; à remplacer par `compile()`). Depuis T5
