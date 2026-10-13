@@ -45,6 +45,7 @@ import { createStepRecorder } from './step-recorder';
 import { getRuleDescription } from './descriptions-fr';
 import { mergePeriodicFamilies } from './periodic';
 import { extractLinearForm } from '../analysis/coefficient-utils';
+import { parameterCondition } from './literal-parameter';
 
 // =============================================================================
 // Types
@@ -388,8 +389,10 @@ export function trySubstitution(
 	if (fresh === null) return null;
 
 	const inU = substituteAtom(expr, variable, family, fresh);
-	// Famille affine : 2^(−x) = 1/X, l'équation en X peut être rationnelle
-	if (inU === null || (!family.affine && !isPolynomialIn(inU, fresh))) return null;
+	// Famille affine : 2^(−x) = 1/X, l'équation en X peut être rationnelle.
+	// Avec un paramètre aussi : y = eˣ/(eˣ + 1) devient y = X/(X + 1)
+	const parametric = [...getVariables(expr)].some((name) => name !== variable);
+	if (inU === null || (!family.affine && !parametric && !isPolynomialIn(inU, fresh))) return null;
 
 	const atom = atomNode(family);
 	const recorder = createStepRecorder();
@@ -415,17 +418,24 @@ export function trySubstitution(
 		let withoutFamily = false;
 
 		for (const uSolution of uResult.solutions) {
-			let uValue: number;
-			try {
-				uValue = uSolution.approximate ?? evaluateNodeToApproximatedNumber(uSolution.value);
-			} catch {
-				return null;
+			// Racine PARAMÉTRÉE (y = eˣ/(eˣ + 1) : u₀ = y/(1 − y)) : pas de valeur,
+			// le retour à x écrit la condition sur le paramètre (`literal-parameter`)
+			const parameters = getVariables(uSolution.value);
+			parameters.delete(fresh);
+			if (parameters.size === 0) {
+				let uValue: number;
+				try {
+					uValue = uSolution.approximate ?? evaluateNodeToApproximatedNumber(uSolution.value);
+				} catch {
+					return null;
+				}
+				if (!Number.isFinite(uValue)) return null;
 			}
-			if (!Number.isFinite(uValue)) return null;
 
 			const back = equals(atom, uSolution.value);
 			const backResult = solveFn(back, { variable, verbosity: opts.verbosity });
 			if (isSolverFailure(backResult) || backResult.status === 'infinite') return null;
+			if (parameters.size > 0 && backResult.periodicSolutions) return null;
 
 			recorder.recordStep(
 				'change-of-variable-back',
@@ -435,7 +445,7 @@ export function trySubstitution(
 				'detailed'
 			);
 
-			solutions.push(...backResult.solutions);
+			solutions.push(...withCondition(backResult.solutions, uSolution.condition));
 			if (backResult.periodicSolutions) families.push(backResult.periodicSolutions);
 			else if (backResult.solutions.length > 0) withoutFamily = true;
 		}
@@ -481,6 +491,30 @@ export function trySubstitution(
 	}
 }
 
+/**
+ * La condition de la racine en u (x² − x = y : Δ ≥ 0) s'ajoute à celle du
+ * retour à x ; une solution dont la condition ne tient jamais disparaît.
+ */
+function withCondition(
+	solutions: readonly Solution[],
+	uCondition: MathNode | undefined
+): Solution[] {
+	if (uCondition === undefined) return [...solutions];
+	const kept: Solution[] = [];
+	for (const solution of solutions) {
+		const both = [uCondition, ...(solution.condition ? [solution.condition] : [])];
+		const condition = parameterCondition(both);
+		if (condition.kind === 'never') continue;
+		kept.push({
+			value: solution.value,
+			exact: solution.exact,
+			...(solution.approximate !== undefined && { approximate: solution.approximate }),
+			...(condition.kind === 'when' && { condition: condition.node })
+		});
+	}
+	return kept;
+}
+
 /** Dédoublonnage numérique, ordre croissant. */
 function dedupe(solutions: readonly Solution[]): Solution[] {
 	const withValues = solutions.map((s) => {
@@ -490,7 +524,8 @@ function dedupe(solutions: readonly Solution[]): Solution[] {
 		} catch {
 			numeric = Number.NaN;
 		}
-		return { solution: { ...s, approximate: numeric }, numeric };
+		// Racine paramétrée : pas de valeur approchée (NaN s'affichait « ≈ NaN »)
+		return { solution: Number.isFinite(numeric) ? { ...s, approximate: numeric } : s, numeric };
 	});
 	const kept: typeof withValues = [];
 	for (const item of withValues) {

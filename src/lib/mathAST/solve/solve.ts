@@ -59,6 +59,7 @@ import type {
 } from './types';
 import { DEFAULT_SOLVE_OPTIONS, SolveError, isSolverFailure } from './types';
 import { trySubstitution } from './substitution';
+import { tryLiteralParameter } from './literal-parameter';
 import { trySinCosRatio } from './sin-cos-ratio';
 import { tryTrigEquality } from './trig-equality';
 import { mergePeriodicFamilies } from './periodic';
@@ -2352,6 +2353,13 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	if (isSolverFailure(result)) {
 		const numeratorOnly = tryConstantDenominator(expr, variable, opts);
 		if (numeratorOnly) result = numeratorOnly;
+	}
+	// Second membre littéral (`y = e^{2x+1}`) : on ôte une couche (exp, ln,
+	// racine), avec la condition sur le paramètre — voir `literal-parameter.ts`.
+	// Avant le changement de variable, qui lit la VALEUR de ses racines.
+	if (isSolverFailure(result)) {
+		const peeled = tryLiteralParameter(promotedEq, variable, opts, solve);
+		if (peeled) result = peeled;
 	}
 	if (isSolverFailure(result)) {
 		const substituted = trySubstitution(expr, variable, opts, solve);

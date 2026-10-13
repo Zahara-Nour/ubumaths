@@ -24,6 +24,7 @@ import type { CommandContext, CommandResult, ErrorCode } from '../types';
 import { toCustom } from '../../custom-generator';
 import {
 	solutionsLatex,
+	commonCondition,
 	solutionsApproximationLatex,
 	periodicSolutionsText,
 	inequalitySolutionLatex,
@@ -775,6 +776,10 @@ function generateQuadraticPedagogicalSteps(
 
 	// Step 3: Interpret discriminant
 	const deltaNum = parseFloat(deltaStr);
+	// Δ littéral (x² = a : Δ = 4a) : son signe dépend du paramètre. `parseFloat`
+	// rendait NaN, lu comme « Δ < 0, pas de solution reelle » juste au-dessus
+	// de x = ±√a (2026-10-13). On s'arrête au calcul de Δ.
+	if (Number.isNaN(deltaNum)) return steps;
 	let interpretation: string;
 	if (deltaNum > 0) {
 		interpretation = `Delta = ${deltaStr} > 0, deux solutions reelles`;
@@ -1345,6 +1350,7 @@ export class SolveCommand extends BaseCommand {
 			exponential: 'exponentielle',
 			logarithmic: 'logarithmique',
 			trigonometric: 'trigonometrique',
+			rational: 'rationnelle',
 			mixed: 'mixte',
 			constant: 'constante',
 			unknown: 'inconnue'
@@ -1421,12 +1427,18 @@ export class SolveCommand extends BaseCommand {
 			case 'multiple': {
 				// Build exact and decimal solution strings
 				// Une seule solution en ln : sa valeur approchée, comme le LaTeX
-				const exactSolutions = result.solutions
-					.map(
-						(sol) =>
-							`${result.variable} = ${(result.solutions.length === 1 && logarithmicValueText(sol.value, sol.approximate)) || toCustom(sol.value)}`
-					)
-					.join(result.solutions.length > 1 ? ' ou ' : '');
+				// La condition sur un paramètre (y = eˣ : x = ln(y) si y > 0), une
+				// seule fois quand toutes les solutions la partagent
+				const common = commonCondition(result.solutions);
+				const exactSolutions =
+					result.solutions
+						.map(
+							(sol) =>
+								`${result.variable} = ${(result.solutions.length === 1 && logarithmicValueText(sol.value, sol.approximate)) || toCustom(sol.value)}` +
+								(common === undefined && sol.condition ? ` si ${toCustom(sol.condition)}` : '')
+						)
+						.join(result.solutions.length > 1 ? ' ou ' : '') +
+					(common ? `, si ${toCustom(common)}` : '');
 
 				// Check if a fraction has a terminating decimal representation
 				// A fraction in lowest terms has terminating decimal iff denominator only has factors 2 and 5

@@ -239,7 +239,29 @@ paramètre ». Un second membre littéral (`\ln x = a`) reste refusé : il peut 
 développement `\ln(ax)` → ln a + ln x, valable pour a > 0 seulement. `filterSolutionsByDomain`
 (`solve.ts`) garde une solution à paramètre sans la comparer au domaine (l'évaluation levait).
 Tests : `solve/__tests__/parametre-litteral.test.ts` (vérification numérique pour plusieurs
-valeurs du paramètre).
+valeurs du paramètre). ⚠️ Dépassé en partie le 2026-10-13, voir le paragraphe suivant :
+`e^x = 1/a`, `\ln x = a` et `\ln(ax) = 1` sont résolues, avec condition quand il en faut une.
+
+Second membre littéral (2026-10-13, lot 1 « réciproque ») : **`y = f(x)` résolue en x, la
+solution porte sa condition** (`Solution.condition`, désormais rempli). `tryLiteralParameter`
+(`solve/literal-parameter.ts`), repli après la classification et avant le changement de
+variable, seulement si l'équation a un paramètre : isole l'unique terme en x (k·T = c, k
+numérique non nul ; littéral → refus), ôte UNE couche (eᵘ = c → u = ln c si c > 0 ; aᵘ = c →
+u = ln c / ln a si c > 0 ; ln u = c → u = eᶜ ; log u = c → u = 10ᶜ ; √u = c → u = c² si
+c ≥ 0) et rend `u = k` à `solve`, k lettre neuve remplacée ensuite par f⁻¹(c) (la
+normalisation développerait ln(−y/(y − 1)) en ln(−y) − ln(y − 1), indéfini pour 0 < y < 1). Les
+conditions des couches se cumulent ; `parameterCondition` les résout en la lettre quand il n'y
+en a qu'une (`solveInequality`) : `(y + 1)/3 > 0` → `y > −1`, ensemble vide → la solution
+tombe (aucune : `no-real-solution`, démontré). c doit être défini pour toute valeur du
+paramètre, sauf si la condition de la couche, à une lettre, en tient compte. Le second degré
+écrit `Δ ≥ 0` quand Δ porte un paramètre (`x² = y` → ±√y si y ≥ 0 ; toujours négatif →
+`no-real-solution`) ; le changement de variable laisse passer une racine en u paramétrée
+(`y = eˣ/(eˣ + 1)` → x = ln(−y/(y − 1)) si 0 < y < 1) et lit alors une équation en u
+rationnelle. Le CLI affiche la condition (« x = ln(a)/2 − 1/2, si a > 0 », `\quad \text{si }
+a > 0`, une seule fois si toutes les solutions la partagent) et ne conclut plus « Δ < 0 » sur un
+Δ littéral (`parseFloat` rendait NaN). Restent refusés : coefficient littéral devant ln
+(`a\ln x + b = 1`), cos, sin ; plusieurs termes en x (`y = xe^x`). Tests :
+`solve/__tests__/second-membre-litteral.test.ts`, `cli/commands/__tests__/condition-sur-parametre.test.ts`.
 
 Écart V40 (2026-10-13) : **valeur absolue d'une expression affine**. `tryAbsoluteValue`
 (`solve/absolute-value.ts`), premier repli après la classification, remplace la valeur absolue

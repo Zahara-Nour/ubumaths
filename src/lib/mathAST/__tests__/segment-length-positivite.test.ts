@@ -214,15 +214,21 @@ describe('solve : une longueur inconnue est positive', () => {
 // =============================================================================
 
 describe('solve : carré d’une longueur égal à une quantité négative ou nulle', () => {
-	it.each(['AB^2=-CD^2', 'AB^2+CD^2=0', '3AB^2=-2CD^2-5'])(
-		'%s, en AB : aucune solution',
-		(latex) => {
-			const result = solve(readEquation(latex), { variable: 'AB' });
-			expect(result.solutions).toEqual([]);
-			expect(result.status).toBe('no-solution');
-			expect(result.steps.some((step) => step.rule === 'domain-exclusion')).toBe(true);
-		}
-	);
+	it.each(['AB^2=-CD^2', 'AB^2+CD^2=0'])('%s, en AB : aucune solution', (latex) => {
+		const result = solve(readEquation(latex), { variable: 'AB' });
+		expect(result.solutions).toEqual([]);
+		expect(result.status).toBe('no-solution');
+		expect(result.steps.some((step) => step.rule === 'domain-exclusion')).toBe(true);
+	});
+
+	// Discriminant paramétré toujours négatif (Δ = −12(2CD² + 5)) : le solveur
+	// du second degré conclut seul, comme pour AB² = −4 (lot 1 « réciproque »,
+	// 2026-10-13 ; avant, le filtre des longueurs concluait « no-solution »)
+	it('3AB^2 = -2CD^2-5, en AB : aucune solution réelle, quel que soit CD', () => {
+		const result = solve(readEquation('3AB^2=-2CD^2-5'), { variable: 'AB' });
+		expect(result.solutions).toEqual([]);
+		expect(result.status).toBe('no-real-solution');
+	});
 
 	it('AB^2 = -4 : le résultat d’origine, inchangé (no-real-solution)', () => {
 		expect(solve(readEquation('AB^2=-4'), { variable: 'AB' }).status).toBe('no-real-solution');
