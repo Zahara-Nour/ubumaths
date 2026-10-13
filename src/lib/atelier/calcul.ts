@@ -905,6 +905,18 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	 */
 	const name = known.name.toLowerCase();
 
+	// `.latex` et `.texte` SANS expression basculent le mode de saisie du moteur
+	// (héritage de `/cas`) : tout calcul suivant était lu en LaTeX, et
+	// `sqrt(2)*sqrt(8)` devenait « s q r t » (mesuré le 2026-10-13). L'atelier
+	// lit seul la saisie : la bascule ne lui parvient jamais.
+	const typedNothing = space === -1 || resolved.slice(space + 1).trim() === '';
+	if ((name === 'latex' || name === 'custom') && typedNothing) {
+		return {
+			kind: 'refus',
+			message: `Écris l'expression après la commande : « .${known.french} x^2/2 ».`
+		};
+	}
+
 	// `.aide` : l'aide de l'ÉLÈVE, en français (décision de David, 2026-10-09).
 	// L'aide du moteur — anglaise, pour le développeur — reste derrière
 	// `.aide dev`. Aucune aide par commande n'existe : `.aide intégrer` montre

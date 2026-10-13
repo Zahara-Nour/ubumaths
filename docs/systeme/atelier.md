@@ -210,15 +210,20 @@ acceptée quand elle est sans ambiguïté. La lecture vit dans `mathAST` :
 La table `TRANSLATIONS` donne pour chaque commande son nom français, sa description, son exemple
 et sa rubrique de `.aide` (`HelpSection`) ; **son ordre est l'ordre du catalogue**. Les commandes
 anglaises continuent de marcher (le registre est partagé avec le REPL de mathAST, `pnpm math`). Sept commandes du
-moteur sont **visibles et désactivées avec leur raison** (`unavailable` : poser, définir,
-effacer… — les noms se créent dans le panneau).
+moteur **n'existent pas dans l'atelier** (`ENGINE_COMMANDS_LEFT_OUT` : `let`, `def`, `clear`,
+`unset`, `undef`, `inv`, `def'` — décision de David, 2026-10-13) : elles écriraient des noms dans le
+moteur, alors que les noms se créent dans le panneau. Hors du catalogue, tapées en entier, elles
+répondent comme toute commande inconnue. `.auto` (bascule du mode de saisie de `/cas`) n'est pas au
+catalogue non plus.
 
 Chemin d'une commande dans `runCommand` (`calcul.ts`), dans cet ordre :
 
 1. `resolveCommand` + recherche dans le catalogue ; inconnue → refus avec au plus deux
    suggestions (`suggestFor`) ;
 2. on exécute le **nom canonique**, jamais le raccourci tapé (`.s` = simplifier, pas solve) ;
-3. `.aide`, `.mode`, `.exact`, `.décimal` : traités par l'atelier, en français ;
+3. `.aide`, `.mode`, `.exact`, `.décimal` : traités par l'atelier, en français ; `.latex` et
+   `.texte` sans expression : refus (le moteur y basculerait son mode de saisie, et lirait mal tous
+   les calculs suivants) ;
 4. commandes de données (table `SIMULATIONS`) : lisent des **noms de listes**, avant toute
    substitution ;
 5. sinon : virgule décimale, `π`, `f'(x)` puis noms d'objets remplacés par leurs expressions ;
@@ -230,10 +235,10 @@ Chemin d'une commande dans `runCommand` (`calcul.ts`), dans cet ordre :
 **Au clavier** (`CalculView.svelte`, phase 0 [atelier-cas-phase0.md](../wip/atelier-cas-phase0.md),
 décisions de David du 2026-10-11) :
 
-- après un point, la liste des commandes (8 au plus) est un **combobox** : ↑ / ↓ surlignent (les
-  indisponibles sont sautées, la liste boucle), **Entrée ou Tab choisit** (`.dériver `) — sauf une
+- après un point, la liste des commandes (8 au plus) est un **combobox** : ↑ / ↓ surlignent (la liste
+  boucle), **Entrée ou Tab choisit** (`.dériver `) — sauf une
   commande marquée `runsAlone` (`.aide`, `.exact`…) tapée en entier, qu'Entrée lance —, Échap ferme
-  jusqu'à la frappe suivante. Une liste sans commande disponible (`.pose`) laisse Entrée calculer ;
+  jusqu'à la frappe suivante. Sans commande proposée (`.pose`), Entrée calcule ;
 - liste fermée, **↑ / ↓ rappellent les saisies tapées** (`CalcDesk.recallPrevious` /
   `recallNext`) : jamais une ligne écrite par un bouton, même « Comparer avec M » qui passe par
   `submit` ; deux saisies identiques de suite rappelées une fois ; le brouillon d'avant le premier

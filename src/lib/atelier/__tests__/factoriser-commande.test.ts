@@ -42,7 +42,6 @@ describe('la commande existe et se découvre', () => {
 
 		expect(index, '« factoriser » absente du catalogue').toBeGreaterThan(-1);
 		expect(catalog[index - 1].french).toBe('simplifier');
-		expect(catalog[index].unavailable).toBeUndefined();
 	});
 
 	it('son exemple marche vraiment', () => {

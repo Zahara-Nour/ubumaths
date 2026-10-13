@@ -274,17 +274,16 @@ describe('les commandes se découvrent', () => {
 		expect(container.querySelector('.commandes .quoi')?.textContent).toContain('Dériver');
 	});
 
-	// ⚠️ Visible et DÉSACTIVÉE avec sa raison, jamais cachée — sinon l'élève
-	// conclut que l'outil ne sait pas faire. Les commandes qui écrivent dans le
-	// moteur sont dans ce cas : dans l'atelier, les noms viennent du panneau.
-	it('désactive une commande indisponible sans la cacher', async () => {
+	// Les commandes qui écrivent dans le moteur n'existent pas dans l'atelier
+	// (décision de David, 2026-10-13) : les noms viennent du panneau. Elles
+	// étaient grisées dans la liste — et exécutées une fois tapées.
+	it('ne propose pas une commande qui n’existe pas dans l’atelier', async () => {
 		const { type, container } = await open();
 
 		await type('.pose');
 
-		const bouton = container.querySelector('.commandes button') as HTMLButtonElement;
-		expect(bouton.disabled).toBe(true);
-		expect(bouton.textContent).toContain('panneau');
+		const noms = [...container.querySelectorAll('.commandes .nom')].map((n) => n.textContent);
+		expect(noms).not.toContain('.poser');
 	});
 
 	// `.taylor` était désactivée tant que le dispatch la tuait sur ses propres
@@ -483,12 +482,9 @@ describe('le clavier de Calcul', () => {
 			expect(field.getAttribute('aria-activedescendant')).toBe(first!.id);
 		});
 
-		it('↓ parcourt la liste en sautant les commandes indisponibles, et boucle', async () => {
+		it('↓ parcourt la liste, et boucle', async () => {
 			const { container } = await typing('.d');
-			const options = [...container.querySelectorAll('.commandes [role="option"]')];
-			const available = options.filter((o) => o.getAttribute('aria-disabled') !== 'true');
-			// Le décor doit contenir une indisponible, sinon on ne prouve rien
-			expect(available.length).toBeLessThan(options.length);
+			const available = [...container.querySelectorAll('.commandes [role="option"]')];
 			expect(available.length).toBeGreaterThan(1);
 
 			const seen: string[] = [];
@@ -505,9 +501,7 @@ describe('le clavier de Calcul', () => {
 
 		it('↑ depuis la première commande va à la dernière disponible', async () => {
 			const { container } = await typing('.d');
-			const available = [...container.querySelectorAll('.commandes [role="option"]')].filter(
-				(o) => o.getAttribute('aria-disabled') !== 'true'
-			);
+			const available = [...container.querySelectorAll('.commandes [role="option"]')];
 
 			await userEvent.keyboard('{ArrowUp}');
 			await settle();
@@ -517,9 +511,7 @@ describe('le clavier de Calcul', () => {
 
 		it('retaper le début d’une commande surligne de nouveau la première', async () => {
 			const { container, type } = await typing('.d{ArrowDown}');
-			const first = container.querySelector(
-				'.commandes [role="option"]:not([aria-disabled="true"])'
-			);
+			const first = container.querySelector('.commandes [role="option"]');
 			expect(highlighted(container)!.id).not.toBe(first!.id);
 
 			await type('');
@@ -649,8 +641,8 @@ describe('le clavier de Calcul', () => {
 			expect(container.querySelector('.modele')).toBeNull();
 		});
 
-		// Sa raison est déjà dans la liste : l'appeler « modèle » serait faux
-		it('ne s’affiche pas pour une commande indisponible', async () => {
+		// `.poser` n'existe pas dans l'atelier : aucun modèle à montrer
+		it('ne s’affiche pas pour une commande qui n’existe pas', async () => {
 			const { container } = await typing('.poser a');
 
 			expect(container.querySelector('.modele')).toBeNull();

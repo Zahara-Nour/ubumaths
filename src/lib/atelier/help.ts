@@ -131,7 +131,7 @@ const SYNTAX_REMINDER: readonly string[] = [
  */
 export function studentHelp(engine: WebReplEngine): HelpBlock[] {
 	const shown = commandCatalog(engine).filter(
-		(c) => c.section !== undefined && c.unavailable === undefined && c.example !== undefined
+		(c) => c.section !== undefined && c.example !== undefined
 	);
 
 	const blocks: HelpBlock[] = [...WITHOUT_COMMAND];

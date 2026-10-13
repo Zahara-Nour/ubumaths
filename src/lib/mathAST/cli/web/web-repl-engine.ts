@@ -436,8 +436,11 @@ export class WebReplEngine {
 		const cmdName = parts[0].toLowerCase();
 		const args = parts.slice(1).join(' ').trim();
 
-		// Handle mode toggle commands (not in registry)
-		if (cmdName === 'latex') {
+		// Bascules du mode de saisie — SANS argument seulement. Avec un argument,
+		// `.latex x^2` et `.custom x^2` sont les commandes du registre (écrire
+		// l'expression en LaTeX, en syntaxe texte) : la bascule les masquait,
+		// l'argument était ignoré en silence (mesuré le 2026-10-13).
+		if (cmdName === 'latex' && args === '') {
 			this.inputMode = 'latex';
 			return {
 				success: true,
@@ -445,7 +448,7 @@ export class WebReplEngine {
 				outputHtml: escapeWithLabel('Input mode: LaTeX')
 			};
 		}
-		if (cmdName === 'custom') {
+		if (cmdName === 'custom' && args === '') {
 			this.inputMode = 'custom';
 			return {
 				success: true,

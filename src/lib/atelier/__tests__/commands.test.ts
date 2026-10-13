@@ -13,7 +13,8 @@ import {
 	commandBeingWritten,
 	resolveCommand,
 	suggestFor,
-	ATELIER_ONLY_COMMANDS
+	ATELIER_ONLY_COMMANDS,
+	ENGINE_COMMANDS_LEFT_OUT
 } from '../commands';
 import { Atelier } from '../atelier.svelte';
 import { runInput } from '../calcul';
@@ -87,11 +88,14 @@ describe('le catalogue des commandes', () => {
 
 	// L'invariant qui compte : une commande ajoutée au moteur ne doit pas rester
 	// en anglais dans l'atelier. Sans ce test, elle passerait inaperçue.
+	// Seules les commandes laissées dehors EXPRÈS (`ENGINE_COMMANDS_LEFT_OUT`) y échappent.
 	it('ne laisse aucune commande du registre sans traduction', () => {
 		const engine = new WebReplEngine();
 
 		const traduites = new Set(commandCatalog(engine).map((c) => c.name));
-		const oubliees = engine.getCommands().filter((c) => !traduites.has(c.name));
+		const oubliees = engine
+			.getCommands()
+			.filter((c) => !traduites.has(c.name) && !ENGINE_COMMANDS_LEFT_OUT.has(c.name));
 
 		expect(oubliees.map((c) => c.name)).toEqual([]);
 	});
@@ -106,7 +110,7 @@ describe('le catalogue des commandes', () => {
 	 */
 	it('ne propose que des exemples qui s’exécutent vraiment', () => {
 		for (const command of commandCatalog(new WebReplEngine())) {
-			if (command.example === undefined || command.unavailable !== undefined) continue;
+			if (command.example === undefined) continue;
 
 			// ⚠️ **Une garde ne protège que ce qui passe par elle.** Les
 			// commandes servies par l'atelier ne vont jamais au moteur : les
@@ -181,42 +185,34 @@ describe('le catalogue des commandes', () => {
 		}
 	});
 
-	// Une commande indisponible doit dire pourquoi, et ne pas porter d'exemple
-	// qui laisserait croire qu'elle marche.
-	it('donne une raison à toute commande indisponible', () => {
-		for (const command of commandCatalog(new WebReplEngine())) {
-			if (command.unavailable === undefined) continue;
-			expect(command.unavailable.trim()).not.toBe('');
-			expect(command.example).toBeUndefined();
-		}
-	});
-
 	/**
 	 * ⚠️ Q1 option B : **l'atelier détient les noms.** Une commande qui écrit
 	 * dans l'`EvalState` fabrique un nom que le panneau ignore, et les deux
-	 * divergent en silence — mesuré le 2026-09-16, dans les deux sens :
-	 *
-	 * - `.effacer` vide les liaisons du moteur ; le panneau affiche toujours
-	 *   `a = 3`, mais `a + 1` rend « a+1 » avec `success: true` ;
-	 * - `.poser b = 5` marche, puis la première modification d'un objet du
-	 *   panneau détruit `b` sans un mot — `syncEngine` repose tout.
+	 * divergent en silence — mesuré le 2026-09-16, puis le 2026-10-13 alors
+	 * qu'elles étaient « indisponibles » (grisées, mais exécutées une fois
+	 * tapées). Décision de David (2026-10-13) : elles n'existent pas ici.
+	 * Le comportement tapé est vérifié dans `commandes-inexistantes.svelte.test.ts`.
 	 */
-	it('rend indisponible toute commande qui écrirait dans le moteur', () => {
+	it('ne met au catalogue aucune commande qui écrirait dans le moteur', () => {
 		const catalog = commandCatalog(new WebReplEngine());
 
-		for (const name of ['let', 'def', 'unset', 'undef', 'clear', 'inv', "def'"]) {
-			const command = catalog.find((c) => c.name === name);
-			expect(command, name).toBeDefined();
-			expect(command?.unavailable, name).toBeTruthy();
+		for (const name of ['let', 'def', 'unset', 'undef', 'clear', 'inv', "def'", 'auto']) {
+			expect(
+				catalog.find((c) => c.name === name),
+				name
+			).toBeUndefined();
 		}
 	});
 
-	// Celles qui LISENT seulement restent utilisables : elles ne mentent jamais.
-	it('laisse utilisables les commandes qui ne font que lire', () => {
+	// Celles qui LISENT seulement restent au catalogue : elles ne mentent jamais.
+	it('garde les commandes qui ne font que lire', () => {
 		const catalog = commandCatalog(new WebReplEngine());
 
 		for (const name of ['vars', 'fns', 'simplify', 'diff', 'solve', 'variations']) {
-			expect(catalog.find((c) => c.name === name)?.unavailable, name).toBeUndefined();
+			expect(
+				catalog.find((c) => c.name === name),
+				name
+			).toBeDefined();
 		}
 	});
 
@@ -318,7 +314,7 @@ describe('la commande en cours d’écriture', () => {
 	// sa description sous le champ, qui ne dit pas comment écrire la suite
 	it('chaque commande d’élève disponible a un exemple', () => {
 		const missing = catalog
-			.filter((c) => c.section !== undefined && c.unavailable === undefined)
+			.filter((c) => c.section !== undefined)
 			.filter((c) => c.example === undefined)
 			.map((c) => c.french);
 
@@ -336,7 +332,7 @@ describe('les commandes qui se lancent seules', () => {
 
 	it('sont celles qu’on attend', () => {
 		expect(alone.map((c) => c.french).sort()).toEqual(
-			['aide', 'auto', 'décimal', 'exact', 'exporter', 'fonctions', 'valeurs'].sort()
+			['aide', 'décimal', 'exact', 'exporter', 'fonctions', 'valeurs'].sort()
 		);
 	});
 

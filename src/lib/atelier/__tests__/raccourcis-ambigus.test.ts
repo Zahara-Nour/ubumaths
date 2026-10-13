@@ -55,9 +55,7 @@ describe('le catalogue tranche, y compris à l’exécution', () => {
 		// ⚠️ La garde générale : le catalogue est construit depuis le registre,
 		// donc un raccourci ambigu ajouté demain se voit ici sans qu'on y pense.
 		const engine = new WebReplEngine();
-		const testables = commandCatalog(engine).filter(
-			(c) => c.unavailable === undefined && c.example !== undefined
-		);
+		const testables = commandCatalog(engine).filter((c) => c.example !== undefined);
 		expect(testables.length).toBeGreaterThan(5);
 
 		for (const command of testables) {
