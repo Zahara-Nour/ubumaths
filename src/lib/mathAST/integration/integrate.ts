@@ -55,7 +55,7 @@ import { dropAbsOfPositive } from './positive-abs';
 import { absorbLnConstantFactors } from './ln-constant';
 import { asPowerSum, integratePowerSum, powerSumAsNode } from './power-sum';
 import { laurentForm } from './laurent-form';
-import { antiderivativeDiscontinuity, numericIntegrand } from './singularity';
+import { antiderivativeDiscontinuity, denominatorPole, numericIntegrand } from './singularity';
 import { compile } from '../eval/compile';
 import {
 	absProductForm,
@@ -1029,13 +1029,16 @@ export function integrateDefinite(
 	const variable = indefiniteResult.variable;
 
 	// F(b) − F(a) n'a de sens que si F est continue sur [a ; b] : à travers un
-	// pôle, refus explicite — jamais une valeur (revue de #947)
-	const discontinuity = antiderivativeDiscontinuity(
-		indefiniteResult.antiderivative,
-		variable,
-		numericBound(lower),
-		numericBound(upper)
-	);
+	// pôle, refus explicite — jamais une valeur (revue de #947). Second filet
+	// sur f (V53) : un dénominateur qui change de signe dans [a ; b], racine
+	// localisée par bissection (∛2 n'a pas à être trouvée exactement)
+	const discontinuity =
+		antiderivativeDiscontinuity(
+			indefiniteResult.antiderivative,
+			variable,
+			numericBound(lower),
+			numericBound(upper)
+		) ?? denominatorPole(expr, variable, numericBound(lower), numericBound(upper));
 	if (discontinuity !== null) {
 		return {
 			...indefiniteResult,
