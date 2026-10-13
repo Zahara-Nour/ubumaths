@@ -143,7 +143,7 @@ appliquée (A8) ; cadres englobants en pointillés gris (A10).
 - **Marqueurs `\class{ubs-n<id>}{…}`** : un span par nœud, imbriqués comme l'arbre, rendu
   identique au pixel à `toLatex` (`\htmlData` décale `2\sin x` de 0,17 em). Puissance : jamais
   `{base}^{…}` (des accolades font un atome ordinaire : −0,46 em autour d'un `+` voisin) ; écrire
-  `base^{…}`. **Base entre parenthèses** : l'exposant s'écrit DANS le marqueur de la parenthèse,
+  `base^{…}`. **Base qui finit par un délimiteur** (`(…)`, `|…|`, `⌊…⌋`, `\cos(x)`) : l'exposant s'écrit DANS le marqueur de la base,
   `\class{…}{\left( … \right)^{…}}` : hors du marqueur, la base est un groupe et MathLive place
   l'exposant d'après le dernier caractère avant `)` (`(−½ + x)²` : 66 px de haut au lieu de 73,
   corrigé le 2026-10-13). Seule exception à « marqueurs imbriqués comme l'arbre » : la zone d'une

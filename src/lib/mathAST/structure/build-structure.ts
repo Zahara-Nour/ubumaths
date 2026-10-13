@@ -103,6 +103,8 @@ export interface StructureOptions {
 const EMPTY: StructureResult = { status: 'empty' };
 const UNRECOGNIZED: StructureResult = { status: 'unrecognized' };
 /** Un seul marqueur qui enveloppe tout : `\class{ubs-n<id>}{<contenu>}` */
+/** Délimiteur fermant extensible ou de partie entière, à la fin d'une écriture */
+const CLOSING_DELIMITER_AT_END = /\\(?:right(?:[)\]|]|\\\|)|rfloor|rceil)$/;
 const MARKED_BLOCK = new RegExp(`^\\\\class\\{${MARKER_PREFIX}(\\d+)\\}\\{([\\s\\S]*)\\}$`);
 /** Valeur absolue, parties entières : l'argument entre ses barres ou crochets */
 const ENCLOSING_FUNCTIONS: Partial<Record<string, readonly [string, string]>> = {
@@ -170,18 +172,18 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 	}
 
 	/**
-	 * `(…)²` : l'exposant s'écrit dans le marqueur de la parenthèse, accroché à
-	 * `\right)` comme dans l'écriture usuelle. Hors du marqueur, la base est un
-	 * groupe et MathLive place l'exposant d'après le dernier caractère avant `)` :
-	 * `(−½ + x)²` avait son exposant trop bas (66 px de haut au lieu de 73). Le
-	 * LaTeX de la parenthèse (`drafts`) n'en change pas ; son cadre ne compte que
-	 * ses descendants (`StructureFormula`). `null` : la base n'est pas une parenthèse.
+	 * `(…)²`, `|…|²`, `⌊…⌋²` : l'exposant s'écrit dans le marqueur de la base,
+	 * accroché au délimiteur fermant comme dans l'écriture usuelle. Hors du
+	 * marqueur, la base est un groupe et MathLive place l'exposant d'après le
+	 * dernier caractère avant le délimiteur : `(−½ + x)²` avait son exposant trop
+	 * bas (66 px de haut au lieu de 73). Le LaTeX de la base (`drafts`) n'en
+	 * change pas ; son cadre ne compte que ses descendants (`StructureFormula`).
+	 * `null` : la base ne finit pas par un délimiteur fermant.
 	 */
 	function superscriptInsideParentheses(base: string, exponent: string): string | null {
 		const match = MARKED_BLOCK.exec(base);
-		const id = match ? Number(match[1]) : null;
-		if (!match || id === null || drafts[id]?.info.kind !== 'parentheses') return null;
-		return markLatex(id, `${match[2]}^{${exponent}}`);
+		if (!match || !CLOSING_DELIMITER_AT_END.test(match[2])) return null;
+		return markLatex(Number(match[1]), `${match[2]}^{${exponent}}`);
 	}
 
 	function leaf(

@@ -61,13 +61,15 @@ function unbrace(latex: string): string {
 /** Parents lus dans l'imbrication des marqueurs : id → id du marqueur englobant */
 /**
  * Le marqueur qui enveloppe celui de `node` : son parent, sauf l'exposant d'une
- * parenthèse (`(x + 1)²`), logé dans le marqueur de sa base pour que MathLive le
- * place comme dans l'écriture usuelle (accroché à `\right)`).
+ * base qui finit par un délimiteur (`(x + 1)²`, `|x|²`), logé dans le marqueur de
+ * sa base pour que MathLive le place comme dans l'écriture usuelle.
  */
 function markerParentOf(structure: ExpressionStructure, node: StructureNode): number | null {
 	if (node.role !== 'exponent' || node.parent === null) return node.parent;
 	const base = structure.nodes[structure.nodes[node.parent].children[0]];
-	return base.kind === 'parentheses' ? base.id : node.parent;
+	return /\\(?:right(?:[)\]|]|\\\|)|rfloor|rceil)$/.test(stripMarkers(base.latex))
+		? base.id
+		: node.parent;
 }
 
 function markerParents(latex: string): Map<number, number | null> {

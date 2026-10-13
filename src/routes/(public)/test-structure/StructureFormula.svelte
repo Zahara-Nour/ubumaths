@@ -178,7 +178,8 @@
 		const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
 		const range = document.createRange();
 		while (walker.nextNode()) {
-			if (!walker.currentNode.textContent?.trim()) continue;
+			// U+200B : MathLive en pose dans `ML__vlist-s` (un exposant qui descend) ; `trim` le garde
+			if (!walker.currentNode.textContent?.replace(/\u200b/g, '').trim()) continue;
 			if (!belongsTo(walker.currentNode.parentElement, id)) continue;
 			range.selectNodeContents(walker.currentNode);
 			rects.push(...Array.from(range.getClientRects()));

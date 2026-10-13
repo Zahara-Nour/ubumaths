@@ -29,7 +29,10 @@ const POWERS_OF_PARENTHESES = [
 	String.raw`(-x+1)^2`,
 	String.raw`\left(\frac{1}{2}+x\right)^2`,
 	String.raw`4\left(x-\frac{1}{2}\right)^3-1`,
-	String.raw`(a+b)^{n+1}`
+	String.raw`(a+b)^{n+1}`,
+	String.raw`(x+1)^{\frac{1}{2}}`,
+	String.raw`\left|-\frac{1}{2}+x\right|^2`,
+	String.raw`\lfloor -\frac{1}{2}+x\rfloor^2`
 ];
 
 // Variables
@@ -74,8 +77,8 @@ describe('rendu marqué identique à l’écriture usuelle (puissance d’une pa
 });
 
 describe('le cadre de la parenthèse s’arrête avant l’exposant (A6)', () => {
-	it('(x + 1)² : cadre de (x + 1) à gauche du 2', async () => {
-		const structure = structureOf('(x+1)^2');
+	it.each(['(x+1)^2', String.raw`(x+1)^{\frac{1}{2}}`])('%s', async (latex) => {
+		const structure = structureOf(latex);
 		const parentheses = structure.nodes.find((n) => n.kind === 'parentheses');
 		const exponent = structure.nodes.find((n) => n.role === 'exponent');
 		if (!parentheses || !exponent) throw new Error('structure inattendue');
@@ -91,6 +94,7 @@ describe('le cadre de la parenthèse s’arrête avant l’exposant (A6)', () =>
 		const two = span?.shadowRoot
 			?.querySelector(`.${MARKER_PREFIX}${exponent.id}`)
 			?.getBoundingClientRect();
+		// (le « 2 » : l'exposant, quel qu'il soit)
 		if (!frame || !two) throw new Error('cadre ou exposant introuvable');
 		// La marge du cadre peut effleurer le 2, pas le couvrir
 		expect(frame.right).toBeLessThan(two.left + two.width / 2);
