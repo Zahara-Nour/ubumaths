@@ -12,7 +12,8 @@
 -- rangés comme l'application range les fichiers de l'élève :
 --   message-attachments    : messages/<id d'un message privé qu'il a envoyé>/…
 --   bug-report-screenshots : <son id>/<id d'un de ses signalements>/…
--- et jamais un chemin contenant « .. ». Un chemin non conforme est ignoré (le fichier reste).
+-- et jamais un chemin dont un segment vaut « .. » (un nom comme photo..png reste rendu ;
+-- casse des UUID ignorée). Un chemin non conforme est ignoré (le fichier reste).
 -- chat-attachments inchangé : seuls prof et admin y créent des pièces jointes.
 -- Le reste de la fonction est recopié à l'identique de 20261014100000.
 --
@@ -76,16 +77,16 @@ BEGIN
 			WHERE ma.uploaded_by = p_user_id
 			  AND pm.sender_id = p_user_id
 			  AND ma.storage_path IS NOT NULL
-			  AND starts_with(ma.storage_path, 'messages/' || ma.message_id::text || '/')
-			  AND position('..' IN ma.storage_path) = 0
+			  AND starts_with(lower(ma.storage_path), 'messages/' || ma.message_id::text || '/')
+			  AND ('/' || ma.storage_path || '/') NOT LIKE '%/../%'
 		), '[]'::jsonb),
 		'bug-report-screenshots', coalesce((
 			SELECT jsonb_agg(DISTINCT br.screenshot_path)
 			FROM bug_reports br
 			WHERE br.user_id = p_user_id
 			  AND br.screenshot_path IS NOT NULL
-			  AND starts_with(br.screenshot_path, p_user_id::text || '/' || br.id::text || '/')
-			  AND position('..' IN br.screenshot_path) = 0
+			  AND starts_with(lower(br.screenshot_path), p_user_id::text || '/' || br.id::text || '/')
+			  AND ('/' || br.screenshot_path || '/') NOT LIKE '%/../%'
 		), '[]'::jsonb)
 	);
 

@@ -293,12 +293,18 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 
 		const sonAutreMessage = await message(eleve.id);
 		const legitime = `messages/${sonMessage}/a.png`;
+		// Nom légitime à points consécutifs : rendu (seul un segment « .. » est refusé).
+		const legitimePoints = `messages/${sonAutreMessage}/photo..png`;
 		// Au plus 3 pièces jointes par message : les chemins se répartissent sur deux.
 		for (const [messageId, chemin] of [
 			[sonMessage, legitime],
 			[sonMessage, `messages/${messageDuCamarade}/b.png`],
 			[sonMessage, `messages/${sonMessage}/../${messageDuCamarade}/c.png`],
-			[sonAutreMessage, `${camarade.id}/zz/d.png`]
+			[sonAutreMessage, `${camarade.id}/zz/d.png`],
+			[sonAutreMessage, legitimePoints],
+			// Déposée par l'élève sur le message du camarade (la RLS d'insertion l'interdit ;
+			// la fonction ne s'y fie pas) : non rendue.
+			[messageDuCamarade, `messages/${messageDuCamarade}/e.png`]
 		]) {
 			await pg.query(
 				`insert into message_attachments_v2
@@ -333,10 +339,14 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 		expect(error).toBeNull();
 		expect(data).toMatchObject({
 			storage_paths: {
-				'message-attachments': [legitime],
 				'bug-report-screenshots': [capture]
 			}
 		});
+		// Liste EXACTE (ordre libre) : aucun chemin forgé en plus des deux légitimes.
+		const rendus = (data as { storage_paths: Record<string, string[]> }).storage_paths[
+			'message-attachments'
+		];
+		expect([...rendus].sort()).toEqual([legitime, legitimePoints].sort());
 		await service.auth.admin.deleteUser(eleve.id);
 		await pg.query('delete from bug_reports where user_id = $1', [camarade.id]);
 		await pg.query('delete from private_messages where sender_id = $1', [camarade.id]);

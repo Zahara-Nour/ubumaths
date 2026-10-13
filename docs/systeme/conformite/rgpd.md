@@ -598,7 +598,7 @@ WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
   est journalisé en erreur, il n'interrompt pas la suppression ; le cron du dimanche reprend).
   Pour `message-attachments` et `bug-report-screenshots`, dont l'élève écrit lui-même le chemin,
   seul un chemin rangé chez lui est rendu (`messages/<son message>/…`, `<son id>/<son
-signalement>/…`, jamais `..`) : sinon il ferait retirer le fichier d'un camarade
+signalement>/…`, aucun segment `..`) : sinon il ferait retirer le fichier d'un camarade
   (`20261016101200`).
 
 **Atomicité** : en fin de fonction, si une clé étrangère sans `ON DELETE` vise encore le compte
