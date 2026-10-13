@@ -260,6 +260,10 @@ ouvre une sinon ; après un opérateur ou au début, elle ouvre. Une barre ouvra
 implicite après `|…|` suivi d'un facteur est refusée comme ambiguë (`|2|x|-1|`, `|x|y|z|` :
 « écris \left| … \right| ») ; une relation lève l'ambiguïté (`|x|y=2|x|` se lit). Tests :
 `parser/latex/__tests__/abs-implicit-multiply.test.ts`. Tests : `solve/__tests__/valeur-absolue.test.ts`.
+`\vert`, `\lvert`, `\rvert` sont lus par le tokenizer comme la barre `|` (2026-10-13) : la touche
+« valeur absolue » du clavier virtuel de MathLive rend `\left\vert2x+1\right\vert`, refusé
+auparavant. `\mid` (divisibilité) et `\Vert`, `\|` (norme) restent refusés. Tests :
+`parser/latex/__tests__/vert-commands.test.ts`, `utils/__tests__/answer-validator-vert.test.ts`.
 
 **Ce que voit l'élève (2026-10-13, atelier seulement).** `generateEquationSteps` envoie toute
 équation où l'inconnue paraît sous une valeur absolue vers `pedagogical-solve/absolute-value.ts`
