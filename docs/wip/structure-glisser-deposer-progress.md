@@ -190,13 +190,13 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
 
 ### E5. Élève de 6e ou avant (niveau de l'élève connecté ; visiteur : aucune restriction)
 
-| #    | Cas                                                   | Comportement attendu                                                                                    |
-| ---- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| E5.1 | (G6) somme qui contient une soustraction (`12 − 4`)   | ses termes ne se glissent pas : pas de fond de groupe, pas de curseur « main », pas de phrase           |
-| E5.2 | somme d'additions seules (`2 + 3 + 4`)                | permis                                                                                                  |
-| E5.3 | produit (`2 × 3 × 5`)                                 | permis                                                                                                  |
-| E5.4 | **à confirmer** : `2 × (3 + 4)`, aller-retour du `2`  | reco de Claude : `2 × (3 + 4)` (le `×` reste devant une parenthèse), pas `2(3 + 4)`, écriture vue en 5e |
-| E5.5 | le message « 6e ou avant » remplace la structure (C1) | rien ne se glisse                                                                                       |
+| #    | Cas                                                   | Comportement attendu                                                                                                                                                          |
+| ---- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| E5.1 | (G6) somme qui contient une soustraction (`12 − 4`)   | ses termes ne se glissent pas : pas de fond de groupe, pas de curseur « main », pas de phrase                                                                                 |
+| E5.2 | somme d'additions seules (`2 + 3 + 4`)                | permis                                                                                                                                                                        |
+| E5.3 | produit (`2 × 3 × 5`)                                 | permis                                                                                                                                                                        |
+| E5.4 | `2 × (3 + 4)`, aller-retour du `2`                    | `2 × (3 + 4)`, pas `2(3 + 4)` (écriture vue en 5e). Appliqué comme « × toujours écrit en 6e ou avant » (`2 × π × r`) : **extension proposée par Claude, en attente de David** |
+| E5.5 | le message « 6e ou avant » remplace la structure (C1) | rien ne se glisse                                                                                                                                                             |
 
 ### E6. Au clavier (proposition de Claude)
 
@@ -240,3 +240,9 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
   réglages (structure, lecture, déplacer ⇒ structure), E5.4 étendu à « × toujours écrit » en 6e.
 - 2026-10-13 — lot 1 : `src/lib/mathAST/structure/rearrange.ts` (29 tests, vus rouges d'abord),
   branche `feat/structure-reecriture`.
+- 2026-10-13 — revue du lot 1 (`code-reviewer`, Opus) : 590 déplacements du corpus, 0 anomalie.
+  Corrigé : un quotient en ligne posé après un autre facteur prend des parenthèses (`12 : 3 × 2`,
+  `2` en tête → `2 (12 : 3)` ; sans elles, `(2 × 12) : 3`) — signalé à David, l'autre option
+  serait de figer ces produits ; tests des parenthèses de l'écriture usuelle (`2×-3`, `--3+x`),
+  vus rouges en les retirant ; décimal `.5` ; fantôme sans marqueurs. Repéré, hors chantier :
+  `toLatex(multiply(2, divide(12, 3, 'ratio')))` écrit `2 \times 12 : 3` (à signaler).

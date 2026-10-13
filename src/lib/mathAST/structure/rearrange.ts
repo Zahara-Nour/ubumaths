@@ -23,8 +23,16 @@ export interface MovablePart {
 	readonly sign: Sign;
 	/** `\class{ubs-n<id>}{…}` */
 	readonly marked: string;
-	/** Écrite entre parenthèses par son groupe (`a + (−b)`) : elles la suivent */
+	/**
+	 * Écrite entre parenthèses par l'écriture usuelle (`toLatex`), pas tapées :
+	 * `2 × (−3)` saisi `2×-3`. Elles la suivent partout.
+	 */
 	readonly wrapped: boolean;
+	/**
+	 * Quotient en ligne (`12 : 3`, `x ÷ 2`) : facteur d'un produit posé ailleurs
+	 * qu'en tête, il prend des parenthèses (`2 × 12 : 3` se relirait `(2 × 12) : 3`).
+	 */
+	readonly inlineQuotient: boolean;
 }
 
 /** Une somme et ses termes, un produit et ses facteurs, une égalité et ses deux membres */
@@ -52,7 +60,7 @@ export interface RearrangeOptions {
 export interface GroupLayout {
 	/** `gaps[k]` : avant la partie k ; `gaps[parts.length]` : à la fin ; 0 ou absent : rien */
 	readonly gaps?: readonly number[];
-	/** LaTeX de la partie saisie : donne sa hauteur aux espaces (la ligne ne se tasse pas) */
+	/** LaTeX de la partie saisie (marqueurs retirés) : donne sa hauteur aux espaces */
 	readonly phantom?: string;
 }
 
@@ -95,12 +103,14 @@ export function movableGroupOf(
 			if (part.role !== 'term') return null;
 			// G6 : à ce niveau, pas de terme négatif
 			if (beforeFifthGrade && group.signs.includes('-')) return null;
-			return collect(group, 'sum', group.signs, beforeFifthGrade);
+			return collect(structure, group, 'sum', group.signs, beforeFifthGrade);
 		case 'product':
-			return part.role === 'factor' ? collect(group, 'product', null, beforeFifthGrade) : null;
+			return part.role === 'factor'
+				? collect(structure, group, 'product', null, beforeFifthGrade)
+				: null;
 		case 'relation': {
 			const isEquality = group.relations.length === 1 && group.relations[0] === '=';
-			return isEquality ? collect(group, 'equality', null, beforeFifthGrade) : null;
+			return isEquality ? collect(structure, group, 'equality', null, beforeFifthGrade) : null;
 		}
 		default:
 			return null;
@@ -109,6 +119,7 @@ export function movableGroupOf(
 
 /** Les parties du groupe, retrouvées dans son LaTeX marqué */
 function collect(
+	structure: ExpressionStructure,
 	node: StructureNode,
 	kind: MovableGroup['kind'],
 	signs: readonly Sign[] | null,
@@ -128,10 +139,16 @@ function collect(
 			id: childId,
 			sign: signs ? signs[i] : '+',
 			marked: content.slice(cursor + block.start, cursor + block.end),
-			wrapped
+			wrapped,
+			inlineQuotient: isInlineQuotient(structure, childId)
 		});
 		cursor += block.end;
-		if (wrapped) cursor = content.indexOf(RIGHT_PAREN, cursor) + RIGHT_PAREN.length;
+		if (wrapped) {
+			// `wrapIf` écrit ` \right)` juste après le marqueur
+			const close = content.indexOf(RIGHT_PAREN, cursor);
+			if (close < 0) throw new Error(`parenthèse fermante introuvable après ${childId}`);
+			cursor = close + RIGHT_PAREN.length;
+		}
 	});
 	return {
 		kind,
@@ -140,6 +157,13 @@ function collect(
 		timesSign: written.includes('\\cdot') ? CDOT : TIMES,
 		alwaysTimes: beforeFifthGrade
 	};
+}
+
+/** `12 : 3`, `x ÷ 2`, `a / b` : un quotient écrit en ligne (pas une fraction) */
+function isInlineQuotient(structure: ExpressionStructure, id: number): boolean {
+	const node = structure.nodes[id];
+	if (node.kind !== 'quotient') return false;
+	return structure.nodes[node.children[0]]?.role === 'dividend';
 }
 
 /** Le marqueur de la sous-expression `id` dans `latex`, ou `null` */
@@ -168,7 +192,9 @@ function findMarkerBlock(latex: string, id: number): MarkerBlock | null {
 /**
  * L'expression entière (LaTeX marqué) après avoir posé la partie `from` du
  * groupe en position `to`. Posée à sa place : rien ne change, pas même un
- * signe × superflu, ce n'est pas un déplacement (E3.8).
+ * signe × superflu, ce n'est pas un déplacement (E3.8). Part toujours de
+ * `structure.latex` : pour un second déplacement, relire d'abord le résultat
+ * (`structureFromLatex`).
  */
 export function movedLatex(
 	structure: ExpressionStructure,
@@ -230,7 +256,8 @@ export function cardLatex(group: MovableGroup, part: MovablePart): string {
 /** La partie k telle que le groupe l'écrit, précédée de son signe */
 function piece(group: MovableGroup, parts: readonly MovablePart[], k: number): string {
 	const part = parts[k];
-	const written = part.wrapped ? `${LEFT_PAREN} ${part.marked} ${RIGHT_PAREN}` : part.marked;
+	const wrapped = part.wrapped || (group.kind === 'product' && k > 0 && part.inlineQuotient);
+	const written = wrapped ? `${LEFT_PAREN} ${part.marked} ${RIGHT_PAREN}` : part.marked;
 	switch (group.kind) {
 		case 'sum': {
 			// G4 : le signe suit le terme ; un « + » en tête disparaît
@@ -238,7 +265,7 @@ function piece(group: MovableGroup, parts: readonly MovablePart[], k: number): s
 			return `${part.sign === '-' ? ' - ' : ' + '}${written}`;
 		}
 		case 'product':
-			return k === 0 ? written : `${factorSeparator(group, part)}${written}`;
+			return k === 0 ? written : `${factorSeparator(group, part, wrapped)}${written}`;
 		case 'equality':
 			return k === 0 ? written : ` = ${written}`;
 	}
@@ -251,10 +278,10 @@ function piece(group: MovableGroup, parts: readonly MovablePart[], k: number): s
  * l'élève l'avait écrit (`3 × a × b` → `3ab`). Sans mémoire : un aller-retour
  * rend l'écriture de départ. 6e ou avant : toujours le signe (E5.4).
  */
-function factorSeparator(group: MovableGroup, right: MovablePart): string {
+function factorSeparator(group: MovableGroup, right: MovablePart, wrapped: boolean): string {
 	if (group.alwaysTimes) return group.timesSign;
-	if (right.wrapped) return ' ';
-	return /^(\d|\\d?frac)/.test(stripMarkers(right.marked)) ? group.timesSign : ' ';
+	if (wrapped) return ' ';
+	return /^(\d|\.|\\d?frac)/.test(stripMarkers(right.marked)) ? group.timesSign : ' ';
 }
 
 /**
@@ -264,7 +291,8 @@ function factorSeparator(group: MovableGroup, right: MovablePart): string {
  * (largeur nulle) n'y changent rien.
  */
 function gapLatex(width: number, slot: number, phantom: string): string {
-	const height = phantom ? `\\vphantom{${phantom}}` : '';
+	// Sans marqueurs : un `ubs-n<id>` en double tromperait le repérage au pointeur
+	const height = phantom ? `\\vphantom{${stripMarkers(phantom)}}` : '';
 	return `\\mathord{\\class{${GAP_CLASS_PREFIX}${slot}}{\\hspace{${width.toFixed(3)}em}${height}}}`;
 }
 

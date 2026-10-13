@@ -204,6 +204,24 @@ describe('movedLatex : l’expression après un déplacement (E3)', () => {
 		);
 	});
 
+	it('un quotient en ligne posé après un autre facteur prend des parenthèses (sinon (2 × 12) : 3)', () => {
+		expect(move('12:3\\times2', '2', 0)).toBe(String.raw`2 \left( 12 : 3 \right)`);
+		expect(move('12:3\\times2', '2', 0, SIXTH_GRADE)).toBe(
+			String.raw`2 \times \left( 12 : 3 \right)`
+		);
+		// Resté en tête, pas de parenthèses : `12 : 3 × 5 × 2` se lit de gauche à droite
+		expect(move('12:3\\times2\\times5', '5', 1)).toBe('12 : 3 \\times 5 \\times 2');
+	});
+
+	it('une parenthèse de l’écriture usuelle (non tapée) suit sa partie', () => {
+		expect(move('2\\times-3', '-3', 0)).toBe(String.raw`\left( -3 \right) \times 2`);
+		expect(move('--3+x', 'x', 0)).toBe(String.raw`x - \left( -3 \right)`);
+	});
+
+	it('un décimal écrit sans zéro prend la croix comme un nombre', () => {
+		expect(move('.5x', 'x', 0)).toMatch(/^x \\times /);
+	});
+
 	it('un facteur d’un produit précédé d’un « − »', () => {
 		expect(move('-3x', 'x', 0)).toBe('-x \\times 3');
 	});
@@ -247,9 +265,30 @@ describe('groupLatex : la ligne pendant le glisser', () => {
 	});
 
 	it('dans un produit, l’espace s’ouvre avant le signe de multiplication', () => {
+		const group = groupOf(structureOf('2\\times3\\times5'), '3');
+		expect(stripMarkers(groupLatex(group, group.parts, { gaps: [0, 0.25] }))).toBe(
+			'2\\mathord{\\class{ubs-gap1}{\\hspace{0.250em}}} \\times 3 \\times 5'
+		);
+	});
+
+	it('dans une égalité, l’espace s’ouvre avant le « = »', () => {
+		const group = groupOf(structureOf('2x+3=7'), '7');
+		expect(stripMarkers(groupLatex(group, group.parts, { gaps: [0, 0.5] }))).toBe(
+			'2 x + 3\\mathord{\\class{ubs-gap1}{\\hspace{0.500em}}} = 7'
+		);
+	});
+
+	it('le fantôme est écrit sans marqueurs (un marqueur en double tromperait le repérage)', () => {
 		const group = groupOf(structureOf('2xy'), 'x');
-		expect(stripMarkers(groupLatex(group, group.parts, { gaps: [0, 0.25], phantom: 'x' }))).toBe(
-			'2\\mathord{\\class{ubs-gap1}{\\hspace{0.250em}\\vphantom{x}}} x y'
+		const latex = groupLatex(group, group.parts, {
+			gaps: [0, 0.25],
+			phantom: group.parts[1].marked
+		});
+		expect(latex.match(/ubs-n/g)?.length).toBe(
+			group.parts
+				.map((p) => p.marked)
+				.join('')
+				.match(/ubs-n/g)?.length
 		);
 	});
 
