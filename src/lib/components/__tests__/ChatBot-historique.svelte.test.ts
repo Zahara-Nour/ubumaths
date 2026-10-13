@@ -33,6 +33,19 @@ describe('ChatBot — historique par compte', () => {
 		expect(screen.container.textContent).not.toContain(SECRET_A);
 	});
 
+	it('un autre compte se connecte, chat ouvert : la conversation précédente disparaît', async () => {
+		// Deux onglets : B se connecte dans l'autre, `data.user` change sans démonter le chat.
+		localStorage.setItem('chatHistory:eleve-a', savedConversation(SECRET_A));
+		const screen = await render(ChatBot, { props: { userId: 'eleve-a' } });
+		await expect.poll(() => screen.container.textContent).toContain(SECRET_A);
+
+		await screen.rerender({ userId: 'eleve-b' });
+
+		await expect.poll(() => screen.container.textContent).not.toContain(SECRET_A);
+		expect(localStorage.getItem('chatHistory:eleve-b')).toBeNull();
+		expect(localStorage.getItem('chatHistory:eleve-a')).toBeNull();
+	});
+
 	it('l’élève retrouve sa propre conversation', async () => {
 		localStorage.setItem('chatHistory:eleve-a', savedConversation(SECRET_A));
 		const screen = await render(ChatBot, { props: { userId: 'eleve-a' } });

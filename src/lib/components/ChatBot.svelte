@@ -387,7 +387,9 @@
 		try {
 			forgetOtherChatHistories(localStorage, userId);
 			const saved = loadChatHistory(localStorage, userId);
-			if (Array.isArray(saved)) messages = saved as Message[];
+			// Remise à zéro aussi : un autre compte peut se connecter (autre onglet) sans que
+			// le chat soit démonté — la conversation précédente ne doit pas lui rester.
+			messages = Array.isArray(saved) ? (saved as Message[]) : [];
 		} catch (e) {
 			console.error('Historique du chat illisible :', e);
 		}

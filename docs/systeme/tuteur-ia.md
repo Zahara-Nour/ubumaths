@@ -201,7 +201,9 @@ quand le corpus est vide. Et le texte des documents déposés, à l'indexation.
 `localStorage['chatHistory:<id du compte>']` (`src/lib/utils/chat-history.ts`). Sur un appareil
 partagé (constat T17, 2026-10-13) : à l'ouverture du chat, les conversations des autres comptes et
 l'ancienne clé commune `chatHistory` sont effacées sans être affichées ; la déconnexion
-(`submitLogoutForm`, page d'attente d'approbation) les efface toutes. Le bouton « effacer » du chat
+(`submitLogoutForm`, page d'attente d'approbation) et la suppression du compte
+(`AccountDeletionDialog`) les effacent toutes ; un changement de compte chat ouvert (autre onglet)
+vide la conversation affichée. Le bouton « effacer » du chat
 efface celle du compte. Limite : un élève parti sans se déconnecter laisse sa conversation dans le
 navigateur jusqu'à la prochaine ouverture du chat par un autre compte.
 
