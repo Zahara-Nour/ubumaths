@@ -388,3 +388,61 @@ describe('corrections non visibles pour l’élève', () => {
 		expect(typst).toContain('CORRIGE2');
 	});
 });
+
+// ============================================================================
+// TITRE : MÊMES FONCTIONS DÉCLARÉES ET MÊME SENS DE AB QUE L'ÉNONCÉ
+// ============================================================================
+
+describe('titre d’exercice : fonctions déclarées et sens de AB de l’exercice', () => {
+	const withTitle = (
+		title: string,
+		generic_functions: string[] | null,
+		statement = "Calculer ~C'(x)~."
+	) => {
+		const input = teacherInput(BASE_CONFIG, [EXERCISES[1]], []);
+		input.instance.exercises[0] = {
+			...input.instance.exercises[0],
+			title,
+			statement,
+			generic_functions
+		};
+		const view = studentView(BASE_CONFIG, [EXERCISES[1]], []);
+		view.exercises[0] = {
+			...view.exercises[0],
+			title,
+			statement,
+			generic_functions
+		};
+		return { input, view };
+	};
+
+	it.each(TEACHER_LAYOUTS)('prof (%s) : `~C’(x)~` sans erreur, comme l’énoncé', (_n, tpl) => {
+		const { input } = withTitle("Coût marginal ~C'(x)~", ['C']);
+		const typst = generateWorksheetTypst({ ...input, mode: 'worksheet', template: tpl });
+		expect(typst).not.toContain('Unexpected token');
+		// Le titre rend la formule comme l'énoncé
+		expect(typst).toContain("Coût marginal $C'( x )$");
+		expect(typst).toContain("Calculer $C'( x )$");
+	});
+
+	it('élève : `~C’(x)~` sans erreur, comme l’énoncé', () => {
+		const { view } = withTitle("Coût marginal ~C'(x)~", ['C']);
+		const typst = generateStudentWorksheetTypst(view, 'correction');
+		expect(typst).not.toContain('Unexpected token');
+		expect(typst).toContain("Coût marginal $C'( x )$");
+	});
+
+	it('sens de AB : longueur dans le titre comme dans l’énoncé', () => {
+		const { input } = withTitle("Le segment ~A'B'~", null, "Calculer ~A'B'~.");
+		input.instance.exercises[0].capital_pairs = 'length';
+		const typst = generateWorksheetTypst({ ...input, mode: 'worksheet' });
+		expect(typst).not.toContain('Unexpected token');
+		expect(typst).toContain("Le segment $A'B'$");
+	});
+
+	it('titre sans maths : texte simple', () => {
+		const { input } = withTitle('Coût marginal', ['C']);
+		const typst = generateWorksheetTypst({ ...input, mode: 'worksheet' });
+		expect(typst).toContain('[Exercice 1 : Coût marginal]');
+	});
+});

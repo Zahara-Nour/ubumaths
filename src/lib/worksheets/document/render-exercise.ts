@@ -358,12 +358,16 @@ ${body}
 // PIÈCES COMMUNES
 // ============================================================================
 
-/** Titre d'exercice en Typst : ses formules `$…$` et `~…~` rendues */
+/**
+ * Titre d'exercice en Typst : ses formules `$…$` et `~…~` rendues avec les
+ * fonctions déclarées et le sens de `AB` de l'exercice, comme son énoncé
+ * (sans eux, `~C'(x)~` s'imprimait en erreur).
+ */
 function exerciseTitle(exercise: DocumentExercise, doc: WorksheetDocument): string {
 	return processTableCellContent(
 		exercise.title ?? '',
 		doc.locale,
-		undefined,
+		genericFunctionsConfig(exercise.genericFunctions),
 		exercise.capitalPairs
 	);
 }
