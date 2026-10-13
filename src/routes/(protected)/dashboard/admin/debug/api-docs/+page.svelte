@@ -194,7 +194,6 @@
 		<a href="/api/openapi.json" target="_blank" rel="noopener noreferrer"
 			>Download OpenAPI Spec (JSON)</a
 		>
-		<a href="/" target="_blank" rel="noopener noreferrer">Return to Chiphre</a>
 	</div>
 </div>
 

@@ -49,7 +49,7 @@ async function main() {
 		console.log(`   - Schemas: ${schemaCount}`);
 		console.log(`   - Tags: ${tagCount}`);
 		console.log(`   - File Size: ${fileSize} KB`);
-		console.log(`\n🔗 View docs: http://localhost:5175/api-docs`);
+		console.log(`\n🔗 View docs: http://localhost:5175/dashboard/admin/debug/api-docs`);
 		console.log(`🔗 Download spec: http://localhost:5175/openapi.json`);
 	} catch (error) {
 		console.error('❌ Failed to generate OpenAPI spec:', error);

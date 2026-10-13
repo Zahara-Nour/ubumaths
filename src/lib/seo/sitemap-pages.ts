@@ -161,7 +161,6 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 	{ pattern: '/test-*', reason: DEMO },
 	{ pattern: '/blockly/**', reason: DEMO },
 	{ pattern: '/slides/**', reason: DEMO },
-	{ pattern: '/api-docs', reason: 'documentation technique de l’API, pas une destination' },
 
 	// Parcours d'authentification et de consentement
 	{ pattern: '/auth/**', reason: 'étape du parcours de connexion, pas une destination' },

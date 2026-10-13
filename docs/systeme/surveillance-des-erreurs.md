@@ -10,7 +10,7 @@ couvre:
   - 'src/lib/server/{errorMonitoring,healthStats,bug-report-export,bug-report-screenshots,docs-scanner,markdown-parser,search}.ts'
   - 'src/lib/server/validation/{errors,bug-reports,health,search}.ts'
   - 'src/lib/server/openapi/**'
-  - 'src/routes/(public)/api-docs/**'
+  - 'src/routes/(protected)/dashboard/admin/debug/api-docs/**'
 ---
 
 # Surveillance des erreurs, signalements, santé et outils admin
@@ -199,14 +199,17 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   `__APP_VERSION__` injecté par `vite.config.ts`. Affichés par `InfoPanel.svelte` et la
   page admin des réglages.
 
-### OpenAPI et `/api-docs`
+### OpenAPI et la page Swagger
 
 - `src/lib/server/openapi/generator.ts` : `generateOpenAPISpec()` écrit **à la main** une
   spécification OpenAPI 3.1 de 11 chemins.
 - `GET /api/openapi.json` : admin seul, `Cache-Control: private, no-store`.
-- `/api-docs` (groupe public, `ssr = false`) : Swagger UI chargé depuis `unpkg.com`
-  (version épinglée 5.11.0, autorisée par la CSP de `src/hooks.server.ts`), qui lit
-  `/api/openapi.json`. Exclu du plan du site (`src/lib/seo/sitemap-pages.ts`).
+- `/dashboard/admin/debug/api-docs` (admin seul : garde de la section et `requireAdmin`
+  dans `+page.server.ts` ; `ssr = false`, entrée « API (Swagger) » du menu debug) :
+  Swagger UI chargé depuis `unpkg.com` (version épinglée 5.11.0, autorisée par la CSP de
+  `src/hooks.server.ts`), qui lit
+  `/api/openapi.json`. Jusqu'au 2026-10-13, la page était publique (`/api-docs`) et
+  montrait un Swagger vide aux non-admins.
 
 ## Invariants
 
@@ -346,7 +349,5 @@ Constatés le 2026-10-13, non corrigés.
   présents dans le déploiement Vercel.
 - **OpenAPI** : 11 chemins sur environ 380 routes, dont 4 qui n'existent plus en tant que
   route (`/api/messages`, `/api/questions`, `/api/notifications`, `/api/rewards/award`).
-  `/api-docs` est public mais la spécification est réservée à l'admin : un non-admin voit
-  un Swagger vide.
 - **Commentaire périmé** : l'en-tête de `healthStats.ts` dit que `server_cache`,
   `background_job_runs` et les vues `admin_*` manquent dans `database.ts` ; elles y sont.
