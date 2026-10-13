@@ -95,3 +95,7 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
   refuse) ; plusieurs lettres ; coefficient littéral devant ln/cos/sin ; `y = x eˣ`. Écritures à
   mettre au propre au lot 2 (`ln(y/3 + 1/3)` → `ln((y+1)/3)`, `(1/2)^a`). **Question à David** :
   `ax = 1` → `1/a` et `e^{ax} = 2` → `ln 2 / a` sans « si a ≠ 0 » (convention V41, déjà sur main).
+- 2026-10-13 — **lot 2 en PR** : `computeReciprocal` (`src/lib/mathAST/reciprocal/`, doc
+  [reciproque.md](../systeme/mathast/reciproque.md)) ; les 8 cas du tableau et les 4 refus testés,
+  aller-retour numérique ; f(I) lue par les variations ET par le solveur, en accord. Écritures
+  laissées au solveur : `x² − 4x + 1` sur [2 ; +∞[ → `√(4x + 12)/2 + 2`, `1/x²` → `√x/x`.

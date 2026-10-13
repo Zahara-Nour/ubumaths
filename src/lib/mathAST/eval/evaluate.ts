@@ -410,6 +410,11 @@ function evaluateFunctionToRational(
 	depth: number,
 	base?: MathNode
 ): Rational {
+	// `root(a, n)` : la racine n-ième du solveur et de `denormalize` — la même
+	// que `\sqrt[n]{a}`, dont le parseur range l'indice dans `base`
+	if (name === 'root' && args.length === 2 && base === undefined) {
+		return evaluateFunctionToRational('sqrt', [args[0]], depth, args[1]);
+	}
 	// Evaluate arguments to Rationals first (for exact computation where possible)
 	const rationalArgs = args.map((arg) => evaluateToRational(arg, depth + 1));
 
@@ -938,6 +943,7 @@ const KNOWN_FUNCTIONS = new Set([
 	'log2',
 	'sqrt',
 	'cbrt',
+	'root',
 	'abs',
 	'sign',
 	'floor',
