@@ -18,23 +18,23 @@ function output(input: string): string {
 
 describe('.domaine — dénominateur impair', () => {
 	it('x^(2/3) : ℝ', () => {
-		expect(output('.domaine x^(2/3)')).toMatch(/Domaine : ℝ/);
+		expect(output('.domaine x^(2/3)')).toBe('D = ℝ');
 	});
 
 	it('x^(-1/3) : ℝ privé de 0', () => {
-		expect(output('.domaine x^(-1/3)')).toMatch(/Domaine : ℝ \\ \{0\}|Domaine : ℝ\*/);
+		expect(output('.domaine x^(-1/3)')).toBe('D = ℝ \\ {0}');
 	});
 
 	it('x^(4/6) se lit x^(2/3) : ℝ', () => {
-		expect(output('.domaine x^(4/6)')).toMatch(/Domaine : ℝ/);
+		expect(output('.domaine x^(4/6)')).toBe('D = ℝ');
 	});
 
 	it('(x-1)^(5/3) : ℝ', () => {
-		expect(output('.domaine (x-1)^(5/3)')).toMatch(/Domaine : ℝ/);
+		expect(output('.domaine (x-1)^(5/3)')).toBe('D = ℝ');
 	});
 
 	it('x^(1/2) inchangé : [0 ; +∞[', () => {
-		expect(output('.domaine x^(1/2)')).toMatch(/Domaine : \[0 ; \+∞\[/);
+		expect(output('.domaine x^(1/2)')).toBe('D = [0 ; +∞[');
 	});
 });
 

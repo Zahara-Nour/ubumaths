@@ -330,11 +330,19 @@ describe('f(t) = t^2 : les commandes répondent en t', () => {
 	it('.variations f / .domaine f : en t', () => {
 		const s = session();
 		runInput(s, 'f(t) = t^2');
-		for (const input of ['.variations f', '.domaine f']) {
-			const r = runInput(s, input);
-			expect(r.kind === 'commande' ? r.output : '', input).toContain('t');
-			expect(r.kind === 'commande' ? r.output : '', input).not.toMatch(/(?<![a-z])x(?![a-z])/);
-		}
+		const variations = runInput(s, '.variations f');
+		expect(variations.kind === 'commande' ? variations.output : '').toContain('t');
+		expect(variations.kind === 'commande' ? variations.output : '').not.toMatch(
+			/(?<![a-z])x(?![a-z])/
+		);
+		// `.domaine` répond par l'ensemble : la lettre est dans les étapes
+		runInput(s, 'g(t) = ln(t)');
+		const domain = runInput(s, '.domaine g');
+		expect(domain.kind === 'commande' ? domain.output : '').toBe('D = ]0 ; +∞[');
+		const steps = domain.kind === 'commande' ? (domain.steps ?? []) : [];
+		const constraints = steps.map((st) => st.expressionLatex ?? '').join(' ');
+		expect(constraints).toContain('t > 0');
+		expect(constraints).not.toContain('x > 0');
 	});
 
 	it('.résoudre f=0 et f(t)=0 : t = 2 (f(t) = 2t − 4)', () => {

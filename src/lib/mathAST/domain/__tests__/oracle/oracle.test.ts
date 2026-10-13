@@ -114,35 +114,35 @@ describe('oracle du domaine — moteur', () => {
 // Saisie atelier : `.domaine` via runInput, rendu exact
 // =============================================================================
 
+/** La réponse de la ligne, en texte : `D = …` (formule depuis la PR 2 de `.domaine`). */
 function domaineLine(input: string): string {
 	const outcome = runInput({ atelier: new Atelier(), engine: new WebReplEngine() }, input);
 	if (outcome.kind !== 'commande') return `${outcome.kind}: ${JSON.stringify(outcome)}`;
-	const line = (outcome.output ?? '').split('\n').find((l) => l.startsWith('Domaine :'));
-	return line ?? `pas de ligne Domaine : ${outcome.output ?? ''}`;
+	return outcome.output;
 }
 
 const ATELIER_CASES: readonly (readonly [string, string])[] = [
 	// les trois cas du signalement
-	['.domaine 1/(x-1/2)', 'Domaine : ℝ \\ {1/2}'],
-	['.domaine sqrt(x-1/3)', 'Domaine : [1/3 ; +∞['],
-	['.domaine sqrt(3x-1)', 'Domaine : [1/3 ; +∞['],
+	['.domaine 1/(x-1/2)', 'D = ℝ \\ {1/2}'],
+	['.domaine sqrt(x-1/3)', 'D = [1/3 ; +∞['],
+	['.domaine sqrt(3x-1)', 'D = [1/3 ; +∞['],
 	// rationnels
-	['.domaine 1/(2x+5)', 'Domaine : ℝ \\ {-5/2}'],
-	['.domaine ln(x-1/2)', 'Domaine : ]1/2 ; +∞['],
-	['.domaine ln(3-2x)', 'Domaine : ]-∞ ; 3/2['],
-	['.domaine 1/(6x^2-5x+1)', 'Domaine : ℝ \\ {1/3 ; 1/2}'],
+	['.domaine 1/(2x+5)', 'D = ℝ \\ {-5/2}'],
+	['.domaine ln(x-1/2)', 'D = ]1/2 ; +∞['],
+	['.domaine ln(3-2x)', 'D = ]-∞ ; 3/2['],
+	['.domaine 1/(6x^2-5x+1)', 'D = ℝ \\ {1/3 ; 1/2}'],
 	// irrationnels
-	['.domaine 1/(x^2-2)', 'Domaine : ℝ \\ {-√2 ; √2}'],
-	['.domaine 1/(2x^2-1)', 'Domaine : ℝ \\ {-√2/2 ; √2/2}'],
-	['.domaine sqrt(x^2-x-1)', 'Domaine : ]-∞ ; (1-√5)/2] ∪ [(1+√5)/2 ; +∞['],
+	['.domaine 1/(x^2-2)', 'D = ℝ \\ {-√2 ; √2}'],
+	['.domaine 1/(2x^2-1)', 'D = ℝ \\ {-√2/2 ; √2/2}'],
+	['.domaine sqrt(x^2-x-1)', 'D = ]-∞ ; (1-√5)/2] ∪ [(1+√5)/2 ; +∞['],
 	// composées, valeur absolue
-	['.domaine sqrt(ln(x))', 'Domaine : [1 ; +∞['],
-	['.domaine ln(sqrt(x)-1)', 'Domaine : ]1 ; +∞['],
-	['.domaine ln(abs(x)-1)', 'Domaine : ]-∞ ; -1[ ∪ ]1 ; +∞['],
+	['.domaine sqrt(ln(x))', 'D = [1 ; +∞['],
+	['.domaine ln(sqrt(x)-1)', 'D = ]1 ; +∞['],
+	['.domaine ln(abs(x)-1)', 'D = ]-∞ ; -1[ ∪ ]1 ; +∞['],
 	// périodiques
-	['.domaine tan(x)', 'Domaine : ℝ \\ {π/2 + k·π : k ∈ ℤ}'],
-	['.domaine tan(2x)', 'Domaine : ℝ \\ {π/4 + k·π/2 : k ∈ ℤ}'],
-	['.domaine 1/sin(x)', 'Domaine : ℝ \\ {k·π : k ∈ ℤ}']
+	['.domaine tan(x)', 'D = ℝ \\ {π/2 + k·π : k ∈ ℤ}'],
+	['.domaine tan(2x)', 'D = ℝ \\ {π/4 + k·π/2 : k ∈ ℤ}'],
+	['.domaine 1/sin(x)', 'D = ℝ \\ {k·π : k ∈ ℤ}']
 ];
 
 describe('oracle du domaine — `.domaine` dans l’atelier', () => {

@@ -226,7 +226,9 @@ describe('chaque commande de la vue Calcul écrit la virgule', () => {
 	it('.domaine', () => {
 		const result = commande(runInput(session(), '.domaine ln(x-0.5)'));
 
-		expect(result.output).toContain('ln(x-0,5)');
+		// La réponse écrit ½ (`domainToLatex`) ; le 0,5 tapé vit dans les étapes
+		expect(result.output).toBe('D = ]1/2 ; +∞[');
+		expect(result.steps?.map((s) => s.explanation ?? '').join(' ')).toContain('0{,}5');
 		expectNoDotDecimal(result);
 	});
 

@@ -104,10 +104,12 @@ import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
 import { integrateRefusalSteps, integrateSteps } from './integrate-steps';
+import { domainLine } from './domain-steps';
 import { collapseLnAbs } from '$lib/mathAST/pedagogical-integration/latex';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import {
+	DEFAULT_VARIABLE,
 	guessedVariable,
 	isKeywordCommand,
 	readCommandArguments,
@@ -1523,6 +1525,26 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			...(integrated !== null && { steps: integrated.steps, ...summaryField(integrated) }),
 			...noted
 		};
+	}
+
+	// `.domaine` : la réponse est une FORMULE, `D = …`, écrite comme la
+	// conclusion des étapes ; le texte du terminal (« Expression »,
+	// « Condition ») n'est plus montré (décision Q5 de David, 2026-10-13).
+	// « Comment ? » : les étapes de `pedagogical-domain`, seulement quand
+	// elles concluent, par valeur, le domaine du moteur (`domain-steps.ts`).
+	// Les refus (`DOMAIN_UNRESOLVED`) sont sortis plus haut, inchangés.
+	if (name === 'domain' && result.success && result.ast !== undefined) {
+		const line = domainLine(result.ast, finalArgs?.variable ?? DEFAULT_VARIABLE);
+		if (line !== null) {
+			return {
+				kind: 'commande',
+				input,
+				output: line.text,
+				latex: line.latex,
+				...(line.steps !== undefined && { steps: line.steps, ...summaryField(line) }),
+				...noted
+			};
+		}
 	}
 
 	return {

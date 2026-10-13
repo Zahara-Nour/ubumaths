@@ -727,7 +727,10 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   réel, somme de puissances paires de polynômes et d'une constante > 0 (`x^2+1`) → étape
   « division » justifiée (« somme d'un carré et d'un nombre strictement positif ») ; autre forme
   (`x^2+x+1`, `e^x`, `(\frac1x)^2+1`) → pas de justification.
-  Tests : `pedagogical-domain/__tests__/redaction-etapes.test.ts`.
+  Tests : `pedagogical-domain/__tests__/redaction-etapes.test.ts`. Côté atelier, `.domaine`
+  répond `D = …` écrit par ce même `domainToLatex`, et branche ces étapes derrière sa propre garde
+  (`src/lib/atelier/domain-steps.ts`, voir [atelier.md](../atelier.md)) ; l'oracle du domaine
+  (`domain/__tests__/oracle/oracle.test.ts`) lit cette réponse texte, `D = ℝ \ {1/2}`.
 - La résolution d'équation pédagogique ne rejoue **pas** le solveur algorithmique : elle
   suit ce que l'élève fait sur papier (`pedagogical-solve/`). Paliers : 1 (équation du
   1er degré), 2a (inéquation du 1er degré), 2b (inéquation du 2nd degré), 3 (inéquation

@@ -71,13 +71,16 @@ describe('.variations', () => {
 describe('.domaine', () => {
 	it('`ln(t) ; t` → t > 0', () => {
 		const outcome = command('.domaine ln(t) ; t');
-		expect(outcome.output).toContain('t > 0');
+		// La réponse est l'ensemble (`D = ]0 ; +∞[`) ; la contrainte, dans les étapes
+		expect(outcome.output).toBe('D = ]0 ; +∞[');
+		expect(outcome.steps?.map((s) => s.expressionLatex).join(' ')).toContain('t > 0');
 		expect(outcome.note).toBeUndefined();
 	});
 
 	it('`ln(t)` : t devinée, t > 0', () => {
 		const outcome = command('.domaine ln(t)');
-		expect(outcome.output).toContain('t > 0');
+		expect(outcome.output).toBe('D = ]0 ; +∞[');
+		expect(outcome.steps?.map((s) => s.expressionLatex).join(' ')).toContain('t > 0');
 		expect(outcome.note).toBeUndefined();
 	});
 });
