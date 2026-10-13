@@ -1,7 +1,7 @@
 ---
 title: Atelier — une fonction définie sur un intervalle (phase 0)
 date: 2026-10-13
-status: lots 1 à 3 livrés ; décisions a-g du 2026-10-13 à livrer ; c) = futur chantier (composées)
+status: lots 1 à 3 livrés ; décisions a, b, d-g livrées ; c) = futur chantier (composées)
 ---
 
 # Atelier — une fonction définie sur un intervalle
@@ -116,3 +116,7 @@ Puis le lot 3 de la réciproque (carte `f⁻¹` portant son ensemble).
   - f) tangente refusée hors de l'ensemble (acceptée aux bornes fermées) ; aire sous la courbe
     refusée si [a ; b] sort de l'ensemble ;
   - g) le lien `?f=… sur …` lit « sur » (petite PR).
+- 2026-10-13 — décisions a, b, d, e, f, g livrées (branche `feat/atelier-intervalle-suites`) :
+  `.domaine f` (ensemble choisi), `.évaluer`/`.intégrer` refusés hors de l'ensemble, héritage
+  `inheritedInterval` (`citedIntervals`, `g(x) = f(2x)` → g en erreur), tangente/aire refusées dans
+  « Sur le graphique », lien `?f=… sur …`. e) couvert par un test. Reste c) (futur chantier).

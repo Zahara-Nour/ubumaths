@@ -208,8 +208,26 @@ f(x) = 0 » et « Variations » de la carte. **`f′` hérite** : `#inheritInter
 de f sur ses dérivées à chaque recalcul (il suit f, disparaît avec lui, jamais sauvegardé) ; la
 carte affiche `sur [0 ; +∞[`, `f'(5)` et l'image de la carte f′ hors de l'ensemble sont refusés.
 Pas d'action « Tabuler » (encore désactivée), ni de commande de signe : rien à brancher. Laissés
-sur tout le domaine : `.domaine`, `.intégrer … de a à b`, `.évaluer … en x=…`, `.taylor … en a`,
-`.équivalent` (questions à David, journal de la phase 0).
+sur tout le domaine : `.taylor … en a`, `.équivalent`.
+
+**Les suites décidées par David le 2026-10-13** (journal de la phase 0, a-g ; c = futur chantier,
+`f(2x)` reste refusé) : **a)** `.domaine f` d'une fonction à ensemble répond « f est définie sur
+[0 ; +∞[ (ensemble choisi) ; sans ce choix, elle le serait sur ℝ. », sans la seconde moitié quand
+l'ensemble EST le domaine (`chosenDomainAnswer`) ; sans ensemble, rien ne change. **b)**
+`.évaluer f en x=5` et `.intégrer f de a à b` hors de l'ensemble sont refusés comme `f(5)`
+(`valueOutsideRefusal`, `segmentOutsideRefusal` : la borne qui sort, sinon la partie de [a ; b]
+qui sort — un trou d'une réunion). **d)** Une fonction qui CITE une fonction à ensemble en
+**hérite** (`g(x) = f(x) + 1` → [0 ; +∞[ ; plusieurs → intersection ; en chaîne ; jusqu'à `g′`) :
+`citedIntervals` (points fixes, dans `recomputeAll`) range l'héritage dans
+`FunctionObject.inheritedInterval`, jamais sauvegardé, et `intervalDomainOf` le croise avec le
+`sur` propre de g — calculs, refus de `g(−2)`, étiquette de la carte et tracé suivent ; le champ
+de la carte garde ce que l'élève a écrit. `.résoudre g(x)=5` et `.résoudre f(x)+1=5` donnent
+tous deux 2. `g(x) = f(2x)` (décision c) ou un héritage vide passent g en **erreur**, en français.
+**e)** `.variations … dans [a;b]` inchangé. **f)** Dans « Sur le graphique » (`CurveSettings`),
+une tangente hors de l'ensemble (une borne fermée est dedans) et une aire dont [a ; b] sort
+sont refusées, le refus écrit sous le réglage (`tangentRefusal`, `areaRefusal`) ; `plot-sync`
+ne les dessine pas (`allowedDisplay`). **g)** Le lien `?f=x^2 sur [0;+∞[` lit « sur »
+(`atelierFromCurves`, `splitInterval`).
 
 **Le tracé sur l'intervalle** (lot 3, I5) : `plotRestrictionOf` (`interval.ts`) convertit
 l'ensemble en morceaux numériques (`π` → `3,14…`, `ℝ \ {0}` → deux morceaux ; borne non numérique
@@ -481,7 +499,8 @@ Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de re
   un préfixe d'un caractère dit compressé / brut (repli sans `CompressionStream`). Limite
   `MAX_URL_PAYLOAD` (1 800 caractères), dite **avant** de copier.
 - **Liens de projection** (`grapheur-link.ts`) : `/grapheur?f=x^2-3x+1&f=…`, 1 à
-  `MAX_LINK_CURVES` (8) courbes validées par Zod.
+  `MAX_LINK_CURVES` (8) courbes validées par Zod ; « sur » s'y lit comme ailleurs
+  (`?f=x^2 sur [0;+∞[`, décision g du 2026-10-13).
 - **Mode éphémère** : `?a=` comme `?f=` ouvrent un atelier qui **ne lit ni n'écrit** l'atelier
   personnel ; un lien abîmé le dit et ouvre l'atelier personnel. « Garder dans mon atelier »
   (`keepReceived`) verse dans l'atelier personnel ; en cas de collision, **l'arrivant est
