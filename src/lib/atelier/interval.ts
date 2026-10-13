@@ -27,6 +27,8 @@ import { computeDomain } from '$lib/mathAST/domain/compute';
 import { containsValue, difference, isEmpty, isUniversal } from '$lib/mathAST/domain/algebra';
 import { formatEndpointValue, formatInterval } from '$lib/mathAST/domain/format';
 import { evaluate } from '$lib/mathAST/eval';
+import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
+import { constantOf } from './constant';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { astOf, readingMode, readNumber, referencesOf, type ReadingMode } from './parse';
 import type { Provenance } from './parse';
@@ -197,7 +199,7 @@ export function outsideIntervalRefusal(
 	for (const [, name, argument] of input.matchAll(CALL)) {
 		const domain = intervalDomainOf(get(name));
 		if (domain === null) continue;
-		const value = constantValue(argument);
+		const value = constantValue(argument, get);
 		if (value === null || containsValue(domain, value)) continue;
 		return outsideIntervalMessage(name, argument.trim(), domain);
 	}
@@ -209,13 +211,29 @@ export function outsideIntervalMessage(name: string, written: string, domain: Do
 	return `${written} n'est pas dans l'ensemble de définition de ${name}, ${intervalText(domain)}.`;
 }
 
-/** La valeur d'un argument sans variable, ou `null`. */
-function constantValue(argument: string): number | null {
+/**
+ * La valeur d'un argument, ou `null` s'il dépend d'une variable. Les VALEURS de
+ * l'atelier y sont remplacées par la leur (`f(b)` avec b = 5, revue du lot 1).
+ */
+function constantValue(
+	argument: string,
+	get: (name: string) => AtelierObject | undefined
+): number | null {
 	const direct = readNumber(argument);
 	if (direct !== null) return direct;
 	const ast = astOf(argument);
 	if (ast === null) return null;
-	return numericValue(ast);
+	const bindings: Record<string, number> = {};
+	for (const variable of getVariables(ast)) {
+		const object = get(variable);
+		const value =
+			object?.kind === 'value' && object.status === 'ok' && object.unit === undefined
+				? constantOf(object.definition, object.provenance, [])
+				: null;
+		if (value === null) return null;
+		bindings[variable] = value;
+	}
+	return numericValue(substitute(ast, bindings));
 }
 
 function numericValue(node: MathNode): number | null {

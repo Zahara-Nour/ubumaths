@@ -183,7 +183,7 @@ liste ou une suite (« Seule une fonction se définit sur un intervalle. »), ou
 fonction (I3, `computeDomain` puis `difference` : « ln(x) n'est pas défini sur tout [−1 ; 2] (pas
 en −1). » ; pas jugé quand la définition cite d'autres objets) → refusé, rien ne change. Une
 définition retapée sans « sur » (Calcul ou carte) retire l'intervalle (I6). `f(5)` hors de
-l'ensemble est refusé dans Calcul (`outsideIntervalRefusal`, argument sans variable) et par l'image
+l'ensemble est refusé dans Calcul (`outsideIntervalRefusal`, argument sans variable ou fait de valeurs de l'atelier — `f(b)` avec b = 5 —, et aussi dans une définition, `a = f(5)`) et par l'image
 de la carte (I4). Dans la carte, `smartFence` est coupé dès que le champ contient « sur » (jugé au
 `keydown` en capture : l'`input` arrive trop tard) — sinon `[0;1[` s'écrit
 `\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`, illisible. Pas encore (lots 2 et 3) :

@@ -15,7 +15,7 @@
 	import { useAtelier } from '$lib/atelier/context';
 	import { definitionFromField, fieldLatexOf } from '$lib/atelier/mathfield';
 	import { internalDefinition, typedLetterOf } from '$lib/atelier/letter';
-	import { ONLY_FUNCTIONS, splitInterval } from '$lib/atelier/interval';
+	import { ONLY_FUNCTIONS, readInterval, splitInterval } from '$lib/atelier/interval';
 	import type { AtelierObject } from '$lib/atelier/types';
 
 	interface Props {
@@ -89,6 +89,12 @@
 				: `${object.name} =`
 	);
 
+	/** `sur ℝ` : un ensemble qui ne restreint rien. */
+	function isWholeLine(written: string, shownLetter: string): boolean {
+		const read = readInterval(written, shownLetter);
+		return read.ok && read.domain === null;
+	}
+
 	function intervalOf(o: AtelierObject): string | undefined {
 		return o.kind === 'function' ? o.interval : undefined;
 	}
@@ -126,7 +132,10 @@
 		refusal = internal.ok ? null : internal.message;
 		if (!internal.ok) return;
 		const definition = internal.definition;
-		if (definition === object.definition && (written ?? undefined) === intervalOf(object)) return;
+		// `sur ℝ` ne range rien : sans cette lecture, chaque frappe relançait un update
+		const wanted =
+			written !== null && isWholeLine(written, letter) ? undefined : (written ?? undefined);
+		if (definition === object.definition && wanted === intervalOf(object)) return;
 		// I6 : effacer « sur … » retire l'intervalle (`null`)
 		const updated = atelier.update(
 			object.name,
@@ -180,9 +189,14 @@
 			Object.assign(element, { mathModeSpace: '\\,' });
 		}
 		updateSmartFence();
-		const stopWatching = element
-			? on(element, 'keydown', updateSmartFence, { capture: true })
-			: () => {};
+		// Le clavier virtuel de MathLive ne passe pas par `keydown` : `beforeinput`
+		// et `input` aussi (non mesuré au clavier virtuel, revue du lot 1)
+		const stops = element
+			? (['keydown', 'beforeinput', 'input'] as const).map((type) =>
+					on(element!, type, updateSmartFence, { capture: true })
+				)
+			: [];
+		const stopWatching = () => stops.forEach((stop) => stop());
 		// C9 : une carte neuve est prête à taper
 		if (object.definition === '') element?.focus();
 		// ⚠️ Ce qui a été tapé juste avant de fermer la carte n'est pas perdu

@@ -266,6 +266,30 @@ describe('Calcul : refus', () => {
 		expect(last(d)).toEqual({ text: '2', failed: false });
 	});
 
+	// Revue du lot 1 : I4 se contournait par une définition ou une valeur nommée
+	it('I4 : a = f(5) est refusé, f(b) avec b = 5 aussi', () => {
+		const d = desk();
+		d.submit('f(x) = x^2 sur [0;2]');
+		d.submit('a = f(5)');
+		expect(last(d).failed).toBe(true);
+		expect(d.atelier.get('a')).toBeUndefined();
+
+		d.submit('b = 5');
+		d.submit('f(b)');
+		expect(last(d)).toEqual({
+			text: "b n'est pas dans l'ensemble de définition de f, [0 ; 2].",
+			failed: true
+		});
+	});
+
+	it('« sur » sur une valeur déjà là : refusé, pas perdu en silence', () => {
+		const d = desk();
+		d.submit('a = 3');
+		d.submit('a = x^2 sur [0;1]');
+
+		expect(last(d)).toEqual({ text: ONLY_FUNCTIONS, failed: true });
+	});
+
 	it('I4 : l’image depuis la carte', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2', interval: '[0;2]' }, 'text');
@@ -335,6 +359,17 @@ describe('la carte', () => {
 			);
 			expect(intervalLabelOf(again.get('g')!)).toBe(intervalLabelOf(object));
 		}
+	});
+
+	it('une borne √2 tapée dans Calcul se relit depuis le champ', () => {
+		const d = desk();
+		d.submit('f(x) = x sur [0;√2]');
+		const before = intervalLabelOf(d.atelier.get('f')!);
+		const { written } = splitInterval(fieldLatexOf(d.atelier.get('f')!, []), 'latex');
+
+		expect(d.atelier.update('f', 'x', 'keyboard', undefined, written).ok).toBe(true);
+		expect(intervalLabelOf(d.atelier.get('f')!)).toBe(before);
+		expect(before).toMatch(/^\[0 ; .*2\]$/);
 	});
 
 	it('modifier depuis la carte : null retire l’intervalle (I6)', () => {

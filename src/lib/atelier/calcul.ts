@@ -1549,9 +1549,18 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		const [, name, parameter, typedBody] = definition;
 		// `f(x) = x^2 sur [0;+∞[` : l'ensemble est lu à part (`interval.ts`)
 		const { body, written } = splitInterval(typedBody, readingMode(provenance));
-		if (written !== null && kindOf(parameter, body) !== 'function') {
+		// Le type rangé ne change pas : `a = x^2 sur [0;1]` sur une valeur `a` perdait « sur » en silence
+		const existingKind = session.atelier.get(name)?.kind;
+		if (
+			written !== null &&
+			(kindOf(parameter, body) !== 'function' ||
+				(existingKind !== undefined && existingKind !== 'function'))
+		) {
 			return { kind: 'refus', message: ONLY_FUNCTIONS };
 		}
+		// I4 aussi dans une définition : `a = f(5)` avec f sur [0 ; 2]
+		const outsideInDefinition = outsideIntervalRefusal((n) => session.atelier.get(n), body);
+		if (outsideInDefinition !== null) return { kind: 'refus', message: outsideInDefinition };
 		const commaList = parameter === undefined ? commaListRefusal(name, body) : null;
 		if (commaList !== null) return { kind: 'refus', message: commaList };
 		const bracketed = parameter === undefined ? bracketedListRefusal(name, body) : null;
