@@ -417,6 +417,9 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
  *
  * ⚠️ `getCommands()` ne les connaît pas : sans cette table, `.convertir` et
  * `.stats` resteraient invisibles alors qu'elles marchent.
+ *
+ * Exception : `export` (`.exporter`) n'est plus exécutée par le moteur
+ * (allègement, 2026-10-13) ; le pupitre la sert lui-même (`isExportCommand`).
  */
 const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 	[
