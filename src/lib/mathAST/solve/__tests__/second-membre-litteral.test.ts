@@ -44,6 +44,9 @@ function holds(condition: MathNode, bindings: Record<string, number>): boolean {
 	if (isLogical(condition) && condition.operator === 'and') {
 		return holds(condition.left, bindings) && holds(condition.right, bindings);
 	}
+	if (isLogical(condition) && condition.operator === 'or') {
+		return holds(condition.left, bindings) || holds(condition.right, bindings);
+	}
 	if (!isRelation(condition)) throw new Error(`Condition illisible : ${toLatex(condition)}`);
 	const { operands, relations } = flattenRelationChain(condition);
 	const values = operands.map((operand) => valueAt(operand, bindings));
@@ -53,6 +56,7 @@ function holds(condition: MathNode, bindings: Record<string, number>): boolean {
 		if (op === '<=') return a <= b;
 		if (op === '>') return a > b;
 		if (op === '>=') return a >= b;
+		if (op === '!=') return a !== b;
 		throw new Error(`Relation inattendue : ${op}`);
 	});
 }
@@ -203,8 +207,10 @@ describe('jamais « pas de solution » sans preuve', () => {
 
 	// ln(ax) = 1 : la couche ln est ôtée sur l'équation ÉCRITE (ax = e), pas
 	// sur sa forme développée ln a + ln x (fausse pour a < 0) — juste pour a ≠ 0
-	it('\\ln(ax) = 1 → x = e/a, juste aussi pour a < 0', () => {
-		checkSolutions('\\ln(ax)=1', 'a', [2, -1.5]);
+	// Pour a = 0, ln(0) n'existe pas : la solution porte a ≠ 0 (revue #1302)
+	it('\\ln(ax) = 1 → x = e/a si a ≠ 0, juste aussi pour a < 0', () => {
+		const result = checkSolutions('\\ln(ax)=1', 'a', [2, -1.5]);
+		expect(conditionOf(result)).toBe('a\\neq0');
 	});
 });
 
@@ -227,5 +233,71 @@ describe('second membre numérique : inchangé, sans condition', () => {
 		const result = solveFor('x^2=4');
 		expect(result.solutions).toHaveLength(2);
 		expect(result.solutions.every((s) => s.condition === undefined)).toBe(true);
+	});
+});
+
+// =============================================================================
+// Revue #1302 : indice d'une racine, base d'un logarithme, quotient en eˣ
+// =============================================================================
+
+describe('racine d’indice n : puissance n, condition seulement si n est pair', () => {
+	it('\\sqrt[4]{x} = a → x = a⁴, si a ≥ 0', () => {
+		const result = checkSolutions('\\sqrt[4]{x}=a', 'a', [0.5, 2, 3]);
+		expect(conditionOf(result)).toBe('a\\geqslant0');
+	});
+
+	it('\\sqrt[3]{x+1} = a → x = a³ − 1, sans condition (indice impair)', () => {
+		const result = checkSolutions('\\sqrt[3]{x+1}=a', 'a', [-2, 0.5, 2]);
+		expect(conditionOf(result)).toBeUndefined();
+	});
+
+	it('e^{\\sqrt[4]{x}} = a → x = (ln a)⁴, si a ≥ 1', () => {
+		const result = checkSolutions('e^{\\sqrt[4]{x}}=a', 'a', [1, 3, 10]);
+		const condition = result.solutions[0].condition;
+		expect(condition && holds(condition, { a: 0.5 })).toBe(false);
+	});
+});
+
+describe('logarithme de base b : x = bᶜ', () => {
+	it('\\log_2(x) = a → x = 2ᵃ, sans condition', () => {
+		const result = checkSolutions('\\log_2(x)=a', 'a', [-1, 0, 3]);
+		expect(conditionOf(result)).toBeUndefined();
+	});
+
+	it('\\log_3(2x+1) = a', () => {
+		checkSolutions('\\log_3(2x+1)=a', 'a', [-1, 0.5, 2]);
+	});
+
+	// Même défaut sur main avec un second membre NUMÉRIQUE : log_2(x) = 3 → 1000
+	it.each([
+		['\\log_2(x)=3', 8],
+		['\\log_2(x+1)=3', 7],
+		['\\log_5(2x)=2', 12.5],
+		['\\log_{10}(x)=2', 100],
+		['\\log(x)=2', 100]
+	])('%s → x = %s', (latex, expected) => {
+		const result = solveFor(latex);
+		expect(result.solutions).toHaveLength(1);
+		expect(valueAt(result.solutions[0].value, {})).toBeCloseTo(expected, 9);
+	});
+});
+
+describe('quotient en eˣ : une racine qui annule le dénominateur est exclue', () => {
+	// (e^{2x} − 1)/(e^x − 1) = e^x + 1 pour x ≠ 0 : y = e^x + 1, x ≠ 0 → y > 1, y ≠ 2
+	it.each([
+		['y=\\frac{e^{2x}-1}{e^x-1}', [1.5, 3, 7]],
+		['y=\\frac{e^{2x}-4}{e^x-2}', [2.5, 3, 7]]
+	] as const)('%s : chaque solution annule l’équation, aucune n’est interdite', (latex, values) => {
+		const result = checkSolutions(latex, 'y', values);
+		expect(result.solutions).toHaveLength(1);
+	});
+
+	it('y = (e^{2x} − 1)/(e^x − 1) avec y = 2 : aucune solution (x = 0 interdit)', () => {
+		const result = solveFor('y=\\frac{e^{2x}-1}{e^x-1}');
+		expect(isSolverFailure(result)).toBe(false);
+		expect(conditionOf(result)).toBe('y>1\\landy\\neq2');
+		for (const solution of result.solutions) {
+			expect(solution.condition && holds(solution.condition, { y: 2 })).toBe(false);
+		}
 	});
 });

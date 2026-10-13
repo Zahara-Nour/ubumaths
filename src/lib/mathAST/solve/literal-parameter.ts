@@ -28,7 +28,7 @@
  * @module mathAST/solve/literal-parameter
  */
 
-import type { MathNode, RelationNode, RelationType } from '../types';
+import type { FunctionNode, MathNode, RelationNode, RelationType } from '../types';
 import type { Solution, SolveOptions, SolveResult, EquationType } from './types';
 import { isSolverFailure } from './types';
 import {
@@ -37,6 +37,7 @@ import {
 	euler,
 	func,
 	logicalAnd,
+	logicalOr,
 	multiply,
 	number,
 	opposite,
@@ -45,7 +46,9 @@ import {
 	superscript,
 	variable as variableNode
 } from '../factory';
-import { isInfinity, isLogical, isRelation, isVariable } from '../guards';
+import { isFunction, isInfinity, isLogical, isRelation, isVariable } from '../guards';
+import { toCustom } from '../custom-generator';
+import { logarithmBase } from './solvers/transcendental';
 import { mapNode } from '../transforms';
 import { flattenSumShallow, unflattenSum, flattenRelationChain } from '../flatten';
 import type { SignedTerm } from '../flatten';
@@ -54,7 +57,8 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { denormalize, normalize } from '../normal';
 import { computeDomain } from '../domain/compute';
 import { intersect, isEmpty, isUniversal } from '../domain/algebra';
-import type { Domain } from '../domain/types';
+import type { Domain, Endpoint } from '../domain/types';
+import { nodesEqual } from '../normal/hash';
 import { solveInequality } from './inequality';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
@@ -94,7 +98,7 @@ const MAX_LAYERS = 6;
 /** Lettres neuves pour f⁻¹(c) dans l'équation suivante. */
 const FRESH_NAMES = ['k', 'K', 'm', 'M', 'q', 'Q'] as const;
 
-const COMPARISONS: ReadonlySet<RelationType> = new Set(['<', '>', '<=', '>=']);
+const COMPARISONS: ReadonlySet<RelationType> = new Set(['<', '>', '<=', '>=', '!=']);
 
 let layerDepth = 0;
 
@@ -111,41 +115,80 @@ function atomsOf(node: MathNode): MathNode[] {
 	return relations.map((op, i) => relation(op, operands[i], operands[i + 1]));
 }
 
-/** La condition `letter ∈ intervalle`, écrite comme au tableau. */
-function intervalCondition(domain: Domain, letter: string): ParameterCondition | null {
-	if (isEmpty(domain)) return { kind: 'never' };
-	if (isUniversal(domain)) return { kind: 'always' };
-	if (domain.kind !== 'interval_set' || domain.intervals.length !== 1) return null;
-	if (domain.excludedPoints.length > 0) return null;
-	const { lower, upper } = domain.intervals[0];
-	const x = variableNode(letter);
+/** Les bornes d'un intervalle en condition sur x ; `null` : ℝ entier. */
+function boundsCondition(lower: Endpoint, upper: Endpoint, x: MathNode): MathNode | null {
 	const lowerOp: RelationType = lower.type === 'open' ? '<' : '<=';
 	const upperOp: RelationType = upper.type === 'open' ? '<' : '<=';
 	const lowerFinite = !isInfinity(lower.value);
 	const upperFinite = !isInfinity(upper.value);
 	if (lowerFinite && upperFinite) {
-		return { kind: 'when', node: relationChain([lower.value, x, upper.value], [lowerOp, upperOp]) };
+		return relationChain([lower.value, x, upper.value], [lowerOp, upperOp]);
 	}
-	if (lowerFinite) {
-		return { kind: 'when', node: relation(lower.type === 'open' ? '>' : '>=', x, lower.value) };
+	if (lowerFinite) return relation(lower.type === 'open' ? '>' : '>=', x, lower.value);
+	if (upperFinite) return relation(upperOp, x, upper.value);
+	return null;
+}
+
+/**
+ * La condition `letter ∈ domaine`, écrite comme au tableau : `y > −1`,
+ * `0 < y < 1`, `a ≠ 0` (ℝ \ {0}), `y > 1 et y ≠ 2` (]1 ; 2[ ∪ ]2 ; +∞[) ;
+ * des intervalles séparés par plus qu'un point : leur réunion (« ou »).
+ */
+function intervalCondition(domain: Domain, letter: string): ParameterCondition | null {
+	if (isEmpty(domain)) return { kind: 'never' };
+	if (isUniversal(domain)) return { kind: 'always' };
+	if (domain.kind !== 'interval_set' || domain.intervals.length === 0) return null;
+	const x = variableNode(letter);
+	const { intervals } = domain;
+	const excluded = domain.excludedPoints.map((p) => relation('!=', x, p.value));
+	const gaps: MathNode[] = [];
+	for (let i = 1; i < intervals.length; i++) {
+		const [before, after] = [intervals[i - 1].upper, intervals[i].lower];
+		const pointGap =
+			before.type === 'open' && after.type === 'open' && nodesEqual(before.value, after.value);
+		if (!pointGap) {
+			const pieces = intervals.map((iv) => boundsCondition(iv.lower, iv.upper, x));
+			if (pieces.some((p) => p === null)) return null;
+			const union = (pieces as MathNode[]).reduce((all, p) => logicalOr(all, p));
+			return { kind: 'when', node: [union, ...excluded].reduce((all, a) => logicalAnd(all, a)) };
+		}
+		gaps.push(relation('!=', x, before.value));
 	}
-	if (upperFinite) return { kind: 'when', node: relation(upperOp, x, upper.value) };
-	return { kind: 'always' };
+	const hull = boundsCondition(intervals[0].lower, intervals[intervals.length - 1].upper, x);
+	const atoms = [...(hull ? [hull] : []), ...gaps, ...excluded];
+	if (atoms.length === 0) return { kind: 'always' };
+	return { kind: 'when', node: atoms.reduce((all, a) => logicalAnd(all, a)) };
 }
 
 /**
  * La conjonction de conditions, simplifiée quand elle ne porte que sur UNE
- * lettre : chaque inégalité est résolue en cette lettre (`solveInequality`),
+ * lettre : chaque (in)égalité est résolue en cette lettre (`solveInequality`),
  * les ensembles intersectés. Sinon, la conjonction telle quelle.
+ *
+ * `definedFor` : des expressions qui doivent être DÉFINIES (la solution e/a
+ * de ln(ax) = 1 exige a ≠ 0). Leur domaine entre dans la condition ; `null`
+ * quand on ne sait pas l'écrire (plusieurs lettres) — l'appelant refuse.
  */
-export function parameterCondition(conditions: readonly MathNode[]): ParameterCondition {
+export function parameterCondition(
+	conditions: readonly MathNode[],
+	definedFor: readonly MathNode[] = []
+): ParameterCondition | null {
 	const atoms = conditions.flatMap(atomsOf);
-	if (atoms.length === 0) return { kind: 'always' };
-	const letters = new Set(atoms.flatMap((atom) => [...getVariables(atom)]));
-	if (letters.size === 1 && atoms.every((a) => isRelation(a) && COMPARISONS.has(a.relation))) {
+	const restricted = definedFor.filter((node) => !definedEverywhere(node));
+	if (atoms.length === 0 && restricted.length === 0) return { kind: 'always' };
+	const letters = new Set([...atoms, ...restricted].flatMap((node) => [...getVariables(node)]));
+	const comparable = atoms.every((a) => isRelation(a) && COMPARISONS.has(a.relation));
+	if (letters.size === 1 && comparable) {
 		const [letter] = letters;
 		let domain: Domain = { kind: 'universal' };
 		try {
+			for (const node of restricted) {
+				const definition = computeDomain(node, letter);
+				if (definition.unresolved !== undefined && definition.unresolved.length > 0) {
+					throw new Error('domaine non résolu');
+				}
+				domain = intersect(domain, definition.domain);
+			}
 			for (const atom of atoms) {
 				if (!isRelation(atom)) throw new Error('relation attendue');
 				const solved = solveInequality(atom, { variable: letter, strictMode: true });
@@ -157,6 +200,7 @@ export function parameterCondition(conditions: readonly MathNode[]): ParameterCo
 			// Inéquation non résolue : la condition reste écrite telle quelle
 		}
 	}
+	if (restricted.length > 0) return null;
 	return { kind: 'when', node: atoms.reduce((all, atom) => logicalAnd(all, atom)) };
 }
 
@@ -211,8 +255,10 @@ function peel(core: MathNode, target: MathNode, variable: string): Layer | null 
 			equationType: 'exponential'
 		};
 	}
+	// ⚠️ Le motif P.func ignore `base` : indice de racine, base de log (revue
+	// #1302 : \sqrt[4]{x} = a rendait a², \log_2 x = a rendait 10ᵃ). On le lit.
 	const ln = tryMatch(P.func('ln', [u]), core);
-	if (ln) {
+	if (ln && isFunction(core) && core.base === undefined) {
 		return {
 			argument: getBindingNode(ln, 'u') ?? core,
 			target: tidy(superscript(euler(), target)),
@@ -222,27 +268,40 @@ function peel(core: MathNode, target: MathNode, variable: string): Layer | null 
 		};
 	}
 	const log = tryMatch(P.func('log', [u]), core);
-	if (log) {
+	const logBase = log && isFunction(core) ? logarithmBase(core) : null;
+	if (log && logBase !== null) {
 		return {
 			argument: getBindingNode(log, 'u') ?? core,
-			target: tidy(superscript(number('10'), target)),
+			target: tidy(superscript(logBase, target)),
 			condition: null,
-			description: 'On élève 10 à la puissance de chaque membre',
+			description: `On élève ${toCustom(logBase)} à la puissance de chaque membre`,
 			equationType: 'logarithmic'
 		};
 	}
 	const root = tryMatch(P.func('sqrt', [u]), core);
-	if (root) {
+	const index = root && isFunction(core) ? rootIndex(core) : null;
+	if (root && index !== null) {
+		const even = index % 2 === 0;
 		return {
 			argument: getBindingNode(root, 'u') ?? core,
-			target: tidy(superscript(target, number('2'))),
-			condition: relation('>=', target, number('0')),
-			description: 'On élève au carré, le second membre devant être positif',
+			target: tidy(superscript(target, number(String(index)))),
+			// ⁿ√u = c, n impair : u = cⁿ pour tout c ; n pair : c ≥ 0
+			condition: even ? relation('>=', target, number('0')) : null,
+			description: even
+				? `On élève à la puissance ${index}, le second membre devant être positif`
+				: `On élève à la puissance ${index}`,
 			// Comme √(x + 2) = 3 (chemins des radicaux de solve.ts)
 			equationType: 'unknown'
 		};
 	}
 	return null;
+}
+
+/** L'indice n d'une racine (2 sans indice), entier ≥ 2 ; `null` sinon. */
+function rootIndex(node: FunctionNode): number | null {
+	if (node.base === undefined) return 2;
+	const value = tryNumeric(node.base);
+	return value !== null && Number.isInteger(value) && value >= 2 ? value : null;
 }
 
 /** Le terme en x isolé : T = c. `null` si x apparaît dans plusieurs termes. */
@@ -342,10 +401,13 @@ export function tryLiteralParameter(
 	for (const solution of inner.solutions) {
 		const inherited = solution.condition ? restore(solution.condition) : null;
 		const conditions = [layer.condition, inherited].filter((c): c is MathNode => c !== null);
-		const condition = parameterCondition(conditions);
+		const value = restore(solution.value);
+		// La valeur elle-même doit exister : e/a (ln(ax) = 1) exige a ≠ 0
+		const condition = parameterCondition(conditions, [value]);
+		if (condition === null) return null;
 		if (condition.kind === 'never') continue;
 		solutions.push({
-			value: restore(solution.value),
+			value,
 			exact: solution.exact,
 			...(condition.kind === 'when' && { condition: condition.node })
 		});

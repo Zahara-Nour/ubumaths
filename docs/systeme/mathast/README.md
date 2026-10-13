@@ -247,8 +247,8 @@ solution porte sa condition** (`Solution.condition`, désormais rempli). `tryLit
 (`solve/literal-parameter.ts`), repli après la classification et avant le changement de
 variable, seulement si l'équation a un paramètre : isole l'unique terme en x (k·T = c, k
 numérique non nul ; littéral → refus), ôte UNE couche (eᵘ = c → u = ln c si c > 0 ; aᵘ = c →
-u = ln c / ln a si c > 0 ; ln u = c → u = eᶜ ; log u = c → u = 10ᶜ ; √u = c → u = c² si
-c ≥ 0) et rend `u = k` à `solve`, k lettre neuve remplacée ensuite par f⁻¹(c) (la
+u = ln c / ln a si c > 0 ; ln u = c → u = eᶜ ; log_b u = c → u = bᶜ (b = 10 sans base) ;
+ⁿ√u = c → u = cⁿ, si c ≥ 0 quand n est pair) et rend `u = k` à `solve`, k lettre neuve remplacée ensuite par f⁻¹(c) (la
 normalisation développerait ln(−y/(y − 1)) en ln(−y) − ln(y − 1), indéfini pour 0 < y < 1). Les
 conditions des couches se cumulent ; `parameterCondition` les résout en la lettre quand il n'y
 en a qu'une (`solveInequality`) : `(y + 1)/3 > 0` → `y > −1`, ensemble vide → la solution
@@ -259,7 +259,11 @@ paramètre, sauf si la condition de la couche, à une lettre, en tient compte. L
 (`y = eˣ/(eˣ + 1)` → x = ln(−y/(y − 1)) si 0 < y < 1) et lit alors une équation en u
 rationnelle. Le CLI affiche la condition (« x = ln(a)/2 − 1/2, si a > 0 », `\quad \text{si }
 a > 0`, une seule fois si toutes les solutions la partagent) et ne conclut plus « Δ < 0 » sur un
-Δ littéral (`parseFloat` rendait NaN). Restent refusés : coefficient littéral devant ln
+Δ littéral (`parseFloat` rendait NaN). ⚠️ `P.func` ignore `base` (indice de racine, base de log) : `peel` et
+`extractTranscendentalEquation` la lisent (`logarithmBase`) — `\log_2(x) = 3` rendait 1000 sur
+main. Chaque solution doit aussi être DÉFINIE : `\ln(ax) = 1` → e/a si a ≠ 0. Dans le changement
+de variable, une racine en u paramétrée ne doit annuler aucun dénominateur en u
+(`y = (e^{2x} − 1)/(e^x − 1)` → ln(y − 1) si y > 1 et y ≠ 2). Restent refusés : coefficient littéral devant ln
 (`a\ln x + b = 1`), cos, sin ; plusieurs termes en x (`y = xe^x`). Tests :
 `solve/__tests__/second-membre-litteral.test.ts`, `cli/commands/__tests__/condition-sur-parametre.test.ts`.
 

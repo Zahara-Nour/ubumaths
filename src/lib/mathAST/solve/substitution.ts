@@ -23,13 +23,21 @@
 import type { MathNode, RelationNode } from '../types';
 import type { PeriodicSolutionFamily, Solution, SolveOptions, SolveResult } from './types';
 import { isSolverFailure } from './types';
-import { isEulerConstant, isFunction, isNumber, isSuperscript } from '../guards';
+import {
+	isDivision,
+	isEulerConstant,
+	isFunction,
+	isNumber,
+	isSuperscript,
+	isVariable
+} from '../guards';
 import {
 	divide,
 	equals,
 	euler,
 	func,
 	multiply,
+	notEquals,
 	number,
 	opposite,
 	superscript,
@@ -445,7 +453,15 @@ export function trySubstitution(
 				'detailed'
 			);
 
-			solutions.push(...withCondition(backResult.solutions, uSolution.condition));
+			// Racine paramétrée : elle ne doit annuler aucun dénominateur en u
+			// (y = (e^{2x} − 1)/(e^x − 1) : u = 1 interdit, revue #1302)
+			const uConditions = [
+				...(uSolution.condition ? [uSolution.condition] : []),
+				...(parameters.size > 0 ? nonZeroDenominators(inU, fresh, uSolution.value) : [])
+			];
+			const kept = withCondition(backResult.solutions, uConditions);
+			if (kept === null) return null;
+			solutions.push(...kept);
 			if (backResult.periodicSolutions) families.push(backResult.periodicSolutions);
 			else if (backResult.solutions.length > 0) withoutFamily = true;
 		}
@@ -497,13 +513,14 @@ export function trySubstitution(
  */
 function withCondition(
 	solutions: readonly Solution[],
-	uCondition: MathNode | undefined
-): Solution[] {
-	if (uCondition === undefined) return [...solutions];
+	uConditions: readonly MathNode[]
+): Solution[] | null {
+	if (uConditions.length === 0) return [...solutions];
 	const kept: Solution[] = [];
 	for (const solution of solutions) {
-		const both = [uCondition, ...(solution.condition ? [solution.condition] : [])];
+		const both = [...uConditions, ...(solution.condition ? [solution.condition] : [])];
 		const condition = parameterCondition(both);
+		if (condition === null) return null;
 		if (condition.kind === 'never') continue;
 		kept.push({
 			value: solution.value,
@@ -513,6 +530,19 @@ function withCondition(
 		});
 	}
 	return kept;
+}
+
+/** `D(u₀) ≠ 0` pour chaque dénominateur D de l'équation en u qui contient u. */
+function nonZeroDenominators(inU: MathNode, fresh: string, root: MathNode): MathNode[] {
+	return findNodes(inU, isDivision)
+		.filter(isDivision)
+		.filter((division) => getVariables(division.denominator).has(fresh))
+		.map((division) =>
+			notEquals(
+				mapNode(division.denominator, (n) => (isVariable(n) && n.name === fresh ? root : n)),
+				number('0')
+			)
+		);
 }
 
 /** Dédoublonnage numérique, ordre croissant. */

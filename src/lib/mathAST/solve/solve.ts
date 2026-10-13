@@ -1128,14 +1128,16 @@ function tryExpLogRecursiveDecomposition(
 		}
 		uValues.push({ symbolic: inverseNode, numeric: Math.exp(constantNumeric) });
 	} else {
-		// log(u) = c → u = 10^c
+		// log_b(u) = c → u = b^c (b = 10 sans base écrite)
+		const base = extracted.logBase ?? number('10');
+		const baseNumeric = evaluateNodeToApproximatedNumber(base);
 		let inverseNode: MathNode;
 		if (constantNumeric === 0) {
 			inverseNode = number('1');
 		} else {
-			inverseNode = denormalize(normalize(superscript(number('10'), constantNode)));
+			inverseNode = denormalize(normalize(superscript(base, constantNode)));
 		}
-		uValues.push({ symbolic: inverseNode, numeric: Math.pow(10, constantNumeric) });
+		uValues.push({ symbolic: inverseNode, numeric: Math.pow(baseNumeric, constantNumeric) });
 	}
 
 	const recorder = createStepRecorder();

@@ -326,11 +326,6 @@ export function periodicSolutionsText(result: SolveResult): string | null {
 }
 
 /**
- * Le LaTeX des solutions d'un résultat du solveur — ou `null` quand il n'y a
- * rien de sûr à écrire (échec du solveur, statut inconnu) : l'appelant garde
- * alors le texte, qui EXPLIQUE l'échec.
- */
-/**
  * La condition sur les paramètres que portent TOUTES les solutions (x² = y :
  * y ≥ 0 sur les deux), écrite une seule fois ; `undefined` si aucune ou si
  * elles diffèrent (chaque solution porte alors la sienne).
@@ -344,6 +339,11 @@ export function commonCondition(solutions: readonly Solution[]): MathNode | unde
 		: undefined;
 }
 
+/**
+ * Le LaTeX des solutions d'un résultat du solveur — ou `null` quand il n'y a
+ * rien de sûr à écrire (échec du solveur, statut inconnu) : l'appelant garde
+ * alors le texte, qui EXPLIQUE l'échec.
+ */
 export function solutionsLatex(result: SolveResult): string | null {
 	switch (result.status) {
 		case 'unique':

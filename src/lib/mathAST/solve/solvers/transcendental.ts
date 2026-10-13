@@ -25,7 +25,7 @@
  * @module mathAST/solve/solvers/transcendental
  */
 
-import type { MathNode } from '../../types';
+import type { FunctionNode, MathNode } from '../../types';
 import type {
 	EquationSolver,
 	SolveResult,
@@ -51,7 +51,9 @@ import {
 } from '../../factory';
 import { denormalize, normalize } from '../../normal';
 import { getVariables } from '../../eval/substitute';
-import { isDivision, isOpposite } from '../../guards';
+import { isDivision, isFunction, isOpposite } from '../../guards';
+import { findNodes } from '../../transforms';
+import { nodesEqual } from '../../normal/hash';
 import { extractLinearForm } from '../../analysis/coefficient-utils';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
@@ -85,10 +87,24 @@ export interface TranscendentalEquationParts {
 	 * c doit alors refuser (écart V41 : le coefficient `a` valait 1 en silence).
 	 */
 	readonly constantNumeric: number | null;
+	/** Base du logarithme `log` (10, ou 2 pour `\log_2`) ; absente sinon. */
+	readonly logBase?: MathNode;
 }
 
 // Keep backward compat alias
 export type TrigEquationParts = TranscendentalEquationParts;
+
+/**
+ * La base d'un logarithme `log` : 10 sans base écrite, sinon la base (`\log_2`)
+ * si c'est un nombre > 0 et ≠ 1 ; `null` pour une base qu'on ne sait pas lire.
+ * ⚠️ `P.func('log', …)` ignore la base : `\log_2(x) = 3` rendait 1000 (revue #1302).
+ */
+export function logarithmBase(node: FunctionNode): MathNode | null {
+	if (node.base === undefined) return number('10');
+	if (getVariables(node.base).size > 0) return null;
+	const value = tryNumeric(node.base);
+	return value !== null && value > 0 && value !== 1 ? node.base : null;
+}
 
 /**
  * Result of matching a transcendental pattern against a term.
@@ -98,6 +114,7 @@ interface TranscendentalPatternMatch {
 	readonly funcName: string;
 	readonly argument: MathNode;
 	readonly coeffFactors: readonly MathNode[];
+	readonly logBase?: MathNode;
 }
 
 /**
@@ -130,7 +147,22 @@ function tryTranscendentalPatterns(
 		if (bindings) {
 			const u = getBindingNode(bindings, 'u');
 			if (u && getVariables(u).has(variable)) {
-				return { kind, funcName, argument: u, coeffFactors: extractCoeffFactors(bindings) };
+				// La base que le motif ignore : log_b lue, toute autre base refusée
+				const call = findNodes(
+					term,
+					(n) =>
+						isFunction(n) && n.name === funcName && n.args.length === 1 && nodesEqual(n.args[0], u)
+				)[0];
+				if (call === undefined || !isFunction(call)) continue;
+				const logBase = funcName === 'log' ? logarithmBase(call) : null;
+				if (call.base !== undefined && logBase === null) continue;
+				return {
+					kind,
+					funcName,
+					argument: u,
+					coeffFactors: extractCoeffFactors(bindings),
+					...(logBase !== null && { logBase })
+				};
 			}
 		}
 	}
@@ -282,7 +314,8 @@ export function extractTranscendentalEquation(
 						: signOutOfFraction(
 								denormalize(normalize(divide(opposite(bNode), signedCoeff, 'fraction')))
 							),
-				constantNumeric: bNode === null ? 0 : null
+				constantNumeric: bNode === null ? 0 : null,
+				...(matched.logBase && { logBase: matched.logBase })
 			};
 		}
 
@@ -318,7 +351,8 @@ export function extractTranscendentalEquation(
 			funcName: matched.funcName,
 			argument: matched.argument,
 			constantNode,
-			constantNumeric
+			constantNumeric,
+			...(matched.logBase && { logBase: matched.logBase })
 		};
 	}
 
@@ -572,7 +606,7 @@ function solveLogarithmic(
 	const extracted = extractTranscendentalEquation(expr, variable);
 	if (!extracted || extracted.kind !== 'log') return null;
 
-	const { funcName, argument, constantNode, constantNumeric } = extracted;
+	const { funcName, argument, constantNode, constantNumeric, logBase } = extracted;
 
 	// Extract linear form from argument: u = ax + b
 	const linearForm = extractLinearForm(argument, variable);
@@ -595,7 +629,9 @@ function solveLogarithmic(
 	// log(ax+b) = c → ax+b = 10^c → x = (10^c - b) / a
 	// ln u = c existe pour TOUT c réel : un c paramétré (`a\ln x = 1`, c = 1/a)
 	// donne une valeur juste, e^c, sans valeur approchée.
-	const base = funcName === 'ln' ? euler() : number('10');
+	const base = funcName === 'ln' ? euler() : (logBase ?? number('10'));
+	const baseNumeric = tryNumeric(base);
+	if (baseNumeric === null) return null;
 	const inverseNode: MathNode =
 		constantNumeric === 0
 			? number('1')
@@ -607,7 +643,7 @@ function solveLogarithmic(
 			? NaN
 			: funcName === 'ln'
 				? Math.exp(constantNumeric)
-				: Math.pow(10, constantNumeric);
+				: Math.pow(baseNumeric, constantNumeric);
 
 	let solution: MathNode;
 	let approximate: number;
@@ -636,7 +672,9 @@ function solveLogarithmic(
 
 	const applyRule = funcName === 'ln' ? 'apply-exponential' : 'apply-exponential';
 	const applyDesc =
-		funcName === 'ln' ? `On applique l'exponentielle` : `On applique la puissance de 10`;
+		funcName === 'ln'
+			? `On applique l'exponentielle`
+			: `On applique la puissance de ${baseNumeric}`;
 
 	recorder.recordStep(
 		applyRule,

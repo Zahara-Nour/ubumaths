@@ -159,9 +159,10 @@ describe('second membre ou coefficient littéral : résolu, avec la condition su
 		['k e^x=2', 'k>0'],
 		['a\\exp(x)=1', 'a>0'],
 		['\\ln x = a', undefined],
-		['\\ln(ax)=1', undefined]
+		['\\ln(ax)=1', 'a\\neq0']
 	])('%s : condition %s', (latex, condition) => {
-		const VALUES = condition === undefined ? [2, 3, -1.5, 0.25] : [2, 3, 0.25];
+		const VALUES =
+			condition === undefined || condition.includes('neq') ? [2, 3, -1.5, 0.25] : [2, 3, 0.25];
 		solvedForEveryParameter(latex, VALUES);
 		const result = solve(relationOf(latex), { variable: 'x' });
 		const written = result.solutions[0].condition;
