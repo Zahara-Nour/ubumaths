@@ -36,6 +36,7 @@ import {
 	canon,
 	addToBothSides,
 	chooseAddOrSubtract,
+	movedTerm,
 	divideBothSides,
 	isOne,
 	isZero,
@@ -143,11 +144,8 @@ export function generateLinearEquationSteps(
 	// Compute the two regroupement operands once (shared by atomic + combined modes)
 	const rightSplit = splitSide(current.right, variable);
 	const leftSplit = splitSide(current.left, variable);
-	const xMoveRaw = rightSplit.xPart !== null ? canon(opposite(rightSplit.xPart)) : null;
-	const constMoveRaw =
-		leftSplit.constPart !== null && !isZero(leftSplit.constPart)
-			? canon(opposite(leftSplit.constPart))
-			: null;
+	const xMoveRaw = movedTerm(rightSplit.xPart, variable);
+	const constMoveRaw = movedTerm(leftSplit.constPart, variable);
 
 	if (strategy.regroupementMode === 'combined') {
 		// Combined: ONE transpose-terms step showing both moves simultaneously

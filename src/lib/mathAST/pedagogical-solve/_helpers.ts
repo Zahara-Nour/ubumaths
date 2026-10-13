@@ -15,7 +15,15 @@
 import type { MathNode, RelationNode } from '../types';
 import type { Domain, IntervalSet } from '../domain/types';
 import type { Verbosity } from '../common/verbosity';
-import { add, divide, opposite, relation, subtract, variable as varNode } from '../factory';
+import {
+	add,
+	divide,
+	multiply,
+	opposite,
+	relation,
+	subtract,
+	variable as varNode
+} from '../factory';
 import { computeDomain } from '../domain/compute';
 import { isUniversal } from '../domain/algebra';
 import { flattenSumShallow } from '../flatten';
@@ -24,6 +32,7 @@ import { unwrapGroupingMembers } from '../solve/classify';
 import { denormalize, normalize } from '../normal';
 import { constantSign } from '../common/constant-sign';
 import { getNumericValue } from '../common/numeric';
+import { tidy } from '../tidy';
 import { InequalityNotSolvable } from '../solve/inequality/types';
 import { getVariables } from '../eval/substitute';
 import { toLatex } from '../latex-generator';
@@ -222,34 +231,65 @@ export function isConstantCoefficient(coeff: MathNode): boolean {
 // =============================================================================
 
 /**
- * Le terme s'écrit-il avec un signe moins en tête ? `-5`, `-\dfrac{1}{2}`,
- * `-2x` (produit `(-2)·x`), `-\dfrac{1}{2}x`, `\dfrac{-x}{2}`.
+ * Valeur absolue d'un terme qui s'écrit avec un signe moins en tête, ou `null`
+ * s'il s'écrit sans signe : `-5` → `5`, `-2x` (produit `(-2)·x`) → `2x`,
+ * `-\dfrac{1}{2}x` → `\dfrac{1}{2}x`, `\left(-1-\sqrt{2}\right)x` →
+ * `\left(1+\sqrt{2}\right)x`. Sert à écrire « − 2x » plutôt que « + −2x ».
  *
  * ⚠️ Lire le signe du seul nombre ou du seul `opposite(…)` laissait passer
  * `-2x` pour positif : « On ajoute -2x », `\textcolor{blue}{+ -2x}` (V50).
+ * Un facteur de tête qui est une SOMME (coefficient irrationnel) se lit sur sa
+ * valeur (`constantSign`), pas sur sa forme. Le produit se reconstruit
+ * facteur par facteur : `canon` du terme entier redévelopperait
+ * `(\pi - 4)x` en `\pi x - 4x`. Une somme seule (`1 - \sqrt{2}`) n'est pas
+ * lue : sa valeur absolue s'écrirait sans parenthèses après le « − ».
  */
-function startsWithMinus(term: MathNode): boolean {
+export function negativeTermMagnitude(term: MathNode): MathNode | null {
 	switch (term.type) {
 		case 'opposite':
-			return true;
-		case 'multiplication':
-			return startsWithMinus(term.left);
+			return term.operand;
+		case 'multiplication': {
+			const leading = term.left;
+			const leadingMagnitude =
+				leading.type === 'addition' || leading.type === 'subtraction'
+					? constantSign(leading) === -1
+						? tidy(canon(opposite(leading)))
+						: null
+					: negativeTermMagnitude(leading);
+			if (leadingMagnitude === null) return null;
+			if (isOne(leadingMagnitude)) return term.right;
+			return multiply(leadingMagnitude, term.right, term.displayStyle);
+		}
 		case 'division':
-			return startsWithMinus(term.numerator);
+			return negativeTermMagnitude(term.numerator) !== null ? canon(opposite(term)) : null;
 		default: {
 			const numeric = getNumericValue(term);
-			return numeric !== null && numeric < 0;
+			return numeric !== null && numeric < 0 ? canon(opposite(term)) : null;
 		}
 	}
 }
 
 /**
- * Valeur absolue d'un terme à signe moins en tête (`-2x` → `2x`), ou `null`
- * s'il s'écrit sans signe. Sert à écrire « − 2x » plutôt que « + −2x ».
+ * Le terme à ajouter aux deux membres pour faire passer `part` de l'autre
+ * côté : son opposé, ou `null` s'il est nul (« On ajoute 0 » n'est pas une
+ * étape : `5x - 0 = x + 1`). Une somme de termes en x (`-\pi x + 4x`, ce que
+ * `canon` fait de `-(\pi - 4)x`) s'écrit factorisée, `\left(4 - \pi\right)x`, et un
+ * coefficient somme rangé par `tidy` (`\left(\sqrt{2} - 1\right)x`).
  */
-export function negativeTermMagnitude(term: MathNode): MathNode | null {
-	if (term.type === 'opposite') return term.operand;
-	return startsWithMinus(term) ? canon(opposite(term)) : null;
+export function movedTerm(part: MathNode | null, variable: string): MathNode | null {
+	if (part === null) return null;
+	const moved = canon(opposite(part));
+	if (isZero(moved)) return null;
+	const isSum = (node: MathNode) => node.type === 'addition' || node.type === 'subtraction';
+	const sumCoefficient = isSum(moved) || (moved.type === 'multiplication' && isSum(moved.left));
+	if (sumCoefficient && containsVariable(moved, variable)) {
+		const coefficient = canon(divide(moved, varNode(variable), 'fraction'));
+		if (!containsVariable(coefficient, variable)) {
+			// `tidy` range la somme : `\sqrt{2} - 1`, pas `-1 + \sqrt{2}` (ordre de `canon`).
+			return multiply(tidy(coefficient), varNode(variable), 'implicit');
+		}
+	}
+	return moved;
 }
 
 /**

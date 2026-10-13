@@ -688,7 +688,10 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   soustrait $2x$ », `\textcolor{blue}{- 2x}`, plus « On ajoute −2x » / `+ -2x`. Le signe se lit
   sur le facteur de tête (`-2x`, `-\dfrac{1}{2}x`, `-5`) par `negativeTermMagnitude` et
   `chooseAddOrSubtract` (`pedagogical-solve/_helpers.ts`), au collège (équation et inéquation)
-  comme dans le transfert du lycée. Tests : `terme-negatif-deplace.test.ts`.
+  comme dans le transfert du lycée ; un coefficient somme (irrationnel) se lit sur sa valeur
+  (`constantSign`) : `5x+1=(1+\sqrt{2})x+7` → « On soustrait $(1+\sqrt2)x$ ». `movedTerm` écrit
+  le terme déplacé factorisé et rangé par `tidy` (`\left(4 - \pi\right)x`, `\left(\sqrt{2} - 1\right)x`),
+  et l'omet s'il est nul (`5x-0=x+1` : plus d'« On ajoute 0 »). Tests : `terme-negatif-deplace.test.ts`.
 - **Dérivées et primitives finissent par « On simplifie ».** Les règles laissent le
   résultat brut (la méthode, qu'on garde visible) ; une dernière étape l'écrit avec
   `tidyTerms` (`tidy/terms.ts`). Dérivées : `withTidyStep`

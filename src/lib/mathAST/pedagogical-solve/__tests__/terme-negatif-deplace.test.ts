@@ -11,12 +11,14 @@
 import { describe, it, expect } from 'vitest';
 import { generateEquationSteps, generateInequalitySteps } from '../index';
 import { parseCustomSafe } from '../../parser/custom';
+import { parseLatex } from '../../parser';
 import { isRelation } from '../../guards';
 import { LinearEquationRenderer, formatTransformationCustom } from '../linear-renderer';
 import type { RelationNode } from '../../types';
 
 function ast(source: string): RelationNode {
-	const node = parseCustomSafe(source).ast;
+	// Une source qui contient `\\` (`\\sqrt`, `\\pi`) est du LaTeX.
+	const node = source.includes('\\') ? parseLatex(source) : parseCustomSafe(source).ast;
 	if (node === null || !isRelation(node)) throw new Error(`pas une relation : ${source}`);
 	return node;
 }
@@ -118,6 +120,65 @@ describe('lycée : le transfert écrit « − 2x », pas « + −2x »', () => {
 	it('5x + 1 = 7x - 3 : « − 7x » à gauche, « − 1 » à droite', () => {
 		expect(coloredSteps('5x+1=7x-3', 'lycee')[0].latex).toBe(
 			aligned('5x \\textcolor{blue}{- 7x} &= -3 \\textcolor{blue}{- 1}', '-2x &= -4')
+		);
+	});
+});
+
+/**
+ * Coefficient irrationnel : le facteur de tête est une SOMME (`-1 - \sqrt{2}`),
+ * dont le signe se lit sur sa valeur (`constantSign`), pas sur sa forme.
+ */
+describe('coefficient irrationnel négatif : on soustrait aussi', () => {
+	// Titre attendu au collège : le coefficient positif s'ajoute, le négatif se
+	// soustrait par sa valeur absolue, toujours écrit sans signe en tête.
+	const cases: ReadonlyArray<readonly [string, string]> = [
+		['5x+1=(1+\\sqrt{2})x+7', 'On soustrait $\\left( 1 + \\sqrt{2}\\right) x$ aux deux membres'],
+		['5x+1=(\\sqrt{2}-1)x+7', 'On soustrait $\\left( \\sqrt{2} - 1\\right) x$ aux deux membres'],
+		['5x+1<=(\\pi-4)x+7', 'On ajoute $\\left( 4 - \\pi \\right) x$ aux deux membres'],
+		['5x+1>=(1-\\sqrt{2})x+7', 'On ajoute $\\left( \\sqrt{2} - 1\\right) x$ aux deux membres']
+	];
+	for (const [source, title] of cases) {
+		it(`${source} (collège) : ${title}`, () => {
+			const first = coloredSteps(source, 'college')[0];
+			expect(first.title).toBe(title);
+			expect(first.latex).not.toMatch(/\{[+-] (-|\\left\( -)/);
+		});
+		it(`${source} (lycée) : pas de signe en tête dans l'opération colorée`, () => {
+			expect(coloredSteps(source, 'lycee')[0].latex).not.toMatch(/\{[+-] (-|\\left\( -)/);
+		});
+	}
+
+	it('5x+1=(1+√2)x+7 au collège : LaTeX exact', () => {
+		expect(coloredSteps('5x+1=(1+\\sqrt{2})x+7', 'college')[0].latex).toBe(
+			aligned(
+				'5x + 1 \\textcolor{blue}{- \\left( 1 + \\sqrt{2}\\right) x} &= \\left( 1 + \\sqrt{2}\\right) x + 7 \\textcolor{blue}{- \\left( 1 + \\sqrt{2}\\right) x}',
+				'\\left( 4 - \\sqrt{2}\\right) x + 1 &= 7'
+			)
+		);
+	});
+
+	it('la sortie texte (CLI) suit', () => {
+		const first = steps('5x+1=(1+\\sqrt{2})x+7', 'college').find(
+			(s) => s.operation?.kind === 'subtract-both-sides' || s.operation?.kind === 'add-both-sides'
+		);
+		if (first === undefined) throw new Error('aucune étape de transfert');
+		expect(formatTransformationCustom(first)?.split('\n')[0]).not.toContain('+ (-');
+		expect(formatTransformationCustom(first)?.split('\n')[0]).toContain('@blue{- ');
+	});
+});
+
+describe('ajouter 0 n’est pas une étape', () => {
+	it('5x - 0 = x + 1 au collège : pas de « On ajoute 0 »', () => {
+		const titles = coloredSteps('5x-0=x+1', 'college').map((s) => s.title);
+		expect(titles).toEqual([
+			'On soustrait $x$ aux deux membres',
+			'On divise les deux membres par $4$'
+		]);
+	});
+
+	it('5x - 0 = x + 1 au lycée : pas de `+ 0` dans le transfert', () => {
+		expect(coloredSteps('5x-0=x+1', 'lycee')[0].latex).toBe(
+			aligned('5x \\textcolor{blue}{- x} &= 1', '4x &= 1')
 		);
 	});
 });
