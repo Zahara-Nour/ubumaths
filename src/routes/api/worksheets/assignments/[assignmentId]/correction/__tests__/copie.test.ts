@@ -173,9 +173,9 @@ describe('Corrigé du prof : la copie de la classe', () => {
 				individualized: false
 			})
 		);
-		expect(body.exercises[0].statement).toBe(expected.statement);
-		expect(body.exercises[0].solution).toBe(expected.solution);
-		expect(body.exercises[0].solution).not.toContain('{{');
+		expect(body.exercises?.[0].statement).toBe(expected.statement);
+		expect(body.exercises?.[0].solution).toBe(expected.solution);
+		expect(body.exercises?.[0].solution).not.toContain('{{');
 		expect(mock.tablesRead).not.toContain('worksheet_instances');
 	});
 
@@ -242,7 +242,7 @@ describe('Corrigé du prof : la copie de la classe', () => {
 		expect(pdfOrder).not.toEqual(exercises.map((e) => e.exercise_id));
 
 		const body = await correction(supabase('guided', false, twoLevelExercise(), undefined, patch));
-		expect(body.exercises.map((e) => e.exercise_id)).toEqual(pdfOrder);
+		expect(body.exercises?.map((e) => e.exercise_id)).toEqual(pdfOrder);
 	});
 });
 
