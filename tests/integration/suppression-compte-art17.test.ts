@@ -284,3 +284,27 @@ describe('suppression de compte (art. 17) de bout en bout', () => {
 		await expect(pg.query('select public.delete_user_account(null)')).rejects.toThrow();
 	});
 });
+
+// Les fichiers d'un compte supprimé sont retirés par une tâche hebdomadaire, qui reprend
+// les suppressions terminées sans `storage_removed_at` (migration 20261016101000).
+describe('audit de suppression : date de retrait des fichiers', () => {
+	it('la colonne existe, nulle par défaut, et la table reste fermée aux comptes', async () => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			`select
+				(select data_type from information_schema.columns
+				 where table_schema = 'public' and table_name = 'account_deletion_audit'
+				   and column_name = 'storage_removed_at') as type,
+				(select column_default from information_schema.columns
+				 where table_schema = 'public' and table_name = 'account_deletion_audit'
+				   and column_name = 'storage_removed_at') as defaut,
+				(select relrowsecurity from pg_class
+				 where oid = 'public.account_deletion_audit'::regclass) as rls,
+				(select count(*) from pg_policy
+				 where polrelid = 'public.account_deletion_audit'::regclass)::int as policies`
+		);
+		expect(rows).toEqual([
+			{ type: 'timestamp with time zone', defaut: null, rls: true, policies: 0 }
+		]);
+	});
+});
