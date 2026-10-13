@@ -77,6 +77,7 @@ export type PedagogicalIntegrationRule =
 	| 'apply-linearity-sum' // ∫(f+g) = ∫f + ∫g
 	| 'extract-constant' // ∫c·f = c·∫f
 	// ---- Composite forms (recognised before u-substitution) ----
+	| 'reveal-derivative' // f = k × u'·g(u) : on fait apparaître u', on sort k (avant la forme composée)
 	| 'apply-composite-power' // u'·u^n → u^(n+1)/(n+1)
 	| 'apply-composite-ln' // u'/u → ln|u|
 	| 'apply-composite-exp' // u'·e^u → e^u
@@ -120,13 +121,19 @@ export type PedagogicalIntegrationRule =
  * - `apply-known-primitive`         : `{}` (renderer reads `step.before`)
  * - `apply-linearity-sum`           : `{ f, g }` (or empty for n>2 terms — renderer reads `step.before`)
  * - `extract-constant`              : `{ c, f }`
- * - `apply-composite-power`         : `{ u, n }`
- * - `apply-composite-ln`            : `{ u }`
- * - `apply-composite-exp`           : `{ u }`
- * - `apply-composite-sin`           : `{ u }`
- * - `apply-composite-cos`           : `{ u }`
+ * - `reveal-derivative`             : `{ u, du, k, revealed, integrand }` — `before` = f = k × `revealed`,
+ *                                     `after` = `revealed` = u′·g(u) EXACTEMENT ; l'étape composée suit
+ * - `apply-composite-power`         : `{ u, n, k?, scaled? }`
+ * - `apply-composite-ln`            : `{ u, k?, scaled?, positive? }`
+ * - `apply-composite-exp`           : `{ u, k?, scaled? }`
+ * - `apply-composite-sin`           : `{ u, k?, scaled? }`
+ * - `apply-composite-cos`           : `{ u, k?, scaled? }`
+ *   (une forme composée a toujours `before` = u′·g(u) ; `after` = G(u) sans
+ *   coefficient, et avec un coefficient `after` = `scaled` = k·G(u), `k` étant
+ *   celui de l'étape `reveal-derivative` qui la précède ;
+ *   `positive` (u, ou l'intervalle) : u > 0 certain, `\ln u` sans valeur absolue)
  * - `apply-fundamental-theorem`     : `{ primitive }`
- * - `substitute-bounds`             : `{ primitive }`
+ * - `substitute-bounds`             : `{ primitive, lower, upper }`
  * - `simplify-bounds-result`        : `{}`
  * - `integrand-undefined-on-interval` : `{ point }` (valeur interdite de f dans [a ; b])
  * - `identify-substitution`         : `{ u }`

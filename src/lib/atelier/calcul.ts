@@ -83,6 +83,7 @@ import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
 import { integrateRefusalSteps, integrateSteps } from './integrate-steps';
+import { collapseLnAbs } from '$lib/mathAST/pedagogical-integration/latex';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import {
@@ -1444,7 +1445,9 @@ function runCommand(session: CalcSession, input: string): CalcResult {
  */
 function integralLatex(ast: MathNode, text: string): string {
 	const firstLine = text.split('\n')[0] ?? '';
-	const latex = toLatex(ast);
+	// `\ln\left| u \right|`, comme les étapes (revue du 2026-10-13) — affichage
+	// seul : la garde de concordance compare `ast`, des valeurs
+	const latex = collapseLnAbs(toLatex(ast));
 	if (!firstLine.startsWith('∫[')) return `${latex} + C`;
 	return / ≈ /.test(firstLine) ? `\\approx ${latex}` : latex;
 }
