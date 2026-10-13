@@ -109,17 +109,17 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 
 ### T5 — Messagerie et collaboration temps réel
 
-| Champ                              | Contenu                                                                                          |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Finalité(s)**                    | Messagerie/chat, présence et fonctionnalités temps réel entre utilisateurs autorisés.            |
-| **Base légale**                    | Exécution du contrat / intérêt légitime.                                                         |
-| **Personnes concernées**           | Élèves, enseignants.                                                                             |
-| **Catégories de données**          | Messages, métadonnées (auteur, horodatage, statut de présence).                                  |
-| **Destinataires / sous-traitants** | Supabase (BDD + Realtime).                                                                       |
-| **Transferts hors UE**             | Néant (UE/France).                                                                               |
-| **Durée de conservation**          | 3 ans.                                                                                           |
-| **Mesures de sécurité**            | RLS, modération (filtre de langage `bad-words`), assainissement HTML (DOMPurify).                |
-| **Remarque**                       | ⚠️ Vérifier si la messagerie est effectivement active en production ; sinon retirer cette fiche. |
+| Champ                              | Contenu                                                                                                                                            |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Finalité(s)**                    | Messagerie/chat, présence et fonctionnalités temps réel entre utilisateurs autorisés.                                                              |
+| **Base légale**                    | Exécution du contrat / intérêt légitime.                                                                                                           |
+| **Personnes concernées**           | Élèves, enseignants.                                                                                                                               |
+| **Catégories de données**          | Messages, métadonnées (auteur, horodatage, statut de présence).                                                                                    |
+| **Destinataires / sous-traitants** | Supabase (BDD + Realtime).                                                                                                                         |
+| **Transferts hors UE**             | Néant (UE/France).                                                                                                                                 |
+| **Durée de conservation**          | 3 ans.                                                                                                                                             |
+| **Mesures de sécurité**            | RLS, modération (marquage du chat sur une liste de quatre mots, en base ; aucun filtre sur la messagerie privée), assainissement HTML (DOMPurify). |
+| **Remarque**                       | ⚠️ Vérifier si la messagerie est effectivement active en production ; sinon retirer cette fiche.                                                   |
 
 ### T6 — Assistance IA (tuteur/chat + RAG) — **active en production**
 
