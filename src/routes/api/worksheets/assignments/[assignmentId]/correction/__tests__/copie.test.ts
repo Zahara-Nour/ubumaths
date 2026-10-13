@@ -68,7 +68,9 @@ function supabase(
 		role: 'teacher',
 		createdBy: TEACHER,
 		access: false
-	}
+	},
+	/** Champs de la fiche à remplacer (config, exercices) */
+	worksheetPatch: object = {}
 ): TableMock {
 	return tableMock(
 		{
@@ -102,7 +104,8 @@ function supabase(
 								variation_index: null,
 								exercise
 							}
-						]
+						],
+						...worksheetPatch
 					}
 				},
 				error: null
@@ -115,7 +118,7 @@ function supabase(
 }
 
 interface CorrectionJson {
-	exercises: Array<{ statement: string; solution: string }>;
+	exercises: Array<{ statement: string; solution: string; exercise_id?: string }>;
 	per_student_values_notice?: string | null;
 }
 
@@ -193,5 +196,31 @@ describe('Corrigé du prof : la copie de la classe', () => {
 		await correction(mock, 'typst');
 		expect(selectedColumns(mock, 'worksheet_assignments')).toMatch(/\bgeneric_functions\b/);
 		expect(rendered.instances[0].exercises[0].generic_functions).toEqual(['C']);
+	});
+
+	// Option « mélanger les exercices » : le JSON suit l'ordre de la copie, comme le PDF
+	it('fiche mélangée : le JSON suit le même ordre que le Typst (`exercise_order`)', async () => {
+		const exercises = [1, 2, 3, 4, 5, 6].map((n) => ({
+			id: `550e8400-e29b-41d4-a716-4466554401${n}0`,
+			worksheet_id: WORKSHEET_ID,
+			exercise_id: `550e8400-e29b-41d4-a716-4466554402${n}0`,
+			section_id: null,
+			position: n,
+			points: null,
+			custom_instructions: null,
+			translations: null,
+			variation_index: null,
+			exercise: twoLevelExercise(`550e8400-e29b-41d4-a716-4466554402${n}0`)
+		}));
+		const patch = { config: { shuffle_exercises: true }, worksheet_exercises: exercises };
+		rendered.instances = [];
+		await correction(supabase('guided', false, twoLevelExercise(), undefined, patch), 'typst');
+		const instance = rendered.instances[0];
+		expect(instance.exercise_order).toBeDefined();
+		const pdfOrder = (instance.exercise_order ?? []).map((i) => instance.exercises[i].exercise_id);
+		expect(pdfOrder).not.toEqual(exercises.map((e) => e.exercise_id));
+
+		const body = await correction(supabase('guided', false, twoLevelExercise(), undefined, patch));
+		expect(body.exercises.map((e) => e.exercise_id)).toEqual(pdfOrder);
 	});
 });

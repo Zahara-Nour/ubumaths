@@ -224,7 +224,11 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 					closes_at: assignment.closes_at,
 					correction_release_mode: assignment.correction_release_mode
 				},
-				exercises: instanceData.exercises.map((ex) => ({
+				// Fiche mélangée : l'ordre de la copie (`exercise_order`), comme le PDF
+				exercises: (
+					instanceData.exercise_order?.map((index) => instanceData.exercises[index]) ??
+					instanceData.exercises
+				).map((ex) => ({
 					exercise_id: ex.exercise_id,
 					position: ex.position,
 					statement: ex.statement,
