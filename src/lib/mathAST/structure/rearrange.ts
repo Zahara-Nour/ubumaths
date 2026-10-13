@@ -65,7 +65,7 @@ export interface GroupLayout {
 }
 
 /** Position d'un marqueur dans un LaTeX : `start` … `{` contenu `}` … `end` */
-interface MarkerBlock {
+export interface MarkerBlock {
 	readonly start: number;
 	readonly contentStart: number;
 	readonly contentEnd: number;
@@ -167,7 +167,7 @@ function isInlineQuotient(structure: ExpressionStructure, id: number): boolean {
 }
 
 /** Le marqueur de la sous-expression `id` dans `latex`, ou `null` */
-function findMarkerBlock(latex: string, id: number): MarkerBlock | null {
+export function findMarkerBlock(latex: string, id: number): MarkerBlock | null {
 	const opening = `\\class{${MARKER_PREFIX}${id}}{`;
 	const start = latex.indexOf(opening);
 	if (start < 0) return null;
@@ -203,11 +203,21 @@ export function movedLatex(
 	to: number
 ): string {
 	if (from === to) return structure.latex;
-	return replaceContent(
-		structure.latex,
-		group.id,
-		groupLatex(group, reorder(group.parts, from, to))
-	);
+	return expressionLatex(structure, group, reorder(group.parts, from, to));
+}
+
+/**
+ * L'expression entière (LaTeX marqué), le groupe écrit avec les parties `parts`
+ * et, pendant le glisser, les espaces de `layout` : la formule redessinée à
+ * chaque image.
+ */
+export function expressionLatex(
+	structure: ExpressionStructure,
+	group: MovableGroup,
+	parts: readonly MovablePart[],
+	layout: GroupLayout = {}
+): string {
+	return replaceContent(structure.latex, group.id, groupLatex(group, parts, layout));
 }
 
 /** Les parties sans la partie `from` */
