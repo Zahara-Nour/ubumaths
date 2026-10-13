@@ -10,6 +10,10 @@
  * (et sans option), tout doit être strictement identique.
  *
  * Le corpus contient `AB^2=AC^2+BC^2` : en mode longueur, il change (témoin).
+ *
+ * Mise à jour le 2026-10-13 pour 15 saisies, empreinte seule (lectures, écriture
+ * sans marqueurs et arbre identiques, vérifiés) : l'exposant d'une parenthèse
+ * s'écrit désormais dans son marqueur (`(−½ + x)²`, exposant trop bas sinon).
  */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';

@@ -97,7 +97,9 @@ export type StructureNode = SumStructureNode | RelationStructureNode | PlainStru
 export interface ExpressionStructure {
 	/**
 	 * LaTeX de l'expression où chaque sous-expression est enveloppée dans
-	 * `\class{ubs-n<id>}{…}`, imbriqués comme l'arbre. Rendu identique à
+	 * `\class{ubs-n<id>}{…}`, imbriqués comme l'arbre (sauf l'exposant d'une base
+	 * qui finit par un délimiteur, `(x + 1)²` : logé dans le marqueur de sa base
+	 * pour que MathLive le place comme l'écriture usuelle). Rendu identique à
 	 * `toLatex` de l'expression.
 	 */
 	readonly latex: string;

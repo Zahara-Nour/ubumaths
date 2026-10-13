@@ -33,7 +33,7 @@
 	},
 	"(-3)^2": {
 		"reading": "le carré de −3",
-		"hash": "9e3babe8b8786801"
+		"hash": "eb8a625ee1c72af4"
 	},
 	"-3^2": {
 		"reading": "l'opposé du carré de 3",
@@ -41,11 +41,11 @@
 	},
 	"(-x)^2": {
 		"reading": "le carré de l'opposé de x",
-		"hash": "663566d90c01fabb"
+		"hash": "558680a46c43d634"
 	},
 	"(2x)^2": {
 		"reading": "le carré du produit de 2 par x",
-		"hash": "51cef059ac8eea3f"
+		"hash": "df09a3f90312c590"
 	},
 	"(x+1)(x-1)": {
 		"reading": "le produit de la somme de x et 1 par la différence de x et 1",
@@ -53,7 +53,7 @@
 	},
 	"(x+1)^2-4": {
 		"reading": "la différence du carré de la somme de x et 1 et de 4",
-		"hash": "4bd63c3bb004e3d4"
+		"hash": "626b95a3603f1a13"
 	},
 	"2(x+1)-3(x-2)": {
 		"reading": "la différence du produit de 2 par la somme de x et 1 et du produit de 3 par la différence de x et 2",
@@ -145,11 +145,11 @@
 	},
 	"\\sqrt{(x-1)^2}": {
 		"reading": "la racine carrée du carré de la différence de x et 1",
-		"hash": "e525cdb84d924f09"
+		"hash": "f9cb12d373cfdc30"
 	},
 	"\\cos(x)^2": {
 		"reading": "le carré du cosinus de x",
-		"hash": "9fb5e7861c209785"
+		"hash": "79a9b0b9c0bdf5d1"
 	},
 	"\\cos^2x+\\sin^2x=1": {
 		"reading": "la somme du carré du cosinus de x et du carré du sinus de x est égale à 1",
@@ -325,7 +325,7 @@
 	},
 	"(x^2)^3": {
 		"reading": "le cube du carré de x",
-		"hash": "c22b7931675198ab"
+		"hash": "2d87814c1b4d49dd"
 	},
 	"x^{2^3}": {
 		"reading": "la puissance 2^{3} de x",
@@ -389,11 +389,11 @@
 	},
 	"(x-1)^2": {
 		"reading": "le carré de la différence de x et 1",
-		"hash": "0950b6ef04e27129"
+		"hash": "e5ba95a1999d0637"
 	},
 	"\\left(x-1\\right)^2": {
 		"reading": "le carré de la différence de x et 1",
-		"hash": "0950b6ef04e27129"
+		"hash": "e5ba95a1999d0637"
 	},
 	"\\left[2x-1\\right]": {
 		"reading": "la différence du produit de 2 par x et de 1",
@@ -433,7 +433,7 @@
 	},
 	"(-1)^n": {
 		"reading": "la puissance n de −1",
-		"hash": "e1843024cdb7a45b"
+		"hash": "dae7e21886e356f1"
 	},
 	"-1^n": {
 		"reading": "l'opposé de 1 puissance n",
@@ -577,11 +577,11 @@
 	},
 	"\\left(\\frac{1}{2}\\right)^n": {
 		"reading": "la puissance n du quotient de 1 par 2",
-		"hash": "73b6a9939a9e6342"
+		"hash": "d50ddbb6deeb124f"
 	},
 	"\\left(-\\frac{1}{2}\\right)^2": {
 		"reading": "le carré de l'opposé du quotient de 1 par 2",
-		"hash": "1c2ad72c758f57b9"
+		"hash": "234404091aef2f1f"
 	},
 	"2^n\\times2^m=2^{n+m}": {
 		"reading": "le produit de 2 puissance n par 2 puissance m est égal à la puissance n + m de 2",
@@ -593,7 +593,7 @@
 	},
 	"(ab)^2=a^2b^2": {
 		"reading": "le carré du produit de a par b est égal au produit du carré de a par le carré de b",
-		"hash": "2a9afa68ec471609"
+		"hash": "eed5223b0df16a3d"
 	},
 	"\\frac{a}{b}\\times\\frac{c}{d}=\\frac{ac}{bd}": {
 		"reading": "le produit du quotient de a par b et du quotient de c par d est égal au quotient dont le numérateur est le produit de a par c et le dénominateur le produit de b par d",
@@ -605,7 +605,7 @@
 	},
 	"(a+b)^2=a^2+2ab+b^2": {
 		"reading": "le carré de la somme de a et b est égal à la somme du carré de a, du produit de 2, a et b et du carré de b",
-		"hash": "463b246589da2902"
+		"hash": "28e213f365f2bbb9"
 	},
 	"(a-b)(a+b)=a^2-b^2": {
 		"reading": "le produit de la différence de a et b par la somme de a et b est égal à la différence du carré de a et du carré de b",
@@ -769,7 +769,7 @@
 	},
 	"(\\sqrt{2})^2": {
 		"reading": "le carré de la racine carrée de 2",
-		"hash": "f895f93615c601e3"
+		"hash": "0cfccb44dbd24cfe"
 	},
 	"\\sqrt{2}^2": {
 		"reading": "le carré de la racine carrée de 2",
