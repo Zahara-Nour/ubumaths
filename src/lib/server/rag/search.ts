@@ -47,7 +47,7 @@ export async function hybridSearch(
 	// T16 : sans extrait lisible par l'appelant, la recherche (`rag_hybrid_search`, droits
 	// de l'appelant) ne peut rien rendre. Le message de l'élève ne part donc pas chez
 	// HuggingFace (États-Unis) pour rien.
-	if (!(await hasReadableChunk(supabase))) return [];
+	if (!(await hasReadableChunk(supabase, grade, topics))) return [];
 
 	// Try to get query embedding
 	const embeddingService = getEmbeddingService();
@@ -70,11 +70,19 @@ export async function hybridSearch(
 }
 
 /**
- * Au moins un extrait du corpus lisible avec ce client (RLS de `rag_chunks`). En cas
- * d'erreur : non, pour ne rien envoyer à l'aveugle.
+ * Au moins un extrait du corpus lisible avec ce client (RLS de `rag_chunks`), avec les
+ * mêmes filtres de niveau et de thème que la RPC. En cas d'erreur : non, pour ne rien
+ * envoyer à l'aveugle.
  */
-async function hasReadableChunk(supabase: SupabaseClient): Promise<boolean> {
-	const { data, error } = await supabase.from('rag_chunks').select('id').limit(1);
+async function hasReadableChunk(
+	supabase: SupabaseClient,
+	grade?: string,
+	topics?: string[]
+): Promise<boolean> {
+	let query = supabase.from('rag_chunks').select('id, rag_documents!inner(grades, topics)');
+	if (grade) query = query.overlaps('rag_documents.grades', [grade]);
+	if (topics && topics.length > 0) query = query.overlaps('rag_documents.topics', topics);
+	const { data, error } = await query.limit(1);
 	if (error) {
 		logger.warn('Corpus RAG non vérifié, recherche ignorée :', error);
 		return false;

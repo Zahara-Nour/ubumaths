@@ -14,12 +14,19 @@ vi.mock('../embeddings', () => ({
 
 import { hybridSearch } from '../search';
 
-function clientWithChunks(chunks: { id: string }[]) {
+function clientWithChunks(
+	chunks: { id: string }[] | null,
+	error: { message: string } | null = null
+) {
 	const rpc = vi.fn(async () => ({ data: [], error: null }));
-	const limit = vi.fn(async () => ({ data: chunks, error: null }));
-	const select = vi.fn(() => ({ limit }));
+	const overlaps = vi.fn();
+	const builder = {
+		overlaps: overlaps.mockImplementation(() => builder),
+		limit: vi.fn(async () => ({ data: chunks, error }))
+	};
+	const select = vi.fn(() => builder);
 	const from = vi.fn(() => ({ select }));
-	return { client: { from, rpc } as unknown as SupabaseClient, from, rpc };
+	return { client: { from, rpc } as unknown as SupabaseClient, from, rpc, overlaps };
 }
 
 describe('hybridSearch sans corpus lisible', () => {
@@ -49,15 +56,24 @@ describe('hybridSearch sans corpus lisible', () => {
 	});
 
 	it("n'envoie rien si la vérification du corpus échoue", async () => {
-		const limit = vi.fn(async () => ({ data: null, error: { message: 'boom' } }));
-		const client = {
-			from: vi.fn(() => ({ select: vi.fn(() => ({ limit })) })),
-			rpc: vi.fn()
-		} as unknown as SupabaseClient;
+		const { client } = clientWithChunks(null, { message: 'boom' });
 
 		const results = await hybridSearch(client, 'Comment résoudre 2x + 3 = 7 ?');
 
 		expect(results).toEqual([]);
+		expect(embedQuery).not.toHaveBeenCalled();
+	});
+
+	it('vérifie le corpus avec les filtres de niveau et de thème de la recherche', async () => {
+		const { client, overlaps } = clientWithChunks([]);
+
+		await hybridSearch(client, 'Comment résoudre 2x + 3 = 7 ?', {
+			grade: '6',
+			topics: ['equations']
+		});
+
+		expect(overlaps).toHaveBeenCalledWith('rag_documents.grades', ['6']);
+		expect(overlaps).toHaveBeenCalledWith('rag_documents.topics', ['equations']);
 		expect(embedQuery).not.toHaveBeenCalled();
 	});
 });

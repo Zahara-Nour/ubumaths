@@ -135,7 +135,8 @@ réponse acceptée (`TutorChat.svelte:511`) et l'envoie. Il repart à 0 au recha
   `chunker.ts` (500 caractères, recouvrement 50), embeddings HuggingFace
   `intfloat/multilingual-e5-large` (préfixes `passage:` / `query:`), insertion par lots de 50.
 - **Recherche** (`search.ts`) : `hybridSearch` vérifie d'abord qu'un extrait de `rag_chunks` est
-  lisible par l'appelant (même RLS que la RPC, qui tourne avec ses droits) ; sinon il rend une liste
+  lisible par l'appelant pour son niveau et son thème (même RLS que la RPC, qui tourne avec ses
+  droits, et mêmes filtres) ; sinon il rend une liste
   vide sans appel externe. Ensuite, il embarque la question puis appelle la RPC
   `rag_hybrid_search` (fusion RRF, k = 60, poids 0,7 vecteur / 0,3 plein texte) ; sans embedding ou
   en cas d'erreur, repli sur une recherche plein texte (`textSearch` sur `search_vector`, documents
@@ -188,7 +189,7 @@ pas filtré : seul l'avertissement sous la saisie protège.
 
 **Envoyé à HuggingFace (États-Unis)**, si `HF_API_KEY` est définie : le **dernier message de
 l'élève** (plus de 10 caractères), pour calculer son embedding, **seulement s'il peut lire au moins
-un extrait du corpus** (T16, décision de David du 2026-10-13 : `hasReadableChunk` dans
+un extrait du corpus pour son niveau** (T16, décision de David du 2026-10-13 : `hasReadableChunk` dans
 `search.ts`, sinon la recherche rend vide sans rien envoyer). Et le texte des documents déposés, à
 l'indexation. **En prod au 2026-10-13 : rien ne part** (`HF_API_KEY` absente des variables
 Vercel de production, corpus vide). ⚠️ HuggingFace n'est pas au registre des sous-traitants :
