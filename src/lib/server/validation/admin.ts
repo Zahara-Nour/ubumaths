@@ -117,9 +117,12 @@ export const importedStudentsSchema = z
 // CLASS MANAGEMENT SCHEMAS (dashboard/admin/classes)
 // ============================================================================
 
-/** Un champ de formulaire vide (ou absent) devient `null`. */
+/** Un champ de formulaire vide, blanc ou absent devient `null`. */
 function emptyToNull<T extends z.ZodType>(schema: T) {
-	return z.preprocess((v) => (v === '' || v === undefined ? null : v), schema.nullable());
+	return z.preprocess(
+		(v) => (v === undefined || (typeof v === 'string' && v.trim() === '') ? null : v),
+		schema.nullable()
+	);
 }
 
 /** Code d'inscription d'une classe : lettres, chiffres, `-` et `_`, 10 caractères au plus. */

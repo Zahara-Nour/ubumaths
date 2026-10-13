@@ -99,7 +99,7 @@ describe('admin/classes : entrée valide → écrite normalisée', () => {
 		vi.resetModules();
 	});
 
-	it('create : champs vides → null, code en majuscules', async () => {
+	it('create : champs vides ou blancs → null, code en majuscules', async () => {
 		const { client, chains } = createWriteVerdictSupabase({
 			classes: {
 				// Test d'unicité du code : aucune classe ne le porte.
@@ -109,7 +109,12 @@ describe('admin/classes : entrée valide → écrite normalisée', () => {
 		});
 		const { actions } = await import('../+page.server');
 		const result = await actions.create({
-			request: formRequest({ ...CREATE_FIELDS, school_id: SCHOOL_ID, grade: '6' }),
+			request: formRequest({
+				...CREATE_FIELDS,
+				description: '   ',
+				school_id: SCHOOL_ID,
+				grade: '6'
+			}),
 			locals: adminLocals(client)
 		} as never);
 
