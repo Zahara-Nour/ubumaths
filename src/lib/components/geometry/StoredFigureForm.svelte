@@ -207,7 +207,7 @@
 				rows={24}
 				maxlength={SCRIPT_MAX}
 				spellcheck={false}
-				class="font-mono text-[13px] leading-relaxed"
+				class="min-h-[28rem] font-mono text-[13px] leading-relaxed"
 				aria-invalid={scriptError !== null}
 				aria-describedby={scriptError ? 'figure-script-error' : undefined}
 			/>
