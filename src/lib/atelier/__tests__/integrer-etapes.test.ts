@@ -414,6 +414,9 @@ describe('hasUnexplainedCoefficient : expliqué par une réécriture, ou caché'
 	it('la même forme composée SANS l’étape de réécriture : refusée', () => {
 		expect(hasUnexplainedCoefficient(withoutReveal(stepsOf('e^{2x}')))).toBe(true);
 		expect(hasUnexplainedCoefficient(withoutReveal(stepsOf('\\frac{x}{x^2+1}')))).toBe(true);
+		// u′ = 1 : « On sort la constante 3 » retirée, le 3 de 3 ln|x| est caché
+		expect(hasUnexplainedCoefficient(stepsOf('\\frac3x'))).toBe(false);
+		expect(hasUnexplainedCoefficient(withoutReveal(stepsOf('\\frac3x')))).toBe(true);
 	});
 
 	it('une réécriture fausse (e^{2x} = ⅓ × 2e^{2x}) : refusée', () => {

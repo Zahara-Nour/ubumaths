@@ -123,9 +123,13 @@ function factorLatex(bindings: IntegrationBindings, key: string): string {
  * k = −1 s'écrit avec le seul signe : `-\\left( -e^{-x} \\right)`.
  */
 export function revealedProduct(bindings: IntegrationBindings): string {
-	const k = bind(bindings, 'k');
-	if (k === '-1') return `-${factorLatex(bindings, 'revealed')}`;
-	return `${k} \\times ${factorLatex(bindings, 'revealed')}`;
+	if (isMinusOneCoefficient(bindings)) return `-${factorLatex(bindings, 'revealed')}`;
+	return `${bind(bindings, 'k')} \\times ${factorLatex(bindings, 'revealed')}`;
+}
+
+/** k = −1 : le seul signe s'écrit (`-\\int …`, « On sort le signe − ») */
+export function isMinusOneCoefficient(bindings: IntegrationBindings): boolean {
+	return bind(bindings, 'k') === '-1';
 }
 
 /**
@@ -139,7 +143,7 @@ export function onlyConstantOut(bindings: IntegrationBindings): boolean {
 
 /** « On sort la constante $3$ », « On sort le signe $-$ » pour k = −1 */
 function constantOutTitle(bindings: IntegrationBindings): string {
-	return bind(bindings, 'k') === '-1'
+	return isMinusOneCoefficient(bindings)
 		? 'On sort le signe $-$'
 		: `On sort la constante ${bindMath(bindings, 'k')}`;
 }
@@ -161,14 +165,13 @@ function constantOutEquality(bindings: IntegrationBindings): string {
 
 /** L'explication de « On sort la constante k » (u′ = 1) */
 function constantOutExplanation(bindings: IntegrationBindings): string {
-	const subject = bind(bindings, 'k') === '-1' ? 'Le signe $-$' : 'Une constante multiplicative';
+	const subject = isMinusOneCoefficient(bindings) ? 'Le signe $-$' : 'Une constante multiplicative';
 	return `${subject} sort de l'intégrale : ${math(constantOutEquality(bindings))}.`;
 }
 
 /** `k` devant une intégrale ou une primitive : `\\dfrac{1}{2} `, `-` pour −1 */
 export function coefficientPrefix(bindings: IntegrationBindings): string {
-	const k = bind(bindings, 'k');
-	return k === '-1' ? '-' : `${k} `;
+	return isMinusOneCoefficient(bindings) ? '-' : `${bind(bindings, 'k')} `;
 }
 
 /**

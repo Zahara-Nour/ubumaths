@@ -221,7 +221,7 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 			if (!uv || !vdu) return formatStandard(step, afterLatex, dx);
 			const result = step.bindings?.result;
 			const lines = [
-				`  & \\textcolor{blue}{\\int ${beforeLatex}${dx}}`,
+				`  & \\textcolor{blue}{\\int ${integrandLatex(step.before)}${dx}}`,
 				`  & = ${toLatex(uv)} - \\int ${integrandLatex(vdu)}${dx}`,
 				...(result ? [`  & = ${toLatex(result)}`] : [])
 			];
@@ -321,12 +321,14 @@ function closedIntervalLatex(step: PedagogicalIntegrationStep): string {
 	return `\\left[ ${toLatex(lo)} ; ${toLatex(hi)} \\right]`;
 }
 
-/** Un intégrande somme ou opposé, entre parenthèses : `\\int \\left( -\\cos x \\right)\\,dx`. */
+/**
+ * Un intégrande somme, opposé ou qui commence par un signe (`-3\\sin(x+2)`),
+ * entre parenthèses : `\\int \\left( -\\cos x \\right)\\,dx` — jamais `\\int -…`
+ */
 function integrandLatex(node: MathNode): string {
 	const latex = toLatex(node);
-	return node.type === 'addition' || node.type === 'subtraction' || node.type === 'opposite'
-		? `\\left( ${latex} \\right)`
-		: latex;
+	const wrap = node.type === 'addition' || node.type === 'subtraction' || node.type === 'opposite';
+	return wrap || latex.startsWith('-') ? `\\left( ${latex} \\right)` : latex;
 }
 
 /** Standard 2-line render : integral on top, antiderivative below. */

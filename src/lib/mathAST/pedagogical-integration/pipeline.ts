@@ -127,6 +127,7 @@ import { abs, ln } from '../factory';
 import { findProportionalityConstant, findProportionalityRatio } from '../integration/patterns';
 import { forbiddenValueOnInterval, numericValue } from '../integration/forbidden-value';
 import { isCertainlyPositive } from './positivity';
+import { isMinusOneCoefficient, onlyConstantOut } from './descriptions-fr';
 import { arcsinRule, arctanRule } from '../integration/rules';
 import { PedagogicalIntegrationNotImplemented } from './types';
 import type {
@@ -994,17 +995,26 @@ function integrateComposite(
 	// Les étapes s'enchaînent (chaque `before` est l'`after` précédent) : la
 	// réécriture rend u′g(u), l'intégrande qu'on intègre ensuite ; la forme
 	// composée rend k·G(u), la primitive de f
+	const revealBindings: IntegrationBindings = {
+		u: bareU,
+		du,
+		k: kNode,
+		revealed,
+		integrand,
+		variable: variableNode(ctx.variable)
+	};
 	const reveal = buildStep(ctx, {
 		rule: 'reveal-derivative',
 		before: integrand,
 		after: revealed,
 		variable: ctx.variable,
-		bindings: { u: bareU, du, k: kNode, revealed, integrand, variable: variableNode(ctx.variable) },
+		bindings: revealBindings,
 		// u′ = 1 : il n'y a qu'une constante à sortir (décision de David du 2026-10-13)
-		...(du.type === 'number' &&
-			du.value === '1' && {
-				description: isOneRational(negRational(k)) ? 'On sort le signe −' : 'On sort la constante'
-			})
+		...(onlyConstantOut(revealBindings) && {
+			description: isMinusOneCoefficient(revealBindings)
+				? 'On sort le signe −'
+				: 'On sort la constante'
+		})
 	});
 	const composite = buildStep(ctx, {
 		rule,

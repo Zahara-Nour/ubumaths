@@ -6,7 +6,7 @@
  * ½e^{2x} sans dire d'où venait le ½. Désormais une étape de réécriture
  * « On fait apparaître u′ » écrit `e^{2x} = \dfrac12 \times 2e^{2x}` et sort la
  * constante ; la forme u′e^u s'applique alors EXACTEMENT à `2e^{2x}`.
- * Même principe pour sin, cos, ln, la puissance, le signe (`e^{-x} = -(-e^{-x})`)
+ * Même principe pour sin, cos, ln, la puissance, le signe (`e^{-x} = -(-e^{-x})`).
  * Quand u′ = 1 (`\frac3x`, `3(x+1)^2`), il n'y a pas de u′ à faire apparaître :
  * l'étape dit « On sort la constante k » (« On sort le signe − » pour k = −1),
  * décision de David du 2026-10-13.
@@ -222,6 +222,18 @@ describe('u′ = 1 : l’étape sort la constante, sans « faire apparaître u�
 				detailed.map((s) => s.expressionLatex)
 			);
 		});
+	});
+
+	// Un intégrande qui commence par un signe va entre parenthèses sous \int,
+	// produit compris (`-3\sin(x+2)`), comme une fraction ou un opposé
+	it.each(['-3\\sin(x+2)', '-3e^x', '-2x^2'])('∫ %s dx : jamais `\\int -`', (integrand) => {
+		for (const level of levels) {
+			for (const step of render(integrand, 'detailed', undefined, level)) {
+				expect(step.expressionLatex ?? '').not.toMatch(/\\int -/);
+			}
+		}
+		const first = render(integrand)[0];
+		expect(first.expressionLatex).toContain('\\int \\left( -');
 	});
 
 	it.each(['e^{2x}', '\\frac{x}{x^2+1}'])(
