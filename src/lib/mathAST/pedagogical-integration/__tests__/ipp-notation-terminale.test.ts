@@ -19,6 +19,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { parseLatex } from '../../parser';
+import { compile } from '../../eval/compile';
 import type { RenderedStep } from '../../common/step-renderer-base';
 import type { Verbosity } from '../../common/verbosity';
 import {
@@ -226,5 +227,41 @@ describe('IPP au supérieur : notation inchangée (u, dv)', () => {
 			for (const choose of chooses) expect(choose.title).toMatch(/dv = /);
 			for (const text of ippTexts(steps)) expect(text).not.toContain("v'(x)");
 		});
+	});
+});
+
+// =============================================================================
+// IPP cyclique en intégrale définie
+// =============================================================================
+
+describe('IPP cyclique définie : ∫₀^π eˣ sin x dx', () => {
+	const bounds = ['0', '\\pi'] as const;
+
+	it('valeur (e^π + 1)/2', () => {
+		const result = generatePedagogicalIntegrationSteps(parseLatex('e^x\\sin x'), {
+			level: 'lycee',
+			definite: { lower: parseLatex(bounds[0]), upper: parseLatex(bounds[1]) }
+		});
+		expect(result.value).toBeDefined();
+		expect(compile(result.value!)({})).toBeCloseTo((Math.exp(Math.PI) + 1) / 2, 9);
+	});
+
+	it('lycée : formule avec bornes annoncée, deux choix en u(x) et v′(x), ni dv ni du', () => {
+		const steps = render('e^x\\sin x', 'lycee', 'detailed', bounds);
+		const identify = steps.find((s) => s.rule === 'identify-parts');
+		expect(identify?.explanation).toContain(BOUNDED_FORMULA);
+		const chooses = steps.filter((s) => s.rule === 'choose-u-dv');
+		expect(chooses).toHaveLength(2);
+		for (const choose of chooses) expect(choose.explanation).toMatch(/^On pose \$u\(x\) = /);
+		for (const text of ippTexts(steps)) expect(text).not.toMatch(/\bdv\b|\bdu\b/);
+		expect(steps.map((s) => s.rule)).toContain('simplify-bounds-result');
+	});
+
+	it('supérieur : u et dv', () => {
+		const chooses = render('e^x\\sin x', 'superieur', 'detailed', bounds).filter(
+			(s) => s.rule === 'choose-u-dv'
+		);
+		expect(chooses).toHaveLength(2);
+		for (const choose of chooses) expect(choose.title).toMatch(/dv = /);
 	});
 });

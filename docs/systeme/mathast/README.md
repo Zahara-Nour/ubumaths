@@ -791,8 +791,8 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   et rend la première valeur interdite de [a ; b], **bornes comprises**. Si elle existe, les
   étapes s'arrêtent à `integrand-undefined-on-interval` (« La fonction n'est pas définie en
   x = 3/2, qui appartient à [1 ; 2] : l'intégrale n'est pas définie sur cet intervalle. », mots en
-  `\text{}` ; une valeur que le domaine ne rend qu'en décimal, racine de x³ − 2, s'écrit arrondie
-  à 3 décimales, « x ≈ 1.26 », par `forbiddenPointLatex`, le binding `point` gardant la valeur
+  `\text{}` ; une valeur que le domaine ne rend qu'en décimal, racine de x³ − 2, s'écrit à 3
+  chiffres significatifs, « x ≈ 1.26 », « x ≈ 0.000412 » (jamais « ≈ 0 »), par `forbiddenPointLatex`, le binding `point` gardant la valeur
   complète), sans `value` ni `antiderivative` (type `PedagogicalDefiniteIntegrationResult`) ;
   `result.undefinedAt` porte la valeur. Le refus s'affiche donc même pour une primitive que le
   pipeline ne sait pas écrire (∫₀¹ 4/(3x − 2)²). Bornes littérales : pas de contrôle, valeur

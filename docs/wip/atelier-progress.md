@@ -76,14 +76,16 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
      Tests : `integrer-etapes.test.ts` (refus + garde), `integrer-pole-depliage.svelte.test.ts` (rendu).
      **Noté** : l'intégrande `\frac{1}{x-2}` s'écrit `\dfrac{1}{\left( x - 2 \right)}` dans les étapes
      (parenthèses résiduelles, `pedagogical-integration`).
-   - **2b `.intégrer` PR 3 — FAITE (2026-10-13, branche `feat/integration-ipp-terminale`, non
-     commitée à la remise de l'agent)** : IPP en notation de terminale au lycée (u(x), v′(x), u′(x),
+   - **2b `.intégrer` PR 3 — FAITE (2026-10-13, branche `feat/integration-ipp-terminale`, commit
+     01c392219)** : IPP en notation de terminale au lycée (u(x), v′(x), u′(x),
      v(x) ; formule avec bornes annoncée dans une intégrale définie, puis la version primitive des
      lignes de calcul), supérieur inchangé (u, dv). Sous-étapes `reveal-derivative` du v gardées ; IPP
      cyclique idem. Tests : `ipp-notation-terminale.test.ts`, `integrer-etapes.test.ts`.
      **À soumettre à David** : IPP calculée AVEC bornes (∫₀¹ = [xeˣ]₀¹ − ∫₀¹ eˣ dx) plutôt que
      primitive puis théorème fondamental — changement d'architecture du pipeline, non fait.
    - **À faire plus tard — défauts du moteur `integration` relevés (2026-10-13)** :
+     - Le domaine rend des pôles faux près de 0 : x³ − 6,4·10⁻¹¹ (pôle 0,0004) rendu « 0 » ;
+       x³ − 10⁻¹⁰ (pôle 0,000464) rendu 0,000737.
      - `.intégrer \frac1t ; t de -1 à 1` : le message du refus dit « (x ≈ 0) » au lieu de t.
      - `.intégrer … de -1 à 1/2` : le message écrit l'intervalle « [-1 ; 1:/2] ».
      - `.intégrer \frac{1}{x^2-2} de 0 à 2` : « Unable to factor denominator », en anglais.
