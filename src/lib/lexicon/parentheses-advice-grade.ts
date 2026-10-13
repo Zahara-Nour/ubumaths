@@ -4,7 +4,7 @@
  * L'enchaînement d'additions et de soustractions et les nombres relatifs
  * arrivent en 5e : la page appelle `parenthesesAdvice` (`mathAST/structure`)
  * seulement si `needsParenthesesAdvice(readReaderGrade()())`.
- * Spécification : `docs/wip/structure-expression-progress.md`, section C.
+ * Spécification : `docs/systeme/mathast/structure-expression.md`, section C.
  *
  * @module lexicon/parentheses-advice-grade
  */

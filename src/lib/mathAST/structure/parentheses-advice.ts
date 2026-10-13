@@ -6,7 +6,7 @@
  * arrivent en 5e. Avant, l'élève écrit les parenthèses : une suite comme
  * `5 − 3 + x` ou un « − » en tête (`−3 + x`) demande un message, et la page
  * masque la structure et la lecture tant qu'il est là.
- * Spécification : `docs/wip/structure-expression-progress.md`, section C.
+ * Spécification : `docs/systeme/mathast/structure-expression.md`, section C.
  *
  * `parenthesesAdvice` ne connaît pas le niveau : la page l'appelle seulement si
  * `needsParenthesesAdvice` (`$lib/lexicon/parentheses-advice-grade`) le dit.

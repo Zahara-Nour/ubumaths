@@ -3,7 +3,7 @@
  * ================================================
  *
  * Lecture d'une sous-expression : `2 + 3y` → « la somme de 2 et du produit de
- * 3 par y ». Spécification : `docs/wip/structure-expression-progress.md`,
+ * 3 par y ». Spécification : `docs/systeme/mathast/structure-expression.md`,
  * section B (B1-B15).
  *
  * La lecture est STRUCTURÉE : une suite de segments (texte, formule, mot du

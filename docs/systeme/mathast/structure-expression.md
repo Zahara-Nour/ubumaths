@@ -1,11 +1,24 @@
-# Structure d'une expression — phase 0
+---
+couvre:
+  - 'src/lib/mathAST/structure/**'
+  - src/lib/lexicon/parentheses-advice-grade.ts
+---
 
-> Chantier ouvert le 2026-10-11. Héritier d'Algebria (outil Flash/Haxe de David, Sésamath, article
-> 487 de MathemaTICE). Démo : `/test-structure`, branche locale `feat/demo-structure-expression`
-> (worktree `../ubumaths-wt-structure`, non poussée). Vocabulaire : [CONTEXT.md](../../CONTEXT.md)
-> § « La structure d'une expression ».
+# Structure d'une expression
 
-## Décisions de David (2026-10-11)
+> Outil **« Structure d'une expression »** : page publique `/test-structure`
+> ([utilitaires-et-demos.md](../utilitaires-et-demos.md)) ; moteur `src/lib/mathAST/structure/`
+> ([README.md](README.md)). Héritier d'Algebria (outil Flash/Haxe de David, Sésamath, article 487
+> de MathemaTICE). Vocabulaire : [CONTEXT.md](../../../CONTEXT.md) § « La structure d'une
+> expression ». Livré le 2026-10-11 (#1125) ; journal du chantier :
+> [structure-expression-progress.md](../../archive/wip/structure-expression-progress.md).
+
+Au survol (ou au toucher), la plus petite **sous-expression** sous le pointeur est encadrée, et une
+**lecture en français** dit ce qu'elle est (« la somme de 2 et du produit de 3 par y »), avec des
+mots cliquables vers le dictionnaire. Un élève de 6e ou avant reçoit un message à la place quand
+l'expression demande les relatifs ou les priorités de 5e.
+
+## Décisions de David (2026-10-11, Q22 étendue le 2026-10-12)
 
 | #   | Question                     | Décision                                                                                                                                                                                                                                                                                                                                      |
 | --- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -120,54 +133,33 @@ enregistré ; niveau lu par `readReaderGrade()` (`profiles.grade`).
 Points proposés par Claude et acceptés : « x puissance 4 » (B9) ; survol de « sin » = la fonction
 appliquée (A8) ; cadres englobants en pointillés gris (A10).
 
-## Plan
+## Comment c'est fait (mesuré, Chromium et WebKit)
 
-| Lot | Contenu                                                                                       | Agent                   |
-| --- | --------------------------------------------------------------------------------------------- | ----------------------- |
-| 1   | `mathAST` : arbre de structure (aplati, signe à la somme, arguments de fonctions)             | `mathast-expert` (Opus) |
-| 2   | `mathAST` : lecture en français, mots rattachés aux sous-expressions                          | `mathast-expert` (Opus) |
-| 3   | règle « 6e ou avant » et propositions de parenthèses                                          | `mathast-expert` (Opus) |
-| 4   | page `/test-structure`, encadré, panneau, sens inverse, mots cliquables (`LexiconTerm`)       | `svelte-expert` (Opus)  |
-| 5   | définitions manquantes du dictionnaire (membre, carré, cube…) : proposées, validées par David | session principale      |
+- **L'arbre vient de mathAST, pas de MathLive** : MathLive ne connaît qu'une suite plate
+  d'atomes. `structure/` aplatit sommes, produits et chaînes de relations (signe « − » à la somme,
+  `signs` gardés pour la lecture). Un « − » en tête sans parenthèses porte sur tout le produit ou
+  le quotient en ligne qui suit (décision de David) : `−3x` ≡ `−(3x)`, `−6 ÷ 3 + 1` ≡
+  `−(6 ÷ 3) + 1` ; inchangés : `(−3)x`, `2 × (−3)`, `−3`, `−3²` (opposé de 3²).
+- **Marqueurs `\class{ubs-n<id>}{…}`** : un span par nœud, imbriqués comme l'arbre, rendu
+  identique au pixel à `toLatex` (`\htmlData` décale `2\sin x` de 0,17 em). Puissance : jamais
+  `{base}^{…}` (des accolades font un atome ordinaire : −0,46 em autour d'un `+` voisin) ; écrire
+  `base^{…}`.
+- **Repérage** : pas l'élément sous le pointeur (dans une fraction les boîtes absolues se
+  chevauchent : le dénominateur rendait le quotient) ; on mesure la zone des caractères de chaque
+  nœud (Range, svg, `.ML__frac-line`) et on prend le plus profond qui contient le point.
+- **Encadré dessiné par-dessus** (div absolue), jamais `\enclose`.
+- **Lecture** (`readingOf`) : segments texte / formule / mot, chacun rattaché à l'id de sa
+  sous-expression ; la clé d'un mot est le `termId` du dictionnaire (`carré (puissance)`,
+  `image (fonction)`…), passée telle quelle à `LexiconTerm`.
+- **Message « 6e ou avant »** : `parenthesesAdvice` (un message à la fois, première
+  sous-expression en ordre préfixe, « − » en tête avant la suite), appelé seulement si
+  `needsParenthesesAdvice(readReaderGrade()())` (`src/lib/lexicon/parentheses-advice-grade.ts` :
+  élève de 6e ou avant ; visiteur ou niveau inconnu : jamais).
+- **Longueurs** : deux majuscules collées se lisent comme une longueur (« la longueur AB »,
+  `capitalPairs: 'length'`), voir [convention-equivalence.md](convention-equivalence.md).
+- **Pas dans le chat** : `\class` est interdit en mode restreint.
 
-Tests d'abord (rouges) à chaque lot ; `code-reviewer` en fin de lot.
-
-## Journal
-
-- 2026-10-11 — démo validée ; Q1-Q15 tranchées ; glossaire à jour (a81a98d56).
-- 2026-10-11 — spécification validée ; page = `/test-structure`. Lot 1 lancé dans le worktree
-  `../ubumaths-wt-structure` (branche `feat/demo-structure-expression`).
-- 2026-10-11 — lot 1 : module `src/lib/mathAST/structure/` (arbre, LaTeX marqué, vide / non reconnue) ;
-  la démo s'y branche, l'option « le signe − » disparaît (signe à la somme).
-- 2026-10-11 — décision de David : **`−3x` équivaut à `−(3x)`, `−6 ÷ 3 + 1` à `−(6 ÷ 3) + 1`**. Un
-  « − » en tête sans parenthèses visibles porte sur tout le produit ou le quotient en ligne qui suit
-  (le parseur rend `(−3)·x`, la structure réassocie). Hors somme : opposé du produit ; dans une
-  somme : signe à la somme. Inchangé : `(−3)x`, `2 × (−3)`, `−3`, `−3²` (opposé de 3²).
-- 2026-10-11 — lot 2 : `structure/reading.ts` (`readingOf`, `readingPlainText`). Lecture
-  structurée en segments texte / formule / mot, chacun rattaché à l'id de sa sous-expression ; clé
-  d'un mot = `termId` du dictionnaire (`carré (puissance)`, `image (fonction)`…), passée telle
-  quelle à `LexiconTerm` au lot 4. B15 et précisions ajoutées à la section B.
-- 2026-10-11 — lot 3 : `structure/parentheses-advice.ts` (`parenthesesAdvice`, `needsParenthesesAdvice`).
-  Un message à la fois, première sous-expression en ordre préfixe ; `−` en tête avant la suite.
-  C1 appliqué selon ses exemples (`10 − 2 − 3` = message). À valider par David : message pour `−3x`
-  et `−3` seuls (et tout « − » sans parenthèses : `2x = −6`, `10^{−3}`), texte de C2, au-delà de 3
-  termes « tout à gauche ou tout à droite » (`((7 − 2) + 3x) − 5` ou `7 − (2 + (3x − 5))`).
-- 2026-10-11 — lot 2, décisions Q16, Q17, Q20 appliquées à la lecture (`reading.ts`). Q16
-  précisée : un exposant lettre seule garde la forme simple (`x^n` → « x puissance n »,
-  `e^x` → « e puissance x ») ; Q21, Q22 consignées.
-- 2026-10-11 — lot 4 : page `/test-structure` branchée sur la lecture. `StructureExplorer.svelte`
-  (formule, lecture de l'expression entière en permanence, lecture de la dernière sous-expression
-  survolée, message « 6e ou avant » qui remplace encadré et lecture), `StructureReading.svelte`
-  (formules en `math-span`, mots en `LexiconTerm`, sens inverse au survol ou au focus),
-  `StructureFormula` accepte une sous-expression imposée (`highlightId`) ; corpus : lecture courte
-  sous chaque expression ; `structure-latex.ts` (anciens intitulés) supprimé. Visiteur : fiches du
-  dictionnaire lues au niveau 5e (`structure-lexicon.svelte.ts`).
-- 2026-10-11 — lots 1 à 4 livrés : PR #1125 mergée (revues de code à chaque lot, CI verte). Reste
-  le lot 5 : quatre définitions à valider par David (différent, racine cubique, racine n-ième,
-  logarithme décimal) et Q25 (saisie par la page d'administration ou migration). Limite connue :
-  `AB²` lu comme un produit par le parseur (Q18, chantier séparé).
-
-## Lot 5 — mots ajoutés au dictionnaire (validés par David le 2026-10-11)
+## Mots ajoutés au dictionnaire pour la lecture (validés par David le 2026-10-11)
 
 Niveaux vérifiés contre les points des programmes en base. Ajout par migration de données
 (`20261016090300_dictionnaire_mots_lecture.sql`), question d'accès tranchée : lecture publique,
@@ -179,3 +171,9 @@ comme les autres entrées, rien d'autre.
 | racine cubique     | 2        | 2-344, fonction cube : résoudre $f(x) = k$                     |
 | racine n-ième      | T_EXP    | TEXP-257 à 269, racines $n$-ièmes (complexes)                  |
 | logarithme décimal | T_TECHNO | TTECHNO-040, unique solution de $10^x = b$, définition sans ln |
+
+## Suites décidées, pas commencées
+
+- **L'Atelier** (Q1 : « d'abord un outil dédié, puis l'Atelier ») : phase 0 à ouvrir.
+- **Glisser-déposer** de termes, facteurs et membres, comme dans Algebria (Q6) : pas en v1, phase
+  0 à part.

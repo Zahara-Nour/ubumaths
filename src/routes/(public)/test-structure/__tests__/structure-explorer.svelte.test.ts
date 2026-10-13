@@ -1,6 +1,6 @@
 /**
  * Structure d'une expression — l'explorateur de la formule principale (lot 4)
- * Spécification : docs/wip/structure-expression-progress.md (Q10, B, C).
+ * Spécification : docs/systeme/mathast/structure-expression.md (Q10, B, C).
  *
  * - la lecture de l'expression entière, mots du dictionnaire en mots cliquables,
  *   un mot absent du dictionnaire en texte sans lien ;
