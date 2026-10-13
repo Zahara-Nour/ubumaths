@@ -573,9 +573,19 @@ Refusés aussi : bornes non numériques (`de 0 à a`), toute exception (`\frac{1
 `PedagogicalIntegrationNotImplemented`). Montrés : polynômes, eˣ, 1/x, cos/sin, composées
 exactes (`2e^{2x}`, `\frac{2x}{x^2+1}`), IPP, et hors terminale l'IPP cyclique et les éléments
 simples à facteurs x − r (`\frac{1}{x^2-1}`, `\frac{1}{x(x-1)}` de 2 à 3) ; à facteur non unitaire,
-coefficient caché, refusés. Un **pôle dans [a ; b]** sort en refus du moteur (`INTEGRAL_UNDEFINED`) : une ligne de
-refus ne porte pas d'étapes (`CalcResult` `refus`), donc pas de « Comment ? ». La rédaction des
-composées, `F(b) − F(a)` et l'IPP en notation u, v′ viendront dans les PR suivantes.
+coefficient caché, refusés.
+
+Un **pôle dans [a ; b]** (`\frac1x` de −1 à 1, `\frac{1}{x-2}` de 1 à 3, et aussi une borne,
+`\frac1x` de 0 à 1) sort en **refus du moteur** (`INTEGRAL_UNDEFINED`), message inchangé. Ce
+refus porte en plus `steps` et `summary` (champs optionnels du `CalcResult` `refus`, posés par
+`integrateRefusalSteps` seulement pour `.intégrer`) : « Comment ? » et l'interrupteur Résumé /
+Détaillé apparaissent sur la ligne de refus comme sur une réponse, et déplient « La fonction n'est
+pas définie en x = 0, qui appartient à [−1 ; 1] ». Garde (`citesForbiddenPoint`) : les étapes
+concluent `undefinedAt` par l'étape `integrand-undefined-on-interval`, qui cite la même valeur ;
+cette valeur est un nombre, dans [min(a, b) ; max(a, b)] bornes comprises, et f n'y a pas de
+valeur finie (f sans autre lettre que la variable). Sinon pas d'étapes. Les refus des autres
+commandes n'en portent jamais. La rédaction des composées, `F(b) − F(a)` et l'IPP en notation
+u, v′ viendront dans les PR suivantes.
 
 Statistiques : `summarizeList` / `summarizeTable` (`src/lib/statistics/describe.ts`), et
 `src/lib/statistics/` pour l'ajustement (`fit.ts`), le bivarié, la simulation, les fractions et

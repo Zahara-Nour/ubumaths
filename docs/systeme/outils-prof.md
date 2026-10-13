@@ -11,6 +11,7 @@ couvre:
   - src/lib/server/spreadsheet-access.ts
   - 'src/lib/server/validation/{kanban,spreadsheet,google,whiteboard-drive,whiteboard-templates}.ts'
   - src/lib/types/google.ts
+  - src/lib/utils/google-oauth-error.ts
   - 'src/routes/(protected)/whiteboard/**'
   - 'src/routes/(protected)/spreadsheet/**'
   - 'src/routes/(protected)/organisation/kanban/**'
@@ -337,6 +338,12 @@ rediriger vers `/dashboard` les pages `dashboard/teacher/settings/google`,
 `FileDrawer` restent actifs, interrupteur coupé ou non. Tables, routes et dialogues
 `src/lib/components/google/` sont conservés : remettre le drapeau à `true` rallume tout. La connexion Google (`GOOGLE_LOGIN_ENABLED`, autre drapeau)
 est décrite dans [auth.md](auth.md).
+
+Retour de la connexion OAuth : le callback renvoie vers les réglages avec `?connected=true`
+ou `?error=…`. La page affiche l'un ou l'autre en toast puis nettoie l'adresse ; le texte
+de l'erreur vient de `googleOAuthErrorMessage` (`src/lib/utils/google-oauth-error.ts` :
+« Connexion à Google annulée » pour `access_denied`, sinon l'erreur citée, tronquée à 200
+caractères).
 
 ### Carte du code
 
