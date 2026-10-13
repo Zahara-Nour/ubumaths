@@ -268,6 +268,16 @@ describe('.intégrer : pôle dans [a ; b] → refus du moteur + étapes du refus
 		expect(latex).not.toMatch(/\d\.\d/);
 	});
 
+	it('refus que la garde bloque : `\\tan x` de 0 à 2 → refus du moteur, sans étapes', () => {
+		// Les étapes citent π/2, mais tan(π/2) se calcule en un nombre fini
+		// (≈ 1,6·10¹⁶) : la valeur n'est pas prouvée interdite, pas d'étapes
+		const entry = lastEntry('.intégrer \\tan x de 0 à 2');
+		expect(entry.failed).toBe(true);
+		expect(entry.text).toContain("L'intégrale diverge ou n'est pas définie sur [0 ; 2]");
+		expect(entry.steps).toBeUndefined();
+		expect(entry.summary).toBeUndefined();
+	});
+
 	it.each([
 		['.dériver |x|', 'la valeur absolue n'],
 		['.dériver x^2 ; ab', '« ab » n']
@@ -302,6 +312,11 @@ describe('citesForbiddenPoint : la valeur citée par le refus, vérifiée', () =
 
 	it('pas une valeur interdite (f y est définie) : refusée', () => {
 		expect(citesForbiddenPoint(node('x^2'), 'x', node('0'), a, b)).toBe(false);
+	});
+
+	it('une autre lettre que la variable : refusée (f ne s’évalue nulle part)', () => {
+		// Sans cette garde, 1/(x − k) vaut NaN partout, donc « interdite » en 0,5
+		expect(citesForbiddenPoint(node('1/(x-k)'), 'x', node('0.5'), a, b)).toBe(false);
 	});
 
 	it('une valeur non numérique : refusée', () => {

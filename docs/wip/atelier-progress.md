@@ -68,6 +68,10 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
      Tests : `integrer-etapes.test.ts` (refus + garde), `integrer-pole-depliage.svelte.test.ts` (rendu).
      **Noté** : l'intégrande `\frac{1}{x-2}` s'écrit `\dfrac{1}{\left( x - 2 \right)}` dans les étapes
      (parenthèses résiduelles, `pedagogical-integration`).
+   - **À faire plus tard — défauts du moteur `integration` relevés (2026-10-13)** :
+     - `.intégrer \frac1t ; t de -1 à 1` : le message du refus dit « (x ≈ 0) » au lieu de t.
+     - `.intégrer … de -1 à 1/2` : le message écrit l'intervalle « [-1 ; 1:/2] ».
+     - `.intégrer \frac{1}{x^2-2} de 0 à 2` : « Unable to factor denominator », en anglais.
    - **2c. Commande `.limite`** (aucune aujourd'hui ; `pedagogical-limits` sert aux corrections) :
      syntaxe et limites à gauche / à droite à trancher par David.
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).
