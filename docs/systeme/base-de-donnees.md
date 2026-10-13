@@ -252,6 +252,10 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   affectation (`guided` par défaut, `intermediate`, `autonomous`) — [ADR 0023](../adr/0023-copie-d-une-fiche-niveau-de-guidage-par-affectation.md).
   L'élève visé lit celui de sa propre affectation, jamais celui d'un autre groupe (test :
   `tests/integration/worksheet-assignment-guidance-level.test.ts`).
+- `worksheet_error_reports` (signalement d'un élève sur un exercice de fiche) : l'élève le crée en
+  attente et en corrige la description ; `status`, `reviewed_by`, `reviewed_at` et `response` sont
+  au prof et à l'admin (déclencheur `guard_worksheet_error_report_teacher_fields`,
+  `20261016101700`, test `tests/integration/signalement-fiche-champs-du-prof.test.ts`).
 - `worksheet_instances` : exercices générés par élève (graine déterministe).
 
 **L'accès est hérité, jamais distribué** : `student_has_worksheet_access` part de
