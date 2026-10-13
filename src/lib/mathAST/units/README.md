@@ -131,14 +131,15 @@ type Dimension =
 
 ## Supported Units
 
-| Category | Base | Prefixed           | Special   |
-| -------- | ---- | ------------------ | --------- |
-| Length   | m    | km, cm, mm, μm, nm | -         |
-| Mass     | g    | kg, mg, μg         | t, q      |
-| Time     | s    | ms, ns             | min, h, j |
-| Volume   | L    | mL, cL             | -         |
-| Angle    | rad  | -                  | °, deg    |
-| Currency | -    | -                  | €, $      |
+| Category    | Base | Prefixed           | Special                                                   |
+| ----------- | ---- | ------------------ | --------------------------------------------------------- |
+| Length      | m    | km, cm, mm, μm, nm | -                                                         |
+| Mass        | g    | kg, mg, μg         | t, q                                                      |
+| Time        | s    | ms, ns             | min, h, j                                                 |
+| Volume      | L    | mL, cL             | -                                                         |
+| Angle       | rad  | -                  | °, deg                                                    |
+| Currency    | -    | -                  | €, $                                                      |
+| Information | o    | -                  | ko, Mo, Go, To, Kio, Mio, Gio, Tio, bit, kbit, Mbit, Gbit |
 
 **SI Prefixes:** G, M, k, h, da, d, c, m, μ, n, p
 
