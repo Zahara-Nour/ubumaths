@@ -7,6 +7,7 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 ### Modifié
 
 - Script `blackboard_letters.py` : `ℕ ℤ ℝ` dessinés en traits souples (deux hampes côte à côte, deux diagonales parallèles pour `ℤ`) ; le trait droit ajouté par `redraw_symbols.py` coupait la diagonale du N, la boucle du R, et ne doublait qu'une partie de la diagonale du Z. `ℚ ℂ` gardent leur trait doublé. Ordre : après `redraw_symbols.py`
+- Script `latin_letters.py` : `P` redessiné dans Math-Italic, Main-Regular et Main-Italic (et donc dans la police Typst). Celui de Shantell, trop arrondi en haut à gauche, se lisait `ρ` ou `p` ; la hampe penche toujours à gauche et garde sa patte courbée, la panse part d'un petit départ de trait qui fait un coin. Ordre : après `replace_glyphs.py`
 
 ### Corrigé
 
