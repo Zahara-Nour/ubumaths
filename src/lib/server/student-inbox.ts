@@ -16,6 +16,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database, Tables } from '$lib/types/database';
 import type { StudentWorkInbox, WorkItem, WorkSource } from '$lib/types/student-inbox';
 import { formLabel } from '$lib/types/evaluation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/student-inbox');
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
@@ -30,7 +33,7 @@ const LATE_ARCHIVE_MS = 30 * DAY_MS;
  * because a single failing source shouldn't blank out the whole inbox.
  */
 function logError(label: string, error: { message?: string } | null | undefined): void {
-	if (error) console.error(`[student-inbox] ${label}:`, error);
+	if (error) logger.error(`[student-inbox] ${label}:`, error);
 }
 
 // ============================================================================

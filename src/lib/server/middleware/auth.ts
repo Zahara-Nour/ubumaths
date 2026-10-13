@@ -30,6 +30,9 @@
 import { error } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/middleware/auth');
 
 // ============================================================================
 // TYPES
@@ -142,7 +145,7 @@ export async function requireAuth(locals: App.Locals): Promise<AuthResult> {
 		.single();
 
 	if (profileError || !profile) {
-		console.error('Profile fetch error:', profileError);
+		logger.error('Profile fetch error:', profileError);
 		throw error(403, 'Profil utilisateur introuvable');
 	}
 

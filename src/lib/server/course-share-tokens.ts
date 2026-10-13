@@ -31,6 +31,9 @@ import {
 	type PublicWorksheet
 } from '$lib/server/journal-share-tokens';
 import { buildSeriesLink, seriesCategoriesSchema, totalQuestions } from '$lib/validation/series';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/course-share-tokens');
 
 // Types
 
@@ -229,7 +232,7 @@ export function safeExternalUrl(raw: string | null): string | null {
 function toPublicSeries(s: PublicCourseChapter['series'][number]): PublicCourseSeries {
 	const categories = seriesCategoriesSchema.safeParse(s.categories);
 	if (!categories.success) {
-		console.error('[course-share] Composition illisible pour la série', s.series_id);
+		logger.error('[course-share] Composition illisible pour la série', s.series_id);
 	}
 	const lisible = categories.success ? categories.data : null;
 	return {
@@ -365,7 +368,7 @@ export async function getActiveCourseShareToken(
 		.maybeSingle();
 
 	if (error) {
-		console.error('[course-share] lecture du jeton actif impossible:', error.message);
+		logger.error('[course-share] lecture du jeton actif impossible:', error.message);
 		return { token: null, error: 'Impossible de lire le lien du cours' };
 	}
 
@@ -392,7 +395,7 @@ export async function revokeCourseShareToken(
 		.select('id');
 
 	if (error) {
-		console.error('[course-share] révocation impossible:', error.message);
+		logger.error('[course-share] révocation impossible:', error.message);
 		return { revoked: 0, error: 'Impossible de révoquer le lien du cours' };
 	}
 
@@ -427,7 +430,7 @@ export async function rotateCourseShareToken(
 		.single();
 
 	if (error || !data) {
-		console.error('[course-share] création du jeton impossible:', error?.message);
+		logger.error('[course-share] création du jeton impossible:', error?.message);
 		return { token: null, error: 'Impossible de créer le lien du cours' };
 	}
 
@@ -450,14 +453,14 @@ export async function resolveCourseShareToken(
 	});
 
 	if (error) {
-		console.error('[course-share] résolution impossible:', error.message);
+		logger.error('[course-share] résolution impossible:', error.message);
 		return null;
 	}
 	if (data === null) return null;
 
 	const parsed = publicCourseSchema.safeParse(data);
 	if (!parsed.success) {
-		console.error('[course-share] cours de forme inattendue:', parsed.error.issues[0]);
+		logger.error('[course-share] cours de forme inattendue:', parsed.error.issues[0]);
 		return null;
 	}
 	return parsed.data;
@@ -478,14 +481,14 @@ export async function resolveCourseWorksheetByShareToken(
 	});
 
 	if (error) {
-		console.error('[course-share] fiche illisible:', error.message);
+		logger.error('[course-share] fiche illisible:', error.message);
 		return null;
 	}
 	if (data === null) return null;
 
 	const parsed = publicWorksheetSchema.safeParse(data);
 	if (!parsed.success) {
-		console.error('[course-share] fiche de forme inattendue:', parsed.error.issues[0]);
+		logger.error('[course-share] fiche de forme inattendue:', parsed.error.issues[0]);
 		return null;
 	}
 	return parsed.data;
@@ -509,14 +512,14 @@ export async function resolveCourseDocumentByShareToken(
 	});
 
 	if (error) {
-		console.error('[course-share] document illisible:', error.message);
+		logger.error('[course-share] document illisible:', error.message);
 		return null;
 	}
 	if (data === null) return null;
 
 	const parsed = courseDocumentFileSchema.safeParse(data);
 	if (!parsed.success) {
-		console.error('[course-share] document de forme inattendue:', parsed.error.issues[0]);
+		logger.error('[course-share] document de forme inattendue:', parsed.error.issues[0]);
 		return null;
 	}
 	return parsed.data;

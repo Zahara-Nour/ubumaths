@@ -13,6 +13,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { isCourseCard } from '$lib/questions/types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/course-card-attempts');
 
 // ============================================================================
 // TYPES
@@ -63,7 +66,7 @@ export async function fetchCourseCardTemplateIds(
 			return ids;
 		}
 
-		console.error(`[course-card] question_templates illisible (tentative ${attempt + 1}) :`, error);
+		logger.error(`[course-card] question_templates illisible (tentative ${attempt + 1}) :`, error);
 		const delay = COURSE_CARD_READ_RETRY_DELAYS_MS[attempt];
 		if (delay === undefined) throw new CourseCardLookupError(error.message);
 		await new Promise((resolve) => setTimeout(resolve, delay));

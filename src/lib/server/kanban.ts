@@ -26,6 +26,9 @@ import type {
 	KanbanTag,
 	KanbanBoardMember
 } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/kanban');
 
 type AnySupabase = SupabaseClient<Database>;
 
@@ -126,7 +129,7 @@ export async function getAccessibleBoards(
 	});
 
 	if (dbError) {
-		console.error('[kanban] getAccessibleBoards failed:', dbError);
+		logger.error('[kanban] getAccessibleBoards failed:', dbError);
 		throw error(500, 'Erreur lors du chargement des tableaux');
 	}
 
@@ -220,7 +223,7 @@ export async function getBoardWithContent(
 		.maybeSingle();
 
 	if (dbError) {
-		console.error('[kanban] getBoardWithContent failed:', dbError);
+		logger.error('[kanban] getBoardWithContent failed:', dbError);
 		throw error(500, 'Erreur lors du chargement du tableau');
 	}
 
@@ -309,7 +312,7 @@ async function fetchBoardMembers(
 			.eq('class_id', classId)
 			.eq('status', 'active');
 		if (memberErr) {
-			console.error('[kanban] fetchBoardMembers / class_members failed:', memberErr);
+			logger.error('[kanban] fetchBoardMembers / class_members failed:', memberErr);
 			// Don't 500 the whole page: degrade gracefully with the owner only.
 			return [
 				{
@@ -343,7 +346,7 @@ async function fetchBoardMembers(
 	const annuaire = indexStaffById(await fetchStaffDirectory(supabase));
 
 	if (profErr) {
-		console.error('[kanban] fetchBoardMembers / profiles failed:', profErr);
+		logger.error('[kanban] fetchBoardMembers / profiles failed:', profErr);
 		return idList.map((id) => ({
 			id,
 			full_name: null,
@@ -425,7 +428,7 @@ export async function getColumnBoardId(
 		.maybeSingle();
 
 	if (dbError) {
-		console.error('[kanban] getColumnBoardId failed:', dbError);
+		logger.error('[kanban] getColumnBoardId failed:', dbError);
 		throw error(500, 'Erreur lors de la lecture de la colonne');
 	}
 
@@ -447,7 +450,7 @@ export async function getCardColumnId(
 		.maybeSingle();
 
 	if (dbError) {
-		console.error('[kanban] getCardColumnId failed:', dbError);
+		logger.error('[kanban] getCardColumnId failed:', dbError);
 		throw error(500, 'Erreur lors de la lecture de la carte');
 	}
 
@@ -476,7 +479,7 @@ export async function assertBoardOwner(
 		.maybeSingle();
 
 	if (dbError) {
-		console.error('[kanban] assertBoardOwner failed:', dbError);
+		logger.error('[kanban] assertBoardOwner failed:', dbError);
 		throw error(500, 'Erreur lors de la vérification du propriétaire');
 	}
 
@@ -508,7 +511,7 @@ export async function assertBoardAccess(
 		.maybeSingle();
 
 	if (dbError) {
-		console.error('[kanban] assertBoardAccess failed:', dbError);
+		logger.error('[kanban] assertBoardAccess failed:', dbError);
 		throw error(500, 'Erreur lors de la vérification du tableau');
 	}
 
@@ -540,7 +543,7 @@ export async function isClassTeacher(
 		.maybeSingle();
 
 	if (dbError) {
-		console.error('[kanban] isClassTeacher failed:', dbError);
+		logger.error('[kanban] isClassTeacher failed:', dbError);
 		throw error(500, 'Erreur lors de la vérification de la classe');
 	}
 

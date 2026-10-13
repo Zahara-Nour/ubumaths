@@ -30,6 +30,9 @@ import { FSRS } from '$lib/srs/fsrs';
 import type { CardState, CardStats, Grade, ReviewHistoryEntry } from '$lib/srs/types';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { reviewBestOfDay } from './best-of-day';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/srs/fsrs-actions');
 
 type SB = SupabaseClient<Database>;
 
@@ -61,7 +64,7 @@ export async function loadOrInitCardStats(
 	// panne les rendait `null`, donc « carte jamais vue » : l'algorithme
 	// repartait de zéro et l'élève perdait sa progression sur cette carte.
 	if (existingError) {
-		console.error('[srs] Statistiques de carte illisibles :', existingError);
+		logger.error('[srs] Statistiques de carte illisibles :', existingError);
 		throw new Error(existingError.message);
 	}
 

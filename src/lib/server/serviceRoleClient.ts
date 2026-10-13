@@ -132,7 +132,7 @@ function auditServiceRoleUsage(): void {
 	}
 
 	if (!callerLine) {
-		console.warn(
+		logger.warn(
 			'\x1b[33m%s\x1b[0m',
 			'[SECURITY WARNING] Could not determine service role client caller from stack trace'
 		);
@@ -143,7 +143,7 @@ function auditServiceRoleUsage(): void {
 	const isAllowed = ALLOWED_SERVICE_ROLE_PATHS.some((path) => callerLine!.includes(path));
 
 	if (!isAllowed) {
-		console.warn(
+		logger.warn(
 			'\x1b[33m%s\x1b[0m', // Yellow color
 			`[SECURITY WARNING] Service role client used from unexpected location:\n  ${callerLine}\n` +
 				`  Allowed paths: ${ALLOWED_SERVICE_ROLE_PATHS.join(', ')}\n` +

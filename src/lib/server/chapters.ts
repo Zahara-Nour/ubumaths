@@ -34,6 +34,9 @@ import type {
 	CreateChecklistItemInput,
 	UpdateChecklistItemInput
 } from '$lib/server/validation/chapters';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/chapters');
 
 // ============================================================================
 // TYPES
@@ -197,7 +200,7 @@ export async function getTeacherChapters(
 	const { data, error } = await query;
 
 	if (error) {
-		console.error('[getTeacherChapters] Error:', error);
+		logger.error('[getTeacherChapters] Error:', error);
 		return { data: [], error: new Error(error.message), count: 0 };
 	}
 
@@ -234,7 +237,7 @@ export async function createChapter(
 		.single();
 
 	if (classError || !classData) {
-		console.error('[createChapter] Error fetching class:', classError);
+		logger.error('[createChapter] Error fetching class:', classError);
 		return { data: null, error: new Error(classError?.message || 'Class not found') };
 	}
 
@@ -253,7 +256,7 @@ export async function createChapter(
 		// le rang à 0, ce qui insérait l'élément EN TÊTE et réordonnait la liste
 		// du professeur sans rien dire.
 		if (maxOrderError) {
-			console.error('[chapters] Rang suivant illisible (class_chapters) :', maxOrderError);
+			logger.error('[chapters] Rang suivant illisible (class_chapters) :', maxOrderError);
 			return { data: null, error: new Error(maxOrderError.message) };
 		}
 
@@ -275,7 +278,7 @@ export async function createChapter(
 		.single();
 
 	if (error) {
-		console.error('[createChapter] Error:', error);
+		logger.error('[createChapter] Error:', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -312,7 +315,7 @@ export async function updateChapter(
 		.single();
 
 	if (error) {
-		console.error('[updateChapter] Error:', error);
+		logger.error('[updateChapter] Error:', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -334,7 +337,7 @@ export async function deleteChapter(
 	const { error } = await supabase.from('class_chapters').delete().eq('id', chapterId);
 
 	if (error) {
-		console.error('[deleteChapter] Error:', error);
+		logger.error('[deleteChapter] Error:', error);
 		return { error: new Error(error.message) };
 	}
 
@@ -363,7 +366,7 @@ export async function reorderChapters(
 			.eq('class_id', classId);
 
 		if (error) {
-			console.error('[reorderChapters] Error updating order:', error);
+			logger.error('[reorderChapters] Error updating order:', error);
 			return { error: new Error(error.message) };
 		}
 	}
@@ -403,7 +406,7 @@ export async function addChapterDocument(
 		// le rang à 0, ce qui insérait l'élément EN TÊTE et réordonnait la liste
 		// du professeur sans rien dire.
 		if (maxOrderError) {
-			console.error('[chapters] Rang suivant illisible (chapter_documents) :', maxOrderError);
+			logger.error('[chapters] Rang suivant illisible (chapter_documents) :', maxOrderError);
 			return { data: null, error: new Error(maxOrderError.message) };
 		}
 
@@ -449,7 +452,7 @@ export async function addChapterDocument(
 		.single();
 
 	if (error) {
-		console.error('[addChapterDocument] Error:', error);
+		logger.error('[addChapterDocument] Error:', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -483,7 +486,7 @@ export async function updateChapterDocument(
 		.single();
 
 	if (error) {
-		console.error('[updateChapterDocument] Error:', error);
+		logger.error('[updateChapterDocument] Error:', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -505,7 +508,7 @@ export async function deleteChapterDocument(
 	const { error } = await supabase.from('chapter_documents').delete().eq('id', documentId);
 
 	if (error) {
-		console.error('[deleteChapterDocument] Error:', error);
+		logger.error('[deleteChapterDocument] Error:', error);
 		return { error: new Error(error.message) };
 	}
 
@@ -533,7 +536,7 @@ export async function reorderDocuments(
 			.eq('chapter_id', chapterId);
 
 		if (error) {
-			console.error('[reorderDocuments] Error:', error);
+			logger.error('[reorderDocuments] Error:', error);
 			return { error: new Error(error.message) };
 		}
 	}
@@ -573,7 +576,7 @@ export async function addChecklistItem(
 		// le rang à 0, ce qui insérait l'élément EN TÊTE et réordonnait la liste
 		// du professeur sans rien dire.
 		if (maxOrderError) {
-			console.error('[chapters] Rang suivant illisible (chapter_checklist_items) :', maxOrderError);
+			logger.error('[chapters] Rang suivant illisible (chapter_checklist_items) :', maxOrderError);
 			return { data: null, error: new Error(maxOrderError.message) };
 		}
 
@@ -592,7 +595,7 @@ export async function addChecklistItem(
 		.single();
 
 	if (error) {
-		console.error('[addChecklistItem] Error:', error);
+		logger.error('[addChecklistItem] Error:', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -626,7 +629,7 @@ export async function updateChecklistItem(
 		.single();
 
 	if (error) {
-		console.error('[updateChecklistItem] Error:', error);
+		logger.error('[updateChecklistItem] Error:', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -647,7 +650,7 @@ export async function deleteChecklistItem(
 	const { error } = await supabase.from('chapter_checklist_items').delete().eq('id', itemId);
 
 	if (error) {
-		console.error('[deleteChecklistItem] Error:', error);
+		logger.error('[deleteChecklistItem] Error:', error);
 		return { error: new Error(error.message) };
 	}
 
@@ -688,7 +691,7 @@ export async function linkExercise(
 		// le rang à 0, ce qui insérait l'élément EN TÊTE et réordonnait la liste
 		// du professeur sans rien dire.
 		if (maxOrderError) {
-			console.error('[chapters] Rang suivant illisible (chapter_exercises) :', maxOrderError);
+			logger.error('[chapters] Rang suivant illisible (chapter_exercises) :', maxOrderError);
 			return { data: null, error: new Error(maxOrderError.message) };
 		}
 
@@ -706,7 +709,7 @@ export async function linkExercise(
 		.single();
 
 	if (error) {
-		console.error('[linkExercise] Error:', error);
+		logger.error('[linkExercise] Error:', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -727,7 +730,7 @@ export async function unlinkExercise(
 	const { error } = await supabase.from('chapter_exercises').delete().eq('id', chapterExerciseId);
 
 	if (error) {
-		console.error('[unlinkExercise] Error:', error);
+		logger.error('[unlinkExercise] Error:', error);
 		return { error: new Error(error.message) };
 	}
 
@@ -766,7 +769,7 @@ export async function linkWorksheet(
 		// le rang à 0, ce qui insérait la fiche EN TÊTE et réordonnait la liste du
 		// professeur sans rien dire.
 		if (maxOrderError) {
-			console.error('[chapters] Rang suivant illisible (chapter_worksheets) :', maxOrderError);
+			logger.error('[chapters] Rang suivant illisible (chapter_worksheets) :', maxOrderError);
 			return { data: null, error: new Error(maxOrderError.message) };
 		}
 
@@ -784,7 +787,7 @@ export async function linkWorksheet(
 		.single();
 
 	if (error) {
-		console.error('[linkWorksheet] Error:', error);
+		logger.error('[linkWorksheet] Error:', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -808,7 +811,7 @@ export async function unlinkWorksheet(
 	const { error } = await supabase.from('chapter_worksheets').delete().eq('id', chapterWorksheetId);
 
 	if (error) {
-		console.error('[unlinkWorksheet] Error:', error);
+		logger.error('[unlinkWorksheet] Error:', error);
 		return { error: new Error(error.message) };
 	}
 
@@ -836,7 +839,7 @@ export async function reorderExercises(
 			.eq('chapter_id', chapterId);
 
 		if (error) {
-			console.error('[reorderExercises] Error:', error);
+			logger.error('[reorderExercises] Error:', error);
 			return { error: new Error(error.message) };
 		}
 	}
@@ -874,7 +877,7 @@ export async function getStudentChecklistProgress(
 		.order('display_order', { ascending: true });
 
 	if (itemsError) {
-		console.error('[getStudentChecklistProgress] Error fetching items:', itemsError);
+		logger.error('[getStudentChecklistProgress] Error fetching items:', itemsError);
 		return { data: [], error: new Error(itemsError.message), count: 0 };
 	}
 
@@ -894,7 +897,7 @@ export async function getStudentChecklistProgress(
 	const { data: progressData, error: progressError } = await progressQuery;
 
 	if (progressError) {
-		console.error('[getStudentChecklistProgress] Error fetching progress:', progressError);
+		logger.error('[getStudentChecklistProgress] Error fetching progress:', progressError);
 		return { data: [], error: new Error(progressError.message), count: 0 };
 	}
 
@@ -968,7 +971,7 @@ export async function getStudentChapters(
 	const { data, error } = await query;
 
 	if (error) {
-		console.error('[getStudentChapters] Error:', error);
+		logger.error('[getStudentChapters] Error:', error);
 		return { data: [], error: new Error(error.message), count: 0 };
 	}
 
@@ -997,7 +1000,7 @@ export async function getChapterWithContent(
 		.single();
 
 	if (chapterError) {
-		console.error('[getChapterWithContent] Error fetching chapter:', chapterError);
+		logger.error('[getChapterWithContent] Error fetching chapter:', chapterError);
 		return { data: null, error: new Error(chapterError.message) };
 	}
 
@@ -1024,7 +1027,7 @@ export async function getChapterWithContent(
 
 	const sectionEnEchec = [documentsRes, checklistItemsRes, exercisesRes].find((r) => r.error);
 	if (sectionEnEchec?.error) {
-		console.error('[getChapterWithContent] Section illisible :', sectionEnEchec.error);
+		logger.error('[getChapterWithContent] Section illisible :', sectionEnEchec.error);
 		return { data: null, error: new Error(sectionEnEchec.error.message) };
 	}
 
@@ -1046,7 +1049,7 @@ export async function getChapterWithContent(
 	// panne ici le montre « non commencé » plutôt que de fermer la page. Mais
 	// elle laisse une trace, au lieu de se confondre avec un vrai zéro.
 	if (checklistProgressError) {
-		console.error('[getChapterWithContent] Avancement illisible :', checklistProgressError);
+		logger.error('[getChapterWithContent] Avancement illisible :', checklistProgressError);
 	}
 
 	// Build progress map for checklist
@@ -1130,7 +1133,7 @@ export async function toggleChecklistItem(
 	// crée. Mais une PANNE rendait aussi `null` : on partait alors créer une
 	// seconde ligne d'avancement pour le même élève et le même item.
 	if (existingError) {
-		console.error('[toggleChecklistItem] Avancement existant illisible :', existingError);
+		logger.error('[toggleChecklistItem] Avancement existant illisible :', existingError);
 		return { data: null, error: new Error(existingError.message) };
 	}
 
@@ -1144,7 +1147,7 @@ export async function toggleChecklistItem(
 			.single();
 
 		if (error) {
-			console.error('[toggleChecklistItem] Error updating:', error);
+			logger.error('[toggleChecklistItem] Error updating:', error);
 			return { data: null, error: new Error(error.message) };
 		}
 
@@ -1162,7 +1165,7 @@ export async function toggleChecklistItem(
 			.single();
 
 		if (error) {
-			console.error('[toggleChecklistItem] Error creating:', error);
+			logger.error('[toggleChecklistItem] Error creating:', error);
 			return { data: null, error: new Error(error.message) };
 		}
 
@@ -1193,7 +1196,7 @@ export async function getMyChecklistProgress(
 		.order('display_order', { ascending: true });
 
 	if (itemsError) {
-		console.error('[getMyChecklistProgress] Error fetching items:', itemsError);
+		logger.error('[getMyChecklistProgress] Error fetching items:', itemsError);
 		return { data: [], error: new Error(itemsError.message), count: 0 };
 	}
 
@@ -1210,7 +1213,7 @@ export async function getMyChecklistProgress(
 	// Sans cette garde, une panne affichait toute la liste décochée : l'élève
 	// voyait son travail effacé et pouvait le refaire par-dessus.
 	if (progressError) {
-		console.error('[getMyChecklistProgress] Avancement illisible :', progressError);
+		logger.error('[getMyChecklistProgress] Avancement illisible :', progressError);
 		return { data: [], error: new Error(progressError.message), count: 0 };
 	}
 

@@ -1,5 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { RiddleDifficulty } from '$lib/types/riddle';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/riddle-auto-select');
 
 /**
  * Auto-select riddle of the day
@@ -27,7 +30,7 @@ export async function autoSelectRiddleOfTheDay(
 		// upsert (`onConflict: 'date'`) écrasait l'énigme que le professeur avait
 		// choisie à la main.
 		if (existingError && existingError.code !== 'PGRST116') {
-			console.error('[auto-select] Énigme du jour illisible :', existingError);
+			logger.error('[auto-select] Énigme du jour illisible :', existingError);
 			return { success: false, error: 'Impossible de vérifier l’énigme du jour' };
 		}
 
@@ -51,7 +54,7 @@ export async function autoSelectRiddleOfTheDay(
 		// Cette liste EXCLUT les énigmes déjà posées. Vide par accident, elle
 		// autorisait à reproposer aux élèves une énigme vue la semaine passée.
 		if (recentRiddlesError) {
-			console.error('[auto-select] Énigmes récentes illisibles :', recentRiddlesError);
+			logger.error('[auto-select] Énigmes récentes illisibles :', recentRiddlesError);
 			return { success: false, error: 'Impossible de lire les énigmes récentes' };
 		}
 
@@ -74,7 +77,7 @@ export async function autoSelectRiddleOfTheDay(
 		// on repart systématiquement à 1 : la rotation se bloque sur le niveau le
 		// plus facile. Aucune ligne (première énigme) est en revanche légitime.
 		if (lastRiddleError) {
-			console.error('[auto-select] Dernière énigme illisible :', lastRiddleError);
+			logger.error('[auto-select] Dernière énigme illisible :', lastRiddleError);
 			return { success: false, error: 'Impossible de lire la dernière énigme posée' };
 		}
 
@@ -102,7 +105,7 @@ export async function autoSelectRiddleOfTheDay(
 		const { data: eligibleRiddles, error: riddlesError } = await query;
 
 		if (riddlesError) {
-			console.error('Error fetching eligible riddles:', riddlesError);
+			logger.error('Error fetching eligible riddles:', riddlesError);
 			return { success: false, error: 'Erreur lors de la récupération des énigmes' };
 		}
 
@@ -140,7 +143,7 @@ export async function autoSelectRiddleOfTheDay(
 			);
 
 			if (setError) {
-				console.error('Error setting riddle of the day:', setError);
+				logger.error('Error setting riddle of the day:', setError);
 				return { success: false, error: "Erreur lors de la définition de l'énigme" };
 			}
 
@@ -167,13 +170,13 @@ export async function autoSelectRiddleOfTheDay(
 		);
 
 		if (setError) {
-			console.error('Error setting riddle of the day:', setError);
+			logger.error('Error setting riddle of the day:', setError);
 			return { success: false, error: "Erreur lors de la définition de l'énigme" };
 		}
 
 		return { success: true, riddleId: selectedRiddle.id };
 	} catch (err) {
-		console.error('Unexpected error in autoSelectRiddleOfTheDay:', err);
+		logger.error('Unexpected error in autoSelectRiddleOfTheDay:', err);
 		return { success: false, error: 'Erreur inattendue' };
 	}
 }
@@ -196,7 +199,7 @@ export async function checkAndAutoSelectToday(
 	// Même garde que ci-dessus : une panne ne doit pas lancer une sélection
 	// automatique par-dessus une énigme déjà programmée.
 	if (existingError && existingError.code !== 'PGRST116') {
-		console.error('[auto-select] Énigme du jour illisible :', existingError);
+		logger.error('[auto-select] Énigme du jour illisible :', existingError);
 		return { success: false, message: 'Impossible de vérifier l’énigme du jour' };
 	}
 

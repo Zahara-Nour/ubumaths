@@ -14,6 +14,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { SectionContentKind } from './validation/chapter-sections';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/chapter-sections');
 
 type ChapterSection = Database['public']['Tables']['chapter_sections']['Row'];
 
@@ -57,7 +60,7 @@ export async function listSections(
 		.order('display_order');
 
 	if (error) {
-		console.error('[listSections] Erreur :', error);
+		logger.error('[listSections] Erreur :', error);
 		return { data: [], error: new Error(error.message) };
 	}
 
@@ -88,7 +91,7 @@ export async function createSection(
 			.maybeSingle();
 
 		if (erreurOrdre) {
-			console.error('[createSection] Ordre illisible :', erreurOrdre);
+			logger.error('[createSection] Ordre illisible :', erreurOrdre);
 			return { data: null, error: new Error(erreurOrdre.message) };
 		}
 
@@ -102,7 +105,7 @@ export async function createSection(
 		.single();
 
 	if (error) {
-		console.error('[createSection] Erreur :', error);
+		logger.error('[createSection] Erreur :', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -128,7 +131,7 @@ export async function renameSection(
 		.maybeSingle();
 
 	if (error) {
-		console.error('[renameSection] Erreur :', error);
+		logger.error('[renameSection] Erreur :', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -157,7 +160,7 @@ export async function deleteSection(
 		.maybeSingle();
 
 	if (error) {
-		console.error('[deleteSection] Erreur :', error);
+		logger.error('[deleteSection] Erreur :', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -183,7 +186,7 @@ export async function reorderSections(
 			.eq('chapter_id', chapterId);
 
 		if (error) {
-			console.error('[reorderSections] Erreur :', error);
+			logger.error('[reorderSections] Erreur :', error);
 			return { error: new Error(error.message) };
 		}
 	}
@@ -220,7 +223,7 @@ export async function assignToSection(
 			.select('id');
 
 		if (error) {
-			console.error(`[assignToSection] ${table} :`, error);
+			logger.error(`[assignToSection] ${table} :`, error);
 			return { error: new Error(error.message) };
 		}
 
@@ -228,7 +231,7 @@ export async function assignToSection(
 		// autre chapitre) rend zéro ligne SANS erreur. Sans ce contrôle, l'écran
 		// annonçait « rangé » et le rechargement montrait l'ancien plan.
 		if (!data || (data as unknown[]).length !== 1) {
-			console.error(`[assignToSection] ${table} : aucune ligne rangée pour ${item.id}`);
+			logger.error(`[assignToSection] ${table} : aucune ligne rangée pour ${item.id}`);
 			return { error: new Error('Ressource introuvable dans ce chapitre'), notFound: true };
 		}
 	}
@@ -266,7 +269,7 @@ export async function placeInSection(
 			.maybeSingle();
 
 		if (error) {
-			console.error(`[placeInSection] Rang suivant illisible (${table}) :`, error);
+			logger.error(`[placeInSection] Rang suivant illisible (${table}) :`, error);
 			return { error: new Error(error.message) };
 		}
 

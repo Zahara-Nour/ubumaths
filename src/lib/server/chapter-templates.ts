@@ -45,6 +45,9 @@ import type {
 	InstantiateTemplateInput,
 	ListTemplatesQuery
 } from '$lib/server/validation/chapter-templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/chapter-templates');
 
 // ============================================================================
 // TYPES
@@ -100,13 +103,13 @@ export async function createChapterTemplate(
 			.single();
 
 		if (error) {
-			console.error('[createChapterTemplate] Error:', error);
+			logger.error('[createChapterTemplate] Error:', error);
 			return { data: null, error: new Error(error.message) };
 		}
 
 		return { data: dbTemplateToApp(template as DbChapterTemplate), error: null };
 	} catch (err) {
-		console.error('[createChapterTemplate] Unexpected error:', err);
+		logger.error('[createChapterTemplate] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -140,7 +143,7 @@ export async function createTemplateFromChapter(
 			.single();
 
 		if (chapterError) {
-			console.error('[createTemplateFromChapter] Error fetching chapter:', chapterError);
+			logger.error('[createTemplateFromChapter] Error fetching chapter:', chapterError);
 			return { data: null, error: new Error(chapterError.message) };
 		}
 
@@ -162,7 +165,7 @@ export async function createTemplateFromChapter(
 			.single();
 
 		if (error) {
-			console.error('[createTemplateFromChapter] Error:', error);
+			logger.error('[createTemplateFromChapter] Error:', error);
 			return { data: null, error: new Error(error.message) };
 		}
 
@@ -176,7 +179,7 @@ export async function createTemplateFromChapter(
 			.maybeSingle();
 
 		if (existingError) {
-			console.error('[createTemplateFromChapter] Rattachement illisible :', existingError);
+			logger.error('[createTemplateFromChapter] Rattachement illisible :', existingError);
 		} else if (!existing) {
 			// Un chapitre ne porte qu'un rattachement — le code le lit avec
 			// `.single()` — donc celui qui suit déjà un modèle garde le sien.
@@ -189,13 +192,13 @@ export async function createTemplateFromChapter(
 
 			// Le modèle existe : un rattachement manqué ne doit pas le perdre.
 			if (linkError) {
-				console.error('[createTemplateFromChapter] Rattachement impossible :', linkError);
+				logger.error('[createTemplateFromChapter] Rattachement impossible :', linkError);
 			}
 		}
 
 		return { data: dbTemplateToApp(template as DbChapterTemplate), error: null };
 	} catch (err) {
-		console.error('[createTemplateFromChapter] Unexpected error:', err);
+		logger.error('[createTemplateFromChapter] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -219,13 +222,13 @@ export async function getChapterTemplate(
 			.single();
 
 		if (error) {
-			console.error('[getChapterTemplate] Error:', error);
+			logger.error('[getChapterTemplate] Error:', error);
 			return { data: null, error: new Error(error.message) };
 		}
 
 		return { data: dbTemplateToApp(template as DbChapterTemplate), error: null };
 	} catch (err) {
-		console.error('[getChapterTemplate] Unexpected error:', err);
+		logger.error('[getChapterTemplate] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -254,7 +257,7 @@ export async function updateChapterTemplate(
 			.single();
 
 		if (fetchError) {
-			console.error('[updateChapterTemplate] Error fetching template:', fetchError);
+			logger.error('[updateChapterTemplate] Error fetching template:', fetchError);
 			return { data: null, error: new Error(fetchError.message) };
 		}
 
@@ -298,7 +301,7 @@ export async function updateChapterTemplate(
 			});
 
 			if (versionError) {
-				console.error('[updateChapterTemplate] Error creating version:', versionError);
+				logger.error('[updateChapterTemplate] Error creating version:', versionError);
 				return { data: null, error: new Error(versionError.message) };
 			}
 		}
@@ -311,13 +314,13 @@ export async function updateChapterTemplate(
 			.single();
 
 		if (error) {
-			console.error('[updateChapterTemplate] Error:', error);
+			logger.error('[updateChapterTemplate] Error:', error);
 			return { data: null, error: new Error(error.message) };
 		}
 
 		return { data: dbTemplateToApp(template as DbChapterTemplate), error: null };
 	} catch (err) {
-		console.error('[updateChapterTemplate] Unexpected error:', err);
+		logger.error('[updateChapterTemplate] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -344,7 +347,7 @@ export async function deleteChapterTemplate(
 			.single();
 
 		if (readError) {
-			console.error('[deleteChapterTemplate] Lecture impossible :', readError);
+			logger.error('[deleteChapterTemplate] Lecture impossible :', readError);
 			return { error: new Error(readError.message) };
 		}
 
@@ -360,13 +363,13 @@ export async function deleteChapterTemplate(
 		const { error } = await supabase.from('chapter_templates').delete().eq('id', templateId);
 
 		if (error) {
-			console.error('[deleteChapterTemplate] Suppression impossible :', error);
+			logger.error('[deleteChapterTemplate] Suppression impossible :', error);
 			return { error: new Error(error.message) };
 		}
 
 		return { error: null };
 	} catch (err) {
-		console.error('[deleteChapterTemplate] Unexpected error:', err);
+		logger.error('[deleteChapterTemplate] Unexpected error:', err);
 		return { error: err as Error };
 	}
 }
@@ -433,7 +436,7 @@ export async function listChapterTemplates(
 		const { data, error, count } = await dbQuery;
 
 		if (error) {
-			console.error('[listChapterTemplates] Error:', error);
+			logger.error('[listChapterTemplates] Error:', error);
 			return { data: [], error: new Error(error.message), count: 0 };
 		}
 
@@ -466,7 +469,7 @@ export async function listChapterTemplates(
 
 		return { data: templates, error: null, count: count ?? 0 };
 	} catch (err) {
-		console.error('[listChapterTemplates] Unexpected error:', err);
+		logger.error('[listChapterTemplates] Unexpected error:', err);
 		return { data: [], error: err as Error, count: 0 };
 	}
 }
@@ -495,7 +498,7 @@ export async function publishTemplate(
 			.single();
 
 		if (fetchError) {
-			console.error('[publishTemplate] Error fetching template:', fetchError);
+			logger.error('[publishTemplate] Error fetching template:', fetchError);
 			return { data: null, error: new Error(fetchError.message) };
 		}
 
@@ -521,13 +524,13 @@ export async function publishTemplate(
 			.single();
 
 		if (error) {
-			console.error('[publishTemplate] Error:', error);
+			logger.error('[publishTemplate] Error:', error);
 			return { data: null, error: new Error(error.message) };
 		}
 
 		return { data: dbTemplateToApp(updated as DbChapterTemplate), error: null };
 	} catch (err) {
-		console.error('[publishTemplate] Unexpected error:', err);
+		logger.error('[publishTemplate] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -552,13 +555,13 @@ export async function archiveTemplate(
 			.single();
 
 		if (error) {
-			console.error('[archiveTemplate] Error:', error);
+			logger.error('[archiveTemplate] Error:', error);
 			return { data: null, error: new Error(error.message) };
 		}
 
 		return { data: dbTemplateToApp(template as DbChapterTemplate), error: null };
 	} catch (err) {
-		console.error('[archiveTemplate] Unexpected error:', err);
+		logger.error('[archiveTemplate] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -593,7 +596,7 @@ export async function createTemplateVersion(
 			.single();
 
 		if (fetchError) {
-			console.error('[createTemplateVersion] Error fetching template:', fetchError);
+			logger.error('[createTemplateVersion] Error fetching template:', fetchError);
 			return { data: null, error: new Error(fetchError.message) };
 		}
 
@@ -618,7 +621,7 @@ export async function createTemplateVersion(
 			.single();
 
 		if (versionError) {
-			console.error('[createTemplateVersion] Error creating version:', versionError);
+			logger.error('[createTemplateVersion] Error creating version:', versionError);
 			return { data: null, error: new Error(versionError.message) };
 		}
 
@@ -632,13 +635,13 @@ export async function createTemplateVersion(
 			.eq('id', templateId);
 
 		if (updateError) {
-			console.error('[createTemplateVersion] Error updating template:', updateError);
+			logger.error('[createTemplateVersion] Error updating template:', updateError);
 			return { data: null, error: new Error(updateError.message) };
 		}
 
 		return { data: dbTemplateVersionToApp(version as DbChapterTemplateVersion), error: null };
 	} catch (err) {
-		console.error('[createTemplateVersion] Unexpected error:', err);
+		logger.error('[createTemplateVersion] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -662,7 +665,7 @@ export async function getTemplateVersions(
 			.order('version_number', { ascending: false });
 
 		if (error) {
-			console.error('[getTemplateVersions] Error:', error);
+			logger.error('[getTemplateVersions] Error:', error);
 			return { data: [], error: new Error(error.message), count: 0 };
 		}
 
@@ -672,7 +675,7 @@ export async function getTemplateVersions(
 
 		return { data: versions, error: null, count: versions.length };
 	} catch (err) {
-		console.error('[getTemplateVersions] Unexpected error:', err);
+		logger.error('[getTemplateVersions] Unexpected error:', err);
 		return { data: [], error: err as Error, count: 0 };
 	}
 }
@@ -699,13 +702,13 @@ export async function getTemplateVersion(
 			.single();
 
 		if (error) {
-			console.error('[getTemplateVersion] Error:', error);
+			logger.error('[getTemplateVersion] Error:', error);
 			return { data: null, error: new Error(error.message) };
 		}
 
 		return { data: dbTemplateVersionToApp(version as DbChapterTemplateVersion), error: null };
 	} catch (err) {
-		console.error('[getTemplateVersion] Unexpected error:', err);
+		logger.error('[getTemplateVersion] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -848,7 +851,7 @@ export async function instantiateTemplate(
 			.single();
 
 		if (templateError) {
-			console.error('[instantiateTemplate] Error fetching template:', templateError);
+			logger.error('[instantiateTemplate] Error fetching template:', templateError);
 			return { data: null, error: new Error(templateError.message) };
 		}
 
@@ -885,7 +888,7 @@ export async function instantiateTemplate(
 			.single();
 
 		if (chapterError) {
-			console.error('[instantiateTemplate] Error creating chapter:', chapterError);
+			logger.error('[instantiateTemplate] Error creating chapter:', chapterError);
 			return { data: null, error: new Error(chapterError.message) };
 		}
 
@@ -914,7 +917,7 @@ export async function instantiateTemplate(
 			.single();
 
 		if (instError) {
-			console.error('[instantiateTemplate] Error creating instantiation:', instError);
+			logger.error('[instantiateTemplate] Error creating instantiation:', instError);
 			// Rollback: delete the chapter
 			await supabase.from('class_chapters').delete().eq('id', chapterId);
 			return { data: null, error: new Error(instError.message) };
@@ -928,7 +931,7 @@ export async function instantiateTemplate(
 			error: null
 		};
 	} catch (err) {
-		console.error('[instantiateTemplate] Unexpected error:', err);
+		logger.error('[instantiateTemplate] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -963,7 +966,7 @@ export async function getInstantiationWithStatus(
 			.maybeSingle();
 
 		if (error) {
-			console.error('[getInstantiationWithStatus] Erreur :', error);
+			logger.error('[getInstantiationWithStatus] Erreur :', error);
 			return { data: null, error: new Error(error.message) };
 		}
 
@@ -982,7 +985,7 @@ export async function getInstantiationWithStatus(
 			: { data: null, error: null };
 
 		if (templateError) {
-			console.error('[getInstantiationWithStatus] Modèle illisible :', templateError);
+			logger.error('[getInstantiationWithStatus] Modèle illisible :', templateError);
 			return { data: null, error: new Error(templateError.message) };
 		}
 
@@ -1003,7 +1006,7 @@ export async function getInstantiationWithStatus(
 			error: null
 		};
 	} catch (err) {
-		console.error('[getInstantiationWithStatus] Erreur inattendue :', err);
+		logger.error('[getInstantiationWithStatus] Erreur inattendue :', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -1032,7 +1035,7 @@ export async function checkForTemplateUpdates(
 			.maybeSingle();
 
 		if (error) {
-			console.error('[checkForTemplateUpdates] Error:', error);
+			logger.error('[checkForTemplateUpdates] Error:', error);
 			return { data: null, error: new Error(error.message) };
 		}
 
@@ -1051,7 +1054,7 @@ export async function checkForTemplateUpdates(
 			.maybeSingle();
 
 		if (templateError) {
-			console.error('[checkForTemplateUpdates] Error fetching template:', templateError);
+			logger.error('[checkForTemplateUpdates] Error fetching template:', templateError);
 			return { data: null, error: new Error(templateError.message) };
 		}
 
@@ -1071,7 +1074,7 @@ export async function checkForTemplateUpdates(
 			error: null
 		};
 	} catch (err) {
-		console.error('[checkForTemplateUpdates] Unexpected error:', err);
+		logger.error('[checkForTemplateUpdates] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -1098,7 +1101,7 @@ export async function getMigrationPreview(
 			.single();
 
 		if (instError || !instantiation.template_id) {
-			console.error('[getMigrationPreview] Error:', instError);
+			logger.error('[getMigrationPreview] Error:', instError);
 			return { data: null, error: new Error(instError?.message ?? 'Template not found') };
 		}
 
@@ -1115,7 +1118,7 @@ export async function getMigrationPreview(
 			// instanciée : il annonce « aucun changement » quelle que soit la mise
 			// à jour réellement disponible.
 			if (templateError) {
-				console.error('[getMigrationPreview] Version courante illisible :', templateError);
+				logger.error('[getMigrationPreview] Version courante illisible :', templateError);
 				return { data: null, error: new Error(templateError.message) };
 			}
 
@@ -1140,7 +1143,7 @@ export async function getMigrationPreview(
 			.single();
 
 		if (fromError || toError) {
-			console.error('[getMigrationPreview] Error fetching versions:', fromError ?? toError);
+			logger.error('[getMigrationPreview] Error fetching versions:', fromError ?? toError);
 			return { data: null, error: new Error('Failed to fetch version data') };
 		}
 
@@ -1165,7 +1168,7 @@ export async function getMigrationPreview(
 			error: null
 		};
 	} catch (err) {
-		console.error('[getMigrationPreview] Unexpected error:', err);
+		logger.error('[getMigrationPreview] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -1192,7 +1195,7 @@ export async function migrateChapterToVersion(
 			.single();
 
 		if (instError || !instantiation.template_id) {
-			console.error('[migrateChapterToVersion] Error:', instError);
+			logger.error('[migrateChapterToVersion] Error:', instError);
 			return { error: new Error(instError?.message ?? 'Template not found') };
 		}
 
@@ -1205,7 +1208,7 @@ export async function migrateChapterToVersion(
 			.single();
 
 		if (versionError) {
-			console.error('[migrateChapterToVersion] Error fetching version:', versionError);
+			logger.error('[migrateChapterToVersion] Error fetching version:', versionError);
 			return { error: new Error(versionError.message) };
 		}
 
@@ -1229,13 +1232,13 @@ export async function migrateChapterToVersion(
 			.eq('chapter_id', chapterId);
 
 		if (updateError) {
-			console.error('[migrateChapterToVersion] Error updating instantiation:', updateError);
+			logger.error('[migrateChapterToVersion] Error updating instantiation:', updateError);
 			return { error: new Error(updateError.message) };
 		}
 
 		return { error: null };
 	} catch (err) {
-		console.error('[migrateChapterToVersion] Unexpected error:', err);
+		logger.error('[migrateChapterToVersion] Unexpected error:', err);
 		return { error: err as Error };
 	}
 }
@@ -1258,13 +1261,13 @@ export async function detachChapterFromTemplate(
 			.eq('chapter_id', chapterId);
 
 		if (error) {
-			console.error('[detachChapterFromTemplate] Error:', error);
+			logger.error('[detachChapterFromTemplate] Error:', error);
 			return { error: new Error(error.message) };
 		}
 
 		return { error: null };
 	} catch (err) {
-		console.error('[detachChapterFromTemplate] Unexpected error:', err);
+		logger.error('[detachChapterFromTemplate] Unexpected error:', err);
 		return { error: err as Error };
 	}
 }
@@ -1315,7 +1318,7 @@ export async function extractContentSnapshotFromChapter(
 			(r) => r.error
 		);
 		if (sectionEnEchec?.error) {
-			console.error('[extractContentSnapshot] Section illisible :', sectionEnEchec.error);
+			logger.error('[extractContentSnapshot] Section illisible :', sectionEnEchec.error);
 			return { data: null, error: new Error(sectionEnEchec.error.message) };
 		}
 
@@ -1357,7 +1360,7 @@ export async function extractContentSnapshotFromChapter(
 
 		return { data: snapshot, error: null };
 	} catch (err) {
-		console.error('[extractContentSnapshotFromChapter] Unexpected error:', err);
+		logger.error('[extractContentSnapshotFromChapter] Unexpected error:', err);
 		return { data: null, error: err as Error };
 	}
 }
@@ -1430,7 +1433,7 @@ export async function mergeContentSnapshotIntoChapter(
 		(r) => r.error
 	);
 	if (lectureEnEchec?.error) {
-		console.error('[mergeContentSnapshotIntoChapter] Contenu illisible :', lectureEnEchec.error);
+		logger.error('[mergeContentSnapshotIntoChapter] Contenu illisible :', lectureEnEchec.error);
 		return { error: new Error(lectureEnEchec.error.message) };
 	}
 
@@ -1457,7 +1460,7 @@ export async function mergeContentSnapshotIntoChapter(
 					.update({ title: doc.title, description: doc.description, mime_type: doc.mimeType })
 					.eq('id', existant.id);
 				if (error) {
-					console.error('[mergeContentSnapshotIntoChapter] Document non mis à jour :', error);
+					logger.error('[mergeContentSnapshotIntoChapter] Document non mis à jour :', error);
 					return { error: new Error(error.message) };
 				}
 			}
@@ -1475,7 +1478,7 @@ export async function mergeContentSnapshotIntoChapter(
 			display_order: rang++
 		});
 		if (error) {
-			console.error('[mergeContentSnapshotIntoChapter] Document non ajouté :', error);
+			logger.error('[mergeContentSnapshotIntoChapter] Document non ajouté :', error);
 			return { error: new Error(error.message) };
 		}
 	}
@@ -1492,7 +1495,7 @@ export async function mergeContentSnapshotIntoChapter(
 					.update({ description: item.description })
 					.eq('id', existant.id);
 				if (error) {
-					console.error('[mergeContentSnapshotIntoChapter] Objectif non mis à jour :', error);
+					logger.error('[mergeContentSnapshotIntoChapter] Objectif non mis à jour :', error);
 					return { error: new Error(error.message) };
 				}
 			}
@@ -1505,7 +1508,7 @@ export async function mergeContentSnapshotIntoChapter(
 			display_order: rang++
 		});
 		if (error) {
-			console.error('[mergeContentSnapshotIntoChapter] Objectif non ajouté :', error);
+			logger.error('[mergeContentSnapshotIntoChapter] Objectif non ajouté :', error);
 			return { error: new Error(error.message) };
 		}
 	}
@@ -1521,7 +1524,7 @@ export async function mergeContentSnapshotIntoChapter(
 			display_order: rang++
 		});
 		if (error) {
-			console.error('[mergeContentSnapshotIntoChapter] Exercice non ajouté :', error);
+			logger.error('[mergeContentSnapshotIntoChapter] Exercice non ajouté :', error);
 			return { error: new Error(error.message) };
 		}
 	}
@@ -1538,7 +1541,7 @@ export async function mergeContentSnapshotIntoChapter(
 			display_order: rang++
 		});
 		if (error) {
-			console.error('[mergeContentSnapshotIntoChapter] Fiche non ajoutée :', error);
+			logger.error('[mergeContentSnapshotIntoChapter] Fiche non ajoutée :', error);
 			return { error: new Error(error.message) };
 		}
 	}
@@ -1598,7 +1601,7 @@ export async function applyContentSnapshotToChapter(
 				);
 
 			if (docError) {
-				console.error('[applyContentSnapshotToChapter] Error inserting documents:', docError);
+				logger.error('[applyContentSnapshotToChapter] Error inserting documents:', docError);
 				return { error: new Error(docError.message) };
 			}
 		}
@@ -1617,7 +1620,7 @@ export async function applyContentSnapshotToChapter(
 				.insert(checklistInserts);
 
 			if (checklistError) {
-				console.error(
+				logger.error(
 					'[applyContentSnapshotToChapter] Error inserting checklist items:',
 					checklistError
 				);
@@ -1638,7 +1641,7 @@ export async function applyContentSnapshotToChapter(
 				.insert(exerciseInserts);
 
 			if (exerciseError) {
-				console.error('[applyContentSnapshotToChapter] Error inserting exercises:', exerciseError);
+				logger.error('[applyContentSnapshotToChapter] Error inserting exercises:', exerciseError);
 				return { error: new Error(exerciseError.message) };
 			}
 		}
@@ -1656,17 +1659,14 @@ export async function applyContentSnapshotToChapter(
 			);
 
 			if (worksheetError) {
-				console.error(
-					'[applyContentSnapshotToChapter] Error inserting worksheets:',
-					worksheetError
-				);
+				logger.error('[applyContentSnapshotToChapter] Error inserting worksheets:', worksheetError);
 				return { error: new Error(worksheetError.message) };
 			}
 		}
 
 		return { error: null };
 	} catch (err) {
-		console.error('[applyContentSnapshotToChapter] Unexpected error:', err);
+		logger.error('[applyContentSnapshotToChapter] Unexpected error:', err);
 		return { error: err as Error };
 	}
 }

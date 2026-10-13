@@ -139,6 +139,12 @@ function redactObject(obj: unknown, depth = 0, seen: WeakSet<object> = new WeakS
 		if ('cause' in obj && obj.cause !== undefined) {
 			errorObj.cause = redactObject(obj.cause, depth + 1, seen);
 		}
+		// Champs propres (code, details, hint d'une PostgrestError…) : sans eux, un 23505
+		// ou un 42501 disparaît des journaux. Masqués comme ceux d'un objet ordinaire.
+		for (const [key, value] of Object.entries(obj)) {
+			if (key in errorObj) continue;
+			errorObj[key] = isSensitiveField(key) ? '[REDACTED]' : redactObject(value, depth + 1, seen);
+		}
 		return errorObj;
 	}
 

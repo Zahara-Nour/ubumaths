@@ -16,6 +16,9 @@ import { createSystemNotification } from './notifications';
 import { dev } from '$app/environment';
 import { createServiceRoleClient } from './serviceRoleClient';
 import { escapeHtml } from '$lib/utils/html-escape';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/errorMonitoring');
 
 type SupabaseClientType = SupabaseClient<Database>;
 
@@ -254,7 +257,7 @@ export async function logError(
 	try {
 		// In development, also log to console
 		if (dev) {
-			console.error('[ERROR MONITORING]', {
+			logger.error('[ERROR MONITORING]', {
 				type: data.error_type,
 				severity: data.severity || 'error',
 				message: data.message,
@@ -314,7 +317,7 @@ export async function logError(
 			.single();
 
 		if (insertError) {
-			console.error('Failed to insert error log:', insertError);
+			logger.error('Failed to insert error log:', insertError);
 			return { success: false, error: 'Failed to log error' };
 		}
 
@@ -330,7 +333,7 @@ export async function logError(
 
 		return { success: true, id: errorLog.id };
 	} catch (error) {
-		console.error('Error in logError:', error);
+		logger.error('Error in logError:', error);
 		return { success: false, error: 'Unexpected error while logging' };
 	}
 }
@@ -361,7 +364,7 @@ async function notifyCriticalError(
 			system_event_type: 'assessment_graded' // Note: 'error_critical' not in SystemEventType enum, using fallback
 		});
 	} catch (error) {
-		console.error('Failed to send critical error notification:', error);
+		logger.error('Failed to send critical error notification:', error);
 		// Don't throw - notification failure shouldn't prevent error logging
 	}
 }
@@ -377,7 +380,7 @@ export async function getErrorStats(
 		const { data, error } = await supabase.rpc('get_error_stats', { p_hours: hours }).single();
 
 		if (error) {
-			console.error('Failed to get error stats:', error);
+			logger.error('Failed to get error stats:', error);
 			return { success: false, error: 'Failed to retrieve statistics' };
 		}
 
@@ -393,7 +396,7 @@ export async function getErrorStats(
 			}
 		};
 	} catch (error) {
-		console.error('Error in getErrorStats:', error);
+		logger.error('Error in getErrorStats:', error);
 		return { success: false, error: 'Unexpected error' };
 	}
 }
@@ -459,13 +462,13 @@ export async function getErrorLogs(
 		const { data, error, count } = await query;
 
 		if (error) {
-			console.error('Failed to get error logs:', error);
+			logger.error('Failed to get error logs:', error);
 			return { success: false, error: 'Failed to retrieve errors' };
 		}
 
 		return { success: true, data: data as ErrorLog[], count: count || 0 };
 	} catch (error) {
-		console.error('Error in getErrorLogs:', error);
+		logger.error('Error in getErrorLogs:', error);
 		return { success: false, error: 'Unexpected error' };
 	}
 }
@@ -519,13 +522,13 @@ export async function getErrorOccurrences(
 		const { data, error, count } = await query;
 
 		if (error) {
-			console.error('Failed to get error occurrences:', error);
+			logger.error('Failed to get error occurrences:', error);
 			return { success: false, error: 'Failed to retrieve error occurrences' };
 		}
 
 		return { success: true, data: data as ErrorOccurrence[], count: count || 0 };
 	} catch (error) {
-		console.error('Error in getErrorOccurrences:', error);
+		logger.error('Error in getErrorOccurrences:', error);
 		return { success: false, error: 'Unexpected error' };
 	}
 }
@@ -545,13 +548,13 @@ export async function getErrorLog(
 			.single();
 
 		if (error) {
-			console.error('Failed to get error log:', error);
+			logger.error('Failed to get error log:', error);
 			return { success: false, error: 'Error not found' };
 		}
 
 		return { success: true, data: data as ErrorLog };
 	} catch (error) {
-		console.error('Error in getErrorLog:', error);
+		logger.error('Error in getErrorLog:', error);
 		return { success: false, error: 'Unexpected error' };
 	}
 }
@@ -573,13 +576,13 @@ export async function resolveError(
 		});
 
 		if (error) {
-			console.error('Failed to resolve error:', error);
+			logger.error('Failed to resolve error:', error);
 			return { success: false, error: 'Failed to resolve error' };
 		}
 
 		return { success: true };
 	} catch (error) {
-		console.error('Error in resolveError:', error);
+		logger.error('Error in resolveError:', error);
 		return { success: false, error: 'Unexpected error' };
 	}
 }
@@ -601,13 +604,13 @@ export async function resolveErrorBySignature(
 		});
 
 		if (error) {
-			console.error('Failed to bulk resolve errors:', error);
+			logger.error('Failed to bulk resolve errors:', error);
 			return { success: false, error: 'Failed to resolve errors' };
 		}
 
 		return { success: true, count: data as number };
 	} catch (error) {
-		console.error('Error in resolveErrorBySignature:', error);
+		logger.error('Error in resolveErrorBySignature:', error);
 		return { success: false, error: 'Unexpected error' };
 	}
 }
@@ -625,13 +628,13 @@ export async function cleanupOldErrors(
 		});
 
 		if (error) {
-			console.error('Failed to cleanup errors:', error);
+			logger.error('Failed to cleanup errors:', error);
 			return { success: false, error: 'Failed to cleanup errors' };
 		}
 
 		return { success: true, deletedCount: data as number };
 	} catch (error) {
-		console.error('Error in cleanupOldErrors:', error);
+		logger.error('Error in cleanupOldErrors:', error);
 		return { success: false, error: 'Unexpected error' };
 	}
 }
@@ -648,13 +651,13 @@ export async function deleteAllResolvedErrors(
 		const { data, error } = await supabase.rpc('delete_all_resolved_errors');
 
 		if (error) {
-			console.error('Failed to delete resolved errors:', error);
+			logger.error('Failed to delete resolved errors:', error);
 			return { success: false, error: 'Failed to delete resolved errors' };
 		}
 
 		return { success: true, deletedCount: data as number };
 	} catch (error) {
-		console.error('Error in deleteAllResolvedErrors:', error);
+		logger.error('Error in deleteAllResolvedErrors:', error);
 		return { success: false, error: 'Unexpected error' };
 	}
 }
@@ -678,7 +681,7 @@ export async function getUserContext(
 		// Le rôle n'enrichit qu'un rapport d'erreur : son absence ne doit pas
 		// empêcher de le remonter. Elle se signale sans bloquer.
 		if (error) {
-			console.error('[errorMonitoring] Rôle illisible :', error);
+			logger.error('[errorMonitoring] Rôle illisible :', error);
 			return { user_id: userId };
 		}
 

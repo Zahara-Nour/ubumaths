@@ -20,6 +20,9 @@ import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import type { Json } from '$lib/types/database';
 import { rpcNullable, toJson } from '$lib/types/database-helpers';
 import type { VipCardInstance } from '$lib/types/vip-card';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/vip-card-grants');
 
 // ============================================================================
 // TYPES
@@ -67,13 +70,13 @@ export async function grantVipCardsAfterAction(params: {
 	});
 
 	if (error) {
-		console.error('[vip-cards] grant_vip_cards_after_action annulée :', error);
+		logger.error('[vip-cards] grant_vip_cards_after_action annulée :', error);
 		return null;
 	}
 
 	const parsed = grantResultSchema.safeParse(data);
 	if (!parsed.success) {
-		console.error('[vip-cards] grant_vip_cards_after_action : réponse inattendue', data);
+		logger.error('[vip-cards] grant_vip_cards_after_action : réponse inattendue', data);
 		return null;
 	}
 
@@ -101,7 +104,7 @@ export async function restoreActionCard(
 	});
 
 	if (error || data !== true) {
-		console.error('[vip-cards] carte d’action NON rendue :', {
+		logger.error('[vip-cards] carte d’action NON rendue :', {
 			studentId,
 			instanceId,
 			error,
@@ -128,7 +131,7 @@ export async function findLockedCardInstances(
 		.in('card_instance_id', instanceIds);
 
 	if (error) {
-		console.error('[vip-cards] verrous du marché illisibles :', error);
+		logger.error('[vip-cards] verrous du marché illisibles :', error);
 		throw error;
 	}
 	return (data ?? []).map((row) => row.card_instance_id);
