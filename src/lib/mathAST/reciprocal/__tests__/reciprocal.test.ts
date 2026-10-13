@@ -541,13 +541,40 @@ describe('computeReciprocal — non bijective : explication et réciproques par 
 		expect(refusal.pieces).toBeUndefined();
 		expect(refusal.message).toContain("une infinité d'intervalles");
 		expect(refusal.suggestion && formatInterval(refusal.suggestion)).toBe('[-π/2 ; π/2]');
-		expect(refusal.message).toContain('.réciproque f sur [-π/2 ; π/2].');
 	});
 
 	it('cos sur ℝ : périodique aussi, [0 ; π] proposé', () => {
 		const refusal = notBijectiveOf('\\cos(x)');
 		expect(refusal.infinitelyManyPieces).toBe(true);
 		expect(refusal.suggestion && formatInterval(refusal.suggestion)).toBe('[0 ; π]');
+	});
+
+	// Décision (5) de David (2026-10-13) : la vérité, sans proposer une commande
+	// qui échouerait — `.réciproque f sur [−π/2 ; π/2]` ne sait pas écrire arcsin
+	it.each([
+		[
+			'\\sin(x)',
+			"f n'est pas bijective sur ℝ, mais elle l'est sur une infinité d'intervalles, par exemple [−π/2 ; π/2]. Sa réciproque y est la fonction arcsin, que Chiphre ne sait pas encore calculer."
+		],
+		[
+			'\\cos(x)',
+			"f n'est pas bijective sur ℝ, mais elle l'est sur une infinité d'intervalles, par exemple [0 ; π]. Sa réciproque y est la fonction arccos, que Chiphre ne sait pas encore calculer."
+		],
+		[
+			'2\\sin(x)+1',
+			"f n'est pas bijective sur ℝ, mais elle l'est sur une infinité d'intervalles, par exemple [−π/2 ; π/2]. Sa réciproque y s'écrit avec la fonction arcsin, que Chiphre ne sait pas encore calculer."
+		]
+	])('%s : le refus dit arcsin / arccos, sans commande', (f, message) => {
+		const refusal = notBijectiveOf(f);
+		expect(refusal.message).toBe(message);
+		expect(refusal.message).not.toContain('.réciproque');
+	});
+
+	it('tan sur son domaine : ]−π/2 ; π/2[ et arctan', () => {
+		const refusal = notBijectiveOf('\\tan(x)');
+		expect(refusal.message).toContain(']−π/2 ; π/2[');
+		expect(refusal.message).toContain('Sa réciproque y est la fonction arctan');
+		expect(refusal.message).not.toContain('.réciproque');
 	});
 
 	it('sin sur [0 ; 1] (pas une période entière) : reste un refus honnête, jamais « non bijective »', () => {

@@ -155,6 +155,20 @@ describe('les refus', () => {
 		});
 	});
 
+	// Décision (5) de David : la vérité, sans proposer `.réciproque f sur …`
+	it.each([
+		['sin(x)', '[−π/2 ; π/2]', 'arcsin'],
+		['cos(x)', '[0 ; π]', 'arccos'],
+		['tan(x)', ']−π/2 ; π/2[', 'arctan']
+	])('f(x) = %s : bijective sur %s, réciproque %s pas encore calculée', (definition, on, arc) => {
+		const desk = deskWith(`f(x) = ${definition}`, '.réciproque f', 'f⁻¹(0.5)');
+		const [command, value] = desk.entries.slice(-2);
+		expect(command.failed).toBe(true);
+		expect(command.text).toContain(`par exemple ${on}. Sa réciproque y est la fonction ${arc}`);
+		expect(command.text).not.toContain('.réciproque');
+		expect(value).toMatchObject({ failed: true, text: command.text });
+	});
+
 	it.each(['.variations f^-1', 'g(x) = f⁻¹(x)'])(
 		'f non bijective, %s : le même refus, et rien n’est créé',
 		(input) => {
