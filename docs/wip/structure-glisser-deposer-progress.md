@@ -81,6 +81,35 @@ Aucune image perdue (intervalle à 60 images par seconde). WebKit headless arron
 iPad n'est pas mesuré. Continuité : un espace presque nul ajoute 0,44 px (invisible) ; un « − »
 en tête précédé d'un espace devenait binaire (+20,66 px) → terme groupé `{-3}` (0 px).
 
+### Retours de David sur la démo (2026-10-13)
+
+1. « Je ne vois aucun espace se créer » : l'espace s'ouvrait sous le terme saisi, qui le cachait.
+   Demandé : une **boîte de dépôt** classique, et un **fond** au terme déplacé. Fait : boîte en
+   pointillés à chaque place ouverte (HTML posé sur l'espace mesuré, `\class{dropgap<k>}`) ;
+   `\vphantom` du terme dans l'espace (la ligne garde sa hauteur) ; terme sur une carte, soulevé
+   au-dessus de la ligne (case « Soulever », cochée par défaut, pour comparer).
+2. « Ça marche plutôt bien » ; demandé : **les facteurs d'un produit** aussi, et **montrer la
+   structure algébrique**. Fait :
+   - facteurs : produit implicite → la croix devant un nombre ou une fraction (`x × 2`, pas
+     `x2`), rien ailleurs (`2x`, `3(x + 1)`) ; produit écrit avec `×` ou `·` → ce signe partout ;
+   - structure (lecture de Claude, à confirmer) : au survol, la partie saisissable encadrée, son
+     groupe sur un fond clair avec son nom (« somme · 4 termes ») ; pendant le glisser, ce fond
+     suit le groupe ; sous la formule, la lecture en français de l'outil Structure (sens inverse
+     compris) ;
+   - **un clic dans le cadre remonte d'un cran** (A11) : sans lui, `2x` ne se saisissait plus
+     en entier (tout point de `2x` est dans `2` ou dans `x`). On glisse ce qui est encadré.
+
+Défauts trouvés en route et corrigés : un terme du dénominateur ne se saisissait pas (la boîte
+du numérateur le recouvre → repérage géométrique, la plus petite partie qui contient le point) ;
+la lecture restait celle de l'expression précédente (`math-span` ne relit pas son texte →
+`{#key}`) ; une partie encadrée gardée d'une expression à l'autre empêchait le glisser suivant.
+
+Mesures après ces ajouts (mêmes 8 expressions, en encadrant d'abord le terme visé) : Chromium
+0,5 à 1,5 ms par rendu (pire 4,2) ; WebKit 1,5 à 5 ms (pire 7) ; aucune image perdue.
+
+À demander à David : sa « structure algébrique » est-elle celle-ci (cadres au survol + nom du
+groupe + lecture), ou un arbre dessiné ? Soulever le terme ou le laisser sous le pointeur ?
+
 ## Journal
 
 - 2026-10-13 — ouverture : lecture de l'article Algebria, inventaire de l'existant, questions
@@ -88,3 +117,6 @@ en tête précédé d'un espace devenait binaire (+20,66 px) → terme groupé `
 - 2026-10-13 — G8 et G9 tranchées par David ; G1-G7 et G10 encore ouvertes.
 - 2026-10-13 — G9 : idée de David (rendu malléable pendant le glisser) ; trois pistes comparées, piste 3 recommandée, démo à valider.
 - 2026-10-13 — démo de la piste 3 (`/test-glisser`) : rendu de 1 à 5 ms par image, pire 12 ms (WebKit) ; à juger par David.
+- 2026-10-13 — retours de David : boîte de dépôt visible, carte du terme saisi ; puis facteurs
+  d'un produit, structure au survol, clic qui remonte d'un cran, lecture (démo, commit local
+  8b303bce0). 11 tests verts.
