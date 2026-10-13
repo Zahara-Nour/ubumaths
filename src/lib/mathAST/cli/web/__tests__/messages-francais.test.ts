@@ -52,7 +52,8 @@ describe('les erreurs de lecture courantes, en français', () => {
 	});
 
 	it('un message inconnu de la table : une formule française, jamais l’anglais', () => {
-		const line = run('| 2 || 3 |');
+		// « Expected '|' to close absolute value » n'est pas dans la table
+		const line = run('| 2 + 3');
 
 		expect(line.success).toBe(false);
 		expect(line.output).not.toMatch(ENGLISH);

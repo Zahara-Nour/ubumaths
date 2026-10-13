@@ -252,8 +252,14 @@ u = v ou u = −v, identité comprise (`|x − 1| = |1 − x|` → tout réel). 
 (`|x| = x + 1`), un paramètre (`|x| = a`), deux valeurs absolues hors de |u| = |v|. Effet de
 bord juste : les décompositions qui rappellent `solve` (`\ln|x| = 1`, `\sqrt{|x|} = 2`) et les
 inéquations affines (`|x| < 3`, tableau de signes de |u| − c une fois ses zéros trouvés) se
-concluent. ⚠️ Le parseur refuse un coefficient collé à `|` (`2|x|`, « Unexpected token: | ») ;
-`2\left|x\right|` se lit. Pas d'étapes rédigées (`pedagogical-solve` ne connaît pas la valeur
+concluent. Un facteur collé à une barre se lit en produit implicite (2026-10-13 :
+`2|x|`, `x|x|`, `|x||y|`, `\frac12|x|`). Règle des barres nues (`parser-pratt.ts`,
+`inBareAbs`) : dans un groupe (parenthèses, accolades, `\left…\right`, contenu d'une valeur
+absolue), une barre qui suit un facteur ferme la valeur absolue ouverte s'il y en a une, en
+ouvre une sinon ; après un opérateur ou au début, elle ouvre. Une barre ouvrante par produit
+implicite après `|…|` suivi d'un facteur est refusée comme ambiguë (`|2|x|-1|`, `|x|y|z|` :
+« écris \left| … \right| ») ; une relation lève l'ambiguïté (`|x|y=2|x|` se lit). Tests :
+`parser/latex/__tests__/abs-implicit-multiply.test.ts`. Pas d'étapes rédigées (`pedagogical-solve` ne connaît pas la valeur
 absolue). Tests : `solve/__tests__/valeur-absolue.test.ts`.
 
 ### Carte du code

@@ -223,6 +223,20 @@ class PrattParser {
 	 * cellules de matrice). Cf. `parseLimit` pour la règle de portée.
 	 */
 	private inLimitArgument = false;
+	/**
+	 * Barres `|` nues (valeur absolue sans `\left`) : dans le groupe courant, une
+	 * valeur absolue est-elle ouverte ? Si oui, une barre qui suit un facteur la
+	 * ferme ; sinon elle en ouvre une nouvelle (produit implicite : `2|x|`).
+	 * Chaque groupe lu au niveau NONE (parenthèses, accolades, `\left…\right`,
+	 * contenu d'une valeur absolue) repart d'un état neuf.
+	 */
+	private inBareAbs = false;
+	/**
+	 * Une valeur absolue nue s'est fermée devant un facteur (`|2|x…`) : une barre
+	 * ouvrante par produit implicite plus loin rendrait la lecture ambiguë
+	 * (`|2|x|-1|` = |2|·x·|−1| ou |2|x|−1| ?). Remis à faux par une relation.
+	 */
+	private factorAfterBareAbs = false;
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new Tokenizer(input);
@@ -386,15 +400,26 @@ class PrattParser {
 	/**
 	 * Parse an expression with the given minimum binding power
 	 */
-	private parseExpression(minBp: number): MathNode {
+	private parseExpression(minBp: number, inBareAbs = false): MathNode {
 		// Un groupe (lu au niveau NONE) ouvre une portée neuve : la règle
-		// « \lim A + \lim B » ne vaut qu'au niveau de l'argument de la limite.
+		// « \lim A + \lim B » ne vaut qu'au niveau de l'argument de la limite,
+		// et une barre `|` ne ferme que la valeur absolue ouverte dans ce groupe.
 		const savedInLimitArgument = this.inLimitArgument;
-		if (minBp === BP.NONE) this.inLimitArgument = false;
+		const savedInBareAbs = this.inBareAbs;
+		const savedFactorAfterBareAbs = this.factorAfterBareAbs;
+		if (minBp === BP.NONE) {
+			this.inLimitArgument = false;
+			this.inBareAbs = inBareAbs;
+			this.factorAfterBareAbs = false;
+		}
 		try {
 			return this.parseExpressionBody(minBp);
 		} finally {
 			this.inLimitArgument = savedInLimitArgument;
+			if (minBp === BP.NONE) {
+				this.inBareAbs = savedInBareAbs;
+				this.factorAfterBareAbs = savedFactorAfterBareAbs;
+			}
 		}
 	}
 
@@ -417,6 +442,10 @@ class PrattParser {
 			const bp = this.getLeftBindingPower();
 			if (bp <= minBp) {
 				break;
+			}
+			// Une relation sépare deux membres : `|x|y=2|x|` n'est pas ambigu
+			if (bp === BP.RELATION && !this.inBareAbs) {
+				this.factorAfterBareAbs = false;
 			}
 			// Argument de \lim : `\lim A + \lim B` = lim(A) + lim(B)
 			if (this.inLimitArgument && this.isOperatorBeforeLimit()) {
@@ -688,6 +717,11 @@ class PrattParser {
 			case 'LPAREN':
 				// Implicit multiplication
 				return BP.MULTIPLY;
+
+			case 'PIPE':
+				// Barre fermante si une valeur absolue est ouverte dans ce groupe
+				// (elle termine l'expression), ouvrante sinon (`2|x|` : produit implicite)
+				return this.inBareAbs ? BP.NONE : BP.MULTIPLY;
 
 			default:
 				break;
@@ -1153,8 +1187,13 @@ class PrattParser {
 	 */
 	private parseAbsoluteValue(): MathNode {
 		this.advance(); // consume |
-		const content = this.parseExpression(BP.NONE);
+		const content = this.parseExpression(BP.NONE, true);
 		this.expect('PIPE', "Expected '|' to close absolute value");
+		// `|2|x…` : un facteur suit la barre fermante ; une barre ouvrante plus loin
+		// dans ce groupe serait ambiguë (cf. factorAfterBareAbs)
+		if (!this.check('PIPE') && this.shouldInsertImplicitMultiply()) {
+			this.factorAfterBareAbs = true;
+		}
 		return this.applyColor(MathAST.abs(content));
 	}
 
@@ -1477,10 +1516,24 @@ class PrattParser {
 			token.type === 'RPAREN' ||
 			token.type === 'RBRACE' ||
 			token.type === 'RBRACKET' ||
-			token.type === 'PIPE' ||
 			token.type === 'COMMA'
 		) {
 			return false;
+		}
+
+		// Barre `|` : fermante si une valeur absolue est ouverte dans ce groupe,
+		// ouvrante sinon (`2|x|`, `x|x|`, `|x||y|` : produit implicite)
+		if (token.type === 'PIPE') {
+			if (this.inBareAbs) return false;
+			if (this.factorAfterBareAbs) {
+				this.error(
+					'Barres « | » ambiguës : écris la valeur absolue extérieure avec \\left| … \\right| (par exemple \\left|2|x|-1\\right|)',
+					token.position,
+					token.length,
+					'SYNTAX_ERROR'
+				);
+			}
+			return true;
 		}
 
 		// Check for relation commands
