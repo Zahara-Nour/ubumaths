@@ -345,6 +345,13 @@ inéquation à valeur interdite (`rejectForbiddenValues`, `pedagogical-solve/_he
 second degré refuse aussi depuis V48 (`\frac{2x^3}{x}<2` se rédigeait 2x² − 2 < 0 sans exclure 0) :
 l'appelant (atelier, `correction-generator`) se replie sur la réponse du moteur. Tests : `solve/inequality/__tests__/domaine-de-definition.test.ts`,
 `pedagogical-solve/__tests__/inequation-valeurs-interdites.test.ts`.
+**`dans` lit tout ensemble d'élève** (2026-10-13, lot 2 de l'intervalle de l'atelier) : hors d'un
+intervalle borné à la française, `solveInInterval` (`readSolvingDomain`) et `.variations` lisent
+l'ensemble par `parseStudentDomain` — borne infinie (`[0 ; +∞[`), réunion, `ℝ \ {0}`. Pour
+`.variations`, `studyDomain` (`domain/study.ts`) le croise avec le domaine de l'expression avant
+`computeVariations`, qui prend le domaine fourni tel quel. `writeCommandArguments` écrit `dans` en
+dernier : un intervalle semi-ouvert ne referme pas ses crochets, et un `pour t` placé après y
+restait collé. Tests : `atelier/__tests__/intervalle-calculs.test.ts`.
 
 ### Carte du code
 
