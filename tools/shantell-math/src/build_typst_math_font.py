@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Build « Shantell Math », a single OpenType math font (with a MATH table) for
+Build « Chiphre Math », a single OpenType math font (with a MATH table) for
 Typst, from the Shantell KaTeX fonts of static/fonts/shantell-katex/.
 
 MathLive combines twenty KaTeX fonts and lays formulas out with the KaTeX
@@ -20,7 +20,7 @@ and writes that table:
   font metrics, i.e. Computer Modern's, which these glyphs were fitted to.
 
 Every glyph is redrawn without hinting; the result is OFL like its sources.
-Output: static/fonts/shantell-typst/ShantellMath.ttf, plus the text font of the
+Output: static/fonts/shantell-typst/ChiphreMath.ttf, plus the text font of the
 PDF: Shantell Sans Light and Bold, rebuilt from their instances (fonts/input/)
 under one family name, « Shantell Sans » (see write_text_fonts).
 """
@@ -40,14 +40,14 @@ from fontTools.ttLib import TTFont, newTable
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SOURCE_DIR = REPO_ROOT / "static" / "fonts" / "shantell-katex"
 OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "shantell-typst"
-OUTPUT = OUTPUT_DIR / "ShantellMath.ttf"
+OUTPUT = OUTPUT_DIR / "ChiphreMath.ttf"
 INPUT_DIR = REPO_ROOT / "tools" / "shantell-math" / "fonts" / "input"
 # Police de texte du PDF : source -> (fichier publié, style)
 TEXT_FONTS = {
     "shantell-sans-300.ttf": ("ShantellSans-Light.ttf", "Light"),
     "shantell-sans-bold.ttf": ("ShantellSans-Bold.ttf", "Bold"),
 }
-FAMILY = "Shantell Math"
+FAMILY = "Chiphre Math"
 
 # Police source -> préfixe des noms de glyphes dans la police réunie
 SOURCES = {
@@ -283,7 +283,7 @@ class FontBuilder:
             (3, f"{FAMILY} Regular"),
             (4, f"{FAMILY} Regular"),
             (5, "Version 1.0"),
-            (6, "ShantellMath-Regular"),
+            (6, "ChiphreMath-Regular"),
             (13, "This Font Software is licensed under the SIL Open Font License, Version 1.1."),
             (14, "https://openfontlicense.org"),
         ):
@@ -359,7 +359,7 @@ def write_text_fonts() -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build the Shantell Math OpenType font for Typst")
+    parser = argparse.ArgumentParser(description="Build the Chiphre Math OpenType font for Typst")
     parser.parse_args()
 
     font = FontBuilder().build()

@@ -16,7 +16,7 @@ letters and the operators (measured on 2026-10-13: « 2024 » 280 px wide at
 
 MathLive takes digits from KaTeX_Main-Regular (class ML__cmr), whatever the
 letter style. Run after replace_symbols.py and before build_typst_math_font.py,
-which copies these digits into Shantell Math. The script works in place on
+which copies these digits into Chiphre Math. The script works in place on
 static/fonts/shantell-katex/ and redraws each digit from the Shantell source,
 so running it twice gives the same font. Writing to static/fonts/KaTeX_*.woff2
 is refused: the original KaTeX fonts were overwritten that way on 2026-01-20.

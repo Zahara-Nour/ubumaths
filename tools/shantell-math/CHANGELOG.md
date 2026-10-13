@@ -1,6 +1,12 @@
-# Changelog - Shantell-Math
+# Changelog - Chiphre Math (ex-Shantell-Math)
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
+
+## [1.12.0] - 2026-10-13
+
+### Modifié
+
+- La police s'appelle **Chiphre Math** (choix de David) : police Typst `ChiphreMath.ttf`, famille « Chiphre Math », nom PostScript `ChiphreMath-Regular` ; titre et textes de `/test-font`. Les copies KaTeX de `static/fonts/shantell-katex/` gardent leurs noms `KaTeX_*`, que MathLive impose ; les dossiers `tools/shantell-math/` et `shantell-katex/` gardent leur nom historique
 
 ## [1.11.0] - 2026-10-13
 

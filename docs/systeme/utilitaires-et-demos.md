@@ -119,7 +119,7 @@ Précisions :
   (copie figée de la base, `exercices-demo.json`, image copiée dans `static/test-font/`), affichés en
   Shantell et téléchargeables en PDF : `shantell-pdf.ts` compile avec un compilateur Typst **à part**
   (`TypstSnippet.buildLocalCompiler`), qui charge en plus `static/fonts/shantell-typst/` (Shantell
-  Sans Light/Bold, Shantell Math : police OpenType MATH construite depuis le jeu KaTeX par
+  Sans Light/Bold, **Chiphre Math** : police OpenType MATH construite depuis le jeu KaTeX par
   `tools/shantell-math/src/build_typst_math_font.py`). Le compilateur partagé des fiches n'est pas
   touché.
 - **`/test-cadres`** : garde la trace du choix `\htmlStyle` pour le cadre des solutions
