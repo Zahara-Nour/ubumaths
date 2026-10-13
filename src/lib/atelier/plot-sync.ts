@@ -21,6 +21,7 @@ import { plainDisplay } from './display';
 import { isFunction, isList, isSequence } from './types';
 import { plotRestrictionOf } from './interval';
 import { sameRestriction, type Restriction } from '$lib/grapheur/restriction';
+import { reciprocalOf } from './names';
 
 /**
  * Les courbes posées par l'atelier, par nom d'objet.
@@ -35,6 +36,23 @@ import { sameRestriction, type Restriction } from '$lib/grapheur/restriction';
  * L'invariant est structurel plutôt que supposé.
  */
 const posted = new WeakMap<Atelier, WeakMap<GrapheurStore, Map<string, string>>>();
+
+/**
+ * La clé de la droite y = x dans les courbes posées : jamais un nom d'objet
+ * (une espace n'en contient pas), elle ne peut donc pas en écraser un.
+ */
+const IDENTITY_LINE = 'y = x';
+
+/**
+ * La droite y = x (décision (3) de David, 2026-10-13) : grise, en pointillés,
+ * plus fine que les courbes. Un token, lisible en clair et en sombre ; la
+ * couleur hors palette passe telle quelle (`curveColorValue`).
+ */
+const IDENTITY_SETTINGS = {
+	color: 'var(--color-muted-foreground)',
+	lineStyle: 'dashed',
+	lineWidth: 1
+} as const;
 
 /** Ce qu'un nuage doit valoir. */
 interface WantedScatter {
@@ -207,9 +225,9 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 		if (sequence !== null) wanted.set(object.name, sequence);
 	}
 
-	// Retirer ce qui ne doit plus être tracé.
+	// Retirer ce qui ne doit plus être tracé (la droite y = x a sa propre pose).
 	for (const [name, id] of mine) {
-		if (!wanted.has(name)) {
+		if (!wanted.has(name) && name !== IDENTITY_LINE) {
 			graph.removeFunction(id);
 			mine.delete(name);
 		}
@@ -268,6 +286,36 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 		if (curve.visible !== target.visible) changes.visible = target.visible;
 		if (Object.keys(changes).length > 0) graph.updateFunction(curveId, changes);
 	}
+
+	syncIdentityLine(atelier, graph, mine);
+}
+
+/** Une fonction affichée dans le Graphe : tracée, et qui produit une courbe. */
+function isShown(object: AtelierObject | undefined): boolean {
+	return object !== undefined && isFunction(object) && object.plotted && object.status === 'ok';
+}
+
+/**
+ * La droite y = x, d'office quand f ET sa carte f⁻¹ sont affichées ; retirée
+ * dès que l'une est masquée, supprimée ou en erreur. Pas une carte : rien dans
+ * l'atelier, donc rien de sauvegardé. Idempotente, comme le reste.
+ */
+function syncIdentityLine(atelier: Atelier, graph: GrapheurStore, mine: Map<string, string>): void {
+	const wanted = atelier.objects.some((o) => {
+		const base = reciprocalOf(o.name);
+		return base !== null && isShown(o) && isShown(atelier.get(base));
+	});
+	const id = mine.get(IDENTITY_LINE);
+	const current = id === undefined ? undefined : graph.getFunction(id);
+	if (!wanted) {
+		if (id !== undefined) graph.removeFunction(id);
+		mine.delete(IDENTITY_LINE);
+		return;
+	}
+	if (current !== undefined && isExplicitFunction(current)) return;
+	const posed = graph.addFunction('x');
+	graph.updateFunction(posed, IDENTITY_SETTINGS);
+	mine.set(IDENTITY_LINE, posed);
 }
 
 /**
