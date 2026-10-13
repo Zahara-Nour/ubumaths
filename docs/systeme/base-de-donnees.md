@@ -426,7 +426,9 @@ celles de tous les élèves. `rag_documents` → `rag_chunks` : documents du pro
 `account_deletion_audit` (RLS sans policy : client service seul) trace chaque suppression de
 compte, par l'élève ou par la purge de conservation ; `cleanup_result.storage_paths` liste ses
 fichiers, et `storage_removed_at` (`20261016101000`) dit s'ils ont été retirés du storage
-(nul = à retirer).
+(nul = à retirer). `delete_user_account` ne rend, pour les pièces jointes de messages privés et les
+captures de signalement, que les chemins rangés chez l'élève (`20261016101200`) : il en écrit
+lui-même le chemin.
 
 ---
 

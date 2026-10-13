@@ -122,7 +122,7 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 			note: 'messagerie, modération, notifications, avertissements, amitiés'
 		},
 		{
-			glob: 'src/lib/server/{notifications,auto-notifications,warnings,student-inbox,profanity-filter}.ts',
+			glob: 'src/lib/server/{notifications,auto-notifications,warnings,student-inbox}.ts',
 			note: 'messagerie, modération, notifications, avertissements, amitiés'
 		},
 		{

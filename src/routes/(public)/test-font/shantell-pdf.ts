@@ -6,7 +6,7 @@
  * le compilateur partagé de l'application (`$typst`) est un singleton dont les
  * polices sont fixées à sa création. Celui-ci charge en plus Shantell Sans (texte)
  * et Chiphre Math (formules, police OpenType MATH construite par
- * tools/shantell-math), sans rien changer aux PDF des fiches.
+ * tools/chiphre-math), sans rien changer aux PDF des fiches.
  */
 
 import { getTypstCompiler } from '$lib/typst/compiler/typst-compiler';
@@ -50,9 +50,9 @@ interface TypstSnippetClass {
 const TYPST_VERSION = '0.6.1-rc5';
 const COMPILER_WASM_URL = `https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler@${TYPST_VERSION}/pkg/typst_ts_web_compiler_bg.wasm`;
 const SHANTELL_FONT_URLS = [
-	'/fonts/shantell-typst/ShantellSans-Light.ttf',
-	'/fonts/shantell-typst/ShantellSans-Bold.ttf',
-	'/fonts/shantell-typst/ChiphreMath.ttf'
+	'/fonts/chiphre-math-typst/ShantellSans-Light.ttf',
+	'/fonts/chiphre-math-typst/ShantellSans-Bold.ttf',
+	'/fonts/chiphre-math-typst/ChiphreMath.ttf'
 ];
 const STANDARD_TEXT_FONT = '#set text(font: "New Computer Modern"';
 

@@ -18,7 +18,7 @@ bolder than the letters. So each glyph is:
 like the KaTeX ones.
 
 Run after roughen_extras.py, which rebuilds Size1-4 from the original KaTeX
-fonts: this script works in place on static/fonts/shantell-katex/ and redraws
+fonts: this script works in place on static/fonts/chiphre-math/ and redraws
 each listed glyph from the Shantell source, so running it twice gives the same
 font. Writing to static/fonts/KaTeX_*.woff2 is refused: the original KaTeX
 fonts were overwritten that way on 2026-01-20.
@@ -40,9 +40,9 @@ from fontTools.ttLib import TTFont
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "shantell-katex"
+OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "chiphre-math"
 ORIGINAL_DIR = REPO_ROOT / "static" / "fonts" / "katex-original"
-SHANTELL = REPO_ROOT / "tools" / "shantell-math" / "fonts" / "input" / "shantell-sans-300.ttf"
+SHANTELL = REPO_ROOT / "tools" / "chiphre-math" / "fonts" / "input" / "shantell-sans-300.ttf"
 
 FONTS = ["KaTeX_Size1-Regular", "KaTeX_Size2-Regular"]
 

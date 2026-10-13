@@ -375,9 +375,9 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   `x-vercel-cron` (falsifiable) ; le bouton admin des tâches HTTP envoie `Origin` (le
   contrôle CSRF le refusait en 403 en prod). **Actif après le prochain `deploy:prod`.**
   `profile.class_ids` (liste des énigmes élève) : pas de défaut, mesuré (0 écart / 81).
-- ⏳ **Chemins forgés (audit de #1243, antérieur)** : un élève peut créer une pièce jointe
+- ✅ **Chemins forgés (audit de #1243, antérieur) — #1246 (mergée, `20261016101200` en prod, md5 prod = local testé)** : un élève peut créer une pièce jointe
   de message privé (`message_attachments_v2.storage_path`) ou une capture de signalement
   (`bug_reports.screenshot_path`) avec le chemin d'un fichier d'autrui ; à la suppression
-  de son compte, ce fichier serait retiré. Correctif proposé à David : `delete_user_account`
+  de son compte, ce fichier serait retiré. Accord de David (2026-10-13) : `delete_user_account`
   ne rend que les chemins conformes (`messages/<id de son message>/…`,
   `<son id>/<id de son signalement>/…`). Prod : 0 fichier dans ces buckets.

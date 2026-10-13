@@ -18,7 +18,7 @@ Each glyph has its own random generator (seed + glyph name), so the result
 does not depend on the order of the glyphs.
 
 Sources are read from static/fonts/katex-original/; outputs go to
-static/fonts/shantell-katex/. Writing to static/fonts/KaTeX_*.woff2 is refused:
+static/fonts/chiphre-math/. Writing to static/fonts/KaTeX_*.woff2 is refused:
 the original KaTeX fonts were overwritten that way on 2026-01-20.
 """
 
@@ -36,7 +36,7 @@ from fontTools.ttLib.tables._g_l_y_f import GlyphCoordinates
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SOURCE_DIR = REPO_ROOT / "static" / "fonts" / "katex-original"
-OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "shantell-katex"
+OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "chiphre-math"
 
 FONTS = [
     "KaTeX_Size1-Regular",

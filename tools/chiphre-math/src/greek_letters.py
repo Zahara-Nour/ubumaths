@@ -24,7 +24,7 @@ sets lowercase Greek upright in French); capitals to KaTeX_Main-Regular (upright
 the default) and KaTeX_Math-Italic (\\varGamma…).
 
 Run after replace_symbols.py and before build_typst_math_font.py. The script
-works in place on static/fonts/shantell-katex/ and redraws each glyph from the
+works in place on static/fonts/chiphre-math/ and redraws each glyph from the
 Shantell source, so running it twice gives the same font. Writing to
 static/fonts/KaTeX_*.woff2 is refused: the original KaTeX fonts were
 overwritten that way on 2026-01-20.
@@ -49,9 +49,9 @@ from redraw_symbols import add_glyph  # noqa: E402
 from replace_delimiters import STROKE, put_glyph, reference_glyph, stroked, to_path  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "shantell-katex"
+OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "chiphre-math"
 ORIGINAL_DIR = REPO_ROOT / "static" / "fonts" / "katex-original"
-SHANTELL = REPO_ROOT / "tools" / "shantell-math" / "fonts" / "input" / "shantell-sans-300.ttf"
+SHANTELL = REPO_ROOT / "tools" / "chiphre-math" / "fonts" / "input" / "shantell-sans-300.ttf"
 
 # Lignes centrales des traits, mesurées sur Shantell 300 (o, H, p, ß) : le bord
 # extérieur du trait tombe sur la ligne de Shantell

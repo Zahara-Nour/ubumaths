@@ -62,7 +62,7 @@ Les formules mathématiques utilisent toujours la police KaTeX standard.
 
    ```javascript
    import { MathfieldElement } from 'mathlive';
-   MathfieldElement.fontsDirectory = '/fonts/shantell-katex';
+   MathfieldElement.fontsDirectory = '/fonts/chiphre-math';
    // PUIS créer les mathfields
    ```
 
@@ -165,7 +165,7 @@ def func(path: Optional[Path] = None):  # Au lieu de path: Path | None
 ### Vérifier l'installation
 
 ```bash
-cd tools/shantell-math
+cd tools/chiphre-math
 source venv/bin/activate
 python -c "import fontTools; print(fontTools.__version__)"
 python -c "import brotli; print('brotli OK')"
@@ -177,7 +177,7 @@ python -c "import brotli; print('brotli OK')"
 # Lister les glyphes
 python -c "
 from fontTools.ttLib import TTFont
-font = TTFont('static/fonts/shantell-katex/KaTeX_Main-Regular.woff2')
+font = TTFont('static/fonts/chiphre-math/KaTeX_Main-Regular.woff2')
 cmap = font.getBestCmap()
 print('A:', cmap.get(ord('A')))
 print('∑:', cmap.get(0x2211))
