@@ -1,6 +1,7 @@
 ---
 couvre:
   - src/lib/utils/consent.ts
+  - src/lib/utils/work-data.ts
   - src/lib/server/validation/account.ts
   - 'src/lib/server/email/**'
   - 'src/lib/components/account/**'
@@ -587,7 +588,28 @@ WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
 - **Audit** : `account_deletion_audit` (hash SHA-256 de l'e-mail, IP, navigateur, statut) ;
   `user_id` passé à NULL une fois la suppression terminée.
 - **Navigateur** : après la suppression réussie, `AccountDeletionDialog` efface de l'appareil les
-  conversations avec le Père Ubu (`localStorage`, constat T17 ; [tuteur-ia.md](../tuteur-ia.md)).
+  données de travail de l'élève (`clearWorkData`, voir ci-dessous).
+
+**Données de travail dans le navigateur** (constat T17 étendu, décision de David du 2026-10-13 :
+effacées à la déconnexion). `localStorage` garde le travail de l'élève : conversation avec le
+Père Ubu, code Python et Blockly, atelier, console de calcul, calculatrice, grapheur, tableur,
+tableau blanc, parties de jeux (démineur, 2048, Mathémo, Evoland, Cabinet Noir) et profil de
+joueur. La liste des clés vit dans `src/lib/utils/work-data.ts` ; **une nouvelle clé de travail
+s'y ajoute**, sinon elle survit au changement de compte. Le navigateur retient à qui ces données
+appartiennent ; le layout racine (`src/routes/+layout.ts`) le vérifie à chaque page et à chaque
+changement de session :
+
+- même compte : rien ne change ;
+- visiteur sans compte qui se connecte : son compte reprend son travail (le bac à sable Python
+  propose alors de l'enregistrer dans le compte) ;
+- autre compte, visiteur après un compte (session expirée), propriétaire inconnu (données
+  d'avant le 2026-10-13) : effacées, puis la page est rechargée pour vider ce qui était déjà lu ;
+- déconnexion (`submitLogoutForm`, page d'attente d'approbation) et suppression du compte :
+  effacées.
+
+Les préférences (thème, police, position des barres d'outils) et les réglages du prof (classe,
+période, panier de questions) restent. Limite : sans déconnexion, le travail reste dans le
+navigateur jusqu'à la prochaine page ouverte par un autre compte ou un visiteur.
 
 **Ce qui part** (décisions de David, 2026-10-10) :
 
