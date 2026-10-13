@@ -94,7 +94,7 @@ Puis le lot 3 de la réciproque (carte `f⁻¹` portant son ensemble).
   (`#inheritIntervals`, non sauvegardé), `f'(5)` refusé. « Tabuler » n'existe pas encore (action
   désactivée), pas de commande de signe. Questions pour David : (a) `.domaine f` doit-il répondre
   l'ensemble de f ? (b) `.intégrer f de 3 à 5`, `.évaluer f en x=5` hors de l'ensemble : refus comme
-  `f(5)` ? (c) `f(2x) = 4` : restreindre 2x à l'ensemble, ou refuser ? (d) `g(x) = f(x) + 1` hérite-t-elle
+  `f(5)` ? (c) `f(2x) = 4` : refusé pour l'instant (revue) — restreindre 2x à l'ensemble plus tard ? (d) `g(x) = f(x) + 1` hérite-t-elle
   de l'ensemble de f ? (e) `dans` désormais accepté par `.variations` tapé (`.variations x^2 dans [0;+∞[`).
   Défaut vu en passant, hors lot : l'image depuis la carte f′ (`f′(1)`) répond « Impossible de
   calculer » même sans intervalle.

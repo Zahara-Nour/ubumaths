@@ -649,9 +649,17 @@ function applyKeyword(
 				parseFloat(numerator) / (denominator === undefined ? 1 : parseFloat(denominator));
 			return null;
 		}
-		case 'dans':
+		case 'dans': {
+			// `dans [0;+∞[ pour t` : le crochet de +∞ ne se referme pas, et `pour t`
+			// restait dans l'intervalle (revue du lot 2 de l'intervalle)
+			const swallowed = /^(.*\S)\s+pour\s+(\S+)$/s.exec(value);
+			if (swallowed !== null) {
+				result.interval = decimalPoint(swallowed[1]);
+				return applyKeyword(command, 'pour', swallowed[2], result);
+			}
 			result.interval = decimalPoint(value);
 			return null;
+		}
 		case 'et':
 			result.other = value;
 			return null;

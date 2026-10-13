@@ -159,6 +159,44 @@ describe('.résoudre sur l’ensemble de la fonction', () => {
 	});
 });
 
+describe('suites de revue', () => {
+	it('une équation périodique sur un ensemble non borné : refus honnête, pas une réponse finie', () => {
+		const d = desk('f(x) = sin(x) sur [0;+∞[');
+		d.submit('.résoudre f(x)=0');
+		expect(last(d).failed).toBe(true);
+		expect(last(d).text).toContain('infinité');
+		d.runFromPanel('solve', 'f');
+		expect(last(d).failed).toBe(true);
+		d.submit('.résoudre sin(x)=0 dans [0;+∞[');
+		expect(last(d).failed).toBe(true);
+		// Borné : les solutions comme avant
+		d.submit('.résoudre sin(x)=0 dans [0;4]');
+		expect(last(d).failed).toBe(false);
+	});
+
+	it('f(2x) : f appelée sur autre chose que l’inconnue est refusée, pas résolue sur ℝ', () => {
+		const d = desk('f(x) = x^2 sur [0;+∞[');
+		d.submit('.résoudre f(2x)=4');
+		expect(last(d).failed).toBe(true);
+		expect(last(d).text).toContain('f(2x)');
+	});
+
+	it('f(a) avec a une valeur : un nombre, l’inconnue n’est pas restreinte', () => {
+		const d = desk('a = 3', 'f(x) = x^2 sur [0;+∞[');
+		d.submit('.résoudre f(a) = -x');
+		expect(last(d).latex).toBe('x = -9');
+	});
+
+	it('`dans [0;+∞[ pour t` tapé dans cet ordre', () => {
+		const d = desk();
+		d.submit('.résoudre t^2=4 dans [0;+∞[ pour t');
+		expect(last(d).latex).toBe('t = 2');
+		d.submit('.variations t^2 dans [0;+∞[ pour t');
+		expect(last(d).failed).toBe(false);
+		expect(last(d).table?.domain).toEqual([{ expression: '0' }, { expression: '+\\infty' }]);
+	});
+});
+
 // =============================================================================
 // f′ hérite de l'ensemble de f
 // =============================================================================

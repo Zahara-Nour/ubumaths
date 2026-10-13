@@ -105,9 +105,6 @@ const CALL = /(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)(['′]*)\(([^()]*)\)/g;
 /** Un nom de fonction cité, dérivée comprise : `f`, `f'`, `f′`, `f_1`. */
 const CITED_NAME = /(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)(['′]*)/g;
 
-/** Ce qui suit un nom cité : un appel sur une lettre seule (`(x)`, `( t )`). */
-const CALL_ON_LETTER = /^\s*\(\s*[A-Za-z]\s*\)/;
-
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -258,21 +255,32 @@ export function outsideIntervalRefusal(
 	return null;
 }
 
+/** Ce que l'étude d'une commande tire des fonctions qu'elle cite (`citedIntervalDomain`). */
+export type CitedInterval =
+	| { readonly kind: 'restricted'; readonly domain: Domain; readonly name: string }
+	/** `f(2x)` : c'est 2x qui doit être dans l'ensemble de f — refusé */
+	| { readonly kind: 'composed'; readonly call: string; readonly name: string };
+
 /**
  * Lot 2 : l'ensemble sur lequel une commande étudie les fonctions qu'elle cite
  * (`.variations f`, `.résoudre f(x) = 4`, `f′` compris) — l'intersection de
  * leurs ensembles —, ou `null` si aucune n'en a.
  *
- * Seule une fonction citée SEULE ou appelée sur une lettre (`f`, `f(x)`,
- * `f'(t)`) restreint la variable : dans `f(2x) = 4`, c'est 2x qui doit être
- * dans l'ensemble de f, pas x — l'étude reste alors sur tout le domaine.
+ * Une fonction citée SEULE ou appelée sur l'inconnue (`f`, `f(x)`, `f'(t)`)
+ * restreint l'inconnue. Appelée sur un nombre ou une autre lettre (`f(a)`),
+ * elle vaut un nombre : rien à restreindre. Appelée sur une expression de
+ * l'inconnue (`f(2x)`), c'est 2x qui devrait être dans l'ensemble : refus
+ * (`composed`) plutôt qu'une réponse sur tout le domaine (revue du lot 2).
  *
  * @param typed - L'expression tapée, AVANT le remplacement des noms
+ * @param variable - L'inconnue étudiée
  */
 export function citedIntervalDomain(
 	get: (name: string) => AtelierObject | undefined,
-	typed: string
-): { readonly domain: Domain; readonly name: string } | null {
+	typed: string,
+	variable: string
+): CitedInterval | null {
+	const unknown = new RegExp(`(?<![A-Za-z_\\\\])${variable}(?![A-Za-z_0-9])`);
 	let domain: Domain | null = null;
 	let first: string | null = null;
 	for (const match of typed.matchAll(CITED_NAME)) {
@@ -280,14 +288,30 @@ export function citedIntervalDomain(
 		const after = typed.slice(match.index + whole.length);
 		// Un mot plus long (`sin`, `ln`) n'est pas un nom
 		if (/^[A-Za-z0-9_]/.test(after)) continue;
-		// Un appel sur autre chose qu'une lettre seule (`f(2x)`) ne restreint pas
-		if (/^\s*\(/.test(after) && !CALL_ON_LETTER.test(after)) continue;
 		const own = intervalDomainOf(get(name));
 		if (own === null) continue;
+		const shown = displayName(name + "'".repeat(primes.length));
+		const argument = callArgument(after);
+		if (argument !== null && argument !== variable) {
+			if (!unknown.test(argument)) continue;
+			return { kind: 'composed', call: `${shown}(${argument})`, name: shown };
+		}
 		domain = domain === null ? own : intersect(domain, own);
-		first ??= displayName(name + "'".repeat(primes.length));
+		first ??= shown;
 	}
-	return domain === null || first === null ? null : { domain, name: first };
+	return domain === null || first === null ? null : { kind: 'restricted', domain, name: first };
+}
+
+/** L'argument de l'appel qui ouvre `after` (`(2x)…` → `2x`, parenthèses imbriquées comprises), ou `null`. */
+function callArgument(after: string): string | null {
+	const open = /^\s*\(/.exec(after);
+	if (open === null) return null;
+	let depth = 0;
+	for (let i = open[0].length - 1; i < after.length; i++) {
+		if (after[i] === '(') depth++;
+		else if (after[i] === ')' && --depth === 0) return after.slice(open[0].length, i).trim();
+	}
+	return null;
 }
 
 /** « 5 n'est pas dans l'ensemble de définition de f, [0 ; 2]. » */

@@ -193,14 +193,13 @@ intervalle — même règle `intervalWord`, « sur » en fin de saisie compris (
 
 **Les calculs sur l'intervalle** (lot 2, I4) : `.résoudre` et `.variations` travaillent sur
 l'ensemble des fonctions qu'ils citent SEULES ou appelées sur une lettre (`f`, `f(x)`, `f'(t)` —
-`citedIntervalDomain`, intersection s'il y en a plusieurs) ; dans `f(2x)`, c'est 2x qui devrait être
-dans l'ensemble : rien n'est restreint. Un `dans` tapé se croise avec cet ensemble (vide → refus).
+`citedIntervalDomain`, intersection s'il y en a plusieurs) ; appelée sur un nombre ou une autre lettre (`f(a)`), elle vaut un nombre ; sur une expression de l'inconnue (`f(2x)`), refus en français (c'est 2x qui devrait être dans l'ensemble). Un `dans` tapé se croise avec cet ensemble (vide → refus).
 L'atelier passe l'ensemble au moteur par le mot `dans` (`formatInterval`, relu par
 `studyDomain` / `readSolvingDomain`) : la ligne de texte, le tableau et les étapes disent la même
 chose. `.variations f` (x² sur [0 ; +∞[) : tableau de 0 (compris) à +∞, croissante ; `.résoudre
 f(x)=4` : `x = 2` — les étapes résolvent sur ℝ puis une dernière « On ne garde que les solutions
 qui sont dans [0 ; +∞[ » (`solveSteps(…, within)`, équations à solutions isolées seulement ; une
-inéquation garde la réponse du moteur, déjà restreinte). Mêmes règles pour les actions « Résoudre
+inéquation garde la réponse du moteur, déjà restreinte). Une famille périodique sur un ensemble non borné (`sin(x) = 0` sur [0 ; +∞[) est refusée : « Une infinité de solutions sur cet ensemble ». Mêmes règles pour les actions « Résoudre
 f(x) = 0 » et « Variations » de la carte. **`f′` hérite** : `#inheritIntervals` recopie l'ensemble
 de f sur ses dérivées à chaque recalcul (il suit f, disparaît avec lui, jamais sauvegardé) ; la
 carte affiche `sur [0 ; +∞[`, `f'(5)` et l'image de la carte f′ hors de l'ensemble sont refusés.

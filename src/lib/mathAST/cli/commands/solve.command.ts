@@ -80,6 +80,10 @@ export const EQUATION_UNSOLVED = 'EQUATION_UNSOLVED' satisfies ErrorCode;
 /** Ce qu'on dit alors, au lieu de « Type d'equation non supporte: unknown ». */
 export const EQUATION_UNSOLVED_MESSAGE = 'Je ne sais pas encore résoudre cette équation.';
 
+/** Une famille périodique sur un ensemble non borné : les solutions ne s'énumèrent pas. */
+const INFINITELY_MANY_MESSAGE =
+	"Une infinité de solutions sur cet ensemble : elles ne s'énumèrent que sur un intervalle borné (dans [0 ; 10]).";
+
 /** Une solution qui dépendrait de paramètres (`u_0·q^n = 10` en n). */
 function parameterMessage(letters: readonly string[]): string {
 	return `La solution dépend de ${letters.join(', ')} : je ne sais pas encore résoudre avec un paramètre.`;
@@ -1129,6 +1133,15 @@ export class SolveCommand extends BaseCommand {
 		}
 	}
 
+	/** Le solveur trouve-t-il une famille périodique de solutions ? */
+	private hasPeriodicSolutions(equation: RelationNode, variable: string): boolean {
+		try {
+			return solve(equation, { variable }).periodicSolutions !== undefined;
+		} catch {
+			return false;
+		}
+	}
+
 	/**
 	 * L'ensemble écrit après `dans`. Un intervalle BORNÉ à la française
 	 * (`[0 ; 2\pi]`) garde son écriture ; sinon, tout ce que lit le parseur
@@ -1141,7 +1154,14 @@ export class SolveCommand extends BaseCommand {
 		variable: string,
 		parserOptions: Parameters<typeof parse>[1]
 	):
-		| { ok: true; domain: Domain; intervalLatex: string; intervalText: string }
+		| {
+				ok: true;
+				domain: Domain;
+				intervalLatex: string;
+				intervalText: string;
+				/** Toutes les bornes finies : une famille périodique s'y énumère */
+				bounded: boolean;
+		  }
 		| { ok: false; message: string } {
 		const written = /^([[\]])\s*(.+?)\s*;\s*(.+?)\s*([[\]])$/s.exec(text.trim());
 		const lower = written === null ? undefined : parse(written[2], parserOptions).ast;
@@ -1163,7 +1183,12 @@ export class SolveCommand extends BaseCommand {
 						ok: true,
 						domain: student.domain,
 						intervalLatex: set.replace(/^S = /, ''),
-						intervalText: formatInterval(student.domain)
+						intervalText: formatInterval(student.domain),
+						bounded:
+							student.domain.kind === 'interval_set' &&
+							student.domain.intervals.every(
+								(i) => i.lower.value.type !== 'infinity' && i.upper.value.type !== 'infinity'
+							)
 					};
 				}
 			}
@@ -1195,7 +1220,8 @@ export class SolveCommand extends BaseCommand {
 				)
 			]),
 			intervalLatex: `\\left${written[1]}${toLatex(lower)} ; ${toLatex(upper)}\\right${written[4]}`,
-			intervalText: `${written[1]}${written[2]} ; ${written[3]}${written[4]}`
+			intervalText: `${written[1]}${written[2]} ; ${written[3]}${written[4]}`,
+			bounded: true
 		};
 	}
 
@@ -1217,7 +1243,7 @@ export class SolveCommand extends BaseCommand {
 		});
 		const read = this.readSolvingDomain(text, variable, parserOptions);
 		if (!read.ok) return fail(read.message);
-		const { domain, intervalLatex, intervalText } = read;
+		const { domain, intervalLatex, intervalText, bounded } = read;
 		// Une inéquation : son ensemble solution, restreint à l'intervalle
 		if (equation.relation !== '=') {
 			return this.solveInequalityInInterval(equation, variable, domain);
@@ -1264,6 +1290,16 @@ export class SolveCommand extends BaseCommand {
 			}
 		} catch {
 			// Le solveur ne sait pas : les zéros sur l'intervalle prennent le relais
+		}
+		// Une famille périodique sur un ensemble NON borné (`sin(x) = 0` sur
+		// [0 ; +∞[) : `findZeros` n'en rendrait que les premiers termes — une
+		// réponse finie, donc fausse (revue du lot 2 de l'intervalle)
+		if (!bounded && this.hasPeriodicSolutions(equation, variable)) {
+			return {
+				success: false,
+				output: '',
+				error: { code: EQUATION_UNSOLVED, message: INFINITELY_MANY_MESSAGE }
+			};
 		}
 		const { zeros, resolved } = findZerosWithStatus(
 			subtract(equation.left, equation.right),

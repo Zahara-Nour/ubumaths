@@ -1144,9 +1144,20 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// l'ensemble des fonctions citées (`f(x) = x^2 sur [0;+∞[`), croisé avec
 	// un `dans` tapé ; le moteur le reçoit par ce mot
 	const cited =
-		(name === 'solve' || name === 'variations') && typedArgs !== null
-			? citedIntervalDomain((n) => session.atelier.get(n), typedArgs.expression)
+		(name === 'solve' || name === 'variations') && typedArgs !== null && finalArgs !== null
+			? citedIntervalDomain(
+					(n) => session.atelier.get(n),
+					typedArgs.expression,
+					finalArgs.variable ?? INTERNAL_LETTER
+				)
 			: null;
+	if (cited?.kind === 'composed') {
+		return {
+			kind: 'refus',
+			message: `${cited.name} est définie sur un intervalle : dans ${cited.call}, l'atelier ne sait pas encore restreindre l'inconnue. Écris l'expression de ${cited.call} en toutes lettres.`,
+			...notesOf(letterNote)
+		};
+	}
 	let studied: Domain | null = null;
 	if (cited !== null && finalArgs !== null) {
 		const typedWithin =
