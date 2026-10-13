@@ -15,6 +15,7 @@ import type { Database, Json } from '$lib/types/database';
 import { createSystemNotification } from './notifications';
 import { dev } from '$app/environment';
 import { createServiceRoleClient } from './serviceRoleClient';
+import { escapeHtml } from '$lib/utils/html-escape';
 
 type SupabaseClientType = SupabaseClient<Database>;
 
@@ -143,8 +144,21 @@ const SENSITIVE_PATTERNS = [
 	/bearer/i
 ];
 
+/** Adresse courriel, masquée partout où le journal garde du texte. */
+const EMAIL_PATTERN = /[\w.-]+@[\w.-]+\.\w+/g;
+const EMAIL_MASK = '[email]@[domain]';
+
+/** Masque les adresses courriel d'une valeur texte ; laisse les autres valeurs telles quelles. */
+function redactEmails(value: unknown): unknown {
+	return typeof value === 'string' ? value.replace(EMAIL_PATTERN, EMAIL_MASK) : value;
+}
+
 /**
  * Sanitize an object by removing sensitive fields
+ *
+ * Les clés sensibles (password, token…) sont remplacées ; dans les autres, les
+ * adresses courriel sont masquées : une valeur parle d'un élève quel que soit le
+ * nom de sa clé.
  */
 function sanitizeObject(
 	obj: Record<string, unknown> | null | undefined
@@ -165,10 +179,10 @@ function sanitizeObject(
 		} else if (Array.isArray(value)) {
 			// Sanitize arrays of objects
 			sanitized[key] = value.map((item) =>
-				typeof item === 'object' ? sanitizeObject(item) : item
+				item && typeof item === 'object' ? sanitizeObject(item) : redactEmails(item)
 			);
 		} else {
-			sanitized[key] = value;
+			sanitized[key] = redactEmails(value);
 		}
 	}
 
@@ -198,15 +212,12 @@ function sanitizeErrorData(data: LogErrorData): LogErrorData {
 
 	// Redact email addresses from stack traces
 	if (sanitized.stack_trace) {
-		sanitized.stack_trace = sanitized.stack_trace.replace(
-			/[\w.-]+@[\w.-]+\.\w+/g,
-			'[email]@[domain]'
-		);
+		sanitized.stack_trace = sanitized.stack_trace.replace(EMAIL_PATTERN, EMAIL_MASK);
 	}
 
 	// Redact email addresses from messages
 	if (sanitized.message) {
-		sanitized.message = sanitized.message.replace(/[\w.-]+@[\w.-]+\.\w+/g, '[email]@[domain]');
+		sanitized.message = sanitized.message.replace(EMAIL_PATTERN, EMAIL_MASK);
 	}
 
 	return sanitized;
@@ -328,13 +339,14 @@ async function notifyCriticalError(
 	errorData: LogErrorData
 ): Promise<void> {
 	try {
-		// Create system notification for admins (écrite par le client service)
+		// Create system notification for admins (écrite par le client service).
+		// Message et URL viennent du navigateur : échappés, ils s'affichent comme du texte.
 		await createSystemNotification({
 			title: '🚨 Erreur Critique Détectée',
-			message: `<p><strong>Type:</strong> ${errorData.error_type}</p>
-				<p><strong>Message:</strong> ${errorData.message}</p>
-				<p><strong>URL:</strong> ${errorData.url}</p>
-				${errorData.user_role ? `<p><strong>Rôle utilisateur:</strong> ${errorData.user_role}</p>` : ''}`,
+			message: `<p><strong>Type:</strong> ${escapeHtml(errorData.error_type)}</p>
+				<p><strong>Message:</strong> ${escapeHtml(errorData.message)}</p>
+				<p><strong>URL:</strong> ${escapeHtml(errorData.url)}</p>
+				${errorData.user_role ? `<p><strong>Rôle utilisateur:</strong> ${escapeHtml(errorData.user_role)}</p>` : ''}`,
 			type: 'alert',
 			priority: 'urgent',
 			action_label: 'Voir les détails',

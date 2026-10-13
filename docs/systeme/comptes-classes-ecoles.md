@@ -332,8 +332,6 @@ Constatés le 2026-10-13, **non corrigés**.
 - **Import : 500 transformé en 400** : dans l'action `import`, le `throw error(500, …)` est pris
   par le `catch` final, qui rend « Données invalides » (400). La variable `affectedClassIds` est
   calculée puis jamais utilisée.
-- **E-mails d'élèves dans les journaux serveur** : `send-welcome-email` (« Email sent successfully
-  to … ») et l'import (« Profile exists for … ») écrivent l'adresse en clair dans la console.
 - **`search-users` masque les pannes** : une erreur de `search_users_unaccent` rend 200 avec
   `users: []`, comme « aucun résultat ».
 - **Code mort** : `getClassStudents` et `getClassStudentCount` (`students.ts`) ;

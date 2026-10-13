@@ -177,11 +177,7 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 			// Sign out and redirect - this prevents "Unexpected token '<'" errors
 			// during client-side navigation when pages try to redirect with HTML response
 			if (!event.locals.profile) {
-				console.error(
-					'[userProfileHandle] Profile not found for authenticated user:',
-					user.id,
-					user.email
-				);
+				console.error('[userProfileHandle] Profile not found for authenticated user:', user.id);
 
 				// Log to error_logs table for admin visibility
 				try {
@@ -193,7 +189,6 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 						user_agent: event.request.headers.get('user-agent') ?? undefined,
 						user_id: user.id,
 						context: {
-							user_email: user.email,
 							request_id: event.locals.requestId || 'unknown'
 						}
 					});
@@ -226,7 +221,6 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 					user_id: user.id,
 					stack_trace: err instanceof Error ? err.stack : undefined,
 					context: {
-						user_email: user.email,
 						request_id: event.locals.requestId || 'unknown'
 					}
 				});

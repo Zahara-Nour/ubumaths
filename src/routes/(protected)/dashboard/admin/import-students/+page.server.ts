@@ -161,7 +161,7 @@ export const actions: Actions = {
 
 						if (existingProfile) {
 							console.log(
-								`Profile exists for ${student.email}, updating profile and class memberships...`
+								`Profile exists for ${existingProfile.id}, updating profile and class memberships...`
 							);
 
 							// Update the student's profile with school_id and grade from import
@@ -183,7 +183,10 @@ export const actions: Actions = {
 								.eq('id', existingProfile.id);
 
 							if (profileUpdateError) {
-								console.error(`Error updating profile for ${student.email}:`, profileUpdateError);
+								console.error(
+									`Error updating profile for ${existingProfile.id}:`,
+									profileUpdateError
+								);
 							}
 
 							// Add student to class_members table directly (bypassing pending_students)
@@ -199,7 +202,10 @@ export const actions: Actions = {
 
 								// Ignore if student is already in the class (error code 23505)
 								if (memberError && memberError.code !== '23505') {
-									console.error(`Error adding ${student.email} to class ${classId}:`, memberError);
+									console.error(
+										`Error adding ${existingProfile.id} to class ${classId}:`,
+										memberError
+									);
 								}
 							}
 
@@ -215,7 +221,10 @@ export const actions: Actions = {
 								.eq('is_activated', false);
 
 							if (activateError) {
-								console.error(`Error activating pending student ${student.email}:`, activateError);
+								console.error(
+									`Error activating pending student ${existingProfile.id}:`,
+									activateError
+								);
 							}
 
 							updatedCount++;
@@ -227,10 +236,10 @@ export const actions: Actions = {
 
 							if (pendingError && pendingError.code === '23505') {
 								// Already exists in pending_students, skip
-								console.log(`Student ${student.email} exists in pending_students, skipping...`);
+								console.log('Student already in pending_students, skipping...');
 								skippedCount++;
 							} else if (pendingError) {
-								console.error(`Error adding ${student.email} to pending:`, pendingError);
+								console.error('Error adding student to pending:', pendingError);
 								skippedCount++;
 							}
 						}

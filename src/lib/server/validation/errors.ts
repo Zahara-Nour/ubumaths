@@ -41,7 +41,13 @@ export const logErrorSchema = z.object({
 	viewport_height: z.number().int().positive().max(10000).optional(),
 
 	// Additional context
-	context: z.record(z.string(), z.unknown()).optional(),
+	// Borné : la route est ouverte aux visiteurs sans compte.
+	context: z
+		.record(z.string(), z.unknown())
+		.refine((context) => JSON.stringify(context).length <= 10_000, {
+			message: 'Contexte trop volumineux (10 000 caractères au plus)'
+		})
+		.optional(),
 	tags: z.array(z.string().max(100)).max(20).optional()
 });
 

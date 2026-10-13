@@ -77,7 +77,8 @@ Trois boucles distinctes :
   - `logError` nettoie (`sanitizeErrorData`), tronque (message 1 000, pile 5 000, URL
     500 caractères), puis insère avec le **client service** (la RLS n'autorise
     l'insertion qu'à l'admin). Une erreur `critical` déclenche `notifyCriticalError` :
-    notification urgente à tous les admins (`createSystemNotification`) ;
+    notification urgente à tous les admins (`createSystemNotification`), message et URL
+    échappés (`escapeHtml`) : ils s'affichent comme du texte ;
   - `getUserContext` ajoute `user_id` et `user_role` ;
   - lecture : `getErrorStats` (RPC `get_error_stats`), `getErrorLogs`,
     `getErrorOccurrences`, `getErrorLog` ;
@@ -94,14 +95,14 @@ Trois boucles distinctes :
 
 ### Routes `api/errors`
 
-| Route                              | Qui                             | Rôle                                                                                                   |
-| ---------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `POST /api/errors/log`             | tout le monde, même sans compte | écrit une erreur ; 20 par minute et par IP                                                             |
-| `GET /api/errors`                  | admin                           | liste filtrée (`listErrorsQuerySchema`, 100 au plus)                                                   |
-| `GET`/`PUT /api/errors/[id]`       | admin                           | une erreur ; la marquer résolue                                                                        |
-| `POST /api/errors/bulk-resolve`    | admin                           | résout par empreinte tout ce qui correspond aux filtres                                                |
-| `POST /api/errors/delete-resolved` | admin                           | supprime toutes les erreurs résolues (client service)                                                  |
-| `POST /api/errors/cleanup`         | admin                           | supprime les erreurs de plus de N jours (90 par défaut, 365 au plus), trace dans `background_job_runs` |
+| Route                              | Qui                             | Rôle                                                                                                                 |
+| ---------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/errors/log`             | tout le monde, même sans compte | écrit une erreur ; 20 par minute et par IP ; sans compte, `critical` devient `error` ; `context` ≤ 10 000 caractères |
+| `GET /api/errors`                  | admin                           | liste filtrée (`listErrorsQuerySchema`, 100 au plus)                                                                 |
+| `GET`/`PUT /api/errors/[id]`       | admin                           | une erreur ; la marquer résolue                                                                                      |
+| `POST /api/errors/bulk-resolve`    | admin                           | résout par empreinte tout ce qui correspond aux filtres                                                              |
+| `POST /api/errors/delete-resolved` | admin                           | supprime toutes les erreurs résolues (client service)                                                                |
+| `POST /api/errors/cleanup`         | admin                           | supprime les erreurs de plus de N jours (90 par défaut, 365 au plus), trace dans `background_job_runs`               |
 
 Pages admin : `/dashboard/admin/errors` (statistiques 24 h et occurrences, filtres
 `type`, `severity`, `resolved`, `search` dans l'adresse), `/dashboard/admin/errors/[id]`
@@ -223,8 +224,9 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 
 - `logError` masque les clés sensibles (`password`, `token`, `secret`, `api_key`, `auth`,
   `credential`, `session`, `cookie`, `bearer`) dans en-têtes, corps et contexte, et les
-  adresses mail dans le message et la pile. Une adresse mail rangée sous une autre clé du
-  contexte **n'est pas** masquée (voir Écarts).
+  adresses mail dans le message, la pile **et toutes les valeurs texte** des en-têtes, du
+  corps et du contexte, quel que soit le nom de la clé (depuis le 2026-10-13). Aucun appelant
+  ne range plus `user_email` dans le contexte : `user_id` suffit.
 - Une erreur porte `user_id` et `user_role` si l'utilisateur est connecté.
 - Un signalement porte l'URL, le user-agent, les sélecteurs des dernières actions, les
   erreurs récentes. La capture peut montrer n'importe quoi de l'écran (nom, copie d'un
@@ -275,6 +277,10 @@ rapport en UUID. Exceptions : voir Écarts.
 - `src/lib/utils/__tests__/read-api-error-message.test.ts` : `readApiErrorMessage`.
 - `src/lib/server/__tests__/bug-report-screenshots.test.ts` : URL signées.
 - `src/routes/api/bug-reports/__tests__/rate-limit.test.ts` : le 11ᵉ signalement reçoit 429.
+- `src/lib/server/__tests__/errorMonitoring-journal.test.ts` : adresses masquées dans le
+  contexte, message de l'alerte critique échappé.
+- `src/routes/api/errors/log/__tests__/log.test.ts` : `critical` ramené à `error` sans compte,
+  taille du contexte bornée.
 - `tests/integration/database/error-monitoring-triggers.test.ts` : empreinte SHA-256 et
   regroupement en base.
 - `tests/integration/resources-view-search.test.ts` : vue `resources` et `search_resources`
@@ -283,7 +289,7 @@ rapport en UUID. Exceptions : voir Écarts.
   du compte.
 - `src/lib/__tests__/cdn-versions-epinglees.test.ts` : l'URL Swagger d'`unpkg` porte une version.
 
-Rien ne teste `freezeDetection.ts`, les routes `api/errors`, les pages admin, ni
+Rien ne teste `freezeDetection.ts`, les routes de lecture `api/errors`, les pages admin, ni
 `docs-scanner.ts`.
 
 ## Décisions
@@ -303,16 +309,8 @@ Constatés le 2026-10-13, non corrigés.
   `error_logs` avec le client de l'utilisateur. La RLS réserve cette table à l'admin : pour
   un élève ou le prof, la requête rend zéro ligne sans erreur. `recentErrors` et
   `slowRequests` sont donc vides, sauf pour l'admin.
-- **`critical` ouvert à tous.** `POST /api/errors/log` n'exige aucun compte et accepte
-  `severity: 'critical'`, qui envoie une notification urgente aux admins. Seule borne :
-  20 par minute et par IP, en mémoire. Le champ `context` est un objet libre, sans taille
-  maximale.
 - **Notification critique** : `system_event_type: 'assessment_graded'` faute de valeur
-  adaptée (commentaire dans le code) ; le message et l'URL de l'erreur sont insérés tels
-  quels dans le HTML de la notification.
-- **Adresse mail dans le contexte** : `src/hooks.server.ts` et
-  `src/routes/(protected)/+layout.server.ts` rangent `user_email` dans `context` ; la clé
-  ne correspond à aucun motif masqué, l'adresse est stockée en clair dans `error_logs`.
+  adaptée (commentaire dans le code).
 - **Écritures sans `.select()`** (la RLS échoue en silence) : `DELETE` d'un rapport, lots
   `PATCH`/`DELETE`, et la mise à jour de `screenshot_path` après l'envoi d'une capture. Sur
   un rapport qui n'est plus `pending`, l'auteur envoie le fichier, la mise à jour touche

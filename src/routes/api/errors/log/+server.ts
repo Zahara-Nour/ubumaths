@@ -27,6 +27,12 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 
 		// Get user context if session exists
 		const { user } = await locals.safeGetSession();
+
+		// Une erreur « critical » alerte les admins en urgence : un visiteur sans compte
+		// ne peut pas la déclencher. Son erreur est gardée, en gravité « error ».
+		if (!user && errorData.severity === 'critical') {
+			errorData.severity = 'error';
+		}
 		let userContext = {};
 		if (user?.id) {
 			userContext = await getUserContext(locals.supabase, user.id);
