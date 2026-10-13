@@ -225,10 +225,11 @@ describe('le réglage ligne par ligne', () => {
 		let racine = afficher(...DEUX_LIGNES);
 		let [premiere, seconde] = lignes(racine);
 		await deplierLigne(premiere);
-		cliquer(bouton(premiere, 'Résumé'));
+		cliquer(bouton(premiere, 'Détaillé'));
 		await tick();
+		// Le dernier choix est « Résumé » : différent du défaut, sinon le test ne prouve rien
 		await deplierLigne(seconde);
-		cliquer(bouton(seconde, 'Détaillé'));
+		cliquer(bouton(seconde, 'Résumé'));
 		await tick();
 		vider();
 
@@ -236,9 +237,27 @@ describe('le réglage ligne par ligne', () => {
 		[premiere, seconde] = lignes(racine);
 		await deplierLigne(premiere);
 		await deplierLigne(seconde);
-		// Le choix d'une ligne ne survit pas ; le dernier choix, si
+		// Le choix d'une ligne ne survit pas (la 1re était « Détaillé ») ; le dernier choix, si
+		expect(enResume(premiere)).toBe(true);
+		expect(enResume(seconde)).toBe(true);
+		expect(racine.querySelectorAll('.etapes .step-explanation')).toHaveLength(0);
+	});
+
+	it('une ligne ouverte avant tout choix, repliée puis redépliée, reprend le dernier choix', async () => {
+		const racine = afficher(...DEUX_LIGNES);
+		const [premiere, seconde] = lignes(racine);
+		await deplierLigne(premiere);
 		expect(enResume(premiere)).toBe(false);
-		expect(enResume(seconde)).toBe(false);
+		await deplierLigne(seconde);
+		cliquer(bouton(seconde, 'Résumé'));
+		await tick();
+		// Pas changée sous les yeux
+		expect(enResume(premiere)).toBe(false);
+
+		await replierLigne(premiere);
+		await deplierLigne(premiere);
+		expect(enResume(premiere)).toBe(true);
+		expect(premiere.querySelectorAll('.step-explanation')).toHaveLength(0);
 	});
 
 	it('chaque groupe a un nom accessible distinct, relié à sa ligne', async () => {
@@ -254,6 +273,11 @@ describe('le réglage ligne par ligne', () => {
 		groupes.forEach((groupe, i) => {
 			const decrit = groupe?.getAttribute('aria-describedby') ?? '';
 			expect(document.getElementById(decrit)?.textContent?.trim()).toBe(DEUX_LIGNES[i]);
+		});
+		// « Comment ? » désigne le bloc déplié de SA ligne
+		[premiere, seconde].forEach((ligne) => {
+			const controle = bouton(ligne, 'Masquer le détail').getAttribute('aria-controls') ?? '';
+			expect(document.getElementById(controle)).toBe(ligne.querySelector('.etapes'));
 		});
 	});
 });

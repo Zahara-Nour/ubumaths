@@ -494,7 +494,7 @@
 		{#each desk.entries as entry, index (entry.id)}
 			{@const markup = markupOf(entry)}
 			<li class:refus={entry.failed}>
-				<p class="saisie" id="saisie-{entry.id}">{entry.label}</p>
+				<p class="saisie" id="{uid}-saisie-{entry.id}">{entry.label}</p>
 				<div class="reponse">
 					{#if markup !== null}
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -527,7 +527,7 @@
 							size="sm"
 							class="comment"
 							aria-expanded={unfolded.includes(entry.id)}
-							aria-controls="etapes-{entry.id}"
+							aria-controls="{uid}-etapes-{entry.id}"
 							onclick={() => toggleSteps(entry.id)}
 						>
 							{unfolded.includes(entry.id) ? 'Masquer le détail' : 'Comment ?'}
@@ -535,14 +535,14 @@
 					{/if}
 				</div>
 				{#if entry.steps !== undefined && unfolded.includes(entry.id)}
-					<div class="etapes" id="etapes-{entry.id}">
+					<div class="etapes" id="{uid}-etapes-{entry.id}">
 						<!-- Pas d'interrupteur quand le résumé ne dirait rien de moins -->
 						{#if entry.summary !== undefined}
 							<div
 								class="redaction"
 								role="group"
 								aria-label="Rédaction des étapes de la ligne {index + 1}"
-								aria-describedby="saisie-{entry.id}"
+								aria-describedby="{uid}-saisie-{entry.id}"
 							>
 								<button
 									type="button"
