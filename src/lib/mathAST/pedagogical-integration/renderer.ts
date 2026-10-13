@@ -33,7 +33,13 @@ import type {
 	SchoolLevel,
 	StepRenderer
 } from '../common/step-renderer-base';
-import { EXPLANATIONS, TITLES, coefficientPrefix, revealedProduct } from './descriptions-fr';
+import {
+	EXPLANATIONS,
+	TITLES,
+	coefficientPrefix,
+	onlyConstantOut,
+	revealedProduct
+} from './descriptions-fr';
 import type {
 	IntegrationBindings,
 	PedagogicalIntegrationRule,
@@ -180,9 +186,11 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 			// Jamais `\\int -…` : un produit qui commence par un signe va entre parenthèses
 			const product = revealedProduct(bindings);
 			const underIntegral = product.startsWith('-') ? `\\left( ${product} \\right)` : product;
+			// u′ = 1 : « On sort la constante k », pas de ligne `k × …` (décision de
+			// David du 2026-10-13) — ∫ 3/x dx = 3 ∫ 1/x dx
 			const lines = [
 				`  & \\textcolor{blue}{\\int ${integrandLatex(step.before)}${dx}}`,
-				`  & = \\int ${underIntegral}${dx}`,
+				...(onlyConstantOut(bindings) ? [] : [`  & = \\int ${underIntegral}${dx}`]),
 				`  & = ${coefficientPrefix(bindings)}\\int ${integrandLatex(revealed)}${dx}`
 			];
 			return `\\begin{aligned}\n${lines.join(' \\\\\n')}\n\\end{aligned}`;

@@ -128,6 +128,43 @@ export function revealedProduct(bindings: IntegrationBindings): string {
 	return `${k} \\times ${factorLatex(bindings, 'revealed')}`;
 }
 
+/**
+ * u′ = 1 (`\\frac3x`, `3(x+1)^2`) : la réécriture ne fait apparaître aucun u′,
+ * elle sort seulement la constante k (décision de David du 2026-10-13)
+ */
+export function onlyConstantOut(bindings: IntegrationBindings): boolean {
+	const du = bindings.du;
+	return du?.type === 'number' && du.value === '1';
+}
+
+/** « On sort la constante $3$ », « On sort le signe $-$ » pour k = −1 */
+function constantOutTitle(bindings: IntegrationBindings): string {
+	return bind(bindings, 'k') === '-1'
+		? 'On sort le signe $-$'
+		: `On sort la constante ${bindMath(bindings, 'k')}`;
+}
+
+/** Un intégrande écrit juste après `\\int` : entre parenthèses s'il commence par un signe ou est une somme */
+function underIntegral(bindings: IntegrationBindings, key: string): string {
+	const node = bindings[key];
+	if (!node) return '?';
+	const latex = toLatex(node);
+	const wrap = node.type === 'addition' || node.type === 'subtraction' || node.type === 'opposite';
+	return wrap || latex.startsWith('-') ? `\\left( ${latex} \\right)` : latex;
+}
+
+/** `\\int \\dfrac{3}{x}\\,dx = 3 \\int \\dfrac{1}{x}\\,dx` */
+function constantOutEquality(bindings: IntegrationBindings): string {
+	const dx = `\\,d${bindings.variable ? bind(bindings, 'variable') : 'x'}`;
+	return `\\int ${underIntegral(bindings, 'integrand')}${dx} = ${coefficientPrefix(bindings)}\\int ${underIntegral(bindings, 'revealed')}${dx}`;
+}
+
+/** L'explication de « On sort la constante k » (u′ = 1) */
+function constantOutExplanation(bindings: IntegrationBindings): string {
+	const subject = bind(bindings, 'k') === '-1' ? 'Le signe $-$' : 'Une constante multiplicative';
+	return `${subject} sort de l'intégrale : ${math(constantOutEquality(bindings))}.`;
+}
+
 /** `k` devant une intégrale ou une primitive : `\\dfrac{1}{2} `, `-` pour −1 */
 export function coefficientPrefix(bindings: IntegrationBindings): string {
 	const k = bind(bindings, 'k');
@@ -154,7 +191,7 @@ function positivitySentence(bindings: IntegrationBindings, lnLatex: string): str
 	return ` Comme ${math(`${bind(bindings, 'positive')} > 0`)} ${where}, on écrit ${math(lnLatex)} sans valeur absolue.`;
 }
 
-/** La phrase de la constante sortie de l'intégrale par « On fait apparaître u′ », ou '' */
+/** La phrase de la constante sortie de l'intégrale par « On fait apparaître u′ » (ou « On sort la constante k »), ou '' */
 function constantSentence(bindings: IntegrationBindings): string {
 	if (!bindings.k || !bindings.scaled) return '';
 	return ` Avec la constante ${bindMath(bindings, 'k')} sortie de l'intégrale : ${bindMath(bindings, 'scaled')}.`;
@@ -208,7 +245,8 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'apply-linearity-sum': () => 'Linéarité de l’intégrale',
 	'extract-constant': (b) => `On sort la constante ${bindMath(b, 'c')}`,
 	// ---- Composite forms ----
-	'reveal-derivative': () => "On fait apparaître $u'$",
+	'reveal-derivative': (b) =>
+		onlyConstantOut(b) ? constantOutTitle(b) : "On fait apparaître $u'$",
 	'apply-composite-power': () => "Forme $u'u^n$",
 	'apply-composite-ln': () => "Forme $\\dfrac{u'}{u}$",
 	'apply-composite-exp': () => "Forme $u'e^u$",
@@ -250,7 +288,10 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'apply-known-primitive': () => 'Primitive',
 	'apply-linearity-sum': () => '$\\int(f+g)\\,dx = \\int f\\,dx + \\int g\\,dx$',
 	'extract-constant': () => '$\\int cf\\,dx = c\\int f\\,dx$',
-	'reveal-derivative': (b) => math(`${bind(b, 'integrand')} = ${revealedProduct(b)}`),
+	'reveal-derivative': (b) =>
+		onlyConstantOut(b)
+			? constantOutTitle(b)
+			: math(`${bind(b, 'integrand')} = ${revealedProduct(b)}`),
 	'apply-composite-power': () => "$\\int u'u^n\\,dx = \\dfrac{u^{n+1}}{n+1}$",
 	'apply-composite-ln': () => "$\\int \\dfrac{u'}{u}\\,dx = \\ln|u|$",
 	'apply-composite-exp': () => "$\\int u'e^u\\,dx = e^u$",
@@ -308,7 +349,9 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'extract-constant': (b) =>
 		`Une constante multiplicative sort de l'intégrale : ${math(`\\int ${constantUnderIntegral(b)} f(x)\\,dx = ${bind(b, 'c') === '-1' ? '-' : `${bind(b, 'c')} `}\\int f(x)\\,dx`)}.`,
 	'reveal-derivative': (b) =>
-		`Avec ${math(`u = ${bind(b, 'u')}`)}, on a ${math(`u' = ${bind(b, 'du')}`)}. On écrit ${math(`${bind(b, 'integrand')} = ${revealedProduct(b)}`)} pour faire apparaître $u'$, puis on sort la constante ${bindMath(b, 'k')} de l'intégrale.`,
+		onlyConstantOut(b)
+			? constantOutExplanation(b)
+			: `Avec ${math(`u = ${bind(b, 'u')}`)}, on a ${math(`u' = ${bind(b, 'du')}`)}. On écrit ${math(`${bind(b, 'integrand')} = ${revealedProduct(b)}`)} pour faire apparaître $u'$, puis on sort la constante ${bindMath(b, 'k')} de l'intégrale.`,
 	'apply-composite-power': (b) =>
 		`On reconnaît la forme $u'u^n$ avec ${math(`u = ${bind(b, 'u')}`)} et ${math(`n = ${bind(b, 'n')}`)}, dont une primitive est $\\dfrac{u^{n+1}}{n+1}$.${constantSentence(b)}`,
 	'apply-composite-ln': (b) =>

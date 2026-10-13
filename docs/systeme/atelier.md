@@ -655,7 +655,8 @@ deux gardes passent (`integrate-steps-check.ts`) :
   numériquement sur la grille — ou k·G(u) quand elle déclare un coefficient `k`. Depuis la PR 2
   (décisions de David du 2026-10-13), le pipeline n'écrit plus de coefficient sans le dire :
   l'étape `reveal-derivative` (« On fait apparaître $u'$ ») réécrit `e^{2x} = \dfrac12 \times 2e^{2x}`
-  et sort ½, puis la forme composée intègre `2e^{2x}`. La garde (`revealExplains`) n'accepte un `k`
+  et sort ½, puis la forme composée intègre `2e^{2x}` ; quand u′ = 1 (`\frac3x`), la même règle
+  s'intitule « On sort la constante $3$ » et la garde la reconnaît pareil. La garde (`revealExplains`) n'accepte un `k`
   que si l'étape **immédiatement précédente** est cette réécriture, au même k, juste en valeurs
   (f = k × u′g(u), et la forme composée intègre bien u′g(u)). Un ½ glissé dans la primitive sans
   cette étape reste refusé. Le contrôle porte aussi sur les sous-étapes (IPP : v = ½e^{2x} est

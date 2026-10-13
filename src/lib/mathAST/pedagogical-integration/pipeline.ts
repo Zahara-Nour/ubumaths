@@ -999,7 +999,12 @@ function integrateComposite(
 		before: integrand,
 		after: revealed,
 		variable: ctx.variable,
-		bindings: { u: bareU, du, k: kNode, revealed, integrand }
+		bindings: { u: bareU, du, k: kNode, revealed, integrand, variable: variableNode(ctx.variable) },
+		// u′ = 1 : il n'y a qu'une constante à sortir (décision de David du 2026-10-13)
+		...(du.type === 'number' &&
+			du.value === '1' && {
+				description: isOneRational(negRational(k)) ? 'On sort le signe −' : 'On sort la constante'
+			})
 	});
 	const composite = buildStep(ctx, {
 		rule,
