@@ -21,6 +21,7 @@ import { getVariables } from '$lib/mathAST/eval/substitute';
 import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
 import {
 	astOf,
+	readingMode,
 	readNumber,
 	readListValue,
 	individualEntries,
@@ -35,6 +36,14 @@ import {
 	typedLetterOf
 } from './letter';
 import { syncEngine, expressionOf, expandInput, expandCommandArgument, termsOf } from './engine';
+import {
+	intervalDomainOf,
+	ONLY_FUNCTIONS,
+	outsideIntervalMessage,
+	outsideIntervalRefusal,
+	splitInterval
+} from './interval';
+import { containsValue } from '$lib/mathAST/domain/algebra';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import {
@@ -507,12 +516,17 @@ function naturalReadingRefusal(atelier: Atelier, reading: NaturalReading): CalcR
 	return { kind: 'refus', message: problem, ...notesOf(problem.includes(UNITLESS) ? hint : null) };
 }
 
+/**
+ * @param interval - L'ensemble écrit après « sur » (`f(x) = x^2 sur [0;+∞[`),
+ *   ou `null` : une définition retapée sans « sur » retire l'intervalle (I6).
+ */
 function defineObject(
 	session: CalcSession,
 	name: string,
 	parameter: string | undefined,
 	typedBody: string,
-	provenance: Provenance
+	provenance: Provenance,
+	interval: string | null = null
 ): CalcResult {
 	const { atelier } = session;
 	const existing = atelier.get(name);
@@ -576,7 +590,13 @@ function defineObject(
 			return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
 		}
 		const created = atelier.create(
-			{ kind: kindOf(parameter, body), name, definition: stored, ...(letter && { letter }) },
+			{
+				kind: kindOf(parameter, body),
+				name,
+				definition: stored,
+				...(letter && { letter }),
+				...(interval !== null && { interval })
+			},
 			provenance
 		);
 		if (!created.ok) return { kind: 'refus', message: created.message };
@@ -598,7 +618,8 @@ function defineObject(
 		name,
 		stored,
 		provenance,
-		existing.kind === 'function' ? letter : undefined
+		existing.kind === 'function' ? letter : undefined,
+		existing.kind === 'function' ? interval : undefined
 	);
 	if (!updated.ok) return { kind: 'refus', message: updated.message };
 	return { kind: 'definition', name, object: updated.object, ...notesOf(...notes) };
@@ -1508,6 +1529,10 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	const recurrence = RECURRENCE_DEFINITION.exec(input);
 	if (recurrence !== null) {
 		const [, name, body] = recurrence;
+		// Une suite se règle par son premier indice, pas par un ensemble
+		if (splitInterval(body, readingMode(provenance)).written !== null) {
+			return { kind: 'refus', message: ONLY_FUNCTIONS };
+		}
 		const result = defineObject(session, name, 'n', body, provenance);
 		if (result.kind === 'definition' && session.atelier.get(name)?.kind === 'sequence') {
 			const set = session.atelier.setSequence(name, { mode: 'recurrence' });
@@ -1521,7 +1546,12 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 
 	const definition = DEFINITION.exec(input);
 	if (definition !== null) {
-		const [, name, parameter, body] = definition;
+		const [, name, parameter, typedBody] = definition;
+		// `f(x) = x^2 sur [0;+∞[` : l'ensemble est lu à part (`interval.ts`)
+		const { body, written } = splitInterval(typedBody, readingMode(provenance));
+		if (written !== null && kindOf(parameter, body) !== 'function') {
+			return { kind: 'refus', message: ONLY_FUNCTIONS };
+		}
 		const commaList = parameter === undefined ? commaListRefusal(name, body) : null;
 		if (commaList !== null) return { kind: 'refus', message: commaList };
 		const bracketed = parameter === undefined ? bracketedListRefusal(name, body) : null;
@@ -1529,7 +1559,7 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		// `A = (1 ; 2)` : le refus d'une saisie (#983), pas un objet en erreur
 		const typed = coupleOrSetRefusal(body);
 		if (typed !== null) return { kind: 'refus', message: typed };
-		const result = defineObject(session, name, parameter, body, provenance);
+		const result = defineObject(session, name, parameter, body, provenance, written);
 		// `u(n) = …` dit « explicite » (S3) : le mode d'une suite étant gardé à la
 		// modification, c'est ici qu'une récurrence retapée en explicite le devient
 		// — sinon u(3) valait 5 au lieu de 7 (revue du lot 5a, B1)
@@ -1551,6 +1581,10 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// moteur, elle rendait « Unexpected token: ' » — un message de parseur.
 	const blocked = derivativeOfUnusable(session, input);
 	if (blocked !== null) return { kind: 'refus', message: blocked };
+
+	// I4 : `f(5)` avec f sur [0 ; 2] se refuse, le moteur ne connaît pas l'ensemble
+	const outside = outsideIntervalRefusal((n) => session.atelier.get(n), input);
+	if (outside !== null) return { kind: 'refus', message: outside };
 
 	// S3 : les termes d'une récurrence (`u(5)`) sont calculés ici, puis passés au
 	// moteur comme des nombres — il ne sait pas itérer une récurrence
@@ -1739,6 +1773,11 @@ function computeAction(
 		const value = argument === undefined ? null : readNumber(argument);
 		if (value === null) {
 			return { ok: false, message: `« ${argument ?? ''} » n'est pas un nombre.` };
+		}
+		// I4 : hors de l'ensemble de la fonction, pas d'image
+		const domain = intervalDomainOf(atelier.get(name));
+		if (domain !== null && !containsValue(domain, value)) {
+			return { ok: false, message: outsideIntervalMessage(name, (argument ?? '').trim(), domain) };
 		}
 		// Ici, citer le nom est SÛR et mesuré : `f(2)` rend `-1`. C'est le chemin
 		// d'évaluation, pas une commande symbolique — la substitution du §6 bis ne

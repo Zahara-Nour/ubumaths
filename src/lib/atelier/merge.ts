@@ -72,18 +72,21 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		}
 		arrivedAs.set(wanted, chosen);
 
-		const created = atelier.create(
-			{
-				kind: stored.kind,
-				name: chosen,
-				// La définition d'une dérivée est son propre nom : `g′(x)`, pas `f′(x)`
-				definition: derivative !== null ? `${chosen}(x)` : stored.definition,
-				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
-			},
-			// Ce qui vient d'une URL a été écrit par nous : même lecture qu'au
-			// rangement, pour que l'aller-retour ne change pas le sens (D10).
-			'url'
-		);
+		const input = {
+			kind: stored.kind,
+			name: chosen,
+			// La définition d'une dérivée est son propre nom : `g′(x)`, pas `f′(x)`
+			definition: derivative !== null ? `${chosen}(x)` : stored.definition,
+			...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
+		};
+		// Ce qui vient d'une URL a été écrit par nous : même lecture qu'au
+		// rangement, pour que l'aller-retour ne change pas le sens (D10).
+		// L'ensemble d'une fonction suit ; refusé, la fonction arrive sur son domaine.
+		let created =
+			stored.kind === 'function' && stored.interval !== undefined
+				? atelier.create({ ...input, interval: stored.interval }, 'url')
+				: atelier.create(input, 'url');
+		if (!created.ok && stored.interval !== undefined) created = atelier.create(input, 'url');
 
 		if (!created.ok) {
 			refused.push({ name: wanted, reason: created.message });

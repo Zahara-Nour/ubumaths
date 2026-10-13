@@ -14,7 +14,7 @@
 
 import { z } from 'zod';
 import type { ObjectKind } from './types';
-import { MAX_DEFINITION_LENGTH } from './types';
+import { MAX_DEFINITION_LENGTH, MAX_INTERVAL_LENGTH } from './types';
 import { sequenceDisplaySchema, storedDisplaySchema, type StoredDisplay } from './display';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 
@@ -66,6 +66,11 @@ const storedObjectSchema = z.object({
 		.optional()
 		.catch(undefined),
 	/**
+	 * L'ensemble d'une fonction, tel qu'écrit après « sur » (`interval.ts`).
+	 * Abîmé ou refusé à la relecture : oublié, la fonction gardée sur son domaine.
+	 */
+	interval: z.string().min(1).max(MAX_INTERVAL_LENGTH).optional().catch(undefined),
+	/**
 	 * Réglages d'affichage d'une fonction. ⚠️ `.catch(undefined)` : un réglage
 	 * abîmé est OUBLIÉ, l'objet est gardé — perdre `f` pour une couleur illisible
 	 * serait disproportionné. Tracée, elle recevra une couleur neuve.
@@ -110,6 +115,8 @@ export interface StoredObject {
 	readonly plotted?: boolean;
 	/** La lettre de l'élève d'une fonction (`f(t)`), absente pour x. */
 	readonly letter?: string;
+	/** L'ensemble d'une fonction (`[0;+∞[`), absent sans « sur ». */
+	readonly interval?: string;
 	readonly display?: StoredDisplay;
 	readonly slider?: { readonly min: number; readonly max: number; readonly step: number };
 	readonly mode?: 'explicit' | 'recurrence';

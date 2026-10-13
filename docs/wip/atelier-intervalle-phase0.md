@@ -1,7 +1,7 @@
 ---
 title: Atelier — une fonction définie sur un intervalle (phase 0)
 date: 2026-10-13
-status: phase 0 validée (2026-10-13, I1-I6 selon les recos) ; lot 1 en cours
+status: phase 0 validée (2026-10-13, I1-I6 selon les recos) ; lot 1 en PR
 ---
 
 # Atelier — une fonction définie sur un intervalle
@@ -86,3 +86,5 @@ Puis le lot 3 de la réciproque (carte `f⁻¹` portant son ensemble).
 ## Journal
 
 - 2026-10-13 — phase 0 écrite ; validée par David (« je valide ») : I1-I6 selon les recos.
+- 2026-10-13 — lot 1 (modèle et saisie) : `interval.ts`, champ `FunctionObject.interval`, I3, I4, I6,
+  persistance + URL + fusion ; « sur » mesuré dans Chromium (lettres collées, `smartFence` coupé).

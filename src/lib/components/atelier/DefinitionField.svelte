@@ -9,11 +9,13 @@
 	 * pas « l'ancienne courbe » à côté : une seule vérité.
 	 */
 	import { onMount } from 'svelte';
+	import { on } from 'svelte/events';
 	import type { MathfieldElement } from 'mathlive';
 	import MathField from '$lib/components/MathField.svelte';
 	import { useAtelier } from '$lib/atelier/context';
 	import { definitionFromField, fieldLatexOf } from '$lib/atelier/mathfield';
 	import { internalDefinition, typedLetterOf } from '$lib/atelier/letter';
+	import { ONLY_FUNCTIONS, splitInterval } from '$lib/atelier/interval';
 	import type { AtelierObject } from '$lib/atelier/types';
 
 	interface Props {
@@ -60,6 +62,10 @@
 	// svelte-ignore state_referenced_locally
 	let lastLetter = letter;
 
+	/** L'ensemble rangé (`sur [0;1]`) que montre le champ : changé ailleurs, le champ suit. */
+	// svelte-ignore state_referenced_locally
+	let lastInterval = intervalOf(object);
+
 	let timer: ReturnType<typeof setTimeout> | null = null;
 
 	/**
@@ -83,13 +89,35 @@
 				: `${object.name} =`
 	);
 
+	function intervalOf(o: AtelierObject): string | undefined {
+		return o.kind === 'function' ? o.interval : undefined;
+	}
+
+	/**
+	 * Mesuré dans Chromium (`intervalle-champ.svelte.test.ts`) : avec `smartFence`,
+	 * taper `[0;1[` écrit `\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`,
+	 * illisible. Coupé dès que le champ d'une fonction contient « sur » — comme
+	 * les cases « intervalles » des questions —, rendu sinon (les parenthèses se
+	 * referment). Jugé à chaque touche, AVANT MathLive (`keydown` en capture) :
+	 * l'événement `input` arrive trop tard, après plusieurs frappes rapides.
+	 */
+	function updateSmartFence() {
+		if (element && object.kind === 'function') element.smartFence = !element.value.includes('sur');
+	}
+
 	/** Écrire maintenant ce qui a été tapé. */
 	function flush() {
 		if (timer !== null) clearTimeout(timer);
 		timer = null;
 		if (!dirty) return;
 		dirty = false;
-		const typed = definitionFromField(object.kind, latex);
+		// `f(x) = x^2 sur [0;+∞[` : l'ensemble est lu à part (`interval.ts`)
+		const { body, written } = splitInterval(latex, 'latex');
+		if (written !== null && object.kind !== 'function') {
+			refusal = ONLY_FUNCTIONS;
+			return;
+		}
+		const typed = definitionFromField(object.kind, body);
 		const internal =
 			object.kind === 'function'
 				? internalDefinition(typed, letter, object.name, 'keyboard', atelier.functionNames)
@@ -98,9 +126,22 @@
 		refusal = internal.ok ? null : internal.message;
 		if (!internal.ok) return;
 		const definition = internal.definition;
-		if (definition === object.definition) return;
+		if (definition === object.definition && (written ?? undefined) === intervalOf(object)) return;
+		// I6 : effacer « sur … » retire l'intervalle (`null`)
+		const updated = atelier.update(
+			object.name,
+			definition,
+			'keyboard',
+			undefined,
+			object.kind === 'function' ? written : undefined
+		);
+		// Ensemble illisible, vide, hors du domaine (I3) : rien n'est rangé
+		if (!updated.ok) {
+			refusal = updated.message;
+			return;
+		}
 		lastWritten = definition;
-		atelier.update(object.name, definition, 'keyboard');
+		lastInterval = intervalOf(updated.object);
 	}
 
 	function handleInput() {
@@ -113,15 +154,20 @@
 	$effect(() => {
 		const definition = object.definition;
 		const shownLetter = letter;
-		if (definition === lastWritten && shownLetter === lastLetter) return;
+		const interval = intervalOf(object);
+		if (definition === lastWritten && shownLetter === lastLetter && interval === lastInterval) {
+			return;
+		}
 		lastWritten = definition;
 		lastLetter = shownLetter;
+		lastInterval = interval;
 		// La version venue d'ailleurs l'emporte sur une frappe encore en attente
 		if (timer !== null) clearTimeout(timer);
 		timer = null;
 		dirty = false;
 		refusal = null;
 		latex = fieldLatexOf(object, atelier.functionNames, shownLetter);
+		updateSmartFence();
 		// ⚠️ `MathField` ne recopie pas une valeur VIDE (`if (value)`) ; on ne
 		// touche pas à ce composant partagé avec les réponses aux questions
 		if (latex === '' && element) element.value = '';
@@ -133,10 +179,17 @@
 		if (object.kind === 'value' && element) {
 			Object.assign(element, { mathModeSpace: '\\,' });
 		}
+		updateSmartFence();
+		const stopWatching = element
+			? on(element, 'keydown', updateSmartFence, { capture: true })
+			: () => {};
 		// C9 : une carte neuve est prête à taper
 		if (object.definition === '') element?.focus();
 		// ⚠️ Ce qui a été tapé juste avant de fermer la carte n'est pas perdu
-		return flush;
+		return () => {
+			stopWatching();
+			flush();
+		};
 	});
 </script>
 

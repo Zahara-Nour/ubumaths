@@ -20,6 +20,7 @@ import type { MathNode } from '$lib/mathAST/types';
 import type { AtelierObject, ObjectKind } from './types';
 import { astOf, parseDefinition, readingMode, readNumber } from './parse';
 import { INTERNAL_LETTER, renameVariable } from './letter';
+import { intervalFieldLatex } from './interval';
 import { readNaturalQuantities } from './natural-quantities';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import { toLatex } from '$lib/mathAST/latex-generator';
@@ -47,6 +48,18 @@ export function fieldLatexOf(
 	object: AtelierObject,
 	functionNames: readonly string[],
 	letter: string = INTERNAL_LETTER
+): string {
+	// `f(x) = x^2 sur [0;+∞[` : l'ensemble suit la définition, « sur » écrit en mot
+	const expression = expressionFieldLatex(object, functionNames, letter);
+	const interval = intervalFieldLatex(object);
+	return interval === null ? expression : `${expression}\\text{ sur }${interval}`;
+}
+
+/** La définition seule, sans l'ensemble. */
+function expressionFieldLatex(
+	object: AtelierObject,
+	functionNames: readonly string[],
+	letter: string
 ): string {
 	// `f(t) = t^2` : rangée en x, montrée dans la lettre de l'élève (`letter.ts`)
 	const provenance = object.provenance ?? 'url';
