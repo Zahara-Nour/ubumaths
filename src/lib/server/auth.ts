@@ -35,9 +35,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { Profile, UserRole } from '$lib/server/middleware/auth';
 import { error, redirect } from '@sveltejs/kit';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 
-const logger = createLogger('server/auth.ts');
+const logger = createServerLogger('server/auth.ts');
 
 /**
  * Get the user's profile from the database

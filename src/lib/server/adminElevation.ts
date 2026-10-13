@@ -38,9 +38,9 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { Handle } from '@sveltejs/kit';
 import type { Database } from '$lib/types/database';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 
-const logger = createLogger('server/adminElevation.ts');
+const logger = createServerLogger('server/adminElevation.ts');
 
 /**
  * Name of the elevation cookie. MUST NOT start with `sb-` (otherwise

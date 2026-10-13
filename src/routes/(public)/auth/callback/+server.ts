@@ -34,13 +34,13 @@
 
 import { redirect, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { notifyAdminsOfPendingUser } from '$lib/server/notifications';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { validateRedirectUrl } from '$lib/server/validateRedirectUrl';
 import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
 
-const logger = createLogger('auth/callback');
+const logger = createServerLogger('auth/callback');
 
 // Allowed email domain for Google OAuth
 const ALLOWED_DOMAIN = '@voltairedoha.com';

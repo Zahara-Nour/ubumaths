@@ -20,7 +20,7 @@ import type { Database } from '$lib/types/database';
 
 // Mock the logger to avoid console noise in tests (must be hoisted)
 vi.mock('$lib/utils/logger', () => ({
-	createLogger: vi.fn(() => ({
+	createServerLogger: vi.fn(() => ({
 		info: vi.fn(),
 		warn: vi.fn(),
 		error: vi.fn(),

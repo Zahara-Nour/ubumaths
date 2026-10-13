@@ -7,6 +7,8 @@
  * tests/fixtures/cliquet-console-serveur.json. Logique et périmètre :
  * scripts/cliquet-console-serveur.ts. Après une migration : `pnpm logs:cliquet --maj`.
  */
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
 	compareCounts,
@@ -65,5 +67,17 @@ describe('cliquet des console.* serveur', () => {
 		const report = ratchetReport(readRatchet(ROOT), countServerConsoleCalls(ROOT));
 		// Le message dit quoi faire : createServerLogger, ou `pnpm logs:cliquet --maj`
 		expect(report, report ?? '').toBeNull();
+	});
+});
+
+// `createLogger` est muet hors dev : côté serveur, il rend une erreur invisible en
+// production (lot 3 : toute l'authentification journalisait ainsi, sans rien laisser
+// dans les logs Vercel). Le cliquet ne le voit pas, il ne compte que les console.*.
+describe('createLogger côté serveur', () => {
+	it('aucun fichier serveur ne journalise par createLogger', () => {
+		const offenders = serverFiles(ROOT).filter((f) =>
+			/\bcreateLogger\(/.test(readFileSync(join(ROOT, f), 'utf8'))
+		);
+		expect(offenders, `utilise createServerLogger : ${offenders.join(', ')}`).toEqual([]);
 	});
 });
