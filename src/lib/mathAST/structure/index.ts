@@ -17,6 +17,19 @@ export type {
 	SumStructureNode
 } from './types';
 export {
+	cardLatex,
+	GAP_CLASS_PREFIX,
+	groupLatex,
+	movableGroupOf,
+	movedLatex,
+	reorder,
+	withoutPart,
+	type GroupLayout,
+	type MovableGroup,
+	type MovablePart,
+	type RearrangeOptions
+} from './rearrange';
+export {
 	parenthesesAdvice,
 	type AdviceSegment,
 	type ParenthesesAdvice

@@ -139,7 +139,7 @@ Mesures après ces ajouts (mêmes 8 expressions, en encadrant d'abord le terme v
 Structure algébrique : **les cadres** (confirmé par David le 2026-10-13). Encore à demander :
 soulever le terme ou le laisser sous le pointeur ?
 
-## Spécification E — glisser-déposer (proposée le 2026-10-13, à valider par David)
+## Spécification E — glisser-déposer (validée par David le 2026-10-13)
 
 S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/structure-expression.md).
 « Partie » : un terme d'une somme, un facteur d'un produit, un membre d'une égalité.
@@ -190,13 +190,13 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
 
 ### E5. Élève de 6e ou avant (niveau de l'élève connecté ; visiteur : aucune restriction)
 
-| #    | Cas                                                   | Comportement attendu                                                                                    |
-| ---- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| E5.1 | (G6) somme qui contient une soustraction (`12 − 4`)   | ses termes ne se glissent pas : pas de fond de groupe, pas de curseur « main », pas de phrase           |
-| E5.2 | somme d'additions seules (`2 + 3 + 4`)                | permis                                                                                                  |
-| E5.3 | produit (`2 × 3 × 5`)                                 | permis                                                                                                  |
-| E5.4 | **à confirmer** : `2 × (3 + 4)`, aller-retour du `2`  | reco de Claude : `2 × (3 + 4)` (le `×` reste devant une parenthèse), pas `2(3 + 4)`, écriture vue en 5e |
-| E5.5 | le message « 6e ou avant » remplace la structure (C1) | rien ne se glisse                                                                                       |
+| #    | Cas                                                   | Comportement attendu                                                                                                                                                          |
+| ---- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| E5.1 | (G6) somme qui contient une soustraction (`12 − 4`)   | ses termes ne se glissent pas : pas de fond de groupe, pas de curseur « main », pas de phrase                                                                                 |
+| E5.2 | somme d'additions seules (`2 + 3 + 4`)                | permis                                                                                                                                                                        |
+| E5.3 | produit (`2 × 3 × 5`)                                 | permis                                                                                                                                                                        |
+| E5.4 | `2 × (3 + 4)`, aller-retour du `2`                    | `2 × (3 + 4)`, pas `2(3 + 4)` (écriture vue en 5e). Appliqué comme « × toujours écrit en 6e ou avant » (`2 × π × r`) : **extension proposée par Claude, en attente de David** |
+| E5.5 | le message « 6e ou avant » remplace la structure (C1) | rien ne se glisse                                                                                                                                                             |
 
 ### E6. Au clavier (proposition de Claude)
 
@@ -204,7 +204,7 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
 | ---- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | E6.1 | une partie encadrée, flèche ← ou → | elle change de place d'un cran (même réécriture qu'au lâcher) ; une autre voie que le glisser (accessibilité) |
 
-### Choix techniques proposés
+### Choix techniques (validés par David le 2026-10-13)
 
 - La formule de l'outil passe du `math-span` (shadow DOM, figé) au rendu de MathLive dans la page
   (`convertLatexToMarkup`, comme l'Atelier et la démo), corpus compris : un seul chemin. Rendu
@@ -233,3 +233,18 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
 - 2026-10-13 — « la structure, c'est bien les cadres » (David).
 - 2026-10-13 — réponses de David : d'accord avec les recos sauf G5 (bloquer), Soulever (au choix),
   G6 (désactiver les sommes avec soustraction en 6e). Spécification E rédigée, à valider.
+- 2026-10-13 — spécification E validée (« ok pour ce que tu proposes ») ; but final de David : un
+  champ de formule réglable (structure oui/non, déplacer oui/non), réutilisable dans l'Atelier ou
+  ailleurs → lot 2 = ce composant. Questions posées : passer d'écrire à manipuler dans le même
+  champ (reco : curseur dedans = écrire, dehors = manipuler, double-clic ou crayon pour revenir),
+  réglages (structure, lecture, déplacer ⇒ structure), E5.4 étendu à « × toujours écrit » en 6e.
+- 2026-10-13 — lot 1 : `src/lib/mathAST/structure/rearrange.ts` (29 tests, vus rouges d'abord),
+  branche `feat/structure-reecriture`.
+- 2026-10-13 — revue du lot 1 (`code-reviewer`, Opus) : 590 déplacements du corpus, 0 anomalie.
+  Corrigé : un quotient en ligne posé après un autre facteur prend des parenthèses (`12 : 3 × 2`,
+  `2` en tête → `2 (12 : 3)` ; sans elles, `(2 × 12) : 3`) — signalé à David, l'autre option
+  serait de figer ces produits ; tests des parenthèses de l'écriture usuelle (`2×-3`, `--3+x`),
+  vus rouges en les retirant ; décimal `.5` ; fantôme sans marqueurs. Repéré, hors chantier :
+  `toLatex(multiply(2, divide(12, 3, 'ratio')))` écrit `2 \times 12 : 3` (à signaler).
+- 2026-10-13 — **lot 1 mergé : PR #1332** (b03cb0b88), CI verte ; pas en prod. Lot 2 (champ de
+  formule réglable) en attente des réponses de David (écrire / manipuler, réglages, E5.4).
