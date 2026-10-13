@@ -91,6 +91,29 @@ describe('StoredFigurePreview — deplacable', () => {
 	});
 });
 
+describe('StoredFigurePreview — zoom', () => {
+	it('fenêtre de 100 unités (4 px par unité) : la molette dézoome encore', async () => {
+		const result = evaluateStoredFigure(`fenetre: 0 ; 100 ; 0 ; 100\n---\n${SCRIPT}`);
+		if (!result.ok) throw new Error(result.message);
+		const windows: { xMin: number; xMax: number }[] = [];
+		const screen = await render(StoredFigurePreview, {
+			target: mainElement(800),
+			props: { result, onWindowChange: (w) => windows.push(w) }
+		});
+		await expect.poll(() => screen.container.querySelector('svg.geometry-canvas')).not.toBeNull();
+		const svg = screen.container.querySelector('svg.geometry-canvas') as SVGSVGElement;
+		const rect = svg.getBoundingClientRect();
+		const at = {
+			clientX: rect.left + 200,
+			clientY: rect.top + 200,
+			bubbles: true,
+			cancelable: true
+		};
+		svg.dispatchEvent(new WheelEvent('wheel', { ...at, deltaY: 100 }));
+		await expect.poll(() => windows.at(-1)!.xMax - windows.at(-1)!.xMin).toBeGreaterThan(105);
+	});
+});
+
 describe('StoredFigurePreview — repère et script nu', () => {
 	it('axes: oui → axes et graduations dessinés en SVG, marge autour de la fenêtre', async () => {
 		const { svg } = await renderText(`${HEADER}\naxes: oui\ngrille: 1\n---\n${SCRIPT}`);
@@ -104,8 +127,20 @@ describe('StoredFigurePreview — repère et script nu', () => {
 	});
 
 	it('conteneur étroit (téléphone) : la toile tient, la fenêtre reste entière', async () => {
-		const { svg } = await renderText(`${HEADER}\naxes: oui\n---\n${SCRIPT}`, 300);
-		await expect.poll(() => Number(svg.getAttribute('width'))).toBeLessThanOrEqual(300);
+		await renderText(`${HEADER}\naxes: oui\n---\n${SCRIPT}`, 300);
+		// Toile relue à chaque essai : la mesure du conteneur la recrée
+		const current = () => document.querySelector('main svg.geometry-canvas') as SVGSVGElement;
+		await expect.poll(() => Number(current().getAttribute('width'))).toBeLessThanOrEqual(300);
+		// Fenêtre -5..5 entière : la toile vaut 10 unités plus la marge des axes, sur l'échelle réduite
+		const width = Number(current().getAttribute('width'));
+		const axis = current().querySelectorAll('.underlay line.figure-axe');
+		expect(axis.length).toBe(2);
+		const labels = [...current().querySelectorAll('.underlay .figure-graduation-texte')].map(
+			(t) => t.textContent
+		);
+		expect(labels).toContain('−5');
+		expect(labels).toContain('5');
+		expect(width).toBeGreaterThan(2 * 26);
 	});
 
 	it('script nu : toile historique 520 × 520, grille de la toile, point déplaçable', async () => {

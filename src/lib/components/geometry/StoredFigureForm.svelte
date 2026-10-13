@@ -32,6 +32,7 @@
 	import { getGradeSelectItems } from '$lib/utils/grades';
 	import { evaluateStoredFigure } from '$lib/utils/geometry-figure-script';
 	import {
+		hasFigureHeader,
 		readHeaderField,
 		readWindowFields,
 		writeHeaderField,
@@ -149,7 +150,8 @@
 
 	function setWindowField(index: number, value: string) {
 		const bounds = [...windowFields];
-		bounds[index] = value;
+		// `;` sépare les bornes dans la ligne : tapé dans un champ, il décalerait les quatre
+		bounds[index] = value.replaceAll(';', '');
 		script = writeWindowFields(script, bounds);
 		scheduleRefresh();
 	}
@@ -275,6 +277,13 @@
 			<Card.Description>
 				Ces champs écrivent l'en-tête du texte (au-dessus de la ligne ---) ; l'en-tête modifié à la
 				main les met à jour.
+				{#if !hasFigureHeader(script)}
+					<span class="mt-1 block text-warning">
+						Texte sans en-tête : l'aperçu garde l'affichage historique (grille, points déplaçables).
+						Régler un champ crée l'en-tête, avec ses valeurs par défaut (sans grille ni axes, points
+						non déplaçables).
+					</span>
+				{/if}
 			</Card.Description>
 		</Card.Header>
 		<Card.Content class="space-y-4">

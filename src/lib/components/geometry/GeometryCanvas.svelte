@@ -184,8 +184,13 @@
 	let spaceHeld = $state(false);
 
 	// Zoom limits
-	const MIN_PPU = 5;
-	const MAX_PPU = 200;
+	// Bornes élargies autour de l'échelle initiale : une fenêtre d'en-tête de
+	// 100 unités (4 px par unité) doit pouvoir encore dézoomer, une fenêtre d'une
+	// unité (400 px par unité) rezoomer. Inchangées à 40 px par unité.
+	// svelte-ignore state_referenced_locally
+	const MIN_PPU = Math.min(5, initialPpu / 4);
+	// svelte-ignore state_referenced_locally
+	const MAX_PPU = Math.max(200, initialPpu * 4);
 
 	// Viewport derived from center + pixelsPerUnit + SVG size.
 	let viewport: Viewport = $derived({

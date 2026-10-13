@@ -304,7 +304,9 @@ statique : largeur de la fenêtre selon la taille (280 / 400 / 560 px), hauteur 
 Les champs « Affichage » écrivent la ligne de leur clé (ajoutée avant `---` si absente, retirée
 si vidée) et se relisent dans le texte : l'en-tête modifié à la main met les champs à jour ; le
 script n'est jamais réécrit. « Prendre le cadrage actuel » écrit en `fenetre:` la vue de
-l'aperçu (zoom à la molette, déplacement barre d'espace enfoncée), marge des axes retirée.
+l'aperçu (zoom à la molette, déplacement barre d'espace enfoncée), marge des axes retirée. Le zoom de la toile
+est borné à [min(5, échelle initiale / 4) ; max(200, échelle initiale × 4)] px par unité : une
+fenêtre de 100 unités dézoome encore.
 
 **Pages.** `/dashboard/teacher/figures` : liste filtrable (filtres dans l'adresse), lien
 « Figures » de la barre latérale du prof ; `…/new` et `…/[id]/edit` (l'auteur seul : la figure
