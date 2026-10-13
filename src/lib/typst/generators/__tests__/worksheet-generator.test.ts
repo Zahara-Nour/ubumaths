@@ -592,9 +592,10 @@ describe('WorksheetGenerator', () => {
 
 			const result = generator.generate({ worksheet: createMockWorksheet(), instance });
 
-			expect(result.typstContent).toContain('points-badge(5)');
-			expect(result.typstContent).toContain('points-badge(1)');
-			expect(result.typstContent).not.toContain('points-badge(2)');
+			// Libellé de documentLabels : « 1 pt », « 5 pts » (ADR 0028, lot 1)
+			expect(result.typstContent).toContain('points-badge([5 pts])');
+			expect(result.typstContent).toContain('points-badge([1 pt])');
+			expect(result.typstContent).not.toContain('points-badge([2 pts])');
 		});
 
 		it('omits the points badge when the exercise has none', () => {
@@ -604,7 +605,7 @@ describe('WorksheetGenerator', () => {
 				instance: createMockInstance()
 			});
 
-			// (the `#let points-badge(pts)` definition always sits in the setup)
+			// (the `#let points-badge(label)` definition always sits in the setup)
 			expect(result.typstContent).not.toMatch(/^\s+points-badge\(/m);
 		});
 

@@ -35,26 +35,21 @@ import type {
 	WorksheetRow,
 	WorksheetConfig,
 	InstanceData,
-	InstanceSection,
-	ResolvedExercise,
 	WorksheetType,
 	WorksheetTemplateRow
 } from '$lib/types/worksheets';
 import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types';
-import { groupExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
 import { BaseTypstGenerator } from './base-generator';
-import { generateTypst, escapeTypst, parseMarkdown } from '$lib/ubumark';
-import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
+import { escapeTypst } from '$lib/ubumark';
 import { getDefaultTemplate, renderTemplate } from '../templates';
 import { documentLabels, labelPlaceholders, type DocumentLabels } from '../labels';
 import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
 import { localizedText, worksheetLocale } from '$lib/types/worksheets';
-import { formatNumber } from '../utils';
-import { SECTION_COLOR, exerciseBadge } from '../worksheet-palette';
-// Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
-import '$lib/ubumark/generators/figure-typst-setup';
-import { correctionForPrint } from '$lib/questions/correction-detail';
 import { endOfTypstCall, withCorrectionFonts } from '../correction-fonts';
+import { documentFromTeacherCopy } from '$lib/worksheets/document/teacher-adapter';
+import { renderExercises, type ExerciseLayout } from '$lib/worksheets/document/render-exercise';
+import { MATH_LIMITS_SETUP } from '$lib/worksheets/document/math-limits';
+import type { DocumentForm } from '$lib/worksheets/document/types';
 
 // ============================================================================
 // TYPES
@@ -73,24 +68,13 @@ export interface WorksheetGeneratorInput {
 }
 
 /**
- * How the exercise header is rendered inside `{{exercises}}`
- *
- * - `heading`: bold "Exercice N : title" line (default, used by every template
- *   written against the `{{exercises}}` placeholder)
- * - `badge`: the number in white on an amber rounded square, like the student PDF
- *   (opted into by a template using the `{{exercises_badge}}` placeholder).
- *   Section titles follow suit: amber small caps over an amber rule.
- */
-type ExerciseHeaderStyle = 'heading' | 'badge';
-
-/**
  * Les trois PDF d'une fiche :
  * - `worksheet` : la fiche, énoncés seuls ;
  * - `answers` : les résultats seuls (`answers`), sans l'énoncé ;
  * - `correction` : le corrigé (concis ou détaillé selon la fiche), sans
  *   l'énoncé, en Shantell Sans et Chiphre Math (`correction-fonts.ts`).
  */
-export type WorksheetPdfMode = 'worksheet' | 'answers' | 'correction';
+export type WorksheetPdfMode = DocumentForm;
 
 /** Réglages du générateur propres aux fiches */
 export interface WorksheetGeneratorOptions {
@@ -273,21 +257,16 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 * Generate Typst document from template
 	 */
 	private generateFromTemplate(input: WorksheetGeneratorInput, templateContent: string): string {
-		const { worksheet, instance } = input;
+		const { worksheet } = input;
 		const mode = this.pdfMode;
 
-		// Generate exercises content for the template. A template opts into the
-		// red-badge numbering by using {{exercises_badge}} instead of {{exercises}};
-		// both keys receive the same content so only the placeholder used matters.
-		const exerciseStyle: ExerciseHeaderStyle = templateContent.includes('{{exercises_badge}}')
+		// Les exercices du gabarit. Un gabarit qui place {{exercises_badge}} reçoit
+		// les numéros sur carré ambre ; sinon ({{exercises}}) l'en-tête « Exercice N ».
+		// Les deux clés reçoivent le même contenu : seul compte le placeholder utilisé.
+		const layout: ExerciseLayout = templateContent.includes('{{exercises_badge}}')
 			? 'badge'
 			: 'heading';
-		const exercisesTypst = this.generateExercisesOnly(
-			instance,
-			mode,
-			worksheet.type,
-			exerciseStyle
-		);
+		const exercisesTypst = this.generateExercises(input, mode, layout);
 
 		// Display options are opt-out: an absent flag means "show". They are
 		// exposed as {{#if show_x}} conditionals so templates can drop the label
@@ -354,12 +333,12 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 * Generate default document without template
 	 */
 	private generateDefault(input: WorksheetGeneratorInput): string {
-		const { worksheet, instance } = input;
+		const { worksheet } = input;
 		const mode = this.pdfMode;
 
 		const setup = this.generateWorksheetSetup(worksheet.type);
 		const header = this.generateHeader(worksheet, mode);
-		const exercises = this.generateExercises(instance, mode, worksheet.type);
+		const exercises = this.generateExercises(input, mode, 'classic');
 		const footer = this.generateFooter(worksheet, mode);
 
 		return [setup, header, exercises, footer].filter(Boolean).join('\n\n');
@@ -389,13 +368,13 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 #set text(
   font: "New Computer Modern",
   size: ${fontSize}pt,
-  lang: "fr",
-  region: "FR"
+  lang: "${TYPST_LANGS[this.locale]}",${this.locale === 'fr' ? '\n  region: "FR"' : ''}
 )
 
 #set par(justify: true, leading: 0.65em)
 #set heading(numbering: none)
 
+${MATH_LIMITS_SETUP}
 // Custom styles for different elements
 #let exercise-box(content) = {
   block(
@@ -426,12 +405,13 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
   )
 }
 
-#let points-badge(pts) = {
+// Le libellé (« 1 pt », « 2 pts ») vient de documentLabels, dans la langue de la fiche
+#let points-badge(label) = {
   text(size: 0.9em, weight: "bold")[#box(
     fill: rgb(220, 220, 220),
     inset: (x: 6pt, y: 3pt),
     radius: 3pt,
-    [#pts pts]
+    label
   )]
 }
 `;
@@ -562,328 +542,20 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	}
 
 	/**
-	 * Generate all exercises with proper numbering and formatting
-	 * Groups exercises by section if sections are present
+	 * Les exercices du document, rendus par le module commun aux PDF du prof et
+	 * de l'élève (ADR 0028) : numérotation, sections, titres, corrigés.
 	 */
 	private generateExercises(
-		instance: InstanceData,
+		input: WorksheetGeneratorInput,
 		mode: WorksheetPdfMode,
-		worksheetType: WorksheetType
+		layout: ExerciseLayout
 	): string {
-		const exercises = instance.exercises;
-		const sections = instance.sections ?? [];
-		const numberingStyle = this.worksheetConfig.numbering_style || 'numeric';
-
-		// Apply exercise order if shuffled
-		const orderedExercises = instance.exercise_order
-			? instance.exercise_order.map((idx) => exercises[idx])
-			: exercises;
-
-		// La numérotation est celle de `$lib/worksheets/exercise-numbering` — la
-		// même règle que la page élève et que le résolveur de `[[exos:fiche#3]]`.
-		// Elle était écrite ici en propre, et une troisième copie avait déjà
-		// divergé (notifications de signalement).
-		//
-		// `preserveExerciseOrder` : l'ordre du tirage au sort prime sur `position`.
-		let content = '';
-		for (const group of groupExercisesForDisplay(orderedExercises, sections, {
-			preserveExerciseOrder: true
-		})) {
-			if (group.section)
-				content += this.generateSectionHeader(this.sectionFor(group.section, mode));
-
-			for (const { exercise, number } of group.exercises) {
-				content += this.generateSingleExercise(
-					exercise,
-					formatNumber(number, numberingStyle),
-					mode,
-					worksheetType
-				);
-				content += '\n\n';
-			}
-		}
-
-		return content;
-	}
-
-	/**
-	 * La section telle qu'un PDF l'imprime : sa consigne fait partie de
-	 * l'énoncé, les corrigés n'en gardent que le titre.
-	 */
-	private sectionFor(section: InstanceSection, mode: WorksheetPdfMode): InstanceSection {
-		return mode === 'worksheet' ? section : { ...section, instructions: null };
-	}
-
-	/**
-	 * Generate section header for PDF
-	 */
-	private generateSectionHeader(section: InstanceSection): string {
-		let content = '#block(width: 100%, inset: (top: 0.5em, bottom: 0.3em))[\n';
-		content += `  #text(size: 1.2em, weight: "bold")[${escapeTypst(section.title)}]\n`;
-		if (section.instructions) {
-			content += '  #v(0.2em)\n';
-			content += `  #text(size: 0.95em, style: "italic")[${escapeTypst(section.instructions)}]\n`;
-		}
-		content += ']\n';
-		content += '#v(0.3em)\n\n';
-		return content;
-	}
-
-	/**
-	 * Generate a single exercise with statement and optionally solution
-	 */
-	private generateSingleExercise(
-		exercise: ResolvedExercise,
-		number: string,
-		mode: WorksheetPdfMode,
-		worksheetType: WorksheetType
-	): string {
-		const config = this.worksheetConfig;
-		let content = '';
-
-		// Exercise header with number, title, and optional points
-		const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
-		content += '#exercise-header[\n';
-		content += '  #grid(\n';
-		content += '    columns: (auto, 1fr, auto),\n';
-		content += `    [#text(size: 1.1em, weight: "bold")[${this.labels.exercise} ${number}${titleSuffix}]],\n`;
-		content += '    [],\n';
-
-		if (config.show_points && exercise.points) {
-			content += `    points-badge(${exercise.points})\n`;
-		} else {
-			content += '    []\n';
-		}
-
-		content += '  )\n';
-
-		// Consigne du prof : elle fait partie de l'énoncé, sur la fiche seulement
-		if (mode === 'worksheet' && exercise.custom_instructions) {
-			content += '  #v(0.2em)\n';
-			content += `  #text(style: "italic", fill: rgb(90, 90, 90))[${escapeTypst(exercise.custom_instructions)}]\n`;
-		}
-
-		content += ']\n';
-
-		// Corrigés : jamais l'énoncé, seulement les réponses ou la correction
-		if (mode !== 'worksheet') {
-			return content + this.generateCorrectionPart(exercise, mode);
-		}
-
-		content += '#exercise-box[\n';
-		content += this.markdownToIndentedTypst(exercise.statement, exercise) + '\n';
-
-		// Add answer space for exams
-		if (worksheetType === 'exam' || worksheetType === 'assessment') {
-			content += '  #v(0.5em)\n';
-			content += '  #answer-space(height: 5cm)\n';
-		}
-
-		content += ']\n';
-		return content;
-	}
-
-	/**
-	 * Markdown d'un exercice en Typst, indenté de deux espaces (contenu d'un bloc)
-	 */
-	private markdownToIndentedTypst(markdown: string, exercise: ResolvedExercise): string {
-		const typst = generateTypst(parseMarkdown(markdown), {
-			includeSetup: false,
-			language: this.locale,
-			genericFunctions: genericFunctionsConfig(exercise.generic_functions),
-			capitalPairs: exercise.capital_pairs
+		const doc = documentFromTeacherCopy({
+			worksheet: input.worksheet,
+			instance: input.instance,
+			config: this.worksheetConfig
 		});
-		return typst
-			.split('\n')
-			.map((line) => '  ' + line)
-			.join('\n');
-	}
-
-	/**
-	 * Ce qu'un corrigé imprime sous l'en-tête d'un exercice, sans l'énoncé :
-	 * - Réponses : les résultats seuls ; absents, un renvoi au corrigé ;
-	 * - Corrigé : la correction, concise ou détaillée selon la fiche (D11).
-	 */
-	private generateCorrectionPart(
-		exercise: ResolvedExercise,
-		mode: Exclude<WorksheetPdfMode, 'worksheet'>
-	): string {
-		// Même espacement serré sous le titre que l'énoncé de la fiche
-		if (mode === 'answers') {
-			const body = exercise.answers?.trim()
-				? this.markdownToIndentedTypst(exercise.answers, exercise)
-				: `  #emph[${escapeTypst(this.labels.answersNotWritten)}]`;
-			return `#block(width: 100%, inset: 0pt, above: 0.5em)[\n${body}\n]\n`;
-		}
-
-		if (!exercise.solution) return '';
-		// Concise ou détaillée selon la fiche (D11), avant Typst
-		const solution = correctionForPrint(exercise.solution, this.worksheetConfig.correction_detail);
-		return `#block(width: 100%, fill: rgb("#f0f0f0"), inset: 10pt, radius: 4pt, above: 0.5em)[
-${this.markdownToIndentedTypst(solution, exercise)}
-]
-`;
-	}
-
-	/**
-	 * Generate only the exercises content (for use in templates)
-	 * Groups exercises by section if sections are present
-	 */
-	private generateExercisesOnly(
-		instance: InstanceData,
-		mode: WorksheetPdfMode,
-		worksheetType: WorksheetType,
-		headerStyle: ExerciseHeaderStyle = 'heading'
-	): string {
-		const exercises = instance.exercises;
-		const sections = instance.sections ?? [];
-		const numberingStyle = this.worksheetConfig.numbering_style || 'numeric';
-
-		// Apply exercise order if shuffled
-		const orderedExercises = instance.exercise_order
-			? instance.exercise_order.map((idx) => exercises[idx])
-			: exercises;
-
-		// Même règle de numérotation que partout ailleurs (cf. generateExercises).
-		let content = '';
-		for (const group of groupExercisesForDisplay(orderedExercises, sections, {
-			preserveExerciseOrder: true
-		})) {
-			if (group.section) {
-				content += this.generateSectionHeaderSimple(
-					this.sectionFor(group.section, mode),
-					headerStyle
-				);
-			}
-
-			for (const { exercise, number } of group.exercises) {
-				content += this.generateSingleExerciseSimple(
-					exercise,
-					formatNumber(number, numberingStyle),
-					mode,
-					worksheetType,
-					headerStyle
-				);
-				content += '\n\n';
-			}
-		}
-
-		return content;
-	}
-
-	/**
-	 * Generate section header for templates (simplified version)
-	 */
-	private generateSectionHeaderSimple(
-		section: InstanceSection,
-		headerStyle: ExerciseHeaderStyle = 'heading'
-	): string {
-		if (headerStyle === 'badge') return this.generateSectionHeaderBadge(section);
-
-		let content = `#block(width: 100%, inset: (top: 0.5em, bottom: 0.3em))[
-  #text(size: 1.2em, weight: "bold")[${escapeTypst(section.title)}]`;
-		if (section.instructions) {
-			content += `
-  #v(0.2em)
-  #text(size: 0.95em, style: "italic")[${escapeTypst(section.instructions)}]`;
-		}
-		content += '\n]\n#v(0.3em)\n\n';
-		return content;
-	}
-
-	/**
-	 * Section header matching the badge numbering: amber small-caps title over an
-	 * amber rule. Plain bold text was weaker than the badged exercise headings it
-	 * introduces, so sections did not stand out.
-	 *
-	 * `sticky`: the title never stays alone at the bottom of a column.
-	 * `above`: well over the gap between exercises (1.8em), so a new section
-	 * reads as a clean break from the previous one.
-	 */
-	private generateSectionHeaderBadge(section: InstanceSection): string {
-		let content = `#block(width: 100%, sticky: true, above: 3.5em, below: 1em)[
-  #text(fill: ${SECTION_COLOR}, weight: "bold", size: 1.15em)[#smallcaps[${escapeTypst(section.title)}]]
-  #v(-0.6em)
-  #line(length: 100%, stroke: 1.2pt + ${SECTION_COLOR})`;
-		if (section.instructions) {
-			content += `
-  #v(-0.4em)
-  #text(style: "italic", fill: luma(35%))[${escapeTypst(section.instructions)}]`;
-		}
-		content += '\n]\n\n';
-		return content;
-	}
-
-	/**
-	 * Generate a single exercise (simplified version for templates)
-	 */
-	private generateSingleExerciseSimple(
-		exercise: ResolvedExercise,
-		number: string,
-		mode: WorksheetPdfMode,
-		worksheetType: WorksheetType,
-		headerStyle: ExerciseHeaderStyle = 'heading'
-	): string {
-		const config = this.worksheetConfig;
-		let content = '';
-
-		// Exercise header, in its own `sticky` block so a column or page break can
-		// never leave the number alone at the bottom, away from its statement.
-		const pointsBox =
-			config.show_points && exercise.points
-				? `#box(fill: rgb("#dcdcdc"), inset: (x: 6pt, y: 3pt), radius: 3pt)[${exercise.points} ${
-						exercise.points > 1 ? this.labels.pointAbbrevPlural : this.labels.pointAbbrev
-					}]`
-				: '';
-
-		if (headerStyle === 'badge') {
-			// Numéro sur carré ambre, titre et points dans une grille alignée
-			// `horizon` : posé en ligne, le titre suivait la ligne de base du
-			// numéro et paraissait décalé par rapport au carré.
-			const title = exercise.title ? `#text(weight: "bold")[${escapeTypst(exercise.title)}]` : '';
-			content += `#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[
-  #grid(
-    columns: (auto, 1fr, auto),
-    column-gutter: 0.5em,
-    align: horizon,
-    ${exerciseBadge(number)},
-    [${title}],
-    [${pointsBox}]
-  )`;
-		} else {
-			const titleSuffix = exercise.title ? ` : ${escapeTypst(exercise.title)}` : '';
-			content += `#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[
-  #text(size: 1.1em, weight: "bold")[${this.labels.exercise} ${number}${titleSuffix}]`;
-			if (pointsBox) content += ` #h(1fr) ${pointsBox}`;
-		}
-
-		// Consigne du prof : elle fait partie de l'énoncé, sur la fiche seulement
-		if (mode === 'worksheet' && exercise.custom_instructions) {
-			content += `\n\n  #text(style: "italic", fill: gray)[${escapeTypst(exercise.custom_instructions)}]`;
-		}
-
-		content += `\n]\n`;
-
-		// Corrigés : jamais l'énoncé, seulement les réponses ou la correction
-		if (mode !== 'worksheet') {
-			return content + this.generateCorrectionPart(exercise, mode);
-		}
-
-		// Open the statement block (breakable: a long statement still splits
-		// across columns, just never right after the number). Quel que soit le
-		// style (badge ou « Exercice N »), l'énoncé colle à son titre au lieu
-		// d'hériter de l'espacement entre blocs du modèle (souvent 1,8em).
-		content += `#block(width: 100%, inset: 0pt, above: 0.5em)[\n`;
-		content += this.markdownToIndentedTypst(exercise.statement, exercise) + '\n';
-
-		// Add answer space for exams
-		if (worksheetType === 'exam' || worksheetType === 'assessment') {
-			content += `  #v(0.5em)
-  #rect(width: 100%, height: 5cm, stroke: (paint: rgb("#c8c8c8"), thickness: 0.5pt, dash: "dashed"), fill: none)`;
-		}
-
-		content += '\n]\n';
-		return content;
+		return renderExercises(doc, mode, layout);
 	}
 
 	/**

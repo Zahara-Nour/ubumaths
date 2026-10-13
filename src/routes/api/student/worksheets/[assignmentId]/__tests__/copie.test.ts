@@ -52,7 +52,11 @@ const STUDENTS = [
 	'550e8400-e29b-41d4-a716-446655440026'
 ];
 
-function assignmentRow(guidanceLevel: string, individualized: boolean) {
+function assignmentRow(
+	guidanceLevel: string,
+	individualized: boolean,
+	config: Record<string, unknown> = {}
+) {
 	return {
 		id: ASSIGNMENT_ID,
 		worksheet_id: WORKSHEET_ID,
@@ -67,7 +71,7 @@ function assignmentRow(guidanceLevel: string, individualized: boolean) {
 			title: 'Fiche',
 			description: null,
 			type: 'worksheet',
-			config: {},
+			config,
 			translations: null
 		}
 	};
@@ -76,10 +80,14 @@ function assignmentRow(guidanceLevel: string, individualized: boolean) {
 function supabase(
 	guidanceLevel: string,
 	individualized: boolean,
-	exercise: ReturnType<typeof twoLevelExercise> & { topic?: string | null } = twoLevelExercise()
+	exercise: ReturnType<typeof twoLevelExercise> & { topic?: string | null } = twoLevelExercise(),
+	config: Record<string, unknown> = {}
 ): TableMock {
 	return tableMock({
-		worksheet_assignments: { data: assignmentRow(guidanceLevel, individualized), error: null },
+		worksheet_assignments: {
+			data: assignmentRow(guidanceLevel, individualized, config),
+			error: null
+		},
 		worksheet_exercises: {
 			data: [
 				{
@@ -104,6 +112,8 @@ function supabase(
 
 interface StudentView {
 	exercises: Array<{ statement: string; correction: string | null; capital_pairs?: string }>;
+	numbering_style?: string;
+	show_points?: boolean;
 }
 
 async function fetchCopy(mock: TableMock, studentId: string): Promise<StudentView> {
@@ -201,5 +211,25 @@ describe('API élève : la copie suit l’affectation', () => {
 		expect(JSON.stringify((await fetchCopy(matrices, STUDENTS[0])).exercises[0])).not.toContain(
 			'Graphes et matrices'
 		);
+	});
+
+	// ADR 0028, lot 1 : le PDF de l'élève numérote et affiche les points comme
+	// celui du prof. Le schéma de réponse retire les clés qu'il ne connaît pas :
+	// ce test passe par lui.
+	it('numérotation et « afficher les points » de la fiche arrivent à l’élève', async () => {
+		const roman = await fetchCopy(
+			supabase('guided', false, twoLevelExercise(), {
+				numbering_style: 'roman',
+				show_points: false
+			}),
+			STUDENTS[0]
+		);
+		expect(roman.numbering_style).toBe('roman');
+		expect(roman.show_points).toBe(false);
+
+		// Réglages absents : ceux du PDF du prof (chiffres, points masqués)
+		const bare = await fetchCopy(supabase('guided', false), STUDENTS[0]);
+		expect(bare.numbering_style).toBe('numeric');
+		expect(bare.show_points).toBe(false);
 	});
 });

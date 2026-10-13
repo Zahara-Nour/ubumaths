@@ -472,6 +472,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			language: locale,
 			// Le PDF de l'aperçu imprime le corrigé comme celui de l'élève (D11)
 			correction_detail: asWorksheetConfig(worksheet.config).correction_detail,
+			// Numérotation et points comme le PDF du prof (ADR 0028) : absents de la
+			// config, chiffres arabes et points masqués
+			numbering_style: asWorksheetConfig(worksheet.config).numbering_style ?? 'numeric',
+			show_points: asWorksheetConfig(worksheet.config).show_points === true,
 			description: worksheet.description,
 			type: worksheet.type as WorksheetType,
 			instructions: fullAssignment.instructions,

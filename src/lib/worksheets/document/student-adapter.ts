@@ -1,0 +1,56 @@
+/**
+ * Document d'une fiche depuis la vue de l'élève (ADR 0028)
+ *
+ * Le serveur a déjà filtré les corrections. Garde en plus : une correction
+ * dont `correction_visible` est faux n'entre jamais dans le document, même si
+ * le texte arrivait par erreur.
+ *
+ * @module worksheets/document/student-adapter
+ */
+
+import { isContentLocale, type ContentLocale } from '$lib/types/locale';
+import type { StudentWorksheetView } from '$lib/types/worksheets';
+import type { WorksheetDocument } from './types';
+import { placeExercises, writtenOrNull } from './numbering';
+
+export function documentFromStudentView(view: StudentWorksheetView): WorksheetDocument {
+	// Validée plutôt que supposée : la valeur traverse une réponse d'API
+	const locale: ContentLocale = isContentLocale(view.language) ? view.language : 'fr';
+	const numberingStyle = view.numbering_style ?? 'numeric';
+	const sections = [...(view.sections ?? [])].sort((a, b) => a.position - b.position);
+
+	return {
+		title: view.title,
+		type: view.type,
+		locale,
+		description: view.description,
+		assignment: { instructions: view.instructions },
+		// La copie de l'élève n'est jamais tirée au sort (ADR 0023) : ordre des positions
+		exercises: placeExercises(view.exercises ?? [], sections, numberingStyle, false).map(
+			({ exercise, number, sectionId }) => ({
+				number,
+				sectionId,
+				title: exercise.title ?? null,
+				statement: exercise.statement,
+				correction: exercise.correction_visible
+					? {
+							solution: writtenOrNull(exercise.correction),
+							answers: writtenOrNull(exercise.answers)
+						}
+					: null,
+				points: exercise.points ?? null,
+				instructions: exercise.custom_instructions ?? null,
+				essential: exercise.is_essential ?? false,
+				genericFunctions: exercise.generic_functions ?? null,
+				capitalPairs: exercise.capital_pairs
+			})
+		),
+		sections: sections.map(({ id, title, instructions }) => ({ id, title, instructions })),
+		display: {
+			// Absent (vue d'avant le lot 1) : affichés, comme avant
+			showPoints: view.show_points ?? true,
+			numberingStyle,
+			correctionDetail: view.correction_detail
+		}
+	};
+}

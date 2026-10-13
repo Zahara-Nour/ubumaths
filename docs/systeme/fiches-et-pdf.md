@@ -51,12 +51,13 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 
 ### `src/lib/worksheets/` — règles propres aux fiches
 
-| Fichier                                         | Rôle                                                                                                                                                                                                                                                                                                      |
-| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/worksheets/exercise-numbering.ts`      | **La** règle du numéro affiché : `groupExercisesForDisplay`, `orderExercisesForDisplay`, `displayNumberOf`, `exerciseAtDisplayNumber`. Utilisée par la page élève, le générateur PDF et le serveur.                                                                                                       |
-| `src/lib/worksheets/student-worksheet-typst.ts` | `generateStudentWorksheetTypst` : le PDF **élève** (et l'aperçu « vue élève » du prof), mise en page codée en dur, depuis la vue déjà résolue (`StudentWorksheetView`).                                                                                                                                   |
-| `src/lib/worksheets/serie-automatismes.ts`      | `buildSerie` : une **série figée** d'instances de modèles de question devient un exercice ordinaire ([ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md)). Toute anomalie lève une exception. Les formules maison sont figées avec les fonctions du modèle et le sens de `AB` de l'instance. |
-| `src/lib/worksheets/exercise-edit-link.ts`      | `exerciseEditHref`, `worksheetReturnHref` : aller-retour fiche ↔ exercice par `?fiche=<uuid>` (Zod : UUID seulement).                                                                                                                                                                                     |
+| Fichier                                         | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/lib/worksheets/exercise-numbering.ts`      | **La** règle du numéro affiché : `groupExercisesForDisplay`, `orderExercisesForDisplay`, `displayNumberOf`, `exerciseAtDisplayNumber`. Utilisée par la page élève, le générateur PDF et le serveur.                                                                                                                                                                                                                                  |
+| `src/lib/worksheets/student-worksheet-typst.ts` | `generateStudentWorksheetTypst` : le PDF **élève** (et l'aperçu « vue élève » du prof), enveloppe codée en dur (setup, en-tête, partie de fin) ; les exercices viennent du rendu commun.                                                                                                                                                                                                                                             |
+| `src/lib/worksheets/document/`                  | Le **document d'une fiche** ([ADR 0028](../adr/0028-pdf-de-fiche-un-generateur-des-styles-et-des-formes.md), lot 1) : `WorksheetDocument` (`types.ts`), rempli par `documentFromTeacherCopy` (copie du prof) ou `documentFromStudentView` (vue élève, correction non visible → `correction: null`) ; ordre et numéros (`numbering.ts`) ; **rendu d'exercice unique** `renderExercises` (`render-exercise.ts`) ; `MATH_LIMITS_SETUP`. |
+| `src/lib/worksheets/serie-automatismes.ts`      | `buildSerie` : une **série figée** d'instances de modèles de question devient un exercice ordinaire ([ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md)). Toute anomalie lève une exception. Les formules maison sont figées avec les fonctions du modèle et le sens de `AB` de l'instance.                                                                                                                            |
+| `src/lib/worksheets/exercise-edit-link.ts`      | `exerciseEditHref`, `worksheetReturnHref` : aller-retour fiche ↔ exercice par `?fiche=<uuid>` (Zod : UUID seulement).                                                                                                                                                                                                                                                                                                                |
 
 ### `src/lib/typst/` — de la fiche au PDF
 
@@ -237,6 +238,20 @@ ambre (charte élève) ; sinon `{{exercises}}` en titres gras. Dans les corrigé
 `#set page(…)` (`endOfLastPageSetup`, sinon il restait seul sur une page 1 vide) et après le dernier
 `#set text(…)` de premier niveau (`endOfLastTextSetup`, pour prendre les polices du Corrigé).
 
+**Un document, un rendu d'exercice** (ADR 0028, lot 1) : les deux générateurs construisent un
+`WorksheetDocument` puis appellent `renderExercises(doc, forme, habillage)`. Les habillages
+(`classic` : prof sans gabarit ; `heading` : `{{exercises}}` ; `badge` : `{{exercises_badge}}` ;
+`student` : PDF élève) ne changent que la présentation ; ils disparaissent au lot 2. Communs aux deux
+PDF : titre d'exercice avec ses formules (`processTableCellContent`), ordre et numérotation
+(`numbering_style`, `exercise_order` côté prof), points en « pt » / « pts » de `documentLabels` (aussi en anglais, et
+aussi dans le `points-badge` du prof sans gabarit, qui reçoit le libellé) masqués si `show_points` n'est pas coché, exercice hors section après des sections sous
+« Autres exercices », correction non écrite → « Correction non écrite. » sous le numéro (Corrigé,
+et Réponses quand il n'y a ni réponses ni corrigé), opérateurs à limites (`MATH_LIMITS_SETUP`, aussi
+dans le setup du prof sans gabarit, dont `lang` suit la fiche). L'API élève (et celle d'aperçu de
+l'affectation) transmet `numbering_style` et `show_points` (résolus comme pour le prof : absents,
+chiffres et points masqués) ; la copie de l'élève n'est jamais tirée au sort, son ordre est celui
+des positions.
+
 **Trois PDF du prof** (`WorksheetPdfMode`, choix « Fiche · Réponses · Corrigé » de `PdfPreview` ;
 la lecture publique `variant="reader"` reste sur la fiche) :
 
@@ -326,6 +341,8 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
    devDependency `@myriaddreamin/typst-ts-web-compiler` et `@myriaddreamin/typst.ts` dans
    `package.json` (`0.6.1-rc5`). Changer l'une sans les autres rend `fiche:verifier` mensonger.
 3. **Le numéro d'exercice** se calcule par `exercise-numbering.ts`, jamais depuis `position`.
+   Un exercice imprimé se rend par `worksheets/document/render-exercise.ts`, jamais dans un
+   générateur : une évolution du rendu d'un exercice ne s'écrit qu'une fois (ADR 0028).
 4. **La langue est celle de la fiche**, pour le contenu comme pour l'habillage : pas d'exercice
    anglais sous des libellés français. Une config illisible retombe sur le français, elle génère
    quand même.
@@ -378,6 +395,9 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
   `template-localisation.test.ts`), `__tests__/labels.test.ts`,
   `service/__tests__/typst-service.test.ts`, `cache/__tests__/typst-cache.test.ts`,
   `utils/__tests__/typst-utils.test.ts`.
+- `src/lib/worksheets/document/__tests__/` : `worksheet-document.test.ts` (deux adaptateurs, même
+  document, même Typst d'exercice ; garde des corrections non visibles),
+  `deux-pdf-meme-exercice.test.ts` (les écarts corrigés au lot 1, des deux côtés).
 - `src/lib/worksheets/__tests__/` : `exercise-numbering.test.ts`, `student-worksheet-typst.test.ts`,
   `serie-automatismes.test.ts`, `exercise-edit-link.test.ts`.
 - Serveur : `src/lib/server/worksheets/__tests__/instance-generator.test.ts`,
@@ -435,4 +455,4 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
    dépôt ; `compile-prod.mjs` ajoute STIX Two Math depuis un chemin macOS — témoin local et
    production peuvent donc différer sur un glyphe.
 
-Vérifié contre le code le 2026-10-11.
+Vérifié contre le code le 2026-10-13 (lot 1 de l'ADR 0028).

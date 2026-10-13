@@ -36,6 +36,7 @@ contourner en silence.
 | 0025 | [Le cours d'une classe est lisible par lien, sans compte](0025-cours-lisible-par-lien-sans-compte.md)                                    | 2026-10-12 |
 | 0026 | [Les grandeurs : un seul circuit, et « un nombre, une espace, une unité »](0026-grandeurs-un-contrat-et-l-espace.md)                     | 2026-10-11 |
 | 0027 | [Les figures géométriques ont leur propre table, publiques pour tous](0027-figures-geometriques-stockees.md)                             | 2026-10-13 |
+| 0028 | [PDF de fiche : un seul générateur, des styles, une forme = un gabarit](0028-pdf-de-fiche-un-generateur-des-styles-et-des-formes.md)     | 2026-10-13 |
 
 ## Écrire un ADR
 

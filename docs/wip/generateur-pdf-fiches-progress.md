@@ -1,0 +1,146 @@
+# Un seul générateur PDF de fiches, piloté par les gabarits — journal
+
+> Chantier ouvert le 2026-10-13 (demande de David). Worktree `../ubumaths-wt-pdf-fiches`,
+> branche `refactor/generateur-pdf-fiches-unique`. **Plan validé le 2026-10-13 (ADR 0028) ; lots 0 et 1 faits (lot 1 non poussé), lot 2 à venir.**
+
+## Constat (exploration du 2026-10-13)
+
+Deux générateurs Typst produisent les PDF de fiches :
+
+- `src/lib/typst/generators/worksheet-generator.ts` (1 054 lignes) : aperçu et PDF du prof,
+  corrigé du serveur, pages publiques cahier / cours, scripts `scripts/fiches/` ; gabarits ;
+- `src/lib/worksheets/student-worksheet-typst.ts` (354 lignes) : PDF téléchargé par l'élève et
+  aperçu « vue élève » du prof ; mise en page figée (2 colonnes), **aucun gabarit**.
+
+7 fonctionnalités ont été posées deux fois (sens de AB, correction concise / détaillée, figures,
+point décimal anglais, fonctions déclarées, tableaux de signes, fiches en anglais) : toutes sur le
+rendu **d'un exercice**. Le générateur prof a lui-même deux chemins jumeaux (avec / sans gabarit).
+
+Écarts de comportement (bugs d'un côté ou de l'autre) :
+
+1. titre d'exercice : formules rendues côté élève, texte brut côté prof ;
+2. setup prof par défaut : `lang: "fr"` en dur, même pour une fiche anglaise ;
+3. élève : ordre des exercices (`exercise_order`) et style de numérotation ignorés ;
+4. élève : « point(s) » en français en dur ;
+5. opérateurs à limites (∑, lim) réglés côté élève seulement.
+
+Gabarits inaccessibles :
+
+- le PDF élève les ignore ; le corrigé du serveur (`api/worksheets/assignments/[id]/correction`)
+  aussi (toujours la mise en page par défaut) ;
+- RLS de `worksheet_templates` : lecture par le créateur ou l'admin seulement → un élève ne peut pas
+  lire un gabarit créé par le prof (les gabarits système ont une copie dans le code,
+  `getDefaultTemplate`).
+- Le corrigé prof réutilise le gabarit de la fiche en y injectant un bandeau « CORRECTION ».
+
+## Décisions de David (2026-10-13)
+
+- **D0** — La différence se fait entre **types de documents**, pas entre prof et élève : un seul
+  générateur, piloté par le gabarit.
+- **D1** — Question d'accès : un élève pourra lire **le gabarit de la fiche qui lui est affectée**
+  (code de mise en page Typst, aucune donnée d'élève), y compris un gabarit créé par le prof, **via
+  le serveur** (seulement ce gabarit, seulement pour un élève à qui la fiche est affectée).
+  → tests d'intégration (rouges sans le changement) + `security-auditor`.
+- **D2** — **1 forme = 1 gabarit**. Un **style** regroupe ses gabarits, un par forme ; le prof
+  choisit un style pour la fiche, les formes suivent ; il peut changer le gabarit d'une forme. Les
+  éléments communs d'un style (couleurs, en-tête, rendu d'un exercice) sont écrits une fois, dans
+  un fichier partagé importé par ses gabarits. Forme absente d'un style → celle du style par défaut.
+
+- **D3** — Base : **table `worksheet_styles`** (nom, description, propriétaire, code Typst commun) ;
+  `worksheet_templates` porte son style et sa forme (un gabarit par couple) ; la fiche pointe vers
+  un style ; remplacement d'une forme par fiche dans une table dédiée (clés étrangères). « L'élève
+  passe par le serveur » expliqué et validé : aucune policy RLS ouverte aux élèves.
+- **D4** — Comportements : exercice hors section après des sections → « **Autres exercices** » ;
+  correction non écrite → « **Exercice N : correction non écrite** » ; « afficher les points »
+  s'applique **à tous les PDF**.
+
+## Vocabulaire proposé (à verser dans CONTEXT.md, lot 0)
+
+| Terme       | Sens                                                                                                                     |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Gabarit** | Mise en page Typst d'**une** forme de document (`worksheet_templates`). « Modèle » reste aux chapitres et questions.     |
+| **Style**   | Famille de gabarits qui se ressemblent (« Moderne », « Fiche élève »…), un par forme ; choisi par le prof pour la fiche. |
+| **Forme**   | Ce que contient le PDF : **fiche** · **réponses** · **corrigé** · **fiche + corrections** (corrections en fin).          |
+
+## Architecture cible (à valider)
+
+1. **Un modèle de document unique**, `DocumentFiche` : titre, type, langue, exercices (numéro,
+   titre, énoncé, réponses ?, corrigé ?, points, consigne, section, indispensable ★), sections,
+   affectation ? (consignes), cartouche (élève, classe, date), options d'affichage. **Deux
+   adaptateurs** le remplissent : depuis la copie recalculée (`buildWorksheetCopy`, côté prof) et
+   depuis `StudentWorksheetView` (côté élève, corrections déjà filtrées par le serveur).
+2. **Un rendu d'exercice unique** (titre avec formules, numérotation, points localisés, consigne,
+   énoncé, réponses / corrigé concis ou détaillé), utilisé par toutes les formes.
+3. **Un générateur sans « mode »** : `générer(document, gabarit) → Typst`. Le gabarit décide quoi
+   afficher ; les placeholders (consignes d'affectation, ★, cartouche…) sont disponibles pour tous.
+4. **Résolution du gabarit** : style de la fiche + forme demandée (+ remplacement éventuel par le
+   prof) → gabarit ; repli sur le style par défaut. Côté élève, le serveur renvoie le gabarit (D1).
+5. Tous les chemins passent par là : aperçu prof, PDF par élève (ZIP), corrigé du serveur,
+   téléchargement élève, aperçu « vue élève », cahier / cours publics, scripts `scripts/fiches/`.
+
+**Q1 (base de données)** — tranchée : D3 (table des styles).
+
+## Lots (proposés)
+
+| Lot | Contenu                                                                                                                                                                   | Change le rendu ?           |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| 0   | ADR (D0-D2) + vocabulaire CONTEXT.md                                                                                                                                      | non                         |
+| 1   | `DocumentFiche` + 2 adaptateurs + rendu d'exercice unique, branchés dans les deux générateurs actuels ; écarts 1-5 corrigés                                               | oui : écarts 1-5 seulement  |
+| 2   | Formes = gabarits : pour chaque style intégré, gabarits réponses / corrigé / fiche + corrections ; fichier commun du style ; plus de bandeau injecté ni de `mode`         | oui : corrigés (à montrer)  |
+| 3   | Base : styles et formes (Q1), migration additive ; choix du style (+ remplacement d'une forme) dans l'écran de la fiche                                                   | écran prof (à montrer)      |
+| 4   | Élève : le serveur fournit le gabarit (D1, tests d'intégration + `security-auditor`) ; PDF élève, aperçu vue élève et corrigé du serveur passent par le générateur unique | oui : PDF élève (à montrer) |
+| 5   | Retrait de `student-worksheet-typst.ts` et des chemins morts (`generateBatchTypst`) ; doc versée dans `docs/systeme/fiches-et-pdf.md`, journal archivé                    | non                         |
+
+Chaque lot : tests d'abord (rouges), empreinte Typst avant / après sur un jeu de fiches réelles
+(rien ne bouge hors de ce que le lot veut changer), rendu montré à David avant la PR quand
+l'esthétique change.
+
+## Comportements attendus du lot 1 (spécification TDD, à valider)
+
+Nominal :
+
+- une même fiche, rendue depuis la copie prof et depuis la vue élève (corrections toutes visibles),
+  donne **le même Typst d'exercice** (titre, numéro, points, consigne, énoncé, corrigé) ;
+- un titre `Dériver $f(x)=x^2$` s'affiche avec la formule, dans les deux PDF ;
+- fiche en anglais : `lang: "en"`, « pt » / « points » en anglais, des deux côtés ;
+- `numbering_style` romain et un `exercise_order` personnalisé : mêmes numéros, même ordre côté
+  élève que côté prof ;
+- ∑ et lim ont leurs bornes dessous dans les deux PDF.
+
+Limites :
+
+- exercice sans section après des sections : même regroupement des deux côtés (D4 : « Autres exercices ») ;
+- solution vide : même traitement des deux côtés (aujourd'hui : en-tête seul côté prof, exercice
+  omis côté élève) — **D4 : « Exercice N : correction non écrite »** ;
+- `show_points` décoché : points masqués des deux côtés (aujourd'hui toujours affichés côté élève).
+
+Erreur / garde :
+
+- corrections non visibles pour l'élève : jamais dans son PDF, quelle que soit la forme ;
+- langue inconnue → repli `fr`, comme aujourd'hui.
+
+## Journal
+
+- 2026-10-13 — **lot 1 fait** (commits locaux, non poussés). `src/lib/worksheets/document/` :
+  `WorksheetDocument`, adaptateurs prof / élève, ordre et numéros, rendu d'exercice unique
+  (habillages `classic` / `heading` / `badge` / `student`, qui disparaissent au lot 2) ; les deux
+  chemins jumeaux du prof fusionnés. Écarts corrigés : titre en formule côté prof ; `lang` du setup
+  prof selon la fiche (+ `region: "FR"` en français seulement) ; ∑ / lim dans le setup prof ;
+  élève : `numbering_style`, « pt / pts » de `documentLabels`, `show_points` (API élève et aperçu :
+  `numbering_style`, `show_points`, et `asWorksheetConfig` lit enfin `numbering_style`) ; D4 :
+  « Autres exercices » des deux côtés, « Correction non écrite. » (Corrigé ; Réponses sans réponses
+  ni corrigé). Empreinte avant / après (3 fiches × 13 mises en page × 3 formes + élève × 3 fins,
+  126 fichiers) : 54 changent, uniquement ces écarts. Mesure prod (2026-10-13) : 27 fiches sur 32
+  ont `show_points` faux, mais aucune n'a d'exercice à points → le PDF élève ne perd rien.
+  Restent ouverts : la copie élève n'a pas d'`exercise_order` (jamais tirée, ADR 0023) alors que
+  `shuffle_exercises` existe dans la config ; mots « pt / pts » identiques en anglais (décision
+  de David : « pt / pts » aussi en anglais).
+- 2026-10-13 — revue du lot 1 : titre avec les fonctions déclarées et le sens de AB de
+  l'exercice ; `points-badge` du prof sans gabarit sur `documentLabels` (« 1 pt », plus « 1 pts »).
+  **À faire au lot 2** : l'aperçu markdown à l'écran de `PdfPreview.svelte` (l. 244-256) garde sa
+  propre numérotation `i + 1`, « Réponses non rédigées » en français en dur et pas de « Correction
+  non écrite » : le faire passer par le rendu commun.
+
+- 2026-10-13 — plan validé ; D3, D4 ; lot 0 : ADR 0028, vocabulaire dans CONTEXT.md (style, gabarit, forme).
+
+- 2026-10-13 — exploration (carte des deux générateurs), décisions D0-D2, plan proposé.
