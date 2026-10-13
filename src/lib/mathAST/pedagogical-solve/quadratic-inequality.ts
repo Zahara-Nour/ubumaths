@@ -55,6 +55,7 @@ import {
 	isConstantCoefficient,
 	isZero,
 	makeStep,
+	rejectForbiddenValues,
 	renumberSteps,
 	domainDescriptionLatex
 } from './_helpers';
@@ -424,6 +425,11 @@ export function generateQuadraticInequalitySteps(
 			level: level === 'lycee' ? 'lycee' : 'superieur'
 		});
 	}
+
+	// 4 bis. Valeur interdite effacée par la forme canonique : refus, comme au
+	// premier degré. \frac{2x^3}{x}<2 se rédigeait 2x² − 2 < 0, sans jamais
+	// exclure 0 (V48) ; l'appelant se replie sur `solveInequality`.
+	rejectForbiddenValues(inequality, variable);
 
 	// 5. Extract coefficients (a, b, c)
 	const coeffs = extractQuadraticCoefficients(standardForm, variable);

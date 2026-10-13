@@ -458,6 +458,11 @@ ligne ne compile plus. Conclusions acceptées pour la ligne : `read-solution`, `
 `no-real-solution`, les conclusions d'inéquation, et `read-all-reals` (`S = ℝ`,
 `|x-1|=|1-x|`).
 
+Une inéquation dont l'écriture a une valeur interdite que la forme canonique efface
+(`\frac{3x^2}{2x}\geq 0`, `\frac{2x^3}{x}<2`) n'a pas d'étapes : les pipelines du premier et du
+second degré la refusent (`rejectForbiddenValues`, V47 puis V48), `solveSteps` rend `null` et
+l'atelier affiche la réponse du moteur sans « Comment ? ».
+
 **Le garde-fou** (`solve-steps-check.ts`) vérifie la conclusion contre les nombres et le moteur
 avant de la montrer ; un désaccord rend `null` (repli sur la réponse du moteur). `S = ℝ` est
 accepté seulement si l'équation tient sur toute une grille ET si `solve` répond `infinite`. Un

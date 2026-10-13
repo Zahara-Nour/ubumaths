@@ -315,8 +315,8 @@ signe lit comme ℝ → statut `partial`, sauf si aucun pôle ne tombe dans le d
 (`\tan x \geq 0` sur [-1 ; 1] reste `complete`). La console (avec ou sans `dans`) en hérite. Le pipeline
 pédagogique du premier degré, dont la conclusion est une forme résolue (`x ≥ 0`), refuse une
 inéquation à valeur interdite (`rejectForbiddenValues`, `pedagogical-solve/_helpers.ts`) ; le
-second degré conclut par `solveInequality` (juste), mais son tableau ne montre pas la valeur
-interdite (V48). Tests : `solve/inequality/__tests__/domaine-de-definition.test.ts`,
+second degré refuse aussi depuis V48 (`\frac{2x^3}{x}<2` se rédigeait 2x² − 2 < 0 sans exclure 0) :
+l'appelant (atelier, `correction-generator`) se replie sur la réponse du moteur. Tests : `solve/inequality/__tests__/domaine-de-definition.test.ts`,
 `pedagogical-solve/__tests__/inequation-valeurs-interdites.test.ts`.
 
 ### Carte du code
