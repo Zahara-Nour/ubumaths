@@ -193,6 +193,23 @@ describe('durées composées et fractions dans la carte', () => {
 		sameQuantity(definitionFromField('value', typed), expected);
 	});
 
+	// Revue : la notation scientifique passait par le secours des cases à unité
+	it.each([
+		['2{,}5\\times10^3\\,m', 'm'],
+		['1{,}5\\times10^8\\,km', 'km']
+	])('%s reste une grandeur', (typed, unit) => {
+		expect(parseDefinition('value', definitionFromField('value', typed), 'keyboard')).toEqual({
+			unit
+		});
+	});
+
+	it('une partie décimale garde sa virgule, un ordre inhabituel son écriture', () => {
+		expect(roundTrip('(2.5[h]+30[min])', 'text').field).toContain('2{,}5');
+		const { field, back } = roundTrip('(2[min]+3[h])', 'text');
+		expect(field).toContain('+');
+		expect(parseDefinition('value', back, 'keyboard')).toEqual({ unit: 'min' });
+	});
+
 	it('ce qui n’est pas une grandeur reste tel quel', () => {
 		expect(definitionFromField('value', '\\min\\left(2,3\\right)')).toBe('\\min\\left(2,3\\right)');
 		expect(definitionFromField('value', '\\frac{1}{2}m')).toBe('\\frac{1}{2}m');

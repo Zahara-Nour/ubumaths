@@ -29,8 +29,8 @@ import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
 // Constantes
 // =============================================================================
 
-/** Les unités d'une durée composée (`2 h 30 min`). */
-const DURATION_UNITS: ReadonlySet<string> = new Set(['h', 'min', 's']);
+/** Les unités d'une durée composée (`2 h 30 min`), de la plus grande à la plus petite. */
+const DURATION_UNITS: readonly string[] = ['h', 'min', 's'];
 
 // =============================================================================
 // Fonctions
@@ -94,11 +94,17 @@ function compositeDurationField(ast: MathNode | null): string | null {
 	parts.unshift(node);
 	if (parts.length < 2) return null;
 	const written: string[] = [];
+	let previous = -1;
 	for (const part of parts) {
 		const symbol = isUnit(part) ? part.unit.original : undefined;
 		if (!isUnit(part) || !isNumber(part.expression) || symbol === undefined) return null;
-		if (!DURATION_UNITS.has(symbol)) return null;
-		written.push(`${part.expression.value}~\\unit{${symbol}}`);
+		// h, min, s dans cet ordre, chacune une fois : sinon l'écriture du rangement
+		const rank = DURATION_UNITS.indexOf(symbol);
+		if (rank <= previous) return null;
+		previous = rank;
+		// La virgule de MathLive, comme un nombre seul (`2{,}5`)
+		const value = String(part.expression.value).replace('.', '{,}');
+		written.push(`${value}~\\unit{${symbol}}`);
 	}
 	return forMathlive(written.join('~'));
 }
@@ -156,6 +162,15 @@ export function definitionFromField(kind: ObjectKind, latex: string): string {
 	if (natural !== null) {
 		const read = parseDefinition('value', natural, 'keyboard');
 		if (read.error === undefined && read.unit !== undefined) return natural;
+	}
+	// La notation scientifique (`2{,}5\times10^3\,m`) échappe à la lecture
+	// naturelle (un nombre après `^`) : le secours des cases à unité (revue)
+	// (sur `decimal` : la virgule de MathLive `2{,}5` cachait le chiffre — revue du lot C)
+	if (/\d\\,\s*[^\d\s\\]/.test(decimal)) {
+		// La virgule redevient celle de MathLive (`2{,}5`) : nue, le LaTeX la refuse
+		const spaced = normalizeStudentQuantity(decimal).replace(/(\d),(\d)/g, '$1{,}$2');
+		const read = parseDefinition('value', spaced, 'keyboard');
+		if (read.error === undefined && read.unit !== undefined) return spaced;
 	}
 	if (parseDefinition('value', typed, 'keyboard').error === undefined) return typed;
 
