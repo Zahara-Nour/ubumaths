@@ -169,8 +169,7 @@ appliquée (A8) ; cadres englobants en pointillés gris (A10).
   figée dès qu'elle contient une soustraction) ; `movedLatex` réécrit le seul contenu du marqueur
   du groupe, les marqueurs des parties restent (la formule réécrite reste explorable). Le signe
   suit le terme, un `+` en tête disparaît ; dans un produit, le signe × seulement devant un nombre
-  ou une fraction (même écrit par l'élève) — toujours en 6e ou avant, **provisoire** (extension de
-  E5.4 proposée par Claude, en attente de David) ; un quotient en ligne posé ailleurs qu'en tête
+  ou une fraction (même écrit par l'élève) — toujours en 6e ou avant (E5.4, David, 2026-10-14) ; un quotient en ligne posé ailleurs qu'en tête
   d'un produit prend des parenthèses (`12 : 3 × 2` → `2 (12 : 3)` : `2 × 12 : 3` se relirait
   `(2 × 12) : 3`) ; une parenthèse de l'écriture usuelle (`2 × (−3)` saisi `2×-3`) suit sa partie ;
   posée à sa place, une partie ne change rien. Un second déplacement repart d'une structure relue. `groupLatex` écrit la ligne pendant le glisser : espaces
