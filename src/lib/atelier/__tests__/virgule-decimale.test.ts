@@ -309,11 +309,13 @@ describe('la saisie lit la virgule que l’affichage écrit', () => {
 	it('dans l’expression d’une commande : .évaluer x^2+0,5 en x=0,3', () => {
 		const result = commande(runInput(session(), '.évaluer x^2+0,5 en x=0,3'));
 
-		expect(result.output).toContain('59/100');
+		// E5 (David, 2026-10-14) : saisie décimale → réponse décimale (avant : 59/100)
+		expect(result.output).toBe('0,59');
 	});
 
 	it.each([
-		['.évaluer 2x en x=1,5', 'Result: 3'],
+		// La ligne est une formule depuis 2026-10-14 (avant : « Result: 3 (exact) »)
+		['.évaluer 2x en x=1,5', '3'],
 		['.résoudre 0,5x+3=1', 'x = -4'],
 		['.intégrer x de 0 à 0,5', '1/8'],
 		['.taylor e^x ordre 3 en 0,5', 'x-0,5'],
@@ -535,7 +537,7 @@ describe('ce qui ne change pas', () => {
 		const message = result.kind === 'refus' ? result.message : '';
 		expect(message).toBe('Pour remplacer x par 0,3, écris : .évaluer x^2+0,5 en x=0,3');
 		const retyped = commande(runInput(session(), message.split('écris : ')[1]));
-		expect(retyped.output).toContain('59/100');
+		expect(retyped.output).toBe('0,59');
 	});
 
 	it('l’écho de la saisie reste ce qui a été tapé', () => {

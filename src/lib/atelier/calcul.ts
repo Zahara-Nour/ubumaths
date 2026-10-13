@@ -99,6 +99,8 @@ import { solveSteps, type SolvedSteps } from './solve-steps';
 import { readNaturalQuantities, singleLetterHint, type NaturalReading } from './natural-quantities';
 import { quantityProblem } from '$lib/mathAST/cli/quantities';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
+import { VALUE_FORBIDDEN, typedValueLatex } from '$lib/mathAST/cli/commands/eval.command';
+import { isBoolean, isNumber, isOpposite } from '$lib/mathAST/guards';
 import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
@@ -292,7 +294,9 @@ const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
 	// `.domaine sqrt(sin(x))` : le domaine n'a pas pu être établi (#963)
 	'DOMAIN_UNRESOLVED',
 	// `5[m]+3[s]`, `.convertir kg` après une longueur (phase 0 grandeurs, lot A)
-	'QUANTITY_ERROR'
+	'QUANTITY_ERROR',
+	// `.évaluer \frac{x+1}{x-1} en x=1` : « $x = 1$ est une valeur interdite… »
+	VALUE_FORBIDDEN
 ]);
 
 /**
@@ -1316,6 +1320,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		return {
 			kind: 'refus',
 			message: result.error?.message ?? UNREADABLE_COMMAND,
+			// Le refus de `.évaluer` cite la valeur en formule : `$x = 1$`
+			...(result.error?.code === VALUE_FORBIDDEN && { formulas: true as const }),
 			...(explained !== null && { steps: explained.steps, ...summaryField(explained) }),
 			...noted
 		};
@@ -1547,6 +1553,28 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		}
 	}
 
+	// `.évaluer` : la réponse est une FORMULE, `f(3) = 9` pour une fonction de
+	// l'atelier, la valeur seule pour une expression (décision de David,
+	// 2026-10-14) ; le texte du terminal (« Result: 9 (exact) Mode: exact »,
+	// en anglais) n'est plus montré
+	if (name === 'eval' && result.success && result.latex !== undefined) {
+		const assignment = finalArgs?.assignment ?? typedArgs?.assignment ?? null;
+		const line = evaluatedLine(
+			result,
+			result.latex,
+			evaluatedFunctionName(session, typedArgs?.expression ?? null),
+			assignment?.value ?? null
+		);
+		return {
+			kind: 'commande',
+			input,
+			output: line.text,
+			latex: line.latex,
+			...solutionsAlternative(result),
+			...noted
+		};
+	}
+
 	return {
 		kind: 'commande',
 		input,
@@ -1554,6 +1582,48 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		...(rendered.latex && { latex: rendered.latex }),
 		...noted
 	};
+}
+
+/**
+ * La fonction de l'atelier qu'évalue `.évaluer f en x=3` (ou `f(x)`), sinon
+ * `null` : une expression qui la contient (`f(x)+1`) n'est pas `f`.
+ */
+function evaluatedFunctionName(session: CalcSession, typed: string | null): string | null {
+	if (typed === null) return null;
+	const name = /^\s*([^\s(]+?)\s*(?:\(\s*[A-Za-z]\s*\))?\s*$/.exec(typed)?.[1];
+	return name !== undefined && session.atelier.get(name)?.kind === 'function' ? name : null;
+}
+
+/**
+ * La ligne de `.évaluer` : `f(3) = 9` (`\approx` quand c'est arrondi), ou la
+ * valeur seule. `latex` est la valeur écrite par le moteur (`eval.command`).
+ */
+function evaluatedLine(
+	result: ReplExecutionResult,
+	latex: string,
+	functionName: string | null,
+	typedValue: string | null
+): { readonly text: string; readonly latex: string } {
+	const rounded = latex.startsWith('\\approx');
+	const ast = result.ast;
+	const valueText =
+		ast === undefined
+			? ''
+			: isBoolean(ast)
+				? ast.value
+					? 'vrai'
+					: 'faux'
+				: `${rounded ? '≈ ' : ''}${toCustom(ast)}`;
+	const value = typedValue === null ? undefined : parseCommandExpression(typedValue).ast;
+	if (functionName === null || value === undefined) return { text: valueText, latex };
+	// La valeur tapée telle quelle, une division écrite en fraction : f(1/3) → f(⅓),
+	// comme dans un refus (`typedValueLatex`)
+	const argument = typedValueLatex(value);
+	const plain = isNumber(value) || (isOpposite(value) && isNumber(value.operand));
+	const call = plain ? `${functionName}(${argument})` : `${functionName}\\left(${argument}\\right)`;
+	// Le texte, homogène : `f(sqrt(2)) = 1+sqrt(2)`, pas `f(\sqrt{2}) = 1+sqrt(2)`
+	const text = `${functionName}(${toCustom(value)}) ${rounded ? valueText : `= ${valueText}`}`;
+	return { text, latex: rounded ? `${call} ${latex}` : `${call} = ${latex}` };
 }
 
 /**

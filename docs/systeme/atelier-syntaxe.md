@@ -49,6 +49,9 @@ L'expression s'arrête au **premier mot-clé**. Un mot-clé est un mot entier, e
   définie sur un intervalle (`f(x) = x^2 sur [0;+∞[`) passe au moteur par ce mot. `.évaluer f en
 x=…` et `.intégrer f de a à b` hors de cet ensemble sont refusés comme `f(5)`, et `.domaine f`
   le donne (« ensemble choisi », décisions a et b du 2026-10-13).
+- **`en`** (`.évaluer`) : la réponse est une formule, `f(3) = 9` ou la valeur seule ; une valeur
+  décimale donne une réponse décimale, une valeur interdite un refus qui dit pourquoi (détail :
+  [atelier.md](atelier.md), « `.évaluer` en détail », 2026-10-14).
 - **`sur`** (`.réciproque`, lot 3 de la réciproque, 2026-10-13) : le mot de la définition d'une
   fonction sur un intervalle (`f(x) = x^2 sur [0;+∞[`), pas `dans`. Il est CROISÉ avec l'ensemble
   de la carte f (vide → refus). Sur une fonction de l'atelier, crée ou met à jour la carte `f⁻¹` ;
