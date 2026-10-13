@@ -230,15 +230,21 @@ export class EvalCommand extends BaseCommand {
  * dans un refus et dans la ligne `f(…) = …` de l'atelier (revue du 2026-10-14).
  */
 export function typedValueLatex(value: MathNode): string {
-	return toLatex(
-		mapNode(value, (n) => {
-			if (!isDivision(n)) return n;
-			// `-1/2` est lu (−1)/2 : le signe sort de la fraction
-			return isOpposite(n.numerator)
-				? opposite(fraction(n.numerator.operand, n.denominator))
-				: fraction(n.numerator, n.denominator);
-		})
-	);
+	return toLatex(typedValueNode(value));
+}
+
+/**
+ * La valeur tapée, ses divisions récrites en fractions : l'arbre que
+ * `typedValueLatex` écrit, et que les étapes de l'atelier substituent.
+ */
+export function typedValueNode(value: MathNode): MathNode {
+	return mapNode(value, (n) => {
+		if (!isDivision(n)) return n;
+		// `-1/2` est lu (−1)/2 : le signe sort de la fraction
+		return isOpposite(n.numerator)
+			? opposite(fraction(n.numerator.operand, n.denominator))
+			: fraction(n.numerator, n.denominator);
+	});
 }
 
 /**

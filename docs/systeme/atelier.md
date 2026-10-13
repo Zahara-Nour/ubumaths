@@ -596,7 +596,7 @@ Doc du moteur : [mathast/README.md](mathast/README.md).
 | `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                                                                                                                                                                                                                                             |
 | `.intégrer`                             | réponse : `integration` (`integrate.command.ts`) ; « Comment ? » : `src/lib/mathAST/pedagogical-integration/` niveau lycée, vérifié par `integrate-steps-check.ts`                                                                                                                                                                                   |
 | `.domaine`                              | réponse : `computeDomain` (`domain.command.ts` refuse ce qu'il ne résout pas), écrite par `domainToLatex` ; « Comment ? » : `src/lib/mathAST/pedagogical-domain/` niveau lycée, vérifié par `domain-steps-check.ts`                                                                                                                                  |
-| `.évaluer`                              | réponse : `eval.command.ts` — `substitute`, refus d'une valeur interdite (`forbiddenValue`, `mathAST/eval/forbidden-value.ts`, exact), puis `evaluate` ; la ligne est une formule (`evaluatedLine`, voir ci-dessous) ; pas encore de « Comment ? »                                                                                                   |
+| `.évaluer`                              | réponse : `eval.command.ts` — `substitute`, refus d'une valeur interdite (`forbiddenValue`, `mathAST/eval/forbidden-value.ts`, exact), puis `evaluate` ; la ligne est une formule (`evaluatedLine`, voir ci-dessous) ; « Comment ? » : `src/lib/mathAST/pedagogical-arithmetic/` niveau collège, vérifié par `evaluate-steps-check.ts`               |
 | `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                                                                                                                                                                                                                                                  |
 | syntaxe des commandes                   | `src/lib/mathAST/cli/core/variable-argument.ts`                                                                                                                                                                                                                                                                                                      |
 
@@ -618,7 +618,7 @@ second degré la refusent (`rejectForbiddenValues`, V47 puis V48), `solveSteps` 
 l'atelier affiche la réponse du moteur sans « Comment ? ».
 
 **« Résumé / Détaillé »** (`steps-summary.ts`, 2026-10-13). Les commandes qui rédigent
-(simplifier, factoriser, dériver, résoudre, intégrer, domaine — tapées, ou Résoudre / Dériver sur une carte) rendent le même
+(simplifier, factoriser, dériver, résoudre, intégrer, domaine — tapées, ou Résoudre / Dériver sur une carte ; `.évaluer` construit le sien, voir plus bas) rendent le même
 calcul DEUX fois : `steps` en `verbosity: 'detailed'`, `summary` en `'summarized'`. Le moteur
 tourne une fois ; seul `renderAll` est rappelé, et la réponse de la ligne vient du calcul, jamais
 de la rédaction. `summaryOf` compare les deux rendus et rend `undefined` s'ils sont identiques :
@@ -651,8 +651,8 @@ accepté seulement si l'équation tient sur toute une grille ET si `solve` répo
 ligne est une **formule**, plus le texte du terminal (« Result: 9 (exact) Mode: exact », en
 anglais) : `f(3) = 9` quand l'expression tapée est une fonction de l'atelier (`f` ou `f(x)`, dans
 sa lettre : `f(t) = t^2`, `en t=2` → `f(2) = 4` ; une valeur non entière entre `\left(…\right)`,
-une division tapée écrite en fraction), sinon la valeur seule — l'écho montre déjà l'expression,
-le remplacement viendra avec les étapes (PR 2 et 3). Une comparaison répond « vrai » / « faux ».
+une division tapée écrite en fraction ; l'appel est écrit par `evaluatedCallLatex`), sinon la
+valeur seule — l'écho montre déjà l'expression, le remplacement est la première étape. Une comparaison répond « vrai » / « faux ».
 **E5** : une saisie décimale (dans la valeur, l'expression, la formule de f ou une variable posée,
 `hasDecimalLiteral` sur l'expression remplacée) donne une réponse décimale, comme le mode décimal,
 écrite par la règle du bouton ≈ (`approximation.ts` : 4 décimales, `\approx` seulement si
@@ -671,6 +671,36 @@ calcul n'a pas de valeur : … ». La valeur citée s'écrit comme dans la ligne
 `\dfrac{\pi}{2}`, `-\dfrac{1}{2}`). Avant : un dénominateur nul finissait en « Je n'ai pas su
 lire », `\sqrt{-1}`, `\ln 0`, `\tan(\pi/2)`, `\arcsin(2)` passaient pour des résultats. La console
 (`repl.ts`) garde son texte. Plusieurs lettres (`en x=2, y=3`) : décision de David en attente.
+
+**« Comment ? » de `.évaluer`** (`evaluate-steps.ts`, PR 3, décisions de David du 2026-10-14).
+**E2** : `generatePedagogicalArithmeticSteps` niveau `college`, une opération par étape (pièges du
+négatif compris : `(-3)^2 = (-3) \times (-3) = 9`, « Soustraire $-3$, c'est ajouter $3$ »).
+**E3** : la première étape est rédigée par l'atelier, « On remplace $x$ par $-3$ » (règle
+`atelier-substitute`) : l'expression où `typedValueNode(valeur)` (la valeur tapée, divisions en
+fractions, partagée avec `typedValueLatex`) a pris la place de la lettre, négatifs entre
+parenthèses (`substitute` + `toLatex`), produit d'un nombre écrit `\times` (`crossProducts` :
+`3x` en −2 sortait `3 * (-2)`), négatif en tête de produit entre parenthèses dès le remplacement
+(`parenthesizeLeadingNegatives` : `(-2)(-2-1)`, pas `-2(-2-1)`), parenthèses que l'atelier ajoute
+autour d'une fonction citée retirées quand elles ne servent à rien (`dropUselessParentheses` :
+`g(x)+1` → `2^2 + 1`, développé en `2 \times 2`) ; pour une fonction de l'atelier, `f(2) = 2^2 + 1` (parenthèses
+extérieures de la définition retirées). Le pipeline part de cette même expression. **Résumé** :
+le pipeline ne distingue pas ses étapes par verbosité (seules les explications changent) ; le
+résumé est donc CONSTRUIT : le remplacement, puis « On effectue les calculs »
+(`atelier-evaluate-result`, `expression = valeur` ou `f(2) = 5` d'un trait) ; offert seulement
+si le détaillé compte au moins deux opérations. **Gardes** (`evaluate-steps-check.ts`, toute
+exception → pas d'étapes) : valeur conclue = réponse du moteur **en calcul exact**
+(`evaluate(a − b)` nul) ; réponse arrondie (`\approx`) → rien ; **E4** pas de « Comment ? » si
+l'expression contient une fonction autre que racine et valeur absolue, ou une puissance de e
+(`e^0`, `\ln 1`, `\sin 0`), ni si le pipeline ne rend aucune étape ou « On calcule » seul
+(`(1/2)^2`, `x` en 3) ; aucun `*` dans le LaTeX ; **E5** une réponse décimale garde ses
+décimaux (virgule par `resultWithDecimalComma`, `2 \times 1{,}5 = 3`), mais des étapes qui
+passent par une fraction sous une réponse décimale (le pipeline récrit `1{,}5^2` en 9/4 et
+`1 + 0{,}5` en 3/2) → pas d'étapes. **Une seule lettre** : une saisie qui cite une autre lettre
+qu'une fonction de l'atelier (`a x` avec `a` posé, que l'atelier remplace avant le moteur) n'a
+pas d'étapes (`citesOtherLetters`, E6 en attente) ; de même une valeur posée tapée après `en`
+(`en x=a`), dont la ligne s'écrit `f(3) = 10` (`typedValueOf` ôte les parenthèses de
+remplacement). Les refus (`VALUE_FORBIDDEN`) sortent avant,
+sans étapes.
 
 **`.intégrer` en détail** (`integrate-steps.ts`, 2026-10-13). La réponse de la ligne est celle
 du moteur `integration`, inchangée (`+ C` compris). Le « Comment ? » vient de
