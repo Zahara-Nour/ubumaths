@@ -297,7 +297,8 @@ CRON_SECRET                   # Secret taches planifiees
 > pas retires par le SQL (chemins consignes dans `cleanup_result`) : une tache hebdomadaire
 > (`/api/cron/deleted-account-files`, cron Vercel du dimanche) les retire, et date la ligne
 > d'audit (`storage_removed_at`) une fois tout retire. Elle reprend aussi les retraits echoues
-> de la suppression par l'eleve. Autres durees reelles :
+> de la suppression par l'eleve. Le meme passage retire les pieces jointes de la messagerie restees
+> sans ligne en base (message purge apres 3 ans, piece jointe retiree). Autres durees reelles :
 > `error_logs` 30 j, `audit_logs` 60 j, `user_presence` 30 j, `friendships` refusees 2 ans,
 > `messages` / `private_messages` 3 ans.
 
