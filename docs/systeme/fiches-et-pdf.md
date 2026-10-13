@@ -243,8 +243,8 @@ ambre (charte élève) ; sinon `{{exercises}}` en titres gras. Dans les corrigé
 (`classic` : prof sans gabarit ; `heading` : `{{exercises}}` ; `badge` : `{{exercises_badge}}` ;
 `student` : PDF élève) ne changent que la présentation ; ils disparaissent au lot 2. Communs aux deux
 PDF : titre d'exercice avec ses formules (`processTableCellContent`), ordre et numérotation
-(`numbering_style`, `exercise_order` côté prof), points en « pt » / « pts » de `documentLabels`
-masqués si `show_points` n'est pas coché, exercice hors section après des sections sous
+(`numbering_style`, `exercise_order` côté prof), points en « pt » / « pts » de `documentLabels` (aussi en anglais, et
+aussi dans le `points-badge` du prof sans gabarit, qui reçoit le libellé) masqués si `show_points` n'est pas coché, exercice hors section après des sections sous
 « Autres exercices », correction non écrite → « Correction non écrite. » sous le numéro (Corrigé,
 et Réponses quand il n'y a ni réponses ni corrigé), opérateurs à limites (`MATH_LIMITS_SETUP`, aussi
 dans le setup du prof sans gabarit, dont `lang` suit la fiche). L'API élève (et celle d'aperçu de

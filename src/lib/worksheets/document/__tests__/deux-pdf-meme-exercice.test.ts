@@ -3,7 +3,8 @@
  * ==================================================================
  *
  * Les deux générateurs passent par le même rendu d'exercice. Les écarts qui
- * existaient entre eux (titre en formule, langue, numérotation, « points »,
+ * existaient entre eux (titre en formule, langue, numérotation, « pt / pts »
+ * de `documentLabels` pour toutes les mises en page,
  * opérateurs à limites, « Autres exercices », correction non écrite,
  * « afficher les points ») sont corrigés des deux côtés.
  */
@@ -282,6 +283,15 @@ describe('ordre et numérotation', () => {
 // ============================================================================
 
 describe('points', () => {
+	it('prof sans gabarit : « 1 pt », « 2 pts » (documentLabels, plus « pts » en dur)', () => {
+		for (const language of ['fr', 'en'] as const) {
+			const typst = teacher('worksheet', { ...BASE_CONFIG, language });
+			expect(typst).toContain('points-badge([1 pt])');
+			expect(typst).toContain('points-badge([2 pts])');
+			expect(typst).not.toContain('#pts pts');
+		}
+	});
+
 	it('élève : « pt » / « pts », les mots du prof', () => {
 		const typst = student('none');
 		expect(typst).toContain('[2 pts]');
@@ -300,7 +310,7 @@ describe('points', () => {
 		for (const [, tpl] of TEACHER_LAYOUTS) {
 			const typst = teacher('worksheet', hidden, tpl);
 			expect(typst).not.toMatch(/\d pts?\]/);
-			expect(typst).not.toMatch(/points-badge\(\d/);
+			expect(typst).not.toMatch(/points-badge\(\[/);
 		}
 	});
 });

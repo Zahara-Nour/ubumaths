@@ -405,12 +405,13 @@ ${MATH_LIMITS_SETUP}
   )
 }
 
-#let points-badge(pts) = {
+// Le libellé (« 1 pt », « 2 pts ») vient de documentLabels, dans la langue de la fiche
+#let points-badge(label) = {
   text(size: 0.9em, weight: "bold")[#box(
     fill: rgb(220, 220, 220),
     inset: (x: 6pt, y: 3pt),
     radius: 3pt,
-    [#pts pts]
+    label
   )]
 }
 `;

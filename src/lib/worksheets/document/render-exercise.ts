@@ -173,7 +173,8 @@ function renderClassicExercise(
 	content += '    columns: (auto, 1fr, auto),\n';
 	content += `    [#text(size: 1.1em, weight: "bold")[${labels.exercise} ${exercise.number}${title}]],\n`;
 	content += '    [],\n';
-	content += shownPoints(exercise, doc) ? `    points-badge(${exercise.points})\n` : '    []\n';
+	const points = shownPoints(exercise, doc);
+	content += points ? `    points-badge([${points}])\n` : '    []\n';
 	content += '  )\n';
 
 	// Consigne du prof : elle fait partie de l'énoncé, sur la fiche seulement
