@@ -16,7 +16,7 @@
 
 import type { MathNode } from '../types';
 import { parseLatexSafe } from '../parser';
-import { computeDomain, createDomainStepRecorder } from '../domain';
+import { computeDomain, createDomainStepRecorder, formatInterval } from '../domain';
 import type { Domain, DomainRule, EnhancedDomainStep } from '../domain';
 import { LYCEE_FORBIDDEN_RULES } from '../domain/mvp-rules';
 import {
@@ -75,23 +75,73 @@ export function generatePedagogicalDomainSteps(
 		recorder
 	});
 
+	// Contrainte que le moteur n'a pas su résoudre (`\sqrt{\sin x}`,
+	// `\frac{1}{x^5+x+1}`) : le domaine rendu est incomplet. Aucune étape
+	// plutôt qu'une rédaction concluant à tort « Domaine : ℝ ».
+	if (result.unresolved && result.unresolved.length > 0) {
+		throw new PedagogicalDomainNotImplemented(
+			expression,
+			`unresolved constraints: ${result.unresolved.join(', ')}`
+		);
+	}
+
 	const allSteps = recorder.getSteps();
 	assertOnlyMvpRules(allSteps, expression);
 	assertLevelAllowsRules(allSteps, schoolLevel, expression);
 
 	const filtered = recorder.getStepsFiltered(verbosity);
 
-	// V1 MVP: an expression with no recordable steps is treated as universal
-	// (no restriction). Synthesize a single `universal` step so the renderer
-	// always has something to display.
-	const steps: readonly EnhancedDomainStep[] =
-		filtered.length === 0 ? [synthesizeUniversalStep(result.domain)] : filtered;
+	// Aucune contrainte enregistrée : le domaine doit être ℝ. Une contrainte
+	// que le moteur applique sans l'enregistrer (`x^{-1/2}` : x > 0) donnerait
+	// sinon une étape « Domaine : ℝ » fausse.
+	if (filtered.length === 0) {
+		if (result.domain.kind !== 'universal') {
+			throw new PedagogicalDomainNotImplemented(
+				expression,
+				'restricted domain without a recorded constraint'
+			);
+		}
+		return { steps: [synthesizeUniversalStep(result.domain)], domain: result.domain, variable };
+	}
 
 	return {
-		steps,
+		steps: withFinalDomainStep(filtered, result.domain),
 		domain: result.domain,
 		variable
 	};
+}
+
+/**
+ * Chaque étape de contrainte montre l'ensemble de SA contrainte ; le domaine
+ * se lit à l'étape d'intersection. Le moteur ne l'émet qu'au-delà d'une
+ * contrainte : avec une seule, on l'ajoute si l'ensemble de la contrainte
+ * n'est pas le domaine (contrainte appliquée sans être enregistrée).
+ */
+function withFinalDomainStep(
+	steps: readonly EnhancedDomainStep[],
+	domain: Domain
+): readonly EnhancedDomainStep[] {
+	if (steps.some((s) => s.rule === 'intersection')) return steps;
+	const last = steps[steps.length - 1];
+	const shown = last.intermediateDomain;
+	if (steps.length === 1 && shown !== undefined && sameDomain(shown, domain)) return steps;
+	return [
+		...steps,
+		{
+			id: last.id + 1,
+			rule: 'intersection',
+			description: 'Intersection des contraintes',
+			expression: '',
+			constraint: '',
+			intermediateDomain: domain,
+			verbosityLevel: 'summarized'
+		}
+	];
+}
+
+/** Deux domaines égaux, comparés par leur écriture. */
+function sameDomain(a: Domain, b: Domain): boolean {
+	return formatInterval(a) === formatInterval(b);
 }
 
 // =============================================================================

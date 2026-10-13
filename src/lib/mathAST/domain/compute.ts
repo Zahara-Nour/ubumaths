@@ -491,25 +491,107 @@ function computeDivisionDomain(
 		domain = restrictTo(domain, nonZero, options, node.denominator);
 	}
 
-	// Pedagogical recording (V1 MVP): emit a `division_constraint` step when
-	// the denominator has zeros to exclude. The intermediateDomain captures
-	// the post-exclusion state (i.e. what the renderer should display as the
-	// "Domaine" line when this step is rendered in isolation).
-	if (options.showSteps && options.recorder && hasZeros) {
+	// Rédaction : une étape `division_constraint` dont l'ensemble est celui de
+	// SA contrainte (« dénominateur ≠ 0 » seul, `\frac{\ln x}{x-2}` → ℝ∖{2}) ;
+	// l'intersection avec les autres contraintes se fait à l'étape finale.
+	if (options.showSteps && options.recorder && nonZero !== null) {
 		const denomLatex = toLatex(node.denominator);
-		options.recorder.recordWithTemplate(
-			'division_constraint',
-			denomLatex,
-			buildConstraintLatex('division_constraint', denomLatex),
-			{ expr: denomLatex },
-			{
-				intermediateDomain: domain,
-				verbosityLevel: 'summarized'
+		if (hasZeros) {
+			options.recorder.recordWithTemplate(
+				'division_constraint',
+				denomLatex,
+				buildConstraintLatex('division_constraint', denomLatex),
+				{ expr: denomLatex },
+				{
+					intermediateDomain: nonZero,
+					verbosityLevel: 'summarized'
+				}
+			);
+		} else {
+			// Dénominateur qui ne s'annule jamais (`x^2+1`) : on le dit, et on
+			// le justifie quand sa forme le permet simplement.
+			const reasoning = neverZeroReasoning(node.denominator, variable, denomLatex);
+			if (reasoning !== null) {
+				options.recorder.record(
+					'division_constraint',
+					denomLatex,
+					buildConstraintLatex('division_constraint', denomLatex),
+					{ intermediateDomain: nonZero, reasoning, verbosityLevel: 'summarized' }
+				);
 			}
-		);
+		}
 	}
 
 	return domain;
+}
+
+/** Indice pair d'une racine `\sqrt[n]{…}` autre que 2 ; `null` sinon. */
+function evenRootIndex(node: { name: string; base?: MathNode }): number | null {
+	if (node.name !== 'sqrt' || node.base === undefined) return null;
+	const index = tryConstantValue(node.base);
+	return index !== null && Number.isInteger(index) && index % 2 === 0 && index !== 2 ? index : null;
+}
+
+/**
+ * Justification de « dénominateur > 0 pour tout réel » quand il est une
+ * somme de puissances paires (coefficients positifs) et d'une constante
+ * strictement positive : `x^2+1`, `2x^2+3`, `x^4+x^2+1`. `null` sinon (la
+ * rédaction se tait plutôt que d'affirmer sans justifier).
+ */
+function neverZeroReasoning(denominator: MathNode, variable: string, latex: string): string | null {
+	const terms = additiveTerms(denominator);
+	if (terms === null) return null;
+	let squares = 0;
+	let bareSquare = true;
+	let positiveConstant = false;
+	for (const term of terms) {
+		if (!containsVariable(term, variable)) {
+			const value = tryConstantValue(term);
+			if (value === null || value <= 0) return null;
+			positiveConstant = true;
+			continue;
+		}
+		const square = evenPowerTerm(term);
+		if (square === null) return null;
+		squares += 1;
+		if (!square.bare) bareSquare = false;
+	}
+	if (!positiveConstant || squares === 0) return null;
+	const why =
+		squares === 1 && bareSquare
+			? 'somme d’un carré et d’un nombre strictement positif'
+			: 'somme de termes positifs ou nuls et d’un nombre strictement positif';
+	return `Pour tout réel $${variable}$, $${latex} > 0$ (${why}) : le dénominateur ne s’annule jamais.`;
+}
+
+/** Termes d'une somme (`a + b + c`) ; `null` si une soustraction s'y trouve. */
+function additiveTerms(node: MathNode): MathNode[] | null {
+	if (node.type === 'addition') {
+		const left = additiveTerms(node.left);
+		const right = additiveTerms(node.right);
+		return left && right ? [...left, ...right] : null;
+	}
+	if (node.type === 'subtraction' || node.type === 'opposite') return null;
+	return [node];
+}
+
+/**
+ * `u^{2k}` (bare) ou `c·u^{2k}` avec `c > 0` constant (non bare) ;
+ * `null` sinon.
+ */
+function evenPowerTerm(node: MathNode): { bare: boolean } | null {
+	if (node.type === 'superscript') {
+		const exponent = tryConstantValue(node.superscript);
+		return exponent !== null && exponent > 0 && Number.isInteger(exponent) && exponent % 2 === 0
+			? { bare: true }
+			: null;
+	}
+	if (node.type === 'multiplication') {
+		const coefficient = tryConstantValue(node.left);
+		if (coefficient === null || coefficient <= 0) return null;
+		return evenPowerTerm(node.right) === null ? null : { bare: false };
+	}
+	return null;
 }
 
 /**
@@ -550,7 +632,7 @@ function computeFunctionDomain(
 					buildConstraintLatex(trigRule, argLatex),
 					{ expr: argLatex },
 					{
-						intermediateDomain: result,
+						intermediateDomain: periodicDomain,
 						verbosityLevel: 'summarized'
 					}
 				);
@@ -601,7 +683,22 @@ function computeFunctionDomain(
 	// refuses those cases via `assertOnlyMvpRules`.
 	if (options.showSteps && options.recorder) {
 		const constraintRule = getConstraintRuleForFunction(node.name);
-		if (constraintRule && V1_MVP_FUNCTION_CONSTRAINT_RULES.has(constraintRule)) {
+		const evenIndex = constraintRule === 'sqrt_constraint' ? evenRootIndex(node) : null;
+		if (evenIndex !== null) {
+			// Racine d'indice pair autre que 2 (`\sqrt[4]{x}`) : ni « racine
+			// carrée » ni `\sqrt{x}` dans la rédaction
+			const argLatex = toLatex(arg);
+			options.recorder.record(
+				'even_root_constraint',
+				argLatex,
+				buildConstraintLatex('even_root_constraint', argLatex),
+				{
+					intermediateDomain: preimage === null ? undefined : preimage,
+					reasoning: `Pour que $${toLatex({ type: 'function', name: node.name, args: node.args, base: node.base })}$ soit définie, il faut $${argLatex} \\geq 0$`,
+					verbosityLevel: 'summarized'
+				}
+			);
+		} else if (constraintRule && V1_MVP_FUNCTION_CONSTRAINT_RULES.has(constraintRule)) {
 			const argLatex = toLatex(arg);
 			// `computePreimage` returns `Domain | null`. When null (argument too
 			// complex to invert), omit `intermediateDomain` so the renderer
@@ -804,7 +901,7 @@ function computePowerDomain(
 					buildConstraintLatex('power_constraint', baseLatex),
 					{ expr: baseLatex },
 					{
-						intermediateDomain: domain,
+						intermediateDomain: nonZero,
 						verbosityLevel: 'summarized'
 					}
 				);

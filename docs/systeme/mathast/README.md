@@ -709,6 +709,21 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   (`\int \left( -3 \right) f(x)\,dx = -3 \int f(x)\,dx`).
   Côté atelier, `decimalCommaProse` écrit `{,}` dans les `$…$` et `historyToUbumark` garde ces
   formules (`$…$`, pas `\$`).
+- **Étapes d'ensemble de définition** (`pedagogical-domain/`, 2026-10-13). Chaque étape de
+  contrainte montre l'ensemble de **sa** contrainte (`intermediateDomain` posé par
+  `domain/compute.ts`) : `\frac{\ln x}{x-2}` → « $x - 2 \neq 0$ » : ℝ ∖ {2} ;
+  `\frac{1}{\sqrt{x-1}}` → « $\sqrt{x-1} \neq 0$ » : ℝ ∖ {1} (la racine a son étape [1 ; +∞[) ;
+  le domaine se lit à l'étape d'intersection, que `dispatch.ts` ajoute quand le moteur ne l'a pas
+  émise et qu'une étape seule ne montre pas le domaine. Refus (`PedagogicalDomainNotImplemented`,
+  donc pas d'étapes côté `correction-generator`) : contrainte non résolue (`result.unresolved` :
+  `\sqrt{\sin x}`, `\frac{1}{x^5+x+1}`), domaine restreint sans contrainte enregistrée
+  (`x^{-1/2}`). Ensembles écrits par `domainToLatex` (`renderer.ts`, depuis la structure du
+  domaine et non plus depuis `formatInterval`) : `\left\{0\right\}`, `\sqrt{2}`,
+  `\frac{\pi}{4}+\frac{k\pi}{2},\ k\in\mathbb{Z}`. Racine d'indice pair autre que 2 →
+  `even_root_constraint`. Dénominateur sans zéro réel, somme de puissances paires et d'une
+  constante > 0 (`x^2+1`) → étape « division » justifiée (« somme d'un carré et d'un nombre
+  strictement positif ») ; autre forme (`x^2+x+1`, `e^x`) → pas d'étape, « Domaine universel ».
+  Tests : `pedagogical-domain/__tests__/redaction-etapes.test.ts`.
 - La résolution d'équation pédagogique ne rejoue **pas** le solveur algorithmique : elle
   suit ce que l'élève fait sur papier (`pedagogical-solve/`). Paliers : 1 (équation du
   1er degré), 2a (inéquation du 1er degré), 2b (inéquation du 2nd degré), 3 (inéquation

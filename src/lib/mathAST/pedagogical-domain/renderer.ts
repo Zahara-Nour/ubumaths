@@ -28,7 +28,15 @@
  */
 
 import { formatInterval } from '../domain';
-import type { Domain, EnhancedDomainStep } from '../domain';
+import type {
+	Domain,
+	EnhancedDomainStep,
+	Interval,
+	IntervalSet,
+	PeriodicExclusion
+} from '../domain';
+import type { MathNode } from '../types';
+import { toLatex } from '../latex-generator';
 import type {
 	PedagogicalRenderOptions,
 	RenderedStep,
@@ -52,43 +60,121 @@ function effectiveSchoolLevel(level: SchoolLevel): PedagogicalDomainSchoolLevel 
 }
 
 /**
- * Convert the `formatInterval` Unicode output into LaTeX.
+ * Écriture LaTeX d'un domaine, construite depuis sa structure (et non en
+ * traduisant l'écriture Unicode de `formatInterval`) :
  *
- * `formatInterval` returns French-style notation with Unicode glyphs
- * (`∞`, `ℝ`, `∅`, `≥`, `∪`, `∩`, …) and pseudo-LaTeX for excluded points
- * (`ℝ \ {0}` for `1/x`, `[0 ; +∞[ \ {1}` for `√x/(x-1)`, etc.). For
- * embedding inside `\begin{aligned}`, we map those to LaTeX commands and
- * convert the `\ {...}` pseudo-syntax into `\setminus \{...\}`.
+ * - `]0 ; +\infty[ \cup …`, ℝ entier → `\mathbb{R}`, vide → `\emptyset` ;
+ * - singleton → `\left\{0\right\}` ;
+ * - points exclus → `\setminus\left\{-\sqrt{2} ; \sqrt{2}\right\}` ;
+ * - exclusions périodiques →
+ *   `\mathbb{R}\setminus\left\{\frac{\pi}{2}+k\pi,\ k\in\mathbb{Z}\right\}`.
  */
-function intervalToLatex(domainStr: string): string {
-	return (
-		domainStr
-			.replace(/∞/g, '\\infty')
-			.replace(/ℝ/g, '\\mathbb{R}')
-			.replace(/ℤ/g, '\\mathbb{Z}')
-			.replace(/ℕ/g, '\\mathbb{N}')
-			.replace(/∅/g, '\\emptyset')
-			.replace(/≤/g, '\\leq')
-			.replace(/≥/g, '\\geq')
-			.replace(/≠/g, '\\neq')
-			.replace(/∪/g, '\\cup')
-			.replace(/∩/g, '\\cap')
-			.replace(/×/g, '\\times')
-			.replace(/·/g, '\\cdot ')
-			.replace(/π/g, '\\pi')
-			.replace(/∈/g, '\\in')
-			// Excluded points: `\ {a, b}` → `\setminus \{a, b\}`. Run after the
-			// other replacements so we only match the literal backslash-space-brace
-			// produced by `formatInterval` (cf. format.ts:137).
-			.replace(/\\ \{([^{}]*)\}/g, '\\setminus \\{$1\\}')
-	);
+export function domainToLatex(domain: Domain): string {
+	switch (domain.kind) {
+		case 'universal':
+			return '\\mathbb{R}';
+		case 'empty':
+			return '\\emptyset';
+		case 'periodic_exclusion':
+			return periodicToLatex(domain);
+		case 'interval_set':
+			return intervalSetToLatex(domain);
+		case 'condition_domain':
+			return unicodeToLatex(formatInterval(domain));
+	}
+}
+
+function intervalSetToLatex(domain: IntervalSet): string {
+	const base =
+		domain.intervals.length === 0
+			? '\\emptyset'
+			: domain.intervals.length === 1 && isWholeLine(domain.intervals[0])
+				? '\\mathbb{R}'
+				: domain.intervals.map(singleIntervalToLatex).join(' \\cup ');
+	if (domain.excludedPoints.length === 0) return base;
+	const points = domain.excludedPoints.map((p) => valueToLatex(p.value)).join(' ; ');
+	return `${base} \\setminus \\left\\{${points}\\right\\}`;
+}
+
+function isWholeLine(interval: Interval): boolean {
+	return interval.lower.value.type === 'infinity' && interval.upper.value.type === 'infinity';
+}
+
+function singleIntervalToLatex(interval: Interval): string {
+	const lower = valueToLatex(interval.lower.value);
+	const upper = valueToLatex(interval.upper.value);
+	const closed = interval.lower.type === 'closed' && interval.upper.type === 'closed';
+	// [a ; a] est le singleton {a}
+	if (closed && lower === upper) return `\\left\\{${lower}\\right\\}`;
+	const left = interval.lower.type === 'closed' ? '[' : ']';
+	const right = interval.upper.type === 'closed' ? ']' : '[';
+	return `${left}${lower} ; ${upper}${right}`;
+}
+
+function periodicToLatex(domain: PeriodicExclusion): string {
+	const multiple = periodMultipleToLatex(domain.period);
+	const isZeroBase = nodeIsZero(domain.basePoint);
+	const points = isZeroBase ? multiple : `${valueToLatex(domain.basePoint)}+${multiple}`;
+	return `\\mathbb{R}\\setminus\\left\\{${points},\\ k\\in\\mathbb{Z}\\right\\}`;
+}
+
+/** `k` fois la période : `k\pi`, `2k\pi`, `\frac{k\pi}{2}`. */
+function periodMultipleToLatex(period: MathNode): string {
+	if (period.type === 'division') {
+		return `\\frac{${periodMultipleToLatex(period.numerator)}}{${valueToLatex(period.denominator)}}`;
+	}
+	if (period.type === 'multiplication' && period.left.type === 'number') {
+		return `${period.left.value}k${valueToLatex(period.right)}`;
+	}
+	if (period.type === 'number' && period.value === '1') return 'k';
+	return `k${valueToLatex(period)}`;
+}
+
+function nodeIsZero(node: MathNode): boolean {
+	return node.type === 'number' && Number(node.value) === 0;
+}
+
+/** Valeur d'une borne ou d'un point exclu : fractions en `\frac`. */
+function valueToLatex(node: MathNode): string {
+	switch (node.type) {
+		case 'infinity':
+			return node.sign === 'positive' ? '+\\infty' : '-\\infty';
+		case 'division':
+			return `\\frac{${valueToLatex(node.numerator)}}{${valueToLatex(node.denominator)}}`;
+		case 'opposite': {
+			const operand = valueToLatex(node.operand);
+			const isSum = node.operand.type === 'addition' || node.operand.type === 'subtraction';
+			return isSum ? `-\\left(${operand}\\right)` : `-${operand}`;
+		}
+		default:
+			return toLatex(node);
+	}
+}
+
+/**
+ * Repli pour les domaines par conditions (rares) : traduction des glyphes
+ * Unicode de `formatInterval`.
+ */
+function unicodeToLatex(domainStr: string): string {
+	return domainStr
+		.replace(/∞/g, '\\infty')
+		.replace(/ℝ/g, '\\mathbb{R}')
+		.replace(/ℤ/g, '\\mathbb{Z}')
+		.replace(/∅/g, '\\emptyset')
+		.replace(/≤/g, '\\leq')
+		.replace(/≥/g, '\\geq')
+		.replace(/≠/g, '\\neq')
+		.replace(/∪/g, '\\cup')
+		.replace(/∩/g, '\\cap')
+		.replace(/π/g, '\\pi')
+		.replace(/√/g, '\\sqrt');
 }
 
 /**
  * Format the LaTeX `\text{Domaine : }` line for a captured intermediateDomain.
  */
 function formatDomainLatex(domain: Domain): string {
-	return intervalToLatex(formatInterval(domain));
+	return domainToLatex(domain);
 }
 
 /**
