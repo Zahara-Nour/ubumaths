@@ -2,7 +2,7 @@
  * Unit tests for WebReplEngine Phase 2 - Unit Integration
  *
  * Tests for unit-aware evaluation, .convert command and dimensional error
- * handling (`.unitmode` retirée, phase 0 `docs/wip/grandeurs-phase0.md`).
+ * handling (`.unitmode` retirée, phase 0 `docs/archive/wip/grandeurs-phase0.md`).
  *
  * Note: Units must be entered using LaTeX syntax: 5~\unit{m}
  */

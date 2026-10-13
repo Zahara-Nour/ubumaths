@@ -122,7 +122,7 @@ Le parseur LaTeX **ignore** les commandes d'espacement, qui n'ont aucun sens mat
 **Un seul calculateur** : `tidy` avec `unitChoice: 'written'` (l'unité écrite d'abord). Il sert
 `{{eval}}` (`evaluateQuantity`, `src/lib/mathAST/eval/evaluate-with-modifiers.ts`) et, depuis le
 2026-10-11, Calcul et `/cas` (`src/lib/mathAST/cli/quantities.ts` ; phase 0
-`docs/wip/grandeurs-phase0.md`, lot A). L'ancien `evaluateWithUnits` est retiré : il écrivait l'unité
+`docs/archive/wip/grandeurs-phase0.md`, lot A). L'ancien `evaluateWithUnits` est retiré : il écrivait l'unité
 sans son coefficient (`10[km]/1[h]` → « 10 m/s »).
 
 | Calcul              | Réponse                                                           |
