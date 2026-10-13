@@ -14,9 +14,9 @@ import { randomBytes, timingSafeEqual } from 'crypto';
 /**
  * Verify CRON authentication from request headers
  *
- * Supports two authentication methods:
- * 1. Vercel Cron (automatic): x-vercel-cron: 1 header + VERCEL=1 environment
- * 2. Manual triggers: Authorization: Bearer <CRON_SECRET> header
+ * Une seule méthode : `Authorization: Bearer <CRON_SECRET>`, que Vercel envoie à ses
+ * crons et que le déclencheur admin envoie aussi. (L'ancienne « méthode Vercel »,
+ * l'en-tête `x-vercel-cron`, acceptait n'importe quel appelant qui l'envoyait.)
  *
  * @param request - The incoming HTTP request
  * @throws {Error} 401 if authentication fails
@@ -33,8 +33,7 @@ import { randomBytes, timingSafeEqual } from 'crypto';
  * ```
  *
  * @security
- * - Method 1 (Vercel): Checks x-vercel-cron=1 header + VERCEL=1 env var
- * - Method 2 (Manual): Bearer token with constant-time comparison
+ * - Bearer token with constant-time comparison
  * - Fails secure: Rejects all requests if CRON_SECRET undefined
  * - Logs all authentication attempts (success + failure)
  */
@@ -48,29 +47,13 @@ export function verifyCronAuth(request: Request): void {
 		throw error(503, 'CRON endpoints disabled: CRON_SECRET not configured');
 	}
 
-	// METHOD 1: Check for Vercel Cron header (added automatically by Vercel)
-	const vercelCronHeader = request.headers.get('x-vercel-cron');
-	if (vercelCronHeader === '1') {
-		// Verify we're running on Vercel (additional security layer)
-		if (process.env.VERCEL === '1') {
-			console.log('[CRON AUTH] ✅ Valid Vercel Cron', {
-				url: request.url,
-				method: request.method,
-				timestamp: new Date().toISOString()
-			});
-			return; // Authorized
-		} else {
-			console.warn('[CRON AUTH] x-vercel-cron header present but not running on Vercel', {
-				url: request.url
-			});
-			throw error(401, 'Environnement non autorisé');
-		}
-	}
-
-	// METHOD 2: Check for Bearer token (for manual triggers)
+	// Seul le jeton fait foi. L'en-tête `x-vercel-cron` ne prouve rien : n'importe qui
+	// peut l'envoyer. Vercel envoie lui-même `Authorization: Bearer <CRON_SECRET>` à ses
+	// crons quand la variable est définie.
+	// Bearer token : crons Vercel et déclenchement manuel par l'admin
 	const authHeader = request.headers.get('authorization');
 	if (!authHeader) {
-		console.warn('[CRON AUTH] Missing authentication (no x-vercel-cron or Authorization header)', {
+		console.warn('[CRON AUTH] Missing authentication (no Authorization header)', {
 			url: request.url,
 			method: request.method
 		});

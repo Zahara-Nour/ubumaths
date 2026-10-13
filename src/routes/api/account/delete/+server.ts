@@ -28,11 +28,11 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { z } from 'zod';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { deleteAccountSchema } from '$lib/server/validation/account';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { removeAccountFiles } from '$lib/server/deleted-account-files';
 import { createServerLogger } from '$lib/utils/logger';
 import { rateLimit } from '$lib/server/middleware/rateLimit';
 
@@ -178,20 +178,30 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 		}
 
 		// Step 7: fichiers retirés seulement une fois le compte supprimé : si deleteUser
-		// échoue, l'élève n'a pas perdu ses pièces jointes (best-effort, jamais bloquant).
-		await removeUserFiles(serviceClient, userId, cleanupResult);
+		// échoue, l'élève n'a pas perdu ses pièces jointes (jamais bloquant). Un retrait
+		// incomplet laisse `storage_removed_at` nul : le cron hebdomadaire le reprendra
+		// (`src/routes/api/cron/deleted-account-files`).
+		const removal = await removeAccountFiles(serviceClient, cleanupResult);
+		if (!removal.ok) {
+			logger.error('Fichiers du compte non tous retirés, repris par le cron', { userId });
+		}
 
-		// Step 8: Update audit entry with success
+		// Step 8: Update audit entry with success. Une ligne restée sans `completed` ne
+		// serait jamais reprise par le cron des fichiers : l'échec se journalise.
 		if (auditId) {
-			await serviceClient
+			const { error: finalAuditError } = await serviceClient
 				.from('account_deletion_audit')
 				.update({
 					user_id: null, // Anonymize - user no longer exists
 					status: 'completed',
 					cleanup_result: cleanupResult,
-					completed_at: new Date().toISOString()
+					completed_at: new Date().toISOString(),
+					...(removal.ok ? { storage_removed_at: new Date().toISOString() } : {})
 				})
 				.eq('id', auditId);
+			if (finalAuditError) {
+				logger.error('Audit de suppression non finalisé', { auditId, error: finalAuditError });
+			}
 		}
 
 		logger.info('Account deletion completed successfully', { userId });
@@ -222,42 +232,3 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 		throw error(500, 'Une erreur inattendue est survenue');
 	}
 };
-
-/** Chemins de fichiers rendus par `delete_user_account`, par bucket. */
-const storagePathsSchema = z.object({
-	storage_paths: z.record(z.string(), z.array(z.string()))
-});
-
-/**
- * Retire du storage les fichiers de l'élève, par leurs chemins EXACTS — collectés par
- * `delete_user_account` avant que la cascade n'efface les lignes qui les portent.
- * (Un `list(userId)` ne trouvait rien : les pièces jointes sont rangées par
- * conversation ou par message, les captures dans des sous-dossiers.)
- *
- * Au mieux : un échec est journalisé en erreur, il n'interrompt pas la suppression.
- */
-async function removeUserFiles(
-	serviceClient: ReturnType<typeof createServiceRoleClient>,
-	userId: string,
-	cleanupResult: unknown
-): Promise<void> {
-	const parsed = storagePathsSchema.safeParse(cleanupResult);
-	if (!parsed.success) {
-		logger.error('Chemins de fichiers illisibles, fichiers du compte non supprimés', { userId });
-		return;
-	}
-
-	for (const [bucket, paths] of Object.entries(parsed.data.storage_paths)) {
-		if (paths.length === 0) continue;
-		try {
-			const { error: removeError } = await serviceClient.storage.from(bucket).remove(paths);
-			if (removeError) {
-				logger.error('Fichiers du compte non supprimés', { bucket, userId, error: removeError });
-			} else {
-				logger.info('Fichiers du compte supprimés', { bucket, userId, count: paths.length });
-			}
-		} catch (err) {
-			logger.error('Fichiers du compte non supprimés', { bucket, userId, error: err });
-		}
-	}
-}

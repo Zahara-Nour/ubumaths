@@ -86,6 +86,9 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				// Le fetch de Node n'envoie pas d'origine : sans elle, le contrôle CSRF de
+				// hooks.server.ts refuse le POST (403) hors du dev sur localhost.
+				Origin: baseUrl,
 				Authorization: `Bearer ${env.CRON_SECRET}`
 			}
 		});
