@@ -595,7 +595,11 @@ WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
 - tout ce qui pointe vers le profil en cascade (jeux, SRS, progression, consentements…) ;
 - les fichiers de `chat-attachments`, `message-attachments`, `bug-report-screenshots` : la fonction
   rend leurs chemins exacts, collectés avant la cascade, et la route les retire (au mieux : un échec
-  est journalisé en erreur, il n'interrompt pas la suppression).
+  est journalisé en erreur, il n'interrompt pas la suppression ; le cron du dimanche reprend).
+  Pour `message-attachments` et `bug-report-screenshots`, dont l'élève écrit lui-même le chemin,
+  seul un chemin rangé chez lui est rendu (`messages/<son message>/…`, `<son id>/<son
+signalement>/…`, aucun segment `..`) : sinon il ferait retirer le fichier d'un camarade
+  (`20261016101200`).
 
 **Atomicité** : en fin de fonction, si une clé étrangère sans `ON DELETE` vise encore le compte
 (quelle que soit la table, future comprise), la fonction lève une exception et la transaction est

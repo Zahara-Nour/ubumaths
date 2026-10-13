@@ -20,7 +20,7 @@ metrics, hard-coded); letters keep Shantell's size and baseline, like the
 letters already copied.
 
 Run after roughen_extras.py and replace_symbols.py: this script works in place
-on static/fonts/shantell-katex/ and redraws each glyph from scratch, so running
+on static/fonts/chiphre-math/ and redraws each glyph from scratch, so running
 it twice gives the same font. Writing to static/fonts/KaTeX_*.woff2 is
 refused: the original KaTeX fonts were overwritten that way on 2026-01-20.
 """
@@ -46,9 +46,9 @@ from replace_delimiters import STROKE, Frame, put_glyph, reference_glyph, stroke
 from round_x import c_centre_line  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "shantell-katex"
+OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "chiphre-math"
 ORIGINAL_DIR = REPO_ROOT / "static" / "fonts" / "katex-original"
-SHANTELL = REPO_ROOT / "tools" / "shantell-math" / "fonts" / "input" / "shantell-sans-300.ttf"
+SHANTELL = REPO_ROOT / "tools" / "chiphre-math" / "fonts" / "input" / "shantell-sans-300.ttf"
 
 # Écart entre la ligne centrale d'un trait et celle de son double (ℝ, ℕ…)
 DOUBLE_GAP = 2.6 * STROKE

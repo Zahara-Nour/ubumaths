@@ -17,7 +17,7 @@ letters and the operators (measured on 2026-10-13: « 2024 » 280 px wide at
 MathLive takes digits from KaTeX_Main-Regular (class ML__cmr), whatever the
 letter style. Run after replace_symbols.py and before build_typst_math_font.py,
 which copies these digits into Chiphre Math. The script works in place on
-static/fonts/shantell-katex/ and redraws each digit from the Shantell source,
+static/fonts/chiphre-math/ and redraws each digit from the Shantell source,
 so running it twice gives the same font. Writing to static/fonts/KaTeX_*.woff2
 is refused: the original KaTeX fonts were overwritten that way on 2026-01-20.
 """
@@ -38,8 +38,8 @@ from greek_letters import glyph, moved  # noqa: E402
 from replace_delimiters import STROKE, put_glyph  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "shantell-katex"
-SHANTELL = REPO_ROOT / "tools" / "shantell-math" / "fonts" / "input" / "shantell-sans-300.ttf"
+OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "chiphre-math"
+SHANTELL = REPO_ROOT / "tools" / "chiphre-math" / "fonts" / "input" / "shantell-sans-300.ttf"
 
 # Taille des chiffres et chasse, par rapport à ceux de Shantell (variante B,
 # choisie par David parmi trois essais : 100 %/0,8, 90 %/0,8, 85 %/0,75)

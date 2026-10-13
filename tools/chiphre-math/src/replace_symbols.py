@@ -19,7 +19,7 @@ the math axis, so each one is fitted in one of three ways:
 and given the KaTeX advance width, whatever its own.
 
 Run after roughen_extras.py, which rebuilds AMS from the original KaTeX font.
-The script works in place on static/fonts/shantell-katex/: each listed glyph
+The script works in place on static/fonts/chiphre-math/: each listed glyph
 is redrawn from the Shantell source, so running it twice gives the same font.
 Writing to static/fonts/KaTeX_*.woff2 is refused: the original KaTeX fonts
 were overwritten that way on 2026-01-20.
@@ -38,9 +38,9 @@ from fontTools.ttLib import TTFont
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "shantell-katex"
+OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "chiphre-math"
 ORIGINAL_DIR = REPO_ROOT / "static" / "fonts" / "katex-original"
-SHANTELL = REPO_ROOT / "tools" / "shantell-math" / "fonts" / "input" / "shantell-sans-300.ttf"
+SHANTELL = REPO_ROOT / "tools" / "chiphre-math" / "fonts" / "input" / "shantell-sans-300.ttf"
 
 OPERATOR, DELIMITER, LETTER = "operator", "delimiter", "letter"
 
