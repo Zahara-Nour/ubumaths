@@ -13,7 +13,7 @@
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import {
 	cleanupAllTestData,
 	createServiceRoleClient
@@ -205,7 +205,10 @@ describe('messagerie : pièces jointes', () => {
 		);
 
 		try {
-			const { data, error } = await service.rpc('list_orphan_message_attachment_files', {
+			// Fonction née avec cette migration : `database.ts` (généré depuis la prod) ne la
+			// connaît qu'après le push, d'où un client non typé.
+			const brut = service as unknown as SupabaseClient;
+			const { data, error } = await brut.rpc('list_orphan_message_attachment_files', {
 				p_limit: 100
 			});
 			expect(error).toBeNull();
@@ -214,7 +217,7 @@ describe('messagerie : pièces jointes', () => {
 			expect(noms).not.toContain(recent);
 			expect(noms).not.toContain(rattache);
 
-			const client = await createAuthenticatedClient(eleve.email);
+			const client = (await createAuthenticatedClient(eleve.email)) as unknown as SupabaseClient;
 			const refus = await client.rpc('list_orphan_message_attachment_files', { p_limit: 100 });
 			expect(refus.error?.code).toBe('42501');
 		} finally {
