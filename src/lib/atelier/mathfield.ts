@@ -8,16 +8,29 @@
  *   LaTeX ; ce qui vient déjà d'un champ de maths est rendu tel quel.
  * - **depuis le champ** : du LaTeX, lu en provenance `'keyboard'` (D10). Une
  *   seule retouche, en SECOURS : une grandeur que MathLive écrit
- *   `12\operatorname{\mathrm{km}}`, que l'atelier refusait.
+ *   `12\operatorname{\mathrm{km}}`, que l'atelier refusait. Une valeur écrite
+ *   « un nombre, une espace, une unité » se lit comme dans Calcul (lot C des
+ *   grandeurs) : `2\,h\,30\,\min` est une durée composée, `\frac{1}{2}\,m` un
+ *   demi-mètre.
  *
  * @module atelier/mathfield
  */
 
+import type { MathNode } from '$lib/mathAST/types';
 import type { AtelierObject, ObjectKind } from './types';
 import { astOf, parseDefinition, readingMode, readNumber } from './parse';
 import { INTERNAL_LETTER, renameVariable } from './letter';
+import { readNaturalQuantities } from './natural-quantities';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { isAddition, isDelimiter, isNumber, isUnit } from '$lib/mathAST/guards';
 import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
+
+// =============================================================================
+// Constantes
+// =============================================================================
+
+/** Les unités d'une durée composée (`2 h 30 min`). */
+const DURATION_UNITS: ReadonlySet<string> = new Set(['h', 'min', 's']);
 
 // =============================================================================
 // Fonctions
@@ -41,6 +54,10 @@ export function fieldLatexOf(
 			? object.definition
 			: renameVariable(object.definition, INTERNAL_LETTER, letter, provenance, functionNames);
 	if (definition.trim() === '') return '';
+	if (object.kind === 'value') {
+		const composite = compositeDurationField(astOf(definition, provenance, functionNames));
+		if (composite !== null) return composite;
+	}
 	if (readingMode(provenance) === 'latex') return forMathlive(definition);
 	// Un nombre s'affiche comme l'élève l'écrit : `2,5`, pas le `2.5` que rendrait
 	// `toLatex` (revue du lot 4 : le curseur écrit `2,5`, le champ montrait `2.5`)
@@ -63,6 +80,64 @@ export function forMathlive(latex: string): string {
 }
 
 /**
+ * Une durée composée rangée `(2[h]+30[min])`, montrée comme l'élève l'écrit :
+ * `2 h 30 min`, sans le `+` ni les parenthèses du rangement (restes du lot C).
+ */
+function compositeDurationField(ast: MathNode | null): string | null {
+	if (ast === null || !isDelimiter(ast)) return null;
+	const parts: MathNode[] = [];
+	let node = ast.content;
+	while (isAddition(node)) {
+		parts.unshift(node.right);
+		node = node.left;
+	}
+	parts.unshift(node);
+	if (parts.length < 2) return null;
+	const written: string[] = [];
+	for (const part of parts) {
+		const symbol = isUnit(part) ? part.unit.original : undefined;
+		if (!isUnit(part) || !isNumber(part.expression) || symbol === undefined) return null;
+		if (!DURATION_UNITS.has(symbol)) return null;
+		written.push(`${part.expression.value}~\\unit{${symbol}}`);
+	}
+	return forMathlive(written.join('~'));
+}
+
+/**
+ * Une valeur écrite « un nombre, une espace, une unité », lue comme dans Calcul
+ * (`readNaturalQuantities`) puis réécrite en LaTeX : `2\,h\,30\,\min` →
+ * `(2\unit{h}+30\unit{min})`, `\frac{1}{2}\,m` → `\frac{1}{2}\unit{m}`.
+ *
+ * `null` si ce n'est pas QU'une grandeur : une lettre hors d'une unité
+ * (`\min\left(2,3\right)`, `3\,x`) laisse la saisie aux autres lectures.
+ */
+function naturalQuantityLatex(latex: string): string | null {
+	const text = latex
+		.replace(/\\left\(/g, '(')
+		.replace(/\\right\)/g, ')')
+		.replace(/\\operatorname\{\\mathrm\{([^{}]*)\}\}/g, ' $1')
+		.replace(/\\mathrm\{([^{}]*)\}/g, ' $1')
+		.replace(/\\d?frac\{(\d+)\}\{(\d+)\}/g, '$1/$2')
+		// MathLive écrit toujours « min » en opérateur `\min`
+		.replace(/\\min(?![A-Za-z])/g, 'min')
+		.replace(/\{,\}/g, ',')
+		.replace(/\\[,;: ]|~/g, ' ')
+		// `(1/2) m`, la forme que le champ montre pour `(1/2)[m]` : `1/2 m`
+		.replace(/\(\s*(\d+\/\d+)\s*\)(?=\s+[^\s\d(])/g, '$1');
+	const read = readNaturalQuantities(text, []).text;
+	const outside = read.replace(/\[[^\]]*\]/g, '');
+	if (outside === read || /[A-Za-z\\]/.test(outside)) return null;
+	return (
+		read
+			.replace(/\((\d+)\/(\d+)\)\[/g, '\\frac{$1}{$2}[')
+			.replace(/\[([^\]]*)\]/g, '\\unit{$1}')
+			// La virgule redevient celle de MathLive (`2{,}5`) : nue, le LaTeX la refuse
+			.replace(/(\d),(\d)/g, '$1{,}$2')
+			.replace(/\s+/g, '')
+	);
+}
+
+/**
  * La définition à ranger pour ce que l'élève a tapé dans la carte.
  *
  * ⚠️ Le secours « unité » ne s'applique qu'à une VALEUR qui ne se lit pas
@@ -77,12 +152,10 @@ export function definitionFromField(kind: ObjectKind, latex: string): string {
 	if (readNumber(decimal) !== null) return decimal;
 	// « un nombre, une espace, une unité » (lot C des grandeurs) : l'espace tapée
 	// arrive `\,` (`mathModeSpace` du champ) — `5\,m` est une grandeur, `5m` un produit
-	// (sur `decimal` : la virgule de MathLive `2{,}5` cachait le chiffre — revue)
-	if (/\d\\,\s*[^\d\s\\]/.test(decimal)) {
-		// La virgule redevient celle de MathLive (`2{,}5`) : nue, le LaTeX la refuse
-		const spaced = normalizeStudentQuantity(decimal).replace(/(\d),(\d)/g, '$1{,}$2');
-		const read = parseDefinition('value', spaced, 'keyboard');
-		if (read.error === undefined && read.unit !== undefined) return spaced;
+	const natural = naturalQuantityLatex(typed);
+	if (natural !== null) {
+		const read = parseDefinition('value', natural, 'keyboard');
+		if (read.error === undefined && read.unit !== undefined) return natural;
 	}
 	if (parseDefinition('value', typed, 'keyboard').error === undefined) return typed;
 

@@ -136,3 +136,65 @@ describe('grandeurs et MathLive', () => {
 		expect(forMathlive('12~\\unit{km}+3\\unit{m}')).not.toContain('\\unit');
 	});
 });
+
+/**
+ * Restes du lot C des grandeurs (2026-10-13) : une durée composée ou une
+ * fraction suivie d'une unité ne se relisait plus au retour du champ, et ne se
+ * lisait pas tapée dans la carte (`2\,h\,30\,\min` : MathLive écrit `\min`).
+ */
+describe('durées composées et fractions dans la carte', () => {
+	/** La même grandeur, une fois relue : même écriture LaTeX de l'arbre. */
+	function sameQuantity(definition: string, expected: string) {
+		const a = astOf(definition, 'keyboard', []);
+		const b = astOf(expected, 'keyboard', []);
+		expect(a).not.toBeNull();
+		expect(toLatex(a!)).toBe(toLatex(b!));
+	}
+
+	function roundTrip(definition: string, provenance: 'text' | 'keyboard') {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'd', definition }, provenance);
+		const field = fieldLatexOf(atelier.get('d')!, atelier.functionNames);
+		return { field, back: definitionFromField('value', field) };
+	}
+
+	it('une durée composée rangée par Calcul se relit après retouche', () => {
+		const { back } = roundTrip('(2[h]+30[min])', 'text');
+
+		expect(parseDefinition('value', back, 'keyboard')).toEqual({ unit: 'h' });
+		sameQuantity(back, '(2\\unit{h}+30\\unit{min})');
+	});
+
+	it('elle s’affiche dans le champ comme l’élève l’écrit : 2 h 30 min', () => {
+		for (const [definition, provenance] of [
+			['(2[h]+30[min])', 'text'],
+			['(2\\unit{h}+30\\unit{min})', 'keyboard']
+		] as const) {
+			const { field } = roundTrip(definition, provenance);
+			expect(field).not.toContain('+');
+			expect(field).not.toContain('\\left(');
+			expect(field).toMatch(/2.*h.*30.*min/);
+		}
+	});
+
+	it('une fraction suivie d’une unité se relit après retouche', () => {
+		const { back } = roundTrip('(1/2)[m]', 'text');
+
+		expect(parseDefinition('value', back, 'keyboard')).toEqual({ unit: 'm' });
+		sameQuantity(back, '\\frac{1}{2}\\unit{m}');
+	});
+
+	it.each([
+		['2\\,h\\,30\\,\\min', '(2\\unit{h}+30\\unit{min})'],
+		['1\\,h\\,5\\,\\min\\,30\\,s', '(1\\unit{h}+5\\unit{min}+30\\unit{s})'],
+		['2\\,\\min\\,30\\,s', '(2\\unit{min}+30\\unit{s})'],
+		['\\frac{1}{2}\\,m', '\\frac{1}{2}\\unit{m}']
+	])('%s tapé dans la carte est une grandeur', (typed, expected) => {
+		sameQuantity(definitionFromField('value', typed), expected);
+	});
+
+	it('ce qui n’est pas une grandeur reste tel quel', () => {
+		expect(definitionFromField('value', '\\min\\left(2,3\\right)')).toBe('\\min\\left(2,3\\right)');
+		expect(definitionFromField('value', '\\frac{1}{2}m')).toBe('\\frac{1}{2}m');
+	});
+});

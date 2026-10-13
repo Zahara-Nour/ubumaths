@@ -75,6 +75,12 @@ export type QuantityOutcome =
 			readonly approximate: MathNode | null;
 			/** La grandeur EXACTE que `.convert` reprendra */
 			readonly quantity: MathNode | null;
+			/**
+			 * Ce que l'élève a vu de cette grandeur quand ce n'est pas la grandeur
+			 * elle-même (une durée composée, `2 h 30 min`) : le membre gauche de
+			 * `.convert`, qui sinon écrirait `2,5 h` (restes du lot C)
+			 */
+			readonly written?: QuantityAnswer;
 	  }
 	/**
 	 * Les unités se sont simplifiées (`3[h]/1[min]`, `sin(30[°])`, `5[km]>3[m]`) :
@@ -244,18 +250,23 @@ function both(node: MathNode): Shown {
  * En décimal, le signe est `≈` dès qu'un côté n'est pas exact — dans l'arbre
  * comme dans le texte (revue : l'arbre dessinait `=` entre deux arrondis).
  */
-function equality(left: MathNode, right: MathNode): Shown {
+function equality(left: MathNode, right: MathNode, written?: QuantityAnswer): Shown {
+	// Une durée composée se répète telle que l'élève l'a vue, dans les deux modes
 	const exact = {
-		node: relation('=', left, right),
-		text: `${quantityText(left)} = ${quantityText(right)}`
+		node: relation('=', written?.node ?? left, right),
+		text: `${written?.text ?? quantityText(left)} = ${quantityText(right)}`
 	};
 	const l = decimalOf(left);
 	const r = decimalOf(right);
 	if (l === null || r === null) return { exact, decimal: exact, approximate: null };
 	const sign = l.exact && r.exact ? '=' : '≈';
+	const shownLeft = written ?? l;
 	return {
 		exact,
-		decimal: { node: relation(sign, l.node, r.node), text: `${l.text} ${sign} ${r.text}` },
+		decimal: {
+			node: relation(sign, shownLeft.node, r.node),
+			text: `${shownLeft.text} ${sign} ${r.text}`
+		},
 		// Le bouton ≈ : la grandeur exacte à gauche, la valeur approchée à droite
 		approximate: r.exact ? null : relation('≈', left, r.node)
 	};
@@ -510,14 +521,20 @@ function compositeDuration(ast: MathNode, quantity: MathNode): Shown | null {
 }
 
 /** La réponse pour le mode demandé, avec la bascule et le bouton ≈. */
-function answered(shown: Shown, mode: QuantityMode, quantity: MathNode): QuantityOutcome {
+function answered(
+	shown: Shown,
+	mode: QuantityMode,
+	quantity: MathNode,
+	written?: QuantityAnswer
+): QuantityOutcome {
 	return {
 		ok: true,
 		answer: mode === 'decimal' ? shown.decimal : shown.exact,
 		exact: shown.exact,
 		decimal: shown.decimal,
 		approximate: mode === 'exact' ? shown.approximate : null,
-		quantity
+		quantity,
+		...(written !== undefined && { written })
 	};
 }
 
@@ -554,7 +571,7 @@ export function computeQuantity(ast: MathNode, mode: QuantityMode): QuantityOutc
 			: expressedInWritten(ast, quantityOf(reduced)!.unit.unit);
 		const quantity = chosen?.decimal === true && chosen.written ? chosen.quantity : reduced;
 		const composite = compositeDuration(ast, quantity);
-		if (composite !== null) return answered(composite, mode, quantity);
+		if (composite !== null) return answered(composite, mode, quantity, composite.exact);
 		const derived = namedDerived(quantity);
 		return answered(
 			derived === null ? both(quantity) : equality(quantity, derived),
@@ -606,11 +623,14 @@ function notSameMessage(from: string, to: string): string {
 /**
  * `.convert` : la dernière grandeur exprimée dans `target`, exactement —
  * `12.3 km = 12300 m`, `2.5 km/h = 25/36 m/s`, `180 ° = π rad`, `20 °C = 293.15 K`.
+ *
+ * @param seen - ce que l'élève a vu de la grandeur (`2 h 30 min`), répété à gauche
  */
 export function convertQuantity(
 	quantity: MathNode | null,
 	target: string,
-	mode: QuantityMode
+	mode: QuantityMode,
+	seen?: QuantityAnswer
 ): QuantityOutcome {
 	if (quantity === null) {
 		return {
@@ -640,7 +660,7 @@ export function convertQuantity(
 			sourceValue === null || !temperatures ? null : convertTemperature(sourceValue, from, written);
 		if (temperature === null) return { ok: false, message: notSameMessage(from, written) };
 		const converted = signedQuantity(rationalNode(temperature), targetUnit);
-		return answered(equality(quantity, converted), mode, quantity);
+		return answered(equality(quantity, converted, seen), mode, quantity, seen);
 	}
 
 	if (getConversionFactor(source.unit.unit, unit) === null) {
@@ -658,5 +678,5 @@ export function convertQuantity(
 				: exactValue(divide(base, factor, 'fraction'));
 	if (exact === null) return { ok: false, message: MIXED_MESSAGE };
 	const converted = signedQuantity(exact, targetUnit);
-	return answered(equality(quantity, converted), mode, quantity);
+	return answered(equality(quantity, converted, seen), mode, quantity, seen);
 }
