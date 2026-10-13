@@ -9123,41 +9123,6 @@ export type Database = {
           },
         ]
       }
-      python_submission_server_verdicts: {
-        Row: {
-          created_at: string
-          server_is_correct: boolean | null
-          server_validation_result: Json | null
-          submission_id: string
-          verification_status: string
-          verified_at: string | null
-        }
-        Insert: {
-          created_at?: string
-          server_is_correct?: boolean | null
-          server_validation_result?: Json | null
-          submission_id: string
-          verification_status?: string
-          verified_at?: string | null
-        }
-        Update: {
-          created_at?: string
-          server_is_correct?: boolean | null
-          server_validation_result?: Json | null
-          submission_id?: string
-          verification_status?: string
-          verified_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "python_submission_server_verdicts_submission_id_fkey"
-            columns: ["submission_id"]
-            isOneToOne: true
-            referencedRelation: "python_exercise_submissions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       question_template_points: {
         Row: {
           created_at: string
@@ -15956,7 +15921,6 @@ export type Database = {
       run_cleanup_all: { Args: never; Returns: undefined }
       run_cleanup_expired_data: { Args: never; Returns: undefined }
       run_daily_summaries: { Args: never; Returns: undefined }
-      run_flag_stale_python_rechecks: { Args: never; Returns: undefined }
       run_recalculate_minesweeper_ref_times: { Args: never; Returns: undefined }
       run_retention_c11: { Args: never; Returns: Json }
       run_weekly_best_bonuses: { Args: never; Returns: undefined }
