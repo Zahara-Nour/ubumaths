@@ -554,15 +554,15 @@ describe('computeReciprocal — non bijective : explication et réciproques par 
 	it.each([
 		[
 			'\\sin(x)',
-			"f n'est pas bijective sur ℝ, mais elle l'est sur une infinité d'intervalles, par exemple [−π/2 ; π/2]. Sa réciproque y est la fonction arcsin, que Chiphre ne sait pas encore calculer."
+			"f n'est pas bijective sur ℝ : f(0) = f(π) = 0, donc 0 aurait plusieurs antécédents. Elle l'est sur une infinité d'intervalles, par exemple [−π/2 ; π/2]. Sa réciproque y est la fonction arcsin, que Chiphre ne sait pas encore calculer."
 		],
 		[
 			'\\cos(x)',
-			"f n'est pas bijective sur ℝ, mais elle l'est sur une infinité d'intervalles, par exemple [0 ; π]. Sa réciproque y est la fonction arccos, que Chiphre ne sait pas encore calculer."
+			"f n'est pas bijective sur ℝ : f(0) = f(2π) = 1, donc 1 aurait plusieurs antécédents. Elle l'est sur une infinité d'intervalles, par exemple [0 ; π]. Sa réciproque y est la fonction arccos, que Chiphre ne sait pas encore calculer."
 		],
 		[
 			'2\\sin(x)+1',
-			"f n'est pas bijective sur ℝ, mais elle l'est sur une infinité d'intervalles, par exemple [−π/2 ; π/2]. Sa réciproque y s'écrit avec la fonction arcsin, que Chiphre ne sait pas encore calculer."
+			"f n'est pas bijective sur ℝ : f(0) = f(π) = 1, donc 1 aurait plusieurs antécédents. Elle l'est sur une infinité d'intervalles, par exemple [−π/2 ; π/2]. Sa réciproque y s'écrit avec la fonction arcsin, que Chiphre ne sait pas encore calculer."
 		]
 	])('%s : le refus dit arcsin / arccos, sans commande', (f, message) => {
 		const refusal = notBijectiveOf(f);
@@ -570,10 +570,23 @@ describe('computeReciprocal — non bijective : explication et réciproques par 
 		expect(refusal.message).not.toContain('.réciproque');
 	});
 
+	// Les paires citées sont vraies : f(0) = f(b) à 1e-12 près
+	it.each([
+		[Math.sin, Math.PI, 0],
+		[Math.cos, 2 * Math.PI, 1],
+		[Math.tan, Math.PI, 0],
+		[(x: number) => 2 * Math.sin(x) + 1, Math.PI, 1]
+	])('paire citée : %s(0) = %s(b) = %s', (f, b, y) => {
+		expect(f(0)).toBeCloseTo(y, 12);
+		expect(f(b)).toBeCloseTo(y, 12);
+	});
+
 	it('tan sur son domaine : ]−π/2 ; π/2[ et arctan', () => {
 		const refusal = notBijectiveOf('\\tan(x)');
-		expect(refusal.message).toContain(']−π/2 ; π/2[');
-		expect(refusal.message).toContain('Sa réciproque y est la fonction arctan');
+		// L'explication d'abord, comme pour x² (décision de David, 2026-10-13)
+		expect(refusal.message).toMatch(
+			/^f n'est pas bijective sur .+ : f\(0\) = f\(π\) = 0, donc 0 aurait plusieurs antécédents\. Elle l'est sur une infinité d'intervalles, par exemple \]−π\/2 ; π\/2\[\. Sa réciproque y est la fonction arctan, que Chiphre ne sait pas encore calculer\.$/
+		);
 		expect(refusal.message).not.toContain('.réciproque');
 	});
 

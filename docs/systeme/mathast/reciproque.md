@@ -53,9 +53,12 @@ David du 2026-10-13). Pour x² sur ℝ :
   [−T/2 ; T/2] qui contient 0 (sin : [-π/2 ; π/2]), sinon celui qui part de 0 (cos : [0 ; π]).
   ⚠️ `.réciproque sin sur [-π/2 ; π/2]` reste `unsolved` (pas d'arcsin) : quand la réciproque
   n'est pas calculable sur le morceau proposé, le refus ne propose PAS de commande (décision (5)
-  de David, 2026-10-13, `refusePeriodicWithoutFormula`) : « f n'est pas bijective sur ℝ, mais elle
-  l'est sur une infinité d'intervalles, par exemple [−π/2 ; π/2]. Sa réciproque y est la fonction
-  arcsin, que Chiphre ne sait pas encore calculer. » — « s'écrit avec la fonction arcsin » quand x
+  de David, 2026-10-13, `refusePeriodicWithoutFormula`) : « f n'est pas bijective sur ℝ : f(0) =
+  f(π) = 0, donc 0 aurait plusieurs antécédents. Elle l'est sur une infinité d'intervalles, par
+  exemple [−π/2 ; π/2]. Sa réciproque y est la fonction arcsin, que Chiphre ne sait pas encore
+  calculer. » — l'explication d'abord, comme pour x² (`periodicWhy` : 0 et π, sinon 0 et 2π, dans
+  I et de même image entière — cos : f(0) = f(2π) = 1 ; tan : f(0) = f(π) = 0 ; sans paire, la
+  phrase d'avant, « …sur ℝ, mais elle l'est… »). « s'écrit avec la fonction arcsin » quand x
   n'apparaît que dans sin (2 sin x + 1), une phrase sans arcsin sinon (x·sin x). tan (ensemble
   `periodic_exclusion`, `refuseTangent`) : f(x₀ + π) = f(x₀) prouve la non-bijectivité, morceau
   ]−π/2 ; π/2[ proposé s'il est monotone, arctan.

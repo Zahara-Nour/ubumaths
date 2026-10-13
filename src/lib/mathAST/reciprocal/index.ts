@@ -305,11 +305,18 @@ function refusePeriodicWithoutFormula(
 		arc === null
 			? `Chiphre ne sait pas encore calculer sa réciproque ${suggestion ? 'sur cet intervalle' : 'sur ces intervalles'}.`
 			: `Sa réciproque ${there} ${exact ? 'est' : "s'écrit avec"} la fonction ${arc}, que Chiphre ne sait pas encore calculer.`;
+	const notBijective = `${name} n'est pas bijective sur ${formatInterval(withRealLineWritten(domain))}`;
+	// L'explication d'abord, comme pour x² (décision de David, 2026-10-13)
+	const why = periodicWhy(context);
+	const opening =
+		why === null
+			? `${notBijective}, mais elle l'est sur une infinité d'intervalles${where}.`
+			: `${notBijective} : ${why} Elle l'est sur une infinité d'intervalles${where}.`;
 	return {
 		ok: false,
 		refusal: {
 			kind: 'not-bijective',
-			message: `${name} n'est pas bijective sur ${formatInterval(withRealLineWritten(domain))}, mais elle l'est sur une infinité d'intervalles${where}. ${formula}`,
+			message: `${opening} ${formula}`,
 			...(sameImage && {
 				sameImage: [numericNode(sameImage[0]), numericNode(sameImage[1])] as const
 			}),
@@ -317,6 +324,29 @@ function refusePeriodicWithoutFormula(
 			infinitelyManyPieces: true as const
 		}
 	};
+}
+
+/** Écarts essayés depuis 0 : sin(0) = sin(π), cos(0) = cos(2π), tan(0) = tan(π). */
+const PERIODIC_PAIRS: readonly (readonly [number, string])[] = [
+	[Math.PI, 'π'],
+	[2 * Math.PI, '2π']
+];
+
+/**
+ * « f(0) = f(π) = 0, donc 0 aurait plusieurs antécédents. » quand 0 et π (ou
+ * 2π) sont dans I avec une même image entière, sinon `null`.
+ */
+function periodicWhy({ f, variable, name, domain }: NonInjective): string | null {
+	if (!containsValue(domain, 0)) return null;
+	const y = valueAt(f, variable, 0);
+	if (y === null || !isRound(y)) return null;
+	const found = PERIODIC_PAIRS.find(([b]) => {
+		const image = containsValue(domain, b) ? valueAt(f, variable, b) : null;
+		return image !== null && close(image, y);
+	});
+	if (found === undefined) return null;
+	const image = Math.round(y) || 0;
+	return `${name}(0) = ${name}(${found[1]}) = ${image}, donc ${image} aurait plusieurs antécédents.`;
 }
 
 /**
