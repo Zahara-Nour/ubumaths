@@ -25,6 +25,14 @@ describe('les noms de fonctions liées', () => {
 		expect(after(lines, input)).toBe(expected);
 	});
 
+	// Revue : le corps d'une définition, et la définition en ligne `:=`
+	it.each([
+		[['.def k(x) = x+1', '.def m(x) = k(x)+1'], 'm(1)', '3'],
+		[['k(x) := x+1'], 'k(1)', '2']
+	])('%j puis %s donne %s', (lines, input, expected) => {
+		expect(after(lines, input)).toBe(expected);
+	});
+
 	it('les noms par défaut restent des fonctions à côté des noms liés', () => {
 		expect(after(['.def k(x) = x+1', '.def f(x) = 2x'], 'f(k(1))')).toBe('4');
 	});

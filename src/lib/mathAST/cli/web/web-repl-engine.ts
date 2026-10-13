@@ -8,7 +8,7 @@
 import type { MathNode, RelationNode } from '../../types';
 import type { CommandContext, ErrorCode } from '../types';
 import { CommandRegistry, parse, createEvalState, bindingsToRecord, setBinding } from '../core';
-import { getFunctionNames, getFunction } from '../core/eval-state';
+import { createFunctionBinding, getFunctionNames, getFunction } from '../core/eval-state';
 import type { EvalState } from '../core';
 import type { PipelineOptions } from '../core/pipeline';
 import { createDefaultRegistry } from '../commands';
@@ -676,11 +676,9 @@ export class WebReplEngine {
 			};
 		}
 
-		// Store the function definition
-		this.evalState.functions[funcName] = {
-			parameters,
-			expression: parseResult.ast
-		};
+		// Par `createFunctionBinding` : le nom entre dans `functionNames`, et
+		// `k(x) := x+1` puis `k(1)` se calcule (revue)
+		createFunctionBinding(this.evalState, funcName, parameters, parseResult.ast);
 		this.lastAst = parseResult.ast;
 
 		// Format output
