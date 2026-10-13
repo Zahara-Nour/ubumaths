@@ -237,7 +237,24 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		// Build exercises array
 		const exercises: StudentExerciseView[] = [];
 
-		for (const we of worksheetExercises ?? []) {
+		// Option « mélanger les exercices » : l'ordre de CETTE copie, tiré comme
+		// celui du PDF du prof (même fonction, même graine), sur les MÊMES lignes
+		// que lui — avant d'écarter les exercices orphelins, sinon la permutation
+		// de toute la section changerait. `null` : pas de mélange, l'ordre des
+		// positions comme avant.
+		const shuffledRows = copyExerciseOrder(
+			worksheetExercises ?? [],
+			sections ?? [],
+			copyScope,
+			worksheet.config
+		);
+		// Sections illisibles : tout tomberait hors section, avec une autre graine.
+		// Mieux vaut une erreur qu'un ordre faux ; sans mélange, elles restent facultatives.
+		if (sectionsError && shuffledRows) {
+			throw error(500, 'Erreur lors de la recuperation des exercices');
+		}
+
+		for (const we of shuffledRows ?? worksheetExercises ?? []) {
 			const exerciseData = getFirstOrSelf(we.exercise as unknown as ExerciseData | null);
 
 			if (!exerciseData) {
@@ -306,16 +323,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			exercises.push(exerciseView);
 		}
 
-		// Option « mélanger les exercices » : l'ordre de CETTE copie, tiré comme
-		// celui du PDF du prof (même fonction, même graine). `null` : pas de
-		// mélange, l'ordre des positions comme avant.
-		const shuffledExercises = copyExerciseOrder(
-			exercises,
-			sections ?? [],
-			copyScope,
-			worksheet.config
-		);
-
 		// Build sections array for response
 		const sectionViews: StudentSectionView[] = (sections ?? []).map((s) => ({
 			id: s.id,
@@ -356,8 +363,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			show_corrections: assignment.show_corrections ?? false,
 			class_name: studentClass?.name || null,
 			read_only: readOnly,
-			...(shuffledExercises ? { shuffled: true } : {}),
-			exercises: shuffledExercises ?? exercises,
+			...(shuffledRows ? { shuffled: true } : {}),
+			exercises,
 			sections: sectionViews
 		};
 

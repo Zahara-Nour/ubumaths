@@ -66,7 +66,18 @@ const ROWS = [
 	}))
 ];
 
-function supabase(individualized: boolean, config: Record<string, unknown>): TableMock {
+interface MockOptions {
+	/** Exercice dont la jointure rend `null` (exercice orphelin) */
+	orphanId?: string;
+	/** Lecture des sections en échec */
+	sectionsError?: boolean;
+}
+
+function supabase(
+	individualized: boolean,
+	config: Record<string, unknown>,
+	options: MockOptions = {}
+): TableMock {
 	return tableMock({
 		worksheet_assignments: {
 			data: {
@@ -104,14 +115,18 @@ function supabase(individualized: boolean, config: Record<string, unknown>): Tab
 					correction_visible: true,
 					variation_index: null,
 					is_essential: false,
-					exercise: twoLevelExercise()
+					exercise: row.id === options.orphanId ? null : twoLevelExercise()
 				})),
 			error: null
 		},
-		worksheet_sections: {
-			data: [{ id: SECTION_ID, title: 'A', instructions: null, translations: null, position: 1 }],
-			error: null
-		}
+		worksheet_sections: options.sectionsError
+			? { data: null, error: { message: 'panne' } }
+			: {
+					data: [
+						{ id: SECTION_ID, title: 'A', instructions: null, translations: null, position: 1 }
+					],
+					error: null
+				}
 	});
 }
 
@@ -211,5 +226,32 @@ describe('mélange : l’ordre de la copie arrive à l’élève', () => {
 			expect(teacherView.shuffled).toBeUndefined();
 			expect(ids(teacherView)).toEqual(dbOrder);
 		}
+	});
+
+	it('exercice orphelin : les autres gardent l’ordre de la copie du prof', async () => {
+		const orphanId = ROWS[2].id;
+		const withoutOrphan = (order: string[]) => order.filter((id) => id !== orphanId);
+		for (const studentId of STUDENTS) {
+			const mock = supabase(true, { shuffle_exercises: true }, { orphanId });
+			const fromStudent = await studentApi(mock, studentId);
+			expect(ids(fromStudent)).toEqual(withoutOrphan(expectedOrder(true, studentId)));
+			const fromPreview = await preview(
+				supabase(true, { shuffle_exercises: true }, { orphanId }),
+				studentId
+			);
+			expect(ids(fromPreview)).toEqual(withoutOrphan(expectedOrder(true, studentId)));
+		}
+	});
+
+	it('sections illisibles + fiche mélangée : erreur 500 plutôt qu’un ordre faux', async () => {
+		const mock = () => supabase(true, { shuffle_exercises: true }, { sectionsError: true });
+		await expect(studentApi(mock(), STUDENTS[0])).rejects.toMatchObject({ status: 500 });
+		await expect(preview(mock(), STUDENTS[0])).rejects.toMatchObject({ status: 500 });
+	});
+
+	it('sections illisibles sans mélange : réponse servie, comme avant', async () => {
+		const mock = () => supabase(true, {}, { sectionsError: true });
+		expect((await studentApi(mock(), STUDENTS[0])).exercises).toHaveLength(ROWS.length);
+		expect((await preview(mock(), STUDENTS[0])).exercises).toHaveLength(ROWS.length);
 	});
 });
