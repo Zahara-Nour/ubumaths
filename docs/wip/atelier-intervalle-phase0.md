@@ -1,7 +1,7 @@
 ---
 title: Atelier — une fonction définie sur un intervalle (phase 0)
 date: 2026-10-13
-status: phase 0 en attente de validation (I1-I6)
+status: phase 0 validée (2026-10-13, I1-I6 selon les recos) ; lot 1 en cours
 ---
 
 # Atelier — une fonction définie sur un intervalle
@@ -85,4 +85,4 @@ Puis le lot 3 de la réciproque (carte `f⁻¹` portant son ensemble).
 
 ## Journal
 
-- 2026-10-13 — phase 0 écrite, en attente de validation.
+- 2026-10-13 — phase 0 écrite ; validée par David (« je valide ») : I1-I6 selon les recos.
