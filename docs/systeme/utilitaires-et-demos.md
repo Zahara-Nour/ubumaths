@@ -113,9 +113,9 @@ Précisions :
 - **`/test-font`** : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles
-  de la police, petits et grands (ponctuation, opérateurs, ensembles, flèches, vecteurs,
-  délimiteurs empilés, racines, ∑ ∫, lettres grecques, AMS) : la regarder suffit pour
-  juger un changement du jeu Shantell (`tools/shantell-math/`). En bas, trois **exercices réels**
+  de la police, petits et grands (ponctuation, opérateurs, logique, ensembles, flèches, vecteurs,
+  géométrie, délimiteurs empilés, racines, ∑ ∫, lettres grecques, AMS) : la regarder suffit
+  pour juger un changement du jeu Shantell (`tools/shantell-math/`). En bas, trois **exercices réels**
   (copie figée de la base, `exercices-demo.json`, image copiée dans `static/test-font/`), affichés en
   Shantell et téléchargeables en PDF : `shantell-pdf.ts` compile avec un compilateur Typst **à part**
   (`TypstSnippet.buildLocalCompiler`), qui charge en plus `static/fonts/shantell-typst/` (Shantell
@@ -139,6 +139,11 @@ Précisions :
   droits, pris dans KaTeX_Main-Regular. KaTeX n'y a pas de minuscules grecques : le navigateur
   prend une police du système (le jeu `katex` fait pareil). Le jeu Shantell les ajoute à
   Main-Regular. Une capture Playwright sans `locale: 'fr-FR'` ne montre pas ce cas.
+- **MathLive n'écrit pas toujours le caractère ni la police de KaTeX.** `\perp` donne `⟂`
+  (U+27C2, absent de KaTeX), `\lnot` est pris dans AMS (qui n'a pas de `¬`), les accents de
+  `\hat` et `\tilde` sont `^` et `~`. Redessiner le glyphe attendu ne change alors rien à
+  l'écran : relever d'abord, dans le navigateur, le caractère et la police (`font-family`) de
+  chaque symbole. `\widehat` et `\overline` ne passent pas par la police (SVG, filet).
 - Les pages `/demo/**` sont publiques et sans `noindex` : seul `robots.txt` les écarte.
 
 ---

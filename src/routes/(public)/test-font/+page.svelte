@@ -72,11 +72,14 @@
 		'a<b\\leq c\\quad d>e\\geq f\\quad a\\leqslant b\\geqslant c\\quad A\\rightarrow B\\leftarrow C\\leftrightarrow D',
 		// Logique
 		'P\\Rightarrow Q\\quad P\\implies Q\\quad P\\Leftrightarrow Q\\quad P\\iff Q\\quad f:x\\mapsto x^2',
+		'\\forall x\\in E,\\ \\exists n\\quad\\nexists y\\quad A\\land B\\lor\\lnot C',
 		// Ensembles
 		'x\\in[0;1]\\cup]2;+\\infty[\\quad A\\cap B=\\emptyset\\quad C=\\varnothing\\quad\\mathbb{N}\\subset\\mathbb{Z}\\subset\\mathbb{Q}\\subset\\mathbb{R}\\subset\\mathbb{C}',
 		'x\\notin E\\quad A\\subseteq B\\supseteq C\\quad A\\subsetneq B\\supsetneq C\\quad A\\nsubseteq B\\nsupseteq C\\quad D\\supset E',
 		// Vecteurs
 		'\\vec{u}+\\vec{v}=\\vec{AB}\\quad\\vec{u}\\cdot\\vec{n}=0',
+		// Géométrie
+		"(d)\\perp(d')\\quad(d)\\parallel(\\Delta)\\nparallel(D)\\quad\\angle ABC=\\measuredangle ABC=90^\\circ\\quad\\hat{A}\\quad\\bar{x}\\quad\\tilde{u}",
 		// Lettres grecques
 		'\\alpha\\beta\\gamma\\delta\\varepsilon\\zeta\\eta\\theta\\iota\\kappa\\lambda\\mu\\nu\\rho\\sigma\\tau\\upsilon\\varphi\\phi\\chi\\psi\\omega\\quad\\xi\\vartheta\\varpi\\varrho\\varsigma\\quad\\Gamma\\Delta\\Theta\\Lambda\\Xi\\Pi\\Sigma\\Upsilon\\Phi\\Psi',
 		// Lettres-symboles

@@ -2,6 +2,19 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.11.0] - 2026-10-13
+
+### Ajouté
+
+- Script `logic_geometry.py` : symboles de logique et de géométrie à la main de Shantell
+  - repris de Shantell : `∀` (A retourné), `∨` et `∧` (V, à l'endroit et retourné), `¬`, l'accent de `\hat`, `∘` (le signe degré de Shantell, donc `90^\circ`), `∥` (deux `|` de Shantell)
+  - dessinés au trait des lettres : `∃` (anguleux : un E rond de Shantell en miroir se lit 3), `⊥ ∠ ∡`, la barre de `\bar` et la vague de `\tilde` ; `∄ ∦` portent le trait de `\not`
+  - MathLive écrit `\perp` avec `⟂` (U+27C2), absent de KaTeX : ajouté à Main-Regular ; il prend `¬` dans AMS, qui n'en a pas : ajouté ; ses accents sont `^` et `~`, redessinés comme `ˆ` et `˜`
+  - `\widehat` et `\overline` restent fins : MathLive les trace lui-même (SVG, filet), sans la police
+- Ordre : après `replace_symbols.py` (`∥` reprend son `|`), avant `build_typst_math_font.py`
+- Script `smaller_digits.py` : chiffres de Main-Regular réduits à 90 % (trait regagné en épaississant le contour) et resserrés (chasse × 0,8) ; ceux de Shantell, hauts comme les capitales et larges de 0,7 em, étalaient les nombres (« 2024 » : 280 px à 100 px, contre 200 px avec KaTeX). `+ − =` gardent leur taille
+- Ordre : après `replace_symbols.py`, avant `build_typst_math_font.py`
+
 ## [1.10.0] - 2026-10-13
 
 ### Modifié
