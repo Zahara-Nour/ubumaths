@@ -38,3 +38,27 @@ Démarré le 2026-10-13. Worktree `../ubumaths-wt-figures`, branche `feat/figure
   - [ ] PR, merge.
   - [ ] Après merge (David) : créer le flocon de Koch comme première figure publique.
 - [ ] **Lot 2** : type de ressource « figure » cité dans le cahier de texte et le cours.
+
+## Réglages d'affichage (branche `feat/figures-reglages`, spécification validée le 2026-10-13)
+
+Le texte enregistré devient exactement le contenu d'un bloc ` ```figure ` (en-tête, `---`,
+script) ; sans `---`, script nu, affichage d'aujourd'hui. Clés existantes du bloc + deux clés
+réservées aux figures interactives : `deplacable: oui|non` (défaut non, curseurs toujours actifs)
+et `rendu: normal|croquis|mixte`, refusées avec un message situé dans un bloc d'exercice.
+
+- [x] Parseur du bloc : option `interactive` (`parseFigureContent`), fenêtre facultative dans ce
+      mode ; conversion pure fenêtre ↔ vue de toile (`ubumark/utils/figure-view.ts`).
+- [x] `GeometryCanvas` : props `objectsMovable` (figer les objets, garder curseurs, zoom et
+      déplacement de la vue) et `underlay` (repère de l'en-tête, `FigureFrameLayer.svelte`).
+- [x] Formulaire : champs « Affichage » liés à l'en-tête dans les deux sens, bouton « Prendre le
+      cadrage actuel » ; page publique et aperçu réglés par l'en-tête, largeur bornée au conteneur.
+- [x] Tests unitaires, test de composant (`deplacable: non` → point figé, curseur actif ; rouge
+      sans la garde), page publique vue au navigateur headless.
+
+## Chantier futur (à ne pas commencer sans David)
+
+- **Bloc ` ```figure ` interactif à l'écran**, figé au PDF à la valeur initiale des curseurs. Les
+  clés (`deplacable:`, `rendu:`, option `interactive` du parseur) et la conversion
+  `figureViewFromWindow` servent telles quelles. Questions ouvertes : le chat reste-t-il
+  statique ? quel budget de recalcul (le bloc vient aussi des élèves) ? quels types d'objets
+  ouvrir au bloc (liste blanche de `figure-scene.ts`) ?
