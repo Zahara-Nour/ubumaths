@@ -24,7 +24,10 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
 ## Reste à faire
 
 1. **Remplacer `/cas`** — ✅ **fait le 2026-10-13** (PR 4 de [atelier-cas-phase0.md](atelier-cas-phase0.md),
-   #1340) : la page est retirée, l'adresse mène à `/atelier`. Reste `/calc`.
+   #1340) : la page est retirée, l'adresse mène à `/atelier` ; moteur allégé de ce que seule `/cas`
+   utilisait (#1343). Reste `/calc` (publique, dans le sitemap) : ses commandes ne marchent pas — en
+   mode commande elle envoie `..diff x^2` et le moteur répond « Commande inconnue : .diff » (constat
+   du 2026-10-13, antérieur à #1343). À trancher par David : la corriger ou la remplacer par l'atelier.
    Historique : `/cas` existait toujours (`ReplContainer`), hors barre latérale. Le catalogue de
    l'atelier (`commands.ts`) traduit toutes les commandes du moteur ; 7 sont déclarées indisponibles avec
    leur raison. Pas encore fait : l'inventaire de ce que `/cas` offre et que l'atelier n'offre pas, puis
