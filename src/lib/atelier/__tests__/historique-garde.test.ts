@@ -400,7 +400,14 @@ const POISONS = [
 	'\\begin',
 	'x\\',
 	'\\é',
-	'x\u0000y'
+	'x\u0000y',
+	// Audit du 2026-10-14 : au-delà de U+00FF, MathLive regroupe les caractères
+	// (`splitGraphemes`, bornes fausses) et peut avaler le premier `\` de `\\`
+	'a\u200D\\\\htmlStyle{color:red}{x}',
+	'é\u200D\\\\class{evil}{x}',
+	'\u200D\u200D\\\\cssId{evil}{x}',
+	'\u{1F1EB}\\\\href{https://evil.example}{x}',
+	'x\u2212 1'
 ];
 
 describe('empoisonnement du stockage', () => {

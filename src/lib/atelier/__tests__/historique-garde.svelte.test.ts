@@ -155,7 +155,10 @@ describe('un stockage empoisonné ne compose rien de dangereux', () => {
 			'\\class{evil}{x}',
 			'\\cssId{evil}{x}',
 			'\\htmlData{foo=bar}{x}',
-			'\\text{\\htmlStyle{background:url(https://evil.example/y)}{x}}'
+			'\\text{\\htmlStyle{background:url(https://evil.example/y)}{x}}',
+			// Un ZWJ fait avaler à MathLive le premier `\` de `\\` (audit du 2026-10-14)
+			'a\u200D\\\\htmlStyle{background:url(https://evil.example/z)}{x}',
+			'\u{1F1EB}\\\\class{evil}{x}'
 		];
 		localStorage.setItem(
 			CALC_HISTORY_STORAGE_KEY,

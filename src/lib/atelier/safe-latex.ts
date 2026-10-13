@@ -65,29 +65,32 @@ const COMMAND = /\\([a-zA-Z*]+|[\s\S]?)/g;
 /** Après `\begin` ou `\end` : le nom de l'environnement, entre accolades. */
 const ENVIRONMENT = /\\(?:begin|end)\s*\{([^{}]*)\}/g;
 
+/**
+ * Les seuls caractères permis : ASCII imprimable et Latin-1 (`°`, `µ`, `é`).
+ *
+ * ⚠️ Audit du 2026-10-14 : au-delà de U+00FF, MathLive regroupe les caractères
+ * AVANT de lire les commandes (`splitGraphemes`), et ce regroupement a des
+ * bornes fausses — un ZWJ ou un indicateur régional devant `\\htmlStyle` fait
+ * avaler le premier `\`, et MathLive lit `\htmlStyle` là où on a vérifié `\\`.
+ * Dans cette plage, il lit la chaîne telle quelle, comme ce module. Exclus
+ * aussi : les caractères de contrôle et les sauts de ligne.
+ */
+const PLAIN = /^[ -~ -ÿ]*$/;
+
 // =============================================================================
 // Fonctions
 // =============================================================================
 
-/** Un caractère de contrôle, hors tabulation et sauts de ligne ? */
-function hasControlCharacter(text: string): boolean {
-	for (let i = 0; i < text.length; i++) {
-		const code = text.charCodeAt(i);
-		if ((code < 32 && code !== 9 && code !== 10 && code !== 13) || code === 127) return true;
-	}
-	return false;
-}
-
 /**
  * La formule n'emploie-t-elle QUE des commandes mathématiques connues ?
  *
- * Refusée aussi : la notation `^^5c` de TeX (MathLive la lit comme un
- * caractère, `\` compris), un `\begin` sans environnement connu, un caractère
- * de contrôle. Une formule refusée n'est jamais « réparée » : la ligne se
- * montre en texte.
+ * Refusée aussi : un caractère hors de `PLAIN`, la notation `^^5c` de TeX
+ * (MathLive la lit comme un caractère, `\` compris), un `\begin` sans
+ * environnement connu. Une formule refusée n'est jamais « réparée » : la ligne
+ * se montre en texte.
  */
 export function isSafeLatex(latex: string): boolean {
-	if (latex.includes('^^') || hasControlCharacter(latex)) return false;
+	if (!PLAIN.test(latex) || latex.includes('^^')) return false;
 	for (const [, name] of latex.matchAll(COMMAND)) {
 		const known = name.length > 1 || /[a-zA-Z]/.test(name) ? MATH_COMMANDS : CONTROL_SYMBOLS;
 		if (!known.has(name)) return false;

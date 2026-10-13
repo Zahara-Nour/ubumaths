@@ -561,8 +561,10 @@ Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de re
   `\htmlData` des attributs, `\href` un lien. Une formule (`latex`, `alternative.latex`, chaque
   `$…$` d'un refus) n'est gardée que si **chacune de ses commandes** est sur la liste blanche de
   `safe-latex.ts` (commandes lues comme le `Tokenizer` de MathLive : lettres et `*` ; notation
-  `^^5c` refusée ; environnements `\begin{…}` nommés) — sinon elle est oubliée et la ligne se
-  montre en texte, échappé par Svelte. Relire par `parseLatex` puis `toLatex` a été écarté : 15
+  `^^5c` refusée ; environnements `\begin{…}` nommés ; **caractères ASCII et Latin-1 seulement** :
+  au-delà de U+00FF, MathLive regroupe les caractères avant de lire les commandes, avec des bornes
+  fausses — un ZWJ devant `\\htmlStyle` lui faisait lire `\htmlStyle`, audit du 2026-10-14) —
+  sinon elle est oubliée et la ligne se montre en texte, échappé par Svelte. Relire par `parseLatex` puis `toLatex` a été écarté : 15
   réponses ordinaires sur 43 ne se relisent pas (`\approx`, `\left\{`, intervalles, `\mathrm`,
   `\mathbb{R}`). Gardes : `historique-garde.test.ts` (états forgés), `historique-garde-sonde.test.ts`
   (chaque commande permise composée par MathLive avec des arguments piégés : aucun ne finit dans
