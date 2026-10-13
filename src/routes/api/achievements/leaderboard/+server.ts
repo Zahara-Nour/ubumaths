@@ -24,6 +24,9 @@ import {
 	getAchievementLeaderboard,
 	AchievementServiceError
 } from '$lib/server/achievements/service';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/achievements/leaderboard/+server');
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const supabase = locals.supabase;
@@ -70,7 +73,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			count: leaderboard.length
 		});
 	} catch (err) {
-		console.error('[API] Error fetching leaderboard:', err);
+		logger.error('[API] Error fetching leaderboard:', err);
 
 		if (err instanceof AchievementServiceError) {
 			throw error(500, err.message);

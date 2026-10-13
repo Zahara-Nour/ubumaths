@@ -18,6 +18,9 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { batchApproveSchema } from '$lib/server/validation/migration-review';
 import { loadQuestionWithTransform, getQuestionCount } from '$lib/migration/question-data-loader';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/migration/batch/approve/+server');
 
 /**
  * POST /api/migration/batch/approve
@@ -145,7 +148,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Log and return generic error
-		console.error('Error in batch approval:', err);
+		logger.error('Error in batch approval:', err);
 		throw error(500, 'Impossible de terminer l’approbation groupée');
 	}
 };

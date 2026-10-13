@@ -26,6 +26,9 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/vip-cards/request-activation/+server');
 
 // ============================================================================
 // VALIDATION SCHEMA
@@ -71,7 +74,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	);
 
 	if (rpcError) {
-		console.error('[request-activation] RPC error:', rpcError);
+		logger.error('[request-activation] RPC error:', rpcError);
 		throw error(500, `Impossible de demander l’activation : ${rpcError.message}`);
 	}
 
@@ -111,7 +114,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// relecture, l'identifiant d'instance renvoyé est un UUID inventé, qui ne
 	// désignera aucune carte réelle lors de la prochaine action.
 	if (updatedProfileError) {
-		console.error(
+		logger.error(
 			'Inventaire relu en échec, identifiant d’instance approximatif :',
 			updatedProfileError
 		);

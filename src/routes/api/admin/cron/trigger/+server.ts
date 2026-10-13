@@ -21,6 +21,9 @@ import {
 	type CronTriggerResponse
 } from '$lib/server/validation/cron';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/cron/trigger/+server');
 
 // Simple in-memory rate limit store
 // WARNING: Resets on server restart. In Vercel serverless, each cold start
@@ -63,7 +66,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 	}
 
 	try {
-		console.log(`[CRON Trigger] Admin triggering job: ${job_path}`);
+		logger.info(`[CRON Trigger] Admin triggering job: ${job_path}`);
 
 		// Check if this is an RPC job (pg_cron function)
 		if (job_path.startsWith('rpc:')) {
@@ -99,7 +102,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 		// Handle response
 		if (!response.ok) {
 			const errorText = await response.text().catch(() => 'Unknown error');
-			console.error(`[CRON Trigger] Job failed with status ${response.status}:`, errorText);
+			logger.error(`[CRON Trigger] Job failed with status ${response.status}:`, errorText);
 
 			const triggerResponse: CronTriggerResponse = {
 				success: false,
@@ -119,7 +122,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 			jobResult = null;
 		}
 
-		console.log(`[CRON Trigger] Job completed successfully:`, job_path);
+		logger.info(`[CRON Trigger] Job completed successfully:`, job_path);
 
 		const triggerResponse: CronTriggerResponse = {
 			success: true,
@@ -134,7 +137,7 @@ export const POST: RequestHandler = async ({ request, locals, url }) => {
 			result: jobResult
 		});
 	} catch (err) {
-		console.error(`[CRON Trigger] Failed to trigger job ${job_path}:`, err);
+		logger.error(`[CRON Trigger] Failed to trigger job ${job_path}:`, err);
 
 		// Une erreur SvelteKit (`error(503, …)`) n'est pas une `Response` : la relancer telle quelle.
 		if (isHttpError(err)) throw err;
@@ -168,7 +171,7 @@ async function triggerRpcJob(
 	rateLimitStore.set(job_path, now);
 
 	if (rpcError) {
-		console.error(`[CRON Trigger] RPC job failed:`, rpcError);
+		logger.error(`[CRON Trigger] RPC job failed:`, rpcError);
 
 		const triggerResponse: CronTriggerResponse = {
 			success: false,
@@ -180,7 +183,7 @@ async function triggerRpcJob(
 		return json(triggerResponse, { status: 500 });
 	}
 
-	console.log(`[CRON Trigger] RPC job completed successfully:`, functionName);
+	logger.info(`[CRON Trigger] RPC job completed successfully:`, functionName);
 
 	const triggerResponse: CronTriggerResponse = {
 		success: true,

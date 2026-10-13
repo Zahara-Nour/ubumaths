@@ -1,6 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/moderation/reports/[id]/+server');
 
 /**
  * Review report request schema
@@ -81,7 +84,7 @@ export const PUT: RequestHandler = async ({ request, params, locals }) => {
 		.maybeSingle();
 
 	if (fetchError) {
-		console.error('Failed to fetch report:', fetchError);
+		logger.error('Failed to fetch report:', fetchError);
 		throw error(500, 'Impossible de vérifier le signalement');
 	}
 
@@ -99,7 +102,7 @@ export const PUT: RequestHandler = async ({ request, params, locals }) => {
 	});
 
 	if (reviewError) {
-		console.error('Failed to review report:', reviewError);
+		logger.error('Failed to review report:', reviewError);
 
 		if (reviewError.message.includes('Permission denied')) {
 			throw error(403, 'Permission denied');

@@ -27,6 +27,9 @@ import { GoogleDriveClient } from '$lib/server/google/drive-api';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
 import { DRIVE_MIME_TYPE } from '$lib/whiteboard/utils/sync-state';
 import { listFilesQuerySchema } from '$lib/server/validation/whiteboard-drive';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/drive/list/+server');
 
 /**
  * Construct proxy URL for thumbnail
@@ -85,7 +88,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// List subfolders
 		const folders = await driveClient.listFolders(targetFolderId);
 
-		console.log(
+		logger.info(
 			`[Whiteboard Drive] Listed ${files.length} files and ${folders.length} folders for teacher ${user.id}`
 		);
 
@@ -126,7 +129,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			}
 		}
 
-		console.error('[Whiteboard Drive] List error:', {
+		logger.error('[Whiteboard Drive] List error:', {
 			error: err,
 			requestedFolderId,
 			userId: user.id

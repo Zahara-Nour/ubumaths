@@ -34,6 +34,9 @@ import { getTemplateById } from '$lib/server/vip-card-queries';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import { validateActivationContext } from '$lib/server/vip-card-context';
 import { asStudentVipCards } from '$lib/types/vip-card';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/vip-cards/activate-add-gidouilles/+server');
 
 const activateGidouillesSchema = z.object({
 	instanceId: z.string().uuid(),
@@ -75,7 +78,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (fetchError) {
-		console.error('[activate-add-gidouilles] Error fetching profile:', fetchError);
+		logger.error('[activate-add-gidouilles] Error fetching profile:', fetchError);
 		throw error(500, `Impossible de charger le profil de l’élève : ${fetchError.message}`);
 	}
 
@@ -129,7 +132,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (membershipError && membershipError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', membershipError);
+		logger.error('Lecture impossible :', membershipError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -148,13 +151,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (rpcError) {
-		console.error('[activate-add-gidouilles] RPC error:', rpcError);
+		logger.error('[activate-add-gidouilles] RPC error:', rpcError);
 		throw error(500, 'Impossible d’utiliser la carte VIP');
 	}
 
 	const rpcData = rpcResult as { success: boolean; error?: string };
 	if (!rpcData.success) {
-		console.error('[activate-add-gidouilles] RPC failed:', rpcData.error);
+		logger.error('[activate-add-gidouilles] RPC failed:', rpcData.error);
 		throw error(500, 'Impossible d’utiliser la carte VIP');
 	}
 
@@ -168,7 +171,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (gidouillesError) {
-		console.error('[activate-add-gidouilles] Error adding gidouilles:', gidouillesError);
+		logger.error('[activate-add-gidouilles] Error adding gidouilles:', gidouillesError);
 		// Card was consumed but gidouilles failed - log for manual recovery
 		throw error(500, 'Impossible d’ajouter les gidouilles. Préviens ton professeur.');
 	}

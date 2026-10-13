@@ -7,6 +7,9 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { studentFilesQuerySchema } from '$lib/server/validation/python-files';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-files/students/+server');
 
 // =============================================================================
 // HANDLERS
@@ -59,7 +62,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data: classMembers, error: membersError } = await studentIdsQuery;
 
 	if (membersError) {
-		console.error('Error fetching class members:', membersError);
+		logger.error('Error fetching class members:', membersError);
 		throw error(500, 'Impossible de charger les élèves des classes');
 	}
 
@@ -115,7 +118,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		.range(offset, offset + limit - 1);
 
 	if (filesError) {
-		console.error('Error fetching student files:', filesError);
+		logger.error('Error fetching student files:', filesError);
 		throw error(500, 'Impossible de charger les fichiers Python des élèves');
 	}
 
@@ -140,7 +143,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 			// laisse une trace.
 			if (studentClassesError) {
-				console.error('Enrichissement illisible :', studentClassesError);
+				logger.error('Enrichissement illisible :', studentClassesError);
 			}
 
 			return {

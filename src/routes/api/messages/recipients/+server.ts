@@ -1,6 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/messages/recipients/+server');
 
 /**
  * GET /api/messages/recipients
@@ -21,7 +24,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.single();
 
 		if (profileError) {
-			console.error('Error fetching profile:', profileError);
+			logger.error('Error fetching profile:', profileError);
 			throw error(500, 'Erreur lors de la récupération du profil');
 		}
 
@@ -34,7 +37,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		);
 
 		if (recipientsError) {
-			console.error('Error fetching recipients:', recipientsError);
+			logger.error('Error fetching recipients:', recipientsError);
 			throw error(500, 'Erreur lors de la récupération des destinataires');
 		}
 
@@ -47,7 +50,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			);
 
 			if (classesError) {
-				console.error('Error fetching classes:', classesError);
+				logger.error('Error fetching classes:', classesError);
 			} else {
 				classes = classesData;
 			}
@@ -59,7 +62,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			userRole: profile.role
 		});
 	} catch (err) {
-		console.error('Error in recipients API:', err);
+		logger.error('Error in recipients API:', err);
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}

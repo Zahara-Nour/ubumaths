@@ -38,6 +38,9 @@ import {
 	sharedCourseworkIdParamSchema,
 	updateSharedCourseworkByIdSchema
 } from '$lib/server/validation/google';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/shared-coursework/[id]/+server');
 
 /**
  * Update shared coursework settings by record ID
@@ -91,7 +94,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			if (fetchError?.code === 'PGRST116') {
 				throw error(404, 'Devoir Classroom partagé introuvable ou accès refusé');
 			}
-			console.error('[Update Shared Coursework] Record verification error:', fetchError);
+			logger.error('[Update Shared Coursework] Record verification error:', fetchError);
 			throw error(404, 'Devoir Classroom partagé introuvable');
 		}
 
@@ -205,7 +208,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 			.single();
 
 		if (updateError) {
-			console.error('[Update Shared Coursework] Update error:', updateError);
+			logger.error('[Update Shared Coursework] Update error:', updateError);
 			throw error(500, 'Impossible de modifier le devoir Classroom partagé');
 		}
 
@@ -266,7 +269,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		}
 
 		// Handle other errors
-		console.error('[Update Shared Coursework] Error updating record:', err);
+		logger.error('[Update Shared Coursework] Error updating record:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };
@@ -311,7 +314,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			if (fetchError?.code === 'PGRST116') {
 				throw error(404, 'Devoir Classroom partagé introuvable ou accès refusé');
 			}
-			console.error('[Delete Shared Coursework] Record verification error:', fetchError);
+			logger.error('[Delete Shared Coursework] Record verification error:', fetchError);
 			throw error(404, 'Devoir Classroom partagé introuvable');
 		}
 
@@ -325,7 +328,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.eq('id', sharedCourseworkId);
 
 		if (deleteError) {
-			console.error('[Delete Shared Coursework] Delete error:', deleteError);
+			logger.error('[Delete Shared Coursework] Delete error:', deleteError);
 			throw error(500, 'Impossible de supprimer le devoir Classroom partagé');
 		}
 
@@ -339,7 +342,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		}
 
 		// Handle other errors
-		console.error('[Delete Shared Coursework] Error deleting record:', err);
+		logger.error('[Delete Shared Coursework] Error deleting record:', err);
 		throw error(500, 'Une erreur inattendue s’est produite');
 	}
 };

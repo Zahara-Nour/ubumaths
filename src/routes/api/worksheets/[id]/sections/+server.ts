@@ -17,6 +17,9 @@ import {
 } from '$lib/server/validation/worksheets';
 import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/sections/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -85,7 +88,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('position', { ascending: true });
 
 	if (dbError) {
-		console.error('Failed to fetch sections:', dbError);
+		logger.error('Failed to fetch sections:', dbError);
 		throw error(500, 'Impossible de charger les sections');
 	}
 
@@ -149,7 +152,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to create section:', dbError);
+		logger.error('Failed to create section:', dbError);
 
 		// Handle unique constraint violation (duplicate position)
 		if (dbError.code === '23505') {
@@ -221,7 +224,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.in('id', sectionIds);
 
 	if (fetchError) {
-		console.error('Failed to verify sections:', fetchError);
+		logger.error('Failed to verify sections:', fetchError);
 		throw error(500, 'Impossible de vérifier les sections');
 	}
 
@@ -248,7 +251,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	);
 
 	if (rpcError) {
-		console.error('Failed to reorder sections:', rpcError);
+		logger.error('Failed to reorder sections:', rpcError);
 		throw error(500, rpcError.message || 'Impossible de réordonner les sections');
 	}
 

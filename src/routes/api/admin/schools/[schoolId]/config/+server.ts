@@ -14,6 +14,9 @@ import { updateSchoolConfigSchema } from '$lib/server/validation/school-config';
 import { DEFAULT_TIMEZONE } from '$lib/utils/timezones';
 import { DEFAULT_WEEK_CONFIG } from '$lib/utils/week-config';
 import type { SchoolTimetable } from '$lib/utils/timetable';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/schools/[schoolId]/config/+server');
 
 /**
  * Update school configuration (timezone and week_config)
@@ -57,7 +60,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		.single();
 
 	if (fetchError) {
-		console.error('[PUT /api/admin/schools/[schoolId]/config] Fetch error:', fetchError);
+		logger.error('[PUT /api/admin/schools/[schoolId]/config] Fetch error:', fetchError);
 		throw error(404, 'École introuvable');
 	}
 
@@ -88,7 +91,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 		.single();
 
 	if (updateError) {
-		console.error('[PUT /api/admin/schools/[schoolId]/config] Update error:', updateError);
+		logger.error('[PUT /api/admin/schools/[schoolId]/config] Update error:', updateError);
 		throw error(500, 'Impossible d’enregistrer la configuration de l’école');
 	}
 
@@ -139,7 +142,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		.single();
 
 	if (fetchError) {
-		console.error('[GET /api/admin/schools/[schoolId]/config] Fetch error:', fetchError);
+		logger.error('[GET /api/admin/schools/[schoolId]/config] Fetch error:', fetchError);
 		throw error(404, 'École introuvable');
 	}
 

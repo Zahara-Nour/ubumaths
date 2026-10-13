@@ -10,6 +10,9 @@ import {
 	type AssignExerciseInput
 } from '$lib/server/validation/python-exercises';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-exercises/[id]/assign/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -105,7 +108,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (studentClassesError && studentClassesError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', studentClassesError);
+			logger.error('Contrôle d’accès impossible :', studentClassesError);
 			throw error(500, 'Impossible de vérifier les droits d’accès');
 		}
 
@@ -129,7 +132,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (assignmentError) {
-		console.error('Failed to create assignment:', assignmentError);
+		logger.error('Failed to create assignment:', assignmentError);
 
 		// Check for duplicate assignment
 		if (assignmentError.code === '23505') {

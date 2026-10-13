@@ -33,6 +33,9 @@ import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
 import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
 import { sendConsentEmail, isBrevoConfigured } from '$lib/server/email/brevo';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/consent/send-email/+server');
 
 /**
  * Request body schema
@@ -89,7 +92,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.single();
 
 	if (studentError || !student) {
-		console.error('[Send Consent Email] Error fetching student:', studentError);
+		logger.error('[Send Consent Email] Error fetching student:', studentError);
 		throw error(404, 'Élève non trouvé');
 	}
 
@@ -108,7 +111,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Le nom de l'école n'est qu'un ornement du courriel ; PGRST116 signifie
 	// « élève hors classe », cas normal.
 	if (classInfoError && classInfoError.code !== 'PGRST116') {
-		console.error('[Send Consent Email] École illisible :', classInfoError);
+		logger.error('[Send Consent Email] École illisible :', classInfoError);
 	}
 
 	const schoolName = (classInfo?.classes as { schools?: { name?: string } })?.schools?.name ?? null;
@@ -122,7 +125,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// ⚠️ Ce décompte borne un quota. Une panne le ramenait à zéro, donc à
 	// « quota intact » : la limite sautait aussi souvent que la requête échouait.
 	if (allConsentsError) {
-		console.error('Quota illisible :', allConsentsError);
+		logger.error('Quota illisible :', allConsentsError);
 		throw error(500, 'Impossible de vérifier le quota');
 	}
 
@@ -148,7 +151,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (existingConsentError && existingConsentError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', existingConsentError);
+		logger.error('Lecture impossible :', existingConsentError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -171,7 +174,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (insertError || !newConsent) {
-				console.error('[Send Consent Email] Error creating consent record:', insertError);
+				logger.error('[Send Consent Email] Error creating consent record:', insertError);
 				throw error(500, 'Erreur lors de la création de la demande de consentement');
 			}
 
@@ -193,7 +196,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.eq('id', existingConsent.id);
 
 			if (updateError) {
-				console.error('[Send Consent Email] Error updating consent record:', updateError);
+				logger.error('[Send Consent Email] Error updating consent record:', updateError);
 			}
 		}
 	} else {
@@ -210,7 +213,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (insertError || !newConsent) {
-			console.error('[Send Consent Email] Error creating consent record:', insertError);
+			logger.error('[Send Consent Email] Error creating consent record:', insertError);
 			throw error(500, 'Erreur lors de la création de la demande de consentement');
 		}
 
@@ -241,7 +244,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	);
 
 	if (!result.success) {
-		console.error('[Send Consent Email] Brevo error:', result.error);
+		logger.error('[Send Consent Email] Brevo error:', result.error);
 		throw error(500, `Échec de l'envoi de l'email: ${result.error}`);
 	}
 
@@ -251,7 +254,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.update({ last_email_sent_at: new Date().toISOString() })
 		.eq('consent_token', consentToken);
 
-	console.log(
+	logger.info(
 		`[Send Consent Email] Email sent successfully to ${parent_email} for student ${student_id} by teacher ${user.id}`
 	);
 

@@ -20,6 +20,9 @@ import {
 	fetchTagNamesForResources,
 	syncResourceTags
 } from '$lib/server/resource-tags';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-exercises/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -122,7 +125,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			.or(`student_id.eq.${user.id},class_id.in.(${await getStudentClassIds(supabase, user.id)})`);
 
 		if (assignmentsError) {
-			console.error('Failed to fetch student assignments:', assignmentsError);
+			logger.error('Failed to fetch student assignments:', assignmentsError);
 			throw error(500, 'Impossible de charger les affectations');
 		}
 
@@ -168,7 +171,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data: exercises, error: exercisesError, count } = await query;
 
 	if (exercisesError) {
-		console.error('Failed to fetch exercises:', exercisesError);
+		logger.error('Failed to fetch exercises:', exercisesError);
 		throw error(500, 'Impossible de charger les corvées Python');
 	}
 
@@ -264,7 +267,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (insertError) {
-		console.error('Failed to create exercise:', insertError);
+		logger.error('Failed to create exercise:', insertError);
 		throw error(500, 'Impossible de créer la corvée Python');
 	}
 
@@ -275,7 +278,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		try {
 			await syncResourceTags(supabase, 'python_exercise', exercise.id, data.tags);
 		} catch (e) {
-			console.error('Failed to attach tags to new exercise — rolling back:', e);
+			logger.error('Failed to attach tags to new exercise — rolling back:', e);
 			await supabase.from('python_exercises').delete().eq('id', exercise.id);
 			throw error(500, 'Impossible d’enregistrer les tags');
 		}
@@ -300,7 +303,7 @@ async function getStudentClassIds(
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (classesError) {
-		console.error('Enrichissement illisible :', classesError);
+		logger.error('Enrichissement illisible :', classesError);
 	}
 
 	if (!classes || classes.length === 0) {

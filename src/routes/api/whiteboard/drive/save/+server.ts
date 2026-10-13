@@ -29,6 +29,9 @@ import { GoogleDriveClient } from '$lib/server/google/drive-api';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
 import { validateUbwFile, serializeDocument } from '$lib/whiteboard/utils/file-operations';
 import { DRIVE_MIME_TYPE } from '$lib/whiteboard/utils/sync-state';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/drive/save/+server');
 
 /**
  * Save whiteboard document to Google Drive
@@ -63,7 +66,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	} = validation.data;
 
 	// Debug: log what we received
-	console.log('[Whiteboard Drive Save] Request received:', {
+	logger.info('[Whiteboard Drive Save] Request received:', {
 		fileId: fileId || 'undefined (will create new)',
 		requestedFolderId: requestedFolderId || 'undefined (will use root)',
 		fileName,
@@ -117,10 +120,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 						description: `Thumbnail for ${finalFileName}`
 					});
 					thumbnailFileId = thumbResult.id;
-					console.log(`[Whiteboard Drive] Created thumbnail ${thumbResult.id}`);
+					logger.info(`[Whiteboard Drive] Created thumbnail ${thumbResult.id}`);
 				} catch (thumbErr) {
 					// Log but don't fail if thumbnail creation fails
-					console.warn('[Whiteboard Drive] Failed to create thumbnail:', thumbErr);
+					logger.warn('[Whiteboard Drive] Failed to create thumbnail:', thumbErr);
 				}
 			}
 		}
@@ -129,7 +132,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (fileId) {
 			// Update existing file content
 			result = await driveClient.updateFile(fileId, content);
-			console.log(`[Whiteboard Drive] Updated file ${fileId} for teacher ${user.id}`);
+			logger.info(`[Whiteboard Drive] Updated file ${fileId} for teacher ${user.id}`);
 
 			// Only move file if folderId was EXPLICITLY provided in the request
 			// This prevents auto-save (which doesn't send folderId) from moving files
@@ -137,7 +140,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				const currentParent = await driveClient.getParentFolderId(fileId);
 				if (currentParent !== requestedFolderId) {
 					await driveClient.moveFile(fileId, requestedFolderId);
-					console.log(`[Whiteboard Drive] Moved file ${fileId} to folder ${requestedFolderId}`);
+					logger.info(`[Whiteboard Drive] Moved file ${fileId} to folder ${requestedFolderId}`);
 				}
 			}
 
@@ -166,7 +169,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				folderId,
 				appProperties: Object.keys(appProperties).length > 0 ? appProperties : undefined
 			});
-			console.log(
+			logger.info(
 				`[Whiteboard Drive] Created ${isAutosave ? 'autosave' : 'file'} ${result.id} for teacher ${user.id}`
 			);
 		}
@@ -198,7 +201,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		console.error('[Whiteboard Drive] Save error:', err);
+		logger.error('[Whiteboard Drive] Save error:', err);
 		const message = err instanceof Error ? err.message : 'erreur inconnue';
 		throw error(500, `Impossible d’enregistrer sur Google Drive : ${message}`);
 	}

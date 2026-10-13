@@ -17,6 +17,9 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/students/+server');
 
 // ============================================================================
 // VALIDATION SCHEMAS
@@ -90,7 +93,7 @@ async function verifyAssignmentAccess(
 	// PGRST116 = pas de profil, et le refus qui suit est légitime. Toute AUTRE
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Rôle illisible :', profileError);
+		logger.error('Rôle illisible :', profileError);
 		throw error(500, 'Impossible de vérifier les droits d’accès');
 	}
 
@@ -156,7 +159,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.eq('assignment_id', assignmentId);
 
 		if (classError) {
-			console.error('Error fetching class assignments:', classError);
+			logger.error('Error fetching class assignments:', classError);
 			throw error(500, 'Impossible de charger les classes');
 		}
 
@@ -179,7 +182,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 				.eq('status', 'active');
 
 			if (membersError) {
-				console.error('Error fetching class members:', membersError);
+				logger.error('Error fetching class members:', membersError);
 				continue;
 			}
 
@@ -213,7 +216,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			.eq('assignment_id', assignmentId);
 
 		if (individualError) {
-			console.error('Error fetching individual students:', individualError);
+			logger.error('Error fetching individual students:', individualError);
 			throw error(500, 'Impossible de charger les élèves affectés individuellement');
 		}
 
@@ -260,7 +263,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			individual_count: (individualStudents || []).length
 		});
 	} catch (err) {
-		console.error('Error fetching assignment students:', err);
+		logger.error('Error fetching assignment students:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
@@ -328,7 +331,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.eq('role', 'student');
 
 		if (studentsError) {
-			console.error('Error fetching students:', studentsError);
+			logger.error('Error fetching students:', studentsError);
 			throw error(500, 'Impossible de vérifier les élèves');
 		}
 
@@ -351,7 +354,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			.select('id');
 
 		if (insertError) {
-			console.error('Error adding students to assignment:', insertError);
+			logger.error('Error adding students to assignment:', insertError);
 			throw error(500, 'Impossible d’ajouter les élèves');
 		}
 
@@ -364,7 +367,7 @@ export const POST: RequestHandler = async ({ params, locals, request }) => {
 			{ status: 201 }
 		);
 	} catch (err) {
-		console.error('Error adding students to assignment:', err);
+		logger.error('Error adding students to assignment:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.
@@ -424,7 +427,7 @@ export const DELETE: RequestHandler = async ({ params, locals, url }) => {
 			.eq('student_id', validation.data.student_id);
 
 		if (deleteError) {
-			console.error('Error removing student from assignment:', deleteError);
+			logger.error('Error removing student from assignment:', deleteError);
 			throw error(500, 'Impossible de retirer l’élève');
 		}
 
@@ -437,7 +440,7 @@ export const DELETE: RequestHandler = async ({ params, locals, url }) => {
 			message: 'Élève retiré de l’affectation'
 		});
 	} catch (err) {
-		console.error('Error removing student from assignment:', err);
+		logger.error('Error removing student from assignment:', err);
 
 		// `error()` de SvelteKit lève un `HttpError`, qui n'étend PAS `Error` :
 		// `err instanceof Error` y est faux, et tout 4xx délibéré ressortait en 500.

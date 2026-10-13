@@ -12,6 +12,9 @@ import {
 	createWorksheetResponseSchema
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/duplicate/+server');
 
 /**
  * POST /api/worksheets/[id]/duplicate
@@ -79,7 +82,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	}
 
 	if (createError) {
-		console.error('Failed to duplicate worksheet:', createError);
+		logger.error('Failed to duplicate worksheet:', createError);
 		throw error(500, 'Impossible de dupliquer la fiche');
 	}
 
@@ -94,7 +97,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	// dire. La fiche dupliquée serait amputée, et l'écart ne se verrait qu'à
 	// l'usage.
 	if (sectionsError) {
-		console.error('Contenu à dupliquer illisible :', sectionsError);
+		logger.error('Contenu à dupliquer illisible :', sectionsError);
 		throw error(500, 'Impossible de dupliquer la fiche');
 	}
 
@@ -118,7 +121,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 			// dire. La fiche dupliquée serait amputée, et l'écart ne se verrait qu'à
 			// l'usage.
 			if (newSectionError) {
-				console.error('Contenu à dupliquer illisible :', newSectionError);
+				logger.error('Contenu à dupliquer illisible :', newSectionError);
 				throw error(500, 'Impossible de dupliquer la fiche');
 			}
 
@@ -138,7 +141,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		// dire. La fiche dupliquée serait amputée, et l'écart ne se verrait qu'à
 		// l'usage.
 		if (exercisesError) {
-			console.error('Contenu à dupliquer illisible :', exercisesError);
+			logger.error('Contenu à dupliquer illisible :', exercisesError);
 			throw error(500, 'Impossible de dupliquer la fiche');
 		}
 
@@ -168,7 +171,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 		// dire. La fiche dupliquée serait amputée, et l'écart ne se verrait qu'à
 		// l'usage.
 		if (exercisesError) {
-			console.error('Contenu à dupliquer illisible :', exercisesError);
+			logger.error('Contenu à dupliquer illisible :', exercisesError);
 			throw error(500, 'Impossible de dupliquer la fiche');
 		}
 

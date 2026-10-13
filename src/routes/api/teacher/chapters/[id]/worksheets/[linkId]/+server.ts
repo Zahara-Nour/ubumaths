@@ -11,6 +11,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { unlinkWorksheet } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/worksheets/[linkId]/+server');
 
 async function verifyWorksheetLinkOwnership(
 	chapterId: string,
@@ -67,7 +70,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const result = await unlinkWorksheet(linkId, locals.supabase);
 
 	if (result.error) {
-		console.error('[DELETE /api/teacher/chapters/[id]/worksheets/[linkId]] Error:', result.error);
+		logger.error('[DELETE /api/teacher/chapters/[id]/worksheets/[linkId]] Error:', result.error);
 		throw error(500, 'Failed to unlink worksheet');
 	}
 

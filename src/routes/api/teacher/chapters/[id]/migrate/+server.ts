@@ -9,6 +9,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { migrateChapterToVersion } from '$lib/server/chapter-templates';
 import { migrateChapterSchema } from '$lib/server/validation/chapter-templates';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/migrate/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -59,7 +62,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (instantiationError && instantiationError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', instantiationError);
+		logger.error('Lecture impossible :', instantiationError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -100,7 +103,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	const result = await migrateChapterToVersion(chapterId, targetVersion, locals.supabase);
 
 	if (result.error) {
-		console.error('[POST /api/teacher/chapters/[id]/migrate] Error:', result.error);
+		logger.error('[POST /api/teacher/chapters/[id]/migrate] Error:', result.error);
 		throw error(500, 'Failed to migrate chapter');
 	}
 

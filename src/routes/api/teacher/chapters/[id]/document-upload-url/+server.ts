@@ -15,6 +15,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { uuidSchema } from '$lib/server/validation/common';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapters/[id]/document-upload-url/+server');
 
 /** Le bucket porte la même liste ; celle-ci refuse tôt, avec un message clair. */
 const ALLOWED_MIME_TYPES = [
@@ -49,7 +52,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime ; toute
 	// autre panne mérite son propre message.
 	if (chapterError && chapterError.code !== 'PGRST116') {
-		console.error('[document-upload-url] Lecture impossible :', chapterError);
+		logger.error('[document-upload-url] Lecture impossible :', chapterError);
 		throw error(500, 'Vérification impossible');
 	}
 
@@ -79,7 +82,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.createSignedUploadUrl(storagePath);
 
 	if (signError || !data) {
-		console.error('[document-upload-url] Signature impossible :', signError);
+		logger.error('[document-upload-url] Signature impossible :', signError);
 		throw error(500, "Erreur lors de la préparation de l'envoi");
 	}
 

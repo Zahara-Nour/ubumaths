@@ -55,6 +55,11 @@ import {
 	worksheetExerciseSeed,
 	type ExerciseContentRow
 } from '$lib/worksheets/worksheet-copy';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'api/student/worksheets/[assignmentId]/exercises/[exerciseId]/report/+server'
+);
 
 export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// Auth check: Must be a student
@@ -95,7 +100,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 		// panne doit se distinguer d'un refus mérité.
 		if (canAccessError && canAccessError.code !== 'PGRST116') {
-			console.error('Contrôle d’accès impossible :', canAccessError);
+			logger.error('Contrôle d’accès impossible :', canAccessError);
 			throw error(500, 'Impossible de vérifier votre accès');
 		}
 
@@ -124,7 +129,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (assignmentError || !assignment) {
-			console.error('[API] Error fetching assignment:', assignmentError);
+			logger.error('[API] Error fetching assignment:', assignmentError);
 			throw error(404, 'Devoir non trouve');
 		}
 
@@ -143,7 +148,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (weError || !worksheetExercise) {
-			console.error('[API] Error fetching worksheet exercise:', weError);
+			logger.error('[API] Error fetching worksheet exercise:', weError);
 			throw error(404, 'Exercice non trouve dans ce devoir');
 		}
 
@@ -173,7 +178,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			.eq('student_id', user.id);
 
 		if (countError) {
-			console.error('[API] Error counting existing reports:', countError);
+			logger.error('[API] Error counting existing reports:', countError);
 			throw error(500, 'Erreur lors de la verification des signalements');
 		}
 
@@ -201,7 +206,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (insertError) {
-			console.error('[API] Error inserting error report:', insertError);
+			logger.error('[API] Error inserting error report:', insertError);
 			throw error(500, 'Erreur lors de la creation du signalement');
 		}
 
@@ -234,7 +239,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			throw err;
 		}
 
-		console.error(
+		logger.error(
 			'[API] Unexpected error in POST /api/student/worksheets/[assignmentId]/exercises/[exerciseId]/report:',
 			err
 		);

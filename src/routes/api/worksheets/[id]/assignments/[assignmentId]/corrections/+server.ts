@@ -21,6 +21,11 @@ import {
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'api/worksheets/[id]/assignments/[assignmentId]/corrections/+server'
+);
 
 // ============================================================================
 // REQUEST/RESPONSE SCHEMAS
@@ -123,7 +128,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.eq('assignment_id', params.assignmentId);
 
 	if (fetchError) {
-		console.error('Failed to fetch exercise settings:', fetchError);
+		logger.error('Failed to fetch exercise settings:', fetchError);
 		throw error(500, 'Impossible de charger les réglages');
 	}
 
@@ -222,7 +227,7 @@ async function handleGlobalUpdate(
 		.eq('id', assignmentId);
 
 	if (updateError) {
-		console.error('Failed to update correction settings:', updateError);
+		logger.error('Failed to update correction settings:', updateError);
 		throw error(500, 'Impossible de modifier les réglages');
 	}
 
@@ -275,7 +280,7 @@ async function handleExerciseUpdate(
 		);
 
 	if (upsertError) {
-		console.error('Failed to update exercise correction setting:', upsertError);
+		logger.error('Failed to update exercise correction setting:', upsertError);
 		throw error(500, 'Impossible de modifier le réglage');
 	}
 
@@ -315,7 +320,7 @@ async function handleBulkUpdate(
 		.in('id', exerciseIds);
 
 	if (exercisesError) {
-		console.error('Failed to verify exercises:', exercisesError);
+		logger.error('Failed to verify exercises:', exercisesError);
 		throw error(500, 'Impossible de vérifier les exercices');
 	}
 
@@ -339,7 +344,7 @@ async function handleBulkUpdate(
 		.upsert(upsertData, { onConflict: 'assignment_id,worksheet_exercise_id' });
 
 	if (upsertError) {
-		console.error('Failed to bulk update exercise settings:', upsertError);
+		logger.error('Failed to bulk update exercise settings:', upsertError);
 		throw error(500, 'Impossible de modifier les réglages');
 	}
 

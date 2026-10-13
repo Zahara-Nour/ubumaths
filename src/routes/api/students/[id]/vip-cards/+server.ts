@@ -21,6 +21,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { asStudentVipCards } from '$lib/types/vip-card';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/students/[id]/vip-cards/+server');
 
 // ============================================================================
 // GET HANDLER
@@ -55,7 +58,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		.single();
 
 	if (fetchError) {
-		console.error('[vip-cards] Error fetching student profile:', fetchError);
+		logger.error('[vip-cards] Error fetching student profile:', fetchError);
 		throw error(500, `Failed to fetch student profile: ${fetchError.message}`);
 	}
 

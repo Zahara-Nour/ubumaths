@@ -14,6 +14,9 @@ import { requireAuth } from '$lib/server/middleware/auth';
 import { updateSectionSchema } from '$lib/server/validation/srs';
 import { z } from 'zod';
 import type { TablesUpdate } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/srs/decks/[id]/sections/[sectionId]/+server');
 
 /** Paramètres de la route : deux uuid. */
 const sectionParamsSchema = z.object({ id: z.string().uuid(), sectionId: z.string().uuid() });
@@ -32,7 +35,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (deckError) {
-		console.error('Contrôle d’accès impossible :', deckError);
+		logger.error('Contrôle d’accès impossible :', deckError);
 		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
 	}
 	if (!deck) {
@@ -76,7 +79,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		if (updateErr.code === '42501') {
 			return json({ error: 'Modification refusée par les permissions.' }, { status: 403 });
 		}
-		console.error('[sections/PATCH] failed:', updateErr);
+		logger.error('[sections/PATCH] failed:', updateErr);
 		return json({ error: updateErr.message }, { status: 500 });
 	}
 
@@ -107,7 +110,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (deckError) {
-		console.error('Contrôle d’accès impossible :', deckError);
+		logger.error('Contrôle d’accès impossible :', deckError);
 		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
 	}
 	if (!deck) {
@@ -125,7 +128,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 		if (deleteErr.code === '42501') {
 			return json({ error: 'Suppression refusée par les permissions.' }, { status: 403 });
 		}
-		console.error('[sections/DELETE] failed:', deleteErr);
+		logger.error('[sections/DELETE] failed:', deleteErr);
 		return json({ error: deleteErr.message }, { status: 500 });
 	}
 
@@ -140,7 +143,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			.eq('deck_id', deckId)
 			.maybeSingle();
 		if (lectureErr) {
-			console.error('[sections/DELETE] contrôle impossible :', lectureErr);
+			logger.error('[sections/DELETE] contrôle impossible :', lectureErr);
 			return json({ error: 'Impossible de vérifier la suppression' }, { status: 500 });
 		}
 		if (encore) {

@@ -18,6 +18,9 @@ import {
 import { uuidSchema } from '$lib/server/validation/common';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/[id]/exercises/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -99,7 +102,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		.order('position', { ascending: true });
 
 	if (dbError) {
-		console.error('Failed to fetch exercises:', dbError);
+		logger.error('Failed to fetch exercises:', dbError);
 		throw error(500, 'Impossible de charger les exercices');
 	}
 
@@ -201,7 +204,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to add exercise to worksheet:', dbError);
+		logger.error('Failed to add exercise to worksheet:', dbError);
 
 		// Handle duplicate exercise in worksheet
 		if (dbError.code === '23505') {
@@ -273,7 +276,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.in('id', exerciseIds);
 
 	if (fetchError) {
-		console.error('Failed to verify exercises:', fetchError);
+		logger.error('Failed to verify exercises:', fetchError);
 		throw error(500, 'Impossible de vérifier les exercices');
 	}
 
@@ -302,7 +305,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	);
 
 	if (rpcError) {
-		console.error('Failed to reorder exercises:', rpcError);
+		logger.error('Failed to reorder exercises:', rpcError);
 		throw error(500, rpcError.message || 'Impossible de réordonner les exercices');
 	}
 

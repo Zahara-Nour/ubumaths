@@ -25,6 +25,9 @@ import { assertGoogleClassroomEnabled } from '$lib/server/google/feature-guard';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { bulkShareCourseworkSchema } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/google/coursework/bulk-share/+server');
 
 /**
  * POST /api/google/coursework/bulk-share
@@ -59,7 +62,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.in('id', courseworkIds);
 
 	if (courseworkError) {
-		console.error('[Bulk Coursework Share] Error fetching coursework:', courseworkError);
+		logger.error('[Bulk Coursework Share] Error fetching coursework:', courseworkError);
 		throw error(500, 'Impossible de charger les devoirs Classroom');
 	}
 
@@ -79,7 +82,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (invalidCoursework.length > 0) {
-		console.error(
+		logger.error(
 			`[Bulk Coursework Share] Unauthorized coursework access attempt by teacher ${user.id}:`,
 			invalidCoursework.map((c) => c.id)
 		);
@@ -94,7 +97,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.eq('is_active', true);
 
 	if (classesError) {
-		console.error('[Bulk Coursework Share] Error fetching classes:', classesError);
+		logger.error('[Bulk Coursework Share] Error fetching classes:', classesError);
 		throw error(500, 'Impossible de vérifier les classes');
 	}
 
@@ -116,7 +119,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Verify category belongs to one of the selected classes
 		if (!classIds.includes(category.class_id)) {
-			console.error(
+			logger.error(
 				`[Bulk Coursework Share] Category ${categoryId} does not belong to any selected class`,
 				{ classIds, categoryClassId: category.class_id, teacherId: user.id }
 			);
@@ -142,7 +145,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			: (topic.google_classroom_courses as unknown as { teacher_id: string })?.teacher_id;
 
 		if (topicTeacherId !== user.id) {
-			console.error(
+			logger.error(
 				`[Bulk Coursework Share] Unauthorized topic access attempt by teacher ${user.id}:`,
 				{ topicId, topicTeacherId }
 			);
@@ -173,7 +176,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 	if (insertError) {
-		console.error('[Bulk Coursework Share] Error sharing coursework:', insertError);
+		logger.error('[Bulk Coursework Share] Error sharing coursework:', insertError);
 		throw error(500, 'Impossible de partager les devoirs Classroom');
 	}
 

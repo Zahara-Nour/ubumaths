@@ -11,6 +11,9 @@ import { cleanupOldErrors } from '$lib/server/errorMonitoring';
 import { cleanupErrorsSchema } from '$lib/server/validation/errors';
 import { requireRole } from '$lib/server/middleware/auth';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/errors/cleanup/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	await requireRole(locals, 'admin');
@@ -37,7 +40,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 		if (startError) {
-			console.error('Failed to start job run:', startError);
+			logger.error('Failed to start job run:', startError);
 			// Continue anyway (don't block job execution)
 		} else {
 			runId = startData;
@@ -88,7 +91,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			throw err;
 		}
 
-		console.error('Error in /api/errors/cleanup:', err);
+		logger.error('Error in /api/errors/cleanup:', err);
 		throw error(500, 'Internal server error');
 	}
 };

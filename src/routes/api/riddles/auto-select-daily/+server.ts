@@ -3,6 +3,9 @@ import type { RequestHandler } from './$types';
 import { verifyCronAuth } from '$lib/server/auth/cron';
 import { checkAndAutoSelectToday } from '$lib/server/riddle-auto-select';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/riddles/auto-select-daily/+server');
 
 /**
  * API endpoint to trigger auto-selection of riddle of the day
@@ -33,7 +36,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase } }) =>
 		});
 
 		if (startError) {
-			console.error('Failed to start job run:', startError);
+			logger.error('Failed to start job run:', startError);
 			// Continue anyway (don't block job execution)
 		} else {
 			runId = startData;
@@ -93,7 +96,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase } }) =>
 			});
 		}
 
-		console.error('Error in auto-select endpoint:', err);
+		logger.error('Error in auto-select endpoint:', err);
 		return json(
 			{
 				success: false,
@@ -127,7 +130,7 @@ export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 	// PGRST116 = aucune énigme programmée aujourd'hui : c'est précisément la
 	// réponse que cette route est censée donner, pas une panne.
 	if (existingError && existingError.code !== 'PGRST116') {
-		console.error('Énigme du jour illisible :', existingError);
+		logger.error('Énigme du jour illisible :', existingError);
 		throw error(500, 'Impossible de vérifier l’énigme du jour');
 	}
 

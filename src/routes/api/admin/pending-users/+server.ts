@@ -18,6 +18,9 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/admin/pending-users/+server');
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type ExtendedProfile = Profile & {
@@ -83,7 +86,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.eq('status', 'pending');
 
 		if (countError) {
-			console.error('Error counting pending users:', countError);
+			logger.error('Error counting pending users:', countError);
 			throw error(500, 'Impossible de compter les comptes en attente');
 		}
 
@@ -117,7 +120,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.range(offset, offset + limit - 1);
 
 		if (fetchError) {
-			console.error('Error fetching pending users:', fetchError);
+			logger.error('Error fetching pending users:', fetchError);
 			throw error(500, 'Impossible de charger les comptes en attente');
 		}
 
@@ -133,7 +136,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		});
 	} catch (err) {
-		console.error('Error in GET /api/admin/pending-users:', err);
+		logger.error('Error in GET /api/admin/pending-users:', err);
 
 		// Re-throw SvelteKit errors
 		if (err && typeof err === 'object' && 'status' in err) {

@@ -10,6 +10,9 @@ import { getAssignmentsForStudent } from '$lib/server/exercise-assignments';
 import type { StudentExerciseFilters } from '$lib/exercises/types';
 import { validateStudentExerciseFilters } from '$lib/server/validation';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/exercises/assigned/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -68,7 +71,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const fetchError = 'error' in result ? result.error : null;
 
 	if (fetchError) {
-		console.error('Failed to fetch assigned exercises:', fetchError);
+		logger.error('Failed to fetch assigned exercises:', fetchError);
 		return json({ error: 'Impossible de charger les exercices' }, { status: 500 });
 	}
 

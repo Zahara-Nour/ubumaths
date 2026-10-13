@@ -25,6 +25,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { GoogleDriveClient } from '$lib/server/google/drive-api';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
 import { createFolderRequestSchema } from '$lib/server/validation/whiteboard-drive';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/drive/folder/+server');
 
 /**
  * Create a subfolder in Google Drive
@@ -56,7 +59,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Create the folder
 		const folderId = await driveClient.createFolder(name, parentFolderId);
 
-		console.log(`[Whiteboard Drive] Created folder "${name}" (${folderId}) for teacher ${user.id}`);
+		logger.info(`[Whiteboard Drive] Created folder "${name}" (${folderId}) for teacher ${user.id}`);
 
 		return json({
 			success: true,
@@ -85,7 +88,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		}
 
-		console.error('[Whiteboard Drive] Create folder error:', err);
+		logger.error('[Whiteboard Drive] Create folder error:', err);
 		const message = err instanceof Error ? err.message : 'erreur inconnue';
 		throw error(500, `Impossible de créer le dossier : ${message}`);
 	}

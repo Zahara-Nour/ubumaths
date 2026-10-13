@@ -24,6 +24,11 @@ import {
 } from '$lib/server/auto-notifications';
 import type { TeacherErrorReportView, ErrorReportStatus } from '$lib/types/worksheets';
 import { toJson } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]/+server'
+);
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -129,7 +134,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.single();
 
 		if (reportError || !reportData) {
-			console.error('[API] Error fetching report:', reportError);
+			logger.error('[API] Error fetching report:', reportError);
 			throw error(404, 'Signalement introuvable');
 		}
 
@@ -164,7 +169,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			.limit(1);
 
 		if (nextError) {
-			console.error('[API] Error fetching next pending report:', nextError);
+			logger.error('[API] Error fetching next pending report:', nextError);
 		}
 
 		const nextPendingReportId = nextPendingReports?.[0]?.id ?? null;
@@ -235,7 +240,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw err;
 		}
 
-		console.error(
+		logger.error(
 			'[API] Unexpected error in GET /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]:',
 			err
 		);
@@ -351,7 +356,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (worksheetExerciseError || !worksheetExerciseData) {
-			console.error('[API] Error fetching worksheet exercise:', worksheetExerciseError);
+			logger.error('[API] Error fetching worksheet exercise:', worksheetExerciseError);
 			throw error(500, 'Exercice du signalement introuvable');
 		}
 
@@ -396,7 +401,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		// pour ne pas accuser l'élève d'un refus de lecture.
 		let readFailed = Boolean(targetClassesError);
 		if (targetClassesError) {
-			console.error('[API] Classes de l’affectation illisibles :', targetClassesError.message);
+			logger.error('[API] Classes de l’affectation illisibles :', targetClassesError.message);
 		}
 
 		let classId: string | undefined;
@@ -414,7 +419,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 			if (membershipError) {
 				readFailed = true;
-				console.error('[API] Appartenance de classe illisible :', membershipError.message);
+				logger.error('[API] Appartenance de classe illisible :', membershipError.message);
 			}
 
 			classId = membership?.class_id;
@@ -436,7 +441,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 					.single();
 
 				if (fetchExerciseError || !currentExercise) {
-					console.error('[API] Error fetching exercise:', fetchExerciseError);
+					logger.error('[API] Error fetching exercise:', fetchExerciseError);
 					throw error(500, 'Impossible de charger l’exercice');
 				}
 
@@ -468,7 +473,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 				.eq('id', exerciseId);
 
 			if (exerciseUpdateError) {
-				console.error('[API] Error updating exercise variations:', exerciseUpdateError);
+				logger.error('[API] Error updating exercise variations:', exerciseUpdateError);
 				throw error(500, 'Impossible de modifier l’exercice');
 			}
 
@@ -486,10 +491,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 				if (bonusError) {
 					// Log but don't fail the request - bonus is a nice-to-have
-					console.error('[API] Error awarding bonus:', bonusError);
+					logger.error('[API] Error awarding bonus:', bonusError);
 				}
 			} else {
-				console.warn(
+				logger.warn(
 					readFailed
 						? '[API] Classe indéterminable (lecture en panne) : pas de gidouille pour'
 						: '[API] Élève membre d’aucune classe visée par l’affectation : pas de gidouille pour',
@@ -530,7 +535,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			.single();
 
 		if (updateError || !updatedReport) {
-			console.error('[API] Error updating report:', updateError);
+			logger.error('[API] Error updating report:', updateError);
 			throw error(500, 'Impossible de modifier le signalement');
 		}
 
@@ -588,7 +593,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			throw err;
 		}
 
-		console.error(
+		logger.error(
 			'[API] Unexpected error in PUT /api/worksheets/[id]/assignments/[assignmentId]/reports/[reportId]:',
 			err
 		);

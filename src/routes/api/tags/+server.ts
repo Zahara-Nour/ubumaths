@@ -14,6 +14,9 @@ import {
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { isTaggableKind } from '$lib/server/resource-tags';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/tags/+server');
 
 /**
  * GET /api/tags
@@ -32,7 +35,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		.order('name', { ascending: true });
 
 	if (fetchError) {
-		console.error('Failed to fetch tags:', fetchError);
+		logger.error('Failed to fetch tags:', fetchError);
 		throw error(500, 'Failed to fetch tags');
 	}
 
@@ -56,7 +59,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// Mais on laisse une trace — un tri qui disparaît sans bruit ressemble à
 		// un choix de conception, pas à une panne.
 		if (usedError) {
-			console.error('[tags] classement par type impossible:', usedError);
+			logger.error('[tags] classement par type impossible:', usedError);
 		} else {
 			const usedIds = new Set((used ?? []).map((row) => row.tag_id));
 			tags = tags
@@ -112,7 +115,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	// panne prenait le même visage et faisait conclure « rien ici », donc créer
 	// par-dessus ce qu'on n'avait simplement pas su lire.
 	if (existingError && existingError.code !== 'PGRST116') {
-		console.error('Lecture impossible :', existingError);
+		logger.error('Lecture impossible :', existingError);
 		throw error(500, 'Impossible de vérifier l’état actuel');
 	}
 
@@ -127,7 +130,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 		// laisse une trace.
 		if (fullTagError) {
-			console.error('Enrichissement illisible :', fullTagError);
+			logger.error('Enrichissement illisible :', fullTagError);
 		}
 
 		if (fullTag) {
@@ -155,7 +158,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		if (insertError.code === '23505') {
 			throw error(409, 'Ce tag existe déjà');
 		}
-		console.error('Failed to create tag:', insertError);
+		logger.error('Failed to create tag:', insertError);
 		throw error(500, 'Failed to create tag');
 	}
 

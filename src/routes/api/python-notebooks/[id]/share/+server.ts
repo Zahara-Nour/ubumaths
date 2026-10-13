@@ -8,6 +8,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { uuidSchema } from '$lib/server/validation/common';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/python-notebooks/[id]/share/+server');
 
 // =============================================================================
 // VALIDATION SCHEMAS
@@ -69,7 +72,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		if (fetchError?.code === 'PGRST116') {
 			throw error(404, 'Carnet introuvable');
 		}
-		console.error('Error fetching notebook for sharing:', fetchError);
+		logger.error('Error fetching notebook for sharing:', fetchError);
 		throw error(500, 'Impossible de vérifier le carnet');
 	}
 
@@ -98,7 +101,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		if (classError?.code === 'PGRST116') {
 			throw error(404, 'Classe introuvable');
 		}
-		console.error('Error fetching class for sharing:', classError);
+		logger.error('Error fetching class for sharing:', classError);
 		throw error(500, 'Impossible de vérifier la classe');
 	}
 
@@ -111,7 +114,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.maybeSingle();
 
 	if (existingError) {
-		console.error('Error checking existing assignment:', existingError);
+		logger.error('Error checking existing assignment:', existingError);
 		throw error(500, 'Impossible de vérifier les partages existants');
 	}
 
@@ -132,7 +135,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (insertError) {
-		console.error('Error creating notebook assignment:', insertError);
+		logger.error('Error creating notebook assignment:', insertError);
 		if (insertError.code === '23505') {
 			// Unique constraint violation
 			throw error(400, 'Ce carnet est déjà partagé avec cette classe');

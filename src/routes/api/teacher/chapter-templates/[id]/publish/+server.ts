@@ -8,6 +8,9 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { getChapterTemplate, publishTemplate } from '$lib/server/chapter-templates';
 import { uuidSchema } from '$lib/server/validation/common';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/teacher/chapter-templates/[id]/publish/+server');
 
 /**
  * POST /api/teacher/chapter-templates/[id]/publish
@@ -39,7 +42,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	// Le helper rend `{ data, error }` : sans cette garde, une panne de lecture
 	// se présentait comme un modèle inexistant (404).
 	if (existingError) {
-		console.error('Modèle illisible :', existingError);
+		logger.error('Modèle illisible :', existingError);
 		throw error(500, 'Impossible de vérifier le modèle');
 	}
 	if (!existing) {
@@ -63,7 +66,7 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	const result = await publishTemplate(templateId, locals.supabase);
 
 	if (result.error) {
-		console.error('[POST /api/teacher/chapter-templates/[id]/publish] Error:', result.error);
+		logger.error('[POST /api/teacher/chapter-templates/[id]/publish] Error:', result.error);
 
 		// Handle specific error messages
 		if (result.error.message.includes('Cannot publish empty template')) {

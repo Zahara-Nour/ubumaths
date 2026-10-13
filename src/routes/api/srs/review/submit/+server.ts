@@ -24,6 +24,9 @@ import { ensureProgrammeDeckCard } from '$lib/server/srs/programme-deck';
 import { entersProgrammeDeck } from '$lib/server/srs/programme-deck-rule';
 import { applyFsrsReview } from '$lib/server/srs/fsrs-actions';
 import { recordSrsReviewAttempt } from '$lib/server/srs/srs-attempt';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/srs/review/submit/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const { user, profile } = await requireAuth(locals);
@@ -93,7 +96,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				body.timeSpent
 			);
 		} catch (upsertError) {
-			console.error('[srs/review/submit] UPSERT stats failed:', upsertError);
+			logger.error('[srs/review/submit] UPSERT stats failed:', upsertError);
 			return json({ error: 'Impossible d’enregistrer ta révision' }, { status: 500 });
 		}
 
@@ -127,7 +130,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					try {
 						await ensureProgrammeDeckCard(supabase, user.id, card.template_id);
 					} catch (progErr) {
-						console.error('[srs/review/submit] Programme add failed:', progErr);
+						logger.error('[srs/review/submit] Programme add failed:', progErr);
 					}
 				}
 			}
@@ -152,7 +155,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// panne prenait le même visage et faisait conclure « rien ici », donc créer
 		// par-dessus ce qu'on n'avait simplement pas su lire.
 		if (existingSessionError && existingSessionError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', existingSessionError);
+			logger.error('Lecture impossible :', existingSessionError);
 			throw error(500, 'Impossible de vérifier l’état actuel');
 		}
 
@@ -170,7 +173,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					total_time: existingSession.total_time + timeSpent
 				})
 				.eq('id', existingSession.id);
-			if (sessionUpdateError) console.error('Séance non mise à jour :', sessionUpdateError);
+			if (sessionUpdateError) logger.error('Séance non mise à jour :', sessionUpdateError);
 		} else {
 			const { error: sessionInsertError } = await supabase.from('srs_review_sessions').insert({
 				user_id: user.id,
@@ -179,7 +182,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				correct_count: isCorrect ? 1 : 0,
 				total_time: timeSpent
 			});
-			if (sessionInsertError) console.error('Séance non créée :', sessionInsertError);
+			if (sessionInsertError) logger.error('Séance non créée :', sessionInsertError);
 		}
 
 		return json({
@@ -193,7 +196,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		});
 	} catch (error) {
-		console.error('Unexpected error in POST /api/srs/review/submit:', error);
+		logger.error('Unexpected error in POST /api/srs/review/submit:', error);
 		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };

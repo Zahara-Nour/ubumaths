@@ -35,6 +35,9 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { GoogleDriveClient } from '$lib/server/google/drive-api';
 import { GoogleClassroomClient } from '$lib/server/google/classroom-api';
 import { getTeacherAccessToken } from '$lib/server/google/sync';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/whiteboard/export-to-classroom/+server');
 
 /**
  * Request body schema - Simplified
@@ -85,7 +88,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		body = await request.json();
 	} catch (err) {
-		console.error('[Export to Classroom] Invalid JSON body:', err);
+		logger.error('[Export to Classroom] Invalid JSON body:', err);
 		throw error(400, 'Corps de requête JSON invalide');
 	}
 
@@ -121,7 +124,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			if (classError.code === 'PGRST116') {
 				throw error(404, 'Classe introuvable ou accès refusé');
 			}
-			console.error('[Export to Classroom] Class lookup error:', classError);
+			logger.error('[Export to Classroom] Class lookup error:', classError);
 			throw error(500, 'Impossible de vérifier la classe');
 		}
 
@@ -170,19 +173,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		);
 
 		if (counterError) {
-			console.error('[Export to Classroom] Counter error:', counterError);
+			logger.error('[Export to Classroom] Counter error:', counterError);
 			throw error(500, 'Impossible de numéroter l’export');
 		}
 
 		if (counter === null || counter === undefined) {
-			console.error('[Export to Classroom] Counter is null/undefined');
+			logger.error('[Export to Classroom] Counter is null/undefined');
 			throw error(500, 'Compteur d’export invalide');
 		}
 
 		// Step 5: Generate title and filename
 		const title = generateFrenchTitle(date);
 		const filename = generateFilename(classData.join_code, date, counter);
-		console.log(`[Export to Classroom] Generated filename: ${filename} (counter: ${counter})`);
+		logger.info(`[Export to Classroom] Generated filename: ${filename} (counter: ${counter})`);
 
 		// Step 6: Get access token and initialize clients
 		const accessToken = await getTeacherAccessToken(user.id, locals.supabase);
@@ -205,7 +208,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			if (err && typeof err === 'object' && 'status' in err) {
 				throw err;
 			}
-			console.error('[Export to Classroom] Base64 validation error:', err);
+			logger.error('[Export to Classroom] Base64 validation error:', err);
 			throw error(400, 'Données PDF invalides : encodage base64 incorrect');
 		}
 
@@ -222,7 +225,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			isBase64: true
 		});
 
-		console.log(
+		logger.info(
 			`[Export to Classroom] Uploaded PDF ${driveFile.id} (${filename}) for teacher ${user.id}`
 		);
 
@@ -246,7 +249,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			]
 		});
 
-		console.log(
+		logger.info(
 			`[Export to Classroom] Created material ${material.id} in course ${courseData.google_course_id} for class ${classData.name}`
 		);
 
@@ -281,7 +284,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Log detailed error server-side only
-		console.error('[Export to Classroom] Internal error:', err);
+		logger.error('[Export to Classroom] Internal error:', err);
 		// Return generic error to client (no internal details)
 		throw error(500, 'Impossible d’exporter vers Google Classroom');
 	}

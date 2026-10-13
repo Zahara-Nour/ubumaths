@@ -23,6 +23,9 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { pythonSettingsSchema } from '$lib/server/validation/python-settings';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/profile/python-settings/+server');
 
 export const PUT: RequestHandler = async ({ locals, request }) => {
 	const { user, profile, supabase } = locals;
@@ -55,7 +58,7 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 			.eq('id', user.id);
 
 		if (updateError) {
-			console.error('[API] Error updating python settings:', updateError);
+			logger.error('[API] Error updating python settings:', updateError);
 			throw error(500, 'Failed to update settings');
 		}
 
@@ -66,7 +69,7 @@ export const PUT: RequestHandler = async ({ locals, request }) => {
 			throw err;
 		}
 
-		console.error('[API] Unexpected error in PUT /api/profile/python-settings:', err);
+		logger.error('[API] Unexpected error in PUT /api/profile/python-settings:', err);
 		throw error(500, 'An unexpected error occurred');
 	}
 };

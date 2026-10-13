@@ -24,6 +24,9 @@ import type { RequestHandler } from './$types';
 import { addWarningSchema } from '$lib/server/validation/warnings';
 import { addWarning } from '$lib/server/warnings';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/warnings/+server');
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -52,7 +55,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			counts: updatedCounts
 		});
 	} catch (err) {
-		console.error('Error adding warning:', err);
+		logger.error('Error adding warning:', err);
 
 		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;

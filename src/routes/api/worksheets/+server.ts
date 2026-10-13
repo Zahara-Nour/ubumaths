@@ -15,6 +15,9 @@ import {
 	createWorksheetResponseSchema
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/worksheets/+server');
 
 type ZodIssue = { path: (string | number)[]; message: string };
 
@@ -74,7 +77,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const { data: worksheets, error: dbError, count } = await query;
 
 	if (dbError) {
-		console.error('Failed to fetch worksheets:', dbError);
+		logger.error('Failed to fetch worksheets:', dbError);
 		throw error(500, 'Impossible de charger les fiches');
 	}
 
@@ -174,7 +177,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (dbError) {
-		console.error('Failed to create worksheet:', dbError);
+		logger.error('Failed to create worksheet:', dbError);
 		throw error(500, 'Impossible de créer la fiche');
 	}
 

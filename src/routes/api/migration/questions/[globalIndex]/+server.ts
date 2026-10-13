@@ -19,6 +19,9 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { globalIndexSchema } from '$lib/server/validation/migration-review';
 import { loadQuestionWithTransform } from '$lib/migration/question-data-loader';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/migration/questions/[globalIndex]/+server');
 
 /**
  * GET /api/migration/questions/[globalIndex]
@@ -93,7 +96,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		}
 
 		// Log and return generic error
-		console.error('Error loading question:', err);
+		logger.error('Error loading question:', err);
 		throw error(500, 'Impossible de charger la question');
 	}
 };

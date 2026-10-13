@@ -19,6 +19,9 @@ import {
 } from '$lib/server/validation/srs';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import { requireAuth } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/srs/cards/+server');
 
 /**
  * GET /api/srs/cards?deck_id=X
@@ -67,7 +70,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			.order('created_at', { ascending: false });
 
 		if (cardsError) {
-			console.error('Error fetching cards:', cardsError);
+			logger.error('Error fetching cards:', cardsError);
 			return json({ error: 'Impossible de charger les cartes de révision' }, { status: 500 });
 		}
 
@@ -80,7 +83,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 		return json(validated);
 	} catch (error) {
-		console.error('Unexpected error in GET /api/srs/cards:', error);
+		logger.error('Unexpected error in GET /api/srs/cards:', error);
 		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };
@@ -186,7 +189,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (createError) {
-				console.error('Error creating template card:', createError);
+				logger.error('Error creating template card:', createError);
 				return json({ error: 'Impossible de créer la carte de révision' }, { status: 500 });
 			}
 
@@ -214,7 +217,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.single();
 
 			if (createError) {
-				console.error('Error creating custom card:', createError);
+				logger.error('Error creating custom card:', createError);
 				return json({ error: 'Impossible de créer la carte de révision' }, { status: 500 });
 			}
 
@@ -228,7 +231,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json(validated, { status: 201 });
 		}
 	} catch (error) {
-		console.error('Unexpected error in POST /api/srs/cards:', error);
+		logger.error('Unexpected error in POST /api/srs/cards:', error);
 		return json({ error: 'Une erreur inattendue s’est produite' }, { status: 500 });
 	}
 };
