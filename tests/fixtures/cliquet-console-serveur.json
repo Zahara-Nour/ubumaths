@@ -16,7 +16,7 @@
 	"src/routes/(protected)/dashboard/admin/dictionnaire/+page.server.ts": 1,
 	"src/routes/(protected)/dashboard/admin/docs/[...path]/+page.server.ts": 1,
 	"src/routes/(protected)/dashboard/admin/friendships/+page.server.ts": 5,
-	"src/routes/(protected)/dashboard/admin/import-students/+page.server.ts": 15,
+	"src/routes/(protected)/dashboard/admin/import-students/+page.server.ts": 14,
 	"src/routes/(protected)/dashboard/admin/migration/+page.server.ts": 2,
 	"src/routes/(protected)/dashboard/admin/migration/[theme]/[domain]/[subdomain]/+page.server.ts": 3,
 	"src/routes/(protected)/dashboard/admin/migration/[theme]/[domain]/[subdomain]/[globalIndex]/edit/+page.server.ts": 2,
