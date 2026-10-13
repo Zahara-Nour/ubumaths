@@ -4541,6 +4541,64 @@ export type Database = {
           },
         ]
       }
+      geometry_figures: {
+        Row: {
+          author_id: string
+          created_at: string
+          description: string | null
+          dsl_script: string
+          grades: string[]
+          id: string
+          is_public: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string
+          created_at?: string
+          description?: string | null
+          dsl_script: string
+          grades?: string[]
+          id?: string
+          is_public?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          created_at?: string
+          description?: string | null
+          dsl_script?: string
+          grades?: string[]
+          id?: string
+          is_public?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "geometry_figures_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "geometry_figures_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "geometry_figures_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       gidouilles_activity: {
         Row: {
           class_id: string | null
