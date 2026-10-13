@@ -52,7 +52,7 @@ export type EquationOperation =
 	/** Initial classification — no transformation, just labels the equation. */
 	| {
 			readonly kind: 'identify-equation';
-			readonly equationType: 'linear' | 'quadratic' | 'rational';
+			readonly equationType: 'linear' | 'quadratic' | 'rational' | 'absolute-value';
 			/** L'inconnue de la résolution, que l'explication nomme (`t`, pas toujours `x`). */
 			readonly variable?: string;
 	  }
@@ -416,7 +416,48 @@ export type EquationOperation =
 			readonly kind: 'inequality-conclude-rational';
 			readonly relation: '<' | '>' | '<=' | '>=' | '!=';
 			readonly solutionDescription: string;
-	  };
+	  }
+	// =============================================================================
+	// Équations avec valeur absolue (`absolute-value.ts`, 2026-10-13)
+	// =============================================================================
+	/**
+	 * On isole la valeur absolue : `3|x − 1| = 6` ⇒ `|x − 1| = 2`, ou
+	 * `|x − 1| − |x + 3| = 0` ⇒ `|x − 1| = |x + 3|`. Avant / après dans
+	 * `before` / `after`.
+	 */
+	| {
+			readonly kind: 'isolate-absolute-value';
+			/** La forme obtenue, lue par l'analyse : |u| = c ou |u| = |v|. */
+			readonly form: 'single' | 'equal';
+	  }
+	/**
+	 * La propriété du cours, appliquée : `|u| = c ⇔ u = c ou u = −c` (c > 0),
+	 * `|u| = 0 ⇔ u = 0`, `|u| = |v| ⇔ u = v ou u = −v`. `value` est c (absent
+	 * pour |u| = |v|) ; `branches` les équations du premier degré obtenues.
+	 */
+	| {
+			readonly kind: 'split-absolute-value';
+			readonly case: 'positive' | 'zero' | 'equal';
+			readonly value?: MathNode;
+			readonly branches: readonly RelationNode[];
+	  }
+	/** |u| = c avec c < 0 : une valeur absolue est positive ou nulle. */
+	| { readonly kind: 'absolute-value-negative'; readonly value: MathNode }
+	/** Annonce la résolution d'une des équations du premier degré obtenues. */
+	| { readonly kind: 'solve-branch'; readonly equation: RelationNode }
+	/**
+	 * Une équation obtenue est dégénérée : `0 = 4` (aucune solution) ou `0 = 0`
+	 * (tout réel). `relation` est l'égalité sans inconnue à laquelle on arrive.
+	 */
+	| {
+			readonly kind: 'branch-truth';
+			readonly truth: boolean;
+			/** L'inconnue, que l'explication nomme (« quel que soit $x$ »). */
+			readonly variable: string;
+			readonly relation: RelationNode;
+	  }
+	/** Conclusion : tout réel est solution, `S = ℝ`. */
+	| { readonly kind: 'read-all-reals'; readonly variable: string };
 
 // =============================================================================
 // Equation Step

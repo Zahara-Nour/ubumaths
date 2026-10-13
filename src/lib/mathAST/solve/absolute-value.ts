@@ -168,14 +168,13 @@ function solveBranches(
 	};
 }
 
-/** k·|u| + r = 0, k et r constants, u affine : |u| = c, c constante. */
-function solveSingle(
+/** k·|u| + r = 0, k et r constants, u affine : |u| = c, c constante, de signe connu. */
+function analyzeSingle(
 	expr: MathNode,
 	argument: MathNode,
 	variable: string,
-	opts: SolveOptions,
 	solve: SolveFn
-): SolveResult | null {
+): { readonly value: MathNode; readonly sign: -1 | 0 | 1 } | null {
 	const names = freshNames(expr, 1);
 	if (names === null) return null;
 	const [t] = names;
@@ -184,17 +183,93 @@ function solveSingle(
 	if (getVariables(isolated).has(variable)) return null;
 	if (getPolynomialDegree(isolated, t) !== 1) return null;
 
-	const inT = solve(equals(isolated, number('0')), { variable: t, verbosity: opts.verbosity });
+	const inT = solve(equals(isolated, number('0')), { variable: t });
 	if (inT.status !== 'unique' || inT.solutions.length !== 1) return null;
-	const c = inT.solutions[0].value;
+	const value = inT.solutions[0].value;
 	// Un paramètre littéral (|x| = a) : le signe de c n'est pas connu
-	if (getVariables(c).size > 0) return null;
+	if (getVariables(value).size > 0) return null;
 
-	const sign = constantSign(simplified(c));
-	if (sign === null) return null;
+	const sign = constantSign(simplified(value));
+	return sign === null ? null : { value, sign };
+}
 
-	const recorder = createStepRecorder();
+/** k·|u| − k·|v| = 0, u et v affines : c'est exactement k(|u| − |v|) = 0, k ≠ 0. */
+function isEqualAbs(expr: MathNode, [u, v]: readonly MathNode[]): boolean {
+	const names = freshNames(expr, 2);
+	if (names === null) return false;
+	const [t1, t2] = names;
+	const isolated = withAbsReplaced(expr, [u, v], names);
+	const letters = getVariables(isolated);
+	if ([...letters].some((name) => name !== t1 && name !== t2)) return false;
+	if (getPolynomialDegree(isolated, t1) !== 1 || getPolynomialDegree(isolated, t2) !== 1) {
+		return false;
+	}
+	// a·t₁ + b·t₂ (+ c·t₁t₂ + d) avec g(0, 0) = 0 et g(t, t) ≡ 0 : d = c = 0,
+	// b = −a — c'est exactement a(|u| − |v|) = 0
+	const atOrigin = substitute(isolated, { [t1]: 0, [t2]: 0 });
+	const onDiagonal = substitute(isolated, { [t2]: variableNode(t1) });
+	if (!isZeroNode(atOrigin) || !isZeroNode(onDiagonal)) return false;
+	// a = 0 : g ≡ 0, l'équation ne dit rien de |u|, |v|
+	return !isZeroNode(substitute(isolated, { [t1]: 1, [t2]: 0 }));
+}
+
+/**
+ * La forme d'une équation `expr = 0` avec valeur absolue, une fois la valeur
+ * absolue isolée — ou `null` hors du périmètre. Partagée par `solve` (le
+ * résultat) et `pedagogical-solve/absolute-value` (la rédaction) : les deux
+ * lisent la MÊME équation, jamais deux analyses qui pourraient diverger.
+ *
+ * - `single` : |argument| = value, `sign` le signe de value ;
+ * - `equal` : |left| = |right|.
+ */
+export type AbsoluteValueShape =
+	| {
+			readonly kind: 'single';
+			readonly argument: MathNode;
+			readonly value: MathNode;
+			readonly sign: -1 | 0 | 1;
+	  }
+	| { readonly kind: 'equal'; readonly left: MathNode; readonly right: MathNode };
+
+export function analyzeAbsoluteValue(
+	expr: MathNode,
+	variable: string,
+	solve: SolveFn
+): AbsoluteValueShape | null {
+	const arguments_ = absArguments(expr, variable);
+	if (arguments_ === null || arguments_.length === 0 || arguments_.length > 2) return null;
+	if (!arguments_.every((a) => isAffineIn(a, variable))) return null;
+
+	if (arguments_.length === 1) {
+		const single = analyzeSingle(expr, arguments_[0], variable, solve);
+		return single === null ? null : { kind: 'single', argument: arguments_[0], ...single };
+	}
+	const [left, right] = arguments_;
+	return isEqualAbs(expr, arguments_) ? { kind: 'equal', left, right } : null;
+}
+
+/**
+ * Résoudre `expr = 0` quand l'inconnue n'y paraît que sous une ou deux valeurs
+ * absolues d'expressions affines. `null` hors de ce périmètre.
+ */
+export function tryAbsoluteValue(
+	expr: MathNode,
+	variable: string,
+	opts: SolveOptions,
+	solve: SolveFn
+): SolveResult | null {
+	const shape = analyzeAbsoluteValue(expr, variable, solve);
+	if (shape === null) return null;
+
+	if (shape.kind === 'equal') {
+		const { left: u, right: v } = shape;
+		const branches = [equals(subtract(u, v), number('0')), equals(add(u, v), number('0'))];
+		return solveBranches(expr, branches, variable, opts, solve, 'equal-absolute-values');
+	}
+
+	const { argument, value: c, sign } = shape;
 	if (sign < 0) {
+		const recorder = createStepRecorder();
 		recorder.recordStep(
 			'absolute-value-negative',
 			getRuleDescription('absolute-value-negative'),
@@ -217,52 +292,4 @@ function solveSingle(
 			? [equals(argument, number('0'))]
 			: [equals(argument, opposite(c)), equals(argument, c)];
 	return solveBranches(expr, branches, variable, opts, solve, 'absolute-value');
-}
-
-/** k·|u| − k·|v| = 0, u et v affines : u = v ou u = −v. */
-function solveEqualAbs(
-	expr: MathNode,
-	[u, v]: readonly MathNode[],
-	variable: string,
-	opts: SolveOptions,
-	solve: SolveFn
-): SolveResult | null {
-	const names = freshNames(expr, 2);
-	if (names === null) return null;
-	const [t1, t2] = names;
-	const isolated = withAbsReplaced(expr, [u, v], names);
-	const letters = getVariables(isolated);
-	if ([...letters].some((name) => name !== t1 && name !== t2)) return null;
-	if (getPolynomialDegree(isolated, t1) !== 1 || getPolynomialDegree(isolated, t2) !== 1) {
-		return null;
-	}
-	// a·t₁ + b·t₂ (+ c·t₁t₂ + d) avec g(0, 0) = 0 et g(t, t) ≡ 0 : d = c = 0,
-	// b = −a — c'est exactement a(|u| − |v|) = 0
-	const atOrigin = substitute(isolated, { [t1]: 0, [t2]: 0 });
-	const onDiagonal = substitute(isolated, { [t2]: variableNode(t1) });
-	if (!isZeroNode(atOrigin) || !isZeroNode(onDiagonal)) return null;
-	// a = 0 : g ≡ 0, l'équation ne dit rien de |u|, |v|
-	if (isZeroNode(substitute(isolated, { [t1]: 1, [t2]: 0 }))) return null;
-
-	const branches = [equals(subtract(u, v), number('0')), equals(add(u, v), number('0'))];
-	return solveBranches(expr, branches, variable, opts, solve, 'equal-absolute-values');
-}
-
-/**
- * Résoudre `expr = 0` quand l'inconnue n'y paraît que sous une ou deux valeurs
- * absolues d'expressions affines. `null` hors de ce périmètre.
- */
-export function tryAbsoluteValue(
-	expr: MathNode,
-	variable: string,
-	opts: SolveOptions,
-	solve: SolveFn
-): SolveResult | null {
-	const arguments_ = absArguments(expr, variable);
-	if (arguments_ === null || arguments_.length === 0 || arguments_.length > 2) return null;
-	if (!arguments_.every((a) => isAffineIn(a, variable))) return null;
-
-	return arguments_.length === 1
-		? solveSingle(expr, arguments_[0], variable, opts, solve)
-		: solveEqualAbs(expr, arguments_, variable, opts, solve);
 }

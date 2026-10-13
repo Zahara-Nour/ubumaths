@@ -17,7 +17,13 @@
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import type { EquationStep } from '$lib/mathAST/pedagogical-solve';
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
+import type {
+	PedagogicalRenderOptions,
+	SchoolLevel,
+	StepRenderer
+} from '$lib/mathAST/common/step-renderer-base';
 import {
+	AbsoluteValueEquationRenderer,
 	generateEquationSteps,
 	generateInequalitySteps,
 	LinearEquationRenderer,
@@ -54,7 +60,9 @@ const CONCLUSIONS: ReadonlySet<string> = new Set([
 	// par un ensemble de solutions : `S = ]-∞ ; -2] ∪ [2 ; +∞[`.
 	'inequality-conclude-rational',
 	'inequality-conclude-from-isolated-square',
-	'inequality-conclude-quadratic'
+	'inequality-conclude-quadratic',
+	// Une équation avec valeur absolue peut conclure `S = ℝ` (|x − 1| = |1 − x|)
+	'read-all-reals'
 	// ⚠️ **`inequality-conclude-truth` est ABSENT, et délibérément.** Il annonce
 	// une contradiction dès qu'il n'arrive pas à évaluer la comparaison —
 	// mesuré, `0x<5` rend « contradiction : S = ∅ » alors que 0 < 5 est
@@ -88,6 +96,43 @@ export interface SolvedSteps {
 	 * correspondaient plus à la ligne quand a < 0).
 	 */
 	readonly approximate?: string;
+}
+
+/** Le type d'équation qu'annonce la première étape (`identify-equation`). */
+type EquationType = Extract<
+	EquationStep['operation'],
+	{ kind: 'identify-equation' }
+>['equationType'];
+
+/**
+ * Le renderer d'un type d'équation, et le niveau auquel il rend.
+ *
+ * ⚠️ **Exhaustif, sans `else` fourre-tout.** L'ancien `kind === 'linear' ?
+ * Linear : Quadratic` envoyait sans bruit tout nouveau type au renderer du
+ * second degré — mesuré le 2026-10-13, `|2x+1|=5` s'y annonçait « Équation du
+ * second degré ». Un type ajouté sans sa ligne ici ne compile plus.
+ */
+export function rendererFor(kind: EquationType): {
+	readonly renderer: StepRenderer<EquationStep, PedagogicalRenderOptions>;
+	readonly schoolLevel: SchoolLevel;
+} {
+	switch (kind) {
+		case 'linear':
+			return { renderer: new LinearEquationRenderer(), schoolLevel: 'college' };
+		// `rational` : les inéquations rationnelles, que `correction-generator`
+		// confie, comme nous, au renderer du second degré
+		case 'quadratic':
+		case 'rational':
+			return { renderer: new QuadraticEquationRenderer(), schoolLevel: 'lycee' };
+		// Le niveau demandé à la génération (`college`) : chaque branche du premier
+		// degré se rédige comme l'équation seule (« On soustrait 1 aux deux membres »)
+		case 'absolute-value':
+			return { renderer: new AbsoluteValueEquationRenderer(), schoolLevel: 'college' };
+		default: {
+			const unknown: never = kind;
+			throw new Error(`rendererFor: type d'équation inconnu ${String(unknown)}`);
+		}
+	}
 }
 
 /** Le membre de gauche est-il l'inconnue toute seule ? */
@@ -187,16 +232,8 @@ export function solveSteps(argument: string): SolvedSteps | null {
 		const kind = first?.kind === 'identify-equation' ? first.equationType : null;
 		if (kind === null) return null;
 
-		const rendered =
-			kind === 'linear'
-				? new LinearEquationRenderer().renderAll(steps, {
-						schoolLevel: 'college',
-						verbosity: 'detailed'
-					})
-				: new QuadraticEquationRenderer().renderAll(steps, {
-						schoolLevel: 'lycee',
-						verbosity: 'detailed'
-					});
+		const { renderer, schoolLevel } = rendererFor(kind);
+		const rendered = renderer.renderAll(steps, { schoolLevel, verbosity: 'detailed' });
 
 		// Sans réponse affichable, la ligne n'aurait RIEN à montrer : une zone
 		// mathématique vide, et le texte du moteur jamais affiché.
