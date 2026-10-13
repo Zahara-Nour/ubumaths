@@ -1,10 +1,15 @@
 <!--
 	Formulaire d'une figure stockée (ADR 0027) : création et modification.
 
-	Le script s'édite à gauche, la figure se redessine à droite après une pause
-	de frappe (400 ms). Un script en erreur ne s'enregistre PAS : le bouton est
-	désactivé, et le script est réexécuté au moment de l'envoi (la pause de frappe
-	pourrait ne pas être écoulée).
+	Le texte s'édite à gauche, la figure se redessine à droite après une pause
+	de frappe (400 ms). Un texte en erreur (en-tête ou script) ne s'enregistre
+	PAS : le bouton est désactivé, et le texte est réexécuté au moment de l'envoi
+	(la pause de frappe pourrait ne pas être écoulée).
+
+	Texte = contenu d'un bloc ```figure : en-tête, `---`, script (sans `---`,
+	script nu). Les champs « Affichage » lisent et écrivent les lignes de
+	l'en-tête (`stored-figure-header.ts`) : modifier l'en-tête à la main met les
+	champs à jour, et un champ ne touche qu'à sa ligne, jamais au script.
 
 	Poste vers les actions de la page : `?/save`, et `?/delete` si `deletable`.
 -->
@@ -25,7 +30,16 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { submitAction } from '$lib/utils/form-action';
 	import { getGradeSelectItems } from '$lib/utils/grades';
-	import { evaluateFigureScript } from '$lib/utils/geometry-figure-script';
+	import { evaluateStoredFigure } from '$lib/utils/geometry-figure-script';
+	import {
+		readHeaderField,
+		readWindowFields,
+		writeHeaderField,
+		writeWindowFields,
+		type StoredFigureFieldKey
+	} from '$lib/utils/stored-figure-header';
+	import { formatFigureWindow } from '$lib/ubumark/utils/figure-view';
+	import { FIGURE_RENDER_MODES, FIGURE_SIZES, type FigureWindow } from '$lib/ubumark/types/figure';
 
 	// ============================================================================
 	// TYPES
@@ -56,6 +70,12 @@
 	const DESCRIPTION_MAX = 2000;
 	const SCRIPT_MAX = 100_000;
 	const gradeItems = getGradeSelectItems();
+	const sizeItems = FIGURE_SIZES.map((size) => ({ value: size, label: size }));
+	const renderItems = Object.keys(FIGURE_RENDER_MODES).map((word) => ({
+		value: word,
+		label: word
+	}));
+	const WINDOW_LABELS = ['x min', 'x max', 'y min', 'y max'] as const;
 
 	// ============================================================================
 	// VARIABLES
@@ -78,8 +98,11 @@
 	let confirmDeleteOpen = $state(false);
 	let previewTimer: ReturnType<typeof setTimeout> | undefined;
 
+	/** Fenêtre que montre l'aperçu (après zoom ou déplacement) */
+	let currentWindow = $state<FigureWindow | null>(null);
+
 	// Exécuté dans le navigateur seulement : le rendu serveur n'en a pas besoin
-	const result = $derived(browser ? evaluateFigureScript(previewScript) : null);
+	const result = $derived(browser ? evaluateStoredFigure(previewScript) : null);
 	const isPreviewPending = $derived(previewScript !== script);
 	const scriptError = $derived(result && !result.ok ? result.message : null);
 	const canSave = $derived(
@@ -92,15 +115,51 @@
 			!isDeleting
 	);
 
+	// Champs « Affichage » : valeurs BRUTES de l'en-tête (une ligne en erreur
+	// reste lisible dans son champ, le message vient du parseur)
+	const windowFields = $derived(readWindowFields(script));
+	const sizeField = $derived(readHeaderField(script, 'taille')?.toLowerCase() ?? 'moyenne');
+	const axesField = $derived(readHeaderField(script, 'axes')?.toLowerCase() === 'oui');
+	const gridField = $derived(readHeaderField(script, 'grille') ?? '');
+	const ticksField = $derived(readHeaderField(script, 'graduations') ?? '');
+	const draggableField = $derived(readHeaderField(script, 'deplacable')?.toLowerCase() === 'oui');
+	const renderField = $derived(readHeaderField(script, 'rendu')?.toLowerCase() ?? 'normal');
+
 	// ============================================================================
 	// FONCTIONS
 	// ============================================================================
 
-	function handleScriptInput() {
+	/** Le texte a changé : l'aperçu suivra après la pause de frappe */
+	function scheduleRefresh() {
 		clearTimeout(previewTimer);
 		previewTimer = setTimeout(() => {
 			previewScript = script;
 		}, PREVIEW_DELAY_MS);
+	}
+
+	/**
+	 * Écrire une clé de l'en-tête. Valeur par défaut sur une clé absente : rien
+	 * à écrire (un script nu le reste) ; valeur vide : la ligne disparaît.
+	 */
+	function setField(key: StoredFigureFieldKey, value: string, defaultValue: string | null) {
+		if (readHeaderField(script, key) === null && value === defaultValue) return;
+		script = writeHeaderField(script, key, value.trim() === '' ? null : value);
+		scheduleRefresh();
+	}
+
+	function setWindowField(index: number, value: string) {
+		const bounds = [...windowFields];
+		bounds[index] = value;
+		script = writeWindowFields(script, bounds);
+		scheduleRefresh();
+	}
+
+	function takeCurrentFraming() {
+		if (!currentWindow) return;
+		const updated = writeHeaderField(script, 'fenetre', formatFigureWindow(currentWindow));
+		if (updated === script) return;
+		script = updated;
+		scheduleRefresh();
 	}
 
 	async function handleSubmit() {
@@ -109,9 +168,9 @@
 		// (Entrée dans un champ peut arriver avant la fin de la pause de frappe)
 		clearTimeout(previewTimer);
 		previewScript = script;
-		const check = evaluateFigureScript(script);
+		const check = evaluateStoredFigure(script);
 		if (!check.ok) {
-			toaster.error('Le script contient une erreur : la figure ne peut pas être enregistrée');
+			toaster.error('Le texte contient une erreur : la figure ne peut pas être enregistrée');
 			return;
 		}
 		if (!title.trim()) {
@@ -210,13 +269,95 @@
 		</Card.Content>
 	</Card.Root>
 
+	<Card.Root>
+		<Card.Header>
+			<Card.Title class="text-base">Affichage</Card.Title>
+			<Card.Description>
+				Ces champs écrivent l'en-tête du texte (au-dessus de la ligne ---) ; l'en-tête modifié à la
+				main les met à jour.
+			</Card.Description>
+		</Card.Header>
+		<Card.Content class="space-y-4">
+			<fieldset class="space-y-2">
+				<legend class="text-sm font-medium">Fenêtre (vide : vue par défaut)</legend>
+				<div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+					{#each WINDOW_LABELS as label, index (label)}
+						<div class="space-y-1">
+							<Label for="figure-window-{index}" class="text-xs text-muted-foreground">
+								{label}
+							</Label>
+							<Input
+								id="figure-window-{index}"
+								inputmode="decimal"
+								value={windowFields[index]}
+								oninput={(e) => setWindowField(index, e.currentTarget.value)}
+							/>
+						</div>
+					{/each}
+				</div>
+			</fieldset>
+			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				<div class="space-y-2">
+					<span class="text-sm font-medium">Taille</span>
+					<MySelect
+						type="single"
+						bind:value={() => sizeField, (v) => setField('taille', v, 'moyenne')}
+						items={sizeItems}
+						placeholder="Taille"
+						triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+					/>
+				</div>
+				<div class="space-y-2">
+					<span class="text-sm font-medium">Rendu</span>
+					<MySelect
+						type="single"
+						bind:value={() => renderField, (v) => setField('rendu', v, 'normal')}
+						items={renderItems}
+						placeholder="Rendu"
+						triggerClass="h-10 w-full rounded-md border border-input bg-background px-3 text-sm inline-flex items-center justify-between"
+					/>
+				</div>
+				<div class="space-y-2">
+					<Label for="figure-grid">Grille (pas, vide : aucune)</Label>
+					<Input
+						id="figure-grid"
+						value={gridField}
+						placeholder="ex. 1 ou 1 ; 2"
+						oninput={(e) => setField('grille', e.currentTarget.value, '')}
+					/>
+				</div>
+				<div class="space-y-2">
+					<Label for="figure-ticks">Graduations (pas, ou non)</Label>
+					<Input
+						id="figure-ticks"
+						value={ticksField}
+						placeholder="pas de la grille"
+						oninput={(e) => setField('graduations', e.currentTarget.value, '')}
+					/>
+				</div>
+			</div>
+			<div class="flex flex-wrap gap-x-6 gap-y-2">
+				<MyCheckbox
+					bind:checked={() => axesField, (v) => setField('axes', v ? 'oui' : 'non', 'non')}
+					label="Axes"
+				/>
+				<MyCheckbox
+					bind:checked={
+						() => draggableField, (v) => setField('deplacable', v ? 'oui' : 'non', 'non')
+					}
+					label="Points déplaçables (les curseurs restent toujours actifs)"
+				/>
+			</div>
+		</Card.Content>
+	</Card.Root>
+
 	<div class="grid gap-6 xl:grid-cols-2">
 		<div class="min-w-0 space-y-2">
-			<Label for="figure-script">Script</Label>
+			<Label for="figure-script">Texte de la figure (en-tête, ---, script)</Label>
 			<Textarea
 				id="figure-script"
 				bind:value={script}
-				oninput={handleScriptInput}
+				oninput={scheduleRefresh}
 				rows={24}
 				maxlength={SCRIPT_MAX}
 				spellcheck={false}
@@ -233,7 +374,21 @@
 				Aperçu{isPreviewPending ? ' (mise à jour…)' : ''}
 			</span>
 			<div id="figure-script-error">
-				<StoredFigurePreview {result} />
+				<StoredFigurePreview {result} onWindowChange={(w) => (currentWindow = w)} />
+			</div>
+			<div class="flex flex-wrap items-center gap-2">
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					disabled={!result?.ok || currentWindow === null || isPreviewPending}
+					onclick={takeCurrentFraming}
+				>
+					Prendre le cadrage actuel
+				</Button>
+				<span class="text-xs text-muted-foreground">
+					Zoom à la molette, déplacement avec la barre d'espace enfoncée
+				</span>
 			</div>
 		</div>
 	</div>
@@ -260,7 +415,7 @@
 	</div>
 	{#if scriptError}
 		<p class="text-right text-sm text-destructive">
-			Le script contient une erreur : corrige-la pour pouvoir enregistrer.
+			Le texte contient une erreur : corrige-la pour pouvoir enregistrer.
 		</p>
 	{/if}
 </form>
