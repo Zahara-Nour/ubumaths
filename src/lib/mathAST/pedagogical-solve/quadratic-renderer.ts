@@ -48,6 +48,11 @@ function isInequalityStep(step: EquationStep): boolean {
 	return step.before.type === 'relation' && step.before.relation !== '=';
 }
 
+/** L'opérateur de l'étape en LaTeX (`\geqslant`…), pour la prose entre `$…$`. */
+function relationLatex(step: EquationStep): string {
+	return step.before.type === 'relation' ? RELATION_MAP[step.before.relation] : '=';
+}
+
 /**
  * Best-effort detection of the unknown variable name in an EquationStep —
  * walks the AST searching for a `variable` node. Falls back to `'x'`.
@@ -117,6 +122,10 @@ function isolateSquareExplanation(op: EquationOperation, step: EquationStep): st
 	}
 	const divide = `divise les deux membres par ${divisor} pour isoler ${square}`;
 	const opening = transpose ? `On transpose le terme constant, puis on ${divide}` : `On ${divide}`;
+	// ⚠️ `≠` n'a pas de sens à retourner : diviser par un nombre non nul le garde.
+	if (step.before.type === 'relation' && step.before.relation === '!=') {
+		return `${opening}. ${divisor} n’est pas nul, donc la relation $\\neq$ est préservée : ${result}.`;
+	}
 	if (divisorValue !== null && divisorValue < 0) {
 		return `${opening}. Comme ${divisor} est négatif, l’opérateur de l’inéquation est retourné (changement de sens : < devient >, ≤ devient ≥, etc.) : ${result}.`;
 	}
@@ -146,7 +155,7 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		},
 		standardize: (_op, step) =>
 			isInequalityStep(step)
-				? 'On met l’inéquation sous la forme $ax^2 + bx + c ⊻ 0$'
+				? `On met l’inéquation sous la forme $ax^2 + bx + c ${relationLatex(step)} 0$`
 				: 'On met l’équation sous la forme $ax^2 + bx + c = 0$',
 		'identify-coefficients': () => 'On identifie les coefficients a, b et c',
 		'compute-discriminant': () => 'On calcule le discriminant Δ = b² − 4ac',
@@ -293,8 +302,10 @@ const EXPLANATIONS: Record<
 			isInequalityStep(step)
 				? 'Une inéquation du second degré s’écrit ax² + bx + c ⊻ 0 avec a ≠ 0 (où ⊻ ∈ $\\{<, >, \\leq, \\geq, \\neq\\}$). On calcule le discriminant pour déterminer les racines, puis on dresse le tableau de signes pour lire la solution.'
 				: 'Une équation du second degré s’écrit ax² + bx + c = 0 avec a ≠ 0. On va calculer le discriminant pour déterminer le nombre de solutions.',
-		standardize: () =>
-			'On déplace tous les termes dans le membre de gauche : f(x) − g(x) ⊻ 0. La nouvelle relation est équivalente à la précédente.',
+		standardize: (_op, step) =>
+			isInequalityStep(step)
+				? `On déplace tous les termes dans le membre de gauche : $f(x) - g(x) ${relationLatex(step)} 0$. La nouvelle inéquation est équivalente à la précédente.`
+				: 'On déplace tous les termes dans le membre de gauche : $f(x) - g(x) = 0$. La nouvelle équation est équivalente à la précédente.',
 		'identify-coefficients': () =>
 			'a est le coefficient de x², b celui de x, c le terme constant. Ils servent ensuite au calcul du discriminant.',
 		'compute-discriminant': () =>
@@ -324,10 +335,14 @@ const EXPLANATIONS: Record<
 		'no-real-solution': () => 'Dans ℝ, l’équation n’admet aucune solution. On note S = ∅.',
 		'factor-gcd': () =>
 			'Quand les coefficients ont un facteur entier commun, on divise les deux membres par ce PGCD pour simplifier les calculs ; les solutions de l’équation simplifiée sont identiques à celles de l’équation originale.',
-		'recognize-no-linear-term': () =>
-			'Quand b = 0, l’équation se réduit à ax² + c = 0 : on isole x² et on extrait la racine carrée plutôt que d’utiliser la formule générale.',
-		'recognize-no-constant-term': () =>
-			'Quand c = 0, x est facteur commun : l’équation devient x(ax + b) = 0 et on applique la propriété du produit nul.',
+		'recognize-no-linear-term': (_op, step) =>
+			isInequalityStep(step)
+				? `Quand $b = 0$, l’inéquation s’écrit $ax^2 + c ${relationLatex(step)} 0$ : on isole $x^2$, puis on conclut sans tableau de signes.`
+				: 'Quand b = 0, l’équation se réduit à ax² + c = 0 : on isole x² et on extrait la racine carrée plutôt que d’utiliser la formule générale.',
+		'recognize-no-constant-term': (_op, step) =>
+			isInequalityStep(step)
+				? `Quand $c = 0$, $x$ est facteur commun : l’inéquation devient $x(ax + b) ${relationLatex(step)} 0$, et on étudie le signe du produit dans un tableau.`
+				: 'Quand c = 0, x est facteur commun : l’équation devient x(ax + b) = 0 et on applique la propriété du produit nul.',
 		'recognize-factored': () =>
 			'L’équation est déjà un produit de facteurs égal à zéro : on applique directement la propriété du produit nul.',
 		'isolate-square': isolateSquareExplanation,
@@ -367,8 +382,14 @@ const EXPLANATIONS: Record<
 		'simplify-solutions': () => 'Réduction canonique.',
 		'read-solutions': () => 'Ensemble solution.',
 		'no-real-solution': () => 'Δ < 0 ⇒ S = ∅ dans ℝ.',
-		'recognize-no-linear-term': () => 'ax² + c = 0 ⇒ x² = −c/a.',
-		'recognize-no-constant-term': () => 'ax² + bx = 0 ⇒ x(ax + b) = 0.',
+		'recognize-no-linear-term': (_op, step) =>
+			isInequalityStep(step)
+				? `$ax^2 + c ${relationLatex(step)} 0$ : on isole $x^2$.`
+				: 'ax² + c = 0 ⇒ x² = −c/a.',
+		'recognize-no-constant-term': (_op, step) =>
+			isInequalityStep(step)
+				? `$ax^2 + bx ${relationLatex(step)} 0$ : on factorise par $x$.`
+				: 'ax² + bx = 0 ⇒ x(ax + b) = 0.',
 		'recognize-factored': () => 'Produit de facteurs nul.',
 		'zero-product': () => 'A · B = 0 ⇒ A = 0 ∨ B = 0.',
 		'quadratic-sign-table': () => 'Signe(P) = signe(a) à l’extérieur des racines.',

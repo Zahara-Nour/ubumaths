@@ -678,7 +678,10 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   comme `toLatex`) au lieu de l'opérateur brut `>=`. Tests :
   `pedagogical-solve/__tests__/inequation-second-degre-relation.test.ts`. L'explication de
   « On isole le carré » nomme alors le diviseur `a` (champ `divisor` de l'opération) et dit si le
-  sens est préservé ou retourné, comme le 1er degré ; une équation garde « x² = −c / a ». Le 1er
+  sens est préservé ou retourné, comme le 1er degré ; une équation garde « x² = −c / a ». `≠` n'a
+  pas de sens à retourner : diviser ou multiplier par un nombre non nul le garde (« $-3$ n'est pas
+  nul, donc la relation $\neq$ est préservée », 1er et 2nd degré). Les textes de la forme standard
+  et de « b = 0 » / « c = 0 » écrivent la vraie relation (`$f(x) - g(x) \geqslant 0$`), plus de `⊻`. Le 1er
   degré écrit aussi ses blocs alignés par `RELATION_MAP` (`\leqslant`/`\geqslant`, plus de
   `\leq`/`\geq`) : `inequation-premier-degre-symboles.test.ts`. Typst les lit (`lt.eq.slant`).
 - **Dérivées et primitives finissent par « On simplifie ».** Les règles laissent le

@@ -45,6 +45,19 @@ function renderedLines(source: string, level: Level): readonly string[] {
 		.map((s) => `${s.rule} → ${s.expressionLatex}`);
 }
 
+/** Les étapes rendues (titre, explication, LaTeX), au lycée. */
+function renderedSteps(source: string) {
+	const relation = ast(source);
+	const steps =
+		relation.relation === '='
+			? generateEquationSteps(relation, { level: 'lycee' })
+			: generateInequalitySteps(relation, { level: 'lycee' });
+	return new QuadraticEquationRenderer().renderAll(steps, {
+		schoolLevel: 'lycee',
+		verbosity: 'detailed'
+	});
+}
+
 /** Bloc aligné de deux lignes, tel que l'écrit le rendu. */
 function aligned(first: string, second: string): string {
 	return `\\begin{aligned}   ${first} \\\\   ${second} \\end{aligned}`;
@@ -188,6 +201,86 @@ describe('l’explication de « On isole le carré » reprend la relation', () =
 	it('2x^2 = 8 : l’explication d’une équation ne change pas', () => {
 		expect(isolateExplanation('2x^2=8')).toBe(
 			'En divisant par a et en transposant, on obtient x² = −c / a.'
+		);
+	});
+});
+
+describe('« On isole le carré » : ≠, a = 1, a = ½, second membre nul', () => {
+	function isolateExplanation(source: string): string | undefined {
+		return renderedSteps(source).find((s) => s.rule === 'isolate-square')?.explanation;
+	}
+
+	it('-2x^2 ≠ -8 : diviser par −2 garde ≠, pas de changement de sens', () => {
+		expect(isolateExplanation('-2x^2!=-8')).toBe(
+			'On transpose le terme constant, puis on divise les deux membres par $-2$ pour isoler $x^2$. $-2$ n’est pas nul, donc la relation $\\neq$ est préservée : $x^2\\neq 4$.'
+		);
+	});
+
+	it('a = 1 (x^2 - 4 < 0) : pas de division par 1', () => {
+		expect(isolateExplanation('x^2-4<0')).toBe('On transpose le terme constant : $x^2 < 4$.');
+	});
+
+	it('a = ½ : on divise par $\\dfrac{1}{2}$', () => {
+		expect(isolateExplanation('1/2x^2<2')).toBe(
+			'On transpose le terme constant, puis on divise les deux membres par $\\dfrac{1}{2}$ pour isoler $x^2$. $\\dfrac{1}{2}$ est positif, donc l’inéquation est préservée : $x^2 < 4$.'
+		);
+	});
+
+	it('2x^2 < 0 : rien à transposer', () => {
+		expect(isolateExplanation('2x^2<0')).toBe(
+			'On divise les deux membres par $2$ pour isoler $x^2$. $2$ est positif, donc l’inéquation est préservée : $x^2 < 0$.'
+		);
+	});
+
+	it('-x^2 ≥ 0 : rien à transposer, le sens se retourne', () => {
+		expect(isolateExplanation('-x^2>=0')).toBe(
+			'On divise les deux membres par $-1$ pour isoler $x^2$. Comme $-1$ est négatif, l’opérateur de l’inéquation est retourné (changement de sens : < devient >, ≤ devient ≥, etc.) : $x^2\\leqslant 0$.'
+		);
+	});
+});
+
+describe('forme standard et « b = 0 » : le texte suit la relation', () => {
+	/**
+	 * ⚠️ Sous une ligne `3x^2 - 12 \geqslant 0`, l'explication disait
+	 * « l’équation se réduit à ax² + c = 0 », et la forme standard
+	 * « f(x) − g(x) ⊻ 0 » : `⊻` n'est pas un symbole d'élève.
+	 */
+	function step(source: string, rule: string) {
+		return renderedSteps(source).find((s) => s.rule === rule);
+	}
+
+	it('3x^2 ≥ 12 : la forme standard écrit \\geqslant', () => {
+		const standardize = step('3x^2>=12', 'standardize');
+
+		expect(standardize?.title).toBe(
+			'On met l’inéquation sous la forme $ax^2 + bx + c \\geqslant 0$'
+		);
+		expect(standardize?.explanation).toBe(
+			'On déplace tous les termes dans le membre de gauche : $f(x) - g(x) \\geqslant 0$. La nouvelle inéquation est équivalente à la précédente.'
+		);
+	});
+
+	it('2x^2 < 2 : la forme standard écrit <', () => {
+		expect(step('2x^2<2', 'standardize')?.title).toBe(
+			'On met l’inéquation sous la forme $ax^2 + bx + c < 0$'
+		);
+	});
+
+	it('3x^2 ≥ 12 : b = 0 parle d’inéquation', () => {
+		expect(step('3x^2>=12', 'recognize-no-linear-term')?.explanation).toBe(
+			'Quand $b = 0$, l’inéquation s’écrit $ax^2 + c \\geqslant 0$ : on isole $x^2$, puis on conclut sans tableau de signes.'
+		);
+	});
+
+	it('2x^2 = 8 : l’équation garde son texte, en $…$ pour la forme standard', () => {
+		const standardize = step('2x^2=8', 'standardize');
+
+		expect(standardize?.title).toBe('On met l’équation sous la forme $ax^2 + bx + c = 0$');
+		expect(standardize?.explanation).toBe(
+			'On déplace tous les termes dans le membre de gauche : $f(x) - g(x) = 0$. La nouvelle équation est équivalente à la précédente.'
+		);
+		expect(step('2x^2=8', 'recognize-no-linear-term')?.explanation).toBe(
+			'Quand b = 0, l’équation se réduit à ax² + c = 0 : on isole x² et on extrait la racine carrée plutôt que d’utiliser la formule générale.'
 		);
 	});
 });

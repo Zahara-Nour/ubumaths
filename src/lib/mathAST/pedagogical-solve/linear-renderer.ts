@@ -226,6 +226,19 @@ function variableOf(step: EquationStep): string {
 }
 
 /**
+ * ⚠️ **`≠` n'a pas de sens à retourner** : diviser ou multiplier par un nombre
+ * non nul le garde. Sans cette branche, `-3x + 1 ≠ 7` tombait dans « $-3$ est
+ * positif, donc l'inéquation est préservée » — faux deux fois.
+ */
+function isNotEqualStep(step: EquationStep): boolean {
+	return step.before.type === 'relation' && step.before.relation === '!=';
+}
+
+function notEqualPreserved(operand: string): string {
+	return `${operand} n'est pas nul, donc la relation ${math('\\neq')} est préservée.`;
+}
+
+/**
  * Explanation for `divide-both-sides` and `multiply-both-sides` adapted to
  * the operator kind (equation vs inequality) and the flip flag.
  *
@@ -236,6 +249,9 @@ function variableOf(step: EquationStep): string {
 function divideExplanation(op: EquationOperation, step: EquationStep): string {
 	if (op.kind !== 'divide-both-sides') return '';
 	const operand = operandStr(op);
+	if (isNotEqualStep(step)) {
+		return `On divise les deux membres par ${operand} pour isoler ${variableOf(step)}. ${notEqualPreserved(operand)}`;
+	}
 	if (isInequalityStep(step)) {
 		if (op.flipOperator) {
 			return `On divise les deux membres par ${operand} pour isoler ${variableOf(step)}. Comme ${operand} est négatif, l'opérateur de l'inéquation est retourné (changement de sens : < devient >, ≤ devient ≥, etc.).`;
@@ -248,6 +264,9 @@ function divideExplanation(op: EquationOperation, step: EquationStep): string {
 function multiplyExplanation(op: EquationOperation, step: EquationStep): string {
 	if (op.kind !== 'multiply-both-sides') return '';
 	const operand = operandStr(op);
+	if (isNotEqualStep(step)) {
+		return `On multiplie les deux membres par ${operand}. ${notEqualPreserved(operand)}`;
+	}
 	if (isInequalityStep(step)) {
 		if (op.flipOperator) {
 			return `On multiplie les deux membres par ${operand}. Comme ${operand} est négatif, l'opérateur de l'inéquation est retourné (changement de sens).`;
