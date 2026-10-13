@@ -74,7 +74,8 @@ les `question_templates` publiés (réponses comprises : `/automaths` génère d
 `curriculum_points`, `curriculum_point_automatismes`, `grade_predecessors`, `classification_nodes`,
 `source_types` (contenu public des programmes, ADR 0020) et le rangement des exercices lisibles
 (`exercise_classifications`) ; les lignes `is_public` de `exercises`, `python_exercises` ;
-`parody_evaluations` et leurs `resource_tags`, `tags`, `schools`, `riddle_of_the_day`. Les
+`parody_evaluations` et leurs `resource_tags`, `tags`, `schools`, `riddle_of_the_day`, les
+`geometry_figures` publiques (ADR 0027, sans leurs tags). Les
 constructions publiques sont réservées aux comptes connectés, et les parties de `minesweeper_games`
 à leur joueur (2026-10-15).
 
@@ -429,6 +430,12 @@ l'admin) → `google_classroom_courses`, `_coursework`, `_materials`, `_topics` 
   `tests/integration/kanban-rls.test.ts`.
 - `spreadsheets`, `constructions` : à leur auteur (les constructions `is_public` sont lisibles par
   tout compte connecté). `whiteboard_templates` : modèles publics, de l'auteur ou système.
+- **Figures géométriques** (ADR 0027) : `geometry_figures`, scripts du DSL `geometry-core`, distinctes
+  des `constructions` animées. Publique (`is_public`) = lisible par tous, `anon` compris ; privée =
+  l'auteur seul. Prof et admin créent ; chacun ne modifie et ne supprime **que ses** figures (l'admin
+  ne touche pas à celles du prof). Niveaux `grades` (contrôle `is_valid_grade_array`), tags par
+  `resource_tags` (type `geometry_figure`), effacés avec la figure par le trigger
+  `geometry_figures_drop_tags`. Test : `tests/integration/figures-geometriques.test.ts`.
 
 ### Tuteur et recherche documentaire (RAG)
 
