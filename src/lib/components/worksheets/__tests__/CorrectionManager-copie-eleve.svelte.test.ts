@@ -39,7 +39,10 @@ const ASSIGNMENT = {
 describe('gestionnaire de corrections : corrigé de classe', () => {
 	let correctionRequests: URL[];
 
-	function stubFetch(perStudent: boolean) {
+	function stubFetch(
+		perStudent: boolean,
+		students: 'ok' | 'empty' | 'error' | (() => 'ok' | 'error') = 'ok'
+	) {
 		vi.stubGlobal(
 			'fetch',
 			vi.fn(async (input: string) => {
@@ -54,6 +57,13 @@ describe('gestionnaire de corrections : corrigé de classe', () => {
 						typst: `CORRIGE:${url.searchParams.get('studentId') ?? 'classe'}`,
 						per_student_copies: perStudent
 					});
+				}
+				const studentsState = typeof students === 'function' ? students() : students;
+				if (url.pathname.endsWith('/students') && studentsState === 'error') {
+					return Response.json({ message: 'panne' }, { status: 500 });
+				}
+				if (url.pathname.endsWith('/students') && studentsState === 'empty') {
+					return Response.json({ students: [] });
 				}
 				if (url.pathname.endsWith('/students')) {
 					// Ordre de la base : la liste est triée par nom à l'affichage
@@ -108,5 +118,44 @@ describe('gestionnaire de corrections : corrigé de classe', () => {
 		await page.getByRole('button', { name: 'PDF' }).click();
 		await expect.poll(() => compiled.sources).toEqual(['CORRIGE:classe']);
 		expect(document.body.textContent).not.toContain('Produire le corrigé');
+	});
+
+	it('texte du choix : « valeurs ou ordre des exercices » (pas le mot du lore des fiches)', async () => {
+		stubFetch(true);
+		await render(CorrectionManager, {
+			props: { assignment: ASSIGNMENT, worksheetId: WORKSHEET_ID }
+		});
+		await page.getByRole('button', { name: 'PDF' }).click();
+		await expect.poll(() => document.body.textContent).toContain('valeurs ou ordre des exercices');
+		expect(document.body.textContent).not.toContain('Corvée');
+	});
+
+	it('liste des élèves en panne : message d’erreur et « Réessayer », pas « aucun élève »', async () => {
+		let state: 'ok' | 'error' = 'error';
+		stubFetch(true, () => state);
+		await render(CorrectionManager, {
+			props: { assignment: ASSIGNMENT, worksheetId: WORKSHEET_ID }
+		});
+		await page.getByRole('button', { name: 'PDF' }).click();
+		await expect
+			.poll(() => document.body.textContent)
+			.toContain('Impossible de charger la liste des élèves');
+		expect(document.body.textContent).not.toContain('Aucun élève dans cette affectation');
+		state = 'ok';
+		await page.getByRole('button', { name: 'Réessayer' }).click();
+		await expect.poll(() => document.body.textContent).toContain('Adam Bernard');
+	});
+
+	it('affectation sans élève : « Aucun élève dans cette affectation », sans « Réessayer »', async () => {
+		stubFetch(true, 'empty');
+		await render(CorrectionManager, {
+			props: { assignment: ASSIGNMENT, worksheetId: WORKSHEET_ID }
+		});
+		await page.getByRole('button', { name: 'PDF' }).click();
+		await expect
+			.poll(() => document.body.textContent)
+			.toContain('Aucun élève dans cette affectation');
+		expect(document.body.textContent).not.toContain('Réessayer');
+		expect(compiled.sources).toHaveLength(0);
 	});
 });

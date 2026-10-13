@@ -88,6 +88,8 @@
 	// est la copie d'un élève choisi ici, au moment de le produire
 	let studentDialogOpen = $state(false);
 	let copyStudentItems = $state<{ value: string; label: string; description?: string }[]>([]);
+	// Liste des élèves : chargée, vide (affectation sans élève) ou en panne
+	let copyStudentsStatus = $state<'ok' | 'empty' | 'error'>('ok');
 	let copyStudentId = $state<string | undefined>(undefined);
 	let isLoadingExercises = $state(false);
 	let isTogglingExercise = $state<string | null>(null);
@@ -275,28 +277,36 @@
 
 	/**
 	 * Les élèves de l'affectation, triés par nom (comme l'aperçu « vue
-	 * élève ») : le premier est présélectionné.
+	 * élève ») : le premier est présélectionné. Une panne se distingue d'une
+	 * liste vide (`copyStudentsStatus`) : l'une se réessaie, l'autre non.
 	 */
-	async function loadCopyStudents(): Promise<boolean> {
-		const response = await fetch(`/api/worksheets/assignments/${assignment.id}/students`);
-		if (!response.ok) return false;
-		const data: {
-			students?: {
-				id: string;
-				first_name: string | null;
-				last_name: string | null;
-				class_name: string | null;
-			}[];
-		} = await response.json();
-		copyStudentItems = (data.students ?? [])
-			.map((s) => ({
-				value: s.id,
-				label: [s.first_name, s.last_name].filter(Boolean).join(' ') || 'Élève sans nom',
-				description: s.class_name || undefined
-			}))
-			.sort((a, b) => a.label.localeCompare(b.label, 'fr'));
-		copyStudentId = copyStudentItems[0]?.value;
-		return copyStudentItems.length > 0;
+	async function loadCopyStudents(): Promise<void> {
+		try {
+			const response = await fetch(`/api/worksheets/assignments/${assignment.id}/students`);
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			const data: {
+				students?: {
+					id: string;
+					first_name: string | null;
+					last_name: string | null;
+					class_name: string | null;
+				}[];
+			} = await response.json();
+			copyStudentItems = (data.students ?? [])
+				.map((s) => ({
+					value: s.id,
+					label: [s.first_name, s.last_name].filter(Boolean).join(' ') || 'Élève sans nom',
+					description: s.class_name || undefined
+				}))
+				.sort((a, b) => a.label.localeCompare(b.label, 'fr'));
+			copyStudentId = copyStudentItems[0]?.value;
+			copyStudentsStatus = copyStudentItems.length > 0 ? 'ok' : 'empty';
+		} catch (err) {
+			console.error('Élèves de l’affectation illisibles :', err);
+			copyStudentItems = [];
+			copyStudentId = undefined;
+			copyStudentsStatus = 'error';
+		}
 	}
 
 	/**
@@ -315,8 +325,8 @@
 			const data = await response.json();
 			if (!response.ok) throw new Error(data.message);
 			if (data.needs_student === true) {
-				if (await loadCopyStudents()) studentDialogOpen = true;
-				else toaster.error('Aucun élève dans cette affectation');
+				await loadCopyStudents();
+				studentDialogOpen = true;
 				return;
 			}
 			studentDialogOpen = false;
@@ -497,17 +507,26 @@
 		<Dialog.Header>
 			<Dialog.Title>Corrigé de classe</Dialog.Title>
 			<Dialog.Description>
-				Chaque élève a sa propre version de cette fiche (valeurs ou ordre des {lore.learning
-					.exercise}s). Le corrigé reprend la copie de l’élève choisi ; son nom n’est pas imprimé,
-				et un avertissement invite chaque élève à consulter sa correction personnelle.
+				Chaque élève a sa propre version de cette fiche (valeurs ou ordre des exercices). Le corrigé
+				reprend la copie de l’élève choisi ; son nom n’est pas imprimé, et un avertissement invite
+				chaque élève à consulter sa correction personnelle.
 			</Dialog.Description>
 		</Dialog.Header>
-		<MySelect
-			type="single"
-			bind:value={copyStudentId}
-			items={copyStudentItems}
-			placeholder="Choisir un élève"
-		/>
+		{#if copyStudentsStatus === 'error'}
+			<div class="flex items-center justify-between gap-3 text-sm text-destructive">
+				<span>Impossible de charger la liste des élèves.</span>
+				<Button variant="outline" size="sm" onclick={loadCopyStudents}>Réessayer</Button>
+			</div>
+		{:else if copyStudentsStatus === 'empty'}
+			<p class="text-sm text-muted-foreground">Aucun élève dans cette affectation.</p>
+		{:else}
+			<MySelect
+				type="single"
+				bind:value={copyStudentId}
+				items={copyStudentItems}
+				placeholder="Choisir un élève"
+			/>
+		{/if}
 		<Dialog.Footer>
 			<Button variant="outline" onclick={() => (studentDialogOpen = false)}>Annuler</Button>
 			<Button
