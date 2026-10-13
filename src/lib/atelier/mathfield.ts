@@ -21,6 +21,7 @@ import type { AtelierObject, ObjectKind } from './types';
 import { astOf, parseDefinition, readingMode, readNumber } from './parse';
 import { INTERNAL_LETTER, renameVariable } from './letter';
 import { readNaturalQuantities } from './natural-quantities';
+import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { isAddition, isDelimiter, isNumber, isUnit } from '$lib/mathAST/guards';
 import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
@@ -65,9 +66,8 @@ export function fieldLatexOf(
 
 	const ast = astOf(definition, provenance, functionNames);
 	if (ast === null) return definition;
-	const latex = forMathlive(toLatex(ast));
-	// Une valeur garde la virgule de l'élève : `2,5 km`, pas le `2.5` de `toLatex`
-	return object.kind === 'value' ? latex.replace(/(\d)\.(\d)/g, '$1{,}$2') : latex;
+	// La virgule de l'élève : `2,5 km`, `2,5x`, pas le `2.5` de `toLatex`
+	return forMathlive(toLatex(ast)).replace(/(\d)\.(\d)/g, '$1{,}$2');
 }
 
 /**
@@ -185,5 +185,15 @@ export function definitionFromField(kind: ObjectKind, latex: string): string {
 	// La virgule du champ (`2{,}5\times10^3`) : nue, le LaTeX la refuse (revue)
 	const quantity = normalizeStudentQuantity(typed).replace(/(\d),(\d)/g, '$1{,}$2');
 	const read = parseDefinition('value', quantity, 'keyboard');
-	return read.error === undefined && read.unit !== undefined ? quantity : typed;
+	if (read.error === undefined && read.unit !== undefined) return quantity;
+
+	// Une unité écrite comme le champ la montre (`\operatorname{\mathrm{m}}`, la forme
+	// de `forMathlive`) est une unité, quoi qu'il y ait devant : `10^3 m`, que le secours ci-dessus coupe
+	const marked = typed.replace(
+		/\\operatorname\{\\mathrm\{([^{}]*)\}\}/g,
+		(whole, symbol: string) => (parseUnit(symbol) === null ? whole : `\\unit{${symbol}}`)
+	);
+	if (marked === typed) return typed;
+	const markedRead = parseDefinition('value', marked, 'keyboard');
+	return markedRead.error === undefined && markedRead.unit !== undefined ? marked : typed;
 }
