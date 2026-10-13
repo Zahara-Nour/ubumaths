@@ -268,3 +268,8 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
   sur 21 se glissent.
 - 2026-10-13 — « encore beaucoup de parties encadrées » : au survol, seulement la partie visée et
   celles qui la contiennent (plus celles qu'elle contient).
+- 2026-10-13 — « l'exposant 2 change de hauteur » : défaut de la structure (prod), pas du glisser —
+  hors du marqueur de sa base, MathLive plaçait l'exposant d'après le dernier caractère avant `)`.
+  **Corrigé : PR #1346 mergée** (aussi `|…|²`, `⌊…⌋²`). Démo : cadres et fonds bornés par la barre
+  de fraction (mesure caractère par caractère ; la boîte de police d'un chiffre déborde sous
+  l'encre), nom du groupe sous son fond dans un dénominateur.
