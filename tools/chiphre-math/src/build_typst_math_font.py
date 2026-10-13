@@ -11,7 +11,8 @@ and writes that table:
 
 - letters: Math-Italic → math italic code points (U+1D434…, ℎ, Greek, π),
   Main-Regular → upright letters, digits, operators, punctuation, Greek capitals;
-  AMS → ℕ ℤ ℚ ℝ ℂ (the \\mathbb letters) and ⩽ ⩾; Caligraphic → math script
+  AMS → ℕ ℤ ℚ ℝ ℂ (the \\mathbb letters), ⩽ ⩾ and every other AMS symbol missing
+  from Main; ≠ = « = » and the slash of \\not; Caligraphic → math script
   capitals (U+1D49C…, ℬ ℰ ℱ ℋ ℐ ℒ ℳ ℛ: Typst's cal());
 - sizes: the glyph of Main (or Size1 for the big operators), then Size1 to
   Size4, become the vertical variants of ( [ { | ⟨ ⌈ ⌊ / √ ∑ ∏ ∐ ∫ ∬ ∭;
@@ -201,6 +202,22 @@ class FontBuilder:
         if name is not None:
             self.cmap[codepoint] = name
 
+    def compose(self, codepoint: int, name: str, source: str, parts: List[int]) -> None:
+        """Glyphe fait de glyphes d'une police source superposés à la même origine
+        (≠ : le « = » et le trait de \\not, que MathLive superpose lui aussi)."""
+        font = self.sources[source]
+        glyph_set = font.getGlyphSet()
+        cmap = font.getBestCmap()
+        pen = TTGlyphPen(None)
+        for part in parts:
+            glyph_set[cmap[part]].draw(pen)
+        glyph = pen.glyph()
+        glyph.recalcBounds(None)
+        self.glyphs[name] = glyph
+        self.metrics[name] = (font["hmtx"][cmap[parts[0]]][0], getattr(glyph, "xMin", 0))
+        self.order.append(name)
+        self.cmap[codepoint] = name
+
     def height(self, name: str) -> int:
         pen = BoundsPen(None)
         self.glyphs[name].draw(pen, None)
@@ -222,6 +239,14 @@ class FontBuilder:
             self.map(codepoint, "AMS")
         for char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
             self.map(math_script_codepoint(char), "Cal", ord(char))
+        # Le reste d'AMS (⊊ ⊈ ∄ ∦ ∡ ∴ ∵…) : sans lui, Typst prenait ces symboles dans une
+        # autre police ; △ est celui d'AMS, que MathLive affiche (\\triangle)
+        for codepoint in self.sources["AMS"].getBestCmap():
+            if codepoint >= 0x80 and codepoint not in self.cmap:
+                self.map(codepoint, "AMS")
+        self.map(ord("△"), "AMS")
+        # ≠ : KaTeX n'a pas ce caractère, MathLive superpose « = » et le trait de \\not
+        self.compose(0x2260, "Main.notequal", "Main", [ord("="), 0xE020])
         # Les grands opérateurs n'existent qu'en Size1-2 : la taille en ligne est le glyphe de base
         for char in BIG_OPERATORS:
             self.map(ord(char), "S1")
