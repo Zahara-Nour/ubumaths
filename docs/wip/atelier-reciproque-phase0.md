@@ -160,3 +160,7 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
   départ → refus de `f(5)`) ; droite y = x grise en pointillés (`syncPlots`) ; sin/cos/tan : refus
   qui nomme arcsin/arccos/arctan sans commande. Défaut `g(x) = f(x)^-1` corrigé (exposant négatif
   sans accolades relu `^(-1)` par `parse.ts`).
+- 2026-10-13 — #1338 (f⁻¹ à la volée, y = x, refus de sin/cos/tan, `g(x) = f(x)^-1` réparé) et #1342
+  (définition en erreur dite telle quelle dans Calcul ; refus de sin avec son explication ; borne
+  ouverte où f n'existe pas, tan sur ]−1 ; 4[) MERGÉS. Reste noté : `m(x) = 1/0` — une carte en
+  erreur devient inconnue du moteur (`.domaine h` → ℝ, `h(1)` → « Fonction inconnue »), PR à part.
