@@ -285,6 +285,18 @@ du moteur, statut `no-solution` + `error`, pour un ∅). Les modèles de questio
 de `generatedSteps.kind` pour la valeur absolue (PR suivante). Tests :
 `pedagogical-solve/__tests__/valeur-absolue.test.ts`, `atelier/__tests__/resoudre-valeur-absolue.test.ts`.
 
+Écart V43 (2026-10-13) : **une identité résolue « dans » un intervalle** rendait tout
+l'intervalle, valeurs interdites comprises (`.résoudre \frac{|x|-2}{|x|-2}=1 dans [-5;5]` →
+`[-5 ; 5]`, `\frac{3x}{3x}=1 dans [-1;1]` → `[-1 ; 1]`). Le domaine de `solve` était exact
+(`ℝ \ {−2 ; 2}`, zéros de |u| − c lus par `invertMonotone` dans `domain/compute.ts`) : c'est la
+branche « identité » de `solveInInterval` (`cli/commands/solve.command.ts`) qui ne le lisait pas.
+Elle rend maintenant le domaine de `solve` intersecté avec l'intervalle, mis en forme par
+`normalizeExcludedPoints` (exporté de `domain/compute.ts` : point hors de l'intervalle effacé,
+point sur une borne qui l'ouvre — `\frac{2x}{2x}=1 dans [0;1]` → `]0 ; 1]`), et refuse
+(« Je ne sais pas encore résoudre ») un domaine à exclusion périodique, qu'`intersect` perdait
+(`\frac{\sin x}{\sin x}=1 dans [-1;3]` gardait 0). Tests :
+`cli/commands/__tests__/identite-dans-intervalle.test.ts`.
+
 ### Carte du code
 
 | Fichier              | Rôle                                                                                                                                                                                                                                                              |

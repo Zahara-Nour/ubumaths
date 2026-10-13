@@ -1347,7 +1347,7 @@ function samePeriodic(a: Domain, b: Domain): boolean {
  *   jointifs y sont recollés) ; sinon le point coupe l'intervalle
  *   (`]0 ; +∞[ \ {1}` → `]0 ; 1[ ∪ ]1 ; +∞[`).
  */
-function normalizeExcludedPoints(domain: Domain): Domain {
+export function normalizeExcludedPoints(domain: Domain): Domain {
 	if (domain.kind !== 'interval_set') return domain;
 	type Bound = { node: MathNode; value: number; closed: boolean };
 	const toBound = (b: { value: MathNode; type: string }): Bound | null => {
