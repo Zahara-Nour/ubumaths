@@ -43,7 +43,11 @@ describe('les commandes de noms de /cas', () => {
 		['.unset a', 'unset'],
 		['.undef f', 'undef'],
 		['.inv f', 'inv'],
-		[".def' f", "def'"]
+		[".def' f", "def'"],
+		// Les raccourcis du registre ne rouvrent pas la porte
+		['.clr', 'clr'],
+		['.del a', 'del'],
+		['.inverse f', 'inverse']
 	])('« %s » répond comme une commande inconnue', (input, written) => {
 		const { desk } = deskWithNames();
 		desk.submit(input);
@@ -89,6 +93,17 @@ describe('les bascules de saisie de /cas', () => {
 
 		expect(lastText(desk)).toBe('3/2');
 	});
+
+	it.each(['.l', '.tex', '.c', '.cust'])(
+		'le raccourci « %s » seul ne bascule pas la saisie',
+		(input) => {
+			const { desk } = deskWithNames();
+			desk.submit(input);
+			desk.submit('sqrt(2)*sqrt(8)');
+
+			expect(lastText(desk)).toBe('4');
+		}
+	);
 
 	it('« .latex » seul demande l’expression', () => {
 		const { desk } = deskWithNames();
