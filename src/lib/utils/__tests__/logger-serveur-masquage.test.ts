@@ -17,7 +17,9 @@ afterEach(() => {
 function logged(message: unknown, ...args: unknown[]): unknown[] {
 	const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 	createServerLogger('x.ts').error(message, ...args);
-	return spy.mock.calls[0].slice(1);
+	// Dernier appel : dans un même test, `spyOn` rend le même espion, qui garde les appels
+	// précédents
+	return (spy.mock.lastCall ?? []).slice(1);
 }
 
 function loggedText(message: unknown, ...args: unknown[]): string {
@@ -43,6 +45,22 @@ describe('createServerLogger — noms des élèves', () => {
 		expect(loggedText('profil', profile)).not.toMatch(/Léa|Martin/);
 	});
 
+	it('masque les noms d’un compte connecté par Google (identities)', () => {
+		const user = {
+			id: 'b3f1c2d4-0000-4000-8000-000000000001',
+			identities: [
+				{
+					provider: 'google',
+					identity_data: { name: 'Léa Martin', given_name: 'Léa', family_name: 'Martin' }
+				}
+			],
+			given_name: 'Léa',
+			family_name: 'Martin'
+		};
+
+		expect(loggedText('connexion', user)).not.toMatch(/Léa|Martin/);
+	});
+
 	it('garde le champ name d’un objet qui n’est pas une personne', () => {
 		expect(logged('catégorie', { name: 'Fractions' })[1]).toEqual({ name: 'Fractions' });
 	});
@@ -64,6 +82,8 @@ describe('createServerLogger — codes de connexion', () => {
 	it('masque un code à usage unique écrit dans une chaîne', () => {
 		expect(loggedText('OTP 482913 refusé')).not.toContain('482913');
 		expect(loggedText('code: 482913')).not.toContain('482913');
+		expect(loggedText('réponse {"code": "482913"}')).not.toContain('482913');
+		expect(loggedText('otp_code: 482913')).not.toContain('482913');
 	});
 
 	it('garde un code d’erreur Postgres écrit dans une chaîne', () => {
@@ -78,7 +98,7 @@ describe('createServerLogger — codes de connexion', () => {
 
 	it('masque la clé code quand elle porte un code de connexion', () => {
 		const [, value] = logged('échange', {
-			otpCode: { code: '482913' },
+			verify: { code: '482913' },
 			oauth: { code: '9f8e7d6c-1111-4222-8333-444455556666' },
 			numeric: { code: 482913 }
 		});
@@ -93,6 +113,9 @@ describe('createServerLogger — codes de connexion', () => {
 			{ code: 'PGRST116' },
 			{ code: 'otp_expired' },
 			{ code: 'ECONNRESET' },
+			{ code: 'EAI_AGAIN' },
+			{ code: 'UND_ERR_CONNECT_TIMEOUT' },
+			{ code: 'ERR_HTTP2_STREAM_ERROR' },
 			{ code: 401 }
 		]);
 
@@ -102,6 +125,9 @@ describe('createServerLogger — codes de connexion', () => {
 			{ code: 'PGRST116' },
 			{ code: 'otp_expired' },
 			{ code: 'ECONNRESET' },
+			{ code: 'EAI_AGAIN' },
+			{ code: 'UND_ERR_CONNECT_TIMEOUT' },
+			{ code: 'ERR_HTTP2_STREAM_ERROR' },
 			{ code: 401 }
 		]);
 	});
@@ -122,6 +148,18 @@ describe('createServerLogger — e-mails', () => {
 		const [, value] = logged('profil', { email: 'eleve@college' });
 
 		expect(value).toEqual({ email: '[email@redacted]' });
+	});
+
+	it('masque en entier un e-mail à domaine numérique ou à lettres accentuées', () => {
+		for (const email of [
+			'eleve@163.com',
+			'x@123.fr',
+			'marie@école.fr',
+			'zoé.martin@gmail.com',
+			'jérôme@laposte.net'
+		]) {
+			expect(logged(`connexion de ${email}`)[0]).toBe('connexion de [email@redacted]');
+		}
 	});
 
 	it('garde lisibles les chemins de pile des paquets', () => {

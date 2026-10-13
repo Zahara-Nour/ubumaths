@@ -23,15 +23,17 @@ export type LogLevel = 'trace' | 'info' | 'warn' | 'error';
  * Note: Patterns are kept simple to avoid ReDoS vulnerabilities
  */
 const PII_PATTERNS = {
-	// Email addresses (simplified to avoid ReDoS). Domaine sans point compris
-	// (`eleve@college`) ; il commence par une lettre, si bien qu'un chemin de pile
-	// (`postgrest-js@1.21.4`, `/@supabase/…`) reste lisible.
-	email: /[\w.+-]+@[A-Za-z][A-Za-z0-9-]*(?:\.[A-Za-z0-9-]+)*/g,
+	// Email addresses (simplified to avoid ReDoS). Forme large : domaine sans point
+	// (`eleve@college`), numérique (`163.com`) ou accentué. Le `/` borne l'adresse, si bien
+	// que `/@supabase/…` d'un chemin de pile n'est pas visé ; `nom@1.21.4` est écarté
+	// au remplacement (voir `redactString`).
+	email: /[^\s@/]+@([^\s@/]+)/g,
 	// Codes de connexion passés dans une URL (callback OAuth, lien de confirmation)
 	urlSecret: /([?&#](?:code|token_hash|token|access_token|refresh_token|otp)=)[^&#\s"']+/gi,
-	// Code à usage unique (6 chiffres) annoncé par « otp » ou « code » ; un code
-	// d'erreur Postgres (5 caractères, `23505`) n'est pas visé
-	otp: /\b(otp|code)(\W{0,3})\d{6}\b/gi,
+	// Code à usage unique (6 chiffres) annoncé par « otp » ou « code », jusqu'à 4 signes
+	// entre les deux (`"code": "482913"`) ; un code d'erreur Postgres (5 caractères,
+	// `23505`) n'est pas visé
+	otp: /(otp|code)\b(\W{0,4})\d{6}\b/gi,
 	// IP addresses - IPv4
 	ipv4: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g,
 	// IP addresses - IPv6 (common forms)
@@ -64,12 +66,15 @@ const SENSITIVE_FIELDS = [
 	/authorization/i,
 	/mdp/i,
 	/pwd/i,
-	/(^|_)otp|Otp|OTP/,
+	// `otp` en tête ou après `_`, `Otp` en camelCase : `footprint` n'est pas visé
+	/(?:^|_)otp|Otp|OTP/,
 	// Noms des personnes : colonnes de `profiles` et métadonnées d'un compte Supabase
 	// (`user_metadata.full_name`, `name`, `pseudo`…). Le `name` seul reste lisible ailleurs
 	// (catégorie, fichier) : il n'est masqué qu'à l'intérieur des métadonnées.
-	/^(full_?name|first_?name|last_?name|display_?name|user_?name|pseudo|prenom|nom)$/i,
-	/^(raw_)?(user|app)_?meta_?data$/i
+	/^(full_?name|first_?name|last_?name|given_?name|family_?name|display_?name|user_?name|pseudo|prenom|nom)$/i,
+	// Métadonnées d'un compte, et `identities[].identity_data` d'un compte Google
+	/^(raw_)?(user|app)_?meta_?data$/i,
+	/^identity_?data$/i
 ] as const;
 
 /**
@@ -82,8 +87,12 @@ const ERROR_CODE_PATTERNS = [
 	/^[0-9A-Z]{5}$/,
 	/^PGRST\d+$/,
 	/^[a-z]+(?:_[a-z]+)+$/,
-	/^(?=.*[G-Z])E[A-Z]+$/,
-	/^ERR_[A-Z_]+$/
+	// Node (`ECONNRESET`, `EAI_AGAIN`) : au moins une lettre de G à Z, ce qui écarte
+	// un code de classe fait de 8 caractères hexadécimaux
+	/^(?=.*[G-Z])E[A-Z_]+$/,
+	/^ERR_[A-Z0-9_]+$/,
+	// undici, le fetch de supabase-js (`UND_ERR_CONNECT_TIMEOUT`)
+	/^UND_ERR_[A-Z_]+$/
 ] as const;
 
 /**
@@ -93,7 +102,11 @@ function redactString(value: string): string {
 	let result = value;
 
 	// Redact emails
-	result = result.replace(PII_PATTERNS.email, '[email@redacted]');
+	result = result.replace(PII_PATTERNS.email, (match, domain: string) =>
+		// Un domaine fait de chiffres et de points est une version de paquet
+		// (`postgrest-js@1.21.4` dans un chemin de pile), pas une adresse
+		/^[\d.]+$/.test(domain) ? match : '[email@redacted]'
+	);
 
 	// Redact IPv4 (show first octet only)
 	result = result.replace(PII_PATTERNS.ipv4, (ip) => {
