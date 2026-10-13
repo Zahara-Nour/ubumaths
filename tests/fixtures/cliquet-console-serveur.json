@@ -1,5 +1,6 @@
 {
 	"src/hooks.server.ts": 7,
+	"src/lib/server/documents/pdf-extractor.ts": 1,
 	"src/routes/(protected)/+layout.server.ts": 2,
 	"src/routes/(protected)/constructions/+page.server.ts": 1,
 	"src/routes/(protected)/constructions/[id]/+page.server.ts": 1,
