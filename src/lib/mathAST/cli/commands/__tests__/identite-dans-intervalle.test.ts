@@ -80,3 +80,63 @@ describe('sans « dans » : le domaine de solve était déjà exact (verrou)', (
 		expect(result.status).toBe('no-solution');
 	});
 });
+
+describe('domaine non déterminé : refus honnête, jamais « tout l’intervalle » ni « S = ℝ »', () => {
+	const unsolved = 'Je ne sais pas encore résoudre cette équation.';
+	it.each([
+		// x⁵ − x + 1 s'annule vers −1,167 ; x = cos x vers 0,739 ; eˣ = x + 2 vers −1,84 et 1,15
+		'\\frac{x^5-x+1}{x^5-x+1}=1 dans [-2;2]',
+		'\\frac{x-\\cos x}{x-\\cos x}=1 dans [-1;1]',
+		'\\frac{e^x-x-2}{e^x-x-2}=1 dans [-3;3]',
+		'\\sqrt{x^5-x+1}-\\sqrt{x^5-x+1}=0 dans [-2;2]',
+		'\\frac{x^5-x+1}{x^5-x+1}=1',
+		'\\frac{2x-\\cos x}{2x-\\cos x}=1',
+		'\\sqrt{x^5-x+1}-\\sqrt{x^5-x+1}=0',
+		'\\frac{2\\tan x}{2\\tan x}=1'
+	])('%s', (command) => {
+		const result = new WebReplEngine().execute(`.solve ${command}`);
+		expect(result.success).toBe(false);
+		expect(result.error?.message).toBe(unsolved);
+	});
+
+	it('solve expose les contraintes non résolues du domaine', () => {
+		const result = solve(parseLatex('\\frac{x^5-x+1}{x^5-x+1}=1') as RelationNode, {
+			variable: 'x'
+		});
+		expect(result.domainUnresolved?.length ?? 0).toBeGreaterThan(0);
+	});
+
+	it('domaine exact : pas de contrainte non résolue exposée', () => {
+		const result = solve(parseLatex('\\frac{|x|-2}{|x|-2}=1') as RelationNode, { variable: 'x' });
+		expect(result.domainUnresolved).toBeUndefined();
+	});
+});
+
+describe('verrous (justes avant la revue)', () => {
+	it('\\frac{x}{x}=1 dans ]0;1] : tout l’intervalle', () => {
+		expect(run('.solve \\frac{x}{x}=1 dans ]0;1]').output).toBe('Tous les nombres de ]0 ; 1]');
+	});
+
+	it('\\frac{x-2}{x-2}=1 dans [2;2] : pas de solution', () => {
+		const r = run('.solve \\frac{x-2}{x-2}=1 dans [2;2]');
+		expect(r.output).toBe('Pas de solution dans cet intervalle');
+		expect(r.latex).toBe('S=\\emptyset');
+	});
+
+	it('\\frac{\\sqrt{x^2-1}}{\\sqrt{x^2-1}}=1 dans [-3;3] : réunion', () => {
+		expect(run('.solve \\frac{\\sqrt{x^2-1}}{\\sqrt{x^2-1}}=1 dans [-3;3]').output).toBe(
+			'S = [-3 ; -1[ ∪ ]1 ; 3]'
+		);
+	});
+
+	it.each([
+		['x=x', 'S = ℝ'],
+		['0=0', 'S = ℝ']
+	])('%s sans intervalle : tout réel', (equation) => {
+		expect(run(`.solve ${equation}`).output).toContain('toute valeur est solution');
+	});
+
+	it('2(x+1)=2x+2 dans [-1;1] : tout l’intervalle', () => {
+		expect(run('.solve 2(x+1)=2x+2 dans [-1;1]').output).toBe('Tous les nombres de [-1 ; 1]');
+	});
+});

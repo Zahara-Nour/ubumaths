@@ -296,6 +296,12 @@ point sur une borne qui l'ouvre — `\frac{2x}{2x}=1 dans [0;1]` → `]0 ; 1]`),
 (« Je ne sais pas encore résoudre ») un domaine à exclusion périodique, qu'`intersect` perdait
 (`\frac{\sin x}{\sin x}=1 dans [-1;3]` gardait 0). Tests :
 `cli/commands/__tests__/identite-dans-intervalle.test.ts`.
+Écart V45 (2026-10-13, en partie) : quand `computeDomain` ne résout pas une contrainte
+(`unresolved` : `x^5 − x + 1 ≠ 0`, deux exclusions périodiques croisées), `solve` le dit dans
+`SolveResult.domainUnresolved` (absent si le domaine est exact) et la console refuse une
+identité sur un tel domaine, avec ou sans `dans`, au lieu de « S = ℝ » ou de tout l'intervalle.
+Reste (V45) : les solutions finies ne sont pas vérifiées contre ces contraintes, et les autres
+lecteurs de `solve` ignorent le champ. Les inéquations ne lisent pas le domaine (V47).
 
 ### Carte du code
 

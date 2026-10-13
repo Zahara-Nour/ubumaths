@@ -1017,6 +1017,16 @@ export class SolveCommand extends BaseCommand {
 				};
 			}
 
+			// Une identité sur un domaine qu'on n'a pas su déterminer
+			// (`\frac{x^5-x+1}{x^5-x+1}=1`) : « S = ℝ » serait faux, on le dit
+			if (result.status === 'infinite' && result.domainUnresolved !== undefined) {
+				return {
+					success: false,
+					output: '',
+					error: { code: EQUATION_UNSOLVED, message: EQUATION_UNSOLVED_MESSAGE }
+				};
+			}
+
 			// Format output with toggle support
 			const formatted = this.formatOutputWithToggle(relation, result, verbosity, ctx);
 			// Les solutions en LaTeX, bâties sur le résultat STRUCTURÉ : le texte
@@ -1176,12 +1186,14 @@ export class SolveCommand extends BaseCommand {
 				// Tout le DOMAINE dans l'intervalle, pas tout l'intervalle :
 				// `\frac{|x|-2}{|x|-2}=1 dans [-5;5]` rendait [-5 ; 5] (écart V43)
 				// Exclusion périodique, condition : `intersect` la perdrait en silence
-				// (sin x / sin x = 1 dans [-1 ; 3] gardait 0) ; on ne sait pas, on le dit
+				// (sin x / sin x = 1 dans [-1 ; 3] gardait 0) ; domaine non déterminé
+				// (x⁵ − x + 1 ≠ 0) : trop grand. On ne sait pas, on le dit
 				const definedOn = whole.domain ?? { kind: 'universal' };
 				if (
-					definedOn.kind !== 'universal' &&
-					definedOn.kind !== 'interval_set' &&
-					definedOn.kind !== 'empty'
+					whole.domainUnresolved !== undefined ||
+					(definedOn.kind !== 'universal' &&
+						definedOn.kind !== 'interval_set' &&
+						definedOn.kind !== 'empty')
 				) {
 					return {
 						success: false,
