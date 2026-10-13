@@ -180,6 +180,7 @@ describe('une ligne revient telle qu’affichée', () => {
 
 		expect(formulas.length).toBeGreaterThan(30);
 		expect(formulas.filter((latex) => !isSafeLatex(latex))).toEqual([]);
+		expect(isSafeLatex(`${'\\frac{'.repeat(10)}x${'}{1}'.repeat(10)}`)).toBe(true);
 	});
 
 	it('ni étapes, ni tableau, ni « Garder » : la ligne restaurée n’a plus l’arbre du résultat', () => {
@@ -407,7 +408,9 @@ const POISONS = [
 	'é\u200D\\\\class{evil}{x}',
 	'\u200D\u200D\\\\cssId{evil}{x}',
 	'\u{1F1EB}\\\\href{https://evil.example}{x}',
-	'x\u2212 1'
+	'x\u2212 1',
+	// 41 niveaux d'accolades : MathLive épuise sa pile vers 400 (audit, mesuré)
+	`${'\\frac{'.repeat(41)}x${'}{1}'.repeat(41)}`
 ];
 
 describe('empoisonnement du stockage', () => {

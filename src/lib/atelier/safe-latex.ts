@@ -75,22 +75,40 @@ const ENVIRONMENT = /\\(?:begin|end)\s*\{([^{}]*)\}/g;
  * Dans cette plage, il lit la chaîne telle quelle, comme ce module. Exclus
  * aussi : les caractères de contrôle et les sauts de ligne.
  */
-const PLAIN = /^[ -~ -ÿ]*$/;
+const PLAIN = /^[\x20-\x7E\xA0-\xFF]*$/;
+
+/**
+ * Imbrication maximale des accolades. Mesuré (audit) : 400 `\frac{` imbriqués
+ * épuisent la pile de MathLive en ~50 ms ; une réponse de Calcul dépasse
+ * rarement 5 niveaux.
+ */
+const MAX_NESTING = 40;
 
 // =============================================================================
 // Fonctions
 // =============================================================================
+
+/** Les accolades sont-elles imbriquées au-delà de `MAX_NESTING` ? (`\{` n'en est pas une) */
+function tooDeep(latex: string): boolean {
+	let depth = 0;
+	for (let i = 0; i < latex.length; i++) {
+		if (latex[i] === '\\') i++;
+		else if (latex[i] === '{' && ++depth > MAX_NESTING) return true;
+		else if (latex[i] === '}') depth--;
+	}
+	return false;
+}
 
 /**
  * La formule n'emploie-t-elle QUE des commandes mathématiques connues ?
  *
  * Refusée aussi : un caractère hors de `PLAIN`, la notation `^^5c` de TeX
  * (MathLive la lit comme un caractère, `\` compris), un `\begin` sans
- * environnement connu. Une formule refusée n'est jamais « réparée » : la ligne
- * se montre en texte.
+ * environnement connu, une imbrication démesurée. Une formule refusée n'est
+ * jamais « réparée » : la ligne se montre en texte.
  */
 export function isSafeLatex(latex: string): boolean {
-	if (!PLAIN.test(latex) || latex.includes('^^')) return false;
+	if (!PLAIN.test(latex) || latex.includes('^^') || tooDeep(latex)) return false;
 	for (const [, name] of latex.matchAll(COMMAND)) {
 		const known = name.length > 1 || /[a-zA-Z]/.test(name) ? MATH_COMMANDS : CONTROL_SYMBOLS;
 		if (!known.has(name)) return false;
