@@ -65,6 +65,17 @@ describe('logError — journal des erreurs', () => {
 		expect(serialized).toContain('[email]@[domain]');
 	});
 
+	it('masque une adresse courriel dans l’URL', async () => {
+		await logError(unusedClient, {
+			error_type: 'client_js',
+			severity: 'error',
+			message: 'Erreur',
+			url: '/auth/login?email=ada@example.com'
+		});
+
+		expect(insertedRow().url).toBe('/auth/login?email=[email]@[domain]');
+	});
+
 	it('échappe le message d’une erreur critique dans la notification aux admins', async () => {
 		await logError(unusedClient, {
 			error_type: 'client_js',

@@ -215,6 +215,11 @@ function sanitizeErrorData(data: LogErrorData): LogErrorData {
 		sanitized.stack_trace = sanitized.stack_trace.replace(EMAIL_PATTERN, EMAIL_MASK);
 	}
 
+	// Une adresse peut aussi venir de l'URL (paramètre de requête)
+	if (sanitized.url) {
+		sanitized.url = sanitized.url.replace(EMAIL_PATTERN, EMAIL_MASK);
+	}
+
 	// Redact email addresses from messages
 	if (sanitized.message) {
 		sanitized.message = sanitized.message.replace(EMAIL_PATTERN, EMAIL_MASK);

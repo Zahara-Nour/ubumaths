@@ -20,13 +20,21 @@ import { logErrorSchema } from '$lib/server/validation/errors';
 
 type PostEvent = Parameters<typeof POST>[0];
 
-function event(body: unknown, user: { id: string } | null): PostEvent {
+function event(
+	body: unknown,
+	user: { id: string } | null,
+	status: 'approved' | 'pending' | null = user ? 'approved' : null
+): PostEvent {
 	return {
 		request: new Request('http://localhost/api/errors/log', {
 			method: 'POST',
 			body: JSON.stringify(body)
 		}),
-		locals: { supabase: {}, safeGetSession: async () => ({ user }) },
+		locals: {
+			supabase: {},
+			safeGetSession: async () => ({ user }),
+			profile: status ? { id: user?.id, status } : null
+		},
 		getClientAddress: () => '127.0.0.1'
 	} as unknown as PostEvent;
 }
@@ -55,7 +63,13 @@ describe('POST /api/errors/log', () => {
 		expect(loggedSeverity()).toBe('error');
 	});
 
-	it('garde « critical » pour un utilisateur connecté', async () => {
+	it('ramène « critical » à « error » pour un compte en attente d’approbation', async () => {
+		await POST(event(CRITICAL, { id: 'u2' }, 'pending'));
+
+		expect(loggedSeverity()).toBe('error');
+	});
+
+	it('garde « critical » pour un compte approuvé', async () => {
 		await POST(event(CRITICAL, { id: 'u1' }));
 
 		expect(loggedSeverity()).toBe('critical');

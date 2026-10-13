@@ -28,9 +28,10 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 		// Get user context if session exists
 		const { user } = await locals.safeGetSession();
 
-		// Une erreur « critical » alerte les admins en urgence : un visiteur sans compte
-		// ne peut pas la déclencher. Son erreur est gardée, en gravité « error ».
-		if (!user && errorData.severity === 'critical') {
+		// Une erreur « critical » alerte les admins en urgence : seul un compte approuvé
+		// peut la déclencher. L'inscription est ouverte et un compte en attente garde
+		// l'accès à cette route : sans approbation, l'erreur est gardée en « error ».
+		if (locals.profile?.status !== 'approved' && errorData.severity === 'critical') {
 			errorData.severity = 'error';
 		}
 		let userContext = {};

@@ -95,14 +95,14 @@ Trois boucles distinctes :
 
 ### Routes `api/errors`
 
-| Route                              | Qui                             | Rôle                                                                                                                 |
-| ---------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `POST /api/errors/log`             | tout le monde, même sans compte | écrit une erreur ; 20 par minute et par IP ; sans compte, `critical` devient `error` ; `context` ≤ 10 000 caractères |
-| `GET /api/errors`                  | admin                           | liste filtrée (`listErrorsQuerySchema`, 100 au plus)                                                                 |
-| `GET`/`PUT /api/errors/[id]`       | admin                           | une erreur ; la marquer résolue                                                                                      |
-| `POST /api/errors/bulk-resolve`    | admin                           | résout par empreinte tout ce qui correspond aux filtres                                                              |
-| `POST /api/errors/delete-resolved` | admin                           | supprime toutes les erreurs résolues (client service)                                                                |
-| `POST /api/errors/cleanup`         | admin                           | supprime les erreurs de plus de N jours (90 par défaut, 365 au plus), trace dans `background_job_runs`               |
+| Route                              | Qui                             | Rôle                                                                                                                          |
+| ---------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `POST /api/errors/log`             | tout le monde, même sans compte | écrit une erreur ; 20 par minute et par IP ; sans compte approuvé, `critical` devient `error` ; `context` ≤ 10 000 caractères |
+| `GET /api/errors`                  | admin                           | liste filtrée (`listErrorsQuerySchema`, 100 au plus)                                                                          |
+| `GET`/`PUT /api/errors/[id]`       | admin                           | une erreur ; la marquer résolue                                                                                               |
+| `POST /api/errors/bulk-resolve`    | admin                           | résout par empreinte tout ce qui correspond aux filtres                                                                       |
+| `POST /api/errors/delete-resolved` | admin                           | supprime toutes les erreurs résolues (client service)                                                                         |
+| `POST /api/errors/cleanup`         | admin                           | supprime les erreurs de plus de N jours (90 par défaut, 365 au plus), trace dans `background_job_runs`                        |
 
 Pages admin : `/dashboard/admin/errors` (statistiques 24 h et occurrences, filtres
 `type`, `severity`, `resolved`, `search` dans l'adresse), `/dashboard/admin/errors/[id]`
@@ -224,7 +224,7 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 
 - `logError` masque les clés sensibles (`password`, `token`, `secret`, `api_key`, `auth`,
   `credential`, `session`, `cookie`, `bearer`) dans en-têtes, corps et contexte, et les
-  adresses mail dans le message, la pile **et toutes les valeurs texte** des en-têtes, du
+  adresses mail dans le message, la pile, l'URL **et toutes les valeurs texte** des en-têtes, du
   corps et du contexte, quel que soit le nom de la clé (depuis le 2026-10-13). Aucun appelant
   ne range plus `user_email` dans le contexte : `user_id` suffit.
 - Une erreur porte `user_id` et `user_role` si l'utilisateur est connecté.
@@ -278,8 +278,8 @@ rapport en UUID. Exceptions : voir Écarts.
 - `src/lib/server/__tests__/bug-report-screenshots.test.ts` : URL signées.
 - `src/routes/api/bug-reports/__tests__/rate-limit.test.ts` : le 11ᵉ signalement reçoit 429.
 - `src/lib/server/__tests__/errorMonitoring-journal.test.ts` : adresses masquées dans le
-  contexte, message de l'alerte critique échappé.
-- `src/routes/api/errors/log/__tests__/log.test.ts` : `critical` ramené à `error` sans compte,
+  contexte et l'URL, message de l'alerte critique échappé.
+- `src/routes/api/errors/log/__tests__/log.test.ts` : `critical` ramené à `error` sans compte approuvé,
   taille du contexte bornée.
 - `tests/integration/database/error-monitoring-triggers.test.ts` : empreinte SHA-256 et
   regroupement en base.
