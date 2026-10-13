@@ -213,7 +213,8 @@ sur tout le domaine : `.taylor … en a`, `.équivalent`.
 **Les suites décidées par David le 2026-10-13** (journal de la phase 0, a-g ; c = futur chantier,
 `f(2x)` reste refusé) : **a)** `.domaine f` d'une fonction à ensemble répond « f est définie sur
 [0 ; +∞[ (ensemble choisi) ; sans ce choix, elle le serait sur ℝ. », sans la seconde moitié quand
-l'ensemble EST le domaine (`chosenDomainAnswer`) ; sans ensemble, rien ne change. **b)**
+l'ensemble EST le domaine, et « (ensemble hérité) … sans cet héritage » pour une fonction qui le
+tient des fonctions qu'elle cite (`chosenDomainAnswer`) ; sans ensemble, rien ne change. **b)**
 `.évaluer f en x=5` et `.intégrer f de a à b` hors de l'ensemble sont refusés comme `f(5)`
 (`valueOutsideRefusal`, `segmentOutsideRefusal` : la borne qui sort, sinon la partie de [a ; b]
 qui sort — un trou d'une réunion). **d)** Une fonction qui CITE une fonction à ensemble en
