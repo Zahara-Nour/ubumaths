@@ -12,7 +12,8 @@
  * - hors des `$…$`, aucun `\`, `^`, `_`, `{`, `}` (LaTeX), `*` (italique
  *   Markdown d'ubumark) ni `~` (formule en syntaxe maison).
  *
- * Le panel couvre les 11 pipelines que `generateCorrection` appelle
+ * Le panel couvre les 11 pipelines que `generateCorrection` appelle, plus la
+ * valeur absolue (que seul l'atelier emploie pour l'instant)
  * (arithmétique, premier et second degré, inéquations du premier et du second
  * degré, rationnelles, dérivation, intégration, simplification, limites,
  * domaine), à chaque niveau accepté : listes ci-dessous et cas de démo des
@@ -39,6 +40,8 @@ import { generateQuadraticEquationSteps } from '../pedagogical-solve/quadratic';
 import { generateQuadraticInequalitySteps } from '../pedagogical-solve/quadratic-inequality';
 import { generateRationalInequalitySteps } from '../pedagogical-solve/rational-inequality';
 import { QuadraticEquationRenderer } from '../pedagogical-solve/quadratic-renderer';
+import { generateAbsoluteValueEquationSteps } from '../pedagogical-solve/absolute-value';
+import { AbsoluteValueEquationRenderer } from '../pedagogical-solve/absolute-value-renderer';
 import { ALL_CATEGORIES as LINEAR_DEMOS } from '../pedagogical-solve/demo-equations';
 import { ALL_CATEGORIES_QUADRATIC as QUADRATIC_DEMOS } from '../pedagogical-solve/demo-equations-quadratic';
 import { generatePedagogicalArithmeticSteps } from '../pedagogical-arithmetic/pipeline';
@@ -169,6 +172,19 @@ const QUADRATIC_EQUATIONS: readonly string[] = [
 	'x^2+2x+5=0',
 	'3x^2-12=0',
 	'4x^2-4x+1=0'
+];
+
+/** Valeur absolue (2026-10-13) : chaque forme de la rédaction, dont l'isolement */
+const ABSOLUTE_VALUE_EQUATIONS: readonly string[] = [
+	'\\left|2x+1\\right|=5',
+	'\\left|x\\right|=0',
+	'\\left|x\\right|=-2',
+	'\\left|x\\right|=\\pi',
+	'\\left|x\\right|=1-\\sqrt{2}',
+	'3\\left|x-1\\right|=6',
+	'5-\\left|x\\right|=2',
+	'\\left|x-1\\right|=\\left|x+3\\right|',
+	'\\left|x-1\\right|=\\left|1-x\\right|'
 ];
 
 const LIMITS: ReadonlyArray<readonly [string, string, ('left' | 'right')?]> = [
@@ -331,6 +347,27 @@ function equationTexts(
 		),
 		...descriptions(where, steps)
 	];
+}
+
+function absoluteValueTexts(): Text[] {
+	const renderer = new AbsoluteValueEquationRenderer();
+	const texts: Text[] = [];
+	for (const level of UPPER_LEVELS) {
+		for (const latex of ABSOLUTE_VALUE_EQUATIONS) {
+			const steps = generateAbsoluteValueEquationSteps(parseLatex(latex) as RelationNode, {
+				level
+			});
+			const where = `${latex} (${level})`;
+			texts.push(
+				...renderedTexts(
+					where,
+					renderer.renderAll(steps, { schoolLevel: level, verbosity: 'detailed' })
+				),
+				...descriptions(where, steps)
+			);
+		}
+	}
+	return texts;
 }
 
 function secondDegreeTexts(): Text[] {
@@ -599,6 +636,7 @@ describe('prose des étapes : les maths entre $…$ (V25)', () => {
 		expect(derivativeTexts().length).toBeGreaterThan(100);
 		expect(linearTexts().length).toBeGreaterThan(100);
 		expect(secondDegreeTexts().length).toBeGreaterThan(200);
+		expect(absoluteValueTexts().length).toBeGreaterThan(100);
 		expect(arithmeticTexts().length).toBeGreaterThan(200);
 		expect(simplifyTexts().length).toBeGreaterThan(100);
 		expect(limitTexts().length).toBeGreaterThan(100);
@@ -620,6 +658,10 @@ describe('prose des étapes : les maths entre $…$ (V25)', () => {
 
 	it('second degré : équations, inéquations du second degré et rationnelles', () => {
 		expect(failures(secondDegreeTexts())).toEqual([]);
+	});
+
+	it('valeur absolue : |u| = c, isolement, |u| = |v|, lycée et supérieur', () => {
+		expect(failures(absoluteValueTexts())).toEqual([]);
 	});
 
 	it('arithmétique : les cas de démo, à chaque niveau', () => {

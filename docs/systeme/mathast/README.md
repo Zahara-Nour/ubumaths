@@ -253,8 +253,27 @@ u = v ou u = −v, identité comprise (`|x − 1| = |1 − x|` → tout réel). 
 bord juste : les décompositions qui rappellent `solve` (`\ln|x| = 1`, `\sqrt{|x|} = 2`) et les
 inéquations affines (`|x| < 3`, tableau de signes de |u| − c une fois ses zéros trouvés) se
 concluent. ⚠️ Le parseur refuse un coefficient collé à `|` (`2|x|`, « Unexpected token: | ») ;
-`2\left|x\right|` se lit. Pas d'étapes rédigées (`pedagogical-solve` ne connaît pas la valeur
-absolue). Tests : `solve/__tests__/valeur-absolue.test.ts`.
+`2\left|x\right|` se lit. Tests : `solve/__tests__/valeur-absolue.test.ts`.
+
+**Ce que voit l'élève (2026-10-13, atelier seulement).** `generateEquationSteps` envoie toute
+équation où l'inconnue paraît sous une valeur absolue vers `pedagogical-solve/absolute-value.ts`
+(`equationType: 'absolute-value'`, rendu par `AbsoluteValueEquationRenderer`). La forme est lue
+par `analyzeAbsoluteValue`, la même analyse que `tryAbsoluteValue` : même périmètre, refus
+(`UnsupportedAbsoluteValueEquation`) ailleurs, et l'ensemble conclu est celui de `solve`.
+Rédaction validée par David : « Équation avec une valeur absolue » → « On isole la valeur
+absolue » si besoin (`3\left|x-1\right| = 6` ⇒ `|x − 1| = 2`) → « Deux nombres ont pour valeur
+absolue $5$ : $5$ et $-5$ » (`|2x + 1| = 5 ⇔ 2x + 1 = 5 ou 2x + 1 = −5`), « Seul $0$ a pour
+valeur absolue $0$ », ou « Une valeur absolue est positive ou nulle » (c < 0, puis `S = ∅`) ;
+|u| = |v| : « Deux nombres ont la même valeur absolue s'ils sont égaux ou opposés ». Chaque
+équation du premier degré est résolue À PLAT (« On résout $2x + 1 = 5$ » puis les étapes du
+pipeline linéaire, sans son titre ni son `S`), une branche dégénérée se conclut (`0 = 4` sans
+solution, `0 = 0` tout réel), puis `S = {…}` ou `S = ℝ` (`read-all-reals`). L'atelier choisit le
+renderer par un `switch` exhaustif (`rendererFor`, `atelier/solve-steps.ts`) — l'ancien
+`linear ? Linear : Quadratic` annonçait `|2x+1|=5` « Équation du second degré » — et son
+garde-fou vérifie `S = ℝ` contre le moteur (`solve-steps-check.ts`, qui ne prend plus un échec
+du moteur, statut `no-solution` + `error`, pour un ∅). Les modèles de questions n'ont pas encore
+de `generatedSteps.kind` pour la valeur absolue (PR suivante). Tests :
+`pedagogical-solve/__tests__/valeur-absolue.test.ts`, `atelier/__tests__/resoudre-valeur-absolue.test.ts`.
 
 ### Carte du code
 

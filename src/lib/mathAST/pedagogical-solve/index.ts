@@ -6,7 +6,8 @@
  * should import from here rather than reaching into individual files.
  *
  * Exposes :
- * - `generateEquationSteps(eq, options)` — auto-dispatch on polynomial degree
+ * - `generateEquationSteps(eq, options)` — une valeur absolue de l'inconnue
+ *   part vers `absolute-value.ts` ; sinon auto-dispatch on polynomial degree
  *   to the linear or quadratic pipeline. Bumps under-curriculum levels
  *   (`primaire` for linear, `primaire`+`college` for quadratic).
  * - The individual `generateLinearEquationSteps` and
@@ -23,6 +24,7 @@ import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import { canon } from './_helpers';
 import { generateLinearEquationSteps } from './linear';
 import { generateQuadraticEquationSteps, PedagogicalQuadraticNotImplemented } from './quadratic';
+import { generateAbsoluteValueEquationSteps, hasAbsoluteValueOf } from './absolute-value';
 import type {
 	EquationStep,
 	LinearEquationStepsOptions,
@@ -107,6 +109,11 @@ export function generateEquationSteps(
 	const variable = options.variable ?? detectVariable(equation);
 	if (variable === null) {
 		throw new Error('generateEquationSteps: cannot detect a single variable');
+	}
+
+	// |u| = c, |u| = |v| : le degré n'est pas défini, le pipeline est à part
+	if (hasAbsoluteValueOf(equation, variable)) {
+		return generateAbsoluteValueEquationSteps(equation, { level: options.level, variable });
 	}
 
 	const standardForm = canon(addNode(equation.left, opposite(equation.right)));
@@ -273,6 +280,11 @@ export {
 export { UndevelopedLinearForm } from './_helpers';
 export { LinearEquationRenderer, formatTransformationLines } from './linear-renderer';
 export { QuadraticEquationRenderer } from './quadratic-renderer';
+export { AbsoluteValueEquationRenderer } from './absolute-value-renderer';
+export {
+	generateAbsoluteValueEquationSteps,
+	UnsupportedAbsoluteValueEquation
+} from './absolute-value';
 
 // Le tableau de signes comme DONNÉE : le `\begin{array}` et le tableau de
 // l'application en dérivent tous deux, pour qu'ils ne divergent jamais.
