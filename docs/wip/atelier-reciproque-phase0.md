@@ -87,3 +87,11 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
 ## Journal
 
 - 2026-10-13 — phase 0 écrite ; R1-R4 tranchées ; Q5 = (b) ; phase 0 validée (« ok pour la phase 0 »).
+- 2026-10-13 — **lot 1 MERGÉ (#1302)** : `solve(y = f(x), x)` avec second membre littéral (exp, ln,
+  log_b, racine d'indice n, base constante ; substitution u = eˣ), condition sur le paramètre dans
+  `Solution.condition` ; bug de main `\log_2(x)=3` → 1000 corrigé (→ 8). Deux revues avec
+  vérification numérique : aucune réponse fausse. Restent (refus honnêtes, comme sur main) :
+  `y = eˣ + e⁻ˣ`, `y = e^{2x}/(eˣ − 2)` (le domaine de la valeur ne se résout pas → `definedFor`
+  refuse) ; plusieurs lettres ; coefficient littéral devant ln/cos/sin ; `y = x eˣ`. Écritures à
+  mettre au propre au lot 2 (`ln(y/3 + 1/3)` → `ln((y+1)/3)`, `(1/2)^a`). **Question à David** :
+  `ax = 1` → `1/a` et `e^{ax} = 2` → `ln 2 / a` sans « si a ≠ 0 » (convention V41, déjà sur main).
