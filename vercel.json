@@ -5,7 +5,7 @@
 			"production": true
 		}
 	},
-	"crons": [],
+	"crons": [{ "path": "/api/cron/deleted-account-files", "schedule": "0 4 * * 0" }],
 	"ignoreCommand": "bash scripts/vercel-ignore-build.sh",
 	"headers": [
 		{

@@ -74,6 +74,7 @@ export type Database = {
           ip_address: unknown
           requested_at: string
           status: string
+          storage_removed_at: string | null
           user_agent: string | null
           user_id: string | null
         }
@@ -86,6 +87,7 @@ export type Database = {
           ip_address?: unknown
           requested_at?: string
           status: string
+          storage_removed_at?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
@@ -98,6 +100,7 @@ export type Database = {
           ip_address?: unknown
           requested_at?: string
           status?: string
+          storage_removed_at?: string | null
           user_agent?: string | null
           user_id?: string | null
         }

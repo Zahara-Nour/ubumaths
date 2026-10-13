@@ -236,13 +236,19 @@ Cet index cite chaque module sans le décrire : il ne le couvre pas pour la gard
 | `buddy-xp-service.ts`       | Orchestration des gains d'XP du compagnon                                                 | `riddles/[id]`, `student/buddy`, `api/tests/save`         | `evaluation-attempts.ts`               | [buddy-palotins.md](buddy-palotins.md)     |
 | `buddy-xp.ts`               | Réexport de `src/lib/utils/buddy-xp.ts` côté serveur                                      | —                                                         | `buddy-xp-service.ts`                  | [buddy-palotins.md](buddy-palotins.md)     |
 
-**Total : 99 modules indexés** (recompté le 2026-10-12). Sans appelant hors tests : **`csrfProtection.ts`**, **`profanity-filter.ts`**, et, à l'intérieur des dossiers, **`auth/cron.ts`** (`verifyCronAuth`, testé, appelé par aucune route). `migration/publication.ts` et `migration/review-db.ts` ne sont appelés que par des scripts (`scripts/migrate-questions-phase1.ts`, `scripts/record-review.ts`, `scripts/import-reviewed-questions.ts`).
+**Total : 99 modules indexés** (recompté le 2026-10-12). Sans appelant hors tests : **`csrfProtection.ts`**, **`profanity-filter.ts`**, et, à l'intérieur des dossiers, aucun autre (`auth/cron.ts` est appelé par `api/cron/deleted-account-files` depuis le 2026-10-13). `migration/publication.ts` et `migration/review-db.ts` ne sont appelés que par des scripts (`scripts/migrate-questions-phase1.ts`, `scripts/record-review.ts`, `scripts/import-reviewed-questions.ts`).
 
 ---
 
 ## 3. Tâches planifiées
 
-Aucune tâche planifiée côté Vercel : `vercel.json` déclare `"crons": []`. Le travail périodique vit dans **pg_cron**, programmé **hors migrations** (le baseline crée l'extension et la vue `admin_pg_cron_jobs`, pas les jobs). État en production, lu le 2026-10-10 (`cron.job`, MCP Supabase en lecture seule) :
+**Une seule tâche planifiée côté Vercel** (2026-10-13) : `/api/cron/deleted-account-files`,
+le dimanche à 04:00 UTC (`vercel.json`), qui retire du storage les fichiers des comptes supprimés
+(`src/lib/server/deleted-account-files.ts`) ; le SQL ne peut pas toucher au storage
+(`protect_objects_delete`, pas de `pg_net`). Elle s'authentifie par `Bearer CRON_SECRET` seul
+(`verifyCronAuth`, `src/lib/server/auth/cron.ts`) : Vercel envoie ce jeton à ses crons, et
+l'en-tête `x-vercel-cron`, que n'importe qui peut envoyer, n'ouvre plus rien. Le reste du
+travail périodique vit dans **pg_cron**, programmé **hors migrations** (le baseline crée l'extension et la vue `admin_pg_cron_jobs`, pas les jobs). État en production, lu le 2026-10-10 (`cron.job`, MCP Supabase en lecture seule) :
 
 | Job pg_cron                         | Planning (UTC) | Fonction                                      |
 | ----------------------------------- | -------------- | --------------------------------------------- |

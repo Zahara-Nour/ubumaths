@@ -138,6 +138,7 @@ describe('ALLOWED_JOB_PATHS', () => {
 	it('should be immutable (readonly)', () => {
 		// TypeScript should prevent mutation at compile time
 		// This test just verifies the array has the expected length
-		expect(ALLOWED_JOB_PATHS.length).toBe(8);
+		expect(ALLOWED_JOB_PATHS.length).toBe(9);
+		expect(ALLOWED_JOB_PATHS).toContain('/api/cron/deleted-account-files');
 	});
 });
