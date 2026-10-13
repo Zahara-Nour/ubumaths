@@ -10,8 +10,8 @@ Redraw, in Shantell's hand, symbols that Shantell Sans does not have:
 - ↦ is Shantell's → (already in the font), lengthened, with a bar;
 - ∪ ∩ are a hand-drawn U and its mirror image;
 - ⇒ ⟹ ⇔ ⟺ have two shafts and the short open head of Shantell's →;
-- ℕ ℤ ℚ ℝ ℂ are Shantell's N Z Q R C with one stroke doubled, as they are
-  handwritten: the stem of N and R, the diagonal of Z, the inner left side of
+- ℚ ℂ are Shantell's Q C with one stroke doubled, as they are handwritten (ℕ ℤ ℝ
+  are drawn by blackboard_letters.py): the inner left side of
   Q and C. The stroke to double is measured on the letter itself.
 
 Centre lines are stroked with the width of Shantell's letters, inside the box
@@ -372,7 +372,8 @@ def main() -> None:
     path = OUTPUT_DIR / f"{name}.woff2"
     font = TTFont(path)
     reference = TTFont(ORIGINAL_DIR / f"{name}.woff2")
-    for char in "NZQRC":
+    # ℕ ℤ ℝ : tracés en traits souples par blackboard_letters.py
+    for char in "QC":
         box, advance = reference_glyph(reference, ord(char))
         put_glyph(font, ord(char), blackboard_letter(source, char, box, advance), advance)
     for char, mirror, bar in [("⊊", False, "neq"), ("⊋", True, "neq"), ("⊈", False, "not"), ("⊉", True, "not")]:
@@ -380,7 +381,7 @@ def main() -> None:
         put_glyph(font, ord(char), subset(source, box, mirror, bar), advance)
     font.flavor = "woff2"
     font.save(path)
-    print(f"{name}: ℕ ℤ ℚ ℝ ℂ ⊊ ⊋ ⊈ ⊉ -> {path.relative_to(REPO_ROOT)}")
+    print(f"{name}: ℚ ℂ ⊊ ⊋ ⊈ ⊉ -> {path.relative_to(REPO_ROOT)}")
 
 
 if __name__ == "__main__":
