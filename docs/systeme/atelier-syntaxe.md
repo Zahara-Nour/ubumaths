@@ -51,6 +51,10 @@ L'expression s'arrête au **premier mot-clé**. Un mot-clé est un mot entier, e
   fonction sur un intervalle (`f(x) = x^2 sur [0;+∞[`), pas `dans`. Il est CROISÉ avec l'ensemble
   de la carte f (vide → refus). Sur une fonction de l'atelier, crée ou met à jour la carte `f⁻¹` ;
   sur une expression, la ligne seule. Sans « sur » : l'ensemble de f, sinon son domaine.
+- **`f⁻¹`** (décision (1) de David, 2026-10-13) : `f^-1`, `f^{-1}`, `f^(-1)` ou `f⁻¹`, f une
+  fonction de l'atelier, désigne sa réciproque, calculée à la volée (sans carte) : `f⁻¹(5)`,
+  `.variations f⁻¹`, `.dériver f⁻¹`, `.résoudre f⁻¹(x)=2`, `g(x) = f⁻¹(x)`. L'inverse 1/f s'écrit
+  `1/f(x)` ou `f(x)^-1` ; `x^-1`, `2^-1`, `a^-1` (a une valeur) sont des puissances.
 - **Variable** : voir la question 1 ci-dessous.
 
 ### Commandes de probabilités et de statistiques
