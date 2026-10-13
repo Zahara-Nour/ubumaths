@@ -301,7 +301,11 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   (`.select('id')`). Même chose pour `DELETE /api/moderation/messages/[id]` et l'action
   `deleteFriendship` de `admin/friendships` (commentaire « `.select()` n'est pas décoratif »).
 - `restrict-user/` fait `.insert(...).select().single()`.
-- Ce n'est **pas** le cas partout : voir Écarts.
+- `unrestrict-user/` (`.delete().select('id')`, 403 sur zéro ligne), `DELETE /api/messages/[id]`
+  (403 côté expéditeur, 404 sans entrée de boîte de réception) et l'action `toggleRead` de
+  `PATCH /api/messages/[id]` (404 sans entrée, 403 sinon) vérifient les lignes rendues.
+- `reports/[id]/` lit le signalement avant la RPC `review_report` (qui rend `void` et ne compte
+  pas les lignes) : un identifiant inconnu rend 404.
 
 ### Zod
 
@@ -332,6 +336,10 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
   `src/routes/api/moderation/messages/__tests__/messages-delete.test.ts`,
   `src/routes/api/moderation/restrict-user/__tests__/restrict-user.test.ts`,
   `src/routes/api/moderation/unrestrict-user/__tests__/unrestrict-user.test.ts`.
+- Écritures vérifiées (zéro ligne touchée n'annonce pas un succès) :
+  `src/routes/api/messages/[id]/__tests__/write-verdict.test.ts`,
+  `src/routes/api/moderation/unrestrict-user/__tests__/write-verdict.test.ts`,
+  `src/routes/api/moderation/reports/[id]/__tests__/write-verdict.test.ts` (signalement inconnu → 404).
 - Serveur : `src/lib/server/__tests__/delete-notification.test.ts`,
   `notifications-pagination.test.ts`, `notifications-pagination-logic.test.ts`,
   `system-notifications.test.ts`, `student-inbox.test.ts` (même dossier).
@@ -376,22 +384,12 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
   sophistiqué » qui n'existe pas.
 - **Dépendance `bad-words` orpheline** : seul `profanity-filter.ts`, retiré le 2026-10-13, l'importait ;
   elle reste dans `package.json`.
-- **Levée de restriction non vérifiée.** `unrestrict-user/` fait `.delete()` sans `.select()` :
-  un refus de la RLS (0 ligne, pas d'erreur) rendrait « succès », et l'élève resterait restreint
-  alors que le prof croit la restriction levée.
-- **`review_report` ne vérifie pas que le signalement existe** : un identifiant inconnu rend
-  succès (UPDATE de zéro ligne).
 - **Mentions factices dans l'éditeur riche.** `src/lib/stores/mentions.svelte.ts` propose une
   liste en dur (« Alice Dupont », « Bob Durand »…) ; l'extension `Mention` est active dans
   `editor-config.ts`. Aucune vraie personne, mais des noms inventés offerts à l'autocomplétion.
 - **Un expéditeur peut réécrire un message privé envoyé** : policy « Senders can edit their
   messages » (UPDATE de `private_messages` sur `sender_id`, sans liste de colonnes). Aucun
   écran ne le fait ; un appel direct le peut.
-
-### Écritures sans `.select()`
-
-- `DELETE /api/messages/[id]` (`deleted_by_sender`, `message_inbox.deleted`) et l'action
-  `toggleRead` de `PATCH /api/messages/[id]` : `.update()` sans vérifier les lignes rendues.
 
 ### Code mort ou sans appelant
 
