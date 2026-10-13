@@ -136,7 +136,7 @@ Aucun ADR ne porte sur la migration elle-même. Deux la touchent :
 
 ## Écarts connus
 
-Constatés le 2026-10-13, **non corrigés**.
+Constatés le 2026-10-13, **non corrigés, et à ne pas corriger** : la migration est terminée ; David garde les scripts en l'état, au cas où (décision du 2026-10-13). Ne pas les reproposer comme chantier.
 
 - **`POST /api/migration/batch/approve` n'écrit rien.** Il vérifie les numéros et répond « approuvé » (`// TODO: Phase 4 - Store approval in database`). L'en-tête dit « updates in-memory state » : il n'y a pas d'état. Aucun écran ne l'appelle.
 - **Approve laisse passer une transformation ratée.** La route teste `!questionData.transformed`, mais `transformQuestion` rend un objet `{ success: false }` sans lancer : la garde ne voit que les exceptions. Même garde dans `batch/approve`. Les tests mockent `transformed: { id: 'test' }`, une forme que le code réel ne rend jamais.
