@@ -7,6 +7,9 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/srs/decks/+page.server');
 
 export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -39,7 +42,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			.order('created_at', { ascending: false });
 
 		if (decksError) {
-			console.error('Error fetching decks:', decksError);
+			logger.error('Error fetching decks:', decksError);
 			throw error(500, 'Failed to load decks');
 		}
 
@@ -58,7 +61,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 				});
 
 				if (statsError) {
-					console.error(`Error fetching stats for deck ${deck.id}:`, statsError);
+					logger.error(`Error fetching stats for deck ${deck.id}:`, statsError);
 					// Return deck without stats on error
 					return {
 						id: deck.id,
@@ -109,7 +112,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 			decks: decksWithStats
 		};
 	} catch (err) {
-		console.error('Error in teacher decks page load:', err);
+		logger.error('Error in teacher decks page load:', err);
 		throw error(500, 'Internal server error');
 	}
 };

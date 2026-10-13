@@ -5,6 +5,9 @@
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/constructions/+page.server');
 
 /**
  * Une ligne de la liste des constructions.
@@ -55,7 +58,7 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 		.order('created_at', { ascending: false });
 
 	if (constructionsError) {
-		console.error('Error fetching constructions:', constructionsError);
+		logger.error('Error fetching constructions:', constructionsError);
 		throw error(500, 'Erreur lors du chargement des constructions');
 	}
 

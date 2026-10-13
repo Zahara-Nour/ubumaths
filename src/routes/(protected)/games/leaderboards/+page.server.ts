@@ -15,6 +15,9 @@ import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { gameLeaderboardQuerySchema } from '$lib/server/validation/games';
 import type { GameLeaderboardRow, MinesweeperLeaderboardRow } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/games/leaderboards/+page.server');
 
 export const load: PageServerLoad = async ({ url, locals, parent }) => {
 	const { supabase } = locals;
@@ -47,7 +50,7 @@ export const load: PageServerLoad = async ({ url, locals, parent }) => {
 	});
 
 	if (rpcError) {
-		console.error('[Leaderboards] game_leaderboard RPC error:', rpcError);
+		logger.error('[Leaderboards] game_leaderboard RPC error:', rpcError);
 		throw error(500, 'Impossible de charger le classement');
 	}
 
@@ -61,7 +64,7 @@ export const load: PageServerLoad = async ({ url, locals, parent }) => {
 			p_limit: limit
 		});
 		if (msError) {
-			console.error('[Leaderboards] minesweeper_scoped_leaderboard RPC error:', msError);
+			logger.error('[Leaderboards] minesweeper_scoped_leaderboard RPC error:', msError);
 			// Non-blocking: the unified ranking above is already loaded.
 		} else {
 			minesweeperDetail = msData ?? [];

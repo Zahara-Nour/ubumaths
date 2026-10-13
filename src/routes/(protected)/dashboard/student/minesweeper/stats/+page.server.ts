@@ -9,6 +9,9 @@
 
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/minesweeper/stats/+page.server');
 
 type GameStats = {
 	difficulty: 'beginner' | 'intermediate' | 'expert';
@@ -163,7 +166,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 		// ne doit pas se confondre avec une donnée réellement vide.
 		if (schoolDataError && schoolDataError.code !== 'PGRST116') {
-			console.error('Contexte illisible :', schoolDataError);
+			logger.error('Contexte illisible :', schoolDataError);
 		}
 
 		const school = (
@@ -190,7 +193,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 		// ne doit pas se confondre avec une donnée réellement vide.
 		if (classementError) {
-			console.error('Contexte illisible :', classementError);
+			logger.error('Contexte illisible :', classementError);
 		}
 
 		const lignesClassement = classement ?? [];
@@ -207,7 +210,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.order('created_at', { ascending: false });
 
 		if (gamesError) {
-			console.error('[Stats] Error fetching games:', gamesError);
+			logger.error('[Stats] Error fetching games:', gamesError);
 			throw gamesError;
 		}
 
@@ -411,7 +414,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			currentUserId: user.id
 		};
 	} catch (err) {
-		console.error('[Stats] Error loading stats:', err);
+		logger.error('[Stats] Error loading stats:', err);
 		throw error(500, 'Impossible de charger les statistiques');
 	}
 };

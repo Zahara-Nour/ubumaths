@@ -16,6 +16,11 @@ import type { PageServerLoad } from './$types';
 import { resolve } from '$app/paths';
 import { requireRole } from '$lib/server/middleware/auth';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/student/worksheets/exercice/[id]/+page.server'
+);
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	await requireRole(locals, 'student');
@@ -29,7 +34,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.maybeSingle();
 
 	if (linkError) {
-		console.error('[worksheet-exercise/élève] résolution impossible:', linkError);
+		logger.error('[worksheet-exercise/élève] résolution impossible:', linkError);
 		throw error(500, 'Erreur lors de la résolution de la référence');
 	}
 
@@ -49,7 +54,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.maybeSingle();
 
 	if (assignmentError) {
-		console.error('[worksheet-exercise/élève] distribution introuvable:', assignmentError);
+		logger.error('[worksheet-exercise/élève] distribution introuvable:', assignmentError);
 		throw error(500, 'Erreur lors de la résolution de la référence');
 	}
 

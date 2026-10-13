@@ -8,6 +8,11 @@
 
 import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/gamification/buddies/+page.server'
+);
 
 export interface ClassBuddyData {
 	classId: string;
@@ -45,7 +50,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (classesError || !classes) {
-		console.error('[buddies] Error fetching classes:', classesError);
+		logger.error('[buddies] Error fetching classes:', classesError);
 		return { classesData: [] };
 	}
 
@@ -77,7 +82,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.eq('status', 'active');
 
 		if (membersError) {
-			console.error(`[buddies] Error fetching members for class ${cls.id}:`, membersError);
+			logger.error(`[buddies] Error fetching members for class ${cls.id}:`, membersError);
 			continue;
 		}
 

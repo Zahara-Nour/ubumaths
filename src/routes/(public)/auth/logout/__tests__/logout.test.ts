@@ -23,7 +23,7 @@ vi.mock('$lib/server/adminElevation', async (importOriginal) => {
 });
 
 vi.mock('$lib/utils/logger', () => ({
-	createLogger: () => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() })
+	createServerLogger: () => ({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() })
 }));
 
 import { POST } from '../+server';

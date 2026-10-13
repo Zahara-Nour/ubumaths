@@ -19,6 +19,9 @@ import type {
 	SubdimensionLetter,
 	ValidatedObservables
 } from '$lib/types/skills';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/competences/[code]/+page.server');
 
 export interface ObservableState {
 	skill_id: string;
@@ -95,7 +98,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Competen
 		.in('observable_id', allSkillIds);
 
 	if (obsStateError) {
-		console.error('Lecture impossible :', obsStateError);
+		logger.error('Lecture impossible :', obsStateError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -124,7 +127,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<Competen
 	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 	// ne doit pas se confondre avec une donnée réellement vide.
 	if (levelError && levelError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', levelError);
+		logger.error('Contexte illisible :', levelError);
 	}
 
 	const subdimensions: SubdimensionWithObservables[] = (comp.subdimensions ?? [])

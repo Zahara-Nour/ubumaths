@@ -14,6 +14,9 @@ import { initEnv } from '$lib/server/env';
 import { getUserProfile } from '$lib/server/auth';
 import { mustStayPrivate, PRIVATE_NO_STORE } from '$lib/server/private-response';
 import { csrfHandle } from '$lib/server/csrfHandle';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('hooks.server');
 
 // ====================================================================
 // Environment Variable Validation
@@ -23,7 +26,7 @@ try {
 	initEnv();
 } catch (err) {
 	const errorMessage = err instanceof Error ? err.message : String(err);
-	console.error('Failed to initialize environment:', errorMessage);
+	logger.error('Failed to initialize environment:', errorMessage);
 	// Application won't start with invalid env vars in production
 	// In development, validation errors are logged but execution continues
 }
@@ -177,7 +180,7 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 			// Sign out and redirect - this prevents "Unexpected token '<'" errors
 			// during client-side navigation when pages try to redirect with HTML response
 			if (!event.locals.profile) {
-				console.error('[userProfileHandle] Profile not found for authenticated user:', user.id);
+				logger.error('[userProfileHandle] Profile not found for authenticated user:', user.id);
 
 				// Log to error_logs table for admin visibility
 				try {
@@ -193,7 +196,7 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 						}
 					});
 				} catch (logErr) {
-					console.error('[userProfileHandle] Failed to log error:', logErr);
+					logger.error('[userProfileHandle] Failed to log error:', logErr);
 				}
 
 				// Sign out and redirect to login
@@ -208,7 +211,7 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 
 			// Log the error
 			const errorMessage = err instanceof Error ? err.message : String(err);
-			console.error('[userProfileHandle] Failed to fetch profile for user:', user.id, errorMessage);
+			logger.error('[userProfileHandle] Failed to fetch profile for user:', user.id, errorMessage);
 
 			// Log to error_logs table for admin visibility
 			try {
@@ -225,7 +228,7 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 					}
 				});
 			} catch (logErr) {
-				console.error('[userProfileHandle] Failed to log error:', logErr);
+				logger.error('[userProfileHandle] Failed to log error:', logErr);
 			}
 
 			// Sign out and redirect to login - this prevents "Unexpected token '<'" errors
@@ -303,7 +306,7 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 				} catch (error) {
 					// Silently fail - don't let logging errors break the app
 					if (dev) {
-						console.error('Error logging slow request:', error);
+						logger.error('Error logging slow request:', error);
 					}
 				}
 			});
@@ -346,7 +349,7 @@ const errorMonitoringHandle: Handle = async ({ event, resolve }) => {
 
 		// Log to console in development
 		if (dev) {
-			console.error('[Server Error]', {
+			logger.error('[Server Error]', {
 				url: event.url.pathname,
 				method: event.request.method,
 				error: errorMessage

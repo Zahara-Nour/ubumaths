@@ -45,14 +45,25 @@ ni les déplacements refusés ni le retour donné à l'élève.
 | G8  | **Pas de nouvelle ligne** pour l'instant : l'expression change en place.                                                                                                                                                                                                                            |
 | G9  | **Comme Algebria** : pendant le glisser, un **espace s'ouvre** là où l'expression peut être posée, sous forme d'un bloc qui apparaît de façon **fluide** ; **toute l'expression adapte sa taille** ; le bloc **disparaît** si l'on continue à glisser plus loin (il se rouvre à la place suivante). |
 
-Conséquence technique (G9) : MathLive rend une formule figée, sans animation. Piste : rendre de
-nouveau la formule avec un emplacement vide (`\phantom` du terme) à la place visée, et animer le
-passage d'un rendu à l'autre en mesurant la position de chaque sous-expression avant et après (les
-marqueurs `ubs-n<id>` le permettent) puis en les faisant glisser en CSS. À éprouver sur une démo
-jetable (Chromium et WebKit, fractions comprises) avant la spécification.
+### G9 : comment rendre l'expression malléable pendant le glisser (2026-10-13)
+
+Idée de David : au début du glisser, remplacer le rendu de MathLive par quelque chose de plus
+simple et malléable, puis revenir à MathLive au lâcher. Aujourd'hui la formule explorée est un
+`math-span` (rendu dans un shadow DOM, figé). Trois façons de le faire :
+
+| Piste                                         | Principe                                                                                                                                                                                                   | Pour                                                                                                    | Contre                                                                                                                          |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Nos propres blocs HTML                     | chaque sous-expression devient une boîte CSS ; l'espace est une boîte dont la largeur s'anime ; le navigateur recalcule tout à chaque image (comme Algebria, qui avait son propre moteur)                  | fluidité native ; une barre de fraction s'allonge seule                                                 | refaire la typographie de MathLive (fractions, exposants, racines, parenthèses extensibles) ; écart de rendu visible au passage |
+| 2. Calque de morceaux, positions par MathLive | on découpe le rendu en morceaux (glyphes, barres), MathLive calcule hors écran le rendu visé, on anime les morceaux d'une position à l'autre                                                               | exact au départ et à l'arrivée                                                                          | beaucoup de comptabilité : suivre chaque glyphe d'un rendu à l'autre, signes qui apparaissent ou disparaissent                  |
+| 3. MathLive redessine à chaque image          | on passe du `math-span` au rendu statique de MathLive dans la page (`convertLatexToMarkup`, déjà utilisé par l'Atelier) ; à chaque image, un `\hspace` grandit à la place visée et se referme à l'ancienne | chaque image est un vrai rendu MathLive (fractions, racines s'élargissent juste) ; aucun saut au retour | un rendu par image : coût à mesurer, surtout sur Safari et iPad                                                                 |
+
+Recommandation : **piste 3**, éprouvée par une démo jetable qui mesure le temps d'un rendu par
+image (objectif : moins de 8 ms) sur Chromium et WebKit, avec une expression lourde (fraction dont
+le numérateur est une somme). Repli si trop lent : piste 2.
 
 ## Journal
 
 - 2026-10-13 — ouverture : lecture de l'article Algebria, inventaire de l'existant, questions
   G1-G10. Aucun code, aucun test.
 - 2026-10-13 — G8 et G9 tranchées par David ; G1-G7 et G10 encore ouvertes.
+- 2026-10-13 — G9 : idée de David (rendu malléable pendant le glisser) ; trois pistes comparées, piste 3 recommandée, démo à valider.

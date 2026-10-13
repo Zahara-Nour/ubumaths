@@ -4,6 +4,11 @@ import { error, redirect } from '@sveltejs/kit';
 import { getTeacherTestMode } from '$lib/server/test-mode';
 import { RIDDLE_COLUMNS, toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
 import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/enigmes/validations/+page.server'
+);
 
 /**
  * Load pending manual validations for teacher
@@ -41,7 +46,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.order('created_at', { ascending: true });
 
 	if (attemptsError) {
-		console.error('Error fetching pending validations:', attemptsError);
+		logger.error('Error fetching pending validations:', attemptsError);
 		throw error(500, 'Erreur lors du chargement des validations en attente');
 	}
 
@@ -51,7 +56,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	);
 
 	if (solutionsError) {
-		console.error('Error fetching riddle solutions:', solutionsError);
+		logger.error('Error fetching riddle solutions:', solutionsError);
 		throw error(500, 'Erreur lors du chargement des validations en attente');
 	}
 

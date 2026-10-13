@@ -8,6 +8,11 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { requireTeacherOfClass } from '$lib/server/stats/teacher-class-auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/classes/[classId]/analytics/+page.server'
+);
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const classId = params.classId;
@@ -26,7 +31,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Cette liste borne la portée du classement. Vidée par une panne, elle
 	// affiche un classement amputé sans le dire.
 	if (memberRowsError) {
-		console.error('Périmètre illisible :', memberRowsError);
+		logger.error('Périmètre illisible :', memberRowsError);
 		throw error(500, 'Impossible de déterminer le périmètre');
 	}
 
@@ -51,7 +56,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.order('display_order', { ascending: true });
 
 	if (themeRowsError) {
-		console.error('Lecture impossible :', themeRowsError);
+		logger.error('Lecture impossible :', themeRowsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -70,7 +75,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			.in('student_id', studentIds)
 			.eq('resolved', false);
 		if (flagsCountError) {
-			console.error('Compteur de signalements illisible :', flagsCountError);
+			logger.error('Compteur de signalements illisible :', flagsCountError);
 			unresolvedFlagsCount = null;
 		} else {
 			unresolvedFlagsCount = count ?? 0;

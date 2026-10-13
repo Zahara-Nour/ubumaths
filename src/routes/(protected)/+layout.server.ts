@@ -49,17 +49,17 @@
 import type { LayoutServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/auth';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { logError } from '$lib/server/errorMonitoring';
 import { getConsentStatus, type ConsentProfile } from '$lib/utils/consent';
 
-const logger = createLogger('(protected)/+layout.server.ts');
+const logger = createServerLogger('(protected)/+layout.server.ts');
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	// User and profile are already loaded in locals by userProfileHandle (hooks.server.ts)
 	const { user, profile } = locals;
 
-	console.log('🎨 [PROTECTED LAYOUT SERVER] Exécution');
+	logger.info('🎨 [PROTECTED LAYOUT SERVER] Exécution');
 
 	// Require authentication for ALL routes in (protected) group
 	// If user is null, requireAuth() throws a redirect to /login
@@ -91,7 +91,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 				}
 			});
 		} catch (logErr) {
-			console.error('[protected layout] Failed to log error:', logErr);
+			logger.error('[protected layout] Failed to log error:', logErr);
 		}
 
 		throw error(

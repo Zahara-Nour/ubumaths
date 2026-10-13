@@ -11,6 +11,11 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { chapterDeckParamsSchema } from '$lib/server/validation/srs';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/revisions/chapitres/[chapterId]/+page.server'
+);
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	await requireRole(locals, 'student');
@@ -27,7 +32,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.maybeSingle();
 
 	if (chapterError) {
-		console.error('[revisions/chapitres] Chapitre illisible :', chapterError);
+		logger.error('[revisions/chapitres] Chapitre illisible :', chapterError);
 		throw error(500, 'Impossible de charger le chapitre');
 	}
 	if (!chapter) throw error(404, 'Chapitre introuvable');

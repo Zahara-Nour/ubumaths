@@ -34,13 +34,13 @@
 
 import { redirect, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { notifyAdminsOfPendingUser } from '$lib/server/notifications';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { validateRedirectUrl } from '$lib/server/validateRedirectUrl';
 import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
 
-const logger = createLogger('auth/callback');
+const logger = createServerLogger('auth/callback');
 
 // Allowed email domain for Google OAuth
 const ALLOWED_DOMAIN = '@voltairedoha.com';
@@ -134,7 +134,12 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 				});
 
 			if (insertError) {
-				logger.error('Failed to create profile:', insertError);
+				// code et message seulement : sur une violation de contrainte, `details` recopie
+				// la ligne insérée, nom de l'élève compris, que le masquage ne reconnaît pas
+				logger.error('Failed to create profile:', {
+					code: insertError.code,
+					message: insertError.message
+				});
 				// CRITICAL: Sign out the user since we couldn't create their profile.
 				// Without this, they would have a valid Supabase auth session but no profile
 				// in the database. The userProfileHandle hook would then silently sign them

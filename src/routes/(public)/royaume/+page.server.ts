@@ -3,6 +3,9 @@ import { ambianceMonthIndex } from '$lib/almanach/palettes';
 import { allArticles, pickRandomArticle, publishedArticles } from '$lib/server/shtam/articles';
 import { toSummary, todayIsoInParis } from '$lib/server/shtam/present';
 import type { PageServerLoad } from './$types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/royaume/+page.server');
 
 // Types
 
@@ -40,7 +43,7 @@ function pickDispatch(now: Date): TourDispatch | null {
 		const { slug, title, lede, byline } = toSummary(article);
 		return { slug, title, lede, byline };
 	} catch (err) {
-		console.error('[royaume] Shtam illisible, dépêche masquée :', err);
+		logger.error('[royaume] Shtam illisible, dépêche masquée :', err);
 		return null;
 	}
 }

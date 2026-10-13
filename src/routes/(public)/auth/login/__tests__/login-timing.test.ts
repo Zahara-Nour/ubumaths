@@ -27,7 +27,7 @@ import { actions } from '../+page.server';
 
 // Mock dependencies
 vi.mock('$lib/utils/logger', () => ({
-	createLogger: () => ({
+	createServerLogger: () => ({
 		info: vi.fn(),
 		error: vi.fn(),
 		warn: vi.fn(),

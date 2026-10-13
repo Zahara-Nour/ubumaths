@@ -5,6 +5,9 @@ import { error, redirect } from '@sveltejs/kit';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/riddles/[id]/+page.server');
 
 /**
  * Load riddle detail for student to attempt
@@ -26,7 +29,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		.single();
 
 	if (riddleError || !riddle) {
-		console.error('Error fetching riddle:', riddleError);
+		logger.error('Error fetching riddle:', riddleError);
 		throw error(404, 'Énigme non trouvée');
 	}
 
@@ -39,7 +42,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 	);
 
 	if (solutionsError) {
-		console.error('Lecture impossible :', solutionsError);
+		logger.error('Lecture impossible :', solutionsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -53,7 +56,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		.limit(1);
 
 	if (attemptsError) {
-		console.error('Lecture impossible :', attemptsError);
+		logger.error('Lecture impossible :', attemptsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

@@ -10,6 +10,11 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { asStudentVipCards } from '$lib/types/vip-card';
 import { getTemplateById, getAllTemplates } from '$lib/server/vip-card-queries';
 import { getActionDescription } from '$lib/utils/vip-cards';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/gamification/rewards/+page.server'
+);
 
 interface ActivationRequest {
 	studentId: string;
@@ -34,7 +39,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.eq('status', 'active');
 
 	if (classMembersError) {
-		console.error('[rewards] Error fetching class members:', classMembersError);
+		logger.error('[rewards] Error fetching class members:', classMembersError);
 		return { activationRequests: [] };
 	}
 
@@ -52,7 +57,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.in('id', studentIds);
 
 	if (profilesError) {
-		console.error('[rewards] Error fetching profiles:', profilesError);
+		logger.error('[rewards] Error fetching profiles:', profilesError);
 		return { activationRequests: [] };
 	}
 
@@ -109,7 +114,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				});
 			}
 		} catch (error) {
-			console.error(`[rewards] Error fetching template ${request.cardId}:`, error);
+			logger.error(`[rewards] Error fetching template ${request.cardId}:`, error);
 		}
 	}
 

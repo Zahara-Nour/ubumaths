@@ -19,10 +19,10 @@
 import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { Handle } from '@sveltejs/kit';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { capSessionCookieOptions } from '$lib/utils/session-cookies';
 
-const logger = createLogger('server/supabase.ts');
+const logger = createServerLogger('server/supabase.ts');
 
 export const handle: Handle = async ({ event, resolve }) => {
 	logger.trace('Creating server client for URL:', PUBLIC_SUPABASE_URL);

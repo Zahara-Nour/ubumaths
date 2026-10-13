@@ -7,6 +7,11 @@ import type { TablesUpdate } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
 import { RIDDLE_COLUMNS, toDbRiddle } from '$lib/types/riddle';
 import { fetchRiddleSolutions, saveRiddleSolution } from '$lib/server/riddle-solutions';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/enigmes/[id]/edit/+page.server'
+);
 
 /**
  * Load riddle for editing
@@ -28,7 +33,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		.single();
 
 	if (riddleError || !riddle) {
-		console.error('Error fetching riddle:', riddleError);
+		logger.error('Error fetching riddle:', riddleError);
 		throw error(404, 'Énigme non trouvée');
 	}
 
@@ -37,7 +42,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 	if (solutionError) {
 		// Sans solution lue, le formulaire s'ouvrirait vide et l'enregistrement
 		// effacerait la correction existante.
-		console.error('Error fetching riddle solution:', solutionError);
+		logger.error('Error fetching riddle solution:', solutionError);
 		throw error(500, "Impossible de charger la réponse et la correction de l'énigme");
 	}
 
@@ -92,7 +97,7 @@ export const actions: Actions = {
 			.select('id');
 
 		if (updateError) {
-			console.error('[RIDDLE EDIT SERVER] Error updating riddle:', updateError);
+			logger.error('[RIDDLE EDIT SERVER] Error updating riddle:', updateError);
 			return fail(500, { message: "Erreur lors de la mise à jour de l'énigme" });
 		}
 		if (!updated || updated.length === 0) {
@@ -105,7 +110,7 @@ export const actions: Actions = {
 			correction: validation.data.correction
 		});
 		if (!saved.ok) {
-			console.error('[RIDDLE EDIT SERVER] Error saving solution:', saved);
+			logger.error('[RIDDLE EDIT SERVER] Error saving solution:', saved);
 			return fail(500, {
 				message: "Erreur lors de l'enregistrement de la réponse et de la correction"
 			});

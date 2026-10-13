@@ -253,3 +253,38 @@ describe('virgule et durée composée dans un calcul', () => {
 		expect(toLatex(a!)).toBe(toLatex(b!));
 	});
 });
+
+/** Défauts anciens du champ, corrigés le 2026-10-13 (suites de #1296). */
+describe('puissance de dix et virgule des fonctions', () => {
+	it.each([
+		['10^3[m]', '10^3\\unit{m}'],
+		['10^(-3)[m]', '10^{-3}\\unit{m}'],
+		['2,5*10^3[m]', '2{,}5\\times10^3\\unit{m}']
+	])('%s se relit après retouche', (definition, expected) => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'd', definition }, 'text');
+		const back = definitionFromField(
+			'value',
+			fieldLatexOf(atelier.get('d')!, atelier.functionNames)
+		);
+		expect(parseDefinition('value', back, 'keyboard')).toEqual({ unit: 'm' });
+		expect(toLatex(astOf(back, 'keyboard', [])!)).toBe(toLatex(astOf(expected, 'keyboard', [])!));
+	});
+
+	// Revue : le dernier recours ne fait une unité que si la relecture en rend une
+	it('min(2, 3) écrit en opérateur reste la fonction', () => {
+		const typed = '\\operatorname{\\mathrm{min}}\\left(2,3\\right)';
+		expect(definitionFromField('value', typed)).toBe(typed);
+	});
+
+	it('une fonction garde la virgule de l’élève, et se relit', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: '2,5x+0,5' }, 'text');
+
+		const latex = fieldLatexOf(atelier.get('f')!, atelier.functionNames);
+
+		expect(latex).toContain('2{,}5');
+		expect(latex).not.toMatch(/\d\.\d/);
+		sameReading(definitionFromField('function', latex), '2,5x+0,5', 'text');
+	});
+});

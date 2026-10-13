@@ -41,9 +41,9 @@ import {
 	checkElevationRateLimitByIP,
 	checkElevationRateLimitByEmail
 } from '$lib/server/rateLimiter';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 
-const logger = createLogger('api/admin/elevate');
+const logger = createServerLogger('api/admin/elevate');
 
 /** Hard ceiling on the elevation cookie lifetime (seconds) — ~1h. */
 const MAX_ELEVATION_MAX_AGE = 3600;

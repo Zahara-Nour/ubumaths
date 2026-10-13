@@ -4,6 +4,9 @@ import { RIDDLE_COLUMNS, toDbRiddle, toDbRiddleAttempt, toStudentRiddle } from '
 import { error, redirect } from '@sveltejs/kit';
 import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/riddles/+page.server');
 
 /** Ligne `riddles` telle que la lit cette page : sans réponse attendue ni correction. */
 type RiddleRow = Parameters<typeof toDbRiddle>[0];
@@ -32,7 +35,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		await supabase.rpc('get_riddle_of_the_day');
 
 	if (riddleError) {
-		console.error('Error fetching riddle of the day:', riddleError);
+		logger.error('Error fetching riddle of the day:', riddleError);
 	}
 
 	let studentAttempt: DbRiddleAttempt | null = null;
@@ -50,7 +53,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
 		// doit pas se confondre avec une donnée réellement vide.
 		if (riddleError && riddleError.code !== 'PGRST116') {
-			console.error('Contexte illisible :', riddleError);
+			logger.error('Contexte illisible :', riddleError);
 		}
 
 		if (riddle) {
@@ -67,7 +70,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				.limit(1);
 
 			if (attemptsError) {
-				console.error('Lecture impossible :', attemptsError);
+				logger.error('Lecture impossible :', attemptsError);
 				throw error(500, 'Impossible de charger les données');
 			}
 
@@ -92,7 +95,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('assigned_at', { ascending: false });
 
 	if (assignmentsError) {
-		console.error('Lecture impossible :', assignmentsError);
+		logger.error('Lecture impossible :', assignmentsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -110,7 +113,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	);
 
 	if (solutionsError) {
-		console.error('Lecture impossible :', solutionsError);
+		logger.error('Lecture impossible :', solutionsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

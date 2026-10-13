@@ -23,6 +23,9 @@
 import type { PageServerLoad } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { error } from '@sveltejs/kit';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/debug/database/+page.server');
 
 /**
  * Redact email address for privacy
@@ -45,7 +48,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Contrôle d'intégrité : une liste vide se lit « aucune anomalie ». C'est le
 	// verdict inverse de « je n'ai rien pu vérifier ».
 	if (statsError) {
-		console.error('Contrôle d’intégrité impossible :', statsError);
+		logger.error('Contrôle d’intégrité impossible :', statsError);
 		throw error(500, 'Impossible de vérifier l’intégrité');
 	}
 
@@ -73,7 +76,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Contrôle d'intégrité : une liste vide se lit « aucune anomalie ». C'est le
 	// verdict inverse de « je n'ai rien pu vérifier ».
 	if (missingNamesError) {
-		console.error('Contrôle d’intégrité impossible :', missingNamesError);
+		logger.error('Contrôle d’intégrité impossible :', missingNamesError);
 		throw error(500, 'Impossible de vérifier l’intégrité');
 	}
 
@@ -86,7 +89,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Contrôle d'intégrité : une liste vide se lit « aucune anomalie ». C'est le
 	// verdict inverse de « je n'ai rien pu vérifier ».
 	if (missingSchoolError) {
-		console.error('Contrôle d’intégrité impossible :', missingSchoolError);
+		logger.error('Contrôle d’intégrité impossible :', missingSchoolError);
 		throw error(500, 'Impossible de vérifier l’intégrité');
 	}
 
@@ -100,7 +103,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Contrôle d'intégrité : une liste vide se lit « aucune anomalie ». C'est le
 	// verdict inverse de « je n'ai rien pu vérifier ».
 	if (noClassesError) {
-		console.error('Contrôle d’intégrité impossible :', noClassesError);
+		logger.error('Contrôle d’intégrité impossible :', noClassesError);
 		throw error(500, 'Impossible de vérifier l’intégrité');
 	}
 
@@ -116,7 +119,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Contrôle d'intégrité : une liste vide se lit « aucune anomalie ». C'est le
 	// verdict inverse de « je n'ai rien pu vérifier ».
 	if (pendingStudentsNotActivatedError) {
-		console.error('Contrôle d’intégrité impossible :', pendingStudentsNotActivatedError);
+		logger.error('Contrôle d’intégrité impossible :', pendingStudentsNotActivatedError);
 		throw error(500, 'Impossible de vérifier l’intégrité');
 	}
 
@@ -130,7 +133,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Contrôle d'intégrité : une liste vide se lit « aucune anomalie ». C'est le
 	// verdict inverse de « je n'ai rien pu vérifier ».
 	if (recentSignupsError) {
-		console.error('Contrôle d’intégrité impossible :', recentSignupsError);
+		logger.error('Contrôle d’intégrité impossible :', recentSignupsError);
 		throw error(500, 'Impossible de vérifier l’intégrité');
 	}
 

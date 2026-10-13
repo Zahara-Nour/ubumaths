@@ -16,6 +16,9 @@ import type { PageServerLoad } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { getAccessibleBoards } from '$lib/server/kanban';
 import type { KanbanBoardWithCounts } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/organisation/kanban/+page.server');
 
 export interface TeacherClassOption {
 	id: string;
@@ -37,7 +40,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		boards = page.boards;
 		nextCursor = page.nextCursor;
 	} catch (err) {
-		console.error('[organisation/kanban] failed to load boards:', err);
+		logger.error('[organisation/kanban] failed to load boards:', err);
 	}
 
 	// 2. Classes for the create dialog (teachers only - students never create
@@ -50,7 +53,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.order('name', { ascending: true });
 
 		if (classError) {
-			console.error('[organisation/kanban] failed to load classes:', classError);
+			logger.error('[organisation/kanban] failed to load classes:', classError);
 		} else {
 			teacherClasses = (classRows ?? []) as TeacherClassOption[];
 		}

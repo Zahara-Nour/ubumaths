@@ -16,6 +16,11 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/evaluation-tasks/[id]/saisie/+page.server'
+);
 
 export interface StudentRow {
 	id: string;
@@ -94,7 +99,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 	// Cette liste borne la portée du classement. Vidée par une panne, elle
 	// affiche un classement amputé sans le dire.
 	if (membersError) {
-		console.error('Périmètre illisible :', membersError);
+		logger.error('Périmètre illisible :', membersError);
 		throw error(500, 'Impossible de déterminer le périmètre');
 	}
 
@@ -167,7 +172,7 @@ export const load: PageServerLoad = async ({ locals, params }): Promise<SaisieDa
 		.order('created_at', { ascending: true });
 
 	if (existingAttemptsError) {
-		console.error('Lecture impossible :', existingAttemptsError);
+		logger.error('Lecture impossible :', existingAttemptsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -204,7 +209,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la tâche n'existe pas, et le 404 qui suit est légitime.
 		if (taskError && taskError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', taskError);
+			logger.error('Lecture impossible :', taskError);
 			return fail(500, { message: 'Lecture impossible' });
 		}
 		if (!task) {
@@ -225,7 +230,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la tâche n'existe pas, et le 404 qui suit est légitime.
 		if (perimeterError && perimeterError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', perimeterError);
+			logger.error('Lecture impossible :', perimeterError);
 			return fail(500, { message: 'Lecture impossible' });
 		}
 		const allowedSkillIds = new Set((perimeter ?? []).map((p) => p.observable_id));
@@ -245,7 +250,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la tâche n'existe pas, et le 404 qui suit est légitime.
 		if (membersError && membersError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', membersError);
+			logger.error('Lecture impossible :', membersError);
 			return fail(500, { message: 'Lecture impossible' });
 		}
 		const allowedStudentIds = new Set((members ?? []).map((m) => m.student_id).filter(Boolean));

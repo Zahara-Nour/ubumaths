@@ -15,6 +15,9 @@ import {
 	checkNotificationCreateRateLimit,
 	checkNotificationDeleteRateLimit
 } from '$lib/server/rateLimiter';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/notifications/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Admin only (real admin login OR step-up elevation)
@@ -28,7 +31,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (classesError) {
-		console.error('Lecture impossible :', classesError);
+		logger.error('Lecture impossible :', classesError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -40,7 +43,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('lastname');
 
 	if (usersError) {
-		console.error('Lecture impossible :', usersError);
+		logger.error('Lecture impossible :', usersError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
