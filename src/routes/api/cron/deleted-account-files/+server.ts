@@ -4,6 +4,8 @@
  * Retire du storage les fichiers des comptes supprimés que la suppression n'a pas pu
  * retirer : purge de conservation C11 (le SQL ne peut pas toucher au storage) et retraits
  * échoués de la route de suppression. Voir `src/lib/server/deleted-account-files.ts`.
+ * Retire aussi les pièces jointes de la messagerie restées sans ligne en base
+ * (`sweepOrphanMessageAttachments`, `src/lib/server/message-attachments.ts`).
  *
  * Appelée chaque semaine par le cron Vercel (GET, `vercel.json`) et à la demande depuis
  * `/dashboard/admin/cron` (POST). AUTH : `Bearer CRON_SECRET` seulement.
@@ -14,6 +16,7 @@ import type { RequestHandler } from './$types';
 import { verifyCronAuth } from '$lib/server/auth/cron';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { sweepDeletedAccountFiles } from '$lib/server/deleted-account-files';
+import { sweepOrphanMessageAttachments } from '$lib/server/message-attachments';
 
 const JOB_NAME = 'deleted_account_files';
 
@@ -29,18 +32,27 @@ const handler: RequestHandler = async ({ request }) => {
 
 	try {
 		const result = await sweepDeletedAccountFiles(serviceClient);
+		// Même passage : pièces jointes de la messagerie restées sans ligne (message purgé,
+		// pièce jointe retirée, envoi inachevé).
+		const orphanFiles = await sweepOrphanMessageAttachments(serviceClient);
+		const success = result.failed === 0 && !orphanFiles.failed;
+		const problems = [
+			result.failed > 0 ? `${result.failed} suppression(s) de compte non traitée(s)` : null,
+			orphanFiles.failed
+				? `${orphanFiles.listed} pièce(s) jointe(s) orpheline(s) non retirée(s)`
+				: null
+		].filter((p): p is string => p !== null);
 		if (runId) {
 			await serviceClient.rpc('complete_job_run', {
 				p_run_id: runId,
-				p_status: result.failed === 0 ? 'success' : 'failed',
-				p_error_message:
-					result.failed === 0
-						? undefined
-						: `${result.failed} suppression(s) non traitée(s), reprise au prochain passage`,
-				p_metadata: { ...result }
+				p_status: success ? 'success' : 'failed',
+				p_error_message: success
+					? undefined
+					: `${problems.join(' ; ')}, reprise au prochain passage`,
+				p_metadata: { ...result, orphan_files: orphanFiles }
 			});
 		}
-		return json({ success: result.failed === 0, ...result });
+		return json({ success, ...result, orphan_files: orphanFiles });
 	} catch (err) {
 		const message = err instanceof Error ? err.message : 'Erreur inconnue';
 		if (runId) {
