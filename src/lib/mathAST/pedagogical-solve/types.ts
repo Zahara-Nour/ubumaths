@@ -425,7 +425,11 @@ export type EquationOperation =
 	 * `|x − 1| − |x + 3| = 0` ⇒ `|x − 1| = |x + 3|`. Avant / après dans
 	 * `before` / `after`.
 	 */
-	| { readonly kind: 'isolate-absolute-value' }
+	| {
+			readonly kind: 'isolate-absolute-value';
+			/** La forme obtenue, lue par l'analyse : |u| = c ou |u| = |v|. */
+			readonly form: 'single' | 'equal';
+	  }
 	/**
 	 * La propriété du cours, appliquée : `|u| = c ⇔ u = c ou u = −c` (c > 0),
 	 * `|u| = 0 ⇔ u = 0`, `|u| = |v| ⇔ u = v ou u = −v`. `value` est c (absent

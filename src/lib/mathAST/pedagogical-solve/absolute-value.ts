@@ -31,6 +31,7 @@ import { solve } from '../solve/solve';
 import { analyzeAbsoluteValue, type AbsoluteValueShape } from '../solve/absolute-value';
 import { detectVariable } from '../solve/classify';
 import { canon, makeStep } from './_helpers';
+import { computeNumericValue } from '../solve/numeric-value';
 import { generateLinearEquationSteps } from './linear';
 import type { EquationOperation, EquationStep, LinearSchoolLevel } from './types';
 
@@ -58,6 +59,9 @@ export class UnsupportedAbsoluteValueEquation extends Error {
 // =============================================================================
 
 /** Les issues de `solve` qu'on sait conclure : un ensemble fini, vide, ou ℝ. */
+/** Écart relatif en deçà duquel deux solutions sont la même. */
+const RELATIVE_TOLERANCE = 1e-9;
+
 const CONCLUSIVE_STATUSES: ReadonlySet<string> = new Set([
 	'unique',
 	'multiple',
@@ -87,9 +91,39 @@ export function hasAbsoluteValueOf(equation: RelationNode, variable: string): bo
 	return findNodes(equation, isAbs).some((node) => getVariables(node).has(variable));
 }
 
-/** Le premier degré se rédige au collège ; la valeur absolue, elle, est en 2nde. */
-function linearLevel(level: SchoolLevel): LinearSchoolLevel {
-	return level === 'primaire' || level === 'college' ? 'lycee' : level;
+/**
+ * Le niveau des étapes du premier degré de chaque branche : celui demandé
+ * (l'élève lit la même rédaction que pour `2x + 1 = 5` seule), le primaire
+ * relevé au collège comme dans `generateEquationSteps`. Partagé avec le
+ * renderer : générer et rendre au même niveau.
+ */
+export function linearLevelFor(level: SchoolLevel): LinearSchoolLevel {
+	return level === 'primaire' ? 'college' : level;
+}
+
+/**
+ * Les solutions écrites comme dans les branches (`\sqrt{2} - 1`, pas la forme
+ * réduite du moteur), sans doublon (`|2x| = |x|` donne 0 deux fois), dans
+ * l'ordre croissant — et vérifiées contre `solve` : un désaccord est un refus.
+ */
+function orderedSolutions(written: readonly MathNode[], engine: readonly MathNode[]): MathNode[] {
+	const valued: { readonly node: MathNode; readonly value: number }[] = [];
+	for (const node of written) {
+		const value = computeNumericValue(node);
+		if (value === null) throw new UnsupportedAbsoluteValueEquation();
+		if (valued.some((v) => near(v.value, value))) continue;
+		valued.push({ node, value });
+	}
+	const engineValues = engine.map((node) => computeNumericValue(node));
+	const agrees =
+		engineValues.length === valued.length &&
+		engineValues.every((e) => e !== null && valued.some((v) => near(v.value, e)));
+	if (!agrees) throw new UnsupportedAbsoluteValueEquation();
+	return valued.sort((a, b) => a.value - b.value).map((v) => v.node);
+}
+
+function near(a: number, b: number): boolean {
+	return Math.abs(a - b) <= RELATIVE_TOLERANCE * Math.max(1, Math.abs(a), Math.abs(b));
 }
 
 /** `x = c`, c sans l'inconnue : déjà résolue, rien à rédiger. */
@@ -185,7 +219,7 @@ export function generateAbsoluteValueEquationSteps(
 	const isolated = isolatedForm(input, shape, variable);
 	if (!isolated.already) {
 		push(
-			{ kind: 'isolate-absolute-value' },
+			{ kind: 'isolate-absolute-value', form: shape.kind },
 			'On isole la valeur absolue',
 			input,
 			isolated.relation
@@ -218,15 +252,19 @@ export function generateAbsoluteValueEquationSteps(
 	push(split, splitDescription(split), current);
 
 	let last = current;
+	const written: MathNode[] = [];
 	for (const branch of branches) {
-		if (isSolvedFor(branch, variable)) continue;
+		if (isSolvedFor(branch, variable)) {
+			written.push(branch.right);
+			continue;
+		}
 		push({ kind: 'solve-branch', equation: branch }, 'On résout une des deux équations', branch);
 		last = branch;
 
 		// Les étapes du premier degré, sans leur titre ni leur « S = … » : la
 		// conclusion porte sur l'équation de départ, pas sur cette branche
 		const linear = generateLinearEquationSteps(branch, {
-			level: linearLevel(options.level),
+			level: linearLevelFor(options.level),
 			variable
 		});
 		for (const step of linear) {
@@ -249,6 +287,10 @@ export function generateAbsoluteValueEquationSteps(
 				relation
 			);
 			last = relation;
+		} else if (isSolvedFor(last, variable)) {
+			written.push(last.right);
+		} else {
+			throw new UnsupportedAbsoluteValueEquation();
 		}
 	}
 
@@ -256,7 +298,10 @@ export function generateAbsoluteValueEquationSteps(
 		push({ kind: 'read-all-reals', variable }, 'Tout réel est solution', last);
 		return steps;
 	}
-	const solutions = overall.solutions.map((s) => s.value);
+	const solutions = orderedSolutions(
+		written,
+		overall.solutions.map((s) => s.value)
+	);
 	push(
 		{ kind: 'read-solutions', variable, solutions },
 		solutions.length === 0

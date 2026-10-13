@@ -23,7 +23,8 @@ describe('le renderer se choisit sans `else` fourre-tout', () => {
 		const { renderer, schoolLevel } = rendererFor('absolute-value');
 
 		expect(renderer).toBeInstanceOf(AbsoluteValueEquationRenderer);
-		expect(schoolLevel).toBe('lycee');
+		// Le niveau que l'atelier demande : les branches se rédigent comme au collège
+		expect(schoolLevel).toBe('college');
 	});
 
 	it('les autres types gardent le leur', () => {
@@ -48,11 +49,11 @@ describe('.résoudre |u| = c', () => {
 			'Équation avec une valeur absolue',
 			'Deux nombres ont pour valeur absolue $5$ : $5$ et $-5$',
 			'On résout $2x + 1 = 5$',
-			'On isole les termes en x dans le membre de gauche',
-			'On termine en simplifiant le coefficient de x',
+			'On soustrait $1$ aux deux membres',
+			'On divise les deux membres par $2$',
 			'On résout $2x + 1 = -5$',
-			'On isole les termes en x dans le membre de gauche',
-			'On termine en simplifiant le coefficient de x',
+			'On soustrait $1$ aux deux membres',
+			'On divise les deux membres par $2$',
 			'On réunit les solutions des deux équations'
 		]);
 	});

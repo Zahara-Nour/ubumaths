@@ -352,7 +352,7 @@ function equationTexts(
 function absoluteValueTexts(): Text[] {
 	const renderer = new AbsoluteValueEquationRenderer();
 	const texts: Text[] = [];
-	for (const level of UPPER_LEVELS) {
+	for (const level of ['college', 'lycee', 'superieur'] as const) {
 		for (const latex of ABSOLUTE_VALUE_EQUATIONS) {
 			const steps = generateAbsoluteValueEquationSteps(parseLatex(latex) as RelationNode, {
 				level
@@ -660,7 +660,7 @@ describe('prose des étapes : les maths entre $…$ (V25)', () => {
 		expect(failures(secondDegreeTexts())).toEqual([]);
 	});
 
-	it('valeur absolue : |u| = c, isolement, |u| = |v|, lycée et supérieur', () => {
+	it('valeur absolue : |u| = c, isolement, |u| = |v|, collège, lycée, supérieur', () => {
 		expect(failures(absoluteValueTexts())).toEqual([]);
 	});
 

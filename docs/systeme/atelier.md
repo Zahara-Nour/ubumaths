@@ -446,6 +446,25 @@ Doc du moteur : [mathast/README.md](mathast/README.md).
 | `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                                                                            |
 | syntaxe des commandes                   | `src/lib/mathAST/cli/core/variable-argument.ts`                                                                                                                                |
 
+**`.résoudre` en détail** (`solve-steps.ts`). `generateEquationSteps` (niveau `college`) choisit
+le pipeline — premier degré, second degré, ou **valeur absolue** (`|2x+1|=5`, `3\left|x-1\right|=6`,
+`|x-1|=|x+3|` : pipeline `absolute-value`, dont chaque branche du premier degré se rédige comme
+l'équation seule). Le renderer se lit dans la première étape (`identify-equation.equationType`)
+par `rendererFor`, un `switch` **exhaustif** gardé par `never` : `linear` → premier degré au
+collège, `quadratic` et `rational` → second degré au lycée, `absolute-value` → renderer de la valeur
+absolue au collège. L'ancien `linear ? Linear : Quadratic` envoyait tout type nouveau au renderer
+du second degré (`|2x+1|=5` s'annonçait « Équation du second degré ») ; un type ajouté sans sa
+ligne ne compile plus. Conclusions acceptées pour la ligne : `read-solution`, `read-solutions`,
+`no-real-solution`, les conclusions d'inéquation, et `read-all-reals` (`S = ℝ`,
+`|x-1|=|1-x|`).
+
+**Le garde-fou** (`solve-steps-check.ts`) vérifie la conclusion contre les nombres et le moteur
+avant de la montrer ; un désaccord rend `null` (repli sur la réponse du moteur). `S = ℝ` est
+accepté seulement si l'équation tient sur toute une grille ET si `solve` répond `infinite`. Un
+**échec du moteur** porte le statut `no-solution` : `engineSolutions` le détecte par
+`isSolverFailure` et rend `null`, sinon « type non supporté » confirmait une conclusion `S = ∅`
+(`x\left|x\right|=4`, qui a la solution 2).
+
 Statistiques : `summarizeList` / `summarizeTable` (`src/lib/statistics/describe.ts`), et
 `src/lib/statistics/` pour l'ajustement (`fit.ts`), le bivarié, la simulation, les fractions et
 les variables aléatoires. Les **scènes** (diagrammes, lois, comparaisons) passent par les mêmes

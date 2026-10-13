@@ -124,9 +124,10 @@ export function rendererFor(kind: EquationType): {
 		case 'quadratic':
 		case 'rational':
 			return { renderer: new QuadraticEquationRenderer(), schoolLevel: 'lycee' };
-		// La valeur absolue est au programme de 2nde
+		// Le niveau demandé à la génération (`college`) : chaque branche du premier
+		// degré se rédige comme l'équation seule (« On soustrait 1 aux deux membres »)
 		case 'absolute-value':
-			return { renderer: new AbsoluteValueEquationRenderer(), schoolLevel: 'lycee' };
+			return { renderer: new AbsoluteValueEquationRenderer(), schoolLevel: 'college' };
 		default: {
 			const unknown: never = kind;
 			throw new Error(`rendererFor: type d'équation inconnu ${String(unknown)}`);

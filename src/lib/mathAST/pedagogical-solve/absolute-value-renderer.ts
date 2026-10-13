@@ -12,12 +12,11 @@
 import type {
 	PedagogicalRenderOptions,
 	RenderedStep,
-	SchoolLevel,
 	StepRenderer
 } from '../common/step-renderer-base';
 import type { MathNode, RelationNode } from '../types';
 import { toLatex } from '../latex-generator';
-import { countAbsoluteValues } from './absolute-value';
+import { linearLevelFor } from './absolute-value';
 import { LinearEquationRenderer } from './linear-renderer';
 import type { EquationOperation, EquationStep } from './types';
 
@@ -92,10 +91,9 @@ function renderOwned(op: Owned, step: EquationStep): Rendering {
 	switch (op.kind) {
 		case 'identify-equation':
 			return {
-				title:
-					countAbsoluteValues(step.before) > 1
-						? 'Équation avec deux valeurs absolues'
-						: 'Équation avec une valeur absolue',
+				// Le générateur nomme la forme lue par l'analyse (`|x| + |x| = 4` a
+				// UNE valeur absolue, écrite deux fois) : une seule source
+				title: step.description,
 				latex: eq(step.before)
 			};
 		case 'isolate-absolute-value': {
@@ -104,7 +102,7 @@ function renderOwned(op: Owned, step: EquationStep): Rendering {
 			return {
 				title: 'On isole la valeur absolue',
 				explanation:
-					countAbsoluteValues(after) > 1
+					op.form === 'equal'
 						? 'On se ramène à la forme $|u|=|v|$.'
 						: 'On se ramène à la forme $|u|=c$.',
 				latex: `\\begin{aligned} ${fmt(before.left)} &= ${fmt(before.right)} \\\\ ${fmt(after.left)} &= ${fmt(after.right)} \\end{aligned}`
@@ -175,11 +173,6 @@ function renderOwned(op: Owned, step: EquationStep): Rendering {
 	}
 }
 
-/** Les étapes du premier degré se rendent au lycée (la valeur absolue est en 2nde). */
-function linearLevel(level: SchoolLevel): SchoolLevel {
-	return level === 'primaire' || level === 'college' ? 'lycee' : level;
-}
-
 // =============================================================================
 // Renderer
 // =============================================================================
@@ -195,7 +188,7 @@ export class AbsoluteValueEquationRenderer implements StepRenderer<
 		if (op === undefined || !isOwned(op)) {
 			return this.linear.render(step, {
 				...options,
-				schoolLevel: linearLevel(options.schoolLevel)
+				schoolLevel: linearLevelFor(options.schoolLevel)
 			});
 		}
 		const { title, explanation, latex } = renderOwned(op, step);

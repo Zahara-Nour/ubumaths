@@ -16,18 +16,34 @@ import { describe, expect, it } from 'vitest';
 import { parseLatex } from '../../parser';
 import type { RelationNode } from '../../types';
 import type { RenderedStep } from '../../common/step-renderer-base';
-import { AbsoluteValueEquationRenderer, generateEquationSteps } from '..';
+import type { SchoolLevel } from '../../common/step-renderer-base';
+import {
+	AbsoluteValueEquationRenderer,
+	generateEquationSteps,
+	generateLinearEquationSteps,
+	LinearEquationRenderer
+} from '..';
 
 // =============================================================================
 // Fonctions
 // =============================================================================
 
-function rendered(latex: string): readonly RenderedStep[] {
-	const steps = generateEquationSteps(parseLatex(latex) as RelationNode, { level: 'lycee' });
+function rendered(latex: string, level: SchoolLevel = 'lycee'): readonly RenderedStep[] {
+	const steps = generateEquationSteps(parseLatex(latex) as RelationNode, { level });
 	return new AbsoluteValueEquationRenderer().renderAll(steps, {
-		schoolLevel: 'lycee',
+		schoolLevel: level,
 		verbosity: 'detailed'
 	});
+}
+
+/** La résolution de `latex` SEULE, sans son titre ni son « S = … ». */
+function standaloneLinear(latex: string, level: 'college' | 'lycee'): string[] {
+	const steps = generateLinearEquationSteps(parseLatex(latex) as RelationNode, { level });
+	return lines(
+		new LinearEquationRenderer()
+			.renderAll(steps, { schoolLevel: level, verbosity: 'detailed' })
+			.filter((s) => s.rule !== 'identify-equation' && s.rule !== 'read-solution')
+	);
 }
 
 /** Titre et LaTeX de chaque étape, dans l'ordre : ce que l'élève lit. */
@@ -66,6 +82,68 @@ describe('|u| = c, c > 0', () => {
 			'Équation avec une valeur absolue ‖ \\left| x \\right| = \\pi',
 			'Deux nombres ont pour valeur absolue $\\pi$ : $\\pi$ et $-\\pi$ ‖ \\left| x \\right| = \\pi \\;\\Longleftrightarrow\\; x = \\pi \\;\\text{ou}\\; x = -\\pi',
 			'On réunit les solutions des deux équations ‖ S = \\left\\{ -\\pi \\,;\\, \\pi \\right\\}'
+		]);
+	});
+});
+
+describe('écriture et niveau', () => {
+	it('|x| = √2 − 1 : S reprend l’écriture des branches, dans l’ordre croissant', () => {
+		expect(lines(rendered('\\left|x\\right|=\\sqrt{2}-1'))).toEqual([
+			'Équation avec une valeur absolue ‖ \\left| x \\right| = \\sqrt{2} - 1',
+			'Deux nombres ont pour valeur absolue $\\sqrt{2} - 1$ : $\\sqrt{2} - 1$ et $1 - \\sqrt{2}$ ‖ \\left| x \\right| = \\sqrt{2} - 1 \\;\\Longleftrightarrow\\; x = \\sqrt{2} - 1 \\;\\text{ou}\\; x = 1 - \\sqrt{2}',
+			'On réunit les solutions des deux équations ‖ S = \\left\\{ 1 - \\sqrt{2} \\,;\\, \\sqrt{2} - 1 \\right\\}'
+		]);
+	});
+
+	it.each(['college', 'lycee'] as const)(
+		'%s : chaque branche se rédige comme l’équation du premier degré seule',
+		(level) => {
+			const steps = lines(rendered('\\left|2x+1\\right|=5', level));
+			const first = steps.indexOf('On résout $2x + 1 = 5$ ‖ 2x + 1 = 5');
+			const second = steps.indexOf('On résout $2x + 1 = -5$ ‖ 2x + 1 = -5');
+
+			expect(steps.slice(first + 1, second)).toEqual(standaloneLinear('2x+1=5', level));
+			expect(steps.slice(second + 1, -1)).toEqual(standaloneLinear('2x+1=-5', level));
+		}
+	);
+
+	it('collège : « On soustrait 1 », « On divise par 2 », comme 2x + 1 = 5 seule', () => {
+		const titles = rendered('\\left|2x+1\\right|=5', 'college').map((s) => s.title);
+
+		expect(titles).toContain('On soustrait $1$ aux deux membres');
+		expect(titles).toContain('On divise les deux membres par $2$');
+	});
+
+	it('|x| + |x| = 4 : une seule valeur absolue (la même deux fois), titre et explication d’accord', () => {
+		const steps = rendered('\\left|x\\right|+\\left|x\\right|=4');
+
+		expect(steps[0].title).toBe('Équation avec une valeur absolue');
+		expect(steps[1].title).toBe('On isole la valeur absolue');
+		expect(steps[1].explanation).toBe('On se ramène à la forme $|u|=c$.');
+	});
+
+	it('|−x| = 2', () => {
+		expect(lines(rendered('\\left|-x\\right|=2'))).toEqual([
+			'Équation avec une valeur absolue ‖ \\left| -x \\right| = 2',
+			'Deux nombres ont pour valeur absolue $2$ : $2$ et $-2$ ‖ \\left| -x \\right| = 2 \\;\\Longleftrightarrow\\; -x = 2 \\;\\text{ou}\\; -x = -2',
+			'On résout $-x = 2$ ‖ -x = 2',
+			'On termine en simplifiant le coefficient de x ‖ x = -2',
+			'On résout $-x = -2$ ‖ -x = -2',
+			'On termine en simplifiant le coefficient de x ‖ x = 2',
+			'On réunit les solutions des deux équations ‖ S = \\left\\{ -2 \\,;\\, 2 \\right\\}'
+		]);
+	});
+
+	it('|2x| = |x| : les deux branches donnent 0, une seule solution', () => {
+		expect(lines(rendered('\\left|2x\\right|=\\left|x\\right|'))).toEqual([
+			'Équation avec deux valeurs absolues ‖ \\left| 2x \\right| = \\left| x \\right|',
+			"Deux nombres ont la même valeur absolue s'ils sont égaux ou opposés ‖ \\left| 2x \\right| = \\left| x \\right| \\;\\Longleftrightarrow\\; 2x = x \\;\\text{ou}\\; 2x = -x",
+			'On résout $2x = x$ ‖ 2x = x',
+			'On isole les termes en x dans le membre de gauche ‖ \\begin{aligned}   2x \\textcolor{blue}{- x} &= 0 \\\\   x &= 0 \\end{aligned}',
+			'On résout $2x = -x$ ‖ 2x = -x',
+			'On isole les termes en x dans le membre de gauche ‖ \\begin{aligned}   2x \\textcolor{blue}{+ x} &= 0 \\\\   3x &= 0 \\end{aligned}',
+			'On termine en simplifiant le coefficient de x ‖ x = 0',
+			"L'équation a une seule solution ‖ S = \\left\\{ 0 \\right\\}"
 		]);
 	});
 });
