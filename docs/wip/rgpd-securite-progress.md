@@ -381,3 +381,19 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   de son compte, ce fichier serait retiré. Accord de David (2026-10-13) : `delete_user_account`
   ne rend que les chemins conformes (`messages/<id de son message>/…`,
   `<son id>/<id de son signalement>/…`). Prod : 0 fichier dans ces buckets.
+- ✅ **Pièces jointes de la messagerie (décision de David du 2026-10-13 : « un élève envoie
+  le scan de son cahier »)**. Le bucket n'existait pas en prod : toute pièce jointe
+  échouait en silence. Règles validées : joint = expéditeur ; lit = expéditeur,
+  destinataire non supprimé, admin ; JPEG/PNG/WebP/HEIC/PDF, 10 Mo, 3 par message ;
+  conservation du message.
+  - **#1250** (`20261016101300` en prod, vérifiée) : bucket privé sans policy de storage
+    (une migration ne peut pas en poser : `storage.objects` à `supabase_storage_admin`),
+    contrainte de taille 5 → 10 Mo, lecture admin, `list_orphan_message_attachment_files`.
+  - **#1256** (code + `20261016101400` en prod, vérifiée) : liens d'envoi et de lecture
+    signés par le serveur après contrôle RLS ; cron du dimanche qui retire les fichiers
+    orphelins. **Audit : 1 bloquant corrigé avant merge** — le serveur signait le chemin
+    écrit par le navigateur, `%2e%2e` sortait du message voire du bucket ; signature et
+    policy exigent désormais `messages/<message>/<uuid>-<nom>`. Aussi : limite de 3 sur
+    les fichiers déposés, consentement `send_message`, 303 `no-store`.
+  - **Actif après le prochain `deploy:prod`.** Reste mineur : course sur la limite de 3
+    (expéditeur seul, cron), 500 au lieu de 404 si le fichier manque.
