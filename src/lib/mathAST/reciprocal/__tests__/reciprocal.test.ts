@@ -570,16 +570,21 @@ describe('computeReciprocal — non bijective : explication et réciproques par 
 		expect(refusal.message).not.toContain('.réciproque');
 	});
 
-	// Les paires citées sont vraies : f(0) = f(b) à 1e-12 près
-	it.each([
-		[Math.sin, Math.PI, 0],
-		[Math.cos, 2 * Math.PI, 1],
-		[Math.tan, Math.PI, 0],
-		[(x: number) => 2 * Math.sin(x) + 1, Math.PI, 1]
-	])('paire citée : %s(0) = %s(b) = %s', (f, b, y) => {
-		expect(f(0)).toBeCloseTo(y, 12);
-		expect(f(b)).toBeCloseTo(y, 12);
-	});
+	// Les paires CITÉES par le refus sont vraies : lues dans le message,
+	// recalculées sur f (à 1e-9 près)
+	it.each(['\\sin(x)', '\\cos(x)', '\\tan(x)', '2\\sin(x)+1'])(
+		'%s : la paire citée a bien la même image',
+		(latex) => {
+			const cited = /f\(0\) = f\((π|2π)\) = (-?\d+)/.exec(notBijectiveOf(latex).message);
+			expect(cited).not.toBeNull();
+			const [, b, y] = cited!;
+			const f = parseLatex(latex);
+			for (const at of [0, b === 'π' ? Math.PI : 2 * Math.PI]) {
+				const image = evaluateNodeToApproximatedNumber(substitute(f, { x: at }));
+				expect(image).toBeCloseTo(Number(y), 9);
+			}
+		}
+	);
 
 	it('tan sur son domaine : ]−π/2 ; π/2[ et arctan', () => {
 		const refusal = notBijectiveOf('\\tan(x)');

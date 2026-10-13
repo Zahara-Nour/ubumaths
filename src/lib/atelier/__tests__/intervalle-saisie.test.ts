@@ -113,9 +113,10 @@ describe('« sur » sans ensemble derrière : la saisie reste entière', () => {
 
 			expect([UNREADABLE_INTERVAL, ONLY_FUNCTIONS]).not.toContain(last(d).text);
 			// L'objet est rangé (pas un refus de saisie) ; « 3 sur 4 » illisible met
-			// sa carte en erreur, et la ligne le dit depuis le 2026-10-13
+			// sa carte en erreur (« x sur 2 » aussi), et la ligne le dit depuis le 2026-10-13
 			expect(last(d).text).toMatch(/^« [a-z] » est dans tes objets/);
 			expect(d.atelier.get(typed.charAt(0))).toBeDefined();
+			expect(last(d).failed).toBe(typed.includes(' sur ') && !typed.endsWith('sur'));
 		}
 	);
 });
