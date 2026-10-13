@@ -63,7 +63,7 @@ export function mapSeriesWriteError(
 	if (error.code === FOREIGN_KEY_VIOLATION && operation === 'delete') {
 		return new SeriesError(409, SERIES_IN_USE_MESSAGE);
 	}
-	return new SeriesError(500, 'Enregistrement impossible, réessaie dans un instant');
+	return new SeriesError(500, 'Enregistrement impossible, réessayer dans un instant');
 }
 
 /**

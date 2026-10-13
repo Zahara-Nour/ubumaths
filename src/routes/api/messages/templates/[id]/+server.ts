@@ -82,7 +82,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
 		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier vos droits');
+		return error(500, 'Impossible de vérifier les droits');
 	}
 
 	if (!profile) {
@@ -109,12 +109,12 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 
 	// Teachers cannot modify system templates
 	if (isSystemTemplate && !isAdmin) {
-		return error(403, 'Vous ne pouvez pas modifier un template système');
+		return error(403, 'Un template système ne peut pas être modifié');
 	}
 
 	// Non-admin, non-owner cannot modify
 	if (!isAdmin && !isOwner) {
-		return error(403, 'Vous ne pouvez modifier que vos propres templates');
+		return error(403, 'Modification réservée à l’auteur du template');
 	}
 
 	// ====================================================================
@@ -184,11 +184,11 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 			// panne doit se distinguer d'un refus mérité.
 			if (classDataError && classDataError.code !== 'PGRST116') {
 				logger.error('Contrôle d’accès impossible :', classDataError);
-				return error(500, 'Impossible de vérifier votre accès');
+				return error(500, 'Impossible de vérifier l’accès');
 			}
 
 			if (!classData) {
-				return error(403, 'Vous ne pouvez utiliser que vos propres classes');
+				return error(403, 'Utilisation réservée aux classes du professeur');
 			}
 		}
 	}
@@ -239,7 +239,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
 		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier vos droits');
+		return error(500, 'Impossible de vérifier les droits');
 	}
 
 	if (!profile) {
@@ -264,12 +264,12 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	// Teachers cannot delete system templates
 	if (isSystemTemplate && !isAdmin) {
-		return error(403, 'Vous ne pouvez pas supprimer un template système');
+		return error(403, 'Un template système ne peut pas être supprimé');
 	}
 
 	// Non-admin, non-owner cannot delete
 	if (!isAdmin && !isOwner) {
-		return error(403, 'Vous ne pouvez supprimer que vos propres templates');
+		return error(403, 'Suppression réservée à l’auteur du template');
 	}
 
 	// Delete template

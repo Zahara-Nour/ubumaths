@@ -12,6 +12,7 @@ couvre:
   - 'src/routes/api/teacher/{chapters,chapter-templates,curriculum,periods}/**'
   - 'src/routes/api/student/{chapters,checklist}/**'
   - 'src/routes/(protected)/dashboard/teacher/{cours,cahier-texte,avancement,programme}/**'
+  - 'src/routes/(protected)/dashboard/teacher/contenu/templates/**'
   - 'src/routes/(protected)/dashboard/student/{cours,cahier-texte,progression}/**'
   - 'src/routes/(public)/cahier/**'
   - 'src/routes/(public)/cours/**'
@@ -212,6 +213,12 @@ quelle version). Seul un modèle **publié** s'instancie.
 - Ni l'**ordre d'affichage** ni `published_at` ne descendent du modèle : ils appartiennent à la
   classe. Tout contenu arrivé par un modèle est **préparé, jamais donné**.
 - **Détacher** (`detachChapterFromTemplate`) coupe le lien, le contenu reste.
+- **Pages** (onglet « Templates » du hub Contenu, vérifié le 2026-10-13) :
+  `src/routes/(protected)/dashboard/teacher/contenu/templates/` — liste (`listChapterTemplates`,
+  filtres validés par `listTemplatesQuerySchema`, valeurs par défaut si invalides), `new/`
+  (action `create`, `createChapterTemplateSchema`) et `[templateId]/` (versions, chapitres
+  rattachés ; actions `update`, `publish`, `updateFromChapter`, `delete`, `archive`,
+  `instantiate`). Prof seul (`requireRole`). Tests : `contenu/templates/__tests__/routes.test.ts`.
 
 ### Séance et travaux à faire
 

@@ -81,7 +81,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 	// Verify user is a participant
 	if (trade.initiator_id !== userId && trade.partner_id !== userId) {
-		throw error(403, "Vous n'êtes pas participant à cet échange");
+		throw error(403, 'Accès réservé aux participants de cet échange');
 	}
 
 	// Sort offers and messages by created_at
@@ -135,7 +135,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	// Verify user is a participant
 	if (trade.initiator_id !== userId && trade.partner_id !== userId) {
-		throw error(403, "Vous n'êtes pas participant à cet échange");
+		throw error(403, 'Accès réservé aux participants de cet échange');
 	}
 
 	// Verify trade is still negotiating

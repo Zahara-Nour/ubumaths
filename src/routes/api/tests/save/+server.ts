@@ -78,7 +78,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		} catch (lookupError) {
 			if (!(lookupError instanceof CourseCardLookupError)) throw lookupError;
 			return json(
-				{ error: 'Enregistrement momentanément impossible, réessaie dans un instant.' },
+				{ error: 'Enregistrement momentanément impossible, réessayer dans un instant.' },
 				{ status: 503 }
 			);
 		}

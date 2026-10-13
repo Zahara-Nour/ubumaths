@@ -96,7 +96,7 @@ function mapEvaluationWriteError(error: { code?: string; message?: string }): Ev
 	if (error.code === CHECK_VIOLATION) {
 		return new EvaluationError(400, 'Réglages incohérents avec la forme choisie');
 	}
-	return new EvaluationError(500, 'Enregistrement impossible, réessaie dans un instant');
+	return new EvaluationError(500, 'Enregistrement impossible, réessayer dans un instant');
 }
 
 // ===========================================================================
@@ -245,7 +245,7 @@ export async function setEvaluationStatus(
 
 	if (error) {
 		logger.error('[setEvaluationStatus] Écriture impossible :', error);
-		throw new EvaluationError(500, 'Enregistrement impossible, réessaie dans un instant');
+		throw new EvaluationError(500, 'Enregistrement impossible, réessayer dans un instant');
 	}
 	if (!data || data.length === 0) {
 		throw new EvaluationError(404, 'Contrôle introuvable');
@@ -272,7 +272,7 @@ export async function assignEvaluation(
 		throw new EvaluationError(404, 'Contrôle introuvable');
 	}
 	if (evaluation.created_by !== teacherId && !actor.isAdmin) {
-		throw new EvaluationError(403, 'Ce contrôle ne vous appartient pas');
+		throw new EvaluationError(403, 'Ce contrôle appartient à un autre professeur');
 	}
 	if (evaluation.status !== 'published') {
 		throw new EvaluationError(400, "Publie le contrôle avant de l'assigner");
@@ -293,7 +293,7 @@ export async function assignEvaluation(
 		}))
 	];
 	if (rows.length === 0) {
-		throw new EvaluationError(400, 'Choisis au moins une classe ou un élève');
+		throw new EvaluationError(400, 'Choisir au moins une classe ou un élève');
 	}
 
 	const { data, error } = await supabase.from('evaluation_assignments').insert(rows).select();
@@ -401,7 +401,7 @@ export async function isAssignmentRecipient(
 
 	if (error) {
 		logger.error('[isAssignmentRecipient] Adhésion illisible :', error);
-		throw new EvaluationError(500, 'Impossible de vérifier votre accès');
+		throw new EvaluationError(500, 'Impossible de vérifier l’accès');
 	}
 	return !!data;
 }
@@ -420,7 +420,7 @@ export async function countAttempts(
 
 	if (error) {
 		logger.error('[countAttempts] Tentatives illisibles :', error);
-		throw new EvaluationError(500, 'Impossible de vérifier vos tentatives précédentes');
+		throw new EvaluationError(500, 'Impossible de vérifier les tentatives précédentes');
 	}
 	return count ?? 0;
 }
@@ -458,7 +458,7 @@ export async function validateAttempt(
 	try {
 		currentAttempts = await countAttempts(supabase, evaluation.id, studentId);
 	} catch {
-		return refused('Impossible de vérifier vos tentatives précédentes');
+		return refused('Impossible de vérifier les tentatives précédentes');
 	}
 
 	const attemptsRemaining = getAttemptsRemaining(currentAttempts, evaluation.max_attempts);
@@ -492,7 +492,7 @@ export async function getStudentAssignments(
 	// évaluations affectées À LA CLASSE disparaissaient de l'écran de l'élève.
 	if (membershipsError) {
 		logger.error('[getStudentAssignments] Classes illisibles :', membershipsError);
-		throw new EvaluationError(500, 'Impossible de charger vos contrôles');
+		throw new EvaluationError(500, 'Impossible de charger les contrôles');
 	}
 	const classIds = (memberships ?? []).map((m) => m.class_id);
 
@@ -507,7 +507,7 @@ export async function getStudentAssignments(
 	const { data, error } = await query;
 	if (error) {
 		logger.error('[getStudentAssignments] Assignations illisibles :', error);
-		throw new EvaluationError(500, 'Impossible de charger vos contrôles');
+		throw new EvaluationError(500, 'Impossible de charger les contrôles');
 	}
 
 	const assignments: Array<{
@@ -534,7 +534,7 @@ export async function getStudentAssignments(
 	// panne ne doit pas le ramener à zéro.
 	if (sessionsError) {
 		logger.error('[getStudentAssignments] Tentatives illisibles :', sessionsError);
-		throw new EvaluationError(500, 'Impossible de charger vos contrôles');
+		throw new EvaluationError(500, 'Impossible de charger les contrôles');
 	}
 
 	const attemptsByEvaluation = new Map<

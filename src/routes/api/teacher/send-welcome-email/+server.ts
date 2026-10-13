@@ -58,7 +58,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!isBrevoConfigured()) {
 		throw error(
 			503,
-			"Le service d'envoi d'emails n'est pas configuré. Contactez l'administrateur."
+			"Le service d'envoi d'emails n'est pas configuré. Voir avec l'administrateur."
 		);
 	}
 
@@ -80,7 +80,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// 4. Verify teacher teaches this student
 	const hasAccess = await verifyTeacherStudent(user.id, student_id, supabase);
 	if (!hasAccess) {
-		throw error(403, "Vous ne pouvez envoyer des emails qu'a vos propres eleves");
+		throw error(403, "Envoi d'emails réservé aux élèves du professeur");
 	}
 
 	// 5. Fetch student info

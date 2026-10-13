@@ -64,10 +64,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (isTeacher) {
 		const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 		if (!hasAccess) {
-			throw error(403, 'Tu ne peux activer des cartes VIP que pour les élèves de tes classes');
+			throw error(403, 'Activation de cartes VIP réservée aux élèves des classes du professeur');
 		}
 	} else if (!isStudent) {
-		throw error(403, 'Tu ne peux activer que tes propres cartes VIP');
+		throw error(403, 'Activation réservée au propriétaire de la carte VIP');
 	}
 
 	// Fetch student's VIP cards
@@ -108,7 +108,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				throw error(400, 'Cette carte ne peut être activée que dans un contexte spécifique');
 			}
 		} else {
-			throw error(400, 'Ton professeur n’a pas encore validé cette carte VIP');
+			throw error(400, 'Le professeur n’a pas encore validé cette carte VIP');
 		}
 	}
 
@@ -173,7 +173,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (gidouillesError) {
 		logger.error('[activate-add-gidouilles] Error adding gidouilles:', gidouillesError);
 		// Card was consumed but gidouilles failed - log for manual recovery
-		throw error(500, 'Impossible d’ajouter les gidouilles. Préviens ton professeur.');
+		throw error(500, 'Impossible d’ajouter les gidouilles : à signaler au professeur.');
 	}
 
 	// Audit trail for card consumption is handled by the use_vip_card RPC

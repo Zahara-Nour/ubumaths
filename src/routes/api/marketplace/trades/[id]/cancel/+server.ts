@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	const isPartner = trade.partner_id === userId;
 
 	if (!isInitiator && !isPartner) {
-		throw error(403, 'Vous ne participez pas a cet echange');
+		throw error(403, 'Accès réservé aux participants de cet échange');
 	}
 
 	// Check trade is still negotiating

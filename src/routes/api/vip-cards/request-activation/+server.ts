@@ -61,7 +61,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	// Verify that the authenticated user is the student making the request
 	if (user.id !== studentId) {
-		throw error(403, 'Tu ne peux demander l’activation que de tes propres cartes VIP');
+		throw error(403, 'Demande d’activation réservée au propriétaire de la carte VIP');
 	}
 
 	// Call atomic RPC (FOR UPDATE + audit trail in one transaction)

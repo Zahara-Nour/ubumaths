@@ -142,7 +142,7 @@ type UserRole = Database['public']['Enums']['user_role'];
 // CONSTANTS
 // ============================================================================
 
-const ELEVATION_UNAVAILABLE_MESSAGE = 'Élévation indisponible. Réessayez plus tard.';
+const ELEVATION_UNAVAILABLE_MESSAGE = 'Élévation indisponible. Réessayer plus tard.';
 
 // ============================================================================
 // CORE RATE LIMITING LOGIC
@@ -343,7 +343,7 @@ function maskKey(key: string): string {
  * ```typescript
  * const result = await checkLoginRateLimitByIP('192.168.1.1');
  * if (!result.allowed) {
- *   // Display to user: "Trop de tentatives de connexion. Réessayez dans 15 minutes."
+ *   // Display to user: "Trop de tentatives de connexion. Réessayer dans 15 minutes."
  *   return json({ error: result.message }, { status: 429 });
  * }
  * ```
@@ -359,7 +359,7 @@ export async function checkLoginRateLimitByIP(ip: string): Promise<RateLimitResu
 		key,
 		5,
 		900, // 15 minutes
-		'Trop de tentatives de connexion. Réessayez dans 15 minutes.'
+		'Trop de tentatives de connexion. Réessayer dans 15 minutes.'
 	);
 
 	if (!result.allowed) {
@@ -439,7 +439,7 @@ export async function checkLoginRateLimitByEmail(email: string): Promise<RateLim
 		key,
 		3,
 		900, // 15 minutes
-		'Trop de tentatives de connexion pour cet email. Réessayez dans 15 minutes.'
+		'Trop de tentatives de connexion pour cet email. Réessayer dans 15 minutes.'
 	);
 
 	if (!result.allowed) {
@@ -479,7 +479,7 @@ export async function checkElevationRateLimitByIP(ip: string): Promise<RateLimit
 		key,
 		5,
 		900, // 15 minutes
-		'Trop de tentatives. Réessayez dans 15 minutes.',
+		'Trop de tentatives. Réessayer dans 15 minutes.',
 		true // Fermé en cas de panne (B8)
 	);
 
@@ -521,7 +521,7 @@ export async function checkElevationRateLimitByEmail(email: string): Promise<Rat
 		key,
 		3,
 		900, // 15 minutes
-		'Trop de tentatives pour cet email. Réessayez dans 15 minutes.',
+		'Trop de tentatives pour cet email. Réessayer dans 15 minutes.',
 		true // Fermé en cas de panne (B8)
 	);
 
@@ -590,7 +590,7 @@ export async function checkSignupRateLimitByIP(ip: string): Promise<RateLimitRes
 		key,
 		40,
 		3600, // 1 hour
-		"Trop d'inscriptions depuis ce réseau. Réessayez dans 1 heure."
+		"Trop d'inscriptions depuis ce réseau. Réessayer dans 1 heure."
 	);
 
 	if (!result.allowed) {
@@ -624,7 +624,7 @@ export async function checkSignupRateLimitByEmail(email: string): Promise<RateLi
 		key,
 		3,
 		3600, // 1 hour
-		"Trop de tentatives d'inscription pour cet email. Réessayez dans 1 heure."
+		"Trop de tentatives d'inscription pour cet email. Réessayer dans 1 heure."
 	);
 
 	if (!result.allowed) {
@@ -649,7 +649,7 @@ export async function checkPasswordResetRateLimitByEmail(email: string): Promise
 		key,
 		3,
 		3600,
-		'Trop de demandes de réinitialisation pour cet email. Réessayez dans 1 heure.'
+		'Trop de demandes de réinitialisation pour cet email. Réessayer dans 1 heure.'
 	);
 	if (!result.allowed) {
 		logger.warn('Password-reset rate limit exceeded by email', { email: maskKey(key) });
@@ -670,7 +670,7 @@ export async function checkPasswordResetRateLimitByIP(ip: string): Promise<RateL
 		key,
 		20,
 		3600,
-		'Trop de demandes de réinitialisation. Réessayez plus tard.'
+		'Trop de demandes de réinitialisation. Réessayer plus tard.'
 	);
 	if (!result.allowed) {
 		logger.warn('Password-reset rate limit exceeded by IP', { ip: maskKey(key) });
@@ -747,7 +747,7 @@ export async function checkOAuthRateLimitByIP(ip: string): Promise<RateLimitResu
 		key,
 		100, // High limit for shared school networks
 		900, // 15 minutes
-		'Trop de tentatives OAuth. Réessayez dans 15 minutes.'
+		'Trop de tentatives OAuth. Réessayer dans 15 minutes.'
 	);
 
 	if (!result.allowed) {
@@ -829,7 +829,7 @@ export async function checkChatbotRateLimit(userId: string): Promise<RateLimitRe
 		key,
 		5,
 		900, // 15 minutes
-		'Trop de requêtes au chatbot. Réessayez dans 15 minutes.'
+		'Trop de requêtes au chatbot. Réessayer dans 15 minutes.'
 	);
 
 	if (!result.allowed) {
@@ -923,7 +923,7 @@ export async function checkNotificationCreateRateLimit(
 		key,
 		maxAttempts,
 		windowSeconds,
-		'Vous avez atteint la limite de création de notifications. Veuillez réessayer plus tard.'
+		'Limite de création de notifications atteinte. Réessayer plus tard.'
 	);
 
 	if (!result.allowed) {
@@ -1012,7 +1012,7 @@ export async function checkNotificationDeleteRateLimit(
 		key,
 		maxAttempts,
 		windowSeconds,
-		'Vous avez atteint la limite de suppression de notifications. Veuillez réessayer plus tard.'
+		'Limite de suppression de notifications atteinte. Réessayer plus tard.'
 	);
 
 	if (!result.allowed) {
@@ -1094,7 +1094,7 @@ export async function checkNotificationMarkRateLimit(userId: string): Promise<Ra
 		key,
 		30,
 		900, // 15 minutes
-		'Trop de requêtes de marquage. Veuillez patienter quelques instants.'
+		'Trop de requêtes de marquage. Patienter quelques instants.'
 	);
 
 	if (!result.allowed) {
@@ -1138,7 +1138,7 @@ export async function checkKanbanBoardCreateRateLimit(userId: string): Promise<R
 		key,
 		20,
 		3600, // 1 hour
-		'Trop de tableaux créés récemment. Veuillez patienter quelques minutes.'
+		'Trop de tableaux créés récemment. Patienter quelques minutes.'
 	);
 
 	if (!result.allowed) {
@@ -1165,7 +1165,7 @@ export async function checkKanbanColumnMutationRateLimit(userId: string): Promis
 		key,
 		60,
 		3600, // 1 hour
-		'Trop de modifications de colonnes. Veuillez patienter quelques minutes.'
+		'Trop de modifications de colonnes. Patienter quelques minutes.'
 	);
 
 	if (!result.allowed) {
@@ -1193,7 +1193,7 @@ export async function checkKanbanCardMutationRateLimit(userId: string): Promise<
 		key,
 		240,
 		3600, // 1 hour
-		'Trop de modifications de cartes. Veuillez patienter quelques minutes.'
+		'Trop de modifications de cartes. Patienter quelques minutes.'
 	);
 
 	if (!result.allowed) {

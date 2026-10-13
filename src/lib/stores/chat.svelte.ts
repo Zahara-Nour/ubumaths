@@ -895,7 +895,7 @@ class ChatStore {
 					insertError.message?.includes('Consentement parental requis') ?? false;
 				if (this.lastSendRefusedForConsent) {
 					toaster.error(
-						'Consentement parental requis pour envoyer des messages. Contactez votre enseignant.'
+						'Consentement parental requis pour envoyer des messages. Voir avec l’enseignant.'
 					);
 				}
 				// Remove optimistic message on failure

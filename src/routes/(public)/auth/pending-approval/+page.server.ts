@@ -40,8 +40,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		logger.warn('Rejected user accessing pending-approval:', user.email);
 		await supabase.auth.signOut();
 		const errorMessage = profile.rejection_reason
-			? `Votre inscription a été refusée : ${profile.rejection_reason}`
-			: 'Votre inscription a été refusée.';
+			? `Inscription refusée : ${profile.rejection_reason}`
+			: 'Inscription refusée.';
 		throw redirect(303, `/auth/login?error=${encodeURIComponent(errorMessage)}`);
 	}
 

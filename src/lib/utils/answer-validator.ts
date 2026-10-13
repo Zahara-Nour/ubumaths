@@ -622,7 +622,7 @@ function numericalResult(
 		return {
 			isCorrect: false,
 			message: 'Réponse invalide (non numérique)',
-			feedback: 'Vérifiez que vous avez entré un nombre valide'
+			feedback: 'Vérifier que la réponse est un nombre valide'
 		};
 	}
 

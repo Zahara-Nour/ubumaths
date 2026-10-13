@@ -61,7 +61,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		for (const req of requests) {
 			if (deniedStudents.has(req.studentId)) {
 				results.failed++;
-				results.errors.push(`${req.instanceId} : cet élève n’est pas dans tes classes`);
+				results.errors.push(
+					`${req.instanceId} : cet élève n’est pas dans les classes du professeur`
+				);
 			}
 		}
 	}

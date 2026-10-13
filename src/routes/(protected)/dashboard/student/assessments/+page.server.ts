@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// AUTRE panne renvoyait l'élève au tableau de bord sans rien expliquer.
 	if (profileError && profileError.code !== 'PGRST116') {
 		logger.error('Profil illisible :', profileError);
-		throw error(500, 'Impossible de vérifier votre profil');
+		throw error(500, 'Impossible de vérifier le profil');
 	}
 
 	if (!profile || profile.role !== 'student') {

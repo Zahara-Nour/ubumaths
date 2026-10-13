@@ -180,7 +180,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 				// RLS denies attempts to assign people the actor isn't allowed
 				// to act on. Surface as 403 so the client can roll back.
 				if (insError.code === '42501') {
-					throw error(403, "Vous n'êtes pas autorisé·e à modifier les assignations de cette carte");
+					throw error(403, 'Modification des assignations de cette carte non autorisée');
 				}
 				throw error(500, "Erreur lors de l'ajout des personnes assignées");
 			}
@@ -215,10 +215,7 @@ export const PATCH: RequestHandler = async ({ locals, params, request }) => {
 		const afterSet = new Set((afterRows ?? []).map((r) => r.user_id));
 		const stillExtra = [...afterSet].filter((id) => !requested.has(id));
 		if (stillExtra.length > 0) {
-			throw error(
-				403,
-				"Vous n'êtes pas autorisé·e à retirer toutes les personnes assignées sélectionnées"
-			);
+			throw error(403, 'Retrait de toutes les personnes assignées sélectionnées non autorisé');
 		}
 	}
 

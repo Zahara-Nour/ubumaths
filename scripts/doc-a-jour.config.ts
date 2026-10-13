@@ -57,38 +57,6 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 	// échoue sur un trou périmé. Ordre : un fichier appartient au PREMIER trou qui le
 	// désigne, un glob précis passe donc avant le glob large qui le contient.
 	trous: [
-		{
-			glob: 'src/routes/(protected)/dashboard/teacher/contenu/**',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/lib/server/validation/latex.ts',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/routes/api/latex/**',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/lib/resources/**',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/lib/components/{QuestionTemplateCard,QuestionPreview*,QuestionCategoryFields,QuestionTemplateHelpDialogs,CategorySelector,TagBadgeSelector,GradeBadgeSelector,CartFloatingButton,CartQuestionCard,DisplayOptionsEditor,ValidationOptionsEditor,PrecisionEditor,VariableEditor,AnswerEditor,CourseQuestionToggle}.svelte',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/lib/stores/{questionCart,questionCategories,questionTemplates,exerciseFont}.svelte.ts',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/routes/api/teacher/categories/**',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
-		{
-			glob: 'src/lib/templates/**',
-			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
-		},
 		{ glob: 'src/lib/shared/blockly/**', note: 'Blockly, calculatrice, REPL /cas' },
 		{ glob: 'src/lib/components/blockly/**', note: 'Blockly, calculatrice, REPL /cas' },
 		{
@@ -98,18 +66,6 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 		{ glob: 'src/routes/(public)/blockly/**', note: 'Blockly, calculatrice, REPL /cas' },
 		{ glob: 'src/lib/workers/js-sandbox.worker.ts', note: 'Blockly, calculatrice, REPL /cas' },
 		{ glob: 'src/lib/components/{calculator,cas}/**', note: 'Blockly, calculatrice, REPL /cas' },
-		{ glob: 'src/routes/(protected)/calculatrice/**', note: 'Blockly, calculatrice, REPL /cas' },
-		{
-			glob: 'src/routes/(protected)/organisation/**',
-			note: 'organisation (pomodoro), documents prof'
-		},
-		{ glob: 'src/lib/stores/pomodoro/**', note: 'organisation (pomodoro), documents prof' },
-		{ glob: 'src/routes/api/documents/**', note: 'organisation (pomodoro), documents prof' },
-		{ glob: 'src/lib/components/documents/**', note: 'organisation (pomodoro), documents prof' },
-		{ glob: 'src/lib/server/documents/**', note: 'organisation (pomodoro), documents prof' },
-		{
-			glob: 'src/lib/server/validation/documents.ts',
-			note: 'organisation (pomodoro), documents prof'
-		}
+		{ glob: 'src/routes/(protected)/calculatrice/**', note: 'Blockly, calculatrice, REPL /cas' }
 	]
 };

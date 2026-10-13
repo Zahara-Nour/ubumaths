@@ -131,7 +131,7 @@ export const actions: Actions = {
 		// panne produisait le même refus, indiscernable d'un refus mérité.
 		if (profileError && profileError.code !== 'PGRST116') {
 			logger.error('Rôle illisible :', profileError);
-			throw error(500, 'Impossible de vérifier vos droits');
+			throw error(500, 'Impossible de vérifier les droits');
 		}
 
 		if (!profile || (profile.role !== 'teacher' && profile.role !== 'admin')) {
@@ -169,7 +169,7 @@ export const actions: Actions = {
 		if (!supprimees || supprimees.length === 0) {
 			logger.error('[admin/friendships] Suppression sans effet :', friendshipId);
 			return fail(403, {
-				error: 'Cette amitié n’a pas pu être supprimée — vos droits ne le permettent pas.'
+				error: 'Cette amitié n’a pas pu être supprimée — droits insuffisants.'
 			});
 		}
 

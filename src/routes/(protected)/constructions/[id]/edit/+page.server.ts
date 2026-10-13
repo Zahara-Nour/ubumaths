@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ params, parent, locals: { supabase 
 	}
 
 	if (construction.author_id !== user.id) {
-		throw error(403, 'Vous ne pouvez modifier que vos propres constructions');
+		throw error(403, 'Modification réservée à l’auteur de la construction');
 	}
 
 	return { construction };

@@ -86,7 +86,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// panne doit se distinguer d'un refus mérité.
 	if (ownAssignmentsError && ownAssignmentsError.code !== 'PGRST116') {
 		logger.error('Contrôle d’accès impossible :', ownAssignmentsError);
-		throw error(500, 'Impossible de vérifier votre accès');
+		throw error(500, 'Impossible de vérifier l’accès');
 	}
 
 	const isAuthor = exercise.author_id === user.id;
@@ -131,7 +131,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	if (!scope.has(studentId)) {
-		throw error(403, "Cet élève n'est pas dans votre périmètre");
+		throw error(403, 'Cet élève est hors du périmètre autorisé');
 	}
 
 	// 5. Student profile

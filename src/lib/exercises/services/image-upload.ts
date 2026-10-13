@@ -396,7 +396,7 @@ export async function deleteExerciseImage(
 		if (!imagePath.startsWith(`${userId}/`)) {
 			return {
 				success: false,
-				error: 'Non autorisé: vous ne pouvez supprimer que vos propres images'
+				error: 'Non autorisé : suppression réservée à l’auteur de l’image'
 			};
 		}
 

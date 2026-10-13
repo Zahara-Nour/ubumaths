@@ -82,7 +82,7 @@ export async function createAttachmentUploadUrl(
 		return {
 			ok: false,
 			status: 403,
-			message: 'Vous ne pouvez joindre un fichier qu’à vos messages'
+			message: 'Pièce jointe réservée aux messages de leur auteur'
 		};
 	}
 

@@ -1,6 +1,7 @@
 ---
 couvre:
   - 'src/lib/components/templates/{FiltersHelp,TagsInput,VariableAutocomplete}.svelte'
+  - 'src/lib/templates/**'
   - 'src/routes/(protected)/messages/**'
   - 'src/routes/api/{messages,moderation,notifications,warnings}/**'
   - 'src/routes/api/{student,classes,students}/*/warnings/**'
@@ -181,8 +182,12 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   `src/routes/(protected)/constructions/conversion/+page.svelte`).
 - API : `src/routes/api/messages/templates/` — CRUD, `[id]/approve/` (admin seul),
   `[id]/duplicate/`, `[id]/preview/`, `[id]/versions/`, `favorites/`, `match/`, `stats/`.
-- Moteur de variables : `src/lib/templates/` ; types `src/lib/types/messageTemplates.ts` ;
-  validation `src/lib/server/validation/message-templates.ts`.
+- Moteur de variables : `src/lib/templates/` (vérifié le 2026-10-13) — `templateVariables.ts`
+  (variables par déclencheur, `VARIABLES_BY_TRIGGER`), `templateEngine.ts` (`renderTemplate`,
+  `previewTemplate`, `validateTemplate`, placeholders `{{…}}`), `advancedEngine.ts` (blocs
+  `{{#if}}…{{/if}}`, filtres `{{var | filtre}}`, `TEMPLATE_FILTERS`) ; tests dans
+  `src/lib/templates/__tests__/`. Types `src/lib/types/messageTemplates.ts` ; validation
+  `src/lib/server/validation/message-templates.ts`. Sans rapport avec les modèles de chapitre.
 
 ### Amitiés
 

@@ -15,6 +15,8 @@ couvre:
   - 'src/lib/components/question-inputs/**'
   - src/lib/components/markdown/nodes/BlankInput.svelte
   - 'src/lib/components/{QuestionTemplateForm,SharedFieldsEditor}.svelte'
+  - 'src/lib/components/{QuestionTemplateCard,QuestionPreview*,QuestionCategoryFields,QuestionTemplateHelpDialogs,CategorySelector,CartFloatingButton,CartQuestionCard,DisplayOptionsEditor,ValidationOptionsEditor,PrecisionEditor,VariableEditor,AnswerEditor,CourseQuestionToggle}.svelte'
+  - 'src/lib/stores/{questionCart,questionCategories,questionTemplates}.svelte.ts'
   - src/lib/components/exercises/VariationEditor.svelte
   - 'src/routes/api/questions/**'
   - 'src/routes/(protected)/dashboard/admin/questions/**'
@@ -124,7 +126,32 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   explication rendus par `InlineMarkdown`, formules entre `$…$` depuis V25), `CourseCardView.svelte`,
   `TestSpecEditor.svelte`.
 - Éditeur : `src/lib/components/QuestionTemplateForm.svelte`, `SharedFieldsEditor.svelte`,
-  `exercises/VariationEditor.svelte`.
+  `exercises/VariationEditor.svelte`. Ses sous-composants, à la racine de `src/lib/components/`
+  (vérifié le 2026-10-13) : `QuestionCategoryFields` (thème / domaine / sous-domaine, options
+  filtrées par `$lib/questions/category-options`, chaque liste est un `CategorySelector` sur
+  `MySelect` avec « Ajouter… »), `VariableEditor`, `AnswerEditor` (cases ou choix de QCM selon le
+  type), `PrecisionEditor` (`none`, `decimal`, `significant`, `magnitude`, `tolerance`) — ces
+  trois-là servent aussi à `SharedFieldsEditor` —, `DisplayOptionsEditor`,
+  `ValidationOptionsEditor`, `CourseQuestionToggle` (`options.courseQuestion`, cochée et
+  désactivée pour une carte de cours), `QuestionPreview` (instance générée, graine affichée, autre
+  graine, choix de la variation, taille d'affichage) et `QuestionTemplateHelpDialogs` (sept fenêtres d'aide statiques).
+- Liste admin (`dashboard/admin/questions/`) : une `QuestionTemplateCard` par modèle (badge de
+  type, « Cours », niveaux ; aperçu, édition, duplication, suppression).
+- Automaths : `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus l'ajout au panier),
+  `CartFloatingButton` (vers `/automaths/panier`), `CartQuestionCard` (tuile d'une catégorie du
+  panier : durée par pas de 5 s entre 5 et 300 s, nombre de questions).
+- Stores (`src/lib/stores/`) :
+  - `questionCart.svelte.ts` (`questionCart`) : le **panier**, des catégories
+    (`theme`, `domain`, `subdomain`, `level`) avec un nombre de questions (1 à 99,
+    `MAX_QUANTITY`) et une durée par question ; persistant en `localStorage`
+    (`chiphre_question_cart`). `replaceWith` / `mergeItems` y chargent une série (lien de série).
+    Ses types `QuestionCategory` et `CartItem` sont repris par les séries, les évaluations et le SRS.
+  - `questionCategories.svelte.ts` (`questionCategoriesCache`) : catégories des modèles
+    (`/api/questions/categories/all`), pour refuser une catégorie déjà prise et proposer le
+    prochain niveau libre dans `QuestionTemplateForm`.
+  - `questionTemplates.svelte.ts` (`questionTemplatesCache`) : modèles publiés
+    (`/api/questions/templates/all`, ou `initializeFromServer` depuis le `load`), sans durée de
+    vie ; lu par les pages Automaths. Les pages admin invalident les deux caches après écriture.
 - Routes : `src/routes/api/questions/` (`templates`, `templates/[id]`, `templates/bulk-status`,
   `generate/[id]`, `categories`), admin `src/routes/(protected)/dashboard/admin/questions/`
   (liste, `create`, `[id]/edit`, `[id]/preview`), Automaths `src/routes/(public)/automaths/`
@@ -473,3 +500,9 @@ Décisions de David sans ADR, consignées dans les journaux archivés :
 - `question_templates.type` existe en base, mais le code déduit le type de la structure
   (`getQuestionType`). CONTEXT.md liste encore des types TinyMath (`numerical_exact`…) absents de
   `QuestionType`.
+- **Durées du panier ≠ durées d'une série** : `questionCart.updateDelay` et `CartQuestionCard`
+  bornent à 5..300 s, la série enregistrée accepte jusqu'à `MAX_QUESTION_DELAY_SECONDS` (600).
+  Une série à 600 s chargée par `replaceWith` garde sa durée, mais le premier « − » la ramène à 300.
+- **Contrôles natifs** malgré la règle MySelect / MyCheckbox : `<select>` dans
+  `PrecisionEditor.svelte` et `QuestionPreview.svelte`, `<input type="checkbox">` dans
+  `QuestionPreview.svelte`.

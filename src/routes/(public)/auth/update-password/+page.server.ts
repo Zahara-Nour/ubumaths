@@ -86,7 +86,7 @@ export const actions = {
 			logger.error('Password update error:', error.message);
 			// Jamais le message anglais de Supabase : code connu traduit, sinon repli
 			return fail(400, {
-				error: authErrorToFrench(error, 'Impossible de changer ton mot de passe. Réessaie.')
+				error: authErrorToFrench(error, 'Impossible de changer le mot de passe. Réessayer.')
 			});
 		}
 

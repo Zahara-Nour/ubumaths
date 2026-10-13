@@ -57,7 +57,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	if (dbError) {
 		logger.error('[consent page] Database error:', dbError);
-		throw error(500, 'Erreur serveur. Veuillez réessayer plus tard.');
+		throw error(500, 'Erreur serveur. Réessayer plus tard.');
 	}
 
 	// Validate response structure
@@ -136,7 +136,7 @@ export const actions: Actions = {
 
 		if (dbError) {
 			logger.error('[consent grant] Database error:', dbError);
-			return fail(500, { error: 'Erreur serveur. Veuillez réessayer.' });
+			return fail(500, { error: 'Erreur serveur. Réessayer.' });
 		}
 
 		// Validate response structure

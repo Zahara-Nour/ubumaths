@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 	if (!hasAccess) {
-		throw error(403, 'Tu ne peux refuser que les activations des élèves de tes classes');
+		throw error(403, 'Refus réservé aux activations des élèves des classes du professeur');
 	}
 
 	const { data: result, error: rpcError } = await supabase.rpc('reject_vip_card', {

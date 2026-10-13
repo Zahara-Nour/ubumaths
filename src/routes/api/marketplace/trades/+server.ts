@@ -57,7 +57,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	// Check if marketplace is enabled
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {
-		throw error(403, "Le marketplace n'est pas activé pour votre classe");
+		throw error(403, "Le marketplace n'est pas activé pour cette classe");
 	}
 
 	// Build query - use column hints instead of FK names for compatibility
@@ -186,14 +186,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Check if marketplace is enabled for initiator
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {
-		throw error(403, "Le marketplace n'est pas activé pour votre classe");
+		throw error(403, "Le marketplace n'est pas activé pour cette classe");
 	}
 
 	// Amitié vérifiée AVANT toute lecture sur le partenaire : les fonctions qui
 	// le concernent n'acceptent que soi, un ami ou le prof (lot 5).
 	const areFriends = await verifyFriendship(supabase, userId, partner_id);
 	if (!areFriends) {
-		throw error(403, 'Vous devez être amis pour échanger');
+		throw error(403, 'Amitié requise pour échanger');
 	}
 
 	// Check if marketplace is enabled for partner
@@ -225,7 +225,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!limit.can_create_trade) {
 		throw error(
 			429, // 429 Too Many Requests
-			`Vous avez atteint la limite quotidienne de ${limit.max_trades} échanges. Revenez demain pour créer de nouveaux échanges.`
+			`Limite quotidienne de ${limit.max_trades} échanges atteinte. Nouveaux échanges possibles demain.`
 		);
 	}
 
@@ -252,7 +252,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!partnerLimit.can_create_trade) {
 		throw error(
 			429,
-			`Votre ami a atteint sa limite quotidienne de ${partnerLimit.max_trades} échanges. Réessayez demain.`
+			`Cet ami a atteint sa limite quotidienne de ${partnerLimit.max_trades} échanges. Réessayer demain.`
 		);
 	}
 
@@ -276,14 +276,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	if (existingTrade) {
-		throw error(403, 'Vous avez déjà un échange en cours avec cet ami');
+		throw error(403, 'Un échange est déjà en cours avec cet ami');
 	}
 
 	// Validate card ownership if offering cards
 	if (initial_offer.cards.length > 0) {
 		const ownsCards = await validateCardOwnership(supabase, userId, initial_offer.cards);
 		if (!ownsCards) {
-			throw error(403, 'Vous ne possédez pas toutes les cartes spécifiées');
+			throw error(403, 'Certaines des cartes spécifiées manquent dans la collection');
 		}
 	}
 
@@ -291,7 +291,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (initial_offer.gidouilles > 0) {
 		const userGidouilles = await getStudentGidouilles(supabase, userId);
 		if (userGidouilles < initial_offer.gidouilles) {
-			throw error(403, "Vous n'avez pas assez de gidouilles");
+			throw error(403, 'Gidouilles insuffisantes');
 		}
 	}
 

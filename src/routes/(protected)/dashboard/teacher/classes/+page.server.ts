@@ -544,7 +544,7 @@ export const actions: Actions = {
 			}
 
 			if (courseData.teacher_id !== user.id) {
-				return fail(403, { message: 'Vous ne possédez pas ce cours' });
+				return fail(403, { message: 'Accès refusé à ce cours' });
 			}
 		}
 

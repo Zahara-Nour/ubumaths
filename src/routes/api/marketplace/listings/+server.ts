@@ -76,7 +76,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		// For students, check if marketplace is enabled
 		const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 		if (!marketplaceEnabled) {
-			throw error(403, "Le marketplace n'est pas activé pour votre classe");
+			throw error(403, "Le marketplace n'est pas activé pour cette classe");
 		}
 
 		// Un élève ne consulte par auteur que SES annonces (seul usage de l'interface) :
@@ -233,13 +233,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Check if marketplace is enabled
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {
-		throw error(403, "Le marketplace n'est pas activé pour votre classe");
+		throw error(403, "Le marketplace n'est pas activé pour cette classe");
 	}
 
 	// Check active listings limit
 	const withinLimit = await checkActiveListingsLimit(supabase, userId);
 	if (!withinLimit) {
-		throw error(403, "Vous avez atteint le nombre maximum d'annonces actives");
+		throw error(403, "Nombre maximum d'annonces actives atteint");
 	}
 
 	// For 'sell' listings, validate card ownership and availability
@@ -249,7 +249,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			// Verify ownership
 			const ownsCards = await validateCardOwnership(supabase, userId, data.offered_card_ids);
 			if (!ownsCards) {
-				throw error(403, 'Vous ne possédez pas toutes les cartes spécifiées');
+				throw error(403, 'Certaines des cartes spécifiées manquent dans la collection');
 			}
 		}
 	}

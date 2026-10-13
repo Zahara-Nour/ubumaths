@@ -43,7 +43,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 	if (!hasAccess) {
-		throw error(403, 'Tu ne peux valider que les cartes VIP des élèves de tes classes');
+		throw error(403, 'Validation réservée aux cartes VIP des élèves des classes du professeur');
 	}
 
 	const { data: result, error: rpcError } = await supabase.rpc('approve_vip_card', {

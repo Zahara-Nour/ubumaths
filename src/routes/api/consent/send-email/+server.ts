@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!isBrevoConfigured()) {
 		throw error(
 			503,
-			"Le service d'envoi d'emails n'est pas configuré. Contactez l'administrateur."
+			"Le service d'envoi d'emails n'est pas configuré. Voir avec l'administrateur."
 		);
 	}
 
@@ -81,7 +81,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// 3. Verify teacher teaches this student
 	const hasAccess = await verifyTeacherStudent(user.id, student_id, supabase);
 	if (!hasAccess) {
-		throw error(403, "Vous ne pouvez envoyer des emails qu'à vos propres élèves");
+		throw error(403, "Envoi d'emails réservé aux élèves du professeur");
 	}
 
 	// 4. Fetch student info
@@ -134,7 +134,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (totalEmailsSent >= MAX_EMAILS_PER_STUDENT) {
 		throw error(
 			400,
-			`Limite de ${MAX_EMAILS_PER_STUDENT} emails atteinte pour cet élève. Contactez l'administrateur.`
+			`Limite de ${MAX_EMAILS_PER_STUDENT} emails atteinte pour cet élève. Voir avec l'administrateur.`
 		);
 	}
 

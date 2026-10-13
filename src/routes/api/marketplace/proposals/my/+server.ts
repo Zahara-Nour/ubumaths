@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {
-		throw error(403, "Le marketplace n'est pas activé pour votre classe");
+		throw error(403, "Le marketplace n'est pas activé pour cette classe");
 	}
 
 	const { data: proposals, error: proposalsError } = await supabase

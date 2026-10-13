@@ -84,7 +84,7 @@ export async function createNotification(
 				if (invalidClasses.length > 0) {
 					return {
 						success: false,
-						error: 'Vous ne pouvez cibler que vos propres classes'
+						error: 'Ciblage réservé aux classes du professeur'
 					};
 				}
 			}
@@ -111,7 +111,7 @@ export async function createNotification(
 				if (invalidStudents.length > 0) {
 					return {
 						success: false,
-						error: 'Vous ne pouvez cibler que vos propres élèves'
+						error: 'Ciblage réservé aux élèves du professeur'
 					};
 				}
 			}
@@ -524,7 +524,7 @@ export async function deleteNotification(
 		const failure = [notificationError, profileError].find((e) => e && e.code !== 'PGRST116');
 		if (failure) {
 			logger.error('[deleteNotification] Vérification impossible :', failure);
-			return { success: false, error: 'Impossible de vérifier vos droits sur cette notification' };
+			return { success: false, error: 'Impossible de vérifier les droits sur cette notification' };
 		}
 
 		if (!notification || !profile) {

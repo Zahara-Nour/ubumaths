@@ -106,7 +106,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			// panne doit se distinguer d'un refus mérité.
 			if (enrollmentError && enrollmentError.code !== 'PGRST116') {
 				console.error('Contrôle d’accès impossible :', enrollmentError);
-				throw error(500, 'Impossible de vérifier votre accès');
+				throw error(500, 'Impossible de vérifier l’accès');
 			}
 
 			if (enrollment) {

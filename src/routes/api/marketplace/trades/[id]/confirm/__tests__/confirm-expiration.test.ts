@@ -143,6 +143,6 @@ describe('confirm : remise à zéro d’un échange expiré', () => {
 			})
 		);
 		expect(res.status).toBe(410);
-		expect(res.message).toMatch(/expire/);
+		expect(res.message).toMatch(/expiré/);
 	});
 });

@@ -54,7 +54,7 @@ export type ActionOutcome<T = Record<string, unknown>> =
 const DEFAULT_ERROR_MESSAGE = 'Une erreur est survenue';
 
 /** Message affiché quand la session ne permet plus d'exécuter l'action. */
-const SESSION_EXPIRED_MESSAGE = 'Session expirée, reconnectez-vous';
+const SESSION_EXPIRED_MESSAGE = 'Session expirée, reconnexion nécessaire';
 
 // ============================================================================
 // FUNCTIONS

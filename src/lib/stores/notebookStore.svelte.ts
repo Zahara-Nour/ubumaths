@@ -1031,7 +1031,7 @@ export class NotebookStore {
 				this._executor.ensureContext();
 				const recoveryMsg =
 					'Le noyau Python a été réinitialisé après une période d’inactivité. ' +
-					'Ré-exécute tes cellules de code pour restaurer tes variables, puis revérifie.';
+					'Ré-exécuter les cellules de code pour restaurer les variables, puis revérifier.';
 				this.checkpointStatus = { ...this.checkpointStatus, [cellId]: 'failed' };
 				this.checkpointError = { ...this.checkpointError, [cellId]: recoveryMsg };
 				// Don't POST a failed run that was caused by infrastructure,

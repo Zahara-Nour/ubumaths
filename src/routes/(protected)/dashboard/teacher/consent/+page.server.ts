@@ -301,7 +301,7 @@ export const actions: Actions = {
 
 		const hasAccess = await verifyTeacherStudent(user.id, studentId, supabase);
 		if (!hasAccess) {
-			return fail(403, { error: 'Vous ne pouvez modifier que vos propres élèves' });
+			return fail(403, { error: 'Modification réservée aux élèves du professeur' });
 		}
 
 		const graceEnds = new Date(Date.now() + AGE_RESET_GRACE_DAYS * 24 * 60 * 60 * 1000);
@@ -353,7 +353,7 @@ export const actions: Actions = {
 		// Verify teacher has access to this student
 		const hasAccess = await verifyTeacherStudent(user.id, studentId, supabase);
 		if (!hasAccess) {
-			return fail(403, { error: 'Vous ne pouvez modifier que vos propres élèves' });
+			return fail(403, { error: 'Modification réservée aux élèves du professeur' });
 		}
 
 		// Check if consent record exists, create or update

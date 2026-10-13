@@ -75,7 +75,7 @@ export function requireConsent(profile: ConsentProfile, action: RestrictedAction
 	if (!canPerformAction(profile, action)) {
 		const actionMessage = ACTION_MESSAGES[action];
 		throw error(403, {
-			message: `Consentement parental requis pour ${actionMessage}. Contactez votre enseignant.`
+			message: `Consentement parental requis pour ${actionMessage}. Voir avec l’enseignant.`
 		});
 	}
 }

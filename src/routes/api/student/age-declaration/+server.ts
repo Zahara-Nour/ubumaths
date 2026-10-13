@@ -52,13 +52,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	if (profile.age_declaration !== null) {
-		throw error(409, 'Tu as déjà répondu à cette question');
+		throw error(409, 'Réponse déjà enregistrée pour cette question');
 	}
 
 	// Élève déjà dispensé par le professeur : la question ne le concerne pas (Q74),
 	// et un « Non » ne doit pas faire sauter la dispense.
 	if (!profile.consent_required) {
-		throw error(403, 'Cette question ne te concerne pas');
+		throw error(403, 'Cette question ne concerne pas ce compte');
 	}
 
 	const declaration: AgeDeclaration = validation.data.fifteenOrOlder ? '15_plus' : 'under_15';
@@ -97,7 +97,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	// Client service : pas de RLS. 0 ligne = la réponse a été donnée entre-temps.
 	if (!data || data.length !== 1) {
-		throw error(409, 'Tu as déjà répondu à cette question');
+		throw error(409, 'Réponse déjà enregistrée pour cette question');
 	}
 
 	return json({ success: true, ageDeclaration: declaration });
