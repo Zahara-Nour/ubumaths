@@ -5,7 +5,6 @@ couvre:
   - src/lib/mathAST/cli/web/web-repl-engine.ts
   - 'src/routes/(public)/atelier/**'
   - 'src/routes/(public)/calc/**'
-  - 'src/routes/(public)/cas/**'
   - 'src/routes/(public)/grapheur/**'
 ---
 
@@ -53,8 +52,9 @@ Ceux du code et de l'interface :
 - **vue** : Calcul, Graphe ou Données — une _projection_ des objets, sans état propre ;
 - **historique** : les lignes de la vue Calcul (saisies et réponses) ;
 - **mode éphémère** : un atelier reçu par lien, qui ne lit ni n'écrit l'atelier personnel.
-- voisins hors atelier : `/cas` (`src/routes/(public)/cas/+page.svelte`, ancien REPL web, à
-  retirer) et `/calc` (`src/routes/(public)/calc/+page.svelte`, grapheur singleton).
+- voisin hors atelier : `/calc` (`src/routes/(public)/calc/+page.svelte`, grapheur singleton).
+  `/cas` (ancien REPL web) est **retirée** depuis le 2026-10-13 : l'adresse mène à `/atelier` en
+  308 (`redirectHandle`, `src/lib/server/redirectHandle.ts`).
 
 ---
 
@@ -89,6 +89,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/desk.svelte.ts`       | `CalcDesk`, le pupitre : historique, actions venues du panneau, garder une ligne, rejeu                    |
 | `src/lib/atelier/commands.ts`          | Catalogue français des commandes (`commandCatalog`, `resolveCommand`, `suggestFor`)                        |
 | `src/lib/atelier/help.ts`              | `.aide` pour l'élève (`studentHelpText`) ; l'aide du moteur derrière `.aide dev`                           |
+| `src/lib/atelier/listing.ts`           | `.valeurs` et `.fonctions` : les cartes du panneau, en français (`valuesListing`, `functionsListing`)      |
 | `src/lib/atelier/render.ts`            | Rendu d'un résultat du moteur en LaTeX, sans jamais reparser la sortie texte                               |
 | `src/lib/atelier/decimal-comma.ts`     | Virgule décimale à l'affichage, refus des virgules ambiguës à la saisie                                    |
 | `src/lib/atelier/simplify-steps.ts`    | `.simplifier` par étapes (`simplifySteps`)                                                                 |
@@ -121,7 +122,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/url.ts`            | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                             |
 | `src/lib/atelier/grapheur-link.ts`  | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`               |
 | `src/lib/atelier/merge.ts`          | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                        |
-| `src/lib/atelier/history-export.ts` | Export de l'historique de Calcul : JSON rejouable, ubumark lisible                               |
+| `src/lib/atelier/history-export.ts` | Export de l'historique de Calcul : JSON rejouable, ubumark lisible, `downloadHistory`            |
 | `src/lib/atelier/history-import.ts` | Relecture d'un JSON exporté, validée par Zod et bornée (`readHistory`)                           |
 | `src/lib/atelier/removal.ts`        | Les phrases de la suppression en cascade (`cascadeMessage`, `removedMessage`)                    |
 
@@ -303,7 +304,7 @@ contenu. Elle est rangée sur l'objet, parce que `recomputeAll` relit toujours l
 
 ### Commandes
 
-La vue Calcul a **un seul champ**, comme `/cas` : ce que l'élève tape est une **définition** (crée
+La vue Calcul a **un seul champ**, comme l'ancienne `/cas` : ce que l'élève tape est une **définition** (crée
 ou met à jour un objet), un **calcul** (une ligne d'historique) ou une **commande** (commence par
 un point). `runInput` (`src/lib/atelier/calcul.ts`) rend un `CalcResult` de kind `vide`,
 `definition`, `calcul`, `commande` ou `refus`.
@@ -328,15 +329,17 @@ anglaises continuent de marcher (le registre est partagé avec le REPL de mathAS
 moteur **n'existent pas dans l'atelier** (`ENGINE_COMMANDS_LEFT_OUT` : `let`, `def`, `clear`,
 `unset`, `undef`, `inv`, `def'` — décision de David, 2026-10-13) : elles écriraient des noms dans le
 moteur, alors que les noms se créent dans le panneau. Hors du catalogue, tapées en entier, elles
-répondent comme toute commande inconnue. `.auto` (bascule du mode de saisie de `/cas`) n'est pas au
-catalogue non plus.
+répondent comme toute commande inconnue. `.auto` (bascule du mode de saisie de l'ancienne `/cas`) n'est pas
+au catalogue non plus.
 
 Chemin d'une commande dans `runCommand` (`calcul.ts`), dans cet ordre :
 
 1. `resolveCommand` + recherche dans le catalogue ; inconnue → refus avec au plus deux
    suggestions (`suggestFor`) ;
 2. on exécute le **nom canonique**, jamais le raccourci tapé (`.s` = simplifier, pas solve) ;
-3. `.aide`, `.mode`, `.exact`, `.décimal` : traités par l'atelier, en français ; `.latex` et
+3. `.aide`, `.mode`, `.exact`, `.décimal`, `.valeurs`, `.fonctions` : traités par l'atelier, en
+   français (`.valeurs` et `.fonctions` listent les CARTES du panneau, `src/lib/atelier/listing.ts`,
+   pas l'état du moteur) ; `.exporter` suivi d'autre chose : refus ; `.latex` et
    `.texte` sans expression : refus (le moteur y basculerait son mode de saisie, et lirait mal tous
    les calculs suivants) ;
 4. commandes de données (table `SIMULATIONS`) : lisent des **noms de listes**, avant toute
@@ -387,7 +390,7 @@ toujours sur le résultat exact, le calcul décimal du moteur ne sert qu'à une 
 « Garder ». Le texte d'une notation scientifique se retape dans la console (`8.7700*10^9`,
 `1.4286*10^-7`) ; à l'écran, `isScientificNotation` la protège de `tidy` (qui recalculerait
 `3 × 10²⁰`). Mêmes règles pour une grandeur (`9,4607 × 10¹⁵ m`). Le texte d'un résultat exact est mis au propre comme l'écran (`\pi/3`,
-plus `{1/3}\pi`) — `/cas` compris.
+plus `{1/3}\pi`) — y compris dans le texte brut du moteur.
 
 **Résultat exact trop long** (lot « lenteur des grandes fractions », option A de David du 2026-10-12,
 `mathAST/cli/exact-size.ts`) : au-delà de **1 000 caractères**, le mode exact **garde l'écriture
@@ -442,7 +445,7 @@ fréquents (« Unexpected token: EOF » → « Expression incomplète », « Unk
 « Commande inconnue : \foo », « Division by zero » → « Division par zéro »…), « Écriture non
 reconnue » pour une ligne qui COMMENCE par un mot anglais (un message déjà français reste
 entier ; une consigne « Use: »/« Usage: » reste, sous « Forme attendue : »). ⚠️ On traduit le
-message seul, puis on le remplace dans la sortie et, échappé, dans le HTML de /cas : traduit sur
+message seul, puis on le remplace dans la sortie et, échappé, dans le HTML du moteur : traduit sur
 le HTML final, il avalait des balises et réécrivait la saisie recopiée (revue). Les parseurs gardent leurs messages (une cinquantaine
 de tests les vérifient). Une sortie d'erreur VIDE reste vide : l'atelier y répond « Je n'ai pas
 su lire… ».
@@ -466,8 +469,8 @@ test du booléen le réutilise), ni l'arrondi deux fois (ligne et bouton ≈).
 règle unique — la liste s'ouvre quand le mot qui finit au CURSEUR (lettres seulement, curseur relu
 au moment de décider) a au moins 2 lettres et est le début d'une proposition (`si` → `sin(`,
 `sinh(`, `sign(`, `σ` ; `al` → `α` ; `pi` → `π`). Propositions tirées des listes uniques du moteur :
-`SHOWN_FUNCTIONS` (tokenizer) et `GREEK_LETTERS` (variantes exceptées), insérées en symbole — pas le
-module de complétion de `/cas`, qui insère `\alpha`. Rien dans le nom d'une commande (liste des
+`SHOWN_FUNCTIONS` (tokenizer) et `GREEK_LETTERS` (variantes exceptées), insérées en symbole — pas l'ancien
+module de complétion de `/cas` (retiré avec elle), qui insérait `\alpha`. Rien dans le nom d'une commande (liste des
 commandes), ni dans une saisie en LaTeX (`\frac{co`). Pas de nom du panneau : un nom d'objet fait une lettre. Clavier : ↑ / ↓
 surlignent, **Tab ou un clic insère**, **Entrée calcule** même liste ouverte (`3ta` = 3·t·a, décision
 de David), Échap ferme jusqu'à la frappe suivante. Garde : chaque proposition, tapée dans un calcul,
@@ -534,6 +537,14 @@ Bouton « Exporter » de la vue Calcul (`history-export.ts`) :
 - **ubumark** (`historyToUbumark`) pour recopier dans une fiche, formules en `$…$` LaTeX. Le
   titre d'une étape garde ses formules `$…$` (V25 : les pipelines pédagogiques y écrivent leurs
   maths) ; le texte autour est neutralisé (`*` → `×`, `\$`, `\~`).
+
+**`.exporter` tapé dans Calcul** (retrait de `/cas`, 2026-10-13) : le pupitre l'intercepte
+(`isExportCommand`, avant `runInput` — le moteur n'a jamais eu l'historique) et lance le **même**
+téléchargement que le bouton JSON (`downloadHistory`, appelé par `CalcDesk.download`). Aucune ligne
+n'est ajoutée ; la réponse va dans la zone de retour (« Historique exporté : calcul-….json. »).
+Historique vide : rien ne part, et la réponse est la raison des boutons désactivés
+(`NOTHING_TO_EXPORT`, « Rien à exporter pour l'instant. »). Un argument (`.exporter ubumark`) est
+refusé. Un rejeu saute une saisie `.exporter` et ne télécharge rien.
 
 Rejeu (`CalcDesk.replay`) : le fichier vient de dehors, donc `readHistory` le valide (Zod) et le
 borne (`MAX_HISTORY_BYTES`, `MAX_HISTORY_ENTRIES`) avant tout. Chaque geste est refait **par le
@@ -812,8 +823,7 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 
 **À venir** (suivi : [docs/wip/atelier-progress.md](../wip/atelier-progress.md)) :
 
-- **remplacer `/cas`** : inventaire de ce que `/cas` offre et que l'atelier n'offre pas, puis
-  retrait ; `/calc` existe aussi encore ;
+- `/calc` existe encore (`/cas`, elle, est retirée depuis le 2026-10-13) ;
 - **v2** géométrie à la souris, **v3** Python : non commencées, sans phase 0 ;
 - données en grille (tableur intégré, options A/B) : question ouverte ;
 - dettes connues : action « Renommer » encore désactivée (« prochain lot »), `recomputeAll`

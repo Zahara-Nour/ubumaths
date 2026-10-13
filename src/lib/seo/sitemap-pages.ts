@@ -152,7 +152,6 @@ const LOGIN_REQUIRED = 'renvoie un visiteur anonyme vers la connexion';
  */
 export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 	// « Ne pas mettre en avant » (docs/systeme/carte-des-fonctionnalites.md)
-	{ pattern: '/cas', reason: 'héritage remplacé par l’Atelier : ne pas mettre en avant' },
 	{ pattern: '/games/evoland', reason: 'jeu en sommeil, sans lien depuis /games' },
 	// Démos et mise au point
 	{ pattern: '/demo/**', reason: DEMO },

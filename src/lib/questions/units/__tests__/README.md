@@ -2,7 +2,7 @@
 
 `questions/units` sert **une seule chose** : lire et corriger la réponse d'un élève dans une
 case à unité d'une question (`blank.unit.expected`). Le calcul et l'écriture des grandeurs
-partout ailleurs (énoncés, `{{eval}}`, Calcul, `/cas`) passent par `mathAST` : le contrat est
+partout ailleurs (énoncés, `{{eval}}`, Calcul) passent par `mathAST` : le contrat est
 dans [docs/systeme/grandeurs.md](../../../../../docs/systeme/grandeurs.md).
 
 Le catalogue des unités et les opérations de base vivent dans `mathAST/units` (`resolveUnit`,

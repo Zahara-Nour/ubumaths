@@ -1273,7 +1273,8 @@ export class WebReplEngine {
 			ast: outcome.answer.node,
 			...(outcome.quantity !== null &&
 				outcome.quantity !== outcome.answer.node && { quantityAst: outcome.quantity }),
-			// La bascule exact ⇄ décimal de `/cas`, comme pour un nombre
+			// La bascule exact ⇄ décimal, comme pour un nombre (lue par l'ancienne `/cas`,
+			// retirée le 2026-10-13 : plus de lecteur hors des tests)
 			exactOutput: outcome.exact.text,
 			exactOutputHtml: html(outcome.exact.text),
 			decimalOutput: outcome.decimal.text,

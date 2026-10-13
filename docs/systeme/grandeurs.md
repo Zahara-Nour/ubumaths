@@ -74,7 +74,7 @@ Un seul calculateur : **`tidy(ast, { unitChoice: 'written' })`**, en rationnels 
 | Qui                    | Entrée                                                                                                        |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------- |
 | `{{eval}}` des énoncés | `evaluateWithModifiers` (interne : `evaluateQuantity`), `valueIn` (`mathAST/eval/evaluate-with-modifiers.ts`) |
-| Calcul, `/cas`         | `computeQuantity`, `convertQuantity` (`.convertir`), `quantityProblem` (`mathAST/cli/quantities.ts`)          |
+| Calcul de l'atelier    | `computeQuantity`, `convertQuantity` (`.convertir`), `quantityProblem` (`mathAST/cli/quantities.ts`)          |
 
 Ce que fait `computeQuantity` en plus de `tidy` :
 

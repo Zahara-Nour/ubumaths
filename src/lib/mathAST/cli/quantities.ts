@@ -1,5 +1,5 @@
 /**
- * Les grandeurs dans la console de mathAST (Calcul de l'atelier, `/cas`).
+ * Les grandeurs dans la console de mathAST (Calcul de l'atelier, `pnpm math`).
  *
  * Phase 0 `docs/archive/wip/grandeurs-phase0.md`, lot A (validée par David le
  * 2026-10-11) : une grandeur se calcule par `tidy`, **unité écrite d'abord** —
@@ -68,7 +68,7 @@ export type QuantityOutcome =
 			readonly ok: true;
 			/** La réponse dans le mode demandé (exact ou décimal) */
 			readonly answer: QuantityAnswer;
-			/** La réponse exacte et la décimale, pour la bascule de `/cas` */
+			/** La réponse exacte et la décimale (bascule de l'ancienne `/cas`, retirée le 2026-10-13) */
 			readonly exact: QuantityAnswer;
 			readonly decimal: QuantityAnswer;
 			/** L'arbre du bouton ≈ de l'atelier, quand la valeur exacte n'est pas décimale */

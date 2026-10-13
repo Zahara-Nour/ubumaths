@@ -47,7 +47,7 @@ describe('les erreurs de lecture courantes, en français', () => {
 		expect(line.error?.message ?? '').not.toMatch(ENGLISH);
 	});
 
-	it('/cas : le HTML aussi', () => {
+	it('le HTML du moteur aussi', () => {
 		const html = run('2+3)').outputHtml ?? '';
 
 		expect(html).not.toMatch(ENGLISH);

@@ -27,9 +27,8 @@
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
 	import FormulaText from './FormulaText.svelte';
 	import {
-		exportFileName,
-		historyToJson,
-		historyToUbumark,
+		NOTHING_TO_EXPORT,
+		downloadHistory,
 		type ExportFormat
 	} from '$lib/atelier/history-export';
 	import {
@@ -432,22 +431,9 @@
 	/** Rien à exporter : les boutons restent visibles, désactivés, avec leur raison (X1). */
 	const empty = $derived(desk.entries.length === 0);
 
-	/** Enregistrer l'historique dans un fichier, au format choisi (lot C). */
+	/** Enregistrer l'historique dans un fichier : le même chemin que `.exporter` tapé. */
 	function download(format: ExportFormat) {
-		const now = new Date();
-		const content =
-			format === 'json' ? historyToJson(desk.entries, now) : historyToUbumark(desk.entries, now);
-		const type = format === 'json' ? 'application/json' : 'text/markdown';
-		const url = URL.createObjectURL(new Blob([content], { type: `${type};charset=utf-8` }));
-		const link = document.createElement('a');
-		link.href = url;
-		link.download = exportFileName(format, now);
-		// Dans la page, et l'adresse libérée plus tard : Firefox et Safari ont
-		// annulé des téléchargements dont l'adresse disparaissait aussitôt (revue)
-		document.body.append(link);
-		link.click();
-		link.remove();
-		setTimeout(() => URL.revokeObjectURL(url), 1000);
+		downloadHistory(desk.entries, format);
 	}
 </script>
 
@@ -475,7 +461,7 @@
 		>
 			ubumark (pour lire)
 		</Button>
-		{#if empty}<span id="export-raison" class="raison">Rien à exporter pour l’instant.</span>{/if}
+		{#if empty}<span id="export-raison" class="raison">{NOTHING_TO_EXPORT}</span>{/if}
 		{#if onreplay}
 			<Button variant="outline" size="sm" onclick={() => fileInput?.click()}>
 				Rejouer un historique…
