@@ -32,7 +32,8 @@ import { detectVariable } from '../classify';
 import { subtract } from '../../factory';
 import { denormalize, normalize } from '../../normal';
 import { getVariables } from '../../eval/substitute';
-import { isEmpty as isDomainEmpty, union, difference } from '../../domain/algebra';
+import { isEmpty as isDomainEmpty, union, difference, intersect } from '../../domain/algebra';
+import { computeDomain, normalizeExcludedPoints } from '../../domain/compute';
 import { emptyDomain, intervalSet } from '../../domain/factory';
 
 const INEQUALITY_OPS: ReadonlySet<InequalityOp> = new Set(['<', '>', '<=', '>=', '!=']);
@@ -92,16 +93,41 @@ export function solveInequality(
 
 	rejectIfParametric(expression, variable);
 
+	// Le domaine de définition se lit sur l'inéquation ÉCRITE, pas sur la forme
+	// canonique : `normalize` simplifie \frac{3x}{3x} en 1 et \ln x − \ln x en 0,
+	// et 0 ou x ≤ 0 rentraient dans l'ensemble solution (écart V47)
+	const definition = computeDomain(subtract(relation.left, relation.right), variable);
+	if (definition.unresolved !== undefined && definition.unresolved.length > 0) {
+		// x⁵ − x + 1 ≠ 0 non résolue : le domaine serait trop grand, on ne conclut pas
+		throw new InequalityNotSolvable(
+			"Le domaine de définition n'a pas pu être déterminé exactement",
+			definition.unresolved.join(' ; ')
+		);
+	}
+	// Exclusion périodique (\frac{\sin x}{\sin x}) : le découpage du signe ne la
+	// suit pas (il la lit comme ℝ), le résultat ne peut être que partiel
+	const periodicDomain =
+		definition.domain.kind === 'periodic_exclusion' ||
+		definition.domain.kind === 'condition_domain';
+	// Points interdits écrits en intervalles (ℝ \ {0} → ]-∞ ; 0[ ∪ ]0 ; +∞[), sans
+	// quoi `difference` ne reconnaît pas « tout le domaine » ; sur une borne du
+	// domaine imposé, le point l'ouvre : [0 ; 1] \ {0} → ]0 ; 1]
+	const domain = normalizeExcludedPoints(
+		options.domain ? intersect(definition.domain, options.domain) : definition.domain
+	);
+
 	const signResult = analyzeSign(expression, {
 		variable,
-		domain: options.domain,
+		domain,
 		numericFallback: options.numericFallback ?? true,
 		tolerance: options.tolerance,
 		strictMode: false
 	});
 
-	const { solution, hasUnknown } = aggregateSolution(signResult, inequalityOp);
-	const status = computeStatus(signResult.domain, solution, hasUnknown);
+	const aggregated = aggregateSolution(signResult, inequalityOp);
+	const solution = aggregated.solution;
+	const hasUnknown = aggregated.hasUnknown || periodicDomain;
+	const status = computeStatus(signResult.domain, solution, hasUnknown, aggregated.everyMatches);
 
 	const warnings = buildWarnings(signResult.warnings, hasUnknown);
 
@@ -184,9 +210,10 @@ function resolveConstantInequality(expression: MathNode, op: InequalityOp): Solv
 function aggregateSolution(
 	signResult: SignAnalysisResult,
 	op: InequalityOp
-): { solution: Domain; hasUnknown: boolean } {
+): { solution: Domain; hasUnknown: boolean; everyMatches: boolean } {
 	let solution: Domain = emptyDomain();
 	let hasUnknown = false;
+	let everyMatches = true;
 
 	for (const si of signResult.signedIntervals) {
 		if (si.sign === 'unknown') {
@@ -195,10 +222,12 @@ function aggregateSolution(
 		}
 		if (matchesOperator(si.sign, op)) {
 			solution = union(solution, intervalSet([si.interval]));
+		} else {
+			everyMatches = false;
 		}
 	}
 
-	return { solution, hasUnknown };
+	return { solution, hasUnknown, everyMatches };
 }
 
 function matchesOperator(sign: SignedInterval['sign'], op: InequalityOp): boolean {
@@ -237,11 +266,18 @@ function matchesOperator(sign: SignedInterval['sign'], op: InequalityOp): boolea
  * inspect the matching intervals to confirm; reporting `'no-solution'`
  * would hide the unresolved region.
  */
-function computeStatus(domain: Domain, solution: Domain, hasUnknown: boolean): InequalityStatus {
+function computeStatus(
+	domain: Domain,
+	solution: Domain,
+	hasUnknown: boolean,
+	everyMatches: boolean
+): InequalityStatus {
 	if (isDomainEmpty(domain)) return 'empty-domain';
 	if (hasUnknown) return 'partial';
 	if (isDomainEmpty(solution)) return 'no-solution';
-	if (isDomainEmpty(difference(domain, solution))) return 'all-real';
+	// Chaque morceau du découpage convient : tout le domaine. `difference` seule
+	// ne le voit pas sur ℝ \ {0}, dont le point exclu reste à part (V47)
+	if (everyMatches || isDomainEmpty(difference(domain, solution))) return 'all-real';
 	return 'complete';
 }
 

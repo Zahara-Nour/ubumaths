@@ -15,7 +15,9 @@
 import type { MathNode, RelationNode } from '../types';
 import type { Domain, IntervalSet } from '../domain/types';
 import type { Verbosity } from '../common/verbosity';
-import { add, divide, relation, variable as varNode } from '../factory';
+import { add, divide, relation, subtract, variable as varNode } from '../factory';
+import { computeDomain } from '../domain/compute';
+import { isUniversal } from '../domain/algebra';
 import { flattenSumShallow } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
 import { unwrapGroupingMembers } from '../solve/classify';
@@ -83,6 +85,30 @@ export function prepareLinearRelation(rel: RelationNode, variable: string): Rela
 		}
 	}
 	return unwrapped;
+}
+
+/**
+ * Inéquation dont l'écriture a des valeurs interdites : `InequalityNotSolvable`.
+ *
+ * Le pipeline du premier degré lit la forme canonique, où `\frac{3x^2}{2x}`
+ * devient `\frac{3}{2}x` : la valeur interdite 0 disparaît, et
+ * `\frac{3x^2}{2x}\geq 0` concluait x ≥ 0 (écart V47, 2026-10-13). Sa
+ * conclusion est une forme résolue (`x ≥ 0`), qui ne peut pas exclure un
+ * point : il refuse, l'appelant se replie sur `solveInequality`, qui lit le
+ * domaine sur l'inéquation écrite. (Le second degré conclut par
+ * `solveInequality` : sa conclusion est juste, il n'a pas besoin du refus.)
+ */
+export function rejectForbiddenValues(inequality: RelationNode, variable: string): void {
+	const { domain, unresolved } = computeDomain(
+		subtract(inequality.left, inequality.right),
+		variable
+	);
+	if (!isUniversal(domain) || (unresolved !== undefined && unresolved.length > 0)) {
+		throw new InequalityNotSolvable(
+			"L'inéquation a des valeurs interdites : ses étapes du premier ou du second degré les perdraient",
+			'Repli sur solveInequality, qui lit le domaine de définition.'
+		);
+	}
 }
 
 // =============================================================================
