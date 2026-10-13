@@ -833,10 +833,14 @@ function generateMathBlock(node: MathBlockNode, options: ResolvedTypstTranspiler
 				)
 			: toLocaleDecimal(node.expression, options.language);
 
-	// Check if this is an aligned equation (contains \begin{align} etc.)
-	const alignMatch = latex.match(/\\begin\s*\{(align|aligned)\*?\}([\s\S]*?)\\end\s*\{\1\*?\}/);
+	// Formule réduite à un environnement d'alignement → grille. Seulement si elle ne
+	// contient RIEN d'autre : ce qui entoure l'environnement (`S = \left\{ … \right.` d'un
+	// système) était jeté avec la grille, et l'accolade disparaissait du PDF.
+	const alignMatch = latex.match(
+		/^\s*\\begin\s*\{(align|aligned)\*?\}([\s\S]*?)\\end\s*\{\1\*?\}\s*$/
+	);
 
-	if (alignMatch) {
+	if (alignMatch && !/\\begin\s*\{align/.test(alignMatch[2])) {
 		return generateAlignedEquation(alignMatch[2]);
 	}
 
@@ -1523,15 +1527,54 @@ function convertStackedCommand(str: string, latexCmd: string, operator: '_' | '^
 }
 
 /**
+ * Texte d'un `\text{…}` (sans ses formules `$…$`) → chaîne Typst entre guillemets.
+ *
+ * Seules les commandes de TEXTE sont converties : espaces (`\,` `\;` `\:` `\ ` `~`
+ * `\quad`) → espace, `\%` `\{` `\}` `\$` `\&` `\_` `\#` → le caractère, `{,}` → virgule,
+ * accolades de groupe effacées, `\ldots` → points de suspension ; une commande inconnue
+ * garde son nom. `"` et `\` sont échappés pour la chaîne Typst.
+ */
+function latexTextToTypstString(text: string): string {
+	const result = text
+		// Virgule décimale `\{,\}` ou `{,}` avant les accolades échappées
+		.replace(/\\\{,\\\}|\{,\}/g, ',')
+		// Accolades échappées : mises de côté le temps d'effacer les accolades de groupe
+		.replace(/\\\{/g, '\u0001')
+		.replace(/\\\}/g, '\u0002')
+		.replace(/[{}]/g, '')
+		.replaceAll('\u0001', '{')
+		.replaceAll('\u0002', '}')
+		// Saut de ligne `\\` avant les espaces (`\\ ` n'est pas une espace de contrôle)
+		.replace(/\\\\/g, ' ')
+		.replace(/\\(?:q?quad(?![a-zA-Z])|[,;: ])\s*/g, ' ')
+		.replace(/\\!/g, '')
+		.replace(/~/g, ' ')
+		.replace(/\\([%$&_#])/g, '$1')
+		.replace(/\\(?:ldots|dots)(?![a-zA-Z])\s*/g, '…')
+		.replace(/\\([a-zA-Z]+)\s*/g, '$1');
+	return `"${result.replace(/[\\"]/g, '\\$&')}"`;
+}
+
+/**
  * Convert LaTeX \text{...} commands to Typst, handling nested math expressions.
  *
  * In LaTeX, \text{car $x-1<0$} contains text "car " and math "$x-1<0$".
  * In Typst math mode, this becomes: "car " x - 1 < 0
  *
- * @param str - Input string containing \text{...} commands
+ * Le texte devient une chaîne Typst mise À L'ABRI derrière un marqueur `<<<TEXTn>>>`
+ * (rangée dans `texts`), restituée en fin de conversion : aucune règle mathématique ne
+ * doit la toucher (`\,` → « thin », `[` → « bracket.l », `"` → « prime.double »).
+ * Les formules `$…$` imbriquées restent en place, converties avec le reste.
+ *
+ * @param str - Input string containing \text commands
+ * @param texts - Chaînes Typst mises de côté (indice = numéro du marqueur)
  * @returns String with \text commands converted
  */
-function convertTextCommand(str: string): string {
+function convertTextCommand(str: string, texts: string[]): string {
+	const protectText = (text: string): string => {
+		texts.push(latexTextToTypstString(text.replaceAll('\u0003', '\\$')));
+		return `<<<TEXT${texts.length - 1}>>>`;
+	};
 	let result = str;
 	// `\textrm{…}` : texte droit, comme `\text` (sortait « "textrm" »)
 	const pattern = /\\text(?:rm)?\s*\{/g;
@@ -1550,7 +1593,8 @@ function convertTextCommand(str: string): string {
 			const closeIndex = findMatchingBrace(result, openBraceIndex);
 			if (closeIndex === -1) continue;
 
-			const content = result.slice(openBraceIndex + 1, closeIndex);
+			// `\$` (dollar affiché) n'ouvre pas de formule : mis de côté pendant le découpage
+			const content = result.slice(openBraceIndex + 1, closeIndex).replace(/\\\$/g, '\u0003');
 
 			// Parse content for $...$ math segments
 			const parts: string[] = [];
@@ -1561,29 +1605,23 @@ function convertTextCommand(str: string): string {
 			while ((mathMatch = mathRegex.exec(content)) !== null) {
 				// Add text before this math segment (quoted)
 				if (mathMatch.index > lastIndex) {
-					const textPart = content.slice(lastIndex, mathMatch.index);
-					if (textPart) {
-						parts.push(`"${textPart}"`);
-					}
+					parts.push(protectText(content.slice(lastIndex, mathMatch.index)));
 				}
 
 				// Add the math segment (will be converted by the outer function)
 				// Just remove the $ delimiters - the math is already in math mode
-				parts.push(mathMatch[1]);
+				parts.push(mathMatch[1].replaceAll('\u0003', '\\$'));
 
 				lastIndex = mathMatch.index + mathMatch[0].length;
 			}
 
 			// Add remaining text after last math segment (quoted)
 			if (lastIndex < content.length) {
-				const textPart = content.slice(lastIndex);
-				if (textPart) {
-					parts.push(`"${textPart}"`);
-				}
+				parts.push(protectText(content.slice(lastIndex)));
 			}
 
 			// If no math was found, just quote the whole content
-			const replacement = parts.length > 0 ? parts.join(' ') : `"${content}"`;
+			const replacement = parts.length > 0 ? parts.join(' ') : protectText(content);
 			result = result.slice(0, startIndex) + replacement + result.slice(closeIndex + 1);
 
 			changed = true;
@@ -2420,6 +2458,15 @@ function protectLrArguments(text: string): string {
 export function convertLatexToTypstMath(latex: string): string {
 	let result = latex;
 
+	// ========================================================================
+	// TEXTE (Étape 1 sur 2)
+	// ========================================================================
+	// `\text{d}x` → différentielle droite ; tout autre `\text{…}` / `\textrm{…}` devient
+	// une chaîne Typst mise de côté AVANT toute règle mathématique (voir convertTextCommand)
+	result = result.replace(/\\text\s*\{d\}\s*([a-zA-Z])/g, 'dif $1');
+	const textPlaceholders: string[] = [];
+	result = convertTextCommand(result, textPlaceholders);
+
 	// Degrés : `60^{\circ}` / `60^\circ` → `60°` ; `\circ` seul (composition) → `compose`.
 	// Avant tout traitement des exposants : sinon « circ » s'affichait en toutes lettres.
 	result = result.replace(/\^\s*\{\s*\\circ\s*\}|\^\s*\\circ(?![a-zA-Z])/g, '°');
@@ -2625,6 +2672,26 @@ export function convertLatexToTypstMath(latex: string): string {
 		/(\\ubudisplay\s*)?\\begin\s*\{array\}\s*\{[^{}]*\}([\s\S]*?)\\end\s*\{array\}/g,
 		(_, display: string | undefined, content: string) =>
 			toMatrix(display, content.replace(/\\hline(?![a-zA-Z])/g, ''), '#none')
+	);
+
+	// `aligned` DANS une formule (système `S = \left\{\begin{aligned} … \end{aligned}\right.`) :
+	// colonne sans délimiteur, `vec(delim: #none, …)`, dont les lignes s'alignent sur leurs
+	// `&` et autour de laquelle `lr(…)` fait grandir l'accolade. Effacer l'environnement
+	// laissait des sauts de ligne `\` qu'aucune accolade n'englobait. (Une formule de bloc
+	// réduite à `aligned` passe par la grille de generateMathBlock.) `display` : taille
+	// normale ; virgules de premier niveau protégées, comme dans `cases`.
+	result = result.replace(
+		/\\begin\s*\{aligned\*?\}([\s\S]*?)\\end\s*\{aligned\*?\}/g,
+		(_, content: string) => {
+			const rows = content
+				.split(/\\\\/)
+				.map(trimLatex)
+				.filter((row: string) => row.length > 0)
+				.map((row: string) => `display(${protectTopLevelCommas(row)})`);
+			const idx = matPrefixes.length;
+			matPrefixes.push('vec(delim: #none, ');
+			return `<<<mat${idx}>>>${rows.join(', ')})`;
+		}
 	);
 
 	// \sqrt sans accolades : en LaTeX, `\sqrt5` ou `\sqrt x` prend UN seul jeton
@@ -2883,12 +2950,6 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = replaceLatexCmd(result, 'llbracket', 'bracket.l.double');
 	result = replaceLatexCmd(result, 'rrbracket', 'bracket.r.double');
 
-	// Convert \text{d}x → dif x (differential notation before general \text handler)
-	// \text{d} is commonly used in LaTeX for upright "d" in integrals: \int f(x)\text{d}x
-	result = result.replace(/\\text\s*\{d\}\s*([a-zA-Z])/g, 'dif $1');
-
-	// Convert text command (handles nested math like \text{car $x-1<0$})
-	result = convertTextCommand(result);
 	result = result.replace(/\\textbf\s*{([^{}]*)}/g, 'bold("$1")');
 	result = result.replace(/\\textit\s*{([^{}]*)}/g, 'italic("$1")');
 	// Convert \textcolor{color}{content} -> #text(fill: color)[content]
@@ -3274,6 +3335,9 @@ export function convertLatexToTypstMath(latex: string): string {
 
 	// UNITÉS (Étape 2 sur 2)
 	result = result.replace(/<<<UNIT(\d+)>>>/g, (_, idx) => unitPlaceholders[parseInt(idx)]);
+
+	// TEXTE (Étape 2 sur 2)
+	result = result.replace(/<<<TEXT(\d+)>>>/g, (_, idx) => textPlaceholders[parseInt(idx)]);
 
 	// Final trim: bracket symbol insertions may add leading/trailing spaces
 	result = result.trim();
