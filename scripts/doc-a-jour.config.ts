@@ -94,11 +94,7 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 			note: 'exercices (table exercises : éditeur, partage, maîtrise)'
 		},
 		{
-			glob: 'src/routes/(protected)/messages/**',
-			note: 'messagerie, modération, notifications, avertissements, amitiés'
-		},
-		{
-			glob: 'src/routes/api/{messages,moderation,notifications,warnings}/**',
+			glob: 'src/routes/api/{moderation,notifications,warnings}/**',
 			note: 'messagerie, modération, notifications, avertissements, amitiés'
 		},
 		{
@@ -118,7 +114,7 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 			note: 'messagerie, modération, notifications, avertissements, amitiés'
 		},
 		{
-			glob: 'src/lib/stores/{privateMessages,notifications,messageTemplates,mentions,hashtags}.svelte.ts',
+			glob: 'src/lib/stores/{notifications,messageTemplates,mentions,hashtags}.svelte.ts',
 			note: 'messagerie, modération, notifications, avertissements, amitiés'
 		},
 		{
@@ -126,7 +122,7 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 			note: 'messagerie, modération, notifications, avertissements, amitiés'
 		},
 		{
-			glob: 'src/lib/server/validation/{messages,moderation,notifications,warnings,message-templates}.ts',
+			glob: 'src/lib/server/validation/{moderation,notifications,warnings,message-templates}.ts',
 			note: 'messagerie, modération, notifications, avertissements, amitiés'
 		},
 		{
