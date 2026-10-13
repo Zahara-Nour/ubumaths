@@ -93,7 +93,6 @@ const MAINTENANCE: [string, Record<string, unknown>][] = [
 	['delete_all_resolved_errors', {}],
 	['run_cleanup_all', {}],
 	['run_cleanup_expired_data', {}],
-	['run_flag_stale_python_rechecks', {}],
 	['run_recalculate_minesweeper_ref_times', {}],
 	['run_weekly_best_bonuses', {}],
 	['cleanup_abandoned_minesweeper_games', {}],
