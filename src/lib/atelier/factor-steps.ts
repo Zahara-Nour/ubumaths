@@ -24,6 +24,7 @@ import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/r
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { astOf } from './parse';
+import { summaryOf } from './steps-summary';
 
 // =============================================================================
 // Types
@@ -41,6 +42,8 @@ export type FactoredOutcome =
 	| {
 			readonly kind: 'factorisee';
 			readonly steps: readonly RenderedStep[];
+			/** Les mêmes étapes en version résumée, absente si elle ne dit rien de moins. */
+			readonly summary?: readonly RenderedStep[];
 			/** La forme factorisée en LaTeX — ce que la ligne affiche. */
 			readonly answer: string;
 			/** La même en syntaxe texte, pour le cas où le LaTeX ne se compose pas. */
@@ -136,15 +139,24 @@ export function factorSteps(expression: string): FactoredOutcome {
 					};
 		}
 
-		const steps = new PedagogicalSimplifyRenderer().renderAll(result.steps, {
-			schoolLevel: 'lycee',
-			verbosity: 'detailed'
-		});
+		const renderer = new PedagogicalSimplifyRenderer();
+		const steps = renderer.renderAll(result.steps, { schoolLevel: 'lycee', verbosity: 'detailed' });
 		if (steps.length === 0) {
 			return { kind: 'inchangee', message: `Je ne sais pas factoriser « ${plain} ».` };
 		}
+		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
+		const summary = summaryOf(
+			steps,
+			renderer.renderAll(result.steps, { schoolLevel: 'lycee', verbosity: 'summarized' })
+		);
 
-		return { kind: 'factorisee', steps, answer: latex, text: plain };
+		return {
+			kind: 'factorisee',
+			steps,
+			answer: latex,
+			text: plain,
+			...(summary !== undefined && { summary })
+		};
 	} catch {
 		// `PedagogicalSimplifyNotImplemented` (inéquation, matrice…), ou un
 		// générateur qui refuse ce qu'on lui donne.

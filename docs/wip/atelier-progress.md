@@ -31,7 +31,8 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
    (↑/↓, bouton exact ⇄ décimal, complétion — phase 0 en attente de validation ; retrait de `/cas` suspendu).
 2. **v2, puis v3** : phase 0 à écrire.
 3. **Étapes rédigées : plan décidé par David le 2026-10-13** (ses réponses Q1-Q4 = mes recommandations).
-   - **2a. Sélecteur « résumé / détaillé »** : interrupteur DANS chaque « Comment ? » déplié (pas de
+   - **2a. Sélecteur « résumé / détaillé »** — **fait (PR à venir)** (`steps-summary.ts`, tests
+     `etapes-resume.test.ts` et `etapes-resume.svelte.test.ts`) : interrupteur DANS chaque « Comment ? » déplié (pas de
      réglage global) ; « détaillé » à l'ouverture, dernier choix retenu dans ce navigateur ; les quatre
      commandes qui rédigent déjà (simplifier, factoriser, dériver, résoudre ; toutes figées sur
      `verbosity: 'detailed'`) ; pas d'interrupteur là où le résumé ne diffère pas du détaillé ; une

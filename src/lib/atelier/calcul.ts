@@ -157,6 +157,12 @@ export type CalcResult =
 			 * produire. Absentes = repli : la ligne garde la sortie du moteur.
 			 */
 			readonly steps?: readonly RenderedStep[];
+			/**
+			 * Les mêmes étapes en version résumée (interrupteur « Résumé /
+			 * Détaillé »). Absente quand elle ne dit rien de moins, et pour
+			 * `.variations`, qui a sa propre rédaction.
+			 */
+			readonly summary?: readonly RenderedStep[];
 			/** Le graphique d'une simulation, dessiné sous la ligne (Q80) */
 			readonly chart?: StatChartScene;
 			/** Le tableau de variations de `.variations`, quand il se dessine */
@@ -189,6 +195,8 @@ export type ActionOutcome =
 			 * Absentes = repli : la ligne garde la sortie du moteur.
 			 */
 			readonly steps?: readonly RenderedStep[];
+			/** Les mêmes étapes en version résumée, comme `CalcResult` (commande) */
+			readonly summary?: readonly RenderedStep[];
 			/**
 			 * Le tableau de variations, quand l'action en produit un.
 			 *
@@ -715,7 +723,8 @@ function runAtelierCommand(name: string, input: string, argument: string): CalcR
 				input,
 				output: outcome.text,
 				latex: outcome.answer,
-				steps: outcome.steps
+				steps: outcome.steps,
+				...summaryField(outcome)
 			};
 		case 'inchangee':
 			return { kind: 'commande', input, output: outcome.message };
@@ -1142,6 +1151,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				output: rendered.text,
 				latex: derived.answer,
 				steps: derived.steps,
+				...summaryField(derived),
 				...notes
 			};
 		}
@@ -1171,7 +1181,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				input,
 				output: rendered.text,
 				latex: simplified.answer,
-				steps: simplified.steps
+				steps: simplified.steps,
+				...summaryField(simplified)
 			};
 		}
 	}
@@ -1214,6 +1225,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			output: rendered.text,
 			latex: solved.answer,
 			steps: solved.steps,
+			...summaryField(solved),
 			...stepsAlternative(solved),
 			...noted
 		};
@@ -1377,6 +1389,7 @@ function resultWithDecimalComma(result: CalcResult): CalcResult {
 				output: decimalCommaText(result.output),
 				...(result.latex !== undefined && { latex: decimalCommaLatex(result.latex) }),
 				...(result.steps !== undefined && { steps: result.steps.map(decimalCommaStep) }),
+				...(result.summary !== undefined && { summary: result.summary.map(decimalCommaStep) }),
 				...(result.table !== undefined && { table: decimalCommaDeep(result.table) }),
 				...(result.note !== undefined && { note: decimalCommaProse(result.note) }),
 				...alternativeWithDecimalComma(result.alternative)
@@ -1403,6 +1416,16 @@ function alternativeWithDecimalComma(alternative: Alternative | undefined): {
 		: { alternative: { ...alternative, latex: decimalCommaLatex(alternative.latex) } };
 }
 
+/**
+ * La version résumée des étapes, quand la commande en a une (interrupteur
+ * « Résumé / Détaillé » du dépliage) — sinon rien, pas de clé `undefined`.
+ */
+function summaryField(source: { readonly summary?: readonly RenderedStep[] }): {
+	summary?: readonly RenderedStep[];
+} {
+	return source.summary === undefined ? {} : { summary: source.summary };
+}
+
 /** Une action, décimaux à la française — même règle que `resultWithDecimalComma`. */
 function outcomeWithDecimalComma(outcome: ActionOutcome): ActionOutcome {
 	if (!outcome.ok) return outcome;
@@ -1411,6 +1434,7 @@ function outcomeWithDecimalComma(outcome: ActionOutcome): ActionOutcome {
 		output: decimalCommaText(outcome.output),
 		...(outcome.latex !== undefined && { latex: decimalCommaLatex(outcome.latex) }),
 		...(outcome.steps !== undefined && { steps: outcome.steps.map(decimalCommaStep) }),
+		...(outcome.summary !== undefined && { summary: outcome.summary.map(decimalCommaStep) }),
 		...(outcome.table !== undefined && { table: decimalCommaDeep(outcome.table) }),
 		...alternativeWithDecimalComma(outcome.alternative)
 	};
@@ -1746,6 +1770,7 @@ function computeAction(
 				output: rendered.text,
 				latex: solved.answer,
 				steps: solved.steps,
+				...summaryField(solved),
 				...stepsAlternative(solved)
 			};
 		}
@@ -1768,7 +1793,13 @@ function computeAction(
 	if (actionId === 'derive') {
 		const derived = deriveSteps(substituted.expression, name);
 		if (derived !== null) {
-			return { ok: true, output: rendered.text, latex: derived.answer, steps: derived.steps };
+			return {
+				ok: true,
+				output: rendered.text,
+				latex: derived.answer,
+				steps: derived.steps,
+				...summaryField(derived)
+			};
 		}
 	}
 
