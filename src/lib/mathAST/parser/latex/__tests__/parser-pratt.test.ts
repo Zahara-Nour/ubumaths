@@ -444,6 +444,25 @@ describe('Functions', () => {
 			expectType(node, 'function');
 			expect(node.args).toHaveLength(2);
 		});
+
+		// La forme qu'écrit MathLive, et celle que rend toLatex : elle ne se
+		// relisait pas (« Expected \right to close delimiter »)
+		it('should parse multiple arguments inside \\left( \\right)', () => {
+			const node = parse('\\max\\left(\\min\\left(x,2\\right),1\\right)');
+			expectType(node, 'function');
+			expect(node.name).toBe('max');
+			expect(node.args).toHaveLength(2);
+			const inner = node.args[0];
+			expectType(inner, 'function');
+			expect(inner.args).toHaveLength(2);
+		});
+
+		it('should keep a single argument inside \\left( \\right)', () => {
+			const node = parse('\\sin\\left(x+1\\right)');
+			expectType(node, 'function');
+			expect(node.args).toHaveLength(1);
+			expectType(node.args[0], 'addition');
+		});
 	});
 
 	describe('Square root', () => {

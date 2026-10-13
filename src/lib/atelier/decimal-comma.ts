@@ -237,6 +237,62 @@ export function decimalCommaInput(text: string): string {
 }
 
 /**
+ * L'ouverture d'un appel à plusieurs arguments en LaTeX : `\max\left(`,
+ * `\max(`, `\operatorname{mod}\left(`.
+ */
+const MULTI_ARGUMENT_CALL_LATEX = new RegExp(
+	String.raw`\\(?:operatorname\{)?(?:${MULTI_ARGUMENT_FUNCTIONS.join('|')})\}?\s*(?:\\left\s*)?\(`,
+	'g'
+);
+
+/**
+ * Les séparateurs d'arguments d'un appel LaTeX, `from` remplacé par `to` au
+ * premier niveau : `\max\left(2{,}5;x\right)` ↔ `\max\left(2{,}5,x\right)`.
+ *
+ * La virgule décimale de MathLive (`{,}`) est dans un groupe, jamais au premier
+ * niveau ; une commande (`\,`, `\left`) n'est jamais un séparateur.
+ */
+function swapLatexSeparators(latex: string, from: ',' | ';', to: ',' | ';'): string {
+	// Indices de `latex` (UTF-16), comme ceux de `matchAll`
+	const chars = latex.split('');
+	for (const match of latex.matchAll(MULTI_ARGUMENT_CALL_LATEX)) {
+		let depth = 0;
+		let i = match.index + match[0].length;
+		while (i < chars.length) {
+			const char = chars[i];
+			if (char === '\\') {
+				const command = /^\\([A-Za-z]+|.)/.exec(latex.slice(i))?.[1] ?? '';
+				if (command === 'right' && depth === 0) break;
+				if (command === 'left') depth++;
+				if (command === 'right') depth--;
+				// `\left(` : sa parenthèse est comptée avec la commande
+				i += 1 + command.length + (command === 'left' || command === 'right' ? 1 : 0);
+				continue;
+			}
+			if (char === '(' || char === '{' || char === '[') depth++;
+			else if (char === ')' && depth === 0) break;
+			else if (char === ')' || char === '}' || char === ']') depth--;
+			else if (char === from && depth === 0) chars[i] = to;
+			i++;
+		}
+	}
+	return chars.join('');
+}
+
+/** Le « ; » de l'élève entre les arguments d'un appel LaTeX devient « , » pour le moteur. */
+export function argumentSemicolonsLatex(latex: string): string {
+	return swapLatexSeparators(latex, ';', ',');
+}
+
+/**
+ * Les arguments d'un appel affiché séparés par « ; », comme l'élève les tape :
+ * `\max\left(2{,}5;x\right)`, pas `2{,}5, x` qui se lirait 2,5 puis 5.
+ */
+export function argumentSeparatorsShown(latex: string): string {
+	return swapLatexSeparators(latex, ',', ';');
+}
+
+/**
  * La forme corrigée d'une suite : `12,15,9` → `12 ; 15 ; 9`. Avec des points
  * (`1.5,2.5`), la virgule sépare et le point est décimal : `1,5 ; 2,5`.
  */
