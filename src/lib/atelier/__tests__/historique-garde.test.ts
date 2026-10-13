@@ -22,6 +22,9 @@ import {
 	saveCalcHistory
 } from '../history-storage';
 import { isSafeLatex } from '../safe-latex';
+import { commandCatalog } from '../commands';
+import { messageParts } from '../reciprocal';
+import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { keepCalcHistory } from '../session';
 import { decodeAtelier, encodeAtelier } from '../url';
 
@@ -181,6 +184,40 @@ describe('une ligne revient telle qu’affichée', () => {
 		expect(formulas.length).toBeGreaterThan(30);
 		expect(formulas.filter((latex) => !isSafeLatex(latex))).toEqual([]);
 		expect(isSafeLatex(`${'\\frac{'.repeat(10)}x${'}{1}'.repeat(10)}`)).toBe(true);
+	});
+
+	it('les exemples du catalogue des commandes passent aussi la liste blanche', () => {
+		const refused: string[] = [];
+		let checked = 0;
+		for (const command of commandCatalog(new WebReplEngine())) {
+			if (command.example === undefined) continue;
+			const atelier = new Atelier();
+			for (const [name, definition] of Object.entries(command.exampleSetup ?? {})) {
+				atelier.create({ kind: 'list', name, definition });
+			}
+			const desk = new CalcDesk(atelier);
+			desk.submit(command.example);
+			for (const e of desk.entries) {
+				const formulas = [
+					e.latex,
+					e.alternative?.latex,
+					...(e.formulas
+						? messageParts(e.text)
+								.filter((p) => p.math)
+								.map((p) => p.text)
+						: [])
+				];
+				for (const latex of formulas) {
+					if (latex === undefined) continue;
+					checked++;
+					if (!isSafeLatex(latex)) refused.push(`${command.example} → ${latex}`);
+				}
+			}
+		}
+
+		// Beaucoup d’exemples répondent en texte (statistiques) : 11 formules le 2026-10-14
+		expect(checked).toBeGreaterThanOrEqual(10);
+		expect(refused).toEqual([]);
 	});
 
 	it('ni étapes, ni tableau, ni « Garder » : la ligne restaurée n’a plus l’arbre du résultat', () => {
