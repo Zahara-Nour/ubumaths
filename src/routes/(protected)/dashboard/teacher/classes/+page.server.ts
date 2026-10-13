@@ -580,13 +580,20 @@ export const actions: Actions = {
 		}
 
 		// Mono-teacher: RLS scopes write access to the sole teacher/admin.
-		const { error: updateError } = await locals.supabase
+		// Un refus de la RLS (ou une classe inconnue) touche zéro ligne sans erreur :
+		// sans les lignes rendues, l'écran affichait un code qui n'existait nulle part.
+		const { data: updatedClasses, error: updateError } = await locals.supabase
 			.from('classes')
 			.update({ join_code: newCode })
-			.eq('id', classId);
+			.eq('id', classId)
+			.select('id');
 		if (updateError) {
 			console.error('Error updating join code:', updateError);
 			return fail(500, { message: 'Erreur lors de la mise à jour du code' });
+		}
+		if (!updatedClasses || updatedClasses.length === 0) {
+			console.error('[regenerateJoinCode] Aucune ligne modifiée pour', classId);
+			return fail(404, { message: 'Classe introuvable : code non modifié' });
 		}
 
 		return { success: true, joinCode: newCode };
@@ -605,13 +612,19 @@ export const actions: Actions = {
 		}
 		const { classId, open } = validation.data;
 
-		const { error: updateError } = await locals.supabase
+		// Même piège : zéro ligne touchée n'est pas un succès.
+		const { data: updatedClasses, error: updateError } = await locals.supabase
 			.from('classes')
 			.update({ registration_open: open })
-			.eq('id', classId);
+			.eq('id', classId)
+			.select('id');
 		if (updateError) {
 			console.error('Error toggling registration:', updateError);
 			return fail(500, { message: "Erreur lors du changement d'état de l'inscription" });
+		}
+		if (!updatedClasses || updatedClasses.length === 0) {
+			console.error('[toggleRegistration] Aucune ligne modifiée pour', classId);
+			return fail(404, { message: 'Classe introuvable : inscription inchangée' });
 		}
 
 		return { success: true };

@@ -28,15 +28,27 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// Archiver conserve cette lecture pour la période où il était inscrit, et
 	// le trigger `trg_class_members_left_at` horodate son départ — ce qui
 	// l'empêche de recevoir ce qui sera distribué ensuite.
-	const { error: archiveError } = await supabase
+	//
+	// ⚠️ `.select()` n'est pas décoratif : une mise à jour refusée par la RLS, ou
+	// qui ne trouve aucune inscription, touche zéro ligne SANS erreur. L'écran
+	// annonçait alors un retrait qui n'avait pas eu lieu.
+	const { data: archivedMemberships, error: archiveError } = await supabase
 		.from('class_members')
 		.update({ status: 'archived' })
 		.eq('student_id', userId)
-		.eq('class_id', classId);
+		.eq('class_id', classId)
+		.select('id');
 
 	if (archiveError) {
 		console.error('Archive error:', archiveError);
 		return json({ error: archiveError.message }, { status: 400 });
+	}
+
+	if (!archivedMemberships || archivedMemberships.length === 0) {
+		return json(
+			{ error: 'Inscription introuvable : élève non retiré de la classe' },
+			{ status: 404 }
+		);
 	}
 
 	// Fetch the updated profile with all classes

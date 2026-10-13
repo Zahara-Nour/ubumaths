@@ -2198,6 +2198,117 @@ function padSymbol(typst: string, str: string, offset: number, length: number): 
 	return `${before}${typst}${after}`;
 }
 
+// `\left` ou `\right` suivi de son délimiteur (ceux que la conversion sait écrire)
+const LEFT_RIGHT = /\\(left|right)\s*(\\\{|\\\}|\\lbrace|\\rbrace|\\\||[()[\]|.])/g;
+
+/** Le délimiteur LaTeX, tel que la suite de la conversion l'attend */
+function delimiterToken(delimiter: string, insideLr: boolean): string {
+	switch (delimiter) {
+		case '\\{':
+		case '\\lbrace':
+			return '<<<VISIBLE_LBRACE>>>';
+		case '\\}':
+		case '\\rbrace':
+			return '<<<VISIBLE_RBRACE>>>';
+		case '\\|':
+			return '||';
+		case '.':
+			return '';
+		// Dans `lr(…)`, une parenthèse nue ouvrirait un groupe que Typst voudrait fermer
+		// (marqueurs : la multiplication implicite découperait « paren » en lettres)
+		case '(':
+			return insideLr ? ' <<<PAREN_L>>> ' : '(';
+		case ')':
+			return insideLr ? ' <<<PAREN_R>>> ' : ')';
+		case '[':
+		case ']':
+			// Deviennent bracket.l/bracket.r plus loin ; espacés pour ne coller à rien
+			return insideLr ? ` ${delimiter} ` : delimiter;
+		default:
+			return delimiter;
+	}
+}
+
+/**
+ * Apparie les `\left` et `\right` (pile) et écrit chaque paire pour Typst.
+ *
+ * Typst ne fait grandir que les délimiteurs tapés tels quels (`(`) : les symboles
+ * `brace.l`, `bracket.l` restaient à la taille d'une lettre autour d'une fraction
+ * (`S = {-π/4 ; π/4}`, relevé le 2026-10-13). Une paire `( … )` reste telle quelle,
+ * toute autre devient `lr(ouvrant … fermant)`, `.` étant un délimiteur vide : la paire
+ * reste équilibrée même quand un côté est invisible (`\left\{ … \right.` d'un système,
+ * `\left. … \right|` d'une évaluation, qui laissait un `)` orphelin). Un `\left` ou un
+ * `\right` sans partenaire garde son seul délimiteur.
+ */
+function pairLeftRight(text: string): string {
+	const matches = [...text.matchAll(LEFT_RIGHT)];
+	if (matches.length === 0) return text;
+	const replacements: string[] = matches.map((match) => delimiterToken(match[2], false));
+	const open: number[] = [];
+	matches.forEach((match, index) => {
+		if (match[1] === 'left') {
+			open.push(index);
+			return;
+		}
+		const leftIndex = open.pop();
+		if (leftIndex === undefined) return;
+		const left = matches[leftIndex];
+		if (left[2] === '(' && match[2] === ')') return;
+		// Espace avant `lr(` collé à une lettre : `xlr` serait un identifiant inconnu
+		const before = /[A-Za-z0-9]/.test(text[(left.index ?? 0) - 1] ?? '') ? ' ' : '';
+		replacements[leftIndex] = `${before}lr(${delimiterToken(left[2], true)}`;
+		replacements[index] = `${delimiterToken(match[2], true)})`;
+	});
+	let out = '';
+	let last = 0;
+	matches.forEach((match, index) => {
+		out += text.slice(last, match.index) + replacements[index];
+		last = (match.index ?? 0) + match[0].length;
+	});
+	return out + text.slice(last);
+}
+
+/**
+ * Dans les arguments de `lr(…)`, `;` sépare des lignes et `,` des arguments : au premier
+ * niveau, ils deviennent `semi` et la virgule affichée (`","`), par des marqueurs
+ * restitués en fin de conversion. Ceux des appels imbriqués
+ * (`frac(1, 2)`) et des chaînes restent intacts.
+ */
+function protectLrArguments(text: string): string {
+	let out = '';
+	// Pour chaque parenthèse ouverte : est-ce celle d'un `lr(` ?
+	const stack: boolean[] = [];
+	let inString = false;
+	for (let i = 0; i < text.length; i++) {
+		const char = text[i];
+		if (char === '"') inString = !inString;
+		if (!inString) {
+			// Une matrice (`mat(…` caché derrière son marqueur) ouvre une parenthèse
+			const matrix = text.slice(i).match(/^<<<mat\d+>>>/);
+			if (matrix) {
+				stack.push(false);
+				out += matrix[0];
+				i += matrix[0].length - 1;
+				continue;
+			}
+			if (char === '(') {
+				stack.push(text.slice(i - 2, i) === 'lr' && !/[A-Za-z0-9.]/.test(text[i - 3] ?? ''));
+			} else if (char === ')') {
+				stack.pop();
+			} else if (stack[stack.length - 1] && char === ';') {
+				// Marqueur : la multiplication implicite découperait « semi » en lettres
+				out += ' <<<LR_SEMI>>> ';
+				continue;
+			} else if (stack[stack.length - 1] && char === ',') {
+				out += '<<<DECIMAL_COMMA>>>';
+				continue;
+			}
+		}
+		out += char;
+	}
+	return out;
+}
+
 export function convertLatexToTypstMath(latex: string): string {
 	let result = latex;
 
@@ -2264,38 +2375,14 @@ export function convertLatexToTypstMath(latex: string): string {
 	result = result.replace(/\\rightarrow/g, '<<<ARROW_RIGHT>>>');
 	result = result.replace(/\\to(?![a-z])/g, '<<<ARROW_RIGHT>>>');
 
-	// Convert \left( ... \right) to ( ... ) - Typst auto-sizes
-	result = result.replace(/\\left\s*\(/g, '(');
-	result = result.replace(/\\right\s*\)/g, ')');
-
-	// Convert \left[ ... \right] to [ ... ]
-	result = result.replace(/\\left\s*\[/g, '[');
-	result = result.replace(/\\right\s*\]/g, ']');
-
 	// `\lVert … \rVert` (norme) et `\lvert … \rvert` (valeur absolue) d'amsmath : ramenés à
 	// `\|` et `|`, traités ci-dessous. Sinon ils sortaient en texte brut (« lVert »).
 	result = result.replace(/\\[lr]Vert(?![a-zA-Z])/g, '\\|');
 	result = result.replace(/\\[lr]vert(?![a-zA-Z])\s*/g, '|');
 
-	// Convert \left\| ... \right\| to norm: lr(||...||) for proper sizing
-	// MUST be before \left| to avoid \left\| matching \left\ then |
-	result = result.replace(/\\left\s*\\\|/g, 'lr(||');
-	result = result.replace(/\\right\s*\\\|/g, '||)');
-
-	// Convert \left| ... \right| to abs( ... ) or |...|
-	// Use lr(|...|) for proper sizing in Typst
-	result = result.replace(/\\left\s*\|/g, 'lr(|');
-	result = result.replace(/\\right\s*\|/g, '|)');
-
-	// Convert \left\{ ... \right\} to auto-sized visible braces
-	// Use placeholders because in Typst math, plain { } are visible (set notation)
-	// but in LaTeX, plain { } are invisible grouping
-	result = result.replace(/\\left\s*\\{/g, '<<<VISIBLE_LBRACE>>>');
-	result = result.replace(/\\right\s*\\}/g, '<<<VISIBLE_RBRACE>>>');
-
-	// Convert \left\lbrace ... \right\rbrace
-	result = result.replace(/\\left\s*\\lbrace/g, '<<<VISIBLE_LBRACE>>>');
-	result = result.replace(/\\right\s*\\rbrace/g, '<<<VISIBLE_RBRACE>>>');
+	// `\left … \right` appariés : `lr(…)` fait grandir accolades, crochets et barres
+	// (voir pairLeftRight) ; les `;` et `,` de son contenu sont protégés plus bas.
+	result = pairLeftRight(result);
 
 	// Convert standalone \lbrace and \rbrace
 	result = result.replace(/\\lbrace/g, '<<<VISIBLE_LBRACE>>>');
@@ -2309,10 +2396,6 @@ export function convertLatexToTypstMath(latex: string): string {
 	// These produce visible braces in LaTeX, must be after \left\{ and \{,\} handling
 	result = result.replace(/\\{/g, '<<<VISIBLE_LBRACE>>>');
 	result = result.replace(/\\}/g, '<<<VISIBLE_RBRACE>>>');
-
-	// Handle invisible delimiters \left. and \right.
-	result = result.replace(/\\left\s*\./g, '');
-	result = result.replace(/\\right\s*\./g, '');
 
 	// Fallback: remove any remaining \left or \right (unhandled delimiter cases)
 	result = result.replace(/\\left\s*/g, '');
@@ -2372,8 +2455,9 @@ export function convertLatexToTypstMath(latex: string): string {
 		pmatrix: '"("',
 		bmatrix: '"["',
 		vmatrix: '"|"',
-		Vmatrix: '"||"',
-		matrix: '"none"'
+		// Typst n'accepte qu'un caractère ou none : "||" et "none" faisaient échouer la fiche
+		Vmatrix: '"‖"',
+		matrix: '#none'
 	};
 	const matPrefixes: string[] = [];
 	for (const [env, delim] of Object.entries(matrixDelimiters)) {
@@ -2888,6 +2972,7 @@ export function convertLatexToTypstMath(latex: string): string {
 	// - String "," displays as literal comma without extra spacing
 	// - This is the recommended approach per Typst GitHub issue #5272
 	// Must be done AFTER \, -> thin conversion to avoid conflict.
+	result = protectLrArguments(result);
 	result = result.replace(/<<<DECIMAL_COMMA>>>/g, '","');
 
 	// ========================================================================
@@ -2999,6 +3084,11 @@ export function convertLatexToTypstMath(latex: string): string {
 	// ========================================================================
 	// Restore placeholder to Typst double prime symbol
 	result = result.replace(/<<<DOUBLE_PRIME>>>/g, 'prime.double');
+
+	// Marqueurs de `lr(…)` (pairLeftRight, protectLrArguments)
+	result = result.replace(/<<<LR_SEMI>>>/g, 'semi');
+	result = result.replace(/<<<PAREN_L>>>/g, 'paren.l');
+	result = result.replace(/<<<PAREN_R>>>/g, 'paren.r');
 
 	// ========================================================================
 	// MATRIX PLACEHOLDER RESTORATION
