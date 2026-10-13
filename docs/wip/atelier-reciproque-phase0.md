@@ -125,3 +125,7 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
     constante : pas de réciproque » quand c'est le cas ; (2) lettre libre (Calcul) : discussion par
     cas comme un manuel (« si a ≠ 0 : … ; si a = 0 : f est constante »), en trouvant les valeurs du
     paramètre qui cassent la bijectivité. (1) d'abord.
+- 2026-10-13 — **écriture + refus expliqué en PR** (`feat/reciproque-ecriture`) : racine (contenu
+  sorti par `factorPolynomial`, `√(x + 3) + 2`), logistique `ln(x/(1 − x))` ; refus « non bijective »
+  qui explique et liste les réciproques par morceau (`pieces`), périodique (sin, cos) détecté ;
+  x⁴ − 2x² et x eˣ sur ℝ passent de `unsolved` à `not-bijective`. Doc `reciproque.md`.

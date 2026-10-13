@@ -10,7 +10,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { computeReciprocal } from '..';
-import type { ReciprocalResult, ReciprocalSuccess } from '..';
+import type { ReciprocalRefusal, ReciprocalResult, ReciprocalSuccess } from '..';
 import { parseLatex } from '../../parser';
 import { toLatex } from '../../latex-generator';
 import { substitute } from '../../eval/substitute';
@@ -19,6 +19,7 @@ import { formatInterval } from '../../domain/format';
 import { parseStudentDomain } from '../../domain/validation/parse-student-domain';
 import type { Domain } from '../../domain/types';
 import type { MathNode } from '../../types';
+import { isInfinity } from '../../guards';
 
 // =============================================================================
 // Outils
@@ -44,6 +45,37 @@ function valueAt(node: MathNode, variable: string, value: number): number {
 function success(result: ReciprocalResult): ReciprocalSuccess {
 	if (!result.ok) throw new Error(`Refus inattendu : ${result.refusal.message}`);
 	return result;
+}
+
+type NotBijective = Extract<ReciprocalRefusal, { kind: 'not-bijective' }>;
+
+function notBijectiveOf(latex: string, interval?: string): NotBijective {
+	const result = reciprocalOf(latex, interval);
+	if (result.ok) throw new Error('refus attendu');
+	if (result.refusal.kind !== 'not-bijective') {
+		throw new Error(`refus « non bijective » attendu : ${result.refusal.message}`);
+	}
+	return result.refusal;
+}
+
+/** Trois points de la première composante d'un ensemble (bornes exclues). */
+function pointsIn(domain: Domain): number[] {
+	if (domain.kind !== 'interval_set') return [-2, 0.5, 3];
+	const [first] = domain.intervals;
+	const bound = (node: MathNode): number =>
+		isInfinity(node)
+			? node.sign === 'positive'
+				? Infinity
+				: -Infinity
+			: evaluateNodeToApproximatedNumber(node);
+	const low = bound(first.lower.value);
+	const high = bound(first.upper.value);
+	if (Number.isFinite(low) && Number.isFinite(high)) {
+		return [0.2, 0.5, 0.8].map((t) => low + (high - low) * t);
+	}
+	if (Number.isFinite(low)) return [0.5, 2, 7].map((d) => low + d);
+	if (Number.isFinite(high)) return [0.5, 2, 7].map((d) => high - d);
+	return [-2, 0.5, 3];
 }
 
 /** f(f⁻¹(y)) = y et f⁻¹(f(x)) = x, à 1e-9 près. */
@@ -224,17 +256,9 @@ describe('computeReciprocal — étapes', () => {
 
 describe('computeReciprocal — refus', () => {
 	it('x² sur ℝ : non bijective, f(−1) = f(1), suggère [0 ; +∞[', () => {
-		const result = reciprocalOf('x^2');
-		expect(result.ok).toBe(false);
-		if (result.ok) return;
-		const { refusal } = result;
-		expect(refusal.kind).toBe('not-bijective');
-		if (refusal.kind !== 'not-bijective') return;
+		const refusal = notBijectiveOf('x^2');
 		expect(refusal.sameImage?.map((n) => toLatex(n))).toEqual(['-1', '1']);
 		expect(refusal.suggestion && formatInterval(refusal.suggestion)).toBe('[0 ; +∞[');
-		expect(refusal.message).toBe(
-			"f n'est pas bijective sur ℝ (f(-1) = f(1)) : choisis un intervalle, par exemple .réciproque f sur [0 ; +∞[."
-		);
 	});
 
 	it('x² sur [−1 ; 2] : non bijective, f(−1) = f(1), suggère [0 ; 2]', () => {
@@ -248,8 +272,17 @@ describe('computeReciprocal — refus', () => {
 		expect(refusal.message).toContain('sur [-1 ; 2]');
 	});
 
-	it('x eˣ : le moteur ne sait pas — jamais de réponse approchée', () => {
-		const result = reciprocalOf('xe^x');
+	it('x eˣ sur ℝ : non bijective par les variations, même sans formule du solveur', () => {
+		const refusal = notBijectiveOf('xe^x');
+		expect(refusal.pieces?.map((p) => formatInterval(p.interval))).toEqual([
+			']-∞ ; -1]',
+			'[-1 ; +∞['
+		]);
+		expect(refusal.pieces?.every((p) => p.expression === null)).toBe(true);
+	});
+
+	it('x eˣ sur [−1 ; +∞[ : le moteur ne sait pas — jamais de réponse approchée', () => {
+		const result = reciprocalOf('xe^x', '[-1;+\\infty[');
 		if (result.ok) throw new Error('refus attendu');
 		expect(result.refusal.kind).toBe('unsolved');
 		expect(result.refusal.message).toBe(
@@ -309,5 +342,217 @@ describe('computeReciprocal — racines n-ièmes du solveur (root)', () => {
 		const result = success(reciprocalOf('x^5'));
 		expect(formatInterval(result.departure)).toBe('ℝ');
 		checkRoundTrips('x^5', result, [-2, 0.5, 3], [-32, 1, 7]);
+	});
+});
+
+// =============================================================================
+// Écriture du manuel (décisions de David, 2026-10-13)
+// =============================================================================
+
+interface WritingCase {
+	readonly f: string;
+	readonly interval?: string;
+	/** L'écriture d'avant (#1304), mesurée le 2026-10-13. */
+	readonly before: string;
+	readonly after: string;
+}
+
+const WRITINGS: readonly WritingCase[] = [
+	{
+		f: 'x^2-4x+1',
+		interval: '[2;+\\infty[',
+		before: '\\dfrac{\\sqrt{4 x + 12}}{2} + 2',
+		after: '\\sqrt{x + 3} + 2'
+	},
+	{
+		f: 'x^2-4x+1',
+		interval: ']-\\infty;2]',
+		before: '2 - \\dfrac{\\sqrt{4 x + 12}}{2}',
+		after: '2 - \\sqrt{x + 3}'
+	},
+	{
+		f: '2x^2+4x-1',
+		interval: '[-1;+\\infty[',
+		before: '\\dfrac{\\sqrt{8 x + 24}}{4} - 1',
+		after: '\\dfrac{\\sqrt{2 x + 6}}{2} - 1'
+	},
+	{
+		f: '(x-1)^2+3',
+		interval: '[1;+\\infty[',
+		before: '\\dfrac{\\sqrt{4 x - 12}}{2} + 1',
+		after: '\\sqrt{x - 3} + 1'
+	},
+	{
+		f: '\\frac{x^3}{8}+2',
+		before: '\\sqrt[3]{8 x - 16}',
+		after: '2 \\sqrt[3]{x - 2}'
+	},
+	{
+		f: '8x^3-16',
+		before: '\\sqrt[3]{\\dfrac{x}{8} + 2}',
+		after: '\\dfrac{\\sqrt[3]{x + 16}}{2}'
+	},
+	{
+		f: '\\frac{x^4}{16}',
+		interval: '[0;+\\infty[',
+		before: '\\sqrt[4]{16 x}',
+		after: '2 \\sqrt[4]{x}'
+	},
+	{
+		f: '\\frac{e^x}{e^x+1}',
+		before: '\\ln\\left( -\\dfrac{x}{x - 1} \\right)',
+		after: '\\ln\\left( \\dfrac{x}{1 - x} \\right)'
+	}
+];
+
+describe('computeReciprocal — écriture du manuel', () => {
+	for (const c of WRITINGS) {
+		const label = c.interval ? `${c.f} sur ${c.interval}` : c.f;
+		it(`${label} : ${c.before} → ${c.after}, même valeur`, () => {
+			const result = success(reciprocalOf(c.f, c.interval));
+			expect(toLatex(result.expression)).toBe(c.after);
+			const before = parseLatex(c.before);
+			for (const y of pointsIn(result.departure)) {
+				expect(valueAt(result.expression, 'x', y), `en ${y}`).toBeCloseTo(
+					valueAt(before, 'x', y),
+					9
+				);
+				const back = valueAt(parseLatex(c.f), 'x', valueAt(result.expression, 'x', y));
+				expect(back, `f(f⁻¹(${y}))`).toBeCloseTo(y, 9);
+			}
+		});
+	}
+
+	it('x² + x sur [0 ; +∞[ : rien à sortir de √(4x + 1), écriture inchangée', () => {
+		const result = success(reciprocalOf('x^2+x', '[0;+\\infty['));
+		expect(toLatex(result.expression)).toBe('\\dfrac{\\sqrt{4 x + 1} - 1}{2}');
+	});
+
+	it('l’étape de résolution montre la même écriture', () => {
+		const { steps } = success(reciprocalOf('x^2-4x+1', '[2;+\\infty['));
+		expect(steps[0].expressionLatex).toBe('y = x^2 - 4 x + 1 \\iff x = \\sqrt{y + 3} + 2');
+	});
+});
+
+// =============================================================================
+// Refus « non bijective » : expliquer, puis lister les morceaux
+// =============================================================================
+
+/** Chaque réciproque listée vérifie f(f⁻¹(y)) = y sur trois points de son départ. */
+function checkPieces(latex: string, refusal: NotBijective): void {
+	const f = parseLatex(latex);
+	for (const piece of refusal.pieces ?? []) {
+		if (piece.expression === null || piece.departure === null) continue;
+		for (const y of pointsIn(piece.departure)) {
+			const x = valueAt(piece.expression, 'x', y);
+			expect(valueAt(f, 'x', x), `f(f⁻¹(${y})) sur ${formatInterval(piece.interval)}`).toBeCloseTo(
+				y,
+				9
+			);
+			const inside = pointsIn(piece.interval);
+			expect(inside.length).toBe(3);
+		}
+	}
+}
+
+describe('computeReciprocal — non bijective : explication et réciproques par morceau', () => {
+	it('x² sur ℝ : explique les deux antécédents, liste −√x et √x, propose [0 ; +∞[', () => {
+		const refusal = notBijectiveOf('x^2');
+		expect(refusal.message).toBe(
+			"f n'est pas bijective sur ℝ : f(-1) = f(1) = 1, donc 1 aurait deux antécédents et " +
+				'f⁻¹(1) ne saurait pas lequel choisir. Mais f est bijective sur chacun de ces intervalles, ' +
+				'avec une réciproque différente : sur ]-∞ ; 0] : $f^{-1}\\left( x \\right) = -\\sqrt{x}$ ; ' +
+				'sur [0 ; +∞[ : $f^{-1}\\left( x \\right) = \\sqrt{x}$. ' +
+				'Choisis un intervalle, par exemple .réciproque f sur [0 ; +∞[.'
+		);
+		expect(refusal.pieces?.map((p) => formatInterval(p.interval))).toEqual([
+			']-∞ ; 0]',
+			'[0 ; +∞['
+		]);
+		expect(refusal.pieces?.map((p) => p.expression && toLatex(p.expression))).toEqual([
+			'-\\sqrt{x}',
+			'\\sqrt{x}'
+		]);
+		checkPieces('x^2', refusal);
+	});
+
+	it('x⁴ sur ℝ : −∜x sur ]−∞ ; 0], ∜x sur [0 ; +∞[', () => {
+		const refusal = notBijectiveOf('x^4');
+		expect(refusal.pieces?.map((p) => p.expression && toLatex(p.expression))).toEqual([
+			'-\\sqrt[4]{x}',
+			'\\sqrt[4]{x}'
+		]);
+		checkPieces('x^4', refusal);
+	});
+
+	it('x³ − 3x sur ℝ : trois morceaux cités, f(-2) = f(1) = -2', () => {
+		const refusal = notBijectiveOf('x^3-3x');
+		expect(refusal.message).toContain('f(-2) = f(1) = -2, donc -2 aurait deux antécédents');
+		expect(refusal.pieces?.map((p) => formatInterval(p.interval))).toEqual([
+			']-∞ ; -1]',
+			'[-1 ; 1]',
+			'[1 ; +∞['
+		]);
+		for (const piece of refusal.pieces ?? []) {
+			const where = formatInterval(piece.interval);
+			expect(refusal.message).toContain(`sur ${where}`);
+			// sans formule : cité sans formule, jamais une formule fausse
+			if (piece.expression === null) expect(piece.departure).toBeNull();
+		}
+		checkPieces('x^3-3x', refusal);
+	});
+
+	it('x⁴ − 2x² : quatre morceaux, tous listés avec leur réciproque', () => {
+		const refusal = notBijectiveOf('x^4-2x^2');
+		expect(refusal.pieces).toHaveLength(4);
+		checkPieces('x^4-2x^2', refusal);
+	});
+
+	it('x/(x² + 1) : sans paire entière, explication générale sans valeurs', () => {
+		const refusal = notBijectiveOf('\\frac{x}{x^2+1}');
+		expect(refusal.sameImage).toBeUndefined();
+		expect(refusal.message).toContain(
+			'deux nombres différents ont la même image, et f⁻¹ ne saurait pas lequel choisir'
+		);
+		checkPieces('\\frac{x}{x^2+1}', refusal);
+	});
+
+	it('x⁵ − 5x³ + 4x : trop de morceaux pour les lister, on les compte', () => {
+		const refusal = notBijectiveOf('x^5-5x^3+4x');
+		expect(refusal.pieces).toBeUndefined();
+		expect(refusal.message).toContain(
+			'f est bijective sur chacun de ses 5 intervalles de stricte monotonie'
+		);
+		// bornes approchées par les variations : pas proposées telles quelles
+		expect(refusal.message).not.toMatch(/\d{7,}/);
+		expect(refusal.message).toContain('Choisis un intervalle où f est strictement monotone.');
+	});
+
+	it('x⁵ − 5x³ : bornes ±√3 approchées par les variations, morceaux comptés et pas listés', () => {
+		const refusal = notBijectiveOf('x^5-5x^3');
+		expect(refusal.pieces).toBeUndefined();
+		expect(refusal.message).not.toMatch(/\d{7,}/);
+		expect(refusal.message).toContain('chacun de ses 3 intervalles de stricte monotonie');
+	});
+
+	it('sin sur ℝ : une infinité de morceaux, pas de liste, un intervalle proposé', () => {
+		const refusal = notBijectiveOf('\\sin(x)');
+		expect(refusal.infinitelyManyPieces).toBe(true);
+		expect(refusal.pieces).toBeUndefined();
+		expect(refusal.message).toContain("une infinité d'intervalles");
+		expect(refusal.suggestion && formatInterval(refusal.suggestion)).toBe('[-π/2 ; π/2]');
+		expect(refusal.message).toContain('.réciproque f sur [-π/2 ; π/2].');
+	});
+
+	it('cos sur ℝ : périodique aussi, [0 ; π] proposé', () => {
+		const refusal = notBijectiveOf('\\cos(x)');
+		expect(refusal.infinitelyManyPieces).toBe(true);
+		expect(refusal.suggestion && formatInterval(refusal.suggestion)).toBe('[0 ; π]');
+	});
+
+	it('sin sur [0 ; 1] (pas une période entière) : reste un refus honnête, jamais « non bijective »', () => {
+		const result = reciprocalOf('\\sin(x)', '[0;1]');
+		if (result.ok) return;
+		expect(result.refusal.kind).not.toBe('not-bijective');
 	});
 });

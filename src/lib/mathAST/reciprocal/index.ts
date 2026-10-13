@@ -21,10 +21,10 @@
 import type { MathNode } from '../types';
 import type { Domain } from '../domain/types';
 import type { RenderedStep } from '../common/step-renderer-base';
-import type { Solution } from '../solve/types';
+import type { PeriodicSolutionFamily, Solution } from '../solve/types';
 import { isSolverFailure } from '../solve/types';
 import { solve } from '../solve/solve';
-import { equals, variable as variableNode } from '../factory';
+import { equals, fraction, opposite, variable as variableNode } from '../factory';
 import { isLogical, isRelation } from '../guards';
 import { flattenRelationChain } from '../flatten';
 import { getVariables, substitute } from '../eval/substitute';
@@ -32,7 +32,9 @@ import { numericNode } from '../common/numeric';
 import { toLatex } from '../latex-generator';
 import { computeDomain, normalizeExcludedPoints } from '../domain/compute';
 import { containsValue, intersect } from '../domain/algebra';
-import { intervalSet } from '../domain/factory';
+import { interval, intervalSet } from '../domain/factory';
+import type { Interval } from '../domain/types';
+import { tidy } from '../tidy';
 import { formatInterval } from '../domain/format';
 import { domainsAreEqual } from '../domain/validation/compare-domains';
 import { inequalitySolutionLatex, withRealLineWritten } from '../cli/commands/solve-latex';
@@ -77,6 +79,15 @@ export interface ReciprocalSuccess {
 	readonly steps: readonly RenderedStep[];
 }
 
+/** Un morceau de stricte monotonie de f, avec sa réciproque quand on sait la calculer. */
+export interface ReciprocalPiece {
+	readonly interval: Domain;
+	/** f⁻¹ sur ce morceau ; `null` : le moteur ne sait pas la calculer. */
+	readonly expression: MathNode | null;
+	/** Ensemble de départ de cette réciproque ; `null` avec `expression`. */
+	readonly departure: Domain | null;
+}
+
 export type ReciprocalRefusal =
 	| {
 			readonly kind: 'not-bijective';
@@ -85,6 +96,10 @@ export type ReciprocalRefusal =
 			readonly sameImage?: readonly [MathNode, MathNode];
 			/** Un intervalle où f est bijective. */
 			readonly suggestion?: Domain;
+			/** Les morceaux de stricte monotonie (au plus `MAX_LISTED_PIECES`). */
+			readonly pieces?: readonly ReciprocalPiece[];
+			/** f périodique : une infinité de morceaux, aucun listé. */
+			readonly infinitelyManyPieces?: true;
 	  }
 	| { readonly kind: 'unsolved'; readonly message: string }
 	| { readonly kind: 'constant'; readonly message: string };
@@ -110,6 +125,9 @@ const DISTINCT = 1e-4;
 /** Lettres possibles pour le second membre y de `y = f(x)`. */
 const PARAMETER_LETTERS = ['y', 'u', 'w', 'z'];
 
+/** Au-delà, les morceaux sont comptés, pas listés (x³ − 3x en a 3, x⁴ − 2x² en a 4). */
+const MAX_LISTED_PIECES = 4;
+
 // =============================================================================
 // Refus
 // =============================================================================
@@ -124,30 +142,197 @@ function unsolved(name: string): ReciprocalResult {
 	return { ok: false, refusal: { kind: 'unsolved', message } };
 }
 
-function notBijective(
-	name: string,
-	domain: Domain,
-	pair: readonly [number, number] | null,
-	pieces: Pieces
+/** Ce que le refus « non bijective » sait de f. */
+interface NonInjective {
+	readonly f: MathNode;
+	readonly variable: string;
+	readonly name: string;
+	readonly domain: Domain;
+	/** Deux valeurs de même image (échantillons du solveur), ou null. */
+	readonly pair: readonly [number, number] | null;
+	/** Lister les réciproques par morceau (faux dans un morceau : pas de récursion). */
+	readonly listPieces: boolean;
+}
+
+function isRound(v: number): boolean {
+	return Math.abs(v - Math.round(v)) < TOLERANCE;
+}
+
+/** Deux entiers de I de même image, cherchés parmi les valeurs rondes. */
+function integerPair(f: MathNode, variable: string, domain: Domain): [number, number] | null {
+	const integers = ROUND_SAMPLES.filter((v) => Number.isInteger(v) && containsValue(domain, v));
+	for (const a of integers) {
+		const y = valueAt(f, variable, a);
+		if (y === null) continue;
+		const b = integers.find((v) => v !== a && isCounterexample(f, variable, a, v, y));
+		if (b !== undefined) return [a, b];
+	}
+	return null;
+}
+
+/** Pourquoi f⁻¹ n'existe pas : deux antécédents d'une même image. */
+function whyNotInjective(
+	{ f, variable, name }: NonInjective,
+	pair: readonly [number, number] | null
+): string {
+	const choose = `${name}⁻¹ ne saurait pas lequel choisir.`;
+	if (pair === null) return `deux nombres différents ont la même image, et ${choose}`;
+	const [a, b] = pair;
+	const same = `${name}(${a}) = ${name}(${b})`;
+	const image = valueAt(f, variable, a);
+	if (image === null || !isRound(image)) {
+		return `${same} : cette image aurait deux antécédents, et ${choose}`;
+	}
+	const y = Math.round(image) || 0;
+	return `${same} = ${y}, donc ${y} aurait deux antécédents et ${name}⁻¹(${y}) ne saurait pas lequel choisir.`;
+}
+
+/** Une borne approchée par les variations (8222164341/5000000000) ne s'écrit pas à un élève. */
+function readable(domain: Domain): boolean {
+	return !/\d{7,}/.test(formatInterval(domain));
+}
+
+function tidyInterval(iv: Interval): Interval {
+	const end = (e: Interval['lower']): Interval['lower'] => ({ ...e, value: tidy(e.value) });
+	return interval(end(iv.lower), end(iv.upper));
+}
+
+function listedPiece(context: NonInjective, piece: Interval): ReciprocalPiece {
+	const where = intervalSet([tidyInterval(piece)]);
+	const { f, variable, name } = context;
+	const inverse = reciprocalOn(f, { variable, name, interval: where }, false);
+	return inverse.ok
+		? { interval: where, expression: inverse.expression, departure: inverse.departure }
+		: { interval: where, expression: null, departure: null };
+}
+
+function pieceText({ name, variable }: NonInjective, piece: ReciprocalPiece): string {
+	const where = `sur ${formatInterval(piece.interval)}`;
+	if (piece.expression === null) return `${where} (formule que je ne sais pas calculer)`;
+	return `${where} : $${name}^{-1}\\left( ${variable} \\right) = ${toLatex(piece.expression)}$`;
+}
+
+function refuseNotBijective(
+	context: NonInjective,
+	pieces: Pieces,
+	periodic?: { readonly suggestion: Domain | null }
 ): ReciprocalResult {
-	const round = pair?.every((v) => Math.abs(v - Math.round(v)) < TOLERANCE) ?? false;
-	const [a, b] = pair ? pair.map(Math.round).sort((p, q) => p - q) : [0, 0];
-	const last = pieces?.[pieces.length - 1];
-	const suggestion = pieces && pieces.length > 1 && last ? intervalSet([last.piece]) : undefined;
-	const same = round ? ` (${name}(${a}) = ${name}(${b}))` : '';
+	const { name, domain } = context;
+	const pair = context.pair ?? integerPair(context.f, context.variable, domain);
+	const round = pair?.every(isRound) ?? false;
+	const [a, b] = pair && round ? pair.map(Math.round).sort((p, q) => p - q) : [0, 0];
+	const why = whyNotInjective(context, round ? [a, b] : null);
+
+	const several = pieces !== null && pieces.length > 1;
+	const listable =
+		several &&
+		pieces.length <= MAX_LISTED_PIECES &&
+		pieces.every(({ piece }) => readable(intervalSet([tidyInterval(piece)])));
+	const listed =
+		context.listPieces && listable ? pieces.map(({ piece }) => listedPiece(context, piece)) : null;
+	const mais = `Mais ${name} est bijective sur`;
+	let byPiece = '';
+	if (periodic) byPiece = ` ${mais} une infinité d'intervalles, chacun avec sa réciproque.`;
+	else if (listed) {
+		const items = listed.map((piece) => pieceText(context, piece)).join(' ; ');
+		byPiece = ` ${mais} chacun de ces intervalles, avec une réciproque différente : ${items}.`;
+	} else if (several && context.listPieces) {
+		byPiece = ` ${mais} chacun de ses ${pieces.length} intervalles de stricte monotonie, avec une réciproque différente.`;
+	}
+
+	// Le morceau le plus à droite dont on sait la formule, sinon le dernier
+	const withFormula = listed?.filter((piece) => piece.expression !== null).at(-1)?.interval;
+	const last = pieces?.at(-1);
+	const fromPieces =
+		withFormula ?? (several && last ? intervalSet([tidyInterval(last.piece)]) : undefined);
+	const candidate = periodic ? (periodic.suggestion ?? undefined) : fromPieces;
+	const suggestion = candidate && readable(candidate) ? candidate : undefined;
 	const advice = suggestion
-		? `choisis un intervalle, par exemple .réciproque ${name} sur ${formatInterval(suggestion)}.`
-		: 'choisis un intervalle où elle est strictement monotone.';
+		? `Choisis un intervalle, par exemple .réciproque ${name} sur ${formatInterval(suggestion)}.`
+		: `Choisis un intervalle où ${name} est strictement monotone.`;
 	const sameImage: readonly [MathNode, MathNode] = [numericNode(a), numericNode(b)];
 	return {
 		ok: false,
 		refusal: {
 			kind: 'not-bijective',
-			message: `${name} n'est pas bijective sur ${formatInterval(withRealLineWritten(domain))}${same} : ${advice}`,
+			message: `${name} n'est pas bijective sur ${formatInterval(withRealLineWritten(domain))} : ${why}${byPiece} ${advice}`,
 			...(round && { sameImage }),
-			...(suggestion && { suggestion })
+			...(suggestion && { suggestion }),
+			...(listed && { pieces: listed }),
+			...(periodic && { infinitelyManyPieces: true as const })
 		}
 	};
+}
+
+/**
+ * Le solveur rend une famille périodique de solutions (sin, cos, mais aussi
+ * x·sin x) et f(x₀ + T) = f(x₀) avec x₀ et x₀ + T dans I : refus
+ * « non bijective », avec le morceau de [−T/2 ; T/2] qui contient 0 (sin :
+ * [−π/2 ; π/2]), sinon celui qui part de 0 (cos : [0 ; π]). `null` : pas de
+ * période entière dans I, le refus reste `unsolved`.
+ */
+function refusePeriodic(
+	context: NonInjective,
+	family: PeriodicSolutionFamily
+): ReciprocalResult | null {
+	const { f, variable, domain } = context;
+	const period = family.periodNumeric;
+	const x0 = samplesOf(domain).find((x) => {
+		const y = valueAt(f, variable, x);
+		return (
+			y !== null &&
+			containsValue(domain, x + period) &&
+			isCounterexample(f, variable, x, x + period, y)
+		);
+	});
+	if (x0 === undefined) return null;
+	const half = tidy(fraction(family.period, numericNode(2)));
+	const window = interval(
+		{ value: tidy(opposite(half)), type: 'closed' },
+		{ value: half, type: 'closed' }
+	);
+	const pieces = monotonePieces(f, variable, intersect(domain, intervalSet([window])));
+	const chosen =
+		pieces?.find(
+			({ piece }) =>
+				containsValue(intervalSet([piece]), 0) &&
+				approx(piece.lower.value) !== 0 &&
+				approx(piece.upper.value) !== 0
+		) ?? pieces?.find(({ piece }) => approx(piece.lower.value) === 0);
+	const suggestion = chosen ? intervalSet([tidyInterval(chosen.piece)]) : null;
+	return refuseNotBijective(context, null, { suggestion });
+}
+
+/**
+ * La période de f, lue sur une équation à second membre exact (`0 = sin x`,
+ * `1 = cos x`) : le solveur ne résout pas `y = sin x` (mesuré le 2026-10-13).
+ */
+function periodicFamily(
+	f: MathNode,
+	variable: string,
+	domain: Domain
+): PeriodicSolutionFamily | null {
+	for (const x0 of [0, 1, -1, 2].filter((x) => containsValue(domain, x))) {
+		try {
+			const image = tidy(substitute(f, { [variable]: x0 }));
+			const result = solve(equals(image, f), { variable });
+			if (!isSolverFailure(result) && result.periodicSolutions) return result.periodicSolutions;
+		} catch {
+			// essayer le x₀ suivant
+		}
+	}
+	return null;
+}
+
+/**
+ * Le solveur n'a pas de formule, mais f n'est PROUVÉE non injective : par les
+ * variations (x⁴ − 2x², morceaux d'images communes), ou parce qu'elle est
+ * périodique sur I (sin sur ℝ). Sinon `null` : le refus reste `unsolved`.
+ */
+function notInjectiveAnyway(context: NonInjective, pieces: Pieces): ReciprocalResult | null {
+	if (injectiveByPieces(pieces) === false) return refuseNotBijective(context, pieces);
+	const family = periodicFamily(context.f, context.variable, context.domain);
+	return family ? refusePeriodic(context, family) : null;
 }
 
 // =============================================================================
@@ -295,6 +480,15 @@ function stepsOf(
  * suggéré), ou le moteur ne sait pas — jamais une réponse approchée.
  */
 export function computeReciprocal(f: MathNode, options: ReciprocalOptions = {}): ReciprocalResult {
+	return reciprocalOn(f, options, true);
+}
+
+/** `listPieces` faux : dans un morceau, un refus ne relance pas le calcul par morceau. */
+function reciprocalOn(
+	f: MathNode,
+	options: ReciprocalOptions,
+	listPieces: boolean
+): ReciprocalResult {
 	const variable = options.variable ?? 'x';
 	const name = options.name ?? 'f';
 	const letters = getVariables(f);
@@ -319,15 +513,19 @@ export function computeReciprocal(f: MathNode, options: ReciprocalOptions = {}):
 	}
 
 	const letter = PARAMETER_LETTERS.find((l) => l !== variable) ?? 'y';
+	const pieces = monotonePieces(f, variable, domain);
+	const cannotSolve = (): ReciprocalResult =>
+		notInjectiveAnyway({ f, variable, name, domain, pair: null, listPieces }, pieces) ??
+		unsolved(name);
 	let solutions: readonly Solution[];
 	try {
 		const result = solve(equals(variableNode(letter), f), { variable });
-		if (isSolverFailure(result) || result.periodicSolutions) return unsolved(name);
+		if (isSolverFailure(result) || result.periodicSolutions) return cannotSolve();
 		solutions = result.solutions;
 	} catch {
-		return unsolved(name);
+		return cannotSolve();
 	}
-	if (solutions.length === 0) return unsolved(name);
+	if (solutions.length === 0) return cannotSolve();
 
 	// Branches : laquelle rend x₀ ; une autre tombe-t-elle dans I ?
 	const recovers = solutions.map(() => true);
@@ -344,10 +542,9 @@ export function computeReciprocal(f: MathNode, options: ReciprocalOptions = {}):
 			}
 		});
 	}
-	const pieces = monotonePieces(f, variable, domain);
 	const injective = injectiveByPieces(pieces);
 	if (pair !== null || injective === false) {
-		return notBijective(name, domain, pair, pieces);
+		return refuseNotBijective({ f, variable, name, domain, pair, listPieces }, pieces);
 	}
 	// Injectivité PROUVÉE seulement : par les variations, ou parce que le
 	// solveur n'a qu'une solution pour tout y. Les échantillons ne prouvent
@@ -364,7 +561,7 @@ export function computeReciprocal(f: MathNode, options: ReciprocalOptions = {}):
 	const image = bySolver ?? byVariations;
 	if (image === null) return unsolved(name);
 
-	const written = textbookWriting(chosen.value);
+	const written = textbookWriting(chosen.value, letter);
 	const result: Written = {
 		expression: substitute(written, { [letter]: variableNode(variable) }),
 		departure: withRealLineWritten(normalizeExcludedPoints(image)),
