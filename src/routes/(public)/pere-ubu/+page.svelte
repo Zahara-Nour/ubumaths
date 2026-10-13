@@ -10,8 +10,8 @@
 	let { data }: { data: PageData } = $props();
 
 	// Le chat exige un compte (`/api/chat`) : un visiteur est invité à se connecter
-	// au lieu d'écrire dans un chat qui lui répondrait par une erreur (V14).
-	const isLoggedIn = $derived(Boolean(data.user));
+	// au lieu d'écrire dans un chat qui lui répondrait par une erreur (V14) : voir
+	// `{#if data.user}` plus bas, qui donne aussi au chat l'identifiant du compte (T17).
 
 	// Pere Ubu quotes for interaction
 	const pereUbuQuotes = [
@@ -96,8 +96,8 @@
 			</button>
 		</div>
 
-		{#if isLoggedIn}
-			<ChatBot personalityKey="pereUbu" />
+		{#if data.user}
+			<ChatBot personalityKey="pereUbu" userId={data.user.id} />
 		{:else}
 			<div class="flex flex-col items-center gap-4 rounded-xl border bg-card p-8 text-center">
 				<h2 class="text-xl font-semibold">Cornegidouille ! Qui va là ?</h2>

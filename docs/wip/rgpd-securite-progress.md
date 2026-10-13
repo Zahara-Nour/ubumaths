@@ -412,3 +412,9 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   sélection elle-même échoue pour tous (policy d'INSERT `selected_by = auth.uid()`, la route
   écrit `null`), 0 exécution au journal. Correctif : `verifyCronAuth` (code seul, 4 tests
   rouges sans lui). La sélection automatique reste morte : question produit pour David.
+- **T17 — conversation du Père Ubu sur une tablette partagée (choix de David, 2026-10-13)** —
+  branche `fix/historique-tuteur-par-compte` : historique rangé par compte
+  (`chatHistory:<id>`), conversations des autres comptes et ancienne clé commune effacées à
+  l'ouverture du chat, toutes effacées à la déconnexion. 4 tests rouges sans le correctif.
+  **Trouvé au passage** : le chat plantait au montage, en prod comme en dev
+  (`bind:ref={undefined}` vers `Textarea`, `props_invalid_value`) → corrigé.
