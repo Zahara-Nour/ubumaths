@@ -301,7 +301,23 @@ point sur une borne qui l'ouvre — `\frac{2x}{2x}=1 dans [0;1]` → `]0 ; 1]`),
 `SolveResult.domainUnresolved` (absent si le domaine est exact) et la console refuse une
 identité sur un tel domaine, avec ou sans `dans`, au lieu de « S = ℝ » ou de tout l'intervalle.
 Reste (V45) : les solutions finies ne sont pas vérifiées contre ces contraintes, et les autres
-lecteurs de `solve` ignorent le champ. Les inéquations ne lisent pas le domaine (V47).
+lecteurs de `solve` ignorent le champ.
+Écart V47 (2026-10-13) : **les inéquations lisent le domaine de définition sur l'inéquation
+écrite**. `solveInequality` étudie le signe de la forme canonique de f − g, où `normalize`
+simplifie `\frac{3x}{3x}` en 1 et `\ln x − \ln x` en 0 ; le domaine se calculait sur cette forme
+(`\frac{3x}{3x}\geq 1` → S = ℝ, `\frac{2x^2-2}{x+1}\leq 0` → `]-∞ ; 1]`, −1 compris). Il se calcule
+maintenant par `computeDomain` sur f − g avant simplification, intersecté avec le domaine imposé
+(qui remplaçait le domaine de définition au lieu de le restreindre), et passé à `analyzeSign`
+après `normalizeExcludedPoints`. Statut `all-real` lu sur le découpage (chaque morceau convient),
+`difference` ne voyant pas « tout ℝ \ {0} ». Contrainte non résolue (`x^5 − x + 1 ≠ 0`) →
+`InequalityNotSolvable` ; exclusion périodique (`\frac{\sin x}{\sin x}`), que le découpage du
+signe lit comme ℝ → statut `partial`, sauf si aucun pôle ne tombe dans le domaine imposé
+(`\tan x \geq 0` sur [-1 ; 1] reste `complete`). La console (avec ou sans `dans`) en hérite. Le pipeline
+pédagogique du premier degré, dont la conclusion est une forme résolue (`x ≥ 0`), refuse une
+inéquation à valeur interdite (`rejectForbiddenValues`, `pedagogical-solve/_helpers.ts`) ; le
+second degré conclut par `solveInequality` (juste), mais son tableau ne montre pas la valeur
+interdite (V48). Tests : `solve/inequality/__tests__/domaine-de-definition.test.ts`,
+`pedagogical-solve/__tests__/inequation-valeurs-interdites.test.ts`.
 
 ### Carte du code
 

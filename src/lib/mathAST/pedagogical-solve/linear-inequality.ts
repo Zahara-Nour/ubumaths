@@ -47,7 +47,8 @@ import {
 	isZero,
 	makeStep,
 	prepareLinearRelation,
-	renumberSteps
+	renumberSteps,
+	rejectForbiddenValues
 } from './_helpers';
 import { toLatex } from '../latex-generator';
 import { InequalityNotSolvable } from '../solve/inequality/types';
@@ -189,6 +190,9 @@ export function generateLinearInequalitySteps(
 		}
 		// Membre parenthésé déballé ; terme en x non développé → UndevelopedLinearForm
 		inequality = prepareLinearRelation(input, variable);
+		// \frac{3x^2}{2x} lu \frac{3}{2}x : la conclusion x ≥ 0 garderait la
+		// valeur interdite 0 (V47)
+		rejectForbiddenValues(input, variable);
 
 		// 4. Reject parametric coefficients (free variables ≠ unknown).
 		const free = [...getVariables(inequality.left), ...getVariables(inequality.right)].filter(
