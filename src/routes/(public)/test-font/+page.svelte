@@ -192,7 +192,7 @@
 			font-display: swap;
 		}
 		@font-face {
-			font-family: 'ShantellKaTeX';
+			font-family: 'ChiphreMathMain';
 			src: url('/fonts/chiphre-math/KaTeX_Main-Regular.woff2') format('woff2');
 			font-weight: normal;
 			font-style: normal;
@@ -213,7 +213,7 @@
 			font-family: 'ShantellMath', serif;
 		}
 		.font-chiphre-math {
-			font-family: 'ShantellKaTeX', serif;
+			font-family: 'ChiphreMathMain', serif;
 		}
 		.font-katex-original {
 			font-family: 'KaTeXOriginal', serif;
@@ -245,7 +245,7 @@
 
 			<div class="rounded bg-card p-4">
 				<div class="mb-1 text-xs font-medium text-muted-foreground">
-					ShantellKaTeX (copie dans chiphre-math/)
+					Chiphre Math (KaTeX_Main-Regular de static/fonts/chiphre-math/)
 				</div>
 				<div class="font-chiphre-math text-3xl">
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
@@ -382,7 +382,7 @@
 										disabled={pendingPdf !== null}
 										onclick={() => handleDownloadPdf(exercise, 'shantell')}
 									>
-										{pendingPdf === `${exercise.id}:shantell` ? 'Compilation…' : 'PDF Shantell'}
+										{pendingPdf === `${exercise.id}:shantell` ? 'Compilation…' : 'PDF Chiphre Math'}
 									</Button>
 									<Button
 										size="sm"
@@ -424,8 +424,8 @@
 				maths
 			</li>
 			<li>
-				Shantell : la feuille <code>mathlive-fonts-shantell.css</code> est ajoutée par-dessus, puis retirée
-				pour revenir à KaTeX
+				Chiphre Math : la feuille <code>mathlive-fonts-shantell.css</code> est ajoutée par-dessus, puis
+				retirée pour revenir à KaTeX
 			</li>
 			<li>Force le re-render des mathfields via une cle Svelte</li>
 		</ul>
