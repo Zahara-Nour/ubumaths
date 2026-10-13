@@ -39,8 +39,10 @@ export interface CopyNumbering {
  * Ordre de la copie compris : une fiche qui mélange ses exercices donne à
  * chaque élève (affectation individualisée) ou à la classe son propre ordre.
  * Même calcul que la copie (`copyDisplayNumbers`). Quatre lectures pour toute
- * la fiche, quel que soit le nombre de signalements ; réservé au prof (les
- * routes qui l'appellent vérifient qu'il possède la fiche).
+ * la fiche, quel que soit le nombre de signalements. Appelée par le prof (fiche
+ * possédée, routes qui le vérifient) et par l'élève (avec son propre
+ * `user.id` : l'appelant garantit l'identité, un élève ne demande jamais le
+ * numéro d'un autre) ; lectures soumises à la RLS de l'appelant.
  */
 export async function fetchCopyNumbering(
 	supabase: Sb,
