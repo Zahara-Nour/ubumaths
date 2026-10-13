@@ -233,17 +233,22 @@
 		<h2 class="mb-4 text-xl font-semibold text-orange-600">
 			Test direct des polices (sans MathLive)
 		</h2>
+		<p class="mb-4 text-sm text-muted-foreground">
+			Seulement les caractères de KaTeX_Main-Regular. Les autres (² ∑ ∏ ≠ α…) s'afficheraient ici
+			dans une police du système : MathLive les prend dans d'autres polices KaTeX ou les compose,
+			comme le montrent les formules plus bas.
+		</p>
 
 		<div class="space-y-4">
 			<div class="rounded bg-card p-4">
 				<div class="mb-1 text-xs font-medium text-muted-foreground">
 					ShantellMath (premier essai, fichier d'origine)
 				</div>
-				<div class="font-shantell text-3xl">
+				<div class="font-shantell text-3xl break-all">
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 				</div>
 				<div class="font-shantell mt-2 text-2xl">
-					x² + y² = z² ∫ ∑ ∏ √ ∞ ± × ÷ = ≠ &lt; &gt; ≤ ≥ α β γ δ Γ Δ Θ Σ Ω
+					x + y = z ∫ √ ∞ ± × ÷ &lt; &gt; ≤ ≥ ∈ ∀ ∃ → ⇒ Γ Δ Θ Σ Ω
 				</div>
 			</div>
 
@@ -251,11 +256,11 @@
 				<div class="mb-1 text-xs font-medium text-muted-foreground">
 					Chiphre Math (KaTeX_Main-Regular de static/fonts/chiphre-math/)
 				</div>
-				<div class="font-chiphre-math text-3xl">
+				<div class="font-chiphre-math text-3xl break-all">
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 				</div>
 				<div class="font-chiphre-math mt-2 text-2xl">
-					x² + y² = z² ∫ ∑ ∏ √ ∞ ± × ÷ = ≠ &lt; &gt; ≤ ≥ α β γ δ Γ Δ Θ Σ Ω
+					x + y = z ∫ √ ∞ ± × ÷ &lt; &gt; ≤ ≥ ∈ ∀ ∃ → ⇒ Γ Δ Θ Σ Ω
 				</div>
 			</div>
 
@@ -263,11 +268,11 @@
 				<div class="mb-1 text-xs font-medium text-muted-foreground">
 					KaTeX Original (pour comparaison)
 				</div>
-				<div class="font-katex-original text-3xl">
+				<div class="font-katex-original text-3xl break-all">
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
 				</div>
 				<div class="font-katex-original mt-2 text-2xl">
-					x² + y² = z² ∫ ∑ ∏ √ ∞ ± × ÷ = ≠ &lt; &gt; ≤ ≥ α β γ δ Γ Δ Θ Σ Ω
+					x + y = z ∫ √ ∞ ± × ÷ &lt; &gt; ≤ ≥ ∈ ∀ ∃ → ⇒ Γ Δ Θ Σ Ω
 				</div>
 			</div>
 		</div>
