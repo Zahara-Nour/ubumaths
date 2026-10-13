@@ -452,3 +452,8 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
 - **T11 plus vrai (mesuré le 2026-10-13)** : `sanitizeErrorData` masque clés sensibles et
   courriels (corps, contexte, URL, message, pile) ; prod : 934 lignes, `request_body` 0, une URL à
   paramètre (`/glossaire?q=`), plus ancienne au 2026-09-11 (purge 30 j). §5.9 de `rgpd.md` barré.
+- **T5 corrigé (#1327)** : `challenge-variables.ts` n'envoie à `new Function` qu'une expression
+  arithmétique (`ARITHMETIC_ONLY`, classe de caractères, temps linéaire) ; noms de variables
+  substitués par `interpolateExpression` (un nom piégé faisait planter ou geler le combat).
+  Prod : `game_challenges` écrite par le prof seul, 0 / 464 défis de type `expression`. 3 tests
+  rouges sur `main`.

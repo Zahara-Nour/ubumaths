@@ -397,8 +397,6 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
   `ChatMessageList` ; aucun écran de modération ne liste les messages marqués. Le filtre ne
   connaît que quatre mots. Le commentaire du trigger annonce un contrôle serveur « plus
   sophistiqué » qui n'existe pas.
-- **Dépendance `bad-words` orpheline** : seul `profanity-filter.ts`, retiré le 2026-10-13, l'importait ;
-  elle reste dans `package.json`.
 - **Mentions factices dans l'éditeur riche.** `src/lib/stores/mentions.svelte.ts` propose une
   liste en dur (« Alice Dupont », « Bob Durand »…) ; l'extension `Mention` est active dans
   `editor-config.ts`. Aucune vraie personne, mais des noms inventés offerts à l'autocomplétion.

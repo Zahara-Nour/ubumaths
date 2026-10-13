@@ -330,8 +330,12 @@ RBush, `validation/` branché sur des exercices.
 
 ## 10. Points ouverts
 
-- `src/lib/utils/game/challenge-variables.ts` évalue encore une chaîne venue de la base par
-  `new Function` (hors module ; à remplacer par `compile()`).
+- `src/lib/utils/game/challenge-variables.ts` évalue encore par `new Function` une expression
+  venue de `game_challenges` (hors module ; à remplacer par `compile()`). Depuis T5
+  (2026-10-13), seule l'arithmétique y arrive (liste blanche `ARITHMETIC_ONLY` : chiffres, `.`,
+  `e`, opérateurs, parenthèses, `Math.sqrt`) ; tout autre texte rend `NaN`. En prod, aucun des
+  464 défis n'a de variable ou de réponse de type `expression`, et seul le prof peut écrire la
+  table.
 - La CSP autorise `unsafe-eval` pour Typst (`src/hooks.server.ts`).
 - `figure.ts` (~5 000 lignes) et `builtins.ts` (~7 400 lignes) sont les deux plus gros fichiers.
 - Trois interfaces de configuration Newton divergentes : `NewtonConfig`, `IntersectionConfig`,
