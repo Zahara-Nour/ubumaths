@@ -307,25 +307,25 @@ exports[`Pedagogical domain demo cases (LaTeX format) > logarithmes > renders: l
 Expression: \\ln(5) (variable: x)
 
 ========== LYCEE (summarized) ==========
-- [ln_constraint] Contrainte du logarithme népérien
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{5} \\\\ &\\text{Contrainte : } 5 > 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+- [universal] Domaine universel
+  \\begin{aligned} &\\text{Domaine : } \\mathbb{R} \\end{aligned}
 Domaine final: ℝ
 
 ========== LYCEE (detailed) ==========
-- [ln_constraint] Contrainte du logarithme népérien
-  · Pour que $\\ln\\left(5\\right)$ soit défini, il faut $5 > 0$
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{5} \\\\ &\\text{Contrainte : } 5 > 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+- [universal] Domaine universel
+  · Aucune restriction particulière : le domaine est ℝ.
+  \\begin{aligned} &\\text{Domaine : } \\mathbb{R} \\end{aligned}
 Domaine final: ℝ
 
 ========== SUPERIEUR (summarized) ==========
-- [ln_constraint] ln u défini
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{5} \\\\ &\\text{Contrainte : } 5 > 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+- [universal] D = ℝ
+  \\begin{aligned} &\\text{Domaine : } \\mathbb{R} \\end{aligned}
 Domaine final: ℝ
 
 ========== SUPERIEUR (detailed) ==========
-- [ln_constraint] ln u défini
-  · Pour que $\\ln\\left(5\\right)$ soit défini, il faut $5 > 0$
-  \\begin{aligned} &\\text{Expression : } \\textcolor{blue}{5} \\\\ &\\text{Contrainte : } 5 > 0 \\\\ &\\text{Domaine : } \\mathbb{R} \\end{aligned}
+- [universal] D = ℝ
+  · Pas de restriction : D = ℝ.
+  \\begin{aligned} &\\text{Domaine : } \\mathbb{R} \\end{aligned}
 Domaine final: ℝ
 "
 `;

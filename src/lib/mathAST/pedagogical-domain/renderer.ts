@@ -37,6 +37,7 @@ import type {
 } from '../domain';
 import type { MathNode } from '../types';
 import { toLatex } from '../latex-generator';
+import { compile } from '../eval/compile';
 import type {
 	PedagogicalRenderOptions,
 	RenderedStep,
@@ -85,15 +86,53 @@ export function domainToLatex(domain: Domain): string {
 }
 
 function intervalSetToLatex(domain: IntervalSet): string {
+	// ]a ; b[ ∪ ]b ; c[ s'écrit ]a ; c[ ∖ {b} : un point exclu, pas une réunion
+	const merged: { lower: Interval['lower']; upper: Interval['upper'] }[] = [];
+	const excluded: MathNode[] = domain.excludedPoints.map((p) => p.value);
+	for (const interval of domain.intervals) {
+		const previous = merged[merged.length - 1];
+		if (
+			previous !== undefined &&
+			previous.upper.type === 'open' &&
+			interval.lower.type === 'open' &&
+			previous.upper.value.type !== 'infinity' &&
+			valueToLatex(previous.upper.value) === valueToLatex(interval.lower.value)
+		) {
+			excluded.push(previous.upper.value);
+			merged[merged.length - 1] = { lower: previous.lower, upper: interval.upper };
+		} else {
+			merged.push({ lower: interval.lower, upper: interval.upper });
+		}
+	}
+	const pieces: Interval[] = merged.map((m) => ({ kind: 'interval', ...m }));
 	const base =
-		domain.intervals.length === 0
+		pieces.length === 0
 			? '\\emptyset'
-			: domain.intervals.length === 1 && isWholeLine(domain.intervals[0])
+			: pieces.length === 1 && isWholeLine(pieces[0])
 				? '\\mathbb{R}'
-				: domain.intervals.map(singleIntervalToLatex).join(' \\cup ');
-	if (domain.excludedPoints.length === 0) return base;
-	const points = domain.excludedPoints.map((p) => valueToLatex(p.value)).join(' ; ');
+				: pieces.map(singleIntervalToLatex).join(' \\cup ');
+	if (excluded.length === 0) return base;
+	const points = sortByValue(excluded).map(valueToLatex).join(' ; ');
 	return `${base} \\setminus \\left\\{${points}\\right\\}`;
+}
+
+/** Points rangés par valeur croissante (ordre d'origine si non évaluables). */
+function sortByValue(nodes: readonly MathNode[]): MathNode[] {
+	const values = nodes.map(numericValue);
+	if (values.some((v) => v === null)) return [...nodes];
+	return nodes
+		.map((node, i) => ({ node, value: values[i] as number }))
+		.sort((x, y) => x.value - y.value)
+		.map((x) => x.node);
+}
+
+function numericValue(node: MathNode): number | null {
+	try {
+		const value = compile(node)({});
+		return typeof value === 'number' && Number.isFinite(value) ? value : null;
+	} catch {
+		return null;
+	}
 }
 
 function isWholeLine(interval: Interval): boolean {
@@ -113,25 +152,49 @@ function singleIntervalToLatex(interval: Interval): string {
 
 function periodicToLatex(domain: PeriodicExclusion): string {
 	const multiple = periodMultipleToLatex(domain.period);
-	const isZeroBase = nodeIsZero(domain.basePoint);
+	const isZeroBase = numericValue(domain.basePoint) === 0;
 	const points = isZeroBase ? multiple : `${valueToLatex(domain.basePoint)}+${multiple}`;
 	return `\\mathbb{R}\\setminus\\left\\{${points},\\ k\\in\\mathbb{Z}\\right\\}`;
 }
 
-/** `k` fois la période : `k\pi`, `2k\pi`, `\frac{k\pi}{2}`. */
+/** `k` fois la période : `k`, `2k`, `k\pi`, `2k\pi`, `\frac{k\pi}{2}`, `\frac{k}{2}`. */
 function periodMultipleToLatex(period: MathNode): string {
 	if (period.type === 'division') {
 		return `\\frac{${periodMultipleToLatex(period.numerator)}}{${valueToLatex(period.denominator)}}`;
 	}
-	if (period.type === 'multiplication' && period.left.type === 'number') {
-		return `${period.left.value}k${valueToLatex(period.right)}`;
+	if (period.type === 'number') {
+		const fraction = decimalFraction(period.value);
+		if (fraction !== null) {
+			const top = fraction.n === '1' ? 'k' : `${fraction.n}k`;
+			return fraction.d === '1' ? top : `\\frac{${top}}{${fraction.d}}`;
+		}
+		return `${period.value}k`;
 	}
-	if (period.type === 'number' && period.value === '1') return 'k';
+	if (period.type === 'multiplication' && period.left.type === 'number') {
+		const coefficient = period.left.value === '1' ? '' : period.left.value;
+		return `${coefficient}k${valueToLatex(period.right)}`;
+	}
 	return `k${valueToLatex(period)}`;
 }
 
-function nodeIsZero(node: MathNode): boolean {
-	return node.type === 'number' && Number(node.value) === 0;
+/**
+ * `"0.5"` → 1/2 (positif, réduit) ; `null` si l'écriture n'est pas un décimal
+ * positif court (au plus 6 chiffres après la virgule).
+ */
+function decimalFraction(value: string): { n: string; d: string } | null {
+	const match = /^(\d+)(?:\.(\d{1,6}))?$/.exec(value);
+	if (!match) return null;
+	const decimals = match[2] ?? '';
+	let n = BigInt(match[1] + decimals);
+	let d = 10n ** BigInt(decimals.length);
+	const g = gcd(n, d);
+	n /= g;
+	d /= g;
+	return { n: n.toString(), d: d.toString() };
+}
+
+function gcd(a: bigint, b: bigint): bigint {
+	return b === 0n ? (a === 0n ? 1n : a) : gcd(b, a % b);
 }
 
 /** Valeur d'une borne ou d'un point exclu : fractions en `\frac`. */
@@ -139,16 +202,37 @@ function valueToLatex(node: MathNode): string {
 	switch (node.type) {
 		case 'infinity':
 			return node.sign === 'positive' ? '+\\infty' : '-\\infty';
+		case 'number': {
+			const fraction = decimalFraction(node.value);
+			if (fraction === null || fraction.d === '1') return toLatex(node);
+			return `\\frac{${fraction.n}}{${fraction.d}}`;
+		}
 		case 'division':
 			return `\\frac{${valueToLatex(node.numerator)}}{${valueToLatex(node.denominator)}}`;
 		case 'opposite': {
 			const operand = valueToLatex(node.operand);
-			const isSum = node.operand.type === 'addition' || node.operand.type === 'subtraction';
-			return isSum ? `-\\left(${operand}\\right)` : `-${operand}`;
+			return isSum(node.operand) ? `-\\left(${operand}\\right)` : `-${operand}`;
+		}
+		case 'addition':
+			return `${valueToLatex(node.left)}+${valueToLatex(node.right)}`;
+		case 'subtraction': {
+			const right = valueToLatex(node.right);
+			return `${valueToLatex(node.left)}-${isSum(node.right) ? `\\left(${right}\\right)` : right}`;
+		}
+		case 'multiplication': {
+			const left = valueToLatex(node.left);
+			const right = valueToLatex(node.right);
+			return node.left.type === 'number' && node.right.type !== 'number'
+				? `${left}${right}`
+				: `${left} \\times ${right}`;
 		}
 		default:
 			return toLatex(node);
 	}
+}
+
+function isSum(node: MathNode): boolean {
+	return node.type === 'addition' || node.type === 'subtraction';
 }
 
 /**
@@ -156,18 +240,27 @@ function valueToLatex(node: MathNode): string {
  * Unicode de `formatInterval`.
  */
 function unicodeToLatex(domainStr: string): string {
-	return domainStr
-		.replace(/∞/g, '\\infty')
-		.replace(/ℝ/g, '\\mathbb{R}')
-		.replace(/ℤ/g, '\\mathbb{Z}')
-		.replace(/∅/g, '\\emptyset')
-		.replace(/≤/g, '\\leq')
-		.replace(/≥/g, '\\geq')
-		.replace(/≠/g, '\\neq')
-		.replace(/∪/g, '\\cup')
-		.replace(/∩/g, '\\cap')
-		.replace(/π/g, '\\pi')
-		.replace(/√/g, '\\sqrt');
+	return (
+		domainStr
+			// Points exclus d'abord (avant que ℤ ne devienne `\mathbb{Z}`, dont
+			// les accolades casseraient la reconnaissance) : `\ {a ; b}` →
+			// `\setminus \left\{a ; b\right\}`
+			.replace(/\\ \{([^{}]*)\}/g, '\\setminus \\left\\{$1\\right\\}')
+			.replace(/∞/g, '\\infty')
+			.replace(/ℝ/g, '\\mathbb{R}')
+			.replace(/ℤ/g, '\\mathbb{Z}')
+			.replace(/ℕ/g, '\\mathbb{N}')
+			.replace(/∅/g, '\\emptyset')
+			.replace(/≤/g, '\\leq')
+			.replace(/≥/g, '\\geq')
+			.replace(/≠/g, '\\neq')
+			.replace(/∪/g, '\\cup')
+			.replace(/∩/g, '\\cap')
+			.replace(/∈/g, '\\in')
+			.replace(/·/g, '\\cdot ')
+			.replace(/π/g, '\\pi')
+			.replace(/√/g, '\\sqrt')
+	);
 }
 
 /**

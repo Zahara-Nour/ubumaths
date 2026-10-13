@@ -20,6 +20,9 @@ import {
 } from '../index';
 import type { PedagogicalDomainSchoolLevel } from '../types';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
+import type { MathNode } from '$lib/mathAST/types';
+import type { Domain } from '$lib/mathAST/domain';
+import { domainToLatex } from '../renderer';
 
 // =============================================================================
 // Constantes
@@ -266,4 +269,106 @@ describe('Non-régression', () => {
 			});
 		}
 	}
+});
+
+// =============================================================================
+// Revue du 2026-10-13
+// =============================================================================
+
+describe('Revue — les étapes doivent prouver le domaine', () => {
+	const REFUSED = [
+		// x > 0 appliqué sans être écrit : l'intersection affichée ne se déduit pas des étapes
+		'\\sqrt{x}+x^{-1/2}',
+		// valeur interdite irrationnelle connue seulement en décimal (Q3)
+		'\\frac{1}{x^3-2}'
+	];
+	for (const level of LEVELS) {
+		for (const expression of REFUSED) {
+			it(`${expression} (${level}) est refusé`, () => {
+				expect(() => dispatchPedagogicalDomain({ expression, schoolLevel: level })).toThrow(
+					PedagogicalDomainNotImplemented
+				);
+			});
+		}
+	}
+
+	it('\\frac{1}{(\\frac1x)^2+1} : pas de « pour tout réel x » (faux en 0)', () => {
+		const steps = render('\\frac{1}{(\\frac1x)^2+1}', 'lycee');
+		for (const step of steps) {
+			expect(step.explanation ?? '').not.toMatch(/pour tout réel/i);
+		}
+	});
+
+	it('\\frac{1}{x-\\sqrt2} : pas d’étape « $2 \\geq 0$ »', () => {
+		const steps = render('\\frac{1}{x-\\sqrt2}', 'lycee');
+		expect(steps.map((s) => s.rule)).toEqual(['division_constraint']);
+		expect(domainLine(steps[0])).toBe('\\mathbb{R}\\setminus\\left\\{\\sqrt{2}\\right\\}');
+	});
+});
+
+describe('Revue — écriture des exclusions périodiques', () => {
+	const CASES: ReadonlyArray<{ expression: string; set: string }> = [
+		{
+			expression: '\\tan(\\frac{\\pi x}{2})',
+			set: '\\mathbb{R}\\setminus\\left\\{1+2k,\\k\\in\\mathbb{Z}\\right\\}'
+		},
+		{
+			expression: '\\tan(\\pi x)',
+			set: '\\mathbb{R}\\setminus\\left\\{\\frac{1}{2}+k,\\k\\in\\mathbb{Z}\\right\\}'
+		},
+		{
+			expression: '\\tan(x-1)',
+			set: '\\mathbb{R}\\setminus\\left\\{1+\\frac{\\pi}{2}+k\\pi,\\k\\in\\mathbb{Z}\\right\\}'
+		}
+	];
+	for (const { expression, set } of CASES) {
+		it(expression, () => {
+			const [step] = render(expression, 'lycee');
+			expect(domainLine(step)).toBe(set);
+		});
+	}
+});
+
+describe('Revue — ]-∞ ; a[ ∪ ]a ; +∞[ s’écrit ℝ ∖ {a}', () => {
+	const inf = (sign: 'positive' | 'negative'): MathNode => ({ type: 'infinity', sign });
+	const num = (value: string): MathNode => ({ type: 'number', value });
+	const open = (lower: MathNode, upper: MathNode) => ({
+		kind: 'interval' as const,
+		lower: { value: lower, type: 'open' as const },
+		upper: { value: upper, type: 'open' as const }
+	});
+	const set = (...intervals: ReturnType<typeof open>[]): Domain => ({
+		kind: 'interval_set',
+		intervals,
+		excludedPoints: []
+	});
+
+	it(']-∞ ; 0[ ∪ ]0 ; +∞[ → ℝ ∖ {0}', () => {
+		const latex = domainToLatex(
+			set(open(inf('negative'), num('0')), open(num('0'), inf('positive')))
+		);
+		expect(compact(latex)).toBe('\\mathbb{R}\\setminus\\left\\{0\\right\\}');
+	});
+
+	it(']-∞ ; -1[ ∪ ]-1 ; 1[ ∪ ]1 ; +∞[ → ℝ ∖ {-1 ; 1}', () => {
+		const minusOne: MathNode = { type: 'opposite', operand: num('1') };
+		const latex = domainToLatex(
+			set(
+				open(inf('negative'), minusOne),
+				open(minusOne, num('1')),
+				open(num('1'), inf('positive'))
+			)
+		);
+		expect(compact(latex)).toBe('\\mathbb{R}\\setminus\\left\\{-1;1\\right\\}');
+	});
+
+	it(']0 ; 1[ ∪ ]1 ; 2[ → ]0 ; 2[ ∖ {1}', () => {
+		const latex = domainToLatex(set(open(num('0'), num('1')), open(num('1'), num('2'))));
+		expect(compact(latex)).toBe(']0;2[\\setminus\\left\\{1\\right\\}');
+	});
+
+	it('\\sqrt{x^2-1} reste une réunion', () => {
+		const [step] = render('\\sqrt{x^2-1}', 'lycee');
+		expect(domainLine(step)).toBe(']-\\infty;-1]\\cup[1;+\\infty[');
+	});
 });

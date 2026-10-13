@@ -551,7 +551,7 @@ function neverZeroReasoning(denominator: MathNode, variable: string, latex: stri
 			positiveConstant = true;
 			continue;
 		}
-		const square = evenPowerTerm(term);
+		const square = evenPowerTerm(term, variable);
 		if (square === null) return null;
 		squares += 1;
 		if (!square.bare) bareSquare = false;
@@ -579,19 +579,50 @@ function additiveTerms(node: MathNode): MathNode[] | null {
  * `u^{2k}` (bare) ou `c·u^{2k}` avec `c > 0` constant (non bare) ;
  * `null` sinon.
  */
-function evenPowerTerm(node: MathNode): { bare: boolean } | null {
+function evenPowerTerm(node: MathNode, variable: string): { bare: boolean } | null {
 	if (node.type === 'superscript') {
 		const exponent = tryConstantValue(node.superscript);
-		return exponent !== null && exponent > 0 && Number.isInteger(exponent) && exponent % 2 === 0
-			? { bare: true }
-			: null;
+		const even =
+			exponent !== null && exponent > 0 && Number.isInteger(exponent) && exponent % 2 === 0;
+		// Base polynomiale seulement : `(\frac1x)^2+1` n'est pas défini en 0
+		return even && isPolynomialIn(node.base, variable) ? { bare: true } : null;
 	}
 	if (node.type === 'multiplication') {
 		const coefficient = tryConstantValue(node.left);
 		if (coefficient === null || coefficient <= 0) return null;
-		return evenPowerTerm(node.right) === null ? null : { bare: false };
+		return evenPowerTerm(node.right, variable) === null ? null : { bare: false };
 	}
 	return null;
+}
+
+/** Polynôme en `variable` : nombres, variable, +, −, ×, puissances entières ≥ 0. */
+function isPolynomialIn(node: MathNode, variable: string): boolean {
+	switch (node.type) {
+		case 'number':
+			return true;
+		case 'variable':
+			return node.name === variable;
+		case 'delimiter':
+			return isPolynomialIn(node.content, variable);
+		case 'opposite':
+		case 'positive':
+			return isPolynomialIn(node.operand, variable);
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return isPolynomialIn(node.left, variable) && isPolynomialIn(node.right, variable);
+		case 'superscript': {
+			const exponent = tryConstantValue(node.superscript);
+			return (
+				exponent !== null &&
+				exponent >= 0 &&
+				Number.isInteger(exponent) &&
+				isPolynomialIn(node.base, variable)
+			);
+		}
+		default:
+			return false;
+	}
 }
 
 /**
@@ -681,7 +712,9 @@ function computeFunctionDomain(
 	// emitted earlier in the periodic_exclusion branch above. Rules outside
 	// the MVP set are silent here; the upstream pedagogical dispatcher
 	// refuses those cases via `assertOnlyMvpRules`.
-	if (options.showSteps && options.recorder) {
+	// Argument constant (`\sqrt{2}` dans `\frac{1}{x-\sqrt2}`) : aucune
+	// contrainte sur la variable, pas d'étape « $2 \geq 0$ »
+	if (options.showSteps && options.recorder && containsVariable(arg, variable)) {
 		const constraintRule = getConstraintRuleForFunction(node.name);
 		const evenIndex = constraintRule === 'sqrt_constraint' ? evenRootIndex(node) : null;
 		if (evenIndex !== null) {
