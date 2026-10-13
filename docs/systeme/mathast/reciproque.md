@@ -46,7 +46,7 @@ David du 2026-10-13). Pour x² sur ℝ :
   `computeReciprocal` sur le morceau (sans relister) ; formule en `$…$` (convention des étapes,
   rendue par ubumark), ou « (formule que je ne sais pas calculer) » et `expression: null`
   (x³ − 3x : Cardano). Au-delà de 4 (x⁵ − 5x³ + 4x : 5), ils sont comptés, pas listés.
-- **Périodique** (`infinitelyManyPieces`) : quand le solveur ne résout pas `y = f(x)`, la période se
+- **Famille périodique** (`infinitelyManyPieces`, x·sin x compris) : quand le solveur ne résout pas `y = f(x)`, la période se
   lit sur `f(x₀) = f(x)` à second membre exact (`0 = sin x`) et se vérifie numériquement dans I
   (x₀ et x₀ + T dans I). Aucun morceau listé ; l'intervalle proposé est le morceau de
   [−T/2 ; T/2] qui contient 0 (sin : [-π/2 ; π/2]), sinon celui qui part de 0 (cos : [0 ; π]).
@@ -55,7 +55,7 @@ David du 2026-10-13). Pour x² sur ℝ :
   échoue → `not-bijective` quand même (x⁴ − 2x², x eˣ sur ℝ ; avant : `unsolved`).
 - `suggestion` : le morceau le plus à droite qui a une formule, sinon le dernier ; jamais une borne
   approchée par les variations (7 chiffres ou plus : « choisis un intervalle où f est strictement
-  monotone »).
+  monotone ») ; une telle borne fait aussi compter les morceaux au lieu de les lister (x⁵ − 5x³).
 
 Champs : `sameImage` (la paire entière), `suggestion`, `pieces`
 (`{ interval, expression | null, departure | null }`, pour l'affichage LaTeX de l'atelier),

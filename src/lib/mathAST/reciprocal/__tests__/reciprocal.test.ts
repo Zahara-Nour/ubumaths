@@ -528,6 +528,13 @@ describe('computeReciprocal — non bijective : explication et réciproques par 
 		expect(refusal.message).toContain('Choisis un intervalle où f est strictement monotone.');
 	});
 
+	it('x⁵ − 5x³ : bornes ±√3 approchées par les variations, morceaux comptés et pas listés', () => {
+		const refusal = notBijectiveOf('x^5-5x^3');
+		expect(refusal.pieces).toBeUndefined();
+		expect(refusal.message).not.toMatch(/\d{7,}/);
+		expect(refusal.message).toContain('chacun de ses 3 intervalles de stricte monotonie');
+	});
+
 	it('sin sur ℝ : une infinité de morceaux, pas de liste, un intervalle proposé', () => {
 		const refusal = notBijectiveOf('\\sin(x)');
 		expect(refusal.infinitelyManyPieces).toBe(true);

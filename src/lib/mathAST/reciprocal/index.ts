@@ -187,6 +187,11 @@ function whyNotInjective(
 	return `${same} = ${y}, donc ${y} aurait deux antécédents et ${name}⁻¹(${y}) ne saurait pas lequel choisir.`;
 }
 
+/** Une borne approchée par les variations (8222164341/5000000000) ne s'écrit pas à un élève. */
+function readable(domain: Domain): boolean {
+	return !/\d{7,}/.test(formatInterval(domain));
+}
+
 function tidyInterval(iv: Interval): Interval {
 	const end = (e: Interval['lower']): Interval['lower'] => ({ ...e, value: tidy(e.value) });
 	return interval(end(iv.lower), end(iv.upper));
@@ -219,10 +224,12 @@ function refuseNotBijective(
 	const why = whyNotInjective(context, round ? [a, b] : null);
 
 	const several = pieces !== null && pieces.length > 1;
+	const listable =
+		several &&
+		pieces.length <= MAX_LISTED_PIECES &&
+		pieces.every(({ piece }) => readable(intervalSet([tidyInterval(piece)])));
 	const listed =
-		context.listPieces && several && pieces.length <= MAX_LISTED_PIECES
-			? pieces.map(({ piece }) => listedPiece(context, piece))
-			: null;
+		context.listPieces && listable ? pieces.map(({ piece }) => listedPiece(context, piece)) : null;
 	const mais = `Mais ${name} est bijective sur`;
 	let byPiece = '';
 	if (periodic) byPiece = ` ${mais} une infinité d'intervalles, chacun avec sa réciproque.`;
@@ -239,8 +246,7 @@ function refuseNotBijective(
 	const fromPieces =
 		withFormula ?? (several && last ? intervalSet([tidyInterval(last.piece)]) : undefined);
 	const candidate = periodic ? (periodic.suggestion ?? undefined) : fromPieces;
-	// Une borne approchée (8222164341/5000000000) ne se propose pas à un élève
-	const suggestion = candidate && !/\d{7,}/.test(formatInterval(candidate)) ? candidate : undefined;
+	const suggestion = candidate && readable(candidate) ? candidate : undefined;
 	const advice = suggestion
 		? `Choisis un intervalle, par exemple .réciproque ${name} sur ${formatInterval(suggestion)}.`
 		: `Choisis un intervalle où ${name} est strictement monotone.`;
@@ -259,7 +265,8 @@ function refuseNotBijective(
 }
 
 /**
- * f périodique sur I (f(x₀ + T) = f(x₀) avec x₀ et x₀ + T dans I) : refus
+ * Le solveur rend une famille périodique de solutions (sin, cos, mais aussi
+ * x·sin x) et f(x₀ + T) = f(x₀) avec x₀ et x₀ + T dans I : refus
  * « non bijective », avec le morceau de [−T/2 ; T/2] qui contient 0 (sin :
  * [−π/2 ; π/2]), sinon celui qui part de 0 (cos : [0 ; π]). `null` : pas de
  * période entière dans I, le refus reste `unsolved`.
