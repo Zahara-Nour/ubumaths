@@ -11,7 +11,8 @@
  *     cliquet : sinon un appel migré laisserait la place à un nouveau.
  *
  * Périmètre : `src/lib/server/**` (tout `.ts`/`.js`) et, sous `src/routes/**`,
- * les fichiers serveur (`+server`, `*.server`, ou sous un dossier `server/`).
+ * les fichiers serveur (`+server`, `*.server`, ou sous un dossier `server/`), plus
+ * `src/hooks.server.ts`.
  * Hors tests (`__tests__/`, `*.test.*`, `*.spec.*`).
  *
  * Comptage sur l'arbre syntaxique (compilateur TypeScript) : un `console.error`
@@ -22,9 +23,10 @@
  * La garde vitest : src/lib/__tests__/console-serveur-cliquet.test.ts.
  *
  * Usage : pnpm logs:cliquet          (vérifie)
- *         pnpm logs:cliquet --maj    (réécrit la référence après une migration)
+ *         pnpm logs:cliquet --maj    (réécrit la référence après une migration ;
+ *                                     refusé si un compte monte, sauf --accepter-hausse)
  */
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import ts from 'typescript';
 
@@ -79,7 +81,11 @@ export function serverFiles(root: string): string[] {
 	const routes = walk(join(root, 'src/routes'))
 		.map(toRelative)
 		.filter((file) => ROUTE_SERVER_FILE.test(file.slice('src/routes/'.length)));
-	return [...lib, ...routes].sort();
+	// Hors des deux dossiers : le hook, par lequel passe chaque requête
+	const hooks = ['src/hooks.server.ts', 'src/hooks.server.js'].filter((file) =>
+		existsSync(join(root, file))
+	);
+	return [...lib, ...routes, ...hooks].sort();
 }
 
 /** Comptes par fichier ; les fichiers sans appel n'y figurent pas. */
@@ -138,7 +144,9 @@ export function ratchetReport(ratchet: ConsoleCounts, current: ConsoleCounts): s
 }
 
 function writeRatchet(root: string, counts: ConsoleCounts): void {
-	const sorted = Object.fromEntries(Object.entries(counts).sort(([a], [b]) => a.localeCompare(b)));
+	const sorted = Object.fromEntries(
+		Object.entries(counts).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+	);
 	writeFileSync(join(root, RATCHET_FILE), JSON.stringify(sorted, null, '\t') + '\n');
 }
 
@@ -147,6 +155,15 @@ function main(): void {
 	const current = countServerConsoleCalls(root);
 
 	if (process.argv.includes('--maj')) {
+		// `--maj` abaisse le cliquet ; il n'entérine une hausse que si on le dit
+		const { increases } = compareCounts(readRatchet(root), current);
+		if (increases.length > 0 && !process.argv.includes('--accepter-hausse')) {
+			console.error(ratchetReport(readRatchet(root), current));
+			console.error(
+				'⛔ --maj refusé : des comptes montent (ajoute --accepter-hausse si c’est voulu).'
+			);
+			process.exit(1);
+		}
 		writeRatchet(root, current);
 		console.log(
 			`✓ Cliquet réécrit : ${total(current)} appels console.* dans ${Object.keys(current).length} fichiers.`
