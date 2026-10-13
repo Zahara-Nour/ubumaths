@@ -1,7 +1,7 @@
 # Un seul générateur PDF de fiches, piloté par les gabarits — journal
 
 > Chantier ouvert le 2026-10-13 (demande de David). Worktree `../ubumaths-wt-pdf-fiches`,
-> branche `refactor/generateur-pdf-fiches-unique`. **Phase 0 : plan à valider, aucun code.**
+> branche `refactor/generateur-pdf-fiches-unique`. **Plan validé le 2026-10-13 (ADR 0028) ; lot 0 fait, lot 1 en cours.**
 
 ## Constat (exploration du 2026-10-13)
 
@@ -46,6 +46,14 @@ Gabarits inaccessibles :
   éléments communs d'un style (couleurs, en-tête, rendu d'un exercice) sont écrits une fois, dans
   un fichier partagé importé par ses gabarits. Forme absente d'un style → celle du style par défaut.
 
+- **D3** — Base : **table `worksheet_styles`** (nom, description, propriétaire, code Typst commun) ;
+  `worksheet_templates` porte son style et sa forme (un gabarit par couple) ; la fiche pointe vers
+  un style ; remplacement d'une forme par fiche dans une table dédiée (clés étrangères). « L'élève
+  passe par le serveur » expliqué et validé : aucune policy RLS ouverte aux élèves.
+- **D4** — Comportements : exercice hors section après des sections → « **Autres exercices** » ;
+  correction non écrite → « **Exercice N : correction non écrite** » ; « afficher les points »
+  s'applique **à tous les PDF**.
+
 ## Vocabulaire proposé (à verser dans CONTEXT.md, lot 0)
 
 | Terme       | Sens                                                                                                                     |
@@ -70,15 +78,7 @@ Gabarits inaccessibles :
 5. Tous les chemins passent par là : aperçu prof, PDF par élève (ZIP), corrigé du serveur,
    téléchargement élève, aperçu « vue élève », cahier / cours publics, scripts `scripts/fiches/`.
 
-**Question ouverte Q1 (base de données)** — comment ranger styles et formes :
-
-- (a) deux colonnes sur `worksheet_templates` : `style` (clé) et `forme` ; la fiche garde
-  `template_id` (gabarit de la forme « fiche ») et en déduit son style ; remplacements par forme
-  dans `worksheets.config` ;
-- (b) une table `worksheet_styles` + `worksheet_templates.style_id` + `worksheets.style_id`.
-
-Recommandation : (a), plus léger, migration additive ; (b) si les styles doivent avoir leur propre
-nom / description / propriétaire.
+**Q1 (base de données)** — tranchée : D3 (table des styles).
 
 ## Lots (proposés)
 
@@ -109,10 +109,9 @@ Nominal :
 
 Limites :
 
-- exercice sans section après des sections : même regroupement des deux côtés (choix à acter :
-  « Autres exercices » côté élève aujourd'hui, en fin sans titre côté prof) ;
+- exercice sans section après des sections : même regroupement des deux côtés (D4 : « Autres exercices ») ;
 - solution vide : même traitement des deux côtés (aujourd'hui : en-tête seul côté prof, exercice
-  omis côté élève) — **proposition : omis** ;
+  omis côté élève) — **D4 : « Exercice N : correction non écrite »** ;
 - `show_points` décoché : points masqués des deux côtés (aujourd'hui toujours affichés côté élève).
 
 Erreur / garde :
@@ -121,5 +120,7 @@ Erreur / garde :
 - langue inconnue → repli `fr`, comme aujourd'hui.
 
 ## Journal
+
+- 2026-10-13 — plan validé ; D3, D4 ; lot 0 : ADR 0028, vocabulaire dans CONTEXT.md (style, gabarit, forme).
 
 - 2026-10-13 — exploration (carte des deux générateurs), décisions D0-D2, plan proposé.
