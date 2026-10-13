@@ -21,11 +21,12 @@ afterEach(() => {
 });
 
 describe('AccountDeletionDialog', () => {
-	it('la suppression réussie efface les conversations du chat', async () => {
+	it('la suppression réussie efface les données de travail du navigateur', async () => {
 		localStorage.setItem(
 			'chatHistory:eleve-a',
 			JSON.stringify([{ role: 'user', content: 'privé', timestamp: 1 }])
 		);
+		localStorage.setItem('minesweeper_game', '{}');
 		localStorage.setItem('theme', 'dark');
 		await render(AccountDeletionDialog, { props: { open: true, onOpenChange: () => {} } });
 
@@ -34,6 +35,7 @@ describe('AccountDeletionDialog', () => {
 		await page.getByRole('button', { name: 'Supprimer definitivement' }).click();
 
 		await expect.poll(() => localStorage.getItem('chatHistory:eleve-a')).toBeNull();
+		expect(localStorage.getItem('minesweeper_game')).toBeNull();
 		expect(fetch).toHaveBeenCalledWith('/api/account/delete', expect.anything());
 		expect(localStorage.getItem('theme')).toBe('dark');
 	});

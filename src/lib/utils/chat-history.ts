@@ -4,7 +4,8 @@
  * Rangé PAR COMPTE (`chatHistory:<id>`) : sur une tablette partagée, l'élève suivant ne
  * doit pas lire la conversation du précédent (constat T17). L'ancienne clé commune
  * `chatHistory` n'appartient à personne de connu : elle est effacée, jamais reprise.
- * La déconnexion efface toutes les conversations (`submitLogoutForm`).
+ * La déconnexion efface toutes les conversations avec les autres données de travail
+ * (`clearWorkData`, `src/lib/utils/work-data.ts`).
  */
 
 const LEGACY_KEY = 'chatHistory';
@@ -14,7 +15,7 @@ function isChatHistoryKey(key: string): boolean {
 	return key === LEGACY_KEY || key.startsWith(KEY_PREFIX);
 }
 
-function removeKeys(storage: Storage, keep: (key: string) => boolean): void {
+function removeChatHistories(storage: Storage, keep: (key: string) => boolean): void {
 	// Liste figée d'abord : retirer une clé décale les index de `storage.key()`.
 	const keys = Array.from({ length: storage.length }, (_, i) => storage.key(i)).filter(
 		(key): key is string => key !== null
@@ -26,12 +27,7 @@ function removeKeys(storage: Storage, keep: (key: string) => boolean): void {
 
 /** Efface les conversations des AUTRES comptes (et l'ancienne clé commune). */
 export function forgetOtherChatHistories(storage: Storage, userId: string): void {
-	removeKeys(storage, (key) => key === KEY_PREFIX + userId);
-}
-
-/** Efface toutes les conversations du navigateur (déconnexion). */
-export function clearAllChatHistories(storage: Storage): void {
-	removeKeys(storage, () => false);
+	removeChatHistories(storage, (key) => key === KEY_PREFIX + userId);
 }
 
 export function loadChatHistory(storage: Storage, userId: string): unknown {

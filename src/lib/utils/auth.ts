@@ -5,7 +5,7 @@
  * be duplicated across components.
  */
 
-import { clearAllChatHistories } from '$lib/utils/chat-history';
+import { clearWorkData } from '$lib/utils/work-data';
 
 /**
  * Submits a hidden POST form to /auth/logout. The server-side handler clears
@@ -14,12 +14,13 @@ import { clearAllChatHistories } from '$lib/utils/chat-history';
  * and reloads with the new auth state.
  */
 export function submitLogoutForm(): void {
-	// Tablette partagée : l'élève suivant ne doit pas lire la conversation avec le
-	// Père Ubu (T17). Une erreur de stockage n'empêche pas la déconnexion.
+	// Tablette partagée : l'élève suivant ne doit retrouver ni la conversation avec le
+	// Père Ubu, ni le code, les calculs ou les parties du précédent (T17,
+	// `src/lib/utils/work-data.ts`). Une erreur de stockage n'empêche pas la déconnexion.
 	try {
-		clearAllChatHistories(localStorage);
+		clearWorkData(localStorage);
 	} catch (e) {
-		console.error('Historique du chat non effacé :', e);
+		console.error('Données de travail non effacées :', e);
 	}
 	const form = document.createElement('form');
 	form.method = 'POST';

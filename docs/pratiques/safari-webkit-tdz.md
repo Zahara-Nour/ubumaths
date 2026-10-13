@@ -75,12 +75,13 @@ This reduced the root layout chunk from **231KB to 49KB** because `@supabase/ssr
 
 ## Related Fixes in This Codebase
 
-| File                        | Fix                                   | Why                                                                |
-| --------------------------- | ------------------------------------- | ------------------------------------------------------------------ |
-| `src/routes/+layout.ts`     | `await import('@supabase/ssr')`       | Main fix: removes heavy static dependency                          |
-| `src/routes/+layout.ts`     | `await import('$app/navigation')`     | Prevents `invalidate` from creating circular chunk references      |
-| `src/routes/+layout.svelte` | Dynamic import of `@vercel/analytics` | Brave blocks these; also reduces static dependency chain           |
-| `src/hooks.client.ts`       | `handleError` with detailed message   | Error detail shown on the error page, under « Détails techniques » |
+| File                        | Fix                                   | Why                                                                                     |
+| --------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- |
+| `src/routes/+layout.ts`     | `await import('@supabase/ssr')`       | Main fix: removes heavy static dependency                                               |
+| `src/routes/+layout.ts`     | `await import('$app/navigation')`     | Prevents `invalidate` from creating circular chunk references                           |
+| `src/routes/+layout.ts`     | Static imports kept tiny              | Only `$app/environment` (a constant) and `$lib/utils/work-data` (no imports) — no chain |
+| `src/routes/+layout.svelte` | Dynamic import of `@vercel/analytics` | Brave blocks these; also reduces static dependency chain                                |
+| `src/hooks.client.ts`       | `handleError` with detailed message   | Error detail shown on the error page, under « Détails techniques »                      |
 
 ## Rules for Future Development
 
@@ -91,6 +92,8 @@ Any static import in the root `+layout.ts` becomes part of the route entry modul
 **Safe static imports** (small, no transitive deps):
 
 - `$env/static/public` (compile-time constants)
+- `$app/environment` (a constant, does not go through `client.js`)
+- `$lib/utils/work-data` (imports nothing; work data owner check, see `docs/systeme/conformite/rgpd.md`)
 - Type imports (`import type { ... }`)
 
 **Must be dynamic imports** (heavy, large dep trees):

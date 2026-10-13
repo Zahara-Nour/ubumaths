@@ -424,3 +424,11 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   l'ouverture du chat, toutes effacées à la déconnexion. 4 tests rouges sans le correctif.
   **Trouvé au passage** : le chat plantait au montage, en prod comme en dev
   (`bind:ref={undefined}` vers `Textarea`, `props_invalid_value`) → corrigé.
+- **T17 étendu — données de travail dans le navigateur (David, 2026-10-13 : « traite les
+  pareil », effacées à la déconnexion)** — branche `fix/donnees-de-travail-par-compte` :
+  `src/lib/utils/work-data.ts` (18 clés + 4 préfixes : Python, Blockly, atelier, console,
+  calculatrice, grapheur, tableur, tableau blanc, jeux, profil de joueur, chat). Propriétaire
+  retenu dans le navigateur, vérifié par le layout racine à chaque page ; autre compte ou
+  visiteur → effacées + rechargement ; visiteur qui se connecte → son compte reprend ;
+  déconnexion, attente d'approbation, suppression du compte → effacées. Tests : 11 unitaires
+  (8 rouges sans le module) + 3 du layout (rouges sans l'appel).

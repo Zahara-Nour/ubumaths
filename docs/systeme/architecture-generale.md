@@ -97,7 +97,10 @@ Deux `load` racine, dans l'ordre :
    session existe.
 2. **`src/routes/+layout.ts`** (universel : SSR puis navigateur) : crée le client Supabase
    (`createServerClient` à partir des cookies en SSR, `createBrowserClient` dans le navigateur),
-   `depends('supabase:auth')`. Les composants utilisent ce client (`data.supabase`).
+   `depends('supabase:auth')`. Les composants utilisent ce client (`data.supabase`). Dans le
+   navigateur, il vérifie d'abord à qui appartiennent les données de travail de l'élève gardées
+   dans `localStorage` (`enforceWorkDataOwner`, `src/lib/utils/work-data.ts`) : celles d'un autre
+   compte sont effacées et la page rechargée ([conformite/rgpd.md](conformite/rgpd.md)).
 
 **Flux d'auth réactif** : `onAuthStateChange` ne consomme **jamais** la session du rappel (non
 vérifiée) ; il appelle `invalidate('supabase:auth')`, qui relance le `load` racine et la

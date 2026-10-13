@@ -54,10 +54,11 @@ describe('ChatBot — historique par compte', () => {
 });
 
 describe('Déconnexion', () => {
-	it('efface toutes les conversations du navigateur', () => {
+	it('efface toutes les conversations et les données de travail du navigateur', () => {
 		const submit = vi.spyOn(HTMLFormElement.prototype, 'submit').mockImplementation(() => {});
 		localStorage.setItem('chatHistory', savedConversation('ancienne'));
 		localStorage.setItem('chatHistory:eleve-a', savedConversation(SECRET_A));
+		localStorage.setItem('chiphre-python-playground', 'print("A")');
 		localStorage.setItem('theme', 'dark');
 
 		submitLogoutForm();
@@ -65,6 +66,7 @@ describe('Déconnexion', () => {
 		expect(submit).toHaveBeenCalled();
 		expect(localStorage.getItem('chatHistory')).toBeNull();
 		expect(localStorage.getItem('chatHistory:eleve-a')).toBeNull();
+		expect(localStorage.getItem('chiphre-python-playground')).toBeNull();
 		// Les préférences d'affichage ne sont pas des données de l'élève : elles restent.
 		expect(localStorage.getItem('theme')).toBe('dark');
 		submit.mockRestore();

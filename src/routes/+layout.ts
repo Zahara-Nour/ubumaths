@@ -37,6 +37,8 @@
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 // Module sans dépendance : son import statique ne crée pas de chaîne (Safari TDZ)
 import { browserCookieMethods } from '$lib/utils/session-cookies';
+import { browser } from '$app/environment';
+import { enforceWorkDataOwner, watchWorkDataOwnerOnce } from '$lib/utils/work-data';
 import type { LayoutLoad } from './$types';
 
 // =============================================================================
@@ -116,6 +118,19 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	// Register this load function to re-run when 'supabase:auth' is invalidated
 	// This enables reactive auth state updates throughout the app
 	depends('supabase:auth');
+
+	// Données de travail d'élève dans le navigateur (code, calculs, parties) : jamais
+	// montrées à un autre compte. Celles d'un autre sont effacées, et la page rechargée
+	// pour vider ce que les modules en ont déjà lu (`src/lib/utils/work-data.ts`).
+	// Vérifié à chaque chargement de page ; un changement de compte dans un AUTRE onglet
+	// recharge celui-ci (événement `storage`), car `data.user` n'y change pas.
+	if (browser) watchWorkDataOwnerOnce(() => location.reload());
+	if (
+		browser &&
+		enforceWorkDataOwner(data.user?.id ?? null, localStorage, () => location.reload())
+	) {
+		await new Promise<never>(() => {});
+	}
 	console.log('🎨 [ROOT LAYOUT] Exécution');
 
 	// --- DYNAMIC IMPORT (Safari/WebKit TDZ fix) ---

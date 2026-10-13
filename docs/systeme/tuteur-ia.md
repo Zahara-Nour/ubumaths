@@ -200,12 +200,11 @@ quand le corpus est vide. Et le texte des documents déposés, à l'indexation.
 **Stocké dans le navigateur** : `ChatBot` garde tout l'historique, images en base64 comprises, dans
 `localStorage['chatHistory:<id du compte>']` (`src/lib/utils/chat-history.ts`). Sur un appareil
 partagé (constat T17, 2026-10-13) : à l'ouverture du chat, les conversations des autres comptes et
-l'ancienne clé commune `chatHistory` sont effacées sans être affichées ; la déconnexion
-(`submitLogoutForm`, page d'attente d'approbation) et la suppression du compte
-(`AccountDeletionDialog`) les effacent toutes ; un changement de compte chat ouvert (autre onglet)
-vide la conversation affichée. Le bouton « effacer » du chat
-efface celle du compte. Limite : un élève parti sans se déconnecter laisse sa conversation dans le
-navigateur jusqu'à la prochaine ouverture du chat par un autre compte.
+l'ancienne clé commune `chatHistory` sont effacées sans être affichées ; un changement de compte
+chat ouvert (autre onglet) vide la conversation affichée. Comme les autres données de travail, elle
+est effacée à la déconnexion, à la suppression du compte et à l'arrivée d'un autre compte
+(`src/lib/utils/work-data.ts`, [conformite/rgpd.md](conformite/rgpd.md)). Le bouton « effacer » du
+chat efface celle du compte.
 
 **Durée** : conversations du tuteur supprimées **1 an après leur dernier message** par
 `run_retention_c11()` (`supabase/migrations/20261015090500_conservation_c11.sql`), appelée par la

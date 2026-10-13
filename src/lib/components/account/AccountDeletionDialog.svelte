@@ -20,7 +20,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { AlertTriangle, Loader2, Trash2, X } from '@lucide/svelte';
-	import { clearAllChatHistories } from '$lib/utils/chat-history';
+	import { clearWorkData } from '$lib/utils/work-data';
 
 	interface Props {
 		open: boolean;
@@ -84,12 +84,13 @@
 				return;
 			}
 
-			// Le compte n'existe plus : sa conversation avec le Père Ubu ne reste pas sur
-			// l'appareil (T17). Une erreur de stockage n'empêche pas la redirection.
+			// Le compte n'existe plus : ses données de travail (conversation avec le Père Ubu,
+			// code, calculs, parties) ne restent pas sur l'appareil (T17). Une erreur de
+			// stockage n'empêche pas la redirection.
 			try {
-				clearAllChatHistories(localStorage);
+				clearWorkData(localStorage);
 			} catch (e) {
-				console.error('Historique du chat non effacé :', e);
+				console.error('Données de travail non effacées :', e);
 			}
 
 			// Success - close dialog and redirect
