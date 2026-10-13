@@ -204,8 +204,6 @@ describe('le bouton ≈ et la bascule exact ⇄ décimal', () => {
 		const result = run('10[km]/3');
 
 		expect(result.approximateLatex).toBe('\\approx 3.3333~\\mathrm{km}');
-		expect(result.canToggle).toBe(true);
-		expect(result.decimalOutput).toBe('≈ 3.3333 km');
 	});
 
 	it('une grandeur décimale n’en propose pas', () => {

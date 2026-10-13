@@ -1,16 +1,11 @@
 /**
  * Web REPL Function Features Tests
  *
- * Tests for function state exposure and HTML formatting in WebReplEngine.
+ * Tests for function state exposure in WebReplEngine.
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { WebReplEngine } from '../web-repl-engine';
-import {
-	formatFunctionDefinitionHtml,
-	formatFunctionInfoHtml,
-	formatFunctionListHtml
-} from '../output-formatter-web';
 
 // =============================================================================
 // WebReplEngine.getFunctions() Tests
@@ -193,137 +188,6 @@ describe('WebReplEngine.getState()', () => {
 });
 
 // =============================================================================
-// HTML Output Formatting Tests
-// =============================================================================
-
-describe('formatFunctionDefinitionHtml()', () => {
-	it('formats single parameter function correctly', () => {
-		const html = formatFunctionDefinitionHtml('f', ['x'], 'x^2 + 1');
-
-		expect(html).toContain('repl-fn-name');
-		expect(html).toContain('repl-fn-param');
-		expect(html).toContain('f');
-		expect(html).toContain('x');
-		expect(html).toContain('x^2 + 1');
-		expect(html).toContain('=');
-	});
-
-	it('formats multiple parameters correctly', () => {
-		const html = formatFunctionDefinitionHtml('g', ['x', 'y'], 'x + y');
-
-		expect(html).toContain('x');
-		expect(html).toContain('y');
-		expect(html).toContain(', '); // Parameter separator
-	});
-
-	it('escapes HTML in expressions', () => {
-		const html = formatFunctionDefinitionHtml('f', ['x'], '<script>');
-
-		expect(html).not.toContain('<script>');
-		expect(html).toContain('&lt;script&gt;');
-	});
-
-	it('handles empty parameters', () => {
-		const html = formatFunctionDefinitionHtml('c', [], '42');
-
-		expect(html).toContain('c');
-		expect(html).toContain('()');
-		expect(html).toContain('42');
-	});
-});
-
-describe('formatFunctionInfoHtml()', () => {
-	it('formats function without derivative or inverse', () => {
-		const html = formatFunctionInfoHtml('f', ['x'], 'x^2');
-
-		expect(html).toContain('repl-fn-name');
-		expect(html).toContain('f');
-		expect(html).not.toContain('repl-fn-derivative');
-		expect(html).not.toContain('repl-fn-inverse');
-	});
-
-	it('includes derivative when provided', () => {
-		const html = formatFunctionInfoHtml('f', ['x'], 'x^2', '2*x');
-
-		expect(html).toContain('repl-fn-derivative');
-		expect(html).toContain('2*x');
-		expect(html).toContain('<br>');
-	});
-
-	it('includes inverse when provided', () => {
-		const html = formatFunctionInfoHtml('f', ['x'], 'x^2', undefined, 'sqrt(x)');
-
-		expect(html).toContain('repl-fn-inverse');
-		expect(html).toContain('f^(-1)');
-		expect(html).toContain('sqrt(x)');
-	});
-
-	it('includes both derivative and inverse when provided', () => {
-		const html = formatFunctionInfoHtml('f', ['x'], 'x^2', '2*x', 'sqrt(x)');
-
-		expect(html).toContain('repl-fn-name');
-		expect(html).toContain('repl-fn-derivative');
-		expect(html).toContain('repl-fn-inverse');
-		expect(html).toContain('f^(-1)');
-
-		// Should have multiple lines
-		const lineCount = (html.match(/<br>/g) || []).length;
-		expect(lineCount).toBe(2);
-	});
-
-	it('escapes HTML in derivative and inverse', () => {
-		const html = formatFunctionInfoHtml('f', ['x'], 'x', '<bad>', '<evil>');
-
-		expect(html).not.toContain('<bad>');
-		expect(html).not.toContain('<evil>');
-		expect(html).toContain('&lt;');
-	});
-});
-
-describe('formatFunctionListHtml()', () => {
-	it('returns dim message for empty list', () => {
-		const html = formatFunctionListHtml([]);
-
-		expect(html).toContain('repl-dim');
-		expect(html).toContain('No functions defined');
-	});
-
-	it('formats single function', () => {
-		const html = formatFunctionListHtml([{ name: 'f', params: ['x'], expression: 'x^2' }]);
-
-		expect(html).toContain('f');
-		expect(html).toContain('x^2');
-	});
-
-	it('formats multiple functions with spacing', () => {
-		const html = formatFunctionListHtml([
-			{ name: 'f', params: ['x'], expression: 'x^2' },
-			{ name: 'g', params: ['x'], expression: 'x + 1' }
-		]);
-
-		expect(html).toContain('f');
-		expect(html).toContain('g');
-		// Functions should be separated by double line breaks
-		expect(html).toContain('<br><br>');
-	});
-
-	it('includes derivative and inverse in list', () => {
-		const html = formatFunctionListHtml([
-			{
-				name: 'f',
-				params: ['x'],
-				expression: 'x^2',
-				derivative: '2*x',
-				inverse: 'sqrt(x)'
-			}
-		]);
-
-		expect(html).toContain('repl-fn-derivative');
-		expect(html).toContain('f^(-1)');
-	});
-});
-
-// =============================================================================
 // Integration Tests
 // =============================================================================
 
@@ -385,77 +249,5 @@ describe('Integration: define, list, check output', () => {
 		const functions = engine.getFunctions();
 		// Depending on implementation, functions may or may not be cleared
 		expect(functions.length).toBeGreaterThanOrEqual(0);
-	});
-});
-
-// =============================================================================
-// CSS Class Tests
-// =============================================================================
-
-describe('HTML output has correct CSS classes', () => {
-	it('function name uses repl-fn-name class', () => {
-		const html = formatFunctionDefinitionHtml('f', ['x'], 'x');
-		expect(html).toMatch(/class="repl-fn-name"[^>]*>f</);
-	});
-
-	it('parameter uses repl-fn-param class', () => {
-		const html = formatFunctionDefinitionHtml('f', ['x'], 'x');
-		expect(html).toMatch(/class="repl-fn-param"[^>]*>x</);
-	});
-
-	it('derivative uses repl-fn-derivative class', () => {
-		const html = formatFunctionInfoHtml('f', ['x'], 'x', '1');
-		expect(html).toContain('class="repl-fn-derivative"');
-	});
-
-	it('inverse uses repl-fn-inverse class', () => {
-		const html = formatFunctionInfoHtml('f', ['x'], 'x', undefined, 'x');
-		expect(html).toContain('class="repl-fn-inverse"');
-	});
-
-	it('empty list uses repl-dim class', () => {
-		const html = formatFunctionListHtml([]);
-		expect(html).toContain('class="repl-dim"');
-	});
-});
-
-// =============================================================================
-// Edge Cases
-// =============================================================================
-
-describe('Edge cases', () => {
-	it('handles function with no parameters gracefully', () => {
-		// getFunctions should handle edge case of empty params
-		const html = formatFunctionDefinitionHtml('c', [], 'pi');
-		// The function name 'c' is wrapped in a span, so () should follow the closing tag
-		expect(html).toContain('</span>()');
-		expect(html).toContain('pi');
-	});
-
-	it('handles special characters in expression', () => {
-		const html = formatFunctionDefinitionHtml('f', ['x'], 'x & y < 1');
-		expect(html).toContain('&amp;');
-		expect(html).toContain('&lt;');
-	});
-
-	it('handles long parameter names', () => {
-		const html = formatFunctionDefinitionHtml('func', ['alpha', 'beta'], 'alpha + beta');
-		expect(html).toContain('alpha');
-		expect(html).toContain('beta');
-	});
-
-	it('handles derivative notation correctly', () => {
-		const html = formatFunctionInfoHtml('g', ['t'], 't^2', '2t');
-		// Should show g'(t) = 2t - apostrophe is HTML-escaped
-		expect(html).toContain('g&#039;'); // HTML-escaped apostrophe
-		expect(html).toContain('t');
-		expect(html).toContain('2t');
-	});
-
-	it('handles inverse notation correctly', () => {
-		const html = formatFunctionInfoHtml('h', ['u'], 'u^3', undefined, 'u^(1/3)');
-		// Should show h^(-1)(u) = u^(1/3)
-		expect(html).toContain('h^(-1)');
-		expect(html).toContain('u');
 	});
 });

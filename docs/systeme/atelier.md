@@ -336,8 +336,8 @@ anglaises continuent de marcher (le registre est partagé avec le REPL de mathAS
 moteur **n'existent pas dans l'atelier** (`ENGINE_COMMANDS_LEFT_OUT` : `let`, `def`, `clear`,
 `unset`, `undef`, `inv`, `def'` — décision de David, 2026-10-13) : elles écriraient des noms dans le
 moteur, alors que les noms se créent dans le panneau. Hors du catalogue, tapées en entier, elles
-répondent comme toute commande inconnue. `.auto` (bascule du mode de saisie de l'ancienne `/cas`) n'est pas
-au catalogue non plus.
+répondent comme toute commande inconnue. `.auto` (bascule du mode de saisie de l'ancienne `/cas`,
+retirée du moteur le 2026-10-13) n'est pas au catalogue non plus.
 
 Chemin d'une commande dans `runCommand` (`calcul.ts`), dans cet ordre :
 
@@ -347,8 +347,10 @@ Chemin d'une commande dans `runCommand` (`calcul.ts`), dans cet ordre :
 3. `.aide`, `.mode`, `.exact`, `.décimal`, `.valeurs`, `.fonctions` : traités par l'atelier, en
    français (`.valeurs` et `.fonctions` listent les CARTES du panneau, `src/lib/atelier/listing.ts`,
    pas l'état du moteur) ; `.exporter` suivi d'autre chose : refus ; `.latex` et
-   `.texte` sans expression : refus (le moteur y basculerait son mode de saisie, et lirait mal tous
-   les calculs suivants) ;
+   `.texte` sans expression : refus (garde née de la bascule du mode de saisie de `/cas`, qui
+   faisait lire de travers tous les calculs suivants ; la bascule est retirée du moteur depuis le
+   2026-10-13, et sans expression la commande du registre reprendrait la dernière expression du
+   moteur) ;
 4. commandes de données (table `SIMULATIONS`) : lisent des **noms de listes**, avant toute
    substitution ;
 5. sinon : virgule décimale, `π`, `f'(x)` puis noms d'objets remplacés par leurs expressions ;

@@ -12,18 +12,8 @@ import { createFunctionBinding, getFunctionNames, getFunction } from '../core/ev
 import type { EvalState } from '../core';
 import type { PipelineOptions } from '../core/pipeline';
 import { createDefaultRegistry } from '../commands';
-import type {
-	ReplExecutionResult,
-	ReplInputMode,
-	WebFunctionInfo,
-	ReplHistoryEntry
-} from './types';
-import {
-	formatErrorHtml,
-	formatInputErrorHtml,
-	escapeWithLabel,
-	formatTreeHtml
-} from './output-formatter-web';
+import type { ReplExecutionResult, WebFunctionInfo } from './types';
+import { formatErrorHtml, formatInputErrorHtml, formatTreeHtml } from './output-formatter-web';
 import {
 	toCustom,
 	getVariables,
@@ -210,7 +200,6 @@ function keptValue(
  * - Dot-commands (e.g., .help, .tree, .simplify)
  * - Expression parsing and display
  * - Equivalence checking (expr1 === expr2)
- * - Input mode switching (latex/custom/auto)
  *
  * Returns results with both plain text and HTML formatting.
  *
@@ -226,21 +215,16 @@ function keptValue(
  * // Execute a command
  * const treeResult = engine.execute('.tree');
  * console.log(treeResult.ast); // Access AST
- *
- * // Change input mode
- * engine.setInputMode('latex');
  * ```
  */
 export class WebReplEngine {
 	private registry: CommandRegistry;
-	private inputMode: ReplInputMode = 'auto';
 	private lastAst: MathNode | undefined;
 	private evalState: EvalState;
 	/** La dernière grandeur calculée, exacte : celle que `.convert` reprend. */
 	private lastQuantity: MathNode | null = null;
 	/** Ce que l'élève a vu de `lastQuantity` (une durée composée), pour `.convert` */
 	private lastWritten: QuantityAnswer | undefined = undefined;
-	private historyRef: ReadonlyArray<ReplHistoryEntry> = [];
 
 	constructor() {
 		this.registry = createDefaultRegistry();
@@ -305,33 +289,6 @@ export class WebReplEngine {
 
 		// Handle regular expression
 		return this.executeExpression(trimmedInput);
-	}
-
-	/**
-	 * Set the input mode for expression parsing.
-	 *
-	 * @param mode - The input mode to use
-	 */
-	setInputMode(mode: ReplInputMode): void {
-		this.inputMode = mode;
-	}
-
-	/**
-	 * Get the current input mode.
-	 *
-	 * @returns Current input mode
-	 */
-	getInputMode(): ReplInputMode {
-		return this.inputMode;
-	}
-
-	/**
-	 * Get the last successfully parsed AST.
-	 *
-	 * @returns Last AST, or undefined if no AST available
-	 */
-	getLastAst(): MathNode | undefined {
-		return this.lastAst;
 	}
 
 	/**
@@ -413,18 +370,6 @@ export class WebReplEngine {
 		return this.evalState;
 	}
 
-	/**
-	 * Set the history reference for export functionality.
-	 *
-	 * Should be called by the REPL store before each execute() call
-	 * to keep the engine's view of history up to date.
-	 *
-	 * @param history - Current history array (newest first)
-	 */
-	setHistory(history: ReadonlyArray<ReplHistoryEntry>): void {
-		this.historyRef = history;
-	}
-
 	// ===========================================================================
 	// Private Execution Handlers
 	// ===========================================================================
@@ -436,35 +381,6 @@ export class WebReplEngine {
 		const parts = input.slice(1).split(/\s+/);
 		const cmdName = parts[0].toLowerCase();
 		const args = parts.slice(1).join(' ').trim();
-
-		// Bascules du mode de saisie — SANS argument seulement. Avec un argument,
-		// `.latex x^2` et `.custom x^2` sont les commandes du registre (écrire
-		// l'expression en LaTeX, en syntaxe texte) : la bascule les masquait,
-		// l'argument était ignoré en silence (mesuré le 2026-10-13).
-		if (cmdName === 'latex' && args === '') {
-			this.inputMode = 'latex';
-			return {
-				success: true,
-				output: 'Input mode: LaTeX',
-				outputHtml: escapeWithLabel('Input mode: LaTeX')
-			};
-		}
-		if (cmdName === 'custom' && args === '') {
-			this.inputMode = 'custom';
-			return {
-				success: true,
-				output: 'Input mode: Custom syntax',
-				outputHtml: escapeWithLabel('Input mode: Custom syntax')
-			};
-		}
-		if (cmdName === 'auto') {
-			this.inputMode = 'auto';
-			return {
-				success: true,
-				output: 'Input mode: Auto-detect',
-				outputHtml: escapeWithLabel('Input mode: Auto-detect')
-			};
-		}
 
 		// Evaluation mode shortcuts: .exact and .decimal
 		if (cmdName === 'exact') {
@@ -499,11 +415,6 @@ export class WebReplEngine {
 			return this.executeLinregCommand(args);
 		}
 
-		// Handle .export command
-		if (cmdName === 'export' || cmdName === 'exp') {
-			return this.executeExportCommand();
-		}
-
 		// Look up command in registry
 		const command = this.registry.get(cmdName);
 		if (!command) {
@@ -532,7 +443,7 @@ export class WebReplEngine {
 				const ctx: CommandContext = {
 					ast: this.lastAst,
 					input: args,
-					format: this.inputMode === 'auto' ? 'latex' : this.inputMode,
+					format: 'latex',
 					options: {},
 					isRepl: true,
 					evalState: this.evalState
@@ -542,8 +453,7 @@ export class WebReplEngine {
 			}
 
 			// For other commands, parse the argument as an expression
-			const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-			const parseResult = parse(args, this.parseOptions(forceFormat));
+			const parseResult = parse(args, this.parseOptions());
 
 			if (parseResult.ast) {
 				ast = parseResult.ast;
@@ -581,7 +491,7 @@ export class WebReplEngine {
 		const ctx: CommandContext = {
 			ast,
 			input: cmdInput,
-			format: this.inputMode === 'auto' ? 'latex' : this.inputMode,
+			format: 'latex',
 			options: {},
 			isRepl: true,
 			evalState: this.evalState
@@ -596,8 +506,7 @@ export class WebReplEngine {
 	 * Parses the value and stores it in evalState.bindings.
 	 */
 	private executeInlineAssignment(varName: string, valueExpr: string): ReplExecutionResult {
-		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-		const parseResult = parse(valueExpr, this.parseOptions(forceFormat));
+		const parseResult = parse(valueExpr, this.parseOptions());
 
 		if (parseResult.errors.length > 0 || !parseResult.ast) {
 			const error = parseResult.errors[0];
@@ -649,8 +558,7 @@ export class WebReplEngine {
 		parameters: string[],
 		bodyExpr: string
 	): ReplExecutionResult {
-		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-		const parseResult = parse(bodyExpr, this.parseOptions(forceFormat));
+		const parseResult = parse(bodyExpr, this.parseOptions());
 
 		if (parseResult.errors.length > 0 || !parseResult.ast) {
 			const error = parseResult.errors[0];
@@ -745,9 +653,8 @@ export class WebReplEngine {
 		}
 
 		// Parse both expressions
-		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-		const result1 = parse(expr1Str, this.parseOptions(forceFormat));
-		const result2 = parse(expr2Str, this.parseOptions(forceFormat));
+		const result1 = parse(expr1Str, this.parseOptions());
+		const result2 = parse(expr2Str, this.parseOptions());
 
 		if (!result1.ast) {
 			const error = result1.errors[0];
@@ -884,12 +791,13 @@ export class WebReplEngine {
 	}
 
 	/**
-	 * Les options de lecture d'une saisie : le format forcé, et l'état — ses
-	 * fonctions liées se lisent comme des fonctions, quel que soit leur nom
-	 * (`k(0)` restait `k(0)`, 2026-10-13).
+	 * Les options de lecture d'une saisie : l'état — ses fonctions liées se
+	 * lisent comme des fonctions, quel que soit leur nom (`k(0)` restait `k(0)`,
+	 * 2026-10-13). Le format est toujours détecté : la bascule du mode de saisie
+	 * (`.latex` / `.custom` / `.auto` sans argument) servait `/cas`, retirée.
 	 */
-	private parseOptions(forceFormat: PipelineOptions['forceFormat']): PipelineOptions {
-		return { evalState: this.evalState, ...(forceFormat && { forceFormat }) };
+	private parseOptions(): PipelineOptions {
+		return { evalState: this.evalState };
 	}
 
 	/**
@@ -897,9 +805,7 @@ export class WebReplEngine {
 	 * If the expression contains variables and all are bound, auto-evaluates it.
 	 */
 	private executeExpression(input: string): ReplExecutionResult {
-		// Use forced format if mode is not 'auto'
-		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-		const result = parse(input, this.parseOptions(forceFormat));
+		const result = parse(input, this.parseOptions());
 
 		// Display any errors
 		if (result.errors.length > 0) {
@@ -1205,12 +1111,6 @@ export class WebReplEngine {
 							: approximationNode(digits),
 				...(currentMode === 'decimal' &&
 					digits !== null && { quantityAst: keptValue(decimalResult, digits, exactResult.node) }),
-				// Toggle support fields
-				exactOutput,
-				exactOutputHtml,
-				...(decimalOutput !== undefined && { decimalOutput }),
-				...(decimalOutputHtml !== undefined && { decimalOutputHtml }),
-				canToggle,
 				...approximationFields(currentMode, exactResult.node, canToggle, digits, tooLong !== null),
 				...(tooLong !== null && { exactTooLong: Math.round(tooLong) })
 			};
@@ -1273,13 +1173,6 @@ export class WebReplEngine {
 			ast: outcome.answer.node,
 			...(outcome.quantity !== null &&
 				outcome.quantity !== outcome.answer.node && { quantityAst: outcome.quantity }),
-			// La bascule exact ⇄ décimal, comme pour un nombre (lue par l'ancienne `/cas`,
-			// retirée le 2026-10-13 : plus de lecteur hors des tests)
-			exactOutput: outcome.exact.text,
-			exactOutputHtml: html(outcome.exact.text),
-			decimalOutput: outcome.decimal.text,
-			decimalOutputHtml: html(outcome.decimal.text),
-			canToggle: outcome.exact.text !== outcome.decimal.text,
 			// Le bouton ≈ de l'atelier (#1086), écrit pour l'affichage
 			...(approximate !== undefined && { approximateLatex: approximate })
 		};
@@ -1466,13 +1359,6 @@ export class WebReplEngine {
 			ast?: MathNode;
 			latex?: string;
 			outputHtml?: string;
-			// Toggle support fields
-			exactOutput?: string;
-			exactOutputHtml?: string;
-			decimalOutput?: string;
-			decimalOutputHtml?: string;
-			canToggle?: boolean;
-			showDecimalInitially?: boolean;
 			approximateLatex?: string;
 		},
 		ast?: MathNode
@@ -1504,14 +1390,7 @@ export class WebReplEngine {
 				...(cmdResult.latex !== undefined && { latex: cmdResult.latex }),
 				...(cmdResult.approximateLatex !== undefined && {
 					approximateLatex: cmdResult.approximateLatex
-				}),
-				// Pass through toggle fields if present
-				exactOutput: cmdResult.exactOutput,
-				exactOutputHtml: cmdResult.exactOutputHtml,
-				decimalOutput: cmdResult.decimalOutput,
-				decimalOutputHtml: cmdResult.decimalOutputHtml,
-				canToggle: cmdResult.canToggle,
-				showDecimalInitially: cmdResult.showDecimalInitially
+				})
 			};
 		}
 
@@ -1536,14 +1415,7 @@ export class WebReplEngine {
 			...(cmdResult.latex !== undefined && { latex: cmdResult.latex }),
 			...(cmdResult.approximateLatex !== undefined && {
 				approximateLatex: cmdResult.approximateLatex
-			}),
-			// Pass through toggle fields if present
-			exactOutput: cmdResult.exactOutput,
-			exactOutputHtml: cmdResult.exactOutputHtml,
-			decimalOutput: cmdResult.decimalOutput,
-			decimalOutputHtml: cmdResult.decimalOutputHtml,
-			canToggle: cmdResult.canToggle,
-			showDecimalInitially: cmdResult.showDecimalInitially
+			})
 		};
 	}
 
@@ -1918,62 +1790,6 @@ export class WebReplEngine {
 		return {
 			lines,
 			latex: linregLatex(left, term, shortestDecimal(fit.slope), shortestDecimal(fit.intercept))
-		};
-	}
-
-	// ===========================================================================
-	// Export Command
-	// ===========================================================================
-
-	/**
-	 * Execute the .export command.
-	 *
-	 * Exports the REPL history to a JSON file containing input/output pairs.
-	 */
-	private executeExportCommand(): ReplExecutionResult {
-		if (this.historyRef.length === 0) {
-			return {
-				success: false,
-				output: 'Aucun historique a exporter',
-				outputHtml: formatErrorHtml({
-					code: 'NO_AST',
-					message: 'Aucun historique a exporter',
-					suggestion: "Executez quelques expressions d'abord"
-				}),
-				error: {
-					code: 'NO_AST',
-					message: 'No history to export'
-				}
-			};
-		}
-
-		// Build export data (oldest to newest for chronological order)
-		// Strip ANSI codes from output for clean JSON
-		const entries = [...this.historyRef]
-			.reverse()
-			.filter((entry) => !entry.isCommand || !entry.input.startsWith('.export'))
-			.map((entry) => ({
-				input: entry.input,
-				output: this.stripAnsi(entry.result.output)
-			}));
-
-		const exportData = {
-			exportedAt: new Date().toISOString(),
-			entries
-		};
-
-		const jsonContent = JSON.stringify(exportData, null, 2);
-		const filename = `mathast-session-${Date.now()}.json`;
-
-		return {
-			success: true,
-			output: `Export: ${entries.length} entrees`,
-			outputHtml: `<span class="text-green-400">Export: ${entries.length} entrees</span>`,
-			exportData: {
-				content: jsonContent,
-				filename,
-				mimeType: 'application/json'
-			}
 		};
 	}
 }
