@@ -64,7 +64,10 @@ export function fieldLatexOf(
 	if (readNumber(definition) !== null) return definition.trim();
 
 	const ast = astOf(definition, provenance, functionNames);
-	return ast === null ? definition : forMathlive(toLatex(ast));
+	if (ast === null) return definition;
+	const latex = forMathlive(toLatex(ast));
+	// Une valeur garde la virgule de l'élève : `2,5 km`, pas le `2.5` de `toLatex`
+	return object.kind === 'value' ? latex.replace(/(\d)\.(\d)/g, '$1{,}$2') : latex;
 }
 
 /**
@@ -114,6 +117,9 @@ function compositeDurationField(ast: MathNode | null): string | null {
  * (`readNaturalQuantities`) puis réécrite en LaTeX : `2\,h\,30\,\min` →
  * `(2\unit{h}+30\unit{min})`, `\frac{1}{2}\,m` → `\frac{1}{2}\unit{m}`.
  *
+ * Une grandeur peut être prise dans un calcul de nombres (`(1 h + 30 min) × 2`,
+ * la forme que le champ montre pour `(1[h]+30[min])*2`).
+ *
  * `null` si ce n'est pas QU'une grandeur : une lettre hors d'une unité
  * (`\min\left(2,3\right)`, `3\,x`) laisse la saisie aux autres lectures.
  */
@@ -124,6 +130,8 @@ function naturalQuantityLatex(latex: string): string | null {
 		.replace(/\\operatorname\{\\mathrm\{([^{}]*)\}\}/g, ' $1')
 		.replace(/\\mathrm\{([^{}]*)\}/g, ' $1')
 		.replace(/\\d?frac\{(\d+)\}\{(\d+)\}/g, '$1/$2')
+		// Une grandeur prise dans un calcul : `\times`, `\cdot` et `\dfrac` restent du LaTeX
+		.replace(/\\times(?![A-Za-z])/g, '\\cdot ')
 		// MathLive écrit toujours « min » en opérateur `\min`
 		.replace(/\\min(?![A-Za-z])/g, 'min')
 		.replace(/\{,\}/g, ',')
@@ -131,8 +139,8 @@ function naturalQuantityLatex(latex: string): string | null {
 		// `(1/2) m`, la forme que le champ montre pour `(1/2)[m]` : `1/2 m`
 		.replace(/\(\s*(\d+\/\d+)\s*\)(?=\s+[^\s\d(])/g, '$1');
 	const read = readNaturalQuantities(text, []).text;
-	const outside = read.replace(/\[[^\]]*\]/g, '');
-	if (outside === read || /[A-Za-z\\]/.test(outside)) return null;
+	const outside = read.replace(/\[[^\]]*\]|\\(?:d?frac|cdot)(?![A-Za-z])/g, '');
+	if (!read.includes('[') || /[A-Za-z\\]/.test(outside)) return null;
 	return (
 		read
 			.replace(/\((\d+)\/(\d+)\)\[/g, '\\frac{$1}{$2}[')
