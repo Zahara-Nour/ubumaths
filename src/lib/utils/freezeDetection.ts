@@ -254,6 +254,23 @@ function restoreState(): void {
 	}
 }
 
+/**
+ * Oublie les actions et les gels retenus par cet onglet, en mémoire et dans
+ * `sessionStorage`. Ils contiennent les adresses visitées, jointes aux rapports de bug :
+ * sur une tablette partagée, l'élève suivant ne doit pas envoyer celles du précédent.
+ * Appelée avec l'effacement des données de travail (`src/lib/utils/work-data.ts`).
+ */
+export function clearFreezeDetectionData(): void {
+	state.freezeEvents = [];
+	state.actions = [];
+	if (!browser) return;
+	try {
+		sessionStorage.removeItem(SESSION_STORAGE_KEY);
+	} catch {
+		// Stockage inaccessible : rien à effacer
+	}
+}
+
 // =============================================================================
 // Long Task Observer
 // =============================================================================

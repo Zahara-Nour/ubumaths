@@ -16,8 +16,13 @@
  * Les préférences (thème, police, position des barres d'outils) et les réglages du prof
  * (classe, période, panier de questions) ne sont pas des données d'élève : elles restent.
  *
+ * Les adresses visitées retenues par l'onglet pour les rapports de bug
+ * (`chiphre_freeze_data`, `sessionStorage`) partent avec elles.
+ *
  * ⚠️ Une nouvelle clé de travail s'ajoute ici, sinon elle survit au changement de compte.
  */
+
+import { clearFreezeDetectionData } from '$lib/utils/freezeDetection';
 
 const OWNER_KEY = 'chiphre:work-data-owner';
 const ANONYMOUS = 'anonymous';
@@ -69,6 +74,7 @@ export function clearWorkData(storage: Storage): number {
 	const keys = workDataKeys(storage);
 	for (const key of keys) storage.removeItem(key);
 	storage.removeItem(OWNER_KEY);
+	clearFreezeDetectionData();
 	return keys.length;
 }
 

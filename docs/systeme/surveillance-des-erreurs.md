@@ -122,7 +122,10 @@ erreurs de test).
   le rappel de proposition (15 s et plus) ou d'envoi automatique (plus de 30 s) ;
 - **activité** : les 20 dernières actions (`click`, `input`, `navigation`, `scroll`),
   réduites au sélecteur de l'élément (id, première classe ou balise). Jamais la valeur
-  saisie. État gardé dans `sessionStorage` (clé `chiphre_freeze_data`), gels gardés 15 min ;
+  saisie. État gardé dans `sessionStorage` (clé `chiphre_freeze_data`), gels gardés 15 min.
+  Les actions `navigation` gardent l'adresse complète : `clearFreezeDetectionData()` vide tout,
+  appelée par `clearWorkData` (déconnexion, suppression du compte, autre compte sur l'appareil,
+  voir [RGPD](conformite/rgpd.md)) ;
 - `getFreezeDetectionContext()` rend gels, actions et Web Vitals pour un signalement.
 
 Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte`
@@ -300,7 +303,10 @@ rapport en UUID. Exceptions : voir Écarts.
   du compte.
 - `src/lib/__tests__/cdn-versions-epinglees.test.ts` : l'URL Swagger d'`unpkg` porte une version.
 
-Rien ne teste `freezeDetection.ts`, les routes de lecture `api/errors`, les pages admin, ni
+- `src/lib/utils/__tests__/traces-onglet-effacees.svelte.test.ts` : les adresses visitées
+  partent à la déconnexion et quand un autre compte prend l'onglet, restent pour le même compte.
+
+Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement), les routes de lecture `api/errors`, les pages admin, ni
 `docs-scanner.ts`.
 
 ## Décisions
