@@ -14,7 +14,7 @@
 
 import { Atelier, sequenceInputOf } from './atelier.svelte';
 import { loadAtelier, saveAtelier, type AtelierState } from './persistence';
-import { nextName, derivativeOf, displayName } from './names';
+import { nextName, derivativeOf, displayName, reciprocalName, reciprocalOf } from './names';
 
 // =============================================================================
 // Types
@@ -51,15 +51,25 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 
 	// Les fonctions AVANT leurs dérivées : supprimer puis recréer `f` range `f′`
 	// devant elle, et `f′` aurait suivi la `f` locale (revue du lot 3a, C1)
-	const order = (name: string) => derivativeOf(name)?.order ?? 0;
+	// (et avant leur réciproque `f⁻¹`, qui suit f de la même façon)
+	const order = (name: string) =>
+		derivativeOf(name)?.order ?? (reciprocalOf(name) !== null ? 1 : 0);
 	const ordered = [...state.objects].sort((a, b) => order(a.name) - order(b.name));
 
 	for (const stored of ordered) {
 		const taken = atelier.names;
 		const wanted = stored.name;
 		const derivative = derivativeOf(wanted);
+		const reciprocal = reciprocalOf(wanted);
 		let chosen: string;
-		if (derivative !== null) {
+		if (reciprocal !== null) {
+			// `f⁻¹` suit f : arrivée sous le nom `g`, sa réciproque devient `g⁻¹`
+			chosen = reciprocalName(arrivedAs.get(reciprocal) ?? reciprocal);
+			if (taken.includes(chosen)) {
+				refused.push({ name: wanted, reason: `${displayName(chosen)} existe déjà.` });
+				continue;
+			}
+		} else if (derivative !== null) {
 			// `f′` suit `f` : si `f` est arrivée sous le nom `g`, elle devient `g′`
 			const base = arrivedAs.get(derivative.base) ?? derivative.base;
 			chosen = `${base}${"'".repeat(derivative.order)}`;
@@ -77,6 +87,8 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 			name: chosen,
 			// La définition d'une dérivée est son propre nom : `g′(x)`, pas `f′(x)`
 			definition: derivative !== null ? `${chosen}(x)` : stored.definition,
+			...(stored.kind === 'function' &&
+				stored.reciprocalOn !== undefined && { reciprocalOn: stored.reciprocalOn }),
 			...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
 		};
 		// Ce qui vient d'une URL a été écrit par nous : même lecture qu'au

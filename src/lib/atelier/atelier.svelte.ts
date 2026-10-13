@@ -37,8 +37,11 @@ import {
 	derivativeOf,
 	hasObjectNameShape,
 	derivativeName,
-	displayName
+	displayName,
+	reciprocalName,
+	reciprocalOf
 } from './names';
+import { reciprocalOfFunction, type ReciprocalOutcome } from './reciprocal';
 import type { Provenance } from './parse';
 import { parseDefinition, readNumber, referencesOf, renameInDefinition } from './parse';
 import { z } from 'zod';
@@ -58,8 +61,8 @@ import {
 	type StoredDisplay
 } from './display';
 import { astOf as astOfDefinition } from './parse';
-import { INTERNAL_LETTER, letterRejection } from './letter';
-import { checkInterval, ONLY_FUNCTIONS, type CheckedInterval } from './interval';
+import { INTERNAL_LETTER, letterRejection, typedLetterOf } from './letter';
+import { checkInterval, ONLY_FUNCTIONS, readInterval, type CheckedInterval } from './interval';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { listCitedMessage } from './list-cited';
 import { transformAST } from '$lib/mathAST/visitor';
@@ -137,6 +140,15 @@ export interface RestoreReport {
 	readonly skipped: readonly SkippedObject[];
 }
 
+/** La carte `f⁻¹` créée ou mise à jour, avec ce que le calcul a donné (la ligne de Calcul). */
+export interface ReciprocalCreated {
+	readonly ok: true;
+	readonly object: AtelierObject;
+	/** La carte existait : même intervalle (`same`) ou nouvel intervalle (`updated`). */
+	readonly existed?: 'same' | 'updated';
+	readonly outcome: Extract<ReciprocalOutcome, { ok: true }>;
+}
+
 /** Ce qu'il faut pour créer un objet. Sans `name`, l'atelier en propose un. */
 export interface CreateInput {
 	readonly kind: ObjectKind;
@@ -152,6 +164,8 @@ export interface CreateInput {
 	 * la création — illisible, vide ou hors du domaine, la création est refusée.
 	 */
 	readonly interval?: string;
+	/** Pour une carte `f⁻¹` : l'intervalle tapé dans `.réciproque f sur I` (relecture). */
+	readonly reciprocalOn?: string;
 	/** Pour une suite : mode, rang et premier terme déjà connus (relecture, Calcul). */
 	readonly sequence?: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>;
 }
@@ -403,8 +417,10 @@ export class Atelier {
 	 * noms réels — tout déclarer casserait la lecture de `zzz(x)`.
 	 */
 	get functionNames(): readonly string[] {
+		// `f^-1` n'est pas un nom que le parseur sait lire : la carte `f⁻¹` ne se
+		// cite pas (lot 3 de la réciproque)
 		return this.items
-			.filter((o) => o.kind === 'function' || o.kind === 'sequence')
+			.filter((o) => (o.kind === 'function' || o.kind === 'sequence') && !reciprocalOf(o.name))
 			.map((o) => o.name);
 	}
 
@@ -462,6 +478,24 @@ export class Atelier {
 				return { ok: false, message: nameRejectionMessage('taken', input.name) };
 			}
 			name = input.name;
+		} else if (reciprocalOf(input.name) !== null) {
+			// La carte `f⁻¹` se CALCULE depuis f (`#reciprocals`) : une définition
+			// rangée (lien, sauvegarde) est ignorée, l'intervalle tapé est gardé
+			if (input.kind !== 'function') {
+				return {
+					ok: false,
+					message: `${displayName(input.name)} est la réciproque de ${reciprocalOf(input.name)} : elle se calcule, elle ne se définit pas.`
+				};
+			}
+			if (this.names.includes(input.name)) {
+				return { ok: false, message: nameRejectionMessage('taken', input.name) };
+			}
+			this.items.push({
+				...this.build(input.name, 'function', '', 'text'),
+				...(input.reciprocalOn !== undefined && { reciprocalOn: input.reciprocalOn })
+			} as AtelierObject);
+			this.recomputeAll();
+			return { ok: true, object: this.get(input.name)! };
 		} else {
 			const rejection = validateName(input.name, this.names);
 			if (rejection) return { ok: false, message: nameRejectionMessage(rejection, input.name) };
@@ -513,6 +547,12 @@ export class Atelier {
 		if (base.kind !== 'function') {
 			return { ok: false, message: `Seule une fonction se dérive : « ${name} » n'en est pas une.` };
 		}
+		if (reciprocalOf(name) !== null) {
+			return {
+				ok: false,
+				message: `${displayName(name)} n'a pas de carte dérivée : tape .dériver suivi de sa formule.`
+			};
+		}
 		if (base.status !== 'ok') {
 			// Le message de l'objet d'abord : une fonction EN ATTENTE n'est pas
 			// illisible, elle attend un nom (`a`) — le dire autrement serait faux
@@ -543,6 +583,45 @@ export class Atelier {
 		}
 		if (base.plotted) this.setPlotted(derived, true);
 		return { ok: true, object: this.get(derived)! };
+	}
+
+	/**
+	 * Créer — ou mettre à jour — la carte `f⁻¹` (lot 3 de
+	 * `docs/wip/atelier-reciproque-phase0.md`, R1).
+	 *
+	 * Refusée sans carte quand f n'a pas de réciproque (constante, non bijective,
+	 * le moteur ne sait pas) : le refus dit pourquoi. La carte SUIT f
+	 * (`#reciprocals`) ; elle est tracée d'office si f l'est, comme `f′`.
+	 *
+	 * @param on - l'intervalle tapé après « sur » ; il remplace celui de f
+	 */
+	createReciprocal(base: string, on?: string): ReciprocalCreated | (Refused & { formulas?: true }) {
+		const outcome = reciprocalOfFunction(this, base, on);
+		if (!outcome.ok) return outcome;
+		// `sur ℝ` ne restreint rien : rien à ranger
+		const owner = this.get(base)!;
+		const read = on === undefined ? null : readInterval(on, typedLetterOf(this, owner));
+		const kept = read === null || (read.ok && read.domain === null) ? undefined : on!.trim();
+		const name = reciprocalName(base);
+		const index = this.items.findIndex((o) => o.name === name);
+		if (index !== -1) {
+			const current = this.items[index];
+			const same = isFunction(current) && current.reciprocalOn === kept;
+			if (!same && isFunction(current)) {
+				const { reciprocalOn: _dropped, ...rest } = current;
+				this.items[index] = kept === undefined ? rest : { ...rest, reciprocalOn: kept };
+				this.recomputeAll();
+			}
+			return { ok: true, object: this.get(name)!, existed: same ? 'same' : 'updated', outcome };
+		}
+		const created = this.create({
+			kind: 'function',
+			name,
+			...(kept !== undefined && { reciprocalOn: kept })
+		});
+		if (!created.ok) return created;
+		if (owner.plotted) this.setPlotted(name, true);
+		return { ok: true, object: this.get(name)!, outcome };
 	}
 
 	// ---------------------------------------------------------------------------
@@ -687,6 +766,19 @@ export class Atelier {
 				message: `${displayName(from)} suit ${ownDerivative.base} : c'est ${ownDerivative.base} qu'on renomme, et sa dérivée suit.`
 			};
 		}
+		const ownReciprocal = reciprocalOf(from);
+		if (ownReciprocal !== null) {
+			return {
+				ok: false,
+				message: `${displayName(from)} suit ${ownReciprocal} : c'est ${ownReciprocal} qu'on renomme, et sa réciproque suit.`
+			};
+		}
+		if (this.names.includes(reciprocalName(from)) && this.names.includes(reciprocalName(to))) {
+			return {
+				ok: false,
+				message: `${displayName(reciprocalName(to))} existe déjà : renommer « ${from} » en « ${to} » en ferait deux.`
+			};
+		}
 		// Revue du lot 3a, B2 : les dérivées de `from` prennent le nom de `to` —
 		// jamais celui d'un objet qui existe déjà (une `f′` restée orpheline)
 		for (const o of this.items) {
@@ -724,13 +816,19 @@ export class Atelier {
 			const renamed = `${to}${"'".repeat(derivative.order)}`;
 			this.items[i] = { ...o, name: renamed, definition: `${renamed}(x)` } as AtelierObject;
 		});
+		// La réciproque aussi : `f⁻¹` devient `h⁻¹` (sa formule se recalcule)
+		this.items.forEach((o, i) => {
+			if (reciprocalOf(o.name) === from) this.items[i] = { ...o, name: reciprocalName(to) };
+		});
 
 		// Les définitions qui citaient l'ancien nom suivent : c'est ce qu'attend
 		// un élève, et on le lui dit en rendant la liste. L'objet renommé n'y
 		// figure pas — il n'a pas été « mis à jour », il a été renommé.
 		const updated: string[] = [];
 		this.items.forEach((o, i) => {
-			if (o.name === to || derivativeOf(o.name)?.base === to) return;
+			if (o.name === to || derivativeOf(o.name)?.base === to || reciprocalOf(o.name) !== null) {
+				return;
+			}
 			const rewritten = this.#renamedIn(o, from, to);
 			// Le premier terme d'une suite peut citer la valeur renommée (S1)
 			const firstTerm = isSequence(o) && o.firstTerm === from ? to : undefined;
@@ -1014,7 +1112,7 @@ export class Atelier {
 		const objects: StoredObject[] = this.items.map((o) => ({
 			name: o.name,
 			kind: o.kind,
-			definition: o.definition,
+			definition: reciprocalOf(o.name) === null ? o.definition : '',
 			// Rangé seulement quand il est vrai : un atelier sans courbe tracée ne
 			// paie pas ce champ dans l'URL, qui est le mécanisme de partage.
 			...(o.plotted ? { plotted: true } : {}),
@@ -1025,9 +1123,15 @@ export class Atelier {
 			...(isFunction(o) && o.letter ? { letter: o.letter } : {}),
 			// L'ensemble écrit après « sur » : absent sans intervalle. Celui d'une
 			// dérivée se relit sur sa fonction (`#inheritIntervals`)
-			...(isFunction(o) && o.interval !== undefined && derivativeOf(o.name) === null
+			// Celui d'une réciproque est son ensemble de départ, recalculé (`#reciprocals`)
+			...(isFunction(o) &&
+			o.interval !== undefined &&
+			derivativeOf(o.name) === null &&
+			reciprocalOf(o.name) === null
 				? { interval: o.interval }
 				: {}),
+			// La carte `f⁻¹` range l'intervalle TAPÉ, jamais sa formule (elle se recalcule)
+			...(isFunction(o) && o.reciprocalOn !== undefined ? { reciprocalOn: o.reciprocalOn } : {}),
 			// Seulement s'il a été réglé : un curseur par défaut ne pèse rien dans le lien
 			...(isValue(o) && o.slider && !isDefaultSlider(o.slider)
 				? { slider: { min: o.slider.min, max: o.slider.max, step: o.slider.step } }
@@ -1070,6 +1174,8 @@ export class Atelier {
 				definition: stored.definition,
 				...(stored.kind === 'function' && stored.letter && { letter: stored.letter }),
 				...(stored.kind === 'function' && stored.interval && { interval: stored.interval }),
+				...(stored.kind === 'function' &&
+					stored.reciprocalOn && { reciprocalOn: stored.reciprocalOn }),
 				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
 			};
 			let attempt = input;
@@ -1281,6 +1387,10 @@ export class Atelier {
 	 * quoi supprimer `a` laisserait la suite « ok » et muette.
 	 */
 	#refsOf(o: AtelierObject): MissingReference[] {
+		// La carte `f⁻¹` dépend de f, et de rien d'autre : ses lettres (`(x − b)/a`)
+		// sont celles que f cite déjà. Supprimer f l'emporte (#828)
+		const base = reciprocalOf(o.name);
+		if (base !== null) return [{ name: base, as: 'function' }];
 		const refs = [...this.#cited(o.kind, o.definition, o.provenance)];
 		if (isSequence(o) && o.mode === 'recurrence' && hasObjectNameShape(o.firstTerm)) {
 			if (!refs.some((r) => r.name === o.firstTerm)) refs.push({ name: o.firstTerm, as: 'value' });
@@ -1589,6 +1699,41 @@ export class Atelier {
 		this.#inheritIntervals();
 		this.#underivable();
 		this.#sequenceChecks();
+		this.#reciprocals();
+	}
+
+	/**
+	 * La carte `f⁻¹` SUIT f (lot 3 de la réciproque) : recalculée à chaque
+	 * passage, formule et ensemble de départ (son `interval`, pour le tracé et
+	 * les calculs). f devenue non bijective, constante (a = 0)… : la carte passe
+	 * en erreur avec le refus, sans formule — jamais une formule fausse.
+	 *
+	 * ⚠️ EN DERNIER : f doit avoir son statut définitif (`#sequenceChecks` peut
+	 * encore la passer en erreur). Une f en attente ou en erreur a déjà propagé
+	 * son statut à `f⁻¹` (elle en dépend, `#refsOf`).
+	 */
+	#reciprocals(): void {
+		this.items.forEach((o, i) => {
+			const base = reciprocalOf(o.name);
+			if (base === null || !isFunction(o) || this.get(base)?.status !== 'ok') return;
+			const computed = reciprocalOfFunction(this, base, o.reciprocalOn);
+			const { interval: _interval, message: _message, ...rest } = o;
+			const next: AtelierObject = computed.ok
+				? {
+						...rest,
+						definition: computed.definition,
+						provenance: 'text',
+						status: 'ok',
+						...(computed.interval !== undefined && { interval: computed.interval })
+					}
+				: { ...rest, definition: '', status: 'error', message: computed.message };
+			const same =
+				next.definition === o.definition &&
+				next.status === o.status &&
+				next.message === o.message &&
+				(next as typeof o).interval === o.interval;
+			if (!same) this.items[i] = next;
+		});
 	}
 
 	/**

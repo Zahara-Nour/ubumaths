@@ -323,7 +323,14 @@ export function expandCommandArgument(atelier: Atelier, text: string): string | 
 export function substitutedAstOf(
 	atelier: Atelier,
 	name: string,
-	options?: { readonly forDerivation?: boolean }
+	options?: {
+		readonly forDerivation?: boolean;
+		/**
+		 * Garder les VALEURS citées en lettres (`a x + b`) : seules les fonctions
+		 * sont remplacées. La carte `f⁻¹` garde ainsi ses curseurs (`reciprocal.ts`).
+		 */
+		readonly keepValues?: boolean;
+	}
 ):
 	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
 	const object = atelier.get(name);
@@ -377,9 +384,12 @@ export function substitutedAstOf(
 	// cette réécriture elle n'était pas remplacée, et le grapheur refusait la
 	// suite qui la cite (revue du lot 5b)
 	const withCalls = subscriptsAsCalls(expanded, functions, name);
-	const substituted = substituteAll(withCalls, variables, substituteFunction, {
-		functions: functions satisfies FunctionBindings
-	});
+	const substituted = substituteAll(
+		withCalls,
+		options?.keepValues === true ? {} : variables,
+		substituteFunction,
+		{ functions: functions satisfies FunctionBindings }
+	);
 
 	return { ok: true, ast: substituted };
 }

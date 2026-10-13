@@ -51,7 +51,8 @@ const MAX_SERIALIZED_LENGTH = 500_000;
  * relecture. Les ranger, c'est risquer de relire un verdict devenu faux.
  */
 const storedObjectSchema = z.object({
-	name: z.string().min(1).max(8),
+	// 12 : la carte `f⁻¹` s'appelle `f^-1`, `u_12^-1` (lot 3 de la réciproque)
+	name: z.string().min(1).max(12),
 	kind: z.enum(['value', 'function', 'sequence', 'list']),
 	definition: z.string().max(MAX_DEFINITION_LENGTH),
 	/** Affiché dans la vue Graphe. Absent = non tracé. */
@@ -70,6 +71,12 @@ const storedObjectSchema = z.object({
 	 * Abîmé ou refusé à la relecture : oublié, la fonction gardée sur son domaine.
 	 */
 	interval: z.string().min(1).max(MAX_INTERVAL_LENGTH).optional().catch(undefined),
+	/**
+	 * Carte `f⁻¹` : l'intervalle tapé dans `.réciproque f sur I`. Sa formule n'est
+	 * pas rangée, elle se recalcule depuis f. Abîmé : oublié, la carte reprend
+	 * l'intervalle de f.
+	 */
+	reciprocalOn: z.string().min(1).max(MAX_INTERVAL_LENGTH).optional().catch(undefined),
 	/**
 	 * Réglages d'affichage d'une fonction. ⚠️ `.catch(undefined)` : un réglage
 	 * abîmé est OUBLIÉ, l'objet est gardé — perdre `f` pour une couleur illisible
@@ -117,6 +124,8 @@ export interface StoredObject {
 	readonly letter?: string;
 	/** L'ensemble d'une fonction (`[0;+∞[`), absent sans « sur ». */
 	readonly interval?: string;
+	/** Carte `f⁻¹` : l'intervalle tapé dans `.réciproque f sur I`. */
+	readonly reciprocalOn?: string;
 	readonly display?: StoredDisplay;
 	readonly slider?: { readonly min: number; readonly max: number; readonly step: number };
 	readonly mode?: 'explicit' | 'recurrence';

@@ -80,14 +80,36 @@ export function derivativeName(name: string): string {
 	return `${name}'`;
 }
 
+/**
+ * Le nom d'une réciproque : un nom d'objet suivi de `^-1` (`f^-1`, `u_1^-1`).
+ *
+ * ⚠️ Jamais tapé par l'élève comme nom (`validateName` le refuse : ce n'est pas
+ * une lettre) : la carte `f⁻¹` naît de « Réciproque » ou de `.réciproque f`, et
+ * suit f. Aucun nom d'élève ne peut donc entrer en collision avec elle.
+ */
+const RECIPROCAL_SHAPE = /^([A-Za-z](?:_\d+)?)\^-1$/;
+
+/** La fonction dont ce nom est la réciproque (`f^-1` → `f`), ou `null`. */
+export function reciprocalOf(name: string): string | null {
+	const match = RECIPROCAL_SHAPE.exec(name);
+	return match === null || RESERVED_NAMES.has(match[1]) ? null : match[1];
+}
+
+/** Le nom rangé de la réciproque de `name` : `f` → `f^-1`. */
+export function reciprocalName(name: string): string {
+	return `${name}^-1`;
+}
+
 /** Les signes primes typographiques, jusqu'à la tierce. */
 const PRIMES = ['', '′', '″', '‴'];
 
 /**
- * Le nom tel qu'on l'AFFICHE : `f'` s'écrit `f′`, `f''` s'écrit `f″`.
+ * Le nom tel qu'on l'AFFICHE : `f'` s'écrit `f′`, `f''` s'écrit `f″`, `f^-1` s'écrit `f⁻¹`.
  * Le nom rangé garde l'apostrophe, que le parseur sait lire.
  */
 export function displayName(name: string): string {
+	const reciprocal = reciprocalOf(name);
+	if (reciprocal !== null) return `${reciprocal}⁻¹`;
 	const derivative = derivativeOf(name);
 	if (derivative === null) return name;
 	const marks = PRIMES[derivative.order] ?? '′'.repeat(derivative.order);

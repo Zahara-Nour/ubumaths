@@ -17,8 +17,17 @@ import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
+import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
+import { numericNode } from '$lib/mathAST/common/numeric';
+import { reciprocalCommand, reciprocalResult } from './reciprocal';
+import {
+	validateName,
+	nameRejectionMessage,
+	nextName,
+	derivativeOf,
+	displayName,
+	reciprocalOf
+} from './names';
 import {
 	astOf,
 	readingMode,
@@ -194,6 +203,8 @@ export type CalcResult =
 	| {
 			readonly kind: 'refus';
 			readonly message: string;
+			/** Le message cite des formules en `$…$`, composées par la vue (`.réciproque`) */
+			readonly formulas?: true;
 			/** Une indication montrée avec le refus (`.résoudre 2t+1<5` : « écris « ; t » ») */
 			readonly note?: string;
 	  };
@@ -1007,6 +1018,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		};
 	}
 
+	// `.réciproque f [sur I]` lit un NOM de fonction : avant la substitution des
+	// noms, qui en ferait une expression (lot 3 de la réciproque)
+	if (known.name === 'reciprocal') {
+		return reciprocalCommand(session.atelier, input, typedArgument, (text) =>
+			withPiCommand(decimalCommaInput(text))
+		);
+	}
+
 	const simulation = SIMULATIONS[known.name];
 	if (simulation !== undefined) {
 		const seed = (session.seed ?? randomSeed)();
@@ -1505,6 +1524,17 @@ function summaryField(source: { readonly summary?: readonly RenderedStep[] }): {
 	return source.summary === undefined ? {} : { summary: source.summary };
 }
 
+/**
+ * « Réciproque » sur la carte de `name` : la même ligne que `.réciproque name`
+ * (carte `f⁻¹` comprise), décimaux à la française.
+ */
+export function runReciprocal(session: CalcSession, name: string): CalcResult {
+	syncEngine(session.atelier, session.engine);
+	return resultWithDecimalComma(
+		reciprocalResult(session.atelier, name, undefined, `.réciproque ${name}`)
+	);
+}
+
 /** Une action, décimaux à la française — même règle que `resultWithDecimalComma`. */
 function outcomeWithDecimalComma(outcome: ActionOutcome): ActionOutcome {
 	if (!outcome.ok) return outcome;
@@ -1843,7 +1873,14 @@ function computeAction(
 		// Ici, citer le nom est SÛR et mesuré : `f(2)` rend `-1`. C'est le chemin
 		// d'évaluation, pas une commande symbolique — la substitution du §6 bis ne
 		// concerne que les secondes.
-		const result = engine.execute(`${name}(${value})`);
+		// La carte `f⁻¹` s'appelle `f^-1`, que le moteur lirait comme une puissance :
+		// on lui donne sa formule, x remplacé (lot 3 de la réciproque)
+		const formula = reciprocalOf(name) === null ? null : astOf(substituted.expression, 'text');
+		const result = engine.execute(
+			formula === null
+				? `${name}(${value})`
+				: toCustom(substitute(formula, { [INTERNAL_LETTER]: numericNode(value) }))
+		);
 		if (!result.success) {
 			return { ok: false, message: `Impossible de calculer ${name}(${argument}).` };
 		}

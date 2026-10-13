@@ -20,7 +20,7 @@
 import type { AtelierObject } from './types';
 import type { MathNode } from '$lib/mathAST/types';
 import { astOf, readingMode, renameInDefinition, type Provenance } from './parse';
-import { RESERVED_NAMES, derivativeOf } from './names';
+import { RESERVED_NAMES, derivativeOf, reciprocalOf } from './names';
 import { transformAST, visitAST } from '$lib/mathAST/visitor';
 import { nodesEqual } from '$lib/mathAST/normal/hash';
 import { toCustom } from '$lib/mathAST/custom-generator';
@@ -57,8 +57,9 @@ export const INTERNAL_LETTER = 'x';
  * peut changer si `f` est redéfinie.
  */
 export function typedLetterOf(atelier: LetterSource, object: AtelierObject): string {
-	const derivative = derivativeOf(object.name);
-	const owner = derivative === null ? object : atelier.get(derivative.base);
+	// `f′` et `f⁻¹` suivent la lettre de f (`f(t) = 2t + 3` → `f⁻¹(t) = (t − 3)/2`)
+	const base = derivativeOf(object.name)?.base ?? reciprocalOf(object.name);
+	const owner = base === null ? object : atelier.get(base);
 	if (owner?.kind !== 'function') return object.kind === 'sequence' ? 'n' : INTERNAL_LETTER;
 	return owner.letter ?? INTERNAL_LETTER;
 }

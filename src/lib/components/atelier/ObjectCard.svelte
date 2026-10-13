@@ -16,7 +16,8 @@
 	import { curveColorValue } from '$lib/grapheur/colors';
 	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
 	import { forMathlive } from '$lib/atelier/mathfield';
-	import { derivativeOf, displayName } from '$lib/atelier/names';
+	import { derivativeOf, displayName, reciprocalOf } from '$lib/atelier/names';
+	import FormulaText from './FormulaText.svelte';
 	import { derivativeAstOf } from '$lib/atelier/engine';
 	import {
 		INTERNAL_LETTER,
@@ -107,6 +108,9 @@
 	/** La fonction dont cette carte est la dérivée (`f′` → `f`), ou `null`. */
 	const derivative = $derived(derivativeOf(object.name));
 
+	/** La fonction dont cette carte est la réciproque (`f⁻¹` → `f`), ou `null`. */
+	const reciprocal = $derived(reciprocalOf(object.name));
+
 	/**
 	 * La définition en écriture mathématique (C1), ou `null` si elle ne se lit
 	 * pas — elle s'affiche alors en texte, telle que l'élève l'a tapée.
@@ -159,6 +163,7 @@
 	 */
 	const editable = $derived(
 		derivative === null &&
+			reciprocal === null &&
 			(object.kind === 'function' || object.kind === 'value' || object.kind === 'sequence')
 	);
 
@@ -234,6 +239,9 @@
 			dérivée de {displayName(derivative.base)} — elle suit {displayName(derivative.base)}
 		</p>
 	{/if}
+	{#if selected && reciprocal !== null}
+		<p class="derivee">réciproque de {reciprocal} — elle suit {reciprocal}</p>
+	{/if}
 
 	<!-- A4 : l'image d'un nombre se calcule ICI, sans envoyer dans Calcul -->
 	{#if selected && object.kind === 'function' && onImage}
@@ -293,7 +301,10 @@
 	{/if}
 
 	{#if object.message}
-		<p class="message">{object.message}</p>
+		<!-- Le refus d'une carte `f⁻¹` cite des formules `$…$` (réciproques par morceau) -->
+		<p class="message">
+			{#if reciprocal !== null}<FormulaText text={object.message} />{:else}{object.message}{/if}
+		</p>
 	{/if}
 
 	{#if selected}
