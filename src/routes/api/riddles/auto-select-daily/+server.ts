@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { verifyCronAuth } from '$lib/server/auth/cron';
 import { checkAndAutoSelectToday } from '$lib/server/riddle-auto-select';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 
@@ -11,19 +12,14 @@ import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
  * - Admin manually
  * - Scheduled task
  *
- * Security: Should be protected by API key or admin authentication
+ * AUTH : `Bearer CRON_SECRET` seulement (`verifyCronAuth`), comme les autres tâches.
+ * L'ancienne clé `VITE_RIDDLE_AUTO_SELECT_API_KEY` n'était exigée que si elle était
+ * définie ; absente en prod, la route acceptait tout POST (constat 9bis).
  *
  * Job Tracking: Logs execution to background_job_runs table
  */
 export const POST: RequestHandler = async ({ request, locals: { supabase } }) => {
-	// Optional: Add API key authentication
-	const authHeader = request.headers.get('authorization');
-	const apiKey = import.meta.env.VITE_RIDDLE_AUTO_SELECT_API_KEY;
-
-	// If API key is configured, verify it
-	if (apiKey && authHeader !== `Bearer ${apiKey}`) {
-		throw error(401, 'Non autorisé');
-	}
+	verifyCronAuth(request);
 
 	// Create service role client for job logging (bypasses RLS)
 	const serviceClient = createServiceRoleClient();
