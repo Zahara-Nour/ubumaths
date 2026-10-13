@@ -43,8 +43,10 @@ describe('figure → Typst : rendu inscrit par les producteurs de PDF', () => {
 		).toBe(true);
 	});
 
+	// 3 depuis l'ADR 0028 (lot 1) : les deux générateurs de fiches appellent le rendu
+	// d'exercice commun (worksheets/document/render-exercise.ts) au lieu de generateTypst.
 	it('les producteurs connus sont trouvés', () => {
-		expect(callers.length).toBeGreaterThanOrEqual(4);
+		expect(callers.length).toBeGreaterThanOrEqual(3);
 	});
 
 	it.each(callers.map((f) => [f.replace(SRC, 'src')]))('%s importe figure-typst-setup', (rel) => {
