@@ -1,6 +1,16 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import {
+	adminClassCreateSchema,
+	adminClassIdSchema,
+	adminClassUpdateSchema
+} from '$lib/server/validation/admin';
+
+/** Les champs du formulaire, un champ absent valant `undefined`. */
+function formFields(formData: FormData, names: string[]): Record<string, unknown> {
+	return Object.fromEntries(names.map((name) => [name, formData.get(name) ?? undefined]));
+}
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Admin gate (admin login OR step-up elevation)
@@ -64,20 +74,22 @@ export const actions: Actions = {
 		// Admin gate (admin login OR step-up elevation)
 		const { supabase } = await requireAdmin(locals);
 
-		const formData = await request.formData();
-		const name = formData.get('name') as string;
-		const description = formData.get('description') as string;
-		const school_id = formData.get('school_id') as string;
-		const grade = formData.get('grade') as string | null;
-		const custom_join_code = formData.get('join_code') as string;
-
-		// Validate required fields
-		if (!name) {
-			return fail(400, { message: 'Name is required' });
+		const parsed = adminClassCreateSchema.safeParse(
+			formFields(await request.formData(), [
+				'name',
+				'description',
+				'school_id',
+				'grade',
+				'join_code'
+			])
+		);
+		if (!parsed.success) {
+			return fail(400, { message: parsed.error.issues[0].message });
 		}
+		const { name, description, school_id, grade } = parsed.data;
 
 		// Generate or use custom join code
-		let join_code = custom_join_code?.trim().toUpperCase();
+		let join_code = parsed.data.join_code;
 
 		if (!join_code) {
 			// Auto-generate join code
@@ -111,9 +123,9 @@ export const actions: Actions = {
 		// Insert class
 		const { error: insertError } = await supabase.from('classes').insert({
 			name,
-			description: description || null,
-			school_id: school_id || null,
-			grade: grade || null,
+			description,
+			school_id,
+			grade,
 			join_code,
 			is_active: true
 		});
@@ -130,19 +142,21 @@ export const actions: Actions = {
 		// Admin gate (admin login OR step-up elevation)
 		const { supabase } = await requireAdmin(locals);
 
-		const formData = await request.formData();
-		const id = formData.get('id') as string;
-		const name = formData.get('name') as string;
-		const description = formData.get('description') as string;
-		const school_id = formData.get('school_id') as string;
-		const grade = formData.get('grade') as string | null;
-		const join_code = formData.get('join_code') as string;
-		const is_active = formData.get('is_active') === 'true';
-
-		// Validate required fields
-		if (!id || !name) {
-			return fail(400, { message: 'ID and name are required' });
+		const parsed = adminClassUpdateSchema.safeParse(
+			formFields(await request.formData(), [
+				'id',
+				'name',
+				'description',
+				'school_id',
+				'grade',
+				'join_code',
+				'is_active'
+			])
+		);
+		if (!parsed.success) {
+			return fail(400, { message: parsed.error.issues[0].message });
 		}
+		const { id, name, description, school_id, grade, join_code, is_active } = parsed.data;
 
 		// If join code changed, validate it's unique
 		const { data: currentClass, error: fetchError } = await supabase
@@ -182,9 +196,9 @@ export const actions: Actions = {
 			.from('classes')
 			.update({
 				name,
-				description: description || null,
-				school_id: school_id || null,
-				grade: grade || null,
+				description,
+				school_id,
+				grade,
 				join_code,
 				is_active
 			})
@@ -209,12 +223,11 @@ export const actions: Actions = {
 		// Admin gate (admin login OR step-up elevation)
 		const { supabase } = await requireAdmin(locals);
 
-		const formData = await request.formData();
-		const id = formData.get('id') as string;
-
-		if (!id) {
-			return fail(400, { message: 'Class ID is required' });
+		const parsed = adminClassIdSchema.safeParse(formFields(await request.formData(), ['id']));
+		if (!parsed.success) {
+			return fail(400, { message: 'Identifiant de classe invalide' });
 		}
+		const { id } = parsed.data;
 
 		// Zéro ligne touchée (classe inconnue ou refus de la RLS) n'est pas un succès.
 		const { data: updatedClasses, error: updateError } = await supabase
@@ -239,12 +252,11 @@ export const actions: Actions = {
 		// Admin gate (admin login OR step-up elevation)
 		const { supabase } = await requireAdmin(locals);
 
-		const formData = await request.formData();
-		const id = formData.get('id') as string;
-
-		if (!id) {
-			return fail(400, { message: 'Class ID is required' });
+		const parsed = adminClassIdSchema.safeParse(formFields(await request.formData(), ['id']));
+		if (!parsed.success) {
+			return fail(400, { message: 'Identifiant de classe invalide' });
 		}
+		const { id } = parsed.data;
 
 		// Zéro ligne touchée (classe inconnue ou refus de la RLS) n'est pas un succès.
 		const { data: updatedClasses, error: updateError } = await supabase

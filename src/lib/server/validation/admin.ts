@@ -3,7 +3,8 @@
  */
 
 import { z } from 'zod';
-import { formDataTransforms, roleSchema, roleWithAllSchema } from './common';
+import { formDataTransforms, roleSchema, roleWithAllSchema, uuidSchema } from './common';
+import { gradeCodeSchema, gradeFlexibleSchema } from './grades';
 
 /**
  * Schema for adding a user to a class
@@ -86,6 +87,72 @@ export const importStudentsFormSchema = z.object({
 	students: z.string().min(1, 'Données des élèves requises'), // JSON string
 	school_id: formDataTransforms.uuid
 });
+
+/**
+ * Un élève importé, tel que la page l'envoie après lecture du CSV.
+ *
+ * Le niveau est ramené à son code (« 6ème » → « 6 ») : c'est la forme que
+ * portent les profils, où il est recopié à l'activation du compte.
+ */
+export const importedStudentSchema = z.object({
+	email: z.string().trim().toLowerCase().max(254, 'Courriel trop long').email('Courriel invalide'),
+	firstname: z.string().trim().min(1, 'Prénom requis').max(100, 'Prénom trop long'),
+	lastname: z.string().trim().min(1, 'Nom requis').max(100, 'Nom trop long'),
+	grade: gradeFlexibleSchema.nullable(),
+	class_codes: z
+		.array(z.string().trim().toUpperCase().max(10, 'Code de classe trop long'))
+		.max(20, 'Trop de codes de classe pour un élève')
+});
+
+/**
+ * La liste des élèves d'un import. Le plafond borne la taille d'un envoi : la
+ * plus grosse école du parc compte 77 élèves.
+ */
+export const importedStudentsSchema = z
+	.array(importedStudentSchema)
+	.min(1, 'Aucun élève à importer')
+	.max(1000, 'Trop d’élèves dans un seul import (1 000 au plus)');
+
+// ============================================================================
+// CLASS MANAGEMENT SCHEMAS (dashboard/admin/classes)
+// ============================================================================
+
+/** Un champ de formulaire vide (ou absent) devient `null`. */
+function emptyToNull<T extends z.ZodType>(schema: T) {
+	return z.preprocess((v) => (v === '' || v === undefined ? null : v), schema.nullable());
+}
+
+/** Code d'inscription d'une classe : lettres, chiffres, `-` et `_`, 10 caractères au plus. */
+const joinCodeSchema = z
+	.string()
+	.trim()
+	.toUpperCase()
+	.max(10, 'Code de classe trop long (10 caractères au plus)')
+	.regex(/^[A-Z0-9_-]*$/, 'Code de classe : lettres, chiffres, « - » et « _ » seulement');
+
+/** Formulaire de création d'une classe ; un code vide est généré par la base. */
+export const adminClassCreateSchema = z.object({
+	name: z.string().trim().min(1, 'Nom requis').max(100, 'Nom trop long (100 caractères au plus)'),
+	description: emptyToNull(
+		z.string().trim().max(500, 'Description trop longue (500 caractères au plus)')
+	),
+	school_id: emptyToNull(uuidSchema),
+	grade: emptyToNull(gradeCodeSchema),
+	join_code: joinCodeSchema.nullish().transform((v) => v ?? '')
+});
+
+/** Formulaire de modification d'une classe : le code y est toujours saisi. */
+export const adminClassUpdateSchema = adminClassCreateSchema.extend({
+	id: uuidSchema,
+	join_code: joinCodeSchema.min(1, 'Code de classe requis'),
+	is_active: z
+		.string()
+		.nullish()
+		.transform((v) => v === 'true')
+});
+
+/** Activation / désactivation d'une classe. */
+export const adminClassIdSchema = z.object({ id: uuidSchema });
 
 // ============================================================================
 // SCHOOL MANAGEMENT SCHEMAS

@@ -97,7 +97,12 @@ export const actions: Actions = {
 		const { supabase } = await requireAdmin(locals);
 
 		const formData = await request.formData();
-		const id = formData.get('id') as string;
+
+		const idResult = uuidSchema.safeParse(formData.get('id'));
+		if (!idResult.success) {
+			return fail(400, { message: 'Identifiant école invalide' });
+		}
+		const id = idResult.data;
 
 		// Typed confirmation (destructive): the admin must type the exact school name.
 		// Enforced server-side — the dialog is only the friendly front door.
