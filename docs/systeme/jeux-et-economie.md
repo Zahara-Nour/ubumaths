@@ -29,6 +29,7 @@ couvre:
   - 'src/routes/(public)/games/**'
   - 'src/routes/(public)/demo/vip-cards-demo/**'
   - 'src/routes/api/{vip-cards,games,marketplace,riddles,rewards,achievements}/**'
+  - 'src/routes/api/cron/riddle-of-the-day/**'
   - 'src/routes/api/teacher/rewards/**'
   - 'src/routes/api/admin/vip-cards/**'
   - 'src/routes/api/student/{bonus-history,gidouilles-activity,rewards}/**'
