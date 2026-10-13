@@ -169,6 +169,11 @@ export interface WorksheetConfig {
 	show_points?: boolean;
 	numbering_style?: NumberingStyle;
 	shuffle_exercises?: boolean;
+	/**
+	 * @deprecated Case « Mélanger dans les sections » retirée (D6, 2026-10-13) :
+	 * « mélanger les exercices » mélange déjà dans chaque section. La clé peut
+	 * rester en base (anciennes fiches) ; aucun chemin vivant ne la lit.
+	 */
 	shuffle_within_sections?: boolean;
 	page_layout?: 'A4' | 'Letter';
 	font_size?: number;
@@ -837,7 +842,6 @@ export const DEFAULT_WORKSHEET_CONFIG: WorksheetConfig = {
 	show_points: true,
 	numbering_style: 'numeric',
 	shuffle_exercises: false,
-	shuffle_within_sections: false,
 	page_layout: 'A4',
 	font_size: 12,
 	margins: { top: 20, bottom: 20, left: 15, right: 15 }
@@ -1006,8 +1010,7 @@ export function asWorksheetConfig(value: unknown): WorksheetConfig {
 		'show_student_name',
 		'show_class',
 		'show_points',
-		'shuffle_exercises',
-		'shuffle_within_sections'
+		'shuffle_exercises'
 	] as const) {
 		if (typeof raw[flag] === 'boolean') config[flag] = raw[flag];
 	}

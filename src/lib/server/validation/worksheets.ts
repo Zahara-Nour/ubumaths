@@ -100,6 +100,9 @@ const worksheetConfigObjectSchema = z.object({
 	show_points: z.boolean().optional(),
 	numbering_style: numberingStyleSchema.optional(),
 	shuffle_exercises: z.boolean().optional(),
+	// Case retirée (D6) mais clé encore acceptée : un client ancien ou un script
+	// l'envoie, et la config d'une fiche existante la renvoie telle quelle — la
+	// retirer du schéma la ferait disparaître de la base au prochain envoi.
 	shuffle_within_sections: z.boolean().optional(),
 	page_layout: z.enum(['A4', 'Letter']).optional(),
 	font_size: z

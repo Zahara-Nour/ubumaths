@@ -45,7 +45,6 @@
 	let showPoints = $state(true);
 	let numberingStyle = $state<NumberingStyle>('numeric');
 	let shuffleExercises = $state(false);
-	let shuffleWithinSections = $state(false);
 	let pageLayout = $state<'A4' | 'Letter'>('A4');
 
 	// Loading state
@@ -76,7 +75,6 @@
 		show_points: showPoints,
 		numbering_style: numberingStyle,
 		shuffle_exercises: shuffleExercises,
-		shuffle_within_sections: shuffleWithinSections,
 		page_layout: pageLayout
 	});
 
@@ -300,10 +298,6 @@
 								<MyCheckbox
 									bind:checked={shuffleExercises}
 									label="Melanger les {lore.learning.exercise}s"
-								/>
-								<MyCheckbox
-									bind:checked={shuffleWithinSections}
-									label="Melanger dans les sections"
 								/>
 							</div>
 						</div>
