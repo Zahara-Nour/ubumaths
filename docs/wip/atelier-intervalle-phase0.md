@@ -1,7 +1,7 @@
 ---
 title: Atelier — une fonction définie sur un intervalle (phase 0)
 date: 2026-10-13
-status: phase 0 validée (2026-10-13, I1-I6 selon les recos) ; lot 1 mergé (#1305) ; lot 2 en PR
+status: lots 1 à 3 livrés (#1305, #1307, #1315, 2026-10-13) ; questions a-g ouvertes
 ---
 
 # Atelier — une fonction définie sur un intervalle
