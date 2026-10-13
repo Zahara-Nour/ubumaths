@@ -35,13 +35,14 @@ import { add, divide, opposite, variable as varNode } from '../factory';
 import { flattenSumShallow, unflattenSum } from '../flatten';
 import type { SignedTerm } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
-import { getNumericValue } from '../common/numeric';
 import { constantSign } from '../common/constant-sign';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import { getVariables } from '../eval/substitute';
 import {
 	canon,
 	addToBothSides,
+	chooseAddOrSubtract,
+	movedTerm,
 	divideBothSidesWithFlip,
 	isOne,
 	isZero,
@@ -117,20 +118,6 @@ function splitSide(
 function extractCoefficientOfX(node: MathNode, variable: string): MathNode | null {
 	if (!containsVariable(node, variable)) return null;
 	return canon(divide(node, varNode(variable), 'fraction'));
-}
-
-function chooseAddOrSubtract(operand: MathNode): {
-	kind: 'add-both-sides' | 'subtract-both-sides';
-	displayOperand: MathNode;
-} {
-	if (operand.type === 'opposite') {
-		return { kind: 'subtract-both-sides', displayOperand: operand.operand };
-	}
-	const numeric = getNumericValue(operand);
-	if (numeric !== null && numeric < 0) {
-		return { kind: 'subtract-both-sides', displayOperand: canon(opposite(operand)) };
-	}
-	return { kind: 'add-both-sides', displayOperand: operand };
 }
 
 /** Un opérande dans la prose (titres de repli) : en LaTeX entre `$…$` (V25) */
@@ -239,11 +226,8 @@ export function generateLinearInequalitySteps(
 	const regroupementSteps: EquationStep[] = [];
 	const rightSplit = splitSide(current.right, variable);
 	const leftSplit = splitSide(current.left, variable);
-	const xMoveRaw = rightSplit.xPart !== null ? canon(opposite(rightSplit.xPart)) : null;
-	const constMoveRaw =
-		leftSplit.constPart !== null && !isZero(leftSplit.constPart)
-			? canon(opposite(leftSplit.constPart))
-			: null;
+	const xMoveRaw = movedTerm(rightSplit.xPart, variable);
+	const constMoveRaw = movedTerm(leftSplit.constPart, variable);
 
 	if (strategy.regroupementMode === 'combined') {
 		if (xMoveRaw !== null || constMoveRaw !== null) {
