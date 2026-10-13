@@ -127,9 +127,16 @@ export function revealedProduct(bindings: IntegrationBindings): string {
 	return `${bind(bindings, 'k')} \\times ${factorLatex(bindings, 'revealed')}`;
 }
 
-/** k = −1 : le seul signe s'écrit (`-\\int …`, « On sort le signe − ») */
-export function isMinusOneCoefficient(bindings: IntegrationBindings): boolean {
-	return bind(bindings, 'k') === '-1';
+/**
+ * k = −1 : le seul signe s'écrit (`-\\int …`, « On sort le signe − »). La
+ * constante s'appelle `k` dans `reveal-derivative`, `c` dans `extract-constant` :
+ * une seule définition pour les deux étapes (décision de David du 2026-10-13).
+ */
+export function isMinusOneCoefficient(
+	bindings: IntegrationBindings,
+	key: 'k' | 'c' = 'k'
+): boolean {
+	return bind(bindings, key) === '-1';
 }
 
 /**
@@ -142,11 +149,15 @@ export function onlyConstantOut(bindings: IntegrationBindings): boolean {
 }
 
 /** « On sort la constante $3$ », « On sort le signe $-$ » pour k = −1 */
-function constantOutTitle(bindings: IntegrationBindings): string {
-	return isMinusOneCoefficient(bindings)
+function constantOutTitle(bindings: IntegrationBindings, key: 'k' | 'c' = 'k'): string {
+	return isMinusOneCoefficient(bindings, key)
 		? 'On sort le signe $-$'
-		: `On sort la constante ${bindMath(bindings, 'k')}`;
+		: `On sort la constante ${bindMath(bindings, key)}`;
 }
+
+/** `∫ -f(x) dx = -∫ f(x) dx`, l'intégrande négatif entre parenthèses (jamais `\\int -`) */
+const SIGN_OUT_EXPLANATION =
+	"Le signe $-$ sort de l'intégrale : $\\int \\left( -f(x) \\right)\\,dx = -\\int f(x)\\,dx$.";
 
 /** Un intégrande écrit juste après `\\int` : entre parenthèses s'il commence par un signe ou est une somme */
 function underIntegral(bindings: IntegrationBindings, key: string): string {
@@ -197,7 +208,10 @@ function positivitySentence(bindings: IntegrationBindings, lnLatex: string): str
 /** La phrase de la constante sortie de l'intégrale par « On fait apparaître u′ » (ou « On sort la constante k »), ou '' */
 function constantSentence(bindings: IntegrationBindings): string {
 	if (!bindings.k || !bindings.scaled) return '';
-	return ` Avec la constante ${bindMath(bindings, 'k')} sortie de l'intégrale : ${bindMath(bindings, 'scaled')}.`;
+	const out = isMinusOneCoefficient(bindings)
+		? 'le signe $-$ sorti'
+		: `la constante ${bindMath(bindings, 'k')} sortie`;
+	return ` Avec ${out} de l'intégrale : ${bindMath(bindings, 'scaled')}.`;
 }
 
 /**
@@ -246,7 +260,7 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'apply-known-primitive': () => 'Primitive usuelle',
 	// ---- Linearity ----
 	'apply-linearity-sum': () => 'Linéarité de l’intégrale',
-	'extract-constant': (b) => `On sort la constante ${bindMath(b, 'c')}`,
+	'extract-constant': (b) => constantOutTitle(b, 'c'),
 	// ---- Composite forms ----
 	'reveal-derivative': (b) =>
 		onlyConstantOut(b) ? constantOutTitle(b) : "On fait apparaître $u'$",
@@ -290,7 +304,8 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'apply-constant-rule': () => '$\\int c\\,dx = cx$',
 	'apply-known-primitive': () => 'Primitive',
 	'apply-linearity-sum': () => '$\\int(f+g)\\,dx = \\int f\\,dx + \\int g\\,dx$',
-	'extract-constant': () => '$\\int cf\\,dx = c\\int f\\,dx$',
+	'extract-constant': (b) =>
+		isMinusOneCoefficient(b, 'c') ? constantOutTitle(b, 'c') : '$\\int cf\\,dx = c\\int f\\,dx$',
 	'reveal-derivative': (b) =>
 		onlyConstantOut(b)
 			? constantOutTitle(b)
@@ -350,7 +365,9 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'apply-linearity-sum': () =>
 		"L'intégrale est linéaire : $\\int (f+g)\\,dx = \\int f\\,dx + \\int g\\,dx$. On intègre chaque terme séparément.",
 	'extract-constant': (b) =>
-		`Une constante multiplicative sort de l'intégrale : ${math(`\\int ${constantUnderIntegral(b)} f(x)\\,dx = ${bind(b, 'c') === '-1' ? '-' : `${bind(b, 'c')} `}\\int f(x)\\,dx`)}.`,
+		isMinusOneCoefficient(b, 'c')
+			? SIGN_OUT_EXPLANATION
+			: `Une constante multiplicative sort de l'intégrale : ${math(`\\int ${constantUnderIntegral(b)} f(x)\\,dx = ${bind(b, 'c')} \\int f(x)\\,dx`)}.`,
 	'reveal-derivative': (b) =>
 		onlyConstantOut(b)
 			? constantOutExplanation(b)

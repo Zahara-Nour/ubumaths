@@ -901,7 +901,7 @@ Expression: x \\sin(x)
   \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
 - [apply-parts-formula] Formule de l'IPP : $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$
   \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = -x \\cos\\left( x \\right) - \\int \\left( -\\cos\\left( x \\right) \\right)\\,dx \\\\ & = -x \\cos\\left( x \\right) - \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
-  - [extract-constant] On sort la constante $-1$
+  - [extract-constant] On sort le signe $-$
     \\begin{aligned} & \\textcolor{blue}{\\int \\left( -\\cos\\left( x \\right) \\right)\\,dx} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
     - [apply-known-primitive] Primitive usuelle
       \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
@@ -924,8 +924,8 @@ Antiderivative: -x \\cos\\left( x \\right) + \\sin\\left( x \\right)
 - [apply-parts-formula] Formule de l'IPP : $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$
   · On applique la formule $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$, puis on calcule l'intégrale restante.
   \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = -x \\cos\\left( x \\right) - \\int \\left( -\\cos\\left( x \\right) \\right)\\,dx \\\\ & = -x \\cos\\left( x \\right) - \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
-  - [extract-constant] On sort la constante $-1$
-    · Une constante multiplicative sort de l'intégrale : $\\int \\left( -1 \\right) f(x)\\,dx = -\\int f(x)\\,dx$.
+  - [extract-constant] On sort le signe $-$
+    · Le signe $-$ sort de l'intégrale : $\\int \\left( -f(x) \\right)\\,dx = -\\int f(x)\\,dx$.
     \\begin{aligned} & \\textcolor{blue}{\\int \\left( -\\cos\\left( x \\right) \\right)\\,dx} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
     - [apply-known-primitive] Primitive usuelle
       · On reconnaît une primitive de référence (table des primitives usuelles).
@@ -945,7 +945,7 @@ Antiderivative: -x \\cos\\left( x \\right) + \\sin\\left( x \\right)
   \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
 - [apply-parts-formula] $\\int u\\,dv = uv - \\int v\\,du$
   \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = -x \\cos\\left( x \\right) - \\int \\left( -\\cos\\left( x \\right) \\right)\\,dx \\\\ & = -x \\cos\\left( x \\right) - \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
-  - [extract-constant] $\\int cf\\,dx = c\\int f\\,dx$
+  - [extract-constant] On sort le signe $-$
     \\begin{aligned} & \\textcolor{blue}{\\int \\left( -\\cos\\left( x \\right) \\right)\\,dx} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
     - [apply-known-primitive] Primitive
       \\begin{aligned} & \\textcolor{blue}{\\int \\cos\\left( x \\right)\\,dx} \\\\ & = \\sin\\left( x \\right) \\end{aligned}
@@ -963,8 +963,8 @@ Antiderivative: -x \\cos\\left( x \\right) + \\sin\\left( x \\right)
 - [apply-parts-formula] $\\int u\\,dv = uv - \\int v\\,du$
   · On applique la formule $\\int u\\,dv = uv - \\int v\\,du$, puis on calcule l'intégrale restante.
   \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = -x \\cos\\left( x \\right) - \\int \\left( -\\cos\\left( x \\right) \\right)\\,dx \\\\ & = -x \\cos\\left( x \\right) - \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
-  - [extract-constant] $\\int cf\\,dx = c\\int f\\,dx$
-    · Une constante multiplicative sort de l'intégrale : $\\int \\left( -1 \\right) f(x)\\,dx = -\\int f(x)\\,dx$.
+  - [extract-constant] On sort le signe $-$
+    · Le signe $-$ sort de l'intégrale : $\\int \\left( -f(x) \\right)\\,dx = -\\int f(x)\\,dx$.
     \\begin{aligned} & \\textcolor{blue}{\\int \\left( -\\cos\\left( x \\right) \\right)\\,dx} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
     - [apply-known-primitive] Primitive
       · On reconnaît une primitive de référence (table des primitives usuelles).
