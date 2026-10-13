@@ -229,9 +229,22 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
   la notification, « — » côté prof). La notification mène à
   `/dashboard/student/worksheets/<affectation>#exercice-<id>` : la fiche défile jusqu'à l'exercice
   et le met en évidence. La page du signalement offre « Voir la copie de <prénom> » (aperçu
-  `.../preview?studentId=<élève>#exercice-<id>`, `studentId` retenu seulement pour un élève de
-  l'affectation) et « Corriger l'exercice » (`/dashboard/teacher/contenu/exercices/<id>`). Aucune
-  règle d'accès ne change : le calcul se fait côté prof, l'élève ne reçoit que son propre numéro.
+  `.../preview?studentId=<élève>&depuis=signalement&signalement=<id>#exercice-<id>`,
+  `assignmentPreviewHref` dans `src/lib/navigation/return-links.ts` ; `studentId` retenu seulement
+  pour un élève de l'affectation ; le bouton retour de l'aperçu revient alors au signalement,
+  `assignmentPreviewReturn`) et « Corriger l'exercice » (`/dashboard/teacher/contenu/exercices/<id>`).
+  Côté élève, ses signalements (onglet de la fiche `api/student/worksheets/[assignmentId]/reports`,
+  `api/student/reports`, réponse de `.../exercises/[exerciseId]/report`) portent le numéro de SA
+  copie (`fetchCopyNumbering` avec son identifiant), `null` si la fiche lui est illisible (ancien
+  membre) : `StudentReportCard` et `CancelReportDialog` n'affichent alors aucun numéro. Aucune
+  règle d'accès ne change : chacun ne reçoit que le numéro de sa propre copie (le prof, ceux de ses
+  élèves).
+- Aperçu « vue prof » d'une affectation où chaque élève a sa version (D6) : même règle que le
+  corrigé de classe. `.../preview` accepte `copyOf=<élève>` (contrôlé par `isStudentOfAssignment`,
+  sinon 400 ; ignoré si la copie est commune) et sert `per_student_copies` ; l'écran redemande
+  avec le premier élève de la liste, propose « Copie de référence » (`MySelect`), avertit, et le
+  PDF (`generateStudentWorksheetTypst(…, { individualCopyNotice })`) imprime l'avertissement en tête,
+  sans nom d'élève (vue prof : corrections toutes visibles).
 - Le signalement d'erreur d'un élève enregistre la version et la graine de SA copie
   (`worksheetExerciseSeed`, 31 bits, tient dans `worksheet_error_reports.seed`).
   Seuls le prof et l'admin traitent le signalement (statut, relu par, date, réponse) : la base le
@@ -442,6 +455,8 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
   routes de signalements, `ancre-exercice.svelte.test.ts` (fiche de l'élève),
   `eleve-depuis-adresse.svelte.test.ts` et `page-server-eleve.test.ts` (aperçu),
   `liens-copie.svelte.test.ts` (page du signalement), `CorrectionManager-copie-eleve.svelte.test.ts`,
+  `numero-copie-eleve.test.ts` et `onglet-signalements-numero.svelte.test.ts` (côté élève),
+  `vue-prof-individualisee.test.ts` / `.svelte.test.ts` (aperçu), `student-worksheet-typst-avertissement.test.ts`,
   `avertissement-copie-individuelle.test.ts` (Typst), `melanger-sections-retire.svelte.test.ts`.
 - `src/lib/worksheets/__tests__/` : `exercise-numbering.test.ts`, `student-worksheet-typst.test.ts`,
   `serie-automatismes.test.ts`, `exercise-edit-link.test.ts`.
@@ -501,10 +516,7 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
    production peuvent donc différer sur un glyphe.
 9. ~~Option « mélanger les exercices » : trois restes~~ : **corrigé** (D6, 2026-10-14) : case
    « Mélanger dans les sections » retirée, numéro des signalements pris dans la copie de l'élève,
-   corrigé de classe d'une affectation individualisée d'après la copie d'un élève choisi. Reste
-   hors périmètre : la carte « Mes signalements » de l'élève (`api/student/reports`,
-   `api/student/worksheets/[assignmentId]/reports`, `.../exercises/[exerciseId]/report`) montre
-   encore `position` (qui redémarre à chaque section et ignore le mélange) ; l'aperçu « vue
-   prof » d'une affectation individualisée imprime toujours la copie de la classe.
+   corrigé de classe et aperçu « vue prof » d'une affectation individualisée d'après la copie d'un
+   élève choisi, signalements de l'élève sur le numéro de sa copie.
 
 Vérifié contre le code le 2026-10-14 (lot 1 de l'ADR 0028, option « mélanger les exercices » et ses suites D6).

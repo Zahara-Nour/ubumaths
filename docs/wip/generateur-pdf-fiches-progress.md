@@ -76,6 +76,12 @@ Gabarits inaccessibles :
      (premier par défaut, nom non imprimé), exercices identifiés au moins par leur titre,
      avertissement imprimé en tête, localisé (« Chaque élève a sa propre version : consulte ta
      correction personnelle. »). Non individualisée : rien ne change.
+  4. (décisions du 2026-10-14) Signalements de l'élève (onglet, « Mes signalements », envoi) : le
+     numéro de SA copie, aucun numéro s'il est inconnu. Aperçu ouvert depuis un signalement :
+     `?depuis=signalement`, retour au signalement. **Aperçu « vue prof » d'une affectation
+     individualisée** : même règle que le corrigé de classe (copie d'un élève choisi, premier par
+     défaut, nom non imprimé, titres, avertissement imprimé en tête) ; non individualisée : rien ne
+     change.
 
 ## Vocabulaire proposé (à verser dans CONTEXT.md, lot 0)
 
@@ -155,8 +161,12 @@ Erreur / garde :
   « Voir la copie de <prénom> » et « Corriger l'exercice ». (3) `hasPerStudentCopies` ; route
   `.../correction` : `needs_student` sans élève, `studentId` contrôlé (`isStudentOfAssignment`,
   mis en commun avec l'aperçu), avertissement `individualCopyNotice` ; `CorrectionManager` : liste
-  des élèves (premier par défaut). `per_student_values_notice` retiré. Restes : carte « Mes
-  signalements » de l'élève sur `position` ; vue prof de l'aperçu d'une affectation individualisée.
+  des élèves (premier par défaut). `per_student_values_notice` retiré. (4) Suites : signalements
+  de l'élève sur le numéro de sa copie (`null` → rien d'affiché ; ancien membre : fiche illisible,
+  donc `null` — le test d'intégration `archived-student-error-reports` attendait la position 3,
+  corrigé) ; `assignmentPreviewHref` / `assignmentPreviewReturn` (`?depuis=signalement`) ; vue
+  prof de l'aperçu : `copyOf`, `per_student_copies`, « Copie de référence », avertissement du PDF
+  élève (`individualCopyNotice`).
 
 - 2026-10-13 — **D5 fait** (branche `feat/fiches-melange-exercices`, commits locaux).
   `copyExerciseOrder` (`worksheet-copy.ts`) et `copyOrderSeed` (`student-copy.ts`, graine dédiée
