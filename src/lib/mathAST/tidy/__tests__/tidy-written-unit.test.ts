@@ -1,7 +1,7 @@
 /**
  * `tidy` avec `unitChoice: 'written'` : l'unité écrite d'abord.
  *
- * Spécification : docs/wip/grandeurs-eval-progress.md, lot 1 (décision 3 de
+ * Spécification : docs/archive/wip/grandeurs-eval-progress.md, lot 1 (décision 3 de
  * David, 2026-09-27). Pour une grandeur numérique :
  * 1. l'unité écrite (premier terme d'une somme ; pour un produit, chaque
  *    dimension de base prend la première unité écrite) si la valeur y a une

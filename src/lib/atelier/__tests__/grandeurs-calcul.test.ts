@@ -1,6 +1,6 @@
 /**
  * Les grandeurs vues depuis une ligne de Calcul (phase 0
- * `docs/wip/grandeurs-phase0.md`, lot A).
+ * `docs/archive/wip/grandeurs-phase0.md`, lot A).
  *
  * Mesuré avant : `5[km]` affichait « 5 » (l'arbre de la réponse n'avait pas
  * d'unité), `d/t` avec d = 5 km et t = 2 h affichait « 5/2 m/s ».

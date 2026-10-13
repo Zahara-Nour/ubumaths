@@ -1,7 +1,7 @@
 /**
  * Les grandeurs dans la console de mathAST (Calcul de l'atelier, `/cas`).
  *
- * Phase 0 `docs/wip/grandeurs-phase0.md`, lot A (validée par David le
+ * Phase 0 `docs/archive/wip/grandeurs-phase0.md`, lot A (validée par David le
  * 2026-10-11) : une grandeur se calcule par `tidy`, **unité écrite d'abord** —
  * comme `{{eval}}` (`evaluate-with-modifiers.ts`). L'ancien chemin,
  * `evaluateWithUnits`, perdait le coefficient de l'unité à l'écriture :

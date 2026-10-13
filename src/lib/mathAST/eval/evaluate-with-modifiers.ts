@@ -361,7 +361,7 @@ function formatExact(ast: MathNode, numValue: number): string {
 }
 
 // =============================================================================
-// Grandeurs (lot 2 du chantier Grandeurs, docs/wip/grandeurs-eval-progress.md)
+// Grandeurs (lot 2 du chantier Grandeurs, docs/archive/wip/grandeurs-eval-progress.md)
 // =============================================================================
 
 /** Le calcul contient une grandeur (`7[mm]`, `3[h]`) */
