@@ -233,6 +233,21 @@ export function salvageObjects(candidates: readonly unknown[]): {
 // Ranger
 // =============================================================================
 
+/**
+ * Le stockage est-il plein ? Firefox n'emploie pas le même nom ni le même code
+ * que les autres — s'en tenir à « QuotaExceededError » faisait afficher le
+ * message « rien ne sera conservé » à la place de « exporte ou supprime ».
+ */
+export function isQuotaExceeded(error: unknown): boolean {
+	return (
+		error instanceof DOMException &&
+		(error.name === 'QuotaExceededError' ||
+			error.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+			error.code === 22 ||
+			error.code === 1014)
+	);
+}
+
 export function saveAtelier(storage: Storage | null, state: AtelierState): SaveOutcome {
 	if (!storage) return { kind: 'unavailable' };
 
@@ -258,16 +273,7 @@ export function saveAtelier(storage: Storage | null, state: AtelierState): SaveO
 		storage.setItem(ATELIER_STORAGE_KEY, serialized);
 		return { kind: 'saved' };
 	} catch (error) {
-		// Firefox n'emploie pas le même nom ni le même code que les autres —
-		// s'en tenir à « QuotaExceededError » faisait afficher le message
-		// « rien ne sera conservé » à la place de « exporte ou supprime ».
-		const isQuota =
-			error instanceof DOMException &&
-			(error.name === 'QuotaExceededError' ||
-				error.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
-				error.code === 22 ||
-				error.code === 1014);
-		if (isQuota) {
+		if (isQuotaExceeded(error)) {
 			// ⚠️ On ne réduit PAS l'atelier pour faire tenir : le store de la
 			// calculatrice le fait et vide l'historique sans rien dire. Ici c'est
 			// le travail de l'élève, il doit savoir et choisir.

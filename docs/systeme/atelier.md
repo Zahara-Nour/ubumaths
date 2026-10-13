@@ -117,16 +117,18 @@ Ceux du code et de l'interface :
 
 **Session, partage, export** :
 
-| Fichier                             | Rôle                                                                                             |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `src/lib/atelier/persistence.ts`    | Ranger / relire le `localStorage` (`loadAtelier`, `saveAtelier`, `readForeignWrite`), schéma Zod |
-| `src/lib/atelier/session.ts`        | Cycle de vie (`openSession`) : chargement, sauvegarde différée, autres onglets                   |
-| `src/lib/atelier/url.ts`            | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                             |
-| `src/lib/atelier/grapheur-link.ts`  | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`               |
-| `src/lib/atelier/merge.ts`          | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                        |
-| `src/lib/atelier/history-export.ts` | Export de l'historique de Calcul : JSON rejouable, ubumark lisible, `downloadHistory`            |
-| `src/lib/atelier/history-import.ts` | Relecture d'un JSON exporté, validée par Zod et bornée (`readHistory`)                           |
-| `src/lib/atelier/removal.ts`        | Les phrases de la suppression en cascade (`cascadeMessage`, `removedMessage`)                    |
+| Fichier                              | Rôle                                                                                               |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `src/lib/atelier/persistence.ts`     | Ranger / relire le `localStorage` (`loadAtelier`, `saveAtelier`, `readForeignWrite`), schéma Zod   |
+| `src/lib/atelier/session.ts`         | Cycle de vie (`openSession`) : chargement, sauvegarde différée, autres onglets ; `keepCalcHistory` |
+| `src/lib/atelier/history-storage.ts` | Les lignes de Calcul gardées au rechargement (`loadCalcHistory`, `saveCalcHistory`), Zod, plafonds |
+| `src/lib/atelier/safe-latex.ts`      | Liste blanche des commandes LaTeX d'une formule relue du stockage (`isSafeLatex`)                  |
+| `src/lib/atelier/url.ts`             | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                               |
+| `src/lib/atelier/grapheur-link.ts`   | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`                 |
+| `src/lib/atelier/merge.ts`           | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                          |
+| `src/lib/atelier/history-export.ts`  | Export de l'historique de Calcul : JSON rejouable, ubumark lisible, `downloadHistory`              |
+| `src/lib/atelier/history-import.ts`  | Relecture d'un JSON exporté, validée par Zod et bornée (`readHistory`)                             |
+| `src/lib/atelier/removal.ts`         | Les phrases de la suppression en cascade (`cascadeMessage`, `removedMessage`)                      |
 
 ### Composants — `src/lib/components/atelier/`
 
@@ -372,7 +374,8 @@ décisions de David du 2026-10-11) :
   `recallNext`) : jamais une ligne écrite par un bouton, même « Comparer avec M » qui passe par
   `submit` ; deux saisies identiques de suite rappelées une fois ; le brouillon d'avant le premier
   ↑ revient au bout ; une ligne rappelée puis modifiée n'est pas perdue ; « Repartir de zéro » vide
-  le rappel, et rien n'est rappelable après un rechargement ou un rejeu ;
+  le rappel ; il revient au rechargement avec les lignes (les 100 dernières saisies tapées), et rien
+  n'est rappelable après un rejeu ;
 - une fois la commande choisie ou tapée avec son espace, son **modèle** (l'exemple du catalogue,
   `commandBeingWritten`) reste sous le champ pendant qu'on tape la suite. Garde : toute commande
   d'élève disponible a un exemple (`commands.test.ts`).
@@ -536,7 +539,37 @@ Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de re
   personnel ; un lien abîmé le dit et ouvre l'atelier personnel. « Garder dans mon atelier »
   (`keepReceived`) verse dans l'atelier personnel ; en cas de collision, **l'arrivant est
   renommé** et on le dit (Q2, `mergeInto`).
-- **Repartir de zéro** : confirmation, vide aussi l'historique ; absent d'un atelier reçu.
+- **Lignes de Calcul** (`history-storage.ts`, décision de David du 2026-10-13, « option 1 ») :
+  clé **à part**, `CALC_HISTORY_STORAGE_KEY` (`chiphre-atelier-historique`), version
+  `CALC_HISTORY_VERSION`. Rangées 500 ms après la dernière ligne (et au `pagehide`, au démontage)
+  par `keepCalcHistory` (`session.ts`), relues au montage : les `MAX_KEPT_LINES` (100) dernières
+  et les saisies tapées pour ↑ / ↓. On range ce que l'écran **montre** — saisie, réponse, échec,
+  note, bouton ≈ (`alternative`), formules d'un refus (`formulas`) — et le geste (`replay`, un
+  « Garder » recalé sur les lignes gardées) ; **jamais l'arbre du résultat** : une ligne restaurée
+  n'a ni « Garder », ni « Comment ? », ni tableau, ni graphique (retaper la saisie par ↑ les
+  redonne). **Rien n'est refait** : une définition restaurée ne crée ni ne change aucune carte.
+  Plafonds : `MAX_KEPT_HISTORY_LENGTH` (200 000 caractères, à côté des 500 000 des cartes), dont
+  40 000 pour les saisies ; saisie et libellé 2 000, texte 10 000 (raccourci « … »), formule 5 000
+  (au-delà, oubliée : la ligne reste en texte), note 1 000. Trop gros ou stockage plein : les
+  lignes les plus récentes, en silence, jamais d'échec — la clé à part ne coûte jamais les cartes.
+  Une version plus récente n'est ni relue ni écrasée ; un état illisible ou une chaîne plus longue
+  que le plafond : Calcul repart vide. Le lien `?a=` n'encode que `Atelier.serialize()`, sans
+  l'historique ; le mode éphémère ne lit ni n'écrit cette clé.
+- ⚠️ **Sécurité de la relecture** : ce qui revient du `localStorage` est une entrée **non
+  fiable**, et la vue compose les formules en `{@html}` (`convertLatexToMarkup`). Mesuré le
+  2026-10-14 (MathLive 0.111.1) : `\htmlStyle{…}{x}` rend un `style`, `\class`, `\cssId`,
+  `\htmlData` des attributs, `\href` un lien. Une formule (`latex`, `alternative.latex`, chaque
+  `$…$` d'un refus) n'est gardée que si **chacune de ses commandes** est sur la liste blanche de
+  `safe-latex.ts` (commandes lues comme le `Tokenizer` de MathLive : lettres et `*` ; notation
+  `^^5c` refusée ; environnements `\begin{…}` nommés) — sinon elle est oubliée et la ligne se
+  montre en texte, échappé par Svelte. Relire par `parseLatex` puis `toLatex` a été écarté : 15
+  réponses ordinaires sur 43 ne se relisent pas (`\approx`, `\left\{`, intervalles, `\mathrm`,
+  `\mathbb{R}`). Gardes : `historique-garde.test.ts` (états forgés), `historique-garde-sonde.test.ts`
+  (chaque commande permise composée par MathLive avec des arguments piégés : aucun ne finit dans
+  un attribut), `historique-garde.svelte.test.ts` (le DOM rendu).
+- **Repartir de zéro** : confirmation, vide aussi l'historique **et ce qui en est rangé** ;
+  actif dès qu'il y a un objet OU une ligne de Calcul (les lignes survivent au rechargement) ;
+  absent d'un atelier reçu.
 
 ### Export et rejeu de l'historique
 
@@ -561,7 +594,8 @@ Rejeu (`CalcDesk.replay`) : le fichier vient de dehors, donc `readHistory` le va
 borne (`MAX_HISTORY_BYTES`, `MAX_HISTORY_ENTRIES`) avant tout. Chaque geste est refait **par le
 même chemin** que l'élève (`submit`, `runFromPanel`, `keep`…) ; rien n'est injecté. Le rejeu
 s'arrête à la première ligne qui échoue et dit laquelle (`ReplayReport`). Désactivé en mode
-éphémère.
+éphémère. Une ligne restaurée au rechargement garde son geste : un export fait après
+un rechargement se rejoue comme avant.
 
 ### Suppression en cascade
 
@@ -635,7 +669,7 @@ retenu. Le niveau d'une ligne est figé quand on la déplie (`toggleSteps`) : un
 ailleurs ne la change pas sous les yeux. Une ligne réglée à la main garde son niveau si on la
 replie puis la redéplie ; une ligne seulement ouverte reprend le dernier choix. Ces niveaux par
 ligne vivent dans une `SvelteMap` du composant, par `entry.id`, et ne survivent pas à un
-rechargement (l'historique non plus). Chaque groupe s'annonce « Rédaction des étapes de la ligne
+rechargement (une ligne restaurée n'a d'ailleurs plus d'étapes). Chaque groupe s'annonce « Rédaction des étapes de la ligne
 N », `aria-describedby` vers la saisie de la ligne. Une préférence d'affichage, pas un objet :
 elle ne voyage ni dans un lien ni dans une fusion.
 
@@ -746,7 +780,8 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
    définition en t qui contient déjà x est refusée (`letterRejection`).
 6. **Rien ne quitte le navigateur.** Ni requête, ni compte : stockage local et URL seulement.
 7. **Toute entrée venue de dehors passe par Zod** : sauvegarde (`atelierShellSchema`), lien
-   (`decodeAtelier`, `curvesFromLink`), historique importé (`readHistory`), réglages
+   (`decodeAtelier`, `curvesFromLink`), historique importé (`readHistory`), lignes de Calcul
+   rangées (`loadCalcHistory`, formules par la liste blanche `isSafeLatex`), réglages
    (`curveDisplaySchema`).
 8. **Plafonds D8** : `MAX_LIST_VALUES` (200) par liste, `MAX_LISTS` (8) listes,
    `MAX_DEFINITION_LENGTH` à la saisie — pour qu'un atelier tienne dans une URL.
