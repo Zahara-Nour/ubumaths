@@ -301,10 +301,20 @@ describe('audit de suppression : date de retrait des fichiers', () => {
 				(select relrowsecurity from pg_class
 				 where oid = 'public.account_deletion_audit'::regclass) as rls,
 				(select count(*) from pg_policy
-				 where polrelid = 'public.account_deletion_audit'::regclass)::int as policies`
+				 where polrelid = 'public.account_deletion_audit'::regclass)::int as policies,
+				has_table_privilege('authenticated', 'public.account_deletion_audit', 'select')
+					as authenticated_lit,
+				has_table_privilege('anon', 'public.account_deletion_audit', 'select') as anon_lit`
 		);
 		expect(rows).toEqual([
-			{ type: 'timestamp with time zone', defaut: null, rls: true, policies: 0 }
+			{
+				type: 'timestamp with time zone',
+				defaut: null,
+				rls: true,
+				policies: 0,
+				authenticated_lit: false,
+				anon_lit: false
+			}
 		]);
 	});
 });
