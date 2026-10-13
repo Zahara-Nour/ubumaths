@@ -12,6 +12,8 @@
 import { z } from 'zod';
 import { Atelier } from './atelier.svelte';
 import { decodeAtelier } from './url';
+import { splitInterval } from './interval';
+import { readingMode } from './parse';
 import type { AtelierState } from './persistence';
 
 // =============================================================================
@@ -74,7 +76,12 @@ export function atelierFromCurves(
 	const atelier = new Atelier();
 	const created: { name: string; definition: string }[] = [];
 	for (const definition of definitions) {
-		const result = atelier.create({ kind: 'function', definition }, 'text');
+		// Décision g : « sur » se lit comme dans le reste de l'atelier (`?f=x^2 sur [0;+∞[`)
+		const { body, written } = splitInterval(definition, readingMode('text'));
+		const result = atelier.create(
+			{ kind: 'function', definition: body, ...(written !== null && { interval: written }) },
+			'text'
+		);
 		if (!result.ok) return { ok: false, message: result.message };
 		created.push({ name: result.object.name, definition });
 	}

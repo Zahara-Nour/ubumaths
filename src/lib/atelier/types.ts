@@ -12,6 +12,7 @@
 import type { Provenance } from './parse';
 import type { CurveColor } from '$lib/grapheur/colors';
 import type { LineStyle } from '$lib/grapheur/types';
+import type { Domain } from '$lib/mathAST/domain/types';
 
 // =============================================================================
 // Types
@@ -147,6 +148,13 @@ export interface FunctionObject extends AtelierObjectBase {
 	 * `sur ℝ` n'est pas rangé.
 	 */
 	readonly interval?: string;
+	/**
+	 * L'ensemble HÉRITÉ des fonctions que la définition cite (`g(x) = f(x) + 1`
+	 * avec f sur [0 ; +∞[, décision d du 2026-10-13) : recalculé à chaque passage
+	 * (`citedIntervals`), jamais sauvegardé. L'ensemble de la fonction est son
+	 * intersection avec `interval` (`intervalDomainOf`).
+	 */
+	readonly inheritedInterval?: Domain;
 	/**
 	 * Carte `f⁻¹` seulement : l'intervalle I tapé dans `.réciproque f sur I`, sur
 	 * lequel f est inversée — CROISÉ avec celui de f à chaque recalcul. Absent =
