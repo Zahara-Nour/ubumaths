@@ -55,6 +55,7 @@ import {
 } from '../factory';
 import { toLatex } from '../latex-generator';
 import { containsVariable } from '../common/contains-variable';
+import { getChildren } from '../transforms';
 import { differentiate } from '../differentiation/differentiate';
 import { matchKnownLimit, getKnownLimitValue } from '../limits/known-limits';
 import { normalizeApproach } from '../limits/evaluate';
@@ -358,26 +359,29 @@ function runStrategies(expression: MathNode, ctx: PipelineContext): NonNullable<
 
 /**
  * La limite d'un côté seul, calculée par le pipeline lui-même (même niveau,
- * identifiants à part : seules la valeur et le statut servent), ou `null`.
+ * mêmes identifiants), avec ses étapes — la conclusion ôtée : l'appelant
+ * conclut lui-même. `null` quand elle ne se calcule pas ou n'existe pas.
  */
 function sideLimit(
 	expression: MathNode,
 	ctx: PipelineContext,
 	direction: LimitDirection
-): MathNode | null {
+): { readonly value: MathNode; readonly steps: readonly PedagogicalLimitStep[] } | null {
 	try {
-		const side = runStrategies(expression, {
-			...ctx,
-			direction,
-			globalBefore: expression,
-			idGen: { next: 1 }
-		});
-		return side.status === 'does-not-exist' ? null : side.value;
+		const side = runStrategies(expression, { ...ctx, direction, globalBefore: expression });
+		if (side.status === 'does-not-exist' || side.value === null) return null;
+		return { value: side.value, steps: side.steps.filter((s) => !CONCLUSION_RULES.has(s.rule)) };
 	} catch (error) {
 		if (error instanceof PedagogicalLimitNotImplemented) return null;
 		throw error;
 	}
 }
+
+const CONCLUSION_RULES: ReadonlySet<PedagogicalLimitRule> = new Set([
+	'conclude',
+	'conclude-infinite',
+	'conclude-does-not-exist'
+]);
 
 // =============================================================================
 // Côté implicite (domaine d'un seul côté du point)
@@ -421,6 +425,16 @@ function tryImplicitSide(expression: MathNode, ctx: PipelineContext): StrategyRe
 		bindings: { domainBoundary: ctx.approach }
 	});
 	const rest = runStrategies(expression, sideCtx);
+	// Le côté étudié par un pôle (`\\ln x / x` en 0) : une seule étape « à
+	// droite », qui porte les deux raisons (domaine, puis signe du dénominateur).
+	const [first, ...others] = rest.steps;
+	if (first?.rule === step.rule) {
+		const merged: PedagogicalLimitStep = {
+			...first,
+			bindings: { ...first.bindings, domainBoundary: ctx.approach }
+		};
+		return { ...rest, steps: [merged, ...others] };
+	}
 	return { ...rest, steps: [step, ...rest.steps] };
 }
 
@@ -451,6 +465,9 @@ function tryDirectSubstitution(expression: MathNode, ctx: PipelineContext): Stra
 
 	const value = evaluateAtPoint(expression, ctx.variable, aValue);
 	if (value === null || !Number.isFinite(value)) return null;
+	// `x^x` en 0 : JavaScript calcule 0⁰ = 1, mais l'expression n'est pas
+	// définie au point (forme 0⁰) — pas de « continue au point étudié ».
+	if (hasZeroPowerZero(expression, ctx.variable, aValue)) return null;
 
 	const valueNode = exactValueAt(expression, ctx, value) ?? numericNode(value);
 
@@ -472,6 +489,18 @@ function tryDirectSubstitution(expression: MathNode, ctx: PipelineContext): Stra
 		status: 'exact',
 		indeterminateForm: 'none'
 	};
+}
+
+/** Une puissance dont la base et l'exposant valent 0 au point (forme 0⁰) */
+function hasZeroPowerZero(expr: MathNode, variable: string, a: number): boolean {
+	if (
+		isSuperscript(expr) &&
+		evaluateAtPoint(expr.base, variable, a) === 0 &&
+		evaluateAtPoint(expr.superscript, variable, a) === 0
+	) {
+		return true;
+	}
+	return getChildren(expr).some((child) => hasZeroPowerZero(child, variable, a));
 }
 
 /**
@@ -796,7 +825,9 @@ function tryExponentialComposition(expression: MathNode, ctx: PipelineContext): 
 				: null;
 	if (exponent === null || !containsVariable(exponent, ctx.variable)) return null;
 
-	const innerLimit = sideLimit(exponent, ctx, ctx.direction);
+	// Les étapes de la limite de l'exposant ne s'écrivent pas : la ligne
+	// « \\lim u = L » de l'étape les résume.
+	const innerLimit = sideLimit(exponent, ctx, ctx.direction)?.value ?? null;
 	if (innerLimit === null) return null;
 	const value = exponentialOf(innerLimit);
 
@@ -828,6 +859,7 @@ function exponentialOf(limit: MathNode): MathNode {
 		return limit.sign === 'positive' ? infinity('positive') : number('0');
 	}
 	if (isNumber(limit) && limit.value === '0') return number('1');
+	if (isNumber(limit) && limit.value === '1') return euler();
 	return power(euler(), limit);
 }
 
@@ -1728,16 +1760,26 @@ function tryOneSided(expression: MathNode, ctx: PipelineContext): StrategyResult
 
 	// Limite d'un côté : ±∞ quand il diverge ; sinon calculée par le pipeline
 	// sur ce côté (`e^{1/x}` en 0⁻ : 0), jamais lue sur un signe nul.
-	const sideValue = (sign: number, direction: LimitDirection): MathNode | null =>
-		sign !== 0 ? signNodeFromSign(sign) : sideLimit(expression, ctx, direction);
-	const leftValue = wantLeft ? sideValue(leftSign, 'left') : null;
-	const rightValue = wantRight ? sideValue(rightSign, 'right') : null;
-	if ((wantLeft && leftValue === null) || (wantRight && rightValue === null)) return null;
+	// Ses étapes (la composée de `e^{1/x}` en 0⁻) deviennent les sous-étapes du côté.
+	const sideValue = (
+		sign: number,
+		direction: LimitDirection
+	): { readonly value: MathNode; readonly steps: readonly PedagogicalLimitStep[] } | null =>
+		sign !== 0
+			? { value: signNodeFromSign(sign), steps: [] }
+			: sideLimit(expression, ctx, direction);
+	const leftSide = wantLeft ? sideValue(leftSign, 'left') : null;
+	const rightSide = wantRight ? sideValue(rightSign, 'right') : null;
+	if ((wantLeft && leftSide === null) || (wantRight && rightSide === null)) return null;
+	const leftValue = leftSide?.value ?? null;
+	const rightValue = rightSide?.value ?? null;
 
 	const steps: PedagogicalLimitStep[] = [];
 	const sideStep = (direction: 'left' | 'right', sign: number, value: MathNode) => {
 		const name = direction === 'left' ? 'gauche' : 'droite';
+		const subSteps = (direction === 'left' ? leftSide : rightSide)?.steps ?? [];
 		return makeStep(ctx, {
+			subSteps,
 			rule: direction === 'left' ? 'analyze-left-limit' : 'analyze-right-limit',
 			description: `Étude de la limite à ${name} en ${inlineMath(ctx.approach)} : ${inlineMath(value)}`,
 			before: expression,

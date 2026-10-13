@@ -19,6 +19,7 @@ import type { RenderedStep } from '../../common/step-renderer-base';
 import type { LimitDirection } from '../../limits/types';
 import { generatePedagogicalLimitSteps } from '../pipeline';
 import { PedagogicalLimitRenderer } from '../renderer';
+import { PedagogicalLimitNotImplemented } from '../types';
 import type { PedagogicalLimitResult, PedagogicalLimitStep } from '../types';
 
 // =============================================================================
@@ -273,4 +274,50 @@ describe('non-régression : les cas justes gardent leur valeur', () => {
 			});
 		}
 	}
+});
+
+describe('revue (2026-10-14)', () => {
+	it('e^{sin x / x} en 0 : la valeur s’écrit e, jamais e^1', () => {
+		const { result, rendered } = run('e^{\\frac{\\sin x}{x}}', '0', 'lycee');
+		expect(result.value && toLatex(result.value)).toBe('\\exponentialE');
+		for (const step of flat(rendered)) expect(step.expressionLatex).not.toContain('^1');
+	});
+
+	for (const [expression, left, right] of [
+		['e^{\\frac{1}{x}}', '0', '+\\infty'],
+		['e^{-\\frac{1}{x}}', '+\\infty', '0'],
+		['e^{\\frac{1}{x-1}}', '0', '+\\infty']
+	] as const) {
+		const approach = expression.includes('x-1') ? '1' : '0';
+		it(`${expression} en ${approach} sans côté : chaque côté montre sa composée`, () => {
+			const { result, rendered } = run(expression, approach, 'lycee');
+			expect(result.status).toBe('does-not-exist');
+			for (const [rule, value] of [
+				['analyze-left-limit', left],
+				['analyze-right-limit', right]
+			] as const) {
+				const side = rendered.find((s) => s.rule === rule);
+				expect(side?.expressionLatex).toContain(`= ${value}`);
+				// La valeur finie (0) vient du pipeline sur ce côté : ses étapes restent visibles
+				expect(side?.subSteps?.map((s) => s.rule)).toContain('apply-composition');
+			}
+		});
+	}
+
+	it('ln x / x en 0 sans côté : une seule étude du côté droit', () => {
+		const { result, rendered } = run('\\frac{\\ln x}{x}', '0', 'lycee');
+		expect(result.value && toLatex(result.value)).toBe('-\\infty');
+		expect(rules(rendered).filter((r) => r === 'analyze-right-limit')).toHaveLength(1);
+	});
+
+	it('1/(x−1)² en 1 sans côté : +∞ des deux côtés, la limite existe', () => {
+		const { result, rendered } = run('\\frac{1}{(x-1)^2}', '1', 'lycee');
+		expect(result.status).toBe('infinite');
+		expect(result.value && toLatex(result.value)).toBe('+\\infty');
+		expect(rules(rendered)).not.toContain('conclude-does-not-exist');
+	});
+
+	it('x^x en 0 : forme 0⁰, pas de substitution « continue au point » — étapes refusées', () => {
+		expect(() => run('x^x', '0', 'lycee')).toThrow(PedagogicalLimitNotImplemented);
+	});
 });
