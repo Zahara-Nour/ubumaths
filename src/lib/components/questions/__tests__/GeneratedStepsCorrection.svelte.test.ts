@@ -82,7 +82,7 @@ describe('GeneratedStepsCorrection — les maths de la prose', () => {
 		const screen = await render(GeneratedStepsCorrection, { props: { steps: realSteps } });
 		const texts = () => [...screen.container.querySelectorAll('.step-title, .step-explanation')];
 
-		// L'explication « On pose $u = 2 x$ et $dv = …$ » : ses formules sont rendues
+		// L'explication « On pose $u(x) = 2 x$ et $v'(x) = …$ » : ses formules sont rendues
 		await expect
 			.poll(() => texts().reduce((n, el) => n + formulasOf(el).length, 0))
 			.toBeGreaterThan(4);

@@ -23,6 +23,7 @@
  */
 
 import type { MathNode } from '../types';
+import { number } from '../factory';
 import { integrationLatex as toLatex } from './latex';
 import { numericValue } from '../integration/forbidden-value';
 import { withExplicitNumberProducts } from '../pedagogical-differentiation/tidy-step';
@@ -160,10 +161,10 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 		case 'integrand-undefined-on-interval': {
 			// L'intégrale, puis la phrase du refus : mots dans \text{}, valeurs en
 			// mathématiques ; l'intervalle écrit dans l'ordre croissant (V28)
-			const point = step.bindings?.point ? toLatex(step.bindings.point) : '?';
+			const point = step.bindings?.point ? forbiddenPointLatex(step.bindings.point) : '= ?';
 			const lines = [
 				`  & \\textcolor{blue}{${integralLatex(step, dx)}}`,
-				`  & \\text{La fonction n’est pas définie en } ${step.variable} = ${point} \\text{, qui appartient à } ${closedIntervalLatex(step)} \\text{ :}`,
+				`  & \\text{La fonction n’est pas définie en } ${step.variable} ${point} \\text{, qui appartient à } ${closedIntervalLatex(step)} \\text{ :}`,
 				`  & \\text{l’intégrale n’est pas définie sur cet intervalle.}`
 			];
 			return `\\begin{aligned}\n${lines.join(' \\\\\n')}\n\\end{aligned}`;
@@ -263,6 +264,41 @@ function integralLatex(step: PedagogicalIntegrationStep, dx: string): string {
 	return step.definite
 		? `\\int_{${toLatex(step.definite.lower)}}^{${toLatex(step.definite.upper)}} ${integrand}${dx}`
 		: `\\int ${integrand}${dx}`;
+}
+
+/** Chiffres significatifs d'une valeur interdite approchée */
+const FORBIDDEN_POINT_SIGNIFICANT = 3;
+
+/**
+ * `= 3/2`, `= \\dfrac{\\pi}{2}`, `= 0.5` : la valeur interdite exacte ; un
+ * décimal plus long (racine de x³ − 2, seule écriture que rend le domaine)
+ * s'écrit à 3 chiffres significatifs, `\\approx 1.26`, `\\approx 0.000412`,
+ * jamais `= 1.2599210498948732` ni « ≈ 0 » (revue du 2026-10-13 : un arrondi à
+ * 3 décimales écrasait les petites valeurs). Le binding `point` reste la valeur
+ * complète (la garde de l'atelier la compare).
+ */
+function forbiddenPointLatex(point: MathNode): string {
+	// −1,2599… : un opposé de nombre (pas de nombre négatif littéral)
+	const negative = point.type === 'opposite';
+	const magnitude = point.type === 'opposite' ? point.operand : point;
+	if (magnitude.type !== 'number') return `= ${toLatex(point)}`;
+	const value = Number(magnitude.value);
+	if (!Number.isFinite(value) || value === 0) return `= ${toLatex(point)}`;
+	const text = significantDecimal(value, FORBIDDEN_POINT_SIGNIFICANT);
+	if (Number(text) === value) return `= ${toLatex(point)}`;
+	return `\\approx ${negative ? '-' : ''}${toLatex(number(text))}`;
+}
+
+/**
+ * Un réel strictement positif à `digits` chiffres significatifs, en écriture
+ * décimale (jamais `1.23e-7`), sans zéro final : `0.000412`, `1.26`, `1230`.
+ */
+function significantDecimal(value: number, digits: number): string {
+	const rounded = Number(value.toPrecision(digits));
+	const exponent = Math.floor(Math.log10(rounded));
+	const decimals = Math.max(0, digits - 1 - exponent);
+	const fixed = rounded.toFixed(decimals);
+	return fixed.includes('.') ? fixed.replace(/0+$/, '').replace(/\.$/, '') : fixed;
 }
 
 /**

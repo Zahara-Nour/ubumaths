@@ -64,6 +64,13 @@ export interface DispatchContext {
 	 * u > 0 y est certain (décision de David, 2026-10-13).
 	 */
 	readonly interval?: { readonly lower: MathNode; readonly upper: MathNode };
+	/**
+	 * Intégrale définie seulement : ses bornes, pour énoncer au lycée la formule
+	 * d'IPP avec bornes avant la version primitive qui sert au calcul (décision
+	 * de David, 2026-10-13). Retirées dans les intégrales imbriquées d'une IPP
+	 * (v et ∫ u′v), qui ne sont que des primitives.
+	 */
+	readonly definite?: { readonly lower: MathNode; readonly upper: MathNode };
 }
 
 export function createContext(
@@ -90,6 +97,14 @@ export function withDeeperRecursion(ctx: DispatchContext): DispatchContext {
 	return {
 		...ctx,
 		currentDepth: ctx.currentDepth + 1
+	};
+}
+
+/** Un cran plus profond, sans les bornes : une primitive cherchée dans une IPP */
+export function primitiveInsideParts(ctx: DispatchContext): DispatchContext {
+	return {
+		...withDeeperRecursion(ctx),
+		definite: undefined
 	};
 }
 

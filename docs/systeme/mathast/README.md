@@ -768,6 +768,15 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   calcul : elle reste en version résumée. Les étapes s'enchaînent (`after` de la réécriture =
   `before` de la forme). Dans une IPP, v = ∫dv avec réécriture vient en sous-étapes de
   `choose-u-dv`. u′ s'écrit propre (`cleanDerivative` : constante exacte, sinon `tidyTerms`).
+- **IPP : notation selon le niveau** (décision de David du 2026-10-13). Au **lycée**, notation de
+  terminale (`descriptions-fr.ts`) : « On pose $u(x) = …$ et $v'(x) = …$, donc $u'(x) = …$ et
+  $v(x) = …$ », formule $\int u(x)v'(x)\,dx = u(x)v(x) - \int u'(x)v(x)\,dx$ ; dans une intégrale
+  définie, l'annonce `identify-parts` énonce d'abord la version avec bornes
+  ($\int_a^b … = \left[u(x)v(x)\right]_a^b - …$, bindings `lower`/`upper` tirés de
+  `ctx.definite`), puis la version primitive, celle des lignes de calcul (le pipeline cherche une
+  primitive avant le théorème fondamental). Les intégrales imbriquées d'une IPP (v, ∫u′v) se
+  calculent sans bornes (`primitiveInsideParts`). Au **supérieur**, inchangé : u, dv, du
+  (`SUPERIEUR_EXPLANATIONS`). L'IPP cyclique suit la même notation.
 - **ln|u| ou ln u.** Les étapes écrivent `\ln\left| u \right|` (`latex.ts`, `collapseLnAbs` ;
   la réponse du moteur garde `\ln\left( \left| u \right| \right)`), et `\ln u` sans valeur absolue
   quand u > 0 est **certain** (`positivity.ts`, `isCertainlyPositive` par `analyzeSign` : domaine
@@ -782,7 +791,9 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   et rend la première valeur interdite de [a ; b], **bornes comprises**. Si elle existe, les
   étapes s'arrêtent à `integrand-undefined-on-interval` (« La fonction n'est pas définie en
   x = 3/2, qui appartient à [1 ; 2] : l'intégrale n'est pas définie sur cet intervalle. », mots en
-  `\text{}`), sans `value` ni `antiderivative` (type `PedagogicalDefiniteIntegrationResult`) ;
+  `\text{}` ; une valeur que le domaine ne rend qu'en décimal, racine de x³ − 2, s'écrit à 3
+  chiffres significatifs, « x ≈ 1.26 », « x ≈ 0.000412 » (jamais « ≈ 0 »), par `forbiddenPointLatex`, le binding `point` gardant la valeur
+  complète), sans `value` ni `antiderivative` (type `PedagogicalDefiniteIntegrationResult`) ;
   `result.undefinedAt` porte la valeur. Le refus s'affiche donc même pour une primitive que le
   pipeline ne sait pas écrire (∫₀¹ 4/(3x − 2)²). Bornes littérales : pas de contrôle, valeur
   symbolique comme avant. **Domaine non résolu** (`unresolved`, dénominateur `e^x - 2`) avec des

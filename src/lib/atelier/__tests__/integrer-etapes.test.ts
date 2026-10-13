@@ -425,3 +425,31 @@ describe('hasUnexplainedCoefficient : expliqué par une réécriture, ou caché'
 		expect(hasUnexplainedCoefficient([hidden])).toBe(true);
 	});
 });
+
+// =============================================================================
+// IPP : notation de terminale (PR 3, décision de David du 2026-10-13)
+// =============================================================================
+
+describe('.intégrer : IPP en notation de terminale (u, v′), étapes gardées', () => {
+	it.each([
+		['.intégrer xe^x de 0 à 1', '1'],
+		['.intégrer \\ln(x) de 1 à e', '1'],
+		['.intégrer x\\ln(x)', null],
+		['.intégrer x^2e^x', null],
+		['.intégrer xe^{2x}', null],
+		['.intégrer e^x\\sin(x)', null]
+	])('%s', (input, value) => {
+		const entry = lastEntry(input);
+		expect(entry.failed).toBe(false);
+		if (value !== null) expect(entry.latex).toBe(value);
+		// Le « Comment ? » reste : la garde reconnaît toujours les étapes
+		expect(entry.steps).toBeDefined();
+		expect(entry.summary).toBeDefined();
+		const chooses = flatten(entry.steps!).filter((s) => s.rule === 'choose-u-dv');
+		expect(chooses.length).toBeGreaterThan(0);
+		for (const choose of chooses) {
+			expect(choose.explanation).toMatch(/^On pose \$u\(x\) = .+\$ et \$v'\(x\) = /);
+			expect(choose.explanation).not.toMatch(/\bdv\b|\bdu\b/);
+		}
+	});
+});

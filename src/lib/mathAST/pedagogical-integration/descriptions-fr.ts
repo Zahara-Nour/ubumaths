@@ -172,6 +172,26 @@ function boundsDifference(bindings: IntegrationBindings): string {
 	return `F(${toLatex(upper)}) - F(${toLatex(lower)})`;
 }
 
+/**
+ * La formule d'IPP de terminale, en u et v′ (décision de David du 2026-10-13) :
+ * version primitive, et version avec bornes pour une intégrale définie
+ */
+const PARTS_FORMULA_PRIMITIVE = "$\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$";
+const PARTS_FORMULA_BOUNDED =
+	"$\\int_a^b u(x)v'(x)\\,dx = \\left[u(x)v(x)\\right]_a^b - \\int_a^b u'(x)v(x)\\,dx$";
+
+/**
+ * La formule du lycée qu'annonce l'IPP : avec bornes dans une intégrale
+ * définie (bindings `lower`/`upper`), puis la version primitive, celle des
+ * lignes de calcul (le pipeline cherche une primitive avant le théorème
+ * fondamental)
+ */
+function partsFormulaSentence(bindings: IntegrationBindings): string {
+	const head = "L'intégration par parties s'utilise pour intégrer un produit $u(x)v'(x)$ : ";
+	if (!bindings.lower || !bindings.upper) return `${head}${PARTS_FORMULA_PRIMITIVE}.`;
+	return `${head}${PARTS_FORMULA_BOUNDED}. On cherche d'abord une primitive, avec la même formule sans bornes : ${PARTS_FORMULA_PRIMITIVE}.`;
+}
+
 // =============================================================================
 // TITLES
 // =============================================================================
@@ -206,8 +226,9 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'substitute-back': () => 'Retour à la variable initiale',
 	// ---- IPP ----
 	'identify-parts': () => 'Intégration par parties',
-	'choose-u-dv': (b) => `Choix : ${math(`u = ${bind(b, 'u')}`)}, ${math(`dv = ${bind(b, 'dv')}`)}`,
-	'apply-parts-formula': () => "Formule de l'IPP : $\\int u\\,dv = uv - \\int v\\,du$",
+	'choose-u-dv': (b) =>
+		`Choix : ${math(`u(x) = ${bind(b, 'u')}`)}, ${math(`v'(x) = ${bind(b, 'dv')}`)}`,
+	'apply-parts-formula': () => `Formule de l'IPP : ${PARTS_FORMULA_PRIMITIVE}`,
 	'apply-cyclic-ipp': () =>
 		"IPP cyclique : on retrouve l'intégrale de départ, on résout l'équation",
 	'decompose-rational': (b) =>
@@ -306,12 +327,11 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		'On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).',
 	'integrand-undefined-on-interval': () =>
 		'Le théorème fondamental ne s’applique qu’à une fonction définie et continue sur tout l’intervalle d’intégration, bornes comprises. Ici la fonction a une valeur interdite dans l’intervalle : on ne calcule pas de valeur.',
-	'identify-parts': () =>
-		"L'intégration par parties s'utilise pour intégrer un produit : $\\int u\\,dv = uv - \\int v\\,du$.",
+	'identify-parts': partsFormulaSentence,
 	'choose-u-dv': (b) =>
-		`On pose ${math(`u = ${bind(b, 'u')}`)} et ${math(`dv = ${bind(b, 'dv')}`)}, d'où ${math(`du = ${differential(b, 'du')}`)} et ${math(`v = ${bind(b, 'v')}`)}.`,
+		`On pose ${math(`u(x) = ${bind(b, 'u')}`)} et ${math(`v'(x) = ${bind(b, 'dv')}`)}, donc ${math(`u'(x) = ${bind(b, 'du')}`)} et ${math(`v(x) = ${bind(b, 'v')}`)}.`,
 	'apply-parts-formula': () =>
-		"On applique la formule $\\int u\\,dv = uv - \\int v\\,du$, puis on calcule l'intégrale restante.",
+		`On applique la formule ${PARTS_FORMULA_PRIMITIVE}, puis on calcule l'intégrale restante.`,
 	'apply-cyclic-ipp': () =>
 		"Après deux IPP successives, l'intégrale de départ I réapparaît dans le second membre. On obtient une équation du type I = expression − k·I, qu'on résout pour I : I = expression / (1 − k).",
 	'decompose-rational': (b) =>
@@ -336,11 +356,25 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		'Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.'
 };
 
+/**
+ * Supérieur : les autres règles reprennent l'explication du lycée (repli) ;
+ * l'IPP garde la notation du supérieur, u et dv (décision de David du
+ * 2026-10-13 : seul le lycée passe à u et v′).
+ */
+const SUPERIEUR_EXPLANATIONS: RuleFnMap<ExplainFn> = {
+	'identify-parts': () =>
+		"L'intégration par parties s'utilise pour intégrer un produit : $\\int u\\,dv = uv - \\int v\\,du$.",
+	'choose-u-dv': (b) =>
+		`On pose ${math(`u = ${bind(b, 'u')}`)} et ${math(`dv = ${bind(b, 'dv')}`)}, d'où ${math(`du = ${differential(b, 'du')}`)} et ${math(`v = ${bind(b, 'v')}`)}.`,
+	'apply-parts-formula': () =>
+		"On applique la formule $\\int u\\,dv = uv - \\int v\\,du$, puis on calcule l'intégrale restante."
+};
+
 export const EXPLANATIONS: Record<SchoolLevel, RuleFnMap<ExplainFn>> = {
 	primaire: {},
 	college: {},
 	lycee: LYCEE_EXPLANATIONS,
-	superieur: {} // supérieur : titles already carry the formula, no extra explanation
+	superieur: SUPERIEUR_EXPLANATIONS
 };
 
 // =============================================================================

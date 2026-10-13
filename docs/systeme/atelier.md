@@ -590,8 +590,9 @@ pas définie en x = 0, qui appartient à [−1 ; 1] ». Garde (`citesForbiddenPo
 concluent `undefinedAt` par l'étape `integrand-undefined-on-interval`, qui cite la même valeur ;
 cette valeur est un nombre, dans [min(a, b) ; max(a, b)] bornes comprises, et f n'y a pas de
 valeur finie (f sans autre lettre que la variable). Sinon pas d'étapes. Les refus des autres
-commandes n'en portent jamais. La rédaction des composées, `F(b) − F(a)` et l'IPP en notation
-u, v′ viendront dans les PR suivantes.
+commandes n'en portent jamais. Les étapes sont au niveau lycée : l'IPP s'y rédige en notation de
+terminale (« On pose $u(x) = x$ et $v'(x) = e^x$, donc $u'(x) = 1$ et $v(x) = e^x$ », PR 3 du
+2026-10-13), sans changer ce que la garde reconnaît.
 
 Statistiques : `summarizeList` / `summarizeTable` (`src/lib/statistics/describe.ts`), et
 `src/lib/statistics/` pour l'ajustement (`fit.ts`), le bivarié, la simulation, les fractions et
