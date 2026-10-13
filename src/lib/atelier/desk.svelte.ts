@@ -20,6 +20,7 @@ import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import {
 	runInput,
 	runAction,
+	isExportCommand,
 	runReciprocal,
 	promote,
 	derivativeNote,
@@ -45,6 +46,12 @@ import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 import { syncPlots } from './plot-sync';
 import { removedLine, restoredLine } from './removal';
 import { stepOf, type ImportedHistory } from './history-import';
+import {
+	NOTHING_TO_EXPORT,
+	downloadHistory,
+	exportFileName,
+	type ExportFormat
+} from './history-export';
 import { termsOf } from './engine';
 import { isList, isQualitative, type AtelierObject, type ListObject } from './types';
 import { wordsReason } from './actions';
@@ -251,6 +258,12 @@ export class CalcDesk {
 	/** Ce que le champ contenait avant le premier ↑ : ↓ le rend au bout. */
 	#draftBeforeRecall = '';
 
+	/**
+	 * Le téléchargement de `.exporter` : celui du bouton « JSON (pour
+	 * rejouer) ». Remplacé par les tests, qui n'ont pas de page.
+	 */
+	download: (entries: readonly Entry[], format: ExportFormat) => void = downloadHistory;
+
 	constructor(atelier: Atelier, engine: WebReplEngine = new WebReplEngine()) {
 		this.atelier = atelier;
 		this.session = { atelier, engine };
@@ -339,6 +352,12 @@ export class CalcDesk {
 
 	/** `typed` : tapée par l'élève (rappelable par ↑), ou écrite par un bouton. */
 	#submit(text: string, typed: boolean): void {
+		// `.exporter` : le pupitre tient l'historique, le moteur ne l'a jamais eu.
+		// Pas de ligne : l'historique exporté reste celui de l'élève
+		if (isExportCommand(this.session.engine, text)) {
+			if (typed) this.#exportTyped(text);
+			return;
+		}
 		const result = runInput(this.session, text, 'text');
 		if (result.kind === 'vide') return;
 		this.#gesture = { kind: 'saisie', input: text };
@@ -353,6 +372,22 @@ export class CalcDesk {
 		this.#push({ label: text, ...entryOf(result), result });
 		this.draft = '';
 		this.notice = null;
+	}
+
+	/**
+	 * `.exporter` tapé : le même fichier que le bouton JSON, ou la même raison
+	 * que le bouton désactivé. Un rejeu ne télécharge rien (il n'appelle pas ici).
+	 */
+	#exportTyped(text: string): void {
+		this.#recalled = null;
+		if (this.#typed.at(-1) !== text) this.#typed.push(text);
+		this.draft = '';
+		if (this.entries.length === 0) {
+			this.notice = NOTHING_TO_EXPORT;
+			return;
+		}
+		this.download(this.entries, 'json');
+		this.notice = `Historique exporté : ${exportFileName('json', new Date())}.`;
 	}
 
 	/**
@@ -375,6 +410,9 @@ export class CalcDesk {
 		for (const [index, entry] of history.entries.entries()) {
 			const step = stepOf(entry);
 			if (step === null) continue;
+			// `.exporter` n'écrit aucune ligne : rien à refaire, et un rejeu ne
+			// télécharge rien
+			if (step.kind === 'saisie' && isExportCommand(this.session.engine, step.input)) continue;
 			const before = this.entries.length;
 			this.notice = null;
 			const missed = this.#replayStep(step, rows, graph);

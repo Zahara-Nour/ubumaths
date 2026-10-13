@@ -421,7 +421,7 @@ Synchronisation avec Google Classroom : `google_integrations` (jeton du professe
 l'admin) → `google_classroom_courses`, `_coursework`, `_materials`, `_topics` ; `shared_coursework` /
 `shared_materials` exposent aux élèves ce qui est partagé. Code : `src/lib/server/google/`, `src/routes/api/google`.
 
-### Outils du professeur (kanban, tableau blanc, tableur, constructions)
+### Outils du professeur (kanban, tableau blanc, tableur, constructions, figures)
 
 - **Kanban** : `kanban_boards` → `kanban_columns` → `kanban_cards`. Tableau personnel
   (`class_id` NULL, privé à son propriétaire) ou de classe (lisible par les membres, qui gèrent les

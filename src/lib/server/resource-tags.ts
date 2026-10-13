@@ -31,7 +31,12 @@ type SB = SupabaseClient<Database>;
  * addressable.
  */
 export type TaggableKind =
-	ResourceKind | 'python_exercise' | 'construction' | 'worksheet' | 'parody_evaluation';
+	| ResourceKind
+	| 'python_exercise'
+	| 'construction'
+	| 'worksheet'
+	| 'parody_evaluation'
+	| 'geometry_figure';
 
 /** Les types que `resource_tags` accepte, pour valider une entrée non fiable. */
 export const TAGGABLE_KINDS = [
@@ -43,7 +48,10 @@ export const TAGGABLE_KINDS = [
 	'python_exercise',
 	'construction',
 	'worksheet',
-	'parody_evaluation'
+	'parody_evaluation',
+	// Figures géométriques stockées (ADR 0027) : étiquetables ; la citation dans
+	// le cahier (type de ressource adressable) viendra au lot 2
+	'geometry_figure'
 ] as const;
 
 /** Garde de type pour un `kind` venant d'un paramètre d'URL. */

@@ -4,7 +4,7 @@
 > (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
-221 tables · 25 vues · 313 fonctions. Colonne suivie de `?` : peut être nulle.
+222 tables · 25 vues · 313 fonctions. Colonne suivie de `?` : peut être nulle.
 
 ## Établissement et personnes (20)
 
@@ -1142,7 +1142,7 @@ Liens : `shared_coursework_id` → `shared_coursework` · `student_id` → `prof
 
 Liens : `category_id` → `coursework_categories` · `class_id` → `classes` · `material_id` → `google_classroom_materials` · `shared_by` → `profiles` · `topic_id` → `google_classroom_topics`
 
-## Outils du professeur (kanban, tableau blanc, tableur, constructions) (12)
+## Outils du professeur (kanban, tableau blanc, tableur, constructions, figures) (13)
 
 ### `construction_demo_scripts`
 
@@ -1153,6 +1153,12 @@ Liens : `author_id` → `profiles`
 ### `constructions`
 
 `author_id?` · `created_at?` · `description?` · `dsl_script?` · `format` · `id` · `is_public?` · `script` · `title` · `updated_at?`
+
+Liens : `author_id` → `profiles`
+
+### `geometry_figures`
+
+`author_id` · `created_at` · `description?` · `dsl_script` · `grades` · `id` · `is_public` · `title` · `updated_at`
 
 Liens : `author_id` → `profiles`
 

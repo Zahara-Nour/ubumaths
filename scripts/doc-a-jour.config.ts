@@ -57,15 +57,15 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 	// échoue sur un trou périmé. Ordre : un fichier appartient au PREMIER trou qui le
 	// désigne, un glob précis passe donc avant le glob large qui le contient.
 	trous: [
-		{ glob: 'src/lib/shared/blockly/**', note: 'Blockly, calculatrice, REPL /cas' },
-		{ glob: 'src/lib/components/blockly/**', note: 'Blockly, calculatrice, REPL /cas' },
+		{ glob: 'src/lib/shared/blockly/**', note: 'Blockly, calculatrice' },
+		{ glob: 'src/lib/components/blockly/**', note: 'Blockly, calculatrice' },
 		{
-			glob: 'src/lib/stores/{blocklyPlayground,calculator,repl}.svelte.ts',
-			note: 'Blockly, calculatrice, REPL /cas'
+			glob: 'src/lib/stores/{blocklyPlayground,calculator}.svelte.ts',
+			note: 'Blockly, calculatrice'
 		},
-		{ glob: 'src/routes/(public)/blockly/**', note: 'Blockly, calculatrice, REPL /cas' },
-		{ glob: 'src/lib/workers/js-sandbox.worker.ts', note: 'Blockly, calculatrice, REPL /cas' },
-		{ glob: 'src/lib/components/{calculator,cas}/**', note: 'Blockly, calculatrice, REPL /cas' },
-		{ glob: 'src/routes/(protected)/calculatrice/**', note: 'Blockly, calculatrice, REPL /cas' }
+		{ glob: 'src/routes/(public)/blockly/**', note: 'Blockly, calculatrice' },
+		{ glob: 'src/lib/workers/js-sandbox.worker.ts', note: 'Blockly, calculatrice' },
+		{ glob: 'src/lib/components/calculator/**', note: 'Blockly, calculatrice' },
+		{ glob: 'src/routes/(protected)/calculatrice/**', note: 'Blockly, calculatrice' }
 	]
 };

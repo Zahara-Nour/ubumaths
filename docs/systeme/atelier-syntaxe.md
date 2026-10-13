@@ -63,6 +63,15 @@ x=…` et `.intégrer f de a à b` hors de cet ensemble sont refusés comme `f(5
 
 Leurs arguments sont des **noms d'objets et des nombres**, jamais des expressions : l'espace n'y est pas ambigu. **Proposition : inchangées** (`.binomiale X 10 0,3`, `.simuler L M 100`, `.comparer L M`…). Seul l'argument « événement » (`P(X ⩽ 3)`) est une expression, déjà délimitée par `P(…)`.
 
+### Commandes sans argument
+
+`.aide`, `.exact`, `.décimal`, `.valeurs`, `.fonctions`, `.exporter` se lancent d'une seule Entrée
+(`runsAlone`). Depuis le retrait de `/cas` (2026-10-13) : `.valeurs` et `.fonctions` listent les
+cartes du panneau, en français (fonctions : `f′` et `f⁻¹` comprises, ni suites ni listes), et
+figurent dans `.aide` (rubrique « Réglages », décision de David du 2026-10-13) ;
+`.exporter` télécharge l'historique en JSON, comme le bouton, et refuse un argument (détail :
+[atelier.md](atelier.md#export-et-rejeu-de-lhistorique)).
+
 ## Transition
 
 - L'ancienne écriture reste acceptée **quand elle est sans ambiguïté** (`.intégrer x^2 0 1`, `.taylor sin(x) 5 0`).

@@ -58,6 +58,7 @@ toute nouvelle page publique qui n'est dans aucune des trois listes.
 | Exercice partagé                           | `/exercice/[slug]`                                 | Variantes, graine partageable, export PDF, solution ; le tuteur seulement pour un élève connecté. Indexé seulement si coché « Afficher sur Google » (sinon `noindex`)          | non (lien partagé)      | si coché |
 | Cahier de textes public                    | `/cahier/[token]`                                  | Séances et devoirs d'une classe, par lien                                                                                                                                      | non (lien du prof)      | non      |
 | Cours public                               | `/cours/[token]`                                   | Cours publié d'une classe (chapitres, documents, fiches, objectifs, séries), par lien                                                                                          | non (lien du prof)      | non      |
+| Figure géométrique partagée                | `/figures/[id]`                                    | Figure du prof, interactive (curseurs) ; titre, niveaux, description. Une figure privée ou inexistante rend la même 404. Toujours `noindex` (ADR 0027)                         | non (lien du prof)      | non      |
 | Le Trône Royal (Père Ubu)                  | `/pere-ubu`                                        | Père Ubu et ses répliques ; **son chat exige un compte** : un visiteur est invité à se connecter                                                                               | non                     | oui      |
 
 ## Avec un compte élève
@@ -110,7 +111,8 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 
 - Démos et pages de mise au point : `/demo/*`, `/geometry-demo/*`, `/construction-demo`,
   `/test-font`, `/test-cadres`, `/test-erreur`, `/blockly/playground`, `/slides/*`.
-- Héritages remplacés par l'Atelier : `/calc`, `/cas` ([atelier.md](atelier.md)).
+- Héritage remplacé par l'Atelier : `/calc` ([atelier.md](atelier.md)). `/cas` est retirée
+  (2026-10-13) : l'adresse mène à `/atelier`.
 - Routes sans lien ou en sommeil : `/tuteur`, `/calculatrice`, `/games/evoland`, Navadra,
   `/spreadsheet` ([jeux-et-economie.md](jeux-et-economie.md), [outils-prof.md](outils-prof.md)).
 - Tout `/dashboard/admin/*`.
@@ -244,6 +246,7 @@ Royaume, D19 par la chandelle qui se pose au bout d'une minute ; V14, C16, C17, 
 - Glossaire et Almanach : absents du menu (décision de David du 2026-10-12 : le menu garde
   Automaths et le Shtam, les plus vivants).
 - `/calc` reste au sitemap (avant le 2026-10-11) alors que « Ne pas mettre en avant » le range en
-  héritage remplacé par l'Atelier ; `/cas` et `/games/evoland` en sont exclus pour cette raison.
+  héritage remplacé par l'Atelier ; `/games/evoland` en est exclu pour cette raison (`/cas`,
+  retirée le 2026-10-13, n'est plus une page).
 - Accessibilité, tout le site : anneau de focus clair à 2:1 (D16), `muted-foreground` à 4,4:1 sur fonds
   teintés (D17), pas de lien d'évitement (D18).

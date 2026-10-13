@@ -152,7 +152,6 @@ const LOGIN_REQUIRED = 'renvoie un visiteur anonyme vers la connexion';
  */
 export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 	// « Ne pas mettre en avant » (docs/systeme/carte-des-fonctionnalites.md)
-	{ pattern: '/cas', reason: 'héritage remplacé par l’Atelier : ne pas mettre en avant' },
 	{ pattern: '/games/evoland', reason: 'jeu en sommeil, sans lien depuis /games' },
 	// Démos et mise au point
 	{ pattern: '/demo/**', reason: DEMO },
@@ -180,6 +179,10 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 	},
 	{ pattern: '/cahier/[token]/**', reason: 'cahier de textes ouvert par le jeton du professeur' },
 	{ pattern: '/cours/[token]/**', reason: 'cours d’une classe ouvert par le jeton du professeur' },
+	{
+		pattern: '/figures/[id]',
+		reason: 'figure géométrique partagée par lien, en noindex (ADR 0027)'
+	},
 	{ pattern: '/python-exercises/mine', reason: LOGIN_REQUIRED },
 	{ pattern: '/python-exercises/my-progress', reason: LOGIN_REQUIRED },
 	{ pattern: '/python-exercises/new', reason: LOGIN_REQUIRED },

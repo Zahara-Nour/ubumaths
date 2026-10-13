@@ -49,6 +49,12 @@ export const HISTORY_VERSION = 1;
 
 const EXTENSIONS: Readonly<Record<ExportFormat, string>> = { json: 'json', ubumark: 'md' };
 
+/**
+ * Historique vide : la raison des boutons désactivés (X1), et la réponse de
+ * `.exporter` tapé dans Calcul — la même, mot pour mot.
+ */
+export const NOTHING_TO_EXPORT = 'Rien à exporter pour l’instant.';
+
 /** Ce qui, en tête de ligne, ferait une liste, un titre, une citation ou un tableau. */
 const BLOCK_START = /^\s*([-+>#|]|\d+[.)])/;
 
@@ -62,6 +68,28 @@ const INLINE_MATH = /(\$[^$\n]+\$)/;
 /** `calcul-2026-10-05.json` */
 export function exportFileName(format: ExportFormat, now: Date): string {
 	return `calcul-${now.toISOString().slice(0, 10)}.${EXTENSIONS[format]}`;
+}
+
+/**
+ * Enregistrer l'historique dans un fichier, au format choisi (lot C).
+ *
+ * Un seul chemin pour le bouton de la vue ET pour `.exporter` tapé dans
+ * Calcul : le même fichier, le même nom.
+ */
+export function downloadHistory(entries: readonly Entry[], format: ExportFormat): void {
+	const now = new Date();
+	const content = format === 'json' ? historyToJson(entries, now) : historyToUbumark(entries, now);
+	const type = format === 'json' ? 'application/json' : 'text/markdown';
+	const url = URL.createObjectURL(new Blob([content], { type: `${type};charset=utf-8` }));
+	const link = document.createElement('a');
+	link.href = url;
+	link.download = exportFileName(format, now);
+	// Dans la page, et l'adresse libérée plus tard : Firefox et Safari ont
+	// annulé des téléchargements dont l'adresse disparaissait aussitôt (revue)
+	document.body.append(link);
+	link.click();
+	link.remove();
+	setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 /** L'historique pour le rejeu. Une ligne sans geste (ligne secondaire) est gardée, pour la lecture. */

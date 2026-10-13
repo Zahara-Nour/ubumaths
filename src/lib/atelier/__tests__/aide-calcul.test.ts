@@ -45,8 +45,6 @@ const DEV_COMMANDS = [
 	'empreinte',
 	'let',
 	'poser',
-	'vars',
-	'valeurs',
 	'unset',
 	'oublier',
 	'clear',
@@ -55,8 +53,6 @@ const DEV_COMMANDS = [
 	'définir',
 	"def'",
 	'dérivée-de',
-	'fns',
-	'fonctions',
 	'undef',
 	'oublier-fonction',
 	// `réciproque` n'est plus le nom de `inv` : c'est la vraie réciproque,
@@ -94,6 +90,13 @@ describe('`.aide` : une aide en français, pour un élève', () => {
 		expect(text).toMatch(/u\(n\+1\) = /);
 		expect(text).toContain('.mode exact');
 		expect(text).toContain('.mode décimal');
+	});
+
+	// David, 2026-10-13 : depuis qu'elles lisent le panneau, en français (retrait de /cas)
+	it('montre .valeurs et .fonctions aux élèves', () => {
+		const text = helpText();
+		expect(text).toContain('.valeurs');
+		expect(text).toContain('.fonctions');
 	});
 
 	it('ne liste aucune commande de développeur', () => {
