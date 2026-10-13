@@ -1,7 +1,7 @@
 /**
  * Règle « 6e ou avant » de la page de structure : quels niveaux reçoivent le
  * message sur les parenthèses (spécification C4,
- * `docs/wip/structure-expression-progress.md`).
+ * `docs/systeme/mathast/structure-expression.md`).
  */
 import { describe, expect, it } from 'vitest';
 import { GRADE_CODES } from '$lib/types/grades';

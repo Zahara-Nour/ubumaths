@@ -1,7 +1,7 @@
 /**
  * Structure d'une expression : l'arbre des sous-expressions vu par l'élève et
  * le LaTeX marqué qui permet d'en encadrer une au survol.
- * Spécification : `docs/wip/structure-expression-progress.md`.
+ * Spécification : `docs/systeme/mathast/structure-expression.md`.
  */
 export { buildStructure, structureFromLatex, type StructureOptions } from './build-structure';
 export { readingOf, readingPlainText, type Reading, type ReadingSegment } from './reading';

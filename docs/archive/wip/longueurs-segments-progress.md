@@ -3,7 +3,7 @@
 > **Chantier clos le 2026-10-12** (lots 1 à 6 en prod en v0.26.0, positivité #1221). Ce qui dure est
 > versé dans [convention-equivalence.md](../../systeme/mathast/convention-equivalence.md),
 > [mathast/README.md](../../systeme/mathast/README.md) et [exercices.md](../../systeme/exercices.md).
-> Préparé le 2026-10-11, suite de la [structure d'une expression](../../wip/structure-expression-progress.md) (Q18).
+> Préparé le 2026-10-11, suite de la [structure d'une expression](structure-expression-progress.md) (Q18).
 
 ## Le problème
 

@@ -2,7 +2,7 @@
  * Structure d'une expression — lecture en français (lot 2)
  * ========================================================
  *
- * Spécification : `docs/wip/structure-expression-progress.md`, section B
+ * Spécification : `docs/systeme/mathast/structure-expression.md`, section B
  * (B1-B15, accords, contractions). Trois familles de tests :
  * - le TEXTE de la lecture (formules rendues en texte brut, `-` → `−`) ;
  * - les MOTS du dictionnaire et leurs clés (identifiants `termId` du lexique) ;

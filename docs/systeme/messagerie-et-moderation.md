@@ -230,6 +230,19 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
    `private_messages` (et dans `messages` du chat) quand l'auteur n'a pas l'accès complet
    (`20261014110000_lecture_seule_garde_base.sql`). Test :
    `tests/integration/lecture-seule-garde-base.test.ts`.
+7. **Un message envoyé ne se réécrit plus** (décision de David, 2026-10-13) : `anon` et
+   `authenticated` n'ont plus le droit UPDATE sur `private_messages`, sauf la colonne
+   `deleted_by_sender` (« retirer de mes envoyés »). La policy « Senders can edit their
+   messages » reste le filtre « mes messages » ; une autre colonne est refusée en `42501`
+   (`20261016101500_messages_prives_non_modifiables.sql`). Test :
+   `tests/integration/messages-prives-non-modifiables.test.ts`.
+8. **Une ligne de boîte de réception ne se détourne pas** (décision de David, 2026-10-13) :
+   sur `message_inbox`, le destinataire ne change que ses marques. En direct, seulement `read_at`
+   et `deleted` ; statut, dossier et étoile passent par `update_message_status`,
+   `move_message_to_folder` et `toggle_message_star`. Changer `message_id` aurait ouvert la
+   lecture du message d'un autre, la policy SELECT de `private_messages` passant par
+   `message_inbox` (`20261016101600_boite_reception_non_detournable.sql`). Test :
+   `tests/integration/boite-reception-non-detournable.test.ts`.
 
 ### Frontière d'école
 
@@ -350,6 +363,8 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
   `src/lib/components/student-inbox/__tests__/`,
   `src/routes/(protected)/messages/inbox/__tests__/inbox-theme.svelte.test.ts`.
 - Intégration (Supabase local) : `tests/integration/option-b-messaging.test.ts`,
+  `messages-prives-non-modifiables.test.ts`,
+  `boite-reception-non-detournable.test.ts`,
   `message-group-recipients.test.ts`, `security-message-thread.test.ts`,
   `amities-non-forgeables.test.ts`, `notifications-systeme-serveur.test.ts`,
   `securite-points-mineurs.test.ts`, `archived-member-class-notifications.test.ts`,
@@ -387,9 +402,6 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
 - **Mentions factices dans l'éditeur riche.** `src/lib/stores/mentions.svelte.ts` propose une
   liste en dur (« Alice Dupont », « Bob Durand »…) ; l'extension `Mention` est active dans
   `editor-config.ts`. Aucune vraie personne, mais des noms inventés offerts à l'autocomplétion.
-- **Un expéditeur peut réécrire un message privé envoyé** : policy « Senders can edit their
-  messages » (UPDATE de `private_messages` sur `sender_id`, sans liste de colonnes). Aucun
-  écran ne le fait ; un appel direct le peut.
 
 ### Code mort ou sans appelant
 

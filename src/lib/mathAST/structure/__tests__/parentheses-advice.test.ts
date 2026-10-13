@@ -2,7 +2,7 @@
  * Structure d'une expression — règle « 6e ou avant » (lot 3)
  * =========================================================
  *
- * Spécification : `docs/wip/structure-expression-progress.md`, section C.
+ * Spécification : `docs/systeme/mathast/structure-expression.md`, section C.
  * L'enchaînement d'additions et de soustractions et les nombres relatifs
  * arrivent en 5e : avant, l'élève écrit les parenthèses.
  *
