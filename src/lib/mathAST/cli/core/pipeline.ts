@@ -7,8 +7,8 @@
  */
 
 import type { PipelineResult, PipelineError, InputFormat } from '../types';
-import type { LatexParserOptions } from '../../parser';
-import { parseLatexSafe } from '../../parser';
+import type { GenericFunctionConfig, LatexParserOptions } from '../../parser';
+import { DEFAULT_GENERIC_FUNCTIONS, parseLatexSafe } from '../../parser';
 import { parseCustomSafe } from '../../parser/custom';
 import { detectInputFormat } from './input-detector';
 import type { EvalState } from './eval-state';
@@ -68,6 +68,23 @@ export function getParserOptions(state?: EvalState): LatexParserOptions {
 			allowDerivatives: true,
 			allowInverse: true
 		}
+	};
+}
+
+/**
+ * Les fonctions que lit le parseur : les noms par défaut (f, g, h…) ET ceux liés
+ * dans l'état. Sans état, `undefined` : le défaut du parseur.
+ *
+ * ⚠️ Les deux parseurs, texte et LaTeX : seul le LaTeX recevait les noms liés,
+ * et le moteur ne transmettait pas son état — `.def k(x) = x+1` puis `k(0)`
+ * restait `k(0)` (2026-10-13).
+ */
+function genericFunctionsOf(state?: EvalState): GenericFunctionConfig | undefined {
+	const bound = getParserOptions(state).genericFunctions;
+	if (!bound) return undefined;
+	return {
+		...bound,
+		names: [...new Set([...DEFAULT_GENERIC_FUNCTIONS.names, ...bound.names])]
 	};
 }
 
@@ -212,8 +229,10 @@ export function parse(input: string, options?: PipelineOptions): PipelineResult 
 
 	// Parse based on detected format
 	if (detection.format === 'custom') {
+		const genericFunctions = genericFunctionsOf(options?.evalState);
 		const result = parseCustomSafe(withLogicOperators(trimmedInput, 'custom'), {
-			mode: 'tolerant'
+			mode: 'tolerant',
+			...(genericFunctions && { genericFunctions })
 		});
 
 		// Convert parser errors to pipeline errors
@@ -233,11 +252,11 @@ export function parse(input: string, options?: PipelineOptions): PipelineResult 
 	}
 
 	// Parse as LaTeX (default)
-	// Get parser options from evaluation state (includes generic function names)
-	const parserOptions = getParserOptions(options?.evalState);
+	// Les noms de fonctions liées dans l'état, en plus des noms par défaut
+	const genericFunctions = genericFunctionsOf(options?.evalState);
 	const result = parseLatexSafe(withLogicOperators(trimmedInput, 'latex'), {
 		mode: 'tolerant',
-		...parserOptions
+		...(genericFunctions && { genericFunctions })
 	});
 
 	// Convert parser errors to pipeline errors
