@@ -259,3 +259,10 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
   niveau de parties contenues (souris 0,2 em, tactile 0,3 em), curseur placé au même endroit
   relatif dans le champ. Vérifié Chromium et WebKit ; iPad émulé reconnu tactile. À juger par
   David, sur Mac et sur iPad.
+- 2026-10-13 — retour de David (« le drag ne marche plus », « problème avec les cadres ») : le
+  délai de 300 ms avant de déplacer cassait le geste naturel (appui puis mouvement) → retiré :
+  appui puis mouvement = déplacer, appui relâché sans bouger = curseur. Les marges verticales qui
+  grandissaient par niveau débordaient sur la barre de fraction → bordure par niveau à gauche et à
+  droite seulement. Tous les cadres à la fois devenaient illisibles → au survol, seulement ceux qui
+  contiennent la partie visée et ceux qu'elle contient (au doigt : tous). « Lourde » : 21 parties
+  sur 21 se glissent.
