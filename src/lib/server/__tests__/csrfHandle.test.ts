@@ -3,8 +3,8 @@
  * =============================
  *
  * Une écriture dont l'origine ne correspond pas à l'hôte est refusée en 403. Avant
- * 2026-10-13, le refus « Origin mismatch » était levé DANS le `try` qui analyse l'URL :
- * le `catch` le rattrapait et le relevait en « Invalid origin header ». Même statut,
+ * 2026-10-13, le refus « origine différente du site » était levé DANS le `try` qui analyse l'URL :
+ * le `catch` le rattrapait et le relevait en « origine illisible ». Même statut,
  * message trompeur pour qui lit les journaux.
  */
 import { describe, it, expect, vi } from 'vitest';
@@ -46,19 +46,27 @@ describe('csrfHandle', () => {
 		expect(await refus(event)).toBeNull();
 	});
 
-	it('une écriture d’une autre origine est refusée en « Origin mismatch »', async () => {
+	it('une écriture d’une autre origine est refusée en « origine différente du site »', async () => {
 		const event = evenement('POST', { origin: 'https://ailleurs.example', host: 'www.chiph.re' });
 		expect(await refus(event)).toEqual({
 			status: 403,
-			message: 'CSRF validation failed: Origin mismatch'
+			message: 'Requête refusée : origine différente du site'
 		});
 	});
 
-	it('une origine illisible est refusée en « Invalid origin header »', async () => {
+	it('une origine illisible est refusée en « origine illisible »', async () => {
 		const event = evenement('POST', { origin: 'pas une url', host: 'www.chiph.re' });
 		expect(await refus(event)).toEqual({
 			status: 403,
-			message: 'CSRF validation failed: Invalid origin header'
+			message: 'Requête refusée : origine illisible'
+		});
+	});
+
+	it('une origine sans hôte est refusée', async () => {
+		const event = evenement('POST', { origin: 'https://www.chiph.re' });
+		expect(await refus(event)).toEqual({
+			status: 403,
+			message: 'Requête refusée : origine ou hôte absent'
 		});
 	});
 

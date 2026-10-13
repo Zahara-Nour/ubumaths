@@ -37,23 +37,23 @@ export const csrfHandle: Handle = async ({ event, resolve }) => {
 		}
 
 		throw error(403, {
-			message: 'CSRF validation failed: Missing origin or host header'
+			message: 'Requête refusée : origine ou hôte absent'
 		});
 	}
 
 	// L'analyse de l'URL seule dans le `try` : un refus levé dedans serait rattrapé
-	// et ressortirait en « Invalid origin header » (écart C7).
+	// et ressortirait en « origine illisible » (écart C7).
 	let originHost: string;
 	try {
 		originHost = new URL(origin).host;
 	} catch {
 		throw error(403, {
-			message: 'CSRF validation failed: Invalid origin header'
+			message: 'Requête refusée : origine illisible'
 		});
 	}
 	if (originHost !== host) {
 		throw error(403, {
-			message: 'CSRF validation failed: Origin mismatch'
+			message: 'Requête refusée : origine différente du site'
 		});
 	}
 
