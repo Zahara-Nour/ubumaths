@@ -36,9 +36,11 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		result_limit: limit
 	});
 
+	// Une panne n'est pas « aucun résultat » : rendre 200 avec une liste vide
+	// faisait conclure à l'admin que l'élève n'existait pas.
 	if (searchError) {
 		logger.error('Search error:', searchError);
-		return json({ error: searchError.message, users: [] });
+		throw error(500, 'La recherche a échoué');
 	}
 
 	// Transform the result to match expected format

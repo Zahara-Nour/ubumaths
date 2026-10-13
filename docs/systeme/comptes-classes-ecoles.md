@@ -104,7 +104,8 @@ de 2nde de répondre une fois à la question d'âge.
 
 - Page `src/routes/(protected)/dashboard/admin/users/+page.svelte` (+ `+page.server.ts`). Elle
   appelle : `src/routes/api/admin/search-users/+server.ts` (fonction SQL `search_users_unaccent`,
-  3 caractères minimum), `src/routes/api/admin/search-users/pending/+server.ts`,
+  3 caractères minimum ; une panne de la fonction rend 500, et l'écran affiche « La recherche a
+  échoué » au lieu de « Aucun résultat trouvé » ; de même pour les comptes en attente), `src/routes/api/admin/search-users/pending/+server.ts`,
   `src/routes/api/admin/class-students/+server.ts`, `src/routes/api/admin/users/[id]/+server.ts`
   (PATCH : prénom, nom, rôle, école, `is_test`), `src/routes/api/admin/users/[id]/status/+server.ts`
   (approuver, refuser), et les routes d'adhésion ci-dessus.
@@ -327,6 +328,7 @@ Intégration (base locale, `pnpm test:integration`) :
 Validation des entrées (400 avant toute requête, puis écriture normalisée) :
 `src/routes/(protected)/dashboard/admin/{classes,schools,import-students}/__tests__/validation-entrees.test.ts`.
 Panne du serveur pendant l'import : `import-students/__tests__/panne-serveur.test.ts`.
+Panne de la recherche d'utilisateurs : `src/routes/api/admin/search-users/__tests__/panne.test.ts`.
 Aucun test trouvé pour : le reste de l'import d'élèves (profil existant, doublons), l'envoi du
 courriel de bienvenue, `add-to-class` et `remove-from-class`.
 
@@ -342,8 +344,6 @@ courriel de bienvenue, `add-to-class` et `remove-from-class`.
 
 Constatés le 2026-10-13, **non corrigés**.
 
-- **`search-users` masque les pannes** : une erreur de `search_users_unaccent` rend 200 avec
-  `users: []`, comme « aucun résultat ».
 - **Code mort** : `getClassStudents` et `getClassStudentCount` (`students.ts`) ;
   `schoolFormSchema`, `createNotificationFormSchema` (`validation/admin.ts`, utilisés seulement par
   les tests) ; `createClassSchema`, `updateClassSchema`, `getClassStudentsSchema`
