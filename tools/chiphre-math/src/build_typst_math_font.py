@@ -12,8 +12,10 @@ and writes that table:
 - letters: Math-Italic → math italic code points (U+1D434…, ℎ, Greek, π),
   Main-Regular → upright letters, digits, operators, punctuation, Greek capitals;
   AMS → ℕ ℤ ℚ ℝ ℂ (the \\mathbb letters), ⩽ ⩾ and every other AMS symbol missing
-  from Main; ≠ = « = » and the slash of \\not; Caligraphic → math script
-  capitals (U+1D49C…, ℬ ℰ ℱ ℋ ℐ ℒ ℳ ℛ: Typst's cal());
+  from Main; ≠ = « = » and the slash of \\not; · (Typst's dot.c) = ⋅; ″ ‴ = the
+  prime twice, three times (Typst merges f'' and f'''); Caligraphic → math script
+  capitals (U+1D49C…, ℬ ℰ ℱ ℋ ℐ ℒ ℳ ℛ: Typst's cal()); Shantell Sans → accented
+  letters and punctuation, for the text written in a formula;
 - sizes: the glyph of Main (or Size1 for the big operators), then Size1 to
   Size4, become the vertical variants of ( [ { | ⟨ ⌈ ⌊ / √ ∑ ∏ ∐ ∫ ∬ ∭;
 - stacked pieces: the Size4 pieces (⎛ ⎜ ⎝…, ⎷ U+E000 U+E001) and the Size1
@@ -24,7 +26,8 @@ and writes that table:
 Every glyph is redrawn without hinting; the result is OFL like its sources.
 Output: static/fonts/chiphre-math-typst/ChiphreMath.ttf, plus the text font of the
 PDF: Shantell Sans Light and Bold, rebuilt from their instances (fonts/input/)
-under one family name, « Shantell Sans » (see write_text_fonts).
+under one family name, « Shantell Sans » (see write_text_fonts), with the Greek
+letters of Main and the superscript letters of ordinals (ᵉ ʳ ᵈ…) added.
 """
 
 from __future__ import annotations
@@ -36,6 +39,8 @@ from typing import Dict, List, Optional, Tuple
 from fontTools.fontBuilder import FontBuilder as OpenTypeFontBuilder
 from fontTools.otlLib.builder import buildMathTable
 from fontTools.pens.boundsPen import BoundsPen
+from fontTools.pens.recordingPen import DecomposingRecordingPen
+from fontTools.pens.transformPen import TransformPen
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib import TTFont, newTable
 
@@ -62,6 +67,20 @@ SOURCES = {
     "S3": "KaTeX_Size3-Regular",
     "S4": "KaTeX_Size4-Regular",
 }
+# Shantell Sans, d'où viennent les lettres de Main : ses lettres accentuées et sa
+# ponctuation, pour le texte écrit dans une formule (`"d'après…"`)
+SHANTELL_SOURCE = "Sh"
+SHANTELL_RANGES = [(0x00A0, 0x024F), (0x2010, 0x203A)]
+# Lettres en exposant des ordinaux (« 1ᵉʳ », « 10ᵉ », « 2ᵈ »), absentes de Shantell :
+# point de code -> lettre réduite
+SUPERSCRIPT_LETTERS = {0x1D49: "e", 0x02B3: "r", 0x1D48: "d", 0x02E2: "s", 0x1D50: "m",
+                       0x207F: "n", 0x1D52: "o"}
+# Réduction et hauteur du bas des lettres en exposant (celles des chiffres ² ³ de Shantell)
+SUPERSCRIPT_SCALE = 0.6
+SUPERSCRIPT_BOTTOM = 400
+# Grec de la police de texte : celui de Main (minuscules et capitales, tracées à la main
+# de Shantell par greek_letters.py) ; Shantell Sans n'en a pas
+GREEK_RANGE = (0x0391, 0x03C9)
 
 # Constantes MATH : celles de Computer Modern (les métriques KaTeX), en unités pour 1000/em
 CONSTANTS = {
@@ -170,9 +189,30 @@ def math_script_codepoint(char: str) -> int:
     return SCRIPT_EXCEPTIONS.get(char, 0x1D49C + ord(char) - ord("A"))
 
 
+def outline(glyph_set, glyph_name: str, transform=(1, 0, 0, 1, 0, 0)):
+    """Contour d'un glyphe, composants décomposés (les lettres accentuées de Shantell
+    sont faites de la lettre et de l'accent)."""
+    recording = DecomposingRecordingPen(glyph_set)
+    glyph_set[glyph_name].draw(recording)
+    pen = TTGlyphPen(None)
+    recording.replay(TransformPen(pen, transform))
+    glyph = pen.glyph()
+    glyph.recalcBounds(None)
+    return glyph
+
+
+def superscript_letter(glyph_set, glyph_name: str):
+    """Lettre réduite et remontée, comme les chiffres ² ³ de Shantell."""
+    bounds = BoundsPen(glyph_set)
+    glyph_set[glyph_name].draw(bounds)
+    dy = SUPERSCRIPT_BOTTOM - SUPERSCRIPT_SCALE * bounds.bounds[1]
+    return outline(glyph_set, glyph_name, (SUPERSCRIPT_SCALE, 0, 0, SUPERSCRIPT_SCALE, 0, dy))
+
+
 class FontBuilder:
     def __init__(self) -> None:
         self.sources = {key: TTFont(SOURCE_DIR / f"{name}.woff2") for key, name in SOURCES.items()}
+        self.sources[SHANTELL_SOURCE] = TTFont(INPUT_DIR / "shantell-sans-300.ttf")
         self.base = TTFont(SOURCE_DIR / "KaTeX_Main-Regular.woff2")
         self.glyphs: Dict[str, object] = {".notdef": self.base["glyf"][".notdef"]}
         self.metrics: Dict[str, Tuple[int, int]] = {".notdef": self.base["hmtx"][".notdef"]}
@@ -188,10 +228,7 @@ class FontBuilder:
         name = f"{source}.{source_name}"
         if name in self.glyphs:
             return name
-        pen = TTGlyphPen(None)
-        font.getGlyphSet()[source_name].draw(pen)
-        glyph = pen.glyph()
-        glyph.recalcBounds(None)
+        glyph = outline(font.getGlyphSet(), source_name)
         self.glyphs[name] = glyph
         self.metrics[name] = (font["hmtx"][source_name][0], getattr(glyph, "xMin", 0))
         self.order.append(name)
@@ -215,6 +252,25 @@ class FontBuilder:
         glyph.recalcBounds(None)
         self.glyphs[name] = glyph
         self.metrics[name] = (font["hmtx"][cmap[parts[0]]][0], getattr(glyph, "xMin", 0))
+        self.order.append(name)
+        self.cmap[codepoint] = name
+
+    def repeat(self, codepoint: int, name: str, source: str, part: int, count: int) -> None:
+        """Glyphe fait d'un glyphe répété côte à côte (″ ‴ : le prime deux ou trois fois,
+        comme Typst écrit f'' et f''')."""
+        font = self.sources[source]
+        glyph_set = font.getGlyphSet()
+        part_name = font.getBestCmap()[part]
+        bounds = BoundsPen(glyph_set)
+        glyph_set[part_name].draw(bounds)
+        step = round((bounds.bounds[2] - bounds.bounds[0]) * 1.15)
+        pen = TTGlyphPen(None)
+        for index in range(count):
+            glyph_set[part_name].draw(TransformPen(pen, (1, 0, 0, 1, index * step, 0)))
+        glyph = pen.glyph()
+        glyph.recalcBounds(None)
+        self.glyphs[name] = glyph
+        self.metrics[name] = (font["hmtx"][part_name][0] + (count - 1) * step, getattr(glyph, "xMin", 0))
         self.order.append(name)
         self.cmap[codepoint] = name
 
@@ -247,6 +303,15 @@ class FontBuilder:
         self.map(ord("△"), "AMS")
         # ≠ : KaTeX n'a pas ce caractère, MathLive superpose « = » et le trait de \\not
         self.compose(0x2260, "Main.notequal", "Main", [ord("="), 0xE020])
+        # · (U+00B7) : Typst l'écrit pour dot.c (u · v) ; même dessin que ⋅ (\\cdot)
+        self.cmap[0x00B7] = self.cmap[0x22C5]
+        # ″ ‴ : Typst fusionne f'' et f''' en un seul caractère
+        self.repeat(0x2033, "Main.second", "Main", 0x2032, 2)
+        self.repeat(0x2034, "Main.third", "Main", 0x2032, 3)
+        # Lettres accentuées et ponctuation de Shantell, pour le texte d'une formule
+        for codepoint in self.sources[SHANTELL_SOURCE].getBestCmap():
+            if any(low <= codepoint <= high for low, high in SHANTELL_RANGES) and codepoint not in self.cmap:
+                self.map(codepoint, SHANTELL_SOURCE)
         # Les grands opérateurs n'existent qu'en Size1-2 : la taille en ligne est le glyphe de base
         for char in BIG_OPERATORS:
             self.map(ord(char), "S1")
@@ -346,21 +411,44 @@ def write_text_fonts() -> None:
     ordre, mêmes métriques, mêmes tables de crénage et de ligatures), elles
     sont acceptées.
     """
+    main = TTFont(SOURCE_DIR / "KaTeX_Main-Regular.woff2")
+    main_glyphs = main.getGlyphSet()
     for source, (published, style) in TEXT_FONTS.items():
         font = TTFont(INPUT_DIR / source)
-        order = font.getGlyphOrder()
+        order = list(font.getGlyphOrder())
         glyph_set = font.getGlyphSet()
         glyphs = {}
         for glyph_name in order:
             pen = TTGlyphPen(glyph_set)
             glyph_set[glyph_name].draw(pen)
             glyphs[glyph_name] = pen.glyph()
+        cmap = dict(font.getBestCmap())
+        metrics = {glyph_name: font["hmtx"][glyph_name] for glyph_name in order}
+
+        # Ajouts, en fin de liste (les tables de crénage et de ligatures gardent leurs glyphes)
+        def add(codepoint: int, glyph, advance: int) -> None:
+            glyph_name = f"uni{codepoint:04X}"
+            order.append(glyph_name)
+            glyphs[glyph_name] = glyph
+            metrics[glyph_name] = (advance, getattr(glyph, "xMin", 0))
+            cmap[codepoint] = glyph_name
+
+        # Lettres en exposant des ordinaux
+        for codepoint, letter in SUPERSCRIPT_LETTERS.items():
+            if codepoint not in cmap:
+                letter_name = cmap[ord(letter)]
+                advance = round(font["hmtx"][letter_name][0] * SUPERSCRIPT_SCALE) + 20
+                add(codepoint, superscript_letter(glyph_set, letter_name), advance)
+        # Grec (légende « μ = 7/2 ; σ ≈ 1,708 » d'une simulation)
+        for codepoint, main_name in main.getBestCmap().items():
+            if GREEK_RANGE[0] <= codepoint <= GREEK_RANGE[1] and codepoint not in cmap:
+                add(codepoint, outline(main_glyphs, main_name), main["hmtx"][main_name][0])
 
         builder = OpenTypeFontBuilder(font["head"].unitsPerEm, isTTF=True)
         builder.setupGlyphOrder(order)
-        builder.setupCharacterMap(font.getBestCmap())
+        builder.setupCharacterMap(cmap)
         builder.setupGlyf(glyphs)
-        builder.setupHorizontalMetrics({glyph_name: font["hmtx"][glyph_name] for glyph_name in order})
+        builder.setupHorizontalMetrics(metrics)
         hhea = font["hhea"]
         builder.setupHorizontalHeader(ascent=hhea.ascent, descent=hhea.descent, lineGap=hhea.lineGap)
         builder.setupNameTable(
