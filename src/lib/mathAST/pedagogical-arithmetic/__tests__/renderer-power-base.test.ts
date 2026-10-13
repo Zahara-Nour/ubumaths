@@ -38,18 +38,18 @@ describe('renderWithHighlights - base de puissance à parenthéser', () => {
 		const latex = renderedBefore(
 			MathAST.power(MathAST.opposite(MathAST.number('2')), MathAST.number('3'))
 		);
-		expect(latex).toContain('\\left(-2\\right)^{3}');
+		expect(latex).toContain('\\left( -2 \\right)^3');
 	});
 
 	it('(2^3)^2 garde ses parenthèses', () => {
 		const latex = renderedBefore(
 			MathAST.power(MathAST.power(MathAST.number('2'), MathAST.number('3')), MathAST.number('2'))
 		);
-		expect(latex).toContain('\\left(2^{3}\\right)^{2}');
+		expect(latex).toContain('\\left( 2^3 \\right)^2');
 	});
 
-	it('2^3 reste 2^{3}', () => {
+	it('2^3 reste 2^3', () => {
 		const latex = renderedBefore(MathAST.power(MathAST.number('2'), MathAST.number('3')));
-		expect(latex).toContain(' 2^{3} +');
+		expect(latex).toContain(' 2^3 +');
 	});
 });

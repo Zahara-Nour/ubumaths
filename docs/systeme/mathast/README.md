@@ -731,6 +731,23 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   répond `D = …` écrit par ce même `domainToLatex`, et branche ces étapes derrière sa propre garde
   (`src/lib/atelier/domain-steps.ts`, voir [atelier.md](../atelier.md)) ; l'oracle du domaine
   (`domain/__tests__/oracle/oracle.test.ts`) lit cette réponse texte, `D = ℝ \ {1/2}`.
+- **Calcul numérique : une opération par étape au collège** (`pedagogical-arithmetic/`,
+  décisions de David du 2026-10-14). Plus aucun sous-calcul avalé sous « On calcule »
+  (`evaluate-final`) quand une règle existe : `(-3)^2 = (-3) \times (-3) = 9`
+  (`expand-small-power` accepte une base négative, et passe avant les multiplications : priorité 105) ; `5 - (-3) = 5 + 3` (`subtract-negative`) ; `-(-3) = 3` (`opposite-of-opposite`) ;
+  `1 + \frac34 = \frac44 + \frac34` (`integer-to-fraction`) ; `\frac12 \times 2 = \frac22`
+  (`multiply-fraction-by-integer`, aussi au lycée). Une fraction littérale (`\frac34`) n'est pas
+  un calcul : le regroupement « multiplications d'abord » ne la compte ni ne la colore
+  (`isGroupableMulDivTerm`). `\sqrt{9}` se titre « $9 = 3^2$, donc $\sqrt{9} = 3$ » (plus
+  « on extrait le facteur carré parfait »). Le pipeline retire d'entrée les parenthèses autour
+  d'un nombre (les règles ne voient pas au travers) et écrit le produit `\times` (plus
+  d'astérisque `3*(-2)`) ; le renderer écrit **les deux lignes** de l'étape par le même
+  parcours, qui parenthèse un facteur négatif des deux côtés (`(-3) \times (-3)`) et remplace
+  la juxtaposition devant un nombre (`2 \times 1`, pas `2 1`). Un **dénominateur nul** lève
+  `PedagogicalArithmeticDivisionByZero` (message en français) au lieu d'un arrêt silencieux ;
+  `generateCorrection` l'attrape comme toute erreur et laisse la question sans étapes. Le lycée
+  garde son niveau de détail (règles nouvelles au collège seulement, sauf le produit
+  fraction × entier). Tests : `pedagogical-arithmetic/__tests__/college-une-operation-par-etape.test.ts`.
 - La résolution d'équation pédagogique ne rejoue **pas** le solveur algorithmique : elle
   suit ce que l'élève fait sur papier (`pedagogical-solve/`). Paliers : 1 (équation du
   1er degré), 2a (inéquation du 1er degré), 2b (inéquation du 2nd degré), 3 (inéquation

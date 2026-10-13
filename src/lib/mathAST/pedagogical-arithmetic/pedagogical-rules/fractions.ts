@@ -280,6 +280,124 @@ export const toCommonDenominatorMultiply: PedagogicalArithmeticRule = {
 	}
 };
 
+/**
+ * Fraction écrite `\frac{a}{b}` (entiers) qui n'est pas un quotient entier :
+ * `\frac34` oui, `\frac{12}{3}` non (c'est une division à faire, la règle
+ * `evaluateBinaryDiv` s'en charge), `12 ÷ 3` non plus.
+ */
+function asProperFractionLiteral(node: MathNode): { n: bigint; d: bigint } | null {
+	const inner = isOpposite(node) ? node.operand : node;
+	if (!isDivision(inner) || inner.displayStyle !== 'fraction') return null;
+	const f = asIntegerFraction(node);
+	if (!f || f.n % f.d === 0n) return null;
+	return f;
+}
+
+// =============================================================================
+// integerToFraction (priority 130, collège)
+// =============================================================================
+
+/**
+ * `n + a/b → (n·b)/b + a/b` (et `a/b + n`) : l'entier s'écrit avec le
+ * dénominateur de la fraction, puis `addSameDenominator` additionne. Sans
+ * elle, `1 + \frac34` tombait d'un bloc sous « On calcule » (décision de
+ * David, 2026-10-14 : pas de dénominateur commun avalé au collège).
+ */
+function applyIntegerToFraction(
+	bindings: MatchBindings
+): { result: MathNode; integer: bigint; d: bigint } | null {
+	const left = bindingNode(bindings, 'l');
+	const right = bindingNode(bindings, 'r');
+	if (!left || !right) return null;
+	const li = asInteger(left);
+	const ri = asInteger(right);
+	const lf = asProperFractionLiteral(left);
+	const rf = asProperFractionLiteral(right);
+	if (li !== null && rf) {
+		return {
+			result: add(unreducedFractionNode(li * rf.d, rf.d), right),
+			integer: li,
+			d: rf.d
+		};
+	}
+	if (lf && ri !== null) {
+		return {
+			result: add(left, unreducedFractionNode(ri * lf.d, lf.d)),
+			integer: ri,
+			d: lf.d
+		};
+	}
+	return null;
+}
+
+export const integerToFraction: PedagogicalArithmeticRule = {
+	name: 'integer-to-fraction',
+	rule: createRule(
+		P.parse('l + r'),
+		(bindings) =>
+			applyIntegerToFraction(bindings)?.result ?? (bindingNode(bindings, 'l') as MathNode),
+		{
+			name: 'integer-to-fraction',
+			condition: (bindings) => applyIntegerToFraction(bindings) !== null
+		}
+	),
+	applicableLevels: ['college'],
+	priority: 130,
+	descriptions: {
+		college: (b) => {
+			const left = b.l;
+			const right = b.r;
+			const integer = left && asInteger(left) !== null ? left : right;
+			const fraction = integer === left ? right : left;
+			const f = fraction ? asProperFractionLiteral(fraction) : null;
+			if (!integer || !f) return 'On écrit le nombre entier sous forme de fraction';
+			return `On écrit $${toLatex(integer)}$ sous forme de fraction de dénominateur $${f.d}$`;
+		}
+	},
+	explanations: {
+		college: () =>
+			'Pour ajouter un entier et une fraction, on écrit l’entier avec le même dénominateur que la fraction.'
+	}
+};
+
+// =============================================================================
+// multiplyFractionByInteger (priority 110)
+// =============================================================================
+
+/** `(a/b) × n → (a·n)/b` (et `n × (a/b)`), sans réduction. */
+function applyMultiplyFractionByInteger(bindings: MatchBindings): MathNode | null {
+	const left = bindingNode(bindings, 'l');
+	const right = bindingNode(bindings, 'r');
+	if (!left || !right) return null;
+	const lf = asProperFractionLiteral(left);
+	const rf = asProperFractionLiteral(right);
+	const li = asInteger(left);
+	const ri = asInteger(right);
+	if (lf && ri !== null) return unreducedFractionNode(lf.n * ri, lf.d);
+	if (li !== null && rf) return unreducedFractionNode(li * rf.n, rf.d);
+	return null;
+}
+
+export const multiplyFractionByInteger: PedagogicalArithmeticRule = {
+	name: 'multiply-fraction-by-integer',
+	rule: createRule(
+		P.parse('l * r'),
+		(bindings) =>
+			applyMultiplyFractionByInteger(bindings) ?? (bindingNode(bindings, 'l') as MathNode),
+		{
+			name: 'multiply-fraction-by-integer',
+			condition: (bindings) => applyMultiplyFractionByInteger(bindings) !== null
+		}
+	),
+	applicableLevels: ['college', 'lycee', 'superieur'],
+	priority: 110,
+	descriptions: {
+		college: () => 'On multiplie le numérateur par le nombre entier',
+		lycee: () => 'Produit par un entier',
+		superieur: () => '×'
+	}
+};
+
 // =============================================================================
 // multiplyFractions (priority 110)
 // =============================================================================
@@ -413,8 +531,10 @@ export const FRACTION_RULES: readonly PedagogicalArithmeticRule[] = [
 	toCommonDenominator,
 	toCommonDenominatorMultiply,
 	divideFractions,
+	integerToFraction,
 	addSameDenominator,
 	multiplyFractions,
+	multiplyFractionByInteger,
 	reduceFraction
 ];
 

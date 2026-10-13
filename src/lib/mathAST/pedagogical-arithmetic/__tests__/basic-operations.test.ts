@@ -258,8 +258,8 @@ describe('basic-operations rules', () => {
 	});
 
 	describe('BASIC_OPERATION_RULES export', () => {
-		it('contains all 11 rules', () => {
-			expect(BASIC_OPERATION_RULES).toHaveLength(11);
+		it('contains all 13 rules (incl. subtractNegative, oppositeOfOpposite)', () => {
+			expect(BASIC_OPERATION_RULES).toHaveLength(13);
 		});
 
 		it('first item is groupParentheses (highest priority among basic ops)', () => {
