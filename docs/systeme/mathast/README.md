@@ -241,6 +241,21 @@ développement `\ln(ax)` → ln a + ln x, valable pour a > 0 seulement. `filterS
 Tests : `solve/__tests__/parametre-litteral.test.ts` (vérification numérique pour plusieurs
 valeurs du paramètre).
 
+Écart V40 (2026-10-13) : **valeur absolue d'une expression affine**. `tryAbsoluteValue`
+(`solve/absolute-value.ts`), premier repli après la classification, remplace la valeur absolue
+par une lettre neuve t, résout en t (premier degré, sans autre lettre : `2\left|x\right| = 6`,
+`|x + 1| − 2 = 0`, `5 − |x| = 2` isolent |u| = c), lit le signe de c avec `constantSign`
+(c < 0 → ∅, c = 0 → u = 0, c > 0 → u = c ou u = −c) ; |u| = |v| (forme a(|u| − |v|) = 0) donne
+u = v ou u = −v, identité comprise (`|x − 1| = |1 − x|` → tout réel). Avant, `|x| = 3`,
+`|x| = \pi`, `|x| = \ln 2` répondaient « Type d'equation non supporte: unknown ». Refusés
+(rend la main) : u non affine (`|x^2 − 1| = 3`), l'inconnue hors de la valeur absolue
+(`|x| = x + 1`), un paramètre (`|x| = a`), deux valeurs absolues hors de |u| = |v|. Effet de
+bord juste : les décompositions qui rappellent `solve` (`\ln|x| = 1`, `\sqrt{|x|} = 2`) et les
+inéquations affines (`|x| < 3`, tableau de signes de |u| − c une fois ses zéros trouvés) se
+concluent. ⚠️ Le parseur refuse un coefficient collé à `|` (`2|x|`, « Unexpected token: | ») ;
+`2\left|x\right|` se lit. Pas d'étapes rédigées (`pedagogical-solve` ne connaît pas la valeur
+absolue). Tests : `solve/__tests__/valeur-absolue.test.ts`.
+
 ### Carte du code
 
 | Fichier              | Rôle                                                                                                                                                                                                                                                              |

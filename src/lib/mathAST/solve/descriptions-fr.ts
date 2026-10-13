@@ -85,6 +85,10 @@ export type SolvingRule =
 	// Exp/log recursive decomposition
 	| 'exp-log-recursive-decomposition'
 	| 'equal-exponentials'
+	// Valeur absolue (|u| = c, |u| = |v|)
+	| 'absolute-value'
+	| 'absolute-value-negative'
+	| 'equal-absolute-values'
 	// Changement de variable (u = sin x, cos x, tan x, ln x, eˣ)
 	| 'change-of-variable'
 	| 'change-of-variable-back'
@@ -186,6 +190,12 @@ const RULE_DESCRIPTIONS: Record<SolvingRule, string> = {
 	'exp-log-recursive-decomposition':
 		'On decompose en resolvant f(x) = u pour chaque u-valeur exponentielle/logarithmique',
 	'equal-exponentials': "L'exponentielle est injective : e^A = e^B equivaut a A = B",
+
+	// Valeur absolue
+	'absolute-value': '|A| = c, avec c ≥ 0, équivaut à A = c ou A = −c',
+	'absolute-value-negative':
+		"Une valeur absolue est positive : |A| = c, avec c < 0, n'a pas de solution",
+	'equal-absolute-values': '|A| = |B| équivaut à A = B ou A = −B',
 
 	// Changement de variable
 	'change-of-variable': 'On pose u pour ramener a une equation polynomiale en u',

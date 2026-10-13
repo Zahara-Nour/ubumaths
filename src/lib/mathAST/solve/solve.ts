@@ -125,6 +125,7 @@ import {
 } from '../domain/algebra';
 import { formatInterval } from '../domain/format';
 import { reservedVariableRefusal } from '../common/reserved-letters';
+import { tryAbsoluteValue } from './absolute-value';
 import { applyRules, RuleIterationLimitError } from '../pattern/rule';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
@@ -2339,7 +2340,13 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	// Avant elle, le changement de variable (u = sin x, cos x, tan x, ln x,
 	// eˣ) : `sin²x = 1/4` revenait « non supporte ». Lui aussi en repli : une
 	// équation déjà résolue garde sa résolution.
-	// P/c = 0, c constante non nulle (π, e, π + 1) : P = 0. Premier
+	// |u| = c et |u| = |v|, u et v affines : premier repli (écart V40 :
+	// `|x| = π` revenait « non supporte ») — voir `absolute-value.ts`
+	if (isSolverFailure(result)) {
+		const absolute = tryAbsoluteValue(expr, variable, opts, solve);
+		if (absolute) result = absolute;
+	}
+	// P/c = 0, c constante non nulle (π, e, π + 1) : P = 0. Deuxième
 	// repli : écart V37, `x < 2/π` mis sous la forme (πx − 2)/π < 0.
 	if (isSolverFailure(result)) {
 		const numeratorOnly = tryConstantDenominator(expr, variable, opts);
