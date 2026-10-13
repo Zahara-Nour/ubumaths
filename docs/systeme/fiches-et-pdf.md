@@ -199,7 +199,9 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
   section, eux aussi mélangés entre eux, toujours après) ; numérotation continue dans l'ordre
   affiché. La copie du prof le porte dans `exercise_order` (indices dans `exercises`, absent sans
   mélange : empreinte identique) ; l'API élève et l'aperçu d'affectation servent `exercises` dans
-  l'ordre de la copie avec `shuffled: true`, que suivent l'écran de l'élève
+  l'ordre de la copie avec `shuffled: true` (ordre tiré sur toutes les lignes de la fiche, AVANT
+  d'écarter un exercice orphelin, comme la copie du prof ; sections illisibles sur une fiche mélangée
+  → 500 plutôt qu'un ordre faux), que suivent l'écran de l'élève
   (`groupExercisesForDisplay(…, { preserveExerciseOrder })`) et son PDF (`documentFromStudentView`).
   Hors affectation (page de la fiche, aperçu, lot ZIP, cahier ou cours publics) : ordre des
   positions. Réaffecter → autre tirage. `shuffle_within_sections` n'est lu par aucun chemin
@@ -222,7 +224,7 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
 
 Tests : `src/lib/worksheets/__tests__/student-copy.test.ts`, `worksheet-copy.test.ts`,
 `worksheet-copy-ordre.test.ts` (mélange), `copie.test.ts` des trois routes, `ordre.test.ts` de
-l'aperçu d'affectation (API élève et aperçu), `PdfPreview-copie.svelte.test.ts`, `tests/integration/worksheet-assignment-guidance-level.test.ts`.
+l'aperçu d'affectation (API élève et aperçu), `ordre-melange.svelte.test.ts` (écran de l'élève), `PdfPreview-copie.svelte.test.ts`, `tests/integration/worksheet-assignment-guidance-level.test.ts`.
 
 ## La production PDF
 
