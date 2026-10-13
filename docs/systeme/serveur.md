@@ -261,7 +261,7 @@ travail périodique vit dans **pg_cron**, programmé **hors migrations** (le bas
 | `weekly-best-bonuses`               | `0 0,12 * * *` | `run_weekly_best_bonuses()`                   |
 | `recalculate-minesweeper-ref-times` | `30 1 * * 0`   | `run_recalculate_minesweeper_ref_times()`     |
 
-Déclenchement manuel : page `/dashboard/admin/cron` → `api/admin/cron/trigger` (`requireAdmin`, mot `LANCER`, liste blanche `ALLOWED_JOB_PATHS` dans `src/lib/server/validation/cron.ts`) ; historique : `api/admin/cron/jobs`.
+Déclenchement manuel : page `/dashboard/admin/cron` → `api/admin/cron/trigger` (`requireAdmin`, mot `LANCER`, liste blanche `ALLOWED_JOB_PATHS` dans `src/lib/server/validation/cron.ts`) ; l'appel d'une tâche HTTP porte `Origin` (sans elle, le contrôle CSRF de `hooks.server.ts` refusait le POST en prod, corrigé le 2026-10-13) ; historique : `api/admin/cron/jobs`.
 
 Côté GitHub Actions (planifiés, hors application) : `.github/workflows/production-health.yml` (06:00 UTC, pages publiques de prod), `.github/workflows/nightly-integration.yml`, `.github/workflows/nightly-pyodide.yml`, `.github/workflows/codeql.yml`.
 

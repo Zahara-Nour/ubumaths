@@ -186,9 +186,10 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 			logger.error('Fichiers du compte non tous retirés, repris par le cron', { userId });
 		}
 
-		// Step 8: Update audit entry with success
+		// Step 8: Update audit entry with success. Une ligne restée sans `completed` ne
+		// serait jamais reprise par le cron des fichiers : l'échec se journalise.
 		if (auditId) {
-			await serviceClient
+			const { error: finalAuditError } = await serviceClient
 				.from('account_deletion_audit')
 				.update({
 					user_id: null, // Anonymize - user no longer exists
@@ -198,6 +199,9 @@ export const DELETE: RequestHandler = async ({ request, locals, getClientAddress
 					...(removal.ok ? { storage_removed_at: new Date().toISOString() } : {})
 				})
 				.eq('id', auditId);
+			if (finalAuditError) {
+				logger.error('Audit de suppression non finalisé', { auditId, error: finalAuditError });
+			}
 		}
 
 		logger.info('Account deletion completed successfully', { userId });
