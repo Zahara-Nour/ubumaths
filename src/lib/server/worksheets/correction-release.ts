@@ -13,6 +13,9 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { WorksheetAssignmentRow, CorrectionReleaseMode } from '$lib/types/worksheets';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/worksheets/correction-release');
 
 // ============================================================================
 // TYPES
@@ -69,7 +72,7 @@ async function getAllAssignmentStudentIds(
 		.eq('assignment_id', assignmentId);
 
 	if (classAssignmentsError) {
-		console.error(
+		logger.error(
 			'[correction-release] Classes de l’affectation illisibles :',
 			classAssignmentsError
 		);
@@ -88,7 +91,7 @@ async function getAllAssignmentStudentIds(
 			.eq('status', 'active');
 
 		if (classMembersError) {
-			console.error('[correction-release] Membres de classe illisibles :', classMembersError);
+			logger.error('[correction-release] Membres de classe illisibles :', classMembersError);
 			throw new Error(classMembersError.message);
 		}
 
@@ -107,7 +110,7 @@ async function getAllAssignmentStudentIds(
 		.eq('assignment_id', assignmentId);
 
 	if (individualStudentsError) {
-		console.error(
+		logger.error(
 			'[correction-release] Affectations individuelles illisibles :',
 			individualStudentsError
 		);
@@ -133,7 +136,7 @@ async function isUserAdmin(supabase: SupabaseClient, userId: string): Promise<bo
 	// une panne de lecture doit laisser une trace : sans elle, le refus est
 	// indiscernable d'un refus légitime.
 	if (error) {
-		console.error('[correction-release] Rôle illisible :', error);
+		logger.error('[correction-release] Rôle illisible :', error);
 		return false;
 	}
 
@@ -472,13 +475,13 @@ export async function getCorrectionReleaseStatus(
 			.single();
 
 		if (assignmentError || !assignment) {
-			console.error('[getCorrectionReleaseStatus] Assignment fetch error:', assignmentError);
+			logger.error('[getCorrectionReleaseStatus] Assignment fetch error:', assignmentError);
 			return null;
 		}
 
 		// Validate required fields before casting
 		if (!assignment.correction_release_mode || !assignment.status) {
-			console.error('[getCorrectionReleaseStatus] Missing required fields:', {
+			logger.error('[getCorrectionReleaseStatus] Missing required fields:', {
 				correction_release_mode: assignment.correction_release_mode,
 				status: assignment.status
 			});
@@ -515,7 +518,7 @@ export async function getCorrectionReleaseStatus(
 			totalStudents
 		};
 	} catch (err) {
-		console.error('[getCorrectionReleaseStatus] Unexpected error:', err);
+		logger.error('[getCorrectionReleaseStatus] Unexpected error:', err);
 		return null;
 	}
 }

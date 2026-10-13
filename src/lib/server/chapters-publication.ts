@@ -21,6 +21,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { ChapterContentType } from '$lib/types/chapters';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/chapters-publication');
 
 /**
  * Correspondance FERMÉE entre ce qu'un formulaire envoie et la table visée.
@@ -80,7 +83,7 @@ export async function setContentPublication(
 		: undefined;
 
 	if (!table) {
-		console.error(`[setContentPublication] Type de contenu inconnu : ${input.contentType}`);
+		logger.error(`[setContentPublication] Type de contenu inconnu : ${input.contentType}`);
 		return { data: null, error: new Error('Type de contenu inconnu') };
 	}
 
@@ -128,7 +131,7 @@ export async function setContentPublication(
 	}
 
 	if (error) {
-		console.error('[setContentPublication] Écriture impossible :', error);
+		logger.error('[setContentPublication] Écriture impossible :', error);
 		// Une fiche déjà distribuée dont le chapitre n'a pas pu être mis à jour :
 		// la classe l'a reçue, l'écran dira « Préparé ». Le dire, plutôt que de
 		// laisser le professeur croire que rien n'est parti.
@@ -196,7 +199,7 @@ export async function listDistributedWorksheetIds(
 		.or('available_from.is.null,available_from.lte.now');
 
 	if (error) {
-		console.error('[listDistributedWorksheetIds] Affectations illisibles :', error);
+		logger.error('[listDistributedWorksheetIds] Affectations illisibles :', error);
 		return { data: null, error: new Error(error.message) };
 	}
 
@@ -217,7 +220,7 @@ async function ensureWorksheetDistributed(
 		.single();
 
 	if (lienError || !lien) {
-		console.error('[ensureWorksheetDistributed] Rattachement illisible :', lienError);
+		logger.error('[ensureWorksheetDistributed] Rattachement illisible :', lienError);
 		return { error: new Error('Fiche introuvable dans ce chapitre') };
 	}
 
@@ -266,7 +269,7 @@ async function ensureWorksheetDistributed(
 		.single();
 
 	if (affectationError || !affectation) {
-		console.error('[ensureWorksheetDistributed] Affectation impossible :', affectationError);
+		logger.error('[ensureWorksheetDistributed] Affectation impossible :', affectationError);
 		return { error: new Error('Distribution impossible') };
 	}
 
@@ -275,7 +278,7 @@ async function ensureWorksheetDistributed(
 		.insert({ assignment_id: affectation.id, class_id: classId });
 
 	if (lienClasseError) {
-		console.error(
+		logger.error(
 			'[ensureWorksheetDistributed] Rattachement à la classe impossible :',
 			lienClasseError
 		);
@@ -285,7 +288,7 @@ async function ensureWorksheetDistributed(
 			.delete()
 			.eq('id', affectation.id);
 		if (menageError) {
-			console.error('[ensureWorksheetDistributed] Ménage impossible :', menageError);
+			logger.error('[ensureWorksheetDistributed] Ménage impossible :', menageError);
 		}
 		return { error: new Error('Distribution impossible') };
 	}
@@ -298,7 +301,7 @@ async function ensureWorksheetDistributed(
 		.eq('id', affectation.id);
 
 	if (activationError) {
-		console.error('[ensureWorksheetDistributed] Activation impossible :', activationError);
+		logger.error('[ensureWorksheetDistributed] Activation impossible :', activationError);
 		// Le brouillon reste, invisible aux élèves, et supprimable.
 		return { error: new Error('Distribution impossible') };
 	}

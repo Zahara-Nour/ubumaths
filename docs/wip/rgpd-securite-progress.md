@@ -406,3 +406,9 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   renumérotée par sa session). Pas de RPC nouvelle → pas de `db:types`.
 - Le point 2 (safeguarding de la modération) est traité par une autre session
   (`fix/messages-prives-non-modifiables`, `fix/ecritures-verifiees`).
+- **9bis — énigme du jour (branche `fix/enigme-du-jour-cron`)** : mesuré en prod le
+  2026-10-13 — `VITE_RIDDLE_AUTO_SELECT_API_KEY` absente (seul `CRON_SECRET` est défini) →
+  tout POST passait et faisait écrire `background_job_runs` par le client service ; la
+  sélection elle-même échoue pour tous (policy d'INSERT `selected_by = auth.uid()`, la route
+  écrit `null`), 0 exécution au journal. Correctif : `verifyCronAuth` (code seul, 4 tests
+  rouges sans lui). La sélection automatique reste morte : question produit pour David.

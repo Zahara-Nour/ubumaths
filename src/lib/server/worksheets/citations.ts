@@ -30,6 +30,9 @@ import {
 	describeExerciseSelection,
 	parseExerciseSelection
 } from '$lib/resources/exercise-selection';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/worksheets/citations');
 
 type Sb = App.Locals['supabase'];
 
@@ -92,7 +95,7 @@ export async function fetchWorksheetCitations(
 		.maybeSingle();
 
 	if (ficheError) {
-		console.error('[worksheet-citations] fiche illisible:', ficheError);
+		logger.error('[worksheet-citations] fiche illisible:', ficheError);
 		return { citations: [], verifie: false };
 	}
 
@@ -135,14 +138,14 @@ export async function fetchWorksheetCitations(
 	]);
 
 	if (error) {
-		console.error('[worksheet-citations] cahier illisible:', error);
+		logger.error('[worksheet-citations] cahier illisible:', error);
 		return { citations: [], verifie: false };
 	}
 
 	// Le second balayage manque : dire « aucune citation » serait affirmer plus
 	// qu'on ne sait. `verifie: false` est la seule réponse honnête.
 	if (travauxError) {
-		console.error('[worksheet-citations] travaux illisibles:', travauxError);
+		logger.error('[worksheet-citations] travaux illisibles:', travauxError);
 		return { citations: [], verifie: false };
 	}
 

@@ -21,6 +21,9 @@ import type { ChapterSeriesForm, ChapterSeriesRow } from '$lib/types/database-he
 import type { ChapterSeries } from '$lib/types/chapters';
 import { buildSeriesLink, seriesCategoriesSchema, totalQuestions } from '$lib/validation/series';
 import { isDeadlinePassed } from '$lib/utils/dates';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/chapter-series');
 
 // Types
 /**
@@ -64,7 +67,7 @@ export function toChapterSeries(
 	const form = toForm(row.form);
 	const categories = series ? seriesCategoriesSchema.safeParse(series.categories) : null;
 	if (categories && !categories.success) {
-		console.error('[chapter-series] Composition illisible pour la série', row.series_id);
+		logger.error('[chapter-series] Composition illisible pour la série', row.series_id);
 	}
 	const lisible = categories?.success ? categories.data : null;
 
@@ -107,7 +110,7 @@ export async function listChapterSeries(
 		.order('display_order');
 
 	if (error) {
-		console.error('[listChapterSeries] Rattachements illisibles :', error);
+		logger.error('[listChapterSeries] Rattachements illisibles :', error);
 		return { data: null, error: new ChapterSeriesError('db', error.message) };
 	}
 	if (!links || links.length === 0) return { data: [], error: null };
@@ -119,7 +122,7 @@ export async function listChapterSeries(
 		.in('id', seriesIds);
 
 	if (seriesError) {
-		console.error('[listChapterSeries] Séries illisibles :', seriesError);
+		logger.error('[listChapterSeries] Séries illisibles :', seriesError);
 		return { data: null, error: new ChapterSeriesError('db', seriesError.message) };
 	}
 
@@ -128,7 +131,7 @@ export async function listChapterSeries(
 	if (manquantes.length > 0) {
 		// Rattachement lisible, série non : ne devrait pas arriver (mêmes
 		// conditions des deux côtés). Le tracer plutôt que de le taire.
-		console.error('[listChapterSeries] Séries rattachées mais illisibles :', manquantes);
+		logger.error('[listChapterSeries] Séries rattachées mais illisibles :', manquantes);
 	}
 
 	return { data: links.map((l) => toChapterSeries(l, parId.get(l.series_id))), error: null };
@@ -147,7 +150,7 @@ export async function listAvailableSeries(
 		.limit(AVAILABLE_SERIES_LIMIT);
 
 	if (error) {
-		console.error('[listAvailableSeries] Séries illisibles :', error);
+		logger.error('[listAvailableSeries] Séries illisibles :', error);
 		return { data: null, error: new ChapterSeriesError('db', error.message) };
 	}
 
@@ -186,7 +189,7 @@ export async function linkSeries(
 		.maybeSingle();
 
 	if (serieError) {
-		console.error('[linkSeries] Série illisible :', serieError);
+		logger.error('[linkSeries] Série illisible :', serieError);
 		return { data: null, error: new ChapterSeriesError('db', serieError.message) };
 	}
 	if (!serie || serie.created_by !== ownerId) {
@@ -203,7 +206,7 @@ export async function linkSeries(
 
 	// Aucune ligne = première série, cas légitime ; toute autre panne se dit.
 	if (ordreError) {
-		console.error('[linkSeries] Rang suivant illisible :', ordreError);
+		logger.error('[linkSeries] Rang suivant illisible :', ordreError);
 		return { data: null, error: new ChapterSeriesError('db', ordreError.message) };
 	}
 
@@ -218,7 +221,7 @@ export async function linkSeries(
 		.select('id');
 
 	if (error) {
-		console.error('[linkSeries] Rattachement impossible :', error);
+		logger.error('[linkSeries] Rattachement impossible :', error);
 		const kind: ChapterSeriesErrorKind =
 			error.code === '23505' ? 'duplicate' : error.code === '23503' ? 'series_gone' : 'db';
 		return { data: null, error: new ChapterSeriesError(kind, error.message) };
@@ -245,7 +248,7 @@ export async function setSeriesForm(
 		.select('id');
 
 	if (error) {
-		console.error('[setSeriesForm] Écriture impossible :', error);
+		logger.error('[setSeriesForm] Écriture impossible :', error);
 		return { error: new ChapterSeriesError('db', error.message) };
 	}
 	// Zéro ligne : introuvable, ou refusé par la RLS — dans les deux cas, rien
@@ -273,7 +276,7 @@ export async function unlinkSeries(
 		.select('id');
 
 	if (error) {
-		console.error('[unlinkSeries] Suppression impossible :', error);
+		logger.error('[unlinkSeries] Suppression impossible :', error);
 		return { error: new ChapterSeriesError('db', error.message) };
 	}
 	if (!data || data.length !== 1) {
@@ -308,7 +311,7 @@ export async function findOngoingEvaluation(
 		.eq('series_id', seriesId);
 
 	if (error) {
-		console.error('[findOngoingEvaluation] Évaluations illisibles :', error);
+		logger.error('[findOngoingEvaluation] Évaluations illisibles :', error);
 		return { data: null, error: new ChapterSeriesError('db', error.message) };
 	}
 

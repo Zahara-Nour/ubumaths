@@ -60,6 +60,9 @@ import {
 } from '$lib/server/evaluations';
 import { recordSeriesReviews } from '$lib/server/srs/record-series-reviews';
 import { addBuddyXpFromTest } from '$lib/server/buddy-xp-service';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/evaluation-attempts');
 
 // Types
 type Db = SupabaseClient<Database>;
@@ -159,7 +162,7 @@ async function deleteRows(
 	if (ids.length === 0) return true;
 	const { data, error } = await service.from(table).delete().in('id', ids).select('id');
 	if (error || (data?.length ?? 0) !== ids.length) {
-		console.error(`[evaluation-attempts] ${context} : suppression incomplète dans ${table}`, {
+		logger.error(`[evaluation-attempts] ${context} : suppression incomplète dans ${table}`, {
 			ids,
 			deleted: data?.length ?? 0,
 			error
@@ -216,7 +219,7 @@ async function loadSeriesTemplates(
 		.in('domain', domains);
 
 	if (error) {
-		console.error('[evaluation-attempts] Modèles illisibles :', error);
+		logger.error('[evaluation-attempts] Modèles illisibles :', error);
 		throw new EvaluationError(500, 'Impossible de préparer le contrôle, réessaie dans un instant');
 	}
 	return ((data ?? []) as QuestionTemplateRow[]).map(toQuestionTemplate);
@@ -260,7 +263,7 @@ async function regenerateAttempt(
 		.order('position', { ascending: true });
 
 	if (error) {
-		console.error('[evaluation-attempts] Questions de la tentative illisibles :', error);
+		logger.error('[evaluation-attempts] Questions de la tentative illisibles :', error);
 		throw new EvaluationError(500, 'Impossible de relire ta tentative, réessaie dans un instant');
 	}
 	const stored = rows ?? [];
@@ -278,7 +281,7 @@ async function regenerateAttempt(
 			.in('id', templateIds);
 
 		if (templatesError) {
-			console.error('[evaluation-attempts] Modèles de la tentative illisibles :', templatesError);
+			logger.error('[evaluation-attempts] Modèles de la tentative illisibles :', templatesError);
 			throw new EvaluationError(500, 'Impossible de relire ta tentative, réessaie dans un instant');
 		}
 		for (const row of (templateRows ?? []) as QuestionTemplateRow[]) {
@@ -293,7 +296,7 @@ async function regenerateAttempt(
 		const template = templates.get(row.template_id);
 		const result = template ? generateInstance(template, row.seed) : null;
 		if (!result || !result.success) {
-			console.error('[evaluation-attempts] Régénération impossible :', {
+			logger.error('[evaluation-attempts] Régénération impossible :', {
 				attemptId,
 				position: row.position,
 				templateId: row.template_id
@@ -326,7 +329,7 @@ async function findOpenAttempt(userClient: Db, evaluationId: string, userId: str
 		.limit(1);
 
 	if (error) {
-		console.error('[evaluation-attempts] Tentatives illisibles :', error);
+		logger.error('[evaluation-attempts] Tentatives illisibles :', error);
 		throw new EvaluationError(500, 'Impossible de vérifier tes tentatives précédentes');
 	}
 	return data?.[0] ?? null;
@@ -406,7 +409,7 @@ export async function startEvaluationAttempt(
 	for (const draw of draws) {
 		const result = generateInstance(draw.template, draw.seed);
 		if (!result.success) {
-			console.error(
+			logger.error(
 				'[evaluation-attempts] Génération impossible :',
 				draw.template.id,
 				result.errors
@@ -446,7 +449,7 @@ export async function startEvaluationAttempt(
 		.single();
 
 	if (sessionError || !session) {
-		console.error('[evaluation-attempts] Séance non créée :', sessionError);
+		logger.error('[evaluation-attempts] Séance non créée :', sessionError);
 		throw new EvaluationError(500, 'Impossible de commencer le contrôle, réessaie dans un instant');
 	}
 
@@ -463,7 +466,7 @@ export async function startEvaluationAttempt(
 		.select('position');
 
 	if (questionsError || (written?.length ?? 0) !== rows.length) {
-		console.error('[evaluation-attempts] Questions non enregistrées :', questionsError);
+		logger.error('[evaluation-attempts] Questions non enregistrées :', questionsError);
 		// Une séance sans questions ne doit pas coûter une tentative
 		await deleteRows(service, 'test_sessions', [session.id], 'questions non enregistrées');
 		throw new EvaluationError(500, 'Impossible de commencer le contrôle, réessaie dans un instant');
@@ -579,7 +582,7 @@ export async function submitEvaluationAttempt(
 		.maybeSingle();
 
 	if (sessionError) {
-		console.error('[evaluation-attempts] Séance illisible :', sessionError);
+		logger.error('[evaluation-attempts] Séance illisible :', sessionError);
 		throw new EvaluationError(500, 'Impossible de relire ta tentative, réessaie dans un instant');
 	}
 	if (!session || session.user_id !== userId || !session.evaluation_id) {
@@ -612,7 +615,7 @@ export async function submitEvaluationAttempt(
 	const { verdicts, skipped, remainingMs } = gradeWithinBudget(toGrade, actors.gradingBudget);
 	if (skipped > 0) {
 		// Aucune donnée d'élève : seulement des comptes
-		console.warn(
+		logger.warn(
 			`[evaluation-attempts] Budget de correction épuisé : ${skipped} question(s) sur ${toGrade.length} non corrigée(s)`
 		);
 	}
@@ -663,7 +666,7 @@ export async function submitEvaluationAttempt(
 
 		insertedIds = (written ?? []).map((row) => row.id);
 		if (answersError || insertedIds.length !== rows.length) {
-			console.error('[evaluation-attempts] Réponses non enregistrées :', answersError);
+			logger.error('[evaluation-attempts] Réponses non enregistrées :', answersError);
 			await deleteRows(service, 'test_answers', insertedIds, 'réponses partielles');
 			throw new EvaluationError(500, "Ta copie n'a pas pu être enregistrée, réessaie");
 		}
@@ -693,7 +696,7 @@ export async function submitEvaluationAttempt(
 		// Envoi concurrent déjà passé (0 ligne) ou panne : on retire NOS réponses
 		await deleteRows(service, 'test_answers', insertedIds, 'envoi concurrent');
 		if (closeError) {
-			console.error('[evaluation-attempts] Séance non close :', closeError);
+			logger.error('[evaluation-attempts] Séance non close :', closeError);
 			throw new EvaluationError(500, "Ta copie n'a pas pu être enregistrée, réessaie");
 		}
 		throw new AttemptAlreadySubmittedError(await readSubmittedCopy(actors, attemptId));
@@ -718,7 +721,7 @@ export async function submitEvaluationAttempt(
 				corrected.map((q) => ({ isCorrect: q.isCorrect, theme: undefined }))
 			);
 		} catch (xpError) {
-			console.error('[evaluation-attempts] XP non attribuée :', xpError);
+			logger.error('[evaluation-attempts] XP non attribuée :', xpError);
 		}
 	}
 
@@ -817,7 +820,7 @@ export async function readSubmittedCopy(
 			questions: withSubmittedCopyDetails(corrected, actors.gradingBudget)
 		};
 	} catch (e) {
-		console.error('[evaluation-attempts] Copie notée non reconstruite :', e);
+		logger.error('[evaluation-attempts] Copie notée non reconstruite :', e);
 		return null;
 	}
 }

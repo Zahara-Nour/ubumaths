@@ -28,6 +28,9 @@ import type { Database } from '$lib/types/database';
 import type { CartItem, QuestionCategory } from '$lib/stores/questionCart.svelte';
 import { categoryKeyOf, templatesOfCategory } from '$lib/questions/series-items';
 import { seriesCategoriesSchema } from '$lib/validation/series';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/srs/chapter-deck');
 
 // Types
 type SB = SupabaseClient<Database>;
@@ -168,7 +171,7 @@ export function categoriesFilter(categories: readonly QuestionCategory[]): strin
 function readCategories(seriesId: string, raw: unknown): CartItem[] | null {
 	const parsed = seriesCategoriesSchema.safeParse(raw);
 	if (!parsed.success) {
-		console.error('[chapter-deck] Composition illisible pour la série', seriesId);
+		logger.error('[chapter-deck] Composition illisible pour la série', seriesId);
 		return null;
 	}
 	return parsed.data;

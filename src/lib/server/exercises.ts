@@ -26,6 +26,9 @@ import {
 	fetchTagNamesForResources,
 	syncResourceTags
 } from '$lib/server/resource-tags';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/exercises');
 
 type _Exercise = Database['public']['Tables']['exercises']['Row'];
 type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
@@ -197,7 +200,7 @@ export async function getExercises(
 	const { data, error, count } = await query;
 
 	if (error) {
-		console.error('Error fetching exercises:', error);
+		logger.error('Error fetching exercises:', error);
 		return { data: null, error, count: 0 };
 	}
 
@@ -233,7 +236,7 @@ export async function getExercise(supabase: SupabaseClient<Database>, id: string
 	const { data, error } = await supabase.from('exercises').select('*').eq('id', id).single();
 
 	if (error) {
-		console.error('Error fetching exercise:', error);
+		logger.error('Error fetching exercise:', error);
 		return { data: null, error };
 	}
 
@@ -251,7 +254,7 @@ export async function getExerciseBySlug(supabase: SupabaseClient<Database>, slug
 	const { data, error } = await supabase.from('exercises').select('*').eq('slug', slug).single();
 
 	if (error) {
-		console.error('Error fetching exercise by slug:', error);
+		logger.error('Error fetching exercise by slug:', error);
 		return { data: null, error };
 	}
 
@@ -335,7 +338,7 @@ export async function createExercise(
 	const { data, error } = await supabase.from('exercises').insert(insertData).select().single();
 
 	if (error) {
-		console.error('Error creating exercise:', error);
+		logger.error('Error creating exercise:', error);
 		return { data: null, error };
 	}
 
@@ -346,7 +349,7 @@ export async function createExercise(
 		try {
 			await syncResourceTags(supabase, 'exercise', data.id, tagNames);
 		} catch (e) {
-			console.error('Failed to attach tags to new exercise — rolling back:', e);
+			logger.error('Failed to attach tags to new exercise — rolling back:', e);
 			await supabase.from('exercises').delete().eq('id', data.id);
 			return {
 				data: null,
@@ -453,7 +456,7 @@ export async function updateExercise(
 		.single();
 
 	if (error) {
-		console.error('Error updating exercise:', error);
+		logger.error('Error updating exercise:', error);
 		return { data: null, error };
 	}
 
@@ -465,7 +468,7 @@ export async function updateExercise(
 		try {
 			await syncResourceTags(supabase, 'exercise', data.id, tagsUpdate);
 		} catch (e) {
-			console.error('Failed to sync tags on update:', e);
+			logger.error('Failed to sync tags on update:', e);
 			return {
 				data: null,
 				error: e instanceof Error ? e : new Error('Failed to sync tags for exercise')
@@ -509,12 +512,12 @@ export async function deleteExercise(
 		.select('id');
 
 	if (error) {
-		console.error('Error deleting exercise:', error);
+		logger.error('Error deleting exercise:', error);
 		return { error };
 	}
 
 	if (!deleted || deleted.length === 0) {
-		console.error('Exercise not deleted (0 row):', id);
+		logger.error('Exercise not deleted (0 row):', id);
 		return { error: new Error(EXERCISE_NOT_DELETED) };
 	}
 
@@ -593,7 +596,7 @@ export async function getTeacherExercises(
 	const { data, error, count } = await query;
 
 	if (error) {
-		console.error('Error fetching teacher exercises:', error);
+		logger.error('Error fetching teacher exercises:', error);
 		return { data: null, error, count: 0 };
 	}
 

@@ -26,6 +26,9 @@ import {
 	type DictionaryRow
 } from '$lib/dictionary/entry-schema';
 import { forgetDictionary } from './load';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/dictionary/admin');
 
 // ---------------------------------------------------------------------------
 // Types
@@ -179,7 +182,7 @@ export async function loadVersions(
 			.select('id, firstname, lastname, full_name')
 			.in('id', authorIds);
 		// Sans les noms, l'historique reste lisible : « admin » à la place
-		if (profilesError) console.error('[dictionnaire] auteurs illisibles', profilesError);
+		if (profilesError) logger.error('[dictionnaire] auteurs illisibles', profilesError);
 		for (const p of profiles ?? []) {
 			const name = p.full_name ?? [p.firstname, p.lastname].filter(Boolean).join(' ');
 			if (name) names.set(p.id, name);

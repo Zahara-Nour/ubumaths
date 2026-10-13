@@ -19,6 +19,9 @@
 import { error } from '@sveltejs/kit';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/worksheets/assignment-access');
 
 export interface AssignmentAccess {
 	/** L'affectation est lisible, à un titre ou à un autre. */
@@ -44,7 +47,7 @@ export async function resolveAssignmentAccess(
 
 	// PGRST116 = aucune ligne, ce que la suite traite déjà comme un refus.
 	if (canWriteError && canWriteError.code !== 'PGRST116') {
-		console.error('Contrôle d’accès impossible :', canWriteError);
+		logger.error('Contrôle d’accès impossible :', canWriteError);
 		throw error(500, 'Impossible de vérifier votre accès');
 	}
 
@@ -57,7 +60,7 @@ export async function resolveAssignmentAccess(
 	});
 
 	if (canReadError && canReadError.code !== 'PGRST116') {
-		console.error('Contrôle de lecture impossible :', canReadError);
+		logger.error('Contrôle de lecture impossible :', canReadError);
 		throw error(500, 'Impossible de vérifier votre accès');
 	}
 

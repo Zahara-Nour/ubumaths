@@ -16,6 +16,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { isResourceKind, type ResourceKind } from '$lib/resources/kinds';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/search');
 
 /**
  * One row of the `resources` view, as consumed by the app.
@@ -101,7 +104,7 @@ export async function searchResources(
 	});
 
 	if (error) {
-		console.error('[search] search_resources failed:', error);
+		logger.error('[search] search_resources failed:', error);
 		return { rows: [], error: 'Échec de la recherche' };
 	}
 

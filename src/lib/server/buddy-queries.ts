@@ -11,6 +11,9 @@ import type { Database } from '$lib/types/database';
 import type { PalotinType } from '$lib/config/buddy-messages';
 import type { BuddyState, BuddyXpGainResult } from '$lib/types/buddy';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/buddy-queries');
 
 /**
  * Get a student's buddy. Returns null if no buddy chosen yet.
@@ -26,7 +29,7 @@ export async function getStudentBuddy(
 		.maybeSingle();
 
 	if (error) {
-		console.error('❌ [buddy-queries] Error fetching student buddy:', error);
+		logger.error('❌ [buddy-queries] Error fetching student buddy:', error);
 		throw error;
 	}
 
@@ -51,7 +54,7 @@ export async function createStudentBuddy(
 		.single();
 
 	if (error) {
-		console.error('❌ [buddy-queries] Error creating student buddy:', error);
+		logger.error('❌ [buddy-queries] Error creating student buddy:', error);
 		throw error;
 	}
 
@@ -80,7 +83,7 @@ export async function changeStudentPalotin(
 		.single();
 
 	if (error) {
-		console.error('❌ [buddy-queries] Error changing palotin:', error);
+		logger.error('❌ [buddy-queries] Error changing palotin:', error);
 		throw error;
 	}
 
@@ -126,7 +129,7 @@ export async function addBuddyXp(
 	});
 
 	if (error) {
-		console.error('❌ [buddy-queries] Error adding buddy XP:', error);
+		logger.error('❌ [buddy-queries] Error adding buddy XP:', error);
 		throw error;
 	}
 
@@ -134,7 +137,7 @@ export async function addBuddyXp(
 	const result = data as unknown as BuddyXpGainResult & { error?: unknown };
 
 	if (result?.error) {
-		console.error('❌ [buddy-queries] RPC error:', result.error);
+		logger.error('❌ [buddy-queries] RPC error:', result.error);
 		return { xp_gained: 0, new_xp: 0, new_level: 1, leveled_up: false, daily_cap_reached: false };
 	}
 
@@ -174,7 +177,7 @@ export async function updateStreak(
 		.eq('student_id', studentId);
 
 	if (error) {
-		console.error('❌ [buddy-queries] Error updating streak:', error);
+		logger.error('❌ [buddy-queries] Error updating streak:', error);
 		throw error;
 	}
 
@@ -194,7 +197,7 @@ export async function resetStreak(
 		.eq('student_id', studentId);
 
 	if (error) {
-		console.error('❌ [buddy-queries] Error resetting streak:', error);
+		logger.error('❌ [buddy-queries] Error resetting streak:', error);
 		throw error;
 	}
 }
@@ -223,7 +226,7 @@ export async function addExploredTheme(
 		.eq('student_id', studentId);
 
 	if (error) {
-		console.error('❌ [buddy-queries] Error adding explored theme:', error);
+		logger.error('❌ [buddy-queries] Error adding explored theme:', error);
 		throw error;
 	}
 
@@ -267,7 +270,7 @@ export async function getClassBuddies(
 		.eq('status', 'active');
 
 	if (error) {
-		console.error('❌ [buddy-queries] Error fetching class buddies:', error);
+		logger.error('❌ [buddy-queries] Error fetching class buddies:', error);
 		throw error;
 	}
 

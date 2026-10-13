@@ -37,6 +37,9 @@ import {
 	SUBMISSION_GRADING_BUDGET_MS,
 	SUBMITTED_COPY_DETAIL_BUDGET_MS
 } from './grading-budget';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/corrected-detail');
 
 // Types
 export interface DetailItem {
@@ -90,7 +93,7 @@ export function detailOfCorrected(
 			: statusFromBlankStatuses(detail.blanks.map((b) => b.status));
 		// QCM : `validateAnswerDetailed` ne connaît pas le ½ du barème, seuls les cases comptent
 		if (!isChoice && recomputed !== item.status) {
-			console.warn('[corrected-detail] Statut recalculé différent du statut enregistré', {
+			logger.warn('[corrected-detail] Statut recalculé différent du statut enregistré', {
 				recomputed,
 				stored: item.status
 			});

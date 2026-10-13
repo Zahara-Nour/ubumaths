@@ -1,6 +1,10 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { validateFormData, importStudentsFormSchema } from '$lib/server/validation';
+import {
+	validateFormData,
+	importStudentsFormSchema,
+	importedStudentsSchema
+} from '$lib/server/validation';
 import { requireAdmin } from '$lib/server/middleware/auth';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -76,14 +80,22 @@ export const actions: Actions = {
 
 		const { students: studentsJson, school_id: schoolId } = validation.data;
 
+		// Chaque élève est validé (champs, nombre) avant toute écriture.
+		let studentsInput: unknown;
 		try {
-			const students = JSON.parse(studentsJson);
+			studentsInput = JSON.parse(studentsJson);
+		} catch {
+			return fail(400, { message: 'Données invalides' });
+		}
+		const studentsResult = importedStudentsSchema.safeParse(studentsInput);
+		if (!studentsResult.success) {
+			const issue = studentsResult.error.issues[0];
+			const line = typeof issue.path[0] === 'number' ? `Élève n° ${issue.path[0] + 1} : ` : '';
+			return fail(400, { message: `${line}${issue.message}` });
+		}
+		const students = studentsResult.data;
 
-			// Validate data
-			if (!Array.isArray(students) || students.length === 0) {
-				return fail(400, { message: 'Invalid student data' });
-			}
-
+		try {
 			// Fetch all classes to map codes to IDs
 			const { data: classes, error: classesError } = await supabase
 				.from('classes')
@@ -103,15 +115,15 @@ export const actions: Actions = {
 			// Prepare student records with class_ids resolved
 			const pendingStudents = students.map((s) => {
 				// Convert class codes to class IDs
-				const classIds = (s.class_codes || [])
-					.map((code: string) => classCodeMap.get(code.toUpperCase()))
-					.filter((id: string | undefined): id is string => !!id);
+				const classIds = s.class_codes
+					.map((code) => classCodeMap.get(code))
+					.filter((id): id is string => !!id);
 
 				return {
-					email: s.email.toLowerCase().trim(),
-					firstname: s.firstname.trim(),
-					lastname: s.lastname.trim(),
-					grade: s.grade || null,
+					email: s.email,
+					firstname: s.firstname,
+					lastname: s.lastname,
+					grade: s.grade,
 					school_id: schoolId,
 					class_ids: classIds
 				};

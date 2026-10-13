@@ -12,6 +12,9 @@ import type { GradeCode } from '$lib/types/grades';
 import { getEmbeddingService } from './embeddings';
 import { chunkText, chunkMarkdown, chunkExercise, type Chunk } from './chunker';
 import { createHash } from 'crypto';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/rag/processor');
 
 export type SourceType =
 	'question_template' | 'exercise' | 'markdown_doc' | 'google_drive' | 'manual_upload';
@@ -58,7 +61,7 @@ export async function indexDocument(
 		// le même visage et relançait une indexation complète par-dessus
 		// l'existante, en dupliquant les fragments.
 		if (existingDocError && existingDocError.code !== 'PGRST116') {
-			console.error('[rag] Document existant illisible :', existingDocError);
+			logger.error('[rag] Document existant illisible :', existingDocError);
 			throw new Error(existingDocError.message);
 		}
 
@@ -155,7 +158,7 @@ export async function indexDocument(
 			const { error: chunkError } = await supabase.from('rag_chunks').insert(batch);
 
 			if (chunkError) {
-				console.error('Error inserting chunks:', chunkError);
+				logger.error('Error inserting chunks:', chunkError);
 				// Continue with other batches
 			}
 		}
@@ -166,7 +169,7 @@ export async function indexDocument(
 			chunksCreated: chunks.length
 		};
 	} catch (error) {
-		console.error('Document indexing failed:', error);
+		logger.error('Document indexing failed:', error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : 'Unknown error'
@@ -191,7 +194,7 @@ export async function deleteDocument(
 	const { error } = await supabase.from('rag_documents').delete().eq('id', documentId);
 
 	if (error) {
-		console.error('Error deleting document:', error);
+		logger.error('Error deleting document:', error);
 		return false;
 	}
 
@@ -211,7 +214,7 @@ export async function disableDocument(
 		.eq('id', documentId);
 
 	if (error) {
-		console.error('Error disabling document:', error);
+		logger.error('Error disabling document:', error);
 		return false;
 	}
 
@@ -231,7 +234,7 @@ export async function enableDocument(
 		.eq('id', documentId);
 
 	if (error) {
-		console.error('Error enabling document:', error);
+		logger.error('Error enabling document:', error);
 		return false;
 	}
 
@@ -280,7 +283,7 @@ export async function reindexAllDocuments(supabase: SupabaseClient): Promise<{
 		.eq('enabled_for_rag', true);
 
 	if (error || !documents) {
-		console.error('Error fetching documents for reindex:', error);
+		logger.error('Error fetching documents for reindex:', error);
 		return { processed: 0, successful: 0, failed: 0 };
 	}
 
@@ -324,7 +327,7 @@ export async function reindexAllDocuments(supabase: SupabaseClient): Promise<{
 		const { error: chunkError } = await supabase.from('rag_chunks').insert(chunkRecords);
 
 		if (chunkError) {
-			console.error('Error reindexing document:', doc.id, chunkError);
+			logger.error('Error reindexing document:', doc.id, chunkError);
 			failed++;
 		} else {
 			successful++;

@@ -9,6 +9,9 @@
  */
 
 import { getEnv } from '$lib/server/env';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/rag/embeddings');
 
 // Model configuration
 const HF_MODEL = 'intfloat/multilingual-e5-large';
@@ -58,7 +61,7 @@ export class EmbeddingService {
 	 */
 	async embedQuery(query: string): Promise<number[] | null> {
 		if (!this.apiKey) {
-			console.warn('HF_API_KEY not configured, embeddings unavailable');
+			logger.warn('HF_API_KEY not configured, embeddings unavailable');
 			return null;
 		}
 
@@ -73,7 +76,7 @@ export class EmbeddingService {
 	 */
 	async embedPassages(texts: string[]): Promise<number[][] | null> {
 		if (!this.apiKey) {
-			console.warn('HF_API_KEY not configured, embeddings unavailable');
+			logger.warn('HF_API_KEY not configured, embeddings unavailable');
 			return null;
 		}
 
@@ -130,7 +133,7 @@ export class EmbeddingService {
 				// Handle rate limiting
 				if (response.status === 429) {
 					const retryAfter = parseInt(response.headers.get('Retry-After') || '60', 10);
-					console.warn(`HF API rate limited, retry after ${retryAfter}s`);
+					logger.warn(`HF API rate limited, retry after ${retryAfter}s`);
 
 					if (retryCount < MAX_RETRIES) {
 						await this.delay(Math.min(retryAfter * 1000, 30000));
@@ -141,12 +144,12 @@ export class EmbeddingService {
 
 				// Handle model loading (503)
 				if (response.status === 503 && retryCount < MAX_RETRIES) {
-					console.warn('HF model loading, retrying...');
+					logger.warn('HF model loading, retrying...');
 					await this.delay(RETRY_DELAY_MS * (retryCount + 1));
 					return this.embedBatch(texts, retryCount + 1);
 				}
 
-				console.error('HF API error:', response.status, errorText);
+				logger.error('HF API error:', response.status, errorText);
 				return null;
 			}
 
@@ -154,7 +157,7 @@ export class EmbeddingService {
 
 			// Validate response shape
 			if (!Array.isArray(data) || data.length !== texts.length) {
-				console.error('Invalid HF API response shape');
+				logger.error('Invalid HF API response shape');
 				return null;
 			}
 
@@ -171,7 +174,7 @@ export class EmbeddingService {
 			// Validate dimensions
 			for (const emb of embeddings) {
 				if (emb.length !== EMBEDDING_DIMENSION) {
-					console.error(
+					logger.error(
 						`Unexpected embedding dimension: ${emb.length}, expected ${EMBEDDING_DIMENSION}`
 					);
 					return null;
@@ -180,7 +183,7 @@ export class EmbeddingService {
 
 			return embeddings;
 		} catch (error) {
-			console.error('Embedding request failed:', error);
+			logger.error('Embedding request failed:', error);
 
 			if (retryCount < MAX_RETRIES) {
 				await this.delay(RETRY_DELAY_MS * (retryCount + 1));

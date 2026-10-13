@@ -41,6 +41,9 @@ import {
 	GoogleNotFoundError
 } from './errors';
 import { sleep, calculateBackoff } from './utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/google/classroom-api');
 
 /**
  * Google Classroom API base URL
@@ -182,7 +185,7 @@ export class GoogleClassroomClient {
 							const retryAfter = this.getRetryAfter(response);
 							const delay = retryAfter || calculateBackoff(retryCount);
 
-							console.warn(
+							logger.warn(
 								`[GoogleClassroomClient] Rate limit hit for teacher ${this.teacherId}. ` +
 									`Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
 							);
@@ -201,7 +204,7 @@ export class GoogleClassroomClient {
 					case 504:
 						// Server errors - retry once
 						if (retryCount === 0) {
-							console.warn(
+							logger.warn(
 								`[GoogleClassroomClient] Server error ${response.status} for teacher ${this.teacherId}. Retrying once...`
 							);
 							await sleep(2000);

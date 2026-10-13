@@ -32,6 +32,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { getTeacherTestMode } from './test-mode';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/students');
 
 // ============================================================================
 // TYPES
@@ -152,7 +155,7 @@ export async function getClassStudents(
 	// Get teacher's test mode preference
 	const isTestMode = await getTeacherTestMode(userId, supabase);
 
-	console.log('[getClassStudents] Fetching students for class:', classId, 'Test mode:', isTestMode);
+	logger.info('[getClassStudents] Fetching students for class:', classId, 'Test mode:', isTestMode);
 
 	// Build select fields based on 'full' parameter
 	const selectFields = full
@@ -190,7 +193,7 @@ export async function getClassStudents(
 		.eq('profiles.is_test', isTestMode); // KEY: Filter by test mode
 
 	if (error) {
-		console.error('[getClassStudents] Error fetching students:', error);
+		logger.error('[getClassStudents] Error fetching students:', error);
 		throw new Error(`Failed to fetch students: ${error.message}`);
 	}
 
@@ -259,7 +262,7 @@ export async function getTeacherClassesWithStudents(
 	});
 
 	if (error) {
-		console.error('[getTeacherClassesWithStudents] Error fetching classes:', error);
+		logger.error('[getTeacherClassesWithStudents] Error fetching classes:', error);
 		throw new Error(`Failed to fetch teacher classes: ${error.message}`);
 	}
 
@@ -296,7 +299,7 @@ export async function getTeacherClassesWithCounts(
 	});
 
 	if (error) {
-		console.error('[getTeacherClassesWithCounts] Error fetching classes:', error);
+		logger.error('[getTeacherClassesWithCounts] Error fetching classes:', error);
 		throw new Error(`Failed to fetch teacher classes: ${error.message}`);
 	}
 
@@ -335,7 +338,7 @@ export async function getUnassignedStudents(
 		.eq('is_test', isTestMode);
 
 	if (studentsError) {
-		console.error('[getUnassignedStudents] Error fetching students:', studentsError);
+		logger.error('[getUnassignedStudents] Error fetching students:', studentsError);
 		throw new Error(`Failed to fetch students: ${studentsError.message}`);
 	}
 
@@ -346,7 +349,7 @@ export async function getUnassignedStudents(
 		.eq('status', 'active');
 
 	if (membersError) {
-		console.error('[getUnassignedStudents] Error fetching memberships:', membersError);
+		logger.error('[getUnassignedStudents] Error fetching memberships:', membersError);
 		throw new Error(`Failed to fetch memberships: ${membersError.message}`);
 	}
 
@@ -405,7 +408,7 @@ export async function getClassStudentCount(
 		.eq('profiles.is_test', isTestMode);
 
 	if (error) {
-		console.error('[getClassStudentCount] Error counting students:', error);
+		logger.error('[getClassStudentCount] Error counting students:', error);
 		throw new Error(`Failed to count students: ${error.message}`);
 	}
 

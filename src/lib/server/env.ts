@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/env');
 
 /**
  * Environment variable validation schema
@@ -238,31 +241,27 @@ export function initEnv(): Env {
 	const validation = envSchema.safeParse(process.env);
 
 	if (!validation.success) {
-		console.error('❌ Environment variable validation failed:');
-		console.error('');
+		logger.error('❌ Environment variable validation failed:');
 
 		// Group errors by category
 		const errors = validation.error.issues;
 		errors.forEach((issue) => {
 			const path = issue.path.join('.');
-			console.error(`  - ${path}: ${issue.message}`);
+			logger.error(`  - ${path}: ${issue.message}`);
 		});
 
-		console.error('');
-		console.error('Please check your .env file and ensure all required variables are set.');
-		console.error('See .env.example for a complete list of available variables.');
-		console.error('');
+		logger.error('Please check your .env file and ensure all required variables are set.');
+		logger.error('See .env.example for a complete list of available variables.');
 
 		// In production, fail hard - don't start with invalid config
 		if (process.env.NODE_ENV === 'production') {
-			console.error('🚨 Cannot start in production with invalid environment variables');
+			logger.error('🚨 Cannot start in production with invalid environment variables');
 			process.exit(1);
 		}
 
 		// In development/test, warn but continue (for easier development)
-		console.warn('⚠️  Continuing in development mode with invalid env vars');
-		console.warn('   Some features may not work correctly.');
-		console.warn('');
+		logger.warn('⚠️  Continuing in development mode with invalid env vars');
+		logger.warn('   Some features may not work correctly.');
 
 		// Throw error to notify but don't exit
 		throw new Error('Invalid environment variables');
@@ -271,22 +270,20 @@ export function initEnv(): Env {
 	env = validation.data;
 
 	// Log successful validation
-	console.log('✅ Environment variables validated successfully');
-	console.log('');
-	console.log('   Configuration:');
-	console.log(`   - Environment: ${env.NODE_ENV}`);
-	console.log(`   - Supabase URL: ${env.PUBLIC_SUPABASE_URL}`);
-	console.log(`   - AI Chatbot: ${env.ENABLE_AI_CHATBOT ? 'enabled' : 'disabled'}`);
+	logger.info('✅ Environment variables validated successfully');
+	logger.info('   Configuration:');
+	logger.info(`   - Environment: ${env.NODE_ENV}`);
+	logger.info(`   - Supabase URL: ${env.PUBLIC_SUPABASE_URL}`);
+	logger.info(`   - AI Chatbot: ${env.ENABLE_AI_CHATBOT ? 'enabled' : 'disabled'}`);
 	if (env.ENABLE_AI_CHATBOT) {
-		console.log(`     - API Key: ${env.GROQ_API_KEY ? 'configured' : 'MISSING'}`);
-		console.log(`     - Model: ${env.GROQ_MODEL}`);
+		logger.info(`     - API Key: ${env.GROQ_API_KEY ? 'configured' : 'MISSING'}`);
+		logger.info(`     - Model: ${env.GROQ_MODEL}`);
 	}
-	console.log(`   - WebSocket: ${env.ENABLE_WEBSOCKET ? 'enabled' : 'disabled'}`);
-	console.log(`   - Error Logging: ${env.ENABLE_ERROR_LOGGING ? 'enabled' : 'disabled'}`);
-	console.log(
+	logger.info(`   - WebSocket: ${env.ENABLE_WEBSOCKET ? 'enabled' : 'disabled'}`);
+	logger.info(`   - Error Logging: ${env.ENABLE_ERROR_LOGGING ? 'enabled' : 'disabled'}`);
+	logger.info(
 		`   - Rate Limiting: ${env.RATE_LIMIT_MAX_REQUESTS} req/${env.RATE_LIMIT_WINDOW_MS}ms`
 	);
-	console.log('');
 
 	return env;
 }

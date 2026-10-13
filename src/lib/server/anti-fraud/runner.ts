@@ -54,6 +54,9 @@ import {
 	detectSrsVsQuizGap
 } from './detectors';
 import type { RunJobOptions } from '$lib/server/validation/anti-fraud';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/anti-fraud/runner');
 
 const DEFAULT_WINDOW_DAYS = 7;
 const DEDUPE_WINDOW_DAYS = 7;
@@ -188,7 +191,7 @@ async function loadAttempts(
 	// lecture produisait exactement ce verdict, sans jamais le distinguer d'une
 	// absence réelle de tentative suspecte.
 	if (tagRowsError) {
-		console.error('[anti-fraude] Étiquetage illisible :', tagRowsError);
+		logger.error('[anti-fraude] Étiquetage illisible :', tagRowsError);
 		throw new Error(tagRowsError.message);
 	}
 
@@ -203,7 +206,7 @@ async function loadAttempts(
 		.gte('created_at', windowStart.toISOString());
 
 	if (attemptsError) {
-		console.error('[anti-fraude] Tentatives illisibles :', attemptsError);
+		logger.error('[anti-fraude] Tentatives illisibles :', attemptsError);
 		throw new Error(attemptsError.message);
 	}
 
@@ -285,7 +288,7 @@ export async function runAntiFraudJob(
 
 	const enabled = await isAntiFraudEnabled(supabase);
 	if (!enabled) {
-		console.info('[anti-fraud] disabled by config — skipping');
+		logger.info('[anti-fraud] disabled by config — skipping');
 		return {
 			flags_created: 0,
 			scanned_pairs: 0,

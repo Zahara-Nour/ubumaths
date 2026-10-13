@@ -10,6 +10,9 @@
 import { error } from '@sveltejs/kit';
 import { getEnv } from '$lib/server/env';
 import { randomBytes, timingSafeEqual } from 'crypto';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/auth/cron');
 
 /**
  * Verify CRON authentication from request headers
@@ -43,7 +46,7 @@ export function verifyCronAuth(request: Request): void {
 	// SECURITY: Fail-secure - reject if CRON_SECRET not configured
 	// This prevents CRON endpoints from being accidentally exposed
 	if (!env.CRON_SECRET) {
-		console.error('[CRON AUTH] CRON_SECRET not configured - CRON endpoints are disabled');
+		logger.error('[CRON AUTH] CRON_SECRET not configured - CRON endpoints are disabled');
 		throw error(503, 'CRON endpoints disabled: CRON_SECRET not configured');
 	}
 
@@ -53,7 +56,7 @@ export function verifyCronAuth(request: Request): void {
 	// Bearer token : crons Vercel et déclenchement manuel par l'admin
 	const authHeader = request.headers.get('authorization');
 	if (!authHeader) {
-		console.warn('[CRON AUTH] Missing authentication (no Authorization header)', {
+		logger.warn('[CRON AUTH] Missing authentication (no Authorization header)', {
 			url: request.url,
 			method: request.method
 		});
@@ -64,7 +67,7 @@ export function verifyCronAuth(request: Request): void {
 	// Expected format: "Bearer <token>"
 	const match = /^Bearer\s+(.+)$/i.exec(authHeader);
 	if (!match) {
-		console.warn('[CRON AUTH] Invalid Authorization header format', {
+		logger.warn('[CRON AUTH] Invalid Authorization header format', {
 			url: request.url,
 			format: authHeader.substring(0, 20) // Log first 20 chars only (don't leak full header)
 		});
@@ -81,7 +84,7 @@ export function verifyCronAuth(request: Request): void {
 	// Check lengths match before calling timingSafeEqual()
 	// timingSafeEqual() requires equal-length buffers
 	if (expectedBuffer.length !== providedBuffer.length) {
-		console.warn('[CRON AUTH] Invalid token (length mismatch)', {
+		logger.warn('[CRON AUTH] Invalid token (length mismatch)', {
 			url: request.url,
 			expected_length: expectedBuffer.length,
 			provided_length: providedBuffer.length
@@ -92,19 +95,19 @@ export function verifyCronAuth(request: Request): void {
 	// Perform constant-time comparison
 	try {
 		if (!timingSafeEqual(expectedBuffer, providedBuffer)) {
-			console.warn('[CRON AUTH] Invalid token (value mismatch)', {
+			logger.warn('[CRON AUTH] Invalid token (value mismatch)', {
 				url: request.url
 			});
 			throw error(401, 'Jeton invalide');
 		}
 	} catch (err) {
 		// timingSafeEqual can throw if buffers are invalid
-		console.error('[CRON AUTH] Comparison error:', err);
+		logger.error('[CRON AUTH] Comparison error:', err);
 		throw error(401, 'Jeton invalide');
 	}
 
 	// Success - log and continue
-	console.log('[CRON AUTH] ✅ Valid Bearer token', {
+	logger.info('[CRON AUTH] ✅ Valid Bearer token', {
 		url: request.url,
 		method: request.method,
 		timestamp: new Date().toISOString()

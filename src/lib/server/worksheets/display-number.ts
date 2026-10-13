@@ -14,6 +14,9 @@
  */
 
 import { orderExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/worksheets/display-number');
 
 type Sb = App.Locals['supabase'];
 
@@ -39,7 +42,7 @@ export async function fetchDisplayNumbers(
 		]);
 
 	if (exercisesError || sectionsError) {
-		console.error('[display-number] fiche illisible:', exercisesError ?? sectionsError);
+		logger.error('[display-number] fiche illisible:', exercisesError ?? sectionsError);
 		return new Map();
 	}
 
@@ -102,7 +105,7 @@ export async function resolveExercisesAtDisplayNumbers(
 		]);
 
 	if (exercisesError || sectionsError) {
-		console.error('[display-number] fiche illisible:', exercisesError ?? sectionsError);
+		logger.error('[display-number] fiche illisible:', exercisesError ?? sectionsError);
 		return { exerciseIds: [], introuvables: [...numeros] };
 	}
 

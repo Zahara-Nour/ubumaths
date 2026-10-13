@@ -9,6 +9,9 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getEmbeddingService } from './embeddings';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/rag/search');
 
 export interface SearchOptions {
 	limit?: number;
@@ -56,7 +59,7 @@ export async function hybridSearch(
 		});
 	} else {
 		// Fallback to FTS-only
-		console.warn('Embeddings unavailable, falling back to FTS-only search');
+		logger.warn('Embeddings unavailable, falling back to FTS-only search');
 		return executeFtsSearch(supabase, query, { limit, grade, topics });
 	}
 }
@@ -91,7 +94,7 @@ async function executeHybridSearch(
 		});
 
 		if (error) {
-			console.error('Hybrid search error:', error);
+			logger.error('Hybrid search error:', error);
 			// Fallback to FTS
 			return executeFtsSearch(supabase, queryText, {
 				limit: options.limit,
@@ -120,7 +123,7 @@ async function executeHybridSearch(
 			})
 		);
 	} catch (error) {
-		console.error('Hybrid search failed:', error);
+		logger.error('Hybrid search failed:', error);
 		return executeFtsSearch(supabase, queryText, {
 			limit: options.limit,
 			grade: options.grade,
@@ -187,7 +190,7 @@ async function executeFtsSearch(
 		const { data, error } = await query;
 
 		if (error) {
-			console.error('FTS search error:', error);
+			logger.error('FTS search error:', error);
 			return [];
 		}
 
@@ -205,7 +208,7 @@ async function executeFtsSearch(
 			};
 		});
 	} catch (error) {
-		console.error('FTS search failed:', error);
+		logger.error('FTS search failed:', error);
 		return [];
 	}
 }
