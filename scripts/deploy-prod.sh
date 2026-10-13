@@ -32,6 +32,17 @@ ATTENTE_MAX="${DEPLOY_PROD_ATTENTE_MAX:-1500}"
 essai=0
 [ "${1:-}" = "--essai" ] && essai=1
 
+# Verrou noyau « deploy » (scripts/lib/lock.py), dans le répertoire git commun à
+# tous les worktrees : tant qu'il est tenu, le hook .claude/hooks/garde-commandes.py
+# refuse aux sessions Claude `gh pr merge` et les commits ou pushes sur main. Un
+# main qui bouge fait refuser le push de la version, et chaque merge relance la
+# CI que le script attend (2026-10-13 : cinq merges en une heure). Un second
+# deploy:prod sort en exit 2. `--essai` ne crée rien : pas de verrou.
+if [ "$essai" = 0 ] && [ -z "${DEPLOY_PROD_SOUS_VERROU:-}" ]; then
+	DEPLOY_PROD_SOUS_VERROU=1 exec python3 "$(dirname "${BASH_SOURCE[0]}")/lib/lock.py" \
+		deploy "pnpm deploy:prod" -- bash "${BASH_SOURCE[0]}" "$@"
+fi
+
 # success | failure | cancelled | pending | absent
 etat_ci() {
 	local e

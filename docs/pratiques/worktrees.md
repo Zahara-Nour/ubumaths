@@ -39,6 +39,11 @@ donc une garde mécanique ; ailleurs, une règle courte suffit.
 1. **Le dépôt principal reste sur `main`.** Il sert aux commits 100 % doc, au
    `release`, au `db:migrate` d'après-merge et à la lecture. **Jamais de chantier
    dedans** — c'est ce qui garantit qu'il est toujours propre et à jour.
+   Son `main`, son index et ses fichiers non suivis sont **partagés** par
+   toutes les sessions : commit de doc d'un seul tenant (`pull --rebase` →
+   `add <ses fichiers>` → commit → push), arrêt et David si le pull ou le push
+   échoue, rien d'inachevé laissé dedans — voir
+   [git-workflow.md § 1 bis](git-workflow.md#1-bis-plusieurs-sessions-en-parallèle).
 2. **Un worktree = un chantier = une branche = une session.** Je ne travaille
    jamais dans deux worktrees dans la même session, et j'annonce où je suis
    (`git worktree list` + `pwd`) au premier message.

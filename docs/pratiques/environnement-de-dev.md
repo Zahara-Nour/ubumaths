@@ -77,11 +77,11 @@ TypeScript (`eslint.fast.config.js`), plus oxlint, la parité des variables d'en
 
 **Hooks husky** (`.husky/`) :
 
-| Hook         | Ce qu'il fait                                                                                                                                                                                                                  |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `pre-commit` | `pnpm lint-staged` (`.lintstagedrc.js`) : oxlint (`--fix` sur JS/TS, sans `--fix` sur `.svelte`) + prettier ; prettier seul sur json/md/css/html. Bloque sur une _erreur_ oxlint seulement.                                    |
-| `commit-msg` | commitlint, sur **toutes** les branches (les commits de branche arrivent tels quels sur main).                                                                                                                                 |
-| `pre-push`   | `pnpm format:check` (fichiers suivis seulement) → `lint:fast` → `docs:check-links` → `docs:check-refs --strict` → `docs:check-a-jour --couverture` (bloquants), puis `docs:check-a-jour --depuis origin/main` (avertissement). |
+| Hook         | Ce qu'il fait                                                                                                                                                                                                                                                                                                                                                              |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pre-commit` | `scripts/garde-main-a-jour.sh` : sur `main`, refuse le commit si `origin/main` a des commits que le `main` local n'a pas (`git fetch` d'abord, laisse passer hors ligne). Puis `pnpm lint-staged` (`.lintstagedrc.js`) : oxlint (`--fix` sur JS/TS, sans `--fix` sur `.svelte`) + prettier ; prettier seul sur json/md/css/html. Bloque sur une _erreur_ oxlint seulement. |
+| `commit-msg` | commitlint, sur **toutes** les branches (les commits de branche arrivent tels quels sur main).                                                                                                                                                                                                                                                                             |
+| `pre-push`   | `pnpm format:check` (fichiers suivis seulement) → `lint:fast` → `docs:check-links` → `docs:check-refs --strict` → `docs:check-a-jour --couverture` (bloquants), puis `docs:check-a-jour --depuis origin/main` (avertissement).                                                                                                                                             |
 
 Le pre-push est le seul filet des commits de doc poussés directement sur `main`, que la CI de push
 ignore. `--no-verify` n'a plus de raison d'être (le hook Claude le refuse).
@@ -108,6 +108,10 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   arguments ou du dossier (port 5173, `pnpm dev` sans `--strictPort`, `kill:servers` depuis un
   worktree, CLI Supabase directe, `--no-verify`, `pnpm release` seul, `tsc --noEmit`, `svelte-check`
   nu, `git -C ""`) et demande confirmation pour un `--force` ou un `-D` placé n'importe où.
+  Sur `main` (partagé par toutes les sessions) : refuse un pull qui fusionne, un merge non
+  fast-forward, `git add -A` / `.`, `git commit -a` ; pendant un `deploy:prod` (verrou « deploy »),
+  refuse `gh pr merge` et les commits ou pushes vers `main`
+  ([git-workflow.md § 1 bis](git-workflow.md#1-bis-plusieurs-sessions-en-parallèle)).
   `deploy:prod` n'y est plus soumis (décision de David, 2026-10-10) : la règle vit dans CLAUDE.md.
 - Agents : [.claude/agents/README.md](../../.claude/agents/README.md). Skills (`doc-a-jour`,
   `domain-modeling`, `shtam`) : [skills-claude.md](skills-claude.md).
