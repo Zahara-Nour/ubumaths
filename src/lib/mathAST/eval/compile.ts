@@ -273,9 +273,11 @@ function compileFunction(node: FunctionNode): CompiledFn {
 	const { name, args } = node;
 
 	// Nth root: sqrt with base property → x^(1/n)
-	if (name === 'sqrt' && node.base) {
+	// `root(a, n)` (solveur, `denormalize`) : la même racine, indice en argument
+	const rootIndex = name === 'sqrt' ? node.base : name === 'root' ? args[1] : undefined;
+	if (rootIndex) {
 		const arg = compile(args[0]);
-		const base = compile(node.base);
+		const base = compile(rootIndex);
 		// Indice entier impair : racine définie sur ℝ, ⁿ√a = −ⁿ√|a| pour a < 0
 		// (décision du 2026-10-07). Indice pair ou non entier : NaN pour a < 0.
 		return wrapPower(node, (v) => {

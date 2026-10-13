@@ -270,3 +270,44 @@ describe('computeReciprocal — refus', () => {
 		expect(result.refusal.kind).toBe('constant');
 	});
 });
+
+// =============================================================================
+// Régressions de la revue de #1304
+// =============================================================================
+
+describe('computeReciprocal — injectivité prouvée, jamais devinée', () => {
+	it('e^{x²} sur ]−0,001 ; 5] : refus (f(−0,0005) = f(0,0005), invisible aux échantillons)', () => {
+		const result = reciprocalOf('e^{x^2}', ']-0.001;5]');
+		expect(result.ok).toBe(false);
+	});
+
+	it('x² sur ]−0,001 ; 5] et sur [−1 ; 1000] : refus', () => {
+		expect(reciprocalOf('x^2', ']-0.001;5]').ok).toBe(false);
+		expect(reciprocalOf('x^2', '[-1;1000]').ok).toBe(false);
+	});
+
+	it('1/x³ : jamais « non bijective » (le bruit de Cardano n’est pas un contre-exemple)', () => {
+		const result = reciprocalOf('\\frac{1}{x^3}');
+		if (!result.ok) {
+			expect(result.refusal.kind).not.toBe('not-bijective');
+			return;
+		}
+		expect(formatInterval(result.departure)).toBe('ℝ \\ {0}');
+		expect(formatInterval(result.arrival)).toBe('ℝ \\ {0}');
+		checkRoundTrips('\\frac{1}{x^3}', result, [-2, 0.5, 3], [-8, 0.125, 5]);
+	});
+});
+
+describe('computeReciprocal — racines n-ièmes du solveur (root)', () => {
+	it('x⁴ sur [0 ; +∞[ → racine quatrième, [0 ; +∞[ → [0 ; +∞[', () => {
+		const result = success(reciprocalOf('x^4', '[0;+\\infty['));
+		expect(formatInterval(result.departure)).toBe('[0 ; +∞[');
+		checkRoundTrips('x^4', result, [0, 1.5, 3], [0, 2, 81]);
+	});
+
+	it('x⁵ → racine cinquième, ℝ → ℝ', () => {
+		const result = success(reciprocalOf('x^5'));
+		expect(formatInterval(result.departure)).toBe('ℝ');
+		checkRoundTrips('x^5', result, [-2, 0.5, 3], [-32, 1, 7]);
+	});
+});

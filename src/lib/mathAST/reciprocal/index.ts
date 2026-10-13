@@ -104,6 +104,9 @@ const OFFSETS = [0.01, 0.3, 1.7, 6, 40];
 
 const TOLERANCE = 1e-7;
 
+/** Écart relatif au-delà duquel deux antécédents sont distincts, pas du bruit. */
+const DISTINCT = 1e-4;
+
 /** Lettres possibles pour le second membre y de `y = f(x)`. */
 const PARAMETER_LETTERS = ['y', 'u', 'w', 'z'];
 
@@ -203,6 +206,25 @@ function branchValue(solution: Solution, letter: string, y: number): number | nu
 
 function close(a: number, b: number): boolean {
 	return Math.abs(a - b) <= TOLERANCE * Math.max(1, Math.abs(a));
+}
+
+/**
+ * x₁ contredit l'injectivité : même image que x₀ À LA PRÉCISION DU CALCUL, et
+ * nettement distinct de x₀. Une branche imprécise (Cardano pour 1/x³ rendait
+ * 2,99998921 pour x₀ = 3) n'est pas un contre-exemple.
+ */
+function isCounterexample(
+	f: MathNode,
+	variable: string,
+	x0: number,
+	x1: number,
+	y0: number
+): boolean {
+	const y1 = valueAt(f, variable, x1);
+	if (y1 === null) return false;
+	const sameImage = Math.abs(y1 - y0) <= 1e-9 * Math.max(1, Math.abs(y0));
+	const distinct = Math.abs(x1 - x0) > DISTINCT * Math.max(1, Math.abs(x0));
+	return sameImage && distinct;
 }
 
 // =============================================================================
@@ -317,13 +339,20 @@ export function computeReciprocal(f: MathNode, options: ReciprocalOptions = {}):
 			const x1 = branchValue(solution, letter, y0);
 			if (x1 !== null && close(x1, x0)) return;
 			recovers[i] = false;
-			if (x1 !== null && pair === null && containsValue(domain, x1)) pair = [x0, x1];
+			if (x1 !== null && pair === null && containsValue(domain, x1)) {
+				if (isCounterexample(f, variable, x0, x1, y0)) pair = [x0, x1];
+			}
 		});
 	}
 	const pieces = monotonePieces(f, variable, domain);
-	if (pair !== null || injectiveByPieces(pieces) === false) {
+	const injective = injectiveByPieces(pieces);
+	if (pair !== null || injective === false) {
 		return notBijective(name, domain, pair, pieces);
 	}
+	// Injectivité PROUVÉE seulement : par les variations, ou parce que le
+	// solveur n'a qu'une solution pour tout y. Les échantillons ne prouvent
+	// rien — e^{x²} sur ]−0,001 ; 5] leur échappait (revue de #1304).
+	if (injective !== true && solutions.length !== 1) return unsolved(name);
 	const branch = recovers.indexOf(true);
 	if (branch < 0) return unsolved(name);
 	const chosen = solutions[branch];

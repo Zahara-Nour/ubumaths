@@ -46,6 +46,11 @@ f(I), voir plus bas). Refus (`refusal.kind`, message en français, sans écritur
    monotonie (un point critique isolé ne coupe pas un morceau qui garde son sens : x³) ; f est
    injective exactement quand les images des morceaux sont deux à deux disjointes (homographique :
    ]−∞ ; 2[ et ]2 ; +∞[). Des images qui se recouvrent → `not-bijective`.
+   **f n'est acceptée que si l'injectivité est PROUVÉE** : par les variations, ou parce que le
+   solveur n'a qu'une solution pour tout y. Les échantillons ne prouvent rien (`e^{x²}` sur
+   ]−0,001 ; 5] leur échappait) : sans preuve → `unsolved`. Un contre-exemple de l'étape 2 doit
+   avoir la même image à 1e-9 près ET s'écarter de x₀ de plus de 1e-4 (relatif) : le bruit d'une
+   branche imprécise n'en est pas un (Cardano pour 1/x³ : `unsolved`, jamais `not-bijective`).
 4. **f(I), deux lectures** : par les variations (réunion des images des morceaux, limites aux
    bords) et par le solveur (condition de la branche ∩ domaine de s ∩ « s(y) ∈ I », par
    `solveInequality`). Si les deux existent et diffèrent → `unsolved`. `departureReadBy` dit

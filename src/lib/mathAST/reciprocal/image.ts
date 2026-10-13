@@ -28,7 +28,7 @@ import { computeVariations } from '../variations/compute';
 import type { LimitValue, VariationResult } from '../variations/types';
 import { computeDomain } from '../domain/compute';
 import { intersect, union } from '../domain/algebra';
-import { interval, intervalSet } from '../domain/factory';
+import { emptyDomain, interval, intervalSet, universalDomain } from '../domain/factory';
 import { negativeInfinity, positiveInfinity } from '../factory';
 import { solveInequality } from '../solve/inequality';
 
@@ -209,7 +209,7 @@ function conditionDomain(condition: MathNode, letter: string): Domain {
 	const { operands, relations } = flattenRelationChain(condition);
 	return relations
 		.map((op, i) => inequalityDomain(relation(op, operands[i], operands[i + 1]), letter))
-		.reduce((all, d) => intersect(all, d), { kind: 'universal' } as Domain);
+		.reduce<Domain>((all, d) => intersect(all, d), universalDomain());
 }
 
 function inequalityDomain(atom: MathNode, letter: string): Domain {
@@ -255,7 +255,7 @@ export function imageBySolver(
 		if (domain.kind !== 'interval_set') return null;
 		const lands = domain.intervals
 			.map((iv) => landsIn(s, letter, iv))
-			.reduce((all, d) => union(all, d), { kind: 'empty' } as Domain);
+			.reduce<Domain>((all, d) => union(all, d), emptyDomain());
 		image = intersect(image, lands);
 		for (const point of domain.excludedPoints) {
 			image = intersect(image, inequalityDomain(relation('!=', s, point.value), letter));
