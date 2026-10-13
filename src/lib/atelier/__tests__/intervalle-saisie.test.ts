@@ -70,8 +70,7 @@ describe('le mot « sur » coupe la définition', () => {
 			'\\left\\lbrack1;2\\right\\rbrack'
 		],
 		['x^2\\text{ sur }[0;1]', 'latex', 'x^2', '[0;1]'],
-		['xsurR', 'latex', 'x', 'R'],
-		['x sur', 'detect', 'x', '']
+		['xsurR', 'latex', 'x', 'R']
 	] as const)('%s → %s | %s', (typed, mode, body, written) => {
 		expect(splitInterval(typed, mode)).toEqual({ body, written });
 	});
@@ -83,6 +82,36 @@ describe('le mot « sur » coupe la définition', () => {
 	] as const)('%s n’est pas coupé (%s)', (typed, mode) => {
 		expect(splitInterval(typed, mode).written).toBeNull();
 	});
+});
+
+// Seconde revue : « sur » ne coupe que s'il est SUIVI d'un ensemble ; sinon la
+// saisie reste entière, exactement comme avant le lot 1 (`written` nul ⇒ même chemin)
+describe('« sur » sans ensemble derrière : la saisie reste entière', () => {
+	it.each([
+		['sur', 'detect'],
+		['3 sur 4', 'detect'],
+		['x sur 2', 'detect'],
+		['2sur', 'latex'],
+		['xsur', 'latex'],
+		['x\\cdot sur', 'latex'],
+		['sur^2', 'latex'],
+		['x^{sur}', 'latex'],
+		['\\text{surélevé}', 'latex']
+	] as const)('%s (%s)', (typed, mode) => {
+		expect(splitInterval(typed, mode)).toEqual({ body: typed, written: null });
+	});
+
+	it.each(['h(x) = sur', 'p = sur', 'a = 3 sur 4', 'f(x) = x sur 2'])(
+		'Calcul : %s n’est pas refusé pour un intervalle',
+		(typed) => {
+			const d = desk();
+			for (const name of ['s', 'u', 'r']) d.submit(`${name} = 2`);
+			d.submit(typed);
+
+			expect([UNREADABLE_INTERVAL, ONLY_FUNCTIONS]).not.toContain(last(d).text);
+			expect(last(d).failed).toBe(false);
+		}
+	);
 });
 
 describe('les ensembles lus (I2)', () => {
@@ -430,6 +459,18 @@ describe('rechargement et partage', () => {
 		const fresh = new Atelier();
 		fresh.restore(loaded.state);
 		expect(intervalLabelOf(fresh.get('f')!)).toBe('[0 ; +∞[');
+	});
+
+	it('ensemble ET lettre refusés à la relecture : la fonction est gardée, en x', () => {
+		const fresh = new Atelier();
+		const report = fresh.restore({
+			version: 1,
+			objects: [{ name: 'f', kind: 'function', definition: 'x^2', interval: '}}}{{{', letter: 'e' }]
+		});
+
+		expect(report.skipped).toEqual([]);
+		expect(fresh.get('f')).toMatchObject({ definition: 'x^2' });
+		expect(fresh.get('f')?.kind === 'function' && fresh.get('f')).not.toHaveProperty('letter');
 	});
 
 	it('un intervalle abîmé dans un lien : la fonction est gardée sur son domaine', () => {

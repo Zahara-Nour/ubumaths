@@ -67,12 +67,24 @@ export const ONLY_FUNCTIONS = 'Seule une fonction se définit sur un intervalle.
 const SUR_AS_TEXT = /\\(?:text|textrm|mathrm|operatorname)\s*\{\s*sur\s*\}/g;
 
 /**
- * Le mot « sur ». En LaTeX (champ MathLive), collé à ce qui précède : seul ce qui
- * suit compte — pas une minuscule (`surface`), et jamais `\surd`. En texte, un
- * mot entier.
+ * Le mot « sur ». En LaTeX (champ MathLive), collé à ce qui précède (`x^2sur`),
+ * jamais une commande (`\surd`). En texte, un mot entier. Dans les deux cas,
+ * c'est ce qui SUIT qui décide (`SET_START`).
  */
-const SUR_IN_LATEX = /(?<!\\)sur(?![a-z])/;
-const SUR_IN_TEXT = /(?<![A-Za-z\\])sur(?![A-Za-z])/;
+const SUR_IN_LATEX = /(?<!\\)sur/g;
+const SUR_IN_TEXT = /(?<![A-Za-z\\])sur(?![A-Za-z])/g;
+
+/**
+ * Le début d'un ensemble que `parseStudentDomain` lit : un crochet (aussi en
+ * LaTeX), une accolade échappée, ℝ (`ℝ`, `\R`, `\mathbb{R}`, `R` seul, `R*`,
+ * `R+`). Sans lui, « sur » n'est pas le mot de l'intervalle : `a = 3 sur 4`,
+ * `x^{sur}`, `\text{surélevé}` restent entiers, comme avant le lot 1.
+ */
+const SET_START =
+	/^(?:\\[,;:! ]|~|\s)*(?:\[|\]|\\left|\\lbrack|\\rbrack|\\\{|\\lbrace|ℝ|\\R(?![A-Za-z])|\\mathbb|R(?![A-Za-z0-9]))/;
+
+/** Seulement des espaces après « sur » : l'élève est en train de l'écrire. */
+const NOTHING_YET = /^(?:\\[,;:! ]|~|\s)*$/;
 
 /** Un appel `f(…)` sans parenthèse dans l'argument — la forme de `TERM` (`calcul.ts`). */
 const CALL = /(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)\(([^()]*)\)/g;
@@ -81,15 +93,32 @@ const CALL = /(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)\(([^()]*)\)/g;
 // Fonctions
 // =============================================================================
 
-/** Couper une saisie au mot « sur ». */
-export function splitInterval(typed: string, mode: ReadingMode): SplitDefinition {
+/**
+ * Où commence le mot « sur » d'un intervalle, et ce qui le suit — ou `null`.
+ *
+ * @param typing - Accepter aussi « sur » en fin de saisie (rien encore derrière) :
+ *   la carte coupe `smartFence` avant que le crochet ne soit tapé.
+ */
+export function intervalWord(
+	typed: string,
+	mode: ReadingMode,
+	typing = false
+): { readonly before: string; readonly after: string } | null {
 	const text = typed.replace(SUR_AS_TEXT, ' sur ');
-	const match = (mode === 'latex' ? SUR_IN_LATEX : SUR_IN_TEXT).exec(text);
-	if (match === null) return { body: typed, written: null };
-	return {
-		body: text.slice(0, match.index).trim(),
-		written: text.slice(match.index + match[0].length).trim()
-	};
+	for (const match of text.matchAll(mode === 'latex' ? SUR_IN_LATEX : SUR_IN_TEXT)) {
+		const after = text.slice(match.index + match[0].length);
+		if (SET_START.test(after) || (typing && NOTHING_YET.test(after))) {
+			return { before: text.slice(0, match.index), after };
+		}
+	}
+	return null;
+}
+
+/** Couper une saisie au mot « sur » suivi d'un ensemble ; sinon la saisie reste entière. */
+export function splitInterval(typed: string, mode: ReadingMode): SplitDefinition {
+	const word = intervalWord(typed, mode);
+	if (word === null) return { body: typed, written: null };
+	return { body: word.before.trim(), written: word.after.trim() };
 }
 
 /** Lire l'ensemble écrit après « sur ». */

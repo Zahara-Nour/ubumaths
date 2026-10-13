@@ -630,10 +630,6 @@ export class Atelier {
 	// ---------------------------------------------------------------------------
 
 	/**
-	 * Le refus d'un nom qui est la LETTRE d'une fonction (`t` après `f(t)`), ou
-	 * `null`. Sinon la carte de `f` montrerait `t` pour deux choses à la fois.
-	 */
-	/**
 	 * L'ensemble à ranger pour une fonction (I3 : dans son domaine), ou le refus.
 	 * `sur ℝ` ne range rien. Une valeur, une suite, une liste n'en ont pas.
 	 */
@@ -648,6 +644,10 @@ export class Atelier {
 		return checkInterval(written, definition, provenance, this.functionNames, letter);
 	}
 
+	/**
+	 * Le refus d'un nom qui est la LETTRE d'une fonction (`t` après `f(t)`), ou
+	 * `null`. Sinon la carte de `f` montrerait `t` pour deux choses à la fois.
+	 */
 	#letterUse(name: string): string | null {
 		const owner = this.items.find((o) => isFunction(o) && o.letter === name);
 		return owner === undefined
@@ -1069,16 +1069,20 @@ export class Atelier {
 				...(stored.kind === 'function' && stored.interval && { interval: stored.interval }),
 				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
 			};
-			let result = this.create(input);
+			let attempt = input;
+			let result = this.create(attempt);
 			// Un ensemble refusé (lien abîmé, domaine changé) : la fonction est gardée
 			// sur son domaine — perdre f pour son intervalle serait disproportionné
-			if (!result.ok && input.interval !== undefined) {
-				result = this.create({ ...input, interval: undefined });
+			if (!result.ok && attempt.interval !== undefined) {
+				attempt = { ...attempt, interval: undefined };
+				result = this.create(attempt);
 			}
 			// Une lettre refusée (`e`, `n`, le nom de la fonction) : la fonction est
-			// gardée en x — sa définition rangée l'est déjà (`persistence.ts`)
-			if (!result.ok && input.letter !== undefined) {
-				result = this.create({ ...input, letter: undefined });
+			// gardée en x — sa définition rangée l'est déjà (`persistence.ts`). Les
+			// relances s'ENCHAÎNENT : ensemble et lettre refusés, f reste (revue)
+			if (!result.ok && attempt.letter !== undefined) {
+				attempt = { ...attempt, letter: undefined };
+				result = this.create(attempt);
 			}
 			if (!result.ok) {
 				skipped.push({ name: stored.name, reason: result.message });

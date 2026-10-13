@@ -175,8 +175,10 @@ l'élève écrit l'ensemble dans le même champ que la définition, après le mo
 (`f(x) = x^2 sur [0;+∞[`). `splitInterval` (`src/lib/atelier/interval.ts`) coupe AVANT le parseur
 de l'expression : en texte (Calcul), un mot entier ; en LaTeX (carte), « sur » arrive en trois
 lettres collées à ce qui précède (`x^2sur[0;1]`, mesuré dans Chromium) et se reconnaît à ce qui le
-suit — pas une minuscule (`surface`), jamais `\surd` ; la carte l'écrit `\text{ sur }`. L'ensemble
-est lu par `parseStudentDomain` (intervalles, réunions, `ℝ \ {0}`, `ℝ₊`, `x > 0` ; pas `+oo`) et
+suit (`intervalWord`) : il ne coupe QUE devant le début d'un ensemble (crochet, `\left`, `\{`, ℝ,
+`\R`, `\mathbb`, `R` seul) ; sinon la saisie reste entière comme avant (`a = 3 sur 4`, `x^{sur}`,
+`surface`, `\text{surélevé}`) ; jamais `\surd` ; la carte l'écrit `\text{ sur }`. L'ensemble
+est lu par `parseStudentDomain` (intervalles, réunions, `ℝ \ {0}`, `ℝ₊` ; pas `+oo`) et
 rangé TEL QU'ÉCRIT dans `FunctionObject.interval` ; `sur ℝ` ne range rien. `Atelier.create` et
 `update` le jugent (`checkInterval`) : illisible, vide, réduit à un point, posé sur une valeur, une
 liste ou une suite (« Seule une fonction se définit sur un intervalle. »), ou hors du domaine de la
@@ -184,8 +186,9 @@ fonction (I3, `computeDomain` puis `difference` : « ln(x) n'est pas défini sur
 en −1). » ; pas jugé quand la définition cite d'autres objets) → refusé, rien ne change. Une
 définition retapée sans « sur » (Calcul ou carte) retire l'intervalle (I6). `f(5)` hors de
 l'ensemble est refusé dans Calcul (`outsideIntervalRefusal`, argument sans variable ou fait de valeurs de l'atelier — `f(b)` avec b = 5 —, et aussi dans une définition, `a = f(5)`) et par l'image
-de la carte (I4). Dans la carte, `smartFence` est coupé dès que le champ contient « sur » (jugé au
-`keydown` en capture : l'`input` arrive trop tard) — sinon `[0;1[` s'écrit
+de la carte (I4). Dans la carte, `smartFence` est coupé dès que le champ contient le « sur » d'un
+intervalle — même règle `intervalWord`, « sur » en fin de saisie compris (jugé au `keydown`,
+`beforeinput` et `input` en capture : l'`input` arrive trop tard) — sinon `[0;1[` s'écrit
 `\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`, illisible. Pas encore (lots 2 et 3) :
 `.variations`, `.résoudre`, signe sur l'intervalle, `f′` qui hérite, tracé restreint — une fonction
 sur un intervalle se trace et se calcule sur tout son domaine.

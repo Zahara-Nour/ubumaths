@@ -136,6 +136,29 @@ describe('carte : f(x) = x² sur [0 ; +∞[', () => {
 		expect(intervalLabelOf(atelier.get('f')!)).toBeNull();
 	});
 
+	// Seconde revue : smartFence suit la règle du découpage, pas un simple « contient sur »
+	it('« surface » ne coupe pas smartFence : les parenthèses se referment', async () => {
+		const atelier = withF('');
+		const { container } = await render(WithAtelier, { atelier });
+		const card = await open(container, 'f');
+
+		await typeAtEnd(fieldOf(card), 'surface+(x+1');
+
+		expect(fieldOf(card).value).toContain('\\left(');
+	});
+
+	it('taper puis effacer « sur » : (x+1)/(x-1) se lit normalement', async () => {
+		const atelier = withF('');
+		const { container } = await render(WithAtelier, { atelier });
+		const card = await open(container, 'f');
+
+		await typeAtEnd(fieldOf(card), 'sur{Backspace}{Backspace}{Backspace}(x+1)/(x-1)');
+
+		expect(fieldOf(card).value).toContain('\\left(');
+		await vi.waitFor(() => expect(atelier.get('f')?.status).toBe('ok'));
+		expect(intervalLabelOf(atelier.get('f')!)).toBeNull();
+	});
+
 	it('une valeur ne se définit pas sur un intervalle', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'value', name: 'a', definition: '2' }, 'keyboard');

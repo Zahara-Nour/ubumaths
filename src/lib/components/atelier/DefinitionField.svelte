@@ -15,7 +15,7 @@
 	import { useAtelier } from '$lib/atelier/context';
 	import { definitionFromField, fieldLatexOf } from '$lib/atelier/mathfield';
 	import { internalDefinition, typedLetterOf } from '$lib/atelier/letter';
-	import { ONLY_FUNCTIONS, readInterval, splitInterval } from '$lib/atelier/interval';
+	import { intervalWord, ONLY_FUNCTIONS, readInterval, splitInterval } from '$lib/atelier/interval';
 	import type { AtelierObject } from '$lib/atelier/types';
 
 	interface Props {
@@ -102,13 +102,17 @@
 	/**
 	 * Mesuré dans Chromium (`intervalle-champ.svelte.test.ts`) : avec `smartFence`,
 	 * taper `[0;1[` écrit `\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`,
-	 * illisible. Coupé dès que le champ d'une fonction contient « sur » — comme
+	 * illisible. Coupé dès que le champ d'une fonction contient le « sur » d'un
+	 * intervalle (suivi d'un ensemble, ou en fin de saisie) — comme
 	 * les cases « intervalles » des questions —, rendu sinon (les parenthèses se
 	 * referment). Jugé à chaque touche, AVANT MathLive (`keydown` en capture) :
 	 * l'événement `input` arrive trop tard, après plusieurs frappes rapides.
 	 */
 	function updateSmartFence() {
-		if (element && object.kind === 'function') element.smartFence = !element.value.includes('sur');
+		// La MÊME règle que le découpage (`intervalWord`), « sur » en fin de saisie compris
+		if (element && object.kind === 'function') {
+			element.smartFence = intervalWord(element.value, 'latex', true) === null;
+		}
 	}
 
 	/** Écrire maintenant ce qui a été tapé. */
