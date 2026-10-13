@@ -368,3 +368,16 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   `riddles.answer` et `riddles.correction`. Après : 0 colonne, 0 déclencheur, 2 solutions
   intactes ; aucune erreur dans les journaux Postgres. Un élève ne lit plus réponse ni
   correction. Types : #1208.
+- ✅ **Fichiers des comptes supprimés (C11, décision de David du 2026-10-13)** : #1239
+  (`20261016101000` en prod : `account_deletion_audit.storage_removed_at`) et #1243 (cron
+  Vercel du dimanche `api/cron/deleted-account-files`, date l'audit si tout est retiré ; la
+  route de suppression date aussi). Au passage : `verifyCronAuth` ne croit plus l'en-tête
+  `x-vercel-cron` (falsifiable) ; le bouton admin des tâches HTTP envoie `Origin` (le
+  contrôle CSRF le refusait en 403 en prod). **Actif après le prochain `deploy:prod`.**
+  `profile.class_ids` (liste des énigmes élève) : pas de défaut, mesuré (0 écart / 81).
+- ⏳ **Chemins forgés (audit de #1243, antérieur)** : un élève peut créer une pièce jointe
+  de message privé (`message_attachments_v2.storage_path`) ou une capture de signalement
+  (`bug_reports.screenshot_path`) avec le chemin d'un fichier d'autrui ; à la suppression
+  de son compte, ce fichier serait retiré. Correctif proposé à David : `delete_user_account`
+  ne rend que les chemins conformes (`messages/<id de son message>/…`,
+  `<son id>/<id de son signalement>/…`). Prod : 0 fichier dans ces buckets.
