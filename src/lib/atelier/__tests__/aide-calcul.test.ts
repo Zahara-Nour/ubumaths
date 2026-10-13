@@ -59,8 +59,9 @@ const DEV_COMMANDS = [
 	'fonctions',
 	'undef',
 	'oublier-fonction',
+	// `réciproque` n'est plus le nom de `inv` : c'est la vraie réciproque,
+	// calculée, une commande d'élève (lot 3 de la réciproque)
 	'inv',
-	'réciproque',
 	'auto',
 	'export',
 	'exporter'

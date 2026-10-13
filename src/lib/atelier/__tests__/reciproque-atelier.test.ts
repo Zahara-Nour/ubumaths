@@ -173,6 +173,16 @@ describe('le bouton « Réciproque »', () => {
 		expect(actions.find((a) => a.id === 'derive')?.disabledReason).toContain('.dériver');
 	});
 
+	it('« Variations » sur la carte f⁻¹ : sur son ensemble, nommée f^{-1} en LaTeX', () => {
+		const desk = deskWith('f(x) = e^(2x+1)', '.réciproque f');
+		desk.runFromPanel('variations', F_INV);
+		const line = last(desk);
+		const written = [line.latex, ...(line.steps ?? []).map((s) => s.expressionLatex)].join(' ');
+		expect(written).toContain('f^{-1}');
+		expect(written).not.toContain('f^-1');
+		expect(written).toContain(']0 ; +\\infty[');
+	});
+
 	it('l’image sur la carte f⁻¹ se calcule (f⁻¹(5) = 1)', () => {
 		const desk = deskWith('f(x) = 2x+3', '.réciproque f');
 		expect(desk.image(F_INV, '5')).toEqual({ text: '1', failed: false });

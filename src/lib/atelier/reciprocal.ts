@@ -327,7 +327,7 @@ export function reciprocalCommand(
 	typedArgument: string,
 	prepare: (text: string) => string
 ): CalcResult {
-	const { body, written } = splitInterval(typedArgument.trim(), 'text');
+	const { body, written } = splitInterval(typedArgument.trim(), 'detect');
 	if (body === '') {
 		return {
 			kind: 'refus',

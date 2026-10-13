@@ -1524,6 +1524,12 @@ function summaryField(source: { readonly summary?: readonly RenderedStep[] }): {
 	return source.summary === undefined ? {} : { summary: source.summary };
 }
 
+/** Le nom d'une carte dans les étapes : `f^-1` s'écrit `f^{-1}` en LaTeX. */
+function latexName(name: string): string {
+	const base = reciprocalOf(name);
+	return base === null ? name : `${base}^{-1}`;
+}
+
 /**
  * « Réciproque » sur la carte de `name` : la même ligne que `.réciproque name`
  * (carte `f⁻¹` comprise), décimaux à la française.
@@ -1945,7 +1951,7 @@ function computeAction(
 	// ⚠️ « Dériver » rendait la notation d'un terminal : `d/dx(x^2*sin(x)) = …`,
 	// avec un `:/` parasite sur les quotients et aucune règle nommée.
 	if (actionId === 'derive') {
-		const derived = deriveSteps(substituted.expression, name);
+		const derived = deriveSteps(substituted.expression, latexName(name));
 		if (derived !== null) {
 			return {
 				ok: true,
@@ -1959,7 +1965,7 @@ function computeAction(
 
 	// Le même rendu que `.variations` tapé : dérivée, détail, tableau
 	if (actionId === 'variations') {
-		const rendering = variationsRendering(substituted.expression, name, 'x', within);
+		const rendering = variationsRendering(substituted.expression, latexName(name), 'x', within);
 		if (rendering !== null) {
 			return {
 				ok: true,
