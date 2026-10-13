@@ -547,9 +547,10 @@ describe('DELETE /api/account/delete', () => {
 				createMockEvent({ confirmation: ACCOUNT_DELETION_CONFIRMATION_PHRASE }) as never
 			);
 
-			const completed = mockAuditChain.update.mock.calls
-				.map(([payload]: [Record<string, unknown>]) => payload)
-				.find((payload: Record<string, unknown>) => payload.status === 'completed');
+			const payloads = mockAuditChain.update.mock.calls.map(
+				(call: unknown[]) => call[0] as Record<string, unknown>
+			);
+			const completed = payloads.find((payload) => payload.status === 'completed');
 			expect(completed).toBeDefined();
 			expect(completed).not.toHaveProperty('storage_removed_at');
 		});
