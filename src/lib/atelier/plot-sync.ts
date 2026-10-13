@@ -19,6 +19,8 @@ import { isExplicitFunction, isScatter, type ExplicitFunction } from '$lib/graph
 import { firstTermValue, graphLatexOf } from './engine';
 import { plainDisplay } from './display';
 import { isFunction, isList, isSequence } from './types';
+import { plotRestrictionOf } from './interval';
+import { sameRestriction, type Restriction } from '$lib/grapheur/restriction';
 
 /**
  * Les courbes posées par l'atelier, par nom d'objet.
@@ -60,6 +62,12 @@ interface Wanted {
 	 * alors ceux que le grapheur lui a donnés.
 	 */
 	readonly display?: CurveDisplay;
+	/**
+	 * L'ensemble de la fonction (`f(x) = x^2 sur [0;+∞[`), en morceaux
+	 * numériques ; absent sans ensemble. `f′` le porte aussi : elle hérite de
+	 * celui de f (`#inheritIntervals`).
+	 */
+	readonly restriction?: Restriction;
 }
 
 /** Ce que le grapheur reçoit d'un réglage d'atelier. */
@@ -127,10 +135,12 @@ function wantedFor(atelier: Atelier, object: AtelierObject): Wanted | null {
 	// les deux divergeaient sur les constantes — `\pix` lui était illisible,
 	// `f(x) = e^x` ne se traçait pas (retour de David, 2026-10-05)
 	const latex = graphLatexOf(atelier, object.name);
+	const restriction = plotRestrictionOf(object);
 	return {
 		definition: latex ?? object.definition,
 		visible: object.status === 'ok',
-		...(isFunction(object) && object.display && { display: object.display })
+		...(isFunction(object) && object.display && { display: object.display }),
+		...(restriction && { restriction })
 	};
 }
 
@@ -242,9 +252,17 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 
 		// N'écrire que ce qui diffère : c'est cette condition qui rend la
 		// synchronisation idempotente, donc l'effet qui l'appelle non bouclant.
-		const changes: Partial<CurveSettings> & { latex?: string; visible?: boolean } = {};
+		const changes: Partial<CurveSettings> & {
+			latex?: string;
+			visible?: boolean;
+			restriction?: Restriction;
+		} = {};
 		if (isExplicitFunction(curve)) {
 			if (curve.latex !== target.definition) changes.latex = target.definition;
+			// Comparée par contenu : la conversion rend une copie neuve à chaque passage.
+			if (!sameRestriction(curve.restriction, target.restriction)) {
+				changes.restriction = target.restriction;
+			}
 			if (target.display) Object.assign(changes, settingsDiff(curve, target.display));
 		}
 		if (curve.visible !== target.visible) changes.visible = target.visible;

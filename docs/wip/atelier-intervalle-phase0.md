@@ -98,3 +98,9 @@ Puis le lot 3 de la réciproque (carte `f⁻¹` portant son ensemble).
   de l'ensemble de f ? (e) `dans` désormais accepté par `.variations` tapé (`.variations x^2 dans [0;+∞[`).
   Défaut vu en passant, hors lot : l'image depuis la carte f′ (`f′(1)`) répond « Impossible de
   calculer » même sans intervalle.
+- 2026-10-13 — lot 3 (tracé, I5) : `ExplicitFunction.restriction` (morceaux numériques, optionnel),
+  `src/lib/grapheur/restriction.ts` ; tracé par morceaux, point plein / creux (`--color-graph-bg`),
+  rien à l'infini ni sur une asymptote ; zéros, extremums, intersections et survol hors de
+  l'ensemble écartés ; f′ restreinte, tangente non. Questions pour David : (f) l'aire sous la
+  courbe (`.intégrer`, carte) reste libre hors de l'ensemble ; (g) le lien de projection
+  `?f=x^2 sur [0;+∞[` est refusé (« ne se trace pas ») — `atelierFromCurves` ne lit pas « sur ».

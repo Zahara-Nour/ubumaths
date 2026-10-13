@@ -34,6 +34,7 @@ import { compile } from '$lib/mathAST/eval/compile';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { findCriticalZeros, findCriticalExtrema } from '$lib/mathAST/analysis';
 import { exactAsymptotes } from './asymptotes-exactes';
+import { restrictAnalysis, type Restriction } from './restriction';
 import { simplify } from '$lib/mathAST/simplify';
 import { substitute } from '$lib/mathAST/eval/substitute';
 import { add, multiply, variable } from '$lib/mathAST/factory';
@@ -1197,7 +1198,8 @@ export function analyzeAllFunctions(
 	functions: readonly AnalysisInput[],
 	viewport: Viewport
 ): FunctionAnalysis[] {
-	return functions.map((f) => analyzeCached(f, viewport));
+	// La restriction filtre APRÈS le cache : celui-ci ne dépend que de l'expression.
+	return functions.map((f) => restrictAnalysis(analyzeCached(f, viewport), f.restriction));
 }
 
 /**
@@ -1261,6 +1263,8 @@ export interface AnalysisInput {
 	readonly id: string;
 	readonly evaluator: (x: number) => number | null;
 	readonly ast?: AnalysisASTInfo;
+	/** L'ensemble où la courbe est tracée : les points hors de lui sont écartés. */
+	readonly restriction?: Restriction;
 }
 
 /**
@@ -1329,7 +1333,8 @@ export function toAnalysisInputs(
 		inputs.push({
 			id: plottable.id,
 			evaluator: cachedEvaluator(bound),
-			ast: buildAnalysisAST(bound)
+			ast: buildAnalysisAST(bound),
+			...(plottable.restriction && { restriction: plottable.restriction })
 		});
 	}
 
@@ -1396,7 +1401,8 @@ export function derivativeCurve(
 
 	// Rendre le même objet pour les mêmes entrées : le composant de tracé
 	// n'échantillonne à nouveau que si sa prop a réellement changé.
-	const key = `${func.id}|${func.color}|${func.lineWidth}|${func.visible}`;
+	// La restriction en fait partie : la dérivée tracée hérite de l'ensemble de f.
+	const key = `${func.id}|${func.color}|${func.lineWidth}|${func.visible}|${JSON.stringify(func.restriction ?? null)}`;
 	const cached = derivativeCache.get(derivative);
 	if (cached?.key === key) return cached.curve;
 
@@ -1474,7 +1480,9 @@ export function tangentAt(
 			lineWidth: 1,
 			lineStyle: 'solid',
 			showDerivative: false,
-			tangentAt: null
+			tangentAt: null,
+			// La tangente est une droite entière : elle ne garde pas l'ensemble de f.
+			restriction: undefined
 		}
 	};
 }
@@ -1683,7 +1691,7 @@ export function osculatingCircleAt(
  */
 const evaluatorCache = new WeakMap<MathNode, (x: number) => number | null>();
 
-function cachedEvaluator(ast: MathNode): (x: number) => number | null {
+export function cachedEvaluator(ast: MathNode): (x: number) => number | null {
 	const cached = evaluatorCache.get(ast);
 	if (cached) return cached;
 

@@ -12,7 +12,8 @@
 	import type { ExplicitFunction, Viewport, Point } from '$lib/grapheur/types';
 	import { LINE_STYLE_DASHARRAY } from '$lib/grapheur/types';
 	import type { CoordinateTransformer } from '$lib/grapheur/viewport';
-	import { bindParameters, sampleCached } from '$lib/grapheur/analysis';
+	import { bindParameters, cachedEvaluator, sampleCached } from '$lib/grapheur/analysis';
+	import { endpointMarkers, pieceViewports } from '$lib/grapheur/restriction';
 	import type { VariableBindings } from '$lib/grapheur/evaluator';
 	import { curveToSVGPath, curveToPolylinePath } from '$lib/grapheur/bezier';
 	import { curveColorValue } from '$lib/grapheur/colors';
@@ -43,6 +44,9 @@
 	/** Number of sample points for fast rendering during interaction */
 	const LOW_QUALITY_POINTS = 100;
 
+	/** Rayon minimal d'un point de bord (celui de geometry-core), en pixels. */
+	const ENDPOINT_RADIUS = 4;
+
 	// ==========================================================================
 	// Coordinate Transformation
 	// ==========================================================================
@@ -62,40 +66,50 @@
 	 * Generate the SVG path data for the function curve.
 	 * Recomputes when viewport, function, or interaction state changes.
 	 */
+	/** The expression with its parameters bound: the caches key on it. */
+	const bound = $derived(func.ast ? bindParameters(func.ast, bindings) : undefined);
+
 	const pathData = $derived.by(() => {
 		// Skip if no valid AST
-		if (!func.ast) {
-			return '';
-		}
-
-		// Bind the parameters first: the cache keys on the bound expression.
-		const bound = bindParameters(func.ast, bindings);
 		if (!bound) return '';
 
 		// Adjust quality based on interaction state
 		const numPoints = isInteracting ? LOW_QUALITY_POINTS : HIGH_QUALITY_POINTS;
 
-		// Sample the function across the viewport. Cached on the expression: the
-		// panel hands over a fresh object at every render — moving a slider that
-		// changes nothing here would otherwise re-sample the whole curve.
-		const sampledCurve = sampleCached(bound, viewport, numPoints);
-
-		// If no points, return empty path
-		if (sampledCurve.points.length === 0) {
-			return '';
-		}
-
 		// Create transformer for math -> SVG coordinates
 		const pointTransformer = createPointTransformer(transformer);
 
-		// Convert to SVG path
-		// Use polyline for fast rendering during interaction, Bezier otherwise
-		if (isInteracting) {
-			return curveToPolylinePath(sampledCurve, pointTransformer);
-		} else {
-			return curveToSVGPath(sampledCurve, pointTransformer);
+		// Un morceau par intervalle de l'ensemble (la fenêtre entière sans
+		// restriction), chacun ouvrant son propre sous-chemin `M…`.
+		const pieces: string[] = [];
+		for (const piece of pieceViewports(func.restriction, viewport)) {
+			// Sample the function across the piece. Cached on the expression: the
+			// panel hands over a fresh object at every render — moving a slider that
+			// changes nothing here would otherwise re-sample the whole curve.
+			const sampledCurve = sampleCached(bound, piece, numPoints);
+			if (sampledCurve.points.length === 0) continue;
+
+			// Use polyline for fast rendering during interaction, Bezier otherwise
+			pieces.push(
+				isInteracting
+					? curveToPolylinePath(sampledCurve, pointTransformer)
+					: curveToSVGPath(sampledCurve, pointTransformer)
+			);
 		}
+		return pieces.join(' ');
 	});
+
+	/** Les points de bord de l'ensemble, en coordonnées SVG (aucun sans restriction). */
+	const markers = $derived.by(() => {
+		if (!bound || func.restriction === undefined) return [];
+		return endpointMarkers(func.restriction, cachedEvaluator(bound), viewport).map((m) => ({
+			...transformer.mathToSvg(m.x, m.y),
+			filled: m.filled
+		}));
+	});
+
+	/** Le point grossit avec le trait, pour rester visible autour de lui. */
+	const markerRadius = $derived(Math.max(ENDPOINT_RADIUS, func.lineWidth + 1));
 
 	/**
 	 * Compute accessibility label for the curve.
@@ -124,12 +138,30 @@
 		role="img"
 		aria-label={ariaLabel}
 	/>
+	<!-- Bornes de l'ensemble : plein = fermée (atteinte), creux = ouverte. -->
+	{#each markers as marker (`${marker.x},${marker.y}`)}
+		<circle
+			cx={marker.x}
+			cy={marker.y}
+			r={markerRadius}
+			style:stroke={curveColorValue(func.color)}
+			style:fill={marker.filled ? curveColorValue(func.color) : undefined}
+			stroke-width={2}
+			class={marker.filled ? 'endpoint-closed' : 'endpoint-open'}
+			aria-hidden="true"
+		/>
+	{/each}
 {/if}
 
 <style>
 	.function-curve {
 		vector-effect: non-scaling-stroke;
 		transition: opacity 0.15s ease-out;
+	}
+
+	/* Intérieur du point creux : la couleur du fond du graphe, clair ou sombre. */
+	.endpoint-open {
+		fill: var(--color-graph-bg);
 	}
 
 	.function-curve.interacting {
