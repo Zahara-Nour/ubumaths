@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.17.0] - 2026-10-13
+
+### Ajouté
+
+- Script `calligraphic.py` : les 20 autres capitales calligraphiques (`ℬ ℰ ℱ 𝒢 ℋ ℐ 𝒥 𝒦 ℳ 𝒩 𝒪 𝒬 ℛ 𝒯 𝒰 𝒱 𝒲 𝒳 𝒴 𝒵`), au même trait que `𝒫 𝒞 𝒮 ℒ 𝒟 𝒜` ; plus aucune capitale de Caligraphic-Regular ne garde la forme KaTeX
+
 ## [1.16.0] - 2026-10-13
 
 ### Modifié
