@@ -11,8 +11,8 @@ import { join } from 'node:path';
  * the query string (e.g. `/login?error=...`).
  *
  * This guards the whole codebase against reintroducing a `/login` navigation
- * target. A runtime safety net also exists in `hooks.server.ts` (redirectHandle
- * maps `/login` → `/auth/login`) for external / bookmarked URLs.
+ * target. A runtime safety net also exists in `src/lib/server/redirectHandle.ts`
+ * (redirectHandle maps `/login` → `/auth/login`) for external / bookmarked URLs.
  */
 
 const SRC = join(process.cwd(), 'src');
