@@ -295,11 +295,18 @@ describe('COVERAGE_CONFIG — chaque trou nomme sa zone', () => {
 
 	it('range un fichier dans la zone précise quand un glob large la contient', () => {
 		// Le premier trou qui correspond gagne : trier `trous` rangerait ces fichiers
-		// sous la zone large. Aucune doc ici (aucun test ne lit docs/).
-		const noteOf = (file: string) => holesTouched([file], [], COVERAGE_CONFIG)[0]?.note;
-		expect(noteOf('src/routes/api/admin/users/+server.ts')).toMatch(/^classes, élèves/);
-		expect(noteOf('src/routes/api/students/s1/warnings/+server.ts')).toMatch(/^messagerie/);
-		expect(noteOf('src/routes/api/students/s1/+server.ts')).toMatch(/^classes, élèves/);
+		// sous la zone large. Config fictive : les zones réelles qui s'emboîtaient ont
+		// reçu leur doc (2026-10-13). Aucune doc ici (aucun test ne lit docs/).
+		const config: CoverageConfig = {
+			...COVERAGE_CONFIG,
+			trous: [
+				{ glob: 'src/routes/api/{student,students}/*/warnings/**', note: 'précise' },
+				{ glob: 'src/routes/api/students/**', note: 'large' }
+			]
+		};
+		const noteOf = (file: string) => holesTouched([file], [], config)[0]?.note;
+		expect(noteOf('src/routes/api/students/s1/warnings/+server.ts')).toBe('précise');
+		expect(noteOf('src/routes/api/students/s1/+server.ts')).toBe('large');
 	});
 });
 
