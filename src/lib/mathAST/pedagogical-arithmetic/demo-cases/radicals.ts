@@ -9,6 +9,11 @@ import type { DemoCase } from '../demo-helpers';
 
 export const RADICALS: readonly DemoCase[] = [
 	{
+		label: '√9 → 3 (carré parfait)',
+		expression: sqrt(number('9')),
+		schoolLevels: ['college', 'lycee']
+	},
+	{
 		label: '√8 → 2√2',
 		expression: sqrt(number('8')),
 		schoolLevels: ['college', 'lycee']

@@ -121,6 +121,13 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
      $-$ » ($\int -f = -\int f$, sans $(-1)$), quelle que soit l'écriture (`\frac{-1}{x}`, `-\frac1x`,
      `-e^x`) ; valeur interdite approchée de `.domaine` écrite $D = \mathbb{R}\setminus\{\alpha\}$ avec
      $\alpha \approx 1{,}26$ (validé).
+   - **`.évaluer` — décidé par David le 2026-10-14** (phase 0 : pas de module d'évaluation pédagogique ;
+     `pedagogical-arithmetic` saute les pièges du négatif, écrit `*`, conclut 2/0 en silence) : E1 moteur
+     d'abord ; E2 rédaction collège ; E3 une opération par étape, $(-3)^2 = (-3)\times(-3) = 9$, étape
+     « On remplace $x$ par … », résumé = remplacement + résultat ; E4 pas de « Comment ? » pour
+     $e^0$, $\ln 1$… ; E5 saisie décimale → réponse décimale (2,25) ; E6 (proposé, à confirmer) plusieurs
+     lettres séparées par « ; ». Découpage : PR 1 réponse en formule + refus justes ; PR 2 moteur
+     (`\times`, $(-a)^n$, plus de calculs avalés, titre de √9, dénominateur nul) ; PR 3 atelier.
    - **2c. Commande `.limite`** (aucune aujourd'hui ; `pedagogical-limits` sert aux corrections) :
      syntaxe et limites à gauche / à droite à trancher par David.
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).

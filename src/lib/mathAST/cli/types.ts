@@ -53,7 +53,9 @@ export type ErrorCode =
 	/** Inéquation lue mais pas résolue (signe inconnu) : message en français, destiné à l'élève */
 	| 'INEQUALITY_UNSOLVED'
 	/** Équation lue mais pas résolue (aucun solveur, ou un paramètre) : message en français, destiné à l'élève */
-	| 'EQUATION_UNSOLVED';
+	| 'EQUATION_UNSOLVED'
+	/** `.eval` : valeur interdite (dénominateur nul, racine d'un négatif…) — message en français, destiné à l'élève */
+	| 'VALUE_FORBIDDEN';
 
 /**
  * Structured error for command execution

@@ -343,6 +343,21 @@ describe('generateCorrection — silent fallback', () => {
 		expect(result.correction?._renderedSteps).toBeUndefined();
 	});
 
+	// Le pipeline refuse un dénominateur nul par une erreur : la correction
+	// retombe sur le mode sans étapes, la question reste affichable
+	it('returns instance without _renderedSteps when a denominator is zero', () => {
+		const instance = makeInstance({
+			grades: ['4'],
+			resolvedVariables: [{ name: 'b', value: '3' }],
+			correction: {
+				generatedSteps: { kind: 'arithmetic', expression: '1+5/({{b}}-3)' }
+			}
+		});
+		const result = generateCorrection(instance);
+		expect(result.correction?._renderedSteps).toBeUndefined();
+		expect(console.warn).toHaveBeenCalled();
+	});
+
 	it('returns instance without _renderedSteps when linear-equation has no `=`', () => {
 		const instance = makeInstance({
 			grades: ['4'],

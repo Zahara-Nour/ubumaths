@@ -8,6 +8,7 @@
  */
 
 import { add, divide, multiply, number, parentheses, subtract } from '../../factory';
+import { parseLatex } from '../../parser';
 import type { DemoCase } from '../demo-helpers';
 
 /** Inline division `a / b` — distinct from fraction layout. */
@@ -83,5 +84,19 @@ export const BASIC: readonly DemoCase[] = [
 			),
 			divide(parentheses(add(number('15'), number('5'))), number('4'), 'inline')
 		)
+	},
+	// Nombres négatifs substitués (corrections de questions, `.évaluer` de
+	// l'atelier) : une opération par étape au collège (décisions du 2026-10-14)
+	{
+		label: '(−3)² → (−3) × (−3) → 9 (carré d’un négatif)',
+		expression: parseLatex('(-3)^2')
+	},
+	{
+		label: '2(−1)² − 3(−1) + 1 (valeurs négatives substituées)',
+		expression: parseLatex('2(-1)^2-3(-1)+1')
+	},
+	{
+		label: '1 + 3/4 (entier et fraction)',
+		expression: parseLatex('1+\\frac{3}{4}')
 	}
 ];

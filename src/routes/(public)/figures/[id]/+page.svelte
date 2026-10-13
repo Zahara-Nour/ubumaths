@@ -7,14 +7,14 @@
 	import { browser } from '$app/environment';
 	import { Badge } from '$lib/components/ui/badge';
 	import StoredFigurePreview from '$lib/components/geometry/StoredFigurePreview.svelte';
-	import { evaluateFigureScript } from '$lib/utils/geometry-figure-script';
+	import { evaluateStoredFigure } from '$lib/utils/geometry-figure-script';
 	import { GRADES, type GradeCode } from '$lib/types/grades';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
 	// Exécuté dans le navigateur seulement : un gros script ne pèse pas sur le serveur
-	const result = $derived(browser ? evaluateFigureScript(data.figure.dsl_script) : null);
+	const result = $derived(browser ? evaluateStoredFigure(data.figure.dsl_script) : null);
 
 	function gradeLabel(code: string): string {
 		return GRADES[code as GradeCode]?.displayName ?? code;
