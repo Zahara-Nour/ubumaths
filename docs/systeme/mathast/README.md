@@ -676,8 +676,11 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   standard s'écrit `2x^2 - 2 < 0`, pas `= 0` (`buildStandardizeStep` reprend l'opérateur de
   départ), et les blocs alignés du rendu passent par `RELATION_MAP` (`\leqslant`, `\geqslant`,
   comme `toLatex`) au lieu de l'opérateur brut `>=`. Tests :
-  `pedagogical-solve/__tests__/inequation-second-degre-relation.test.ts`. Le rendu du 1er degré
-  écrit encore `\leq`/`\geq` dans ses blocs alignés (`relToLatex`), `\leqslant` ailleurs.
+  `pedagogical-solve/__tests__/inequation-second-degre-relation.test.ts`. L'explication de
+  « On isole le carré » nomme alors le diviseur `a` (champ `divisor` de l'opération) et dit si le
+  sens est préservé ou retourné, comme le 1er degré ; une équation garde « x² = −c / a ». Le 1er
+  degré écrit aussi ses blocs alignés par `RELATION_MAP` (`\leqslant`/`\geqslant`, plus de
+  `\leq`/`\geq`) : `inequation-premier-degre-symboles.test.ts`. Typst les lit (`lt.eq.slant`).
 - **Dérivées et primitives finissent par « On simplifie ».** Les règles laissent le
   résultat brut (la méthode, qu'on garde visible) ; une dernière étape l'écrit avec
   `tidyTerms` (`tidy/terms.ts`). Dérivées : `withTidyStep`

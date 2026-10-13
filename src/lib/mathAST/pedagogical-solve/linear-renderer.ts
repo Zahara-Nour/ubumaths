@@ -18,7 +18,7 @@ import type {
 	RenderedStep,
 	SchoolLevel
 } from '../common/step-renderer-base';
-import { toLatex } from '../latex-generator';
+import { toLatex, RELATION_MAP } from '../latex-generator';
 import { toCustom } from '../custom-generator';
 import type { MathNode } from '../types';
 import type { EquationStep, EquationOperation, LinearSchoolLevel } from './types';
@@ -420,32 +420,6 @@ function formatExpressionLatex(step: EquationStep): string {
  * for info-only steps (no transformation to display). Exposed for the demo
  * which prints each line on its own terminal row.
  */
-/**
- * Map a `RelationNode.relation` string to its LaTeX equivalent for use inside
- * an aligned block (where `>=`/`<=`/`!=` are not valid LaTeX tokens).
- *
- * Scope: only the 5 operators that the linear inequality pipeline emits
- * (`<`, `>`, `<=`, `>=`, `!=`), plus `=` for the equation pipeline. The
- * extended `RelationType` (`≡`, `≢`, `≈`, `⟹`, …) is not produced by either
- * pipeline; the `default` arm passes such tokens through unchanged.
- */
-function relToLatex(rel: string): string {
-	switch (rel) {
-		case '<=':
-			return '\\leq';
-		case '>=':
-			return '\\geq';
-		case '!=':
-			return '\\neq';
-		case '<':
-		case '>':
-		case '=':
-			return rel;
-		default:
-			return rel;
-	}
-}
-
 export function formatTransformationLines(step: EquationStep): readonly string[] | null {
 	const op = step.operation;
 	// `relBefore` is used on the upper line of the aligned block ("operation
@@ -455,8 +429,10 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 	// (before line, original operator) on the upper line and `x > -3`
 	// (after line, flipped operator) on the lower line. For all
 	// non-flip cases (equations, positive divisor), they are equal.
-	const relBefore = step.before.type === 'relation' ? relToLatex(step.before.relation) : '=';
-	const relAfter = step.after.type === 'relation' ? relToLatex(step.after.relation) : '=';
+	// ⚠️ `RELATION_MAP`, celui de `toLatex` : `\leqslant`/`\geqslant` comme les
+	// lignes simples (l'ancien `relToLatex` écrivait `\leq`/`\geq`).
+	const relBefore = step.before.type === 'relation' ? RELATION_MAP[step.before.relation] : '=';
+	const relAfter = step.after.type === 'relation' ? RELATION_MAP[step.after.relation] : '=';
 	const bL = step.before.type === 'relation' ? fmt(step.before.left) : fmt(step.before);
 	const bR = step.before.type === 'relation' ? fmt(step.before.right) : '';
 	const aL = step.after.type === 'relation' ? fmt(step.after.left) : fmt(step.after);

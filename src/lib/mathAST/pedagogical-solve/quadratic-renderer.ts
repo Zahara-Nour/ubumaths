@@ -90,6 +90,39 @@ function paren(node: MathNode): string {
 	return /^\d+(?:[.,]\d+)?$/.test(latex) ? latex : `\\left(${latex}\\right)`;
 }
 
+/**
+ * Explication de `isolate-square`. Une équation garde la formule générale ;
+ * une inéquation nomme le diviseur et dit si le sens est conservé ou retourné,
+ * comme le premier degré (`divideExplanation` de `linear-renderer.ts`).
+ *
+ * ⚠️ Elle disait « on obtient x² = −c / a » même pour `2x^2 < 2` : un `=` que
+ * l'élève ne doit pas écrire.
+ */
+function isolateSquareExplanation(op: EquationOperation, step: EquationStep): string {
+	const generic = 'En divisant par a et en transposant, on obtient x² = −c / a.';
+	if (op.kind !== 'isolate-square' || !isInequalityStep(step) || op.divisor === undefined) {
+		return generic;
+	}
+	const result = `$${fmt(step.after)}$`;
+	const divisor = `$${fmt(op.divisor)}$`;
+	const divisorValue = computeNumericValue(op.divisor);
+	const square = `$${variableOf(step)}^2$`;
+	// Pas de terme constant à transposer quand le second membre isolé est nul.
+	const transpose = computeNumericValue(op.rhs) !== 0;
+
+	if (divisorValue === 1) {
+		return transpose
+			? `On transpose le terme constant : ${result}.`
+			: `On lit directement ${result}.`;
+	}
+	const divide = `divise les deux membres par ${divisor} pour isoler ${square}`;
+	const opening = transpose ? `On transpose le terme constant, puis on ${divide}` : `On ${divide}`;
+	if (divisorValue !== null && divisorValue < 0) {
+		return `${opening}. Comme ${divisor} est négatif, l’opérateur de l’inéquation est retourné (changement de sens : < devient >, ≤ devient ≥, etc.) : ${result}.`;
+	}
+	return `${opening}. ${divisor} est positif, donc l’inéquation est préservée : ${result}.`;
+}
+
 /** Pick the right discriminant-comparison symbol for the supérieur narrative. */
 function discriminantSymbol(numericValue: number | undefined): '>' | '=' | '<' {
 	if (numericValue === undefined || numericValue === null) return '>';
@@ -297,7 +330,7 @@ const EXPLANATIONS: Record<
 			'Quand c = 0, x est facteur commun : l’équation devient x(ax + b) = 0 et on applique la propriété du produit nul.',
 		'recognize-factored': () =>
 			'L’équation est déjà un produit de facteurs égal à zéro : on applique directement la propriété du produit nul.',
-		'isolate-square': () => 'En divisant par a et en transposant, on obtient x² = −c / a.',
+		'isolate-square': isolateSquareExplanation,
 		'extract-square-root': () =>
 			'Si le second membre est positif, x = ±√(rhs) ; s’il est nul, x = 0 ; s’il est négatif, pas de solution réelle.',
 		'factor-common-x': () => 'On met x en facteur : ax² + bx = x(ax + b).',

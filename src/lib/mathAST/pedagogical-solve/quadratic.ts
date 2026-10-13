@@ -715,7 +715,7 @@ function buildBZeroCaseSteps(
 			description: 'On isole le carré',
 			before: current,
 			after: isolatedEq,
-			operation: { kind: 'isolate-square', rhs }
+			operation: { kind: 'isolate-square', rhs, divisor: a }
 		})
 	);
 	current = isolatedEq;

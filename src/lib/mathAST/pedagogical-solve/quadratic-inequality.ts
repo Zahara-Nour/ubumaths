@@ -205,7 +205,7 @@ function buildBZeroInequalitySteps(
 			description: 'On isole le carré',
 			before: current,
 			after: isolatedIneq,
-			operation: { kind: 'isolate-square', rhs }
+			operation: { kind: 'isolate-square', rhs, divisor: a }
 		})
 	);
 

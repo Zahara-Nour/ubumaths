@@ -159,3 +159,35 @@ describe('une équation du second degré ne change pas', () => {
 		);
 	});
 });
+
+describe('l’explication de « On isole le carré » reprend la relation', () => {
+	/** L'explication rendue de l'étape `isolate-square`. */
+	function isolateExplanation(source: string): string | undefined {
+		const relation = ast(source);
+		const steps =
+			relation.relation === '='
+				? generateEquationSteps(relation, { level: 'lycee' })
+				: generateInequalitySteps(relation, { level: 'lycee' });
+		return new QuadraticEquationRenderer()
+			.renderAll(steps, { schoolLevel: 'lycee', verbosity: 'detailed' })
+			.find((s) => s.rule === 'isolate-square')?.explanation;
+	}
+
+	it('2x^2 < 2 : division par un positif, l’inéquation est préservée', () => {
+		expect(isolateExplanation('2x^2<2')).toBe(
+			'On transpose le terme constant, puis on divise les deux membres par $2$ pour isoler $x^2$. $2$ est positif, donc l’inéquation est préservée : $x^2 < 1$.'
+		);
+	});
+
+	it('-2x^2 ≥ -8 : division par un négatif, le sens est retourné', () => {
+		expect(isolateExplanation('-2x^2>=-8')).toBe(
+			'On transpose le terme constant, puis on divise les deux membres par $-2$ pour isoler $x^2$. Comme $-2$ est négatif, l’opérateur de l’inéquation est retourné (changement de sens : < devient >, ≤ devient ≥, etc.) : $x^2\\leqslant 4$.'
+		);
+	});
+
+	it('2x^2 = 8 : l’explication d’une équation ne change pas', () => {
+		expect(isolateExplanation('2x^2=8')).toBe(
+			'En divisant par a et en transposant, on obtient x² = −c / a.'
+		);
+	});
+});

@@ -219,7 +219,15 @@ export type EquationOperation =
 	 */
 	| { readonly kind: 'recognize-factored'; readonly factors: readonly MathNode[] }
 	/** b = 0 path — isolate the square: `ax² + c = 0` ⇒ `x² = −c/a`. */
-	| { readonly kind: 'isolate-square'; readonly rhs: MathNode }
+	| {
+			readonly kind: 'isolate-square';
+			readonly rhs: MathNode;
+			/**
+			 * Le coefficient `a` par lequel on divise. L'explication d'une
+			 * inéquation le nomme : son signe décide du sens.
+			 */
+			readonly divisor?: MathNode;
+	  }
 	/** b = 0 path — extract the square root: `x² = k` ⇒ `x = ±√k`. */
 	| { readonly kind: 'extract-square-root'; readonly argument: MathNode }
 	/** c = 0 path — factorise common x: `ax² + bx = 0` ⇒ `x(ax + b) = 0`. */
