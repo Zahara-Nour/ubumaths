@@ -73,17 +73,22 @@ export function endOfTypstCall(typst: string, start: number): number | null {
 }
 
 /**
- * Le document avec les règles de police du Corrigé, posées après le DERNIER
- * `#set text(…)` de premier niveau (sinon la police du modèle l'emporterait).
- * Sans `#set text`, en tête du document.
+ * Le document avec les règles de police du Corrigé, posées deux fois :
+ * - en tête, pour ce que Typst met en forme avec les réglages du `#set page`
+ *   (pied de page, numéros de page) ;
+ * - après le DERNIER `#set text(…)` de premier niveau, sinon la police du
+ *   modèle l'emporterait sur tout le contenu.
  */
 export function withCorrectionFonts(typst: string): string {
 	let insertAt: number | null = null;
 	for (const match of typst.matchAll(TOP_LEVEL_SET_TEXT)) {
 		insertAt = endOfTypstCall(typst, match.index) ?? insertAt;
 	}
-	if (insertAt === null) return `${CORRECTION_FONT_RULES}\n${typst}`;
-	return `${typst.slice(0, insertAt)}\n${CORRECTION_FONT_RULES}${typst.slice(insertAt)}`;
+	const body =
+		insertAt === null
+			? typst
+			: `${typst.slice(0, insertAt)}\n${CORRECTION_FONT_RULES}${typst.slice(insertAt)}`;
+	return `${CORRECTION_FONT_RULES}\n${body}`;
 }
 
 /** Le document porte-t-il les règles de police du Corrigé ? */
@@ -93,11 +98,20 @@ export function hasCorrectionFonts(typst: string): boolean {
 
 /** Le même document sans les règles de police du Corrigé (repli : police standard) */
 export function withoutCorrectionFonts(typst: string): string {
-	const start = typst.indexOf(START_MARK);
-	if (start === -1) return typst;
-	const end = typst.indexOf(END_MARK, start);
-	if (end === -1) return typst;
-	// Le saut de ligne posé devant les règles part avec elles
-	const from = start > 0 && typst[start - 1] === '\n' ? start - 1 : start;
-	return typst.slice(0, from) + typst.slice(end + END_MARK.length);
+	let result = typst;
+	for (;;) {
+		const start = result.indexOf(START_MARK);
+		if (start === -1) return result;
+		const end = result.indexOf(END_MARK, start);
+		if (end === -1) return result;
+		// En tête, le saut de ligne qui suit les règles part avec elles ; ailleurs,
+		// celui qui les précède
+		if (start === 0) {
+			const after = end + END_MARK.length;
+			result = result.slice(result[after] === '\n' ? after + 1 : after);
+		} else {
+			const from = result[start - 1] === '\n' ? start - 1 : start;
+			result = result.slice(0, from) + result.slice(end + END_MARK.length);
+		}
+	}
 }

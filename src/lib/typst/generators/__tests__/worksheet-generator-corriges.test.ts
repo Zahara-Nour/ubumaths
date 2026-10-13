@@ -199,9 +199,13 @@ describe('Corrigé : Shantell Sans et Chiphre Math', () => {
 			expect(typst).toContain('#set text(font: "Shantell Sans", weight: "light")');
 			expect(typst).toContain('#show math.equation: set text(font: "Chiphre Math")');
 			// Après la police du modèle, sinon elle l'emporterait
-			const rules = typst.indexOf(CORRECTION_FONT_RULES);
+			const rules = typst.lastIndexOf(CORRECTION_FONT_RULES);
+			// Et en tête : pied de page et numéros de page suivent aussi
+			expect(typst.startsWith(CORRECTION_FONT_RULES)).toBe(true);
 			const standardFont = typst.lastIndexOf('New Computer Modern');
 			expect(rules).toBeGreaterThan(standardFont);
+			// Le bandeau prend la police du Corrigé : il vient après les règles
+			expect(typst.indexOf('CORRECTION')).toBeGreaterThan(rules);
 		}
 	);
 

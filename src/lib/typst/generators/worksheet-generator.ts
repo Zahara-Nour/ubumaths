@@ -342,8 +342,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 `;
 		// Le bandeau doit suivre le `#set page(…)` du modèle : un `set page` qui
 		// vient APRÈS du contenu ouvre une nouvelle page, et le bandeau restait
-		// seul sur une page 1 vide.
-		const insertAt = endOfLastPageSetup(rendered);
+		// seul sur une page 1 vide. Il suit aussi son `#set text(…)` : le Corrigé
+		// y pose ses polices, que le bandeau doit prendre.
+		const insertAt = maxOrNull(endOfLastPageSetup(rendered), endOfLastTextSetup(rendered));
 		return insertAt === null
 			? banner + '\n' + rendered
 			: rendered.slice(0, insertAt) + '\n' + banner + rendered.slice(insertAt);
@@ -1034,4 +1035,20 @@ function endOfLastPageSetup(typst: string): number | null {
 	const start = typst.lastIndexOf('#set page(');
 	if (start === -1) return null;
 	return endOfTypstCall(typst, start);
+}
+
+/** Position juste après le dernier `#set text(…)` de premier niveau, ou null */
+function endOfLastTextSetup(typst: string): number | null {
+	let end: number | null = null;
+	for (const match of typst.matchAll(/^#set text\(/gm)) {
+		end = endOfTypstCall(typst, match.index) ?? end;
+	}
+	return end;
+}
+
+/** Le plus grand des deux, en ignorant un null */
+function maxOrNull(a: number | null, b: number | null): number | null {
+	if (a === null) return b;
+	if (b === null) return a;
+	return Math.max(a, b);
 }
