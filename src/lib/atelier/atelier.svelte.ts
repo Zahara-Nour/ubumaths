@@ -41,7 +41,12 @@ import {
 	reciprocalName,
 	reciprocalOf
 } from './names';
-import { citesReciprocal, reciprocalOfFunction, type ReciprocalOutcome } from './reciprocal';
+import {
+	citedReciprocalInterval,
+	citesReciprocal,
+	reciprocalOfFunction,
+	type ReciprocalOutcome
+} from './reciprocal';
 import type { Provenance } from './parse';
 import { parseDefinition, readNumber, referencesOf, renameInDefinition } from './parse';
 import { z } from 'zod';
@@ -62,7 +67,14 @@ import {
 } from './display';
 import { astOf as astOfDefinition } from './parse';
 import { INTERNAL_LETTER, letterRejection, typedLetterOf } from './letter';
-import { checkInterval, ONLY_FUNCTIONS, readInterval, type CheckedInterval } from './interval';
+import {
+	checkInterval,
+	citedIntervals,
+	ONLY_FUNCTIONS,
+	readInterval,
+	type CheckedInterval
+} from './interval';
+import type { Domain } from '$lib/mathAST/domain/types';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { listCitedMessage } from './list-cited';
 import { transformAST } from '$lib/mathAST/visitor';
@@ -586,16 +598,6 @@ export class Atelier {
 	}
 
 	/**
-	 * Créer — ou mettre à jour — la carte `f⁻¹` (lot 3 de
-	 * `docs/wip/atelier-reciproque-phase0.md`, R1).
-	 *
-	 * Refusée sans carte quand f n'a pas de réciproque (constante, non bijective,
-	 * le moteur ne sait pas) : le refus dit pourquoi. La carte SUIT f
-	 * (`#reciprocals`) ; elle est tracée d'office si f l'est, comme `f′`.
-	 *
-	 * @param on - l'intervalle tapé après « sur » ; croisé avec celui de f
-	 */
-	/**
 	 * La réciproque de f telle que `f⁻¹` tapé dans Calcul la calcule, à la volée
 	 * (`engine.ts`) : sur l'intervalle tapé pour la carte `f⁻¹` quand elle
 	 * existe, pour que la carte et `f⁻¹(5)` disent la même chose.
@@ -609,6 +611,16 @@ export class Atelier {
 		);
 	}
 
+	/**
+	 * Créer — ou mettre à jour — la carte `f⁻¹` (lot 3 de
+	 * `docs/wip/atelier-reciproque-phase0.md`, R1).
+	 *
+	 * Refusée sans carte quand f n'a pas de réciproque (constante, non bijective,
+	 * le moteur ne sait pas) : le refus dit pourquoi. La carte SUIT f
+	 * (`#reciprocals`) ; elle est tracée d'office si f l'est, comme `f′`.
+	 *
+	 * @param on - l'intervalle tapé après « sur » ; croisé avec celui de f
+	 */
 	createReciprocal(base: string, on?: string): ReciprocalCreated | (Refused & { formulas?: true }) {
 		// Sans « sur » (le bouton), la carte existante garde l'intervalle tapé avant
 		const existing = this.get(reciprocalName(base));
@@ -1596,6 +1608,10 @@ export class Atelier {
 
 		const ownError = new Map<string, string | undefined>();
 		const deps = new Map<string, string[]>();
+		// Décision d : l'ensemble hérité des fonctions citées (`g(x) = f(x) + 1`)
+		const intervals = citedIntervals(this.items, this.functionNames, (text, others) =>
+			citedReciprocalInterval(this, text, INTERNAL_LETTER, others)
+		);
 		const missing = new Map<string, MissingReference[]>();
 
 		for (const o of this.items) {
@@ -1617,6 +1633,10 @@ export class Atelier {
 					refs.map((r) => r.name)
 				);
 				if (cited !== null) ownError.set(o.name, cited);
+			}
+			// `g(x) = f(2x)` avec f sur un intervalle : pas encore su (décision c)
+			if (!ownError.get(o.name) && intervals.refused.has(o.name)) {
+				ownError.set(o.name, intervals.refused.get(o.name));
 			}
 			deps.set(
 				o.name,
@@ -1714,7 +1734,7 @@ export class Atelier {
 			return next;
 		});
 
-		this.#inheritIntervals();
+		this.#inheritIntervals(intervals.inherited);
 		this.#underivable();
 		this.#sequenceChecks();
 		this.#reciprocals();
@@ -1758,8 +1778,20 @@ export class Atelier {
 	 * La carte `f′` porte l'ensemble de f (lot 2 de
 	 * `docs/wip/atelier-intervalle-phase0.md`) : recopié à chaque recalcul, il
 	 * suit f quand son ensemble change ou disparaît (I6). Jamais sauvegardé.
+	 *
+	 * Décision d : toute fonction porte aussi l'ensemble hérité des fonctions
+	 * qu'elle cite (`inheritedInterval`, calculé par `citedIntervals`).
 	 */
-	#inheritIntervals(): void {
+	#inheritIntervals(inheritedDomains: ReadonlyMap<string, Domain>): void {
+		this.items.forEach((o, i) => {
+			if (!isFunction(o)) return;
+			const domain = inheritedDomains.get(o.name);
+			// Comparé par contenu : un objet neuf à chaque passage relancerait le
+			// rendu de la carte et la synchronisation du tracé pour rien
+			if (JSON.stringify(o.inheritedInterval) === JSON.stringify(domain)) return;
+			const { inheritedInterval: _stale, ...rest } = o;
+			this.items[i] = domain === undefined ? rest : { ...rest, inheritedInterval: domain };
+		});
 		this.items.forEach((o, i) => {
 			const derivative = derivativeOf(o.name);
 			if (derivative === null || !isFunction(o)) return;

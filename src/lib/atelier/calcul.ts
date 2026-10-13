@@ -54,13 +54,17 @@ import {
 } from './letter';
 import { syncEngine, expressionOf, expandInput, expandCommandArgument, termsOf } from './engine';
 import {
+	chosenDomainAnswer,
 	citedIntervalDomain,
+	composedMessage,
 	intervalDomainOf,
 	intervalText,
 	ONLY_FUNCTIONS,
 	outsideIntervalMessage,
 	outsideIntervalRefusal,
-	splitInterval
+	segmentOutsideRefusal,
+	splitInterval,
+	valueOutsideRefusal
 } from './interval';
 import { containsValue, intersect, isEmpty } from '$lib/mathAST/domain/algebra';
 import { formatInterval } from '$lib/mathAST/domain/format';
@@ -1099,6 +1103,12 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				substituteNames(session, expandInput(session.atelier, text)));
 	const argument = substitute(rawArgument);
 	if (argument === null) return { kind: 'refus', message: UNREADABLE_COMMAND };
+	// Décision a : `.domaine f` d'une fonction définie sur un intervalle
+	const chosenDomain =
+		name === 'domain'
+			? chosenDomainAnswer((n) => session.atelier.get(n), typedArgument, argument)
+			: null;
+	if (chosenDomain !== null) return { kind: 'commande', input, output: chosenDomain };
 	// ⚠️ **Certaines commandes ne vont PAS au moteur.** Il ne les connaît pas
 	// et répondrait « Unknown command », en anglais. On sort donc ici, avant
 	// `engine.execute` — et sans moteur derrière, il n'y a aucun repli : ce que
@@ -1186,29 +1196,42 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// Lot 2 de l'intervalle : `.résoudre` et `.variations` travaillent sur
 	// l'ensemble des fonctions citées (`f(x) = x^2 sur [0;+∞[`), croisé avec
 	// un `dans` tapé ; le moteur le reçoit par ce mot
+	// L'ensemble des fonctions citées : `.résoudre` et `.variations` y travaillent
+	// (lot 2), `.intégrer` et `.évaluer` refusent ce qui en sort (décision b)
 	const cited =
-		(name === 'solve' || name === 'variations') && typedArgs !== null && finalArgs !== null
+		(name === 'solve' || name === 'variations' || name === 'integrate' || name === 'eval') &&
+		typedArgs !== null &&
+		finalArgs !== null
 			? citedReciprocalInterval(
 					session.atelier,
 					typedArgs.expression,
-					finalArgs.variable ?? INTERNAL_LETTER,
+					(name === 'eval' ? typedArgs.assignment?.name : finalArgs.variable) ?? INTERNAL_LETTER,
 					(typed) =>
 						citedIntervalDomain(
 							(n) => session.atelier.get(n),
 							typed,
-							finalArgs?.variable ?? INTERNAL_LETTER
+							(name === 'eval' ? typedArgs.assignment?.name : finalArgs?.variable) ??
+								INTERNAL_LETTER
 						)
 				)
 			: null;
 	if (cited?.kind === 'composed') {
-		return {
-			kind: 'refus',
-			message: `${cited.name} est définie sur un intervalle : dans ${cited.call}, l'atelier ne sait pas encore restreindre l'inconnue. Écris l'expression de ${cited.call} en toutes lettres.`,
-			...notesOf(letterNote)
-		};
+		return { kind: 'refus', message: composedMessage(cited), ...notesOf(letterNote) };
+	}
+	const get = (n: string) => session.atelier.get(n);
+	const outsideRefusal =
+		cited === null || typedArgs === null
+			? null
+			: name === 'eval' && typedArgs.assignment !== null
+				? valueOutsideRefusal(get, cited, typedArgs.assignment.value)
+				: name === 'integrate' && typedArgs.bounds !== null
+					? segmentOutsideRefusal(get, cited, typedArgs.bounds.lower, typedArgs.bounds.upper)
+					: null;
+	if (outsideRefusal !== null) {
+		return { kind: 'refus', message: outsideRefusal, ...notesOf(letterNote) };
 	}
 	let studied: Domain | null = null;
-	if (cited !== null && finalArgs !== null) {
+	if (cited !== null && finalArgs !== null && (name === 'solve' || name === 'variations')) {
 		const typedWithin =
 			finalArgs.interval === null
 				? null
@@ -1753,6 +1776,19 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// moteur, elle rendait « Unexpected token: ' » — un message de parseur.
 	const blocked = derivativeOfUnusable(session, input);
 	if (blocked !== null) return { kind: 'refus', message: blocked };
+	// `g(x) = f⁻¹(x)` en erreur (f plus bijective) : le moteur ne la connaît
+	// pas et disait « Fonction inconnue : g » ; la carte g porte la raison
+	for (const [, cited] of input.matchAll(/(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)\s*\(/g)) {
+		const object = session.atelier.get(cited);
+		if (
+			object?.kind === 'function' &&
+			object.status === 'error' &&
+			object.message !== undefined &&
+			citesReciprocal(session.atelier, object.definition)
+		) {
+			return { kind: 'refus', message: `${cited} : ${object.message}` };
+		}
+	}
 
 	// I4 : `f(5)` avec f sur [0 ; 2] se refuse, le moteur ne connaît pas l'ensemble
 	const outside = outsideIntervalRefusal((n) => session.atelier.get(n), input);

@@ -147,8 +147,9 @@ export function mixedNotationMessage(text: string): string | null {
 /** Les provenances qui sont la saisie de l'élève, virgule décimale et « ; » compris. */
 const STUDENT_TYPED: ReadonlySet<Provenance> = new Set(['text', 'paste', 'command']);
 
-/** Un exposant négatif sans accolades : `^-1`, `^-12`, `^-x` (un nombre ou UNE lettre, pas `^-sin(x)`). */
-const NEGATIVE_EXPONENT = /\^\s*-\s*(\d+(?:\.\d+)?|[A-Za-z](?![A-Za-z(]))/g;
+/** Un exposant négatif sans accolades : `^-1`, `^-12`, `^-x` (un nombre ou UNE lettre, pas `^-sin(x)`) ;
+ * jamais suivi d'un autre `^` : `e^-x^2` se lirait (e^{-x})² ici et e^{-x²} dans Calcul. */
+const NEGATIVE_EXPONENT = /\^\s*-\s*(\d+(?:\.\d+)?|[A-Za-z](?![A-Za-z(]))(?!\s*\^)/g;
 
 function parseByProvenance(
 	rawDefinition: string,

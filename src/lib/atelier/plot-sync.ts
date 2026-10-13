@@ -19,7 +19,7 @@ import { isExplicitFunction, isScatter, type ExplicitFunction } from '$lib/graph
 import { firstTermValue, graphLatexOf } from './engine';
 import { plainDisplay } from './display';
 import { isFunction, isList, isSequence } from './types';
-import { plotRestrictionOf } from './interval';
+import { allowedDisplay, plotRestrictionOf } from './interval';
 import { sameRestriction, type Restriction } from '$lib/grapheur/restriction';
 import { reciprocalOf } from './names';
 
@@ -157,7 +157,9 @@ function wantedFor(atelier: Atelier, object: AtelierObject): Wanted | null {
 	return {
 		definition: latex ?? object.definition,
 		visible: object.status === 'ok',
-		...(isFunction(object) && object.display && { display: object.display }),
+		// Décision f : la tangente ou l'aire hors de l'ensemble ne se dessine pas
+		...(isFunction(object) &&
+			object.display && { display: allowedDisplay(object, object.display) }),
 		...(restriction && { restriction })
 	};
 }

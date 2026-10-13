@@ -89,7 +89,7 @@ const formulas = new WeakMap<
 	{ readonly mark: string; readonly byName: Map<string, MathNode | string> }
 >();
 
-/** Tout ce dont dépend une réciproque : définitions, statuts, ensembles. */
+/** Tout ce dont dépend une réciproque (et le moteur) : définitions, statuts, ensembles. */
 function atelierMark(atelier: Atelier): string {
 	return JSON.stringify(
 		atelier.objects.map((o) => [
@@ -99,7 +99,8 @@ function atelierMark(atelier: Atelier): string {
 			o.status,
 			o.provenance,
 			'interval' in o ? o.interval : null,
-			'reciprocalOn' in o ? o.reciprocalOn : null
+			'reciprocalOn' in o ? o.reciprocalOn : null,
+			'inheritedInterval' in o ? o.inheritedInterval : null
 		])
 	);
 }
@@ -136,11 +137,6 @@ function derivable(atelier: Atelier): AtelierObject[] {
 	return atelier.objects.filter((o) => o.status !== 'error' && o.definition.trim() !== '');
 }
 
-/** L'empreinte de ce qui est poussé — deux empreintes égales, rien à refaire. */
-function fingerprint(objects: readonly AtelierObject[]): string {
-	return JSON.stringify(objects.map((o) => [o.kind, o.name, o.definition]));
-}
-
 /**
  * Mettre le moteur en accord avec l'atelier.
  *
@@ -153,7 +149,9 @@ function fingerprint(objects: readonly AtelierObject[]): string {
  */
 export function syncEngine(atelier: Atelier, engine: WebReplEngine): void {
 	const objects = usable(atelier);
-	const mark = fingerprint(objects);
+	// ⚠️ Pas seulement les définitions : `g(x) = f⁻¹(x)` change avec l'ensemble
+	// de f (`interval`, `reciprocalOn`, `inheritedInterval`) — revue de #1338
+	const mark = atelierMark(atelier);
 
 	const perEngine = pushed.get(atelier) ?? new WeakMap<WebReplEngine, string>();
 	if (perEngine.get(engine) === mark) return;

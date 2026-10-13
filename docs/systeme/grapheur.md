@@ -117,6 +117,8 @@ contour de la couleur de la courbe, intérieur `--color-graph-bg`) si ouverte �
 sont écartés ; une asymptote verticale au bord reste, une horizontale ne garde que le côté infini
 atteint. La dérivée du grapheur hérite de la restriction, la tangente non. Seul l'atelier la pose ;
 jamais sérialisée (il la repose à chaque synchronisation). Sans restriction, rien ne change.
+Le grapheur ne juge pas la tangente ni l'aire : c'est l'atelier qui ne les lui passe pas quand
+elles sortent de l'ensemble (`allowedDisplay`, décision f du 2026-10-13, voir [atelier.md](atelier.md)).
 
 **Paramètres** : une lettre libre (`PARAMETER_NAMES`, hors `RESERVED_PARAMETER_NAMES` = `x n e
 pi i`), une valeur et des bornes. `bindParameters` substitue les valeurs dans l'AST avant

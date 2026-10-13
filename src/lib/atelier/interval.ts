@@ -41,7 +41,7 @@ import { toCustom } from '$lib/mathAST/custom-generator';
 import { astOf, readingMode, readNumber, referencesOf, type ReadingMode } from './parse';
 import type { Provenance } from './parse';
 import { INTERNAL_LETTER, renameVariableIn } from './letter';
-import { displayName } from './names';
+import { derivativeOf, displayName, reciprocalOf } from './names';
 
 // =============================================================================
 // Types
@@ -94,6 +94,13 @@ const SUR_IN_TEXT = /(?<![A-Za-z\\])sur(?![A-Za-z])/g;
 const SET_START =
 	/^(?:\\[,;:! ]|~|\s)*(?:\[|\]|\\left(?:\[|\]|\\lbrack|\\rbrack|\\\{|\\lbrace)|\\lbrack|\\rbrack|\\\{|\\lbrace|ℝ|\\R(?![A-Za-z])|\\mathbb|R(?![A-Za-z0-9]))/;
 
+/**
+ * `ℝ\{1}` tapé collé : le parseur y lirait l'accolade échappée de LaTeX. En
+ * texte, c'est la différence `ℝ \ {1}` (revue de #1337). `\R\{1\}` (LaTeX,
+ * accolade fermante échappée) n'est pas touché.
+ */
+const GLUED_SETMINUS = /(ℝ|(?<![A-Za-z\\])R|\\R)\\\{([^{}\\]*)\}/g;
+
 /** Seulement des espaces après « sur » : l'élève est en train de l'écrire. */
 const NOTHING_YET = /^(?:\\[,;:! ]|~|\s)*$/;
 
@@ -144,7 +151,7 @@ export function readInterval(written: string, letter: string = INTERNAL_LETTER):
 	if (written.trim() === '' || written.length > MAX_INTERVAL_LENGTH) {
 		return { ok: false, message: UNREADABLE_INTERVAL };
 	}
-	const read = parseStudentDomain(written, letter);
+	const read = parseStudentDomain(written.replace(GLUED_SETMINUS, '$1 \\ {$2}'), letter);
 	if (!read.success) return { ok: false, message: UNREADABLE_INTERVAL };
 	const domain = read.domain;
 	if (isUniversal(domain)) return { ok: true, domain: null };
@@ -195,11 +202,146 @@ export function checkInterval(
 	};
 }
 
-/** L'ensemble d'une fonction, ou `null` (pas une fonction, ou définie sur son domaine). */
+/**
+ * L'ensemble d'une fonction, ou `null` (pas une fonction, ou définie sur son
+ * domaine) : le sien (`interval`) croisé avec celui qu'elle hérite des
+ * fonctions qu'elle cite (`inheritedInterval`, décision d).
+ */
 export function intervalDomainOf(object: AtelierObject | undefined): Domain | null {
-	if (object?.kind !== 'function' || object.interval === undefined) return null;
-	const read = readInterval(object.interval, object.letter ?? INTERNAL_LETTER);
-	return read.ok ? read.domain : null;
+	if (object?.kind !== 'function') return null;
+	const read =
+		object.interval === undefined
+			? null
+			: readInterval(object.interval, object.letter ?? INTERNAL_LETTER);
+	const own = read?.ok ? read.domain : null;
+	const inherited = object.inheritedInterval ?? null;
+	if (own === null || inherited === null) return own ?? inherited;
+	return intersect(own, inherited);
+}
+
+/**
+ * Décision d (2026-10-13) : ce que chaque fonction hérite des fonctions qu'elle
+ * cite (`g(x) = f(x) + 1` → l'ensemble de f ; plusieurs → l'intersection), en
+ * chaîne (`h = 2g`), et pour une dérivée celui de sa fonction — plus le refus
+ * des définitions qu'on ne sait pas restreindre (`g(x) = f(2x)`, décision c)
+ * ou dont l'ensemble est vide. Points fixes : un passage par maillon de chaîne.
+ *
+ * @param functionNames - Les noms citables, pour relire les définitions
+ */
+export function citedIntervals(
+	objects: readonly AtelierObject[],
+	functionNames: readonly string[],
+	/** `g(x) = f⁻¹(x)` : l'ensemble de départ de f⁻¹, pas celui de f (`citedReciprocalInterval`). */
+	withReciprocals?: (
+		text: string,
+		others: (text: string) => CitedInterval | null
+	) => CitedInterval | null
+): { inherited: Map<string, Domain>; refused: Map<string, string> } {
+	const inherited = new Map<string, Domain>();
+	const refused = new Map<string, string>();
+	const byName = new Map(objects.map((o) => [o.name, o]));
+	const get = (name: string): AtelierObject | undefined => {
+		const object = byName.get(name);
+		if (object?.kind !== 'function') return object;
+		const { inheritedInterval: _stale, ...rest } = object;
+		const domain = inherited.get(name);
+		return domain === undefined ? rest : { ...rest, inheritedInterval: domain };
+	};
+	// La définition en texte, appels compris (`f(x)+1`), relue une seule fois
+	const texts = new Map<string, string>();
+	for (const o of objects) {
+		if (o.kind !== 'function' || derivativeOf(o.name) !== null || reciprocalOf(o.name) !== null) {
+			continue;
+		}
+		const ast = astOf(o.definition, o.provenance, functionNames);
+		if (ast !== null) texts.set(o.name, toCustom(ast));
+	}
+	for (let pass = 0; pass <= objects.length; pass++) {
+		let changed = false;
+		refused.clear();
+		for (const o of objects) {
+			if (o.kind !== 'function') continue;
+			let domain: Domain | null = null;
+			const derivative = derivativeOf(o.name);
+			if (derivative !== null) {
+				domain = inherited.get(derivative.base) ?? null;
+			} else {
+				const text = texts.get(o.name);
+				if (text === undefined) continue;
+				const others = (typed: string) =>
+					citedIntervalDomain((n) => (n === o.name ? undefined : get(n)), typed, INTERNAL_LETTER);
+				const cited = withReciprocals === undefined ? others(text) : withReciprocals(text, others);
+				if (cited?.kind === 'composed') refused.set(o.name, composedMessage(cited));
+				else if (cited !== null) domain = cited.domain;
+			}
+			const before = inherited.get(o.name);
+			if (domain === null) {
+				if (before !== undefined) {
+					inherited.delete(o.name);
+					changed = true;
+				}
+			} else if (before === undefined || JSON.stringify(before) !== JSON.stringify(domain)) {
+				inherited.set(o.name, domain);
+				changed = true;
+			}
+		}
+		if (!changed) break;
+	}
+	for (const [name, domain] of inherited) {
+		const effective = intervalDomainOf(get(name));
+		if (refused.has(name) || effective === null || !isEmpty(effective)) continue;
+		const why = isEmpty(domain)
+			? "les ensembles des fonctions qu'elle cite n'ont aucun nombre en commun"
+			: `les fonctions qu'elle cite ne le sont que sur ${intervalText(domain)}`;
+		refused.set(name, `${displayName(name)} n'est définie nulle part : ${why}.`);
+	}
+	return { inherited, refused };
+}
+
+/** `.domaine f`, `.domaine f(x)`, `.domaine f'` : le nom visé. */
+const DOMAIN_TARGET = /^([A-Za-z](?:_\d+)?)(['′]*)\s*(?:\(\s*[A-Za-z]\s*\))?$/;
+
+/**
+ * Décision a : `.domaine f` quand f a un ensemble — « f est définie sur
+ * [0 ; +∞[ (ensemble choisi) ; sans ce choix, elle le serait sur ℝ. » La
+ * seconde moitié se tait quand l'ensemble EST le domaine (ou qu'il ne se
+ * calcule pas). `null` : pas une fonction à ensemble, la commande suit son cours.
+ *
+ * @param typed - L'argument tapé (`f`, `f(x)`)
+ * @param expression - Son expression, noms remplacés (`(x^2)`)
+ */
+export function chosenDomainAnswer(
+	get: (name: string) => AtelierObject | undefined,
+	typed: string,
+	expression: string
+): string | null {
+	const match = DOMAIN_TARGET.exec(typed.trim());
+	if (match === null) return null;
+	const name = match[1] + "'".repeat(match[2].length);
+	const object = get(name);
+	const domain = intervalDomainOf(object);
+	// En erreur (`f(2x)`, ensemble vide) : la commande suit son cours, rien à affirmer
+	if (domain === null || object?.status !== 'ok' || isEmpty(domain)) return null;
+	// Sans « sur » à elle, l'ensemble vient des fonctions citées (décision d)
+	const origin =
+		object?.kind === 'function' && object.interval === undefined
+			? 'ensemble hérité'
+			: 'ensemble choisi';
+	const chosen = `${displayName(name)} est définie sur ${intervalText(domain)} (${origin})`;
+	const ast = astOf(expression);
+	const natural = ast === null ? null : computeDomain(ast, INTERNAL_LETTER);
+	if (natural === null || natural.unresolved !== undefined) return `${chosen}.`;
+	const a = expandExcludedPoints(domain);
+	const b = expandExcludedPoints(natural.domain);
+	const same = isEmpty(difference(a, b)) && isEmpty(difference(b, a));
+	return same
+		? `${chosen}.`
+		: `${chosen} ; sans ${origin === 'ensemble hérité' ? 'cet héritage' : 'ce choix'}, elle le serait sur ${intervalText(natural.domain)}.`;
+}
+
+/** `f(2x)` quand f a un ensemble : c'est 2x qui devrait y être — pas encore su (décision c). */
+export function composedMessage(cited: { readonly call: string; readonly name: string }): string {
+	return `${cited.name} est définie sur un intervalle : dans ${cited.call}, l'atelier ne sait pas encore restreindre l'inconnue. Écris l'expression de ${cited.call} en toutes lettres.`;
 }
 
 /**
@@ -243,7 +385,9 @@ export function intervalLabelOf(object: AtelierObject): string | null {
 export function intervalFieldLatex(object: AtelierObject): string | null {
 	if (object.kind !== 'function' || object.interval === undefined) return null;
 	if (readingMode(object.provenance ?? 'url') === 'latex') return object.interval;
-	const domain = intervalDomainOf(object);
+	// L'ensemble PROPRE, jamais l'héritage (décision d) : le champ relu le rangerait
+	const read = readInterval(object.interval, object.letter ?? INTERNAL_LETTER);
+	const domain = read.ok ? read.domain : null;
 	if (domain === null) return null;
 	return formatInterval(domain)
 		.replace(/∞/g, '\\infty ')
@@ -338,6 +482,83 @@ function callArgument(after: string): string | null {
 	return null;
 }
 
+/**
+ * Décision b : `.évaluer f en x=5` hors de l'ensemble — même refus que `f(5)`,
+ * ou `null` (valeur dedans, ou qui dépend d'une lettre libre).
+ */
+export function valueOutsideRefusal(
+	get: (name: string) => AtelierObject | undefined,
+	cited: { readonly domain: Domain; readonly name: string },
+	written: string
+): string | null {
+	const value = constantValue(written, get);
+	if (value === null || containsValue(cited.domain, value)) return null;
+	return outsideIntervalMessage(cited.name, shownWritten(written), cited.domain);
+}
+
+/**
+ * Décision b : `.intégrer f de a à b` — la borne qui sort, sinon la partie de
+ * [a ; b] qui sort (un trou entre deux morceaux), ou `null`.
+ */
+export function segmentOutsideRefusal(
+	get: (name: string) => AtelierObject | undefined,
+	cited: { readonly domain: Domain; readonly name: string },
+	lower: string,
+	upper: string
+): string | null {
+	const a = constantValue(lower, get);
+	const b = constantValue(upper, get);
+	if (a === null || b === null) return null;
+	return segmentRefusal(cited, [
+		{ written: shownWritten(lower), value: a },
+		{ written: shownWritten(upper), value: b }
+	]);
+}
+
+/**
+ * Décision f : la tangente en x₀ hors de l'ensemble de la fonction (une borne
+ * fermée est dedans), ou `null`.
+ */
+export function tangentRefusal(object: AtelierObject | undefined, at: number): string | null {
+	const domain = intervalDomainOf(object);
+	if (object === undefined || domain === null || containsValue(domain, at)) return null;
+	return outsideIntervalMessage(displayName(object.name), `x₀ = ${shownNumber(at)}`, domain);
+}
+
+/** Décision f : l'aire sous la courbe sur un [a ; b] qui sort de l'ensemble, ou `null`. */
+export function areaRefusal(
+	object: AtelierObject | undefined,
+	from: number,
+	to: number
+): string | null {
+	const domain = intervalDomainOf(object);
+	if (object === undefined || domain === null) return null;
+	return segmentRefusal({ domain, name: displayName(object.name) }, [
+		{ written: shownNumber(from), value: from },
+		{ written: shownNumber(to), value: to }
+	]);
+}
+
+/** Les réglages à dessiner : sans la tangente ni l'aire refusées (décision f). */
+export function allowedDisplay<
+	D extends {
+		readonly tangentAt: number | null;
+		readonly integral: { readonly from: number; readonly to: number } | null;
+	}
+>(object: AtelierObject, display: D): D {
+	const tangentOut =
+		display.tangentAt !== null && tangentRefusal(object, display.tangentAt) !== null;
+	const areaOut =
+		display.integral !== null &&
+		areaRefusal(object, display.integral.from, display.integral.to) !== null;
+	if (!tangentOut && !areaOut) return display;
+	return {
+		...display,
+		...(tangentOut && { tangentAt: null }),
+		...(areaOut && { integral: null })
+	};
+}
+
 /** « 5 n'est pas dans l'ensemble de définition de f, [0 ; 2]. » */
 export function outsideIntervalMessage(name: string, written: string, domain: Domain): string {
 	return `${written} n'est pas dans l'ensemble de définition de ${name}, ${intervalText(domain)}.`;
@@ -379,6 +600,59 @@ function numericValue(node: MathNode): number | null {
 	} catch {
 		return null;
 	}
+}
+
+/** Une borne hors de l'ensemble (nommée), sinon la partie de [a ; b] qui sort, sinon `null`. */
+function segmentRefusal(
+	cited: { readonly domain: Domain; readonly name: string },
+	bounds: readonly { readonly written: string; readonly value: number }[]
+): string | null {
+	const [low, high] = [...bounds].sort((p, q) => p.value - q.value);
+	const endpoint = (value: number) => ({
+		type: 'closed' as const,
+		value: { type: 'number' as const, value: String(value) }
+	});
+	const segment: Domain = {
+		kind: 'interval_set',
+		intervals: [{ kind: 'interval', lower: endpoint(low.value), upper: endpoint(high.value) }],
+		excludedPoints: []
+	};
+	const outside = difference(segment, expandExcludedPoints(cited.domain));
+	if (isEmpty(outside)) return null;
+	// Seule une partie de longueur NON NULLE compte : une borne ouverte ou un point
+	// exclu ne changent pas l'intégrale (]0;2] de 0 à 2 vaut 8/3) ; une divergence
+	// en un point, `.intégrer` la dit lui-même (revue de #1337)
+	if (outside.kind === 'interval_set') {
+		const pieces = outside.intervals.map((interval) => ({
+			from: numericValue(interval.lower.value),
+			to: numericValue(interval.upper.value)
+		}));
+		const long = pieces.filter((p) => p.from === null || p.to === null || p.to > p.from);
+		if (long.length === 0) return null;
+		// Une borne dans une partie qui sort : c'est elle qu'on nomme
+		for (const bound of bounds) {
+			const inside = long.some(
+				(p) => p.from !== null && p.to !== null && p.from <= bound.value && bound.value <= p.to
+			);
+			if (inside && !containsValue(cited.domain, bound.value)) {
+				return outsideIntervalMessage(cited.name, bound.written, cited.domain);
+			}
+		}
+	}
+	const whole = `[${low.written} ; ${high.written}]`.replace(/-/g, '−');
+	return `Une partie de ${whole}, ${intervalText(outside)}, n'est pas dans l'ensemble de définition de ${cited.name}, ${intervalText(cited.domain)}.`;
+}
+
+/** Une valeur tapée dans une commande, à l'écran : `\pi` (relu ainsi par Calcul) redevient π. */
+function shownWritten(written: string): string {
+	return written.trim().replace(/\\pi(?![A-Za-z])/g, 'π');
+}
+
+/** Un nombre à l'écran : virgule décimale, signe moins typographique. */
+function shownNumber(value: number): string {
+	return String(Math.round(value * 1e4) / 1e4)
+		.replace('.', ',')
+		.replace('-', '−');
 }
 
 /** Nombre de points isolés d'un ensemble fait SEULEMENT de points (`[2;2]`, `{1;2}`), sinon 0. */

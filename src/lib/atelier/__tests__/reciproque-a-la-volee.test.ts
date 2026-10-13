@@ -279,3 +279,40 @@ describe('revue : argument hors du départ, noms à indice, définition, coût',
 		expect(last(desk)).toMatchObject({ failed: false, text: '2' });
 	});
 });
+
+// =============================================================================
+// Revue ciblée de #1338
+// =============================================================================
+
+describe('revue ciblée : ensembles, exposants enchaînés, message de g', () => {
+	it('f change d’ensemble : g(x) = f⁻¹(x) suit (B1)', () => {
+		const desk = deskWith('f(x) = x^2 sur [0;+∞[', 'g(x) = f⁻¹(x)', 'g(4)');
+		expect(last(desk)).toMatchObject({ failed: false, text: '2' });
+		desk.submit('f(x) = x^2 sur ]-∞;0]');
+		desk.submit('f⁻¹(4)');
+		expect(last(desk)).toMatchObject({ failed: false, text: '-2' });
+		desk.submit('g(4)');
+		expect(last(desk)).toMatchObject({ failed: false, text: '-2' });
+	});
+
+	it.each(['e^-x^2', 'x^-1^2'])(
+		'g(x) = %s : la carte ne lit pas autrement que Calcul (B2)',
+		(body) => {
+			const desk = deskWith(`g(x) = ${body}`);
+			expect(desk.atelier.get('g')?.status).toBe('error');
+		}
+	);
+
+	it('g citant f⁻¹, f non bijective : g(4) dit pourquoi, pas « Fonction inconnue »', () => {
+		const desk = deskWith('f(x) = 2x+3', 'g(x) = f⁻¹(x)', 'f(x) = x^2', 'g(4)');
+		expect(last(desk).failed).toBe(true);
+		expect(last(desk).text).toContain("n'est pas bijective");
+	});
+
+	it('g(x) = f⁻¹(x) hérite de l’ensemble de départ de f⁻¹, pas de celui de f', () => {
+		const desk = deskWith('f(x) = x^2+1 sur [0;+∞[', 'g(x) = f⁻¹(x)', 'g(5)');
+		expect(last(desk)).toMatchObject({ failed: false, text: '2' });
+		desk.submit('g(0.5)');
+		expect(last(desk).failed).toBe(true);
+	});
+});
