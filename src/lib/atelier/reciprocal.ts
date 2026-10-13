@@ -159,6 +159,13 @@ export function reciprocalOfFunction(
 		if (domain !== null && isEmpty(domain)) {
 			return refused(`${shown} n'est définie que sur ${intervalText(own!)}.`);
 		}
+		// Réduite à un point : le moteur y verrait une constante (revue de #1328)
+		const point = domain === null ? null : singlePoint(domain);
+		if (point !== null && read.domain !== null && own !== null) {
+			return refused(
+				`${shown} n'est définie que sur ${intervalText(own)} : sur ${intervalText(read.domain)}, il ne reste que ${toCustom(point).replace(/-/g, '−')}.`
+			);
+		}
 	}
 
 	const numeric = substitutedAstOf(atelier, base);
@@ -481,4 +488,14 @@ export function messageParts(message: string): MessagePart[] {
 	}
 	if (last < message.length) parts.push({ math: false, text: message.slice(last) });
 	return parts;
+}
+
+/** Le seul point d'un ensemble réduit à `[a ; a]`, ou `null`. */
+function singlePoint(domain: Domain): MathNode | null {
+	if (domain.kind !== 'interval_set' || domain.intervals.length !== 1) return null;
+	const { lower, upper } = domain.intervals[0];
+	if (lower.type !== 'closed' || upper.type !== 'closed') return null;
+	const a = approx(lower.value);
+	const b = approx(upper.value);
+	return a !== null && b !== null && Math.abs(a - b) < 1e-12 ? lower.value : null;
 }

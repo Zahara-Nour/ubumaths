@@ -136,6 +136,15 @@ describe('.réciproque f : la carte f⁻¹ et la ligne de Calcul', () => {
 		expect(intervalLabelOf(desk.atelier.get(F_INV)!)).toBe('[0 ; 4]');
 	});
 
+	// Revue de #1328 (M1) : l'intersection réduite à {0} faisait dire « fonction constante »
+	it('f sur [0 ; +∞[ puis « sur ]-∞;0] » : il ne reste que 0, refus qui le dit', () => {
+		const desk = deskWith('f(x) = x^2 sur [0;+∞[', '.réciproque f sur ]-∞;0]');
+		expect(last(desk)).toMatchObject({
+			failed: true,
+			text: "f n'est définie que sur [0 ; +∞[ : sur ]−∞ ; 0], il ne reste que 0."
+		});
+	});
+
 	it('f redéfinie après « sur I » : l’intersection est recalculée', () => {
 		const desk = deskWith('f(x) = x^2', '.réciproque f sur [-1;2]');
 		expect(last(desk).failed).toBe(true); // x² n'est pas bijective sur [−1 ; 2]
