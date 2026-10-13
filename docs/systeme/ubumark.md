@@ -224,6 +224,11 @@ A = point(1, 1)
 ```
 ````
 
+Clés de l'en-tête : `fenetre:` (obligatoire), `taille:`, `description:`, `axes:`, `grille:`,
+`graduations:`. `deplacable:` et `rendu:` sont **réservées aux figures interactives** (figures
+stockées, option `interactive` de `parseFigureContent`) : dans un bloc d'exercice, refus situé
+« réglage réservé aux figures interactives » — `src/lib/ubumark/__tests__/figure/figure-reglages-interactifs.test.ts`.
+
 **Statistiques** — `src/lib/ubumark/__tests__/stat-chart/markdown.test.ts` sauf mention :
 
 ````text
