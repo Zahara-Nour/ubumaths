@@ -432,3 +432,12 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   visiteur → effacées + rechargement ; visiteur qui se connecte → son compte reprend ;
   déconnexion, attente d'approbation, suppression du compte → effacées. Tests : 11 unitaires
   (8 rouges sans le module) + 3 du layout (rouges sans l'appel).
+- **Adresses visitées jointes aux rapports de bug (David, 2026-10-13 : « traite le »)** —
+  branche `fix/traces-onglet-rapport-bug` : `chiphre_freeze_data` (`sessionStorage`, 20
+  dernières actions dont l'URL complète des navigations) vidé par `clearWorkData`, en mémoire
+  comme dans l'onglet (`clearFreezeDetectionData`). 2 tests rouges sans l'appel, 2 qui
+  vérifient ce qui reste (même compte, visiteur qui se connecte).
+- **T16 — HuggingFace : inactif en prod, mesuré le 2026-10-13** : `HF_API_KEY` absente des
+  variables Vercel de production, corpus vide (`rag_documents` 0, `rag_chunks` 0). Aucun
+  message d'élève n'est parti chez HuggingFace. Latent : définir la clé l'activerait sans
+  déclaration du sous-traitant. Suite à trancher par David.
