@@ -217,7 +217,9 @@ l'ensemble EST le domaine, et « (ensemble hérité) … sans cet héritage » p
 tient des fonctions qu'elle cite (`chosenDomainAnswer`) ; sans ensemble, rien ne change. **b)**
 `.évaluer f en x=5` et `.intégrer f de a à b` hors de l'ensemble sont refusés comme `f(5)`
 (`valueOutsideRefusal`, `segmentOutsideRefusal` : la borne qui sort, sinon la partie de [a ; b]
-qui sort — un trou d'une réunion). **d)** Une fonction qui CITE une fonction à ensemble en
+qui sort — un trou d'une réunion ; seule une partie de longueur non nulle compte : une borne
+ouverte ou un point exclu ne refusent rien, une divergence est dite par `.intégrer`). `ℝ\{1}` tapé
+collé se lit `ℝ \ {1}`. **d)** Une fonction qui CITE une fonction à ensemble en
 **hérite** (`g(x) = f(x) + 1` → [0 ; +∞[ ; plusieurs → intersection ; en chaîne ; jusqu'à `g′`) :
 `citedIntervals` (points fixes, dans `recomputeAll`) range l'héritage dans
 `FunctionObject.inheritedInterval`, jamais sauvegardé, et `intervalDomainOf` le croise avec le

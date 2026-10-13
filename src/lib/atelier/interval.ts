@@ -94,6 +94,13 @@ const SUR_IN_TEXT = /(?<![A-Za-z\\])sur(?![A-Za-z])/g;
 const SET_START =
 	/^(?:\\[,;:! ]|~|\s)*(?:\[|\]|\\left(?:\[|\]|\\lbrack|\\rbrack|\\\{|\\lbrace)|\\lbrack|\\rbrack|\\\{|\\lbrace|ℝ|\\R(?![A-Za-z])|\\mathbb|R(?![A-Za-z0-9]))/;
 
+/**
+ * `ℝ\{1}` tapé collé : le parseur y lirait l'accolade échappée de LaTeX. En
+ * texte, c'est la différence `ℝ \ {1}` (revue de #1337). `\R\{1\}` (LaTeX,
+ * accolade fermante échappée) n'est pas touché.
+ */
+const GLUED_SETMINUS = /(ℝ|(?<![A-Za-z\\])R|\\R)\\\{([^{}\\]*)\}/g;
+
 /** Seulement des espaces après « sur » : l'élève est en train de l'écrire. */
 const NOTHING_YET = /^(?:\\[,;:! ]|~|\s)*$/;
 
@@ -144,7 +151,7 @@ export function readInterval(written: string, letter: string = INTERNAL_LETTER):
 	if (written.trim() === '' || written.length > MAX_INTERVAL_LENGTH) {
 		return { ok: false, message: UNREADABLE_INTERVAL };
 	}
-	const read = parseStudentDomain(written, letter);
+	const read = parseStudentDomain(written.replace(GLUED_SETMINUS, '$1 \\ {$2}'), letter);
 	if (!read.success) return { ok: false, message: UNREADABLE_INTERVAL };
 	const domain = read.domain;
 	if (isUniversal(domain)) return { ok: true, domain: null };
@@ -597,11 +604,6 @@ function segmentRefusal(
 	cited: { readonly domain: Domain; readonly name: string },
 	bounds: readonly { readonly written: string; readonly value: number }[]
 ): string | null {
-	for (const bound of bounds) {
-		if (!containsValue(cited.domain, bound.value)) {
-			return outsideIntervalMessage(cited.name, bound.written, cited.domain);
-		}
-	}
 	const [low, high] = [...bounds].sort((p, q) => p.value - q.value);
 	const endpoint = (value: number) => ({
 		type: 'closed' as const,
@@ -614,6 +616,26 @@ function segmentRefusal(
 	};
 	const outside = difference(segment, expandExcludedPoints(cited.domain));
 	if (isEmpty(outside)) return null;
+	// Seule une partie de longueur NON NULLE compte : une borne ouverte ou un point
+	// exclu ne changent pas l'intégrale (]0;2] de 0 à 2 vaut 8/3) ; une divergence
+	// en un point, `.intégrer` la dit lui-même (revue de #1337)
+	if (outside.kind === 'interval_set') {
+		const pieces = outside.intervals.map((interval) => ({
+			from: numericValue(interval.lower.value),
+			to: numericValue(interval.upper.value)
+		}));
+		const long = pieces.filter((p) => p.from === null || p.to === null || p.to > p.from);
+		if (long.length === 0) return null;
+		// Une borne dans une partie qui sort : c'est elle qu'on nomme
+		for (const bound of bounds) {
+			const inside = long.some(
+				(p) => p.from !== null && p.to !== null && p.from <= bound.value && bound.value <= p.to
+			);
+			if (inside && !containsValue(cited.domain, bound.value)) {
+				return outsideIntervalMessage(cited.name, bound.written, cited.domain);
+			}
+		}
+	}
 	const whole = `[${low.written} ; ${high.written}]`.replace(/-/g, '−');
 	return `Une partie de ${whole}, ${intervalText(outside)}, n'est pas dans l'ensemble de définition de ${cited.name}, ${intervalText(cited.domain)}.`;
 }

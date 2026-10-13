@@ -130,6 +130,27 @@ describe('b) .intégrer et .évaluer hors de l’ensemble : refus comme f(5)', (
 		expect(last(d).text).toBe("π n'est pas dans l'ensemble de définition de f, [0 ; 3].");
 	});
 
+	it('une borne ouverte ne compte pas : x² sur ]0;2], de 0 à 2 → 8/3', () => {
+		const d = desk('f(x) = x^2 sur ]0;2]');
+		d.submit('.intégrer f de 0 à 2');
+		expect(last(d).failed).toBe(false);
+		expect(last(d).latex).toBe('\\dfrac{8}{3}');
+	});
+
+	it('un point exclu ne compte pas : x² sur [0;1[ ∪ ]1;2], de 0 à 2 → 8/3', () => {
+		const d = desk('p(x) = x^2 sur [0;1[ \\cup ]1;2]');
+		d.submit('.intégrer p de 0 à 2');
+		expect(last(d).failed).toBe(false);
+		expect(last(d).latex).toBe('\\dfrac{8}{3}');
+	});
+
+	it('1/(x−1) hors de 1 : la divergence est dite par .intégrer, pas par l’ensemble', () => {
+		const d = desk('q(x) = 1/(x-1) sur ]-∞;1[ \\cup ]1;+∞[');
+		d.submit('.intégrer q de 0 à 2');
+		expect(last(d).text).not.toContain("n'est pas dans l'ensemble");
+		expect(last(d).text).toContain('diverge');
+	});
+
 	it('bornes dans l’ordre inverse : même jugement', () => {
 		const d = desk('f(x) = x^2 sur [0;2]');
 		d.submit('.intégrer f de 2 à 0');
@@ -291,6 +312,12 @@ describe('f) tangente et aire hors de l’ensemble', () => {
 		expect(areaRefusal(f, 1, 3)).toBe("3 n'est pas dans l'ensemble de définition de f, [0 ; 2].");
 	});
 
+	it('aire sur ]0;2] de 0 à 2 : acceptée (borne ouverte, longueur nulle)', () => {
+		const d = desk('f(x) = x^2 sur ]0;2]');
+		expect(areaRefusal(d.atelier.get('f'), 0, 2)).toBeNull();
+		expect(tangentRefusal(d.atelier.get('f'), 0)).not.toBeNull();
+	});
+
 	it('sans ensemble : tout est permis', () => {
 		const d = desk('f(x) = x^2');
 		expect(tangentRefusal(d.atelier.get('f'), -1)).toBeNull();
@@ -315,6 +342,14 @@ describe('f) tangente et aire hors de l’ensemble', () => {
 // =============================================================================
 // g) le lien ?f=… sur …
 // =============================================================================
+
+describe('ℝ\\{1} écrit collé (revue de #1337)', () => {
+	it('se lit comme ℝ \\ {1}', () => {
+		const d = desk('g(x) = x^2 sur ℝ\\{1}');
+		expect(label(d, 'g')).toBe(label(desk('g(x) = x^2 sur ℝ \\ {1}'), 'g'));
+		expect(label(d, 'g')).not.toBeNull();
+	});
+});
 
 describe('g) le lien de projection lit « sur »', () => {
 	it('?f=x^2 sur [0;+∞[ : tracée sur l’ensemble', () => {
