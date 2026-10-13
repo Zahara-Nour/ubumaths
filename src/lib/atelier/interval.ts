@@ -279,12 +279,11 @@ export function citedIntervals(
 	}
 	for (const [name, domain] of inherited) {
 		const effective = intervalDomainOf(get(name));
-		if (!refused.has(name) && effective !== null && isEmpty(effective)) {
-			refused.set(
-				name,
-				`${displayName(name)} n'est définie nulle part : les fonctions qu'elle cite ne le sont que sur ${intervalText(domain)}.`
-			);
-		}
+		if (refused.has(name) || effective === null || !isEmpty(effective)) continue;
+		const why = isEmpty(domain)
+			? "les ensembles des fonctions qu'elle cite n'ont aucun nombre en commun"
+			: `les fonctions qu'elle cite ne le sont que sur ${intervalText(domain)}`;
+		refused.set(name, `${displayName(name)} n'est définie nulle part : ${why}.`);
 	}
 	return { inherited, refused };
 }
@@ -309,8 +308,10 @@ export function chosenDomainAnswer(
 	const match = DOMAIN_TARGET.exec(typed.trim());
 	if (match === null) return null;
 	const name = match[1] + "'".repeat(match[2].length);
-	const domain = intervalDomainOf(get(name));
-	if (domain === null) return null;
+	const object = get(name);
+	const domain = intervalDomainOf(object);
+	// En erreur (`f(2x)`, ensemble vide) : la commande suit son cours, rien à affirmer
+	if (domain === null || object?.status !== 'ok' || isEmpty(domain)) return null;
 	const chosen = `${displayName(name)} est définie sur ${intervalText(domain)} (ensemble choisi)`;
 	const ast = astOf(expression);
 	const natural = ast === null ? null : computeDomain(ast, INTERNAL_LETTER);
@@ -475,7 +476,7 @@ export function valueOutsideRefusal(
 ): string | null {
 	const value = constantValue(written, get);
 	if (value === null || containsValue(cited.domain, value)) return null;
-	return outsideIntervalMessage(cited.name, written.trim(), cited.domain);
+	return outsideIntervalMessage(cited.name, shownWritten(written), cited.domain);
 }
 
 /**
@@ -492,8 +493,8 @@ export function segmentOutsideRefusal(
 	const b = constantValue(upper, get);
 	if (a === null || b === null) return null;
 	return segmentRefusal(cited, [
-		{ written: lower.trim(), value: a },
-		{ written: upper.trim(), value: b }
+		{ written: shownWritten(lower), value: a },
+		{ written: shownWritten(upper), value: b }
 	]);
 }
 
@@ -608,6 +609,11 @@ function segmentRefusal(
 	if (isEmpty(outside)) return null;
 	const whole = `[${low.written} ; ${high.written}]`.replace(/-/g, '−');
 	return `Une partie de ${whole}, ${intervalText(outside)}, n'est pas dans l'ensemble de définition de ${cited.name}, ${intervalText(cited.domain)}.`;
+}
+
+/** Une valeur tapée dans une commande, à l'écran : `\pi` (relu ainsi par Calcul) redevient π. */
+function shownWritten(written: string): string {
+	return written.trim().replace(/\\pi(?![A-Za-z])/g, 'π');
 }
 
 /** Un nombre à l'écran : virgule décimale, signe moins typographique. */

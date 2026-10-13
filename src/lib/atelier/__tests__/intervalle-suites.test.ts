@@ -118,6 +118,12 @@ describe('b) .intégrer et .évaluer hors de l’ensemble : refus comme f(5)', (
 		);
 	});
 
+	it('une borne π s’écrit π dans le refus (revue)', () => {
+		const d = desk('f(x) = x^2 sur [0;3]');
+		d.submit('.intégrer f de 0 à π');
+		expect(last(d).text).toBe("π n'est pas dans l'ensemble de définition de f, [0 ; 3].");
+	});
+
 	it('bornes dans l’ordre inverse : même jugement', () => {
 		const d = desk('f(x) = x^2 sur [0;2]');
 		d.submit('.intégrer f de 2 à 0');
@@ -197,6 +203,26 @@ describe('d) une fonction qui cite une fonction à intervalle en hérite', () =>
 		const g = d.atelier.get('g');
 		expect(g?.status).toBe('error');
 		expect(g?.message).toContain('f(2x)');
+	});
+
+	it('ensembles cités sans nombre en commun : erreur qui le dit, et .domaine ne l’affirme pas (revue)', () => {
+		const d = desk('f(x) = x sur [0;1]', 'h(x) = x sur [2;3]');
+		d.submit('k(x) = f(x) + h(x)');
+		const k = d.atelier.get('k');
+		expect(k?.status).toBe('error');
+		expect(k?.message).toBe(
+			"k n'est définie nulle part : les ensembles des fonctions qu'elle cite n'ont aucun nombre en commun."
+		);
+		d.submit('.domaine k');
+		expect(last(d).text).not.toContain('ensemble choisi');
+	});
+
+	it('son « sur » hors de l’héritage : erreur qui nomme l’ensemble hérité', () => {
+		const d = desk('f(x) = x^2 sur [0;+∞[');
+		d.submit('g(x) = f(x) + 1 sur [-5;-1]');
+		expect(d.atelier.get('g')?.message).toBe(
+			"g n'est définie nulle part : les fonctions qu'elle cite ne le sont que sur [0 ; +∞[."
+		);
 	});
 
 	it('l’héritage n’est pas sauvegardé : il se relit sur f', () => {

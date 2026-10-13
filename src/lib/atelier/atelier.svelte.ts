@@ -1765,6 +1765,8 @@ export class Atelier {
 		this.items.forEach((o, i) => {
 			if (!isFunction(o)) return;
 			const domain = inheritedDomains.get(o.name);
+			// Comparé par contenu : un objet neuf à chaque passage relancerait le
+			// rendu de la carte et la synchronisation du tracé pour rien
 			if (JSON.stringify(o.inheritedInterval) === JSON.stringify(domain)) return;
 			const { inheritedInterval: _stale, ...rest } = o;
 			this.items[i] = domain === undefined ? rest : { ...rest, inheritedInterval: domain };

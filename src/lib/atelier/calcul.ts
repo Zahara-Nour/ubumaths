@@ -1187,7 +1187,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// Lot 2 de l'intervalle : `.résoudre` et `.variations` travaillent sur
 	// l'ensemble des fonctions citées (`f(x) = x^2 sur [0;+∞[`), croisé avec
 	// un `dans` tapé ; le moteur le reçoit par ce mot
-	// Décision b : `.intégrer` et `.évaluer` refusent ce qui sort de l'ensemble
+	// L'ensemble des fonctions citées : `.résoudre` et `.variations` y travaillent
+	// (lot 2), `.intégrer` et `.évaluer` refusent ce qui en sort (décision b)
 	const cited =
 		(name === 'solve' || name === 'variations' || name === 'integrate' || name === 'eval') &&
 		typedArgs !== null &&
