@@ -913,7 +913,7 @@ function textOf(result: CalcResult): string {
 function definitionText(name: string, object: AtelierObject): string {
 	const placed = `« ${name} » est dans tes objets`;
 	if (object.message === undefined) return `${placed}.`;
-	if (object.status === 'error') return `${placed}, mais elle ne se lit pas : ${object.message}`;
+	if (object.status === 'error') return `${placed}, mais elle est en erreur : ${object.message}`;
 	if (object.status === 'pending') {
 		return `${placed}, ${object.message.charAt(0).toLowerCase()}${object.message.slice(1)}`;
 	}

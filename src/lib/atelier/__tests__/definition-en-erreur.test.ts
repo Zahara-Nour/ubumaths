@@ -34,13 +34,13 @@ describe('une définition en erreur', () => {
 		expect(card.status).toBe('error');
 		expect(last(desk)).toMatchObject({
 			failed: true,
-			text: `« ${name} » est dans tes objets, mais elle ne se lit pas : ${card.message}`
+			text: `« ${name} » est dans tes objets, mais elle est en erreur : ${card.message}`
 		});
 	});
 
 	it('h(x) = x^^2 : le texte attendu, mot pour mot', () => {
 		expect(last(deskWith('h(x) = x^^2')).text).toBe(
-			"« h » est dans tes objets, mais elle ne se lit pas : « x^^2 » n'est pas une expression valide."
+			"« h » est dans tes objets, mais elle est en erreur : « x^^2 » n'est pas une expression valide."
 		);
 	});
 });
@@ -71,10 +71,10 @@ describe('export et rejeu', () => {
 	it('l’export JSON et ubumark gardent le texte et l’échec de la ligne', () => {
 		const desk = deskWith('h(x) = x^^2', 'p(x) = q(x)+1');
 		const [h, p] = JSON.parse(historyToJson(desk.entries, NOW)).entries;
-		expect(h).toMatchObject({ failed: true, text: expect.stringContaining('ne se lit pas') });
+		expect(h).toMatchObject({ failed: true, text: expect.stringContaining('est en erreur') });
 		expect(p).toMatchObject({ failed: false, text: expect.stringContaining('en attente de') });
 		expect(historyToUbumark(desk.entries, NOW)).toContain(
-			'Erreur : « h » est dans tes objets, mais elle ne se lit pas'
+			'Erreur : « h » est dans tes objets, mais elle est en erreur'
 		);
 	});
 

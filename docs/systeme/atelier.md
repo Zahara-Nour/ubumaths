@@ -310,7 +310,7 @@ un point). `runInput` (`src/lib/atelier/calcul.ts`) rend un `CalcResult` de kind
 
 **La ligne d'une définition dit ce que dit la carte** (`definitionText`, `desk.svelte.ts`,
 décision de David du 2026-10-13) : « « f » est dans tes objets. » seulement si la carte n'a pas
-de message ; en erreur, « « h » est dans tes objets, mais elle ne se lit pas : » + le message de la
+de message ; en erreur, « « h » est dans tes objets, mais elle est en erreur : » + le message de la
 carte, et la ligne est en échec (`failed`) ; en attente, « « p » est dans tes objets, en attente
 de « q », qui n'est pas encore défini. », sans échec. Au rejeu, une définition en échec n'arrête
 pas (un export d'avant la disait réussie).

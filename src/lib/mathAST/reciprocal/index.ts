@@ -430,8 +430,23 @@ function refusePeriodic(
 				approx(piece.lower.value) !== 0 &&
 				approx(piece.upper.value) !== 0
 		) ?? pieces?.find(({ piece }) => approx(piece.lower.value) === 0);
-	const suggestion = chosen ? intervalSet([tidyInterval(chosen.piece)]) : null;
+	// Une borne où f n'existe pas reste OUVERTE : la fenêtre fermée gardait π/2
+	// pour tan sur ]−1 ; 4[ (revue de #1342)
+	const suggestion = chosen
+		? intervalSet([openWhereUndefined(tidyInterval(chosen.piece), f, variable)])
+		: null;
 	return refuseNotBijective(context, null, { suggestion });
+}
+
+/** L'intervalle, chaque borne finie où f n'est pas définie rendue ouverte. */
+function openWhereUndefined(piece: Interval, f: MathNode, variable: string): Interval {
+	const open = (end: Interval['lower']): Interval['lower'] => {
+		const at = approx(end.value);
+		return at !== null && Number.isFinite(at) && valueAt(f, variable, at) === null
+			? { ...end, type: 'open' }
+			: end;
+	};
+	return { ...piece, lower: open(piece.lower), upper: open(piece.upper) };
 }
 
 /**
