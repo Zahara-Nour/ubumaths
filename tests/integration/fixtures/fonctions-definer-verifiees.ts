@@ -891,6 +891,10 @@ export const DECLENCHEURS_DEFINER_VERIFIES: Record<string, DeclencheurDefinerVer
 	'classification_nodes_guard_point_tags()': { justification: REGLES_DE_TAG },
 	'exercise_curriculum_points_check_rules()': { justification: REGLES_DE_TAG },
 	'exercise_classifications_guard_point_tags()': { justification: REGLES_DE_TAG },
+	'geometry_figures_drop_tags()': {
+		justification:
+			'efface les liens de tag de la figure supprimée, seulement eux ; DEFINER car la suppression d’un compte arrive en cascade sous supabase_auth_admin (ADR 0027) ; garde d’appelant prof ou admin'
+	},
 	'dictionary_entries_keep_version()': {
 		justification:
 			'historique du dictionnaire : seule voie d’écriture des versions (plus d’INSERT direct) ; garde d’appelant admin ; auteur = auth.uid()'

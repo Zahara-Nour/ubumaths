@@ -155,3 +155,8 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
   - (4) pas de Réciproque sur f′ ni de Dériver sur la carte f⁻¹ (`.dériver f⁻¹` suffit via (1)).
   - (5) sin : le refus dit la vérité (bijective sur [−π/2 ; π/2], réciproque arcsin, que Chiphre ne
     sait pas encore calculer) sans proposer une commande qui échouerait.
+- 2026-10-13 — **décisions (1), (3), (5) en PR** (`feat/reciproque-a-la-volee`) : `f⁻¹` tapé =
+  la réciproque à la volée (`expandDerivatives`, sans carte ; refus de `.réciproque f`, hors du
+  départ → refus de `f(5)`) ; droite y = x grise en pointillés (`syncPlots`) ; sin/cos/tan : refus
+  qui nomme arcsin/arccos/arctan sans commande. Défaut `g(x) = f(x)^-1` corrigé (exposant négatif
+  sans accolades relu `^(-1)` par `parse.ts`).

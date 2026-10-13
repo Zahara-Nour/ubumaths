@@ -248,17 +248,31 @@ MÊME ligne (`reciprocalResult`, `src/lib/atelier/reciprocal.ts`) — réponse `
 — et créent la carte `f⁻¹` (`createReciprocal`), sans changer de vue ; déjà là, elle est mise à
 jour, pas doublée. L'intervalle : celui tapé après « sur » (rangé dans `reciprocalOn`) CROISÉ avec
 l'ensemble de f, recroisé à chaque recalcul (f redéfinie n'est jamais écrasée) — vide : « f n'est
-définie que sur [0 ; +∞[. » ; sinon l'ensemble de f, sinon son domaine. Dans Calcul, `f^-1`,
-`f^{-1}`, `f^(-1)`, `f⁻¹` écrits après une FONCTION de l'atelier sont refusés
-(`inverseNotationRefusal` : le moteur y lirait 1/f en silence ; « pour l'inverse 1/f, écris
-1/f(x) »), et `.réciproque f⁻¹` répond « La réciproque de f⁻¹, c'est f. ». La carte **suit f** (`#reciprocals`, en
+définie que sur [0 ; +∞[. » ; sinon l'ensemble de f, sinon son domaine. **`f⁻¹` tapé dans
+Calcul** (décision (1) de David, 2026-10-13) : `f^-1`, `f^{-1}`, `f^(-1)`, `f⁻¹` écrits après une
+FONCTION de l'atelier sont réécrits `f^{-1}` (`withReciprocalNotation`, en tête de `computeInput`),
+que les deux parseurs lisent comme la réciproque (`isInverse`), puis **calculés à la volée comme
+`f'`** : `expandDerivatives` (`engine.ts`) remplace le nœud par la formule de
+`atelier.reciprocalOutcome(f)` — `f⁻¹(5)` sa valeur, `f⁻¹` seule la fonction (`.variations f⁻¹`,
+`.dériver f⁻¹`, `.résoudre f⁻¹(x)=2`), `g(x) = f⁻¹(x)` une g qui suit f. Aucune carte requise ;
+si la carte existe, son intervalle tapé (`reciprocalOn`) sert aussi, pour dire la même chose.
+Refus (`reciprocalRefusalIn`) : f sans réciproque → celui de `.réciproque f` ; `f⁻¹(5)` hors de
+l'ensemble de départ → celui de `f(5)` hors intervalle. `.variations` et `.résoudre` étudient sur
+l'ensemble de départ de f⁻¹ (`citedReciprocalInterval`). Une g qui cite `f⁻¹` passe en erreur avec
+le refus quand f cesse d'être bijective (`#underivable`). ⚠️ Calculer `f⁻¹` relit les autres objets,
+dont g : une réciproque redemandée en cours de calcul est indisponible (`resolving`), l'objet qui la
+cite est laissé de côté ; les formules sont gardées tant que l'atelier ne change pas (`formulas`, sinon cinq réciproques citées coûtaient 11 s). L'argument de `f⁻¹(…)` est vérifié sur l'arbre (`f⁻¹(g(2))`, `\left(…\right)`). Un nom à indice (`f_1⁻¹`) est refusé (les parseurs y lisent une puissance) ; `f⁻¹(x) = 5x` aussi : elle se calcule, elle ne se définit pas. `g(x) = f⁻¹(x)` hérite de l'ensemble de DÉPART de f⁻¹ (`citedIntervals` reçoit `citedReciprocalInterval`), et l'empreinte du moteur (`atelierMark`) contient les ensembles : f qui change d'ensemble change g. En erreur, `g(4)` rend le message de g. L'inverse s'écrit `1/f(x)` ou `f(x)^-1` ; `x^-1`, `2^-1`, `a^-1` restent
+des puissances. `.réciproque f⁻¹` répond « La réciproque de f⁻¹, c'est f. ». La carte **suit f** (`#reciprocals`, en
 dernier dans `recomputeAll`) : formule rangée en texte (provenance `text`), `interval` = son
 ensemble de départ f(I) (Q5 : le tracé et les calculs suivent, `ℝ` n'est pas rangé) ; f devenue
 non bijective, constante… → la carte passe en erreur avec le refus, définition vide (rien de
 tracé). Elle dépend de f seule (`#refsOf`) : supprimer f l'emporte, renommer f la renomme, sa
 lettre est celle de f. Pas de « Dériver » ni de « Réciproque » sur `f⁻¹`, ni de « Réciproque » sur
 `f′` (raison affichée : taper la formule). L'image `f⁻¹(5)` de la carte passe par sa formule (le
-moteur lirait `f^-1` comme une puissance). Une **expression** (`.réciproque 2x+3`) donne la ligne
+moteur lirait `f^-1` comme une puissance). **Droite y = x** (décision (3)) : grise
+(`--color-muted-foreground`), en pointillés, tracée d'office par `syncPlots` quand f ET sa carte
+`f⁻¹` sont tracées et sans erreur ; retirée dès que l'une est masquée, supprimée ou en erreur. Pas
+une carte : elle n'existe que dans le grapheur, rien n'est sauvegardé. Une **expression** (`.réciproque 2x+3`) donne la ligne
 seule, sans carte. **Paramètres** (cas 1 de David) : f cite des valeurs (`a x + b`, curseurs) →
 la réciproque est jugée avec leurs valeurs actuelles, puis écrite avec leurs lettres quand le
 solveur résout `y = a x + b` et que sa solution coïncide, valeurs remplacées, sur des points du

@@ -33,10 +33,24 @@ import { formatInterval } from '$lib/mathAST/domain/format';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { expandCommandArgument, substitutedAstOf } from './engine';
-import { derivativeOf, displayName, hasObjectNameShape, reciprocalOf } from './names';
-import { intervalDomainOf, intervalText, readInterval, splitInterval } from './interval';
+import {
+	derivativeOf,
+	displayName,
+	hasObjectNameShape,
+	reciprocalName,
+	reciprocalOf
+} from './names';
+import {
+	intervalDomainOf,
+	intervalText,
+	outsideIntervalMessage,
+	readInterval,
+	splitInterval,
+	type CitedInterval
+} from './interval';
 import { INTERNAL_LETTER, renameVariableIn, typedLetterOf } from './letter';
-import { astOf } from './parse';
+import { astOf, type Provenance } from './parse';
+import { visitAST } from '$lib/mathAST/visitor';
 
 // =============================================================================
 // Types
@@ -437,11 +451,14 @@ function calcResultOf(outcome: ReciprocalOutcome, input: string, note: string | 
 }
 
 /**
- * `f^-1`, `f^{-1}`, `f^(-1)`, `f⁻¹` écrits après un nom (lu par `typedReciprocalBase`
- * et `inverseNotationRefusal`). Pas `f^-12` ; pas `f(x)^-1`, qui est bien 1/f(x).
+ * `f^-1`, `f^{-1}`, `f^(-1)`, `f⁻¹` écrits après un nom. Pas `f^-12` ; pas
+ * `f(x)^-1`, qui est bien 1/f(x).
  */
 const INVERSE_NOTATION =
-	/(?<![A-Za-z_])([A-Za-z](?:_\d+)?)\s*(?:\^\s*(?:\{\s*-\s*1\s*\}|\(\s*-\s*1\s*\)|-\s*1(?![\d.,]))|⁻¹)/g;
+	/(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)\s*(?:\^\s*(?:\{\s*-\s*1\s*\}|\(\s*-\s*1\s*\)|-\s*1(?![\d.,]))|⁻¹)/g;
+
+/** `f^{-1}`, la forme rangée (`withReciprocalNotation`), suivie de son argument s'il y en a un. */
+const INVERSE_CALL = /(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)\^\{-1\}(?:\(([^()]*)\))?/g;
 
 /** La fonction dont le texte ENTIER désigne la réciproque (`f^{-1}`, `f⁻¹(x)`), ou `null`. */
 export function typedReciprocalBase(text: string): string | null {
@@ -451,20 +468,161 @@ export function typedReciprocalBase(text: string): string | null {
 	return match === null ? null : match[1];
 }
 
+/** Une fonction de l'atelier, qui a donc une réciproque à calculer (`f⁻¹`). */
+function isAtelierFunction(atelier: Atelier, name: string): boolean {
+	return atelier.get(name)?.kind === 'function';
+}
+
 /**
- * Le refus d'une saisie qui écrit `f^-1` (sous l'une de ses formes) avec f une
- * fonction de l'atelier, ou `null`. Le moteur y lirait la puissance 1/f, sans
- * le dire, alors que l'élève qui a une carte f⁻¹ pense à la réciproque.
- * David n'a pas tranché si `f^-1` tapé doit désigner la carte : refus honnête
- * en attendant (revue de #1328).
+ * La saisie où `f^-1`, `f^(-1)`, `f⁻¹` d'une fonction de l'atelier sont écrits
+ * `f^{-1}` : la forme que les deux parseurs lisent comme la RÉCIPROQUE de f
+ * (`isInverse`), développée à la volée comme `f'` (`engine.ts`, décision (1)
+ * de David, 2026-10-13). Ailleurs (`x^-1`, `a^-1` avec a une valeur), rien ne
+ * change : une puissance.
  */
-export function inverseNotationRefusal(atelier: Atelier, text: string): string | null {
-	for (const match of text.matchAll(INVERSE_NOTATION)) {
-		const name = match[1];
-		if (atelier.get(name)?.kind !== 'function') continue;
-		return `${name}⁻¹ désigne la réciproque de ${name} : sa carte ne se cite pas encore dans Calcul, utilise ses boutons. Pour l'inverse 1/${name}, écris 1/${name}(x).`;
+export function withReciprocalNotation(atelier: Atelier, text: string): string {
+	// Pas un nom à indice : les parseurs lisent `f_1^{-1}` comme une puissance
+	// (refusé par `reciprocalRefusalIn`, revue de la PR)
+	return text.replace(INVERSE_NOTATION, (whole, name: string) =>
+		isAtelierFunction(atelier, name) && !name.includes('_') ? `${name}^{-1}` : whole
+	);
+}
+
+/**
+ * `f^-1(x) = 5x` : f⁻¹ ne se définit pas, comme `f'(x) = 3x` — sans ce refus,
+ * la ligne partait en égalité à tester et répondait « false » (revue de la PR).
+ */
+export function reciprocalDefinitionRefusal(atelier: Atelier, input: string): string | null {
+	const match = /^\s*([A-Za-z](?:_\d+)?)\^\{-1\}\s*\(\s*[A-Za-z]\s*\)\s*=/.exec(input);
+	if (match === null || !isAtelierFunction(atelier, match[1])) return null;
+	const base = match[1];
+	return `${base}⁻¹ est la réciproque de ${base} : elle se calcule, elle ne se définit pas. Pour l'obtenir : .réciproque ${base}`;
+}
+
+/** La saisie (déjà passée par `withReciprocalNotation`) cite-t-elle une réciproque ? */
+export function citesReciprocal(atelier: Atelier, text: string): boolean {
+	return [...text.matchAll(INVERSE_CALL)].some(([, name]) => isAtelierFunction(atelier, name));
+}
+
+/** Les réciproques citées, avec leur argument (`null` : `f⁻¹` seule). */
+function inverseCalls(
+	atelier: Atelier,
+	text: string
+): { readonly base: string; readonly argument: string | null; readonly written: string }[] {
+	return [...text.matchAll(INVERSE_CALL)]
+		.filter(([, name]) => isAtelierFunction(atelier, name))
+		.map(([written, base, argument]) => ({ base, argument: argument ?? null, written }));
+}
+
+/** L'ensemble de départ de f⁻¹ calculée, ou `null` (ℝ, ou un ensemble que l'atelier ne relit pas). */
+function departureOf(outcome: ReciprocalOutcome): Domain | null {
+	if (!outcome.ok || outcome.interval === undefined) return null;
+	const read = readInterval(outcome.interval);
+	return read.ok ? read.domain : null;
+}
+
+/**
+ * Le refus d'une saisie qui cite `f⁻¹`, ou `null` : f sans réciproque → le
+ * refus de `.réciproque f` (formules comprises) ; `f⁻¹(5)` hors de l'ensemble
+ * de départ → le refus de `f(5)` hors de l'intervalle de f.
+ */
+export function reciprocalRefusalIn(
+	atelier: Atelier,
+	text: string,
+	provenance: Provenance = 'text'
+): { readonly message: string; readonly formulas?: true } | null {
+	for (const [, name] of text.matchAll(INVERSE_NOTATION)) {
+		if (!name.includes('_') || !isAtelierFunction(atelier, name)) continue;
+		return {
+			message: `${name}⁻¹ ne se cite pas encore dans Calcul (nom à indice) : utilise .réciproque ${name} et sa carte.`
+		};
+	}
+	for (const { base, argument } of inverseArguments(atelier, text, provenance)) {
+		const outcome = atelier.reciprocalOutcome(base);
+		if (!outcome.ok) {
+			return { message: outcome.message, ...(outcome.formulas && { formulas: true as const }) };
+		}
+		const departure = departureOf(outcome);
+		if (departure === null || argument === null) continue;
+		const expanded = expandCommandArgument(atelier, argument);
+		const value = expanded === null ? null : approxOf(expanded);
+		if (value === null || containsValue(departure, value)) continue;
+		return {
+			message: outsideIntervalMessage(displayName(reciprocalName(base)), argument.trim(), departure)
+		};
 	}
 	return null;
+}
+
+/**
+ * Les réciproques citées et leur argument, lus sur l'ARBRE (`isInverse`) :
+ * `f⁻¹((-1))`, `f^-1 (-1)`, `f⁻¹(g(2))`, `f^{-1}\\left(-1\\right)` échappaient
+ * à une regex (revue de la PR). Saisie illisible : la regex, en repli.
+ */
+function inverseArguments(
+	atelier: Atelier,
+	text: string,
+	provenance: Provenance
+): { readonly base: string; readonly argument: string | null }[] {
+	const ast = astOf(text, provenance, atelier.functionNames);
+	if (ast === null) return inverseCalls(atelier, text);
+	const found: { base: string; argument: string | null }[] = [];
+	visitAST(ast, {
+		enterFunction: (node) => {
+			if (node.isInverse !== true || !isAtelierFunction(atelier, node.name)) return;
+			found.push({
+				base: node.name,
+				argument: node.args.length === 0 ? null : toCustom(node.args[0])
+			});
+		}
+	});
+	return found;
+}
+
+/** La valeur d'un argument sans variable (`5`, `a + 1` une fois a remplacé), ou `null`. */
+function approxOf(text: string): number | null {
+	const ast = astOf(text);
+	if (ast === null || getVariables(ast).size > 0) return null;
+	const value = approx(ast);
+	return value !== null && Number.isFinite(value) ? value : null;
+}
+
+/**
+ * L'ensemble sur lequel `.variations` et `.résoudre` étudient une saisie qui
+ * cite `f⁻¹` : l'ensemble de départ de f⁻¹ (√(x + 2) → [0 ; +∞[), croisé avec
+ * celui des autres fonctions citées (`others`, lu sur la saisie SANS `f⁻¹`,
+ * où le `f` de `f⁻¹` n'a rien à faire). `f⁻¹(2x)` : refus `composed`, comme
+ * `f(2x)` (lot 2 de l'intervalle).
+ */
+export function citedReciprocalInterval(
+	atelier: Atelier,
+	typed: string,
+	variable: string,
+	others: (typed: string) => CitedInterval | null
+): CitedInterval | null {
+	const calls = inverseCalls(atelier, typed);
+	if (calls.length === 0) return others(typed);
+	let cited = others(
+		typed.replace(INVERSE_CALL, (written, name: string) =>
+			isAtelierFunction(atelier, name) ? '(0)' : written
+		)
+	);
+	if (cited?.kind === 'composed') return cited;
+	const unknown = new RegExp(`(?<![A-Za-z_\\\\])${variable}(?![A-Za-z_0-9])`);
+	for (const { base, argument, written } of calls) {
+		const name = displayName(reciprocalName(base));
+		if (argument !== null && argument.trim() !== variable && unknown.test(argument)) {
+			return { kind: 'composed', call: written.replace(`${base}^{-1}`, name), name };
+		}
+		if (argument !== null && argument.trim() !== variable) continue;
+		const departure = departureOf(atelier.reciprocalOutcome(base));
+		if (departure === null) continue;
+		cited =
+			cited === null
+				? { kind: 'restricted', domain: departure, name }
+				: { ...cited, domain: intersect(cited.domain, departure) };
+	}
+	return cited;
 }
 
 /** Un morceau d'un message : du texte, ou une formule LaTeX (entre `$…$`). */

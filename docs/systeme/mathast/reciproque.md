@@ -51,7 +51,14 @@ David du 2026-10-13). Pour x² sur ℝ :
   lit sur `f(x₀) = f(x)` à second membre exact (`0 = sin x`) et se vérifie numériquement dans I
   (x₀ et x₀ + T dans I). Aucun morceau listé ; l'intervalle proposé est le morceau de
   [−T/2 ; T/2] qui contient 0 (sin : [-π/2 ; π/2]), sinon celui qui part de 0 (cos : [0 ; π]).
-  ⚠️ `.réciproque sin sur [-π/2 ; π/2]` reste `unsolved` (pas d'arcsin).
+  ⚠️ `.réciproque sin sur [-π/2 ; π/2]` reste `unsolved` (pas d'arcsin) : quand la réciproque
+  n'est pas calculable sur le morceau proposé, le refus ne propose PAS de commande (décision (5)
+  de David, 2026-10-13, `refusePeriodicWithoutFormula`) : « f n'est pas bijective sur ℝ, mais elle
+  l'est sur une infinité d'intervalles, par exemple [−π/2 ; π/2]. Sa réciproque y est la fonction
+  arcsin, que Chiphre ne sait pas encore calculer. » — « s'écrit avec la fonction arcsin » quand x
+  n'apparaît que dans sin (2 sin x + 1), une phrase sans arcsin sinon (x·sin x). tan (ensemble
+  `periodic_exclusion`, `refuseTangent`) : f(x₀ + π) = f(x₀) prouve la non-bijectivité, morceau
+  ]−π/2 ; π/2[ proposé s'il est monotone, arctan.
 - **Variations sans solveur** : f prouvée non injective par les variations alors que le solveur
   échoue → `not-bijective` quand même (x⁴ − 2x², x eˣ sur ℝ ; avant : `unsolved`).
 - `suggestion` : le morceau le plus à droite qui a une formule, sinon le dernier ; jamais une borne

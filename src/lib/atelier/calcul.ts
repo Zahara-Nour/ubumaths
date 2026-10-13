@@ -19,7 +19,15 @@ import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
 import { numericNode } from '$lib/mathAST/common/numeric';
-import { inverseNotationRefusal, reciprocalCommand, reciprocalResult } from './reciprocal';
+import {
+	citedReciprocalInterval,
+	citesReciprocal,
+	reciprocalCommand,
+	reciprocalDefinitionRefusal,
+	reciprocalRefusalIn,
+	reciprocalResult,
+	withReciprocalNotation
+} from './reciprocal';
 import {
 	validateName,
 	nameRejectionMessage,
@@ -1065,13 +1073,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		};
 	}
 
+	// `.variations f⁻¹` : f sans réciproque, le refus de `.réciproque f`
+	if (known.name !== 'reciprocal') {
+		const inverse = reciprocalRefusalIn(session.atelier, typedArgument);
+		if (inverse !== null) return { kind: 'refus', ...inverse };
+	}
 	// `.réciproque f [sur I]` lit un NOM de fonction : avant la substitution des
 	// noms, qui en ferait une expression (lot 3 de la réciproque)
-	// `.variations f^-1` : le moteur calculerait 1/f sans le dire (revue de #1328)
-	if (known.name !== 'reciprocal') {
-		const inverse = inverseNotationRefusal(session.atelier, typedArgument);
-		if (inverse !== null) return { kind: 'refus', message: inverse };
-	}
 	if (known.name === 'reciprocal') {
 		return reciprocalCommand(session.atelier, input, typedArgument, (text) =>
 			withPiCommand(decimalCommaInput(text))
@@ -1120,8 +1128,9 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		};
 	}
 	// `f'(x)` → son expression d'abord, puis les noms (voir plus haut)
+	// `f⁻¹` aussi, calculée à la volée comme `f'` (décision (1) de David)
 	const substitute = (text: string): string | null =>
-		!text.includes("'")
+		!text.includes("'") && !citesReciprocal(session.atelier, text)
 			? substituteNames(session, text)
 			: (expandCommandArgument(session.atelier, text) ??
 				substituteNames(session, expandInput(session.atelier, text)));
@@ -1226,10 +1235,17 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		(name === 'solve' || name === 'variations' || name === 'integrate' || name === 'eval') &&
 		typedArgs !== null &&
 		finalArgs !== null
-			? citedIntervalDomain(
-					(n) => session.atelier.get(n),
+			? citedReciprocalInterval(
+					session.atelier,
 					typedArgs.expression,
-					(name === 'eval' ? typedArgs.assignment?.name : finalArgs.variable) ?? INTERNAL_LETTER
+					(name === 'eval' ? typedArgs.assignment?.name : finalArgs.variable) ?? INTERNAL_LETTER,
+					(typed) =>
+						citedIntervalDomain(
+							(n) => session.atelier.get(n),
+							typed,
+							(name === 'eval' ? typedArgs.assignment?.name : finalArgs?.variable) ??
+								INTERNAL_LETTER
+						)
 				)
 			: null;
 	if (cited?.kind === 'composed') {
@@ -1682,7 +1698,9 @@ function decimalRankMessage(atelier: Atelier, input: string): string | null {
 }
 
 function computeInput(session: CalcSession, text: string, provenance: Provenance): CalcResult {
-	const input = text.trim();
+	// `f^-1`, `f^(-1)`, `f⁻¹` d'une fonction de l'atelier : écrits `f^{-1}`, la
+	// réciproque que lisent les parseurs (décision (1) de David, 2026-10-13)
+	const input = withReciprocalNotation(session.atelier, text.trim());
 	if (input === '') return { kind: 'vide' };
 
 	// Avant tout chemin — commande, définition, calcul : tous lisent `pi` p·i
@@ -1693,9 +1711,11 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// CALCUL (`runCommand`) : les commandes de données lisent des modalités.
 	if (!input.startsWith('.')) {
 		if (EVENT_PROBABILITY.test(input)) return eventProbability(session.atelier, input);
-		// `f^-1(5)` : ni la puissance 1/f, ni rien laissé tel quel (revue de #1328)
-		const inverse = inverseNotationRefusal(session.atelier, input);
-		if (inverse !== null) return { kind: 'refus', message: inverse };
+		// `f⁻¹(5)` : f sans réciproque, ou 5 hors de l'ensemble de départ de f⁻¹
+		const defined = reciprocalDefinitionRefusal(session.atelier, input);
+		if (defined !== null) return { kind: 'refus', message: defined };
+		const inverse = reciprocalRefusalIn(session.atelier, input, provenance);
+		if (inverse !== null) return { kind: 'refus', ...inverse };
 		const unknown = findUnknownFunctionCall(input);
 		if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };
 	}
@@ -1789,6 +1809,19 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// moteur, elle rendait « Unexpected token: ' » — un message de parseur.
 	const blocked = derivativeOfUnusable(session, input);
 	if (blocked !== null) return { kind: 'refus', message: blocked };
+	// `g(x) = f⁻¹(x)` en erreur (f plus bijective) : le moteur ne la connaît
+	// pas et disait « Fonction inconnue : g » ; la carte g porte la raison
+	for (const [, cited] of input.matchAll(/(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)\s*\(/g)) {
+		const object = session.atelier.get(cited);
+		if (
+			object?.kind === 'function' &&
+			object.status === 'error' &&
+			object.message !== undefined &&
+			citesReciprocal(session.atelier, object.definition)
+		) {
+			return { kind: 'refus', message: `${cited} : ${object.message}` };
+		}
+	}
 
 	// I4 : `f(5)` avec f sur [0 ; 2] se refuse, le moteur ne connaît pas l'ensemble
 	const outside = outsideIntervalRefusal((n) => session.atelier.get(n), input);

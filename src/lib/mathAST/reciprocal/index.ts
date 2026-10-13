@@ -24,8 +24,9 @@ import type { RenderedStep } from '../common/step-renderer-base';
 import type { PeriodicSolutionFamily, Solution } from '../solve/types';
 import { isSolverFailure } from '../solve/types';
 import { solve } from '../solve/solve';
-import { equals, fraction, opposite, variable as variableNode } from '../factory';
+import { equals, fraction, opposite, subtract, variable as variableNode } from '../factory';
 import { isLogical, isRelation } from '../guards';
+import { transformAST, visitAST } from '../visitor';
 import { flattenRelationChain } from '../flatten';
 import { getVariables, substitute } from '../eval/substitute';
 import { numericNode } from '../common/numeric';
@@ -247,6 +248,14 @@ function refuseNotBijective(
 		withFormula ?? (several && last ? intervalSet([tidyInterval(last.piece)]) : undefined);
 	const candidate = periodic ? (periodic.suggestion ?? undefined) : fromPieces;
 	const suggestion = candidate && readable(candidate) ? candidate : undefined;
+	// Décision (5) de David (2026-10-13) : sin sur ℝ — jamais proposer une
+	// commande qui échouerait (le solveur n'écrit pas arcsin)
+	if (
+		periodic &&
+		!(suggestion && reciprocalOn(context.f, { ...context, interval: suggestion }, false).ok)
+	) {
+		return refusePeriodicWithoutFormula(context, suggestion, round ? [a, b] : null);
+	}
 	const advice = suggestion
 		? `Choisis un intervalle, par exemple .réciproque ${name} sur ${formatInterval(suggestion)}.`
 		: `Choisis un intervalle où ${name} est strictement monotone.`;
@@ -262,6 +271,98 @@ function refuseNotBijective(
 			...(periodic && { infinitelyManyPieces: true as const })
 		}
 	};
+}
+
+/** Les fonctions trigonométriques et leur réciproque, que Chiphre ne calcule pas encore. */
+const ARC_FUNCTIONS: Readonly<Record<string, string>> = {
+	sin: 'arcsin',
+	cos: 'arccos',
+	tan: 'arctan'
+};
+
+/**
+ * f périodique, sans réciproque calculable sur le morceau proposé : la vérité,
+ * sans commande. « Sa réciproque y est la fonction arcsin » quand f est sin,
+ * « s'écrit avec » quand x n'apparaît que dans sin (2 sin x + 1) ; sinon,
+ * Chiphre dit seulement qu'il ne sait pas.
+ */
+function refusePeriodicWithoutFormula(
+	context: NonInjective,
+	suggestion: Domain | undefined,
+	sameImage: readonly [number, number] | null
+): ReciprocalResult {
+	const { f, variable, name, domain } = context;
+	const where = suggestion ? `, par exemple ${formatInterval(suggestion).replace(/-/g, '−')}` : '';
+	const trig = onlyTrigonometricIn(f, variable);
+	const arc = trig === null ? null : ARC_FUNCTIONS[trig];
+	const exact =
+		f.type === 'function' &&
+		f.args.length === 1 &&
+		f.args[0].type === 'variable' &&
+		f.args[0].name === variable;
+	const there = suggestion ? 'y' : 'sur ces intervalles';
+	const formula =
+		arc === null
+			? `Chiphre ne sait pas encore calculer sa réciproque ${suggestion ? 'sur cet intervalle' : 'sur ces intervalles'}.`
+			: `Sa réciproque ${there} ${exact ? 'est' : "s'écrit avec"} la fonction ${arc}, que Chiphre ne sait pas encore calculer.`;
+	return {
+		ok: false,
+		refusal: {
+			kind: 'not-bijective',
+			message: `${name} n'est pas bijective sur ${formatInterval(withRealLineWritten(domain))}, mais elle l'est sur une infinité d'intervalles${where}. ${formula}`,
+			...(sameImage && {
+				sameImage: [numericNode(sameImage[0]), numericNode(sameImage[1])] as const
+			}),
+			...(suggestion && { suggestion }),
+			infinitelyManyPieces: true as const
+		}
+	};
+}
+
+/**
+ * tan (x n'apparaît que dans tan) sur son ensemble, ℝ privé de π/2 + kπ :
+ * f(x₀ + π) = f(x₀) prouve qu'elle n'est pas bijective. Le morceau proposé,
+ * ]−π/2 ; π/2[, seulement si f y est strictement monotone. `null` sinon.
+ */
+function refuseTangent(context: NonInjective): ReciprocalResult | null {
+	const { f, variable, domain } = context;
+	if (domain.kind !== 'periodic_exclusion' || onlyTrigonometricIn(f, variable) !== 'tan') {
+		return null;
+	}
+	const period = approx(domain.period);
+	if (period === null || period <= 0) return null;
+	const proved = [0, 0.3, -0.7, 1.1].some((x) => {
+		const [y0, y1] = [valueAt(f, variable, x), valueAt(f, variable, x + period)];
+		return y0 !== null && y1 !== null && close(y0, y1);
+	});
+	if (!proved) return null;
+	const window = intervalSet([
+		interval(
+			{ value: tidy(subtract(domain.basePoint, domain.period)), type: 'open' },
+			{ value: tidy(domain.basePoint), type: 'open' }
+		)
+	]);
+	const monotone = monotonePieces(f, variable, window)?.length === 1;
+	return refusePeriodicWithoutFormula(context, monotone ? window : undefined, null);
+}
+
+/**
+ * `sin`, `cos` ou `tan` quand la variable n'apparaît QUE dans des appels à
+ * cette seule fonction (`2 sin(x) + 1`, `sin(2x)`), sinon `null` (`x sin x`).
+ */
+function onlyTrigonometricIn(f: MathNode, variable: string): string | null {
+	const kinds = new Set<string>();
+	visitAST(f, {
+		enterFunction: (node) => {
+			if (node.name in ARC_FUNCTIONS && getVariables(node).has(variable)) kinds.add(node.name);
+		}
+	});
+	if (kinds.size !== 1) return null;
+	const [kind] = kinds;
+	const rest = transformAST(f, {
+		enterFunction: (node) => (node.name === kind ? numericNode(0) : undefined)
+	});
+	return getVariables(rest).has(variable) ? null : kind;
 }
 
 /**
@@ -502,6 +603,9 @@ function reciprocalOn(
 	const domain = normalizeExcludedPoints(
 		options.interval ? intersect(definition.domain, options.interval) : definition.domain
 	);
+	if (domain.kind === 'periodic_exclusion') {
+		return refuseTangent({ f, variable, name, domain, pair: null, listPieces }) ?? unsolved(name);
+	}
 	if (domain.kind !== 'universal' && domain.kind !== 'interval_set') return unsolved(name);
 	// x − x : la lettre est écrite, la fonction est constante
 	const values = samplesOf(domain).map((x0) => valueAt(f, variable, x0));
