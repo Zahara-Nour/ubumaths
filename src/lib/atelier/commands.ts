@@ -305,13 +305,21 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 	],
 	[
 		'vars',
-		{ french: 'valeurs', description: 'Lister tes valeurs, comme « Mes objets »', runsAlone: true }
+		{
+			french: 'valeurs',
+			section: 'reglages',
+			description: 'Lister tes valeurs, comme « Mes objets »',
+			example: '.valeurs',
+			runsAlone: true
+		}
 	],
 	[
 		'fns',
 		{
 			french: 'fonctions',
+			section: 'reglages',
 			description: 'Lister tes fonctions (f′ et f⁻¹ comprises), comme « Mes objets »',
+			example: '.fonctions',
 			runsAlone: true
 		}
 	],
