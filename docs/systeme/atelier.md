@@ -423,7 +423,9 @@ Calcul sans changer de vue** et crée **une carte par objet créé** (G7).
 Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de refaire le travail) :
 
 - `syncEngine` (`engine.ts`) : l'atelier détient les noms, `WebReplEngine` n'est qu'un
-  calculateur remis en accord avant chaque usage (Q1, option B) ;
+  calculateur remis en accord avant chaque usage (Q1, option B). Une fonction liée s'y lit
+  comme une fonction quel que soit son nom (`k(x) = x+1` puis `k(0)` → 1 ; avant le 2026-10-13,
+  seuls f, g, h, u, v, w l'étaient) : le moteur passe son état à chaque lecture ;
 - `syncPlots` (`plot-sync.ts`) : l'atelier détient l'état, le grapheur le reflète. Rien de ce qui
   se passe dans le grapheur ne remonte. ⚠️ L'effet qui l'appelle lit et écrit le store : s'il
   cessait d'être idempotent, il bouclerait.

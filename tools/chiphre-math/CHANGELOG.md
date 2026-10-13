@@ -2,6 +2,12 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.21.0] - 2026-10-13
+
+### Corrigé
+
+- Écran (`static/mathlive-fonts-shantell.css`, hors police) : avec Chiphre Math, le mode texte de MathLive (`\text`, `\textbf`) était écrit dans la police système ; il prend Shantell Sans Light et Bold, la police de texte des PDF (`--text-font-family`). Le jeu KaTeX ne change pas
+
 ## [1.20.0] - 2026-10-13
 
 ### Modifié
