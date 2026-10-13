@@ -67,7 +67,8 @@ Leurs arguments sont des **noms d'objets et des nombres**, jamais des expression
 
 `.aide`, `.exact`, `.décimal`, `.valeurs`, `.fonctions`, `.exporter` se lancent d'une seule Entrée
 (`runsAlone`). Depuis le retrait de `/cas` (2026-10-13) : `.valeurs` et `.fonctions` listent les
-cartes du panneau, en français (fonctions : `f′` et `f⁻¹` comprises, ni suites ni listes) ;
+cartes du panneau, en français (fonctions : `f′` et `f⁻¹` comprises, ni suites ni listes), et
+figurent dans `.aide` (rubrique « Réglages », décision de David du 2026-10-13) ;
 `.exporter` télécharge l'historique en JSON, comme le bouton, et refuse un argument (détail :
 [atelier.md](atelier.md#export-et-rejeu-de-lhistorique)).
 
