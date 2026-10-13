@@ -8,11 +8,14 @@
  *    numériquement celle du moteur ; une primitive ne diffère de celle du
  *    moteur que d'une constante.
  * 2. **Aucun coefficient caché** : une forme composée (u′e^u, u′/u,
- *    u′sin(u), u′cos(u), u′uⁿ) ne s'applique telle quelle que si l'intégrande
- *    EST u′·f(u). Pour `e^{2x}`, le pipeline rééquilibre par 1/u′ = ½ sans le
- *    dire : le titre annonce « e^u », la ligne écrit « ½e^{2x} ». Le calcul
- *    est juste, la rédaction trompe — refusée. Même contrôle pour les
- *    éléments simples : A·ln|x − r| promis, A·ln|x − r| écrit.
+ *    u′sin(u), u′cos(u), u′uⁿ) écrit exactement G(u) — e^u, ln|u|… — ou k·G(u)
+ *    avec un coefficient k déclaré (½ pour `e^{2x}`), accepté seulement s'il est EXPLIQUÉ : une
+ *    étape « On fait apparaître u′ » (`reveal-derivative`) la précède, écrit
+ *    f = k × u′·g(u) (vérifié en valeurs), et la forme composée reprend ce
+ *    même k (PR 2, décisions de David du 2026-10-13). Un ½ glissé dans la
+ *    primitive sans cette étape — titre « e^u », ligne « ½e^{2x} » — reste
+ *    refusé. Même contrôle pour les éléments simples : A·ln|x − r| promis,
+ *    A·ln|x − r| écrit.
  *
  * @module atelier/integrate-steps-check
  */
@@ -133,9 +136,14 @@ export function primitivesAgree(steps: MathNode, engine: MathNode, variable: str
 /**
  * Une étape composée écrit-elle autre chose que G(u) ? Oui dès qu'un facteur
  * de rééquilibrage (½ pour `e^{2x}`, −1 pour `e^{-x}`, 3 pour `\frac3x`) s'y
- * glisse : c'est exactement le cas où l'intégrande n'est pas u′·f(u).
+ * glisse : c'est exactement le cas où l'intégrande n'est pas u′·f(u). Un
+ * coefficient déclaré (`bindings.k`) n'est accepté que si l'étape qui précède
+ * le fait apparaître (`revealExplains`).
  */
-function compositeHidesCoefficient(step: PedagogicalIntegrationStep): boolean {
+function compositeHidesCoefficient(
+	step: PedagogicalIntegrationStep,
+	previous: PedagogicalIntegrationStep | undefined
+): boolean {
 	const primitive = COMPOSITE_PRIMITIVES[step.rule];
 	if (primitive === undefined) return false;
 	const u = step.bindings?.u;
@@ -144,16 +152,50 @@ function compositeHidesCoefficient(step: PedagogicalIntegrationStep): boolean {
 	const parameters = parameterBindings([step.after, u, ...(n ? [n] : [])], step.variable);
 	const exponent = n === undefined ? 0 : evalAt(n, parameters);
 	if (n !== undefined && !Number.isFinite(exponent)) return true;
+	// Un coefficient déclaré multiplie G(u) ; il doit venir de la réécriture
+	const k = step.bindings?.k;
+	if (k !== undefined && !revealExplains(previous, step)) return true;
+	const factor = k === undefined ? 1 : evalAt(k, parameters);
 	let valid = 0;
 	for (const x of SAMPLE_POINTS) {
 		const bindings = { ...parameters, [step.variable]: x };
 		const written = evalAt(step.after, bindings);
-		const expected = primitive(evalAt(u, bindings), exponent);
+		const expected = factor * primitive(evalAt(u, bindings), exponent);
 		if (!Number.isFinite(written) || !Number.isFinite(expected)) continue;
 		if (!near(written, expected)) return true;
 		valid++;
 	}
 	return valid < MIN_VALID_POINTS;
+}
+
+/**
+ * L'étape `reveal` explique-t-elle le coefficient k de `composite` ? Elle doit
+ * être une réécriture « On fait apparaître u′ » au même k, et juste en valeurs :
+ * f = k × u′g(u) (`before` = k × `revealed`), et la forme composée intègre
+ * exactement `revealed`.
+ */
+function revealExplains(
+	reveal: PedagogicalIntegrationStep | undefined,
+	composite: PedagogicalIntegrationStep
+): boolean {
+	if (reveal?.rule !== 'reveal-derivative') return false;
+	const k = reveal.bindings?.k;
+	const revealed = reveal.bindings?.revealed;
+	const compositeK = composite.bindings?.k;
+	if (!k || !revealed || !compositeK) return false;
+	const nodes = [reveal.before, revealed, composite.before];
+	const parameters = parameterBindings([k, ...nodes], composite.variable);
+	const kValue = evalAt(k, parameters);
+	if (!Number.isFinite(kValue) || !near(kValue, evalAt(compositeK, parameters))) return false;
+	let valid = 0;
+	for (const x of SAMPLE_POINTS) {
+		const bindings = { ...parameters, [composite.variable]: x };
+		const [f, g, integrated] = nodes.map((node) => evalAt(node, bindings));
+		if (![f, g, integrated].every(Number.isFinite)) continue;
+		if (!near(f, kValue * g) || !near(integrated, g)) return false;
+		valid++;
+	}
+	return valid >= MIN_VALID_POINTS;
 }
 
 /**
@@ -181,8 +223,8 @@ function partialFractionsHideCoefficient(step: PedagogicalIntegrationStep): bool
 
 function walk(steps: readonly PedagogicalIntegrationStep[]): boolean {
 	return steps.some(
-		(step) =>
-			compositeHidesCoefficient(step) ||
+		(step, index) =>
+			compositeHidesCoefficient(step, steps[index - 1]) ||
 			partialFractionsHideCoefficient(step) ||
 			walk(step.subSteps ?? [])
 	);
@@ -190,8 +232,9 @@ function walk(steps: readonly PedagogicalIntegrationStep[]): boolean {
 
 /**
  * Une étape (sous-étapes comprises) applique-t-elle une forme composée ou des
- * éléments simples avec un coefficient qu'elle n'explique pas ? Détection par les RÈGLES appliquées
- * et leurs `bindings`, jamais par une liste d'exemples.
+ * éléments simples avec un coefficient qu'elle n'explique pas ? Détection par
+ * les RÈGLES appliquées et leurs `bindings` (une forme composée et la
+ * réécriture `reveal-derivative` qui la précède), jamais par une liste d'exemples.
  */
 export function hasUnexplainedCoefficient(steps: readonly PedagogicalIntegrationStep[]): boolean {
 	return walk(steps);

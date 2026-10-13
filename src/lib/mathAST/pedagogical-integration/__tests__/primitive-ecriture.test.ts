@@ -12,8 +12,9 @@
  *
  * Écriture réelle de `toLatex` : la constante d'Euler s'écrit
  * `\exponentialE` (MathLive l'affiche `e`), `\ln x` s'écrit
- * `\ln\left( x \right)` et `\ln\lvert u\rvert` s'écrit
- * `\ln\left( \left| u \right| \right)`.
+ * `\ln\left( x \right)`. Dans les étapes, `\ln\lvert u\rvert` s'écrit
+ * `\ln\left| u \right|` (décision de David du 2026-10-13 : plus de
+ * `\ln\left( \left| u \right| \right)`, parenthèses doublées).
  */
 import { describe, expect, it } from 'vitest';
 import { containsVariable } from '../../common/contains-variable';
@@ -50,7 +51,7 @@ const DEMO_CASES: readonly Case[] = [
 	{ integrand: 'e^{3x + 1}', expected: '\\dfrac{1}{3} \\exponentialE^{3 x + 1}' },
 	{
 		integrand: '\\dfrac{1}{2x + 1}',
-		expected: '\\dfrac{1}{2} \\ln\\left( \\left| 2 x + 1 \\right| \\right)'
+		expected: '\\dfrac{1}{2} \\ln\\left| 2 x + 1 \\right|'
 	},
 	{ integrand: '5 e^x', expected: '5 \\exponentialE^x' },
 	{ integrand: '2x e^{x^2}', expected: '\\exponentialE^{x^2}' },
@@ -67,7 +68,7 @@ const DEMO_CASES: readonly Case[] = [
 
 // Cas lycée courants traités par le moteur
 const LYCEE_CASES: readonly Case[] = [
-	{ integrand: '\\dfrac{1}{x}', expected: '\\ln\\left( \\left| x \\right| \\right)' },
+	{ integrand: '\\dfrac{1}{x}', expected: '\\ln\\left| x \\right|' },
 	{ integrand: 'e^{-x}', expected: '-\\exponentialE^{-x}' },
 	{ integrand: '4e^{-2x}', expected: '-2 \\exponentialE^{-2 x}' },
 	{ integrand: '\\cos(2x)', expected: '\\dfrac{1}{2} \\sin\\left( 2 x \\right)' },

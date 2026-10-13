@@ -6,13 +6,16 @@
  * `pedagogical-integration` ne s'ajoutent que quand elles disent vrai :
  *
  * - **montrées** : polynômes, eˣ, 1/x sur un intervalle de signe constant,
- *   cos/sin, IPP (cyclique comprise), éléments simples, et les composées dont
- *   l'intégrande est EXACTEMENT u′·f(u) (`2e^{2x}`, `\frac{2x}{x^2+1}`) ;
- * - **refusées** (pas d'étapes, la ligne garde sa réponse) : une composée dont
- *   le coefficient 1/u′ n'est pas expliqué (`e^{2x}`, `\sin(2x)`, `e^{-x}`,
- *   `\frac3x`…), des bornes littérales, des étapes qui ne concordent pas avec
- *   le moteur (`\ln x` de 0 à 1), un intégrande que les étapes ne savent pas
- *   rédiger (`\frac{1}{x^2}`).
+ *   cos/sin, IPP (cyclique comprise), éléments simples à facteurs x − r, et
+ *   toutes les composées : exactement u′·f(u) (`2e^{2x}`), ou avec un
+ *   coefficient que l'étape « On fait apparaître u′ » explique (`e^{2x}`,
+ *   `\sin(2x)`, `e^{-x}`, `\frac3x`… — refusées en PR 1, montrées depuis la
+ *   PR 2, décisions de David du 2026-10-13) ;
+ * - **refusées** (pas d'étapes, la ligne garde sa réponse) : un coefficient
+ *   réellement caché (éléments simples à facteur non unitaire, étape composée
+ *   sans réécriture), des bornes littérales, des étapes qui ne concordent pas
+ *   avec le moteur (`\ln x` de 0 à 1), un intégrande que les étapes ne savent
+ *   pas rédiger (`\frac{1}{x^2}`).
  * - **pôle dans [a ; b]** : la ligne est un REFUS, qui ne porte pas d'étapes.
  */
 
@@ -21,6 +24,13 @@ import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { Atelier } from '../atelier.svelte';
 import { CalcDesk } from '../desk.svelte';
 import { integrateSteps } from '../integrate-steps';
+import { hasUnexplainedCoefficient } from '../integrate-steps-check';
+import { parseLatex } from '$lib/mathAST/parser';
+import { superscript, euler, implicitMultiply, number, fraction } from '$lib/mathAST/factory';
+import {
+	generatePedagogicalIntegrationSteps,
+	type PedagogicalIntegrationStep
+} from '$lib/mathAST/pedagogical-integration';
 import { astOf } from '../parse';
 
 // =============================================================================
@@ -124,10 +134,10 @@ describe('.intégrer : étapes montrées quand elles disent vrai', () => {
 });
 
 // =============================================================================
-// Refusées : la ligne garde la réponse du moteur, sans étapes
+// Composées à coefficient : montrées depuis la PR 2 (refusées en PR 1)
 // =============================================================================
 
-describe('.intégrer : coefficient non expliqué (composée, éléments simples) → pas d’étapes', () => {
+describe('.intégrer : composée à coefficient, expliqué par « On fait apparaître u′ »', () => {
 	it.each([
 		['.intégrer e^{2x}', '\\dfrac{1}{2} \\exponentialE^{2 x} + C'],
 		['.intégrer \\sin(2x)', '-\\dfrac{1}{2} \\cos\\left( 2 x \\right) + C'],
@@ -142,12 +152,33 @@ describe('.intégrer : coefficient non expliqué (composée, éléments simples)
 		['.intégrer \\frac3x', '3 \\ln\\left( \\left| x \\right| \\right) + C'],
 		['.intégrer \\frac{x}{x^2+1}', '\\dfrac{1}{2} \\ln\\left( x^2 + 1 \\right) + C'],
 		['.intégrer (2x+1)^3', '\\dfrac{1}{8} \\left( 2 x + 1 \\right)^4 + C'],
-		// IPP : le ½ caché est dans la sous-étape ∫v·u′ (½e^{2x} → ¼e^{2x})
+		// IPP : v = ½e^{2x} et ∫ ½e^{2x} dx, chacun avec sa réécriture
 		[
 			'.intégrer xe^{2x}',
 			'\\dfrac{1}{2} x \\exponentialE^{2 x} - \\dfrac{1}{4} \\exponentialE^{2 x} + C'
 		],
-		['.intégrer e^{2x} de 0 à 1', '\\dfrac{1}{2} \\exponentialE^2 - \\dfrac{1}{2}'],
+		['.intégrer e^{2x} de 0 à 1', '\\dfrac{1}{2} \\exponentialE^2 - \\dfrac{1}{2}']
+	])('%s', (input, answer) => {
+		const entry = lastEntry(input);
+		expect(entry.failed).toBe(false);
+		expect(entry.latex).toBe(answer);
+		expect(entry.steps).toBeDefined();
+		const rules = flatten(entry.steps!).map((s) => s.rule);
+		expect(rules).toContain('reveal-derivative');
+		expect(entry.summary).toBeDefined();
+	});
+
+	it('en texte aussi : `.intégrer exp(2x)`', () => {
+		expect(lastEntry('.intégrer exp(2x)').steps).toBeDefined();
+	});
+});
+
+// =============================================================================
+// Refusées : la ligne garde la réponse du moteur, sans étapes
+// =============================================================================
+
+describe('.intégrer : coefficient réellement caché (éléments simples) → pas d’étapes', () => {
+	it.each([
 		// Éléments simples à facteur non unitaire : le titre promet A·ln|x − r|,
 		// la ligne écrit (A/2)·ln|2x − 1| (revue du 2026-10-13)
 		[
@@ -168,10 +199,6 @@ describe('.intégrer : coefficient non expliqué (composée, éléments simples)
 		expect(entry.latex).toBe(answer);
 		expect(entry.steps).toBeUndefined();
 		expect(entry.summary).toBeUndefined();
-	});
-
-	it('en texte aussi : `.intégrer exp(2x)`', () => {
-		expect(lastEntry('.intégrer exp(2x)').steps).toBeUndefined();
 	});
 });
 
@@ -232,5 +259,50 @@ describe('integrateSteps : la garde de concordance', () => {
 		expect(
 			integrateSteps({ expression: ')(', variable: null, bounds: null }, node('x'))
 		).toBeNull();
+	});
+});
+
+// =============================================================================
+// La garde des coefficients, appelée directement
+// =============================================================================
+
+describe('hasUnexplainedCoefficient : expliqué par une réécriture, ou caché', () => {
+	const stepsOf = (latex: string) =>
+		generatePedagogicalIntegrationSteps(parseLatex(latex), { level: 'lycee' }).steps;
+	const withoutReveal = (steps: readonly PedagogicalIntegrationStep[]) =>
+		steps.filter((s) => s.rule !== 'reveal-derivative');
+
+	it('`e^{2x}` tel que rédigé : la réécriture explique le ½', () => {
+		expect(hasUnexplainedCoefficient(stepsOf('e^{2x}'))).toBe(false);
+	});
+
+	it('la même forme composée SANS l’étape de réécriture : refusée', () => {
+		expect(hasUnexplainedCoefficient(withoutReveal(stepsOf('e^{2x}')))).toBe(true);
+		expect(hasUnexplainedCoefficient(withoutReveal(stepsOf('\\frac{x}{x^2+1}')))).toBe(true);
+	});
+
+	it('une réécriture fausse (e^{2x} = ⅓ × 2e^{2x}) : refusée', () => {
+		const steps = stepsOf('e^{2x}');
+		const forged = steps.map((step) =>
+			step.rule === 'reveal-derivative'
+				? { ...step, bindings: { ...step.bindings, k: fraction(number('1'), number('3')) } }
+				: step
+		);
+		expect(hasUnexplainedCoefficient(forged)).toBe(true);
+	});
+
+	it('une forme composée qui écrit ½e^{2x} sans coefficient déclaré (avant la PR 2) : refusée', () => {
+		const u = implicitMultiply(number('2'), parseLatex('x'));
+		const hidden: PedagogicalIntegrationStep = {
+			id: 1,
+			rule: 'apply-composite-exp',
+			description: '',
+			before: superscript(euler(), u),
+			after: implicitMultiply(fraction(number('1'), number('2')), superscript(euler(), u)),
+			variable: 'x',
+			verbosityLevel: 'summarized',
+			bindings: { u }
+		};
+		expect(hasUnexplainedCoefficient([hidden])).toBe(true);
 	});
 });

@@ -30,7 +30,8 @@
  */
 
 import type { SchoolLevel } from '../common/step-renderer-base';
-import { toLatex } from '../latex-generator';
+import { getVariables } from '../eval/substitute';
+import { integrationLatex as toLatex } from './latex';
 import type { IntegrationBindings, PedagogicalIntegrationRule } from './types';
 
 // =============================================================================
@@ -106,6 +107,59 @@ function constantIntegral(bindings: IntegrationBindings): string {
 	return `\\int ${constantUnderIntegral(bindings)}\\,dx`;
 }
 
+/** Une expression écrite comme facteur après `\\times` : entre parenthèses si elle commence par `-` ou est une somme */
+function factorLatex(bindings: IntegrationBindings, key: string): string {
+	const node = bindings[key];
+	if (!node) return '?';
+	const latex = toLatex(node);
+	const isSum = node.type === 'addition' || node.type === 'subtraction';
+	return isSum || latex.startsWith('-') ? `\\left( ${latex} \\right)` : latex;
+}
+
+/**
+ * `k × u′g(u)` (LaTeX) : `\\dfrac{1}{2} \\times 2e^{2x}`, `3 \\times \\dfrac{1}{x}` ;
+ * k = −1 s'écrit avec le seul signe : `-\\left( -e^{-x} \\right)`.
+ */
+export function revealedProduct(bindings: IntegrationBindings): string {
+	const k = bind(bindings, 'k');
+	if (k === '-1') return `-${factorLatex(bindings, 'revealed')}`;
+	return `${k} \\times ${factorLatex(bindings, 'revealed')}`;
+}
+
+/** `k` devant une intégrale ou une primitive : `\\dfrac{1}{2} `, `-` pour −1 */
+export function coefficientPrefix(bindings: IntegrationBindings): string {
+	const k = bind(bindings, 'k');
+	return k === '-1' ? '-' : `${k} `;
+}
+
+/** La phrase « u > 0 » d'une primitive ln u sans valeur absolue, ou '' */
+function positivitySentence(bindings: IntegrationBindings, lnLatex: string): string {
+	if (!bindings.positive) return '';
+	const where =
+		bindings.lower && bindings.upper
+			? `sur ${math(`\\left[ ${bind(bindings, 'lower')} ; ${bind(bindings, 'upper')} \\right]`)}`
+			: 'pour tout réel';
+	return ` Comme ${math(`${bind(bindings, 'positive')} > 0`)} ${where}, on écrit ${math(lnLatex)} sans valeur absolue.`;
+}
+
+/** La phrase de la constante sortie de l'intégrale par « On fait apparaître u′ », ou '' */
+function constantSentence(bindings: IntegrationBindings): string {
+	if (!bindings.k || !bindings.scaled) return '';
+	return ` Avec la constante ${bindMath(bindings, 'k')} sortie de l'intégrale : ${bindMath(bindings, 'scaled')}.`;
+}
+
+/**
+ * `F(b) - F(a)`, ou les bornes elles-mêmes quand l'une s'appelle a ou b
+ * (`\\int_0^a` : « F(b) − F(a) » y serait faux)
+ */
+function boundsDifference(bindings: IntegrationBindings): string {
+	const { lower, upper } = bindings;
+	if (!lower || !upper) return 'F(b) - F(a)';
+	const names = new Set([...getVariables(lower), ...getVariables(upper)]);
+	if (!names.has('a') && !names.has('b')) return 'F(b) - F(a)';
+	return `F(${toLatex(upper)}) - F(${toLatex(lower)})`;
+}
+
 // =============================================================================
 // TITLES
 // =============================================================================
@@ -122,6 +176,7 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'apply-linearity-sum': () => 'Linéarité de l’intégrale',
 	'extract-constant': (b) => `On sort la constante ${bindMath(b, 'c')}`,
 	// ---- Composite forms ----
+	'reveal-derivative': () => "On fait apparaître $u'$",
 	'apply-composite-power': () => "Forme $u'u^n$",
 	'apply-composite-ln': () => "Forme $\\dfrac{u'}{u}$",
 	'apply-composite-exp': () => "Forme $u'e^u$",
@@ -162,6 +217,7 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'apply-known-primitive': () => 'Primitive',
 	'apply-linearity-sum': () => '$\\int(f+g)\\,dx = \\int f\\,dx + \\int g\\,dx$',
 	'extract-constant': () => '$\\int cf\\,dx = c\\int f\\,dx$',
+	'reveal-derivative': (b) => math(`${bind(b, 'integrand')} = ${revealedProduct(b)}`),
 	'apply-composite-power': () => "$\\int u'u^n\\,dx = \\dfrac{u^{n+1}}{n+1}$",
 	'apply-composite-ln': () => "$\\int \\dfrac{u'}{u}\\,dx = \\ln|u|$",
 	'apply-composite-exp': () => "$\\int u'e^u\\,dx = e^u$",
@@ -212,26 +268,28 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		`$(x^n)' = n x^{n-1}$, donc $\\int x^n\\,dx = \\dfrac{x^{n+1}}{n+1}$ avec ${math(`n = ${bind(b, 'n')}`)} (et $n \\neq -1$).`,
 	'apply-constant-rule': (b) =>
 		`Une constante c admet la primitive $cx$ : ${math(`${constantIntegral(b)} = ${constantTimesX(b)}`)}.`,
-	'apply-known-primitive': () =>
-		'On reconnaît une primitive de référence (table des primitives usuelles).',
+	'apply-known-primitive': (b) =>
+		`On reconnaît une primitive de référence (table des primitives usuelles).${positivitySentence(b, `\\ln\\left( ${bind(b, 'positive')} \\right)`)}`,
 	'apply-linearity-sum': () =>
 		"L'intégrale est linéaire : $\\int (f+g)\\,dx = \\int f\\,dx + \\int g\\,dx$. On intègre chaque terme séparément.",
 	'extract-constant': (b) =>
 		`Une constante multiplicative sort de l'intégrale : ${math(`\\int ${constantUnderIntegral(b)} f(x)\\,dx = ${bind(b, 'c') === '-1' ? '-' : `${bind(b, 'c')} `}\\int f(x)\\,dx`)}.`,
+	'reveal-derivative': (b) =>
+		`Avec ${math(`u = ${bind(b, 'u')}`)}, on a ${math(`u' = ${bind(b, 'du')}`)}. On écrit ${math(`${bind(b, 'integrand')} = ${revealedProduct(b)}`)} pour faire apparaître $u'$, puis on sort la constante ${bindMath(b, 'k')} de l'intégrale.`,
 	'apply-composite-power': (b) =>
-		`On reconnaît la forme $u'u^n$ avec ${math(`u = ${bind(b, 'u')}`)} et ${math(`n = ${bind(b, 'n')}`)}, dont une primitive est $\\dfrac{u^{n+1}}{n+1}$.`,
+		`On reconnaît la forme $u'u^n$ avec ${math(`u = ${bind(b, 'u')}`)} et ${math(`n = ${bind(b, 'n')}`)}, dont une primitive est $\\dfrac{u^{n+1}}{n+1}$.${constantSentence(b)}`,
 	'apply-composite-ln': (b) =>
-		`On reconnaît la forme $\\dfrac{u'}{u}$ avec ${math(`u = ${bind(b, 'u')}`)}, dont une primitive est $\\ln|u|$.`,
+		`On reconnaît la forme $\\dfrac{u'}{u}$ avec ${math(`u = ${bind(b, 'u')}`)}, dont une primitive est $\\ln|u|$.${positivitySentence(b, `\\ln\\left( ${bind(b, 'u')} \\right)`)}${constantSentence(b)}`,
 	'apply-composite-exp': (b) =>
-		`On reconnaît la forme $u'e^u$ avec ${math(`u = ${bind(b, 'u')}`)}, dont une primitive est $e^u$.`,
+		`On reconnaît la forme $u'e^u$ avec ${math(`u = ${bind(b, 'u')}`)}, dont une primitive est $e^u$.${constantSentence(b)}`,
 	'apply-composite-sin': (b) =>
-		`On reconnaît la forme $u'\\sin(u)$ avec ${math(`u = ${bind(b, 'u')}`)}, dont une primitive est $-\\cos(u)$.`,
+		`On reconnaît la forme $u'\\sin(u)$ avec ${math(`u = ${bind(b, 'u')}`)}, dont une primitive est $-\\cos(u)$.${constantSentence(b)}`,
 	'apply-composite-cos': (b) =>
-		`On reconnaît la forme $u'\\cos(u)$ avec ${math(`u = ${bind(b, 'u')}`)}, dont une primitive est $\\sin(u)$.`,
+		`On reconnaît la forme $u'\\cos(u)$ avec ${math(`u = ${bind(b, 'u')}`)}, dont une primitive est $\\sin(u)$.${constantSentence(b)}`,
 	'apply-fundamental-theorem': (b) =>
 		`On note F la primitive trouvée : ${math(`F(x) = ${bind(b, 'primitive')}`)}. L'intégrale vaut $\\left[F(x)\\right]_a^b$.`,
 	'substitute-bounds': (b) =>
-		`On évalue F aux bornes : F(borne haute) − F(borne basse), avec ${math(`F(x) = ${bind(b, 'primitive')}`)}.`,
+		`On évalue F aux bornes : ${math(boundsDifference(b))}, avec ${math(`F(x) = ${bind(b, 'primitive')}`)}.`,
 	'simplify-bounds-result': () =>
 		'On simplifie l’expression obtenue pour obtenir la valeur exacte (et numérique si possible).',
 	'integrand-undefined-on-interval': () =>
@@ -285,6 +343,7 @@ const DEFAULT_DESCRIPTIONS: Record<PedagogicalIntegrationRule, string> = {
 	'apply-known-primitive': 'Primitive usuelle',
 	'apply-linearity-sum': 'Linéarité (somme)',
 	'extract-constant': 'Extraction de la constante',
+	'reveal-derivative': "On fait apparaître u'",
 	'apply-composite-power': "Forme u'·uⁿ",
 	'apply-composite-ln': "Forme u'/u",
 	'apply-composite-exp': "Forme u'·eᵘ",

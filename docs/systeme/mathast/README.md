@@ -756,6 +756,21 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   l'intégrale restante en toutes lettres, avant sa valeur (pas de « = » faux). Le facteur 1/u′ des formes composées est un rationnel exact
   (`findProportionalityRatio`), et l'exponentielle s'écrit `e^{u}`
   (`superscript(euler(), u)`), jamais `\exp(u)` (décisions de David du 2026-10-11).
+- **Composées : le coefficient s'explique** (décisions de David du 2026-10-13). Quand
+  l'intégrande n'est pas exactement u′·g(u), `integrateComposite` émet d'abord
+  `reveal-derivative` (« On fait apparaître $u'$ ») : `e^{2x} = \dfrac12 \times 2e^{2x}`, ∫ = ½∫2e^{2x}
+  (signe : `e^{-x} = -(-e^{-x})` ; facteur constant : `\dfrac3x = 3 \times \dfrac1x`), puis la forme
+  composée sur `revealed` = u′g(u), qui rend k·G(u) (bindings `k`, `scaled`). La réécriture est un
+  calcul : elle reste en version résumée. Les étapes s'enchaînent (`after` de la réécriture =
+  `before` de la forme). Dans une IPP, v = ∫dv avec réécriture vient en sous-étapes de
+  `choose-u-dv`. u′ s'écrit propre (`cleanDerivative` : constante exacte, sinon `tidyTerms`).
+- **ln|u| ou ln u.** Les étapes écrivent `\ln\left| u \right|` (`latex.ts`, `collapseLnAbs` ;
+  la réponse du moteur garde `\ln\left( \left| u \right| \right)`), et `\ln u` sans valeur absolue
+  quand u > 0 est **certain** (`positivity.ts`, `isCertainlyPositive` par `analyzeSign` : domaine
+  ℝ, zéros résolus) — pour tout réel (`x^2+1`), ou sur [a ; b] d'une intégrale définie bornée par
+  des nombres et sans valeur interdite (`ctx.interval` ; `\frac1x` de 1 à e). Couvert : forme
+  u′/u et 1/x ; les éléments simples gardent |…|. L'évaluation aux bornes dit
+  « $F(b) - F(a)$ » (juste quand a > b), ou les bornes elles-mêmes si l'une s'appelle a ou b.
 - **Intégrale définie : aucune valeur à travers une valeur interdite.** Version pédagogique
   (V28, 2026-10-12) : avant tout calcul, **primitive comprise**, `forbiddenValueOnInterval`
   (`integration/forbidden-value.ts`) lit le domaine exact de f (`computeDomain` : points exclus,
