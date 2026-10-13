@@ -18,6 +18,7 @@ import {
 } from '../commands';
 import { Atelier } from '../atelier.svelte';
 import { runInput } from '../calcul';
+import { CalcDesk } from '../desk.svelte';
 
 describe('le catalogue des commandes', () => {
 	it('vient du registre, pas d’une liste écrite en dur', () => {
@@ -336,17 +337,21 @@ describe('les commandes qui se lancent seules', () => {
 		);
 	});
 
-	// Sinon une seule Entrée enverrait une commande incomplète
+	// Sinon une seule Entrée enverrait une commande incomplète. Par le PUPITRE,
+	// le chemin de l'élève : `.exporter` n'y passe pas par le moteur, il
+	// télécharge l'historique (ou dit qu'il n'y a rien) sans écrire de ligne
 	it('répondent vraiment, tapées seules', () => {
 		for (const command of alone) {
-			const result = runInput(
-				{ atelier: new Atelier(), engine: new WebReplEngine() },
-				`.${command.french}`
-			);
-			expect({ commande: command.french, kind: result.kind }).toEqual({
+			const desk = new CalcDesk(new Atelier());
+			const downloads: string[] = [];
+			desk.download = (_entries, format) => downloads.push(format);
+			desk.submit('1+1');
+			desk.submit(`.${command.french}`);
+			const answer = desk.entries.length === 2 ? desk.entries[1] : null;
+			expect({
 				commande: command.french,
-				kind: 'commande'
-			});
+				answered: answer === null ? downloads.length === 1 : !answer.failed
+			}).toEqual({ commande: command.french, answered: true });
 		}
 	});
 });

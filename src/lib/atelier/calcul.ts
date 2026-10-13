@@ -123,6 +123,7 @@ import {
 	coupleOrSetRefusal
 } from './decimal-comma';
 import { listCitedMessage } from './list-cited';
+import { functionsListing, valuesListing } from './listing';
 
 // =============================================================================
 // Types
@@ -913,6 +914,29 @@ function calculationAlternative(result: ReplExecutionResult): { alternative?: Al
 	return {};
 }
 
+/** Ce que répond `.exporter` suivi d'autre chose. */
+const EXPORT_ALONE =
+	'« .exporter » s’écrit seul : il télécharge l’historique en JSON, pour le rejouer.';
+
+/** La commande du catalogue qu'un nom tapé désigne (français, nom moteur ou raccourci). */
+function catalogCommandOf(engine: WebReplEngine, typed: string) {
+	const wanted = typed.toLowerCase();
+	return commandCatalog(engine).find(
+		(c) => c.name.toLowerCase() === wanted || c.aliases.some((a) => a.toLowerCase() === wanted)
+	);
+}
+
+/**
+ * La saisie est-elle `.exporter` seul (ou `.export`, son nom moteur) ? Le
+ * pupitre le lance lui-même : c'est lui qui tient l'historique, et le
+ * téléchargement est celui du bouton « JSON (pour rejouer) ».
+ */
+export function isExportCommand(engine: WebReplEngine, text: string): boolean {
+	const trimmed = text.trim();
+	if (!trimmed.startsWith('.') || /\s/.test(trimmed)) return false;
+	return catalogCommandOf(engine, resolveCommand(trimmed).slice(1))?.name === 'export';
+}
+
 /** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
 function runCommand(session: CalcSession, input: string): CalcResult {
 	const { engine } = session;
@@ -923,9 +947,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 
 	// ⚠️ On vérifie AVANT d'exécuter : le moteur répondrait « Unknown command »
 	// en anglais, sans dire ce qui s'en approche (§2 E2).
-	const known = commandCatalog(engine).find(
-		(c) => c.name.toLowerCase() === typed || c.aliases.some((a) => a.toLowerCase() === typed)
-	);
+	const known = catalogCommandOf(engine, typed);
 	if (known === undefined) {
 		const written = (
 			input.indexOf(' ') === -1 ? input.slice(1) : input.slice(1, input.indexOf(' '))
@@ -987,6 +1009,17 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		const developer = engine.execute('.help');
 		return { kind: 'commande', input, output: renderResult(developer, { fromCommand: true }).text };
 	}
+
+	// `.valeurs` et `.fonctions` : la liste du MOTEUR était en anglais, et
+	// fausse (une suite y passait pour une fonction, `g(t)` s'écrivait en x).
+	// Le panneau fait foi (retrait de `/cas`, 2026-10-13).
+	if (name === 'vars') return { kind: 'commande', input, output: valuesListing(session.atelier) };
+	if (name === 'fns') return { kind: 'commande', input, output: functionsListing(session.atelier) };
+
+	// `.exporter` seul ne passe pas ici : le pupitre le lance avant (il tient
+	// l'historique, le moteur ne l'a jamais eu — il répondait « Aucun historique
+	// a exporter » après dix calculs). Ce qui arrive ici porte un argument.
+	if (name === 'export') return { kind: 'refus', message: EXPORT_ALONE };
 
 	// `.mode`, `.exact`, `.décimal` : le moteur répond en anglais (« Mode set
 	// to: exact ») et ne lit pas `décimal` avec son accent. L'atelier change le

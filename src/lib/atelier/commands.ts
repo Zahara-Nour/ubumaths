@@ -305,11 +305,15 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 	],
 	[
 		'vars',
-		{ french: 'valeurs', description: 'Lister les valeurs connues du moteur', runsAlone: true }
+		{ french: 'valeurs', description: 'Lister tes valeurs, comme « Mes objets »', runsAlone: true }
 	],
 	[
 		'fns',
-		{ french: 'fonctions', description: 'Lister les fonctions connues du moteur', runsAlone: true }
+		{
+			french: 'fonctions',
+			description: 'Lister tes fonctions (f′ et f⁻¹ comprises), comme « Mes objets »',
+			runsAlone: true
+		}
 	],
 	[
 		'mode',
@@ -445,7 +449,12 @@ const OFF_REGISTRY: ReadonlyMap<string, Translation> = new Map([
 	['decimal', { french: 'décimal', description: 'Passer aux valeurs décimales', runsAlone: true }],
 	[
 		'export',
-		{ french: 'exporter', description: 'Exporter la session', advanced: true, runsAlone: true }
+		{
+			french: 'exporter',
+			description: 'Télécharger l’historique en JSON, pour le rejouer',
+			advanced: true,
+			runsAlone: true
+		}
 	]
 ]);
 
