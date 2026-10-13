@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { uuidSchema } from './common';
-import { exerciseHintSchema } from './exercises';
+import { exerciseHintSchema, exerciseTranslationsSchema } from './exercises';
 import { gradeCodeSchema } from './grades';
 import { CONTENT_LOCALES } from '$lib/types/locale';
 import { capitalPairsSchema } from '$lib/questions/capital-pairs';
@@ -973,6 +973,8 @@ export const studentExerciseViewSchema = z.object({
 	statement: z.string(),
 	correction: z.string().nullable(),
 	correction_visible: z.boolean(),
+	/** Réponses seules, sous la même condition que la correction ; sans la clé, retirée en silence */
+	answers: z.string().nullable().optional(),
 	/** Section ID if exercise belongs to a section */
 	section_id: z.string().uuid().nullable(),
 	/** Hints from selected variation (for guided exercises) */
@@ -1158,6 +1160,10 @@ const reviewVariationSchema = z.object({
 	label: z.string(),
 	statement_md: z.string(),
 	solution_md: z.string(),
+	// La page renvoie la variation entière : sans ces clés, les réponses et la
+	// traduction seraient retirées en silence, puis effacées à l'enregistrement.
+	answers_md: z.string().trim().max(50000, 'Réponses trop longues').optional(),
+	translations: exerciseTranslationsSchema.optional(),
 	hints: z.array(z.unknown()).optional(),
 	variables: z.array(z.unknown()).optional()
 });
@@ -1351,6 +1357,9 @@ const exerciseVariationSchema = z.object({
 	label: z.string(),
 	statement_md: z.string(),
 	solution_md: z.string(),
+	// Sans ces clés, le schéma les retire en silence (puis la page les efface)
+	answers_md: z.string().optional(),
+	translations: z.unknown().optional(),
 	hints: z.array(z.unknown()).optional(),
 	variables: z.array(z.unknown()).optional()
 });

@@ -17,7 +17,7 @@ couvre:
 # Exercices : éditeur, partage, affectation, maîtrise
 
 > Première doc de la zone, écrite à partir du code (règle « doc d'abord », 2026-10-12).
-> Vérifié contre le code le 2026-10-12.
+> Vérifié contre le code le 2026-10-12 ; réponses des niveaux de guidage le 2026-10-13.
 
 ## À quoi ça sert
 
@@ -98,6 +98,15 @@ l'écriture comme à l'import),
 fonctions génériques (`GenericFunctionInput`), import LaTeX (`LaTeXImportDialog`). À l'envoi, le
 formulaire écrit **toujours** `variations` ; `shared` n'est envoyé que s'il porte quelque chose ;
 `search_indexed` vaut `isPublic && searchIndexed`.
+
+Chaque niveau de guidage porte, en plus de l'énoncé et de la correction, des **réponses**
+facultatives (`answers_md`, et `translations.en.answers_md`) : les résultats seuls, sans détail,
+imprimés dans le PDF « Réponses » de la fiche ([fiches-et-pdf.md](fiches-et-pdf.md)). Carte
+« Réponses (sans détail) » de `VariationEditor`, sous la correction ; vidée, la clé disparaît. Zod
+(`exerciseVariationSchema`, `exerciseTranslationsSchema`, 50 000 caractères) ; les schémas de
+réponse et de relecture d'un signalement (`validation/worksheets.ts`) déclarent `answers_md` et
+`translations`, que la page de relecture renvoie avec la variation entière (avant, la traduction y
+était retirée en silence puis effacée à l'enregistrement).
 
 Autour : `ExerciseMarkdownEditor` / `ExerciseRichTextEditor` / `ExerciseMarkdownPreview`,
 `HintEditor` et `HintTranslationEditor` (indices et leur traduction), `ImageUploader` et les

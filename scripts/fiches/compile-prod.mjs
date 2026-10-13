@@ -18,7 +18,12 @@
  * Écrit `<nom>.pdf` à côté de chaque `<nom>.typ` ; code de sortie 1 si un seul
  * fichier échoue.
  *
- * Usage : node scripts/fiches/compile-prod.mjs <fichier.typ>...
+ * Polices en plus : `--police <fichier.ttf>` (répétable), comme le compilateur du
+ * Corrigé de la production (`correction-fonts-compiler.ts`) charge Shantell Sans et
+ * Chiphre Math. `--polices-corrige` charge ces trois-là, depuis
+ * `static/fonts/chiphre-math-typst/`.
+ *
+ * Usage : node scripts/fiches/compile-prod.mjs [--polices-corrige] [--police <f.ttf>]... <fichier.typ>...
  */
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -42,10 +47,30 @@ const WASM = join(
 // Police mathématique : STIX Two Math (macOS) ; le texte utilise les polices intégrées
 const MATH_FONT = '/System/Library/Fonts/Supplemental/STIXTwoMath.otf';
 
-const fichiers = process.argv.slice(2);
+// Polices du Corrigé (les mêmes fichiers que `CORRECTION_FONT_FILES`)
+const POLICES_CORRIGE = ['ShantellSans-Light.ttf', 'ShantellSans-Bold.ttf', 'ChiphreMath.ttf'].map(
+	(f) => join('static', 'fonts', 'chiphre-math-typst', f)
+);
+
+const fichiers = [];
+const policesEnPlus = [];
+const args = process.argv.slice(2);
+for (let i = 0; i < args.length; i++) {
+	if (args[i] === '--police') policesEnPlus.push(args[++i]);
+	else if (args[i] === '--polices-corrige') policesEnPlus.push(...POLICES_CORRIGE);
+	else fichiers.push(args[i]);
+}
 if (fichiers.length === 0) {
-	console.error('Usage : node scripts/fiches/compile-prod.mjs <fichier.typ>...');
+	console.error(
+		'Usage : node scripts/fiches/compile-prod.mjs [--polices-corrige] [--police <f.ttf>]... <fichier.typ>...'
+	);
 	process.exit(2);
+}
+for (const police of policesEnPlus) {
+	if (!police || !existsSync(police)) {
+		console.error(`Police introuvable : ${police}`);
+		process.exit(2);
+	}
 }
 if (!existsSync(WASM)) {
 	console.error(`Compilateur introuvable : ${WASM} (lancer depuis la racine, après pnpm install)`);
@@ -71,7 +96,7 @@ const compilateur = createTypstCompiler();
 await compilateur.init({
 	getModule: () => readFileSync(WASM),
 	beforeBuild: [
-		loadFonts([new Uint8Array(readFileSync(MATH_FONT))]),
+		loadFonts([MATH_FONT, ...policesEnPlus].map((f) => new Uint8Array(readFileSync(f)))),
 		withAccessModel(acces),
 		withPackageRegistry(new NodeFetchPackageRegistry(acces, telecharger))
 	]

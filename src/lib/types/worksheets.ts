@@ -203,6 +203,11 @@ export interface ResolvedExercise {
 	parameters: Record<string, number | string>;
 	statement: string;
 	solution: string;
+	/**
+	 * Réponses seules, sans détail (PDF « Réponses »). Absent ou vide : le PDF
+	 * renvoie au corrigé. Les instances stockées avant l'ajout du champ ne l'ont pas.
+	 */
+	answers?: string;
 	/** Optional title for the exercise */
 	title?: string | null;
 	/** Points awarded for this exercise, as set on the worksheet */
@@ -655,6 +660,11 @@ export interface StudentExerciseView {
 	statement: string;
 	correction: string | null;
 	correction_visible: boolean;
+	/**
+	 * Réponses seules : transmises EXACTEMENT quand la correction l'est
+	 * (`correction_visible`), jamais avant. Absent ou `null` : rien à montrer.
+	 */
+	answers?: string | null;
 	/** Section ID if exercise belongs to a section */
 	section_id: string | null;
 	/** Optional title for the exercise */

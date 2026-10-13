@@ -91,6 +91,8 @@ const exerciseVariationSchema = z.object({
 	label: z.string(),
 	statement_md: z.string(),
 	solution_md: z.string(),
+	// Réponses seules : sans la clé, l'export puis l'import les perdraient
+	answers_md: z.string().max(50000).optional(),
 	variables: z.array(variableSchema).optional(),
 	hints: z.array(exerciseHintSchema).optional()
 });

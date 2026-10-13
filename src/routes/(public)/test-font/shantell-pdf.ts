@@ -2,14 +2,13 @@
  * PDF des exercices de démonstration de /test-font, compilés par Typst.
  *
  * La chaîne est celle des fiches (`markdownToTypst`, images chargées puis posées
- * dans le système de fichiers virtuel), mais avec un compilateur Typst À PART :
- * le compilateur partagé de l'application (`$typst`) est un singleton dont les
- * polices sont fixées à sa création. Celui-ci charge en plus Shantell Sans (texte)
- * et Chiphre Math (formules, police OpenType MATH construite par
- * tools/chiphre-math), sans rien changer aux PDF des fiches.
+ * dans le système de fichiers virtuel), avec le compilateur du Corrigé des fiches
+ * (`correction-fonts-compiler.ts`), qui charge en plus Shantell Sans (texte) et
+ * Chiphre Math (formules, police OpenType MATH construite par tools/chiphre-math).
  */
 
-import { getTypstCompiler } from '$lib/typst/compiler/typst-compiler';
+import { getCorrectionFontsCompiler } from '$lib/typst/compiler/correction-fonts-compiler';
+import { withCorrectionFonts } from '$lib/typst/correction-fonts';
 import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
 import {
 	clearTrackedExternalImages,
@@ -26,62 +25,7 @@ interface DemoExercise {
 	solution_md: string;
 }
 
-/** Fournisseur de configuration d'un compilateur typst.ts (polices, paquets…) */
-type SnippetProvider = { key: string };
-
-interface TypstSnippetInstance {
-	setCompilerInitOptions: (options: { getModule: () => string }) => void;
-	use: (...providers: SnippetProvider[]) => void;
-	pdf: (options: { mainContent: string }) => Promise<Uint8Array>;
-	mapShadow: (path: string, content: Uint8Array) => Promise<void>;
-	resetShadow: () => Promise<void>;
-}
-
-/** La classe TypstSnippet du bundle typst.ts (chargé par CDN) */
-interface TypstSnippetClass {
-	new (options: { compiler: unknown }): TypstSnippetInstance;
-	/** Construit un compilateur propre à l'instance, avec la même configuration que le global */
-	buildLocalCompiler: unknown;
-	preloadFontFromUrl: (url: string) => SnippetProvider;
-	fetchPackageRegistry: () => SnippetProvider;
-}
-
-// Constantes
-const TYPST_VERSION = '0.6.1-rc5';
-const COMPILER_WASM_URL = `https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler@${TYPST_VERSION}/pkg/typst_ts_web_compiler_bg.wasm`;
-const SHANTELL_FONT_URLS = [
-	'/fonts/chiphre-math-typst/ShantellSans-Light.ttf',
-	'/fonts/chiphre-math-typst/ShantellSans-Bold.ttf',
-	'/fonts/chiphre-math-typst/ChiphreMath.ttf'
-];
-const STANDARD_TEXT_FONT = '#set text(font: "New Computer Modern"';
-
-// Variables
-let shantellSnippet: TypstSnippetInstance | null = null;
-
 // Fonctions
-
-/** Le compilateur dédié, créé au premier PDF et gardé pour les suivants */
-async function getShantellSnippet(): Promise<TypstSnippetInstance> {
-	if (shantellSnippet) return shantellSnippet;
-
-	// Charge le bundle typst.ts (il expose la classe TypstSnippet)
-	await getTypstCompiler();
-	const TypstSnippet = (window as unknown as { TypstSnippet: TypstSnippetClass }).TypstSnippet;
-
-	const snippet = new TypstSnippet({ compiler: TypstSnippet.buildLocalCompiler });
-	snippet.setCompilerInitOptions({ getModule: () => COMPILER_WASM_URL });
-	snippet.use(
-		// Nos polices, en plus des polices de texte par défaut de Typst
-		...SHANTELL_FONT_URLS.map((path) =>
-			TypstSnippet.preloadFontFromUrl(new URL(path, window.location.origin).href)
-		),
-		// Les paquets @preview (cetz : tableaux de variations, cercle…)
-		TypstSnippet.fetchPackageRegistry()
-	);
-	shantellSnippet = snippet;
-	return snippet;
-}
 
 /** Le Typst d'un exercice : énoncé puis corrigé, dans la police demandée */
 async function exerciseTypst(exercise: DemoExercise, fonts: PdfFontSet): Promise<string> {
@@ -98,11 +42,8 @@ async function exerciseTypst(exercise: DemoExercise, fonts: PdfFontSet): Promise
 		// Images copiées dans static/test-font : la chaîne PDF ne charge que les adresses complètes
 		.replaceAll('](/test-font/', `](${window.location.origin}/test-font/`);
 	const typst = await markdownToTypst(markdown, { includeSetup: true, language: 'fr' });
-	if (fonts === 'standard') return typst;
-	return typst.replace(
-		STANDARD_TEXT_FONT,
-		'#show math.equation: set text(font: "Chiphre Math")\n#set text(font: "Shantell Sans", weight: "light"'
-	);
+	// Les mêmes règles que le Corrigé des fiches
+	return fonts === 'standard' ? typst : withCorrectionFonts(typst);
 }
 
 /** Compile un exercice en PDF et le fait télécharger */
@@ -110,7 +51,8 @@ export async function downloadExercisePdf(
 	exercise: DemoExercise,
 	fonts: PdfFontSet
 ): Promise<void> {
-	const snippet = await getShantellSnippet();
+	// Le compilateur du Corrigé des fiches : il charge Shantell Sans et Chiphre Math
+	const snippet = await getCorrectionFontsCompiler();
 
 	clearTrackedExternalImages();
 	const typst = await exerciseTypst(exercise, fonts);

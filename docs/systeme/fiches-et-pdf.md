@@ -24,7 +24,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; écarts 4 à 6 le 2026-10-12 (K11).
+> Vérifié contre le code le 2026-10-11 ; écarts 4 à 6 le 2026-10-12 (K11) ; Réponses et Corrigé le 2026-10-13.
 
 ## À quoi ça sert
 
@@ -212,7 +212,7 @@ des trois routes, `PdfPreview-copie.svelte.test.ts`, `tests/integration/workshee
 ```
 exercises.variations (ubumark, FR + translations.en)
   → InstanceData / StudentWorksheetView (contenu résolu dans la langue de la fiche)
-  → WorksheetGenerator (prof : gabarit ou mise en page par défaut, énoncé | corrigé)
+  → WorksheetGenerator (prof : gabarit ou mise en page par défaut ; fiche | réponses | corrigé)
     ou generateStudentWorksheetTypst (élève)
       → generateTypst (ubumark) par énoncé / solution ; blocs figure via figure-typst-setup
   → source Typst (une chaîne)
@@ -223,18 +223,52 @@ exercises.variations (ubumark, FR + translations.en)
 
 Trois chemins d'appel, qui n'empruntent pas le même compilateur :
 
-| Écran                                                            | Générateur                      | Compilation                                                                                                     |
-| ---------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Élève (`WorksheetHeader.svelte`), aperçu « vue élève » du prof   | `generateStudentWorksheetTypst` | `generateAndDownloadPdf` → `TypstService` (priorité `URGENT`)                                                   |
-| Prof, fiche (`PdfPreview.svelte`, aussi page publique du cahier) | `generateWorksheetTypst`        | `getTypstCompiler()` direct ; lot : une compilation par élève + corrigé général + `00_SOMMAIRE.txt` dans un ZIP |
-| Prof, corrections (`CorrectionManager.svelte`)                   | —                               | `compileToPdf` du compilateur partagé (version épinglée)                                                        |
+| Écran                                                            | Générateur                      | Compilation                                                                                                      |
+| ---------------------------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Élève (`WorksheetHeader.svelte`), aperçu « vue élève » du prof   | `generateStudentWorksheetTypst` | `generateAndDownloadPdf` → `TypstService` (priorité `URGENT`) ; avec corrigé : `compileTypstDocument`            |
+| Prof, fiche (`PdfPreview.svelte`, aussi page publique du cahier) | `generateWorksheetTypst`        | `compileTypstDocument` ; lot : une compilation par élève + réponses ou corrigé général + `00_SOMMAIRE.txt` (ZIP) |
+| Prof, corrections (`CorrectionManager.svelte`)                   | — (Typst rendu par l'API)       | `compileTypstDocument` (compilateur du Corrigé, repli)                                                           |
 
 **Gabarits** : `WorksheetGenerator` prend le `template_content` de la ligne `worksheet_templates`
 passée, sinon un gabarit intégré par `template_id`, sinon une mise en page par défaut
 (`generateDefault`). Un gabarit qui contient `{{exercises_badge}}` reçoit la numérotation en carré
-ambre (charte élève) ; sinon `{{exercises}}` en titres gras. En mode corrigé, un bandeau
-« CORRECTION » est inséré **après** le dernier `#set page(…)` (`endOfLastPageSetup`) : avant, il
-restait seul sur une page 1 vide.
+ambre (charte élève) ; sinon `{{exercises}}` en titres gras. Dans les corrigés, un bandeau
+« CORRECTION » ou « RÉPONSES » (« SOLUTIONS » / « ANSWERS ») est inséré **après** le dernier
+`#set page(…)` (`endOfLastPageSetup`, sinon il restait seul sur une page 1 vide) et après le dernier
+`#set text(…)` de premier niveau (`endOfLastTextSetup`, pour prendre les polices du Corrigé).
+
+**Trois PDF du prof** (`WorksheetPdfMode`, choix « Fiche · Réponses · Corrigé » de `PdfPreview` ;
+la lecture publique `variant="reader"` reste sur la fiche) :
+
+- `worksheet` : les énoncés, consignes du prof et cadres de réponse des évaluations ;
+- `answers` : pour chaque exercice, numéro et titre puis `answers` (champ `answers_md` de la
+  variation, `{{var}}` résolues comme dans la correction, traduction `translations.en.answers_md`
+  avec repli français) ; vide : « Réponses non rédigées : voir le corrigé. » en italique. Police
+  standard ;
+- `correction` : numéro et titre puis la correction (`correctionForPrint`, ADR 0017), en
+  **Shantell Sans** (Light, Bold pour le gras) et **Chiphre Math** pour les formules.
+
+Réponses et Corrigé ne répètent **jamais l'énoncé** (ni consigne d'exercice, ni consigne de
+section, ni consignes d'épreuve). Noms de fichier distincts : `worksheetPdfFileName`
+(« … - Réponses.pdf », « … - Corrigé.pdf »). Côté élève, la boîte de téléchargement propose « avec
+réponses » (partie « Réponses ») ou « avec corrigé » (partie « Corrections », seule en Shantell /
+Chiphre Math), pour les seuls exercices dont la correction est visible : l'API élève sert
+`answers` **exactement** sous la condition de `correction` (`correction_visible`).
+
+**Polices du Corrigé** (`src/lib/typst/correction-fonts.ts`) : des règles Typst encadrées de
+`// <polices-du-corrige>`, posées en tête (pied de page) et après le dernier `#set text(…)` du
+document (`withCorrectionFonts`) ; aucun gabarit n'est réécrit. `withoutCorrectionFonts` les retire.
+Les trois fichiers (`static/fonts/chiphre-math-typst/`, 870 ko) ne sont chargés que par un
+compilateur à part (`src/lib/typst/compiler/correction-fonts-compiler.ts`, construit au premier
+Corrigé, partagé avec `/test-font`) : la fiche et les Réponses ne les téléchargent pas.
+`compileTypstDocument` choisit le compilateur d'après le document et porte le **repli** : la
+compilation avec ces polices lève une erreur → le même corrigé recompilé sans elles,
+`console.error` du message Typst et `toaster.warning` (« Corrigé imprimé dans la police standard :
+… »). `generateWorksheetTypst({ correctionFonts: false })` et
+`generateStudentWorksheetTypst(…, { correctionFonts: false })` produisent ce corrigé sans polices.
+Glyphes absents de Chiphre Math (`≠`, `·`, lettres calligraphiques, `″`, lettres accentuées en
+mode math) et de Shantell Sans (grec en texte) : Typst prend une autre police pour ce glyphe, sans
+erreur (inventaire du 2026-10-13 sur les 32 fiches en base).
 
 **Noms de fichier** : tout PDF ou ZIP de fiche (fiche, corrigé, lot par élève, dossier et archive
 du lot par classe) est nommé par `sanitizeForFileName` (`src/lib/worksheets/pdf-file-name.ts`) :
@@ -244,7 +278,8 @@ accents retirés (`NFKD`, « Équations » → `Equations`), tout autre caractè
 
 **Polices** : les gabarits et le PDF élève demandent `"New Computer Modern"` ; aucun code
 n'en charge côté navigateur — ce sont les polices fournies par le bundle typst.ts.
-`scripts/fiches/compile-prod.mjs` charge en plus STIX Two Math (chemin macOS) pour les formules.
+`scripts/fiches/compile-prod.mjs` charge en plus STIX Two Math (chemin macOS) pour les formules,
+et, avec `--polices-corrige`, les trois polices du Corrigé (ci-dessus).
 Une police sans un glyphe donne des carrés (cas de `n⃗`,
 [journal figures-pdf](../archive/wip/figures-pdf-progress.md)).
 

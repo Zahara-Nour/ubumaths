@@ -309,9 +309,12 @@ function generateVariationsInstance(
 	// The frontend component will handle rendering hints from the hints array
 	let resolvedStatementMd: string;
 	let resolvedSolutionMd: string;
+	let resolvedAnswersMd: string;
 	try {
 		resolvedStatementMd = resolveText(resolvedVariation.statement_md, resolvedVariables);
 		resolvedSolutionMd = resolveText(resolvedVariation.solution_md, resolvedVariables);
+		// Réponses seules : mêmes valeurs que la correction
+		resolvedAnswersMd = resolveText(resolvedVariation.answers_md ?? '', resolvedVariables);
 	} catch (error) {
 		return {
 			success: false,
@@ -367,6 +370,7 @@ function generateVariationsInstance(
 		// Resolved content
 		statement_md: resolvedStatementMd,
 		solution_md: resolvedSolutionMd,
+		answers_md: resolvedAnswersMd,
 
 		// Optional AST
 		statement_ast: statementAst,

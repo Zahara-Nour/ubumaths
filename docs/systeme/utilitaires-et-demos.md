@@ -117,11 +117,12 @@ Précisions :
   géométrie, délimiteurs empilés, racines, ∑ ∫, lettres grecques, AMS) : la regarder suffit
   pour juger un changement du jeu Shantell (`tools/chiphre-math/`). En bas, trois **exercices réels**
   (copie figée de la base, `exercices-demo.json`, image copiée dans `static/test-font/`), affichés en
-  Shantell et téléchargeables en PDF : `shantell-pdf.ts` compile avec un compilateur Typst **à part**
-  (`TypstSnippet.buildLocalCompiler`), qui charge en plus `static/fonts/chiphre-math-typst/` (Shantell
-  Sans Light/Bold, **Chiphre Math** : police OpenType MATH construite depuis le jeu KaTeX par
-  `tools/chiphre-math/src/build_typst_math_font.py`). Le compilateur partagé des fiches n'est pas
-  touché.
+  Shantell et téléchargeables en PDF : `shantell-pdf.ts` compile avec le compilateur du **Corrigé
+  des fiches** (`src/lib/typst/compiler/correction-fonts-compiler.ts`, `TypstSnippet.buildLocalCompiler`),
+  qui charge en plus `static/fonts/chiphre-math-typst/` (Shantell Sans Light/Bold, **Chiphre Math** :
+  police OpenType MATH construite depuis le jeu KaTeX par
+  `tools/chiphre-math/src/build_typst_math_font.py`), et pose les mêmes règles de police
+  (`withCorrectionFonts`). Le compilateur partagé des fiches n'est pas touché.
 - **`/test-cadres`** : garde la trace du choix `\htmlStyle` pour le cadre des solutions
   (`\bbox` perd sa bordure en MathLive 0.111.1, `roundedbox` est décalé).
 

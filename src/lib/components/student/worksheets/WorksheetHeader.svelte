@@ -9,7 +9,7 @@
 -->
 
 <script lang="ts">
-	import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
+	import { worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
 	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -30,7 +30,11 @@
 		Loader2
 	} from '@lucide/svelte';
 	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
-	import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
+	import {
+		generateStudentWorksheetTypst,
+		type StudentPdfEnding
+	} from '$lib/worksheets/student-worksheet-typst';
+	import { fallbackWarning } from '$lib/typst/compiler/correction-fonts-compiler';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { StudentWorksheetView, WorksheetType } from '$lib/types/worksheets';
 
@@ -59,25 +63,27 @@
 		if (worksheet.show_corrections) {
 			showPdfDialog = true;
 		} else {
-			downloadPdf(false);
+			downloadPdf('none');
 		}
 	}
 
 	/**
-	 * Download worksheet as PDF
+	 * Télécharge la fiche en PDF, suivie de ses réponses ou de son corrigé
+	 * (exercices dont la correction est visible seulement)
 	 */
-	async function downloadPdf(includeSolution: boolean) {
+	async function downloadPdf(ending: StudentPdfEnding) {
 		showPdfDialog = false;
 		isPdfLoading = true;
 
-		const filename = `${sanitizeForFileName(worksheet.title)}.pdf`;
+		const kind = ending === 'none' ? 'worksheet' : ending;
 		const result = await generateAndDownloadPdf(
-			() => generateStudentWorksheetTypst(worksheet, includeSolution),
-			filename
+			() => generateStudentWorksheetTypst(worksheet, ending),
+			worksheetPdfFileName(worksheet.title, kind)
 		);
 
 		if (result.success) {
 			toaster.success('PDF telecharge !');
+			if (result.fallbackError) toaster.warning(fallbackWarning(result.fallbackError));
 		} else {
 			toaster.error(result.error || 'Erreur lors de la generation du PDF');
 		}
@@ -267,13 +273,20 @@
 	<Dialog.Content class="sm:max-w-md">
 		<Dialog.Header>
 			<Dialog.Title>Telecharger en PDF</Dialog.Title>
-			<Dialog.Description>Voulez-vous inclure les corrections dans le PDF ?</Dialog.Description>
+			<Dialog.Description>
+				Ajouter à la fin les réponses seules, ou le corrigé détaillé ?
+			</Dialog.Description>
 		</Dialog.Header>
 		<Dialog.Footer class="flex-col gap-2 sm:flex-row">
-			<Button variant="outline" onclick={() => downloadPdf(false)} class="w-full sm:w-auto">
+			<Button variant="outline" onclick={() => downloadPdf('none')} class="w-full sm:w-auto">
 				Sans corrections
 			</Button>
-			<Button onclick={() => downloadPdf(true)} class="w-full sm:w-auto">Avec corrections</Button>
+			<Button variant="outline" onclick={() => downloadPdf('answers')} class="w-full sm:w-auto">
+				Avec réponses
+			</Button>
+			<Button onclick={() => downloadPdf('correction')} class="w-full sm:w-auto">
+				Avec corrigé
+			</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>

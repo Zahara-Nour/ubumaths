@@ -49,6 +49,10 @@ export interface DocumentLabels {
 	exercises: string;
 	corrections: string;
 	correction: string;
+	/** PDF « Réponses » : les résultats seuls, sans détail */
+	answers: string;
+	/** Exercice sans réponses rédigées, dans le PDF « Réponses » */
+	answersNotWritten: string;
 	instructions: string;
 	guidelines: string;
 	essentialExercises: string;
@@ -160,6 +164,8 @@ const FR: DocumentLabels = {
 	exercises: 'Exercices',
 	corrections: 'Corrections',
 	correction: 'Correction',
+	answers: 'Réponses',
+	answersNotWritten: 'Réponses non rédigées : voir le corrigé.',
 	instructions: 'Instructions',
 	guidelines: 'Consignes',
 	essentialExercises: 'Exercices indispensables',
@@ -268,8 +274,11 @@ const EN: DocumentLabels = {
 
 	exercise: 'Exercise',
 	exercises: 'Exercises',
-	corrections: 'Answers',
-	correction: 'Answers',
+	// « Answers » nomme désormais le PDF des résultats seuls
+	corrections: 'Solutions',
+	correction: 'Solutions',
+	answers: 'Answers',
+	answersNotWritten: 'Answers not written: see the worked solutions.',
 	instructions: 'Instructions',
 	guidelines: 'Instructions',
 	essentialExercises: 'Essential exercises',

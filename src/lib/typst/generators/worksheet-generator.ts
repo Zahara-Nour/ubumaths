@@ -54,6 +54,7 @@ import { SECTION_COLOR, exerciseBadge } from '../worksheet-palette';
 // Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
 import '$lib/ubumark/generators/figure-typst-setup';
 import { correctionForPrint } from '$lib/questions/correction-detail';
+import { endOfTypstCall, withCorrectionFonts } from '../correction-fonts';
 
 // ============================================================================
 // TYPES
@@ -83,16 +84,37 @@ export interface WorksheetGeneratorInput {
 type ExerciseHeaderStyle = 'heading' | 'badge';
 
 /**
+ * Les trois PDF d'une fiche :
+ * - `worksheet` : la fiche, énoncés seuls ;
+ * - `answers` : les résultats seuls (`answers`), sans l'énoncé ;
+ * - `correction` : le corrigé (concis ou détaillé selon la fiche), sans
+ *   l'énoncé, en Shantell Sans et Chiphre Math (`correction-fonts.ts`).
+ */
+export type WorksheetPdfMode = 'worksheet' | 'answers' | 'correction';
+
+/** Réglages du générateur propres aux fiches */
+export interface WorksheetGeneratorOptions {
+	/**
+	 * Polices du Corrigé (Shantell Sans, Chiphre Math). Vrai par défaut ;
+	 * faux : le même corrigé dans la police standard (repli quand la
+	 * compilation avec ces polices échoue). Sans effet hors Corrigé.
+	 */
+	correctionFonts?: boolean;
+}
+
+/**
  * Parameters for the legacy generateWorksheetTypst function
  */
 export interface GenerateTypstParams {
 	worksheet: WorksheetRow;
 	instance: InstanceData;
 	config: WorksheetConfig;
-	mode: 'worksheet' | 'correction';
+	mode: WorksheetPdfMode;
 	studentName?: string;
 	className?: string;
 	template?: WorksheetTemplateRow | null;
+	/** Voir `WorksheetGeneratorOptions.correctionFonts` */
+	correctionFonts?: boolean;
 }
 
 // ============================================================================
@@ -108,6 +130,20 @@ export interface GenerateTypstParams {
 export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInput> {
 	/** Worksheet-specific configuration */
 	private worksheetConfig: WorksheetConfig;
+
+	/** Réglages propres aux fiches (polices du Corrigé) */
+	private options: WorksheetGeneratorOptions;
+
+	/** Le PDF demandé ; l'aperçu (`preview`) est une fiche */
+	private get pdfMode(): WorksheetPdfMode {
+		const mode = this.context.mode;
+		return mode === 'answers' || mode === 'correction' ? mode : 'worksheet';
+	}
+
+	/** Bandeau et pied de page d'un corrigé : « Correction » ou « Réponses » */
+	private correctionTitle(mode: WorksheetPdfMode): string {
+		return mode === 'answers' ? this.labels.answers : this.labels.correction;
+	}
 
 	/**
 	 * Language of the whole document: exercise content and chrome alike.
@@ -164,14 +200,17 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 * @param worksheetConfig - Worksheet-specific configuration
 	 * @param generatorConfig - Optional page layout configuration
 	 * @param context - Optional generation context (mode, student info)
+	 * @param options - Réglages propres aux fiches (polices du Corrigé)
 	 */
 	constructor(
 		worksheetConfig: WorksheetConfig,
 		generatorConfig?: Partial<GeneratorConfig>,
-		context?: Partial<GeneratorContext>
+		context?: Partial<GeneratorContext>,
+		options: WorksheetGeneratorOptions = {}
 	) {
 		super(generatorConfig, context);
 		this.worksheetConfig = worksheetConfig;
+		this.options = options;
 	}
 
 	/**
@@ -191,6 +230,11 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			typstContent = this.generateFromTemplate(input, templateContent);
 		} else {
 			typstContent = this.generateDefault(input);
+		}
+
+		// Corrigé : Shantell Sans et Chiphre Math, posées après la police du document
+		if (this.pdfMode === 'correction' && this.options.correctionFonts !== false) {
+			typstContent = withCorrectionFonts(typstContent);
 		}
 
 		return {
@@ -230,7 +274,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 */
 	private generateFromTemplate(input: WorksheetGeneratorInput, templateContent: string): string {
 		const { worksheet, instance } = input;
-		const mode = this.context.mode as 'worksheet' | 'correction';
+		const mode = this.pdfMode;
 
 		// Generate exercises content for the template. A template opts into the
 		// red-badge numbering by using {{exercises_badge}} instead of {{exercises}};
@@ -283,7 +327,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		};
 
 		const rendered = renderTemplate(templateContent, templateData);
-		if (mode !== 'correction') return rendered;
+		if (mode === 'worksheet') return rendered;
 
 		// Bandeau flottant pleine largeur (`scope: "parent"` : au-dessus des deux
 		// colonnes d'une fiche qui en a deux), en tête de la première page.
@@ -291,15 +335,16 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 #place(top + center, scope: "parent", float: true, clearance: 0.8em)[
   #block(width: 100%, fill: rgb("#228b22"), inset: 10pt)[
     #align(center)[
-      #text(size: 1.4em, weight: "bold", fill: white)[${this.labels.correction.toUpperCase()}]
+      #text(size: 1.4em, weight: "bold", fill: white)[${this.correctionTitle(mode).toUpperCase()}]
     ]
   ]
 ]
 `;
 		// Le bandeau doit suivre le `#set page(…)` du modèle : un `set page` qui
 		// vient APRÈS du contenu ouvre une nouvelle page, et le bandeau restait
-		// seul sur une page 1 vide.
-		const insertAt = endOfLastPageSetup(rendered);
+		// seul sur une page 1 vide. Il suit aussi son `#set text(…)` : le Corrigé
+		// y pose ses polices, que le bandeau doit prendre.
+		const insertAt = maxOrNull(endOfLastPageSetup(rendered), endOfLastTextSetup(rendered));
 		return insertAt === null
 			? banner + '\n' + rendered
 			: rendered.slice(0, insertAt) + '\n' + banner + rendered.slice(insertAt);
@@ -310,7 +355,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 */
 	private generateDefault(input: WorksheetGeneratorInput): string {
 		const { worksheet, instance } = input;
-		const mode = this.context.mode as 'worksheet' | 'correction';
+		const mode = this.pdfMode;
 
 		const setup = this.generateWorksheetSetup(worksheet.type);
 		const header = this.generateHeader(worksheet, mode);
@@ -412,16 +457,16 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	/**
 	 * Generate worksheet header with title, metadata, and student info
 	 */
-	private generateHeader(worksheet: WorksheetRow, mode: 'worksheet' | 'correction'): string {
+	private generateHeader(worksheet: WorksheetRow, mode: WorksheetPdfMode): string {
 		const config = this.worksheetConfig;
 		const labels = this.labels;
 		let header = '';
 
-		// Correction banner (only in correction mode)
-		if (mode === 'correction') {
+		// Bandeau des corrigés (Réponses, Corrigé)
+		if (mode !== 'worksheet') {
 			header += '#block(width: 100%, fill: rgb(34, 139, 34), inset: 10pt)[\n';
 			header += '  #align(center)[\n';
-			header += `    #text(size: 1.4em, weight: "bold", fill: white)[${labels.correction.toUpperCase()}]\n`;
+			header += `    #text(size: 1.4em, weight: "bold", fill: white)[${this.correctionTitle(mode).toUpperCase()}]\n`;
 			header += '  ]\n';
 			header += ']\n\n';
 			header += '#v(0.5em)\n\n';
@@ -466,7 +511,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		// Title
 		if (config.show_title) {
 			const typeLabel = this.typeLabel(worksheet.type);
-			const titleSuffix = mode === 'correction' ? ` - ${labels.correction}` : '';
+			const titleSuffix = mode === 'worksheet' ? '' : ` - ${this.correctionTitle(mode)}`;
 			header += `#align(center)[\n`;
 			header += `  #text(size: 1.5em, weight: "bold")[${escapeTypst(typeLabel)}${titleSuffix}]\n`;
 			header += `  #linebreak()\n`;
@@ -491,8 +536,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			header += '#v(0.5em)\n\n';
 		}
 
-		// Instructions for exams
-		if (worksheet.type === 'exam' || worksheet.type === 'assessment') {
+		// Consignes d'épreuve : sur la fiche seulement (les corrigés n'ont pas d'énoncé)
+		if (mode === 'worksheet' && (worksheet.type === 'exam' || worksheet.type === 'assessment')) {
 			header += '#block(width: 100%, fill: rgb(250, 250, 250), inset: 10pt, radius: 4pt)[\n';
 			header += '  #text(size: 0.9em, style: "italic")[\n';
 			header += `    *${labels.instructions} :*\n`;
@@ -522,7 +567,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 */
 	private generateExercises(
 		instance: InstanceData,
-		mode: 'worksheet' | 'correction',
+		mode: WorksheetPdfMode,
 		worksheetType: WorksheetType
 	): string {
 		const exercises = instance.exercises;
@@ -544,7 +589,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		for (const group of groupExercisesForDisplay(orderedExercises, sections, {
 			preserveExerciseOrder: true
 		})) {
-			if (group.section) content += this.generateSectionHeader(group.section);
+			if (group.section)
+				content += this.generateSectionHeader(this.sectionFor(group.section, mode));
 
 			for (const { exercise, number } of group.exercises) {
 				content += this.generateSingleExercise(
@@ -558,6 +604,14 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		}
 
 		return content;
+	}
+
+	/**
+	 * La section telle qu'un PDF l'imprime : sa consigne fait partie de
+	 * l'énoncé, les corrigés n'en gardent que le titre.
+	 */
+	private sectionFor(section: InstanceSection, mode: WorksheetPdfMode): InstanceSection {
+		return mode === 'worksheet' ? section : { ...section, instructions: null };
 	}
 
 	/**
@@ -581,7 +635,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	private generateSingleExercise(
 		exercise: ResolvedExercise,
 		number: string,
-		mode: 'worksheet' | 'correction',
+		mode: WorksheetPdfMode,
 		worksheetType: WorksheetType
 	): string {
 		const config = this.worksheetConfig;
@@ -603,67 +657,72 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 
 		content += '  )\n';
 
-		if (exercise.custom_instructions) {
+		// Consigne du prof : elle fait partie de l'énoncé, sur la fiche seulement
+		if (mode === 'worksheet' && exercise.custom_instructions) {
 			content += '  #v(0.2em)\n';
 			content += `  #text(style: "italic", fill: rgb(90, 90, 90))[${escapeTypst(exercise.custom_instructions)}]\n`;
 		}
 
 		content += ']\n';
+
+		// Corrigés : jamais l'énoncé, seulement les réponses ou la correction
+		if (mode !== 'worksheet') {
+			return content + this.generateCorrectionPart(exercise, mode);
+		}
+
 		content += '#exercise-box[\n';
+		content += this.markdownToIndentedTypst(exercise.statement, exercise) + '\n';
 
-		// Exercise statement
-		const statementAst = parseMarkdown(exercise.statement);
-		const statementTypst = generateTypst(statementAst, {
-			includeSetup: false,
-			language: this.locale,
-			genericFunctions: genericFunctionsConfig(exercise.generic_functions),
-			capitalPairs: exercise.capital_pairs
-		});
-
-		// Indent the statement content
-		const indentedStatement = statementTypst
-			.split('\n')
-			.map((line) => '  ' + line)
-			.join('\n');
-
-		content += indentedStatement + '\n';
-
-		// Add answer space for exams (in worksheet mode only)
-		if (mode === 'worksheet' && (worksheetType === 'exam' || worksheetType === 'assessment')) {
+		// Add answer space for exams
+		if (worksheetType === 'exam' || worksheetType === 'assessment') {
 			content += '  #v(0.5em)\n';
 			content += '  #answer-space(height: 5cm)\n';
 		}
 
 		content += ']\n';
+		return content;
+	}
 
-		// Solution (in correction mode)
-		if (mode === 'correction' && exercise.solution) {
-			content += '\n#solution-box[\n';
-			content += '  #text(weight: "bold", fill: rgb(0, 100, 0))[Solution :]\n';
-			content += '  #v(0.3em)\n';
+	/**
+	 * Markdown d'un exercice en Typst, indenté de deux espaces (contenu d'un bloc)
+	 */
+	private markdownToIndentedTypst(markdown: string, exercise: ResolvedExercise): string {
+		const typst = generateTypst(parseMarkdown(markdown), {
+			includeSetup: false,
+			language: this.locale,
+			genericFunctions: genericFunctionsConfig(exercise.generic_functions),
+			capitalPairs: exercise.capital_pairs
+		});
+		return typst
+			.split('\n')
+			.map((line) => '  ' + line)
+			.join('\n');
+	}
 
-			// Concise ou détaillée selon la fiche (D11), avant Typst
-			const solutionAst = parseMarkdown(
-				correctionForPrint(exercise.solution, this.worksheetConfig.correction_detail)
-			);
-			const solutionTypst = generateTypst(solutionAst, {
-				includeSetup: false,
-				language: this.locale,
-				genericFunctions: genericFunctionsConfig(exercise.generic_functions),
-				capitalPairs: exercise.capital_pairs
-			});
-
-			// Indent the solution content
-			const indentedSolution = solutionTypst
-				.split('\n')
-				.map((line) => '  ' + line)
-				.join('\n');
-
-			content += indentedSolution + '\n';
-			content += ']\n';
+	/**
+	 * Ce qu'un corrigé imprime sous l'en-tête d'un exercice, sans l'énoncé :
+	 * - Réponses : les résultats seuls ; absents, un renvoi au corrigé ;
+	 * - Corrigé : la correction, concise ou détaillée selon la fiche (D11).
+	 */
+	private generateCorrectionPart(
+		exercise: ResolvedExercise,
+		mode: Exclude<WorksheetPdfMode, 'worksheet'>
+	): string {
+		// Même espacement serré sous le titre que l'énoncé de la fiche
+		if (mode === 'answers') {
+			const body = exercise.answers?.trim()
+				? this.markdownToIndentedTypst(exercise.answers, exercise)
+				: `  #emph[${escapeTypst(this.labels.answersNotWritten)}]`;
+			return `#block(width: 100%, inset: 0pt, above: 0.5em)[\n${body}\n]\n`;
 		}
 
-		return content;
+		if (!exercise.solution) return '';
+		// Concise ou détaillée selon la fiche (D11), avant Typst
+		const solution = correctionForPrint(exercise.solution, this.worksheetConfig.correction_detail);
+		return `#block(width: 100%, fill: rgb("#f0f0f0"), inset: 10pt, radius: 4pt, above: 0.5em)[
+${this.markdownToIndentedTypst(solution, exercise)}
+]
+`;
 	}
 
 	/**
@@ -672,7 +731,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 */
 	private generateExercisesOnly(
 		instance: InstanceData,
-		mode: 'worksheet' | 'correction',
+		mode: WorksheetPdfMode,
 		worksheetType: WorksheetType,
 		headerStyle: ExerciseHeaderStyle = 'heading'
 	): string {
@@ -690,7 +749,12 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		for (const group of groupExercisesForDisplay(orderedExercises, sections, {
 			preserveExerciseOrder: true
 		})) {
-			if (group.section) content += this.generateSectionHeaderSimple(group.section, headerStyle);
+			if (group.section) {
+				content += this.generateSectionHeaderSimple(
+					this.sectionFor(group.section, mode),
+					headerStyle
+				);
+			}
 
 			for (const { exercise, number } of group.exercises) {
 				content += this.generateSingleExerciseSimple(
@@ -756,7 +820,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	private generateSingleExerciseSimple(
 		exercise: ResolvedExercise,
 		number: string,
-		mode: 'worksheet' | 'correction',
+		mode: WorksheetPdfMode,
 		worksheetType: WorksheetType,
 		headerStyle: ExerciseHeaderStyle = 'heading'
 	): string {
@@ -793,75 +857,39 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			if (pointsBox) content += ` #h(1fr) ${pointsBox}`;
 		}
 
-		if (exercise.custom_instructions) {
+		// Consigne du prof : elle fait partie de l'énoncé, sur la fiche seulement
+		if (mode === 'worksheet' && exercise.custom_instructions) {
 			content += `\n\n  #text(style: "italic", fill: gray)[${escapeTypst(exercise.custom_instructions)}]`;
 		}
 
-		// Close the header block and open the statement one (breakable: a long
-		// statement still splits across columns, just never right after the number)
-		// Quel que soit le style (badge ou « Exercice N »), l'énoncé colle à son titre
-		// au lieu d'hériter de l'espacement entre blocs du modèle (souvent 1,8em).
-		content += `\n]\n#block(width: 100%, inset: 0pt, above: 0.5em)[\n`;
+		content += `\n]\n`;
 
-		// Exercise statement
-		const statementAst = parseMarkdown(exercise.statement);
-		const statementTypst = generateTypst(statementAst, {
-			includeSetup: false,
-			language: this.locale,
-			genericFunctions: genericFunctionsConfig(exercise.generic_functions),
-			capitalPairs: exercise.capital_pairs
-		});
+		// Corrigés : jamais l'énoncé, seulement les réponses ou la correction
+		if (mode !== 'worksheet') {
+			return content + this.generateCorrectionPart(exercise, mode);
+		}
 
-		// Indent the statement content
-		const indentedStatement = statementTypst
-			.split('\n')
-			.map((line) => '  ' + line)
-			.join('\n');
-
-		content += indentedStatement + '\n';
+		// Open the statement block (breakable: a long statement still splits
+		// across columns, just never right after the number). Quel que soit le
+		// style (badge ou « Exercice N »), l'énoncé colle à son titre au lieu
+		// d'hériter de l'espacement entre blocs du modèle (souvent 1,8em).
+		content += `#block(width: 100%, inset: 0pt, above: 0.5em)[\n`;
+		content += this.markdownToIndentedTypst(exercise.statement, exercise) + '\n';
 
 		// Add answer space for exams
-		if (mode === 'worksheet' && (worksheetType === 'exam' || worksheetType === 'assessment')) {
+		if (worksheetType === 'exam' || worksheetType === 'assessment') {
 			content += `  #v(0.5em)
   #rect(width: 100%, height: 5cm, stroke: (paint: rgb("#c8c8c8"), thickness: 0.5pt, dash: "dashed"), fill: none)`;
 		}
 
 		content += '\n]\n';
-
-		// Solution (in correction mode)
-		if (mode === 'correction' && exercise.solution) {
-			content += `
-#block(width: 100%, fill: rgb("#f0f0f0"), inset: 10pt, radius: 4pt)[
-  #text(weight: "bold", fill: rgb("#006400"))[Solution :]
-  #v(0.3em)
-`;
-
-			// Concise ou détaillée selon la fiche (D11), avant Typst
-			const solutionAst = parseMarkdown(
-				correctionForPrint(exercise.solution, this.worksheetConfig.correction_detail)
-			);
-			const solutionTypst = generateTypst(solutionAst, {
-				includeSetup: false,
-				language: this.locale,
-				genericFunctions: genericFunctionsConfig(exercise.generic_functions),
-				capitalPairs: exercise.capital_pairs
-			});
-
-			const indentedSolution = solutionTypst
-				.split('\n')
-				.map((line) => '  ' + line)
-				.join('\n');
-
-			content += indentedSolution + '\n]\n';
-		}
-
 		return content;
 	}
 
 	/**
 	 * Generate document footer
 	 */
-	private generateFooter(worksheet: WorksheetRow, mode: 'worksheet' | 'correction'): string {
+	private generateFooter(worksheet: WorksheetRow, mode: WorksheetPdfMode): string {
 		let footer = '';
 
 		// Add page numbering
@@ -869,15 +897,15 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		footer += '  #set align(center)\n';
 		footer += '  #set text(size: 0.9em, fill: rgb(100, 100, 100))\n';
 
-		if (mode === 'correction') {
-			footer += `  ${this.labels.correction} - `;
+		if (mode !== 'worksheet') {
+			footer += `  ${this.correctionTitle(mode)} - `;
 		}
 
 		footer += `  ${escapeTypst(this.title(worksheet))} - Page #context counter(page).display()\n`;
 		footer += '])\n';
 
 		// Add generation info for corrections
-		if (mode === 'correction') {
+		if (mode !== 'worksheet') {
 			footer += '\n#v(2em)\n';
 			footer += '#line(length: 100%, stroke: 0.5pt)\n';
 			footer += '#v(0.5em)\n';
@@ -909,11 +937,16 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 export function generateWorksheetTypst(params: GenerateTypstParams): string {
 	const { worksheet, instance, config, mode, studentName, className, template } = params;
 
-	const generator = new WorksheetGenerator(config, undefined, {
-		mode,
-		studentName,
-		className
-	});
+	const generator = new WorksheetGenerator(
+		config,
+		undefined,
+		{
+			mode,
+			studentName,
+			className
+		},
+		{ correctionFonts: params.correctionFonts }
+	);
 
 	const result = generator.generate({
 		worksheet,
@@ -934,7 +967,7 @@ export function generateBatchTypst(
 	worksheet: WorksheetRow,
 	instances: Array<{ instance: InstanceData; studentName: string; studentId: string }>,
 	config: WorksheetConfig,
-	mode: 'worksheet' | 'correction',
+	mode: WorksheetPdfMode,
 	className?: string
 ): string {
 	const documents: string[] = [];
@@ -1001,19 +1034,21 @@ function removeSetupSection(typst: string): string {
 function endOfLastPageSetup(typst: string): number | null {
 	const start = typst.lastIndexOf('#set page(');
 	if (start === -1) return null;
+	return endOfTypstCall(typst, start);
+}
 
-	let depth = 0;
-	let inString = false;
-	for (let i = start + '#set page'.length; i < typst.length; i++) {
-		const char = typst[i];
-		if (inString) {
-			if (char === '\\') i++;
-			else if (char === '"') inString = false;
-			continue;
-		}
-		if (char === '"') inString = true;
-		else if (char === '(') depth++;
-		else if (char === ')' && --depth === 0) return i + 1;
+/** Position juste après le dernier `#set text(…)` de premier niveau, ou null */
+function endOfLastTextSetup(typst: string): number | null {
+	let end: number | null = null;
+	for (const match of typst.matchAll(/^#set text\(/gm)) {
+		end = endOfTypstCall(typst, match.index) ?? end;
 	}
-	return null;
+	return end;
+}
+
+/** Le plus grand des deux, en ignorant un null */
+function maxOrNull(a: number | null, b: number | null): number | null {
+	if (a === null) return b;
+	if (b === null) return a;
+	return Math.max(a, b);
 }

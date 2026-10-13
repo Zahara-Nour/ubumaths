@@ -210,9 +210,10 @@ describe('WorksheetGenerator', () => {
 				instance: createMockInstance()
 			});
 
-			expect(result.typstContent).toContain('Solution');
+			// Le corrigé ne répète plus l'énoncé : la correction seule
 			expect(result.typstContent).toContain('x = 2');
 			expect(result.typstContent).toContain('17');
+			expect(result.typstContent).not.toContain('Solve for x');
 		});
 
 		it('does not include solutions in worksheet mode', () => {
@@ -381,7 +382,8 @@ describe('WorksheetGenerator', () => {
 				instance: createMockInstance()
 			});
 
-			expect(result.typstContent).toContain('ANSWERS');
+			// « ANSWERS » nomme le PDF des réponses seules
+			expect(result.typstContent).toContain('SOLUTIONS');
 			expect(result.typstContent).not.toContain('CORRECTION');
 		});
 
@@ -803,7 +805,7 @@ describe('generateWorksheetTypst (legacy function)', () => {
 		});
 
 		expect(result).toContain('CORRECTION');
-		expect(result).toContain('Solution');
+		expect(result).toContain('x = 2');
 	});
 });
 
@@ -861,12 +863,16 @@ describe('fonctions déclarées de l’exercice', () => {
 			]
 		});
 
-	const render = (instance: InstanceData, withTemplate: boolean): string =>
+	const render = (
+		instance: InstanceData,
+		withTemplate: boolean,
+		mode: 'worksheet' | 'correction' = 'correction'
+	): string =>
 		generateWorksheetTypst({
 			worksheet: createMockWorksheet(),
 			instance,
 			config: createMockConfig(),
-			mode: 'correction',
+			mode,
 			template: withTemplate
 				? {
 						id: 'tpl',
@@ -885,11 +891,12 @@ describe('fonctions déclarées de l’exercice', () => {
 		['sans modèle', false],
 		['avec modèle', true]
 	])('énoncé et corrigé sans erreur quand C est déclaré (%s)', (_label, withTemplate) => {
-		const typst = render(instanceWithC(['C']), withTemplate);
-		expect(typst).not.toContain('Unexpected token');
-		// Énoncé et corrigé sont bien là tous les deux
-		expect(typst).toContain('Calculer');
-		expect(typst).toContain('On trouve');
+		// Énoncé sur la fiche, correction dans le corrigé (qui ne répète plus l'énoncé)
+		const sheet = render(instanceWithC(['C']), withTemplate, 'worksheet');
+		const correction = render(instanceWithC(['C']), withTemplate);
+		for (const typst of [sheet, correction]) expect(typst).not.toContain('Unexpected token');
+		expect(sheet).toContain('Calculer');
+		expect(correction).toContain('On trouve');
 	});
 
 	it('sans déclaration, C reste une variable : l’erreur apparaît (témoin)', () => {

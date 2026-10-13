@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-	import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
+	import { worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
 	import { WORKSHEET_TYPE_LABELS } from '$lib/utils/worksheet-type-labels';
 	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
@@ -23,7 +23,11 @@
 	import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { generateAndDownloadPdf } from '$lib/typst/pdf-generator';
-	import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
+	import {
+		generateStudentWorksheetTypst,
+		type StudentPdfEnding
+	} from '$lib/worksheets/student-worksheet-typst';
+	import { fallbackWarning } from '$lib/typst/compiler/correction-fonts-compiler';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		Eye,
@@ -142,27 +146,31 @@
 		if (worksheet?.show_corrections) {
 			showPdfDialog = true;
 		} else {
-			downloadPdf(false);
+			downloadPdf('none');
 		}
 	}
 
-	async function downloadPdf(includeSolution: boolean) {
+	async function downloadPdf(ending: StudentPdfEnding) {
 		if (!worksheet) return;
 		showPdfDialog = false;
 		isPdfLoading = true;
 
 		// Capture worksheet in a local const so the closure doesn't see the reactive null state
 		const capturedWorksheet = worksheet;
-		const suffix = previewStudentName ? `_${previewStudentName.replace(/\s+/g, '_')}` : '';
-		const filename = `${sanitizeForFileName(capturedWorksheet.title)}${suffix}.pdf`;
+		const filename = worksheetPdfFileName(
+			capturedWorksheet.title,
+			ending === 'none' ? 'worksheet' : ending,
+			previewStudentName || undefined
+		);
 
 		const result = await generateAndDownloadPdf(
-			() => generateStudentWorksheetTypst(capturedWorksheet, includeSolution),
+			() => generateStudentWorksheetTypst(capturedWorksheet, ending),
 			filename
 		);
 
 		if (result.success) {
 			toaster.success('PDF telecharge !');
+			if (result.fallbackError) toaster.warning(fallbackWarning(result.fallbackError));
 		} else {
 			toaster.error(result.error || 'Erreur lors de la generation du PDF');
 		}
@@ -735,11 +743,14 @@
 	<Dialog.Content class="sm:max-w-md">
 		<Dialog.Header>
 			<Dialog.Title>Telecharger en PDF</Dialog.Title>
-			<Dialog.Description>Voulez-vous inclure les corrections dans le PDF ?</Dialog.Description>
+			<Dialog.Description>
+				Ajouter à la fin les réponses seules, ou le corrigé détaillé ?
+			</Dialog.Description>
 		</Dialog.Header>
 		<Dialog.Footer class="flex-col gap-2 sm:flex-row">
-			<Button variant="outline" onclick={() => downloadPdf(false)}>Sans corrections</Button>
-			<Button onclick={() => downloadPdf(true)}>Avec corrections</Button>
+			<Button variant="outline" onclick={() => downloadPdf('none')}>Sans corrections</Button>
+			<Button variant="outline" onclick={() => downloadPdf('answers')}>Avec réponses</Button>
+			<Button onclick={() => downloadPdf('correction')}>Avec corrigé</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
