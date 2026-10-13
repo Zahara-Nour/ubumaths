@@ -11,16 +11,16 @@
  *    u′sin(u), u′cos(u), u′uⁿ) ne s'applique telle quelle que si l'intégrande
  *    EST u′·f(u). Pour `e^{2x}`, le pipeline rééquilibre par 1/u′ = ½ sans le
  *    dire : le titre annonce « e^u », la ligne écrit « ½e^{2x} ». Le calcul
- *    est juste, la rédaction trompe — refusée.
+ *    est juste, la rédaction trompe — refusée. Même contrôle pour les
+ *    éléments simples : A·ln|x − r| promis, A·ln|x − r| écrit.
  *
  * @module atelier/integrate-steps-check
  */
 
 import type { MathNode } from '$lib/mathAST/types';
-import {
-	generatePedagogicalIntegrationSteps,
-	type PedagogicalIntegrationRule,
-	type PedagogicalIntegrationStep
+import type {
+	PedagogicalIntegrationRule,
+	PedagogicalIntegrationStep
 } from '$lib/mathAST/pedagogical-integration';
 import { compile } from '$lib/mathAST/eval/compile';
 import { getVariables } from '$lib/mathAST/eval/substitute';
@@ -40,9 +40,6 @@ const SAMPLE_POINTS: readonly number[] = [-2.7, -1.3, -0.45, 0.35, 0.8, 1.55, 2.
 
 /** Il faut au moins ce nombre de points où les deux membres existent. */
 const MIN_VALID_POINTS = 2;
-
-/** Profondeur maximale pour vérifier le v d'une IPP (v vient d'une intégration). */
-const MAX_DEPTH = 3;
 
 /**
  * La primitive « nue » G(u) de chaque forme composée : celle que le titre
@@ -160,40 +157,42 @@ function compositeHidesCoefficient(step: PedagogicalIntegrationStep): boolean {
 }
 
 /**
- * Le v d'une IPP est une primitive de v′, calculée sans étape : il faut que
- * sa rédaction, elle aussi, se passe de coefficient caché (`x e^{2x}` :
- * v = ½e^{2x} tombe du ciel).
+ * Les éléments simples écrivent-ils autre chose que A·ln|x − r₁| + B·ln|x − r₂|
+ * (à une constante près) ? C'est ce qu'annonce le titre « ∫A/(x−r) = A ln|x−r| ».
+ * Avec un facteur non unitaire, le pipeline intègre A/(2x − 1) en
+ * (A/2)·ln|2x − 1| sans le dire : `\frac{1}{(2x-1)(x+1)}` écrit ⅓ là où le
+ * titre promet A = ⅔ (revue du 2026-10-13).
  */
-function partsHidesCoefficient(step: PedagogicalIntegrationStep, depth: number): boolean {
-	if (step.rule !== 'choose-u-dv') return false;
-	const dv = step.bindings?.dv;
-	if (dv === undefined) return true;
-	if (depth >= MAX_DEPTH) return true;
-	try {
-		const own = generatePedagogicalIntegrationSteps(dv, {
-			level: 'lycee',
-			variable: step.variable
-		});
-		return walk(own.steps, depth + 1);
-	} catch {
-		return true;
+function partialFractionsHideCoefficient(step: PedagogicalIntegrationStep): boolean {
+	if (step.rule !== 'apply-partial-fractions') return false;
+	const { A, B, r1, r2 } = step.bindings ?? {};
+	if (A === undefined || B === undefined || r1 === undefined || r2 === undefined) return true;
+	const [a, b, root1, root2] = [A, B, r1, r2].map((node) => evalAt(node, {}));
+	const differences: number[] = [];
+	for (const x of SAMPLE_POINTS) {
+		const written = evalAt(step.after, { [step.variable]: x });
+		const expected = a * Math.log(Math.abs(x - root1)) + b * Math.log(Math.abs(x - root2));
+		if (!Number.isFinite(written) || !Number.isFinite(expected)) continue;
+		differences.push(written - expected);
 	}
+	if (differences.length < MIN_VALID_POINTS) return true;
+	return !differences.every((d) => near(d, differences[0]));
 }
 
-function walk(steps: readonly PedagogicalIntegrationStep[], depth: number): boolean {
+function walk(steps: readonly PedagogicalIntegrationStep[]): boolean {
 	return steps.some(
 		(step) =>
 			compositeHidesCoefficient(step) ||
-			partsHidesCoefficient(step, depth) ||
-			walk(step.subSteps ?? [], depth)
+			partialFractionsHideCoefficient(step) ||
+			walk(step.subSteps ?? [])
 	);
 }
 
 /**
- * Une étape (sous-étapes comprises) applique-t-elle une forme composée avec
- * un coefficient qu'elle n'explique pas ? Détection par les RÈGLES appliquées
+ * Une étape (sous-étapes comprises) applique-t-elle une forme composée ou des
+ * éléments simples avec un coefficient qu'elle n'explique pas ? Détection par les RÈGLES appliquées
  * et leurs `bindings`, jamais par une liste d'exemples.
  */
 export function hasUnexplainedCoefficient(steps: readonly PedagogicalIntegrationStep[]): boolean {
-	return walk(steps, 0);
+	return walk(steps);
 }

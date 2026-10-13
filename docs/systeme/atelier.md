@@ -546,14 +546,18 @@ deux gardes passent (`integrate-steps-check.ts`) :
 - **aucun coefficient caché** : une forme composée (`apply-composite-exp`, `-ln`, `-sin`, `-cos`,
   `-power`) doit écrire exactement G(u) (e^u, ln|u|, −cos u, sin u, u^(n+1)/(n+1)), comparé
   numériquement sur la grille. Le pipeline rééquilibre par 1/u′ sans le dire (`e^{2x}` → « ½e^{2x} »
-  sous le titre « e^u ») : un facteur ≠ 1, signe compris (`e^{-x}`, `\frac3x`), refuse. Le v d'une
-  IPP (`choose-u-dv`) est contrôlé de même en rédigeant ∫v′ (`xe^{2x}` : v = ½e^{2x} refusé).
+  sous le titre « e^u ») : un facteur ≠ 1, signe compris (`e^{-x}`, `\frac3x`), refuse. Le contrôle
+  porte aussi sur les sous-étapes : `xe^{2x}` (IPP) est refusé par celle qui intègre ½e^{2x}.
+  Les **éléments simples** (`apply-partial-fractions`) doivent écrire A·ln|x − r₁| + B·ln|x − r₂|
+  à une constante près, comme le promet leur titre : un facteur non unitaire intègre A/(2x − 1)
+  en (A/2)·ln|2x − 1| sans le dire (`\frac{1}{(2x-1)(x+1)}`, `\frac{1}{4x^2-1}`), refusé.
   Détection par les règles et leurs `bindings`, pas par une liste d'exemples.
 
 Refusés aussi : bornes non numériques (`de 0 à a`), toute exception (`\frac{1}{x^2}` :
 `PedagogicalIntegrationNotImplemented`). Montrés : polynômes, eˣ, 1/x, cos/sin, composées
 exactes (`2e^{2x}`, `\frac{2x}{x^2+1}`), IPP, et hors terminale l'IPP cyclique et les éléments
-simples. Un **pôle dans [a ; b]** sort en refus du moteur (`INTEGRAL_UNDEFINED`) : une ligne de
+simples à facteurs x − r (`\frac{1}{x^2-1}`, `\frac{1}{x(x-1)}` de 2 à 3) ; à facteur non unitaire,
+coefficient caché, refusés. Un **pôle dans [a ; b]** sort en refus du moteur (`INTEGRAL_UNDEFINED`) : une ligne de
 refus ne porte pas d'étapes (`CalcResult` `refus`), donc pas de « Comment ? ». La rédaction des
 composées, `F(b) − F(a)` et l'IPP en notation u, v′ viendront dans les PR suivantes.
 

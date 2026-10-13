@@ -56,6 +56,9 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
      `calcul.ts` ; tests `integrer-etapes.test.ts`. **Écart à la décision** : le pôle dans l'intervalle
      sort en ligne de REFUS (`CalcResult` `refus`, sans champ `steps`) — pas d'étapes du refus dans cette
      PR ; les y mettre demande un champ `steps` sur `refus` + son rendu dans `CalculView` (à trancher).
+     Revue : éléments simples à facteur non unitaire refusés (coefficient caché) ; contrôle du v d'IPP
+     retiré (aucun cas ne passait que par lui). **Noté pour plus tard** : parenthèses résiduelles dans
+     les étapes (`\int \left(2e^{2x}\right)dx` quand l'intégrande vient d'une f(x) définie).
    - **2c. Commande `.limite`** (aucune aujourd'hui ; `pedagogical-limits` sert aux corrections) :
      syntaxe et limites à gauche / à droite à trancher par David.
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).

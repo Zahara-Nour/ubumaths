@@ -97,7 +97,9 @@ describe('.intégrer : étapes montrées quand elles disent vrai', () => {
 	it.each([
 		['.intégrer x^2 de 0 à 1', '\\dfrac{1}{3}'],
 		['.intégrer \\frac1x de 1 à 2', '\\ln\\left( 2 \\right)'],
-		['.intégrer 1/x de 1 à 2', '\\ln\\left( 2 \\right)']
+		['.intégrer 1/x de 1 à 2', '\\ln\\left( 2 \\right)'],
+		// Éléments simples, facteurs x − r : rien de caché
+		['.intégrer \\frac{1}{x(x-1)} de 2 à 3', '2 \\ln\\left( 2 \\right) - \\ln\\left( 3 \\right)']
 	])('intégrale définie %s', (input, answer) => {
 		const entry = lastEntry(input);
 		expect(entry.latex).toBe(answer);
@@ -125,7 +127,7 @@ describe('.intégrer : étapes montrées quand elles disent vrai', () => {
 // Refusées : la ligne garde la réponse du moteur, sans étapes
 // =============================================================================
 
-describe('.intégrer : composée dont le coefficient n’est pas expliqué → pas d’étapes', () => {
+describe('.intégrer : coefficient non expliqué (composée, éléments simples) → pas d’étapes', () => {
 	it.each([
 		['.intégrer e^{2x}', '\\dfrac{1}{2} \\exponentialE^{2 x} + C'],
 		['.intégrer \\sin(2x)', '-\\dfrac{1}{2} \\cos\\left( 2 x \\right) + C'],
@@ -140,12 +142,26 @@ describe('.intégrer : composée dont le coefficient n’est pas expliqué → p
 		['.intégrer \\frac3x', '3 \\ln\\left( \\left| x \\right| \\right) + C'],
 		['.intégrer \\frac{x}{x^2+1}', '\\dfrac{1}{2} \\ln\\left( x^2 + 1 \\right) + C'],
 		['.intégrer (2x+1)^3', '\\dfrac{1}{8} \\left( 2 x + 1 \\right)^4 + C'],
-		// IPP dont v se calcule avec un coefficient caché (v = ½e^{2x})
+		// IPP : le ½ caché est dans la sous-étape ∫v·u′ (½e^{2x} → ¼e^{2x})
 		[
 			'.intégrer xe^{2x}',
 			'\\dfrac{1}{2} x \\exponentialE^{2 x} - \\dfrac{1}{4} \\exponentialE^{2 x} + C'
 		],
-		['.intégrer e^{2x} de 0 à 1', '\\dfrac{1}{2} \\exponentialE^2 - \\dfrac{1}{2}']
+		['.intégrer e^{2x} de 0 à 1', '\\dfrac{1}{2} \\exponentialE^2 - \\dfrac{1}{2}'],
+		// Éléments simples à facteur non unitaire : le titre promet A·ln|x − r|,
+		// la ligne écrit (A/2)·ln|2x − 1| (revue du 2026-10-13)
+		[
+			'.intégrer \\frac{1}{(2x-1)(x+1)}',
+			'\\dfrac{1}{3} \\ln\\left( \\left| 2 x - 1 \\right| \\right) - \\dfrac{1}{3} \\ln\\left( \\left| x + 1 \\right| \\right) + C'
+		],
+		[
+			'.intégrer \\frac{3}{2x^2+x-1}',
+			'\\ln\\left( \\left| 2 x - 1 \\right| \\right) - \\ln\\left( \\left| x + 1 \\right| \\right) + C'
+		],
+		[
+			'.intégrer \\frac{1}{4x^2-1}',
+			'\\dfrac{1}{4} \\ln\\left( \\left| 2 x - 1 \\right| \\right) - \\dfrac{1}{4} \\ln\\left( \\left| 2 x + 1 \\right| \\right) + C'
+		]
 	])('%s', (input, answer) => {
 		const entry = lastEntry(input);
 		expect(entry.failed).toBe(false);
