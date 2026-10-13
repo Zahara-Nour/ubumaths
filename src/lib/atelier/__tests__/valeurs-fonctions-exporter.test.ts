@@ -116,6 +116,11 @@ describe('.fonctions', () => {
 		expect(lastLine(desk).text).not.toMatch(/u\(n\)|L =/);
 	});
 
+	it('une réciproque s’écrit lisiblement, sans accolades internes', () => {
+		const { desk } = deskWith('f(x) = 2x+1', '.réciproque f', '.fonctions');
+		expect(lastLine(desk).text).toBe('Tes fonctions :\n  f(x) = 2x+1\n  f⁻¹(x) = (x-1)/2');
+	});
+
 	it('une fonction définie sur un intervalle le garde', () => {
 		const { desk } = deskWith('h(x) = 2x sur [0 ; 5]', '.fonctions');
 		expect(lastLine(desk).text).toBe('Tes fonctions :\n  h(x) = 2x sur [0 ; 5]');
