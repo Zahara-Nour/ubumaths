@@ -144,8 +144,19 @@ Erreur / garde :
 
 ## Journal
 
-- 2026-10-13 — **D6 en cours** (branche `feat/fiches-melange-suites`) : spécification TDD, puis
-  les trois volets.
+- 2026-10-14 — **D6 fait** (branche `feat/fiches-melange-suites`, commits locaux). (1) Case
+  retirée de `MetadataCards` et du formulaire de création ; `asWorksheetConfig` ne lit plus la clé,
+  `DEFAULT_WORKSHEET_CONFIG` ne l'écrit plus ; le schéma Zod serveur l'accepte encore (sinon la
+  config renvoyée telle quelle l'effacerait de la base). (2) `copyDisplayNumbers` +
+  `fetchCopyNumbering` : numéro de la copie de chaque élève dans les deux listes du prof, la page
+  du signalement (l'ancien `+ 1` sur `position` corrigé) et la notification (numéro inconnu → aucun
+  numéro) ; lien `#exercice-<id>` (`exercise-anchor.ts`), défilement + mise en évidence sur la fiche
+  de l'élève et l'aperçu ; aperçu lit `?studentId=` (élève de l'affectation seulement) ; liens
+  « Voir la copie de <prénom> » et « Corriger l'exercice ». (3) `hasPerStudentCopies` ; route
+  `.../correction` : `needs_student` sans élève, `studentId` contrôlé (`isStudentOfAssignment`,
+  mis en commun avec l'aperçu), avertissement `individualCopyNotice` ; `CorrectionManager` : liste
+  des élèves (premier par défaut). `per_student_values_notice` retiré. Restes : carte « Mes
+  signalements » de l'élève sur `position` ; vue prof de l'aperçu d'une affectation individualisée.
 
 - 2026-10-13 — **D5 fait** (branche `feat/fiches-melange-exercices`, commits locaux).
   `copyExerciseOrder` (`worksheet-copy.ts`) et `copyOrderSeed` (`student-copy.ts`, graine dédiée
