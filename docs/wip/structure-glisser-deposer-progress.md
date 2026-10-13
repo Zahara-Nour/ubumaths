@@ -61,9 +61,30 @@ Recommandation : **piste 3**, éprouvée par une démo jetable qui mesure le tem
 image (objectif : moins de 8 ms) sur Chromium et WebKit, avec une expression lourde (fraction dont
 le numérateur est une somme). Repli si trop lent : piste 2.
 
+### Démo de la piste 3 (2026-10-13)
+
+Branche locale `feat/demo-glisser-deposer` (worktree `../ubumaths-wt-glisser`, non poussée), page
+`/test-glisser` : seuls les termes d'une somme se déplacent. La formule est rendue en HTML simple
+(`convertLatexToMarkup`) ; pendant le glisser, elle est redessinée à chaque image avec
+`\mathord{\hspace{…em}}` à chaque place (largeur visée = rendu final moins rendu sans le terme,
+mesurés hors écran au début du glisser). Réécriture de la somme : `sum-drag.ts` (5 tests).
+
+Mesures (Playwright, glisser du premier terme jusqu'au bout, 8 expressions, de `5 − 3 + x` à une
+fraction de sommes avec racine et fractions emboîtées) :
+
+| Moteur   | Rendu moyen  | 95 % sous | Pire     | Images (95 %) |
+| -------- | ------------ | --------- | -------- | ------------- |
+| Chromium | 0,8 à 2,7 ms | 1,2 à 3,9 | 6,6 ms   | 16,8 ms       |
+| WebKit   | 2,3 à 5,2 ms | 4,0 à 6,0 | 11-12 ms | 16,0 ms       |
+
+Aucune image perdue (intervalle à 60 images par seconde). WebKit headless arrondit à 1 ms ; un
+iPad n'est pas mesuré. Continuité : un espace presque nul ajoute 0,44 px (invisible) ; un « − »
+en tête précédé d'un espace devenait binaire (+20,66 px) → terme groupé `{-3}` (0 px).
+
 ## Journal
 
 - 2026-10-13 — ouverture : lecture de l'article Algebria, inventaire de l'existant, questions
   G1-G10. Aucun code, aucun test.
 - 2026-10-13 — G8 et G9 tranchées par David ; G1-G7 et G10 encore ouvertes.
 - 2026-10-13 — G9 : idée de David (rendu malléable pendant le glisser) ; trois pistes comparées, piste 3 recommandée, démo à valider.
+- 2026-10-13 — démo de la piste 3 (`/test-glisser`) : rendu de 1 à 5 ms par image, pire 12 ms (WebKit) ; à juger par David.
