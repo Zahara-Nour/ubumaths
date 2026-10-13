@@ -311,7 +311,7 @@
 	"src/routes/api/rewards/journal/+server.ts": 2,
 	"src/routes/api/rewards/journal/[studentId]/+server.ts": 2,
 	"src/routes/api/riddles/[id]/submit/+server.ts": 4,
-	"src/routes/api/riddles/auto-select-daily/+server.ts": 3,
+	"src/routes/api/riddles/auto-select-daily/+server.ts": 1,
 	"src/routes/api/skill-attempts/+server.ts": 5,
 	"src/routes/api/spreadsheets/+server.ts": 2,
 	"src/routes/api/spreadsheets/[id]/+server.ts": 1,

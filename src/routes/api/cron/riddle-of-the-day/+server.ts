@@ -17,6 +17,9 @@ import type { RequestHandler } from './$types';
 import { verifyCronAuth } from '$lib/server/auth/cron';
 import { checkAndAutoSelectToday } from '$lib/server/riddle-auto-select';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/cron/riddle-of-the-day');
 
 const JOB_NAME = 'auto_select_daily_riddle';
 
@@ -28,7 +31,7 @@ const handler: RequestHandler = async ({ request }) => {
 		p_job_name: JOB_NAME
 	});
 	// Le journal sert à l'admin ; son absence ne doit pas empêcher la sélection.
-	if (startError) console.error('[CRON] Journal de la tâche non ouvert :', startError);
+	if (startError) logger.error('[CRON] Journal de la tâche non ouvert :', startError);
 
 	try {
 		const result = await checkAndAutoSelectToday(serviceClient);
@@ -56,7 +59,7 @@ const handler: RequestHandler = async ({ request }) => {
 				p_error_message: err instanceof Error ? err.message : 'Erreur inconnue'
 			});
 		}
-		console.error('[CRON] Énigme du jour :', err);
+		logger.error('[CRON] Énigme du jour :', err);
 		return json({ success: false, message: 'Erreur serveur' }, { status: 500 });
 	}
 };
