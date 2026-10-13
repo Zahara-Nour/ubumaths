@@ -1,7 +1,7 @@
 ---
 title: Atelier de recherche — chapeau du chantier
 date: 2026-10-10
-status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement de /cas ; v2 et v3 non commencées
+status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10-13) ; v2 et v3 non commencées
 ---
 
 # Atelier — où en est le chantier
@@ -23,12 +23,14 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
 
 ## Reste à faire
 
-1. **Remplacer `/cas`** : `/cas` existe toujours (`ReplContainer`), hors barre latérale. Le catalogue de
+1. **Remplacer `/cas`** — ✅ **fait le 2026-10-13** (PR 4 de [atelier-cas-phase0.md](atelier-cas-phase0.md),
+   branche `feat/retrait-cas`) : la page est retirée, l'adresse mène à `/atelier`. Reste `/calc`.
+   Historique : `/cas` existait toujours (`ReplContainer`), hors barre latérale. Le catalogue de
    l'atelier (`commands.ts`) traduit toutes les commandes du moteur ; 7 sont déclarées indisponibles avec
    leur raison. Pas encore fait : l'inventaire de ce que `/cas` offre et que l'atelier n'offre pas, puis
    le retrait de la page. `/calc` existe aussi (et figure dans le sitemap) ; le cadrage visait la fusion
    `/calc` + `/cas`. **Inventaire fait le 2026-10-11** : [atelier-cas-phase0.md](atelier-cas-phase0.md)
-   (↑/↓, bouton exact ⇄ décimal, complétion — phase 0 en attente de validation ; retrait de `/cas` suspendu).
+   (↑/↓, bouton exact ⇄ décimal, complétion — PR 1 à 3 livrées le 2026-10-11, PR 4 le 2026-10-13).
 2. **v2, puis v3** : phase 0 à écrire.
 3. **Étapes rédigées : plan décidé par David le 2026-10-13** (ses réponses Q1-Q4 = mes recommandations).
    - **2a. Sélecteur « résumé / détaillé »** — **fait (PR à venir)** (`steps-summary.ts`, tests

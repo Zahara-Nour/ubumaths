@@ -124,7 +124,7 @@ Le parseur LaTeX **ignore** les commandes d'espacement, qui n'ont aucun sens mat
 
 **Un seul calculateur** : `tidy` avec `unitChoice: 'written'` (l'unité écrite d'abord). Il sert
 `{{eval}}` (`evaluateQuantity`, `src/lib/mathAST/eval/evaluate-with-modifiers.ts`) et, depuis le
-2026-10-11, Calcul et `/cas` (`src/lib/mathAST/cli/quantities.ts` ; phase 0
+2026-10-11, Calcul (`src/lib/mathAST/cli/quantities.ts` ; phase 0
 `docs/archive/wip/grandeurs-phase0.md`, lot A). L'ancien `evaluateWithUnits` est retiré : il écrivait l'unité
 sans son coefficient (`10[km]/1[h]` → « 10 m/s »).
 
@@ -137,7 +137,7 @@ sans son coefficient (`10[km]/1[h]` → « 10 m/s »).
 | `9.81[m/s^2]*2[kg]` | `19.62 m.kg/s^2 = 19.62 N` (Calcul : l'unité dérivée nommée suit) |
 | `5[m]+3[s]`         | « On ne peut pas ajouter une longueur et une durée. »             |
 
-Calcul et `/cas` ajoutent deux règles (revue du lot A) : une **unité tapée** par l'élève (seule,
+Calcul ajoute deux règles (revue du lot A) : une **unité tapée** par l'élève (seule,
 en puissance, ou deux combinées) l'emporte quand la valeur y tombe juste (`3[kW]*2[h]` →
 `6 kW.h = 21600000 J`) ; ce que `tidy` ne réduit pas (racine, valeur absolue, fonction d'un angle,
 comparaison) passe par un repli exact, unités ramenées à leurs unités de base

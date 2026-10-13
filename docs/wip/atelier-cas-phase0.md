@@ -1,7 +1,7 @@
 ---
 title: Atelier — ce qui manque avant de retirer /cas (phase 0)
 date: 2026-10-11
-status: PR 1 (#1080), PR 2 (#1086) et PR 3 (#1094) livrées le 2026-10-11 ; PR 4 (retrait de /cas) suspendue ; restent les points mis de côté
+status: PR 1 (#1080), PR 2 (#1086) et PR 3 (#1094) livrées le 2026-10-11 ; PR 4 (retrait de /cas) livrée le 2026-10-13 (branche feat/retrait-cas) ; restent les points mis de côté
 ---
 
 # Atelier — ce qui manque avant de retirer `/cas`
@@ -37,8 +37,8 @@ Chapeau du chantier : [atelier-progress.md](atelier-progress.md).
     donner 30, pas `3tan(`.
 - **Après le choix d'une commande, son modèle reste affiché sous le champ** (`.taylor sin(x) ordre 5 en 0`)
   pendant que l'élève tape la suite — plutôt qu'une complétion des mots-clés.
-- **`/cas` n'est PAS retirée pour l'instant** (David, 2026-10-11). La PR 4 est suspendue ; le jour
-  venu, reste à trancher : redirection vers `/atelier` (reco) ou 404.
+- ~~**`/cas` n'est PAS retirée pour l'instant** (David, 2026-10-11).~~ **Feu vert de David le
+  2026-10-13** : `/cas` est retirée, l'adresse mène à `/atelier` (redirection permanente).
 
 ## Trois PR (le retrait est suspendu)
 
@@ -116,7 +116,7 @@ et exige que Calcul l'**accepte** ; une proposition refusée fait échouer le te
 complétion de `/cas` (`mathAST/cli/completion`) insère `\alpha` et `\pi` en LaTeX à côté de `sin(` en
 syntaxe maison — une saisie mêlée que Calcul refuse depuis #911.
 
-### PR 4 — le retrait de `/cas` (⏸ suspendu : « pour l'instant on n'enlève pas /cas »)
+### PR 4 — le retrait de `/cas` (✅ 2026-10-13, branche `feat/retrait-cas`)
 
 Part : la route `src/routes/(public)/cas/`, `src/lib/components/cas/` (dont `AstDrawer` et
 `AstTreeViewer`, jamais montés), `src/lib/stores/repl.svelte.ts`. Restent : `WebReplEngine` (moteur
@@ -175,6 +175,16 @@ absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inv
   options annoncées par leur nom. Mesuré : unités (`cm`, `km`, `min`, `h`) et listes qualitatives
   n'ouvrent rien ; `si`, `de`, `et` ouvrent une liste qu'Entrée ignore.
 - 2026-10-11 — PR 3 mergée (#1094). Les trois PR de la phase 0 sont livrées.
+- 2026-10-13 — PR 4 (feu vert de David) sur `feat/retrait-cas` : `/cas` et `/cas/` → `/atelier` en
+  308, query string comprise (`redirectHandle`, sorti de `hooks.server.ts` dans
+  `src/lib/server/redirectHandle.ts` pour être testé seul). Supprimés : la route, `components/cas/`
+  (8 composants), `stores/repl.svelte.ts`, `mathAST/cli/completion/` (plus aucun usage : ni
+  l'atelier, ni `pnpm math` ; son ré-export de `mathAST/index.ts` retiré). Gardé : `WebReplEngine`.
+  Trois réponses de Calcul réparées en même temps : `.exporter` (répondait « Aucun historique a
+  exporter » après dix calculs) lance le téléchargement JSON du bouton, ou dit « Rien à exporter
+  pour l'instant. » ; `.valeurs` et `.fonctions` (en anglais, depuis l'état du moteur : `u(n)`
+  comptée comme fonction, `g(t)` écrite en x, `b = 2*5`) listent les cartes du panneau, en
+  français (`listing.ts`), f′ et f⁻¹ comprises.
 
 ## Mis de côté (David, 2026-10-11 : « on verra après »)
 
