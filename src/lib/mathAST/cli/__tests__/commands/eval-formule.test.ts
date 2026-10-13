@@ -113,6 +113,53 @@ describe('valeur interdite : refus en français', () => {
 	});
 });
 
+describe('revue : les faux acceptés deviennent des refus', () => {
+	const FRACTIONAL = 'une puissance d’exposant non entier ne s’applique qu’à un nombre positif';
+	it.each([
+		['.eval 3x^{1/2} en x=-4', `$x = -4$ est une valeur interdite : ${FRACTIONAL}.`],
+		['.eval 3x^{0.5} en x=-4', `$x = -4$ est une valeur interdite : ${FRACTIONAL}.`],
+		['.eval 3x^{1/3} en x=-8', `$x = -8$ est une valeur interdite : ${FRACTIONAL}.`],
+		[
+			'.eval 3\\tan x en x=\\pi/2',
+			'$x = \\dfrac{\\pi}{2}$ est une valeur interdite : la tangente n’est pas définie là où le cosinus s’annule.'
+		],
+		[
+			'.eval 3\\tan(x) en x=3\\pi/2',
+			'$x = \\dfrac{3 \\pi}{2}$ est une valeur interdite : la tangente n’est pas définie là où le cosinus s’annule.'
+		],
+		[
+			'.eval 3\\arcsin(x) en x=2',
+			'$x = 2$ est une valeur interdite : l’arc sinus ne s’applique qu’à un nombre compris entre −1 et 1.'
+		],
+		[
+			'.eval 3\\arccos(x) en x=-3/2',
+			'$x = -\\dfrac{3}{2}$ est une valeur interdite : l’arc cosinus ne s’applique qu’à un nombre compris entre −1 et 1.'
+		],
+		[
+			'.eval 2\\sqrt[4]{x} en x=-16',
+			'$x = -16$ est une valeur interdite : le nombre sous une racine d’indice pair est négatif.'
+		],
+		[
+			'.eval 1/(x-2) en x=4/2',
+			"$x = \\dfrac{4}{2}$ est une valeur interdite : le dénominateur s'annule."
+		]
+	])('%s', (input, message) => {
+		const result = run(input);
+		expect(result.error?.code, input).toBe('VALUE_FORBIDDEN');
+		expect(result.error?.message).toBe(message);
+	});
+
+	it.each([
+		['.eval 3x^{1/2} en x=4', '6'],
+		['.eval 3\\tan(x) en x=\\pi/4', '3'],
+		['.eval 3\\arcsin(x) en x=1', '\\dfrac{3\\pi}{2}'],
+		['.eval 2\\sqrt[3]{x} en x=-8', '-4'],
+		['.eval 3x^{2} en x=-2', '12']
+	])('restent acceptés : %s', (input, expected) => {
+		expect(latexOf(input)).toBe(expected.replace(/\s/g, ''));
+	});
+});
+
 describe('le terminal garde son texte', () => {
 	it('« Result: » reste dans la sortie du CLI', () => {
 		expect(run('.eval 3x^2 en x=3').output).toContain('Result:');

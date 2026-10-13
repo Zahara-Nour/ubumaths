@@ -162,4 +162,22 @@ describe('valeur interdite : un refus juste', () => {
 			"$x = 1{,}5$ est une valeur interdite : le dénominateur s'annule."
 		);
 	});
+
+	it('la valeur citée s’écrit comme dans la ligne : x = π/2 en fraction', () => {
+		expect(refusal('.évaluer 1/(x-\\pi/2) en x=\\pi/2').message).toBe(
+			"$x = \\dfrac{\\pi}{2}$ est une valeur interdite : le dénominateur s'annule."
+		);
+	});
+});
+
+describe('revue : écriture de la valeur tapée', () => {
+	it('une fraction négative : f(−1/2) s’écrit f(−½)', () => {
+		expect(latex('.évaluer f en x=-1/2', ['f(x) = 3x^2'])).toBe(
+			'f\\left(-\\dfrac{1}{2}\\right)=\\dfrac{3}{4}'
+		);
+	});
+
+	it('le texte est homogène : f(sqrt(2)) = 1+sqrt(2)', () => {
+		expect(line('.évaluer f en x=\\sqrt{2}', ['f(x) = x+1']).output).toBe('f(sqrt(2)) = 1+sqrt(2)');
+	});
 });

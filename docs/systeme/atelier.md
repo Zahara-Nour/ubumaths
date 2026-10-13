@@ -663,10 +663,14 @@ tolérance : `getDomainViolations` compare des flottants à 10⁻¹⁰ près et 
 `x = 10⁻¹¹`) ; la cause la plus intérieure l'emporte. Refus `VALUE_FORBIDDEN`, formules
 composées : « $x = 1$ est une valeur interdite : le dénominateur s'annule. », « … le nombre sous
 la racine carrée est négatif. », « … le logarithme ne s'applique qu'à un nombre strictement
-positif. », « … 0 n'a pas de puissance négative. » ; sans lettre, « Ce calcul n'a pas de
-valeur : … ». Avant : un dénominateur nul finissait en « Je n'ai pas su lire », `\sqrt{-1}` et
-`\ln 0` passaient pour des résultats. La console (`repl.ts`) garde son texte ; `/calc` montre
-désormais le LaTeX. Plusieurs lettres (`en x=2, y=3`) : décision de David en attente.
+positif. », « … 0 n'a pas de puissance négative. », racine d'indice pair (`\sqrt[4]{x}`), tangente
+où le cosinus s'annule (`\tan` en π/2, lu exactement), arc sinus / arc cosinus hors de [−1 ; 1],
+puissance d'exposant non entier d'un négatif (`x^{1/2}`, `x^{0.5}`, `x^{1/3}` en −8 : convention du
+lycée, $x^a$ défini pour $x > 0$ ; `\sqrt[3]{x}` en −8 = −2 reste accepté) ; sans lettre, « Ce
+calcul n'a pas de valeur : … ». La valeur citée s'écrit comme dans la ligne (`typedValueLatex` :
+`\dfrac{\pi}{2}`, `-\dfrac{1}{2}`). Avant : un dénominateur nul finissait en « Je n'ai pas su
+lire », `\sqrt{-1}`, `\ln 0`, `\tan(\pi/2)`, `\arcsin(2)` passaient pour des résultats. La console
+(`repl.ts`) garde son texte. Plusieurs lettres (`en x=2, y=3`) : décision de David en attente.
 
 **`.intégrer` en détail** (`integrate-steps.ts`, 2026-10-13). La réponse de la ligne est celle
 du moteur `integration`, inchangée (`+ C` compris). Le « Comment ? » vient de

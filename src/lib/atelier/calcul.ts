@@ -99,10 +99,8 @@ import { solveSteps, type SolvedSteps } from './solve-steps';
 import { readNaturalQuantities, singleLetterHint, type NaturalReading } from './natural-quantities';
 import { quantityProblem } from '$lib/mathAST/cli/quantities';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
-import { VALUE_FORBIDDEN } from '$lib/mathAST/cli/commands/eval.command';
-import { isBoolean, isDivision, isNumber, isOpposite } from '$lib/mathAST/guards';
-import { mapNode } from '$lib/mathAST/transforms';
-import { fraction } from '$lib/mathAST/factory';
+import { VALUE_FORBIDDEN, typedValueLatex } from '$lib/mathAST/cli/commands/eval.command';
+import { isBoolean, isNumber, isOpposite } from '$lib/mathAST/guards';
 import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
@@ -1618,13 +1616,13 @@ function evaluatedLine(
 				: `${rounded ? '≈ ' : ''}${toCustom(ast)}`;
 	const value = typedValue === null ? undefined : parseCommandExpression(typedValue).ast;
 	if (functionName === null || value === undefined) return { text: valueText, latex };
-	// La valeur tapée telle quelle, une division écrite en fraction : f(1/3) → f(⅓)
-	const argument = toLatex(
-		mapNode(value, (n) => (isDivision(n) ? fraction(n.numerator, n.denominator) : n))
-	);
+	// La valeur tapée telle quelle, une division écrite en fraction : f(1/3) → f(⅓),
+	// comme dans un refus (`typedValueLatex`)
+	const argument = typedValueLatex(value);
 	const plain = isNumber(value) || (isOpposite(value) && isNumber(value.operand));
 	const call = plain ? `${functionName}(${argument})` : `${functionName}\\left(${argument}\\right)`;
-	const text = `${functionName}(${typedValue}) ${rounded ? valueText : `= ${valueText}`}`;
+	// Le texte, homogène : `f(sqrt(2)) = 1+sqrt(2)`, pas `f(\sqrt{2}) = 1+sqrt(2)`
+	const text = `${functionName}(${toCustom(value)}) ${rounded ? valueText : `= ${valueText}`}`;
 	return { text, latex: rounded ? `${call} ${latex}` : `${call} = ${latex}` };
 }
 

@@ -10,6 +10,9 @@ import { BaseCommand } from './base-command';
 import type { CommandContext, CommandResult, ErrorCode } from '../types';
 import { toCustom } from '../../index';
 import { toLatex } from '../../latex-generator';
+import { isDivision, isOpposite } from '../../guards';
+import { mapNode } from '../../transforms';
+import { fraction, opposite } from '../../factory';
 import { evaluate, substitute } from '../../eval';
 import { forbiddenValue, FORBIDDEN_REASON_TEXT } from '../../eval/forbidden-value';
 import { hasDecimalLiteral } from '../../tidy/decimal';
@@ -161,7 +164,7 @@ export class EvalCommand extends BaseCommand {
 				const message =
 					typedAssignment === null
 						? `Ce calcul n'a pas de valeur : ${reason}.`
-						: `$${typedAssignment.name} = ${toLatex(typedAssignment.value)}$ est une valeur interdite : ${reason}.`;
+						: `$${typedAssignment.name} = ${typedValueLatex(typedAssignment.value)}$ est une valeur interdite : ${reason}.`;
 				return {
 					success: false,
 					output: '',
@@ -220,6 +223,23 @@ export class EvalCommand extends BaseCommand {
 // =============================================================================
 // La valeur écrite
 // =============================================================================
+
+/**
+ * La valeur tapée après `en`, écrite pour l'élève : telle quelle, une division
+ * en fraction (`\pi/2` → `\dfrac{\pi}{2}`, `-1/2` → `-\dfrac{1}{2}`). La même
+ * dans un refus et dans la ligne `f(…) = …` de l'atelier (revue du 2026-10-14).
+ */
+export function typedValueLatex(value: MathNode): string {
+	return toLatex(
+		mapNode(value, (n) => {
+			if (!isDivision(n)) return n;
+			// `-1/2` est lu (−1)/2 : le signe sort de la fraction
+			return isOpposite(n.numerator)
+				? opposite(fraction(n.numerator.operand, n.denominator))
+				: fraction(n.numerator, n.denominator);
+		})
+	);
+}
 
 /**
  * La valeur que montre une interface (l'atelier, `/calc`) : son LaTeX, son
