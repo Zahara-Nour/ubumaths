@@ -828,18 +828,6 @@ export {
 export type { ValidatedEvalBindings, ValidatedSecurityOptions } from './eval';
 
 // =============================================================================
-// Auto-Completion API
-// =============================================================================
-
-export { CompletionProvider } from './cli/completion';
-export type {
-	Completion,
-	CompletionKind,
-	CompletionContext,
-	CompletionOptions
-} from './cli/completion';
-
-// =============================================================================
 // Visitor Pattern
 // =============================================================================
 

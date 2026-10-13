@@ -94,7 +94,7 @@ const GENERIC = 'Écriture non reconnue';
 /** Une consigne seule (`.taylor sin(x)` → « Usage: .taylor … ») : la commande est incomplète. */
 const INCOMPLETE = 'Commande incomplète';
 
-/** Les en-têtes anglais du HTML de /cas. */
+/** Les en-têtes anglais du HTML du moteur (`outputHtml`, affiché par l'ancienne `/cas`). */
 const HTML_HEADERS: readonly (readonly [RegExp, string])[] = [
 	[/Error \[[A-Z_]+\]:/g, 'Erreur :'],
 	[/Parse error:/g, 'Erreur de lecture :'],
