@@ -3,7 +3,7 @@
 	=======================
 
 	La formule survolable et son panneau de lecture (spécification :
-	`docs/wip/structure-expression-progress.md`, Q10, sections A à C) :
+	`docs/systeme/mathast/structure-expression.md`, Q10, sections A à C) :
 	- la lecture de l'expression entière, en permanence ;
 	- la lecture de la dernière sous-expression survolée ou touchée (elle reste
 	  quand le pointeur quitte la formule, pour qu'on puisse en survoler les mots) ;

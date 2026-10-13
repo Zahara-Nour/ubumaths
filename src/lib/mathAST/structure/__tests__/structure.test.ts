@@ -2,7 +2,7 @@
  * Structure d'une expression — arbre et LaTeX marqué (lot 1)
  * =========================================================
  *
- * Spécification : `docs/wip/structure-expression-progress.md` (cas A2-A9, A12-A13).
+ * Spécification : `docs/systeme/mathast/structure-expression.md` (cas A2-A9, A12-A13).
  * Deux familles de tests :
  * - l'ARBRE : genres, enfants, rôles, signes des termes ;
  * - le LaTeX MARQUÉ : une fois les `\class{ubs-n<id>}{…}` retirés, il redonne
