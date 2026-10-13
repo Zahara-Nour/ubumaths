@@ -130,19 +130,19 @@ Ceux du code et de l'interface :
 
 ### Composants — `src/lib/components/atelier/`
 
-| Composant                 | Rôle                                                                                      |
-| ------------------------- | ----------------------------------------------------------------------------------------- |
-| `AtelierContainer.svelte` | Le conteneur : panneau + vues, session, `CalcDesk`, `GrapheurStore` propre, confirmations |
-| `ObjectPanel.svelte`      | « Mes objets » : création, liste des cartes                                               |
-| `ObjectCard.svelte`       | Une carte : nom, définition, état, actions                                                |
-| `DefinitionField.svelte`  | `f(x) =` + champ MathLive ; la frappe met l'objet à jour 0,3 s après la dernière touche   |
-| `ValueSlider.svelte`      | Curseur d'une valeur (bornes et pas réglables)                                            |
-| `CurveSettings.svelte`    | « Sur le graphique » : couleur, trait, tangente, aire, cercle osculateur, longueur        |
-| `SequenceSettings.svelte` | Mode, rang initial, premier terme ; nuage ou escalier                                     |
-| `CalculView.svelte`       | Vue Calcul : champ, historique, « Garder », export / import                               |
-| `FormulaText.svelte`      | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`)   |
-| `DataView.svelte`         | Vue Données : une liste par ligne, valeurs séparées par `;`, diagrammes                   |
-| `ShareBar.svelte`         | Partager (lien `?a=`), recevoir, « Garder dans mon atelier »                              |
+| Composant                 | Rôle                                                                                                                    |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `AtelierContainer.svelte` | Le conteneur : panneau + vues, session, `CalcDesk`, `GrapheurStore` propre, confirmations                               |
+| `ObjectPanel.svelte`      | « Mes objets » : création, liste des cartes                                                                             |
+| `ObjectCard.svelte`       | Une carte : nom, définition, état, actions                                                                              |
+| `DefinitionField.svelte`  | `f(x) =` + champ MathLive ; la frappe met l'objet à jour 0,3 s après la dernière touche                                 |
+| `ValueSlider.svelte`      | Curseur d'une valeur (bornes et pas réglables)                                                                          |
+| `CurveSettings.svelte`    | « Sur le graphique » : couleur, trait, tangente, aire, cercle osculateur, longueur                                      |
+| `SequenceSettings.svelte` | Mode, rang initial, premier terme ; nuage ou escalier                                                                   |
+| `CalculView.svelte`       | Vue Calcul : champ, historique, « Garder », export / import                                                             |
+| `FormulaText.svelte`      | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`) |
+| `DataView.svelte`         | Vue Données : une liste par ligne, valeurs séparées par `;`, diagrammes                                                 |
+| `ShareBar.svelte`         | Partager (lien `?a=`), recevoir, « Garder dans mon atelier »                                                            |
 
 La vue **Graphe** n'a pas de composant à elle : `AtelierContainer.svelte` monte
 `src/lib/components/grapheur/GrapheurContainer.svelte` avec `panel={false}` sur un
@@ -596,6 +596,7 @@ Doc du moteur : [mathast/README.md](mathast/README.md).
 | `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                                                                                                                                                                                                                                             |
 | `.intégrer`                             | réponse : `integration` (`integrate.command.ts`) ; « Comment ? » : `src/lib/mathAST/pedagogical-integration/` niveau lycée, vérifié par `integrate-steps-check.ts`                                                                                                                                                                                   |
 | `.domaine`                              | réponse : `computeDomain` (`domain.command.ts` refuse ce qu'il ne résout pas), écrite par `domainToLatex` ; « Comment ? » : `src/lib/mathAST/pedagogical-domain/` niveau lycée, vérifié par `domain-steps-check.ts`                                                                                                                                  |
+| `.évaluer`                              | réponse : `eval.command.ts` — `substitute`, refus d'une valeur interdite (`forbiddenValue`, `mathAST/eval/forbidden-value.ts`, exact), puis `evaluate` ; la ligne est une formule (`evaluatedLine`, voir ci-dessous) ; pas encore de « Comment ? »                                                                                                   |
 | `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                                                                                                                                                                                                                                                  |
 | syntaxe des commandes                   | `src/lib/mathAST/cli/core/variable-argument.ts`                                                                                                                                                                                                                                                                                                      |
 
@@ -645,6 +646,27 @@ accepté seulement si l'équation tient sur toute une grille ET si `solve` répo
 **échec du moteur** porte le statut `no-solution` : `engineSolutions` le détecte par
 `isSolverFailure` et rend `null`, sinon « type non supporté » confirmait une conclusion `S = ∅`
 (`x\left|x\right|=4`, qui a la solution 2).
+
+**`.évaluer` en détail** (`calcul.ts`, `eval.command.ts`, décisions de David du 2026-10-14). La
+ligne est une **formule**, plus le texte du terminal (« Result: 9 (exact) Mode: exact », en
+anglais) : `f(3) = 9` quand l'expression tapée est une fonction de l'atelier (`f` ou `f(x)`, dans
+sa lettre : `f(t) = t^2`, `en t=2` → `f(2) = 4` ; une valeur non entière entre `\left(…\right)`,
+une division tapée écrite en fraction), sinon la valeur seule — l'écho montre déjà l'expression,
+le remplacement viendra avec les étapes (PR 2 et 3). Une comparaison répond « vrai » / « faux ».
+**E5** : une saisie décimale (dans la valeur, l'expression, la formule de f ou une variable posée,
+`hasDecimalLiteral` sur l'expression remplacée) donne une réponse décimale, comme le mode décimal,
+écrite par la règle du bouton ≈ (`approximation.ts` : 4 décimales, `\approx` seulement si
+arrondi) : `en x=1,5` → 2,25, `f(0{,}5) \approx 1{,}4142` ; une saisie exacte, une réponse exacte
+(`\sqrt{2}`, `\dfrac{1}{9}`), avec sa valeur approchée au bouton ≈. **Valeur interdite** : avant
+le calcul, `forbiddenValue` lit l'expression remplacée, **exactement** (rationnel nul, jamais une
+tolérance : `getDomainViolations` compare des flottants à 10⁻¹⁰ près et refuserait `1/x` en
+`x = 10⁻¹¹`) ; la cause la plus intérieure l'emporte. Refus `VALUE_FORBIDDEN`, formules
+composées : « $x = 1$ est une valeur interdite : le dénominateur s'annule. », « … le nombre sous
+la racine carrée est négatif. », « … le logarithme ne s'applique qu'à un nombre strictement
+positif. », « … 0 n'a pas de puissance négative. » ; sans lettre, « Ce calcul n'a pas de
+valeur : … ». Avant : un dénominateur nul finissait en « Je n'ai pas su lire », `\sqrt{-1}` et
+`\ln 0` passaient pour des résultats. La console (`repl.ts`) garde son texte ; `/calc` montre
+désormais le LaTeX. Plusieurs lettres (`en x=2, y=3`) : décision de David en attente.
 
 **`.intégrer` en détail** (`integrate-steps.ts`, 2026-10-13). La réponse de la ligne est celle
 du moteur `integration`, inchangée (`+ C` compris). Le « Comment ? » vient de
