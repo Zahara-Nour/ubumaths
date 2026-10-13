@@ -181,6 +181,9 @@ Routes :
   faible ; le garde du hook ferme l'application.
 - Le prof et l'admin approuvent ou refusent via `api/admin/pending-users` et
   `api/admin/users/[id]/status` (motif dans `rejection_reason`).
+  À l'approbation, l'élève reçoit une notification (`user_approved`) ; s'il est déjà inscrit dans
+  des classes, le professeur en reçoit une aussi (`student_approved`, ciblée par rôle `teacher`,
+  avec un lien vers le courriel de bienvenue).
 
 ### Qui crée le profil
 

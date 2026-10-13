@@ -162,10 +162,12 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 				action_url: '/dashboard'
 			});
 
-			// Notify teachers of the student's classes
+			// Prévenir le professeur si l'élève est déjà inscrit dans des classes.
+			// Modèle mono-professeur : `classes.teacher_id` n'existe plus (migration
+			// 20260620090000), toutes les classes sont celles du professeur.
 			const { data: studentClasses, error: studentClassesError } = await supabase
 				.from('class_members')
-				.select('class_id, classes!inner(id, name, teacher_id)')
+				.select('class_id, classes!inner(name)')
 				.eq('student_id', userId);
 
 			if (studentClassesError) {
@@ -173,52 +175,25 @@ export const PATCH: RequestHandler = async ({ request, locals, params }) => {
 				throw error(500, 'Impossible de charger les données');
 			}
 
-			if (studentClasses && studentClasses.length > 0) {
-				// Get unique teacher IDs with their class info
-				const teacherClassMap = new Map<
-					string,
-					{ teacherId: string; classNames: string[]; studentId: string }
-				>();
+			const classNames = (studentClasses ?? []).map((membership) => membership.classes.name);
 
-				for (const membership of studentClasses) {
-					const classInfo = membership.classes as unknown as {
-						id: string;
-						name: string;
-						teacher_id: string | null;
-					};
-					if (classInfo?.teacher_id) {
-						const existing = teacherClassMap.get(classInfo.teacher_id);
-						if (existing) {
-							existing.classNames.push(classInfo.name);
-						} else {
-							teacherClassMap.set(classInfo.teacher_id, {
-								teacherId: classInfo.teacher_id,
-								classNames: [classInfo.name],
-								studentId: userId
-							});
-						}
-					}
-				}
+			if (classNames.length > 0) {
+				const classText =
+					classNames.length === 1
+						? `la classe ${classNames[0]}`
+						: `les classes ${classNames.join(', ')}`;
 
-				// Create notification for each unique teacher
-				for (const { teacherId, classNames, studentId } of teacherClassMap.values()) {
-					const classText =
-						classNames.length === 1
-							? `la classe ${classNames[0]}`
-							: `les classes ${classNames.join(', ')}`;
-
-					await createSystemNotification({
-						title: 'Nouvel élève approuvé',
-						message: `${fullName} a été ajouté à ${classText}. Vous pouvez lui envoyer un email de bienvenue.`,
-						type: 'info',
-						priority: 'normal',
-						system_event_type: 'student_approved',
-						target_type: 'users',
-						target_user_ids: [teacherId],
-						action_label: 'Envoyer email de bienvenue',
-						action_url: `/dashboard/teacher/welcome-email?student_id=${studentId}`
-					});
-				}
+				await createSystemNotification({
+					title: 'Nouvel élève approuvé',
+					message: `${fullName} a été ajouté à ${classText}. Vous pouvez lui envoyer un email de bienvenue.`,
+					type: 'info',
+					priority: 'normal',
+					system_event_type: 'student_approved',
+					target_type: 'role',
+					target_roles: ['teacher'],
+					action_label: 'Envoyer email de bienvenue',
+					action_url: `/dashboard/teacher/welcome-email?student_id=${userId}`
+				});
 			}
 		}
 
