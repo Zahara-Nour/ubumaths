@@ -2,6 +2,18 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.18.0] - 2026-10-13
+
+### Corrigé
+
+Caractères des fiches PDF pris dans une autre police (relevé de la session des fiches d'exercices) :
+
+- Police Typst : `·` (U+00B7), que Typst écrit pour `dot.c` (produit scalaire `u · v`), reprend le dessin de `⋅`
+- Police Typst : `″ ‴` (Typst fusionne `f''` et `f'''`), faits du prime répété
+- Police Typst : lettres accentuées et ponctuation de Shantell (`é è à ç ê œ « » ’`…), pour le texte écrit dans une formule
+- Police de texte des PDF : le grec de Main (légende « μ = 7/2 ; σ ≈ 1,708 » d'une simulation), même trait en gras
+- Police de texte des PDF : lettres en exposant des ordinaux `ᵉ ʳ ᵈ ˢ ᵐ ⁿ ᵒ` (« 10ᵉ », « 1ᵉʳ »), lettres de Shantell réduites comme ses `² ³`
+
 ## [1.17.0] - 2026-10-13
 
 ### Ajouté
