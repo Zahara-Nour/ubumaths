@@ -791,7 +791,15 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   s'intitule « On sort la constante $3$ » (« On sort le signe $-$ » pour k = −1), aux deux niveaux,
   explication `\int \dfrac3x\,dx = 3\int \dfrac1x\,dx`, sans la ligne `k × …` du calcul
   (`onlyConstantOut`, `descriptions-fr.ts` ; décision de David du 2026-10-13). La réécriture est un
-  calcul : elle reste en version résumée. Les étapes s'enchaînent (`after` de la réécriture =
+  calcul : elle reste en version résumée. **Le signe − devant l'intégrande** (`-e^x`,
+  `-\frac{1}{x+1}`, `-(x+1)^3`, étape `extract-constant` avec c = −1) se rédige comme
+  `\frac{-1}{x}` : « On sort le signe $-$ », explication
+  `\int \left( -f(x) \right)\,dx = -\int f(x)\,dx`, sans $(-1)$ ni $-1 \times$, aux deux niveaux ;
+  les autres constantes gardent « On sort la constante $k$ ». Une seule définition de k = −1 pour
+  les deux étapes (`isMinusOneCoefficient(bindings, 'k' | 'c')`, lu sur la valeur : `(-1)x^2` compris ; décision
+  de David du 2026-10-13). Avec u′ ≠ 1 et k = −1 (`e^{-x}`), la réécriture finit « puis on sort le
+  signe $-$ » (k = −½ reste « la constante »).
+  Les étapes s'enchaînent (`after` de la réécriture =
   `before` de la forme). Dans une IPP, v = ∫dv avec réécriture vient en sous-étapes de
   `choose-u-dv`. u′ s'écrit propre (`cleanDerivative` : constante exacte, sinon `tidyTerms`).
 - **IPP : notation selon le niveau** (décision de David du 2026-10-13). Au **lycée**, notation de

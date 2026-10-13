@@ -186,6 +186,24 @@ describe('.intégrer : composée à coefficient, expliqué par « On fait appara
 		expect(reveal?.title).toBe(title);
 	});
 
+	// Le signe − devant l'intégrande : même titre que `\frac{-1}{x}` (décision
+	// de David du 2026-10-13), « Comment ? » gardé, valeur concordante
+	it.each([
+		['.intégrer -e^x'],
+		['.intégrer -\\frac{1}{x+1}'],
+		['.intégrer -(x+1)^3'],
+		['.intégrer -\\cos x'],
+		['.intégrer -e^x de 0 à 1']
+	])('%s : « On sort le signe $-$ », étapes gardées', (input) => {
+		const entry = lastEntry(input);
+		expect(entry.failed).toBe(false);
+		expect(entry.steps).toBeDefined();
+		expect(entry.summary).toBeDefined();
+		const titles = flatten(entry.steps!).map((s) => s.title);
+		expect(titles).toContain('On sort le signe $-$');
+		expect(titles).not.toContain('On sort la constante $-1$');
+	});
+
 	it('en texte aussi : `.intégrer exp(2x)`', () => {
 		expect(lastEntry('.intégrer exp(2x)').steps).toBeDefined();
 	});

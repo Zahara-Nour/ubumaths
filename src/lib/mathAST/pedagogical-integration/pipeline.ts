@@ -1248,8 +1248,9 @@ function integrateLinearity(integrand: MathNode, ctx: DispatchContext): Dispatch
 }
 
 /**
- * Integrate a unary opposite : `∫ -f(x) dx = -∫ f(x) dx`. Pedagogically
- * rendered as an `extract-constant` with c = -1.
+ * Integrate a unary opposite : `∫ -f(x) dx = -∫ f(x) dx`. Rendered as an
+ * `extract-constant` with c = -1, titled « On sort le signe − » like the
+ * `reveal-derivative` of `\\frac{-1}{x}` (décision de David du 2026-10-13).
  */
 function integrateOpposite(
 	integrand: MathNode & { type: 'opposite' },
@@ -1265,6 +1266,7 @@ function integrateOpposite(
 		after: antiderivative,
 		variable: ctx.variable,
 		bindings: { c: minusOne, f: integrand.operand },
+		description: 'On sort le signe −',
 		subSteps: sub.steps
 	});
 	return { antiderivative, steps: [step] };
@@ -1278,13 +1280,15 @@ function integrateExtractConstant(
 	const recurCtx = withDeeperRecursion(ctx);
 	const sub = integrateNode(extraction.f, recurCtx);
 	const antiderivative = simplifiedMultiply(extraction.c, sub.antiderivative);
+	const bindings: IntegrationBindings = { c: extraction.c, f: extraction.f };
 
 	const step = buildStep(ctx, {
 		rule: 'extract-constant',
 		before: integrand,
 		after: antiderivative,
 		variable: ctx.variable,
-		bindings: { c: extraction.c, f: extraction.f },
+		bindings,
+		...(isMinusOneCoefficient(bindings, 'c') && { description: 'On sort le signe −' }),
 		subSteps: sub.steps
 	});
 	return { antiderivative, steps: [step] };
