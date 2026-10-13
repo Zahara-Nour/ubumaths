@@ -110,10 +110,18 @@ de 2nde de répondre une fois à la question d'âge.
   (approuver, refuser), et les routes d'adhésion ci-dessus.
 - **Import d'élèves** : `src/routes/(protected)/dashboard/admin/import-students/+page.server.ts`,
   action `import`. Les élèves vont dans `pending_students` (avec `class_ids` résolus depuis les
-  codes de classe). Un élève dont le profil existe déjà est rattaché directement : `school_id`,
+  codes de classe). Chaque élève est validé avant toute écriture (`importedStudentsSchema` :
+  courriel, prénom et nom de 100 caractères au plus, 20 codes de classe au plus, 1 000 élèves par
+  import) et son niveau est ramené à son code (« 6ème » → `6`, `gradeFlexibleSchema`) ; une erreur
+  rend 400 en nommant l'élève (« Élève n° 3 : Courriel invalide »). Un élève dont le profil existe déjà est rattaché directement : `school_id`,
   `grade`, adhésions `class_members`. L'activation à la première connexion est décrite dans
   [auth.md](auth.md).
-- Schémas Zod de ces écrans : `src/lib/server/validation/admin.ts`.
+- Schémas Zod de ces écrans : `src/lib/server/validation/admin.ts`. Les actions des classes
+  (`adminClassCreateSchema`, `adminClassUpdateSchema`, `adminClassIdSchema`) bornent le nom
+  (100 caractères), la description (500), exigent un UUID pour la classe et l'école, un code de
+  niveau connu, et un code d'inscription en `[A-Z0-9_-]` de 10 caractères au plus (mis en
+  majuscules ; obligatoire en modification, généré par la base s'il est vide à la création).
+  L'action `delete` des écoles valide `id` comme l'action `update`.
 
 ### Admin : sauvegarde des exercices, réglages
 
@@ -314,8 +322,10 @@ Intégration (base locale, `pnpm test:integration`) :
 - `tests/integration/profil-is-test-bonus.test.ts`, `tests/integration/consentement-champs-profil.test.ts` :
   champs du profil verrouillés pour l'élève.
 
-Aucun test trouvé pour : l'import d'élèves, l'envoi du courriel de bienvenue, les actions de
-`dashboard/admin/classes` et `dashboard/admin/schools`, `add-to-class` et `remove-from-class`.
+Validation des entrées (400 avant toute requête, puis écriture normalisée) :
+`src/routes/(protected)/dashboard/admin/{classes,schools,import-students}/__tests__/validation-entrees.test.ts`.
+Aucun test trouvé pour : le reste de l'import d'élèves (profil existant, doublons), l'envoi du
+courriel de bienvenue, `add-to-class` et `remove-from-class`.
 
 ## Décisions
 
@@ -329,9 +339,6 @@ Aucun test trouvé pour : l'import d'élèves, l'envoi du courriel de bienvenue,
 
 Constatés le 2026-10-13, **non corrigés**.
 
-- **Entrées non validées par Zod** : les actions de `dashboard/admin/classes` lisent le formulaire
-  par `formData.get(...) as string` ; l'action `delete` des écoles ne valide pas `id` ; l'import
-  d'élèves ne valide que la chaîne JSON, pas chaque élève (champs, nombre).
 - **Import : 500 transformé en 400** : dans l'action `import`, le `throw error(500, …)` est pris
   par le `catch` final, qui rend « Données invalides » (400). La variable `affectedClassIds` est
   calculée puis jamais utilisée.
