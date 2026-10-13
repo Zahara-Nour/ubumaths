@@ -19,7 +19,31 @@
      ```
      Une seule ligne hors `docs/` ou `*.md` (`.github/`, `package.json`, un `.sql`…) fait basculer sur le circuit normal.
    - ⚠️ **Avant de pousser : `git pull --rebase`, jamais un `git pull` qui fusionne.** Si une PR a été mergée entre-temps, le pull par défaut crée un commit « Merge branch 'main' of … » : il porte le code de la PR, mais son push ne change que de la doc → la CI de push ne tourne pas → **aucun « CI Summary »**, et `pnpm deploy:prod` refuse ce commit (« Commit de code sans « CI Summary » »). Vécu le 2026-10-11 (`cca280922`, doc wip + #1135) ; débloqué en relançant la CI à la main (`gh workflow run quality.yml --ref main`). Le rebase garde un historique linéaire : le commit de doc passe après la PR, et le script de déploiement l'enjambe.
+   - ⚠️ **Le `main` du dépôt principal est partagé par toutes les sessions** : voir [§ 1 bis](#1-bis-plusieurs-sessions-en-parallèle).
 4. **Conventional commits** (`feat()`, `fix()`, `chore()`, `refactor()`, `perf()`, `docs()`, `test()`). **Aucune mention Claude/Anthropic.**
+
+## 1 bis. Plusieurs sessions en parallèle
+
+Toutes les sessions commitent leur doc dans le **même dépôt principal** : son `main`, son **index** et ses fichiers non suivis sont **partagés**. Un commit laissé là, un fichier mis de côté par `git add`, un fichier non suivi : toutes les autres sessions en héritent.
+
+**Incident du 2026-10-13** : un `git pull --rebase` bloqué par un fichier non suivi d'une autre session ; la session a republié ses deux commits de doc par cherry-pick depuis un worktree, en laissant les originaux dans le `main` local (l'un des deux était même le commit d'une autre session). Mêmes changements sous deux numéros → `main` local à +2/−6 d'`origin/main` → `pnpm deploy:prod` bloqué (« main local diffère de origin/main ») ; une troisième session a « réparé » par `git pull --no-rebase`, d'où le merge `8b0d1a82f` et deux commits en double dans l'historique. Le même jour, cinq merges en une heure ont repoussé le déploiement d'autant.
+
+**Les règles :**
+
+1. **Commit de doc d'un seul tenant, depuis le dépôt principal** : `git pull --rebase` → `git add <ses fichiers>` → `git commit` → `git push` aussitôt. Jamais de commit de doc laissé non poussé.
+2. ⛔ **Pull ou push en échec → on s'arrête et on prévient David.** Jamais republier ses commits par un autre chemin (cherry-pick dans un worktree, push depuis ailleurs) en laissant les originaux en local. Réparer une divergence demande un `reset` ou un merge : c'est à David.
+3. **L'index est partagé** : `git add` nomme ses propres fichiers ; jamais `git add -A`, `git add .`, ni `git commit -a`. Vérifier `git diff --cached --name-only` avant de commiter : un fichier qu'on n'a pas touché, c'est celui d'une autre session.
+4. **Rien d'inachevé dans le dépôt principal** : ni fichier suivi modifié en attente, ni fichier non suivi. Un fichier modifié part dans le commit d'une autre session ou bloque son pull ; un fichier non suivi qu'une PR ajoute ensuite bloque le pull de TOUTES les sessions (« untracked working tree files would be overwritten »). Le travail en cours vit dans un worktree. Un fichier non suivi trouvé dans le dépôt principal : demander à qui il est, ne pas y toucher.
+5. **Fichiers que tout le monde complète** (`docs/wip/verifications-manuelles.md` surtout) : ajouter en fin de section, juste après le pull. En cas de conflit au rebase, **garder les deux côtés**, jamais l'un à la place de l'autre.
+6. **Le `pnpm install` d'après pull** : un pull qui change les dépendances relance `pnpm install` dans le dépôt principal, sous le serveur 5175 qui tourne dessus. Erreur étrange du serveur juste après un pull → le relancer.
+7. **Pendant `pnpm deploy:prod`** : ni commit sur `main`, ni merge de PR (voir [§ 7](#7-déploiement--vérification)).
+
+**Les garde-fous** (ils appliquent les règles sans compter sur la mémoire de chaque session) :
+
+- **Hook Claude** `.claude/hooks/garde-commandes.py`, sur la branche `main` (dépôt principal, ou `cd` / `git -C` vers lui) : refuse `git pull` sans `--rebase` ni `--ff-only`, `git merge` sans `--ff-only` (sauf `--continue` / `--abort`), `git add -A` / `-u` sans chemin ou `git add .`, `git commit -a`. Et, tant que le verrou « deploy » est tenu, refuse `gh pr merge` et tout commit ou push vers `main`, depuis n'importe quel worktree. Le dossier visé est suivi à travers `cd` et `git -C` (guillemets et `~` compris).
+- **Verrou « deploy »** : `pnpm deploy:prod` tourne sous le verrou noyau de `scripts/lib/lock.py` (relâché à sa fin, quelle qu'en soit la cause) ; un second `deploy:prod` sort en exit 2. `--essai` ne le prend pas.
+- **Hook pre-commit** `scripts/garde-main-a-jour.sh` : sur `main`, refuse le commit si `origin/main` a des commits que le `main` local n'a pas (`git fetch` d'abord, 5 s au plus pour se connecter ; hors ligne, il laisse passer ; le commit qui conclut un merge, un cherry-pick ou un revert passe).
+- ⚠️ Pas de `pull.rebase` / `pull.ff` dans `.git/config` : essayé le 2026-10-13, `pull.ff=only` fait échouer le rebase légitime de son propre commit de doc, n'empêche pas `--no-rebase` de fusionner, et s'appliquerait à tous les worktrees (la config est commune).
 
 ## 2. Nommage des branches
 
@@ -70,6 +94,7 @@
 ## 7. Déploiement & vérification
 
 - Merge sur `main` → **rien n'est déployé**. La prod ne bouge que par **`pnpm deploy:prod`**, lancé par David ou par Claude **sur sa demande explicite** (ADR 0021). Le script crée la version (`pnpm release` : numéro, CHANGELOG, tag) sur le dernier état vérifié par la CI, attend la CI de ce commit de version, puis avance `production` jusqu'à lui ; `--essai` montre ce qui partirait.
+  - Il tient le verrou « deploy » de bout en bout : le hook Claude refuse alors aux autres sessions `gh pr merge` et les commits ou pushes vers `main` ([§ 1 bis](#1-bis-plusieurs-sessions-en-parallèle)). Un humain n'est pas arrêté par le hook : David, qui lance aussi des merges, attend la fin.
 - Ce qui attend la prod : `git log --first-parent origin/production..origin/main`.
 - **Previews OFF** : le **job Build CI** (+ garde TDZ Safari) valide le build.
 - Surveiller le déploiement (`get_deployment` → `READY`).

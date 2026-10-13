@@ -10,7 +10,9 @@
  * - CI en cours, rouge, ou commit de code sans CI → ni version, ni prod ;
  * - CI de la version rouge → la version reste, la prod ne bouge pas ;
  * - rien de nouveau → ni version, ni prod ; jamais de force-push ;
- * - `--essai` ne crée rien.
+ * - `--essai` ne crée rien ;
+ * - un second deploy:prod pendant le premier (verrou « deploy ») sort en exit 2
+ *   sans rien créer ; l'essai, lui, n'est pas bloqué.
  *
  * Dépôts jetables (un dépôt nu tient lieu de GitHub) et `gh` remplacé par un
  * bouchon qui lit l'état de la CI de chaque commit dans un fichier ; `pnpm
@@ -20,10 +22,12 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import {
 	appendFileSync,
 	chmodSync,
+	existsSync,
+	readFileSync,
 	mkdtempSync,
 	mkdirSync,
 	realpathSync,
@@ -34,6 +38,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve, sep } from 'node:path';
 
 const SCRIPT = resolve(__dirname, '../deploy-prod.sh');
+const LOCK = resolve(__dirname, '../lib/lock.py');
 
 let racine: string;
 let github: string;
@@ -340,5 +345,33 @@ describe('deploy-prod.sh — ce qui arrête tout', () => {
 		expect(r.status, r.sortie).toBe(1);
 		expect(r.sortie).toContain("n'est pas un ancêtre");
 		expect(production()).toBe(avant);
+	});
+});
+
+describe('deploy-prod.sh — un seul déploiement à la fois (verrou « deploy »)', () => {
+	it('un second deploy:prod sort en exit 2 sans rien créer ; l’essai passe', async () => {
+		pousser('success', 'src/a.ts');
+		const premier = spawn('python3', [LOCK, 'deploy', 'pnpm deploy:prod', '--', 'sleep', '60'], {
+			cwd: dansLeBac(local),
+			env: env(),
+			stdio: 'ignore'
+		});
+		try {
+			// Le détenteur écrit son PID une fois le verrou acquis
+			const fichier = join(local, '.git', '.locks', 'deploy');
+			for (let i = 0; i < 100; i++) {
+				if (existsSync(fichier) && readFileSync(fichier, 'utf8').trim()) break;
+				await new Promise((r) => setTimeout(r, 50));
+			}
+			const r = deployer();
+			expect(r.status, r.sortie).toBe(2);
+			expect(r.sortie).toContain('pnpm deploy:prod tourne déjà');
+			expect(production()).toBeNull();
+			const essai = deployer('--essai');
+			expect(essai.status, essai.sortie).toBe(0);
+			expect(essai.sortie).not.toContain('tourne déjà');
+		} finally {
+			premier.kill('SIGKILL');
+		}
 	});
 });

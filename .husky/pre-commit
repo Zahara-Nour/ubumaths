@@ -1,1 +1,2 @@
+bash scripts/garde-main-a-jour.sh
 pnpm lint-staged

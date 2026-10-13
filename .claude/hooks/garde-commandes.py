@@ -11,8 +11,11 @@ ne bloque jamais : le garde-fou ne doit pas casser la session.
 Tests : scripts/__tests__/garde-commandes.test.ts.
 """
 
+import fcntl
 import json
+import os
 import re
+import subprocess
 import sys
 
 
@@ -48,18 +51,102 @@ except Exception:
 if re.search(r"""\bgit\s+-C\s*(""|'')""", commande):
     refuser('`git -C ""` agit dans le dossier courant, souvent le dépôt principal. Vérifier que le dossier n\'est pas vide.')
 
-# Le texte entre guillemets (messages de commit, corps de PR) n'est pas une commande.
-sans_texte = re.sub(r'"(?:\\.|[^"\\])*"|\'[^\']*\'', '""', commande)
+# Le corps d'un heredoc (message de commit `-F -`, fichier écrit par cat) n'est pas une commande.
+sans_heredoc = re.sub(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n.*?\n\s*\2\s*(?=\n|$)", "", commande, flags=re.S)
+
+# Le texte entre guillemets (messages de commit, corps de PR) n'est pas une commande :
+# il devient un repère "Qn", qui ne ressemble à aucune option. Son contenu est rangé
+# pour les chemins de `cd` et de `git -C`, qu'on écrit souvent entre guillemets.
+citations: list = []
+
+
+def ranger(m: "re.Match[str]") -> str:
+    citations.append(m.group(0)[1:-1])
+    return f'"Q{len(citations) - 1}"'
+
+
+sans_texte = re.sub(r'"(?:\\.|[^"\\])*"|\'[^\']*\'', ranger, sans_heredoc)
 segments = [s.strip() for s in re.split(r"&&|\|\||;|\||\n", sans_texte) if s.strip()]
 
 
-def mot(segment: str) -> str:
-    """Le segment sans ses affectations de variables en tête (FORCE=1 …)."""
-    return re.sub(r"^(?:[A-Za-z_][A-Za-z0-9_]*=\S*\s+)*", "", segment)
+def chemin(argument: str) -> str:
+    """Un argument de chemin, guillemets retirés et `~` développé."""
+    repere = re.fullmatch(r'"Q(\d+)"', argument)
+    brut = citations[int(repere.group(1))] if repere else argument
+    return os.path.expanduser(brut) if brut else ""
 
+
+def git_dans(lieu: str, *args: str) -> str:
+    """Sortie d'une commande git lancée dans `lieu` ; vide si elle échoue.
+
+    Jamais avec un `lieu` vide : git agirait alors dans le dossier courant.
+    """
+    if not lieu:
+        return ""
+    try:
+        r = subprocess.run(["git", "-C", lieu, *args], capture_output=True, text=True, timeout=5)
+    except Exception:
+        return ""
+    return r.stdout.strip() if r.returncode == 0 else ""
+
+
+def branche(lieu: str) -> str:
+    return git_dans(lieu, "rev-parse", "--abbrev-ref", "HEAD")
+
+
+def deploiement_en_cours(lieu: str) -> bool:
+    """Vrai si `pnpm deploy:prod` tient le verrou noyau « deploy » (scripts/lib/lock.py).
+
+    Le verrou vit dans le répertoire git COMMUN, partagé par tous les worktrees.
+    On tente un verrou PARTAGÉ non bloquant : il échoue seulement si le déploiement
+    tient le verrou exclusif ; sinon on le relâche aussitôt.
+    """
+    commun = git_dans(lieu, "rev-parse", "--path-format=absolute", "--git-common-dir")
+    if not commun:
+        return False
+    try:
+        fd = os.open(os.path.join(commun, ".locks", "deploy"), os.O_RDONLY)
+    except OSError:
+        return False
+    try:
+        fcntl.flock(fd, fcntl.LOCK_SH | fcntl.LOCK_NB)
+    except OSError:
+        return True
+    else:
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        return False
+    finally:
+        os.close(fd)
+
+
+DEPLOIEMENT = (
+    "`pnpm deploy:prod` est en cours (verrou « deploy ») : ni merge de PR, ni commit ou push sur main "
+    "jusqu'à sa fin. Un main qui bouge fait refuser le push du commit de version, et chaque merge "
+    "relance la CI qu'il attend. Attendre la fin du déploiement."
+)
+
+
+def mot(segment: str) -> str:
+    """Le segment sans ses parenthèses ou accolades ouvrantes, ni ses affectations de
+    variables en tête (`(cd x && …)`, FORCE=1 …)."""
+    sans_groupe = re.sub(r"[)}\s]+$", "", re.sub(r"^[({\s]*", "", segment))
+    return re.sub(r"^(?:[A-Za-z_][A-Za-z0-9_]*=\S*\s+)*", "", sans_groupe)
+
+
+# Dossier où s'exécute chaque segment : celui de la session, puis les `cd` successifs.
+ici = dossier
 
 for brut in segments:
     s = mot(brut)
+
+    aller = re.match(r"cd\s+(\S+)$", s)
+    if aller:
+        if chemin(aller.group(1)) and ici:
+            ici = os.path.normpath(os.path.join(ici, chemin(aller.group(1))))
+        continue
+
+    if re.match(r"gh\s+pr\s+merge\b", s) and deploiement_en_cours(ici):
+        refuser(DEPLOIEMENT)
 
     if re.match(r"pnpm\s+(?:run\s+)?check:fast\b", s) or re.search(r"\btsc\b.*--noEmit", s):
         refuser("meurt sur le tas V8 (~4 Go) et donne de faux positifs `$lib`. Utiliser `pnpm check:incremental`.")
@@ -95,15 +182,45 @@ for brut in segments:
     # Commandes qui perdent du travail : la liste `ask` de .claude/settings.json fait
     # foi, mais elle ne voit qu'un début de commande (`git push origin main --force`
     # lui échappe). Ici, l'option est cherchée n'importe où dans la commande git.
-    commande_git = re.match(r"git\s+(?:-C\s+\S+\s+)?(\w[\w-]*)\b(.*)", s)
+    # Options globales avant le verbe : `-C <dossier>`, `-c clé=valeur`, `--no-pager`…
+    commande_git = re.match(r"git((?:\s+(?:-C\s+\S+|-c\s+\S+|--[\w-]+(?:=\S+)?))*)\s+(\w[\w-]*)\b(.*)", s)
     if commande_git:
-        verbe, reste = commande_git.group(1), " " + commande_git.group(2) + " "
+        verbe, reste = commande_git.group(2), " " + commande_git.group(3) + " "
+        lieu = ici
+        for dossier_git in re.findall(r"-C\s+(\S+)", commande_git.group(1)):
+            if chemin(dossier_git) and lieu:
+                lieu = os.path.normpath(os.path.join(lieu, chemin(dossier_git)))
+        # Arguments hors options : chemins, remote, refspecs (un texte entre guillemets compte)
+        arguments = [a for a in reste.split() if not a.startswith("-")]
         if verbe == "push" and re.search(r"\s(?:--force(?:-with-lease)?(?:=\S*)?|-f)\s", reste):
             demander("push forcé : il réécrit l'historique distant (liste `ask` de .claude/settings.json).")
         if verbe == "branch" and (
             re.search(r"\s-D\s", reste) or (re.search(r"\s--delete\s", reste) and re.search(r"\s--force\s", reste))
         ):
             demander("suppression forcée de branche (`-D`) : elle perd les commits non mergés. Préférer `git branch -d`.")
+
+        # Le main du dépôt principal est PARTAGÉ par toutes les sessions, son index
+        # aussi (incident du 2026-10-13 : main divergé, deploy:prod bloqué).
+        if verbe in ("pull", "merge", "add", "commit", "push") and branche(lieu) == "main":
+            if verbe == "pull" and (
+                "--no-rebase" in reste or not re.search(r"\s(?:--rebase(?:=\S+)?|-r|--ff-only)\s", reste)
+            ):
+                refuser("sur main, `git pull` doit être `git pull --rebase` (ou `--ff-only`) : un pull qui fusionne crée un commit de merge dans le main partagé par toutes les sessions. S'il échoue, s'arrêter et prévenir David.")
+            # --continue / --abort concluent ou annulent un merge déjà commencé
+            if verbe == "merge" and not re.search(r"\s(?:--ff-only|--abort|--continue|--quit)\s", reste):
+                refuser("sur main, seul `git merge --ff-only` est permis : un merge crée un commit dans le main partagé par toutes les sessions.")
+            # `-A` / `-u` limités à des chemins (`git add -A docs/x/`) restent permis
+            tout_l_index = re.search(r"\s(?:-A|--all|-u|--update)\s", reste) and not arguments
+            if verbe == "add" and (tout_l_index or any(a in (".", "./", ":/") for a in arguments)):
+                refuser("sur main, l'index est partagé par toutes les sessions : `git add` nomme ses propres fichiers, jamais `-A`, `-u` ni `.` sans chemin.")
+            if verbe == "commit" and re.search(r"\s(?:--all|-[a-zA-Z]*a[a-zA-Z]*)\s", reste):
+                refuser("sur main, `git commit -a` emporterait les modifications des autres sessions : nommer ses fichiers (`git commit -- <fichiers>`).")
+            # Sur main, un push sans refspec pousse main
+            pousse_main = verbe == "push" and (len(arguments) <= 1 or re.search(r"[\s:](?:refs/heads/)?main\s", reste))
+            if (verbe == "commit" or pousse_main) and deploiement_en_cours(lieu):
+                refuser(DEPLOIEMENT)
+        elif verbe == "push" and re.search(r"[\s:](?:refs/heads/)?main\s", reste) and deploiement_en_cours(lieu):
+            refuser(DEPLOIEMENT)
 
     # `pnpm deploy:prod` n'est plus soumis à confirmation (décision de David,
     # 2026-10-10) : la règle « seulement sur sa demande explicite » reste dans
