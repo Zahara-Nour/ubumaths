@@ -9,6 +9,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Clock } from '@lucide/svelte';
+	import { clearAllChatHistories } from '$lib/utils/chat-history';
 
 	let isLoggingOut = $state(false);
 	let dialogOpen = $state(true);
@@ -17,6 +18,11 @@
 		if (isLoggingOut) return;
 		isLoggingOut = true;
 		try {
+			try {
+				clearAllChatHistories(localStorage);
+			} catch (e) {
+				console.error('Historique du chat non effacé :', e);
+			}
 			await fetch('/auth/logout', { method: 'POST' });
 			await invalidateAll();
 			await goto('/');

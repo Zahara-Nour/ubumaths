@@ -586,6 +586,8 @@ WHERE job_name = 'retention_cleanup' ORDER BY started_at DESC LIMIT 1;
 - **Limite** : 1 demande / 24 h (limiteur en mémoire, par instance).
 - **Audit** : `account_deletion_audit` (hash SHA-256 de l'e-mail, IP, navigateur, statut) ;
   `user_id` passé à NULL une fois la suppression terminée.
+- **Navigateur** : après la suppression réussie, `AccountDeletionDialog` efface de l'appareil les
+  conversations avec le Père Ubu (`localStorage`, constat T17 ; [tuteur-ia.md](../tuteur-ia.md)).
 
 **Ce qui part** (décisions de David, 2026-10-10) :
 

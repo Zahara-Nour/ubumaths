@@ -20,6 +20,7 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { AlertTriangle, Loader2, Trash2, X } from '@lucide/svelte';
+	import { clearAllChatHistories } from '$lib/utils/chat-history';
 
 	interface Props {
 		open: boolean;
@@ -81,6 +82,14 @@
 					error = data.message || 'Une erreur est survenue. Veuillez reessayer.';
 				}
 				return;
+			}
+
+			// Le compte n'existe plus : sa conversation avec le Père Ubu ne reste pas sur
+			// l'appareil (T17). Une erreur de stockage n'empêche pas la redirection.
+			try {
+				clearAllChatHistories(localStorage);
+			} catch (e) {
+				console.error('Historique du chat non effacé :', e);
 			}
 
 			// Success - close dialog and redirect

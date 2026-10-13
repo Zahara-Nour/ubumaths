@@ -63,6 +63,12 @@
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { convertLegacyLatexToMarkdown } from '$lib/utils/latex-syntax-adapter';
 	import { buildChatRequestBody } from '$lib/utils/chat-request';
+	import {
+		clearChatHistory,
+		forgetOtherChatHistories,
+		loadChatHistory,
+		saveChatHistory
+	} from '$lib/utils/chat-history';
 
 	interface TextContent {
 		type: 'text';
@@ -94,9 +100,11 @@
 
 	interface Props {
 		personalityKey?: PersonalityKey;
+		/** Compte connecté : l'historique est rangé sous son identifiant (T17). */
+		userId: string;
 	}
 
-	let { personalityKey = 'pereUbu' }: Props = $props();
+	let { personalityKey = 'pereUbu', userId }: Props = $props();
 
 	// State with Svelte 5 runes
 	let messages = $state<Message[]>([]);
@@ -201,7 +209,10 @@
 
 	// Refs for DOM elements
 	let messagesContainer: HTMLDivElement | undefined = $state();
-	let textareaElement: HTMLTextAreaElement | undefined = $state();
+	// `null`, pas `undefined` : `Textarea` a `ref = $bindable(null)`, et Svelte refuse
+	// `bind:ref={undefined}` vers une prop qui a une valeur par défaut — le chat plantait
+	// au montage (props_invalid_value), en prod comme en dev.
+	let textareaElement: HTMLTextAreaElement | null = $state(null);
 	let fileInputElement: HTMLInputElement | undefined = $state();
 
 	// Constants for image validation
@@ -370,22 +381,28 @@
 			.map((item) => item.image_url.url);
 	}
 
-	// Load history from localStorage on mount
+	// Historique du compte connecté, et lui seul : celui d'un autre compte (tablette
+	// partagée, élève précédent non déconnecté) est effacé sans être affiché (T17).
 	$effect(() => {
-		const saved = localStorage.getItem('chatHistory');
-		if (saved) {
-			try {
-				messages = JSON.parse(saved);
-			} catch (e) {
-				console.error('Error loading chat history:', e);
-			}
+		try {
+			forgetOtherChatHistories(localStorage, userId);
+			const saved = loadChatHistory(localStorage, userId);
+			// Remise à zéro aussi : un autre compte peut se connecter (autre onglet) sans que
+			// le chat soit démonté — la conversation précédente ne doit pas lui rester.
+			messages = Array.isArray(saved) ? (saved as Message[]) : [];
+		} catch (e) {
+			console.error('Historique du chat illisible :', e);
 		}
 	});
 
-	// Auto-save history to localStorage
+	// Sauvegarde automatique (les images en base64 peuvent dépasser le quota du navigateur).
 	$effect(() => {
 		if (messages.length > 0) {
-			localStorage.setItem('chatHistory', JSON.stringify(messages));
+			try {
+				saveChatHistory(localStorage, userId, messages);
+			} catch (e) {
+				console.error('Historique du chat non enregistré :', e);
+			}
 		}
 	});
 
@@ -525,7 +542,7 @@
 
 	function clearHistory() {
 		messages = [];
-		localStorage.removeItem('chatHistory');
+		clearChatHistory(localStorage, userId);
 		toaster.success('Historique effacé !');
 	}
 

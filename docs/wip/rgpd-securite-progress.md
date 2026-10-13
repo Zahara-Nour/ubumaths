@@ -418,3 +418,9 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   service (seule façon d'écrire sans compte ; ne choisit que des énigmes publiées). Prod :
   1 énigme publiée, 0 énigme du jour jamais posée → la tâche réussira le 1er jour, puis
   échouera (« Aucune énigme éligible ») 30 jours, faute d'autre énigme publiée.
+- **T17 — conversation du Père Ubu sur une tablette partagée (choix de David, 2026-10-13)** —
+  branche `fix/historique-tuteur-par-compte` : historique rangé par compte
+  (`chatHistory:<id>`), conversations des autres comptes et ancienne clé commune effacées à
+  l'ouverture du chat, toutes effacées à la déconnexion. 4 tests rouges sans le correctif.
+  **Trouvé au passage** : le chat plantait au montage, en prod comme en dev
+  (`bind:ref={undefined}` vers `Textarea`, `props_invalid_value`) → corrigé.
