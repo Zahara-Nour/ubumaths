@@ -573,6 +573,14 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
 11. **Seul l'affichage passe à la virgule décimale** : le moteur, l'arbre gardé et le rejeu
     restent en `0.5` (`decimal-comma.ts`). Dans le titre ou l'explication d'une étape,
     `decimalCommaProse` écrit `0,5` dans la phrase et `0{,}5` dans une formule `$…$` (V25).
+    À la **lecture d'une définition** (`parseByProvenance`, `parse.ts`), la virgule décimale et
+    le « ; » qui sépare les arguments de `max`, `min`, `gcd`, `mod` sont traduits comme pour un
+    calcul (`decimalCommaInput` en texte, `argumentSemicolonsLatex` en LaTeX) : `f(x) =
+max(2,5 ; x)` puis `f(1)` répond `5/2` (avant le 2026-10-13 : « Écriture non reconnue »).
+    ⚠️ La saisie de l'élève seulement (`'text'`, `'paste'`, `'command'`) : `'url'` relit aussi le
+    texte du moteur (`toCustom` écrit `max(2,3)`), dont la virgule sépare. Comme sur une ligne de
+    calcul, `f(x) = max(1,2)+x` est refusée (« Sépare les valeurs avec « ; » »). Le
+    champ de la carte montre `\max\left(2{,}5;x\right)` (`argumentSeparatorsShown`).
 12. **On ne valide pas** les réponses de l'élève (décision figée n° 2).
 
 ---

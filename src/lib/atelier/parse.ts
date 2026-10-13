@@ -24,7 +24,7 @@ import {
 import type { MissingReference, ObjectKind } from './types';
 import { readListValue, readNumber } from '$lib/statistics/read-value';
 import { hasObjectNameShape } from './names';
-import { coupleOrSetRefusal } from './decimal-comma';
+import { argumentSemicolonsLatex, coupleOrSetRefusal, decimalCommaInput } from './decimal-comma';
 
 /**
  * D'où vient une définition. Décision D10 : c'est la provenance qui décide du
@@ -144,16 +144,27 @@ export function mixedNotationMessage(text: string): string | null {
 		: null;
 }
 
+/** Les provenances qui sont la saisie de l'élève, virgule décimale et « ; » compris. */
+const STUDENT_TYPED: ReadonlySet<Provenance> = new Set(['text', 'paste', 'command']);
+
 function parseByProvenance(
 	rawDefinition: string,
 	provenance: Provenance,
 	functionNames?: readonly string[]
 ) {
-	const definition = withPiCommand(rawDefinition);
+	const typed = withPiCommand(rawDefinition);
 	// Les mêmes noms de fonctions dans les deux lectures : en LaTeX, l'atelier ne
 	// les transmettait pas, et `k(x)` tapé dans la carte se lisait k·x
 	const genericFunctions = genericFunctionsFor(functionNames);
-	if (readingMode(provenance) === 'latex') return parseLatexSafe(definition, { genericFunctions });
+	// Le « ; » de l'élève entre les arguments (`max(2,5 ; x)`) : traduit pour un
+	// calcul, il ne l'était pas pour une définition — `f(1)` répondait « Écriture
+	// non reconnue » (2026-10-13)
+	if (readingMode(provenance) === 'latex') {
+		return parseLatexSafe(argumentSemicolonsLatex(typed), { genericFunctions });
+	}
+	// ⚠️ La saisie de l'élève seulement : `'url'` relit aussi le texte du moteur
+	// (`toCustom` écrit `max(2,3)`), dont la virgule n'est pas décimale (revue)
+	const definition = STUDENT_TYPED.has(provenance) ? decimalCommaInput(typed) : typed;
 
 	const detected = detectInputFormat(definition);
 	if (detected.format === 'latex' && detected.confidence > 0.5) {

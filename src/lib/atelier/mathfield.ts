@@ -22,6 +22,7 @@ import { astOf, parseDefinition, readingMode, readNumber } from './parse';
 import { INTERNAL_LETTER, renameVariable } from './letter';
 import { intervalFieldLatex } from './interval';
 import { readNaturalQuantities } from './natural-quantities';
+import { argumentSeparatorsShown } from './decimal-comma';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { isAddition, isDelimiter, isNumber, isUnit } from '$lib/mathAST/guards';
@@ -79,8 +80,9 @@ function expressionFieldLatex(
 
 	const ast = astOf(definition, provenance, functionNames);
 	if (ast === null) return definition;
-	// La virgule de l'élève : `2,5 km`, `2,5x`, pas le `2.5` de `toLatex`
-	return forMathlive(toLatex(ast)).replace(/(\d)\.(\d)/g, '$1{,}$2');
+	// La virgule de l'élève : `2,5 km`, `2,5x`, pas le `2.5` de `toLatex` ; ses
+	// arguments séparés par « ; » : `max(2,5 ; x)`, pas `2,5, x`
+	return argumentSeparatorsShown(forMathlive(toLatex(ast))).replace(/(\d)\.(\d)/g, '$1{,}$2');
 }
 
 /**

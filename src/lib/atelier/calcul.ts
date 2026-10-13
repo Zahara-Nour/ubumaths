@@ -1611,6 +1611,9 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		if (commaList !== null) return { kind: 'refus', message: commaList };
 		const bracketed = parameter === undefined ? bracketedListRefusal(name, body) : null;
 		if (bracketed !== null) return { kind: 'refus', message: bracketed };
+		// `f(x) = max(1,2)+x` : la virgule est décimale, comme sur une ligne de calcul
+		const commaRefused = commaRefusal(body, input);
+		if (commaRefused !== null) return { kind: 'refus', message: commaRefused };
 		// `A = (1 ; 2)` : le refus d'une saisie (#983), pas un objet en erreur
 		const typed = coupleOrSetRefusal(body);
 		if (typed !== null) return { kind: 'refus', message: typed };
