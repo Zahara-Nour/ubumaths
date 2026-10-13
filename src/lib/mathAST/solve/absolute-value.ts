@@ -42,8 +42,12 @@ type SolveFn = (equation: RelationNode, options?: SolveOptions) => SolveResult;
 
 /** Lettres essayées pour remplacer une valeur absolue (la première absente de l'équation). */
 const FRESH_NAMES = ['t', 'u', 'w', 's', 'T', 'U', 'W', 'S'] as const;
-/** Deux solutions plus proches que cela sont la même (|2x| = |x| : 0 deux fois). */
-const DUPLICATE_TOLERANCE = 1e-10;
+/**
+ * Repli seulement, quand la comparaison exacte ne conclut pas : écart RELATIF
+ * en deçà duquel deux solutions sont la même. Une tolérance absolue confondait
+ * −c et c pour c petit (`|x| = 10^{-11}` ne rendait que −10⁻¹¹).
+ */
+const RELATIVE_DUPLICATE_TOLERANCE = 1e-12;
 
 function isAbs(node: MathNode): node is FunctionNode {
 	return isFunction(node) && node.name === 'abs' && node.args.length === 1;
@@ -87,7 +91,9 @@ function withAbsReplaced(
 		expr,
 		(node) => isAbs(node) && arguments_.some((a) => nodesEqual(a, node.args[0])),
 		(node) => {
-			const index = arguments_.findIndex((a) => isAbs(node) && nodesEqual(a, node.args[0]));
+			// Le prédicat n'a retenu que des valeurs absolues : ce test ne sert qu'au typage
+			if (!isAbs(node)) return node;
+			const index = arguments_.findIndex((a) => nodesEqual(a, node.args[0]));
 			return variableNode(names[index]);
 		}
 	);
@@ -97,22 +103,28 @@ function approximateOf(solution: Solution): number | null {
 	return solution.approximate ?? computeNumericValue(solution.value);
 }
 
+/**
+ * Deux solutions identiques : d'abord sur la forme exacte (|2x| = |x| rend 0
+ * deux fois), puis, si l'exact ne conclut pas, à un écart relatif près.
+ */
+function sameSolution(a: Solution, aValue: number, b: Solution, bValue: number): boolean {
+	if (isZeroNode(subtract(a.value, b.value))) return true;
+	const scale = Math.max(Math.abs(aValue), Math.abs(bValue));
+	return scale === 0 || Math.abs(aValue - bValue) <= RELATIVE_DUPLICATE_TOLERANCE * scale;
+}
+
 /** Solutions réunies, sans doublon, dans l'ordre croissant. */
 function merged(results: readonly SolveResult[]): Solution[] | null {
-	const solutions: Solution[] = [];
+	const solutions: { readonly solution: Solution; readonly value: number }[] = [];
 	for (const result of results) {
 		for (const solution of result.solutions) {
 			const value = approximateOf(solution);
 			if (value === null) return null;
-			if (
-				solutions.some((s) => Math.abs((approximateOf(s) ?? NaN) - value) < DUPLICATE_TOLERANCE)
-			) {
-				continue;
-			}
-			solutions.push({ ...solution, approximate: value });
+			if (solutions.some((s) => sameSolution(s.solution, s.value, solution, value))) continue;
+			solutions.push({ solution: { ...solution, approximate: value }, value });
 		}
 	}
-	return solutions.sort((a, b) => (a.approximate ?? 0) - (b.approximate ?? 0));
+	return solutions.sort((a, b) => a.value - b.value).map((s) => s.solution);
 }
 
 /**

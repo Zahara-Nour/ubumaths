@@ -84,6 +84,19 @@ describe('|u| = c : u = c ou u = −c', () => {
 	});
 });
 
+describe('deux solutions très proches de 0 ne sont pas confondues', () => {
+	// Dédoublonner à 1e-10 près perdait +c : seule −c restait
+	it.each(['|x|=10^{-11}', '|x|=0.00000000001', '|x|=10^{-20}'])('%s → −c et c', (latex) => {
+		const result = solve(relationOf(latex), { variable: 'x' });
+		expect(result.status).toBe('multiple');
+		expect(result.solutions).toHaveLength(2);
+		const [low, high] = result.solutions.map((s) => evaluateNodeToApproximatedNumber(s.value));
+		expect(low).toBeLessThan(0);
+		expect(high).toBeGreaterThan(0);
+		expect(low).toBeCloseTo(-high, 30);
+	});
+});
+
 describe('la valeur absolue est isolée d’abord', () => {
 	it.each([
 		['|x+1|-2=0', ['-3', '1']],
@@ -104,7 +117,8 @@ describe('|u| = |v| : u = v ou u = −v', () => {
 	it.each([
 		['|x-1|=|x+3|', ['-1']],
 		['|2x|=|x|', ['0']],
-		['|x+1|=|2x-4|', ['1', '5']]
+		['|x+1|=|2x-4|', ['1', '5']],
+		['|x-1|=|2x-2|', ['1']]
 	])('%s → %j', (latex, expected) => {
 		expect(solvedForms(latex)).toEqual(expected);
 	});
