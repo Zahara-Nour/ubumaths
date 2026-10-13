@@ -520,11 +520,18 @@ gouverne que l'`explanation` de chaque étape — le résumé garde toutes les �
 comprise), titres et calculs, sans le « pourquoi ». `summary` suit `steps` partout (virgule
 décimale, `Entry`) ; l'export de l'historique ne garde que `steps`. `.variations` a sa propre
 rédaction, sans verbosité : pas de `summary`. Dans `CalculView`, l'interrupteur est DANS le
-« Comment ? » déplié (choix segmenté de `SequenceSettings`, `aria-pressed` et coche ✓), une seule
-valeur pour toute la vue, « Détaillé » à l'ouverture, le dernier choix retenu sous
+« Comment ? » déplié (choix segmenté de `SequenceSettings`, `aria-pressed` et coche ✓), réglé
+**ligne par ligne** (décision de David, 2026-10-13) : basculer une ligne ne change pas les autres
+lignes dépliées. Le dernier choix fait, sur n'importe quelle ligne, est retenu sous
 `chiphre-atelier-etapes` dans `localStorage` (lecture et écriture dans un `try` : la vue marche
-sans). Une préférence d'affichage, pas un objet : elle ne voyage ni dans un lien ni dans une
-fusion.
+sans) ; il sert de niveau d'OUVERTURE aux lignes dépliées ensuite, « Détaillé » si rien n'est
+retenu. Le niveau d'une ligne est figé quand on la déplie (`toggleSteps`) : un choix fait ensuite
+ailleurs ne la change pas sous les yeux. Une ligne réglée à la main garde son niveau si on la
+replie puis la redéplie ; une ligne seulement ouverte reprend le dernier choix. Ces niveaux par
+ligne vivent dans une `SvelteMap` du composant, par `entry.id`, et ne survivent pas à un
+rechargement (l'historique non plus). Chaque groupe s'annonce « Rédaction des étapes de la ligne
+N », `aria-describedby` vers la saisie de la ligne. Une préférence d'affichage, pas un objet :
+elle ne voyage ni dans un lien ni dans une fusion.
 
 **Le garde-fou** (`solve-steps-check.ts`) vérifie la conclusion contre les nombres et le moteur
 avant de la montrer ; un désaccord rend `null` (repli sur la réponse du moteur). `S = ℝ` est

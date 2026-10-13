@@ -19,6 +19,7 @@
 		type AtelierCommand
 	} from '$lib/atelier/commands';
 	import { tick } from 'svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
 	import { insertProposal, proposalsFor, type Proposal } from '$lib/atelier/completion';
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
@@ -106,30 +107,51 @@
 	}
 
 	/**
-	 * La rédaction des étapes dépliées : « Détaillé » à l'ouverture, puis le
-	 * dernier choix retenu dans ce navigateur (décision de David, 2026-10-13).
+	 * La rédaction des étapes, LIGNE PAR LIGNE (décision de David, 2026-10-13).
 	 *
-	 * Une seule valeur pour toute la vue, pas une par ligne : c'est une
-	 * préférence de lecture, et deux dépliages ouverts côte à côte ne doivent
-	 * pas se contredire. Basculer ne recalcule rien — les deux rédactions sont
+	 * `lastVerbosity` : le dernier choix fait, sur n'importe quelle ligne, retenu
+	 * dans ce navigateur (« Détaillé » si rien n'est retenu). Il ne s'applique
+	 * qu'à l'OUVERTURE d'une ligne : basculer une ligne ne touche pas les autres
+	 * lignes déjà dépliées.
+	 *
+	 * `lineVerbosity` : le niveau de chaque ligne dépliée au moins une fois.
+	 * `chosen` distingue une ligne réglée à la main (elle garde son niveau si on
+	 * la replie puis la redéplie) d'une ligne seulement ouverte (elle reprend le
+	 * dernier choix à sa prochaine ouverture). Non persisté : l'historique ne
+	 * l'est pas non plus. Basculer ne recalcule rien — les deux rédactions sont
 	 * déjà dans la ligne (`Entry.summary`).
 	 */
-	let stepsVerbosity = $state<StepsVerbosity>(readStepsVerbosity(stepsStorage()));
+	let lastVerbosity = $state<StepsVerbosity>(readStepsVerbosity(stepsStorage()));
+	const lineVerbosity = new SvelteMap<number, { verbosity: StepsVerbosity; chosen: boolean }>();
 
-	function chooseStepsVerbosity(verbosity: StepsVerbosity) {
-		stepsVerbosity = verbosity;
+	function verbosityOf(id: number): StepsVerbosity {
+		return lineVerbosity.get(id)?.verbosity ?? lastVerbosity;
+	}
+
+	function chooseStepsVerbosity(id: number, verbosity: StepsVerbosity) {
+		lineVerbosity.set(id, { verbosity, chosen: true });
+		lastVerbosity = verbosity;
 		writeStepsVerbosity(stepsStorage(), verbosity);
 	}
 
 	/** Les étapes à montrer : le résumé seulement si la ligne en a un. */
 	function shownSteps(entry: Entry, detailed: NonNullable<Entry['steps']>) {
-		return stepsVerbosity === 'summarized' && entry.summary !== undefined
+		return verbosityOf(entry.id) === 'summarized' && entry.summary !== undefined
 			? entry.summary
 			: detailed;
 	}
 
 	function toggleSteps(id: number) {
-		unfolded = unfolded.includes(id) ? unfolded.filter((x) => x !== id) : [...unfolded, id];
+		if (unfolded.includes(id)) {
+			unfolded = unfolded.filter((x) => x !== id);
+			return;
+		}
+		// Le niveau d'ouverture est figé ICI : un choix fait ensuite sur une
+		// autre ligne ne doit pas changer celle-ci sous les yeux de l'élève
+		if (lineVerbosity.get(id)?.chosen !== true) {
+			lineVerbosity.set(id, { verbosity: lastVerbosity, chosen: false });
+		}
+		unfolded = [...unfolded, id];
 	}
 
 	const catalog = $derived(commandCatalog(desk.session.engine));
@@ -469,10 +491,10 @@
 		{/if}
 	</div>
 	<ol class="historique">
-		{#each desk.entries as entry (entry.id)}
+		{#each desk.entries as entry, index (entry.id)}
 			{@const markup = markupOf(entry)}
 			<li class:refus={entry.failed}>
-				<p class="saisie">{entry.label}</p>
+				<p class="saisie" id="saisie-{entry.id}">{entry.label}</p>
 				<div class="reponse">
 					{#if markup !== null}
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -516,19 +538,24 @@
 					<div class="etapes" id="etapes-{entry.id}">
 						<!-- Pas d'interrupteur quand le résumé ne dirait rien de moins -->
 						{#if entry.summary !== undefined}
-							<div class="redaction" role="group" aria-label="Rédaction des étapes">
+							<div
+								class="redaction"
+								role="group"
+								aria-label="Rédaction des étapes de la ligne {index + 1}"
+								aria-describedby="saisie-{entry.id}"
+							>
 								<button
 									type="button"
 									class="choix"
-									aria-pressed={stepsVerbosity === 'summarized'}
-									onclick={() => chooseStepsVerbosity('summarized')}
+									aria-pressed={verbosityOf(entry.id) === 'summarized'}
+									onclick={() => chooseStepsVerbosity(entry.id, 'summarized')}
 									><span class="coche" aria-hidden="true">✓</span>Résumé</button
 								>
 								<button
 									type="button"
 									class="choix"
-									aria-pressed={stepsVerbosity === 'detailed'}
-									onclick={() => chooseStepsVerbosity('detailed')}
+									aria-pressed={verbosityOf(entry.id) === 'detailed'}
+									onclick={() => chooseStepsVerbosity(entry.id, 'detailed')}
 									><span class="coche" aria-hidden="true">✓</span>Détaillé</button
 								>
 							</div>
