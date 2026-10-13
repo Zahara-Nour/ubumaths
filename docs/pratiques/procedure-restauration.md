@@ -224,7 +224,7 @@ restauration les recrée.
 `flag_stale_python_rechecks`, que la migration
 `20260827120000_python_submission_server_verification.sql` décrivait comme « à
 programmer », n'a jamais tourné : la fonction et sa table ont été supprimées le
-2026-10-13 (migration `20261016101500`, re-vérification Python abandonnée).
+2026-10-13 (migration `20261016101700`, re-vérification Python abandonnée).
 
 **Recréer dans un nouveau projet :**
 
