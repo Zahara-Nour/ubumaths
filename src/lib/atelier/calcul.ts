@@ -935,9 +935,10 @@ function catalogCommandOf(engine: WebReplEngine, typed: string) {
 }
 
 /**
- * La saisie est-elle `.exporter` seul (ou `.export`, son nom moteur) ? Le
- * pupitre le lance lui-même : c'est lui qui tient l'historique, et le
- * téléchargement est celui du bouton « JSON (pour rejouer) ».
+ * La saisie est-elle `.exporter` seul (nom interne `export`) ? Le moteur ne
+ * l'exécute plus (allègement, 2026-10-13) : le pupitre le lance lui-même,
+ * c'est lui qui tient l'historique, et le téléchargement est celui du bouton
+ * « JSON (pour rejouer) ».
  */
 export function isExportCommand(engine: WebReplEngine, text: string): boolean {
 	const trimmed = text.trim();
@@ -987,10 +988,10 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	 */
 	const name = known.name.toLowerCase();
 
-	// `.latex` et `.texte` SANS expression basculent le mode de saisie du moteur
-	// (héritage de `/cas`) : tout calcul suivant était lu en LaTeX, et
-	// `sqrt(2)*sqrt(8)` devenait « s q r t » (mesuré le 2026-10-13). L'atelier
-	// lit seul la saisie : la bascule ne lui parvient jamais.
+	// `.latex` et `.texte` SANS expression n'ont rien à écrire : refus qui montre
+	// l'écriture attendue. (Ils basculaient autrefois le mode de saisie du moteur,
+	// héritage de `/cas`, `sqrt(2)*sqrt(8)` devenant « s q r t » : bascule
+	// retirée du moteur le 2026-10-13.)
 	const typedNothing = space === -1 || resolved.slice(space + 1).trim() === '';
 	if ((name === 'latex' || name === 'custom') && typedNothing) {
 		return {
