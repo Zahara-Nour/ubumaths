@@ -20,6 +20,10 @@
  * Fallback chain :
  *   `TITLES[effective][rule] ?? TITLES.lycee[rule] ?? () => step.description`
  *
+ * Prose : toute formule entre `$…$` (LaTeX), jamais en Unicode (`+∞`, `x²`,
+ * `0/0`) — `InlineMarkdown` affiche titres et explications (V25, 2026-10-14) ;
+ * garde : `__tests__/prose-maths-delimitees.test.ts`.
+ *
  * Coverage notes :
  *
  * - V1 emits : `identify-limit`, `detect-indeterminate-form`,
@@ -27,8 +31,10 @@
  *   `factor-denominator`, `simplify-common-factor`, `conclude`,
  *   `conclude-infinite`, `conclude-does-not-exist` ; en ±∞, la factorisation
  *   du terme prépondérant (`expand`, `factor-dominant-term`,
- *   `limits-of-terms`, `apply-product`, `apply-quotient`). All have entries
- *   in both LYCEE_TITLES and SUPERIEUR_TITLES.
+ *   `limits-of-terms`, `apply-product`, `apply-quotient`) ; en un pôle,
+ *   `analyze-left-limit` / `analyze-right-limit` / `compare-one-sided`, et la
+ *   composée `apply-composition` (`e^{1/x}`). All have entries in both
+ *   LYCEE_TITLES and SUPERIEUR_TITLES.
  * - V1.1+ rules (`multiply-by-conjugate`, `apply-squeeze`, `apply-lhopital`,
  *   `analyze-left-limit`, `apply-composition`, …) have lycée entries
  *   prepared so adding the corresponding pipeline strategy in a follow-up
@@ -38,12 +44,12 @@
  */
 
 import type { MathNode } from '../types';
-import type { IndeterminateForm } from '../limits/types';
 import { isAddition, isSubtraction } from '../guards';
+import { toLatex } from '../latex-generator';
 import { containsVariable } from '../common/contains-variable';
 import type { LimitsSchoolLevel } from './types';
 import type { PedagogicalLimitRule, PedagogicalLimitStep } from './types';
-import { formatPowerShort, formatValueShort } from './helpers';
+import { approachMath, formMath, inlineMath } from './helpers';
 
 // =============================================================================
 // Function signatures
@@ -58,43 +64,37 @@ type RuleFnMap<F> = Partial<Record<PedagogicalLimitRule, F>>;
 // Helpers
 // =============================================================================
 
-/**
- * Render an approach point as plain text suitable for prose titles.
- * (LaTeX-flavoured rendering is handled by the renderer's
- * `formatExpressionLatex`.)
- */
+// Toute formule de la prose entre `$…$` (V25, 2026-10-14) : `InlineMarkdown`
+// l'affiche en maths. Jamais d'Unicode (`+∞`, `x²`, `0/0`) hors des `$…$`.
+
+/** Le point d'approche : `$0$`, `$+\\infty$` */
 function approachLabel(step: PedagogicalLimitStep): string {
-	return formatValueShort(step.approach);
+	return approachMath(step.approach);
 }
 
 function valueLabel(step: PedagogicalLimitStep): string {
-	return formatValueShort(step.after);
+	return inlineMath(step.after);
 }
 
-/** `∞/∞`, `∞ − ∞`, `0 × ∞` : la forme écrite comme au tableau */
-function formLabel(form: IndeterminateForm | undefined): string {
-	if (form === '∞-∞') return '∞ − ∞';
-	if (form === '0*∞') return '0 × ∞';
-	return form ?? '?';
+/** La variable : `$x$` */
+function variableLabel(step: PedagogicalLimitStep): string {
+	return `$${step.variable}$`;
 }
 
-const powerLabel = formatPowerShort;
-
-/** Facteur d'un produit écrit en texte : `(−∞)`, `(−2)`, `1/3` */
-function factorLabel(node: MathNode): string {
-	const text = formatValueShort(node);
-	return node.type === 'infinity' || text.startsWith('−') ? `(${text})` : text;
+/** Facteur d'un produit en LaTeX : `\\left(-\\infty\\right)`, `\\left(-2\\right)`, `\\dfrac{1}{3}` */
+function factorLatex(node: MathNode): string {
+	const latex = toLatex(node);
+	return node.type === 'infinity' || latex.startsWith('-') ? `\\left(${latex}\\right)` : latex;
 }
 
 /** Simplification par x^k en ±∞ : la puissance est en liaison `dominant`. */
 function simplifyTitle(s: PedagogicalLimitStep, fallback: string): string {
 	const dominant = s.bindings?.dominant;
-	return dominant ? `Simplification par ${powerLabel(dominant)}` : fallback;
+	return dominant ? `Simplification par ${inlineMath(dominant)}` : fallback;
 }
 
 /**
- * Le facteur restant nommé en mots, jamais en LaTeX (l'explication s'affiche
- * en texte brut, V25) : « le quotient restant », « la parenthèse ».
+ * Le facteur restant nommé en mots : « le quotient restant », « la parenthèse ».
  */
 function restLabel(node: MathNode): string {
 	if (node.type === 'division') return 'le quotient restant';
@@ -103,36 +103,85 @@ function restLabel(node: MathNode): string {
 }
 
 /**
- * « Le facteur x³ tend vers −∞ et le quotient restant tend vers 1 : par
- * produit, (−∞) × 1 = −∞ » ; un facteur constant : « … et est multiplié par 1/2 ».
+ * « Le facteur $x^{3}$ tend vers $-\\infty$ et le quotient restant tend vers
+ * $1$ : par produit, $\\left(-\\infty\\right) \\times 1 = -\\infty$ » ; un facteur
+ * constant : « … et est multiplié par $\\dfrac{1}{2}$ ».
  */
 function productExplanation(s: PedagogicalLimitStep): string | undefined {
 	const { power, powerLimit, rest, restLimit } = s.bindings ?? {};
 	if (!power || !powerLimit || !rest || !restLimit) return undefined;
 	const other = containsVariable(rest, s.variable)
-		? `${restLabel(rest)} tend vers ${formatValueShort(restLimit)}`
-		: `est multiplié par ${formatValueShort(restLimit)}`;
+		? `${restLabel(rest)} tend vers ${inlineMath(restLimit)}`
+		: `est multiplié par ${inlineMath(restLimit)}`;
 	return (
-		`Le facteur ${powerLabel(power)} tend vers ${formatValueShort(powerLimit)} et ${other} : ` +
-		`par produit, ${factorLabel(powerLimit)} × ${factorLabel(restLimit)} = ${valueLabel(s)}.`
+		`Le facteur ${inlineMath(power)} tend vers ${inlineMath(powerLimit)} et ${other} : ` +
+		`par produit, $${factorLatex(powerLimit)} \\times ${factorLatex(restLimit)} = ${toLatex(s.after)}$.`
 	);
 }
 
-/** « Le numérateur tend vers 3 et le dénominateur vers 2 : … », « 2 divisé par … » */
+/** « Le numérateur tend vers $3$ et le dénominateur vers $2$ : … », « $2$ divisé par … » */
 function quotientExplanation(s: PedagogicalLimitStep): string | undefined {
 	const { numerator, numeratorLimit, denominatorLimit, denominatorAbsLimit } = s.bindings ?? {};
 	if (!numerator || !numeratorLimit) return undefined;
 	// Signe du dénominateur illisible ((π − 4)x²) : on raisonne en valeur absolue.
 	if (denominatorAbsLimit) {
 		return containsVariable(numerator, s.variable)
-			? `Le numérateur tend vers ${formatValueShort(numeratorLimit)} et le dénominateur, en valeur absolue, vers +∞ : par quotient, la limite vaut ${valueLabel(s)}.`
-			: `${formatValueShort(numeratorLimit)} divisé par une quantité dont la valeur absolue tend vers +∞ : la limite vaut ${valueLabel(s)}.`;
+			? `Le numérateur tend vers ${inlineMath(numeratorLimit)} et le dénominateur, en valeur absolue, vers $+\\infty$ : par quotient, la limite vaut ${valueLabel(s)}.`
+			: `${inlineMath(numeratorLimit)} divisé par une quantité dont la valeur absolue tend vers $+\\infty$ : la limite vaut ${valueLabel(s)}.`;
 	}
 	if (!denominatorLimit) return undefined;
 	if (denominatorLimit.type === 'infinity' && !containsVariable(numerator, s.variable)) {
-		return `${formatValueShort(numeratorLimit)} divisé par une quantité qui tend vers ${formatValueShort(denominatorLimit)} : la limite vaut ${valueLabel(s)}.`;
+		return `${inlineMath(numeratorLimit)} divisé par une quantité qui tend vers ${inlineMath(denominatorLimit)} : la limite vaut ${valueLabel(s)}.`;
 	}
-	return `Le numérateur tend vers ${formatValueShort(numeratorLimit)} et le dénominateur vers ${formatValueShort(denominatorLimit)} : par quotient, la limite vaut ${valueLabel(s)}.`;
+	return `Le numérateur tend vers ${inlineMath(numeratorLimit)} et le dénominateur vers ${inlineMath(denominatorLimit)} : par quotient, la limite vaut ${valueLabel(s)}.`;
+}
+
+/**
+ * Étude d'un côté :
+ * - pôle d'un quotient : « Le numérateur tend vers $1$ et $x - 2 \\to 0^+$ : par
+ *   quotient, la limite à droite vaut $+\\infty$. » ;
+ * - domaine d'un seul côté (`\\ln x` en 0) : « L'expression n'est définie qu'à
+ *   droite de $0$ : la limite en $0$ est la limite à droite. »
+ */
+function sideExplanation(s: PedagogicalLimitStep): string | undefined {
+	const name = s.direction === 'left' ? 'gauche' : 'droite';
+	const { numeratorLimit, denominator, denominatorSign, domainBoundary } = s.bindings ?? {};
+	if (domainBoundary) {
+		return `L'expression n'est définie qu'à ${name} de ${inlineMath(domainBoundary)} : la limite en ${inlineMath(domainBoundary)} est la limite à ${name}.`;
+	}
+	if (!numeratorLimit || !denominator || denominatorSign?.type !== 'infinity') return undefined;
+	const side = denominatorSign.sign === 'positive' ? '+' : '-';
+	return (
+		`Le numérateur tend vers ${inlineMath(numeratorLimit)} et $${toLatex(denominator)} \\to 0^${side}$ : ` +
+		`par quotient, la limite à ${name} vaut ${valueLabel(s)}.`
+	);
+}
+
+/** Le côté en exposant : `^+`, `^-`, rien sans côté */
+function sideMark(s: PedagogicalLimitStep): string {
+	if (s.direction === 'left') return '^-';
+	if (s.direction === 'right') return '^+';
+	return '';
+}
+
+/** Le facteur `$x - a$` de la liaison `factor`, sinon « $x - a$ » en mots */
+function factorOf(s: PedagogicalLimitStep): string {
+	const factor = s.bindings?.factor;
+	return factor ? inlineMath(factor) : `$${s.variable} - a$`;
+}
+
+/** « La limite à gauche vaut $-\\infty$ et la limite à droite $+\\infty$. » */
+function compareExplanation(s: PedagogicalLimitStep): string | undefined {
+	const { left, right } = s.bindings ?? {};
+	if (!left || !right) return undefined;
+	return `La limite à gauche vaut ${inlineMath(left)} et la limite à droite ${inlineMath(right)}.`;
+}
+
+/** « $\\lim_{X \\to +\\infty} e^{X} = +\\infty$ » : la limite de l'exponentielle en la limite de l'exposant */
+function compositionExplanation(s: PedagogicalLimitStep): string | undefined {
+	const innerLimit = s.bindings?.innerLimit;
+	if (!innerLimit) return undefined;
+	return `L'exposant tend vers ${inlineMath(innerLimit)}, et $\\lim_{X \\to ${toLatex(innerLimit)}} \\exponentialE^{X} = ${toLatex(s.after)}$ : par composition, la limite vaut ${valueLabel(s)}.`;
 }
 
 // =============================================================================
@@ -142,12 +191,12 @@ function quotientExplanation(s: PedagogicalLimitStep): string | undefined {
 const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	// ---- Identification ----
 	'identify-limit': (s) =>
-		`On veut calculer la limite de l'expression quand ${s.variable} tend vers ${approachLabel(s)}`,
+		`On veut calculer la limite de l'expression quand ${variableLabel(s)} tend vers ${approachMath(s.approach, s.direction)}`,
 	'detect-indeterminate-form': (s) =>
-		`Forme indéterminée ${formLabel(s.indeterminateForm)} reconnue`,
+		`Forme indéterminée ${formMath(s.indeterminateForm)} reconnue`,
 	// ---- Direct techniques ----
 	'apply-direct-substitution': (s) =>
-		`Substitution directe : on remplace ${s.variable} par ${approachLabel(s)}`,
+		`Substitution directe : on remplace ${variableLabel(s)} par ${approachLabel(s)}`,
 	'apply-known-limit': (s) => s.description, // re-uses KnownLimitEntry.descriptionFr
 	'algebraic-simplification': () => 'Simplification algébrique',
 	'abs-simplification': () => 'Résolution du signe de la valeur absolue',
@@ -190,8 +239,9 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	// At supérieur the audience is assumed familiar — keep it tight.
 	// Formule entre `$…$` : la prose est rendue par `InlineMarkdown` (V25)
-	'identify-limit': (s) => `Calcul de $\\lim_{${s.variable} \\to ${approachLabel(s)}}$`,
-	'detect-indeterminate-form': (s) => `Forme indéterminée ${formLabel(s.indeterminateForm)}`,
+	'identify-limit': (s) =>
+		`Calcul de $\\lim_{${s.variable} \\to ${toLatex(s.approach)}${sideMark(s)}}$`,
+	'detect-indeterminate-form': (s) => `Forme indéterminée ${formMath(s.indeterminateForm)}`,
 	'apply-direct-substitution': () => `Continuité : substitution directe`,
 	'apply-known-limit': (s) => s.description,
 	'algebraic-simplification': () => `Simplification algébrique`,
@@ -206,8 +256,8 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	'limits-of-terms': () => `Limites des termes`,
 	'apply-growth-comparison': () => `Croissances comparées`,
 	'compute-asymptotic-equivalent': () => `Équivalent asymptotique`,
-	'analyze-left-limit': (s) => `$\\lim_{${s.variable} \\to ${approachLabel(s)}^-}$`,
-	'analyze-right-limit': (s) => `$\\lim_{${s.variable} \\to ${approachLabel(s)}^+}$`,
+	'analyze-left-limit': (s) => `$\\lim_{${s.variable} \\to ${toLatex(s.approach)}^-}$`,
+	'analyze-right-limit': (s) => `$\\lim_{${s.variable} \\to ${toLatex(s.approach)}^+}$`,
 	'compare-one-sided': () => `Comparaison gauche/droite`,
 	'identify-bounds': () => `Encadrement`,
 	// Vocab : « théorème d'encadrement (squeeze) » au sup, pas « gendarmes »
@@ -215,15 +265,15 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 	// Keep titles plain-text — LaTeX formulae go to `expressionLatex` (and
 	// to EXPLANATIONS at sup, where they appear in markdown).
 	'apply-lhopital': () => `Règle de L'Hôpital`,
-	'identify-composition': () => `Composée f \\circ g`,
+	'identify-composition': () => `Composée $f \\circ g$`,
 	'apply-composition': () => `Limite d'une composée`,
 	'apply-linearity': () => `Linéarité`,
 	'apply-sum': () => `Somme`,
 	'apply-product': () => `Produit`,
 	'apply-quotient': () => `Quotient`,
-	conclude: (s) => `= ${valueLabel(s)}`,
+	conclude: (s) => `$= ${toLatex(s.after)}$`,
 	'conclude-does-not-exist': () => `La limite n'existe pas`,
-	'conclude-infinite': (s) => `= ${valueLabel(s)}`
+	'conclude-infinite': (s) => `$= ${toLatex(s.after)}$`
 };
 
 // =============================================================================
@@ -236,12 +286,12 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'detect-indeterminate-form': (s) => {
 		const form = s.indeterminateForm;
 		if (form === '0/0') {
-			return `Numérateur et dénominateur tendent vers 0. Une simplification (factorisation, rationalisation) est nécessaire.`;
+			return `Numérateur et dénominateur tendent vers $0$. Une simplification (factorisation, rationalisation) est nécessaire.`;
 		}
 		if (form === '∞/∞') {
 			const simplifyBy = s.bindings?.simplifyBy;
 			const next = simplifyBy
-				? `On simplifie par ${powerLabel(simplifyBy)}.`
+				? `On simplifie par ${inlineMath(simplifyBy)}.`
 				: `On factorise par le terme prépondérant.`;
 			return `Numérateur et dénominateur tendent vers l'infini : on ne peut pas conclure directement. ${next}`;
 		}
@@ -252,27 +302,27 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 			return `On a une différence d'infinis : on ne peut pas conclure directement. ${next}`;
 		}
 		if (form === '0*∞') {
-			return `On a un produit indéterminé 0 × ∞ : on transforme en quotient.`;
+			return `On a un produit indéterminé ${formMath(form)} : on transforme en quotient.`;
 		}
 		return `Forme indéterminée — il faut transformer l'expression pour conclure.`;
 	},
 	'apply-direct-substitution': () =>
 		`L'expression est continue au point étudié, donc la limite vaut la valeur de l'expression en ce point.`,
 	'apply-known-limit': () => `On reconnaît une limite de référence du cours.`,
-	'factor-numerator': () =>
-		`Si le numérateur s'annule au point étudié, alors (x − a) en est un facteur. On factorise pour préparer la simplification.`,
-	'factor-denominator': () =>
-		`Si le dénominateur s'annule au point étudié, alors (x − a) en est un facteur. On factorise pour préparer la simplification.`,
+	'factor-numerator': (s) =>
+		`Le numérateur s'annule en ${approachLabel(s)}, donc ${factorOf(s)} en est un facteur. On factorise pour préparer la simplification.`,
+	'factor-denominator': (s) =>
+		`Le dénominateur s'annule en ${approachLabel(s)}, donc ${factorOf(s)} en est un facteur. On factorise pour préparer la simplification.`,
 	'simplify-common-factor': (s) =>
 		s.bindings?.dominant
-			? `${powerLabel(s.bindings.dominant)} est un facteur commun au numérateur et au dénominateur : on simplifie.`
+			? `${inlineMath(s.bindings.dominant)} est un facteur commun au numérateur et au dénominateur : on simplifie.`
 			: `Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.`,
 	expand: () =>
 		`L'expression n'est pas développée : on la développe pour faire apparaître chaque puissance de la variable.`,
 	'factor-dominant-term': (s) =>
-		`Dans chaque somme, on met en facteur la plus grande puissance de ${s.variable} : les autres termes deviennent des quotients qui tendent vers 0.`,
+		`Dans chaque somme, on met en facteur la plus grande puissance de ${variableLabel(s)} : les autres termes deviennent des quotients qui tendent vers $0$.`,
 	'limits-of-terms': (s) =>
-		`Un nombre divisé par une puissance de ${s.variable} tend vers 0 : chaque parenthèse tend vers son premier terme.`,
+		`Un nombre divisé par une puissance de ${variableLabel(s)} tend vers $0$ : chaque parenthèse tend vers son premier terme.`,
 	'apply-sum': () => `Pas de forme indéterminée : on conclut par somme des limites.`,
 	'apply-product': (s) =>
 		s.termLimits
@@ -282,7 +332,12 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		s.termLimits
 			? `Pas de forme indéterminée : on conclut par quotient des limites.`
 			: quotientExplanation(s),
-	'apply-squeeze': () => `Si f ≤ g ≤ h et f, h tendent vers la même limite ℓ, alors g aussi.`,
+	'analyze-left-limit': sideExplanation,
+	'analyze-right-limit': sideExplanation,
+	'compare-one-sided': compareExplanation,
+	'apply-composition': compositionExplanation,
+	'apply-squeeze': () =>
+		`Si $f \\leq g \\leq h$ et si $f$ et $h$ tendent vers la même limite $\\ell$, alors $g$ aussi.`,
 	conclude: () => `On peut maintenant conclure.`,
 	'conclude-infinite': () => `Le résultat est une limite infinie.`,
 	'conclude-does-not-exist': () =>
@@ -293,7 +348,7 @@ const SUPERIEUR_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'detect-indeterminate-form': (s) => {
 		// En ±∞ sur un polynôme ou un quotient de polynômes : terme prépondérant
 		if (s.bindings?.expandsTo) return `On développe.`;
-		if (s.bindings?.simplifyBy) return `On simplifie par ${powerLabel(s.bindings.simplifyBy)}.`;
+		if (s.bindings?.simplifyBy) return `On simplifie par ${inlineMath(s.bindings.simplifyBy)}.`;
 		if (s.bindings?.dominant) return `On factorise par le terme prépondérant.`;
 		const form = s.indeterminateForm;
 		if (form === '0/0' || form === '∞/∞')
@@ -303,7 +358,10 @@ const SUPERIEUR_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'apply-lhopital': () =>
 		`Sous les hypothèses de L'Hôpital, la limite du quotient est égale à la limite du quotient des dérivées.`,
 	'apply-squeeze': () =>
-		`Théorème d'encadrement : si f ≤ g ≤ h et lim f = lim h = ℓ, alors lim g = ℓ.`
+		`Théorème d'encadrement : si $f \\leq g \\leq h$ et $\\lim f = \\lim h = \\ell$, alors $\\lim g = \\ell$.`,
+	'analyze-left-limit': sideExplanation,
+	'analyze-right-limit': sideExplanation,
+	'apply-composition': compositionExplanation
 };
 
 // =============================================================================

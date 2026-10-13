@@ -156,12 +156,17 @@ export const FACTORISATION_CLUSTER_RULES: ReadonlySet<PedagogicalLimitRule> = ne
  *   (le renderer lit `step.termLimits` : limites des opérandes, donc celle du tout)
  * - `apply-growth-comparison`              : `{ fast, slow }` (e.g. `{ fast: e^x, slow: x }`)
  * - `compute-asymptotic-equivalent`        : `{ equivalent }`
- * - `analyze-left-limit`, `analyze-right-limit` : `{ side }`
- * - `compare-one-sided`                    : `{ left, right }`
+ * - `analyze-left-limit`, `analyze-right-limit` : en un pôle d'un quotient,
+ *   `{ numeratorLimit, denominator, denominatorSign }` (`denominatorSign` : un
+ *   infini qui ne porte que le signe de D de ce côté, `$x - 2 \\to 0^+$`) ;
+ *   côté implicite (domaine d'un seul côté, `\\ln x` en 0) : `{ domainBoundary }`
+ * - `compare-one-sided`, `conclude-does-not-exist` : `{ left, right }` (limites à gauche et à droite)
  * - `identify-bounds`                      : `{ lower, upper }`
  * - `apply-squeeze`                        : `{ commonLimit }`
  * - `apply-lhopital`                       : `{ numeratorDerivative, denominatorDerivative }`
- * - `identify-composition`, `apply-composition` : `{ outer, inner, innerLimit }`
+ * - `identify-composition`                 : `{ outer, inner, innerLimit }`
+ * - `apply-composition` (e^u)              : `{ inner, innerLimit }`, plus `step.termLimits`
+ *   (`\\lim u = L`, donc `\\lim e^u = …`)
  * - `apply-linearity`                      : `{ f, g, alpha?, beta? }`
  * - `apply-product` (en ±∞)                : `{ power, powerLimit, restLimit }` (xᵈ, sa limite, celle de l'autre facteur)
  * - `apply-quotient` (en ±∞)               : `{ numerator, numeratorLimit, denominatorLimit }`

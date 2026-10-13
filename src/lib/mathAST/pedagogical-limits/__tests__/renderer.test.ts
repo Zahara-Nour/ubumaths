@@ -434,7 +434,14 @@ describe('renderer — recursion', () => {
 		const steps = generatePedagogicalLimitSteps(
 			divide(
 				subtract(power(variable('x'), number('2')), number('4')),
-				subtract(variable('x'), number('2'))
+				// x² − 3x + 2 = (x − 2)(x − 1) : les deux côtés se factorisent
+				add(
+					subtract(
+						power(variable('x'), number('2')),
+						multiply(number('3'), variable('x'), 'implicit')
+					),
+					number('2')
+				)
 			),
 			{ variable: 'x', approach: number('2'), schoolLevel: 'lycee' }
 		).steps;
@@ -449,7 +456,14 @@ describe('renderer — recursion', () => {
 		const steps = generatePedagogicalLimitSteps(
 			divide(
 				subtract(power(variable('x'), number('2')), number('4')),
-				subtract(variable('x'), number('2'))
+				// x² − 3x + 2 = (x − 2)(x − 1) : les deux côtés se factorisent
+				add(
+					subtract(
+						power(variable('x'), number('2')),
+						multiply(number('3'), variable('x'), 'implicit')
+					),
+					number('2')
+				)
 			),
 			{ variable: 'x', approach: number('2'), schoolLevel: 'lycee' }
 		).steps;

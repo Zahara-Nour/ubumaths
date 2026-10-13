@@ -19,7 +19,8 @@ interface Case {
 	readonly value: string;
 	/** Factorisations du numérateur et du dénominateur, première passe */
 	readonly numerator: string;
-	readonly denominator: string;
+	/** `null` : le dénominateur est déjà le facteur, rien à factoriser */
+	readonly denominator: string | null;
 	/** Forme simplifiée de la dernière passe */
 	readonly simplified: string;
 	readonly factorText: string;
@@ -30,9 +31,10 @@ const CASES: readonly Case[] = [
 		latex: '\\lim_{x\\to -3} \\frac{x^2-9}{x+3}',
 		value: '-6',
 		numerator: '\\left( x + 3 \\right) \\left( x - 3 \\right)',
-		denominator: 'x + 3',
+		// Le dénominateur EST le facteur : pas de sous-étape « x + 3 = x + 3 »
+		denominator: null,
 		simplified: 'x - 3',
-		factorText: '(x + 3)'
+		factorText: '$x + 3$'
 	},
 	{
 		latex: '\\lim_{x\\to 1}\\frac{x^3-1}{x^2-1}',
@@ -40,7 +42,7 @@ const CASES: readonly Case[] = [
 		numerator: '\\left( x - 1 \\right) \\left( x^2 + x + 1 \\right)',
 		denominator: '\\left( x - 1 \\right) \\left( x + 1 \\right)',
 		simplified: '\\dfrac{x^2 + x + 1}{x + 1}',
-		factorText: '(x − 1)'
+		factorText: '$x - 1$'
 	},
 	{
 		latex: '\\lim_{x\\to 2}\\frac{x^2-5x+6}{x^2-4}',
@@ -48,15 +50,16 @@ const CASES: readonly Case[] = [
 		numerator: '\\left( x - 2 \\right) \\left( x - 3 \\right)',
 		denominator: '\\left( x - 2 \\right) \\left( x + 2 \\right)',
 		simplified: '\\dfrac{x - 3}{x + 2}',
-		factorText: '(x − 2)'
+		factorText: '$x - 2$'
 	},
 	{
 		latex: '\\lim_{x\\to -1}\\frac{2x^2+x-1}{x+1}',
 		value: '-3',
 		numerator: '\\left( x + 1 \\right) \\left( 2 x - 1 \\right)',
-		denominator: 'x + 1',
+		// Le dénominateur EST le facteur : pas de sous-étape « x + 1 = x + 1 »
+		denominator: null,
 		simplified: '2 x - 1',
-		factorText: '(x + 1)'
+		factorText: '$x + 1$'
 	},
 	{
 		// Racine double en haut et en bas, coefficient dominant 2 : deux passes
@@ -65,7 +68,7 @@ const CASES: readonly Case[] = [
 		numerator: '\\left( x - 1 \\right) \\left( 2 x^2 + 2 x - 4 \\right)',
 		denominator: '\\left( x - 1 \\right) \\left( x - 1 \\right)',
 		simplified: '2 x + 4',
-		factorText: '(x − 1)'
+		factorText: '$x - 1$'
 	}
 ];
 
@@ -94,7 +97,8 @@ describe('limite pédagogique — factorisation par le noyau exact', () => {
 			const steps = flatten(result.steps);
 			const byRule = (rule: string) => steps.filter((s) => s.rule === rule);
 			expect(toLatex(byRule('factor-numerator')[0].after)).toBe(c.numerator);
-			expect(toLatex(byRule('factor-denominator')[0].after)).toBe(c.denominator);
+			if (c.denominator === null) expect(byRule('factor-denominator')).toHaveLength(0);
+			else expect(toLatex(byRule('factor-denominator')[0].after)).toBe(c.denominator);
 			const simplify = byRule('simplify-common-factor');
 			expect(toLatex(simplify[simplify.length - 1].after)).toBe(c.simplified);
 			expect(simplify[0].description).toBe(
