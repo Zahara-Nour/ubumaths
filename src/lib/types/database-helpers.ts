@@ -688,3 +688,29 @@ export type ChapterSeriesForm = 'flash' | 'interactive';
 
 /** `public.chapter_series` (migration `20261002100000_series_de_chapitre.sql`). */
 export type ChapterSeriesRow = Database['public']['Tables']['chapter_series']['Row'];
+
+// =============================================================================
+// FIGURES GÉOMÉTRIQUES STOCKÉES
+// =============================================================================
+
+/** `public.geometry_figures` (migration `20261016103100_geometry_figures.sql`, ADR 0027). */
+export type GeometryFigureRow = Tables<'geometry_figures'>;
+
+/** Une figure et les noms de ses tags (page de modification du prof). */
+export interface GeometryFigureWithTags extends GeometryFigureRow {
+	tags: string[];
+}
+
+/**
+ * Une ligne de la liste du prof : tout SAUF le script, qui peut peser 100 000
+ * caractères par figure — la liste n'en a pas besoin.
+ */
+export interface GeometryFigureSummary extends Omit<GeometryFigureRow, 'dsl_script'> {
+	tags: string[];
+}
+
+/** Ce que la page publique reçoit : ni auteur ni tags (`anon` ne lit pas `resource_tags`). */
+export type PublicGeometryFigure = Pick<
+	GeometryFigureRow,
+	'id' | 'title' | 'description' | 'dsl_script' | 'grades'
+>;

@@ -41,6 +41,7 @@ const CHAIN_METHODS = [
 	'is',
 	'not',
 	'or',
+	'contains',
 	'order',
 	'limit',
 	'range'
