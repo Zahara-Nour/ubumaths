@@ -182,7 +182,8 @@ export function definitionFromField(kind: ObjectKind, latex: string): string {
 	}
 	if (parseDefinition('value', typed, 'keyboard').error === undefined) return typed;
 
-	const quantity = normalizeStudentQuantity(typed);
+	// La virgule du champ (`2{,}5\times10^3`) : nue, le LaTeX la refuse (revue)
+	const quantity = normalizeStudentQuantity(typed).replace(/(\d),(\d)/g, '$1{,}$2');
 	const read = parseDefinition('value', quantity, 'keyboard');
 	return read.error === undefined && read.unit !== undefined ? quantity : typed;
 }

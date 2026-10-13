@@ -230,7 +230,9 @@ describe('virgule et durée composée dans un calcul', () => {
 
 	it.each([
 		['2,5[km]', '2{,}5', 'km'],
-		['0,75[kg]*4', '0{,}75', 'kg']
+		['0,75[kg]*4', '0{,}75', 'kg'],
+		// Revue : la notation scientifique passe par le dernier secours
+		['2,5*10^3[m]', '2{,}5', 'm']
 	])('%s s’affiche avec une virgule et se relit', (definition, shown, unit) => {
 		const { field, back } = roundTrip(definition);
 		expect(field).toContain(shown);
