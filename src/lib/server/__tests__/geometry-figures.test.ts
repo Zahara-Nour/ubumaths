@@ -31,6 +31,7 @@ import {
 	getOwnGeometryFigure,
 	getPublicGeometryFigure,
 	listGeometryFigures,
+	listGeometryFigureTagNames,
 	toIlikePattern,
 	updateGeometryFigure
 } from '../geometry-figures';
@@ -273,5 +274,27 @@ describe('deleteGeometryFigure', () => {
 		await expect(deleteGeometryFigure(fake.client, FIGURE_ID)).rejects.toMatchObject({
 			status: 500
 		});
+	});
+});
+
+describe('listGeometryFigureTagNames', () => {
+	it('rend les noms des tags posés sur des figures, sans doublon, triés', async () => {
+		const fake = createFakeSupabase(() => ({
+			data: [
+				{ tags: { name: 'suites' } },
+				{ tags: { name: 'aires' } },
+				{ tags: { name: 'aires' } },
+				{ tags: null }
+			]
+		}));
+		expect(await listGeometryFigureTagNames(fake.client)).toEqual(['aires', 'suites']);
+		expect(called(fake.on('resource_tags')[0], 'eq', 'resource_kind', 'geometry_figure')).toBe(
+			true
+		);
+	});
+
+	it('une panne est une erreur 500', async () => {
+		const fake = createFakeSupabase(() => ({ error: { message: 'panne' } }));
+		await expect(listGeometryFigureTagNames(fake.client)).rejects.toMatchObject({ status: 500 });
 	});
 });

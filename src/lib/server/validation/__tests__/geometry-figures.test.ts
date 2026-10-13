@@ -8,6 +8,7 @@ import { describe, it, expect } from 'vitest';
 import {
 	figureIdSchema,
 	figureInputSchema,
+	parseFigureFormData,
 	parseFigureListFilters,
 	FIGURE_SCRIPT_MAX
 } from '../geometry-figures';
@@ -138,5 +139,44 @@ describe('parseFigureListFilters', () => {
 		expect(parseFigureListFilters(new URLSearchParams('grade=TS')).success).toBe(false);
 		expect(parseFigureListFilters(new URLSearchParams('scope=all')).success).toBe(false);
 		expect(parseFigureListFilters(new URLSearchParams(`q=${'a'.repeat(101)}`)).success).toBe(false);
+	});
+});
+
+describe('parseFigureFormData', () => {
+	function form(entries: Record<string, string>): FormData {
+		const data = new FormData();
+		for (const [key, value] of Object.entries(entries)) data.set(key, value);
+		return data;
+	}
+
+	const FIELDS = {
+		title: 'Carré',
+		description: '',
+		dsl_script: 'A = point(0, 0)',
+		grades: '["6"]',
+		tags: '["aires"]',
+		is_public: 'true'
+	};
+
+	it('lit le formulaire complet', () => {
+		expect(parseFigureFormData(form(FIELDS)).data).toEqual({
+			title: 'Carré',
+			description: null,
+			dsl_script: 'A = point(0, 0)',
+			grades: ['6'],
+			tags: ['aires'],
+			is_public: true
+		});
+	});
+
+	it('refuse un JSON illisible, une case publique absente, un niveau inconnu', () => {
+		expect(parseFigureFormData(form({ ...FIELDS, grades: '[6' })).success).toBe(false);
+		expect(parseFigureFormData(form({ ...FIELDS, is_public: 'oui' })).success).toBe(false);
+		expect(parseFigureFormData(form({ ...FIELDS, grades: '["TS"]' })).success).toBe(false);
+	});
+
+	it('refuse un champ JSON démesuré sans le lire', () => {
+		const huge = JSON.stringify(Array.from({ length: 3000 }, () => 'aires'));
+		expect(parseFigureFormData(form({ ...FIELDS, tags: huge })).success).toBe(false);
 	});
 });

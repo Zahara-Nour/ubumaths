@@ -150,6 +150,31 @@ export async function listGeometryFigures(
 	return rows.map((row) => ({ ...row, tags: tagsById.get(row.id) ?? [] }));
 }
 
+/**
+ * Noms des tags posés sur des figures, pour le filtre de la liste. Lire ce
+ * catalogue plutôt que celui de tous les tags : un filtre ne propose que ce qui
+ * peut trouver quelque chose. (Un utilisateur connecté lit les liens de tag de
+ * toutes les figures, privées comprises : tag et identifiant, jamais le contenu
+ * — accepté par David, ADR 0027.)
+ */
+export async function listGeometryFigureTagNames(supabase: TypedSupabaseClient): Promise<string[]> {
+	const { data, error } = await supabase
+		.from('resource_tags')
+		.select('tags(name)')
+		.eq('resource_kind', TAG_KIND);
+
+	if (error) {
+		logger.error('[listGeometryFigureTagNames] Lecture impossible :', error);
+		throw new GeometryFigureError(500, 'Impossible de charger les tags des figures');
+	}
+	const names = new Set<string>();
+	for (const row of data ?? []) {
+		const tag = (row as { tags: { name: string } | null }).tags;
+		if (tag?.name) names.add(tag.name);
+	}
+	return [...names].sort((a, b) => a.localeCompare(b, 'fr'));
+}
+
 /** Une figure lisible par l'appelant (publique, ou la sienne), sinon `null` */
 export async function getGeometryFigure(
 	supabase: TypedSupabaseClient,

@@ -88,8 +88,8 @@ export const figureListFiltersSchema = z.object({
 		.string()
 		.trim()
 		.max(FIGURE_SEARCH_MAX, `La recherche compte ${FIGURE_SEARCH_MAX} caractères au maximum`)
-		.optional()
-		.transform((value) => (value ? value : undefined)),
+		.transform((value) => (value ? value : undefined))
+		.optional(),
 	scope: z.enum(FIGURE_SCOPES).optional()
 });
 
@@ -111,5 +111,31 @@ export function parseFigureListFilters(params: URLSearchParams) {
 		tags: params.getAll('tag').filter((tag) => tag.trim().length > 0),
 		q: nonEmpty(params.get('q')),
 		scope: nonEmpty(params.get('scope'))
+	});
+}
+
+/** Champ JSON du formulaire (niveaux, tags), borné avant tout `JSON.parse` */
+function parseJsonField(value: FormDataEntryValue | null): unknown {
+	if (typeof value !== 'string' || value.length > 10_000) return undefined;
+	try {
+		return JSON.parse(value) as unknown;
+	} catch {
+		return undefined;
+	}
+}
+
+/**
+ * Figure depuis le formulaire de création ou de modification : `grades` et
+ * `tags` arrivent en JSON, `is_public` en `'true'` / `'false'`.
+ */
+export function parseFigureFormData(formData: FormData) {
+	const isPublic = formData.get('is_public');
+	return figureInputSchema.safeParse({
+		title: formData.get('title'),
+		description: formData.get('description') ?? null,
+		dsl_script: formData.get('dsl_script'),
+		grades: parseJsonField(formData.get('grades')),
+		tags: parseJsonField(formData.get('tags')),
+		is_public: isPublic === 'true' ? true : isPublic === 'false' ? false : undefined
 	});
 }
