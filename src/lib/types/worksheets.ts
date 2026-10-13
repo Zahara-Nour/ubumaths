@@ -176,7 +176,7 @@ export interface WorksheetConfig {
 	/**
 	 * @deprecated Case « Mélanger dans les sections » retirée (D6, 2026-10-13) :
 	 * « mélanger les exercices » mélange déjà dans chaque section. La clé peut
-	 * rester en base (anciennes fiches) ; aucun chemin vivant ne la lit.
+	 * rester en base (anciennes fiches) ; plus aucun code ne la lit.
 	 */
 	shuffle_within_sections?: boolean;
 	page_layout?: 'A4' | 'Letter';
