@@ -246,7 +246,8 @@ export const actions: Actions = {
 
 		const { challenge_id, answer, correct_answer, time_taken, spell_num } = validation.data;
 
-		logger.info('[submitAnswer] Received form data:', {
+		// Réponses d'élève : trace, donc dev seulement (jamais dans les logs de prod)
+		logger.trace('[submitAnswer] Received form data:', {
 			challenge_id,
 			answer,
 			correct_answer,
@@ -294,16 +295,16 @@ export const actions: Actions = {
 
 		// Validate answer using the correct answer from the client
 		// (generated on the client with the same random seed as displayed)
-		logger.info('[submitAnswer] Validating answer:');
-		logger.info('  - Student answer:', JSON.stringify(answer));
-		logger.info('  - Correct answer:', JSON.stringify(correct_answer));
+		logger.trace('[submitAnswer] Validating answer:');
+		logger.trace('  - Student answer:', JSON.stringify(answer));
+		logger.trace('  - Correct answer:', JSON.stringify(correct_answer));
 		// `game_challenges.answer` est du jsonb, donc typé `Json` : il ne porte
 		// aucune clé. On extrait la tolérance avec un garde, et `validateAnswer`
 		// applique sa valeur par défaut (0.01) quand elle est absente.
 		const tolerance = toleranceDuDefi(challenge.answer);
 		logger.info('  - Tolerance:', tolerance);
 		const success = validateAnswer(answer, correct_answer, tolerance);
-		logger.info('[submitAnswer] Validation result:', success);
+		logger.trace('[submitAnswer] Validation result:', success);
 
 		// Record challenge attempt
 		await supabase.from('game_challenge_attempts').insert({

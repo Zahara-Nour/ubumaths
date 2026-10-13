@@ -158,7 +158,7 @@ export const actions: Actions = {
 
 		// Trace sans donnée personnelle (nom de l'élève mineur, IP du parent) : la preuve
 		// complète est dans parental_consents.
-		logger.info(`[consent grant] Success - Token: ${token.slice(0, 8)}...`);
+		logger.info('[consent grant] Success');
 
 		// Redirect to success page
 		throw redirect(303, '/consent/success');
