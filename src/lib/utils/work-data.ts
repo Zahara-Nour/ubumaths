@@ -16,8 +16,13 @@
  * Les préférences (thème, police, position des barres d'outils) et les réglages du prof
  * (classe, période, panier de questions) ne sont pas des données d'élève : elles restent.
  *
+ * Les adresses visitées retenues par l'onglet pour les rapports de bug
+ * (`chiphre_freeze_data`, `sessionStorage`) partent avec elles.
+ *
  * ⚠️ Une nouvelle clé de travail s'ajoute ici, sinon elle survit au changement de compte.
  */
+
+import { clearFreezeDetectionData } from '$lib/utils/freezeDetection';
 
 const OWNER_KEY = 'chiphre:work-data-owner';
 const ANONYMOUS = 'anonymous';
@@ -66,6 +71,8 @@ function workDataKeys(storage: Storage): string[] {
 
 /** Efface toutes les données de travail et leur propriétaire. Rend le nombre de clés retirées. */
 export function clearWorkData(storage: Storage): number {
+	// En premier : une erreur de stockage plus bas ne doit pas les laisser.
+	clearFreezeDetectionData();
 	const keys = workDataKeys(storage);
 	for (const key of keys) storage.removeItem(key);
 	storage.removeItem(OWNER_KEY);
@@ -130,7 +137,11 @@ export function watchWorkDataOwner(
 	target.addEventListener('storage', (event) => {
 		const { key, newValue } = event as StorageEvent;
 		if (key !== OWNER_KEY && key !== null) return;
-		if (newValue !== getTabOwner()) reload();
+		if (newValue === getTabOwner()) return;
+		// Les adresses retenues par CET onglet sont celles de l'ancien compte : `sessionStorage`
+		// survit au rechargement, et le compte suivant les enverrait avec son rapport de bug.
+		clearFreezeDetectionData();
+		reload();
 	});
 }
 
