@@ -108,6 +108,14 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
      `pedagogical-domain/__tests__/redaction-etapes.test.ts`, doc `docs/systeme/mathast/README.md`.
      Découpage : PR 1 moteur (garde `unresolved` aussi pour `correction-generator`, Q1, Q2, Q6) ; PR 2
      atelier (« Comment ? », garde par ensembles, Q3, Q5).
+     **PR 2 `.domaine` (atelier) faite (2026-10-13, branche `feat/atelier-etapes-domaine`)** :
+     réponse en formule `D = …` (Q5, `domainToLatex`, plus de « Condition ») ; « Comment ? » +
+     Résumé / Détaillé derrière `sameDomainByValue` (ensemble conclu = domaine du moteur, par
+     valeur) ; Q3 : pas d'étapes, `D = ℝ \ {α} avec α ≈ 1,26` (écriture validée par David) ; Q4, Q6 branchés ; refus inchangés. `domain-steps.ts`,
+     `domain-steps-check.ts` ; tests `domaine-etapes.test.ts` (+ export),
+     `domaine-etapes-affichage.svelte.test.ts` ; tests qui lisaient « Domaine : … » / « t > 0 »
+     dans le texte mis à jour (oracle du domaine compris). Reste : justification « $x^2+1>0$ »
+     dans l'étape universelle si simple (Q6), raccord au tableau de signes (Q4).
    - **Décisions de David (2026-10-13, fin de journée)** : le signe moins se rédige « On sort le signe
      $-$ » ($\int -f = -\int f$, sans $(-1)$), quelle que soit l'écriture (`\frac{-1}{x}`, `-\frac1x`,
      `-e^x`) ; valeur interdite approchée de `.domaine` écrite $D = \mathbb{R}\setminus\{\alpha\}$ avec

@@ -87,7 +87,7 @@ describe('a) .domaine d’une fonction définie sur un intervalle', () => {
 	it('sans intervalle : inchangé', () => {
 		const d = desk('m(x) = x^2');
 		d.submit('.domaine m');
-		expect(last(d).text).toContain('Domaine : ℝ');
+		expect(last(d).text).toBe('D = ℝ');
 	});
 });
 

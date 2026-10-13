@@ -60,7 +60,7 @@ Ceux du code et de l'interface :
 
 ## Carte du code
 
-### Modèle — `src/lib/atelier/` (49 fichiers hors tests)
+### Modèle — `src/lib/atelier/` (52 fichiers hors tests)
 
 | Fichier                             | Rôle                                                                                                      |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -83,23 +83,25 @@ Ceux du code et de l'interface :
 
 **Vue Calcul** (saisie, commandes, historique) :
 
-| Fichier                                | Rôle                                                                                                       |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `src/lib/atelier/calcul.ts`            | **Aiguillage de la saisie** (`runInput`) : définition, calcul ou commande ; actions de carte (`runAction`) |
-| `src/lib/atelier/desk.svelte.ts`       | `CalcDesk`, le pupitre : historique, actions venues du panneau, garder une ligne, rejeu                    |
-| `src/lib/atelier/commands.ts`          | Catalogue français des commandes (`commandCatalog`, `resolveCommand`, `suggestFor`)                        |
-| `src/lib/atelier/help.ts`              | `.aide` pour l'élève (`studentHelpText`) ; l'aide du moteur derrière `.aide dev`                           |
-| `src/lib/atelier/listing.ts`           | `.valeurs` et `.fonctions` : les cartes du panneau, en français (`valuesListing`, `functionsListing`)      |
-| `src/lib/atelier/render.ts`            | Rendu d'un résultat du moteur en LaTeX, sans jamais reparser la sortie texte                               |
-| `src/lib/atelier/decimal-comma.ts`     | Virgule décimale à l'affichage, refus des virgules ambiguës à la saisie                                    |
-| `src/lib/atelier/simplify-steps.ts`    | `.simplifier` par étapes (`simplifySteps`)                                                                 |
-| `src/lib/atelier/factor-steps.ts`      | `.factoriser` par étapes (`factorSteps`)                                                                   |
-| `src/lib/atelier/derive-steps.ts`      | `.dériver` et « Dériver » expliqués (`deriveSteps`)                                                        |
-| `src/lib/atelier/solve-steps.ts`       | `.résoudre` par étapes (`solveSteps`)                                                                      |
-| `src/lib/atelier/solve-steps-check.ts` | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                            |
-| `src/lib/atelier/variations-steps.ts`  | `.variations` et « Variations » : tableau et détail (`variationsRendering`)                                |
-| `src/lib/atelier/steps-summary.ts`     | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                          |
-| `src/lib/atelier/tidy-terms.ts`        | Ré-export de `tidyTerms` (vit dans `src/lib/mathAST/tidy/terms.ts`)                                        |
+| Fichier                                 | Rôle                                                                                                       |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `src/lib/atelier/calcul.ts`             | **Aiguillage de la saisie** (`runInput`) : définition, calcul ou commande ; actions de carte (`runAction`) |
+| `src/lib/atelier/desk.svelte.ts`        | `CalcDesk`, le pupitre : historique, actions venues du panneau, garder une ligne, rejeu                    |
+| `src/lib/atelier/commands.ts`           | Catalogue français des commandes (`commandCatalog`, `resolveCommand`, `suggestFor`)                        |
+| `src/lib/atelier/help.ts`               | `.aide` pour l'élève (`studentHelpText`) ; l'aide du moteur derrière `.aide dev`                           |
+| `src/lib/atelier/listing.ts`            | `.valeurs` et `.fonctions` : les cartes du panneau, en français (`valuesListing`, `functionsListing`)      |
+| `src/lib/atelier/render.ts`             | Rendu d'un résultat du moteur en LaTeX, sans jamais reparser la sortie texte                               |
+| `src/lib/atelier/decimal-comma.ts`      | Virgule décimale à l'affichage, refus des virgules ambiguës à la saisie                                    |
+| `src/lib/atelier/simplify-steps.ts`     | `.simplifier` par étapes (`simplifySteps`)                                                                 |
+| `src/lib/atelier/factor-steps.ts`       | `.factoriser` par étapes (`factorSteps`)                                                                   |
+| `src/lib/atelier/derive-steps.ts`       | `.dériver` et « Dériver » expliqués (`deriveSteps`)                                                        |
+| `src/lib/atelier/solve-steps.ts`        | `.résoudre` par étapes (`solveSteps`)                                                                      |
+| `src/lib/atelier/solve-steps-check.ts`  | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                            |
+| `src/lib/atelier/variations-steps.ts`   | `.variations` et « Variations » : tableau et détail (`variationsRendering`)                                |
+| `src/lib/atelier/steps-summary.ts`      | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                          |
+| `src/lib/atelier/domain-steps.ts`       | `.domaine` : réponse `D = …` et « Comment ? » (`domainLine`)                                               |
+| `src/lib/atelier/domain-steps-check.ts` | Garde-fou : l'ensemble conclu par les étapes est, par valeur, le domaine du moteur (`sameDomainByValue`)   |
+| `src/lib/atelier/tidy-terms.ts`         | Ré-export de `tidyTerms` (vit dans `src/lib/mathAST/tidy/terms.ts`)                                        |
 
 **Statistiques et probabilités** (commandes servies par l'atelier, pas par le moteur) :
 
@@ -593,6 +595,7 @@ Doc du moteur : [mathast/README.md](mathast/README.md).
 | `.réciproque`, « Réciproque », `f⁻¹`    | `computeReciprocal` (`src/lib/mathAST/reciprocal/`, [mathast/reciproque.md](mathast/reciproque.md)) ; lettres des paramètres : `solve` puis `textbookWriting`                                                                                                                                                                                        |
 | `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                                                                                                                                                                                                                                             |
 | `.intégrer`                             | réponse : `integration` (`integrate.command.ts`) ; « Comment ? » : `src/lib/mathAST/pedagogical-integration/` niveau lycée, vérifié par `integrate-steps-check.ts`                                                                                                                                                                                   |
+| `.domaine`                              | réponse : `computeDomain` (`domain.command.ts` refuse ce qu'il ne résout pas), écrite par `domainToLatex` ; « Comment ? » : `src/lib/mathAST/pedagogical-domain/` niveau lycée, vérifié par `domain-steps-check.ts`                                                                                                                                  |
 | `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                                                                                                                                                                                                                                                  |
 | syntaxe des commandes                   | `src/lib/mathAST/cli/core/variable-argument.ts`                                                                                                                                                                                                                                                                                                      |
 
@@ -614,7 +617,7 @@ second degré la refusent (`rejectForbiddenValues`, V47 puis V48), `solveSteps` 
 l'atelier affiche la réponse du moteur sans « Comment ? ».
 
 **« Résumé / Détaillé »** (`steps-summary.ts`, 2026-10-13). Les commandes qui rédigent
-(simplifier, factoriser, dériver, résoudre, intégrer — tapées, ou Résoudre / Dériver sur une carte) rendent le même
+(simplifier, factoriser, dériver, résoudre, intégrer, domaine — tapées, ou Résoudre / Dériver sur une carte) rendent le même
 calcul DEUX fois : `steps` en `verbosity: 'detailed'`, `summary` en `'summarized'`. Le moteur
 tourne une fois ; seul `renderAll` est rappelé, et la réponse de la ligne vient du calcul, jamais
 de la rédaction. `summaryOf` compare les deux rendus et rend `undefined` s'ils sont identiques :
@@ -687,6 +690,35 @@ valeur finie (f sans autre lettre que la variable). Sinon pas d'étapes. Les ref
 commandes n'en portent jamais. Les étapes sont au niveau lycée : l'IPP s'y rédige en notation de
 terminale (« On pose $u(x) = x$ et $v'(x) = e^x$, donc $u'(x) = 1$ et $v(x) = e^x$ », PR 3 du
 2026-10-13), sans changer ce que la garde reconnaît.
+
+**`.domaine` en détail** (`domain-steps.ts`, PR 2 de `.domaine`, décisions de David du
+2026-10-13). La réponse de la ligne est une **formule**, `D = …`, écrite par `domainToLatex`
+(`pedagogical-domain/renderer.ts`) — le même écrivain que la conclusion « Domaine : … » des
+étapes ; le texte du terminal (« Expression », « Contraintes », « Condition ») n'est plus montré.
+`output` porte la même réponse en texte (`D = ]0 ; +∞[ \ {2}`, `formatDomainInterval`) : repli
+de la vue, export JSON. Le domaine est recalculé par `computeDomain` sur `result.ast` (la fonction
+même de `domain.command.ts`), dans la variable de la ligne (`; t`, `pour t`, devinée). Les refus
+du moteur (`DOMAIN_UNRESOLVED` : `\sqrt{\sin x}`) sortent plus haut, inchangés, sans étapes ;
+`.domaine f` d'une fonction à ensemble garde sa phrase (décision a).
+
+- **Valeur connue seulement en décimal** (plus de 6 décimales, même critère que le pipeline :
+  `\frac{1}{x^3-2}`) : pas d'étapes, et la valeur est NOMMÉE dans l'ensemble puis arrondie —
+  `D = ℝ \ {α} avec α ≈ 1,26` (écriture validée par David ; lettres α, β, γ, δ par valeurs
+  croissantes ; au-delà de quatre, ou hors réunion d'intervalles, la ligne garde le texte du
+  moteur). Deux décimales, deux chiffres significatifs sous 1 (`α ≈ 0,046`, jamais « α ≈ 0 ») ;
+  deux arrondis égaux reçoivent des décimales jusqu'à se distinguer (`1,260` et `1,261`).
+  `]0 ; α[ ∪ ]α ; +∞[` est réécrit `]0 ; +∞[ \ {α}` avant les deux écrivains : texte et LaTeX
+  disent le même ensemble.
+- **« Comment ? »** : `generatePedagogicalDomainSteps` (niveau `lycee`, détaillé + résumé),
+  montré seulement si l'ensemble que conclut la dernière étape est, **par valeur**, le domaine du
+  moteur (`sameDomainByValue` : appartenance testée en chaque borne, chaque point exclu, leurs
+  voisins à 10⁻⁶ près et une grille, valeurs lues par les évaluateurs mêmes de `containsValue`
+  — avec `compile`, [√2 et ]√2 passaient pour égaux ; une exclusion périodique est sondée sur
+  ±4 périodes ; une valeur non évaluable, un domaine par conditions → désaccord). Toute exception (`PedagogicalDomainNotImplemented`) → pas d'étapes, la formule
+  reste. Quand les étapes sont montrées, la réponse s'écrit avec l'ensemble qu'elles concluent :
+  les deux écritures sont identiques. Branché aussi sans la résolution rédigée d'une contrainte
+  (`\sqrt{x^2-5x+6}`, Q4) et pour le domaine universel (Q6). Tests :
+  `domaine-etapes.test.ts`, `domaine-etapes-affichage.svelte.test.ts`.
 
 Statistiques : `summarizeList` / `summarizeTable` (`src/lib/statistics/describe.ts`), et
 `src/lib/statistics/` pour l'ajustement (`fit.ts`), le bivarié, la simulation, les fractions et
