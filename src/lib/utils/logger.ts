@@ -23,8 +23,17 @@ export type LogLevel = 'trace' | 'info' | 'warn' | 'error';
  * Note: Patterns are kept simple to avoid ReDoS vulnerabilities
  */
 const PII_PATTERNS = {
-	// Email addresses (simplified to avoid ReDoS)
-	email: /[^\s@]+@[^\s@]+\.[^\s@]+/g,
+	// Email addresses (simplified to avoid ReDoS). Forme large : domaine sans point
+	// (`eleve@college`), numérique (`163.com`) ou accentué. Le `/` borne l'adresse, si bien
+	// que `/@supabase/…` d'un chemin de pile n'est pas visé ; `nom@1.21.4` est écarté
+	// au remplacement (voir `redactString`).
+	email: /[^\s@/]+@([^\s@/]+)/g,
+	// Codes de connexion passés dans une URL (callback OAuth, lien de confirmation)
+	urlSecret: /([?&#](?:code|token_hash|token|access_token|refresh_token|otp)=)[^&#\s"']+/gi,
+	// Code à usage unique (6 chiffres) annoncé par « otp » ou « code », jusqu'à 4 signes
+	// entre les deux (`"code": "482913"`) ; un code d'erreur Postgres (5 caractères,
+	// `23505`) n'est pas visé
+	otp: /(otp|code)\b(\W{0,4})\d{6}\b/gi,
 	// IP addresses - IPv4
 	ipv4: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g,
 	// IP addresses - IPv6 (common forms)
@@ -54,7 +63,36 @@ const SENSITIVE_FIELDS = [
 	/session/i,
 	/cookie/i,
 	/bearer/i,
-	/authorization/i
+	/authorization/i,
+	/mdp/i,
+	/pwd/i,
+	// `otp` en tête ou après `_`, `Otp` en camelCase : `footprint` n'est pas visé
+	/(?:^|_)otp|Otp|OTP/,
+	// Noms des personnes : colonnes de `profiles` et métadonnées d'un compte Supabase
+	// (`user_metadata.full_name`, `name`, `pseudo`…). Le `name` seul reste lisible ailleurs
+	// (catégorie, fichier) : il n'est masqué qu'à l'intérieur des métadonnées.
+	/^(full_?name|first_?name|last_?name|given_?name|family_?name|display_?name|user_?name|pseudo|prenom|nom)$/i,
+	// Métadonnées d'un compte, et `identities[].identity_data` d'un compte Google
+	/^(raw_)?(user|app)_?meta_?data$/i,
+	/^identity_?data$/i
+] as const;
+
+/**
+ * Valeurs de la clé `code` qui restent lisibles : des codes d'erreur, utiles au tri.
+ * SQLSTATE Postgres (`23505`), PostgREST (`PGRST116`), Supabase Auth (`otp_expired`),
+ * Node (`ECONNRESET`). Tout le reste (code OAuth, code à usage unique) est masqué.
+ * Un code de classe (8 caractères hexadécimaux) n'a aucune de ces formes.
+ */
+const ERROR_CODE_PATTERNS = [
+	/^[0-9A-Z]{5}$/,
+	/^PGRST\d+$/,
+	/^[a-z]+(?:_[a-z]+)+$/,
+	// Node (`ECONNRESET`, `EAI_AGAIN`) : au moins une lettre de G à Z, ce qui écarte
+	// un code de classe fait de 8 caractères hexadécimaux
+	/^(?=.*[G-Z])E[A-Z_]+$/,
+	/^ERR_[A-Z0-9_]+$/,
+	// undici, le fetch de supabase-js (`UND_ERR_CONNECT_TIMEOUT`)
+	/^UND_ERR_[A-Z_]+$/
 ] as const;
 
 /**
@@ -64,7 +102,11 @@ function redactString(value: string): string {
 	let result = value;
 
 	// Redact emails
-	result = result.replace(PII_PATTERNS.email, '[email@redacted]');
+	result = result.replace(PII_PATTERNS.email, (match, domain: string) =>
+		// Un domaine fait de chiffres et de points est une version de paquet
+		// (`postgrest-js@1.21.4` dans un chemin de pile), pas une adresse
+		/^[\d.]+$/.test(domain) ? match : '[email@redacted]'
+	);
 
 	// Redact IPv4 (show first octet only)
 	result = result.replace(PII_PATTERNS.ipv4, (ip) => {
@@ -90,6 +132,10 @@ function redactString(value: string): string {
 	// Redact phone numbers
 	result = result.replace(PII_PATTERNS.phone, '[PHONE_REDACTED]');
 
+	// Codes de connexion : paramètres d'URL, code à usage unique
+	result = result.replace(PII_PATTERNS.urlSecret, '$1[REDACTED]');
+	result = result.replace(PII_PATTERNS.otp, '$1$2[REDACTED]');
+
 	return result;
 }
 
@@ -98,6 +144,22 @@ function redactString(value: string): string {
  */
 function isSensitiveField(key: string): boolean {
 	return SENSITIVE_FIELDS.some((pattern) => pattern.test(key));
+}
+
+/**
+ * Masque la valeur d'un champ d'après son nom. Un booléen reste lisible sous un nom
+ * sensible (`hasOtpHash: true` ne dit rien du secret) ; la clé `code` ne garde que
+ * les codes d'erreur.
+ */
+function redactField(key: string, value: unknown, depth: number, seen: WeakSet<object>): unknown {
+	if (key === 'code') {
+		if (typeof value === 'number') return value < 1000 ? value : '[REDACTED]';
+		if (typeof value === 'string') {
+			return ERROR_CODE_PATTERNS.some((pattern) => pattern.test(value)) ? value : '[REDACTED]';
+		}
+	}
+	if (isSensitiveField(key) && typeof value !== 'boolean') return '[REDACTED]';
+	return redactObject(value, depth + 1, seen);
 }
 
 /**
@@ -143,7 +205,7 @@ function redactObject(obj: unknown, depth = 0, seen: WeakSet<object> = new WeakS
 		// ou un 42501 disparaît des journaux. Masqués comme ceux d'un objet ordinaire.
 		for (const [key, value] of Object.entries(obj)) {
 			if (key in errorObj) continue;
-			errorObj[key] = isSensitiveField(key) ? '[REDACTED]' : redactObject(value, depth + 1, seen);
+			errorObj[key] = redactField(key, value, depth, seen);
 		}
 		return errorObj;
 	}
@@ -155,11 +217,7 @@ function redactObject(obj: unknown, depth = 0, seen: WeakSet<object> = new WeakS
 	if (typeof obj === 'object') {
 		const result: Record<string, unknown> = {};
 		for (const [key, value] of Object.entries(obj)) {
-			if (isSensitiveField(key)) {
-				result[key] = '[REDACTED]';
-			} else {
-				result[key] = redactObject(value, depth + 1, seen);
-			}
+			result[key] = redactField(key, value, depth, seen);
 		}
 		return result;
 	}
