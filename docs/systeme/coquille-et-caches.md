@@ -5,7 +5,7 @@ couvre:
   - 'src/routes/(protected)/dashboard/{admin,student,teacher}/*'
   - 'src/lib/components/{Header,Sidebar,InfoPanel,LoadingDashboard,LoadingTable,ExerciseSkeleton,FlipCard,FontSelector,Wheel}.svelte'
   - 'src/lib/components/{skeleton,modals}/**'
-  - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,activityStore,mobile,modalStack,input-capability,auth}.svelte.ts'
+  - 'src/lib/stores/{studentDashboardCache,teacherDashboardCache,selectedClass,selectedPeriod,activity,mobile,modalStack,input-capability,auth}.svelte.ts'
   - 'src/lib/types/{student-cache,teacher-cache,cache-context}.ts'
   - src/lib/utils/cache-sync.ts
   - 'src/routes/(protected)/dashboard/teacher/{wheel,recherche,documents}/**'
@@ -258,9 +258,6 @@ annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`)
 - **Le layout prof refuse l'admin.** Une garde `teacher || admin` dans une page sous
   `/dashboard/teacher` (`wheel/+page.server.ts:14`, `documents/+page.server.ts:25`) ne rend pas la
   page accessible à l'admin : le 403 du layout passe avant.
-- **Deux fichiers exportent un `activityStore`** : `activity.svelte.ts` (compteurs, utilisé) et
-  `activityStore.svelte.ts` (gel de l'interface et Web Vitals, inutilisé). Vérifier le chemin
-  d'import.
 - **Deux listes de liens publics** : `Header.svelte` (tiroir mobile) et `Sidebar.svelte` (barre)
   ont chacun leur copie. Une entrée ajoutée à l'une manque à l'autre.
 
@@ -288,7 +285,7 @@ annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`)
 - **`modalStack.popTo`** appelle l'`onReturn` de la modale qui **reste**, pas de celles qu'il
   retire, à l'inverse de `pop`. Aucun appelant. `ModalEntry.component` est typé
   `Component<any, any, any>` (`modalStack.svelte.ts:44`).
-- **Code sans importeur** : `auth.svelte.ts` (store `auth`), `activityStore.svelte.ts`,
+- **Code sans importeur** : `auth.svelte.ts` (store `auth`),
   `input-capability.svelte.ts`, `LoadingDashboard`, `LoadingTable`, `FontSelector`,
   `modals/ExampleModal`, `SkeletonAvatar`, `SkeletonButton`, `SkeletonIcon`, `SkeletonNavItem`.
 - **Pages sans entrée** : aucun lien dans `src/` vers `/dashboard/teacher/wheel` ni

@@ -84,19 +84,6 @@ export const updateSchoolConfigSchema = z.object({
 export type ValidatedSchoolConfig = z.infer<typeof updateSchoolConfigSchema>;
 
 /**
- * Partial school configuration update schema
- * Allows updating only timezone OR week_config
- */
-export const partialSchoolConfigSchema = z
-	.object({
-		timezone: timezoneSchema.optional(),
-		week_config: weekConfigSchema.optional()
-	})
-	.refine((data) => data.timezone !== undefined || data.week_config !== undefined, {
-		message: 'Fuseau horaire ou semaine requis'
-	});
-
-/**
  * Export week config schema for reuse
  */
 export { weekConfigSchema };

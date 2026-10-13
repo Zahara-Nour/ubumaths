@@ -162,21 +162,3 @@ export async function getDocumentContent(categoryPath: string, docPath: string):
 		throw new Error(`Document not found: ${categoryPath}/${docPath}`);
 	}
 }
-
-/**
- * Search documentation by query
- */
-export async function searchDocumentation(query: string): Promise<DocumentMetadata[]> {
-	const allCategories = await scanDocumentation();
-	const allDocs = allCategories.flatMap((cat) => cat.docs);
-
-	const lowerQuery = query.toLowerCase();
-
-	return allDocs.filter((doc) => {
-		return (
-			doc.title.toLowerCase().includes(lowerQuery) ||
-			doc.path.toLowerCase().includes(lowerQuery) ||
-			doc.category.toLowerCase().includes(lowerQuery)
-		);
-	});
-}

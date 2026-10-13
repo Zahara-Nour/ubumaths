@@ -1,7 +1,6 @@
 src/lib/components/achievements/index.ts AchievementLeaderboard
 src/lib/components/achievements/index.ts AchievementList
 src/lib/components/achievements/index.ts AchievementNotifications
-src/lib/components/admin/widgets/index.ts ErrorSummaryWidget
 src/lib/components/game/minesweeper/index.ts LeaderboardPreview
 src/lib/components/game/minesweeper/index.ts PremiumBanner
 src/lib/components/journal/index.ts JournalEntryCard

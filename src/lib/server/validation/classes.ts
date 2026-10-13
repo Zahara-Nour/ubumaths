@@ -3,7 +3,7 @@
  */
 
 import { z } from 'zod';
-import { gradeSchema, formDataTransforms } from './common';
+import { formDataTransforms } from './common';
 
 /**
  * School year format: YYYY-YYYY (e.g., "2024-2025")
@@ -18,36 +18,6 @@ export const schoolYearSchema = z
 		},
 		{ message: "L'année de fin doit être l'année suivant l'année de début" }
 	);
-
-/**
- * Schema for creating a class
- */
-export const createClassSchema = z.object({
-	name: z.string().trim().min(1, 'Nom requis').max(100, 'Nom trop long (max 100 caractères)'),
-	grade: gradeSchema,
-	school_year: schoolYearSchema,
-	description: z.string().max(500, 'Description trop longue (max 500 caractères)').optional()
-});
-
-/**
- * Schema for updating a class (all fields optional)
- */
-export const updateClassSchema = createClassSchema.partial();
-
-/**
- * Schema for getting students in a class (GET /api/classes/[classId]/students)
- * Query parameter: full=true for complete profile data
- */
-export const getClassStudentsSchema = z.object({
-	// Pas de `.optional()` final : depuis Zod 4.5, un `.optional()` extérieur rend
-	// `undefined` sans exécuter la transformation (absent → undefined au lieu de false).
-	// Le `.optional()` intérieur suffit à rendre la clé facultative.
-	full: z
-		.string()
-		.optional()
-		.transform((val) => val === 'true')
-		.pipe(z.boolean())
-});
 
 // ============================================================================
 // CLASS SCHEDULE FORM SCHEMAS

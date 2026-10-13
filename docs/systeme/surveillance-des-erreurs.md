@@ -82,10 +82,10 @@ Trois boucles distinctes :
     notification urgente à tous les admins (`createSystemNotification`), message et URL
     échappés (`escapeHtml`) : ils s'affichent comme du texte ;
   - `getUserContext` ajoute `user_id` et `user_role` ;
-  - lecture : `getErrorStats` (RPC `get_error_stats`), `getErrorLogs`,
+  - lecture : `getErrorStats` (RPC `get_error_stats`),
     `getErrorOccurrences`, `getErrorLog` ;
   - résolution et purge : `resolveError` (RPC `resolve_error`),
-    `resolveErrorBySignature`, `cleanupOldErrors` (RPC `cleanup_old_errors`),
+    `resolveErrorBySignature`,
     `deleteAllResolvedErrors` (RPC `delete_all_resolved_errors`).
 - Appelants dans le serveur : `src/hooks.server.ts` (`errorMonitoringHandle` : exceptions
   non rattrapées, et requêtes de plus de 3 s en `performance` ; aussi profil absent ou
@@ -100,11 +100,8 @@ Trois boucles distinctes :
 | Route                              | Qui                             | Rôle                                                                                                                          |
 | ---------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `POST /api/errors/log`             | tout le monde, même sans compte | écrit une erreur ; 20 par minute et par IP ; sans compte approuvé, `critical` devient `error` ; `context` ≤ 10 000 caractères |
-| `GET /api/errors`                  | admin                           | liste filtrée (`listErrorsQuerySchema`, 100 au plus)                                                                          |
-| `GET`/`PUT /api/errors/[id]`       | admin                           | une erreur ; la marquer résolue                                                                                               |
 | `POST /api/errors/bulk-resolve`    | admin                           | résout par empreinte tout ce qui correspond aux filtres                                                                       |
 | `POST /api/errors/delete-resolved` | admin                           | supprime toutes les erreurs résolues (client service)                                                                         |
-| `POST /api/errors/cleanup`         | admin                           | supprime les erreurs de plus de N jours (90 par défaut, 365 au plus), trace dans `background_job_runs`                        |
 
 Pages admin : `/dashboard/admin/errors` (statistiques 24 h et occurrences, filtres
 `type`, `severity`, `resolved`, `search` dans l'adresse), `/dashboard/admin/errors/[id]`
@@ -330,7 +327,7 @@ rapport en UUID. Exceptions : voir Écarts.
   partent à la déconnexion, quand un autre compte prend l'onglet ou un autre onglet, restent pour
   le même compte ; une navigation est retenue sans ses paramètres.
 
-Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement), les routes de lecture `api/errors`, les pages admin, ni
+Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement), les pages admin, ni
 `docs-scanner.ts`.
 
 ## Décisions
@@ -353,9 +350,6 @@ Constatés le 2026-10-13, non corrigés.
   adaptée (commentaire dans le code).
 - **Supprimer un rapport ne supprime pas sa capture** : ni `DELETE` ni le lot ne touchent
   au storage.
-- **Routes sans appelant** : `GET /api/errors`, `GET`/`PUT /api/errors/[id]` (la page
-  passe par ses propres `load` et action) et `POST /api/errors/cleanup` (90 jours par
-  défaut, alors que la purge hebdomadaire garde 30 jours).
 - **Zod manquant** : la page `/dashboard/admin/errors` passe les filtres de l'adresse sans
   validation ; l'action `resolve` de `/dashboard/admin/errors/[id]` lit `notes` sans borne ;
   `/dashboard/admin/bug-reports` passe `status`, `category`, `severity` tels quels.
@@ -366,10 +360,9 @@ Constatés le 2026-10-13, non corrigés.
   l'envoi automatique d'un signalement.
 - **Web Vitals jamais dans le contexte de gel** : `reportWebVital` de `freezeDetection.ts`
   dit être appelée par `errorMonitoring.ts`, qui ne l'importe pas. `webVitals` reste vide
-  dans les signalements. `src/lib/stores/activityStore.svelte.ts`, seul lecteur de
-  `getWebVitals` et `isUnresponsive`, n'est importé nulle part.
-- **Doc admin** : la recherche (`?q=`) s'affiche mais ne cherche rien
-  (`searchDocumentation` n'a aucun appelant) ; `CATEGORY_CONFIG` nomme des dossiers
+  dans les signalements.
+- **Doc admin** : la recherche (`?q=`) s'affiche mais ne cherche rien (aucune fonction
+  de recherche depuis le 2026-10-13) ; `CATEGORY_CONFIG` nomme des dossiers
   (`features`, `architecture`, `guides`…) qui n'existent plus dans `docs/`. Lecture
   de `docs/` sur le disque au moment de la requête : non vérifié que ces fichiers sont
   présents dans le déploiement Vercel.
