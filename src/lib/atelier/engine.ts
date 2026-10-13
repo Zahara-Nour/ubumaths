@@ -78,6 +78,32 @@ const pushed = new WeakMap<Atelier, WeakMap<WebReplEngine, string>>();
  */
 const resolving = new WeakMap<Atelier, Set<string>>();
 
+/**
+ * Les formules de `f⁻¹` déjà calculées, par atelier, valables tant que
+ * l'empreinte de l'atelier ne change pas. Sans elles, chaque `bindingsOf`
+ * recalculait toutes les réciproques citées, qui relisent f, donc refont
+ * `bindingsOf` : cinq réciproques citées prenaient 11 s (revue de la PR).
+ */
+const formulas = new WeakMap<
+	Atelier,
+	{ readonly mark: string; readonly byName: Map<string, MathNode | string> }
+>();
+
+/** Tout ce dont dépend une réciproque : définitions, statuts, ensembles. */
+function atelierMark(atelier: Atelier): string {
+	return JSON.stringify(
+		atelier.objects.map((o) => [
+			o.name,
+			o.kind,
+			o.definition,
+			o.status,
+			o.provenance,
+			'interval' in o ? o.interval : null,
+			'reciprocalOn' in o ? o.reciprocalOn : null
+		])
+	);
+}
+
 /** `f⁻¹` citée sans réciproque possible (f non bijective…) ; le message est le refus. */
 export class ReciprocalUnavailable extends Error {}
 
@@ -270,16 +296,29 @@ function reciprocalResolver(atelier: Atelier): ReciprocalResolver {
 		const busy = resolving.get(atelier) ?? new Set<string>();
 		resolving.set(atelier, busy);
 		if (busy.has(name)) throw new ReciprocalUnavailable(`${name}⁻¹ se cite elle-même.`);
-		busy.add(name);
-		try {
-			const outcome = atelier.reciprocalOutcome(name);
-			if (!outcome.ok) throw new ReciprocalUnavailable(outcome.message);
-			const formula = astOf(outcome.definition, 'text', atelier.functionNames);
-			if (formula === null) throw new ReciprocalUnavailable(`${name}⁻¹ ne se lit pas.`);
-			return formula;
-		} finally {
-			busy.delete(name);
+		const mark = atelierMark(atelier);
+		let known = formulas.get(atelier);
+		if (known === undefined || known.mark !== mark) {
+			known = { mark, byName: new Map() };
+			formulas.set(atelier, known);
 		}
+		let found = known.byName.get(name);
+		if (found === undefined) {
+			busy.add(name);
+			try {
+				const outcome = atelier.reciprocalOutcome(name);
+				const formula = outcome.ok
+					? astOf(outcome.definition, 'text', atelier.functionNames)
+					: null;
+				found = outcome.ok ? (formula ?? `${name}⁻¹ ne se lit pas.`) : outcome.message;
+			} finally {
+				busy.delete(name);
+			}
+			known.byName.set(name, found);
+		}
+		// Un message : le refus de `.réciproque f`
+		if (typeof found === 'string') throw new ReciprocalUnavailable(found);
+		return found;
 	};
 }
 

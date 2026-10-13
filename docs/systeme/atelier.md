@@ -239,7 +239,7 @@ l'ensemble de départ → celui de `f(5)` hors intervalle. `.variations` et `.r�
 l'ensemble de départ de f⁻¹ (`citedReciprocalInterval`). Une g qui cite `f⁻¹` passe en erreur avec
 le refus quand f cesse d'être bijective (`#underivable`). ⚠️ Calculer `f⁻¹` relit les autres objets,
 dont g : une réciproque redemandée en cours de calcul est indisponible (`resolving`), l'objet qui la
-cite est laissé de côté. L'inverse s'écrit `1/f(x)` ou `f(x)^-1` ; `x^-1`, `2^-1`, `a^-1` restent
+cite est laissé de côté ; les formules sont gardées tant que l'atelier ne change pas (`formulas`, sinon cinq réciproques citées coûtaient 11 s). L'argument de `f⁻¹(…)` est vérifié sur l'arbre (`f⁻¹(g(2))`, `\left(…\right)`). Un nom à indice (`f_1⁻¹`) est refusé (les parseurs y lisent une puissance) ; `f⁻¹(x) = 5x` aussi : elle se calcule, elle ne se définit pas. L'inverse s'écrit `1/f(x)` ou `f(x)^-1` ; `x^-1`, `2^-1`, `a^-1` restent
 des puissances. `.réciproque f⁻¹` répond « La réciproque de f⁻¹, c'est f. ». La carte **suit f** (`#reciprocals`, en
 dernier dans `recomputeAll`) : formule rangée en texte (provenance `text`), `interval` = son
 ensemble de départ f(I) (Q5 : le tracé et les calculs suivent, `ℝ` n'est pas rangé) ; f devenue

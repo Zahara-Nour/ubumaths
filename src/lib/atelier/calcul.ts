@@ -23,6 +23,7 @@ import {
 	citedReciprocalInterval,
 	citesReciprocal,
 	reciprocalCommand,
+	reciprocalDefinitionRefusal,
 	reciprocalRefusalIn,
 	reciprocalResult,
 	withReciprocalNotation
@@ -1655,7 +1656,9 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	if (!input.startsWith('.')) {
 		if (EVENT_PROBABILITY.test(input)) return eventProbability(session.atelier, input);
 		// `f⁻¹(5)` : f sans réciproque, ou 5 hors de l'ensemble de départ de f⁻¹
-		const inverse = reciprocalRefusalIn(session.atelier, input);
+		const defined = reciprocalDefinitionRefusal(session.atelier, input);
+		if (defined !== null) return { kind: 'refus', message: defined };
+		const inverse = reciprocalRefusalIn(session.atelier, input, provenance);
 		if (inverse !== null) return { kind: 'refus', ...inverse };
 		const unknown = findUnknownFunctionCall(input);
 		if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };

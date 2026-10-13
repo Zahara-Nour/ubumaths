@@ -227,3 +227,55 @@ describe('x^-1, 2^-1, a^-1, f(x)^-1 restent des puissances', () => {
 		expect(last(desk)).toMatchObject({ failed: false, text });
 	});
 });
+
+// =============================================================================
+// Revue de la PR
+// =============================================================================
+
+describe('revue : argument hors du départ, noms à indice, définition, coût', () => {
+	it.each(['f⁻¹((-1))', 'f^-1 (-1)', 'f⁻¹(g(2))'])(
+		'%s avec f(x) = √(x + 2) : refusé, jamais −1',
+		(input) => {
+			const desk = deskWith('f(x) = sqrt(x+2)', 'g(x) = x-3', input);
+			expect(last(desk).failed).toBe(true);
+			expect(last(desk).text).toContain("n'est pas dans l'ensemble de définition de f⁻¹");
+		}
+	);
+
+	it('dans un champ de maths : f^{-1}\\left(-1\\right) refusé aussi', () => {
+		const session = { atelier: new Atelier(), engine: new WebReplEngine() };
+		runInput(session, 'f(x) = sqrt(x+2)');
+		const result = runInput(session, 'f^{-1}\\left(-1\\right)', 'mathfield');
+		expect(result.kind).toBe('refus');
+	});
+
+	it.each(['f_1^-1(5)', '.dériver f_1^-1'])('%s (nom à indice) : refus honnête', (input) => {
+		const desk = deskWith('f_1(x) = 2x+3', input);
+		expect(last(desk).failed).toBe(true);
+		expect(last(desk).text).toContain('f_1⁻¹');
+	});
+
+	it('f^-1(x) = 5x : f⁻¹ se calcule, elle ne se définit pas', () => {
+		const desk = deskWith('f(x) = 2x+3', 'f^-1(x) = 5x');
+		expect(last(desk)).toMatchObject({
+			failed: true,
+			text: "f⁻¹ est la réciproque de f : elle se calcule, elle ne se définit pas. Pour l'obtenir : .réciproque f"
+		});
+	});
+
+	it('g(x) = 2^-sin(x) : pas lue 2^(-s)·in(x)', () => {
+		const desk = deskWith('g(x) = 2^-sin(x)');
+		expect(desk.atelier.get('g')?.status).not.toBe('pending');
+	});
+
+	it('cinq réciproques citées : le calcul reste rapide', () => {
+		const names = ['f', 'h', 'k', 'p', 'q'];
+		const desk = deskWith(...names.map((n) => `${n}(x) = 2x+3`));
+		const started = performance.now();
+		['a', 'b', 'c', 'd', 'm'].forEach((g, i) => desk.submit(`${g}(x) = ${names[i]}⁻¹(x)`));
+		desk.submit('f(x) = 3x');
+		expect(performance.now() - started).toBeLessThan(3000);
+		desk.submit('a(6)');
+		expect(last(desk)).toMatchObject({ failed: false, text: '2' });
+	});
+});
