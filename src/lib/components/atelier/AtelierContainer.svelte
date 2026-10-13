@@ -166,7 +166,7 @@
 	// jamais — rien n'est alors jamais enregistré.
 	let session = $state<Session | null>(null);
 	/** Les lignes de Calcul rangées : même raison d'être un `$state`. */
-	let history = $state<HistoryKeeper | null>(null);
+	let calcHistory = $state<HistoryKeeper | null>(null);
 
 	/**
 	 * B3 : à l'ouverture, un atelier VIDE reçoit une carte prête à taper, tracée
@@ -193,7 +193,7 @@
 		});
 		// Les lignes de Calcul aussi (décision de David du 2026-10-13) : relues
 		// sans rien refaire, et déjà « vues » — pas de pastille sur l'onglet
-		history = keepCalcHistory(desk, { storage: readStorage(), target: window });
+		calcHistory = keepCalcHistory(desk, { storage: readStorage(), target: window });
 		seen = desk.entries.length;
 		// La carte d'accueil AVANT de noter la révision de départ : sinon la simple
 		// visite de `/grapheur` enregistrait une carte vide (revue du lot 6, C2) —
@@ -205,8 +205,8 @@
 		return () => {
 			session?.close();
 			session = null;
-			history?.close();
-			history = null;
+			calcHistory?.close();
+			calcHistory = null;
 		};
 	});
 
@@ -251,7 +251,7 @@
 	// à chaque fois, et c'est ce remplacement qu'on suit
 	$effect(() => {
 		void desk.entries;
-		history?.touch();
+		calcHistory?.touch();
 	});
 
 	// Option B : la courbe suit l'objet. Un seul sens — l'atelier détient l'état.

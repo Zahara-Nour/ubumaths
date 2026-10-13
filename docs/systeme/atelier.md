@@ -549,12 +549,15 @@ Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de re
   n'a ni « Garder », ni « Comment ? », ni tableau, ni graphique (retaper la saisie par ↑ les
   redonne). **Rien n'est refait** : une définition restaurée ne crée ni ne change aucune carte.
   Plafonds : `MAX_KEPT_HISTORY_LENGTH` (200 000 caractères, à côté des 500 000 des cartes), dont
-  40 000 pour les saisies ; saisie et libellé 2 000, texte 10 000 (raccourci « … »), formule 5 000
-  (au-delà, oubliée : la ligne reste en texte), note 1 000. Trop gros ou stockage plein : les
+  40 000 pour les saisies ; saisie et libellé 4 000 (`MAX_DEFINITION_LENGTH`), texte 10 000
+  (raccourci « … »), formule 5 000 (au-delà, oubliée : la ligne reste en texte), note 1 000. Trop gros ou stockage plein : les
   lignes les plus récentes, en silence, jamais d'échec — la clé à part ne coûte jamais les cartes.
   Une version plus récente n'est ni relue ni écrasée ; un état illisible ou une chaîne plus longue
   que le plafond : Calcul repart vide. Le lien `?a=` n'encode que `Atelier.serialize()`, sans
-  l'historique ; le mode éphémère ne lit ni n'écrit cette clé.
+  l'historique ; le mode éphémère ne lit ni n'écrit cette clé. **Deux onglets** : aucune écoute
+  `storage` pour cette clé, le dernier qui range écrase les lignes de l'autre (et un « Repartir
+  de zéro » fait dans l'un revient si l'autre ajoute une ligne) — des lignes d'affichage, jamais
+  les cartes.
 - ⚠️ **Sécurité de la relecture** : ce qui revient du `localStorage` est une entrée **non
   fiable**, et la vue compose les formules en `{@html}` (`convertLatexToMarkup`). Mesuré le
   2026-10-14 (MathLive 0.111.1) : `\htmlStyle{…}{x}` rend un `style`, `\class`, `\cssId`,

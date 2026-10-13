@@ -38,6 +38,13 @@ export interface Session {
 	close(): void;
 }
 
+/** Les lignes de Calcul rangées (`keepCalcHistory`). */
+export interface HistoryKeeper {
+	/** Signaler que les lignes ont changé — déclenche un rangement différé. */
+	touch(): void;
+	close(): void;
+}
+
 /**
  * Ouvrir un atelier : le remplir avec ce qui était rangé, puis le suivre.
  *
@@ -135,12 +142,6 @@ export function openSession(atelier: Atelier, options: SessionOptions): Session 
 // =============================================================================
 // Les lignes de Calcul (décision de David du 2026-10-13, « option 1 »)
 // =============================================================================
-
-export interface HistoryKeeper {
-	/** Signaler que les lignes ont changé — déclenche un rangement différé. */
-	touch(): void;
-	close(): void;
-}
 
 /**
  * Relire les lignes de Calcul rangées dans le pupitre, puis les ranger en

@@ -28,3 +28,8 @@ les lignes de la vue Calcul reviennent au rechargement, comme les cartes. Branch
   `CalcDesk.restoreHistory` ; « Repartir de zéro » actif dès qu'il y a une ligne de Calcul. Tests
   rouges vérifiés (module absent, puis liste blanche neutralisée : 30 échecs en node, une classe
   forgée `evil` dans le DOM). Pas d'étapes ni de « Garder » sur une ligne restaurée.
+- 2026-10-14 — `security-auditor` : 1 bloquant (un ZWJ ou un indicateur régional devant `\\htmlStyle`
+  faisait avaler un `\` à MathLive, `splitGraphemes`) → formules relues limitées à l'ASCII et au
+  Latin-1 ; 1 mineur (imbrication démesurée) → 40 niveaux d'accolades au plus. `code-reviewer` :
+  0 bloquant ; garde de doc (`statistiques.md`), en-tête de `FormulaText`, témoin de la sonde, deux
+  onglets documentés, plafond des saisies sur `MAX_DEFINITION_LENGTH`, ordre des déclarations.

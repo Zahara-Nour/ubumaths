@@ -23,36 +23,10 @@ import type { Entry, ReplayStep } from './desk.svelte';
 import { isQuotaExceeded } from './persistence';
 import { messageParts } from './reciprocal';
 import { isSafeLatex } from './safe-latex';
+import { MAX_DEFINITION_LENGTH } from './types';
 
 // =============================================================================
-// Constantes
-// =============================================================================
-
-export const CALC_HISTORY_STORAGE_KEY = 'chiphre-atelier-historique';
-
-/** À incrémenter dès que la forme rangée change. */
-export const CALC_HISTORY_VERSION = 1;
-
-/** Les 100 dernières lignes, comme `/calc` (`chiphre-calc-history`). */
-export const MAX_KEPT_LINES = 100;
-
-/**
- * En caractères ; les cartes ont droit à 500 000 (`MAX_SERIALIZED_LENGTH`) : à
- * deux, loin des ~5 Mo du navigateur. Plus long à la relecture : forgé, pas lu.
- */
-export const MAX_KEPT_HISTORY_LENGTH = 200_000;
-
-/** Les saisies rappelables par ↑ : une part fixe du plafond, le reste aux lignes. */
-const MAX_TYPED_LENGTH = 40_000;
-
-/** Une saisie : une liste de 200 valeurs (plafond D8) y tient. */
-const MAX_INPUT_LENGTH = 2_000;
-const MAX_TEXT_LENGTH = 10_000;
-const MAX_LATEX_LENGTH = 5_000;
-const MAX_NOTE_LENGTH = 1_000;
-
-// =============================================================================
-// Forme rangée
+// Types
 // =============================================================================
 
 /** Une ligne rangée : ce que l'écran montre, et le geste rejouable. */
@@ -77,6 +51,37 @@ export type LoadedHistory =
 	| { readonly kind: 'loaded'; readonly history: KeptHistory }
 	/** Rangé par une version plus récente : ni relu, ni écrasé. */
 	| { readonly kind: 'too-recent' };
+
+// =============================================================================
+// Constantes
+// =============================================================================
+
+export const CALC_HISTORY_STORAGE_KEY = 'chiphre-atelier-historique';
+
+/** À incrémenter dès que la forme rangée change. */
+export const CALC_HISTORY_VERSION = 1;
+
+/** Les 100 dernières lignes, comme `/calc` (`chiphre-calc-history`). */
+export const MAX_KEPT_LINES = 100;
+
+/**
+ * En caractères ; les cartes ont droit à 500 000 (`MAX_SERIALIZED_LENGTH`) : à
+ * deux, loin des ~5 Mo du navigateur. Plus long à la relecture : forgé, pas lu.
+ */
+export const MAX_KEPT_HISTORY_LENGTH = 200_000;
+
+/** Les saisies rappelables par ↑ : une part fixe du plafond, le reste aux lignes. */
+const MAX_TYPED_LENGTH = 40_000;
+
+/** Une saisie : la plus longue définition permise (200 modalités d'une liste) y tient. */
+const MAX_INPUT_LENGTH = MAX_DEFINITION_LENGTH;
+const MAX_TEXT_LENGTH = 10_000;
+const MAX_LATEX_LENGTH = 5_000;
+const MAX_NOTE_LENGTH = 1_000;
+
+// =============================================================================
+// Forme rangée
+// =============================================================================
 
 const formula = z.string().max(MAX_LATEX_LENGTH).refine(isSafeLatex);
 const name = z.string().min(1).max(100);
@@ -243,7 +248,7 @@ export function saveCalcHistory(
 			return 'removed';
 		}
 		const kept = recentTyped(typed);
-		// La marge couvre l'enveloppe et les échappements que `JSON.stringify` ajoute
+		// La marge couvre l'enveloppe (`version`, clés, crochets)
 		const budget = MAX_KEPT_HISTORY_LENGTH - JSON.stringify(kept).length - 1_000;
 		let lines = recentLines(entries, budget, MAX_KEPT_LINES);
 		for (;;) {

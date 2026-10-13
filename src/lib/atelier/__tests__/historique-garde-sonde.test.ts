@@ -40,6 +40,20 @@ describe('aucune commande permise ne recopie un argument dans un attribut', () =
 		`\\${command} ${TRAP}`
 	];
 
+	// Témoin : si MathLive changeait son balisage, la fouille ne trouverait plus
+	// rien et les tests ci-dessous resteraient verts sans rien prouver
+	it('la fouille voit les attributs des commandes interdites', () => {
+		const forbidden = ['htmlStyle', 'class', 'cssId', 'htmlData', 'href'];
+
+		const seen = forbidden.filter((command) =>
+			shapes(command)
+				.flatMap((latex) => attributeValues(render(latex)))
+				.some((a) => a.includes('zzevil'))
+		);
+
+		expect(seen).toEqual(forbidden);
+	});
+
 	it.each([...MATH_COMMANDS])('\\%s', (command) => {
 		for (const latex of shapes(command)) {
 			const markup = render(latex);
