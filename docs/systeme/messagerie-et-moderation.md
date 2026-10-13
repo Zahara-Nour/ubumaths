@@ -8,7 +8,7 @@ couvre:
   - 'src/lib/components/{moderation,notifications,student-inbox}/**'
   - 'src/lib/components/{AddFriend,FriendRequests,FriendsList,OnlineStatus}.svelte'
   - 'src/lib/stores/{privateMessages,notifications,messageTemplates,mentions,hashtags}.svelte.ts'
-  - 'src/lib/server/{notifications,auto-notifications,warnings,student-inbox,profanity-filter}.ts'
+  - 'src/lib/server/{notifications,auto-notifications,warnings,student-inbox}.ts'
   - 'src/lib/server/validation/{messages,moderation,notifications,warnings,message-templates}.ts'
   - 'src/lib/types/{notification,warnings,messageTemplates,student-inbox}.ts'
   - 'src/lib/utils/{notification-formatters,sanitize-notification}.ts'
@@ -215,7 +215,7 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   `is_flagged` + `flag_reason`. Il **marque**, il ne bloque pas. `ChatMessageList` affiche
   « Ce message a été signalé automatiquement ».
 - Aucun filtre sur `private_messages`, ni sur les notifications.
-- `src/lib/server/profanity-filter.ts` n'est importé par personne (voir Écarts).
+- L'ancien filtre côté serveur (`profanity-filter.ts`, jamais branché) a été retiré le 2026-10-13.
 
 ### Ce que voit et fait le prof (ou l'admin)
 
@@ -340,8 +340,8 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
   `ChatMessageList` ; aucun écran de modération ne liste les messages marqués. Le filtre ne
   connaît que quatre mots. Le commentaire du trigger annonce un contrôle serveur « plus
   sophistiqué » qui n'existe pas.
-- **`profanity-filter.ts` est mort** (son en-tête le dit : « NOT IN USE ») ; la dépendance
-  `bad-words` de `package.json` n'est utilisée que par lui.
+- **Dépendance `bad-words` orpheline** : seul `profanity-filter.ts`, retiré le 2026-10-13, l'importait ;
+  elle reste dans `package.json`.
 - **Levée de restriction non vérifiée.** `unrestrict-user/` fait `.delete()` sans `.select()` :
   un refus de la RLS (0 ligne, pas d'erreur) rendrait « succès », et l'élève resterait restreint
   alors que le prof croit la restriction levée.

@@ -38,7 +38,7 @@ Créer une version "handwritten" des polices KaTeX pour MathLive en :
 ### Étape 1 : Setup
 
 ```bash
-cd tools/shantell-math
+cd tools/chiphre-math
 python -m venv venv
 source venv/bin/activate
 pip install fonttools brotli
@@ -77,7 +77,7 @@ Convertir les polices modifiées en WOFF2 pour le web.
 ## Structure du projet
 
 ```
-tools/shantell-math/
+tools/chiphre-math/
 ├── src/
 │   ├── replace_glyphs.py    # Remplace caractères par Shantell Sans
 │   ├── roughen_math.py      # Effet sketchy sur symboles math
@@ -93,9 +93,9 @@ tools/shantell-math/
 ## Commande pour démarrer
 
 ```
-Crée le projet shantell-math dans tools/ pour modifier les polices KaTeX
+Crée le projet chiphre-math dans tools/ pour modifier les polices KaTeX
 avec Shantell Sans (caractères normaux) et un effet roughen (symboles math).
-Voir tools/shantell-math/PROJECT_BRIEF.md pour les détails.
+Voir tools/chiphre-math/PROJECT_BRIEF.md pour les détails.
 ```
 
 ## Références
