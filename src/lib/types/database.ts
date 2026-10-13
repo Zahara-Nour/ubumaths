@@ -15647,6 +15647,12 @@ export type Database = {
         Returns: Json
       }
       leave_multiplayer_queue: { Args: never; Returns: Json }
+      list_orphan_message_attachment_files: {
+        Args: { p_limit?: number }
+        Returns: {
+          name: string
+        }[]
+      }
       lock_cards: {
         Args: {
           p_card_ids: string[]

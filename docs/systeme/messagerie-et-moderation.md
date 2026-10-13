@@ -10,6 +10,8 @@ couvre:
   - 'src/lib/stores/{privateMessages,notifications,messageTemplates,mentions,hashtags}.svelte.ts'
   - 'src/lib/server/{notifications,auto-notifications,warnings,student-inbox}.ts'
   - 'src/lib/server/validation/{messages,moderation,notifications,warnings,message-templates}.ts'
+  - src/lib/server/message-attachments.ts
+  - src/lib/utils/message-attachment-rules.ts
   - 'src/lib/types/{notification,warnings,messageTemplates,student-inbox}.ts'
   - 'src/lib/utils/{notification-formatters,sanitize-notification}.ts'
   - 'src/routes/(protected)/dashboard/{teacher,admin}/{moderation,notifications,message-templates,friendships}/**'
@@ -73,6 +75,38 @@ Cette zone couvre cinq choses :
   contenu 1-10 000, 100 destinataires max ; `updateMessageSchema` en union discriminée).
 - Tables : `private_messages` (le message), `message_inbox` (une ligne par destinataire :
   lu, étoilé, dossier, statut).
+
+#### Pièces jointes
+
+Décision de David (2026-10-13) : un élève envoie par exemple le scan de son cahier au prof.
+Jusque-là, le bucket n'existait pas en prod et toute pièce jointe échouait en silence.
+
+- **Règles** (`src/lib/utils/message-attachment-rules.ts`, communes au navigateur et au
+  serveur) : images JPEG, PNG, WebP, HEIC et PDF ; 10 Mo ; 3 par message. Le bucket
+  `message-attachments` applique les mêmes limites (migration `20261016101300`).
+- **Bucket privé, sans policy de storage** : seul le client service y dépose et en signe les
+  liens. L'accès est décidé par `src/lib/server/message-attachments.ts` avec le client de
+  l'utilisateur, donc sa RLS :
+  - **envoi** — `POST /api/messages/[id]/attachments` : l'utilisateur est l'expéditeur du message,
+    moins de 3 pièces jointes ; le serveur choisit le chemin (`messages/<message>/<uuid>-<nom>`) et
+    rend un lien d'envoi à usage unique. Le navigateur dépose le fichier directement dans le
+    storage (Vercel refuse les corps de plus de 4,5 Mo), puis enregistre la ligne
+    `message_attachments_v2`, dont la policy d'insertion exige ce rangement ;
+  - **lecture** — `GET /api/messages/attachments/[attachmentId]` : la RLS de
+    `message_attachments_v2` rend la ligne (expéditeur, destinataire qui n'a pas supprimé le
+    message, admin), puis redirection vers un lien signé d'une heure ; sinon 404.
+- **Aucun lien public** : `public_url` n'est plus écrit ni lu.
+- **Fin de vie** : la suppression du compte de l'élève retire ses fichiers
+  ([conformite/rgpd.md](conformite/rgpd.md)) ; la purge des messages et le retrait d'une pièce
+  jointe effacent la ligne, et le cron du dimanche retire les fichiers restés sans ligne
+  (`list_orphan_message_attachment_files`).
+- **Limite connue** : le type d'un fichier est celui que déclare le navigateur (le bucket le
+  vérifie, pas le contenu). Le fichier est servi avec ce type et en téléchargement : un faux PDF
+  ne s'exécute pas.
+
+Tests : `tests/integration/messagerie-pieces-jointes.test.ts` (bucket, policies),
+`tests/integration/messagerie-pieces-jointes-liens.test.ts` (envoi et lecture de bout en bout),
+`src/routes/api/messages/__tests__/attachments.test.ts` (routes).
 
 ### Modération et signalements (chat)
 
