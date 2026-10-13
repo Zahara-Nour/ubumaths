@@ -92,10 +92,10 @@ le SRS ([srs.md](srs.md)).
 
 Les **exercices** (table `exercises`) sont les exercices rédigés des fiches PDF, pas des modèles
 de question. Ils ont leur propre générateur (`src/lib/exercises/generator/instance-generator.ts`,
-syntaxe `{{}}` d'ubumark), leur export Typst (`typst/exercise-typst-generator.ts`), leur import /
+syntaxe `{{}}` d'ubumark, résolue dans l'énoncé, la correction et les réponses `answers_md`), leur export Typst (`typst/exercise-typst-generator.ts`), leur import /
 export validé par Zod (`validation.ts`, `markdown-frontmatter.ts` ; le format v2.0 porte aussi
 `generic_functions`, `resources` et `distribution_mode`, pas le slug), la traduction
-(`translation-status.ts`, `translation-draft.ts`), les images (`services/`) et l'avertissement
+(`translation-status.ts`, `translation-draft.ts` : énoncé, correction et réponses `answers_md`), les images (`services/`) et l'avertissement
 `bare-greek-warnings.ts` (`~2pi~` lu 2 × p × i). `isParameterized` (générateur) dit si un
 exercice a des variables, où qu'elles soient (`shared`, niveaux de guidage, ancienne colonne
 `variables`), y compris sur une ligne brute aux colonnes `null`. Démarche d'écriture : [fiches-exercices](../pratiques/fiches-exercices.md).

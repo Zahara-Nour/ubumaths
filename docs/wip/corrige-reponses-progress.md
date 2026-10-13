@@ -1,7 +1,7 @@
 ---
 title: Corrigés « Réponses » et « Corrigé » des fiches d'exercices
 date: 2026-10-13
-status: lot 1 (code) en cours
+status: lot 1 (code) écrit, à relire (revue, PR)
 ---
 
 # Deux corrigés PDF pour les fiches — point de reprise
@@ -32,4 +32,20 @@ status: lot 1 (code) en cours
 
 ## État
 
-- [ ] lot 1 · [ ] lot 2 · [ ] lot 3
+- [x] lot 1 écrit sur `feat/corrige-reponses` (pas encore poussé) · [ ] lot 2 · [ ] lot 3
+
+### Lot 1 — ce qui est fait (2026-10-13)
+
+- Champ `answers_md` (+ EN) : types, Zod (écriture, réponse, relecture de signalement, export),
+  générateur d'instance (`{{var}}` résolues), copie, API élève (sous `correction_visible` seulement).
+- Générateur prof : modes `worksheet | answers | correction`, jamais d'énoncé dans les corrigés ;
+  polices du Corrigé par règles encadrées (`src/lib/typst/correction-fonts.ts`), option
+  `correctionFonts: false`. Libellés EN : Corrigé = « Solutions », Réponses = « Answers ».
+- Compilateur du Corrigé (`src/lib/typst/compiler/correction-fonts-compiler.ts`, partagé avec
+  /test-font) + repli police standard (`toaster.warning`).
+- `PdfPreview` : Fiche · Réponses · Corrigé ; élève : « avec réponses » / « avec corrigé ».
+- Preuve : 32 fiches en base, Corrigé FR + EN = 64 compilations par le compilateur de prod avec
+  les polices : 0 échec. Glyphes manquants (≠, ·, calligraphiques, grec en texte) : repli de
+  glyphe par Typst, sans erreur (point ouvert : couverture de Chiphre Math / Shantell).
+- Point ouvert : avec ces polices plus larges, une égalité alignée longue peut passer à la ligne
+  dans sa cellule (d720d039, E(G) = … page 2) : taille du Corrigé à trancher.
