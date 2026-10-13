@@ -83,6 +83,8 @@
 		"(d)\\perp(d')\\quad(d)\\parallel(\\Delta)\\nparallel(D)\\quad\\angle ABC=\\measuredangle ABC=90^\\circ\\quad\\hat{A}\\quad\\bar{x}\\quad\\tilde{u}\\quad\\triangle ABC",
 		// Lettres grecques
 		'\\alpha\\beta\\gamma\\delta\\varepsilon\\zeta\\eta\\theta\\iota\\kappa\\lambda\\mu\\nu\\rho\\sigma\\tau\\upsilon\\varphi\\phi\\chi\\psi\\omega\\quad\\xi\\vartheta\\varpi\\varrho\\varsigma\\quad\\Gamma\\Delta\\Theta\\Lambda\\Xi\\Pi\\Sigma\\Upsilon\\Phi\\Psi',
+		// Lettres calligraphiques
+		'\\mathcal{S}=\\{2\\}\\quad\\mathcal{C}_f\\quad\\mathcal{P}\\quad\\mathcal{D}_f\\quad\\mathcal{L}\\quad\\mathcal{A}\\quad S\\ne\\mathcal{S}',
 		// Lettres-symboles et divers
 		'E=\\hbar\\omega\\quad\\ell\\quad 20\\,\\%\\quad u_1,\\ldots,u_n\\quad 1+\\cdots+n\\quad\\therefore\\ \\because\\quad\\spadesuit\\heartsuit\\diamondsuit\\clubsuit',
 		'2\\pi r\\quad\\frac{\\partial f}{\\partial x}\\quad\\Omega\\quad x\\times y',

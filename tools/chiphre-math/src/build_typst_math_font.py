@@ -11,7 +11,8 @@ and writes that table:
 
 - letters: Math-Italic → math italic code points (U+1D434…, ℎ, Greek, π),
   Main-Regular → upright letters, digits, operators, punctuation, Greek capitals;
-  AMS → ℕ ℤ ℚ ℝ ℂ (the \\mathbb letters) and ⩽ ⩾;
+  AMS → ℕ ℤ ℚ ℝ ℂ (the \\mathbb letters) and ⩽ ⩾; Caligraphic → math script
+  capitals (U+1D49C…, ℬ ℰ ℱ ℋ ℐ ℒ ℳ ℛ: Typst's cal());
 - sizes: the glyph of Main (or Size1 for the big operators), then Size1 to
   Size4, become the vertical variants of ( [ { | ⟨ ⌈ ⌊ / √ ∑ ∏ ∐ ∫ ∬ ∭;
 - stacked pieces: the Size4 pieces (⎛ ⎜ ⎝…, ⎷ U+E000 U+E001) and the Size1
@@ -54,6 +55,7 @@ SOURCES = {
     "Main": "KaTeX_Main-Regular",
     "MathIt": "KaTeX_Math-Italic",
     "AMS": "KaTeX_AMS-Regular",
+    "Cal": "KaTeX_Caligraphic-Regular",
     "S1": "KaTeX_Size1-Regular",
     "S2": "KaTeX_Size2-Regular",
     "S3": "KaTeX_Size3-Regular",
@@ -158,6 +160,15 @@ def math_italic_codepoint(char: str) -> Optional[int]:
     return None
 
 
+# Capitales « script » rangées hors du bloc U+1D49C (bloc des symboles de type lettre)
+SCRIPT_EXCEPTIONS = {"B": 0x212C, "E": 0x2130, "F": 0x2131, "H": 0x210B, "I": 0x2110, "L": 0x2112, "M": 0x2133, "R": 0x211B}
+
+
+def math_script_codepoint(char: str) -> int:
+    """Point de code « script mathématique » d'une capitale latine (cal() de Typst)."""
+    return SCRIPT_EXCEPTIONS.get(char, 0x1D49C + ord(char) - ord("A"))
+
+
 class FontBuilder:
     def __init__(self) -> None:
         self.sources = {key: TTFont(SOURCE_DIR / f"{name}.woff2") for key, name in SOURCES.items()}
@@ -209,6 +220,8 @@ class FontBuilder:
             self.map(codepoint, "AMS", ord(char))
         for codepoint in (0x2A7D, 0x2A7E):
             self.map(codepoint, "AMS")
+        for char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+            self.map(math_script_codepoint(char), "Cal", ord(char))
         # Les grands opérateurs n'existent qu'en Size1-2 : la taille en ligne est le glyphe de base
         for char in BIG_OPERATORS:
             self.map(ord(char), "S1")
