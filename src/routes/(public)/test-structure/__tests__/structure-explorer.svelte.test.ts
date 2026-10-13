@@ -232,7 +232,10 @@ describe('clavier sur la lecture principale (revue du lot 4)', () => {
 		await expect
 			.element(page.getByRole('button', { name: 'par', exact: true }))
 			.toBeInTheDocument();
-		// Premier arrêt : « la », qui désigne la somme
+		// Premier arrêt : le champ lui-même (on l'écrit au clavier, Entrée) ; puis « la »,
+		// qui désigne la somme
+		await userEvent.tab();
+		expect(document.activeElement).toBe(stage);
 		await userEvent.tab();
 		expect(document.activeElement?.getAttribute('aria-label')).toBe('la');
 		await expect.poll(() => stage?.dataset.framedId).toBe('0');

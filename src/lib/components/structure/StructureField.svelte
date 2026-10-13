@@ -94,9 +94,11 @@
 		parsed && reading && readId !== null && parsed.nodes[readId] ? readingOf(parsed, readId) : null
 	);
 
-	// Une expression venue d'ailleurs (exemple chargé) : sélection et historique repartent de zéro
+	// Une expression venue d'ailleurs (exemple chargé) ou un autre sens de `AB` (les
+	// numéros de sous-expressions changent) : sélection et historique repartent de zéro
 	$effect(() => {
 		const current = latex;
+		void capitalPairs;
 		untrack(() => {
 			selectedId = null;
 			readId = null;
@@ -154,9 +156,9 @@
 						>{segment.latex}</math-span
 					>{:else}{segment.text}{/if}{/each}
 		</div>
-	{:else if explore && result.status === 'figureName'}
+	{:else if (explore || move) && result.status === 'figureName'}
 		<div class="structure-advice" role="status" data-figure-name>{result.message}</div>
-	{:else if explore && result.status === 'unrecognized'}
+	{:else if (explore || move) && result.status === 'unrecognized'}
 		<div class="text-muted-foreground">Expression non reconnue ou incomplète.</div>
 	{/if}
 

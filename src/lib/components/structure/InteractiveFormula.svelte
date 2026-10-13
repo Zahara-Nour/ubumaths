@@ -22,6 +22,7 @@
 -->
 <script lang="ts">
 	import { convertLatexToMarkup, type MathfieldElement } from 'mathlive';
+	import { onDestroy } from 'svelte';
 	import {
 		cardLatex,
 		expressionLatex,
@@ -166,6 +167,8 @@
 	let settling = false;
 	/** Cadres du dernier rendu, relatifs au champ ; vidé à chaque rendu */
 	let frameCache: Map<number, Box> | null = null;
+	/** Pose en cours (150 ms) : annulée au démontage */
+	let settleTimer: ReturnType<typeof setTimeout> | null = null;
 
 	// Rendu au repos (et après un déplacement, un changement de réglage)
 	$effect(() => {
@@ -363,6 +366,18 @@
 		frameCache = null;
 	}
 
+	/** Fenêtre redimensionnée (rotation d'une tablette) : les contours se recalent */
+	function handleResize() {
+		frameCache = null;
+		if (!drag && !settling) drawOutlines();
+	}
+
+	onDestroy(() => {
+		if (settleTimer) clearTimeout(settleTimer);
+		if (drag?.raf) cancelAnimationFrame(drag.raf);
+		drag = null;
+	});
+
 	/** Pose un cadre (coordonnées relatives au champ) ; `null` : le cache */
 	function placeFrame(element: HTMLElement | undefined, box: Box | null | undefined) {
 		if (!element) return;
@@ -501,7 +516,8 @@
 		} catch {
 			// Pointeur déjà relâché (événement synthétique) : la capture est facultative
 		}
-		event.preventDefault();
+		// Sans déplacement possible, le doigt garde le défilement de la page
+		if (move) event.preventDefault();
 	}
 
 	function handlePointerUp(event: PointerEvent) {
@@ -512,6 +528,23 @@
 			return;
 		}
 		if (drag && event.pointerId === drag.pointerId) drop(drag);
+	}
+
+	/** Geste annulé par le système : comme Échap, rien ne change (E2.5) */
+	function handlePointerCancel(event: PointerEvent) {
+		if (pending && event.pointerId === pending.pointerId) pending = null;
+		if (drag && event.pointerId === drag.pointerId) {
+			drag.target = drag.from;
+			drop(drag);
+		}
+	}
+
+	/** Au clavier : Entrée ouvre la saisie, curseur en fin d'expression */
+	function handleFieldKeydown(event: KeyboardEvent) {
+		if (event.key !== 'Enter' || editAt || drag || event.target !== wrapper) return;
+		event.preventDefault();
+		showFrames(null);
+		editAt = { rx: 1, ry: 0.5 };
 	}
 
 	function startEditing(event: PointerEvent) {
@@ -751,13 +784,17 @@
 		floating.style.top = '0px';
 		floating.classList.add('landing');
 
-		setTimeout(() => {
+		settleTimer = setTimeout(() => {
+			settleTimer = null;
 			termElement?.style.removeProperty('visibility');
 			if (floating) floating.hidden = true;
 			settling = false;
 			isDragging = false;
+			frameCache = null;
+			// L'expression a changé d'ailleurs pendant le geste : elle gagne
+			if (d.structure !== structure) return;
 			if (d.target !== d.from) onmove?.(stripMarkers(finalLatex));
-			else frameCache = null;
+			else drawOutlines();
 		}, SETTLE_MS);
 	}
 
@@ -767,12 +804,14 @@
 	 * la formule (`onedit` si elle a changé) ; Échap : retour sans rien changer.
 	 */
 	function initEditor(element: MathfieldElement) {
-		element.value = latex;
+		const opened = latex;
+		element.value = opened;
 		let cancelled = false;
 		const finish = () => {
 			const value = element.value;
 			editAt = null;
-			if (!cancelled && value !== latex) onedit?.(value);
+			// Changée d'ailleurs pendant la saisie : la nouvelle expression gagne
+			if (!cancelled && value !== opened && latex === opened) onedit?.(value);
 		};
 		const handleEditorKeydown = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') cancelled = true;
@@ -803,7 +842,7 @@
 	}
 </script>
 
-<svelte:window onresize={invalidateFrames} onkeydown={handleKeydown} />
+<svelte:window onresize={handleResize} onkeydown={handleKeydown} />
 
 <div
 	bind:this={wrapper}
@@ -812,14 +851,17 @@
 	class:touch
 	class:editing={editAt !== null}
 	class:lifted={lift}
+	class:movable={move}
 	data-field
 	role="application"
+	tabindex="0"
 	aria-label={label}
+	onkeydown={handleFieldKeydown}
 	onpointerenter={invalidateFrames}
 	onpointerdown={handlePointerDown}
 	onpointermove={handlePointerMove}
 	onpointerup={handlePointerUp}
-	onpointercancel={handlePointerUp}
+	onpointercancel={handlePointerCancel}
 	onpointerleave={() => {
 		if (!pending && !drag && !settling && highlightId === null) showFrames(null);
 	}}
@@ -859,7 +901,6 @@
 		background: var(--color-muted);
 		font-size: 2.75rem;
 		text-align: center;
-		touch-action: none;
 		user-select: none;
 		cursor: text;
 	}
@@ -867,6 +908,11 @@
 	/* La carte soulevée monte : de la place en haut */
 	.field.lifted {
 		padding-top: 4rem;
+	}
+
+	/* Seulement si l'on peut déplacer : sinon le doigt fait défiler la page */
+	.field.movable {
+		touch-action: none;
 	}
 
 	.field:global(.can-grab) {

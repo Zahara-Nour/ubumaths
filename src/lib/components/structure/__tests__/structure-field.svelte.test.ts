@@ -172,6 +172,45 @@ describe('F2/F4 — appui puis mouvement : déplacer', () => {
 	});
 });
 
+/** Appui, mouvement jusqu'à (toX, y), puis `finish` à la place du relâcher */
+async function dragThen(target: Element, x: number, y: number, toX: number, finish: () => void) {
+	pointer('pointermove', x, y, target);
+	pointer('pointerdown', x, y, target);
+	for (let i = 1; i <= 12; i++) {
+		pointer('pointermove', x + ((toX - x) * i) / 12, y, target);
+		await new Promise((resolve) => requestAnimationFrame(resolve));
+	}
+	await new Promise((resolve) => setTimeout(resolve, 200));
+	finish();
+	await new Promise((resolve) => setTimeout(resolve, 300));
+}
+
+describe('F4 — un déplacement interrompu ne change rien (E2.5)', () => {
+	it('Échap pendant le glisser : la partie revient à sa place', async () => {
+		const { container } = await renderField({ latex: '2x+1' });
+		const field = container.querySelector('[data-field]');
+		if (!field) throw new Error('champ absent');
+		const one = rectOf(container, idOf('2x+1', '1'));
+		const twoX = rectOf(container, idOf('2x+1', '2 x'));
+		await dragThen(field, one.left + one.width / 2, one.top + one.height / 2, twoX.left - 10, () =>
+			window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+		);
+		expect(latexOf(container)).toBe('2x+1');
+	});
+
+	it('geste annulé par le système (pointercancel) : rien ne change', async () => {
+		const { container } = await renderField({ latex: '2x+1' });
+		const field = container.querySelector('[data-field]');
+		if (!field) throw new Error('champ absent');
+		const one = rectOf(container, idOf('2x+1', '1'));
+		const twoX = rectOf(container, idOf('2x+1', '2 x'));
+		await dragThen(field, one.left + one.width / 2, one.top + one.height / 2, twoX.left - 10, () =>
+			pointer('pointercancel', twoX.left - 10, one.top + one.height / 2, field)
+		);
+		expect(latexOf(container)).toBe('2x+1');
+	});
+});
+
 describe('F5 — Annuler', () => {
 	it('revient au déplacement précédent ; grisé quand il n’y a rien à annuler', async () => {
 		const { container } = await renderField({ latex: '2x+1' });
@@ -187,6 +226,42 @@ describe('F5 — Annuler', () => {
 		undo()?.click();
 		await expect.poll(() => latexOf(container)).toBe('2x+1');
 		await expect.poll(() => undo()?.disabled).toBe(true);
+	});
+});
+
+describe('F5 — une saisie vide l’historique', () => {
+	it('après un déplacement, une frappe : « Annuler » grisé', async () => {
+		const { container } = await renderField({ latex: '2x+1' });
+		const field = container.querySelector('[data-field]');
+		const undo = () => container.querySelector<HTMLButtonElement>('[data-undo]');
+		if (!field) throw new Error('champ absent');
+		const one = rectOf(container, idOf('2x+1', '1'));
+		const twoX = rectOf(container, idOf('2x+1', '2 x'));
+		await dragTo(field, one.left + one.width / 2, one.top + one.height / 2, twoX.left - 10);
+		await expect.poll(() => undo()?.disabled).toBe(false);
+		const plus = rectOf(container, idOf('1 + 2 x', '1'));
+		pointer('pointerdown', plus.left + 2, plus.top + 4, field);
+		pointer('pointerup', plus.left + 2, plus.top + 4, field);
+		const editor = () => container.querySelector<HTMLElement & { value: string }>('math-field');
+		await expect.poll(() => editor()).not.toBeNull();
+		const mf = editor();
+		if (!mf) throw new Error('saisie absente');
+		mf.value = '1+2x+3';
+		mf.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+		await expect.poll(() => latexOf(container)).toBe('1+2x+3');
+		expect(undo()?.disabled).toBe(true);
+	});
+});
+
+describe('clavier : le champ s’atteint et s’écrit sans souris', () => {
+	it('focusable ; Entrée ouvre la saisie', async () => {
+		const { container } = await renderField({ latex: '2x+1' });
+		const field = container.querySelector<HTMLElement>('[data-field]');
+		if (!field) throw new Error('champ absent');
+		expect(field.tabIndex).toBe(0);
+		field.focus();
+		field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+		await expect.poll(() => container.querySelector('math-field')).not.toBeNull();
 	});
 });
 
@@ -270,6 +345,20 @@ describe('F7 — élève de 6e ou avant', () => {
 		const two = rectOf(container, idOf('2+3', '2'));
 		await dragTo(field, three.left + three.width / 2, three.top + three.height / 2, two.left - 10);
 		await expect.poll(() => latexOf(container)).toBe('3 + 2');
+	});
+});
+
+describe('F3 — mode tactile : les cadres restent après un lâcher sur place', () => {
+	it('appui, petit mouvement, lâcher : toujours 6 cadres', async () => {
+		const { container } = await renderField({ latex: '2x+3y', touch: true });
+		const field = container.querySelector('[data-field]');
+		if (!field) throw new Error('champ absent');
+		await expect.poll(() => container.querySelectorAll('.part-outline').length).toBe(6);
+		const y = rectOf(container, idOf('2x+3y', 'y'));
+		await dragTo(field, y.left + y.width / 2, y.top + y.height / 2, y.left + y.width / 2 + 8);
+		await new Promise((resolve) => setTimeout(resolve, 300));
+		expect(latexOf(container)).toBe('2x+3y');
+		await expect.poll(() => container.querySelectorAll('.part-outline').length).toBe(6);
 	});
 });
 
