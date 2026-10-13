@@ -3,6 +3,7 @@ couvre:
   - 'src/lib/ubumark/**'
   - 'src/lib/components/markdown/**'
   - 'src/lib/extensions/**'
+  - 'src/lib/resources/**'
   - 'src/lib/components/rich-text/markdown-{import,export}.ts'
   - src/lib/components/exercises/LaTeXImportDialog.svelte
   - src/lib/utils/markdown-cache.ts
@@ -76,6 +77,35 @@ Hors périmètre : les **QCM** (choix, mélange) ne sont pas de la notation ubum
 - **Contrôle d'auteur** : `scripts/check-ubumark.ts` (`pnpm check:ubumark`).
 - **Instanciation** des modèles : `src/lib/questions/generator/instance-generator.ts`
   (`generateInstance`) et `src/lib/questions/generator/content-resolver.ts` appellent le paramétrage.
+
+### Références internes et adressage — `src/lib/resources/`
+
+Vérifié contre le code le 2026-10-13. Une référence `[[type:uuid|libellé]]` (ou
+`[[worksheet:uuid#3,5-7|libellé]]`) cite une ressource ; ce module dit **où elle vit** pour un
+lecteur donné, et rien de plus (le droit de lire reste aux gardes des routes et à la RLS).
+
+- `kinds.ts` : `RESOURCE_KINDS` (exercice, fiche, `worksheet_exercise` — l'identifiant est celui
+  de la jonction `worksheet_exercises` —, question, évaluation, chapitre, exercice Python,
+  notebook, construction, document) et `isResourceKind`. Sans dépendance, importable côté serveur.
+- `registry.ts` : `RESOURCE_REGISTRY` (libellé, icône, une route par rôle `ViewerRole` :
+  `teacher`, `student`, `admin`, `public`, ou `null`) et `resolveResource` → `url` ou `null`.
+  Routes construites par `resolve()` de SvelteKit : une route disparue est une erreur de type.
+  Appelants : `InternalLink.svelte` (rendu ubumark), la page `/dashboard/teacher/recherche`.
+- `references.ts` : `REFERENCE_REGEX` (même grammaire que le parser, `markdown-parser.ts`),
+  `extractResourceReferences` (dédoublonnées, sélection comprise), `referenceIdsOfKind`,
+  `referencesToLabels` (aperçu en texte du cahier de texte). Lus par
+  `src/lib/server/curriculum-coverage.ts` (couverture du programme tirée d'une séance) et
+  `src/lib/server/worksheets/citations.ts`.
+- `linkify.ts` : `linkifyResourceReferences` change les références en liens **dans du HTML**
+  (cahier de texte saisi dans TipTap), à appliquer **après** l'assainissement ; un type sans page
+  pour ce lecteur reste du texte grisé. Appelants : cahier de texte élève et cahier public.
+- `prefixes.ts` (`KIND_PREFIXES`, `parseResourceQuery`, `prefixHint`) et
+  `exercise-selection.ts` (`parseExerciseSelection`, `formatExerciseSelection`,
+  `describeExerciseSelection`) servent le sélecteur `[[` de
+  `src/lib/extensions/resource-link-extension.ts` : `[[exos:derivees#3` cherche les fiches et vise
+  l'exercice 3. La sélection désigne des **numéros** dans la fiche, pas des identifiants.
+- Tests : `src/lib/resources/__tests__/` ; `registry.test.ts` parcourt `src/routes` et vérifie
+  que chaque route déclarée existe.
 
 ## La syntaxe
 

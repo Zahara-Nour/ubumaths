@@ -11,6 +11,8 @@ couvre:
   - 'src/lib/server/validation/{errors,bug-reports,health,search}.ts'
   - 'src/lib/server/openapi/**'
   - 'src/routes/(protected)/dashboard/admin/debug/api-docs/**'
+  - 'src/routes/api/latex/**'
+  - src/lib/server/validation/latex.ts
 ---
 
 # Surveillance des erreurs, signalements, santé et outils admin
@@ -206,6 +208,11 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   refuse un chemin qui sort de `docs/` (`..`).
 - `/dashboard/admin/debug/*` : pages d'essai (base, session, RLS, avatar, roue, éditeurs,
   PDF Typst et LaTeX, MathField…). Le menu est dans `debug/+layout.svelte`.
+- `POST /api/latex/compile` (vérifié le 2026-10-13) : relais vers `texlive.net`
+  (`latexcgi`) pour la page `debug/latex-preview`, son seul appelant. Compte exigé
+  (`requireAuth`, l'ancien relais ouvert du finding H13) ; Zod `compileLatexSchema`
+  (`src/lib/server/validation/latex.ts` : 50 000 caractères au plus, `svg` / `png` / `pdf`,
+  corps 8 à 72). La réponse de texlive.net est renvoyée telle quelle, avec son `Content-Type`.
 - `src/lib/utils/version.ts` : `getVersion()` / `getRawVersion()`, lisent
   `__APP_VERSION__` injecté par `vite.config.ts`. Affichés par `InfoPanel.svelte` et la
   page admin des réglages.
@@ -370,3 +377,6 @@ Constatés le 2026-10-13, non corrigés.
   route (`/api/messages`, `/api/questions`, `/api/notifications`, `/api/rewards/award`).
 - **Commentaire périmé** : l'en-tête de `healthStats.ts` dit que `server_cache`,
   `background_job_runs` et les vues `admin_*` manquent dans `database.ts` ; elles y sont.
+- **`/api/latex/compile` répond 500 à une entrée invalide** : le `throw error(400, …)` de la
+  validation (et l'erreur d'un texlive.net en panne) est rattrapé par le `catch` global, qui
+  relance un 500 « Compilation failed: Unknown error » (`HttpError` n'étend pas `Error`).
