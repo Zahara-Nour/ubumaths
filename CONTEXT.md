@@ -9,6 +9,12 @@ table ou d'écrire à David. Les décisions figées (le _pourquoi_) vivent dans 
 
 Colonne « Code » : identifiant anglais utilisé dans le dépôt (règle du CLAUDE.md).
 
+**Messages d'erreur : neutres, sans personne** (décision de David, 2026-10-13). Ni « tu » ni
+« vous », ni possessif de 2ᵉ personne : « Impossible de vérifier l'accès », « Modification
+réservée à l'auteur du document », « Réessayer dans un instant ». Vaut pour tout message
+d'erreur rendu par le serveur ou affiché après un échec, quel que soit le rôle du lecteur. Les
+textes d'interface (boutons, consignes, récits) gardent leur ton.
+
 ---
 
 ## La plateforme
