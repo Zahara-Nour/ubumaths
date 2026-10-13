@@ -29,7 +29,7 @@ describe('/auth/update-password — messages en français', () => {
 	it('sans session : le lien a expiré', async () => {
 		const res = await run({ user: false });
 		expect(res.status).toBe(401);
-		expect(res.data.error).toMatch(/lien a expiré/);
+		expect(res.data.error).toMatch(/Lien expiré/);
 	});
 
 	it('mots de passe différents', async () => {

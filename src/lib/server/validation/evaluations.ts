@@ -177,7 +177,7 @@ export const assignEvaluationSchema = z
 		(data) =>
 			(data.class_ids && data.class_ids.length > 0) ||
 			(data.student_ids && data.student_ids.length > 0),
-		{ message: 'Choisis au moins une classe ou un élève' }
+		{ message: 'Choisir au moins une classe ou un élève' }
 	);
 
 /** Liste d'identifiants de classes sérialisée par le formulaire d'assignation */

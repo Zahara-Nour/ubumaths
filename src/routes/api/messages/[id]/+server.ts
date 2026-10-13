@@ -28,7 +28,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 
 			// Check if it's a permission error
 			if (fetchError.message?.includes('do not have access')) {
-				throw error(403, "Vous n'avez pas accès à ce message");
+				throw error(403, 'Accès refusé à ce message');
 			}
 
 			throw error(500, 'Erreur lors de la récupération du message');

@@ -42,7 +42,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	}
 
 	if (trade.initiator_id !== userId && trade.partner_id !== userId) {
-		throw error(403, "Vous n'êtes pas participant à cet échange");
+		throw error(403, 'Accès réservé aux participants de cet échange');
 	}
 
 	// Get chat messages
@@ -107,7 +107,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	if (trade.initiator_id !== userId && trade.partner_id !== userId) {
-		throw error(403, "Vous n'êtes pas participant à cet échange");
+		throw error(403, 'Accès réservé aux participants de cet échange');
 	}
 
 	if (trade.status === 'cancelled') {

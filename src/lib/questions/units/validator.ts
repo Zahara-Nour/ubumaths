@@ -86,7 +86,7 @@ export interface ValidationResult {
 
 // Les messages où l'UNITÉ est en cause vivent dans `./feedback` (textes figés).
 const DEFAULT_MESSAGES = {
-	invalidInput: 'Réponse invalide. Vérifiez le format.',
+	invalidInput: 'Réponse invalide : vérifier le format.',
 	incorrectValue: 'Valeur incorrecte.',
 	wrongBoth: 'Valeur et unité incorrectes.'
 };

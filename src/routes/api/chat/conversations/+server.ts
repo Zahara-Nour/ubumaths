@@ -110,7 +110,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (createError) {
 			// Handle specific error messages from RPC
 			if (createError.message.includes('must be friends')) {
-				throw error(403, 'Vous devez être ami avec cet utilisateur pour discuter');
+				throw error(403, 'Amitié requise avec cet utilisateur pour discuter');
 			}
 			if (createError.message.includes('already exists')) {
 				throw error(409, 'La conversation existe déjà');

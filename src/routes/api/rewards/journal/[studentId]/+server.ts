@@ -57,7 +57,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	const hasAccess = await verifyTeacherStudentWithRole(user.id, studentId, profile, supabase);
 
 	if (!hasAccess) {
-		throw error(403, 'Vous ne pouvez consulter que le journal de vos propres élèves');
+		throw error(403, 'Consultation réservée au journal des élèves du professeur');
 	}
 
 	// Parse and validate query parameters

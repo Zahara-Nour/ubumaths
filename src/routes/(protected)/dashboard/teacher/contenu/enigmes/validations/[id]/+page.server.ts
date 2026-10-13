@@ -48,7 +48,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 
 	// Verify teacher owns this riddle
 	if (attempt.riddle.created_by !== user.id) {
-		throw error(403, 'Vous ne pouvez valider que vos propres énigmes');
+		throw error(403, 'Validation réservée à l’auteur de l’énigme');
 	}
 
 	// La page affiche la correction : elle vit dans `riddle_solutions`, que la RLS ouvre

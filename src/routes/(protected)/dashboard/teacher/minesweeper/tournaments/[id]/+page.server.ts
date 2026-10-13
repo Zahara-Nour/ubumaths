@@ -58,7 +58,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch, url }) => {
 
 	// Verify teacher is the creator
 	if (tournament.creator_id !== user.id) {
-		throw error(403, 'Vous ne pouvez gerer que vos propres tournois');
+		throw error(403, 'Gestion réservée au créateur du tournoi');
 	}
 
 	// Auto-finalize if tournament ended but not yet finalized

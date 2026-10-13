@@ -53,7 +53,7 @@ export const chooseCardsSchema = z.object({
 				.regex(/^[a-z0-9-]+$/i, 'Identifiant de carte VIP invalide')
 		)
 		.min(1, 'Choisis au moins une carte VIP')
-		.max(10, 'Tu ne peux pas choisir plus de 10 cartes VIP')
+		.max(10, 'Impossible de choisir plus de 10 cartes VIP')
 });
 
 // ============================================================================

@@ -146,7 +146,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 					// panne doit se distinguer d'un refus mérité.
 					if (tournamentClassesError && tournamentClassesError.code !== 'PGRST116') {
 						logger.error('Contrôle d’accès impossible :', tournamentClassesError);
-						throw error(500, 'Impossible de vérifier votre accès');
+						throw error(500, 'Impossible de vérifier l’accès');
 					}
 
 					const tournamentClassIds = (tournamentClasses || []).map((tc) => tc.class_id);

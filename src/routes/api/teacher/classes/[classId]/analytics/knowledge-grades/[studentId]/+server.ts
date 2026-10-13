@@ -47,7 +47,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 	// panne doit se distinguer d'un refus mérité.
 	if (membershipError) {
 		logger.error('Contrôle d’accès impossible :', membershipError);
-		return json({ error: 'Impossible de vérifier votre accès' }, { status: 500 });
+		return json({ error: 'Impossible de vérifier l’accès' }, { status: 500 });
 	}
 
 	if (!membership) {

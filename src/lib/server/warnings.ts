@@ -193,7 +193,7 @@ export async function getClassWarnings(options: {
 
 	if (!classCheck) {
 		logger.error('[getClassWarnings] Teacher does not own class:', classId);
-		throw error(403, 'Tu ne peux pas voir les avertissements de cette classe');
+		throw error(403, 'Accès refusé aux avertissements de cette classe');
 	}
 
 	// Fetch all ACTIVE warnings for this class and period

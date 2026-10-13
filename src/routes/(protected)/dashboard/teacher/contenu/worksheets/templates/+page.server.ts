@@ -200,7 +200,7 @@ export const actions: Actions = {
 
 		if (count && count > 0) {
 			return fail(400, {
-				message: `Ce template est utilise par ${count} feuille(s). Retirez-le d'abord de ces feuilles.`
+				message: `Ce template est utilisé par ${count} feuille(s) : le retirer d'abord de ces feuilles.`
 			});
 		}
 

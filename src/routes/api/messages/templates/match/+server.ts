@@ -62,7 +62,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		// panne doit se distinguer d'un refus mérité.
 		if (classMembersError && classMembersError.code !== 'PGRST116') {
 			logger.error('Contrôle d’accès impossible :', classMembersError);
-			return error(500, 'Impossible de vérifier votre accès');
+			return error(500, 'Impossible de vérifier l’accès');
 		}
 
 		userClassIds = classMembers?.map((cm) => (cm as { class_id: string }).class_id) || [];

@@ -46,7 +46,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	if (report.user_id !== user.id) {
-		throw error(403, 'Vous ne pouvez ajouter une capture que sur vos propres rapports');
+		throw error(403, 'Ajout de capture réservé à l’auteur du rapport');
 	}
 
 	// Check Content-Type

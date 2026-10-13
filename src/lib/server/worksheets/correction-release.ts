@@ -270,7 +270,7 @@ export async function releaseCorrections(
 	if (!isCreator && !isAdmin) {
 		return {
 			success: false,
-			message: "Vous n'etes pas autorise a publier les corrections de cette assignation"
+			message: 'Publication des corrections de cette assignation non autorisée'
 		};
 	}
 
@@ -347,7 +347,7 @@ export async function revokeCorrections(
 	if (!isCreator && !isAdmin) {
 		return {
 			success: false,
-			message: "Vous n'etes pas autorise a modifier cette assignation"
+			message: 'Modification de cette assignation non autorisée'
 		};
 	}
 
@@ -417,7 +417,7 @@ export async function updateCorrectionSettings(
 	if (assignment.created_by !== userId) {
 		return {
 			success: false,
-			message: "Vous n'etes pas autorise a modifier cette assignation"
+			message: 'Modification de cette assignation non autorisée'
 		};
 	}
 

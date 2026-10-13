@@ -73,7 +73,7 @@ class QuestionCartStore {
 			console.error('Failed to save cart to localStorage:', error);
 			// Handle quota exceeded or other errors
 			if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-				alert("Le panier est plein. Veuillez supprimer des questions avant d'en ajouter d'autres.");
+				alert("Le panier est plein : supprimer des questions avant d'en ajouter d'autres.");
 			}
 		}
 	}

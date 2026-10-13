@@ -78,7 +78,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// panne doit se distinguer d'un refus mérité.
 	if (studentRawError && studentRawError.code !== 'PGRST116') {
 		logger.error('Contrôle d’accès impossible :', studentRawError);
-		throw error(500, 'Impossible de vérifier votre accès');
+		throw error(500, 'Impossible de vérifier l’accès');
 	}
 
 	if (!studentRaw) throw error(404, 'Élève introuvable');
@@ -135,7 +135,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	// Scope check: in one of my classes OR I have at least one direct assignment
 	if (!isInMyClasses && directAssignedExoIds.size === 0) {
-		throw error(403, "Cet élève n'est pas dans votre périmètre");
+		throw error(403, 'Cet élève est hors du périmètre autorisé');
 	}
 
 	// 6. My class-level assignments touching this student (only on classes they belong to)

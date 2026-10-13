@@ -127,7 +127,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			},
 			manifest: null,
 			error:
-				'Impossible de charger les donnees de migration. Verifiez que le fichier manifest.json existe.'
+				'Impossible de charger les données de migration. Vérifier que le fichier manifest.json existe.'
 		};
 	}
 };

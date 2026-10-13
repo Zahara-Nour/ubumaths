@@ -303,7 +303,7 @@ async function checkAndAwardMathemoMilestones(
 	// une seconde fois.
 	if (existingError) {
 		logger.error('Succès déjà obtenus illisibles :', existingError);
-		throw error(500, 'Impossible de vérifier vos succès');
+		throw error(500, 'Impossible de vérifier les succès');
 	}
 
 	const existingIds = new Set((existing || []).map((e) => e.achievement_id));

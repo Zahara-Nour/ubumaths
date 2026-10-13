@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const rateLimitResult = await checkTutorRateLimit(user.id, exerciseContext?.exerciseId);
 			if (!rateLimitResult.allowed) {
 				throw error(429, {
-					message: rateLimitResult.message || 'Limite de tuteur dépassée. Réessayez plus tard.'
+					message: rateLimitResult.message || 'Limite de tuteur dépassée. Réessayer plus tard.'
 				});
 			}
 
@@ -307,7 +307,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		if (!rateLimitResult.allowed) {
 			throw error(429, {
-				message: rateLimitResult.message || 'Trop de requêtes. Veuillez réessayer plus tard.'
+				message: rateLimitResult.message || 'Trop de requêtes. Réessayer plus tard.'
 			});
 		}
 

@@ -61,7 +61,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// La fiche existe, mais elle ne lui a pas été distribuée : le dire plutôt que
 	// de renvoyer vers une liste où il la chercherait en vain.
 	if (!assignment) {
-		throw error(404, "Cette fiche ne t'a pas encore été distribuée");
+		throw error(404, "Cette fiche n'a pas encore été distribuée");
 	}
 
 	redirect(

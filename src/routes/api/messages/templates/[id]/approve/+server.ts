@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// panne produisait le même refus, indiscernable d'un refus mérité.
 	if (profileError && profileError.code !== 'PGRST116') {
 		logger.error('Rôle illisible :', profileError);
-		return error(500, 'Impossible de vérifier vos droits');
+		return error(500, 'Impossible de vérifier les droits');
 	}
 
 	if (!profile || profile.role !== 'admin') {

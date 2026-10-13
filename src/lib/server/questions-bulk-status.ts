@@ -186,7 +186,7 @@ function settle(
 			title: row.title,
 			reasons: [
 				conflictIds.has(row.id)
-					? 'la base a refusé le lot : une catégorie est devenue occupée entre-temps, réessaie'
+					? 'la base a refusé le lot : une catégorie est devenue occupée entre-temps, réessayer'
 					: NOT_SAVED
 			]
 		});

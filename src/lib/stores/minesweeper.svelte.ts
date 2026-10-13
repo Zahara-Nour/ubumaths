@@ -1060,7 +1060,7 @@ class MinesweeperStore {
 
 		// Must be a student to use hints
 		if (!this.shouldUseDatabase() || !game.id) {
-			toaster.error("Vous devez être connecté en tant qu'élève pour utiliser les indices");
+			toaster.error("Connexion en tant qu'élève requise pour utiliser les indices");
 			return;
 		}
 
@@ -1166,10 +1166,10 @@ class MinesweeperStore {
 				rawMessage.includes('introuvable')
 			) {
 				userMessage = 'Partie introuvable';
-			} else if (rawMessage.includes('temporairement') || rawMessage.includes('réessayez')) {
+			} else if (rawMessage.includes('temporairement') || rawMessage.includes('réessaye')) {
 				userMessage = rawMessage; // already user-friendly from server
 			} else if (rawMessage.includes('Opération invalide')) {
-				userMessage = `Impossible d'utiliser l'indice, réessayez — ${rawMessage.match(/\[[\w·]+\]/)?.[0] ?? '[UNKNOWN]'}`;
+				userMessage = `Impossible d'utiliser l'indice, réessayer — ${rawMessage.match(/\[[\w·]+\]/)?.[0] ?? '[UNKNOWN]'}`;
 			}
 
 			toaster.error(userMessage);
@@ -1204,7 +1204,7 @@ class MinesweeperStore {
 		}
 
 		if (!this.shouldUseDatabase() || !game.id) {
-			toaster.error("Vous devez être connecté en tant qu'élève pour utiliser le détecteur");
+			toaster.error("Connexion en tant qu'élève requise pour utiliser le détecteur");
 			return;
 		}
 
@@ -1462,7 +1462,7 @@ class MinesweeperStore {
 
 		// Must have a game ID for database games
 		if (!this.shouldUseDatabase() || !game.id) {
-			toaster.error("Vous devez être connecté en tant qu'élève pour utiliser la Seconde Chance");
+			toaster.error("Connexion en tant qu'élève requise pour utiliser la Seconde Chance");
 			this.pendingBombCell = null;
 			return;
 		}
@@ -1575,7 +1575,7 @@ class MinesweeperStore {
 		}
 
 		if (!this.shouldUseDatabase() || !game.id) {
-			toaster.error("Vous devez être connecté en tant qu'élève pour utiliser le Gel");
+			toaster.error("Connexion en tant qu'élève requise pour utiliser le Gel");
 			return;
 		}
 
@@ -2047,7 +2047,7 @@ class MinesweeperStore {
 
 					// Handle session expiry (401) with user-friendly message
 					if (response.status === 401) {
-						toaster.error('Session expirée. Veuillez vous reconnecter.');
+						toaster.error('Session expirée : reconnexion nécessaire.');
 						logger.warn('Session expired during game completion');
 						// Show victory modal without rewards (game was won locally)
 						this.showVictoryModalWithoutRewards(game);
@@ -2245,7 +2245,7 @@ class MinesweeperStore {
 			// Show error toast for students (database save failed)
 			// Keep toasts only for errors as per user request
 			if (this.shouldUseDatabase() && game.id) {
-				toaster.error('Erreur lors de la sauvegarde. Verifiez votre connexion.');
+				toaster.error('Erreur lors de la sauvegarde : connexion à vérifier.');
 
 				// Still show modal for the result (but user knows it wasn't saved)
 				const config = DIFFICULTY_CONFIGS[game.difficulty];
@@ -2704,7 +2704,7 @@ class MinesweeperStore {
 		}
 
 		if (!this.shouldUseDatabase()) {
-			throw new Error('Connecte-toi avec ton compte élève pour jouer au tournoi');
+			throw new Error('Connexion avec un compte élève requise pour jouer au tournoi');
 		}
 
 		this.isLoading = true;
@@ -2807,7 +2807,7 @@ class MinesweeperStore {
 		}
 
 		if (!this.shouldUseDatabase()) {
-			throw new Error('Connecte-toi avec ton compte élève pour jouer au tournoi');
+			throw new Error('Connexion avec un compte élève requise pour jouer au tournoi');
 		}
 
 		// Stop existing timers
@@ -3014,7 +3014,7 @@ class MinesweeperStore {
 			logger.error('Failed to complete tournament game:', err);
 			this.error = message;
 			this.isCompletingGame = false;
-			toaster.error('Erreur lors de la sauvegarde. Votre partie a peut-être été enregistrée.');
+			toaster.error('Erreur lors de la sauvegarde. La partie a peut-être été enregistrée.');
 		}
 
 		// Trigger reactivity

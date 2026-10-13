@@ -40,7 +40,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	if (fetchError) {
 		logger.error('Failed to load teacher exercises:', fetchError);
-		throw error(500, 'Erreur lors du chargement de tes exercices');
+		throw error(500, 'Erreur lors du chargement des exercices');
 	}
 
 	// Tags depuis `resource_tags`, en une requête groupée.

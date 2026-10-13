@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	// Check if marketplace is enabled
 	const marketplaceEnabled = await isMarketplaceEnabled(supabase, userId);
 	if (!marketplaceEnabled) {
-		throw error(403, "Le marketplace n'est pas activé pour votre classe");
+		throw error(403, "Le marketplace n'est pas activé pour cette classe");
 	}
 
 	// Fetch listing with creator info
@@ -160,7 +160,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	}
 
 	if (listing.creator_id !== userId) {
-		throw error(403, 'Vous ne pouvez pas modifier cette annonce');
+		throw error(403, 'Modification de cette annonce non autorisée');
 	}
 
 	if (listing.status !== 'active') {
@@ -229,7 +229,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	}
 
 	if (listing.creator_id !== userId) {
-		throw error(403, 'Vous ne pouvez pas annuler cette annonce');
+		throw error(403, 'Annulation de cette annonce non autorisée');
 	}
 
 	if (listing.status !== 'active') {

@@ -132,7 +132,7 @@ export function sanitizeRPCError(err: unknown, functionName: string): never {
 
 		// PostgREST: schema cache stale (function not found after migration)
 		if (code === 'PGRST202' || msg.includes('Could not find the function')) {
-			throw error(503, 'Service temporairement indisponible, réessayez dans quelques secondes');
+			throw error(503, 'Service temporairement indisponible, réessayer dans quelques secondes');
 		}
 
 		// Authentication
@@ -172,11 +172,11 @@ export function sanitizeRPCError(err: unknown, functionName: string): never {
 
 		// PostgreSQL infrastructure errors
 		if (msg.includes('deadlock detected')) {
-			throw error(503, 'Conflit temporaire, réessayez');
+			throw error(503, 'Conflit temporaire, réessayer');
 		}
 
 		if (msg.includes('canceling statement') || msg.includes('timeout')) {
-			throw error(503, 'Délai dépassé, réessayez');
+			throw error(503, 'Délai dépassé, réessayer');
 		}
 
 		// Unknown message — categorize by PostgreSQL error code if possible

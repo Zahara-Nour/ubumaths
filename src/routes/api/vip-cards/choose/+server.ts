@@ -87,11 +87,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			supabase
 		);
 		if (!hasAccess) {
-			throw error(403, 'Tu ne peux choisir des cartes VIP que pour les élèves de tes classes');
+			throw error(403, 'Choix de cartes VIP réservé aux élèves des classes du professeur');
 		}
 	} else if (!isStudent) {
 		// Ni professeur, ni l'élève lui-même
-		throw error(403, 'Tu ne peux choisir des cartes VIP que pour toi ou tes élèves');
+		throw error(403, 'Choix de cartes VIP réservé à l’élève concerné ou à son professeur');
 	} else {
 		// Élève : consentement requis
 		requireConsent(profile, 'purchase_items');
@@ -136,10 +136,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				throw error(400, 'Cette carte ne peut être activée que dans un contexte spécifique');
 			}
 		} else {
-			throw error(
-				400,
-				'Cette carte VIP doit être validée par ton professeur avant d’être utilisée'
-			);
+			throw error(400, 'Cette carte VIP doit être validée par le professeur avant d’être utilisée');
 		}
 	}
 

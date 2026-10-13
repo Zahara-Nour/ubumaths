@@ -401,7 +401,7 @@ export const ResourceLink = Extension.create<ResourceLinkOptions, ResourceLinkSt
 						noResultsText: 'Aucune ressource trouvée',
 						// Trois raisons distinctes d'être vide, trois messages.
 						emptyText: (query) => {
-							if (lastSearchFailed) return 'Recherche indisponible — réessaie dans un instant';
+							if (lastSearchFailed) return 'Recherche indisponible — réessayer dans un instant';
 							const parsed = parseResourceQuery(query);
 							if (parsed.text.length < minQueryLength) {
 								return parsed.kind

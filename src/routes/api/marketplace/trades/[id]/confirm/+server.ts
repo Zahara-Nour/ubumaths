@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	const isPartner = trade.partner_id === userId;
 
 	if (!isInitiator && !isPartner) {
-		throw error(403, "Vous n'etes pas participant a cet echange");
+		throw error(403, 'Accès réservé aux participants de cet échange');
 	}
 
 	// Verify trade is still negotiating
@@ -100,11 +100,11 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			logger.error('Remise a zero de l echange expire impossible :', resetError ?? '0 ligne');
 			throw error(
 				500,
-				"La confirmation a expiré, mais l'échange n'a pas pu être réinitialisé. Réessayez."
+				"La confirmation a expiré, mais l'échange n'a pas pu être réinitialisé. Réessayer."
 			);
 		}
 
-		throw error(410, 'La confirmation a expire. Veuillez revalider.');
+		throw error(410, 'La confirmation a expiré : nouvelle validation nécessaire.');
 	}
 
 	// Record this user's confirmation.

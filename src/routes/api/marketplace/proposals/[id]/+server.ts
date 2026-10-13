@@ -92,7 +92,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 	// Verify user owns the listing
 	if (!listing || listing.creator_id !== userId) {
-		throw error(403, 'Vous ne pouvez pas répondre à cette proposition');
+		throw error(403, 'Réponse à cette proposition non autorisée');
 	}
 
 	// Verify proposal is pending
@@ -273,7 +273,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 	// Verify user is the proposer
 	if (proposal.proposer_id !== userId) {
-		throw error(403, 'Vous ne pouvez pas retirer cette proposition');
+		throw error(403, 'Retrait de cette proposition non autorisé');
 	}
 
 	// Verify proposal is pending

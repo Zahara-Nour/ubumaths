@@ -29,7 +29,7 @@ export const load: PageServerLoad = async ({ params, fetch, locals, url }) => {
 
 	// Stripped solution_code → caller is not the author.
 	if (!('solution_code' in exercise) || exercise.solution_code === undefined) {
-		throw error(403, 'Vous ne pouvez modifier que vos propres exercices');
+		throw error(403, 'Modification réservée à l’auteur de l’exercice');
 	}
 
 	return { exercise };

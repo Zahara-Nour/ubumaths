@@ -65,7 +65,7 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 	const isParticipant = combat.organizer_id === user.id;
 
 	if (!isParticipant) {
-		throw error(403, 'Tu ne participes pas à ce combat');
+		throw error(403, 'Accès réservé aux participants de ce combat');
 	}
 
 	// Fetch game player
@@ -80,7 +80,7 @@ export const load: PageServerLoad = async ({ params, locals: { safeGetSession, s
 	// neuf — niveau 1, tutoriel au début.
 	if (gamePlayerError && gamePlayerError.code !== 'PGRST116') {
 		logger.error('Fiche de joueur illisible :', gamePlayerError);
-		throw error(500, 'Impossible de charger votre profil de jeu');
+		throw error(500, 'Impossible de charger le profil de jeu');
 	}
 
 	// L'écran de combat lit le niveau du joueur dès son initialisation : sans
