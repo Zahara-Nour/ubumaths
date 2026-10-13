@@ -24,7 +24,7 @@ import {
 import type { MissingReference, ObjectKind } from './types';
 import { readListValue, readNumber } from '$lib/statistics/read-value';
 import { hasObjectNameShape } from './names';
-import { coupleOrSetRefusal } from './decimal-comma';
+import { argumentSemicolonsLatex, coupleOrSetRefusal, decimalCommaInput } from './decimal-comma';
 
 /**
  * D'où vient une définition. Décision D10 : c'est la provenance qui décide du
@@ -149,11 +149,17 @@ function parseByProvenance(
 	provenance: Provenance,
 	functionNames?: readonly string[]
 ) {
-	const definition = withPiCommand(rawDefinition);
+	const typed = withPiCommand(rawDefinition);
 	// Les mêmes noms de fonctions dans les deux lectures : en LaTeX, l'atelier ne
 	// les transmettait pas, et `k(x)` tapé dans la carte se lisait k·x
 	const genericFunctions = genericFunctionsFor(functionNames);
-	if (readingMode(provenance) === 'latex') return parseLatexSafe(definition, { genericFunctions });
+	// Le « ; » de l'élève entre les arguments (`max(2,5 ; x)`) : traduit pour un
+	// calcul, il ne l'était pas pour une définition — `f(1)` répondait « Écriture
+	// non reconnue » (2026-10-13)
+	if (readingMode(provenance) === 'latex') {
+		return parseLatexSafe(argumentSemicolonsLatex(typed), { genericFunctions });
+	}
+	const definition = decimalCommaInput(typed);
 
 	const detected = detectInputFormat(definition);
 	if (detected.format === 'latex' && detected.confidence > 0.5) {
