@@ -5,8 +5,8 @@
  * un curseur est refusée (« Nombre attendu »). Le script construit donc d'avance
  * toutes les étapes. Chaque pointe ajoutée à l'étape k sort de son côté avec une
  * hauteur multipliée par t_k = (|n − (k−1)| − |n − k| + 1) / 2, qui vaut 0 tant
- * que n ≤ k − 1 et 1 dès que n ≥ k : à n entier, on voit exactement l'étape n ;
- * entre deux entiers, les pointes poussent.
+ * que n ≤ k − 1 et 1 dès que n ≥ k. Le curseur avance par pas de 1 : on voit
+ * exactement l'étape n, jamais d'état intermédiaire.
  */
 
 const SQRT3 = Math.sqrt(3);
@@ -25,7 +25,7 @@ export function buildKochDsl(steps: number, side = 6): string {
 	const yBottom = -(half * SQRT3) / 3;
 	const yTop = (2 * half * SQRT3) / 3;
 	const lines = [
-		`n = slider(min=0, max=${steps}, valeur=0, pas=0.01)`,
+		`n = slider(min=0, max=${steps}, valeur=0, pas=1)`,
 		`A = point(${-half}, ${yBottom.toFixed(6)}, visible=faux)`,
 		`B = point(${half}, ${yBottom.toFixed(6)}, visible=faux)`,
 		`C = point(0, ${yTop.toFixed(6)}, visible=faux)`

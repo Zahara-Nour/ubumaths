@@ -65,7 +65,7 @@
 		<a href="/geometry-demo/sliders/koch" class="rounded-lg border p-4 hover:bg-muted">
 			<h2 class="font-bold">Flocon de Von Koch</h2>
 			<p class="text-sm text-muted-foreground">
-				Le curseur fait pousser les pointes, de l'étape 0 à l'étape 4 (768 sommets).
+				Le curseur montre chaque étape, de 0 à 4 (768 sommets à l'étape 4).
 			</p>
 		</a>
 		<a href="/geometry-demo/sliders/integrale" class="rounded-lg border p-4 hover:bg-muted">
