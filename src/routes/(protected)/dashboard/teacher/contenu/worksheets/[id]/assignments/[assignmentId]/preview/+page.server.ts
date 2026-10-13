@@ -7,6 +7,7 @@
  */
 
 import { error } from '@sveltejs/kit';
+import { z } from 'zod';
 import type { PageServerLoad } from './$types';
 
 interface StudentItem {
@@ -16,7 +17,9 @@ interface StudentItem {
 	class_name: string | null;
 }
 
-export const load: PageServerLoad = async ({ params, locals, fetch }) => {
+const studentIdSchema = z.string().uuid();
+
+export const load: PageServerLoad = async ({ params, locals, fetch, url }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
 		throw error(401, 'Non authentifie');
@@ -52,9 +55,17 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		})
 	);
 
+	// Élève présélectionné, lu dans l'adresse (lien « Voir la copie de… » d'un
+	// signalement, D6) : retenu seulement s'il est dans la liste de
+	// l'affectation, que le prof voit déjà ; sinon, vue prof.
+	const requested = studentIdSchema.safeParse(url.searchParams.get('studentId'));
+	const initialStudentId =
+		requested.success && students.some((s) => s.id === requested.data) ? requested.data : null;
+
 	return {
 		worksheetId,
 		assignmentId,
-		students
+		students,
+		initialStudentId
 	};
 };

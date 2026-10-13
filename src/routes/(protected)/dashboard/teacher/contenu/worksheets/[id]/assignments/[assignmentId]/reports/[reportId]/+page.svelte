@@ -33,7 +33,8 @@
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { Check, X, Loader2, AlertTriangle } from '@lucide/svelte';
+	import { Check, X, Loader2, AlertTriangle, Eye, Pencil } from '@lucide/svelte';
+	import { exerciseAnchorHash } from '$lib/worksheets/exercise-anchor';
 	import type { ExerciseVariation } from '$lib/exercises/types';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
@@ -85,6 +86,15 @@
 	provideCapitalPairs(() => exerciseCapitalPairs(exercise.topic));
 	const context = initialData.context as ContextData;
 	const nextPendingReportId = initialData.nextPendingReportId as string | null;
+
+	// Numéro de l'exercice dans LA COPIE de l'élève (D6), servi par l'API ;
+	// 0 : inconnu (fiche illisible) — un tiret plutôt qu'un numéro faux.
+	const exerciseNumber = context.exercise_position > 0 ? String(context.exercise_position) : '—';
+	const studentFirstName = report.student_first_name ?? context.student_name;
+	// La copie de l'élève : aperçu « vue élève » présélectionné, ancré sur l'exercice signalé
+	const studentCopyHref = `/dashboard/teacher/contenu/worksheets/${initialData.worksheetId}/assignments/${initialData.assignmentId}/preview?studentId=${report.student_id}${exerciseAnchorHash(report.worksheet_exercise_id)}`;
+	// L'exercice d'origine, dans son éditeur
+	const exerciseEditorHref = `/dashboard/teacher/contenu/exercices/${exercise.id}`;
 
 	// State - deep copy variations for editing
 	let variations = $state<ExerciseVariation[]>(JSON.parse(JSON.stringify(exercise.variations)));
@@ -290,7 +300,7 @@
 </script>
 
 <svelte:head>
-	<title>Signalement - {lore.learning.exercise} {context.exercise_position + 1} - Chiphre</title>
+	<title>Signalement - {lore.learning.exercise} {exerciseNumber} - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl py-6">
@@ -305,6 +315,16 @@
 			<p class="mt-1 text-muted-foreground">
 				{context.worksheet_title}
 			</p>
+			<div class="mt-3 flex flex-wrap gap-2">
+				<Button variant="outline" size="sm" href={studentCopyHref} class="gap-2">
+					<Eye class="h-4 w-4" />
+					Voir la copie de {studentFirstName}
+				</Button>
+				<Button variant="outline" size="sm" href={exerciseEditorHref} class="gap-2">
+					<Pencil class="h-4 w-4" />
+					Corriger l’exercice
+				</Button>
+			</div>
 		</div>
 	</div>
 
@@ -322,7 +342,7 @@
 				</span>
 				<span>
 					<span class="font-medium text-foreground">{lore.learning.exercise} :</span>
-					{context.exercise_position + 1}
+					{exerciseNumber}
 				</span>
 				{#if report.variation_index !== null}
 					<span>

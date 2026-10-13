@@ -53,6 +53,12 @@
 	import type { PageData } from './$types';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { page } from '$app/state';
+	import {
+		ANCHOR_HIGHLIGHT_MS,
+		exerciseAnchorId,
+		scrollToAnchoredExercise
+	} from '$lib/worksheets/exercise-anchor';
 	import type {
 		StudentWorksheetView,
 		StudentExerciseView,
@@ -62,8 +68,10 @@
 	let { data }: { data: PageData } = $props();
 
 	// State
-	// Use string | undefined (not null) so MySelect can bind directly
-	let selectedStudentId = $state<string | undefined>(undefined);
+	// Use string | undefined (not null) so MySelect can bind directly.
+	// Élève présélectionné par l'adresse (`?studentId=`, lien d'un signalement)
+	// svelte-ignore state_referenced_locally
+	let selectedStudentId = $state<string | undefined>(data.initialStudentId ?? undefined);
 	let worksheet = $state<StudentWorksheetView | null>(null);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
@@ -305,6 +313,32 @@
 	// Check if we have sections to display
 	let hasSections = $derived(sections.length > 0);
 
+	// Ouvert depuis un signalement (D6) : l'ancre `#exercice-<id>` vise un
+	// exercice de fiche ; une fois la copie chargée, la page défile jusqu'à lui
+	// et le met brièvement en évidence.
+	let highlightedExerciseId = $state<string | null>(null);
+
+	$effect(() => {
+		const hash = page.url.hash;
+		if (loading || exercises.length === 0) return;
+		const id = scrollToAnchoredExercise(hash);
+		if (!id) return;
+		highlightedExerciseId = id;
+		const timer = setTimeout(() => {
+			highlightedExerciseId = null;
+		}, ANCHOR_HIGHLIGHT_MS);
+		return () => clearTimeout(timer);
+	});
+
+	/** Classes de l'élément d'un exercice : mis en évidence s'il est visé par l'ancre */
+	function exerciseItemClass(exerciseId: string): string {
+		const base =
+			'flex w-full scroll-mt-24 items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50';
+		return highlightedExerciseId === exerciseId
+			? `${base} ring-2 ring-amber-400 ring-offset-2`
+			: base;
+	}
+
 	// Modal navigation
 	function openExercise(index: number) {
 		currentExerciseIndex = index;
@@ -494,8 +528,10 @@
 								{@const visualIndex = visualOrderExercises.findIndex((e) => e.id === exercise.id)}
 								<button
 									type="button"
+									id={exerciseAnchorId(exercise.id)}
+									data-highlighted={highlightedExerciseId === exercise.id}
 									onclick={() => openExercise(visualIndex)}
-									class="flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50"
+									class={exerciseItemClass(exercise.id)}
 								>
 									<div
 										class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
@@ -548,8 +584,10 @@
 				{#each exercises as exercise, i (exercise.id)}
 					<button
 						type="button"
+						id={exerciseAnchorId(exercise.id)}
+						data-highlighted={highlightedExerciseId === exercise.id}
 						onclick={() => openExercise(i)}
-						class="flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50"
+						class={exerciseItemClass(exercise.id)}
 					>
 						<div
 							class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
