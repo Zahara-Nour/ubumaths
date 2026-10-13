@@ -3,7 +3,7 @@
  */
 
 import { z } from 'zod';
-import { formDataTransforms, roleSchema, roleWithAllSchema, uuidSchema } from './common';
+import { formDataTransforms, roleSchema, uuidSchema } from './common';
 import { gradeCodeSchema, gradeFlexibleSchema } from './grades';
 
 /**
@@ -61,20 +61,6 @@ export const searchUsersSchema = z.object({
 // ============================================================================
 // USER MANAGEMENT FORM SCHEMAS
 // ============================================================================
-
-/**
- * Update profile form schema (admin)
- */
-export const updateProfileFormSchema = z.object({
-	user_id: formDataTransforms.uuid,
-	firstname: formDataTransforms.optionalString.nullable(),
-	lastname: formDataTransforms.optionalString.nullable(),
-	email: formDataTransforms.email,
-	role: roleSchema,
-	school_id: formDataTransforms.optionalUuid.nullable(),
-	avatar_url: formDataTransforms.optionalString.nullable(),
-	is_test: formDataTransforms.boolean.optional()
-});
 
 // ============================================================================
 // STUDENT IMPORT SCHEMAS
@@ -161,43 +147,9 @@ export const adminClassIdSchema = z.object({ id: uuidSchema });
 // SCHOOL MANAGEMENT SCHEMAS
 // ============================================================================
 
-/**
- * Create/Update school form schema
- */
-export const schoolFormSchema = z.object({
-	name: z
-		.string()
-		.trim()
-		.min(1, 'Nom requis')
-		.max(200, 'Nom trop long (200 caractères au maximum)'),
-	address: formDataTransforms.optionalString.nullable(),
-	city: formDataTransforms.optionalString.nullable(),
-	country: formDataTransforms.optionalString.nullable(),
-	timezone: formDataTransforms.optionalString.nullable()
-});
-
 // ============================================================================
 // NOTIFICATION MANAGEMENT SCHEMAS
 // ============================================================================
-
-/**
- * Create notification form schema
- */
-export const createNotificationFormSchema = z.object({
-	title: z
-		.string()
-		.trim()
-		.min(1, 'Titre requis')
-		.max(200, 'Titre trop long (200 caractères au maximum)'),
-	message: z
-		.string()
-		.min(1, 'Message requis')
-		.max(2000, 'Message trop long (2000 caractères au maximum)'),
-	type: z.enum(['info', 'success', 'warning', 'error']),
-	target_role: roleWithAllSchema,
-	target_class_id: formDataTransforms.optionalUuid.nullable(),
-	expires_at: formDataTransforms.optionalString.nullable()
-});
 
 // ============================================================================
 // TEST MODE SCHEMA

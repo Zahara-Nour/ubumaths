@@ -27,7 +27,6 @@ couvre:
   - 'src/routes/(protected)/dashboard/admin/+layout.server.ts'
   - 'src/routes/(protected)/dashboard/elevate/**'
   - 'src/routes/api/admin/elevate/**'
-  - 'src/routes/api/admin/pending-users/**'
   - 'src/routes/api/admin/users/*/status/**'
   - 'src/routes/api/google/auth/**'
 ---
@@ -89,21 +88,21 @@ Deux callbacks différents : `/auth/callback` (connexion Google) ≠ `/api/googl
 
 Routes :
 
-| Route                                                    | Rôle                                                                                                                                                                                                                                        |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `(public)/auth/login`                                    | Actions `login` (e-mail + mot de passe) et `googleSignIn` (refusée : drapeau à `false`).                                                                                                                                                    |
-| `(public)/auth/register`                                 | Inscription autonome d'un élève par **code de classe**.                                                                                                                                                                                     |
-| `(public)/auth/confirm`                                  | Lien e-mail (`verifyOtp`) : confirmation d'inscription, `recovery` → `/auth/update-password`.                                                                                                                                               |
-| `(public)/auth/callback`                                 | Retour de la connexion Google (refusé tant que `GOOGLE_LOGIN_ENABLED` est `false`).                                                                                                                                                         |
-| `(public)/auth/reset-password`, `update-password`        | Mot de passe oublié / nouveau mot de passe.                                                                                                                                                                                                 |
-| `(public)/auth/pending-approval`                         | Écran d'attente d'un compte `pending`.                                                                                                                                                                                                      |
-| `(public)/auth/logout`                                   | `POST` → `signOut()`, révoque et efface l'élévation admin → `/`. Côté navigateur, `submitLogoutForm` et la page d'attente d'approbation effacent d'abord les données de travail de l'élève (T17, [conformite/rgpd.md](conformite/rgpd.md)). |
-| `(protected)/+layout.server.ts`                          | Garde de groupe des **pages** protégées (session, profil, statut, consentement).                                                                                                                                                            |
-| `(protected)/dashboard/admin/+layout.server.ts`          | Garde de la section admin (élévation ou vrai admin ; deux préfixes ouverts au prof).                                                                                                                                                        |
-| `(protected)/dashboard/elevate`                          | Écran de saisie du mot de passe admin.                                                                                                                                                                                                      |
-| `api/admin/elevate`, `api/admin/elevate/revoke`          | Pose / retire l'élévation.                                                                                                                                                                                                                  |
-| `api/admin/pending-users`, `api/admin/users/[id]/status` | Approbation des comptes (prof **et** admin, via `requireRoles`).                                                                                                                                                                            |
-| `api/google/auth/{connect,callback,disconnect,status}`   | Autorisation Google Classroom (prof seulement).                                                                                                                                                                                             |
+| Route                                                           | Rôle                                                                                                                                                                                                                                        |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `(public)/auth/login`                                           | Actions `login` (e-mail + mot de passe) et `googleSignIn` (refusée : drapeau à `false`).                                                                                                                                                    |
+| `(public)/auth/register`                                        | Inscription autonome d'un élève par **code de classe**.                                                                                                                                                                                     |
+| `(public)/auth/confirm`                                         | Lien e-mail (`verifyOtp`) : confirmation d'inscription, `recovery` → `/auth/update-password`.                                                                                                                                               |
+| `(public)/auth/callback`                                        | Retour de la connexion Google (refusé tant que `GOOGLE_LOGIN_ENABLED` est `false`).                                                                                                                                                         |
+| `(public)/auth/reset-password`, `update-password`               | Mot de passe oublié / nouveau mot de passe.                                                                                                                                                                                                 |
+| `(public)/auth/pending-approval`                                | Écran d'attente d'un compte `pending`.                                                                                                                                                                                                      |
+| `(public)/auth/logout`                                          | `POST` → `signOut()`, révoque et efface l'élévation admin → `/`. Côté navigateur, `submitLogoutForm` et la page d'attente d'approbation effacent d'abord les données de travail de l'élève (T17, [conformite/rgpd.md](conformite/rgpd.md)). |
+| `(protected)/+layout.server.ts`                                 | Garde de groupe des **pages** protégées (session, profil, statut, consentement).                                                                                                                                                            |
+| `(protected)/dashboard/admin/+layout.server.ts`                 | Garde de la section admin (élévation ou vrai admin ; deux préfixes ouverts au prof).                                                                                                                                                        |
+| `(protected)/dashboard/elevate`                                 | Écran de saisie du mot de passe admin.                                                                                                                                                                                                      |
+| `api/admin/elevate`, `api/admin/elevate/revoke`                 | Pose / retire l'élévation.                                                                                                                                                                                                                  |
+| `api/admin/search-users/pending`, `api/admin/users/[id]/status` | Approbation des comptes (prof **et** admin, via `requireRoles`).                                                                                                                                                                            |
+| `api/google/auth/{connect,callback,disconnect,status}`          | Autorisation Google Classroom (prof seulement).                                                                                                                                                                                             |
 
 `/login` n'existe pas : `redirectHandle` le renvoie en 308 vers `/auth/login`
 (test : `src/routes/__tests__/login-redirect.test.ts`).
@@ -179,8 +178,8 @@ Routes :
   écrire au prof. Aucun accès à un mineur (amitiés et conversations bornées à l'école ; données de
   jeu privées depuis le 2026-10-11). Garder le statut dans chaque policy coûterait cher pour un gain
   faible ; le garde du hook ferme l'application.
-- Le prof et l'admin approuvent ou refusent via `api/admin/pending-users` et
-  `api/admin/users/[id]/status` (motif dans `rejection_reason`).
+- Le prof et l'admin listent les comptes en attente via `api/admin/search-users/pending` et
+  approuvent ou refusent via `api/admin/users/[id]/status` (motif dans `rejection_reason`).
   À l'approbation, l'élève reçoit une notification (`user_approved`) ; s'il est déjà inscrit dans
   des classes, le professeur en reçoit une aussi (`student_approved`, ciblée par rôle `teacher`,
   avec un lien vers le courriel de bienvenue).

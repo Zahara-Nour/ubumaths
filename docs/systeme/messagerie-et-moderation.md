@@ -144,8 +144,7 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   `getClassWarnings`, `addWarning`, `addWarningsBulk`, `removeWarningsBulk`.
 - API prof (`requireRoles(['teacher','admin'])`) : `src/routes/api/warnings/` (un ajout),
   `warnings/bulk/` (`add_warnings_bulk`), `warnings/remove-bulk/` (`remove_warnings_bulk`,
-  contexte `teacher` ou `vip_card`), `classes/[classId]/warnings/` (lecture par classe),
-  `students/[id]/warnings/`.
+  contexte `teacher` ou `vip_card`), `classes/[classId]/warnings/` (lecture par classe).
 - API élève : `src/routes/api/student/warnings/[periodId]/` — ses avertissements de la période.
   Affichés par `src/lib/components/RewardsBlock.svelte` (tableau de bord élève).
 - Types : `src/lib/types/warnings.ts` (`WarningType`, `WARNING_TYPE_LABELS`) ; validation
@@ -420,8 +419,8 @@ Toutes les entrées passent par un schéma : `sendMessageSchema`, `updateMessage
 - `auto-notifications.ts` : 7 fonctions sur 10 sans appelant (`notifyNewAssignment`,
   `notifyNewResource`, `notifyRewardEarned`, `notifyVipCardEarned`, `notifyBadgeUnlocked`,
   `notifyMaintenance`, `notifyFeatureRelease`). `cleanupExpiredNotifications` sans appelant.
-- Routes d'avertissements sans appelant dans `src/` : `POST /api/warnings` (ajout unitaire,
-  seul usage d'`addWarning`) et `GET /api/students/[id]/warnings`.
+- Route d'avertissements sans appelant dans `src/` : `POST /api/warnings` (ajout unitaire,
+  seul usage d'`addWarning`).
 
 ### Commentaires faux, incohérences
 

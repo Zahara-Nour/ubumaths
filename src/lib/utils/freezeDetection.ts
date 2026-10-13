@@ -187,7 +187,7 @@ export function getRecentActions(): UserAction[] {
 /**
  * Get web vitals
  */
-export function getWebVitals(): WebVitalsData {
+function getWebVitals(): WebVitalsData {
 	return { ...state.webVitals };
 }
 
@@ -197,13 +197,6 @@ export function getWebVitals(): WebVitalsData {
 export function updateWebVitals(vitals: Partial<WebVitalsData>): void {
 	state.webVitals = { ...state.webVitals, ...vitals };
 	persistState();
-}
-
-/**
- * Check if currently unresponsive
- */
-export function isUnresponsive(): boolean {
-	return state.isUnresponsive;
 }
 
 /**

@@ -1,6 +1,6 @@
 ---
 couvre:
-  - 'src/routes/api/admin/{add-to-class,annuaire,anti-fraud,class-composition-source,class-students,compose-class,dictionnaire,elevate,exercises,health-stats,pending-users,remove-from-class,schools,search-users,users,vip-cards}/**'
+  - 'src/routes/api/admin/{add-to-class,annuaire,anti-fraud,class-composition-source,class-students,compose-class,dictionnaire,elevate,exercises,health-stats,remove-from-class,schools,search-users,users,vip-cards}/**'
   - 'src/routes/api/{classes,students}/**'
   - 'src/routes/api/teacher/{classes,send-welcome-email}/**'
   - 'src/routes/api/student/{profile,age-declaration}/**'
@@ -37,7 +37,7 @@ couvre:
 > [jeux-et-economie.md](jeux-et-economie.md) ; `api/admin/anti-fraud`,
 > `api/teacher/classes/[classId]/anti-fraud` → [srs.md](srs.md) ;
 > `api/teacher/classes/[classId]/analytics` et la page `analytics` → [analytique-prof.md](analytique-prof.md) ;
-> `api/admin/elevate`, `api/admin/pending-users`, `api/admin/users/[id]/status` → [auth.md](auth.md) ;
+> `api/admin/elevate`, `api/admin/users/[id]/status` → [auth.md](auth.md) ;
 > `dashboard/teacher/settings/google` → [outils-prof.md](outils-prof.md) ; `api/admin/health-stats`
 > et les widgets admin → [tableaux-de-bord-et-navigation.md](tableaux-de-bord-et-navigation.md).
 >
@@ -158,7 +158,7 @@ de 2nde de répondre une fois à la question d'âge.
 - Routes JSON des classes : `src/routes/api/classes/+server.ts` et
   `src/routes/api/teacher/classes/+server.ts` (mêmes données, voir Écarts),
   `src/routes/api/classes/[classId]/students/+server.ts`,
-  `src/routes/api/classes/[classId]/warnings/+server.ts`, `src/routes/api/students/[id]/warnings/+server.ts`.
+  `src/routes/api/classes/[classId]/warnings/+server.ts`.
 - **Courriel de bienvenue** : page `src/routes/(protected)/dashboard/teacher/welcome-email/+page.server.ts`
   (aperçu), envoi par `src/routes/api/teacher/send-welcome-email/+server.ts` via Brevo
   (`sendWelcomeEmail` dans `src/lib/server/email/brevo.ts`). Texte unique :
@@ -199,7 +199,7 @@ de 2nde de répondre une fois à la question d'âge.
 
 ### Le professeur unique
 
-- Promouvoir un compte en prof : `api/admin/users/[id]` et l'action `update_profile` vérifient
+- Promouvoir un compte en prof : `api/admin/users/[id]` vérifie
   qu'aucun autre prof n'existe ; la base a le dernier mot (`trg_enforce_single_teacher`, et
   `guard_profile_role_change` sur le changement de rôle).
 - `is_test` (élève de test) n'est modifiable que par l'admin : la base le refuse au prof, et
@@ -344,19 +344,10 @@ courriel de bienvenue, `add-to-class` et `remove-from-class`.
 
 Constatés le 2026-10-13, **non corrigés**.
 
-- **Code mort** : `getClassStudents` et `getClassStudentCount` (`students.ts`) ;
-  `schoolFormSchema`, `createNotificationFormSchema` (`validation/admin.ts`, utilisés seulement par
-  les tests) ; `createClassSchema`, `updateClassSchema`, `getClassStudentsSchema`
-  (`validation/classes.ts`, idem) ; `schoolIdParamSchema`, `yearIdParamSchema`,
-  `schoolYearParamsSchema`, `linkAssessmentsResponseSchema`, `yearStatsResponseSchema`
-  (`validation/schools.ts`, aucun usage) ; `partialSchoolConfigSchema` (tests seulement) ;
-  `restoreOptionsSchema` (seulement via `validateRestoreOptions`) ; le widget
-  `ErrorSummaryWidget.svelte`. L'action `update_profile` de `dashboard/admin/users` n'est appelée
-  par aucun écran (la page passe par `PATCH api/admin/users/[id]`). Aucun appel trouvé dans `src/`
-  vers `api/students/[id]/warnings` ni vers `api/admin/pending-users` (la page utilise
-  `search-users/pending`).
-- **Doublons** : `api/classes` et `api/teacher/classes` rendent les mêmes classes ; `pending-users`
-  et `search-users/pending` listent les mêmes comptes.
+- **Code mort retiré le 2026-10-13** : fonctions, schémas, widget, action `update_profile` et
+  routes `api/students/[id]/warnings` et `api/admin/pending-users`, sans appelant. Reste
+  `restoreOptionsSchema`, utilisé seulement via `validateRestoreOptions`.
+- **Doublons** : `api/classes` et `api/teacher/classes` rendent les mêmes classes.
 - **Commentaires faux ou périmés** :
   - `dashboard/teacher/classes/+page.server.ts` dit que `day_of_week` est borné à 0-4 ; le schéma
     accepte 0-6.
@@ -369,7 +360,5 @@ Constatés le 2026-10-13, **non corrigés**.
   - `dashboard/admin/users/+page.server.ts` dit que le prof ne voit que les comptes en attente
     « à cause de la RLS » ; en mono-prof, il voit tous les élèves. À revérifier.
 - **`/api/classes/[classId]/students`** valide `classId` avec `getClassGidouillesSchema` (le schéma
-  d'une autre route) ; `getClassStudentsSchema`, prévu pour elle, n'est pas utilisé.
+  d'une autre route).
 - **`bulk_create` des écoles** force `uai: ''` : un import en masse n'enregistre jamais d'UAI.
-- **`update_profile`** (admin) peut écrire `profiles.email` sans toucher à l'e-mail de connexion
-  (`auth.users`) : les deux peuvent diverger. Action non appelée par l'écran (voir Code mort).

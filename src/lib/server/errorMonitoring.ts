@@ -402,78 +402,6 @@ export async function getErrorStats(
 }
 
 /**
- * Get error logs with optional filters
- */
-export async function getErrorLogs(
-	supabase: SupabaseClientType,
-	filters: ErrorFilters = {}
-): Promise<{ success: boolean; data?: ErrorLog[]; count?: number; error?: string }> {
-	try {
-		let query = supabase.from('error_logs').select('*', { count: 'exact' });
-
-		// Apply filters
-		if (filters.error_type) {
-			if (Array.isArray(filters.error_type)) {
-				query = query.in('error_type', filters.error_type);
-			} else {
-				query = query.eq('error_type', filters.error_type);
-			}
-		}
-
-		if (filters.severity) {
-			if (Array.isArray(filters.severity)) {
-				query = query.in('severity', filters.severity);
-			} else {
-				query = query.eq('severity', filters.severity);
-			}
-		}
-
-		if (filters.resolved !== undefined) {
-			query = query.eq('resolved', filters.resolved);
-		}
-
-		if (filters.user_id) {
-			query = query.eq('user_id', filters.user_id);
-		}
-
-		if (filters.date_from) {
-			query = query.gte('created_at', filters.date_from);
-		}
-
-		if (filters.date_to) {
-			query = query.lte('created_at', filters.date_to);
-		}
-
-		if (filters.search) {
-			query = query.ilike('message', `%${filters.search}%`);
-		}
-
-		// Sorting and pagination
-		query = query.order('created_at', { ascending: false });
-
-		if (filters.limit) {
-			query = query.limit(filters.limit);
-		}
-
-		if (filters.offset) {
-			query = query.range(filters.offset, filters.offset + (filters.limit || 50) - 1);
-		}
-
-		const { data, error, count } = await query;
-
-		if (error) {
-			logger.error('Failed to get error logs:', error);
-			return { success: false, error: 'Failed to retrieve errors' };
-		}
-
-		return { success: true, data: data as ErrorLog[], count: count || 0 };
-	} catch (error) {
-		logger.error('Error in getErrorLogs:', error);
-		return { success: false, error: 'Unexpected error' };
-	}
-}
-
-/**
  * Get error occurrences (deduplicated errors)
  */
 export async function getErrorOccurrences(
@@ -611,30 +539,6 @@ export async function resolveErrorBySignature(
 		return { success: true, count: data as number };
 	} catch (error) {
 		logger.error('Error in resolveErrorBySignature:', error);
-		return { success: false, error: 'Unexpected error' };
-	}
-}
-
-/**
- * Cleanup old resolved errors
- */
-export async function cleanupOldErrors(
-	supabase: SupabaseClientType,
-	daysOld: number = 90
-): Promise<{ success: boolean; deletedCount?: number; error?: string }> {
-	try {
-		const { data, error } = await supabase.rpc('cleanup_old_errors', {
-			p_days_old: daysOld
-		});
-
-		if (error) {
-			logger.error('Failed to cleanup errors:', error);
-			return { success: false, error: 'Failed to cleanup errors' };
-		}
-
-		return { success: true, deletedCount: data as number };
-	} catch (error) {
-		logger.error('Error in cleanupOldErrors:', error);
 		return { success: false, error: 'Unexpected error' };
 	}
 }

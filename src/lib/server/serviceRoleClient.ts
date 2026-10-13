@@ -43,8 +43,6 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'lib/server/srs/fsrs-actions.ts',
 	// Test files
 	'.test.ts',
-	// Cleanup endpoints
-	'/api/errors/cleanup',
 	// Profil créé à la connexion Google : valeurs imposées par le serveur
 	'/auth/callback',
 	// Inscription par code de classe : résolution du code par une RPC réservée à
