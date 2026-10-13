@@ -31,7 +31,9 @@
 --     for insert to public with check ((auth.uid() = uploaded_by) and (exists (select 1
 --     from private_messages where private_messages.id = message_attachments_v2.message_id
 --     and private_messages.sender_id = auth.uid())));
---   delete from storage.buckets where id = 'message-attachments';  -- seulement s'il est vide
+--   -- bucket vide seulement ; en prod, le déclencheur protect_buckets_delete l'interdit sans :
+--   set local storage.allow_delete_query = 'true';
+--   delete from storage.buckets where id = 'message-attachments';
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (

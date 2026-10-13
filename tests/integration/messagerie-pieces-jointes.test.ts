@@ -14,7 +14,10 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
-import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
+import {
+	cleanupAllTestData,
+	createServiceRoleClient
+} from '../helpers/database/trigger-test-helpers';
 import { createAuthenticatedClient } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
@@ -146,17 +149,36 @@ describe('messagerie : pièces jointes', () => {
 	});
 
 	it('aucun compte ne dépose ni ne lit directement dans le bucket : seul le serveur', async () => {
-		const chemin = `messages/${messageId}/direct.pdf`;
-		const fichier = new Blob(['%PDF-1.4'], { type: 'application/pdf' });
+		// Le bucket existe (test plus haut) : un refus ici vient de l'absence de policy,
+		// pas d'un « Bucket not found ».
+		const service = createServiceRoleClient();
+		const chemin = `messages/${messageId}/cahier.jpg`;
+		const depot = await service.storage
+			.from(BUCKET)
+			.upload(chemin, new Blob(['zz'], { type: 'image/jpeg' }), { upsert: true });
+		expect(depot.error).toBeNull();
 
-		const client = await createAuthenticatedClient(eleve.email);
-		const envoi = await client.storage.from(BUCKET).upload(chemin, fichier);
-		expect(envoi.error).not.toBeNull();
+		try {
+			const client = await createAuthenticatedClient(eleve.email);
+			const envoi = await client.storage
+				.from(BUCKET)
+				.upload(
+					`messages/${messageId}/direct.pdf`,
+					new Blob(['%PDF-1.4'], { type: 'application/pdf' })
+				);
+			expect(envoi.error?.message).toMatch(/row-level security|policy|unauthorized/i);
 
-		const anonyme = createClient(SUPABASE_URL, ANON_KEY, {
-			auth: { persistSession: false, autoRefreshToken: false }
-		});
-		const lecture = await anonyme.storage.from(BUCKET).download(`messages/${messageId}/cahier.jpg`);
-		expect(lecture.data).toBeNull();
+			for (const lecteur of [
+				client,
+				createClient(SUPABASE_URL, ANON_KEY, {
+					auth: { persistSession: false, autoRefreshToken: false }
+				})
+			]) {
+				const lecture = await lecteur.storage.from(BUCKET).download(chemin);
+				expect(lecture.data).toBeNull();
+			}
+		} finally {
+			await service.storage.from(BUCKET).remove([chemin]);
+		}
 	});
 });
