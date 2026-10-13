@@ -1,7 +1,7 @@
 ---
 title: Atelier — une fonction définie sur un intervalle (phase 0)
 date: 2026-10-13
-status: phase 0 validée (2026-10-13, I1-I6 selon les recos) ; lot 1 en PR
+status: phase 0 validée (2026-10-13, I1-I6 selon les recos) ; lot 1 mergé (#1305) ; lot 2 en PR
 ---
 
 # Atelier — une fonction définie sur un intervalle
@@ -88,3 +88,13 @@ Puis le lot 3 de la réciproque (carte `f⁻¹` portant son ensemble).
 - 2026-10-13 — phase 0 écrite ; validée par David (« je valide ») : I1-I6 selon les recos.
 - 2026-10-13 — lot 1 (modèle et saisie) : `interval.ts`, champ `FunctionObject.interval`, I3, I4, I6,
   persistance + URL + fusion ; « sur » mesuré dans Chromium (lettres collées, `smartFence` coupé).
+- 2026-10-13 — lot 2 (calculs) : `.résoudre`, `.variations` et leurs actions de carte sur l'ensemble
+  des fonctions citées (`f`, `f(x)` ; pas `f(2x)`), passé au moteur par `dans` (élargi aux bornes
+  infinies et réunions, et à `.variations`) ; étapes de résolution + tri final ; `f′` hérite
+  (`#inheritIntervals`, non sauvegardé), `f'(5)` refusé. « Tabuler » n'existe pas encore (action
+  désactivée), pas de commande de signe. Questions pour David : (a) `.domaine f` doit-il répondre
+  l'ensemble de f ? (b) `.intégrer f de 3 à 5`, `.évaluer f en x=5` hors de l'ensemble : refus comme
+  `f(5)` ? (c) `f(2x) = 4` : refusé pour l'instant (revue) — restreindre 2x à l'ensemble plus tard ? (d) `g(x) = f(x) + 1` hérite-t-elle
+  de l'ensemble de f ? (e) `dans` désormais accepté par `.variations` tapé (`.variations x^2 dans [0;+∞[`).
+  Défaut vu en passant, hors lot : l'image depuis la carte f′ (`f′(1)`) répond « Impossible de
+  calculer » même sans intervalle.

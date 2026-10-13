@@ -40,6 +40,10 @@ import { astOf } from './parse';
 import { concludedSolutions, conclusionAgrees } from './solve-steps-check';
 import { summaryOf } from './steps-summary';
 import { approximateSolutionsLatex } from '$lib/mathAST/cli/approximation';
+import type { Domain } from '$lib/mathAST/domain/types';
+import { containsValue } from '$lib/mathAST/domain/algebra';
+import { evaluate } from '$lib/mathAST/eval';
+import { intervalText } from './interval';
 
 // =============================================================================
 // Constantes
@@ -185,8 +189,12 @@ function answerFor(step: EquationStep, rendered: RenderedStep): string | null {
  *   « résoudre `3x+5=14` en x ». L'inconnue est x, sauf si une autre est
  *   donnée après un point-virgule (`3 = 2t ; t`) — comme `.solve`, aucune
  *   devinette (décision de David, 2026-10-06).
+ * @param within - L'ensemble de la fonction résolue (lot 2 de
+ *   `docs/wip/atelier-intervalle-phase0.md`) : les étapes résolvent sur ℝ, puis
+ *   une dernière ne garde que les solutions de l'ensemble. Seulement pour une
+ *   équation qui conclut sur des solutions isolées ; sinon, repli (`null`).
  */
-export function solveSteps(argument: string): SolvedSteps | null {
+export function solveSteps(argument: string, within?: Domain): SolvedSteps | null {
 	try {
 		// ⚠️ **On lit l'argument comme des MATHÉMATIQUES, pas comme une ligne de
 		// commande.** Le moteur, lui, appliquait deux conventions de terminal qui
@@ -249,15 +257,18 @@ export function solveSteps(argument: string): SolvedSteps | null {
 		if (!conclusionAgrees(relation, variable, steps[steps.length - 1])) return null;
 
 		const solutions = concludedSolutions(steps[steps.length - 1]);
+		const summarized = renderer.renderAll(steps, { schoolLevel, verbosity: 'summarized' });
+		if (within !== undefined) {
+			return solutions === null
+				? null
+				: restrictedSteps(rendered, summarized, solutions, variable, within);
+		}
 		const approximate =
 			solutions === null
 				? null
 				: approximateSolutionsLatex(variable, solutions, answer.trimStart().startsWith('S'));
 		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
-		const summary = summaryOf(
-			rendered,
-			renderer.renderAll(steps, { schoolLevel, verbosity: 'summarized' })
-		);
+		const summary = summaryOf(rendered, summarized);
 		return {
 			steps: rendered,
 			answer,
@@ -271,4 +282,54 @@ export function solveSteps(argument: string): SolvedSteps | null {
 		// qui refuse ce qu'on lui donne.
 		return null;
 	}
+}
+
+/**
+ * Les étapes sur ℝ, puis celle qui ne garde que les solutions de l'ensemble
+ * (`x = 2` pour x² = 4 sur [0 ; +∞[). La réponse est celle de cette étape.
+ */
+function restrictedSteps(
+	rendered: readonly RenderedStep[],
+	summarized: readonly RenderedStep[],
+	solutions: readonly MathNode[],
+	variable: string,
+	within: Domain
+): SolvedSteps | null {
+	const kept: MathNode[] = [];
+	for (const solution of solutions) {
+		const value = numericValueOf(solution);
+		if (value === null) return null;
+		if (containsValue(within, value)) kept.push(solution);
+	}
+	const answer =
+		kept.length === 0
+			? 'S = \\emptyset'
+			: kept.length === 1
+				? `${variable} = ${toLatex(kept[0])}`
+				: `S = \\left\\{ ${kept.map((k) => toLatex(k)).join(' \\,;\\, ')} \\right\\}`;
+	const last = (steps: readonly RenderedStep[]): RenderedStep => ({
+		id: steps.length,
+		rule: 'keep-in-interval',
+		title: `On ne garde que les solutions qui sont dans ${intervalText(within)}`,
+		expressionLatex: answer
+	});
+	const detailed = [...rendered, last(rendered)];
+	const summary = summaryOf(detailed, [...summarized, last(summarized)]);
+	const approximate = approximateSolutionsLatex(variable, kept, kept.length > 1);
+	return {
+		steps: detailed,
+		answer,
+		...(summary !== undefined && { summary }),
+		...(approximate !== null && { approximate })
+	};
+}
+
+/** La valeur décimale d'une solution, ou `null`. */
+function numericValueOf(node: MathNode): number | null {
+	const result = evaluate(node, { mode: 'decimal' });
+	return result.status === 'value' &&
+		typeof result.value === 'number' &&
+		Number.isFinite(result.value)
+		? result.value
+		: null;
 }

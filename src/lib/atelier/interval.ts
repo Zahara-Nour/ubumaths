@@ -24,7 +24,13 @@ import type { MathNode } from '$lib/mathAST/types';
 import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
 import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-domains';
 import { computeDomain } from '$lib/mathAST/domain/compute';
-import { containsValue, difference, isEmpty, isUniversal } from '$lib/mathAST/domain/algebra';
+import {
+	containsValue,
+	difference,
+	intersect,
+	isEmpty,
+	isUniversal
+} from '$lib/mathAST/domain/algebra';
 import { formatEndpointValue, formatInterval } from '$lib/mathAST/domain/format';
 import { evaluate } from '$lib/mathAST/eval';
 import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
@@ -33,6 +39,7 @@ import { toCustom } from '$lib/mathAST/custom-generator';
 import { astOf, readingMode, readNumber, referencesOf, type ReadingMode } from './parse';
 import type { Provenance } from './parse';
 import { INTERNAL_LETTER, renameVariableIn } from './letter';
+import { displayName } from './names';
 
 // =============================================================================
 // Types
@@ -88,8 +95,15 @@ const SET_START =
 /** Seulement des espaces après « sur » : l'élève est en train de l'écrire. */
 const NOTHING_YET = /^(?:\\[,;:! ]|~|\s)*$/;
 
-/** Un appel `f(…)` sans parenthèse dans l'argument — la forme de `TERM` (`calcul.ts`). */
-const CALL = /(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)\(([^()]*)\)/g;
+/**
+ * Un appel `f(…)` sans parenthèse dans l'argument — la forme de `TERM`
+ * (`calcul.ts`) —, dérivée comprise (`f'(5)`, `f′(5)` : f′ hérite de
+ * l'ensemble de f, lot 2).
+ */
+const CALL = /(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)(['′]*)\(([^()]*)\)/g;
+
+/** Un nom de fonction cité, dérivée comprise : `f`, `f'`, `f′`, `f_1`. */
+const CITED_NAME = /(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)(['′]*)/g;
 
 // =============================================================================
 // Fonctions
@@ -227,12 +241,75 @@ export function outsideIntervalRefusal(
 	get: (name: string) => AtelierObject | undefined,
 	input: string
 ): string | null {
-	for (const [, name, argument] of input.matchAll(CALL)) {
+	for (const [, name, primes, argument] of input.matchAll(CALL)) {
 		const domain = intervalDomainOf(get(name));
 		if (domain === null) continue;
 		const value = constantValue(argument, get);
 		if (value === null || containsValue(domain, value)) continue;
-		return outsideIntervalMessage(name, argument.trim(), domain);
+		return outsideIntervalMessage(
+			displayName(name + "'".repeat(primes.length)),
+			argument.trim(),
+			domain
+		);
+	}
+	return null;
+}
+
+/** Ce que l'étude d'une commande tire des fonctions qu'elle cite (`citedIntervalDomain`). */
+export type CitedInterval =
+	| { readonly kind: 'restricted'; readonly domain: Domain; readonly name: string }
+	/** `f(2x)` : c'est 2x qui doit être dans l'ensemble de f — refusé */
+	| { readonly kind: 'composed'; readonly call: string; readonly name: string };
+
+/**
+ * Lot 2 : l'ensemble sur lequel une commande étudie les fonctions qu'elle cite
+ * (`.variations f`, `.résoudre f(x) = 4`, `f′` compris) — l'intersection de
+ * leurs ensembles —, ou `null` si aucune n'en a.
+ *
+ * Une fonction citée SEULE ou appelée sur l'inconnue (`f`, `f(x)`, `f'(t)`)
+ * restreint l'inconnue. Appelée sur un nombre ou une autre lettre (`f(a)`),
+ * elle vaut un nombre : rien à restreindre. Appelée sur une expression de
+ * l'inconnue (`f(2x)`), c'est 2x qui devrait être dans l'ensemble : refus
+ * (`composed`) plutôt qu'une réponse sur tout le domaine (revue du lot 2).
+ *
+ * @param typed - L'expression tapée, AVANT le remplacement des noms
+ * @param variable - L'inconnue étudiée
+ */
+export function citedIntervalDomain(
+	get: (name: string) => AtelierObject | undefined,
+	typed: string,
+	variable: string
+): CitedInterval | null {
+	const unknown = new RegExp(`(?<![A-Za-z_\\\\])${variable}(?![A-Za-z_0-9])`);
+	let domain: Domain | null = null;
+	let first: string | null = null;
+	for (const match of typed.matchAll(CITED_NAME)) {
+		const [whole, name, primes] = match;
+		const after = typed.slice(match.index + whole.length);
+		// Un mot plus long (`sin`, `ln`) n'est pas un nom
+		if (/^[A-Za-z0-9_]/.test(after)) continue;
+		const own = intervalDomainOf(get(name));
+		if (own === null) continue;
+		const shown = displayName(name + "'".repeat(primes.length));
+		const argument = callArgument(after);
+		if (argument !== null && argument !== variable) {
+			if (!unknown.test(argument)) continue;
+			return { kind: 'composed', call: `${shown}(${argument})`, name: shown };
+		}
+		domain = domain === null ? own : intersect(domain, own);
+		first ??= shown;
+	}
+	return domain === null || first === null ? null : { kind: 'restricted', domain, name: first };
+}
+
+/** L'argument de l'appel qui ouvre `after` (`(2x)…` → `2x`, parenthèses imbriquées comprises), ou `null`. */
+function callArgument(after: string): string | null {
+	const open = /^\s*\(/.exec(after);
+	if (open === null) return null;
+	let depth = 0;
+	for (let i = open[0].length - 1; i < after.length; i++) {
+		if (after[i] === '(') depth++;
+		else if (after[i] === ')' && --depth === 0) return after.slice(open[0].length, i).trim();
 	}
 	return null;
 }
