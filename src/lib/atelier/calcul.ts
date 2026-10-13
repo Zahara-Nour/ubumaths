@@ -82,6 +82,7 @@ import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
+import { integrateSteps } from './integrate-steps';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import {
@@ -1372,12 +1373,29 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// `.intégrer` : même exception — son `result.ast` est la PRIMITIVE, ou la
 	// VALEUR d'une intégrale définie (voir `integrate.command.ts`). Sans lui, la
 	// ligne montrait le texte du terminal, « ∫ x^2 dx = {1/3}x^3 + C » (2026-10-08).
+	//
+	// « Comment ? » : les étapes de `pedagogical-integration`, seulement quand
+	// elles confirment ce que dit le moteur et n'ont aucun coefficient caché
+	// (`integrate-steps.ts`) — sinon la ligne reste celle du moteur, seule.
+	// Un pôle dans [a ; b] sort plus haut, en refus : sans étapes.
 	if (name === 'integrate' && result.success && result.ast !== undefined) {
+		const integrated =
+			finalArgs === null
+				? null
+				: integrateSteps(
+						{
+							expression: finalArgs.expression,
+							variable: finalArgs.variable,
+							bounds: finalArgs.bounds
+						},
+						result.ast
+					);
 		return {
 			kind: 'commande',
 			input,
 			output: rendered.text,
 			latex: integralLatex(result.ast, rendered.text),
+			...(integrated !== null && { steps: integrated.steps, ...summaryField(integrated) }),
 			...noted
 		};
 	}

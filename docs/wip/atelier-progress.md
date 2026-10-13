@@ -50,6 +50,12 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
      « F(b) − F(a) » ; PR 3 = IPP en notation terminale (u, v′) ; plus tard `1/x^2`, `\sqrt x` (x^n).
      Hors terminale (IPP cyclique, éléments simples) montré ; `+ C` gardé ; pôle dans l'intervalle :
      étapes du refus montrées.
+   - **2b `.intégrer` PR 1 — FAITE (2026-10-13, branche `feat/atelier-etapes-integrer`, non commitée à la
+     remise de l'agent)** : `integrate-steps.ts` + garde `integrate-steps-check.ts` (concordance avec le
+     moteur ; coefficient caché détecté sur les règles composées et le v d'une IPP), branchés dans
+     `calcul.ts` ; tests `integrer-etapes.test.ts`. **Écart à la décision** : le pôle dans l'intervalle
+     sort en ligne de REFUS (`CalcResult` `refus`, sans champ `steps`) — pas d'étapes du refus dans cette
+     PR ; les y mettre demande un champ `steps` sur `refus` + son rendu dans `CalculView` (à trancher).
    - **2c. Commande `.limite`** (aucune aujourd'hui ; `pedagogical-limits` sert aux corrections) :
      syntaxe et limites à gauche / à droite à trancher par David.
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).
