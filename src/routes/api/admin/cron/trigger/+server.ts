@@ -6,7 +6,7 @@
  *
  * Body:
  * - job_path: The API path of the job to trigger
- *   - HTTP jobs: "/api/cron/daily-summaries-and-rewards"
+ *   - HTTP jobs: "/api/cron/deleted-account-files"
  *   - RPC jobs: "rpc:cleanup_stale_trades" (pg_cron functions)
  */
 

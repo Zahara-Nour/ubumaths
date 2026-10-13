@@ -10,7 +10,7 @@ couvre:
   - src/lib/server/adminElevation.ts
   - src/lib/server/serviceRoleClient.ts
   - src/lib/server/rateLimiter.ts
-  - src/lib/server/csrfProtection.ts
+  - src/lib/server/csrfHandle.ts
   - src/lib/server/passwordPolicy.ts
   - src/lib/server/validateRedirectUrl.ts
   - src/lib/server/private-response.ts
@@ -64,28 +64,28 @@ Deux callbacks différents : `/auth/callback` (connexion Google) ≠ `/api/googl
 
 ## Carte du code
 
-| Fichier                                           | Rôle                                                                                                                            |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `src/hooks.server.ts`                             | Chaîne des handles (ordre ci-dessous) ; `userProfileHandle`, `csrfHandle`, `securityHeadersHandle`.                             |
-| `src/lib/server/supabase.ts`                      | Handle Supabase : `locals.supabase` (cookies SSR) et `locals.safeGetSession()`.                                                 |
-| `src/lib/server/auth.ts`                          | Pour les **pages** : `getUserProfile`, `requireAuth(user)` (redirige), `requireRole(profile, …)`, `hasRole`, `hasAnyRole`.      |
-| `src/lib/server/middleware/auth.ts`               | Pour les **API** : `requireAuth(locals)`, `requireRole`, `requireRoles`, `requireAdmin` ; types `UserRole`, `Profile`.          |
-| `src/lib/server/adminElevation.ts`                | Élévation : cookie `ubu-admin-elevation`, `createAdminClient`, `createEphemeralAuthClient`, `adminElevationHandle`.             |
-| `src/lib/server/serviceRoleClient.ts`             | `createServiceRoleClient()` — contourne la RLS ; liste `ALLOWED_SERVICE_ROLE_PATHS` (avertissement **en dev seulement**).       |
-| `src/lib/server/rateLimiter.ts`                   | Limites persistantes (RPC `check_and_increment_rate_limit`, table `rate_limits`) : login, inscription, reset, élévation, OAuth. |
-| `src/lib/server/middleware/rateLimit.ts`          | Limiteur **en mémoire** (par instance), utilisé par quelques API (`account/delete`, `search`…).                                 |
-| `src/lib/server/validation/auth.ts`               | Zod : `loginFormSchema`, `registerFormSchema`, `requestPasswordResetSchema`, `updatePasswordSchema`…                            |
-| `src/lib/server/passwordPolicy.ts`                | `validatePasswordPolicy`, appliquée par les schémas d'inscription et de changement de mot de passe.                             |
-| `src/lib/server/validateRedirectUrl.ts`           | Anti open-redirect pour les paramètres `next`.                                                                                  |
-| `src/lib/server/private-response.ts`              | `mustStayPrivate` / `PRIVATE_NO_STORE` : pas de cache partagé pour une réponse connectée ou qui pose un cookie.                 |
-| `src/lib/server/auth/cron.ts`                     | `verifyCronAuth(request)` : `Bearer <CRON_SECRET>` seul pour `/api/cron/*` (`x-vercel-cron`, falsifiable, n'ouvre plus rien).   |
-| `src/lib/server/auth/auth-error-fr.ts`            | `authErrorToFrench` : messages GoTrue traduits.                                                                                 |
-| `src/lib/server/middleware/consent.ts`            | `requireConsent(profile, action)` — voir [conformite/](conformite/).                                                            |
-| `src/lib/server/middleware/student-access.ts`     | `verifyTeacherStudent`, `verifyTeacherStudentWithRole`.                                                                         |
-| `src/lib/config/google-login.ts`                  | `GOOGLE_LOGIN_ENABLED = false`.                                                                                                 |
-| `src/lib/config/google-classroom.ts`              | `GOOGLE_CLASSROOM_ENABLED = false`.                                                                                             |
-| `src/lib/server/google/oauth.ts`, `encryption.ts` | Classroom : `getAuthUrl`, `exchangeCodeForTokens`, `refreshAccessToken`, `revokeAccess` ; `encryptToken`/`decryptToken`.        |
-| `src/app.d.ts`                                    | Type de `App.Locals` (`user`, `profile`, `supabase`, `safeGetSession`, `adminSupabase?`, `adminElevation?`).                    |
+| Fichier                                           | Rôle                                                                                                                                         |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/hooks.server.ts`                             | Chaîne des handles (ordre ci-dessous) ; `userProfileHandle`, `securityHeadersHandle` ; `csrfHandle` vit dans `src/lib/server/csrfHandle.ts`. |
+| `src/lib/server/supabase.ts`                      | Handle Supabase : `locals.supabase` (cookies SSR) et `locals.safeGetSession()`.                                                              |
+| `src/lib/server/auth.ts`                          | Pour les **pages** : `getUserProfile`, `requireAuth(user)` (redirige), `requireRole(profile, …)`, `hasRole`, `hasAnyRole`.                   |
+| `src/lib/server/middleware/auth.ts`               | Pour les **API** : `requireAuth(locals)`, `requireRole`, `requireRoles`, `requireAdmin` ; types `UserRole`, `Profile`.                       |
+| `src/lib/server/adminElevation.ts`                | Élévation : cookie `ubu-admin-elevation`, `createAdminClient`, `createEphemeralAuthClient`, `adminElevationHandle`.                          |
+| `src/lib/server/serviceRoleClient.ts`             | `createServiceRoleClient()` — contourne la RLS ; liste `ALLOWED_SERVICE_ROLE_PATHS` (avertissement **en dev seulement**).                    |
+| `src/lib/server/rateLimiter.ts`                   | Limites persistantes (RPC `check_and_increment_rate_limit`, table `rate_limits`) : login, inscription, reset, élévation, OAuth.              |
+| `src/lib/server/middleware/rateLimit.ts`          | Limiteur **en mémoire** (par instance), utilisé par quelques API (`account/delete`, `search`…).                                              |
+| `src/lib/server/validation/auth.ts`               | Zod : `loginFormSchema`, `registerFormSchema`, `requestPasswordResetSchema`, `updatePasswordSchema`…                                         |
+| `src/lib/server/passwordPolicy.ts`                | `validatePasswordPolicy`, appliquée par les schémas d'inscription et de changement de mot de passe.                                          |
+| `src/lib/server/validateRedirectUrl.ts`           | Anti open-redirect pour les paramètres `next`.                                                                                               |
+| `src/lib/server/private-response.ts`              | `mustStayPrivate` / `PRIVATE_NO_STORE` : pas de cache partagé pour une réponse connectée ou qui pose un cookie.                              |
+| `src/lib/server/auth/cron.ts`                     | `verifyCronAuth(request)` : `Bearer <CRON_SECRET>` seul pour `/api/cron/*` (`x-vercel-cron`, falsifiable, n'ouvre plus rien).                |
+| `src/lib/server/auth/auth-error-fr.ts`            | `authErrorToFrench` : messages GoTrue traduits.                                                                                              |
+| `src/lib/server/middleware/consent.ts`            | `requireConsent(profile, action)` — voir [conformite/](conformite/).                                                                         |
+| `src/lib/server/middleware/student-access.ts`     | `verifyTeacherStudent`, `verifyTeacherStudentWithRole`.                                                                                      |
+| `src/lib/config/google-login.ts`                  | `GOOGLE_LOGIN_ENABLED = false`.                                                                                                              |
+| `src/lib/config/google-classroom.ts`              | `GOOGLE_CLASSROOM_ENABLED = false`.                                                                                                          |
+| `src/lib/server/google/oauth.ts`, `encryption.ts` | Classroom : `getAuthUrl`, `exchangeCodeForTokens`, `refreshAccessToken`, `revokeAccess` ; `encryptToken`/`decryptToken`.                     |
+| `src/app.d.ts`                                    | Type de `App.Locals` (`user`, `profile`, `supabase`, `safeGetSession`, `adminSupabase?`, `adminElevation?`).                                 |
 
 Routes :
 
@@ -355,7 +355,7 @@ d'intégration obligatoires, et relire [rls-echecs-silencieux](../pratiques/rls-
 | `src/lib/utils/__tests__/session-cookies.test.ts`                                                                                                                                       | Plafond de 30 jours (400 → 30 j, effacement `Max-Age=0` intact) ; écriture navigateur sur `document.cookie`. |
 | `src/routes/api/admin/elevate/__tests__/elevate.test.ts`, `revoke/__tests__/revoke.test.ts`                                                                                             | Endpoints d'élévation.                                                                                       |
 | `src/lib/server/middleware/__tests__/requireAdmin.test.ts`, `student-access.test.ts`                                                                                                    | Gardes API.                                                                                                  |
-| `src/lib/server/__tests__/csrfProtection.test.ts`, `private-response.test.ts`, `validateRedirectUrl.test.ts`, `rateLimiter.test.ts`                                                     | Défenses transverses.                                                                                        |
+| `src/lib/server/__tests__/csrfHandle.test.ts`, `private-response.test.ts`, `validateRedirectUrl.test.ts`, `rateLimiter.test.ts`                                                         | Défenses transverses.                                                                                        |
 | `src/lib/server/auth/__tests__/cron.test.ts`, `auth-error-fr.test.ts`                                                                                                                   | Secret cron, messages traduits.                                                                              |
 | `src/routes/(public)/auth/{login,reset-password,update-password}/__tests__/`                                                                                                            | Formulaires publics.                                                                                         |
 | `src/routes/__tests__/login-redirect.test.ts`                                                                                                                                           | `/login` → `/auth/login`.                                                                                    |

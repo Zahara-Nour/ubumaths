@@ -9,10 +9,11 @@ import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle } from '@sveltejs/kit';
 import { logError, getUserContext } from '$lib/server/errorMonitoring';
 import { dev } from '$app/environment';
-import { error, redirect } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { initEnv } from '$lib/server/env';
 import { getUserProfile } from '$lib/server/auth';
 import { mustStayPrivate, PRIVATE_NO_STORE } from '$lib/server/private-response';
+import { csrfHandle } from '$lib/server/csrfHandle';
 
 // ====================================================================
 // Environment Variable Validation
@@ -243,63 +244,6 @@ const userProfileHandle: Handle = async ({ event, resolve }) => {
 		}
 	} else {
 		event.locals.profile = null;
-	}
-
-	return resolve(event);
-};
-
-/**
- * CSRF Protection Handle
- * Validates origin header for all state-changing requests (POST, PUT, DELETE, PATCH)
- *
- * SECURITY: Prevents Cross-Site Request Forgery attacks
- * - Checks origin header matches host header
- * - Only enforced for state-changing methods
- * - Critical for API endpoints and form submissions
- */
-const csrfHandle: Handle = async ({ event, resolve }) => {
-	// Allow safe methods (read-only)
-	const method = event.request.method;
-	if (['GET', 'HEAD', 'OPTIONS'].includes(method)) {
-		return resolve(event);
-	}
-
-	// For state-changing methods, validate origin
-	const origin = event.request.headers.get('origin');
-	const host = event.request.headers.get('host');
-
-	// Missing headers - check if internal server-to-server call
-	if (!origin || !host) {
-		// Internal fetch calls from server actions/load functions don't have origin/host headers
-		// These are safe as they don't come from a browser (no CSRF risk)
-		// Allow if BOTH are missing (indicates internal SvelteKit fetch)
-		if (!origin && !host) {
-			return resolve(event);
-		}
-
-		// In development, allow localhost without origin (for testing tools)
-		if (dev && host?.includes('localhost')) {
-			return resolve(event);
-		}
-
-		throw error(403, {
-			message: 'CSRF validation failed: Missing origin or host header'
-		});
-	}
-
-	// Validate origin matches host
-	try {
-		const originUrl = new URL(origin);
-		if (originUrl.host !== host) {
-			throw error(403, {
-				message: 'CSRF validation failed: Origin mismatch'
-			});
-		}
-	} catch (_err) {
-		// Invalid origin URL
-		throw error(403, {
-			message: 'CSRF validation failed: Invalid origin header'
-		});
 	}
 
 	return resolve(event);
