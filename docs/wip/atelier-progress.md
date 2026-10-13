@@ -30,10 +30,19 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
    `/calc` + `/cas`. **Inventaire fait le 2026-10-11** : [atelier-cas-phase0.md](atelier-cas-phase0.md)
    (↑/↓, bouton exact ⇄ décimal, complétion — phase 0 en attente de validation ; retrait de `/cas` suspendu).
 2. **v2, puis v3** : phase 0 à écrire.
-3. **Sélecteur « résumé / détaillé » des étapes** (demandé par David le 2026-10-13, pas commencé) :
-   le moteur rédige déjà les deux verbosités (`summarized` / `detailed`), l'atelier affiche toujours
-   `detailed` sous « Comment ? ». Exposer le choix ; une étape essentielle (valeur interdite, V48 (a))
-   reste présente aux deux niveaux, seule sa rédaction change. Phase 0 à écrire.
+3. **Étapes rédigées : plan décidé par David le 2026-10-13** (ses réponses Q1-Q4 = mes recommandations).
+   - **2a. Sélecteur « résumé / détaillé »** : interrupteur DANS chaque « Comment ? » déplié (pas de
+     réglage global) ; « détaillé » à l'ouverture, dernier choix retenu dans ce navigateur ; les quatre
+     commandes qui rédigent déjà (simplifier, factoriser, dériver, résoudre ; toutes figées sur
+     `verbosity: 'detailed'`) ; pas d'interrupteur là où le résumé ne diffère pas du détaillé ; une
+     réponse sans étapes (V48) reste sans « Comment ? ». Une étape essentielle (valeur interdite) reste
+     aux deux niveaux.
+   - **2b. Brancher les étapes que le moteur rédige déjà**, une commande par PR : `.intégrer`
+     (`pedagogical-integration`), puis `.domaine` (`pedagogical-domain`), puis `.évaluer`
+     (`pedagogical-evaluate`) ; rédaction mesurée sur des cas d'élèves avant, refus si trompeuse.
+   - **2c. Commande `.limite`** (aucune aujourd'hui ; `pedagogical-limits` sert aux corrections) :
+     syntaxe et limites à gauche / à droite à trancher par David.
+   - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).
 
 ### Dettes encore ouvertes (vérifiées dans le code)
 
