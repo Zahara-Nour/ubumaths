@@ -45,6 +45,15 @@ ni les déplacements refusés ni le retour donné à l'élève.
 | G8  | **Pas de nouvelle ligne** pour l'instant : l'expression change en place.                                                                                                                                                                                                                            |
 | G9  | **Comme Algebria** : pendant le glisser, un **espace s'ouvre** là où l'expression peut être posée, sous forme d'un bloc qui apparaît de façon **fluide** ; **toute l'expression adapte sa taille** ; le bloc **disparaît** si l'on continue à glisser plus loin (il se rouvre à la place suivante). |
 | G11 | **Option A** : après un déplacement, le signe × seulement où il est obligatoire (devant un nombre, devant une fraction), même si l'élève l'avait écrit ; lâcher une partie à sa place ne change rien. Avant la 5e, pas de calcul littéral : la question ne se pose pas.                             |
+| G1  | Sur la page de l'outil **« Structure d'une expression »** (`/test-structure`), pas de page à part.                                                                                                                                                                                                  |
+| G2  | Un terme dans sa somme, un facteur dans son produit, **et** les deux membres d'une égalité.                                                                                                                                                                                                         |
+| G3  | Passer un terme d'un membre à l'autre : **pas en v1** (transformation, chantier à part).                                                                                                                                                                                                            |
+| G4  | Le signe suit le terme ; un `+` en tête disparaît.                                                                                                                                                                                                                                                  |
+| G5  | **On bloque** : une partie ne peut pas sortir de son groupe tant que le pointeur est dehors (pas de refus, pas de phrase).                                                                                                                                                                          |
+| G6  | **6e ou avant** : glisser **désactivé** pour les termes d'une somme qui contient une **soustraction** (à ce niveau, pas de terme négatif) ; une somme d'additions seules se glisse.                                                                                                                 |
+| G7  | Numérateur et dénominateur, les deux côtés d'un `÷` : ne s'échangent pas ; une phrase dit pourquoi.                                                                                                                                                                                                 |
+| G10 | Au doigt, comme la démo : un toucher encadre, un second toucher dans le cadre remonte d'un cran, le glisser part dès que le doigt bouge.                                                                                                                                                            |
+| —   | **Structure = les cadres** de la démo (partie encadrée, groupe sur un fond clair avec son nom, lecture). **Soulever** : au choix de l'utilisateur (une case). **« Annuler »** : oui, plusieurs retours possibles.                                                                                   |
 
 ### G9 : comment rendre l'expression malléable pendant le glisser (2026-10-13)
 
@@ -130,6 +139,83 @@ Mesures après ces ajouts (mêmes 8 expressions, en encadrant d'abord le terme v
 Structure algébrique : **les cadres** (confirmé par David le 2026-10-13). Encore à demander :
 soulever le terme ou le laisser sous le pointeur ?
 
+## Spécification E — glisser-déposer (proposée le 2026-10-13, à valider par David)
+
+S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/structure-expression.md).
+« Partie » : un terme d'une somme, un facteur d'un produit, un membre d'une égalité.
+
+### E1. Ce qu'on saisit
+
+| #    | Cas                                                                                         | Comportement attendu                                                                                                                                            |
+| ---- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| E1.1 | l'encadré (règle A1) est une partie                                                         | son groupe passe sur un fond clair, avec son nom (« somme · 3 termes », « produit · 2 facteurs », « égalité · 2 membres ») ; curseur « main » ; on peut glisser |
+| E1.2 | l'encadré n'est pas une partie (somme entière, exposant, numérateur, contenu d'une racine…) | pas de fond, pas de glisser ; un clic remonte d'un cran (A11) jusqu'à une partie                                                                                |
+| E1.3 | `2x + 1`, survol de `x`                                                                     | `x` encadré, fond « produit · 2 facteurs » ; un clic → `2x` encadré, fond « somme · 2 termes » ; on glisse **ce qui est encadré**                               |
+| E1.4 | après ce clic, le pointeur passe sur une autre partie                                       | retour à la plus petite partie sous le pointeur                                                                                                                 |
+| E1.5 | appui sur le dénominateur d'une fraction                                                    | une partie du dénominateur (la boîte du numérateur le recouvre : repérage par la position des caractères)                                                       |
+| E1.6 | formules du corpus                                                                          | survol seul, pas de glisser                                                                                                                                     |
+
+### E2. Pendant le glisser
+
+| #    | Cas                                                        | Comportement attendu                                                                                                                                              |
+| ---- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| E2.1 | appui sur une partie, puis le pointeur bouge de 4 px       | la partie part sur une carte (fond, bordure, ombre) ; une boîte de dépôt à sa place ; la ligne garde sa hauteur                                                   |
+| E2.2 | case « Soulever le terme » (cochée par défaut)             | cochée : la carte monte au-dessus de la ligne ; décochée : elle reste sous le pointeur                                                                            |
+| E2.3 | le pointeur passe d'une place à une autre                  | la boîte s'ouvre en douceur à la nouvelle place et se referme à l'ancienne ; toute l'expression s'élargit (barre de fraction, racine, parenthèses) ; le fond suit |
+| E2.4 | (G5) le pointeur sort du groupe                            | la carte s'arrête au bord du groupe, au plus près du pointeur ; la boîte reste à la place la plus proche ; la carte suit de nouveau quand le pointeur revient     |
+| E2.5 | touche Échap                                               | la partie revient à sa place, rien ne change                                                                                                                      |
+| E2.6 | (G7) glisser commencé sur un numérateur ou un dénominateur | rien ne part ; sous la formule : « Le numérateur et le dénominateur ne s'échangent pas : la fraction changerait de valeur. »                                      |
+| E2.7 | (G7) glisser commencé sur un côté d'une division en ligne  | rien ne part ; « Les deux nombres d'une division ne s'échangent pas : le quotient changerait. »                                                                   |
+
+### E3. Au lâcher
+
+| #    | Cas                                         | Comportement attendu                                                                           |
+| ---- | ------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| E3.1 | lâcher                                      | la carte se pose dans la boîte ; l'expression est réécrite ; la saisie et les lectures suivent |
+| E3.2 | (G4) `5 − 3 + x`                            | `x` en tête → `x + 5 − 3` ; `3` en tête → `−3 + 5 + x` ; `5` à la fin → `−3 + x + 5`           |
+| E3.3 | (G11) `3xy`                                 | `3` à la fin → `xy × 3` ; puis en tête → `3xy`                                                 |
+| E3.4 | (G11) `a × b × c`, `2 × 3 × 5`, `4 × a × ½` | `c` en tête → `c a b` ; `5` en tête → `5 × 2 × 3` ; `a` en tête → `a × 4 × ½`                  |
+| E3.5 | `2(x + 1)(x − 3)`                           | `2` à la fin → `(x + 1)(x − 3) × 2`                                                            |
+| E3.6 | `2x + 3 = 7`                                | un membre glissé de l'autre côté du `=` → `7 = 2x + 3`                                         |
+| E3.7 | inégalité (`2x < 7`)                        | ses membres ne se glissent pas (il faudrait retourner le signe)                                |
+| E3.8 | partie lâchée à sa place                    | rien ne change, pas même un `×` superflu                                                       |
+| E3.9 | `a + (−b)`                                  | `(−b)` en tête → `(−b) + a` : la parenthèse écrite par la somme reste                          |
+
+### E4. Annuler
+
+| #    | Cas                                | Comportement attendu                                              |
+| ---- | ---------------------------------- | ----------------------------------------------------------------- |
+| E4.1 | « Annuler » après des déplacements | revient au déplacement précédent, autant de fois qu'il y en a eu  |
+| E4.2 | nouvelle saisie ou exemple chargé  | l'historique repart de zéro ; « Annuler » grisé quand il est vide |
+
+### E5. Élève de 6e ou avant (niveau de l'élève connecté ; visiteur : aucune restriction)
+
+| #    | Cas                                                   | Comportement attendu                                                                                    |
+| ---- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| E5.1 | (G6) somme qui contient une soustraction (`12 − 4`)   | ses termes ne se glissent pas : pas de fond de groupe, pas de curseur « main », pas de phrase           |
+| E5.2 | somme d'additions seules (`2 + 3 + 4`)                | permis                                                                                                  |
+| E5.3 | produit (`2 × 3 × 5`)                                 | permis                                                                                                  |
+| E5.4 | **à confirmer** : `2 × (3 + 4)`, aller-retour du `2`  | reco de Claude : `2 × (3 + 4)` (le `×` reste devant une parenthèse), pas `2(3 + 4)`, écriture vue en 5e |
+| E5.5 | le message « 6e ou avant » remplace la structure (C1) | rien ne se glisse                                                                                       |
+
+### E6. Au clavier (proposition de Claude)
+
+| #    | Cas                                | Comportement attendu                                                                                          |
+| ---- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| E6.1 | une partie encadrée, flèche ← ou → | elle change de place d'un cran (même réécriture qu'au lâcher) ; une autre voie que le glisser (accessibilité) |
+
+### Choix techniques proposés
+
+- La formule de l'outil passe du `math-span` (shadow DOM, figé) au rendu de MathLive dans la page
+  (`convertLatexToMarkup`, comme l'Atelier et la démo), corpus compris : un seul chemin. Rendu
+  identique à l'œil ; c'est ce qui permet de redessiner à chaque image (piste 3).
+- La réécriture (déplacer une partie, signes, règle des `×`, membres) devient un module pur de
+  `src/lib/mathAST/structure/`, repris de `sum-drag.ts` de la démo ; la démo reste locale et part
+  à la poubelle.
+- Lots : 1) module de réécriture et ses tests (E3, E5.1-E5.4) ; 2) rendu dans la page et glisser
+  dans l'outil (E1, E2) ; 3) Annuler, G7, clavier (E4, E2.6-E2.7, E6). Tests d'abord, vus en échec.
+  Agents : lot 1 dans la session principale ; `code-reviewer` (Opus) en fin de chaque lot.
+
 ## Journal
 
 - 2026-10-13 — ouverture : lecture de l'article Algebria, inventaire de l'existant, questions
@@ -145,3 +231,5 @@ soulever le terme ou le laisser sous le pointeur ?
 - 2026-10-13 — G11 tranchée (A) ; démo à jour (commit local, `movedLatex`, 13 tests) : `3xy` →
   `xy × 3` → `3xy` vérifié dans le navigateur.
 - 2026-10-13 — « la structure, c'est bien les cadres » (David).
+- 2026-10-13 — réponses de David : d'accord avec les recos sauf G5 (bloquer), Soulever (au choix),
+  G6 (désactiver les sommes avec soustraction en 6e). Spécification E rédigée, à valider.
