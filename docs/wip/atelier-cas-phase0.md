@@ -1,7 +1,7 @@
 ---
 title: Atelier — ce qui manque avant de retirer /cas (phase 0)
 date: 2026-10-11
-status: PR 1 (#1080), PR 2 (#1086) et PR 3 (#1094) livrées le 2026-10-11 ; PR 4 (retrait de /cas) livrée le 2026-10-13 (branche feat/retrait-cas) ; restent les points mis de côté
+status: PR 1 (#1080), PR 2 (#1086) et PR 3 (#1094) livrées le 2026-10-11 ; PR 4 (retrait de /cas) livrée le 2026-10-13 (#1340) ; restent les points mis de côté
 ---
 
 # Atelier — ce qui manque avant de retirer `/cas`
@@ -116,7 +116,7 @@ et exige que Calcul l'**accepte** ; une proposition refusée fait échouer le te
 complétion de `/cas` (`mathAST/cli/completion`) insère `\alpha` et `\pi` en LaTeX à côté de `sin(` en
 syntaxe maison — une saisie mêlée que Calcul refuse depuis #911.
 
-### PR 4 — le retrait de `/cas` (✅ 2026-10-13, branche `feat/retrait-cas`)
+### PR 4 — le retrait de `/cas` (✅ 2026-10-13, #1340)
 
 Part : la route `src/routes/(public)/cas/`, `src/lib/components/cas/` (dont `AstDrawer` et
 `AstTreeViewer`, jamais montés), `src/lib/stores/repl.svelte.ts`. Restent : `WebReplEngine` (moteur
@@ -175,7 +175,7 @@ absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inv
   options annoncées par leur nom. Mesuré : unités (`cm`, `km`, `min`, `h`) et listes qualitatives
   n'ouvrent rien ; `si`, `de`, `et` ouvrent une liste qu'Entrée ignore.
 - 2026-10-11 — PR 3 mergée (#1094). Les trois PR de la phase 0 sont livrées.
-- 2026-10-13 — PR 4 (feu vert de David) sur `feat/retrait-cas` : `/cas` et `/cas/` → `/atelier` en
+- 2026-10-13 — PR 4 (feu vert de David) (#1340) : `/cas` et `/cas/` → `/atelier` en
   308, query string comprise (`redirectHandle`, sorti de `hooks.server.ts` dans
   `src/lib/server/redirectHandle.ts` pour être testé seul). Supprimés : la route, `components/cas/`
   (8 composants), `stores/repl.svelte.ts`, `mathAST/cli/completion/` (plus aucun usage : ni

@@ -24,7 +24,7 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
 ## Reste à faire
 
 1. **Remplacer `/cas`** — ✅ **fait le 2026-10-13** (PR 4 de [atelier-cas-phase0.md](atelier-cas-phase0.md),
-   branche `feat/retrait-cas`) : la page est retirée, l'adresse mène à `/atelier`. Reste `/calc`.
+   #1340) : la page est retirée, l'adresse mène à `/atelier`. Reste `/calc`.
    Historique : `/cas` existait toujours (`ReplContainer`), hors barre latérale. Le catalogue de
    l'atelier (`commands.ts`) traduit toutes les commandes du moteur ; 7 sont déclarées indisponibles avec
    leur raison. Pas encore fait : l'inventaire de ce que `/cas` offre et que l'atelier n'offre pas, puis
