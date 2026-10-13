@@ -326,7 +326,7 @@ Exercices, fichiers et carnets Python, exécutés dans le navigateur (Pyodide). 
   `python_notebook_assignments`, `python_notebook_checkpoint_runs`.
 - `python_submission_server_verdicts` (verdicts de la re-vérification serveur, abandonnée par
   l'[ADR 0010](../adr/0010-pas-de-reverification-serveur-python.md)) : vide et inerte, **supprimée**
-  le 2026-10-13 avec `run_flag_stale_python_rechecks` (migration `20261016101700`).
+  le 2026-10-13 avec `run_flag_stale_python_rechecks` (migration `20261016103000`).
 
 Accès : l'élève lit et soumet ses propres soumissions, le professeur lit celles de tous les élèves.
 Un carnet est lu par son auteur, par l'élève à qui il est assigné (`is_notebook_assigned_to_student`,
