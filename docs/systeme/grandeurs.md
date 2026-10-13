@@ -63,7 +63,7 @@ Dans la carte, MathLive écrit l'espace tapée `\,` et « min » toujours en op�
 lecture que si la saisie n'est QU'une grandeur (`\min\left(2,3\right)` reste la fonction). Une durée
 composée rangée revient dans le champ écrite `2 h 30 min`, sans le `+` du rangement
 (`fieldLatexOf`) : elle se relit après retouche (restes du lot C, 2026-10-13), seule ou prise dans
-un calcul (`(1 h + 30 min) × 2`). Le champ écrit la virgule de l'élève (`2{,}5 km`, pas `2.5`).
+un calcul (`(1 h + 30 min) × 2`). Le champ écrit la virgule de l'élève (`2{,}5 km`, pas `2.5`) ; une unité qu'il montre (`\operatorname{\mathrm{m}}`) se relit en unité, même après une puissance (`10^3 m`).
 
 ### Calculer — `tidy`, unité écrite d'abord
 
