@@ -3,18 +3,25 @@
 Greek letters in Shantell's hand. Shantell Sans has only π and Ω (see
 replace_symbols.py); the other letters are
 
-- borrowed from Shantell glyphs of the same shape: Cyrillic Г П Ф Ѳ ѳ з є к т,
-  Latin Y V v o, ∆ and µ, mirrored when needed (Λ is V upside down, ε is з
-  mirrored);
-- or drawn as centre lines stroked with the width of Shantell's letters, on
-  Shantell's x-height, cap height and descender: α β γ δ ζ η ι λ ρ σ υ φ χ ψ ω,
-  Ξ Σ Ψ.
+- borrowed whole from Shantell glyphs of the same shape: Cyrillic Г П Ф Ѳ ѳ з
+  є к т ф, Latin Y V v o, ∆ and µ, mirrored when needed (Λ is V upside down, ε
+  is з mirrored);
+- taken from a single piece of a Shantell letter: ι (the lower part of l, with
+  its foot), υ (u), χ (x stretched below the baseline);
+- drawn in smooth strokes, like Shantell's own letters: α β γ δ ζ η λ ξ ρ ϱ σ ς
+  φ ψ ω ϖ ϑ. Each stroke is a Catmull-Rom curve through points taken on the
+  centre lines of Shantell's letters (bowls of o and c, x-height, ascender,
+  descender), stroked with the width of its letters and round ends; a letter
+  where the hand lifts (η ψ ζ λ ϱ ϖ) has two strokes overlapping, like n. Pieces
+  of Shantell letters joined together kept corners at the joins, and stood out;
+- drawn as straight centre lines with the width of Shantell's letters: Ξ Σ Ψ.
 
 Like the other letters, each one keeps Shantell's size and baseline, is centred
 on the KaTeX glyph it replaces and narrowed only when wider than its advance
 (MathLive lays formulas out with the KaTeX metrics, hard-coded). Lowercase
-letters go to KaTeX_Math-Italic, capitals to KaTeX_Main-Regular (upright, the
-default) and KaTeX_Math-Italic (\\varGamma…). ξ ϑ ϖ ϱ ς keep the KaTeX shape.
+letters go to KaTeX_Math-Italic and, added, to KaTeX_Main-Regular (MathLive
+sets lowercase Greek upright in French); capitals to KaTeX_Main-Regular (upright,
+the default) and KaTeX_Math-Italic (\\varGamma…).
 
 Run after replace_symbols.py and before build_typst_math_font.py. The script
 works in place on static/fonts/shantell-katex/ and redraws each glyph from the
@@ -38,6 +45,7 @@ from fontTools.ttLib import TTFont
 # Les scripts voisins, même lancé en mode isolé (python -I)
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from redraw_symbols import add_glyph  # noqa: E402
 from replace_delimiters import STROKE, put_glyph, reference_glyph, stroked, to_path  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -75,181 +83,297 @@ BORROWED: Dict[str, Tuple[str, bool, bool]] = {
     "μ": ("µ", False, False),
     "ν": ("v", False, False),
     "ο": ("o", False, False),
+    # π de Shantell lui-même (déjà mis dans Math-Italic par replace_symbols.py) :
+    # ici pour Main-Regular
+    "π": ("π", False, False),
     "τ": ("т", False, False),
     "ϕ": ("ф", False, False),
 }
 
 
-# --- Lettres dessinées : lignes centrales, unités de Shantell ---
+# --- Lettres faites d'un morceau de lettre Shantell : ι υ χ ---
+#
+# Un bout coupé net reçoit un bout rond, comme les traits de Shantell.
+
+Box = Tuple[float, float, float, float]
+Matrix = Tuple[float, float, float, float, float, float]
 
 
-def alpha() -> list:
-    # Une boucle à gauche, les deux traits de droite se croisent en queue de poisson
-    return [
-        ("M", (470, X_HEIGHT + 10)),
-        ("C", (400, 200, 330, BASE, 220, BASE)),
-        ("C", (110, BASE, 50, 120, 50, 235)),
-        ("C", (50, 360, 120, X_HEIGHT, 225, X_HEIGHT)),
-        ("C", (340, X_HEIGHT, 400, 260, 475, BASE - 10)),
-    ]
+def glyph(source: TTFont, char: str) -> pathops.Path:
+    glyph_set = source.getGlyphSet()
+    recording = DecomposingRecordingPen(glyph_set)
+    glyph_set[source.getBestCmap()[ord(char)]].draw(recording)
+    path = pathops.Path()
+    recording.replay(path.getPen())
+    path.simplify()
+    return path
 
 
-def beta() -> list:
-    return [
-        ("M", (95, DESCENDER)),
-        ("L", (95, 560)),
-        ("C", (95, 670, 160, ASCENDER, 260, ASCENDER)),
-        ("C", (370, ASCENDER, 420, 650, 420, 570)),
-        ("C", (420, 480, 345, 425, 225, 425)),
-        ("C", (390, 425, 470, 330, 470, 220)),
-        ("C", (470, 90, 375, BASE, 260, BASE)),
-        ("C", (180, BASE, 120, 30, 95, 80)),
-    ]
+def rectangle(box: Box) -> pathops.Path:
+    path = pathops.Path()
+    path.moveTo(box[0], box[1])
+    path.lineTo(box[2], box[1])
+    path.lineTo(box[2], box[3])
+    path.lineTo(box[0], box[3])
+    path.close()
+    return path
 
 
-def gamma() -> list:
-    # Deux bras qui se croisent sur la ligne de base, une petite boucle dessous
-    return [
-        ("M", (30, X_HEIGHT - 20)),
-        ("C", (130, X_HEIGHT + 20, 220, 260, 255, 40)),
-        ("C", (340, -90, 330, DESCENDER, 255, DESCENDER)),
-        ("C", (180, DESCENDER, 170, -90, 255, 40)),
-        ("M", (465, X_HEIGHT)),
-        ("L", (255, 40)),
-    ]
+def keep(path: pathops.Path, box: Box) -> pathops.Path:
+    """La partie du tracé dans la boîte."""
+    return pathops.op(path, rectangle(box), pathops.PathOp.INTERSECTION)
 
 
-def delta() -> list:
-    return [
-        ("M", (400, ASCENDER - 20)),
-        ("C", (330, ASCENDER + 10, 160, ASCENDER + 10, 160, 650)),
-        ("C", (160, 570, 455, 470, 455, 230)),
-        ("C", (455, 90, 365, BASE, 250, BASE)),
-        ("C", (130, BASE, 50, 90, 50, 220)),
-        ("C", (50, 350, 150, 440, 300, 470)),
-    ]
+def moved(path: pathops.Path, matrix: Matrix) -> pathops.Path:
+    result = pathops.Path()
+    path.draw(TransformPen(result.getPen(), matrix))
+    result.simplify()
+    return result
 
 
-def iota() -> list:
-    # Le ı de Shantell, avec le crochet du bas qui le distingue d'un 1 ou d'un l
-    return [
-        ("M", (90, X_HEIGHT)),
-        ("L", (90, 130)),
-        ("C", (90, 50, 130, BASE, 200, BASE + 10)),
-    ]
+def cap(x: float, y: float) -> pathops.Path:
+    """Un bout rond, au trait des lettres."""
+    return stroked(to_path([("M", (x, y)), ("L", (x + 0.5, y))]))
 
 
-def zeta() -> list:
-    return [
-        ("M", (140, ASCENDER - 30)),
-        ("L", (390, ASCENDER - 30)),
-        ("C", (210, 570, 60, 390, 60, 220)),
-        ("C", (60, 60, 160, BASE + 10, 300, BASE + 10)),
-        ("C", (420, BASE + 10, 435, -80, 405, -140)),
-        ("C", (385, -190, 335, DESCENDER, 290, DESCENDER)),
-    ]
+def merged(*paths: pathops.Path) -> pathops.Path:
+    result = paths[0]
+    for path in paths[1:]:
+        result = pathops.op(result, path, pathops.PathOp.UNION)
+    return result
 
 
-def eta() -> list:
-    # Le n de Shantell, jambe droite prolongée sous la ligne
-    return [
-        ("M", (80, X_HEIGHT)),
-        ("L", (80, BASE)),
-        ("M", (80, 300)),
-        ("C", (110, 410, 190, X_HEIGHT, 290, X_HEIGHT)),
-        ("C", (400, X_HEIGHT, 460, 400, 460, 300)),
-        ("L", (460, DESCENDER)),
-    ]
+def stroke_centre(path: pathops.Path, y: float, from_right: bool = False) -> float:
+    """Milieu du premier trait rencontré sur l'horizontale y."""
+    xs = range(1200, -400, -2) if from_right else range(-400, 1200, 2)
+    crossings = []
+    was_inside = False
+    for x in xs:
+        now_inside = path.contains((x, y))
+        if now_inside != was_inside:
+            crossings.append(x)
+            if len(crossings) == 2:
+                break
+        was_inside = now_inside
+    return (crossings[0] + crossings[1]) / 2
 
 
-def lambda_() -> list:
-    return [
-        ("M", (90, ASCENDER - 20)),
-        ("C", (180, ASCENDER + 10, 225, 620, 275, 430)),
-        ("L", (450, BASE)),
-        ("M", (275, 410)),
-        ("L", (60, BASE)),
-    ]
+def assembled_iota(source: TTFont) -> pathops.Path:
+    # Le bas du l de Shantell, avec son pied qui part à droite
+    l_glyph = glyph(source, "l")
+    top = X_HEIGHT
+    lower = keep(l_glyph, (-100, -100, 800, top))
+    return merged(lower, cap(stroke_centre(lower, top - 2), top))
 
 
-def rho() -> list:
-    return [
-        ("M", (90, DESCENDER)),
-        ("L", (90, 230)),
-        ("C", (90, 380, 170, X_HEIGHT, 270, X_HEIGHT)),
-        ("C", (390, X_HEIGHT, 460, 370, 460, 230)),
-        ("C", (460, 90, 380, BASE, 270, BASE)),
-        ("C", (180, BASE, 110, 50, 90, 110)),
-    ]
+def assembled_upsilon(source: TTFont) -> pathops.Path:
+    return glyph(source, "u")
 
 
-def sigma() -> list:
-    # Un o fermé, et le trait du haut qui part à droite
-    return [
-        ("M", (500, X_HEIGHT)),
-        ("L", (250, X_HEIGHT)),
-        ("C", (120, X_HEIGHT, 50, 360, 50, 230)),
-        ("C", (50, 90, 140, BASE, 250, BASE)),
-        ("C", (370, BASE, 440, 100, 440, 230)),
-        ("C", (440, 360, 370, 445, 270, X_HEIGHT)),
-    ]
+def assembled_chi(source: TTFont) -> pathops.Path:
+    # Le x de Shantell, étiré pour descendre sous la ligne comme le χ
+    x = glyph(source, "x")
+    y_min, y_max = x.bounds[1], x.bounds[3]
+    factor = (y_max - (DESCENDER - HALF)) / (y_max - y_min)
+    return moved(x, (1, 0, 0, factor, 0, y_max * (1 - factor)))
 
 
-def upsilon() -> list:
-    return [
-        ("M", (60, X_HEIGHT)),
-        ("L", (60, 230)),
-        ("C", (60, 80, 150, BASE, 260, BASE)),
-        ("C", (390, BASE, 460, 130, 460, 300)),
-        ("C", (460, 400, 440, 450, 410, X_HEIGHT)),
-    ]
+# --- Lettres d'un seul trait : courbe lisse par des points ---
+#
+# Les assemblages gardent des angles aux raccords. Ces lettres-ci sont un seul
+# trait souple, comme celles de Shantell : une courbe sans cassure (spline de
+# Catmull-Rom) passe par des points relevés sur les lignes centrales des lettres
+# de Shantell (ventres du o et du c, hauteur d'x, jambages), puis elle est
+# épaissie au trait des lettres, bouts ronds.
 
 
-def varphi() -> list:
-    # La boucle ouverte et la hampe du φ manuscrit
-    return [
-        ("M", (170, X_HEIGHT - 20)),
-        ("C", (60, 400, 40, 250, 60, 150)),
-        ("C", (90, 40, 200, BASE, 290, BASE)),
-        ("C", (420, BASE, 490, 100, 490, 240)),
-        ("C", (490, 380, 400, X_HEIGHT, 330, X_HEIGHT)),
-        ("C", (260, X_HEIGHT, 240, 400, 240, 300)),
-        ("L", (240, DESCENDER)),
-    ]
+def smooth(points) -> list:
+    """Commandes d'une courbe lisse passant par les points (Catmull-Rom)."""
+    padded = [points[0]] + list(points) + [points[-1]]
+    commands = [("M", points[0])]
+    for i in range(1, len(padded) - 2):
+        p0, p1, p2, p3 = padded[i - 1], padded[i], padded[i + 1], padded[i + 2]
+        c1 = (p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6)
+        c2 = (p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6)
+        commands.append(("C", (*c1, *c2, *p2)))
+    return commands
 
 
-def chi() -> list:
-    return [
-        ("M", (30, X_HEIGHT - 20)),
-        ("C", (90, X_HEIGHT + 10, 140, 440, 200, 300)),
-        ("L", (360, -150)),
-        ("C", (390, -210, 420, DESCENDER, 470, DESCENDER + 20)),
-        ("M", (450, X_HEIGHT)),
-        ("L", (60, DESCENDER)),
-    ]
+def one_stroke(points) -> pathops.Path:
+    return stroked(to_path(smooth(points)))
 
 
-def psi() -> list:
-    return [
-        ("M", (40, X_HEIGHT)),
-        ("L", (40, 260)),
-        ("C", (40, 100, 140, BASE, 260, BASE)),
-        ("C", (380, BASE, 480, 100, 480, 260)),
-        ("L", (480, X_HEIGHT)),
-        ("M", (260, ASCENDER)),
-        ("L", (260, DESCENDER)),
-    ]
+def curvy_alpha(source: TTFont) -> pathops.Path:
+    # Queue du haut, croisement, ventre du c (gauche 96, bas 24, haut 455),
+    # retour par le croisement, queue du bas
+    return one_stroke([
+        (605, 480), (530, 395), (455, 245), (398, 100), (300, 26), (175, 52), (106, 158),
+        (97, 255), (124, 354), (198, 433), (300, 457), (396, 396), (455, 245), (522, 95), (608, 16),
+    ])
 
 
-def omega() -> list:
-    # Deux creux arrondis qui se rejoignent au milieu
-    return [
-        ("M", (90, X_HEIGHT)),
-        ("C", (35, 380, 35, BASE, 165, BASE)),
-        ("C", (245, BASE, 265, 80, 265, 200)),
-        ("C", (265, 80, 285, BASE, 365, BASE)),
-        ("C", (495, BASE, 495, 380, 440, X_HEIGHT)),
-    ]
+def curvy_beta(source: TTFont) -> pathops.Path:
+    # La hampe monte du jambage, deux ventres, le second revient vers la hampe
+    return one_stroke([
+        (110, DESCENDER), (104, 40), (100, 330), (108, 570), (150, 695), (245, 726), (345, 700),
+        (392, 622), (358, 530), (262, 480), (205, 466), (275, 456), (390, 420), (462, 310),
+        (465, 175), (405, 62), (290, 18), (180, 32), (112, 90),
+    ])
+
+
+def curvy_gamma(source: TTFont) -> pathops.Path:
+    # Bras gauche courbe, boucle en goutte sous la ligne, bras droit qui remonte
+    return one_stroke([
+        (25, 425), (85, X_HEIGHT), (160, 380), (225, 180), (262, 20), (300, -105), (292, -205),
+        (240, DESCENDER), (192, -175), (205, -70), (262, 25), (345, 210), (420, 380), (478, X_HEIGHT),
+    ])
+
+
+def curvy_delta(source: TTFont) -> pathops.Path:
+    # L'enroulement du haut descend dans le ventre du o, qui fait le tour
+    return one_stroke([
+        (440, 680), (385, ASCENDER), (290, ASCENDER + 5), (215, 700), (220, 630), (305, 565),
+        (420, 470), (478, 330), (470, 180), (400, 60), (292, 22), (170, 40), (100, 130),
+        (92, 250), (130, 360), (220, 435), (330, 455), (420, 420),
+    ])
+
+
+def strokes(*point_lists) -> pathops.Path:
+    """Plusieurs traits souples qui se chevauchent, comme la main qui se lève (n, ψ)."""
+    return merged(*(one_stroke(points) for points in point_lists))
+
+
+# Queue commune de ζ ξ ς : le trait file à droite sous la ligne, puis plonge et revient
+TAIL = [(340, 25), (410, -35), (400, -130), (330, -195), (270, DESCENDER + 10)]
+
+
+def curvy_zeta(source: TTFont) -> pathops.Path:
+    return strokes(
+        [(130, 690), (280, 705), (420, 712)],
+        [(405, 702), (260, 600), (140, 460), (80, 290), (110, 125), (225, 48)] + TAIL,
+    )
+
+
+def curvy_eta(source: TTFont) -> pathops.Path:
+    # Le n : la hampe, puis l'arche dont la jambe droite descend au jambage
+    return strokes(
+        [(92, X_HEIGHT + 5), (90, 250), (95, BASE)],
+        [(95, 300), (150, 420), (260, 465), (380, 432), (446, 330), (456, 150), (455, -100), (450, DESCENDER)],
+    )
+
+
+def curvy_lambda(source: TTFont) -> pathops.Path:
+    return strokes(
+        [(85, ASCENDER - 10), (150, ASCENDER + 5), (215, 650), (280, 450), (360, 230), (420, 90), (462, BASE)],
+        [(275, 420), (190, 250), (120, 110), (70, BASE)],
+    )
+
+
+def curvy_xi(source: TTFont) -> pathops.Path:
+    return one_stroke([
+        (410, 710), (270, 714), (165, 662), (170, 575), (260, 526), (365, 512), (250, 505), (130, 440),
+        (80, 300), (105, 140), (225, 48),
+    ] + TAIL)
+
+
+def curvy_rho(source: TTFont) -> pathops.Path:
+    # Du bas du jambage, la hampe monte et fait le tour du ventre
+    return one_stroke([
+        (105, DESCENDER), (100, 0), (100, 230), (130, 370), (220, 455), (330, 460), (430, 390),
+        (462, 250), (430, 110), (340, 30), (230, 25), (140, 70), (102, 140),
+    ])
+
+
+def curvy_varrho(source: TTFont) -> pathops.Path:
+    # Le ventre rond (le trait repasse sur son début pour se refermer sans pli),
+    # et la hampe qui descend de son flanc gauche et file à droite
+    return strokes(
+        [(280, 462), (410, 415), (462, 270), (430, 110), (330, 28), (210, 30), (120, 100), (98, 250),
+         (140, 390), (250, 462), (350, 455), (425, 400)],
+        [(100, 200), (98, 0), (110, -140), (170, -205), (280, -215), (380, -205)],
+    )
+
+
+def curvy_sigma(source: TTFont) -> pathops.Path:
+    # La barre du haut, qui revient en arrière et fait le tour du ventre
+    return one_stroke([
+        (540, 470), (420, 462), (290, 462), (160, 425), (80, 300), (85, 140), (170, 45), (290, 26),
+        (400, 60), (458, 180), (445, 330), (370, 440), (270, 465),
+    ])
+
+
+def curvy_final_sigma(source: TTFont) -> pathops.Path:
+    return one_stroke([(440, 445), (350, 468), (220, 445), (115, 360), (80, 235), (120, 115), (230, 50)] + TAIL)
+
+
+def curvy_varphi(source: TTFont) -> pathops.Path:
+    # La boucle ouverte du φ manuscrit, puis la hampe qui descend en son milieu
+    return one_stroke([
+        (170, 430), (100, 380), (70, 260), (110, 120), (220, 40), (330, 40), (430, 120), (470, 260),
+        (440, 400), (350, 462), (270, 420), (250, 300), (248, 100), (245, -100), (245, DESCENDER),
+    ])
+
+
+def curvy_psi(source: TTFont) -> pathops.Path:
+    return strokes(
+        [(60, 470), (60, 300), (90, 140), (180, 50), (270, 30), (370, 55), (450, 150), (472, 300), (472, 470)],
+        [(265, ASCENDER), (268, 300), (265, 0), (262, DESCENDER)],
+    )
+
+
+OMEGA = [
+    (115, 470), (65, 340), (68, 170), (120, 60), (195, 28), (262, 70), (285, 180), (288, 240), (292, 180),
+    (315, 70), (380, 28), (455, 60), (505, 170), (508, 340), (458, 470),
+]
+
+
+def curvy_omega(source: TTFont) -> pathops.Path:
+    # Deux creux ronds, qui se rejoignent en une pointe au milieu
+    return one_stroke(OMEGA)
+
+
+def curvy_varpi(source: TTFont) -> pathops.Path:
+    return strokes([(30, 470), (300, 480), (575, 470)], OMEGA)
+
+
+def curvy_vartheta(source: TTFont) -> pathops.Path:
+    # Un crochet à gauche, le creux, la boucle du haut qui revient en queue
+    return one_stroke([
+        (45, 380), (75, 450), (120, 465), (150, 420), (140, 300), (150, 140), (200, 50), (290, 30),
+        (390, 70), (440, 200), (445, 330), (440, 480), (410, 640), (340, ASCENDER), (270, 700),
+        (255, 600), (300, 470), (400, 400), (505, 395),
+    ])
+
+
+ASSEMBLED: Dict[str, Callable[[TTFont], pathops.Path]] = {
+    "ι": assembled_iota,
+    "υ": assembled_upsilon,
+    "χ": assembled_chi,
+}
+CURVY: Dict[str, Callable[[TTFont], pathops.Path]] = {
+    "α": curvy_alpha,
+    "β": curvy_beta,
+    "γ": curvy_gamma,
+    "δ": curvy_delta,
+    "ζ": curvy_zeta,
+    "η": curvy_eta,
+    "λ": curvy_lambda,
+    "ξ": curvy_xi,
+    "ρ": curvy_rho,
+    "ϱ": curvy_varrho,
+    "σ": curvy_sigma,
+    "ς": curvy_final_sigma,
+    "φ": curvy_varphi,
+    "ψ": curvy_psi,
+    "ω": curvy_omega,
+    "ϖ": curvy_varpi,
+    "ϑ": curvy_vartheta,
+}
+
+
+# --- Capitales dessinées : lignes centrales droites, unités de Shantell ---
+#
+# Ξ Σ Ψ sont faites de traits droits, où un trait calculé ne se remarque pas.
 
 
 def capital_xi() -> list:
@@ -286,32 +410,23 @@ def capital_psi() -> list:
 
 
 DRAWN: Dict[str, Callable[[], list]] = {
-    "α": alpha,
-    "β": beta,
-    "γ": gamma,
-    "δ": delta,
-    "ζ": zeta,
-    "ι": iota,
-    "η": eta,
-    "λ": lambda_,
-    "ρ": rho,
-    "σ": sigma,
-    "υ": upsilon,
-    "φ": varphi,
-    "χ": chi,
-    "ψ": psi,
-    "ω": omega,
     "Ξ": capital_xi,
     "Σ": capital_sigma,
     "Ψ": capital_psi,
 }
 
-LOWERCASE = "αβγδεϵζηθικλμνορστυφϕχψω"
+LOWERCASE = "αβγδεϵζηθϑικλμνξοπϖρϱσςτυφϕχψω"
 CAPITALS = "ΓΔΘΛΞΠΣΥΦΨ"
+# Les minuscules vont aussi dans Main-Regular : en français, MathLive écrit les
+# minuscules grecques droites (letterShapeStyle « french », choisi d'après la
+# langue du navigateur) et les cherche dans la police droite, que KaTeX n'en a
+# pas pourvue ; le navigateur se rabattait sur une police du système
 TARGETS = {
     "KaTeX_Math-Italic": LOWERCASE + CAPITALS,
-    "KaTeX_Main-Regular": CAPITALS,
+    "KaTeX_Main-Regular": CAPITALS + LOWERCASE,
 }
+# Police de référence (boîte, chasse) d'une lettre absente de la police visée
+FALLBACK_REFERENCE = "KaTeX_Math-Italic"
 
 
 # --- Construction ---
@@ -344,6 +459,10 @@ def borrowed_path(source: TTFont, char: str) -> pathops.Path:
 
 
 def letter_path(source: TTFont, char: str) -> pathops.Path:
+    if char in CURVY:
+        return CURVY[char](source)
+    if char in ASSEMBLED:
+        return ASSEMBLED[char](source)
     if char in BORROWED:
         return borrowed_path(source, char)
     return stroked(to_path(DRAWN[char]()))
@@ -371,8 +490,13 @@ def main() -> None:
             raise SystemExit(f"Sortie refusée hors de {OUTPUT_DIR}: {path}")
         font = TTFont(path)
         reference = TTFont(ORIGINAL_DIR / f"{name}.woff2")
+        fallback = TTFont(ORIGINAL_DIR / f"{FALLBACK_REFERENCE}.woff2")
         for char in chars:
-            box, advance = reference_glyph(reference, ord(char))
+            if ord(char) in reference.getBestCmap():
+                box, advance = reference_glyph(reference, ord(char))
+            else:
+                box, advance = reference_glyph(fallback, ord(char))
+                add_glyph(font, ord(char), f"uni{ord(char):04X}")
             put_glyph(font, ord(char), placed(letter_path(source, char), box, advance), advance)
         font.flavor = "woff2"
         font.save(path)
