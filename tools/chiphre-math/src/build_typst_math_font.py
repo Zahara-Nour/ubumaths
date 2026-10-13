@@ -82,6 +82,10 @@ SUPERSCRIPT_BOTTOM = 400
 # de Shantell par greek_letters.py) ; Shantell Sans n'en a pas
 GREEK_RANGE = (0x0391, 0x03C9)
 
+# Épaisseur des barres de fraction et de racine : celle du trait des lettres (0,068 em),
+# comme à l'écran (mathlive-fonts.ts) ; Computer Modern en a 40
+STROKE = 68
+
 # Constantes MATH : celles de Computer Modern (les métriques KaTeX), en unités pour 1000/em
 CONSTANTS = {
     "ScriptPercentScaleDown": 70,
@@ -122,7 +126,7 @@ CONSTANTS = {
     "FractionDenominatorDisplayStyleShiftDown": 686,
     "FractionNumeratorGapMin": 40,
     "FractionNumDisplayStyleGapMin": 120,
-    "FractionRuleThickness": 40,
+    "FractionRuleThickness": STROKE,
     "FractionDenominatorGapMin": 40,
     "FractionDenomDisplayStyleGapMin": 120,
     "SkewedFractionHorizontalGap": 350,
@@ -135,7 +139,7 @@ CONSTANTS = {
     "UnderbarExtraDescender": 40,
     "RadicalVerticalGap": 50,
     "RadicalDisplayStyleVerticalGap": 148,
-    "RadicalRuleThickness": 40,
+    "RadicalRuleThickness": STROKE,
     "RadicalExtraAscender": 40,
     "RadicalKernBeforeDegree": 278,
     "RadicalKernAfterDegree": -556,

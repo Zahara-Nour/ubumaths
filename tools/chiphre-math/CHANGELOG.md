@@ -2,6 +2,13 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.19.0] - 2026-10-13
+
+### Modifié
+
+- Police Typst : barres de fraction et de racine à l'épaisseur du trait des lettres (`FractionRuleThickness`, `RadicalRuleThickness` : 40 → 68), comme à l'écran
+- Écran (`src/lib/utils/mathlive-fonts.ts`, hors police) : avec Chiphre Math, MathLive trace ses barres de fraction et de racine à 0,068 em au lieu de 0,04 em, bouts arrondis ; la barre de racine dépasse l'expression de 0,15 em et se referme par un petit trait de 0,22 em
+
 ## [1.18.0] - 2026-10-13
 
 ### Corrigé
