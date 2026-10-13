@@ -596,12 +596,16 @@ export class Atelier {
 	 * @param on - l'intervalle tapé après « sur » ; il remplace celui de f
 	 */
 	createReciprocal(base: string, on?: string): ReciprocalCreated | (Refused & { formulas?: true }) {
-		const outcome = reciprocalOfFunction(this, base, on);
+		// Sans « sur » (le bouton), la carte existante garde l'intervalle tapé avant
+		const existing = this.get(reciprocalName(base));
+		const wanted =
+			on ?? (existing !== undefined && isFunction(existing) ? existing.reciprocalOn : undefined);
+		const outcome = reciprocalOfFunction(this, base, wanted);
 		if (!outcome.ok) return outcome;
 		// `sur ℝ` ne restreint rien : rien à ranger
 		const owner = this.get(base)!;
-		const read = on === undefined ? null : readInterval(on, typedLetterOf(this, owner));
-		const kept = read === null || (read.ok && read.domain === null) ? undefined : on!.trim();
+		const read = wanted === undefined ? null : readInterval(wanted, typedLetterOf(this, owner));
+		const kept = read === null || (read.ok && read.domain === null) ? undefined : wanted!.trim();
 		const name = reciprocalName(base);
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index !== -1) {

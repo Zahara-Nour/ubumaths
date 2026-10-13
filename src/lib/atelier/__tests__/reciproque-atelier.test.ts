@@ -237,6 +237,18 @@ describe('les refus : en français, sans carte', () => {
 		expect(last(desk)).toMatchObject({ failed: true, text: "« g » n'existe pas dans l'atelier." });
 	});
 
+	it('.réciproque f^-1 : la réciproque de f⁻¹, c’est f', () => {
+		const desk = deskWith('f(x) = 2x+3', '.réciproque f', '.réciproque f^-1');
+		expect(last(desk)).toMatchObject({ failed: true, text: "La réciproque de f⁻¹, c'est f." });
+	});
+
+	it('le bouton garde l’intervalle tapé avant pour la carte f⁻¹ (revue)', () => {
+		const desk = deskWith('f(x) = x^2', '.réciproque f sur [0;+∞[');
+		desk.runFromPanel('reciprocal', 'f');
+		expect(last(desk).failed).toBe(false);
+		expect(desk.atelier.get(F_INV)).toMatchObject({ status: 'ok', reciprocalOn: '[0;+∞[' });
+	});
+
 	it('la carte f⁻¹ existante n’est pas doublée', () => {
 		const desk = deskWith('f(x) = 2x+3', '.réciproque f', '.réciproque f');
 		expect(desk.atelier.names.filter((n) => n === F_INV)).toHaveLength(1);
@@ -343,6 +355,18 @@ describe('f⁻¹ se recrée comme f′ : sa formule n’est pas rangée', () => 
 		reloaded.restore(read.kind === 'loaded' ? read.state : state);
 		expect(reloaded.get(F_INV)?.status).toBe('ok');
 		expect(valueAt(reloaded, F_INV, 9)).toBeCloseTo(-3, 9);
+	});
+
+	it('fusion : une f refusée n’emmène pas sa réciproque sur la f locale (revue)', () => {
+		// La f envoyée manque (refusée, abîmée) : seule sa réciproque arrive
+		const sent = deskWith('f(x) = x^2', '.réciproque f sur [0;+∞[').atelier.serialize();
+		const mine = deskWith('f(x) = 2x+3').atelier;
+		const report = mergeInto(mine, {
+			...sent,
+			objects: sent.objects.filter((o) => o.name !== 'f')
+		});
+		expect(mine.names).toEqual(['f']);
+		expect(report.refused.map((r) => r.name)).toEqual([F_INV]);
 	});
 
 	it('fusion : f arrivée sous le nom g, sa réciproque devient g⁻¹', () => {

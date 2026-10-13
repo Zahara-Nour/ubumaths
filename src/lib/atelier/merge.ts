@@ -48,6 +48,8 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 
 	// Les fonctions renommées à l'arrivée : leurs dérivées doivent les suivre
 	const arrivedAs = new Map<string, string>();
+	/** Les objets effectivement créés (une f refusée n'emmène pas sa réciproque) */
+	const landed = new Set<string>();
 
 	// Les fonctions AVANT leurs dérivées : supprimer puis recréer `f` range `f′`
 	// devant elle, et `f′` aurait suivi la `f` locale (revue du lot 3a, C1)
@@ -64,7 +66,13 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		let chosen: string;
 		if (reciprocal !== null) {
 			// `f⁻¹` suit f : arrivée sous le nom `g`, sa réciproque devient `g⁻¹`
-			chosen = reciprocalName(arrivedAs.get(reciprocal) ?? reciprocal);
+			// Sa f n'est pas arrivée (refusée) : la rattacher à la f locale serait faux
+			const base = landed.has(reciprocal) ? arrivedAs.get(reciprocal) : undefined;
+			if (base === undefined) {
+				refused.push({ name: wanted, reason: `${reciprocal} n'est pas arrivée.` });
+				continue;
+			}
+			chosen = reciprocalName(base);
 			if (taken.includes(chosen)) {
 				refused.push({ name: wanted, reason: `${displayName(chosen)} existe déjà.` });
 				continue;
@@ -105,6 +113,7 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 			continue;
 		}
 
+		landed.add(wanted);
 		if (chosen === wanted) added++;
 		else renamed.push({ from: wanted, to: chosen });
 

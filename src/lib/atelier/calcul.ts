@@ -1900,13 +1900,16 @@ function computeAction(
 		// La carte `f⁻¹` s'appelle `f^-1`, que le moteur lirait comme une puissance :
 		// on lui donne sa formule, x remplacé (lot 3 de la réciproque)
 		const formula = reciprocalOf(name) === null ? null : astOf(substituted.expression, 'text');
+		if (reciprocalOf(name) !== null && formula === null) {
+			return { ok: false, message: `Impossible de calculer ${displayName(name)}(${argument}).` };
+		}
 		const result = engine.execute(
 			formula === null
 				? `${name}(${value})`
 				: toCustom(substitute(formula, { [INTERNAL_LETTER]: numericNode(value) }))
 		);
 		if (!result.success) {
-			return { ok: false, message: `Impossible de calculer ${name}(${argument}).` };
+			return { ok: false, message: `Impossible de calculer ${displayName(name)}(${argument}).` };
 		}
 		const rendered = renderResult(result);
 		// La ligne de l'image a son bouton ≈, comme `f(2)` tapé

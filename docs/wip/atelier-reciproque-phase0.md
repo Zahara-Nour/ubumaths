@@ -129,3 +129,11 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
   sorti par `factorPolynomial`, `√(x + 3) + 2`), logistique `ln(x/(1 − x))` ; refus « non bijective »
   qui explique et liste les réciproques par morceau (`pieces`), périodique (sin, cos) détecté ;
   x⁴ − 2x² et x eˣ sur ℝ passent de `unsolved` à `not-bijective`. Doc `reciproque.md`.
+- 2026-10-13 — **lot 3 en PR** (`feat/atelier-reciproque`) : bouton « Réciproque » et
+  `.réciproque f [sur I]` (aussi sur une expression : ligne seule) → carte `f⁻¹` (rangée `f^-1`),
+  qui suit f, porte son ensemble de départ comme intervalle (tracé restreint), se recrée au
+  rechargement sans formule rangée ; `sur I` REMPLACE l'intervalle de f. Paramètres, cas 1 : formule
+  à lettres (`(x − b)/a`) quand le solveur la trouve et qu'elle coïncide avec la réciproque jugée
+  aux valeurs actuelles, sinon formule à nombres (`a eˣ` → `ln(x/2)`) recalculée à chaque cran ;
+  « Pour a = 0 et b = 3, f est constante : pas de réciproque. » Refus composés en maths dans Calcul
+  et sur la carte. Doc : [atelier.md](../systeme/atelier.md) § « La réciproque ».

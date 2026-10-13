@@ -102,8 +102,12 @@ function cached(key: string, compute: () => ReciprocalOutcome): ReciprocalOutcom
 	return fresh;
 }
 
-function refused(message: string): ReciprocalOutcome {
-	return { ok: false, message, ...(message.includes('$') && { formulas: true as const }) };
+/**
+ * ⚠️ `formulas` (composées par `{@html}`) seulement pour un refus `not-bijective`
+ * du moteur : ses `$…$` viennent de `toLatex`, jamais d'un texte saisi.
+ */
+function refused(message: string, formulas = false): ReciprocalOutcome {
+	return { ok: false, message, ...(formulas && { formulas: true as const }) };
 }
 
 /** Le type d'un objet, dans la phrase de refus (« a est une valeur »). */
@@ -219,12 +223,14 @@ function outcomeOf(
 	const withParameters = Object.keys(values).length > 0;
 	if (!result.ok) {
 		const { refusal } = result;
-		if (!withParameters) return refused(refusal.message);
+		const formulas = refusal.kind === 'not-bijective' && refusal.message.includes('$');
+		if (!withParameters) return refused(refusal.message, formulas);
 		// Cas 1 de David : « pour a = 0, f est constante : pas de réciproque »
 		return refused(
 			refusal.kind === 'constant'
 				? `Pour ${valuesText(values)}, ${name} est constante : pas de réciproque.`
-				: `Pour ${valuesText(values)} : ${refusal.message}`
+				: `Pour ${valuesText(values)} : ${refusal.message}`,
+			formulas
 		);
 	}
 
@@ -259,8 +265,8 @@ function outcomeOf(
 			...(withParameters && {
 				note:
 					formula === numericFormula
-						? `Calculée avec ${valuesText(values)}.`
-						: `Étapes faites avec ${valuesText(values)} ; la carte ${name}⁻¹ garde les lettres et suit les curseurs.`
+						? `Calculée avec ${valuesText(values)} ; la carte ${name}⁻¹ suit les curseurs.`
+						: `Étapes faites avec ${valuesText(values)} ; la carte ${name}⁻¹ suit les curseurs.`
 			})
 		}
 	};
@@ -335,6 +341,10 @@ export function reciprocalCommand(
 		};
 	}
 	const on = written ?? undefined;
+	const follows = reciprocalOf(body);
+	if (follows !== null) {
+		return { kind: 'refus', message: `La réciproque de ${displayName(body)}, c'est ${follows}.` };
+	}
 	const target = /^([A-Za-z](?:_\d+)?'*)\s*(?:\(\s*[A-Za-z]\s*\))?$/.exec(body)?.[1];
 	if (target !== undefined && atelier.get(target) !== undefined) {
 		return reciprocalResult(atelier, target, on, input);
