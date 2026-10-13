@@ -205,8 +205,15 @@ de f sur ses dérivées à chaque recalcul (il suit f, disparaît avec lui, jama
 carte affiche `sur [0 ; +∞[`, `f'(5)` et l'image de la carte f′ hors de l'ensemble sont refusés.
 Pas d'action « Tabuler » (encore désactivée), ni de commande de signe : rien à brancher. Laissés
 sur tout le domaine : `.domaine`, `.intégrer … de a à b`, `.évaluer … en x=…`, `.taylor … en a`,
-`.équivalent` (questions à David, journal de la phase 0). Pas encore (lot 3) : le tracé restreint
-— une fonction sur un intervalle se trace sur tout son domaine.
+`.équivalent` (questions à David, journal de la phase 0).
+
+**Le tracé sur l'intervalle** (lot 3, I5) : `plotRestrictionOf` (`interval.ts`) convertit
+l'ensemble en morceaux numériques (`π` → `3,14…`, `ℝ \ {0}` → deux morceaux ; borne non numérique
+ou ensemble par conditions → courbe entière) ; `syncPlots` le pose sur la courbe
+(`ExplicitFunction.restriction`, comparé par contenu pour rester idempotent). Le grapheur ne trace
+que sur l'ensemble : point plein à une borne fermée, creux à une borne ouverte, rien à l'infini ni
+là où f n'est pas définie (détail : [grapheur.md](grapheur.md)). `f′`, qui hérite, se trace
+restreinte aussi.
 
 **Provenance** (D10, `Provenance` dans `src/lib/atelier/parse.ts`) : c'est _d'où vient_ la
 définition (champ MathLive, clavier, URL, collage, Calcul…) qui choisit le parseur, jamais son

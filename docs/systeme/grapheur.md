@@ -55,6 +55,7 @@ couleur + style de trait ; la **fenêtre** (`Viewport`) est le rectangle `xMin�
 | `src/lib/grapheur/asymptotes-exactes.ts`                                                   | Asymptotes d'une fraction rationnelle par division euclidienne (`exactAsymptotes`)                                                       |
 | `src/lib/grapheur/asymptote-labels.ts`                                                     | Placement des étiquettes d'asymptotes dans le cadre (`placeAsymptoteLabels`)                                                             |
 | `src/lib/grapheur/intersections.ts`                                                        | Intersections entre courbes visibles (`findAllIntersections`), via `findRoots` de mathAST                                                |
+| `src/lib/grapheur/restriction.ts`                                                          | Courbe restreinte à un ensemble : morceaux à tracer (`pieceViewports`), points de bord (`endpointMarkers`), analyses filtrées            |
 | `src/lib/grapheur/sequence.ts`                                                             | Suites explicites et récurrentes (`parseSequence`, `computeSequenceTerms`, `computeCobwebPath`)                                          |
 | `src/lib/grapheur/exact.ts`                                                                | Valeur exacte d'un terme de suite (`exactTermValue`), ou `null`                                                                          |
 | `src/lib/grapheur/pinned-labels.ts`                                                        | Étiquettes figées par un clic (`cyclePinnedLabels`) — non persistées                                                                     |
@@ -101,6 +102,18 @@ le grapheur parse du LaTeX, et `\pi x` collé en `\pix` lui était illisible.
 Le store garde **un seul tableau** `functions` pour les trois (décision 1 des suites, 2026-09-04).
 Une fonction porte en plus `showDerivative`, `tangentAt`, `integral` et le cercle osculateur, qui
 partage l'abscisse de la tangente.
+
+**Restriction** (optionnelle, `ExplicitFunction.restriction`, lot 3 de
+[atelier-intervalle-phase0.md](../wip/atelier-intervalle-phase0.md)) : des morceaux NUMÉRIQUES
+(`CurvePiece` : bornes réelles, ±∞ permis, ouvertes ou fermées). `FunctionCurve` échantillonne
+chaque morceau à part (un sous-chemin `M…` par morceau) et marque chaque borne finie visible d'un
+cercle : plein (`endpoint-closed`, couleur de la courbe) si fermée, creux (`endpoint-open`,
+contour de la couleur de la courbe, intérieur `--color-graph-bg`) si ouverte — comme
+`functionToSVG` de geometry-core. Pas de point là où la fonction n'a pas de valeur (`1/x` sur
+`]0;5]` en 0). Zéros, extremums (`restrictAnalysis`), intersections et survol hors de l'ensemble
+sont écartés ; une asymptote verticale au bord reste, une horizontale ne garde que le côté infini
+atteint. La dérivée du grapheur hérite de la restriction, la tangente non. Seul l'atelier la pose ;
+jamais sérialisée (il la repose à chaque synchronisation). Sans restriction, rien ne change.
 
 **Paramètres** : une lettre libre (`PARAMETER_NAMES`, hors `RESERVED_PARAMETER_NAMES` = `x n e
 pi i`), une valeur et des bornes. `bindParameters` substitue les valeurs dans l'AST avant

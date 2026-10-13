@@ -15,6 +15,7 @@
 
 import type { Point, Viewport } from './types';
 import type { AnalysisInput } from './analysis';
+import { isInsideRestriction } from './restriction';
 import { subtract } from '$lib/mathAST/factory';
 import { compile } from '$lib/mathAST/eval/compile';
 import { findRoots } from '$lib/mathAST/analysis/roots';
@@ -99,6 +100,9 @@ export function findAllIntersections(
 			const f2 = functions[j];
 
 			for (const point of findIntersections(f1, f2, viewport)) {
+				// Un croisement hors de l'ensemble d'une des courbes n'est pas tracé.
+				if (!isInsideRestriction(f1.restriction, point.x)) continue;
+				if (!isInsideRestriction(f2.restriction, point.x)) continue;
 				results.push({ point, functionIds: [f1.id, f2.id] as const });
 			}
 		}

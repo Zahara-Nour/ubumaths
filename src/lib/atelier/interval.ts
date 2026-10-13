@@ -32,6 +32,8 @@ import {
 	isUniversal
 } from '$lib/mathAST/domain/algebra';
 import { formatEndpointValue, formatInterval } from '$lib/mathAST/domain/format';
+import { endpointToNumber } from '$lib/math/intervals';
+import type { CurvePiece } from '$lib/grapheur/restriction';
 import { evaluate } from '$lib/mathAST/eval';
 import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
 import { constantOf } from './constant';
@@ -198,6 +200,28 @@ export function intervalDomainOf(object: AtelierObject | undefined): Domain | nu
 	if (object?.kind !== 'function' || object.interval === undefined) return null;
 	const read = readInterval(object.interval, object.letter ?? INTERNAL_LETTER);
 	return read.ok ? read.domain : null;
+}
+
+/**
+ * L'ensemble d'une fonction en morceaux numériques, pour le tracé (lot 3, I5) :
+ * `π` devient `3,14…`, `ℝ \ {0}` deux morceaux. `undefined` sans ensemble — et
+ * aussi pour un ensemble que le grapheur ne saurait pas couper (borne non
+ * numérique, ensemble par conditions) : la courbe se trace alors entière.
+ */
+export function plotRestrictionOf(object: AtelierObject | undefined): CurvePiece[] | undefined {
+	const domain = intervalDomainOf(object);
+	// `sur ℝ` équivaut à pas d'ensemble : rien à poser
+	if (domain === null || isUniversal(domain)) return undefined;
+	const expanded = expandExcludedPoints(domain);
+	if (expanded.kind !== 'interval_set') return undefined;
+	const pieces = expanded.intervals.map((interval) => ({
+		from: endpointToNumber(interval.lower.value),
+		to: endpointToNumber(interval.upper.value),
+		fromClosed: interval.lower.type === 'closed',
+		toClosed: interval.upper.type === 'closed'
+	}));
+	if (pieces.some((p) => Number.isNaN(p.from) || Number.isNaN(p.to))) return undefined;
+	return pieces.sort((a, b) => a.from - b.from);
 }
 
 /** L'ensemble à l'écran : `[0 ; +∞[`, signe moins typographique. */
