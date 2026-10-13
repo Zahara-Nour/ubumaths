@@ -10,7 +10,8 @@ Contexte : l'atelier doit remplacer `/calc` ([atelier-progress.md](atelier-progr
 `/calc` du 2026-10-13 : il manque à l'atelier la saisie en écriture mathématique (MathLive) dans Calcul,
 le clavier virtuel, les étapes d'un calcul simple et un bouton « Copier ». Décisions de David du même
 jour : clavier virtuel = celui de MathLive, configuré ; étapes d'un calcul simple : oui ; Copier : oui ;
-historique gardé au rechargement : à réexpliquer. **Premier chantier : la saisie** (« c'est le plus gros
+historique gardé au rechargement : **oui** (option 1, 2026-10-13 : les lignes de Calcul reviennent
+au rechargement comme les cartes, PR à part). **Premier chantier : la saisie** (« c'est le plus gros
 morceau ») — David ne veut PAS du point devant les commandes : « une écriture la plus naturelle possible ».
 
 ## Constats (MathLive 0.111.1, lus dans `node_modules/mathlive/types` et `mathlive.mjs`)
@@ -63,4 +64,4 @@ morceau ») — David ne veut PAS du point devant les commandes : « une écritu
 
 ## Journal
 
-- 2026-10-13 — inventaire de `/calc` ; décisions 1-11 de David.
+- 2026-10-13 — inventaire de `/calc` ; décisions 1-11 de David ; historique gardé au rechargement : oui.
