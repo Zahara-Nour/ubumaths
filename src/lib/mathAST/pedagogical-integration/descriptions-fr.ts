@@ -31,6 +31,7 @@
 
 import type { SchoolLevel } from '../common/step-renderer-base';
 import type { MathNode } from '../types';
+import { extractExactRational } from '../common/numeric';
 import { getVariables } from '../eval/substitute';
 import { numericValue } from '../integration/forbidden-value';
 import { integrationLatex as toLatex } from './latex';
@@ -136,7 +137,10 @@ export function isMinusOneCoefficient(
 	bindings: IntegrationBindings,
 	key: 'k' | 'c' = 'k'
 ): boolean {
-	return bind(bindings, key) === '-1';
+	// La VALEUR, pas le LaTeX : `(-1)x^2` lie `\\left( -1 \\right)` (revue du 2026-10-13)
+	const node = bindings[key];
+	const value = node ? extractExactRational(node) : null;
+	return value !== null && value.n === -value.d;
 }
 
 /**
@@ -371,7 +375,7 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'reveal-derivative': (b) =>
 		onlyConstantOut(b)
 			? constantOutExplanation(b)
-			: `Avec ${math(`u = ${bind(b, 'u')}`)}, on a ${math(`u' = ${bind(b, 'du')}`)}. On écrit ${math(`${bind(b, 'integrand')} = ${revealedProduct(b)}`)} pour faire apparaître $u'$, puis on sort la constante ${bindMath(b, 'k')} de l'intégrale.`,
+			: `Avec ${math(`u = ${bind(b, 'u')}`)}, on a ${math(`u' = ${bind(b, 'du')}`)}. On écrit ${math(`${bind(b, 'integrand')} = ${revealedProduct(b)}`)} pour faire apparaître $u'$, puis on sort ${isMinusOneCoefficient(b) ? 'le signe $-$' : `la constante ${bindMath(b, 'k')}`} de l'intégrale.`,
 	'apply-composite-power': (b) =>
 		`On reconnaît la forme $u'u^n$ avec ${math(`u = ${bind(b, 'u')}`)} et ${math(`n = ${bind(b, 'n')}`)}, dont une primitive est $\\dfrac{u^{n+1}}{n+1}$.${constantSentence(b)}`,
 	'apply-composite-ln': (b) =>

@@ -146,3 +146,50 @@ describe('intégrales définies avec le signe sorti : valeur juste', () => {
 		expect(constantStep(steps).title).toBe('On sort le signe $-$');
 	});
 });
+
+// =============================================================================
+// Revue : k = −1 lu sur la VALEUR, et le signe dit partout (IPP, u′ ≠ 1)
+// =============================================================================
+
+describe('k = −1 écrit `(-1)` : lu sur la valeur, pas sur le LaTeX', () => {
+	it.each(['(-1)x^2', 'e^x\\cdot(-1)'])('%s → « On sort le signe $-$ »', (latex) => {
+		for (const level of LEVELS) {
+			for (const verbosity of VERBOSITIES) {
+				const steps = render(latex, level, verbosity);
+				expect(constantStep(steps).title).toBe('On sort le signe $-$');
+				expect(allText(steps)).not.toContain('constante $');
+			}
+		}
+		expect(constantStep(render(latex, 'lycee', 'detailed')).explanation).toBe(
+			"Le signe $-$ sort de l'intégrale : $\\int \\left( -f(x) \\right)\\,dx = -\\int f(x)\\,dx$."
+		);
+	});
+});
+
+describe('k = −1 avec u′ ≠ 1 : « on sort le signe $-$ », jamais « constante $-1$ »', () => {
+	it("`e^{-x}` : « On fait apparaître $u'$ … puis on sort le signe $-$ »", () => {
+		const steps = render('e^{-x}', 'lycee', 'detailed');
+		const reveal = steps.find((s) => s.rule === 'reveal-derivative');
+		expect(reveal?.title).toBe("On fait apparaître $u'$");
+		expect(reveal?.explanation).toMatch(/puis on sort le signe \$-\$ de l'intégrale\.$/);
+	});
+
+	it.each(['e^{-x}', 'xe^{-x}', '\\sin(-x)', '-\\frac{1}{x+1}', '-e^x', '(-1)x^2'])(
+		'%s : aucune « constante $-1$ » dans toute la sortie',
+		(latex) => {
+			for (const level of LEVELS) {
+				for (const verbosity of VERBOSITIES) {
+					const text = allText(render(latex, level, verbosity));
+					expect(text).not.toMatch(/constante \$(\\left\( )?-1/);
+				}
+			}
+		}
+	);
+
+	it('`e^{-2x}` : k = −½ reste « on sort la constante »', () => {
+		const reveal = render('e^{-2x}', 'lycee', 'detailed').find(
+			(s) => s.rule === 'reveal-derivative'
+		);
+		expect(reveal?.explanation).toContain('puis on sort la constante $-\\dfrac{1}{2}$');
+	});
+});

@@ -793,7 +793,9 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   `\frac{-1}{x}` : « On sort le signe $-$ », explication
   `\int \left( -f(x) \right)\,dx = -\int f(x)\,dx`, sans $(-1)$ ni $-1 \times$, aux deux niveaux ;
   les autres constantes gardent « On sort la constante $k$ ». Une seule définition de k = −1 pour
-  les deux étapes (`isMinusOneCoefficient(bindings, 'k' | 'c')`, décision de David du 2026-10-13).
+  les deux étapes (`isMinusOneCoefficient(bindings, 'k' | 'c')`, lu sur la valeur : `(-1)x^2` compris ; décision
+  de David du 2026-10-13). Avec u′ ≠ 1 et k = −1 (`e^{-x}`), la réécriture finit « puis on sort le
+  signe $-$ » (k = −½ reste « la constante »).
   Les étapes s'enchaînent (`after` de la réécriture =
   `before` de la forme). Dans une IPP, v = ∫dv avec réécriture vient en sous-étapes de
   `choose-u-dv`. u′ s'écrit propre (`cleanDerivative` : constante exacte, sinon `tidyTerms`).
