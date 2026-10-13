@@ -108,6 +108,10 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
      `pedagogical-domain/__tests__/redaction-etapes.test.ts`, doc `docs/systeme/mathast/README.md`.
      Découpage : PR 1 moteur (garde `unresolved` aussi pour `correction-generator`, Q1, Q2, Q6) ; PR 2
      atelier (« Comment ? », garde par ensembles, Q3, Q5).
+   - **Décisions de David (2026-10-13, fin de journée)** : le signe moins se rédige « On sort le signe
+     $-$ » ($\int -f = -\int f$, sans $(-1)$), quelle que soit l'écriture (`\frac{-1}{x}`, `-\frac1x`,
+     `-e^x`) ; valeur interdite approchée de `.domaine` écrite $D = \mathbb{R}\setminus\{\alpha\}$ avec
+     $\alpha \approx 1{,}26$ (validé).
    - **2c. Commande `.limite`** (aucune aujourd'hui ; `pedagogical-limits` sert aux corrections) :
      syntaxe et limites à gauche / à droite à trancher par David.
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).
