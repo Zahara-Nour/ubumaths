@@ -54,6 +54,12 @@ Gabarits inaccessibles :
   correction non écrite → « **Exercice N : correction non écrite** » ; « afficher les points »
   s'applique **à tous les PDF**.
 
+- **D5** (2026-10-13) — **« Mélanger les exercices » refonctionne**, dans l'esprit de l'ADR 0023 :
+  l'ordre est tiré comme les valeurs (case « individualisés » décochée → un ordre pour la classe ;
+  cochée → un par élève), à l'intérieur de chaque section (sections dans leur ordre, hors section
+  après), déterministe, recalculé par la même fonction pour tous les chemins ; hors affectation, pas
+  de mélange ; réaffecter → autre tirage ; fiche sans l'option : rien ne change.
+
 ## Vocabulaire proposé (à verser dans CONTEXT.md, lot 0)
 
 | Terme       | Sens                                                                                                                     |
@@ -120,6 +126,20 @@ Erreur / garde :
 - langue inconnue → repli `fr`, comme aujourd'hui.
 
 ## Journal
+
+- 2026-10-13 — **D5 fait** (branche `feat/fiches-melange-exercices`, commits locaux).
+  `copyExerciseOrder` (`worksheet-copy.ts`) et `copyOrderSeed` (`student-copy.ts`, graine dédiée
+  `…:ordre:<section>`, une par section : pas de corrélation avec les valeurs, et ajouter un
+  exercice à une section ne rebat pas les autres). Copie du prof : `exercise_order` ; API élève et
+  aperçu d'affectation : `exercises` dans l'ordre de la copie + `shuffled: true` (dans le schéma de
+  réponse) ; écran élève (`preserveExerciseOrder`) et PDF élève (`documentFromStudentView`) le
+  suivent ; l'aperçu « vue élève » du prof suivait déjà l'ordre du tableau. Interprétation : les
+  exercices hors section se mélangent entre eux (sinon l'option ne ferait rien sur une fiche sans
+  section), leur bloc reste après les sections. Mesure prod : 0 fiche sur 32 avec
+  `shuffle_exercises` ou `shuffle_within_sections`. **ADR 0023 non révisé** : le README des ADR
+  interdit de réécrire un ADR accepté (sa section « Révision » date d'avant l'implémentation) ; si
+  David veut la trace en ADR, ce serait un nouvel ADR. Ouverts (doc, écart 9) :
+  `shuffle_within_sections` mort, numéros des signalements, corrigé de classe individualisé.
 
 - 2026-10-13 — **lot 1 fait** (commits locaux, non poussés). `src/lib/worksheets/document/` :
   `WorksheetDocument`, adaptateurs prof / élève, ordre et numéros, rendu d'exercice unique
