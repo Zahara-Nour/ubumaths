@@ -226,7 +226,7 @@ Absents de [rgpd-securite-constats.md](rgpd-securite-constats.md) ; non classés
 | T8 | Trois limiteurs de débit ; `middleware/rateLimit.ts` et la `Map` de `api/admin/cron/trigger` ne tiennent pas entre instances Vercel. | [serveur.md](../systeme/serveur.md) #6 |
 | T9 | CSRF en double : SvelteKit (`svelte.config.js`) + `csrfHandle` maison. | [serveur.md](../systeme/serveur.md) #5 |
 | ~~T10~~ | ~~`CorrectionManager.svelte:299-311` charge typst.ts et ses WASM depuis jsDelivr **sans version** (chaîne d'approvisionnement ; aussi K11).~~ **Corrigé** par #1220 (K11) : `compileToPdf` partagé ; garde `cdn-versions-epinglees.test.ts`. | [fiches-et-pdf.md](../systeme/fiches-et-pdf.md) #5 |
-| T11 | `error_logs` peut contenir des PII (`request_body`, `url`), sans assainissement (§5.9, non barrée). | [conformite/rgpd.md](../systeme/conformite/rgpd.md) |
+| ~~T11~~ | ~~`error_logs` peut contenir des PII (`request_body`, `url`), sans assainissement (§5.9, non barrée).~~ **Plus vrai** (mesuré le 2026-10-13) : assainissement en place (`sanitizeErrorData`), `request_body` jamais renseigné en prod (0 / 934), purge à 30 j effective ; §5.9 mis à jour. | [conformite/rgpd.md](../systeme/conformite/rgpd.md) |
 | T12 | Période de grâce du consentement : échéance 2026-06-30 dépassée (« relancer ou repousser »). | [conformite/README.md](../systeme/conformite/README.md) #4 |
 | T13 | Registre des sous-traitants : HuggingFace absent, Groq « à vérifier », Vercel Analytics non détaillé (C13 des constats ne vise que la page de confidentialité). | [conformite/README.md](../systeme/conformite/README.md) #3 |
 | T14 | Mentions légales `[A COMPLÉTER]` (identité, statut, directeur de publication). | [conformite/README.md](../systeme/conformite/README.md) #6 |
