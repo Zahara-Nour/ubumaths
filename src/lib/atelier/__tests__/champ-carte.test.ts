@@ -271,6 +271,12 @@ describe('puissance de dix et virgule des fonctions', () => {
 		expect(toLatex(astOf(back, 'keyboard', [])!)).toBe(toLatex(astOf(expected, 'keyboard', [])!));
 	});
 
+	// Revue : le dernier recours ne fait une unité que si la relecture en rend une
+	it('min(2, 3) écrit en opérateur reste la fonction', () => {
+		const typed = '\\operatorname{\\mathrm{min}}\\left(2,3\\right)';
+		expect(definitionFromField('value', typed)).toBe(typed);
+	});
+
 	it('une fonction garde la virgule de l’élève, et se relit', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: '2,5x+0,5' }, 'text');
