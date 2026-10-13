@@ -47,6 +47,10 @@ function generateRandomValue(min: number, max: number, decimals: number = 0): nu
 	return decimals > 0 ? parseFloat(value.toFixed(decimals)) : Math.floor(value);
 }
 
+// Une classe de caractères, pas d'alternance répétée : temps linéaire. La seule lettre, `e`
+// (notation scientifique), ne forme aucun code : au pire un identifiant inconnu → NaN.
+const ARITHMETIC_ONLY = /^[\d.e+\-*/()\s]*$/;
+
 /**
  * Evaluate mathematical expression with variables
  * Supports basic arithmetic: +, -, *, /, ^, sqrt, parentheses
@@ -65,7 +69,11 @@ function evaluateExpression(expression: string, variables: Record<string, number
 	// Replace ^ with ** for exponentiation
 	expr = expr.replace(/\^/g, '**');
 
-	// Evaluate safely using Function constructor
+	// T5 : l'expression vient de la base (`game_challenges`) et s'évalue dans le navigateur
+	// de l'élève. Seule l'arithmétique atteint `new Function` : nombres (notation
+	// scientifique comprise), opérateurs, parenthèses et `Math.sqrt`.
+	if (!ARITHMETIC_ONLY.test(expr.replace(/Math\.sqrt\(/g, '('))) return NaN;
+
 	try {
 		const fn = new Function('return ' + expr);
 		const result = fn();
