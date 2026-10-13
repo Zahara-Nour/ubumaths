@@ -1,13 +1,13 @@
 ---
 couvre:
-  - 'src/routes/api/{errors,bug-reports,health,search,openapi.json}/**'
+  - 'src/routes/api/{errors,bug-reports,search,openapi.json}/**'
   - 'src/routes/(protected)/dashboard/admin/{errors,bug-reports,docs,debug}/**'
   - 'src/routes/(protected)/dashboard/bug-reports/**'
   - 'src/lib/components/bug-reports/**'
   - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version}.ts'
   - src/lib/stores/bugReportsConfig.svelte.ts
   - src/lib/types/bug-reports.ts
-  - 'src/lib/server/{errorMonitoring,healthStats,bug-report-export,bug-report-screenshots,docs-scanner,markdown-parser,search}.ts'
+  - 'src/lib/server/{errorMonitoring,healthStats,bug-report-errors,bug-report-export,bug-report-screenshots,docs-scanner,markdown-parser,search}.ts'
   - 'src/lib/server/validation/{errors,bug-reports,health,search}.ts'
   - 'src/lib/server/openapi/**'
   - 'src/routes/(protected)/dashboard/admin/debug/api-docs/**'
@@ -142,8 +142,15 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
   `getFreezeDetectionContext()`. La capture est un **fichier choisi** par l'utilisateur
   (JPEG, PNG, GIF, WebP) : aucune capture automatique de l'écran.
 - **`/api/bug-reports`** : `GET` (les siens ; tout pour l'admin), `POST` (crée, 10 par heure
-  et par compte, ajoute les erreurs des 5 dernières minutes lues dans `error_logs`, notifie
-  les admins par `notifyAdminsOfNewBugReport`).
+  et par compte, notifie les admins par `notifyAdminsOfNewBugReport`). Le contexte envoyé
+  par le client ne peut pas porter d'erreurs (`recentErrors`, `slowRequests` absents du
+  schéma).
+- **Erreurs jointes à la lecture** : `attachReportErrors` (`src/lib/server/bug-report-errors.ts`)
+  lit dans `error_logs`, avec le client de l'admin, les erreurs de l'auteur des 5 minutes qui
+  précèdent le signalement, et les range dans `session_context.recentErrors` et `slowRequests`
+  (requêtes lentes, `error_type = 'performance'`). Appelée par la page
+  `/dashboard/admin/bug-reports` (une seule lecture pour la liste) et par l'export. Rien n'est
+  enregistré : un signalement de plus de 30 jours n'a plus d'erreurs (purge du journal).
 - **`/api/bug-reports/[reportId]`** : `GET` ; `PATCH` (l'auteur modifie titre et
   description tant que le statut vaut `pending` ; l'admin change statut et notes) ;
   `DELETE` (admin).
@@ -179,9 +186,8 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 
 ### Santé
 
-- `GET /api/health` : public, sans authentification. Compte `profiles` (`head: true`) et
-  rend `ok` (moins de 500 ms), `degraded` ou `down` avec la latence. Aucun appelant
-  dans le dépôt.
+- Pas de route publique « le site est-il en vie ? » : `GET /api/health`, sans appelant, a été
+  supprimée le 2026-10-13 (décision de David ; Vercel surveille le site).
 - `src/lib/server/healthStats.ts` : statistiques du tableau de bord admin (erreurs,
   utilisateurs, performances, contenu, tâches), en cache 5 min dans `server_cache`. Lu
   par `/api/admin/health-stats` (hors de cette zone ; voir
@@ -240,8 +246,9 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   corps et du contexte, quel que soit le nom de la clé (depuis le 2026-10-13). Aucun appelant
   ne range plus `user_email` dans le contexte : `user_id` suffit.
 - Une erreur porte `user_id` et `user_role` si l'utilisateur est connecté.
-- Un signalement porte l'URL, le user-agent, les sélecteurs des dernières actions, les
-  erreurs récentes. La capture peut montrer n'importe quoi de l'écran (nom, copie d'un
+- Un signalement porte l'URL, le user-agent, les sélecteurs des dernières actions. Les
+  erreurs récentes de l'auteur n'y sont **pas** enregistrées : son auteur peut le relire, et
+  ces erreurs sont réservées à l'admin, qui les voit jointes à la lecture. La capture peut montrer n'importe quoi de l'écran (nom, copie d'un
   camarade) : d'où le bucket privé et les URL signées.
 - L'export pour Claude Code contient le nom (ou le mail) de l'auteur et une URL de capture
   valable **7 jours**.
@@ -289,6 +296,13 @@ rapport en UUID. Exceptions : voir Écarts.
 - `src/lib/utils/__tests__/read-api-error-message.test.ts` : `readApiErrorMessage`.
 - `src/lib/server/__tests__/bug-report-screenshots.test.ts` : URL signées.
 - `src/routes/api/bug-reports/__tests__/rate-limit.test.ts` : le 11ᵉ signalement reçoit 429.
+- `src/lib/server/__tests__/bug-report-errors.test.ts` : erreurs de l'auteur dans la fenêtre de
+  5 minutes, et seulement elles ; requêtes lentes à part ; copie ancienne remplacée ; une lecture
+  pour toute la liste ; panne sans casse.
+- `src/routes/api/bug-reports/__tests__/sans-erreurs-a-la-creation.test.ts` : la création ne lit
+  pas `error_logs` et n'enregistre pas d'erreurs envoyées par le client.
+- `src/routes/api/bug-reports/[reportId]/export/__tests__/erreurs-jointes.test.ts` : l'export
+  contient l'erreur de l'auteur.
 - `src/routes/api/bug-reports/__tests__/write-verdict.test.ts` : zéro ligne touchée n'est pas
   un succès — `DELETE` d'un rapport → 404 ; dans un lot, chaque rapport intact passe dans
   `failed` et `success` vaut `false` ; capture non rattachée au rapport → 403 et fichier retiré
@@ -320,25 +334,21 @@ Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement), les r
   projet Supabase européen.
 - Conservation de 30 jours des journaux : décisions C11 de David (2026-10-11), en-tête de
   `supabase/migrations/20261015090500_conservation_c11.sql`.
+- Erreurs jointes aux signalements : lisibles par l'admin seul (David, 2026-10-13). Lues à la
+  lecture du signalement, jamais copiées dedans. Suppression de `GET /api/health` : David,
+  même jour.
 
 ## Écarts connus
 
 Constatés le 2026-10-13, non corrigés.
 
-- **Erreurs récentes jamais jointes aux signalements.** `POST /api/bug-reports` lit
-  `error_logs` avec le client de l'utilisateur. La RLS réserve cette table à l'admin : pour
-  un élève ou le prof, la requête rend zéro ligne sans erreur. `recentErrors` et
-  `slowRequests` sont donc vides, sauf pour l'admin.
 - **Notification critique** : `system_event_type: 'assessment_graded'` faute de valeur
   adaptée (commentaire dans le code).
 - **Supprimer un rapport ne supprime pas sa capture** : ni `DELETE` ni le lot ne touchent
   au storage.
 - **Routes sans appelant** : `GET /api/errors`, `GET`/`PUT /api/errors/[id]` (la page
   passe par ses propres `load` et action) et `POST /api/errors/cleanup` (90 jours par
-  défaut, alors que la purge hebdomadaire garde 30 jours). `GET /api/health` n'a aucun
-  appelant ; lu dans le code, un appel anonyme devrait rendre 503 (`profiles` est fermé à
-  `anon` depuis `supabase/migrations/20260902094000_security_profiles_anon_read.sql`) et
-  exposer le message d'erreur de la base. Non mesuré.
+  défaut, alors que la purge hebdomadaire garde 30 jours).
 - **Zod manquant** : la page `/dashboard/admin/errors` passe les filtres de l'adresse sans
   validation ; l'action `resolve` de `/dashboard/admin/errors/[id]` lit `notes` sans borne ;
   `/dashboard/admin/bug-reports` passe `status`, `category`, `severity` tels quels.

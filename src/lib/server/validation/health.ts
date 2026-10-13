@@ -20,23 +20,6 @@ export const healthStatusSchema = z.enum(['ok', 'degraded', 'down']);
 export const jobStatusSchema = z.enum(['running', 'success', 'failed', 'timeout']);
 
 // ============================================================================
-// HEALTH CHECK RESPONSE
-// ============================================================================
-
-/**
- * Simple health check response
- * Used by /api/health endpoint
- */
-export const healthCheckResponseSchema = z.object({
-	status: healthStatusSchema,
-	latency_ms: z.number().int().positive().max(60000),
-	timestamp: z.string().datetime(),
-	error: z.string().optional()
-});
-
-export type HealthCheckResponse = z.infer<typeof healthCheckResponseSchema>;
-
-// ============================================================================
 // ERROR STATISTICS
 // ============================================================================
 

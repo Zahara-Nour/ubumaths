@@ -126,64 +126,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const data = validation.data;
 
 	try {
-		// Enrich session context with recent errors from error_logs
-		const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-
-		// Fetch recent errors for this user
-		const { data: recentErrors, error: recentErrorsError } = await locals.supabase
-			.from('error_logs')
-			.select(
-				'id, error_type, message, severity, created_at, url, file_path, line_number, stack_trace'
-			)
-			.eq('user_id', user.id)
-			.gte('created_at', fiveMinutesAgo)
-			.order('created_at', { ascending: false })
-			.limit(10);
-
-		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
-		// laisse une trace.
-		if (recentErrorsError) {
-			logger.error('Enrichissement illisible :', recentErrorsError);
-		}
-
-		// Fetch recent slow requests
-		const { data: slowRequests, error: slowRequestsError } = await locals.supabase
-			.from('error_logs')
-			.select('url, response_time, status_code, created_at')
-			.eq('user_id', user.id)
-			.eq('error_type', 'performance')
-			.gte('created_at', fiveMinutesAgo)
-			.order('created_at', { ascending: false })
-			.limit(5);
-
-		// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
-		// laisse une trace.
-		if (slowRequestsError) {
-			logger.error('Enrichissement illisible :', slowRequestsError);
-		}
-
-		// Build enriched context
+		// Les erreurs du journal ne sont pas copiées ici : le signalement est relu
+		// par son auteur, et ces erreurs sont réservées à l'admin, qui les voit
+		// jointes à la lecture (`attachReportErrors`, décision du 2026-10-13).
 		const enrichedContext = {
 			...data.sessionContext,
-			capturedAt: new Date().toISOString(),
-			recentErrors:
-				recentErrors?.map((e) => ({
-					id: e.id,
-					type: e.error_type,
-					message: e.message?.substring(0, 500) || '',
-					severity: e.severity || 'error',
-					timestamp: e.created_at,
-					url: e.url,
-					file_path: e.file_path,
-					line_number: e.line_number,
-					stack_trace: e.stack_trace?.substring(0, 2000)
-				})) || [],
-			slowRequests:
-				slowRequests?.map((r) => ({
-					url: r.url || '',
-					duration: r.response_time || 0,
-					status: r.status_code || 0
-				})) || []
+			capturedAt: new Date().toISOString()
 		};
 
 		// Insert the bug report

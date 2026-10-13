@@ -38,6 +38,8 @@ const CHAIN_METHODS = [
 	'delete',
 	'eq',
 	'in',
+	'gte',
+	'lte',
 	'order',
 	'limit',
 	'contains'
