@@ -12,14 +12,14 @@ donner aux élèves, par exemple depuis le cahier de texte.
 
 ## Décision
 
-| Sujet       | Décision                                                                                            |
-| ----------- | --------------------------------------------------------------------------------------------------- |
-| Stockage    | **Table à part** `geometry_figures` : titre, description, script, niveaux, `is_public`              |
-| Lecture     | **Publique = tout le monde, même sans compte** ; privée = son auteur seul                           |
-| Écriture    | **Prof et admin** créent ; chacun ne modifie et ne supprime **que ses** figures                     |
-| Rangement   | Niveaux (`grades`, contrôle `is_valid_grade_array` des exercices) + tags partagés (`resource_tags`) |
-| Taille      | Script ≤ 100 000 caractères (`MAX_DSL_SOURCE_LENGTH` de l'interpréteur)                             |
-| Suppression | Les liens de tag partent avec la figure (trigger) ; supprimer le compte supprime ses figures        |
+| Sujet       | Décision                                                                                                   |
+| ----------- | ---------------------------------------------------------------------------------------------------------- |
+| Stockage    | **Table à part** `geometry_figures` : titre, description, script, niveaux, `is_public`                     |
+| Lecture     | **Publique = tout le monde, même sans compte** ; privée = son auteur seul                                  |
+| Écriture    | **Prof et admin** créent ; chacun ne modifie et ne supprime **que ses** figures                            |
+| Rangement   | Niveaux (`grades`, contrôle `is_valid_grade_array` des exercices) + tags partagés (`resource_tags`)        |
+| Taille      | Script ≤ 100 000 caractères (`MAX_DSL_SOURCE_LENGTH` de l'interpréteur)                                    |
+| Suppression | Les liens de tag partent avec la figure (trigger DEFINER gardé) ; supprimer le compte supprime ses figures |
 
 ## Écarté
 
