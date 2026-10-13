@@ -19,7 +19,8 @@ import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import {
 	createAttachmentUploadUrl,
-	getAttachmentDownloadUrl
+	getAttachmentDownloadUrl,
+	sweepOrphanMessageAttachments
 } from '$lib/server/message-attachments';
 import { MESSAGE_ATTACHMENT_BUCKET } from '$lib/utils/message-attachment-rules';
 
@@ -149,5 +150,29 @@ describe('messagerie : liens des pièces jointes', () => {
 		const client = await createAuthenticatedClient(eleve.email);
 		const lien = await createAttachmentUploadUrl(client, service, eleve.id, messageId, SCAN);
 		expect(lien).toMatchObject({ ok: false, status: 409 });
+	});
+
+	it('le cron retire un fichier resté sans pièce jointe depuis plus d’un jour, pas les autres', async () => {
+		const pg = await getPostgresClient();
+		const orphelin = `messages/${messageId}/zz-orphelin.pdf`;
+		const { error } = await service.storage
+			.from(MESSAGE_ATTACHMENT_BUCKET)
+			.upload(orphelin, new Blob([CONTENU], { type: 'application/pdf' }), { upsert: true });
+		expect(error).toBeNull();
+		await pg.query(
+			`update storage.objects set created_at = now() - interval '2 days'
+			 where bucket_id = $1 and name = any($2)`,
+			[MESSAGE_ATTACHMENT_BUCKET, [orphelin, chemin]]
+		);
+
+		const result = await sweepOrphanMessageAttachments(service);
+
+		expect(result.failed).toBe(false);
+		const { rows } = await pg.query<{ name: string }>(
+			`select name from storage.objects where bucket_id = $1 and name = any($2)`,
+			[MESSAGE_ATTACHMENT_BUCKET, [orphelin, chemin]]
+		);
+		// Le scan enregistré reste ; l'orphelin est parti.
+		expect(rows.map((r) => r.name)).toEqual([chemin]);
 	});
 });

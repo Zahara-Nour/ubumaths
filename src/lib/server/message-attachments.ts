@@ -135,3 +135,35 @@ export async function getAttachmentDownloadUrl(
 	}
 	return data.signedUrl;
 }
+
+/** Fichiers retirés par passage : borne la durée du cron. */
+const ORPHAN_SWEEP_LIMIT = 500;
+
+/**
+ * Retire du storage les fichiers de pièces jointes restés sans ligne en base depuis plus
+ * d'un jour : message purgé (3 ans), pièce jointe retirée par l'expéditeur, envoi dont
+ * l'enregistrement a échoué. Le SQL ne peut pas toucher au storage ; la liste vient de
+ * `list_orphan_message_attachment_files` (service_role seul). Appelée par le cron du
+ * dimanche (`src/routes/api/cron/deleted-account-files/+server.ts`).
+ */
+export async function sweepOrphanMessageAttachments(
+	serviceClient: Client
+): Promise<{ listed: number; removed: number; failed: boolean }> {
+	const { data, error } = await serviceClient.rpc('list_orphan_message_attachment_files', {
+		p_limit: ORPHAN_SWEEP_LIMIT
+	});
+	// Une lecture en panne ne doit pas passer pour « rien à retirer ».
+	if (error) {
+		throw new Error(`Fichiers orphelins illisibles : ${error.message}`);
+	}
+	const names = (data ?? []).map((row) => row.name);
+	if (names.length === 0) return { listed: 0, removed: 0, failed: false };
+
+	const { data: removed, error: removeError } = await serviceClient.storage
+		.from(MESSAGE_ATTACHMENT_BUCKET)
+		.remove(names);
+	if (removeError) {
+		return { listed: names.length, removed: 0, failed: true };
+	}
+	return { listed: names.length, removed: removed?.length ?? 0, failed: false };
+}

@@ -4,10 +4,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET, POST } from '../+server';
 import { sweepDeletedAccountFiles } from '$lib/server/deleted-account-files';
+import { sweepOrphanMessageAttachments } from '$lib/server/message-attachments';
 import { getEnv } from '$lib/server/env';
 
 vi.mock('$lib/server/env', () => ({ getEnv: vi.fn() }));
 vi.mock('$lib/server/deleted-account-files', () => ({ sweepDeletedAccountFiles: vi.fn() }));
+vi.mock('$lib/server/message-attachments', () => ({ sweepOrphanMessageAttachments: vi.fn() }));
 
 const rpc = vi.fn();
 vi.mock('$lib/server/serviceRoleClient', () => ({
@@ -15,6 +17,7 @@ vi.mock('$lib/server/serviceRoleClient', () => ({
 }));
 
 const SECRET = 'test-secret-12345678901234567890';
+const AUCUN_ORPHELIN = { listed: 0, removed: 0, failed: false };
 
 function event(headers: Record<string, string>) {
 	return {
@@ -26,6 +29,7 @@ beforeEach(() => {
 	vi.clearAllMocks();
 	vi.mocked(getEnv).mockReturnValue({ CRON_SECRET: SECRET } as ReturnType<typeof getEnv>);
 	rpc.mockResolvedValue({ data: 'run-1', error: null });
+	vi.mocked(sweepOrphanMessageAttachments).mockResolvedValue(AUCUN_ORPHELIN);
 });
 
 describe('api/cron/deleted-account-files', () => {
@@ -49,7 +53,8 @@ describe('api/cron/deleted-account-files', () => {
 				checked: 1,
 				cleared: 1,
 				failed: 0,
-				files: 2
+				files: 2,
+				orphan_files: AUCUN_ORPHELIN
 			});
 		}
 		expect(rpc).toHaveBeenCalledWith(
@@ -72,6 +77,32 @@ describe('api/cron/deleted-account-files', () => {
 		expect(rpc).toHaveBeenCalledWith(
 			'complete_job_run',
 			expect.objectContaining({ p_status: 'failed', p_error_message: expect.any(String) })
+		);
+	});
+
+	it('retire aussi les pièces jointes orphelines ; un échec de retrait est journalisé', async () => {
+		vi.mocked(sweepDeletedAccountFiles).mockResolvedValue({
+			checked: 0,
+			cleared: 0,
+			failed: 0,
+			files: 0
+		});
+		vi.mocked(sweepOrphanMessageAttachments).mockResolvedValue({
+			listed: 2,
+			removed: 0,
+			failed: true
+		});
+
+		const response = await GET(event({ authorization: `Bearer ${SECRET}` }));
+
+		expect(sweepOrphanMessageAttachments).toHaveBeenCalled();
+		expect(await response.json()).toMatchObject({ success: false });
+		expect(rpc).toHaveBeenCalledWith(
+			'complete_job_run',
+			expect.objectContaining({
+				p_status: 'failed',
+				p_error_message: expect.stringContaining('orpheline')
+			})
 		);
 	});
 

@@ -243,7 +243,7 @@ Cet index cite chaque module sans le décrire : il ne le couvre pas pour la gard
 
 **Une seule tâche planifiée côté Vercel** (2026-10-13) : `/api/cron/deleted-account-files`,
 le dimanche à 04:00 UTC (`vercel.json`), qui retire du storage les fichiers des comptes supprimés
-(`src/lib/server/deleted-account-files.ts`) ; le SQL ne peut pas toucher au storage
+(`src/lib/server/deleted-account-files.ts`) et les pièces jointes de la messagerie restées sans ligne en base (`sweepOrphanMessageAttachments`) ; le SQL ne peut pas toucher au storage
 (`protect_objects_delete`, pas de `pg_net`). Elle s'authentifie par `Bearer CRON_SECRET` seul
 (`verifyCronAuth`, `src/lib/server/auth/cron.ts`) : Vercel envoie ce jeton à ses crons, et
 l'en-tête `x-vercel-cron`, que n'importe qui peut envoyer, n'ouvre plus rien. Le reste du
