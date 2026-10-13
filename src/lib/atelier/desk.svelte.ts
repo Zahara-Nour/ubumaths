@@ -348,8 +348,11 @@ export class CalcDesk {
 			label: text,
 			text: textOf(result),
 			...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
-			...(result.kind === 'commande' && result.steps !== undefined ? { steps: result.steps } : {}),
-			...(result.kind === 'commande' && result.summary !== undefined
+			// Un refus peut aussi porter des étapes (`.intégrer`, pôle dans [a ; b])
+			...((result.kind === 'commande' || result.kind === 'refus') && result.steps !== undefined
+				? { steps: result.steps }
+				: {}),
+			...((result.kind === 'commande' || result.kind === 'refus') && result.summary !== undefined
 				? { summary: result.summary }
 				: {}),
 			...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
