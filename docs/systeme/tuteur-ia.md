@@ -225,7 +225,10 @@ conversations (`src/routes/api/account/export/+server.ts:183`).
   client (`ExerciseModal.svelte:106`, `exercice/[slug]/+page.svelte:185`). La correction que
   `POST /api/tutor/conversations` lit côté serveur et range dans `exercise_correction` n'est relue
   par aucun appel au tuteur (seul l'export la lit). Et l'élève peut lire cette colonne : la policy
-  « Students can view own conversations » couvre toute la ligne.
+  « Students can view own conversations » couvre toute la ligne. **Accepté** (T18, décision de
+  David du 2026-10-13) : la correction est déjà dans le navigateur (correction côté client, décidée
+  le 2026-09-13) ; un élève qui la trafique ne fausse que l'aide qu'il reçoit, toujours sous le
+  prompt du Père Ubu et l'anti-triche posés par le serveur. Ne pas re-proposer de la relire en base.
 - **Le niveau scolaire aussi.** `studentGrade` vient du client ; `ExerciseModal` et
   `/exercice/[slug]` ne l'envoient pas, donc le tuteur y parle à un élève de **6e** et le RAG filtre
   sur `6` (`api/chat/+server.ts:93`), quel que soit son niveau réel.

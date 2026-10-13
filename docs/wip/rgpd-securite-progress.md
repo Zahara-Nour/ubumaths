@@ -446,3 +446,6 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   que la RPC `rag_hybrid_search`, SECURITY INVOKER) avant tout appel à HuggingFace ; erreur → rien
   n'est envoyé. 2 tests rouges sans le garde-fou. Registre des sous-traitants et `tuteur-ia.md` :
   déclarer HuggingFace avant de définir `HF_API_KEY`.
+- **T18 clos (David, 2026-10-13 : « clore, accepté »)** : la `solution` envoyée au tuteur par le
+  navigateur reste ; elle y est déjà (correction côté client), la trafiquer ne fausse que l'aide
+  reçue par l'élève lui-même. Écrit dans `tuteur-ia.md` (Pièges).
