@@ -14396,17 +14396,6 @@ export type Database = {
         Args: { p_week_end: string; p_week_start: string }
         Returns: number
       }
-      award_weekly_reward: {
-        Args: {
-          p_class_id: string
-          p_gidouilles?: number
-          p_reason?: string
-          p_student_id: string
-          p_week_end: string
-          p_week_start: string
-        }
-        Returns: string
-      }
       backfill_tournament_scores: {
         Args: { p_tournament_id: string }
         Returns: {
@@ -14414,14 +14403,6 @@ export type Database = {
         }[]
       }
       calculate_3bv: { Args: { p_grid_state: Json }; Returns: number }
-      calculate_daily_challenge_gidouilles: {
-        Args: {
-          p_difficulty: string
-          p_student_id: string
-          p_time_seconds: number
-        }
-        Returns: number
-      }
       calculate_elo_change: {
         Args: { p_loser_elo: number; p_winner_elo: number }
         Returns: number
