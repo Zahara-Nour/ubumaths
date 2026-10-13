@@ -1,10 +1,11 @@
 # Moteur web de la console mathAST
 
 `WebReplEngine` exécute dans le navigateur ce que fait la console de `pnpm math` : expressions,
-commandes à point (`.dériver`, `.résoudre`…), égalités, grandeurs. **Son seul lecteur est la vue
-Calcul de l'atelier** (`src/lib/atelier/engine.ts`, `src/lib/atelier/desk.svelte.ts`) : l'atelier
-traduit les commandes en français, lit la saisie lui-même et met en forme les réponses
-(doc : [docs/systeme/atelier.md](../../../../../docs/systeme/atelier.md)).
+commandes à point (`.dériver`, `.résoudre`…), égalités, grandeurs. **Deux lecteurs** : la vue
+Calcul de l'atelier (`src/lib/atelier/engine.ts`, `src/lib/atelier/desk.svelte.ts`), qui traduit les
+commandes en français, lit la saisie elle-même et met en forme les réponses (doc :
+[docs/systeme/atelier.md](../../../../../docs/systeme/atelier.md)) ; et la calculatrice `/calc`
+(`src/lib/stores/calculator.svelte.ts`).
 
 Le REPL web `/cas` (store `repl.svelte.ts`, composants `components/cas/`, complétion
 `cli/completion/`) est **retiré depuis le 2026-10-13** : l'adresse mène à `/atelier`.
