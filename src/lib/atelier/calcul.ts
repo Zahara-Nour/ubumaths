@@ -106,6 +106,7 @@ import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
 import { integrateRefusalSteps, integrateSteps } from './integrate-steps';
+import { evaluateSteps } from './evaluate-steps';
 import { domainLine } from './domain-steps';
 import { collapseLnAbs } from '$lib/mathAST/pedagogical-integration/latex';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
@@ -1557,20 +1558,37 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// l'atelier, la valeur seule pour une expression (décision de David,
 	// 2026-10-14) ; le texte du terminal (« Result: 9 (exact) Mode: exact »,
 	// en anglais) n'est plus montré
+	//
+	// « Comment ? » (PR 3) : le remplacement, rédigé ici, puis les étapes
+	// collège de `pedagogical-arithmetic`, seulement quand elles concluent la
+	// réponse du moteur et ont quelque chose à montrer (`evaluate-steps.ts`).
+	// Les refus (`VALUE_FORBIDDEN`) sont sortis plus haut, sans étapes.
 	if (name === 'eval' && result.success && result.latex !== undefined) {
 		const assignment = finalArgs?.assignment ?? typedArgs?.assignment ?? null;
-		const line = evaluatedLine(
-			result,
-			result.latex,
-			evaluatedFunctionName(session, typedArgs?.expression ?? null),
-			assignment?.value ?? null
-		);
+		const functionName = evaluatedFunctionName(session, typedArgs?.expression ?? null);
+		const line = evaluatedLine(result, result.latex, functionName, assignment?.value ?? null);
+		const evaluated =
+			finalArgs === null ||
+			finalArgs.assignment === null ||
+			result.ast === undefined ||
+			citesOtherLetters(session, typedArgs?.expression ?? null, finalArgs.assignment.name)
+				? null
+				: evaluateSteps(
+						{
+							expression: finalArgs.expression,
+							assignment: finalArgs.assignment,
+							callLatex: evaluatedCallLatex(functionName, finalArgs.assignment.value)
+						},
+						result.ast,
+						result.latex
+					);
 		return {
 			kind: 'commande',
 			input,
 			output: line.text,
 			latex: line.latex,
 			...solutionsAlternative(result),
+			...(evaluated !== null && { steps: evaluated.steps, ...summaryField(evaluated) }),
 			...noted
 		};
 	}
@@ -1615,15 +1633,41 @@ function evaluatedLine(
 					: 'faux'
 				: `${rounded ? '≈ ' : ''}${toCustom(ast)}`;
 	const value = typedValue === null ? undefined : parseCommandExpression(typedValue).ast;
-	if (functionName === null || value === undefined) return { text: valueText, latex };
-	// La valeur tapée telle quelle, une division écrite en fraction : f(1/3) → f(⅓),
-	// comme dans un refus (`typedValueLatex`)
-	const argument = typedValueLatex(value);
-	const plain = isNumber(value) || (isOpposite(value) && isNumber(value.operand));
-	const call = plain ? `${functionName}(${argument})` : `${functionName}\\left(${argument}\\right)`;
+	const call = evaluatedCallLatex(functionName, typedValue);
+	if (functionName === null || value === undefined || call === null) {
+		return { text: valueText, latex };
+	}
 	// Le texte, homogène : `f(sqrt(2)) = 1+sqrt(2)`, pas `f(\sqrt{2}) = 1+sqrt(2)`
 	const text = `${functionName}(${toCustom(value)}) ${rounded ? valueText : `= ${valueText}`}`;
 	return { text, latex: rounded ? `${call} ${latex}` : `${call} = ${latex}` };
+}
+
+/**
+ * La saisie TAPÉE cite-t-elle une autre lettre que celle qu'on remplace
+ * (une valeur posée dans l'atelier, `a` dans `.évaluer a x en x=3`) ? Ses
+ * étapes la feraient disparaître sans le dire : pas d'étapes (E6, plusieurs
+ * lettres, en attente). Le nom d'une fonction de l'atelier ne compte pas.
+ */
+function citesOtherLetters(session: CalcSession, typed: string | null, letter: string): boolean {
+	const ast = typed === null ? undefined : parseCommandExpression(typed).ast;
+	if (ast === undefined) return true;
+	return [...getVariables(ast)].some(
+		(name) => name !== letter && session.atelier.get(name)?.kind !== 'function'
+	);
+}
+
+/**
+ * L'appel `f(3)` en LaTeX, ou `null` sans fonction de l'atelier : la tête de
+ * la ligne de `.évaluer` et de ses étapes. La valeur tapée telle quelle, une
+ * division écrite en fraction : f(1/3) → f(⅓), comme dans un refus
+ * (`typedValueLatex`).
+ */
+function evaluatedCallLatex(functionName: string | null, typedValue: string | null): string | null {
+	const value = typedValue === null ? undefined : parseCommandExpression(typedValue).ast;
+	if (functionName === null || value === undefined) return null;
+	const argument = typedValueLatex(value);
+	const plain = isNumber(value) || (isOpposite(value) && isNumber(value.operand));
+	return plain ? `${functionName}(${argument})` : `${functionName}\\left(${argument}\\right)`;
 }
 
 /**

@@ -128,6 +128,10 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
      $e^0$, $\ln 1$… ; E5 saisie décimale → réponse décimale (2,25) ; E6 (proposé, à confirmer) plusieurs
      lettres séparées par « ; ». Découpage : PR 1 réponse en formule + refus justes ; PR 2 moteur
      (`\times`, $(-a)^n$, plus de calculs avalés, titre de √9, dénominateur nul) ; PR 3 atelier.
+     PR 1 (#1351) et PR 2 (#1353) mergées. **PR 3 faite (2026-10-14)** : `evaluate-steps.ts` +
+     `evaluate-steps-check.ts`, étape « On remplace » rédigée par l'atelier, résumé construit
+     (remplacement + « On effectue les calculs »), gardes E4/E5, une seule lettre ; tests
+     `evaluer-etapes.test.ts`, `evaluer-etapes-affichage.svelte.test.ts`. Reste : E6.
    - **2c. Commande `.limite`** (aucune aujourd'hui ; `pedagogical-limits` sert aux corrections) :
      syntaxe et limites à gauche / à droite à trancher par David.
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).
