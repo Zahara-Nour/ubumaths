@@ -157,7 +157,8 @@ describe('messagerie : pièces jointes', () => {
 			const { data, error } = await client
 				.from('message_attachments_v2')
 				.select('file_name')
-				.eq('message_id', messageId);
+				.eq('message_id', messageId)
+				.eq('file_name', 'cahier.jpg');
 			expect(error).toBeNull();
 			return data;
 		};
