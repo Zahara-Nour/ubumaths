@@ -77,11 +77,13 @@ const SUR_IN_TEXT = /(?<![A-Za-z\\])sur(?![A-Za-z])/g;
 /**
  * Le début d'un ensemble que `parseStudentDomain` lit : un crochet (aussi en
  * LaTeX), une accolade échappée, ℝ (`ℝ`, `\R`, `\mathbb{R}`, `R` seul, `R*`,
- * `R+`). Sans lui, « sur » n'est pas le mot de l'intervalle : `a = 3 sur 4`,
+ * `R+`). `\left` compte seulement devant un crochet ou une accolade :
+ * `\left(` et `\left|` (smartFence) sont des parenthèses, pas un ensemble.
+ * Sans lui, « sur » n'est pas le mot de l'intervalle : `a = 3 sur 4`,
  * `x^{sur}`, `\text{surélevé}` restent entiers, comme avant le lot 1.
  */
 const SET_START =
-	/^(?:\\[,;:! ]|~|\s)*(?:\[|\]|\\left|\\lbrack|\\rbrack|\\\{|\\lbrace|ℝ|\\R(?![A-Za-z])|\\mathbb|R(?![A-Za-z0-9]))/;
+	/^(?:\\[,;:! ]|~|\s)*(?:\[|\]|\\left(?:\[|\]|\\lbrack|\\rbrack|\\\{|\\lbrace)|\\lbrack|\\rbrack|\\\{|\\lbrace|ℝ|\\R(?![A-Za-z])|\\mathbb|R(?![A-Za-z0-9]))/;
 
 /** Seulement des espaces après « sur » : l'élève est en train de l'écrire. */
 const NOTHING_YET = /^(?:\\[,;:! ]|~|\s)*$/;

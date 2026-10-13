@@ -96,7 +96,10 @@ describe('« sur » sans ensemble derrière : la saisie reste entière', () => {
 		['x\\cdot sur', 'latex'],
 		['sur^2', 'latex'],
 		['x^{sur}', 'latex'],
-		['\\text{surélevé}', 'latex']
+		['\\text{surélevé}', 'latex'],
+		// `\left(` et `\left|` : MathLive les écrit à chaque parenthèse (smartFence)
+		['sur\\left(x+1\\right)', 'latex'],
+		['sur\\left|x\\right|', 'latex']
 	] as const)('%s (%s)', (typed, mode) => {
 		expect(splitInterval(typed, mode)).toEqual({ body: typed, written: null });
 	});
