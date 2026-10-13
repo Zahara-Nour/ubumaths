@@ -56,4 +56,26 @@ describe("expressions d'un défi", () => {
 		expect((globalThis as Record<string, unknown>).__pwned).toBeUndefined();
 		expect(correct_answer).toBeNaN();
 	});
+
+	it("refuse `Math.sqrt` collé à d'autres lettres", () => {
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+		const { variables } = generateChallengeVariables(withExpression('Math.sqrtMath.sqrt(4)'));
+		expect(variables.r).toBeNaN();
+	});
+
+	it('un nom de variable piégé ne fait ni planter ni geler le combat', () => {
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+		const challenge = {
+			variables: {
+				'a(': { type: 'random', min: 1, max: 2 },
+				'(x+)+y': { type: 'random', min: 1, max: 2 },
+				r: { type: 'expression', expression: '{a(} + 1' }
+			},
+			answer: { type: 'expression', value: '{r}' }
+		} as unknown as Challenge;
+
+		const { variables } = generateChallengeVariables(challenge);
+
+		expect(variables.r).toBeNaN();
+	});
 });
