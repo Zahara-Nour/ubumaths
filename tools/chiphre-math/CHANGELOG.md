@@ -2,6 +2,17 @@
 
 Toutes les modifications notables de ce projet sont documentées dans ce fichier.
 
+## [1.14.0] - 2026-10-13
+
+### Ajouté
+
+- Script `everyday_symbols.py` : symboles courants restés en KaTeX, à la main de Shantell
+  - Main-Regular : `ℏ` (h de Shantell barré d'un trait penché), `% ℓ ↗ ↘ ∼` de Shantell, `∓` (± retourné), `∖` (\\), `… ⋯ ⋅` (points de Shantell aux places de KaTeX), `⇐ ⟸` (⇒ ⟹ en miroir), `⟼` (↦ prolongé), `≃` (vague sur une barre), `≪ ≫` (deux <), `∣` (le `|` de la police), `♠ ♡ ♢ ♣`
+  - AMS : `⩽ ⩾` (le < de Shantell et une barre parallèle à son bras du bas), `△` de Shantell, `∴ ∵`
+  - un glyphe réduit pour tenir dans sa boîte regagne le trait des lettres ; `\longrightarrow` et les autres flèches longues restent fines : MathLive les trace lui-même (SVG)
+- Ordre : après `replace_symbols.py` et `redraw_symbols.py`, avant `build_typst_math_font.py`
+- Éditeur de `/test-font` : les symboles de ce lot ajoutés à leurs familles
+
 ## [1.13.0] - 2026-10-13
 
 ### Modifié
