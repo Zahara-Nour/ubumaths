@@ -175,7 +175,10 @@ export const actions: Actions = {
 		}
 
 		// Update class
-		const { error: updateError } = await supabase
+		// ⚠️ Une mise à jour refusée par la RLS touche zéro ligne sans erreur :
+		// `.select()` pour ne pas annoncer un succès qui n'a pas eu lieu
+		// (cf. docs/pratiques/rls-echecs-silencieux.md).
+		const { data: updatedClasses, error: updateError } = await supabase
 			.from('classes')
 			.update({
 				name,
@@ -185,11 +188,18 @@ export const actions: Actions = {
 				join_code,
 				is_active
 			})
-			.eq('id', id);
+			.eq('id', id)
+			.select('id');
 
 		if (updateError) {
 			console.error('Error updating class:', updateError);
 			return fail(400, { message: updateError.message });
+		}
+
+		// La classe a été lue juste au-dessus : zéro ligne = refus, pas absence.
+		if (!updatedClasses || updatedClasses.length === 0) {
+			console.error('[admin/classes update] Aucune ligne modifiée pour', id);
+			return fail(403, { message: 'Classe non modifiée : droits insuffisants' });
 		}
 
 		return { success: true };
@@ -206,14 +216,20 @@ export const actions: Actions = {
 			return fail(400, { message: 'Class ID is required' });
 		}
 
-		const { error: updateError } = await supabase
+		// Zéro ligne touchée (classe inconnue ou refus de la RLS) n'est pas un succès.
+		const { data: updatedClasses, error: updateError } = await supabase
 			.from('classes')
 			.update({ is_active: false })
-			.eq('id', id);
+			.eq('id', id)
+			.select('id');
 
 		if (updateError) {
 			console.error('Error deactivating class:', updateError);
 			return fail(400, { message: updateError.message });
+		}
+
+		if (!updatedClasses || updatedClasses.length === 0) {
+			return fail(404, { message: 'Classe introuvable : non désactivée' });
 		}
 
 		return { success: true };
@@ -230,14 +246,20 @@ export const actions: Actions = {
 			return fail(400, { message: 'Class ID is required' });
 		}
 
-		const { error: updateError } = await supabase
+		// Zéro ligne touchée (classe inconnue ou refus de la RLS) n'est pas un succès.
+		const { data: updatedClasses, error: updateError } = await supabase
 			.from('classes')
 			.update({ is_active: true })
-			.eq('id', id);
+			.eq('id', id)
+			.select('id');
 
 		if (updateError) {
 			console.error('Error activating class:', updateError);
 			return fail(400, { message: updateError.message });
+		}
+
+		if (!updatedClasses || updatedClasses.length === 0) {
+			return fail(404, { message: 'Classe introuvable : non activée' });
 		}
 
 		return { success: true };

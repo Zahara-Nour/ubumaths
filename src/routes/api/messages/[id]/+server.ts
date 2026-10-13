@@ -108,15 +108,28 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 
 				const newReadValue = inboxEntry?.read_at ? null : new Date().toISOString();
 
-				const { error: readError } = await supabase
+				// ⚠️ Une mise à jour refusée par la RLS ne lève aucune erreur : elle
+				// touche zéro ligne. Sans les lignes rendues, on annonçait « lu » ou
+				// « non lu » sans rien avoir changé (cf. docs/pratiques/rls-echecs-silencieux.md).
+				const { data: updatedEntries, error: readError } = await supabase
 					.from('message_inbox')
 					.update({ read_at: newReadValue })
 					.eq('message_id', messageId)
-					.eq('recipient_id', user.id);
+					.eq('recipient_id', user.id)
+					.select('id');
 
 				if (readError) {
 					console.error('Error toggling read:', readError);
 					throw error(500, 'Erreur lors de la mise à jour du statut de lecture');
+				}
+
+				if (!updatedEntries || updatedEntries.length === 0) {
+					// Pas d'entrée lue plus haut : le message n'est pas dans cette boîte.
+					if (!inboxEntry) {
+						throw error(404, 'Message absent de la boîte de réception');
+					}
+					console.error('[toggleRead] Aucune ligne modifiée pour', messageId);
+					throw error(403, 'Statut de lecture non modifié : droits insuffisants');
 				}
 
 				return json({ success: true, isRead: newReadValue !== null });
@@ -185,26 +198,42 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
 		if (message.sender_id === user.id) {
 			// Sender deleting their sent message
-			const { error: deleteError } = await supabase
+			// ⚠️ Un refus de la RLS touche zéro ligne sans erreur : on vérifie les
+			// lignes rendues avant d'annoncer la suppression.
+			const { data: updatedMessages, error: deleteError } = await supabase
 				.from('private_messages')
 				.update({ deleted_by_sender: true })
-				.eq('id', messageId);
+				.eq('id', messageId)
+				.select('id');
 
 			if (deleteError) {
 				console.error('Error deleting message:', deleteError);
 				throw error(500, 'Erreur lors de la suppression du message');
 			}
+
+			// Le message a été lu juste au-dessus : zéro ligne = refus, pas absence.
+			if (!updatedMessages || updatedMessages.length === 0) {
+				console.error('[DELETE message] Aucune ligne modifiée pour', messageId);
+				throw error(403, 'Message non supprimé : droits insuffisants');
+			}
 		} else {
 			// Recipient marking as deleted in their inbox
-			const { error: deleteError } = await supabase
+			const { data: updatedEntries, error: deleteError } = await supabase
 				.from('message_inbox')
 				.update({ deleted: true })
 				.eq('message_id', messageId)
-				.eq('recipient_id', user.id);
+				.eq('recipient_id', user.id)
+				.select('id');
 
 			if (deleteError) {
 				console.error('Error deleting inbox entry:', deleteError);
 				throw error(500, 'Erreur lors de la suppression du message');
+			}
+
+			// Zéro ligne : pas d'entrée de boîte de réception pour cet utilisateur
+			// (ou entrée masquée par la RLS) — rien n'a été supprimé.
+			if (!updatedEntries || updatedEntries.length === 0) {
+				throw error(404, 'Message absent de la boîte de réception');
 			}
 		}
 

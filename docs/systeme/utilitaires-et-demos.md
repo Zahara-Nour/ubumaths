@@ -105,7 +105,7 @@ Précisions :
   sous-expression survolée ou touchée), `StructureReading.svelte` (lecture en français, mots du
   dictionnaire cliquables), `StructureExplorer.svelte` (les deux réunis, message « 6e ou
   avant »), `structure-lexicon.svelte.ts` (fiches du dictionnaire au niveau de l'élève, 5e pour
-  un visiteur). Spécification : `docs/wip/structure-expression-progress.md`. Le moteur est décrit
+  un visiteur). Spécification et décisions : [mathast/structure-expression.md](mathast/structure-expression.md). Le moteur est décrit
   dans [mathast/README.md](mathast/README.md). Deux majuscules collées se lisent comme une
   **longueur** (« la longueur AB », `capitalPairs: 'length'`) ; la case « Lire AB comme un
   produit » repasse en mode produit, pour la formule principale et le corpus. Un nom de figure
