@@ -78,7 +78,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	// Validate redirect URL to prevent open redirect attacks
 	const next = validateRedirectUrl(rawNext, url.origin);
 
-	logger.info('Auth confirmation request:', { type, has_token: !!token_hash });
+	logger.info('Auth confirmation request:', { type, lienComplet: !!token_hash });
 
 	// Validate that we have the required parameters and a known OTP type
 	if (!token_hash || !type || !VALID_OTP_TYPES.includes(type as OtpType)) {
