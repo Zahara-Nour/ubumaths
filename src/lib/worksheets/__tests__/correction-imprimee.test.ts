@@ -162,7 +162,7 @@ function studentCorrection(correction_detail?: 'concise' | 'detailed'): string {
 			}
 		]
 	} as unknown as StudentWorksheetView;
-	return generateStudentWorksheetTypst(view, true);
+	return generateStudentWorksheetTypst(view, 'correction');
 }
 
 describe('PDF de l’élève : le réglage de la fiche', () => {

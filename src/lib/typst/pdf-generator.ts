@@ -34,6 +34,8 @@ import {
 } from '$lib/ubumark/generators/typst-generator';
 import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
 import { createLogger } from '$lib/utils/logger';
+import { hasCorrectionFonts } from '$lib/typst/correction-fonts';
+import { compileTypstDocument } from '$lib/typst/compiler/correction-fonts-compiler';
 
 const logger = createLogger('pdf-generator');
 
@@ -44,6 +46,11 @@ const logger = createLogger('pdf-generator');
 export interface PdfGenerationResult {
 	success: true;
 	data: Uint8Array;
+	/**
+	 * Corrigé recompilé dans la police standard : l'erreur Typst de la
+	 * compilation en Shantell Sans / Chiphre Math. `null` sans repli.
+	 */
+	fallbackError: string | null;
 }
 
 export interface PdfGenerationError {
@@ -83,7 +90,7 @@ export interface PdfGenerationOptions {
  * @example Basic usage
  * ```typescript
  * const result = await generatePdfFromTypst(() =>
- *   generateStudentWorksheetTypst(worksheet, true)
+ *   generateStudentWorksheetTypst(worksheet, 'correction')
  * );
  *
  * if (result.success) {
@@ -119,14 +126,22 @@ export async function generatePdfFromTypst(
 		// Generate Typst content (this will track external image URLs)
 		const typstContent = generateContent();
 
-		// Fetch and map external images to virtual file system
+		// Fetch external images
 		const externalImageUrls = getTrackedExternalImages();
-		if (externalImageUrls.length > 0) {
-			logger.info('Fetching external images', { count: externalImageUrls.length });
+		const imageData =
+			externalImageUrls.length > 0
+				? await fetchExternalImages(externalImageUrls, { timeout: imageFetchTimeout })
+				: new Map<string, Uint8Array>();
 
-			const imageData = await fetchExternalImages(externalImageUrls, {
-				timeout: imageFetchTimeout
-			});
+		// Corrigé : compilateur dédié (Shantell Sans, Chiphre Math), avec repli
+		if (hasCorrectionFonts(typstContent)) {
+			const result = await compileTypstDocument(typstContent, { images: imageData });
+			return { success: true, data: result.data.pdf, fallbackError: result.fallbackError };
+		}
+
+		// Map external images to virtual file system
+		if (imageData.size > 0) {
+			logger.info('Mapping external images', { count: imageData.size });
 
 			for (const [url, data] of imageData) {
 				const virtualPath = urlToVirtualPath(url);
@@ -153,7 +168,8 @@ export async function generatePdfFromTypst(
 
 		return {
 			success: true,
-			data: result.data as Uint8Array
+			data: result.data as Uint8Array,
+			fallbackError: null
 		};
 	} catch (error) {
 		logger.error('PDF generation failed', { error });
@@ -178,7 +194,7 @@ export async function generatePdfFromTypst(
  * @example
  * ```typescript
  * const success = await generateAndDownloadPdf(
- *   () => generateStudentWorksheetTypst(worksheet, false),
+ *   () => generateStudentWorksheetTypst(worksheet, 'none'),
  *   'mon_devoir.pdf'
  * );
  *
@@ -193,7 +209,7 @@ export async function generateAndDownloadPdf(
 	generateContent: () => string,
 	filename: string,
 	options: PdfGenerationOptions = {}
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; fallbackError?: string | null }> {
 	const result = await generatePdfFromTypst(generateContent, options);
 
 	if (!result.success) {
@@ -213,5 +229,5 @@ export async function generateAndDownloadPdf(
 
 	URL.revokeObjectURL(url);
 
-	return { success: true };
+	return { success: true, fallbackError: result.fallbackError };
 }

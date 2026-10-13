@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { sanitizeForFileName } from '$lib/worksheets/pdf-file-name';
+	import {
+		sanitizeForFileName,
+		worksheetPdfFileName,
+		type WorksheetPdfKind
+	} from '$lib/worksheets/pdf-file-name';
 	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -32,7 +36,11 @@
 		clearTrackedExternalImages,
 		getTrackedExternalImages
 	} from '$lib/ubumark/generators/typst-generator';
-	import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
+	import { fetchExternalImages } from '$lib/typst/image-loader';
+	import {
+		compileTypstDocument,
+		fallbackWarning
+	} from '$lib/typst/compiler/correction-fonts-compiler';
 	import type { WorksheetWithRelations, InstanceData } from '$lib/types/worksheets';
 	import { worksheetLocale } from '$lib/types/worksheets';
 	import { buildWorksheetCopy, GUIDANCE_LEVEL_ITEMS } from '$lib/worksheets/worksheet-copy';
@@ -83,8 +91,13 @@
 	let isTypstLoading = $state(true);
 	let typstError = $state<string | null>(null);
 
-	// Preview state
-	let modeChoisi = $state<'worksheet' | 'correction'>('worksheet');
+	// Preview state : les trois PDF de la fiche
+	const PDF_KIND_ITEMS: { value: WorksheetPdfKind; label: string }[] = [
+		{ value: 'worksheet', label: 'Fiche' },
+		{ value: 'answers', label: 'Réponses' },
+		{ value: 'correction', label: 'Corrigé' }
+	];
+	let modeChoisi = $state<WorksheetPdfKind>('worksheet');
 
 	// Verrou, pas simple masquage : même si un sélecteur subsistait quelque part,
 	// le mode retomberait sur « fiche ».
@@ -231,12 +244,12 @@
 			}
 			instanceData.exercises.forEach((ex, i) => {
 				mdParts.push(`## ${lore.learning.exercise} ${i + 1}\n`);
-				mdParts.push(ex.statement || '');
+				// Comme le PDF : la fiche montre l'énoncé, les corrigés ne le répètent pas
+				if (mode === 'worksheet') mdParts.push(ex.statement || '');
+				if (mode === 'answers') mdParts.push(ex.answers || '');
 				if (mode === 'correction' && ex.solution) {
-					// Comme le PDF : concise ou détaillée selon la fiche (D11)
-					mdParts.push(
-						`\n### Solution\n${correctionForPrint(ex.solution, worksheet.config?.correction_detail)}`
-					);
+					// Concise ou détaillée selon la fiche (D11)
+					mdParts.push(correctionForPrint(ex.solution, worksheet.config?.correction_detail));
 				}
 				mdParts.push('\n');
 			});
@@ -255,37 +268,24 @@
 				className: classId ? 'Classe' : undefined,
 				template: worksheet.template
 			});
-			typstContent = generatedTypst;
+			// Images externes, posées dans le système de fichiers virtuel à la compilation
+			const imageData = await fetchExternalImages(getTrackedExternalImages());
 
-			// Fetch and map external images to virtual file system
-			const externalImageUrls = getTrackedExternalImages();
-			if (externalImageUrls.length > 0) {
-				console.log('[PdfPreview] Fetching external images:', externalImageUrls.length);
-				const imageData = await fetchExternalImages(externalImageUrls);
-				for (const [url, data] of imageData) {
-					const virtualPath = urlToVirtualPath(url);
-					typst.mapShadow(virtualPath, data);
-					console.log('[PdfPreview] Mapped image:', url.slice(0, 60), '->', virtualPath);
-				}
-			}
-
-			// Generate SVG for preview
-			const svg = await typst.svg({ mainContent: generatedTypst });
-			svgContent = svg;
-
-			// Generate PDF
-			const pdfData = await typst.pdf({ mainContent: typstContent });
-			pdfBlob = new Blob([pdfData as BlobPart], { type: 'application/pdf' });
+			// Aperçu SVG et PDF ; le Corrigé passe par le compilateur de ses polices,
+			// et retombe sur la police standard si elles échouent
+			const compiled = await compileTypstDocument(generatedTypst, {
+				images: imageData,
+				svg: true,
+				compiler: typst ?? undefined
+			});
+			typstContent = compiled.typst;
+			svgContent = compiled.data.svg ?? '';
+			pdfBlob = new Blob([compiled.data.pdf as BlobPart], { type: 'application/pdf' });
 			pdfUrl = URL.createObjectURL(pdfBlob);
-
-			// Reset shadow file system to free memory
-			typst.resetShadow();
-
-			// Set filename
-			const safeName = studentName ? sanitizeForFileName(studentName) : 'preview';
-			pdfFilename = `${sanitizeForFileName(worksheet.title)}_${safeName}_${mode}.pdf`;
+			pdfFilename = worksheetPdfFileName(worksheet.title, mode, studentName);
 
 			toaster.success('PDF genere avec succes');
+			if (compiled.fallbackError) toaster.warning(fallbackWarning(compiled.fallbackError));
 		} catch (err) {
 			console.error('PDF generation error:', err);
 			typstError = `Erreur de compilation: ${err}`;
@@ -362,16 +362,18 @@
 				template: worksheet.template
 			});
 
-			// Fetch and map external images once for all PDFs
-			const externalImageUrls = getTrackedExternalImages();
-			if (externalImageUrls.length > 0) {
-				console.log('[PdfPreview Batch] Fetching external images:', externalImageUrls.length);
-				const imageData = await fetchExternalImages(externalImageUrls);
-				for (const [url, data] of imageData) {
-					const virtualPath = urlToVirtualPath(url);
-					typst.mapShadow(virtualPath, data);
-				}
-			}
+			// Images externes, téléchargées une fois pour tous les PDF
+			const imageData = await fetchExternalImages(getTrackedExternalImages());
+			// Première erreur de police du Corrigé : un seul avertissement pour le lot
+			let firstFallbackError: string | null = null;
+			const compileForBatch = async (source: string) => {
+				const compiled = await compileTypstDocument(source, {
+					images: imageData,
+					compiler: typst ?? undefined
+				});
+				firstFallbackError ??= compiled.fallbackError;
+				return compiled.data.pdf;
+			};
 
 			// Generate PDFs for each student
 			for (let i = 0; i < students.length; i++) {
@@ -397,30 +399,28 @@
 					template: worksheet.template
 				});
 
-				// Compile to PDF (images already mapped to virtual file system)
-				const pdfData = await typst.pdf({ mainContent: typstContent });
-
-				// Add to zip
-				const filename = `${sanitizeForFileName(studentName)}_${sanitizeForFileName(worksheet.title)}_${mode}.pdf`;
-				folder.file(filename, pdfData);
+				const pdfData = await compileForBatch(typstContent);
+				folder.file(worksheetPdfFileName(worksheet.title, mode, studentName), pdfData);
 			}
 
-			// If correction mode, add master correction document
-			if (mode === 'correction') {
-				batchCurrentStudent = 'Correction generale...';
+			// Corrigés : un exemplaire général, sans nom d'élève (et sans énoncé)
+			if (mode !== 'worksheet') {
+				const general = mode === 'answers' ? 'REPONSES GENERALES' : 'CORRECTION GENERALE';
+				batchCurrentStudent =
+					mode === 'answers' ? 'Reponses generales...' : 'Correction generale...';
 				const masterInstance = generateSimpleInstance(worksheet);
 				clearTrackedExternalImages();
 				const masterTypst = generateWorksheetTypst({
 					worksheet,
 					instance: masterInstance,
 					config: worksheet.config || {},
-					mode: 'correction',
-					studentName: 'CORRECTION GENERALE',
+					mode,
+					studentName: general,
 					className: classId ? 'Classe' : undefined,
 					template: worksheet.template
 				});
-				const masterPdf = await typst.pdf({ mainContent: masterTypst });
-				folder.file('00_CORRECTION_GENERALE.pdf', masterPdf);
+				const masterPdf = await compileForBatch(masterTypst);
+				folder.file(`00_${general.replace(' ', '_')}.pdf`, masterPdf);
 			}
 
 			// Add summary document
@@ -446,12 +446,11 @@
 			URL.revokeObjectURL(url);
 
 			toaster.success(`${batchTotal} PDFs generes et telecharges avec succes`);
+			if (firstFallbackError) toaster.warning(fallbackWarning(firstFallbackError));
 		} catch (err) {
 			console.error('Batch PDF generation error:', err);
 			toaster.error('Erreur lors de la generation des PDFs en lot');
 		} finally {
-			// Reset shadow file system to free memory
-			typst.resetShadow();
 			isBatchGenerating = false;
 			batchProgress = 0;
 			batchCurrentStudent = '';
@@ -460,7 +459,7 @@
 
 	function generateBatchSummary(): string {
 		const date = new Date().toLocaleString('fr-FR');
-		const modeLabel = mode === 'correction' ? 'Corrections' : 'Feuilles de travail';
+		const modeLabel = PDF_KIND_ITEMS.find((item) => item.value === mode)?.label ?? 'Fiche';
 
 		return `========================================
 GENERATION BATCH DE PDFS
@@ -483,7 +482,11 @@ INFORMATIONS
 
 - Chaque PDF est personnalise avec le nom de l'eleve
 - Les ${lore.learning.exercise}s peuvent etre melangees selon la configuration
-- ${mode === 'correction' ? 'Les solutions sont incluses' : 'Les solutions ne sont pas incluses'}
+- ${
+			mode === 'worksheet'
+				? 'Les solutions ne sont pas incluses'
+				: 'Sans les enonces : ' + (mode === 'answers' ? 'les reponses seules' : 'le corrige')
+		}
 - Generation effectuee cote client (navigateur)
 
 ========================================
@@ -508,7 +511,7 @@ INFORMATIONS
 	// ============================================================================
 
 	// Track previous values to detect changes
-	let prevMode = $state<'worksheet' | 'correction' | null>(null);
+	let prevMode = $state<WorksheetPdfKind | null>(null);
 	let prevStudentId = $state<string | null | undefined>(undefined);
 	let hasInitialized = $state(false);
 
@@ -625,14 +628,12 @@ INFORMATIONS
 					<div class="grid gap-4 sm:grid-cols-2">
 						{#if !estLecteur}
 							<div class="space-y-2">
-								<Label>Mode</Label>
+								<Label>PDF</Label>
 								<MySelect
 									type="single"
 									bind:value={modeChoisi}
-									items={[
-										{ value: 'worksheet', label: 'Feuille de travail' },
-										{ value: 'correction', label: 'Correction' }
-									]}
+									items={PDF_KIND_ITEMS}
+									triggerAriaLabel="PDF à générer"
 								/>
 							</div>
 						{/if}
@@ -799,8 +800,8 @@ INFORMATIONS
 							<div class="space-y-2">
 								<div class="flex items-center gap-2">
 									<Badge variant="secondary">{students.length} eleves</Badge>
-									<Badge variant={mode === 'correction' ? 'default' : 'outline'}>
-										Mode: {mode === 'correction' ? 'Corrections' : 'Feuilles de travail'}
+									<Badge variant={mode === 'worksheet' ? 'outline' : 'default'}>
+										PDF : {PDF_KIND_ITEMS.find((item) => item.value === mode)?.label}
 									</Badge>
 								</div>
 								<p class="text-sm text-muted-foreground">
@@ -812,14 +813,12 @@ INFORMATIONS
 
 						<!-- Mode selector for batch -->
 						<div class="space-y-2">
-							<Label>Mode de generation</Label>
+							<Label>PDF à générer</Label>
 							<MySelect
 								type="single"
 								bind:value={modeChoisi}
-								items={[
-									{ value: 'worksheet', label: 'Feuilles de travail' },
-									{ value: 'correction', label: 'Corrections' }
-								]}
+								items={PDF_KIND_ITEMS}
+								triggerAriaLabel="PDF à générer pour le lot"
 							/>
 						</div>
 
@@ -871,6 +870,8 @@ INFORMATIONS
 								<li>- Document de synthese avec la liste des eleves</li>
 								{#if mode === 'correction'}
 									<li>- Correction generale incluse</li>
+								{:else if mode === 'answers'}
+									<li>- Reponses generales incluses</li>
 								{/if}
 								<li>- Generation 100% cote client (pas de serveur)</li>
 							</ul>

@@ -9,7 +9,10 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { compileToPdf } from '$lib/typst';
+	import {
+		compileTypstDocument,
+		fallbackWarning
+	} from '$lib/typst/compiler/correction-fonts-compiler';
 	import { Eye, Loader2, EyeOff, Settings2, FileText, AlertTriangle } from '@lucide/svelte';
 	import type { WorksheetAssignmentRow, CorrectionReleaseMode } from '$lib/types/worksheets';
 
@@ -277,9 +280,13 @@
 			if (!response.ok) throw new Error(data.message);
 			perStudentValuesNotice =
 				typeof data.per_student_values_notice === 'string' ? data.per_student_values_notice : null;
-			// Compilateur partagé, versions épinglées (écart T10 : plus de typst.ts « latest »)
-			const pdfData = await compileToPdf(data.typst);
-			const blob = new Blob([pdfData as unknown as BlobPart], { type: 'application/pdf' });
+			// Versions épinglées (écart T10) ; le Corrigé passe par le compilateur de ses
+			// polices, avec repli dans la police standard
+			const compiled = await compileTypstDocument(data.typst);
+			if (compiled.fallbackError) toaster.warning(fallbackWarning(compiled.fallbackError));
+			const blob = new Blob([compiled.data.pdf as unknown as BlobPart], {
+				type: 'application/pdf'
+			});
 			window.open(URL.createObjectURL(blob), '_blank');
 		} catch (_err) {
 			toaster.error('Erreur apercu');

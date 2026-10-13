@@ -157,6 +157,7 @@
 		for (const v of variations) {
 			count += (v.statement_md.match(imageRegex) || []).length;
 			count += (v.solution_md.match(imageRegex) || []).length;
+			count += (v.answers_md?.match(imageRegex) || []).length;
 		}
 		return count;
 	}
@@ -305,6 +306,8 @@
 			label: source.label,
 			statement_md: source.statement_md,
 			solution_md: source.solution_md,
+			// Réponses seules : facultatives, absentes par défaut
+			answers_md: source.answers_md,
 			variables: source.variables ? [...source.variables.map((v) => ({ ...v }))] : undefined,
 			hints: source.hints ? [...source.hints.map((h) => ({ ...h }))] : undefined,
 			// The translation follows its statement: duplicating a translated

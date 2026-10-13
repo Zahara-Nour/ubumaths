@@ -11,7 +11,7 @@
  * ```typescript
  * import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
  *
- * const typstContent = generateStudentWorksheetTypst(worksheet, true);
+ * const typstContent = generateStudentWorksheetTypst(worksheet, 'correction');
  * // Compile with TypstService
  * const service = getTypstService();
  * const result = await service.compile(typstContent, { format: 'pdf' });
@@ -33,6 +33,26 @@ import { exerciseBadge } from '$lib/typst/worksheet-palette';
 // Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
 import '$lib/ubumark/generators/figure-typst-setup';
 import { correctionForPrint } from '$lib/questions/correction-detail';
+import { CORRECTION_FONT_RULES } from '$lib/typst/correction-fonts';
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+/**
+ * Ce que le PDF imprime après les exercices :
+ * - `none` : rien ;
+ * - `answers` : partie « Réponses », les résultats seuls ;
+ * - `correction` : partie « Corrections », le corrigé en Shantell Sans et
+ *   Chiphre Math (`correction-fonts.ts`).
+ * Dans les deux cas, seulement les exercices dont la correction est visible.
+ */
+export type StudentPdfEnding = 'none' | 'answers' | 'correction';
+
+export interface StudentPdfOptions {
+	/** Polices du corrigé ; faux : police standard (repli). Vrai par défaut. */
+	correctionFonts?: boolean;
+}
 
 // ============================================================================
 // HELPERS
@@ -86,12 +106,14 @@ function getSectionOrderedExercises(worksheet: StudentWorksheetView): StudentExe
  * Generate Typst document for a student worksheet
  *
  * @param worksheet - Student worksheet view with resolved exercises
- * @param includeSolution - Whether to include corrections
+ * @param ending - Partie de fin : rien, les réponses ou le corrigé
+ * @param options - Polices du corrigé (repli : police standard)
  * @returns Typst document content
  */
 export function generateStudentWorksheetTypst(
 	worksheet: StudentWorksheetView,
-	includeSolution: boolean
+	ending: StudentPdfEnding,
+	options: StudentPdfOptions = {}
 ): string {
 	// The sheet the student prints is a document: its chrome follows the
 	// worksheet language, like the teacher's PDF does.
@@ -143,11 +165,12 @@ export function generateStudentWorksheetTypst(
 	let currentSectionId: string | null | undefined = undefined;
 	let exerciseNumber = 0;
 
-	// Collect corrections for later (if includeSolution)
-	const corrections: {
+	// Partie de fin, remplie au fil des exercices (réponses ou corrigés)
+	const endings: {
 		number: number;
 		title: string | null | undefined;
-		correction: string;
+		/** Markdown imprimé ; `null` : réponses non rédigées */
+		content: string | null;
 		genericFunctions: GenericFunctionConfig | undefined;
 		capitalPairs: CapitalPairs | undefined;
 	}[] = [];
@@ -222,26 +245,41 @@ ${exerciseContent}]\n`;
 			typst += exerciseContent;
 		}
 
-		// Collect correction for the end section
-		if (includeSolution && exercise.correction && exercise.correction_visible) {
-			corrections.push({
-				number: exerciseNumber,
-				title: exercise.title,
-				correction: exercise.correction,
-				genericFunctions,
-				capitalPairs
-			});
+		// Partie de fin : seulement les exercices dont la correction est visible
+		if (exercise.correction_visible) {
+			if (ending === 'correction' && exercise.correction) {
+				endings.push({
+					number: exerciseNumber,
+					title: exercise.title,
+					// Concise ou détaillée selon la fiche (D11), avant Typst
+					content: correctionForPrint(exercise.correction, worksheet.correction_detail),
+					genericFunctions,
+					capitalPairs
+				});
+			} else if (ending === 'answers') {
+				endings.push({
+					number: exerciseNumber,
+					title: exercise.title,
+					content: exercise.answers?.trim() ? exercise.answers : null,
+					genericFunctions,
+					capitalPairs
+				});
+			}
 		}
 
 		typst += `#v(1em)\n`;
 	}
 
-	// Add corrections section at the end
-	if (corrections.length > 0) {
+	// Partie de fin : « Réponses » ou « Corrections »
+	if (endings.length > 0) {
 		typst += `#pagebreak()\n\n`;
-		typst += `= ${labels.corrections}\n\n`;
+		// Le corrigé seul passe en Shantell Sans et Chiphre Math : les énoncés gardent leur police
+		if (ending === 'correction' && options.correctionFonts !== false) {
+			typst += `${CORRECTION_FONT_RULES}\n`;
+		}
+		typst += `= ${ending === 'answers' ? labels.answers : labels.corrections}\n\n`;
 
-		for (const { number, title, correction, genericFunctions, capitalPairs } of corrections) {
+		for (const { number, title, content, genericFunctions, capitalPairs } of endings) {
 			const titlePart = title
 				? ` #h(0.5em) #text(weight: "bold")[${processTableCellContent(title, locale, undefined, capitalPairs)}]`
 				: '';
@@ -250,16 +288,15 @@ ${exerciseContent}]\n`;
 			typst += `#block(fill: rgb("#f0fdf4"), radius: 4pt, inset: 12pt, width: 100%)[
   #block(sticky: true, below: 0.6em)[#${exerciseBadge(number)}${titlePart}]
 `;
-			// Concise ou détaillée selon la fiche (D11), avant Typst
-			const correctionAst = parseMarkdown(
-				correctionForPrint(correction, worksheet.correction_detail)
-			);
-			typst += generateTypst(correctionAst, {
-				includeSetup: false,
-				genericFunctions,
-				capitalPairs,
-				language: locale
-			});
+			typst +=
+				content === null
+					? `#emph[${escapeTypst(labels.answersNotWritten)}]`
+					: generateTypst(parseMarkdown(content), {
+							includeSetup: false,
+							genericFunctions,
+							capitalPairs,
+							language: locale
+						});
 			typst += `\n]\n\n#v(1em)\n`;
 		}
 	}

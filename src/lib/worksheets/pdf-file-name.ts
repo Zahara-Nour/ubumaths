@@ -32,3 +32,30 @@ export function sanitizeForFileName(name: string): string {
 		.replace(/[^a-zA-Z0-9_-]/g, '_')
 		.replace(/__+/g, '_');
 }
+
+/** Les trois PDF d'une fiche : la fiche, ses réponses, son corrigé */
+export type WorksheetPdfKind = 'worksheet' | 'answers' | 'correction';
+
+const PDF_KIND_SUFFIXES: Record<WorksheetPdfKind, string> = {
+	worksheet: '',
+	answers: ' - Réponses',
+	correction: ' - Corrigé'
+};
+
+/**
+ * Nom du PDF téléchargé : titre (et élève), puis « - Réponses » ou
+ * « - Corrigé », pour que les trois fichiers ne s'écrasent pas.
+ *
+ * @example
+ * ```typescript
+ * worksheetPdfFileName('Équations', 'answers') // 'Equations - Réponses.pdf'
+ * ```
+ */
+export function worksheetPdfFileName(
+	title: string,
+	kind: WorksheetPdfKind,
+	studentName?: string
+): string {
+	const student = studentName ? `_${sanitizeForFileName(studentName)}` : '';
+	return `${sanitizeForFileName(title)}${student}${PDF_KIND_SUFFIXES[kind]}.pdf`;
+}

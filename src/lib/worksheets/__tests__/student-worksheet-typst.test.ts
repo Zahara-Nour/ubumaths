@@ -37,7 +37,7 @@ const createWorksheet = (overrides?: Partial<StudentWorksheetView>): StudentWork
 
 describe('generateStudentWorksheetTypst', () => {
 	it('puts the exercise header in a sticky block, ahead of the statement', () => {
-		const typst = generateStudentWorksheetTypst(createWorksheet(), false);
+		const typst = generateStudentWorksheetTypst(createWorksheet(), 'none');
 
 		// The badge lives inside a sticky block...
 		expect(typst).toMatch(
@@ -53,7 +53,7 @@ describe('generateStudentWorksheetTypst', () => {
 		const worksheet = createWorksheet();
 		worksheet.exercises![0].custom_instructions = 'Detailler les etapes.';
 
-		const typst = generateStudentWorksheetTypst(worksheet, false);
+		const typst = generateStudentWorksheetTypst(worksheet, 'none');
 		const stickyBlock = typst.slice(
 			typst.indexOf('#block(sticky: true'),
 			typst.indexOf('#show math.equation')
@@ -64,14 +64,14 @@ describe('generateStudentWorksheetTypst', () => {
 	});
 
 	it('makes the correction header sticky too', () => {
-		const typst = generateStudentWorksheetTypst(createWorksheet(), true);
+		const typst = generateStudentWorksheetTypst(createWorksheet(), 'correction');
 
 		expect(typst).toContain('= Corrections');
 		expect(typst).toMatch(/#block\(fill: rgb\("#f0fdf4"\)[^\n]*\[\n {2}#block\(sticky: true/);
 	});
 
 	it('numérote exercices et corrigés sur la charte ambre de la fiche enseignant, plus en rouge', () => {
-		const typst = generateStudentWorksheetTypst(createWorksheet(), true);
+		const typst = generateStudentWorksheetTypst(createWorksheet(), 'correction');
 		const badge =
 			'#box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]]';
 
@@ -93,7 +93,7 @@ describe('student worksheet language', () => {
 					}
 				]
 			}),
-			true
+			'correction'
 		);
 
 		expect(typst).toContain('lang: "fr"');
@@ -114,13 +114,14 @@ describe('student worksheet language', () => {
 					}
 				]
 			}),
-			true
+			'correction'
 		);
 
 		expect(typst).toContain('lang: "en"');
 		expect(typst).toContain('Worksheet');
 		expect(typst).toContain('Essential exercises');
-		expect(typst).toContain('= Answers');
+		// « Answers » nomme désormais la partie des résultats seuls
+		expect(typst).toContain('= Solutions');
 		// No French chrome left on an English sheet.
 		expect(typst).not.toContain("Fiche d'exercices");
 		expect(typst).not.toContain('Exercices indispensables');
@@ -139,13 +140,13 @@ describe('generateStudentWorksheetTypst — fonctions déclarées', () => {
 	};
 
 	it('énoncé et corrigé sans erreur quand C est déclaré', () => {
-		const typst = generateStudentWorksheetTypst(worksheetWithC(['C']), true);
+		const typst = generateStudentWorksheetTypst(worksheetWithC(['C']), 'correction');
 		expect(typst).not.toContain('Unexpected token');
 		expect(typst).toContain('On trouve');
 	});
 
 	it('sans déclaration, l’erreur apparaît (témoin)', () => {
-		const typst = generateStudentWorksheetTypst(worksheetWithC(undefined), true);
+		const typst = generateStudentWorksheetTypst(worksheetWithC(undefined), 'correction');
 		expect(typst).toContain('Unexpected token');
 	});
 });
@@ -162,14 +163,16 @@ describe('generateStudentWorksheetTypst — sens de AB (capital_pairs)', () => {
 	};
 
 	it('longueur : titre, énoncé et corrigé sans erreur', () => {
-		const typst = generateStudentWorksheetTypst(worksheetWithPrimes('length'), true);
+		const typst = generateStudentWorksheetTypst(worksheetWithPrimes('length'), 'correction');
 		expect(typst).not.toContain('Unexpected token');
 		expect(typst).toContain('On trouve');
 	});
 
 	it('absent ou produit : écriture d’avant, identique (témoin)', () => {
-		const before = generateStudentWorksheetTypst(worksheetWithPrimes(undefined), true);
+		const before = generateStudentWorksheetTypst(worksheetWithPrimes(undefined), 'correction');
 		expect(before).toContain('Unexpected token');
-		expect(generateStudentWorksheetTypst(worksheetWithPrimes('product'), true)).toBe(before);
+		expect(generateStudentWorksheetTypst(worksheetWithPrimes('product'), 'correction')).toBe(
+			before
+		);
 	});
 });
