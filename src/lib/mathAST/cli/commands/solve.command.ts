@@ -45,6 +45,7 @@ import { number, opposite, add, subtract } from '../../factory';
 import { findZerosWithStatus } from '../../sign/helpers/zeros';
 import { closedEndpoint, interval, intervalSet, openEndpoint } from '../../domain/factory';
 import { intersect, isEmpty } from '../../domain/algebra';
+import { normalizeExcludedPoints } from '../../domain/compute';
 import type { Domain } from '../../domain/types';
 import { toLatex } from '../../latex-generator';
 
@@ -1016,6 +1017,16 @@ export class SolveCommand extends BaseCommand {
 				};
 			}
 
+			// Une identité sur un domaine qu'on n'a pas su déterminer
+			// (`\frac{x^5-x+1}{x^5-x+1}=1`) : « S = ℝ » serait faux, on le dit
+			if (result.status === 'infinite' && result.domainUnresolved !== undefined) {
+				return {
+					success: false,
+					output: '',
+					error: { code: EQUATION_UNSOLVED, message: EQUATION_UNSOLVED_MESSAGE }
+				};
+			}
+
 			// Format output with toggle support
 			const formatted = this.formatOutputWithToggle(relation, result, verbosity, ctx);
 			// Les solutions en LaTeX, bâties sur le résultat STRUCTURÉ : le texte
@@ -1172,11 +1183,37 @@ export class SolveCommand extends BaseCommand {
 		try {
 			const whole = solve(equation, { variable });
 			if (whole.status === 'infinite') {
-				return {
-					success: true,
-					output: `Tous les nombres de ${written[1]}${written[2]} ; ${written[3]}${written[4]}`,
-					latex: `S = ${intervalLatex}`
-				};
+				// Tout le DOMAINE dans l'intervalle, pas tout l'intervalle :
+				// `\frac{|x|-2}{|x|-2}=1 dans [-5;5]` rendait [-5 ; 5] (écart V43)
+				// Exclusion périodique, condition : `intersect` la perdrait en silence
+				// (sin x / sin x = 1 dans [-1 ; 3] gardait 0) ; domaine non déterminé
+				// (x⁵ − x + 1 ≠ 0) : trop grand. On ne sait pas, on le dit
+				const definedOn = whole.domain ?? { kind: 'universal' };
+				if (
+					whole.domainUnresolved !== undefined ||
+					(definedOn.kind !== 'universal' &&
+						definedOn.kind !== 'interval_set' &&
+						definedOn.kind !== 'empty')
+				) {
+					return {
+						success: false,
+						output: '',
+						error: { code: EQUATION_UNSOLVED, message: EQUATION_UNSOLVED_MESSAGE }
+					};
+				}
+				// Un point interdit hors de l'intervalle disparaît, sur une borne il l'ouvre
+				const restricted = normalizeExcludedPoints(intersect(definedOn, domain));
+				if (formatInterval(restricted) === formatInterval(domain)) {
+					return {
+						success: true,
+						output: `Tous les nombres de ${written[1]}${written[2]} ; ${written[3]}${written[4]}`,
+						latex: `S = ${intervalLatex}`
+					};
+				}
+				const set = inequalitySolutionLatex(restricted) ?? 'S = \\emptyset';
+				return isEmpty(restricted)
+					? { success: true, output: 'Pas de solution dans cet intervalle', latex: set }
+					: { success: true, output: `S = ${formatInterval(restricted)}`, latex: set };
 			}
 			if (whole.status === 'no-solution' && !isSolverFailure(whole)) {
 				return { success: true, output: 'Pas de solution', latex: 'S = \\emptyset' };

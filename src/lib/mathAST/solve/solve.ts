@@ -2156,7 +2156,7 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	}
 
 	// Compute domain of definition, intersected with user-provided search domain
-	const { domain: computedDomain } = computeDomain(expr, variable);
+	const { domain: computedDomain, unresolved: domainUnresolved } = computeDomain(expr, variable);
 	const domain = options?.domain
 		? intersectDomains(computedDomain, options.domain)
 		: computedDomain;
@@ -2196,7 +2196,8 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 			...bySubstitution,
 			solutions: kept,
 			status: kept.length === 0 ? 'no-solution' : kept.length === 1 ? 'unique' : 'multiple',
-			domain
+			domain,
+			...(domainUnresolved !== undefined && { domainUnresolved })
 		};
 	}
 
@@ -2393,6 +2394,8 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 	}
 
 	result = filterSolutionsByDomain(result, domain, variable, domainRecorder);
+	// Domaine incomplet : le dire, jamais le présenter comme exact (V45)
+	if (domainUnresolved !== undefined) result = { ...result, domainUnresolved };
 
 	// Append any exclusion steps
 	const exclusionSteps = domainRecorder
