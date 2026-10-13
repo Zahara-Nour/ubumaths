@@ -67,6 +67,8 @@ describe('signalement d’erreur sur une fiche : champs du prof', () => {
 	let assignmentId: string;
 	let worksheetExerciseId: string;
 	let reportId: string;
+	/** Affectation d'une autre fiche, à laquelle l'élève n'a pas accès. */
+	let autreAffectationId: string;
 
 	beforeAll(async () => {
 		await cleanupAllTestData();
@@ -96,6 +98,13 @@ describe('signalement d’erreur sur une fiche : champs du prof', () => {
 			.from('worksheet_assignment_students')
 			.insert({ assignment_id: assignmentId, student_id: eleve.id });
 		expect(error).toBeNull();
+
+		autreAffectationId = await insert('worksheet_assignments', {
+			worksheet_id: worksheetId,
+			status: 'active',
+			available_from: new Date(Date.now() - 86_400_000).toISOString(),
+			created_by: prof.id
+		});
 	});
 
 	afterAll(async () => {
@@ -144,7 +153,9 @@ describe('signalement d’erreur sur une fiche : champs du prof', () => {
 	it.each([
 		['« relu par »', () => ({ reviewed_by: autre.id })],
 		['la réponse', () => ({ response: 'zz-réponse forgée' })],
-		['la date de relecture', () => ({ reviewed_at: new Date().toISOString() })]
+		['la date de relecture', () => ({ reviewed_at: new Date().toISOString() })],
+		// Audit de #1266 : la policy ne revérifie pas l'affectation en modification.
+		['l’affectation visée', () => ({ assignment_id: autreAffectationId })]
 	])('l’élève ne change pas %s de son signalement', async (_cas, champs) => {
 		const client = await clientFor(eleve.email);
 		const { error } = await client

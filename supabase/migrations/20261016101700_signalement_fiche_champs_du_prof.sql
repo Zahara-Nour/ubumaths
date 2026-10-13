@@ -11,9 +11,11 @@
 -- Une policy ne voit pas les colonnes, et un droit de colonne ne distingue pas l'élève du
 -- prof (même rôle authenticated) : un déclencheur refuse donc, à un compte qui n'est ni
 -- prof ni admin, de créer un signalement autrement qu'en attente et sans relecture, puis
--- de changer status, reviewed_by, reviewed_at ou response.
+-- de changer status, reviewed_by, reviewed_at ou response — ni, en modification, rien
+-- d'autre que la description (affectation, exercice, auteur, version et graine).
 --
--- Accès perdu : l'élève ne remplit plus les champs du prof. Accès gagné : aucun.
+-- Accès perdu : l'élève ne remplit plus les champs du prof et ne déplace plus son
+-- signalement vers une autre affectation. Accès gagné : aucun.
 -- Prod (2026-10-13) : 14 signalements, 13 traités, aucun « relu par » rempli par un élève ;
 -- le déclencheur ne vise que les écritures futures.
 --
@@ -41,10 +43,17 @@ begin
 			or new.response is not null then
 			raise exception 'Seul le professeur traite un signalement' using errcode = '42501';
 		end if;
+	-- En modification, l'élève ne change que sa description (audit de #1266 : la policy
+	-- ne revérifie pas l'affectation, il déplaçait son signalement vers une autre).
 	elsif new.status is distinct from old.status
 		or new.reviewed_by is distinct from old.reviewed_by
 		or new.reviewed_at is distinct from old.reviewed_at
-		or new.response is distinct from old.response then
+		or new.response is distinct from old.response
+		or new.assignment_id is distinct from old.assignment_id
+		or new.worksheet_exercise_id is distinct from old.worksheet_exercise_id
+		or new.student_id is distinct from old.student_id
+		or new.variation_index is distinct from old.variation_index
+		or new.seed is distinct from old.seed then
 		raise exception 'Seul le professeur traite un signalement' using errcode = '42501';
 	end if;
 
