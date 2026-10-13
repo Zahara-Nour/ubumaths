@@ -190,13 +190,13 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
 
 ### E5. Élève de 6e ou avant (niveau de l'élève connecté ; visiteur : aucune restriction)
 
-| #    | Cas                                                   | Comportement attendu                                                                                                                                                          |
-| ---- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| E5.1 | (G6) somme qui contient une soustraction (`12 − 4`)   | ses termes ne se glissent pas : pas de fond de groupe, pas de curseur « main », pas de phrase                                                                                 |
-| E5.2 | somme d'additions seules (`2 + 3 + 4`)                | permis                                                                                                                                                                        |
-| E5.3 | produit (`2 × 3 × 5`)                                 | permis                                                                                                                                                                        |
-| E5.4 | `2 × (3 + 4)`, aller-retour du `2`                    | `2 × (3 + 4)`, pas `2(3 + 4)` (écriture vue en 5e). Appliqué comme « × toujours écrit en 6e ou avant » (`2 × π × r`) : **extension proposée par Claude, en attente de David** |
-| E5.5 | le message « 6e ou avant » remplace la structure (C1) | rien ne se glisse                                                                                                                                                             |
+| #    | Cas                                                   | Comportement attendu                                                                                                                                      |
+| ---- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| E5.1 | (G6) somme qui contient une soustraction (`12 − 4`)   | ses termes ne se glissent pas : pas de fond de groupe, pas de curseur « main », pas de phrase                                                             |
+| E5.2 | somme d'additions seules (`2 + 3 + 4`)                | permis                                                                                                                                                    |
+| E5.3 | produit (`2 × 3 × 5`)                                 | permis                                                                                                                                                    |
+| E5.4 | `2 × (3 + 4)`, aller-retour du `2`                    | `2 × (3 + 4)`, pas `2(3 + 4)` (écriture vue en 5e). Appliqué comme « × toujours écrit en 6e ou avant » (`2 × π × r`) : **décidé par David le 2026-10-14** |
+| E5.5 | le message « 6e ou avant » remplace la structure (C1) | rien ne se glisse                                                                                                                                         |
 
 ### E6. Au clavier (proposition de Claude)
 
@@ -273,3 +273,8 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
   **Corrigé : PR #1346 mergée** (aussi `|…|²`, `⌊…⌋²`). Démo : cadres et fonds bornés par la barre
   de fraction (mesure caractère par caractère ; la boîte de police d'un chiffre déborde sous
   l'encre), nom du groupe sous son fond dans un dénominateur.
+- 2026-10-14 — David suit les recos : **réglages du champ** = « structure » (cadres au survol),
+  « lecture » (phrase en français, décochée par défaut hors de l'outil), « déplacer » (allume
+  « structure ») ; **6e ou avant : × toujours écrit** (E5.4). Gestes : clic court = curseur,
+  appui puis mouvement = déplacer, cadres imbriqués (bordure), mode tactile. Prochaine étape :
+  spécification du lot 2 (le champ réutilisable) à valider.
