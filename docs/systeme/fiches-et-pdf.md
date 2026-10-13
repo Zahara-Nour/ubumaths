@@ -222,7 +222,9 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
   cet élève (valeurs et ordre), son nom n'est pas imprimé, et l'avertissement localisé
   `individualCopyNotice` (« Chaque élève a sa propre version : consulte ta correction
   personnelle. ») est imprimé en tête (`generateWorksheetTypst({ individualCopyNotice })`). Les
-  exercices y gardent numéro et titre. La réponse porte `per_student_copies`.
+  exercices n'y ont ni numéro ni carré, le titre seul (`display.titleOnly`), « Exercice sans
+  titre » s'il manque (`untitledExercise`) ; même règle pour le PDF de l'aperçu vue prof. La
+  réponse porte `per_student_copies`.
 - Signalements (D6) : la liste du prof (`api/worksheets/[id]/reports`, `.../assignments/[id]/reports`),
   la page du signalement et la notification de l'élève citent le numéro de l'exercice **dans la
   copie de l'élève** (`fetchCopyNumbering`, même calcul que la copie ; inconnu → aucun numéro dans
@@ -294,7 +296,8 @@ ambre (charte élève) ; sinon `{{exercises}}` en titres gras. Dans les corrigé
 
 **Un document, un rendu d'exercice** (ADR 0028, lot 1) : les deux générateurs construisent un
 `WorksheetDocument` puis appellent `renderExercises(doc, forme, habillage)`. Les habillages
-(`classic` : prof sans gabarit ; `heading` : `{{exercises}}` ; `badge` : `{{exercises_badge}}` ;
+(`classic` : fiche du prof sans gabarit — ses Réponses et son Corrigé passent en `badge`, deux
+colonnes, bandeau et avertissement pleine largeur en tête (D6) ; `heading` : `{{exercises}}` ; `badge` : `{{exercises_badge}}` ;
 `student` : PDF élève) ne changent que la présentation ; ils disparaissent au lot 2. Communs aux deux
 PDF : titre d'exercice avec ses formules (`processTableCellContent`), ordre et numérotation
 (`numbering_style`, `exercise_order` côté prof), points en « pt » / « pts » de `documentLabels` (aussi en anglais, et

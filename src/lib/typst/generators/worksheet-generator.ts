@@ -359,7 +359,13 @@ ${this.individualCopyNoticeBlock(mode)}`;
 
 		const setup = this.generateWorksheetSetup(worksheet.type);
 		const header = this.generateHeader(worksheet, mode);
-		const exercises = this.generateExercises(input, mode, 'classic');
+		// Corrigés : l'allure de la fiche élève — deux colonnes, numéros en carré
+		// coloré (habillage `badge`) ; bandeau et avertissement restent en tête,
+		// pleine largeur. La fiche (énoncés) garde sa mise en page.
+		const exercises =
+			mode === 'worksheet'
+				? this.generateExercises(input, mode, 'classic')
+				: `#columns(2, gutter: 1.5em)[\n${this.generateExercises(input, mode, 'badge')}\n]`;
 		const footer = this.generateFooter(worksheet, mode);
 
 		return [setup, header, exercises, footer].filter(Boolean).join('\n\n');
@@ -572,11 +578,15 @@ ${MATH_LIMITS_SETUP}
 		mode: WorksheetPdfMode,
 		layout: ExerciseLayout
 	): string {
-		const doc = documentFromTeacherCopy({
+		const copyDoc = documentFromTeacherCopy({
 			worksheet: input.worksheet,
 			instance: input.instance,
 			config: this.worksheetConfig
 		});
+		// Copie d'un élève servant de corrigé de classe (D6) : le titre seul
+		const doc = this.options.individualCopyNotice
+			? { ...copyDoc, display: { ...copyDoc.display, titleOnly: true } }
+			: copyDoc;
 		return renderExercises(doc, mode, layout);
 	}
 

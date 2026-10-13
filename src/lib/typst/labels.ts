@@ -60,6 +60,8 @@ export interface DocumentLabels {
 	 * version (valeurs ou ordre) : ce corrigé est la copie d'un élève (D6)
 	 */
 	individualCopyNotice: string;
+	/** En-tête d'un exercice sans titre, quand les numéros ne s'impriment pas (D6) */
+	untitledExercise: string;
 	instructions: string;
 	guidelines: string;
 	essentialExercises: string;
@@ -175,6 +177,7 @@ const FR: DocumentLabels = {
 	answersNotWritten: 'Réponses non rédigées : voir le corrigé.',
 	correctionNotWritten: 'Correction non écrite.',
 	individualCopyNotice: 'Chaque élève a sa propre version : consulte ta correction personnelle.',
+	untitledExercise: 'Exercice sans titre',
 	instructions: 'Instructions',
 	guidelines: 'Consignes',
 	essentialExercises: 'Exercices indispensables',
@@ -290,6 +293,7 @@ const EN: DocumentLabels = {
 	answersNotWritten: 'Answers not written: see the worked solutions.',
 	correctionNotWritten: 'Solution not written.',
 	individualCopyNotice: 'Each student has their own version: check your personal correction.',
+	untitledExercise: 'Untitled exercise',
 	instructions: 'Instructions',
 	guidelines: 'Instructions',
 	essentialExercises: 'Essential exercises',

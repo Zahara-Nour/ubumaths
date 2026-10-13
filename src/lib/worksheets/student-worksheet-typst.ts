@@ -71,7 +71,11 @@ export function generateStudentWorksheetTypst(
 	// Le document de la fiche (ADR 0028) : ordre, numéros et corrections
 	// visibles décidés une fois, comme pour le PDF du prof. Sa langue est
 	// validée plutôt que supposée : elle traverse une réponse d'API.
-	const doc = documentFromStudentView(worksheet);
+	const viewDoc = documentFromStudentView(worksheet);
+	// Copie d'un élève servant de vue prof (D6) : le titre seul, sans numéro
+	const doc = options.individualCopyNotice
+		? { ...viewDoc, display: { ...viewDoc.display, titleOnly: true } }
+		: viewDoc;
 	const locale = doc.locale;
 	const labels = documentLabels(locale);
 	let typst = generateSetup(locale);
