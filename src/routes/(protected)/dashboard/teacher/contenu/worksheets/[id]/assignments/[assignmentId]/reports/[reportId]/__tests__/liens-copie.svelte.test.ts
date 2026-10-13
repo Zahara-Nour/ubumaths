@@ -18,11 +18,12 @@ const ASSIGNMENT_ID = '550e8400-e29b-41d4-a716-446655440010';
 const STUDENT_ID = '550e8400-e29b-41d4-a716-446655440501';
 const WE_ID = '550e8400-e29b-41d4-a716-446655440012';
 const EXERCISE_ID = '550e8400-e29b-41d4-a716-4466554402e0';
+const REPORT_ID = '550e8400-e29b-41d4-a716-446655440030';
 
 function data(copyNumber: number) {
 	return {
 		report: {
-			id: '550e8400-e29b-41d4-a716-446655440030',
+			id: REPORT_ID,
 			assignment_id: ASSIGNMENT_ID,
 			worksheet_exercise_id: WE_ID,
 			exercise_position: copyNumber,
@@ -62,12 +63,12 @@ function link(text: string): HTMLAnchorElement | undefined {
 }
 
 describe('page d’un signalement : copie de l’élève et exercice d’origine', () => {
-	it('« Voir la copie de Léa » : aperçu vue élève présélectionné, ancré sur l’exercice', async () => {
+	it('« Voir la copie de Léa » : aperçu vue élève présélectionné, ancré, retour au signalement', async () => {
 		await render(ReportPage, { props: { data: data(7) } as never });
 		const copy = link('Voir la copie de Léa');
 		expect(copy).toBeDefined();
 		expect(copy!.getAttribute('href')).toBe(
-			`/dashboard/teacher/contenu/worksheets/${WORKSHEET_ID}/assignments/${ASSIGNMENT_ID}/preview?studentId=${STUDENT_ID}#exercice-${WE_ID}`
+			`/dashboard/teacher/contenu/worksheets/${WORKSHEET_ID}/assignments/${ASSIGNMENT_ID}/preview?studentId=${STUDENT_ID}&depuis=signalement&signalement=${REPORT_ID}#exercice-${WE_ID}`
 		);
 	});
 

@@ -11,11 +11,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import type { StudentWorksheetView } from '$lib/types/worksheets';
 
-const location = vi.hoisted(() => ({ hash: '' }));
+const location = vi.hoisted(() => ({ hash: '', search: '' }));
 vi.mock('$app/state', () => ({
 	page: {
 		get url() {
-			return new URL(`http://localhost:5175/preview${location.hash}`);
+			return new URL(`http://localhost:5175/preview${location.search}${location.hash}`);
 		}
 	}
 }));
@@ -103,6 +103,7 @@ describe('aperçu vue élève : élève et exercice lus dans l’adresse', () =>
 		vi.restoreAllMocks();
 		vi.unstubAllGlobals();
 		location.hash = '';
+		location.search = '';
 	});
 
 	it('`studentId` de l’adresse : la copie de cet élève est demandée et affichée', async () => {
@@ -126,5 +127,27 @@ describe('aperçu vue élève : élève et exercice lus dans l’adresse', () =>
 		await render(PreviewPage, { props: { data: data(null) } as never });
 		await expect.poll(() => requested.length).toBeGreaterThan(0);
 		expect(new URL(requested[0]).searchParams.get('studentId')).toBeNull();
+	});
+
+	it('ouvert depuis un signalement (`?depuis=signalement`) : retour à la page du signalement', async () => {
+		const reportId = '550e8400-e29b-41d4-a716-446655440030';
+		location.search = `?studentId=${STUDENT_ID}&depuis=signalement&signalement=${reportId}`;
+		await render(PreviewPage, { props: { data: data(STUDENT_ID) } as never });
+		const back = [...document.querySelectorAll('a')].find((a) =>
+			a.textContent?.includes('Retour au signalement')
+		);
+		expect(back?.getAttribute('href')).toBe(
+			`/dashboard/teacher/contenu/worksheets/${WORKSHEET_ID}/assignments/${ASSIGNMENT_ID}/reports/${reportId}`
+		);
+	});
+
+	it('sans origine : retour à la fiche, comme avant', async () => {
+		await render(PreviewPage, { props: { data: data(null) } as never });
+		const back = [...document.querySelectorAll('a')].find((a) =>
+			a.textContent?.includes('Retour à la fiche')
+		);
+		expect(back?.getAttribute('href')).toBe(
+			`/dashboard/teacher/contenu/worksheets/${WORKSHEET_ID}`
+		);
 	});
 });

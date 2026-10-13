@@ -54,6 +54,7 @@
 	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import { page } from '$app/state';
+	import { assignmentPreviewReturn } from '$lib/navigation/return-links';
 	import {
 		ANCHOR_HIGHLIGHT_MS,
 		exerciseAnchorId,
@@ -66,6 +67,11 @@
 	} from '$lib/types/worksheets';
 
 	let { data }: { data: PageData } = $props();
+
+	// Deux parents : la fiche, ou la page d'un signalement (`?depuis=signalement`)
+	let backLink = $derived(
+		assignmentPreviewReturn(data.worksheetId, data.assignmentId, page.url.searchParams)
+	);
 
 	// State
 	// Use string | undefined (not null) so MySelect can bind directly.
@@ -375,11 +381,7 @@
 	<!-- Header with back button and student selector -->
 	<div class="mb-6 space-y-4">
 		<div class="flex items-center justify-between">
-			<BackLink
-				href={`/dashboard/teacher/contenu/worksheets/${data.worksheetId}`}
-				label="Retour à la fiche"
-				class="mb-0"
-			/>
+			<BackLink href={backLink.href} label={backLink.label} class="mb-0" />
 
 			<!-- Preview mode badge -->
 			<Badge variant={previewMode === 'teacher' ? 'default' : 'secondary'} class="gap-1">

@@ -34,7 +34,7 @@
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Check, X, Loader2, AlertTriangle, Eye, Pencil } from '@lucide/svelte';
-	import { exerciseAnchorHash } from '$lib/worksheets/exercise-anchor';
+	import { assignmentPreviewHref } from '$lib/navigation/return-links';
 	import type { ExerciseVariation } from '$lib/exercises/types';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
@@ -92,7 +92,12 @@
 	const exerciseNumber = context.exercise_position > 0 ? String(context.exercise_position) : '—';
 	const studentFirstName = report.student_first_name ?? context.student_name;
 	// La copie de l'élève : aperçu « vue élève » présélectionné, ancré sur l'exercice signalé
-	const studentCopyHref = `/dashboard/teacher/contenu/worksheets/${initialData.worksheetId}/assignments/${initialData.assignmentId}/preview?studentId=${report.student_id}${exerciseAnchorHash(report.worksheet_exercise_id)}`;
+	// (l'aperçu revient ici : `?depuis=signalement`)
+	const studentCopyHref = assignmentPreviewHref(initialData.worksheetId, initialData.assignmentId, {
+		studentId: report.student_id,
+		reportId: report.id,
+		worksheetExerciseId: report.worksheet_exercise_id
+	});
 	// L'exercice d'origine, dans son éditeur
 	const exerciseEditorHref = `/dashboard/teacher/contenu/exercices/${exercise.id}`;
 
