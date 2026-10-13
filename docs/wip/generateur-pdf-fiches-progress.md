@@ -1,7 +1,7 @@
 # Un seul générateur PDF de fiches, piloté par les gabarits — journal
 
 > Chantier ouvert le 2026-10-13 (demande de David). Worktree `../ubumaths-wt-pdf-fiches`,
-> branche `refactor/generateur-pdf-fiches-unique`. **Plan validé le 2026-10-13 (ADR 0028) ; lot 0 fait, lot 1 en cours.**
+> branche `refactor/generateur-pdf-fiches-unique`. **Plan validé le 2026-10-13 (ADR 0028) ; lots 0 et 1 faits (lot 1 non poussé), lot 2 à venir.**
 
 ## Constat (exploration du 2026-10-13)
 
@@ -120,6 +120,20 @@ Erreur / garde :
 - langue inconnue → repli `fr`, comme aujourd'hui.
 
 ## Journal
+
+- 2026-10-13 — **lot 1 fait** (commits locaux, non poussés). `src/lib/worksheets/document/` :
+  `WorksheetDocument`, adaptateurs prof / élève, ordre et numéros, rendu d'exercice unique
+  (habillages `classic` / `heading` / `badge` / `student`, qui disparaissent au lot 2) ; les deux
+  chemins jumeaux du prof fusionnés. Écarts corrigés : titre en formule côté prof ; `lang` du setup
+  prof selon la fiche (+ `region: "FR"` en français seulement) ; ∑ / lim dans le setup prof ;
+  élève : `numbering_style`, « pt / pts » de `documentLabels`, `show_points` (API élève et aperçu :
+  `numbering_style`, `show_points`, et `asWorksheetConfig` lit enfin `numbering_style`) ; D4 :
+  « Autres exercices » des deux côtés, « Correction non écrite. » (Corrigé ; Réponses sans réponses
+  ni corrigé). Empreinte avant / après (3 fiches × 13 mises en page × 3 formes + élève × 3 fins,
+  126 fichiers) : 54 changent, uniquement ces écarts. Mesure prod (2026-10-13) : 27 fiches sur 32
+  ont `show_points` faux, mais aucune n'a d'exercice à points → le PDF élève ne perd rien.
+  Restent ouverts : la copie élève n'a pas d'`exercise_order` (jamais tirée, ADR 0023) alors que
+  `shuffle_exercises` existe dans la config ; mots « pt / pts » identiques en anglais.
 
 - 2026-10-13 — plan validé ; D3, D4 ; lot 0 : ADR 0028, vocabulaire dans CONTEXT.md (style, gabarit, forme).
 
