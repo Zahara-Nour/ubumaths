@@ -1019,6 +1019,9 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	language: contentLocaleSchema.optional(),
 	/** Corrigé imprimé concis ou détaillé (réglage de la fiche, D11) */
 	correction_detail: z.enum(['concise', 'detailed']).optional(),
+	/** Numérotation et « afficher les points » de la fiche : sans ces clés, le schéma les retire */
+	numbering_style: numberingStyleSchema.optional(),
+	show_points: z.boolean().optional(),
 	description: z.string().nullable(),
 	type: worksheetTypeSchema,
 	instructions: z.string().nullable(),

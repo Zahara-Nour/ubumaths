@@ -53,6 +53,8 @@ export interface DocumentLabels {
 	answers: string;
 	/** Exercice sans réponses rédigées, dans le PDF « Réponses » */
 	answersNotWritten: string;
+	/** Exercice sans corrigé rédigé, dans les PDF « Réponses » et « Corrigé » (ADR 0028, D4) */
+	correctionNotWritten: string;
 	instructions: string;
 	guidelines: string;
 	essentialExercises: string;
@@ -166,6 +168,7 @@ const FR: DocumentLabels = {
 	correction: 'Correction',
 	answers: 'Réponses',
 	answersNotWritten: 'Réponses non rédigées : voir le corrigé.',
+	correctionNotWritten: 'Correction non écrite.',
 	instructions: 'Instructions',
 	guidelines: 'Consignes',
 	essentialExercises: 'Exercices indispensables',
@@ -279,6 +282,7 @@ const EN: DocumentLabels = {
 	correction: 'Solutions',
 	answers: 'Answers',
 	answersNotWritten: 'Answers not written: see the worked solutions.',
+	correctionNotWritten: 'Solution not written.',
 	instructions: 'Instructions',
 	guidelines: 'Instructions',
 	essentialExercises: 'Essential exercises',

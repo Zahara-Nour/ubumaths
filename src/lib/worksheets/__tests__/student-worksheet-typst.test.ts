@@ -59,7 +59,8 @@ describe('generateStudentWorksheetTypst', () => {
 			typst.indexOf('#show math.equation')
 		);
 
-		expect(stickyBlock).toContain('3 points');
+		// « pts » : les mots du PDF du prof, dans la langue de la fiche (ADR 0028, lot 1)
+		expect(stickyBlock).toContain('3 pts');
 		expect(stickyBlock).toContain('Detailler les etapes.');
 	});
 
