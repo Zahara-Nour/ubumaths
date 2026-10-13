@@ -383,6 +383,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			const resolved = {
 				statement: copy.statement,
 				correction: copy.solution || null,
+				answers: copy.answers || null,
 				hints: copy.hints
 			};
 
@@ -405,6 +406,8 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				statement: resolved.statement,
 				correction: correctionVisible ? resolved.correction : null,
 				correction_visible: correctionVisible,
+				// Réponses seules : EXACTEMENT sous la condition de la correction
+				answers: correctionVisible ? resolved.answers : null,
 				section_id: we.section_id ?? null,
 				is_essential: we.is_essential ?? false
 			};

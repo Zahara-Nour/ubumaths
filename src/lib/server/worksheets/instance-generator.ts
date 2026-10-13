@@ -255,6 +255,7 @@ function resolveExercise(
 		parameters,
 		statement: instance.statement_md,
 		solution: instance.solution_md,
+		answers: instance.answers_md ?? '',
 		statement_ast: instance.statement_ast,
 		solution_ast: instance.solution_ast,
 		selectedVariationIndex: instance.selectedVariationIndex,

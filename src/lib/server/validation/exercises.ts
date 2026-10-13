@@ -115,6 +115,7 @@ export const exerciseTranslationsSchema = z
 			.object({
 				statement_md: z.string().trim().max(50000, 'Énoncé trop long').optional(),
 				solution_md: z.string().trim().max(50000, 'Correction trop longue').optional(),
+				answers_md: z.string().trim().max(50000, 'Réponses trop longues').optional(),
 				// Keyed by hint id, and carrying text only: id/type/url stay in the
 				// French hint so a translation can never break a {{hint:id}} reference.
 				hints: z
@@ -158,6 +159,8 @@ export const exerciseVariationSchema = z
 			.trim()
 			.min(1, 'Correction requise')
 			.max(50000, 'Correction trop longue'),
+		// Réponses seules (PDF « Réponses ») : facultatives
+		answers_md: z.string().trim().max(50000, 'Réponses trop longues').optional(),
 		variables: z
 			.array(variableSchema)
 			.max(100, '100 variables au maximum par niveau de guidage')
@@ -622,6 +625,9 @@ const exerciseVariationResponseSchema = z.object({
 	label: z.string(),
 	statement_md: z.string(),
 	solution_md: z.string(),
+	// Sans ces clés, le schéma les retire en silence de la réponse
+	answers_md: z.string().optional(),
+	translations: z.unknown().optional(),
 	hints: z.array(z.unknown()).optional(),
 	variables: z.array(z.unknown()).optional()
 });

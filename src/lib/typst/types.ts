@@ -326,10 +326,11 @@ export interface CacheStats {
  * Mode for document generation
  *
  * - `worksheet`: Student worksheet (exercises without solutions)
- * - `correction`: Teacher correction (exercises with solutions)
+ * - `answers`: Réponses seules, sans l'énoncé (PDF « Réponses »)
+ * - `correction`: Corrigé, sans l'énoncé (PDF « Corrigé »)
  * - `preview`: Quick preview mode (simplified formatting)
  */
-export type GeneratorMode = 'worksheet' | 'correction' | 'preview';
+export type GeneratorMode = 'worksheet' | 'answers' | 'correction' | 'preview';
 
 /**
  * Context for document generation

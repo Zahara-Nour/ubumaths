@@ -266,6 +266,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				statement,
 				correction: correctionVisible ? correction : null,
 				correction_visible: correctionVisible,
+				// Réponses seules : EXACTEMENT sous la condition de la correction
+				answers: correctionVisible ? copy.answers || null : null,
 				section_id: we.section_id ?? null,
 				is_essential: we.is_essential ?? false
 			};

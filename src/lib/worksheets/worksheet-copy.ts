@@ -196,7 +196,7 @@ export function buildWorksheetCopy(worksheet: WorksheetForCopy, scope: CopyScope
 					{ id: we.id, variation_index: we.variation_index ?? null, exercise: we.exercise },
 					scope
 				)
-			: { statement: '', solution: '', hints: undefined, variationIndex: 0 };
+			: { statement: '', solution: '', answers: '', hints: undefined, variationIndex: 0 };
 		return {
 			exercise_id: we.exercise_id,
 			title: we.exercise?.title ?? null,
@@ -212,6 +212,7 @@ export function buildWorksheetCopy(worksheet: WorksheetForCopy, scope: CopyScope
 			parameters: {},
 			statement: copy.statement,
 			solution: copy.solution,
+			answers: copy.answers,
 			hints: copy.hints,
 			selectedVariationIndex: copy.variationIndex,
 			// Fonctions déclarées : sans elles, `C'(x)` s'imprime en erreur dans le PDF.

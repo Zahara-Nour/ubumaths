@@ -45,6 +45,8 @@ export interface CopyExerciseOptions {
 export interface CopyExercise {
 	statement: string;
 	solution: string;
+	/** Réponses seules (PDF « Réponses ») ; chaîne vide si l'exercice n'en a pas */
+	answers: string;
 	hints?: ExerciseHint[];
 	variationIndex: number;
 }
@@ -143,6 +145,7 @@ export function resolveCopyExercise(
 		return {
 			statement: result.instance.statement_md,
 			solution: result.instance.solution_md ?? '',
+			answers: result.instance.answers_md ?? '',
 			hints: result.instance.resolvedHints,
 			variationIndex
 		};
@@ -151,6 +154,7 @@ export function resolveCopyExercise(
 	return {
 		statement: content.statement_md,
 		solution: content.solution_md,
+		answers: content.answers_md,
 		hints: content.hints,
 		variationIndex
 	};

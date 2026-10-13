@@ -591,6 +591,8 @@ export interface TranslatedHint {
 export interface TranslatedExerciseContent {
 	statement_md?: string;
 	solution_md?: string;
+	/** Réponses seules (PDF « Réponses ») : variation seulement */
+	answers_md?: string;
 	hints?: Record<string, TranslatedHint>;
 }
 
@@ -622,6 +624,13 @@ export interface ExerciseVariation {
 	 * might show just the final answer.
 	 */
 	solution_md: string;
+
+	/**
+	 * Réponses seules, sans détail, question par question : imprimées dans le
+	 * PDF « Réponses » de la fiche. Facultatif ; peut contenir des `{{var}}`,
+	 * résolues comme dans la correction.
+	 */
+	answers_md?: string;
 
 	/**
 	 * Per-variation variables (merged with shared variables)
@@ -866,6 +875,11 @@ export interface ExerciseInstance {
 	 * Ready for parsing and display
 	 */
 	solution_md: string;
+
+	/**
+	 * Réponses seules, variables résolues ; chaîne vide si la variation n'en a pas
+	 */
+	answers_md?: string;
 
 	// Parsed content (optional, only if parseAST was requested)
 	/**
@@ -2432,6 +2446,10 @@ export function resolveExerciseVariationWithShared(
 			sharedTr?.solution_md ||
 			shared?.solution_md ||
 			'',
+		// Réponses : propres à la variation, rien dans les valeurs partagées
+		...((variationTr?.answers_md || variation.answers_md) && {
+			answers_md: variationTr?.answers_md || variation.answers_md
+		}),
 		variables: mergeExerciseVariables(shared?.variables, variation.variables),
 		hints: localizeHints(variation.hints, variationTr?.hints)
 	};
@@ -2463,6 +2481,15 @@ function localizeHints(
 	});
 }
 
+/** Le contenu d'une variation, dans la langue demandée */
+export interface ExerciseContent {
+	statement_md: string;
+	solution_md: string;
+	/** Réponses seules ; chaîne vide si la variation n'en a pas */
+	answers_md: string;
+	hints?: ExerciseHint[];
+}
+
 /**
  * Get exercise content from variations (the single source of truth)
  *
@@ -2489,7 +2516,7 @@ export function getExerciseContent(
 	exercise: Exercise,
 	variationIndex = 0,
 	locale: ContentLocale = 'fr'
-): { statement_md: string; solution_md: string; hints?: ExerciseHint[] } {
+): ExerciseContent {
 	if (!exercise.variations || exercise.variations.length === 0) {
 		throw new Error(`Exercise ${exercise.id} has no variations`);
 	}
@@ -2504,6 +2531,7 @@ export function getExerciseContent(
 	return {
 		statement_md: resolved.statement_md,
 		solution_md: resolved.solution_md,
+		answers_md: resolved.answers_md ?? '',
 		hints: resolved.hints
 	};
 }
@@ -2522,11 +2550,12 @@ export function getExerciseContentSafe(
 	exercise: Exercise,
 	variationIndex = 0,
 	locale: ContentLocale = 'fr'
-): { statement_md: string; solution_md: string; hints?: ExerciseHint[] } {
+): ExerciseContent {
 	if (!exercise.variations || exercise.variations.length === 0) {
 		return {
 			statement_md: '',
 			solution_md: '',
+			answers_md: '',
 			hints: undefined
 		};
 	}
