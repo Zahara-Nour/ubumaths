@@ -113,19 +113,32 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 
 		// Bucket is private: there is no durable public URL. We store only the
 		// storage path; signed URLs are generated on read (see bug-report-screenshots.ts).
-		const { error: updateError } = await locals.supabase
+		//
+		// ⚠️ Une mise à jour refusée par la RLS touche zéro ligne sans erreur. Sans
+		// les lignes rendues, on annonçait la capture enregistrée alors que le
+		// rapport ne la référençait pas, et le fichier restait orphelin au bucket.
+		const { data: updatedReports, error: updateError } = await locals.supabase
 			.from('bug_reports')
 			.update({
 				screenshot_url: null,
 				screenshot_path: storagePath
 			})
-			.eq('id', params.reportId);
+			.eq('id', params.reportId)
+			.select('id');
 
 		if (updateError) {
 			console.error('[API] Error updating bug report with screenshot:', updateError);
 			// Try to clean up the uploaded file
 			await locals.supabase.storage.from(BUCKET_NAME).remove([storagePath]);
 			throw error(500, 'Erreur lors de la mise à jour du rapport');
+		}
+
+		if (!updatedReports || updatedReports.length === 0) {
+			console.error('[API] Capture non rattachée au rapport', params.reportId);
+			// Le fichier vient d'être envoyé : sans rapport qui le référence, il
+			// resterait orphelin dans le bucket.
+			await locals.supabase.storage.from(BUCKET_NAME).remove([storagePath]);
+			throw error(403, 'Capture non enregistrée : rapport non modifiable');
 		}
 
 		// Return a short-lived signed URL so the client can preview immediately.

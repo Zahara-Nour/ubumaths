@@ -16,6 +16,7 @@ import { unrestrictUserSchema } from '$lib/server/validation/moderation';
  * - 400: Validation failed
  * - 401: Not authenticated
  * - 403: Not a teacher/admin OR not the teacher who created the restriction
+ *        OR the deletion touched no row (refused by RLS)
  * - 404: Restriction not found
  * - 500: Database error
  */
@@ -69,14 +70,24 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// 6. Delete restriction
-	const { error: deleteError } = await locals.supabase
+	// ⚠️ Une suppression refusée par la RLS ne lève aucune erreur : elle touche
+	// zéro ligne. Sans les lignes rendues, le prof croyait la restriction levée
+	// alors que l'élève restait restreint (cf. docs/pratiques/rls-echecs-silencieux.md).
+	const { data: deletedRestrictions, error: deleteError } = await locals.supabase
 		.from('user_restrictions')
 		.delete()
-		.eq('id', restrictionId);
+		.eq('id', restrictionId)
+		.select('id');
 
 	if (deleteError) {
 		console.error('Failed to delete restriction:', deleteError);
 		throw error(500, 'Failed to remove restriction');
+	}
+
+	// La restriction a été lue juste au-dessus : zéro ligne = refus, pas absence.
+	if (!deletedRestrictions || deletedRestrictions.length === 0) {
+		console.error('[unrestrict-user] Aucune ligne supprimée pour', restrictionId);
+		throw error(403, 'Restriction non levée : droits insuffisants');
 	}
 
 	// 7. Log moderation action (determine action type based on restriction type)

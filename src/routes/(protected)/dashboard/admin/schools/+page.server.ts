@@ -128,10 +128,23 @@ export const actions: Actions = {
 			});
 		}
 
-		const { error: deleteError } = await supabase.from('schools').delete().eq('id', id);
+		// ⚠️ Une suppression refusée par la RLS touche zéro ligne sans erreur :
+		// sans les lignes rendues, l'écran annonçait une école supprimée qui
+		// existait toujours (cf. docs/pratiques/rls-echecs-silencieux.md).
+		const { data: deletedSchools, error: deleteError } = await supabase
+			.from('schools')
+			.delete()
+			.eq('id', id)
+			.select('id');
 
 		if (deleteError) {
 			return fail(400, { message: deleteError.message });
+		}
+
+		// L'école a été lue juste au-dessus : zéro ligne = refus, pas absence.
+		if (!deletedSchools || deletedSchools.length === 0) {
+			console.error('[admin/schools delete] Aucune ligne supprimée pour', id);
+			return fail(403, { message: 'École non supprimée : droits insuffisants' });
 		}
 
 		return { success: true };

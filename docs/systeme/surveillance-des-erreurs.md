@@ -143,10 +143,14 @@ Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte
   description tant que le statut vaut `pending` ; l'admin change statut et notes) ;
   `DELETE` (admin).
 - **`/api/bug-reports/batch`** : `PATCH` et `DELETE` en lot, admin, 100 rapports au plus.
+  Chaque écriture vérifie ses lignes : un rapport intact (inconnu, refus de la RLS) va dans
+  `failed`, et `success` ne vaut `true` que si tout le lot a été traité.
 - **`/api/bug-reports/[reportId]/screenshot`** : `POST`, l'auteur seul. Taille plafonnée
   par `MAX_IMAGE_SIZE_BYTES`, signature binaire vérifiée (`validateFileSignature`).
   Chemin `<id utilisateur>/<id du rapport>/<horodatage>.<ext>` dans le bucket
-  `bug-report-screenshots` ; l'ancienne capture est retirée.
+  `bug-report-screenshots` ; l'ancienne capture est retirée. Si la mise à jour du rapport ne
+  touche aucune ligne (rapport plus `pending`, refus de la RLS), le fichier envoyé est retiré
+  et la route rend 403.
 - **`src/lib/server/bug-report-screenshots.ts`** : le bucket est privé ; `bug_reports.screenshot_url`
   est recalculé à chaque lecture depuis `screenshot_path` en URL signée
   (`DISPLAY_SIGNED_URL_TTL` = 1 h ; `EXPORT_SIGNED_URL_TTL` = 7 jours). Échec de signature
@@ -277,6 +281,10 @@ rapport en UUID. Exceptions : voir Écarts.
 - `src/lib/utils/__tests__/read-api-error-message.test.ts` : `readApiErrorMessage`.
 - `src/lib/server/__tests__/bug-report-screenshots.test.ts` : URL signées.
 - `src/routes/api/bug-reports/__tests__/rate-limit.test.ts` : le 11ᵉ signalement reçoit 429.
+- `src/routes/api/bug-reports/__tests__/write-verdict.test.ts` : zéro ligne touchée n'est pas
+  un succès — `DELETE` d'un rapport → 404 ; dans un lot, chaque rapport intact passe dans
+  `failed` et `success` vaut `false` ; capture non rattachée au rapport → 403 et fichier retiré
+  du bucket.
 - `src/lib/server/__tests__/errorMonitoring-journal.test.ts` : adresses masquées dans le
   contexte et l'URL, message de l'alerte critique échappé.
 - `src/routes/api/errors/log/__tests__/log.test.ts` : `critical` ramené à `error` sans compte approuvé,
@@ -311,10 +319,6 @@ Constatés le 2026-10-13, non corrigés.
   `slowRequests` sont donc vides, sauf pour l'admin.
 - **Notification critique** : `system_event_type: 'assessment_graded'` faute de valeur
   adaptée (commentaire dans le code).
-- **Écritures sans `.select()`** (la RLS échoue en silence) : `DELETE` d'un rapport, lots
-  `PATCH`/`DELETE`, et la mise à jour de `screenshot_path` après l'envoi d'une capture. Sur
-  un rapport qui n'est plus `pending`, l'auteur envoie le fichier, la mise à jour touche
-  zéro ligne, et le fichier reste orphelin dans le bucket.
 - **Supprimer un rapport ne supprime pas sa capture** : ni `DELETE` ni le lot ne touchent
   au storage.
 - **Routes sans appelant** : `GET /api/errors`, `GET`/`PUT /api/errors/[id]` (la page
