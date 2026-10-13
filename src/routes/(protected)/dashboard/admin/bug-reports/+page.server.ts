@@ -8,6 +8,7 @@
 import type { PageServerLoad } from './$types';
 import type { BugReportWithAuthor } from '$lib/types/bug-reports';
 import { signBugReportScreenshots } from '$lib/server/bug-report-screenshots';
+import { attachReportErrors } from '$lib/server/bug-report-errors';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { error } from '@sveltejs/kit';
 import { createServerLogger } from '$lib/utils/logger';
@@ -68,6 +69,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	// Replace stored screenshot_url with fresh signed URLs (private bucket)
 	await signBugReportScreenshots(supabase, (reports ?? []) as BugReportWithAuthor[]);
+
+	// Erreurs de l'auteur avant le signalement : lues ici, réservées à l'admin.
+	await attachReportErrors(supabase, reports ?? []);
 
 	const today = new Date();
 	today.setHours(0, 0, 0, 0);
