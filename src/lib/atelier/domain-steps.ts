@@ -71,8 +71,11 @@ const LETTERS: readonly { readonly glyph: string; readonly latex: string }[] = [
 	{ glyph: 'δ', latex: '\\delta' }
 ];
 
-/** L'arrondi montré : deux décimales (« α ≈ 1,26 »). */
-const ROUNDING = 100;
+/** L'arrondi montré : deux décimales (« α ≈ 1,26 »), deux chiffres significatifs sous 1. */
+const DECIMALS = 2;
+
+/** Au-delà, deux valeurs qui s'arrondissent pareil restent indistinctes. */
+const MAX_DECIMALS = 12;
 
 // =============================================================================
 // Fonction principale
@@ -180,8 +183,11 @@ function exactAnswer(domain: Domain): DomainLine {
  * des réunions d'intervalles, ou au-delà de quatre valeurs : la ligne garde
  * alors le texte du moteur.
  */
-function approximateAnswer(domain: Domain): DomainLine | null {
-	if (domain.kind !== 'interval_set') return null;
+function approximateAnswer(engineDomain: Domain): DomainLine | null {
+	if (engineDomain.kind !== 'interval_set') return null;
+	// ]0 ; α[ ∪ ]α ; +∞[ s'écrit ]0 ; +∞[ \ {α} : `domainToLatex` le fait
+	// seul, `formatDomainInterval` non — on le fait ici pour les deux (revue)
+	const domain = mergedAtExcludedPoints(engineDomain);
 	const values = distinctSorted(
 		[
 			...domain.intervals.flatMap((i) => [i.lower.value, i.upper.value]),
@@ -210,7 +216,7 @@ function approximateAnswer(domain: Domain): DomainLine | null {
 			.map((p) => ({ ...p, value: named(p.value) }))
 	};
 
-	const rounded = values.map((v) => String(Math.round(v * ROUNDING) / ROUNDING));
+	const rounded = roundedApart(values);
 	const latexSet = LETTERS.reduce(
 		(latex, letter) => latex.replaceAll(letter.glyph, letter.latex),
 		domainToLatex(renamed)
@@ -221,6 +227,50 @@ function approximateAnswer(domain: Domain): DomainLine | null {
 		latex: `D = ${latexSet} \\text{ avec } ${enumeration(latexValues, ' \\text{, } ', ' \\text{ et } ')}`,
 		text: `D = ${formatDomainInterval(renamed)} avec ${enumeration(textValues, ', ', ' et ')}`
 	};
+}
+
+/**
+ * Deux intervalles ouverts qui se touchent en une même valeur (]a ; b[ ∪
+ * ]b ; c[) deviennent ]a ; c[ privé de b — l'écriture de `domainToLatex`.
+ */
+function mergedAtExcludedPoints(domain: IntervalSet): IntervalSet {
+	const intervals: IntervalSet['intervals'][number][] = [];
+	const excluded = [...domain.excludedPoints];
+	for (const interval of domain.intervals) {
+		const previous = intervals[intervals.length - 1];
+		const meeting =
+			previous !== undefined &&
+			previous.upper.type === 'open' &&
+			interval.lower.type === 'open' &&
+			previous.upper.value.type !== 'infinity' &&
+			near(valueOf(previous.upper.value) ?? NaN, valueOf(interval.lower.value) ?? NaN);
+		if (meeting) {
+			excluded.push({ kind: 'excluded_point', value: previous.upper.value });
+			intervals[intervals.length - 1] = { ...previous, upper: interval.upper };
+		} else {
+			intervals.push(interval);
+		}
+	}
+	return { ...domain, intervals, excludedPoints: excluded };
+}
+
+/**
+ * Les arrondis montrés : deux décimales, deux chiffres significatifs pour
+ * |v| < 1 (jamais « α ≈ 0 ») ; tant que deux arrondis se confondent, une
+ * décimale de plus pour tous (« 1,260 » et « 1,261 »).
+ */
+function roundedApart(values: readonly number[]): string[] {
+	const base = values.map((v) =>
+		Math.abs(v) < 1 && v !== 0
+			? Math.max(DECIMALS, Math.ceil(-Math.log10(Math.abs(v))) + 1)
+			: DECIMALS
+	);
+	for (let extra = 0; ; extra++) {
+		const written = values.map((v, i) => v.toFixed(Math.min(base[i] + extra, MAX_DECIMALS)));
+		if (new Set(written).size === written.length || base.every((d) => d + extra >= MAX_DECIMALS)) {
+			return written;
+		}
+	}
 }
 
 /** « a », « a et b », « a, b et c ». */

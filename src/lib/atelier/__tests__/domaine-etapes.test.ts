@@ -219,6 +219,37 @@ describe('.domaine : valeur interdite connue seulement en décimal (Q3)', () => 
 		}
 	);
 
+	/** ℝ privé de valeurs écrites en décimal (domaine du moteur imposé). */
+	function excluding(...values: string[]): Domain {
+		return set([[null, false, null, false]], values);
+	}
+
+	it.each([
+		// |v| < 1 : deux chiffres significatifs, jamais « α ≈ 0 »
+		[['0.0464158883'], '\\alpha \\approx 0.046'],
+		[['0.0004641588'], '\\alpha \\approx 0.00046'],
+		[['-0.0464158883'], '\\alpha \\approx -0.046'],
+		[['0.7937005259'], '\\alpha \\approx 0.79'],
+		// Deux arrondis égaux : on ajoute des décimales jusqu'à les distinguer
+		[['1.2599210498', '1.2612345678'], '\\alpha \\approx 1.260 \\text{ et } \\beta \\approx 1.261']
+	])('arrondi de %j : %s', (values, written) => {
+		const line = domainLine(node('1/x'), 'x', excluding(...values));
+		expect(line?.latex).toContain(written);
+	});
+
+	it('`.domaine \\frac{1}{x^3-0.0001}` : α ≈ 0,046', () => {
+		const entry = lastEntry('.domaine \\frac{1}{x^3-0.0001}');
+		expect(entry.text).toBe('D = ℝ \\ {α} avec α ≈ 0,046');
+	});
+
+	it('texte et LaTeX disent le même ensemble : `\\sqrt{x}+\\frac{1}{x^3-2}`', () => {
+		const entry = lastEntry('.domaine \\sqrt{x}+\\frac{1}{x^3-2}');
+		expect(entry.latex).toBe(
+			'D = [0 ; +\\infty[ \\setminus \\left\\{\\alpha\\right\\} \\text{ avec } \\alpha \\approx 1{,}26'
+		);
+		expect(entry.text).toBe('D = [0 ; +∞[ \\ {α} avec α ≈ 1,26');
+	});
+
 	it('deux valeurs approchées : α < β, dans l’ordre', () => {
 		const line = domainLine(node('1/((x^3-2)(x^3+2))'), 'x');
 		expect(line?.latex).toBe(
@@ -287,6 +318,43 @@ describe('garde : étapes et moteur comparés par valeur', () => {
 		} as Domain;
 		expect(sameDomainByValue(tan, { kind: 'universal' })).toBe(false);
 		expect(sameDomainByValue(tan, tan)).toBe(true);
+	});
+
+	// Revue : la borne était sondée par `compile` (√2 un ulp au-dessus de ce
+	// que lit `containsValue`) : [√2 et ]√2 passaient pour égaux
+	it.each(['sqrt(2)', 'ln(3)', '-sqrt(2)'])(
+		'[%s ; +∞[ contre la même borne ouverte : désaccord',
+		(bound) => {
+			const from = (closed: boolean): Domain =>
+				({
+					kind: 'interval_set',
+					intervals: [
+						{
+							kind: 'interval',
+							lower: { value: node(bound), type: closed ? 'closed' : 'open' },
+							upper: { value: infinity('positive'), type: 'open' }
+						}
+					],
+					excludedPoints: []
+				}) as Domain;
+			expect(sameDomainByValue(from(true), from(false))).toBe(false);
+			expect(sameDomainByValue(from(true), from(true))).toBe(true);
+		}
+	);
+
+	it('ℝ \\ {√2} contre ℝ : désaccord', () => {
+		const without: Domain = {
+			kind: 'interval_set',
+			intervals: [
+				{
+					kind: 'interval',
+					lower: { value: infinity('negative'), type: 'open' },
+					upper: { value: infinity('positive'), type: 'open' }
+				}
+			],
+			excludedPoints: [{ kind: 'excluded_point', value: node('sqrt(2)') }]
+		} as Domain;
+		expect(sameDomainByValue(without, { kind: 'universal' })).toBe(false);
 	});
 
 	it('une borne littérale (non évaluable) : pas d’accord possible', () => {

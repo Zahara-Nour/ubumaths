@@ -13,6 +13,17 @@
  * s'accordent en tous ces points sont égales : c'est seulement là qu'elles
  * peuvent changer d'avis.
  *
+ * ⚠️ Les points sondés sont calculés avec les MÊMES évaluateurs que
+ * `containsValue` : `endpointToNumber` pour les bornes et les points exclus,
+ * `evaluateNodeToApproximatedNumber` pour une exclusion périodique. Avec
+ * `compile`, √2 tombait un ulp au-dessus de la borne que lit `containsValue` :
+ * [√2 ; +∞[ et ]√2 ; +∞[ passaient pour égaux (revue du 2026-10-13).
+ *
+ * Limite : une exclusion périodique n'est sondée que sur ±4 périodes autour
+ * de sa valeur de base (plus la grille). Deux familles qui coïncident là et
+ * diffèrent plus loin passeraient pour égales ; le moteur ne produit que des
+ * familles a + kp, qu'un tel échantillon départage.
+ *
  * Dans le doute — une borne littérale (`]a ; +∞[`), un domaine par
  * conditions —, `false` : pas d'étapes.
  *
@@ -22,7 +33,8 @@
 import type { MathNode } from '$lib/mathAST/types';
 import type { Domain } from '$lib/mathAST/domain/types';
 import { containsValue } from '$lib/mathAST/domain/algebra';
-import { compile } from '$lib/mathAST/eval/compile';
+import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
+import { endpointToNumber } from '$lib/math/intervals/endpoint';
 
 // =============================================================================
 // Constantes
@@ -71,8 +83,8 @@ function criticalPoints(domain: Domain): (number | null)[] {
 		case 'condition_domain':
 			return [null];
 		case 'periodic_exclusion': {
-			const base = valueOf(domain.basePoint);
-			const period = valueOf(domain.period);
+			const base = periodicValueOf(domain.basePoint);
+			const period = periodicValueOf(domain.period);
 			if (base === null || period === null || period === 0) return [null];
 			const points: number[] = [];
 			for (let k = -PERIODS; k <= PERIODS; k++) points.push(base + k * period);
@@ -83,24 +95,30 @@ function criticalPoints(domain: Domain): (number | null)[] {
 			for (const interval of domain.intervals) {
 				points.push(boundOf(interval.lower.value), boundOf(interval.upper.value));
 			}
-			for (const excluded of domain.excludedPoints) points.push(valueOf(excluded.value));
+			for (const excluded of domain.excludedPoints) points.push(endpointOf(excluded.value));
 			// Les infinis ne sont pas des points à sonder
 			return points.filter((p) => p === null || Number.isFinite(p));
 		}
 	}
 }
 
-/** Une borne : ±∞ comprises (écartées ensuite), sinon une valeur. */
+/** Une borne : ±∞ comprises (écartées ensuite), sinon sa valeur. */
 function boundOf(node: MathNode): number | null {
 	if (node.type === 'infinity') return node.sign === 'positive' ? Infinity : -Infinity;
-	return valueOf(node);
+	return endpointOf(node);
 }
 
-/** La valeur d'un nombre écrit (`2`, `\frac{\pi}{2}`), `null` sinon. */
-function valueOf(node: MathNode): number | null {
+/** Une borne ou un point exclu, lu comme le lit `containsValue` ; `null` sinon. */
+function endpointOf(node: MathNode): number | null {
+	const value = endpointToNumber(node);
+	return Number.isFinite(value) ? value : null;
+}
+
+/** Une valeur d'exclusion périodique, lue comme la lit `containsValue`. */
+function periodicValueOf(node: MathNode): number | null {
 	try {
-		const value = compile(node)({});
-		return typeof value === 'number' && Number.isFinite(value) ? value : null;
+		const value = evaluateNodeToApproximatedNumber(node);
+		return Number.isFinite(value) ? value : null;
 	} catch {
 		return null;
 	}

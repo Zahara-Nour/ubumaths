@@ -702,15 +702,19 @@ du moteur (`DOMAIN_UNRESOLVED` : `\sqrt{\sin x}`) sortent plus haut, inchangés,
 `.domaine f` d'une fonction à ensemble garde sa phrase (décision a).
 
 - **Valeur connue seulement en décimal** (plus de 6 décimales, même critère que le pipeline :
-  `\frac{1}{x^3-2}`) : pas d'étapes, et la valeur est NOMMÉE dans l'ensemble puis arrondie à
-  deux décimales — `D = ℝ \ {α} avec α ≈ 1,26` (lettres α, β, γ, δ par valeurs croissantes ;
-  au-delà de quatre, ou hors réunion d'intervalles, la ligne garde le texte du moteur). Choix
-  fait en l'absence de David, qui avait écarté « x ≠ ≈ 1,26 ».
+  `\frac{1}{x^3-2}`) : pas d'étapes, et la valeur est NOMMÉE dans l'ensemble puis arrondie —
+  `D = ℝ \ {α} avec α ≈ 1,26` (écriture validée par David ; lettres α, β, γ, δ par valeurs
+  croissantes ; au-delà de quatre, ou hors réunion d'intervalles, la ligne garde le texte du
+  moteur). Deux décimales, deux chiffres significatifs sous 1 (`α ≈ 0,046`, jamais « α ≈ 0 ») ;
+  deux arrondis égaux reçoivent des décimales jusqu'à se distinguer (`1,260` et `1,261`).
+  `]0 ; α[ ∪ ]α ; +∞[` est réécrit `]0 ; +∞[ \ {α}` avant les deux écrivains : texte et LaTeX
+  disent le même ensemble.
 - **« Comment ? »** : `generatePedagogicalDomainSteps` (niveau `lycee`, détaillé + résumé),
   montré seulement si l'ensemble que conclut la dernière étape est, **par valeur**, le domaine du
   moteur (`sameDomainByValue` : appartenance testée en chaque borne, chaque point exclu, leurs
-  voisins à 10⁻⁶ près et une grille ; une valeur non évaluable, un domaine par conditions →
-  désaccord). Toute exception (`PedagogicalDomainNotImplemented`) → pas d'étapes, la formule
+  voisins à 10⁻⁶ près et une grille, valeurs lues par les évaluateurs mêmes de `containsValue`
+  — avec `compile`, [√2 et ]√2 passaient pour égaux ; une exclusion périodique est sondée sur
+  ±4 périodes ; une valeur non évaluable, un domaine par conditions → désaccord). Toute exception (`PedagogicalDomainNotImplemented`) → pas d'étapes, la formule
   reste. Quand les étapes sont montrées, la réponse s'écrit avec l'ensemble qu'elles concluent :
   les deux écritures sont identiques. Branché aussi sans la résolution rédigée d'une contrainte
   (`\sqrt{x^2-5x+6}`, Q4) et pour le domaine universel (Q6). Tests :
