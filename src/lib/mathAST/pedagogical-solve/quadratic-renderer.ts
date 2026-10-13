@@ -19,7 +19,7 @@ import type {
 	RenderedStep,
 	SchoolLevel
 } from '../common/step-renderer-base';
-import { toLatex } from '../latex-generator';
+import { toLatex, RELATION_MAP } from '../latex-generator';
 import { computeNumericValue } from '../solve/numeric-value';
 import { constantSign } from '../common/constant-sign';
 import type { MathNode } from '../types';
@@ -46,6 +46,11 @@ function fmt(node: MathNode): string {
  */
 function isInequalityStep(step: EquationStep): boolean {
 	return step.before.type === 'relation' && step.before.relation !== '=';
+}
+
+/** L'opérateur de l'étape en LaTeX (`\geqslant`…), pour la prose entre `$…$`. */
+function relationLatex(step: EquationStep): string {
+	return step.before.type === 'relation' ? RELATION_MAP[step.before.relation] : '=';
 }
 
 /**
@@ -90,6 +95,43 @@ function paren(node: MathNode): string {
 	return /^\d+(?:[.,]\d+)?$/.test(latex) ? latex : `\\left(${latex}\\right)`;
 }
 
+/**
+ * Explication de `isolate-square`. Une équation garde la formule générale ;
+ * une inéquation nomme le diviseur et dit si le sens est conservé ou retourné,
+ * comme le premier degré (`divideExplanation` de `linear-renderer.ts`).
+ *
+ * ⚠️ Elle disait « on obtient x² = −c / a » même pour `2x^2 < 2` : un `=` que
+ * l'élève ne doit pas écrire.
+ */
+function isolateSquareExplanation(op: EquationOperation, step: EquationStep): string {
+	const generic = 'En divisant par a et en transposant, on obtient x² = −c / a.';
+	if (op.kind !== 'isolate-square' || !isInequalityStep(step) || op.divisor === undefined) {
+		return generic;
+	}
+	const result = `$${fmt(step.after)}$`;
+	const divisor = `$${fmt(op.divisor)}$`;
+	const divisorValue = computeNumericValue(op.divisor);
+	const square = `$${variableOf(step)}^2$`;
+	// Pas de terme constant à transposer quand le second membre isolé est nul.
+	const transpose = computeNumericValue(op.rhs) !== 0;
+
+	if (divisorValue === 1) {
+		return transpose
+			? `On transpose le terme constant : ${result}.`
+			: `On lit directement ${result}.`;
+	}
+	const divide = `divise les deux membres par ${divisor} pour isoler ${square}`;
+	const opening = transpose ? `On transpose le terme constant, puis on ${divide}` : `On ${divide}`;
+	// ⚠️ `≠` n'a pas de sens à retourner : diviser par un nombre non nul le garde.
+	if (step.before.type === 'relation' && step.before.relation === '!=') {
+		return `${opening}. ${divisor} n’est pas nul, donc la relation $\\neq$ est préservée : ${result}.`;
+	}
+	if (divisorValue !== null && divisorValue < 0) {
+		return `${opening}. Comme ${divisor} est négatif, l’opérateur de l’inéquation est retourné (changement de sens : < devient >, ≤ devient ≥, etc.) : ${result}.`;
+	}
+	return `${opening}. ${divisor} est positif, donc l’inéquation est préservée : ${result}.`;
+}
+
 /** Pick the right discriminant-comparison symbol for the supérieur narrative. */
 function discriminantSymbol(numericValue: number | undefined): '>' | '=' | '<' {
 	if (numericValue === undefined || numericValue === null) return '>';
@@ -113,7 +155,7 @@ const TITLES: Record<QuadraticSchoolLevel, Partial<Record<EquationOperation['kin
 		},
 		standardize: (_op, step) =>
 			isInequalityStep(step)
-				? 'On met l’inéquation sous la forme $ax^2 + bx + c ⊻ 0$'
+				? `On met l’inéquation sous la forme $ax^2 + bx + c ${relationLatex(step)} 0$`
 				: 'On met l’équation sous la forme $ax^2 + bx + c = 0$',
 		'identify-coefficients': () => 'On identifie les coefficients a, b et c',
 		'compute-discriminant': () => 'On calcule le discriminant Δ = b² − 4ac',
@@ -260,8 +302,10 @@ const EXPLANATIONS: Record<
 			isInequalityStep(step)
 				? 'Une inéquation du second degré s’écrit ax² + bx + c ⊻ 0 avec a ≠ 0 (où ⊻ ∈ $\\{<, >, \\leq, \\geq, \\neq\\}$). On calcule le discriminant pour déterminer les racines, puis on dresse le tableau de signes pour lire la solution.'
 				: 'Une équation du second degré s’écrit ax² + bx + c = 0 avec a ≠ 0. On va calculer le discriminant pour déterminer le nombre de solutions.',
-		standardize: () =>
-			'On déplace tous les termes dans le membre de gauche : f(x) − g(x) ⊻ 0. La nouvelle relation est équivalente à la précédente.',
+		standardize: (_op, step) =>
+			isInequalityStep(step)
+				? `On déplace tous les termes dans le membre de gauche : $f(x) - g(x) ${relationLatex(step)} 0$. La nouvelle inéquation est équivalente à la précédente.`
+				: 'On déplace tous les termes dans le membre de gauche : $f(x) - g(x) = 0$. La nouvelle équation est équivalente à la précédente.',
 		'identify-coefficients': () =>
 			'a est le coefficient de x², b celui de x, c le terme constant. Ils servent ensuite au calcul du discriminant.',
 		'compute-discriminant': () =>
@@ -291,13 +335,17 @@ const EXPLANATIONS: Record<
 		'no-real-solution': () => 'Dans ℝ, l’équation n’admet aucune solution. On note S = ∅.',
 		'factor-gcd': () =>
 			'Quand les coefficients ont un facteur entier commun, on divise les deux membres par ce PGCD pour simplifier les calculs ; les solutions de l’équation simplifiée sont identiques à celles de l’équation originale.',
-		'recognize-no-linear-term': () =>
-			'Quand b = 0, l’équation se réduit à ax² + c = 0 : on isole x² et on extrait la racine carrée plutôt que d’utiliser la formule générale.',
-		'recognize-no-constant-term': () =>
-			'Quand c = 0, x est facteur commun : l’équation devient x(ax + b) = 0 et on applique la propriété du produit nul.',
+		'recognize-no-linear-term': (_op, step) =>
+			isInequalityStep(step)
+				? `Quand $b = 0$, l’inéquation s’écrit $ax^2 + c ${relationLatex(step)} 0$ : on isole $x^2$, puis on conclut sans tableau de signes.`
+				: 'Quand b = 0, l’équation se réduit à ax² + c = 0 : on isole x² et on extrait la racine carrée plutôt que d’utiliser la formule générale.',
+		'recognize-no-constant-term': (_op, step) =>
+			isInequalityStep(step)
+				? `Quand $c = 0$, $x$ est facteur commun : l’inéquation devient $x(ax + b) ${relationLatex(step)} 0$, et on étudie le signe du produit dans un tableau.`
+				: 'Quand c = 0, x est facteur commun : l’équation devient x(ax + b) = 0 et on applique la propriété du produit nul.',
 		'recognize-factored': () =>
 			'L’équation est déjà un produit de facteurs égal à zéro : on applique directement la propriété du produit nul.',
-		'isolate-square': () => 'En divisant par a et en transposant, on obtient x² = −c / a.',
+		'isolate-square': isolateSquareExplanation,
 		'extract-square-root': () =>
 			'Si le second membre est positif, x = ±√(rhs) ; s’il est nul, x = 0 ; s’il est négatif, pas de solution réelle.',
 		'factor-common-x': () => 'On met x en facteur : ax² + bx = x(ax + b).',
@@ -334,8 +382,14 @@ const EXPLANATIONS: Record<
 		'simplify-solutions': () => 'Réduction canonique.',
 		'read-solutions': () => 'Ensemble solution.',
 		'no-real-solution': () => 'Δ < 0 ⇒ S = ∅ dans ℝ.',
-		'recognize-no-linear-term': () => 'ax² + c = 0 ⇒ x² = −c/a.',
-		'recognize-no-constant-term': () => 'ax² + bx = 0 ⇒ x(ax + b) = 0.',
+		'recognize-no-linear-term': (_op, step) =>
+			isInequalityStep(step)
+				? `$ax^2 + c ${relationLatex(step)} 0$ : on isole $x^2$.`
+				: 'ax² + c = 0 ⇒ x² = −c/a.',
+		'recognize-no-constant-term': (_op, step) =>
+			isInequalityStep(step)
+				? `$ax^2 + bx ${relationLatex(step)} 0$ : on factorise par $x$.`
+				: 'ax² + bx = 0 ⇒ x(ax + b) = 0.',
 		'recognize-factored': () => 'Produit de facteurs nul.',
 		'zero-product': () => 'A · B = 0 ⇒ A = 0 ∨ B = 0.',
 		'quadratic-sign-table': () => 'Signe(P) = signe(a) à l’extérieur des racines.',
@@ -535,8 +589,10 @@ function alignedTransformation(step: EquationStep): string {
 	// 2c b=0 fast path divides by `a < 0`), the after-line uses the flipped
 	// operator, while the before-line keeps the original. For non-flip steps,
 	// both relations are equal and the rendering is unchanged.
-	const relBefore = step.before.type === 'relation' ? step.before.relation : '=';
-	const relAfter = step.after.type === 'relation' ? step.after.relation : '=';
+	// ⚠️ L'opérateur passe par `RELATION_MAP`, comme dans `toLatex` : brut, il
+	// s'écrivait `&>=` au lieu de `\geqslant`.
+	const relBefore = step.before.type === 'relation' ? RELATION_MAP[step.before.relation] : '=';
+	const relAfter = step.after.type === 'relation' ? RELATION_MAP[step.after.relation] : '=';
 	const bL = step.before.type === 'relation' ? fmt(step.before.left) : fmt(step.before);
 	const bR = step.before.type === 'relation' ? fmt(step.before.right) : '';
 	const aL = step.after.type === 'relation' ? fmt(step.after.left) : fmt(step.after);

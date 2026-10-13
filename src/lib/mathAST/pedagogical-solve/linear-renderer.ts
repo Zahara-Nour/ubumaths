@@ -18,7 +18,7 @@ import type {
 	RenderedStep,
 	SchoolLevel
 } from '../common/step-renderer-base';
-import { toLatex } from '../latex-generator';
+import { toLatex, RELATION_MAP } from '../latex-generator';
 import { toCustom } from '../custom-generator';
 import type { MathNode } from '../types';
 import type { EquationStep, EquationOperation, LinearSchoolLevel } from './types';
@@ -226,6 +226,19 @@ function variableOf(step: EquationStep): string {
 }
 
 /**
+ * ⚠️ **`≠` n'a pas de sens à retourner** : diviser ou multiplier par un nombre
+ * non nul le garde. Sans cette branche, `-3x + 1 ≠ 7` tombait dans « $-3$ est
+ * positif, donc l'inéquation est préservée » — faux deux fois.
+ */
+function isNotEqualStep(step: EquationStep): boolean {
+	return step.before.type === 'relation' && step.before.relation === '!=';
+}
+
+function notEqualPreserved(operand: string): string {
+	return `${operand} n'est pas nul, donc la relation ${math('\\neq')} est préservée.`;
+}
+
+/**
  * Explanation for `divide-both-sides` and `multiply-both-sides` adapted to
  * the operator kind (equation vs inequality) and the flip flag.
  *
@@ -236,6 +249,9 @@ function variableOf(step: EquationStep): string {
 function divideExplanation(op: EquationOperation, step: EquationStep): string {
 	if (op.kind !== 'divide-both-sides') return '';
 	const operand = operandStr(op);
+	if (isNotEqualStep(step)) {
+		return `On divise les deux membres par ${operand} pour isoler ${variableOf(step)}. ${notEqualPreserved(operand)}`;
+	}
 	if (isInequalityStep(step)) {
 		if (op.flipOperator) {
 			return `On divise les deux membres par ${operand} pour isoler ${variableOf(step)}. Comme ${operand} est négatif, l'opérateur de l'inéquation est retourné (changement de sens : < devient >, ≤ devient ≥, etc.).`;
@@ -248,6 +264,9 @@ function divideExplanation(op: EquationOperation, step: EquationStep): string {
 function multiplyExplanation(op: EquationOperation, step: EquationStep): string {
 	if (op.kind !== 'multiply-both-sides') return '';
 	const operand = operandStr(op);
+	if (isNotEqualStep(step)) {
+		return `On multiplie les deux membres par ${operand}. ${notEqualPreserved(operand)}`;
+	}
 	if (isInequalityStep(step)) {
 		if (op.flipOperator) {
 			return `On multiplie les deux membres par ${operand}. Comme ${operand} est négatif, l'opérateur de l'inéquation est retourné (changement de sens).`;
@@ -420,32 +439,6 @@ function formatExpressionLatex(step: EquationStep): string {
  * for info-only steps (no transformation to display). Exposed for the demo
  * which prints each line on its own terminal row.
  */
-/**
- * Map a `RelationNode.relation` string to its LaTeX equivalent for use inside
- * an aligned block (where `>=`/`<=`/`!=` are not valid LaTeX tokens).
- *
- * Scope: only the 5 operators that the linear inequality pipeline emits
- * (`<`, `>`, `<=`, `>=`, `!=`), plus `=` for the equation pipeline. The
- * extended `RelationType` (`≡`, `≢`, `≈`, `⟹`, …) is not produced by either
- * pipeline; the `default` arm passes such tokens through unchanged.
- */
-function relToLatex(rel: string): string {
-	switch (rel) {
-		case '<=':
-			return '\\leq';
-		case '>=':
-			return '\\geq';
-		case '!=':
-			return '\\neq';
-		case '<':
-		case '>':
-		case '=':
-			return rel;
-		default:
-			return rel;
-	}
-}
-
 export function formatTransformationLines(step: EquationStep): readonly string[] | null {
 	const op = step.operation;
 	// `relBefore` is used on the upper line of the aligned block ("operation
@@ -455,8 +448,10 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 	// (before line, original operator) on the upper line and `x > -3`
 	// (after line, flipped operator) on the lower line. For all
 	// non-flip cases (equations, positive divisor), they are equal.
-	const relBefore = step.before.type === 'relation' ? relToLatex(step.before.relation) : '=';
-	const relAfter = step.after.type === 'relation' ? relToLatex(step.after.relation) : '=';
+	// ⚠️ `RELATION_MAP`, celui de `toLatex` : `\leqslant`/`\geqslant` comme les
+	// lignes simples (l'ancien `relToLatex` écrivait `\leq`/`\geq`).
+	const relBefore = step.before.type === 'relation' ? RELATION_MAP[step.before.relation] : '=';
+	const relAfter = step.after.type === 'relation' ? RELATION_MAP[step.after.relation] : '=';
 	const bL = step.before.type === 'relation' ? fmt(step.before.left) : fmt(step.before);
 	const bR = step.before.type === 'relation' ? fmt(step.before.right) : '';
 	const aL = step.after.type === 'relation' ? fmt(step.after.left) : fmt(step.after);

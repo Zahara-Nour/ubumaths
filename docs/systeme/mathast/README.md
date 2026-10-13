@@ -672,6 +672,18 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   rationnelle) ; granularité par les tables `STRATEGIES`, `STRATEGIES_QUADRATIC`,
   `STRATEGIES_RATIONAL`. `generateEquationSteps` relève le niveau insuffisant
   (`primaire` → `college` pour le 1er degré, jusqu'à `lycee` pour le 2nd).
+  **Une inéquation du 2nd degré garde son opérateur à chaque ligne** (2026-10-13) : la forme
+  standard s'écrit `2x^2 - 2 < 0`, pas `= 0` (`buildStandardizeStep` reprend l'opérateur de
+  départ), et les blocs alignés du rendu passent par `RELATION_MAP` (`\leqslant`, `\geqslant`,
+  comme `toLatex`) au lieu de l'opérateur brut `>=`. Tests :
+  `pedagogical-solve/__tests__/inequation-second-degre-relation.test.ts`. L'explication de
+  « On isole le carré » nomme alors le diviseur `a` (champ `divisor` de l'opération) et dit si le
+  sens est préservé ou retourné, comme le 1er degré ; une équation garde « x² = −c / a ». `≠` n'a
+  pas de sens à retourner : diviser ou multiplier par un nombre non nul le garde (« $-3$ n'est pas
+  nul, donc la relation $\neq$ est préservée », 1er et 2nd degré). Les textes de la forme standard
+  et de « b = 0 » / « c = 0 » écrivent la vraie relation (`$f(x) - g(x) \geqslant 0$`), plus de `⊻`. Le 1er
+  degré écrit aussi ses blocs alignés par `RELATION_MAP` (`\leqslant`/`\geqslant`, plus de
+  `\leq`/`\geq`) : `inequation-premier-degre-symboles.test.ts`. Typst les lit (`lt.eq.slant`).
 - **Dérivées et primitives finissent par « On simplifie ».** Les règles laissent le
   résultat brut (la méthode, qu'on garde visible) ; une dernière étape l'écrit avec
   `tidyTerms` (`tidy/terms.ts`). Dérivées : `withTidyStep`
