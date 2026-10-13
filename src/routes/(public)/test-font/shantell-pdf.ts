@@ -5,7 +5,7 @@
  * dans le système de fichiers virtuel), mais avec un compilateur Typst À PART :
  * le compilateur partagé de l'application (`$typst`) est un singleton dont les
  * polices sont fixées à sa création. Celui-ci charge en plus Shantell Sans (texte)
- * et Shantell Math (formules, police OpenType MATH construite par
+ * et Chiphre Math (formules, police OpenType MATH construite par
  * tools/shantell-math), sans rien changer aux PDF des fiches.
  */
 
@@ -52,7 +52,7 @@ const COMPILER_WASM_URL = `https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-
 const SHANTELL_FONT_URLS = [
 	'/fonts/shantell-typst/ShantellSans-Light.ttf',
 	'/fonts/shantell-typst/ShantellSans-Bold.ttf',
-	'/fonts/shantell-typst/ShantellMath.ttf'
+	'/fonts/shantell-typst/ChiphreMath.ttf'
 ];
 const STANDARD_TEXT_FONT = '#set text(font: "New Computer Modern"';
 
@@ -101,7 +101,7 @@ async function exerciseTypst(exercise: DemoExercise, fonts: PdfFontSet): Promise
 	if (fonts === 'standard') return typst;
 	return typst.replace(
 		STANDARD_TEXT_FONT,
-		'#show math.equation: set text(font: "Shantell Math")\n#set text(font: "Shantell Sans", weight: "light"'
+		'#show math.equation: set text(font: "Chiphre Math")\n#set text(font: "Shantell Sans", weight: "light"'
 	);
 }
 

@@ -168,7 +168,7 @@
 </script>
 
 <svelte:head>
-	<title>Test Police ShantellMath | Chiphre</title>
+	<title>Test Police Chiphre Math | Chiphre</title>
 	<style>
 		@font-face {
 			font-family: 'ShantellSans';
@@ -222,7 +222,7 @@
 </svelte:head>
 
 <div class="container mx-auto p-4">
-	<h1 class="mb-4 text-2xl font-bold">Test Police ShantellMath</h1>
+	<h1 class="mb-4 text-2xl font-bold">Test Police Chiphre Math</h1>
 
 	<!-- Direct font test without MathLive -->
 	<div class="mb-8 rounded-lg border-2 border-orange-300 bg-card p-4">
@@ -233,7 +233,7 @@
 		<div class="space-y-4">
 			<div class="rounded bg-card p-4">
 				<div class="mb-1 text-xs font-medium text-muted-foreground">
-					ShantellMath (fichier original)
+					ShantellMath (premier essai, fichier d'origine)
 				</div>
 				<div class="font-shantell text-3xl">
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
@@ -280,7 +280,7 @@
 					? 'bg-green-500 text-white'
 					: 'bg-secondary text-secondary-foreground hover:opacity-80'}"
 			>
-				{isSwitching && currentFont !== 'shantell' ? 'Chargement...' : 'ShantellMath'}
+				{isSwitching && currentFont !== 'shantell' ? 'Chargement...' : 'Chiphre Math'}
 			</button>
 			<button
 				onclick={() => handleSwitchFont('katex')}
@@ -295,7 +295,7 @@
 		</div>
 		<span class="text-sm text-muted-foreground">
 			Police active: <strong
-				>{currentFont === 'shantell' ? 'ShantellMath (manuscrite)' : 'KaTeX (standard)'}</strong
+				>{currentFont === 'shantell' ? 'Chiphre Math (manuscrite)' : 'KaTeX (standard)'}</strong
 			>
 		</span>
 		<span class="text-xs text-green-600"> Changement dynamique sans rechargement de page </span>
@@ -367,8 +367,8 @@
 				<h2 class="mb-2 text-xl font-semibold">Exercices de la base</h2>
 				<p class="mb-4 text-sm text-muted-foreground">
 					Trois exercices réels (énoncé et corrigé), copiés de la base le 2026-10-12. Le PDF est
-					compilé par Typst, comme les fiches, avec Shantell Sans pour le texte et Shantell Math
-					pour les formules ; « PDF standard » montre la même chose avec les polices habituelles.
+					compilé par Typst, comme les fiches, avec Shantell Sans pour le texte et Chiphre Math pour
+					les formules ; « PDF standard » montre la même chose avec les polices habituelles.
 				</p>
 
 				<div class="space-y-6">
@@ -407,7 +407,7 @@
 	{/if}
 
 	<div class="mt-8 rounded-lg bg-blue-50 p-4">
-		<h3 class="mb-2 font-semibold text-blue-800">À propos de ShantellMath</h3>
+		<h3 class="mb-2 font-semibold text-blue-800">À propos de Chiphre Math</h3>
 		<ul class="list-inside list-disc space-y-1 text-sm text-blue-700">
 			<li>Caractères A-Z, a-z, 0-9 remplacés par Shantell Sans (police manuscrite)</li>
 			<li>Symboles mathématiques avec effet "roughen" (petites perturbations)</li>

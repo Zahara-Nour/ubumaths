@@ -1,4 +1,6 @@
-# Shantell-Math
+# Chiphre Math (outils `shantell-math`)
+
+La police mathématique manuscrite de Chiphre s'appelle **Chiphre Math** (nommée le 2026-10-13). Elle est faite de glyphes de Shantell Sans et de dessins à sa main, calés sur les polices KaTeX, dont MathLive impose les noms de fichiers et de familles (`KaTeX_Main`…) : seul son nom public change. Le dossier garde son nom historique.
 
 Outils pour créer une version "handwritten" des polices KaTeX pour MathLive.
 
