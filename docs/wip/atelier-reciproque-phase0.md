@@ -99,3 +99,12 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
   [reciproque.md](../systeme/mathast/reciproque.md)) ; les 8 cas du tableau et les 4 refus testés,
   aller-retour numérique ; f(I) lue par les variations ET par le solveur, en accord. Écritures
   laissées au solveur : `x² − 4x + 1` sur [2 ; +∞[ → `√(4x + 12)/2 + 2`, `1/x²` → `√x/x`.
+- 2026-10-13 — **lot 2 MERGÉ (#1304)** : `computeReciprocal` (`src/lib/mathAST/reciprocal/`, doc
+  `docs/systeme/mathast/reciproque.md`) ; injectivité acceptée seulement si PROUVÉE (variations ou
+  solution unique) ; f(I) lu par variations et par le solveur ; `root(a, n)` désormais évalué.
+  Deux revues (62 cas vérifiés numériquement, aucune réciproque, borne ni bijectivité fausse).
+  Refus honnêtes restants : `1/x³` (Cardano imprécis), `1/x⁴`, `(x−2)⁴`, `|x|`, `ch x`.
+  Constat hors lot (déjà sur main) : un indice de racine négatif (`\sqrt[-3]{27}`) fige
+  l'évaluateur > 15 s → PR à part (garde `index < 1`). **Questions à David** : écritures du manuel
+  (`2 + √(x+3)` plutôt que `√(4x+12)/2 + 2`) ; intervalle suggéré = morceau monotone le plus à
+  droite ; paire `f(a) = f(b)` citée seulement si a, b entiers ; 3ᵉ étape « ensembles » (R4).
