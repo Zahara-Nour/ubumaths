@@ -36,6 +36,8 @@
  *   d'après le niveau de guidage de l'affectation (jamais tirée), valeurs
  *   d'après la graine de l'affectation (et de l'élève si elle est
  *   individualisée). Rien n'est lu dans `worksheet_instances`.
+ * - Fiche qui mélange ses exercices : `exercises` dans l'ordre de la copie
+ *   (`copyExerciseOrder`) et `shuffled: true`.
  */
 
 import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
@@ -53,6 +55,7 @@ import { getCorrectionVisibilityMap } from '$lib/server/worksheets/correction-vi
 import type { ExerciseResource } from '$lib/exercises/types';
 import {
 	assignmentCopyScope,
+	copyExerciseOrder,
 	resolveWorksheetExerciseCopy,
 	type ExerciseContentRow
 } from '$lib/worksheets/worksheet-copy';
@@ -234,7 +237,24 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		// Build exercises array
 		const exercises: StudentExerciseView[] = [];
 
-		for (const we of worksheetExercises ?? []) {
+		// Option « mélanger les exercices » : l'ordre de CETTE copie, tiré comme
+		// celui du PDF du prof (même fonction, même graine), sur les MÊMES lignes
+		// que lui — avant d'écarter les exercices orphelins, sinon la permutation
+		// de toute la section changerait. `null` : pas de mélange, l'ordre des
+		// positions comme avant.
+		const shuffledRows = copyExerciseOrder(
+			worksheetExercises ?? [],
+			sections ?? [],
+			copyScope,
+			worksheet.config
+		);
+		// Sections illisibles : tout tomberait hors section, avec une autre graine.
+		// Mieux vaut une erreur qu'un ordre faux ; sans mélange, elles restent facultatives.
+		if (sectionsError && shuffledRows) {
+			throw error(500, 'Erreur lors de la recuperation des exercices');
+		}
+
+		for (const we of shuffledRows ?? worksheetExercises ?? []) {
 			const exerciseData = getFirstOrSelf(we.exercise as unknown as ExerciseData | null);
 
 			if (!exerciseData) {
@@ -343,6 +363,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			show_corrections: assignment.show_corrections ?? false,
 			class_name: studentClass?.name || null,
 			read_only: readOnly,
+			...(shuffledRows ? { shuffled: true } : {}),
 			exercises,
 			sections: sectionViews
 		};

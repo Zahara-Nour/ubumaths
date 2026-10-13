@@ -1036,6 +1036,8 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	 * proposer.
 	 */
 	read_only: z.boolean(),
+	/** Ordre tiré (« mélanger les exercices ») : sans cette clé, le schéma la retire */
+	shuffled: z.boolean().optional(),
 	exercises: z.array(studentExerciseViewSchema),
 	/** Sections for grouping exercises */
 	sections: z.array(studentSectionViewSchema)

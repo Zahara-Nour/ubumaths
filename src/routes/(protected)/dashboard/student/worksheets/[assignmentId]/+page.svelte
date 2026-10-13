@@ -46,7 +46,13 @@
 	// Groupement et numérotation : `$lib/worksheets/exercise-numbering`, la même
 	// règle que le générateur PDF. Elle était réécrite ici, et une troisième
 	// copie avait déjà divergé — d'où le module partagé.
-	let displayGroups = $derived(groupExercisesForDisplay(exercises, sections));
+	// Fiche mélangée : l'ordre de la copie, servi par l'API, prime sur `position`
+	// (le même que dans le PDF).
+	let displayGroups = $derived(
+		groupExercisesForDisplay(exercises, sections, {
+			preserveExerciseOrder: worksheet.shuffled === true
+		})
+	);
 
 	// Ordre visuel, utilisé pour la numérotation et la navigation dans la modale.
 	let visualOrderExercises = $derived(

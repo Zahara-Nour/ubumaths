@@ -6,7 +6,8 @@
  * leur exercice) et le cœur `student-copy.ts`. Tous les chemins qui montrent
  * une copie passent ici : écran et PDF de l'élève, aperçu d'affectation,
  * corrigé du prof, aperçu et lot ZIP de la page de la fiche. Une même
- * affectation, un même élève : la même copie partout.
+ * affectation, un même élève : la même copie partout — valeurs, versions et,
+ * si la fiche mélange ses exercices, ordre (`copyExerciseOrder`).
  *
  * @module worksheets/worksheet-copy
  */
@@ -14,13 +15,17 @@
 import type { ContentLocale } from '$lib/types/locale';
 import type { Exercise, ExerciseVariation, SharedExerciseDefaults } from '$lib/exercises/types';
 import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
+import { createRandomSource, shuffled } from '$lib/utils/random';
 import {
+	asWorksheetConfig,
 	localizedText,
 	type InstanceData,
 	type InstanceSection,
 	type WorksheetWithRelations
 } from '$lib/types/worksheets';
+import { groupExercisesForDisplay, type NumberableSection } from './exercise-numbering';
 import {
+	copyOrderSeed,
 	copySeed,
 	resolveCopyExercise,
 	isGuidanceLevel,
@@ -72,6 +77,14 @@ export interface WorksheetExerciseCopyRow {
 	/** Version imposée par la fiche : prime sur le niveau */
 	variation_index: number | null;
 	exercise: ExerciseContentRow;
+}
+
+/** Ce qu'il faut d'un exercice de la fiche pour l'ordonner */
+export interface OrderableWorksheetExercise {
+	/** `worksheet_exercises.id` */
+	id: string;
+	position: number;
+	section_id?: string | null;
 }
 
 /**
@@ -176,6 +189,58 @@ export function worksheetExerciseSeed(worksheetExerciseId: string, scope: CopySc
 	});
 }
 
+/**
+ * La fiche mélange-t-elle les exercices de CETTE copie ? Option « mélanger
+ * les exercices » de la fiche, et seulement dans une affectation : hors
+ * affectation (page de la fiche, cahier ou cours publics, aperçu et lot ZIP
+ * de la fiche), l'ordre reste celui des positions, comme le niveau de
+ * guidage y reste le défaut (ADR 0023).
+ */
+export function shufflesExercises(config: unknown, scope: CopyScope): boolean {
+	return scope.assignmentId !== null && asWorksheetConfig(config).shuffle_exercises === true;
+}
+
+/**
+ * L'ordre des exercices de la copie, ou `null` : pas de mélange (ordre des
+ * positions, rien ne change).
+ *
+ * Mélangé : les groupes d'affichage de `groupExercisesForDisplay` (sections
+ * dans leur ordre, puis les exercices hors section — ou d'une section
+ * inconnue — à la fin) gardent leur place ; les exercices sont mélangés À
+ * L'INTÉRIEUR de chaque groupe, chacun avec sa graine (`copyOrderSeed`,
+ * même portée que les valeurs : la classe, ou l'élève si l'affectation est
+ * individualisée). Rend les lignes reçues, réordonnées.
+ */
+export function copyExerciseOrder<E extends OrderableWorksheetExercise>(
+	exercises: readonly E[],
+	sections: readonly NumberableSection[],
+	scope: CopyScope,
+	config: unknown
+): E[] | null {
+	if (!shufflesExercises(config, scope)) return null;
+	// Point de départ indépendant de l'ordre de la base : position, puis identifiant
+	const start = [...exercises].sort(
+		(a, b) => a.position - b.position || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+	);
+	return groupExercisesForDisplay(start, sections, { preserveExerciseOrder: true }).flatMap(
+		(group) => {
+			const random = createRandomSource(
+				copyOrderSeed({
+					assignmentId: scope.assignmentId,
+					worksheetId: scope.worksheetId,
+					studentId: scope.studentId,
+					individualized: scope.individualized,
+					sectionId: group.section?.id ?? null
+				})
+			);
+			return shuffled(
+				group.exercises.map(({ exercise }) => exercise),
+				random
+			);
+		}
+	);
+}
+
 /** Les exercices de la fiche, dans l'ordre */
 function sortedWorksheetExercises(worksheet: WorksheetForCopy) {
 	const exercises = worksheet.exercises ?? worksheet.worksheet_exercises ?? [];
@@ -186,11 +251,15 @@ function sortedWorksheetExercises(worksheet: WorksheetForCopy) {
  * La copie entière d'une fiche, prête pour le PDF (`generateWorksheetTypst`) :
  * chaque exercice par `resolveWorksheetExerciseCopy`, avec son titre, ses
  * points, sa section et la consigne du prof, et les sections de la fiche.
+ * Fiche qui mélange ses exercices : `exercise_order` (indices dans
+ * `exercises`) porte l'ordre de la copie ; absent sinon.
  */
 export function buildWorksheetCopy(worksheet: WorksheetForCopy, scope: CopyScope): InstanceData {
 	const locale = scope.locale ?? 'fr';
+	const worksheetExercises = sortedWorksheetExercises(worksheet);
+	const worksheetSections = worksheet.sections ?? worksheet.worksheet_sections ?? [];
 
-	const exercises = sortedWorksheetExercises(worksheet).map((we) => {
+	const exercises = worksheetExercises.map((we) => {
 		const copy = we.exercise
 			? resolveWorksheetExerciseCopy(
 					{ id: we.id, variation_index: we.variation_index ?? null, exercise: we.exercise },
@@ -223,7 +292,7 @@ export function buildWorksheetCopy(worksheet: WorksheetForCopy, scope: CopyScope
 	});
 
 	// Les sections, pour que le PDF groupe les exercices comme la fiche
-	const sections: InstanceSection[] = (worksheet.sections ?? worksheet.worksheet_sections ?? [])
+	const sections: InstanceSection[] = worksheetSections
 		.slice()
 		.sort((a, b) => a.position - b.position)
 		.map((section) => ({
@@ -238,7 +307,10 @@ export function buildWorksheetCopy(worksheet: WorksheetForCopy, scope: CopyScope
 			position: section.position
 		}));
 
-	return { exercises, sections: sections.length > 0 ? sections : undefined };
+	const copy: InstanceData = { exercises, sections: sections.length > 0 ? sections : undefined };
+	const order = copyExerciseOrder(worksheetExercises, worksheetSections, scope, worksheet.config);
+	if (order) copy.exercise_order = order.map((we) => worksheetExercises.indexOf(we));
+	return copy;
 }
 
 /**

@@ -25,26 +25,30 @@ export function documentFromStudentView(view: StudentWorksheetView): WorksheetDo
 		locale,
 		description: view.description,
 		assignment: { instructions: view.instructions },
-		// La copie de l'élève n'est jamais tirée au sort (ADR 0023) : ordre des positions
-		exercises: placeExercises(view.exercises ?? [], sections, numberingStyle, false).map(
-			({ exercise, number, sectionId }) => ({
-				number,
-				sectionId,
-				title: exercise.title ?? null,
-				statement: exercise.statement,
-				correction: exercise.correction_visible
-					? {
-							solution: writtenOrNull(exercise.correction),
-							answers: writtenOrNull(exercise.answers)
-						}
-					: null,
-				points: exercise.points ?? null,
-				instructions: exercise.custom_instructions ?? null,
-				essential: exercise.is_essential ?? false,
-				genericFunctions: exercise.generic_functions ?? null,
-				capitalPairs: exercise.capital_pairs
-			})
-		),
+		// Ordre tiré (« mélanger les exercices ») : celui de la copie, déjà appliqué
+		// par le serveur ; sinon, ordre des positions
+		exercises: placeExercises(
+			view.exercises ?? [],
+			sections,
+			numberingStyle,
+			view.shuffled === true
+		).map(({ exercise, number, sectionId }) => ({
+			number,
+			sectionId,
+			title: exercise.title ?? null,
+			statement: exercise.statement,
+			correction: exercise.correction_visible
+				? {
+						solution: writtenOrNull(exercise.correction),
+						answers: writtenOrNull(exercise.answers)
+					}
+				: null,
+			points: exercise.points ?? null,
+			instructions: exercise.custom_instructions ?? null,
+			essential: exercise.is_essential ?? false,
+			genericFunctions: exercise.generic_functions ?? null,
+			capitalPairs: exercise.capital_pairs
+		})),
 		sections: sections.map(({ id, title, instructions }) => ({ id, title, instructions })),
 		display: {
 			// Absent (vue d'avant le lot 1) : affichés, comme avant

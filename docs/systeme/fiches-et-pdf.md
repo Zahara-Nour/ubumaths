@@ -189,6 +189,23 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
 - **Valeurs tirées** (exercices à variables) : `copySeed` — affectation (fiche hors affectation), +
   élève si l'affectation est individualisée (`individualized`, NULL = oui), + `worksheet_exercises.id`
   (réordonner la fiche ne change rien). Non individualisée : même copie pour toute la classe.
+- **Ordre** (option de fiche « mélanger les exercices », `config.shuffle_exercises` ; décision de
+  David du 2026-10-13) : `copyExerciseOrder` (`worksheet-copy.ts`), **seulement dans une
+  affectation**. Même portée que les valeurs (la classe, ou l'élève si l'affectation est
+  individualisée), mais une **graine dédiée par section**, `copyOrderSeed` (`…:ordre:<section>`
+  au lieu de `…:exercice:<id>`) : l'ordre ne se corrèle pas aux valeurs, mélanger ne change ni les
+  valeurs ni les versions, et ajouter un exercice à une section ne rebat pas les autres. Mélange **à
+  l'intérieur** de chaque groupe d'affichage (sections dans leur ordre, puis les exercices hors
+  section, eux aussi mélangés entre eux, toujours après) ; numérotation continue dans l'ordre
+  affiché. La copie du prof le porte dans `exercise_order` (indices dans `exercises`, absent sans
+  mélange : empreinte identique) ; l'API élève et l'aperçu d'affectation servent `exercises` dans
+  l'ordre de la copie avec `shuffled: true` (ordre tiré sur toutes les lignes de la fiche, AVANT
+  d'écarter un exercice orphelin, comme la copie du prof ; sections illisibles sur une fiche mélangée
+  → 500 plutôt qu'un ordre faux), que suivent l'écran de l'élève
+  (`groupExercisesForDisplay(…, { preserveExerciseOrder })`) et son PDF (`documentFromStudentView`).
+  Hors affectation (page de la fiche, aperçu, lot ZIP, cahier ou cours publics) : ordre des
+  positions. Réaffecter → autre tirage. `shuffle_within_sections` n'est lu par aucun chemin
+  vivant (voir Écarts connus).
 - `resolveCopyExercise` produit l'exercice ; `src/lib/worksheets/worksheet-copy.ts` l'applique à la
   fiche entière et lit le niveau (inconnu → guidé). Génération en échec : le texte brut de la MÊME
   version.
@@ -205,8 +222,9 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
 - Le réglage par exercice « Mode de variante » (`variant_mode`) est retiré de l'interface et n'est
   plus lu par les chemins vivants.
 
-Tests : `src/lib/worksheets/__tests__/student-copy.test.ts`, `worksheet-copy.test.ts`, `copie.test.ts`
-des trois routes, `PdfPreview-copie.svelte.test.ts`, `tests/integration/worksheet-assignment-guidance-level.test.ts`.
+Tests : `src/lib/worksheets/__tests__/student-copy.test.ts`, `worksheet-copy.test.ts`,
+`worksheet-copy-ordre.test.ts` (mélange), `copie.test.ts` des trois routes, `ordre.test.ts` de
+l'aperçu d'affectation (API élève et aperçu), `ordre-melange.svelte.test.ts` (écran de l'élève), `PdfPreview-copie.svelte.test.ts`, `tests/integration/worksheet-assignment-guidance-level.test.ts`.
 
 ## La production PDF
 
@@ -249,8 +267,9 @@ aussi dans le `points-badge` du prof sans gabarit, qui reçoit le libellé) masq
 et Réponses quand il n'y a ni réponses ni corrigé), opérateurs à limites (`MATH_LIMITS_SETUP`, aussi
 dans le setup du prof sans gabarit, dont `lang` suit la fiche). L'API élève (et celle d'aperçu de
 l'affectation) transmet `numbering_style` et `show_points` (résolus comme pour le prof : absents,
-chiffres et points masqués) ; la copie de l'élève n'est jamais tirée au sort, son ordre est celui
-des positions.
+chiffres et points masqués) ; l'ordre de la copie de l'élève est celui des positions, sauf fiche
+qui mélange ses exercices (voir « La copie d'un élève » : `shuffled`, suivi par
+`documentFromStudentView`).
 
 **Trois PDF du prof** (`WorksheetPdfMode`, choix « Fiche · Réponses · Corrigé » de `PdfPreview` ;
 la lecture publique `variant="reader"` reste sur la fiche) :
@@ -454,5 +473,13 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
 8. **Polices** : le rendu dépend des polices embarquées par le bundle typst.ts, non listées dans le
    dépôt ; `compile-prod.mjs` ajoute STIX Two Math depuis un chemin macOS — témoin local et
    production peuvent donc différer sur un glyphe.
+9. **Option « mélanger les exercices » : deux restes** (2026-10-13 ; aucune fiche n'a l'une ou
+   l'autre case cochée en prod, mesuré le 2026-10-13). (a) La case « Mélanger dans les sections »
+   (`shuffle_within_sections`) n'est lue par aucun chemin vivant : « mélanger les exercices » mélange
+   déjà à l'intérieur des sections. (b) Le numéro d'exercice des messages à l'élève
+   (`server/worksheets/display-number.ts`, signalements) est celui de l'ordre des positions, pas
+   celui de sa copie mélangée. (c) Le corrigé de la classe d'une affectation individualisée et
+   mélangée suit un ordre commun qui n'est celui d'aucun élève ; `per_student_values_notice` ne
+   parle que des valeurs (et seulement s'il y a des variables). À trancher par David.
 
-Vérifié contre le code le 2026-10-13 (lot 1 de l'ADR 0028).
+Vérifié contre le code le 2026-10-13 (lot 1 de l'ADR 0028, option « mélanger les exercices »).

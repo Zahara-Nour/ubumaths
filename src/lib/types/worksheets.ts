@@ -733,6 +733,12 @@ export interface StudentWorksheetView {
 	 * proposer.
 	 */
 	read_only: boolean;
+	/**
+	 * Ordre tiré (option « mélanger les exercices », copie d'une affectation) :
+	 * `exercises` arrive dans l'ordre de la copie, à NE PAS retrier par
+	 * `position`. Absent : ordre des positions, comme avant.
+	 */
+	shuffled?: boolean;
 	exercises: StudentExerciseView[];
 	/** Sections for grouping exercises */
 	sections: StudentSectionView[];

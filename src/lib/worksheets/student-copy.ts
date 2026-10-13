@@ -14,6 +14,8 @@
  * - Valeurs : graine de l'affectation (de la fiche hors affectation), de
  *   l'élève si l'affectation est individualisée, et de l'exercice de la fiche
  *   (son identifiant, pas sa position : réordonner la fiche ne change rien).
+ * - Ordre (option « mélanger les exercices » de la fiche) : même portée que
+ *   les valeurs, graine dédiée par section (`copyOrderSeed`).
  *
  * @module worksheets/student-copy
  */
@@ -60,6 +62,12 @@ export interface CopySeedParts {
 	studentId?: string | null;
 	/** Case « exercices individualisés » de l'affectation */
 	individualized: boolean;
+}
+
+/** La portée de la copie et la section dont on tire l'ordre */
+export interface CopyOrderSeedParts extends Omit<CopySeedParts, 'worksheetExerciseId'> {
+	/** `null` : les exercices hors section */
+	sectionId: string | null;
 }
 
 // ============================================================================
@@ -114,13 +122,33 @@ function hash31(text: string): number {
 	return (hash >>> 0) & 0x7fffffff;
 }
 
-/** Graine des valeurs tirées d'un exercice de la copie */
-export function copySeed(parts: CopySeedParts): number {
+/**
+ * La portée d'une copie, en texte : l'affectation (la fiche hors affectation),
+ * et l'élève si l'affectation est individualisée.
+ */
+function copyScopeKey(parts: Omit<CopySeedParts, 'worksheetExerciseId'>): string {
 	const scope = parts.assignmentId
 		? `affectation:${parts.assignmentId}`
 		: `fiche:${parts.worksheetId}`;
 	const student = parts.individualized && parts.studentId ? `:eleve:${parts.studentId}` : '';
-	return hash31(`${scope}${student}:exercice:${parts.worksheetExerciseId}`);
+	return `${scope}${student}`;
+}
+
+/** Graine des valeurs tirées d'un exercice de la copie */
+export function copySeed(parts: CopySeedParts): number {
+	return hash31(`${copyScopeKey(parts)}:exercice:${parts.worksheetExerciseId}`);
+}
+
+/**
+ * Graine de l'ordre des exercices d'une section de la copie (option
+ * « mélanger les exercices »). Même portée que les valeurs, mais une graine
+ * DÉDIÉE (`:ordre:` au lieu de `:exercice:`) : l'ordre et les valeurs ne se
+ * corrèlent pas, et mélanger ne change aucune valeur. Une graine par section
+ * (`null` : les exercices hors section) : ajouter un exercice à une section
+ * ne rebat pas les autres.
+ */
+export function copyOrderSeed(parts: CopyOrderSeedParts): number {
+	return hash31(`${copyScopeKey(parts)}:ordre:${parts.sectionId ?? 'hors-section'}`);
 }
 
 /**
