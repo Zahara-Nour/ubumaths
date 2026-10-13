@@ -435,7 +435,9 @@ l'admin) → `google_classroom_courses`, `_coursework`, `_materials`, `_topics` 
   l'auteur seul. Prof et admin créent ; chacun ne modifie et ne supprime **que ses** figures (l'admin
   ne touche pas à celles du prof). Niveaux `grades` (contrôle `is_valid_grade_array`), tags par
   `resource_tags` (type `geometry_figure`), effacés avec la figure par le trigger
-  `geometry_figures_drop_tags`. Test : `tests/integration/figures-geometriques.test.ts`.
+  `geometry_figures_drop_tags` (SECURITY DEFINER gardé : la suppression d'un compte y arrive en
+  cascade sous `supabase_auth_admin`, sans droit sur `resource_tags`). `UPDATE` accordé colonne par
+  colonne : ni `id`, ni `author_id`. Test : `tests/integration/figures-geometriques.test.ts`.
 
 ### Tuteur et recherche documentaire (RAG)
 

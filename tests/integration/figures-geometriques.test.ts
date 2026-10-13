@@ -31,6 +31,9 @@ const ANON_KEY =
 
 /** Préfixe unique à ce run : les figures et tags créés le portent (nettoyage ciblé). */
 const RUN = `itest-figures-${Date.now().toString(36)}`;
+const SERVICE_ROLE_KEY =
+	process.env.SUPABASE_TEST_SERVICE_ROLE_KEY ||
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU';
 const CLIENT_OPTIONS = { auth: { persistSession: false, autoRefreshToken: false } };
 const SCRIPT = 'A = point(0, 0)\nB = point(3, 0)\ns = segment(A, B)';
 
@@ -307,6 +310,69 @@ describe('Figures géométriques : qui lit, qui écrit', () => {
 			.select('id');
 		expect(deleted).toHaveLength(1);
 		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			"select count(*)::int as n from public.resource_tags where resource_kind = 'geometry_figure' and resource_id = $1",
+			[figureId]
+		);
+		expect(rows[0].n).toBe(0);
+	});
+
+	// --- Audit de sécurité (2026-10-13) ---------------------------------------
+
+	it('11. un élève ne lit pas la figure privée du prof, même par son identifiant', async () => {
+		const { data, error } = await studentClient
+			.from('geometry_figures')
+			.select('id')
+			.eq('id', privateId);
+		expect(error).toBeNull();
+		expect(data).toEqual([]);
+	});
+
+	it('12. sans compte : les liens de tag d’une figure ne se lisent pas', async () => {
+		const pg = await getPostgresClient();
+		const { rows: tag } = await pg.query(
+			'insert into public.tags (name) values ($1) returning id',
+			[`${RUN} anon`]
+		);
+		await pg.query(
+			"insert into public.resource_tags (resource_kind, resource_id, tag_id) values ('geometry_figure', $1, $2)",
+			[publicId, tag[0].id]
+		);
+		const { data } = await anonClient
+			.from('resource_tags')
+			.select('tag_id')
+			.eq('resource_kind', 'geometry_figure')
+			.eq('resource_id', publicId);
+		expect(data ?? []).toEqual([]);
+	});
+
+	it('13. l’auteur ne change pas l’identifiant de sa figure (ses tags resteraient orphelins)', async () => {
+		const { error } = await teacherClient
+			.from('geometry_figures')
+			.update({ id: '00000000-0000-4000-8000-000000000027' })
+			.eq('id', privateId)
+			.select('id');
+		expect(error).not.toBeNull();
+		expect(await readRow(privateId)).toBeDefined();
+	});
+
+	it('14. supprimer le compte d’un auteur de figure taguée réussit, figures et tags compris', async () => {
+		// Dernier test : il supprime le prof de la suite (un seul prof autorisé, invariant mono-prof).
+		const figureId = await seedFigure(teacherId, 'compte supprimé', true);
+		const pg = await getPostgresClient();
+		const { rows: tag } = await pg.query(
+			'insert into public.tags (name) values ($1) returning id',
+			[`${RUN} compte`]
+		);
+		await pg.query(
+			"insert into public.resource_tags (resource_kind, resource_id, tag_id) values ('geometry_figure', $1, $2)",
+			[figureId, tag[0].id]
+		);
+
+		const service = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, CLIENT_OPTIONS);
+		const { error } = await service.auth.admin.deleteUser(teacherId);
+		expect(error).toBeNull();
+		expect(await readRow(figureId)).toBeUndefined();
 		const { rows } = await pg.query(
 			"select count(*)::int as n from public.resource_tags where resource_kind = 'geometry_figure' and resource_id = $1",
 			[figureId]

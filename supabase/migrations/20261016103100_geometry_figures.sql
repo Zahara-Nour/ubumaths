@@ -79,14 +79,22 @@ alter table public.resource_tags add constraint resource_tags_valid_kind check (
 
 -- `resource_tags` n'a pas de FK vers la ressource (polymorphe) : sans ce
 -- trigger, supprimer une figure laisserait ses liens de tag orphelins.
--- SECURITY INVOKER : seul l'auteur supprime sa figure, et il est prof ou admin,
--- donc la policy « Teachers and admins manage resource tags » l'autorise.
+-- SECURITY DEFINER : la suppression d'un COMPTE (auth.admin.deleteUser) arrive
+-- ici en cascade sous `supabase_auth_admin`, qui n'a pas DELETE sur
+-- `resource_tags` ; en SECURITY INVOKER elle échouait (audit du 2026-10-13,
+-- test 14). La fonction n'efface que les liens de la figure supprimée, et
+-- refuse un appelant connecté qui n'est ni prof ni admin (garde avant toute
+-- lecture, comme les triggers de 20261013120000_tags_modeles_points).
 create function public.geometry_figures_drop_tags()
 returns trigger
 language plpgsql
+security definer
 set search_path = public, pg_temp
 as $$
 begin
+	if coalesce(auth.role(), '') in ('anon', 'authenticated') and not public.is_teacher_or_admin() then
+		raise exception 'Suppression refusée : droits insuffisants.' using errcode = 'insufficient_privilege';
+	end if;
 	delete from public.resource_tags
 	where resource_kind = 'geometry_figure' and resource_id = old.id;
 	return old;
@@ -103,8 +111,12 @@ create trigger geometry_figures_drop_tags
 
 revoke all on public.geometry_figures from anon, authenticated;
 grant select on public.geometry_figures to anon;
-grant select, insert, update, delete on public.geometry_figures to authenticated;
+grant select, insert, delete on public.geometry_figures to authenticated;
+-- UPDATE colonne par colonne : ni `id` (ses liens de tag deviendraient orphelins), ni
+-- `author_id`, ni les dates (`updated_at` est posé par le trigger).
+grant update (title, description, dsl_script, grades, is_public) on public.geometry_figures to authenticated;
 
+alter function public.geometry_figures_drop_tags() owner to postgres;
 revoke execute on function public.geometry_figures_drop_tags() from public, anon, authenticated;
 
 alter table public.geometry_figures enable row level security;
