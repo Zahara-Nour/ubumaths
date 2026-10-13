@@ -1051,6 +1051,23 @@ describe("generateCorrection — kind: 'domain'", () => {
 		expect(result.correction?._renderedSteps).toBeUndefined();
 	});
 
+	// Domaine que le moteur ne sait pas résoudre : aucune étape plutôt que
+	// des étapes concluant « ℝ » (phase 0 du 2026-10-13, G1)
+	for (const expression of ['\\sqrt{\\sin x}', '\\frac{1}{x^5+x+1}']) {
+		for (const schoolLevel of ['lycee', 'superieur'] as const) {
+			it(`no _renderedSteps when the domain is unresolved: ${expression} (${schoolLevel})`, () => {
+				const instance = makeInstance({
+					grades: ['T_SPE'],
+					correction: {
+						generatedSteps: { kind: 'domain', expression, options: { schoolLevel } }
+					}
+				});
+				const result = generateCorrection(instance);
+				expect(result.correction?._renderedSteps).toBeUndefined();
+			});
+		}
+	}
+
 	it('honours an explicit variable', () => {
 		const instance = makeInstance({
 			grades: ['1_SPE'],

@@ -187,12 +187,12 @@ describe('PedagogicalDomainRenderer — format aligned 3-lignes', () => {
 
 	it('converts the backslash + braces of excluded points to LaTeX \\setminus \\{...\\}', () => {
 		// `1/x` → domain ℝ \ {0} from formatInterval. The renderer must produce
-		// `\\mathbb{R} \\setminus \\{0\\}`, not `\\mathbb{R} \\ {0}` (broken LaTeX).
+		// `\\mathbb{R} \\setminus \\left\\{0\\right\\}`, not `\\mathbb{R} \\ {0}` (broken LaTeX).
 		const expr = parseLatex('\\dfrac{1}{x}');
 		const result = generatePedagogicalDomainSteps(expr, { schoolLevel: 'lycee' });
 		const rendered = renderer.render(result.steps[0], RENDER_OPTIONS_LYCEE);
 		expect(rendered.expressionLatex).toContain('\\setminus');
-		expect(rendered.expressionLatex).toContain('\\{0\\}');
+		expect(rendered.expressionLatex).toContain('\\left\\{0\\right\\}');
 		expect(rendered.expressionLatex).not.toMatch(/\\mathbb\{R\} \\ \{/);
 	});
 

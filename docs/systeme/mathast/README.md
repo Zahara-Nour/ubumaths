@@ -709,6 +709,25 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   (`\int \left( -3 \right) f(x)\,dx = -3 \int f(x)\,dx`).
   Côté atelier, `decimalCommaProse` écrit `{,}` dans les `$…$` et `historyToUbumark` garde ces
   formules (`$…$`, pas `\$`).
+- **Étapes d'ensemble de définition** (`pedagogical-domain/`, 2026-10-13). Chaque étape de
+  contrainte montre l'ensemble de **sa** contrainte (`intermediateDomain` posé par
+  `domain/compute.ts`) : `\frac{\ln x}{x-2}` → « $x - 2 \neq 0$ » : ℝ ∖ {2} ;
+  `\frac{1}{\sqrt{x-1}}` → « $\sqrt{x-1} \neq 0$ » : ℝ ∖ {1} (la racine a son étape [1 ; +∞[) ;
+  le domaine se lit à l'étape d'intersection (ajoutée par `dispatch.ts` au-delà d'une contrainte
+  si le moteur ne l'a pas émise). **Les étapes doivent prouver le domaine** : `dispatch.ts` refuse
+  (`PedagogicalDomainNotImplemented`, donc pas d'étapes côté `correction-generator`) quand
+  l'intersection des ensembles affichés diffère, par valeur, du domaine du moteur (contrainte
+  appliquée sans être écrite : `\sqrt{x}+x^{-1/2}`), quand une contrainte n'est pas résolue
+  (`result.unresolved` : `\sqrt{\sin x}`, `\frac{1}{x^5+x+1}`) et quand une valeur n'est connue
+  qu'en décimal (plus de 6 décimales : `\frac{1}{x^3-2}`). Ensembles écrits par `domainToLatex`
+  (`renderer.ts`, depuis la structure du domaine et non plus depuis `formatInterval`) :
+  `\left\{0\right\}`, `\sqrt{2}`, `\frac{1}{2}` (pas 0.5), `]a ; b[ ∪ ]b ; c[` écrit `]a ; c[ ∖ {b}`,
+  `\frac{\pi}{4}+\frac{k\pi}{2},\ k\in\mathbb{Z}`, `1+2k`. Racine d'indice pair autre que 2 →
+  `even_root_constraint` ; argument constant (`\sqrt{2}`) → pas d'étape. Dénominateur sans zéro
+  réel, somme de puissances paires de polynômes et d'une constante > 0 (`x^2+1`) → étape
+  « division » justifiée (« somme d'un carré et d'un nombre strictement positif ») ; autre forme
+  (`x^2+x+1`, `e^x`, `(\frac1x)^2+1`) → pas de justification.
+  Tests : `pedagogical-domain/__tests__/redaction-etapes.test.ts`.
 - La résolution d'équation pédagogique ne rejoue **pas** le solveur algorithmique : elle
   suit ce que l'élève fait sur papier (`pedagogical-solve/`). Paliers : 1 (équation du
   1er degré), 2a (inéquation du 1er degré), 2b (inéquation du 2nd degré), 3 (inéquation

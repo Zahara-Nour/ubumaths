@@ -101,6 +101,11 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
      (périodiques, singleton) ; Q3 valeur interdite irrationnelle → étapes refusées, réponse « ≈ 1,26 » ;
      Q4 brancher sans la résolution de la contrainte, raccord au tableau de signes plus tard ; Q5 réponse
      en formule $D = …$ ; Q6 brancher « domaine universel », justification « $x^2+1>0$ » si simple.
+     **PR 1 `.domaine` (moteur) faite (2026-10-13, branche `fix/pedagogical-domain-etapes`)** : G1
+     garde `unresolved` (+ domaine restreint sans contrainte enregistrée, `x^{-1/2}`), Q1, Q2, D3
+     (racine n-ième), Q6 (`x^2+1`, somme de puissances paires + constante > 0 seulement), Q3 (valeur
+     interdite en décimal → pas d'étapes), étapes qui doivent prouver le domaine (revue) ; tests
+     `pedagogical-domain/__tests__/redaction-etapes.test.ts`, doc `docs/systeme/mathast/README.md`.
      Découpage : PR 1 moteur (garde `unresolved` aussi pour `correction-generator`, Q1, Q2, Q6) ; PR 2
      atelier (« Comment ? », garde par ensembles, Q3, Q5).
    - **2c. Commande `.limite`** (aucune aujourd'hui ; `pedagogical-limits` sert aux corrections) :
