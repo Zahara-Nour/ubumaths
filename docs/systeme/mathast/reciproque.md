@@ -25,14 +25,41 @@ Succès : `expression` (f⁻¹ écrite comme au manuel), `departure` = f(I), `ar
 (`RenderedStep[]`, le format que l'atelier affiche déjà), `departureReadBy` (les chemins qui ont lu
 f(I), voir plus bas). Refus (`refusal.kind`, message en français, sans écriture interne) :
 
-| Refus           | Quand                                                                                                        | Message                                                                                                         |
-| --------------- | ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| `constant`      | f ne contient pas sa variable, ou vaut la même chose partout (`3x − 3x + 2`)                                 | « Une fonction constante n'a pas de réciproque. »                                                               |
-| `not-bijective` | deux x de I ont la même image                                                                                | « f n'est pas bijective sur ℝ (f(-1) = f(1)) : choisis un intervalle, par exemple .réciproque f sur [0 ; +∞[. » |
-| `unsolved`      | le solveur ne sait pas (`x eˣ`, `x + sin x`, `sin x`), plusieurs lettres, deux lectures de f(I) en désaccord | « Je ne sais pas calculer la réciproque de f algébriquement. »                                                  |
+| Refus           | Quand                                                                                                        | Message                                                        |
+| --------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- |
+| `constant`      | f ne contient pas sa variable, ou vaut la même chose partout (`3x − 3x + 2`)                                 | « Une fonction constante n'a pas de réciproque. »              |
+| `not-bijective` | deux x de I ont la même image (solveur, variations, ou f périodique sur I)                                   | voir ci-dessous                                                |
+| `unsolved`      | le solveur ne sait pas (`x eˣ`, `x + sin x`, `sin x`), plusieurs lettres, deux lectures de f(I) en désaccord | « Je ne sais pas calculer la réciproque de f algébriquement. » |
 
-`not-bijective` porte `sameImage` (deux valeurs ENTIÈRES de même image, quand on en trouve) et
-`suggestion` (le dernier morceau de stricte monotonie de f sur I).
+`not-bijective` EXPLIQUE, puis LISTE les réciproques par morceau de stricte monotonie (décision de
+David du 2026-10-13). Pour x² sur ℝ :
+
+> f n'est pas bijective sur ℝ : f(-1) = f(1) = 1, donc 1 aurait deux antécédents et f⁻¹(1) ne
+> saurait pas lequel choisir. Mais f est bijective sur chacun de ces intervalles, avec une
+> réciproque différente : sur ]-∞ ; 0] : $f^{-1}\left( x \right) = -\sqrt{x}$ ; sur [0 ; +∞[ :
+> $f^{-1}\left( x \right) = \sqrt{x}$. Choisis un intervalle, par exemple .réciproque f sur [0 ; +∞[.
+
+- **La paire** : deux ENTIERS de même image (échantillons du solveur, sinon valeurs rondes) ; image
+  entière → « donc 1 aurait deux antécédents » ; image non entière (cos : f(-1) = f(1)) → « cette
+  image » ; pas de paire (x/(x² + 1), sin) → « deux nombres différents ont la même image ».
+- **Les morceaux** (`pieces`, au plus `MAX_LISTED_PIECES` = 4) : chacun recalculé par
+  `computeReciprocal` sur le morceau (sans relister) ; formule en `$…$` (convention des étapes,
+  rendue par ubumark), ou « (formule que je ne sais pas calculer) » et `expression: null`
+  (x³ − 3x : Cardano). Au-delà de 4 (x⁵ − 5x³ + 4x : 5), ils sont comptés, pas listés.
+- **Périodique** (`infinitelyManyPieces`) : quand le solveur ne résout pas `y = f(x)`, la période se
+  lit sur `f(x₀) = f(x)` à second membre exact (`0 = sin x`) et se vérifie numériquement dans I
+  (x₀ et x₀ + T dans I). Aucun morceau listé ; l'intervalle proposé est le morceau de
+  [−T/2 ; T/2] qui contient 0 (sin : [-π/2 ; π/2]), sinon celui qui part de 0 (cos : [0 ; π]).
+  ⚠️ `.réciproque sin sur [-π/2 ; π/2]` reste `unsolved` (pas d'arcsin).
+- **Variations sans solveur** : f prouvée non injective par les variations alors que le solveur
+  échoue → `not-bijective` quand même (x⁴ − 2x², x eˣ sur ℝ ; avant : `unsolved`).
+- `suggestion` : le morceau le plus à droite qui a une formule, sinon le dernier ; jamais une borne
+  approchée par les variations (7 chiffres ou plus : « choisis un intervalle où f est strictement
+  monotone »).
+
+Champs : `sameImage` (la paire entière), `suggestion`, `pieces`
+(`{ interval, expression | null, departure | null }`, pour l'affichage LaTeX de l'atelier),
+`infinitelyManyPieces`.
 
 ## Méthode
 
@@ -57,8 +84,14 @@ f(I), voir plus bas). Refus (`refusal.kind`, message en français, sans écritur
    lesquelles ont abouti ; sur les huit cas du tableau de la phase 0, les deux (test).
    `computeRange` ne sert pas : il rend `null` pour (2x+1)/(x−3) et ln(x − 1) (mesuré le
    2026-10-13).
-5. **Écriture** (`writing.ts`) : `tidy`, puis une seule fraction quand tous les termes d'une somme
-   ont le même dénominateur entier, à tous les niveaux : `(x − 3)/2`, `(ln x − 1)/2`, `ln((x + 1)/3)`.
+5. **Écriture** (`writing.ts`), sur l'écriture finale seulement : `tidy` ; sous une racine (carrée,
+   cubique, `root(u, n)`), le contenu du radicande sort — `factorPolynomial` (ADR 0024) le donne,
+   `extractPerfectPower` (`normal/radical.ts`) en garde la partie parfaite (numérateur et
+   dénominateur), puis `tidy` simplifie avec le dénominateur : `√(4x + 12)/2 + 2` → `√(x + 3) + 2`,
+   `∛(8x − 16)` → `2∛(x − 2)`, `∛(x/8 + 2)` → `∛(x + 16)/2` ; puis une seule fraction quand tous les
+   termes d'une somme ont le même dénominateur entier, à tous les niveaux : `(x − 3)/2`,
+   `(ln x − 1)/2`, `ln((x + 1)/3)` ; enfin `−x/(x − 1)` → `x/(1 − x)` (logistique :
+   `ln(x/(1 − x))`).
    Les ensembles s'écrivent `ℝ \ {2}` plutôt que `]−∞ ; 2[ ∪ ]2 ; +∞[` (`withRealLineWritten`).
 
 ## Étapes (R3)
@@ -70,12 +103,13 @@ dit quelle solution on garde quand il y en a plusieurs, et la condition d'existe
 
 ## Ce qui reste à l'écriture du solveur (mesuré le 2026-10-13)
 
-Justes, vérifiés numériquement, mais pas la forme du manuel : `x² − 4x + 1` sur [2 ; +∞[ →
-`√(4x + 12)/2 + 2` (manuel : `2 + √(x + 3)`) ; `1/x²` sur ]0 ; +∞[ → `√x/x` (manuel : `1/√x`) ;
+Justes, vérifiés numériquement, mais pas la forme du manuel : `1/x²` sur ]0 ; +∞[ → `√x/x` (manuel : `1/√x`) ;
 `ln(x²)` sur ]0 ; +∞[ → `√(eˣ)` (manuel : `e^{x/2}`) ; `2ˣ` → `ln x / ln 2`.
 
 ## Tests
 
 `reciprocal/__tests__/reciprocal.test.ts` : le tableau de la phase 0 (f(f⁻¹(y)) = y et
 f⁻¹(f(x)) = x sur trois points chacun, ensembles, accord des deux lectures de f(I)), la lettre
-choisie, les étapes, les refus.
+choisie, les étapes, les refus ; l'écriture du manuel (chaque réécriture égale numériquement à
+l'écriture d'avant, sur trois points du départ) ; les réciproques par morceau (f(f⁻¹(y)) = y sur
+trois points du départ de chaque morceau).
