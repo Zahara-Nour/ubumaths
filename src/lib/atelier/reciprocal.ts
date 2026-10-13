@@ -527,11 +527,7 @@ export function reciprocalRefusalIn(
 		const value = expanded === null ? null : approxOf(expanded);
 		if (value === null || containsValue(departure, value)) continue;
 		return {
-			message: outsideIntervalMessage(
-				displayName(reciprocalName(base)),
-				argument.trim(),
-				departure
-			)
+			message: outsideIntervalMessage(displayName(reciprocalName(base)), argument.trim(), departure)
 		};
 	}
 	return null;
@@ -560,9 +556,11 @@ export function citedReciprocalInterval(
 ): CitedInterval | null {
 	const calls = inverseCalls(atelier, typed);
 	if (calls.length === 0) return others(typed);
-	let cited = others(typed.replace(INVERSE_CALL, (written, name: string) =>
-		isAtelierFunction(atelier, name) ? '(0)' : written
-	));
+	let cited = others(
+		typed.replace(INVERSE_CALL, (written, name: string) =>
+			isAtelierFunction(atelier, name) ? '(0)' : written
+		)
+	);
 	if (cited?.kind === 'composed') return cited;
 	const unknown = new RegExp(`(?<![A-Za-z_\\\\])${variable}(?![A-Za-z_0-9])`);
 	for (const { base, argument, written } of calls) {

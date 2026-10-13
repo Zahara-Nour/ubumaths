@@ -292,7 +292,9 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 
 /** Une fonction affichée dans le Graphe : tracée, et qui produit une courbe. */
 function isShown(object: AtelierObject | undefined): boolean {
-	return object !== undefined && isFunction(object) && object.plotted && object.status === 'ok';
+	return (
+		object !== undefined && isFunction(object) && object.plotted === true && object.status === 'ok'
+	);
 }
 
 /**

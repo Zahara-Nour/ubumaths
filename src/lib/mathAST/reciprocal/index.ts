@@ -250,7 +250,10 @@ function refuseNotBijective(
 	const suggestion = candidate && readable(candidate) ? candidate : undefined;
 	// Décision (5) de David (2026-10-13) : sin sur ℝ — jamais proposer une
 	// commande qui échouerait (le solveur n'écrit pas arcsin)
-	if (periodic && !(suggestion && reciprocalOn(context.f, { ...context, interval: suggestion }, false).ok)) {
+	if (
+		periodic &&
+		!(suggestion && reciprocalOn(context.f, { ...context, interval: suggestion }, false).ok)
+	) {
 		return refusePeriodicWithoutFormula(context, suggestion, round ? [a, b] : null);
 	}
 	const advice = suggestion
@@ -307,7 +310,9 @@ function refusePeriodicWithoutFormula(
 		refusal: {
 			kind: 'not-bijective',
 			message: `${name} n'est pas bijective sur ${formatInterval(withRealLineWritten(domain))}, mais elle l'est sur une infinité d'intervalles${where}. ${formula}`,
-			...(sameImage && { sameImage: [numericNode(sameImage[0]), numericNode(sameImage[1])] as const }),
+			...(sameImage && {
+				sameImage: [numericNode(sameImage[0]), numericNode(sameImage[1])] as const
+			}),
 			...(suggestion && { suggestion }),
 			infinitelyManyPieces: true as const
 		}

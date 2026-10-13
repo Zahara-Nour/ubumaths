@@ -185,7 +185,6 @@ function parseByProvenance(
 	return read;
 }
 
-
 /**
  * L'arbre d'une définition, ou `null` si elle ne se lit pas.
  *
