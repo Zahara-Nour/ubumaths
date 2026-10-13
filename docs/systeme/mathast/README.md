@@ -703,9 +703,11 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   `domainDescriptionLatex` (`pedagogical-solve/_helpers.ts`), forme standard en `$…$` (plus de
   backticks) ; domaine : gabarits de `domain/step-descriptions.ts` en `$…$` ; simplification : les
   propriétés de l'exponentielle et des radicaux de `normal/` réécrites dans
-  `pedagogical-simplify/descriptions-fr.ts`. Les **limites** écrivent encore leur prose en Unicode
-  (`formatPowerShort`, `formatValueShort`), sauf les titres-formules du supérieur
-  (`$\lim_{x \to 0^-}$`). Sous ∫, une constante négative s'écrit entre parenthèses
+  `pedagogical-simplify/descriptions-fr.ts`. Les **limites** aussi depuis le 2026-10-14
+  (`inlineMath`, `approachMath`, `formMath` de `pedagogical-limits/helpers.ts`) : « La limite vaut
+  $-\infty$ », « Forme indéterminée $\frac{\infty}{\infty}$ », « Simplification par $x^2$ » ;
+  pour elles le garde-fou refuse en plus toute maths en clair hors des `$…$` (Unicode `+∞`, `x²`,
+  `0⁺`, `−`, `×`, ni `lim`, `=`, `0/0`). Sous ∫, une constante négative s'écrit entre parenthèses
   (`\int \left( -3 \right) f(x)\,dx = -3 \int f(x)\,dx`).
   Côté atelier, `decimalCommaProse` écrit `{,}` dans les `$…$` et `historyToUbumark` garde ces
   formules (`$…$`, pas `\$`).
@@ -933,7 +935,25 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   gendarmes acceptent aussi un point négatif ou fractionnaire. La **substitution directe rend la
   valeur exacte** de `limits/exact-evaluation.ts` (`tryEvaluateLimitExact`, réduite par
   `normalize`) quand elle retombe sur la valeur flottante : `\dfrac{3}{2}`, `3\sqrt{2}`, plus
-  `1.5` (K21, V21) ; titres en texte (`formatValueShort` : « La limite vaut 3/2 », « 3√2 »).
+  `1.5` (K21, V21) ; titres en LaTeX entre `$…$` (« La limite vaut $\dfrac{3}{2}$ », « $3 \sqrt{2}$ »).
+  Un numérateur ou un dénominateur qui EST déjà le facteur (`x - 1` en 1) n'a pas de sous-étape
+  (plus de « x − 1 = x − 1 ») ; une fraction simplifiée en constante (`\dfrac{x+1}{x+1}` → 1)
+  conclut sur l'expression de départ, sans « \lim 1 = 1 » (2026-10-14).
+  **Limites de référence** (`tryKnownLimit`) : `e^u` est lu comme `\exp(u)` pour la table
+  `KNOWN_LIMITS`, et la parenthèse autour de la base d'une puissance ôtée
+  (`toKnownLimitShape`) — `\dfrac{e^x}{x}`, `x e^{-x}`, `\dfrac{x^3}{e^x}` en +∞ (croissances
+  comparées), `\left(1+\dfrac{1}{x}\right)^x` ; l'étape garde l'écriture de l'élève, la valeur
+  `\exp(1)` s'écrit e (`withEulerPowers`) ; titre : la famille (« Croissance comparée », « Limite
+  fondamentale », « Limite de référence »), la formule est dans le bloc. **Composée e^u**
+  (`tryExponentialComposition`) : limite de l'exposant (par le pipeline, même côté), puis de
+  l'exponentielle — `e^{1/x}` en 0⁺ : +∞, en 0⁻ : 0. **Pôle** (`tryOneSided`) : chaque côté a
+  sa limite (±∞ lue au signe, sinon calculée par le pipeline sur ce côté) ; en un pôle d'un
+  quotient, l'explication donne le signe du dénominateur (« Le numérateur tend vers $1$ et
+  $x - 2 \to 0^+$ ») ; sans côté demandé, comparaison puis **conclusion** : la valeur commune, ou
+  `conclude-does-not-exist` (`\dfrac{1}{x}` en 0), à tous les niveaux. **Côté implicite**
+  (`tryImplicitSide`) : sans côté demandé, une expression définie d'un seul côté du point
+  (`\ln x` en 0) est étudiée de ce côté, une étape le dit (« L'expression n'est définie qu'à
+  droite de $0$ »).
   **En ±∞** (`tryInfinityAnalysis`, K21, V26, 2026-10-12) : la **factorisation du terme
   prépondérant**, seule méthode au programme (BO 2019, Tle spé, capacités attendues ; la règle
   « quotient des termes de plus haut degré » et l'étape `identify-dominant-term` ont disparu). Au
@@ -947,7 +967,7 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   (bloc `\lim \dfrac{1}{x} = 0`, `\text{donc } \lim (3 + \dfrac{1}{x}) = 3`, champ
   `termLimits` de l'étape) → `apply-quotient` ou `apply-product` (explication : « Le facteur x³
   tend vers −∞ et l'autre facteur tend vers −2 : par produit, (−∞) × (−2) = +∞ », « 2 divisé
-  par une quantité qui tend vers +∞ » ; le facteur restant nommé en mots, « le quotient restant », « la parenthèse » : titres et explications sans LaTeX, en Unicode — le composant les rend par `InlineMarkdown` depuis V25, sans `$` ils restent du texte) → conclusion. Mode
+  par une quantité qui tend vers +∞ » ; le facteur restant nommé en mots, « le quotient restant », « la parenthèse » ; formules en LaTeX entre `$…$`, rendues par `InlineMarkdown`) → conclusion. Mode
   résumé : développement, factorisation, simplification, conclusion. Deux monômes
   (`\dfrac{2x^2}{3x^2}`) : pas de factorisation, « On simplifie par x² ». **Sans forme
   indéterminée** (`\dfrac{1}{x+1}`, `x^2+1`, `(x+1)^2`, `-x^4+x` en −∞), pas de factorisation :

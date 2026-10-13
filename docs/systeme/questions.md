@@ -327,7 +327,10 @@ d'un QCM (bon / coché à tort / oublié), les remarques de forme. Spécificatio
 `generatedSteps` (déclaratif : `arithmetic`, `arithmetic-from-blank`, `linear-equation`,
 `quadratic-equation`, `linear-inequality`, `quadratic-inequality`, `rational-inequality`,
 `differentiate`, `integrate`, `simplify` + intention, `limit`, `domain`). Les deux peuvent coexister :
-**le mode A l'emporte à l'affichage**.
+**le mode A l'emporte à l'affichage**. Pour `limit`, l'expression et le point passent par
+`dispatchPedagogicalLimit`, qui lit la **syntaxe maison** (`parseCustomSafe` : `(x^2-4)/(x-2)`,
+`e^x/x`, `ln(x)`) et non le LaTeX : `\frac{1}{x}` y est une erreur de lecture, donc un repli
+silencieux sur le mode A (seul le point accepte aussi `\infty`, `+\infty`, `-\infty`).
 
 Mode B : `generateCorrection` résout les variables, appelle le pipeline `pedagogical-*` et range
 les étapes dans `correction._renderedSteps`. Si le pipeline lève une erreur (expression

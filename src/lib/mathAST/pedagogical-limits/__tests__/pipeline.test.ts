@@ -161,15 +161,23 @@ describe('pipeline — factorisation', () => {
 		expect(rules).toContain('detect-indeterminate-form');
 		expect(rules).toContain('simplify-common-factor');
 		expect(rules).toContain('factor-numerator');
-		expect(rules).toContain('factor-denominator');
+		// Le dénominateur EST le facteur x − 2 : pas de sous-étape « x − 2 = x − 2 »
+		expect(rules).not.toContain('factor-denominator');
 		expect(rules).toContain('apply-direct-substitution');
 		expect(rules).toContain('conclude');
 	});
 
 	it('factor-numerator and factor-denominator nest under simplify-common-factor', () => {
+		// x² − 3x + 2 = (x − 2)(x − 1) : les deux côtés se factorisent
 		const expr = divide(
 			subtract(power(variable('x'), number('2')), number('4')),
-			subtract(variable('x'), number('2'))
+			add(
+				subtract(
+					power(variable('x'), number('2')),
+					multiply(number('3'), variable('x'), 'implicit')
+				),
+				number('2')
+			)
 		);
 		const result = generatePedagogicalLimitSteps(expr, {
 			variable: 'x',

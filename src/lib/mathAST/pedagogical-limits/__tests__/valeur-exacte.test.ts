@@ -38,10 +38,25 @@ function rendered(latex: string): RenderedStep[] {
 }
 
 const CASES = [
-	{ latex: '\\lim_{x\\to 1}\\frac{x^3-1}{x^2-1}', value: '\\dfrac{3}{2}', text: '3/2', a: 1 },
-	{ latex: '\\lim_{x\\to 2}\\frac{x^2-5x+6}{x^2-4}', value: '-\\dfrac{1}{4}', text: '−1/4', a: 2 },
-	{ latex: '\\lim_{x\\to 1}\\frac{2x}{3x+3}', value: '\\dfrac{1}{3}', text: '1/3', a: 1 },
-	{ latex: '\\lim_{x\\to 2}3\\sqrt{x}', value: '3 \\sqrt{2}', text: '3√2', a: 2 }
+	{
+		latex: '\\lim_{x\\to 1}\\frac{x^3-1}{x^2-1}',
+		value: '\\dfrac{3}{2}',
+		text: '$\\dfrac{3}{2}$',
+		a: 1
+	},
+	{
+		latex: '\\lim_{x\\to 2}\\frac{x^2-5x+6}{x^2-4}',
+		value: '-\\dfrac{1}{4}',
+		text: '$-\\dfrac{1}{4}$',
+		a: 2
+	},
+	{
+		latex: '\\lim_{x\\to 1}\\frac{2x}{3x+3}',
+		value: '\\dfrac{1}{3}',
+		text: '$\\dfrac{1}{3}$',
+		a: 1
+	},
+	{ latex: '\\lim_{x\\to 2}3\\sqrt{x}', value: '3 \\sqrt{2}', text: '$3 \\sqrt{2}$', a: 2 }
 ] as const;
 
 describe('limite pédagogique — valeur exacte, jamais un décimal approché', () => {
@@ -167,7 +182,7 @@ describe('limite pédagogique en ±∞ — valeur exacte, égale à celle du mot
 
 	it('la conclusion de \\frac{3x+1}{2x-5} en +∞ affiche 3/2', () => {
 		const steps = rendered('\\lim_{x\\to +\\infty}\\frac{3x+1}{2x-5}');
-		expect(steps[steps.length - 1].title).toBe('La limite vaut 3/2');
+		expect(steps[steps.length - 1].title).toBe('La limite vaut $\\dfrac{3}{2}$');
 	});
 
 	it('par le dispatch (chemin des corrections), (3x+1)/(2x-5) en +∞ → 3/2 exact', () => {
@@ -186,16 +201,16 @@ describe('limite pédagogique en ±∞ — valeur exacte, égale à celle du mot
 });
 
 describe('limite pédagogique en ±∞ — titres en prose', () => {
-	it('\\frac{\\pi x+1}{2x} en +∞ : « La limite vaut π/2 », sans barre oblique inverse', () => {
+	it('\\frac{\\pi x+1}{2x} en +∞ : « La limite vaut $\\dfrac{\\pi}{2}$ », la formule entre $…$', () => {
 		const steps = rendered('\\lim_{x\\to +\\infty}\\frac{\\pi x+1}{2x}');
-		expect(steps[steps.length - 1].title).toBe('La limite vaut π/2');
+		expect(steps[steps.length - 1].title).toBe('La limite vaut $\\dfrac{\\pi}{2}$');
 	});
 });
 
 describe('limite pédagogique en ±∞ — fonction constante', () => {
 	for (const [constant, expected, text] of [
-		['5', '5', '5'],
-		['\\pi', '\\pi', 'π']
+		['5', '5', '$5$'],
+		['\\pi', '\\pi', '$\\pi$']
 	] as const) {
 		const latex = `\\lim_{x\\to +\\infty}${constant}`;
 

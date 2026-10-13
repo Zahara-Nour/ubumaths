@@ -17,9 +17,9 @@
  * (arithmétique, premier et second degré, inéquations du premier et du second
  * degré, rationnelles, dérivation, intégration, simplification, limites,
  * domaine), à chaque niveau accepté : listes ci-dessous et cas de démo des
- * modules. Les limites écrivent encore l'essentiel de leur prose en Unicode
- * (`formatPowerShort`, `formatValueShort`) ; leurs titres du supérieur qui
- * sont des formules passent en `$…$`.
+ * modules. Les limites, plus strictes depuis le 2026-10-14 : hors des `$…$`,
+ * aucune maths en Unicode (`+∞`, `x²`, `0⁺`, `−`, `×`), ni `lim`, `=` ou `0/0`
+ * — toute formule de leur prose passe en LaTeX entre `$…$`.
  */
 
 import { describe, expect, it } from 'vitest';
@@ -190,6 +190,13 @@ const ABSOLUTE_VALUE_EQUATIONS: readonly string[] = [
 const LIMITS: ReadonlyArray<readonly [string, string, ('left' | 'right')?]> = [
 	['1/x', '0', 'left'],
 	['1/x', '0', 'right'],
+	['1/x', '0'],
+	['1/(x-2)', '2'],
+	['e^x/x', '+\\infty'],
+	['x*e^(-x)', '+\\infty'],
+	['e^(1/x)', '0', 'right'],
+	['ln(x)', '0'],
+	['(x+1)/(x+1)', '-1'],
 	['(2x+1)/(x-3)', '3', 'right'],
 	['(3x^2+1)/(2x^2-5)', '\\infty'],
 	['(x^2-4)/(x-2)', '2']
@@ -204,6 +211,12 @@ const DOMAINS: readonly string[] = [
 
 const ALL_LEVELS: readonly SchoolLevel[] = ['primaire', 'college', 'lycee', 'superieur'];
 const UPPER_LEVELS = ['lycee', 'superieur'] as const;
+
+/**
+ * Maths écrites hors des `$…$` dans la prose des limites : Unicode (`+∞`, `x²`,
+ * `0⁺`, `−`, `×`, `≤`, `ℓ`), `lim`, `=`, ou une fraction `0/0` en ligne.
+ */
+const UNICODE_MATH = /[∞⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻×·−→≤≥√πℓ∼≠⇒]|\blim\b|=|\d\s*\/\s*\d/;
 
 /** Ce qui, en tête de texte, ouvre un bloc ubumark (liste, titre, citation, tableau) */
 const BLOCK_START = /^\s*(([-+*]|\d+[.)])(\s|$)|[>#|])/;
@@ -603,11 +616,22 @@ function demoTexts(): Text[] {
 	return texts;
 }
 
-function failures(texts: readonly Text[]): string[] {
+function failures(
+	texts: readonly Text[],
+	check: (text: string) => string | null = defects
+): string[] {
 	return texts.flatMap(({ where, text }) => {
-		const defect = defects(text);
+		const defect = check(text);
 		return defect ? [`${where} : ${defect} — ${text}`] : [];
 	});
+}
+
+/** Limites : en plus, aucune maths en Unicode hors des `$…$` */
+function limitDefects(text: string): string | null {
+	const defect = defects(text);
+	if (defect) return defect;
+	const leaked = text.replace(/\$[^$]*\$/g, ' ').match(UNICODE_MATH);
+	return leaked ? `« ${leaked[0]} » hors des $…$ (maths en clair)` : null;
 }
 
 // =============================================================================
@@ -672,8 +696,17 @@ describe('prose des étapes : les maths entre $…$ (V25)', () => {
 		expect(failures(simplifyTexts())).toEqual([]);
 	});
 
-	it('limites : lycée et supérieur', () => {
-		expect(failures(limitTexts())).toEqual([]);
+	it('le détecteur des limites voit les maths en Unicode', () => {
+		expect(limitDefects('La limite vaut +∞')).not.toBeNull();
+		expect(limitDefects('Forme indéterminée 0/0 reconnue')).not.toBeNull();
+		expect(limitDefects('Limite : lim(1/x) = −∞ quand x tend vers 0⁻')).not.toBeNull();
+		expect(limitDefects('Simplification par x²')).not.toBeNull();
+		expect(limitDefects('La limite vaut $+\\infty$')).toBeNull();
+		expect(limitDefects('Comparaison gauche/droite')).toBeNull();
+	});
+
+	it('limites : lycée et supérieur, aucune maths hors des $…$', () => {
+		expect(failures(limitTexts(), limitDefects)).toEqual([]);
 	});
 
 	it('domaine de définition : lycée et supérieur', () => {
