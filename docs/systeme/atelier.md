@@ -308,6 +308,13 @@ ou met à jour un objet), un **calcul** (une ligne d'historique) ou une **comman
 un point). `runInput` (`src/lib/atelier/calcul.ts`) rend un `CalcResult` de kind `vide`,
 `definition`, `calcul`, `commande` ou `refus`.
 
+**La ligne d'une définition dit ce que dit la carte** (`definitionText`, `desk.svelte.ts`,
+décision de David du 2026-10-13) : « « f » est dans tes objets. » seulement si la carte n'a pas
+de message ; en erreur, « « h » est dans tes objets, mais elle ne se lit pas : » + le message de la
+carte, et la ligne est en échec (`failed`) ; en attente, « « p » est dans tes objets, en attente
+de « q », qui n'est pas encore défini. », sans échec. Au rejeu, une définition en échec n'arrête
+pas (un export d'avant la disait réussie).
+
 **Syntaxe** : voir [atelier-syntaxe.md](atelier-syntaxe.md) — mots-clés français (`de … à`,
 `pour`, `en`, `ordre`, `dans`, `et`), noms et mots-clés sans accent acceptés, ancienne écriture
 acceptée quand elle est sans ambiguïté. La lecture vit dans `mathAST` :

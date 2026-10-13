@@ -46,7 +46,7 @@ import { syncPlots } from './plot-sync';
 import { removedLine, restoredLine } from './removal';
 import { stepOf, type ImportedHistory } from './history-import';
 import { termsOf } from './engine';
-import { isList, isQualitative, type ListObject } from './types';
+import { isList, isQualitative, type AtelierObject, type ListObject } from './types';
 import { wordsReason } from './actions';
 import { lawFractions } from './simulate';
 import { nextName, displayName } from './names';
@@ -380,14 +380,16 @@ export class CalcDesk {
 			const missed = this.#replayStep(step, rows, graph);
 			const first = this.entries[before];
 			if (first !== undefined) rows[index] = before;
-			// R3 : on ne s'arrête que si la ligne AVAIT réussi
+			// R3 : on ne s'arrête que si la ligne AVAIT réussi. Une définition
+			// rangée en erreur ne l'arrête pas : un export d'avant le 2026-10-13
+			// la disait réussie, et la carte existe bel et bien
 			const broken =
 				missed ??
 				(entry.failed
 					? null
 					: first === undefined
 						? (this.notice ?? 'cette ligne ne s’est pas rejouée.')
-						: first.failed
+						: first.failed && first.result?.kind !== 'definition'
 							? first.text
 							: null);
 			if (broken !== null) {
@@ -882,7 +884,9 @@ function entryOf(result: CalcResult): Omit<Entry, 'id' | 'label'> {
 			: {}),
 		...('note' in result && result.note !== undefined ? { note: result.note } : {}),
 		...(result.kind === 'refus' && result.formulas === true && { formulas: true as const }),
-		failed: result.kind === 'refus'
+		// Une définition rangée mais en erreur (`h(x) = x^^2`) : la ligne aussi
+		failed:
+			result.kind === 'refus' || (result.kind === 'definition' && result.object.status === 'error')
 	};
 }
 
@@ -895,8 +899,23 @@ function textOf(result: CalcResult): string {
 		case 'refus':
 			return result.message;
 		case 'definition':
-			return `« ${result.name} » est dans tes objets.`;
+			return definitionText(result.name, result.object);
 		default:
 			return '';
 	}
+}
+
+/**
+ * La ligne d'une définition dit ce que dit la carte (décision de David,
+ * 2026-10-13) : rangée, mais en erreur ou en attente, elle reprend le
+ * message de la carte au lieu d'annoncer un objet prêt.
+ */
+function definitionText(name: string, object: AtelierObject): string {
+	const placed = `« ${name} » est dans tes objets`;
+	if (object.message === undefined) return `${placed}.`;
+	if (object.status === 'error') return `${placed}, mais elle ne se lit pas : ${object.message}`;
+	if (object.status === 'pending') {
+		return `${placed}, ${object.message.charAt(0).toLowerCase()}${object.message.slice(1)}`;
+	}
+	return `${placed}.`;
 }
