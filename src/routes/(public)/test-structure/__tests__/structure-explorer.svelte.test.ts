@@ -12,7 +12,7 @@ import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-svelte';
 // Comme la page : polices et classes du rendu MathLive (le rendu local = celui de la CI)
 import '$lib/utils/mathlive-styles';
-import { stripMarkers, structureFromLatex } from '$lib/mathAST/structure';
+import { MARKER_PREFIX, stripMarkers, structureFromLatex } from '$lib/mathAST/structure';
 import StructureExplorerHarness from './StructureExplorerHarness.svelte';
 import StructureReadingHarness from './StructureReadingHarness.svelte';
 
@@ -138,13 +138,15 @@ describe('sens inverse : survoler la lecture encadre la sous-expression (Q10)', 
 			latex: '2+3y',
 			readerGrade: null
 		});
-		const stage = container.querySelector<HTMLElement>('.structure-stage');
+		const stage = container.querySelector<HTMLElement>('[data-field]');
 		expect(stage?.dataset.framedId).toBeUndefined();
 		await expect.poll(() => lexiconButtons(container)).toContain('produit');
 		await userEvent.hover(page.getByRole('button', { name: 'produit', exact: true }));
 		await expect.poll(() => stage?.dataset.framedId).toBe(String(nodeIdOf('2+3y', '3y')));
 		// L'encadré est dessiné, pas seulement calculé
-		await expect.poll(() => container.querySelectorAll('.structure-frame').length).toBe(1);
+		await expect
+			.poll(() => container.querySelectorAll('.structure-frame:not([hidden])').length)
+			.toBe(1);
 	});
 
 	it('survoler une formule de la lecture encadre sa sous-expression', async () => {
@@ -152,7 +154,7 @@ describe('sens inverse : survoler la lecture encadre la sous-expression (Q10)', 
 			latex: '2+3y',
 			readerGrade: null
 		});
-		const stage = container.querySelector<HTMLElement>('.structure-stage');
+		const stage = container.querySelector<HTMLElement>('[data-field]');
 		// Le segment par son rôle et son nom : le rendu MathLive répète « y » (texte, MathML)
 		await userEvent.hover(page.getByRole('button', { name: 'y', exact: true }));
 		await expect.poll(() => stage?.dataset.framedId).toBe(String(nodeIdOf('2+3y', 'y')));
@@ -166,7 +168,8 @@ describe('élève de 6e ou avant (section C)', () => {
 			readerGrade: '6'
 		});
 		await expect.element(page.getByText(/Ajoute des parenthèses/)).toBeInTheDocument();
-		expect(container.querySelector('.structure-stage')).toBeNull();
+		// La formule reste, pour qu'on l'écrive (champ F) ; sans structure, rien ne s'encadre
+		expect(container.querySelector(`[data-field-stage] [class*="${MARKER_PREFIX}"]`)).toBeNull();
 		expect(wholeReading(container)).toBeNull();
 	});
 
@@ -177,7 +180,7 @@ describe('élève de 6e ou avant (section C)', () => {
 		});
 		await expect.element(page.getByText(/s'apprend en 5e/)).toBeInTheDocument();
 		expect(container.querySelector('[data-advice] math-span')).not.toBeNull();
-		expect(container.querySelector('.structure-stage')).toBeNull();
+		expect(container.querySelector(`[data-field-stage] [class*="${MARKER_PREFIX}"]`)).toBeNull();
 	});
 
 	it('C3 : élève de 6e, 2+3+4 → pas de message, lecture visible', async () => {
@@ -196,7 +199,7 @@ describe('élève de 6e ou avant (section C)', () => {
 				readerGrade
 			});
 			expect(container.querySelector('[data-advice]')).toBeNull();
-			expect(container.querySelector('.structure-stage')).not.toBeNull();
+			expect(container.querySelector('[data-field]')).not.toBeNull();
 			expect(wholeReading(container)?.textContent?.replace(/\s+/g, ' ')).toContain('la somme de 5');
 		}
 	});
@@ -222,14 +225,17 @@ describe('clavier sur la lecture principale (revue du lot 4)', () => {
 			latex: '2+3y',
 			readerGrade: null
 		});
-		const stage = container.querySelector<HTMLElement>('.structure-stage');
+		const stage = container.querySelector<HTMLElement>('[data-field]');
 		await expect.poll(() => lexiconButtons(container)).toContain('produit');
 		const two = page.getByRole('button', { name: '2', exact: true });
 		await expect.element(two).toBeInTheDocument();
 		await expect
 			.element(page.getByRole('button', { name: 'par', exact: true }))
 			.toBeInTheDocument();
-		// Premier arrêt : « la », qui désigne la somme
+		// Premier arrêt : le champ lui-même (on l'écrit au clavier, Entrée) ; puis « la »,
+		// qui désigne la somme
+		await userEvent.tab();
+		expect(document.activeElement).toBe(stage);
 		await userEvent.tab();
 		expect(document.activeElement?.getAttribute('aria-label')).toBe('la');
 		await expect.poll(() => stage?.dataset.framedId).toBe('0');
@@ -242,7 +248,7 @@ describe('clavier sur la lecture principale (revue du lot 4)', () => {
 			latex: '2+3y',
 			readerGrade: null
 		});
-		const stage = container.querySelector<HTMLElement>('.structure-stage');
+		const stage = container.querySelector<HTMLElement>('[data-field]');
 		const product = nodeIdOf('2+3y', '3y');
 		await expect.poll(() => lexiconButtons(container)).toContain('produit');
 		const word = page.getByRole('button', { name: 'produit', exact: true }).first();
@@ -264,13 +270,13 @@ describe('réglage « nombres et lettres seuls » (revue du lot 4)', () => {
 			readerGrade: null,
 			frameLeaves: false
 		});
-		const stage = container.querySelector<HTMLElement>('.structure-stage');
+		const stage = container.querySelector<HTMLElement>('[data-field]');
 		const two = page.getByRole('button', { name: '2', exact: true });
 		await userEvent.hover(two);
 		// Le survol a bien eu lieu (segment survolé), mais rien n'est encadré
 		await expect.poll(() => two.element().matches(':hover')).toBe(true);
 		expect(stage?.dataset.framedId).toBeUndefined();
-		expect(container.querySelectorAll('.structure-frame')).toHaveLength(0);
+		expect(container.querySelectorAll('.structure-frame:not([hidden])')).toHaveLength(0);
 		await expect.poll(() => lexiconButtons(container)).toContain('produit');
 		await userEvent.hover(page.getByRole('button', { name: 'produit', exact: true }));
 		await expect.poll(() => stage?.dataset.framedId).toBe(String(nodeIdOf('2+3y', '3y')));
@@ -299,13 +305,15 @@ describe('longueurs de segments (chantier « longueurs », lot 4)', () => {
 			readerGrade: null,
 			capitalPairs: 'length'
 		});
-		const stage = container.querySelector<HTMLElement>('.structure-stage');
+		const stage = container.querySelector<HTMLElement>('[data-field]');
 		await expect.poll(() => lexiconButtons(container)).toContain('longueur');
 		await userEvent.hover(page.getByRole('button', { name: 'longueur', exact: true }));
 		const lengthId = nodeIdOf(latex, "A'B'", 'length');
 		await expect.poll(() => stage?.dataset.framedId).toBe(String(lengthId));
 		// Un seul encadré dessiné : la longueur n'est pas coupée en A′ et B′
-		await expect.poll(() => container.querySelectorAll('.structure-frame').length).toBe(1);
+		await expect
+			.poll(() => container.querySelectorAll('.structure-frame:not([hidden])').length)
+			.toBe(1);
 	});
 
 	it('mode produit : 3AB² se lit comme avant', async () => {

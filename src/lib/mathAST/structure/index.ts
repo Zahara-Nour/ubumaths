@@ -18,6 +18,8 @@ export type {
 } from './types';
 export {
 	cardLatex,
+	expressionLatex,
+	findMarkerBlock,
 	GAP_CLASS_PREFIX,
 	groupLatex,
 	movableGroupOf,
@@ -25,6 +27,7 @@ export {
 	reorder,
 	withoutPart,
 	type GroupLayout,
+	type MarkerBlock,
 	type MovableGroup,
 	type MovablePart,
 	type RearrangeOptions
