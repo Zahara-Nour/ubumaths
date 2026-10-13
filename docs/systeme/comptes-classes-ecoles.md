@@ -285,7 +285,13 @@ Unitaires (mocks Supabase) :
 - `src/routes/api/student/age-declaration/__tests__/age-declaration.test.ts` : Oui, Non et délai de
   grâce, 409, 403 hors 2nde, écriture par le client service avec `.select()`.
 - `src/routes/(protected)/dashboard/teacher/classes/__tests__/schedule-write-verdict.test.ts` : une
-  écriture de créneau qui ne touche aucune ligne n'annonce pas un succès.
+  écriture de créneau qui ne touche aucune ligne n'annonce pas un succès ; même règle pour
+  `regenerateJoinCode` et `toggleRegistration` dans `class-write-verdict.test.ts` (même dossier).
+- `src/routes/api/admin/remove-from-class/__tests__/write-verdict.test.ts` (404 sans inscription
+  archivée), `src/routes/(protected)/dashboard/admin/classes/__tests__/write-verdict.test.ts`
+  (`update`, `deactivate`, `activate`) et
+  `src/routes/(protected)/dashboard/admin/schools/__tests__/write-verdict.test.ts` (`delete`) :
+  zéro ligne touchée n'annonce pas un succès.
 - `src/lib/server/admin/__tests__/exercise-backup.test.ts` : validation et restauration.
 - `src/lib/components/admin/__tests__/SchoolConfigModal.svelte.test.ts` (la semaine enregistrée est
   bien chargée, malgré les proxys `$state`) et `WeekConfigEditor.svelte.test.ts` (les préréglages
@@ -323,9 +329,6 @@ Aucun test trouvé pour : l'import d'élèves, l'envoi du courriel de bienvenue,
 
 Constatés le 2026-10-13, **non corrigés**.
 
-- **Écritures sans `.select()`** : `remove-from-class`, `regenerateJoinCode`,
-  `toggleRegistration`, les actions de `dashboard/admin/classes` et l'action `delete` des écoles
-  annoncent un succès même si aucune ligne n'a bougé.
 - **Entrées non validées par Zod** : les actions de `dashboard/admin/classes` lisent le formulaire
   par `formData.get(...) as string` ; l'action `delete` des écoles ne valide pas `id` ; l'import
   d'élèves ne valide que la chaîne JSON, pas chaque élève (champs, nombre).

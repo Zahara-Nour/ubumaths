@@ -217,14 +217,22 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	}
 
 	try {
-		const { error: deleteError } = await locals.supabase
+		// ⚠️ Une suppression refusée par la RLS, ou d'un rapport inconnu, touche
+		// zéro ligne sans erreur : on vérifie les lignes rendues avant d'annoncer
+		// la suppression (cf. docs/pratiques/rls-echecs-silencieux.md).
+		const { data: deletedReports, error: deleteError } = await locals.supabase
 			.from('bug_reports')
 			.delete()
-			.eq('id', params.reportId);
+			.eq('id', params.reportId)
+			.select('id');
 
 		if (deleteError) {
 			console.error('[API] Error deleting bug report:', deleteError);
 			throw error(500, 'Erreur lors de la suppression du rapport');
+		}
+
+		if (!deletedReports || deletedReports.length === 0) {
+			throw error(404, 'Rapport non trouvé : rien n’a été supprimé');
 		}
 
 		return json({ success: true });

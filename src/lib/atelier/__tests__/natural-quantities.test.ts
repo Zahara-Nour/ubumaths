@@ -1,6 +1,6 @@
 /**
  * La lecture d'une grandeur écrite naturellement dans l'atelier (phase 0
- * `docs/wip/grandeurs-lot-c-phase0.md`, validée par David le 2026-10-11) :
+ * `docs/archive/wip/grandeurs-lot-c-phase0.md`, validée par David le 2026-10-11) :
  * « un nombre, une espace, une unité » est une grandeur ; collé ou avec `*`,
  * c'est un produit.
  */

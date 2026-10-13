@@ -6,6 +6,7 @@ couvre:
   - 'src/lib/server/utils/**'
   - 'src/lib/server/validation/{index,common,params,response-utils,cron}.ts'
   - 'src/lib/utils/{form-action,logger}.ts'
+  - scripts/cliquet-console-serveur.ts
   - src/lib/zod-locale.ts
   - 'src/routes/(protected)/dashboard/admin/cron/**'
   - 'src/routes/api/admin/cron/**'
@@ -88,7 +89,8 @@ Une route sensible accessible sans compte → `rateLimiter.ts` (le seul qui tien
 
 ### 1.6 Journalisation
 
-- `createServerLogger(fichier)` / `createLogger` de `src/lib/utils/logger.ts` ; `redactPII` masque les données personnelles. Peu adopté : 4 endpoints l'importent, **319** utilisent `console.error` directement (les deux finissent dans les logs Vercel).
+- `createServerLogger(fichier)` / `createLogger` de `src/lib/utils/logger.ts` ; `redactPII` masque les données personnelles. Peu adopté : 4 endpoints l'importent, **319** utilisent `console.error` directement (les deux finissent dans les logs Vercel). Hors dev, `createServerLogger` écrit du texte nu (horodatage + `[fichier]`) : pas de codes ANSI, que les journaux Vercel affichent en clair ; en dev, couleurs gardées (test `src/lib/utils/__tests__/logger-serveur-sans-ansi.test.ts`).
+- **Cliquet des `console.*` serveur** (2026-10-13) : `scripts/cliquet-console-serveur.ts` compte, fichier par fichier, les `console.(log|info|warn|error|debug|trace)(…)` de `src/lib/server/**` et des fichiers serveur de `src/routes/**` (`+server`, `*.server`, dossier `server/`), plus `src/hooks.server.ts`, tests exclus, sur l'arbre syntaxique (commentaires et chaînes ignorés). Référence : `tests/fixtures/cliquet-console-serveur.json` ; garde : `src/lib/__tests__/console-serveur-cliquet.test.ts`. Un compte qui monte, ou un fichier neuf avec `console.*` → échec (« utilise createServerLogger ») ; un compte qui baisse → échec aussi, `pnpm logs:cliquet --maj` abaisse la référence (il refuse une hausse, sauf `--accepter-hausse`). Angle mort : `console['error'](…)`, un alias ou une déstructuration de `console` ne comptent pas.
 - Erreur à garder et à trier : `logError` (`src/lib/server/errorMonitoring.ts`).
 - Jobs : RPC `start_job_run` / `complete_job_run` (table `background_job_runs`, page `/dashboard/admin/cron`).
 
@@ -269,12 +271,12 @@ Côté GitHub Actions (planifiés, hors application) : `.github/workflows/produc
 ## 4. Écarts connus
 
 1. **Énigme du jour : aucun déclencheur automatique, et une garde fragile.** `api/riddles/auto-select-daily` n'est planifié nulle part (pas de cron Vercel, pas de job pg_cron) ; seul le bouton admin l'appelle. La route n'exige une clé que si `VITE_RIDDLE_AUTO_SELECT_API_KEY` est définie (sinon **POST ouvert**, qui écrit via le client service role), alors que le déclencheur admin envoie `Bearer CRON_SECRET` : avec la clé définie, le bouton reçoit 401. Valeur de la variable en prod non vérifiée (secret). `verifyCronAuth` (`src/lib/server/auth/cron.ts`), fait pour ce cas, n'est branché nulle part.
-2. **`run_flag_stale_python_rechecks` n'est pas programmé** : sa migration (`supabase/migrations/20260827120000_python_submission_server_verification.sql`) dit de le planifier hors bande ; il n'est pas dans `cron.job` en prod, ni dans `ALLOWED_JOB_PATHS`. La fonction ne fait que **compter** les vérifications restées `pending` plus d'une heure (elle ne modifie rien) ; la table `python_submission_server_verdicts` est **vide** en prod (mesuré le 2026-10-13). Sans effet tant que la vérification serveur des soumissions Python ne sert pas.
+2. ✅ **`run_flag_stale_python_rechecks` supprimé** (2026-10-13, migration `20261016101700`) : jamais programmé, il ne faisait que compter les lignes `pending` de `python_submission_server_verdicts`, table vide que rien n'alimentait (re-vérification Python abandonnée, ADR 0010). Table et fonction supprimées.
 3. ✅ **Liste blanche service role** (2026-10-13) : `'/api/cleanup/'`, sans route, retiré ; `'/api/cron/'` sert de nouveau (`api/cron/deleted-account-files`). Le commentaire de `api/admin/cron/trigger` cite la vraie route HTTP. Le contrôle n'est qu'un avertissement de dev.
 4. **Deux `requireAuth` homonymes** aux signatures différentes : `src/lib/server/auth.ts` (`user`, redirige) et `src/lib/server/middleware/auth.ts` (`locals`, 401). Et 91 endpoints refont une garde à la main au lieu du middleware (§ 1.1).
 5. **CSRF en double** : SvelteKit (`svelte.config.js`) + `csrfHandle` maison. ✅ (2026-10-13) `csrfProtection.ts`, appelé par personne, supprimé ; le 403 « origine différente du site » ne ressort plus en « origine illisible » (test `src/lib/server/__tests__/csrfHandle.test.ts`).
 6. **Trois limiteurs de débit** (§ 1.5) ; `middleware/rateLimit.ts` et la `Map` locale de `api/admin/cron/trigger` ne tiennent pas entre instances Vercel.
-7. **Journalisation hétérogène** : `console.error` direct dans 319 endpoints, logger structuré dans 4.
+7. **Journalisation hétérogène** : `console.error` direct dans 319 endpoints, logger structuré dans 4. Décision (David) : tout passera par `createServerLogger`, en lots. **Lot 0 fait (2026-10-13)** : logger sans codes ANSI hors dev ; cliquet par fichier (`pnpm logs:cliquet`, § 1.6), référence à 2 205 appels dans 531 fichiers.
 8. ✅ **Code mort** : `profanity-filter.ts` supprimé (2026-10-13) ; le filtrage des messages passe par la fonction SQL `check_profanity_simple`, appelée par le trigger `process_message_content`.
 
 ---

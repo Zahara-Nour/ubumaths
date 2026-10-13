@@ -1594,6 +1594,20 @@ describe('convertLatexToTypstMath - Matrix environments', () => {
 		);
 	});
 
+	// Typst n'accepte qu'UN caractère (ou none) pour `delim` : "none" et "||" faisaient
+	// échouer toute la fiche (« expected exactly one character », compilé le 2026-10-13)
+	it('\\begin{matrix} : mat() sans délimiteur (none, pas la chaîne "none")', () => {
+		expect(convertLatexToTypstMath('\\begin{matrix} a & b \\\\ c & d \\end{matrix}')).toBe(
+			'mat(delim: #none, a, b; c, d)'
+		);
+	});
+
+	it('\\begin{Vmatrix} : mat() à doubles barres, en un seul caractère ‖', () => {
+		expect(convertLatexToTypstMath('\\begin{Vmatrix} a & b \\\\ c & d \\end{Vmatrix}')).toBe(
+			'mat(delim: "‖", a, b; c, d)'
+		);
+	});
+
 	it('should handle vector coordinates with expressions', () => {
 		expect(
 			convertLatexToTypstMath('\\begin{pmatrix} t+6 \\\\ 2t - \\dfrac{1}{2} \\end{pmatrix}')

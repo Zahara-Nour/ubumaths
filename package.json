@@ -22,6 +22,7 @@
 		"check:changed": "bash scripts/check-changed.sh",
 		"check:staged": "bash scripts/check-changed.sh --staged",
 		"check:incremental": "bash scripts/check-incremental.sh",
+		"logs:cliquet": "tsx scripts/cliquet-console-serveur.ts",
 		"types:cliquet": "svelte-kit sync && bash scripts/gros-process.sh 'Un cliquet des types des tests' tsx scripts/cliquet-types-tests.ts",
 		"check:css-tokens": "bash scripts/check-css-tokens.sh",
 		"extern:sync": "bash scripts/extern-sync.sh",

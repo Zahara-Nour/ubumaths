@@ -1,7 +1,7 @@
 /**
  * Atelier — lire une grandeur écrite naturellement
  *
- * Phase 0 `docs/wip/grandeurs-lot-c-phase0.md` (décisions de David du
+ * Phase 0 `docs/archive/wip/grandeurs-lot-c-phase0.md` (décisions de David du
  * 2026-10-11) : **« un nombre, une espace, une unité » est une grandeur** —
  * `5 km` se lit `5[km]` ; collé (`5m`) ou avec `*`, c'est un produit. C'est la
  * règle typographique officielle : une espace entre le nombre et l'unité, un

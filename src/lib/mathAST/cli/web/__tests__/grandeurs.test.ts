@@ -1,7 +1,7 @@
 /**
  * Les grandeurs dans la console de mathAST (Calcul de l'atelier, `/cas`).
  *
- * Phase 0 `docs/wip/grandeurs-phase0.md`, lot A (validée par David le
+ * Phase 0 `docs/archive/wip/grandeurs-phase0.md`, lot A (validée par David le
  * 2026-10-11) : une grandeur se calcule par `tidy`, unité écrite d'abord —
  * comme `{{eval}}`. Mesuré avant : `10[km]/1[h]` répondait « 10 m/s »,
  * `90[km/h]*2[h]` « 180 m », `3[h]+20[min]` une fraction de 17 chiffres.

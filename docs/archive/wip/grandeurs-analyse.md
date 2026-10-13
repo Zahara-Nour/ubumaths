@@ -15,7 +15,7 @@ sauf mention contraire. Vocabulaire : une **grandeur** est un nombre muni d'une 
 1. **Calcul (atelier) et `/cas` affichent des grandeurs fausses** : 9 cas sur 26 de la batterie
    (`10 km ÷ 1 h` → « 10 m/s », `7 mm × 5 mm` → « 35 m² », `90 km/h × 2 h` → « 180 m »). La
    valeur calculée est juste, l'**étiquette** de l'unité est fausse. Défaut **connu et mesuré le
-   2026-09-27** (`docs/wip/grandeurs-eval-progress.md` : « à corriger à part »), jamais corrigé.
+   2026-09-27** (`docs/archive/wip/grandeurs-eval-progress.md` : « à corriger à part »), jamais corrigé.
 2. **Le bon calculateur existe déjà** : `tidy` (unité écrite d'abord), sur lequel `{{eval}}` des
    questions a été bâti — juste sur les 26 cas. Calcul passe par un **autre**, plus ancien :
    `evaluateWithUnits`.

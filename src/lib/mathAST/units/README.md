@@ -35,8 +35,15 @@ const factor = getConversionFactor(km_h, velocity);
 
 // Format
 format(km_h, 'original'); // 'km/h'
-format(km_h, 'fraction'); // 'm/s'
+format(km_h, 'fraction'); // 'm/s' — ⚠️ le coefficient (1000/3600) n'est PAS écrit
 ```
+
+> ⚠️ **`'dot'` et `'fraction'` écrivent la signature en unités de base, sans le
+> coefficient** : km/h devient « m/s ». Ce n'est pas un style d'écriture d'une
+> grandeur. C'est cette perte qui faisait répondre « 10 m/s » à `10[km]/1[h]` dans
+> Calcul jusqu'au lot A des grandeurs (#1099). Pour écrire une grandeur calculée,
+> passer par `tidy` (unité écrite d'abord) : voir
+> [docs/systeme/grandeurs.md](../../../../docs/systeme/grandeurs.md).
 
 ## API Reference
 
@@ -89,8 +96,8 @@ normalizeToBase(u); // Normalize to SI base
 
 ```typescript
 format(u, 'original'); // Preserve input (e.g., 'km/h')
-format(u, 'dot'); // Normalized (e.g., 'm.s^-1')
-format(u, 'fraction'); // Fraction (e.g., 'm/s')
+format(u, 'dot'); // Base units, coefficient dropped (km/h → 'm.s^-1')
+format(u, 'fraction'); // Base units, coefficient dropped (km/h → 'm/s')
 ```
 
 ## Types
@@ -141,8 +148,6 @@ type Dimension =
 pnpm test:server src/lib/mathAST/units/
 ```
 
-336 tests covering all modules.
-
 ## Files
 
 - `types.ts` - Type definitions
@@ -150,6 +155,9 @@ pnpm test:server src/lib/mathAST/units/
 - `factory.ts` - Unit creation functions
 - `operations.ts` - Arithmetic operations
 - `conversion.ts` - Unit conversion
+- `exact.ts` - Coefficients de conversion en rationnels exacts (`tidy`)
+- `selection.ts` - Choix de l'unité adaptée à l'ordre de grandeur
 - `parser.ts` - String parsing
 - `formatter.ts` - Output formatting
+- `display.ts` - Écriture d'affichage (`\mathrm{km}`, Typst) : `displayUnitsInLatex`
 - `index.ts` - Public exports

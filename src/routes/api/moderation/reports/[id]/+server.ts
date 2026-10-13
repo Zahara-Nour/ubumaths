@@ -69,7 +69,27 @@ export const PUT: RequestHandler = async ({ request, params, locals }) => {
 
 	const { status, reviewNotes, deleteMessage } = validation.data;
 
-	// 5. Call review_report RPC
+	// 5. Vérifier que le signalement existe. La RPC `review_report` (SECURITY
+	// DEFINER, `RETURNS void`) fait un UPDATE sans compter les lignes : un
+	// identifiant inconnu rendait « succès » sur zéro ligne modifiée. Le prof et
+	// l'admin voient tous les signalements (policy « Teachers can view all
+	// reports ») : une absence ici est une vraie absence.
+	const { data: existingReport, error: fetchError } = await locals.supabase
+		.from('message_reports')
+		.select('id')
+		.eq('id', reportId)
+		.maybeSingle();
+
+	if (fetchError) {
+		console.error('Failed to fetch report:', fetchError);
+		throw error(500, 'Impossible de vérifier le signalement');
+	}
+
+	if (!existingReport) {
+		throw error(404, 'Signalement introuvable');
+	}
+
+	// 6. Call review_report RPC
 	const { error: reviewError } = await locals.supabase.rpc('review_report', {
 		p_report_id: reportId,
 		p_new_status: status,

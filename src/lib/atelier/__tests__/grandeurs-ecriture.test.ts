@@ -1,6 +1,6 @@
 /**
  * Écrire une grandeur naturellement dans Calcul (phase 0
- * `docs/wip/grandeurs-lot-c-phase0.md`, validée par David le 2026-10-11).
+ * `docs/archive/wip/grandeurs-lot-c-phase0.md`, validée par David le 2026-10-11).
  */
 
 import { describe, it, expect } from 'vitest';
