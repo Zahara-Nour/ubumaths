@@ -311,7 +311,8 @@ maintenant par `computeDomain` sur f − g avant simplification, intersecté ave
 après `normalizeExcludedPoints`. Statut `all-real` lu sur le découpage (chaque morceau convient),
 `difference` ne voyant pas « tout ℝ \ {0} ». Contrainte non résolue (`x^5 − x + 1 ≠ 0`) →
 `InequalityNotSolvable` ; exclusion périodique (`\frac{\sin x}{\sin x}`), que le découpage du
-signe lit comme ℝ → statut `partial`. La console (avec ou sans `dans`) en hérite. Le pipeline
+signe lit comme ℝ → statut `partial`, sauf si aucun pôle ne tombe dans le domaine imposé
+(`\tan x \geq 0` sur [-1 ; 1] reste `complete`). La console (avec ou sans `dans`) en hérite. Le pipeline
 pédagogique du premier degré, dont la conclusion est une forme résolue (`x ≥ 0`), refuse une
 inéquation à valeur interdite (`rejectForbiddenValues`, `pedagogical-solve/_helpers.ts`) ; le
 second degré conclut par `solveInequality` (juste), mais son tableau ne montre pas la valeur

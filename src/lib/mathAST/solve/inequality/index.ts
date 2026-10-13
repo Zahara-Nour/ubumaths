@@ -16,7 +16,8 @@
 
 import { reservedVariableRefusal } from '../../common/reserved-letters';
 import type { MathNode, RelationNode } from '../../types';
-import type { Domain } from '../../domain/types';
+import type { Domain, PeriodicExclusion } from '../../domain/types';
+import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import type { SignAnalysisResult, SignedInterval } from '../../sign/types';
 import {
 	SolveInequalityError,
@@ -105,10 +106,12 @@ export function solveInequality(
 		);
 	}
 	// Exclusion périodique (\frac{\sin x}{\sin x}) : le découpage du signe ne la
-	// suit pas (il la lit comme ℝ), le résultat ne peut être que partiel
+	// suit pas (il la lit comme ℝ), le résultat ne peut être que partiel — sauf
+	// si aucun pôle ne tombe dans le domaine imposé (\tan x ≥ 0 sur [-1 ; 1])
 	const periodicDomain =
-		definition.domain.kind === 'periodic_exclusion' ||
-		definition.domain.kind === 'condition_domain';
+		definition.domain.kind === 'condition_domain' ||
+		(definition.domain.kind === 'periodic_exclusion' &&
+			(options.domain === undefined || periodicPoleInside(definition.domain, options.domain)));
 	// Points interdits écrits en intervalles (ℝ \ {0} → ]-∞ ; 0[ ∪ ]0 ; +∞[), sans
 	// quoi `difference` ne reconnaît pas « tout le domaine » ; sur une borne du
 	// domaine imposé, le point l'ouvre : [0 ; 1] \ {0} → ]0 ; 1]
@@ -202,6 +205,38 @@ function resolveConstantInequality(expression: MathNode, op: InequalityOp): Solv
 		status,
 		signTable: signResult
 	};
+}
+
+/**
+ * Un point de `base + k·période` tombe-t-il dans `imposed` (bornes comprises) ?
+ * Dans le doute (borne ou période non évaluable, domaine non intervalle) : oui.
+ */
+function periodicPoleInside(periodic: PeriodicExclusion, imposed: Domain): boolean {
+	if (imposed.kind === 'empty') return false;
+	if (imposed.kind !== 'interval_set') return true;
+	const base = numericValue(periodic.basePoint);
+	const period = numericValue(periodic.period);
+	if (base === null || period === null || period <= 0) return true;
+	for (const piece of imposed.intervals) {
+		const lo = numericValue(piece.lower.value);
+		const hi = numericValue(piece.upper.value);
+		if (lo === null || hi === null) return true;
+		if (!Number.isFinite(lo) || !Number.isFinite(hi)) return true;
+		// Premier pôle ≥ lo, à une tolérance près (un pôle sur une borne compte)
+		const first = base + Math.ceil((lo - base) / period - 1e-9) * period;
+		if (first <= hi + 1e-9) return true;
+	}
+	return false;
+}
+
+function numericValue(node: MathNode): number | null {
+	if (node.type === 'infinity') return node.sign === 'positive' ? Infinity : -Infinity;
+	try {
+		const value = evaluateNodeToApproximatedNumber(node);
+		return Number.isNaN(value) ? null : value;
+	} catch {
+		return null;
+	}
 }
 
 /**

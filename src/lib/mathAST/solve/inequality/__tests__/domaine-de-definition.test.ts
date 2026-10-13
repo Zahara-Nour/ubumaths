@@ -49,7 +49,8 @@ describe('les valeurs interdites sont exclues de l’ensemble solution', () => {
 	it('\\frac{3x}{3x}\\geq 1 : tout le domaine, statut « all-real »', () => {
 		const result = solveInequality(relationOf('\\frac{3x}{3x}\\geq 1'), { variable: 'x' });
 		expect(result.status).toBe('all-real');
-		expect(formatInterval(result.domain)).not.toBe('ℝ');
+		expect(formatInterval(result.domain)).toBe('ℝ \\ {0}');
+		expect(formatInterval(result.solution)).toBe(']-∞ ; 0[ ∪ ]0 ; +∞[');
 	});
 
 	it('un domaine imposé est intersecté avec le domaine de définition', () => {
@@ -59,6 +60,45 @@ describe('les valeurs interdites sont exclues de l’ensemble solution', () => {
 		]);
 		const result = solveInequality(relationOf('2\\sqrt{x}<4'), { variable: 'x', domain: imposed });
 		expect(formatInterval(result.solution)).toBe('[0 ; 4[');
+	});
+});
+
+describe('exclusion périodique et domaine imposé : partiel seulement si un pôle y tombe', () => {
+	const between = (lo: string, hi: string) =>
+		intervalSet([interval(closedEndpoint(parseLatex(lo)), closedEndpoint(parseLatex(hi)))]);
+	// -1 écrit opposite(1) par le parseur, jamais number('-1')
+
+	it('\\tan(x)\\geq 0 sur [-1 ; 1] : aucun pôle, S = [0 ; 1], statut complete', () => {
+		const result = solveInequality(relationOf('2\\tan(x)\\geq 0'), {
+			variable: 'x',
+			domain: between('-1', '1')
+		});
+		expect(result.status).toBe('complete');
+		expect(formatInterval(result.solution)).toBe('[0 ; 1]');
+	});
+
+	it('\\frac{1}{\\cos x}>0 sur [-1 ; 1] : aucun pôle, tout l’intervalle', () => {
+		const result = solveInequality(relationOf('\\frac{3}{\\cos x}>0'), {
+			variable: 'x',
+			domain: between('-1', '1')
+		});
+		expect(result.status).toBe('all-real');
+	});
+
+	it('\\tan(x)\\geq 0 sur [1 ; 2] : π/2 dans l’intervalle, partiel', () => {
+		const result = solveInequality(relationOf('2\\tan(x)\\geq 0'), {
+			variable: 'x',
+			domain: between('1', '2')
+		});
+		expect(result.status).toBe('partial');
+	});
+
+	it('\\frac{3\\sin x}{3\\sin x}\\geq 1 sur [-1 ; 3] : 0 dans l’intervalle, partiel', () => {
+		const result = solveInequality(relationOf('\\frac{3\\sin x}{3\\sin x}\\geq 1'), {
+			variable: 'x',
+			domain: between('-1', '3')
+		});
+		expect(result.status).toBe('partial');
 	});
 });
 
