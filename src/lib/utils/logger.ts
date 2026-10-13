@@ -23,11 +23,6 @@ export type LogLevel = 'trace' | 'info' | 'warn' | 'error';
  * Note: Patterns are kept simple to avoid ReDoS vulnerabilities
  */
 const PII_PATTERNS = {
-	// Email addresses (simplified to avoid ReDoS). Forme large : domaine sans point
-	// (`eleve@college`), numérique (`163.com`) ou accentué. Le `/` borne l'adresse, si bien
-	// que `/@supabase/…` d'un chemin de pile n'est pas visé ; `nom@1.21.4` est écarté
-	// au remplacement (voir `redactString`).
-	email: /[^\s@/]+@([^\s@/]+)/g,
 	// Codes de connexion passés dans une URL (callback OAuth, lien de confirmation)
 	urlSecret: /([?&#](?:code|token_hash|token|access_token|refresh_token|otp)=)[^&#\s"']+/gi,
 	// Code à usage unique (6 chiffres) annoncé par « otp » ou « code », jusqu'à 4 signes
@@ -96,17 +91,59 @@ const ERROR_CODE_PATTERNS = [
 ] as const;
 
 /**
+ * Domaine fait de chiffres et de points : une version de paquet (`postgrest-js@1.21.4`
+ * d'un chemin de pile), pas une adresse. `163.com` ou `12.34.fr` n'en sont pas.
+ */
+const PACKAGE_VERSION = /^[\d.]+$/;
+
+/**
+ * Chemin pnpm avec pairs, `kit@2.8.0_@sveltejs+vite-plugin-svelte@4.0.0-next.6_svelte@5.1.0`.
+ * Domaine qui suit une version : `2.8.0_…`, `4.0.0-next.6_svelte` (un `_` n'existe dans
+ * aucun nom de domaine). Pair à portée : partie locale réduite à une version suivie de
+ * `_`, domaine en `scope+nom`.
+ */
+const PNPM_PEER_DOMAIN = /^\d+\.\d+\.\d+(?:-[A-Za-z0-9.]+)?_/;
+const PNPM_PEER_LOCAL = /^\d+\.\d+\.\d+(?:-[A-Za-z0-9.]+)?_$/;
+
+/** Ce qui borne une adresse e-mail : un espace, un autre `@`, un `/` (chemin de pile). */
+function isEmailBoundary(char: string): boolean {
+	return char === '@' || char === '/' || /\s/.test(char);
+}
+
+/**
+ * Masque les e-mails sous toutes leurs formes : domaine sans point (`eleve@college`),
+ * numérique (`163.com`), accentué. Balayage linéaire à partir de chaque `@` : un motif
+ * `[^\s@/]+@` reparcourait la chaîne depuis chaque position (5 à 10 s pour 100 Ko).
+ */
+function redactEmails(value: string): string {
+	let result = '';
+	let copied = 0;
+	for (let at = value.indexOf('@'); at !== -1; at = value.indexOf('@', at + 1)) {
+		let start = at;
+		while (start > copied && !isEmailBoundary(value[start - 1])) start--;
+		let end = at + 1;
+		while (end < value.length && !isEmailBoundary(value[end])) end++;
+		const local = value.slice(start, at);
+		const domain = value.slice(at + 1, end);
+		const isPackagePath =
+			PACKAGE_VERSION.test(domain) ||
+			PNPM_PEER_DOMAIN.test(domain) ||
+			(PNPM_PEER_LOCAL.test(local) && domain.includes('+'));
+		if (local === '' || domain === '' || isPackagePath) continue;
+		result += value.slice(copied, start) + '[email@redacted]';
+		copied = end;
+	}
+	return result + value.slice(copied);
+}
+
+/**
  * Redact PII from a string value
  */
 function redactString(value: string): string {
 	let result = value;
 
 	// Redact emails
-	result = result.replace(PII_PATTERNS.email, (match, domain: string) =>
-		// Un domaine fait de chiffres et de points est une version de paquet
-		// (`postgrest-js@1.21.4` dans un chemin de pile), pas une adresse
-		/^[\d.]+$/.test(domain) ? match : '[email@redacted]'
-	);
+	result = redactEmails(result);
 
 	// Redact IPv4 (show first octet only)
 	result = result.replace(PII_PATTERNS.ipv4, (ip) => {
