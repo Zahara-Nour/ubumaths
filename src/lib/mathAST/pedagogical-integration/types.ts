@@ -395,11 +395,14 @@ export const STRATEGIES_INTEGRATION: Readonly<
 
 /**
  * Error thrown when a pedagogical integration cannot be performed within the
- * V1 scope (e.g. requires partial fractions, trigonometric substitution,
- * cyclic IPP, tabular IPP, parametric integrals, improper integrals, or
- * piecewise functions).
+ * current scope (e.g. trigonometric substitution, tabular IPP, parametric
+ * integrals, improper integrals, piecewise functions, or `1/x^2`). L'IPP
+ * cyclique (`enableCyclicParts`) et les éléments simples
+ * (`enablePartialFractions`) ne sont PLUS hors périmètre : actifs au lycée.
  *
- * Caught by `correction-generator.ts` to fall back silently to Mode A.
+ * Caught by `correction-generator.ts` to fall back silently to Mode A, and by
+ * `atelier/integrate-steps.ts` (la ligne `.intégrer` garde alors la réponse du
+ * moteur, sans « Comment ? »).
  */
 export class PedagogicalIntegrationNotImplemented extends Error {
 	readonly integrand: MathNode;
