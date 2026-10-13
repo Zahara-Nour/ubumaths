@@ -37,12 +37,17 @@ Retirés faute de lecteur : la bascule du mode de saisie (`setInputMode`, `getIn
 `ReplInputMode`, `.latex` / `.custom` sans argument, `.auto`) — la saisie est toujours détectée ;
 `.export` / `.exp` et l'historique passé au moteur (`setHistory`, `ReplHistoryEntry`, `exportData`)
 — l'atelier exporte lui-même (`.exporter`) ; les champs de bascule exact/décimal (`exactOutput`,
-`exactOutputHtml`, `decimalOutput`, `decimalOutputHtml`, `canToggle`, `showDecimalInitially`) et
-`highlightRanges` ; `getLastAst` ; `TabStyle` ; les formateurs HTML `escapeWithLabel`,
+`exactOutputHtml`, `decimalOutput`, `decimalOutputHtml`, `canToggle`, `showDecimalInitially`) de
+`ReplExecutionResult`, et `highlightRanges` ; `getLastAst` ; `TabStyle` ; les formateurs HTML `escapeWithLabel`,
 `formatHashHtml`, `formatFunction*Html`.
 
+⚠️ Côté CLI, `CommandResult` (`cli/types.ts`) déclare toujours ces champs de bascule et `.solve`
+(`solve.command.ts`) les remplit encore : seul le moteur web a cessé de les transmettre. Ils n'ont
+plus de lecteur (ni `repl.ts`, ni `cli.ts`) ; `QuantityOutcome.exact` / `.decimal`
+(`cli/quantities.ts`) non plus. À alléger dans un second temps.
+
 Sans argument, `.latex` et `.custom` sont désormais les commandes du registre (sur la dernière
-expression du moteur) ; `.auto`, `.export` et `.exp` sont des commandes inconnues. L'atelier ne
+expression du moteur ; sans expression antérieure, un échec à la sortie vide) ; `.auto`, `.export` et `.exp` sont des commandes inconnues. L'atelier ne
 les envoie jamais au moteur (refus ou commande inconnue avant, `calcul.ts`).
 
 ## Tests

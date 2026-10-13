@@ -199,7 +199,7 @@ describe('.convert entre degrés et radians', () => {
 	});
 });
 
-describe('le bouton ≈ et la bascule exact ⇄ décimal', () => {
+describe('le bouton ≈', () => {
 	it('une grandeur non décimale propose sa valeur approchée', () => {
 		const result = run('10[km]/3');
 
