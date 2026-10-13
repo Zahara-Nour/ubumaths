@@ -25,6 +25,7 @@
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
 	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
+	import FormulaText from './FormulaText.svelte';
 	import {
 		exportFileName,
 		historyToJson,
@@ -499,6 +500,9 @@
 					{#if markup !== null}
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 						<span class="math">{@html markup}</span>
+					{:else if entry.formulas}
+						<!-- Refus de `.réciproque` : ses formules `$…$` composées -->
+						<span class="texte"><FormulaText text={entry.text} /></span>
 					{:else}
 						<span class="texte">{entry.text}</span>
 					{/if}

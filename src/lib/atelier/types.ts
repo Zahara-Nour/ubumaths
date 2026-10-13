@@ -148,6 +148,13 @@ export interface FunctionObject extends AtelierObjectBase {
 	 */
 	readonly interval?: string;
 	/**
+	 * Carte `f⁻¹` seulement : l'intervalle I tapé dans `.réciproque f sur I`, sur
+	 * lequel f est inversée — CROISÉ avec celui de f à chaque recalcul. Absent =
+	 * celui de f (ou son domaine). L'`interval` de la carte, lui, est son ensemble de départ f(I),
+	 * recalculé avec la formule (`reciprocal.ts`), jamais rangé.
+	 */
+	readonly reciprocalOn?: string;
+	/**
 	 * Réglages d'affichage. Absents tant que la fonction n'a jamais été tracée :
 	 * ils naissent au premier tracé, puis survivent au retrait (§1 L1).
 	 */

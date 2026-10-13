@@ -17,8 +17,17 @@ import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { validateName, nameRejectionMessage, nextName, derivativeOf, displayName } from './names';
+import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
+import { numericNode } from '$lib/mathAST/common/numeric';
+import { inverseNotationRefusal, reciprocalCommand, reciprocalResult } from './reciprocal';
+import {
+	validateName,
+	nameRejectionMessage,
+	nextName,
+	derivativeOf,
+	displayName,
+	reciprocalOf
+} from './names';
 import {
 	astOf,
 	readingMode,
@@ -196,6 +205,8 @@ export type CalcResult =
 	| {
 			readonly kind: 'refus';
 			readonly message: string;
+			/** Le message cite des formules en `$…$`, composées par la vue (`.réciproque`) */
+			readonly formulas?: true;
 			/** Une indication montrée avec le refus (`.résoudre 2t+1<5` : « écris « ; t » ») */
 			readonly note?: string;
 			/**
@@ -1017,6 +1028,19 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		};
 	}
 
+	// `.réciproque f [sur I]` lit un NOM de fonction : avant la substitution des
+	// noms, qui en ferait une expression (lot 3 de la réciproque)
+	// `.variations f^-1` : le moteur calculerait 1/f sans le dire (revue de #1328)
+	if (known.name !== 'reciprocal') {
+		const inverse = inverseNotationRefusal(session.atelier, typedArgument);
+		if (inverse !== null) return { kind: 'refus', message: inverse };
+	}
+	if (known.name === 'reciprocal') {
+		return reciprocalCommand(session.atelier, input, typedArgument, (text) =>
+			withPiCommand(decimalCommaInput(text))
+		);
+	}
+
 	const simulation = SIMULATIONS[known.name];
 	if (simulation !== undefined) {
 		const seed = (session.seed ?? randomSeed)();
@@ -1556,6 +1580,23 @@ function summaryField(source: { readonly summary?: readonly RenderedStep[] }): {
 	return source.summary === undefined ? {} : { summary: source.summary };
 }
 
+/** Le nom d'une carte dans les étapes : `f^-1` s'écrit `f^{-1}` en LaTeX. */
+function latexName(name: string): string {
+	const base = reciprocalOf(name);
+	return base === null ? name : `${base}^{-1}`;
+}
+
+/**
+ * « Réciproque » sur la carte de `name` : la même ligne que `.réciproque name`
+ * (carte `f⁻¹` comprise), décimaux à la française.
+ */
+export function runReciprocal(session: CalcSession, name: string): CalcResult {
+	syncEngine(session.atelier, session.engine);
+	return resultWithDecimalComma(
+		reciprocalResult(session.atelier, name, undefined, `.réciproque ${name}`)
+	);
+}
+
 /** Une action, décimaux à la française — même règle que `resultWithDecimalComma`. */
 function outcomeWithDecimalComma(outcome: ActionOutcome): ActionOutcome {
 	if (!outcome.ok) return outcome;
@@ -1597,6 +1638,9 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// CALCUL (`runCommand`) : les commandes de données lisent des modalités.
 	if (!input.startsWith('.')) {
 		if (EVENT_PROBABILITY.test(input)) return eventProbability(session.atelier, input);
+		// `f^-1(5)` : ni la puissance 1/f, ni rien laissé tel quel (revue de #1328)
+		const inverse = inverseNotationRefusal(session.atelier, input);
+		if (inverse !== null) return { kind: 'refus', message: inverse };
 		const unknown = findUnknownFunctionCall(input);
 		if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };
 	}
@@ -1894,9 +1938,19 @@ function computeAction(
 		// Ici, citer le nom est SÛR et mesuré : `f(2)` rend `-1`. C'est le chemin
 		// d'évaluation, pas une commande symbolique — la substitution du §6 bis ne
 		// concerne que les secondes.
-		const result = engine.execute(`${name}(${value})`);
+		// La carte `f⁻¹` s'appelle `f^-1`, que le moteur lirait comme une puissance :
+		// on lui donne sa formule, x remplacé (lot 3 de la réciproque)
+		const formula = reciprocalOf(name) === null ? null : astOf(substituted.expression, 'text');
+		if (reciprocalOf(name) !== null && formula === null) {
+			return { ok: false, message: `Impossible de calculer ${displayName(name)}(${argument}).` };
+		}
+		const result = engine.execute(
+			formula === null
+				? `${name}(${value})`
+				: toCustom(substitute(formula, { [INTERNAL_LETTER]: numericNode(value) }))
+		);
 		if (!result.success) {
-			return { ok: false, message: `Impossible de calculer ${name}(${argument}).` };
+			return { ok: false, message: `Impossible de calculer ${displayName(name)}(${argument}).` };
 		}
 		const rendered = renderResult(result);
 		// La ligne de l'image a son bouton ≈, comme `f(2)` tapé
@@ -1959,7 +2013,7 @@ function computeAction(
 	// ⚠️ « Dériver » rendait la notation d'un terminal : `d/dx(x^2*sin(x)) = …`,
 	// avec un `:/` parasite sur les quotients et aucune règle nommée.
 	if (actionId === 'derive') {
-		const derived = deriveSteps(substituted.expression, name);
+		const derived = deriveSteps(substituted.expression, latexName(name));
 		if (derived !== null) {
 			return {
 				ok: true,
@@ -1973,7 +2027,7 @@ function computeAction(
 
 	// Le même rendu que `.variations` tapé : dérivée, détail, tableau
 	if (actionId === 'variations') {
-		const rendering = variationsRendering(substituted.expression, name, 'x', within);
+		const rendering = variationsRendering(substituted.expression, latexName(name), 'x', within);
 		if (rendering !== null) {
 			return {
 				ok: true,

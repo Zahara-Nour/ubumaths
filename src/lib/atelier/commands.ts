@@ -245,6 +245,15 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		}
 	],
 	[
+		'reciprocal',
+		{
+			french: 'réciproque',
+			section: 'analyser',
+			description: 'Calculer la réciproque d’une fonction (sur un intervalle : sur …)',
+			example: '.réciproque x^2 sur [0;+∞['
+		}
+	],
+	[
 		'domain',
 		{
 			french: 'domaine',
@@ -347,8 +356,8 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
  * moteur (`a + 1` rendait « a+1 » avec `a = 3` au panneau), `.définir` créait
  * une fonction invisible. Ne pas les remettre au catalogue sous une autre forme.
  *
- * `inv` : la réciproque donnée à la main, jamais vérifiée. Une vraie
- * réciproque calculée viendra (`docs/wip/atelier-reciproque-phase0.md`).
+ * `inv` : la réciproque donnée à la main, jamais vérifiée. La vraie
+ * réciproque, calculée, est `.réciproque` (`reciprocal`, servie par l'atelier).
  */
 export const ENGINE_COMMANDS_LEFT_OUT: ReadonlySet<string> = new Set([
 	'let',
@@ -375,6 +384,9 @@ export const ENGINE_COMMANDS_LEFT_OUT: ReadonlySet<string> = new Set([
  */
 export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	'factor',
+	// `.réciproque` : calculée, vérifiée (`reciprocal.ts`) — rien à voir avec
+	// `inv` du moteur, laissée de côté (`ENGINE_COMMANDS_LEFT_OUT`)
+	'reciprocal',
 	'simulate',
 	'frequency',
 	'samples',

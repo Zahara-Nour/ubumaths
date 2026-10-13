@@ -3,7 +3,7 @@
  *
  * Décision de David (2026-10-13) : les commandes qui créent ou effacent des
  * noms (`.poser`, `.définir`, `.effacer`, `.oublier`, `.oublier-fonction`,
- * `.dérivée-de`, `.réciproque` donnée à la main) **ne sont pas censées
+ * `.dérivée-de`, `.inv` — la réciproque donnée à la main) **ne sont pas censées
  * exister** dans l'atelier — le panneau fait la même chose. Pas de refus
  * particulier : elles répondent comme toute commande inconnue.
  *
@@ -12,6 +12,9 @@
  * désynchronisait le moteur du panneau (`a + 1` rendait « a+1 » avec
  * `a = 3` affiché), `.définir` créait une fonction invisible, et `.latex`
  * basculait la saisie en LaTeX (`sqrt(2)*sqrt(8)` devenait « s q r t »).
+ *
+ * `.réciproque` n'en est plus : c'est la réciproque CALCULÉE (lot 3 de
+ * `docs/wip/atelier-reciproque-phase0.md`), servie par l'atelier.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -35,7 +38,6 @@ describe('les commandes de noms de /cas', () => {
 		['.effacer', 'effacer'],
 		['.oublier a', 'oublier'],
 		['.oublier-fonction f', 'oublier-fonction'],
-		['.réciproque f', 'réciproque'],
 		['.dérivée-de f', 'dérivée-de'],
 		['.let b 2', 'let'],
 		['.def g(x)=x', 'def'],

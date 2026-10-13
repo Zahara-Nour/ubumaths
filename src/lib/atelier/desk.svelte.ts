@@ -20,6 +20,7 @@ import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import {
 	runInput,
 	runAction,
+	runReciprocal,
 	promote,
 	derivativeNote,
 	type Alternative,
@@ -101,6 +102,11 @@ export interface Entry {
 	 * le bouton de la ligne. Affichage seul : l'export et le rejeu l'ignorent.
 	 */
 	readonly alternative?: Alternative;
+	/**
+	 * Le texte d'un refus cite des formules en `$…$` (réciproques par morceau,
+	 * lot 3 de la réciproque) : la vue les compose en mathématiques.
+	 */
+	readonly formulas?: true;
 	/** Présent seulement pour une saisie : c'est ce que « Garder » consomme. */
 	readonly result?: CalcResult;
 	/**
@@ -344,27 +350,7 @@ export class CalcDesk {
 			if (this.#typed.at(-1) !== text) this.#typed.push(text);
 		}
 
-		this.#push({
-			label: text,
-			text: textOf(result),
-			...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
-			// Un refus peut aussi porter des étapes (`.intégrer`, pôle dans [a ; b])
-			...((result.kind === 'commande' || result.kind === 'refus') && result.steps !== undefined
-				? { steps: result.steps }
-				: {}),
-			...((result.kind === 'commande' || result.kind === 'refus') && result.summary !== undefined
-				? { summary: result.summary }
-				: {}),
-			...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
-			...(result.kind === 'commande' && result.table !== undefined ? { table: result.table } : {}),
-			...((result.kind === 'calcul' || result.kind === 'commande') &&
-			result.alternative !== undefined
-				? { alternative: result.alternative }
-				: {}),
-			...('note' in result && result.note !== undefined ? { note: result.note } : {}),
-			failed: result.kind === 'refus',
-			result
-		});
+		this.#push({ label: text, ...entryOf(result), result });
 		this.draft = '';
 		this.notice = null;
 	}
@@ -833,6 +819,17 @@ export class CalcDesk {
 			return 'ok';
 		}
 
+		// « Réciproque » (lot 3 de la réciproque, R1) : la même ligne que
+		// `.réciproque f`, et la carte `f⁻¹` — sans changer de vue
+		if (actionId === 'reciprocal') {
+			this.#push({
+				label: `Réciproque ${displayName(name)}`,
+				...entryOf(runReciprocal(this.session, name))
+			});
+			this.notice = null;
+			return 'ok';
+		}
+
 		const label = PANEL_ACTIONS[actionId];
 		if (label === undefined) return 'unsupported';
 
@@ -864,6 +861,29 @@ export class CalcDesk {
 		this.notice = null;
 		return 'ok';
 	}
+}
+
+/** Ce qu'une ligne affiche, tiré du résultat d'une saisie (ou de « Réciproque »). */
+function entryOf(result: CalcResult): Omit<Entry, 'id' | 'label'> {
+	return {
+		text: textOf(result),
+		...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
+		// Un refus peut aussi porter des étapes (`.intégrer`, pôle dans [a ; b])
+		...((result.kind === 'commande' || result.kind === 'refus') && result.steps !== undefined
+			? { steps: result.steps }
+			: {}),
+		...((result.kind === 'commande' || result.kind === 'refus') && result.summary !== undefined
+			? { summary: result.summary }
+			: {}),
+		...(result.kind === 'commande' && result.chart !== undefined ? { chart: result.chart } : {}),
+		...(result.kind === 'commande' && result.table !== undefined ? { table: result.table } : {}),
+		...((result.kind === 'calcul' || result.kind === 'commande') && result.alternative !== undefined
+			? { alternative: result.alternative }
+			: {}),
+		...('note' in result && result.note !== undefined ? { note: result.note } : {}),
+		...(result.kind === 'refus' && result.formulas === true && { formulas: true as const }),
+		failed: result.kind === 'refus'
+	};
 }
 
 /** Ce qu'une ligne affiche en toutes lettres. */

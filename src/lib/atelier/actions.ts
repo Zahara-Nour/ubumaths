@@ -20,6 +20,25 @@ import type { AtelierObject } from './types';
 import { isValue, isList, isQualitative, type ListObject } from './types';
 import { crossProblem } from './cross';
 import { compareProblem } from './compare';
+import { derivativeOf, displayName, reciprocalOf } from './names';
+
+/**
+ * Ce que les cartes qui SUIVENT une fonction ne savent pas faire (`f′`, `f⁻¹`),
+ * avec la raison : pas de carte `f⁻¹′`, ni `f′⁻¹` — leurs noms ne se rangent pas.
+ */
+function followerReason(object: AtelierObject, actionId: string): string | undefined {
+	const reciprocal = reciprocalOf(object.name);
+	if (reciprocal !== null && actionId === 'reciprocal') {
+		return `La réciproque de ${displayName(object.name)}, c'est ${reciprocal}.`;
+	}
+	if (reciprocal !== null && actionId === 'derive') {
+		return `Pour dériver ${displayName(object.name)}, tape .dériver suivi de sa formule.`;
+	}
+	if (derivativeOf(object.name) !== null && actionId === 'reciprocal') {
+		return `Pas de carte réciproque pour une dérivée : tape .réciproque suivi de sa formule.`;
+	}
+	return undefined;
+}
 
 /** Une action proposée sur un objet. */
 export interface ObjectAction {
@@ -50,6 +69,8 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 	function: [
 		{ id: 'plot', label: 'Tracer' },
 		{ id: 'derive', label: 'Dériver' },
+		// Lot 3 de la réciproque (R1) : la carte `f⁻¹`, comme « Dériver » crée `f′`
+		{ id: 'reciprocal', label: 'Réciproque' },
 		// D7 : les DEUX gestes, distincts. « Dériver » affiche, « Garder » crée
 		// un objet — donc quelque chose de traçable et de citable.
 		{ id: 'table', label: 'Tabuler' },
@@ -348,6 +369,8 @@ export function actionsFor(
 		// `scatter:M` et `fit:M` portent leur partenaire : c'est la racine qui
 		// décide si l'action attend son lot.
 		if (NOT_YET.has(root)) return { ...action, disabledReason: NOT_YET_REASON };
+		const follower = followerReason(object, action.id);
+		if (follower !== undefined) return { ...action, disabledReason: follower };
 		return action;
 	});
 
