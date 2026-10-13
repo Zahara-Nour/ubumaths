@@ -266,3 +266,5 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
   droite seulement. Tous les cadres à la fois devenaient illisibles → au survol, seulement ceux qui
   contiennent la partie visée et ceux qu'elle contient (au doigt : tous). « Lourde » : 21 parties
   sur 21 se glissent.
+- 2026-10-13 — « encore beaucoup de parties encadrées » : au survol, seulement la partie visée et
+  celles qui la contiennent (plus celles qu'elle contient).
