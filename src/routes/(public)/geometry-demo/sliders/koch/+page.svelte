@@ -16,10 +16,9 @@
 		<h1 class="mt-2 text-2xl font-bold">Flocon de Von Koch</h1>
 		<p class="text-muted-foreground">
 			Le curseur n choisit l'étape (0 à 4). À chaque étape, chaque côté est coupé en trois et une
-			pointe équilatérale pousse sur le tiers du milieu. À n entier, on voit exactement l'étape n ;
-			entre deux entiers, les pointes grandissent. Le DSL ne boucle qu'au chargement : le script
-			construit d'avance les 4 étapes (768 sommets) et chaque pointe de l'étape k a une hauteur
-			multipliée par t<sub>k</sub>, qui passe de 0 à 1 quand n va de k − 1 à k.
+			pointe équilatérale pousse sur le tiers du milieu. Le DSL ne boucle qu'au chargement : le
+			script construit d'avance les 4 étapes (768 sommets) et chaque pointe de l'étape k a une
+			hauteur multipliée par t<sub>k</sub>, qui vaut 0 si n &lt; k et 1 si n ≥ k.
 		</p>
 	</div>
 

@@ -47,9 +47,9 @@ describe('buildKochDsl — flocon piloté par un curseur', () => {
 		}
 	});
 
-	it('entre deux entiers, les pointes poussent : à n = 0,5 elles sont à mi-hauteur', () => {
-		// 3 pointes d'aire a_0/9 chacune à pleine hauteur, moitié moins à mi-hauteur
-		expect(setup(4).ratioAt(0.5)).toBeCloseTo(1 + 3 * (1 / 9) * 0.5, 6);
+	it('le curseur avance par pas de 1 : pas d’étape intermédiaire', () => {
+		// n = 2,4 est ramené à 2 : on voit l'étape 2, pas des pointes à 40 % de leur hauteur
+		expect(setup(4).ratioAt(2.4)).toBeCloseTo(8 / 5 - (3 / 5) * (4 / 9) ** 2, 6);
 	});
 
 	it('revenir en arrière rend la figure de l’étape demandée', () => {
