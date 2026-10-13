@@ -114,9 +114,37 @@ describe('.réciproque f : la carte f⁻¹ et la ligne de Calcul', () => {
 		expect(valueAt(desk.atelier, F_INV, 9)).toBeCloseTo(3, 9);
 	});
 
-	it('« sur I » tapé REMPLACE l’intervalle de f', () => {
-		const desk = deskWith('f(x) = x^2 sur [0;+∞[', '.réciproque f sur ]-∞;0]');
+	// Revue de #1328 : « sur I » est CROISÉ avec l'ensemble de f, jamais substitué
+	it('« sur I » tapé sur une f sans ensemble : f⁻¹ = −√x sur ]−∞ ; 0]', () => {
+		const desk = deskWith('f(x) = x^2', '.réciproque f sur ]-∞;0]');
 		expect(valueAt(desk.atelier, F_INV, 9)).toBeCloseTo(-3, 9);
+	});
+
+	it.each([']-∞;0[', '[-4;-1]'])('f sur [0 ; +∞[ puis « sur %s » : vide, refus (pas −√x)', (on) => {
+		const desk = deskWith('f(x) = x^2 sur [0;+∞[', `.réciproque f sur ${on}`);
+		expect(last(desk)).toMatchObject({
+			failed: true,
+			text: "f n'est définie que sur [0 ; +∞[."
+		});
+		expect(desk.atelier.get(F_INV)).toBeUndefined();
+	});
+
+	it('f sur [0 ; +∞[ puis « sur [−1 ; 2] » : √x, sur [0 ; 2] croisé', () => {
+		const desk = deskWith('f(x) = x^2 sur [0;+∞[', '.réciproque f sur [-1;2]');
+		expect(last(desk).failed).toBe(false);
+		expect(valueAt(desk.atelier, F_INV, 4)).toBeCloseTo(2, 9);
+		expect(intervalLabelOf(desk.atelier.get(F_INV)!)).toBe('[0 ; 4]');
+	});
+
+	it('f redéfinie après « sur I » : l’intersection est recalculée', () => {
+		const desk = deskWith('f(x) = x^2', '.réciproque f sur [-1;2]');
+		expect(last(desk).failed).toBe(true); // x² n'est pas bijective sur [−1 ; 2]
+		desk.submit('.réciproque f sur [-3;-1]');
+		expect(valueAt(desk.atelier, F_INV, 4)).toBeCloseTo(-2, 9);
+		desk.submit('f(x) = x^2 sur [0;+∞[');
+		const card = desk.atelier.get(F_INV)!;
+		expect(card.status).toBe('error');
+		expect(card.message).toBe("f n'est définie que sur [0 ; +∞[.");
 	});
 
 	it('la lettre de l’élève : f(t) = 2t + 3 donne f⁻¹(t)', () => {
@@ -237,9 +265,28 @@ describe('les refus : en français, sans carte', () => {
 		expect(last(desk)).toMatchObject({ failed: true, text: "« g » n'existe pas dans l'atelier." });
 	});
 
-	it('.réciproque f^-1 : la réciproque de f⁻¹, c’est f', () => {
-		const desk = deskWith('f(x) = 2x+3', '.réciproque f', '.réciproque f^-1');
-		expect(last(desk)).toMatchObject({ failed: true, text: "La réciproque de f⁻¹, c'est f." });
+	it.each(['f^-1', 'f^{-1}', 'f^(-1)', 'f⁻¹', 'f^{-1}(x)'])(
+		'.réciproque %s : la réciproque de f⁻¹, c’est f (jamais « constante »)',
+		(written) => {
+			const desk = deskWith('f(x) = 2x+3', '.réciproque f', `.réciproque ${written}`);
+			expect(last(desk)).toMatchObject({ failed: true, text: "La réciproque de f⁻¹, c'est f." });
+		}
+	);
+
+	it.each(['.variations f^-1', '.dériver f^{-1}', '.résoudre f^(-1)(x)=2', 'f^-1(5)', 'f⁻¹(5)'])(
+		'%s : refus honnête, jamais 1/f calculé en silence',
+		(input) => {
+			const desk = deskWith('f(x) = 2x+3', '.réciproque f', input);
+			expect(last(desk).failed).toBe(true);
+			expect(last(desk).text).toBe(
+				"f⁻¹ désigne la réciproque de f : sa carte ne se cite pas encore dans Calcul, utilise ses boutons. Pour l'inverse 1/f, écris 1/f(x)."
+			);
+		}
+	);
+
+	it('x^-1, e^-1, f(x)^-1 restent des puissances', () => {
+		const desk = deskWith('f(x) = 2x+3', 'x^-1', 'e^-1', '.simplifier f(x)^-1');
+		expect(desk.entries.slice(-3).every((e) => !e.failed)).toBe(true);
 	});
 
 	it('le bouton garde l’intervalle tapé avant pour la carte f⁻¹ (revue)', () => {

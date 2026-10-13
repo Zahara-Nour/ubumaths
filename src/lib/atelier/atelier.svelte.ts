@@ -593,7 +593,7 @@ export class Atelier {
 	 * le moteur ne sait pas) : le refus dit pourquoi. La carte SUIT f
 	 * (`#reciprocals`) ; elle est tracée d'office si f l'est, comme `f′`.
 	 *
-	 * @param on - l'intervalle tapé après « sur » ; il remplace celui de f
+	 * @param on - l'intervalle tapé après « sur » ; croisé avec celui de f
 	 */
 	createReciprocal(base: string, on?: string): ReciprocalCreated | (Refused & { formulas?: true }) {
 		// Sans « sur » (le bouton), la carte existante garde l'intervalle tapé avant

@@ -132,7 +132,7 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
 - 2026-10-13 — **lot 3 en PR** (`feat/atelier-reciproque`) : bouton « Réciproque » et
   `.réciproque f [sur I]` (aussi sur une expression : ligne seule) → carte `f⁻¹` (rangée `f^-1`),
   qui suit f, porte son ensemble de départ comme intervalle (tracé restreint), se recrée au
-  rechargement sans formule rangée ; `sur I` REMPLACE l'intervalle de f. Paramètres, cas 1 : formule
+  rechargement sans formule rangée ; `sur I` CROISÉ avec l'ensemble de f (revue de #1328 ; d'abord « remplace », faux). Paramètres, cas 1 : formule
   à lettres (`(x − b)/a`) quand le solveur la trouve et qu'elle coïncide avec la réciproque jugée
   aux valeurs actuelles, sinon formule à nombres (`a eˣ` → `ln(x/2)`) recalculée à chaque cran ;
   « Pour a = 0 et b = 3, f est constante : pas de réciproque. » Refus composés en maths dans Calcul

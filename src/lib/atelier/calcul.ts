@@ -19,7 +19,7 @@ import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
 import { numericNode } from '$lib/mathAST/common/numeric';
-import { reciprocalCommand, reciprocalResult } from './reciprocal';
+import { inverseNotationRefusal, reciprocalCommand, reciprocalResult } from './reciprocal';
 import {
 	validateName,
 	nameRejectionMessage,
@@ -1029,6 +1029,11 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 
 	// `.réciproque f [sur I]` lit un NOM de fonction : avant la substitution des
 	// noms, qui en ferait une expression (lot 3 de la réciproque)
+	// `.variations f^-1` : le moteur calculerait 1/f sans le dire (revue de #1328)
+	if (known.name !== 'reciprocal') {
+		const inverse = inverseNotationRefusal(session.atelier, typedArgument);
+		if (inverse !== null) return { kind: 'refus', message: inverse };
+	}
 	if (known.name === 'reciprocal') {
 		return reciprocalCommand(session.atelier, input, typedArgument, (text) =>
 			withPiCommand(decimalCommaInput(text))
@@ -1630,6 +1635,9 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// CALCUL (`runCommand`) : les commandes de données lisent des modalités.
 	if (!input.startsWith('.')) {
 		if (EVENT_PROBABILITY.test(input)) return eventProbability(session.atelier, input);
+		// `f^-1(5)` : ni la puissance 1/f, ni rien laissé tel quel (revue de #1328)
+		const inverse = inverseNotationRefusal(session.atelier, input);
+		if (inverse !== null) return { kind: 'refus', message: inverse };
 		const unknown = findUnknownFunctionCall(input);
 		if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };
 	}

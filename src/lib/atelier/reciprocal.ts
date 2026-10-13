@@ -28,13 +28,13 @@ import { solve } from '$lib/mathAST/solve/solve';
 import { isSolverFailure } from '$lib/mathAST/solve/types';
 import { equals, variable as variableNode } from '$lib/mathAST/factory';
 import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
-import { containsValue } from '$lib/mathAST/domain/algebra';
+import { containsValue, intersect, isEmpty } from '$lib/mathAST/domain/algebra';
 import { formatInterval } from '$lib/mathAST/domain/format';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { expandCommandArgument, substitutedAstOf } from './engine';
 import { derivativeOf, displayName, hasObjectNameShape, reciprocalOf } from './names';
-import { intervalDomainOf, readInterval, splitInterval } from './interval';
+import { intervalDomainOf, intervalText, readInterval, splitInterval } from './interval';
 import { INTERNAL_LETTER, renameVariableIn, typedLetterOf } from './letter';
 import { astOf } from './parse';
 
@@ -117,8 +117,9 @@ const KIND_NAMES = { value: 'une valeur', sequence: 'une suite', list: 'une list
  * La réciproque de la fonction `base` de l'atelier, sur `on` (tapé après
  * « sur ») s'il est donné, sinon sur l'intervalle de f, sinon sur son domaine.
  *
- * ⚠️ `on` REMPLACE l'intervalle de f (le plus simple : c'est ce que l'élève
- * vient d'écrire) ; il n'est pas croisé avec lui.
+ * ⚠️ `on` est CROISÉ avec l'ensemble de f, recalculé à chaque appel : f définie
+ * sur [0 ; +∞[ n'existe pas sur ]−∞ ; 0], et une f redéfinie plus tard n'est
+ * jamais écrasée par un intervalle figé (revue de #1328). Vide → refus.
  */
 export function reciprocalOfFunction(
 	atelier: Atelier,
@@ -149,13 +150,15 @@ export function reciprocalOfFunction(
 	}
 
 	const letter = typedLetterOf(atelier, object);
-	let domain: Domain | null;
+	const own = intervalDomainOf(object);
+	let domain: Domain | null = own;
 	if (on !== undefined) {
 		const read = readInterval(on, letter);
 		if (!read.ok) return refused(read.message);
-		domain = read.domain;
-	} else {
-		domain = intervalDomainOf(object);
+		domain = read.domain === null ? own : own === null ? read.domain : intersect(read.domain, own);
+		if (domain !== null && isEmpty(domain)) {
+			return refused(`${shown} n'est définie que sur ${intervalText(own!)}.`);
+		}
 	}
 
 	const numeric = substitutedAstOf(atelier, base);
@@ -341,9 +344,10 @@ export function reciprocalCommand(
 		};
 	}
 	const on = written ?? undefined;
-	const follows = reciprocalOf(body);
+	// `f^-1`, `f^{-1}`, `f^(-1)`, `f⁻¹` : la réciproque de f⁻¹ est f
+	const follows = typedReciprocalBase(body);
 	if (follows !== null) {
-		return { kind: 'refus', message: `La réciproque de ${displayName(body)}, c'est ${follows}.` };
+		return { kind: 'refus', message: `La réciproque de ${follows}⁻¹, c'est ${follows}.` };
 	}
 	const target = /^([A-Za-z](?:_\d+)?'*)\s*(?:\(\s*[A-Za-z]\s*\))?$/.exec(body)?.[1];
 	if (target !== undefined && atelier.get(target) !== undefined) {
@@ -423,6 +427,37 @@ function calcResultOf(outcome: ReciprocalOutcome, input: string, note: string | 
 		steps: outcome.line.steps,
 		...(notes.length > 0 && { note: notes.join(' ') })
 	};
+}
+
+/**
+ * `f^-1`, `f^{-1}`, `f^(-1)`, `f⁻¹` écrits après un nom (lu par `typedReciprocalBase`
+ * et `inverseNotationRefusal`). Pas `f^-12` ; pas `f(x)^-1`, qui est bien 1/f(x).
+ */
+const INVERSE_NOTATION =
+	/(?<![A-Za-z_])([A-Za-z](?:_\d+)?)\s*(?:\^\s*(?:\{\s*-\s*1\s*\}|\(\s*-\s*1\s*\)|-\s*1(?![\d.,]))|⁻¹)/g;
+
+/** La fonction dont le texte ENTIER désigne la réciproque (`f^{-1}`, `f⁻¹(x)`), ou `null`. */
+export function typedReciprocalBase(text: string): string | null {
+	const match = new RegExp(`^${INVERSE_NOTATION.source}\\s*(?:\\(\\s*[A-Za-z]\\s*\\))?$`).exec(
+		text.trim()
+	);
+	return match === null ? null : match[1];
+}
+
+/**
+ * Le refus d'une saisie qui écrit `f^-1` (sous l'une de ses formes) avec f une
+ * fonction de l'atelier, ou `null`. Le moteur y lirait la puissance 1/f, sans
+ * le dire, alors que l'élève qui a une carte f⁻¹ pense à la réciproque.
+ * David n'a pas tranché si `f^-1` tapé doit désigner la carte : refus honnête
+ * en attendant (revue de #1328).
+ */
+export function inverseNotationRefusal(atelier: Atelier, text: string): string | null {
+	for (const match of text.matchAll(INVERSE_NOTATION)) {
+		const name = match[1];
+		if (atelier.get(name)?.kind !== 'function') continue;
+		return `${name}⁻¹ désigne la réciproque de ${name} : sa carte ne se cite pas encore dans Calcul, utilise ses boutons. Pour l'inverse 1/${name}, écris 1/${name}(x).`;
+	}
+	return null;
 }
 
 /** Un morceau d'un message : du texte, ou une formule LaTeX (entre `$…$`). */

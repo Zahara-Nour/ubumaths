@@ -48,8 +48,8 @@ L'expression s'arrête au **premier mot-clé**. Un mot-clé est un mot entier, e
   `ℝ \ {0}` (`studyDomain`, `src/lib/mathAST/domain/study.ts`). L'ensemble d'une fonction de l'atelier
   définie sur un intervalle (`f(x) = x^2 sur [0;+∞[`) passe au moteur par ce mot.
 - **`sur`** (`.réciproque`, lot 3 de la réciproque, 2026-10-13) : le mot de la définition d'une
-  fonction sur un intervalle (`f(x) = x^2 sur [0;+∞[`), pas `dans`. Il REMPLACE l'ensemble de la
-  carte f (pas d'intersection). Sur une fonction de l'atelier, crée ou met à jour la carte `f⁻¹` ;
+  fonction sur un intervalle (`f(x) = x^2 sur [0;+∞[`), pas `dans`. Il est CROISÉ avec l'ensemble
+  de la carte f (vide → refus). Sur une fonction de l'atelier, crée ou met à jour la carte `f⁻¹` ;
   sur une expression, la ligne seule. Sans « sur » : l'ensemble de f, sinon son domaine.
 - **Variable** : voir la question 1 ci-dessous.
 

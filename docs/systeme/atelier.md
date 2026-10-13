@@ -224,8 +224,12 @@ R1-R4) : le bouton « Réciproque » de la carte d'une fonction et `.réciproque
 MÊME ligne (`reciprocalResult`, `src/lib/atelier/reciprocal.ts`) — réponse `f⁻¹(x) = …, f⁻¹ : départ
 → arrivée` (R4), étapes de `computeReciprocal` (R3, [mathast/reciproque.md](mathast/reciproque.md))
 — et créent la carte `f⁻¹` (`createReciprocal`), sans changer de vue ; déjà là, elle est mise à
-jour, pas doublée. L'intervalle : celui tapé après « sur » (rangé dans `reciprocalOn`, il
-REMPLACE celui de f), sinon celui de f, sinon son domaine. La carte **suit f** (`#reciprocals`, en
+jour, pas doublée. L'intervalle : celui tapé après « sur » (rangé dans `reciprocalOn`) CROISÉ avec
+l'ensemble de f, recroisé à chaque recalcul (f redéfinie n'est jamais écrasée) — vide : « f n'est
+définie que sur [0 ; +∞[. » ; sinon l'ensemble de f, sinon son domaine. Dans Calcul, `f^-1`,
+`f^{-1}`, `f^(-1)`, `f⁻¹` écrits après une FONCTION de l'atelier sont refusés
+(`inverseNotationRefusal` : le moteur y lirait 1/f en silence ; « pour l'inverse 1/f, écris
+1/f(x) »), et `.réciproque f⁻¹` répond « La réciproque de f⁻¹, c'est f. ». La carte **suit f** (`#reciprocals`, en
 dernier dans `recomputeAll`) : formule rangée en texte (provenance `text`), `interval` = son
 ensemble de départ f(I) (Q5 : le tracé et les calculs suivent, `ℝ` n'est pas rangé) ; f devenue
 non bijective, constante… → la carte passe en erreur avec le refus, définition vide (rien de
