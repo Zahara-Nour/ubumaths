@@ -457,3 +457,8 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   substitués par `interpolateExpression` (un nom piégé faisait planter ou geler le combat).
   Prod : `game_challenges` écrite par le prof seul, 0 / 464 défis de type `expression`. 3 tests
   rouges sur `main`.
+- **T4 plus vrai (vérifié le 2026-10-13)** : garde `assertGoogleClassroomEnabled()` dans chaque
+  méthode des routes `/api/google/**` et `export-to-classroom` (comptage méthode par méthode),
+  test `interrupteur-google.test.ts` 25/25 ; seuls `auth/disconnect` et `auth/status` restent
+  ouverts (B8). Reste `class_google_classroom_links` : jamais lue, 0 ligne en prod → suppression
+  destructive à décider par David.

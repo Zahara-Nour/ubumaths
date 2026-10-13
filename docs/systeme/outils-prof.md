@@ -408,8 +408,11 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
    Le panneau de fichiers ne propose plus rien de Google quand le drapeau est éteint (V5, test
    `src/lib/whiteboard/__tests__/panneau-sans-google.svelte.test.ts`). Un tableau partagé en direct
    pour les élèves (chat, visio) serait une autre fonctionnalité, à penser avec le projet visio.
-4. **Google** : les routes `/api/google/**` ne testent pas le drapeau (seules les pages le
-   font) ; `class_google_classroom_links` n'est lue nulle part dans `src/`.
+4. **Google** : `class_google_classroom_links` n'est lue nulle part dans `src/` et compte 0
+   ligne en prod (mesuré le 2026-10-13) ; la supprimer serait une migration destructive, à
+   décider par David. Le drapeau, lui, est testé par toutes les routes `/api/google/**` (B8,
+   `src/routes/api/google/__tests__/interrupteur-google.test.ts` : 403 pour chaque méthode, sauf
+   `auth/disconnect` et `auth/status`).
 5. **Kanban** : l'en-tête de `src/lib/server/kanban.ts` cite une migration d'avant le baseline.
 6. **Diaporamas** : l'annotation (`AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore`)
    n'est montée que par les démos `/slides/demo{,-embedded}` (remises en place le 2026-10-11) ;
