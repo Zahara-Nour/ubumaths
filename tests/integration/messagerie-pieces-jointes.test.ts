@@ -1,0 +1,162 @@
+/**
+ * Messagerie : pièces jointes privées, lues par l'expéditeur, les destinataires et l'admin
+ * ======================================================================================
+ *
+ * Mesuré en prod le 2026-10-13 : le bucket `message-attachments` n'existait pas, toute
+ * pièce jointe échouait en silence. Décision de David (2026-10-13) : un élève envoie par
+ * exemple le scan de son cahier au prof.
+ *   - qui joint : l'expéditeur du message (élève → prof, prof → élèves) ;
+ *   - qui lit : l'expéditeur, les destinataires qui ne l'ont pas supprimé, l'admin ;
+ *   - bucket PRIVÉ, sans policy de storage : seul le serveur y accède (liens signés) ;
+ *   - images JPEG, PNG, WebP, HEIC et PDF, 10 Mo, 3 par message.
+ *
+ * @vitest-environment node
+ */
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { createClient } from '@supabase/supabase-js';
+import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
+import { createAuthenticatedClient } from '../helpers/database/supabase-client';
+import { getPostgresClient } from '../helpers/database/postgres-client';
+import { TestData } from '../helpers/database/test-data-factory';
+
+// ============================================================================
+// CONSTANTES
+// ============================================================================
+
+const SUPABASE_URL = process.env.SUPABASE_TEST_URL || 'http://localhost:54321';
+const ANON_KEY =
+	process.env.SUPABASE_TEST_ANON_KEY ||
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+
+const BUCKET = 'message-attachments';
+
+// ============================================================================
+// TESTS
+// ============================================================================
+
+describe('messagerie : pièces jointes', () => {
+	let prof: { id: string; email: string };
+	let eleve: { id: string; email: string };
+	let autre: { id: string; email: string };
+	let admin: { id: string; email: string };
+	let messageId: string;
+	let messageDeLAutre: string;
+
+	beforeAll(async () => {
+		await cleanupAllTestData();
+		prof = await TestData.profile().withRole('teacher').create();
+		eleve = await TestData.profile().withRole('student').create();
+		autre = await TestData.profile().withRole('student').create();
+		admin = await TestData.profile().withRole('admin').create();
+
+		const pg = await getPostgresClient();
+		const envoyer = async (expediteur: string, destinataire: string) => {
+			const { rows } = await pg.query<{ id: string }>(
+				`insert into private_messages (sender_id, subject, content)
+				 values ($1, 'zz-scan', '{}'::jsonb) returning id`,
+				[expediteur]
+			);
+			await pg.query(`insert into message_inbox (message_id, recipient_id) values ($1, $2)`, [
+				rows[0].id,
+				destinataire
+			]);
+			return rows[0].id;
+		};
+		messageId = await envoyer(eleve.id, prof.id);
+		messageDeLAutre = await envoyer(autre.id, prof.id);
+	});
+
+	afterAll(async () => {
+		const pg = await getPostgresClient();
+		await pg.query('delete from private_messages where id = any($1)', [
+			[messageId, messageDeLAutre]
+		]);
+		await cleanupAllTestData();
+	});
+
+	it('le bucket existe, privé, plafonné à 10 Mo, images et PDF seulement', async () => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			`select public, file_size_limit::int as limite, allowed_mime_types::text[] as types
+			 from storage.buckets where id = $1`,
+			[BUCKET]
+		);
+		expect(rows).toHaveLength(1);
+		expect(rows[0].public).toBe(false);
+		expect(rows[0].limite).toBe(10 * 1024 * 1024);
+		expect([...rows[0].types].sort()).toEqual(
+			[
+				'application/pdf',
+				'image/heic',
+				'image/heif',
+				'image/jpeg',
+				'image/png',
+				'image/webp'
+			].sort()
+		);
+	});
+
+	it('l’expéditeur enregistre une pièce jointe rangée sous son message', async () => {
+		const client = await createAuthenticatedClient(eleve.email);
+		const { data, error } = await client
+			.from('message_attachments_v2')
+			.insert({
+				message_id: messageId,
+				file_name: 'cahier.jpg',
+				file_type: 'image/jpeg',
+				file_size: 1000,
+				storage_path: `messages/${messageId}/cahier.jpg`,
+				uploaded_by: eleve.id
+			})
+			.select('id');
+		expect(error).toBeNull();
+		expect(data).toHaveLength(1);
+	});
+
+	it.each([
+		['sous le message d’un autre', () => `messages/${messageDeLAutre}/x.jpg`],
+		['avec un segment « .. »', () => `messages/${messageId}/../${messageDeLAutre}/x.jpg`],
+		['hors du dossier messages/', () => `${autre.id}/x.jpg`]
+	])('un chemin rangé %s est refusé', async (_cas, chemin) => {
+		const client = await createAuthenticatedClient(eleve.email);
+		const { error } = await client.from('message_attachments_v2').insert({
+			message_id: messageId,
+			file_name: 'x.jpg',
+			file_type: 'image/jpeg',
+			file_size: 1000,
+			storage_path: chemin(),
+			uploaded_by: eleve.id
+		});
+		expect(error?.code).toBe('42501');
+	});
+
+	it('le destinataire et l’admin voient la pièce jointe, un autre élève non', async () => {
+		const voit = async (email: string) => {
+			const client = await createAuthenticatedClient(email);
+			const { data, error } = await client
+				.from('message_attachments_v2')
+				.select('file_name')
+				.eq('message_id', messageId);
+			expect(error).toBeNull();
+			return data;
+		};
+		expect(await voit(prof.email)).toEqual([{ file_name: 'cahier.jpg' }]);
+		expect(await voit(admin.email)).toEqual([{ file_name: 'cahier.jpg' }]);
+		expect(await voit(autre.email)).toEqual([]);
+	});
+
+	it('aucun compte ne dépose ni ne lit directement dans le bucket : seul le serveur', async () => {
+		const chemin = `messages/${messageId}/direct.pdf`;
+		const fichier = new Blob(['%PDF-1.4'], { type: 'application/pdf' });
+
+		const client = await createAuthenticatedClient(eleve.email);
+		const envoi = await client.storage.from(BUCKET).upload(chemin, fichier);
+		expect(envoi.error).not.toBeNull();
+
+		const anonyme = createClient(SUPABASE_URL, ANON_KEY, {
+			auth: { persistSession: false, autoRefreshToken: false }
+		});
+		const lecture = await anonyme.storage.from(BUCKET).download(`messages/${messageId}/cahier.jpg`);
+		expect(lecture.data).toBeNull();
+	});
+});
