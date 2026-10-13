@@ -24,6 +24,7 @@
 		studentDefinitionOf,
 		typedLetterOf
 	} from '$lib/atelier/letter';
+	import { intervalLabelOf } from '$lib/atelier/interval';
 	import { Eye, EyeOff } from '@lucide/svelte';
 	import DefinitionField from './DefinitionField.svelte';
 	import CurveSettings from './CurveSettings.svelte';
@@ -141,6 +142,9 @@
 		};
 	});
 
+	/** L'ensemble d'une fonction définie sur un intervalle (`sur [0 ; +∞[`), ou `null`. */
+	const intervalLabel = $derived(intervalLabelOf(object));
+
 	/** La couleur de la courbe, si la fonction est tracée (C1, C2). */
 	const curveColor = $derived(
 		(isFunction(object) || isSequence(object)) && object.plotted && object.display
@@ -193,6 +197,9 @@
 					<span class="sr-only">{rendered.spoken}</span>
 				{:else}
 					{studentDefinitionOf(atelier, object) || '…'}
+				{/if}
+				{#if intervalLabel}
+					<span class="intervalle">sur {intervalLabel}</span>
 				{/if}
 			</span>
 			<span class="type">{KIND_LABELS[object.kind]}</span>
@@ -460,6 +467,9 @@
 		font-size: 0.875rem;
 		color: var(--color-muted-foreground);
 		overflow-wrap: anywhere;
+	}
+	.intervalle {
+		margin-left: 0.25em;
 	}
 	.type {
 		font-size: 0.625rem;

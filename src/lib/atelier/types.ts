@@ -141,6 +141,13 @@ export interface FunctionObject extends AtelierObjectBase {
 	 */
 	readonly letter?: string;
 	/**
+	 * L'ensemble sur lequel l'élève a défini la fonction (`f(x) = x^2 sur [0;+∞[`),
+	 * tel qu'il l'a ÉCRIT après « sur » — texte ou LaTeX selon `provenance`, relu
+	 * par `parseStudentDomain` (`interval.ts`). Absent = définie sur son domaine ;
+	 * `sur ℝ` n'est pas rangé.
+	 */
+	readonly interval?: string;
+	/**
 	 * Réglages d'affichage. Absents tant que la fonction n'a jamais été tracée :
 	 * ils naissent au premier tracé, puis survivent au retrait (§1 L1).
 	 */
@@ -231,6 +238,9 @@ export const MAX_LISTS = 8;
  * 40 caractères étaient acceptées, puis perdues au rechargement (revue).
  */
 export const MAX_DEFINITION_LENGTH = 4000;
+
+/** Longueur d'un ensemble écrit après « sur » (`interval.ts`) : saisie, sauvegarde, lien. */
+export const MAX_INTERVAL_LENGTH = 200;
 
 /** Liste qualitative (Q91) : modalités distinctes, longueur d'une modalité */
 export const MAX_CATEGORIES = 20;

@@ -59,6 +59,7 @@ import {
 } from './display';
 import { astOf as astOfDefinition } from './parse';
 import { INTERNAL_LETTER, letterRejection } from './letter';
+import { checkInterval, ONLY_FUNCTIONS, type CheckedInterval } from './interval';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { listCitedMessage } from './list-cited';
 import { transformAST } from '$lib/mathAST/visitor';
@@ -146,6 +147,11 @@ export interface CreateInput {
 	 * ⚠️ `definition` est déjà en x (voir `letter.ts`).
 	 */
 	readonly letter?: string;
+	/**
+	 * Pour une fonction : l'ensemble écrit après « sur » (`interval.ts`), jugé à
+	 * la création — illisible, vide ou hors du domaine, la création est refusée.
+	 */
+	readonly interval?: string;
 	/** Pour une suite : mode, rang et premier terme déjà connus (relecture, Calcul). */
 	readonly sequence?: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>;
 }
@@ -470,7 +476,20 @@ export class Atelier {
 			if (refused !== null) return { ok: false, message: refused };
 		}
 
-		const built = this.build(name, input.kind, definition, provenance, letter);
+		let interval: string | undefined;
+		if (input.interval !== undefined) {
+			const checked = this.#checkedInterval(
+				input.kind,
+				input.interval,
+				definition,
+				provenance,
+				letter
+			);
+			if (!checked.ok) return { ok: false, message: checked.message };
+			interval = checked.interval;
+		}
+
+		const built = this.build(name, input.kind, definition, provenance, letter, interval);
 		this.items.push(
 			isSequence(built) && input.sequence
 				? { ...built, ...sequenceSettings(input.sequence, built) }
@@ -611,6 +630,21 @@ export class Atelier {
 	// ---------------------------------------------------------------------------
 
 	/**
+	 * L'ensemble à ranger pour une fonction (I3 : dans son domaine), ou le refus.
+	 * `sur ℝ` ne range rien. Une valeur, une suite, une liste n'en ont pas.
+	 */
+	#checkedInterval(
+		kind: ObjectKind,
+		written: string,
+		definition: string,
+		provenance: Provenance,
+		letter: string | undefined
+	): CheckedInterval {
+		if (kind !== 'function') return { ok: false, message: ONLY_FUNCTIONS };
+		return checkInterval(written, definition, provenance, this.functionNames, letter);
+	}
+
+	/**
 	 * Le refus d'un nom qui est la LETTRE d'une fonction (`t` après `f(t)`), ou
 	 * `null`. Sinon la carte de `f` montrerait `t` pour deux choses à la fois.
 	 */
@@ -732,12 +766,15 @@ export class Atelier {
 	/**
 	 * @param letter - Pour une fonction : la lettre de l'élève, ou `undefined`
 	 *   pour garder la sienne. ⚠️ `definition` est déjà en x (`letter.ts`).
+	 * @param interval - Pour une fonction : l'ensemble écrit après « sur », `null`
+	 *   pour le retirer (I6), `undefined` pour garder le sien.
 	 */
 	update(
 		name: string,
 		definition: string,
 		provenance: Provenance = 'url',
-		letter?: string
+		letter?: string,
+		interval?: string | null
 	): Updated | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return { ok: false, message: `« ${name} » n'existe pas.` };
@@ -756,12 +793,28 @@ export class Atelier {
 		// courbe. Même famille que le curseur écrasé (revue #334, point 7) : tout
 		// état d'affichage ajouté ici devra être reporté là.
 		const previous = this.items[index];
+		const keptLetter = letter ?? (isFunction(previous) ? previous.letter : undefined);
+		const wanted =
+			interval === undefined ? (isFunction(previous) ? previous.interval : undefined) : interval;
+		let keptInterval: string | undefined;
+		if (wanted !== null && wanted !== undefined) {
+			const checked = this.#checkedInterval(
+				previous.kind,
+				wanted,
+				definition,
+				provenance,
+				keptLetter
+			);
+			if (!checked.ok) return { ok: false, message: checked.message };
+			keptInterval = checked.interval;
+		}
 		const rebuilt = this.build(
 			name,
 			previous.kind,
 			definition,
 			provenance,
-			letter ?? (isFunction(previous) ? previous.letter : undefined)
+			keptLetter,
+			keptInterval
 		);
 		// K3 (dette n° 2) : le curseur réglé survit à la définition — `build()`
 		// en fabrique un neuf, qu'on remplace par l'ancien, élargi si besoin (L1)
@@ -970,6 +1023,8 @@ export class Atelier {
 			...(isFunction(o) && o.display ? { display: compactDisplay(o.display) } : {}),
 			// La lettre de l'élève (`f(t)`) : absente pour x, qui ne pèse rien
 			...(isFunction(o) && o.letter ? { letter: o.letter } : {}),
+			// L'ensemble écrit après « sur » : absent sans intervalle
+			...(isFunction(o) && o.interval !== undefined ? { interval: o.interval } : {}),
 			// Seulement s'il a été réglé : un curseur par défaut ne pèse rien dans le lien
 			...(isValue(o) && o.slider && !isDefaultSlider(o.slider)
 				? { slider: { min: o.slider.min, max: o.slider.max, step: o.slider.step } }
@@ -1011,13 +1066,23 @@ export class Atelier {
 				name: stored.name,
 				definition: stored.definition,
 				...(stored.kind === 'function' && stored.letter && { letter: stored.letter }),
+				...(stored.kind === 'function' && stored.interval && { interval: stored.interval }),
 				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
 			};
-			let result = this.create(input);
+			let attempt = input;
+			let result = this.create(attempt);
+			// Un ensemble refusé (lien abîmé, domaine changé) : la fonction est gardée
+			// sur son domaine — perdre f pour son intervalle serait disproportionné
+			if (!result.ok && attempt.interval !== undefined) {
+				attempt = { ...attempt, interval: undefined };
+				result = this.create(attempt);
+			}
 			// Une lettre refusée (`e`, `n`, le nom de la fonction) : la fonction est
-			// gardée en x — sa définition rangée l'est déjà (`persistence.ts`)
-			if (!result.ok && input.letter !== undefined) {
-				result = this.create({ ...input, letter: undefined });
+			// gardée en x — sa définition rangée l'est déjà (`persistence.ts`). Les
+			// relances s'ENCHAÎNENT : ensemble et lettre refusés, f reste (revue)
+			if (!result.ok && attempt.letter !== undefined) {
+				attempt = { ...attempt, letter: undefined };
+				result = this.create(attempt);
 			}
 			if (!result.ok) {
 				skipped.push({ name: stored.name, reason: result.message });
@@ -1302,7 +1367,8 @@ export class Atelier {
 		kind: ObjectKind,
 		definition: string,
 		provenance: Provenance = 'url',
-		letter?: string
+		letter?: string,
+		interval?: string
 	): AtelierObject {
 		const parsed = parseDefinition(kind, definition, provenance, this.functionNames);
 		const base = {
@@ -1345,7 +1411,8 @@ export class Atelier {
 					...base,
 					kind: 'function',
 					variable: 'x',
-					...(letter !== undefined && letter !== INTERNAL_LETTER && { letter })
+					...(letter !== undefined && letter !== INTERNAL_LETTER && { letter }),
+					...(interval !== undefined && { interval })
 				};
 			case 'sequence':
 				// S4 : une définition qui se cite elle-même est une récurrence

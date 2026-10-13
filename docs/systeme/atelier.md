@@ -60,7 +60,7 @@ Ceux du code et de l'interface :
 
 ## Carte du code
 
-### Modèle — `src/lib/atelier/` (45 fichiers hors tests)
+### Modèle — `src/lib/atelier/` (46 fichiers hors tests)
 
 | Fichier                             | Rôle                                                                                                      |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -69,6 +69,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/names.ts`          | Validation des noms, nommage automatique (`nextName`), noms de dérivées (`derivativeName`)                |
 | `src/lib/atelier/parse.ts`          | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)     |
 | `src/lib/atelier/letter.ts`         | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                              |
+| `src/lib/atelier/interval.ts`       | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)          |
 | `src/lib/atelier/constant.ts`       | La valeur d'une constante (curseurs, premier terme d'une suite)                                           |
 | `src/lib/atelier/list-cited.ts`     | Refus d'une liste citée comme un nombre (`listCitedMessage`)                                              |
 | `src/lib/atelier/actions.ts`        | Les actions d'une carte selon le type et l'état (`actionsFor`), listes partenaires                        |
@@ -152,12 +153,12 @@ cartes (décision G3).
 `AtelierObject` = `ValueObject` | `FunctionObject` | `SequenceObject` | `ListObject`
 (`src/lib/atelier/types.ts`).
 
-| Type       | Exemple                    | Particularités                                                                              |
-| ---------- | -------------------------- | ------------------------------------------------------------------------------------------- |
-| `value`    | `a = 2`, `d = 12[km]`      | curseur (bornes `[-10 ; 10]` par défaut, D3) ; une grandeur à unité n'en a pas (D4)         |
-| `function` | `f(x) = x^2`, `f(t) = t^2` | rangée **en x** ; `letter` garde la lettre de l'élève pour l'affichage ; `display` du tracé |
-| `sequence` | `u(n) = 2n+1`, `u = 2u+1`  | `mode` explicite / récurrence, `firstIndex`, `firstTerm` (nombre ou nom d'une valeur)       |
-| `list`     | `L = 12 ; 15 ; 9`          | `values` numériques, ou `categories` (liste qualitative) ; `plottedWith` pour le nuage      |
+| Type       | Exemple                    | Particularités                                                                                                                          |
+| ---------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`    | `a = 2`, `d = 12[km]`      | curseur (bornes `[-10 ; 10]` par défaut, D3) ; une grandeur à unité n'en a pas (D4)                                                     |
+| `function` | `f(x) = x^2`, `f(t) = t^2` | rangée **en x** ; `letter` garde la lettre de l'élève pour l'affichage ; `interval` l'ensemble écrit après « sur » ; `display` du tracé |
+| `sequence` | `u(n) = 2n+1`, `u = 2u+1`  | `mode` explicite / récurrence, `firstIndex`, `firstTerm` (nombre ou nom d'une valeur)                                                   |
+| `list`     | `L = 12 ; 15 ; 9`          | `values` numériques, ou `categories` (liste qualitative) ; `plottedWith` pour le nuage                                                  |
 
 **Quatre états** (D9) : `error` > `pending` > `incomplete` > `ok`. Un nom cité mais absent met
 l'objet **en attente** (`pending`, avec `missing`), pas en erreur ; l'attente se répare seule quand
@@ -167,6 +168,30 @@ le nom apparaît, et pour une lettre seule elle porte une **offre de curseur**
 **Noms** (`src/lib/atelier/names.ts`) : une lettre latine, éventuellement indicée ; **un seul
 espace de noms** tous types confondus (D1). Les dérivées s'appellent `f′` (`derivativeName`,
 `isDerivativeName`). Le nommage automatique évite les noms cités par la définition (#329).
+
+**Fonction définie sur un intervalle** (lot 1 de
+[atelier-intervalle-phase0.md](../wip/atelier-intervalle-phase0.md), I1-I6 validées le 2026-10-13) :
+l'élève écrit l'ensemble dans le même champ que la définition, après le mot « sur »
+(`f(x) = x^2 sur [0;+∞[`). `splitInterval` (`src/lib/atelier/interval.ts`) coupe AVANT le parseur
+de l'expression : en texte (Calcul), un mot entier ; en LaTeX (carte), « sur » arrive en trois
+lettres collées à ce qui précède (`x^2sur[0;1]`, mesuré dans Chromium) et se reconnaît à ce qui le
+suit (`intervalWord`) : il ne coupe QUE devant le début d'un ensemble (crochet, `\left`, `\{`, ℝ,
+`\R`, `\mathbb`, `R` seul) ; sinon la saisie reste entière comme avant (`a = 3 sur 4`, `x^{sur}`,
+`surface`, `\text{surélevé}`) ; jamais `\surd` ; la carte l'écrit `\text{ sur }`. L'ensemble
+est lu par `parseStudentDomain` (intervalles, réunions, `ℝ \ {0}`, `ℝ₊` ; pas `+oo`) et
+rangé TEL QU'ÉCRIT dans `FunctionObject.interval` ; `sur ℝ` ne range rien. `Atelier.create` et
+`update` le jugent (`checkInterval`) : illisible, vide, réduit à un point, posé sur une valeur, une
+liste ou une suite (« Seule une fonction se définit sur un intervalle. »), ou hors du domaine de la
+fonction (I3, `computeDomain` puis `difference` : « ln(x) n'est pas défini sur tout [−1 ; 2] (pas
+en −1). » ; pas jugé quand la définition cite d'autres objets) → refusé, rien ne change. Une
+définition retapée sans « sur » (Calcul ou carte) retire l'intervalle (I6). `f(5)` hors de
+l'ensemble est refusé dans Calcul (`outsideIntervalRefusal`, argument sans variable ou fait de valeurs de l'atelier — `f(b)` avec b = 5 —, et aussi dans une définition, `a = f(5)`) et par l'image
+de la carte (I4). Dans la carte, `smartFence` est coupé dès que le champ contient le « sur » d'un
+intervalle — même règle `intervalWord`, « sur » en fin de saisie compris (jugé au `keydown`,
+`beforeinput` et `input` en capture : l'`input` arrive trop tard) — sinon `[0;1[` s'écrit
+`\left\lbrack0;1\left\lbrack\right\rbrack\right\rbrack`, illisible. Pas encore (lots 2 et 3) :
+`.variations`, `.résoudre`, signe sur l'intervalle, `f′` qui hérite, tracé restreint — une fonction
+sur un intervalle se trace et se calcule sur tout son domaine.
 
 **Provenance** (D10, `Provenance` dans `src/lib/atelier/parse.ts`) : c'est _d'où vient_ la
 définition (champ MathLive, clavier, URL, collage, Calcul…) qui choisit le parseur, jamais son
@@ -385,8 +410,8 @@ Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de re
 
 - **Stockage local** (`persistence.ts`) : clé `ATELIER_STORAGE_KEY` (`chiphre-atelier`),
   version `ATELIER_STATE_VERSION`. On range de quoi **reconstruire** (nom, type, définition,
-  tracé, lettre, réglages), jamais l'état ni le message — ils se recalculent. Un objet abîmé est
-  écarté seul (`salvageObjects`), un réglage abîmé est oublié, l'objet gardé. Un état d'une version
+  tracé, lettre, intervalle, réglages), jamais l'état ni le message — ils se recalculent. Un objet abîmé est
+  écarté seul (`salvageObjects`), un réglage abîmé est oublié, l'objet gardé ; un intervalle refusé à la relecture (lien, fusion) aussi, la fonction gardée sur son domaine. Un état d'une version
   **plus récente** n'est ni relu ni écrasé. Chaque issue est nommée (`LoadOutcome`,
   `SaveOutcome` : stockage indisponible, quota, trop volumineux…).
 - **Session** (`session.ts`) : sauvegarde différée de 500 ms sur `revision`, écrite aussi au
