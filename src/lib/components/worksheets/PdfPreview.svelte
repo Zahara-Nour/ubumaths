@@ -246,7 +246,11 @@
 				mdParts.push(`## ${lore.learning.exercise} ${i + 1}\n`);
 				// Comme le PDF : la fiche montre l'énoncé, les corrigés ne le répètent pas
 				if (mode === 'worksheet') mdParts.push(ex.statement || '');
-				if (mode === 'answers') mdParts.push(ex.answers || '');
+				if (mode === 'answers') {
+					mdParts.push(
+						ex.answers?.trim() ? ex.answers : '_Réponses non rédigées : voir le corrigé._'
+					);
+				}
 				if (mode === 'correction' && ex.solution) {
 					// Concise ou détaillée selon la fiche (D11)
 					mdParts.push(correctionForPrint(ex.solution, worksheet.config?.correction_detail));
@@ -633,6 +637,7 @@ INFORMATIONS
 									type="single"
 									bind:value={modeChoisi}
 									items={PDF_KIND_ITEMS}
+									disabled={isBatchGenerating}
 									triggerAriaLabel="PDF à générer"
 								/>
 							</div>
@@ -818,6 +823,7 @@ INFORMATIONS
 								type="single"
 								bind:value={modeChoisi}
 								items={PDF_KIND_ITEMS}
+								disabled={isBatchGenerating}
 								triggerAriaLabel="PDF à générer pour le lot"
 							/>
 						</div>

@@ -83,11 +83,10 @@ let fontsCompiler: Promise<TypstSnippetInstance> | null = null;
 
 /** Le compilateur du Corrigé, créé au premier appel et gardé pour les suivants */
 export function getCorrectionFontsCompiler(): Promise<DocumentCompiler> {
-	fontsCompiler ??= buildCorrectionFontsCompiler().catch((error: unknown) => {
-		// Échec de construction : le prochain Corrigé réessaie
-		fontsCompiler = null;
-		throw error;
-	});
+	// Un échec de construction reste en mémoire jusqu'au rechargement de la page :
+	// les Corrigés suivants (un lot entier) passent directement au repli, sans
+	// refaire la tentative pour chaque élève
+	fontsCompiler ??= buildCorrectionFontsCompiler();
 	return fontsCompiler;
 }
 

@@ -135,7 +135,28 @@ export async function generatePdfFromTypst(
 
 		// Corrigé : compilateur dédié (Shantell Sans, Chiphre Math), avec repli
 		if (hasCorrectionFonts(typstContent)) {
-			const result = await compileTypstDocument(typstContent, { images: imageData });
+			// Repli dans la police standard : par la file du service, comme les autres PDF
+			const result = await compileTypstDocument(typstContent, {
+				images: imageData,
+				compiler: {
+					mapShadow: (path, data) => service.mapShadow(path, data),
+					resetShadow: () => service.resetShadow(),
+					svg: async () => {
+						throw new Error('SVG non disponible par le service');
+					},
+					pdf: async ({ mainContent }) => {
+						const compiled = await service.compileWithPriority(
+							mainContent,
+							{ format: 'pdf' },
+							priority
+						);
+						if (!compiled.success || !compiled.data) {
+							throw new Error(compiled.error || 'Erreur lors de la compilation PDF');
+						}
+						return compiled.data as Uint8Array;
+					}
+				}
+			});
 			return { success: true, data: result.data.pdf, fallbackError: result.fallbackError };
 		}
 
