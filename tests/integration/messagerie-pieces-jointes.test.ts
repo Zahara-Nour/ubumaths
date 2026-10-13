@@ -181,4 +181,44 @@ describe('messagerie : pièces jointes', () => {
 			await service.storage.from(BUCKET).remove([chemin]);
 		}
 	});
+
+	// Purge des messages (3 ans) et retrait d'une pièce jointe : la ligne part, le fichier
+	// reste (le SQL ne touche pas au storage). Le cron du dimanche retire les fichiers
+	// que cette fonction liste : sans ligne de pièce jointe, et vieux de plus d'un jour
+	// (un envoi en cours n'a pas encore enregistré sa ligne).
+	it('liste les fichiers orphelins de plus d’un jour, réservée au serveur', async () => {
+		const service = createServiceRoleClient();
+		const pg = await getPostgresClient();
+		const vieux = `messages/${messageId}/zz-orphelin-vieux.pdf`;
+		const recent = `messages/${messageId}/zz-orphelin-recent.pdf`;
+		const rattache = `messages/${messageId}/cahier.jpg`;
+		for (const chemin of [vieux, recent, rattache]) {
+			const { error } = await service.storage
+				.from(BUCKET)
+				.upload(chemin, new Blob(['%PDF-1.4'], { type: 'application/pdf' }), { upsert: true });
+			expect(error).toBeNull();
+		}
+		await pg.query(
+			`update storage.objects set created_at = now() - interval '2 days'
+			 where bucket_id = $1 and name = any($2)`,
+			[BUCKET, [vieux, rattache]]
+		);
+
+		try {
+			const { data, error } = await service.rpc('list_orphan_message_attachment_files', {
+				p_limit: 100
+			});
+			expect(error).toBeNull();
+			const noms = (data ?? []).map((ligne: { name: string }) => ligne.name);
+			expect(noms).toContain(vieux);
+			expect(noms).not.toContain(recent);
+			expect(noms).not.toContain(rattache);
+
+			const client = await createAuthenticatedClient(eleve.email);
+			const refus = await client.rpc('list_orphan_message_attachment_files', { p_limit: 100 });
+			expect(refus.error?.code).toBe('42501');
+		} finally {
+			await service.storage.from(BUCKET).remove([vieux, recent, rattache]);
+		}
+	});
 });

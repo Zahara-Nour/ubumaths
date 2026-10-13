@@ -18,6 +18,10 @@
 --    (messages/<message>/…, aucun segment « .. ») — c'est lui que le serveur signe et que
 --    la suppression de compte retire.
 -- 3. L'admin lit les pièces jointes (il lit déjà tous les messages privés).
+-- 4. list_orphan_message_attachment_files : les fichiers du bucket sans ligne de pièce
+--    jointe, vieux de plus d'un jour. La purge des messages (3 ans) et le retrait d'une
+--    pièce jointe effacent la ligne, pas le fichier ; le cron du dimanche
+--    (api/cron/deleted-account-files) les retire. Réservée à service_role.
 --
 -- Accès gagné : l'admin lit la ligne des pièces jointes (nom, type, taille, chemin).
 -- Accès perdu : un expéditeur ne peut plus enregistrer un chemin rangé hors de son message.
@@ -34,6 +38,7 @@
 --   -- bucket vide seulement ; en prod, le déclencheur protect_buckets_delete l'interdit sans :
 --   set local storage.allow_delete_query = 'true';
 --   delete from storage.buckets where id = 'message-attachments';
+--   drop function public.list_orphan_message_attachment_files(integer);
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
@@ -70,3 +75,29 @@ create policy "Admins can view all message attachments"
 	for select
 	to authenticated
 	using ((select public.is_admin()));
+
+create function public.list_orphan_message_attachment_files(p_limit integer default 500)
+returns table (name text)
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+	select o.name
+	from storage.objects o
+	where o.bucket_id = 'message-attachments'
+	  and o.created_at < now() - interval '1 day'
+	  and not exists (
+		select 1 from public.message_attachments_v2 ma where ma.storage_path = o.name
+	  )
+	order by o.created_at
+	limit least(greatest(coalesce(p_limit, 500), 1), 1000);
+$$;
+
+comment on function public.list_orphan_message_attachment_files(integer) is
+	'Fichiers de message-attachments sans pièce jointe en base, vieux de plus d''un jour, '
+	'que le cron du dimanche retire du storage. Réservée à service_role.';
+
+revoke execute on function public.list_orphan_message_attachment_files(integer)
+	from public, anon, authenticated;
+grant execute on function public.list_orphan_message_attachment_files(integer) to service_role;
