@@ -12,6 +12,11 @@ import {
 	getAssignmentWithEvaluation,
 	isAssignmentRecipient
 } from '$lib/server/evaluations';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/student/assessments/[id]/results/+page.server'
+);
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { user } = await locals.safeGetSession();
@@ -30,7 +35,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// PGRST116 = pas de profil, et la redirection qui suit est légitime. Une
 	// AUTRE panne renvoyait l'élève au tableau de bord sans rien expliquer.
 	if (profileError && profileError.code !== 'PGRST116') {
-		console.error('Profil illisible :', profileError);
+		logger.error('Profil illisible :', profileError);
 		throw error(500, 'Impossible de vérifier votre profil');
 	}
 
@@ -56,7 +61,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 		// Des tentatives illisibles ne sont pas « aucune tentative »
 		if (attemptsError) {
-			console.error('[student results] Tentatives illisibles :', attemptsError);
+			logger.error('[student results] Tentatives illisibles :', attemptsError);
 			throw error(500, 'Impossible de charger vos résultats');
 		}
 

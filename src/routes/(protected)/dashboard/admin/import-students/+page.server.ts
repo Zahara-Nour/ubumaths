@@ -6,6 +6,9 @@ import {
 	importedStudentsSchema
 } from '$lib/server/validation';
 import { requireAdmin } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/import-students/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Admin only (real admin login OR step-up elevation)
@@ -18,7 +21,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (schoolsError) {
-		console.error('Error fetching schools:', schoolsError);
+		logger.error('Error fetching schools:', schoolsError);
 		throw error(500, 'Failed to load schools');
 	}
 
@@ -29,7 +32,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (classesError) {
-		console.error('Error fetching classes:', classesError);
+		logger.error('Error fetching classes:', classesError);
 		throw error(500, 'Failed to load classes');
 	}
 
@@ -41,7 +44,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (pendingError) {
-		console.error('Error fetching pending students:', pendingError);
+		logger.error('Error fetching pending students:', pendingError);
 	}
 
 	// Fetch activated students
@@ -52,7 +55,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('activated_at', { ascending: false });
 
 	if (activatedError) {
-		console.error('Error fetching activated students:', activatedError);
+		logger.error('Error fetching activated students:', activatedError);
 	}
 
 	return {
@@ -101,7 +104,7 @@ export const actions: Actions = {
 			.select('id, join_code');
 
 		if (classesError) {
-			console.error('Error fetching classes:', classesError);
+			logger.error('Error fetching classes:', classesError);
 			return fail(500, { message: 'Erreur lors de la récupération des classes' });
 		}
 
@@ -136,13 +139,13 @@ export const actions: Actions = {
 			.select();
 
 		if (insertError) {
-			console.error('Error inserting pending students:', insertError);
+			logger.error('Error inserting pending students:', insertError);
 
 			// Handle duplicate emails (error code 23505 = unique_violation)
 			// This happens when students logged in BEFORE being imported
 			// In this case, we need to add them directly to class_members instead
 			if (insertError.code === '23505') {
-				console.log('Some students already exist, checking profiles...');
+				logger.info('Some students already exist, checking profiles...');
 
 				let updatedCount = 0;
 				let skippedCount = 0;
@@ -160,12 +163,12 @@ export const actions: Actions = {
 					// panne prenait le même visage et faisait conclure « rien ici », donc créer
 					// par-dessus ce qu'on n'avait simplement pas su lire.
 					if (existingProfileError && existingProfileError.code !== 'PGRST116') {
-						console.error('Lecture impossible :', existingProfileError);
+						logger.error('Lecture impossible :', existingProfileError);
 						return fail(500, { message: 'Impossible de vérifier l’état actuel' });
 					}
 
 					if (existingProfile) {
-						console.log(
+						logger.info(
 							`Profile exists for ${existingProfile.id}, updating profile and class memberships...`
 						);
 
@@ -188,10 +191,7 @@ export const actions: Actions = {
 							.eq('id', existingProfile.id);
 
 						if (profileUpdateError) {
-							console.error(
-								`Error updating profile for ${existingProfile.id}:`,
-								profileUpdateError
-							);
+							logger.error(`Error updating profile for ${existingProfile.id}:`, profileUpdateError);
 						}
 
 						// Add student to class_members table directly (bypassing pending_students)
@@ -207,7 +207,7 @@ export const actions: Actions = {
 
 							// Ignore if student is already in the class (error code 23505)
 							if (memberError && memberError.code !== '23505') {
-								console.error(
+								logger.error(
 									`Error adding ${existingProfile.id} to class ${classId}:`,
 									memberError
 								);
@@ -226,7 +226,7 @@ export const actions: Actions = {
 							.eq('is_activated', false);
 
 						if (activateError) {
-							console.error(
+							logger.error(
 								`Error activating pending student ${existingProfile.id}:`,
 								activateError
 							);
@@ -239,10 +239,10 @@ export const actions: Actions = {
 
 						if (pendingError && pendingError.code === '23505') {
 							// Already exists in pending_students, skip
-							console.log('Student already in pending_students, skipping...');
+							logger.info('Student already in pending_students, skipping...');
 							skippedCount++;
 						} else if (pendingError) {
-							console.error('Error adding student to pending:', pendingError);
+							logger.error('Error adding student to pending:', pendingError);
 							skippedCount++;
 						}
 					}

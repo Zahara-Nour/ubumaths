@@ -32,14 +32,14 @@
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { config } from 'dotenv';
 
 // Load environment variables from .env file
 // This ensures variables are available even before SvelteKit's env module initializes
 config();
 
-const logger = createLogger('rateLimiter');
+const logger = createServerLogger('rateLimiter');
 
 // ============================================================================
 // SERVICE ROLE CLIENT (REQUIRED FOR RATE LIMITING)

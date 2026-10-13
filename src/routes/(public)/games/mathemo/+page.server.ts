@@ -12,6 +12,9 @@ import { countAvailableConsumableUses } from '$lib/utils/vip-cards';
 import { error } from '@sveltejs/kit';
 import { isDictionaryAdmin, loadDictionary } from '$lib/server/dictionary/load';
 import { playableTerms } from './dictionary-words';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/games/mathemo/+page.server');
 
 const LETTER_CARD_IDS = ['mathemo-letter'];
 const UNDO_CARD_IDS = ['mathemo-undo'];
@@ -25,7 +28,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	try {
 		words = playableTerms(await loadDictionary(supabase, { fresh: isDictionaryAdmin(locals) }));
 	} catch (cause) {
-		console.error('[mathémo] dictionnaire illisible', cause);
+		logger.error('[mathémo] dictionnaire illisible', cause);
 		throw error(503, 'Mathémo est momentanément indisponible.');
 	}
 

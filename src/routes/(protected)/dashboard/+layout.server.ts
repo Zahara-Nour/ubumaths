@@ -22,6 +22,9 @@ import type { LayoutServerLoad } from './$types';
 import { toPataphysicalDate } from '$lib/almanach/calendar';
 import { countPendingActivationRequests } from '$lib/server/vip-card-queries';
 import { isMarketplaceEnabled } from '$lib/server/marketplace/helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/+layout.server');
 
 export const load: LayoutServerLoad = async ({ locals }) => {
 	const { supabase, profile } = locals;
@@ -35,7 +38,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		try {
 			pendingVipRequestsCount = await countPendingActivationRequests(supabase, profile.id);
 		} catch (error) {
-			console.error('❌ [dashboard/+layout.server.ts] Error loading pending VIP requests:', error);
+			logger.error('❌ [dashboard/+layout.server.ts] Error loading pending VIP requests:', error);
 			// Don't throw - just return 0 count on error
 			pendingVipRequestsCount = 0;
 		}
@@ -45,7 +48,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		try {
 			marketplaceEnabled = await isMarketplaceEnabled(supabase, profile.id);
 		} catch (error) {
-			console.error('❌ [dashboard/+layout.server.ts] Error checking marketplace status:', error);
+			logger.error('❌ [dashboard/+layout.server.ts] Error checking marketplace status:', error);
 			// Don't throw - just return false on error
 			marketplaceEnabled = false;
 		}

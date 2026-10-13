@@ -1,5 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/tutor-stats/+page.server');
 
 /**
  * Tutor Statistics Dashboard - Server Load
@@ -22,7 +25,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (classesError) {
-		console.error('Failed to load classes:', classesError);
+		logger.error('Failed to load classes:', classesError);
 	}
 
 	return {

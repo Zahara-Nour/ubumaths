@@ -3,6 +3,9 @@ import { RIDDLE_COLUMNS, toDbRiddle } from '$lib/types/riddle';
 import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
 import { error, redirect, fail } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/contenu/enigmes/+page.server');
 
 /**
  * Load teacher's riddles
@@ -21,7 +24,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.order('riddle_number', { ascending: false });
 
 	if (riddlesError) {
-		console.error('Error fetching riddles:', riddlesError);
+		logger.error('Error fetching riddles:', riddlesError);
 		throw error(500, 'Erreur lors du chargement des énigmes');
 	}
 
@@ -33,7 +36,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	);
 
 	if (solutionsError) {
-		console.error('Error fetching riddle solutions:', solutionsError);
+		logger.error('Error fetching riddle solutions:', solutionsError);
 		throw error(500, 'Erreur lors du chargement des énigmes');
 	}
 
@@ -44,7 +47,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.eq('created_by', user.id);
 
 	if (statsError) {
-		console.error('Error fetching riddle stats:', statsError);
+		logger.error('Error fetching riddle stats:', statsError);
 	}
 
 	// Merge riddles with their stats
@@ -80,7 +83,7 @@ export const actions: Actions = {
 		const { error: deleteError } = await supabase.from('riddles').delete().eq('id', riddleId);
 
 		if (deleteError) {
-			console.error('Error deleting riddle:', deleteError);
+			logger.error('Error deleting riddle:', deleteError);
 			return fail(500, { message: "Erreur lors de la suppression de l'énigme" });
 		}
 
@@ -110,7 +113,7 @@ export const actions: Actions = {
 			.eq('id', riddleId);
 
 		if (updateError) {
-			console.error('Error updating riddle status:', updateError);
+			logger.error('Error updating riddle status:', updateError);
 			return fail(500, { message: 'Erreur lors de la mise à jour du statut' });
 		}
 

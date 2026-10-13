@@ -2,6 +2,9 @@ import type { PageServerLoad, Actions } from './$types';
 import { redirect, fail } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/contenu/worksheets/+page.server');
 
 // Validation schema for query parameters
 const querySchema = z.object({
@@ -54,7 +57,7 @@ export const load: PageServerLoad = async ({ locals, url, fetch }) => {
 	const response = await fetch(`/api/worksheets?${apiParams.toString()}`);
 
 	if (!response.ok) {
-		console.error('Failed to fetch worksheets:', await response.text());
+		logger.error('Failed to fetch worksheets:', await response.text());
 		return {
 			worksheets: [],
 			pagination: { page: 1, limit: 20, total: 0, totalPages: 0 },

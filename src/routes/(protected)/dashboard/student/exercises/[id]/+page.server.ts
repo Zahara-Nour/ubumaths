@@ -3,6 +3,9 @@ import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { toExercise } from '$lib/types/exercise-row';
 import { fetchResourceTagNames } from '$lib/server/resource-tags';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/student/exercises/[id]/+page.server');
 
 export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	const { user } = await locals.safeGetSession();
@@ -49,7 +52,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 	// ne doit pas se confondre avec une donnée réellement vide.
 	if (assignmentError && assignmentError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', assignmentError);
+		logger.error('Contexte illisible :', assignmentError);
 	}
 
 	// Fetch completion
@@ -63,7 +66,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	// Élément de contexte : le repli d'affichage existe déjà, mais son absence
 	// ne doit pas se confondre avec une donnée réellement vide.
 	if (completionError && completionError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', completionError);
+		logger.error('Contexte illisible :', completionError);
 	}
 
 	// Get student's active classes (for per_group mode)
@@ -76,7 +79,7 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 	// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
 	// panne doit se distinguer d'un refus mérité.
 	if (classMembershipsError && classMembershipsError.code !== 'PGRST116') {
-		console.error('Contrôle d’accès impossible :', classMembershipsError);
+		logger.error('Contrôle d’accès impossible :', classMembershipsError);
 		throw error(500, 'Impossible de vérifier votre accès');
 	}
 

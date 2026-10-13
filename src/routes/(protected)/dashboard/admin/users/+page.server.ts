@@ -25,6 +25,9 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { validateFormData, updateProfileFormSchema } from '$lib/server/validation';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/users/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase, safeGetSession: _safeGetSession } = locals;
@@ -45,7 +48,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (classesError) {
-		console.error('Error fetching classes:', classesError);
+		logger.error('Error fetching classes:', classesError);
 		throw error(500, 'Failed to load classes');
 	}
 
@@ -56,7 +59,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (schoolsError) {
-		console.error('Error fetching schools:', schoolsError);
+		logger.error('Error fetching schools:', schoolsError);
 		throw error(500, 'Failed to load schools');
 	}
 
@@ -67,7 +70,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.eq('status', 'pending');
 
 	if (countError) {
-		console.error('Error counting pending users:', countError);
+		logger.error('Error counting pending users:', countError);
 		// Don't throw - just log and continue with 0
 	}
 
@@ -114,7 +117,7 @@ export const actions: Actions = {
 			// panne prenait le même visage et faisait conclure « rien ici », donc créer
 			// par-dessus ce qu'on n'avait simplement pas su lire.
 			if (currentTeacherError && currentTeacherError.code !== 'PGRST116') {
-				console.error('Lecture impossible :', currentTeacherError);
+				logger.error('Lecture impossible :', currentTeacherError);
 				throw error(500, 'Impossible de vérifier l’état actuel');
 			}
 			if (currentTeacher && currentTeacher.id !== validation.data.user_id) {
@@ -143,7 +146,7 @@ export const actions: Actions = {
 			.eq('id', validation.data.user_id);
 
 		if (updateError) {
-			console.error('Update error:', updateError);
+			logger.error('Update error:', updateError);
 			return fail(400, { message: updateError.message });
 		}
 
@@ -155,7 +158,7 @@ export const actions: Actions = {
 			.single();
 
 		if (fetchError) {
-			console.error('Fetch error:', fetchError);
+			logger.error('Fetch error:', fetchError);
 			return { success: true }; // Still return success even if fetch fails
 		}
 

@@ -2,6 +2,11 @@ import type { PageServerLoad, Actions } from './$types';
 import { redirect, fail } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { RIDDLE_COLUMNS } from '$lib/types/riddle';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/enigmes/of-the-day/+page.server'
+);
 
 /**
  * Load riddle of the day management data
@@ -21,7 +26,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 	// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
 	// doit pas se confondre avec une donnée réellement vide.
 	if (currentRiddleIdError && currentRiddleIdError.code !== 'PGRST116') {
-		console.error('Contexte illisible :', currentRiddleIdError);
+		logger.error('Contexte illisible :', currentRiddleIdError);
 	}
 
 	// La page n'affiche ni la réponse attendue ni la correction : colonnes nommées, sans
@@ -50,7 +55,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.limit(30);
 
 	if (historyError) {
-		console.error('Error fetching history:', historyError);
+		logger.error('Error fetching history:', historyError);
 	}
 
 	// Get all published riddles for selection
@@ -61,7 +66,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.order('riddle_number', { ascending: false });
 
 	if (riddlesError) {
-		console.error('Error fetching riddles:', riddlesError);
+		logger.error('Error fetching riddles:', riddlesError);
 	}
 
 	return {
@@ -115,7 +120,7 @@ export const actions: Actions = {
 		});
 
 		if (setError) {
-			console.error('Error setting riddle of the day:', setError);
+			logger.error('Error setting riddle of the day:', setError);
 			return fail(500, { message: "Erreur lors de la définition de l'énigme du jour" });
 		}
 
@@ -141,7 +146,7 @@ export const actions: Actions = {
 			.eq('date', assignmentDate);
 
 		if (deleteError) {
-			console.error('Error removing riddle of the day:', deleteError);
+			logger.error('Error removing riddle of the day:', deleteError);
 			return fail(500, { message: 'Erreur lors de la suppression' });
 		}
 

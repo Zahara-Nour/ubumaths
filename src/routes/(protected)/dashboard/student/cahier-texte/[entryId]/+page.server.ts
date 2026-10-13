@@ -14,6 +14,11 @@ import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { requireRole } from '$lib/server/middleware/auth';
 import { z } from 'zod';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/student/cahier-texte/[entryId]/+page.server'
+);
 
 // UUID validation schema
 const uuidSchema = z.string().uuid('ID invalide');
@@ -40,7 +45,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.eq('status', 'active');
 
 	if (membershipError) {
-		console.error('[Student Entry Detail] Error fetching memberships:', membershipError);
+		logger.error('[Student Entry Detail] Error fetching memberships:', membershipError);
 		throw error(500, 'Erreur lors du chargement');
 	}
 
@@ -77,7 +82,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			// No rows returned - either doesn't exist, not published, or not in student's class
 			throw error(404, 'Entrée introuvable');
 		}
-		console.error('[Student Entry Detail] Error fetching entry:', entryError);
+		logger.error('[Student Entry Detail] Error fetching entry:', entryError);
 		throw error(500, 'Erreur lors du chargement');
 	}
 

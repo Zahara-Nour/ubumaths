@@ -4,6 +4,9 @@ import { schoolUpsertSchema } from '$lib/server/validation/schools';
 import { uuidSchema } from '$lib/server/validation/common';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { assertTypedConfirmation } from '$lib/server/confirmAction';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/schools/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Admin only (real admin login OR step-up elevation)
@@ -16,7 +19,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('name');
 
 	if (schoolsError) {
-		console.error('Error fetching schools:', schoolsError);
+		logger.error('Error fetching schools:', schoolsError);
 		throw error(500, 'Failed to load schools');
 	}
 
@@ -148,7 +151,7 @@ export const actions: Actions = {
 
 		// L'école a été lue juste au-dessus : zéro ligne = refus, pas absence.
 		if (!deletedSchools || deletedSchools.length === 0) {
-			console.error('[admin/schools delete] Aucune ligne supprimée pour', id);
+			logger.error('[admin/schools delete] Aucune ligne supprimée pour', id);
 			return fail(403, { message: 'École non supprimée : droits insuffisants' });
 		}
 

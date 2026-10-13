@@ -6,6 +6,9 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { isDictionaryAdmin, loadDictionary } from '$lib/server/dictionary/load';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/glossaire/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	try {
@@ -13,7 +16,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			entries: await loadDictionary(locals.supabase, { fresh: isDictionaryAdmin(locals) })
 		};
 	} catch (cause) {
-		console.error('[glossaire] dictionnaire illisible', cause);
+		logger.error('[glossaire] dictionnaire illisible', cause);
 		throw error(503, 'Le glossaire est momentanément indisponible.');
 	}
 };

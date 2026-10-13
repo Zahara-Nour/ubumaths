@@ -10,9 +10,9 @@
 
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 
-const logger = createLogger('auth/pending-approval');
+const logger = createServerLogger('auth/pending-approval');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile, supabase } = locals;

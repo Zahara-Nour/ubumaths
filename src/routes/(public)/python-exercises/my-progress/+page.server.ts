@@ -13,6 +13,9 @@
 
 import { redirect, error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(public)/python-exercises/my-progress/+page.server');
 
 export type MasteryStatus = 'mastered' | 'needs_review' | 'not_started';
 
@@ -44,7 +47,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.single();
 
 	if (profileErr) {
-		console.error('Failed to fetch profile:', profileErr);
+		logger.error('Failed to fetch profile:', profileErr);
 		throw error(500, 'Erreur lors de la récupération du profil');
 	}
 	if (!profile || profile.role !== 'student') {
@@ -61,7 +64,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Cette liste borne la portée du classement. Vidée par une panne, elle
 	// affiche un classement amputé sans le dire.
 	if (myClassesRawError) {
-		console.error('Périmètre illisible :', myClassesRawError);
+		logger.error('Périmètre illisible :', myClassesRawError);
 		throw error(500, 'Impossible de déterminer le périmètre');
 	}
 	const myClassIds = (myClassesRaw ?? []).map((m) => m.class_id as string);
@@ -77,7 +80,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.or(orFilter);
 
 	if (assignmentsRawError) {
-		console.error('Lecture impossible :', assignmentsRawError);
+		logger.error('Lecture impossible :', assignmentsRawError);
 		throw error(500, 'Impossible de charger les données');
 	}
 	const assignedExoIds = new Set(
@@ -92,7 +95,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (submissionsRawError) {
-		console.error('Lecture impossible :', submissionsRawError);
+		logger.error('Lecture impossible :', submissionsRawError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -122,7 +125,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (masteryRawError) {
-		console.error('Enrichissement illisible :', masteryRawError);
+		logger.error('Enrichissement illisible :', masteryRawError);
 	}
 
 	type DbMasteryStatus = 'mastered' | 'needs_review';
@@ -145,7 +148,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.in('id', Array.from(unionExoIds));
 
 	if (exosRawError) {
-		console.error('Lecture impossible :', exosRawError);
+		logger.error('Lecture impossible :', exosRawError);
 		throw error(500, 'Impossible de charger les données');
 	}
 	const exoById = new Map<string, ExerciseSummary>(

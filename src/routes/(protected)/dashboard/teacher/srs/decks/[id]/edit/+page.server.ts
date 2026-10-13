@@ -7,6 +7,9 @@
 
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/srs/decks/[id]/edit/+page.server');
 
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -42,7 +45,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			.single();
 
 		if (deckError || !deck) {
-			console.error('Error fetching deck:', deckError);
+			logger.error('Error fetching deck:', deckError);
 			throw error(404, 'Deck introuvable');
 		}
 
@@ -71,7 +74,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			.order('created_at', { ascending: false });
 
 		if (cardsError) {
-			console.error('Error fetching cards:', cardsError);
+			logger.error('Error fetching cards:', cardsError);
 		}
 
 		// Map cards to camelCase
@@ -91,7 +94,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			cards: mappedCards
 		};
 	} catch (err) {
-		console.error('Error in edit deck page load:', err);
+		logger.error('Error in edit deck page load:', err);
 		throw error(500, 'Internal server error');
 	}
 };

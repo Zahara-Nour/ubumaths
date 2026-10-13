@@ -20,6 +20,9 @@ import { requireAdmin } from '$lib/server/middleware/auth';
 import { getCurriculumTree, type CurriculumTreeTheme } from '$lib/server/curriculum';
 import { isLegacyPoint, type PointGeneration } from '$lib/server/curriculum-generation';
 import { getGradesAtOrAbove } from '$lib/types/grades';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/admin/questions/[id]/edit/+page.server');
 
 /** Tag lu pour l'écran : le point, et de quoi connaître sa génération. */
 interface TagRow {
@@ -74,7 +77,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (tagRowsError) {
-		console.error('Enrichissement illisible :', tagRowsError);
+		logger.error('Enrichissement illisible :', tagRowsError);
 	}
 
 	return {

@@ -5,6 +5,11 @@ import { sendValidationResultMessage } from '$lib/server/riddle-messages';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { RIDDLE_COLUMNS, toDbRiddle, toDbRiddleAttempt } from '$lib/types/riddle';
 import { fetchRiddleSolutions } from '$lib/server/riddle-solutions';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/enigmes/validations/[id]/+page.server'
+);
 
 /**
  * Load validation details
@@ -37,7 +42,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		.single();
 
 	if (attemptError || !attempt) {
-		console.error('Error fetching attempt:', attemptError);
+		logger.error('Error fetching attempt:', attemptError);
 		throw error(404, 'Tentative non trouvée ou déjà validée');
 	}
 
@@ -52,7 +57,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 		attempt.riddle.id
 	]);
 	if (solutionsError) {
-		console.error('Error fetching riddle solution:', solutionsError);
+		logger.error('Error fetching riddle solution:', solutionsError);
 		throw error(500, 'Impossible de charger la correction de l’énigme');
 	}
 
@@ -103,7 +108,7 @@ export const actions: Actions = {
 		});
 
 		if (validateError) {
-			console.error('Error validating attempt:', validateError);
+			logger.error('Error validating attempt:', validateError);
 			return fail(500, { message: 'Erreur lors de la validation' });
 		}
 
@@ -122,7 +127,7 @@ export const actions: Actions = {
 		// Élément de contexte : le repli d'affichage existe déjà, mais son absence ne
 		// doit pas se confondre avec une donnée réellement vide.
 		if (attemptError && attemptError.code !== 'PGRST116') {
-			console.error('Contexte illisible :', attemptError);
+			logger.error('Contexte illisible :', attemptError);
 		}
 
 		// Send notification to student

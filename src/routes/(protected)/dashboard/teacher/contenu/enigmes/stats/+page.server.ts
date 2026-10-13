@@ -1,6 +1,11 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { getTeacherTestMode } from '$lib/server/test-mode';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/contenu/enigmes/stats/+page.server'
+);
 
 /**
  * Load riddle statistics for teacher
@@ -21,7 +26,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.eq('created_by', user.id);
 
 	if (riddlesError) {
-		console.error('Lecture impossible :', riddlesError);
+		logger.error('Lecture impossible :', riddlesError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -43,7 +48,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.eq('profiles.is_test', isTestMode);
 
 	if (pendingValidationsError) {
-		console.error('Lecture impossible :', pendingValidationsError);
+		logger.error('Lecture impossible :', pendingValidationsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -57,7 +62,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.order('total_attempts', { ascending: false });
 
 	if (riddleStatsError) {
-		console.error('Lecture impossible :', riddleStatsError);
+		logger.error('Lecture impossible :', riddleStatsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -79,7 +84,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 		.eq('profiles.is_test', isTestMode);
 
 	if (studentStatsError) {
-		console.error('Lecture impossible :', studentStatsError);
+		logger.error('Lecture impossible :', studentStatsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 

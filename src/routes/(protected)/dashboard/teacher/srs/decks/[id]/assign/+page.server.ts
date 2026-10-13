@@ -8,6 +8,11 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getAssignmentTargets } from '$lib/server/students';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/srs/decks/[id]/assign/+page.server'
+);
 
 export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
 	const { user } = await safeGetSession();
@@ -28,7 +33,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			.single();
 
 		if (deckError || !deck) {
-			console.error('Error fetching deck:', deckError);
+			logger.error('Error fetching deck:', deckError);
 			throw error(404, 'Deck introuvable');
 		}
 
@@ -84,7 +89,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 
 		const mappedStudents = Array.from(studentsMap.values());
 
-		console.log('Students found:', mappedStudents.length);
+		logger.info('Students found:', mappedStudents.length);
 
 		return {
 			deck: mappedDeck,
@@ -92,7 +97,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
 			classes: classesWithCounts
 		};
 	} catch (err) {
-		console.error('Error in assign page load:', err);
+		logger.error('Error in assign page load:', err);
 		throw error(500, 'Internal server error');
 	}
 };

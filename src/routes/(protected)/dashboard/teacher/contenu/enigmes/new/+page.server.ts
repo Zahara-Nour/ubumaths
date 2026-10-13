@@ -6,6 +6,9 @@ import type { TablesInsert } from '$lib/types/database';
 import { RIDDLE_COLUMNS } from '$lib/types/riddle';
 import { toJson } from '$lib/types/database-helpers';
 import { saveRiddleSolution } from '$lib/server/riddle-solutions';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/teacher/contenu/enigmes/new/+page.server');
 
 /**
  * Load page (no data needed for new riddle)
@@ -66,7 +69,7 @@ export const actions: Actions = {
 			.single();
 
 		if (insertError || !newRiddle) {
-			console.error('[RIDDLE CREATE SERVER] Error creating riddle:', insertError);
+			logger.error('[RIDDLE CREATE SERVER] Error creating riddle:', insertError);
 			return fail(500, { message: "Erreur lors de la création de l'énigme" });
 		}
 
@@ -77,7 +80,7 @@ export const actions: Actions = {
 		});
 
 		if (!saved.ok) {
-			console.error('[RIDDLE CREATE SERVER] Error saving solution:', saved);
+			logger.error('[RIDDLE CREATE SERVER] Error saving solution:', saved);
 			// Compensation : une énigme sans sa solution ne doit pas rester en base
 			// (publiée, elle se validerait à la main sans correction).
 			const { data: deleted, error: deleteError } = await supabase
@@ -86,7 +89,7 @@ export const actions: Actions = {
 				.eq('id', newRiddle.id)
 				.select('id');
 			if (deleteError || !deleted || deleted.length === 0) {
-				console.error('[RIDDLE CREATE SERVER] Compensation impossible :', {
+				logger.error('[RIDDLE CREATE SERVER] Compensation impossible :', {
 					riddleId: newRiddle.id,
 					deleteError
 				});

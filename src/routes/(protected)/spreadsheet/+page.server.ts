@@ -5,6 +5,9 @@
 
 import type { PageServerLoad } from './$types';
 import { requireSpreadsheetUser } from '$lib/server/spreadsheet-access';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/spreadsheet/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user } = await requireSpreadsheetUser(locals);
@@ -18,7 +21,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.limit(20);
 
 	if (error) {
-		console.error('Error loading spreadsheets:', error);
+		logger.error('Error loading spreadsheets:', error);
 		return {
 			spreadsheets: []
 		};

@@ -41,13 +41,13 @@
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { createLogger } from '$lib/utils/logger';
+import { createServerLogger } from '$lib/utils/logger';
 import { config } from 'dotenv';
 
 // Charger les variables d'environnement
 config();
 
-const logger = createLogger('tutorRateLimiter');
+const logger = createServerLogger('tutorRateLimiter');
 
 // ============================================================================
 // SERVICE ROLE CLIENT (SINGLETON POUR LE RATE LIMITING)

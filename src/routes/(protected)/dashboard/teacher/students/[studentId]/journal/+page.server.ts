@@ -18,6 +18,11 @@ import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger(
+	'(protected)/dashboard/teacher/students/[studentId]/journal/+page.server'
+);
 
 // Validate studentId path parameter
 const studentIdSchema = z.object({
@@ -52,7 +57,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.single();
 
 	if (studentError || !student) {
-		console.error('[Teacher Journal] Error fetching student:', studentError);
+		logger.error('[Teacher Journal] Error fetching student:', studentError);
 		throw error(404, 'Élève non trouvé');
 	}
 
