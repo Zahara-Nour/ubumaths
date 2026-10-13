@@ -222,8 +222,10 @@ def to_path(commands: Commands, mirror_x: bool = False, mirror_y: bool = False) 
     return path
 
 
-def stroked(path: pathops.Path, clip: Optional[Tuple[float, float]] = None) -> pathops.Path:
-    path.stroke(STROKE, pathops.LineCap.ROUND_CAP, pathops.LineJoin.ROUND_JOIN, 4)
+def stroked(
+    path: pathops.Path, clip: Optional[Tuple[float, float]] = None, width: float = STROKE
+) -> pathops.Path:
+    path.stroke(width, pathops.LineCap.ROUND_CAP, pathops.LineJoin.ROUND_JOIN, 4)
     # Les bouts ronds sont des coniques, que simplify() et les polices ignorent
     path.convertConicsToQuads()
     path.simplify()
