@@ -246,3 +246,5 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
   serait de figer ces produits ; tests des parenthèses de l'écriture usuelle (`2×-3`, `--3+x`),
   vus rouges en les retirant ; décimal `.5` ; fantôme sans marqueurs. Repéré, hors chantier :
   `toLatex(multiply(2, divide(12, 3, 'ratio')))` écrit `2 \times 12 : 3` (à signaler).
+- 2026-10-13 — **lot 1 mergé : PR #1332** (b03cb0b88), CI verte ; pas en prod. Lot 2 (champ de
+  formule réglable) en attente des réponses de David (écrire / manipuler, réglages, E5.4).
