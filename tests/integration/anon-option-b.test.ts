@@ -117,7 +117,6 @@ const RELATIONS_FERMEES = [
 	'python_exercise_assignments',
 	'python_exercise_mastery',
 	'python_exercise_submissions',
-	'python_submission_server_verdicts',
 	'question_template_points',
 	'rag_chunks',
 	'rag_documents',
@@ -381,8 +380,8 @@ function anonClient(): SupabaseClient<Database> {
 
 describe('(a) anon n’a plus aucun droit sur les objets fermés', () => {
 	it('l’inventaire compte 141 relations et 143 fonctions', () => {
-		expect(RELATIONS_FERMEES).toHaveLength(139);
-		expect(new Set(RELATIONS_FERMEES).size).toBe(139);
+		expect(RELATIONS_FERMEES).toHaveLength(138);
+		expect(new Set(RELATIONS_FERMEES).size).toBe(138);
 		expect(FONCTIONS_REVOQUEES).toHaveLength(143);
 		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(143);
 	});

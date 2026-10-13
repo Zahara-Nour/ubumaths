@@ -320,8 +320,9 @@ Exercices, fichiers et carnets Python, exécutés dans le navigateur (Pyodide). 
 - `python_exercises` → `python_exercise_assignments`, `python_exercise_submissions`,
   `python_exercise_mastery` ; `python_files` (+ affectations) ; `python_notebooks` →
   `python_notebook_assignments`, `python_notebook_checkpoint_runs`.
-- `python_submission_server_verdicts` : existe en prod mais **inerte** — la re-vérification serveur a
-  été abandonnée ([ADR 0010](../adr/0010-pas-de-reverification-serveur-python.md)).
+- `python_submission_server_verdicts` (verdicts de la re-vérification serveur, abandonnée par
+  l'[ADR 0010](../adr/0010-pas-de-reverification-serveur-python.md)) : vide et inerte, **supprimée**
+  le 2026-10-13 avec `run_flag_stale_python_rechecks` (migration `20261016101500`).
 
 Accès : l'élève lit et soumet ses propres soumissions, le professeur lit celles de tous les élèves.
 Un carnet est lu par son auteur, par l'élève à qui il est assigné (`is_notebook_assigned_to_student`,
@@ -495,7 +496,8 @@ authenticated` ne part qu'après le `deploy:prod` qui livre la route (sinon la p
   sérialisation à clés triées.
 - **Une colonne masquée ne se fait pas par `REVOKE` de colonne** : un rôle sans SELECT au niveau
   table reçoit `42501` sur un `select('*')`, ce qui casse PostgREST. Pour cacher des données à l'élève,
-  une table annexe sans policy élève (c'est ce que fait `python_submission_server_verdicts`).
+  une table annexe sans policy élève (c'était le choix de `python_submission_server_verdicts`, supprimée
+  depuis).
 - **`curriculum_points` : cinq des six clés étrangères qui le visent sont en CASCADE** ; supprimer un
   point effacerait sans un mot la couverture du cahier de texte et l'acquisition des élèves. On
   archive.

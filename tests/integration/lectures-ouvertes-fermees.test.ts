@@ -175,7 +175,8 @@ describe('lectures ouvertes fermées', () => {
 		'process_weekly_rewards',
 		'purchase_shop_item',
 		'award_weekly_reward',
-		'calculate_daily_challenge_gidouilles'
+		'calculate_daily_challenge_gidouilles',
+		'run_flag_stale_python_rechecks'
 	])('la fonction sans appelant %s n’existe plus', async (nom) => {
 		const pg = await getPostgresClient();
 		const { rows } = await pg.query(
@@ -183,5 +184,13 @@ describe('lectures ouvertes fermées', () => {
 			[nom]
 		);
 		expect(rows).toEqual([]);
+	});
+
+	it('la table inerte python_submission_server_verdicts n’existe plus', async () => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			`select to_regclass('public.python_submission_server_verdicts') as t`
+		);
+		expect(rows[0].t).toBeNull();
 	});
 });
