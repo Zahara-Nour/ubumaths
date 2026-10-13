@@ -45,6 +45,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { toaster } from '$lib/stores/toaster.svelte';
+	import { googleOAuthErrorMessage } from '$lib/utils/google-oauth-error';
 
 	// ============================================================================
 	// Types
@@ -98,6 +99,13 @@
 			const url = new URL($page.url);
 			url.searchParams.delete('connected');
 			await goto(url.pathname, { replaceState: true });
+		}
+
+		// Retour de Google en erreur (refus, jeton) : le dire, puis nettoyer l'adresse.
+		const oauthError = googleOAuthErrorMessage($page.url.searchParams.get('error'));
+		if (oauthError) {
+			toaster.error(oauthError);
+			await goto($page.url.pathname, { replaceState: true });
 		}
 	});
 

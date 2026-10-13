@@ -446,3 +446,9 @@ record_game_reward(uuid,text,uuid,numeric,uuid) FROM authenticated` (même migra
   que la RPC `rag_hybrid_search`, SECURITY INVOKER) avant tout appel à HuggingFace ; erreur → rien
   n'est envoyé. 2 tests rouges sans le garde-fou. Registre des sous-traitants et `tuteur-ia.md` :
   déclarer HuggingFace avant de définir `HF_API_KEY`.
+- **T18 clos (David, 2026-10-13 : « clore, accepté »)** : la `solution` envoyée au tuteur par le
+  navigateur reste ; elle y est déjà (correction côté client), la trafiquer ne fausse que l'aide
+  reçue par l'élève lui-même. Écrit dans `tuteur-ia.md` (Pièges).
+- **T11 plus vrai (mesuré le 2026-10-13)** : `sanitizeErrorData` masque clés sensibles et
+  courriels (corps, contexte, URL, message, pile) ; prod : 934 lignes, `request_body` 0, une URL à
+  paramètre (`/glossaire?q=`), plus ancienne au 2026-09-11 (purge 30 j). §5.9 de `rgpd.md` barré.

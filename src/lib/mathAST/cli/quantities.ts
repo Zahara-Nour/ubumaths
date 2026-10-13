@@ -122,6 +122,8 @@ const DIMENSION_NAMES: Readonly<Record<string, string>> = {
 	'temperature^1': 'une température',
 	'angle^1': 'un angle',
 	'currency^1': 'une somme d’argent',
+	'information^1': 'une quantité de données',
+	'information^1*time^-1': 'un débit',
 	'electric_current^1': 'une intensité',
 	'amount^1': 'une quantité de matière',
 	'length^1*time^-1': 'une vitesse',

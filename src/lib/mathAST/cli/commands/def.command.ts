@@ -129,8 +129,8 @@ export class DefCommand extends BaseCommand {
 			};
 		}
 
-		// Parse the expression
-		const parseResult = parse(expressionStr);
+		// Le corps lu avec les fonctions déjà liées : `.def m(x) = k(x)+1` (revue)
+		const parseResult = parse(expressionStr, { evalState: ctx.evalState });
 
 		if (parseResult.errors.length > 0 || !parseResult.ast) {
 			const errorMsg = parseResult.errors[0]?.message ?? 'Failed to parse expression';

@@ -8,8 +8,9 @@
 import type { MathNode, RelationNode } from '../../types';
 import type { CommandContext, ErrorCode } from '../types';
 import { CommandRegistry, parse, createEvalState, bindingsToRecord, setBinding } from '../core';
-import { getFunctionNames, getFunction } from '../core/eval-state';
+import { createFunctionBinding, getFunctionNames, getFunction } from '../core/eval-state';
 import type { EvalState } from '../core';
+import type { PipelineOptions } from '../core/pipeline';
 import { createDefaultRegistry } from '../commands';
 import type {
 	ReplExecutionResult,
@@ -542,7 +543,7 @@ export class WebReplEngine {
 
 			// For other commands, parse the argument as an expression
 			const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-			const parseResult = parse(args, forceFormat ? { forceFormat } : undefined);
+			const parseResult = parse(args, this.parseOptions(forceFormat));
 
 			if (parseResult.ast) {
 				ast = parseResult.ast;
@@ -596,7 +597,7 @@ export class WebReplEngine {
 	 */
 	private executeInlineAssignment(varName: string, valueExpr: string): ReplExecutionResult {
 		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-		const parseResult = parse(valueExpr, forceFormat ? { forceFormat } : undefined);
+		const parseResult = parse(valueExpr, this.parseOptions(forceFormat));
 
 		if (parseResult.errors.length > 0 || !parseResult.ast) {
 			const error = parseResult.errors[0];
@@ -649,7 +650,7 @@ export class WebReplEngine {
 		bodyExpr: string
 	): ReplExecutionResult {
 		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-		const parseResult = parse(bodyExpr, forceFormat ? { forceFormat } : undefined);
+		const parseResult = parse(bodyExpr, this.parseOptions(forceFormat));
 
 		if (parseResult.errors.length > 0 || !parseResult.ast) {
 			const error = parseResult.errors[0];
@@ -675,11 +676,9 @@ export class WebReplEngine {
 			};
 		}
 
-		// Store the function definition
-		this.evalState.functions[funcName] = {
-			parameters,
-			expression: parseResult.ast
-		};
+		// Par `createFunctionBinding` : le nom entre dans `functionNames`, et
+		// `k(x) := x+1` puis `k(1)` se calcule (revue)
+		createFunctionBinding(this.evalState, funcName, parameters, parseResult.ast);
 		this.lastAst = parseResult.ast;
 
 		// Format output
@@ -747,8 +746,8 @@ export class WebReplEngine {
 
 		// Parse both expressions
 		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-		const result1 = parse(expr1Str, forceFormat ? { forceFormat } : undefined);
-		const result2 = parse(expr2Str, forceFormat ? { forceFormat } : undefined);
+		const result1 = parse(expr1Str, this.parseOptions(forceFormat));
+		const result2 = parse(expr2Str, this.parseOptions(forceFormat));
 
 		if (!result1.ast) {
 			const error = result1.errors[0];
@@ -885,13 +884,22 @@ export class WebReplEngine {
 	}
 
 	/**
+	 * Les options de lecture d'une saisie : le format forcé, et l'état — ses
+	 * fonctions liées se lisent comme des fonctions, quel que soit leur nom
+	 * (`k(0)` restait `k(0)`, 2026-10-13).
+	 */
+	private parseOptions(forceFormat: PipelineOptions['forceFormat']): PipelineOptions {
+		return { evalState: this.evalState, ...(forceFormat && { forceFormat }) };
+	}
+
+	/**
 	 * Parse and display a mathematical expression.
 	 * If the expression contains variables and all are bound, auto-evaluates it.
 	 */
 	private executeExpression(input: string): ReplExecutionResult {
 		// Use forced format if mode is not 'auto'
 		const forceFormat = this.inputMode === 'auto' ? undefined : this.inputMode;
-		const result = parse(input, forceFormat ? { forceFormat } : undefined);
+		const result = parse(input, this.parseOptions(forceFormat));
 
 		// Display any errors
 		if (result.errors.length > 0) {

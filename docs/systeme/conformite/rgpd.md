@@ -462,13 +462,17 @@ CRON_SECRET                   # Secret taches planifiees
 
 ---
 
-### 5.9 MOYEN - Error logs avec PII
+### 5.9 ~~MOYEN - Error logs avec PII~~ **TRAITE** (verifie le 2026-10-13)
 
-**Situation actuelle** :
+`logError` (`src/lib/server/errorMonitoring.ts`, `sanitizeErrorData`) assainit avant ecriture :
+cles sensibles (`password`, `token`, `secret`, `auth`, `session`, `cookie`, `bearer`…) remplacees
+par `[REDACTED]` dans les en-tetes, le corps et le contexte ; adresses courriel masquees dans
+toutes les valeurs texte, l'URL, le message et la pile. Purge a 30 jours.
 
-- `request_body` peut contenir des donnees de formulaire (noms, emails)
-- `url` peut reveler des identifiants
-- Pas de sanitization automatique
+Mesure en prod (2026-10-13, lecture seule) : 934 lignes, `request_body` jamais renseigne (0),
+aucune adresse courriel dans un corps, une seule URL a parametre (recherche du glossaire), plus
+ancienne ligne au 2026-09-11 (purge effective). Restent, assumes : `user_id` (pseudonyme,
+necessaire au diagnostic) et les identifiants techniques dans les chemins d'URL.
 
 ---
 

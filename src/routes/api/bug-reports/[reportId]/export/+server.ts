@@ -13,6 +13,7 @@ import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { generateClaudeCodeExport } from '$lib/server/bug-report-export';
+import { attachReportErrors } from '$lib/server/bug-report-errors';
 import { signBugReportScreenshot, EXPORT_SIGNED_URL_TTL } from '$lib/server/bug-report-screenshots';
 import { z } from 'zod';
 import { createServerLogger } from '$lib/utils/logger';
@@ -63,6 +64,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		// Sign the screenshot URL with a longer TTL so the exported markdown link
 		// stays openable after download (private bucket).
 		await signBugReportScreenshot(locals.supabase, report, EXPORT_SIGNED_URL_TTL);
+
+		// Erreurs de l'auteur avant le signalement : lues ici, réservées à l'admin.
+		await attachReportErrors(locals.supabase, [report]);
 
 		// Generate the export
 		const exportData = generateClaudeCodeExport(report);

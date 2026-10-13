@@ -66,6 +66,11 @@ describe('unitKeysFor — grandeur attendue', () => {
 		expect(unitKeysFor(['12\\unit{€}'], [undefined])).toEqual(['€']);
 	});
 
+	// 2026-10-13 : sans ce groupe, une case qui attend des Mo proposait cm, m, km…
+	it('quantité de données : bit, o, ko, Mo, Go, To', () => {
+		expect(unitKeysFor(['5\\unit{Mo}'], [undefined])).toEqual(['bit', 'o', 'ko', 'Mo', 'Go', 'To']);
+	});
+
 	it('plusieurs trous de grandeurs différentes : réunion, sans doublon', () => {
 		expect(unitKeysFor(['5\\unit{km}', '2\\unit{h}', '3\\unit{m}'], [])).toEqual([
 			'mm',

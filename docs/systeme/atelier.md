@@ -423,7 +423,9 @@ Calcul sans changer de vue** et crée **une carte par objet créé** (G7).
 Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de refaire le travail) :
 
 - `syncEngine` (`engine.ts`) : l'atelier détient les noms, `WebReplEngine` n'est qu'un
-  calculateur remis en accord avant chaque usage (Q1, option B) ;
+  calculateur remis en accord avant chaque usage (Q1, option B). Une fonction liée s'y lit
+  comme une fonction quel que soit son nom (`k(x) = x+1` puis `k(0)` → 1 ; avant le 2026-10-13,
+  seuls f, g, h, u, v, w l'étaient) : le moteur passe son état à chaque lecture ;
 - `syncPlots` (`plot-sync.ts`) : l'atelier détient l'état, le grapheur le reflète. Rien de ce qui
   se passe dans le grapheur ne remonte. ⚠️ L'effet qui l'appelle lit et écrit le store : s'il
   cessait d'être idempotent, il bouclerait.
@@ -497,6 +499,7 @@ Doc du moteur : [mathast/README.md](mathast/README.md).
 | `.factoriser`                           | même pipeline, intention `factoriser`, niveau lycée (stratégies de l'ADR 0024 : identités à coefficients, Δ, racine évidente) ; aucun repli moteur : « je n'ai pas su » se dit                                                                                                                                                                       |
 | `.dériver`, « Dériver », `f′`           | `src/lib/mathAST/pedagogical-differentiation/` (règle nommée, sous-étapes)                                                                                                                                                                                                                                                                           |
 | `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                                                                                                                                                                                                                                             |
+| `.intégrer`                             | réponse : `integration` (`integrate.command.ts`) ; « Comment ? » : `src/lib/mathAST/pedagogical-integration/` niveau lycée, vérifié par `integrate-steps-check.ts`                                                                                                                                                                                   |
 | `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                                                                                                                                                                                                                                                  |
 | syntaxe des commandes                   | `src/lib/mathAST/cli/core/variable-argument.ts`                                                                                                                                                                                                                                                                                                      |
 
@@ -517,8 +520,8 @@ Une inéquation dont l'écriture a une valeur interdite que la forme canonique e
 second degré la refusent (`rejectForbiddenValues`, V47 puis V48), `solveSteps` rend `null` et
 l'atelier affiche la réponse du moteur sans « Comment ? ».
 
-**« Résumé / Détaillé »** (`steps-summary.ts`, 2026-10-13). Les quatre commandes qui rédigent
-(simplifier, factoriser, dériver, résoudre — tapées, ou Résoudre / Dériver sur une carte) rendent le même
+**« Résumé / Détaillé »** (`steps-summary.ts`, 2026-10-13). Les commandes qui rédigent
+(simplifier, factoriser, dériver, résoudre, intégrer — tapées, ou Résoudre / Dériver sur une carte) rendent le même
 calcul DEUX fois : `steps` en `verbosity: 'detailed'`, `summary` en `'summarized'`. Le moteur
 tourne une fois ; seul `renderAll` est rappelé, et la réponse de la ligne vient du calcul, jamais
 de la rédaction. `summaryOf` compare les deux rendus et rend `undefined` s'ils sont identiques :
@@ -546,6 +549,33 @@ accepté seulement si l'équation tient sur toute une grille ET si `solve` répo
 **échec du moteur** porte le statut `no-solution` : `engineSolutions` le détecte par
 `isSolverFailure` et rend `null`, sinon « type non supporté » confirmait une conclusion `S = ∅`
 (`x\left|x\right|=4`, qui a la solution 2).
+
+**`.intégrer` en détail** (`integrate-steps.ts`, 2026-10-13). La réponse de la ligne est celle
+du moteur `integration`, inchangée (`+ C` compris). Le « Comment ? » vient de
+`generatePedagogicalIntegrationSteps` (niveau `lycee`, détaillé + résumé), et ne s'affiche que si
+deux gardes passent (`integrate-steps-check.ts`) :
+
+- **concordance avec le moteur** : en définie, la valeur des étapes est numériquement celle du
+  moteur ; en primitive, F_étapes − F_moteur est constante sur une grille (là où les deux
+  existent, au moins 2 points). Un refus rédigé (`undefinedAt`) alors que le moteur a une valeur
+  est un désaccord : `\ln x` de 0 à 1 (impropre, −1) n'a pas d'étapes ;
+- **aucun coefficient caché** : une forme composée (`apply-composite-exp`, `-ln`, `-sin`, `-cos`,
+  `-power`) doit écrire exactement G(u) (e^u, ln|u|, −cos u, sin u, u^(n+1)/(n+1)), comparé
+  numériquement sur la grille. Le pipeline rééquilibre par 1/u′ sans le dire (`e^{2x}` → « ½e^{2x} »
+  sous le titre « e^u ») : un facteur ≠ 1, signe compris (`e^{-x}`, `\frac3x`), refuse. Le contrôle
+  porte aussi sur les sous-étapes : `xe^{2x}` (IPP) est refusé par celle qui intègre ½e^{2x}.
+  Les **éléments simples** (`apply-partial-fractions`) doivent écrire A·ln|x − r₁| + B·ln|x − r₂|
+  à une constante près, comme le promet leur titre : un facteur non unitaire intègre A/(2x − 1)
+  en (A/2)·ln|2x − 1| sans le dire (`\frac{1}{(2x-1)(x+1)}`, `\frac{1}{4x^2-1}`), refusé.
+  Détection par les règles et leurs `bindings`, pas par une liste d'exemples.
+
+Refusés aussi : bornes non numériques (`de 0 à a`), toute exception (`\frac{1}{x^2}` :
+`PedagogicalIntegrationNotImplemented`). Montrés : polynômes, eˣ, 1/x, cos/sin, composées
+exactes (`2e^{2x}`, `\frac{2x}{x^2+1}`), IPP, et hors terminale l'IPP cyclique et les éléments
+simples à facteurs x − r (`\frac{1}{x^2-1}`, `\frac{1}{x(x-1)}` de 2 à 3) ; à facteur non unitaire,
+coefficient caché, refusés. Un **pôle dans [a ; b]** sort en refus du moteur (`INTEGRAL_UNDEFINED`) : une ligne de
+refus ne porte pas d'étapes (`CalcResult` `refus`), donc pas de « Comment ? ». La rédaction des
+composées, `F(b) − F(a)` et l'IPP en notation u, v′ viendront dans les PR suivantes.
 
 Statistiques : `summarizeList` / `summarizeTable` (`src/lib/statistics/describe.ts`), et
 `src/lib/statistics/` pour l'ajustement (`fit.ts`), le bivarié, la simulation, les fractions et
