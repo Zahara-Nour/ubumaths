@@ -83,7 +83,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 				url: '(protected) layout',
 				user_id: user!.id,
 				context: {
-					user_email: user!.email,
 					possible_causes: [
 						'User signed up but profile was not created',
 						'Database trigger is missing',
@@ -103,7 +102,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 
 	// Check user approval status — deny-by-default: only 'approved' may proceed.
 	if (profile.status === 'pending') {
-		logger.info('User pending approval, redirecting:', user!.email);
+		logger.info('User pending approval, redirecting:', user!.id);
 		throw redirect(303, '/auth/pending-approval');
 	}
 
@@ -111,7 +110,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		// 'rejected' or any unexpected/future status → deny access.
 		logger.warn(
 			'Non-approved user attempting to access protected route:',
-			user!.email,
+			user!.id,
 			profile.status
 		);
 		// Sign out the non-approved user

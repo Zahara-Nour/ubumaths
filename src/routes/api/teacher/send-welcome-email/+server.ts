@@ -126,7 +126,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	console.log(
-		`[Send Welcome Email] Email sent successfully to ${student.email} by teacher ${user.id}`
+		`[Send Welcome Email] Email sent successfully to student ${student.id} by teacher ${user.id}`
 	);
 
 	return json({
