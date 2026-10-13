@@ -41,12 +41,13 @@ describe('un « non » sans parenthèses porte sur toute la comparaison', () => 
 });
 
 describe('valeurs absolues et « ou »', () => {
-	// `| 2 || 3 |` n'a pas de sens : il reste refusé, comme avant (erreur de lecture)
-	it('| 2 || 3 | : refusé, sans « ou » dans la valeur absolue', () => {
+	// `| 2 || 3 |` = |2|·|3| : deux valeurs absolues collées font un produit (V40,
+	// comme `|x||y|`), jamais un « ou »
+	it('| 2 || 3 | : le produit |2|·|3|, sans « ou » dans la valeur absolue', () => {
 		const line = run('| 2 || 3 |');
 
-		expect(line.success).toBe(false);
-		expect(line.output).not.toMatch(/Cannot evaluate boolean/);
+		expect(line.success).toBe(true);
+		expect(line.output).toBe('6');
 	});
 
 	it('|2| || |3| : un « ou » entre deux nombres, refusé en français', () => {

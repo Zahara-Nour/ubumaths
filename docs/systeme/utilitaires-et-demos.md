@@ -115,12 +115,12 @@ Précisions :
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles
   de la police, petits et grands (ponctuation, opérateurs, logique, ensembles, flèches, vecteurs,
   géométrie, délimiteurs empilés, racines, ∑ ∫, lettres grecques, AMS) : la regarder suffit
-  pour juger un changement du jeu Shantell (`tools/shantell-math/`). En bas, trois **exercices réels**
+  pour juger un changement du jeu Shantell (`tools/chiphre-math/`). En bas, trois **exercices réels**
   (copie figée de la base, `exercices-demo.json`, image copiée dans `static/test-font/`), affichés en
   Shantell et téléchargeables en PDF : `shantell-pdf.ts` compile avec un compilateur Typst **à part**
-  (`TypstSnippet.buildLocalCompiler`), qui charge en plus `static/fonts/shantell-typst/` (Shantell
+  (`TypstSnippet.buildLocalCompiler`), qui charge en plus `static/fonts/chiphre-math-typst/` (Shantell
   Sans Light/Bold, **Chiphre Math** : police OpenType MATH construite depuis le jeu KaTeX par
-  `tools/shantell-math/src/build_typst_math_font.py`). Le compilateur partagé des fiches n'est pas
+  `tools/chiphre-math/src/build_typst_math_font.py`). Le compilateur partagé des fiches n'est pas
   touché.
 - **`/test-cadres`** : garde la trace du choix `\htmlStyle` pour le cadre des solutions
   (`\bbox` perd sa bordure en MathLive 0.111.1, `roundedbox` est décalé).

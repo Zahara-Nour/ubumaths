@@ -15,7 +15,7 @@ The x is built from Shantell's own c, so that it keeps the font's style
    merged into one outline.
 
 The x keeps the box and advance width of Shantell's x, so MathLive spacing is
-unchanged. The script works in place on static/fonts/shantell-katex/ (each run
+unchanged. The script works in place on static/fonts/chiphre-math/ (each run
 redraws the glyph from the Shantell sources, so running it twice gives the
 same font). Writing to static/fonts/KaTeX_*.woff2 is refused: the original
 KaTeX fonts were overwritten that way on 2026-01-20.
@@ -37,8 +37,8 @@ from fontTools.ttLib import TTFont
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "shantell-katex"
-INPUT_DIR = REPO_ROOT / "tools" / "shantell-math" / "fonts" / "input"
+OUTPUT_DIR = REPO_ROOT / "static" / "fonts" / "chiphre-math"
+INPUT_DIR = REPO_ROOT / "tools" / "chiphre-math" / "fonts" / "input"
 
 # Police -> (source Shantell au même poids, épaisseur du trait des lettres de
 # cette source, mesurée sur o, l, n, c)

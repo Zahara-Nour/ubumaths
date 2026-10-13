@@ -44,7 +44,6 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Test files
 	'.test.ts',
 	// Cleanup endpoints
-	'/api/cleanup/',
 	'/api/errors/cleanup',
 	// Profil créé à la connexion Google : valeurs imposées par le serveur
 	'/auth/callback',

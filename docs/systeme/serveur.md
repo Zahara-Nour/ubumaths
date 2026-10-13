@@ -1,7 +1,7 @@
 ---
 couvre:
   - src/hooks.server.ts
-  - 'src/lib/server/{serviceRoleClient,rateLimiter,csp,csrfProtection,sanitization,validateRedirectUrl,env,supabase,confirmAction,anonymous-supabase}.ts'
+  - 'src/lib/server/{serviceRoleClient,rateLimiter,csp,csrfHandle,sanitization,validateRedirectUrl,env,supabase,confirmAction,anonymous-supabase}.ts'
   - 'src/lib/server/middleware/**'
   - 'src/lib/server/utils/**'
   - 'src/lib/server/validation/{index,common,params,response-utils,cron}.ts'
@@ -94,15 +94,15 @@ Une route sensible accessible sans compte → `rateLimiter.ts` (le seul qui tien
 
 ### 1.7 Ce que les hooks font pour tous
 
-| Garde                                      | Fichier                                                                |
-| ------------------------------------------ | ---------------------------------------------------------------------- |
-| Variables d'environnement validées (Zod)   | `src/lib/server/env.ts` (`initEnv`, `getEnv`)                          |
-| Mode maintenance (503 avant Supabase)      | `src/lib/server/maintenance.ts` (`maintenanceHandle`)                  |
-| Session Supabase SSR                       | `src/lib/server/supabase.ts` (`handle`)                                |
-| CSRF : `Origin` ≠ `Host` → 403 (mutations) | `csrfHandle` dans `src/hooks.server.ts` + `csrf` de `svelte.config.js` |
-| CSP dépendant de la config                 | `src/lib/server/csp.ts`                                                |
-| Pas de cache partagé pour un connecté      | `src/lib/server/private-response.ts` (`mustStayPrivate`)               |
-| Élévation admin                            | `src/lib/server/adminElevation.ts`                                     |
+| Garde                                      | Fichier                                                                                                          |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| Variables d'environnement validées (Zod)   | `src/lib/server/env.ts` (`initEnv`, `getEnv`)                                                                    |
+| Mode maintenance (503 avant Supabase)      | `src/lib/server/maintenance.ts` (`maintenanceHandle`)                                                            |
+| Session Supabase SSR                       | `src/lib/server/supabase.ts` (`handle`)                                                                          |
+| CSRF : `Origin` ≠ `Host` → 403 (mutations) | `csrfHandle` (`src/lib/server/csrfHandle.ts`, branché dans `src/hooks.server.ts`) + `csrf` de `svelte.config.js` |
+| CSP dépendant de la config                 | `src/lib/server/csp.ts`                                                                                          |
+| Pas de cache partagé pour un connecté      | `src/lib/server/private-response.ts` (`mustStayPrivate`)                                                         |
+| Élévation admin                            | `src/lib/server/adminElevation.ts`                                                                               |
 
 ---
 
@@ -128,7 +128,7 @@ Cet index cite chaque module sans le décrire : il ne le couvre pas pour la gard
 | `validateRedirectUrl.ts` | Anti open-redirect (`next`, `redirect`)                                                                                                                                | —                                                                                                           | `/auth/callback`, `/auth/confirm`                                      | [auth.md](auth.md)                                          |
 | `private-response.ts`    | `Cache-Control: private, no-store` pour les connectés                                                                                                                  | —                                                                                                           | hooks                                                                  | [auth.md](auth.md)                                          |
 | `csp.ts`                 | Sources CSP dépendant de la config : origine Supabase exacte (`img-src`) ; API + temps réel de notre projet (`connect-src`, seul effet réel en dev sur la base locale) | —                                                                                                           | hooks                                                                  | —                                                           |
-| `csrfProtection.ts`      | Validation `Origin` manuelle                                                                                                                                           | —                                                                                                           | **aucun appelant** (test seul)                                         | —                                                           |
+| `csrfHandle.ts`          | Handle CSRF : `Origin` doit correspondre à `Host` pour les écritures (403 sinon)                                                                                       | —                                                                                                           | hooks                                                                  | [auth.md](auth.md)                                          |
 | `env.ts`                 | Schéma Zod des variables d'environnement                                                                                                                               | `admin/cron`, `chat`                                                                                        | hooks, `google/`, `rag/`, `auth/cron.ts`                               | —                                                           |
 | `maintenance.ts`         | Page 503 de maintenance (spirale de π, HTML autonome), contournement par cookie                                                                                        | —                                                                                                           | hooks                                                                  | —                                                           |
 | `confirmAction.ts`       | Confirmation tapée des actions admin destructrices                                                                                                                     | `admin/cron`, `admin/exercises`, `admin/vip-cards`                                                          | `/dashboard/admin/schools`                                             | § 1.1                                                       |
@@ -159,7 +159,6 @@ Cet index cite chaque module sans le décrire : il ne le couvre pas pour la gard
 | `kanban.ts`                 | Tableaux kanban (organisation), autorisation par RLS                   | `organisation/kanban`                                                                          | `/organisation/kanban`                           | —                                        |
 | `bug-report-export.ts`      | Export Markdown d'un signalement de bug                                | `bug-reports/[reportId]`                                                                       | —                                                | —                                        |
 | `bug-report-screenshots.ts` | URLs signées des captures (bucket privé)                               | `bug-reports/[reportId]`                                                                       | pages bug-reports                                | —                                        |
-| `profanity-filter.ts`       | Filtre de grossièretés pour le chat                                    | —                                                                                              | **aucun appelant**                               | —                                        |
 
 ### Cours, cahier de texte, programme
 
@@ -236,7 +235,7 @@ Cet index cite chaque module sans le décrire : il ne le couvre pas pour la gard
 | `buddy-xp-service.ts`       | Orchestration des gains d'XP du compagnon                                                 | `riddles/[id]`, `student/buddy`, `api/tests/save`         | `evaluation-attempts.ts`               | [buddy-palotins.md](buddy-palotins.md)     |
 | `buddy-xp.ts`               | Réexport de `src/lib/utils/buddy-xp.ts` côté serveur                                      | —                                                         | `buddy-xp-service.ts`                  | [buddy-palotins.md](buddy-palotins.md)     |
 
-**Total : 99 modules indexés** (recompté le 2026-10-12). Sans appelant hors tests : **`csrfProtection.ts`**, **`profanity-filter.ts`**, et, à l'intérieur des dossiers, aucun autre (`auth/cron.ts` est appelé par `api/cron/deleted-account-files` depuis le 2026-10-13). `migration/publication.ts` et `migration/review-db.ts` ne sont appelés que par des scripts (`scripts/migrate-questions-phase1.ts`, `scripts/record-review.ts`, `scripts/import-reviewed-questions.ts`).
+**Total : 98 modules indexés** (2026-10-13 : `csrfProtection.ts` et `profanity-filter.ts`, sans appelant, supprimés ; `csrfHandle.ts` sorti du hook). Sans appelant hors tests : à l'intérieur des dossiers, aucun (`auth/cron.ts` est appelé par `api/cron/deleted-account-files` depuis le 2026-10-13). `migration/publication.ts` et `migration/review-db.ts` ne sont appelés que par des scripts (`scripts/migrate-questions-phase1.ts`, `scripts/record-review.ts`, `scripts/import-reviewed-questions.ts`).
 
 ---
 
@@ -270,13 +269,13 @@ Côté GitHub Actions (planifiés, hors application) : `.github/workflows/produc
 ## 4. Écarts connus
 
 1. **Énigme du jour : aucun déclencheur automatique, et une garde fragile.** `api/riddles/auto-select-daily` n'est planifié nulle part (pas de cron Vercel, pas de job pg_cron) ; seul le bouton admin l'appelle. La route n'exige une clé que si `VITE_RIDDLE_AUTO_SELECT_API_KEY` est définie (sinon **POST ouvert**, qui écrit via le client service role), alors que le déclencheur admin envoie `Bearer CRON_SECRET` : avec la clé définie, le bouton reçoit 401. Valeur de la variable en prod non vérifiée (secret). `verifyCronAuth` (`src/lib/server/auth/cron.ts`), fait pour ce cas, n'est branché nulle part.
-2. **`run_flag_stale_python_rechecks` n'est pas programmé** : sa migration (`supabase/migrations/20260827120000_python_submission_server_verification.sql`) dit de le planifier hors bande ; il n'est pas dans `cron.job` en prod, ni dans `ALLOWED_JOB_PATHS`.
-3. **Liste blanche service role partiellement périmée** : `'/api/cron/'` et `'/api/cleanup/'` ne correspondent à aucune route (`/auth/register`, qui manquait, y est depuis B8) ; le commentaire de `validation/cron.ts` cite `/api/cron/daily-summaries-and-rewards`, inexistant. Le contrôle n'est qu'un avertissement de dev.
+2. **`run_flag_stale_python_rechecks` n'est pas programmé** : sa migration (`supabase/migrations/20260827120000_python_submission_server_verification.sql`) dit de le planifier hors bande ; il n'est pas dans `cron.job` en prod, ni dans `ALLOWED_JOB_PATHS`. La fonction ne fait que **compter** les vérifications restées `pending` plus d'une heure (elle ne modifie rien) ; la table `python_submission_server_verdicts` est **vide** en prod (mesuré le 2026-10-13). Sans effet tant que la vérification serveur des soumissions Python ne sert pas.
+3. ✅ **Liste blanche service role** (2026-10-13) : `'/api/cleanup/'`, sans route, retiré ; `'/api/cron/'` sert de nouveau (`api/cron/deleted-account-files`). Le commentaire de `api/admin/cron/trigger` cite la vraie route HTTP. Le contrôle n'est qu'un avertissement de dev.
 4. **Deux `requireAuth` homonymes** aux signatures différentes : `src/lib/server/auth.ts` (`user`, redirige) et `src/lib/server/middleware/auth.ts` (`locals`, 401). Et 91 endpoints refont une garde à la main au lieu du middleware (§ 1.1).
-5. **CSRF en double** : SvelteKit (`svelte.config.js`) + `csrfHandle` maison ; `csrfProtection.ts` n'est appelé par personne. Dans `csrfHandle`, le 403 « Origin mismatch » est rattrapé par le `catch` et ressort en « Invalid origin header » (même statut, message trompeur).
+5. **CSRF en double** : SvelteKit (`svelte.config.js`) + `csrfHandle` maison. ✅ (2026-10-13) `csrfProtection.ts`, appelé par personne, supprimé ; le 403 « origine différente du site » ne ressort plus en « origine illisible » (test `src/lib/server/__tests__/csrfHandle.test.ts`).
 6. **Trois limiteurs de débit** (§ 1.5) ; `middleware/rateLimit.ts` et la `Map` locale de `api/admin/cron/trigger` ne tiennent pas entre instances Vercel.
 7. **Journalisation hétérogène** : `console.error` direct dans 319 endpoints, logger structuré dans 4.
-8. **Code mort** : `profanity-filter.ts` (le filtrage des messages passe par la fonction SQL `check_profanity_simple`, appelée par le trigger `process_message_content`).
+8. ✅ **Code mort** : `profanity-filter.ts` supprimé (2026-10-13) ; le filtrage des messages passe par la fonction SQL `check_profanity_simple`, appelée par le trigger `process_message_content`.
 
 ---
 

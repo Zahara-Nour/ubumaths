@@ -10,7 +10,7 @@ couvre:
   - src/lib/server/adminElevation.ts
   - src/lib/server/serviceRoleClient.ts
   - src/lib/server/rateLimiter.ts
-  - src/lib/server/csrfProtection.ts
+  - src/lib/server/csrfHandle.ts
   - src/lib/server/passwordPolicy.ts
   - src/lib/server/validateRedirectUrl.ts
   - src/lib/server/private-response.ts
@@ -66,7 +66,7 @@ Deux callbacks différents : `/auth/callback` (connexion Google) ≠ `/api/googl
 
 | Fichier                                           | Rôle                                                                                                                                                                                        |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/hooks.server.ts`                             | Chaîne des handles (ordre ci-dessous) ; `userProfileHandle`, `csrfHandle`, `securityHeadersHandle`.                                                                                         |
+| `src/hooks.server.ts`                             | Chaîne des handles (ordre ci-dessous) ; `userProfileHandle`, `securityHeadersHandle` ; `csrfHandle` vit dans `src/lib/server/csrfHandle.ts`.                                                |
 | `src/lib/server/supabase.ts`                      | Handle Supabase : `locals.supabase` (cookies SSR) et `locals.safeGetSession()`.                                                                                                             |
 | `src/lib/server/auth.ts`                          | Pour les **pages** : `getUserProfile`, `requireAuth(user)` (redirige), `requireRole(profile, …)`, `hasRole`, `hasAnyRole`.                                                                  |
 | `src/lib/server/middleware/auth.ts`               | Pour les **API** : `requireAuth(locals)`, `requireRole`, `requireRoles`, `requireAdmin` ; types `UserRole`, `Profile`.                                                                      |
@@ -355,7 +355,7 @@ d'intégration obligatoires, et relire [rls-echecs-silencieux](../pratiques/rls-
 | `src/lib/utils/__tests__/session-cookies.test.ts`                                                                                                                                       | Plafond de 30 jours (400 → 30 j, effacement `Max-Age=0` intact) ; écriture navigateur sur `document.cookie`. |
 | `src/routes/api/admin/elevate/__tests__/elevate.test.ts`, `revoke/__tests__/revoke.test.ts`                                                                                             | Endpoints d'élévation.                                                                                       |
 | `src/lib/server/middleware/__tests__/requireAdmin.test.ts`, `student-access.test.ts`                                                                                                    | Gardes API.                                                                                                  |
-| `src/lib/server/__tests__/csrfProtection.test.ts`, `private-response.test.ts`, `validateRedirectUrl.test.ts`, `rateLimiter.test.ts`                                                     | Défenses transverses.                                                                                        |
+| `src/lib/server/__tests__/csrfHandle.test.ts`, `private-response.test.ts`, `validateRedirectUrl.test.ts`, `rateLimiter.test.ts`                                                         | Défenses transverses.                                                                                        |
 | `src/lib/server/auth/__tests__/cron.test.ts`, `auth-error-fr.test.ts`                                                                                                                   | Secret cron, messages traduits.                                                                              |
 | `src/routes/(public)/auth/{login,reset-password,update-password}/__tests__/`                                                                                                            | Formulaires publics.                                                                                         |
 | `src/routes/__tests__/login-redirect.test.ts`                                                                                                                                           | `/login` → `/auth/login`.                                                                                    |
