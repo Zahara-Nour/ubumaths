@@ -292,6 +292,11 @@ implicite après `|…|` suivi d'un facteur est refusée comme ambiguë (`|2|x|-
 auparavant. `\mid` (divisibilité) et `\Vert`, `\|` (norme) restent refusés. Tests :
 `parser/latex/__tests__/vert-commands.test.ts`, `utils/__tests__/answer-validator-vert.test.ts`.
 
+Les arguments d'une fonction connue entre `\left( … \right)` se lisent comme entre `( … )`
+(2026-10-13, `parseFunctionArguments` de `parser-pratt.ts`) : `\max\left(2,x\right)`, la forme
+qu'écrit MathLive et que rend `toLatex`, ne se relisait pas (« Expected \right to close
+delimiter »). Tests : `parser/latex/__tests__/parser-pratt.test.ts` (« inside \left( \right) »).
+
 **Ce que voit l'élève (2026-10-13, atelier seulement).** `generateEquationSteps` envoie toute
 équation où l'inconnue paraît sous une valeur absolue vers `pedagogical-solve/absolute-value.ts`
 (`equationType: 'absolute-value'`, rendu par `AbsoluteValueEquationRenderer`). La forme est lue
