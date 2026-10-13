@@ -41,6 +41,15 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
    - **2b. Brancher les étapes que le moteur rédige déjà**, une commande par PR : `.intégrer`
      (`pedagogical-integration`), puis `.domaine` (`pedagogical-domain`), puis `.évaluer`
      (`pedagogical-evaluate`) ; rédaction mesurée sur des cas d'élèves avant, refus si trompeuse.
+   - **Retour de David sur 2a (2026-10-13)** : réglage **ligne par ligne** (#1292 basculait toute la vue) ;
+     le dernier choix sert de niveau d'ouverture aux lignes dépliées ensuite.
+   - **2b `.intégrer` — décidé par David le 2026-10-13** (mes recos) : PR 1 = branchement avec garde de
+     concordance (étapes ↔ réponse du moteur) et refus des cas trompeurs (composées au coefficient non
+     expliqué, bornes littérales, `\ln x` de 0 à 1 impropre) ; PR 2 = rédaction des composées
+     (« $e^{2x} = \frac12 \times 2e^{2x}$ »), `\ln|u|` en primitive mais `\ln u` si u > 0 sûr,
+     « F(b) − F(a) » ; PR 3 = IPP en notation terminale (u, v′) ; plus tard `1/x^2`, `\sqrt x` (x^n).
+     Hors terminale (IPP cyclique, éléments simples) montré ; `+ C` gardé ; pôle dans l'intervalle :
+     étapes du refus montrées.
    - **2c. Commande `.limite`** (aucune aujourd'hui ; `pedagogical-limits` sert aux corrections) :
      syntaxe et limites à gauche / à droite à trancher par David.
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).
