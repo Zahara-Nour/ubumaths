@@ -35,7 +35,9 @@ describe('les erreurs de lecture courantes, en français', () => {
 		['\\lim_{x} x', /\\to/],
 		['log_(2)', /indice/],
 		['\\begin{foo}', /Environnement inconnu : foo/],
-		["f'(2)", /f'/]
+		["f'(2)", /f'/],
+		['2|x', /Valeur absolue non fermée/],
+		['| 2 + 3', /Valeur absolue non fermée/]
 	])('%s', (input, expected) => {
 		const line = run(input);
 
@@ -52,8 +54,8 @@ describe('les erreurs de lecture courantes, en français', () => {
 	});
 
 	it('un message inconnu de la table : une formule française, jamais l’anglais', () => {
-		// « Expected '|' to close absolute value » n'est pas dans la table
-		const line = run('| 2 + 3');
+		// « Expected delimiter after \\left, got 2 » n'est pas dans la table
+		const line = run('\\left 2');
 
 		expect(line.success).toBe(false);
 		expect(line.output).not.toMatch(ENGLISH);

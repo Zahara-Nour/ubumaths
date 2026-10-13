@@ -28,6 +28,7 @@ const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
 	[/Unexpected token(?: in [a-z]+)?: (\S+)/, '« $1 » inattendu ici'],
 	[/Unexpected character:? ['"]?([^'"\s]+)['"]?/, 'Caractère « $1 » inconnu'],
 	[/Unexpected (?:infix )?operator:? ?(\S*)/, 'Opérateur « $1 » inattendu'],
+	[/Expected '\|' to close absolute value/, 'Valeur absolue non fermée : il manque une barre |'],
 	[/Expected \\right to close delimiter/, 'Il manque \\right pour fermer la parenthèse'],
 	[/Expected \\to in limit subscript/, 'Il manque \\to sous la limite : \\lim_{x \\to 0}'],
 	[/Expected '([^']+)' after [\w \\]+/, 'Il manque « $1 »'],

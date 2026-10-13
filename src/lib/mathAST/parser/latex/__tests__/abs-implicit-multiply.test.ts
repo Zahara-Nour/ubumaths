@@ -55,6 +55,9 @@ describe('facteur collé à une barre ouvrante = produit implicite', () => {
 		['\\pi|x|', (x) => Math.PI * Math.abs(x)],
 		['2|x|+|x-1|', (x) => 2 * Math.abs(x) + Math.abs(x - 1)],
 		['|x||y|', (x, y) => Math.abs(x) * Math.abs(y)],
+		['\\left|x\\right||y|', (x, y) => Math.abs(x) * Math.abs(y)],
+		['|x| |y|', (x, y) => Math.abs(x) * Math.abs(y)],
+		['|x|\\,|y|', (x, y) => Math.abs(x) * Math.abs(y)],
 		['3|x|-2|y|', (x, y) => 3 * Math.abs(x) - 2 * Math.abs(y)],
 		['2|x|^2', (x) => 2 * Math.abs(x) ** 2],
 		// Dans un groupe neuf (parenthèses, accolades), la barre ouvre de nouveau
@@ -104,6 +107,10 @@ describe('rien ne change pour ce qui passait déjà', () => {
 describe('ambiguïté ouvrante / fermante : refus, jamais une lecture devinée', () => {
 	it.each(['|2|x|-1|', '|x|y|z|', '|x|y+2|z|'])('%s est refusé', (latex) => {
 		expect(() => parseLatex(latex)).toThrow(/\\left\|/);
+	});
+
+	it.each(['2|x', 'a|b'])('%s : barre fermante oubliée → erreur, jamais un produit', (latex) => {
+		expect(() => parseLatex(latex)).toThrow(/close absolute value/);
 	});
 
 	it('la forme explicite de la valeur absolue imbriquée se lit', () => {
