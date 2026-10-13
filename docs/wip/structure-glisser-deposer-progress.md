@@ -107,6 +107,25 @@ la lecture restait celle de l'expression précédente (`math-span` ne relit pas 
 Mesures après ces ajouts (mêmes 8 expressions, en encadrant d'abord le terme visé) : Chromium
 0,5 à 1,5 ms par rendu (pire 4,2) ; WebKit 1,5 à 5 ms (pire 7) ; aucune image perdue.
 
+3. Survol : un facteur d'un terme ne s'encadrait pas toujours. Cause : après un clic (qui
+   remonte d'un cran), le terme restait encadré tant que le pointeur restait dedans ; et comme le
+   survol encadre déjà, tout clic sur un facteur remontait au terme. Corrigé : à la souris, la
+   remontée ne tient que tant qu'on reste sur la partie cliquée. Contrôle : 94 survols (centre de
+   chaque terme et facteur des 12 exemples), 0 anomalie.
+4. Les `×` : « il faut une politique : on simplifie tout le temps ou pas ? ». Constat (aller-retour
+   mesuré) : `3xy` → `xy × 3` → `3 × x × y` ; un `×` obligatoire fait passer tout le produit en
+   « écrit avec des × ». **G11 ouverte** :
+
+   | Option                       | Après chaque déplacement                                                                                            |
+   | ---------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+   | A. Toujours la forme usuelle | `×` seulement où il est obligatoire (devant un nombre, devant une fraction) ; `3 × a × b` → `3ab`, même écrit ainsi |
+   | B. Garder les `×` de l'élève | n'ajouter et ne retirer que les `×` obligatoires ; demande de savoir qui a écrit chaque `×`                         |
+   | C. Ne jamais retirer un `×`  | ce que fait la démo (par contagion)                                                                                 |
+
+   Reco de Claude : A (sans mémoire, l'écriture attendue en classe : notion `N-ECRIT-PRODUIT`,
+   « suppression du signe × devant une lettre ou une parenthèse, le nombre s'écrit en premier »,
+   5e). Sous-question : avant la 5e, garder tous les `×` ?
+
 À demander à David : sa « structure algébrique » est-elle celle-ci (cadres au survol + nom du
 groupe + lecture), ou un arbre dessiné ? Soulever le terme ou le laisser sous le pointeur ?
 
@@ -120,3 +139,5 @@ groupe + lecture), ou un arbre dessiné ? Soulever le terme ou le laisser sous l
 - 2026-10-13 — retours de David : boîte de dépôt visible, carte du terme saisi ; puis facteurs
   d'un produit, structure au survol, clic qui remonte d'un cran, lecture (démo, commit local
   8b303bce0). 11 tests verts.
+- 2026-10-13 — survol d'un facteur corrigé (commit local 979180230) ; G11 (politique des `×`)
+  posée à David.
