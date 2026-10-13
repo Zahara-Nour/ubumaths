@@ -66,6 +66,7 @@ import type {
 	StudentWorksheetView,
 	WorksheetType
 } from '$lib/types/worksheets';
+import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/preview/+server');
@@ -182,62 +183,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// If studentId provided, verify they have access to this assignment
 		let previewStudentName: string | null = null;
 		if (studentId) {
-			// Check individual assignment first (simple query)
-			const { data: individualAccess, error: individualAccessError } = await locals.supabase
-				.from('worksheet_assignment_students')
-				.select('id')
-				.eq('assignment_id', assignmentId)
-				.eq('student_id', studentId)
-				.maybeSingle();
+			// Nommément désigné, ou membre actif d'une classe visée
+			const isRecipient = await isStudentOfAssignment(locals.supabase, assignmentId, studentId);
 
-			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
-			// panne doit se distinguer d'un refus mérité.
-			if (individualAccessError) {
-				logger.error('Contrôle d’accès impossible :', individualAccessError);
-				throw error(500, 'Impossible de vérifier l’accès');
-			}
-
-			// If not individually assigned, check class membership
-			let hasClassAccess = false;
-			if (!individualAccess) {
-				// Get assigned class IDs
-				const { data: assignedClasses, error: assignedClassesError } = await locals.supabase
-					.from('worksheet_assignment_classes')
-					.select('class_id')
-					.eq('assignment_id', assignmentId);
-
-				// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
-				// panne doit se distinguer d'un refus mérité.
-				if (assignedClassesError) {
-					logger.error('Contrôle d’accès impossible :', assignedClassesError);
-					throw error(500, 'Impossible de vérifier l’accès');
-				}
-
-				if (assignedClasses && assignedClasses.length > 0) {
-					const classIds = assignedClasses.map((ac) => ac.class_id);
-
-					// Check if student is member of any assigned class
-					const { data: membership, error: membershipError } = await locals.supabase
-						.from('class_members')
-						.select('id')
-						.eq('student_id', studentId)
-						.eq('status', 'active')
-						.in('class_id', classIds)
-						.limit(1)
-						.maybeSingle();
-
-					// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
-					// panne doit se distinguer d'un refus mérité.
-					if (membershipError) {
-						logger.error('Contrôle d’accès impossible :', membershipError);
-						throw error(500, 'Impossible de vérifier l’accès');
-					}
-
-					hasClassAccess = !!membership;
-				}
-			}
-
-			if (!individualAccess && !hasClassAccess) {
+			if (!isRecipient) {
 				throw error(400, 'Cet élève n’a pas accès à cette affectation');
 			}
 

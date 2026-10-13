@@ -84,6 +84,12 @@ export interface WorksheetGeneratorOptions {
 	 * compilation avec ces polices échoue). Sans effet hors Corrigé.
 	 */
 	correctionFonts?: boolean;
+	/**
+	 * Corrigé de classe d'une affectation dont chaque élève a sa version
+	 * (valeurs ou ordre) : avertissement imprimé en tête, dans la langue de la
+	 * fiche (D6). Sans effet sur la fiche (énoncés).
+	 */
+	individualCopyNotice?: boolean;
 }
 
 /**
@@ -99,6 +105,8 @@ export interface GenerateTypstParams {
 	template?: WorksheetTemplateRow | null;
 	/** Voir `WorksheetGeneratorOptions.correctionFonts` */
 	correctionFonts?: boolean;
+	/** Voir `WorksheetGeneratorOptions.individualCopyNotice` */
+	individualCopyNotice?: boolean;
 }
 
 // ============================================================================
@@ -127,6 +135,19 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	/** Bandeau et pied de page d'un corrigé : « Correction » ou « Réponses » */
 	private correctionTitle(mode: WorksheetPdfMode): string {
 		return mode === 'answers' ? this.labels.answers : this.labels.correction;
+	}
+
+	/**
+	 * Avertissement du corrigé de classe d'une affectation individualisée
+	 * (D6) : ce corrigé est la copie d'un élève. Vide sinon, et sur la fiche.
+	 */
+	private individualCopyNoticeBlock(mode: WorksheetPdfMode): string {
+		if (mode === 'worksheet' || !this.options.individualCopyNotice) return '';
+		return `#block(width: 100%, fill: rgb("#fff4d6"), stroke: rgb("#d9a400"), inset: 8pt, radius: 4pt)[
+  #text(weight: "bold")[${escapeTypst(this.labels.individualCopyNotice)}]
+]
+#v(0.5em)
+`;
 	}
 
 	/**
@@ -318,7 +339,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
     ]
   ]
 ]
-`;
+${this.individualCopyNoticeBlock(mode)}`;
 		// Le bandeau doit suivre le `#set page(…)` du modèle : un `set page` qui
 		// vient APRÈS du contenu ouvre une nouvelle page, et le bandeau restait
 		// seul sur une page 1 vide. Il suit aussi son `#set text(…)` : le Corrigé
@@ -450,6 +471,7 @@ ${MATH_LIMITS_SETUP}
 			header += '  ]\n';
 			header += ']\n\n';
 			header += '#v(0.5em)\n\n';
+			header += this.individualCopyNoticeBlock(mode);
 		}
 
 		// Student information box
@@ -617,7 +639,7 @@ export function generateWorksheetTypst(params: GenerateTypstParams): string {
 			studentName,
 			className
 		},
-		{ correctionFonts: params.correctionFonts }
+		{ correctionFonts: params.correctionFonts, individualCopyNotice: params.individualCopyNotice }
 	);
 
 	const result = generator.generate({

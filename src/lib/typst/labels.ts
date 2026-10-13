@@ -55,6 +55,11 @@ export interface DocumentLabels {
 	answersNotWritten: string;
 	/** Exercice sans corrigé rédigé, dans les PDF « Réponses » et « Corrigé » (ADR 0028, D4) */
 	correctionNotWritten: string;
+	/**
+	 * En tête du corrigé de classe d'une affectation dont chaque élève a sa
+	 * version (valeurs ou ordre) : ce corrigé est la copie d'un élève (D6)
+	 */
+	individualCopyNotice: string;
 	instructions: string;
 	guidelines: string;
 	essentialExercises: string;
@@ -169,6 +174,7 @@ const FR: DocumentLabels = {
 	answers: 'Réponses',
 	answersNotWritten: 'Réponses non rédigées : voir le corrigé.',
 	correctionNotWritten: 'Correction non écrite.',
+	individualCopyNotice: 'Chaque élève a sa propre version : consulte ta correction personnelle.',
 	instructions: 'Instructions',
 	guidelines: 'Consignes',
 	essentialExercises: 'Exercices indispensables',
@@ -283,6 +289,7 @@ const EN: DocumentLabels = {
 	answers: 'Answers',
 	answersNotWritten: 'Answers not written: see the worked solutions.',
 	correctionNotWritten: 'Solution not written.',
+	individualCopyNotice: 'Each student has their own version: check your personal correction.',
 	instructions: 'Instructions',
 	guidelines: 'Instructions',
 	essentialExercises: 'Essential exercises',
