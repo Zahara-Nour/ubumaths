@@ -139,7 +139,7 @@ Mesures après ces ajouts (mêmes 8 expressions, en encadrant d'abord le terme v
 Structure algébrique : **les cadres** (confirmé par David le 2026-10-13). Encore à demander :
 soulever le terme ou le laisser sous le pointeur ?
 
-## Spécification E — glisser-déposer (proposée le 2026-10-13, à valider par David)
+## Spécification E — glisser-déposer (validée par David le 2026-10-13)
 
 S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/structure-expression.md).
 « Partie » : un terme d'une somme, un facteur d'un produit, un membre d'une égalité.
@@ -204,7 +204,7 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
 | ---- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | E6.1 | une partie encadrée, flèche ← ou → | elle change de place d'un cran (même réécriture qu'au lâcher) ; une autre voie que le glisser (accessibilité) |
 
-### Choix techniques proposés
+### Choix techniques (validés par David le 2026-10-13)
 
 - La formule de l'outil passe du `math-span` (shadow DOM, figé) au rendu de MathLive dans la page
   (`convertLatexToMarkup`, comme l'Atelier et la démo), corpus compris : un seul chemin. Rendu
@@ -233,3 +233,10 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
 - 2026-10-13 — « la structure, c'est bien les cadres » (David).
 - 2026-10-13 — réponses de David : d'accord avec les recos sauf G5 (bloquer), Soulever (au choix),
   G6 (désactiver les sommes avec soustraction en 6e). Spécification E rédigée, à valider.
+- 2026-10-13 — spécification E validée (« ok pour ce que tu proposes ») ; but final de David : un
+  champ de formule réglable (structure oui/non, déplacer oui/non), réutilisable dans l'Atelier ou
+  ailleurs → lot 2 = ce composant. Questions posées : passer d'écrire à manipuler dans le même
+  champ (reco : curseur dedans = écrire, dehors = manipuler, double-clic ou crayon pour revenir),
+  réglages (structure, lecture, déplacer ⇒ structure), E5.4 étendu à « × toujours écrit » en 6e.
+- 2026-10-13 — lot 1 : `src/lib/mathAST/structure/rearrange.ts` (29 tests, vus rouges d'abord),
+  branche `feat/structure-reecriture`.
