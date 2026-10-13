@@ -18,6 +18,8 @@
 --    (messages/<message>/…, aucun segment « .. ») — c'est lui que le serveur signe et que
 --    la suppression de compte retire.
 -- 3. L'admin lit les pièces jointes (il lit déjà tous les messages privés).
+-- 3 bis. La contrainte de taille de la table passe de 5 à 10 Mo, comme le bucket : sinon un
+--    fichier de 5 à 10 Mo était déposé, puis sa ligne refusée.
 -- 4. list_orphan_message_attachment_files : les fichiers du bucket sans ligne de pièce
 --    jointe, vieux de plus d'un jour. La purge des messages (3 ans) et le retrait d'une
 --    pièce jointe effacent la ligne, pas le fichier ; le cron du dimanche
@@ -39,6 +41,9 @@
 --   set local storage.allow_delete_query = 'true';
 --   delete from storage.buckets where id = 'message-attachments';
 --   drop function public.list_orphan_message_attachment_files(integer);
+--   alter table public.message_attachments_v2 drop constraint message_attachments_v2_file_size_check,
+--     add constraint message_attachments_v2_file_size_check
+--     check (file_size > 0 and file_size <= 5242880);  -- échoue si une ligne dépasse 5 Mo
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
@@ -69,6 +74,11 @@ create policy "Users can upload attachments to their messages"
 		and starts_with(storage_path, 'messages/' || message_id::text || '/')
 		and ('/' || storage_path || '/') not like '%/../%'
 	);
+
+alter table public.message_attachments_v2
+	drop constraint message_attachments_v2_file_size_check,
+	add constraint message_attachments_v2_file_size_check
+		check (file_size > 0 and file_size <= 10485760);
 
 create policy "Admins can view all message attachments"
 	on public.message_attachments_v2

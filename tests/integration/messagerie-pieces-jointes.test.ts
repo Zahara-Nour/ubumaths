@@ -116,6 +116,24 @@ describe('messagerie : pièces jointes', () => {
 		expect(data).toHaveLength(1);
 	});
 
+	// La contrainte de la table plafonnait à 5 Mo, le bucket à 10 Mo (décision de David) :
+	// un fichier de 5 à 10 Mo était déposé, puis sa ligne refusée.
+	it('une pièce jointe de 8 Mo s’enregistre', async () => {
+		const client = await createAuthenticatedClient(eleve.email);
+		const { error } = await client
+			.from('message_attachments_v2')
+			.insert({
+				message_id: messageId,
+				file_name: 'gros-scan.pdf',
+				file_type: 'application/pdf',
+				file_size: 8 * 1024 * 1024,
+				storage_path: `messages/${messageId}/gros-scan.pdf`,
+				uploaded_by: eleve.id
+			})
+			.select('id');
+		expect(error).toBeNull();
+	});
+
 	it.each([
 		['sous le message d’un autre', () => `messages/${messageDeLAutre}/x.jpg`],
 		['avec un segment « .. »', () => `messages/${messageId}/../${messageDeLAutre}/x.jpg`],
@@ -191,7 +209,13 @@ describe('messagerie : pièces jointes', () => {
 		const pg = await getPostgresClient();
 		const vieux = `messages/${messageId}/zz-orphelin-vieux.pdf`;
 		const recent = `messages/${messageId}/zz-orphelin-recent.pdf`;
-		const rattache = `messages/${messageId}/cahier.jpg`;
+		const rattache = `messages/${messageId}/zz-rattache.pdf`;
+		await pg.query(
+			`insert into message_attachments_v2
+			   (message_id, file_name, file_type, file_size, storage_path, uploaded_by)
+			 values ($1, 'zz-rattache.pdf', 'application/pdf', 1, $2, $3)`,
+			[messageId, rattache, eleve.id]
+		);
 		for (const chemin of [vieux, recent, rattache]) {
 			const { error } = await service.storage
 				.from(BUCKET)

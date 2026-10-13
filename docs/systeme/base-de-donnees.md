@@ -347,7 +347,7 @@ reçus ; le professeur lit la messagerie pour la modérer et supprime (logiqueme
 chats de classe ; l'admin lit tout.
 
 Pièces jointes de la messagerie (`20261016101300`) : bucket **privé** `message-attachments`
-(10 Mo ; JPEG, PNG, WebP, HEIC, PDF), **sans policy sur `storage.objects`** : seul le client
+(10 Mo, comme la contrainte `file_size` de la table ; JPEG, PNG, WebP, HEIC, PDF), **sans policy sur `storage.objects`** : seul le client
 service y dépose et en signe les liens, après avoir vérifié l'accès avec la RLS de
 `message_attachments_v2` (expéditeur, destinataires non supprimés, admin). Le chemin enregistré
 est rangé sous le message (`messages/<message>/…`, aucun segment `..`), 3 par message. La purge des messages
