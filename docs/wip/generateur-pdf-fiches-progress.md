@@ -133,7 +133,13 @@ Erreur / garde :
   126 fichiers) : 54 changent, uniquement ces écarts. Mesure prod (2026-10-13) : 27 fiches sur 32
   ont `show_points` faux, mais aucune n'a d'exercice à points → le PDF élève ne perd rien.
   Restent ouverts : la copie élève n'a pas d'`exercise_order` (jamais tirée, ADR 0023) alors que
-  `shuffle_exercises` existe dans la config ; mots « pt / pts » identiques en anglais.
+  `shuffle_exercises` existe dans la config ; mots « pt / pts » identiques en anglais (décision
+  de David : « pt / pts » aussi en anglais).
+- 2026-10-13 — revue du lot 1 : titre avec les fonctions déclarées et le sens de AB de
+  l'exercice ; `points-badge` du prof sans gabarit sur `documentLabels` (« 1 pt », plus « 1 pts »).
+  **À faire au lot 2** : l'aperçu markdown à l'écran de `PdfPreview.svelte` (l. 244-256) garde sa
+  propre numérotation `i + 1`, « Réponses non rédigées » en français en dur et pas de « Correction
+  non écrite » : le faire passer par le rendu commun.
 
 - 2026-10-13 — plan validé ; D3, D4 ; lot 0 : ADR 0028, vocabulaire dans CONTEXT.md (style, gabarit, forme).
 
