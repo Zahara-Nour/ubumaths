@@ -22,6 +22,9 @@
 const OWNER_KEY = 'chiphre:work-data-owner';
 const ANONYMOUS = 'anonymous';
 
+/** Propriétaire vu par CET onglet au dernier chargement (`watchWorkDataOwner`). */
+let tabOwner: string | null = null;
+
 const WORK_DATA_KEYS: readonly string[] = [
 	'chatHistory',
 	'chiphre-python-playground',
@@ -81,7 +84,13 @@ export function claimWorkData(storage: Storage, userId: string | null): boolean 
 
 	const adopt = owner === ANONYMOUS && userId !== null;
 	const removed = adopt ? 0 : clearWorkData(storage);
-	storage.setItem(OWNER_KEY, current);
+	try {
+		storage.setItem(OWNER_KEY, current);
+	} catch (e) {
+		// Sans propriétaire écrit, le prochain chargement ne trouvera rien à effacer : pas
+		// de boucle. L'effacement, lui, a eu lieu : la page doit quand même recharger.
+		console.error('Propriétaire des données de travail non enregistré :', e);
+	}
 	return removed > 0;
 }
 
@@ -98,10 +107,37 @@ export function enforceWorkDataOwner(
 	let removed: boolean;
 	try {
 		removed = claimWorkData(storage, userId);
+		tabOwner = userId ?? ANONYMOUS;
 	} catch (e) {
 		console.error('Données de travail du navigateur non vérifiées :', e);
 		return false;
 	}
 	if (removed) reload();
 	return removed;
+}
+
+/**
+ * Autre onglet du même navigateur : quand un autre compte y prend l'appareil (ou s'y
+ * déconnecte), cet onglet-ci se recharge. Sinon, resté ouvert sur le travail de A, il
+ * pourrait le réécrire (sauvegarde différée, `pagehide`) après la prise en charge de B, qui
+ * le reprendrait. L'événement `storage` ne part que vers les AUTRES onglets.
+ */
+export function watchWorkDataOwner(
+	target: EventTarget,
+	getTabOwner: () => string | null,
+	reload: () => void
+): void {
+	target.addEventListener('storage', (event) => {
+		const { key, newValue } = event as StorageEvent;
+		if (key !== OWNER_KEY && key !== null) return;
+		if (newValue !== getTabOwner()) reload();
+	});
+}
+
+/** Branchement unique par onglet, depuis le layout racine. */
+let watching = false;
+export function watchWorkDataOwnerOnce(reload: () => void): void {
+	if (watching || typeof window === 'undefined') return;
+	watching = true;
+	watchWorkDataOwner(window, () => tabOwner, reload);
 }

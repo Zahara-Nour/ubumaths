@@ -3,7 +3,13 @@
  * (T17 étendu, décision de David du 2026-10-13 : effacées à la déconnexion).
  */
 import { describe, it, expect, vi } from 'vitest';
-import { claimWorkData, clearWorkData, enforceWorkDataOwner, isWorkDataKey } from '../work-data';
+import {
+	claimWorkData,
+	clearWorkData,
+	enforceWorkDataOwner,
+	isWorkDataKey,
+	watchWorkDataOwner
+} from '../work-data';
 
 class MemoryStorage implements Storage {
 	private items = new Map<string, string>();
@@ -95,6 +101,16 @@ describe('claimWorkData', () => {
 		expect(storage.getItem(OWNER)).toBe('eleve-a');
 	});
 
+	it('le propriétaire ne peut pas être écrit : l’effacement compte quand même', () => {
+		const storage = storageWith('eleve-a');
+		storage.setItem = () => {
+			throw new Error('QuotaExceededError');
+		};
+		// Les modules ont déjà lu les données de A : sans rechargement, B les verrait.
+		expect(claimWorkData(storage, 'eleve-b')).toBe(true);
+		expect(workKeysLeft(storage)).toEqual([]);
+	});
+
 	it('propriétaire inconnu, rien à effacer : pas de rechargement', () => {
 		const storage = storageWith(null, {});
 		expect(claimWorkData(storage, null)).toBe(false);
@@ -141,5 +157,37 @@ describe('isWorkDataKey', () => {
 		for (const key of Object.keys(WORK)) expect(isWorkDataKey(key)).toBe(true);
 		for (const key of Object.keys(PREFERENCES)) expect(isWorkDataKey(key)).toBe(false);
 		expect(isWorkDataKey(OWNER)).toBe(false);
+	});
+});
+
+describe('watchWorkDataOwner (autre onglet)', () => {
+	// `StorageEvent` n'existe pas sous Node : même forme, mêmes champs lus.
+	function storageEvent(key: string | null, newValue: string | null) {
+		return Object.assign(new Event('storage'), { key, newValue });
+	}
+
+	it('un autre compte prend l’appareil dans un autre onglet : cet onglet se recharge', () => {
+		const target = new EventTarget();
+		const reload = vi.fn();
+		watchWorkDataOwner(target, () => 'eleve-a', reload);
+		target.dispatchEvent(storageEvent('chiphre:work-data-owner', 'eleve-b'));
+		expect(reload).toHaveBeenCalledOnce();
+	});
+
+	it('déconnexion dans un autre onglet (propriétaire retiré) : cet onglet se recharge', () => {
+		const target = new EventTarget();
+		const reload = vi.fn();
+		watchWorkDataOwner(target, () => 'eleve-a', reload);
+		target.dispatchEvent(storageEvent('chiphre:work-data-owner', null));
+		expect(reload).toHaveBeenCalledOnce();
+	});
+
+	it('même propriétaire, ou autre clé : rien', () => {
+		const target = new EventTarget();
+		const reload = vi.fn();
+		watchWorkDataOwner(target, () => 'eleve-a', reload);
+		target.dispatchEvent(storageEvent('chiphre:work-data-owner', 'eleve-a'));
+		target.dispatchEvent(storageEvent('theme', 'dark'));
+		expect(reload).not.toHaveBeenCalled();
 	});
 });

@@ -92,6 +92,8 @@ Any static import in the root `+layout.ts` becomes part of the route entry modul
 **Safe static imports** (small, no transitive deps):
 
 - `$env/static/public` (compile-time constants)
+- `$app/environment` (a constant, does not go through `client.js`)
+- `$lib/utils/work-data` (imports nothing; work data owner check, see `docs/systeme/conformite/rgpd.md`)
 - Type imports (`import type { ... }`)
 
 **Must be dynamic imports** (heavy, large dep trees):

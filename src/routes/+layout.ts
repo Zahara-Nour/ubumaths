@@ -38,7 +38,7 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 // Module sans dépendance : son import statique ne crée pas de chaîne (Safari TDZ)
 import { browserCookieMethods } from '$lib/utils/session-cookies';
 import { browser } from '$app/environment';
-import { enforceWorkDataOwner } from '$lib/utils/work-data';
+import { enforceWorkDataOwner, watchWorkDataOwnerOnce } from '$lib/utils/work-data';
 import type { LayoutLoad } from './$types';
 
 // =============================================================================
@@ -122,7 +122,9 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	// Données de travail d'élève dans le navigateur (code, calculs, parties) : jamais
 	// montrées à un autre compte. Celles d'un autre sont effacées, et la page rechargée
 	// pour vider ce que les modules en ont déjà lu (`src/lib/utils/work-data.ts`).
-	// Relancé à chaque changement de session (`supabase:auth`).
+	// Vérifié à chaque chargement de page ; un changement de compte dans un AUTRE onglet
+	// recharge celui-ci (événement `storage`), car `data.user` n'y change pas.
+	if (browser) watchWorkDataOwnerOnce(() => location.reload());
 	if (
 		browser &&
 		enforceWorkDataOwner(data.user?.id ?? null, localStorage, () => location.reload())

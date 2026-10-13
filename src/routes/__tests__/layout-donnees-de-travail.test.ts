@@ -7,14 +7,17 @@
  * vérifié par le serveur, et n'affiche rien quand la page doit être rechargée.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { enforceWorkDataOwner } from '$lib/utils/work-data';
+import { enforceWorkDataOwner, watchWorkDataOwnerOnce } from '$lib/utils/work-data';
 
 vi.mock('$app/environment', () => ({ browser: true }));
 vi.mock('$env/static/public', () => ({
 	PUBLIC_SUPABASE_URL: 'http://localhost',
 	PUBLIC_SUPABASE_ANON_KEY: 'anon'
 }));
-vi.mock('$lib/utils/work-data', () => ({ enforceWorkDataOwner: vi.fn() }));
+vi.mock('$lib/utils/work-data', () => ({
+	enforceWorkDataOwner: vi.fn(),
+	watchWorkDataOwnerOnce: vi.fn()
+}));
 vi.mock('@supabase/ssr', () => ({
 	// `isBrowser` faux : le layout prend le client serveur, sans écouteur d'auth.
 	isBrowser: () => false,
@@ -51,6 +54,8 @@ describe('layout racine — données de travail', () => {
 			expect.any(Function)
 		);
 		expect(result).toMatchObject({ user: { id: 'eleve-a' } });
+		// Changement de compte dans un autre onglet.
+		expect(watchWorkDataOwnerOnce).toHaveBeenCalledWith(expect.any(Function));
 	});
 
 	it('visiteur sans compte : vérifie avec null', async () => {
