@@ -30,6 +30,10 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; reste le remplacement 
    `/calc` + `/cas`. **Inventaire fait le 2026-10-11** : [atelier-cas-phase0.md](atelier-cas-phase0.md)
    (↑/↓, bouton exact ⇄ décimal, complétion — phase 0 en attente de validation ; retrait de `/cas` suspendu).
 2. **v2, puis v3** : phase 0 à écrire.
+3. **Sélecteur « résumé / détaillé » des étapes** (demandé par David le 2026-10-13, pas commencé) :
+   le moteur rédige déjà les deux verbosités (`summarized` / `detailed`), l'atelier affiche toujours
+   `detailed` sous « Comment ? ». Exposer le choix ; une étape essentielle (valeur interdite, V48 (a))
+   reste présente aux deux niveaux, seule sa rédaction change. Phase 0 à écrire.
 
 ### Dettes encore ouvertes (vérifiées dans le code)
 
