@@ -4,15 +4,14 @@
 
 	Reprend l'idée d'Algebria (David, Sésamath) : en promenant la souris sur une
 	expression, on voit encadrée la plus petite sous-expression sous le pointeur
-	(nombre, terme, facteur, parenthèses, somme…). Sur un écran tactile, un toucher
-	encadre, un nouveau toucher dans le cadre passe à la sous-expression qui la contient.
+	(nombre, terme, facteur, parenthèses, somme…), et on déplace un terme dans sa
+	somme, un facteur dans son produit, un membre d'une égalité. Une seule formule,
+	`StructureField` (`$lib/components/structure`) : clic court pour écrire, appui
+	puis mouvement pour déplacer, lecture en français, message « 6e ou avant ».
 
-	La structure et sa lecture en français viennent de `$lib/mathAST/structure` ;
-	MathLive affiche des marqueurs `\class` sans effet sur le rendu ; le survol et
-	l'encadré sont dans `StructureFormula.svelte`, la lecture (mots cliquables,
-	sens inverse) et le message « 6e ou avant » dans `StructureExplorer.svelte`.
-	Chaque expression du corpus est survolable, avec la lecture courte de la
-	sous-expression survolée.
+	La structure et sa lecture en français viennent de `$lib/mathAST/structure`.
+	Chaque expression du corpus est survolable (`StructureFormula.svelte`), avec la
+	lecture courte de la sous-expression survolée.
 
 	Deux majuscules collées (`AB`) se lisent comme une longueur (« la longueur AB »),
 	sauf si la case « Lire AB comme un produit » est cochée : tout est alors lu
@@ -21,16 +20,15 @@
 <script lang="ts">
 	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
-	import type { MathfieldElement } from 'mathlive';
 	import { Button } from '$lib/components/ui/button';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	// Lecture seule : le corpus des tests de parité, une saisie par ligne
 	import corpusText from '$lib/mathAST/structure/__tests__/fixtures/corpus-saisies.txt?raw';
 	import type { CapitalPairs } from '$lib/mathAST/parser';
 	import { readingOf, structureFromLatex, type StructureResult } from '$lib/mathAST/structure';
-	import StructureExplorer from './StructureExplorer.svelte';
+	import StructureField from '$lib/components/structure/StructureField.svelte';
+	import StructureReading from '$lib/components/structure/StructureReading.svelte';
 	import StructureFormula from './StructureFormula.svelte';
-	import StructureReading from './StructureReading.svelte';
 	import { provideStructureLexicon } from './structure-lexicon.svelte';
 
 	// Types
@@ -67,6 +65,8 @@
 	let showAncestors = $state(false);
 	/** Case « Lire AB comme un produit » : décochée, `AB` est une longueur */
 	let readAsProduct = $state(false);
+	/** Case « Soulever le terme » : la partie déplacée monte au-dessus de la ligne */
+	let lift = $state(true);
 	const capitalPairs: CapitalPairs = $derived(readAsProduct ? 'product' : 'length');
 	/** Structures calculées une fois par sens ; les zones, elles, se mesurent au premier survol */
 	const corpus: CorpusEntry[] = $derived(
@@ -77,7 +77,6 @@
 	);
 	/** Sous-expression survolée de chaque formule du corpus */
 	let corpusSelection = $state<(number | null)[]>(CORPUS_LATEX.map(() => null));
-	let mathfield = $state<MathfieldElement>();
 
 	// Mots de la lecture : fiche du dictionnaire au niveau de l'élève connecté
 	provideStructureLexicon();
@@ -85,23 +84,11 @@
 	// Fonctions
 	function loadExample(example: Example) {
 		latex = example.latex;
-		if (mathfield) mathfield.value = example.latex;
 	}
 
 	function handleOptionChange() {
 		// Le réglage change ce qui s'encadre : les encadrés du corpus sont à recalculer
 		corpusSelection = CORPUS_LATEX.map(() => null);
-	}
-
-	function initMathfield(element: MathfieldElement) {
-		mathfield = element;
-		element.value = latex;
-		const update = () => {
-			latex = element.value;
-		};
-		element.addEventListener('input', update);
-		// Action plutôt qu'attachment : prettier-plugin-svelte 3.3 ne lit pas `{@attach}`
-		return { destroy: () => element.removeEventListener('input', update) };
 	}
 </script>
 
@@ -115,18 +102,14 @@
 		<h1 class="text-2xl font-bold">La structure d'une expression</h1>
 		<div class="text-muted-foreground">
 			Promenez la souris sur l'expression : la plus petite sous-expression sous le pointeur est
-			encadrée et lue en français. Sur un écran tactile, touchez l'expression, puis touchez à
-			nouveau dans le cadre pour passer à la sous-expression qui la contient. Survolez un mot de la
-			lecture : sa sous-expression s'encadre ; cliquez-le pour ouvrir sa fiche du dictionnaire.
+			encadrée et lue en français. Cliquez pour écrire. Appuyez sur un terme, un facteur ou un
+			membre d'égalité puis bougez pour le déplacer ; sur la bordure du cadre de 2x, on attrape 2x
+			entier. Survolez un mot de la lecture : sa sous-expression s'encadre ; cliquez-le pour ouvrir
+			sa fiche du dictionnaire.
 		</div>
 	</header>
 
 	<section class="space-y-3">
-		<div class="space-y-1">
-			<span id="structure-input-label" class="text-sm font-medium">Expression</span>
-			<math-field use:initMathfield aria-labelledby="structure-input-label" class="structure-input"
-			></math-field>
-		</div>
 		<div class="flex flex-wrap gap-2">
 			{#each EXAMPLES as example (example.label)}
 				<Button variant="outline" size="sm" onclick={() => loadExample(example)}>
@@ -150,12 +133,13 @@
 				onCheckedChange={handleOptionChange}
 				label="Lire AB comme un produit"
 			/>
+			<MyCheckbox bind:checked={lift} label="Soulever le terme pendant un déplacement" />
 		</div>
 	</section>
 
-	<!-- Une nouvelle expression ou un autre sens de AB : sélection et lecture repartent de zéro -->
-	{#key `${capitalPairs}:${latex}`}
-		<StructureExplorer {latex} {frameLeaves} {showAncestors} {capitalPairs} />
+	<!-- Un autre sens de AB : le champ repart de zéro (une nouvelle expression, il s'en charge) -->
+	{#key capitalPairs}
+		<StructureField bind:latex reading move {lift} {frameLeaves} {showAncestors} {capitalPairs} />
 	{/key}
 
 	<section class="space-y-3" aria-labelledby="corpus-title">
@@ -198,12 +182,6 @@
 </div>
 
 <style>
-	.structure-input {
-		width: 100%;
-		font-size: 1.5rem;
-		padding: 0.25rem 0.5rem;
-	}
-
 	.corpus-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));

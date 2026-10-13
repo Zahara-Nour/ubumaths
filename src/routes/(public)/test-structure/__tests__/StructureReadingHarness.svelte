@@ -4,7 +4,7 @@
 <script lang="ts">
 	import { provideReaderGrade } from '$lib/lexicon/reader-grade';
 	import { readingOf, structureFromLatex } from '$lib/mathAST/structure';
-	import StructureReading from '../StructureReading.svelte';
+	import StructureReading from '$lib/components/structure/StructureReading.svelte';
 	import { provideStructureLexicon } from '../structure-lexicon.svelte';
 
 	interface Props {
