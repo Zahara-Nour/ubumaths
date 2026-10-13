@@ -853,7 +853,8 @@
 	class:lifted={lift}
 	class:movable={move}
 	data-field
-	role="application"
+	role="button"
+	aria-roledescription="formule"
 	tabindex="0"
 	aria-label={label}
 	onkeydown={handleFieldKeydown}
