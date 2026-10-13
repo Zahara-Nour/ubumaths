@@ -59,6 +59,17 @@ function unbrace(latex: string): string {
 }
 
 /** Parents lus dans l'imbrication des marqueurs : id → id du marqueur englobant */
+/**
+ * Le marqueur qui enveloppe celui de `node` : son parent, sauf l'exposant d'une
+ * parenthèse (`(x + 1)²`), logé dans le marqueur de sa base pour que MathLive le
+ * place comme dans l'écriture usuelle (accroché à `\right)`).
+ */
+function markerParentOf(structure: ExpressionStructure, node: StructureNode): number | null {
+	if (node.role !== 'exponent' || node.parent === null) return node.parent;
+	const base = structure.nodes[structure.nodes[node.parent].children[0]];
+	return base.kind === 'parentheses' ? base.id : node.parent;
+}
+
 function markerParents(latex: string): Map<number, number | null> {
 	const parents = new Map<number, number | null>();
 	const stack: (number | null)[] = [];
@@ -96,7 +107,7 @@ function expectFaithful(ast: MathNode) {
 	const parents = markerParents(structure.latex);
 	expect(parents.size).toBe(structure.nodes.length);
 	for (const node of structure.nodes) {
-		expect(parents.get(node.id)).toBe(node.parent);
+		expect(parents.get(node.id)).toBe(markerParentOf(structure, node));
 		// Chaque sous-expression s'écrit comme `toLatex` l'écrirait seule
 		expect(unbrace(stripMarkers(node.latex))).toBe(unbrace(toLatex(node.ast)));
 		for (const child of node.children) expect(structure.nodes[child].parent).toBe(node.id);

@@ -109,7 +109,7 @@
 		const origin = stage.getBoundingClientRect();
 		for (const element of root.querySelectorAll(`[class*="${MARKER_PREFIX}"]`)) {
 			const id = markerIdFromClasses(element.classList);
-			const rect = id === null ? null : contentRect(element);
+			const rect = id === null ? null : contentRect(element, id);
 			if (id === null || !rect) continue;
 			rects.set(
 				id,
@@ -167,18 +167,24 @@
 		return !withLeaves && isLeaf(node) && node.parent !== null ? null : id;
 	}
 
-	/** Rectangle réellement occupé par les caractères et traits d'une sous-expression */
-	function contentRect(element: Element): DOMRect | null {
+	/**
+	 * Rectangle réellement occupé par les caractères et traits de la
+	 * sous-expression `id`. Seuls comptent les siens et ceux de ses descendants :
+	 * l'exposant de `(x + 1)²` est écrit dans le marqueur de la parenthèse (pour
+	 * que MathLive le place comme dans l'écriture usuelle), il n'en fait pas partie.
+	 */
+	function contentRect(element: Element, id: number): DOMRect | null {
 		const rects: DOMRect[] = [];
 		const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
 		const range = document.createRange();
 		while (walker.nextNode()) {
 			if (!walker.currentNode.textContent?.trim()) continue;
+			if (!belongsTo(walker.currentNode.parentElement, id)) continue;
 			range.selectNodeContents(walker.currentNode);
 			rects.push(...Array.from(range.getClientRects()));
 		}
 		for (const line of element.querySelectorAll('svg, .ML__frac-line')) {
-			rects.push(line.getBoundingClientRect());
+			if (belongsTo(line, id)) rects.push(line.getBoundingClientRect());
 		}
 		const visible = rects.filter((r) => r.width > 0 || r.height > 0);
 		if (visible.length === 0) return null;
@@ -187,6 +193,17 @@
 		const right = Math.max(...visible.map((r) => r.right));
 		const bottom = Math.max(...visible.map((r) => r.bottom));
 		return new DOMRect(left, top, right - left, bottom - top);
+	}
+
+	/** L'élément est-il dessiné par la sous-expression `id` (ou par l'un de ses descendants) ? */
+	function belongsTo(element: Element | null, id: number): boolean {
+		const marker = element?.closest(`[class*="${MARKER_PREFIX}"]`);
+		let owner = marker ? markerIdFromClasses(marker.classList) : null;
+		while (owner !== null) {
+			if (owner === id) return true;
+			owner = structure.nodes[owner]?.parent ?? null;
+		}
+		return false;
 	}
 
 	function computeFrames(id: number | null, withAncestors: boolean): Frame[] {

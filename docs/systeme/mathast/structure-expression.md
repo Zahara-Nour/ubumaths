@@ -143,7 +143,12 @@ appliquée (A8) ; cadres englobants en pointillés gris (A10).
 - **Marqueurs `\class{ubs-n<id>}{…}`** : un span par nœud, imbriqués comme l'arbre, rendu
   identique au pixel à `toLatex` (`\htmlData` décale `2\sin x` de 0,17 em). Puissance : jamais
   `{base}^{…}` (des accolades font un atome ordinaire : −0,46 em autour d'un `+` voisin) ; écrire
-  `base^{…}`.
+  `base^{…}`. **Base entre parenthèses** : l'exposant s'écrit DANS le marqueur de la parenthèse,
+  `\class{…}{\left( … \right)^{…}}` : hors du marqueur, la base est un groupe et MathLive place
+  l'exposant d'après le dernier caractère avant `)` (`(−½ + x)²` : 66 px de haut au lieu de 73,
+  corrigé le 2026-10-13). Seule exception à « marqueurs imbriqués comme l'arbre » : la zone d'une
+  sous-expression ne compte que ses descendants (`StructureFormula`), le cadre de `(x + 1)` ne
+  prend pas le `²`.
 - **Repérage** : pas l'élément sous le pointeur (dans une fraction les boîtes absolues se
   chevauchent : le dénominateur rendait le quotient) ; on mesure la zone des caractères de chaque
   nœud (Range, svg, `.ML__frac-line`) et on prend le plus profond qui contient le point.

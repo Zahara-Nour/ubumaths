@@ -50,7 +50,7 @@ import {
 	needsParenthesesAsPowerBase,
 	needsParenthesesUnderOpposite
 } from '../common/sign-parentheses';
-import { markLatex } from './markers';
+import { MARKER_PREFIX, markLatex } from './markers';
 import type {
 	ExpressionStructure,
 	StructureKind,
@@ -102,6 +102,8 @@ export interface StructureOptions {
 // Constantes
 const EMPTY: StructureResult = { status: 'empty' };
 const UNRECOGNIZED: StructureResult = { status: 'unrecognized' };
+/** Un seul marqueur qui enveloppe tout : `\class{ubs-n<id>}{<contenu>}` */
+const MARKED_BLOCK = new RegExp(`^\\\\class\\{${MARKER_PREFIX}(\\d+)\\}\\{([\\s\\S]*)\\}$`);
 /** Valeur absolue, parties entières : l'argument entre ses barres ou crochets */
 const ENCLOSING_FUNCTIONS: Partial<Record<string, readonly [string, string]>> = {
 	abs: ['\\left|', '\\right|'],
@@ -167,6 +169,21 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 		return markLatex(id, latex);
 	}
 
+	/**
+	 * `(…)²` : l'exposant s'écrit dans le marqueur de la parenthèse, accroché à
+	 * `\right)` comme dans l'écriture usuelle. Hors du marqueur, la base est un
+	 * groupe et MathLive place l'exposant d'après le dernier caractère avant `)` :
+	 * `(−½ + x)²` avait son exposant trop bas (66 px de haut au lieu de 73). Le
+	 * LaTeX de la parenthèse (`drafts`) n'en change pas ; son cadre ne compte que
+	 * ses descendants (`StructureFormula`). `null` : la base n'est pas une parenthèse.
+	 */
+	function superscriptInsideParentheses(base: string, exponent: string): string | null {
+		const match = MARKED_BLOCK.exec(base);
+		const id = match ? Number(match[1]) : null;
+		if (!match || id === null || drafts[id]?.info.kind !== 'parentheses') return null;
+		return markLatex(id, `${match[2]}^{${exponent}}`);
+	}
+
 	function leaf(
 		n: MathNode,
 		parent: number | null,
@@ -214,9 +231,10 @@ export function buildStructure(input: MathNode): ExpressionStructure {
 				}
 				const id = register(parent, role, n, { kind: 'power' });
 				const base = wrapIf(build(n.base, id, 'base'), needsParenthesesAsPowerBase(n.base));
+				const exponent = build(n.superscript, id, 'exponent');
 				// Pas d'accolades autour de la base : `{x}^{2}` est un atome ordinaire, qui
 				// supprime l'espace autour d'un `+` voisin (mesuré : −0,46 em pour `x^2 + 1`)
-				return mark(id, `${base}^{${build(n.superscript, id, 'exponent')}}`);
+				return mark(id, superscriptInsideParentheses(base, exponent) ?? `${base}^{${exponent}}`);
 			}
 			case 'function':
 				return buildFunction(n, parent, role);
