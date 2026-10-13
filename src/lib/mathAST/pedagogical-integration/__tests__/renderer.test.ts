@@ -182,7 +182,8 @@ describe('PedagogicalIntegrationRenderer — IPP', () => {
 		const apply = rendered.find((s) => s.rule === 'apply-parts-formula');
 		expect(ident?.title).toContain('parties');
 		expect(choose?.title).toContain('u');
-		expect(apply?.title).toContain('uv');
+		// Notation de terminale (u, v′) au lycée depuis le 2026-10-13
+		expect(apply?.title).toContain('u(x)v(x)');
 	});
 
 	it('renders ∫x · sin(x) dx IPP with bindings exposed in choose-u-dv title', () => {
@@ -193,9 +194,9 @@ describe('PedagogicalIntegrationRenderer — IPP', () => {
 			verbosity: 'summarized'
 		});
 		const choose = rendered.find((s) => s.rule === 'choose-u-dv');
-		// The choose-u-dv title interpolates u and dv from bindings.
-		expect(choose?.title).toMatch(/u\s*=/);
-		expect(choose?.title).toMatch(/dv\s*=/);
+		// Le titre du choix interpole u et v′ (notation de terminale au lycée)
+		expect(choose?.title).toMatch(/u\(x\)\s*=/);
+		expect(choose?.title).toMatch(/v'\(x\)\s*=/);
 	});
 });
 
@@ -416,5 +417,31 @@ describe('intégrale définie : refus, suites de la revue de V28', () => {
 	it('un refus ne calcule pas la primitive : `antiderivative` absent', () => {
 		const { result } = renderDefinite('\\frac{4}{(3x-2)^2}', '0', '1');
 		expect(result.antiderivative).toBeUndefined();
+	});
+});
+
+describe('valeur interdite non exacte : arrondie lisiblement, jamais un flottant brut', () => {
+	it('∫ 3x²/(x³ − 2) de 1 à 2 : « x ≈ 1.26 », pas « x = 1.2599210498948732 »', () => {
+		const { rendered } = renderDefinite('\\frac{3x^2}{x^3-2}', '1', '2');
+		const refusal = rendered[rendered.length - 1];
+		expect(refusal.rule).toBe('integrand-undefined-on-interval');
+		expect(refusal.expressionLatex).toContain(
+			'\\text{La fonction n’est pas définie en } x \\approx 1.26 \\text{, qui appartient à } \\left[ 1 ; 2 \\right]'
+		);
+		expect(refusal.expressionLatex).not.toContain('1.2599');
+	});
+
+	it('∫ 3x²/(x³ + 2) de −2 à −1 : « x ≈ -1.26 »', () => {
+		const { rendered } = renderDefinite('\\frac{3x^2}{x^3+2}', '-2', '-1');
+		const refusal = rendered[rendered.length - 1];
+		expect(refusal.expressionLatex).toContain('pas définie en } x \\approx -1.26 \\text');
+	});
+
+	it('une valeur décimale courte reste exacte : « x = 0.5 »', () => {
+		const { rendered } = renderDefinite('\\frac{1}{x-0.5}', '0', '1');
+		const refusal = rendered[rendered.length - 1];
+		expect(refusal.expressionLatex).toMatch(
+			/pas définie en \} x = (0\.5|\\dfrac\{1\}\{2\}) \\text/
+		);
 	});
 });

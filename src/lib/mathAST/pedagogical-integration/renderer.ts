@@ -23,6 +23,7 @@
  */
 
 import type { MathNode } from '../types';
+import { number } from '../factory';
 import { integrationLatex as toLatex } from './latex';
 import { numericValue } from '../integration/forbidden-value';
 import { withExplicitNumberProducts } from '../pedagogical-differentiation/tidy-step';
@@ -160,10 +161,10 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 		case 'integrand-undefined-on-interval': {
 			// L'intégrale, puis la phrase du refus : mots dans \text{}, valeurs en
 			// mathématiques ; l'intervalle écrit dans l'ordre croissant (V28)
-			const point = step.bindings?.point ? toLatex(step.bindings.point) : '?';
+			const point = step.bindings?.point ? forbiddenPointLatex(step.bindings.point) : '= ?';
 			const lines = [
 				`  & \\textcolor{blue}{${integralLatex(step, dx)}}`,
-				`  & \\text{La fonction n’est pas définie en } ${step.variable} = ${point} \\text{, qui appartient à } ${closedIntervalLatex(step)} \\text{ :}`,
+				`  & \\text{La fonction n’est pas définie en } ${step.variable} ${point} \\text{, qui appartient à } ${closedIntervalLatex(step)} \\text{ :}`,
 				`  & \\text{l’intégrale n’est pas définie sur cet intervalle.}`
 			];
 			return `\\begin{aligned}\n${lines.join(' \\\\\n')}\n\\end{aligned}`;
@@ -263,6 +264,26 @@ function integralLatex(step: PedagogicalIntegrationStep, dx: string): string {
 	return step.definite
 		? `\\int_{${toLatex(step.definite.lower)}}^{${toLatex(step.definite.upper)}} ${integrand}${dx}`
 		: `\\int ${integrand}${dx}`;
+}
+
+/** Décimales au plus d'une valeur interdite approchée */
+const FORBIDDEN_POINT_DECIMALS = 3;
+
+/**
+ * `= 3/2`, `= \\dfrac{\\pi}{2}` : la valeur interdite exacte ; un décimal à
+ * plus de 3 décimales (racine de x³ − 2, seule écriture que rend le domaine)
+ * s'écrit arrondi, `\\approx 1.26`, jamais `= 1.2599210498948732`. Le binding
+ * `point` reste la valeur complète (la garde de l'atelier la compare).
+ */
+function forbiddenPointLatex(point: MathNode): string {
+	// −1,2599… : un opposé de nombre (pas de nombre négatif littéral)
+	const negative = point.type === 'opposite';
+	const magnitude = point.type === 'opposite' ? point.operand : point;
+	if (magnitude.type !== 'number') return `= ${toLatex(point)}`;
+	const decimals = magnitude.value.split('.')[1]?.length ?? 0;
+	if (decimals <= FORBIDDEN_POINT_DECIMALS) return `= ${toLatex(point)}`;
+	const rounded = Number(Number(magnitude.value).toFixed(FORBIDDEN_POINT_DECIMALS));
+	return `\\approx ${negative ? '-' : ''}${toLatex(number(String(rounded)))}`;
 }
 
 /**

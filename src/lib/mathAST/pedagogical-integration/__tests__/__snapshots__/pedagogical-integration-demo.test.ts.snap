@@ -737,9 +737,9 @@ Expression: \\ln(x)
   \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx}
 - [identify-parts] Intégration par parties
   \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx}
-- [choose-u-dv] Choix : $u = \\ln\\left( x \\right)$, $dv = 1$
+- [choose-u-dv] Choix : $u(x) = \\ln\\left( x \\right)$, $v'(x) = 1$
   \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx}
-- [apply-parts-formula] Formule de l'IPP : $\\int u\\,dv = uv - \\int v\\,du$
+- [apply-parts-formula] Formule de l'IPP : $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$
   \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) x - \\int 1\\,dx \\\\ & = \\ln\\left( x \\right) x - x \\end{aligned}
   - [apply-constant-rule] Primitive d'une constante
     \\begin{aligned} & \\textcolor{blue}{\\int 1\\,dx} \\\\ & = x \\end{aligned}
@@ -754,13 +754,13 @@ Antiderivative: x \\ln\\left( x \\right) - x
   · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
   \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx}
 - [identify-parts] Intégration par parties
-  · L'intégration par parties s'utilise pour intégrer un produit : $\\int u\\,dv = uv - \\int v\\,du$.
+  · L'intégration par parties s'utilise pour intégrer un produit $u(x)v'(x)$ : $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$.
   \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx}
-- [choose-u-dv] Choix : $u = \\ln\\left( x \\right)$, $dv = 1$
-  · On pose $u = \\ln\\left( x \\right)$ et $dv = 1$, d'où $du = \\dfrac{1}{x}\\,dx$ et $v = x$.
+- [choose-u-dv] Choix : $u(x) = \\ln\\left( x \\right)$, $v'(x) = 1$
+  · On pose $u(x) = \\ln\\left( x \\right)$ et $v'(x) = 1$, donc $u'(x) = \\dfrac{1}{x}$ et $v(x) = x$.
   \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx}
-- [apply-parts-formula] Formule de l'IPP : $\\int u\\,dv = uv - \\int v\\,du$
-  · On applique la formule $\\int u\\,dv = uv - \\int v\\,du$, puis on calcule l'intégrale restante.
+- [apply-parts-formula] Formule de l'IPP : $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$
+  · On applique la formule $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$, puis on calcule l'intégrale restante.
   \\begin{aligned} & \\textcolor{blue}{\\int \\ln\\left( x \\right)\\,dx} \\\\ & = \\ln\\left( x \\right) x - \\int 1\\,dx \\\\ & = \\ln\\left( x \\right) x - x \\end{aligned}
   - [apply-constant-rule] Primitive d'une constante
     · Une constante c admet la primitive $cx$ : $\\int dx = x$.
@@ -817,9 +817,9 @@ Expression: x e^x
   \\textcolor{blue}{\\int x \\exponentialE^x\\,dx}
 - [identify-parts] Intégration par parties
   \\textcolor{blue}{\\int x \\exponentialE^x\\,dx}
-- [choose-u-dv] Choix : $u = x$, $dv = \\exponentialE^x$
+- [choose-u-dv] Choix : $u(x) = x$, $v'(x) = \\exponentialE^x$
   \\textcolor{blue}{\\int x \\exponentialE^x\\,dx}
-- [apply-parts-formula] Formule de l'IPP : $\\int u\\,dv = uv - \\int v\\,du$
+- [apply-parts-formula] Formule de l'IPP : $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$
   \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exponentialE^x - \\int \\exponentialE^x\\,dx \\\\ & = x \\exponentialE^x - \\exponentialE^x \\end{aligned}
   - [apply-known-primitive] Primitive usuelle
     \\begin{aligned} & \\textcolor{blue}{\\int \\exponentialE^x\\,dx} \\\\ & = \\exponentialE^x \\end{aligned}
@@ -834,13 +834,13 @@ Antiderivative: \\left( x - 1 \\right) \\exponentialE^x
   · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
   \\textcolor{blue}{\\int x \\exponentialE^x\\,dx}
 - [identify-parts] Intégration par parties
-  · L'intégration par parties s'utilise pour intégrer un produit : $\\int u\\,dv = uv - \\int v\\,du$.
+  · L'intégration par parties s'utilise pour intégrer un produit $u(x)v'(x)$ : $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$.
   \\textcolor{blue}{\\int x \\exponentialE^x\\,dx}
-- [choose-u-dv] Choix : $u = x$, $dv = \\exponentialE^x$
-  · On pose $u = x$ et $dv = \\exponentialE^x$, d'où $du = dx$ et $v = \\exponentialE^x$.
+- [choose-u-dv] Choix : $u(x) = x$, $v'(x) = \\exponentialE^x$
+  · On pose $u(x) = x$ et $v'(x) = \\exponentialE^x$, donc $u'(x) = 1$ et $v(x) = \\exponentialE^x$.
   \\textcolor{blue}{\\int x \\exponentialE^x\\,dx}
-- [apply-parts-formula] Formule de l'IPP : $\\int u\\,dv = uv - \\int v\\,du$
-  · On applique la formule $\\int u\\,dv = uv - \\int v\\,du$, puis on calcule l'intégrale restante.
+- [apply-parts-formula] Formule de l'IPP : $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$
+  · On applique la formule $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$, puis on calcule l'intégrale restante.
   \\begin{aligned} & \\textcolor{blue}{\\int x \\exponentialE^x\\,dx} \\\\ & = x \\exponentialE^x - \\int \\exponentialE^x\\,dx \\\\ & = x \\exponentialE^x - \\exponentialE^x \\end{aligned}
   - [apply-known-primitive] Primitive usuelle
     · On reconnaît une primitive de référence (table des primitives usuelles).
@@ -897,9 +897,9 @@ Expression: x \\sin(x)
   \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
 - [identify-parts] Intégration par parties
   \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
-- [choose-u-dv] Choix : $u = x$, $dv = \\sin\\left( x \\right)$
+- [choose-u-dv] Choix : $u(x) = x$, $v'(x) = \\sin\\left( x \\right)$
   \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
-- [apply-parts-formula] Formule de l'IPP : $\\int u\\,dv = uv - \\int v\\,du$
+- [apply-parts-formula] Formule de l'IPP : $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$
   \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = -x \\cos\\left( x \\right) - \\int \\left( -\\cos\\left( x \\right) \\right)\\,dx \\\\ & = -x \\cos\\left( x \\right) - \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [extract-constant] On sort la constante $-1$
     \\begin{aligned} & \\textcolor{blue}{\\int \\left( -\\cos\\left( x \\right) \\right)\\,dx} \\\\ & = -\\sin\\left( x \\right) \\end{aligned}
@@ -916,13 +916,13 @@ Antiderivative: -x \\cos\\left( x \\right) + \\sin\\left( x \\right)
   · Pour intégrer une fonction, on cherche une primitive : une fonction dont la dérivée est égale à l'intégrande.
   \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
 - [identify-parts] Intégration par parties
-  · L'intégration par parties s'utilise pour intégrer un produit : $\\int u\\,dv = uv - \\int v\\,du$.
+  · L'intégration par parties s'utilise pour intégrer un produit $u(x)v'(x)$ : $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$.
   \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
-- [choose-u-dv] Choix : $u = x$, $dv = \\sin\\left( x \\right)$
-  · On pose $u = x$ et $dv = \\sin\\left( x \\right)$, d'où $du = dx$ et $v = -\\cos\\left( x \\right)$.
+- [choose-u-dv] Choix : $u(x) = x$, $v'(x) = \\sin\\left( x \\right)$
+  · On pose $u(x) = x$ et $v'(x) = \\sin\\left( x \\right)$, donc $u'(x) = 1$ et $v(x) = -\\cos\\left( x \\right)$.
   \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx}
-- [apply-parts-formula] Formule de l'IPP : $\\int u\\,dv = uv - \\int v\\,du$
-  · On applique la formule $\\int u\\,dv = uv - \\int v\\,du$, puis on calcule l'intégrale restante.
+- [apply-parts-formula] Formule de l'IPP : $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$
+  · On applique la formule $\\int u(x)v'(x)\\,dx = u(x)v(x) - \\int u'(x)v(x)\\,dx$, puis on calcule l'intégrale restante.
   \\begin{aligned} & \\textcolor{blue}{\\int x \\sin\\left( x \\right)\\,dx} \\\\ & = -x \\cos\\left( x \\right) - \\int \\left( -\\cos\\left( x \\right) \\right)\\,dx \\\\ & = -x \\cos\\left( x \\right) - \\left( -\\sin\\left( x \\right) \\right) \\end{aligned}
   - [extract-constant] On sort la constante $-1$
     · Une constante multiplicative sort de l'intégrale : $\\int \\left( -1 \\right) f(x)\\,dx = -\\int f(x)\\,dx$.

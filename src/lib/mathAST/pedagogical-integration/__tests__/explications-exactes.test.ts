@@ -17,17 +17,21 @@ import { generatePedagogicalIntegrationSteps } from '../pipeline';
 import { PedagogicalIntegrationRenderer } from '../renderer';
 import type { RenderedStep } from '../../common/step-renderer-base';
 
-function renderedSteps(latex: string): RenderedStep[] {
-	const result = generatePedagogicalIntegrationSteps(parseLatex(latex), { level: 'lycee' });
+function renderedSteps(latex: string, level: 'lycee' | 'superieur' = 'lycee'): RenderedStep[] {
+	const result = generatePedagogicalIntegrationSteps(parseLatex(latex), { level });
 	const renderer = new PedagogicalIntegrationRenderer();
 	const flat = (s: RenderedStep): RenderedStep[] => [s, ...(s.subSteps ?? []).flatMap(flat)];
 	return renderer
-		.renderAll(result.steps, { schoolLevel: 'lycee', verbosity: 'detailed' })
+		.renderAll(result.steps, { schoolLevel: level, verbosity: 'detailed' })
 		.flatMap(flat);
 }
 
-function explanationOf(latex: string, rule: string): string {
-	const step = renderedSteps(latex).find((s) => s.rule === rule);
+function explanationOf(
+	latex: string,
+	rule: string,
+	level: 'lycee' | 'superieur' = 'lycee'
+): string {
+	const step = renderedSteps(latex, level).find((s) => s.rule === rule);
 	if (!step?.explanation) throw new Error(`pas d'explication ${rule} pour ${latex}`);
 	return step.explanation;
 }
@@ -67,6 +71,7 @@ describe('V22 — décomposition en éléments simples : le dénominateur factor
 });
 
 describe('V24 — choix de u et dv : du = dx, jamais « 1 dx »', () => {
+	// Notation du supérieur (u, dv) ; le lycée écrit u′(x) depuis le 2026-10-13
 	it.each([
 		['xe^{2x}', 'du = dx'],
 		['xe^x', 'du = dx'],
@@ -75,9 +80,19 @@ describe('V24 — choix de u et dv : du = dx, jamais « 1 dx »', () => {
 		['(1-x)e^x', 'du = -dx'],
 		['3xe^x', 'du = 3\\,dx'],
 		['x^2e^x', 'du = 2 x\\,dx']
-	])('∫%s : « %s »', (latex, expected) => {
-		const explanation = explanationOf(latex, 'choose-u-dv');
+	])('supérieur, ∫%s : « %s »', (latex, expected) => {
+		const explanation = explanationOf(latex, 'choose-u-dv', 'superieur');
 		expect(explanation).toContain(`$${expected}$ et $v =`);
+	});
+
+	it.each([
+		['xe^{2x}', "u'(x) = 1"],
+		['-xe^x', "u'(x) = -1"],
+		['3xe^x', "u'(x) = 3"],
+		['x^2e^x', "u'(x) = 2 x"]
+	])('lycée, ∫%s : « %s » (notation de terminale)', (latex, expected) => {
+		const explanation = explanationOf(latex, 'choose-u-dv');
+		expect(explanation).toContain(`$${expected}$ et $v(x) =`);
 	});
 
 	it('aucune explication n’écrit « 1 dx », « -1 dx » ni « 1 x »', () => {

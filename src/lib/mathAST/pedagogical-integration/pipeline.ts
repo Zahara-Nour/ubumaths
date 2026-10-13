@@ -114,6 +114,7 @@ import {
 	tryDetectParts,
 	tryExtractConstant,
 	unwrapSign,
+	primitiveInsideParts,
 	withDeeperRecursion
 } from './_helpers';
 import type {
@@ -338,8 +339,9 @@ function generateDefiniteSteps(
 	// ln u sans valeur absolue quand u > 0 y est certain
 	const numericBounds =
 		Number.isFinite(numericValue(definite.lower)) && Number.isFinite(numericValue(definite.upper));
+	const boundedCtx: DispatchContext = { ...ctx, definite };
 	const innerCtx: DispatchContext =
-		check.kind === 'defined' && numericBounds ? { ...ctx, interval: definite } : ctx;
+		check.kind === 'defined' && numericBounds ? { ...boundedCtx, interval: definite } : boundedCtx;
 
 	// Compute the antiderivative pedagogically — without `add-constant`
 	// (the constant cancels in F(b) - F(a)).
@@ -1292,7 +1294,7 @@ function integrateByParts(
 	// v = ∫dv (recursive call) — we deliberately pass the sub-integration
 	// through `integrateNode` so the antiderivative obeys the same pedagogical
 	// rules as the top-level call.
-	const recurCtx = withDeeperRecursion(ctx);
+	const recurCtx = primitiveInsideParts(ctx);
 	let vSub: DispatchResult;
 	try {
 		vSub = integrateNode(dv, recurCtx);
@@ -1334,7 +1336,7 @@ function integrateByParts(
 		before: integrand,
 		after: integrand,
 		variable: ctx.variable,
-		bindings: { u, dv }
+		bindings: { u, dv, ...boundsBindings(ctx) }
 	});
 	// v = ∫dv écrit avec un coefficient (v = ½e^{2x}) : sa réécriture vient sous
 	// le choix, sinon le ½ tomberait du ciel (décision de David du 2026-10-13)
@@ -1356,6 +1358,14 @@ function integrateByParts(
 		subSteps: vduSub.steps
 	});
 	return { antiderivative, steps: [identify, choose, apply] };
+}
+
+/**
+ * Les bornes de l'intégrale définie (`lower`, `upper`) : l'annonce de l'IPP
+ * énonce alors au lycée la formule avec bornes ; rien pour une primitive.
+ */
+function boundsBindings(ctx: DispatchContext): Record<string, MathNode> {
+	return ctx.definite ? { lower: ctx.definite.lower, upper: ctx.definite.upper } : {};
 }
 
 /** Une étape « On fait apparaître u′ », sous-étapes comprises ? */
@@ -1448,7 +1458,7 @@ function integrateCyclicIPP(integrand: MathNode, ctx: DispatchContext): Dispatch
 	} catch {
 		throw new PedagogicalIntegrationNotImplemented(integrand, 'cyclic IPP: cannot compute du₀');
 	}
-	const recurCtx = withDeeperRecursion(ctx);
+	const recurCtx = primitiveInsideParts(ctx);
 	let v0Sub: DispatchResult;
 	try {
 		v0Sub = integrateNode(dv0, recurCtx);
@@ -1534,7 +1544,7 @@ function integrateCyclicIPP(integrand: MathNode, ctx: DispatchContext): Dispatch
 		before: integrand,
 		after: integrand,
 		variable: ctx.variable,
-		bindings: { u: u0, dv: dv0 }
+		bindings: { u: u0, dv: dv0, ...boundsBindings(ctx) }
 	});
 	const choose1 = buildStep(ctx, {
 		rule: 'choose-u-dv',
