@@ -20,6 +20,9 @@
 
 import * as Brevo from '@getbrevo/brevo';
 import { env } from '$env/dynamic/private';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/email/brevo');
 
 /**
  * Email send result interface (compatible with existing Gmail interface)
@@ -102,7 +105,7 @@ export async function sendEmail(
 			messageId: response.body?.messageId
 		};
 	} catch (error) {
-		console.error('[Brevo] Email send error:', error);
+		logger.error('[Brevo] Email send error:', error);
 
 		if (error instanceof Error) {
 			return {

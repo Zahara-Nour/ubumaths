@@ -28,6 +28,9 @@ import {
 } from '$lib/server/validation/backup';
 import { fetchTagNamesForResources, syncResourceTags } from '$lib/server/resource-tags';
 import { consistentSearchIndexed } from '$lib/server/exercise-search-indexed';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/admin/exercise-backup');
 
 /**
  * `.single()` traite « zéro ligne » comme une erreur (`PGRST116`). Pendant une
@@ -611,7 +614,7 @@ export async function restoreFromBackup(
 		.from('profiles')
 		.select('id');
 	if (existingUsersError) {
-		console.error('[restore] Comptes illisibles :', existingUsersError);
+		logger.error('[restore] Comptes illisibles :', existingUsersError);
 		throw new Error(existingUsersError.message);
 	}
 	const validUserIds = new Set((existingUsers ?? []).map((u) => u.id));
@@ -624,7 +627,7 @@ export async function restoreFromBackup(
 		.from('exercises')
 		.select('id');
 	if (existingExercisesError) {
-		console.error('[restore] Exercices illisibles :', existingExercisesError);
+		logger.error('[restore] Exercices illisibles :', existingExercisesError);
 		throw new Error(existingExercisesError.message);
 	}
 	const validExerciseIds = new Set((existingExercises ?? []).map((e) => e.id));
@@ -697,7 +700,7 @@ async function restoreExercises(
 			// prenait le même visage, et l’enregistrement partait en insertion
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
 			if (isFailure(existingError)) {
-				console.error('[restore] Lecture impossible (exercises) :', existingError);
+				logger.error('[restore] Lecture impossible (exercises) :', existingError);
 				throw new Error(existingError.message);
 			}
 
@@ -824,7 +827,7 @@ async function restoreTemplates(
 			// prenait le même visage, et l’enregistrement partait en insertion
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
 			if (isFailure(existingError)) {
-				console.error('[restore] Lecture impossible (exercise_templates) :', existingError);
+				logger.error('[restore] Lecture impossible (exercise_templates) :', existingError);
 				throw new Error(existingError.message);
 			}
 
@@ -936,7 +939,7 @@ async function restoreFavorites(
 			// prenait le même visage, et l’enregistrement partait en insertion
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
 			if (isFailure(existingError)) {
-				console.error('[restore] Lecture impossible (exercise_favorites) :', existingError);
+				logger.error('[restore] Lecture impossible (exercise_favorites) :', existingError);
 				throw new Error(existingError.message);
 			}
 
@@ -1020,7 +1023,7 @@ async function restoreTokens(
 			// prenait le même visage, et l’enregistrement partait en insertion
 			// par-dessus une ligne qu’on n’avait simplement pas su lire.
 			if (isFailure(existingError)) {
-				console.error('[restore] Lecture impossible (exercise_share_tokens) :', existingError);
+				logger.error('[restore] Lecture impossible (exercise_share_tokens) :', existingError);
 				throw new Error(existingError.message);
 			}
 

@@ -16,6 +16,9 @@
 import { createSystemNotification } from './notifications';
 import { escapeHtml } from '$lib/utils/html-escape';
 import type { NotificationTargetType } from '$lib/types/notification';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/auto-notifications');
 
 /**
  * Create notification when a new assignment is created
@@ -44,7 +47,7 @@ export async function notifyNewAssignment(data: {
 			action_url: `/dashboard/student/devoirs/${data.assignmentId}`
 		});
 	} catch (error) {
-		console.error('Error creating assignment notification:', error);
+		logger.error('Error creating assignment notification:', error);
 		// Don't throw - notification failure shouldn't break the assignment creation
 	}
 }
@@ -76,7 +79,7 @@ export async function notifyNewResource(data: {
 			action_url: `/dashboard/student/resources/${data.resourceId}`
 		});
 	} catch (error) {
-		console.error('Error creating resource notification:', error);
+		logger.error('Error creating resource notification:', error);
 	}
 }
 
@@ -107,7 +110,7 @@ export async function notifyRewardEarned(data: {
 			target_user_ids: [data.studentId]
 		});
 	} catch (error) {
-		console.error('Error creating reward notification:', error);
+		logger.error('Error creating reward notification:', error);
 	}
 }
 
@@ -136,7 +139,7 @@ export async function notifyVipCardEarned(data: {
 			action_url: '/dashboard/student/vip-cards'
 		});
 	} catch (error) {
-		console.error('Error creating VIP card notification:', error);
+		logger.error('Error creating VIP card notification:', error);
 	}
 }
 
@@ -171,7 +174,7 @@ export async function notifyBadgeUnlocked(data: {
 			action_url: '/dashboard/student/badges'
 		});
 	} catch (error) {
-		console.error('Error creating badge notification:', error);
+		logger.error('Error creating badge notification:', error);
 	}
 }
 
@@ -197,7 +200,7 @@ export async function notifyMaintenance(data: {
 			target_type: 'all'
 		});
 	} catch (error) {
-		console.error('Error creating maintenance notification:', error);
+		logger.error('Error creating maintenance notification:', error);
 	}
 }
 
@@ -228,7 +231,7 @@ export async function notifyFeatureRelease(data: {
 			action_url: data.actionUrl
 		});
 	} catch (error) {
-		console.error('Error creating feature release notification:', error);
+		logger.error('Error creating feature release notification:', error);
 	}
 }
 
@@ -266,7 +269,7 @@ export async function notifyNewAssessment(data: {
 			action_url: '/dashboard/student/assessments'
 		});
 	} catch (error) {
-		console.error('Error creating assessment notification:', error);
+		logger.error('Error creating assessment notification:', error);
 		// Don't throw - notification failure shouldn't break the assignment
 	}
 }
@@ -294,7 +297,7 @@ export async function notifyErrorReportValidated(data: {
 			target_user_ids: [data.studentId]
 		});
 	} catch (error) {
-		console.error('Error creating error report validated notification:', error);
+		logger.error('Error creating error report validated notification:', error);
 		// Don't throw - notification failure shouldn't break the validation flow
 	}
 }
@@ -327,7 +330,7 @@ export async function notifyErrorReportRejected(data: {
 			target_user_ids: [data.studentId]
 		});
 	} catch (error) {
-		console.error('Error creating error report rejected notification:', error);
+		logger.error('Error creating error report rejected notification:', error);
 		// Don't throw - notification failure shouldn't break the rejection flow
 	}
 }

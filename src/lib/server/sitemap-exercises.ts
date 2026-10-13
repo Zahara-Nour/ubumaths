@@ -10,6 +10,9 @@
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/sitemap-exercises');
 
 // Types
 
@@ -40,7 +43,7 @@ export async function fetchIndexedExercises(
 			.limit(SITEMAP_EXERCISE_LIMIT);
 
 		if (error) {
-			console.error('[sitemap] Exercices illisibles, plan servi sans eux :', error);
+			logger.error('[sitemap] Exercices illisibles, plan servi sans eux :', error);
 			return [];
 		}
 
@@ -50,7 +53,7 @@ export async function fetchIndexedExercises(
 			lastmod: row.updated_at.slice(0, 10)
 		}));
 	} catch (e) {
-		console.error('[sitemap] Lecture des exercices impossible, plan servi sans eux :', e);
+		logger.error('[sitemap] Lecture des exercices impossible, plan servi sans eux :', e);
 		return [];
 	}
 }

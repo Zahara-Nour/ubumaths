@@ -25,6 +25,9 @@ import { GoogleNotConnectedError } from './errors';
 import { decryptToken, encryptToken } from './encryption';
 import { refreshAccessToken, shouldRefreshToken } from './oauth';
 import { parseGoogleDateTime, extractMaterialData } from './utils';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/google/sync');
 // Error types imported for future use
 // import { GoogleTokenExpiredError, GoogleAPIError } from './errors';
 
@@ -92,7 +95,7 @@ export async function getTeacherAccessToken(
 
 	// Check if token needs refresh (expires in less than 5 minutes)
 	if (shouldRefreshToken(integration.token_expiry)) {
-		console.log(`[Sync] Refreshing expired token for teacher ${teacherId}`);
+		logger.info(`[Sync] Refreshing expired token for teacher ${teacherId}`);
 
 		try {
 			// Decrypt refresh token
@@ -119,7 +122,7 @@ export async function getTeacherAccessToken(
 				);
 			}
 
-			console.log(`[Sync] Token refreshed successfully for teacher ${teacherId}`);
+			logger.info(`[Sync] Token refreshed successfully for teacher ${teacherId}`);
 			return access_token;
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'erreur inconnue';
@@ -177,7 +180,7 @@ export async function syncTeacherCourses(
 			nextPageToken = token;
 		} while (nextPageToken);
 
-		console.log(`[Sync] Fetched ${allCourses.length} active courses for teacher ${teacherId}`);
+		logger.info(`[Sync] Fetched ${allCourses.length} active courses for teacher ${teacherId}`);
 
 		// Track synced Google course IDs for cleanup
 		const syncedGoogleCourseIds: string[] = [];
@@ -230,7 +233,7 @@ export async function syncTeacherCourses(
 			if (deleteError) {
 				result.errors.push(`Impossible de retirer les anciens cours : ${deleteError.message}`);
 			} else if (count && count > 0) {
-				console.log(`[Sync] Cleaned up ${count} old/archived courses for teacher ${teacherId}`);
+				logger.info(`[Sync] Cleaned up ${count} old/archived courses for teacher ${teacherId}`);
 			}
 		} else {
 			// No active courses - delete all courses for this teacher
@@ -242,7 +245,7 @@ export async function syncTeacherCourses(
 			if (deleteError) {
 				result.errors.push(`Impossible de retirer les cours : ${deleteError.message}`);
 			} else if (count && count > 0) {
-				console.log(
+				logger.info(
 					`[Sync] No active courses found. Cleaned up ${count} courses for teacher ${teacherId}`
 				);
 			}
@@ -254,13 +257,13 @@ export async function syncTeacherCourses(
 			.update({ last_sync_at: new Date().toISOString() })
 			.eq('teacher_id', teacherId);
 
-		console.log(
+		logger.info(
 			`[Sync] Synced ${result.synced}/${allCourses.length} active courses for teacher ${teacherId}`
 		);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'erreur inconnue';
 		result.errors.push(`Impossible de synchroniser les cours : ${message}`);
-		console.error(`[Sync] Error syncing courses for teacher ${teacherId}:`, error);
+		logger.error(`[Sync] Error syncing courses for teacher ${teacherId}:`, error);
 	}
 
 	return result;
@@ -304,11 +307,11 @@ export async function syncTopics(
 
 		// If no topics, return early
 		if (!topics || topics.length === 0) {
-			console.log(`[Sync] No topics found for course ${googleCourseId}`);
+			logger.info(`[Sync] No topics found for course ${googleCourseId}`);
 			return result;
 		}
 
-		console.log(`[Sync] Fetched ${topics.length} topics for course ${googleCourseId}`);
+		logger.info(`[Sync] Fetched ${topics.length} topics for course ${googleCourseId}`);
 
 		// Track synced Google topic IDs for cleanup
 		const syncedGoogleTopicIds: string[] = [];
@@ -335,7 +338,7 @@ export async function syncTopics(
 				if (upsertError) {
 					const errorMsg = `Impossible de synchroniser le thème « ${topic.name} » : ${upsertError.message}`;
 					result.errors.push(errorMsg);
-					console.error(`[Sync] ${errorMsg}`);
+					logger.error(`[Sync] ${errorMsg}`);
 				} else {
 					result.synced++;
 				}
@@ -343,7 +346,7 @@ export async function syncTopics(
 				const message = error instanceof Error ? error.message : 'erreur inconnue';
 				const errorMsg = `Impossible de synchroniser le thème « ${topic.name} » : ${message}`;
 				result.errors.push(errorMsg);
-				console.error(`[Sync] ${errorMsg}`);
+				logger.error(`[Sync] ${errorMsg}`);
 			}
 		}
 
@@ -358,9 +361,9 @@ export async function syncTopics(
 			if (deleteError) {
 				const errorMsg = `Impossible de retirer les anciens thèmes : ${deleteError.message}`;
 				result.errors.push(errorMsg);
-				console.error(`[Sync] ${errorMsg}`);
+				logger.error(`[Sync] ${errorMsg}`);
 			} else if (count && count > 0) {
-				console.log(`[Sync] Cleaned up ${count} deleted topics for course ${googleCourseId}`);
+				logger.info(`[Sync] Cleaned up ${count} deleted topics for course ${googleCourseId}`);
 			}
 		} else {
 			// No topics - delete all topics for this course
@@ -372,21 +375,21 @@ export async function syncTopics(
 			if (deleteError) {
 				const errorMsg = `Impossible de retirer les thèmes : ${deleteError.message}`;
 				result.errors.push(errorMsg);
-				console.error(`[Sync] ${errorMsg}`);
+				logger.error(`[Sync] ${errorMsg}`);
 			} else if (count && count > 0) {
-				console.log(
+				logger.info(
 					`[Sync] No topics found. Cleaned up ${count} topics for course ${googleCourseId}`
 				);
 			}
 		}
 
-		console.log(
+		logger.info(
 			`[Sync] Synced ${result.synced}/${topics.length} topics for course ${googleCourseId}`
 		);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'erreur inconnue';
 		result.errors.push(`Impossible de synchroniser les thèmes : ${message}`);
-		console.error(`[Sync] Error syncing topics for course ${googleCourseId}:`, error);
+		logger.error(`[Sync] Error syncing topics for course ${googleCourseId}:`, error);
 	}
 
 	return result;
@@ -447,13 +450,13 @@ export async function syncCoursework(
 			nextPageToken = token;
 		} while (nextPageToken);
 
-		console.log(
+		logger.info(
 			`[Sync] Fetched ${allCoursework.length} coursework items for course ${googleCourseId}`
 		);
 
 		// Early return if no coursework
 		if (allCoursework.length === 0) {
-			console.log(`[Sync] No coursework found for course ${googleCourseId}`);
+			logger.info(`[Sync] No coursework found for course ${googleCourseId}`);
 			return result;
 		}
 
@@ -466,7 +469,7 @@ export async function syncCoursework(
 		if (topicsError) {
 			const errorMsg = `Attention : impossible de charger les thèmes du cours ${googleCourseId} (${topicsError.message}) ; les devoirs ne seront pas rattachés à leur thème.`;
 			result.errors.push(errorMsg);
-			console.error(`[Sync] ${errorMsg}`);
+			logger.error(`[Sync] ${errorMsg}`);
 		}
 
 		const topicMap = new Map<string, string>();
@@ -532,7 +535,7 @@ export async function syncCoursework(
 				if (courseworkError) {
 					const errorMsg = `Impossible de synchroniser le devoir « ${work.title} » : ${courseworkError.message}`;
 					result.errors.push(errorMsg);
-					console.error(`[Sync] ${errorMsg}`);
+					logger.error(`[Sync] ${errorMsg}`);
 					continue;
 				}
 
@@ -564,7 +567,7 @@ export async function syncCoursework(
 								materialError instanceof Error ? materialError.message : 'erreur inconnue';
 							const errorMsg = `Impossible de synchroniser le support du devoir « ${work.title} » : ${message}`;
 							result.errors.push(errorMsg);
-							console.error(`[Sync] ${errorMsg}`);
+							logger.error(`[Sync] ${errorMsg}`);
 						}
 					}
 				}
@@ -574,17 +577,17 @@ export async function syncCoursework(
 				const message = error instanceof Error ? error.message : 'erreur inconnue';
 				const errorMsg = `Impossible de synchroniser le devoir « ${work.title} » : ${message}`;
 				result.errors.push(errorMsg);
-				console.error(`[Sync] ${errorMsg}`, error);
+				logger.error(`[Sync] ${errorMsg}`, error);
 			}
 		}
 
-		console.log(
+		logger.info(
 			`[Sync] Synced ${result.synced}/${allCoursework.length} coursework items for course ${googleCourseId}`
 		);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'erreur inconnue';
 		result.errors.push(`Impossible de synchroniser les devoirs : ${message}`);
-		console.error(`[Sync] Error syncing coursework for course ${googleCourseId}:`, error);
+		logger.error(`[Sync] Error syncing coursework for course ${googleCourseId}:`, error);
 	}
 
 	return result;
@@ -643,11 +646,11 @@ export async function syncCourseWorkMaterials(
 
 		// If no materials, return early
 		if (allMaterials.length === 0) {
-			console.log(`[Sync] No course work materials found for course ${googleCourseId}`);
+			logger.info(`[Sync] No course work materials found for course ${googleCourseId}`);
 			return result;
 		}
 
-		console.log(
+		logger.info(
 			`[Sync] Fetched ${allMaterials.length} course work materials for course ${googleCourseId}`
 		);
 
@@ -660,7 +663,7 @@ export async function syncCourseWorkMaterials(
 		if (topicsError) {
 			const errorMsg = `Attention : impossible de charger les thèmes du cours ${googleCourseId} (${topicsError.message}) ; les supports ne seront pas rattachés à leur thème.`;
 			result.errors.push(errorMsg);
-			console.error(`[Sync] ${errorMsg}`);
+			logger.error(`[Sync] ${errorMsg}`);
 		}
 
 		const topicMap = new Map<string, string>();
@@ -701,7 +704,7 @@ export async function syncCourseWorkMaterials(
 				if (materialError) {
 					const errorMsg = `Impossible de synchroniser le support « ${material.title} » : ${materialError.message}`;
 					result.errors.push(errorMsg);
-					console.error(`[Sync] ${errorMsg}`);
+					logger.error(`[Sync] ${errorMsg}`);
 					continue;
 				}
 
@@ -737,14 +740,14 @@ export async function syncCourseWorkMaterials(
 							if (attachmentInsertError) {
 								const errorMsg = `Impossible de synchroniser la pièce jointe du support « ${material.title} » : ${attachmentInsertError.message}`;
 								result.errors.push(errorMsg);
-								console.error(`[Sync] ${errorMsg}`);
+								logger.error(`[Sync] ${errorMsg}`);
 							}
 						} catch (attachmentError) {
 							const message =
 								attachmentError instanceof Error ? attachmentError.message : 'erreur inconnue';
 							const errorMsg = `Impossible de synchroniser la pièce jointe du support « ${material.title} » : ${message}`;
 							result.errors.push(errorMsg);
-							console.error(`[Sync] ${errorMsg}`);
+							logger.error(`[Sync] ${errorMsg}`);
 						}
 					}
 				}
@@ -754,20 +757,17 @@ export async function syncCourseWorkMaterials(
 				const message = error instanceof Error ? error.message : 'erreur inconnue';
 				const errorMsg = `Impossible de synchroniser le support « ${material.title} » : ${message}`;
 				result.errors.push(errorMsg);
-				console.error(`[Sync] ${errorMsg}`, error);
+				logger.error(`[Sync] ${errorMsg}`, error);
 			}
 		}
 
-		console.log(
+		logger.info(
 			`[Sync] Synced ${result.synced}/${allMaterials.length} course work materials for course ${googleCourseId}`
 		);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'erreur inconnue';
 		result.errors.push(`Impossible de synchroniser les supports : ${message}`);
-		console.error(
-			`[Sync] Error syncing course work materials for course ${googleCourseId}:`,
-			error
-		);
+		logger.error(`[Sync] Error syncing course work materials for course ${googleCourseId}:`, error);
 	}
 
 	return result;
@@ -802,7 +802,7 @@ export async function fullSync(
 		errors: []
 	};
 
-	console.log(`[Sync] Starting full sync for teacher ${teacherId}`);
+	logger.info(`[Sync] Starting full sync for teacher ${teacherId}`);
 
 	try {
 		// Step 1: Sync all courses
@@ -823,13 +823,13 @@ export async function fullSync(
 		}
 
 		if (!courses || courses.length === 0) {
-			console.log(`[Sync] No courses found for teacher ${teacherId}`);
+			logger.info(`[Sync] No courses found for teacher ${teacherId}`);
 			return result;
 		}
 
 		// Step 3: Sync topics, coursework, and materials for each course
 		for (const course of courses) {
-			console.log(`[Sync] Syncing data for course: ${course.name}`);
+			logger.info(`[Sync] Syncing data for course: ${course.name}`);
 
 			// 3a. Sync topics first (needed for coursework/materials linking)
 			const topicsResult = await syncTopics(
@@ -862,7 +862,7 @@ export async function fullSync(
 			result.errors.push(...materialsResult.errors);
 		}
 
-		console.log(
+		logger.info(
 			`[Sync] Full sync completed for teacher ${teacherId}. ` +
 				`Courses: ${result.coursesSynced}, Topics: ${result.topicsSynced}, ` +
 				`Coursework: ${result.courseworkSynced}, Materials: ${result.materialsSynced}, ` +
@@ -871,7 +871,7 @@ export async function fullSync(
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'erreur inconnue';
 		result.errors.push(`Échec de la synchronisation complète : ${message}`);
-		console.error(`[Sync] Fatal error during full sync for teacher ${teacherId}:`, error);
+		logger.error(`[Sync] Fatal error during full sync for teacher ${teacherId}:`, error);
 	}
 
 	return result;
@@ -944,7 +944,7 @@ export async function syncSingleCourse(
 			// enregistré, cas normal. Toute autre panne faisait sauter en silence la
 			// synchronisation des thèmes, travaux et supports de ce cours.
 			if (dbCourseError && dbCourseError.code !== 'PGRST116') {
-				console.error('[google/sync] Cours illisible :', dbCourseError);
+				logger.error('[google/sync] Cours illisible :', dbCourseError);
 				throw new Error(dbCourseError.message);
 			}
 

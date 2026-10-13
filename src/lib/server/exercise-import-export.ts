@@ -30,6 +30,9 @@ import {
 import { createExercise } from './exercises';
 import { syncResourceTags } from './resource-tags';
 import { createHash } from 'crypto';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/exercise-import-export');
 
 // ============================================================================
 // EXPORT FUNCTIONS
@@ -207,7 +210,7 @@ async function findDuplicateExercise(
 		// Cette lecture sert à détecter un doublon. Une panne rendait « aucun
 		// doublon trouvé », et l'import créait une seconde copie de l'exercice.
 		if (error) {
-			console.error('[import] Exercices existants illisibles :', error);
+			logger.error('[import] Exercices existants illisibles :', error);
 			throw new Error(error.message);
 		}
 
@@ -254,7 +257,7 @@ async function generateUniqueCopyTitle(
 
 	// Même piège : la liste des titres existants sert à éviter une collision.
 	if (exercisesError) {
-		console.error('[import] Titres existants illisibles :', exercisesError);
+		logger.error('[import] Titres existants illisibles :', exercisesError);
 		throw new Error(exercisesError.message);
 	}
 
@@ -370,7 +373,7 @@ export async function importExerciseFromJSON(
 			try {
 				await syncResourceTags(supabase, 'exercise', data!.id, replaceTags ?? []);
 			} catch (e) {
-				console.error('Failed to sync tags while replacing imported exercise:', e);
+				logger.error('Failed to sync tags while replacing imported exercise:', e);
 				return {
 					success: false,
 					error: e instanceof Error ? e.message : 'Failed to sync tags for exercise'

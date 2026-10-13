@@ -15,6 +15,9 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/srs/deck-copy');
 
 /** Une section telle qu'elle existe dans le deck source. */
 export type SourceSection = { id: string; name: string; description: string | null };
@@ -145,7 +148,7 @@ export async function findAssignedDeckCopy(
 		.limit(1);
 
 	if (error) {
-		console.error('Copie du deck illisible :', error);
+		logger.error('Copie du deck illisible :', error);
 		return null;
 	}
 

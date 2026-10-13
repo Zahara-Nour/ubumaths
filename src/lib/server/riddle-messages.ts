@@ -4,6 +4,9 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/riddle-messages');
 
 /**
  * Create a message to teacher requesting validation of a riddle answer
@@ -54,13 +57,13 @@ export async function createRiddleValidationMessage(
 			.single();
 
 		if (messageError) {
-			console.error('Error creating validation message:', messageError);
+			logger.error('Error creating validation message:', messageError);
 			return { success: false, error: messageError.message };
 		}
 
 		return { success: true, messageId: message.id };
 	} catch (error) {
-		console.error('Error in createRiddleValidationMessage:', error);
+		logger.error('Error in createRiddleValidationMessage:', error);
 		return { success: false, error: String(error) };
 	}
 }
@@ -79,7 +82,7 @@ export async function getRiddleTeacherId(
 		.single();
 
 	if (error || !riddle) {
-		console.error('Error fetching riddle teacher:', error);
+		logger.error('Error fetching riddle teacher:', error);
 		return null;
 	}
 
@@ -138,13 +141,13 @@ export async function sendValidationResultMessage(
 		});
 
 		if (messageError) {
-			console.error('Error sending validation result:', messageError);
+			logger.error('Error sending validation result:', messageError);
 			return { success: false, error: messageError.message };
 		}
 
 		return { success: true };
 	} catch (error) {
-		console.error('Error in sendValidationResultMessage:', error);
+		logger.error('Error in sendValidationResultMessage:', error);
 		return { success: false, error: String(error) };
 	}
 }

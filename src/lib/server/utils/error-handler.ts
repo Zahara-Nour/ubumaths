@@ -1,5 +1,8 @@
 import { error } from '@sveltejs/kit';
 import type { PostgrestError } from '@supabase/supabase-js';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/utils/error-handler');
 
 /**
  * Semantic error codes for RPC errors.
@@ -78,7 +81,7 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
  */
 export function sanitizePostgresError(err: unknown, context: string): never {
 	// Log full error server-side for debugging
-	console.error(`[${context}]`, {
+	logger.error(`[${context}]`, {
 		error: err,
 		timestamp: new Date().toISOString()
 	});
@@ -117,7 +120,7 @@ export function sanitizePostgresError(err: unknown, context: string): never {
  * Sanitizes RPC errors from Supabase functions
  */
 export function sanitizeRPCError(err: unknown, functionName: string): never {
-	console.error(`[RPC:${functionName}]`, {
+	logger.error(`[RPC:${functionName}]`, {
 		error: err,
 		timestamp: new Date().toISOString()
 	});
@@ -192,7 +195,7 @@ export function sanitizeRPCError(err: unknown, functionName: string): never {
 		else if (code.startsWith('PGRST')) errorType = 'PGRST'; // PostgREST errors
 
 		const traceCode = generateTraceCode();
-		console.error(`[RPC:${functionName}] ${traceCode}·${errorType} — "${msg}" (code: "${code}")`);
+		logger.error(`[RPC:${functionName}] ${traceCode}·${errorType} — "${msg}" (code: "${code}")`);
 		throw error(400, withCode('Opération invalide', errorType, traceCode));
 	}
 

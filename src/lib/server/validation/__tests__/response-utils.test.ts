@@ -89,6 +89,7 @@ describe('response validation utilities', () => {
 			}
 
 			expect(consoleErrorSpy).toHaveBeenCalledWith(
+				expect.stringContaining('[server/validation/response-utils]'),
 				expect.stringContaining('[RESPONSE VALIDATION ERROR]'),
 				expect.objectContaining({
 					issues: expect.any(Array),

@@ -10,6 +10,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { VipCardTemplate } from '$lib/stores/vipCardTemplates.svelte';
 import { asVipCardAction, type VipCardCategory, type VipCardRarity } from '$lib/types/vip-card';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/vip-card-queries');
 
 /**
  * Get all VIP card templates from database
@@ -33,7 +36,7 @@ export async function getAllTemplates(
 	const { data, error } = await query;
 
 	if (error) {
-		console.error('❌ [vip-card-queries] Error fetching all templates:', error);
+		logger.error('❌ [vip-card-queries] Error fetching all templates:', error);
 		throw error;
 	}
 
@@ -61,7 +64,7 @@ export async function getTemplateById(
 			// Not found - expected case
 			return null;
 		}
-		console.error(`❌ [vip-card-queries] Error fetching template ${cardId}:`, error);
+		logger.error(`❌ [vip-card-queries] Error fetching template ${cardId}:`, error);
 		throw error;
 	}
 
@@ -85,7 +88,7 @@ export async function getTemplatesByIds(
 	const { data, error } = await supabase.from('vip_card_templates').select('*').in('id', cardIds);
 
 	if (error) {
-		console.error('❌ [vip-card-queries] Error fetching templates by IDs:', error);
+		logger.error('❌ [vip-card-queries] Error fetching templates by IDs:', error);
 		throw error;
 	}
 
@@ -117,7 +120,7 @@ export async function getTemplatesByCategory(
 	const { data, error } = await query;
 
 	if (error) {
-		console.error(`❌ [vip-card-queries] Error fetching templates by category ${category}:`, error);
+		logger.error(`❌ [vip-card-queries] Error fetching templates by category ${category}:`, error);
 		throw error;
 	}
 
@@ -149,7 +152,7 @@ export async function getTemplatesByRarity(
 	const { data, error } = await query;
 
 	if (error) {
-		console.error(`❌ [vip-card-queries] Error fetching templates by rarity ${rarity}:`, error);
+		logger.error(`❌ [vip-card-queries] Error fetching templates by rarity ${rarity}:`, error);
 		throw error;
 	}
 
@@ -179,7 +182,7 @@ export async function getTemplatesWithActions(
 	const { data, error } = await query;
 
 	if (error) {
-		console.error('❌ [vip-card-queries] Error fetching templates with actions:', error);
+		logger.error('❌ [vip-card-queries] Error fetching templates with actions:', error);
 		throw error;
 	}
 
@@ -219,7 +222,7 @@ export async function templateExists(
 		if (error.code === 'PGRST116') {
 			return false; // Not found
 		}
-		console.error(`❌ [vip-card-queries] Error checking template existence for ${cardId}:`, error);
+		logger.error(`❌ [vip-card-queries] Error checking template existence for ${cardId}:`, error);
 		throw error;
 	}
 
@@ -261,7 +264,7 @@ export async function getPendingActivationRequests(
 	const { data: teacherClasses, error: classesError } = await supabase.from('classes').select('id');
 
 	if (classesError) {
-		console.error('❌ [vip-card-queries] Error fetching teacher classes:', classesError);
+		logger.error('❌ [vip-card-queries] Error fetching teacher classes:', classesError);
 		throw classesError;
 	}
 
@@ -279,7 +282,7 @@ export async function getPendingActivationRequests(
 		.eq('status', 'active');
 
 	if (membersError) {
-		console.error('❌ [vip-card-queries] Error fetching class members:', membersError);
+		logger.error('❌ [vip-card-queries] Error fetching class members:', membersError);
 		throw membersError;
 	}
 
@@ -296,7 +299,7 @@ export async function getPendingActivationRequests(
 		.in('id', studentIds);
 
 	if (studentsError) {
-		console.error('❌ [vip-card-queries] Error fetching student profiles:', studentsError);
+		logger.error('❌ [vip-card-queries] Error fetching student profiles:', studentsError);
 		throw studentsError;
 	}
 

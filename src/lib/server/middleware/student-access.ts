@@ -34,6 +34,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { Profile } from './auth';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('server/middleware/student-access');
 
 // ============================================================================
 // TYPES
@@ -158,7 +161,7 @@ export async function verifyTeacherStudent(
 
 	// Fail closed: if query errors, deny access
 	if (lookupError) {
-		console.error('[verifyTeacherStudent] Database error:', lookupError);
+		logger.error('[verifyTeacherStudent] Database error:', lookupError);
 		return false;
 	}
 
