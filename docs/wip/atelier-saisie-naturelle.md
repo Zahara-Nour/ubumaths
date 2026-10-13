@@ -65,3 +65,6 @@ morceau ») — David ne veut PAS du point devant les commandes : « une écritu
 ## Journal
 
 - 2026-10-13 — inventaire de `/calc` ; décisions 1-11 de David ; historique gardé au rechargement : oui.
+- 2026-10-14 — prototype jetable `/test-saisie` (branche `proto/saisie-naturelle`, PR brouillon) :
+  les exemples passent par le vrai `CalcDesk` ; mesures : espace, « é », ↑/↓, collage, clavier
+  virtuel ; 15 raccourcis retirés, 3 restreints ; `.limite` et `.développer` absents du moteur.
