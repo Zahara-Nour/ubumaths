@@ -36,6 +36,20 @@ const KEY_SPELLINGS: Record<StoredFigureFieldKey, readonly string[]> = {
 	rendu: ['rendu']
 };
 
+/**
+ * En-tête qui reproduit l'affichage d'un script nu (toile de 520 px à 40 px par
+ * unité, centrée sur l'origine, grille et axes, points déplaçables) : régler un
+ * premier champ ne doit pas changer les autres (choix de David, 2026-10-14).
+ * `grande` (560 px) est la taille la plus proche de 520 px.
+ */
+export const BARE_SCRIPT_HEADER: readonly (readonly [StoredFigureFieldKey, string])[] = [
+	['fenetre', '-6.5 ; 6.5 ; -6.5 ; 6.5'],
+	['taille', 'grande'],
+	['axes', 'oui'],
+	['grille', '1 ; 1'],
+	['deplacable', 'oui']
+];
+
 // ============================================================================
 // FONCTIONS
 // ============================================================================
@@ -107,4 +121,14 @@ export function writeWindowFields(text: string, bounds: readonly string[]): stri
 	const trimmed = bounds.map((b) => b.trim());
 	if (trimmed.every((b) => b === '')) return writeHeaderField(text, 'fenetre', null);
 	return writeHeaderField(text, 'fenetre', trimmed.join(' ; '));
+}
+
+/**
+ * Script nu : faire naître l'en-tête qui garde son affichage
+ * (`BARE_SCRIPT_HEADER`) ; texte qui a déjà un en-tête : rendu tel quel.
+ */
+export function withBareScriptHeader(text: string): string {
+	if (hasFigureHeader(text)) return text;
+	const header = BARE_SCRIPT_HEADER.map(([key, value]) => `${key}: ${value}`).join('\n');
+	return `${header}\n---\n${text}`;
 }

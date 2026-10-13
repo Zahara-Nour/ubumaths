@@ -35,6 +35,7 @@
 		hasFigureHeader,
 		readHeaderField,
 		readWindowFields,
+		withBareScriptHeader,
 		writeHeaderField,
 		writeWindowFields,
 		type StoredFigureFieldKey
@@ -144,7 +145,11 @@
 	 */
 	function setField(key: StoredFigureFieldKey, value: string, defaultValue: string | null) {
 		if (readHeaderField(script, key) === null && value === defaultValue) return;
-		script = writeHeaderField(script, key, value.trim() === '' ? null : value);
+		script = writeHeaderField(
+			withBareScriptHeader(script),
+			key,
+			value.trim() === '' ? null : value
+		);
 		scheduleRefresh();
 	}
 
@@ -152,13 +157,17 @@
 		const bounds = [...windowFields];
 		// `;` sépare les bornes dans la ligne : tapé dans un champ, il décalerait les quatre
 		bounds[index] = value.replaceAll(';', '');
-		script = writeWindowFields(script, bounds);
+		script = writeWindowFields(withBareScriptHeader(script), bounds);
 		scheduleRefresh();
 	}
 
 	function takeCurrentFraming() {
 		if (!currentWindow) return;
-		const updated = writeHeaderField(script, 'fenetre', formatFigureWindow(currentWindow));
+		const updated = writeHeaderField(
+			withBareScriptHeader(script),
+			'fenetre',
+			formatFigureWindow(currentWindow)
+		);
 		if (updated === script) return;
 		script = updated;
 		scheduleRefresh();
@@ -279,9 +288,8 @@
 				main les met à jour.
 				{#if !hasFigureHeader(script)}
 					<span class="mt-1 block text-warning">
-						Texte sans en-tête : l'aperçu garde l'affichage historique (grille, points déplaçables).
-						Régler un champ crée l'en-tête, avec ses valeurs par défaut (sans grille ni axes, points
-						non déplaçables).
+						Texte sans en-tête : régler un champ crée l'en-tête, qui garde l'affichage actuel
+						(grille, axes, points déplaçables).
 					</span>
 				{/if}
 			</Card.Description>

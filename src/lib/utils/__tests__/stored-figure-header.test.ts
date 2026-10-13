@@ -9,9 +9,11 @@ import {
 	hasFigureHeader,
 	readHeaderField,
 	readWindowFields,
+	withBareScriptHeader,
 	writeHeaderField,
 	writeWindowFields
 } from '../stored-figure-header';
+import { evaluateStoredFigure } from '../geometry-figure-script';
 
 const SCRIPT = '# un commentaire\nA = point(0, 0)  # origine\nB = point(3, 1)';
 
@@ -97,5 +99,36 @@ describe('aller-retour texte ↔ champs ↔ texte', () => {
 		out = writeHeaderField(out, 'axes', null);
 		expect(out.endsWith(`---\n${SCRIPT}`)).toBe(true);
 		expect(out.startsWith('fénétre-inconnue: 3\n')).toBe(true);
+	});
+});
+
+describe('script nu : l’en-tête naît avec l’affichage actuel', () => {
+	const BARE = 'A = point(1, 2)\nB = point(3, 4)';
+
+	it('reprend toile, grille, axes et points déplaçables, le script intact', () => {
+		const text = withBareScriptHeader(BARE);
+		expect(text.endsWith(`\n---\n${BARE}`)).toBe(true);
+		expect(readHeaderField(text, 'fenetre')).toBe('-6.5 ; 6.5 ; -6.5 ; 6.5');
+		expect(readHeaderField(text, 'taille')).toBe('grande');
+		expect(readHeaderField(text, 'axes')).toBe('oui');
+		expect(readHeaderField(text, 'grille')).toBe('1 ; 1');
+		expect(readHeaderField(text, 'deplacable')).toBe('oui');
+	});
+
+	it('un premier champ réglé ne change que lui', () => {
+		const text = writeHeaderField(withBareScriptHeader(BARE), 'rendu', 'croquis');
+		expect(readHeaderField(text, 'rendu')).toBe('croquis');
+		expect(readHeaderField(text, 'deplacable')).toBe('oui');
+		expect(readHeaderField(text, 'grille')).toBe('1 ; 1');
+	});
+
+	it('un texte qui a déjà un en-tête est rendu tel quel', () => {
+		const text = `axes: non\n---\n${BARE}`;
+		expect(withBareScriptHeader(text)).toBe(text);
+	});
+
+	it('l’en-tête né est valide pour le parseur des figures stockées', () => {
+		const result = evaluateStoredFigure(withBareScriptHeader(BARE));
+		expect(result.ok).toBe(true);
 	});
 });
