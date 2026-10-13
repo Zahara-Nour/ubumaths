@@ -609,8 +609,9 @@ changement de session :
 
 Les adresses visitées et les gels que l'onglet retient pour les rapports de bug
 (`sessionStorage`, clé `chiphre_freeze_data`) partent avec ces données, en mémoire comme dans
-l'onglet (`clearFreezeDetectionData`) : l'élève suivant n'envoie pas, avec son rapport, les pages
-ouvertes par le précédent.
+l'onglet (`clearFreezeDetectionData`), y compris dans les autres onglets ouverts quand le compte
+change : l'élève suivant n'envoie pas, avec son rapport, les pages ouvertes par le précédent. Ces
+adresses sont retenues sans paramètres ni fragment.
 
 Les préférences (thème, police, position des barres d'outils) et les réglages du prof (classe,
 période, panier de questions) restent. Limite : sans déconnexion, le travail reste dans le

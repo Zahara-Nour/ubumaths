@@ -123,9 +123,11 @@ erreurs de test).
 - **activité** : les 20 dernières actions (`click`, `input`, `navigation`, `scroll`),
   réduites au sélecteur de l'élément (id, première classe ou balise). Jamais la valeur
   saisie. État gardé dans `sessionStorage` (clé `chiphre_freeze_data`), gels gardés 15 min.
-  Les actions `navigation` gardent l'adresse complète : `clearFreezeDetectionData()` vide tout,
-  appelée par `clearWorkData` (déconnexion, suppression du compte, autre compte sur l'appareil,
-  voir [RGPD](conformite/rgpd.md)) ;
+  Les adresses (navigations, gels) sont retenues **sans paramètres ni fragment** (`pageAddress`) :
+  un lien de réinitialisation ne finit pas dans un rapport. `clearFreezeDetectionData()` vide
+  tout, appelée par `clearWorkData` (déconnexion, suppression du compte, autre compte sur
+  l'appareil) et par un onglet qui voit le compte changer ailleurs, avant de se recharger
+  (voir [RGPD](conformite/rgpd.md)) ;
 - `getFreezeDetectionContext()` rend gels, actions et Web Vitals pour un signalement.
 
 Les rappels sont branchés dans `src/routes/(protected)/dashboard/+layout.svelte`
@@ -304,7 +306,8 @@ rapport en UUID. Exceptions : voir Écarts.
 - `src/lib/__tests__/cdn-versions-epinglees.test.ts` : l'URL Swagger d'`unpkg` porte une version.
 
 - `src/lib/utils/__tests__/traces-onglet-effacees.svelte.test.ts` : les adresses visitées
-  partent à la déconnexion et quand un autre compte prend l'onglet, restent pour le même compte.
+  partent à la déconnexion, quand un autre compte prend l'onglet ou un autre onglet, restent pour
+  le même compte ; une navigation est retenue sans ses paramètres.
 
 Rien d'autre ne teste `freezeDetection.ts` (ni les gels, ni le battement), les routes de lecture `api/errors`, les pages admin, ni
 `docs-scanner.ts`.

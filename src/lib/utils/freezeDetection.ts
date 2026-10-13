@@ -317,7 +317,7 @@ function initLongTaskObserver(): void {
 						duration,
 						type: 'long_task',
 						context: {
-							url: window.location.href,
+							url: pageAddress(window.location.href),
 							lastAction: getLastAction()?.type
 						}
 					};
@@ -492,7 +492,7 @@ function initHeartbeat(): void {
 				duration: drift,
 				type: 'unresponsive',
 				context: {
-					url: window.location.href,
+					url: pageAddress(window.location.href),
 					lastAction: getLastAction()?.type
 				}
 			};
@@ -543,6 +543,19 @@ function initHeartbeat(): void {
 // =============================================================================
 
 let activityInitialized = false;
+
+/**
+ * Adresse sans paramètres ni fragment : un lien de réinitialisation ou un code d'accès
+ * ne doit pas finir dans un rapport de bug.
+ */
+function pageAddress(url: string): string {
+	try {
+		const parsed = new URL(url, window.location.href);
+		return `${parsed.origin}${parsed.pathname}`;
+	} catch {
+		return '';
+	}
+}
 
 /**
  * Get simple CSS selector for an element
@@ -654,7 +667,7 @@ function initActivityTracking(): void {
 			const navEvent = e as unknown as { destination?: { url?: string } };
 			addAction({
 				type: 'navigation',
-				target: navEvent.destination?.url || window.location.href
+				target: pageAddress(navEvent.destination?.url || window.location.href)
 			});
 		});
 	} else {
@@ -662,7 +675,7 @@ function initActivityTracking(): void {
 		window.addEventListener('popstate', () => {
 			addAction({
 				type: 'navigation',
-				target: window.location.href
+				target: pageAddress(window.location.href)
 			});
 		});
 	}
