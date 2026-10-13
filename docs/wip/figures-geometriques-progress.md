@@ -29,6 +29,12 @@ Démarré le 2026-10-13. Worktree `../ubumaths-wt-figures`, branche `feat/figure
         page publique (hors sitemap) ; parcours vérifié au navigateur headless en local (créer avec
         erreur de script refusée, enregistrer, modifier, supprimer).
   - [x] Doc : `docs/systeme/geometrie/README.md` §7, navigation, carte des fonctionnalités.
-  - [ ] Revue (`code-reviewer`, `security-auditor`), PR, merge.
+  - [x] Revue : `security-auditor` sans bloquant ; `code-reviewer` : doublon possible si les tags
+        échouent à la création (corrigé : figure rendue, renvoi vers la modification), filtres
+        désynchronisés au Précédent (corrigé : `afterNavigate`).
+  - [ ] Reste signalé, hors PR : `syncResourceTags` supprime sans `.select()` (refus RLS muet) ;
+        la policy de `resource_tags` laisse un prof écrire les liens de tag de la figure de
+        l'admin (hors application) ; `.in('id', …)` non borné pour un tag très employé.
+  - [ ] PR, merge.
   - [ ] Après merge (David) : créer le flocon de Koch comme première figure publique.
 - [ ] **Lot 2** : type de ressource « figure » cité dans le cahier de texte et le cours.
