@@ -790,7 +790,16 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   `correction-generator` se replie sur le mode A. Sous ∫, une somme ou un opposé s'écrit entre
   parenthèses dans toutes les étapes (`integralLatex`, `renderer.ts`). Moteur
   (`integrateDefinite`) : contrôle **numérique** de la continuité de F sur [a ; b]
-  (`integration/singularity.ts`, revue de #947) ; refus = `status: 'unsupported'`,
+  (`integration/singularity.ts`, revue de #947) — saut par bissection, divergence logarithmique
+  par zoom vers le minimum puis le maximum de F (V53 : viser l'écart à la moyenne des extrémités
+  laissait filer ln|x³ − 2| sur [1 ; 2]) — et second filet sur f, `denominatorPole` : un
+  dénominateur qui change de signe dans [a ; b] (racine localisée par bissection, ∛2 ou ln 3
+  jamais calculés exactement) est un pôle quand |f| y croît d'un ordre
+  ≳ 0,85 (`singularityKind` : |f| multiplié par plus de 50 entre les distances h et h/100 ; un
+  pôle simple donne 100, l'ordre 1/2 donne 10). Prolongeable, 1/∛x, 1/√(2 − x) en 2,
+  x/√(1 − x²) en 1 : acceptés ; un côté où f n'est pas définie (1/x^0,4 pour x < 0) ne compte
+  pas si l'autre est mesuré. Repli numérique : une singularité de f d'ordre < 0,85
+  (1/√|x³ − 2|) garde sa valeur approchée ; refus = `status: 'unsupported'`,
   `value: null`, `error` en français (∫₀¹ eˣ/(eˣ − 2) compris). Il accepte une intégrale impropre
   convergente (∫₀¹ 1/√x = 2) que la version pédagogique refuserait (borne interdite) si elle
   savait calculer la primitive.
