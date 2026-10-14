@@ -169,3 +169,34 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
   aucune trace de `\unit` dans `components/atelier`.
 - **Renommer la liste partenaire choisie** fait revenir en silence au
   partenaire par défaut (#615).
+
+### État mesuré le 2026-10-14 (moteur de `main`, `runInput` / `CalcDesk`)
+
+Relevé des points « plus tard » de ce journal et des phases 0, à la demande de David.
+
+- **Faits depuis** :
+  - message anglais « Unable to factor denominator » → « Je ne sais pas factoriser le
+    dénominateur » ;
+  - pôles faux près de 0 (x³ − 10⁻¹⁰) → plus de valeur fausse, refus honnête ;
+  - `m(x) = 1/0` → `.domaine m` répond ∅ (étape « 0 ≠ 0 »), `m(1)` « Division par zéro » ;
+  - forme 1^∞ : `.limite (1+1/x)^x en +inf` → e, 3 étapes ;
+  - `π/3` sans accolades, `.mode décimal` à 4 décimales (#1101, #1107).
+- **Toujours ouverts** :
+  - `.intégrer 1/t de -1 à 1` dit « (x ≈ 0) » au lieu de t ;
+  - `.intégrer 1/x de -1 à 1/2` écrit « [-1 ; 1:/2] » ;
+  - image depuis la carte f′ : « Impossible de calculer f′(1). » ;
+  - sans étapes : `.intégrer 1/x^2`, `.intégrer \sqrt x`, `.limite` par la conjuguée ;
+  - `.domaine 1/(x^2+1)` : « Aucune restriction particulière », sans « x² + 1 > 0 » ;
+  - fonction à paramètre libre : refus large (`.variations`, `.limite`, `.résoudre`) ;
+    réciproque à paramètres sans carte refusée ;
+  - `cos(2(x+1))` développé, `e^(2(x+1))` « rien à développer » ;
+  - `0,5*0,5` → 1/4 en mode exact (décision de David en attente) ;
+  - saisie, lot 2 (tournures nominales, `2,5 h en min`) ;
+  - tableur, v2, v3 non commencés ; « Renommer » désactivé ; pas de palette d'unités ;
+  - composées `f(2x)` sur un ensemble (atelier-intervalle, décision c).
+- **Défauts nouveaux, trouvés en mesurant** :
+  - `2,5 h en min` (sans `.convertir`) est calculé comme un produit et s'affiche
+    « 2,5 h e n m i n », sans refus ;
+  - `.intégrer 1/(x^2-2)` (sans bornes) rend la sortie brute du moteur « ∫ 1/(x^2-2) dx : Non
+    résolu / Technique tentée : … » au lieu d'un refus en français ;
+  - `.réciproque a x + b` : « la réciproque de f », alors qu'aucune f n'est tapée.
