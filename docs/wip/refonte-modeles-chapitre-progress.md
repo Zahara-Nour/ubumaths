@@ -161,6 +161,16 @@ en prod (reprise, étape 3) avant le déploiement du code qui en tient compte (�
   chacune avec un test rouge d'abord. Le bug « ajouter un objectif » trouvé en route est parti à
   part (#1387).
 
+- **3c en branche** `feat/modeles-interface` (bâtie sur `feat/modeles-serveur`) : éditeur partagé
+  (`ChapterSectionsEditor`, `DocumentUpload`, `ChapterAddDialogs` par propriétaire) ; page du
+  modèle (plan édité, « Retirer du modèle », « Modifier » titre/description ; plus de versions ni
+  de « Mettre à jour depuis un chapitre ») ; chapitre lié (marque « Modèle », Masquer/Réafficher,
+  interrupteur des masqués, « Chapitre lié au modèle », détachement confirmé) ; compteurs lus
+  dans les tables (`countTemplateContent`). Vu à l'écran le 2026-10-14 sur la base locale (modèle
+  rempli depuis sa page, publié, chapitre lié créé, document masqué, clair et sombre).
+  ⚠️ Avant la reprise (étape 4), le modèle de 1SPE s'affiche à 0 élément : son contenu n'est que
+  dans le snapshot.
+
 - **3a livrée en branche** `feat/modeles-adoption` : migration `20261016103400_modele_adoption.sql`
   - `tests/integration/modele-adoption.test.ts` (9 tests ; 3 rouges sans la migration, puis 2 de
     plus après la revue). `security-auditor` : aucun bloquant ; mineurs 1 (adopter un élément retiré)
