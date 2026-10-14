@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.34.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.33.0...v0.34.0) (2026-10-14)
+
+### ✨ Features
+
+- **fiches:** « Fiche + corrigé » pour le prof, chaque correction sous son énoncé ([708243a](https://github.com/Zahara-Nour/ubumaths/commit/708243ae4f183d1f1020ae4634be8379db884761))
+- **fiches:** « Le parc aquatique » sans calculatrice (racines entières, encart de calculs) ([b6122da](https://github.com/Zahara-Nour/ubumaths/commit/b6122da6de9fbc9df468e6cb5e6d4758c5b9004f))
+- **fiches:** « Le parc aquatique » sur une page (encart réduit, questions fusionnées) ([19f0dc0](https://github.com/Zahara-Nour/ubumaths/commit/19f0dc07f19d52ec6bc6290c24bce643e38808a1))
+- **fiches:** exercice d'évaluation « Le parc aquatique » (second degré, 1re spé) ([72d8329](https://github.com/Zahara-Nour/ubumaths/commit/72d8329084eb9548a76c05eb54df5e74dc0e8ee2))
+- **fiches:** schémas du jet d'eau, de l'aire de pique-nique et du billet (parc aquatique) ([5ec6550](https://github.com/Zahara-Nour/ubumaths/commit/5ec6550b3ded5d0b13f56bd925de4e3f3161a6b3))
+
+### 🐛 Bug Fixes
+
+- **fiches:** titre de l'aperçu, liste du ZIP et test du corrigé concis ([9cb341c](https://github.com/Zahara-Nour/ubumaths/commit/9cb341c68506c0d9fd3a47dc4d3f0cdb3e6b4fc3))
+
+### 📚 Documentation
+
+- **fiches:** la fiche + corrigé du prof ([a97e272](https://github.com/Zahara-Nour/ubumaths/commit/a97e2722e32c704ba089f70227ae817a29d206e4))
+- **wip:** étape 5 des modèles, accord de David sur les suppressions ([0a02dbf](https://github.com/Zahara-Nour/ubumaths/commit/0a02dbf39d1799224cd2117b8245989b7de813ca))
+- **wip:** refonte des modèles en prod (v0.33.0), vérifications manuelles ([7b47ecc](https://github.com/Zahara-Nour/ubumaths/commit/7b47ecc4ba71032b6552ec9f673a5a50c3412c33))
+- **wip:** vérification manuelle de la fiche + corrigé ([#1396](https://github.com/Zahara-Nour/ubumaths/issues/1396)) ([8584991](https://github.com/Zahara-Nour/ubumaths/commit/85849917c8f9bcb4b08c63419e5dc542478f5a8f))
+
 ## [0.33.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.32.0...v0.33.0) (2026-10-14)
 
 ### ✨ Features
