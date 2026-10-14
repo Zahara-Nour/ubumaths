@@ -150,6 +150,30 @@ en prod (reprise, étape 3) avant le déploiement du code qui en tient compte (�
   ⚠️ `db:types` rendra `chapter_id` facultatif dans `database.ts` : le typecheck du code en dépendra
   (à traiter dans la PR qui régénère les types).
 
+- **Étape 2 livrée** : #1380 mergée, `db:migrate` le 2026-10-14 (vérifié en prod : 6 tables, 29
+  déclencheurs, règle élève intacte, 4 documents publiés de la 1SPE intacts). Types : #1381.
+
+### Plan de l'étape 3 (2026-10-14)
+
+- **3a livrée en branche** `feat/modeles-adoption` : migration `20261016103400_modele_adoption.sql`
+  - `tests/integration/modele-adoption.test.ts` (9 tests ; 3 rouges sans la migration, puis 2 de
+    plus après la revue). `security-auditor` : aucun bloquant ; mineurs 1 (adopter un élément retiré)
+    et 2 (une ligne du modèle qui se relierait elle-même) corrigés et testés.
+
+- **3a — adoption (migration)** : un élément PROPRE au chapitre devient une ligne de lien sans
+  changer d'identifiant (cases cochées des objectifs, `published_at` gardés). Nécessaire à « Faire
+  un modèle » et à la reprise. La garde `modele_lien_garde` l'interdit aujourd'hui : elle
+  l'autorisera vers un élément d'un modèle auquel le chapitre est lié, contenu repris du modèle.
+- **3b — serveur** : module du contenu de modèle (lister, ajouter, modifier, retirer ou
+  supprimer, réordonner ; téléversement sous `templates/<id>/`) ; instancier = `link_chapter_to_template` ;
+  détacher = copier les fichiers chez le chapitre puis délier ; supprimer un modèle relié =
+  refus ; « Faire un modèle » = copier le contenu chez le modèle, puis adopter ;
+  `/api/documents/[id]` sert le fichier par le service après la garde RLS ; `deleteDocument` ne
+  supprime jamais le fichier d'une ligne de lien.
+- **3c — interface** : éditeur partagé (`ChapterSectionsEditor`, `DocumentUpload` par
+  propriétaire) ; page d'édition du modèle ; dans le chapitre, éléments du modèle marqués, non
+  modifiables, masquables ; plus de « Mettre à jour depuis un chapitre » ni de versions affichées.
+
 ## Découpage prévu
 
 1. Phase 0 (ce document) — validation de David.
