@@ -332,7 +332,7 @@ mais créer un gabarit (nouveau, depuis un gabarit de Chiphre, duplication, API)
 même identifiant et au même nom ; le renommer le renomme ; le supprimer supprime le style (cascade
 vers le gabarit), refusé tant qu'une fiche désigne le gabarit ou le style
 (`tests/integration/fiche-choix-du-style.test.ts`). Liens partagés
-(lot 4a, D11, migration `20261016103400_style_fiche_liens_partages`) : `get_worksheet_by_share_token`
+(lot 4a, D11, migration `20261016103500_style_fiche_liens_partages`) : `get_worksheet_by_share_token`
 et `get_course_worksheet_by_share_token` rendent aussi `style_id`, `template_id` et `template`, la
 fiche du style retenu **seulement si ce style appartient à l'auteur de la fiche** (style de
 Chiphre : `null`, Typst dans le code ; style d'un autre compte : jamais)
