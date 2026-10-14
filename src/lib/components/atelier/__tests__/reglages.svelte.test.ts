@@ -32,12 +32,15 @@ afterEach(() => {
 });
 
 /** Un atelier reçu par lien (éphémère) : les réglages y sont aussi. */
-async function open() {
-	const view = await render(AtelierContainer, { atelier: new Atelier(), ephemeral: true });
+async function open(atelier = new Atelier()) {
+	const view = await render(AtelierContainer, { atelier, ephemeral: true });
 	const container = view.container;
 	const calcul = () => container.querySelector('.calcul form') as HTMLFormElement;
-	const textField = () => calcul().querySelector('input[type="text"]') as HTMLInputElement | null;
-	const mathField = () => calcul().querySelector('math-field') as MathfieldElement | null;
+	// Hors de l'onglet Calcul, la vue n'existe plus : aucun champ
+	const textField = () =>
+		(container.querySelector('.calcul form input[type="text"]') as HTMLInputElement | null) ?? null;
+	const mathField = () =>
+		(container.querySelector('.calcul form math-field') as MathfieldElement | null) ?? null;
 	const settingsButton = () =>
 		[...container.querySelectorAll('button')].find((b) => b.textContent?.includes('Réglages'));
 	const history = () => container.querySelector('.historique')?.textContent ?? '';
@@ -76,8 +79,26 @@ async function open() {
 		await userEvent.keyboard(keys);
 	}
 
+	function tab(label: string): HTMLButtonElement {
+		const found = [...container.querySelectorAll('.onglet')].find((t) =>
+			t.textContent?.trim().startsWith(label)
+		);
+		if (!found) throw new Error(`pas d'onglet ${label}`);
+		return found as HTMLButtonElement;
+	}
+
+	function card(name: string): HTMLElement {
+		const found = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === name
+		);
+		if (!found) throw new Error(`pas de carte ${name}`);
+		return found as HTMLElement;
+	}
+
 	return {
 		container,
+		tab,
+		card,
 		calcul,
 		textField,
 		mathField,
@@ -267,5 +288,100 @@ describe('Calcul en écriture mathématique', () => {
 
 		await vi.waitFor(() => expect(container.textContent).not.toContain('Modèle :'));
 		expect(container.querySelector('[aria-label="Commandes disponibles"]')).toBeNull();
+	});
+});
+
+// =============================================================================
+// Revues : la ligne venue du dehors, l'onglet, l'accessibilité
+// =============================================================================
+
+describe('la ligne venue du dehors, en écriture mathématique', () => {
+	it('une commande préparée par une carte arrive entière, et calcule', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '1;2;3;4;5;6' });
+		atelier.create({ kind: 'list', name: 'M', definition: '1/6;1/6;1/6;1/6;1/6;1/6' });
+		const { choose, card, mathField, typeMath, history, container } = await open(atelier);
+		await choose('Écriture mathématique');
+
+		(card('L').querySelector('.entete') as HTMLButtonElement).click();
+		const action = await vi.waitFor(() => {
+			const found = [...card('L').querySelectorAll('.action')].find(
+				(b) => b.textContent?.trim() === 'Simuler avec probabilités M'
+			) as HTMLButtonElement | undefined;
+			expect(found).toBeTruthy();
+			return found as HTMLButtonElement;
+		});
+		action.click();
+		// Les arguments séparés par `\,` : une espace simple ne se voit pas en
+		// mathématiques, l'élève lisait « simuler LM100 » (revue du 2026-10-14)
+		await vi.waitFor(() => expect(mathField()?.value).toContain(String.raw`L\,M\,100`));
+		await typeMath('{Enter}');
+
+		await vi.waitFor(() => expect(history()).toContain('100'));
+		expect(container.querySelector('.historique li.refus')).toBeNull();
+	});
+
+	it('changer d’onglet garde la ligne en cours, cases du modèle comprises', async () => {
+		const { choose, typeMath, mathField, tab } = await open();
+		await choose('Écriture mathématique');
+
+		await typeMath('intégrer');
+		await userEvent.keyboard('{Tab}');
+		await vi.waitFor(() => expect(mathField()?.value).toContain('placeholder'));
+		const before = mathField()?.value;
+		tab('Graphe').click();
+		await vi.waitFor(() => expect(mathField()).toBeNull());
+		tab('Calcul').click();
+
+		await vi.waitFor(() => expect(mathField()?.value).toBe(before));
+	});
+});
+
+describe('l’accessibilité du champ mathématique et de la fenêtre', () => {
+	it('les propositions sont annoncées aux lecteurs d’écran', async () => {
+		const { choose, typeMath, calcul } = await open();
+		await choose('Écriture mathématique');
+
+		await typeMath('rés');
+
+		await vi.waitFor(() =>
+			expect(calcul().parentElement?.querySelector('[role="status"]')?.textContent).toMatch(
+				/résoudre, 1 sur \d+/
+			)
+		);
+	});
+
+	it('la liste des propositions reste dans l’écran quand le champ est en bas', async () => {
+		const { choose, typeMath, container } = await open();
+		// L'atelier sur toute la hauteur : le champ de Calcul est en bas de l'écran
+		container.style.height = '100vh';
+		await choose('Écriture mathématique');
+
+		await typeMath('ré');
+
+		const list = await vi.waitFor(() => {
+			const found = document.querySelector('[role="listbox"]');
+			expect(found).toBeTruthy();
+			return found as HTMLElement;
+		});
+		// « résoudre » et « réciproque » : visibles en entier, pas dans un ruban qui défile
+		const options = [...list.querySelectorAll('[role="option"]')].slice(0, 2);
+		expect(options).toHaveLength(2);
+		const shown = list.getBoundingClientRect();
+		for (const option of options) {
+			const box = option.getBoundingClientRect();
+			expect(box.top).toBeGreaterThanOrEqual(Math.max(0, shown.top));
+			expect(box.bottom).toBeLessThanOrEqual(Math.min(window.innerHeight, shown.bottom));
+		}
+	});
+
+	it('la croix « Fermer » ferme la fenêtre et rend le focus au bouton', async () => {
+		const { settingsButton, openSettings } = await open();
+
+		await openSettings();
+		await page.getByRole('button', { name: 'Fermer' }).click();
+
+		await vi.waitFor(() => expect(document.querySelector('[role="dialog"]')).toBeNull());
+		await vi.waitFor(() => expect(document.activeElement).toBe(settingsButton()));
 	});
 });

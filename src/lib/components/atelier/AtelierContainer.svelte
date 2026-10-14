@@ -107,6 +107,9 @@
 	 */
 	let inputMode = $state<InputMode>(readInputMode(readStorage()));
 
+	/** La ligne en cours du champ mathématique : elle survit au passage par le Graphe. */
+	let mathLatex = $state('');
+
 	function chooseInputMode(mode: InputMode) {
 		inputMode = mode;
 		writeInputMode(readStorage(), mode);
@@ -540,7 +543,12 @@
 
 		<section class="vue" class:pleine={activeView === 'graphe'}>
 			{#if activeView === 'calcul'}
-				<CalculView {desk} {inputMode} onreplay={ephemeral ? undefined : handleReplayRequest} />
+				<CalculView
+					{desk}
+					{inputMode}
+					bind:mathLatex
+					onreplay={ephemeral ? undefined : handleReplayRequest}
+				/>
 			{:else if activeView === 'graphe'}
 				<!--
 					`panel={false}` : dans l'atelier, c'est « Mes objets » qui tient ce

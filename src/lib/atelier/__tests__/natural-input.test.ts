@@ -232,6 +232,24 @@ describe('dans l’atelier, le mode texte et le mode mathématique se passent la
 		expect(lost).toEqual([]);
 	});
 
+	// Revue du 2026-10-14 : une espace simple ne se voit pas en mathématiques
+	it('les arguments d’une commande restent séparés à l’écran, les mots restent des mots', () => {
+		expect(fieldLatexFromText('.simuler L M 100', words)).toBe(
+			String.raw`\text{simuler}\,L\,M\,100`
+		);
+		expect(fieldLatexFromText('.filtrer G = fille et R = oui', words)).toBe(
+			String.raw`\text{filtrer}\,G\,=\,\text{fille}\,\text{et}\,R\,=\,\text{oui}`
+		);
+		// Une parenthèse ne se coupe pas
+		expect(fieldLatexFromText('.développer (x + 1)^2', words)).toBe(
+			fieldLatexFromText('.développer (x+1)^2', words)
+		);
+	});
+
+	it('le point d’une commande pas encore finie tombe aussi (`.dé`)', () => {
+		expect(fieldLatexFromText('.dé', words).startsWith('.')).toBe(false);
+	});
+
 	it('la ligne d’un modèle pas fini passe au mode texte sans ses cases', () => {
 		const template = String.raw`\text{intégrer}\,\placeholder{}\,\text{de}\,\placeholder{}`;
 		expect(draftTextOf(template, words)).toBe('.intégrer de');

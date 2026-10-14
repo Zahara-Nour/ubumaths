@@ -67,7 +67,28 @@
 	let field = $state<MathfieldElement>();
 	let proposals = $state<Proposal[]>([]);
 	let highlighted = $state(0);
-	let listAt = $state({ left: 0, top: 0 });
+	/**
+	 * Où s'ouvre la liste : sous le mot, ou AU-DESSUS quand le champ est dans la
+	 * moitié basse de l'écran — le champ de Calcul est en bas de la vue, et la
+	 * liste sortait de l'écran (revue a11y, 2.4.7). Bornée, elle défile.
+	 */
+	let listAt = $state<{ left: number; top?: number; bottom?: number; maxHeight: number }>({
+		left: 0,
+		top: 0,
+		maxHeight: 0
+	});
+	let listElement = $state<HTMLUListElement>();
+
+	/**
+	 * Ce que lit un lecteur d'écran : le focus réel est DANS le shadow DOM de
+	 * MathLive, où `aria-controls` et `aria-activedescendant` de l'hôte ne
+	 * portent pas (revue a11y, 4.1.2) — une région `status` dit la liste.
+	 */
+	const announcement = $derived(
+		proposals.length === 0
+			? ''
+			: `${proposals[highlighted]?.label ?? ''}, ${highlighted + 1} sur ${proposals.length}. ↑ ↓ pour choisir, Tab pour insérer.`
+	);
 	/** Échap ferme la liste jusqu'à la frappe suivante */
 	let dismissed = false;
 	/** Une réécriture en cours : son propre `input` ne doit rien relancer */
@@ -155,7 +176,17 @@
 		proposals = next;
 		// Sous la première lettre du mot (décision 9 : `getElementInfo`)
 		const bounds = found && field?.getElementInfo(field.position - found.atoms + 1)?.bounds;
-		if (bounds && next.length > 0) listAt = { left: bounds.left, top: bounds.bottom + 6 };
+		if (bounds && next.length > 0) listAt = placeList(bounds);
+	}
+
+	/** Sous le mot si la moitié basse de l'écran est libre, au-dessus sinon. */
+	function placeList(bounds: DOMRect) {
+		const gap = 6;
+		const below = window.innerHeight - bounds.bottom - gap * 2;
+		const above = bounds.top - gap * 2;
+		return below >= above
+			? { left: bounds.left, top: bounds.bottom + gap, maxHeight: below }
+			: { left: bounds.left, bottom: window.innerHeight - bounds.top + gap, maxHeight: above };
 	}
 
 	function choose(proposal: Proposal, thenSubmit = false) {
@@ -281,6 +312,13 @@
 		updateSmartFence();
 	}
 
+	// La proposition surlignée reste visible quand la liste défile
+	$effect(() => {
+		const index = highlighted;
+		if (proposals.length === 0) return;
+		listElement?.children[index]?.scrollIntoView({ block: 'nearest' });
+	});
+
 	/**
 	 * La ligne écrite du dehors : bascule depuis le mode texte, commande préparée
 	 * par une carte (« Simuler »). Celle que le champ vient d'écrire lui-même est
@@ -342,18 +380,22 @@
 <math-field
 	bind:this={field}
 	aria-label={label}
-	aria-autocomplete="list"
-	aria-controls={proposals.length > 0 ? LIST_ID : undefined}
 	class="block w-full rounded-lg border border-border bg-background px-2 py-1.5 text-[1.375rem] text-foreground focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-ring"
 ></math-field>
 
+<p class="sr-only" role="status">{announcement}</p>
+
 {#if proposals.length > 0}
 	<ul
+		bind:this={listElement}
 		id={LIST_ID}
 		role="listbox"
-		class="fixed z-[200] m-0 max-w-[min(24rem,calc(100vw-2rem))] min-w-48 list-none rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg"
+		aria-label="Propositions : Tab pour insérer"
+		class="fixed z-[200] m-0 max-w-[min(24rem,calc(100vw-2rem))] min-w-48 list-none overflow-y-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg"
 		style:left="{listAt.left}px"
-		style:top="{listAt.top}px"
+		style:top={listAt.top === undefined ? undefined : `${listAt.top}px`}
+		style:bottom={listAt.bottom === undefined ? undefined : `${listAt.bottom}px`}
+		style:max-height="{listAt.maxHeight}px"
 	>
 		{#each proposals as proposal, index (proposal.label)}
 			<li
@@ -361,7 +403,7 @@
 				aria-selected={index === highlighted}
 				class="flex cursor-pointer items-baseline gap-3 rounded-md px-2 py-1.5 {index ===
 				highlighted
-					? 'bg-accent text-accent-foreground'
+					? 'bg-primary text-primary-foreground'
 					: ''}"
 				onpointerdown={(event) => {
 					event.preventDefault();
@@ -369,7 +411,10 @@
 				}}
 			>
 				<span class="font-semibold">{proposal.label}</span>
-				<span class="truncate text-[0.8125rem] opacity-75">{proposal.detail}</span>
+				<!-- Pas d'opacité sur la surlignée : son contraste tomberait sous 4,5:1 (revue a11y) -->
+				<span class="truncate text-[0.8125rem] {index === highlighted ? '' : 'opacity-75'}"
+					>{proposal.detail}</span
+				>
 			</li>
 		{/each}
 	</ul>

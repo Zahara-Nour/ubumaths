@@ -611,15 +611,24 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
 - **`desk.draft` reste la ligne en cours, en texte, quel que soit le champ** : le champ
   mathématique l'écrit à chaque frappe (`draftTextOf`, cases vides retirées) et la reprend quand
   elle change du dehors — bascule depuis le mode texte, commande préparée par une carte, ligne
-  vidée après un calcul (`fieldLatexFromText`, qui fait tomber le point d'une commande et garde en
-  mots les mots de commande en argument : `.mode décimal`).
+  vidée après un calcul (`fieldLatexFromText`). Son LaTeX est tenu par le **conteneur** : la vue
+  Calcul est démontée au passage par le Graphe, et la reconstruire depuis le texte perdait les
+  cases d'un modèle.
+- **`fieldLatexFromText`** fait tomber le point d'une commande ; dans une commande, il coupe aux
+  espaces hors parenthèses et joint les morceaux par `\,` — une espace simple ne se voit pas en
+  mathématiques (`.simuler L M 100` s'affichait « simuler LM100 ») ; les mots de commande, petits
+  mots et mots de plusieurs lettres restent des mots (`.mode décimal`, `G = fille`). Le test
+  `natural-input-champ.svelte.test.ts` passe chaque exemple du catalogue par le VRAI champ.
 - **↑ / ↓** rappellent les saisies tapées dans l'un ou l'autre mode, réécrites pour le champ ;
   le rappel compare à ce que MathLive a rangé (`{2 x}` devient `{2x}`), pas à l'historique.
 - **Le clavier virtuel est un seul pour la page** : les onglets « Calcul » et « Commandes » sont
   posés quand le champ prend le focus et retirés quand il le perd (les cartes ont leurs champs
   MathLive), comme `FillBlanksInput.svelte`.
 - En écriture mathématique, la liste des commandes et le « Modèle : » du mode texte ne s'ouvrent
-  pas : le champ a sa propre liste. L'historique montre le texte envoyé (avec le point).
+  pas : le champ a sa propre liste. Le focus réel est dans le shadow DOM de MathLive, où
+  `aria-controls` de l'hôte ne porte pas : une région `status` annonce la proposition surlignée
+  (« résoudre, 1 sur 2 »). La liste s'ouvre au-dessus du mot quand le champ est dans la moitié
+  basse de l'écran, et défile. L'historique montre le texte envoyé (avec le point).
 
 ### Session, persistance, URL
 

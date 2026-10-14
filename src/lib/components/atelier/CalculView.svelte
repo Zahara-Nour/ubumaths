@@ -60,7 +60,8 @@
 	let {
 		desk,
 		onreplay,
-		inputMode = 'text'
+		inputMode = 'text',
+		mathLatex = $bindable('')
 	}: {
 		desk: CalcDesk;
 		/**
@@ -70,6 +71,12 @@
 		onreplay?: (history: ImportedHistory) => void;
 		/** Le champ : texte, ou écriture mathématique (réglage de l'atelier). */
 		inputMode?: InputMode;
+		/**
+		 * La ligne en cours du champ mathématique, en LaTeX. Tenue par le
+		 * CONTENEUR : la vue est démontée quand on passe au Graphe, et la
+		 * reconstruire depuis `desk.draft` perdait les cases d'un modèle (revue).
+		 */
+		mathLatex?: string;
 	} = $props();
 
 	let fileInput = $state<HTMLInputElement | null>(null);
@@ -179,13 +186,15 @@
 	 * (`fieldLatexFromText`).
 	 */
 	const words = $derived(commandWords(catalog));
-	let mathLatex = $state('');
 	let naturalField = $state<NaturalField | null>(null);
 	/**
 	 * Le brouillon que `mathLatex` écrit déjà. Pas un `$state` : l'effet qui le
-	 * lit ne doit se relancer que sur `desk.draft`.
+	 * lit ne doit se relancer que sur `desk.draft`. Au retour sur Calcul, il
+	 * repart de la ligne gardée : seul un brouillon changé entre-temps (une
+	 * commande préparée par une carte) la remplace.
 	 */
-	let mirrored: string | null = null;
+	// svelte-ignore state_referenced_locally
+	let mirrored: string | null = mathLatex === '' ? null : draftTextOf(mathLatex, words);
 
 	function setMathLatex(value: string) {
 		mathLatex = value;
