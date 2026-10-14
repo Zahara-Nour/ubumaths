@@ -101,6 +101,16 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		}
 	],
 	[
+		// Servie par l'atelier (`expand.ts`) : le registre n'a pas d'`expand`
+		'expand',
+		{
+			french: 'développer',
+			section: 'calculer',
+			description: 'Développer et réduire une expression',
+			example: '.développer (2x-1)(x+3)'
+		}
+	],
+	[
 		'diff',
 		{
 			french: 'dériver',
@@ -405,6 +415,8 @@ export const ENGINE_COMMANDS_LEFT_OUT: ReadonlySet<string> = new Set([
  */
 export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	'factor',
+	// `.développer` : l'intention `developper`, la réponse seule (`expand.ts`)
+	'expand',
 	// `.réciproque` : calculée, vérifiée (`reciprocal.ts`) — rien à voir avec
 	// `inv` du moteur, laissée de côté (`ENGINE_COMMANDS_LEFT_OUT`)
 	'reciprocal',
