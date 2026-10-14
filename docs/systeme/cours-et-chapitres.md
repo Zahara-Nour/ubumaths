@@ -8,7 +8,7 @@ couvre:
   - 'src/lib/components/templates/{index.ts,__tests__/**}'
   - 'src/lib/components/{ClassScheduleGrid,ScheduleEntryModal}.svelte'
   - 'src/lib/types/{chapter*,chapters,journal,academic_periods_types}.ts'
-  - 'src/lib/utils/{academic-period,class-sessions,schedule,timetable,week-config,timeMatching,programme-tree}.ts'
+  - 'src/lib/utils/{academic-period,class-sessions,schedule,timetable,week-config,timeMatching,programme-tree,template-select-items}.ts'
   - 'src/routes/api/teacher/{chapters,chapter-templates,curriculum,periods}/**'
   - 'src/routes/api/student/{chapters,checklist}/**'
   - 'src/routes/(protected)/dashboard/teacher/{cours,cahier-texte,avancement,programme}/**'
@@ -204,6 +204,15 @@ Détails : [fiches-et-pdf.md](fiches-et-pdf.md) et le chantier
 `chapter_templates` (`status` : `draft` → `published` → `archived`), `chapter_template_versions`
 (un `content_snapshot` par version) et `chapter_template_instantiations` (quel chapitre vient de
 quelle version). Seul un modèle **publié** s'instancie.
+
+- **Refus d'un modèle inutilisable** : un brouillon ou un modèle archivé fait rendre à
+  `instantiateTemplate` une `TemplateUnusableError`, dont le message est écrit pour le professeur
+  (« publiez-le d'abord »). Les trois appelants (actions `instantiateFromTemplate` et
+  `instantiate`, route `api/teacher/chapter-templates/[id]/instantiate`) la rendent en **409**
+  avec ce message ; toute autre erreur reste une panne (500, message générique, jamais le texte
+  Postgres). Le dialogue « Créer depuis un template » de la page Cours **grise** ces modèles,
+  statut dans le libellé (`src/lib/utils/template-select-items.ts`). Avant le 2026-10-14, il
+  proposait les brouillons, et le refus s'affichait « Erreur lors de la creation… ».
 
 - **Instancier** copie le snapshot dans un chapitre neuf (`applyContentSnapshotToChapter`).
 - **Mettre à jour** (`migrateChapterToVersion` → `mergeContentSnapshotIntoChapter`) est
