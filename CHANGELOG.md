@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.35.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.34.0...v0.35.0) (2026-10-14)
+
+### ✨ Features
+
+- **modeles:** numéro de version d'une instanciation par défaut (étape 5) ([a7829e1](https://github.com/Zahara-Nour/ubumaths/commit/a7829e1b59b2685297790533dae60057b9a06fef))
+
+### 🐛 Bug Fixes
+
+- **atelier:** revue — conversion essayée à part, erreurs de la gauche, π, lettres ([4874941](https://github.com/Zahara-Nour/ubumaths/commit/4874941d4f62e638cb4901b0cd8fa397aa0f6673))
+- **atelier:** six défauts visibles — image de f′, refus de .intégrer, conversion « en » ([870286b](https://github.com/Zahara-Nour/ubumaths/commit/870286b5753bdafaf5cb1fff5c6576bdb7241ef7))
+- **grapheur:** asymptotes verticales retrouvées au dézoom et loin de l'origine ([20406b9](https://github.com/Zahara-Nour/ubumaths/commit/20406b91513b8e9c5dee9cbc08471be64672accd))
+- **grapheur:** plus de fausses asymptotes verticales sur eˣ loin de l'origine ([78d4b6c](https://github.com/Zahara-Nour/ubumaths/commit/78d4b6c164d38bd617c92a1f9eb43d8814cec700))
+- **grapheur:** plus de racines en série là où une exponentielle frôle l'axe ([52d6668](https://github.com/Zahara-Nour/ubumaths/commit/52d6668ab1a30eac766136dc037aa9116ed2aa15))
+- **grapheur:** une limite estimée sous son incertitude vaut 0 ([2da5e8a](https://github.com/Zahara-Nour/ubumaths/commit/2da5e8a0a47100eb465f829d62e0b90843866197))
+
+### 📚 Documentation
+
+- **atelier:** conversion d'un trait, image de f′, refus de .intégrer et de .réciproque ([3390de4](https://github.com/Zahara-Nour/ubumaths/commit/3390de474f9d9e314b32f3671988652ba994b589))
+- **cours:** retirer l'ancien système de versions des modèles (étape 5A) ([acf8bfc](https://github.com/Zahara-Nour/ubumaths/commit/acf8bfcb26739f8daaa2d43835cf45d5ff2c3b14))
+- **grapheur:** écarts connus relevés par la revue des asymptotes verticales ([dc33a60](https://github.com/Zahara-Nour/ubumaths/commit/dc33a6059120829b31bf62378141d05fb460b69d))
+- **grapheur:** racines, limites et asymptotes verticales après les correctifs ([c44050d](https://github.com/Zahara-Nour/ubumaths/commit/c44050d3f048f5ff62bbad301ee36db4071894aa)), closes [#1400](https://github.com/Zahara-Nour/ubumaths/issues/1400) [#1401](https://github.com/Zahara-Nour/ubumaths/issues/1401) [#1402](https://github.com/Zahara-Nour/ubumaths/issues/1402)
+- **wip:** atelier, six défauts visibles corrigés ([#1404](https://github.com/Zahara-Nour/ubumaths/issues/1404)) et leur vérification ([7e94ec0](https://github.com/Zahara-Nour/ubumaths/commit/7e94ec0ff2c61ef1942774110699b8d3c3eac9d1))
+- **wip:** vérification manuelle des correctifs du grapheur ([e8506b3](https://github.com/Zahara-Nour/ubumaths/commit/e8506b390481eb0a7a10566be9060820f8c346e2))
+
 ## [0.34.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.33.0...v0.34.0) (2026-10-14)
 
 ### ✨ Features
