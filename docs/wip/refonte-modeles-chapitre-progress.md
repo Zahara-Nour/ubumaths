@@ -192,7 +192,9 @@ en prod (reprise, étape 3) avant le déploiement du code qui en tient compte (�
 
 - **4 — reprise, en branche** `feat/modeles-reprise` (bâtie sur `feat/modeles-serveur`) :
   `migrateSnapshotTemplate` (`src/lib/server/chapter-template-reprise.ts`) + script
-  `scripts/reprise-modeles-adr0029.ts` (essai par défaut, `--appliquer`, `--cible=prod`). Aides de
+  `scripts/reprise-modeles-adr0029.ts` (`--essai` par défaut, `--appliquer`, `--cible=prod`,
+  `--rattacher`). Rejouable après un échec partiel ; garde « déployé d'abord » en prod (revue du
+  2026-10-14 : risques 1 à 3, voir § Déploiement). Aides de
   copie/adoption sorties de `chapter-templates.ts` vers `chapter-template-copy.ts` (importables par
   `tsx`). Test `tests/integration/reprise-modeles.test.ts` (9 tests, décor de la prod du
   2026-10-14) : rouge sur une fonction vide, puis vert ; sans le détachement temporaire, l'adoption
@@ -212,6 +214,29 @@ reprise** : le modèle publié f74e72c8 n'a son contenu que dans `content_snapsh
 nouveau code, sa page l'afficherait vide et l'instancier donnerait un chapitre vide. Séance de
 mise en prod : `deploy:prod` → reprise (`scripts/reprise-modeles-adr0029.ts`, d'abord `--essai`)
 → vérification avec David (ses élèves de 1SPE lisent leurs 4 documents).
+
+- **Ordre verrouillé** : `--cible=prod --appliquer` refuse d'écrire tant que `origin/production`
+  (après `git fetch`) ne contient pas `5f5e787e9` (merge de #1390), et le revérifie juste avant
+  l'adoption. Essai : `--cible=prod --essai` (par défaut si ni `--essai` ni `--appliquer`).
+- ⛔ **Aucun retour arrière Vercel après la reprise** : l'ancien code ne sait pas lire les lignes
+  de lien (il supprimerait le fichier d'une ligne de lien, et servirait le stockage avec les droits
+  de l'élève, qui n'en a aucun sous `templates/…`). Un problème après la reprise se corrige en
+  avant.
+- **Sauvegarde** : `~/chiphre-sauvegardes/reprise-modeles-adr0029/<modèle>-<horodatage>.json`
+  (modèle, instanciations, lignes des chapitres liés et du modèle), écrite avant toute écriture.
+- **Secours si le processus meurt pendant la fenêtre « détaché »** : le script imprime, AVANT de
+  détacher, la ligne `→ détachement temporaire des instanciations <id>, <id>`. Relancer le script
+  avec `--rattacher <id>,<id>` (il reprend là où il s'est arrêté), ou, à la main (SQL, prod) :
+
+  ```sql
+  update public.chapter_template_instantiations
+  set is_detached = false
+  where id in ('<id 1>', '<id 2>')  -- les ids imprimés (aussi dans la sauvegarde JSON)
+  returning id, chapter_id, is_detached;
+  ```
+
+  Pendant la fenêtre, rien ne change pour les élèves (le chapitre source n'a encore aucune ligne
+  de lien) ; seul le suivi du modèle est suspendu.
 
 ## Découpage prévu
 

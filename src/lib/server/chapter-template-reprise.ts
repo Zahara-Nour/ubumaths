@@ -41,14 +41,14 @@ import { z } from 'zod';
 import type { Database } from '$lib/types/database';
 import { createServerLogger } from '$lib/utils/logger';
 import { CHAPTER_DOCUMENTS_BUCKET, extensionOf, ownerStoragePrefix } from './content-owner';
-import { removeStoredFiles } from './template-content';
 import {
 	LINKED_TABLES_SECTIONS_LAST,
 	adoptMappedRows,
 	copyContentToTemplate,
 	readChapterContent,
 	type ChapterContentRows,
-	type ContentMapping
+	type ContentMapping,
+	type LinkedTable
 } from './chapter-template-copy';
 
 const logger = createServerLogger('server/chapter-template-reprise');
@@ -73,6 +73,22 @@ export class RepriseError extends Error {
 		this.name = 'RepriseError';
 		this.lines = lines;
 	}
+}
+
+/** Options de `migrateSnapshotTemplate`. */
+export interface RepriseOptions {
+	/** Ne rien écrire (ni base, ni stockage) : décrire. */
+	dryRun: boolean;
+	/**
+	 * Instanciations détachées à RATTACHER à la relance : celles que la reprise
+	 * interrompue avait détachées (imprimées avant le détachement). Le chapitre
+	 * source est toujours rattaché.
+	 */
+	reattach?: string[];
+	/** Garde « déployé d'abord » : un message = refus d'écrire. Appelée avant toute écriture ET juste avant l'adoption. */
+	guard?: () => Promise<string | null>;
+	/** Chaque ligne du compte rendu, imprimée au moment où elle est écrite. */
+	onLine?: (line: string) => void;
 }
 
 /** Un document publié du chapitre source, tel qu'il était AVANT la reprise. */
@@ -100,25 +116,36 @@ const ELEMENT_TABLES = LINKED_TABLES_SECTIONS_LAST.filter((t) => t !== 'chapter_
  * Reprend un modèle à snapshot : son contenu passe en tables, copié du chapitre
  * source ; ses chapitres liés relient ce contenu. Voir l'en-tête du module.
  *
+ * REJOUABLE : si le modèle possède déjà des lignes (reprise interrompue), elle
+ * reprend là où elle s'est arrêtée — rattachement, adoption manquante (chaque
+ * ligne propre du chapitre source retrouve sa copie par une clé stable), liens des
+ * autres chapitres — ou répond « rien à faire ».
+ *
  * @param templateId - Le modèle à reprendre
- * @param sourceChapterId - Le chapitre d'origine, déjà lié (non détaché) au modèle
+ * @param sourceChapterId - Le chapitre d'origine, rattaché au modèle
  * @param supabase - Client SERVICE (la reprise touche les chapitres de toutes les classes)
- * @param options - `dryRun` : ne rien écrire, décrire
+ * @param options - Voir `RepriseOptions`
  */
 export async function migrateSnapshotTemplate(
 	templateId: string,
 	sourceChapterId: string,
 	supabase: Client,
-	options: { dryRun: boolean }
+	options: RepriseOptions
 ): Promise<{ data: RepriseReport | null; error: RepriseError | null }> {
-	const lines: string[] = [];
+	const lines = liveLines(options.onLine);
 	const stop = (message: string) => ({ data: null, error: new RepriseError(message, lines) });
 
 	const ids = idsSchema.safeParse({ templateId, sourceChapterId });
 	if (!ids.success) return stop(`Identifiant invalide : ${ids.error.issues[0].message}`);
 
+	/** La garde « déployé d'abord » (production) ; `null` = on peut écrire. */
+	const guard = async (moment: string): Promise<string | null> => {
+		const refus = options.guard ? await options.guard() : null;
+		return refus ? `${refus} (${moment})` : null;
+	};
+
 	try {
-		// --- 1. Le modèle, et son contenu en tables -------------------------------
+		// --- 1. Le modèle, ses chapitres liés, son contenu en tables --------------
 		const { data: template, error: templateError } = await supabase
 			.from('chapter_templates')
 			.select('id, title, status, content_snapshot')
@@ -128,65 +155,57 @@ export async function migrateSnapshotTemplate(
 		if (!template) return stop(`Modèle introuvable : ${templateId}`);
 		lines.push(`Modèle « ${template.title} » (${templateId}), statut ${template.status}.`);
 
-		const owned = await countTemplateRows(templateId, supabase);
-		if (owned.error) return stop(owned.error);
-		if (owned.total > 0) {
-			lines.push(
-				`Le modèle possède déjà ${owned.total} ligne(s) en tables : RIEN À FAIRE (reprise déjà passée).`
-			);
-			const verification = await verifyReprise(templateId, sourceChapterId, null, supabase);
-			return { data: { outcome: 'nothing_to_do', lines, verification }, error: null };
-		}
-
-		// --- 2. Vérifications en tête : rien n'est écrit si l'une échoue ----------
 		const { data: insts, error: instError } = await supabase
 			.from('chapter_template_instantiations')
 			.select('id, chapter_id, is_detached')
 			.eq('template_id', templateId);
 		if (instError) return stop(`Chapitres liés illisibles : ${instError.message}`);
-		const linked = (insts ?? []).filter((i) => !i.is_detached);
-		if (!linked.some((i) => i.chapter_id === sourceChapterId)) {
-			return stop(
-				`Le chapitre source ${sourceChapterId} n'est pas un chapitre lié (non détaché) de ce modèle.`
-			);
+		const instSource = (insts ?? []).find((i) => i.chapter_id === sourceChapterId);
+		if (!instSource) {
+			return stop(`Le chapitre source ${sourceChapterId} n'est pas rattaché à ce modèle.`);
 		}
-		const others = linked.filter((i) => i.chapter_id !== sourceChapterId);
 
 		const contenu = await readChapterContent(sourceChapterId, supabase);
 		if (contenu.error || !contenu.data) {
 			return stop(`Contenu du chapitre source illisible : ${contenu.error?.message ?? '?'}`);
 		}
 		const source = contenu.data;
-		const preflight = await checkSource(source, supabase);
-		if (preflight) return stop(preflight);
-
-		const plans: OtherChapterPlan[] = [];
-		for (const other of others) {
-			const { data: docs, error } = await supabase
-				.from('chapter_documents')
-				.select('*')
-				.eq('chapter_id', other.chapter_id)
-				.is('source_id', null)
-				.like('google_drive_url', `${FAKE_LINK_PREFIX}%`);
-			if (error) {
-				return stop(`Documents du chapitre ${other.chapter_id} illisibles : ${error.message}`);
-			}
-			const publies = (docs ?? []).filter((d) => d.published_at !== null);
-			if (publies.length > 0) {
-				return stop(
-					`Le chapitre ${other.chapter_id} a ${publies.length} faux lien(s) storage:// publié(s) ` +
-						`(${publies.map((d) => `« ${d.title} »`).join(', ')}) : des élèves les voient, ` +
-						`la reprise ne les supprime pas. Arrêt, rien n'a été écrit.`
-				);
-			}
-			plans.push({ chapterId: other.chapter_id, fakeLinks: docs ?? [] });
-		}
-
 		const publishedBefore: PublishedBefore[] = source.documents
 			.filter((d) => d.published_at !== null)
 			.map((d) => ({ id: d.id, title: d.title, publishedAt: d.published_at as string }));
 
-		describePlan(template.content_snapshot, templateId, sourceChapterId, source, plans, lines);
+		const owned = await countTemplateRows(templateId, supabase);
+		if (owned.error) return stop(owned.error);
+
+		if (owned.total > 0) {
+			return await resume({
+				templateId,
+				sourceChapterId,
+				supabase,
+				options,
+				insts: insts ?? [],
+				source,
+				publishedBefore,
+				ownedTotal: owned.total,
+				lines,
+				guard
+			});
+		}
+
+		// --- 2. Vérifications en tête : rien n'est écrit si l'une échoue ----------
+		if (instSource.is_detached) {
+			return stop(`Le chapitre source ${sourceChapterId} est détaché du modèle : état inattendu.`);
+		}
+		const linked = (insts ?? []).filter((i) => !i.is_detached);
+		const preflight = await checkSource(source, supabase);
+		if (preflight) return stop(preflight);
+		const plans = await planOtherChapters(
+			linked.filter((i) => i.chapter_id !== sourceChapterId).map((i) => i.chapter_id),
+			supabase
+		);
+		if (plans.error) return stop(plans.error);
+
+		describePlan(template.content_snapshot, templateId, sourceChapterId, source, plans.data, lines);
 
 		if (options.dryRun) {
 			lines.push('', 'ESSAI : rien n’a été écrit (ni base, ni stockage).');
@@ -196,6 +215,8 @@ export async function migrateSnapshotTemplate(
 
 		// --- 3. Copie chez le modèle, chapitres liés détachés le temps de la copie --
 		lines.push('', 'APPLICATION');
+		const refusAvant = await guard('avant toute écriture');
+		if (refusAvant) return stop(refusAvant);
 		const copie = await copyWhileDetached(
 			linked.map((i) => i.id),
 			source,
@@ -205,36 +226,330 @@ export async function migrateSnapshotTemplate(
 		);
 		if (copie.error || !copie.mapping) return stop(copie.error ?? 'Copie impossible');
 
-		// --- 4. Le chapitre source adopte sa copie ---------------------------------
-		const nonAdoptes = await adoptMappedRows(sourceChapterId, copie.mapping, supabase);
-		if (nonAdoptes.length > 0) {
-			return stop(
-				`${nonAdoptes.length} ligne(s) du chapitre source non adoptée(s) : ` +
-					nonAdoptes.map((m) => `${m.table} ${m.chapterRowId}`).join(', ')
-			);
-		}
-		lines.push(
-			`  ✓ ${copie.mapping.length} ligne(s) du chapitre source adoptée(s) (mêmes identifiants)`
-		);
-
-		// --- 5. Les autres chapitres liés -----------------------------------------
-		for (const plan of plans) {
-			const err = await repairOtherChapter(plan, templateId, supabase, lines);
-			if (err) return stop(err);
-		}
-
-		// --- 6. Vérification -------------------------------------------------------
-		const verification = await verifyReprise(
+		// --- 4 à 6. Adoption, autres chapitres, vérification ----------------------
+		return await finish({
 			templateId,
 			sourceChapterId,
+			supabase,
+			mapping: copie.mapping,
+			plans: plans.data,
 			publishedBefore,
-			supabase
-		);
-		return { data: { outcome: 'done', lines, verification }, error: null };
+			lines,
+			guard
+		});
 	} catch (err) {
 		logger.error('[migrateSnapshotTemplate] Erreur inattendue :', err);
 		return stop(`Erreur inattendue : ${err instanceof Error ? err.message : String(err)}`);
 	}
+}
+
+/** Contexte partagé par la fin d'une reprise, d'une traite ou relancée. */
+interface FinishContext {
+	templateId: string;
+	sourceChapterId: string;
+	supabase: Client;
+	mapping: ContentMapping;
+	plans: OtherChapterPlan[];
+	publishedBefore: PublishedBefore[];
+	lines: string[];
+	guard: (moment: string) => Promise<string | null>;
+}
+
+/** Adoption par le chapitre source (garde revérifiée juste avant), autres chapitres, vérification. */
+async function finish(ctx: FinishContext): Promise<{
+	data: RepriseReport | null;
+	error: RepriseError | null;
+}> {
+	const { templateId, sourceChapterId, supabase, mapping, lines } = ctx;
+	const stop = (message: string) => ({ data: null, error: new RepriseError(message, lines) });
+
+	if (mapping.length > 0) {
+		const refus = await ctx.guard('juste avant l’adoption');
+		if (refus) return stop(refus);
+		const nonAdoptes = await adoptMappedRows(sourceChapterId, mapping, supabase);
+		if (nonAdoptes.length > 0) {
+			return stop(
+				`${nonAdoptes.length} ligne(s) du chapitre source non adoptée(s) : ` +
+					nonAdoptes.map((m) => `${m.table} ${m.chapterRowId}`).join(', ') +
+					' — relancer : la reprise retrouvera les copies restantes.'
+			);
+		}
+		lines.push(`  ✓ ${mapping.length} ligne(s) du chapitre source adoptée(s) (mêmes identifiants)`);
+	}
+
+	for (const plan of ctx.plans) {
+		const err = await repairOtherChapter(plan, templateId, supabase, lines);
+		if (err) return stop(err);
+	}
+
+	const verification = await verifyReprise(
+		templateId,
+		sourceChapterId,
+		ctx.publishedBefore,
+		supabase
+	);
+	return { data: { outcome: 'done', lines, verification }, error: null };
+}
+
+/** Contexte d'une relance : le modèle possède déjà des lignes. */
+interface ResumeContext {
+	templateId: string;
+	sourceChapterId: string;
+	supabase: Client;
+	options: RepriseOptions;
+	insts: { id: string; chapter_id: string; is_detached: boolean }[];
+	source: ChapterContentRows;
+	publishedBefore: PublishedBefore[];
+	ownedTotal: number;
+	lines: string[];
+	guard: (moment: string) => Promise<string | null>;
+}
+
+/**
+ * Relance d'une reprise interrompue (ou déjà finie). Tout est lu et apparié AVANT
+ * d'écrire ; une copie introuvable ou ambiguë arrête tout, explicitement.
+ */
+async function resume(ctx: ResumeContext): Promise<{
+	data: RepriseReport | null;
+	error: RepriseError | null;
+}> {
+	const { templateId, sourceChapterId, supabase, options, lines } = ctx;
+	const stop = (message: string) => ({ data: null, error: new RepriseError(message, lines) });
+	lines.push(`Le modèle possède déjà ${ctx.ownedTotal} ligne(s) en tables : RELANCE.`);
+
+	// Rattacher : le chapitre source (il doit suivre le modèle, c'est l'hypothèse
+	// de la reprise) et les instanciations que l'appelant nomme (`reattach`).
+	const reattach = new Set(options.reattach ?? []);
+	const aRattacher = ctx.insts.filter(
+		(i) => i.is_detached && (i.chapter_id === sourceChapterId || reattach.has(i.id))
+	);
+	for (const i of ctx.insts.filter((x) => x.is_detached && !aRattacher.includes(x))) {
+		lines.push(
+			`  ⚠️ instanciation ${i.id} (chapitre ${i.chapter_id}) détachée, laissée telle quelle : ` +
+				'si la reprise l’avait détachée, relancer avec --rattacher ' +
+				i.id
+		);
+	}
+	const lies = ctx.insts.filter((i) => !i.is_detached || aRattacher.includes(i));
+
+	if (ctx.source.documents.some((d) => d.google_drive_url?.startsWith(FAKE_LINK_PREFIX))) {
+		return stop('Le chapitre source porte des faux liens storage:// : état inattendu, arrêt.');
+	}
+	const mapping = await matchUnadoptedRows(templateId, ctx.source, supabase);
+	if (mapping.error) return stop(mapping.error);
+
+	const plans = await planOtherChapters(
+		lies.filter((i) => i.chapter_id !== sourceChapterId).map((i) => i.chapter_id),
+		supabase
+	);
+	if (plans.error) return stop(plans.error);
+	const aRelier: OtherChapterPlan[] = [];
+	for (const p of plans.data) {
+		const manquants = await missingLinks(p.chapterId, templateId, supabase);
+		if (manquants.error) return stop(manquants.error);
+		if (p.fakeLinks.length > 0 || manquants.count > 0) aRelier.push(p);
+	}
+
+	if (aRattacher.length === 0 && mapping.data.length === 0 && aRelier.length === 0) {
+		lines.push('RIEN À FAIRE : reprise déjà passée en entier.');
+		const verification = await verifyReprise(templateId, sourceChapterId, null, supabase);
+		return { data: { outcome: 'nothing_to_do', lines, verification }, error: null };
+	}
+
+	lines.push(
+		`  à rattacher : ${aRattacher.map((i) => `${i.id} (chapitre ${i.chapter_id})`).join(', ') || 'aucune'}`,
+		`  lignes du chapitre source à adopter : ${mapping.data.length}`,
+		...aRelier.map(
+			(p) =>
+				`  chapitre ${p.chapterId} : ${p.fakeLinks.length} faux lien(s) à supprimer, puis relié`
+		)
+	);
+	if (options.dryRun) {
+		lines.push('', 'ESSAI : rien n’a été écrit (ni base, ni stockage).');
+		const verification = await verifySourceFilesNow(ctx.source, supabase);
+		return { data: { outcome: 'dry_run', lines, verification }, error: null };
+	}
+
+	lines.push('', 'APPLICATION (relance)');
+	const refus = await ctx.guard('avant toute écriture');
+	if (refus) return stop(refus);
+	if (aRattacher.length > 0) {
+		const ids = aRattacher.map((i) => i.id);
+		const { data, error } = await supabase
+			.from('chapter_template_instantiations')
+			.update({ is_detached: false })
+			.in('id', ids)
+			.select('id');
+		if (error || (data ?? []).length !== ids.length) {
+			return stop(
+				`Rattachement impossible (${(data ?? []).length}/${ids.length}) : ${error?.message ?? 'lignes non rendues'}`
+			);
+		}
+		lines.push(`  ✓ ${ids.length} instanciation(s) rattachée(s)`);
+	}
+
+	return await finish({
+		templateId,
+		sourceChapterId,
+		supabase,
+		mapping: mapping.data,
+		plans: aRelier,
+		publishedBefore: ctx.publishedBefore,
+		lines,
+		guard: ctx.guard
+	});
+}
+
+/**
+ * Chaque ligne PROPRE (non masquée) du chapitre source retrouve sa copie chez le
+ * modèle, parmi les copies qu'aucune ligne du chapitre n'a encore adoptées, par
+ * une clé stable (`adoptionKey`). Une clé doit désigner exactement une ligne de
+ * chaque côté : sinon arrêt (aucune copie, ou ambiguïté). Sections d'abord.
+ */
+async function matchUnadoptedRows(
+	templateId: string,
+	source: ChapterContentRows,
+	supabase: Client
+): Promise<{ data: ContentMapping; error: string | null }> {
+	const parTable: Record<LinkedTable, Record<string, unknown>[]> = {
+		chapter_sections: source.sections,
+		chapter_documents: source.documents,
+		chapter_checklist_items: source.checklistItems,
+		chapter_exercises: source.exercises,
+		chapter_worksheets: source.worksheets,
+		chapter_series: source.series
+	};
+	const mapping: ContentMapping = [];
+	const ordre: LinkedTable[] = ['chapter_sections', ...ELEMENT_TABLES];
+
+	for (const table of ordre) {
+		const lignes = parTable[table];
+		const adoptees = new Set(
+			lignes.map((l) => l.source_id).filter((x): x is string => typeof x === 'string')
+		);
+		const propres = lignes.filter((l) => l.source_id === null && l.hidden !== true);
+		if (propres.length === 0) continue;
+
+		const { data: copies, error } = await supabase
+			.from(table)
+			.select('*')
+			.eq('template_id', templateId);
+		if (error) return { data: [], error: `${table} du modèle illisible : ${error.message}` };
+		const libres = ((copies ?? []) as Record<string, unknown>[]).filter(
+			(c) => !adoptees.has(String(c.id)) && (c.retired_at ?? null) === null
+		);
+
+		const groupe = (rows: Record<string, unknown>[]) => {
+			const m = new Map<string, Record<string, unknown>[]>();
+			for (const r of rows) {
+				const k = adoptionKey(table, r);
+				m.set(k, [...(m.get(k) ?? []), r]);
+			}
+			return m;
+		};
+		const candidats = groupe(libres);
+		for (const [cle, mesLignes] of groupe(propres)) {
+			const leurs = candidats.get(cle) ?? [];
+			if (leurs.length === 0) {
+				return {
+					data: [],
+					error: `${table} : aucune copie chez le modèle pour ${mesLignes.map((l) => l.id).join(', ')} (clé « ${cle} »). Arrêt.`
+				};
+			}
+			if (mesLignes.length !== 1 || leurs.length !== 1) {
+				return {
+					data: [],
+					error:
+						`${table} : appariement ambigu pour la clé « ${cle} » (${mesLignes.length} ligne(s) ` +
+						`du chapitre, ${leurs.length} copie(s) libre(s)). Arrêt, rien n’est adopté.`
+				};
+			}
+			mapping.push({
+				table,
+				chapterRowId: String(mesLignes[0].id),
+				templateRowId: String(leurs[0].id)
+			});
+		}
+	}
+	return { data: mapping, error: null };
+}
+
+/**
+ * La clé qui relie une ligne du chapitre à sa copie : ce que la copie garde à
+ * l'identique. Document téléversé : nom de fichier + titre ; sinon titre ou
+ * contenu (ou l'objet référencé) + ordre.
+ */
+function adoptionKey(table: LinkedTable, r: Record<string, unknown>): string {
+	const v = (k: string) => String(r[k] ?? '');
+	switch (table) {
+		case 'chapter_sections':
+			return `${v('title')}|${v('display_order')}`;
+		case 'chapter_documents':
+			return r.source_type === 'upload' && r.file_name
+				? `fichier|${v('file_name')}|${v('title')}`
+				: `lien|${v('title')}|${v('display_order')}`;
+		case 'chapter_checklist_items':
+			return `${v('content')}|${v('display_order')}`;
+		case 'chapter_exercises':
+			return `${v('exercise_id')}|${v('display_order')}`;
+		case 'chapter_worksheets':
+			return `${v('worksheet_id')}|${v('display_order')}`;
+		case 'chapter_series':
+			return `${v('series_id')}|${v('form')}|${v('display_order')}`;
+	}
+}
+
+/**
+ * Les faux liens `storage://` de chaque autre chapitre lié. Un faux lien PUBLIÉ
+ * arrête tout avant la moindre écriture : des élèves le voient.
+ */
+async function planOtherChapters(
+	chapterIds: string[],
+	supabase: Client
+): Promise<{ data: OtherChapterPlan[]; error: string | null }> {
+	const plans: OtherChapterPlan[] = [];
+	for (const chapterId of chapterIds) {
+		const { data: docs, error } = await supabase
+			.from('chapter_documents')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.is('source_id', null)
+			.like('google_drive_url', `${FAKE_LINK_PREFIX}%`);
+		if (error) {
+			return {
+				data: [],
+				error: `Documents du chapitre ${chapterId} illisibles : ${error.message}`
+			};
+		}
+		const publies = (docs ?? []).filter((d) => d.published_at !== null);
+		if (publies.length > 0) {
+			return {
+				data: [],
+				error:
+					`Le chapitre ${chapterId} a ${publies.length} faux lien(s) storage:// publié(s) ` +
+					`(${publies.map((d) => `« ${d.title} »`).join(', ')}) : des élèves les voient, ` +
+					`la reprise ne les supprime pas. Arrêt, rien n'a été écrit.`
+			};
+		}
+		plans.push({ chapterId, fakeLinks: docs ?? [] });
+	}
+	return { data: plans, error: null };
+}
+
+/**
+ * Un tableau de lignes dont chaque ajout est AUSSI imprimé aussitôt (`onLine`) :
+ * si le processus meurt, ce qui a été annoncé (les instanciations détachées, par
+ * exemple) est déjà à l'écran.
+ */
+function liveLines(onLine: ((line: string) => void) | undefined): string[] {
+	const lines: string[] = [];
+	if (!onLine) return lines;
+	const push = lines.push.bind(lines);
+	lines.push = (...items: string[]) => {
+		for (const item of items) onLine(item);
+		return push(...items);
+	};
+	return lines;
 }
 
 /**
@@ -252,6 +567,12 @@ async function copyWhileDetached(
 	let mapping: ContentMapping | null = null;
 	let error: string | null = null;
 
+	// Annoncé AVANT d'écrire : si le processus meurt dans la fenêtre, ces identifiants
+	// sont à l'écran (secours SQL : journal de la refonte, § Déploiement).
+	lines.push(
+		`  → détachement temporaire des instanciations ${instantiationIds.join(', ')} ` +
+			'(si le processus meurt : relancer avec --rattacher <ces ids>, ou remettre is_detached = false)'
+	);
 	const { data: detached, error: detachError } = await supabase
 		.from('chapter_template_instantiations')
 		.update({ is_detached: true })
@@ -406,15 +727,20 @@ function snapshotDocumentCount(snapshot: unknown): number | null {
 	return Array.isArray(docs) ? docs.length : null;
 }
 
-/** Copie ratée : le modèle redevient vide (il l'était), fichiers copiés compris. */
+/**
+ * Copie ratée : le modèle doit redevenir vide (il l'était), fichiers copiés
+ * compris. Chaque suppression est COMPTÉE, et le compte rendu dit si le modèle est
+ * vraiment vide : sinon la relance reprendra à partir de ce qui reste.
+ */
 async function undoTemplateCopy(
 	templateId: string,
 	copiedFiles: string[],
 	supabase: Client,
 	lines: string[]
 ): Promise<void> {
+	let lignes = 0;
 	for (const table of LINKED_TABLES_SECTIONS_LAST) {
-		const { error } = await supabase
+		const { data, error } = await supabase
 			.from(table)
 			.delete()
 			.eq('template_id', templateId)
@@ -423,9 +749,27 @@ async function undoTemplateCopy(
 			logger.error(`[undoTemplateCopy] ${table} :`, error);
 			lines.push(`  ⚠️ lignes ${table} du modèle non supprimées : ${error.message}`);
 		}
+		lignes += (data ?? []).length;
 	}
-	await removeStoredFiles(copiedFiles, supabase);
-	lines.push('  ↩ copie annulée : lignes et fichiers copiés chez le modèle supprimés');
+
+	let fichiers = 0;
+	if (copiedFiles.length > 0) {
+		const { data, error } = await supabase.storage
+			.from(CHAPTER_DOCUMENTS_BUCKET)
+			.remove(copiedFiles);
+		if (error) logger.error('[undoTemplateCopy] fichiers :', error);
+		fichiers = (data ?? []).length;
+	}
+
+	const reste = await countTemplateRows(templateId, supabase);
+	const vide = !reste.error && reste.total === 0 && fichiers === copiedFiles.length;
+	lines.push(
+		`  ↩ copie annulée : ${lignes} ligne(s) du modèle supprimée(s), ` +
+			`${fichiers}/${copiedFiles.length} fichier(s) copié(s) supprimé(s) — ` +
+			(vide
+				? 'le modèle est de nouveau vide'
+				: `⚠️ le modèle N’EST PAS vide (${reste.error ?? `${reste.total} ligne(s)`}${fichiers === copiedFiles.length ? '' : ', fichiers restants'}) : la relance reprendra à partir de là`)
+	);
 }
 
 /**
