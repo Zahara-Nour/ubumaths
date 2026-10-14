@@ -143,10 +143,9 @@ describe('Réponses et Corrigé : jamais l’énoncé', () => {
 	it('évaluation : pas de cadre de réponse dans les corrigés', () => {
 		for (const mode of ['answers', 'correction'] as const) {
 			const typst = generate(mode, { type: 'exam' });
-			expect(typst).not.toContain('#answer-space(height');
-			expect(typst).not.toContain('dash: "dashed"), fill: none)\n');
+			expect(typst).not.toContain('dash: "dashed"), fill: none)');
 		}
-		expect(generate('worksheet', { type: 'exam' })).toContain('#answer-space(height');
+		expect(generate('worksheet', { type: 'exam' })).toContain('dash: "dashed"), fill: none)');
 	});
 });
 

@@ -1,8 +1,8 @@
 /**
  * Opérateurs à limites (∑, ∏, ∫, lim, max…) : bornes dessous et dessus
  *
- * Règles Typst communes aux setups des PDF de fiche (élève et prof sans
- * gabarit) ; les gabarits les recevront au lot 2 (ADR 0028).
+ * Règles Typst communes aux PDF de fiche : setup du PDF élève, et en tête de
+ * tout document produit par un gabarit (ADR 0028, lot 2).
  *
  * @module worksheets/document/math-limits
  */
