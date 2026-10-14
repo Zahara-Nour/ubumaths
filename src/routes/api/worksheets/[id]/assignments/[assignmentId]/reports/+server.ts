@@ -9,7 +9,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
-import { fetchDisplayNumbers } from '$lib/server/worksheets/display-number';
+import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
 import {
 	validateAssignmentParams,
 	validateErrorReportsQuery,
@@ -181,18 +181,13 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			throw error(500, 'Impossible de charger les signalements');
 		}
 
-		// Step 3: le NUMÉRO AFFICHÉ de chaque exercice signalé.
-		//
-		// Pas `position` : elle redémarre à 1 dans chaque section, si bien que le
-		// professeur lisait un numéro différent de celui que l'élève lui citait
-		// dans son signalement. Même règle que la fiche et que le PDF.
-		const worksheetExerciseIds = [...new Set((reports ?? []).map((r) => r.worksheet_exercise_id))];
-
-		let exercisePositions: Map<string, number> = new Map();
-
-		if (worksheetExerciseIds.length > 0) {
-			exercisePositions = await fetchDisplayNumbers(locals.supabase, params.id);
-		}
+		// Step 3: le numéro de chaque exercice signalé DANS LA COPIE de son élève
+		// (D6) : celui que l'élève a lu et cite dans son signalement — ordre
+		// mélangé compris. Pas `position`, qui redémarre à 1 dans chaque section.
+		const numbering =
+			(reports ?? []).length > 0
+				? await fetchCopyNumbering(locals.supabase, worksheetId, [assignmentId])
+				: null;
 
 		// Step 4: Transform to TeacherErrorReportView
 		const reportViews: TeacherErrorReportView[] = (reports ?? []).map((report) => {
@@ -203,7 +198,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				id: report.id,
 				assignment_id: report.assignment_id,
 				worksheet_exercise_id: report.worksheet_exercise_id,
-				exercise_position: exercisePositions.get(report.worksheet_exercise_id) ?? 0,
+				// 0 : numéro inconnu (fiche illisible), jamais un numéro faux
+				exercise_position:
+					numbering?.numberOf(assignmentId, report.student_id, report.worksheet_exercise_id) ?? 0,
 				student_id: report.student_id,
 				student_first_name: student?.firstname ?? null,
 				student_last_name: student?.lastname ?? null,

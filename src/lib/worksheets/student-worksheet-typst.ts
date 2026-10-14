@@ -44,6 +44,11 @@ export type StudentPdfEnding = 'none' | 'answers' | 'correction';
 export interface StudentPdfOptions {
 	/** Polices du corrigé ; faux : police standard (repli). Vrai par défaut. */
 	correctionFonts?: boolean;
+	/**
+	 * Aperçu « vue prof » d'une affectation dont chaque élève a sa version
+	 * (D6) : ce PDF est la copie d'un élève ; avertissement imprimé en tête.
+	 */
+	individualCopyNotice?: boolean;
 }
 
 // ============================================================================
@@ -66,7 +71,11 @@ export function generateStudentWorksheetTypst(
 	// Le document de la fiche (ADR 0028) : ordre, numéros et corrections
 	// visibles décidés une fois, comme pour le PDF du prof. Sa langue est
 	// validée plutôt que supposée : elle traverse une réponse d'API.
-	const doc = documentFromStudentView(worksheet);
+	const viewDoc = documentFromStudentView(worksheet);
+	// Copie d'un élève servant de vue prof (D6) : le titre seul, sans numéro
+	const doc = options.individualCopyNotice
+		? { ...viewDoc, display: { ...viewDoc.display, titleOnly: true } }
+		: viewDoc;
 	const locale = doc.locale;
 	const labels = documentLabels(locale);
 	let typst = generateSetup(locale);
@@ -79,6 +88,13 @@ export function generateStudentWorksheetTypst(
 	// Type badge
 	const typeLabel = STUDENT_TYPE_LABELS[locale][doc.type] || escapeTypst(doc.type);
 	typst += `#align(center)[#text(size: 0.9em, fill: gray)[${typeLabel}]]\n\n`;
+
+	// Copie d'un élève servant de vue prof (D6) : chaque élève a sa version
+	if (options.individualCopyNotice) {
+		typst += `#block(width: 100%, fill: rgb("#fff4d6"), stroke: rgb("#d9a400"), inset: 8pt, radius: 4pt)[
+  #text(weight: "bold")[${escapeTypst(labels.individualCopyNotice)}]
+]\n\n`;
+	}
 
 	// Description if present
 	if (doc.description) {

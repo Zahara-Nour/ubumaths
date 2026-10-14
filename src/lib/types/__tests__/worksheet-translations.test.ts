@@ -76,6 +76,12 @@ describe('localizedText()', () => {
  * continuer à se générer, en retombant sur les valeurs par défaut.
  */
 describe('asWorksheetConfig', () => {
+	it('ne lit plus `shuffle_within_sections` (case retirée, D6) ; garde `shuffle_exercises`', () => {
+		const config = asWorksheetConfig({ shuffle_exercises: true, shuffle_within_sections: true });
+		expect(config.shuffle_exercises).toBe(true);
+		expect(config).not.toHaveProperty('shuffle_within_sections');
+	});
+
 	it('conserve les champs bien typés', () => {
 		const config = asWorksheetConfig({
 			language: 'en',

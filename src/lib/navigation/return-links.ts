@@ -7,6 +7,7 @@
  * origine connue est retenue, sinon la page parente par défaut.
  */
 import { lore } from '$lib/config/lore';
+import { exerciseAnchorHash } from '$lib/worksheets/exercise-anchor';
 
 export const FROM_PARAM = 'depuis';
 
@@ -47,6 +48,52 @@ export function studySessionReturnHref(deckId: string, searchParams: URLSearchPa
 	return searchParams.get(FROM_PARAM) === 'programme'
 		? '/dashboard/revisions/decks/programme'
 		: `/dashboard/revisions/decks/${deckId}`;
+}
+
+// ============================================================================
+// APERÇU « VUE ÉLÈVE » D'UNE AFFECTATION — ouvert depuis la fiche ou depuis un
+// signalement (D6) : il revient alors à la page du signalement
+// ============================================================================
+
+const REPORT_PARAM = 'signalement';
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function assignmentBase(worksheetId: string, assignmentId: string): string {
+	return `/dashboard/teacher/contenu/worksheets/${worksheetId}/assignments/${assignmentId}`;
+}
+
+export function assignmentPreviewHref(
+	worksheetId: string,
+	assignmentId: string,
+	options: { studentId?: string; reportId?: string; worksheetExerciseId?: string } = {}
+): string {
+	const query = new URLSearchParams();
+	if (options.studentId) query.set('studentId', options.studentId);
+	if (options.reportId) {
+		query.set(FROM_PARAM, REPORT_PARAM);
+		query.set(REPORT_PARAM, options.reportId);
+	}
+	const search = query.toString();
+	const hash = options.worksheetExerciseId ? exerciseAnchorHash(options.worksheetExerciseId) : '';
+	return `${assignmentBase(worksheetId, assignmentId)}/preview${search ? `?${search}` : ''}${hash}`;
+}
+
+export function assignmentPreviewReturn(
+	worksheetId: string,
+	assignmentId: string,
+	searchParams: URLSearchParams
+): ReturnLink {
+	const reportId = searchParams.get(REPORT_PARAM);
+	if (searchParams.get(FROM_PARAM) === REPORT_PARAM && reportId && UUID_PATTERN.test(reportId)) {
+		return {
+			href: `${assignmentBase(worksheetId, assignmentId)}/reports/${reportId}`,
+			label: 'Retour au signalement'
+		};
+	}
+	return {
+		href: `/dashboard/teacher/contenu/worksheets/${worksheetId}`,
+		label: 'Retour à la fiche'
+	};
 }
 
 // ============================================================================

@@ -89,6 +89,11 @@ on:
       - 'src/lib/typst/labels.ts'
       - 'src/lib/typst/templates/default-templates.ts'
       - 'src/lib/worksheets/exercise-numbering.ts'
+      - 'src/lib/worksheets/exercise-anchor.ts'
+      - 'src/lib/worksheets/student-copy.ts'
+      - 'src/lib/worksheets/worksheet-copy.ts'
+      - 'src/lib/exercises/generator/instance-generator.ts'
+      - 'src/lib/types/worksheets.ts'
       # src/routes : handlers appelés directement par les tests. Chez GitHub, `[]`
       # est une classe de caractères, et `?` / `+` portent sur le caractère
       # PRÉCÉDENT (pas « un caractère quelconque ») : un segment `[id]` ou `(groupe)`

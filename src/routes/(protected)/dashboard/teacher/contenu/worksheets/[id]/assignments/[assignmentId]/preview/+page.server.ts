@@ -7,6 +7,7 @@
  */
 
 import { error } from '@sveltejs/kit';
+import { z } from 'zod';
 import type { PageServerLoad } from './$types';
 
 interface StudentItem {
@@ -16,7 +17,9 @@ interface StudentItem {
 	class_name: string | null;
 }
 
-export const load: PageServerLoad = async ({ params, locals, fetch }) => {
+const studentIdSchema = z.string().uuid();
+
+export const load: PageServerLoad = async ({ params, locals, fetch, url }) => {
 	const { user } = await locals.safeGetSession();
 	if (!user) {
 		throw error(401, 'Non authentifie');
@@ -52,9 +55,22 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		})
 	);
 
+	// Élève présélectionné, lu dans l'adresse (lien « Voir la copie de… » d'un
+	// signalement, D6) : retenu seulement s'il est dans la liste de
+	// l'affectation, que le prof voit déjà ; sinon, vue prof.
+	const requestedParam = url.searchParams.get('studentId');
+	const requested = studentIdSchema.safeParse(requestedParam);
+	const initialStudentId =
+		requested.success && students.some((s) => s.id === requested.data) ? requested.data : null;
+	// Élève demandé puis écarté (a quitté la classe, identifiant invalide) :
+	// l'écran le dit, plutôt que de montrer en silence une autre copie
+	const discardedStudent = requestedParam !== null && initialStudentId === null;
+
 	return {
 		worksheetId,
 		assignmentId,
-		students
+		students,
+		initialStudentId,
+		discardedStudent
 	};
 };
