@@ -330,6 +330,10 @@ describe('Q3 : la condition « a ≠ 0 » d’une primitive qui divise par a', (
 		expect(latex(input, [])).toBe(expected);
 	});
 
+	it('.intégrer x^{a-1} → x^a / a, exposant réduit', () => {
+		expect(latex('.intégrer x^{a-1}', [])).toBe('\\dfrac{x^a}{a}+C\\quad(a\\neq0)');
+	});
+
 	it('le texte de la ligne porte aussi la condition', () => {
 		const result = run('.intégrer h', H);
 		expect(result.kind === 'commande' && result.output).toContain('(a ≠ 0)');
@@ -342,7 +346,9 @@ describe('Q3 : la condition « a ≠ 0 » d’une primitive qui divise par a', (
 		// la division par a vient de l'expression de DÉPART : pas de note
 		['.intégrer 1/(a x)', [], '\\dfrac{\\ln\\left|x\\right|}{a}+C'],
 		// le paramètre posé : plus de paramètre
-		['.intégrer e^{a x}', ['a = 2'], '\\dfrac{1}{2}\\exponentialE^{2x}+C']
+		['.intégrer e^{a x}', ['a = 2'], '\\dfrac{1}{2}\\exponentialE^{2x}+C'],
+		// toujours vraie : a² + 1 ≠ 0 ne se dit pas
+		['.intégrer e^{(a^2+1)x}', [], '\\dfrac{\\exponentialE^{a^2x+x}}{a^2+1}+C']
 	])('pas de condition : %s', (input, setup, expected) => {
 		expect(latex(input, setup)).toBe(expected);
 	});
@@ -366,6 +372,11 @@ describe('Q5 (V57) : une résolution qui divise par le paramètre refuse', () =>
 		['a x^2 = 1', 'a'],
 		['e^{a x} = 1', 'a'],
 		['1/x = a', 'a'],
+		// équations rationnelles : la solution peut tomber sur la valeur interdite
+		['x/(x-a)=0', 'a'],
+		['a/x = 1', 'a'],
+		['\\dfrac{a}{x} = 2', 'a'],
+		['(x-a)/(x-1)=0', 'a'],
 		// le sens de l'inégalité dépend du signe de a
 		['a x > 1', 'a']
 	])('.résoudre %s → « dépend de %s »', (equation, letter) => {
@@ -382,6 +393,8 @@ describe('Q5 (V57) : une résolution qui divise par le paramètre refuse', () =>
 		['2x = a', 'x=\\dfrac{a}{2}'],
 		['(x-a)(x-1) = 0', 'S=\\left\\{a\\,;\\,1\\right\\}'],
 		['\\ln(x) = a', 'x=\\exponentialE^a'],
+		// la solution a + 1 n'est jamais la valeur interdite a
+		['1/(x-a)=1', 'x=a+1'],
 		// pas de division : le moteur écrit lui-même la condition sur a
 		['x^2 = a', 'S=\\left\\{\\sqrt{a}\\,;\\,-\\sqrt{a}\\right\\}\\quad\\text{si}a\\geqslant0']
 	])('juste pour tout a, gardé : .résoudre %s', (equation, expected) => {
@@ -396,5 +409,39 @@ describe('Q5 (V57) : une résolution qui divise par le paramètre refuse', () =>
 
 	it('le paramètre posé : .résoudre a x = 4, a = 2 → x = 2', () => {
 		expect(latex('.résoudre a x = 4', ['a = 2'])).toBe('x=2');
+	});
+});
+
+// =============================================================================
+// Bornes à paramètre (revue de 0d3d9beea)
+// =============================================================================
+
+describe('.intégrer : une borne ou un exposant à paramètre', () => {
+	it.each([
+		// ln|a| : faux si 0 est entre 1 et a
+		['.intégrer 1/x de 1 à a'],
+		['.intégrer 1/x^2 de 1 à a'],
+		['.intégrer 1/x de a à 2'],
+		// diverge pour a ⩽ −1
+		['.intégrer x^a de 0 à 1'],
+		// un pôle qui dépend de a, bornes en nombres
+		['.intégrer 1/(x-a) de 0 à 1'],
+		['.intégrer 1/(x^2-a) de 0 à 1']
+	])('%s → « dépend de a »', (input) => {
+		expect(refusal(input, [])).toBe(DEPENDS_ON('a'));
+	});
+
+	it.each([
+		['.intégrer x^2 de 0 à a', '\\dfrac{1}{3}a^3'],
+		['.intégrer e^x de 0 à a', '\\exponentialE^a-1']
+	])('sans pôle, gardé : %s', (input, expected) => {
+		expect(latex(input, [])).toBe(expected);
+	});
+});
+
+describe('.intégrer 1/(x^2+a^2+1) de 0 à 1 : aucun pôle réel', () => {
+	it('pas de refus « dépend de a »', () => {
+		const result = run('.intégrer 1/(x^2+a^2+1) de 0 à 1', []);
+		expect(result.kind === 'refus' && result.message).not.toBe(DEPENDS_ON('a'));
 	});
 });

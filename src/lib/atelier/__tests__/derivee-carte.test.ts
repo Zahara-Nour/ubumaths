@@ -225,6 +225,20 @@ describe('« Dériver » et `.dériver f`', () => {
 		expect(last?.steps?.length ?? 0).toBeGreaterThan(0);
 	});
 
+	// Q4 (David, 2026-10-14), par le vrai chemin du bouton
+	it('à paramètre : le bouton crée f′ et écrit f′(x) = a', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' }, 'text');
+		const desk = new CalcDesk(atelier);
+
+		desk.runFromPanel('derive', 'f');
+
+		expect(atelier.get("f'")?.missing).toEqual([{ name: 'a', as: 'value' }]);
+		const last = desk.entries.at(-1);
+		expect(last?.failed).toBe(false);
+		expect(last?.latex?.replace(/\s/g, '')).toBe("f'(x)=a");
+	});
+
 	// D3
 	it('`.dériver f` crée la même carte', () => {
 		const atelier = withF();

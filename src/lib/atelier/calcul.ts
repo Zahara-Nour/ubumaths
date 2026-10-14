@@ -13,7 +13,7 @@
 import type { Atelier, Created, Refused } from './atelier.svelte';
 import type { AtelierObject, ObjectKind } from './types';
 import { dependsOnMessage, parametersOf } from './types';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
@@ -74,7 +74,9 @@ import {
 	splitInterval,
 	valueOutsideRefusal
 } from './interval';
-import { containsValue, intersect, isEmpty } from '$lib/mathAST/domain/algebra';
+import { containsValue, intersect, isEmpty, isUniversal } from '$lib/mathAST/domain/algebra';
+import { computeDomain } from '$lib/mathAST/domain/compute';
+import { solve as solveRelation } from '$lib/mathAST/solve';
 import { formatInterval } from '$lib/mathAST/domain/format';
 import type { Domain } from '$lib/mathAST/domain/types';
 import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
@@ -1594,6 +1596,26 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	if (parameterRefusal !== null) {
 		return { kind: 'refus', message: parameterRefusal, ...notesOf(letterNote) };
 	}
+	// Une borne à paramètre sur un pôle (`1/x de 1 à a` → ln|a|, faux si
+	// a ⩽ 0), un pôle qui dépend du paramètre (`1/(x-a) de 0 à 1`), ou `x^a`
+	// jusqu'en 0 (diverge pour a ⩽ −1) : refus, que le moteur ait répondu ou
+	// non (`1/(x^2-a)` : « Unable to factor denominator »)
+	const boundedIntegrand =
+		name === 'integrate' && finalArgs?.bounds != null
+			? parseCommandExpression(finalArgs.expression).ast
+			: undefined;
+	const boundsRefusal =
+		boundedIntegrand === undefined || finalArgs?.bounds == null
+			? null
+			: parameterBoundsRefusal(
+					session,
+					boundedIntegrand,
+					finalArgs.variable ?? DEFAULT_VARIABLE,
+					finalArgs.bounds
+				);
+	if (boundsRefusal !== null) {
+		return { kind: 'refus', message: boundsRefusal, ...notesOf(letterNote) };
+	}
 	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
 	// afficherait « x^2 » là où `.dériver x^2` répond « 2x » (voir `render.ts`).
 	const rendered = renderResult(result, { fromCommand: true });
@@ -1763,7 +1785,15 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		!result.success &&
 		(result.error?.code === INEQUALITY_UNSOLVED || result.error?.code === EQUATION_UNSOLVED)
 	) {
-		return { kind: 'refus', message: result.error.message, ...noted };
+		// Un paramètre : le message de l'atelier, le même que pour `a x = 0`
+		// (« Le résultat dépend de q et u_0 : … »), pas celui du moteur
+		// (les lettres viennent du moteur : il sait lire `u_0`, `getVariables` y voit u)
+		const letters = /^La solution dépend de (.+) : je ne sais pas encore/.exec(
+			result.error.message
+		)?.[1];
+		const message =
+			letters === undefined ? result.error.message : dependsOnMessage(letters.split(', '));
+		return { kind: 'refus', message, ...noted };
 	}
 
 	// Pas d'étapes (degré ≥ 3, transcendante, trigonométrique) : les solutions
@@ -1841,11 +1871,12 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			finalArgs === null ? undefined : parseCommandExpression(finalArgs.expression).ast;
 		const parameters =
 			integrand === undefined ? [] : freeParameters(session, integrand, integrationVariable);
-		const shown =
+		const reduced =
 			finalArgs?.bounds != null &&
 			(citesParameterized(session, typedArgument) || parameters.length > 0)
 				? simplify(result.ast).result
 				: result.ast;
+		const shown = parameters.length > 0 ? reducedExponents(reduced, integrationVariable) : reduced;
 		// Q3 (David, 2026-10-14) : une primitive qui DIVISE par le paramètre
 		// (`e^{ax}` → `e^{ax}/a`) le dit — « (a ≠ 0) »
 		const conditions =
@@ -2027,11 +2058,6 @@ function evaluatedCallLatex(functionName: string | null, typedValue: string | nu
 	return plain ? `${functionName}(${argument})` : `${functionName}\\left(${argument}\\right)`;
 }
 
-/**
- * Le LaTeX du résultat de `.intégrer`, lu sur la première ligne du moteur :
- * `∫[a→b] … = v` (valeur exacte), `∫[a→b] … ≈ v` (approchée), sinon une
- * primitive, `∫ … = F + C` — la constante y reste, comme dans le texte.
- */
 // =============================================================================
 // Paramètres : lettres non posées (Q3, Q5 — David, 2026-10-14)
 // =============================================================================
@@ -2085,8 +2111,10 @@ function parameterFactors(
  * La forme la plus lisible de « facteur ≠ 0 » : `a ≠ 0`, `a − 1` → `a ≠ 1`,
  * `a + 1` → `a ≠ −1` ; sinon le facteur entier, `a^2 + 1 ≠ 0`.
  */
-function conditionOf(factor: MathNode): Condition {
+function conditionOf(factor: MathNode): Condition | null {
 	const node = factor.type === 'delimiter' ? factor.content : factor;
+	// Toujours vraie (`a^2 + 1 ≠ 0`) : rien à dire
+	if (isPositive(node)) return null;
 	const excluded = (letter: string, value: string): Condition => ({
 		latex: `${letter} \\neq ${value}`,
 		text: `${letter} ≠ ${value}`
@@ -2118,7 +2146,9 @@ function denominatorConditions(
 		if (node.type === 'division') {
 			for (const factor of parameterFactors(node.denominator, variable, parameters)) {
 				const condition = conditionOf(factor);
-				if (!found.some((c) => c.latex === condition.latex)) found.push(condition);
+				if (condition !== null && !found.some((c) => c.latex === condition.latex)) {
+					found.push(condition);
+				}
 			}
 		}
 		return node;
@@ -2169,6 +2199,8 @@ function parameterSolveRefusal(
 	if (ast === undefined || !isRelation(ast) || isRelation(ast.left)) return null;
 	const parameters = freeParameters(session, ast, unknown);
 	if (parameters.length === 0) return null;
+	const rational = ast.relation === '=' ? forbiddenSolutions(ast, unknown, parameters) : [];
+	if (rational.length > 0) return dependsOnMessage(rational);
 	const difference: MathNode = { type: 'subtraction', left: ast.left, right: ast.right };
 	const degree = getPolynomialDegree(difference, unknown);
 	if (degree === 0) return null;
@@ -2186,6 +2218,146 @@ function parameterSolveRefusal(
 	const denominators = latexDenominators(latex);
 	const divisors = parameters.filter((p) => denominators.some((d) => cites(d, p)));
 	return divisors.length === 0 ? null : dependsOnMessage(divisors);
+}
+
+/**
+ * Équation rationnelle (revue de 0d3d9beea) : les paramètres pour lesquels une
+ * solution tombe sur une valeur interdite. `x/(x-a) = 0` → x = 0, interdite si
+ * a = 0 ; `(x-a)/(x-1) = 0` → x = a, interdite si a = 1 ; `a/x = 1` → x = a.
+ * `1/(x-a) = 1` → x = a + 1 n'annule jamais x − a : gardée.
+ */
+function forbiddenSolutions(
+	relation: RelationNode,
+	unknown: string,
+	parameters: readonly string[]
+): string[] {
+	const denominators: MathNode[] = [];
+	mapNode(relation, (node) => {
+		if (node.type === 'division' && getVariables(node.denominator).has(unknown)) {
+			denominators.push(node.denominator);
+		}
+		return node;
+	});
+	if (denominators.length === 0) return [];
+	let solutions: readonly { readonly value: MathNode }[];
+	try {
+		solutions = solveRelation(relation, { variable: unknown }).solutions;
+	} catch {
+		return [];
+	}
+	const found = new Set<string>();
+	for (const solution of solutions) {
+		for (const denominator of denominators) {
+			const at = simplify(substitute(denominator, { [unknown]: solution.value })).result;
+			for (const p of citedParameters(at, parameters)) found.add(p);
+		}
+	}
+	return parameters.filter((p) => found.has(p));
+}
+
+/** Positif ou nul quelle que soit la valeur des lettres : `a^2`, `a^2 + b^2`, 3. */
+function isNonNegative(node: MathNode): boolean {
+	if (node.type === 'delimiter') return isNonNegative(node.content);
+	if (isNumber(node)) return Number(node.value) >= 0;
+	if (node.type === 'superscript' && isNumber(node.superscript)) {
+		const exponent = Number(node.superscript.value);
+		return Number.isInteger(exponent) && exponent % 2 === 0;
+	}
+	if (node.type === 'addition' || node.type === 'multiplication') {
+		return isNonNegative(node.left) && isNonNegative(node.right);
+	}
+	return false;
+}
+
+/** Strictement positif quelle que soit la valeur des lettres : `a^2 + 1`. */
+function isPositive(node: MathNode): boolean {
+	if (node.type === 'delimiter') return isPositive(node.content);
+	if (isNumber(node)) return Number(node.value) > 0;
+	if (node.type === 'addition') {
+		return (
+			(isPositive(node.left) && isNonNegative(node.right)) ||
+			(isNonNegative(node.left) && isPositive(node.right))
+		);
+	}
+	if (node.type === 'multiplication') return isPositive(node.left) && isPositive(node.right);
+	return false;
+}
+
+/** `x^{a-1+1}` → `x^a` : l'exposant à paramètre d'une puissance de la variable, réduit. */
+function reducedExponents(ast: MathNode, variable: string): MathNode {
+	return mapNode(ast, (node) =>
+		node.type === 'superscript' &&
+		node.base.type === 'variable' &&
+		node.base.name === variable &&
+		!isNumber(node.superscript)
+			? { ...node, superscript: simplify(node.superscript).result }
+			: node
+	);
+}
+
+/** La valeur d'une borne écrite en nombre (`2`, `-1`), sinon `null`. */
+function numericBound(ast: MathNode | undefined): number | null {
+	if (ast === undefined) return null;
+	if (isNumber(ast)) return Number(ast.value);
+	if (isOpposite(ast) && isNumber(ast.operand)) return -Number(ast.operand.value);
+	return null;
+}
+
+/**
+ * Une intégrale bornée qui dépend du paramètre sans le dire (revue de
+ * 0d3d9beea) :
+ * - une borne à paramètre et une intégrande qui n'est pas définie partout
+ *   (`1/x de 1 à a` → ln|a|, faux dès que 0 est entre 1 et a) ;
+ * - `x^a` sur un segment qui touche 0 ou une borne à paramètre
+ *   (`x^a de 0 à 1` diverge pour a ⩽ −1).
+ * - un pôle qui dépend du paramètre, même entre deux nombres (`1/(x-a) de 0 à 1`).
+ * `x^2 de 0 à a` (définie partout) reste : a³/3.
+ */
+function parameterBoundsRefusal(
+	session: CalcSession,
+	integrand: MathNode,
+	variable: string,
+	bounds: { readonly lower: string; readonly upper: string }
+): string | null {
+	const lower = parseCommandExpression(bounds.lower).ast;
+	const upper = parseCommandExpression(bounds.upper).ast;
+	const inBounds = [lower, upper].flatMap((b) =>
+		b === undefined ? [] : freeParameters(session, b, variable)
+	);
+	const integrandParameters = freeParameters(session, integrand, variable);
+	const exponents = new Set<string>();
+	mapNode(integrand, (node) => {
+		if (node.type === 'superscript' && getVariables(node.base).has(variable)) {
+			for (const p of citedParameters(node.superscript, integrandParameters)) exponents.add(p);
+		}
+		return node;
+	});
+	if (exponents.size > 0) {
+		const a = numericBound(lower);
+		const b = numericBound(upper);
+		if (inBounds.length > 0 || (a !== null && b !== null && Math.min(a, b) <= 0)) {
+			return dependsOnMessage([...new Set([...exponents, ...inBounds])]);
+		}
+	}
+	// Un pôle qui dépend du paramètre, bornes en nombres compris
+	// (`1/(x-a) de 0 à 1`, faux pour a dans [0 ; 1]) ; pas `1/(x^2+a^2+1)`,
+	// toujours positif
+	const poles = new Set<string>();
+	mapNode(integrand, (node) => {
+		if (
+			node.type === 'division' &&
+			getVariables(node.denominator).has(variable) &&
+			!isPositive(node.denominator)
+		) {
+			for (const p of citedParameters(node.denominator, integrandParameters)) poles.add(p);
+		}
+		return node;
+	});
+	if (poles.size > 0) return dependsOnMessage([...new Set([...poles, ...inBounds])]);
+	if (inBounds.length === 0) return null;
+	const domain = computeDomain(integrand, variable);
+	if (isUniversal(domain.domain) && (domain.unresolved?.length ?? 0) === 0) return null;
+	return dependsOnMessage([...new Set(inBounds)]);
 }
 
 /** Les paramètres du coefficient dominant d'un polynôme en `unknown`. */
@@ -2252,6 +2424,11 @@ function latexDenominators(latex: string): string[] {
 	return denominators;
 }
 
+/**
+ * Le LaTeX du résultat de `.intégrer`, lu sur la première ligne du moteur :
+ * `∫[a→b] … = v` (valeur exacte), `∫[a→b] … ≈ v` (approchée), sinon une
+ * primitive, `∫ … = F + C` — la constante y reste, comme dans le texte.
+ */
 function integralLatex(ast: MathNode, text: string): string {
 	const firstLine = text.split('\n')[0] ?? '';
 	// `\ln\left| u \right|`, comme les étapes (revue du 2026-10-13) — affichage
