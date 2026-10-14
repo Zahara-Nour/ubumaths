@@ -1024,12 +1024,23 @@ describe('Document CRUD Functions', () => {
 
 	describe('deleteChapterDocument', () => {
 		it('should delete document', async () => {
-			const deletePromise = Promise.resolve({ data: {}, error: null });
-			supabase._mockChain.eq.mockReturnValueOnce(deletePromise as never);
+			// `.delete().eq().select('id')` : la suppression relit ses lignes.
+			const deletePromise = Promise.resolve({ data: [{ id: mockDocumentId }], error: null });
+			supabase._mockChain.select.mockReturnValueOnce(deletePromise as never);
 
 			const result = await chapters.deleteChapterDocument(mockDocumentId, supabase);
 
 			expect(result.error).toBeNull();
+		});
+
+		// La RLS échoue en silence : zéro ligne supprimée n'est pas un succès.
+		it('signale une suppression qui n’a touché aucune ligne', async () => {
+			const deletePromise = Promise.resolve({ data: [], error: null });
+			supabase._mockChain.select.mockReturnValueOnce(deletePromise as never);
+
+			const result = await chapters.deleteChapterDocument(mockDocumentId, supabase);
+
+			expect(result.error?.message).toBe('Document introuvable');
 		});
 	});
 });
