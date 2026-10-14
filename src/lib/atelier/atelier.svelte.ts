@@ -323,6 +323,13 @@ const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-m
 /** Valeur d'un curseur neuf — même convention que `addParameter` du grapheur. */
 const OFFER_DEFINITION = '1';
 
+/**
+ * Une FONCTION citée comme un nombre (`f(x) = a x` avec `a(x) = x^2`, V58) :
+ * le moteur ne sait pas ce que vaut `a` seul, et `.dériver f` répondait `a`.
+ */
+const functionAsNumberMessage = (fn: string, user: string, letter: string) =>
+	`« ${fn} » est une fonction : « ${user} » ne peut pas s'en servir comme d'un nombre. Écris ${fn}(${letter}), ou donne un autre nom à la lettre.`;
+
 const brokenMessage = (culprits: readonly string[]) =>
 	culprits.length === 1
 		? `Dépend de « ${culprits[0]} », qui est en erreur.`
@@ -1637,6 +1644,18 @@ export class Atelier {
 					refs.map((r) => r.name)
 				);
 				if (cited !== null) ownError.set(o.name, cited);
+			}
+			// V58 : `a` lettre de f, puis `a(x) = x^2` — quel que soit l'ordre de
+			// saisie, f ne vaut rien. Les cartes `f′`, `f⁻¹` suivent f, elles ne
+			// citent rien de leur propre chef
+			if (!ownError.get(o.name) && derivativeOf(o.name) === null && reciprocalOf(o.name) === null) {
+				const asNumber = refs.find(
+					(r) => r.as === 'value' && r.name !== o.name && this.get(r.name)?.kind === 'function'
+				);
+				if (asNumber !== undefined) {
+					const letter = isFunction(o) ? (o.letter ?? 'x') : 'x';
+					ownError.set(o.name, functionAsNumberMessage(asNumber.name, o.name, letter));
+				}
 			}
 			// `g(x) = f(2x)` avec f sur un intervalle : pas encore su (décision c)
 			if (!ownError.get(o.name) && intervals.refused.has(o.name)) {

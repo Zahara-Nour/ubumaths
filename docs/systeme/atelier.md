@@ -178,7 +178,13 @@ cartes (décision G3).
 **Quatre états** (D9) : `error` > `pending` > `incomplete` > `ok`. Un nom cité mais absent met
 l'objet **en attente** (`pending`, avec `missing`), pas en erreur ; l'attente se répare seule quand
 le nom apparaît, et pour une lettre seule elle porte une **offre de curseur**
-(`createFromOffer`). Un objet vide est `incomplete` ; ceux qui le citent l'attendent.
+(`createFromOffer`). Un objet vide est `incomplete` ; ceux qui le citent l'attendent. Une
+**fonction citée comme un nombre** (`f(x) = a x` avec `a(x) = x^2`, dans n'importe quel ordre de
+saisie) met la définition en erreur (V58, `functionAsNumberMessage` dans `recomputeAll`) : « « a »
+est une fonction : « f » ne peut pas s'en servir comme d'un nombre. Écris a(x), ou donne un autre
+nom à la lettre. » Les cartes `f′` et `f⁻¹` n'y passent pas (elles suivent f). ⚠️ Redéfinir un nom
+garde son type : `a = 3` puis `a(x) = x^2` laisse une **valeur** `a = x^2`, et `a(x) = x^2` puis
+`a = 2` une fonction constante.
 
 **Noms** (`src/lib/atelier/names.ts`) : une lettre latine, éventuellement indicée ; **un seul
 espace de noms** tous types confondus (D1). Les dérivées s'appellent `f′` (`derivativeName`,
@@ -327,6 +333,20 @@ de message ; en erreur, « « h » est dans tes objets, mais elle est en erreur 
 carte, et la ligne est en échec (`failed`) ; en attente, « « p » est dans tes objets, en attente
 de « q », qui n'est pas encore défini. », sans échec. Au rejeu, une définition en échec n'arrête
 pas (un export d'avant la disait réussie).
+
+**Un objet en erreur ne sert à rien** (V58, décision de David du 2026-10-14). Le moteur ne lie
+pas un objet en erreur (`syncEngine`) : il prenait son nom pour une lettre, et sur
+`f(x) = f(x)+1` (statut `error`) `.dériver f` répondait `d/dx(f) = 0`, `.intégrer f` ½f².
+Une seule garde, `brokenObjectRefusal` (`calcul.ts`), pour **toute commande** (sauf les
+simulations, qui lisent des noms de listes) et **toute ligne de calcul** (`f(2)`, `f'(2)`,
+`a+1`) : « « f » est mal définie (sa ligne est en erreur) : corrige sa définition d'abord. »
+(« mal défini » pour une valeur). Un objet qui dépend d'un objet en erreur (`g(x) = f(x)+1`) est
+lui-même en erreur (propagation de `recomputeAll`), donc refusé pareil. Les **définitions** ne
+passent pas par la garde : c'est en redéfinissant f qu'on la corrige. Exceptions : les cartes
+`f′`, `f⁻¹` (leurs refus disent pourquoi la dérivée ou la réciproque manque), et une fonction en
+erreur parce qu'elle cite `f⁻¹`, qui garde « g : » + le message de sa carte. Les **boutons de la
+carte** sont désactivés avec le message de la carte (`blockedBy`, `actions.ts`), et `runAction`
+le rend aussi (`expressionOf` refuse un objet qui n'est pas « ok »).
 
 **Syntaxe** : voir [atelier-syntaxe.md](atelier-syntaxe.md) — mots-clés français (`de … à`,
 `pour`, `en`, `ordre`, `dans`, `et`), noms et mots-clés sans accent acceptés, ancienne écriture
