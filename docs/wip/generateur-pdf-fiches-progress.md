@@ -95,6 +95,14 @@ Gabarits inaccessibles :
   le style qui décide (`showsPoints`), la case « afficher les points » ne vaut que pour les styles
   qui en impriment. Le PDF élève suivra au lot 4 (il passe par le gabarit).
 
+- **D9** (2026-10-14, lot 3) — **question d'accès** : le prof et l'admin lisent tous les styles
+  (ceux de Chiphre et les leurs) et ne modifient que les leurs ; **les élèves n'ont aucun accès
+  direct** à la table (le serveur leur fournit le gabarit, lot 4). **Le Typst des styles de
+  Chiphre reste dans le code** : en base, une ligne par style (id, nom, description) pour qu'une
+  fiche puisse le désigner. **Remplacer le gabarit d'une forme pour une fiche : plus tard** (0
+  gabarit du prof en prod). **Page « Gabarits » inchangée** au lot 3 : seul le menu « Gabarit » de
+  la fiche devient « Style ». Deux PR : 3a migration (puis `db:migrate`, `db:types`), 3b le code.
+
 ## Vocabulaire proposé (à verser dans CONTEXT.md, lot 0)
 
 | Terme       | Sens                                                                                                                     |
