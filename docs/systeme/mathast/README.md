@@ -918,6 +918,9 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   `value: null`, `error` en français (∫₀¹ eˣ/(eˣ − 2) compris). Il accepte une intégrale impropre
   convergente (∫₀¹ 1/√x = 2) que la version pédagogique refuserait (borne interdite) si elle
   savait calculer la primitive.
+  Les messages de refus nomment le point dans la variable de l'intégrale (`t ≈ 0` pour
+  `\int \frac1t\,dt`, plus `x ≈ 0`) et écrivent les bornes lisibles (`boundText` : `1/2`, plus
+  la division en ligne `1:/2` de `toCustom`), mesurés le 2026-10-14.
 - **Intégrales à paramètre** (V61, 2026-10-14) : la règle arctan (`isArctanPattern`,
   `integrators/basic.ts`) déballe les parenthèses du dénominateur — `1/(x^2+a^2)` tapé en
   notation maison arrive en `delimiter` et n'était pas reconnu (« Unable to factor

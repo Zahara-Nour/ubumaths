@@ -69,6 +69,22 @@ import {
 } from './class-form';
 
 // =============================================================================
+// Écriture des bornes dans un message
+// =============================================================================
+
+/**
+ * Une borne lisible par l'élève : la notation interne écrit la division en
+ * ligne `:/`, π `\pi` et la racine `sqrt`, que les messages montraient tels
+ * quels (« [-1 ; 1:/2] », « [0 ; \pi] », mesurés le 2026-10-14).
+ */
+function boundText(bound: MathNode): string {
+	return toCustom(bound)
+		.replaceAll(':/', '/')
+		.replace(/\\pi(?![A-Za-z])/g, 'π')
+		.replace(/\bsqrt(?=\()/g, '√');
+}
+
+// =============================================================================
 // Budget global
 // =============================================================================
 
@@ -993,13 +1009,13 @@ export function integrateDefinite(
 			}
 			if (integrand.kind === 'singular') {
 				return refused(
-					`L'intégrale diverge ou n'est pas définie sur [${toCustom(lower)} ; ${toCustom(upper)}] : ${integrand.reason}`
+					`L'intégrale diverge ou n'est pas définie sur [${boundText(lower)} ; ${boundText(upper)}] : ${integrand.reason}`
 				);
 			}
 			const value = adaptiveSimpson(integrand.f, a, b, NUMERIC_TOLERANCE, NUMERIC_MAX_DEPTH);
 			if (!Number.isFinite(value)) {
 				return refused(
-					`L'intégrale diverge ou n'est pas définie sur [${toCustom(lower)} ; ${toCustom(upper)}]`
+					`L'intégrale diverge ou n'est pas définie sur [${boundText(lower)} ; ${boundText(upper)}]`
 				);
 			}
 
@@ -1060,7 +1076,7 @@ export function integrateDefinite(
 			value: null,
 			approximate: undefined,
 			steps: [],
-			error: `L'intégrale diverge ou n'est pas définie sur [${toCustom(lower)} ; ${toCustom(upper)}] : ${discontinuity}`
+			error: `L'intégrale diverge ou n'est pas définie sur [${boundText(lower)} ; ${boundText(upper)}] : ${discontinuity}`
 		};
 	}
 
@@ -1104,7 +1120,7 @@ export function integrateDefinite(
 				symbolic,
 				'summarized',
 				undefined,
-				`F(${toCustom(upper)}) - F(${toCustom(lower)})`
+				`F(${boundText(upper)}) - F(${boundText(lower)})`
 			);
 			return {
 				...indefiniteResult,

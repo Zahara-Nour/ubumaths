@@ -204,13 +204,15 @@ function singularityKind(
 
 /**
  * Raison pour laquelle `fn` n'est pas continue sur [lo ; hi], ou null.
- * `subject` nomme la fonction contrôlée dans les messages.
+ * `subject` nomme la fonction contrôlée dans les messages, `variable` le point
+ * (`t ≈ 0` pour `.intégrer 1/t`, pas `x ≈ 0` : mesuré le 2026-10-14).
  */
 function scanDiscontinuity(
 	fn: (x: number) => number,
 	lo: number,
 	hi: number,
-	subject: 'la primitive' | 'la fonction'
+	subject: 'la primitive' | 'la fonction',
+	variable: string
 ): string | null {
 	const length = hi - lo;
 
@@ -220,7 +222,7 @@ function scanDiscontinuity(
 	xs.push(hi - length * NEAR_END);
 	const values = xs.map(fn);
 	const bad = values.findIndex((v) => !Number.isFinite(v));
-	if (bad !== -1) return `${subject} n'y est pas définie (x ≈ ${format(xs[bad])})`;
+	if (bad !== -1) return `${subject} n'y est pas définie (${variable} ≈ ${format(xs[bad])})`;
 
 	const magnitudes = values.map(Math.abs).sort((p, q) => p - q);
 	const tolerance = RELATIVE_TOLERANCE * Math.max(1, magnitudes[magnitudes.length >> 1]);
@@ -233,7 +235,7 @@ function scanDiscontinuity(
 		const near = fn(end + toward * length * NEAR_END);
 		const nearer = fn(end + toward * length * NEARER_END);
 		if (!Number.isFinite(nearer) || Math.abs(nearer - near) > tolerance) {
-			return `${subject} diverge en x = ${format(end)}`;
+			return `${subject} diverge en ${variable} = ${format(end)}`;
 		}
 	}
 
@@ -253,7 +255,7 @@ function scanDiscontinuity(
 		// f (repli numérique) non bornée mais intégrable (1/√|x³ − 2|) : Simpson
 		// garde sa valeur approchée ; F, elle, ne doit jamais diverger
 		if (subject === 'la fonction' && singularityKind(fn, at, lo, hi) === 'integrable') continue;
-		return `la fonction a une singularité en x ≈ ${format(at)}`;
+		return `la fonction a une singularité en ${variable} ≈ ${format(at)}`;
 	}
 	return null;
 }
@@ -313,7 +315,13 @@ export function antiderivativeDiscontinuity(
 	if (!Number.isFinite(lower) || !Number.isFinite(upper) || lower === upper) return null;
 	const F = compiledIn(antiderivative, variable);
 	if (F === null) return null;
-	return scanDiscontinuity(F, Math.min(lower, upper), Math.max(lower, upper), 'la primitive');
+	return scanDiscontinuity(
+		F,
+		Math.min(lower, upper),
+		Math.max(lower, upper),
+		'la primitive',
+		variable
+	);
 }
 
 /**
@@ -386,7 +394,7 @@ export function denominatorPole(
 			if (!zero && !signChange) continue;
 			const z = zero ? xs[i] : rootBetween(g, xs[i], xs[i + 1]);
 			if (singularityKind(f, z, lo, hi) === 'pole')
-				return `la fonction a une singularité en x ≈ ${format(z)}`;
+				return `la fonction a une singularité en ${variable} ≈ ${format(z)}`;
 		}
 	}
 	return null;
@@ -421,11 +429,11 @@ export function numericIntegrand(
 	// Les bornes elles-mêmes (Simpson les évalue) : prolongeables, ou refus
 	for (const end of [lo, hi]) {
 		if (!Number.isFinite(extended(end))) {
-			return { kind: 'singular', reason: `la fonction diverge en x = ${format(end)}` };
+			return { kind: 'singular', reason: `la fonction diverge en ${variable} = ${format(end)}` };
 		}
 	}
 	const reason =
-		scanDiscontinuity(extended, lo, hi, 'la fonction') ??
+		scanDiscontinuity(extended, lo, hi, 'la fonction', variable) ??
 		denominatorPole(integrand, variable, lo, hi);
 	return reason === null ? { kind: 'regular', f: extended } : { kind: 'singular', reason };
 }

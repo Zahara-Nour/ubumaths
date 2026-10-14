@@ -49,9 +49,11 @@ describe('.intégrer : les refus restent du texte', () => {
 		expect(run('.intégrer 1/x -1 1')).toMatchObject({ kind: 'refus' });
 	});
 
-	it('non résolu : texte du moteur, sans LaTeX', () => {
+	// Mesuré le 2026-10-14 : la ligne montrait la sortie du terminal, « ∫ … : Non
+	// résolu / Technique tentée … » — le refus du moteur, en français, à la place
+	it('non résolu : le refus du moteur, en français, sans LaTeX', () => {
 		const outcome = run('.intégrer e^(x^2)');
 		expect(outcome).not.toHaveProperty('latex');
-		expect(outcome).toMatchObject({ output: expect.stringContaining('Non résolu') });
+		expect(outcome).toEqual({ kind: 'refus', message: 'Je ne sais pas calculer cette intégrale' });
 	});
 });
