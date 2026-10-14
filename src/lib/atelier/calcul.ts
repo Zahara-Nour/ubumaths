@@ -80,6 +80,8 @@ import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student
 import { UNREADABLE_STUDY_DOMAIN } from '$lib/mathAST/domain/study';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
+import { simplify } from '$lib/mathAST/simplify/simplify';
+import { mapNode } from '$lib/mathAST/transforms';
 import {
 	resolveCommand,
 	suggestFor,
@@ -107,7 +109,7 @@ import { readNaturalQuantities, singleLetterHint, type NaturalReading } from './
 import { quantityProblem } from '$lib/mathAST/cli/quantities';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
 import { VALUE_FORBIDDEN, typedValueLatex } from '$lib/mathAST/cli/commands/eval.command';
-import { isBoolean, isNumber, isOpposite } from '$lib/mathAST/guards';
+import { isBoolean, isNumber, isOpposite, isRelation } from '$lib/mathAST/guards';
 import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
@@ -748,22 +750,217 @@ function replaceCalls(
 }
 
 /**
- * L'appel `f(2)` d'une fonction en attente d'un paramètre (`f(x) = a x`) :
- * son expression, x remplacé par l'argument — `a` reste une lettre, que
- * `.évaluer` reçoit après `en`. `null` si l'appel ne se lit pas.
+ * Les appels des fonctions `names` dans un arbre, remplacés par leur
+ * expression, x remplacé par l'argument — les paramètres restent des lettres.
+ *
+ * ⚠️ De l'INTÉRIEUR vers l'extérieur (`mapNode` est ascendant) : l'argument
+ * est déjà développé quand l'appel qui le contient l'est — `f(f(x))` donne
+ * `a(ax)`, et non `a f(x)`. Puis UNE seule passe de `substitute` : itéré, x
+ * remplacé par `2x` l'était dix fois (`f(2x)` → 1024a).
+ *
+ * `reduce` : chaque appel remplacé est réduit (`simplify`) — la ligne de
+ * calcul, que le moteur rend telle quelle dès qu'une lettre y reste.
+ * `divisionByZero` : un dénominateur nul APRÈS la substitution (`a/x` en 0),
+ * que `simplify` aurait écrit `a/0` sans rien dire.
  */
-function pendingCall(session: CalcSession, name: string, call: string): string | null {
-	const node = astOf(call, 'url', session.atelier.functionNames);
-	const body = substitutedAstOf(session.atelier, name, { forDerivation: true });
-	if (node?.type !== 'function' || node.args.length !== 1 || !body.ok) return null;
-	return toCustom(substitute(body.ast, { [INTERNAL_LETTER]: node.args[0] }));
+function expandedCalls(
+	session: CalcSession,
+	ast: MathNode,
+	names: ReadonlySet<string>,
+	reduce: boolean
+): { readonly ast: MathNode; readonly cited: readonly string[]; readonly divisionByZero: boolean } {
+	const cited: string[] = [];
+	let divisionByZero = false;
+	const expanded = mapNode(ast, (node) => {
+		if (
+			node.type !== 'function' ||
+			!names.has(node.name) ||
+			node.args.length !== 1 ||
+			node.isInverse === true ||
+			node.power !== undefined
+		) {
+			return node;
+		}
+		let value: MathNode;
+		if (node.derivativeOrder !== undefined) {
+			// `f'(2)` : la dérivée développée par `expandInput`, puis réduite
+			// (sans quoi `2 a * 2` restait affiché)
+			if (!reduce) return node;
+			const derived = astOf(expandInput(session.atelier, toCustom(node)), 'url');
+			if (derived === null) return node;
+			value = derived;
+		} else {
+			const body = substitutedAstOf(session.atelier, node.name, { forDerivation: true });
+			if (!body.ok) return node;
+			value = substitute(body.ast, { [INTERNAL_LETTER]: node.args[0] }, { maxIterations: 1 });
+		}
+		if (hasZeroDenominator(value)) divisionByZero = true;
+		if (!cited.includes(node.name)) cited.push(node.name);
+		return reduce ? simplify(value).result : value;
+	});
+	return { ast: expanded, cited, divisionByZero };
+}
+
+/** Un dénominateur qui vaut 0, une fois réduit (`a/(1-1)`). */
+function hasZeroDenominator(ast: MathNode): boolean {
+	let found = false;
+	mapNode(ast, (node) => {
+		if (!found && node.type === 'division') {
+			const denominator = simplify(node.denominator).result;
+			found = isNumber(denominator) && Number(denominator.value) === 0;
+		}
+		return node;
+	});
+	return found;
 }
 
 /**
- * `pendingFunctions` (`.évaluer`, E6) : une fonction en attente d'un
- * paramètre (`f(x) = a x`, `a` non posé) est remplacée aussi — la valeur de
- * `a` arrive après `en` (`en x=1 ; a=2`), et sans elle le moteur le dit
- * (« Il manque la valeur de a »).
+ * L'appel `f(2)` d'une fonction en attente d'un paramètre (`f(x) = a x`) :
+ * son expression, x remplacé par l'argument — `a` reste une lettre, que
+ * `.évaluer` reçoit après `en`. Les appels imbriqués des fonctions `names`
+ * aussi (`f(f(x))`). `null` si l'appel ne se lit pas.
+ */
+function pendingCall(
+	session: CalcSession,
+	names: ReadonlySet<string>,
+	call: string
+): string | null {
+	const node = astOf(call, 'url', session.atelier.functionNames);
+	if (node?.type !== 'function' || node.args.length !== 1) return null;
+	const expanded = expandedCalls(session, node, names, false);
+	return expanded.cited.length === 0 ? null : toCustom(expanded.ast);
+}
+
+/**
+ * Les paramètres d'une fonction « à paramètre » : en attente de VALEURS
+ * seulement (`f(x) = a x`, `a` non posé → `['a']`). `null` pour tout autre
+ * objet — une fonction prête, ou en attente d'une FONCTION (`missing` en
+ * `as: 'function'`), dont l'expression ne vaut rien sans elle (V56).
+ * ⚠️ `p(x) = q(x)+1`, q inconnu, n'en est PAS : l'atelier lit `q(x)` comme
+ * le produit q·x, et q comme une valeur — p est donc à paramètre q.
+ */
+function parametersOf(object: AtelierObject): readonly string[] | null {
+	if (object.kind !== 'function' || object.status !== 'pending') return null;
+	const missing = object.missing ?? [];
+	if (missing.length === 0 || missing.some((m) => m.as !== 'value')) return null;
+	return missing.map((m) => m.name);
+}
+
+/** Une fonction de l'atelier, citée (`f`, `f(2)`, `f'`) dans une saisie. */
+function citesName(typed: string, name: string): boolean {
+	return new RegExp(`(?<![A-Za-z_\\\\])${name}(?![A-Za-z_0-9])`).test(typed);
+}
+
+/** La saisie cite-t-elle une fonction à paramètre ? */
+function citesParameterized(session: CalcSession, typed: string): boolean {
+	return session.atelier.objects.some((o) => parametersOf(o) !== null && citesName(typed, o.name));
+}
+
+/**
+ * Les commandes dont la réponse dépend du SIGNE ou de la valeur d'un
+ * paramètre : `.résoudre a x = 0` (a = 0 ?), `.limite e^{a x}`, `.variations`
+ * (signe de f' = a)… Avec une fonction à paramètre, elles refusent plutôt que
+ * de répondre faux (V56).
+ */
+const PARAMETER_BLOCKED = new Set(['solve', 'variations', 'limit', 'domain', 'reciprocal']);
+
+/**
+ * Le refus d'une commande qui cite une fonction en attente (V56), ou `null` :
+ * - en attente d'une FONCTION (`p(x) = q(x)+1`) : le message de la carte —
+ *   le moteur recevait le symbole p, et `.dériver p` répondait 0 ;
+ * - à paramètre, pour une commande de `PARAMETER_BLOCKED` : le résultat
+ *   dépend du paramètre, on le nomme.
+ */
+function pendingFunctionRefusal(
+	session: CalcSession,
+	typed: string,
+	command: string
+): string | null {
+	const parameters: string[] = [];
+	for (const object of session.atelier.objects) {
+		if (object.kind !== 'function' || object.status !== 'pending') continue;
+		if (!citesName(typed, object.name)) continue;
+		const own = parametersOf(object);
+		if (own === null) {
+			if (object.message !== undefined) return object.message;
+			continue;
+		}
+		if (!PARAMETER_BLOCKED.has(command)) continue;
+		for (const parameter of own) if (!parameters.includes(parameter)) parameters.push(parameter);
+	}
+	return parameters.length === 0 ? null : dependsOnMessage(parameters);
+}
+
+/** « Le résultat dépend de a : donne-lui une valeur (a = 2) pour l'étudier. » */
+function dependsOnMessage(parameters: readonly string[]): string {
+	const letters =
+		parameters.length === 1
+			? parameters[0]
+			: `${parameters.slice(0, -1).join(', ')} et ${parameters[parameters.length - 1]}`;
+	const pronoun = parameters.length === 1 ? 'lui' : 'leur';
+	return `Le résultat dépend de ${letters} : donne-${pronoun} une valeur (${parameters[0]} = 2) pour l'étudier.`;
+}
+
+/** Ce que devient une ligne de calcul qui cite une fonction à paramètre. */
+type ParameterizedLine =
+	| { readonly kind: 'text'; readonly text: string }
+	| { readonly kind: 'refus'; readonly message: string }
+	| { readonly kind: 'division-by-zero' };
+
+/**
+ * Les APPELS d'une fonction à paramètre dans une ligne de calcul : `f(2)` →
+ * `2a`. Le moteur ne lie que les objets prêts, et répondait « Fonction
+ * inconnue : f — définis-la d'abord », alors que f est dans l'atelier (V56).
+ *
+ * ⚠️ Dans l'ARBRE, et réduit ICI (`simplify`) : une ligne de calcul qui garde
+ * des lettres est rendue telle quelle par le moteur — en texte, `f(2)+1`
+ * affichait `(a*2)+1`. Seuls les appels sont réduits : `x+x` tapé reste tel
+ * quel, comme avant. La ligne n'est récrite que si elle cite un tel appel ;
+ * les fonctions prêtes y sont alors remplacées aussi (`g(f(2))` → 4a²), et
+ * `f'(2)` développée et réduite (4a).
+ *
+ * Refus : une égalité ou une comparaison (`f(2)=4` répondait `false`, vrai
+ * pour a = 2). Un dénominateur nul (`a/x` en 0) : « Division par zéro »,
+ * comme sans paramètre — `simplify` aurait écrit `a/0`.
+ */
+function parameterizedLine(session: CalcSession, text: string): ParameterizedLine {
+	const parameterized = session.atelier.objects.filter((o) => parametersOf(o) !== null);
+	if (parameterized.length === 0) return { kind: 'text', text };
+	// `f` seul : son expression, comme pour une fonction prête (`2x`)
+	const alone = parameterized.find((o) => o.name === text.trim());
+	if (alone !== undefined) {
+		const body = substitutedAstOf(session.atelier, alone.name, { forDerivation: true });
+		return { kind: 'text', text: body.ok ? toCustom(body.ast) : text };
+	}
+	const ast = astOf(text, 'url', session.atelier.functionNames);
+	if (ast === null) return { kind: 'text', text };
+	const names = new Set(
+		session.atelier.objects
+			.filter((o) => o.kind === 'function' && (o.status === 'ok' || parametersOf(o) !== null))
+			.map((o) => o.name)
+	);
+	const expanded = expandedCalls(session, ast, names, true);
+	const parameters = [
+		...new Set(
+			parameterized
+				.filter((o) => expanded.cited.includes(o.name))
+				.flatMap((o) => parametersOf(o) ?? [])
+		)
+	];
+	if (parameters.length === 0) return { kind: 'text', text };
+	if (expanded.divisionByZero) return { kind: 'division-by-zero' };
+	if (isRelation(ast)) return { kind: 'refus', message: dependsOnMessage(parameters) };
+	return { kind: 'text', text: toCustom(expanded.ast) };
+}
+
+/**
+ * Une fonction à paramètre (`f(x) = a x`, `a` non posé) est remplacée comme
+ * une fonction prête : le paramètre reste une lettre, `.dériver f` répond a
+ * (V56 — le moteur recevait le symbole f et répondait 0).
+ *
+ * `pendingFunctions` (`.évaluer`, E6) : toute fonction en attente est
+ * remplacée — la valeur de `a` arrive après `en` (`en x=1 ; a=2`), et sans
+ * elle le moteur le dit (« Il manque la valeur de a »).
  */
 function substituteNames(
 	session: CalcSession,
@@ -772,11 +969,26 @@ function substituteNames(
 ): string | null {
 	if (argument.trim() === '') return argument;
 
+	// Les fonctions que remplace l'appel d'une fonction en attente : en attente
+	// (`f(f(x))`) et PRÊTES (`f(g(x))`) — sinon le sort de `g(x)` dépendait de
+	// l'ordre de définition (g après f : « Je n'ai pas su lire »)
+	const callNames = new Set(
+		session.atelier.objects
+			.filter(
+				(o) =>
+					o.kind === 'function' &&
+					(o.status === 'ok' ||
+						(o.status === 'pending' && (pendingFunctions || parametersOf(o) !== null)))
+			)
+			.map((o) => o.name)
+	);
 	let result = argument;
 	for (const object of session.atelier.objects) {
 		const usable =
 			object.status === 'ok' ||
-			(pendingFunctions && object.status === 'pending' && object.kind === 'function');
+			(object.status === 'pending' &&
+				object.kind === 'function' &&
+				(pendingFunctions || parametersOf(object) !== null));
 		if (!usable) continue;
 		// Une liste n'a pas d'expression : ce sont ses VALEURS que lit une
 		// commande de séries (`.stats L` répondait « certaines valeurs ne sont
@@ -797,7 +1009,7 @@ function substituteNames(
 		if (object.kind === 'function' || object.kind === 'sequence') {
 			const replaced = pending
 				? replaceCalls(session, result, object.name, (call) =>
-						pendingCall(session, object.name, call)
+						pendingCall(session, callNames, call)
 					)
 				: replaceCalls(session, result, object.name);
 			if (replaced === null) return null;
@@ -1124,6 +1336,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			kind: 'refus',
 			message: `« ${recurrence.name} » est une suite récurrente : les commandes ne s'en servent pas. Ses termes se calculent un par un, comme ${recurrence.name}(5).`
 		};
+	}
+
+	// Une fonction en attente citée (V56) : refus, avant toute substitution.
+	// `.évaluer` reçoit la valeur du paramètre après `en` (E6) ; les
+	// simulations lisent des noms de listes
+	if (name !== 'eval' && SIMULATIONS[known.name] === undefined) {
+		const pendingRefused = pendingFunctionRefusal(session, typedArgument, known.name);
+		if (pendingRefused !== null) return { kind: 'refus', message: pendingRefused };
 	}
 
 	// `.variations f⁻¹` : f sans réciproque, le refus de `.réciproque f`
@@ -1619,11 +1839,17 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 						},
 						result.ast
 					);
+		// Une fonction à paramètre (V56) : le moteur laisse la valeur en l'état
+		// quand une lettre y reste (`e^{a * 0}`) — réduite ici, pour l'affichage
+		const shown =
+			finalArgs?.bounds != null && citesParameterized(session, typedArgument)
+				? simplify(result.ast).result
+				: result.ast;
 		return {
 			kind: 'commande',
 			input,
 			output: rendered.text,
-			latex: integralLatex(result.ast, rendered.text),
+			latex: integralLatex(shown, rendered.text),
 			...(integrated !== null && { steps: integrated.steps, ...summaryField(integrated) }),
 			...noted
 		};
@@ -2108,7 +2334,14 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	const reading = readNaturalQuantities(decimalCommaInput(withTerms.text), session.atelier.names);
 	const misread = naturalReadingRefusal(session.atelier, reading);
 	if (misread !== null) return misread;
-	const result = session.engine.execute(expandInput(session.atelier, withPiCommand(reading.text)));
+	// `f(2)` d'une fonction à paramètre → `2a` (V56) ; AVANT `expandInput`,
+	// qui développerait `f'(2)` en `2 a * 2`, sans le réduire
+	const line = parameterizedLine(session, withPiCommand(reading.text));
+	if (line.kind === 'refus') return { kind: 'refus', message: line.message };
+	if (line.kind === 'division-by-zero') {
+		return { kind: 'calcul', input, output: 'Erreur de calcul : Division par zéro' };
+	}
+	const result = session.engine.execute(expandInput(session.atelier, line.text));
 	// Des grandeurs qui ne se combinent pas : un refus, en français (lot A),
 	// avec l'aide d'une lettre lue comme unité (`3 t + 2`)
 	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {

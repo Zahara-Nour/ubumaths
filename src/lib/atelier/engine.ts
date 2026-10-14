@@ -508,11 +508,21 @@ export function substitutedAstOf(
 	// cette réécriture elle n'était pas remplacée, et le grapheur refusait la
 	// suite qui la cite (revue du lot 5b)
 	const withCalls = subscriptsAsCalls(expanded, functions, name);
+	// Pour dériver (et pour une fonction à paramètre, V56) : une fonction citée
+	// EN ATTENTE est remplacée aussi — `g(x) = f(x)+1` avec `f(x) = a x` vaut
+	// `a x + 1`, et `.dériver g` répondait f'(x)
+	const cited: FunctionBindings =
+		options?.forDerivation === true
+			? {
+					...Object.fromEntries(Object.entries(derivableFunctions).filter(([n]) => n !== name)),
+					...functions
+				}
+			: functions;
 	const substituted = substituteAll(
 		withCalls,
 		options?.keepValues === true ? {} : variables,
 		substituteFunction,
-		{ functions: functions satisfies FunctionBindings }
+		{ functions: cited }
 	);
 
 	return { ok: true, ast: substituted };
