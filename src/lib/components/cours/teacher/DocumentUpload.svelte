@@ -178,7 +178,7 @@
 
 			if (envoiError) {
 				console.error('[DocumentUpload] Envoi impossible :', envoiError);
-				uploadError = "Erreur lors de l'envoi du fichier";
+				uploadError = "Erreur lors de l'upload";
 				return;
 			}
 

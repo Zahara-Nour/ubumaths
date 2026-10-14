@@ -446,7 +446,7 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
 - Utilitaires : `src/lib/utils/__tests__/{class-sessions,academic-period,week-config,timeMatching}.test.ts`.
 - Composants : `src/lib/components/cours/**/__tests__/` (dont
   `ChapterSectionsEditor-proprietaire` : plan d'un modèle, chapitre lié, masqués ; et
-  `DocumentUpload` : routes du propriétaire), `templates/__tests__/`,
+  `DocumentUpload-proprietaire` : routes du propriétaire), `templates/__tests__/`,
   `src/lib/components/__tests__/ClassScheduleGrid.svelte.test.ts` ; routes :
   `dashboard/teacher/cours/[classId]/[chapterId]/__tests__/series-actions.test.ts`,
   `api/teacher/chapters/[id]/sections/assign/__tests__/assign.test.ts`,
