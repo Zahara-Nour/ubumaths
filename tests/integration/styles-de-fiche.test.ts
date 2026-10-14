@@ -122,6 +122,9 @@ afterAll(async () => {
 		.query('delete from public.worksheets where title like $1', [`${RUN}%`])
 		.catch(() => undefined);
 	await pg
+		.query('delete from public.worksheet_templates where name like $1', [`${RUN}%`])
+		.catch(() => undefined);
+	await pg
 		.query('delete from public.worksheet_styles where name like $1', [`${RUN}%`])
 		.catch(() => undefined);
 	await cleanupAllTestData();
@@ -308,6 +311,97 @@ describe('Styles de fiche : contraintes', () => {
 			templateId
 		]);
 		expect(template.rows).toHaveLength(0);
+	});
+});
+
+// Une clé étrangère se vérifie hors RLS : sans garde, le prof rattacherait sa
+// fiche ou son gabarit à un style qui n'est pas le sien (audit du lot 3a).
+describe('Styles de fiche : rattachement par le prof', () => {
+	async function teacherTemplate(): Promise<string> {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			`insert into public.worksheet_templates (name, template_content, created_by)
+			 values ($1, $2, $3) returning id`,
+			[`${RUN} gabarit libre`, TYPST, teacherId]
+		);
+		return rows[0].id;
+	}
+
+	async function teacherWorksheet(): Promise<string> {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			`insert into public.worksheets (title, type, status, created_by)
+			 values ($1, 'worksheet', 'draft', $2) returning id`,
+			[`${RUN} fiche du prof`, teacherId]
+		);
+		return rows[0].id;
+	}
+
+	async function templateStyle(id: string): Promise<string | null> {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			'select style_id from public.worksheet_templates where id = $1',
+			[id]
+		);
+		return rows[0].style_id;
+	}
+
+	async function worksheetStyle(id: string): Promise<string | null> {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query('select style_id from public.worksheets where id = $1', [id]);
+		return rows[0].style_id;
+	}
+
+	it('son gabarit ne rejoint ni un style de Chiphre, ni le style de l’admin', async () => {
+		const templateId = await teacherTemplate();
+		for (const styleId of [DEFAULT_STYLE_ID, adminStyleId]) {
+			const { error } = await teacherClient
+				.from('worksheet_templates')
+				.update({ style_id: styleId, form: 'answers' })
+				.eq('id', templateId)
+				.select('id');
+			expect(error).not.toBeNull();
+			expect(await templateStyle(templateId)).toBeNull();
+		}
+	});
+
+	it('son gabarit rejoint son propre style', async () => {
+		const templateId = await teacherTemplate();
+		const styleId = await seedStyle(teacherId, 'rattachement');
+		const { data, error } = await teacherClient
+			.from('worksheet_templates')
+			.update({ style_id: styleId, form: 'answers' })
+			.eq('id', templateId)
+			.select('id');
+		expect(error).toBeNull();
+		expect(data).toHaveLength(1);
+		expect(await templateStyle(templateId)).toBe(styleId);
+	});
+
+	it('sa fiche ne prend pas le style de l’admin', async () => {
+		const worksheetId = await teacherWorksheet();
+		const { error } = await teacherClient
+			.from('worksheets')
+			.update({ style_id: adminStyleId })
+			.eq('id', worksheetId)
+			.select('id');
+		expect(error).not.toBeNull();
+		expect(await worksheetStyle(worksheetId)).toBeNull();
+	});
+
+	it('sa fiche prend un style de Chiphre ou le sien', async () => {
+		const worksheetId = await teacherWorksheet();
+		const ownStyleId = await seedStyle(teacherId, 'pour la fiche');
+		for (const styleId of [DEFAULT_STYLE_ID, ownStyleId]) {
+			const { data, error } = await teacherClient
+				.from('worksheets')
+				.update({ style_id: styleId })
+				.eq('id', worksheetId)
+				.select('id');
+			expect(error).toBeNull();
+			expect(data).toHaveLength(1);
+			expect(await worksheetStyle(worksheetId)).toBe(styleId);
+		}
 	});
 });
 

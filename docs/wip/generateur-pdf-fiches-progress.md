@@ -170,6 +170,18 @@ Erreur / garde :
 
 ## Journal
 
+- 2026-10-14 — **lot 3a** (branche `feat/fiches-styles-base`) : migration
+  `20261016103200_worksheet_styles` (table des styles, 12 styles de Chiphre, `style_id` et `form`
+  des gabarits, `worksheets.style_id` laissé vide). `security-auditor` : rien de bloquant ; corrigé
+  son point « clé étrangère vérifiée hors RLS » par deux triggers (SECURITY INVOKER) : un gabarit
+  ne rejoint qu'un style de son auteur, une fiche un style de Chiphre ou de son auteur. Tests
+  `styles-de-fiche.test.ts` : 19, rouges sans la migration (puis 2 rouges sans les triggers).
+  **À respecter en 3b et au lot 4** (audit) : lire le style avec le client du prof, style illisible
+  → repli ; jamais résoudre un style en service-role sans vérifier `owner_id is null or owner_id =
+created_by` ; Zod sur `style_id` / `form` ; Typst d'un style de Chiphre toujours pris dans le
+  code. Note : un prof peut fixer lui-même l'`id` d'un nouveau style ; une future migration de
+  Chiphre insérera ses styles avec `on conflict`.
+
 - 2026-10-14 — **lot 2 fait** (branche `refactor/fiches-formes-gabarits`). `templates/styles.ts`
   (`BUILT_IN_STYLES`, `DEFAULT_STYLE_ID`, `resolveTemplate`) ; « Fiche élève » découpé en code
   commun (`STUDENT_STYLE_COMMON`, `{{style_common}}`) et quatre formes (`STUDENT_STYLE_FORMS`) ;

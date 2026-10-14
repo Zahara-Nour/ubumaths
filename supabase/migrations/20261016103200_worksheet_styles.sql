@@ -29,6 +29,10 @@
 -- des gabarits sans style.
 --
 -- ROLLBACK:BEGIN
+-- drop trigger if exists worksheets_style_owner_check on public.worksheets;
+-- drop trigger if exists worksheet_templates_style_owner_check on public.worksheet_templates;
+-- drop function if exists public.worksheets_style_owner_check();
+-- drop function if exists public.worksheet_templates_style_owner_check();
 -- alter table public.worksheets drop column if exists style_id;
 -- drop index if exists public.worksheet_templates_style_form_key;
 -- alter table public.worksheet_templates drop column if exists form;
@@ -154,3 +158,73 @@ create policy "Admins manage all styles"
 	to authenticated
 	using ((select public.is_admin()))
 	with check ((select public.is_admin()));
+
+-- ---------------------------------------------------------------------------
+-- 5. Rattachement à un style : seulement à un style permis
+-- ---------------------------------------------------------------------------
+--
+-- Une clé étrangère se vérifie hors RLS : sans ces triggers, un prof pourrait
+-- rattacher sa fiche ou son gabarit au style d'un autre (connu par son UUID),
+-- ou son gabarit à un style de Chiphre (et y prendre la place d'une forme).
+-- SECURITY INVOKER : la lecture du style passe par la RLS de l'appelant ; un
+-- style qu'il ne lit pas est refusé comme un style qui n'existe pas.
+-- Migrations, seed et `service_role` (hors `anon` / `authenticated`) passent.
+
+create function public.worksheet_templates_style_owner_check()
+returns trigger
+language plpgsql
+security invoker
+set search_path = public, pg_temp
+as $$
+begin
+	if new.style_id is null
+		or coalesce(auth.role(), '') not in ('anon', 'authenticated')
+		or public.is_admin() then
+		return new;
+	end if;
+	-- Un gabarit ne rejoint que le style de son auteur (jamais un style de Chiphre).
+	if not exists (
+		select 1 from public.worksheet_styles s
+		where s.id = new.style_id and s.owner_id = new.created_by
+	) then
+		raise exception 'Style refusé : un gabarit ne rejoint qu''un style de son auteur.'
+			using errcode = 'insufficient_privilege';
+	end if;
+	return new;
+end;
+$$;
+
+create trigger worksheet_templates_style_owner_check
+	before insert or update of style_id, form, created_by on public.worksheet_templates
+	for each row execute function public.worksheet_templates_style_owner_check();
+
+create function public.worksheets_style_owner_check()
+returns trigger
+language plpgsql
+security invoker
+set search_path = public, pg_temp
+as $$
+begin
+	if new.style_id is null
+		or coalesce(auth.role(), '') not in ('anon', 'authenticated')
+		or public.is_admin() then
+		return new;
+	end if;
+	-- Une fiche prend un style de Chiphre, ou un style de l'auteur de la fiche.
+	if not exists (
+		select 1 from public.worksheet_styles s
+		where s.id = new.style_id and (s.owner_id is null or s.owner_id = new.created_by)
+	) then
+		raise exception 'Style refusé : la fiche prend un style de Chiphre ou de son auteur.'
+			using errcode = 'insufficient_privilege';
+	end if;
+	return new;
+end;
+$$;
+
+create trigger worksheets_style_owner_check
+	before insert or update of style_id, created_by on public.worksheets
+	for each row execute function public.worksheets_style_owner_check();
+
+revoke execute on function public.worksheet_templates_style_owner_check() from public, anon;
+revoke execute on function public.worksheets_style_owner_check() from public, anon;
