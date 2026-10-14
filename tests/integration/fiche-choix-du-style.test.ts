@@ -101,9 +101,9 @@ function jsonRequest(body: unknown): Request {
 }
 
 /** Le statut d'une route, qu'elle réponde ou qu'elle lève `error()`. */
-async function statusOf(call: () => Promise<Response>): Promise<number> {
+async function statusOf(call: () => unknown): Promise<number> {
 	try {
-		return (await call()).status;
+		return ((await call()) as Response).status;
 	} catch (e) {
 		const status = (e as { status?: number }).status;
 		if (typeof status === 'number') return status;
@@ -175,8 +175,8 @@ async function templateInDb(
 	return rows[0];
 }
 
-function put(id: string, body: unknown): Promise<Response> {
-	return updateWorksheet({ locals, params: { id }, request: jsonRequest(body) } as never);
+async function put(id: string, body: unknown): Promise<Response> {
+	return await updateWorksheet({ locals, params: { id }, request: jsonRequest(body) } as never);
 }
 
 // ============================================================================
@@ -385,7 +385,7 @@ describe('la page « Gabarits » (ses actions) : un gabarit et son style vont en
 	}
 
 	/** L'identifiant du gabarit vers lequel l'action redirige. */
-	async function redirectedId(call: () => Promise<unknown>): Promise<string> {
+	async function redirectedId(call: () => unknown): Promise<string> {
 		try {
 			await call();
 		} catch (e) {

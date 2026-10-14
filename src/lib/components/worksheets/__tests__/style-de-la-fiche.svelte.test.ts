@@ -47,7 +47,7 @@ async function renderCards(
 	ids: { style_id?: string | null; template_id?: string | null },
 	onFieldChange: (field: string, value: unknown) => void = () => {}
 ) {
-	return render(MetadataCards, {
+	return await render(MetadataCards, {
 		props: { worksheet: worksheet(ids), styles: STYLES, onFieldChange }
 	});
 }
