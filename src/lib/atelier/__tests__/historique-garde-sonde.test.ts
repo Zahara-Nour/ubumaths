@@ -73,3 +73,27 @@ describe('aucune commande permise ne recopie un argument dans un attribut', () =
 		expect(attributes.filter((a) => a.includes('zzevil'))).toEqual([]);
 	});
 });
+
+/**
+ * Contre-audit de #1356 : `\\[dimension]` (interligne) n'a pas de borne — MathLive
+ * empile la parenthèse étirable sur toute la hauteur : 1e6 em sature la mémoire,
+ * l'onglet plante à CHAQUE visite (aucun try/catch ne rattrape un « heap out of memory »).
+ */
+describe('une formule relue ne peut pas faire exploser le rendu', () => {
+	it.each([
+		'\\begin{pmatrix}x\\\\[1000000em]x\\end{pmatrix}',
+		'\\begin{pmatrix}x\\\\ [10000em]x\\end{pmatrix}',
+		'\\begin{cases}x\\\\[1em]y\\end{cases}'
+	])('refuse l’interligne réglé « \\\\[…] » : %s', (latex) => {
+		expect(isSafeLatex(latex)).toBe(false);
+	});
+
+	it('refuse une formule aux trop nombreuses lignes', () => {
+		const rows = Array.from({ length: 150 }, () => 'x').join('\\\\');
+		expect(isSafeLatex(`\\begin{pmatrix}${rows}\\end{pmatrix}`)).toBe(false);
+	});
+
+	it('garde une matrice ordinaire', () => {
+		expect(isSafeLatex('\\begin{pmatrix}1 & 2\\\\3 & 4\\end{pmatrix}')).toBe(true);
+	});
+});

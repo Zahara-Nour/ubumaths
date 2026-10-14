@@ -84,6 +84,20 @@ const PLAIN = /^[\x20-\x7E\xA0-\xFF]*$/;
  */
 const MAX_NESTING = 40;
 
+/**
+ * Lignes au plus dans une formule (`\\`). Mesuré (contre-audit de #1356) : 5 000
+ * caractères de lignes vides dans une `pmatrix` donnent ~1,2 Mo de balisage ;
+ * une réponse de Calcul en a quelques-unes (tableau, système).
+ */
+const MAX_ROW_BREAKS = 100;
+
+/**
+ * Interligne réglé `\\[1em]` (espaces permises avant `[`) : sans borne, MathLive
+ * étire les délimiteurs sur toute la hauteur — `\\[1000000em]` sature la
+ * mémoire et l'onglet plante à chaque visite. Le moteur ne l'écrit jamais.
+ */
+const ROW_SPACING = /\\\\\s*\[/;
+
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -104,11 +118,13 @@ function tooDeep(latex: string): boolean {
  *
  * Refusée aussi : un caractère hors de `PLAIN`, la notation `^^5c` de TeX
  * (MathLive la lit comme un caractère, `\` compris), un `\begin` sans
- * environnement connu, une imbrication démesurée. Une formule refusée n'est
+ * environnement connu, une imbrication démesurée, un interligne réglé
+ * (`\\[…]`) ou trop de lignes. Une formule refusée n'est
  * jamais « réparée » : la ligne se montre en texte.
  */
 export function isSafeLatex(latex: string): boolean {
 	if (!PLAIN.test(latex) || latex.includes('^^') || tooDeep(latex)) return false;
+	if (ROW_SPACING.test(latex) || (latex.match(/\\\\/g) ?? []).length > MAX_ROW_BREAKS) return false;
 	for (const [, name] of latex.matchAll(COMMAND)) {
 		const known = name.length > 1 || /[a-zA-Z]/.test(name) ? MATH_COMMANDS : CONTROL_SYMBOLS;
 		if (!known.has(name)) return false;
