@@ -224,8 +224,32 @@
 			desk.notice = converted.message;
 			return false;
 		}
-		desk.submit(converted.text);
+		desk.submit(converted.text, latex);
 		return true;
+	}
+
+	/**
+	 * La consigne du champ mathématique vide, en LaTeX (MathLive) : celle du
+	 * champ texte, sans le point des commandes.
+	 */
+	const MATH_PLACEHOLDER = String.raw`f(x)=x^2-3x+1\text{, ou }12\,\mathrm{km}+300\,\mathrm{m}\text{, ou résoudre }x^2=4`;
+
+	/**
+	 * La saisie écrite dans le champ mathématique, composée — ou `null` : la
+	 * ligne montre alors son texte, échappé par Svelte.
+	 */
+	function inputMarkupOf(entry: Entry): string | null {
+		if (entry.inputLatex === undefined) return null;
+		try {
+			return convertLatexToMarkup(entry.inputLatex, { defaultMode: 'inline-math' });
+		} catch {
+			return null;
+		}
+	}
+
+	/** Ce que lit un lecteur d'écran : le texte envoyé, sans le point jamais tapé. */
+	function spokenInput(entry: Entry): string {
+		return entry.label.replace(/^\.(?=\p{L})/u, '');
 	}
 
 	/**
@@ -557,8 +581,19 @@
 	<ol class="historique">
 		{#each desk.entries as entry, index (entry.id)}
 			{@const markup = markupOf(entry)}
+			{@const written = inputMarkupOf(entry)}
 			<li class:refus={entry.failed}>
-				<p class="saisie" id="{uid}-saisie-{entry.id}">{entry.label}</p>
+				<p class="saisie" id="{uid}-saisie-{entry.id}">
+					{#if written !== null}
+						<!-- La saisie écrite en mathématiques : composée pour les yeux,
+						     dite en texte aux lecteurs d'écran (lecture de MathLive en anglais) -->
+						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+						<span class="saisie-math" aria-hidden="true">{@html written}</span>
+						<span class="sr-only">{spokenInput(entry)}</span>
+					{:else}
+						{entry.label}
+					{/if}
+				</p>
 				<div class="reponse">
 					{#if markup !== null}
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -726,6 +761,7 @@
 					history={recallableLatex}
 					onsubmit={submitMath}
 					label="Calcul, définition ou commande"
+					placeholder={MATH_PLACEHOLDER}
 				/>
 			</div>
 		{:else}
@@ -802,6 +838,14 @@
 		margin: 0;
 		font-size: 0.8125rem;
 		color: var(--color-muted-foreground);
+	}
+	/* La saisie écrite en mathématiques : à la taille de la saisie, et une
+	   longue ligne défile dans son cadre (§3 N5) */
+	.saisie-math {
+		display: inline-block;
+		max-width: 100%;
+		overflow-x: auto;
+		vertical-align: bottom;
 	}
 
 	.reponse {

@@ -44,6 +44,8 @@
 		/** `false` : la ligne n'est pas partie (case vide), le champ la garde */
 		onsubmit: (latex: string) => boolean | void;
 		label?: string;
+		/** La consigne du champ vide, en LaTeX */
+		placeholder?: string;
 		/** Prendre le focus à l'ouverture (la page d'essai ; pas l'atelier) */
 		focusOnMount?: boolean;
 	}
@@ -54,6 +56,7 @@
 		latex = $bindable(''),
 		onsubmit,
 		label = 'Saisie de Calcul',
+		placeholder,
 		focusOnMount = false
 	}: Props = $props();
 
@@ -380,6 +383,7 @@
 <math-field
 	bind:this={field}
 	aria-label={label}
+	{placeholder}
 	class="block w-full rounded-lg border border-border bg-background px-2 py-1.5 text-[1.375rem] text-foreground focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-ring"
 ></math-field>
 
