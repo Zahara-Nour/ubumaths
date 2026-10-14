@@ -95,6 +95,14 @@ Gabarits inaccessibles :
   le style qui décide (`showsPoints`), la case « afficher les points » ne vaut que pour les styles
   qui en impriment. Le PDF élève suivra au lot 4 (il passe par le gabarit).
 
+- **D9** (2026-10-14, lot 3) — **question d'accès** : le prof et l'admin lisent tous les styles
+  (ceux de Chiphre et les leurs) et ne modifient que les leurs ; **les élèves n'ont aucun accès
+  direct** à la table (le serveur leur fournit le gabarit, lot 4). **Le Typst des styles de
+  Chiphre reste dans le code** : en base, une ligne par style (id, nom, description) pour qu'une
+  fiche puisse le désigner. **Remplacer le gabarit d'une forme pour une fiche : plus tard** (0
+  gabarit du prof en prod). **Page « Gabarits » inchangée** au lot 3 : seul le menu « Gabarit » de
+  la fiche devient « Style ». Deux PR : 3a migration (puis `db:migrate`, `db:types`), 3b le code.
+
 ## Vocabulaire proposé (à verser dans CONTEXT.md, lot 0)
 
 | Terme       | Sens                                                                                                                     |
@@ -161,6 +169,18 @@ Erreur / garde :
 - langue inconnue → repli `fr`, comme aujourd'hui.
 
 ## Journal
+
+- 2026-10-14 — **lot 3a** (branche `feat/fiches-styles-base`) : migration
+  `20261016103200_worksheet_styles` (table des styles, 12 styles de Chiphre, `style_id` et `form`
+  des gabarits, `worksheets.style_id` laissé vide). `security-auditor` : rien de bloquant ; corrigé
+  son point « clé étrangère vérifiée hors RLS » par deux triggers (SECURITY INVOKER) : un gabarit
+  ne rejoint qu'un style de son auteur, une fiche un style de Chiphre ou de son auteur. Tests
+  `styles-de-fiche.test.ts` : 19, rouges sans la migration (puis 2 rouges sans les triggers).
+  **À respecter en 3b et au lot 4** (audit) : lire le style avec le client du prof, style illisible
+  → repli ; jamais résoudre un style en service-role sans vérifier `owner_id is null or owner_id =
+created_by` ; Zod sur `style_id` / `form` ; Typst d'un style de Chiphre toujours pris dans le
+  code. Note : un prof peut fixer lui-même l'`id` d'un nouveau style ; une future migration de
+  Chiphre insérera ses styles avec `on conflict`.
 
 - 2026-10-14 — **lot 2 fait** (branche `refactor/fiches-formes-gabarits`). `templates/styles.ts`
   (`BUILT_IN_STYLES`, `DEFAULT_STYLE_ID`, `resolveTemplate`) ; « Fiche élève » découpé en code

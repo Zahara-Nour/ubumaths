@@ -258,6 +258,12 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   au prof et à l'admin (déclencheur `guard_worksheet_error_report_teacher_fields`,
   `20261016101700`, test `tests/integration/signalement-fiche-champs-du-prof.test.ts`).
 - `worksheet_instances` : exercices générés par élève (graine déterministe).
+- `worksheet_styles` (ADR 0028, `20261016103200`) : style de mise en page d'une fiche, propriétaire
+  vide = fourni par Chiphre (Typst dans le code). Lus par le prof et l'admin (ceux de Chiphre et les
+  leurs), modifiés par leur propriétaire ou l'admin ; **aucun accès élève ni `anon`**. Une clé
+  étrangère se vérifie hors RLS : deux déclencheurs refusent qu'un gabarit rejoigne un style qui
+  n'est pas celui de son auteur, ou qu'une fiche prenne le style d'un autre que Chiphre ou son auteur
+  (test `tests/integration/styles-de-fiche.test.ts`).
 
 **L'accès est hérité, jamais distribué** : `student_has_worksheet_access` part de
 `worksheet_assignments`, passe par `worksheet_assignment_classes` / `worksheet_assignment_students`

@@ -1523,3 +1523,12 @@ ON CONFLICT (id) DO UPDATE SET
   description = EXCLUDED.description,
   template_content = EXCLUDED.template_content,
   placeholders = EXCLUDED.placeholders;
+
+-- Chaque gabarit système est la forme « fiche » de son style (ADR 0028) : la
+-- migration 20261016103200_worksheet_styles le fait en production, mais en
+-- local ce seed insère les gabarits APRÈS les migrations.
+UPDATE public.worksheet_templates t
+SET style_id = t.id
+WHERE t.created_by IS NULL
+  AND t.style_id IS NULL
+  AND EXISTS (SELECT 1 FROM public.worksheet_styles s WHERE s.id = t.id);

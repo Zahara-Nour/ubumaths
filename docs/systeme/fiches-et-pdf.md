@@ -126,12 +126,13 @@ est en consultation seule, `read_only` — [composants-ui.md § BackLink](../pra
 ## Le modèle d'une fiche
 
 ```
-worksheets (type, status, config jsonb, translations, template_id, school_id)
+worksheets (type, status, config jsonb, translations, template_id, style_id, school_id)
  ├── worksheet_sections (title, instructions, position, translations)
  ├── worksheet_exercises (exercise_id → exercises, section_id?, position, points,
  │                        custom_instructions, variation_index?, variant_mode/config (plus lus),
  │                        correction_visible, is_essential, translations)
- ├── worksheet_templates (template_content Typst, placeholders)   ← via template_id
+ ├── worksheet_templates (template_content Typst, placeholders, style_id, form)   ← via template_id
+ ├── worksheet_styles (name, description, owner_id vide = Chiphre, common_typst) ← via style_id
  ├── worksheet_assignments (status, available_from, closes_at, show_corrections,
  │    │                     correction_release_mode / _at, individualized, guidance_level)
  │    ├── worksheet_assignment_classes (class_id)        ← une ligne par classe
@@ -306,6 +307,15 @@ d'en-tête pleine largeur, plus injectés. Fiche + corrections (`withCorrections
 (`MATH_LIMITS_SETUP`) sont posés en tête de tout document produit par un gabarit. Un gabarit qui
 contient `{{exercises_badge}}` reçoit la numérotation en carré ambre (charte élève) ; sinon
 `{{exercises}}` en titres gras. L'option `page_layout` (A4 / Letter) n'est lue par aucun gabarit.
+
+**Styles en base** (lot 3a, migration `20261016103200_worksheet_styles`) : table
+`worksheet_styles`, une ligne par style de Chiphre (mêmes identifiants que leur gabarit, propriétaire
+vide ; leur Typst reste dans le code, D9) et une par style d'un prof. `worksheet_templates` porte
+`style_id` et `form` (un gabarit par couple) ; `worksheets.style_id` (vide = le style se déduit de
+`template_id`, comme avant ; style supprimé → vide). Accès (D9) : le prof et l'admin lisent les
+styles de Chiphre et les leurs, ne modifient que les leurs (l'admin, tous) ; ni élève ni visiteur
+n'y accède (`tests/integration/styles-de-fiche.test.ts`). Le code ne lit pas encore ces colonnes
+(lot 3b).
 
 **Un document, un rendu d'exercice** (ADR 0028, lot 1) : les deux générateurs construisent un
 `WorksheetDocument` puis appellent `renderExercises(doc, forme, habillage)`. Les habillages

@@ -88,6 +88,7 @@ on:
       - 'src/lib/typst/image-loader.ts'
       - 'src/lib/typst/labels.ts'
       - 'src/lib/typst/templates/default-templates.ts'
+      - 'src/lib/typst/templates/styles.ts'
       - 'src/lib/worksheets/exercise-numbering.ts'
       - 'src/lib/worksheets/exercise-anchor.ts'
       - 'src/lib/worksheets/student-copy.ts'
