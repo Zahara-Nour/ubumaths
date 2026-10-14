@@ -1,7 +1,7 @@
 ---
 title: Atelier — le tableur intégré (phase 0)
 date: 2026-10-15
-status: phase 0 du lot 1 EN ATTENTE DE VALIDATION ; option C, recos Q1-Q5 et T1-T9 décidées
+status: phase 0 du lot 1 VALIDÉE (2026-10-15) ; option C, Q1-Q5, T1-T9, P1-P2 décidées
 ---
 
 # Atelier — le tableur intégré
@@ -190,12 +190,12 @@ n° 9).
 
 ---
 
-## Questions ouvertes (lot 1)
+## Questions du lot 1 — tranchées par David (2026-10-15, « oui je valide »)
 
 - **P1 — Appariement par ligne** (§6) : deux colonnes s'associent ligne à ligne, en écartant les
-  lignes incomplètes — au lieu du rang dans la liste. **Reco : oui** ; sinon une case vide décale
+  lignes incomplètes — au lieu du rang dans la liste. **Décidé : oui** ; sinon une case vide décale
   toutes les paires en silence.
-- **P2 — `;` dans une cellule** (§3) : `12 ; 15 ; 9` se répartit vers le bas. **Reco : oui**, c'est
+- **P2 — `;` dans une cellule** (§3) : `12 ; 15 ; 9` se répartit vers le bas. **Décidé : oui**, c'est
   l'habitude du champ actuel ; sinon la cellule devient le mot « 12 ; 15 ; 9 ».
 
 ## Découpage en PR (lot 1)
