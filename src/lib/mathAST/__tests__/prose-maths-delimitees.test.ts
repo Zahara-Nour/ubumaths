@@ -17,7 +17,9 @@
  * (arithmétique, premier et second degré, inéquations du premier et du second
  * degré, rationnelles, dérivation, intégration, simplification, limites,
  * domaine), à chaque niveau accepté : listes ci-dessous et cas de démo des
- * modules. Les limites, plus strictes depuis le 2026-10-14 : hors des `$…$`,
+ * modules. L'intention `developper` est vérifiée sur ce qu'elle MONTRE : la
+ * rédaction d'`explainExpansion` (option B du 2026-10-14), pas la trace du
+ * pipeline. Les limites, plus strictes depuis le 2026-10-14 : hors des `$…$`,
  * aucune maths en Unicode (`+∞`, `x²`, `0⁺`, `−`, `×`), ni `lim`, `=` ou `0/0`
  * — toute formule de leur prose passe en LaTeX entre `$…$`.
  */
@@ -50,6 +52,7 @@ import { ALL_CATEGORIES as ARITHMETIC_DEMOS } from '../pedagogical-arithmetic/de
 import { generatePedagogicalSimplifySteps } from '../pedagogical-simplify/pipeline';
 import { PedagogicalSimplifyRenderer } from '../pedagogical-simplify/renderer';
 import { ALL_DEMO_CATEGORIES as SIMPLIFY_DEMOS } from '../pedagogical-simplify/demo-cases';
+import { explainExpansion } from '../pedagogical-simplify/expand-explained';
 import { dispatchPedagogicalLimit, PedagogicalLimitRenderer } from '../pedagogical-limits';
 import { ALL_CATEGORIES as LIMIT_DEMOS } from '../pedagogical-limits/demo-cases';
 import { dispatchPedagogicalDomain, PedagogicalDomainRenderer } from '../pedagogical-domain';
@@ -185,6 +188,24 @@ const ABSOLUTE_VALUE_EQUATIONS: readonly string[] = [
 	'5-\\left|x\\right|=2',
 	'\\left|x-1\\right|=\\left|x+3\\right|',
 	'\\left|x-1\\right|=\\left|1-x\\right|'
+];
+
+/**
+ * Développer (option B, 2026-10-14) : la rédaction que voient l'atelier et les
+ * corrections, dont des titres à maths entre `$…$` (`eˣ`, lettres indicées,
+ * fraction en facteur)
+ */
+const EXPANSIONS: readonly string[] = [
+	'(2x-1)(x+3)',
+	'3(x-2)-(x+1)',
+	'(3x-1)^2-(x+2)^2',
+	'(x+1)^3',
+	'-2(x-4)',
+	'(a-2b)^2',
+	'(x_1+x_2)^2',
+	'e^x(x+1)',
+	'\\dfrac{x}{2}(x+1)',
+	'(0.5x+1)^2'
 ];
 
 const LIMITS: ReadonlyArray<readonly [string, string, ('left' | 'right')?]> = [
@@ -450,12 +471,34 @@ function arithmeticTexts(): Text[] {
 	return texts;
 }
 
+/** Développer : les deux versions rendues de la rédaction, et ses descriptions */
+function expansionTexts(where: string, latex: string, schoolLevel: SchoolLevel): Text[] {
+	const explained = explainExpansion(parseLatex(latex), { schoolLevel });
+	if (explained.kind !== 'expanded' || explained.steps === null) return [];
+	const { raw, detailed, summarized } = explained.steps;
+	return [
+		...renderedTexts(where, detailed),
+		...renderedTexts(`${where} résumé`, summarized),
+		...descriptions(where, [...raw.steps, ...raw.summary])
+	];
+}
+
 function simplifyTexts(): Text[] {
 	const renderer = new PedagogicalSimplifyRenderer();
 	const texts: Text[] = [];
+	for (const latex of EXPANSIONS) {
+		for (const schoolLevel of ['college', 'lycee'] as const) {
+			const where = `${latex} [developper] (${schoolLevel})`;
+			texts.push(...attempt(where, () => expansionTexts(where, latex, schoolLevel)));
+		}
+	}
 	for (const testCase of SIMPLIFY_DEMOS.flatMap((c) => c.cases)) {
 		for (const schoolLevel of testCase.schoolLevels ?? (['college', 'lycee'] as const)) {
 			const where = `${testCase.label} [${testCase.intent}] (${schoolLevel})`;
+			if (testCase.intent === 'developper') {
+				texts.push(...attempt(where, () => expansionTexts(where, testCase.latex, schoolLevel)));
+				continue;
+			}
 			texts.push(
 				...attempt(where, () => {
 					const result = generatePedagogicalSimplifySteps(parseLatex(testCase.latex), {
@@ -694,6 +737,15 @@ describe('prose des étapes : les maths entre $…$ (V25)', () => {
 
 	it('simplification : les cas de démo', () => {
 		expect(failures(simplifyTexts())).toEqual([]);
+	});
+
+	it('développer : le panel produit des titres à maths entre $…$', () => {
+		const titles = simplifyTexts()
+			.filter(({ where }) => where.includes('[developper]') && where.endsWith('titre'))
+			.map(({ text }) => text);
+
+		expect(titles).toContain('On distribue $\\exponentialE^x$');
+		expect(titles).toContain('On reconnaît (a + b)² = a² + 2ab + b², avec a = $x_1$ et b = $x_2$');
 	});
 
 	it('le détecteur des limites voit les maths en Unicode', () => {

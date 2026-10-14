@@ -102,7 +102,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/decimal-comma.ts`      | Virgule décimale à l'affichage, refus des virgules ambiguës à la saisie                                    |
 | `src/lib/atelier/simplify-steps.ts`     | `.simplifier` par étapes (`simplifySteps`)                                                                 |
 | `src/lib/atelier/factor-steps.ts`       | `.factoriser` par étapes (`factorSteps`)                                                                   |
-| `src/lib/atelier/expand.ts`             | `.développer` : la réponse (`expandExpression`) et son « Comment ? » (`writeExpandSteps`)                  |
+| `src/lib/atelier/expand.ts`             | `.développer` : refus et messages (`expandExpression`) ; réponse et « Comment ? » par `explainExpansion`   |
 | `src/lib/atelier/derive-steps.ts`       | `.dériver` et « Dériver » expliqués (`deriveSteps`)                                                        |
 | `src/lib/atelier/solve-steps.ts`        | `.résoudre` par étapes (`solveSteps`)                                                                      |
 | `src/lib/atelier/solve-steps-check.ts`  | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                            |
@@ -1010,7 +1010,11 @@ expression TAPÉE citée), tout ce qui n'est pas une expression (liste, saisie i
 
 **Le « Comment ? » de `.développer`** (PR 2, section E de la phase 0) : rédigé par
 `writeExpandSteps` (`mathAST/pedagogical-simplify/expand-steps.ts`), qui part de l'expression
-tapée et finit sur la réponse de la ligne. La trace de l'intention `developper` n'est pas montrée
+tapée et finit sur la réponse de la ligne. Réponse et étapes viennent d'`explainExpansion`
+(`pedagogical-simplify/expand-explained.ts`), que les corrections d'exercices générées
+(`intent: 'developper'`) appellent aussi : une intention, une seule rédaction (option B de David,
+2026-10-14) ; restent dans `expand.ts` les refus, les messages, le plafond de termes et le mode
+décimal (`decimal: true`). La trace de l'intention `developper` n'est pas montrée
 (produits collés « 2x1 », la même ligne jusqu'à 13 fois, distribution cachée). Une ligne par geste,
 appliqué à tous les termes où il vaut : un cube s'écrit carré × parenthèse (« On écrit (x + 1)³ =
 (x + 1)²(x + 1) ») ; une identité remarquable nomme a et b (« On reconnaît (a + b)² = a² + 2ab +
@@ -1037,7 +1041,7 @@ réponse reste — pour une somme sous une fonction, une racine, dans un exposan
 (`(x+1)(x-1)/(x+2)` se lit `(x+1)·((x-1)/(x+2))`), ni au-delà de 16 produits sur une ligne.
 L'ordre du manuel vit dans `pedagogical-simplify/expand-order.ts` (`orderExpanded`), partagé par
 la réponse et les étapes. Tests : `developper-commande.test.ts`,
-`pedagogical-simplify/__tests__/expand-steps.test.ts`.
+`pedagogical-simplify/__tests__/expand-steps.test.ts`, `expand-explained.test.ts`.
 
 **`.limite` en détail** (`limit.ts`, PR 2 de `.limite`, syntaxe tranchée par David le
 2026-10-14, L1-L6). Servie par l'atelier (`ATELIER_ONLY_COMMANDS`), lue **avant** la substitution

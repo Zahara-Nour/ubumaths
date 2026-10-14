@@ -12,6 +12,7 @@ import {
 	generatePedagogicalIntegrationSteps,
 	PedagogicalIntegrationRenderer
 } from '$lib/mathAST/pedagogical-integration';
+import { explainExpansion } from '$lib/mathAST/pedagogical-simplify/expand-explained';
 
 const steps: RenderedStep[] = [
 	{
@@ -90,5 +91,26 @@ describe('GeneratedStepsCorrection — les maths de la prose', () => {
 		for (const el of texts()) {
 			expect(proseOf(el)).not.toMatch(/[$\\^{}_]/);
 		}
+	});
+
+	// Développer (option B, 2026-10-14) : la rédaction de l'atelier, montrée aussi
+	// par les corrections d'exercices — ses titres nomment a et b, ou le facteur, en maths
+	it.each([
+		['(x_1+x_2)^2', ['x_1', 'x_2']],
+		['e^x(x+1)', ['\\exponentialE^x']]
+	])('développer %s : les maths du titre sont rendues', async (latex, formulas) => {
+		const explained = explainExpansion(parseLatex(latex), { schoolLevel: 'lycee' });
+		if (explained.kind !== 'expanded' || explained.steps === null) {
+			throw new Error(`${latex} : pas de rédaction`);
+		}
+		const screen = await render(GeneratedStepsCorrection, {
+			props: { steps: explained.steps.detailed }
+		});
+		const title = screen.container.querySelector('.step-title');
+		if (!title) throw new Error('pas de titre');
+
+		await expect.poll(() => formulasOf(title).length).toBe(formulas.length);
+		formulas.forEach((formula, index) => expect(formulasOf(title)[index]).toContain(formula));
+		expect(proseOf(title)).not.toMatch(/[$\\^{}_]/);
 	});
 });
