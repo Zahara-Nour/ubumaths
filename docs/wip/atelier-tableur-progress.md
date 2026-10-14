@@ -25,6 +25,13 @@ Worktree `../ubumaths-wt-tableur`.
 
 - [x] tests du modèle (rouges : module absent ; case vide prouvée rouge sans le correctif de lecture)
 - [x] modèle (grid.ts, Atelier : colonnes, cellules sans nom, nommer / retirer le nom, v2, fusion T7)
-- [ ] vue Données en grille
+- [x] vue Données en grille (28 tests navigateur ; captures Playwright 1280 et 390 px)
 - [x] refus de `A2` dans Calcul (sur un calcul qui échoue seulement)
-- [ ] doc système
+- [x] doc système (atelier.md : section « La grille », v2, fusion, invariant 13)
+
+### Constats en route (hors périmètre)
+
+- Téléphone (390 px) : le haut de l'atelier se chevauche (« Mes objets », « Partager… », onglets,
+  boutons de création) — déjà vrai dans la vue Calcul, avant ce chantier.
+- `pnpm test:client src/lib/atelier src/lib/components/atelier` d'un seul coup : le navigateur de
+  test se ferme en route (« rpc is closed »), 8 à 13 fichiers jamais lancés ; en deux lots, 51/51.

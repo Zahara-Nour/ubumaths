@@ -13,7 +13,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-10.
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-15.
 
 ## À quoi ça sert
 
@@ -66,12 +66,13 @@ Ceux du code et de l'interface :
 
 ## Carte du code
 
-### Modèle — `src/lib/atelier/` (53 fichiers hors tests)
+### Modèle — `src/lib/atelier/` (64 fichiers hors tests)
 
 | Fichier                             | Rôle                                                                                                      |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `src/lib/atelier/types.ts`          | Les quatre types d'objets, `ObjectStatus`, `CurveDisplay`, `SequenceDisplay`, plafonds D8, gardes de type |
 | `src/lib/atelier/atelier.svelte.ts` | **La classe `Atelier`** : création, renommage, mise à jour, suppression, états, `serialize`/`restore`     |
+| `src/lib/atelier/grid.ts`           | La grille de la vue Données : adresses (`B3`), entrées d'une colonne nommée, répartition P2, plafonds     |
 | `src/lib/atelier/names.ts`          | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)        |
 | `src/lib/atelier/parse.ts`          | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)     |
 | `src/lib/atelier/letter.ts`         | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                              |
@@ -157,7 +158,7 @@ Ceux du code et de l'interface :
 | `NaturalField.svelte`     | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel       |
 | `AtelierSettings.svelte`  | Le bouton « Réglages » et sa fenêtre : la saisie dans Calcul                                                            |
 | `FormulaText.svelte`      | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`) |
-| `DataView.svelte`         | Vue Données : une liste par ligne, valeurs séparées par `;`, diagrammes                                                 |
+| `DataView.svelte`         | Vue Données : la grille (barre de cellule, clavier, nommer une colonne), aperçus des listes, diagrammes                 |
 | `ShareBar.svelte`         | Partager (lien `?a=`), recevoir, « Garder dans mon atelier »                                                            |
 
 La vue **Graphe** n'a pas de composant à elle : `AtelierContainer.svelte` monte
@@ -179,7 +180,7 @@ cartes (décision G3).
 | `value`    | `a = 2`, `d = 12[km]`      | curseur (bornes `[-10 ; 10]` par défaut, D3) ; une grandeur à unité n'en a pas (D4)                                                     |
 | `function` | `f(x) = x^2`, `f(t) = t^2` | rangée **en x** ; `letter` garde la lettre de l'élève pour l'affichage ; `interval` l'ensemble écrit après « sur » ; `display` du tracé |
 | `sequence` | `u(n) = 2n+1`, `u = 2u+1`  | `mode` explicite / récurrence, `firstIndex`, `firstTerm` (nombre ou nom d'une valeur)                                                   |
-| `list`     | `L = 12 ; 15 ; 9`          | `values` numériques, ou `categories` (liste qualitative) ; `plottedWith` pour le nuage                                                  |
+| `list`     | `L = 12 ; 15 ; 9`          | `values` numériques, ou `categories` (liste qualitative) ; `plottedWith` pour le nuage ; `column`, sa colonne dans la grille            |
 
 **Quatre états** (D9) : `error` > `pending` > `incomplete` > `ok`. Un nom cité mais absent met
 l'objet **en attente** (`pending`, avec `missing`), pas en erreur ; l'attente se répare seule quand
@@ -326,6 +327,38 @@ contenu. Elle est rangée sur l'objet, parce que `recomputeAll` relit toujours l
 `toggleChart`), la liste partenaire choisie (`choosePartner`) et les lois retenues
 (`rememberLaw`, `lawOf`) vivent dans l'`Atelier` mais pas dans `serialize()`.
 
+### La grille (vue Données)
+
+Tableur intégré, lot 1 (phase 0 : [atelier-tableur-phase0.md](../wip/atelier-tableur-phase0.md),
+décisions de David du 2026-10-15 ; journal : [atelier-tableur-progress.md](../wip/atelier-tableur-progress.md)).
+Pas encore de formules : une cellule est du texte brut.
+
+- **Une liste est une colonne nommée** (T1). Ses cellules sont les entrées de sa définition, une
+  par ligne : `12 ;  ; 15` = la ligne 2 est vide (`entriesOf`, `definitionFrom`, `grid.ts`). Les
+  colonnes **sans nom** gardent leurs cellules dans l'`Atelier` (`cells`, rangées). **Chaque
+  cellule a un seul propriétaire** : la liste de sa colonne, ou la grille.
+- **26 colonnes (A-Z) × 200 lignes** (`GRID_COLUMNS`, `GRID_ROWS` = `MAX_LIST_VALUES`), une
+  cellule de 200 caractères au plus (`MAX_CELL_LENGTH`).
+- **Une cellule se lit comme une entrée de liste** (`readListValue` : `1,5`, `1.5`, `1/6`, sinon un
+  mot) ; une entrée vide n'est pas une valeur ignorée. Un texte avec « ; » se **répartit vers le
+  bas** (P2, `spreadText`).
+- `editCells` écrit un geste entier, tout ou rien : hors de A1-Z200, trop long ou au-delà de la
+  ligne 200 → refus, rien n'est écrit. Une colonne nommée est réécrite par `update` (la liste garde
+  sa colonne) ; une colonne sans nom fait seulement monter `revision`.
+- **Créer une liste** (« + Liste », `L = …` dans Calcul, `.simuler`, `.filtrer`, « Garder ») prend
+  la **première colonne libre** (ni liste ni cellule) ; aucune → « La grille est pleine : vide une
+  colonne pour créer une liste. ». `nameColumn` fait d'une colonne remplie une liste (refus de nom
+  d'aujourd'hui, `MAX_LISTS`) ; `unnameColumn` supprime la liste (cascade) et **garde les
+  cellules**, annulable par `undoRemoval`. Supprimer la liste depuis sa carte **vide sa colonne**
+  (T3).
+- `cell`, `listAt`, `columnOf`, `usedExtent` (zone utilisée), `freeColumns` : ce que lit la vue.
+- La vue (`DataView.svelte`) : barre de cellule (adresse, contenu brut, modifiable), clavier de
+  tableur (Entrée, Tab, Échap, flèches, F2, Suppr ; taper remplace), zone utilisée + 10 lignes et 3
+  colonnes (au moins 10 × 5), en-tête « nommer » / nom de liste « × », aperçu de chaque liste sous
+  son en-tête, diagrammes sous la grille. La validation (pas la frappe) recalcule.
+- **Calcul ne lit pas une cellule** (Q1) : un calcul qui échoue et cite `B2` répond « B2 est une
+  cellule de la grille : nomme sa colonne pour t’en servir. » (`cellCitedIn`, `calcul.ts`).
+
 ### Ce que fait la classe `Atelier`
 
 - **créer** : `create` (+ `createDerivative` pour `f′`, `createReciprocal` pour `f⁻¹`,
@@ -334,6 +367,8 @@ contenu. Elle est rangée sur l'objet, parce que `recomputeAll` relit toujours l
   `setSlider`, `slideTo`, `setSequence`, `setDisplay`, `setSequenceDisplay`, `setPlotted` ;
 - **supprimer** : `remove`, `removalOf`, `removeWithDependents`, `undoRemoval` ;
 - **dépendances** : `dependents` ; toute mutation finit par `recomputeAll` (relit tout) ;
+- **grille** : `cell`, `editCells`, `nameColumn`, `unnameColumn`, `listAt`, `columnOf`,
+  `usedExtent`, `freeColumns` ;
 - **sauvegarde** : `serialize`, `restore` ; `revision` est le **seul** signal « quelque chose a
   changé » (la session l'écoute pour enregistrer).
 
@@ -589,7 +624,7 @@ Calcul sans changer de vue** et crée **une carte par objet créé** (G7).
 | ------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | Calcul  | `CalculView.svelte` + `CalcDesk`      | l'historique ; « Garder » promeut une ligne en objet nommé (`promote`, D5) ; « Comment ? » déplie les étapes, « Résumé / Détaillé » |
 | Graphe  | `GrapheurContainer` (`panel={false}`) | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots`                                                 |
-| Données | `DataView.svelte`                     | listes en lignes, diagrammes en bâtons / barres / circulaire                                                                        |
+| Données | `DataView.svelte`                     | la grille (une liste = une colonne nommée), diagrammes en bâtons / barres / circulaire                                              |
 
 Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de refaire le travail) :
 
@@ -652,7 +687,11 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   l'intervalle tapé (`reciprocalOn`) ; un lien ou une fusion la recrée, et une f renommée à
   l'arrivée (`g`) emmène sa réciproque (`g⁻¹`, `mergeInto`). Un objet abîmé est
   écarté seul (`salvageObjects`), un réglage abîmé est oublié, l'objet gardé ; un intervalle refusé à la relecture (lien, fusion) aussi, la fonction gardée sur son domaine. Un état d'une version
-  **plus récente** n'est ni relu ni écrasé. Chaque issue est nommée (`LoadOutcome`,
+  **plus récente** n'est ni relu ni écrasé. **Version 2** (2026-10-15) : la colonne de chaque liste
+  (`column`, `A`-`Z`) et les cellules des colonnes sans nom (`grid.cells`, triées une par une par
+  `salvageGrid`, réunies par `salvageState`) ; une version 1 se relit, ses listes placées en A, B…
+  dans l'ordre des cartes. Sans la version 2, un onglet resté sur l'ancien code relirait l'état en
+  jetant la grille, puis l'enregistrerait. Chaque issue est nommée (`LoadOutcome`,
   `SaveOutcome` : stockage indisponible, quota, trop volumineux…).
 - **Session** (`session.ts`) : sauvegarde différée de 500 ms sur `revision`, écrite aussi au
   `pagehide` ; l'événement `storage` signale une écriture d'un autre onglet. Tout ce qui doit être
@@ -666,7 +705,9 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
 - **Mode éphémère** : `?a=` comme `?f=` ouvrent un atelier qui **ne lit ni n'écrit** l'atelier
   personnel ; un lien abîmé le dit et ouvre l'atelier personnel. « Garder dans mon atelier »
   (`keepReceived`) verse dans l'atelier personnel ; en cas de collision, **l'arrivant est
-  renommé** et on le dit (Q2, `mergeInto`).
+  renommé** et on le dit (Q2, `mergeInto`). Ses colonnes (listes et cellules sans nom) vont dans
+  les **premières colonnes libres**, dans leur ordre ; pas assez de colonnes libres → refus,
+  rien n'est versé (T7, `mergeRefusal`).
 - **Lignes de Calcul** (`history-storage.ts`, décision de David du 2026-10-13, « option 1 ») :
   clé **à part**, `CALC_HISTORY_STORAGE_KEY` (`chiphre-atelier-historique`), version
   `CALC_HISTORY_VERSION`. Rangées 500 ms après la dernière ligne (et au `pagehide`, au démontage)
@@ -741,7 +782,9 @@ Supprimer un objet supprime **aussi ses dépendants**, directs ou en chaîne (d�
   confirmation en cite trois puis « et N autres » (`cascadeMessage`) ;
 - `removeWithDependents` rend un reçu ; `undoRemoval` restaure **à l'identique** (définitions,
   réglages, tracés, diagrammes) — une seule fois, et **refusé si l'atelier a changé depuis**
-  (`revision`) : jamais de restauration par-dessus un nom repris.
+  (`revision`) : jamais de restauration par-dessus un nom repris. Elle remet aussi les cellules
+  sans nom d'avant : retirer le nom d'une colonne puis annuler rend la colonne à sa liste, sans
+  copie dans la grille.
 
 L'état « en attente » reste pour un nom cité _avant_ d'être défini ; seule la suppression a changé.
 
@@ -1206,7 +1249,8 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
    rangées (`loadCalcHistory`, formules par la liste blanche `isSafeLatex`), réglages
    (`curveDisplaySchema`).
 8. **Plafonds D8** : `MAX_LIST_VALUES` (200) par liste, `MAX_LISTS` (8) listes,
-   `MAX_DEFINITION_LENGTH` à la saisie — pour qu'un atelier tienne dans une URL.
+   `MAX_DEFINITION_LENGTH` à la saisie — pour qu'un atelier tienne dans une URL. La grille :
+   26 × 200, 200 caractères par cellule.
 9. **Visible et désactivé avec sa raison**, jamais caché : actions de carte et commandes.
 10. **On ne reparse jamais la sortie texte du moteur** (`render.ts`). Un **calcul** s'écrit depuis
     son arbre, mis au propre par `tidy` (π/3, √2/2 ; un résultat qui porte un décimal ou une variable
@@ -1228,6 +1272,8 @@ max(2,5 ; x)` puis `f(1)` répond `5/2` (avant le 2026-10-13 : « Écriture non 
     calcul, `f(x) = max(1,2)+x` est refusée (« Sépare les valeurs avec « ; » »). Le
     champ de la carte montre `\max\left(2{,}5;x\right)` (`argumentSeparatorsShown`).
 12. **On ne valide pas** les réponses de l'élève (décision figée n° 2).
+13. **Une cellule de la grille a un seul propriétaire** : la liste de sa colonne (dans sa
+    définition) ou la grille (`cells`), jamais les deux.
 
 ---
 
@@ -1326,7 +1372,8 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 
 - `/calc` existe encore (`/cas`, elle, est retirée depuis le 2026-10-13) ;
 - **v2** géométrie à la souris, **v3** Python : non commencées, sans phase 0 ;
-- données en grille (tableur intégré, options A/B) : question ouverte ;
+- tableur intégré (option C, 2026-10-15) : lot 1 en cours — grille de valeurs (PR 1) ; à venir :
+  collage / copie / CSV / titres, annulation / appariement par ligne, puis les formules ;
 - dettes connues : action « Renommer » encore désactivée (« prochain lot »), `recomputeAll`
   réassigne tout le tableau (jamais mesuré), saisie des unités sans palette.
 
@@ -1336,4 +1383,4 @@ les garanties `/grapheur` non faites : elles le sont (lots 2 à 6, #779 → #809
 
 ---
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-15.
