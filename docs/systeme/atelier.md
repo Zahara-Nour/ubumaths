@@ -709,10 +709,14 @@ recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer
   valeur (a = 2) pour l'étudier. » (« de a et b : donne-leur … » à plusieurs). Mesuré avant :
   `.résoudre a x = 0` → x = 0, `.limite e^{a x} en +∞` → +∞, faux pour a ≤ 0. Le refus est large
   (`.résoudre g(x)=0` de `g(x) = x^2 + k` y passe aussi). `.évaluer` n'y passe pas (E6).
-- **Ligne de calcul** (`parameterizedCalls`, après `expandInput`) : `f(2)` → `2a`, `f` seul →
-  `a x`, appels réduits par `simplify` dans l'arbre (le moteur rend tel quel un calcul qui garde
-  des lettres ; avant : « Fonction inconnue : f — définis-la d'abord »).
-- **Substitution en une passe** (`maxIterations: 1`) : `f(2x)` itéré donnait `a·2¹⁰x`.
+- **Ligne de calcul** (`parameterizedLine`, avant `expandInput`) : `f(2)` → `2a`, `f` seul →
+  `a x`, `f'(2)` de `a x^2` → `4a`, `g(f(2))` → `4a²` avec g prête ; appels réduits par
+  `simplify` dans l'arbre (le moteur rend tel quel un calcul qui garde des lettres ; avant :
+  « Fonction inconnue : f — définis-la d'abord »). Une égalité ou une comparaison (`f(2)=4`,
+  qui répondait `false`) est refusée (« Le résultat dépend de a… ») ; un dénominateur nul après
+  substitution (`a/x` en 0) rend « Erreur de calcul : Division par zéro », comme sans paramètre.
+- **Substitution** (`expandedCalls`) : de l'intérieur vers l'extérieur (`f(f(x))` → a²x), puis
+  une seule passe (`maxIterations: 1`) : `f(2x)` itéré donnait `a·2¹⁰x`.
 - **Fonction qui en cite une à paramètre** (`g(x) = f(x)+1`) : `substitutedAstOf(…,
 { forDerivation })` remplace aussi les fonctions en attente (`engine.ts`) → `.dériver g` = a.
 - Une fonction en attente d'une **fonction** (`as: 'function'`) : la commande est refusée avec

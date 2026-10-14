@@ -95,6 +95,13 @@ describe('f(x) = a x : les commandes qui concluent', () => {
 		expect(latex('.taylor f 2', F)).toBe('ax');
 	});
 
+	it('.équivalent f et x a → vrai ; f et 2x → faux', () => {
+		const same = run('.équivalent f et x a', F);
+		const other = run('.équivalent f et 2x', F);
+		expect(same.kind === 'commande' && same.output).toMatch(/^Equivalent: true/);
+		expect(other.kind === 'commande' && other.output).toMatch(/^Equivalent: false/);
+	});
+
 	it("f'(x) → a, inchangé", () => {
 		expect(latex("f'(x)", F)).toBe('a');
 	});
@@ -145,8 +152,8 @@ describe('h(x) = e^{a x}', () => {
 		expect(latex('.intégrer h', H)).toBe('\\dfrac{\\exponentialE^{ax}}{a}+C');
 	});
 
-	it('.intégrer h de 0 à 1 : réduit, sans `a * 0`', () => {
-		expect(latex('.intégrer h de 0 à 1', H)).not.toContain('*');
+	it('.intégrer h de 0 à 1 → (e^a − 1)/a, réduit (sans `a * 0`)', () => {
+		expect(latex('.intégrer h de 0 à 1', H)).toBe('\\dfrac{\\exponentialE^a-1}{a}');
 	});
 
 	it('h(2) → e^{2a}', () => {
@@ -163,6 +170,62 @@ describe('une fonction qui cite une fonction à paramètre', () => {
 
 	it('g(2) → 2a + 1', () => {
 		expect(latex('g(2)', chain)).toBe('2a+1');
+	});
+});
+
+describe('revue de 8b86c675e', () => {
+	it.each(['f(2)=4', 'f(2)<4', 'f(2)>4', 'f(2)\\leq 4', 'f(2)\\geq 4', 'f(2)\\neq 4'])(
+		'%s : une comparaison qui dépend de a est refusée (et non « false »)',
+		(input) => {
+			expect(refusal(input, F)).toBe(DEPENDS_ON('a'));
+		}
+	);
+
+	it('sans paramètre, f(2)=4 reste vrai', () => {
+		const result = run('f(2)=4', ['f(x) = 2x']);
+		expect(result.kind === 'calcul' && result.output).toBe('true');
+	});
+
+	it.each([
+		['f(x) = a/x', 'f(0)'],
+		['f(x) = a/(x-1)', 'f(1)'],
+		['f(x) = a/(x-1)', 'f(1)+2']
+	])('%s, %s : « Division par zéro », comme sans paramètre', (definition, input) => {
+		const expected = run(input, [definition.replace('a', '2')]);
+		expect(expected).toEqual({
+			kind: 'calcul',
+			input,
+			output: 'Erreur de calcul : Division par zéro'
+		});
+		expect(run(input, [definition])).toEqual(expected);
+	});
+
+	it('f(x) = a/(x-1), f(2) → a', () => {
+		expect(latex('f(2)', ['f(x) = a/(x-1)'])).toBe('a');
+	});
+
+	it('.dériver f(f(x)) → a² (appels imbriqués)', () => {
+		expect(latex('.dériver f(f(x))', F)).toBe('a^2');
+	});
+
+	it('f(f(2)) → 2a²', () => {
+		expect(latex('f(f(2))', F)).toBe('2a^2');
+	});
+
+	it('g prête : g(f(2)) → 4a²', () => {
+		expect(latex('g(f(2))', ['f(x) = a x', 'g(x) = x^2'])).toBe('4a^2');
+	});
+
+	it('g prête : f(g(x)) → a x²', () => {
+		expect(latex('f(g(x))', ['f(x) = a x', 'g(x) = x^2'])).toBe('ax^2');
+	});
+
+	it("f(x) = a x^2 : f'(2) → 4a", () => {
+		expect(latex("f'(2)", ['f(x) = a x^2'])).toBe('4a');
+	});
+
+	it("f(x) = a x^2 : f'(2)+1 → 4a+1", () => {
+		expect(latex("f'(2)+1", ['f(x) = a x^2'])).toBe('4a+1');
 	});
 });
 
