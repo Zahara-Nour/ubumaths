@@ -19,6 +19,7 @@ import { numericNode } from '../common/numeric';
 import { solve } from '../solve';
 import { substitute } from '../eval/substitute';
 import { evaluate } from '../eval/evaluate';
+import { touchesZero } from './near-zero';
 
 // =============================================================================
 // Types
@@ -290,8 +291,8 @@ function findNumericZeros(
 		const x = xMin + i * step;
 		const y = compiledFn({ x });
 
-		// Near-zero value
-		if (Number.isFinite(y) && Math.abs(y) < BISECTION_TOLERANCE) {
+		// Échantillon où la courbe touche l'axe (racine double comprise)
+		if (touchesZero((t) => compiledFn({ x: t }), x, step, BISECTION_TOLERANCE)) {
 			if (!points.some((p) => Math.abs(p.xNumeric - x) < step)) {
 				points.push(makeNumericPoint(x, compiledFn({ x }), type));
 			}
