@@ -61,7 +61,8 @@ const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
 /**
  * Une fonction usuelle écrite en lettres, sans antislash ni parenthèse :
  * `sin x`, `ln x`, `sin^2 x`. Le nom doit être DÉLIMITÉ — `cost`, `lnx`,
- * `\arcsin`, `\cosh`, `\operatorname{sin}` ne comptent pas — et n'est pas
+ * `\arcsin`, `\cosh`, `\operatorname{sin}` ne comptent pas (l'atelier refuse
+ * à part `cost` et `lnx` : `GLUED_FUNCTION`) — et n'est pas
  * suivi (indice et exposant éventuels compris : `log_2(x)`, que `toCustom`
  * écrit pour un logarithme de base donnée) d'une parenthèse ouvrante, ou de `\left(` (ce qu'écrit MathLive). Un
  * indice de racine entre crochets (`sqrt[3](x)`, que la définition
@@ -78,7 +79,29 @@ const BARE_FUNCTION =
  * (`|x|`), jamais un mot-clé de commande (`.limite ln en 0`).
  */
 const BARE_FUNCTION_TAIL =
-	/^(\s*_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?(\s*\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?(?:\s*(?!(?:en|pour|de|dans|ordre|et|sur)(?![A-Za-z0-9]))([-−]?(?:\d+(?:[.,]\d+)?[A-Za-z]*|[A-Za-z][A-Za-z0-9]*|\\[A-Za-z]+|π|\|[^|]+\|)))?/;
+	/^(\s*_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?(\s*\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?(?:\s*(?!(?:en|pour|de|dans|ordre|et|sur)(?![A-Za-z0-9]))([-−]?(?:\d+(?:[.,]\d+)?[A-Za-z]*|[A-Za-z][A-Za-z0-9]*|\\[A-Za-z]+|π|[α-ωΑ-Ωϑϕ]|\|[^|]+\|)))?/;
+
+/**
+ * Une fonction usuelle COLLÉE à son argument : `lnx`, `sinx`, `cost`, `ln2`,
+ * `ln2x`, `sin2,5`, `sin2π`, `cos2θ`. Deux formes :
+ * - `argument` : une lettre ASCII seule, ou un nombre suivi d'au plus une
+ *   lettre (ASCII, grecque ou π), puis une fin, une espace, un opérateur (`^`,
+ *   `²`, `³` compris), un délimiteur fermant ou un antislash (`\cdot`, `\right`) ;
+ * - `numberOnly` : un nombre suivi d'une parenthèse ouvrante ou d'une autre
+ *   commande LaTeX (`ln2(x)`, `cos2\pi`, `ln2\sqrt{x}`) — l'argument n'est pas
+ *   le nombre seul, le refus ne le devine pas.
+ * `sinus`, `lnxy`, `costume` ne sont pas visés. Le nom peut suivre une lettre
+ * SEULE (`xlnx`, `2xlnx` ; `asinx` : a·sin x, la lettre est un coefficient),
+ * un nombre ou une puissance (`x^2lnx`), pas un mot (`explnx`), ni un
+ * antislash (`\cos t`), ni un `\operatorname{…}` ; `{` seul ne l'arrête pas
+ * (`e^{lnx}`, `\frac{lnx}{x}`). `sinh`, `cosh`, `tanh` (fonctions
+ * hyperboliques) sont écartés par `gluedFunction`.
+ */
+const GLUED_FUNCTION =
+	/(?<![A-Za-z\\][A-Za-z]|\\|\\(?:operatorname|mathrm|mathit|text)\s*\{)(sin|cos|tan|ln|log|exp|sqrt)(?:(?<numberOnly>\d+(?:[.,]\d+)?)(?=\(|\\(?!(?:right|cdot|times|div|leq?|geq?|neq)(?![A-Za-z]))[A-Za-z])|(?<argument>\d+(?:[.,]\d+)?(?:[A-Za-z]|[α-ωΑ-Ωϑϕ])?|[A-Za-z])(?=$|[\s+\-−*/^=<>≤≥·×÷,;)\]}|!²³\\]))/g;
+
+/** Les fonctions hyperboliques : `sinh` n'est pas sin(h). */
+const HYPERBOLIC = /^(?:sin|cos|tan)h$/;
 
 /**
  * Les deux bornes d'une intégrale définie, en fin de texte : `… 0 1`, ou
@@ -415,6 +438,19 @@ export function bareFunctionMessage(name: string): string {
  */
 export function bareFunctionRefusal(input: string): string | null {
 	const found = BARE_FUNCTION.exec(input);
+	// Décision de David (2026-10-14) : `lnx`, `sinx` (s·i·n·x, i l'imaginaire),
+	// `ln2x` se lisaient en produits de lettres. Le même refus, cité tel quel
+	const glued = gluedFunction(input);
+	if (glued !== null && (found === null || glued.index <= found.index)) {
+		// `log10`, `log2` : base ou argument ? On ne devine pas (revue du 2026-10-14)
+		const digits = /^log(\d+)$/.exec(glued.typed);
+		if (digits !== null) {
+			const base = digits[1] === '10' ? '' : ` En base ${digits[1]} : log_${digits[1]}(…).`;
+			return `« ${glued.typed} » : écris log(…) avec des parenthèses ; log est le logarithme décimal.${base}`;
+		}
+		// `cos2\pi`, `ln2(x)` : proposer cos(2) changerait le sens
+		return `« ${glued.typed} » : écris ${glued.name}(${glued.argument ?? '…'}) avec des parenthèses.`;
+	}
 	if (found === null) return null;
 	const name = found[1];
 	const tail = BARE_FUNCTION_TAIL.exec(input.slice(found.index + name.length));
@@ -424,6 +460,19 @@ export function bareFunctionRefusal(input: string): string | null {
 	// Rien de lisible après le nom : on n'invente pas d'argument
 	const suggested = `${name}${compact(subscript)}${compact(exponent)}(${argument ?? '…'})`;
 	return `« ${typed} » : écris ${suggested} avec des parenthèses.`;
+}
+
+/** La première fonction usuelle collée à son argument (`GLUED_FUNCTION`), ou `null`. */
+function gluedFunction(
+	input: string
+): { index: number; typed: string; name: string; argument: string | null } | null {
+	for (const match of input.matchAll(GLUED_FUNCTION)) {
+		const [typed, name] = match;
+		if (HYPERBOLIC.test(typed)) continue;
+		const argument = match.groups?.argument ?? null;
+		return { index: match.index, typed, name, argument };
+	}
+	return null;
 }
 
 // =============================================================================
