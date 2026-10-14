@@ -37,6 +37,7 @@ contourner en silence.
 | 0026 | [Les grandeurs : un seul circuit, et « un nombre, une espace, une unité »](0026-grandeurs-un-contrat-et-l-espace.md)                     | 2026-10-11 |
 | 0027 | [Les figures géométriques ont leur propre table, publiques pour tous](0027-figures-geometriques-stockees.md)                             | 2026-10-13 |
 | 0028 | [PDF de fiche : un seul générateur, des styles, une forme = un gabarit](0028-pdf-de-fiche-un-generateur-des-styles-et-des-formes.md)     | 2026-10-13 |
+| 0029 | [Le modèle de chapitre possède son contenu ; le chapitre lié le relie](0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md)       | 2026-10-14 |
 
 ## Écrire un ADR
 

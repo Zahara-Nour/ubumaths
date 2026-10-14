@@ -18,7 +18,8 @@ import {
 	deleteChapterTemplate,
 	extractContentSnapshotFromChapter,
 	getTemplateVersions,
-	instantiateTemplate
+	instantiateTemplate,
+	TemplateUnusableError
 } from '$lib/server/chapter-templates';
 import {
 	updateChapterTemplateSchema,
@@ -435,6 +436,11 @@ export const actions: Actions = {
 			user.id,
 			locals.supabase
 		);
+
+		// Archivé entre l'affichage et le clic : dire pourquoi, pas « erreur ».
+		if (instError instanceof TemplateUnusableError) {
+			return fail(409, { error: instError.message, action: 'instantiate' });
+		}
 
 		if (instError || !result) {
 			console.error('[Instantiate Template] Error:', instError);

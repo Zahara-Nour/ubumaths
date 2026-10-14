@@ -2,6 +2,76 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.32.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.31.0...v0.32.0) (2026-10-14)
+
+### ✨ Features
+
+- **atelier:** commande développer, la réponse seule ([35f017d](https://github.com/Zahara-Nour/ubumaths/commit/35f017d34fbb3438a1df9e4d5b295a389a049762))
+- **atelier:** développer écrit en décimaux ce qui est tapé en décimaux ([cfc0fc2](https://github.com/Zahara-Nour/ubumaths/commit/cfc0fc259f5efea2434ed303419509dc41cad41b))
+- **atelier:** développer, le « Comment ? » rédigé comme au tableau ([f9b17a7](https://github.com/Zahara-Nour/ubumaths/commit/f9b17a7aa455ef3f5867242debeaadeeb7691b27))
+- **atelier:** les lignes de Calcul reviennent au rechargement ([fc37e4d](https://github.com/Zahara-Nour/ubumaths/commit/fc37e4dafd1089199295a28cd5f222b79ea292a9))
+- **corrections:** développer montre la rédaction de l'atelier ([8edce85](https://github.com/Zahara-Nour/ubumaths/commit/8edce85d8cd101a8f356e69de6115ad4e20a6a47))
+- **fiches:** le style « Fiche élève » n'imprime aucun point ([03e13fd](https://github.com/Zahara-Nour/ubumaths/commit/03e13fdba4733d13fdc2abeec78dbae5f4bd1fc6))
+- **fiches:** table des styles de fiche, style et forme des gabarits ([414d5a0](https://github.com/Zahara-Nour/ubumaths/commit/414d5a0142ec4a8d78f5d4c32bf71ef298199d2c))
+
+### 🐛 Bug Fixes
+
+- **atelier:** bornes à paramètre, puissances et fonctions à domaine refusées (revue V61) ([4efeb48](https://github.com/Zahara-Nour/ubumaths/commit/4efeb48570113cd29ef0ff98962d2296ba86d3dd))
+- **atelier:** commandes refusées sur une fonction en erreur (V58) ([7d33cd2](https://github.com/Zahara-Nour/ubumaths/commit/7d33cd2343afd4c030c912cf4296f1d8f3ac758a))
+- **atelier:** développer, corrections de revue ([925235b](https://github.com/Zahara-Nour/ubumaths/commit/925235bebc9f6c29a9fd4cb3c53f2b78f3c42d39))
+- **atelier:** développer, corrections de revue des étapes ([f6f1537](https://github.com/Zahara-Nour/ubumaths/commit/f6f153744088912484c70f29c0e52b117a51da2f))
+- **atelier:** formule relue refusée hors ASCII et Latin-1 (audit) ([d96edeb](https://github.com/Zahara-Nour/ubumaths/commit/d96edebf3f2c61be1bcc45ebadfadfbd0cab9d20))
+- **atelier:** imbrication des formules relues bornée (audit) ([12c3d19](https://github.com/Zahara-Nour/ubumaths/commit/12c3d1969fd197f2ecb9f77d5d2388a63c2cf9a8))
+- **atelier:** indices, message de propagation, suites citées comme nombre (revue V58) ([ff91e66](https://github.com/Zahara-Nour/ubumaths/commit/ff91e66a20b37cb01ff386fe874e6aaab8e429b4))
+- **atelier:** intégrales à paramètre, refus à tort et messages anglais (V61) ([3d6ed54](https://github.com/Zahara-Nour/ubumaths/commit/3d6ed54d569664ef52d8fce37b9ddba4ecd2e5ae))
+- **atelier:** interligne réglé et lignes en excès refusés à la relecture — contre-audit ([447952e](https://github.com/Zahara-Nour/ubumaths/commit/447952e6f763fa3bfe8e16e866229573ccdec9b8))
+- **atelier:** ln\left(x\right) de MathLive lu ln(x), saisie citée fidèlement ([23f3e63](https://github.com/Zahara-Nour/ubumaths/commit/23f3e63e3f86c6eeb1272775ebdf4a649bfb9f82))
+- **atelier:** lnx, sinx, ln2x collés refusés comme ln x ([5ab17b6](https://github.com/Zahara-Nour/ubumaths/commit/5ab17b6c94806890f363e126e6f09c3797fdb351))
+- **atelier:** noms collés, corrections de revue ([4e0f91b](https://github.com/Zahara-Nour/ubumaths/commit/4e0f91b4bf91985125887d07cc11442b33485ac1))
+- **atelier:** noms lus dans l'arbre, ax et a^2 détectés (contre-revue V58) ([580c169](https://github.com/Zahara-Nour/ubumaths/commit/580c169789c2b38dee642a38a778da0ba8067e07))
+- **atelier:** paramètres, condition a ≠ 0, bouton Dériver, V57 ([0d3d9be](https://github.com/Zahara-Nour/ubumaths/commit/0d3d9beeabafc1e4a0f57175095eeca67f280289))
+- **atelier:** paramètres, équations rationnelles et bornes, corrections de revue ([e7d6e09](https://github.com/Zahara-Nour/ubumaths/commit/e7d6e090ddfa7075e5f1b01f2906eed395fdb479))
+- **atelier:** une fonction usuelle sans parenthèses est refusée partout (V59) ([493d423](https://github.com/Zahara-Nour/ubumaths/commit/493d42308c27833c81648c352f8e1acc80e0b469))
+- **atelier:** xlnx refusé, log2 et log10 orientés vers log_2(…) ([bc59b21](https://github.com/Zahara-Nour/ubumaths/commit/bc59b21b2de4c0b55d61cfd8e064fffda4e735ec))
+- **fiches:** placeholders des gabarits remplacés en une seule passe ([b0a9600](https://github.com/Zahara-Nour/ubumaths/commit/b0a9600087043cf46031944b9e2ca8d1b8fe79c7))
+- **fiches:** un style ne se rattache qu'à son auteur ou à Chiphre ([22e08f9](https://github.com/Zahara-Nour/ubumaths/commit/22e08f93f5da31a53f7abbdb51ff14b7bd43c9cf))
+- **limites:** côté vérifié numériquement, point en π (revue V60) ([9cc90a9](https://github.com/Zahara-Nour/ubumaths/commit/9cc90a91ffe00889322d6db96f360dbecc31ea6c))
+- **limites:** partie entière, arrondi et signe aux sauts (V60) ([99f7ae2](https://github.com/Zahara-Nour/ubumaths/commit/99f7ae2e9d23e0ac6cbbb99d38389714a01898ad))
+- **modeles:** griser les brouillons, dire pourquoi un modèle est refusé ([031c9cf](https://github.com/Zahara-Nour/ubumaths/commit/031c9cfe97bbfd8a599e6e1c50b3d8c02a8f10b4))
+
+### 📚 Documentation
+
+- **atelier:** commande développer, syntaxe et détail ([8b57c32](https://github.com/Zahara-Nour/ubumaths/commit/8b57c32cd5c70c64857b43a33e31b61981cbbd13))
+- **atelier:** développer, le « Comment ? » rédigé (atelier.md, mathAST) ([99a323d](https://github.com/Zahara-Nour/ubumaths/commit/99a323dfe8e81d806843855717092b131ace5e04))
+- **atelier:** historique gardé mergé ([#1356](https://github.com/Zahara-Nour/ubumaths/issues/1356)), prototype en prod, journal archivé ([5da8def](https://github.com/Zahara-Nour/ubumaths/commit/5da8defd617b86927e8f9212b81a20bb8e0298dd))
+- **atelier:** vérification manuelle de [#1356](https://github.com/Zahara-Nour/ubumaths/issues/1356), journal de la saisie naturelle ([4884b09](https://github.com/Zahara-Nour/ubumaths/commit/4884b09dbfc657e0d4112486cce3411f5d944f3a))
+- **bdd:** table des styles de fiche et ses déclencheurs ([fd94f0c](https://github.com/Zahara-Nour/ubumaths/commit/fd94f0c697f5a7473ff860db93ef6872e2e20520))
+- **claude:** exceptions de la règle 2 et piège du git add, d'accord avec git-workflow ([f3a6018](https://github.com/Zahara-Nour/ubumaths/commit/f3a6018ad89678bf2adca62b8aa2062b4d516f72))
+- **cours:** refus d'un modèle inutilisable, brouillons grisés ([b97fcdc](https://github.com/Zahara-Nour/ubumaths/commit/b97fcdc9acb9c5273fceae923fb67e0e157fd0ba))
+- **fiches:** styles et formes des gabarits (lot 2 de l'ADR 0028) ([7cd0875](https://github.com/Zahara-Nour/ubumaths/commit/7cd0875d4debd9897b465f532e7f3950f86de358))
+- **git:** seconde exception à la règle 2 — refus d'un contrôle local du hook ([247a44e](https://github.com/Zahara-Nour/ubumaths/commit/247a44e465b59e1330dfd3f98e1eea5056ee4b8f))
+- **git:** un git add à chemin invalide échoue en entier — incident du 2026-10-14 ([a9f0389](https://github.com/Zahara-Nour/ubumaths/commit/a9f0389e9cd0f170c4c90703593efbc0a7b2b979))
+- **mathast:** développer, une intention, une seule rédaction ([9763df3](https://github.com/Zahara-Nour/ubumaths/commit/9763df3726a80000ca8b53294cbf09ff8ae725d4))
+- **wip:** décisions de David sur E(x) et la condition des intégrales bornées ([bc43f89](https://github.com/Zahara-Nour/ubumaths/commit/bc43f89236a7036e6e018207b825f5317e5146f6))
+- **wip:** développer livrée ([#1372](https://github.com/Zahara-Nour/ubumaths/issues/1372), [#1375](https://github.com/Zahara-Nour/ubumaths/issues/1375), [#1377](https://github.com/Zahara-Nour/ubumaths/issues/1377)), points ouverts ([032c5b6](https://github.com/Zahara-Nour/ubumaths/commit/032c5b6517613b56df15a3b307705a4dde18731e))
+- **wip:** développer mergée ([#1372](https://github.com/Zahara-Nour/ubumaths/issues/1372)), vérification manuelle et notes pour la PR 2 ([39f4fa0](https://github.com/Zahara-Nour/ubumaths/commit/39f4fa0fbb3671e884bc9009151252758a6237bf))
+- **wip:** développer, décimaux alignés sur .limite ([e7b64db](https://github.com/Zahara-Nour/ubumaths/commit/e7b64dbf1c4abef4aa0957304ca70c15bc8f2fbf))
+- **wip:** développer, décision B pour les corrections d'exercices ([4f7d09a](https://github.com/Zahara-Nour/ubumaths/commit/4f7d09ab23cd0e264578916ab9cad7d7d0952e9b))
+- **wip:** développer, décisions de David sur la phase 0 ([a8e9997](https://github.com/Zahara-Nour/ubumaths/commit/a8e9997f72a32d6a78efc24769e26db68f78017d))
+- **wip:** développer, étapes mergées ([#1375](https://github.com/Zahara-Nour/ubumaths/issues/1375)), vérification manuelle ([b43f3df](https://github.com/Zahara-Nour/ubumaths/commit/b43f3df7ee00011b245ea6df22cddf2a847fbe87))
+- **wip:** écart V59 corrigé, vérifications manuelles de [#1368](https://github.com/Zahara-Nour/ubumaths/issues/1368) et [#1369](https://github.com/Zahara-Nour/ubumaths/issues/1369) ([7e5a090](https://github.com/Zahara-Nour/ubumaths/commit/7e5a09062280149045b40fd76af9b341de8be142))
+- **wip:** écart V61, restes mineurs des intégrales à paramètre ([65fc70b](https://github.com/Zahara-Nour/ubumaths/commit/65fc70b52ce96cbce9f487775e0884d7de9b8b36))
+- **wip:** lien du journal archivé de l'historique gardé ([579e362](https://github.com/Zahara-Nour/ubumaths/commit/579e3628b32bf85f8772a8bfe8e836ddc2ea3a92))
+- **wip:** numéro de PR de l'écart V58 ([580aa69](https://github.com/Zahara-Nour/ubumaths/commit/580aa69cf00b70132c46c2497a206d8059251b1a))
+- **wip:** numéro de PR de l'écart V60 ([18242c6](https://github.com/Zahara-Nour/ubumaths/commit/18242c6cf3a7ab36b940c37847f08f3be0b5da5f))
+- **wip:** numéro de PR de l'écart V61 ([b25cc66](https://github.com/Zahara-Nour/ubumaths/commit/b25cc66069a3e8b7c3c939afd04ca50ee8796719))
+- **wip:** phase 0 de la commande développer, mesures du module ([5a6fa44](https://github.com/Zahara-Nour/ubumaths/commit/5a6fa4483915923b2e6ce52325d9c84a4b1c176c))
+- **wip:** plus de correctif sur /calc, V55 sans objet ([7b20880](https://github.com/Zahara-Nour/ubumaths/commit/7b208805d9a9e3602ccfd536324f397a3ace94ae))
+- **wip:** restes de la contre-revue de V61 dans l'écart V64 ([b4dfaf9](https://github.com/Zahara-Nour/ubumaths/commit/b4dfaf95d6868869ef2fed2e312b09c6380caa63))
+- **wip:** vérification manuelle des paramètres ([#1367](https://github.com/Zahara-Nour/ubumaths/issues/1367)) ([9bcc800](https://github.com/Zahara-Nour/ubumaths/commit/9bcc800e2173cb0ebd84d28d38ea110fd493d6b2))
+- **wip:** vérifications manuelles de [#1370](https://github.com/Zahara-Nour/ubumaths/issues/1370) ([aedbe4e](https://github.com/Zahara-Nour/ubumaths/commit/aedbe4e2fbae3e888d7bb9c66357e57ca0d64f0f))
+- **wip:** vérifications manuelles de [#1371](https://github.com/Zahara-Nour/ubumaths/issues/1371), [#1373](https://github.com/Zahara-Nour/ubumaths/issues/1373) et [#1374](https://github.com/Zahara-Nour/ubumaths/issues/1374) ([247dc43](https://github.com/Zahara-Nour/ubumaths/commit/247dc435d74b8d2dd1b64de048733b6ae3474863))
+
 ## [0.31.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.30.0...v0.31.0) (2026-10-14)
 
 ### ✨ Features

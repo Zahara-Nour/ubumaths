@@ -49,6 +49,18 @@ import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('server/chapter-templates');
 
+/**
+ * Le modèle existe mais ne peut pas servir (brouillon, archivé). Son message
+ * est écrit pour le professeur, et l'écran le montre tel quel ; toute autre
+ * erreur d'instanciation reste une panne, au message générique.
+ */
+export class TemplateUnusableError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = 'TemplateUnusableError';
+	}
+}
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -861,7 +873,7 @@ export async function instantiateTemplate(
 		if (template.status !== 'published') {
 			return {
 				data: null,
-				error: new Error(
+				error: new TemplateUnusableError(
 					template.status === 'draft'
 						? 'Un modèle en brouillon ne peut pas être utilisé : publiez-le d’abord.'
 						: 'Un modèle archivé ne peut plus être utilisé.'
