@@ -633,7 +633,9 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   texte envoyé (`.dériver x^3`, avec un point jamais tapé) ; un lecteur d'écran lit ce texte sans
   le point (la lecture de MathLive est en anglais). `label` reste le texte envoyé : l'export et le
   rejeu l'utilisent, et une ligne rejouée revient en texte. Gardée au rechargement, relue par la
-  liste blanche comme une réponse. Le champ vide a sa consigne (`placeholder` de MathLive, en
+  liste blanche comme une réponse — et la vue la refiltre AVANT de la composer, quelle que soit sa
+  provenance : ↑ rappelle des saisies relues du stockage, filtrées en longueur seulement (audit du
+  2026-10-14 : `\htmlStyle{…}` rappelé puis validé posait un calque dans la page). Le champ vide a sa consigne (`placeholder` de MathLive, en
   LaTeX).
 
 ### Session, persistance, URL

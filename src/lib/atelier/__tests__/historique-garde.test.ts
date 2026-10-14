@@ -489,16 +489,19 @@ describe('la saisie écrite dans le champ mathématique', () => {
 		expect(lines.every((l) => l.inputLatex === undefined && l.label === '1/3+1/6')).toBe(true);
 	});
 
-	it('trop longue, elle n’est pas rangée ; la ligne, si', () => {
+	// Ce qui est RANGÉ, pas ce qui est relu : la relecture refuserait de toute
+	// façon (revue), le test ne prouverait rien
+	it.each([
+		['trop longue', 'x+'.repeat(3_000) + '1'],
+		['hors liste blanche', String.raw`\htmlStyle{color:red}{x}`]
+	])('%s, elle n’est pas rangée ; la ligne, si', (_, inputLatex) => {
 		const storage = new MemoryStorage();
-		// Au-delà du plafond des formules (5 000 caractères)
-		const long = 'x+'.repeat(3_000) + '1';
-		saveCalcHistory(storage, [entry(0, { inputLatex: long })], []);
+		saveCalcHistory(storage, [entry(0, { inputLatex })], []);
 
-		const lines = loadedLines(storage)!;
+		const stored = JSON.parse(storage.getItem(CALC_HISTORY_STORAGE_KEY)!);
 
-		expect(lines).toHaveLength(1);
-		expect(lines[0].inputLatex).toBeUndefined();
+		expect(stored.lines).toHaveLength(1);
+		expect(stored.lines[0]).not.toHaveProperty('inputLatex');
 	});
 });
 

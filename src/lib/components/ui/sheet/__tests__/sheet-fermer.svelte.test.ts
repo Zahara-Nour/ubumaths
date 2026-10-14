@@ -6,11 +6,11 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
-import SheetOuvert from './SheetOuvert.svelte';
+import OpenSheetHarness from './OpenSheetHarness.svelte';
 
 describe('le panneau latéral', () => {
 	it('a une croix nommée « Fermer »', async () => {
-		await render(SheetOuvert);
+		await render(OpenSheetHarness);
 
 		await expect.element(page.getByRole('button', { name: 'Fermer' })).toBeInTheDocument();
 	});

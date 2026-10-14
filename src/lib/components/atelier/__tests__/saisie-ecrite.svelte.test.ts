@@ -147,6 +147,26 @@ describe('l’historique montre la saisie écrite', () => {
 	});
 });
 
+describe('une saisie forgée dans le stockage, rappelée puis validée', () => {
+	// Audit du 2026-10-14 : les `typed` relus ne sont filtrés qu'en longueur ;
+	// ↑ les remet dans le champ, Entrée les validait composés dans la page
+	it('se montre en texte, sans rien composer', async () => {
+		const poison = String.raw`\htmlStyle{position:fixed;background:url(https://evil.example/p.png)}{x}`;
+		localStorage.setItem(
+			CALC_HISTORY_STORAGE_KEY,
+			JSON.stringify({ version: CALC_HISTORY_VERSION, lines: [], typed: [poison] })
+		);
+		const { typeMath, saisies, container } = await open('math');
+
+		await typeMath('{ArrowUp}');
+		await userEvent.keyboard('{Enter}');
+
+		await vi.waitFor(() => expect(saisies()).toHaveLength(1));
+		expect(saisies()[0].querySelector('[aria-hidden="true"]')).toBeNull();
+		expect(container.querySelector('[style*="evil"]')).toBeNull();
+	});
+});
+
 // =============================================================================
 // La consigne du champ vide
 // =============================================================================

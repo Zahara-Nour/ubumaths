@@ -190,8 +190,10 @@ function keptLineOf(entry: Entry): KeptLine {
 	const replay = keptReplay(entry.replay);
 	return {
 		label: clip(entry.label, MAX_INPUT_LENGTH),
+		// Hors liste blanche, la relecture la refuserait : pas la peine de la ranger
 		...(entry.inputLatex !== undefined &&
-			entry.inputLatex.length <= MAX_LATEX_LENGTH && { inputLatex: entry.inputLatex }),
+			entry.inputLatex.length <= MAX_LATEX_LENGTH &&
+			isSafeLatex(entry.inputLatex) && { inputLatex: entry.inputLatex }),
 		text: clip(entry.text, MAX_TEXT_LENGTH),
 		failed: entry.failed,
 		// Une formule ne se raccourcit pas : trop longue, la ligne reste en texte

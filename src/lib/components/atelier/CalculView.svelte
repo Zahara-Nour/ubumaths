@@ -51,6 +51,7 @@
 		fieldLatexFromText
 	} from '$lib/atelier/natural-input';
 	import NaturalField from './NaturalField.svelte';
+	import { isSafeLatex } from '$lib/atelier/safe-latex';
 
 	/**
 	 * Le pupitre vient du CONTENEUR, pas d'ici : c'est lui qui reçoit les actions
@@ -237,9 +238,15 @@
 	/**
 	 * La saisie écrite dans le champ mathématique, composée — ou `null` : la
 	 * ligne montre alors son texte, échappé par Svelte.
+	 *
+	 * ⚠️ La liste blanche ICI, quelle que soit la provenance (audit du
+	 * 2026-10-14) : une saisie tapée peut venir du stockage — ↑ rappelle les
+	 * `typed` relus, filtrés en longueur seulement — ou d'un collage. Sans ce
+	 * filtre, `\htmlStyle{…}` rappelé puis validé posait un calque plein écran
+	 * et une requête vers un site tiers dans la page.
 	 */
 	function inputMarkupOf(entry: Entry): string | null {
-		if (entry.inputLatex === undefined) return null;
+		if (entry.inputLatex === undefined || !isSafeLatex(entry.inputLatex)) return null;
 		try {
 			return convertLatexToMarkup(entry.inputLatex, { defaultMode: 'inline-math' });
 		} catch {
@@ -588,7 +595,7 @@
 						<!-- La saisie écrite en mathématiques : composée pour les yeux,
 						     dite en texte aux lecteurs d'écran (lecture de MathLive en anglais) -->
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-						<span class="saisie-math" aria-hidden="true">{@html written}</span>
+						<span aria-hidden="true">{@html written}</span>
 						<span class="sr-only">{spokenInput(entry)}</span>
 					{:else}
 						{entry.label}
@@ -834,18 +841,15 @@
 		color: var(--color-destructive);
 	}
 
+	/* Une longue saisie écrite en mathématiques défile dans son cadre (§3 N5).
+	   Sur le paragraphe, pas sur la formule : une zone qui défile prend le focus
+	   au clavier (Chrome 130), et la formule est cachée aux lecteurs d'écran */
 	.saisie {
 		margin: 0;
 		font-size: 0.8125rem;
 		color: var(--color-muted-foreground);
-	}
-	/* La saisie écrite en mathématiques : à la taille de la saisie, et une
-	   longue ligne défile dans son cadre (§3 N5) */
-	.saisie-math {
-		display: inline-block;
 		max-width: 100%;
 		overflow-x: auto;
-		vertical-align: bottom;
 	}
 
 	.reponse {
