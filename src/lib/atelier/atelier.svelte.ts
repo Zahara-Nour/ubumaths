@@ -16,7 +16,15 @@
  */
 
 import { SvelteMap } from 'svelte/reactivity';
-import { MAX_LISTS, isFunction, isList, isSequence, isValue, parametersOf } from './types';
+import {
+	MAX_DEFINITION_LENGTH,
+	MAX_LISTS,
+	isFunction,
+	isList,
+	isSequence,
+	isValue,
+	parametersOf
+} from './types';
 import { constantOf } from './constant';
 import type {
 	AtelierObject,
@@ -348,6 +356,19 @@ function formatSliderValue(value: number, step: number): string {
 const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-même.';
 
 const GRID_FULL = 'La grille est pleine : vide une colonne pour créer une liste.';
+
+/**
+ * Pourquoi ces entrées ne peuvent pas devenir la colonne d'une liste, ou `null`.
+ *
+ * ⚠️ Une définition plus longue que `MAX_DEFINITION_LENGTH` est écartée à la
+ * relecture (`persistence.ts`) : la liste ET ses cellules disparaîtraient au
+ * rechargement suivant (revue). 200 modalités de 20 caractères suffisent.
+ */
+function definitionTooLong(column: number, entries: readonly string[]): string | null {
+	const length = definitionFrom(entries).length;
+	if (length <= MAX_DEFINITION_LENGTH) return null;
+	return `La colonne ${columnLetter(column)} ferait ${length} caractères : une liste en garde ${MAX_DEFINITION_LENGTH} au plus pour pouvoir être enregistrée.`;
+}
 
 /** Valeur d'un curseur neuf — même convention que `addParameter` du grapheur. */
 const OFFER_DEFINITION = '1';
@@ -1292,27 +1313,40 @@ export class Atelier {
 			}
 		}
 
-		// Les colonnes nommées : une réécriture de la liste par colonne touchée
+		// Un geste sans effet ne compte pas : il ferait monter `revision`, et
+		// « Annuler » une suppression deviendrait impossible (revue)
+		const changes = spread.filter((edit) => this.cell(edit.column, edit.row) !== edit.text);
+
+		// Les colonnes nommées : une réécriture de la liste par colonne touchée,
+		// vérifiée AVANT d'écrire quoi que ce soit (tout ou rien)
 		const rewritten = new Map<number, string[]>();
-		for (const edit of spread) {
+		for (const edit of changes) {
 			const list = this.listAt(edit.column);
-			if (list === undefined) {
-				const address = cellName(edit.column, edit.row);
-				if (edit.text === '') this.cells.delete(address);
-				else this.cells.set(address, edit.text);
-				continue;
-			}
+			if (list === undefined) continue;
 			const entries = rewritten.get(edit.column) ?? [...entriesOf(list.definition)];
 			while (entries.length < edit.row) entries.push('');
 			entries[edit.row - 1] = edit.text;
 			rewritten.set(edit.column, entries);
 		}
 		for (const [column, entries] of rewritten) {
+			const tooLong = definitionTooLong(column, entries);
+			if (tooLong !== null) return { ok: false, message: tooLong };
+		}
+
+		let unnamedChanged = false;
+		for (const edit of changes) {
+			if (this.listAt(edit.column) !== undefined) continue;
+			const address = cellName(edit.column, edit.row);
+			if (edit.text === '') this.cells.delete(address);
+			else this.cells.set(address, edit.text);
+			unnamedChanged = true;
+		}
+		for (const [column, entries] of rewritten) {
 			this.update(this.listAt(column)!.name, definitionFrom(entries));
 		}
 		// Une colonne sans nom ne touche aucun objet : pas de recalcul, mais la
 		// sauvegarde doit l'entendre
-		if (rewritten.size === 0) this.revision++;
+		if (unnamedChanged && rewritten.size === 0) this.revision++;
 		return { ok: true };
 	}
 
@@ -1343,6 +1377,9 @@ export class Atelier {
 			entries.push(text);
 			moved.push([address, text]);
 		}
+		// Rangée trop longue, la liste serait écartée au rechargement — avec ses cellules
+		const tooLong = definitionTooLong(column, entries);
+		if (tooLong !== null) return { ok: false, message: tooLong };
 		for (const [address] of moved) this.cells.delete(address);
 		const created = this.create({
 			kind: 'list',

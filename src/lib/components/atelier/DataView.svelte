@@ -219,12 +219,27 @@
 		}
 	}
 
+	/**
+	 * Une frappe encore là en changeant de cellule est une frappe REFUSÉE (la
+	 * validation a eu lieu en quittant le champ) : elle ne suit pas la sélection
+	 * (revue : Entrée l'écrivait dans la nouvelle cellule). Cliquer dans la
+	 * cellule en cours d'édition, lui, ne l'abandonne pas.
+	 */
+	function leaveRefusedDraft(column: number, row: number) {
+		if (editing === null || (selected.column === column && selected.row === row)) return;
+		editing = null;
+		draft = '';
+		refusal = '';
+	}
+
 	function clickCell(column: number, row: number) {
+		leaveRefusedDraft(column, row);
 		select(column, row);
 		focusSelected();
 	}
 
 	function doubleClickCell(column: number, row: number) {
+		leaveRefusedDraft(column, row);
 		select(column, row);
 		startEditing('cell', atelier.cell(column, row));
 	}

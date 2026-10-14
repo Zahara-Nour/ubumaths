@@ -180,7 +180,9 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		const column = at === null ? undefined : placed.get(columnLetter(at.column));
 		return at === null || column === undefined ? [] : [{ column, row: at.row, text }];
 	});
-	if (cells.length > 0) atelier.editCells(cells);
+	// Un refus se dit dans le rapport, jamais en silence (revue)
+	const written = cells.length > 0 ? atelier.editCells(cells) : null;
+	if (written !== null && !written.ok) refused.push({ name: 'grille', reason: written.message });
 
 	return { added, renamed, refused };
 }

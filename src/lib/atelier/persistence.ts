@@ -136,7 +136,12 @@ export const atelierShellSchema = z.object({
 /** Une cellule rangée : son adresse dans la grille (`B3`), son texte brut. */
 const storedCellSchema = z.tuple([
 	z.string().refine((name) => readCellName(name) !== null),
-	z.string().max(MAX_CELL_LENGTH)
+	// Sans « ; » : la saisie le répartit vers le bas (P2), une cellule rangée n'en a
+	// jamais — un lien forgé qui en porte s'afficherait autrement selon le chemin
+	z
+		.string()
+		.max(MAX_CELL_LENGTH)
+		.refine((text) => !text.includes(';'))
 ]);
 
 export interface StoredObject {

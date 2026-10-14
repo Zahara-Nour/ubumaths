@@ -237,6 +237,25 @@ describe('saisie au clavier (§3)', () => {
 		expect(container.querySelector('.refus')?.textContent).toContain('200 caractères');
 		expect(bar.value).toHaveLength(201);
 	});
+
+	// Revue : la frappe refusée suivait la sélection dans une autre cellule
+	it('cliquer ailleurs après un refus abandonne la frappe refusée', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+		const bar = container.querySelector('#atelier-barre-cellule') as HTMLInputElement;
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.click(bar);
+		await userEvent.fill(bar, 'x'.repeat(201));
+		await userEvent.keyboard('{Enter}');
+		await settle();
+		await userEvent.click(cellAt(container, 'B3')!);
+		await settle();
+
+		expect(cellAt(container, 'B3')?.textContent?.trim()).toBe('');
+		expect(cellAt(container, 'B3')?.querySelector('input')).toBeNull();
+		expect(bar.value).toBe('');
+	});
 });
 
 describe('nommer une colonne (§1)', () => {

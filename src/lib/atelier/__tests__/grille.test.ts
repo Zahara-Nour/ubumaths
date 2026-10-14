@@ -12,7 +12,7 @@ import { Atelier } from '../atelier.svelte';
 import { mergeInto, mergeRefusal } from '../merge';
 import { salvageGrid, ATELIER_STATE_VERSION, type AtelierState } from '../persistence';
 import { definitionFrom, entriesOf, spreadText, GRID_ROWS, MAX_CELL_LENGTH } from '../grid';
-import { isList, MAX_LISTS, type ListObject } from '../types';
+import { isList, MAX_DEFINITION_LENGTH, MAX_LISTS, type ListObject } from '../types';
 
 function listOf(atelier: Atelier, name: string): ListObject {
 	const object = atelier.get(name);
@@ -43,6 +43,15 @@ describe('entrées d’une colonne', () => {
 			{ row: 5, text: '9' }
 		]);
 		expect(spreadText(3, '12')).toEqual([{ row: 3, text: '12' }]);
+	});
+
+	// Revue : un « ; » final vidait la ligne suivante
+	it('un « ; » final n’écrit rien en dessous', () => {
+		expect(spreadText(1, '12 ; 15 ; 9 ;')).toEqual([
+			{ row: 1, text: '12' },
+			{ row: 2, text: '15' },
+			{ row: 3, text: '9' }
+		]);
 	});
 });
 
@@ -141,6 +150,43 @@ describe('P2 et plafonds de saisie', () => {
 
 		expect(edited.ok).toBe(false);
 		expect(a.cell(A, 1)).toBe('');
+	});
+
+	// Revue : une liste plus longue que MAX_DEFINITION_LENGTH était perdue au rechargement
+	it(`une colonne nommée ne dépasse pas ${MAX_DEFINITION_LENGTH} caractères`, () => {
+		const a = new Atelier();
+		const long = Array.from({ length: GRID_ROWS }, (_, i) => ({
+			column: A,
+			row: i + 1,
+			text: `modalité numéro ${i}`
+		}));
+		a.editCells(long);
+
+		const named = a.nameColumn(A, 'L');
+
+		expect(named.ok).toBe(false);
+		if (!named.ok) expect(named.message).toContain(`${MAX_DEFINITION_LENGTH}`);
+		expect(a.get('L')).toBeUndefined();
+		expect(a.cell(A, GRID_ROWS)).toBe(`modalité numéro ${GRID_ROWS - 1}`);
+
+		a.create({ kind: 'list', name: 'M', definition: '1' });
+		const edited = a.editCells(long.map((e) => ({ ...e, column: B })));
+		expect(edited.ok).toBe(false);
+		expect(listOf(a, 'M').definition).toBe('1');
+	});
+
+	// Revue : un geste sans effet faisait monter la révision (« Annuler » devenu impossible)
+	it('un geste qui ne change rien ne compte pas comme un changement', () => {
+		const a = new Atelier();
+		a.create({ kind: 'list', name: 'L', definition: '1' });
+		const before = a.revision;
+
+		a.editCells([
+			{ column: C, row: 4, text: '' },
+			{ column: A, row: 1, text: '1' }
+		]);
+
+		expect(a.revision).toBe(before);
 	});
 
 	it('une colonne hors de A-Z est refusée', () => {
@@ -307,11 +353,20 @@ describe('§7 — sauvegarde, lien, conversion', () => {
 
 	it('une grille abîmée perd ses cellules abîmées, pas le reste', () => {
 		const { grid, dropped } = salvageGrid({
-			cells: { A1: '12', ZZ9: '1', A0: '1', B201: '1', C2: 4, D3: 'x'.repeat(MAX_CELL_LENGTH + 1) }
+			cells: {
+				A1: '12',
+				ZZ9: '1',
+				A0: '1',
+				B201: '1',
+				C2: 4,
+				D3: 'x'.repeat(MAX_CELL_LENGTH + 1),
+				// Revue : un « ; » se répartirait à la fusion, et pas à la relecture
+				E1: '1 ; 2'
+			}
 		});
 
 		expect(grid.cells).toEqual({ A1: '12' });
-		expect(dropped).toBe(5);
+		expect(dropped).toBe(6);
 	});
 });
 

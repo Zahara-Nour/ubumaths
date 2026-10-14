@@ -119,5 +119,11 @@ export function cellInCalculMessage(cell: string): string {
  */
 export function spreadText(row: number, text: string): { row: number; text: string }[] {
 	if (!text.includes(';')) return [{ row, text: text.trim() }];
-	return text.split(';').map((piece, offset) => ({ row: row + offset, text: piece.trim() }));
+	// `12 ; 15 ;` : le « ; » final n'écrit rien en dessous (revue : il vidait la
+	// ligne suivante), comme l'ancien champ qui l'ignorait
+	const pieces = entriesOf(text);
+	return (pieces.length === 0 ? [''] : pieces).map((piece, offset) => ({
+		row: row + offset,
+		text: piece
+	}));
 }

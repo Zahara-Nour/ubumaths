@@ -342,9 +342,12 @@ Pas encore de formules : une cellule est du texte brut.
 - **Une cellule se lit comme une entrée de liste** (`readListValue` : `1,5`, `1.5`, `1/6`, sinon un
   mot) ; une entrée vide n'est pas une valeur ignorée. Un texte avec « ; » se **répartit vers le
   bas** (P2, `spreadText`).
-- `editCells` écrit un geste entier, tout ou rien : hors de A1-Z200, trop long ou au-delà de la
-  ligne 200 → refus, rien n'est écrit. Une colonne nommée est réécrite par `update` (la liste garde
-  sa colonne) ; une colonne sans nom fait seulement monter `revision`.
+- `editCells` écrit un geste entier, tout ou rien : hors de A1-Z200, trop long, au-delà de la
+  ligne 200, ou une colonne nommée dont la définition dépasserait `MAX_DEFINITION_LENGTH` (elle
+  serait écartée au rechargement, cellules comprises ; `nameColumn` refuse de même) → refus, rien
+  n'est écrit. Un geste sans effet ne compte pas (sinon « Annuler » une suppression deviendrait
+  impossible). Une colonne nommée est réécrite par `update` (la liste garde sa colonne) ; une
+  colonne sans nom fait seulement monter `revision`. Un « ; » final n'écrit rien en dessous.
 - **Créer une liste** (« + Liste », `L = …` dans Calcul, `.simuler`, `.filtrer`, « Garder ») prend
   la **première colonne libre** (ni liste ni cellule) ; aucune → « La grille est pleine : vide une
   colonne pour créer une liste. ». `nameColumn` fait d'une colonne remplie une liste (refus de nom
