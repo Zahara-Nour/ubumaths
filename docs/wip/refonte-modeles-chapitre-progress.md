@@ -2,7 +2,8 @@
 
 > Décision : [ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md)
 > (2026-10-14). Doc de la zone : [cours-et-chapitres.md](../systeme/cours-et-chapitres.md) (écart 9).
-> État : **phase 0, en attente de validation de David.** Rien n'est codé.
+> État : **phase 0 validée par David le 2026-10-14** (comportements 1-19, Q1-Q4 selon les recos).
+> Prochaine étape : modèle de données et question d'accès, avant tout SQL.
 
 ## Point de départ (mesuré le 2026-10-14)
 
@@ -14,7 +15,7 @@
 - La règle de stockage élève du bucket `chapter-documents` n'existe qu'en production (aucune
   migration) et ne teste pas `published_at`.
 
-## Phase 0 — comportements attendus (à valider)
+## Phase 0 — comportements attendus (validés le 2026-10-14)
 
 « Élément » = section, document, objectif, fiche, série ou exercice.
 
@@ -69,7 +70,7 @@
 19. Le chapitre de 1SPE 2 est relié aux 4 documents du modèle, non publiés ; ses faux liens
     `storage://` disparaissent.
 
-## Questions encore ouvertes (tour 2)
+## Questions du tour 2 — tranchées le 2026-10-14 (recos retenues)
 
 ❓ **Q1 — Le mot.** Le glossaire dit « instanciation » pour un chapitre créé depuis un modèle. Avec
 le lien, faut-il l'appeler **chapitre lié** (et bannir « instanciation » dans l'interface) ?
