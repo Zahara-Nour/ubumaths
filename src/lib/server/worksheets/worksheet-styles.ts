@@ -81,3 +81,111 @@ export async function loadStyleTemplate(
 	}
 	return data ? { ...data, placeholders: [] } : null;
 }
+
+// ============================================================================
+// UN GABARIT DE LA PAGE « GABARITS » ET SON STYLE (D10)
+// ============================================================================
+//
+// La page « Gabarits » ne change pas à l'écran (D9), mais chaque gabarit
+// qu'elle crée est la fiche d'un style du même nom, au même identifiant : c'est
+// ce style que le menu de la fiche propose. Renommer le gabarit renomme le
+// style ; supprimer le gabarit supprime le style (et, par cascade, le gabarit).
+
+type TemplateInsert = Database['public']['Tables']['worksheet_templates']['Insert'];
+type TemplateRow = Database['public']['Tables']['worksheet_templates']['Row'];
+
+/**
+ * Le style propre au gabarit — créé avec lui, au même identifiant — ou `null`
+ * (gabarit rattaché à un autre style, ou sans style).
+ */
+export function ownStyleId(template: { id: string; style_id: string | null }): string | null {
+	return template.style_id === template.id ? template.style_id : null;
+}
+
+/**
+ * Crée le style, puis sa fiche. Fiche refusée : le style, inutile seul, est
+ * retiré.
+ */
+export async function insertTemplateWithStyle(
+	supabase: SupabaseClient<Database>,
+	row: Omit<TemplateInsert, 'id' | 'style_id' | 'form'> & { created_by: string }
+): Promise<{ data: TemplateRow | null; error: unknown }> {
+	const id = crypto.randomUUID();
+	const { error: styleError } = await supabase.from('worksheet_styles').insert({
+		id,
+		owner_id: row.created_by,
+		name: row.name,
+		description: row.description ?? null
+	});
+	if (styleError) return { data: null, error: styleError };
+
+	const { data, error } = await supabase
+		.from('worksheet_templates')
+		.insert({ ...row, id, style_id: id, form: 'worksheet' })
+		.select()
+		.single();
+	if (error) {
+		await supabase.from('worksheet_styles').delete().eq('id', id);
+		return { data: null, error };
+	}
+	return { data, error: null };
+}
+
+/** Le nom et la description du gabarit, recopiés sur son style. */
+export async function syncTemplateStyle(
+	supabase: SupabaseClient<Database>,
+	template: { id: string; style_id: string | null },
+	fields: { name?: string; description?: string | null }
+): Promise<void> {
+	const styleId = ownStyleId(template);
+	if (!styleId || (fields.name === undefined && fields.description === undefined)) return;
+
+	const update: Database['public']['Tables']['worksheet_styles']['Update'] = {};
+	if (fields.name !== undefined) update.name = fields.name;
+	if (fields.description !== undefined) update.description = fields.description;
+	const { data, error } = await supabase
+		.from('worksheet_styles')
+		.update(update)
+		.eq('id', styleId)
+		.select('id');
+	// La RLS refuse en silence : zéro ligne, sans erreur
+	if (error || (data ?? []).length === 0) {
+		logger.error('Style du gabarit non renommé :', error ?? 'aucune ligne');
+	}
+}
+
+/**
+ * Le nombre de fiches qui désignent ce gabarit ou son style : la suppression
+ * leur retirerait leur mise en page sans le dire.
+ */
+export async function countWorksheetsUsingTemplate(
+	supabase: SupabaseClient<Database>,
+	template: { id: string; style_id: string | null }
+): Promise<{ count: number; error: unknown }> {
+	const styleId = ownStyleId(template);
+	const { count, error } = await supabase
+		.from('worksheets')
+		.select('id', { count: 'exact', head: true })
+		.or(
+			styleId
+				? `template_id.eq.${template.id},style_id.eq.${styleId}`
+				: `template_id.eq.${template.id}`
+		);
+	return { count: count ?? 0, error };
+}
+
+/**
+ * Supprime le gabarit avec son style (la cascade emporte le gabarit), ou le
+ * gabarit seul s'il n'a pas de style propre. Rend faux si rien n'a été
+ * supprimé (la RLS refuse en silence).
+ */
+export async function deleteTemplateWithStyle(
+	supabase: SupabaseClient<Database>,
+	template: { id: string; style_id: string | null }
+): Promise<{ deleted: boolean; error: unknown }> {
+	const styleId = ownStyleId(template);
+	const { data, error } = styleId
+		? await supabase.from('worksheet_styles').delete().eq('id', styleId).select('id')
+		: await supabase.from('worksheet_templates').delete().eq('id', template.id).select('id');
+	return { deleted: !error && (data ?? []).length > 0, error };
+}

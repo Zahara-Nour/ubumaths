@@ -7,6 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { insertTemplateWithStyle } from '$lib/server/worksheets/worksheet-styles';
 import {
 	validateListTemplatesQuery,
 	validateCreateTemplate,
@@ -112,40 +113,17 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 	const data = validation.data;
 
-	// Un gabarit de la page « Gabarits » est la fiche d'un style du même nom, au
-	// même identifiant (D10) : c'est le style que le menu de la fiche propose.
-	const id = crypto.randomUUID();
-	const { error: styleError } = await locals.supabase.from('worksheet_styles').insert({
-		id,
-		owner_id: user.id,
+	// Le gabarit est la fiche d'un style du même nom, au même identifiant (D10)
+	const { data: template, error: dbError } = await insertTemplateWithStyle(locals.supabase, {
 		name: data.name,
-		description: data.description ?? null
+		description: data.description ?? null,
+		template_content: data.template_content,
+		placeholders: data.placeholders ?? [],
+		created_by: user.id
 	});
 
-	if (styleError) {
-		logger.error('Failed to create template style:', styleError);
-		throw error(500, 'Impossible de créer le modèle de fiche');
-	}
-
-	const { data: template, error: dbError } = await locals.supabase
-		.from('worksheet_templates')
-		.insert({
-			id,
-			name: data.name,
-			description: data.description ?? null,
-			template_content: data.template_content,
-			placeholders: data.placeholders ?? [],
-			created_by: user.id,
-			style_id: id,
-			form: 'worksheet'
-		})
-		.select()
-		.single();
-
-	if (dbError) {
+	if (dbError || !template) {
 		logger.error('Failed to create template:', dbError);
-		// Le style seul ne servirait à rien : il disparaît avec l'échec
-		await locals.supabase.from('worksheet_styles').delete().eq('id', id);
 		throw error(500, 'Impossible de créer le modèle de fiche');
 	}
 

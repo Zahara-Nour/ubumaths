@@ -40,6 +40,8 @@ import {
 	PUT as updateTemplate,
 	DELETE as deleteTemplate
 } from '../../src/routes/api/worksheets/templates/[id]/+server';
+import { actions as listActions } from '../../src/routes/(protected)/dashboard/teacher/contenu/worksheets/templates/+page.server';
+import { actions as editActions } from '../../src/routes/(protected)/dashboard/teacher/contenu/worksheets/templates/[id]/+page.server';
 
 // ============================================================================
 // CONSTANTES
@@ -316,7 +318,7 @@ describe('le gabarit du style d’une fiche', () => {
 	});
 });
 
-describe('la page « Gabarits » : un gabarit et son style vont ensemble (D10)', () => {
+describe('l’API des gabarits : un gabarit et son style vont ensemble (D10)', () => {
 	async function createdTemplate(name: string): Promise<string> {
 		const response = await createTemplate({
 			locals,
@@ -356,6 +358,8 @@ describe('la page « Gabarits » : un gabarit et son style vont ensemble (D10)',
 
 	it('supprimer le gabarit supprime son style', async () => {
 		const id = await createdTemplate('à supprimer');
+		// Le style existe : sinon la suite passerait à vide
+		expect(await styleInDb(id)).toBeDefined();
 		const response = await deleteTemplate({ locals, params: { id } } as never);
 
 		expect(response.status).toBe(200);
@@ -370,5 +374,103 @@ describe('la page « Gabarits » : un gabarit et son style vont ensemble (D10)',
 		expect(await statusOf(() => deleteTemplate({ locals, params: { id } } as never))).toBe(400);
 		expect(await styleInDb(id)).toBeDefined();
 		expect((await worksheetInDb(worksheetId)).style_id).toBe(id);
+	});
+});
+
+describe('la page « Gabarits » (ses actions) : un gabarit et son style vont ensemble (D10)', () => {
+	function formRequest(fields: Record<string, string>): Request {
+		const body = new FormData();
+		for (const [k, v] of Object.entries(fields)) body.set(k, v);
+		return new Request('http://localhost/', { method: 'POST', body });
+	}
+
+	/** L'identifiant du gabarit vers lequel l'action redirige. */
+	async function redirectedId(call: () => Promise<unknown>): Promise<string> {
+		try {
+			await call();
+		} catch (e) {
+			const location = (e as { location?: string }).location;
+			if (location) return location.split('/').pop() as string;
+			throw e;
+		}
+		throw new Error('aucune redirection');
+	}
+
+	async function createdFromForm(name: string): Promise<string> {
+		return redirectedId(() =>
+			editActions.create({
+				locals,
+				params: { id: 'new' },
+				request: formRequest({ name: `${RUN} ${name}`, description: '', template_content: TYPST })
+			} as never)
+		);
+	}
+
+	it('« Nouveau gabarit » crée son style', async () => {
+		const id = await createdFromForm('formulaire');
+		expect(await styleInDb(id)).toMatchObject({ name: `${RUN} formulaire`, owner_id: teacherId });
+		expect(await templateInDb(id)).toEqual({ style_id: id, form: 'worksheet' });
+	});
+
+	it('« Partir d’un gabarit de Chiphre » crée son style', async () => {
+		const id = await redirectedId(() =>
+			listActions.createFromDefault({
+				locals,
+				request: formRequest({ template_id: STANDARD })
+			} as never)
+		);
+		expect(await styleInDb(id)).toMatchObject({ name: 'Standard (copie)', owner_id: teacherId });
+		expect(await templateInDb(id)).toEqual({ style_id: id, form: 'worksheet' });
+		// Nom sans le préfixe du run : nettoyage à la main
+		const pg = await getPostgresClient();
+		await pg.query('delete from public.worksheet_styles where id = $1', [id]);
+	});
+
+	it('dupliquer un gabarit crée le style de la copie', async () => {
+		const id = await createdFromForm('à copier');
+		const result = (await listActions.duplicate({
+			locals,
+			request: formRequest({ template_id: id })
+		} as never)) as { templateId: string };
+
+		expect(result.templateId).not.toBe(id);
+		expect(await styleInDb(result.templateId)).toMatchObject({ name: `${RUN} à copier (copie)` });
+		expect(await templateInDb(result.templateId)).toEqual({
+			style_id: result.templateId,
+			form: 'worksheet'
+		});
+	});
+
+	it('modifier le gabarit renomme son style', async () => {
+		const id = await createdFromForm('avant');
+		await editActions.update({
+			locals,
+			params: { id },
+			request: formRequest({
+				name: `${RUN} après`,
+				description: 'Évaluations',
+				template_content: TYPST
+			})
+		} as never);
+		expect(await styleInDb(id)).toMatchObject({ name: `${RUN} après`, description: 'Évaluations' });
+	});
+
+	it('supprimer le gabarit supprime son style', async () => {
+		const id = await createdFromForm('à jeter');
+		expect(await styleInDb(id)).toBeDefined();
+		await listActions.delete({ locals, request: formRequest({ template_id: id }) } as never);
+		expect(await templateInDb(id)).toBeUndefined();
+		expect(await styleInDb(id)).toBeUndefined();
+	});
+
+	it('un gabarit dont le style sert à une fiche reste', async () => {
+		const id = await createdFromForm('gardé');
+		await seedWorksheet('qui le garde', id);
+		const result = (await listActions.delete({
+			locals,
+			request: formRequest({ template_id: id })
+		} as never)) as { status?: number };
+		expect(result.status).toBe(400);
+		expect(await styleInDb(id)).toBeDefined();
 	});
 });

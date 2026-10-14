@@ -9,6 +9,11 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import {
+	countWorksheetsUsingTemplate,
+	deleteTemplateWithStyle,
+	syncTemplateStyle
+} from '$lib/server/worksheets/worksheet-styles';
+import {
 	validateUpdateTemplate,
 	templateResponseSchema,
 	deleteTemplateResponseSchema
@@ -65,14 +70,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 	return json(validated);
 };
-
-/**
- * Le style propre au gabarit — créé avec lui, au même identifiant (D10) — ou
- * `null` (gabarit rattaché à un autre style, ou d'avant le lot 3 sans style).
- */
-function ownStyleId(template: { id: string; style_id: string | null }): string | null {
-	return template.style_id === template.id ? template.style_id : null;
-}
 
 /**
  * PUT /api/worksheets/templates/[id]
@@ -147,20 +144,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// Le style du gabarit porte son nom dans le menu de la fiche (D10)
-	if (ownStyleId(existingTemplate) && (data.name !== undefined || data.description !== undefined)) {
-		const styleUpdate: TablesUpdate<'worksheet_styles'> = {};
-		if (data.name !== undefined) styleUpdate.name = data.name;
-		if (data.description !== undefined) styleUpdate.description = data.description;
-		const { data: styles, error: styleError } = await locals.supabase
-			.from('worksheet_styles')
-			.update(styleUpdate)
-			.eq('id', existingTemplate.id)
-			.select('id');
-		// La RLS refuse en silence : zéro ligne, sans erreur
-		if (styleError || (styles ?? []).length === 0) {
-			logger.error('Failed to rename template style:', styleError ?? 'aucune ligne');
-		}
-	}
+	await syncTemplateStyle(locals.supabase, existingTemplate, data);
 
 	// Validate response
 	const validated = validateJsonResponse(
@@ -208,33 +192,29 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	// Une fiche qui désigne ce gabarit, ou son style (D10), perdrait sa mise en
 	// page sans le dire : la suppression est refusée.
-	const styleId = ownStyleId(existingTemplate);
-	const { count: worksheetCount, error: countError } = await locals.supabase
-		.from('worksheets')
-		.select('id', { count: 'exact', head: true })
-		.or(
-			styleId ? `template_id.eq.${params.id},style_id.eq.${styleId}` : `template_id.eq.${params.id}`
-		);
+	const { count: worksheetCount, error: countError } = await countWorksheetsUsingTemplate(
+		locals.supabase,
+		existingTemplate
+	);
 
 	if (countError) {
 		logger.error('Failed to check template usage:', countError);
 		throw error(500, 'Impossible de vérifier l’usage du modèle');
 	}
 
-	if (worksheetCount && worksheetCount > 0) {
+	if (worksheetCount > 0) {
 		throw error(
 			400,
 			`Impossible de supprimer ce modèle : des fiches l’utilisent (${worksheetCount}). Retirer d’abord le modèle de ces fiches.`
 		);
 	}
 
-	// Supprimer le style emporte le gabarit (`on delete cascade`) ; la RLS refuse
-	// en silence, d'où la relecture des lignes supprimées.
-	const { data: deleted, error: dbError } = styleId
-		? await locals.supabase.from('worksheet_styles').delete().eq('id', styleId).select('id')
-		: await locals.supabase.from('worksheet_templates').delete().eq('id', params.id).select('id');
+	const { deleted, error: dbError } = await deleteTemplateWithStyle(
+		locals.supabase,
+		existingTemplate
+	);
 
-	if (dbError || (deleted ?? []).length === 0) {
+	if (!deleted) {
 		logger.error('Failed to delete template:', dbError ?? 'aucune ligne');
 		throw error(500, 'Impossible de supprimer le modèle de fiche');
 	}
