@@ -3,13 +3,15 @@
  * (phase 0 `docs/wip/atelier-developper-phase0.md`, décisions de David du
  * 2026-10-14).
  *
- * ⚠️ PR 1 : la RÉPONSE seule. Les étapes que rend aujourd'hui l'intention
- * `developper` ne sont pas montrables (produits collés « 2x1 », la même ligne
- * jusqu'à 13 fois, distribution cachée) : pas de « Comment ? » tant qu'elles ne
- * sont pas rédigées (PR 2).
+ * PR 1 : la réponse. PR 2 : le « Comment ? » (section E de la phase 0) — les
+ * étapes que rendait l'intention `developper` n'étaient pas montrables (produits
+ * collés « 2x1 », la même ligne jusqu'à 13 fois, distribution cachée) ; elles
+ * sont rédigées par `pedagogical-simplify/expand-steps.ts`. Les tests lisent ce
+ * que l'élève VOIT : le titre et l'image (la ligne « = … » sous le titre).
  */
 
 import { describe, it, expect } from 'vitest';
+import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { Atelier } from '../atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, type CalcSession } from '../calcul';
@@ -35,6 +37,65 @@ function refus(input: string): string {
 	expect(result.kind, `« ${input} » n'a pas été refusé`).toBe('refus');
 	return result.kind === 'refus' ? result.message : '';
 }
+
+/**
+ * Les deux lignes d'une étape : l'expression de départ (en bleu) et l'image,
+ * la ligne « = … » que l'élève lit sous le titre.
+ */
+function linesOf(step: RenderedStep): { before: string; image: string } {
+	const latex = step.expressionLatex ?? '';
+	const match =
+		/^\\begin\{aligned\}\n {2}\\textcolor\{blue\}\{(.*)\} & \\\\\n {2}= (.*)\n\\end\{aligned\}$/.exec(
+			latex
+		);
+	expect(match, `étape illisible : ${latex}`).not.toBeNull();
+	return { before: match![1], image: match![2] };
+}
+
+/** Les étapes d'une ligne « .développer … » : [titre, image], dans l'ordre. */
+function etapes(expression: string, s: CalcSession = session()): [string, string][] {
+	const result = commande(`.développer ${expression}`, s);
+	expect(result.steps, `« ${expression} » n'a pas d'étapes`).toBeDefined();
+	return result.steps!.map((step) => [step.title, linesOf(step).image]);
+}
+
+/** La même chose, en version résumée. */
+function resume(expression: string): [string, string][] {
+	const result = commande(`.développer ${expression}`);
+	expect(result.summary, `« ${expression} » n'a pas de résumé`).toBeDefined();
+	return result.summary!.map((step) => [step.title, linesOf(step).image]);
+}
+
+/** Un nombre collé à une lettre ou à un autre nombre : `2 x 1`, `2 3` (règle de la section E). */
+const GLUED_NUMBER = /(?:^|[^a-z\\{])[a-z] \d|\d \d/;
+
+/** Les expressions du tableau B qui se rédigent, et quelques voisines. */
+const EXPLAINED = [
+	'(x+1)^2',
+	'(x-3)^2',
+	'(2x+5)^2',
+	'(x+2)(x-2)',
+	'(2x-1)(x+3)',
+	'3(x-2)-(x+1)',
+	'5-2(x-3)',
+	'x(x-1)',
+	'(3x-1)^2-(x+2)^2',
+	'(x+1)(x+2)(x+3)',
+	'(x+1)^3',
+	'(a+b)^2',
+	'a(x+b)',
+	'e^x(x+1)',
+	'(0,5x+1)^2',
+	'(x/2+1)^2',
+	'-(x+1)',
+	'-(2x-3)',
+	'-(x+1)(x-1)',
+	'-2(x-4)',
+	'(a-b)^2',
+	'(x+a)(x-a)',
+	'2(x+1)^2',
+	'(x+1)^4'
+];
 
 describe('la commande existe et se découvre', () => {
 	it('elle est au catalogue, juste après « factoriser », dans « Calculer »', () => {
@@ -65,9 +126,225 @@ describe('la commande existe et se découvre', () => {
 		expect(result.output).not.toContain('Error');
 	});
 
-	it('pas de « Comment ? » tant que les étapes ne sont pas rédigées (PR 2)', () => {
+	it('le « Comment ? » est là, avec sa version résumée (PR 2)', () => {
 		const result = commande('.développer (2x-1)(x+3)');
 
+		expect(result.steps).toBeDefined();
+		expect(result.summary).toBeDefined();
+	});
+});
+
+/**
+ * Section E de la phase 0, validée par David le 2026-10-14 : deux règles pour
+ * toutes — jamais deux lignes identiques de suite, un × entre deux facteurs dès
+ * qu'un nombre suit une lettre ou un autre nombre.
+ */
+describe('« Comment ? » : les étapes rédigées (section E)', () => {
+	it('(x+1)² : l’identité qui nomme a et b, puis chaque terme calculé', () => {
+		expect(etapes('(x+1)^2')).toEqual([
+			[
+				'On reconnaît (a + b)² = a² + 2ab + b², avec a = x et b = 1',
+				'x^2 + 2 \\times x \\times 1 + 1^2'
+			],
+			['On calcule chaque terme', 'x^2 + 2 x + 1']
+		]);
+	});
+
+	it('(2x − 1)(x + 3) : la distribution, chaque produit, la réduction', () => {
+		expect(etapes('(2x-1)(x+3)')).toEqual([
+			[
+				'On distribue : chaque terme du premier facteur multiplie chaque terme du second',
+				'2 x \\times x + 2 x \\times 3 - 1 \\times x - 1 \\times 3'
+			],
+			['On calcule chaque produit', '2 x^2 + 6 x - x - 3'],
+			['On réduit', '2 x^2 + 5 x - 3']
+		]);
+	});
+
+	it('3(x − 2) − (x + 1) : distribuer 3 et le signe − en une ligne, puis réduire', () => {
+		expect(etapes('3(x-2)-(x+1)')).toEqual([
+			[
+				'On distribue 3, et le signe − devant la parenthèse change le signe de chaque terme',
+				'3 x - 6 - x - 1'
+			],
+			['On réduit', '2 x - 7']
+		]);
+	});
+
+	it('(3x − 1)² − (x + 2)² : les deux carrés, la parenthèse précédée d’un −, la réduction', () => {
+		expect(etapes('(3x-1)^2-(x+2)^2')).toEqual([
+			[
+				'On développe chaque carré avec son identité remarquable',
+				'9 x^2 - 6 x + 1 - \\left( x^2 + 4 x + 4 \\right)'
+			],
+			['On enlève la parenthèse précédée d’un −', '9 x^2 - 6 x + 1 - x^2 - 4 x - 4'],
+			['On réduit', '8 x^2 - 10 x - 3']
+		]);
+	});
+
+	it('(x + 1)³ : le carré fois la parenthèse, puis identité, distribution, réduction', () => {
+		expect(etapes('(x+1)^3')).toEqual([
+			['On écrit (x + 1)³ = (x + 1)²(x + 1)', '\\left( x + 1 \\right)^2 \\left( x + 1 \\right)'],
+			[
+				'On reconnaît (a + b)² = a² + 2ab + b², avec a = x et b = 1',
+				'\\left( x^2 + 2 \\times x \\times 1 + 1^2 \\right) \\left( x + 1 \\right)'
+			],
+			['On calcule chaque terme', '\\left( x^2 + 2 x + 1 \\right) \\left( x + 1 \\right)'],
+			[
+				'On distribue : chaque terme du premier facteur multiplie chaque terme du second',
+				'x^2 \\times x + x^2 \\times 1 + 2 x \\times x + 2 x \\times 1 + 1 \\times x + 1 \\times 1'
+			],
+			['On calcule chaque produit', 'x^3 + x^2 + 2 x^2 + 2 x + x + 1'],
+			['On réduit', 'x^3 + 3 x^2 + 3 x + 1']
+		]);
+	});
+
+	it('exposant 4 ou plus : une seule étape, « On développe la puissance »', () => {
+		expect(etapes('(x+1)^4')).toEqual([
+			['On développe la puissance', 'x^4 + 4 x^3 + 6 x^2 + 4 x + 1']
+		]);
+	});
+
+	it('la première ligne part de l’expression tapée, chaque étape de la précédente', () => {
+		const steps = commande('.développer (2x-1)(x+3)').steps!;
+
+		expect(steps[0].expressionLatex).toBe(
+			'\\begin{aligned}\n  \\textcolor{blue}{\\left( 2 x - 1 \\right) \\left( x + 3 \\right)} & \\\\\n' +
+				'  = 2 x \\times x + 2 x \\times 3 - 1 \\times x - 1 \\times 3\n\\end{aligned}'
+		);
+		for (let i = 1; i < steps.length; i++) {
+			expect(linesOf(steps[i]).before).toBe(linesOf(steps[i - 1]).image);
+		}
+	});
+
+	it('d’autres écritures du collège : un facteur, le signe −, une lettre, a² − b²', () => {
+		expect(etapes('5-2(x-3)')).toEqual([
+			['On distribue −2', '5 - 2 x + 6'],
+			['On réduit', '-2 x + 11']
+		]);
+		expect(etapes('x(x-1)')).toEqual([['On distribue x', 'x^2 - x']]);
+		expect(etapes('-(x+1)')).toEqual([['On enlève la parenthèse précédée d’un −', '-x - 1']]);
+		expect(etapes('(x+2)(x-2)')).toEqual([
+			['On reconnaît (a + b)(a − b) = a² − b², avec a = x et b = 2', 'x^2 - 2^2'],
+			['On calcule chaque terme', 'x^2 - 4']
+		]);
+	});
+
+	it('les décimaux des étapes suivent ceux de la réponse', () => {
+		expect(etapes('(0,5x+1)^2')).toEqual([
+			[
+				'On reconnaît (a + b)² = a² + 2ab + b², avec a = 0,5x et b = 1',
+				'\\left( 0{,}5 x \\right)^2 + 2 \\times 0{,}5 x \\times 1 + 1^2'
+			],
+			['On calcule chaque terme', '0{,}25 x^2 + x + 1']
+		]);
+	});
+});
+
+describe('les deux règles, sur le tableau B', () => {
+	it.each(EXPLAINED)('%s : jamais deux images identiques de suite', (expression) => {
+		const images = etapes(expression).map(([, image]) => image);
+
+		for (let i = 1; i < images.length; i++) {
+			expect(images[i], `${expression}, étape ${i + 1}`).not.toBe(images[i - 1]);
+		}
+		// Ni une première image identique à l'expression de départ
+		const first = commande(`.développer ${expression}`).steps![0];
+		expect(linesOf(first).image).not.toBe(linesOf(first).before);
+	});
+
+	it.each(EXPLAINED)('%s : la dernière image est la réponse de la ligne', (expression) => {
+		const result = commande(`.développer ${expression}`);
+		const steps = result.steps!;
+
+		expect(linesOf(steps[steps.length - 1]).image).toBe(result.latex);
+		const summary = result.summary ?? steps;
+		expect(linesOf(summary[summary.length - 1]).image).toBe(result.latex);
+	});
+
+	it.each(EXPLAINED)('%s : aucun nombre collé à une lettre ou à un nombre', (expression) => {
+		for (const [title, image] of etapes(expression)) {
+			expect(image, title).not.toMatch(GLUED_NUMBER);
+		}
+	});
+
+	it('en mode décimal, la dernière image est encore la réponse', () => {
+		const s = session();
+		run('.mode décimal', s);
+		const result = commande('.développer (x/2+1)^2', s);
+		const steps = result.steps!;
+
+		expect(result.latex).toBe('0{,}25 x^2 + x + 1');
+		expect(linesOf(steps[steps.length - 1]).image).toBe('0{,}25 x^2 + x + 1');
+	});
+});
+
+describe('la version résumée : sans les lignes à × ni les « pourquoi »', () => {
+	it('(x+1)² : l’identité donne directement les termes calculés', () => {
+		expect(resume('(x+1)^2')).toEqual([
+			['On reconnaît (a + b)² = a² + 2ab + b², avec a = x et b = 1', 'x^2 + 2 x + 1']
+		]);
+	});
+
+	it('(2x − 1)(x + 3) : distribuer, puis réduire', () => {
+		expect(resume('(2x-1)(x+3)')).toEqual([
+			[
+				'On distribue : chaque terme du premier facteur multiplie chaque terme du second',
+				'2 x^2 + 6 x - x - 3'
+			],
+			['On réduit', '2 x^2 + 5 x - 3']
+		]);
+	});
+
+	it.each(EXPLAINED)('%s : jamais plus long, jamais un × ni un « pourquoi »', (expression) => {
+		const result = commande(`.développer ${expression}`);
+		const summary = result.summary ?? result.steps!;
+
+		expect(summary.length).toBeLessThanOrEqual(result.steps!.length);
+		for (const step of summary) {
+			expect(step.explanation, step.title).toBeUndefined();
+			expect(linesOf(step).image, step.title).not.toContain('\\times');
+		}
+	});
+
+	it('la version détaillée dit le « pourquoi » de chaque étape', () => {
+		const steps = commande('.développer (2x-1)(x+3)').steps!;
+
+		expect(steps.every((step) => step.explanation !== undefined)).toBe(true);
+	});
+
+	it('une ligne à × de moins dans le résumé, partout où il y en a une', () => {
+		for (const expression of ['(x+1)^2', '(2x-1)(x+3)', '(x+1)^3', '(x+1)(x+2)(x+3)']) {
+			const result = commande(`.développer ${expression}`);
+
+			expect(result.summary!.length, expression).toBeLessThan(result.steps!.length);
+		}
+	});
+});
+
+describe('ce qu’on ne sait pas expliquer ne s’affiche pas en étapes', () => {
+	it('rien à développer : ni réponse ni étapes (1/(x+1))', () => {
+		const result = commande('.développer 1/(x+1)');
+
+		expect(result.latex).toBeUndefined();
+		expect(result.steps).toBeUndefined();
+		expect(result.summary).toBeUndefined();
+	});
+
+	it('une somme sous une fonction : la réponse, sans « Comment ? »', () => {
+		const result = commande('.développer cos(2(x+1))');
+
+		expect(result.latex).toBe('\\cos\\left( 2 x + 2 \\right)');
+		expect(result.steps).toBeUndefined();
+		expect(result.summary).toBeUndefined();
+	});
+
+	it('une fraction de sommes : la réponse, sans « Comment ? »', () => {
+		// Le texte se lit `(x+1) · (x-1)/(x+2)` : une fraction EN FACTEUR, que la
+		// rédaction ne sait pas encore mettre sur un seul trait
+		const result = commande('.développer (x+1)(x-1)/(x+2)');
+
+		expect(result.latex).toBe('\\dfrac{x^2 - 1}{x + 2}');
 		expect(result.steps).toBeUndefined();
 		expect(result.summary).toBeUndefined();
 	});

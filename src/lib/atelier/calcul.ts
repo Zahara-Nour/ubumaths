@@ -1056,8 +1056,9 @@ function runAtelierCommand(
 }
 
 /**
- * `.développer` : la réponse, « rien à développer » (une réponse, pas une ligne
- * rouge) ou un refus. Pas encore d'étapes (phase 0 `atelier-developper-phase0.md`).
+ * `.développer` : la réponse (avec son « Comment ? » quand il se rédige), « rien
+ * à développer » (une réponse, pas une ligne rouge) ou un refus (phase 0
+ * `atelier-developper-phase0.md`).
  *
  * Les refus citent l'expression TAPÉE (`.résoudre (x+1)^2=4`), pas celle où les
  * noms d'objets sont déjà remplacés.
@@ -1068,7 +1069,14 @@ function runExpandCommand(input: string, argument: string, mode: ExpandMode): Ca
 	const outcome = expandExpression(argument, mode, typed);
 	switch (outcome.kind) {
 		case 'developpee':
-			return { kind: 'commande', input, output: outcome.text, latex: outcome.answer };
+			return {
+				kind: 'commande',
+				input,
+				output: outcome.text,
+				latex: outcome.answer,
+				...(outcome.steps !== undefined && { steps: outcome.steps }),
+				...summaryField(outcome)
+			};
 		case 'inchangee':
 			return { kind: 'commande', input, output: outcome.message };
 		case 'illisible':

@@ -397,7 +397,28 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'simplify-fraction': () => 'On divise numérateur et dénominateur par leur PGCD.',
 	'radical-simplify': () => 'On extrait du radical les facteurs qui sont des carrés parfaits.',
 	'sqrt-extract-perfect-square': () =>
-		'On extrait du radical les facteurs qui sont des carrés parfaits.'
+		'On extrait du radical les facteurs qui sont des carrés parfaits.',
+	// « développer » rédigé (`expand-steps.ts`) : le titre est dans la description
+	'expand-whole-power': () =>
+		'Au-delà du cube, distribuer à la main serait trop long : le développement est donné d’un coup.',
+	'expand-split-power': () =>
+		'Une puissance est un produit de facteurs égaux, qu’on développe un produit après l’autre.',
+	'expand-identity': () =>
+		'Une identité remarquable donne le développement d’un coup : on remplace a et b dans le membre de droite.',
+	'expand-compute': () =>
+		'On multiplie les nombres entre eux et les lettres entre elles, avec la règle des signes : 2x × 3 = 6x, x × x = x².',
+	'expand-reduce-inside': () =>
+		'On regroupe les termes semblables de la parenthèse avant de distribuer : il y aura moins de produits.',
+	'expand-distribute': () =>
+		'Chaque terme du premier facteur multiplie chaque terme du second ; le signe de chaque produit suit la règle des signes.',
+	'expand-distribute-factor': () =>
+		'k(a + b) = ka + kb : le facteur multiplie chaque terme de la parenthèse.',
+	'expand-remove-parentheses': () =>
+		'−(a + b) = −a − b : enlever une parenthèse précédée d’un −, c’est changer le signe de chacun de ses termes.',
+	'expand-unwrap': () => 'Une parenthèse précédée d’un + s’enlève sans rien changer.',
+	'expand-reduce': () =>
+		'On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.',
+	'expand-order': () => 'On range les termes : puissances décroissantes de x.'
 };
 
 const COLLEGE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
