@@ -1,7 +1,7 @@
 ---
 title: Atelier — la commande « développer » (phase 0)
 date: 2026-10-14
-status: validée par David le 2026-10-14 ; PR 1 (#1372) et PR 2 (#1375) mergées ; PR 3 (corrections d'exercices, option B) en cours
+status: livrée — PR 1 (#1372), PR 2 (#1375), PR 3 (#1377) mergées, en attente du deploy:prod ; point ouvert : ordre des termes non polynomiaux
 ---
 
 # Atelier — la commande « développer »
@@ -165,3 +165,9 @@ Tests d'abord, rouges, pour chaque ligne de B, C, D et E ; `code-reviewer` en fi
   `writeExpandSteps` — reco B, petite PR, deux instantanés de démo changent.
 - 2026-10-14 — **décision de David : B** — les corrections d'exercices générées (`intent: 'developper'`)
   montrent la même rédaction que l'atelier (`writeExpandSteps`). PR 3, branche `feat/developper-corrections`.
+- 2026-10-14 — **PR 3 mergée (#1377)** : `explainExpansion` (`pedagogical-simplify/expand-explained.ts`)
+  sert l'atelier, les corrections d'exercices générées et la démo ; sans rédaction, Mode A, jamais
+  l'ancienne trace. Revue : l'atelier rend la même chose (136 cas, 0 écart). **Points ouverts** :
+  (1) `(e^x+e^(-x))^2` s'écrit `e^{2x} + e^{-2x} + 2` (ordre du module) et non `e^{2x} + 2 + e^{-2x}`
+  — question posée à David ; (2) les corrections d'exercices générées écrivent les décimaux avec un
+  point dans le LaTeX, comme les autres corrections générées (rendu à l'écran non vérifié).
