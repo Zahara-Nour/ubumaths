@@ -70,14 +70,29 @@ describe('une action du panneau produit quelque chose', () => {
 		expect(d.runFromPanel('image', 'f')).toBe('unsupported');
 	});
 
+	// En attente d'une FONCTION : `a*x`, à paramètre, se dérive depuis Q4
+	// (David, 2026-10-14)
 	it('dit pourquoi quand l’objet ne peut rien produire', () => {
 		const atelier = new Atelier();
-		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' });
+		atelier.create({ kind: 'function', name: 'f', definition: 'h(x) + 1' });
 		const d = new CalcDesk(atelier);
 
 		d.runFromPanel('derive', 'f');
 
 		expect(d.entries[0].text).toBe(atelier.get('f')?.message);
+		expect(d.entries[0].failed).toBe(true);
+	});
+
+	it('dit pourquoi quand le paramètre empêche de conclure (« Résoudre » sur a x)', () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' });
+		const d = new CalcDesk(atelier);
+
+		d.runFromPanel('solve', 'f');
+
+		expect(d.entries[0].text).toBe(
+			"Le résultat dépend de a : donne-lui une valeur (a = 2) pour l'étudier."
+		);
 		expect(d.entries[0].failed).toBe(true);
 	});
 

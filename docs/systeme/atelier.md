@@ -739,7 +739,7 @@ manque la valeur de a : .évaluer f en x=1 ; a=3, par exemple. » (la commande c
 tapée). Les autres commandes : voir « Fonction à paramètre » plus bas.
 
 **Fonction à paramètre** (V56, 2026-10-14). Une fonction en attente de **valeurs** seulement
-(`parametersOf` : `missing` tout en `as: 'value'`, `f(x) = a x`) se comporte comme son
+(`parametersOf`, `types.ts` : `missing` tout en `as: 'value'`, `f(x) = a x`) se comporte comme son
 expression, le paramètre restant une lettre. Avant, `substituteNames` la sautait : le moteur
 recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer f` ½f² + C.
 
@@ -765,6 +765,40 @@ recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer
 - Une fonction en attente d'une **fonction** (`as: 'function'`) : la commande est refusée avec
   le message de la carte (`pendingFunctionRefusal`). ⚠️ `p(x) = q(x)+1`, q inconnu, est lu
   q·x par l'atelier (`as: 'value'`) : `.dériver p` répond q.
+- **Boutons de la carte** (Q4, David, 2026-10-14) : ils disent ce que dit la commande.
+  « Dériver » répond f′(x) = a et crée la carte f′, à paramètre comme f (`createDerivative`
+  accepte une base à paramètre ; `.dériver f` aussi, sans la note « En attente de a ») ;
+  « Résoudre f(x) = 0 », « Variations », « Réciproque » sont désactivés avec « Le résultat dépend
+  de a… » (`parameterReason`, `actions.ts`) ; « Tracer » garde le message de la carte. Le champ
+  « image » rend `2a` pour f(2), comme la ligne tapée (`runAction` → `parameterizedLine`).
+- **Condition d'une primitive** (Q3) : `.intégrer` affiche « (a ≠ 0) » quand la réponse a un
+  dénominateur fait d'un paramètre que l'expression de départ n'avait pas
+  (`introducedConditions`) : `e^{ax}` → $\dfrac{e^{ax}}{a} + C \quad (a \neq 0)$, `x^a` →
+  « (a ≠ −1) », `e^{(a-1)x}` → « (a ≠ 1) » (forme lisible : `conditionOf`). Rien pour
+  `1/(a x)` (la division est dans le départ, comme `.dériver`), ni pour `e^{2x}`. Le texte de
+  la ligne porte la même condition. Une intégrale bornée est aussi réduite quand l'intégrande
+  tapée contient un paramètre (`.intégrer e^{a x} de 0 à 1` → $\dfrac{e^a - 1}{a}$).
+- **`.résoudre` tapé avec une lettre non posée** (V57, Q5 — `parameterSolveRefusal`, après le
+  moteur, ses refus d'abord) : refus « Le résultat dépend de a… » quand la résolution DIVISE par
+  le paramètre — polynôme dont le coefficient dominant en contient un (`a x = 0`, `a x + b = 0`,
+  `x/a = 1`, `a x^2 = 1`, `a x > 1`) ; sinon l'inconnue multipliée par un paramètre
+  (`e^{a x} = 1`) ou un paramètre au dénominateur de la réponse (`1/x = a`), sauf si le moteur
+  a écrit la condition (`u_0 \cdot 0{,}5^n = 1` : « si u₀ > 0 »). Restent résolus : `x + a = 0`,
+  `2x = a`, `(x-a)(x-1) = 0` ({a ; 1}, juste même si a = 1), `\ln x = a`, et `x^2 = a`, que le
+  moteur conditionne déjà (« si a ⩾ 0 »). `x + a > 0` garde le refus du moteur (« Je ne sais pas
+  encore résoudre cette inéquation »). Un refus n'a pas de « Comment ? ».
+- **Équations rationnelles** (`forbiddenSolutions`) : refus quand une solution peut tomber sur
+  une valeur interdite — chaque solution du solveur est remplacée dans les dénominateurs en x de
+  l'entrée, et un paramètre qui y reste refuse : `x/(x-a)=0` (x = 0, interdite si a = 0),
+  `a/x = 1`, `\dfrac{a}{x} = 2`, `(x-a)/(x-1)=0` (x = a, interdite si a = 1). Gardée :
+  `1/(x-a)=1` → x = a + 1. Le refus du moteur « La solution dépend de q, u_0 : je ne sais pas
+  encore résoudre avec un paramètre » est reformulé en « Le résultat dépend de q et u_0 : … ».
+- **Bornes à paramètre** (`parameterBoundsRefusal`) : `.intégrer` refuse (« dépend de a ») quand
+  une borne contient un paramètre et que l'intégrande n'est pas définie partout (`1/x de 1 à a`
+  → ln|a|, `1/x^2 de 1 à a`), ou qu'une puissance de x a un exposant à paramètre sur un segment
+  qui touche 0 ou a une borne à paramètre (`x^a de 0 à 1` diverge pour a ⩽ −1). Aussi, bornes en nombres, quand un dénominateur en x contient un paramètre et n'est pas toujours positif (`1/(x-a) de 0 à 1`, `1/(x^2-a) de 0 à 1` ; pas `1/(x^2+a^2+1)`). Gardé :
+  `x^2 de 0 à a` → a³/3. Une condition toujours vraie ne s'affiche pas (`a^2 + 1 ≠ 0`,
+  `isPositive`) ; l'exposant d'une puissance de x est réduit (`x^{a-1+1}` → `x^a`).
 
 **« Comment ? » de `.évaluer`** (`evaluate-steps.ts`, PR 3, décisions de David du 2026-10-14).
 **E2** : `generatePedagogicalArithmeticSteps` niveau `college`, une opération par étape (pièges du

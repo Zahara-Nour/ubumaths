@@ -16,7 +16,7 @@
  */
 
 import { SvelteMap } from 'svelte/reactivity';
-import { MAX_LISTS, isFunction, isList, isSequence, isValue } from './types';
+import { MAX_LISTS, isFunction, isList, isSequence, isValue, parametersOf } from './types';
 import { constantOf } from './constant';
 import type {
 	AtelierObject,
@@ -565,7 +565,10 @@ export class Atelier {
 				message: `${displayName(name)} n'a pas de carte dérivée : tape .dériver suivi de sa formule.`
 			};
 		}
-		if (base.status !== 'ok') {
+		// Une fonction à paramètre (`f(x) = a x`) se dérive comme `.dériver f`
+		// (Q4, David, 2026-10-14) : sa carte f′ attend a, comme f
+		const parameterized = parametersOf(base) !== null;
+		if (base.status !== 'ok' && !parameterized) {
 			// Le message de l'objet d'abord : une fonction EN ATTENTE n'est pas
 			// illisible, elle attend un nom (`a`) — le dire autrement serait faux
 			return {
@@ -589,7 +592,8 @@ export class Atelier {
 		if (!created.ok) return created;
 		// E3 : une dérivée qui ne se calcule pas ne laisse pas de carte en erreur
 		// (`recomputeAll` l'a passée en erreur : voir `#underivable`)
-		if (this.get(derived)?.status !== 'ok') {
+		const card = this.get(derived);
+		if (card === undefined || (card.status !== 'ok' && parametersOf(card) === null)) {
 			this.remove(derived);
 			return { ok: false, message: `La dérivée de « ${displayName(name)} » ne se calcule pas.` };
 		}

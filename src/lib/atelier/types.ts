@@ -287,3 +287,36 @@ export function isQualitative(
 ): list is ListObject & { categories: readonly string[] } {
 	return list.categories !== undefined;
 }
+
+// =============================================================================
+// Fonction à paramètre (V56)
+// =============================================================================
+
+/**
+ * Les paramètres d'une fonction « à paramètre » : en attente de VALEURS
+ * seulement (`f(x) = a x`, `a` non posé → `['a']`). `null` pour tout autre
+ * objet — une fonction prête, ou en attente d'une FONCTION (`missing` en
+ * `as: 'function'`), dont l'expression ne vaut rien sans elle (V56).
+ * ⚠️ `p(x) = q(x)+1`, q inconnu, n'en est PAS : l'atelier lit `q(x)` comme
+ * le produit q·x, et q comme une valeur — p est donc à paramètre q.
+ */
+export function parametersOf(object: AtelierObject): readonly string[] | null {
+	if (object.kind !== 'function' || object.status !== 'pending') return null;
+	const missing = object.missing ?? [];
+	if (missing.length === 0 || missing.some((m) => m.as !== 'value')) return null;
+	return missing.map((m) => m.name);
+}
+
+/**
+ * « Le résultat dépend de a : donne-lui une valeur (a = 2) pour l'étudier. » —
+ * le refus d'une commande, ou d'un bouton de la carte, que le paramètre
+ * empêche de conclure (V56, V57).
+ */
+export function dependsOnMessage(parameters: readonly string[]): string {
+	const letters =
+		parameters.length === 1
+			? parameters[0]
+			: `${parameters.slice(0, -1).join(', ')} et ${parameters[parameters.length - 1]}`;
+	const pronoun = parameters.length === 1 ? 'lui' : 'leur';
+	return `Le résultat dépend de ${letters} : donne-${pronoun} une valeur (${parameters[0]} = 2) pour l'étudier.`;
+}

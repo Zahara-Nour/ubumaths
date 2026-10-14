@@ -17,7 +17,14 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
-import { isValue, isList, isQualitative, type ListObject } from './types';
+import {
+	dependsOnMessage,
+	isValue,
+	isList,
+	isQualitative,
+	parametersOf,
+	type ListObject
+} from './types';
 import { crossProblem } from './cross';
 import { compareProblem } from './compare';
 import { derivativeOf, displayName, reciprocalOf } from './names';
@@ -308,6 +315,25 @@ function blockedBy(object: AtelierObject): string | undefined {
 }
 
 /**
+ * Une fonction à paramètre (`f(x) = a x`, a non posé) : chaque bouton dit ce
+ * que dit la commande correspondante (Q4, David, 2026-10-14). « Dériver »
+ * répond comme `.dériver f` (a) ; « Résoudre », « Variations » et
+ * « Réciproque » refusent comme `.résoudre`, `.variations`, `.réciproque`.
+ * Les autres (« Tracer » : rien à tracer sans a) gardent le message de l'objet.
+ */
+function parameterReason(
+	parameters: readonly string[],
+	actionId: string,
+	blocked: string
+): string | undefined {
+	if (actionId === 'derive') return undefined;
+	if (actionId === 'solve' || actionId === 'variations' || actionId === 'reciprocal') {
+		return dependsOnMessage(parameters);
+	}
+	return blocked;
+}
+
+/**
  * Les actions à proposer sur cet objet, dans l'ordre d'affichage.
  *
  * @param object - L'objet tel que l'atelier le connaît, statut compris
@@ -318,6 +344,7 @@ export function actionsFor(
 	partner?: string
 ): ObjectAction[] {
 	const blocked = blockedBy(object);
+	const parameters = parametersOf(object);
 
 	// Les listes voient leurs partenaires, quand l'atelier est là pour les dire.
 	const catalogue =
@@ -359,10 +386,14 @@ export function actionsFor(
 		// ⚠️ Retirer du graphe reste possible même quand l'objet ne peut plus rien
 		// produire : sinon une fonction qui casse laisse un marqueur « tracé » que
 		// l'élève ne peut plus enlever, alors que sa courbe a déjà disparu.
-		if (blocked && !(action.id === 'plot' && object.plotted)) {
+		const reason =
+			blocked !== undefined && parameters !== null
+				? parameterReason(parameters, action.id, blocked)
+				: blocked;
+		if (reason && !(action.id === 'plot' && object.plotted)) {
 			// ⚠️ Une raison déjà posée par `partnerActions` (« il faut deux listes »)
 			// est plus précise que « cet objet ne peut rien produire » : on la garde.
-			return { ...action, disabledReason: action.disabledReason ?? blocked };
+			return { ...action, disabledReason: action.disabledReason ?? reason };
 		}
 		// L'objet va bien, mais la vue qui rendrait cette action n'existe pas
 		// encore : on le dit, plutôt que de laisser un bouton sans effet.
