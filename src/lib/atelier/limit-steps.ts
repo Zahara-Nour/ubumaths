@@ -39,6 +39,7 @@ import { parse } from '$lib/mathAST/cli/core/pipeline';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { fraction, variable as variableNode } from '$lib/mathAST/factory';
 import { transformAST } from '$lib/mathAST/visitor';
+import { toLatex } from '$lib/mathAST/latex-generator';
 import { concludesLimitAnswer, showsNothing, type LimitAnswer } from './limit-steps-check';
 import { hasStar } from './evaluate-steps-check';
 import { summaryOf } from './steps-summary';
@@ -94,6 +95,17 @@ const CONCLUSION_RULES: ReadonlySet<PedagogicalLimitRule> = new Set([
 	'conclude-does-not-exist'
 ]);
 
+/**
+ * Les gendarmes : le moteur juge l'encadrement sur des valeurs numériques
+ * (`SQUEEZE_PROBES`) et n'en rend pas les bornes — « Encadrement de
+ * l'expression » n'écrirait aucune inégalité. Pas de « Comment ? » tant
+ * que les bornes ne sont pas rendues (revue du 2026-10-14).
+ */
+const SQUEEZE_RULES: ReadonlySet<PedagogicalLimitRule> = new Set([
+	'identify-bounds',
+	'apply-squeeze'
+]);
+
 /** Le sujet de l'annonce, que remplace le nom d'une fonction citée. */
 const EXPRESSION_WORDS = "de l'expression";
 
@@ -119,18 +131,20 @@ export function limitSteps(question: LimitQuestion, answer: LimitAnswer): LimitS
 		});
 		if (!concludesLimitAnswer(result, answer)) return null;
 		if (showsNothing(result.steps)) return null;
+		if (hasUnwrittenBounds(result.steps)) return null;
 
 		const subject = subjectNode(question.subject);
 		const raw =
 			subject === null ? result.steps : result.steps.map((s) => named(s, subject, expression));
 		const renderer = new PedagogicalLimitRenderer();
+		const sided = sidedPoint(question.approach);
 		const detailed = renderer
 			.renderAll(raw, { schoolLevel: 'lycee', verbosity: 'detailed' })
-			.map((step) => namedTitle(step, question.subject));
+			.map((step) => sided(namedTitle(step, question.subject)));
 		if (hasStar(detailed)) return null;
 		const summarized = raw
 			.filter((s) => !HIDDEN_IN_SUMMARY.has(s.rule))
-			.map((s) => renderer.render(s, { schoolLevel: 'lycee', verbosity: 'summarized' }));
+			.map((s) => sided(renderer.render(s, { schoolLevel: 'lycee', verbosity: 'summarized' })));
 		const summary = summaryOf(detailed, summarized);
 		return summary === undefined ? { steps: detailed } : { steps: detailed, summary };
 	} catch {
@@ -161,12 +175,41 @@ function studentExpression(question: LimitQuestion): MathNode | null {
 				n.name === question.variable ? variableNode(question.letter) : undefined
 		});
 	}
+	// Déjà en fraction ou non, les parenthèses tapées pour la barre tombent :
+	// `\\dfrac{(\\sqrt{x+4}-2)}{x}` (revue du 2026-10-14)
 	return transformAST(node, {
-		leaveDivision: (n) =>
-			n.displayStyle === 'fraction'
-				? undefined
-				: fraction(ungrouped(n.numerator), ungrouped(n.denominator))
+		leaveDivision: (n) => fraction(ungrouped(n.numerator), ungrouped(n.denominator))
 	});
+}
+
+/** Une étape des gendarmes, sous-étapes comprises : bornes non écrites. */
+function hasUnwrittenBounds(steps: readonly PedagogicalLimitStep[]): boolean {
+	return steps.some((s) => SQUEEZE_RULES.has(s.rule) || hasUnwrittenBounds(s.subSteps ?? []));
+}
+
+/**
+ * Un point qui n'est pas un nombre seul, avec un côté, s'écrit comme sur la
+ * ligne de réponse : `{\\tfrac{1}{2}}^+`, jamais `\\dfrac{1}{2}^+` (lu ½ⁿ).
+ * Le renderer colle le côté au point ; on réécrit ses titres, explications
+ * et formules.
+ */
+function sidedPoint(approach: MathNode): (step: RenderedStep) => RenderedStep {
+	const bare = approach.type === 'opposite' ? approach.operand : approach;
+	if (bare.type === 'number' || bare.type === 'constant' || bare.type === 'infinity') {
+		return (step) => step;
+	}
+	const latex = toLatex(approach);
+	const grouped = `{${latex.replace(/\\dfrac/g, '\\tfrac')}}`;
+	const fix = (text: string): string =>
+		text.split(`${latex}^+`).join(`${grouped}^+`).split(`${latex}^-`).join(`${grouped}^-`);
+	const rewrite = (step: RenderedStep): RenderedStep => ({
+		...step,
+		title: fix(step.title),
+		...(step.explanation !== undefined && { explanation: fix(step.explanation) }),
+		...(step.expressionLatex !== undefined && { expressionLatex: fix(step.expressionLatex) }),
+		...(step.subSteps !== undefined && { subSteps: step.subSteps.map(rewrite) })
+	});
+	return rewrite;
 }
 
 /** Le contenu d'une parenthèse de regroupement, sinon le nœud. */

@@ -880,16 +880,21 @@ valeur. ». Une fonction usuelle sans parenthèses (`ln x`, `sin x`, `cos x`, `s
 lue l·n·x par le parseur) est refusée comme dans les autres commandes (`bareFunctionName` :
 « Écris ln(x) avec des parenthèses. ») ; `e^x` se lit bien. Le texte de la ligne (copie, export)
 est lisible (`readableText`) : divisions en `/`, exposant long entre parenthèses (`e^(1/x)`,
-jamais le `e^{1:/x}` de `toCustom`). Test :
+jamais le `e^{1:/x}` de `toCustom`), sans accolades : `1/(x-1)^2`, `e^x/x^2`, `(x+2)/x^2`, des
+parenthèses seulement où le sens l'exige (`1/(2x)`). Test :
 `limite-commande.test.ts`.
 
 **« Comment ? » de `.limite`** (`limit-steps.ts`, PR 3, décisions de David du 2026-10-14).
 Les étapes sont celles de `generatePedagogicalLimitSteps` (niveau `lycee` : forme indéterminée,
 factorisation, conjugué, terme prépondérant, limites de référence et croissances comparées,
-composée `e^u`, côtés d'un pôle, côté implicite, gendarmes) — jamais `dispatchPedagogicalLimit`,
+composée `e^u`, côtés d'un pôle, côté implicite) — jamais `dispatchPedagogicalLimit`,
 qui lit une syntaxe maison. Elles portent sur l'expression calculée, dans la lettre de l'élève
 (f(t) = 1/t : t, pas le x de rangement ; une lettre déjà prise par un paramètre → pas d'étapes),
-divisions écrites en fractions. **Garde de concordance** (`concludesLimitAnswer`) : la valeur
+divisions écrites en fractions sans les parenthèses tapées pour la barre (`\dfrac{\sqrt{x+4}-2}{x}`),
+un point non entier avec un côté écrit comme sur la ligne (`{\tfrac{1}{2}}^+`). **Gendarmes
+exclus** : le moteur juge l'encadrement sur des sondes numériques (`SQUEEZE_PROBES`) sans en
+rendre les bornes ; des étapes `identify-bounds` / `apply-squeeze` → pas de « Comment ? »
+(`x^2 sin(1/x)` en 0) tant que le moteur n'écrit pas l'inégalité. **Garde de concordance** (`concludesLimitAnswer`) : la valeur
 conclue est celle de la ligne par valeur exacte (`concludesEngineValue`), un infini du même signe,
 le même côté implicite (l'étape qui porte `domainBoundary` ↔ `definedSide`) ; « pas de limite »
 n'est expliqué que dans le cas L4 (les deux limites latérales écrites par la ligne), avec les

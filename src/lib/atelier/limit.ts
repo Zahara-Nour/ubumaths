@@ -92,6 +92,14 @@ interface PointReading {
 // Constantes
 // =============================================================================
 
+/**
+ * Un opérande de fraction qui se lit seul, sans parenthèses : un nombre, une
+ * lettre, une parenthèse, un appel (`sqrt(x+1)`), éventuellement à une
+ * puissance (`(x-1)^2`, `e^x`, `x^(n+1)`).
+ */
+const POWER_ATOM =
+	/^(?:\d+(?:\.\d+)?|[A-Za-zπ]|\([^()]*\)|[A-Za-z]+\([^()]*\))(?:\^(?:\d+|[A-Za-z]|\([^()]*\)))?$/;
+
 const UNKNOWN_LIMIT = 'Je ne sais pas calculer cette limite.';
 
 /** `∞`, `inf`, `\infty`, `infini`, signés ou non (sans signe : +∞, L3). */
@@ -740,7 +748,17 @@ function readableText(node: MathNode): string {
 	const fractions = transformAST(node, {
 		leaveDivision: (n) => ({ ...n, displayStyle: 'fraction' as const })
 	});
-	return toCustom(fractions).replace(/\^\{([^{}]*)\}/g, (whole, exponent: string) =>
-		exponent.length === 1 ? `^${exponent}` : `^(${exponent})`
-	);
+	let text = toCustom(fractions);
+	// Des accolades les plus intérieures vers l'extérieur : `e^{2x}` → `e^(2x)`,
+	// `{e^x}/{x^2}` → `e^x/x^2`, `1/{2x}` → `1/(2x)`
+	for (let previous = ''; previous !== text;) {
+		previous = text;
+		text = text.replace(/\^\{([^{}]*)\}/g, (_whole, exponent: string) =>
+			exponent.length === 1 ? `^${exponent}` : `^(${exponent})`
+		);
+		text = text.replace(/\{([^{}]*)\}/g, (_whole, operand: string) =>
+			POWER_ATOM.test(operand) ? operand : `(${operand})`
+		);
+	}
+	return text;
 }

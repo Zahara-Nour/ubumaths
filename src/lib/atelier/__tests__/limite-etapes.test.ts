@@ -151,8 +151,15 @@ describe('limites de référence', () => {
 		expect(last(list).title).toBe('La limite vaut $0$');
 	});
 
+	it('(√(x+4)−2)/x en 0 : la fraction sans les parenthèses tapées', () => {
+		const list = steps('.limite (sqrt(x+4)-2)/x en 0');
+		expect(flat(list[0])).toBe('\\lim_{x\\to0}\\dfrac{\\sqrt{x+4}-2}{x}');
+		expect(last(list).title).toBe('La limite vaut $\\dfrac{1}{4}$');
+	});
+
 	it('(√(x+1)−1)/x en 0 : le conjugué, 1/2', () => {
 		const list = steps('.limite (sqrt(x+1)-1)/x en 0');
+		expect(flat(list[0])).toBe('\\lim_{x\\to0}\\dfrac{\\sqrt{x+1}-1}{x}');
 		expect(titles(list)).toContain('Rationalisation : on multiplie par le conjugué');
 		expect(last(list).title).toBe('La limite vaut $\\dfrac{1}{2}$');
 	});
@@ -170,6 +177,13 @@ describe('les côtés', () => {
 		]);
 		expect(flat(list[1])).toBe('\\lim_{x\\to0^-}\\dfrac{1}{x}|=-\\infty');
 		expect(flat(list[2])).toBe('\\lim_{x\\to0^+}\\dfrac{1}{x}|=+\\infty');
+	});
+
+	it('1/(2x−1) en 1/2⁺ : le point s’écrit {\\tfrac{1}{2}}^+, comme la ligne', () => {
+		const list = steps('.limite 1/(2x-1) en 1/2+');
+		const all = list.map((st) => `${st.title} ${st.expressionLatex ?? ''}`).join(' ');
+		expect(all).toContain('{\\tfrac{1}{2}}^+');
+		expect(all).not.toContain('\\dfrac{1}{2}^+');
 	});
 
 	it('ln x en 0 : le côté implicite, à droite, −∞', () => {
@@ -197,6 +211,10 @@ describe('pas de « Comment ? »', () => {
 		['.limite sqrt(x+1)-sqrt(x) en +inf'],
 		// Oscillation : la raison de `.limite`, que les étapes ne rédigent pas
 		['.limite sin(1/x) en 0'],
+		// Gendarmes : le moteur ne rend pas les bornes (sondes numériques),
+		// « Encadrement de l'expression » n'écrirait aucune inégalité
+		['.limite x^2 sin(1/x) en 0'],
+		['.limite x sin(1/x) en 0'],
 		// « Je ne sais pas »
 		['.limite x sin(x) en +inf']
 	])('%s : la réponse seule', (input) => {

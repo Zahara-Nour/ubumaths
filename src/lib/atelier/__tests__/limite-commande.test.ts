@@ -348,6 +348,15 @@ describe('texte de la ligne lisible', () => {
 		expect(line('.limite e^{1/x} en 0^-').output).toBe('lim x→0- e^(1/x) = 0');
 	});
 
+	it.each([
+		['.limite 1/(x-1)^2 en 1', 'lim x→1 1/(x-1)^2 = +∞'],
+		['.limite e^x/x^2 en +inf', 'lim x→+∞ e^x/x^2 = +∞'],
+		['.limite (x+2)/x^2 en 0', 'lim x→0 (x+2)/x^2 = +∞'],
+		['.limite 1/(2x) en 0+', 'lim x→0+ 1/(2x) = +∞']
+	])('%s : sans accolades, parenthèses où le sens l’exige', (input, text) => {
+		expect(line(input).output).toBe(text);
+	});
+
 	it('e^x garde son écriture', () => {
 		expect(line('.limite e^x en 0').output).toBe('lim x→0 e^x = 1');
 	});
