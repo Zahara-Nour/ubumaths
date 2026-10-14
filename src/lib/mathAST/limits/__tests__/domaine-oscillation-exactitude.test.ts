@@ -203,7 +203,14 @@ describe('f(u), f continue en la limite EXACTE de u (√, exp, puissances)', () 
 		['\\ln(\\frac{2x+1}{x})', PLUS_INF, '\\ln\\left( 2 \\right)'],
 		['e^{\\frac{3x+1}{x}}', MINUS_INF, '\\exponentialE^3'],
 		['(\\frac{2x+1}{x})^3', MINUS_INF, '8'],
-		['\\sqrt{x+3}', number('1'), '2']
+		['\\sqrt{x+3}', number('1'), '2'],
+		['\\sqrt{2+\\frac{1}{x}}', PLUS_INF, '\\sqrt{2}'],
+		['(2-\\frac{1}{x})^{\\frac{1}{2}}', PLUS_INF, '\\sqrt{2}'],
+		['\\left(\\frac{2x}{x+1}\\right)^{\\frac{1}{2}}', PLUS_INF, '\\sqrt{2}'],
+		['\\left(\\frac{2x}{x+1}\\right)^{\\frac{1}{3}}', PLUS_INF, '\\sqrt[3]{2}'],
+		['\\left(\\frac{4x}{x+1}\\right)^{\\frac{1}{2}}', PLUS_INF, '2'],
+		['\\left(\\frac{2x}{x+1}\\right)^{\\frac{3}{2}}', PLUS_INF, '2 \\sqrt{2}'],
+		['\\left(\\frac{2x}{x+1}\\right)^{-\\frac{1}{2}}', PLUS_INF, '\\dfrac{\\sqrt{2}}{2}']
 	] as const)('%s en %s : exact %s', (latex, approach, value) => {
 		const result = limit(latex, approach);
 		expect(result.status).toBe('exact');
@@ -232,5 +239,12 @@ describe('constante + fonction qui diverge en un point exclu : comme 1/x', () =>
 
 	it('2 + 1/x² en 0 : +∞ des deux côtés', () => {
 		expect(valueLatex('2+\\frac{1}{x^2}', number('0'))).toBe('+\\infty');
+	});
+});
+
+describe('analyse côté par côté : un côté non conclu ne prouve pas « pas de limite »', () => {
+	it('1/x − 1/(eˣ − 1) en 0 n’est pas déclarée sans limite (vaut 1/2)', () => {
+		const result = limit('\\frac{1}{x}-\\frac{1}{e^x-1}', number('0'));
+		expect(result.status).not.toBe('does-not-exist');
 	});
 });

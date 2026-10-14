@@ -999,13 +999,14 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   (somme sans variable : le rationnel en tête, `1 + \sqrt{2}`, depuis le 2026-10-12). `exp(1)` s'écrit
   e et `exp(k)` s'écrit e^k (constante `euler`, 2026-10-14 : `(1+\frac{1}{x})^x` en +∞ rendait
   `\exp(1)`). Une valeur qui contient un décimal reste telle quelle (`0.5`, jamais
-  `\dfrac{1}{2}`) : décimal de l'énoncé (`writeLikeInput`) ou des flottants du suivi de signe
-  (`\sqrt{\frac{x^2+1}{4x^2}}` en −∞ rend `0.5` par la composée √). **Un flottant n'est jamais
+  `\dfrac{1}{2}`) : décimal de l'énoncé (`writeLikeInput`) ou des flottants du suivi de signe.
+  **Un flottant n'est jamais
   `exact`** (2026-10-14) : à la sortie de `evaluateLimit`, `withApproximateStatus` passe en
   `approximate` toute valeur où `containsFloatArtifact` voit un nombre non entier absent de
-  l'énoncé (et, si l'énoncé a des décimaux, d'au moins dix chiffres significatifs). Ce `0.5`
-  ne sort plus : la **stratégie 2.45** (`tryContinuousOfExactLimit`, avant la composition)
-  calcule f(u), f continue (√, ⁿ√, exp, a^u, u^p), sur la limite EXACTE de u —
+  l'énoncé (et, si l'énoncé a des décimaux, d'au moins dix chiffres significatifs). La
+  **stratégie 2.45** (`tryContinuousOfExactLimit`, avant la composition)
+  calcule f(u), f continue (√, ⁿ√, exp, a^u, u^p — u^{p/q} écrit en radical, `(2 - \frac{1}{x})^{\frac{1}{2}}` en +∞ = `\sqrt{2}`), sur la limite EXACTE de u, sans le
+  flottant du suivi de signe —
   `\sqrt{\frac{x^2+1}{4x^2}}` en −∞ = `\dfrac{1}{2}`, `e^{\frac{3x+1}{x}}` en −∞ = e³,
   `(\frac{2x+1}{x})^3` en −∞ = 8. `resultToFiniteNode` rend la forme dénormalisée exacte au lieu
   d'un arrondi à dix chiffres. Les calculs intermédiaires
@@ -1019,7 +1020,8 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   `definedSide: 'left' | 'right'` — limite bilatérale en un point fini où f n'est définie que
   d'un côté au voisinage (`\ln x`, `\sqrt{x}` en 0 → `'right'`, `\sqrt{-x}` → `'left'`) : la
   valeur est celle de ce côté (convention lycée, x → 0⁺), `direction` reste `'both'` ; absent si
-  un côté est demandé, en ±∞, ou si f est définie des deux côtés. `noLimitReason`
+  un côté est demandé, en ±∞, ou si l'étude du domaine n'a pas montré de côté unique
+  (`\sqrt{\cos x}` en π/2 n'est pas vu). `noLimitReason`
   (`NoLimitReason`) sur un `does-not-exist` : `'outside-domain'` (f non définie au voisinage du
   côté demandé : `\sqrt{x}` en −1, `\ln x` en −∞), `'sides-differ'` (gauche ≠ droite : `1/x` en
   0, `x^{-1/3}` en 0), `'oscillation'`. L'analyse côté par côté (stratégie 6) se déclenche aussi

@@ -145,8 +145,8 @@ export interface LimitResult {
 	 * Limite demandée des deux côtés (`direction: 'both'`) d'un point FINI où
 	 * la fonction n'est définie que d'un côté au voisinage (ln x, √x en 0) :
 	 * le côté où elle l'est. La valeur est la limite de ce côté — au lycée on
-	 * écrit x → 0⁺. Absent si la fonction est définie des deux côtés, si un
-	 * côté a été demandé, ou en ±∞.
+	 * écrit x → 0⁺. Absent si l'étude du domaine n'a pas montré de côté
+	 * unique (√(cos x) en π/2 n'est pas vu), si un côté a été demandé, ou en ±∞.
 	 */
 	readonly definedSide?: 'left' | 'right';
 

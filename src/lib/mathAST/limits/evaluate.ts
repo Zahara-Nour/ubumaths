@@ -1573,7 +1573,16 @@ function tryContinuousOfExactLimit(
 	if (integer && exponent.n < 0n && inner.value === 0) return null;
 	if (!integer && !(inner.value > 0)) return null;
 	const base = isNumber(inner.node) ? inner.node : parentheses(inner.node);
-	return exactOrSymbolic(power(base, node.superscript));
+	if (integer) return exactOrSymbolic(power(base, node.superscript));
+	// L^{p/q} s'écrit en radical, comme √(2 + 1/x) : (2 − 1/x)^{1/2} → √2, pas 2^{1/2}
+	const magnitude = exponent.n < 0n ? -exponent.n : exponent.n;
+	const radicand = magnitude === 1n ? inner.node : power(base, number(magnitude.toString()));
+	const root = func(
+		'sqrt',
+		[radicand],
+		exponent.d === 2n ? undefined : { base: number(exponent.d.toString()) }
+	);
+	return exactOrSymbolic(exponent.n < 0n ? divide(number('1'), root, 'fraction') : root);
 }
 
 /** Formes 0^0, ∞^0, 1^∞ d'une puissance u^v (ou borne infinie). */
