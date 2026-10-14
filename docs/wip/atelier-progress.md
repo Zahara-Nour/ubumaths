@@ -194,7 +194,10 @@ Relevé des points « plus tard » de ce journal et des phases 0, à la demande 
   - saisie, lot 2 (tournures nominales, `2,5 h en min`) ;
   - tableur, v2, v3 non commencés ; « Renommer » désactivé ; pas de palette d'unités ;
   - composées `f(2x)` sur un ensemble (atelier-intervalle, décision c).
-- **Défauts nouveaux, trouvés en mesurant** :
+- **Corrigés par #1404 (2026-10-15)** : image depuis la carte f′, « (x ≈ 0) » pour t, « [-1 ; 1:/2] »
+  (et `\pi`), les trois défauts nouveaux ci-dessous ; revue : `3 en m` refusé n'efface plus la
+  grandeur d'avant, lettres grecques en symboles dans « dépend de ».
+- **Défauts nouveaux, trouvés en mesurant** (corrigés par #1404) :
   - `2,5 h en min` (sans `.convertir`) est calculé comme un produit et s'affiche
     « 2,5 h e n m i n », sans refus ;
   - `.intégrer 1/(x^2-2)` (sans bornes) rend la sortie brute du moteur « ∫ 1/(x^2-2) dx : Non
