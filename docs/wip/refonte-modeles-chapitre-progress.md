@@ -207,6 +207,15 @@ en prod (reprise, étape 3) avant le déploiement du code qui en tient compte (�
   profs) ; supprimée le même soir. Fragilité à traiter à l'étape 5 : la purge des tests doit
   supprimer les chapitres liés avant les modèles.
 
+### État au 2026-10-14, fin de soirée : PRÊT pour la séance de mise en prod
+
+Sur `main` : #1390 (serveur + interface), #1392 (reprise), #1393 (base : section masquée, en prod),
+#1394 (interface : section masquée, badge « Invisible des élèves »), #1387 (ajout d'objectif).
+Base en prod : migrations 103300, 103400, 103600. Reste après la mise en prod : étape 5
+(nettoyage destructif : snapshot, versions, migration/fusion, API sans appelant, composants morts,
+anciens fichiers `chapters/…` adoptés, règle de stockage élève de prod ; purge des tests à rendre
+sûre face aux lignes de lien).
+
 ### ⛔ Déploiement : 3b + 3c (#1390) ET reprise (étape 4) ENSEMBLE
 
 #1390 (serveur + interface) est mergée le 2026-10-14 mais **ne doit pas partir en prod sans la
