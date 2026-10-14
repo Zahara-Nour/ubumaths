@@ -2,9 +2,10 @@
  * Corrigés : l'allure de la fiche (retours de David sur le rendu, D6)
  * ==================================================================
  *
- * - Corrigé et Réponses sans gabarit : deux colonnes et numéros en carré
- *   coloré (habillage `badge` du rendu commun), bandeau et avertissement en
- *   tête, pleine largeur. La fiche (énoncés) ne change pas.
+ * - Corrigé et Réponses (gabarits du style « Fiche élève », ADR 0028 lot 2) :
+ *   deux colonnes et numéros en carré coloré (habillage `badge` du rendu
+ *   commun), bandeau et avertissement en tête, pleine largeur. Fiche sans
+ *   gabarit : la fiche du style par défaut, « Fiche élève » (D7).
  * - Corrigé de classe d'une affectation individualisée (et aperçu vue prof
  *   individualisé) : ni numéro ni carré, le titre seul ; sans titre,
  *   « Exercice sans titre » (« Untitled exercise »).
@@ -89,7 +90,7 @@ const LAYOUTS: Array<[string, string | undefined]> = [
 	...DEFAULT_TEMPLATES.map((t): [string, string] => [t.name, t.template_content])
 ];
 
-describe('corrigés sans gabarit : l’allure de la fiche', () => {
+describe('corrigés : l’allure de la fiche', () => {
 	it.each(['correction', 'answers'] as const)(
 		'%s : deux colonnes, numéros en carré coloré, plus « Exercice N : »',
 		(mode) => {
@@ -102,18 +103,21 @@ describe('corrigés sans gabarit : l’allure de la fiche', () => {
 		}
 	);
 
-	it('bandeau et avertissement en tête, pleine largeur (avant les colonnes)', () => {
+	it('bandeau et avertissement en tête, pleine largeur (au-dessus des colonnes)', () => {
 		const typst = teacher('correction', { notice: true });
-		const columnsAt = typst.search(TWO_COLUMNS);
-		expect(columnsAt).toBeGreaterThan(-1);
-		expect(typst.indexOf('CORRECTION]')).toBeLessThan(columnsAt);
-		expect(typst.indexOf(NOTICE)).toBeLessThan(columnsAt);
+		// `scope: "parent"` : le bloc flotte au-dessus des deux colonnes de la page
+		const fullWidthAt = typst.indexOf('scope: "parent"');
+		expect(fullWidthAt).toBeGreaterThan(-1);
+		expect(typst.indexOf('CORRECTION]')).toBeGreaterThan(fullWidthAt);
+		expect(typst.indexOf(NOTICE)).toBeGreaterThan(typst.indexOf('CORRECTION]'));
+		expect(typst.indexOf(NOTICE)).toBeLessThan(typst.indexOf('Dériver un polynôme'));
 	});
 
-	it('la fiche (énoncés) ne change pas : une colonne, « Exercice 1 : titre »', () => {
+	it('fiche sans gabarit : celle de « Fiche élève », deux colonnes, numéros en carré (D7)', () => {
 		const typst = teacher('worksheet');
-		expect(typst).not.toMatch(TWO_COLUMNS);
-		expect(typst).toMatch(/Exercice 1 : Dériver un polynôme/);
+		expect(typst).toMatch(TWO_COLUMNS);
+		expect(typst).toContain(exerciseBadge('1'));
+		expect(typst).not.toMatch(/Exercice 1 :/);
 	});
 });
 

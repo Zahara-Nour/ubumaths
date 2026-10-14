@@ -157,7 +157,7 @@ const HEADING_TEMPLATE = DEFAULT_TEMPLATES.find((t) =>
 	t.template_content.includes('{{exercises}}')
 );
 
-/** Les trois mises en page du prof : sans gabarit, gabarit « Exercice N », gabarit à pastilles */
+/** Les mises en page du prof : sans gabarit (« Fiche élève », D7), gabarit « Exercice N », gabarit à pastilles */
 const TEACHER_LAYOUTS: Array<[string, WorksheetTemplateRow | null]> = [
 	['sans gabarit', null],
 	['gabarit « Exercice N »', template(HEADING_TEMPLATE!.template_content)],
@@ -212,10 +212,10 @@ describe('titre d’exercice avec formule', () => {
 });
 
 // ============================================================================
-// LANGUE ET OPÉRATEURS À LIMITES (setup du prof sans gabarit)
+// LANGUE ET OPÉRATEURS À LIMITES (setup du prof)
 // ============================================================================
 
-describe('setup du prof sans gabarit', () => {
+describe('setup du prof', () => {
 	it('fiche anglaise : lang "en"', () => {
 		const typst = teacher('worksheet', { ...BASE_CONFIG, language: 'en' });
 		expect(typst).toContain('lang: "en"');
@@ -226,17 +226,20 @@ describe('setup du prof sans gabarit', () => {
 		expect(teacher('worksheet')).toContain('lang: "fr"');
 	});
 
-	it('∑ et lim ont leurs bornes dessous, comme dans le PDF élève', () => {
-		const typst = teacher('worksheet');
-		for (const rule of [
-			'#show math.sum: math.limits',
-			'#let lim = math.op("lim", limits: true)',
-			'#let max = math.op("max", limits: true)'
-		]) {
-			expect(typst).toContain(rule);
-			expect(student('none')).toContain(rule);
+	it.each(TEACHER_LAYOUTS)(
+		'∑ et lim ont leurs bornes dessous (%s), comme dans le PDF élève',
+		(_n, tpl) => {
+			const typst = teacher('worksheet', BASE_CONFIG, tpl);
+			for (const rule of [
+				'#show math.sum: math.limits',
+				'#let lim = math.op("lim", limits: true)',
+				'#let max = math.op("max", limits: true)'
+			]) {
+				expect(typst).toContain(rule);
+				expect(student('none')).toContain(rule);
+			}
 		}
-	});
+	);
 });
 
 // ============================================================================
@@ -283,11 +286,11 @@ describe('ordre et numérotation', () => {
 // ============================================================================
 
 describe('points', () => {
-	it('prof sans gabarit : « 1 pt », « 2 pts » (documentLabels, plus « pts » en dur)', () => {
+	it('prof : « 1 pt », « 2 pts » (documentLabels, plus « pts » en dur)', () => {
 		for (const language of ['fr', 'en'] as const) {
 			const typst = teacher('worksheet', { ...BASE_CONFIG, language });
-			expect(typst).toContain('points-badge([1 pt])');
-			expect(typst).toContain('points-badge([2 pts])');
+			expect(typst).toContain(')[1 pt]');
+			expect(typst).toContain(')[2 pts]');
 			expect(typst).not.toContain('#pts pts');
 		}
 	});
@@ -466,6 +469,6 @@ describe('titre d’exercice : fonctions déclarées et sens de AB de l’exerci
 	it('titre sans maths : texte simple', () => {
 		const { input } = withTitle('Coût marginal', ['C']);
 		const typst = generateWorksheetTypst({ ...input, mode: 'worksheet' });
-		expect(typst).toContain('[Exercice 1 : Coût marginal]');
+		expect(typst).toContain('#text(weight: "bold")[Coût marginal]');
 	});
 });

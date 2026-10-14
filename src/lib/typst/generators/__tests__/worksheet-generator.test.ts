@@ -13,7 +13,8 @@ import {
 	generateWorksheetTypst,
 	generateBatchTypst
 } from '../worksheet-generator';
-import { DEFAULT_TEMPLATES } from '../../templates/default-templates';
+import { DEFAULT_TEMPLATES, DEFAULT_TEMPLATE_IDS } from '../../templates/default-templates';
+import { exerciseBadge } from '../../worksheet-palette';
 import type {
 	WorksheetRow,
 	InstanceData,
@@ -149,7 +150,7 @@ describe('WorksheetGenerator', () => {
 		it('includes exercises', () => {
 			const generator = new WorksheetGenerator(createMockConfig());
 			const result = generator.generate({
-				worksheet: createMockWorksheet(),
+				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -338,17 +339,17 @@ describe('WorksheetGenerator', () => {
 			});
 
 			const result = generator.generate({
-				worksheet: createMockWorksheet({ type: 'assessment' }),
+				worksheet: createMockWorksheet({
+					type: 'exam',
+					template_id: DEFAULT_TEMPLATE_IDS.exam,
+					estimated_duration_minutes: 50
+				}),
 				instance: createMockInstance()
 			});
 
-			expect(result.typstContent).toContain('*Surname :*');
-			expect(result.typstContent).toContain('*Class :*');
-			expect(result.typstContent).toContain('*Date :*');
-			expect(result.typstContent).toContain('*Duration :*');
-			expect(result.typstContent).toContain('*Marks :*');
+			expect(result.typstContent).toContain('Surname');
+			expect(result.typstContent).toContain('Duration');
 			expect(result.typstContent).toContain('Exercise 1');
-			expect(result.typstContent).toContain('Read each question carefully');
 			// No French label left behind.
 			expect(result.typstContent).not.toContain('Nom :');
 			expect(result.typstContent).not.toContain('Classe :');
@@ -364,7 +365,7 @@ describe('WorksheetGenerator', () => {
 			});
 
 			const result = generator.generate({
-				worksheet: createMockWorksheet(),
+				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -551,7 +552,7 @@ describe('WorksheetGenerator', () => {
 		it('uses numeric numbering by default', () => {
 			const generator = new WorksheetGenerator(createMockConfig({ numbering_style: 'numeric' }));
 			const result = generator.generate({
-				worksheet: createMockWorksheet(),
+				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -562,7 +563,7 @@ describe('WorksheetGenerator', () => {
 		it('uses alphabetic numbering when configured', () => {
 			const generator = new WorksheetGenerator(createMockConfig({ numbering_style: 'alphabetic' }));
 			const result = generator.generate({
-				worksheet: createMockWorksheet(),
+				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -573,7 +574,7 @@ describe('WorksheetGenerator', () => {
 		it('uses roman numbering when configured', () => {
 			const generator = new WorksheetGenerator(createMockConfig({ numbering_style: 'roman' }));
 			const result = generator.generate({
-				worksheet: createMockWorksheet(),
+				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -593,9 +594,9 @@ describe('WorksheetGenerator', () => {
 			const result = generator.generate({ worksheet: createMockWorksheet(), instance });
 
 			// Libellé de documentLabels : « 1 pt », « 5 pts » (ADR 0028, lot 1)
-			expect(result.typstContent).toContain('points-badge([5 pts])');
-			expect(result.typstContent).toContain('points-badge([1 pt])');
-			expect(result.typstContent).not.toContain('points-badge([2 pts])');
+			expect(result.typstContent).toContain(')[5 pts]');
+			expect(result.typstContent).toContain(')[1 pt]');
+			expect(result.typstContent).not.toContain(')[2 pts]');
 		});
 
 		it('omits the points badge when the exercise has none', () => {
@@ -605,8 +606,7 @@ describe('WorksheetGenerator', () => {
 				instance: createMockInstance()
 			});
 
-			// (the `#let points-badge(label)` definition always sits in the setup)
-			expect(result.typstContent).not.toMatch(/^\s+points-badge\(/m);
+			expect(result.typstContent).not.toMatch(/\)\[\d+ pts?\]/);
 		});
 
 		it('renders the custom instructions of an exercise', () => {
@@ -722,16 +722,17 @@ describe('WorksheetGenerator', () => {
 			);
 		});
 
-		it('renders the header through the sticky exercise-header helper without a template', () => {
+		it('without a template, the « Fiche élève » badge header is sticky too', () => {
 			const generator = new WorksheetGenerator(createMockConfig());
 			const result = generator.generate({
 				worksheet: createMockWorksheet(),
 				instance: createMockInstance()
 			});
 
-			expect(result.typstContent).toContain('#let exercise-header(content)');
-			expect(result.typstContent).toContain('sticky: true,');
-			expect(result.typstContent).toContain('#exercise-header[');
+			expect(result.typstContent).toContain(
+				`#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[\n  #grid(`
+			);
+			expect(result.typstContent).toContain(exerciseBadge('1'));
 		});
 	});
 

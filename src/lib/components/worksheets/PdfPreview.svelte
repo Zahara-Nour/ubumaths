@@ -32,6 +32,8 @@
 		FileCode
 	} from '@lucide/svelte';
 	import { generateWorksheetTypst } from '$lib/typst/generators';
+	import { documentFromTeacherCopy } from '$lib/worksheets/document/teacher-adapter';
+	import { renderMarkdownPreview } from '$lib/worksheets/document/render-exercise';
 	import {
 		clearTrackedExternalImages,
 		getTrackedExternalImages
@@ -50,7 +52,6 @@
 		type GuidanceLevel
 	} from '$lib/worksheets/student-copy';
 	import JSZip from 'jszip';
-	import { correctionForPrint } from '$lib/questions/correction-detail';
 	import {
 		getTypstCompiler,
 		type TypstCompiler,
@@ -236,28 +237,15 @@
 			// Generate instance data
 			const instanceData = generateSimpleInstance(worksheet);
 
-			// Generate markdown content for display
-			const mdParts: string[] = [];
-			mdParts.push(`# ${worksheet.title}\n`);
-			if (worksheet.description) {
-				mdParts.push(`${worksheet.description}\n`);
-			}
-			instanceData.exercises.forEach((ex, i) => {
-				mdParts.push(`## ${lore.learning.exercise} ${i + 1}\n`);
-				// Comme le PDF : la fiche montre l'énoncé, les corrigés ne le répètent pas
-				if (mode === 'worksheet') mdParts.push(ex.statement || '');
-				if (mode === 'answers') {
-					mdParts.push(
-						ex.answers?.trim() ? ex.answers : '_Réponses non rédigées : voir le corrigé._'
-					);
-				}
-				if (mode === 'correction' && ex.solution) {
-					// Concise ou détaillée selon la fiche (D11)
-					mdParts.push(correctionForPrint(ex.solution, worksheet.config?.correction_detail));
-				}
-				mdParts.push('\n');
-			});
-			markdownContent = mdParts.join('\n');
+			// Aperçu à l'écran : le même document que le PDF (ordre, numéros, corrections)
+			markdownContent = renderMarkdownPreview(
+				documentFromTeacherCopy({
+					worksheet,
+					instance: instanceData,
+					config: worksheet.config || {}
+				}),
+				mode
+			);
 
 			// Clear tracked images before generating Typst
 			clearTrackedExternalImages();

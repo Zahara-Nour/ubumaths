@@ -83,6 +83,12 @@ Gabarits inaccessibles :
      défaut, nom non imprimé, titres, avertissement imprimé en tête) ; non individualisée : rien ne
      change.
 
+- **D7** (2026-10-14, lot 2) — **style par défaut : « Fiche élève »** (22 fiches sur 32 en prod ;
+  les 8 sans gabarit, toutes de type fiche, A4, sans durée, passent de 1 à 2 colonnes : rendu
+  montré avant la PR). Les **11 autres styles n'ont que leur fiche** : leurs réponses, corrigé et
+  fiche + corrections sont ceux de « Fiche élève » (règle D2). Le **bandeau vert** « CORRIGÉ » /
+  « RÉPONSES » reste, mais **écrit dans le gabarit** de la forme, plus injecté.
+
 ## Vocabulaire proposé (à verser dans CONTEXT.md, lot 0)
 
 | Terme       | Sens                                                                                                                     |
