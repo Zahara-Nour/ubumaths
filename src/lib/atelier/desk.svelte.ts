@@ -72,6 +72,13 @@ export interface Entry {
 	readonly id: number;
 	/** Ce qui a produit cette ligne : la saisie, ou le nom de l'action. */
 	readonly label: string;
+	/**
+	 * La saisie telle qu'ÉCRITE dans le champ « Écriture mathématique », en
+	 * LaTeX : la ligne la montre à la place de `label`, qui reste le texte
+	 * envoyé au moteur (`.dériver x^3`) — celui de l'export et du rejeu.
+	 * Affichage seul.
+	 */
+	readonly inputLatex?: string;
 	/** Ce qu'on affiche en toutes lettres. */
 	readonly text: string;
 	/** Le rendu mathématique, quand il y en a un de sûr. */
@@ -365,13 +372,16 @@ export class CalcDesk {
 		this.draft = this.#draftBeforeRecall;
 	}
 
-	/** Traiter ce que l'élève vient de taper. */
-	submit(text: string): void {
-		this.#submit(text, true);
+	/**
+	 * Traiter ce que l'élève vient de taper. `inputLatex` : la même saisie,
+	 * écrite dans le champ mathématique — la ligne la montrera.
+	 */
+	submit(text: string, inputLatex?: string): void {
+		this.#submit(text, true, inputLatex);
 	}
 
 	/** `typed` : tapée par l'élève (rappelable par ↑), ou écrite par un bouton. */
-	#submit(text: string, typed: boolean): void {
+	#submit(text: string, typed: boolean, inputLatex?: string): void {
 		// `.exporter` : le pupitre tient l'historique, le moteur ne l'a jamais eu.
 		// Pas de ligne : l'historique exporté reste celui de l'élève
 		if (isExportCommand(this.session.engine, text)) {
@@ -389,7 +399,12 @@ export class CalcDesk {
 			if (this.#typed.at(-1) !== text) this.#typed.push(text);
 		}
 
-		this.#push({ label: text, ...entryOf(result), result });
+		this.#push({
+			label: text,
+			...(inputLatex !== undefined && { inputLatex }),
+			...entryOf(result),
+			result
+		});
 		this.draft = '';
 		this.notice = null;
 	}

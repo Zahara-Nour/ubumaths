@@ -9,6 +9,7 @@
 import { describe, expect, it } from 'vitest';
 import { BUILT_IN_STYLES, DEFAULT_STYLE_ID, resolveTemplate } from '../styles';
 import {
+	CORRECTIONS_PART,
 	DEFAULT_TEMPLATES,
 	DEFAULT_TEMPLATE_IDS,
 	STUDENT_STYLE_TEMPLATE
@@ -128,12 +129,20 @@ describe('résolution du gabarit', () => {
 		);
 	});
 
-	it('ses autres formes sont celles de « Fiche élève » (D2)', () => {
-		for (const form of ['answers', 'correction', 'worksheet_with_corrections'] as const) {
+	it('ses réponses et son corrigé sont ceux de « Fiche élève » (D2)', () => {
+		for (const form of ['answers', 'correction'] as const) {
 			expect(resolveTemplate(DEFAULT_TEMPLATE_IDS.standard, form).content).toBe(
 				resolveTemplate(DEFAULT_STYLE_ID, form).content
 			);
 		}
+	});
+
+	it('sa fiche + corrections : SA fiche, puis la partie de fin (David, 2026-10-14)', () => {
+		const resolved = resolveTemplate(DEFAULT_TEMPLATE_IDS.standard, 'worksheet_with_corrections');
+		expect(resolved.content).toBe(
+			`${resolveTemplate(DEFAULT_TEMPLATE_IDS.standard, 'worksheet').content}\n${CORRECTIONS_PART}`
+		);
+		expect(resolved.showsPoints).toBe(true);
 	});
 
 	it('style absent ou inconnu → « Fiche élève », pour toutes les formes', () => {

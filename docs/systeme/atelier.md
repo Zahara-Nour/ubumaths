@@ -628,7 +628,15 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   pas : le champ a sa propre liste. Le focus réel est dans le shadow DOM de MathLive, où
   `aria-controls` de l'hôte ne porte pas : une région `status` annonce la proposition surlignée
   (« résoudre, 1 sur 2 »). La liste s'ouvre au-dessus du mot quand le champ est dans la moitié
-  basse de l'écran, et défile. L'historique montre le texte envoyé (avec le point).
+  basse de l'écran, et défile.
+- **L'historique montre la saisie écrite** (`Entry.inputLatex`, composée par MathLive) au lieu du
+  texte envoyé (`.dériver x^3`, avec un point jamais tapé) ; un lecteur d'écran lit ce texte sans
+  le point (la lecture de MathLive est en anglais). `label` reste le texte envoyé : l'export et le
+  rejeu l'utilisent, et une ligne rejouée revient en texte. Gardée au rechargement, relue par la
+  liste blanche comme une réponse — et la vue la refiltre AVANT de la composer, quelle que soit sa
+  provenance : ↑ rappelle des saisies relues du stockage, filtrées en longueur seulement (audit du
+  2026-10-14 : `\htmlStyle{…}` rappelé puis validé posait un calque dans la page). Le champ vide a sa consigne (`placeholder` de MathLive, en
+  LaTeX).
 
 ### Session, persistance, URL
 
@@ -677,7 +685,7 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   fiable**, et la vue compose les formules en `{@html}` (`convertLatexToMarkup`). Mesuré le
   2026-10-14 (MathLive 0.111.1) : `\htmlStyle{…}{x}` rend un `style`, `\class`, `\cssId`,
   `\htmlData` des attributs, `\href` un lien. Une formule (`latex`, `alternative.latex`, chaque
-  `$…$` d'un refus) n'est gardée que si **chacune de ses commandes** est sur la liste blanche de
+  `$…$` d'un refus, `inputLatex`) n'est gardée que si **chacune de ses commandes** est sur la liste blanche de
   `safe-latex.ts` (commandes lues comme le `Tokenizer` de MathLive : lettres et `*` ; notation
   `^^5c` refusée ; environnements `\begin{…}` nommés ; **caractères ASCII et Latin-1 seulement** :
   au-delà de U+00FF, MathLive regroupe les caractères avant de lire les commandes, avec des bornes

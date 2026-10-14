@@ -69,6 +69,19 @@ export interface PublicWorksheet {
 	estimated_duration_minutes: number | null;
 	sections: unknown[];
 	exercises: unknown[];
+	/**
+	 * Le style de la fiche et, pour un style de son auteur, sa mise en page
+	 * (lot 4a, D11) : le PDF les suit. Absents : « Fiche élève ».
+	 */
+	style_id?: string | null;
+	template_id?: string | null;
+	template?: {
+		id: string;
+		name: string;
+		description: string | null;
+		style_id: string | null;
+		template_content: string;
+	} | null;
 }
 
 export interface JournalShareToken {

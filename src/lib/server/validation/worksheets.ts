@@ -1052,7 +1052,19 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	shuffled: z.boolean().optional(),
 	exercises: z.array(studentExerciseViewSchema),
 	/** Sections for grouping exercises */
-	sections: z.array(studentSectionViewSchema)
+	sections: z.array(studentSectionViewSchema),
+	/** Le style de la fiche (lot 4b) : sans ces clés, le schéma les retire */
+	style_id: z.string().uuid().nullable().optional(),
+	template_id: z.string().uuid().nullable().optional(),
+	/** La mise en page d'un style de l'auteur de la fiche (D11) : son Typst seul */
+	template: z.object({ template_content: z.string() }).nullable().optional(),
+	/** Cartouche du gabarit (lot 4b) : sans ces clés, le schéma les retire */
+	total_points: z.number().nullable().optional(),
+	estimated_duration_minutes: z.number().int().nullable().optional(),
+	show_title: z.boolean().optional(),
+	show_date: z.boolean().optional(),
+	show_class: z.boolean().optional(),
+	show_student_name: z.boolean().optional()
 });
 
 // ============================================================================

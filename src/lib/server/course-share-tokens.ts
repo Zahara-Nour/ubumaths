@@ -148,7 +148,20 @@ const publicWorksheetSchema = z.object({
 	total_points: z.number().nullable(),
 	estimated_duration_minutes: z.number().nullable(),
 	sections: z.array(z.unknown()),
-	exercises: z.array(z.unknown())
+	exercises: z.array(z.unknown()),
+	// Le style de la fiche (lot 4a/4b, D11) : sans ces clés, le schéma les retire
+	style_id: z.string().uuid().nullable().optional(),
+	template_id: z.string().uuid().nullable().optional(),
+	template: z
+		.object({
+			id: z.string().uuid(),
+			name: z.string(),
+			description: z.string().nullable(),
+			style_id: z.string().uuid().nullable(),
+			template_content: z.string()
+		})
+		.nullable()
+		.optional()
 });
 
 const courseDocumentFileSchema = z.object({

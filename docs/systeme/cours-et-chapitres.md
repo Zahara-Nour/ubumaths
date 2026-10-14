@@ -361,7 +361,8 @@ le couvrent.
 `class_journal_share_tokens` : un jeton **actif** par classe (`rotateShareToken` révoque l'ancien),
 expirant à la fin de l'année scolaire (`endOfSchoolYear`, 31 août). La page publique passe par
 les RPC `get_class_journal_by_share_token` et `get_worksheet_by_share_token` ; elle ne donne
-que les séances publiées, et seulement les fiches **citées** dans une séance visible. Jeton
+que les séances publiées, et seulement les fiches **citées** dans une séance visible (imprimées
+dans le style de la fiche, lot 4b). Jeton
 invalide, expiré ou révoqué → **même 404**.
 
 ### Lien du cours
@@ -382,7 +383,9 @@ Ce que lit un visiteur sans compte, par trois portes seulement :
   l'entraînement libre (`buildSeriesLink`, forme du rattachement). Jamais : exercices notés, quiz,
   révisions, progression.
 - `/cours/[token]/fiche/[id]` — RPC `get_course_worksheet_by_share_token` : fiche publiée dans un
-  chapitre visible **et** distribuée à la classe ; PDF `reader`, sans correction.
+  chapitre visible **et** distribuée à la classe ; PDF `reader`, sans correction, dans le style de
+  la fiche (lot 4b : `style_id`, `template_id`, mise en page d'un style de l'auteur ; voir
+  [fiches-et-pdf.md](fiches-et-pdf.md)).
 - `/cours/[token]/document/[id]` — RPC `get_course_document_by_share_token`, **réservée au service
   role** (le chemin de stockage ne sort jamais vers le navigateur) ; fichier → URL signée de
   **60 s** (téléchargement forcé hors PDF et images), Drive → l'URL Drive si elle est en `https:`.

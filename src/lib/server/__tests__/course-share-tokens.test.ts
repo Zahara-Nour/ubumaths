@@ -190,6 +190,35 @@ describe('resolveCourseWorksheetByShareToken', () => {
 		expect(resultat).toEqual(fiche);
 	});
 
+	it('garde le style de la fiche et la mise en page de son auteur (lot 4b)', async () => {
+		const style = '55555555-5555-4555-8555-555555555555';
+		const fiche = {
+			id: FICHE,
+			title: 'Fiche 1',
+			description: null,
+			type: 'standard',
+			config: {},
+			status: 'published',
+			grades: null,
+			translations: null,
+			total_points: null,
+			estimated_duration_minutes: null,
+			sections: [],
+			exercises: [],
+			style_id: style,
+			template_id: null,
+			template: {
+				id: style,
+				name: 'Mes contrôles',
+				description: null,
+				style_id: style,
+				template_content: '// MISE-EN-PAGE\n{{exercises}}'
+			}
+		};
+		const { sb } = client({ data: fiche, error: null });
+		expect(await resolveCourseWorksheetByShareToken(sb, JETON, FICHE)).toEqual(fiche);
+	});
+
 	it('rend null quand la fonction SQL rend null', async () => {
 		const { sb } = client({ data: null, error: null });
 		expect(await resolveCourseWorksheetByShareToken(sb, JETON, FICHE)).toBeNull();

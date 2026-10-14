@@ -32,6 +32,8 @@ import { MAX_DEFINITION_LENGTH } from './types';
 /** Une ligne rangée : ce que l'écran montre, et le geste rejouable. */
 export interface KeptLine {
 	readonly label: string;
+	/** La saisie écrite dans le champ mathématique (`Entry.inputLatex`) */
+	readonly inputLatex?: string;
 	readonly text: string;
 	readonly failed: boolean;
 	readonly latex?: string;
@@ -104,6 +106,8 @@ const replaySchema = z.discriminatedUnion('kind', [
 const keptLineSchema = z
 	.object({
 		label: z.string().max(MAX_INPUT_LENGTH),
+		// Composée en `{@html}` comme une réponse : même liste blanche
+		inputLatex: formula.optional().catch(undefined),
 		text: z.string().max(MAX_TEXT_LENGTH),
 		failed: z.boolean(),
 		latex: formula.optional().catch(undefined),
@@ -186,6 +190,10 @@ function keptLineOf(entry: Entry): KeptLine {
 	const replay = keptReplay(entry.replay);
 	return {
 		label: clip(entry.label, MAX_INPUT_LENGTH),
+		// Hors liste blanche, la relecture la refuserait : pas la peine de la ranger
+		...(entry.inputLatex !== undefined &&
+			entry.inputLatex.length <= MAX_LATEX_LENGTH &&
+			isSafeLatex(entry.inputLatex) && { inputLatex: entry.inputLatex }),
 		text: clip(entry.text, MAX_TEXT_LENGTH),
 		failed: entry.failed,
 		// Une formule ne se raccourcit pas : trop longue, la ligne reste en texte

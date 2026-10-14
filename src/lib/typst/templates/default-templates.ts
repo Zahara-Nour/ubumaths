@@ -1596,6 +1596,19 @@ const STUDENT_STYLE_CORRECTION_BANNER = `#place(top + center, scope: "parent", f
 `;
 
 /**
+ * La partie de fin d'une fiche + corrections : sur une nouvelle page, les
+ * polices du corrigé, le bandeau vert, puis les réponses ou le corrigé. Écrite
+ * une fois : « Fiche élève » la place dans sa forme, et un style qui n'a que sa
+ * fiche la reçoit après elle (`resolveTemplate`).
+ */
+export const CORRECTIONS_PART = `{{#if corrections}}
+#pagebreak()
+{{correction_fonts}}
+${STUDENT_STYLE_CORRECTION_BANNER}
+{{corrections}}
+{{/if}}`;
+
+/**
  * Les gabarits du style « Fiche élève », un par forme (ADR 0028 : une forme =
  * un gabarit). Réponses et corrigé : sans énoncé, numéros sur carré ambre,
  * bandeau vert écrit ici (plus injecté par le générateur). Fiche +
@@ -1617,12 +1630,7 @@ export const STUDENT_STYLE_FORMS = {
 	worksheet_with_corrections: `{{style_common}}${studentStyleHeader()}
 // Exercices (numéros sur carré ambre, sections soulignées en ambre)
 {{exercises_badge}}
-{{#if corrections}}
-#pagebreak()
-{{correction_fonts}}
-${STUDENT_STYLE_CORRECTION_BANNER}
-{{corrections}}
-{{/if}}`
+${CORRECTIONS_PART}`
 } as const;
 
 export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {

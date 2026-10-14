@@ -52,9 +52,13 @@ import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale
 import { localizedText, worksheetLocale } from '$lib/types/worksheets';
 import { CORRECTION_FONT_RULES, withCorrectionFonts } from '../correction-fonts';
 import { documentFromTeacherCopy } from '$lib/worksheets/document/teacher-adapter';
-import { renderExercises, type ExerciseLayout } from '$lib/worksheets/document/render-exercise';
+import {
+	renderDocumentPreamble,
+	renderExercises,
+	type ExerciseLayout
+} from '$lib/worksheets/document/render-exercise';
 import { MATH_LIMITS_SETUP } from '$lib/worksheets/document/math-limits';
-import type { DocumentForm } from '$lib/worksheets/document/types';
+import type { DocumentForm, WorksheetDocument } from '$lib/worksheets/document/types';
 
 // ============================================================================
 // TYPES
@@ -70,6 +74,11 @@ export interface WorksheetGeneratorInput {
 	instance: InstanceData;
 	/** Optional template to use for rendering */
 	template?: WorksheetTemplateRow | null;
+	/**
+	 * Le document déjà construit (vue de l'élève, corrections filtrées par le
+	 * serveur, lot 4b) ; absent : construit depuis la copie du prof (`instance`).
+	 */
+	document?: WorksheetDocument;
 }
 
 /**
@@ -266,7 +275,15 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const layout: ExerciseLayout = templateContent.includes('{{exercises_badge}}')
 			? 'badge'
 			: 'heading';
-		const exercisesTypst = this.generateExercises(input, mode, layout, resolved.showsPoints);
+		// Ce que seul l'élève reçoit (consignes, ★, copie individuelle) : en tête
+		// des énoncés, dans tous les styles ; vide pour la copie du prof
+		const exercisesTypst =
+			(mode === 'worksheet'
+				? renderDocumentPreamble(this.document(input), {
+						individualCopyNotice: this.options.individualCopyNotice,
+						instructionsInTemplate: templateContent.includes('{{instructions}}')
+					})
+				: '') + this.generateExercises(input, mode, layout, resolved.showsPoints);
 		// Fiche + corrections : les réponses ou le corrigé, après les énoncés
 		const corrections = ending
 			? this.generateExercises(input, ending, layout, resolved.showsPoints)
@@ -298,7 +315,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			student_name: this.context.studentName ? escapeTypst(this.context.studentName) : '',
 			total_points: worksheet.total_points?.toString() || '',
 			duration: worksheet.estimated_duration_minutes?.toString() || '',
-			instructions: '', // Could be added to config later
+			// Les consignes de l'affectation (vue de l'élève) ; la copie du prof n'en a pas
+			instructions: escapeTypst(this.document(input).assignment?.instructions ?? ''),
 			school_name: '', // Could be added to config later
 			teacher_name: '', // Could be added to config later
 			exercises: exercisesTypst,
@@ -325,6 +343,18 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		return `${MATH_LIMITS_SETUP}\n${renderTemplate(templateContent, templateData)}`;
 	}
 
+	/** Le document de la fiche : celui fourni (élève), sinon la copie du prof */
+	private document(input: WorksheetGeneratorInput): WorksheetDocument {
+		return (
+			input.document ??
+			documentFromTeacherCopy({
+				worksheet: input.worksheet,
+				instance: input.instance,
+				config: this.worksheetConfig
+			})
+		);
+	}
+
 	/**
 	 * Les exercices du document, rendus par le module commun aux PDF du prof et
 	 * de l'élève (ADR 0028) : numérotation, sections, titres, corrigés.
@@ -335,11 +365,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		layout: ExerciseLayout,
 		styleShowsPoints: boolean
 	): string {
-		const copyDoc = documentFromTeacherCopy({
-			worksheet: input.worksheet,
-			instance: input.instance,
-			config: this.worksheetConfig
-		});
+		const copyDoc = this.document(input);
 		const doc = {
 			...copyDoc,
 			display: {
@@ -391,77 +417,4 @@ export function generateWorksheetTypst(params: GenerateTypstParams): string {
 	});
 
 	return result.typstContent;
-}
-
-/**
- * Generate Typst document for a batch of instances
- * Each instance generates a new page
- *
- * @deprecated Use WorksheetGenerator class with batch processing instead
- */
-export function generateBatchTypst(
-	worksheet: WorksheetRow,
-	instances: Array<{ instance: InstanceData; studentName: string; studentId: string }>,
-	config: WorksheetConfig,
-	mode: WorksheetPdfMode,
-	className?: string
-): string {
-	const documents: string[] = [];
-
-	instances.forEach((item, index) => {
-		// Add page break between documents (except for the first one)
-		if (index > 0) {
-			documents.push('#pagebreak()');
-		}
-
-		// Generate individual document
-		const doc = generateWorksheetTypst({
-			worksheet,
-			instance: item.instance,
-			config,
-			mode,
-			studentName: item.studentName,
-			className
-		});
-
-		// Remove setup from subsequent documents to avoid duplication
-		const docContent = index === 0 ? doc : removeSetupSection(doc);
-		documents.push(docContent);
-	});
-
-	return documents.join('\n\n');
-}
-
-/**
- * Remove the setup section from a Typst document (for batch generation)
- *
- * Inerte depuis le lot 2 de l'ADR 0028 : le marqueur `// Document Setup` venait
- * de la mise en page par défaut, retirée. Sans appelant ; retirée au lot 5.
- */
-function removeSetupSection(typst: string): string {
-	// Find the end of the setup section (look for the first non-setup content)
-	const setupEndMarker = '// Document Setup';
-	const setupStart = typst.indexOf(setupEndMarker);
-
-	if (setupStart === -1) {
-		return typst;
-	}
-
-	// Find where actual content starts (after all the #set and #let declarations)
-	const contentMarkers = [
-		'#block(width: 100%)',
-		'#align(center)',
-		'#exercise-header',
-		'#exercise-box'
-	];
-	let contentStart = typst.length;
-
-	for (const marker of contentMarkers) {
-		const pos = typst.indexOf(marker);
-		if (pos !== -1 && pos < contentStart) {
-			contentStart = pos;
-		}
-	}
-
-	return typst.substring(contentStart);
 }

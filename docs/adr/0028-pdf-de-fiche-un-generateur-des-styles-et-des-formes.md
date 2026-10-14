@@ -1,6 +1,7 @@
 # 0028 — PDF de fiche : un seul générateur, des styles, une forme = un gabarit
 
-- **Statut** : acceptée — mise en œuvre en cours (journal `docs/wip/generateur-pdf-fiches-progress.md`)
+- **Statut** : acceptée — mise en œuvre terminée le 2026-10-14 (#1344 → #1389), sauf le retrait de
+  `worksheets.template_id` ; journal archivé : `docs/archive/wip/generateur-pdf-fiches-progress.md`
 - **Date** : 2026-10-13 · **Décidée par** : David
 
 ## Contexte
@@ -46,3 +47,26 @@ Le corrigé du prof réutilisait le gabarit de la fiche en y injectant un bandea
   le `deploy:prod` qui livre le code qui ne le lit plus, avec l'accord de David.
 - `student-worksheet-typst.ts`, le bandeau injecté et le paramètre `mode` disparaissent.
 - Toute évolution du rendu d'un exercice ne se fait plus qu'une fois.
+
+## Mise en œuvre : ce qui a été fait autrement (décisions de David pendant le chantier)
+
+- **Code Typst des styles de Chiphre : dans le code**, pas en base (D9). `worksheet_styles` a une
+  ligne par style de Chiphre (même identifiant que son gabarit) pour qu'une fiche le désigne ;
+  `common_typst` ne sert qu'aux styles d'un prof (vide aujourd'hui).
+- **Remplacer le gabarit d'une forme pour une fiche : reporté** (D9) — aucune table de
+  remplacement, aucun gabarit du prof en prod.
+- **Points** : le style décide d'abord ; « Fiche élève » n'en imprime aucun (D8), les autres suivent
+  la case de la fiche.
+- **Style par défaut : « Fiche élève »** (D7) ; plus de mise en page écrite dans le code.
+- **Page « Gabarits » inchangée à l'écran** : chaque gabarit qu'elle crée est la fiche d'un style
+  du même nom et du même identifiant (D10).
+- **Accès élève** (D11) : la mise en page d'un style de l'**auteur** de la fiche est lue par le
+  serveur en service-role, après la vérification d'affectation (`loadAuthorStyleTemplate`) ;
+  étendu au **visiteur d'un cahier de texte ou d'un cours partagé**, pour une fiche atteignable par
+  ce lien (fonctions `security definer` de partage). Jamais la mise en page d'un autre compte.
+- **Fiche + corrections d'un style qui n'a que sa fiche** : sa fiche, puis la partie de fin
+  commune (`CORRECTIONS_PART`), et non toute la fiche en « Fiche élève ».
+- `student-worksheet-typst.ts` **reste**, réduit à l'adaptateur de la vue élève vers
+  `WorksheetGenerator` ; l'ancienne mise en page élève est retirée (lot 5).
+- **Reste à faire** : remplir `worksheets.style_id` depuis `template_id`, puis retirer
+  `template_id` (destructif, avec l'accord de David).
