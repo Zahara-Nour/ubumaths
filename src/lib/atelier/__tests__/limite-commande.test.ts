@@ -166,8 +166,8 @@ describe('ce que le moteur ne sait pas', () => {
 	});
 
 	// Le moteur conclut l'oscillation (noLimitReason « oscillation ») : plus de « je ne sais pas ».
-	it('sin x en +∞ : pas de limite', () => {
-		expect(line('.limite sin(x) en +∞').output).toBe('Pas de limite en +∞.');
+	it('sin x en +∞ : pas de limite, avec sa raison (R3)', () => {
+		expect(line('.limite sin(x) en +∞').output).toMatch(/^Pas de limite en \+∞ : /);
 	});
 });
 
@@ -352,5 +352,105 @@ describe('une suite dans une expression : en +∞ seulement', () => {
 
 	it('2u_n en +∞ : 0', () => {
 		expect(latex('.limite 2u_n en +∞', ['u(n) = 1/n']).endsWith('=0')).toBe(true);
+	});
+});
+
+describe("R1 : sans côté, une fonction définie d'un seul côté écrit ce côté", () => {
+	it('ln(x) en 0 : x → 0⁺', () => {
+		const result = line('.limite ln(x) en 0');
+		expect(result.output).toBe('lim x→0+ ln(x) = -∞');
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe(
+			'\\lim\\limits_{x\\to0^+}\\ln\\left(x\\right)=-\\infty'
+		);
+	});
+
+	it('sqrt(x) en 0 : à droite, 0', () => {
+		expect(latex('.limite sqrt(x) en 0')).toBe('\\lim\\limits_{x\\to0^+}\\sqrt{x}=0');
+		expect(line('.limite sqrt(x) en 0').output).toBe('lim x→0+ sqrt(x) = 0');
+	});
+
+	it('sqrt(-x) en 0 : à gauche', () => {
+		expect(latex('.limite sqrt(-x) en 0')).toBe('\\lim\\limits_{x\\to0^-}\\sqrt{-x}=0');
+		expect(line('.limite sqrt(-x) en 0').output).toBe('lim x→0- sqrt(-x) = 0');
+	});
+
+	it('ln(x-1) en 1 : x → 1⁺', () => {
+		expect(latex('.limite ln(x-1) en 1')).toBe(
+			'\\lim\\limits_{x\\to1^+}\\ln\\left(x-1\\right)=-\\infty'
+		);
+	});
+
+	it("une fonction de l'atelier garde son nom : f(x) = ln(x), en 0", () => {
+		expect(latex('.limite f en 0', ['f(x) = ln(x)'])).toBe('\\lim\\limits_{x\\to0^+}f(x)=-\\infty');
+	});
+
+	it('le côté tapé ne change rien', () => {
+		expect(latex('.limite ln(x) en 0+')).toBe(
+			'\\lim\\limits_{x\\to0^+}\\ln\\left(x\\right)=-\\infty'
+		);
+	});
+
+	it('une fonction définie des deux côtés ne prend pas de côté', () => {
+		expect(latex('.limite sqrt(x+2) en 0').startsWith('\\lim\\limits_{x\\to0}\\sqrt')).toBe(true);
+	});
+});
+
+describe('R2 : pas de limite, hors du domaine', () => {
+	it('sqrt(x) en -1', () => {
+		const result = line('.limite sqrt(x) en -1');
+		expect(result.output).toBe(
+			"Pas de limite en -1 : l'expression n'est pas définie au voisinage de -1."
+		);
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe(
+			"\\text{Pasdelimiteen}-1\\text{:l'expressionn'estpasdéfinieauvoisinagede}-1"
+		);
+	});
+
+	it('ln(x) en −∞', () => {
+		const result = line('.limite ln(x) en -∞');
+		expect(result.output).toBe(
+			"Pas de limite en -∞ : l'expression n'est pas définie au voisinage de -∞."
+		);
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe(
+			"\\text{Pasdelimiteen}-\\infty\\text{:l'expressionn'estpasdéfinieauvoisinagede}-\\infty"
+		);
+	});
+
+	it("une fonction citée : f n'est pas définie au voisinage de -1", () => {
+		const result = line('.limite f en -1', ['f(x) = sqrt(x)']);
+		expect(result.output).toBe("Pas de limite en -1 : f n'est pas définie au voisinage de -1.");
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe(
+			"\\text{Pasdelimiteen}-1\\text{:fn'estpasdéfinieauvoisinagede}-1"
+		);
+	});
+});
+
+describe("R3 : pas de limite, l'expression oscille", () => {
+	it('sin(x) en +∞', () => {
+		const result = line('.limite sin(x) en +∞');
+		expect(result.output).toBe(
+			"Pas de limite en +∞ : l'expression oscille sans se rapprocher d'aucune valeur."
+		);
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe(
+			"\\text{Pasdelimiteen}+\\infty\\text{:l'expressionoscillesansserapprocherd'aucunevaleur}"
+		);
+	});
+
+	it('3sin(2x)+1 en −∞', () => {
+		expect(line('.limite 3sin(2x)+1 en -∞').output).toBe(
+			"Pas de limite en -∞ : l'expression oscille sans se rapprocher d'aucune valeur."
+		);
+	});
+
+	it('sin(1/x) en 0', () => {
+		expect(line('.limite sin(1/x) en 0').output).toBe(
+			"Pas de limite en 0 : l'expression oscille sans se rapprocher d'aucune valeur."
+		);
+	});
+
+	it('une fonction citée : f oscille', () => {
+		expect(line('.limite f en +∞', ['f(x) = cos(x)']).output).toBe(
+			"Pas de limite en +∞ : f oscille sans se rapprocher d'aucune valeur."
+		);
 	});
 });
