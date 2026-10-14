@@ -46,6 +46,7 @@ import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 import { syncPlots } from './plot-sync';
 import { removedLine, restoredLine } from './removal';
 import { stepOf, type ImportedHistory } from './history-import';
+import type { KeptHistory } from './history-storage';
 import {
 	NOTHING_TO_EXPORT,
 	downloadHistory,
@@ -299,6 +300,25 @@ export class CalcDesk {
 			failed: !outcome.ok
 		});
 		return { text, failed: !outcome.ok };
+	}
+
+	/** Les saisies tapées, rappelables par ↑ / ↓ : rangées avec les lignes. */
+	get typedInputs(): readonly string[] {
+		return this.#typed;
+	}
+
+	/**
+	 * Reprendre les lignes rangées au rechargement (`history-storage.ts`).
+	 *
+	 * ⚠️ Rien n'est REFAIT : ni calcul, ni définition, ni action — une ligne
+	 * `f(x) = x^2` restaurée ne crée ni ne change aucune carte. Sans l'arbre du
+	 * résultat, la ligne n'a pas de « Garder » (`keep` le dit), ni d'étapes.
+	 * Sans effet sur un historique déjà commencé.
+	 */
+	restoreHistory(history: KeptHistory): void {
+		if (this.entries.length > 0 || this.#typed.length > 0) return;
+		this.entries = history.lines.map((line) => ({ id: this.#nextId++, ...line }));
+		this.#typed = [...history.typed];
 	}
 
 	/** Vider l'historique (« Repartir de zéro ») ; le brouillon est laissé. */

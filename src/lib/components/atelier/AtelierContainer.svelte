@@ -10,7 +10,13 @@
 	import { toast } from 'svelte-sonner';
 	import { Atelier } from '$lib/atelier/atelier.svelte';
 	import { provideAtelier } from '$lib/atelier/context';
-	import { openSession, type Session, type SessionNotice } from '$lib/atelier/session';
+	import {
+		keepCalcHistory,
+		openSession,
+		type HistoryKeeper,
+		type Session,
+		type SessionNotice
+	} from '$lib/atelier/session';
 	import type { AtelierObject } from '$lib/atelier/types';
 	import type { ImportedHistory } from '$lib/atelier/history-import';
 	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
@@ -159,6 +165,8 @@
 	// quand la session s'ouvre, sinon il part une fois sur `null` et ne revient
 	// jamais — rien n'est alors jamais enregistré.
 	let session = $state<Session | null>(null);
+	/** Les lignes de Calcul rangées : même raison d'être un `$state`. */
+	let calcHistory = $state<HistoryKeeper | null>(null);
 
 	/**
 	 * B3 : à l'ouverture, un atelier VIDE reçoit une carte prête à taper, tracée
@@ -183,6 +191,10 @@
 			target: window,
 			onNotice: (notice) => (notices = [...notices, notice])
 		});
+		// Les lignes de Calcul aussi (décision de David du 2026-10-13) : relues
+		// sans rien refaire, et déjà « vues » — pas de pastille sur l'onglet
+		calcHistory = keepCalcHistory(desk, { storage: readStorage(), target: window });
+		seen = desk.entries.length;
 		// La carte d'accueil AVANT de noter la révision de départ : sinon la simple
 		// visite de `/grapheur` enregistrait une carte vide (revue du lot 6, C2) —
 		// elle ne l'est que si l'élève y touche.
@@ -193,6 +205,8 @@
 		return () => {
 			session?.close();
 			session = null;
+			calcHistory?.close();
+			calcHistory = null;
 		};
 	});
 
@@ -231,6 +245,13 @@
 		if (session === null || current === lastSeenRevision) return;
 		lastSeenRevision = current;
 		session.touch();
+	});
+
+	// Une ligne de plus, « Repartir de zéro », un rejeu : `entries` est remplacé
+	// à chaque fois, et c'est ce remplacement qu'on suit
+	$effect(() => {
+		void desk.entries;
+		calcHistory?.touch();
 	});
 
 	// Option B : la courbe suit l'objet. Un seul sens — l'atelier détient l'état.
@@ -427,10 +448,11 @@
 		<div class="barre">
 			<ShareBar {received} {notice} />
 			{#if !ephemeral}
+				<!-- Des lignes de Calcul seules suffisent : elles survivent au rechargement -->
 				<button
 					type="button"
 					class="vider"
-					disabled={atelier.objects.length === 0}
+					disabled={atelier.objects.length === 0 && desk.entries.length === 0}
 					onclick={() => (confirmReset = true)}
 				>
 					Repartir de zéro
