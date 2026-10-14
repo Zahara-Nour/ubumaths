@@ -1,7 +1,7 @@
 ---
 title: Atelier — la commande « développer » (phase 0)
 date: 2026-10-14
-status: validée par David le 2026-10-14 ; PR 1 (#1372) et PR 2 (#1375) mergées ; question A/B ouverte (corrections d'exercices)
+status: validée par David le 2026-10-14 ; PR 1 (#1372) et PR 2 (#1375) mergées ; PR 3 (corrections d'exercices, option B) en cours
 ---
 
 # Atelier — la commande « développer »
@@ -163,3 +163,5 @@ Tests d'abord, rouges, pour chaque ligne de B, C, D et E ; `code-reviewer` en fi
   décimal. **Question ouverte à David (A/B)** : brancher aussi les corrections d'exercices générées
   (`generatedSteps` `kind: 'simplify'`, `intent: 'developper'`, aucun en production) sur
   `writeExpandSteps` — reco B, petite PR, deux instantanés de démo changent.
+- 2026-10-14 — **décision de David : B** — les corrections d'exercices générées (`intent: 'developper'`)
+  montrent la même rédaction que l'atelier (`writeExpandSteps`). PR 3, branche `feat/developper-corrections`.
