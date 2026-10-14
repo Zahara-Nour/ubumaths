@@ -32,7 +32,13 @@ import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
 import { compile } from '$lib/mathAST/eval/compile';
 import { differentiate } from '$lib/mathAST/differentiation';
-import { findCriticalZeros, findCriticalExtrema } from '$lib/mathAST/analysis';
+import {
+	findCriticalZeros,
+	findCriticalExtrema,
+	getAllDiscontinuities
+} from '$lib/mathAST/analysis';
+import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
+import { isInfinity } from '$lib/mathAST/guards';
 import { exactAsymptotes } from './asymptotes-exactes';
 import { restrictAnalysis, type Restriction } from './restriction';
 import { simplify } from '$lib/mathAST/simplify';
@@ -414,15 +420,13 @@ function classifyExtremum(evaluator: (x: number) => number | null, x: number): '
  */
 const POLE_PROBE_RATIOS = [1e-2, 1e-4, 1e-7, 1e-11, 1e-15] as const;
 
-/** Croissance minimale de |f| entre la première et la dernière sonde. */
-const POLE_GROWTH_FACTOR = 4;
-
 /**
- * Croissance minimale de |f| entre la sonde à 1e-7 et la dernière (1e-15).
- * Un pôle croît encore là (ln : ×2,1 au pire) ; une exponentielle non :
- * à cette distance, elle ne varie plus.
+ * Croissance minimale de |f| d'une sonde fine à la suivante (1e-7 → 1e-11 →
+ * 1e-15). Un pôle croît encore là (ln : ×1,36 au pire, à l'échelle 1). Une
+ * exponentielle non, ni un point simplement VOISIN d'un pôle : tan en
+ * 10 004,4, à 0,0017 du pôle, vaut 553 et ne bouge plus à 1e-11 près.
  */
-const POLE_NEAR_GROWTH_FACTOR = 1.5;
+const POLE_STEP_GROWTH_FACTOR = 1.2;
 
 /** Indice, dans `POLE_PROBE_RATIOS`, de la sonde à 1e-7. */
 const POLE_NEAR_PROBE_INDEX = 2;
@@ -436,9 +440,16 @@ const MAX_ASYMPTOTE_CANDIDATES = 64;
  * On sonde de plus en plus près, des deux côtés. Une vraie asymptote fait
  * croître |f| SANS BORNE : il ne suffit pas que |f| soit grande (une
  * exponentielle l'est aussi) ni qu'elle croisse (√x croît). On exige donc que
- * |f| grandisse encore quand on se rapproche, d'un facteur net, et qu'elle
- * grandisse ENCORE tout près du pôle (eˣ en x = 164 croît d'un facteur 5 sur
- * la première sonde, puis plus du tout).
+ * |f| croisse encore à CHAQUE sonde fine, de 1e-7 à 1e-15 : eˣ en x = 164
+ * croît d'un facteur 5 sur la première sonde, puis plus du tout.
+ *
+ * Les sondes lointaines (1 % et 0,01 % de |x|) doivent seulement exister :
+ * elles ne jugent PAS la monotonie. Loin de l'origine, elles enjambent le pôle
+ * voisin de tan, ou tombent sur ln(1) = 0 pour ln(x − 100).
+ *
+ * ⚠️ L'évaluateur du grapheur rend `null` pour ±∞ : un pôle qui dépasse les
+ * flottants avant la sonde fine (e^(1/x) en 0) est indécidable ici. C'est
+ * l'analyse symbolique qui le tranche (`singularPoints`).
  *
  * ⚠️ Pas de seuil « |f| dépasse la fenêtre » : la sonde la plus fine est à
  * 1e-15 du pôle, donc |ln| n'y vaut que ~34. Un tel seuil faisait disparaître
@@ -448,8 +459,6 @@ function divergesAt(evaluator: (x: number) => number | null, x: number): boolean
 	const scale = Math.max(Math.abs(x), 1);
 
 	for (const side of [-1, 1]) {
-		let first: number | null = null;
-		let near = 0;
 		let previous = 0;
 		let increasing = true;
 
@@ -459,27 +468,17 @@ function divergesAt(evaluator: (x: number) => number | null, x: number): boolean
 				increasing = false;
 				break;
 			}
+
 			const magnitude = Math.abs(y);
-			if (magnitude < previous) {
+			if (index < POLE_NEAR_PROBE_INDEX) continue;
+			if (index > POLE_NEAR_PROBE_INDEX && magnitude < previous * POLE_STEP_GROWTH_FACTOR) {
 				increasing = false;
 				break;
 			}
-			if (first === null) first = magnitude;
-			if (index === POLE_NEAR_PROBE_INDEX) near = magnitude;
 			previous = magnitude;
 		}
 
-		// Les deux critères sont nécessaires : sans le second, eˣ passait pour
-		// divergente dès x ≈ 139, la sonde à 1 % de |x| la multipliant déjà par 4.
-		if (
-			increasing &&
-			first !== null &&
-			first > 0 &&
-			previous >= first * POLE_GROWTH_FACTOR &&
-			previous >= near * POLE_NEAR_GROWTH_FACTOR
-		) {
-			return true;
-		}
+		if (increasing && previous > 0) return true;
 	}
 
 	return false;
@@ -581,17 +580,31 @@ function locatePole(evaluator: (x: number) => number | null, xLow: number, xHigh
  * @param viewport - The mathematical viewport bounds
  * @param functionId - ID of the function being analyzed
  * @param numSamples - Number of samples for initial sweep
+ * @param knownCandidates - Points singuliers lus dans l'expression, examinés
+ *   avant le balayage : retenus si une limite unilatérale y est infinie
+ *   (symboliquement), ou à défaut si la sonde numérique les voit diverger
  * @returns Array of detected vertical asymptotes
  */
 export function findVerticalAsymptotes(
 	evaluator: (x: number) => number | null,
 	viewport: Viewport,
 	functionId: string,
-	numSamples: number = DEFAULT_SAMPLES
+	numSamples: number = DEFAULT_SAMPLES,
+	knownCandidates: readonly SingularPoint[] = []
 ): VerticalAsymptote[] {
 	const asymptotes: VerticalAsymptote[] = [];
 	const step = (viewport.xMax - viewport.xMin) / numSamples;
 	const viewportHeight = Math.max(viewport.yMax - viewport.yMin, 1);
+
+	// D'abord les candidats de l'expression : leur abscisse est exacte, et ils
+	// ne dépendent pas de l'échantillonnage. Dézoomé, le balayage tombe à ±3 du
+	// pôle de 1/x, où la courbe vaut ±0,3 : aucun saut, rien à examiner.
+	for (const { x, infiniteLimit } of knownCandidates) {
+		if (x < viewport.xMin || x > viewport.xMax) continue;
+		if (!infiniteLimit && !divergesAt(evaluator, x)) continue;
+		if (asymptotes.some((a) => Math.abs(a.x - x) < step * 2)) continue;
+		asymptotes.push({ x, functionId, behavior: determineBehavior(evaluator, x) });
+	}
 
 	let prevX = viewport.xMin;
 	let prevY = evaluator(prevX);
@@ -631,6 +644,53 @@ export function findVerticalAsymptotes(
 	}
 
 	return asymptotes;
+}
+
+/** Un point où l'expression n'est pas définie ou pas continue. */
+export interface SingularPoint {
+	readonly x: number;
+	/** Une limite unilatérale y est ±∞, établie symboliquement. */
+	readonly infiniteLimit: boolean;
+}
+
+/** Points singuliers par expression : l'analyse de continuité est coûteuse. */
+const singularPointsCache = new WeakMap<MathNode, readonly SingularPoint[]>();
+
+/**
+ * Les points où l'expression n'est pas définie ou pas continue : zéros de
+ * dénominateurs, bords de domaine de ln.
+ *
+ * ⚠️ Pas les pôles périodiques (tan) : l'analyse ne les énumère que sur
+ * [−2π ; 2π]. Dézoomé, le dédoublonnage n'en gardait qu'un — un trait isolé
+ * en −3π/2 au milieu d'une infinité de pôles. Le balayage s'en charge seul.
+ *
+ * Tous les types sont rendus, trous compris : sans limite infinie établie,
+ * c'est `divergesAt` qui tranche, et sin(x)/x en 0 ne diverge pas. Une
+ * analyse en échec rend une liste vide — le balayage numérique reste alors
+ * seul, comme avant.
+ */
+function singularPoints(expression: MathNode): readonly SingularPoint[] {
+	const cached = singularPointsCache.get(expression);
+	if (cached) return cached;
+
+	const points: SingularPoint[] = [];
+	for (const discontinuity of getAllDiscontinuities(expression, 'x') ?? []) {
+		try {
+			if (discontinuity.periodic) continue;
+			const x = evaluateNodeToApproximatedNumber(discontinuity.point);
+			if (!Number.isFinite(x)) continue;
+			const { leftLimit, rightLimit } = discontinuity;
+			const infiniteLimit =
+				(leftLimit !== null && isInfinity(leftLimit)) ||
+				(rightLimit !== null && isInfinity(rightLimit));
+			points.push({ x, infiniteLimit });
+		} catch {
+			// Point symbolique non évaluable : le balayage s'en charge.
+		}
+	}
+
+	singularPointsCache.set(expression, points);
+	return points;
 }
 
 /**
@@ -1202,7 +1262,13 @@ export function analyzeFunction(
 		functionId,
 		roots,
 		extrema,
-		verticalAsymptotes: findVerticalAsymptotes(evaluator, viewport, functionId),
+		verticalAsymptotes: findVerticalAsymptotes(
+			evaluator,
+			viewport,
+			functionId,
+			DEFAULT_SAMPLES,
+			ast ? singularPoints(ast.expression) : []
+		),
 		horizontalAsymptotes: exact?.horizontal ?? findHorizontalAsymptotes(evaluator, functionId),
 		obliqueAsymptotes: exact?.oblique ?? findObliqueAsymptotes(evaluator, functionId),
 		polynomialAsymptotes: exact?.polynomial ?? findPolynomialAsymptotes(evaluator, functionId)

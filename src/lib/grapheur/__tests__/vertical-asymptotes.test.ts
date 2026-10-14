@@ -8,7 +8,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { findVerticalAsymptotes } from '../analysis';
+import {
+	analyzeFunction,
+	buildAnalysisAST,
+	cachedEvaluator,
+	findVerticalAsymptotes
+} from '../analysis';
+import { parseFunction } from '../evaluator';
 import type { Viewport } from '../types';
 
 const viewport: Viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
@@ -134,6 +140,33 @@ describe('findVerticalAsymptotes', () => {
 		expect(found[0].x).toBeCloseTo(500, 6);
 	});
 
+	it('trouve ln(x − a) quel que soit a', () => {
+		// La première sonde est à 1 % de |a| : pour a = 100 elle tombe sur
+		// ln(1) = 0, pour a = 10 000 sur ln(100), plus grand que la suivante.
+		for (const a of [100, 10000]) {
+			const found = findVerticalAsymptotes(
+				(x) => (x <= a ? null : Math.log(x - a)),
+				{ xMin: a - 500, xMax: a + 680, yMin: -130, yMax: 480 },
+				'f'
+			);
+			expect(
+				found.map((v) => Math.round(v.x)),
+				`a = ${a}`
+			).toEqual([a]);
+		}
+	});
+
+	it('trouve les pôles de tan(x) loin de l’origine', () => {
+		// La sonde à 1 % de x = 10 000 enjambe une trentaine de pôles voisins.
+		const found = findVerticalAsymptotes(
+			(x) => Math.tan(x),
+			{ xMin: 10000, xMax: 10010, yMin: -10, yMax: 10 },
+			'f'
+		);
+		const expected = [3183, 3184, 3185].map((k) => ((k + 0.5) * Math.PI).toFixed(3));
+		expect(found.map((v) => v.x.toFixed(3))).toEqual(expected);
+	});
+
 	it("trouve encore l'asymptote de ln(x − 300)", () => {
 		const found = findVerticalAsymptotes(
 			(x) => (x <= 300 ? null : Math.log(x - 300)),
@@ -142,5 +175,50 @@ describe('findVerticalAsymptotes', () => {
 		);
 		expect(found.length).toBe(1);
 		expect(found[0].x).toBeCloseTo(300, 6);
+	});
+});
+
+describe('asymptotes verticales quand on dézoome', () => {
+	// Fenêtre de 1 180 unités : les échantillons tombent à ±3 du pôle de 1/x,
+	// où la courbe vaut ±0,3 — aucun saut, rien à examiner. L'expression, elle,
+	// dit où sont ses pôles.
+	const wide: Viewport = { xMin: -580, xMax: 600, yMin: -130, yMax: 480 };
+
+	const poles = (latex: string): number[] => {
+		const parsed = parseFunction(latex);
+		if (!parsed.ast) throw new Error(`illisible : ${latex}`);
+		const analysis = analyzeFunction(
+			cachedEvaluator(parsed.ast),
+			wide,
+			'f',
+			buildAnalysisAST(parsed.ast)
+		);
+		return analysis.verticalAsymptotes.map((a) => a.x).sort((a, b) => a - b);
+	};
+
+	it.each([
+		['\\frac{1}{x}', 0],
+		['\\frac{1}{x^{2}}', 0],
+		['\\frac{1}{x-300}', 300],
+		['\\frac{x^{2}+1}{x-1}', 1],
+		['\\frac{1}{\\ln(x)}', 1],
+		['\\frac{e^{x}}{x}', 0],
+		// e^(1/x) dépasse les flottants avant la sonde fine : seule l'analyse
+		// symbolique (limite +∞ à droite) peut trancher.
+		['e^{\\frac{1}{x}}', 0]
+	])('trouve le pôle de %s', (latex, pole) => {
+		const found = poles(latex);
+		expect(found.length).toBe(1);
+		expect(found[0]).toBeCloseTo(pole, 9);
+	});
+
+	it('ne pose pas un pôle de tan isolé au milieu des autres', () => {
+		// L'analyse symbolique n'énumère les pôles de tan que sur [−2π ; 2π] :
+		// les retenir dessinait un seul trait, en −3π/2.
+		expect(poles('\\tan(x)').filter((x) => Math.abs(x) < 2 * Math.PI)).toEqual([]);
+	});
+
+	it('ne signale pas le trou de sin(x)/x en 0', () => {
+		expect(poles('\\frac{\\sin(x)}{x}')).toEqual([]);
 	});
 });
