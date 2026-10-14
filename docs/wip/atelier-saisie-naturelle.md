@@ -75,3 +75,6 @@ morceau ») — David ne veut PAS du point devant les commandes : « une écritu
 - 2026-10-14 — prototype mergé (#1355) et en production (v0.31.0, www.chiph.re/test-saisie) pour les
   essais de David sur téléphone ; historique de Calcul gardé au rechargement MERGÉ (#1356, liste blanche
   `safe-latex.ts`, deux audits de sécurité). `.limite` créée par une autre session ; reste `développer`.
+- 2026-10-14 — **demande de David** : une fenêtre de réglages où l'élève choisit la saisie de Calcul,
+  texte (l'actuelle) ou MathLive. Change la décision 1 (« aucun mode à choisir ») : le mode texte
+  reste. Phase 0 : [atelier-reglages-phase0.md](atelier-reglages-phase0.md).
