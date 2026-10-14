@@ -81,6 +81,7 @@ on:
       - 'src/lib/types/question-template.ts'
       - 'src/lib/validation/series.ts'
       - 'src/lib/types/chapter-templates.ts'
+      - 'src/lib/types/chapters.ts'
       - 'src/lib/types/database-helpers.ts'
       - 'src/lib/types/grades.ts'
       - 'src/lib/types/locale.ts'
