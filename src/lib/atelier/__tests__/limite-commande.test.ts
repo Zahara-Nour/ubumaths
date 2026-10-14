@@ -200,3 +200,96 @@ describe('l’aide', () => {
 		expect(latex('.limit 1/x en +∞')).toBe('\\lim\\limits_{x\\to+\\infty}\\dfrac{1}{x}=0');
 	});
 });
+
+describe('revue : une fonction citée seule, dans SA lettre', () => {
+	it('f(t) avec f(t) = 1/t : calcul en t', () => {
+		expect(latex('.limite f(t) en 0+', ['f(t) = 1/t'])).toBe(
+			'\\lim\\limits_{t\\to0^+}f(t)=+\\infty'
+		);
+	});
+
+	it('f(t) avec f en x, sans ensemble : calcul en t, forme tapée', () => {
+		expect(latex('.limite f(t) en 2', ['f(x) = x^2+1'])).toBe(
+			'\\lim\\limits_{t\\to2}f\\left(t\\right)=5'
+		);
+	});
+
+	it('f(2x) sans ensemble : la composée se calcule', () => {
+		expect(latex('.limite f(2x) en 1', ['f(x) = x^2+1'])).toBe(
+			'\\lim\\limits_{x\\to1}f\\left(2x\\right)=5'
+		);
+		expect(latex('.limite f(2x)+1 en 1', ['f(x) = x^2+1']).endsWith('=6')).toBe(true);
+	});
+
+	it('f(2x) avec un ensemble choisi : refus de la composée', () => {
+		expect(refusal('.limite f(2x) en 1', ['f(x) = x^2 sur [0;+∞['])).toMatch(/2x/);
+	});
+
+	it("f' : f'(x)", () => {
+		expect(latex(".limite f' en 2", ['f(x) = x^3'])).toBe("\\lim\\limits_{x\\to2}f'(x)=12");
+	});
+
+	it('le refus de lettre garde le côté', () => {
+		expect(refusal('.limite g en x=0+', ['g(t) = t'])).toContain('en t=0+');
+	});
+});
+
+describe('revue : un point fractionnaire', () => {
+	it('en 1/2 : \\frac', () => {
+		expect(latex('.limite x^2 en 1/2')).toBe('\\lim\\limits_{x\\to\\frac{1}{2}}x^2=\\dfrac{1}{4}');
+		expect(line('.limite x^2 en 1/2').output).toBe('lim x→1/2 x^2 = 1/4');
+	});
+
+	it('en 1/2+ : le côté sans ambiguïté', () => {
+		expect(latex('.limite x^2 en 1/2+')).toBe(
+			'\\lim\\limits_{x\\to{\\tfrac{1}{2}}^+}x^2=\\dfrac{1}{4}'
+		);
+	});
+});
+
+describe('revue : les gardes de l’atelier', () => {
+	const onHalfLine = ['f(x) = x^2 sur [0;+∞['];
+
+	it('hors de l’ensemble de f : refus, comme .évaluer', () => {
+		expect(refusal('.limite f en -1', onHalfLine)).toBe(
+			"-1 n'est pas dans l'ensemble de définition de f, [0 ; +∞[."
+		);
+	});
+
+	it('au bord : accepté, du côté intérieur', () => {
+		expect(latex('.limite f en 0', onHalfLine)).toBe('\\lim\\limits_{x\\to0^+}f(x)=0');
+	});
+
+	it('au bord, du côté extérieur : refus', () => {
+		expect(refusal('.limite f en 0-', onHalfLine)).toMatch(/gauche/);
+	});
+
+	it('vers −∞ hors de l’ensemble : refus ; vers +∞ : accepté', () => {
+		expect(refusal('.limite f en -∞', onHalfLine)).toMatch(/ensemble/);
+		expect(latex('.limite f en +∞', onHalfLine)).toBe('\\lim\\limits_{x\\to+\\infty}f(x)=+\\infty');
+	});
+
+	it('une liste citée : refus de l’atelier', () => {
+		expect(refusal('.limite L en 0', ['L = 1 ; 2 ; 3'])).toBe('L est une liste : utilise .stats L');
+	});
+});
+
+describe('revue : les suites', () => {
+	it.each(['u', 'u_n', 'u(n)'])('.limite %s en +∞ : lim u_n = 0', (typed) => {
+		expect(latex(`.limite ${typed} en +∞`, ['u(n) = 1/n'])).toBe(
+			'\\lim\\limits_{n\\to+\\infty}u_n=0'
+		);
+	});
+
+	it('une suite ailleurs qu’en +∞ : refus', () => {
+		expect(refusal('.limite u en 3', ['u(n) = 1/n'])).toMatch(/\+∞/);
+	});
+});
+
+describe('revue : « pas de limite » garde le côté', () => {
+	it('sqrt(-x) en 0+', () => {
+		const result = line('.limite sqrt(-x) en 0+');
+		expect(result.output).toBe('Pas de limite en 0+.');
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe('\\text{Pasdelimiteen}0^+');
+	});
+});

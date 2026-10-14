@@ -782,19 +782,32 @@ du moteur (`DOMAIN_UNRESOLVED` : `\sqrt{\sin x}`) sortent plus haut, inchangés,
 **`.limite` en détail** (`limit.ts`, PR 2 de `.limite`, syntaxe tranchée par David le
 2026-10-14, L1-L6). Servie par l'atelier (`ATELIER_ONLY_COMMANDS`), lue **avant** la substitution
 des noms : `en 0 à droite` n'est pas une expression, et `a` y serait le mot `à`. Le point
-(`readPoint`) : un nombre ou une valeur de l'atelier (`en 0,5`, `en a`), `en x=1` toléré ; le côté
-`0+`, `0^+`, `0^{+}`, `0 à droite` (et `-`, `à gauche`) ; l'infini `+∞`, `+inf`, `-∞`, `-inf`,
-`\infty`, et `∞` / `inf` seuls = +∞ (pas de côté à l'infini : refus). La lettre est celle de
-l'expression, comme `.évaluer` (plusieurs sans x : refus, « écris la variable après « en » »).
-Le calcul est `evaluateLimit` (`mathAST/limits`). La réponse est une **formule**,
-`\lim\limits_{x\to 1}\dfrac{x^2-1}{x-1} = 2` (expression TAPÉE, parenthèses de la barre de
-fraction retirées, une somme entre `\left(…\right)`) ; une fonction de l'atelier citée seule garde
-son nom et sa lettre, `\lim\limits_{t\to+\infty} f(t) = 0` (calcul en x, où elle est rangée).
+(`readPoint`) : un nombre ou une valeur de l'atelier (`en 0,5`, `en a`, `en 1/2` écrit
+`\frac{1}{2}`), `en x=1` toléré ; le côté `0+`, `0^+`, `0^{+}`, `0 à droite` (et `-`,
+`à gauche`) ; l'infini `+∞`, `+inf`, `-∞`, `-inf`, `\infty`, et `∞` / `inf` seuls = +∞ (pas de
+côté à l'infini : refus). Un côté sur un point qui n'est pas un nombre seul s'écrit
+`x\to {\tfrac{3}{4}}^-`. La lettre est celle de l'expression, comme `.évaluer` (plusieurs sans
+x : refus, « écris la variable après « en » »). Le calcul est `evaluateLimit` (`mathAST/limits`).
+La réponse est une **formule**, `\lim\limits_{x\to 1}\dfrac{x^2-1}{x-1} = 2` (expression TAPÉE,
+parenthèses de la barre de fraction retirées, une somme entre `\left(…\right)`).
+**Citée seule** (`citedObject`) : une fonction de l'atelier `f`, `f'` ou `f(<sa lettre>)` garde
+son nom et sa lettre — son expression RANGÉE (en x) est calculée en x, montrée
+`\lim\limits_{t\to 0^+} f(t)` pour f(t) = 1/t, `f'(x)` pour une dérivée. Tout autre argument
+(`f(t)` quand f s'écrit en x, `f(2x)`, `f(2x)+1`) est une expression : calculée substituée, dans
+la lettre de l'expression substituée, affichée telle que tapée (`\lim\limits_{x\to 1}
+f\left(2x\right) = 5`) ; la composée d'une fonction À ENSEMBLE choisi reste refusée
+(`composedMessage`, faute de domaine de f(u(x))). Une suite `u`, `u_n` ou `u(n)` se calcule en n et
+s'écrit `\lim\limits_{n\to+\infty} u_n` ; seul +∞ est accepté, une suite récurrente est refusée.
+**Gardes de l'atelier** (le branchement saute celles du chemin commun) : une liste citée →
+`listCitedMessage` ; l'ensemble choisi d'une fonction (`f(x) = x^2 sur [0;+∞[`, I4) — un point
+loin de l'ensemble est refusé comme `.évaluer` (« -1 n'est pas dans l'ensemble de définition de
+f, [0 ; +∞[. »), un bord est pris du côté intérieur (`en 0` → `0^+`), un côté extérieur ou un
+infini hors de l'ensemble est refusé ; une composée d'une fonction à ensemble → `composedMessage`.
 `exp(1)` s'écrit `e`. **Jamais de valeur approchée** : statut `indeterminate`, `unsupported`,
 `approximate`, ou un nombre à plus de 6 décimales → « Je ne sais pas calculer cette limite. »
 (une réponse, pas un refus, comme `.factoriser`). `does-not-exist` sans côté (L4) → les deux
 limites latérales quand le moteur les connaît, « Pas de limite en 0 : à gauche −∞, à droite +∞. »,
-sinon « Pas de limite en … ». Pas encore de « Comment ? » (PR 3). Test :
+sinon « Pas de limite en … », côté compris (`0^+`). Pas encore de « Comment ? » (PR 3). Test :
 `limite-commande.test.ts`.
 
 Statistiques : `summarizeList` / `summarizeTable` (`src/lib/statistics/describe.ts`), et

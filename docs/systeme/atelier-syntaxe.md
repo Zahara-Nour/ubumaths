@@ -56,7 +56,8 @@ x=…` et `.intégrer f de a à b` hors de cet ensemble sont refusés comme `f(5
 - **`en`** (`.limite`, 2026-10-14) : un point (`en 1`, `en x=1` toléré, `en 0,5`), un côté
   (`en 0+`, `en 0^+`, `en 0 à droite` ; `-`, `à gauche`), ou l'infini (`+∞`, `+inf`, `-∞`, `-inf` ;
   `∞` ou `inf` seul = +∞). La réponse est une formule, `\lim\limits_{x\to 1}… = 2` ; une fonction
-  de l'atelier garde son nom (`.limite f en +∞` → `\lim f(x) = …`) ; sans côté, deux limites
+  de l'atelier garde son nom (`.limite f en +∞` → `\lim f(x) = …` ; `f`, `f'` ou `f(<sa lettre>)` ;
+  `f(t)`, `f(2x)` se calculent comme une expression, refusés seulement si f a un ensemble choisi), une suite s'écrit `u_n` et n'a de limite qu'en +∞ ; sans côté, deux limites
   latérales différentes → « Pas de limite en 0 : à gauche −∞, à droite +∞ » (détail :
   [atelier.md](atelier.md), « `.limite` en détail »).
 - **`sur`** (`.réciproque`, lot 3 de la réciproque, 2026-10-13) : le mot de la définition d'une

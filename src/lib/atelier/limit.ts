@@ -28,7 +28,10 @@ import { LimitError } from '$lib/mathAST/limits/types';
 import { parse as parseCommandExpression } from '$lib/mathAST/cli/core/pipeline';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { infinity, mathConstant, power } from '$lib/mathAST/factory';
-import { isAddition, isInfinity, isNumber, isSubtraction } from '$lib/mathAST/guards';
+import { isAddition, isInfinity, isNumber, isOpposite, isSubtraction } from '$lib/mathAST/guards';
+import type { Domain } from '$lib/mathAST/domain/types';
+import { containsValue } from '$lib/mathAST/domain/algebra';
+import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { transformAST, visitAST } from '$lib/mathAST/visitor';
@@ -37,6 +40,15 @@ import {
 	unknownFunctionMessage
 } from '$lib/mathAST/parser/custom/tokenizer';
 import { astOf } from './parse';
+import { listCitedMessage } from './list-cited';
+import {
+	citedIntervalDomain,
+	composedMessage,
+	intervalDomainOf,
+	intervalText,
+	outsideIntervalMessage,
+	type CitedInterval
+} from './interval';
 import { INTERNAL_LETTER, typedLetterOf } from './letter';
 
 // =============================================================================
@@ -98,6 +110,7 @@ const ASSIGNMENT = /^([A-Za-z])\s*=\s*(.+)$/;
  * `.factoriser` qui ne sait pas factoriser.
  */
 export function limitCommand(context: LimitContext, input: string, typed: string): CalcResult {
+	const { atelier } = context;
 	const text = typed.trim();
 	const split = /^(.*?)\s*(?:^|\s)en(?:\s+(.*))?$/s.exec(text);
 	const typedExpression = (split === null ? text : split[1]).trim();
@@ -114,30 +127,36 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 
 	const reading = readPoint(context, typedPoint);
 	if (!reading.ok) return { kind: 'refus', message: reading.message };
-	const { point, side } = reading.value;
+	const { point, variable: typedVariable } = reading.value;
+	let side = reading.value.side;
 
 	const unknownCall = findUnknownFunctionCall(typedExpression);
 	if (unknownCall !== null) return { kind: 'refus', message: unknownFunctionMessage(unknownCall) };
+	// Une liste citée comme un nombre : la règle des cartes (`listCitedMessage`)
+	const typedAst = astOf(typedExpression, 'command', atelier.functionNames);
+	const listed =
+		typedAst === null ? null : listCitedMessage(atelier.objects, getVariables(typedAst));
+	if (listed !== null) return { kind: 'refus', message: listed };
 
-	const substituted = context.substitute(typedExpression);
+	// L6 : une fonction (ou une suite) de l'atelier citée seule garde son nom
+	const cited = citedObject(atelier, typedExpression);
+	if (cited?.kind === 'refused') return { kind: 'refus', message: cited.message };
+
+	const substituted = context.substitute(cited === null ? typedExpression : cited.bare);
 	const ast = substituted === null ? undefined : parseCommandExpression(substituted).ast;
 	if (ast === undefined) return { kind: 'refus', message: context.unreadable };
 
-	// L6 : une fonction de l'atelier citée seule garde son nom, dans sa lettre.
-	// Son expression est rangée en x (`INTERNAL_LETTER`) : le calcul s'y fait.
-	const named = citedFunction(context.atelier, typedExpression);
-	const typedVariable = reading.value.variable;
 	let variable: string;
 	let shownLetter: string;
-	if (named !== null) {
-		if (typedVariable !== null && typedVariable !== named.letter) {
+	if (cited !== null) {
+		if (typedVariable !== null && typedVariable !== cited.letter) {
 			return {
 				kind: 'refus',
-				message: `${named.name} s'écrit avec la lettre ${named.letter} : .limite ${named.name} en ${named.letter}=${reading.pointText}.`
+				message: `${cited.name} s'écrit avec la lettre ${cited.letter} : .limite ${cited.name} en ${cited.letter}=${reading.pointText}.`
 			};
 		}
-		variable = INTERNAL_LETTER;
-		shownLetter = named.letter;
+		variable = cited.variable;
+		shownLetter = cited.letter;
 	} else {
 		const guessed = guessedLetter(ast, typedVariable, reading.pointText);
 		if (!guessed.ok) return { kind: 'refus', message: guessed.message };
@@ -145,32 +164,43 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 		shownLetter = guessed.letter;
 	}
 
+	// Une suite n'a de limite qu'en +∞
+	if (cited?.kind === 'sequence' && !(point.kind === 'infinite' && point.sign === 'positive')) {
+		return {
+			kind: 'refus',
+			message: `${cited.name} est une suite : sa limite se cherche en +∞ (.limite ${cited.name} en +∞).`
+		};
+	}
+
+	// I4 : l'ensemble choisi d'une fonction (`f(x) = x^2 sur [0;+∞[`), comme
+	// `.évaluer` et `.intégrer` ; un bord se prend du côté intérieur
+	const restricted = restrictedDomain(atelier, cited, typedExpression, shownLetter);
+	if (restricted?.kind === 'composed') {
+		return { kind: 'refus', message: composedMessage(restricted) };
+	}
+	if (restricted !== null) {
+		const guarded = sideWithin(restricted, point, side, reading.pointText);
+		if (!guarded.ok) return { kind: 'refus', message: guarded.message };
+		side = guarded.side;
+	}
+
 	const direction: LimitDirection = side ?? 'both';
 	const approach = point.kind === 'infinite' ? infinity(point.sign) : point.node;
 	const result = safeLimit(ast, variable, approach, direction);
 	if (result === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
 
-	const pointLatex = pointLatexOf(point, side);
-	const pointText = pointTextOf(point, side);
-
 	if (result.status === 'does-not-exist') {
-		return noLimit(input, ast, variable, approach, point);
+		return noLimit(input, ast, variable, approach, point, side);
 	}
 	const value = knownValue(result);
 	if (value === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
 
-	const shown = shownExpression(context.atelier, typedExpression, ast);
-	const bodyLatex =
-		named !== null
-			? `${named.name}(${shownLetter})`
-			: wrapLatex(shown, toLatex(withoutFractionParentheses(shown)));
-	const bodyText =
-		named !== null ? `${named.name}(${shownLetter})` : wrapText(shown, toCustom(shown));
+	const body = shownBody(cited, typedAst ?? ast, shownLetter);
 	return {
 		kind: 'commande',
 		input,
-		output: `lim ${shownLetter}→${pointText} ${bodyText} = ${valueText(value)}`,
-		latex: `\\lim\\limits_{${shownLetter}\\to ${pointLatex}} ${bodyLatex} = ${toLatex(value)}`
+		output: `lim ${shownLetter}→${pointTextOf(point, side)} ${body.text} = ${valueText(value)}`,
+		latex: `\\lim\\limits_{${shownLetter}\\to ${pointLatexOf(point, side)}} ${body.latex} = ${toLatex(value)}`
 	};
 }
 
@@ -179,6 +209,8 @@ function readPoint(
 	context: LimitContext,
 	typed: string
 ): { ok: true; value: PointReading; pointText: string } | { ok: false; message: string } {
+	// Le point tel que tapé, côté compris, sans la lettre (`x=0+` → `0+`)
+	const shownPoint = typed.replace(/^[A-Za-z]\s*=\s*/, '');
 	let rest = typed;
 	let side: 'left' | 'right' | null = null;
 	const words = SIDE_WORDS.exec(rest);
@@ -204,7 +236,7 @@ function readPoint(
 		return {
 			ok: true,
 			value: { point: { kind: 'infinite', sign }, side: null, variable },
-			pointText: rest
+			pointText: shownPoint
 		};
 	}
 	if (side === null) {
@@ -229,25 +261,163 @@ function readPoint(
 	let node = substituted === null ? undefined : parseCommandExpression(substituted).ast;
 	while (node?.type === 'delimiter') node = node.content;
 	if (node === undefined || getVariables(node).size > 0) return invalid;
+	// `1/2` tapé en ligne s'écrit en fraction (`\frac{1}{2}`, pas `1 / 2`)
+	node = transformAST(node, {
+		leaveDivision: (n) => ({ ...n, displayStyle: 'fraction' as const })
+	});
 	return {
 		ok: true,
 		value: { point: { kind: 'finite', node }, side, variable },
-		pointText: rest
+		pointText: shownPoint
 	};
 }
 
+/** Ce que `.limite` cite seul : une fonction ou une suite de l'atelier. */
+type CitedObject =
+	| {
+			readonly kind: 'function' | 'sequence';
+			/** Le nom montré : `f`, `f'`, `u`. */
+			readonly name: string;
+			/** Ce qu'on remplace par l'expression RANGÉE : `f`, `f'`, `u`. */
+			readonly bare: string;
+			/** La lettre de l'élève, à l'affichage : `t` pour f(t) = 1/t, `n`. */
+			readonly letter: string;
+			/** La lettre du calcul : x pour une fonction (rangée en x), n pour une suite. */
+			readonly variable: string;
+			/** Le nom de la fonction dont vient l'ensemble choisi (`f` pour `f'`). */
+			readonly base: string;
+	  }
+	| { readonly kind: 'refused'; readonly message: string };
+
+/** `f`, `f'`, `f(t)`, `u_n`, `u(n)` : un nom, ses primes, un appel ou un indice. */
+const CITED_ALONE = /^([A-Za-z](?:_\d+)?)(['′]*)\s*(?:\(([^()]*)\)|_\{?\s*([A-Za-z])\s*\}?)?$/;
+
 /**
- * La fonction de l'atelier citée SEULE (`f`, `f(x)`, `f(t)`), avec sa
- * lettre ; sinon `null` : `f(x)+1` n'est pas `f`.
+ * La fonction ou la suite de l'atelier citée SEULE, sinon `null` (`f(x)+1`
+ * est une expression).
+ *
+ * Une fonction se lit `f`, `f'` ou `f(<sa lettre>)` : son expression RANGÉE
+ * (en x) est calculée en x, et montrée dans sa lettre — `f(t)` avec
+ * f(t) = 1/t donne `\lim_{t\to 0^+} f(t)`. Un autre argument (`f(t)` quand
+ * f s'écrit en x, `f(2x)`) n'est pas « f seule » : `null`, l'expression se
+ * calcule substituée, dans sa lettre — et `citedIntervalDomain` refuse la
+ * composée d'une fonction à ensemble choisi. Une suite se lit `u`, `u_n` ou
+ * `u(n)`, calculée en n.
  */
-function citedFunction(
+function citedObject(atelier: Atelier, typed: string): CitedObject | null {
+	const match = CITED_ALONE.exec(typed.trim());
+	if (match === null) return null;
+	const [, base, primeMarks, argument, index] = match;
+	const object = atelier.get(base);
+	const primes = "'".repeat(primeMarks.length);
+	const name = `${base}${primes}`;
+	if (object?.kind === 'function' && index === undefined) {
+		const letter = typedLetterOf(atelier, object);
+		const call = argument?.trim();
+		// Un autre argument (`f(t)` avec f en x, `f(2x)`) : une expression, calculée
+		// substituée dans SA lettre ; une composée d'une fonction à ensemble y est refusée
+		if (call !== undefined && call !== letter) return null;
+		return { kind: 'function', name, bare: name, letter, variable: INTERNAL_LETTER, base };
+	}
+	if (object?.kind === 'sequence' && primes === '') {
+		const letter = typedLetterOf(atelier, object);
+		const written = (argument ?? index)?.trim();
+		if (written !== undefined && written !== letter) return null;
+		if (object.mode === 'recurrence') {
+			return {
+				kind: 'refused',
+				message: `${base} est une suite récurrente : .limite ne sait pas encore en calculer la limite.`
+			};
+		}
+		return { kind: 'sequence', name, bare: base, letter, variable: letter, base };
+	}
+	return null;
+}
+
+/**
+ * L'ensemble choisi des fonctions citées (I4), ou `null` : celui de la
+ * fonction citée seule, sinon celui des fonctions de l'expression
+ * (`citedIntervalDomain` — une composée y est refusée).
+ */
+function restrictedDomain(
 	atelier: Atelier,
-	typed: string
-): { readonly name: string; readonly letter: string } | null {
-	const name = /^\s*([^\s(]+?)\s*(?:\(\s*[A-Za-z]\s*\))?\s*$/.exec(typed)?.[1];
-	const object = name === undefined ? undefined : atelier.get(name);
-	if (name === undefined || object?.kind !== 'function') return null;
-	return { name, letter: typedLetterOf(atelier, object) };
+	cited: CitedObject | null,
+	typed: string,
+	letter: string
+): CitedInterval | null {
+	const get = (name: string) => atelier.get(name);
+	if (cited?.kind === 'function') {
+		const domain = intervalDomainOf(get(cited.base));
+		return domain === null ? null : { kind: 'restricted', domain, name: cited.name };
+	}
+	if (cited !== null) return null;
+	return citedIntervalDomain(get, typed, letter);
+}
+
+/**
+ * Le point est-il au bord ou dans l'ensemble choisi ? Le côté, s'il n'est
+ * pas tapé, devient le côté intérieur d'un bord (`en 0` sur [0 ; +∞[ → 0⁺) ;
+ * un côté tapé hors de l'ensemble, un point loin de lui : refus.
+ */
+function sideWithin(
+	cited: { readonly domain: Domain; readonly name: string },
+	point: LimitPoint,
+	side: 'left' | 'right' | null,
+	pointText: string
+): { ok: true; side: 'left' | 'right' | null } | { ok: false; message: string } {
+	const set = intervalText(cited.domain);
+	if (point.kind === 'infinite') {
+		// Un grand nombre du bon signe : un ensemble borné de ce côté ne le contient pas
+		const far = point.sign === 'positive' ? 1e12 : -1e12;
+		return containsValue(cited.domain, far)
+			? { ok: true, side }
+			: {
+					ok: false,
+					message: `${cited.name} n'est pas définie au voisinage de ${pointText} : son ensemble de définition est ${set}.`
+				};
+	}
+	let at: number;
+	try {
+		at = evaluateNodeToApproximatedNumber(point.node);
+	} catch {
+		return { ok: true, side };
+	}
+	const step = 1e-9 * Math.max(1, Math.abs(at));
+	const leftIn = containsValue(cited.domain, at - step);
+	const rightIn = containsValue(cited.domain, at + step);
+	const shown = pointTextOf(point, null);
+	if (!leftIn && !rightIn) {
+		return { ok: false, message: outsideIntervalMessage(cited.name, shown, cited.domain) };
+	}
+	if ((side === 'left' && !leftIn) || (side === 'right' && !rightIn)) {
+		const where = side === 'left' ? 'à gauche' : 'à droite';
+		return {
+			ok: false,
+			message: `${cited.name} n'est pas définie ${where} de ${shown} : son ensemble de définition est ${set}.`
+		};
+	}
+	if (side !== null || (leftIn && rightIn)) return { ok: true, side };
+	return { ok: true, side: leftIn ? 'left' : 'right' };
+}
+
+/** Ce qui suit `\lim` : `f(t)`, `f'(x)`, `u_n`, sinon l'expression tapée. */
+function shownBody(
+	cited: CitedObject | null,
+	expression: MathNode,
+	letter: string
+): { readonly latex: string; readonly text: string } {
+	if (cited?.kind === 'function') {
+		const call = `${cited.name}(${letter})`;
+		return { latex: call, text: call };
+	}
+	if (cited?.kind === 'sequence') {
+		const sub = cited.name.includes('_') ? `(${cited.name})_${letter}` : `${cited.name}_${letter}`;
+		return { latex: sub.replace(/[()]/g, (p) => (p === '(' ? '\\left(' : '\\right)')), text: sub };
+	}
+	return {
+		latex: wrapLatex(expression, toLatex(withoutFractionParentheses(expression))),
+		text: wrapText(expression, toCustom(expression))
+	};
 }
 
 /**
@@ -333,12 +503,15 @@ function noLimit(
 	ast: MathNode,
 	variable: string,
 	approach: MathNode,
-	point: LimitPoint
+	point: LimitPoint,
+	side: 'left' | 'right' | null
 ): CalcResult {
-	const atLatex = pointLatexOf(point, null);
-	const atText = pointTextOf(point, null);
-	const left = point.kind === 'finite' ? safeLimit(ast, variable, approach, 'left') : null;
-	const right = point.kind === 'finite' ? safeLimit(ast, variable, approach, 'right') : null;
+	const atLatex = pointLatexOf(point, side);
+	const atText = pointTextOf(point, side);
+	// Un côté tapé : sa conclusion seule ; sinon les deux côtés (L4)
+	const sides = point.kind === 'finite' && side === null;
+	const left = sides ? safeLimit(ast, variable, approach, 'left') : null;
+	const right = sides ? safeLimit(ast, variable, approach, 'right') : null;
 	const leftValue = left === null ? null : knownValue(left);
 	const rightValue = right === null ? null : knownValue(right);
 	if (leftValue === null || rightValue === null) {
@@ -355,14 +528,6 @@ function noLimit(
 		output: `Pas de limite en ${atText} : à gauche ${valueText(leftValue)}, à droite ${valueText(rightValue)}.`,
 		latex: `\\text{Pas de limite en } ${atLatex} \\text{ : à gauche } ${toLatex(leftValue)} \\text{, à droite } ${toLatex(rightValue)}`
 	};
-}
-
-/**
- * L'expression montrée : celle TAPÉE (les noms des valeurs gardés), sinon
- * celle calculée. Ses parenthèses restent pour le texte (`(x^2-1)/(x-1)`).
- */
-function shownExpression(atelier: Atelier, typed: string, computed: MathNode): MathNode {
-	return astOf(typed, 'command', atelier.functionNames) ?? computed;
 }
 
 /**
@@ -386,18 +551,27 @@ function wrapText(node: MathNode, text: string): string {
 	return isAddition(node) || isSubtraction(node) ? `(${text})` : text;
 }
 
-/** Le point en indice de `\lim` : `0^+`, `+\infty`, `\frac{1}{2}`. */
+/**
+ * Le point en indice de `\lim` : `0^+`, `+\infty`, `\frac{1}{2}`. Avec un
+ * côté, un point qui n'est pas un nombre seul se met entre accolades, en
+ * petite fraction : `{\tfrac{3}{4}}^-` (`\frac34^-` se lirait 3/4⁻).
+ */
 function pointLatexOf(point: LimitPoint, side: 'left' | 'right' | null): string {
 	if (point.kind === 'infinite') return point.sign === 'positive' ? '+\\infty' : '-\\infty';
-	const latex = toLatex(point.node).replace(/\\dfrac/g, '\\frac');
-	return side === null ? latex : `${latex}^${side === 'right' ? '+' : '-'}`;
+	const latex = toLatex(point.node);
+	if (side === null) return latex.replace(/\\dfrac/g, '\\frac');
+	const mark = side === 'right' ? '+' : '-';
+	const plain = isNumber(point.node) || (isOpposite(point.node) && isNumber(point.node.operand));
+	return plain ? `${latex}^${mark}` : `{${latex.replace(/\\dfrac/g, '\\tfrac')}}^${mark}`;
 }
 
 /** Le point dans le texte de la ligne : `0+`, `+∞`. */
 function pointTextOf(point: LimitPoint, side: 'left' | 'right' | null): string {
 	if (point.kind === 'infinite') return point.sign === 'positive' ? '+∞' : '-∞';
 	const text = toCustom(point.node);
-	return side === null ? text : `${text}${side === 'right' ? '+' : '-'}`;
+	if (side === null) return text;
+	const plain = isNumber(point.node) || (isOpposite(point.node) && isNumber(point.node.operand));
+	return `${plain ? text : `(${text})`}${side === 'right' ? '+' : '-'}`;
 }
 
 /** Une valeur dans le texte de la ligne : `+∞`, `-∞`, sinon son écriture. */
