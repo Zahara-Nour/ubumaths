@@ -26,16 +26,12 @@ import { TestData } from '../helpers/database/test-data-factory';
 import { present } from '../helpers/present';
 import {
 	createTemplateFromChapter,
-	createTemplateVersion,
 	deleteChapterTemplate,
 	detachChapterFromTemplate,
 	instantiateTemplate,
-	migrateChapterToVersion,
-	TemplateInUseError,
-	TemplateLinkedContentError
+	TemplateInUseError
 } from '$lib/server/chapter-templates';
 import { LinkedElementError, unlinkWorksheet } from '$lib/server/chapters';
-import { EMPTY_CONTENT_SNAPSHOT } from '$lib/types/chapter-templates';
 import { POST as templateDocuments } from '../../src/routes/api/teacher/chapter-templates/[id]/documents/+server';
 import { DELETE as deleteChecklistApi } from '../../src/routes/api/teacher/chapters/[id]/checklist/[itemId]/+server';
 import { DELETE as unlinkExerciseApi } from '../../src/routes/api/teacher/chapters/[id]/exercises/[linkId]/+server';
@@ -302,33 +298,6 @@ describe('ADR 0029, étape 3b — corrections de la revue', () => {
 				const { data } = await service.from(table).select('id').eq('id', id);
 				expect(data, table).toHaveLength(1);
 			}
-		});
-	});
-
-	describe('l’ancien circuit des versions', () => {
-		it('refuse une nouvelle version d’un modèle qui possède son contenu', async () => {
-			const { error } = await createTemplateVersion(
-				modele,
-				EMPTY_CONTENT_SNAPSHOT,
-				null,
-				profId,
-				prof
-			);
-			expect(error).toBeInstanceOf(TemplateLinkedContentError);
-		});
-
-		it('refuse de migrer un chapitre qui a des lignes de lien', async () => {
-			const { error } = await migrateChapterToVersion(chapA, 1, prof);
-			expect(error).toBeInstanceOf(TemplateLinkedContentError);
-		});
-
-		it('refuse « mettre à jour depuis un chapitre » : 409', async () => {
-			const r = (await templateActions.updateFromChapter({
-				locals,
-				params: { templateId: modele },
-				request: formRequest({ chapterId: chapA })
-			} as never)) as { status?: number };
-			expect(r.status).toBe(409);
 		});
 	});
 

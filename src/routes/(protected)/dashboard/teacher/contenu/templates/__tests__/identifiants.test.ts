@@ -2,9 +2,8 @@
  * Page d'un modèle — identifiants validés avant toute requête
  * ===========================================================
  *
- * Audit de sécurité (MINEUR) : chaque action valide `params.templateId` (UUID),
- * et « mettre à jour depuis un chapitre » valide aussi `chapterId`, AVANT de
- * toucher la base.
+ * Audit de sécurité (MINEUR) : chaque action valide `params.templateId` (UUID)
+ * AVANT de toucher la base.
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -25,14 +24,7 @@ function formulaire(champs: Record<string, string> = {}): Request {
 }
 
 describe('identifiant de modèle invalide', () => {
-	for (const nom of [
-		'update',
-		'publish',
-		'updateFromChapter',
-		'delete',
-		'archive',
-		'instantiate'
-	] as const) {
+	for (const nom of ['update', 'publish', 'delete', 'archive', 'instantiate'] as const) {
 		it(`${nom} : 400 sans requête`, async () => {
 			from.mockClear();
 			const r = (await actions[nom]!({
@@ -46,18 +38,12 @@ describe('identifiant de modèle invalide', () => {
 	}
 });
 
-describe('updateFromChapter : chapitre invalide', () => {
-	it('400 avant toute écriture', async () => {
-		const single = vi.fn(async () => ({
-			data: { created_by: 'prof', status: 'draft' },
-			error: null
-		}));
-		const chain = { select: () => chain, eq: () => chain, single };
-		const r = (await actions.updateFromChapter!({
-			locals: { supabase: { from: () => chain } },
-			params: { templateId: '22222222-2222-4222-8222-222222222222' },
-			request: formulaire({ chapterId: 'pas-un-uuid' })
-		} as never)) as { status?: number };
-		expect(r.status).toBe(400);
+/**
+ * ADR 0029 : le modèle s'édite sur sa page. L'ancien circuit « mettre à jour
+ * depuis un chapitre » (versions figées) a été retiré : l'action n'existe plus.
+ */
+describe('ancien circuit des versions', () => {
+	it('l’action updateFromChapter n’existe plus', () => {
+		expect(Object.keys(actions)).not.toContain('updateFromChapter');
 	});
 });

@@ -16,7 +16,7 @@ import type {
 	ChapterSeries,
 	ChapterWorksheet
 } from './chapters';
-import { GRADE_CODES, GRADES, type GradeCode } from './grades';
+import type { GradeCode } from './grades';
 
 // ===========================================================================
 // ENUMS & CONSTANTS
@@ -26,116 +26,6 @@ import { GRADE_CODES, GRADES, type GradeCode } from './grades';
  * Template status values
  */
 export type TemplateStatus = 'draft' | 'published' | 'archived';
-
-/**
- * Available grade levels - re-exported from unified grades system
- * @deprecated Use GRADE_CODES from '$lib/types/grades' directly
- */
-export const GRADE_LEVELS = GRADE_CODES;
-export type GradeLevel = GradeCode;
-
-// ===========================================================================
-// CONTENT SNAPSHOT TYPES
-// ===========================================================================
-
-/**
- * Document reference in template snapshot
- */
-export interface TemplateDocumentSnapshot {
-	title: string;
-	description: string | null;
-	documentUrl: string;
-	sourceType: 'external_url' | 'google_drive';
-	mimeType: string | null;
-	displayOrder: number;
-}
-
-/**
- * Checklist item in template snapshot (copied content)
- */
-export interface TemplateChecklistItemSnapshot {
-	content: string;
-	description: string | null;
-	displayOrder: number;
-}
-
-/**
- * Exercise reference in template snapshot
- */
-export interface TemplateExerciseSnapshot {
-	exerciseId: string;
-	displayOrder: number;
-}
-
-/**
- * Worksheet reference in template snapshot
- *
- * Une fiche appartient au professeur et n'est liée à aucune classe : elle se
- * prête donc à un modèle de niveau. Et la porter ne distribue RIEN — la policy
- * de l'élève exige `student_has_worksheet_access` en plus du rattachement.
- */
-export interface TemplateWorksheetSnapshot {
-	worksheetId: string;
-	displayOrder: number;
-}
-
-/**
- * Complete template content snapshot
- */
-export interface TemplateContentSnapshot {
-	documents: TemplateDocumentSnapshot[];
-	checklistItems: TemplateChecklistItemSnapshot[];
-	exercises: TemplateExerciseSnapshot[];
-	worksheets: TemplateWorksheetSnapshot[];
-}
-
-/**
- * Empty content snapshot
- */
-export const EMPTY_CONTENT_SNAPSHOT: TemplateContentSnapshot = {
-	documents: [],
-	checklistItems: [],
-	worksheets: [],
-	exercises: []
-};
-
-// ===========================================================================
-// DIFF TYPES
-// ===========================================================================
-
-/**
- * Diff entry for a single item
- */
-export interface DiffEntry<T> {
-	type: 'added' | 'removed' | 'modified';
-	item: T;
-	previousItem?: T; // Only for 'modified'
-}
-
-/**
- * Complete diff between two template versions
- */
-export interface TemplateDiff {
-	documents: DiffEntry<TemplateDocumentSnapshot>[];
-	checklistItems: DiffEntry<TemplateChecklistItemSnapshot>[];
-	worksheets: DiffEntry<TemplateWorksheetSnapshot>[];
-	exercises: DiffEntry<TemplateExerciseSnapshot>[];
-	/** Summary statistics */
-	stats: {
-		documentsAdded: number;
-		documentsRemoved: number;
-		documentsModified: number;
-		checklistItemsAdded: number;
-		checklistItemsRemoved: number;
-		checklistItemsModified: number;
-		worksheetsAdded: number;
-		worksheetsRemoved: number;
-		worksheetsModified: number;
-		exercisesAdded: number;
-		exercisesRemoved: number;
-		exercisesModified: number;
-	};
-}
 
 // ===========================================================================
 // APPLICATION TYPES (camelCase)
@@ -178,7 +68,8 @@ export interface TemplateContent {
 }
 
 /**
- * Chapter template - reusable chapter structure
+ * Modèle de chapitre. Son contenu vit dans les tables du chapitre, rangé sous
+ * `template_id` (ADR 0029) : il n'est plus porté par le modèle lui-même.
  */
 export interface ChapterTemplate {
 	id: string;
@@ -189,55 +80,26 @@ export interface ChapterTemplate {
 	grades: GradeCode[];
 	color: ChapterColor | null;
 	icon: ChapterIcon | null;
-	contentSnapshot: TemplateContentSnapshot;
 	instantiationCount: number;
-	currentVersion: number;
 	createdAt: string;
 	updatedAt: string;
 }
 
 /**
- * Chapter template version - snapshot of template at a point in time
- */
-export interface ChapterTemplateVersion {
-	id: string;
-	templateId: string;
-	versionNumber: number;
-	createdBy: string;
-	contentSnapshot: TemplateContentSnapshot;
-	changeSummary: string | null;
-	diff: TemplateDiff | null;
-	createdAt: string;
-}
-
-/**
- * Chapter template instantiation - link between template and chapter
+ * Rattachement d'un chapitre à un modèle : lié, ou détaché (il garde alors sa
+ * propre copie). `templateId` vaut `null` quand le modèle a été supprimé.
  */
 export interface ChapterTemplateInstantiation {
 	id: string;
 	templateId: string | null;
-	templateVersion: number;
 	chapterId: string;
-	currentTemplateVersion: number | null;
 	isDetached: boolean;
 	instantiatedAt: string;
-	lastMigratedAt: string | null;
 }
 
 // ===========================================================================
 // ENRICHED TYPES
 // ===========================================================================
-
-/**
- * Template with creator info
- */
-export interface TemplateWithCreator extends ChapterTemplate {
-	creator: {
-		id: string;
-		fullName: string | null;
-		avatarUrl: string | null;
-	};
-}
 
 /**
  * Template summary for list views
@@ -251,7 +113,6 @@ export interface TemplateSummary {
 	icon: ChapterIcon | null;
 	status: TemplateStatus;
 	instantiationCount: number;
-	currentVersion: number;
 	createdAt: string;
 	updatedAt: string;
 	creatorName: string | null;
@@ -266,27 +127,11 @@ export interface TemplateSummary {
 }
 
 /**
- * Template instantiation with update status
+ * Le rattachement d'un chapitre, tel que l'écran le montre : avec le titre du
+ * modèle (`null` s'il a été supprimé).
  */
 export interface InstantiationWithStatus extends ChapterTemplateInstantiation {
-	/** Whether an update is available */
-	hasUpdate: boolean;
-	/** Latest available version (if hasUpdate is true) */
-	latestVersion: number | null;
-	/** Template title (if not deleted) */
 	templateTitle: string | null;
-}
-
-/**
- * Migration preview - what will change if migrating
- */
-export interface MigrationPreview {
-	instantiationId: string;
-	chapterId: string;
-	fromVersion: number;
-	toVersion: number;
-	diff: TemplateDiff;
-	changeSummary: string | null;
 }
 
 // ===========================================================================
@@ -294,7 +139,9 @@ export interface MigrationPreview {
 // ===========================================================================
 
 /**
- * Database row type for chapter_templates
+ * Les colonnes de `chapter_templates` que le code lit. La table porte encore
+ * `content_snapshot` et `current_version` (ancien système de versions), que
+ * plus rien ne lit.
  */
 export interface DbChapterTemplate {
 	id: string;
@@ -305,70 +152,27 @@ export interface DbChapterTemplate {
 	grades: string[];
 	color: string | null;
 	icon: string | null;
-	content_snapshot: Record<string, unknown>;
 	instantiation_count: number;
-	current_version: number;
 	created_at: string;
 	updated_at: string;
 }
 
 /**
- * Database row type for chapter_template_versions
- */
-export interface DbChapterTemplateVersion {
-	id: string;
-	template_id: string;
-	version_number: number;
-	created_by: string;
-	content_snapshot: Record<string, unknown>;
-	change_summary: string | null;
-	diff: Record<string, unknown> | null;
-	created_at: string;
-}
-
-/**
- * Database row type for chapter_template_instantiations
+ * Les colonnes de `chapter_template_instantiations` que le code lit. Les
+ * colonnes de version (`template_version`, `current_template_version`,
+ * `last_migrated_at`) restent en base, sans lecteur.
  */
 export interface DbChapterTemplateInstantiation {
 	id: string;
 	template_id: string | null;
-	template_version: number;
 	chapter_id: string;
-	current_template_version: number | null;
 	is_detached: boolean;
 	instantiated_at: string;
-	last_migrated_at: string | null;
 }
 
 // ===========================================================================
 // CONVERTER FUNCTIONS (DB -> App)
 // ===========================================================================
-
-/**
- * Parse content snapshot from JSONB
- */
-export function parseContentSnapshot(json: Record<string, unknown>): TemplateContentSnapshot {
-	return {
-		documents: Array.isArray(json.documents) ? (json.documents as TemplateDocumentSnapshot[]) : [],
-		checklistItems: Array.isArray(json.checklistItems)
-			? (json.checklistItems as TemplateChecklistItemSnapshot[])
-			: [],
-		exercises: Array.isArray(json.exercises) ? (json.exercises as TemplateExerciseSnapshot[]) : [],
-		// Absent des versions écrites avant que les modèles portent les fiches :
-		// un ancien `content_snapshot` reste donc lisible, sans fiche.
-		worksheets: Array.isArray(json.worksheets)
-			? (json.worksheets as TemplateWorksheetSnapshot[])
-			: []
-	};
-}
-
-/**
- * Parse diff from JSONB
- */
-export function parseDiff(json: Record<string, unknown> | null): TemplateDiff | null {
-	if (!json) return null;
-	return json as unknown as TemplateDiff;
-}
 
 /**
  * Convert database template to app type
@@ -383,27 +187,9 @@ export function dbTemplateToApp(db: DbChapterTemplate): ChapterTemplate {
 		grades: db.grades as GradeCode[],
 		color: db.color as ChapterColor | null,
 		icon: db.icon as ChapterIcon | null,
-		contentSnapshot: parseContentSnapshot(db.content_snapshot),
 		instantiationCount: db.instantiation_count,
-		currentVersion: db.current_version,
 		createdAt: db.created_at,
 		updatedAt: db.updated_at
-	};
-}
-
-/**
- * Convert database template version to app type
- */
-export function dbTemplateVersionToApp(db: DbChapterTemplateVersion): ChapterTemplateVersion {
-	return {
-		id: db.id,
-		templateId: db.template_id,
-		versionNumber: db.version_number,
-		createdBy: db.created_by,
-		contentSnapshot: parseContentSnapshot(db.content_snapshot),
-		changeSummary: db.change_summary,
-		diff: parseDiff(db.diff),
-		createdAt: db.created_at
 	};
 }
 
@@ -416,101 +202,8 @@ export function dbInstantiationToApp(
 	return {
 		id: db.id,
 		templateId: db.template_id,
-		templateVersion: db.template_version,
 		chapterId: db.chapter_id,
-		currentTemplateVersion: db.current_template_version,
 		isDetached: db.is_detached,
-		instantiatedAt: db.instantiated_at,
-		lastMigratedAt: db.last_migrated_at
+		instantiatedAt: db.instantiated_at
 	};
-}
-
-// ===========================================================================
-// HELPER FUNCTIONS
-// ===========================================================================
-
-/**
- * Check if a template has content (for validation before publishing)
- */
-export function hasContent(snapshot: TemplateContentSnapshot): boolean {
-	return (
-		snapshot.documents.length > 0 ||
-		snapshot.checklistItems.length > 0 ||
-		snapshot.exercises.length > 0 ||
-		snapshot.worksheets.length > 0
-	);
-}
-
-/**
- * Get content counts from snapshot
- */
-export function getContentCounts(snapshot: TemplateContentSnapshot): {
-	documentCount: number;
-	checklistItemCount: number;
-	exerciseCount: number;
-	worksheetCount: number;
-	totalCount: number;
-} {
-	return {
-		documentCount: snapshot.documents.length,
-		checklistItemCount: snapshot.checklistItems.length,
-		exerciseCount: snapshot.exercises.length,
-		worksheetCount: snapshot.worksheets.length,
-		totalCount:
-			snapshot.documents.length +
-			snapshot.checklistItems.length +
-			snapshot.exercises.length +
-			snapshot.worksheets.length
-	};
-}
-
-/**
- * Format grade levels for display
- */
-export function formatGrades(grades: GradeCode[]): string {
-	if (grades.length === 0) return 'Tous niveaux';
-	// Use the canonical short label. The previous `${g}e` only worked for collège
-	// codes ('6' → '6e') and produced garbage for lycée codes split by track
-	// ('1_GEN' → '1_GENe', 'T_GEN' → 'T_GENe').
-	return grades.map((g) => GRADES[g]?.shortName ?? `${g}e`).join(', ');
-}
-
-/**
- * Get status label in French
- */
-export function getStatusLabel(status: TemplateStatus): string {
-	const labels: Record<TemplateStatus, string> = {
-		draft: 'Brouillon',
-		published: 'Publie',
-		archived: 'Archive'
-	};
-	return labels[status];
-}
-
-/**
- * Get status color classes
- */
-export function getStatusColorClasses(status: TemplateStatus): {
-	bg: string;
-	text: string;
-	border: string;
-} {
-	const colors: Record<TemplateStatus, { bg: string; text: string; border: string }> = {
-		draft: {
-			bg: 'bg-yellow-100 dark:bg-yellow-900/30',
-			text: 'text-yellow-700 dark:text-yellow-300',
-			border: 'border-yellow-200 dark:border-yellow-800'
-		},
-		published: {
-			bg: 'bg-green-100 dark:bg-green-900/30',
-			text: 'text-green-700 dark:text-green-300',
-			border: 'border-green-200 dark:border-green-800'
-		},
-		archived: {
-			bg: 'bg-slate-100 dark:bg-slate-800',
-			text: 'text-slate-500 dark:text-slate-400',
-			border: 'border-slate-200 dark:border-slate-700'
-		}
-	};
-	return colors[status];
 }

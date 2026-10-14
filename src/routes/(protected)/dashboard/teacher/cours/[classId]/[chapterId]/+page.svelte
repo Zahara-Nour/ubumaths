@@ -82,9 +82,9 @@
 	 * Un chapitre sans contenu ne fait pas un modèle : le serveur refuse de
 	 * publier un modèle vide, autant ne pas le laisser créer.
 	 *
-	 * ⚠️ Les séries n'y comptent PAS (Q128) : un modèle ne les emporte pas, donc
-	 * un chapitre qui n'a que des séries donnerait un modèle vide — même règle
-	 * que `hasContent(snapshot)` de `chapter-templates.ts`.
+	 * ⚠️ Les séries n'y comptent PAS (Q128), règle héritée de l'ancien modèle
+	 * « snapshot », qui ne les emportait pas. Écart connu : depuis l'ADR 0029 le
+	 * modèle emporte les séries, et `templateHasContent` les compte.
 	 */
 	let hasContent = $derived(documentCount + checklistCount + exerciseCount + worksheetCount > 0);
 

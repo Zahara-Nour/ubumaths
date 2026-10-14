@@ -55,9 +55,7 @@ import { z } from 'zod';
 import {
 	getInstantiationWithStatus,
 	createTemplateFromChapter,
-	migrateChapterToVersion,
-	detachChapterFromTemplate,
-	TemplateLinkedContentError
+	detachChapterFromTemplate
 } from '$lib/server/chapter-templates';
 import { createTemplateFromChapterSchema } from '$lib/server/validation/chapter-templates';
 import {
@@ -410,10 +408,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	// Le modèle dont ce chapitre est issu — `null` s'il n'en a aucun.
 	//
-	// ⚠️ PAS `checkForTemplateUpdates` : elle répond « pas de mise à jour »
-	// (un objet, donc VRAI) même sans modèle, et l'écran affichait alors
-	// « Template supprimé » sur tous les chapitres créés à la main — puis
-	// plantait sur le premier tooltip.
+	// ⚠️ Jamais un objet « rien à signaler » à la place de `null` : l'écran
+	// affichait alors « Template supprimé » sur tous les chapitres créés à la
+	// main — puis plantait sur le premier tooltip.
 	const { data: templateInstantiation, error: templateInstantiationError } =
 		await getInstantiationWithStatus(chapterId, locals.supabase);
 
@@ -1269,55 +1266,6 @@ export const actions: Actions = {
 	},
 
 	// ============ TEMPLATE ACTIONS ============
-
-	migrateToVersion: async ({ request, locals, params }) => {
-		await requireRole(locals, 'teacher');
-		const { chapterId } = params;
-
-		// Verify chapter exists (RLS enforces ownership)
-		const { data: chapter, error: chapterError } = await locals.supabase
-			.from('class_chapters')
-			.select('id')
-			.eq('id', chapterId)
-			.single();
-
-		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
-		// Toute AUTRE panne produisait le même « accès refusé » : le professeur
-		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
-		if (chapterError && chapterError.code !== 'PGRST116') {
-			logger.error('[migrateToVersion] Lecture impossible :', chapterError);
-			return fail(500, { error: 'Verification impossible', action: 'migrateToVersion' });
-		}
-
-		if (!chapter) {
-			return fail(403, { error: 'Acces refuse', action: 'migrateToVersion' });
-		}
-
-		const formData = await request.formData();
-		const targetVersionStr = formData.get('targetVersion') as string;
-		const targetVersion = parseInt(targetVersionStr, 10);
-
-		if (isNaN(targetVersion) || targetVersion < 1) {
-			return fail(400, { error: 'Version cible invalide', action: 'migrateToVersion' });
-		}
-
-		const { error: migrateError } = await migrateChapterToVersion(
-			chapterId,
-			targetVersion,
-			locals.supabase
-		);
-
-		if (migrateError instanceof TemplateLinkedContentError) {
-			return fail(409, { error: migrateError.message, action: 'migrateToVersion' });
-		}
-
-		if (migrateError) {
-			logger.error('[migrateToVersion] Error:', migrateError);
-			return fail(500, { error: 'Erreur lors de la migration', action: 'migrateToVersion' });
-		}
-
-		return { success: true, action: 'migrateToVersion' };
-	},
 
 	detachFromTemplate: async ({ locals, params }) => {
 		await requireRole(locals, 'teacher');

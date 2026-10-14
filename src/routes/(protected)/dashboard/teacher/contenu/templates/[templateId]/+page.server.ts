@@ -53,13 +53,9 @@ import {
 	updateChapterTemplate,
 	publishTemplate,
 	archiveTemplate,
-	createTemplateVersion,
 	deleteChapterTemplate,
-	extractContentSnapshotFromChapter,
 	instantiateTemplate,
-	refuseLegacyVersioning,
 	TemplateInUseError,
-	TemplateLinkedContentError,
 	TemplateUnusableError
 } from '$lib/server/chapter-templates';
 import {
@@ -416,7 +412,6 @@ export const actions: Actions = {
 		const { error: updateError } = await updateChapterTemplate(
 			templateId,
 			validation.data,
-			user.id,
 			locals.supabase
 		);
 
@@ -488,107 +483,6 @@ export const actions: Actions = {
 		}
 
 		return { success: true, action: 'publish' };
-	},
-
-	/**
-	 * Reprendre le contenu d'un chapitre dans le modèle.
-	 *
-	 * ⚠️ SANS APPELANT depuis l'étape 3c : la page n'a plus de bouton « Mettre à
-	 * jour depuis un chapitre » (ADR 0029, le modèle s'édite sur sa page).
-	 * Gardée jusqu'au nettoyage de l'étape 5.
-	 *
-	 * En brouillon, le contenu est remplacé ; sur un modèle publié, il devient
-	 * une nouvelle version, ce qui permet aux chapitres qui en sont issus de se
-	 * mettre à jour à leur tour.
-	 */
-	updateFromChapter: async ({ request, locals, params }) => {
-		const { user } = await requireRole(locals, 'teacher');
-		const idCheck = uuidSchema.safeParse(params.templateId);
-		if (!idCheck.success) {
-			return fail(400, { error: 'Modèle invalide', action: 'updateFromChapter' });
-		}
-		const templateId = idCheck.data;
-
-		const { data: templateCheck, error: templateCheckError } = await locals.supabase
-			.from('chapter_templates')
-			.select('created_by, status')
-			.eq('id', templateId)
-			.single();
-
-		// PGRST116 = la ligne n'existe pas, ce que le refus suivant traite déjà.
-		if (templateCheckError && templateCheckError.code !== 'PGRST116') {
-			logger.error('[Update From Chapter] Lecture impossible :', templateCheckError);
-			return fail(500, { error: 'Lecture impossible', action: 'updateFromChapter' });
-		}
-
-		if (!templateCheck || templateCheck.created_by !== user.id) {
-			return fail(403, { error: 'Accès refusé', action: 'updateFromChapter' });
-		}
-
-		if (templateCheck.status === 'archived') {
-			return fail(400, {
-				error: 'Un modèle archivé ne peut plus être modifié',
-				action: 'updateFromChapter'
-			});
-		}
-
-		const formData = await request.formData();
-		const chapterCheck = uuidSchema.safeParse(formData.get('chapterId'));
-		const changeSummary = (formData.get('changeSummary') as string | null)?.trim() || null;
-
-		if (!chapterCheck.success) {
-			return fail(400, { error: 'Chapitre requis', action: 'updateFromChapter' });
-		}
-		const chapterId = chapterCheck.data;
-
-		// ADR 0029 : un modèle qui possède son contenu, ou un chapitre qui relie un
-		// modèle, ne passent plus par une version figée.
-		const refus = await refuseLegacyVersioning(templateId, chapterId, locals.supabase);
-		if (refus instanceof TemplateLinkedContentError) {
-			return fail(409, { error: refus.message, action: 'updateFromChapter' });
-		}
-		if (refus) {
-			logger.error('[Update From Chapter] Vérification impossible :', refus);
-			return fail(500, { error: 'Lecture impossible', action: 'updateFromChapter' });
-		}
-
-		const { data: snapshot, error: snapshotError } = await extractContentSnapshotFromChapter(
-			chapterId,
-			locals.supabase
-		);
-
-		if (snapshotError || !snapshot) {
-			logger.error('[Update From Chapter] Extraction impossible :', snapshotError);
-			return fail(500, { error: 'Lecture du chapitre impossible', action: 'updateFromChapter' });
-		}
-
-		// Un brouillon se réécrit ; un modèle publié gagne une version, sans quoi
-		// les chapitres qui le suivent ne sauraient pas qu'il a changé.
-		const { error: writeError } =
-			templateCheck.status === 'draft'
-				? await updateChapterTemplate(
-						templateId,
-						{ contentSnapshot: snapshot },
-						user.id,
-						locals.supabase
-					)
-				: await createTemplateVersion(
-						templateId,
-						snapshot,
-						changeSummary,
-						user.id,
-						locals.supabase
-					);
-
-		if (writeError) {
-			logger.error('[Update From Chapter] Écriture impossible :', writeError);
-			return fail(500, {
-				error: 'Erreur lors de la mise à jour du modèle',
-				action: 'updateFromChapter'
-			});
-		}
-
-		return { success: true, action: 'updateFromChapter' };
 	},
 
 	/**
