@@ -864,6 +864,42 @@ function citesName(typed: string, name: string): boolean {
 	return new RegExp(`(?<![A-Za-z_\\\\])${name}(?![A-Za-z_0-9])`).test(typed);
 }
 
+/**
+ * Le refus d'une saisie qui cite un objet EN ERREUR (V58), ou `null`.
+ *
+ * Le moteur ne lie pas un objet en erreur (`syncEngine`) : il prenait son nom
+ * pour une lettre, et `.dériver f` répondait `d/dx(f) = 0` sur
+ * `f(x) = f(x)+1`. Un seul garde, pour toute commande et toute ligne de
+ * calcul ; un objet qui dépend d'un objet en erreur l'est lui-même (le
+ * recalcul de l'atelier le propage), il est donc refusé aussi.
+ *
+ * Deux refus : « mal définie… corrige sa définition » quand c'est SA ligne
+ * qui est fautive (`isMiswritten`) ; sinon « g : » + le message de la carte
+ * (`Dépend de « f »…`, f⁻¹ impossible…), qui dit quoi corriger.
+ *
+ * Exceptions :
+ * - les cartes `f′` et `f⁻¹` suivent f : leurs refus disent pourquoi la
+ *   dérivée ou la réciproque manque (`derivativeOfUnusable`,
+ *   `reciprocalRefusalIn`), pas que l'élève a mal écrit une ligne ;
+ * - les listes : ce sont des données, que les simulations lisent par nom.
+ */
+function brokenObjectRefusal(atelier: Atelier, typed: string): string | null {
+	for (const object of atelier.objects) {
+		if (object.status !== 'error' || object.kind === 'list') continue;
+		if (derivativeOf(object.name) !== null || reciprocalOf(object.name) !== null) continue;
+		if (!citesName(typed, object.name)) continue;
+		// Une erreur qui ne vient pas de sa ligne (`Dépend de « f »…`, f⁻¹
+		// impossible, ce que l'atelier ne sait pas encore faire) : la carte dit
+		// quoi corriger, et ce n'est pas sa définition
+		if (object.message !== undefined && !atelier.isMiswritten(object.name)) {
+			return `${object.name} : ${object.message}`;
+		}
+		const feminine = object.kind === 'function' || object.kind === 'sequence';
+		return `« ${object.name} » est mal défini${feminine ? 'e' : ''} (sa ligne est en erreur) : corrige sa définition d'abord.`;
+	}
+	return null;
+}
+
 /** La saisie cite-t-elle une fonction à paramètre ? */
 function citesParameterized(session: CalcSession, typed: string): boolean {
 	return session.atelier.objects.some((o) => parametersOf(o) !== null && citesName(typed, o.name));
@@ -1362,6 +1398,12 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	if (SIMULATIONS[known.name] === undefined) {
 		const bare = bareFunctionRefusal(typedArgument);
 		if (bare !== null) return { kind: 'refus', message: bare };
+	}
+	// V58 : `.dériver f` avec f en erreur répondait `d/dx(f) = 0`. Les
+	// simulations lisent des noms de listes, pas des objets à calculer
+	if (SIMULATIONS[known.name] === undefined) {
+		const broken = brokenObjectRefusal(session.atelier, typedArgument);
+		if (broken !== null) return { kind: 'refus', message: broken };
 	}
 	const recurrence = session.atelier.objects.find(
 		(o) =>
@@ -2961,23 +3003,15 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		return result;
 	}
 
+	// V58 : un objet en erreur cité (`f(2)`, `f'(2)`, `a+1`) — le moteur ne le
+	// connaît pas et disait « Fonction inconnue : f — définis-la d'abord ».
+	// `g(x) = f⁻¹(x)` en erreur (f plus bijective) : la carte g porte la raison
+	const broken = brokenObjectRefusal(session.atelier, input);
+	if (broken !== null) return { kind: 'refus', message: broken };
 	// ⚠️ Une dérivée d'objet indisponible se refuse ICI, en français : laissée au
 	// moteur, elle rendait « Unexpected token: ' » — un message de parseur.
 	const blocked = derivativeOfUnusable(session, input);
 	if (blocked !== null) return { kind: 'refus', message: blocked };
-	// `g(x) = f⁻¹(x)` en erreur (f plus bijective) : le moteur ne la connaît
-	// pas et disait « Fonction inconnue : g » ; la carte g porte la raison
-	for (const [, cited] of input.matchAll(/(?<![A-Za-z_\\])([A-Za-z](?:_\d+)?)\s*\(/g)) {
-		const object = session.atelier.get(cited);
-		if (
-			object?.kind === 'function' &&
-			object.status === 'error' &&
-			object.message !== undefined &&
-			citesReciprocal(session.atelier, object.definition)
-		) {
-			return { kind: 'refus', message: `${cited} : ${object.message}` };
-		}
-	}
 
 	// I4 : `f(5)` avec f sur [0 ; 2] se refuse, le moteur ne connaît pas l'ensemble
 	const outside = outsideIntervalRefusal((n) => session.atelier.get(n), input);
