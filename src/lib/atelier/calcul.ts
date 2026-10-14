@@ -97,7 +97,8 @@ import { toCustom } from '$lib/mathAST/custom-generator';
 import { simplify } from '$lib/mathAST/simplify/simplify';
 import { getPolynomialDegree } from '$lib/mathAST/analysis/expression-classify';
 import { differentiateN } from '$lib/mathAST/differentiation/differentiate';
-import { mapNode } from '$lib/mathAST/transforms';
+import { findNodes, mapNode } from '$lib/mathAST/transforms';
+import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import {
 	resolveCommand,
 	suggestFor,
@@ -125,7 +126,7 @@ import { readNaturalQuantities, singleLetterHint, type NaturalReading } from './
 import { quantityProblem } from '$lib/mathAST/cli/quantities';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
 import { VALUE_FORBIDDEN, typedValueLatex } from '$lib/mathAST/cli/commands/eval.command';
-import { isBoolean, isNumber, isOpposite, isRelation } from '$lib/mathAST/guards';
+import { isBoolean, isNumber, isOpposite, isRelation, isUnit } from '$lib/mathAST/guards';
 import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
@@ -1920,6 +1921,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		};
 	}
 
+	// Une primitive non trouvée (`.intégrer 1/(x^2-2)`) : le moteur écrit sa
+	// ligne de terminal, « ∫ … : Non résolu / Technique tentée … », que la ligne
+	// montrait telle quelle (mesuré le 2026-10-14) — l'élève lit son refus
+	if (name === 'integrate' && !result.success && result.error?.message !== undefined) {
+		return { kind: 'refus', message: result.error.message, ...noted };
+	}
+
 	// Le moteur a échoué SANS RIEN DIRE (erreur de lecture) : une ligne vide ne
 	// dit rien à l'élève — mesuré, `.deriver )(` et `.resoudre )` (2026-10-05)
 	if (!result.success && rendered.text.trim() === '') {
@@ -2897,6 +2905,49 @@ function decimalRankMessage(atelier: Atelier, input: string): string | null {
 	return null;
 }
 
+/** `2,5 h en min` : une grandeur, « en », une unité — rien d'autre (pas de `=`). */
+const NATURAL_CONVERSION = /^([^=]*\d[^=]*?)\s+en\s+([^\s=]+)$/;
+
+/**
+ * La grandeur et l'unité d'une conversion écrite d'un trait (décision 8 de
+ * David, 2026-10-13 : « conversion naturelle `2,5 h en min` »), ou `null`.
+ * Mesuré le 2026-10-14 : sans elle, la ligne se lisait comme un produit et
+ * montrait « 2,5 h e n m i n », sans refus.
+ */
+function naturalConversion(input: string): { quantity: string; unit: string } | null {
+	const match = NATURAL_CONVERSION.exec(input);
+	if (match === null || parseUnit(match[2]) === null) return null;
+	return { quantity: match[1].trim(), unit: match[2] };
+}
+
+/**
+ * La grandeur calculée, puis convertie : la même réponse que la ligne suivie de
+ * `.convertir`, qui convertit la DERNIÈRE grandeur du moteur. Si la partie
+ * gauche n'en est pas une (`3 en m`), le refus la cite : le moteur dirait
+ * « calcule d'abord une grandeur », qui ne parle pas de la ligne tapée.
+ */
+function convertNaturally(
+	session: CalcSession,
+	input: string,
+	conversion: { quantity: string; unit: string },
+	provenance: Provenance
+): CalcResult {
+	const quantity = computeInput(session, conversion.quantity, provenance);
+	if (quantity.kind === 'refus') return quantity;
+	const isQuantity =
+		quantity.kind === 'calcul' &&
+		quantity.ast !== undefined &&
+		findNodes(quantity.ast, isUnit).length > 0;
+	if (!isQuantity) {
+		return {
+			kind: 'refus',
+			message: `« ${conversion.quantity} » n'est pas une grandeur : il n'y a rien à convertir en ${conversion.unit}.`
+		};
+	}
+	const converted = runCommand(session, `.convertir ${conversion.unit}`);
+	return converted.kind === 'commande' ? { ...converted, input } : converted;
+}
+
 function computeInput(session: CalcSession, text: string, provenance: Provenance): CalcResult {
 	// `f^-1`, `f^(-1)`, `f⁻¹` d'une fonction de l'atelier : écrits `f^{-1}`, la
 	// réciproque que lisent les parseurs (décision (1) de David, 2026-10-13)
@@ -2932,6 +2983,9 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// de calcul (`.filtrer L = π` lit une modalité), et l'écho reste ce qui a
 	// été tapé (revue #911)
 	if (input.startsWith('.')) return runCommand(session, input);
+
+	const conversion = naturalConversion(input);
+	if (conversion !== null) return convertNaturally(session, input, conversion, provenance);
 
 	// La forme du membre gauche est garantie par la regex — `3 = 3` n'y entre
 	// pas. Un nom RÉSERVÉ, lui, y entre et se fait refuser par `validateName` :
@@ -3249,9 +3303,12 @@ function computeAction(
 		// d'évaluation, pas une commande symbolique — la substitution du §6 bis ne
 		// concerne que les secondes.
 		// La carte `f⁻¹` s'appelle `f^-1`, que le moteur lirait comme une puissance :
-		// on lui donne sa formule, x remplacé (lot 3 de la réciproque)
-		const formula = reciprocalOf(name) === null ? null : astOf(substituted.expression, 'text');
-		if (reciprocalOf(name) !== null && formula === null) {
+		// on lui donne sa formule, x remplacé (lot 3 de la réciproque). De même la
+		// carte `f′` : le moteur lit `f'(1)` comme la dérivée d'une fonction qu'il
+		// n'a pas, « Impossible de calculer f′(1) » (mesuré le 2026-10-14)
+		const byFormula = reciprocalOf(name) !== null || derivativeOf(name) !== null;
+		const formula = byFormula ? astOf(substituted.expression, 'text') : null;
+		if (byFormula && formula === null) {
 			return { ok: false, message: `Impossible de calculer ${displayName(name)}(${argument}).` };
 		}
 		const result = engine.execute(

@@ -50,6 +50,7 @@ import {
 } from './interval';
 import { INTERNAL_LETTER, renameVariableIn, typedLetterOf } from './letter';
 import { astOf, type Provenance } from './parse';
+import { dependsOnMessage } from './types';
 import { visitAST } from '$lib/mathAST/visitor';
 
 // =============================================================================
@@ -389,6 +390,11 @@ export function reciprocalCommand(
 		: letters.length === 1
 			? letters[0]
 			: INTERNAL_LETTER;
+	// Des lettres en plus de la variable (`.réciproque a x + b`) : le refus de
+	// toute commande à paramètres, pas « la réciproque de f » qu'il n'a pas tapée
+	// (mesuré le 2026-10-14). Avec une carte, `a` a déjà été remplacé.
+	const parameters = letters.filter((name) => name !== letter).sort();
+	if (parameters.length > 0) return { kind: 'refus', message: dependsOnMessage(parameters) };
 	let domain: Domain | null = null;
 	if (on !== undefined) {
 		const read = readInterval(on, letter);
