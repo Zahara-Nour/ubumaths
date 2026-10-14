@@ -155,6 +155,12 @@ en prod (reprise, étape 3) avant le déploiement du code qui en tient compte (�
 
 ### Plan de l'étape 3 (2026-10-14)
 
+- **3b en branche** `feat/modeles-serveur` : serveur écrit par un agent, puis `code-reviewer`
+  (2 bugs : section des liens à l'ajout, élément masqué figé au détachement ; 4 risques) et
+  `security-auditor` (aucun bloquant ; 2 importants sur l'intégrité des fichiers) — 12 corrections,
+  chacune avec un test rouge d'abord. Le bug « ajouter un objectif » trouvé en route est parti à
+  part (#1387).
+
 - **3a livrée en branche** `feat/modeles-adoption` : migration `20261016103400_modele_adoption.sql`
   - `tests/integration/modele-adoption.test.ts` (9 tests ; 3 rouges sans la migration, puis 2 de
     plus après la revue). `security-auditor` : aucun bloquant ; mineurs 1 (adopter un élément retiré)

@@ -497,20 +497,9 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
    et `api/teacher/chapters/*/worksheets/**` sont couverts par les deux docs.
 10. L'en-tête de l'éditeur de chapitre (`[classId]/[chapterId]/+page.server.ts`) annonce un
     réordonnancement des documents, objectifs et exercices qui n'a pas d'action.
-11. **L'action `addChecklistItem` de la page du chapitre refuse tout** (constaté le 2026-10-14) :
-    elle valide `{ content, description }` avec `createChecklistItemSchema`, qui exige `chapterId`
-    → 400 à chaque ajout. La page du modèle valide sans ce champ. Non corrigé (hors étape 3b).
-12. **Un modèle ne se modifiait qu'en passant par un chapitre** — tranché par l'ADR 0029 : le
-    modèle s'édite sur sa page (serveur livré à l'étape 3b, interface à l'étape 3c). Historique :
-    David veut revoir le modèle des
-    chapitres (demande du 2026-10-14, rien de décidé, ne pas changer en attendant). Modifier un
-    modèle demande de modifier un chapitre de classe, puis « Mettre à jour depuis un chapitre » sur
-    la page du modèle : un geste en deux temps que personne n'a choisi. Les modèles n'avaient aucun
-    écran de modification ; le 2026-09-14, `updateFromChapter` a bouché ce trou en réutilisant
-    `extractContentSnapshotFromChapter`, et la question « modifier un modèle directement ? » n'a
-    jamais été posée ([journal](../archive/wip/mon-cours-chapitres-progress.md#le-cycle-de-vie-dun-modèle--complété-le-2026-09-14)).
-    Pistes présentées, à trancher : (1) éditer le modèle sur sa page, chaque enregistrement = une
-    version — un second éditeur à maintenir ; (2) « Modifier » ouvre l'éditeur de chapitre sur un
-    brouillon hors classe, « Enregistrer comme nouvelle version » — touche schéma et RLS, question
-    d'accès d'abord ; (3) garder le geste, l'expliquer et présélectionner le chapitre d'origine. À
-    reprendre avec les écarts 2, 3 et 5.
+11. **Un modèle ne se modifiait qu'en passant par un chapitre** (un chapitre de classe, puis
+    « Mettre à jour depuis un chapitre » : un geste que personne n'avait choisi, bouche-trou du
+    2026-09-14). Tranché par l'[ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md) :
+    le modèle s'édite sur sa page — serveur livré à l'étape 3b, interface à l'étape 3c
+    ([journal](../wip/refonte-modeles-chapitre-progress.md)). D'ici là, l'ancien circuit des versions
+    est refusé (409) dès qu'un modèle possède du contenu en tables ou qu'un chapitre est relié.
