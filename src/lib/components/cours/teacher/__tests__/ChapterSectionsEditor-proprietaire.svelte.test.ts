@@ -15,6 +15,11 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import {
+	SHADOW_ITEM_MARKER_PROPERTY_NAME,
+	SHADOW_PLACEHOLDER_ITEM_ID,
+	TRIGGERS
+} from 'svelte-dnd-action';
 import type {
 	ChapterChecklistItem,
 	ChapterDocument,
@@ -327,6 +332,140 @@ describe('ChapterSectionsEditor — chapitre lié', () => {
 		expect(champ(reafficher, 'hidden')).toBe('false');
 		// Un élément masqué n'est jamais publié : il se réaffiche d'abord.
 		expect(l?.querySelector('form[action="?/setPublication"]')).toBeNull();
+	});
+
+	/**
+	 * Après « Détacher du modèle », la page recharge : mêmes identifiants, même
+	 * publication, mais `sourceId` à vide. Le plan doit se reconstruire — sinon
+	 * il garde les marques « Modèle » et des « Masquer » qui rendent 404.
+	 */
+	it('détaché : plus de marque « Modèle », la corbeille revient', async () => {
+		const lie = {
+			chapterId: CHAPITRE,
+			sections: [section({ sourceId: SOURCE })],
+			documents: [document({ id: DOC_MODELE, title: 'Cours du modèle', sourceId: SOURCE })],
+			checklistItems: [],
+			chapterSeries: [],
+			...COMMUN
+		};
+		const { container, rerender } = await render(ChapterSectionsEditor, lie);
+		const racine = container as HTMLElement;
+		expect(racine.textContent).toContain('Modèle');
+
+		await rerender({
+			sections: [section({ sourceId: null })],
+			documents: [document({ id: DOC_MODELE, title: 'Cours du modèle', sourceId: null })]
+		});
+		await rendu();
+
+		expect(racine.textContent).not.toContain('Modèle');
+		const l = ligne(racine, 'Cours du modèle');
+		expect(l?.querySelector('form[action="?/deleteDocument"]')).not.toBeNull();
+		expect(l?.querySelector('form[action="?/setHidden"]')).toBeNull();
+		expect(
+			racine.querySelector('button[aria-label="Supprimer la section Le cours"]')
+		).not.toBeNull();
+	});
+
+	/**
+	 * Le dernier masqué réaffiché, l'interrupteur disparaît. Il ne doit pas
+	 * rester allumé en coulisse : le prochain élément masqué s'afficherait
+	 * aussitôt, barré, au lieu de quitter le plan.
+	 */
+	it('plus aucun masqué : l’interrupteur se remet à zéro', async () => {
+		const masque = document({
+			id: DOC_MODELE,
+			title: 'Cours du modèle',
+			sourceId: SOURCE,
+			hidden: true
+		});
+		const { container, rerender } = await render(ChapterSectionsEditor, {
+			chapterId: CHAPITRE,
+			sections: [section()],
+			documents: [masque],
+			checklistItems: [],
+			chapterSeries: [],
+			...COMMUN
+		});
+		const racine = container as HTMLElement;
+		racine.querySelector<HTMLButtonElement>('button[role="switch"]')?.click();
+		await rendu();
+		expect(ligne(racine, 'Cours du modèle')).not.toBeNull();
+
+		// Réaffiché : plus de masqué, plus d'interrupteur.
+		await rerender({ documents: [{ ...masque, hidden: false }] });
+		await rendu();
+		expect(racine.querySelector('button[role="switch"]')).toBeNull();
+
+		// Masqué de nouveau : il quitte le plan, l'interrupteur est éteint.
+		await rerender({ documents: [masque] });
+		await rendu();
+		expect(ligne(racine, 'Cours du modèle')).toBeNull();
+		expect(racine.querySelector('button[role="switch"]')?.getAttribute('aria-checked')).toBe(
+			'false'
+		);
+	});
+
+	/**
+	 * Masqués cachés, le plan n'affiche que les visibles. Ranger la zone ne
+	 * doit pas renuméroter ces seuls visibles : le masqué tomberait à égalité de
+	 * rang, et réaffiché, il sauterait n'importe où. La zone part ENTIÈRE.
+	 */
+	it('ranger une zone garde leur rang aux masqués cachés', async () => {
+		const appels: { url: string; body: unknown }[] = [];
+		vi.spyOn(globalThis, 'fetch').mockImplementation(async (url, init) => {
+			appels.push({ url: String(url), body: JSON.parse(String(init?.body ?? '{}')) });
+			return new Response(JSON.stringify({}), { status: 200 });
+		});
+		const A = '0000000a-0000-4000-8000-000000000000';
+		const H = '0000000b-0000-4000-8000-000000000000';
+		const B = '0000000c-0000-4000-8000-000000000000';
+		const { container } = await render(ChapterSectionsEditor, {
+			chapterId: CHAPITRE,
+			sections: [section()],
+			documents: [
+				document({ id: A, title: 'A', sectionOrder: 0 }),
+				document({ id: H, title: 'H', sectionOrder: 1, sourceId: SOURCE, hidden: true }),
+				document({ id: B, title: 'B', sectionOrder: 2 })
+			],
+			checklistItems: [],
+			chapterSeries: [],
+			...COMMUN
+		});
+		const zone = (container as HTMLElement).querySelectorAll<HTMLElement>('[role="list"]')[1];
+		const res = (id: string) => ({ id: `document:${id}`, kind: 'document', contentId: id });
+		const poser = (nom: string, items: object[], info: object) =>
+			zone.dispatchEvent(new CustomEvent(nom, { detail: { items, info } }));
+
+		// B prise à son rang (1 parmi les visibles), déposée devant A.
+		const ombre = {
+			...res(B),
+			[SHADOW_ITEM_MARKER_PROPERTY_NAME]: true,
+			id: SHADOW_PLACEHOLDER_ITEM_ID
+		};
+		poser('consider', [res(A), ombre], {
+			trigger: TRIGGERS.DRAG_STARTED,
+			id: `document:${B}`,
+			source: 'pointer'
+		});
+		await rendu();
+		poser('finalize', [res(B), res(A)], {
+			trigger: TRIGGERS.DROPPED_INTO_ZONE,
+			id: `document:${B}`,
+			source: 'pointer'
+		});
+		await rendu();
+
+		expect(appels).toHaveLength(1);
+		expect(appels[0].body).toEqual({
+			sectionId: COURS,
+			items: [
+				{ kind: 'document', id: B, sectionOrder: 0 },
+				{ kind: 'document', id: A, sectionOrder: 1 },
+				// Le masqué suit A, qu'il suivait : jamais à égalité avec un visible.
+				{ kind: 'document', id: H, sectionOrder: 2 }
+			]
+		});
 	});
 
 	it('sans élément masqué, pas d’interrupteur', async () => {

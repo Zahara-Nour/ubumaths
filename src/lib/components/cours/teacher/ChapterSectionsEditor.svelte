@@ -84,6 +84,7 @@
 		EyeOff
 	} from '@lucide/svelte';
 	import {
+		avecMasquesASaPlace,
 		empreinteAffichage,
 		estOmbre,
 		origineDuGlisser,
@@ -182,15 +183,27 @@
 			: `/api/teacher/chapters/${chapterId}`
 	);
 
-	/** Afficher, dans un chapitre lié, les éléments du modèle masqués. */
-	let afficherMasques = $state(false);
-
 	/** Combien d'éléments ce chapitre masque — l'interrupteur n'existe que s'il y en a. */
 	const nombreMasques = $derived(
 		[...documents, ...exercises, ...checklistItems, ...worksheets, ...chapterSeries].filter(
 			(e) => e.hidden === true
 		).length
 	);
+
+	const aucunMasque = $derived(nombreMasques === 0);
+
+	/**
+	 * Afficher, dans un chapitre lié, les éléments du modèle masqués.
+	 *
+	 * `$derived` ÉCRASABLE plutôt qu'un `$state` remis à zéro par un `$effect` :
+	 * l'interrupteur l'allume, et il se recalcule à faux dès que `aucunMasque`
+	 * change — le dernier masqué réaffiché éteint l'interrupteur, sans quoi le
+	 * prochain élément masqué resterait affiché, barré, au lieu de quitter le plan.
+	 */
+	let afficherMasques = $derived.by(() => {
+		void aucunMasque;
+		return false;
+	});
 
 	/**
 	 * Vue unifiée d'une ressource.
@@ -310,7 +323,9 @@
 	 * Toutes les ressources du plan, avec la section où elles sont rangées. Les
 	 * éléments masqués n'y sont que si le professeur a demandé à les voir.
 	 */
-	function toutesLesRessources(): { ressource: Ressource; sectionId: string | null }[] {
+	function toutesLesRessources(
+		avecMasques = afficherMasques
+	): { ressource: Ressource; sectionId: string | null }[] {
 		return (
 			[
 				...documents.map((d) => ({
@@ -393,7 +408,7 @@
 			]
 				// Tri secondaire sur le libellé : `section_order` vaut 0 par défaut,
 				// donc tout ce qui n'a jamais été rangé est à égalité.
-				.filter(({ ressource }) => afficherMasques || !ressource.hidden)
+				.filter(({ ressource }) => avecMasques || !ressource.hidden)
 				.sort(
 					(a, b) => a.ordre - b.ordre || a.ressource.label.localeCompare(b.ressource.label, 'fr')
 				)
@@ -425,6 +440,26 @@
 	// glisser rendrait le geste saccadé.
 	let sectionsLocales = $state<SectionLocale[]>(instantanerSections());
 	let nonClassees = $state<Ressource[]>(instantanerNonClassees());
+
+	/**
+	 * Chaque zone (clé `''` = « Non classé »), masqués COMPRIS, dans l'ordre.
+	 * Hors `$state` : elle ne pilote aucun affichage, elle sert à enregistrer un
+	 * rangement sans faire perdre leur rang aux masqués (`avecMasquesASaPlace`).
+	 */
+	let zonesCompletes = instantanerZonesCompletes();
+
+	function cleZone(sectionId: string | null): string {
+		return sectionId ?? '';
+	}
+
+	function instantanerZonesCompletes(): Map<string, Ressource[]> {
+		const zones = new Map<string, Ressource[]>();
+		for (const { ressource, sectionId } of toutesLesRessources(true)) {
+			const cle = cleZone(sectionId);
+			zones.set(cle, [...(zones.get(cle) ?? []), ressource]);
+		}
+		return zones;
+	}
 
 	/**
 	 * Empreinte de CE QUI EXISTE ET DE CE QUI S'AFFICHE — jamais du rangement.
@@ -475,6 +510,7 @@
 		derniereEmpreinte = empreinte;
 		sectionsLocales = instantanerSections();
 		nonClassees = instantanerNonClassees();
+		zonesCompletes = instantanerZonesCompletes();
 	});
 
 	let busy = $state(false);
@@ -505,21 +541,42 @@
 		}
 	}
 
-	/** Persiste l'ordre d'une zone, en renumérotant de 0 à n. */
+	/**
+	 * Persiste l'ordre d'une zone, en renumérotant de 0 à n la zone ENTIÈRE :
+	 * les masqués cachés y gardent leur place, sinon ils tomberaient à égalité
+	 * de rang avec un visible.
+	 */
 	async function persisterZone(sectionId: string | null, liste: Ressource[]): Promise<boolean> {
-		if (liste.length === 0) return true;
+		const cle = cleZone(sectionId);
+		const zone = avecMasquesASaPlace(zonesCompletes.get(cle) ?? [], liste);
+		if (zone.length === 0) return true;
 
-		return appeler(
+		const ok = await appeler(
 			`${apiBase}/sections/assign`,
 			{
 				method: 'POST',
 				body: JSON.stringify({
 					sectionId,
-					items: liste.map((r, i) => ({ kind: r.kind, id: r.contentId, sectionOrder: i }))
+					items: zone.map((r, i) => ({ kind: r.kind, id: r.contentId, sectionOrder: i }))
 				})
 			},
 			'Impossible de ranger les ressources'
 		);
+
+		if (ok) {
+			// Ce qui est rangé ici n'est plus ailleurs : un masqué déplacé (masqués
+			// affichés) ne doit pas revenir dans sa zone de départ.
+			const ici = new Set(zone.map((r) => r.id));
+			for (const [autre, contenu] of zonesCompletes) {
+				if (autre !== cle)
+					zonesCompletes.set(
+						autre,
+						contenu.filter((r) => !ici.has(r.id))
+					);
+			}
+			zonesCompletes.set(cle, zone);
+		}
+		return ok;
 	}
 
 	// ===== Glisser-déposer : les ressources =====
@@ -1025,7 +1082,11 @@
 	-->
 	{#if !isTemplate && nombreMasques > 0}
 		<div class="flex items-center gap-2">
-			<Switch id="afficher-masques" bind:checked={afficherMasques} />
+			<Switch
+				id="afficher-masques"
+				checked={afficherMasques}
+				onCheckedChange={(v: boolean) => (afficherMasques = v)}
+			/>
 			<Label for="afficher-masques" class="cursor-pointer text-sm">
 				Afficher les éléments masqués ({nombreMasques})
 			</Label>
