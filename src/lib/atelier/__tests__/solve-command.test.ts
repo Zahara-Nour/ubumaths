@@ -108,16 +108,18 @@ describe('`.résoudre` se replie sans rien perdre', () => {
 		expect(result.output.length).toBeGreaterThan(0);
 	});
 
-	it('L3 : une équation à paramètre garde la sortie actuelle', () => {
+	// V57 (Q5, David, 2026-10-14) : la résolution diviserait par b — x = 9/b
+	// est faux pour b = 0. Le refus nomme b, sans « Comment ? »
+	it('L3 : une équation qui divise par un paramètre refuse en le nommant', () => {
 		const s = session();
 		runInput(s, 'k(x) = b*x');
 
 		const result = runInput(s, '.résoudre b*x+5=14');
 
-		expect(result.kind).toBe('commande');
-		if (result.kind !== 'commande') return;
-		expect(result.steps).toBeUndefined();
-		expect(result.output.length).toBeGreaterThan(0);
+		expect(result).toEqual({
+			kind: 'refus',
+			message: "Le résultat dépend de b : donne-lui une valeur (b = 2) pour l'étudier."
+		});
 	});
 
 	it('les autres commandes ne portent pas d’étapes', () => {

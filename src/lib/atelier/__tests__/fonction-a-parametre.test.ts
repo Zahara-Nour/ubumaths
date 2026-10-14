@@ -148,12 +148,13 @@ describe('h(x) = e^{a x}', () => {
 		expect(latex('.dériver h', H)).toBe('a\\exponentialE^{ax}');
 	});
 
-	it('.intégrer h → e^{ax}/a + C', () => {
-		expect(latex('.intégrer h', H)).toBe('\\dfrac{\\exponentialE^{ax}}{a}+C');
+	// Q3 (David, 2026-10-14) : la primitive DIVISE par a → condition affichée
+	it('.intégrer h → e^{ax}/a + C (a ≠ 0)', () => {
+		expect(latex('.intégrer h', H)).toBe('\\dfrac{\\exponentialE^{ax}}{a}+C\\quad(a\\neq0)');
 	});
 
-	it('.intégrer h de 0 à 1 → (e^a − 1)/a, réduit (sans `a * 0`)', () => {
-		expect(latex('.intégrer h de 0 à 1', H)).toBe('\\dfrac{\\exponentialE^a-1}{a}');
+	it('.intégrer h de 0 à 1 → (e^a − 1)/a (a ≠ 0), réduit (sans `a * 0`)', () => {
+		expect(latex('.intégrer h de 0 à 1', H)).toBe('\\dfrac{\\exponentialE^a-1}{a}\\quad(a\\neq0)');
 	});
 
 	it('h(2) → e^{2a}', () => {
@@ -310,5 +311,90 @@ describe('.évaluer (E6) : inchangé', () => {
 
 	it('sans la valeur de a : « Il manque la valeur de a »', () => {
 		expect(refusal('.évaluer f en x=1', F)).toContain('Il manque la valeur de a');
+	});
+});
+
+// =============================================================================
+// Q3 — une primitive qui DIVISE par le paramètre affiche sa condition
+// =============================================================================
+
+describe('Q3 : la condition « a ≠ 0 » d’une primitive qui divise par a', () => {
+	it.each([
+		['.intégrer e^{a x}', '\\dfrac{\\exponentialE^{ax}}{a}+C\\quad(a\\neq0)'],
+		['.intégrer e^{a x} de 0 à 1', '\\dfrac{\\exponentialE^a-1}{a}\\quad(a\\neq0)'],
+		['.intégrer e^{2a x}', '\\dfrac{\\exponentialE^{2ax}}{2a}+C\\quad(a\\neq0)'],
+		['.intégrer e^{(a-1)x}', '\\dfrac{\\exponentialE^{ax-x}}{a-1}+C\\quad(a\\neq1)'],
+		['.intégrer x^a', '\\dfrac{x^{a+1}}{a+1}+C\\quad(a\\neq-1)'],
+		['.intégrer \\cos(a x)', '\\dfrac{\\sin\\left(ax\\right)}{a}+C\\quad(a\\neq0)']
+	])('%s', (input, expected) => {
+		expect(latex(input, [])).toBe(expected);
+	});
+
+	it('le texte de la ligne porte aussi la condition', () => {
+		const result = run('.intégrer h', H);
+		expect(result.kind === 'commande' && result.output).toContain('(a ≠ 0)');
+	});
+
+	it.each([
+		// le dénominateur ne contient pas de paramètre
+		['.intégrer f', F, '\\dfrac{1}{2}ax^2+C'],
+		['.intégrer e^{2x}', [], '\\dfrac{1}{2}\\exponentialE^{2x}+C'],
+		// la division par a vient de l'expression de DÉPART : pas de note
+		['.intégrer 1/(a x)', [], '\\dfrac{\\ln\\left|x\\right|}{a}+C'],
+		// le paramètre posé : plus de paramètre
+		['.intégrer e^{a x}', ['a = 2'], '\\dfrac{1}{2}\\exponentialE^{2x}+C']
+	])('pas de condition : %s', (input, setup, expected) => {
+		expect(latex(input, setup)).toBe(expected);
+	});
+
+	it('.dériver 1/(a x) : la condition vient du départ, pas de note', () => {
+		expect(latex('.dériver 1/(a x)', [])).not.toContain('neq');
+	});
+});
+
+// =============================================================================
+// Q5 — V57 : `.résoudre` tapé avec une lettre non posée
+// =============================================================================
+
+describe('Q5 (V57) : une résolution qui divise par le paramètre refuse', () => {
+	it.each([
+		['a x = 0', 'a'],
+		['a x = 3', 'a'],
+		['a x + b = 0', 'a'],
+		['a(x-1) = 0', 'a'],
+		['x/a = 1', 'a'],
+		['a x^2 = 1', 'a'],
+		['e^{a x} = 1', 'a'],
+		['1/x = a', 'a'],
+		// le sens de l'inégalité dépend du signe de a
+		['a x > 1', 'a']
+	])('.résoudre %s → « dépend de %s »', (equation, letter) => {
+		const result = run(`.résoudre ${equation}`, []);
+		expect(result.kind).toBe('refus');
+		if (result.kind !== 'refus') return;
+		expect(result.message).toBe(DEPENDS_ON(letter));
+		// pas de « Comment ? » sur un refus
+		expect(result.steps).toBeUndefined();
+	});
+
+	it.each([
+		['x + a = 0', 'x=-a'],
+		['2x = a', 'x=\\dfrac{a}{2}'],
+		['(x-a)(x-1) = 0', 'S=\\left\\{a\\,;\\,1\\right\\}'],
+		['\\ln(x) = a', 'x=\\exponentialE^a'],
+		// pas de division : le moteur écrit lui-même la condition sur a
+		['x^2 = a', 'S=\\left\\{\\sqrt{a}\\,;\\,-\\sqrt{a}\\right\\}\\quad\\text{si}a\\geqslant0']
+	])('juste pour tout a, gardé : .résoudre %s', (equation, expected) => {
+		expect(latex(`.résoudre ${equation}`, [])).toBe(expected);
+	});
+
+	it('x + a > 0 : le refus du moteur, inchangé', () => {
+		expect(refusal('.résoudre x + a > 0', [])).toBe(
+			'Je ne sais pas encore résoudre cette inéquation.'
+		);
+	});
+
+	it('le paramètre posé : .résoudre a x = 4, a = 2 → x = 2', () => {
+		expect(latex('.résoudre a x = 4', ['a = 2'])).toBe('x=2');
 	});
 });

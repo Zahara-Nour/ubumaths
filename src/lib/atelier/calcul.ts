@@ -12,6 +12,7 @@
 
 import type { Atelier, Created, Refused } from './atelier.svelte';
 import type { AtelierObject, ObjectKind } from './types';
+import { dependsOnMessage, parametersOf } from './types';
 import type { MathNode } from '$lib/mathAST/types';
 import type { Provenance } from './parse';
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
@@ -81,6 +82,8 @@ import { UNREADABLE_STUDY_DOMAIN } from '$lib/mathAST/domain/study';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { simplify } from '$lib/mathAST/simplify/simplify';
+import { getPolynomialDegree } from '$lib/mathAST/analysis/expression-classify';
+import { differentiateN } from '$lib/mathAST/differentiation/differentiate';
 import { mapNode } from '$lib/mathAST/transforms';
 import {
 	resolveCommand,
@@ -831,21 +834,6 @@ function pendingCall(
 	return expanded.cited.length === 0 ? null : toCustom(expanded.ast);
 }
 
-/**
- * Les paramètres d'une fonction « à paramètre » : en attente de VALEURS
- * seulement (`f(x) = a x`, `a` non posé → `['a']`). `null` pour tout autre
- * objet — une fonction prête, ou en attente d'une FONCTION (`missing` en
- * `as: 'function'`), dont l'expression ne vaut rien sans elle (V56).
- * ⚠️ `p(x) = q(x)+1`, q inconnu, n'en est PAS : l'atelier lit `q(x)` comme
- * le produit q·x, et q comme une valeur — p est donc à paramètre q.
- */
-function parametersOf(object: AtelierObject): readonly string[] | null {
-	if (object.kind !== 'function' || object.status !== 'pending') return null;
-	const missing = object.missing ?? [];
-	if (missing.length === 0 || missing.some((m) => m.as !== 'value')) return null;
-	return missing.map((m) => m.name);
-}
-
 /** Une fonction de l'atelier, citée (`f`, `f(2)`, `f'`) dans une saisie. */
 function citesName(typed: string, name: string): boolean {
 	return new RegExp(`(?<![A-Za-z_\\\\])${name}(?![A-Za-z_0-9])`).test(typed);
@@ -889,16 +877,6 @@ function pendingFunctionRefusal(
 		for (const parameter of own) if (!parameters.includes(parameter)) parameters.push(parameter);
 	}
 	return parameters.length === 0 ? null : dependsOnMessage(parameters);
-}
-
-/** « Le résultat dépend de a : donne-lui une valeur (a = 2) pour l'étudier. » */
-function dependsOnMessage(parameters: readonly string[]): string {
-	const letters =
-		parameters.length === 1
-			? parameters[0]
-			: `${parameters.slice(0, -1).join(', ')} et ${parameters[parameters.length - 1]}`;
-	const pronoun = parameters.length === 1 ? 'lui' : 'leur';
-	return `Le résultat dépend de ${letters} : donne-${pronoun} une valeur (${parameters[0]} = 2) pour l'étudier.`;
 }
 
 /** Ce que devient une ligne de calcul qui cite une fonction à paramètre. */
@@ -1599,6 +1577,23 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${commandArgument}`;
 
 	const result = engine.execute(executed);
+	// V57 : une résolution qui DIVISE par un paramètre (`a x = 0` → x = 0, faux
+	// pour a = 0) refuse plutôt que de répondre (Q5, David, 2026-10-14). Les
+	// refus du moteur passent avant : il dit déjà ce qu'il ne sait pas faire
+	const parameterRefusal =
+		name === 'solve' &&
+		finalArgs !== null &&
+		(result.success || result.error?.code === INEQUALITY_UNSOLVED)
+			? parameterSolveRefusal(
+					session,
+					finalArgs.expression,
+					finalArgs.variable ?? DEFAULT_VARIABLE,
+					result.success ? result.latex : undefined
+				)
+			: null;
+	if (parameterRefusal !== null) {
+		return { kind: 'refus', message: parameterRefusal, ...notesOf(letterNote) };
+	}
 	// `fromCommand` : pour une commande, `result.ast` porte l'ENTRÉE. Le rendre
 	// afficherait « x^2 » là où `.dériver x^2` répond « 2x » (voir `render.ts`).
 	const rendered = renderResult(result, { fromCommand: true });
@@ -1841,15 +1836,32 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 					);
 		// Une fonction à paramètre (V56) : le moteur laisse la valeur en l'état
 		// quand une lettre y reste (`e^{a * 0}`) — réduite ici, pour l'affichage
+		const integrationVariable = finalArgs?.variable ?? DEFAULT_VARIABLE;
+		const integrand =
+			finalArgs === null ? undefined : parseCommandExpression(finalArgs.expression).ast;
+		const parameters =
+			integrand === undefined ? [] : freeParameters(session, integrand, integrationVariable);
 		const shown =
-			finalArgs?.bounds != null && citesParameterized(session, typedArgument)
+			finalArgs?.bounds != null &&
+			(citesParameterized(session, typedArgument) || parameters.length > 0)
 				? simplify(result.ast).result
 				: result.ast;
+		// Q3 (David, 2026-10-14) : une primitive qui DIVISE par le paramètre
+		// (`e^{ax}` → `e^{ax}/a`) le dit — « (a ≠ 0) »
+		const conditions =
+			finalArgs === null
+				? []
+				: introducedConditions(shown, finalArgs.expression, integrationVariable, parameters);
 		return {
 			kind: 'commande',
 			input,
-			output: rendered.text,
-			latex: integralLatex(shown, rendered.text),
+			output:
+				conditions.length === 0
+					? rendered.text
+					: `${rendered.text} (${conditions.map((c) => c.text).join(', ')})`,
+			latex:
+				integralLatex(shown, rendered.text) +
+				(conditions.length === 0 ? '' : ` \\quad (${conditions.map((c) => c.latex).join(',\\ ')})`),
 			...(integrated !== null && { steps: integrated.steps, ...summaryField(integrated) }),
 			...noted
 		};
@@ -2020,6 +2032,226 @@ function evaluatedCallLatex(functionName: string | null, typedValue: string | nu
  * `∫[a→b] … = v` (valeur exacte), `∫[a→b] … ≈ v` (approchée), sinon une
  * primitive, `∫ … = F + C` — la constante y reste, comme dans le texte.
  */
+// =============================================================================
+// Paramètres : lettres non posées (Q3, Q5 — David, 2026-10-14)
+// =============================================================================
+
+/**
+ * Les lettres non posées d'un arbre : ni la variable, ni une valeur de
+ * l'atelier (`a = 2` posé n'est plus un paramètre).
+ */
+function freeParameters(session: CalcSession, ast: MathNode, variable: string): string[] {
+	const bound = new Set(session.engine.getEvalState().bindings.keys());
+	return [...getVariables(ast)].filter((v) => v !== variable && !bound.has(v));
+}
+
+/** Les lettres de `parameters` qu'un arbre contient. */
+function citedParameters(ast: MathNode, parameters: readonly string[]): string[] {
+	const letters = getVariables(ast);
+	return parameters.filter((p) => letters.has(p));
+}
+
+/** Une condition « a ≠ 0 », écrite pour la ligne (LaTeX) et pour le texte. */
+interface Condition {
+	readonly latex: string;
+	readonly text: string;
+}
+
+/**
+ * Les facteurs d'un dénominateur faits de paramètres seulement : `2a` → a,
+ * `a x` → a (x est la variable), `(a-1)^2` → a − 1.
+ */
+function parameterFactors(
+	node: MathNode,
+	variable: string,
+	parameters: readonly string[]
+): MathNode[] {
+	if (node.type === 'delimiter') return parameterFactors(node.content, variable, parameters);
+	if (node.type === 'opposite') return parameterFactors(node.operand, variable, parameters);
+	if (node.type === 'multiplication') {
+		return [
+			...parameterFactors(node.left, variable, parameters),
+			...parameterFactors(node.right, variable, parameters)
+		];
+	}
+	if (node.type === 'superscript' && isNumber(node.superscript)) {
+		return parameterFactors(node.base, variable, parameters);
+	}
+	if (getVariables(node).has(variable) || citedParameters(node, parameters).length === 0) return [];
+	return [node];
+}
+
+/**
+ * La forme la plus lisible de « facteur ≠ 0 » : `a ≠ 0`, `a − 1` → `a ≠ 1`,
+ * `a + 1` → `a ≠ −1` ; sinon le facteur entier, `a^2 + 1 ≠ 0`.
+ */
+function conditionOf(factor: MathNode): Condition {
+	const node = factor.type === 'delimiter' ? factor.content : factor;
+	const excluded = (letter: string, value: string): Condition => ({
+		latex: `${letter} \\neq ${value}`,
+		text: `${letter} ≠ ${value}`
+	});
+	if (node.type === 'variable') return excluded(node.name, '0');
+	if (node.type === 'addition' || node.type === 'subtraction') {
+		const { left, right } = node;
+		const pair =
+			left.type === 'variable' && isNumber(right)
+				? { letter: left.name, number: right.value }
+				: right.type === 'variable' && isNumber(left)
+					? { letter: right.name, number: left.value }
+					: null;
+		if (pair !== null) {
+			return excluded(pair.letter, node.type === 'addition' ? `-${pair.number}` : pair.number);
+		}
+	}
+	return { latex: `${toLatex(node)} \\neq 0`, text: `${toCustom(node)} ≠ 0` };
+}
+
+/** Les conditions « ≠ 0 » des dénominateurs d'un arbre qui contiennent un paramètre. */
+function denominatorConditions(
+	ast: MathNode,
+	variable: string,
+	parameters: readonly string[]
+): Condition[] {
+	const found: Condition[] = [];
+	mapNode(ast, (node) => {
+		if (node.type === 'division') {
+			for (const factor of parameterFactors(node.denominator, variable, parameters)) {
+				const condition = conditionOf(factor);
+				if (!found.some((c) => c.latex === condition.latex)) found.push(condition);
+			}
+		}
+		return node;
+	});
+	return found;
+}
+
+/**
+ * Q3 : les conditions qu'une primitive ou une intégrale INTRODUIT en divisant
+ * par un paramètre (`e^{ax}` → `e^{ax}/a`, « a ≠ 0 »). Une division déjà dans
+ * l'expression de départ (`1/(a x)`) n'est pas redite : la condition vient
+ * d'elle, pas du calcul — comme pour `.dériver`.
+ */
+function introducedConditions(
+	answer: MathNode,
+	typed: string,
+	variable: string,
+	parameters: readonly string[]
+): Condition[] {
+	if (parameters.length === 0) return [];
+	const input = parseCommandExpression(typed).ast;
+	const already = input === undefined ? [] : denominatorConditions(input, variable, parameters);
+	return denominatorConditions(answer, variable, parameters).filter(
+		(c) => !already.some((a) => a.latex === c.latex)
+	);
+}
+
+/**
+ * Q5 (V57) : `.résoudre` refuse quand la résolution DIVISE par une expression
+ * d'un paramètre — `a x = 0` répondait x = 0, faux pour a = 0.
+ * - polynôme en l'inconnue : son coefficient dominant contient un paramètre
+ *   (`a x + b = 0`, `x/a = 1`, `a x^2 = 1`, et `a x > 1`, dont le sens dépend
+ *   du signe de a) ; `(x-a)(x-1) = 0`, `x + a = 0` restent résolus ;
+ * - sinon, l'inconnue multipliée par un paramètre (`e^{a x} = 1`), ou un
+ *   paramètre au dénominateur de la réponse (`1/x = a` → 1/a) — sauf si le
+ *   moteur a écrit la condition (`u_0 \cdot 0{,}5^n = 1` : « si u₀ > 0 »).
+ * ⚠️ `x^2 = a` reste : pas de division, et la réponse dit « si a ⩾ 0 ».
+ *
+ * @param latex - La réponse du moteur, `undefined` s'il n'a pas conclu
+ */
+function parameterSolveRefusal(
+	session: CalcSession,
+	typed: string,
+	unknown: string,
+	latex: string | undefined
+): string | null {
+	const ast = parseCommandExpression(typed).ast;
+	if (ast === undefined || !isRelation(ast) || isRelation(ast.left)) return null;
+	const parameters = freeParameters(session, ast, unknown);
+	if (parameters.length === 0) return null;
+	const difference: MathNode = { type: 'subtraction', left: ast.left, right: ast.right };
+	const degree = getPolynomialDegree(difference, unknown);
+	if (degree === 0) return null;
+	if (degree !== null) {
+		const leading = leadingParameters(difference, degree, unknown, parameters);
+		if (leading.length > 0) return dependsOnMessage(leading);
+	}
+	const conditioned = latex?.includes('\\text{si') ?? false;
+	if (conditioned) return null;
+	const multiplied = degree === null ? multipliedParameters(difference, unknown, parameters) : [];
+	if (multiplied.length > 0) return dependsOnMessage(multiplied);
+	if (latex === undefined) return null;
+	const cites = (chunk: string, p: string) =>
+		new RegExp(`(?<![A-Za-z\\\\])${p}(?![A-Za-z])`).test(chunk);
+	const denominators = latexDenominators(latex);
+	const divisors = parameters.filter((p) => denominators.some((d) => cites(d, p)));
+	return divisors.length === 0 ? null : dependsOnMessage(divisors);
+}
+
+/** Les paramètres du coefficient dominant d'un polynôme en `unknown`. */
+function leadingParameters(
+	polynomial: MathNode,
+	degree: number,
+	unknown: string,
+	parameters: readonly string[]
+): string[] {
+	try {
+		const leading = simplify(differentiateN(polynomial, degree, { variable: unknown })).result;
+		return citedParameters(leading, parameters);
+	} catch {
+		return [];
+	}
+}
+
+/** Les paramètres qui multiplient (ou divisent) l'inconnue : `a x`, `x/a`. */
+function multipliedParameters(
+	ast: MathNode,
+	unknown: string,
+	parameters: readonly string[]
+): string[] {
+	const found = new Set<string>();
+	const withUnknown = (n: MathNode) => getVariables(n).has(unknown);
+	mapNode(ast, (node) => {
+		const pairs: (readonly [MathNode, MathNode])[] =
+			node.type === 'multiplication'
+				? [
+						[node.left, node.right],
+						[node.right, node.left]
+					]
+				: node.type === 'division'
+					? [[node.numerator, node.denominator]]
+					: [];
+		for (const [carrier, factor] of pairs) {
+			if (withUnknown(carrier) && !withUnknown(factor)) {
+				for (const p of citedParameters(factor, parameters)) found.add(p);
+			}
+		}
+		return node;
+	});
+	return parameters.filter((p) => found.has(p));
+}
+
+/** Les dénominateurs `\dfrac{…}{…}` d'une réponse en LaTeX. */
+function latexDenominators(latex: string): string[] {
+	const denominators: string[] = [];
+	// La fin du groupe `{…}` ouvert en `from`, -1 s'il ne se ferme pas
+	const groupEnd = (from: number): number => {
+		let depth = 0;
+		for (let i = from; i < latex.length; i++) {
+			if (latex[i] === '{') depth++;
+			else if (latex[i] === '}' && --depth === 0) return i;
+		}
+		return -1;
+	};
+	for (const match of latex.matchAll(/\\d?frac\{/g)) {
+		const numeratorEnd = groupEnd(match.index + match[0].length - 1);
+		if (numeratorEnd === -1 || latex[numeratorEnd + 1] !== '{') continue;
+		const denominatorEnd = groupEnd(numeratorEnd + 1);
+		if (denominatorEnd !== -1) denominators.push(latex.slice(numeratorEnd + 2, denominatorEnd));
+	}
+	return denominators;
+}
+
 function integralLatex(ast: MathNode, text: string): string {
 	const firstLine = text.split('\n')[0] ?? '';
 	// `\ln\left| u \right|`, comme les étapes (revue du 2026-10-13) — affichage
@@ -2495,9 +2727,16 @@ function computeAction(
 	const { atelier, engine } = session;
 	syncEngine(atelier, engine);
 
-	const substituted = expressionOf(atelier, name);
+	// Une fonction à paramètre (`f(x) = a x`) : son expression, a gardé en
+	// lettre — le bouton dit ce que dit la commande (Q4, David, 2026-10-14)
+	const object = atelier.get(name);
+	const parameters = object === undefined ? null : parametersOf(object);
+	const substituted = expressionOf(atelier, name, { forDerivation: parameters !== null });
 	// Le message vient de l'objet : le panneau et l'action disent la même chose.
 	if (!substituted.ok) return { ok: false, message: substituted.message };
+	if (parameters !== null && (actionId === 'solve' || actionId === 'variations')) {
+		return { ok: false, message: dependsOnMessage(parameters) };
+	}
 
 	if (actionId === 'image') {
 		const value = argument === undefined ? null : readNumber(argument);
@@ -2511,6 +2750,16 @@ function computeAction(
 				ok: false,
 				message: outsideIntervalMessage(displayName(name), (argument ?? '').trim(), domain)
 			};
+		}
+		// À paramètre : `f(2)` → `2a`, comme la ligne tapée (`parameterizedLine`)
+		if (parameters !== null) {
+			const line = parameterizedLine(session, `${name}(${value})`);
+			if (line.kind === 'refus') return { ok: false, message: line.message };
+			const computed = line.kind === 'text' ? engine.execute(line.text) : null;
+			if (computed === null || !computed.success) {
+				return { ok: false, message: `Impossible de calculer ${displayName(name)}(${argument}).` };
+			}
+			return { ok: true, output: renderResult(computed).text };
 		}
 		// Ici, citer le nom est SÛR et mesuré : `f(2)` rend `-1`. C'est le chemin
 		// d'évaluation, pas une commande symbolique — la substitution du §6 bis ne
