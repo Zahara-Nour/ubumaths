@@ -102,7 +102,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/decimal-comma.ts`      | Virgule décimale à l'affichage, refus des virgules ambiguës à la saisie                                    |
 | `src/lib/atelier/simplify-steps.ts`     | `.simplifier` par étapes (`simplifySteps`)                                                                 |
 | `src/lib/atelier/factor-steps.ts`       | `.factoriser` par étapes (`factorSteps`)                                                                   |
-| `src/lib/atelier/expand.ts`             | `.développer` : la réponse développée et réduite (`expandExpression`), sans étapes pour l'instant          |
+| `src/lib/atelier/expand.ts`             | `.développer` : la réponse (`expandExpression`) et son « Comment ? » (`writeExpandSteps`)                  |
 | `src/lib/atelier/derive-steps.ts`       | `.dériver` et « Dériver » expliqués (`deriveSteps`)                                                        |
 | `src/lib/atelier/solve-steps.ts`        | `.résoudre` par étapes (`solveSteps`)                                                                      |
 | `src/lib/atelier/solve-steps-check.ts`  | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                            |
@@ -673,7 +673,7 @@ Doc du moteur : [mathast/README.md](mathast/README.md).
 | calcul avec des grandeurs, `.convertir` | `computeQuantity` / `convertQuantity` (`src/lib/mathAST/cli/quantities.ts`) : `tidy`, unité écrite d'abord — comme `{{eval}}` ; contrat : [grandeurs.md](grandeurs.md)                                                                                                                                                                               |
 | `.simplifier`                           | `generatePedagogicalSimplifySteps`, intention `auto` (ADR 0007)                                                                                                                                                                                                                                                                                      |
 | `.factoriser`                           | même pipeline, intention `factoriser`, niveau lycée (stratégies de l'ADR 0024 : identités à coefficients, Δ, racine évidente) ; aucun repli moteur : « je n'ai pas su » se dit                                                                                                                                                                       |
-| `.développer`                           | même pipeline, intention `developper`, niveau lycée ; la réponse seule (voir « `.développer` en détail ») ; aucun repli moteur : « rien à développer » se dit                                                                                                                                                                                        |
+| `.développer`                           | même pipeline, intention `developper`, niveau lycée, pour la réponse ; le « Comment ? » rédigé à part (`pedagogical-simplify/expand-steps.ts`, voir « `.développer` en détail ») ; aucun repli moteur : « rien à développer » se dit                                                                                                                 |
 | `.dériver`, « Dériver », `f′`           | `src/lib/mathAST/pedagogical-differentiation/` (règle nommée, sous-étapes)                                                                                                                                                                                                                                                                           |
 | `.réciproque`, « Réciproque », `f⁻¹`    | `computeReciprocal` (`src/lib/mathAST/reciprocal/`, [mathast/reciproque.md](mathast/reciproque.md)) ; lettres des paramètres : `solve` puis `textbookWriting`                                                                                                                                                                                        |
 | `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                                                                                                                                                                                                                                             |
@@ -966,10 +966,30 @@ développement de plus de 500 termes (`MAX_TERMS`, estimé AVANT le calcul, qui 
 produit, une puissance de nombres : `e^{(x+1)^2}` rendait `e^{x^2 + 2 x 1 + 1^2}`) — jamais une
 réponse mal écrite. Refus : sans expression (avec l'exemple), une équation ou une inéquation
 (« On développe une expression, pas une équation. Pour la résoudre : .résoudre (x+1)^2=4 »,
-expression TAPÉE citée), tout ce qui n'est pas une expression (liste, saisie illisible). **Pas de
-« Comment ? »** : les étapes de l'intention `developper` ne sont pas montrables (produits collés
-« 2x1 », la même ligne jusqu'à 13 fois, distribution cachée) — elles seront rédigées dans
-`pedagogical-simplify` (PR 2). Tests : `developper-commande.test.ts`.
+expression TAPÉE citée), tout ce qui n'est pas une expression (liste, saisie illisible).
+
+**Le « Comment ? » de `.développer`** (PR 2, section E de la phase 0) : rédigé par
+`writeExpandSteps` (`mathAST/pedagogical-simplify/expand-steps.ts`), qui part de l'expression
+tapée et finit sur la réponse de la ligne. La trace de l'intention `developper` n'est pas montrée
+(produits collés « 2x1 », la même ligne jusqu'à 13 fois, distribution cachée). Une ligne par geste,
+appliqué à tous les termes où il vaut : un cube s'écrit carré × parenthèse (« On écrit (x + 1)³ =
+(x + 1)²(x + 1) ») ; une identité remarquable nomme a et b (« On reconnaît (a + b)² = a² + 2ab +
+b², avec a = x et b = 1 ») — seule, elle a sa ligne à × (`x² + 2 × x × 1 + 1²`) puis « On calcule
+chaque terme » ; plusieurs s'écrivent calculées (« On développe chaque carré avec son identité
+remarquable ») ; une parenthèse d'un produit qu'on peut réduire l'est (« On réduit dans la
+parenthèse ») ; la double distribution a sa ligne à × puis « On calcule chaque produit » ; un
+facteur se distribue calculé (« On distribue 3, et le signe − devant la parenthèse change le signe
+de chaque terme », « On enlève la parenthèse précédée d'un − ») ; enfin « On réduit » (« On ordonne
+les termes » si seul l'ordre change). Exposant 4 ou plus : une seule ligne, « On développe la
+puissance ». Jamais deux images identiques de suite ; un × dès qu'un nombre suit une lettre ou un
+nombre ; chaque image est vérifiée égale à l'entrée (`areEquivalent`) ; la dernière image est la
+réponse, décimaux compris (l'atelier passe sa mise en forme à chaque image). Version résumée : la
+ligne à × fondue dans le calcul qui la suit, sans les « pourquoi ». Pas de « Comment ? » — la
+réponse reste — pour une somme sous une fonction, une racine, dans un exposant ou une fraction
+(`(x+1)(x-1)/(x+2)` se lit `(x+1)·((x-1)/(x+2))`), ni au-delà de 16 produits sur une ligne.
+L'ordre du manuel vit dans `pedagogical-simplify/expand-order.ts` (`orderExpanded`), partagé par
+la réponse et les étapes. Tests : `developper-commande.test.ts`,
+`pedagogical-simplify/__tests__/expand-steps.test.ts`.
 
 **`.limite` en détail** (`limit.ts`, PR 2 de `.limite`, syntaxe tranchée par David le
 2026-10-14, L1-L6). Servie par l'atelier (`ATELIER_ONLY_COMMANDS`), lue **avant** la substitution

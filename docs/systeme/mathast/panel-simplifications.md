@@ -23,6 +23,12 @@ couvre:
 | `developper` | règles de développement + identités, puis `normalize`                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `factoriser` | factorisation + identités, puis extraction du contenu (numérique, monôme, ou non polynomial : `x\exponentialE^x - \exponentialE^x` → `(x-1)\exponentialE^x`), puis les stratégies de l'ADR 0024 (facteurs réduits, racines du trinôme, racine évidente — lycée —, développer en dernier recours ; facteurs dans l'ordre du noyau), puis `tidy` facteur par facteur (deux nombres côte à côte sont calculés : `2\times 3` → `6`). **Pas** de `normalize` |
 
+La colonne `developper` est le **résultat** de l'intention. Les étapes que montre `.développer`
+(atelier) ne sont pas sa trace : une rédaction à part, `expand-steps.ts`, reçoit ce résultat rangé
+dans l'ordre du manuel (`expand-order.ts`) et finit dessus — voir
+[README § Les étapes de « développer »](README.md#les-étapes-de-développer-expand-stepsts).
+Ce panel n'en change pas.
+
 ⚠️ **Les quatre intentions sont mesurées à `schoolLevel: 'lycee'`.** Les
 identités trigonométriques et exponentielles sont coupées en dessous — c'est un
 garde-fou pédagogique délibéré, pas un défaut. Sans niveau, `sin²x + cos²x`
