@@ -16,7 +16,11 @@ import {
 	deleteChapter,
 	reorderChapters
 } from '$lib/server/chapters';
-import { listChapterTemplates, instantiateTemplate } from '$lib/server/chapter-templates';
+import {
+	listChapterTemplates,
+	instantiateTemplate,
+	TemplateUnusableError
+} from '$lib/server/chapter-templates';
 import {
 	createChapterSchema,
 	updateChapterSchema,
@@ -483,6 +487,12 @@ export const actions: Actions = {
 			user.id,
 			locals.supabase
 		);
+
+		// Brouillon, archivé : le professeur doit lire quoi faire (« publiez-le
+		// d'abord »). Le message générique ne le disait pas.
+		if (instError instanceof TemplateUnusableError) {
+			return fail(409, { error: instError.message, action: 'instantiateFromTemplate' });
+		}
 
 		if (instError || !result) {
 			logger.error('[Instantiate Template] Error:', instError);
