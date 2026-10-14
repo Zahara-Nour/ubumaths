@@ -80,6 +80,8 @@ import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student
 import { UNREADABLE_STUDY_DOMAIN } from '$lib/mathAST/domain/study';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
+import { simplify } from '$lib/mathAST/simplify/simplify';
+import { mapNode } from '$lib/mathAST/transforms';
 import {
 	resolveCommand,
 	suggestFor,
@@ -756,14 +758,123 @@ function pendingCall(session: CalcSession, name: string, call: string): string |
 	const node = astOf(call, 'url', session.atelier.functionNames);
 	const body = substitutedAstOf(session.atelier, name, { forDerivation: true });
 	if (node?.type !== 'function' || node.args.length !== 1 || !body.ok) return null;
-	return toCustom(substitute(body.ast, { [INTERNAL_LETTER]: node.args[0] }));
+	// Une seule passe : `f(2x)` itéré remplaçait x par 2x dix fois (1024a)
+	return toCustom(substitute(body.ast, { [INTERNAL_LETTER]: node.args[0] }, { maxIterations: 1 }));
 }
 
 /**
- * `pendingFunctions` (`.évaluer`, E6) : une fonction en attente d'un
- * paramètre (`f(x) = a x`, `a` non posé) est remplacée aussi — la valeur de
- * `a` arrive après `en` (`en x=1 ; a=2`), et sans elle le moteur le dit
- * (« Il manque la valeur de a »).
+ * Les paramètres d'une fonction « à paramètre » : en attente de VALEURS
+ * seulement (`f(x) = a x`, `a` non posé → `['a']`). `null` pour tout autre
+ * objet — une fonction prête, ou en attente d'une autre FONCTION
+ * (`p(x) = q(x)+1`), dont l'expression ne vaut rien sans q (V56).
+ */
+function parametersOf(object: AtelierObject): readonly string[] | null {
+	if (object.kind !== 'function' || object.status !== 'pending') return null;
+	const missing = object.missing ?? [];
+	if (missing.length === 0 || missing.some((m) => m.as !== 'value')) return null;
+	return missing.map((m) => m.name);
+}
+
+/** Une fonction de l'atelier, citée (`f`, `f(2)`, `f'`) dans une saisie. */
+function citesName(typed: string, name: string): boolean {
+	return new RegExp(`(?<![A-Za-z_\\\\])${name}(?![A-Za-z_0-9])`).test(typed);
+}
+
+/** La saisie cite-t-elle une fonction à paramètre ? */
+function citesParameterized(session: CalcSession, typed: string): boolean {
+	return session.atelier.objects.some((o) => parametersOf(o) !== null && citesName(typed, o.name));
+}
+
+/**
+ * Les commandes dont la réponse dépend du SIGNE ou de la valeur d'un
+ * paramètre : `.résoudre a x = 0` (a = 0 ?), `.limite e^{a x}`, `.variations`
+ * (signe de f' = a)… Avec une fonction à paramètre, elles refusent plutôt que
+ * de répondre faux (V56).
+ */
+const PARAMETER_BLOCKED = new Set(['solve', 'variations', 'limit', 'domain', 'reciprocal']);
+
+/**
+ * Le refus d'une commande qui cite une fonction en attente (V56), ou `null` :
+ * - en attente d'une FONCTION (`p(x) = q(x)+1`) : le message de la carte —
+ *   le moteur recevait le symbole p, et `.dériver p` répondait 0 ;
+ * - à paramètre, pour une commande de `PARAMETER_BLOCKED` : le résultat
+ *   dépend du paramètre, on le nomme.
+ */
+function pendingFunctionRefusal(
+	session: CalcSession,
+	typed: string,
+	command: string
+): string | null {
+	const parameters: string[] = [];
+	for (const object of session.atelier.objects) {
+		if (object.kind !== 'function' || object.status !== 'pending') continue;
+		if (!citesName(typed, object.name)) continue;
+		const own = parametersOf(object);
+		if (own === null) return object.message ?? null;
+		if (!PARAMETER_BLOCKED.has(command)) continue;
+		for (const parameter of own) if (!parameters.includes(parameter)) parameters.push(parameter);
+	}
+	if (parameters.length === 0) return null;
+	const letters =
+		parameters.length === 1
+			? parameters[0]
+			: `${parameters.slice(0, -1).join(', ')} et ${parameters[parameters.length - 1]}`;
+	const pronoun = parameters.length === 1 ? 'lui' : 'leur';
+	return `Le résultat dépend de ${letters} : donne-${pronoun} une valeur (${parameters[0]} = 2) pour l'étudier.`;
+}
+
+/**
+ * Les APPELS d'une fonction à paramètre dans une ligne de calcul : `f(2)` →
+ * `2a`. Le moteur ne lie que les objets prêts, et répondait « Fonction
+ * inconnue : f — définis-la d'abord », alors que f est dans l'atelier (V56).
+ *
+ * ⚠️ Dans l'ARBRE, et réduit ICI (`simplify`) : une ligne de calcul qui garde
+ * des lettres est rendue telle quelle par le moteur — en texte, `f(2)+1`
+ * affichait `(a*2)+1`. Seuls les appels sont réduits : `x+x` tapé reste tel
+ * quel, comme avant. La ligne n'est récrite que si elle cite un tel appel.
+ * ⚠️ À appeler APRÈS `expandInput` : `f'(2)` est un nœud `function` lui aussi.
+ */
+function parameterizedCalls(session: CalcSession, text: string): string {
+	const names = new Set(
+		session.atelier.objects.filter((o) => parametersOf(o) !== null).map((o) => o.name)
+	);
+	if (names.size === 0) return text;
+	// `f` seul : son expression, comme pour une fonction prête (`2x`)
+	if (names.has(text.trim())) {
+		const body = substitutedAstOf(session.atelier, text.trim(), { forDerivation: true });
+		return body.ok ? toCustom(body.ast) : text;
+	}
+	const ast = astOf(text, 'url', session.atelier.functionNames);
+	if (ast === null) return text;
+	let replaced = false;
+	const expanded = mapNode(ast, (node) => {
+		if (
+			node.type !== 'function' ||
+			!names.has(node.name) ||
+			node.args.length !== 1 ||
+			node.derivativeOrder !== undefined ||
+			node.isInverse === true ||
+			node.power !== undefined
+		) {
+			return node;
+		}
+		const body = substitutedAstOf(session.atelier, node.name, { forDerivation: true });
+		if (!body.ok) return node;
+		replaced = true;
+		return simplify(substitute(body.ast, { [INTERNAL_LETTER]: node.args[0] }, { maxIterations: 1 }))
+			.result;
+	});
+	return replaced ? toCustom(expanded) : text;
+}
+
+/**
+ * Une fonction à paramètre (`f(x) = a x`, `a` non posé) est remplacée comme
+ * une fonction prête : le paramètre reste une lettre, `.dériver f` répond a
+ * (V56 — le moteur recevait le symbole f et répondait 0).
+ *
+ * `pendingFunctions` (`.évaluer`, E6) : toute fonction en attente est
+ * remplacée — la valeur de `a` arrive après `en` (`en x=1 ; a=2`), et sans
+ * elle le moteur le dit (« Il manque la valeur de a »).
  */
 function substituteNames(
 	session: CalcSession,
@@ -776,7 +887,9 @@ function substituteNames(
 	for (const object of session.atelier.objects) {
 		const usable =
 			object.status === 'ok' ||
-			(pendingFunctions && object.status === 'pending' && object.kind === 'function');
+			(object.status === 'pending' &&
+				object.kind === 'function' &&
+				(pendingFunctions || parametersOf(object) !== null));
 		if (!usable) continue;
 		// Une liste n'a pas d'expression : ce sont ses VALEURS que lit une
 		// commande de séries (`.stats L` répondait « certaines valeurs ne sont
@@ -1124,6 +1237,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			kind: 'refus',
 			message: `« ${recurrence.name} » est une suite récurrente : les commandes ne s'en servent pas. Ses termes se calculent un par un, comme ${recurrence.name}(5).`
 		};
+	}
+
+	// Une fonction en attente citée (V56) : refus, avant toute substitution.
+	// `.évaluer` reçoit la valeur du paramètre après `en` (E6) ; les
+	// simulations lisent des noms de listes
+	if (name !== 'eval' && SIMULATIONS[known.name] === undefined) {
+		const pendingRefused = pendingFunctionRefusal(session, typedArgument, known.name);
+		if (pendingRefused !== null) return { kind: 'refus', message: pendingRefused };
 	}
 
 	// `.variations f⁻¹` : f sans réciproque, le refus de `.réciproque f`
@@ -1619,11 +1740,17 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 						},
 						result.ast
 					);
+		// Une fonction à paramètre (V56) : le moteur laisse la valeur en l'état
+		// quand une lettre y reste (`e^{a * 0}`) — réduite ici, pour l'affichage
+		const shown =
+			finalArgs?.bounds != null && citesParameterized(session, typedArgument)
+				? simplify(result.ast).result
+				: result.ast;
 		return {
 			kind: 'commande',
 			input,
 			output: rendered.text,
-			latex: integralLatex(result.ast, rendered.text),
+			latex: integralLatex(shown, rendered.text),
 			...(integrated !== null && { steps: integrated.steps, ...summaryField(integrated) }),
 			...noted
 		};
@@ -2108,7 +2235,10 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	const reading = readNaturalQuantities(decimalCommaInput(withTerms.text), session.atelier.names);
 	const misread = naturalReadingRefusal(session.atelier, reading);
 	if (misread !== null) return misread;
-	const result = session.engine.execute(expandInput(session.atelier, withPiCommand(reading.text)));
+	// `f(2)` d'une fonction à paramètre → `(2a)` (V56)
+	const result = session.engine.execute(
+		parameterizedCalls(session, expandInput(session.atelier, withPiCommand(reading.text)))
+	);
 	// Des grandeurs qui ne se combinent pas : un refus, en français (lot A),
 	// avec l'aide d'une lettre lue comme unité (`3 t + 2`)
 	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {

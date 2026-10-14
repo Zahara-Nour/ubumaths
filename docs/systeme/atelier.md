@@ -689,10 +689,35 @@ le moteur : « a vaut déjà 5 dans l'atelier : retire « a=1 », ou efface a av
 exemple. », aussi à une seule valeur donnée), valeur interdite (« Pour $a = 1$ et $b = 0$, ce
 calcul n'a pas de valeur : … »). Un « ; » final sans valeur (`en a=1 ; b`) : « Il manque la
 valeur de b : … » (« x a déjà sa valeur : retire « ; x ». » si la lettre en a une). Une
-**fonction en attente d'un paramètre** (`f(x) = a x`, `a` non posé) est remplacée pour
-`.évaluer` seulement (`substituteNames(…, pendingFunctions)`, appels par `pendingCall`) :
-`.évaluer f en x=1 ; a=2` → `2` avec ses étapes, `.évaluer f en x=1` → « Il manque la valeur de
-a : .évaluer f en x=1 ; a=3, par exemple. » (la commande citée telle que tapée).
+**fonction en attente d'un paramètre** (`f(x) = a x`, `a` non posé) est remplacée
+(`substituteNames(…, pendingFunctions)` : pour `.évaluer`, toute fonction en attente ; appels par
+`pendingCall`) : `.évaluer f en x=1 ; a=2` → `2` avec ses étapes, `.évaluer f en x=1` → « Il
+manque la valeur de a : .évaluer f en x=1 ; a=3, par exemple. » (la commande citée telle que
+tapée). Les autres commandes : voir « Fonction à paramètre » plus bas.
+
+**Fonction à paramètre** (V56, 2026-10-14). Une fonction en attente de **valeurs** seulement
+(`parametersOf` : `missing` tout en `as: 'value'`, `f(x) = a x`) se comporte comme son
+expression, le paramètre restant une lettre. Avant, `substituteNames` la sautait : le moteur
+recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer f` ½f² + C.
+
+- **Commandes qui concluent** : `.dériver f` → `a`, `.intégrer f` → ½ax² + C, `.intégrer f de 0
+à 1` → a/2 (une intégrale bornée est réduite par `simplify` quand une fonction à paramètre est
+  citée : `(e^a − 1)/a`, et non `e^{a * 0}`), `.simplifier`, `.factoriser`, `.taylor`,
+  `.équivalent`.
+- **Commandes refusées** (`PARAMETER_BLOCKED` : `.résoudre`, `.variations`, `.limite`,
+  `.domaine`, `.réciproque`, y compris par `f'`) : « Le résultat dépend de a : donne-lui une
+  valeur (a = 2) pour l'étudier. » (« de a et b : donne-leur … » à plusieurs). Mesuré avant :
+  `.résoudre a x = 0` → x = 0, `.limite e^{a x} en +∞` → +∞, faux pour a ≤ 0. Le refus est large
+  (`.résoudre g(x)=0` de `g(x) = x^2 + k` y passe aussi). `.évaluer` n'y passe pas (E6).
+- **Ligne de calcul** (`parameterizedCalls`, après `expandInput`) : `f(2)` → `2a`, `f` seul →
+  `a x`, appels réduits par `simplify` dans l'arbre (le moteur rend tel quel un calcul qui garde
+  des lettres ; avant : « Fonction inconnue : f — définis-la d'abord »).
+- **Substitution en une passe** (`maxIterations: 1`) : `f(2x)` itéré donnait `a·2¹⁰x`.
+- **Fonction qui en cite une à paramètre** (`g(x) = f(x)+1`) : `substitutedAstOf(…,
+{ forDerivation })` remplace aussi les fonctions en attente (`engine.ts`) → `.dériver g` = a.
+- Une fonction en attente d'une **fonction** (`as: 'function'`) : la commande est refusée avec
+  le message de la carte (`pendingFunctionRefusal`). ⚠️ `p(x) = q(x)+1`, q inconnu, est lu
+  q·x par l'atelier (`as: 'value'`) : `.dériver p` répond q.
 
 **« Comment ? » de `.évaluer`** (`evaluate-steps.ts`, PR 3, décisions de David du 2026-10-14).
 **E2** : `generatePedagogicalArithmeticSteps` niveau `college`, une opération par étape (pièges du

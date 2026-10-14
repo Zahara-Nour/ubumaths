@@ -53,7 +53,9 @@ describe('une fonction de l’atelier se dérive toujours en x', () => {
 		expect(outcome).toMatchObject({
 			kind: 'commande',
 			latex: '0',
-			output: 'd/dx(f) = 0',
+			// L'expression de f, comme pour une fonction prête (V56) : le moteur
+			// recevait le symbole f, et `.dériver f` de `f(x) = a x` répondait 0
+			output: 'd/dx((k)) = 0',
 			note: "En attente de « k », qui n'est pas encore défini."
 		});
 	});
