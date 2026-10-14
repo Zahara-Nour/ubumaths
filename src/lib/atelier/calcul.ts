@@ -836,15 +836,14 @@ function substituteArguments(
 	const expression = substitute(args.expression);
 	const lower = args.bounds === null ? null : substitute(args.bounds.lower);
 	const upper = args.bounds === null ? null : substitute(args.bounds.upper);
-	const value = args.assignment === null ? null : substitute(args.assignment.value);
+	const values = args.assignments.map((assignment) => substitute(assignment.value));
 	const interval = args.interval === null ? null : substitute(args.interval);
 	const other = args.other === null ? null : substitute(args.other);
 	if (expression === null) return null;
 	if (args.bounds !== null && (lower === null || upper === null)) return null;
+	if (values.some((value) => value === null)) return null;
 	if (
-		[args.assignment, args.interval, args.other].some(
-			(part, i) => part !== null && [value, interval, other][i] === null
-		)
+		[args.interval, args.other].some((part, i) => part !== null && [interval, other][i] === null)
 	) {
 		return null;
 	}
@@ -852,7 +851,10 @@ function substituteArguments(
 		...args,
 		expression,
 		bounds: lower === null || upper === null ? null : { lower, upper },
-		assignment: args.assignment === null || value === null ? null : { ...args.assignment, value },
+		assignments: args.assignments.map((assignment, i) => ({
+			...assignment,
+			value: values[i] ?? assignment.value
+		})),
 		interval,
 		other
 	};
@@ -1190,6 +1192,20 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			message: 'Écris « et » entre les deux expressions : .équivalent (x+1)^2 et x^2+2x+1'
 		};
 	}
+	// `.évaluer 2a en a=1` alors que `a` est posé dans l'atelier : l'atelier
+	// le remplace avant le moteur, qui répondait « « a » n'apparaît pas dans
+	// 2(5) », illisible (décision de David, 2026-10-14)
+	const posed =
+		name === 'eval'
+			? typedArgs?.assignments.find((a) => session.atelier.get(a.name)?.kind === 'value')
+			: undefined;
+	if (posed !== undefined) {
+		const definition = session.atelier.get(posed.name)?.definition ?? '';
+		return {
+			kind: 'refus',
+			message: `${posed.name} vaut déjà ${definition} dans l'atelier : retire « ${posed.name}=${posed.value} », ou efface ${posed.name} avant.`
+		};
+	}
 	const args = typedArgs === null ? null : substituteArguments(typedArgs, substitute);
 	if (typedArgs !== null && args === null) return { kind: 'refus', message: UNREADABLE_COMMAND };
 
@@ -1210,7 +1226,17 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// en x) au lieu de dériver t³ par rapport à x (revue #962).
 	const letter =
 		typedArgs === null || name === 'equiv' ? null : functionLetterOf(session, typedArgs.expression);
-	const typedVariable = typedArgs?.variable ?? typedArgs?.assignment?.name ?? null;
+	// `.évaluer` : la lettre des fonctions citées est celle de la valeur tapée
+	// (`en t=2`) ; à plusieurs lettres (E6), celle qui porte leur nom
+	const evalAssignment =
+		typedArgs === null
+			? null
+			: typedArgs.assignments.length === 1
+				? typedArgs.assignments[0]
+				: (typedArgs.assignments.find(
+						(a) => a.name === (letter?.kind === 'single' ? letter.letter : INTERNAL_LETTER)
+					) ?? null);
+	const typedVariable = typedArgs?.variable ?? evalAssignment?.name ?? null;
 	const rewrites =
 		letter?.kind === 'single' && (typedVariable === null || typedVariable === letter.letter);
 	let finalArgs =
@@ -1256,13 +1282,12 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			? citedReciprocalInterval(
 					session.atelier,
 					typedArgs.expression,
-					(name === 'eval' ? typedArgs.assignment?.name : finalArgs.variable) ?? INTERNAL_LETTER,
+					(name === 'eval' ? evalAssignment?.name : finalArgs.variable) ?? INTERNAL_LETTER,
 					(typed) =>
 						citedIntervalDomain(
 							(n) => session.atelier.get(n),
 							typed,
-							(name === 'eval' ? typedArgs.assignment?.name : finalArgs?.variable) ??
-								INTERNAL_LETTER
+							(name === 'eval' ? evalAssignment?.name : finalArgs?.variable) ?? INTERNAL_LETTER
 						)
 				)
 			: null;
@@ -1273,8 +1298,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	const outsideRefusal =
 		cited === null || typedArgs === null
 			? null
-			: name === 'eval' && typedArgs.assignment !== null
-				? valueOutsideRefusal(get, cited, typedArgs.assignment.value)
+			: name === 'eval' && evalAssignment !== null
+				? valueOutsideRefusal(get, cited, evalAssignment.value)
 				: name === 'integrate' && typedArgs.bounds !== null
 					? segmentOutsideRefusal(get, cited, typedArgs.bounds.lower, typedArgs.bounds.upper)
 					: null;
@@ -1574,21 +1599,28 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// réponse du moteur et ont quelque chose à montrer (`evaluate-steps.ts`).
 	// Les refus (`VALUE_FORBIDDEN`) sont sortis plus haut, sans étapes.
 	if (name === 'eval' && result.success && result.latex !== undefined) {
-		const assignment = finalArgs?.assignment ?? typedArgs?.assignment ?? null;
-		const functionName = evaluatedFunctionName(session, typedArgs?.expression ?? null);
-		const line = evaluatedLine(result, result.latex, functionName, assignment?.value ?? null);
+		const assignments = finalArgs?.assignments ?? typedArgs?.assignments ?? [];
+		// `f(3) = …` : une fonction de l'atelier en UNE valeur ; à plusieurs
+		// lettres (E6), la valeur seule, comme pour une expression
+		const functionName =
+			assignments.length === 1
+				? evaluatedFunctionName(session, typedArgs?.expression ?? null)
+				: null;
+		const single = assignments.length === 1 ? assignments[0].value : null;
+		const line = evaluatedLine(result, result.latex, functionName, single);
+		const names = new Set(assignments.map((a) => a.name));
 		const evaluated =
 			finalArgs === null ||
-			finalArgs.assignment === null ||
+			finalArgs.assignments.length === 0 ||
 			result.ast === undefined ||
-			citesOtherLetters(session, typedArgs?.expression ?? null, finalArgs.assignment.name) ||
-			citesOtherLetters(session, typedArgs?.assignment?.value ?? null, null)
+			citesOtherLetters(session, typedArgs?.expression ?? null, names) ||
+			(typedArgs?.assignments ?? []).some((a) => citesOtherLetters(session, a.value, new Set()))
 				? null
 				: evaluateSteps(
 						{
 							expression: finalArgs.expression,
-							assignment: finalArgs.assignment,
-							callLatex: evaluatedCallLatex(functionName, finalArgs.assignment.value)
+							assignments: finalArgs.assignments,
+							callLatex: evaluatedCallLatex(functionName, single)
 						},
 						result.ast,
 						result.latex
@@ -1654,21 +1686,21 @@ function evaluatedLine(
 }
 
 /**
- * La saisie TAPÉE cite-t-elle une autre lettre que celle qu'on remplace
+ * La saisie TAPÉE cite-t-elle une autre lettre que celles qu'on remplace
  * (une valeur posée dans l'atelier, `a` dans `.évaluer a x en x=3`, ou dans
- * la valeur, `en x=a` : `letter` vaut alors `null`) ? Ses
- * étapes la feraient disparaître sans le dire : pas d'étapes (E6, plusieurs
- * lettres, en attente). Le nom d'une fonction de l'atelier ne compte pas.
+ * une valeur, `en x=a` : `letters` est alors vide) ? Ses étapes la feraient
+ * disparaître sans le dire : pas d'étapes. Le nom d'une fonction de
+ * l'atelier ne compte pas.
  */
 function citesOtherLetters(
 	session: CalcSession,
 	typed: string | null,
-	letter: string | null
+	letters: ReadonlySet<string>
 ): boolean {
 	const ast = typed === null ? undefined : parseCommandExpression(typed).ast;
 	if (ast === undefined) return true;
 	return [...getVariables(ast)].some(
-		(name) => name !== letter && session.atelier.get(name)?.kind !== 'function'
+		(name) => !letters.has(name) && session.atelier.get(name)?.kind !== 'function'
 	);
 }
 
