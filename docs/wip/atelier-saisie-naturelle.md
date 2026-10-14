@@ -72,3 +72,6 @@ morceau ») — David ne veut PAS du point devant les commandes : « une écritu
   (1) PAS de sortie automatique d'une fraction quand on tape un opérateur — le comportement de
   MathLive reste (on sort par → ou Tab) ; (2) **créer les commandes `limite` et `développer`** ;
   (3) liste ouverte : **Entrée calcule, Tab choisit** (comme pour les fonctions aujourd'hui).
+- 2026-10-14 — prototype mergé (#1355) et en production (v0.31.0, www.chiph.re/test-saisie) pour les
+  essais de David sur téléphone ; historique de Calcul gardé au rechargement MERGÉ (#1356, liste blanche
+  `safe-latex.ts`, deux audits de sécurité). `.limite` créée par une autre session ; reste `développer`.
