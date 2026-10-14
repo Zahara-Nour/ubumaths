@@ -57,11 +57,12 @@ import {
 	variable as variableNode,
 	greek,
 	power,
-	mathConstant
+	mathConstant,
+	parentheses
 } from '../factory';
 import { findNodes, mapNode } from '../transforms';
 import { flattenSumShallow, flattenProductShallow, unflattenProduct } from '../flatten';
-import { isEulerBase } from '../differentiation/rules';
+import { isEulerBase, rootIndexOf } from '../differentiation/rules';
 import { expandEulerPowers } from '../normal/rules/euler-power';
 import { expandFunctionPowers } from '../common/function-power';
 import { expandOddRootPowers, hasOddRootPower } from '../common/odd-root-power';
@@ -761,6 +762,32 @@ function evaluateLimitExactForm(
 		}
 	}
 
+	// Stratégie 2.45 : f(u) avec f continue en la limite EXACTE et finie de u
+	// (√, ⁿ√, exp, a^u, u^p). Avant la composition, qui suit la limite de u en
+	// flottants : √((x²+1)/(4x²)) en −∞ rendait 0.5 (√0.25), désormais 1/2.
+	const continuous = tryContinuousOfExactLimit(expression, varName, approachPoint, dir, options);
+	if (continuous !== null) {
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			continuous,
+			'summarized',
+			approachPoint,
+			'Continuité : lim f(u) = f(lim u)'
+		);
+		return createResult(
+			continuous,
+			varName,
+			approachPoint,
+			dir,
+			'exact',
+			'none',
+			'composition',
+			recorder,
+			opts
+		);
+	}
+
 	// Strategy 2.5: Try composition limits (for infinity, function compositions, divisions by zero)
 	const compositionResult = tryCompositionLimit(expression, varName, approachPoint, dir, recorder);
 	if (compositionResult.success && compositionResult.value) {
@@ -1126,10 +1153,16 @@ function evaluateLimitExactForm(
 			);
 		}
 
-		// Un côté seulement approché : rien ne prouve que les limites diffèrent
-		const approximateSide =
-			oneSided.left?.status === 'approximate' || oneSided.right?.status === 'approximate';
-		if (!oneSided.twoSidedExists && !approximateSide) {
+		// « Gauche ≠ droite » n'est prouvé que si les DEUX côtés sont conclus
+		// (valeur exacte ou infinie) : un côté approché, non supporté ou sans
+		// limite ne prouve rien. Depuis que le point exclu d'un domaine
+		// (ℝ \ {0} pour 2 + 1/x) déclenche cette analyse, 1/x − 1/(eˣ − 1) en 0
+		// se disait sans limite (vaut 1/2).
+		const concluded = (side: LimitResult | null) =>
+			side !== null &&
+			(side.status === 'exact' || side.status === 'infinite') &&
+			side.value !== null;
+		if (!oneSided.twoSidedExists && concluded(oneSided.left) && concluded(oneSided.right)) {
 			return createResult(
 				null,
 				varName,
@@ -1463,6 +1496,84 @@ function tryLogarithmOfPositiveLimit(
 	if (value.n === value.d) return number('0');
 	const constant = exactConstantNode(inner.value);
 	return constant === null ? null : ln(constant);
+}
+
+/**
+ * lim f(u) = f(L) quand u tend vers une limite EXACTE et finie L où f est
+ * continue : √u et ⁿ√u d'indice pair (L > 0 ; L = 0 relève du côté 0⁺, laissé
+ * à la composition), ⁿ√u d'indice impair, exp u, a^u (a > 0 constant, e
+ * compris), u^p (p constant : entier positif, entier négatif si L ≠ 0, sinon
+ * L > 0). La valeur est exacte : f(L) réduit en rationnel s'il l'est
+ * (√(1/4) = 1/2), sinon gardé symbolique (√(1/2), e³). Null hors de ces cas.
+ */
+function tryContinuousOfExactLimit(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): MathNode | null {
+	const node = stripDelimiters(expression);
+	const limitOf = (inner: MathNode): { node: MathNode; value: number } | null => {
+		if (!containsVariable(inner, varName)) return null;
+		const result = evaluateLimit(inner, varName, approach, dir, options);
+		if (result.status !== 'exact' || result.value === null || isInfinity(result.value)) {
+			return null;
+		}
+		try {
+			const value = evaluateNodeToApproximatedNumber(result.value);
+			return Number.isFinite(value) ? { node: result.value, value } : null;
+		} catch {
+			return null;
+		}
+	};
+	const exactOrSymbolic = (value: MathNode): MathNode => exactConstantNode(value) ?? value;
+
+	if (isFunction(node) && node.args.length === 1 && (node.name === 'sqrt' || node.name === 'exp')) {
+		const inner = limitOf(node.args[0]);
+		if (inner === null) return null;
+		if (node.name === 'exp') {
+			return inner.value === 0 ? number('1') : power(mathConstant('euler'), inner.node);
+		}
+		const index = rootIndexOf(node);
+		const n = index === null ? 2 : isNumber(index) ? Number(index.value) : NaN;
+		if (!Number.isInteger(n) || n < 2) return null;
+		if (n % 2 === 0 && !(inner.value > 0)) return null;
+		const root = func('sqrt', [inner.node], index === null ? undefined : { base: index });
+		return exactOrSymbolic(root);
+	}
+
+	if (!isSuperscript(node)) return null;
+	const baseHasVariable = containsVariable(node.base, varName);
+	const exponentHasVariable = containsVariable(node.superscript, varName);
+	if (baseHasVariable === exponentHasVariable) return null;
+
+	if (exponentHasVariable) {
+		// a^u, a > 0 constant (e^u compris)
+		let base: number;
+		try {
+			base = evaluateNodeToApproximatedNumber(node.base);
+		} catch {
+			return null;
+		}
+		if (!Number.isFinite(base) || !(base > 0)) return null;
+		const inner = limitOf(node.superscript);
+		if (inner === null) return null;
+		if (inner.value === 0) return number('1');
+		const baseNode = isEulerBase(node.base) ? mathConstant('euler') : node.base;
+		return exactOrSymbolic(power(baseNode, inner.node));
+	}
+
+	// u^p, p constant
+	const exponent = exactConstantRational(node.superscript);
+	if (exponent === null) return null;
+	const inner = limitOf(node.base);
+	if (inner === null) return null;
+	const integer = exponent.d === 1n;
+	if (integer && exponent.n < 0n && inner.value === 0) return null;
+	if (!integer && !(inner.value > 0)) return null;
+	const base = isNumber(inner.node) ? inner.node : parentheses(inner.node);
+	return exactOrSymbolic(power(base, node.superscript));
 }
 
 /** Formes 0^0, ∞^0, 1^∞ d'une puissance u^v (ou borne infinie). */

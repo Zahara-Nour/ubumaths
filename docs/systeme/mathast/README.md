@@ -1003,8 +1003,11 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   (`\sqrt{\frac{x^2+1}{4x^2}}` en −∞ rend `0.5` par la composée √). **Un flottant n'est jamais
   `exact`** (2026-10-14) : à la sortie de `evaluateLimit`, `withApproximateStatus` passe en
   `approximate` toute valeur où `containsFloatArtifact` voit un nombre non entier absent de
-  l'énoncé (et, si l'énoncé a des décimaux, d'au moins dix chiffres significatifs) — ce
-  `0.5` est donc `approximate`. `resultToFiniteNode` rend la forme dénormalisée exacte au lieu
+  l'énoncé (et, si l'énoncé a des décimaux, d'au moins dix chiffres significatifs). Ce `0.5`
+  ne sort plus : la **stratégie 2.45** (`tryContinuousOfExactLimit`, avant la composition)
+  calcule f(u), f continue (√, ⁿ√, exp, a^u, u^p), sur la limite EXACTE de u —
+  `\sqrt{\frac{x^2+1}{4x^2}}` en −∞ = `\dfrac{1}{2}`, `e^{\frac{3x+1}{x}}` en −∞ = e³,
+  `(\frac{2x+1}{x})^3` en −∞ = 8. `resultToFiniteNode` rend la forme dénormalisée exacte au lieu
   d'un arrondi à dix chiffres. Les calculs intermédiaires
   gardent la forme de `resultToNode` ; `analyzeDiscontinuity` (`limits/one-sided.ts`) compare la
   valeur au point et la limite numériquement (repli : `tidy` des deux côtés) — `|x| + 0.5` en 0
@@ -1019,7 +1022,10 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   un côté est demandé, en ±∞, ou si f est définie des deux côtés. `noLimitReason`
   (`NoLimitReason`) sur un `does-not-exist` : `'outside-domain'` (f non définie au voisinage du
   côté demandé : `\sqrt{x}` en −1, `\ln x` en −∞), `'sides-differ'` (gauche ≠ droite : `1/x` en
-  0, `x^{-1/3}` en 0), `'oscillation'`. **Oscillation** (`oscillatesWithoutLimit`, stratégie
+  0, `x^{-1/3}` en 0), `'oscillation'`. L'analyse côté par côté (stratégie 6) se déclenche aussi
+  en un **point exclu** du domaine (`isOnDomainBoundary`, `limits/one-sided.ts` : `2 + 1/x` en 0),
+  et ne conclut « pas de limite » que si les DEUX côtés ont une limite exacte ou infinie
+  différente — un côté non conclu laisse la main aux stratégies suivantes. **Oscillation** (`oscillatesWithoutLimit`, stratégie
   6.5, en dernier recours) : `a\sin(u) + b`, `a\cos(u) + b` (a ≠ 0 et b constants ; somme à un
   seul terme variable, facteur ou diviseur constant, opposé) avec u → ±∞ du côté demandé — en
   bilatéral en un point fini, des deux côtés (`\sin\frac{1}{x}` en 0). Les limites trouvées

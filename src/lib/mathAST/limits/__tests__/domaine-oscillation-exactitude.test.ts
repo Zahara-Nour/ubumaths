@@ -169,15 +169,6 @@ describe('valeur approchée jamais rendue « exact »', () => {
 		expect(toLatex(result.value as MathNode)).toBe(value);
 	});
 
-	it('composée √ calculée en flottants (√((x²+1)/(4x²)) en −∞) : approximate, plus « exact 0.5 »', () => {
-		// La valeur vaut bien 1/2, mais le suivi de signe la calcule en
-		// flottants : rien ne la prouve exacte (en +∞, le terme dominant rend 1/2)
-		const result = limit('\\sqrt{\\frac{x^2+1}{4x^2}}', MINUS_INF);
-		expect(result.status).toBe('approximate');
-		expect(toLatex(result.value as MathNode)).toBe('0.5');
-		expect(valueLatex('\\sqrt{\\frac{x^2+1}{4x^2}}', PLUS_INF)).toBe('\\dfrac{1}{2}');
-	});
-
 	it('repli numérique de L’Hôpital : approximate', () => {
 		expect(limit('\\frac{\\sqrt{x^2+1}}{\\sqrt{3}x}', PLUS_INF).status).toBe('approximate');
 	});
@@ -198,5 +189,48 @@ describe('valeur approchée jamais rendue « exact »', () => {
 			expect(containsFloatArtifact(number('1.5'), statement('0.5x'))).toBe(false);
 			expect(containsFloatArtifact(number('0.3'), statement('\\frac{0.3x}{x+0.7}'))).toBe(false);
 		});
+	});
+});
+
+describe('f(u), f continue en la limite EXACTE de u (√, exp, puissances)', () => {
+	it.each([
+		['\\sqrt{\\frac{x^2+1}{4x^2}}', MINUS_INF, '\\dfrac{1}{2}'],
+		['\\sqrt{\\frac{x^2+1}{4x^2}}', PLUS_INF, '\\dfrac{1}{2}'],
+		['\\sqrt{\\frac{9x^2+1}{4x^2}}', MINUS_INF, '\\dfrac{3}{2}'],
+		['\\sqrt{\\frac{x+1}{2x}}', PLUS_INF, '\\dfrac{\\sqrt{2}}{2}'],
+		['\\frac{\\sqrt{4x^2+1}}{x}', PLUS_INF, '2'],
+		['\\frac{\\sqrt{4x^2+1}}{x}', MINUS_INF, '-2'],
+		['\\ln(\\frac{2x+1}{x})', PLUS_INF, '\\ln\\left( 2 \\right)'],
+		['e^{\\frac{3x+1}{x}}', MINUS_INF, '\\exponentialE^3'],
+		['(\\frac{2x+1}{x})^3', MINUS_INF, '8'],
+		['\\sqrt{x+3}', number('1'), '2']
+	] as const)('%s en %s : exact %s', (latex, approach, value) => {
+		const result = limit(latex, approach);
+		expect(result.status).toBe('exact');
+		expect(toLatex(result.value as MathNode)).toBe(value);
+	});
+});
+
+describe('constante + fonction qui diverge en un point exclu : comme 1/x', () => {
+	it.each([
+		['\\frac{1}{3}+\\frac{1}{x}', number('0')],
+		['2+\\frac{1}{x}', number('0')],
+		['\\frac{1}{x}+0.5', number('0')],
+		['x+\\frac{3}{x-2}', number('2')]
+	] as const)('%s en %s : pas de limite, sides-differ', (latex, approach) => {
+		const result = limit(latex, approach);
+		expect(result.status).toBe('does-not-exist');
+		expect(result.noLimitReason).toBe('sides-differ');
+	});
+
+	it.each([
+		['\\frac{1}{3}+\\frac{1}{x}', 'left', '-\\infty'],
+		['2+\\frac{1}{x}', 'right', '+\\infty']
+	] as const)('%s en 0 (%s) : %s', (latex, direction, value) => {
+		expect(valueLatex(latex, number('0'), direction)).toBe(value);
+	});
+
+	it('2 + 1/x² en 0 : +∞ des deux côtés', () => {
+		expect(valueLatex('2+\\frac{1}{x^2}', number('0'))).toBe('+\\infty');
 	});
 });
