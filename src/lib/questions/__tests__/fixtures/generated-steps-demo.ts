@@ -558,9 +558,10 @@ export const integrateDefiniteDemo: QuestionTemplate = {
 /**
  * Demo question : « Développe et réduis $(x+{{a}})(x-{{a}})$. » for collège.
  *
- * Mode B declares a `simplify` correction with `intent: 'developper'`. The
- * pipeline recognises the conjugate identity and emits one
- * `product-to-diff-squares` step ; normalize then settles the canonical form.
+ * Mode B declares a `simplify` correction with `intent: 'developper'`. Les
+ * étapes sont celles de `.développer` dans l'atelier (`explainExpansion`,
+ * option B du 2026-10-14) : l'identité (a + b)(a − b) = a² − b² avec a et b
+ * nommés (`expand-identity`), puis chaque terme calculé (`expand-compute`).
  */
 export const simplifyDistributionDemo: QuestionTemplate = {
 	id: 'demo-simplify-distribution-college',

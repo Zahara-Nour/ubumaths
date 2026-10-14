@@ -458,31 +458,23 @@ exports[`Mode B end-to-end demos > 4e linear inequality with x on both sides —
 ]
 `;
 
-exports[`Mode B end-to-end demos > 4e simplify distribution — produces a product-to-diff-squares step 1`] = `
+exports[`Mode B end-to-end demos > 4e simplify distribution — produces an identity step, written as in the atelier 1`] = `
 [
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
     "id": 1,
-    "rule": "product-to-diff-squares",
+    "rule": "expand-identity",
     "schoolLevel": "college",
-    "title": "On utilise (a+b)(a-b) = a² - b²",
-  },
-  {
-    "hasExplanation": false,
-    "hasExpressionLatex": true,
-    "id": 2,
-    "rule": "expand-power",
-    "schoolLevel": "college",
-    "title": "On développe la puissance",
+    "title": "On reconnaît (a + b)(a − b) = a² − b², avec a = x et b = 3",
   },
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
-    "id": 3,
-    "rule": "combine-like-terms",
+    "id": 2,
+    "rule": "expand-compute",
     "schoolLevel": "college",
-    "title": "On regroupe les termes en x",
+    "title": "On calcule chaque terme",
   },
 ]
 `;

@@ -9,31 +9,28 @@
  * Développer, c'est aussi réduire (la consigne scolaire « développer et
  * réduire », décision de David du 2026-09-21).
  *
- * **Le « Comment ? »** (PR 2, section E de la phase 0
- * `atelier-developper-phase0.md`) : rédigé par `writeExpandSteps`, qui part de
- * l'expression écrite et finit sur la réponse de la ligne. La trace de
- * l'intention `developper` n'est pas montrée — mesuré le 2026-10-14 : produits
- * collés (`2 x 1` s'affiche « 2x1 »), la même ligne jusqu'à 13 fois,
- * distribution cachée sous « On regroupe les termes semblables ». Ce que la
- * rédaction ne sait pas expliquer n'a pas d'étapes ; la réponse reste.
+ * **La réponse et le « Comment ? »** viennent d'`explainExpansion`
+ * (`mathAST/pedagogical-simplify/expand-explained.ts`), la même fonction que les
+ * corrections d'exercices générées : une intention, une seule rédaction
+ * (décision de David du 2026-10-14, option B). Les étapes (section E de la
+ * phase 0 `atelier-developper-phase0.md`) partent de l'expression écrite et
+ * finissent sur la réponse de la ligne ; la trace de l'intention `developper`
+ * n'est pas montrée. Ce que la rédaction ne sait pas expliquer n'a pas
+ * d'étapes ; la réponse reste. Ici, ce qui est propre à l'atelier : les refus,
+ * les messages, le plafond de termes, le mode décimal.
  *
  * @module atelier/expand
  */
 
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import { generatePedagogicalSimplifySteps } from '$lib/mathAST/pedagogical-simplify/pipeline';
-import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/renderer';
-import { isMonomial, orderExpanded } from '$lib/mathAST/pedagogical-simplify/expand-order';
-import { writeExpandSteps } from '$lib/mathAST/pedagogical-simplify/expand-steps';
+import { explainExpansion } from '$lib/mathAST/pedagogical-simplify/expand-explained';
+import { isMonomial } from '$lib/mathAST/pedagogical-simplify/expand-order';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { toCustom } from '$lib/mathAST/custom-generator';
-import { multiply, number, opposite } from '$lib/mathAST/factory';
-import { flattenProductShallow, flattenSumShallow } from '$lib/mathAST/flatten';
-import { findNodes, mapNode } from '$lib/mathAST/transforms';
+import { flattenSumShallow } from '$lib/mathAST/flatten';
+import { findNodes } from '$lib/mathAST/transforms';
 import { getVariables } from '$lib/mathAST/eval/substitute';
-import { decimalString, hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
-import { nodesEqual } from '$lib/mathAST/normal/hash';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
 
@@ -87,28 +84,15 @@ const MAX_TERMS = 500;
 /**
  * Retirer les parenthèses qui enveloppent toute l'expression.
  *
- * La substitution des noms écrit `f` en `((x+1)^2)` : sans ce retrait, la
- * comparaison avant/après verrait une différence qui n'en est pas une. Seules
- * les parenthèses de GROUPEMENT : `[0;1]` est un intervalle.
+ * La substitution des noms écrit `f` en `((x+1)^2)` : sans ce retrait, une
+ * équation ou une liste entre parenthèses ne serait pas reconnue, ni le message
+ * « rien à développer » bien choisi. Seules les parenthèses de GROUPEMENT :
+ * `[0;1]` est un intervalle.
  */
 function unwrapGrouping(node: MathNode): MathNode {
 	if (node.type !== 'delimiter') return node;
 	if (node.semantic !== undefined && node.semantic !== 'grouping') return node;
 	return unwrapGrouping(node.content);
-}
-
-/**
- * L'arbre sans ses parenthèses de groupement, pour comparer deux écritures du
- * même calcul : `1/(x+1)` tapé en ligne et `\dfrac{1}{x+1}` rendu par le
- * module ne diffèrent que par là (et par le style du quotient, que l'empreinte
- * ignore déjà).
- */
-function withoutGrouping(node: MathNode): MathNode {
-	return mapNode(node, (n) =>
-		n.type === 'delimiter' && (n.semantic === undefined || n.semantic === 'grouping')
-			? n.content
-			: n
-	);
 }
 
 /** La forme texte d'un arbre, ou sa forme LaTeX si le générateur refuse. */
@@ -184,36 +168,6 @@ function isTooLong(node: MathNode): boolean {
 	return findNodes(node, (n) => n.type === 'superscript' && termEstimate(n) > MAX_TERMS).length > 0;
 }
 
-/**
- * Une écriture que le module n'a pas su finir : deux nombres dans un même
- * produit (`2 x 1`), une puissance de nombres (`1^2`). Mesuré : une somme
- * dans un exposant (`e^{(x+1)^2}`) est développée sans être réduite.
- */
-function hasUnfinishedArithmetic(node: MathNode): boolean {
-	return (
-		findNodes(node, (n) => {
-			if (n.type === 'superscript') {
-				return n.base.type === 'number' && n.superscript.type === 'number';
-			}
-			if (n.type !== 'multiplication') return false;
-			return flattenProductShallow(n).filter(({ factor }) => factor.type === 'number').length >= 2;
-		}).length > 0
-	);
-}
-
-/**
- * `-(x+1)` s'écrit `-1(x+1)` pour le module, qui ne développait pas
- * l'opposé d'une somme (0 étape, la ligne disait « rien à développer » — revue).
- */
-function withExplicitMinusOne(node: MathNode): MathNode {
-	return mapNode(node, (n) => {
-		if (n.type !== 'opposite' || n.operand.type !== 'delimiter') return n;
-		const inside = unwrapGrouping(n.operand);
-		if (inside.type !== 'addition' && inside.type !== 'subtraction') return n;
-		return multiply(opposite(number('1')), n.operand, 'implicit');
-	});
-}
-
 /** Le refus d'une relation : une équation se résout, elle ne se développe pas (phase 0, D). */
 function relationRefusal(relation: RelationNode, typed: string): string {
 	if (relation.relation === '=') {
@@ -228,59 +182,6 @@ function relationRefusal(relation: RelationNode, typed: string): string {
 /** Le refus de tout ce qui n'est pas une expression à développer (phase 0, D). */
 function notExpandable(typed: string): string {
 	return `« ${typed} » n’est pas une expression qu’on sait développer.`;
-}
-
-// =============================================================================
-// Fonctions — mode décimal
-// =============================================================================
-
-/** Un entier écrit, éventuellement précédé d'un signe : sa valeur, sinon `null`. */
-function integerOf(node: MathNode): bigint | null {
-	if (node.type === 'opposite') {
-		const value = integerOf(node.operand);
-		return value === null ? null : -value;
-	}
-	if (node.type !== 'number' || !/^-?\d+$/.test(node.value)) return null;
-	return BigInt(node.value);
-}
-
-/**
- * En décimal (mode décimal, ou un décimal tapé), une fraction de deux entiers
- * à écriture décimale finie s'écrit en décimal (`1/4` → `0.25`). Les autres restent des fractions :
- * arrondir `1/9` ferait d'une égalité une approximation.
- */
-function decimalFraction(node: MathNode): MathNode {
-	if (node.type !== 'division') return node;
-	const numerator = integerOf(node.numerator);
-	const denominator = integerOf(node.denominator);
-	if (numerator === null || denominator === null || denominator === 0n) return node;
-	const negative = numerator < 0n !== denominator < 0n;
-	const absolute = (n: bigint) => (n < 0n ? -n : n);
-	const text = decimalString({ n: absolute(numerator), d: absolute(denominator) });
-	if (text === null) return node;
-	return negative ? opposite(number(text)) : number(text);
-}
-
-// =============================================================================
-// Fonctions — le « Comment ? »
-// =============================================================================
-
-/**
- * Les deux rédactions rendues pour le dépliage, ou rien quand la rédaction a
- * renoncé (la réponse reste, sans « Comment ? »).
- */
-function renderedSteps(written: ReturnType<typeof writeExpandSteps>): {
-	steps?: readonly RenderedStep[];
-	summary?: readonly RenderedStep[];
-} {
-	if (written === null) return {};
-	const renderer = new PedagogicalSimplifyRenderer();
-	const steps = renderer.renderAll(written.steps, { schoolLevel: 'lycee', verbosity: 'detailed' });
-	const summary = summaryOf(
-		steps,
-		renderer.renderAll(written.summary, { schoolLevel: 'lycee', verbosity: 'summarized' })
-	);
-	return { steps, ...(summary !== undefined && { summary }) };
 }
 
 // =============================================================================
@@ -328,40 +229,31 @@ export function expandExpression(
 			};
 		}
 
-		const result = generatePedagogicalSimplifySteps(withExplicitMinusOne(node), {
-			intent: 'developper',
-			schoolLevel: 'lycee',
-			verbosity: 'detailed'
-		});
-		// Rien n'a bougé : aucune étape, ou des étapes qui rendent l'expression
-		// de départ (`1/(x+1)` : « On réduit la fraction », sans rien réduire)
-		if (
-			result.steps.length === 0 ||
-			nodesEqual(withoutGrouping(result.result), withoutGrouping(node))
-		) {
-			return { kind: 'inchangee', message: unchangedMessage(node, typed) };
-		}
-
-		// L'ordre du manuel (tableau B) : celui de la réponse ET des étapes
-		const ordered = orderExpanded(result.result);
 		// La réponse s'écrit comme l'élève a écrit, comme `.limite` (décision de
 		// David du 2026-10-06, étendue ici le 2026-10-14) : un décimal tapé, ou le
 		// mode décimal, donne des décimaux — `(0,5x+1)²` → `0,25x² + x + 1`
-		const decimal = mode === 'decimal' || hasDecimalLiteral(node);
-		const format = (image: MathNode) => (decimal ? mapNode(image, decimalFraction) : image);
-		const written = format(ordered);
+		const explained = explainExpansion(node, {
+			schoolLevel: 'lycee',
+			decimal: mode === 'decimal'
+		});
+		if (explained.kind === 'unchanged') {
+			return { kind: 'inchangee', message: unchangedMessage(node, typed) };
+		}
 		// Jamais une réponse mal écrite : « je ne sais pas » vaut mieux que `2 x 1`
-		if (hasUnfinishedArithmetic(written)) {
+		if (explained.kind === 'unfinished') {
 			return { kind: 'inchangee', message: `Je ne sais pas développer « ${typed} ».` };
 		}
-		const answer = toLatex(written);
+		const answer = toLatex(explained.answer);
 		if (answer.trim() === '') {
 			return { kind: 'inchangee', message: unchangedMessage(node, typed) };
 		}
-		// Les étapes reçoivent la réponse et sa mise en forme : leur dernière
-		// image s'écrit exactement comme la ligne
-		const explained = renderedSteps(writeExpandSteps(node, ordered, { format }));
-		return { kind: 'developpee', answer, text: plainFormOf(written), ...explained };
+		const text = plainFormOf(explained.answer);
+		// Sans rédaction, la réponse reste, sans « Comment ? »
+		if (explained.steps === null) return { kind: 'developpee', answer, text };
+		const steps = explained.steps.detailed;
+		// La version résumée, si elle dit quelque chose de moins
+		const summary = summaryOf(steps, explained.steps.summarized);
+		return { kind: 'developpee', answer, text, steps, ...(summary !== undefined && { summary }) };
 	} catch {
 		// `PedagogicalSimplifyNotImplemented` (matrice, inéquation…), ou un
 		// générateur qui refuse ce qu'on lui donne

@@ -9,6 +9,11 @@
  * a deterministic multi-line string suitable for snapshot diffing or
  * terminal display.
  *
+ * ⚠️ L'intention `developper` montre la rédaction d'`explainExpansion`
+ * (`expand-explained.ts`), comme l'atelier et les corrections d'exercices :
+ * une intention, une seule rédaction (décision de David du 2026-10-14,
+ * option B). La trace du pipeline n'est montrée pour aucune.
+ *
  * Two output formats :
  *  - `'latex'` (default) : reuses the renderer's `expressionLatex` (compact
  *    one-line aligned block) ; stable for snapshots.
@@ -26,6 +31,7 @@ import { toLatex } from '../latex-generator';
 import { parseLatex } from '../parser';
 import { generatePedagogicalSimplifySteps } from './pipeline';
 import { PedagogicalSimplifyRenderer } from './renderer';
+import { explainExpansion } from './expand-explained';
 import {
 	PedagogicalSimplifyNotImplemented,
 	type PedagogicalSimplifyStep,
@@ -114,6 +120,34 @@ function formatResult(node: MathNode, format: DemoFormat): string {
 	return format === 'custom' ? toCustom(node) : toLatex(node);
 }
 
+/**
+ * `developper` : les étapes rédigées comme au tableau, puis la réponse (la
+ * dernière image). Lève `PedagogicalSimplifyNotImplemented` comme le pipeline.
+ */
+function presentExpansion(
+	node: MathNode,
+	schoolLevel: SchoolLevel,
+	verbosity: Verbosity,
+	format: DemoFormat
+): string[] {
+	const explained = explainExpansion(node, { schoolLevel });
+	if (explained.kind === 'unchanged') return ['(no steps — already simplified for this intent)'];
+	if (explained.kind === 'unfinished') return ['(no steps — the pipeline left it unfinished)'];
+	const lines: string[] = [];
+	if (explained.steps === null) {
+		lines.push('(no steps — this expansion cannot be written out yet)');
+	} else {
+		const summarized = verbosity === 'summarized';
+		const raw = summarized ? explained.steps.raw.summary : explained.steps.raw.steps;
+		const rendered = summarized ? explained.steps.summarized : explained.steps.detailed;
+		for (let i = 0; i < rendered.length; i++) {
+			lines.push(...indentStep({ rendered: rendered[i], raw: raw[i], depth: 0, format }));
+		}
+	}
+	lines.push(`=> ${formatResult(explained.answer, format)}`);
+	return lines;
+}
+
 // =============================================================================
 // Public API
 // =============================================================================
@@ -145,6 +179,10 @@ export function presentSimplification(demo: DemoCase, format: DemoFormat = 'late
 			}
 			let result: { result: MathNode; steps: readonly PedagogicalSimplifyStep[] };
 			try {
+				if (demo.intent === 'developper') {
+					lines.push(...presentExpansion(node, level, verbosity, format));
+					continue;
+				}
 				result = generatePedagogicalSimplifySteps(node, {
 					intent: demo.intent,
 					schoolLevel: level,

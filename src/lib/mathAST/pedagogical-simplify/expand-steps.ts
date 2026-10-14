@@ -14,8 +14,10 @@
  * réponse. Les images intermédiaires s'écrivent ici, chaque terme calculé par
  * `normalize` (le moteur du résultat), et chacune est vérifiée égale à l'entrée
  * (`areEquivalent`) : une étape fausse ne s'affiche jamais. La trace de
- * `generatePedagogicalSimplifySteps` n'est pas touchée (deux instantanés la
- * figent : `pedagogical-simplify-demo`, `questions/generated-steps-demo`).
+ * `generatePedagogicalSimplifySteps` n'est pas touchée, mais elle n'est plus
+ * montrée nulle part : l'atelier, les corrections d'exercices et la démo
+ * passent par `explainExpansion` (`expand-explained.ts`), qui appelle cette
+ * rédaction (option B de David, 2026-10-14 : une intention, une rédaction).
  *
  * Une phase par ligne, appliquée à TOUS les termes où elle s'applique, dans cet
  * ordre :
