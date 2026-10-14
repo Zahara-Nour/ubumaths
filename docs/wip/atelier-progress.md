@@ -142,6 +142,13 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
      **Fait le 2026-10-14** : PR 2 #1361 (`limit.ts`), moteur #1362 (`definedSide`, `noLimitReason`,
      oscillation, e, statut approché, f(u) exact), raisons écrites #1363. Ouvert : raison quand le côté
      est TAPÉ (reco : oui, « n'est pas définie à droite de 0 ») ; PR 3 « Comment ? » ; E6.
+   - **Décisions de David (2026-10-14, « je suis tes recos »)** : Q1 `.limite` avec côté TAPÉ → raison
+     écrite (« n'est pas définie à droite de $0$ », « oscille… ») ; Q2 fonction à paramètre : refus
+     large gardé (#1365), refus ciblé (seulement si le paramètre décide) en PR à part plus tard ;
+     Q3 primitive/intégrale qui divise par le paramètre → condition « ($a \neq 0$) » affichée ;
+     Q4 bouton « Dériver » de la carte aligné sur la commande ($f'(x) = a$) ; Q5 V57 `.résoudre a x = 0`
+     → refus « Le résultat dépend de a » quand le moteur divise par une expression du paramètre
+     ($x + a = 0$ reste accepté) ; discussion complète « si $a \neq 0$… si $a = 0$… » = piste future.
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).
 
 ### Dettes encore ouvertes (vérifiées dans le code)
