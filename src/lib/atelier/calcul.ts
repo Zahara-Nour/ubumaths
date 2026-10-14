@@ -108,6 +108,7 @@ import { factorSteps } from './factor-steps';
 import { integrateRefusalSteps, integrateSteps } from './integrate-steps';
 import { evaluateSteps } from './evaluate-steps';
 import { domainLine } from './domain-steps';
+import { limitCommand } from './limit';
 import { collapseLnAbs } from '$lib/mathAST/pedagogical-integration/latex';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { toLatex } from '$lib/mathAST/latex-generator';
@@ -1142,6 +1143,15 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			? substituteNames(session, text)
 			: (expandCommandArgument(session.atelier, text) ??
 				substituteNames(session, expandInput(session.atelier, text)));
+	// `.limite EXPR en POINT` : lue AVANT la substitution des noms — `en 0 à
+	// droite` n'est pas une expression, et `a` (une valeur) y est le mot `à`
+	if (known.name === 'limit') {
+		return limitCommand(
+			{ atelier: session.atelier, substitute, unreadable: UNREADABLE_COMMAND },
+			input,
+			rawArgument
+		);
+	}
 	const argument = substitute(rawArgument);
 	if (argument === null) return { kind: 'refus', message: UNREADABLE_COMMAND };
 	// Décision a : `.domaine f` d'une fonction définie sur un intervalle
