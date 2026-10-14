@@ -151,6 +151,72 @@ export async function listTemplateContent(
 	};
 }
 
+/** Ce que compte un modèle, pour la liste et l'aperçu « Créer depuis un modèle ». */
+export interface TemplateContentCounts {
+	documentCount: number;
+	checklistItemCount: number;
+	exerciseCount: number;
+	worksheetCount: number;
+}
+
+/** Des compteurs à zéro : un modèle sans élément. */
+export const EMPTY_TEMPLATE_COUNTS: TemplateContentCounts = {
+	documentCount: 0,
+	checklistItemCount: 0,
+	exerciseCount: 0,
+	worksheetCount: 0
+};
+
+/**
+ * Compte le contenu RÉEL (en tables, non retiré) de plusieurs modèles à la fois
+ * — depuis l'ADR 0029, plus la photo `content_snapshot`, que l'éditeur ne
+ * modifie pas. Un modèle sans aucun élément n'est pas dans la `Map` : lire avec
+ * `EMPTY_TEMPLATE_COUNTS` en repli.
+ *
+ * Une lecture en échec rend une erreur, jamais des zéros : « 0 document » sur un
+ * modèle qui en a quatre ferait croire à un modèle vide.
+ */
+export async function countTemplateContent(
+	templateIds: string[],
+	supabase: SupabaseClient<Database>
+): Promise<{ data: Map<string, TemplateContentCounts> | null; error: Error | null }> {
+	const counts = new Map<string, TemplateContentCounts>();
+	if (templateIds.length === 0) return { data: counts, error: null };
+
+	const compteurs = [
+		['chapter_documents', 'documentCount'],
+		['chapter_checklist_items', 'checklistItemCount'],
+		['chapter_exercises', 'exerciseCount'],
+		['chapter_worksheets', 'worksheetCount']
+	] as const;
+
+	const resultats = await Promise.all(
+		compteurs.map(([table]) =>
+			supabase
+				.from(table)
+				.select('template_id')
+				.in('template_id', templateIds)
+				.is('retired_at', null)
+		)
+	);
+
+	for (const [i, { data, error }] of resultats.entries()) {
+		const [table, cle] = compteurs[i];
+		if (error) {
+			logger.error(`[countTemplateContent] ${table} illisible :`, error);
+			return { data: null, error: new Error(error.message) };
+		}
+		for (const row of data ?? []) {
+			if (!row.template_id) continue;
+			const actuel = counts.get(row.template_id) ?? { ...EMPTY_TEMPLATE_COUNTS };
+			actuel[cle] += 1;
+			counts.set(row.template_id, actuel);
+		}
+	}
+
+	return { data: counts, error: null };
+}
+
 /**
  * Le modèle a-t-il au moins un élément non retiré (document, objectif,
  * exercice, fiche ou série) ? Une section seule ne fait pas un contenu : c'est

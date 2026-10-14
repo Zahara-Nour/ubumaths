@@ -34,7 +34,6 @@ import {
 	dbTemplateVersionToApp,
 	dbInstantiationToApp,
 	parseContentSnapshot,
-	getContentCounts,
 	EMPTY_CONTENT_SNAPSHOT
 } from '$lib/types/chapter-templates';
 import type {
@@ -46,7 +45,13 @@ import type {
 } from '$lib/server/validation/chapter-templates';
 import { createServerLogger } from '$lib/utils/logger';
 import { CHAPTER_DOCUMENTS_BUCKET, ownerStoragePrefix } from './content-owner';
-import { copyStoredFile, removeStoredFiles, templateHasContent } from './template-content';
+import {
+	copyStoredFile,
+	countTemplateContent,
+	EMPTY_TEMPLATE_COUNTS,
+	removeStoredFiles,
+	templateHasContent
+} from './template-content';
 import { createServiceRoleClient } from './serviceRoleClient';
 
 const logger = createServerLogger('server/chapter-templates');
@@ -556,9 +561,19 @@ export async function listChapterTemplates(
 			return { data: [], error: new Error(error.message), count: 0 };
 		}
 
+		// Les compteurs viennent du contenu RÉEL du modèle (ADR 0029), plus du
+		// snapshot : l'éditeur du modèle écrit dans les tables.
+		const { data: comptes, error: countError } = await countTemplateContent(
+			(data || []).map((row) => row.id),
+			supabase
+		);
+		if (countError || !comptes) {
+			return { data: [], error: countError ?? new Error('Compteurs illisibles'), count: 0 };
+		}
+
 		const templates: TemplateSummary[] = (data || []).map((row) => {
 			const template = dbTemplateToApp(row as unknown as DbChapterTemplate);
-			const counts = getContentCounts(template.contentSnapshot);
+			const counts = comptes.get(template.id) ?? EMPTY_TEMPLATE_COUNTS;
 			const profile = (row as unknown as { profiles: { full_name: string | null } | null })
 				.profiles;
 
