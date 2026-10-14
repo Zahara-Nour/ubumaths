@@ -587,3 +587,15 @@ describe('V60 : les fonctions en escalier', () => {
 		expect(line('.limite floor(x)/x en +∞').output).toBe('Je ne sais pas calculer cette limite.');
 	});
 });
+
+describe('V60, revue : π et u − L nul d’un côté', () => {
+	it('.limite floor(x) en \\pi : 3', () => {
+		expect(line('.limite floor(x) en \\pi').output).toBe('lim x→π floor(x) = 3');
+	});
+
+	it('.limite sign(x+abs(x)) en 0 : « je ne sais pas », pas 1', () => {
+		expect(line('.limite sign(x+abs(x)) en 0').output).toBe(
+			'Je ne sais pas calculer cette limite.'
+		);
+	});
+});

@@ -1021,7 +1021,10 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   `floor(x)` en 1 rendait 1). Chaque appel g(u) devient la constante qu'il vaut au voisinage, du
   côté demandé : L = lim u (moteur) ; L hors d'un saut → g(L) (exact sur un rationnel, flottant
   sur un irrationnel loin du saut, refus à moins de 10⁻⁹) ; L sur un saut (entier, demi-entier
-  pour `round`, 0 pour `sign`) → le côté lu sur la limite de 1/(u − L) (±∞) ; u → ±∞ → `sign`
+  pour `round`, 0 pour `sign`) → le côté lu sur la limite de 1/(u − L) (±∞), **confirmé** sur
+  u − L en a ± 10⁻³, 10⁻⁴, 10⁻⁶ (en ±∞ : ±10³, 10⁴, 10⁶), non nul et du signe annoncé — le moteur
+  rend +∞ même quand u − L ≡ 0 de ce côté (`sign(x+|x|)` en 0⁻), d'où un refus ; π tapé `π`
+  (variable du parseur) vaut la constante dans ces évaluations ; u → ±∞ → `sign`
   vaut ±1, `floor`/`ceil`/`round` tendent vers cet infini **seulement si l'appel est toute
   l'expression**. Le reste se calcule par le moteur. Sans côté, en un point fini : les deux
   côtés, différents → `does-not-exist` / `sides-differ` (`floor(x)` en 1 : 0 et 1 ;

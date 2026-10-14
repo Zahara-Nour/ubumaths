@@ -34,7 +34,8 @@ import type { LimitDirection, LimitResult } from './types';
 import { isFunction, isInfinity } from '../guards';
 import { findNodes } from '../transforms';
 import { transformAST } from '../visitor';
-import { fraction, number, subtract } from '../factory';
+import { fraction, mathConstant, number, subtract } from '../factory';
+import { substitute } from '../eval/substitute';
 import { containsVariable } from '../common/contains-variable';
 import { extractExactRational, numericNode, rationalToNode } from '../common/numeric';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -78,6 +79,9 @@ const INTEGER_ONLY_FUNCTIONS: ReadonlySet<string> = new Set(['mod', 'gcd']);
 
 /** En deçà, un flottant ne dit pas de quel côté d'un saut on est. */
 const BREAK_TOLERANCE = 1e-9;
+
+/** Écarts au point où le côté d'un saut est confirmé (en ±∞ : 1/h). */
+const SIDE_PROBES: readonly number[] = [1e-3, 1e-4, 1e-6];
 
 /** Au plus près, deux sauts sont à 1/2 l'un de l'autre (`round`) : 1/8 reste entre eux. */
 const EPSILON: Rational = { n: 1n, d: 8n };
@@ -160,7 +164,7 @@ function sidedLimit(
 		const [argument] = call.args;
 		// Imbriquées : floor(floor(x)/2)
 		if (discontinuousCalls(argument, varName).length > 0) return null;
-		const value = callValue(name, argument, direction, limitOf);
+		const value = callValue(name, argument, base, direction, limitOf);
 		if (value === null) return null;
 		if (value.kind === 'infinite') {
 			// floor(u) → ±∞ ne dit rien de floor(x)/x ni de x − floor(x)
@@ -190,6 +194,7 @@ function sidedLimit(
 function callValue(
 	name: StepFunctionName,
 	argument: MathNode,
+	base: ResultBase,
 	direction: LimitDirection,
 	limitOf: LimitOf
 ): CallValue | null {
@@ -205,7 +210,7 @@ function callValue(
 	const at = normalized(exact);
 	if (!isBreak(name, at)) return { kind: 'constant', value: rationalToNode(apply(name, at)) };
 	// Sur un saut : de quel côté u atteint-il L ?
-	const side = sideOfBreak(argument, at, direction, limitOf);
+	const side = sideOfBreak(argument, at, base, direction, limitOf);
 	if (side === null) return null;
 	const near = side === 'above' ? add(at, EPSILON) : add(at, { n: -EPSILON.n, d: EPSILON.d });
 	return { kind: 'constant', value: rationalToNode(apply(name, near)) };
@@ -216,13 +221,8 @@ function callValue(
  * ne sait pas trancher (ln(e) = 1 peut se lire 0,99999… ou 1,00000…).
  */
 function approximateCallValue(name: StepFunctionName, limit: MathNode): CallValue | null {
-	let value: number;
-	try {
-		value = evaluateNodeToApproximatedNumber(limit);
-	} catch {
-		return null;
-	}
-	if (!Number.isFinite(value)) return null;
+	const value = approximate(limit);
+	if (value === null) return null;
 	const nearestBreak =
 		name === 'sign' ? 0 : name === 'round' ? Math.floor(value) + 0.5 : Math.round(value);
 	if (Math.abs(value - nearestBreak) <= BREAK_TOLERANCE) return null;
@@ -238,10 +238,16 @@ function approximateCallValue(name: StepFunctionName, limit: MathNode): CallValu
 /**
  * u − L garde-t-il un signe au voisinage ? Lu sur la limite de 1/(u − L) :
  * +∞ par au-dessus, −∞ par en dessous ; autre chose : `null`.
+ *
+ * Le moteur rend +∞ même quand u − L est identiquement nul de ce côté
+ * (`|x| − x` à droite de 0 : revue de V60) : le côté annoncé est CONFIRMÉ
+ * sur des valeurs de u − L de plus en plus près du point (`SIDE_PROBES`),
+ * toutes non nulles et du signe annoncé — sinon `null`, refus.
  */
 function sideOfBreak(
 	argument: MathNode,
 	at: Rational,
+	base: ResultBase,
 	direction: LimitDirection,
 	limitOf: LimitOf
 ): 'above' | 'below' | null {
@@ -250,7 +256,40 @@ function sideOfBreak(
 	if (reciprocal === null || reciprocal.value === null || !isInfinity(reciprocal.value)) {
 		return null;
 	}
-	return reciprocal.value.sign === 'positive' ? 'above' : 'below';
+	const side = reciprocal.value.sign === 'positive' ? 'above' : 'below';
+	const points = probePoints(base.approach, direction);
+	if (points === null) return null;
+	for (const point of points) {
+		const value = approximate(substitute(gap, { [base.variable]: numericNode(point) }));
+		if (value === null || value === 0 || value > 0 !== (side === 'above')) return null;
+	}
+	return side;
+}
+
+/** Les abscisses de confirmation, du côté demandé ; `null` si le point ne se lit pas. */
+function probePoints(approach: MathNode, direction: LimitDirection): number[] | null {
+	if (isInfinity(approach)) {
+		const sign = approach.sign === 'positive' ? 1 : -1;
+		return SIDE_PROBES.map((h) => sign / h);
+	}
+	if (direction === 'both') return null;
+	const a = approximate(approach);
+	if (a === null) return null;
+	const sign = direction === 'right' ? 1 : -1;
+	return SIDE_PROBES.map((h) => a + sign * h * Math.max(1, Math.abs(a)));
+}
+
+/**
+ * Valeur approchée d'une expression numérique ; π tapé `π` (une variable
+ * pour le parseur) vaut la constante. `null` si elle ne s'évalue pas.
+ */
+function approximate(node: MathNode): number | null {
+	try {
+		const value = evaluateNodeToApproximatedNumber(substitute(node, { π: mathConstant('pi') }));
+		return Number.isFinite(value) ? value : null;
+	} catch {
+		return null;
+	}
 }
 
 // =============================================================================
@@ -284,13 +323,10 @@ function combineSides(left: LimitResult, right: LimitResult, base: ResultBase): 
 function sameValue(a: MathNode, b: MathNode): boolean {
 	if (toLatex(a) === toLatex(b)) return true;
 	if (isInfinity(a) || isInfinity(b)) return isInfinity(a) && isInfinity(b) && a.sign === b.sign;
-	try {
-		const x = evaluateNodeToApproximatedNumber(a);
-		const y = evaluateNodeToApproximatedNumber(b);
-		return Math.abs(x - y) <= 1e-12 * Math.max(1, Math.abs(x), Math.abs(y));
-	} catch {
-		return false;
-	}
+	const x = approximate(a);
+	const y = approximate(b);
+	if (x === null || y === null) return false;
+	return Math.abs(x - y) <= 1e-12 * Math.max(1, Math.abs(x), Math.abs(y));
 }
 
 function unsupported(base: ResultBase): LimitResult {

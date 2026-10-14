@@ -154,3 +154,36 @@ describe('ce qu’on ne sait pas décider : refus honnête, jamais une réponse 
 		expect(limit(input, at)).toBe('unsupported');
 	});
 });
+
+describe('revue : u − L identiquement nul d’un côté — refus, jamais le côté du moteur', () => {
+	// lim 1/(u − L) rendait +∞ même quand u − L ≡ 0 de ce côté (|x| − x à droite)
+	it.each([
+		['sign(x+abs(x))', '0', 'both'],
+		['ceil(abs(x)-x)', '0', 'both'],
+		['ceil(x-abs(x))', '0', 'right'],
+		['sign(abs(x)-x)', '0', 'right']
+	])('%s en %s (%s) → unsupported', (input, at, dir) => {
+		expect(limit(input, at, dir as LimitDirection)).toBe('unsupported');
+	});
+
+	it.each([
+		['sign(x+abs(x))', '0', 'right', 'exact 1'],
+		['ceil(abs(x)-x)', '0', 'left', 'exact 1']
+	])(
+		'le côté où u − L ne s’annule pas reste calculé : %s en %s (%s) → %s',
+		(input, at, dir, expected) => {
+			expect(limit(input, at, dir as LimitDirection)).toBe(expected);
+		}
+	);
+});
+
+describe('revue : un point en π', () => {
+	it.each([
+		['floor(x)', 'π', 'exact 3'],
+		['ceil(x)', 'π/2', 'exact 2'],
+		['floor(x)', '\\pi', 'exact 3'],
+		['sign(x-3)', 'π', 'exact 1']
+	])('%s en %s → %s', (input, at, expected) => {
+		expect(limit(input, at)).toBe(expected);
+	});
+});
