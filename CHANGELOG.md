@@ -2,6 +2,69 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.31.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.30.0...v0.31.0) (2026-10-14)
+
+### ✨ Features
+
+- **atelier:** .évaluer avec plusieurs lettres séparées par « ; » (E6) ([821b275](https://github.com/Zahara-Nour/ubumaths/commit/821b275274d646a0cf8de22be4506d99a0ffc43c))
+- **atelier:** .limite écrit le côté défini et la raison du « pas de limite » ([4752134](https://github.com/Zahara-Nour/ubumaths/commit/4752134cd58df2df517266bc5dfe3d5738ea1972))
+- **atelier:** « Comment ? » de .limite, avec garde et résumé ([de3da14](https://github.com/Zahara-Nour/ubumaths/commit/de3da14b3be51ecd6e91f3f2e7ae68de0fc171d1))
+- **atelier:** commande .limite qui répond en formule ([399a159](https://github.com/Zahara-Nour/ubumaths/commit/399a1590d03699d2396081cb74e2b39297b236a6))
+- **atelier:** prototype jetable de saisie naturelle dans Calcul (/test-saisie) ([1090480](https://github.com/Zahara-Nour/ubumaths/commit/109048088af159d6c4c43e66cd09d9d90e79e8fa))
+- **fiches:** corrigé de classe d'après la copie d'un élève choisi ([dc24ed4](https://github.com/Zahara-Nour/ubumaths/commit/dc24ed465716ba842a0a3a26ad3b2f61c4eccf16))
+- **fiches:** corrigés à l'allure de la fiche, titre seul en copie individuelle ([4c6199c](https://github.com/Zahara-Nour/ubumaths/commit/4c6199cfcd6ba24f159d0c154b503f217df816d7))
+- **fiches:** retirer la case « Mélanger dans les sections » ([6c00b8c](https://github.com/Zahara-Nour/ubumaths/commit/6c00b8c64ce8bc59595a08142491f1d8466d8a07))
+- **fiches:** vue prof d'une affectation individualisée d'après la copie d'un élève ([6e92b43](https://github.com/Zahara-Nour/ubumaths/commit/6e92b43518b6d3a9e64c8e8c80976258fa573b27))
+- **signalements:** arrivée sur l'exercice signalé, copie de l'élève côté prof ([387b3d9](https://github.com/Zahara-Nour/ubumaths/commit/387b3d98587a7a2a8754df3c7351980879e4ecc2))
+- **signalements:** l'aperçu ouvert depuis un signalement y revient ([9307b4a](https://github.com/Zahara-Nour/ubumaths/commit/9307b4a085ef09da47aafa19a988a08f029fd397))
+- **signalements:** l'élève lit le numéro de sa copie dans ses signalements ([0707be4](https://github.com/Zahara-Nour/ubumaths/commit/0707be4159f75a9511ad003d701eccda52b82dc1))
+- **signalements:** numéro de la copie de l'élève et lien vers l'exercice signalé ([abca34c](https://github.com/Zahara-Nour/ubumaths/commit/abca34c83a96ade9383bd823190d983437f48165))
+
+### 🐛 Bug Fixes
+
+- **atelier:** .évaluer, fonction à paramètre, « ; » final, fractions écrites ([7e52f60](https://github.com/Zahara-Nour/ubumaths/commit/7e52f60c65bd96e50b0ecbf90b7e807cb9befe9f))
+- **atelier:** .limite garde la raison quand l'ensemble impose le côté ([7db42f5](https://github.com/Zahara-Nour/ubumaths/commit/7db42f5fd3c261e712c3a5f40def0e5b7e342e62))
+- **atelier:** .limite, corrections de revue ([c33fcc6](https://github.com/Zahara-Nour/ubumaths/commit/c33fcc6d03e454cbf44c8816176d0f4a31471a31))
+- **atelier:** .limite, lettre tapée vérifiée, suites en +∞ seulement ([cf0bf1a](https://github.com/Zahara-Nour/ubumaths/commit/cf0bf1abc1c5d101d0a6b2e09eba9574b73f1b13))
+- **atelier:** .limite, ln x refusé comme ailleurs, raison avec côté tapé ([bea25f3](https://github.com/Zahara-Nour/ubumaths/commit/bea25f33cdbc555c5cd7659bbbcaecd391aa1c52))
+- **atelier:** « Comment ? » de .limite, corrections de revue ([a64448c](https://github.com/Zahara-Nour/ubumaths/commit/a64448ca70740068d4d3370606c56a56583d87d6))
+- **atelier:** f(g(x)) avec paramètre, quel que soit l'ordre de définition ([6f20a25](https://github.com/Zahara-Nour/ubumaths/commit/6f20a257b7a9e3716e1ce38b977f60d643c0b414))
+- **atelier:** fonction à paramètre calculée sur son expression (V56) ([8b86c67](https://github.com/Zahara-Nour/ubumaths/commit/8b86c675e3235153fb0df4e7a29c5280cb501e94))
+- **atelier:** fonction à paramètre, corrections de revue ([0d9bdf4](https://github.com/Zahara-Nour/ubumaths/commit/0d9bdf427f624bf1b40eb92b35fe390984bc0491))
+- **calc:** le mode commande ne double plus le point (V54) ([6c33eb4](https://github.com/Zahara-Nour/ubumaths/commit/6c33eb472965024031a81c988908a6bc682bebf8))
+- **fiches:** choix de l'élève du corrigé, panne de liste et libellé exact ([6559014](https://github.com/Zahara-Nour/ubumaths/commit/6559014874cf34c4d3f9dabfe1ec3c7f40de8701))
+- **limits:** côté défini, raison du « pas de limite », oscillation, e, statut approché ([2f7491f](https://github.com/Zahara-Nour/ubumaths/commit/2f7491f01630e6c0f5ba66b8725026e5a551405d))
+- **limits:** f(u) sur la limite exacte de u, constante + 1/x en 0 ([3867f63](https://github.com/Zahara-Nour/ubumaths/commit/3867f6316efd25f8ee2b7e5ff79d2738370c1007))
+- **limits:** u^(p/q) écrit en radical, doc et commentaire exacts ([2f2b47f](https://github.com/Zahara-Nour/ubumaths/commit/2f2b47f52781f407433523888f295c42cc02d72e))
+- **signalements:** pas de copie d'un autre élève quand l'auteur a quitté la classe ([7d58c53](https://github.com/Zahara-Nour/ubumaths/commit/7d58c53cbcac85a171d216112b86ffbb2cc28b4c))
+
+### 📚 Documentation
+
+- **atelier:** la calculatrice /calc et son mode commande ([d6f8906](https://github.com/Zahara-Nour/ubumaths/commit/d6f89065233d78e19936cb553c7552dae63fc797))
+- **claude:** exception de la course entre pull et push ([8bc05a3](https://github.com/Zahara-Nour/ubumaths/commit/8bc05a35d1d08593e66b7370c07f907ba8b96bfc))
+- **demos:** /test-saisie dans la liste des pages de mise au point ([3d90bac](https://github.com/Zahara-Nour/ubumaths/commit/3d90bacfc2110b96bb413368be04826a982982e3))
+- **evaluations:** numéro de la copie dans les signalements de l'élève ([d5f60a6](https://github.com/Zahara-Nour/ubumaths/commit/d5f60a6711be39ac18f73e077be237f083483440))
+- **fiches:** signalements de l'élève, retour au signalement, vue prof individualisée ([dcd2b58](https://github.com/Zahara-Nour/ubumaths/commit/dcd2b583c296f56a0cfbc8da05316eff95ca9262))
+- **fiches:** suites du mélange (D6), écart 9 résolu ([3fe20fa](https://github.com/Zahara-Nour/ubumaths/commit/3fe20fa4015b3d79359c4f491c9816c11ac5da3d))
+- **git-workflow:** course entre pull et push, un seul nouvel essai ([d606f7a](https://github.com/Zahara-Nour/ubumaths/commit/d606f7adbd09243822bfe689797b672975cd914e))
+- **signalements:** fetchCopyNumbering appelée par le prof et par l'élève ([0f7dee8](https://github.com/Zahara-Nour/ubumaths/commit/0f7dee8d8c89b8eff7c0a2beae72b7abe1d6c04b))
+- **wip:** .limite livrée ([#1361](https://github.com/Zahara-Nour/ubumaths/issues/1361)-[#1363](https://github.com/Zahara-Nour/ubumaths/issues/1363)), reste « Comment ? » et E6 ([f06d30b](https://github.com/Zahara-Nour/ubumaths/commit/f06d30b9d59bd3895271efbf13c4f8729e564fcf))
+- **wip:** décisions D6, suites du mélange des exercices ([221c350](https://github.com/Zahara-Nour/ubumaths/commit/221c350fb5c8b4cb06646ecf341badff80bd1549))
+- **wip:** décisions de David sur Q1-Q5 (limite, paramètres, V57) ([7bb887a](https://github.com/Zahara-Nour/ubumaths/commit/7bb887aede0dfdda16394309e1e577c9f989f78e))
+- **wip:** décisions de David sur Q1-Q5 (limite, paramètres, V57) ([12fa0cf](https://github.com/Zahara-Nour/ubumaths/commit/12fa0cf43c8bfd4df77ac502816117ae0150cee4))
+- **wip:** écart V55, commandes sans argument de /calc inaccessibles ([d2cfb19](https://github.com/Zahara-Nour/ubumaths/commit/d2cfb193f55dd13facb8410945715e54a0c1fb1e))
+- **wip:** écart V56, .dériver d'une fonction à paramètre donne 0 ([fef23fd](https://github.com/Zahara-Nour/ubumaths/commit/fef23fd42d0466a342590d26ca8d28981b75a5dd))
+- **wip:** écarts V57 (résoudre ax = 0) et V58 (fonction récursive) ([b302612](https://github.com/Zahara-Nour/ubumaths/commit/b3026128ac384dfa38c1158e833f53995f8f158e))
+- **wip:** écarts V59 (ln x lu l·n·x) et V60 (floor en 1) ([e140a8b](https://github.com/Zahara-Nour/ubumaths/commit/e140a8bb5154f6279d1091a4fa776a2d85434e53))
+- **wip:** journal du prototype de saisie naturelle ([c1da15c](https://github.com/Zahara-Nour/ubumaths/commit/c1da15cb6ac4cfe7c748ecb53412a9c0a152e303))
+- **wip:** v0.30.0 en prod, vérifications jusqu'à [#1359](https://github.com/Zahara-Nour/ubumaths/issues/1359) faisables sur chiph.re ([116f5c5](https://github.com/Zahara-Nour/ubumaths/commit/116f5c5f3001402b8b8033a18c899e62b94d441c))
+- **wip:** vérification manuelle d'E6 ([#1364](https://github.com/Zahara-Nour/ubumaths/issues/1364)) ([5a018a1](https://github.com/Zahara-Nour/ubumaths/commit/5a018a1cacfaed689ef658bb8e55d64f3b7428a8))
+- **wip:** vérification manuelle de la commande .limite ([#1361](https://github.com/Zahara-Nour/ubumaths/issues/1361)) ([ea92b97](https://github.com/Zahara-Nour/ubumaths/commit/ea92b97da5c248384b0add22b75196d8d8e6b57c))
+- **wip:** vérification manuelle des raisons de .limite ([#1362](https://github.com/Zahara-Nour/ubumaths/issues/1362), [#1363](https://github.com/Zahara-Nour/ubumaths/issues/1363)) ([c2992a2](https://github.com/Zahara-Nour/ubumaths/commit/c2992a2955397ac7faf6b81dc02eeaa77f122d86))
+- **wip:** vérification manuelle des suites du mélange ([#1352](https://github.com/Zahara-Nour/ubumaths/issues/1352)) ([8a4ae9b](https://github.com/Zahara-Nour/ubumaths/commit/8a4ae9b2391dbaeb986d520f83bacb8a2911b937))
+- **wip:** vérification manuelle du « Comment ? » de .limite ([#1366](https://github.com/Zahara-Nour/ubumaths/issues/1366)) ([13a32e7](https://github.com/Zahara-Nour/ubumaths/commit/13a32e7bf0a6963e4a1e0f797bfa2709558c0c85))
+- **wip:** vérification manuelle du mode commande de /calc ([#1360](https://github.com/Zahara-Nour/ubumaths/issues/1360)) ([ba05e9d](https://github.com/Zahara-Nour/ubumaths/commit/ba05e9d517d8a86662c99f5221f75676651de8f5))
+
 ## [0.30.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.29.0...v0.30.0) (2026-10-14)
 
 ### ✨ Features

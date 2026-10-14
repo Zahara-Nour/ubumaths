@@ -12,6 +12,8 @@ couvre:
   - 'src/routes/(public)/test-structure/+page.svelte'
   - 'src/routes/(public)/test-structure/*.svelte'
   - 'src/routes/(public)/test-structure/*.ts'
+  - 'src/routes/(public)/test-saisie/*.svelte'
+  - 'src/routes/(public)/test-saisie/*.ts'
   - 'src/routes/(public)/test-font/+page.svelte'
   - 'src/routes/(public)/test-font/exercices-demo.json'
   - 'src/routes/(public)/test-font/shantell-pdf.ts'
@@ -93,6 +95,7 @@ interdites aux robots par `static/robots.txt` (`/demo`, `/test-`), sauf `/a-prop
 | `/test-cadres`                | tous (`noindex`)                           | aucun                                                  | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`            | Mise au point, gardée             |
 | `/test-font`                  | tous                                       | aucun                                                  | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                      | Mise au point, gardée             |
 | `/test-structure`             | tous (`noindex`)                           | aucun                                                  | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                         | **Chantier vivant**               |
+| `/test-saisie`                | tous (`noindex`)                           | aucun                                                  | Saisie naturelle de Calcul, sans point (`docs/wip/atelier-saisie-naturelle.md`)                             | Prototype jetable                 |
 | `/test-exercises`             | tout connecté, élève compris               | aucun                                                  | `ExerciseMarkdownEditor` sur un exercice d'exemple                                                          | Mise au point, probablement morte |
 
 Précisions :

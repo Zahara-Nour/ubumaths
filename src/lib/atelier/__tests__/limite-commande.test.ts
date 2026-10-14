@@ -291,11 +291,74 @@ describe('revue : les suites', () => {
 	});
 });
 
-describe('revue : « pas de limite » garde le côté', () => {
-	it('sqrt(-x) en 0+', () => {
+describe('Q1 : un côté tapé, la raison du « pas de limite » s’écrit aussi', () => {
+	it('sqrt(-x) en 0+ : pas définie à droite de 0', () => {
 		const result = line('.limite sqrt(-x) en 0+');
-		expect(result.output).toBe('Pas de limite en 0+.');
-		expect((result.latex ?? '').replace(/\s/g, '')).toBe('\\text{Pasdelimiteen}0^+');
+		expect(result.output).toBe(
+			"Pas de limite en 0+ : l'expression n'est pas définie à droite de 0."
+		);
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe(
+			"\\text{Pasdelimiteen}0^+\\text{:l'expressionn'estpasdéfinieàdroitede}0"
+		);
+	});
+
+	it('sqrt(x) en 0- : pas définie à gauche de 0', () => {
+		expect(line('.limite sqrt(x) en 0-').output).toBe(
+			"Pas de limite en 0- : l'expression n'est pas définie à gauche de 0."
+		);
+	});
+
+	it('sin(1/x) en 0+ : oscille', () => {
+		const result = line('.limite sin(1/x) en 0+');
+		expect(result.output).toBe(
+			"Pas de limite en 0+ : l'expression oscille sans se rapprocher d'aucune valeur."
+		);
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe(
+			"\\text{Pasdelimiteen}0^+\\text{:l'expressionoscillesansserapprocherd'aucunevaleur}"
+		);
+	});
+
+	it('une fonction citée : f en maths, hors de \\text', () => {
+		const result = line('.limite f en 0+', ['f(x) = sqrt(-x)']);
+		expect(result.output).toBe("Pas de limite en 0+ : f n'est pas définie à droite de 0.");
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe(
+			"\\text{Pasdelimiteen}0^+\\text{:}f\\text{n'estpasdéfinieàdroitede}0"
+		);
+	});
+});
+
+describe('fonctions usuelles sans parenthèses : refus, comme les autres commandes', () => {
+	it.each([
+		['.limite ln x en 0', 'Écris ln(x) avec des parenthèses.'],
+		['.limite sin x en 0', 'Écris sin(x) avec des parenthèses.'],
+		['.limite cos x en 0', 'Écris cos(x) avec des parenthèses.'],
+		['.limite sqrt x en 4', 'Écris sqrt(x) avec des parenthèses.'],
+		['.limite exp x en 0', 'Écris exp(x) avec des parenthèses.']
+	])('%s', (input, message) => {
+		expect(refusal(input)).toBe(message);
+	});
+
+	it('e^x se lit bien : 1 en 0', () => {
+		expect(latex('.limite e^x en 0')).toBe('\\lim\\limits_{x\\to0}\\exponentialE^x=1');
+	});
+});
+
+describe('texte de la ligne lisible', () => {
+	it('e^{1/x} en 0- : e^(1/x), jamais e^{1:/x}', () => {
+		expect(line('.limite e^{1/x} en 0^-').output).toBe('lim x→0- e^(1/x) = 0');
+	});
+
+	it.each([
+		['.limite 1/(x-1)^2 en 1', 'lim x→1 1/(x-1)^2 = +∞'],
+		['.limite e^x/x^2 en +inf', 'lim x→+∞ e^x/x^2 = +∞'],
+		['.limite (x+2)/x^2 en 0', 'lim x→0 (x+2)/x^2 = +∞'],
+		['.limite 1/(2x) en 0+', 'lim x→0+ 1/(2x) = +∞']
+	])('%s : sans accolades, parenthèses où le sens l’exige', (input, text) => {
+		expect(line(input).output).toBe(text);
+	});
+
+	it('e^x garde son écriture', () => {
+		expect(line('.limite e^x en 0').output).toBe('lim x→0 e^x = 1');
 	});
 });
 
