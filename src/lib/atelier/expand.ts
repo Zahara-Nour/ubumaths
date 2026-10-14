@@ -26,7 +26,7 @@ import { add, number, opposite, subtract } from '$lib/mathAST/factory';
 import { flattenProductShallow, flattenSumShallow } from '$lib/mathAST/flatten';
 import { findNodes, mapNode } from '$lib/mathAST/transforms';
 import { getVariables } from '$lib/mathAST/eval/substitute';
-import { decimalString } from '$lib/mathAST/tidy/decimal';
+import { decimalString, hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
 import { nodesEqual } from '$lib/mathAST/normal/hash';
 import { astOf } from './parse';
 
@@ -314,8 +314,8 @@ function integerOf(node: MathNode): bigint | null {
 }
 
 /**
- * En mode décimal, une fraction de deux entiers à écriture décimale finie
- * s'écrit en décimal (`1/4` → `0.25`). Les autres restent des fractions :
+ * En décimal (mode décimal, ou un décimal tapé), une fraction de deux entiers
+ * à écriture décimale finie s'écrit en décimal (`1/4` → `0.25`). Les autres restent des fractions :
  * arrondir `1/9` ferait d'une égalité une approximation.
  */
 function decimalFraction(node: MathNode): MathNode {
@@ -383,7 +383,11 @@ export function expandExpression(
 		}
 
 		const ordered = mapNode(result.result, orderSum);
-		const written = mode === 'decimal' ? mapNode(ordered, decimalFraction) : ordered;
+		// La réponse s'écrit comme l'élève a écrit, comme `.limite` (décision de
+		// David du 2026-10-06, étendue ici le 2026-10-14) : un décimal tapé, ou le
+		// mode décimal, donne des décimaux — `(0,5x+1)²` → `0,25x² + x + 1`
+		const decimal = mode === 'decimal' || hasDecimalLiteral(node);
+		const written = decimal ? mapNode(ordered, decimalFraction) : ordered;
 		const answer = toLatex(written);
 		if (answer.trim() === '') {
 			return { kind: 'inchangee', message: unchangedMessage(node) };

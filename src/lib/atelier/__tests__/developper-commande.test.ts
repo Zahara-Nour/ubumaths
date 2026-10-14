@@ -115,20 +115,32 @@ describe('l’ordre des termes : puissances décroissantes de x, sinon alphabét
 	});
 });
 
-describe('les décimaux suivent le mode, comme Calcul', () => {
-	it('mode exact : ¼x², comme 0,5 × 0,5 → 1/4', () => {
-		expect(commande('.développer (0,5x+1)^2').latex).toBe('\\dfrac{1}{4} x^2 + x + 1');
+/**
+ * Comme `.limite` (décision de David du 2026-10-06, étendue à `.développer` le
+ * 2026-10-14) : la réponse s'écrit comme l'élève a écrit. Un décimal tapé, ou
+ * le mode décimal, donne des décimaux ; sinon des fractions.
+ */
+describe('les décimaux : la réponse s’écrit comme l’élève a écrit', () => {
+	it('un décimal tapé donne des décimaux, même en mode exact', () => {
+		const result = commande('.développer (0,5x+1)^2');
+
+		expect(result.latex).toBe('0{,}25 x^2 + x + 1');
+		expect(result.output).toBe('0,25x^2+x+1');
 	});
 
-	it('mode décimal : 0,25x²', () => {
+	it('des fractions tapées en mode exact donnent des fractions', () => {
+		expect(commande('.développer (x/2+1)^2').latex).toBe('\\dfrac{1}{4} x^2 + x + 1');
+	});
+
+	it('le mode décimal donne des décimaux, même pour des fractions tapées', () => {
 		const s = session();
 		run('.mode décimal', s);
 
+		expect(commande('.développer (x/2+1)^2', s).latex).toBe('0{,}25 x^2 + x + 1');
 		expect(commande('.développer (0,5x+1)^2', s).latex).toBe('0{,}25 x^2 + x + 1');
-		expect(commande('.développer (0,5x+1)^2', s).output).toBe('0,25x^2+x+1');
 	});
 
-	it('mode décimal : une fraction sans écriture décimale finie reste une fraction', () => {
+	it('une fraction sans écriture décimale finie reste une fraction', () => {
 		const s = session();
 		run('.mode décimal', s);
 
@@ -136,6 +148,9 @@ describe('les décimaux suivent le mode, comme Calcul', () => {
 		// égalité une approximation
 		expect(commande('.développer (x/3+1)^2', s).latex).toBe(
 			'\\dfrac{1}{9} x^2 + \\dfrac{2}{3} x + 1'
+		);
+		expect(commande('.développer (0,5x+1/3)^2').latex).toBe(
+			'0{,}25 x^2 + \\dfrac{1}{3} x + \\dfrac{1}{9}'
 		);
 	});
 });

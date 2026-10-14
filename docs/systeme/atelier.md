@@ -950,9 +950,11 @@ n'a pas d'`expand`), après la substitution des noms (`.développer f`, `.dével
 Développer, c'est aussi réduire. La réponse est le résultat de l'intention `developper`, remis
 dans l'ordre du manuel : puissances décroissantes de x, les autres lettres traitées comme des
 coefficients, sinon l'ordre alphabétique (`a(x+b)` → `ax + ab`, `(a−b)²` → `a² − 2ab + b²` ; un
-coefficient négatif déplacé s'écrit `− 2ab`, jamais `+ (−2ab)`). En mode décimal, une fraction à
-écriture décimale finie s'écrit en décimal (`(0,5x+1)²` → `0,25x² + x + 1`), les autres restent
-des fractions (en exact : `¼x²`, comme `0,5 × 0,5` → 1/4). Rien n'a bougé (aucune étape, ou un
+coefficient négatif déplacé s'écrit `− 2ab`, jamais `+ (−2ab)`). La réponse s'écrit comme l'élève a
+écrit, comme `.limite` (décision de David du 2026-10-06, étendue le 2026-10-14) : un décimal tapé,
+ou le mode décimal, donne des décimaux (`(0,5x+1)²` → `0,25x² + x + 1`, même en mode exact) ;
+sinon des fractions (`(x/2+1)²` → `¼x² + x + 1`) ; une fraction sans écriture décimale finie
+reste une fraction (`⅑x²`). Rien n'a bougé (aucune étape, ou un
 résultat égal à l'entrée aux parenthèses près) : trois phrases, sans ligne rouge — « « x^2+1 »
 est déjà développée et réduite. » (une somme de monômes), « Je ne sais pas développer « (x+1)^n » :
 l'exposant n'est pas un nombre. », sinon « Il n'y a rien à développer dans « 1/(x+1) ». ». Refus :
