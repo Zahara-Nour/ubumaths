@@ -15,7 +15,7 @@
  */
 
 import type { AtelierState } from './persistence';
-import { atelierShellSchema, salvageObjects, ATELIER_STATE_VERSION } from './persistence';
+import { atelierShellSchema, salvageState, ATELIER_STATE_VERSION } from './persistence';
 
 // =============================================================================
 // Constantes
@@ -185,6 +185,6 @@ export async function decodeAtelier(payload: string): Promise<Decoded> {
 	// ⚠️ Le MÊME tri que le stockage, objet par objet : un objet abîmé ne doit
 	// pas coûter tout le lien. Deux règles différentes ici et là feraient qu'un
 	// atelier rangé puis partagé ne survivrait pas au même filtre.
-	const { objects, dropped } = salvageObjects(shell.data.objects);
-	return { ok: true, state: { version: shell.data.version, objects }, dropped };
+	const { state, dropped } = salvageState(shell.data);
+	return { ok: true, state, dropped };
 }

@@ -412,6 +412,9 @@ export function parseDefinition(
 		const values: number[] = [];
 		let skipped = 0;
 		for (const part of parts) {
+			// Une entrée vide est une case vide de la grille (`12 ; ; 15`, tableur
+			// intégré), pas une valeur écartée : rien à signaler
+			if (part.trim() === '') continue;
 			const n = readListValue(part);
 			if (n === null) skipped++;
 			else values.push(n);

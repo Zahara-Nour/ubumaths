@@ -15,6 +15,7 @@
 import { z } from 'zod';
 import type { ObjectKind } from './types';
 import { MAX_DEFINITION_LENGTH, MAX_INTERVAL_LENGTH } from './types';
+import { MAX_CELL_LENGTH, readCellName } from './grid';
 import { sequenceDisplaySchema, storedDisplaySchema, type StoredDisplay } from './display';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 
@@ -30,8 +31,14 @@ export const ATELIER_STORAGE_KEY = 'chiphre-atelier';
  * À incrémenter dès que la forme change. Un état d'une version PLUS RÉCENTE
  * n'est jamais relu ni écrasé : l'élève a peut-être ouvert l'atelier ailleurs
  * dans une version plus neuve, et son travail vaut mieux que le nôtre (§5 L2).
+ *
+ * Version 2 (2026-10-15, tableur intégré) : la colonne de chaque liste et les
+ * cellules des colonnes sans nom. ⚠️ Sans elle, un onglet resté sur l'ancien
+ * code relirait l'état en jetant la grille (Zod retire les clés inconnues),
+ * puis l'enregistrerait. Une version 1 se relit : ses listes sont placées en
+ * A, B… dans l'ordre des cartes.
  */
-export const ATELIER_STATE_VERSION = 1;
+export const ATELIER_STATE_VERSION = 2;
 
 /**
  * Au-delà, on refuse d'enregistrer plutôt que d'écrire un état qu'on ne saura
@@ -103,17 +110,34 @@ const storedObjectSchema = z.object({
 	firstIndex: z.number().int().min(0).max(1000).optional().catch(undefined),
 	firstTerm: z.string().max(20).optional().catch(undefined),
 	/** Réglages du tracé d'une suite (lot 5b). Abîmés : oubliés, l'objet gardé. */
-	sequenceDisplay: sequenceDisplaySchema.optional().catch(undefined)
+	sequenceDisplay: sequenceDisplaySchema.optional().catch(undefined),
+	/**
+	 * La colonne d'une liste dans la grille (`A` à `Z`, version 2). Absente ou
+	 * abîmée : la liste prend la première colonne libre.
+	 */
+	column: z
+		.string()
+		.regex(/^[A-Z]$/)
+		.optional()
+		.catch(undefined)
 });
 
 /**
  * L'enveloppe, volontairement permissive : elle ne juge QUE la forme générale.
- * Le tri des objets se fait un par un, pour n'en perdre qu'un à la fois.
+ * Le tri des objets se fait un par un, pour n'en perdre qu'un à la fois — et
+ * celui des cellules une par une (`salvageGrid`).
  */
 export const atelierShellSchema = z.object({
 	version: z.number().int().positive(),
-	objects: z.array(z.unknown())
+	objects: z.array(z.unknown()),
+	grid: z.unknown().optional()
 });
+
+/** Une cellule rangée : son adresse dans la grille (`B3`), son texte brut. */
+const storedCellSchema = z.tuple([
+	z.string().refine((name) => readCellName(name) !== null),
+	z.string().max(MAX_CELL_LENGTH)
+]);
 
 export interface StoredObject {
 	readonly name: string;
@@ -132,11 +156,20 @@ export interface StoredObject {
 	readonly firstIndex?: number;
 	readonly firstTerm?: string;
 	readonly sequenceDisplay?: unknown;
+	/** La colonne d'une liste (`A` à `Z`). */
+	readonly column?: string;
+}
+
+/** Les cellules des colonnes SANS nom ; celles d'une liste sont dans sa définition. */
+export interface StoredGrid {
+	readonly cells?: Readonly<Record<string, string>>;
 }
 
 export interface AtelierState {
 	readonly version: number;
 	readonly objects: readonly StoredObject[];
+	/** Absente en version 1, et quand aucune colonne sans nom n'a de cellule. */
+	readonly grid?: StoredGrid;
 }
 
 // =============================================================================
@@ -206,8 +239,8 @@ export function loadAtelier(storage: Storage | null): LoadOutcome {
 		return { kind: 'corrupt', message: "L'atelier enregistré n'a pas la forme attendue." };
 	}
 
-	const { objects, dropped } = salvageObjects(shell.data.objects);
-	return { kind: 'loaded', state: { version: shell.data.version, objects }, dropped };
+	const { state, dropped } = salvageState(shell.data);
+	return { kind: 'loaded', state, dropped };
 }
 
 /**
@@ -227,6 +260,37 @@ export function salvageObjects(candidates: readonly unknown[]): {
 		else dropped++;
 	}
 	return { objects, dropped };
+}
+
+/**
+ * Trier les cellules une par une : une adresse hors de A1-Z200, un texte trop
+ * long ou qui n'est pas du texte écarte la cellule, jamais la grille.
+ */
+export function salvageGrid(candidate: unknown): { grid: StoredGrid; dropped: number } {
+	const cells = (candidate as { cells?: unknown } | null | undefined)?.cells;
+	if (cells === null || typeof cells !== 'object' || Array.isArray(cells)) {
+		return { grid: {}, dropped: 0 };
+	}
+	const kept: Record<string, string> = {};
+	let dropped = 0;
+	for (const entry of Object.entries(cells)) {
+		const one = storedCellSchema.safeParse(entry);
+		if (one.success && one.data[1].trim() !== '') kept[one.data[0]] = one.data[1];
+		else dropped++;
+	}
+	return { grid: { cells: kept }, dropped };
+}
+
+/** L'état relu d'une enveloppe validée : objets puis cellules, chacun trié à part. */
+export function salvageState(shell: z.infer<typeof atelierShellSchema>): {
+	state: AtelierState;
+	dropped: number;
+} {
+	const { objects, dropped } = salvageObjects(shell.objects);
+	const { grid, dropped: lostCells } = salvageGrid(shell.grid);
+	// Sans cellule, pas de grille : l'état relu est celui qui a été rangé
+	const kept = Object.keys(grid.cells ?? {}).length > 0 ? { grid } : {};
+	return { state: { version: shell.version, objects, ...kept }, dropped: dropped + lostCells };
 }
 
 // =============================================================================
@@ -342,10 +406,10 @@ export function readForeignWrite(event: StorageEvent): ForeignWriteOutcome {
 	}
 
 	// Même tolérance qu'à la lecture : un objet abîmé ne coûte pas le reste.
-	const { objects } = salvageObjects(shell.data.objects);
+	const { state } = salvageState(shell.data);
 	return {
 		kind: 'changed',
-		state: { version: shell.data.version, objects },
+		state,
 		message: "L'atelier a été modifié dans un autre onglet."
 	};
 }
