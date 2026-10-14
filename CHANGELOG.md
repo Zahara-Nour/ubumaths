@@ -2,6 +2,80 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.33.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.32.0...v0.33.0) (2026-10-14)
+
+### ✨ Features
+
+- **atelier:** fenêtre de réglages, saisie de Calcul en texte ou en écriture mathématique ([ecf0272](https://github.com/Zahara-Nour/ubumaths/commit/ecf0272e0823fbce97bd1c761ce1fdc2a13ef16c))
+- **atelier:** l'historique montre la saisie écrite, consigne du champ mathématique ([64d37cd](https://github.com/Zahara-Nour/ubumaths/commit/64d37cdd58b43e76ad52462166eaf26f089e53a2))
+- **cours:** action setSectionHidden — masquer une section d'un chapitre ([42dbb46](https://github.com/Zahara-Nour/ubumaths/commit/42dbb46f41bebed4dabcbcb8c0ce0b4fff624890))
+- **cours:** masquer et réafficher une section dans le plan du chapitre ([d75f139](https://github.com/Zahara-Nour/ubumaths/commit/d75f139b4f0f30f7cd86a677248a2efc5632c3ba))
+- **cours:** un chapitre caché se dit « Invisible des élèves » ([c1a7e1f](https://github.com/Zahara-Nour/ubumaths/commit/c1a7e1fede7034f23f38e46e1acc346b7561eb51))
+- **fiches:** avec corrigé, les énoncés de l'élève gardent le style de la fiche ([d77059f](https://github.com/Zahara-Nour/ubumaths/commit/d77059fc17b868537a8b9e60423539f8eb1574b5))
+- **fiches:** consignes de l'affectation dans la case du gabarit qui en a une ([1b5ef7e](https://github.com/Zahara-Nour/ubumaths/commit/1b5ef7eeb9ac86b8b0f98b34fff3b9b739895226))
+- **fiches:** le PDF de l'élève suit le style de la fiche (lot 4b, en cours) ([4b90b06](https://github.com/Zahara-Nour/ubumaths/commit/4b90b067bece82808d82a6a4d00922de64216e20))
+- **fiches:** les liens partagés transmettent le style de la fiche (lot 4a) ([7b804bf](https://github.com/Zahara-Nour/ubumaths/commit/7b804bf80eb363d42db2137b967a72076ac4cde6))
+- **fiches:** menu « Style » sur la fiche, style_id enregistré, gabarit et style liés ([b4062cb](https://github.com/Zahara-Nour/ubumaths/commit/b4062cb77aabc47d4ec8f79cd43e3d3f30910fbd))
+- **gabarits:** les actions de la page « Gabarits » créent, renomment et suppriment le style ([b5d58d4](https://github.com/Zahara-Nour/ubumaths/commit/b5d58d424756a1a4e6923edcb09aa0d4b2d72bc9))
+- **modeles:** adopter un élément du chapitre dans son modèle (base) ([f661537](https://github.com/Zahara-Nour/ubumaths/commit/f66153766de9282e13a4ada755e2e79e42ef96b3))
+- **modeles:** compteurs des modèles lus dans leur contenu réel, plus dans le snapshot ([1e80a97](https://github.com/Zahara-Nour/ubumaths/commit/1e80a97eaf6d1b3720b04d24dd4ac0d9f7b7f70b))
+- **modeles:** éditeur partagé chapitre / modèle, page du modèle, chapitre lié ([7c6bf76](https://github.com/Zahara-Nour/ubumaths/commit/7c6bf7638759aa1a9f63db23d81b5e35b96f5893))
+- **modeles:** le modèle possède son contenu, le chapitre le relie (base) ([877afd5](https://github.com/Zahara-Nour/ubumaths/commit/877afd527fb90eb9d4293c7ae1f907a37fc04fd6))
+- **modeles:** le serveur édite, relie, détache et sert le contenu du modèle ([14bd62c](https://github.com/Zahara-Nour/ubumaths/commit/14bd62cf77e8e68924651c700e8f1208c8e2f8ed))
+- **modeles:** masquer une section dans un chapitre (base) ([f7edd55](https://github.com/Zahara-Nour/ubumaths/commit/f7edd55524a9982974acdcc1e79603ada62fd0f9))
+- **modeles:** reprise des modèles à snapshot (ADR 0029, étape 4) ([9ad1606](https://github.com/Zahara-Nour/ubumaths/commit/9ad160636e057234011c6252edcef17a06af9055))
+
+### 🐛 Bug Fixes
+
+- **atelier:** liste blanche à l'affichage de la saisie écrite, revues ([cfc4520](https://github.com/Zahara-Nour/ubumaths/commit/cfc45207fd42547fe19ef3976efb80ea866cebbd))
+- **atelier:** revues du champ mathématique, arguments séparés, ligne gardée, accessibilité ([1eb5660](https://github.com/Zahara-Nour/ubumaths/commit/1eb56601568199a2e391f3876946cf03b2e5dee6))
+- **cours:** ajouter un objectif depuis la page du chapitre ([2b1c024](https://github.com/Zahara-Nour/ubumaths/commit/2b1c0241ea3128a6a9acb9b42edade1a085fab0f))
+- **cours:** message d'échec du dépôt inchangé, test du propriétaire renommé ([a095c89](https://github.com/Zahara-Nour/ubumaths/commit/a095c89a442b2b134154d0eff1680e3ef427074a))
+- **cours:** plan reconstruit au détachement, rang des masqués gardé, interrupteur remis à zéro ([b52ceed](https://github.com/Zahara-Nour/ubumaths/commit/b52ceed2f8cb66a7493e6deed9f61adf91a73fec))
+- **cours:** tests du masquage de section, interrupteur « Afficher ce qui est masqué » ([51600dd](https://github.com/Zahara-Nour/ubumaths/commit/51600dd41d1d555e01f86e809341dbdb83dd23de))
+- **cours:** un seul badge « Invisible des élèves », porté par ChapterCard ([19f7bc8](https://github.com/Zahara-Nour/ubumaths/commit/19f7bc81862f529acd7b069d6a65cdbec72ef988))
+- **db:** horodatage de la migration du style des liens partagés (collision) ([8994bb6](https://github.com/Zahara-Nour/ubumaths/commit/8994bb6f661b5e74db232b48363b72c8b5ca7aac)), closes [#1382](https://github.com/Zahara-Nour/ubumaths/issues/1382)
+- **fiches:** durée, total et cases d'affichage du prof sur le PDF de l'élève ([37d3185](https://github.com/Zahara-Nour/ubumaths/commit/37d3185ca61c8986574732e324ac2d9c1bc5c839))
+- **fiches:** la fiche distribuée s'ouvre, plus de colonne exercises.tags demandée ([05309c4](https://github.com/Zahara-Nour/ubumaths/commit/05309c4197a2fe4fc97258ccabb660e5b69d6eef))
+- **fiches:** lecture service-role du style dans son module, sur la liste blanche ([5157da7](https://github.com/Zahara-Nour/ubumaths/commit/5157da777dd6cece12b2cdfe64485198f2972423))
+- **fiches:** menu des styles de l'auteur, duplication par l'admin, échecs signalés ([9f3af3a](https://github.com/Zahara-Nour/ubumaths/commit/9f3af3a53f3ceadafc6c2703aefad0d670d6da79))
+- **modeles:** corrections de la revue et de l'audit du serveur du modèle ([246b29e](https://github.com/Zahara-Nour/ubumaths/commit/246b29e4ce624adcd0ff989c766bcdbc5f8bd6ed))
+- **modeles:** le masquage d'une section tient au détachement ([cf5b2d9](https://github.com/Zahara-Nour/ubumaths/commit/cf5b2d9d107c84980599510251f0cee780d93a5c))
+- **modeles:** reprise rejouable et verrouillée sur le déploiement de [#1390](https://github.com/Zahara-Nour/ubumaths/issues/1390) ([43a041d](https://github.com/Zahara-Nour/ubumaths/commit/43a041d9f5af24d5a3ee6cd194791eee88660fe3))
+- **modeles:** rollback de la section masquée dans le bon ordre, tests élève et second chapitre ([0ddd665](https://github.com/Zahara-Nour/ubumaths/commit/0ddd6651d44b6e3a03f7c9bb95483c7c3aa04b3a))
+- **modeles:** séries comptées, message de publication et commentaires à jour ([5e5d159](https://github.com/Zahara-Nour/ubumaths/commit/5e5d159b723f565a3e52f56039821f9c1f6bd8d0))
+- **modeles:** un seul logger dans la page du modèle après le rebase ([7aca233](https://github.com/Zahara-Nour/ubumaths/commit/7aca2330c39b15826da84d63fd498b595fe307d7))
+- **modeles:** un seul message à l'ajout d'un lien Drive au modèle ([0c3b572](https://github.com/Zahara-Nour/ubumaths/commit/0c3b572a7934c46086a8f40fa207d48c2ee5292b))
+
+### 📚 Documentation
+
+- **adr:** 0029, le modèle de chapitre possède son contenu ; phase 0 de la refonte ([42043db](https://github.com/Zahara-Nour/ubumaths/commit/42043dbe717b28e244c822f18c48c631819a4a5f))
+- **atelier:** réglages et écriture mathématique dans la doc système ; test isolé du stockage ([6a5e802](https://github.com/Zahara-Nour/ubumaths/commit/6a5e802327988f8618a2891f97fd72fbafdaadd6))
+- **cours:** consigner la refonte voulue du modèle des chapitres ([90472b3](https://github.com/Zahara-Nour/ubumaths/commit/90472b376a491adbc80fe20f6c4e23813c24d0b4))
+- **cours:** couvrir content-owner, template-content et template-guard ([3959ca8](https://github.com/Zahara-Nour/ubumaths/commit/3959ca8ccaa0c7aaaabeaec6a6a1f9ec7fd8db7e))
+- **cours:** écarts à jour après la revue de l'étape 3b ([a5b4bc2](https://github.com/Zahara-Nour/ubumaths/commit/a5b4bc2dc329755bcce91f009f8cbfeba42bd8f2))
+- **cours:** éditeur partagé, page du modèle et chapitre lié (étape 3c) ([1f01cca](https://github.com/Zahara-Nour/ubumaths/commit/1f01cca56f5bf421a52a927c554fca29310b0067))
+- **fiches:** choix du style, gabarit et style liés (lot 3b, D10) ([b5734a2](https://github.com/Zahara-Nour/ubumaths/commit/b5734a26c4e9bb2e0e87831d41c84a1800a659d8))
+- **fiches:** le PDF de l'élève par le générateur unique (lot 4b) ([21bb44e](https://github.com/Zahara-Nour/ubumaths/commit/21bb44eceb1d4c19682f68e90b1f3ddc2cab3efa))
+- **fiches:** service-role du style, pages partagées dans le style de la fiche ([3bf235f](https://github.com/Zahara-Nour/ubumaths/commit/3bf235fddd1f01ea854442a6c64411e8e2bea3b8))
+- **systeme:** servir un fichier de chapitre par le service après la garde RLS ([269f14d](https://github.com/Zahara-Nour/ubumaths/commit/269f14dfa1dbba43f3719fa6e9c55e3ad6d938d1))
+- **ui:** la croix des fenêtres s'appelle « Fermer » ([d56b2b5](https://github.com/Zahara-Nour/ubumaths/commit/d56b2b53930bb2bf1323f8c8e70dc278b5c11313))
+- **wip:** atelier-cas, les deux points mis de côté sont faits ([#1101](https://github.com/Zahara-Nour/ubumaths/issues/1101), [#1107](https://github.com/Zahara-Nour/ubumaths/issues/1107)) ([2a96769](https://github.com/Zahara-Nour/ubumaths/commit/2a9676940b25ea20e7bd864bfe6f90452c1de0b1))
+- **wip:** atelier, décisions de David sur la fenêtre de réglages ([33eb7da](https://github.com/Zahara-Nour/ubumaths/commit/33eb7da703986bc217236edf996c5bedfeb03996))
+- **wip:** atelier, état mesuré des points ouverts (2026-10-14) ([f313058](https://github.com/Zahara-Nour/ubumaths/commit/f313058e10f099c94a3f1e89535a352f6843afaf))
+- **wip:** atelier, phase 0 de la fenêtre de réglages et du choix de saisie ([3a45800](https://github.com/Zahara-Nour/ubumaths/commit/3a45800057bab9ffe280537cdabcdfd684dc3312))
+- **wip:** atelier, réglages livrés ([#1385](https://github.com/Zahara-Nour/ubumaths/issues/1385)) et leur vérification manuelle ([70a1b6f](https://github.com/Zahara-Nour/ubumaths/commit/70a1b6feb20f85a6e60d9ce1bfb130feb38ad436))
+- **wip:** atelier, saisie écrite livrée ([#1388](https://github.com/Zahara-Nour/ubumaths/issues/1388)) et sa vérification manuelle ([e5cb141](https://github.com/Zahara-Nour/ubumaths/commit/e5cb141a24a0c9f51a97b39fa0d65ee951519801))
+- **wip:** lot 4a appliqué en prod, collision d'horodatage résolue ([0778164](https://github.com/Zahara-Nour/ubumaths/commit/0778164670ec762d77c094ef791d19164a12764b))
+- **wip:** question d'accès du lot 4 tranchée (D11) ([da37408](https://github.com/Zahara-Nour/ubumaths/commit/da374089f0b0f0f560b05986c7ad41360fdae5d4))
+- **wip:** refonte des modèles prête pour la mise en prod ([22e7322](https://github.com/Zahara-Nour/ubumaths/commit/22e7322e3cbe30c7b86237d943866b2506d3a4a3))
+- **wip:** refonte des modèles, [#1390](https://github.com/Zahara-Nour/ubumaths/issues/1390) à déployer avec la reprise ([35ecc0f](https://github.com/Zahara-Nour/ubumaths/commit/35ecc0f8a338b998f1cca43ce5e3c1d93a751461))
+- **wip:** refonte des modèles, phase 0 validée ([76d9729](https://github.com/Zahara-Nour/ubumaths/commit/76d9729865f08f5f3cb6476a735b61ef77a1ce5e))
+- **wip:** refonte des modèles, tour 3 et modèle de données ([2eac1c0](https://github.com/Zahara-Nour/ubumaths/commit/2eac1c00d96dcf1ce50cd1235e19171acd6f94b4))
+- **wip:** vérification de la fiche élève après le correctif [#1386](https://github.com/Zahara-Nour/ubumaths/issues/1386) ([39bbf27](https://github.com/Zahara-Nour/ubumaths/commit/39bbf27b01e2490585f78366b4ea2c610715679e))
+- **wip:** vérifications manuelles du lot 3b ([#1379](https://github.com/Zahara-Nour/ubumaths/issues/1379)) ([18ec3ee](https://github.com/Zahara-Nour/ubumaths/commit/18ec3eef069b21d6369d9d1c1930e00b0e98bf27))
+- **wip:** vérifications manuelles du lot 4b ([#1389](https://github.com/Zahara-Nour/ubumaths/issues/1389)) ([fd00ee5](https://github.com/Zahara-Nour/ubumaths/commit/fd00ee59dcdff3a71ecd1efb7be17c3bf5bbb861))
+
 ## [0.32.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.31.0...v0.32.0) (2026-10-14)
 
 ### ✨ Features
