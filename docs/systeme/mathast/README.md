@@ -867,6 +867,16 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   `value: null`, `error` en français (∫₀¹ eˣ/(eˣ − 2) compris). Il accepte une intégrale impropre
   convergente (∫₀¹ 1/√x = 2) que la version pédagogique refuserait (borne interdite) si elle
   savait calculer la primitive.
+- **Intégrales à paramètre** (V61, 2026-10-14) : la règle arctan (`isArctanPattern`,
+  `integrators/basic.ts`) déballe les parenthèses du dénominateur — `1/(x^2+a^2)` tapé en
+  notation maison arrive en `delimiter` et n'était pas reconnu (« Unable to factor
+  denominator ») ; numérateur 1 seulement (`3/(x^2+a^2)`, `1/(x^2+a^2+1)` restent refusés).
+  La valeur symbolique de `integrateDefinite` réduit `1^u` en 1 (`withoutPowersOfOne` :
+  `x^a` de 1 à 2 → (2^{a+1} − 1)/(a + 1)). Les refus des intégrateurs sont écrits en français
+  à la source (partial-fractions, trig-substitution, basic), comme le reste du module :
+  `integrateDefinite` les recopie dans `error`, que l'atelier montre à l'élève ;
+  `integrate.command.ts` dit « Je ne sais pas calculer cette intégrale » et nomme la technique
+  tentée en français (`TECHNIQUE_LABELS`).
 - ⚠️ Les étapes de `normalize` sont du calcul interne, pas une leçon : elles arrivent
   pourtant dans `auto`/`reduire`/`developper` via `runNormalizePass` (ADR 0007 veut les
   retirer du chemin élève).

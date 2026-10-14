@@ -445,3 +445,76 @@ describe('.intégrer 1/(x^2+a^2+1) de 0 à 1 : aucun pôle réel', () => {
 		expect(result.kind === 'refus' && result.message).not.toBe(DEPENDS_ON('a'));
 	});
 });
+
+// =============================================================================
+// V61 (2026-10-14) : intégrales à paramètre, refus inutiles et message anglais
+// =============================================================================
+
+describe('V61 : .intégrer à paramètre, sans pôle sur le segment', () => {
+	it('1/(x^2+a^2) de 1 à 2 : x² + a² ⩾ 1 sur [1 ; 2], la valeur (a ≠ 0)', () => {
+		expect(latex('.intégrer 1/(x^2+a^2) de 1 à 2', [])).toBe(
+			'\\dfrac{\\arctan\\left(\\dfrac{2}{a}\\right)-\\arctan\\left(\\dfrac{1}{a}\\right)}{a}\\quad(a\\neq0)'
+		);
+	});
+
+	it('1/(x^2+a^2) : la primitive, (a ≠ 0)', () => {
+		expect(latex('.intégrer 1/(x^2+a^2)', [])).toBe(
+			'\\dfrac{\\arctan\\left(\\dfrac{x}{a}\\right)}{a}+C\\quad(a\\neq0)'
+		);
+	});
+
+	it('1/(a x) de 1 à 2 : (ln 2)/a (a ≠ 0)', () => {
+		expect(latex('.intégrer 1/(a x) de 1 à 2', [])).toBe(
+			'\\dfrac{\\ln\\left(2\\right)}{a}\\quad(a\\neq0)'
+		);
+	});
+
+	it('3/(a x) de 1 à 2 : 3 ln 2 / a (a ≠ 0)', () => {
+		expect(latex('.intégrer 3/(a x) de 1 à 2', [])).toBe(
+			'\\dfrac{3\\ln\\left(2\\right)}{a}\\quad(a\\neq0)'
+		);
+	});
+
+	it.each([
+		// 0 est dans le segment : x² + a² s'annule pour a = 0
+		['.intégrer 1/(x^2+a^2) de -1 à 1'],
+		// le pôle x = 0 est dans le segment, quel que soit a
+		['.intégrer 1/(a x) de -1 à 1'],
+		// x² − a s'annule dans [0 ; 1] pour a dans [0 ; 1]
+		['.intégrer 1/(x^2-a) de 0 à 1'],
+		// a² − x² aussi
+		['.intégrer 1/(a^2-x^2) de 0 à 1']
+	])('%s : toujours refusé', (input) => {
+		expect(run(input, []).kind).toBe('refus');
+	});
+});
+
+describe('V61 : .intégrer 1/(x^2+a^2+1) de 0 à 1, refus en français', () => {
+	it('le message ne parle pas anglais', () => {
+		const result = run('.intégrer 1/(x^2+a^2+1) de 0 à 1', []);
+		expect(result.kind).toBe('refus');
+		if (result.kind !== 'refus') return;
+		expect(result.message).toBe(
+			'Je ne sais pas factoriser le dénominateur : je ne peux pas calculer cette intégrale'
+		);
+		// pas d'étapes d'un refus « non définie » : rien n'est indéfini ici
+		expect(result.steps).toBeUndefined();
+	});
+
+	it('la primitive non trouvée : la ligne ne cite pas « partial-fractions »', () => {
+		const result = run('.intégrer 1/(x^2+a^2+1)', []);
+		const shown =
+			result.kind === 'refus' ? result.message : result.kind === 'commande' ? result.output : '';
+		expect(shown).not.toMatch(/partial|fractions|Integration|supported/);
+	});
+});
+
+describe('V61 : .intégrer x^a de 1 à 2, 1^{a+1} réduit', () => {
+	it('(2^{a+1} − 1)/(a + 1) (a ≠ −1)', () => {
+		expect(latex('.intégrer x^a de 1 à 2', [])).toBe('\\dfrac{2^{a+1}-1}{a+1}\\quad(a\\neq-1)');
+	});
+
+	it('3x^a de 1 à 2 : le coefficient suit', () => {
+		expect(latex('.intégrer 3x^a de 1 à 2', [])).not.toContain('1^{');
+	});
+});

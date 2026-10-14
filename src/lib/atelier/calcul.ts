@@ -75,7 +75,17 @@ import {
 	splitInterval,
 	valueOutsideRefusal
 } from './interval';
-import { containsValue, intersect, isEmpty, isUniversal } from '$lib/mathAST/domain/algebra';
+import {
+	containsValue,
+	difference as domainDifference,
+	intersect,
+	isEmpty,
+	isUniversal
+} from '$lib/mathAST/domain/algebra';
+import { closedInterval, intervalSet } from '$lib/mathAST/domain/factory';
+import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-domains';
+import { add, divide, number, opposite } from '$lib/mathAST/factory';
+import { compile } from '$lib/mathAST/eval/compile';
 import { computeDomain } from '$lib/mathAST/domain/compute';
 import { solve as solveRelation } from '$lib/mathAST/solve';
 import { formatInterval } from '$lib/mathAST/domain/format';
@@ -1902,7 +1912,13 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		const conditions =
 			finalArgs === null
 				? []
-				: introducedConditions(shown, finalArgs.expression, integrationVariable, parameters);
+				: introducedConditions(
+						shown,
+						finalArgs.expression,
+						integrationVariable,
+						parameters,
+						finalArgs.bounds != null
+					);
 		return {
 			kind: 'commande',
 			input,
@@ -2181,19 +2197,24 @@ function denominatorConditions(
  * par un paramètre (`e^{ax}` → `e^{ax}/a`, « a ≠ 0 »). Une division déjà dans
  * l'expression de départ (`1/(a x)`) n'est pas redite : la condition vient
  * d'elle, pas du calcul — comme pour `.dériver`.
+ *
+ * V61 : une intégrale BORNÉE dit toutes ses conditions, celles de l'intégrande
+ * comprises — `1/(a x) de 1 à 2` → (ln 2)/a (a ≠ 0) : l'intégrande n'est plus
+ * sur la ligne, et la valeur n'a de sens que pour a ≠ 0.
  */
 function introducedConditions(
 	answer: MathNode,
 	typed: string,
 	variable: string,
-	parameters: readonly string[]
+	parameters: readonly string[],
+	bounded: boolean
 ): Condition[] {
 	if (parameters.length === 0) return [];
 	const input = parseCommandExpression(typed).ast;
 	const already = input === undefined ? [] : denominatorConditions(input, variable, parameters);
-	return denominatorConditions(answer, variable, parameters).filter(
-		(c) => !already.some((a) => a.latex === c.latex)
-	);
+	const answered = denominatorConditions(answer, variable, parameters);
+	if (!bounded) return answered.filter((c) => !already.some((a) => a.latex === c.latex));
+	return [...answered, ...already.filter((a) => !answered.some((c) => c.latex === a.latex))];
 }
 
 /**
@@ -2353,21 +2374,29 @@ function parameterBoundsRefusal(
 		return node;
 	});
 	if (exponents.size > 0) {
-		const a = numericBound(lower);
-		const b = numericBound(upper);
-		if (inBounds.length > 0 || (a !== null && b !== null && Math.min(a, b) <= 0)) {
+		const low = numericBound(lower);
+		const high = numericBound(upper);
+		if (inBounds.length > 0 || (low !== null && high !== null && Math.min(low, high) <= 0)) {
 			return dependsOnMessage([...new Set([...exponents, ...inBounds])]);
 		}
 	}
 	// Un pôle qui dépend du paramètre, bornes en nombres compris
 	// (`1/(x-a) de 0 à 1`, faux pour a dans [0 ; 1]) ; pas `1/(x^2+a^2+1)`,
-	// toujours positif
+	// toujours positif, ni `1/(x^2+a^2)` ou `1/(a x)` sur [1 ; 2] (V61)
+	const a = numericBound(lower);
+	const b = numericBound(upper);
+	const segment =
+		inBounds.length === 0 && a !== null && b !== null
+			? { low: Math.min(a, b), high: Math.max(a, b) }
+			: null;
 	const poles = new Set<string>();
 	mapNode(integrand, (node) => {
 		if (
 			node.type === 'division' &&
 			getVariables(node.denominator).has(variable) &&
-			!isPositive(node.denominator)
+			!isPositive(node.denominator) &&
+			(segment === null ||
+				!nonZeroOnSegment(node.denominator, variable, integrandParameters, segment))
 		) {
 			for (const p of citedParameters(node.denominator, integrandParameters)) poles.add(p);
 		}
@@ -2378,6 +2407,89 @@ function parameterBoundsRefusal(
 	const domain = computeDomain(integrand, variable);
 	if (isUniversal(domain.domain) && (domain.unresolved?.length ?? 0) === 0) return null;
 	return dependsOnMessage([...new Set(inBounds)]);
+}
+
+/** Un segment [low ; high] de nombres, low ⩽ high. */
+interface Segment {
+	readonly low: number;
+	readonly high: number;
+}
+
+/**
+ * V61 : un dénominateur qui ne s'annule sur le segment pour AUCUNE valeur des
+ * paramètres, hors facteurs faits de paramètres seuls (`a` dans `a x`) — ceux-là,
+ * la condition « a ≠ 0 » de la ligne les écarte. Chaque autre facteur est :
+ * - sans paramètre, et non nul sur le segment (`x` sur [1 ; 2]) ;
+ * - ou une somme P + Q, P sans paramètre et > 0 sur le segment, Q ⩾ 0 quelle
+ *   que soit la valeur des paramètres (`x^2 + a^2` sur [1 ; 2]).
+ * Dans le doute, `false` : le refus reste (`x^2 - a`, `a x^2 + 1`, `x - a`).
+ */
+function nonZeroOnSegment(
+	denominator: MathNode,
+	variable: string,
+	parameters: readonly string[],
+	segment: Segment
+): boolean {
+	return variableFactors(denominator, variable).every((factor) => {
+		if (citedParameters(factor, parameters).length === 0) {
+			return nonZeroOn(factor, variable, segment);
+		}
+		const terms = signedTerms(factor);
+		const withVariable = terms.filter((t) => getVariables(t).has(variable));
+		const constant = terms.filter((t) => !getVariables(t).has(variable));
+		if (withVariable.length === 0) return false;
+		if (withVariable.some((t) => citedParameters(t, parameters).length > 0)) return false;
+		if (!constant.every(isNonNegative)) return false;
+		return positiveOn(
+			withVariable.reduce((sum, term) => add(sum, term)),
+			variable,
+			segment
+		);
+	});
+}
+
+/** Les facteurs d'un produit qui contiennent la variable : `a x (x+1)^2` → x, x + 1. */
+function variableFactors(node: MathNode, variable: string): MathNode[] {
+	if (node.type === 'delimiter') return variableFactors(node.content, variable);
+	if (node.type === 'opposite') return variableFactors(node.operand, variable);
+	if (node.type === 'multiplication') {
+		return [...variableFactors(node.left, variable), ...variableFactors(node.right, variable)];
+	}
+	if (node.type === 'superscript' && isNumber(node.superscript)) {
+		return variableFactors(node.base, variable);
+	}
+	return getVariables(node).has(variable) ? [node] : [];
+}
+
+/** Les termes d'une somme, une soustraction lue comme l'ajout de l'opposé. */
+function signedTerms(node: MathNode): MathNode[] {
+	if (node.type === 'delimiter') return signedTerms(node.content);
+	if (node.type === 'addition') return [...signedTerms(node.left), ...signedTerms(node.right)];
+	if (node.type === 'subtraction') {
+		return [...signedTerms(node.left), ...signedTerms(node.right).map((t) => opposite(t))];
+	}
+	return [node];
+}
+
+/** Une expression sans paramètre, définie et non nulle en tout point du segment. */
+function nonZeroOn(factor: MathNode, variable: string, segment: Segment): boolean {
+	const result = computeDomain(divide(number('1'), factor, 'fraction'), variable);
+	if ((result.unresolved?.length ?? 0) > 0) return false;
+	const inside = intervalSet([closedInterval(numericNode(segment.low), numericNode(segment.high))]);
+	return isEmpty(domainDifference(inside, expandExcludedPoints(result.domain)));
+}
+
+/**
+ * Strictement positive sur le segment : non nulle en tout point (donc d'un seul
+ * signe, l'expression étant continue là où elle est définie), positive au milieu.
+ */
+function positiveOn(node: MathNode, variable: string, segment: Segment): boolean {
+	if (!nonZeroOn(node, variable, segment)) return false;
+	try {
+		return compile(node)({ [variable]: (segment.low + segment.high) / 2 }) > 0;
+	} catch {
+		return false;
+	}
 }
 
 /** Les paramètres du coefficient dominant d'un polynôme en `unknown`. */

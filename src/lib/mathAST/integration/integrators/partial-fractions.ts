@@ -1321,7 +1321,7 @@ export const partialFractionsIntegrator: Integrator = {
 				integrandType: 'rational',
 				technique: 'partial-fractions',
 				steps: recorder.getSteps(),
-				error: 'Not a rational function'
+				error: "Ce n'est pas une fraction rationnelle"
 			};
 		}
 
@@ -1378,7 +1378,7 @@ export const partialFractionsIntegrator: Integrator = {
 					integrandType: 'rational',
 					technique: 'partial-fractions',
 					steps: recorder.getSteps(),
-					error: 'Polynomial division not yet fully implemented for complex cases'
+					error: 'Je ne sais pas encore faire cette division de polynômes'
 				};
 			}
 
@@ -1519,7 +1519,7 @@ export const partialFractionsIntegrator: Integrator = {
 				integrandType: 'rational',
 				technique: 'partial-fractions',
 				steps: recorder.getSteps(),
-				error: 'Unable to factor denominator'
+				error: 'Je ne sais pas factoriser le dénominateur : je ne peux pas calculer cette intégrale'
 			};
 		}
 
@@ -1542,7 +1542,7 @@ export const partialFractionsIntegrator: Integrator = {
 				integrandType: 'rational',
 				technique: 'partial-fractions',
 				steps: recorder.getSteps(),
-				error: 'Unable to decompose into partial fractions'
+				error: 'Je ne sais pas décomposer cette fraction en éléments simples'
 			};
 		}
 
@@ -1622,7 +1622,7 @@ export const partialFractionsIntegrator: Integrator = {
 					integrandType: 'rational',
 					technique: 'partial-fractions',
 					steps: recorder.getSteps(),
-					error: 'Unable to integrate partial fraction term'
+					error: 'Je ne sais pas intégrer un des éléments simples'
 				};
 			}
 

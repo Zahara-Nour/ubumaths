@@ -241,7 +241,13 @@ function isArctanPattern(
 	if (expr.type !== 'division') return null;
 	if (!isNumber(expr.numerator) || expr.numerator.value !== '1') return null;
 
-	const denom = expr.denominator;
+	// `1/(x^2+a^2)` tapé en notation maison : le dénominateur arrive entre
+	// parenthèses (un `delimiter`, frontière d'aplatissement). Sans ce
+	// déballage, l'atelier ne trouvait pas la primitive (V61, 2026-10-14)
+	let denom = expr.denominator;
+	while (denom.type === 'delimiter' && (denom.semantic ?? 'grouping') === 'grouping') {
+		denom = denom.content;
+	}
 
 	// Check for (1 + x²) or (x² + 1)
 	if (denom.type === 'addition') {
@@ -700,7 +706,7 @@ export const basicIntegrator: Integrator = {
 			integrandType,
 			technique: 'basic-rule',
 			steps: recorder.getSteps(),
-			error: 'Basic integrator cannot handle this expression'
+			error: "Aucune règle de base ne s'applique à cette expression"
 		};
 	}
 };
