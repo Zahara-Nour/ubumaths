@@ -326,7 +326,12 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
   survivances « rétrocompatibilité » ; le code importe tantôt eux, tantôt `geometry-core`.
 - Dézoomé, les pôles de tan hors de [−2π ; 2π] restent au seul balayage, qui n'en voit que
   ceux où un saut dépasse la hauteur de la fenêtre.
+  Mesuré : tan sur [−580 ; 600] n'a qu'un trait, en 45,5π, au milieu de ~375 pôles.
 - Une limite atteinte très lentement (ln(x)/√x → 0) n'est pas reconnue : aucune horizontale.
+- `getAllDiscontinuities` ne voit pas le pôle de 1/(ln x − 1) en x = e : trouvé à ±10, perdu
+  au dézoom.
+- Avec un curseur, chaque valeur rebâtit l'AST : `singularPoints` refait l'analyse de continuité
+  (0,2 ms pour 1/(x − A), jusqu'à 33 ms sur une fraction de degré 3 multipliée par e⁻ˣ et ln x).
 - Nuages de points : pas de forme de point distincte par place (décision Q1a, reportée).
 
 ---

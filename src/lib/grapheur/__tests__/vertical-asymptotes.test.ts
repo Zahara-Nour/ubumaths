@@ -212,9 +212,10 @@ describe('asymptotes verticales quand on dézoome', () => {
 		expect(found[0]).toBeCloseTo(pole, 9);
 	});
 
-	it('ne pose pas un pôle de tan isolé au milieu des autres', () => {
+	it('ne retient pas les pôles de tan énumérés par l’analyse symbolique', () => {
 		// L'analyse symbolique n'énumère les pôles de tan que sur [−2π ; 2π] :
-		// les retenir dessinait un seul trait, en −3π/2.
+		// les retenir dessinait un seul trait, en −3π/2. (Le balayage, lui, en
+		// trouve encore un isolé en 45,5π : écart connu, déjà là avant.)
 		expect(poles('\\tan(x)').filter((x) => Math.abs(x) < 2 * Math.PI)).toEqual([]);
 	});
 
