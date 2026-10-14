@@ -55,6 +55,8 @@ export type ExerciseLayout = (typeof EXERCISE_LAYOUTS)[number];
  */
 export interface RenderOptions {
 	inlineCorrections?: boolean;
+	/** Aperçu markdown : ce qui suit le titre, comme sur le PDF (« — Correction ») */
+	titleSuffix?: string;
 	correctionFonts?: boolean;
 }
 
@@ -104,7 +106,7 @@ export function renderMarkdownPreview(
 ): string {
 	const labels = documentLabels(doc.locale);
 	const level = doc.sections.length > 0 ? '###' : '##';
-	const parts: string[] = [`# ${doc.title}\n`];
+	const parts: string[] = [`# ${doc.title}${options.titleSuffix ?? ''}\n`];
 	if (doc.description) parts.push(`${doc.description}\n`);
 
 	for (const { header, exercise } of withSectionHeaders(doc, form)) {

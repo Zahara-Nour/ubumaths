@@ -45,6 +45,7 @@
 	} from '$lib/typst/compiler/correction-fonts-compiler';
 	import type { WorksheetWithRelations, InstanceData } from '$lib/types/worksheets';
 	import { worksheetLocale } from '$lib/types/worksheets';
+	import { documentLabels } from '$lib/typst/labels';
 	import { buildWorksheetCopy, GUIDANCE_LEVEL_ITEMS } from '$lib/worksheets/worksheet-copy';
 	import {
 		DEFAULT_GUIDANCE_LEVEL,
@@ -250,7 +251,13 @@
 					config: worksheet.config || {}
 				}),
 				generatorMode,
-				{ inlineCorrections }
+				{
+					inlineCorrections,
+					// Comme le titre du PDF
+					titleSuffix: inlineCorrections
+						? ` — ${documentLabels(worksheetLocale(worksheet.config)).correction}`
+						: undefined
+				}
 			);
 
 			// Clear tracked images before generating Typst
@@ -873,7 +880,9 @@ INFORMATIONS
 								<li>- Variantes de {lore.learning.exercise}s selon la configuration</li>
 								<li>- Fichier ZIP contenant tous les PDFs</li>
 								<li>- Document de synthese avec la liste des eleves</li>
-								{#if mode === 'correction'}
+								{#if mode === 'worksheet_correction'}
+									<li>- Chaque correction sous son enonce</li>
+								{:else if mode === 'correction'}
 									<li>- Correction generale incluse</li>
 								{:else if mode === 'answers'}
 									<li>- Reponses generales incluses</li>

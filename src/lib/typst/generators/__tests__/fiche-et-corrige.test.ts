@@ -95,21 +95,21 @@ describe('chaque correction suit son énoncé', () => {
 	});
 
 	it('corrigé concis ou détaillé selon la fiche, comme le Corrigé', () => {
-		const detailed = generateWorksheetTypst({
-			worksheet: worksheet(null),
-			instance: {
-				exercises: [
-					{
-						...INSTANCE.exercises[0],
-						solution: 'Résultat.\n\n<details>\nDÉTAIL-DE-LA-CORRECTION\n</details>'
-					}
-				]
-			},
-			config: { correction_detail: 'concise' },
-			mode: 'worksheet',
-			inlineCorrections: true
-		});
-		expect(detailed).toContain('Résultat.');
+		const typst = (detail: 'concise' | 'detailed') =>
+			generateWorksheetTypst({
+				worksheet: worksheet(null),
+				instance: {
+					exercises: [
+						{ ...INSTANCE.exercises[0], solution: 'Résultat. \\detail{DETAILCORRECTION}' }
+					]
+				},
+				config: { correction_detail: detail },
+				mode: 'worksheet',
+				inlineCorrections: true
+			});
+		expect(typst('concise')).toContain('Résultat.');
+		expect(typst('concise')).not.toContain('DETAILCORRECTION');
+		expect(typst('detailed')).toContain('DETAILCORRECTION');
 	});
 });
 
