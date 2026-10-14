@@ -4,7 +4,7 @@
 > (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
-223 tables · 25 vues · 314 fonctions. Colonne suivie de `?` : peut être nulle.
+222 tables · 25 vues · 314 fonctions. Colonne suivie de `?` : peut être nulle.
 
 ## Établissement et personnes (20)
 
@@ -316,7 +316,7 @@ Liens : `class_id` → `classes` · `template_id` → `message_templates` · `us
 
 Liens : `template_id` → `message_templates` · `user_id` → `profiles`
 
-## Chapitres et cahier de texte (18)
+## Chapitres et cahier de texte (17)
 
 ### `chapter_checklist_items`
 
@@ -356,19 +356,13 @@ Liens : `chapter_id` → `class_chapters` · `section_id, chapter_id` → `chapt
 
 ### `chapter_template_instantiations`
 
-`chapter_id` · `current_template_version?` · `id` · `instantiated_at` · `is_detached` · `last_migrated_at?` · `template_id?` · `template_version`
+`chapter_id` · `id` · `instantiated_at` · `is_detached` · `template_id?`
 
 Liens : `chapter_id` → `class_chapters` · `template_id` → `chapter_templates`
 
-### `chapter_template_versions`
-
-`change_summary?` · `content_snapshot` · `created_at` · `created_by` · `diff?` · `id` · `template_id` · `version_number`
-
-Liens : `created_by` → `profiles` · `template_id` → `chapter_templates`
-
 ### `chapter_templates`
 
-`color?` · `content_snapshot` · `created_at` · `created_by` · `current_version` · `description?` · `grades` · `icon?` · `id` · `instantiation_count` · `status` · `title` · `updated_at`
+`color?` · `created_at` · `created_by` · `description?` · `grades` · `icon?` · `id` · `instantiation_count` · `status` · `title` · `updated_at`
 
 Liens : `created_by` → `profiles`
 
