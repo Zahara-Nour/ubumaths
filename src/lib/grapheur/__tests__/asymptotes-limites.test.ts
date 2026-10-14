@@ -252,3 +252,36 @@ describe('pièges introduits par les corrections', () => {
 		expect(found[0].coefficients[1]).toBeCloseTo(10, 4);
 	});
 });
+
+describe('limite nulle estimée de loin', () => {
+	// La limite est lue en x = 137 299, où ln(x)/x vaut encore 8,6·10⁻⁵ : sans
+	// arrondi, une fenêtre zoomée affichait « y = 0.00008616 ».
+	const lnOverX = (x: number): number | null => (x > 0 ? Math.log(x) / x : null);
+
+	it('rend y = 0 exactement pour ln(x)/x et sin(x)/x', () => {
+		expect(findHorizontalAsymptotes(lnOverX, 'f').map((a) => a.y)).toEqual([0]);
+		expect(findHorizontalAsymptotes((x) => Math.sin(x) / x, 'f').map((a) => a.y)).toEqual([0]);
+	});
+
+	it('garde une petite limite non nulle', () => {
+		const found = findHorizontalAsymptotes((x) => 0.001 + Math.exp(-x), 'f');
+		expect(found.map((a) => a.y)).toEqual([0.001]);
+	});
+
+	it('ne touche pas une limite non nulle approchée lentement', () => {
+		const found = findHorizontalAsymptotes(Math.atan, 'f');
+		expect(found.map((a) => a.y.toFixed(4))).toEqual(['1.5708', '-1.5708']);
+	});
+
+	it("rend une ordonnée à l'origine nulle pour x + ln(x)/x", () => {
+		const found = findObliqueAsymptotes((x) => (x > 0 ? x + Math.log(x) / x : null), 'f');
+		expect(found.map((a) => a.b)).toEqual([0]);
+	});
+
+	it('rend un terme constant nul pour x² + ln(x)/x', () => {
+		// 1,09·10⁻⁴ dépassait le seuil de masquage de l'étiquette : « y = x² + 0.000109 ».
+		const found = findPolynomialAsymptotes((x) => (x > 0 ? x * x + Math.log(x) / x : null), 'f');
+		expect(found.length).toBe(1);
+		expect(found[0].coefficients[0]).toBe(0);
+	});
+});
