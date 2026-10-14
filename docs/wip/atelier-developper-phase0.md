@@ -1,7 +1,7 @@
 ---
 title: Atelier — la commande « développer » (phase 0)
 date: 2026-10-14
-status: validée par David le 2026-10-14 (« je suis tes recos ») ; PR 1 en cours
+status: validée par David le 2026-10-14 ; PR 1 mergée (#1372) ; PR 2 (les étapes) à faire
 ---
 
 # Atelier — la commande « développer »
@@ -142,3 +142,10 @@ Tests d'abord, rouges, pour chaque ligne de B, C, D et E ; `code-reviewer` en fi
   (décision du 2026-10-06) — un décimal tapé, ou le mode décimal, donne des décimaux
   (`(0,5x+1)²` → 0,25x² + x + 1 même en mode exact) ; sinon des fractions ; une fraction sans
   écriture décimale finie reste une fraction. Remplace « décimaux selon le mode » du tableau B.
+- 2026-10-14 — **PR 1 mergée (#1372)** : la commande, la réponse seule. Revue : `-(x+1)` annoncé « rien
+  à développer » (le module rend 0 étape : il part écrit `-1(x+1)`), réponse inachevée
+  (`e^((x+1)^2)` → `e^{x^2 + 2 x 1 + 1^2}`, désormais « Je ne sais pas développer »), plafond de
+  500 termes estimé avant le calcul (`(x+1)^2000` figeait la page 5 s), messages qui citent
+  l'expression tapée. **Pour la PR 2** : le module développe sous `cos` (`cos(2(x+1))` →
+  `cos(2x+2)`) mais pas sous `e^…` (`e^(2(x+1))` → « rien à développer ») ; une somme dans un
+  exposant n'est pas réduite.
