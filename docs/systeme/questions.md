@@ -340,6 +340,14 @@ vient de `gradeLevelToSchoolLevel(grades)` : le plus haut niveau des `grades`, `
 La **stratégie** (pas atomiques au collège, combinés au lycée…) est choisie **au rendu** par niveau :
 la même suite d'opérations se rédige différemment. `verbosity` : `summarized` | `detailed`.
 
+`simplify` avec `intent: 'developper'` ne montre **pas** la trace du pipeline (produits collés
+« 2x1 », la même ligne répétée) : il montre la rédaction de `.développer` dans l'atelier,
+`explainExpansion` (`mathAST/pedagogical-simplify/expand-explained.ts`) — une intention, une seule
+rédaction (décision de David du 2026-10-14, option B). `summarized` en donne la version résumée ; un
+décimal écrit dans l'expression donne des décimaux, sinon des fractions. Sans rédaction (équation,
+rien à développer, somme sous une fonction, une racine, dans un exposant ou une fraction) : repli
+silencieux sur le mode A, jamais sur la trace. Tests : `correction-developper.test.ts`.
+
 Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\detail{…}`, les blocs
 `> [!méthode]`, `> [!rappel]`, `> [!attention]` et les spans `{.rappel}`… ; un seul interrupteur
 (`correction-view-preference.ts`). Rédaction : [corrections-redaction](../pratiques/corrections-redaction.md).
