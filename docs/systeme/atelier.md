@@ -811,9 +811,18 @@ f, [0 ; +∞[. »), un bord est pris du côté intérieur (`en 0` → `0^+`), un
 infini hors de l'ensemble est refusé ; une composée d'une fonction à ensemble → `composedMessage`.
 `exp(1)` s'écrit `e`. **Jamais de valeur approchée** : statut `indeterminate`, `unsupported`,
 `approximate`, ou un nombre à plus de 6 décimales → « Je ne sais pas calculer cette limite. »
-(une réponse, pas un refus, comme `.factoriser`). `does-not-exist` sans côté (L4) → les deux
-limites latérales quand le moteur les connaît, « Pas de limite en 0 : à gauche −∞, à droite +∞. »,
-sinon « Pas de limite en … », côté compris (`0^+`). Pas encore de « Comment ? » (PR 3). Test :
+(une réponse, pas un refus, comme `.factoriser`). Sans côté tapé, une fonction définie d'un seul
+côté du point (`definedSide` du moteur) l'écrit : `.limite ln(x) en 0` →
+`\lim\limits_{x\to 0^+} \ln(x) = -\infty` (aussi `sqrt(x)` en 0, `sqrt(-x)` en `0^-`, `ln(x-1)`
+en 1 ; `f(x)` garde son nom). `does-not-exist` sans côté TAPÉ par l'élève (un côté imposé par l'ensemble choisi, I4, garde la
+raison : f(x) = sin(1/x) sur ]0 ; +∞[, `.limite f en 0` → « Pas de limite en 0+ : f oscille… »),
+selon `noLimitReason` ; le nom de la fonction s'écrit hors de `\text` (`f_1` en indice) :
+`outside-domain` → « Pas de limite en -1 : l'expression n'est pas définie au voisinage de -1. »
+(« f n'est pas définie… » pour une fonction citée seule ; `ln(x)` en −∞) ; `oscillation` → « Pas
+de limite en +∞ : l'expression oscille sans se rapprocher d'aucune valeur. » (« f oscille… » ;
+`3sin(2x)+1` en −∞, `sin(1/x)` en 0) ; sinon (L4, `sides-differ` compris) les deux limites
+latérales quand le moteur les connaît, « Pas de limite en 0 : à gauche −∞, à droite +∞. », sinon
+« Pas de limite en … ». Avec un côté tapé, la conclusion seule, côté compris (`0^+`) — à trancher par David. Pas encore de « Comment ? » (PR 3). Test :
 `limite-commande.test.ts`.
 
 Statistiques : `summarizeList` / `summarizeTable` (`src/lib/statistics/describe.ts`), et

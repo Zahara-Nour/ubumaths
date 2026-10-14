@@ -202,10 +202,14 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 	if (result === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
 
 	if (result.status === 'does-not-exist') {
-		return noLimit(input, ast, variable, approach, point, side);
+		const subject = cited?.kind === 'function' ? cited.name : null;
+		const typedSide = reading.value.side;
+		return noLimit(input, result, subject, { ast, variable, approach }, point, side, typedSide);
 	}
 	const value = knownValue(result);
 	if (value === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
+	// R1 : sans côté tapé, une fonction définie d'un seul côté (ln x en 0) l'écrit : x → 0⁺
+	if (side === null && result.definedSide !== undefined) side = result.definedSide;
 
 	const body = shownBody(cited, typedAst ?? ast, shownLetter);
 	return {
@@ -549,20 +553,57 @@ function withEuler(value: MathNode): MathNode {
 	});
 }
 
+/** Ce qu'il faut pour recalculer les limites latérales (L4). */
+interface LimitQuestion {
+	readonly ast: MathNode;
+	readonly variable: string;
+	readonly approach: MathNode;
+}
+
 /**
- * Le moteur conclut « pas de limite » : L4, les deux limites latérales quand
- * il les connaît (« à gauche −∞, à droite +∞ »), sinon la conclusion seule.
+ * Le moteur conclut « pas de limite ». Sans côté tapé, la raison qu'il donne :
+ * hors du domaine (R2, « l'expression n'est pas définie au voisinage de -1 »),
+ * oscillation (R3) ; sinon L4, les deux limites latérales quand il les
+ * connaît (« à gauche −∞, à droite +∞ »), sinon la conclusion seule.
+ * `subject` : le nom d'une fonction de l'atelier citée seule, sinon `null`
+ * (« l'expression »).
  */
 function noLimit(
 	input: string,
-	ast: MathNode,
-	variable: string,
-	approach: MathNode,
+	result: LimitResult,
+	subject: string | null,
+	question: LimitQuestion,
 	point: LimitPoint,
-	side: 'left' | 'right' | null
+	side: 'left' | 'right' | null,
+	typedSide: 'left' | 'right' | null
 ): CalcResult {
+	const { ast, variable, approach } = question;
 	const atLatex = pointLatexOf(point, side);
 	const atText = pointTextOf(point, side);
+	const who = subject ?? "l'expression";
+	// Le nom d'une fonction s'écrit en mathématiques (`f_1`), hors de `\text`
+	const clause = (words: string): string =>
+		subject === null
+			? `\\text{ : l'expression ${words}}`
+			: `\\text{ : } ${subject.replace(/_(\d{2,})/, '_{$1}')} \\text{ ${words}}`;
+	// Seul un côté TAPÉ coupe la raison ; un côté imposé par l'ensemble choisi (I4) la garde
+	const reason = typedSide === null ? result.noLimitReason : undefined;
+	if (reason === 'outside-domain') {
+		return {
+			kind: 'commande',
+			input,
+			output: `Pas de limite en ${atText} : ${who} n'est pas définie au voisinage de ${atText}.`,
+			latex: `\\text{Pas de limite en } ${atLatex} ${clause("n'est pas définie au voisinage de ")} ${atLatex}`
+		};
+	}
+	if (reason === 'oscillation') {
+		return {
+			kind: 'commande',
+			input,
+			output: `Pas de limite en ${atText} : ${who} oscille sans se rapprocher d'aucune valeur.`,
+			latex: `\\text{Pas de limite en } ${atLatex} ${clause("oscille sans se rapprocher d'aucune valeur")}`
+		};
+	}
 	// Un côté tapé : sa conclusion seule ; sinon les deux côtés (L4)
 	const sides = point.kind === 'finite' && side === null;
 	const left = sides ? safeLimit(ast, variable, approach, 'left') : null;
