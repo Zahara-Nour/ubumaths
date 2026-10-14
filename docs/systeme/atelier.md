@@ -949,9 +949,12 @@ décisions de David du 2026-10-14). Servie par l'atelier (`ATELIER_ONLY_COMMANDS
 n'a pas d'`expand`), après la substitution des noms (`.développer f`, `.développer f(x)`).
 Développer, c'est aussi réduire. La réponse est le résultat de l'intention `developper`, remis
 dans l'ordre du manuel : puissances décroissantes de x, les autres lettres traitées comme des
-coefficients, sinon l'ordre alphabétique (`a(x+b)` → `ax + ab`, `(a−b)²` → `a² − 2ab + b²` ; un
-coefficient négatif déplacé s'écrit `− 2ab`, jamais `+ (−2ab)` ; à rang égal, un terme sans degré
-après les monômes : `x² + 2x + 1 + √(x+1)`). `-(x+1)` part au module écrit `-1(x+1)` : seul, il
+coefficients, sinon l'ordre alphabétique, les lettres indicées comptant comme des lettres
+(`a(x+b)` → `ax + ab`, `(a−b)²` → `a² − 2ab + b²`, `(x_1+x_2)²` → `x_1² + 2x_1x_2 + x_2²` ; un
+coefficient négatif déplacé s'écrit `− 2ab`, jamais `+ (−2ab)`). **Une somme de monômes
+seulement** (revue de la PR 2, 2026-10-14) : dès qu'un terme n'a pas de degré (eˣ, √x, sin x), on
+garde l'ordre du module (`(2√x+1)²` → `4x + 4√x + 1`, `(eˣ+e⁻ˣ)²` → `e²ˣ + e⁻²ˣ + 2`,
+`(x+1)²+√(1+x)` → `x² + 2x + √(x+1) + 1` — la PR 1 rangeait ce terme après les monômes). `-(x+1)` part au module écrit `-1(x+1)` : seul, il
 n'était pas développé (0 étape). La réponse s'écrit comme l'élève a écrit, comme `.limite`
 (décision de David du 2026-10-06, étendue le 2026-10-14) : un décimal tapé, ou le mode décimal,
 donne des décimaux (`(0,5x+1)²` → `0,25x² + x + 1`, même en mode exact) ; sinon des fractions
@@ -979,8 +982,16 @@ chaque terme » ; plusieurs s'écrivent calculées (« On développe chaque carr
 remarquable ») ; une parenthèse d'un produit qu'on peut réduire l'est (« On réduit dans la
 parenthèse ») ; la double distribution a sa ligne à × puis « On calcule chaque produit » ; un
 facteur se distribue calculé (« On distribue 3, et le signe − devant la parenthèse change le signe
-de chaque terme », « On enlève la parenthèse précédée d'un − ») ; enfin « On réduit » (« On ordonne
-les termes » si seul l'ordre change). Exposant 4 ou plus : une seule ligne, « On développe la
+de chaque terme », « On enlève la parenthèse précédée d'un − », « deux signes − se compensent ») ;
+un facteur simple devant les parenthèses fait dire « chaque terme de la première parenthèse » au
+lieu de « du premier facteur ». La dernière ligne dit ce qu'elle fait : « On réduit » si des termes
+semblables se regroupent ; « On ordonne les termes » si seul l'ordre change dans une somme de
+monômes (« pourquoi » : puissances décroissantes de x, sinon l'ordre alphabétique) — l'ordre du
+module, lui, se fond dans la ligne précédente ; « On écrit chaque terme avec son coefficient »
+(`y/2` → `½y`) ou « On calcule chaque terme » (`(2x)²` → `4x²`) si un terme change d'écriture. Le
+titre d'identité ne nomme a et b que si l'expression n'écrit ni `a` ni `b` (`(a−2b)²` : la formule
+seule) ; a et b y sont mis en forme comme les images (`b = 0,5` en mode décimal). `0(x+1)` : la
+réponse 0, sans étapes. Exposant 4 ou plus : une seule ligne, « On développe la
 puissance ». Jamais deux images identiques de suite ; un × dès qu'un nombre suit une lettre ou un
 nombre ; chaque image est vérifiée égale à l'entrée (`areEquivalent`) ; la dernière image est la
 réponse, décimaux compris (l'atelier passe sa mise en forme à chaque image). Version résumée : la

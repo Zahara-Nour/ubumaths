@@ -495,14 +495,18 @@ décision du 2026-09-21 sort la trace de `normalize` du chemin de l'élève. Ce 
 de plus (ADR 0007) : `writeExpandSteps(node, answer, { format })` **reçoit** la réponse — le
 résultat de `developper`, que l'intégration et la stratégie 6 emploient tel quel, rangé par
 `orderExpanded` (`expand-order.ts`, l'ordre du manuel : puissances décroissantes de x, sinon
-alphabétique) — et rédige le chemin jusqu'à elle.
+alphabétique, lettres indicées comprises — pour une somme de **monômes** seulement ; un terme sans
+degré, `eˣ`, `√x`, garde l'ordre du module) — et rédige le chemin jusqu'à elle.
 
 Chaque terme de la somme principale se lit comme un produit (`readChunk` : signe, facteurs simples,
 sommes entre parenthèses et leur puissance). Puis des phases, la première qui s'applique faisant la
 ligne, pour tous les termes où elle vaut : cube → carré × parenthèse ; identités remarquables (une
 seule : ligne à ×, puis « On calcule chaque terme ») ; réduction d'une parenthèse d'un produit ;
 double distribution (ligne à ×, puis « On calcule chaque produit ») ; facteur et signe − devant une
-parenthèse ; enfin « On réduit » jusqu'à la réponse. Exposant ≥ 4 : une seule ligne. Chaque terme
+parenthèse ; enfin la ligne jusqu'à la réponse (`closingOf`) : « On réduit » si des termes se
+regroupent, « On ordonne les termes » si seul l'ordre change dans une somme de monômes, l'ordre du
+module fondu dans la ligne précédente, « On écrit chaque terme avec son coefficient » ou « On
+calcule chaque terme » si un terme change d'écriture. Exposant ≥ 4 : une seule ligne. Chaque terme
 est calculé par `normalize` ; chaque image est vérifiée par `areEquivalent` ; jamais deux images
 identiques de suite ; `format` (les décimaux de l'atelier) s'applique à chaque image, la dernière
 comprise. La version résumée fond chaque ligne à × dans le calcul qui la suit. Ce qui ne se lit pas

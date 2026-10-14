@@ -17,6 +17,7 @@
  */
 
 import type { MathNode } from '../types';
+import { toLatex } from '../latex-generator';
 import { add, divide, multiply, number, opposite, subtract } from '../factory';
 import { flattenProductShallow, flattenSumShallow, type SignedTerm } from '../flatten';
 import { mapNode } from '../transforms';
@@ -34,8 +35,19 @@ const MAIN_VARIABLE = 'x';
 
 /** Une lettre, éventuellement indicée (`x`, `α`, `x_1`). */
 function isLetter(node: MathNode): boolean {
-	if (node.type === 'variable' || node.type === 'greek') return true;
-	return node.type === 'subscript' && isLetter(node.base);
+	return letterName(node) !== null;
+}
+
+/**
+ * Le nom d'une lettre, indice compris (`x`, `α`, `x_1`), ou `null` si ce n'est
+ * pas une lettre. `x_1` et `x_2` sont deux lettres, ni l'une ni l'autre `x`.
+ */
+function letterName(node: MathNode): string | null {
+	if (node.type === 'variable') return node.name;
+	if (node.type === 'greek') return node.letter;
+	if (node.type !== 'subscript') return null;
+	const base = letterName(node.base);
+	return base === null ? null : `${base}_${toLatex(node.subscript)}`;
 }
 
 /**
@@ -85,20 +97,23 @@ export function isMonomial(node: MathNode): boolean {
 function exponentsOf(term: MathNode): ReadonlyMap<string, number> {
 	const exponents = new Map<string, number>();
 	const visit = (node: MathNode) => {
+		const letter = letterName(node);
+		if (letter !== null) {
+			exponents.set(letter, (exponents.get(letter) ?? 0) + 1);
+			return;
+		}
 		switch (node.type) {
-			case 'variable':
-				exponents.set(node.name, (exponents.get(node.name) ?? 0) + 1);
-				return;
-			case 'superscript':
+			case 'superscript': {
+				const name = letterName(node.base);
 				if (
-					node.base.type === 'variable' &&
+					name !== null &&
 					node.superscript.type === 'number' &&
 					/^\d+$/.test(node.superscript.value)
 				) {
-					const name = node.base.name;
 					exponents.set(name, (exponents.get(name) ?? 0) + Number(node.superscript.value));
 				}
 				return;
+			}
 			case 'opposite':
 			case 'positive':
 				visit(node.operand);
@@ -184,27 +199,27 @@ export function sumOf(terms: readonly SignedTerm[]): MathNode {
 	return sum;
 }
 
-/** Une somme dans l'ordre du manuel, ou la même somme si l'ordre est déjà le bon. */
-export function orderSum(node: MathNode): MathNode {
+/**
+ * Une somme dans l'ordre du manuel, ou la même somme si l'ordre est déjà le bon.
+ *
+ * ⚠️ **Une somme de monômes seulement** (décision de revue du 2026-10-14). Dès
+ * qu'un terme n'a pas de degré (`eˣ`, `√x`, `sin x`), le comparer aux monômes
+ * n'a pas de sens : on garde l'ordre du module (`4x + 4√x + 1`,
+ * `e^{2x} + e^{-2x} + 2`). La PR 1 rangeait un tel terme après les monômes.
+ */
+function orderSum(node: MathNode): MathNode {
 	if (node.type !== 'addition' && node.type !== 'subtraction') return node;
 	const terms: readonly SignedTerm[] = flattenSumShallow(node);
+	if (!terms.every(({ term }) => isMonomial(term))) return node;
 	const exponents = terms.map(({ term }) => exponentsOf(term));
 	const others = [...new Set(exponents.flatMap((e) => [...e.keys()]))]
 		.filter((letter) => letter !== MAIN_VARIABLE)
 		.sort();
 	const letters = exponents.some((e) => e.has(MAIN_VARIABLE)) ? [MAIN_VARIABLE, ...others] : others;
 
-	// À rang égal, un terme sans degré (`√(x+1)`, `eˣ`) après les monômes :
-	// `x² + 2x + 1 + √(x+1)`, pas `x² + 2x + √(x+1) + 1` (revue)
-	const withoutDegree = terms.map(({ term }) => (isMonomial(term) ? 0 : 1));
 	const order = terms
 		.map((_, index) => index)
-		.sort(
-			(a, b) =>
-				compareTerms(exponents[a], exponents[b], letters) ||
-				withoutDegree[a] - withoutDegree[b] ||
-				a - b
-		);
+		.sort((a, b) => compareTerms(exponents[a], exponents[b], letters) || a - b);
 	// ⚠️ Déjà dans l'ordre : on rend la somme telle quelle, sans la
 	// reconstruire — son écriture (`-2 x + 11`) ne doit pas changer pour rien
 	if (order.every((position, index) => position === index)) return node;

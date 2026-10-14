@@ -396,8 +396,102 @@ describe('l’ordre des termes : puissances décroissantes de x, sinon alphabét
 		expect(commande('.développer sqrt(x)(sqrt(x)+1)').latex).toBe('x + \\sqrt{x}');
 	});
 
-	it('un terme sans degré se range après les monômes, pas au milieu des constantes', () => {
-		expect(commande('.développer (x+1)^2+sqrt(1+x)').latex).toBe('x^2 + 2 x + 1 + \\sqrt{x + 1}');
+	it('un terme sans degré : l’ordre du module, pas celui du manuel', () => {
+		// Décision de revue du 2026-10-14 (PR 2) : l'ordre du tableau B ne vaut que
+		// pour une somme dont TOUS les termes sont des monômes. Dès qu'un terme n'a
+		// pas de degré (eˣ, √x, sin x…), le comparer aux monômes n'a pas de sens :
+		// la PR 1 rangeait `√(x+1)` après les monômes, on garde l'ordre du module.
+		expect(commande('.développer (x+1)^2+sqrt(1+x)').latex).toBe('x^2 + 2 x + \\sqrt{x + 1} + 1');
+		expect(commande('.développer (2sqrt(x)+1)^2').latex).toBe('4 x + 4 \\sqrt{x} + 1');
+		expect(commande('.développer (e^x+e^(-x))^2').latex).toBe(
+			'\\exponentialE^{2 x} + \\exponentialE^{-2 x} + 2'
+		);
+	});
+
+	it('les lettres indicées comptent comme des lettres', () => {
+		expect(commande('.développer (x_1+x_2)^2').latex).toBe('x_1^2 + 2 x_1 x_2 + x_2^2');
+	});
+});
+
+describe('revue de la PR 2 : des titres et des « pourquoi » qui disent vrai', () => {
+	it('sans degré, l’ordre du module : pas d’étape « On ordonne les termes »', () => {
+		for (const expression of ['(e^x+e^(-x))^2', '(2sqrt(x)+1)^2']) {
+			const result = commande(`.développer ${expression}`);
+			const titles = result.steps!.map((step) => step.title);
+
+			expect(titles, expression).not.toContain('On ordonne les termes');
+			expect(linesOf(result.steps![result.steps!.length - 1]).image, expression).toBe(result.latex);
+		}
+	});
+
+	it('« On ordonne les termes » dit quel ordre : puissances de x, sinon alphabétique', () => {
+		const withX = commande('.développer 1+x(x+1)').steps!;
+		const withoutX = commande('.développer (b+a)^2').steps!;
+
+		expect(withX[withX.length - 1].title).toBe('On ordonne les termes');
+		expect(withX[withX.length - 1].explanation).toContain('puissances décroissantes de x');
+		expect(withoutX[withoutX.length - 1].title).toBe('On ordonne les termes');
+		expect(withoutX[withoutX.length - 1].explanation).toContain('ordre alphabétique');
+	});
+
+	it('le titre d’identité ne nomme a et b que si l’expression n’a ni a ni b', () => {
+		expect(etapes('(a-2b)^2')[0][0]).toBe('On reconnaît (a − b)² = a² − 2ab + b²');
+		expect(etapes('(b+a)^2')[0][0]).toBe('On reconnaît (a + b)² = a² + 2ab + b²');
+		expect(etapes('(x+a)(x-a)')[0][0]).toBe('On reconnaît (a + b)(a − b) = a² − b²');
+		expect(etapes('(2x+5)^2')[0][0]).toBe(
+			'On reconnaît (a + b)² = a² + 2ab + b², avec a = 2x et b = 5'
+		);
+	});
+
+	it('un facteur devant les parenthèses : « la première parenthèse », pas « le premier facteur »', () => {
+		const title =
+			'On distribue : chaque terme de la première parenthèse multiplie chaque terme de la seconde';
+
+		expect(etapes('x(x-1)(x+2)')[0]).toEqual([
+			title,
+			'x \\left( x \\times x + x \\times 2 - 1 \\times x - 1 \\times 2 \\right)'
+		]);
+		expect(etapes('2(x+1)(x+2)')[0][0]).toBe(title);
+	});
+
+	it('−(−(x + 1)) : deux signes − se compensent, sans parler d’un +', () => {
+		const [step] = commande('.développer -(-(x+1))').steps!;
+
+		expect(step.title).toBe('On enlève les parenthèses : deux signes − se compensent');
+		expect(step.explanation).toContain('−(−a) = a');
+		expect(step.explanation).not.toContain('+');
+	});
+
+	it('0(x + 1) : la réponse 0, sans étape « 0 + 0 »', () => {
+		const result = commande('.développer 0(x+1)');
+
+		expect(result.latex).toBe('0');
+		expect(result.steps).toBeUndefined();
+	});
+
+	it('« On réduit » seulement quand des termes semblables se regroupent', () => {
+		expect(etapes('2(x+1)+y/2')).toEqual([
+			['On distribue 2', '2 x + 2 + \\dfrac{y}{2}'],
+			[
+				'On écrit chaque terme avec son coefficient, et on ordonne les termes',
+				'2 x + \\dfrac{1}{2} y + 2'
+			]
+		]);
+		// Un terme calculé, pas un coefficient sorti d'un quotient
+		expect(etapes('(2x)^2')).toEqual([['On calcule chaque terme', '4 x^2']]);
+	});
+
+	it('en mode décimal, a et b s’écrivent dans le titre comme dans l’image', () => {
+		const s = session();
+		run('.mode décimal', s);
+
+		expect(etapes('(x-1/2)^2', s)).toEqual([
+			[
+				'On reconnaît (a − b)² = a² − 2ab + b², avec a = x et b = 0,5',
+				'x^2 - 2 \\times x \\times 0{,}5 + \\left( 0{,}5 \\right)^2'
+			],
+			['On calcule chaque terme', 'x^2 - x + 0{,}25']
+		]);
 	});
 });
 

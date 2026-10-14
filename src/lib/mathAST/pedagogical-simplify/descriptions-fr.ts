@@ -410,15 +410,18 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'expand-reduce-inside': () =>
 		'On regroupe les termes semblables de la parenthèse avant de distribuer : il y aura moins de produits.',
 	'expand-distribute': () =>
-		'Chaque terme du premier facteur multiplie chaque terme du second ; le signe de chaque produit suit la règle des signes.',
+		'Chaque terme d’une parenthèse multiplie chaque terme de l’autre ; le signe de chaque produit suit la règle des signes.',
 	'expand-distribute-factor': () =>
 		'k(a + b) = ka + kb : le facteur multiplie chaque terme de la parenthèse.',
 	'expand-remove-parentheses': () =>
 		'−(a + b) = −a − b : enlever une parenthèse précédée d’un −, c’est changer le signe de chacun de ses termes.',
 	'expand-unwrap': () => 'Une parenthèse précédée d’un + s’enlève sans rien changer.',
+	'expand-double-minus': () => '−(−a) = a : l’opposé de l’opposé d’un nombre, c’est ce nombre.',
 	'expand-reduce': () =>
 		'On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.',
-	'expand-order': () => 'On range les termes : puissances décroissantes de x.'
+	'expand-coefficients': () => 'Le coefficient s’écrit devant les lettres : y/2 = ½ y, x × 3 = 3x.',
+	'expand-order': () => 'On range les termes par puissances décroissantes de x.',
+	'expand-order-alphabetical': () => 'On range les termes dans l’ordre alphabétique des lettres.'
 };
 
 const COLLEGE_EXPLANATIONS: RuleFnMap<ExplainFn> = {

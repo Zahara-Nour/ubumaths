@@ -52,7 +52,7 @@ import { denormalize, normalize } from '../normal';
 import { nodesEqual } from '../pattern/match';
 import { toLatex } from '../latex-generator';
 import { areEquivalent } from '../equivalence';
-import { magnitudeOfNegative, orderExpanded, sumOf } from './expand-order';
+import { isMonomial, magnitudeOfNegative, orderExpanded, sumOf } from './expand-order';
 import type { PedagogicalSimplifyCategory, PedagogicalSimplifyStep } from './types';
 
 // =============================================================================
@@ -87,8 +87,11 @@ type ExpandRule =
 	| 'expand-distribute-factor'
 	| 'expand-remove-parentheses'
 	| 'expand-unwrap'
+	| 'expand-double-minus'
 	| 'expand-reduce'
-	| 'expand-order';
+	| 'expand-coefficients'
+	| 'expand-order'
+	| 'expand-order-alphabetical';
 
 /** Une ligne de la rédaction, avant mise en forme et numérotation. */
 interface Line {
@@ -108,6 +111,8 @@ interface SumFactor {
 /** Un terme de la somme principale, lu comme un produit : son signe, ses facteurs. */
 interface Chunk {
 	readonly sign: Sign;
+	/** Les signes − lus (`−(−(x + 1))` : deux, et un signe + au bout). */
+	readonly minusSigns: number;
 	/** Les facteurs sans somme : nombres, lettres, `eˣ`… */
 	readonly plain: readonly MathNode[];
 	/** Les sommes entre parenthèses, dans l'ordre écrit. */
@@ -126,9 +131,11 @@ type Action =
 			readonly b: MathNode;
 	  }
 	| { readonly kind: 'reduce-inside' }
-	| { readonly kind: 'double' }
+	/** `afterFactor` : un facteur simple précède les parenthèses (`x(x − 1)(x + 2)`). */
+	| { readonly kind: 'double'; readonly afterFactor: boolean }
 	| { readonly kind: 'factor'; readonly factor: MathNode }
 	| { readonly kind: 'sign' }
+	| { readonly kind: 'double-sign' }
 	| { readonly kind: 'unwrap' };
 
 /** Un terme après une phase. */
@@ -142,6 +149,14 @@ interface Rewrite {
 
 /** Une phase : ce qu'elle fait d'un terme, `null` si elle ne s'y applique pas. */
 type Phase = (chunk: Chunk) => Rewrite | null;
+
+/** Ce que les titres savent de l'expression entière. */
+interface TitleContext {
+	/** La mise en forme des images, appliquée aussi aux titres (`b = 0,5` en mode décimal). */
+	readonly format: (node: MathNode) => MathNode;
+	/** L'expression écrit `a` ou `b` : « avec a = … et b = … » mêlerait deux sens. */
+	readonly namesAB: boolean;
+}
 
 // =============================================================================
 // Constantes
@@ -163,8 +178,11 @@ const CATEGORY: Readonly<Record<ExpandRule, PedagogicalSimplifyCategory>> = {
 	'expand-distribute-factor': 'distribution',
 	'expand-remove-parentheses': 'distribution',
 	'expand-unwrap': 'distribution',
+	'expand-double-minus': 'distribution',
 	'expand-reduce': 'combinaison-termes-semblables',
-	'expand-order': 'combinaison-termes-semblables'
+	'expand-coefficients': 'combinaison-termes-semblables',
+	'expand-order': 'combinaison-termes-semblables',
+	'expand-order-alphabetical': 'combinaison-termes-semblables'
 };
 
 const IDENTITY_FORMULA: Readonly<Record<Identity, string>> = {
@@ -177,6 +195,10 @@ const SUPERSCRIPT_DIGITS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
 
 const DOUBLE_TITLE =
 	'On distribue : chaque terme du premier facteur multiplie chaque terme du second';
+
+/** Un facteur simple devant : « le premier facteur » serait ce facteur (`x(x − 1)(x + 2)`). */
+const DOUBLE_TITLE_AFTER_FACTOR =
+	'On distribue : chaque terme de la première parenthèse multiplie chaque terme de la seconde';
 
 // =============================================================================
 // Fonctions — lecture
@@ -238,11 +260,13 @@ function readSum(node: MathNode, exponent: number): SumFactor {
  */
 function readChunk({ sign, term }: SignedTerm): Chunk {
 	let negative = sign === '-';
+	let minusSigns = negative ? 1 : 0;
 	const plain: MathNode[] = [];
 	const sums: SumFactor[] = [];
 	const visit = (node: MathNode): void => {
 		if (node.type === 'opposite') {
 			negative = !negative;
+			minusSigns++;
 			visit(node.operand);
 			return;
 		}
@@ -270,7 +294,7 @@ function readChunk({ sign, term }: SignedTerm): Chunk {
 		plain.push(node);
 	};
 	visit(term);
-	return { sign: negative ? '-' : '+', plain, sums };
+	return { sign: negative ? '-' : '+', minusSigns, plain, sums };
 }
 
 // =============================================================================
@@ -324,6 +348,12 @@ function computeTerm({ sign, term }: SignedTerm): SignedTerm {
 	const value = orderExpanded(denormalize(normalize(term)));
 	if (containsSum(value)) fail();
 	return withOwnSign({ sign, term: value });
+}
+
+/** Un facteur qui vaut 0 (`0`, `0x`, `x − x` réduit). */
+function isZero(node: MathNode): boolean {
+	const value = denormalize(normalize(node));
+	return value.type === 'number' && Number(value.value) === 0;
 }
 
 /** La même somme, `count` facteurs remplacés à `index` par une nouvelle somme. */
@@ -453,7 +483,10 @@ const reduceInside: Phase = (chunk) => {
 		plain.push(own.term);
 	}
 	if (!changed) return null;
-	return { computed: chunkTerms({ sign, plain, sums }), action: { kind: 'reduce-inside' } };
+	return {
+		computed: chunkTerms({ ...chunk, sign, plain, sums }),
+		action: { kind: 'reduce-inside' }
+	};
 };
 
 /** La double distribution des deux premières parenthèses du produit. */
@@ -468,7 +501,10 @@ const distributeBoth: Phase = (chunk) => {
 			term: multiply(asFactor(s.term), asFactor(t.term), 'cross')
 		}))
 	);
-	return replaceSums(chunk, 0, 2, written, { kind: 'double' });
+	return replaceSums(chunk, 0, 2, written, {
+		kind: 'double',
+		afterFactor: chunk.plain.length > 0
+	});
 };
 
 /**
@@ -481,12 +517,15 @@ const distributeFactor: Phase = (chunk) => {
 	const [sum] = chunk.sums;
 	if (sum.exponent !== 1) fail();
 	if (chunk.plain.length === 0) {
+		const kind = chunk.sign === '-' ? 'sign' : chunk.minusSigns > 0 ? 'double-sign' : 'unwrap';
 		return {
 			computed: sum.terms.map(({ sign, term }) => ({ sign: times(chunk.sign, sign), term })),
-			action: { kind: chunk.sign === '-' ? 'sign' : 'unwrap' }
+			action: { kind }
 		};
 	}
 	const factor = productOf(chunk.plain.map(unwrapGrouping));
+	// `0(x + 1)` : distribuer 0 écrirait `0 + 0` — la réponse 0 reste, sans étapes
+	if (isZero(factor)) fail();
 	return {
 		computed: sum.terms.map(({ sign, term }) =>
 			computeTerm({ sign: times(chunk.sign, sign), term: multiply(factor, term, 'cross') })
@@ -565,9 +604,13 @@ function plainText(node: MathNode): string | null {
 	}
 }
 
-/** Une expression dans la prose d'un titre : en texte si possible, sinon entre `$…$`. */
-function prose(node: MathNode): string {
-	return plainText(node) ?? `$${toLatex(node)}$`;
+/**
+ * Une expression dans la prose d'un titre, mise en forme comme les images : en
+ * texte si possible, sinon entre `$…$`.
+ */
+function prose(node: MathNode, format: (node: MathNode) => MathNode): string {
+	const written = format(node);
+	return plainText(written) ?? `$${toLatex(written)}$`;
 }
 
 /** `3`, `3 et −2`, `3, −2 et x`. */
@@ -577,11 +620,15 @@ function enumeration(items: readonly string[]): string {
 }
 
 /** Le titre d'une ligne de distribution d'un facteur, ou de signe. */
-function distributionTitle(actions: readonly Action[]): string {
+function distributionTitle(
+	actions: readonly Action[],
+	format: (node: MathNode) => MathNode
+): string {
 	const factors = actions.flatMap((action) =>
-		action.kind === 'factor' ? [prose(action.factor)] : []
+		action.kind === 'factor' ? [prose(action.factor, format)] : []
 	);
 	const signs = actions.filter((action) => action.kind === 'sign').length;
+	const doubles = actions.filter((action) => action.kind === 'double-sign').length;
 	if (factors.length > 0) {
 		const head = `On distribue ${enumeration(factors)}`;
 		if (signs === 0) return head;
@@ -589,29 +636,34 @@ function distributionTitle(actions: readonly Action[]): string {
 			? `${head}, et le signe − devant la parenthèse change le signe de chaque terme`
 			: `${head}, et le signe − devant chaque parenthèse change le signe de ses termes`;
 	}
-	if (signs === 1) return 'On enlève la parenthèse précédée d’un −';
-	if (signs > 1) return 'On enlève les parenthèses précédées d’un −';
+	if (signs === 1 && doubles === 0) return 'On enlève la parenthèse précédée d’un −';
+	if (signs > 0) return 'On enlève les parenthèses précédées d’un −';
+	if (doubles > 0) return 'On enlève les parenthèses : deux signes − se compensent';
 	return 'On enlève les parenthèses';
 }
 
 /** Le titre d'une ligne, d'après ce que la phase a fait de chaque terme. */
-function titleOf(actions: readonly Action[]): string {
+function titleOf(actions: readonly Action[], context: TitleContext): string {
+	const { format } = context;
 	const [first] = actions;
 	switch (first.kind) {
 		case 'split': {
 			if (actions.length > 1) return 'On écrit chaque puissance comme un produit';
-			const before = plainText(first.before);
-			const after = plainText(first.after);
-			return before !== null && after !== null
-				? `On écrit ${before} = ${after}`
-				: `On écrit $${toLatex(first.before)} = ${toLatex(first.after)}$`;
+			const before = format(first.before);
+			const after = format(first.after);
+			const beforeText = plainText(before);
+			const afterText = plainText(after);
+			return beforeText !== null && afterText !== null
+				? `On écrit ${beforeText} = ${afterText}`
+				: `On écrit $${toLatex(before)} = ${toLatex(after)}$`;
 		}
 		case 'identity': {
 			if (actions.length === 1) {
 				const formula = `On reconnaît ${IDENTITY_FORMULA[first.identity]}`;
-				// `(a+b)²` tapé tel quel : « avec a = a et b = b » ne dirait rien
-				const named = plainText(first.a) === 'a' && plainText(first.b) === 'b';
-				return named ? formula : `${formula}, avec a = ${prose(first.a)} et b = ${prose(first.b)}`;
+				// `(a − 2b)²` : « avec a = a et b = 2b » mêlerait les lettres de
+				// l'élève et celles de la formule — la formule seule (revue)
+				if (context.namesAB) return formula;
+				return `${formula}, avec a = ${prose(first.a, format)} et b = ${prose(first.b, format)}`;
 			}
 			const squares = actions.every(
 				(action) => action.kind === 'identity' && action.identity !== 'conjugate'
@@ -625,9 +677,11 @@ function titleOf(actions: readonly Action[]): string {
 				? 'On réduit dans la parenthèse'
 				: 'On réduit dans chaque parenthèse';
 		case 'double':
-			return DOUBLE_TITLE;
+			return actions.some((action) => action.kind === 'double' && action.afterFactor)
+				? DOUBLE_TITLE_AFTER_FACTOR
+				: DOUBLE_TITLE;
 		default:
-			return distributionTitle(actions);
+			return distributionTitle(actions, format);
 	}
 }
 
@@ -644,8 +698,9 @@ function ruleOf(actions: readonly Action[]): ExpandRule {
 			return 'expand-distribute';
 		default:
 			if (actions.some((action) => action.kind === 'factor')) return 'expand-distribute-factor';
-			return actions.some((action) => action.kind === 'sign')
-				? 'expand-remove-parentheses'
+			if (actions.some((action) => action.kind === 'sign')) return 'expand-remove-parentheses';
+			return actions.some((action) => action.kind === 'double-sign')
+				? 'expand-double-minus'
 				: 'expand-unwrap';
 	}
 }
@@ -664,7 +719,13 @@ function firstPhase(chunks: readonly Chunk[]): readonly (Rewrite | null)[] | nul
 }
 
 /** Les lignes de la rédaction détaillée, jusqu'à la dernière phase (sans « On réduit »). */
-function narrate(start: MathNode, answer: MathNode): Line[] {
+function narrate(start: MathNode, answer: MathNode, format: (node: MathNode) => MathNode): Line[] {
+	const context: TitleContext = {
+		format,
+		namesAB:
+			findNodes(start, (n) => n.type === 'variable' && (n.name === 'a' || n.name === 'b')).length >
+			0
+	};
 	let terms: readonly SignedTerm[] = flattenSumShallow(start);
 	const startChunks = terms.map(readChunk);
 	if (startChunks.some((chunk) => chunk.sums.some((sum) => sum.exponent >= 4))) {
@@ -693,7 +754,7 @@ function narrate(start: MathNode, answer: MathNode): Line[] {
 		if (withProducts) {
 			lines.push({
 				rule: ruleOf(actions),
-				title: titleOf(actions),
+				title: titleOf(actions, context),
 				image: sumOf(pick(true)),
 				products: true
 			});
@@ -704,7 +765,11 @@ function narrate(start: MathNode, answer: MathNode): Line[] {
 				image: sumOf(computed)
 			});
 		} else {
-			lines.push({ rule: ruleOf(actions), title: titleOf(actions), image: sumOf(computed) });
+			lines.push({
+				rule: ruleOf(actions),
+				title: titleOf(actions, context),
+				image: sumOf(computed)
+			});
 		}
 		terms = computed;
 	}
@@ -737,10 +802,63 @@ function sameTerms(left: MathNode, right: MathNode): boolean {
 	return written(left) === written(right);
 }
 
+/** La dernière ligne, jusqu'à la réponse : son titre vrai, ou `'fold'`. */
+type Closing = { readonly rule: ExpandRule; readonly title: string } | 'fold';
+
+/**
+ * Ce que la dernière ligne fait vraiment (revue du 2026-10-14) :
+ *
+ * - des termes semblables se regroupent (moins de termes) : « On réduit » ;
+ * - seul l'ordre change, dans une somme de monômes : « On ordonne les termes »
+ *   (puissances décroissantes de x, sinon l'ordre alphabétique) ; dans une
+ *   somme qui a un terme sans degré, c'est l'ordre du module, qu'aucune règle
+ *   ne justifie : `'fold'`, l'image précédente prend cet ordre sans ligne de plus ;
+ * - un terme change d'écriture : « On écrit chaque terme avec son coefficient »
+ *   s'il sort d'un quotient (`y/2` → `½y`), sinon « On calcule chaque terme »
+ *   (`(2x)²` → `4x²`) — et l'ordre, s'il change aussi.
+ */
+function closingOf(
+	previous: MathNode,
+	last: MathNode,
+	format: (node: MathNode) => MathNode
+): Closing {
+	const before = flattenSumShallow(previous);
+	const after = flattenSumShallow(last);
+	const reduce: Closing = { rule: 'expand-reduce', title: 'On réduit' };
+	// Des termes semblables se regroupent
+	if (after.length < before.length) return reduce;
+	// Les mêmes termes, dans un autre ordre
+	if (sameTerms(previous, last)) {
+		if (!after.every(({ term }) => isMonomial(term))) return 'fold';
+		const withX = findNodes(last, (n) => n.type === 'variable' && n.name === 'x').length > 0;
+		return {
+			rule: withX ? 'expand-order' : 'expand-order-alphabetical',
+			title: 'On ordonne les termes'
+		};
+	}
+	// Autant de termes, écrits autrement : chacun sous sa forme calculée, dans l'ordre de la ligne
+	const own = before.map(withOwnSign);
+	const tidiedTerms = own.map(computeTerm);
+	const tidied = format(sumOf(tidiedTerms));
+	const ordered = toLatex(tidied) !== toLatex(last);
+	if (ordered && !sameTerms(tidied, last)) return reduce;
+	// `y/2` → `½y` : un coefficient sorti du quotient ; `(2x)²` → `4x²` : un calcul
+	const coefficients = own.every(
+		({ term }, index) =>
+			term.type === 'division' || toLatex(format(term)) === toLatex(format(tidiedTerms[index].term))
+	);
+	const head = coefficients
+		? 'On écrit chaque terme avec son coefficient'
+		: 'On calcule chaque terme';
+	return {
+		rule: coefficients ? 'expand-coefficients' : 'expand-compute',
+		title: ordered ? `${head}, et on ordonne les termes` : head
+	};
+}
+
 /**
  * Les étapes, numérotées : une image identique à la précédente ne fait pas de
- * ligne, et la dernière est la réponse (« On réduit », sinon « On ordonne les
- * termes » quand seul l'ordre change).
+ * ligne, et la dernière est la réponse (`closingOf`).
  */
 function stepsOf(
 	start: MathNode,
@@ -772,14 +890,19 @@ function stepsOf(
 		push(line.rule, line.title, format(line.image), line.products ? 'detailed' : 'summarized');
 	}
 	const last = format(answer);
-	if (toLatex(last) !== previousLatex) {
-		const ordered = sameTerms(previous, last);
-		push(
-			ordered ? 'expand-order' : 'expand-reduce',
-			ordered ? 'On ordonne les termes' : 'On réduit',
-			last,
-			'summarized'
-		);
+	if (toLatex(last) === previousLatex) return steps;
+	const closing = closingOf(previous, last, format);
+	if (closing !== 'fold') {
+		push(closing.rule, closing.title, last, 'summarized');
+		return steps;
+	}
+	// L'ordre du module, sans ligne de plus : la dernière image le prend. Sans
+	// ligne avant (rien d'autre à dire qu'un ordre), pas de « Comment ? »
+	const folded = steps.pop();
+	if (folded === undefined) return [];
+	const kept = steps[steps.length - 1];
+	if (kept === undefined || toLatex(kept.globalAfter ?? kept.after) !== toLatex(last)) {
+		steps.push({ ...folded, after: last, globalAfter: last });
 	}
 	return steps;
 }
@@ -799,15 +922,16 @@ export function writeExpandSteps(
 ): ExpandSteps | null {
 	const format = options.format ?? ((image: MathNode) => image);
 	try {
-		const lines = narrate(node, answer);
+		const lines = narrate(node, answer, format);
 		// Jamais une étape fausse : chaque image écrite ici est l'entrée, autrement
 		// écrite (la réponse vient de l'appelant, elle n'est pas revérifiée)
 		for (const line of lines) {
 			if (line.image !== answer && !areEquivalent(line.image, node)) return null;
 		}
 		const steps = stepsOf(node, lines, answer, format);
-		if (steps.length === 0) return null;
-		return { steps, summary: stepsOf(node, summarize(lines), answer, format) };
+		const summary = stepsOf(node, summarize(lines), answer, format);
+		if (steps.length === 0 || summary.length === 0) return null;
+		return { steps, summary };
 	} catch {
 		// `Unwritable` (une écriture qu'on ne sait pas rédiger), ou `normalize`
 		// qui refuse un terme : la réponse reste, sans étapes
