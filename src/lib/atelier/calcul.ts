@@ -44,7 +44,8 @@ import {
 	readListValue,
 	individualEntries,
 	withPiCommand,
-	mixedNotationMessage
+	mixedNotationMessage,
+	withLatexFunctionNames
 } from './parse';
 import {
 	INTERNAL_LETTER,
@@ -128,6 +129,7 @@ import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import {
 	DEFAULT_VARIABLE,
+	bareFunctionRefusal,
 	guessedVariable,
 	isKeywordCommand,
 	readCommandArguments,
@@ -463,6 +465,16 @@ function kindOf(parameter: string | undefined, body: string): ObjectKind {
 	// nœud lui-même qui le dit (`derivativeOrder`).
 	if (/[A-Za-z](?:_\d+)?['’]/.test(body)) return 'function';
 	return 'value';
+}
+
+/**
+ * `L = sin; cos; ln` : un nom sans paramètre, puis des entrées séparées par
+ * « ; » — la forme d'une liste, de nombres ou de mots. La carte n'y cherche
+ * pas de fonction sans parenthèses (`parseDefinition` : une liste sort avant).
+ */
+function isSemicolonList(input: string): boolean {
+	const definition = DEFINITION.exec(input);
+	return definition !== null && definition[2] === undefined && definition[3].includes(';');
 }
 
 /**
@@ -1305,6 +1317,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// C6 : une commande traite une expression ; une récurrence n'en est pas une
 	// (`.dériver u(2)` rendait « d/dx((u(n)-5)(2)) = 0 »)
 	const typedArgument = space === -1 ? '' : resolved.slice(space + 1);
+	// V59 : `.évaluer ln x en x=1` réclamait « les valeurs de l et n ». Le même
+	// refus que sur une ligne de calcul, pour TOUTE commande de calcul (y
+	// compris `.taylor sin ordre 5`, que l'atelier ne lisait déjà pas). Les
+	// simulations lisent des noms de listes, pas des expressions
+	if (SIMULATIONS[known.name] === undefined) {
+		const bare = bareFunctionRefusal(typedArgument);
+		if (bare !== null) return { kind: 'refus', message: bare };
+	}
 	const recurrence = session.atelier.objects.find(
 		(o) =>
 			o.kind === 'sequence' &&
@@ -2591,7 +2611,8 @@ function decimalRankMessage(atelier: Atelier, input: string): string | null {
 function computeInput(session: CalcSession, text: string, provenance: Provenance): CalcResult {
 	// `f^-1`, `f^(-1)`, `f⁻¹` d'une fonction de l'atelier : écrits `f^{-1}`, la
 	// réciproque que lisent les parseurs (décision (1) de David, 2026-10-13)
-	const input = withReciprocalNotation(session.atelier, text.trim());
+	// `ln\left(x\right)` de MathLive : ln de x, pas l·n·(x) (`withLatexFunctionNames`)
+	const input = withReciprocalNotation(session.atelier, withLatexFunctionNames(text.trim()));
 	if (input === '') return { kind: 'vide' };
 
 	// Avant tout chemin — commande, définition, calcul : tous lisent `pi` p·i
@@ -2601,6 +2622,11 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// de lettres, sans erreur. Une commande le vérifie sur son argument de
 	// CALCUL (`runCommand`) : les commandes de données lisent des modalités.
 	if (!input.startsWith('.')) {
+		// V59 : `ln x`, `sin x` se lisaient l·n·x, s·i·n·x, sans erreur — ligne
+		// de calcul comme définition. Une commande le vérifie sur son argument
+		// Sauf une liste de mots (`L = sin; cos; ln`), que la carte accepte aussi
+		const bare = isSemicolonList(input) ? null : bareFunctionRefusal(input);
+		if (bare !== null) return { kind: 'refus', message: bare };
 		if (EVENT_PROBABILITY.test(input)) return eventProbability(session.atelier, input);
 		// `f⁻¹(5)` : f sans réciproque, ou 5 hors de l'ensemble de départ de f⁻¹
 		const defined = reciprocalDefinitionRefusal(session.atelier, input);

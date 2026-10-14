@@ -12,6 +12,7 @@ import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { parseLatexSafe } from '$lib/mathAST/parser';
 import { detectInputFormat, hasBareFunctionCall } from '$lib/mathAST/cli/core/input-detector';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { bareFunctionRefusal } from '$lib/mathAST/cli/core/variable-argument';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { format as formatUnit } from '$lib/mathAST/units';
 import type { MathNode } from '$lib/mathAST/types';
@@ -122,6 +123,17 @@ export function withPiCommand(text: string): string {
 }
 
 /**
+ * `ln\left(x\right)` → `\ln\left(x\right)`. MathLive écrit ainsi un `ln` tapé
+ * lettre à lettre puis une parenthèse : sans l'antislash, le parseur LaTeX lit
+ * l·n·(x). L'élève a mis les parenthèses : c'est bien ln de x (revue de V59).
+ * Seulement devant `\left(` : `ln x` reste refusé (`bareFunctionRefusal`), et
+ * `ln(x)` se lit déjà.
+ */
+export function withLatexFunctionNames(text: string): string {
+	return text.replace(/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?=\s*\\left\s*\()/g, '\\$1');
+}
+
+/**
  * Le refus d'une saisie MÊLÉE : `sin(` sans antislash (texte) avec une commande
  * LaTeX que le parseur maison ne connaît pas (`\frac`, `\sqrt`, `\cdot`…).
  */
@@ -156,7 +168,7 @@ function parseByProvenance(
 	provenance: Provenance,
 	functionNames?: readonly string[]
 ) {
-	const typed = withPiCommand(rawDefinition);
+	const typed = withPiCommand(withLatexFunctionNames(rawDefinition));
 	// Les mêmes noms de fonctions dans les deux lectures : en LaTeX, l'atelier ne
 	// les transmettait pas, et `k(x)` tapé dans la carte se lisait k·x
 	const genericFunctions = genericFunctionsFor(functionNames);
@@ -419,6 +431,11 @@ export function parseDefinition(
 	}
 
 	if (kind === 'value' && PLAIN_NUMBER.test(definition)) return {};
+
+	// V59 : la carte refuse `ln x` comme la ligne de calcul — sans quoi un
+	// `ln x` sans antislash venu de MathLive se lisait l·n·x
+	const bare = bareFunctionRefusal(definition);
+	if (bare !== null) return { error: bare };
 
 	const result = parseByProvenance(definition, provenance, functionNames);
 	if (!result.ast) {

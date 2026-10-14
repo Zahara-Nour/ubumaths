@@ -334,6 +334,22 @@ acceptée quand elle est sans ambiguïté. La lecture vit dans `mathAST` :
 `readCommandArguments`, `isKeywordCommand`, `guessedVariable` dans
 `src/lib/mathAST/cli/core/variable-argument.ts`.
 
+**Fonction usuelle sans parenthèses : refusée partout** (V59, 2026-10-14). `ln x`, `sin x`,
+`cos x`, `tan x`, `exp x`, `sqrt x`, `log x` (et `sin^2 x`, `log_2 x`) se lisaient l·n·x, s·i·n·x :
+une ligne de calcul rendait `l n x`, `.évaluer ln x en x=1` réclamait « les valeurs de l et n ».
+`bareFunctionRefusal` (`variable-argument.ts`, même motif `BARE_FUNCTION` que
+`bareFunctionName`) rend un refus qui CITE le fragment tapé et propose la forme parenthésée :
+« « ln 2x » : écris ln(2x) avec des parenthèses. » ; l'argument est cité tel quel (`sin π` → `sin(π)`, `ln |x|` → `ln(|x|)`, `ln -x` → `ln(-x)`) et, sans argument lisible (`ln + 1`), la forme est `ln(…)`.
+Trois appels : `computeInput` (ligne de calcul ET définition `f(x) = ln x`, refusée avant
+qu'aucun objet ne soit créé), `runCommand` sur l'argument de toute commande sauf les simulations
+(qui lisent des noms de listes) — il devance donc les refus `bareFunctionName` des commandes du CLI
+et de `.limite` —, et `parseDefinition` (la carte : un `ln x` sans antislash venu de MathLive).
+Une liste `L = sin; cos; ln` n'est pas concernée, ni sur la ligne ni sur la carte (`isSemicolonList`). `ln\left(x\right)`, ce qu'écrit MathLive pour `ln` tapé lettre à lettre puis une parenthèse, se lit ln(x) : `withLatexFunctionNames` (`parse.ts`) ajoute l'antislash devant `sin`, `cos`, `tan`, `ln`, `log`, `exp`, `sqrt` suivis de `\left(`, sur la ligne et sur la carte. Refusé même si les lettres sont posées (`l = 2` puis `ln x`) : c'est presque toujours une erreur.
+Restent lus : `ln(x)`, `2 ln(x)`, `\ln x` (LaTeX du clavier MathLive), `l n` (produit écrit avec
+une espace), `cost`, `lnx` (non délimités, toujours des produits). Effet de bord :
+`.taylor sin ordre 5` (le raccourci par le nom seul, que l'atelier ne lisait déjà pas — « Plusieurs
+lettres ») est refusé aussi. Test : `src/lib/atelier/__tests__/fonction-sans-parentheses.test.ts`.
+
 **Trois sources de commandes**, réunies par `commandCatalog` (`src/lib/atelier/commands.ts`) :
 
 | Source                     | Où                            | Exemples                                                              |
@@ -952,8 +968,8 @@ latérales quand le moteur les connaît, « Pas de limite en 0 : à gauche −�
 limite en 0+ : l'expression n'est pas définie à droite de 0. » (« à gauche de » pour `0-`, « f »
 en maths pour une fonction citée) ; `sin(1/x)` en `0+` → « … oscille sans se rapprocher d'aucune
 valeur. ». Une fonction usuelle sans parenthèses (`ln x`, `sin x`, `cos x`, `sqrt x`, `exp x`,
-lue l·n·x par le parseur) est refusée comme dans les autres commandes (`bareFunctionName` :
-« Écris ln(x) avec des parenthèses. ») ; `e^x` se lit bien. Le texte de la ligne (copie, export)
+lue l·n·x par le parseur) est refusée comme dans les autres commandes (`bareFunctionRefusal`, en amont dans
+`runCommand` : « « ln x » : écris ln(x) avec des parenthèses. ») ; `e^x` se lit bien. Le texte de la ligne (copie, export)
 est lisible (`readableText`) : divisions en `/`, exposant long entre parenthèses (`e^(1/x)`,
 jamais le `e^{1:/x}` de `toCustom`), sans accolades : `1/(x-1)^2`, `e^x/x^2`, `(x+2)/x^2`, des
 parenthèses seulement où le sens l'exige (`1/(2x)`). Test :

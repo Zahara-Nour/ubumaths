@@ -63,12 +63,22 @@ const CONSTANT_NAMES: ReadonlySet<string> = new Set(['e', 'i', 'pi']);
  * `sin x`, `ln x`, `sin^2 x`. Le nom doit être DÉLIMITÉ — `cost`, `lnx`,
  * `\arcsin`, `\cosh`, `\operatorname{sin}` ne comptent pas — et n'est pas
  * suivi (indice et exposant éventuels compris : `log_2(x)`, que `toCustom`
- * écrit pour un logarithme de base donnée) d'une parenthèse ouvrante. Un
+ * écrit pour un logarithme de base donnée) d'une parenthèse ouvrante, ou de `\left(` (ce qu'écrit MathLive). Un
  * indice de racine entre crochets (`sqrt[3](x)`, que la définition
  * `f(x) = …` accepte) peut précéder la parenthèse.
  */
 const BARE_FUNCTION =
-	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\[[^\]]*\]\s*)?\()/;
+	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\[[^\]]*\]\s*)?(?:\(|\\left\s*\())/;
+
+/**
+ * Ce qui suit le nom d'une fonction sans parenthèses : son indice et son
+ * exposant éventuels (`log_2 x`, `sin^2 x`), puis l'argument que l'élève
+ * voulait lui donner, signe compris (`-x`) — un nombre (`2`, `2,5`, `2x`), un
+ * mot (`x`, `xy`), `π`, une commande LaTeX (`\pi`) ou une valeur absolue
+ * (`|x|`), jamais un mot-clé de commande (`.limite ln en 0`).
+ */
+const BARE_FUNCTION_TAIL =
+	/^(\s*_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?(\s*\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?(?:\s*(?!(?:en|pour|de|dans|ordre|et|sur)(?![A-Za-z0-9]))([-−]?(?:\d+(?:[.,]\d+)?[A-Za-z]*|[A-Za-z][A-Za-z0-9]*|\\[A-Za-z]+|π|\|[^|]+\|)))?/;
 
 /**
  * Les deux bornes d'une intégrale définie, en fin de texte : `… 0 1`, ou
@@ -392,6 +402,28 @@ export function bareFunctionName(input: string): string | null {
 /** Le refus à montrer pour une fonction écrite sans parenthèses. */
 export function bareFunctionMessage(name: string): string {
 	return `Écris ${name}(x) avec des parenthèses.`;
+}
+
+/**
+ * Le refus d'une fonction usuelle écrite sans parenthèses, qui CITE ce que
+ * l'élève a tapé, ou `null` : `ln x + 1` → « ln x » : écris ln(x) avec des
+ * parenthèses. Sans argument lisible (`ln` seul, `ln + 1`) : « écris ln(…) ».
+ *
+ * C'est le refus de l'atelier, le même partout (V59, 2026-10-14) : ligne de
+ * calcul, définition, argument de toute commande de calcul. Les commandes du
+ * CLI gardent `bareFunctionMessage`, que l'atelier devance.
+ */
+export function bareFunctionRefusal(input: string): string | null {
+	const found = BARE_FUNCTION.exec(input);
+	if (found === null) return null;
+	const name = found[1];
+	const tail = BARE_FUNCTION_TAIL.exec(input.slice(found.index + name.length));
+	const [written = '', subscript = '', exponent = '', argument] = tail ?? [];
+	const typed = (name + written).trim();
+	const compact = (text: string) => text.replace(/\s+/g, '');
+	// Rien de lisible après le nom : on n'invente pas d'argument
+	const suggested = `${name}${compact(subscript)}${compact(exponent)}(${argument ?? '…'})`;
+	return `« ${typed} » : écris ${suggested} avec des parenthèses.`;
 }
 
 // =============================================================================
