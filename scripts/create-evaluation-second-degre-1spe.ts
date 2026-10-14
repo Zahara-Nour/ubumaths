@@ -14,6 +14,12 @@
  * l'ajoute lui-même à son évaluation. Trois schémas (FR + EN), dessinés pour
  * l'occasion (SVG → PNG), illustrent les trois parties.
  *
+ * Version « examen » (2026-10-14, demande de David) : sans calculatrice. Coefficients
+ * choisis pour des racines entières (jet : −0,5x² + x + 1,5 ; recette : maximum en
+ * n = 4, n(8 − n) ⩾ 0) et encart « Quelques résultats de calcul » mêlant le produit
+ * utile et des leurres. Le jet et le billet, redessinés, prennent un suffixe `-v2` :
+ * une image déjà en ligne n'est jamais remplacée.
+ *
  * Relancé alors que l'exercice existe déjà, le script met à jour ses variations
  * (ajout des schémas, 2026-10-14) : l'état d'avant est sauvegardé en JSON.
  *
@@ -43,7 +49,7 @@ const DAVID = '97c1d5e4-5fa0-44ce-be83-ed5467f3a424';
 const TOPIC = 'Optimisation';
 const TITRE = 'Le parc aquatique';
 const BUCKET = 'exercise-images';
-const IMAGES = ['parc-jet', 'parc-pique-nique', 'parc-billet'].flatMap((n) => [
+const IMAGES = ['parc-jet-v2', 'parc-pique-nique', 'parc-billet-v2'].flatMap((n) => [
 	`${n}.png`,
 	`${n}-en.png`
 ]);
