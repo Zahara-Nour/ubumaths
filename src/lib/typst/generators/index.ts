@@ -11,11 +11,7 @@
 export { BaseTypstGenerator } from './base-generator';
 
 // Worksheet generator
-export {
-	WorksheetGenerator,
-	generateWorksheetTypst,
-	generateBatchTypst
-} from './worksheet-generator';
+export { WorksheetGenerator, generateWorksheetTypst } from './worksheet-generator';
 
 // Types
 export type { WorksheetGeneratorInput, GenerateTypstParams } from './worksheet-generator';

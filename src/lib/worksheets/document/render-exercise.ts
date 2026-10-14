@@ -2,8 +2,8 @@
  * Rendu Typst des exercices d'un document de fiche — écrit une seule fois (ADR 0028)
  * =================================================================================
  *
- * Utilisé par les deux générateurs (prof : `worksheet-generator.ts`, élève :
- * `student-worksheet-typst.ts`) et par l'aperçu markdown à l'écran du prof
+ * Utilisé par le générateur des fiches (`worksheet-generator.ts`, pour le
+ * prof comme pour l'élève depuis le lot 4b) et par l'aperçu markdown à l'écran du prof
  * (`renderMarkdownPreview`). Tout ce qui fait un exercice imprimé vit ici :
  * groupement par section (et « Autres exercices »), numéro, titre avec ses
  * formules, points dans la langue du document, consigne, énoncé, réponses ou
@@ -39,9 +39,10 @@ import type { DocumentExercise, DocumentForm, DocumentSection, WorksheetDocument
  * - `badge` : gabarit qui place `{{exercises_badge}}` (numéro sur carré ambre) ;
  * `display.titleOnly` (copie d'un élève servant de document de classe, D6) :
  * dans tous les habillages, le titre seul, sans numéro ni carré.
- * - `student` : PDF de l'élève (carré ambre, ★, corrigés en fin de document).
+ * L'ancien habillage `student` (PDF de l'élève à part) est retiré au lot 5 :
+ * l'élève reçoit le gabarit du style de la fiche, comme le prof.
  */
-export const EXERCISE_LAYOUTS = ['heading', 'badge', 'student'] as const;
+export const EXERCISE_LAYOUTS = ['heading', 'badge'] as const;
 export type ExerciseLayout = (typeof EXERCISE_LAYOUTS)[number];
 
 /** Ce qu'un exercice imprime après son en-tête, hors fiche */
@@ -63,10 +64,6 @@ export function renderExercises(
 	form: DocumentForm,
 	layout: ExerciseLayout
 ): string {
-	if (layout === 'student' && form !== 'worksheet') {
-		return doc.exercises.map((exercise) => renderStudentPanel(exercise, doc, form)).join('');
-	}
-
 	// Réponses et corrigé : seulement les exercices dont la correction est
 	// visible (vue de l'élève) ; la copie du prof les a toutes
 	const printed =
@@ -154,11 +151,6 @@ function renderSectionHeader(section: DocumentSection, layout: ExerciseLayout): 
 	const instructions = section.instructions ? escapeTypst(section.instructions) : null;
 
 	switch (layout) {
-		case 'student':
-			return (
-				`= ${title}\n\n` +
-				(instructions ? `#text(style: "italic", fill: gray)[${instructions}]\n\n` : '')
-			);
 		case 'badge':
 			// Titre ambre en petites capitales sur un filet ambre, à la mesure des
 			// numéros en carré. `sticky` : jamais seul en bas de colonne ; `above` :
@@ -200,13 +192,7 @@ function renderExercise(
 	form: DocumentForm,
 	layout: ExerciseLayout
 ): string {
-	switch (layout) {
-		case 'student':
-			return renderStudentExercise(exercise, doc);
-		case 'heading':
-		case 'badge':
-			return renderTemplateExercise(exercise, doc, form, layout) + '\n\n';
-	}
+	return renderTemplateExercise(exercise, doc, form, layout) + '\n\n';
 }
 
 /** Gabarit : en-tête « Exercice N » ou numéro sur carré ambre, dans un bloc `sticky` */
@@ -314,49 +300,6 @@ export function renderDocumentPreamble(
 	return typst;
 }
 
-/** PDF de l'élève : ★, carré ambre, points et consigne dans un bloc `sticky` */
-function renderStudentExercise(exercise: DocumentExercise, doc: WorksheetDocument): string {
-	const star = exercise.essential ? `#text(fill: rgb("#f59e0b"))[★] ` : '';
-	let header = `${star}${studentHeading(exercise, doc)}`;
-
-	const points = shownPoints(exercise, doc);
-	if (points) header += `\n\n#text(size: 0.9em, fill: gray)[${points}]`;
-	if (exercise.instructions) {
-		header += `\n\n#text(style: "italic", fill: gray)[${escapeTypst(exercise.instructions)}]`;
-	}
-
-	// En-tête, points et consigne dans un seul bloc `sticky` : un saut de
-	// colonne ou de page ne laisse jamais le numéro seul, loin de son énoncé.
-	const content =
-		`#block(sticky: true, below: 0.6em)[\n${header}\n]\n\n` +
-		markdownTypst(exercise.statement, exercise, doc) +
-		'\n\n';
-
-	// Exercice indispensable : filet orange à gauche
-	const framed = exercise.essential
-		? `#block(stroke: (left: 2pt + rgb("#f97316")), inset: (left: 8pt))[\n${content}]\n`
-		: content;
-	return framed + `#v(1em)\n`;
-}
-
-/** Cadre de la partie de fin de l'élève ; rien si la correction n'est pas visible */
-function renderStudentPanel(
-	exercise: DocumentExercise,
-	doc: WorksheetDocument,
-	form: Exclude<DocumentForm, 'worksheet'>
-): string {
-	const printed = renderPrintedCorrection(exercise, doc, form);
-	if (printed === null) return '';
-	// En-tête `sticky` dans le cadre : même raison que pour les exercices
-	return `#block(fill: rgb("#f0fdf4"), radius: 4pt, inset: 12pt, width: 100%)[
-  #block(sticky: true, below: 0.6em)[${studentHeading(exercise, doc)}]
-${printed}
-]
-
-#v(1em)
-`;
-}
-
 // ============================================================================
 // RÉPONSES ET CORRIGÉ
 // ============================================================================
@@ -441,19 +384,6 @@ function titleOnlyHeading(exercise: DocumentExercise, doc: WorksheetDocument): s
 	return exercise.title
 		? exerciseTitle(exercise, doc)
 		: escapeTypst(documentLabels(doc.locale).untitledExercise);
-}
-
-/** En-tête élève : carré ambre et titre, ou le titre seul (D6) */
-function studentHeading(exercise: DocumentExercise, doc: WorksheetDocument): string {
-	if (doc.display.titleOnly) {
-		return `#text(weight: "bold")[${titleOnlyHeading(exercise, doc)}]`;
-	}
-	return `#${exerciseBadge(exercise.number)}${studentTitle(exercise, doc)}`;
-}
-
-/** Titre après le carré ambre de l'élève */
-function studentTitle(exercise: DocumentExercise, doc: WorksheetDocument): string {
-	return exercise.title ? ` #h(0.5em) #text(weight: "bold")[${exerciseTitle(exercise, doc)}]` : '';
 }
 
 /** « 2 pts », dans la langue du document ; vide si les points ne s'affichent pas */

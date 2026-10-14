@@ -104,8 +104,7 @@ export {
 	BaseTypstGenerator,
 	// Worksheet generator
 	WorksheetGenerator,
-	generateWorksheetTypst,
-	generateBatchTypst
+	generateWorksheetTypst
 } from './generators';
 
 export type { WorksheetGeneratorInput, GenerateTypstParams } from './generators';
