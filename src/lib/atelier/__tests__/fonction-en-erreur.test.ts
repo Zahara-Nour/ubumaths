@@ -152,8 +152,44 @@ describe('f(x) = a x, puis a(x) = x^2 : f est mal définie', () => {
 
 	it('une suite citée comme un nombre (u(n) = 2n ; f(x) = u x) : f en erreur', () => {
 		const desk = deskWith('u(n) = 2n', 'f(x) = u x');
-		expect(desk.atelier.get('f')?.message).toBe(AS_NUMBER('u', 'f', 'x', 'suite'));
+		expect(desk.atelier.get('f')?.message).toBe(
+			"« u » est une suite : « f » ne peut pas s'en servir comme d'un nombre. Écris un de ses termes, comme u(2), ou donne un autre nom à la lettre."
+		);
 	});
+
+	it('une suite citée dans une suite : « Écris u(n) »', () => {
+		const desk = deskWith('u(n) = 2n', 'v(n) = u n');
+		expect(desk.atelier.get('v')?.message).toBe(AS_NUMBER('u', 'v', 'n', 'suite'));
+	});
+
+	// Revue de ff91e66a2 : la forme la plus courante, collée (`ax`), passait
+	it.each(['ax', '2ax', 'xa', 'ax+b', 'a^2', 'a x^2 + 1'])(
+		'a(x) = x^2, f(x) = %s : f en erreur, .dériver f refusé',
+		(body) => {
+			const desk = deskWith('a(x) = x^2', `f(x) = ${body}`);
+			expect(desk.atelier.get('f')?.message).toBe(AS_NUMBER('a', 'f'));
+			expect(lastLine('a(x) = x^2', `f(x) = ${body}`, '.dériver f')).toEqual({
+				text: BROKEN('f'),
+				failed: true
+			});
+		}
+	);
+
+	it.each(['a_1 x + a(2)', 'a(x)^2', 'a(2x) + 1'])(
+		'a(x) = x^2, f(x) = %s : f saine (indice, appel)',
+		(body) => {
+			const desk = deskWith('a(x) = x^2', `f(x) = ${body}`);
+			expect(desk.atelier.get('f')?.status).not.toBe('error');
+		}
+	);
+
+	it.each(['f^{-1}(x) + 1', 'f^-1(x) + 1', "f'(x) + 1"])(
+		'f(x) = 2x+1, g(x) = %s : réciproque et dérivée ne sont pas des nombres',
+		(body) => {
+			const desk = deskWith('f(x) = 2x+1', `g(x) = ${body}`);
+			expect(desk.atelier.get('g')?.status).toBe('ok');
+		}
+	);
 
 	it('v(n) = u_n + 1 : la notation indicée d’une suite n’est pas un nombre', () => {
 		const desk = deskWith('u(n) = 2n', 'v(n) = u_n + 1');

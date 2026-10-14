@@ -498,12 +498,14 @@ export function referencesOf(
 
 /**
  * Les noms qu'une définition emploie COMME UN NOMBRE (V58) : `a` dans
- * `a x`, et dans `a(2) + a` — là où `referencesOf` fait gagner l'appel.
+ * `ax`, `a^2`, et dans `a(2) + a` — là où `referencesOf` fait gagner l'appel.
  *
- * ⚠️ Un nom indicé (`a_1`, `u_n`) n'en fait pas partie : l'arbre en garde la
- * base (`a`), mais `a_1` est un autre nom, et `u_n` la notation d'une suite.
- * Le texte tranche : le nom n'est retenu que s'il n'est suivi ni d'un indice,
- * ni d'une apostrophe (`f'`), ni d'une puissance (`f^{-1}`).
+ * Lus dans l'ARBRE, jamais dans le texte (`ax` est `a·x`) : une variable
+ * seule. Ne comptent pas :
+ * - la base d'un indice (`a_1`, `u_n`) : `a_1` est un autre nom, `u_n` la
+ *   notation d'une suite ;
+ * - la base d'une puissance −1 (`f^(-1)`, ce que devient `f^-1`) : la
+ *   réciproque. `f'(x)`, `f^{-1}(x)` sont déjà des appels dans l'arbre.
  */
 export function bareNamesOf(
 	definition: string,
@@ -512,11 +514,42 @@ export function bareNamesOf(
 ): string[] {
 	const result = parseByProvenance(definition, provenance, functionNames);
 	if (!result.ast) return [];
-	return [...getVariables(result.ast)].filter(
-		(name) =>
-			hasObjectNameShape(name) &&
-			new RegExp(`(?<![A-Za-z_\\\\])${name}(?![A-Za-z_0-9'^])`).test(definition)
-	);
+	const found = new Set<string>();
+	collectBareNames(result.ast, found);
+	return [...found].filter(hasObjectNameShape);
+}
+
+/** Une puissance −1 : `-1` ou `-(1)`, tels que les parseurs les rendent. */
+function isMinusOne(node: unknown): boolean {
+	if (!node || typeof node !== 'object') return false;
+	const o = node as Record<string, unknown>;
+	if (o.type === 'number') return o.value === '-1';
+	if (o.type === 'opposite') {
+		const operand = o.operand as Record<string, unknown> | undefined;
+		return operand?.type === 'number' && operand.value === '1';
+	}
+	if (o.type === 'delimiter') return isMinusOne(o.content);
+	return false;
+}
+
+function collectBareNames(node: unknown, into: Set<string>): void {
+	if (!node || typeof node !== 'object') return;
+	if (Array.isArray(node)) {
+		for (const item of node) collectBareNames(item, into);
+		return;
+	}
+	const o = node as Record<string, unknown>;
+	if (o.type === 'variable' && typeof o.name === 'string') {
+		into.add(o.name);
+		return;
+	}
+	// `a_1`, `u_n` : ni la base ni l'indice ne sont un nombre de l'atelier
+	if (o.type === 'subscript') return;
+	if (o.type === 'superscript' && isMinusOne(o.superscript)) {
+		const base = o.base as Record<string, unknown> | undefined;
+		if (base?.type === 'variable') return;
+	}
+	for (const value of Object.values(o)) collectBareNames(value, into);
 }
 
 /**

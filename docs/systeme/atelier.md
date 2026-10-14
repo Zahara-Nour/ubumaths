@@ -179,14 +179,17 @@ cartes (décision G3).
 l'objet **en attente** (`pending`, avec `missing`), pas en erreur ; l'attente se répare seule quand
 le nom apparaît, et pour une lettre seule elle porte une **offre de curseur**
 (`createFromOffer`). Un objet vide est `incomplete` ; ceux qui le citent l'attendent. Une
-**fonction ou une suite citée comme un nombre** (`f(x) = a x` avec `a(x) = x^2`, dans n'importe
-quel ordre de saisie ; `h(x) = a(2) + a` ; `f(x) = u x` avec u une suite) met la définition en
-erreur (V58, `functionAsNumberMessage` dans `recomputeAll`, noms lus par `bareNamesOf`). Message
-de la carte, pour f : _« a » est une fonction : « f » ne peut pas s'en servir comme d'un nombre.
-Écris a(x), ou donne un autre nom à la lettre._ La suggestion suit la variable de l'objet qui
-cite (`a(t)`, `a(n)` pour une suite) ; pour une valeur, _Écris une de ses valeurs, comme a(2)…_
-Un nom indicé n'y est pas pris : `a_1` est un autre nom, `u_n` la notation d'une suite. Les
-cartes `f′` et `f⁻¹` n'y passent pas (elles suivent f). ⚠️ Redéfinir un nom garde son type (V62).
+**fonction ou une suite citée comme un nombre** (`f(x) = ax`, `2ax`, `a^2` avec `a(x) = x^2`,
+dans n'importe quel ordre de saisie ; `h(x) = a(2) + a` ; `f(x) = u x` avec u une suite) met la
+définition en erreur (V58, `functionAsNumberMessage` dans `recomputeAll`). Les noms sont lus
+dans l'arbre (`bareNamesOf`, `parse.ts`) : une variable seule, hors base d'un indice (`a_1` est
+un autre nom, `u_n` la notation d'une suite) et hors base d'une puissance −1 (la réciproque ;
+`f'(x)`, `f^{-1}(x)` sont des appels). Message de la carte, pour f : _« a » est une fonction :
+« f » ne peut pas s'en servir comme d'un nombre. Écris a(x), ou donne un autre nom à la
+lettre._ La suggestion suit la variable de l'objet qui cite (`a(t)`, `a(n)` pour une suite) ;
+pour une valeur, _Écris une de ses valeurs, comme a(2)…_ ; une suite citée dans une fonction ou
+une valeur, _Écris un de ses termes, comme u(2)…_ Les cartes `f′` et `f⁻¹` n'y passent pas
+(elles suivent f). ⚠️ Redéfinir un nom garde son type (V62).
 ⚠️ `referencesOf` lit tout nom indicé comme sa base (`a_1 x` attend `a`), défaut antérieur (V63).
 
 **Noms** (`src/lib/atelier/names.ts`) : une lettre latine, éventuellement indicée ; **un seul

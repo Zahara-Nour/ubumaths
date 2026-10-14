@@ -338,8 +338,11 @@ const OFFER_DEFINITION = '1';
 function functionAsNumberMessage(cited: AtelierObject, user: AtelierObject): string {
 	const what = cited.kind === 'sequence' ? 'suite' : 'fonction';
 	const variable = isFunction(user) ? (user.letter ?? 'x') : isSequence(user) ? 'n' : null;
-	const hint =
-		variable === null
+	// Une suite dans une fonction ou une valeur : ses termes, pas u(x)
+	const asTerm = cited.kind === 'sequence' && !isSequence(user);
+	const hint = asTerm
+		? `Écris un de ses termes, comme ${cited.name}(2)`
+		: variable === null
 			? `Écris une de ses valeurs, comme ${cited.name}(2)`
 			: `Écris ${cited.name}(${variable})`;
 	return `« ${cited.name} » est une ${what} : « ${user.name} » ne peut pas s'en servir comme d'un nombre. ${hint}, ou donne un autre nom à la lettre.`;
