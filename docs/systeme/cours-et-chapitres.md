@@ -205,6 +205,11 @@ Détails : [fiches-et-pdf.md](fiches-et-pdf.md) et le chantier
 (un `content_snapshot` par version) et `chapter_template_instantiations` (quel chapitre vient de
 quelle version). Seul un modèle **publié** s'instancie.
 
+> **Refonte en cours** ([ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md),
+> [journal](../wip/refonte-modeles-chapitre-progress.md)) : le schéma qui permet au modèle de
+> posséder son contenu et au chapitre de le relier est posé (migration `20261016103300`, voir
+> [base-de-donnees.md](base-de-donnees.md)) ; le code ci-dessous fonctionne encore par snapshot.
+
 - **Refus d'un modèle inutilisable** : un brouillon ou un modèle archivé fait rendre à
   `instantiateTemplate` une `TemplateUnusableError`, dont le message est écrit pour le professeur
   (« publiez-le d'abord »). Les trois appelants (actions `instantiateFromTemplate` et

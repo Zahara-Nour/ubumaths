@@ -209,6 +209,17 @@ Code : `src/lib/questions/`, `src/lib/exercises/`, `src/lib/server/` (`exercises
   `chapter_documents`, `chapter_exercises`, `chapter_worksheets`, `chapter_checklist_items`,
   `chapter_series`, `chapter_decks`.
 - `chapter_templates` (+ `_versions`, `chapter_template_instantiations`) : modèles réutilisables.
+- **Contenu possédé par un modèle** ([ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md),
+  migration `20261016103300`, code en cours) : `chapter_sections` et les cinq tables de contenu
+  ci-dessus (sauf `chapter_decks`) acceptent une ligne de **modèle** (`template_id`, `chapter_id`
+  vide) ou de **chapitre** — exactement un des deux. Une ligne de chapitre peut être une **ligne de
+  lien** (`source_id` → la ligne du modèle) : son contenu est recopié par déclencheur
+  (`modele_lien_remplir`, `modele_recopier`), ne se retouche pas (`modele_lien_garde`) ; publication,
+  section, ordre et `hidden` restent au chapitre. Ajouter au modèle crée les liens
+  (`modele_ajout_diffuse`), `retired_at` retire sans ôter ce qui est publié (`modele_retrait`),
+  `source_id` en `RESTRICT` interdit de supprimer un élément ou un modèle encore relié. Lier :
+  `link_chapter_to_template` (SECURITY INVOKER). Fichiers : `chapter-documents/templates/<id>/…`,
+  règles de stockage professeur seulement.
 - `class_journal_entries` → `journal_entry_activities` (exercice, question, évaluation, cours,
   manuel), `journal_entry_points` (couverture du programme : `source` `manual` ou `auto`),
   `journal_entry_homework`, `class_journal_share_tokens`.

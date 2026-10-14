@@ -137,6 +137,19 @@ symétriques de celles de `chapters/…`. `orphan_chapter_documents` ignore les 
 `/api/documents/[id]` lit le stockage avec les droits de l'élève. Aucune ligne de lien ne doit exister
 en prod (reprise, étape 3) avant le déploiement du code qui en tient compte (étape 4).
 
+## Avancement
+
+- **Étape 2 (base)** — branche `feat/modeles-possedent-contenu` : migration
+  `20261016103300_modele_possede_son_contenu.sql` + `tests/integration/modele-possede-son-contenu.test.ts`
+  (22 tests). Rouges sans la migration (décor impossible : colonnes absentes) ; chaque déclencheur
+  désactivé fait tomber son test (6 tests rouges, vérifié le 2026-10-14). 26 suites voisines vertes
+  (896 tests). `security-auditor` : **aucun bloquant**. I1 (rollback dans le mauvais ordre) corrigé,
+  et rollback marqué destructif. I2 clos : la règle élève de prod, lue le 2026-10-14, exige le
+  préfixe `chapters/<id de chapitre>` — un chemin `templates/…` n'y passe jamais. M3 : 4 tests
+  « l'élève n'écrit rien » ajoutés (26 tests). M4 → étape 3.
+  ⚠️ `db:types` rendra `chapter_id` facultatif dans `database.ts` : le typecheck du code en dépendra
+  (à traiter dans la PR qui régénère les types).
+
 ## Découpage prévu
 
 1. Phase 0 (ce document) — validation de David.
