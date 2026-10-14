@@ -112,6 +112,12 @@ Gabarits inaccessibles :
   style). **Gabarit et style liés** : la page « Gabarits » reste la même à l'écran, mais créer un
   gabarit crée son style (même id, même nom), le renommer le renomme, le supprimer le supprime.
 
+- **D11** (2026-10-14, lot 4) — **question d'accès** : la mise en page d'un style du prof (son
+  Typst, sans donnée d'élève) est transmise à l'**élève destinataire** de la fiche et au
+  **visiteur d'un cahier de texte ou d'un cours partagé**, pour une fiche citée dans ce cahier ou
+  ce cours seulement (même périmètre que le contenu de la fiche aujourd'hui). Les styles de
+  Chiphre sont dans le code : rien de nouveau. 0 style du prof en prod le 2026-10-14.
+
 ## Vocabulaire proposé (à verser dans CONTEXT.md, lot 0)
 
 | Terme       | Sens                                                                                                                     |
