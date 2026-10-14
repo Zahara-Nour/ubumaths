@@ -70,7 +70,6 @@ import type {
 } from '$lib/types/worksheets';
 import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
 import { loadAuthorStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/preview/+server');
@@ -493,7 +492,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			// l'accès du prof à l'affectation est vérifié plus haut
 			style_id: worksheet.style_id,
 			template_id: worksheet.template_id,
-			template: await loadAuthorStyleTemplate(createServiceRoleClient(), worksheet),
+			template: await loadAuthorStyleTemplate(worksheet),
 			// Preview metadata
 			preview_mode: isTeacherMode ? 'teacher' : 'student',
 			preview_student_id: studentId ?? null,

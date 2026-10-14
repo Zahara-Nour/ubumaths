@@ -46,7 +46,6 @@ import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { resolveAssignmentAccess } from '$lib/server/worksheets/assignment-access';
 import { loadAuthorStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
-import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import {
 	validateStudentWorksheetParam,
 	studentWorksheetDetailResponseSchema
@@ -370,7 +369,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			// (D11) : l'accès de l'élève à l'affectation est vérifié plus haut
 			style_id: worksheet.style_id,
 			template_id: worksheet.template_id,
-			template: await loadAuthorStyleTemplate(createServiceRoleClient(), worksheet)
+			template: await loadAuthorStyleTemplate(worksheet)
 		};
 
 		// Validate response

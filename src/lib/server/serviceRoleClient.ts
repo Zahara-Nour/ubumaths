@@ -53,6 +53,9 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	'/cours/[token]/document/[id]/+server',
 	// Consentement parental : IP et navigateur relevés par le serveur, pas par le client
 	'/consent/',
+	// Style d'une fiche (lot 4b, D11) : l'élève destinataire reçoit la mise en page
+	// du style de l'auteur ; il n'a aucun droit sur les tables des styles
+	'lib/server/worksheets/worksheet-styles.ts',
 	// Question d'âge en 2nde : la base refuse à l'élève l'écriture de sa réponse
 	'/api/student/age-declaration',
 	// GDPR account deletion (requires auth.admin.deleteUser)

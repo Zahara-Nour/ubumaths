@@ -22,6 +22,7 @@ import {
 	styleIdOf,
 	type StyleOption
 } from '$lib/typst/templates/styles';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('server/worksheets/worksheet-styles');
@@ -78,13 +79,15 @@ export async function loadStyleTemplate(
  *
  * ⚠️ L'appelant a déjà vérifié que le lecteur a accès à la fiche.
  */
-export async function loadAuthorStyleTemplate(
-	service: SupabaseClient<Database>,
-	worksheet: { style_id?: string | null; template_id?: string | null; created_by: string }
-): Promise<{ template_content: string } | null> {
+export async function loadAuthorStyleTemplate(worksheet: {
+	style_id?: string | null;
+	template_id?: string | null;
+	created_by: string;
+}): Promise<{ template_content: string } | null> {
 	const styleId = styleIdOf(worksheet);
 	if (!styleId || isBuiltInStyle(styleId)) return null;
 
+	const service = createServiceRoleClient();
 	const { data: style, error } = await service
 		.from('worksheet_styles')
 		.select('owner_id')
