@@ -90,13 +90,73 @@ au plan du modèle.
 élément masqué disparaît aussi du plan du prof (« pas cette année »), et revient d'un clic.
 ➡️ Garder les deux : le plan du prof reste lisible quand un modèle est riche.
 
+## Tour 3 — tranché le 2026-10-14 (recos retenues)
+
+- **Q5 — rangement** : option 1, **mêmes tables** ; une « ligne de lien » par élément du modèle dans
+  chaque chapitre lié.
+- **Q6 — accès** : personne ne gagne d'accès. **Miroir** : la règle de stockage élève (prod seulement)
+  laissait un élève lister et télécharger les fichiers **non publiés** des chapitres visibles de sa
+  classe (constaté en prod le 2026-10-14 : `Students can read visible chapter documents` ne teste pas
+  `published_at`). Elle est retirée ; le serveur sert le fichier après la garde de publication.
+  Avant le retrait : vérifier sur les données réelles que chaque document publié reste lisible.
+
+## Modèle de données (étape 2)
+
+Six tables de contenu : `chapter_sections`, `chapter_documents`, `chapter_checklist_items`,
+`chapter_exercises`, `chapter_worksheets`, `chapter_series` (`chapter_decks` hors périmètre de
+l'ADR : le modèle n'en porte pas). Chacune reçoit :
+
+- `template_id` — propriétaire quand l'élément appartient au modèle ; `chapter_id` devient
+  facultatif ; **exactement un des deux** (`num_nonnulls = 1`).
+- `source_id` — sur une ligne de chapitre : l'élément du modèle qu'elle relie (`ON DELETE RESTRICT` :
+  la base refuse de perdre une ligne reliée ; pour les sections, `SET NULL`, la section reste au
+  chapitre comme section propre).
+- `retired_at` — élément **retiré** du modèle (point 10) ; `hidden` — élément **masqué** par un
+  chapitre (Q4), forcément non publié.
+
+**Choix d'implémentation** (même comportement que « lu sur la ligne du modèle », moins de code
+touché) : le contenu d'un élément du modèle est **recopié par la base** sur ses lignes de lien —
+titre, description, chemin du fichier (le fichier, lui, reste unique, chez le modèle). Ainsi les
+pages élève, le lien de consultation et les règles d'accès actuelles lisent les lignes de lien sans
+changer. Déclencheurs :
+
+- **à l'insertion** d'une ligne de lien : contenu et section tirés de l'élément du modèle ; refus si
+  la source n'est pas un élément de modèle, ou si le chapitre n'est pas lié (non détaché) à ce modèle ;
+- **à la modification** d'un élément du modèle : contenu recopié sur toutes ses lignes de lien
+  (point 8) ;
+- **à l'ajout** d'un élément au modèle : une ligne de lien non publiée dans chaque chapitre lié
+  (point 9) ;
+- **au retrait** (`retired_at`) : les lignes de lien non publiées sont supprimées (point 10) ;
+- **garde** : une ligne de lien ne change pas de contenu à la main (Q2) — sauf en se détachant
+  (`source_id` remis à `null`, fichier copié par le serveur).
+
+Fichiers d'un modèle : `chapter-documents/templates/<template_id>/…`, règles de stockage professeur
+symétriques de celles de `chapters/…`. `orphan_chapter_documents` ignore les lignes de lien.
+
+⚠️ **Ordre de livraison** : `deleteDocument` supprime le fichier d'un document téléversé, et
+`/api/documents/[id]` lit le stockage avec les droits de l'élève. Aucune ligne de lien ne doit exister
+en prod (reprise, étape 3) avant le déploiement du code qui en tient compte (étape 4).
+
+## Avancement
+
+- **Étape 2 (base)** — branche `feat/modeles-possedent-contenu` : migration
+  `20261016103300_modele_possede_son_contenu.sql` + `tests/integration/modele-possede-son-contenu.test.ts`
+  (22 tests). Rouges sans la migration (décor impossible : colonnes absentes) ; chaque déclencheur
+  désactivé fait tomber son test (6 tests rouges, vérifié le 2026-10-14). 26 suites voisines vertes
+  (896 tests). `security-auditor` : **aucun bloquant**. I1 (rollback dans le mauvais ordre) corrigé,
+  et rollback marqué destructif. I2 clos : la règle élève de prod, lue le 2026-10-14, exige le
+  préfixe `chapters/<id de chapitre>` — un chemin `templates/…` n'y passe jamais. M3 : 4 tests
+  « l'élève n'écrit rien » ajoutés (26 tests). M4 → étape 3.
+  ⚠️ `db:types` rendra `chapter_id` facultatif dans `database.ts` : le typecheck du code en dépendra
+  (à traiter dans la PR qui régénère les types).
+
 ## Découpage prévu
 
 1. Phase 0 (ce document) — validation de David.
 2. Base : tables du lien, propriété du contenu par le modèle, règle de stockage versionnée.
    Question d'accès (point 12) posée, tests d'intégration rouges sans la migration, `security-auditor`.
-3. Reprise des données (points 18-19), copie seulement.
-4. Éditeur partagé (`ChapterSectionsEditor`, `DocumentUpload` paramétrés par leur propriétaire) ;
-   page d'édition du modèle ; chapitre lié.
+3. Éditeur partagé (`ChapterSectionsEditor`, `DocumentUpload` paramétrés par leur propriétaire) ;
+   page d'édition du modèle ; chapitre lié ; service des fichiers par le serveur.
+4. Reprise des données (points 18-19), copie seulement — **après** le déploiement de l'étape 3.
 5. Nettoyage (destructif, arrêt et inventaire des usages) : versions, snapshots, migration/fusion,
    API sans appelant, composants morts, anciens fichiers.
