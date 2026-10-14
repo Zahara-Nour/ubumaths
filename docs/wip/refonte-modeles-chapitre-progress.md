@@ -198,6 +198,15 @@ nouveau code, sa page l'afficherait vide et l'instancier donnerait un chapitre v
 mise en prod : `deploy:prod` → reprise (`scripts/reprise-modeles-adr0029.ts`, d'abord `--essai`)
 → vérification avec David (ses élèves de 1SPE lisent leurs 4 documents).
 
+### Décisions du 2026-10-14 au soir (recos retenues)
+
+- **Badge d'un chapitre invisible** : « Invisible des élèves » (plus « Masqué », réservé aux
+  éléments écartés par une classe).
+- **Section du modèle dans un chapitre** : elle se masque comme un élément ; masquer la section
+  masque — donc dépublie — tout ce qu'elle contient ; la réafficher fait revenir son contenu non
+  publié ; un élément ajouté au modèle dans une section masquée arrive masqué. Migration
+  `20261016103600_section_masquee.sql` (test `modele-section-masquee`).
+
 ## Découpage prévu
 
 1. Phase 0 (ce document) — validation de David.

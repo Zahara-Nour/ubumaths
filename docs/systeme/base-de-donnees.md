@@ -220,6 +220,9 @@ Code : `src/lib/questions/`, `src/lib/exercises/`, `src/lib/server/` (`exercises
   `source_id` en `RESTRICT` interdit de supprimer un élément ou un modèle encore relié. Lier :
   `link_chapter_to_template` (SECURITY INVOKER). Fichiers : `chapter-documents/templates/<id>/…`,
   règles de stockage professeur seulement.
+  Une section de chapitre se masque (`chapter_sections.hidden`, chapitre seulement) :
+  `section_masquee_propage` masque et dépublie son contenu, ou le réaffiche non publié ; un lien
+  qui naît dans une section masquée naît masqué (migration `20261016103600`).
 - `class_journal_entries` → `journal_entry_activities` (exercice, question, évaluation, cours,
   manuel), `journal_entry_points` (couverture du programme : `source` `manual` ou `auto`),
   `journal_entry_homework`, `class_journal_share_tokens`.
