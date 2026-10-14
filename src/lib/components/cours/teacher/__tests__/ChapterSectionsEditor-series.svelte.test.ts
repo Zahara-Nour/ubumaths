@@ -23,6 +23,7 @@ function section(id: string, title: string, displayOrder: number): ChapterSectio
 		id,
 		chapterId: CHAPITRE,
 		sourceId: null,
+		hidden: false,
 		title,
 		displayOrder,
 		createdAt: QUAND,

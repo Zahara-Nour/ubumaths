@@ -1422,10 +1422,28 @@ export async function detachChapterFromTemplate(
 			return { error: null };
 		}
 
+		// Les sections que ce chapitre masque : leur masquage TIENT au détachement
+		// (décision du 2026-10-14). Leur contenu reste masqué, non publié, et
+		// revient quand la section est réaffichée.
+		const { data: masquees, error: masqueesError } = await supabase
+			.from('chapter_sections')
+			.select('id')
+			.eq('chapter_id', chapterId)
+			.eq('hidden', true);
+
+		if (masqueesError) {
+			logger.error('[detachChapterFromTemplate] Sections illisibles :', masqueesError);
+			return { error: new Error(masqueesError.message) };
+		}
+		const sectionsMasquees = new Set((masquees ?? []).map((s) => s.id));
+		/** Un élément d'une section masquée garde son masquage ; les autres le perdent. */
+		const resteMasque = (sectionId: string | null) =>
+			sectionId !== null && sectionsMasquees.has(sectionId);
+
 		// 1. Copier les fichiers reliés.
 		const { data: documents, error: docsError } = await supabase
 			.from('chapter_documents')
-			.select('id, source_type, storage_path')
+			.select('id, source_type, storage_path, section_id')
 			.eq('chapter_id', chapterId)
 			.not('source_id', 'is', null);
 
@@ -1435,7 +1453,7 @@ export async function detachChapterFromTemplate(
 		}
 
 		const owner = { kind: 'chapter', id: chapterId } as const;
-		const copies: { id: string; path: string }[] = [];
+		const copies: { id: string; path: string; sectionId: string | null }[] = [];
 		for (const [rang, doc] of (documents ?? []).entries()) {
 			if (doc.source_type !== 'upload' || !doc.storage_path) continue;
 			const { path, error: copyError } = await copyStoredFile(
@@ -1453,14 +1471,18 @@ export async function detachChapterFromTemplate(
 					error: new Error('Copie des fichiers impossible : le chapitre reste lié au modèle.')
 				};
 			}
-			copies.push({ id: doc.id, path });
+			copies.push({ id: doc.id, path, sectionId: doc.section_id });
 		}
 
 		// 2. Les documents copiés se délient en pointant leur copie.
 		for (const copie of copies) {
 			const { data, error } = await supabase
 				.from('chapter_documents')
-				.update({ source_id: null, storage_path: copie.path, hidden: false })
+				.update(
+					resteMasque(copie.sectionId)
+						? { source_id: null, storage_path: copie.path }
+						: { source_id: null, storage_path: copie.path, hidden: false }
+				)
 				.eq('id', copie.id)
 				.eq('chapter_id', chapterId)
 				.select('id');
@@ -1471,23 +1493,36 @@ export async function detachChapterFromTemplate(
 		}
 
 		// 3. Le reste, sections en dernier : les éléments y sont rangés.
-		// Un élément masqué redevient visible du professeur, NON publié (masqué
-		// l'était déjà) : sans ça, il resterait figé, ni démasquable (ce n'est plus
-		// un lien) ni publiable (la base refuse un élément masqué publié).
+		// Un élément masqué SEUL redevient visible du professeur, NON publié
+		// (masqué l'était déjà) : sans ça, il resterait figé, ni démasquable (ce
+		// n'est plus un lien) ni publiable (la base refuse un élément masqué
+		// publié). Un élément d'une section masquée, lui, reste masqué : la
+		// section le fera revenir. Une section garde son propre masquage.
+		const masqueesListe = [...sectionsMasquees];
 		for (const table of LINKED_TABLES_SECTIONS_LAST) {
-			// Une section n'a pas de masquage.
-			const { error } =
-				table === 'chapter_sections'
-					? await supabase
-							.from(table)
-							.update({ source_id: null })
-							.eq('chapter_id', chapterId)
-							.not('source_id', 'is', null)
-					: await supabase
-							.from(table)
-							.update({ source_id: null, hidden: false })
-							.eq('chapter_id', chapterId)
-							.not('source_id', 'is', null);
+			let error: { message: string } | null = null;
+			if (table !== 'chapter_sections') {
+				// a. Hors section masquée : délié ET démasqué.
+				let horsMasquees = supabase
+					.from(table)
+					.update({ source_id: null, hidden: false })
+					.eq('chapter_id', chapterId)
+					.not('source_id', 'is', null);
+				if (masqueesListe.length > 0) {
+					horsMasquees = horsMasquees.or(
+						`section_id.is.null,section_id.not.in.(${masqueesListe.join(',')})`
+					);
+				}
+				({ error } = await horsMasquees);
+			}
+			// b. Le reste (sections, et éléments des sections masquées) : délié seulement.
+			if (!error) {
+				({ error } = await supabase
+					.from(table)
+					.update({ source_id: null })
+					.eq('chapter_id', chapterId)
+					.not('source_id', 'is', null));
+			}
 			if (error) {
 				logger.error(`[detachChapterFromTemplate] ${table} non délié :`, error);
 				return { error: new Error(error.message) };

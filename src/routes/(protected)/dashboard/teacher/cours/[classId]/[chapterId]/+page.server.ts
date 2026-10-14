@@ -47,6 +47,7 @@ import {
 import {
 	setContentPublication,
 	setLinkedElementHidden,
+	setChapterSectionHidden,
 	listDistributedWorksheetIds,
 	CHAPTER_CONTENT_TYPES
 } from '$lib/server/chapters-publication';
@@ -88,6 +89,12 @@ const setPublicationSchema = z.object({
 	contentType: z.enum(CHAPTER_CONTENT_TYPES),
 	itemId: uuidSchema,
 	published: z.boolean()
+});
+
+/** Masquer ou réafficher une section du chapitre (décision du 2026-10-14). */
+const setSectionHiddenSchema = z.object({
+	sectionId: uuidSchema,
+	hidden: z.boolean()
 });
 
 /** Masquer ou démasquer un élément du modèle dans ce chapitre (ADR 0029, Q4). */
@@ -186,6 +193,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		id: s.id,
 		chapterId,
 		sourceId: s.source_id,
+		hidden: s.hidden,
 		title: s.title,
 		displayOrder: s.display_order,
 		createdAt: s.created_at,
@@ -731,6 +739,45 @@ export const actions: Actions = {
 		}
 
 		return { success: true, action: validation.data.hidden ? 'hide' : 'unhide' };
+	},
+
+	/**
+	 * Masquer ou réafficher une SECTION de ce chapitre (du modèle ou propre). La
+	 * base masque et dépublie alors tout son contenu, ou le fait revenir non
+	 * publié.
+	 */
+	setSectionHidden: async ({ request, locals, params }) => {
+		await requireRole(locals, 'teacher');
+
+		const chapterIdCheck = uuidSchema.safeParse(params.chapterId);
+		const formData = await request.formData();
+		const validation = setSectionHiddenSchema.safeParse({
+			sectionId: formData.get('sectionId'),
+			hidden: formData.get('hidden') === 'true'
+		});
+
+		if (!chapterIdCheck.success || !validation.success) {
+			return fail(400, { error: 'Section invalide', action: 'setSectionHidden' });
+		}
+
+		const { error: hideError, notFound } = await setChapterSectionHidden(
+			{ chapterId: chapterIdCheck.data, ...validation.data },
+			locals.supabase
+		);
+
+		if (notFound) {
+			return fail(404, { error: 'Section introuvable', action: 'setSectionHidden' });
+		}
+		if (hideError) {
+			return fail(500, {
+				error: validation.data.hidden
+					? 'Impossible de masquer cette section'
+					: 'Impossible de réafficher cette section',
+				action: 'setSectionHidden'
+			});
+		}
+
+		return { success: true, action: validation.data.hidden ? 'hideSection' : 'unhideSection' };
 	},
 
 	linkExercise: async ({ request, locals, params }) => {

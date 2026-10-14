@@ -356,6 +356,76 @@ describe('ADR 0029, étape 3b — corrections de la revue', () => {
 		});
 	});
 
+	/**
+	 * Décision du 2026-10-14 : le masquage d'une SECTION tient au détachement.
+	 * Ses éléments restent masqués et non publiés, la section reste masquée ; la
+	 * réafficher fera revenir son contenu. Un élément masqué SEUL, hors section
+	 * masquée, redevient visible (il resterait sinon figé).
+	 */
+	describe('détacher un chapitre avec une section masquée', () => {
+		it('la section et son contenu restent masqués ; le masqué isolé revient', async () => {
+			const objectifModele = await insert(prof, 'chapter_checklist_items', {
+				template_id: modele,
+				section_id: section,
+				content: 'Objectif rangé ZZ',
+				display_order: 1
+			});
+			const chapD = await instancier();
+			const sectionD = await sectionLiee(chapD, section);
+			const { data: lienRange } = await service
+				.from('chapter_checklist_items')
+				.select('id')
+				.eq('chapter_id', chapD)
+				.eq('source_id', objectifModele)
+				.single();
+			const rangeId = present(lienRange).id;
+
+			const { data: masquee, error: masqueError } = await prof
+				.from('chapter_sections')
+				.update({ hidden: true })
+				.eq('id', sectionD)
+				.select('id');
+			expect(masqueError).toBeNull();
+			expect(masquee).toHaveLength(1);
+			// Hors section : masqué à part.
+			await service
+				.from('chapter_checklist_items')
+				.update({ hidden: true })
+				.eq('chapter_id', chapD)
+				.eq('content', 'Objectif initial');
+
+			const { error } = await detachChapterFromTemplate(chapD, prof);
+			expect(error).toBeNull();
+
+			const { data: sec } = await service
+				.from('chapter_sections')
+				.select('source_id, hidden')
+				.eq('id', sectionD)
+				.single();
+			expect(sec).toEqual({ source_id: null, hidden: true });
+
+			const { data: range } = await service
+				.from('chapter_checklist_items')
+				.select('source_id, hidden, published_at, section_id')
+				.eq('id', rangeId)
+				.single();
+			expect(range).toEqual({
+				source_id: null,
+				hidden: true,
+				published_at: null,
+				section_id: sectionD
+			});
+
+			const { data: isole } = await service
+				.from('chapter_checklist_items')
+				.select('source_id, hidden')
+				.eq('chapter_id', chapD)
+				.eq('content', 'Objectif initial')
+				.single();
+			expect(isole).toEqual({ source_id: null, hidden: false });
+		});
+	});
+
 	describe('faire un modèle d’un chapitre lié', () => {
 		it('ne copie pas ce que le chapitre a masqué', async () => {
 			const chapC = await instancier();

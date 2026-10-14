@@ -350,3 +350,35 @@ export async function setLinkedElementHidden(
 
 	return { error: null };
 }
+
+/**
+ * Masquer (ou réafficher) une SECTION dans un chapitre — du modèle ou propre à
+ * la classe (décision du 2026-10-14). La base fait le reste
+ * (`section_masquee_propage`) : masquer masque ET dépublie tout ce que la
+ * section contient ; réafficher fait revenir ce contenu, non publié.
+ *
+ * Le filtre `chapter_id` borne l'écriture au chapitre de l'adresse. Zéro ligne
+ * rendue = section introuvable dans ce chapitre ou refusée par la RLS
+ * (`notFound`) : jamais un succès silencieux.
+ */
+export async function setChapterSectionHidden(
+	input: { chapterId: string; sectionId: string; hidden: boolean },
+	supabase: SupabaseClient<Database>
+): Promise<{ error: Error | null; notFound?: boolean }> {
+	const { data, error } = await supabase
+		.from('chapter_sections')
+		.update({ hidden: input.hidden })
+		.eq('id', input.sectionId)
+		.eq('chapter_id', input.chapterId)
+		.select('id');
+
+	if (error) {
+		logger.error('[setChapterSectionHidden] Écriture impossible :', error);
+		return { error: new Error(error.message) };
+	}
+	if (!data || data.length !== 1) {
+		return { error: new Error('Section introuvable dans ce chapitre'), notFound: true };
+	}
+
+	return { error: null };
+}

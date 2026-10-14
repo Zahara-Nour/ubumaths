@@ -246,6 +246,10 @@ mise en prod : `deploy:prod` → reprise (`scripts/reprise-modeles-adr0029.ts`, 
   masque — donc dépublie — tout ce qu'elle contient ; la réafficher fait revenir son contenu non
   publié ; un élément ajouté au modèle dans une section masquée arrive masqué. Migration
   `20261016103600_section_masquee.sql` (test `modele-section-masquee`).
+- **Interface de ces deux décisions** en branche `feat/modeles-section-interface` : badge
+  « Invisible des élèves » ; action `setSectionHidden` ; « Masquer la section » (confirmation)
+  et « Réafficher la section » dans le plan du chapitre, section masquée soumise à
+  l'interrupteur des masqués, rien ne s'y range.
 
 ## Découpage prévu
 

@@ -11,9 +11,8 @@
 	import { navigating } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
 	import { ChapterCard } from '$lib/components/cours';
-	import { Book, FolderOpen, GraduationCap, Plus, EyeOff } from '@lucide/svelte';
+	import { Book, FolderOpen, GraduationCap, Plus } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	interface Props {
@@ -115,15 +114,7 @@
 						<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 							{#each classData.chapters as chapter (chapter.id)}
 								<div class="relative">
-									<!-- Visibility badge -->
-									{#if !chapter.isVisible}
-										<div class="absolute top-2 right-2 z-10">
-											<Badge variant="secondary" class="flex items-center gap-1">
-												<EyeOff class="h-3 w-3" />
-												Masque
-											</Badge>
-										</div>
-									{/if}
+									<!-- Le badge « Invisible des élèves » est porté par la carte elle-même. -->
 									<ChapterCard
 										{chapter}
 										href="/dashboard/teacher/cours/{classData.classId}/{chapter.id}"

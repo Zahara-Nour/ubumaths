@@ -108,6 +108,9 @@
 				// `setHidden` rend « hide »/« unhide » (élément du modèle, ADR 0029).
 				hide: 'Élément masqué dans ce chapitre',
 				unhide: 'Élément réaffiché — toujours préparé',
+				// `setSectionHidden` rend « hideSection »/« unhideSection ».
+				hideSection: 'Section masquée — son contenu est dépublié',
+				unhideSection: 'Section réaffichée — son contenu revient préparé',
 				// `setPublication` rend « publish »/« unpublish », pas son propre
 				// nom : sans ces deux lignes, publier disait « Operation reussie ».
 				publish: 'Contenu publié — visible par les élèves',
@@ -217,7 +220,7 @@
 							Visible
 						{:else}
 							<EyeOff class="h-3 w-3" />
-							Masqué
+							Invisible des élèves
 						{/if}
 					</Badge>
 				</div>

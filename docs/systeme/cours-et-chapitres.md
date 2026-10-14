@@ -95,7 +95,7 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
 - Prof : `src/routes/(protected)/dashboard/teacher/cours/` — liste par classe, puis
   `[classId]/` (chapitres de la classe : actions `create`, `update`, `delete`, `reorder`,
   `toggleVisibility`, `instantiateFromTemplate`, `shareCourseLink`, `revokeCourseLink`), puis `[classId]/[chapterId]/` (éditeur :
-  actions `setPublication`, `setHidden`, `linkExercise`, `linkWorksheet`, `linkSeries`, `setSeriesForm`,
+  actions `setPublication`, `setHidden`, `setSectionHidden`, `linkExercise`, `linkWorksheet`, `linkSeries`, `setSeriesForm`,
   `createTemplate`, `migrateToVersion` (plus appelée par l'interface), `detachFromTemplate`,
   objectifs…).
 - Élève : `src/routes/(protected)/dashboard/student/cours/` et `cours/[chapterId]/` (plan du
@@ -117,8 +117,8 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   « Retirer du modèle ». Côté chapitre lié : un élément du modèle (`sourceId`) porte la marque
   « Modèle », ne se corrige ni ne se supprime (ni crayon d'objectif, ni forme de série, ni
   corbeille ; une section du modèle ne se renomme ni ne se supprime) — il se **masque**
-  (`?/setHidden`). Un élément masqué quitte le plan ; l'interrupteur « Afficher les éléments
-  masqués (n) » le fait revenir, barré, sans publication, avec « Réafficher » ; il s'éteint de
+  (`?/setHidden`). Un élément masqué quitte le plan ; l'interrupteur « Afficher ce qui est
+  masqué (n) » (éléments et sections) le fait revenir, barré, sans publication, avec « Réafficher » ; il s'éteint de
   lui-même quand le dernier masqué est réaffiché (`$derived` écrasable). Le masquage et le lien
   (`sourceId`, éléments et sections) entrent dans l'empreinte d'affichage (`empreinteAffichage`) :
   sinon un élément masqué resterait à l'écran, et un chapitre détaché garderait ses marques
@@ -127,6 +127,22 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   jamais à égalité de rang avec un visible.
   `ChapterTemplateIndicator` dit « Chapitre lié au modèle « X » » (lien vers sa page) et
   « Détacher du modèle », que la page confirme (`ConfirmDialog`) avant `?/detachFromTemplate`.
+- **Section masquée** (décision du 2026-10-14, migration `20261016103600_section_masquee`) :
+  dans un chapitre, chaque section — du modèle ou propre à la classe — porte « Masquer la
+  section » (icône), après une confirmation qui dit que son contenu sera dépublié ; action
+  `setSectionHidden` (`setChapterSectionHidden` dans `chapters-publication.ts` : filtre
+  `chapter_id`, ligne écrite vérifiée, 404 sinon). La base masque et dépublie alors tout son
+  contenu (`section_masquee_propage`), et la réafficher le fait revenir non publié. Dans le plan,
+  une section masquée compte UNE fois dans l'interrupteur (son contenu n'est pas recompté),
+  disparaît, et revient barrée (« Masquée », « Réafficher la section ») quand l'interrupteur est
+  allumé — sans renommer, supprimer, ajouter, ni geste par élément. Rien ne s'y range : sa zone
+  refuse le glisser-déposer dans les deux sens, et le menu « Ajouter » n'y est pas (un élément
+  y naîtrait publiable ; sorti, il resterait masqué ailleurs). Réordonner les sections garde
+  son rang à une section masquée cachée (`avecMasquesASaPlace`). Côté élève et lien de
+  consultation, rien à filtrer : une section n'y paraît que si elle porte un contenu publié, et
+  celui d'une section masquée ne l'est jamais. La page du modèle n'a pas ce bouton.
+- Un chapitre caché (`is_visible` faux) se dit « Invisible des élèves » ; « Masqué » est réservé
+  à ce qu'une classe écarte de son plan.
 - API appelées par l'interface : `api/teacher/chapters/[id]/sections/**` (éditeur de sections),
   `api/teacher/chapters/[id]/document-upload-url` et `…/documents` (dépôt d'un fichier), et leur
   miroir pour un modèle : `api/teacher/chapter-templates/[id]/sections/**`,
@@ -263,7 +279,9 @@ quelle version). Seul un modèle **publié** s'instancie.
 - **Détacher** (`detachChapterFromTemplate`) : chaque fichier relié est **copié** sous
   `chapters/<id>/…` (une copie en échec arrête tout avant de délier), puis les lignes se délient
   (`source_id` à vide, sections en dernier) avec leur publication, puis `is_detached`. Un élément
-  masqué redevient visible (`hidden = false`), toujours non publié : sinon il resterait figé.
+  masqué SEUL redevient visible (`hidden = false`), toujours non publié : sinon il resterait figé.
+  Une section masquée le reste, et son contenu aussi (masqué, non publié) : la réafficher le fera
+  revenir (décision du 2026-10-14).
 - **Faire un modèle d'un chapitre** (`createTemplateFromChapter`) : copie du contenu chez le modèle
   (sections d'abord, fichiers copiés sous `templates/<id>/…`) AVANT de créer l'instanciation (sinon
   la base diffuserait des doublons), puis le chapitre **adopte** chaque élément (`source_id`) : mêmes
