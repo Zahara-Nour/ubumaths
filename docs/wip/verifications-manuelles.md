@@ -7,7 +7,7 @@
 > **Où** : « dev » = une branche à jour sur un serveur local ; « prod » = chiph.re, après un
 > `pnpm deploy:prod`. Une ligne « prod » reste en attente tant que la PR n'est pas déployée.
 >
-> **v0.29.0 déployée le 2026-10-13** : toutes les PR de ce tableau jusqu'à #1334 sont en prod ; les
+> **v0.30.0 déployée le 2026-10-14** : toutes les PR de ce tableau jusqu'à #1359 sont en prod ; les
 > lignes « dev » se vérifient aussi sur chiph.re.
 
 | Fait | Ajouté le  | Où                  | PR           | Quoi vérifier                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
