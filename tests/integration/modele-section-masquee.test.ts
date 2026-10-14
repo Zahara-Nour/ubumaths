@@ -75,6 +75,9 @@ describe('ADR 0029 — masquer une section dans un chapitre', () => {
 	let docModele: string;
 	let docLie: string;
 	let objectifPropre: string;
+	/** Un second chapitre lié au même modèle, dans une autre classe : jamais touché. */
+	let autreChapitre: string;
+	let eleve: SupabaseClient;
 
 	beforeAll(async () => {
 		await cleanupAllTestData();
@@ -106,6 +109,24 @@ describe('ADR 0029 — masquer une section dans un chapitre', () => {
 			display_order: 1,
 			is_visible: true
 		});
+		const autreClasse = await insertAs(serviceBrut, 'classes', {
+			name: '1SPE section ZZ',
+			school_id: ecole,
+			school_year_id: annee,
+			join_code: 'YYSEC2',
+			is_active: true
+		});
+		autreChapitre = await insertAs(serviceBrut, 'class_chapters', {
+			class_id: autreClasse,
+			title: 'Autre chapitre section YY',
+			display_order: 1,
+			is_visible: true
+		});
+		const e = await TestData.profile().withRole('student').create();
+		await serviceBrut
+			.from('class_members')
+			.insert({ class_id: classe, student_id: e.id, status: 'active' });
+		eleve = await signIn(e.email);
 
 		modele = await insertAs(prof, 'chapter_templates', {
 			created_by: p.id,
@@ -126,11 +147,15 @@ describe('ADR 0029 — masquer une section dans un chapitre', () => {
 			display_order: 0
 		});
 
-		const { error } = await prof.rpc('link_chapter_to_template', {
-			p_chapter_id: chapitre,
-			p_template_id: modele
-		});
-		expect(error).toBeNull();
+		for (const c of [chapitre, autreChapitre]) {
+			const { error } = await prof.rpc('link_chapter_to_template', {
+				p_chapter_id: c,
+				p_template_id: modele
+			});
+			expect(error).toBeNull();
+		}
+		const autreDoc = (await lien('chapter_documents', autreChapitre, docModele))!.id as string;
+		await prof.from('chapter_documents').update({ published_at: PUBLIE }).eq('id', autreDoc);
 
 		sectionLiee = (await lien('chapter_sections', chapitre, sectionModele))!.id as string;
 		docLie = (await lien('chapter_documents', chapitre, docModele))!.id as string;
@@ -154,6 +179,16 @@ describe('ADR 0029 — masquer une section dans un chapitre', () => {
 		expect(r.error).not.toBeNull();
 	});
 
+	it('un élève ne masque pas une section de son chapitre', async () => {
+		const r = await eleve
+			.from('chapter_sections')
+			.update({ hidden: true })
+			.eq('id', sectionLiee)
+			.select('id');
+		expect(r.data ?? []).toEqual([]);
+		expect((await ligne('chapter_sections', sectionLiee))?.hidden).toBe(false);
+	});
+
 	it('masquer la section masque et dépublie tout ce qu’elle contient', async () => {
 		const r = await prof
 			.from('chapter_sections')
@@ -171,6 +206,14 @@ describe('ADR 0029 — masquer une section dans un chapitre', () => {
 			hidden: true,
 			published_at: null
 		});
+	});
+
+	it('l’autre chapitre lié au même modèle n’est pas touché', async () => {
+		const d = await lien('chapter_documents', autreChapitre, docModele);
+		expect(d).toMatchObject({ hidden: false });
+		expect(d?.published_at).not.toBeNull();
+		const s = await lien('chapter_sections', autreChapitre, sectionModele);
+		expect(s?.hidden).toBe(false);
 	});
 
 	it('un élément ajouté au modèle dans une section masquée arrive masqué', async () => {

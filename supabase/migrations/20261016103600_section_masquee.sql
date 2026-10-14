@@ -20,11 +20,12 @@
 -- masquée naît masqué).
 --
 -- ROLLBACK:BEGIN
+-- -- D'ABORD rejouer `public.modele_lien_remplir()` de 20261016103300 (section 3a) :
+-- -- la version ci-dessous lit `chapter_sections.hidden`.
 -- drop trigger if exists section_masquee_propage on public.chapter_sections;
 -- drop function if exists public.section_masquee_propage();
 -- alter table public.chapter_sections drop constraint if exists chapter_sections_masque_sur_chapitre;
 -- alter table public.chapter_sections drop column if exists hidden;
--- -- puis rejouer `public.modele_lien_remplir()` de 20261016103300 (section 3a).
 -- -- Les éléments masqués par une section le restent (colonne `hidden` de chaque table).
 -- ROLLBACK:END
 
