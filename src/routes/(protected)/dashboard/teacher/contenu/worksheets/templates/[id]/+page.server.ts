@@ -185,10 +185,15 @@ export const actions: Actions = {
 		}
 
 		// Le style du gabarit porte son nom dans le menu de la fiche (D10)
-		await syncTemplateStyle(locals.supabase, existingTemplate, {
+		const styleSynced = await syncTemplateStyle(locals.supabase, existingTemplate, {
 			name: validation.data.name,
 			description: validation.data.description
 		});
+		if (!styleSynced) {
+			return fail(500, {
+				message: 'Template enregistré, mais son nom n’a pas suivi dans le menu « Style »'
+			});
+		}
 
 		return { success: true, message: 'Template mis a jour' };
 	}

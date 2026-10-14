@@ -63,6 +63,7 @@ const STANDARD = DEFAULT_TEMPLATE_IDS.standard;
 // ============================================================================
 
 let teacherClient: SupabaseClient;
+let adminClient: SupabaseClient;
 let teacherId: string;
 let adminId: string;
 let adminStyleId: string;
@@ -190,6 +191,7 @@ beforeAll(async () => {
 	teacherId = teacher.id;
 	adminId = admin.id;
 	teacherClient = await signedIn(teacher.email);
+	adminClient = await signedIn(admin.email);
 	locals = buildLocals(teacherClient, teacherId);
 	adminStyleId = await seedStyle(adminId, 'de l’admin');
 });
@@ -227,6 +229,26 @@ describe('les styles proposés au prof', () => {
 		expect(byId.get(DEFAULT_STYLE_ID)?.showsPoints).toBe(false);
 		expect(byId.get(STANDARD)?.showsPoints).toBe(true);
 		expect(byId.get(ownId)?.showsPoints).toBe(true);
+	});
+});
+
+describe('l’admin sur la fiche du prof', () => {
+	it('le menu propose les styles de l’auteur de la fiche, celui qu’elle porte compris', async () => {
+		const ownId = await seedStyle(teacherId, 'vu par l’admin');
+		const styles = await listWorksheetStyles(adminClient as never, teacherId);
+		expect(styles.map((s) => s.id)).toContain(ownId);
+		expect(styles.map((s) => s.id)).not.toContain(adminStyleId);
+	});
+
+	it('dupliquer la fiche du prof garde son style', async () => {
+		const ownId = await seedStyle(teacherId, 'dupliqué par l’admin');
+		const id = await seedWorksheet('dupliquée par l’admin', ownId);
+		const response = await duplicateWorksheet({
+			locals: buildLocals(adminClient, adminId),
+			params: { id }
+		} as never);
+		const { worksheet } = await response.json();
+		expect((await worksheetInDb(worksheet.id)).style_id).toBe(ownId);
 	});
 });
 

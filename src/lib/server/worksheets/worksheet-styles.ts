@@ -125,20 +125,31 @@ export async function insertTemplateWithStyle(
 		.select()
 		.single();
 	if (error) {
-		await supabase.from('worksheet_styles').delete().eq('id', id);
+		const { data: removed, error: removeError } = await supabase
+			.from('worksheet_styles')
+			.delete()
+			.eq('id', id)
+			.select('id');
+		// La RLS refuse en silence : un style resté seul apparaîtrait au menu
+		if (removeError || (removed ?? []).length === 0) {
+			logger.error('Style sans gabarit non retiré :', removeError ?? 'aucune ligne', id);
+		}
 		return { data: null, error };
 	}
 	return { data, error: null };
 }
 
-/** Le nom et la description du gabarit, recopiés sur son style. */
+/**
+ * Le nom et la description du gabarit, recopiés sur son style. Rend faux si
+ * le style n'a pas suivi (l'appelant le dit au prof).
+ */
 export async function syncTemplateStyle(
 	supabase: SupabaseClient<Database>,
 	template: { id: string; style_id: string | null },
 	fields: { name?: string; description?: string | null }
-): Promise<void> {
+): Promise<boolean> {
 	const styleId = ownStyleId(template);
-	if (!styleId || (fields.name === undefined && fields.description === undefined)) return;
+	if (!styleId || (fields.name === undefined && fields.description === undefined)) return true;
 
 	const update: Database['public']['Tables']['worksheet_styles']['Update'] = {};
 	if (fields.name !== undefined) update.name = fields.name;
@@ -151,7 +162,9 @@ export async function syncTemplateStyle(
 	// La RLS refuse en silence : zéro ligne, sans erreur
 	if (error || (data ?? []).length === 0) {
 		logger.error('Style du gabarit non renommé :', error ?? 'aucune ligne');
+		return false;
 	}
+	return true;
 }
 
 /**

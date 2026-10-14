@@ -144,7 +144,9 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	}
 
 	// Le style du gabarit porte son nom dans le menu de la fiche (D10)
-	await syncTemplateStyle(locals.supabase, existingTemplate, data);
+	if (!(await syncTemplateStyle(locals.supabase, existingTemplate, data))) {
+		throw error(500, 'Modèle enregistré, mais son nom n’a pas suivi dans le menu « Style »');
+	}
 
 	// Validate response
 	const validated = validateJsonResponse(

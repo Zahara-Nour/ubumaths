@@ -7,7 +7,6 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { fetchResourceTagNames, syncResourceTags } from '$lib/server/resource-tags';
 import { requireRoles } from '$lib/server/middleware/auth';
-import { isBuiltInStyle } from '$lib/typst/templates/styles';
 import {
 	validateWorksheetId,
 	createWorksheetResponseSchema
@@ -62,12 +61,8 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 			status: 'draft', // Always start as draft
 			version: 1,
 			template_id: original.template_id,
-			// Le style suit la copie ; l'admin qui duplique la fiche du prof ne peut
-			// pas prendre son style (trigger) : sa copie retombe sur `template_id`.
-			style_id:
-				original.created_by === user.id || isBuiltInStyle(original.style_id)
-					? original.style_id
-					: null,
+			// Le style suit la copie (le trigger laisse l'admin prendre le style du prof)
+			style_id: original.style_id,
 			estimated_duration_minutes: original.estimated_duration_minutes,
 			total_points: original.total_points,
 			grades: original.grades,

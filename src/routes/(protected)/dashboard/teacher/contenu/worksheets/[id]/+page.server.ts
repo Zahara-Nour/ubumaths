@@ -24,10 +24,9 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	// Les deux lectures sont indépendantes : les enchaîner faisait payer un
 	// aller-retour de plus à chaque ouverture de fiche.
-	const [response, citations, styles] = await Promise.all([
+	const [response, citations] = await Promise.all([
 		fetch(`/api/worksheets/${params.id}`),
-		fetchWorksheetCitations(locals.supabase, idValidation.data),
-		listWorksheetStyles(locals.supabase, user.id)
+		fetchWorksheetCitations(locals.supabase, idValidation.data)
 	]);
 
 	if (!response.ok) {
@@ -41,6 +40,10 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	}
 
 	const data = await response.json();
+
+	// Les styles de l'AUTEUR de la fiche : l'admin qui ouvre la fiche du prof
+	// voit le style qu'elle porte, comme le PDF.
+	const styles = await listWorksheetStyles(locals.supabase, data.worksheet.created_by);
 
 	return {
 		worksheet: data.worksheet,

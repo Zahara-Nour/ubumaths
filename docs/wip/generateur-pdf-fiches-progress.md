@@ -186,6 +186,11 @@ Erreur / garde :
   `components/worksheets/__tests__/style-de-la-fiche.svelte.test.ts` (8),
   `tests/integration/fiche-choix-du-style.test.ts` (23) ; chacun prouvé rouge sur l'ancien code.
   Rendu de l'écran : `scratchpad/rendu-3b/`.
+  Revue (code-reviewer) : menu de l'admin sur la fiche du prof → styles de l'AUTEUR (corrigé) ;
+  duplication par l'admin garde le style (corrigé) ; style resté seul après un échec, renommage
+  du style raté → tracés et signalés. **Au déploiement** : vérifier qu'aucun gabarit de prof n'est
+  sans style (`select id from worksheet_templates where created_by is not null and style_id is
+null`) — 0 le 2026-10-14.
 
 - 2026-10-14 — **lot 3a** (branche `feat/fiches-styles-base`) : migration
   `20261016103200_worksheet_styles` (table des styles, 12 styles de Chiphre, `style_id` et `form`
