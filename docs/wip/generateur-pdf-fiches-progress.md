@@ -60,6 +60,29 @@ Gabarits inaccessibles :
   après), déterministe, recalculé par la même fonction pour tous les chemins ; hors affectation, pas
   de mélange ; réaffecter → autre tirage ; fiche sans l'option : rien ne change.
 
+- **D6** (2026-10-13) — **suites du mélange** (écart 9 de `fiches-et-pdf.md`) :
+  1. case « Mélanger dans les sections » (`shuffle_within_sections`) **retirée** de l'interface ;
+     la donnée reste en base, plus lue. Le mélange sert l'anti-triche des évaluations ; sans
+     section, toute la fiche est mélangée (déjà le cas).
+  2. **Signalements** : côté élève, la notification cite le numéro de SA copie (même calcul que la
+     copie) et pointe vers sa fiche, ancrée sur l'exercice (ancre fondée sur l'identifiant de
+     l'exercice de fiche, pas sur le numéro) ; la page défile jusqu'à l'exercice et le met en
+     évidence. Côté prof, page du signalement : « Voir la copie de <prénom> » (aperçu « vue
+     élève » présélectionné, même ancre) et « Corriger l'exercice » (éditeur de l'exercice) ;
+     numéro de la copie de l'élève dans la carte et la page. Aucune règle d'accès ne change ; un
+     élève n'obtient jamais l'ordre ni le numéro d'un autre.
+  3. **Corrigé de classe d'une affectation individualisée** (valeurs ou ordre propres à chaque
+     élève) : la copie d'un élève choisi par le prof dans une liste au moment de le produire
+     (premier par défaut, nom non imprimé), exercices identifiés au moins par leur titre,
+     avertissement imprimé en tête, localisé (« Chaque élève a sa propre version : consulte ta
+     correction personnelle. »). Non individualisée : rien ne change.
+  4. (décisions du 2026-10-14) Signalements de l'élève (onglet, « Mes signalements », envoi) : le
+     numéro de SA copie, aucun numéro s'il est inconnu. Aperçu ouvert depuis un signalement :
+     `?depuis=signalement`, retour au signalement. **Aperçu « vue prof » d'une affectation
+     individualisée** : même règle que le corrigé de classe (copie d'un élève choisi, premier par
+     défaut, nom non imprimé, titres, avertissement imprimé en tête) ; non individualisée : rien ne
+     change.
+
 ## Vocabulaire proposé (à verser dans CONTEXT.md, lot 0)
 
 | Terme       | Sens                                                                                                                     |
@@ -126,6 +149,24 @@ Erreur / garde :
 - langue inconnue → repli `fr`, comme aujourd'hui.
 
 ## Journal
+
+- 2026-10-14 — **D6 fait** (branche `feat/fiches-melange-suites`, commits locaux). (1) Case
+  retirée de `MetadataCards` et du formulaire de création ; `asWorksheetConfig` ne lit plus la clé,
+  `DEFAULT_WORKSHEET_CONFIG` ne l'écrit plus ; le schéma Zod serveur l'accepte encore (sinon la
+  config renvoyée telle quelle l'effacerait de la base). (2) `copyDisplayNumbers` +
+  `fetchCopyNumbering` : numéro de la copie de chaque élève dans les deux listes du prof, la page
+  du signalement (l'ancien `+ 1` sur `position` corrigé) et la notification (numéro inconnu → aucun
+  numéro) ; lien `#exercice-<id>` (`exercise-anchor.ts`), défilement + mise en évidence sur la fiche
+  de l'élève et l'aperçu ; aperçu lit `?studentId=` (élève de l'affectation seulement) ; liens
+  « Voir la copie de <prénom> » et « Corriger l'exercice ». (3) `hasPerStudentCopies` ; route
+  `.../correction` : `needs_student` sans élève, `studentId` contrôlé (`isStudentOfAssignment`,
+  mis en commun avec l'aperçu), avertissement `individualCopyNotice` ; `CorrectionManager` : liste
+  des élèves (premier par défaut). `per_student_values_notice` retiré. (4) Suites : signalements
+  de l'élève sur le numéro de sa copie (`null` → rien d'affiché ; ancien membre : fiche illisible,
+  donc `null` — le test d'intégration `archived-student-error-reports` attendait la position 3,
+  corrigé) ; `assignmentPreviewHref` / `assignmentPreviewReturn` (`?depuis=signalement`) ; vue
+  prof de l'aperçu : `copyOf`, `per_student_copies`, « Copie de référence », avertissement du PDF
+  élève (`individualCopyNotice`).
 
 - 2026-10-13 — **D5 fait** (branche `feat/fiches-melange-exercices`, commits locaux).
   `copyExerciseOrder` (`worksheet-copy.ts`) et `copyOrderSeed` (`student-copy.ts`, graine dédiée

@@ -53,6 +53,13 @@
 	import type { PageData } from './$types';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import { page } from '$app/state';
+	import { assignmentPreviewReturn } from '$lib/navigation/return-links';
+	import {
+		ANCHOR_HIGHLIGHT_MS,
+		exerciseAnchorId,
+		scrollToAnchoredExercise
+	} from '$lib/worksheets/exercise-anchor';
 	import type {
 		StudentWorksheetView,
 		StudentExerciseView,
@@ -61,9 +68,16 @@
 
 	let { data }: { data: PageData } = $props();
 
+	// Deux parents : la fiche, ou la page d'un signalement (`?depuis=signalement`)
+	let backLink = $derived(
+		assignmentPreviewReturn(data.worksheetId, data.assignmentId, page.url.searchParams)
+	);
+
 	// State
-	// Use string | undefined (not null) so MySelect can bind directly
-	let selectedStudentId = $state<string | undefined>(undefined);
+	// Use string | undefined (not null) so MySelect can bind directly.
+	// Élève présélectionné par l'adresse (`?studentId=`, lien d'un signalement)
+	// svelte-ignore state_referenced_locally
+	let selectedStudentId = $state<string | undefined>(data.initialStudentId ?? undefined);
 	let worksheet = $state<StudentWorksheetView | null>(null);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
@@ -71,6 +85,10 @@
 	// Preview metadata from API
 	let previewMode = $state<'teacher' | 'student'>('teacher');
 	let previewStudentName = $state<string | null>(null);
+	// Chaque élève a sa version (valeurs ou ordre, D6) : la vue prof s'appuie
+	// sur la copie d'un élève choisi (premier de la liste par défaut)
+	let perStudentCopies = $state(false);
+	let referenceStudentId = $state<string | undefined>(undefined);
 
 	// Modal state
 	let modalOpen = $state(false);
@@ -92,8 +110,19 @@
 			.sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 	]);
 
+	// Les élèves dont la copie peut servir de vue prof (déjà triés par nom)
+	let referenceStudentItems = $derived(studentOptions.filter((option) => option.value !== ''));
+
+	/** La vue prof montre la copie d'un élève : avertissement à l'écran et dans le PDF */
+	let showsIndividualCopy = $derived(previewMode === 'teacher' && perStudentCopies);
+
+	function handleReferenceStudentChange(value: string) {
+		referenceStudentId = value;
+		fetchPreview();
+	}
+
 	// Fetch preview data when student selection changes
-	async function fetchPreview() {
+	async function fetchPreview(): Promise<void> {
 		loading = true;
 		error = null;
 
@@ -104,6 +133,8 @@
 			);
 			if (selectedStudentId) {
 				url.searchParams.set('studentId', selectedStudentId);
+			} else if (referenceStudentId) {
+				url.searchParams.set('copyOf', referenceStudentId);
 			}
 
 			const response = await fetch(url.toString());
@@ -114,6 +145,19 @@
 			}
 
 			const responseData = await response.json();
+			// Vue prof d'une affectation individualisée sans élève de référence :
+			// on prend le premier de la liste et on redemande sa copie
+			const firstStudent = referenceStudentItems[0]?.value;
+			if (
+				!selectedStudentId &&
+				responseData.per_student_copies === true &&
+				!referenceStudentId &&
+				firstStudent
+			) {
+				referenceStudentId = firstStudent;
+				return fetchPreview();
+			}
+			perStudentCopies = responseData.per_student_copies === true;
 			worksheet = responseData as StudentWorksheetView;
 			previewMode = responseData.preview_mode || 'teacher';
 			previewStudentName = responseData.preview_student_name || null;
@@ -163,8 +207,10 @@
 			previewStudentName || undefined
 		);
 
+		// Copie d'un élève servant de vue prof : avertissement imprimé en tête (D6)
+		const individualCopyNotice = showsIndividualCopy;
 		const result = await generateAndDownloadPdf(
-			() => generateStudentWorksheetTypst(capturedWorksheet, ending),
+			() => generateStudentWorksheetTypst(capturedWorksheet, ending, { individualCopyNotice }),
 			filename
 		);
 
@@ -305,6 +351,32 @@
 	// Check if we have sections to display
 	let hasSections = $derived(sections.length > 0);
 
+	// Ouvert depuis un signalement (D6) : l'ancre `#exercice-<id>` vise un
+	// exercice de fiche ; une fois la copie chargée, la page défile jusqu'à lui
+	// et le met brièvement en évidence.
+	let highlightedExerciseId = $state<string | null>(null);
+
+	$effect(() => {
+		const hash = page.url.hash;
+		if (loading || exercises.length === 0) return;
+		const id = scrollToAnchoredExercise(hash);
+		if (!id) return;
+		highlightedExerciseId = id;
+		const timer = setTimeout(() => {
+			highlightedExerciseId = null;
+		}, ANCHOR_HIGHLIGHT_MS);
+		return () => clearTimeout(timer);
+	});
+
+	/** Classes de l'élément d'un exercice : mis en évidence s'il est visé par l'ancre */
+	function exerciseItemClass(exerciseId: string): string {
+		const base =
+			'flex w-full scroll-mt-24 items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50';
+		return highlightedExerciseId === exerciseId
+			? `${base} ring-2 ring-amber-400 ring-offset-2`
+			: base;
+	}
+
 	// Modal navigation
 	function openExercise(index: number) {
 		currentExerciseIndex = index;
@@ -341,11 +413,7 @@
 	<!-- Header with back button and student selector -->
 	<div class="mb-6 space-y-4">
 		<div class="flex items-center justify-between">
-			<BackLink
-				href={`/dashboard/teacher/contenu/worksheets/${data.worksheetId}`}
-				label="Retour à la fiche"
-				class="mb-0"
-			/>
+			<BackLink href={backLink.href} label={backLink.label} class="mb-0" />
 
 			<!-- Preview mode badge -->
 			<Badge variant={previewMode === 'teacher' ? 'default' : 'secondary'} class="gap-1">
@@ -358,6 +426,16 @@
 				{/if}
 			</Badge>
 		</div>
+
+		{#if data.discardedStudent}
+			<!-- Lien d'un signalement vers un élève qui n'est plus destinataire -->
+			<p
+				class="flex items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-100"
+			>
+				<Info class="h-4 w-4 shrink-0" />
+				L’élève demandé n’est plus destinataire de cette affectation : sa copie ne peut pas être affichée.
+			</p>
+		{/if}
 
 		<!-- Student selector -->
 		<Card.Root>
@@ -375,6 +453,25 @@
 						fitContent
 					/>
 				</div>
+				{#if showsIndividualCopy}
+					<!-- Chaque élève a sa version : la vue prof est la copie d'un élève (D6) -->
+					<div class="mt-3 flex flex-col gap-3 border-t pt-3 sm:flex-row sm:items-center">
+						<div class="shrink-0 text-sm font-medium">Copie de référence :</div>
+						<MySelect
+							type="single"
+							value={referenceStudentId}
+							onchange={handleReferenceStudentChange}
+							items={referenceStudentItems}
+							placeholder="Choisir un élève"
+							fitContent
+						/>
+					</div>
+					<p class="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+						<Info class="h-3.5 w-3.5" />
+						Chaque élève a sa propre version de cette fiche : cette vue reprend la copie de l’élève choisi
+						(son nom n’est pas imprimé), et le PDF avertit chaque élève de consulter sa correction personnelle.
+					</p>
+				{/if}
 			</Card.Content>
 		</Card.Root>
 	</div>
@@ -494,8 +591,10 @@
 								{@const visualIndex = visualOrderExercises.findIndex((e) => e.id === exercise.id)}
 								<button
 									type="button"
+									id={exerciseAnchorId(exercise.id)}
+									data-highlighted={highlightedExerciseId === exercise.id}
 									onclick={() => openExercise(visualIndex)}
-									class="flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50"
+									class={exerciseItemClass(exercise.id)}
 								>
 									<div
 										class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"
@@ -548,8 +647,10 @@
 				{#each exercises as exercise, i (exercise.id)}
 					<button
 						type="button"
+						id={exerciseAnchorId(exercise.id)}
+						data-highlighted={highlightedExerciseId === exercise.id}
 						onclick={() => openExercise(i)}
-						class="flex w-full items-center gap-3 rounded-lg border bg-card p-4 text-left transition-colors hover:bg-muted/50"
+						class={exerciseItemClass(exercise.id)}
 					>
 						<div
 							class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"

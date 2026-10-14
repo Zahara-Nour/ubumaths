@@ -23,7 +23,11 @@ import {
 	type InstanceSection,
 	type WorksheetWithRelations
 } from '$lib/types/worksheets';
-import { groupExercisesForDisplay, type NumberableSection } from './exercise-numbering';
+import {
+	groupExercisesForDisplay,
+	orderExercisesForDisplay,
+	type NumberableSection
+} from './exercise-numbering';
 import {
 	copyOrderSeed,
 	copySeed,
@@ -241,6 +245,27 @@ export function copyExerciseOrder<E extends OrderableWorksheetExercise>(
 	);
 }
 
+/**
+ * Le numéro de chaque exercice DANS CETTE COPIE, par `worksheet_exercises.id`
+ * — celui que l'élève lit sur son écran et dans son PDF : ordre de la copie
+ * (`copyExerciseOrder`, mélange compris), puis la numérotation commune
+ * (`orderExercisesForDisplay`). Sert aux messages qui citent un exercice
+ * (signalements) : on le nomme comme l'élève le nomme.
+ */
+export function copyDisplayNumbers<E extends OrderableWorksheetExercise>(
+	exercises: readonly E[],
+	sections: readonly NumberableSection[],
+	scope: CopyScope,
+	config: unknown
+): Map<string, number> {
+	const order = copyExerciseOrder(exercises, sections, scope, config);
+	return new Map(
+		orderExercisesForDisplay(order ?? exercises, sections, {
+			preserveExerciseOrder: order !== null
+		}).map(({ exercise, number }) => [exercise.id, number])
+	);
+}
+
 /** Les exercices de la fiche, dans l'ordre */
 function sortedWorksheetExercises(worksheet: WorksheetForCopy) {
 	const exercises = worksheet.exercises ?? worksheet.worksheet_exercises ?? [];
@@ -324,4 +349,16 @@ export function hasPerStudentValues(worksheet: WorksheetForCopy, scope: CopyScop
 		// `!= null` : la jointure PostgREST rend `null` pour un exercice orphelin
 		(we) => we.exercise != null && hasDrawnValues(we.exercise)
 	);
+}
+
+/**
+ * Chaque élève a-t-il SA version de la fiche ? Oui si l'affectation est
+ * individualisée ET que les valeurs tirées (`hasPerStudentValues`) ou l'ordre
+ * des exercices (option « mélanger les exercices ») changent d'un élève à
+ * l'autre. Le corrigé de classe s'appuie alors sur la copie d'un élève choisi
+ * par le prof, avec un avertissement imprimé (décision D6).
+ */
+export function hasPerStudentCopies(worksheet: WorksheetForCopy, scope: CopyScope): boolean {
+	if (!scope.individualized || !scope.assignmentId) return false;
+	return hasPerStudentValues(worksheet, scope) || shufflesExercises(worksheet.config, scope);
 }

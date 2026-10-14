@@ -57,6 +57,7 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 | `src/lib/worksheets/student-worksheet-typst.ts` | `generateStudentWorksheetTypst` : le PDF **élève** (et l'aperçu « vue élève » du prof), enveloppe codée en dur (setup, en-tête, partie de fin) ; les exercices viennent du rendu commun.                                                                                                                                                                                                                                             |
 | `src/lib/worksheets/document/`                  | Le **document d'une fiche** ([ADR 0028](../adr/0028-pdf-de-fiche-un-generateur-des-styles-et-des-formes.md), lot 1) : `WorksheetDocument` (`types.ts`), rempli par `documentFromTeacherCopy` (copie du prof) ou `documentFromStudentView` (vue élève, correction non visible → `correction: null`) ; ordre et numéros (`numbering.ts`) ; **rendu d'exercice unique** `renderExercises` (`render-exercise.ts`) ; `MATH_LIMITS_SETUP`. |
 | `src/lib/worksheets/serie-automatismes.ts`      | `buildSerie` : une **série figée** d'instances de modèles de question devient un exercice ordinaire ([ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md)). Toute anomalie lève une exception. Les formules maison sont figées avec les fonctions du modèle et le sens de `AB` de l'instance.                                                                                                                            |
+| `src/lib/worksheets/exercise-anchor.ts`         | Ancre d'un exercice de fiche (`#exercice-<worksheet_exercises.id>`, jamais le numéro) : `exerciseAnchorId`, `exerciseAnchorHash`, `worksheetExerciseIdFromHash`, `scrollToAnchoredExercise`. Notifications de signalement, fiche de l'élève, aperçu « vue élève ».                                                                                                                                                                   |
 | `src/lib/worksheets/exercise-edit-link.ts`      | `exerciseEditHref`, `worksheetReturnHref` : aller-retour fiche ↔ exercice par `?fiche=<uuid>` (Zod : UUID seulement).                                                                                                                                                                                                                                                                                                                |
 
 ### `src/lib/typst/` — de la fiche au PDF
@@ -90,7 +91,8 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 | `src/lib/server/worksheets/assignment-classes.ts`    | `fetchAssignmentClasses`, `fetchClassesByAssignment`, `formatClassNames` (jonction `worksheet_assignment_classes`).                                                                                           |
 | `src/lib/server/worksheets/correction-release.ts`    | Libération de la correction : `canAccessCorrections`, `releaseCorrections`, `revokeCorrections`, `updateCorrectionSettings`, `getCorrectionReleaseStatus`.                                                    |
 | `src/lib/server/worksheets/correction-visibility.ts` | `isCorrectionVisible`, `getCorrectionVisibilityMap`, `getCorrectionContext` (cascade, voir plus bas). Ne vérifie **pas** l'autorisation : à l'appelant.                                                       |
-| `src/lib/server/worksheets/display-number.ts`        | `fetchDisplayNumber(s)`, `resolveExercisesAtDisplayNumbers` : le numéro que lit l'élève, côté serveur (messages de signalement).                                                                              |
+| `src/lib/server/worksheets/display-number.ts`        | `fetchCopyNumbering` : le numéro d'un exercice dans la copie de chaque élève (ordre mélangé compris, `copyDisplayNumbers`), pour les signalements ; `resolveExercisesAtDisplayNumbers` (`[[worksheet:…#3]]`). |
+| `src/lib/server/worksheets/assignment-recipients.ts` | `isStudentOfAssignment` : l'élève est-il destinataire (nommé ou membre actif d'une classe visée) ? Aperçu « vue élève » et corrigé d'après la copie d'un élève.                                               |
 | `src/lib/server/worksheets/citations.ts`             | `fetchWorksheetCitations` : où la fiche est citée (cahier de texte, chapitres).                                                                                                                               |
 | `src/lib/server/validation/worksheets.ts`            | Zod des routes : `createWorksheetSchema`, `worksheetConfigSchema`, `createWorksheetExerciseSchema`, `reorderExercisesSchema`, `updateCorrectionSettingsSchema`…                                               |
 | `src/lib/types/worksheets.ts`                        | Types de lignes et JSONB (`WorksheetConfig`, `VariantConfig`, `ResolvedExercise`, `InstanceData`), gardes `asWorksheetConfig`, `asInstanceData`, `toWorksheetRow`, langue `worksheetLocale`, `localizedText`. |
@@ -204,15 +206,50 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
   → 500 plutôt qu'un ordre faux), que suivent l'écran de l'élève
   (`groupExercisesForDisplay(…, { preserveExerciseOrder })`) et son PDF (`documentFromStudentView`).
   Hors affectation (page de la fiche, aperçu, lot ZIP, cahier ou cours publics) : ordre des
-  positions. Réaffecter → autre tirage. `shuffle_within_sections` n'est lu par aucun chemin
-  vivant (voir Écarts connus).
+  positions. Réaffecter → autre tirage. La case « Mélanger dans les sections »
+  (`shuffle_within_sections`) est retirée de l'interface (D6) : `asWorksheetConfig` ne la lit plus,
+  le schéma serveur l'accepte encore pour ne pas l'effacer des fiches qui l'ont en base.
 - `resolveCopyExercise` produit l'exercice ; `src/lib/worksheets/worksheet-copy.ts` l'applique à la
   fiche entière et lit le niveau (inconnu → guidé). Génération en échec : le texte brut de la MÊME
   version.
 - Hors affectation : guidé par défaut ; l'aperçu du prof a un choix « Niveau à imprimer » (absent du
   cahier public). Le lot ZIP de la page de la fiche donne donc la même copie à chaque élève, à son nom.
-- Le corrigé du prof est la copie commune ; affectation individualisée avec variables : la réponse
-  porte `per_student_values_notice`, affiché par `CorrectionManager`.
+- Le corrigé du prof est la copie commune, sauf si chaque élève a sa version
+  (`hasPerStudentCopies` : affectation individualisée ET valeurs tirées ou mélange ; décision D6).
+  Alors `.../correction` sans `studentId` répond `needs_student` ; `CorrectionManager` ouvre la
+  liste des élèves de l'affectation (triée par nom, premier par défaut, `MySelect`) et redemande
+  avec `studentId` (contrôlé par `isStudentOfAssignment`, sinon 400) : le corrigé est la copie de
+  cet élève (valeurs et ordre), son nom n'est pas imprimé, et l'avertissement localisé
+  `individualCopyNotice` (« Chaque élève a sa propre version : consulte ta correction
+  personnelle. ») est imprimé en tête (`generateWorksheetTypst({ individualCopyNotice })`). Les
+  exercices n'y ont ni numéro ni carré, le titre seul (`display.titleOnly`), « Exercice sans
+  titre » s'il manque (`untitledExercise`) ; même règle pour le PDF de l'aperçu vue prof. La
+  réponse porte `per_student_copies`.
+- Signalements (D6) : la liste du prof (`api/worksheets/[id]/reports`, `.../assignments/[id]/reports`),
+  la page du signalement et la notification de l'élève citent le numéro de l'exercice **dans la
+  copie de l'élève** (`fetchCopyNumbering`, même calcul que la copie ; inconnu → aucun numéro dans
+  la notification, « — » côté prof). La notification mène à
+  `/dashboard/student/worksheets/<affectation>#exercice-<id>` : la fiche défile jusqu'à l'exercice
+  et le met en évidence. La page du signalement offre « Voir la copie de <prénom> » (aperçu
+  `.../preview?studentId=<élève>&depuis=signalement&signalement=<id>#exercice-<id>`,
+  `assignmentPreviewHref` dans `src/lib/navigation/return-links.ts` ; `studentId` retenu seulement
+  pour un élève de l'affectation ; le bouton retour de l'aperçu revient alors au signalement,
+  `assignmentPreviewReturn` ; lien proposé seulement si l'auteur est encore destinataire,
+  `context.student_is_recipient`, sinon « Copie de <prénom> indisponible : n'est plus dans la
+  classe », ou « … pour le moment » si la lecture échoue ; un `studentId` écarté est signalé dans
+  l'aperçu, `discardedStudent`, jamais remplacé en silence) et « Corriger l'exercice » (`/dashboard/teacher/contenu/exercices/<id>`).
+  Côté élève, ses signalements (onglet de la fiche `api/student/worksheets/[assignmentId]/reports`,
+  `api/student/reports`, réponse de `.../exercises/[exerciseId]/report`) portent le numéro de SA
+  copie (`fetchCopyNumbering` avec son identifiant), `null` si la fiche lui est illisible (ancien
+  membre) : `StudentReportCard` et `CancelReportDialog` n'affichent alors aucun numéro. Aucune
+  règle d'accès ne change : chacun ne reçoit que le numéro de sa propre copie (le prof, ceux de ses
+  élèves).
+- Aperçu « vue prof » d'une affectation où chaque élève a sa version (D6) : même règle que le
+  corrigé de classe. `.../preview` accepte `copyOf=<élève>` (contrôlé par `isStudentOfAssignment`,
+  sinon 400 ; ignoré si la copie est commune) et sert `per_student_copies` ; l'écran redemande
+  avec le premier élève de la liste, propose « Copie de référence » (`MySelect`), avertit, et le
+  PDF (`generateStudentWorksheetTypst(…, { individualCopyNotice })`) imprime l'avertissement en tête,
+  sans nom d'élève (vue prof : corrections toutes visibles).
 - Le signalement d'erreur d'un élève enregistre la version et la graine de SA copie
   (`worksheetExerciseSeed`, 31 bits, tient dans `worksheet_error_reports.seed`).
   Seuls le prof et l'admin traitent le signalement (statut, relu par, date, réponse) : la base le
@@ -223,7 +260,8 @@ fonction** calcule la copie, pour tous les chemins — écran et PDF de l'élèv
   plus lu par les chemins vivants.
 
 Tests : `src/lib/worksheets/__tests__/student-copy.test.ts`, `worksheet-copy.test.ts`,
-`worksheet-copy-ordre.test.ts` (mélange), `copie.test.ts` des trois routes, `ordre.test.ts` de
+`worksheet-copy-ordre.test.ts` (mélange), `worksheet-copy-numeros.test.ts` (numéro dans la copie,
+`hasPerStudentCopies`), `exercise-anchor.test.ts`, `copie.test.ts` des trois routes, `ordre.test.ts` de
 l'aperçu d'affectation (API élève et aperçu), `ordre-melange.svelte.test.ts` (écran de l'élève), `PdfPreview-copie.svelte.test.ts`, `tests/integration/worksheet-assignment-guidance-level.test.ts`.
 
 ## La production PDF
@@ -258,7 +296,8 @@ ambre (charte élève) ; sinon `{{exercises}}` en titres gras. Dans les corrigé
 
 **Un document, un rendu d'exercice** (ADR 0028, lot 1) : les deux générateurs construisent un
 `WorksheetDocument` puis appellent `renderExercises(doc, forme, habillage)`. Les habillages
-(`classic` : prof sans gabarit ; `heading` : `{{exercises}}` ; `badge` : `{{exercises_badge}}` ;
+(`classic` : fiche du prof sans gabarit — ses Réponses et son Corrigé passent en `badge`, deux
+colonnes, bandeau et avertissement pleine largeur en tête (D6) ; `heading` : `{{exercises}}` ; `badge` : `{{exercises_badge}}` ;
 `student` : PDF élève) ne changent que la présentation ; ils disparaissent au lot 2. Communs aux deux
 PDF : titre d'exercice avec ses formules (`processTableCellContent`), ordre et numérotation
 (`numbering_style`, `exercise_order` côté prof), points en « pt » / « pts » de `documentLabels` (aussi en anglais, et
@@ -417,6 +456,14 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
 - `src/lib/worksheets/document/__tests__/` : `worksheet-document.test.ts` (deux adaptateurs, même
   document, même Typst d'exercice ; garde des corrections non visibles),
   `deux-pdf-meme-exercice.test.ts` (les écarts corrigés au lot 1, des deux côtés).
+- Suites du mélange (D6) : `server/worksheets/__tests__/copy-numbering.test.ts`,
+  `server/__tests__/auto-notifications-signalement.test.ts`, `numero-copie.test.ts` des deux
+  routes de signalements, `ancre-exercice.svelte.test.ts` (fiche de l'élève),
+  `eleve-depuis-adresse.svelte.test.ts` et `page-server-eleve.test.ts` (aperçu),
+  `liens-copie.svelte.test.ts` (page du signalement), `CorrectionManager-copie-eleve.svelte.test.ts`,
+  `numero-copie-eleve.test.ts` et `onglet-signalements-numero.svelte.test.ts` (côté élève),
+  `vue-prof-individualisee.test.ts` / `.svelte.test.ts` (aperçu), `student-worksheet-typst-avertissement.test.ts`,
+  `avertissement-copie-individuelle.test.ts` (Typst), `melanger-sections-retire.svelte.test.ts`.
 - `src/lib/worksheets/__tests__/` : `exercise-numbering.test.ts`, `student-worksheet-typst.test.ts`,
   `serie-automatismes.test.ts`, `exercise-edit-link.test.ts`.
 - Serveur : `src/lib/server/worksheets/__tests__/instance-generator.test.ts`,
@@ -473,13 +520,9 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
 8. **Polices** : le rendu dépend des polices embarquées par le bundle typst.ts, non listées dans le
    dépôt ; `compile-prod.mjs` ajoute STIX Two Math depuis un chemin macOS — témoin local et
    production peuvent donc différer sur un glyphe.
-9. **Option « mélanger les exercices » : deux restes** (2026-10-13 ; aucune fiche n'a l'une ou
-   l'autre case cochée en prod, mesuré le 2026-10-13). (a) La case « Mélanger dans les sections »
-   (`shuffle_within_sections`) n'est lue par aucun chemin vivant : « mélanger les exercices » mélange
-   déjà à l'intérieur des sections. (b) Le numéro d'exercice des messages à l'élève
-   (`server/worksheets/display-number.ts`, signalements) est celui de l'ordre des positions, pas
-   celui de sa copie mélangée. (c) Le corrigé de la classe d'une affectation individualisée et
-   mélangée suit un ordre commun qui n'est celui d'aucun élève ; `per_student_values_notice` ne
-   parle que des valeurs (et seulement s'il y a des variables). À trancher par David.
+9. ~~Option « mélanger les exercices » : trois restes~~ : **corrigé** (D6, 2026-10-14) : case
+   « Mélanger dans les sections » retirée, numéro des signalements pris dans la copie de l'élève,
+   corrigé de classe et aperçu « vue prof » d'une affectation individualisée d'après la copie d'un
+   élève choisi, signalements de l'élève sur le numéro de sa copie.
 
-Vérifié contre le code le 2026-10-13 (lot 1 de l'ADR 0028, option « mélanger les exercices »).
+Vérifié contre le code le 2026-10-14 (lot 1 de l'ADR 0028, option « mélanger les exercices » et ses suites D6).

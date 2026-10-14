@@ -11,8 +11,12 @@
  *   le prof reçoit la copie de la classe (sans élève) — le même calcul que
  *   l'API élève et l'aperçu d'affectation. Un élève reçoit un 404, comme
  *   avant (il n'avait jamais d'instance).
- * - Affectation individualisée avec des valeurs tirées : la réponse porte
- *   `per_student_values_notice`, que l'interface affiche.
+ * - Affectation dont chaque élève a sa version (valeurs tirées ou ordre
+ *   mélangé, `hasPerStudentCopies`, décision D6) : le corrigé de classe est la
+ *   copie d'UN élève de l'affectation, choisi par le prof (`studentId`), avec
+ *   un avertissement imprimé en tête ; son nom n'est pas imprimé. Sans
+ *   `studentId`, la réponse demande l'élève (`needs_student`) au lieu d'un
+ *   corrigé qui ne vaudrait pour personne. `per_student_copies` le dit.
  */
 
 import { error, json } from '@sveltejs/kit';
@@ -30,9 +34,10 @@ import type { WorksheetAssignmentRow } from '$lib/types/worksheets';
 import {
 	assignmentCopyScope,
 	buildWorksheetCopy,
-	hasPerStudentValues,
+	hasPerStudentCopies,
 	type WorksheetForCopy
 } from '$lib/worksheets/worksheet-copy';
+import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/correction/+server');
@@ -41,12 +46,10 @@ const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/cor
 // Note: 'pdf' format is not supported server-side (Typst.js requires browser)
 // Use 'typst' to get the Typst source, then generate PDF client-side
 const querySchema = z.object({
-	format: z.enum(['typst', 'json']).optional().default('typst')
+	format: z.enum(['typst', 'json']).optional().default('typst'),
+	/** L'élève dont la copie sert de corrigé de classe (affectation individualisée) */
+	studentId: z.string().uuid('Identifiant d’élève invalide').optional()
 });
-
-/** Affiché par le gestionnaire de corrections quand les valeurs varient par élève */
-const PER_STUDENT_VALUES_NOTICE =
-	'Valeurs propres à chaque élève : ce corrigé montre la copie commune ; chaque élève voit le sien sur sa copie (écran et PDF).';
 
 // ============================================================================
 // GET HANDLER - Get student's correction PDF
@@ -66,14 +69,15 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 	// Validate query parameters
 	const queryParams = querySchema.safeParse({
-		format: url.searchParams.get('format') || 'pdf'
+		format: url.searchParams.get('format') || 'pdf',
+		studentId: url.searchParams.get('studentId') || undefined
 	});
 
 	if (!queryParams.success) {
 		throw error(400, queryParams.error.issues[0].message);
 	}
 
-	const { format } = queryParams.data;
+	const { format, studentId } = queryParams.data;
 
 	try {
 		// Fetch assignment with worksheet details
@@ -191,13 +195,24 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 
 		// La copie de la classe, recalculée (ADR 0023) : la même que l'aperçu
 		// d'affectation sans élève
-		const copyScope = assignmentCopyScope(assignment, {
+		const classScope = assignmentCopyScope(assignment, {
 			locale: worksheetLocale(worksheet.config)
 		});
+
+		// Chaque élève a sa version (valeurs ou ordre) : la copie de la classe
+		// ne vaut pour personne. Le corrigé est celle d'un élève choisi par le
+		// prof (D6), destinataire de l'affectation ; sans élève, on le demande.
+		const perStudentCopies = hasPerStudentCopies(worksheet, classScope);
+		if (perStudentCopies && !studentId) {
+			return json({ success: true, needs_student: true, per_student_copies: true });
+		}
+		if (perStudentCopies && studentId) {
+			if (!(await isStudentOfAssignment(locals.supabase, assignmentId, studentId))) {
+				throw error(400, 'Cet élève n’a pas accès à cette affectation');
+			}
+		}
+		const copyScope = perStudentCopies ? { ...classScope, studentId } : classScope;
 		const instanceData = buildWorksheetCopy(worksheet, copyScope);
-		const perStudentValuesNotice = hasPerStudentValues(worksheet, copyScope)
-			? PER_STUDENT_VALUES_NOTICE
-			: null;
 		const studentName = 'Aperçu professeur';
 
 		// Les classes visées, lues dans la jonction : l'en-tête du PDF nomme celles
@@ -236,7 +251,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 				})),
 				studentName,
 				className,
-				per_student_values_notice: perStudentValuesNotice
+				per_student_copies: perStudentCopies
 			});
 		}
 
@@ -247,7 +262,9 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			config: worksheet.config || {},
 			mode: 'correction',
 			studentName,
-			className
+			className,
+			// Copie d'un élève : l'avertissement imprimé en tête (D6)
+			individualCopyNotice: perStudentCopies
 		});
 
 		// Return Typst source (PDF generation must be done client-side)
@@ -259,7 +276,7 @@ export const GET: RequestHandler = async ({ params, locals, url }) => {
 			filename,
 			studentName,
 			worksheetTitle: worksheet.title,
-			per_student_values_notice: perStudentValuesNotice
+			per_student_copies: perStudentCopies
 		});
 	} catch (err) {
 		logger.error('[Correction API] Error:', err);

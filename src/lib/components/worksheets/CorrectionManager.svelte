@@ -6,6 +6,7 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Input } from '$lib/components/ui/input';
 	import * as Popover from '$lib/components/ui/popover';
+	import * as Dialog from '$lib/components/ui/dialog';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -83,9 +84,13 @@
 	let isReleasing = $state(false);
 	let isRevoking = $state(false);
 	let isPreviewing = $state(false);
-	// Rendu par le corrigé : les valeurs tirées varient d'un élève à l'autre
-	// (affectation individualisée), le corrigé de la classe ne vaut pour aucun
-	let perStudentValuesNotice = $state<string | null>(null);
+	// Chaque élève a sa version (valeurs ou ordre, D6) : le corrigé de classe
+	// est la copie d'un élève choisi ici, au moment de le produire
+	let studentDialogOpen = $state(false);
+	let copyStudentItems = $state<{ value: string; label: string; description?: string }[]>([]);
+	// Liste des élèves : chargée, vide (affectation sans élève) ou en panne
+	let copyStudentsStatus = $state<'ok' | 'empty' | 'error'>('ok');
+	let copyStudentId = $state<string | undefined>(undefined);
 	let isLoadingExercises = $state(false);
 	let isTogglingExercise = $state<string | null>(null);
 
@@ -270,16 +275,61 @@
 		}
 	}
 
-	async function handlePreviewCorrection() {
+	/**
+	 * Les élèves de l'affectation, triés par nom (comme l'aperçu « vue
+	 * élève ») : le premier est présélectionné. Une panne se distingue d'une
+	 * liste vide (`copyStudentsStatus`) : l'une se réessaie, l'autre non.
+	 */
+	async function loadCopyStudents(): Promise<void> {
+		try {
+			const response = await fetch(`/api/worksheets/assignments/${assignment.id}/students`);
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			const data: {
+				students?: {
+					id: string;
+					first_name: string | null;
+					last_name: string | null;
+					class_name: string | null;
+				}[];
+			} = await response.json();
+			copyStudentItems = (data.students ?? [])
+				.map((s) => ({
+					value: s.id,
+					label: [s.first_name, s.last_name].filter(Boolean).join(' ') || 'Élève sans nom',
+					description: s.class_name || undefined
+				}))
+				.sort((a, b) => a.label.localeCompare(b.label, 'fr'));
+			copyStudentId = copyStudentItems[0]?.value;
+			copyStudentsStatus = copyStudentItems.length > 0 ? 'ok' : 'empty';
+		} catch (err) {
+			console.error('Élèves de l’affectation illisibles :', err);
+			copyStudentItems = [];
+			copyStudentId = undefined;
+			copyStudentsStatus = 'error';
+		}
+	}
+
+	/**
+	 * Le corrigé de classe. Sans élève : la route dit si chaque élève a sa
+	 * version (`needs_student`) ; la liste des élèves s'ouvre alors, et le
+	 * corrigé part d'après la copie de l'élève choisi.
+	 */
+	async function handlePreviewCorrection(studentId?: string) {
 		isPreviewing = true;
 		try {
+			const query = new URLSearchParams({ format: 'typst' });
+			if (studentId) query.set('studentId', studentId);
 			const response = await fetch(
-				`/api/worksheets/assignments/${assignment.id}/correction?format=typst`
+				`/api/worksheets/assignments/${assignment.id}/correction?${query.toString()}`
 			);
 			const data = await response.json();
 			if (!response.ok) throw new Error(data.message);
-			perStudentValuesNotice =
-				typeof data.per_student_values_notice === 'string' ? data.per_student_values_notice : null;
+			if (data.needs_student === true) {
+				await loadCopyStudents();
+				studentDialogOpen = true;
+				return;
+			}
+			studentDialogOpen = false;
 			// Versions épinglées (écart T10) ; le Corrigé passe par le compilateur de ses
 			// polices, avec repli dans la police standard
 			const compiled = await compileTypstDocument(data.typst);
@@ -437,7 +487,7 @@
 		<Button
 			variant="outline"
 			size="sm"
-			onclick={handlePreviewCorrection}
+			onclick={() => handlePreviewCorrection()}
 			disabled={isPreviewing}
 			class="h-8 gap-1.5 text-xs"
 		>
@@ -449,11 +499,43 @@
 			PDF
 		</Button>
 	</div>
-
-	{#if perStudentValuesNotice}
-		<p class="flex items-center gap-1.5 border-t px-4 py-2 text-xs text-muted-foreground">
-			<AlertTriangle class="h-3.5 w-3.5" />
-			{perStudentValuesNotice}
-		</p>
-	{/if}
 </div>
+
+<!-- Corrigé de classe d'une affectation individualisée : l'élève dont la copie sert de corrigé -->
+<Dialog.Root bind:open={studentDialogOpen}>
+	<Dialog.Content class="sm:max-w-md">
+		<Dialog.Header>
+			<Dialog.Title>Corrigé de classe</Dialog.Title>
+			<Dialog.Description>
+				Chaque élève a sa propre version de cette fiche (valeurs ou ordre des exercices). Le corrigé
+				reprend la copie de l’élève choisi ; son nom n’est pas imprimé, et un avertissement invite
+				chaque élève à consulter sa correction personnelle.
+			</Dialog.Description>
+		</Dialog.Header>
+		{#if copyStudentsStatus === 'error'}
+			<div class="flex items-center justify-between gap-3 text-sm text-destructive">
+				<span>Impossible de charger la liste des élèves.</span>
+				<Button variant="outline" size="sm" onclick={loadCopyStudents}>Réessayer</Button>
+			</div>
+		{:else if copyStudentsStatus === 'empty'}
+			<p class="text-sm text-muted-foreground">Aucun élève dans cette affectation.</p>
+		{:else}
+			<MySelect
+				type="single"
+				bind:value={copyStudentId}
+				items={copyStudentItems}
+				placeholder="Choisir un élève"
+			/>
+		{/if}
+		<Dialog.Footer>
+			<Button variant="outline" onclick={() => (studentDialogOpen = false)}>Annuler</Button>
+			<Button
+				onclick={() => handlePreviewCorrection(copyStudentId)}
+				disabled={!copyStudentId || isPreviewing}
+			>
+				{#if isPreviewing}<Loader2 class="mr-1 h-4 w-4 animate-spin" />{/if}
+				Produire le corrigé
+			</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>

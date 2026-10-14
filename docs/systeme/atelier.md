@@ -2,6 +2,8 @@
 couvre:
   - 'src/lib/atelier/**'
   - 'src/lib/components/atelier/**'
+  - 'src/lib/components/calculator/**'
+  - src/lib/stores/calculator.svelte.ts
   - src/lib/mathAST/cli/web/web-repl-engine.ts
   - 'src/routes/(public)/atelier/**'
   - 'src/routes/(public)/calc/**'
@@ -53,6 +55,10 @@ Ceux du code et de l'interface :
 - **historique** : les lignes de la vue Calcul (saisies et réponses) ;
 - **mode éphémère** : un atelier reçu par lien, qui ne lit ni n'écrit l'atelier personnel.
 - voisin hors atelier : `/calc` (`src/routes/(public)/calc/+page.svelte`, grapheur singleton).
+  Sa saisie (`UnifiedInput.svelte`) a un **mode commande** : un « . » dans le champ vide ouvre une
+  zone de commande, qui garde son point (`.eval`) ; le store (`calculator.svelte.ts`) retire un
+  point initial avant de rebâtir `.commande expression` pour `WebReplEngine` (V54 : il le doublait,
+  et toutes les commandes répondaient « Commande inconnue »).
   `/cas` (ancien REPL web) est **retirée** depuis le 2026-10-13 : l'adresse mène à `/atelier` en
   308 (`redirectHandle`, `src/lib/server/redirectHandle.ts`).
 
