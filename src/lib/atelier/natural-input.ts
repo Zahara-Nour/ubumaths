@@ -1,15 +1,16 @@
 /**
- * Prototype JETABLE — la saisie naturelle de Calcul, sans point
+ * La saisie « Écriture mathématique » de Calcul, sans point (en essai)
  *
  * Décisions de David du 2026-10-13 (`docs/wip/atelier-saisie-naturelle.md`) :
- * un seul champ MathLive, le premier mot décide (commande ou calcul), les
- * petits mots ne sont des mots que dans une commande, un mot devient texte
- * quand il est FINI, une unité ne se lit qu'après « nombre + espace ».
+ * le premier mot décide (commande ou calcul), les petits mots ne sont des mots
+ * que dans une commande, un mot devient texte quand il est FINI, une unité ne
+ * se lit qu'après « nombre + espace ». Depuis le 2026-10-14, l'élève choisit
+ * ce mode ou le texte dans les réglages (`docs/wip/atelier-reglages-phase0.md`).
  *
  * Logique pure, sans MathLive : le champ (`NaturalField.svelte`) lui passe le
  * LaTeX à gauche du curseur et applique ce qu'elle rend.
  *
- * @module test-saisie/natural-input
+ * @module atelier/natural-input
  */
 
 import { plain, type AtelierCommand } from '$lib/atelier/commands';
@@ -68,15 +69,6 @@ const CONJUGATIONS: ReadonlyMap<string, string> = new Map(
 		.split(', ')
 		.map((pair) => pair.split(' ') as [string, string])
 );
-
-/**
- * Deux commandes de la décision 2 que le moteur n'a pas (mesuré : « .limite »
- * n'est pas une commande). Gardées dans le vocabulaire pour juger la frappe.
- */
-const MISSING_COMMANDS: readonly Pick<AtelierCommand, 'french' | 'example' | 'description'>[] = [
-	{ french: 'développer', example: '.développer (x+1)^2', description: 'Absente du moteur' },
-	{ french: 'limite', example: '.limite 1/x en +∞', description: 'Absente du moteur (lot 2c)' }
-];
 
 /** Les préfixes du SI, pour nommer une unité préfixée (le module écrit « kmètre »). */
 const PREFIX_NAMES: ReadonlyMap<string, string> = new Map(
@@ -169,12 +161,14 @@ export function templateOf(french: string, example: string | undefined): string 
 
 /** Le vocabulaire des commandes : catalogue (sauf avancées) + les deux absentes. */
 export function commandWords(catalog: readonly AtelierCommand[]): CommandWord[] {
-	return [...catalog.filter((c) => c.advanced !== true), ...MISSING_COMMANDS].map((c) => ({
-		french: c.french,
-		forms: [...new Set([c.french, CONJUGATIONS.get(c.french) ?? c.french].map(normalized))],
-		template: templateOf(c.french, c.example),
-		description: c.description
-	}));
+	return catalog
+		.filter((c) => c.advanced !== true)
+		.map((c) => ({
+			french: c.french,
+			forms: [...new Set([c.french, CONJUGATIONS.get(c.french) ?? c.french].map(normalized))],
+			template: templateOf(c.french, c.example),
+			description: c.description
+		}));
 }
 
 export function findCommand(words: readonly CommandWord[], typed: string): CommandWord | null {
@@ -339,17 +333,61 @@ export function calcTextOf(latex: string, words: readonly CommandWord[]): CalcTe
 }
 
 /**
+ * Ce que montre le mode texte quand l'élève y revient (phase 0
+ * `atelier-reglages-phase0.md`, B) : le texte de Calcul, sans les cases
+ * encore vides d'un modèle (« intégrer ▢ de ▢ » → `.intégrer de`).
+ */
+export function draftTextOf(latex: string, words: readonly CommandWord[]): string {
+	const converted = calcTextOf(latex.replaceAll(PLACEHOLDER, ' '), words);
+	return converted.ok ? converted.text : '';
+}
+
+/**
+ * Les morceaux d'une ligne, coupés aux espaces HORS parenthèses : `(x + 1)^2`
+ * et `P(X ⩽ 3)` restent entiers. Les crochets ne comptent pas — un intervalle
+ * s'écrit `[0;+∞[`.
+ */
+function topLevelTokens(text: string): string[] {
+	const tokens: string[] = [];
+	let current = '';
+	let depth = 0;
+	for (const char of text) {
+		if (char === '(' || char === '{') depth++;
+		else if ((char === ')' || char === '}') && depth > 0) depth--;
+		if (/\s/.test(char) && depth === 0) {
+			if (current !== '') tokens.push(current);
+			current = '';
+		} else {
+			current += char;
+		}
+	}
+	if (current !== '') tokens.push(current);
+	return tokens;
+}
+
+/**
  * Un texte brut collé (« résoudre x^2=4 ») réécrit pour le champ : le premier
  * mot et les petits mots en texte, chaque morceau d'expression relu
  * (`normalizePasted`), les unités après un nombre en romain.
+ *
+ * Sert aussi la ligne du mode texte qui passe au champ (bascule, ↑, commande
+ * préparée par une carte) : son point devant la commande tombe
+ * (`.résoudre` → résoudre).
+ *
+ * ⚠️ Dans une commande, les arguments sont joints par `\,` : une espace simple
+ * ne se VOIT pas en mathématiques — `.simuler L M 100` s'affichait
+ * « simuler LM100 » (revue du 2026-10-14). Un mot de plusieurs lettres y reste
+ * un mot : sinon `fille` devient f·i·l·l·e, et MathLive range `fi lle`.
  */
 export function fieldLatexFromText(text: string, words: readonly CommandWord[]): string {
-	const tokens = text.trim().split(/\s+/);
-	if (findCommand(words, tokens[0]) === null) {
-		if (!/\d\s+[A-Za-z]/.test(text)) return normalizePasted(text.trim());
+	const line = text.trim().replace(/^\.(?=\p{L})/u, '');
+	const tokens = topLevelTokens(line);
+	if (findCommand(words, tokens[0] ?? '') === null) {
+		if (!/\d\s+[A-Za-z]/.test(line)) return normalizePasted(line);
+		const pieces = line.split(/\s+/);
 		const unitAfterNumber = (token: string, i: number) =>
-			i > 0 && /^\d+(?:[.,]\d+)?$/.test(tokens[i - 1]) && isUnit(token);
-		return tokens
+			i > 0 && /^\d+(?:[.,]\d+)?$/.test(pieces[i - 1]) && isUnit(token);
+		return pieces
 			.map((token, i) =>
 				unitAfterNumber(token, i)
 					? String.raw`\mathrm{${token}}`
@@ -357,16 +395,12 @@ export function fieldLatexFromText(text: string, words: readonly CommandWord[]):
 			)
 			.join('\\,');
 	}
-	const parts = [String.raw`\text{${tokens[0]}}`];
-	let expression: string[] = [];
-	for (const token of [...tokens.slice(1), '']) {
-		if (token !== '' && !isSmallWord(token)) {
-			expression.push(token);
-			continue;
-		}
-		if (expression.length > 0) parts.push(normalizePasted(expression.join(' ')));
-		expression = [];
-		if (token !== '') parts.push(String.raw`\text{${token}}`);
-	}
-	return parts.join('\\,');
+	const asWord = (token: string) =>
+		isSmallWord(token) || findCommand(words, token) !== null || /^\p{L}{2,}$/u.test(token);
+	return [
+		String.raw`\text{${tokens[0]}}`,
+		...tokens
+			.slice(1)
+			.map((token) => (asWord(token) ? String.raw`\text{${token}}` : normalizePasted(token)))
+	].join('\\,');
 }

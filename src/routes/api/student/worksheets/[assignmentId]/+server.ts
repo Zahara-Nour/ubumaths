@@ -92,8 +92,6 @@ interface ExerciseData extends ExerciseContentRow {
 	resources: ExerciseResource[] | null;
 	/** Generic function names for math parsing */
 	generic_functions: string[] | null;
-	/** Exercise tags for categorization */
-	tags: string[] | null;
 }
 
 // ============================================================================
@@ -201,8 +199,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					variations,
 					resources,
 					generic_functions,
-					topic,
-					tags
+					topic
 				)
 			`
 			)
@@ -321,11 +318,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			// Add resources if present (from exercise definition)
 			if (exerciseData.resources && exerciseData.resources.length > 0) {
 				exerciseView.resources = exerciseData.resources;
-			}
-
-			// Add tags if present
-			if (exerciseData.tags && exerciseData.tags.length > 0) {
-				exerciseView.tags = exerciseData.tags;
 			}
 
 			exercises.push(exerciseView);

@@ -8,7 +8,9 @@
 	 * (décision D5). Les objets du panneau sont connus du moteur sans que rien
 	 * ne soit redéclaré (Q1, option B).
 	 *
-	 * Spécification : `docs/archive/wip/atelier-vue-calcul-phase0.md`.
+	 * Spécification : `docs/archive/wip/atelier-vue-calcul-phase0.md`. Le champ
+	 * est en texte ou en écriture mathématique, au choix de l'élève dans les
+	 * réglages (`docs/wip/atelier-reglages-phase0.md`).
 	 */
 	import { convertLatexToMarkup } from 'mathlive';
 	import type { CalcDesk, Entry } from '$lib/atelier/desk.svelte';
@@ -41,6 +43,14 @@
 		writeStepsVerbosity,
 		type StepsVerbosity
 	} from '$lib/atelier/steps-summary';
+	import type { InputMode } from '$lib/atelier/input-mode';
+	import {
+		calcTextOf,
+		commandWords,
+		draftTextOf,
+		fieldLatexFromText
+	} from '$lib/atelier/natural-input';
+	import NaturalField from './NaturalField.svelte';
 
 	/**
 	 * Le pupitre vient du CONTENEUR, pas d'ici : c'est lui qui reçoit les actions
@@ -49,7 +59,9 @@
 	 */
 	let {
 		desk,
-		onreplay
+		onreplay,
+		inputMode = 'text',
+		mathLatex = $bindable('')
 	}: {
 		desk: CalcDesk;
 		/**
@@ -57,6 +69,14 @@
 		 * l'atelier puis de rejouer (R2) — ce n'est pas l'affaire de cette vue.
 		 */
 		onreplay?: (history: ImportedHistory) => void;
+		/** Le champ : texte, ou écriture mathématique (réglage de l'atelier). */
+		inputMode?: InputMode;
+		/**
+		 * La ligne en cours du champ mathématique, en LaTeX. Tenue par le
+		 * CONTENEUR : la vue est démontée quand on passe au Graphe, et la
+		 * reconstruire depuis `desk.draft` perdait les cases d'un modèle (revue).
+		 */
+		mathLatex?: string;
 	} = $props();
 
 	let fileInput = $state<HTMLInputElement | null>(null);
@@ -157,6 +177,58 @@
 	const catalog = $derived(commandCatalog(desk.session.engine));
 
 	/**
+	 * Le champ « Écriture mathématique » (phase 0 `atelier-reglages-phase0.md`).
+	 *
+	 * `desk.draft` reste la ligne en cours, en TEXTE, quel que soit le champ :
+	 * le bouton « Calculer », les commandes préparées par une carte et le retour
+	 * au mode texte la lisent. Le champ mathématique l'écrit à chaque frappe
+	 * (`draftTextOf`) ; la reprend quand elle change du dehors
+	 * (`fieldLatexFromText`).
+	 */
+	const words = $derived(commandWords(catalog));
+	let naturalField = $state<NaturalField | null>(null);
+	/**
+	 * Le brouillon que `mathLatex` écrit déjà. Pas un `$state` : l'effet qui le
+	 * lit ne doit se relancer que sur `desk.draft`. Au retour sur Calcul, il
+	 * repart de la ligne gardée : seul un brouillon changé entre-temps (une
+	 * commande préparée par une carte) la remplace.
+	 */
+	// svelte-ignore state_referenced_locally
+	let mirrored: string | null = mathLatex === '' ? null : draftTextOf(mathLatex, words);
+
+	function setMathLatex(value: string) {
+		mathLatex = value;
+		mirrored = draftTextOf(value, words);
+		desk.draft = mirrored;
+	}
+
+	// La bascule depuis le mode texte, une commande préparée par une carte
+	// (« Simuler »), la ligne vidée après un calcul : le champ suit
+	$effect(() => {
+		if (inputMode !== 'math') return;
+		const draft = desk.draft;
+		if (draft === mirrored) return;
+		mirrored = draft;
+		mathLatex = draft === '' ? '' : fieldLatexFromText(draft, words);
+	});
+
+	/** ↑ / ↓ du champ mathématique : les saisies tapées, dans l'un ou l'autre mode. */
+	function recallableLatex(): readonly string[] {
+		return desk.typedInputs.map((text) => fieldLatexFromText(text, words));
+	}
+
+	/** La ligne validée dans le champ mathématique ; `false` : elle reste, la raison est dite. */
+	function submitMath(latex: string): boolean {
+		const converted = calcTextOf(latex, words);
+		if (!converted.ok) {
+			desk.notice = converted.message;
+			return false;
+		}
+		desk.submit(converted.text);
+		return true;
+	}
+
+	/**
 	 * Les commandes à proposer, filtrées par ce qui est déjà tapé (§5 N1, N2).
 	 *
 	 * ⚠️ Le filtre regarde AUSSI la graphie sans accent et les raccourcis : sans
@@ -165,7 +237,8 @@
 	 * qui est le point de ce lot.
 	 */
 	const suggestions = $derived.by(() => {
-		if (!desk.draft.startsWith('.')) return [] as AtelierCommand[];
+		// Le champ mathématique a sa propre liste (sans point)
+		if (inputMode === 'math' || !desk.draft.startsWith('.')) return [] as AtelierCommand[];
 		// Un espace signifie que la commande est choisie : on ne propose plus rien.
 		if (desk.draft.slice(1).includes(' ')) return [] as AtelierCommand[];
 		const typed = plain(desk.draft.slice(1).split(' ')[0]).toLowerCase();
@@ -206,7 +279,9 @@
 	let caret = $state(0);
 	let highlightedProposal = $state<string | null>(null);
 
-	const proposals = $derived(suggestions.length > 0 ? [] : proposalsFor(desk.draft, caret));
+	const proposals = $derived(
+		inputMode === 'math' || suggestions.length > 0 ? [] : proposalsFor(desk.draft, caret)
+	);
 	const proposalsOpen = $derived(proposals.length > 0 && !dismissed);
 	const activeProposal = $derived(
 		proposals.find((p) => p.insert === highlightedProposal) ?? proposals[0] ?? null
@@ -268,7 +343,7 @@
 	}
 
 	/** La commande dont l'élève tape la suite, et son modèle sous le champ. */
-	const writing = $derived(commandBeingWritten(catalog, desk.draft));
+	const writing = $derived(inputMode === 'math' ? null : commandBeingWritten(catalog, desk.draft));
 	const model = $derived(writing === null ? null : (writing.example ?? writing.description));
 
 	/**
@@ -405,7 +480,9 @@
 
 	function submit(event: SubmitEvent) {
 		event.preventDefault();
-		desk.submit(desk.draft);
+		// Le bouton « Calculer » sous le champ mathématique : le même chemin qu'Entrée
+		if (inputMode === 'math') naturalField?.submit();
+		else desk.submit(desk.draft);
 	}
 
 	/** Remplacer la commande en cours par celle que l'élève vient de choisir. */
@@ -640,29 +717,42 @@
 	{/if}
 
 	<form onsubmit={submit}>
-		<input
-			bind:this={field}
-			bind:value={desk.draft}
-			type="text"
-			autocomplete="off"
-			spellcheck="false"
-			role="combobox"
-			aria-autocomplete="list"
-			aria-expanded={listOpen || proposalsOpen}
-			aria-controls={listOpen
-				? `${uid}-commandes`
-				: proposalsOpen
-					? `${uid}-propositions`
-					: undefined}
-			aria-activedescendant={activeDescendant}
-			aria-describedby={model !== null ? `${uid}-modele` : undefined}
-			onkeydown={handleKeydown}
-			onkeyup={handleKeyup}
-			onclick={syncCaret}
-			oninput={handleInput}
-			aria-label="Calcul, définition ou commande"
-			placeholder="f(x) = x^2 − 3x + 1, ou 12 km + 300 m, ou un point pour les commandes"
-		/>
+		{#if inputMode === 'math'}
+			<div class="champ-math">
+				<NaturalField
+					bind:this={naturalField}
+					bind:latex={() => mathLatex, setMathLatex}
+					{words}
+					history={recallableLatex}
+					onsubmit={submitMath}
+					label="Calcul, définition ou commande"
+				/>
+			</div>
+		{:else}
+			<input
+				bind:this={field}
+				bind:value={desk.draft}
+				type="text"
+				autocomplete="off"
+				spellcheck="false"
+				role="combobox"
+				aria-autocomplete="list"
+				aria-expanded={listOpen || proposalsOpen}
+				aria-controls={listOpen
+					? `${uid}-commandes`
+					: proposalsOpen
+						? `${uid}-propositions`
+						: undefined}
+				aria-activedescendant={activeDescendant}
+				aria-describedby={model !== null ? `${uid}-modele` : undefined}
+				onkeydown={handleKeydown}
+				onkeyup={handleKeyup}
+				onclick={syncCaret}
+				oninput={handleInput}
+				aria-label="Calcul, définition ou commande"
+				placeholder="f(x) = x^2 − 3x + 1, ou 12 km + 300 m, ou un point pour les commandes"
+			/>
+		{/if}
 		<Button type="submit" disabled={desk.draft.trim() === ''}>Calculer</Button>
 	</form>
 </div>
@@ -854,6 +944,11 @@
 		display: flex;
 		gap: 0.5rem;
 	}
+	.champ-math {
+		flex: 1;
+		min-width: 0;
+	}
+
 	form input {
 		flex: 1;
 		min-width: 0;

@@ -27,6 +27,8 @@
 	import CalculView from './CalculView.svelte';
 	import DataView from './DataView.svelte';
 	import ShareBar from './ShareBar.svelte';
+	import AtelierSettings from './AtelierSettings.svelte';
+	import { readInputMode, writeInputMode, type InputMode } from '$lib/atelier/input-mode';
 	import { CalcDesk } from '$lib/atelier/desk.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
@@ -96,6 +98,22 @@
 
 	/** « Repartir de zéro » : la confirmation est-elle ouverte ? (B7) */
 	let confirmReset = $state(false);
+
+	/**
+	 * Le champ de Calcul : texte ou écriture mathématique (phase 0
+	 * `atelier-reglages-phase0.md`). Une préférence de l'élève, retenue dans ce
+	 * navigateur — sur un lien reçu aussi : elle n'est pas le contenu de
+	 * l'atelier. Les deux pages ne montent l'atelier que dans le navigateur.
+	 */
+	let inputMode = $state<InputMode>(readInputMode(readStorage()));
+
+	/** La ligne en cours du champ mathématique : elle survit au passage par le Graphe. */
+	let mathLatex = $state('');
+
+	function chooseInputMode(mode: InputMode) {
+		inputMode = mode;
+		writeInputMode(readStorage(), mode);
+	}
 
 	/** Un historique relu : confirmer s'il y a de quoi perdre, sinon rejouer (R1, R2). */
 	function handleReplayRequest(history: ImportedHistory) {
@@ -447,17 +465,20 @@
 		<h1 id="titre-atelier" class="sr-only">{heading}</h1>
 		<div class="barre">
 			<ShareBar {received} {notice} />
-			{#if !ephemeral}
-				<!-- Des lignes de Calcul seules suffisent : elles survivent au rechargement -->
-				<button
-					type="button"
-					class="vider"
-					disabled={atelier.objects.length === 0 && desk.entries.length === 0}
-					onclick={() => (confirmReset = true)}
-				>
-					Repartir de zéro
-				</button>
-			{/if}
+			<div class="outils">
+				<AtelierSettings bind:inputMode={() => inputMode, chooseInputMode} />
+				{#if !ephemeral}
+					<!-- Des lignes de Calcul seules suffisent : elles survivent au rechargement -->
+					<button
+						type="button"
+						class="vider"
+						disabled={atelier.objects.length === 0 && desk.entries.length === 0}
+						onclick={() => (confirmReset = true)}
+					>
+						Repartir de zéro
+					</button>
+				{/if}
+			</div>
 		</div>
 		<ConfirmDialog
 			bind:open={confirmReset}
@@ -522,7 +543,12 @@
 
 		<section class="vue" class:pleine={activeView === 'graphe'}>
 			{#if activeView === 'calcul'}
-				<CalculView {desk} onreplay={ephemeral ? undefined : handleReplayRequest} />
+				<CalculView
+					{desk}
+					{inputMode}
+					bind:mathLatex
+					onreplay={ephemeral ? undefined : handleReplayRequest}
+				/>
 			{:else if activeView === 'graphe'}
 				<!--
 					`panel={false}` : dans l'atelier, c'est « Mes objets » qui tient ce
@@ -563,11 +589,17 @@
 		opacity: 0.5;
 		cursor: not-allowed;
 	}
+	.outils {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-right: 0.625rem;
+	}
+
 	.vider {
 		/* Lisible et visable en projection (revue a11y du lot 6) */
 		min-height: 2.5rem;
 		padding: 0.125rem 0.625rem;
-		margin-right: 0.625rem;
 		border: 1px solid var(--color-border);
 		border-radius: 0.375rem;
 		background: var(--color-background);
