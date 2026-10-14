@@ -24,7 +24,12 @@
 
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
-import { explainExpansion } from '$lib/mathAST/pedagogical-simplify/expand-explained';
+// `unwrapGrouping` : sans ce retrait, une équation ou une liste entre parenthèses
+// (`f` substitué en `((x+1)^2)`) ne serait pas reconnue
+import {
+	explainExpansion,
+	unwrapGrouping
+} from '$lib/mathAST/pedagogical-simplify/expand-explained';
 import { isMonomial } from '$lib/mathAST/pedagogical-simplify/expand-order';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { toCustom } from '$lib/mathAST/custom-generator';
@@ -80,20 +85,6 @@ const MAX_TERMS = 500;
 // =============================================================================
 // Fonctions — lecture
 // =============================================================================
-
-/**
- * Retirer les parenthèses qui enveloppent toute l'expression.
- *
- * La substitution des noms écrit `f` en `((x+1)^2)` : sans ce retrait, une
- * équation ou une liste entre parenthèses ne serait pas reconnue, ni le message
- * « rien à développer » bien choisi. Seules les parenthèses de GROUPEMENT :
- * `[0;1]` est un intervalle.
- */
-function unwrapGrouping(node: MathNode): MathNode {
-	if (node.type !== 'delimiter') return node;
-	if (node.semantic !== undefined && node.semantic !== 'grouping') return node;
-	return unwrapGrouping(node.content);
-}
 
 /** La forme texte d'un arbre, ou sa forme LaTeX si le générateur refuse. */
 function plainFormOf(node: MathNode): string {

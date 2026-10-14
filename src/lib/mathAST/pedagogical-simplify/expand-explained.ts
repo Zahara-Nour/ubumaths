@@ -85,8 +85,12 @@ export type ExplainedExpansion =
 // Fonctions — lecture
 // =============================================================================
 
-/** Les parenthèses de GROUPEMENT qui enveloppent tout retirées (`[0;1]` est un intervalle). */
-function unwrapGrouping(node: MathNode): MathNode {
+/**
+ * Les parenthèses de GROUPEMENT qui enveloppent tout retirées (`[0;1]` est un
+ * intervalle). Partagée avec l'atelier (`atelier/expand.ts`), où la substitution
+ * des noms écrit `f` en `((x+1)^2)`.
+ */
+export function unwrapGrouping(node: MathNode): MathNode {
 	if (node.type !== 'delimiter') return node;
 	if (node.semantic !== undefined && node.semantic !== 'grouping') return node;
 	return unwrapGrouping(node.content);

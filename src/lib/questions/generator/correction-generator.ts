@@ -754,6 +754,11 @@ function renderSimplify({
 	return renderer.renderAll(result.steps, renderOptions);
 }
 
+/**
+ * ⚠️ Ni `variable` ni les `enable*` du modèle : la rédaction range toujours les
+ * termes selon x (`MAIN_VARIABLE` d'`expand-order.ts`) — `(2t-1)(t+3)` donne
+ * le même résultat avec ou sans `variable: 't'`.
+ */
 interface ExpansionDispatch {
 	readonly schoolLevel: SchoolLevel;
 	readonly verbosity: 'summarized' | 'detailed';
@@ -787,7 +792,7 @@ function renderExpansion(
 	try {
 		explained = explainExpansion(node, { schoolLevel, pipeline });
 	} catch (err) {
-		// V1 scope refusals (matrices, inequations…) → silent fallback to Mode A.
+		// Hors du périmètre du module (matrices, inéquations…) : retour silencieux au Mode A
 		if (err instanceof PedagogicalSimplifyNotImplemented) return null;
 		throw err;
 	}

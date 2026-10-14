@@ -254,4 +254,10 @@ describe('développer : sans rédaction, retour silencieux au Mode A', () => {
 	it('une équation : pas d’étapes générées (on développe une expression)', () => {
 		expect(stepsOf({ expression: '(x+1)^2=0' })).toBeUndefined();
 	});
+
+	it('une réponse que le pipeline n’a pas su finir : pas d’étapes générées', () => {
+		// Une somme dans un exposant : le pipeline rend `e^{x^2 + 2 x 1 + 1^2}`,
+		// produit collé et puissance non calculée (revue de la PR 3)
+		expect(stepsOf({ expression: 'e^((x+1)^2)' })).toBeUndefined();
+	});
 });
