@@ -51,6 +51,7 @@
 		fieldLatexFromText
 	} from '$lib/atelier/natural-input';
 	import NaturalField from './NaturalField.svelte';
+	import { isSafeLatex } from '$lib/atelier/safe-latex';
 
 	/**
 	 * Le pupitre vient du CONTENEUR, pas d'ici : c'est lui qui reçoit les actions
@@ -224,8 +225,38 @@
 			desk.notice = converted.message;
 			return false;
 		}
-		desk.submit(converted.text);
+		desk.submit(converted.text, latex);
 		return true;
+	}
+
+	/**
+	 * La consigne du champ mathématique vide, en LaTeX (MathLive) : celle du
+	 * champ texte, sans le point des commandes.
+	 */
+	const MATH_PLACEHOLDER = String.raw`f(x)=x^2-3x+1\text{, ou }12\,\mathrm{km}+300\,\mathrm{m}\text{, ou résoudre }x^2=4`;
+
+	/**
+	 * La saisie écrite dans le champ mathématique, composée — ou `null` : la
+	 * ligne montre alors son texte, échappé par Svelte.
+	 *
+	 * ⚠️ La liste blanche ICI, quelle que soit la provenance (audit du
+	 * 2026-10-14) : une saisie tapée peut venir du stockage — ↑ rappelle les
+	 * `typed` relus, filtrés en longueur seulement — ou d'un collage. Sans ce
+	 * filtre, `\htmlStyle{…}` rappelé puis validé posait un calque plein écran
+	 * et une requête vers un site tiers dans la page.
+	 */
+	function inputMarkupOf(entry: Entry): string | null {
+		if (entry.inputLatex === undefined || !isSafeLatex(entry.inputLatex)) return null;
+		try {
+			return convertLatexToMarkup(entry.inputLatex, { defaultMode: 'inline-math' });
+		} catch {
+			return null;
+		}
+	}
+
+	/** Ce que lit un lecteur d'écran : le texte envoyé, sans le point jamais tapé. */
+	function spokenInput(entry: Entry): string {
+		return entry.label.replace(/^\.(?=\p{L})/u, '');
 	}
 
 	/**
@@ -557,8 +588,19 @@
 	<ol class="historique">
 		{#each desk.entries as entry, index (entry.id)}
 			{@const markup = markupOf(entry)}
+			{@const written = inputMarkupOf(entry)}
 			<li class:refus={entry.failed}>
-				<p class="saisie" id="{uid}-saisie-{entry.id}">{entry.label}</p>
+				<p class="saisie" id="{uid}-saisie-{entry.id}">
+					{#if written !== null}
+						<!-- La saisie écrite en mathématiques : composée pour les yeux,
+						     dite en texte aux lecteurs d'écran (lecture de MathLive en anglais) -->
+						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+						<span aria-hidden="true">{@html written}</span>
+						<span class="sr-only">{spokenInput(entry)}</span>
+					{:else}
+						{entry.label}
+					{/if}
+				</p>
 				<div class="reponse">
 					{#if markup !== null}
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -726,6 +768,7 @@
 					history={recallableLatex}
 					onsubmit={submitMath}
 					label="Calcul, définition ou commande"
+					placeholder={MATH_PLACEHOLDER}
 				/>
 			</div>
 		{:else}
@@ -798,10 +841,15 @@
 		color: var(--color-destructive);
 	}
 
+	/* Une longue saisie écrite en mathématiques défile dans son cadre (§3 N5).
+	   Sur le paragraphe, pas sur la formule : une zone qui défile prend le focus
+	   au clavier (Chrome 130), et la formule est cachée aux lecteurs d'écran */
 	.saisie {
 		margin: 0;
 		font-size: 0.8125rem;
 		color: var(--color-muted-foreground);
+		max-width: 100%;
+		overflow-x: auto;
 	}
 
 	.reponse {

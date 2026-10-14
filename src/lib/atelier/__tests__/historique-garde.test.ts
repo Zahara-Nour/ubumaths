@@ -75,7 +75,8 @@ function shown(entry: Entry) {
 		failed: entry.failed,
 		note: entry.note,
 		alternative: entry.alternative,
-		formulas: entry.formulas
+		formulas: entry.formulas,
+		inputLatex: entry.inputLatex
 	};
 }
 
@@ -449,6 +450,60 @@ const POISONS = [
 	// 41 niveaux d'accolades : MathLive épuise sa pile vers 400 (audit, mesuré)
 	`${'\\frac{'.repeat(41)}x${'}{1}'.repeat(41)}`
 ];
+
+// =============================================================================
+// La saisie écrite en mathématiques (réglage « Écriture mathématique »)
+// =============================================================================
+
+describe('la saisie écrite dans le champ mathématique', () => {
+	const written = String.raw`\text{dériver}\,x^3`;
+
+	it('la ligne la porte ; le texte envoyé reste son libellé (export, rejeu)', () => {
+		const desk = new CalcDesk(new Atelier());
+		desk.submit('.dériver x^3', written);
+		desk.submit('2+3');
+
+		expect(desk.entries[0]).toMatchObject({ label: '.dériver x^3', inputLatex: written });
+		expect(desk.entries[0].replay).toEqual({ kind: 'saisie', input: '.dériver x^3' });
+		// Tapée en mode texte : rien de plus
+		expect(desk.entries[1].inputLatex).toBeUndefined();
+	});
+
+	it('revient au rechargement', () => {
+		const desk = new CalcDesk(new Atelier());
+		desk.submit('.dériver x^3', written);
+
+		expect(reload(desk).entries[0]).toMatchObject({ label: '.dériver x^3', inputLatex: written });
+	});
+
+	it('forgée, elle est oubliée : la ligne revient avec sa saisie en texte', () => {
+		const storage = forge({
+			version: CALC_HISTORY_VERSION,
+			lines: POISONS.map((inputLatex) => line({ inputLatex })),
+			typed: []
+		});
+
+		const lines = loadedLines(storage)!;
+
+		expect(lines).toHaveLength(POISONS.length);
+		expect(lines.every((l) => l.inputLatex === undefined && l.label === '1/3+1/6')).toBe(true);
+	});
+
+	// Ce qui est RANGÉ, pas ce qui est relu : la relecture refuserait de toute
+	// façon (revue), le test ne prouverait rien
+	it.each([
+		['trop longue', 'x+'.repeat(3_000) + '1'],
+		['hors liste blanche', String.raw`\htmlStyle{color:red}{x}`]
+	])('%s, elle n’est pas rangée ; la ligne, si', (_, inputLatex) => {
+		const storage = new MemoryStorage();
+		saveCalcHistory(storage, [entry(0, { inputLatex })], []);
+
+		const stored = JSON.parse(storage.getItem(CALC_HISTORY_STORAGE_KEY)!);
+
+		expect(stored.lines).toHaveLength(1);
+		expect(stored.lines[0]).not.toHaveProperty('inputLatex');
+	});
+});
 
 describe('empoisonnement du stockage', () => {
 	it.each(POISONS)('%s ne passe pas la liste blanche', (poison) => {
