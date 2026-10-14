@@ -388,6 +388,11 @@
 							items={styleOptions}
 							placeholder="Style"
 							triggerAriaLabel="Choisir le style"
+							contentProps={{
+								// La colonne est étroite : le menu prend la largeur de ses noms
+								class:
+									'z-[200] max-h-96 w-max min-w-[var(--bits-select-anchor-width)] overflow-hidden rounded-md border bg-popover p-1 shadow-md'
+							}}
 						/>
 					{/if}
 				</div>

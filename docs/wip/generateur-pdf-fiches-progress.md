@@ -103,6 +103,15 @@ Gabarits inaccessibles :
   gabarit du prof en prod). **Page « Gabarits » inchangée** au lot 3 : seul le menu « Gabarit » de
   la fiche devient « Style ». Deux PR : 3a migration (puis `db:migrate`, `db:types`), 3b le code.
 
+- **D10** (2026-10-14, lot 3b) — spécification validée : menu « Style » (fiche et création, plus
+  d'option « Aucun »), style retenu `style_id ?? template_id` → « Fiche élève », `template_id` suit
+  pour un style de Chiphre, duplication recopie le style, case « Points » masquée si le style n'en
+  imprime pas, PDF prof (aperçu, ZIP, corrigé serveur) sur le style retenu. **Trou (a) corrigé** :
+  la fiche d'un style du prof sert enfin au PDF (le GET ne chargeait pas son Typst). **Trou (b)
+  reporté au lot 4** : cahier de texte et cours partagés impriment en « Fiche élève » (RPC sans
+  style). **Gabarit et style liés** : la page « Gabarits » reste la même à l'écran, mais créer un
+  gabarit crée son style (même id, même nom), le renommer le renomme, le supprimer le supprime.
+
 ## Vocabulaire proposé (à verser dans CONTEXT.md, lot 0)
 
 | Terme       | Sens                                                                                                                     |
@@ -169,6 +178,14 @@ Erreur / garde :
 - langue inconnue → repli `fr`, comme aujourd'hui.
 
 ## Journal
+
+- 2026-10-14 — **lot 3b** (branche `feat/fiches-choix-du-style`) : `styleIdOf`,
+  `isBuiltInStyle`, `BUILT_IN_STYLE_OPTIONS` (`styles.ts`) ; `server/worksheets/worksheet-styles.ts`
+  (menu, fiche d'un style du prof, liaison gabarit-style) ; routes `PUT`/`POST`/duplication et
+  actions de la page « Gabarits ». Tests : `templates/__tests__/style-de-la-fiche.test.ts` (10),
+  `components/worksheets/__tests__/style-de-la-fiche.svelte.test.ts` (8),
+  `tests/integration/fiche-choix-du-style.test.ts` (23) ; chacun prouvé rouge sur l'ancien code.
+  Rendu de l'écran : `scratchpad/rendu-3b/`.
 
 - 2026-10-14 — **lot 3a** (branche `feat/fiches-styles-base`) : migration
   `20261016103200_worksheet_styles` (table des styles, 12 styles de Chiphre, `style_id` et `form`
