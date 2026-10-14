@@ -10,7 +10,7 @@
  *   « Retirer du modèle » ;
  * - chapitre lié : un élément venu du modèle porte la marque « Modèle », ne se
  *   corrige ni ne se supprime ici, et se MASQUE ; un élément masqué quitte le
- *   plan, et revient par l'interrupteur « Afficher les éléments masqués (n) ».
+ *   plan, et revient par l'interrupteur « Afficher ce qui est masqué (n) ».
  */
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -232,7 +232,7 @@ describe('ChapterSectionsEditor — plan d’un modèle', () => {
 
 	it('pas d’interrupteur des masqués dans un modèle', async () => {
 		const racine = await rendreModele({ documents: [document()] });
-		expect(racine.textContent).not.toContain('Afficher les éléments masqués');
+		expect(racine.textContent).not.toContain('Afficher ce qui est masqué');
 	});
 });
 
@@ -321,7 +321,7 @@ describe('ChapterSectionsEditor — chapitre lié', () => {
 		});
 
 		expect(ligne(racine, 'Cours masqué')).toBeNull();
-		expect(racine.textContent).toContain('Afficher les éléments masqués (1)');
+		expect(racine.textContent).toContain('Afficher ce qui est masqué (1)');
 
 		racine.querySelector<HTMLButtonElement>('button[role="switch"]')?.click();
 		await rendu();
@@ -473,7 +473,7 @@ describe('ChapterSectionsEditor — chapitre lié', () => {
 		const racine = await rendreChapitre({
 			documents: [document({ id: DOC_MODELE, sourceId: SOURCE })]
 		});
-		expect(racine.textContent).not.toContain('Afficher les éléments masqués');
+		expect(racine.textContent).not.toContain('Afficher ce qui est masqué');
 	});
 });
 
@@ -510,6 +510,69 @@ describe('ChapterSectionsEditor — masquer une section (décision du 2026-10-14
 		expect(champ(form, 'hidden')).toBe('true');
 	});
 
+	it('le bouton de la confirmation envoie bien le formulaire de masquage', async () => {
+		const envoyes: { action: string | null; champs: Record<string, string> }[] = [];
+		// Capturé AVANT `enhance` (phase de capture, sur la fenêtre) : on lit ce
+		// qui part, sans laisser partir de requête.
+		const intercepter = (e: Event) => {
+			const form = e.target as HTMLFormElement;
+			envoyes.push({
+				action: form.getAttribute('action'),
+				champs: Object.fromEntries(
+					[...new FormData(form).entries()].map(([k, v]) => [k, String(v)])
+				)
+			});
+			e.preventDefault();
+			e.stopImmediatePropagation();
+		};
+		window.addEventListener('submit', intercepter, true);
+		try {
+			const racine = await rendreChapitre({ sections: [section()] });
+			racine
+				.querySelector<HTMLButtonElement>('button[aria-label="Masquer la section Le cours"]')
+				?.click();
+			await rendu();
+
+			const dialogue = window.document.querySelector('[role="dialog"]');
+			const confirmer = Array.from(dialogue?.querySelectorAll('button') ?? []).find(
+				(b) => b.textContent?.trim() === 'Masquer la section'
+			);
+			confirmer?.click();
+			await rendu();
+
+			expect(envoyes).toEqual([
+				{ action: '?/setSectionHidden', champs: { sectionId: COURS, hidden: 'true' } }
+			]);
+		} finally {
+			window.removeEventListener('submit', intercepter, true);
+		}
+	});
+
+	it('une section masquée APRÈS le rendu quitte le plan ; l’interrupteur la fait revenir barrée', async () => {
+		const { container, rerender } = await render(ChapterSectionsEditor, {
+			chapterId: CHAPITRE,
+			sections: [section()],
+			documents: [],
+			checklistItems: [],
+			chapterSeries: [],
+			...COMMUN
+		});
+		const racine = container as HTMLElement;
+		expect(racine.textContent).toContain('Le cours');
+
+		await rerender({ sections: [section({ hidden: true })] });
+		await rendu();
+		expect(racine.textContent).not.toContain('Le cours');
+
+		racine.querySelector<HTMLButtonElement>('button[role="switch"]')?.click();
+		await rendu();
+		expect(racine.textContent).toContain('Le cours');
+		expect(racine.textContent).toContain('Masquée');
+		expect(racine.querySelector('[data-slot="card-title"].line-through')?.textContent).toContain(
+			'Le cours'
+		);
+	});
+
 	it('une section masquée quitte le plan et compte une fois dans l’interrupteur', async () => {
 		const racine = await rendreChapitre({
 			sections: [section({ hidden: true })],
@@ -518,7 +581,7 @@ describe('ChapterSectionsEditor — masquer une section (décision du 2026-10-14
 		});
 
 		expect(racine.textContent).not.toContain('Le cours');
-		expect(racine.textContent).toContain('Afficher les éléments masqués (1)');
+		expect(racine.textContent).toContain('Afficher ce qui est masqué (1)');
 	});
 
 	it('interrupteur allumé : la section revient barrée, à réafficher, sans ajout ni geste par élément', async () => {

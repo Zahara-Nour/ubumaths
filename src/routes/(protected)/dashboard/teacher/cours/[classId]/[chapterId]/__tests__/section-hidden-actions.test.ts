@@ -132,4 +132,14 @@ describe('setSectionHidden', () => {
 
 		expect(statut(await actions.setSectionHidden!(event))).toBe(500);
 	});
+
+	it('l’échec d’un réaffichage le dit comme tel', async () => {
+		const { event } = evenement(
+			{ sectionId: SECTION, hidden: 'false' },
+			{ data: null, error: { message: 'panne' } }
+		);
+
+		const r = (await actions.setSectionHidden!(event)) as { data?: { error?: string } };
+		expect(r.data?.error).toBe('Impossible de réafficher cette section');
+	});
 });

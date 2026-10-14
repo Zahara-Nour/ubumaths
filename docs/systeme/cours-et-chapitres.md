@@ -114,8 +114,8 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   « Retirer du modèle ». Côté chapitre lié : un élément du modèle (`sourceId`) porte la marque
   « Modèle », ne se corrige ni ne se supprime (ni crayon d'objectif, ni forme de série, ni
   corbeille ; une section du modèle ne se renomme ni ne se supprime) — il se **masque**
-  (`?/setHidden`). Un élément masqué quitte le plan ; l'interrupteur « Afficher les éléments
-  masqués (n) » le fait revenir, barré, sans publication, avec « Réafficher » ; il s'éteint de
+  (`?/setHidden`). Un élément masqué quitte le plan ; l'interrupteur « Afficher ce qui est
+  masqué (n) » (éléments et sections) le fait revenir, barré, sans publication, avec « Réafficher » ; il s'éteint de
   lui-même quand le dernier masqué est réaffiché (`$derived` écrasable). Le masquage et le lien
   (`sourceId`, éléments et sections) entrent dans l'empreinte d'affichage (`empreinteAffichage`) :
   sinon un élément masqué resterait à l'écran, et un chapitre détaché garderait ses marques

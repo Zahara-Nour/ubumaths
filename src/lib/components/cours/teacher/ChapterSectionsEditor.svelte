@@ -39,7 +39,7 @@
 	Chapitre lié : un élément venu du modèle (`sourceId`) porte la marque
 	« Modèle » ; il ne se corrige ni ne se supprime ici (il se corrige dans le
 	modèle), il se MASQUE. Un élément masqué quitte le plan, sauf si
-	l'interrupteur « Afficher les éléments masqués » est allumé.
+	l'interrupteur « Afficher ce qui est masqué » est allumé.
 
 	@module components/cours/teacher/ChapterSectionsEditor
 -->
@@ -1152,7 +1152,7 @@
 				onCheckedChange={(v: boolean) => (afficherMasques = v)}
 			/>
 			<Label for="afficher-masques" class="cursor-pointer text-sm">
-				Afficher les éléments masqués ({nombreMasques})
+				Afficher ce qui est masqué ({nombreMasques})
 			</Label>
 		</div>
 	{/if}

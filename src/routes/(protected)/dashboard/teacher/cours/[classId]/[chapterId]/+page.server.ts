@@ -91,13 +91,13 @@ const setPublicationSchema = z.object({
 	published: z.boolean()
 });
 
-/** Masquer ou démasquer un élément du modèle dans ce chapitre (ADR 0029, Q4). */
 /** Masquer ou réafficher une section du chapitre (décision du 2026-10-14). */
 const setSectionHiddenSchema = z.object({
 	sectionId: uuidSchema,
 	hidden: z.boolean()
 });
 
+/** Masquer ou démasquer un élément du modèle dans ce chapitre (ADR 0029, Q4). */
 const setHiddenSchema = z.object({
 	contentType: z.enum(CHAPTER_CONTENT_TYPES),
 	itemId: uuidSchema,
@@ -770,7 +770,9 @@ export const actions: Actions = {
 		}
 		if (hideError) {
 			return fail(500, {
-				error: 'Impossible de masquer cette section',
+				error: validation.data.hidden
+					? 'Impossible de masquer cette section'
+					: 'Impossible de réafficher cette section',
 				action: 'setSectionHidden'
 			});
 		}
