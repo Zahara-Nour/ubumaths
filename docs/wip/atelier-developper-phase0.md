@@ -1,7 +1,7 @@
 ---
 title: Atelier — la commande « développer » (phase 0)
 date: 2026-10-14
-status: proposée, en attente de validation de David
+status: validée par David le 2026-10-14 (« je suis tes recos ») ; PR 1 en cours
 ---
 
 # Atelier — la commande « développer »
@@ -135,3 +135,6 @@ Tests d'abord, rouges, pour chaque ligne de B, C, D et E ; `code-reviewer` en fi
 ## Journal
 
 - 2026-10-14 — phase 0 écrite après mesure du module (35 expressions) et de la base de production.
+- 2026-10-14 — **décisions de David** (« je suis tes recos ») : (1) tableau B tel quel, ordre
+  a² + 2ab + b² et ax + ab, décimaux selon le mode ; (2) équation REFUSÉE, renvoi vers `.résoudre` ;
+  (3) deux PR : la commande d'abord sans « Comment ? », les étapes ensuite.
