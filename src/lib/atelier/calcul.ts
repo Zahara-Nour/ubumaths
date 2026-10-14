@@ -52,7 +52,14 @@ import {
 	renameVariable,
 	typedLetterOf
 } from './letter';
-import { syncEngine, expressionOf, expandInput, expandCommandArgument, termsOf } from './engine';
+import {
+	syncEngine,
+	expressionOf,
+	expandInput,
+	expandCommandArgument,
+	substitutedAstOf,
+	termsOf
+} from './engine';
 import {
 	chosenDomainAnswer,
 	citedIntervalDomain,
@@ -706,7 +713,12 @@ function derivedSequence(session: CalcSession, argument: string): string | null 
  * seul recollerait l'expression devant l'argument, et `f_1(2x)` se lirait de
  * nouveau comme un PRODUIT, sans rien dire (revue de #901).
  */
-function replaceCalls(session: CalcSession, text: string, name: string): string | null {
+function replaceCalls(
+	session: CalcSession,
+	text: string,
+	name: string,
+	compose: (call: string) => string | null = (call) => expandCommandArgument(session.atelier, call)
+): string | null {
 	const start = new RegExp(`(?<![A-Za-z_])${name}'*\\s*\\(`, 'g');
 	let result = '';
 	let cursor = 0;
@@ -726,7 +738,7 @@ function replaceCalls(session: CalcSession, text: string, name: string): string 
 		// Le parseur doit y lire un APPEL : `f_1(2x)` se lit f₁·(2x), et sa
 		// « composition » rendait encore le produit (x^2)(2x)
 		if (astOf(call, 'url', session.atelier.functionNames)?.type !== 'function') return null;
-		const composed = expandCommandArgument(session.atelier, call);
+		const composed = compose(call);
 		if (composed === null) return null;
 		result += `${text.slice(cursor, match.index)}(${composed})`;
 		cursor = end + 1;
@@ -735,12 +747,37 @@ function replaceCalls(session: CalcSession, text: string, name: string): string 
 	return result + text.slice(cursor);
 }
 
-function substituteNames(session: CalcSession, argument: string): string | null {
+/**
+ * L'appel `f(2)` d'une fonction en attente d'un paramètre (`f(x) = a x`) :
+ * son expression, x remplacé par l'argument — `a` reste une lettre, que
+ * `.évaluer` reçoit après `en`. `null` si l'appel ne se lit pas.
+ */
+function pendingCall(session: CalcSession, name: string, call: string): string | null {
+	const node = astOf(call, 'url', session.atelier.functionNames);
+	const body = substitutedAstOf(session.atelier, name, { forDerivation: true });
+	if (node?.type !== 'function' || node.args.length !== 1 || !body.ok) return null;
+	return toCustom(substitute(body.ast, { [INTERNAL_LETTER]: node.args[0] }));
+}
+
+/**
+ * `pendingFunctions` (`.évaluer`, E6) : une fonction en attente d'un
+ * paramètre (`f(x) = a x`, `a` non posé) est remplacée aussi — la valeur de
+ * `a` arrive après `en` (`en x=1 ; a=2`), et sans elle le moteur le dit
+ * (« Il manque la valeur de a »).
+ */
+function substituteNames(
+	session: CalcSession,
+	argument: string,
+	pendingFunctions = false
+): string | null {
 	if (argument.trim() === '') return argument;
 
 	let result = argument;
 	for (const object of session.atelier.objects) {
-		if (object.status !== 'ok') continue;
+		const usable =
+			object.status === 'ok' ||
+			(pendingFunctions && object.status === 'pending' && object.kind === 'function');
+		if (!usable) continue;
 		// Une liste n'a pas d'expression : ce sont ses VALEURS que lit une
 		// commande de séries (`.stats L` répondait « certaines valeurs ne sont
 		// pas des nombres valides »)
@@ -750,14 +787,19 @@ function substituteNames(session: CalcSession, argument: string): string | null 
 			result = result.replace(alone, object.values.join(' ; '));
 			continue;
 		}
-		const expression = expressionOf(session.atelier, object.name);
+		const pending = object.status === 'pending';
+		const expression = expressionOf(session.atelier, object.name, { forDerivation: pending });
 		if (!expression.ok) continue;
 
 		// Les APPELS d'abord : sinon le `f` seul de `f(2x)` serait remplacé, et
 		// `(sin(x))(2x)` se lirait comme un PRODUIT — `.taylor f(2x) 4` rendait
 		// 2x² (2026-10-06).
 		if (object.kind === 'function' || object.kind === 'sequence') {
-			const replaced = replaceCalls(session, result, object.name);
+			const replaced = pending
+				? replaceCalls(session, result, object.name, (call) =>
+						pendingCall(session, object.name, call)
+					)
+				: replaceCalls(session, result, object.name);
 			if (replaced === null) return null;
 			result = replaced;
 		}
@@ -1206,7 +1248,15 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			message: `${posed.name} vaut déjà ${definition} dans l'atelier : retire « ${posed.name}=${posed.value} », ou efface ${posed.name} avant.`
 		};
 	}
-	const args = typedArgs === null ? null : substituteArguments(typedArgs, substitute);
+	// `.évaluer` remplace aussi une fonction en attente d'un paramètre (E6)
+	const substituteArgument =
+		name === 'eval'
+			? (text: string): string | null =>
+					!text.includes("'") && !citesReciprocal(session.atelier, text)
+						? substituteNames(session, text, true)
+						: substitute(text)
+			: substitute;
+	const args = typedArgs === null ? null : substituteArguments(typedArgs, substituteArgument);
 	if (typedArgs !== null && args === null) return { kind: 'refus', message: UNREADABLE_COMMAND };
 
 	// `.dériver f` : la cible tapée, sans sa variable ni son `(x)`. Une
@@ -1353,9 +1403,19 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 						bounds: finalArgs.bounds
 					})
 				: null;
+		// Le refus de `.évaluer` qui propose une commande la cite telle que
+		// l'élève l'a tapée : `.évaluer f en …`, pas `.évaluer (ax) en …`
+		const engineMessage = result.error?.message ?? UNREADABLE_COMMAND;
+		const message =
+			name === 'eval' && finalArgs !== null && typedArgs !== null
+				? engineMessage.replace(
+						`.évaluer ${finalArgs.expression} en `,
+						`.évaluer ${typedArgs.expression} en `
+					)
+				: engineMessage;
 		return {
 			kind: 'refus',
-			message: result.error?.message ?? UNREADABLE_COMMAND,
+			message,
 			// Le refus de `.évaluer` cite la valeur en formule : `$x = 1$`
 			...(result.error?.code === VALUE_FORBIDDEN && { formulas: true as const }),
 			...(explained !== null && { steps: explained.steps, ...summaryField(explained) }),

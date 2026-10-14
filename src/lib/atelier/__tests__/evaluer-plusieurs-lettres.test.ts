@@ -237,6 +237,63 @@ describe('« Comment ? » : le remplacement de toutes les lettres, puis les calc
 });
 
 // =============================================================================
+// Revue de 821b27527
+// =============================================================================
+
+describe('revue : fonction à paramètre, « ; » final, fractions, valeurs', () => {
+	const withParameter = ['f(x) = a x'];
+
+	it('f(x) = a x, a non posé : .évaluer f en x=1 ; a=2 → 2, avec les étapes', () => {
+		const result = line('.évaluer f en x=1 ; a=2', withParameter);
+		expect(result.output).toBe('2');
+		expect(result.steps?.[0].title).toBe('On remplace $x$ par $1$ et $a$ par $2$');
+	});
+
+	it('f(x) tapé avec sa variable : .évaluer f(x) en x=1 ; a=2 → 2', () => {
+		expect(line('.évaluer f(x) en x=1 ; a=2', withParameter).output).toBe('2');
+	});
+
+	it('f(x) = a x, sans la valeur de a : « Il manque la valeur de a »', () => {
+		expect(refusal('.évaluer f en x=1', withParameter)).toBe(
+			'Il manque la valeur de a : .évaluer f en x=1 ; a=3, par exemple.'
+		);
+	});
+
+	it('un « ; » final sans valeur : « Il manque la valeur de b »', () => {
+		expect(refusal('.évaluer 2a+3b en a=1 ; b')).toBe(
+			'Il manque la valeur de b : .évaluer 2a+3b en a=1 ; b=3, par exemple.'
+		);
+	});
+
+	it('un « ; » final qui redonne une lettre déjà valuée : refus juste', () => {
+		expect(refusal('.évaluer x^2 en x=3 ; x')).toBe('x a déjà sa valeur : retire « ; x ».');
+	});
+
+	it('a/b en a=2 ; b=4 : le remplacement s’écrit en fraction', () => {
+		const all = steps('.évaluer a/b en a=2 ; b=4');
+		expect(flat(all[0])).toBe('\\dfrac24');
+	});
+
+	it('x/4 en x=2 : aussi à une lettre', () => {
+		expect(flat(steps('.évaluer x/4 en x=2')[0])).toBe('\\dfrac24');
+	});
+
+	it('a=-1,5 ; b=2 : 2a+3b → 3, le négatif entre parenthèses', () => {
+		const result = line('.évaluer 2a+3b en a=-1,5 ; b=2');
+		expect(result.output).toBe('3');
+		expect(flat(result.steps?.[0] ?? { id: 0, rule: '', title: '' })).toBe(
+			'2\\times(-1,5)+3\\times2'
+		);
+	});
+
+	it('a=1/2 ; b=2 : 2a+3b → 7, la valeur en fraction', () => {
+		const result = line('.évaluer 2a+3b en a=1/2 ; b=2');
+		expect(result.output).toBe('7');
+		expect(result.steps?.[0].title).toBe('On remplace $a$ par $\\dfrac{1}{2}$ et $b$ par $2$');
+	});
+});
+
+// =============================================================================
 // Une seule lettre : inchangé
 // =============================================================================
 

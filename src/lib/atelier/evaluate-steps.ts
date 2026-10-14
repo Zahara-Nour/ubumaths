@@ -41,7 +41,7 @@ import { substitute } from '$lib/mathAST/eval';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { mapNode } from '$lib/mathAST/transforms';
-import { parentheses } from '$lib/mathAST/factory';
+import { fraction, parentheses } from '$lib/mathAST/factory';
 import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
 import { generatePedagogicalArithmeticSteps } from '$lib/mathAST/pedagogical-arithmetic/pipeline';
 import { PedagogicalArithmeticRenderer } from '$lib/mathAST/pedagogical-arithmetic/renderer';
@@ -128,7 +128,7 @@ export function evaluateSteps(
 
 		const replaced = crossProducts(
 			substitute(
-				dropUselessParentheses(expression),
+				slashesAsFractions(dropUselessParentheses(expression)),
 				Object.fromEntries(values.map(({ name, value }) => [name, value]))
 			)
 		);
@@ -186,6 +186,24 @@ function substitutionTitle(
 	values: readonly { readonly name: string; readonly value: MathNode }[]
 ): string {
 	return `On remplace ${listInFrench(values.map(({ name, value }) => `$${name}$ par $${toLatex(value)}$`))}`;
+}
+
+/**
+ * Une division tapée `x/4` écrite en fraction : le remplacement s'écrivait
+ * `2 / 4` (revue du 2026-10-14). Les parenthèses tapées autour du numérateur
+ * ou du dénominateur (`(x+1)/4`) ne servent plus dans une fraction.
+ */
+function slashesAsFractions(node: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		n.type === 'division' && n.displayStyle !== 'fraction'
+			? fraction(ungrouped(n.numerator), ungrouped(n.denominator))
+			: n
+	);
+}
+
+/** Le contenu d'une parenthèse de regroupement, sinon le nœud. */
+function ungrouped(node: MathNode): MathNode {
+	return node.type === 'delimiter' && node.semantic === 'grouping' ? node.content : node;
 }
 
 /**

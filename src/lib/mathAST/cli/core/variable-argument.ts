@@ -611,6 +611,21 @@ export function readCommandArguments(
 		index = next;
 	}
 	if (result.expression === '') return { ok: false, message: 'Il manque l’expression.' };
+	// `.évaluer 2a+3b en a=1 ; b` : le « ; » final se lisait comme la variable
+	// de l'ancienne écriture (`pour b`), puis comme une seconde liste de valeurs
+	if (command === 'eval' && result.variable !== null && result.assignments.length > 0) {
+		const letter = result.variable;
+		if (result.assignments.some((assignment) => assignment.name === letter)) {
+			return { ok: false, message: `${letter} a déjà sa valeur : retire « ; ${letter} ».` };
+		}
+		const example = [...result.assignments, { name: letter, value: '3' }]
+			.map(({ name, value }) => `${name}=${value}`)
+			.join(' ; ');
+		return {
+			ok: false,
+			message: `Il manque la valeur de ${letter} : ${label} ${result.expression} en ${example}, par exemple.`
+		};
+	}
 	if (command === 'eval' && result.assignments.length === 0) {
 		return {
 			ok: false,

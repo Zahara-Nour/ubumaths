@@ -687,7 +687,12 @@ valeur de a est donnée deux fois. »), lettre absente de l'expression (« « c 
 … »), valeur déjà posée dans l'atelier, redonnée, à une ou plusieurs lettres (`calcul.ts`, avant
 le moteur : « a vaut déjà 5 dans l'atelier : retire « a=1 », ou efface a avant. »), lettre sans valeur (« Il manque la valeur de b : .évaluer 2a+3b en a=1 ; b=3, par
 exemple. », aussi à une seule valeur donnée), valeur interdite (« Pour $a = 1$ et $b = 0$, ce
-calcul n'a pas de valeur : … »).
+calcul n'a pas de valeur : … »). Un « ; » final sans valeur (`en a=1 ; b`) : « Il manque la
+valeur de b : … » (« x a déjà sa valeur : retire « ; x ». » si la lettre en a une). Une
+**fonction en attente d'un paramètre** (`f(x) = a x`, `a` non posé) est remplacée pour
+`.évaluer` seulement (`substituteNames(…, pendingFunctions)`, appels par `pendingCall`) :
+`.évaluer f en x=1 ; a=2` → `2` avec ses étapes, `.évaluer f en x=1` → « Il manque la valeur de
+a : .évaluer f en x=1 ; a=3, par exemple. » (la commande citée telle que tapée).
 
 **« Comment ? » de `.évaluer`** (`evaluate-steps.ts`, PR 3, décisions de David du 2026-10-14).
 **E2** : `generatePedagogicalArithmeticSteps` niveau `college`, une opération par étape (pièges du
@@ -714,7 +719,8 @@ décimaux (virgule par `resultWithDecimalComma`, `2 \times 1{,}5 = 3`), mais des
 passent par une fraction sous une réponse décimale (le pipeline récrit `1{,}5^2` en 9/4 et
 `1 + 0{,}5` en 3/2) → pas d'étapes. **Plusieurs lettres** (E6) : toutes remplacées d'un coup,
 « On remplace $a$ par $1$ et $b$ par $2$ » (trois : « $a$ par $1$, $b$ par $2$ et $c$ par $3$ »,
-ordre tapé, `substitutionTitle`), mêmes gardes ; les lettres de l'expression doivent être
+ordre tapé, `substitutionTitle`), mêmes gardes ; une division tapée `x/4` s'écrit en fraction
+dès le remplacement (`slashesAsFractions`, `\dfrac{2}{4}`, à une lettre aussi) ; les lettres de l'expression doivent être
 exactement celles qui ont une valeur. Une saisie qui cite une autre lettre
 qu'une fonction de l'atelier (`a x` avec `a` posé, que l'atelier remplace avant le moteur) n'a
 pas d'étapes (`citesOtherLetters`) ; de même une valeur posée tapée après `en`
