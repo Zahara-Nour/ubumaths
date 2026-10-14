@@ -40,6 +40,7 @@ import {
 import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { isInfinity } from '$lib/mathAST/guards';
 import { exactAsymptotes } from './asymptotes-exactes';
+import { touchesZero } from '$lib/mathAST/analysis/near-zero';
 import { restrictAnalysis, type Restriction } from './restriction';
 import { simplify } from '$lib/mathAST/simplify';
 import { substitute } from '$lib/mathAST/eval/substitute';
@@ -128,8 +129,8 @@ export function findRoots(
 			}
 		}
 
-		// Check for near-zero value (exact or very close to zero)
-		if (y !== null && Math.abs(y) < TOLERANCE) {
+		// Échantillon où la courbe touche l'axe (racine double comprise)
+		if (touchesZero((t) => evaluator(t) ?? NaN, x, step, TOLERANCE)) {
 			if (!roots.some((r) => Math.abs(r.x - x) < step)) {
 				roots.push({
 					x,
@@ -855,7 +856,13 @@ function fitPolynomialBranch(
 		if (gaps[2][k] > gaps[1][k] / CONVERGENCE_RATIO) return null;
 	}
 
-	return second[2];
+	// Incertitude de chaque coefficient : la dispersion des trois dernières
+	// extrapolations. x² + ln(x)/x recevait sinon un terme constant de 1,1·10⁻⁴,
+	// qui oscillait de 2·10⁻⁴ à 4,7·10⁻⁵ d'une extrapolation à l'autre.
+	return second[2].map((coefficient, k) => {
+		const estimates = second.map((extrapolation) => extrapolation[k]);
+		return snapToZero(coefficient, Math.max(...estimates) - Math.min(...estimates));
+	});
 }
 
 /**
@@ -1092,8 +1099,17 @@ function estimateLimit(
 		return null;
 	}
 
-	// Return the last value as the limit
-	return values[values.length - 1];
+	// La dernière valeur, sauf si elle est plus petite que l'incertitude de
+	// l'estimation : ln(x)/x vaut encore 8,6·10⁻⁵ à la dernière sonde.
+	return snapToZero(values[values.length - 1], Math.abs(lastTwo[0] - lastTwo[1]));
+}
+
+/**
+ * Une estimation plus petite que sa propre incertitude ne se distingue pas de
+ * 0 : on rend 0. Sinon, l'élève lit `y = 0.00008616` au lieu de `y = 0`.
+ */
+function snapToZero(value: number, uncertainty: number): number {
+	return Math.abs(value) <= uncertainty ? 0 : value;
 }
 
 // =============================================================================
