@@ -345,8 +345,20 @@ qu'aucun objet ne soit créé), `runCommand` sur l'argument de toute commande sa
 (qui lisent des noms de listes) — il devance donc les refus `bareFunctionName` des commandes du CLI
 et de `.limite` —, et `parseDefinition` (la carte : un `ln x` sans antislash venu de MathLive).
 Une liste `L = sin; cos; ln` n'est pas concernée, ni sur la ligne ni sur la carte (`isSemicolonList`). `ln\left(x\right)`, ce qu'écrit MathLive pour `ln` tapé lettre à lettre puis une parenthèse, se lit ln(x) : `withLatexFunctionNames` (`parse.ts`) ajoute l'antislash devant `sin`, `cos`, `tan`, `ln`, `log`, `exp`, `sqrt` suivis de `\left(`, sur la ligne et sur la carte. Refusé même si les lettres sont posées (`l = 2` puis `ln x`) : c'est presque toujours une erreur.
+**Fonction usuelle COLLÉE à son argument : refusée aussi** (décision de David, 2026-10-14).
+`lnx`, `sinx` (s·i·n·x, i pris pour l'imaginaire), `cosx`, `expx`, `sqrtx`, `logx`, `ln2`,
+`ln2x`, `sin2x`, `ln2,5`, `sinθ` se lisaient en produits de lettres. `GLUED_FUNCTION`
+(`variable-argument.ts`, appelé par `bareFunctionRefusal`, donc aux trois mêmes endroits) : le
+nom suivi d'UNE lettre (θ comprise), ou d'un nombre et d'au plus une lettre, puis d'une fin, d'une
+espace, d'un opérateur (`^` compris : `sinx^2`) ou d'un délimiteur fermant. Le refus cite le
+fragment : « « sinx » : écris sin(x) avec des parenthèses. », « « ln2x » : écris ln(2x)… ».
+`cost` est refusé (cos(t)) : voulu, même si c, o, s, t sont posées, comme `cos x`. Non visés :
+`sinus`, `lnxy`, `costume` (plus d'une lettre), `sinh`, `cosh`, `tanh` (hyperboliques : `sinh(x)`
+se lit bien), un nom précédé d'une lettre (`xlnx`, `arcsinx` : toujours des produits) ou d'un
+`\operatorname{…}`. Le `{` seul ne l'arrête pas : `e^{lnx}`, `\frac{lnx}{x}` sont refusés. Le
+CLI (`bareFunctionName`) ne change pas : `cost + lnx` y reste lu en produit, l'atelier le devance.
 Restent lus : `ln(x)`, `2 ln(x)`, `\ln x` (LaTeX du clavier MathLive), `l n` (produit écrit avec
-une espace), `cost`, `lnx` (non délimités, toujours des produits). Effet de bord :
+une espace), `st` avec s et t posées, `s(3)` d'une fonction `s` de l'élève. Effet de bord :
 `.taylor sin ordre 5` (le raccourci par le nom seul, que l'atelier ne lisait déjà pas — « Plusieurs
 lettres ») est refusé aussi. Test : `src/lib/atelier/__tests__/fonction-sans-parentheses.test.ts`.
 

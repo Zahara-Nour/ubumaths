@@ -188,3 +188,106 @@ describe('les écritures justes restent lues', () => {
 		expect(result.kind).toBe('commande');
 	});
 });
+
+/**
+ * Décision de David (2026-10-14) : un nom de fonction usuelle COLLÉ à son
+ * argument (`lnx`, `sinx`, `ln2x`) se lisait en produit de lettres — `sinx`
+ * donnait s·i·n·x, i pris pour l'imaginaire. Le même refus que `ln x`, quand
+ * le nom est suivi d'UNE lettre ou d'un nombre (`2`, `2x`), puis d'une fin,
+ * d'un opérateur, d'une espace ou d'une parenthèse fermante. `cost` se lit
+ * cos(t) : un élève qui tape `cost` veut presque toujours cos(t).
+ */
+describe('une fonction usuelle collée à son argument est refusée', () => {
+	it.each([
+		['lnx', '« lnx » : écris ln(x) avec des parenthèses.'],
+		['sinx', '« sinx » : écris sin(x) avec des parenthèses.'],
+		['cosx', '« cosx » : écris cos(x) avec des parenthèses.'],
+		['tanx', '« tanx » : écris tan(x) avec des parenthèses.'],
+		['expx', '« expx » : écris exp(x) avec des parenthèses.'],
+		['sqrtx', '« sqrtx » : écris sqrt(x) avec des parenthèses.'],
+		['logx', '« logx » : écris log(x) avec des parenthèses.'],
+		['ln2', '« ln2 » : écris ln(2) avec des parenthèses.'],
+		['ln2x', '« ln2x » : écris ln(2x) avec des parenthèses.'],
+		['sin2x', '« sin2x » : écris sin(2x) avec des parenthèses.'],
+		['ln2,5', '« ln2,5 » : écris ln(2,5) avec des parenthèses.'],
+		['cost', '« cost » : écris cos(t) avec des parenthèses.'],
+		['sinθ', '« sinθ » : écris sin(θ) avec des parenthèses.'],
+		// Le fragment fautif seulement
+		['lnx + 1', '« lnx » : écris ln(x) avec des parenthèses.'],
+		['lnx+1', '« lnx » : écris ln(x) avec des parenthèses.'],
+		['2lnx', '« lnx » : écris ln(x) avec des parenthèses.'],
+		['x + sinx', '« sinx » : écris sin(x) avec des parenthèses.'],
+		['sinx^2', '« sinx » : écris sin(x) avec des parenthèses.'],
+		['(lnx)', '« lnx » : écris ln(x) avec des parenthèses.'],
+		['e^lnx', '« lnx » : écris ln(x) avec des parenthèses.'],
+		['e^{lnx}', '« lnx » : écris ln(x) avec des parenthèses.'],
+		['\\frac{lnx}{x}', '« lnx » : écris ln(x) avec des parenthèses.']
+	])('ligne de calcul « %s »', (text, message) => {
+		expect(refusalOf(text)).toBe(message);
+	});
+
+	it.each([
+		['f(x) = sinx', '« sinx » : écris sin(x) avec des parenthèses.'],
+		['a = ln2x', '« ln2x » : écris ln(2x) avec des parenthèses.'],
+		['.dériver lnx', '« lnx » : écris ln(x) avec des parenthèses.'],
+		['.limite lnx en 0', '« lnx » : écris ln(x) avec des parenthèses.'],
+		['.évaluer cosx en x=0', '« cosx » : écris cos(x) avec des parenthèses.']
+	])('« %s » : le même refus', (text, message) => {
+		expect(refusalOf(text)).toBe(message);
+	});
+
+	it('refuse `lnx` venu d’un champ MathLive, et la carte d’une fonction aussi', () => {
+		expect(refusalOf('lnx', session(), 'mathfield')).toBe(
+			'« lnx » : écris ln(x) avec des parenthèses.'
+		);
+		expect(parseDefinition('function', 'sinx + 1', 'text').error).toBe(
+			'« sinx » : écris sin(x) avec des parenthèses.'
+		);
+	});
+
+	// Comme `cos x` : presque toujours une erreur, même si les lettres existent
+	it('refuse `cost` même quand c, o, s et t sont posées', () => {
+		expect(refusalOf('cost', session('c = 1', 'o = 2', 's = 3', 't = 4'))).toBe(
+			'« cost » : écris cos(t) avec des parenthèses.'
+		);
+	});
+});
+
+describe('ce qui n’est pas une fonction collée reste lu', () => {
+	function calcul(text: string, s: CalcSession = session()) {
+		const result = runInput(s, text);
+		expect(result.kind).toBe('calcul');
+		return result.kind === 'calcul' ? result : null;
+	}
+
+	it.each([
+		['e^x', '\\exponentialE^x'],
+		['x sin(x)', 'x \\sin\\left( x \\right)'],
+		['sin(x)', '\\sin\\left( x \\right)'],
+		['ln(x)', '\\ln\\left( x \\right)'],
+		['sin(2x)', '\\sin\\left( 2 x \\right)'],
+		// Fonctions hyperboliques : `sinh` n'est pas sin(h)
+		['sinh(x)', '\\sinh\\left( x \\right)'],
+		['cosh(x)', '\\cosh\\left( x \\right)']
+	])('« %s »', (text, latex) => {
+		expect(calcul(text)?.latex).toBe(latex);
+	});
+
+	// Une suite plus longue n'est pas visée (lue en produit, comme avant)
+	it.each(['sinus', 'lnxy', 'costume', 'sinh', 'tanh'])('« %s » n’est pas refusé', (text) => {
+		expect(runInput(session(), text).kind).not.toBe('refus');
+	});
+
+	it('des lettres posées gardent leur produit (`st`, `s t`, `a s`)', () => {
+		const s = session('s = 3', 't = 4', 'a = 2');
+		expect(calcul('st', s)?.output).toBe('12');
+		expect(calcul('s t', s)?.output).toBe('12');
+		expect(calcul('a s', s)?.output).toBe('6');
+	});
+
+	it('une fonction de l’élève nommée `s` reste appelée', () => {
+		const s = session('s(x) = x^2', 't = 4');
+		expect(calcul('s(3)', s)?.output).toBe('9');
+		expect(calcul('s(t)', s)?.output).toBe('16');
+	});
+});

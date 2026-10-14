@@ -29,7 +29,7 @@ L'expression s'arrête au **premier mot-clé**. Un mot-clé est un mot entier, e
 
 ### Commandes sur une expression
 
-Une fonction usuelle sans parenthèses dans l'expression (`.évaluer ln x en x=1`) est refusée avant toute lecture, avec le fragment tapé : « « ln x » : écris ln(x) avec des parenthèses. » (`bareFunctionRefusal`, détail : [atelier.md](atelier.md)).
+Une fonction usuelle sans parenthèses dans l'expression (`.évaluer ln x en x=1`) est refusée avant toute lecture, avec le fragment tapé : « « ln x » : écris ln(x) avec des parenthèses. » (`bareFunctionRefusal`, détail : [atelier.md](atelier.md)). Collée à son argument aussi : `lnx`, `sinx`, `cost`, `ln2x` → « « ln2x » : écris ln(2x) avec des parenthèses. » ; `sinus`, `lnxy`, `sinh` ne sont pas visés.
 
 | Commande                          | Nouvelle écriture                                 | Exemple                                                 |
 | --------------------------------- | ------------------------------------------------- | ------------------------------------------------------- |
