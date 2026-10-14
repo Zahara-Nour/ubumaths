@@ -165,7 +165,8 @@ describe('le champ produit le texte que lit runInput, et la vraie chaîne répon
 		['5\\,\\mathrm{km}\\,+\\,300\\,\\mathrm{m}', '5 km + 300 m', '5{,}3~\\mathrm{km}'],
 		['2\\,\\mathrm{h}\\,30\\,\\mathrm{min}', '2 h 30 min', '2~\\mathrm{h}~30~\\mathrm{min}'],
 		['\\frac12\\,\\mathrm{m}+1\\,\\mathrm{m}', '1/2 m+1 m', '1{,}5~\\mathrm{m}'],
-		['\\text{limite}\\,\\frac1x\\,\\text{en}\\,+\\infty', '.limite \\frac1x en +∞', 'refus']
+		// `.limite` existe depuis le prototype (autre session, décisions Q1-Q5 de David)
+		['\\text{limite}\\,\\frac1x\\,\\text{en}\\,+\\infty', '.limite \\frac1x en +∞', '= 0']
 	])('%s', (latex, text, answer) => {
 		const converted = calcTextOf(latex, words);
 		expect(converted).toEqual({ ok: true, text });
