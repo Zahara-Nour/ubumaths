@@ -240,7 +240,8 @@ et la couverture d'une séance sont réservées au professeur.
 chacun leur jeton, un seul actif par classe. `anon` ne lit aucune de ces tables : il passe par des
 fonctions `SECURITY DEFINER` qui refont les gardes élève. Pour le cours :
 `get_class_course_by_share_token` (plan, documents sans chemin, checklists, séries, fiches publiées
-**et** distribuées à la classe) et `get_course_worksheet_by_share_token` ;
+**et** distribuées à la classe) et `get_course_worksheet_by_share_token` (avec, comme
+`get_worksheet_by_share_token`, le style de la fiche et la mise en page d'un style de son auteur) ;
 `get_course_document_by_share_token`, qui rend le chemin du fichier, est réservée au `service_role`.
 
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
