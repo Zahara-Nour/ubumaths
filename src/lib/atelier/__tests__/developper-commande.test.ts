@@ -86,7 +86,12 @@ describe('les réponses : développer ET réduire (tableau B)', () => {
 		['(3x-1)^2-(x+2)^2', '8 x^2 - 10 x - 3'],
 		['(x+1)(x+2)(x+3)', 'x^3 + 6 x^2 + 11 x + 6'],
 		['(x+1)^3', 'x^3 + 3 x^2 + 3 x + 1'],
-		['(x+1)(x-1)/(x+2)', '\\dfrac{x^2 - 1}{x + 2}']
+		['(x+1)(x-1)/(x+2)', '\\dfrac{x^2 - 1}{x + 2}'],
+		// Revue : le module rend 0 étape sur `-(…)` seul, et la ligne disait
+		// « rien à développer » — un cas de collège
+		['-(x+1)', '-x - 1'],
+		['-(2x-3)', '-2 x + 3'],
+		['-(x+1)(x-1)', '-x^2 + 1']
 	])('%s → %s', (expression, attendu) => {
 		expect(commande(`.développer ${expression}`).latex).toBe(attendu);
 	});
@@ -112,6 +117,10 @@ describe('l’ordre des termes : puissances décroissantes de x, sinon alphabét
 	it('un facteur qui n’est pas une puissance de x ne dérange pas l’ordre', () => {
 		expect(commande('.développer e^x(x+1)').latex).toBe('x \\exponentialE^x + \\exponentialE^x');
 		expect(commande('.développer sqrt(x)(sqrt(x)+1)').latex).toBe('x + \\sqrt{x}');
+	});
+
+	it('un terme sans degré se range après les monômes, pas au milieu des constantes', () => {
+		expect(commande('.développer (x+1)^2+sqrt(1+x)').latex).toBe('x^2 + 2 x + 1 + \\sqrt{x + 1}');
 	});
 });
 
@@ -173,11 +182,21 @@ describe('les noms d’objets', () => {
 });
 
 describe('rien à développer : une réponse, pas une ligne rouge (C)', () => {
-	it.each(['x^2+1', 'x^2+2x+1', '3x'])('%s est déjà développée et réduite', (expression) => {
-		const result = commande(`.développer ${expression}`);
+	it.each(['x^2+1', 'x^2+2x+1', '3x', '1/2x+3', 'sqrt(2)x+1', 'x_1+x_2'])(
+		'%s est déjà développée et réduite',
+		(expression) => {
+			const result = commande(`.développer ${expression}`);
 
-		expect(result.output).toContain('est déjà développée et réduite');
-		expect(result.latex).toBeUndefined();
+			expect(result.output).toContain('est déjà développée et réduite');
+			expect(result.latex).toBeUndefined();
+		}
+	);
+
+	it('le message cite l’expression telle que l’élève l’a tapée', () => {
+		// Revue : `toCustom` écrivait « {1/2}x+3 », accolades comprises
+		expect(commande('.développer 1/2x+3').output).toBe(
+			'« 1/2x+3 » est déjà développée et réduite.'
+		);
 	});
 
 	it.each(['1/(x+1)', '(x+1)^(-1)', 'sqrt(x+1)'])('%s : rien à développer', (expression) => {
@@ -185,6 +204,29 @@ describe('rien à développer : une réponse, pas une ligne rouge (C)', () => {
 
 		expect(result.output).toContain('Il n’y a rien à développer dans');
 		expect(result.latex).toBeUndefined();
+	});
+
+	it('une somme dans un exposant : « je ne sais pas », jamais une réponse mal écrite', () => {
+		// Revue : la réponse affichait `e^{x^2 + 2 x 1 + 1^2}`, produit collé et
+		// puissance non calculée — le défaut des étapes passé dans la réponse
+		for (const expression of ['e^((x+1)^2)', '2^((x+1)^2)']) {
+			const result = commande(`.développer ${expression}`);
+
+			expect(result.output, expression).toBe(`Je ne sais pas développer « ${expression} ».`);
+			expect(result.latex, expression).toBeUndefined();
+		}
+	});
+
+	it('un résultat trop long est refusé avant le calcul, qui figerait la page', () => {
+		// Revue : `(x+1)^2000` prenait 5 s, `(x+y+z+1)^25` 15 s
+		for (const expression of ['(x+1)^2000', '(x+y+z+1)^25']) {
+			const result = commande(`.développer ${expression}`);
+
+			expect(result.output, expression).toContain('le calcul serait trop long');
+			expect(result.latex, expression).toBeUndefined();
+		}
+		// En deçà, la réponse
+		expect(commande('.développer (x+1)^100').latex).toMatch(/^x\^\{100\} \+ 100 x\^\{99\}/);
 	});
 
 	it('(x+1)^n : l’exposant n’est pas un nombre', () => {

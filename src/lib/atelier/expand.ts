@@ -22,7 +22,7 @@ import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import { generatePedagogicalSimplifySteps } from '$lib/mathAST/pedagogical-simplify/pipeline';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { toCustom } from '$lib/mathAST/custom-generator';
-import { add, number, opposite, subtract } from '$lib/mathAST/factory';
+import { add, multiply, number, opposite, subtract } from '$lib/mathAST/factory';
 import { flattenProductShallow, flattenSumShallow } from '$lib/mathAST/flatten';
 import { findNodes, mapNode } from '$lib/mathAST/transforms';
 import { getVariables } from '$lib/mathAST/eval/substitute';
@@ -69,6 +69,12 @@ const ORDER_RELATIONS: ReadonlySet<RelationNode['relation']> = new Set(['<', '>'
 /** La variable dont les puissances décroissantes rangent les termes (phase 0, B). */
 const MAIN_VARIABLE = 'x';
 
+/**
+ * Au-delà, le calcul figerait la page : il est synchrone (revue, mesuré le
+ * 2026-10-14 : `(x+1)^2000` 5 s, `(x+y+z+1)^25` 15 s ; `(x+1)^100` 10 ms).
+ */
+const MAX_TERMS = 500;
+
 // =============================================================================
 // Fonctions — lecture
 // =============================================================================
@@ -109,30 +115,43 @@ function plainFormOf(node: MathNode): string {
 	}
 }
 
+/** Une lettre, éventuellement indicée (`x`, `α`, `x_1`). */
+function isLetter(node: MathNode): boolean {
+	if (node.type === 'variable' || node.type === 'greek') return true;
+	return node.type === 'subscript' && isLetter(node.base);
+}
+
 /**
- * Un monôme : nombres, constantes, lettres et puissances entières naturelles
- * de lettres, multipliés entre eux (`3x`, `2ab`, `x^2`).
+ * Un monôme : nombres (fractions et racines de nombres comprises), constantes,
+ * lettres et puissances entières naturelles de lettres, multipliés entre eux
+ * (`3x`, `2ab`, `x^2`, `\dfrac{1}{2}x`, `\sqrt{2}x`, `x_1`).
  */
 function isMonomial(node: MathNode): boolean {
 	switch (node.type) {
 		case 'number':
 		case 'constant':
-		case 'variable':
-		case 'greek':
 			return true;
 		case 'opposite':
 		case 'positive':
 			return isMonomial(node.operand);
 		case 'multiplication':
 			return isMonomial(node.left) && isMonomial(node.right);
+		case 'division':
+			return isMonomial(node.numerator) && node.denominator.type === 'number';
+		case 'function':
+			return (
+				node.name === 'sqrt' &&
+				node.power === undefined &&
+				node.args.every((arg) => arg.type === 'number')
+			);
 		case 'superscript':
 			return (
-				(node.base.type === 'variable' || node.base.type === 'greek') &&
+				isLetter(node.base) &&
 				node.superscript.type === 'number' &&
 				/^\d+$/.test(node.superscript.value)
 			);
 		default:
-			return false;
+			return isLetter(node);
 	}
 }
 
@@ -153,14 +172,81 @@ function hasSymbolicPowerOfSum(node: MathNode): boolean {
 	);
 }
 
-/** Ce qu'on dit quand rien n'a bougé — trois cas, trois phrases (phase 0, C). */
-function unchangedMessage(node: MathNode): string {
-	const written = plainFormOf(node);
+/**
+ * Ce qu'on dit quand rien n'a bougé — trois cas, trois phrases (phase 0, C).
+ *
+ * L'expression citée est celle que l'élève a TAPÉE : `toCustom` écrivait
+ * `1/2x+3` « {1/2}x+3 », accolades comprises (revue).
+ */
+function unchangedMessage(node: MathNode, typed: string): string {
 	if (hasSymbolicPowerOfSum(node)) {
-		return `Je ne sais pas développer « ${written} » : l’exposant n’est pas un nombre.`;
+		return `Je ne sais pas développer « ${typed} » : l’exposant n’est pas un nombre.`;
 	}
-	if (isPolynomial(node)) return `« ${written} » est déjà développée et réduite.`;
-	return `Il n’y a rien à développer dans « ${written} ».`;
+	if (isPolynomial(node)) return `« ${typed} » est déjà développée et réduite.`;
+	return `Il n’y a rien à développer dans « ${typed} ».`;
+}
+
+/**
+ * Le nombre de termes que peut avoir un développement : (t termes)ⁿ en a au
+ * plus C(n + t − 1, t − 1). Seules les puissances comptent — un produit de
+ * sommes d'une même lettre se réduit bien plus que ce décompte ne le dit.
+ */
+function termEstimate(node: MathNode): number {
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+			return flattenSumShallow(node).reduce((total, { term }) => total + termEstimate(term), 0);
+		case 'delimiter':
+			return termEstimate(node.content);
+		case 'multiplication':
+			return termEstimate(node.left) * termEstimate(node.right);
+		case 'superscript': {
+			const n = node.superscript.type === 'number' ? Number(node.superscript.value) : NaN;
+			if (!Number.isInteger(n) || n < 2) return 1;
+			const t = termEstimate(node.base);
+			// C(n + t − 1, t − 1), arrêté dès qu'il dépasse le plafond
+			let count = 1;
+			for (let i = 1; i < t && count <= MAX_TERMS; i++) count = (count * (n + i)) / i;
+			return count;
+		}
+		default:
+			return 1;
+	}
+}
+
+/** Une puissance dont le développement dépasserait le plafond. */
+function isTooLong(node: MathNode): boolean {
+	return findNodes(node, (n) => n.type === 'superscript' && termEstimate(n) > MAX_TERMS).length > 0;
+}
+
+/**
+ * Une écriture que le module n'a pas su finir : deux nombres dans un même
+ * produit (`2 x 1`), une puissance de nombres (`1^2`). Mesuré : une somme
+ * dans un exposant (`e^{(x+1)^2}`) est développée sans être réduite.
+ */
+function hasUnfinishedArithmetic(node: MathNode): boolean {
+	return (
+		findNodes(node, (n) => {
+			if (n.type === 'superscript') {
+				return n.base.type === 'number' && n.superscript.type === 'number';
+			}
+			if (n.type !== 'multiplication') return false;
+			return flattenProductShallow(n).filter(({ factor }) => factor.type === 'number').length >= 2;
+		}).length > 0
+	);
+}
+
+/**
+ * `-(x+1)` s'écrit `-1(x+1)` pour le module, qui ne développait pas
+ * l'opposé d'une somme (0 étape, la ligne disait « rien à développer » — revue).
+ */
+function withExplicitMinusOne(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (n.type !== 'opposite' || n.operand.type !== 'delimiter') return n;
+		const inside = unwrapGrouping(n.operand);
+		if (inside.type !== 'addition' && inside.type !== 'subtraction') return n;
+		return multiply(opposite(number('1')), n.operand, 'implicit');
+	});
 }
 
 /** Le refus d'une relation : une équation se résout, elle ne se développe pas (phase 0, D). */
@@ -253,9 +339,17 @@ function orderSum(node: MathNode): MathNode {
 		.sort();
 	const letters = exponents.some((e) => e.has(MAIN_VARIABLE)) ? [MAIN_VARIABLE, ...others] : others;
 
+	// À rang égal, un terme sans degré (`√(x+1)`, `eˣ`) après les monômes :
+	// `x² + 2x + 1 + √(x+1)`, pas `x² + 2x + √(x+1) + 1` (revue)
+	const withoutDegree = terms.map(({ term }) => (isMonomial(term) ? 0 : 1));
 	const order = terms
 		.map((_, index) => index)
-		.sort((a, b) => compareTerms(exponents[a], exponents[b], letters) || a - b);
+		.sort(
+			(a, b) =>
+				compareTerms(exponents[a], exponents[b], letters) ||
+				withoutDegree[a] - withoutDegree[b] ||
+				a - b
+		);
 	// ⚠️ Déjà dans l'ordre : on rend la somme du module telle quelle, sans la
 	// reconstruire — son écriture (`-2 x + 11`) ne doit pas changer pour rien
 	if (order.every((position, index) => position === index)) return node;
@@ -368,7 +462,14 @@ export function expandExpression(
 			return { kind: 'illisible', message: notExpandable(typed) };
 		}
 
-		const result = generatePedagogicalSimplifySteps(node, {
+		if (isTooLong(node)) {
+			return {
+				kind: 'inchangee',
+				message: `Je ne sais pas développer « ${typed} » ici : le calcul serait trop long.`
+			};
+		}
+
+		const result = generatePedagogicalSimplifySteps(withExplicitMinusOne(node), {
 			intent: 'developper',
 			schoolLevel: 'lycee',
 			verbosity: 'detailed'
@@ -379,7 +480,7 @@ export function expandExpression(
 			result.steps.length === 0 ||
 			nodesEqual(withoutGrouping(result.result), withoutGrouping(node))
 		) {
-			return { kind: 'inchangee', message: unchangedMessage(node) };
+			return { kind: 'inchangee', message: unchangedMessage(node, typed) };
 		}
 
 		const ordered = mapNode(result.result, orderSum);
@@ -388,9 +489,13 @@ export function expandExpression(
 		// mode décimal, donne des décimaux — `(0,5x+1)²` → `0,25x² + x + 1`
 		const decimal = mode === 'decimal' || hasDecimalLiteral(node);
 		const written = decimal ? mapNode(ordered, decimalFraction) : ordered;
+		// Jamais une réponse mal écrite : « je ne sais pas » vaut mieux que `2 x 1`
+		if (hasUnfinishedArithmetic(written)) {
+			return { kind: 'inchangee', message: `Je ne sais pas développer « ${typed} ».` };
+		}
 		const answer = toLatex(written);
 		if (answer.trim() === '') {
-			return { kind: 'inchangee', message: unchangedMessage(node) };
+			return { kind: 'inchangee', message: unchangedMessage(node, typed) };
 		}
 		return { kind: 'developpee', answer, text: plainFormOf(written) };
 	} catch {

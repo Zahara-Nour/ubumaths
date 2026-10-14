@@ -950,20 +950,26 @@ n'a pas d'`expand`), après la substitution des noms (`.développer f`, `.dével
 Développer, c'est aussi réduire. La réponse est le résultat de l'intention `developper`, remis
 dans l'ordre du manuel : puissances décroissantes de x, les autres lettres traitées comme des
 coefficients, sinon l'ordre alphabétique (`a(x+b)` → `ax + ab`, `(a−b)²` → `a² − 2ab + b²` ; un
-coefficient négatif déplacé s'écrit `− 2ab`, jamais `+ (−2ab)`). La réponse s'écrit comme l'élève a
-écrit, comme `.limite` (décision de David du 2026-10-06, étendue le 2026-10-14) : un décimal tapé,
-ou le mode décimal, donne des décimaux (`(0,5x+1)²` → `0,25x² + x + 1`, même en mode exact) ;
-sinon des fractions (`(x/2+1)²` → `¼x² + x + 1`) ; une fraction sans écriture décimale finie
-reste une fraction (`⅑x²`). Rien n'a bougé (aucune étape, ou un
-résultat égal à l'entrée aux parenthèses près) : trois phrases, sans ligne rouge — « « x^2+1 »
-est déjà développée et réduite. » (une somme de monômes), « Je ne sais pas développer « (x+1)^n » :
-l'exposant n'est pas un nombre. », sinon « Il n'y a rien à développer dans « 1/(x+1) ». ». Refus :
-sans expression (avec l'exemple), une équation ou une inéquation (« On développe une expression,
-pas une équation. Pour la résoudre : .résoudre (x+1)^2=4 », expression TAPÉE citée), tout ce qui
-n'est pas une expression (liste, saisie illisible). **Pas de « Comment ? »** : les étapes de
-l'intention `developper` ne sont pas montrables (produits collés « 2x1 », la même ligne jusqu'à
-13 fois, distribution cachée) — elles seront rédigées dans `pedagogical-simplify` (PR 2). Tests :
-`developper-commande.test.ts`.
+coefficient négatif déplacé s'écrit `− 2ab`, jamais `+ (−2ab)` ; à rang égal, un terme sans degré
+après les monômes : `x² + 2x + 1 + √(x+1)`). `-(x+1)` part au module écrit `-1(x+1)` : seul, il
+n'était pas développé (0 étape). La réponse s'écrit comme l'élève a écrit, comme `.limite`
+(décision de David du 2026-10-06, étendue le 2026-10-14) : un décimal tapé, ou le mode décimal,
+donne des décimaux (`(0,5x+1)²` → `0,25x² + x + 1`, même en mode exact) ; sinon des fractions
+(`(x/2+1)²` → `¼x² + x + 1`) ; une fraction sans écriture décimale finie reste une fraction
+(`⅑x²`). Rien n'a bougé (aucune étape, ou un résultat égal à l'entrée aux parenthèses près) : trois
+phrases, sans ligne rouge, qui citent l'expression TAPÉE — « « x^2+1 » est déjà développée et
+réduite. » (une somme de monômes : fractions et racines de nombres, lettres indicées comprises),
+« Je ne sais pas développer « (x+1)^n » : l'exposant n'est pas un nombre. », sinon « Il n'y a rien
+à développer dans « 1/(x+1) ». ». Deux autres « je ne sais pas », sans ligne rouge : un
+développement de plus de 500 termes (`MAX_TERMS`, estimé AVANT le calcul, qui est synchrone :
+`(x+1)^2000` figeait la page 5 s) ; une réponse que le module n'a pas su finir (deux nombres dans un
+produit, une puissance de nombres : `e^{(x+1)^2}` rendait `e^{x^2 + 2 x 1 + 1^2}`) — jamais une
+réponse mal écrite. Refus : sans expression (avec l'exemple), une équation ou une inéquation
+(« On développe une expression, pas une équation. Pour la résoudre : .résoudre (x+1)^2=4 »,
+expression TAPÉE citée), tout ce qui n'est pas une expression (liste, saisie illisible). **Pas de
+« Comment ? »** : les étapes de l'intention `developper` ne sont pas montrables (produits collés
+« 2x1 », la même ligne jusqu'à 13 fois, distribution cachée) — elles seront rédigées dans
+`pedagogical-simplify` (PR 2). Tests : `developper-commande.test.ts`.
 
 **`.limite` en détail** (`limit.ts`, PR 2 de `.limite`, syntaxe tranchée par David le
 2026-10-14, L1-L6). Servie par l'atelier (`ATELIER_ONLY_COMMANDS`), lue **avant** la substitution
