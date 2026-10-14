@@ -354,8 +354,8 @@ espace, d'un opérateur (`^` compris : `sinx^2`) ou d'un délimiteur fermant. Le
 fragment : « « sinx » : écris sin(x) avec des parenthèses. », « « ln2x » : écris ln(2x)… ».
 `cost` est refusé (cos(t)) : voulu, même si c, o, s, t sont posées, comme `cos x`. Non visés :
 `sinus`, `lnxy`, `costume` (plus d'une lettre), `sinh`, `cosh`, `tanh` (hyperboliques : `sinh(x)`
-se lit bien), un nom précédé d'une lettre (`xlnx`, `arcsinx` : toujours des produits) ou d'un
-`\operatorname{…}`. Le `{` seul ne l'arrête pas : `e^{lnx}`, `\frac{lnx}{x}` sont refusés. Le
+se lit bien), un nom précédé d'un MOT (`explnx`, `arcsinx` : toujours des produits) ou d'un
+`\operatorname{…}` ; précédé d'une lettre seule, d'un nombre ou d'une puissance, il est refusé (`xlnx`, `2xlnx`, `x^2lnx` → « lnx »). `log` suivi de chiffres ne propose pas d'argument : « « log2 » : écris log(…) avec des parenthèses ; log est le logarithme décimal. En base 2 : log_2(…). » (sans la dernière phrase pour `log10`). Le `{` seul ne l'arrête pas : `e^{lnx}`, `\frac{lnx}{x}` sont refusés. Le
 CLI (`bareFunctionName`) ne change pas : `cost + lnx` y reste lu en produit, l'atelier le devance.
 Restent lus : `ln(x)`, `2 ln(x)`, `\ln x` (LaTeX du clavier MathLive), `l n` (produit écrit avec
 une espace), `st` avec s et t posées, `s(3)` d'une fonction `s` de l'élève. Effet de bord :

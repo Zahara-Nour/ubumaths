@@ -253,6 +253,46 @@ describe('une fonction usuelle collée à son argument est refusée', () => {
 	});
 });
 
+// Revue du 2026-10-14 : un produit écrit collé (`xlnx`) cache la même faute
+describe('une fonction collée précédée d’une lettre, d’un nombre ou d’une puissance', () => {
+	it.each([
+		['xlnx', '« lnx » : écris ln(x) avec des parenthèses.'],
+		['xsinx', '« sinx » : écris sin(x) avec des parenthèses.'],
+		['2xlnx', '« lnx » : écris ln(x) avec des parenthèses.'],
+		['x^2lnx', '« lnx » : écris ln(x) avec des parenthèses.'],
+		['1 + xlnx', '« lnx » : écris ln(x) avec des parenthèses.']
+	])('« %s »', (text, message) => {
+		expect(refusalOf(text)).toBe(message);
+	});
+
+	// Un mot plus long devant le nom n'est pas visé
+	it.each(['explnx', 'costume', 'sinus'])('« %s » n’est pas refusé', (text) => {
+		expect(runInput(session(), text).kind).not.toBe('refus');
+	});
+});
+
+// `log` suivi de chiffres : base ou argument ? On ne propose pas log(10)
+describe('`log` collé à des chiffres', () => {
+	it.each([
+		['log10', '« log10 » : écris log(…) avec des parenthèses ; log est le logarithme décimal.'],
+		[
+			'log2',
+			'« log2 » : écris log(…) avec des parenthèses ; log est le logarithme décimal. En base 2 : log_2(…).'
+		],
+		[
+			'log2 + 1',
+			'« log2 » : écris log(…) avec des parenthèses ; log est le logarithme décimal. En base 2 : log_2(…).'
+		]
+	])('« %s »', (text, message) => {
+		expect(refusalOf(text)).toBe(message);
+	});
+
+	it('`log_2(8)`, l’écriture de la base proposée, vaut 3', () => {
+		const result = runInput(session(), 'log_2(8)');
+		expect(result.kind === 'calcul' && result.output).toBe('3');
+	});
+});
+
 describe('ce qui n’est pas une fonction collée reste lu', () => {
 	function calcul(text: string, s: CalcSession = session()) {
 		const result = runInput(s, text);

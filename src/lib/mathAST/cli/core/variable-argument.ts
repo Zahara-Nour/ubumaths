@@ -85,14 +85,15 @@ const BARE_FUNCTION_TAIL =
  * Une fonction usuelle COLLÉE à son argument : `lnx`, `sinx`, `cost`, `ln2`,
  * `ln2x`, `sin2,5` — le nom suivi d'UNE lettre, ou d'un nombre et d'au plus
  * une lettre, puis d'une fin, d'une espace, d'un opérateur ou d'un délimiteur
- * fermant. `sinus`, `lnxy`, `costume` ne sont pas visés. Le nom n'est précédé
- * ni d'une lettre (`xlnx`), ni d'un antislash (`\cos t`), ni d'un
+ * fermant. `sinus`, `lnxy`, `costume` ne sont pas visés. Le nom peut suivre
+ * une lettre SEULE (`xlnx`, `2xlnx`), un nombre ou une puissance (`x^2lnx`),
+ * pas un mot (`explnx`), ni un antislash (`\cos t`), ni un
  * `\operatorname{…}` ; `{` seul ne l'arrête pas (`e^{lnx}`, `\frac{lnx}{x}`).
  * `sinh`, `cosh`, `tanh` (fonctions hyperboliques) sont écartés par
  * `gluedFunction`.
  */
 const GLUED_FUNCTION =
-	/(?<![A-Za-z\\]|\\(?:operatorname|mathrm|mathit|text)\s*\{)(sin|cos|tan|ln|log|exp|sqrt)(\d+(?:[.,]\d+)?[A-Za-z]?|[A-Za-z])(?=$|[\s+\-−*/^=<>≤≥·×÷,;)\]}|!\\])/g;
+	/(?<![A-Za-z\\][A-Za-z]|\\|\\(?:operatorname|mathrm|mathit|text)\s*\{)(sin|cos|tan|ln|log|exp|sqrt)(\d+(?:[.,]\d+)?[A-Za-z]?|[A-Za-z])(?=$|[\s+\-−*/^=<>≤≥·×÷,;)\]}|!\\])/g;
 
 /** Les fonctions hyperboliques : `sinh` n'est pas sin(h). */
 const HYPERBOLIC = /^(?:sin|cos|tan)h$/;
@@ -436,6 +437,12 @@ export function bareFunctionRefusal(input: string): string | null {
 	// `ln2x` se lisaient en produits de lettres. Le même refus, cité tel quel
 	const glued = gluedFunction(input);
 	if (glued !== null && (found === null || glued.index <= found.index)) {
+		// `log10`, `log2` : base ou argument ? On ne devine pas (revue du 2026-10-14)
+		if (glued.name === 'log' && /^\d+$/.test(glued.argument)) {
+			const base =
+				glued.argument === '10' ? '' : ` En base ${glued.argument} : log_${glued.argument}(…).`;
+			return `« ${glued.typed} » : écris log(…) avec des parenthèses ; log est le logarithme décimal.${base}`;
+		}
 		return `« ${glued.typed} » : écris ${glued.name}(${glued.argument}) avec des parenthèses.`;
 	}
 	if (found === null) return null;
