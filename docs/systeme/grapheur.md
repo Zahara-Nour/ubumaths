@@ -18,7 +18,7 @@ couvre:
 
 > Synthèse des journaux archivés `docs/archive/wip/grapheur-*`, `suites-grapheur-progress.md`,
 > `dissoudre-doublons-grapheur-progress.md` et des chantiers couleurs. Vérifié contre le code le
-> 2026-10-10.
+> 2026-10-15.
 
 ## À quoi ça sert
 
@@ -167,15 +167,28 @@ mouvement du curseur de tangente ; chaque cache se vide au-delà de 200 fenêtre
 `analyzeFunction` est **hybride** : quand l'AST est disponible (`buildAnalysisAST`), zéros et
 extremums viennent de `findCriticalZeros` / `findCriticalExtrema` (mathAST), exacts quand c'est
 possible (`exactX`, `exactY`, confiance 1,0) ; sinon balayage numérique (`findRoots`,
-`findExtrema`).
+`findExtrema`). Un échantillon presque nul n'est une racine que si |f| y est un **minimum local**
+(`touchesZero`, mathAST) : un seuil absolu donnait à e^(−x) une racine par échantillon au-delà de
+x ≈ 28 (2026-10-15).
 
 Asymptotes, **symbolique d'abord** : sur une fraction rationnelle, `exactAsymptotes` donne
 horizontale, oblique et polynomiale (courbe) d'un coup, avec leur LaTeX. Ailleurs, repli
 numérique : `findHorizontalAsymptotes`, `findObliqueAsymptotes`, `findPolynomialAsymptotes`
 ajustent un polynôme sur des abscisses lointaines (`fitPolynomialBranch`, extrapolation de
-Richardson) ; `findVerticalAsymptotes` reste numérique. Les abscisses de sondage
-(`LARGE_X_VALUES`) ne sont volontairement **pas** des puissances de 10 (elles tombaient sur la
-période de `cos(πx/50)`).
+Richardson). Une limite ou un coefficient plus petit que son incertitude (écart entre les deux
+dernières sondes, dispersion des extrapolations) vaut **0** (`snapToZero`) : ln(x)/x recevait
+`y = 0,0000862`. Les abscisses de sondage (`LARGE_X_VALUES`) ne sont volontairement **pas** des
+puissances de 10 (elles tombaient sur la période de `cos(πx/50)`).
+
+Asymptotes **verticales** (`findVerticalAsymptotes`) : les points singuliers de l'expression
+(`singularPoints`, via `getAllDiscontinuities` de mathAST, en cache par AST) passent d'abord ;
+une limite unilatérale infinie établie symboliquement suffit (e^(1/x) en 0, que l'évaluateur rend
+`null` dès qu'il dépasse les flottants), sinon la sonde numérique tranche (le trou de sin(x)/x
+est écarté). Les pôles périodiques (tan) en sont exclus : l'analyse ne les énumère que sur
+[−2π ; 2π]. Vient ensuite le balayage : intervalles où le domaine change ou dont le saut dépasse
+la fenêtre. `divergesAt` confirme chaque candidat en exigeant que |f| croisse d'au moins ×1,2 à
+**chaque** sonde fine (1e-7, 1e-11, 1e-15 × |x|) : eˣ passait sinon pour divergente dès x ≈ 139,
+une fausse asymptote par échantillon (2026-10-15).
 
 Une asymptote unilatérale (`direction: 'left' | 'right'`) n'est tracée **que de son côté**
 (décision de David, 2026-09-15). Les intersections passent par `findRoots` de mathAST (exact puis
@@ -311,9 +324,16 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
 - **`src/lib/components/grapheur/index.ts`** (barillet) n'a aucun importeur.
 - Les ré-exports `viewport.ts`, `bezier.ts`, `colors.ts` de `src/lib/grapheur/` sont des
   survivances « rétrocompatibilité » ; le code importe tantôt eux, tantôt `geometry-core`.
-- `findVerticalAsymptotes` reste purement numérique, même sur une fraction rationnelle.
+- Dézoomé, les pôles de tan hors de [−2π ; 2π] restent au seul balayage, qui n'en voit que
+  ceux où un saut dépasse la hauteur de la fenêtre.
+  Mesuré : tan sur [−580 ; 600] n'a qu'un trait, en 45,5π, au milieu de ~375 pôles.
+- Une limite atteinte très lentement (ln(x)/√x → 0) n'est pas reconnue : aucune horizontale.
+- `getAllDiscontinuities` ne voit pas le pôle de 1/(ln x − 1) en x = e : trouvé à ±10, perdu
+  au dézoom.
+- Avec un curseur, chaque valeur rebâtit l'AST : `singularPoints` refait l'analyse de continuité
+  (0,2 ms pour 1/(x − A), jusqu'à 33 ms sur une fraction de degré 3 multipliée par e⁻ˣ et ln x).
 - Nuages de points : pas de forme de point distincte par place (décision Q1a, reportée).
 
 ---
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-15.
