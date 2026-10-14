@@ -1,7 +1,7 @@
 ---
 title: Atelier — la commande « développer » (phase 0)
 date: 2026-10-14
-status: validée par David le 2026-10-14 ; PR 1 mergée (#1372) ; PR 2 (les étapes) à faire
+status: validée par David le 2026-10-14 ; PR 1 (#1372) et PR 2 (#1375) mergées ; question A/B ouverte (corrections d'exercices)
 ---
 
 # Atelier — la commande « développer »
@@ -155,3 +155,11 @@ Tests d'abord, rouges, pour chaque ligne de B, C, D et E ; `code-reviewer` en fi
   changent pas (deux instantanés figent la trace). Sans étapes, réponse gardée : somme sous une
   fonction, une racine, un exposant ou dans une fraction — dont `(x+1)(x-1)/(x+2)`, que le texte lit
   `(x+1)·((x-1)/(x+2))`.
+- 2026-10-14 — **PR 2 mergée (#1375)**. Revue (~150 expressions, réponses identiques à `main`) :
+  la règle B ne s'applique qu'à une somme de monômes, sinon l'ordre du module (`(e^x+e^(-x))^2` →
+  `e^{2x} + e^{-2x} + 2`, et non l'ordre du manuel `e^{2x} + 2 + e^{-2x}` : il faudrait une autre
+  règle) ; « avec a = … et b = … » seulement si l'expression n'a ni a ni b ; titres de
+  distribution, « On réduit », « On ordonne les termes » qui disent vrai ; a et b en décimal en mode
+  décimal. **Question ouverte à David (A/B)** : brancher aussi les corrections d'exercices générées
+  (`generatedSteps` `kind: 'simplify'`, `intent: 'developper'`, aucun en production) sur
+  `writeExpandSteps` — reco B, petite PR, deux instantanés de démo changent.
