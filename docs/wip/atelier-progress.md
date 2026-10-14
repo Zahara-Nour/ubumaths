@@ -29,6 +29,7 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
    mode commande elle envoie `..diff x^2` et le moteur répond « Commande inconnue : .diff » (constat
    du 2026-10-13, antérieur à #1343). Décision de David (2026-10-13) : l'atelier remplace `/calc` ; il lui manque d'abord une saisie
    naturelle (MathLive, sans point) → [atelier-saisie-naturelle.md](atelier-saisie-naturelle.md).
+   Précisé le 2026-10-14 : plus aucun correctif sur `/calc` (V55 sans objet), la page sera supprimée.
    Historique : `/cas` existait toujours (`ReplContainer`), hors barre latérale. Le catalogue de
    l'atelier (`commands.ts`) traduit toutes les commandes du moteur ; 7 sont déclarées indisponibles avec
    leur raison. Pas encore fait : l'inventaire de ce que `/cas` offre et que l'atelier n'offre pas, puis
