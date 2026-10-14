@@ -185,6 +185,16 @@ Erreur / garde :
 
 ## Journal
 
+- 2026-10-14 — **lot 4a fait** (#1383, puis #1384) : migration
+  `20261016103500_style_fiche_liens_partages` (les deux fonctions de partage rendent `style_id`,
+  `template_id`, `template` d'un style de l'auteur). Tests `style-fiche-liens-partages.test.ts`
+  (12, `anon`) : 10 rouges sans la migration. `security-auditor` : rien de bloquant (mineurs : un
+  gabarit posé par l'admin dans le style du prof serait transmis, conforme à D11 ;
+  `common_typst` non transmis, comme au lot 3b). **`db:migrate` fait** ; collision d'horodatage
+  avec `modele_adoption` (#1382, même `…103400`) : le premier `db push` a échoué et tout annulé
+  (prod vérifiée intacte), renommée en `…103500` (#1384) puis appliquée ; md5 prod = local.
+  Reste **4b** (code : PDF élève par le générateur unique, pages publiques).
+
 - 2026-10-14 — **lot 3b** (branche `feat/fiches-choix-du-style`) : `styleIdOf`,
   `isBuiltInStyle`, `BUILT_IN_STYLE_OPTIONS` (`styles.ts`) ; `server/worksheets/worksheet-styles.ts`
   (menu, fiche d'un style du prof, liaison gabarit-style) ; routes `PUT`/`POST`/duplication et
