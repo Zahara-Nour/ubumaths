@@ -67,27 +67,28 @@ Docs voisines, à lire plutôt que recopier :
 
 ### Mon cours — serveur (`src/lib/server/`)
 
-| Fichier                             | Rôle                                                                                                                                                                                                                                                                                                          |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `chapters.ts`                       | CRUD des chapitres et de leurs contenus (documents, objectifs, exercices, fiches) ; lectures élève `getStudentChapters`, `getChapterWithContent`, `toggleChecklistItem`, `getMyChecklistProgress`.                                                                                                            |
-| `chapters-publication.ts`           | `setContentPublication` : écrit `published_at` sur un contenu, via la table de correspondance **fermée** `TABLES` (type de contenu → table) ; `listDistributedWorksheetIds`.                                                                                                                                  |
-| `chapter-sections.ts`               | Sections : `listSections`, `createSection`, `renameSection`, `deleteSection`, `reorderSections`, `assignToSection`, `placeInSection`.                                                                                                                                                                         |
-| `chapter-series.ts`                 | Séries rattachées : `linkSeries`, `setSeriesForm`, `unlinkSeries`, `listChapterSeries`, `listAvailableSeries` ; erreurs typées `ChapterSeriesError` (→ 404 / 409 / 500).                                                                                                                                      |
-| `chapter-plan.ts`                   | `buildChapterPlan` : le plan du chapitre **tel que l'élève le voit** (sections dans l'ordre, `UNASSIGNED_SECTION_ID` pour le non-classé).                                                                                                                                                                     |
-| `course-share-tokens.ts`            | Lien du cours (ADR 0025) : `getActiveCourseShareToken`, `rotateCourseShareToken`, `revokeCourseShareToken` (rend le nombre de lignes relues), `resolveCourse{ShareToken,WorksheetByShareToken,DocumentByShareToken}` (charges validées par Zod), `buildPublicCourseView`.                                     |
-| `chapter-templates.ts`              | Modèles : CRUD, `publishTemplate`, `archiveTemplate`, `instantiateTemplate` (lien), `detachChapterFromTemplate` (copie puis délie), `createTemplateFromChapter` (copie puis adoption), `deleteChapterTemplate` (refus si relié) ; reliquats snapshot (versions, `migrateChapterToVersion`) jusqu'à l'étape 5. |
-| `chapter-template-copy.ts`          | Aides partagées par « Faire un modèle » et la reprise : `readChapterContent`, `copyContentToTemplate` (lignes et fichiers copiés chez le modèle), `adoptMappedRows` (le chapitre adopte ses copies), `LINKED_TABLES_SECTIONS_LAST`. Sans module virtuel SvelteKit : importable par `tsx`.                     |
-| `chapter-template-reprise-guard.ts` | `deployGuardDecision` : garde « déployé d'abord » de la reprise, décision pure à partir des codes de sortie de `git fetch` et `git merge-base --is-ancestor` (merge de #1390 dans `origin/production`).                                                                                                       |
-| `chapter-template-reprise.ts`       | `migrateSnapshotTemplate` : reprise d'un modèle à snapshot (ADR 0029, étape 4) — voir « Reprise des modèles à snapshot » ci-dessous ; script `scripts/reprise-modeles-adr0029.ts`.                                                                                                                            |
-| `template-content.ts`               | Contenu POSSÉDÉ par un modèle (ADR 0029) : `listTemplateContent`, `templateHasContent`, `retireTemplateElement`, `copyStoredFile`, `removeStoredFiles`.                                                                                                                                                       |
-| `content-owner.ts`                  | Propriétaire d'un contenu (`ContentOwner` : chapitre ou modèle) : colonne, insertion, dossier `chapters/<id>/` ou `templates/<id>/`, chemin neuf d'un fichier.                                                                                                                                                |
-| `template-guard.ts`                 | `requireOwnedTemplate` : UUID valide, modèle existant, auteur = utilisateur (400 / 404 / 403), pour les routes et actions du contenu d'un modèle.                                                                                                                                                             |
+| Fichier                             | Rôle                                                                                                                                                                                                                                                                                                      |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `chapters.ts`                       | CRUD des chapitres et de leurs contenus (documents, objectifs, exercices, fiches) ; lectures élève `getStudentChapters`, `getChapterWithContent`, `toggleChecklistItem`, `getMyChecklistProgress`.                                                                                                        |
+| `chapters-publication.ts`           | `setContentPublication` : écrit `published_at` sur un contenu, via la table de correspondance **fermée** `TABLES` (type de contenu → table) ; `listDistributedWorksheetIds`.                                                                                                                              |
+| `chapter-sections.ts`               | Sections : `listSections`, `createSection`, `renameSection`, `deleteSection`, `reorderSections`, `assignToSection`, `placeInSection`.                                                                                                                                                                     |
+| `chapter-series.ts`                 | Séries rattachées : `linkSeries`, `setSeriesForm`, `unlinkSeries`, `listChapterSeries`, `listAvailableSeries` ; erreurs typées `ChapterSeriesError` (→ 404 / 409 / 500).                                                                                                                                  |
+| `chapter-plan.ts`                   | `buildChapterPlan` : le plan du chapitre **tel que l'élève le voit** (sections dans l'ordre, `UNASSIGNED_SECTION_ID` pour le non-classé).                                                                                                                                                                 |
+| `course-share-tokens.ts`            | Lien du cours (ADR 0025) : `getActiveCourseShareToken`, `rotateCourseShareToken`, `revokeCourseShareToken` (rend le nombre de lignes relues), `resolveCourse{ShareToken,WorksheetByShareToken,DocumentByShareToken}` (charges validées par Zod), `buildPublicCourseView`.                                 |
+| `chapter-templates.ts`              | Modèles : CRUD, `publishTemplate`, `archiveTemplate`, `instantiateTemplate` (lien), `detachChapterFromTemplate` (copie puis délie), `createTemplateFromChapter` (copie puis adoption), `deleteChapterTemplate` (refus si relié), `getInstantiationWithStatus` (rattachement affiché, `null` sans modèle). |
+| `chapter-template-copy.ts`          | Aides partagées par « Faire un modèle » et la reprise : `readChapterContent`, `copyContentToTemplate` (lignes et fichiers copiés chez le modèle), `adoptMappedRows` (le chapitre adopte ses copies), `LINKED_TABLES_SECTIONS_LAST`. Sans module virtuel SvelteKit : importable par `tsx`.                 |
+| `chapter-template-reprise-guard.ts` | `deployGuardDecision` : garde « déployé d'abord » de la reprise, décision pure à partir des codes de sortie de `git fetch` et `git merge-base --is-ancestor` (merge de #1390 dans `origin/production`).                                                                                                   |
+| `chapter-template-reprise.ts`       | `migrateSnapshotTemplate` : reprise d'un modèle à snapshot (ADR 0029, étape 4) — voir « Reprise des modèles à snapshot » ci-dessous ; script `scripts/reprise-modeles-adr0029.ts`.                                                                                                                        |
+| `template-content.ts`               | Contenu POSSÉDÉ par un modèle (ADR 0029) : `listTemplateContent`, `templateHasContent`, `retireTemplateElement`, `copyStoredFile`, `removeStoredFiles`.                                                                                                                                                   |
+| `content-owner.ts`                  | Propriétaire d'un contenu (`ContentOwner` : chapitre ou modèle) : colonne, insertion, dossier `chapters/<id>/` ou `templates/<id>/`, chemin neuf d'un fichier.                                                                                                                                            |
+| `template-guard.ts`                 | `requireOwnedTemplate` : UUID valide, modèle existant, auteur = utilisateur (400 / 404 / 403), pour les routes et actions du contenu d'un modèle.                                                                                                                                                         |
 
 Validation Zod : `src/lib/server/validation/{chapters,chapter-sections,chapter-series,chapter-templates,chapter-documents}.ts`
 (`chapter-documents` : types MIME, plafond 25 Mo, `isPathInFolder` pour un dépôt de modèle).
 Types : `src/lib/types/chapters.ts` (convertisseurs `dbChapterToApp`…, `ChapterContentType`) et
-`src/lib/types/chapter-templates.ts` (`TemplateContent` et ses éléments `Template*`, reliquats
-`TemplateContentSnapshot`, `TemplateDiff`). Les éléments de chapitre portent `sourceId` (élément du
+`src/lib/types/chapter-templates.ts` (`TemplateContent` et ses éléments `Template*`,
+`ChapterTemplate`, `InstantiationWithStatus` ; aucune colonne de l'ancien système de versions
+n'y est lue). Les éléments de chapitre portent `sourceId` (élément du
 modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
 
 ### Mon cours — pages et API
@@ -96,7 +97,7 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   `[classId]/` (chapitres de la classe : actions `create`, `update`, `delete`, `reorder`,
   `toggleVisibility`, `instantiateFromTemplate`, `shareCourseLink`, `revokeCourseLink`), puis `[classId]/[chapterId]/` (éditeur :
   actions `setPublication`, `setHidden`, `setSectionHidden`, `linkExercise`, `linkWorksheet`, `linkSeries`, `setSeriesForm`,
-  `createTemplate`, `migrateToVersion` (plus appelée par l'interface), `detachFromTemplate`,
+  `createTemplate`, `detachFromTemplate`,
   objectifs…).
 - Élève : `src/routes/(protected)/dashboard/student/cours/` et `cours/[chapterId]/` (plan du
   chapitre, action `toggleChecklist`).
@@ -146,9 +147,10 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
 - API appelées par l'interface : `api/teacher/chapters/[id]/sections/**` (éditeur de sections),
   `api/teacher/chapters/[id]/document-upload-url` et `…/documents` (dépôt d'un fichier), et leur
   miroir pour un modèle : `api/teacher/chapter-templates/[id]/sections/**`,
-  `…/document-upload-url`, `…/documents`. Le reste
-  de `api/teacher/chapters/**`, `api/teacher/chapter-templates/**`, `api/student/chapters/**` et
-  `api/student/checklist/**` n'a pas d'appelant dans `src/` (voir « Écarts connus »).
+  `…/document-upload-url`, `…/documents` (seules routes restantes sous
+  `api/teacher/chapter-templates/`). Le reste de `api/teacher/chapters/**`,
+  `api/student/chapters/**` et `api/student/checklist/**` n'a pas d'appelant dans `src/` (voir
+  « Écarts connus »).
 
 ### Cahier de texte
 
@@ -247,17 +249,24 @@ Détails : [fiches-et-pdf.md](fiches-et-pdf.md) et le chantier
 
 ### Modèles de chapitre
 
-`chapter_templates` (`status` : `draft` → `published` → `archived`), `chapter_template_versions`
-(un `content_snapshot` par version) et `chapter_template_instantiations` (quel chapitre vient de
-quelle version). Seul un modèle **publié** s'instancie.
+`chapter_templates` (`status` : `draft` → `published` → `archived`) et
+`chapter_template_instantiations` (quel chapitre est rattaché à quel modèle, `is_detached`). Seul
+un modèle **publié** s'instancie.
 
-> **Refonte en cours** ([ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md),
-> [journal](../wip/refonte-modeles-chapitre-progress.md)) : le modèle **possède son contenu** (mêmes
-> six tables, colonne `template_id`) et le chapitre lié le **relie** (lignes de lien,
-> `source_id`, contenu recopié par la base — migration `20261016103300`, voir
-> [base-de-donnees.md](base-de-donnees.md)). Serveur (étape 3b) et interface (étape 3c : éditeur
-> partagé, page d'édition du modèle, chapitre lié) suivent ; le nettoyage du snapshot vient à
-> l'étape 5.
+Depuis l'[ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md)
+([journal](../wip/refonte-modeles-chapitre-progress.md)), le modèle **possède son contenu** (mêmes
+six tables, colonne `template_id`) et le chapitre lié le **relie** (lignes de lien, `source_id`,
+contenu recopié par la base — migration `20261016103300`, voir
+[base-de-donnees.md](base-de-donnees.md)).
+
+⚠️ **Colonnes de l'ancien système « snapshot + versions », encore en base mais plus lues par le
+code** (étape 5A) : `chapter_templates.content_snapshot` et `current_version` (laissées à leur
+défaut à l'insertion), la table `chapter_template_versions`, et dans
+`chapter_template_instantiations` : `template_version` (NOT NULL sans défaut, d'où le `1` écrit
+par l'adoption de « Faire un modèle » et par `link_chapter_to_template` en SQL),
+`current_template_version`, `last_migrated_at`. Leur suppression est une migration à part, après
+déploiement. Les lectures `select('*')` de `chapter_templates` les ramènent encore, sans les
+utiliser ; `chapter-template-reprise.ts` (outil de reprise, gardé) lit `content_snapshot`.
 
 - **Contenu du modèle** : les fonctions du chapitre prennent un propriétaire `ContentOwner`
   (sections : `chapter-sections.ts` ; insertions : `insertDocument`, `insertChecklistItem`,
@@ -266,7 +275,7 @@ quelle version). Seul un modèle **publié** s'instancie.
   `contenu/templates/[templateId]/` porte les MÊMES noms d'actions que la page du chapitre
   (`addChecklistItem`, `deleteDocument`, `unlinkSeries`…) pour l'éditeur partagé ; sa charge
   rend `content` (`listTemplateContent`). Publier exige un élément non retiré dans les tables
-  (`templateHasContent`), plus le snapshot. ⚠️ Un élément de modèle ajouté DANS une section reçoit
+  (`templateHasContent`). ⚠️ Un élément de modèle ajouté DANS une section reçoit
   sa section **à l'insertion** (`nextSectionOrder` puis `insert*(…, placement)`) : la base crée ses
   lignes de lien à l'insertion même, et un rangement après coup les laisserait en « Non classé ».
 - **Retirer un élément du modèle** (`retireTemplateElement`, ce que font les actions « supprimer »
@@ -288,16 +297,13 @@ quelle version). Seul un modèle **publié** s'instancie.
   identifiants, publications et cases cochées gardées. L'ancien fichier `chapters/…` reste (étape 5).
   Un chapitre déjà rattaché garde son rattachement : copie sans adoption, et sans ce qu'il a
   masqué. Une adoption ratée n'est pas un succès silencieux : `warning` dans le résultat (action
-  `createTemplate`, route `create-template`).
+  `createTemplate`).
 - **Supprimer un modèle** (`deleteChapterTemplate`) : refusé (`TemplateInUseError`, « archivez-le »,
-  409 sur la page et sur `DELETE api/teacher/chapter-templates/[id]`) tant qu'un chapitre non
+  409 sur la page) tant qu'un chapitre non
   détaché le relie OU qu'une seule ligne de lien désigne un de ses éléments — vérifié avant de
   toucher au moindre fichier. Sinon la ligne du modèle est supprimée (vérifiée), puis ses fichiers
   `templates/<id>/` par le **client service** (la règle de stockage du professeur exige que le
   modèle existe), strictement dans ce dossier.
-- **Ancien circuit des versions** (`updateFromChapter`, `createTemplateVersion`,
-  `migrateChapterToVersion`, route `migrate`, route `versions`) : refusé (`TemplateLinkedContentError`, 409) dès que le modèle possède du contenu en tables ou que le chapitre a des lignes de lien
-  (`refuseLegacyVersioning`). Supprimé à l'étape 5.
 - **Dans le chapitre**, une ligne de lien ne se supprime pas (actions `deleteDocument`,
   `deleteChecklistItem`, `unlinkExercise`, `unlinkWorksheet`, `unlinkSeries` et les routes
   `DELETE api/…/documents/[docId]`, `checklist/[itemId]`, `exercises/[linkId]`,
@@ -334,41 +340,28 @@ quelle version). Seul un modèle **publié** s'instancie.
   `~/chiphre-sauvegardes/reprise-modeles-adr0029/` ; compte rendu imprimé au fil de l'eau. Sortie 0
   seulement si la vérification passe.
 
-Ce qui suit décrit le fonctionnement **d'avant la refonte**, encore en place pour les chapitres
-instanciés par snapshot :
-
 - **Refus d'un modèle inutilisable** : un brouillon ou un modèle archivé fait rendre à
   `instantiateTemplate` une `TemplateUnusableError`, dont le message est écrit pour le professeur
-  (« publiez-le d'abord »). Les trois appelants (actions `instantiateFromTemplate` et
-  `instantiate`, route `api/teacher/chapter-templates/[id]/instantiate`) la rendent en **409**
+  (« publiez-le d'abord »). Les deux appelants (actions `instantiateFromTemplate` et
+  `instantiate`) la rendent en **409**
   avec ce message ; toute autre erreur reste une panne (500, message générique, jamais le texte
   Postgres). Le dialogue « Créer depuis un template » de la page Cours **grise** ces modèles,
   statut dans le libellé (`src/lib/utils/template-select-items.ts`). Avant le 2026-10-14, il
   proposait les brouillons, et le refus s'affichait « Erreur lors de la creation… ».
 
-- **Instancier** copiait le snapshot dans un chapitre neuf (`applyContentSnapshotToChapter`,
-  sans appelant depuis l'étape 3b).
-- **Mettre à jour** (`migrateChapterToVersion` → `mergeContentSnapshotIntoChapter`) est
-  **additif** : ajoute ce qui manque, met à jour le contenu de ce qui existe, **ne supprime
-  jamais**. Clé de reconnaissance : l'identifiant référencé (exercice, fiche), le texte (objectif),
-  l'URL (document).
-- Ni l'**ordre d'affichage** ni `published_at` ne descendent du modèle : ils appartiennent à la
-  classe. Tout contenu arrivé par un modèle est **préparé, jamais donné**.
 - **Pages** (onglet « Templates » du hub Contenu, vérifié le 2026-10-13) :
   `src/routes/(protected)/dashboard/teacher/contenu/templates/` — liste (`listChapterTemplates`,
   filtres validés par `listTemplatesQuerySchema`, valeurs par défaut si invalides), `new/`
   (action `create`, `createChapterTemplateSchema`) et `[templateId]/` (plan du modèle dans
   l'éditeur partagé, chapitres liés ; actions `update` — bouton « Modifier », titre et
   description —, `publish`, `delete`, `archive`, `instantiate`, et les actions de contenu
-  ci-dessus ; `updateFromChapter` reste côté serveur, sans bouton, jusqu'à l'étape 5). Sa charge
+  ci-dessus). Sa charge
   rend `content` et, pour l'éditeur, les titres des exercices, fiches et séries et les listes de
   rattachement (`enrichTemplateContent`). Plus d'historique des versions à l'écran. Prof seul
   (`requireRole`). Tests : `contenu/templates/__tests__/routes.test.ts`.
 - **Compteurs** (documents, objectifs, corvées, fiches, séries ; liste des modèles, page du
   modèle, aperçu « Créer depuis un modèle » de la page Cours) : lus
-  dans le contenu réel non retiré (`countTemplateContent`, appelé par `listChapterTemplates`),
-  plus dans `content_snapshot`. ⚠️ Un modèle dont le contenu n'est encore que dans le snapshot
-  (le modèle de 1SPE avant la reprise de l'étape 4) s'y affiche vide.
+  dans le contenu réel non retiré (`countTemplateContent`, appelé par `listChapterTemplates`).
 
 ### Séance et travaux à faire
 
@@ -482,7 +475,8 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
   (`chapter-sections.ts`, rien ne casse sinon : le type ne serait jamais rangeable), à
   `buildChapterPlan`, au lien du cours s'il doit y être lisible (fonction SQL, schéma Zod et
   `buildPublicCourseView` — sinon il n'y apparaît pas), à la migration (colonnes `published_at`, `section_id`, `section_order` et
-  policy élève), et décider s'il entre dans `TemplateContentSnapshot`.
+  policy élève), et décider s'il entre dans les modèles (`LINKED_TABLES_SECTIONS_LAST`,
+  déclencheurs du lien).
 - **Nouvelle sorte d'activité** : `validation/curriculum.ts` (union discriminée), puis
   `TAGGED_KINDS` dans `curriculum-coverage.ts` si elle porte des tags.
 - **Toute nouvelle surface de progression élève** passe par `student-progression.ts`.
@@ -492,7 +486,7 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
 ## Tests
 
 - Unitaires serveur (`src/lib/server/__tests__/`) : `chapters`, `chapters-publication`,
-  `chapter-plan`, `chapter-series`, `chapter-templates`, `chapter-templates-merge`, `modele-lien`
+  `chapter-plan`, `chapter-series`, `chapter-templates`, `modele-lien`
   (ordre des opérations du lien : détacher, faire un modèle, supprimer, instancier, retirer),
   `template-content-counts` (compteurs lus dans les tables, jamais des zéros sur panne), `journal`,
   `journal-homework`, `journal-activities`, `journal-weekend`, `curriculum-grade`,
@@ -506,6 +500,7 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
   `dashboard/teacher/cours/[classId]/[chapterId]/__tests__/series-actions.test.ts`,
   `api/teacher/chapters/[id]/sections/assign/__tests__/assign.test.ts`,
   `dashboard/teacher/cours/[classId]/__tests__/share-course-actions.test.ts`,
+  `dashboard/teacher/contenu/templates/__tests__/{routes,identifiants,suppression-modele-relie}.test.ts`,
   `(public)/cours/[token]/__tests__/{page-server,page.svelte}.test.ts` ; serveur :
   `course-share-tokens.test.ts`.
 - Intégration (`tests/integration/`, base locale) : `chapter-publication-rls`,
@@ -521,7 +516,9 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
   avant et après par la vraie route, essai sans écriture, refus d'un faux lien publié, rejouable ;
   relance après chacun des échecs partiels — chapitres restés détachés, adoption à moitié, étape 5
   interrompue, garde refusant juste avant l'adoption — et arrêt sur une copie ambiguë ; son propre
-  ménage). Unitaire : `chapter-template-reprise-guard` (garde « déployé d'abord »).
+  ménage), `purge-tests-lignes-de-lien` (la purge des tests et `global-setup` passent malgré les
+  lignes de lien : `tests/helpers/database/purge-modeles.ts` supprime les liens, puis les
+  modèles). Unitaire : `chapter-template-reprise-guard` (garde « déployé d'abord »).
 
 ## Décisions
 
@@ -545,23 +542,22 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
    **troisième sens** de « publier » de [CONTEXT.md](../../CONTEXT.md) (mis à disposition des élèves),
    mais par un booléen, plus `entry_date <= current_date` dans la policy élève, et non par une date
    `published_at` testée `<= now()` comme le veut l'[ADR 0005](../adr/0005-publication-par-element-acces-herite-de-la-classe.md).
-2. **Les modèles n'emportaient ni sections ni séries** (snapshot). Réglé côté serveur par l'ADR
-   0029 (étape 3b : le modèle possède sections et séries, le lien les reprend) ; le snapshot reste
-   écrit par les reliquats jusqu'à l'étape 5.
-3. **Objectif retouché, objectif doublé** : un objectif dont le prof corrige le texte n'est plus
-   reconnu par la mise à jour suivante, qui réinsère la version du modèle (commentaire de
-   `mergeContentSnapshotIntoChapter` ; `chapter_checklist_items` sans contrainte d'unicité).
-   Décision en attente.
-4. **API REST sans appelant dans `src/`** (grep du 2026-10-10) : `api/teacher/chapter-templates/**`,
-   `api/teacher/chapters` (racine, `[id]`, `checklist`, `exercises`, `worksheets`, `progress`,
-   `reorder`, `create-template`, `detach`, `migrate`, `template-updates`),
+2. **Colonnes de l'ancien système de versions encore en base** (voir « Modèles de chapitre ») :
+   plus lues par le code depuis l'étape 5A ; leur suppression est une migration destructive, à
+   faire après le déploiement du code qui n'en dépend plus.
+3. **Règle « un chapitre sans contenu ne fait pas un modèle »** : la page du chapitre
+   (`[classId]/[chapterId]/+page.svelte`) ne compte pas les séries (Q128, héritée du snapshot qui
+   ne les emportait pas), alors que le modèle les emporte désormais et que `templateHasContent`
+   (publication) les compte. Décision en attente.
+4. **API REST sans appelant dans `src/`** (grep du 2026-10-14) : `api/teacher/chapters` (racine,
+   `[id]`, `checklist`, `exercises`, `worksheets`, `progress`, `reorder`),
    `api/student/chapters/**`, `api/student/checklist/**`. L'interface passe par les actions de
    formulaire des pages. Doublons à surveiller : une règle corrigée d'un côté ne l'est pas de
-   l'autre.
-5. **Composants de modèles morts** (à supprimer à l'étape 5) : `TemplateGallery`, `TemplateEditor`,
-   `TemplateInstantiationDialog`, `TemplateMigrationDialog`, `TemplateVersionHistory` (et
-   `TemplateCard`, qu'utilise seulement la galerie) ne sont importés par aucune page ; seul
-   `ChapterTemplateIndicator` sert. Le dossier `src/lib/components/templates/` héberge aussi
+   l'autre. (Les routes de l'ancien système de modèles — `chapter-templates` racine, `[id]`,
+   `publish`, `versions`, `instantiate`, et `chapters/[id]/{create-template,detach,migrate,template-updates}` —
+   ont été supprimées à l'étape 5A.)
+5. **`src/lib/components/templates/`** ne garde que `ChapterTemplateIndicator` pour les modèles de
+   chapitre (les composants de l'ancien système ont été supprimés à l'étape 5A) ; il héberge aussi
    `VariableAutocomplete`, `TagsInput`, `FiltersHelp`, qui servent les **modèles de message**
    (hors de cette zone, donc hors `couvre:`).
 6. **Fonctions sans appelant hors tests** : `reorderDocuments`, `reorderExercises`
@@ -587,6 +583,4 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
     2026-09-14). Tranché par l'[ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md) :
     le modèle s'édite sur sa page — serveur livré à l'étape 3b, interface à l'étape 3c
     ([journal](../wip/refonte-modeles-chapitre-progress.md)). Le bouton « Mettre à jour depuis un
-    chapitre » a disparu ; côté serveur, l'ancien circuit des versions reste refusé (409) dès qu'un
-    modèle possède du contenu en tables ou qu'un chapitre est relié, jusqu'à sa suppression
-    (étape 5).
+    chapitre » a disparu, et l'ancien circuit des versions a été supprimé à l'étape 5A.

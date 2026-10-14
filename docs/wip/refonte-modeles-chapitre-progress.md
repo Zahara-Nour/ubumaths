@@ -207,6 +207,21 @@ en prod (reprise, étape 3) avant le déploiement du code qui en tient compte (�
   profs) ; supprimée le même soir. Fragilité à traiter à l'étape 5 : la purge des tests doit
   supprimer les chapitres liés avant les modèles.
 
+### Étape 5A — code mort de l'ancien système, en branche `refactor/modeles-nettoyage-code` (2026-10-14)
+
+Sans migration ni écriture de données. Supprimés (grep `src`, `tests`, `scripts`, chaînes et
+jointures comprises) : fonctions snapshot/versions de `chapter-templates.ts` (`createTemplateVersion`,
+`getTemplateVersion(s)`, `computeDiff`, `checkForTemplateUpdates`, `getMigrationPreview`,
+`migrateChapterToVersion`, `extract/merge/applyContentSnapshot…`, `refuseLegacyVersioning`,
+`TemplateLinkedContentError`), actions `updateFromChapter` (page du modèle) et `migrateToVersion`
+(page du chapitre), types et schémas Zod orphelins, 10 routes d'API sans appelant, 6 composants
+morts. Le code ne lit plus aucune colonne de version (`INSTANTIATION_COLUMNS`) ; seule écriture
+restante : `template_version: 1` (NOT NULL sans défaut) à l'adoption. Purge des tests : lignes de
+lien puis modèles supprimés avant les profils (`tests/helpers/database/purge-modeles.ts`, test
+`purge-tests-lignes-de-lien`), documents de chapitre avant les classes. Reste l'étape 5B :
+migration destructive (colonnes, `chapter_template_versions`), anciens fichiers `chapters/…`
+adoptés, règle de stockage élève de prod.
+
 ### Mise en prod faite le 2026-10-14 (v0.33.0, ~23 h)
 
 `deploy:prod` → v0.33.0 (Vercel prêt à 22:59) → reprise `--essai` relue avec David → `--appliquer` :
