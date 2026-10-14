@@ -190,6 +190,14 @@ en prod (reprise, étape 3) avant le déploiement du code qui en tient compte (�
   propriétaire) ; page d'édition du modèle ; dans le chapitre, éléments du modèle marqués, non
   modifiables, masquables ; plus de « Mettre à jour depuis un chapitre » ni de versions affichées.
 
+### ⛔ Déploiement : 3b + 3c (#1390) ET reprise (étape 4) ENSEMBLE
+
+#1390 (serveur + interface) est mergée le 2026-10-14 mais **ne doit pas partir en prod sans la
+reprise** : le modèle publié f74e72c8 n'a son contenu que dans `content_snapshot` ; avec le
+nouveau code, sa page l'afficherait vide et l'instancier donnerait un chapitre vide. Séance de
+mise en prod : `deploy:prod` → reprise (`scripts/reprise-modeles-adr0029.ts`, d'abord `--essai`)
+→ vérification avec David (ses élèves de 1SPE lisent leurs 4 documents).
+
 ## Découpage prévu
 
 1. Phase 0 (ce document) — validation de David.
