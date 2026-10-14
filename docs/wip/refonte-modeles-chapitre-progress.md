@@ -207,6 +207,15 @@ en prod (reprise, étape 3) avant le déploiement du code qui en tient compte (�
   profs) ; supprimée le même soir. Fragilité à traiter à l'étape 5 : la purge des tests doit
   supprimer les chapitres liés avant les modèles.
 
+### Mise en prod faite le 2026-10-14 (v0.33.0, ~23 h)
+
+`deploy:prod` → v0.33.0 (Vercel prêt à 22:59) → reprise `--essai` relue avec David → `--appliquer` :
+modèle f74e72c8 = 6 sections + 4 documents (copies sous `templates/f74e72c8…/`), chapitre de 1SPE
+adopté (mêmes identifiants, mêmes dates de publication), chapitre de 1SPE 2 réparé (4 liens non
+publiés), originaux `chapters/1c997492…/` gardés. Vérifié en base (lecture seule) ; aucune erreur
+Vercel. Sauvegarde : `~/chiphre-sauvegardes/reprise-modeles-adr0029/`. ⛔ Plus de retour arrière
+Vercel en deçà de v0.33.0. Vérifications manuelles : `verifications-manuelles.md`. Reste : étape 5.
+
 ### État au 2026-10-14, fin de soirée : PRÊT pour la séance de mise en prod
 
 Sur `main` : #1390 (serveur + interface), #1392 (reprise), #1393 (base : section masquée, en prod),

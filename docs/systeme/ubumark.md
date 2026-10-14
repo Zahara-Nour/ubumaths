@@ -69,8 +69,9 @@ Hors périmètre : les **QCM** (choix, mélange) ne sont pas de la notation ubum
 
 ### Ailleurs
 
-- **PDF** : `src/lib/typst/` (fiches, carnets), `src/lib/exercises/typst/exercise-typst-generator.ts`,
-  `src/lib/worksheets/student-worksheet-typst.ts` appellent `generateTypst`.
+- **PDF** : `src/lib/typst/` (carnets), `src/lib/exercises/typst/exercise-typst-generator.ts` et
+  le rendu des exercices de fiche (`src/lib/worksheets/document/render-exercise.ts`, prof et élève)
+  appellent `generateTypst`.
 - **Éditeur riche** (TipTap) : `src/lib/components/rich-text/markdown-import.ts` /
   `markdown-export.ts` (aller-retour : un bloc spécial devient un `codeBlock` de son langage et
   revient intact), vues d'édition dans `src/lib/extensions/`.
