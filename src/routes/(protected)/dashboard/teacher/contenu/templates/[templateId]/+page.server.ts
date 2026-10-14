@@ -68,10 +68,6 @@ import {
 } from '$lib/server/validation/chapter-templates';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { createServerLogger } from '$lib/utils/logger';
-
-const logger = createServerLogger('dashboard/teacher/contenu/templates/[templateId]/+page.server');
-
 import type {
 	TemplateContent,
 	TemplateSeries,
