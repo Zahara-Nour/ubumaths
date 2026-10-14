@@ -39,7 +39,6 @@ export const COPIE: readonly string[] = [
 	'parody_evaluations',
 	// Chapitres
 	'chapter_templates',
-	'chapter_template_versions',
 	'class_chapters',
 	'chapter_sections',
 	'chapter_series',

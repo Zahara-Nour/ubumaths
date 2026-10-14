@@ -115,8 +115,6 @@ export async function createChapterTemplate(
 	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<ChapterTemplate>> {
 	try {
-		// `content_snapshot` et `current_version` (ancien système de versions)
-		// gardent leur valeur par défaut : plus rien ne les lit.
 		const { data: template, error } = await supabase
 			.from('chapter_templates')
 			.insert({

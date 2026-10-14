@@ -162,7 +162,6 @@ describe('ADR 0029 — adopter un élément du chapitre dans le modèle', () => 
 
 		await insertAs(prof, 'chapter_template_instantiations', {
 			template_id: modele,
-			template_version: 1,
 			chapter_id: chapitre
 		});
 	}, 120_000);
