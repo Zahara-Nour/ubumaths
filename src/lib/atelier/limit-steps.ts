@@ -20,6 +20,9 @@
  *   l'annonce écrit $\lim g(x) = \lim \dfrac{x^2-1}{x-1}$, la conclusion
  *   $\lim g(x) = 2$ ; les étapes parlent de SA lettre (`f(t) = 1/t` : t).
  *
+ * - Fonction en escalier (`floor`, `ceil`, `round`, `sign`) : pas de
+ *   « Comment ? » (V60) — les étapes substitueraient sans voir le saut.
+ *
  * ⚠️ **`null` n'est pas un échec : c'est le repli.** La ligne garde la
  * réponse de `.limite`, sans « Comment ? ». Aucun chemin ne jette.
  *
@@ -34,6 +37,7 @@ import type {
 	PedagogicalLimitStep
 } from '$lib/mathAST/pedagogical-limits/types';
 import { generatePedagogicalLimitSteps } from '$lib/mathAST/pedagogical-limits/pipeline';
+import { containsPiecewiseFunction } from '$lib/mathAST/limits/piecewise';
 import { PedagogicalLimitRenderer } from '$lib/mathAST/pedagogical-limits/renderer';
 import { parse } from '$lib/mathAST/cli/core/pipeline';
 import { getVariables } from '$lib/mathAST/eval/substitute';
@@ -123,6 +127,9 @@ export function limitSteps(question: LimitQuestion, answer: LimitAnswer): LimitS
 	try {
 		const expression = studentExpression(question);
 		if (expression === null) return null;
+		// V60 : le moteur pédagogique ne voit pas les sauts de floor, sign… —
+		// sa conclusion pourrait tomber juste sur un raisonnement faux
+		if (containsPiecewiseFunction(expression)) return null;
 		const result = generatePedagogicalLimitSteps(expression, {
 			variable: question.letter,
 			approach: question.approach,

@@ -547,3 +547,43 @@ describe('revue : le nom de la fonction s’écrit hors du texte', () => {
 		);
 	});
 });
+
+describe('V60 : les fonctions en escalier', () => {
+	it('floor(x) en 1 : pas de limite, à gauche 0, à droite 1', () => {
+		expect(line('.limite floor(x) en 1').output).toBe(
+			'Pas de limite en 1 : à gauche 0, à droite 1.'
+		);
+	});
+
+	it.each([
+		['floor(x) en 1^+', '\\lim\\limits_{x\\to1^+}\\lfloor x\\rfloor=1'],
+		['floor(x) en 1^-', '\\lim\\limits_{x\\to1^-}\\lfloor x\\rfloor=0']
+	])('%s', (typed, expected) => {
+		expect(latex(`.limite ${typed}`)).toBe(expected.replace(/\s/g, ''));
+	});
+
+	it.each([
+		['floor(x) en 1,5', '= 1'],
+		['floor(x) en 1/2', '= 0'],
+		['floor(x) en +∞', '= +∞'],
+		['floor(x) en -∞', '= -∞']
+	])('%s : %s', (typed, expected) => {
+		expect(line(`.limite ${typed}`).output.endsWith(expected)).toBe(true);
+	});
+
+	it('sign(x) en 0 : à gauche -1, à droite 1', () => {
+		expect(line('.limite sign(x) en 0').output).toBe(
+			'Pas de limite en 0 : à gauche -1, à droite 1.'
+		);
+	});
+
+	it('floor(2x) en 1/2 : pas de limite', () => {
+		expect(line('.limite floor(2x) en 1/2').output).toMatch(
+			/^Pas de limite en 1\/2 : à gauche 0, à droite 1\.$/
+		);
+	});
+
+	it('floor(x)/x en +∞ : « je ne sais pas », jamais une réponse fausse', () => {
+		expect(line('.limite floor(x)/x en +∞').output).toBe('Je ne sais pas calculer cette limite.');
+	});
+});

@@ -1001,7 +1001,9 @@ divisions écrites en fractions sans les parenthèses tapées pour la barre (`\d
 un point non entier avec un côté écrit comme sur la ligne (`{\tfrac{1}{2}}^+`). **Gendarmes
 exclus** : le moteur juge l'encadrement sur des sondes numériques (`SQUEEZE_PROBES`) sans en
 rendre les bornes ; des étapes `identify-bounds` / `apply-squeeze` → pas de « Comment ? »
-(`x^2 sin(1/x)` en 0) tant que le moteur n'écrit pas l'inégalité. **Garde de concordance** (`concludesLimitAnswer`) : la valeur
+(`x^2 sin(1/x)` en 0) tant que le moteur n'écrit pas l'inégalité. **Fonctions en escalier
+exclues** (`floor`, `ceil`, `round`, `sign`, V60) : le moteur pédagogique substitue sans voir
+le saut — pas de « Comment ? » (`containsPiecewiseFunction`). **Garde de concordance** (`concludesLimitAnswer`) : la valeur
 conclue est celle de la ligne par valeur exacte (`concludesEngineValue`), un infini du même signe,
 le même côté implicite (l'étape qui porte `domainBoundary` ↔ `definedSide`) ; « pas de limite »
 n'est expliqué que dans le cas L4 (les deux limites latérales écrites par la ligne), avec les

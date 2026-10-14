@@ -78,7 +78,7 @@ import { trySqueeze } from './squeeze';
 import { evaluateOneSidedLimits, needsOneSidedAnalysis, recordOneSidedSteps } from './one-sided';
 import { tryCompositionLimit } from './composition';
 import { rewriteReciprocalTrig } from './reciprocal-trig';
-import { tryPiecewiseFunctionLimit, containsPiecewiseFunction } from './piecewise';
+import { evaluatePiecewiseLimit } from './piecewise';
 import {
 	limitByGeneralizedDegree,
 	involvesFractionalPower,
@@ -353,6 +353,8 @@ export function evaluateLimit(
 	}
 	const greekResult = evaluateGreekVariableLimit(expr, variable, approach, direction, options);
 	if (greekResult !== null) return greekResult;
+	const piecewiseResult = piecewiseLimit(expr, variable, approach, direction, options);
+	if (piecewiseResult !== null) return piecewiseResult;
 	const result = rejectUnreducedInfinity(
 		evaluateLimitExactForm(expr, variable, approach, direction, options)
 	);
@@ -360,6 +362,35 @@ export function evaluateLimit(
 	const twoSided = oddRootTwoSided(expr, variable, approach, options, result, expression);
 	const checked = withApproximateStatus(twoSided ?? result, expression);
 	return withInfiniteStatus(writeValue(writeLikeInput(checked, expression)));
+}
+
+/**
+ * Fonctions en escalier (`floor`, `ceil`, `round`, `sign`) dépendant de la
+ * variable : tranchées avant toute stratégie, qui ne voit pas leurs sauts
+ * (V60 : `floor(x)` en 1 rendait 1). Ce module refuse plutôt que de laisser
+ * la substitution directe conclure. `null` sans fonction en escalier.
+ */
+function piecewiseLimit(
+	expr: MathNode | LimitNode,
+	variable: string | undefined,
+	approach: MathNode | undefined,
+	direction: LimitDirection,
+	options: LimitOptions
+): LimitResult | null {
+	const expression = isLimit(expr) ? expr.expression : expr;
+	const varName = isLimit(expr) ? expr.variable : variable;
+	const point = isLimit(expr) ? expr.approach : approach;
+	const dir = isLimit(expr) ? expr.direction : direction;
+	if (varName === undefined || point === undefined) return null;
+	const limitOf = (node: MathNode, side: LimitDirection): LimitResult | null => {
+		try {
+			return evaluateLimit(node, varName, point, side, options);
+		} catch (error) {
+			if (error instanceof LimitError) return null;
+			throw error;
+		}
+	};
+	return evaluatePiecewiseLimit(expression, varName, normalizeApproach(point), dir, limitOf);
 }
 
 /**
@@ -688,31 +719,6 @@ function evaluateLimitExactForm(
 			recorder,
 			opts
 		);
-	}
-
-	// Strategy 1.5: Try piecewise function limits (floor, ceil, sign)
-	// Must be before direct substitution to handle direction correctly
-	if (!isInfinity(approachPoint) && containsPiecewiseFunction(expression)) {
-		const piecewiseResult = tryPiecewiseFunctionLimit(
-			expression,
-			varName,
-			approachPoint,
-			dir,
-			recorder
-		);
-		if (piecewiseResult.success && piecewiseResult.value) {
-			return createResult(
-				piecewiseResult.value,
-				varName,
-				approachPoint,
-				dir,
-				'exact',
-				'none',
-				piecewiseResult.technique,
-				recorder,
-				opts
-			);
-		}
 	}
 
 	// Stratégie 1.9 : u^v, u ET v variables (xˣ, x^{1/x}), forme 0^0, ∞^0 ou
@@ -2343,25 +2349,6 @@ function evaluateLimitInternal(
 			recorder,
 			opts
 		);
-	}
-
-	// Try piecewise function limits (floor, ceil, sign)
-	// Must be before direct substitution to handle direction correctly
-	if (!isInfinity(approach) && containsPiecewiseFunction(expr)) {
-		const piecewiseResult = tryPiecewiseFunctionLimit(expr, varName, approach, direction, recorder);
-		if (piecewiseResult.success && piecewiseResult.value) {
-			return createResult(
-				piecewiseResult.value,
-				varName,
-				approach,
-				direction,
-				'exact',
-				'none',
-				piecewiseResult.technique,
-				recorder,
-				opts
-			);
-		}
 	}
 
 	// Try direct substitution
