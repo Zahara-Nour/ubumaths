@@ -867,6 +867,16 @@ chaque étape avec l'entrée, suite des règles, titres, collège et lycée, ate
   `value: null`, `error` en français (∫₀¹ eˣ/(eˣ − 2) compris). Il accepte une intégrale impropre
   convergente (∫₀¹ 1/√x = 2) que la version pédagogique refuserait (borne interdite) si elle
   savait calculer la primitive.
+- **Intégrales à paramètre** (V61, 2026-10-14) : la règle arctan (`isArctanPattern`,
+  `integrators/basic.ts`) déballe les parenthèses du dénominateur — `1/(x^2+a^2)` tapé en
+  notation maison arrive en `delimiter` et n'était pas reconnu (« Unable to factor
+  denominator ») ; numérateur 1 seulement (`3/(x^2+a^2)`, `1/(x^2+a^2+1)` restent refusés).
+  La valeur symbolique de `integrateDefinite` réduit `1^u` en 1 (`withoutPowersOfOne` :
+  `x^a` de 1 à 2 → (2^{a+1} − 1)/(a + 1)). Les refus des intégrateurs sont écrits en français
+  à la source (partial-fractions, trig-substitution, basic), comme le reste du module :
+  `integrateDefinite` les recopie dans `error`, que l'atelier montre à l'élève ;
+  `integrate.command.ts` dit « Je ne sais pas calculer cette intégrale » et nomme la technique
+  tentée en français (`TECHNIQUE_LABELS`).
 - ⚠️ Les étapes de `normalize` sont du calcul interne, pas une leçon : elles arrivent
   pourtant dans `auto`/`reduire`/`developper` via `runNormalizePass` (ADR 0007 veut les
   retirer du chemin élève).
@@ -1015,6 +1025,24 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   a pour limite `0.5` et pour valeur `\dfrac{1}{2}`, continue. Les étapes « limite à gauche /
   à droite » d'une limite bilatérale s'écrivent en `a^-` / `a^+` (côté étudié, pas celui de la
   limite).
+- **Fonctions en escalier** (`limits/piecewise.ts`, `evaluatePiecewiseLimit`, V60,
+  2026-10-14) : `floor`, `ceil`, `round`, `sign`/`sgn` dépendant de la variable sont tranchées
+  par `evaluateLimit` AVANT toute stratégie (la substitution directe ne voit pas les sauts :
+  `floor(x)` en 1 rendait 1). Chaque appel g(u) devient la constante qu'il vaut au voisinage, du
+  côté demandé : L = lim u (moteur) ; L hors d'un saut → g(L) (exact sur un rationnel, flottant
+  sur un irrationnel loin du saut, refus à moins de 10⁻⁹) ; L sur un saut (entier, demi-entier
+  pour `round`, 0 pour `sign`) → le côté lu sur la limite de 1/(u − L) (±∞), **confirmé** sur
+  u − L en a ± 10⁻³, 10⁻⁴, 10⁻⁶ (en ±∞ : ±10³, 10⁴, 10⁶), non nul et du signe annoncé — le moteur
+  rend +∞ même quand u − L ≡ 0 de ce côté (`sign(x+|x|)` en 0⁻), d'où un refus ; π tapé `π`
+  (variable du parseur) vaut la constante dans ces évaluations ; u → ±∞ → `sign`
+  vaut ±1, `floor`/`ceil`/`round` tendent vers cet infini **seulement si l'appel est toute
+  l'expression**. Le reste se calcule par le moteur. Sans côté, en un point fini : les deux
+  côtés, différents → `does-not-exist` / `sides-differ` (`floor(x)` en 1 : 0 et 1 ;
+  `floor(sin x)` en 0 : −1 et 0), égaux → leur valeur (`floor(x^2)` en 0 = 0). **Refus**
+  (`unsupported`) : appels imbriqués, argument sans limite ou côté illisible, `floor(x)/x` ou
+  `x − floor(x)` en ±∞, `mod`/`gcd` appliqués à la variable (fonctions des entiers). Les étapes
+  du résultat sont vidées (elles parleraient du reste). Remplace l'ancienne évaluation en
+  a ± 10⁻⁸. Tests : `limits/__tests__/step-functions.test.ts`.
 - **Domaine d'un côté, raison du « pas de limite », oscillation** (`limits/evaluate.ts`,
   2026-10-14). Deux champs optionnels de `LimitResult` (`limits/types.ts`) :
   `definedSide: 'left' | 'right'` — limite bilatérale en un point fini où f n'est définie que

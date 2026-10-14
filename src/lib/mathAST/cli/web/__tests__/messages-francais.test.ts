@@ -143,3 +143,25 @@ describe('la saisie recopiée garde ses mots', () => {
 		expect(run(input).outputHtml ?? '').toContain(input.replace(':', ':'));
 	});
 });
+
+// V61 (2026-10-14) : les refus du moteur d'intégration remontaient en anglais
+// (« Unable to factor denominator », « Technique tentée: partial-fractions »)
+describe('les refus de .integrate, en français', () => {
+	const INTEGRATION_ENGLISH =
+		/\b(Unable|Not a|not supported|not yet|pattern detected|skeleton|integrator|partial-fractions|u-substitution|basic-rule|trig-substitution)\b/;
+
+	it.each([
+		'.integrate 1/(x^2+a^2+1)',
+		'.integrate 1/(x^2+a^2+1) 0 1',
+		'.integrate 3/(x^2+a^2+1) 0 1',
+		'.integrate e^(x^2)',
+		'.integrate 1/(x^3+a)'
+	])('%s', (input) => {
+		const line = run(input);
+		const all = `${line.output}\n${line.error?.message ?? ''}`;
+
+		expect(line.success).toBe(false);
+		expect(all).not.toMatch(ENGLISH);
+		expect(all).not.toMatch(INTEGRATION_ENGLISH);
+	});
+});

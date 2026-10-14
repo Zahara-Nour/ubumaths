@@ -172,8 +172,4 @@ export {
 // Piecewise Functions
 // =============================================================================
 
-export {
-	tryPiecewiseFunctionLimit,
-	containsPiecewiseFunction,
-	type PiecewiseLimitResult
-} from './piecewise';
+export { evaluatePiecewiseLimit, containsPiecewiseFunction, type LimitOf } from './piecewise';
