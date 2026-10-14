@@ -138,3 +138,7 @@ Tests d'abord, rouges, pour chaque ligne de B, C, D et E ; `code-reviewer` en fi
 - 2026-10-14 — **décisions de David** (« je suis tes recos ») : (1) tableau B tel quel, ordre
   a² + 2ab + b² et ax + ab, décimaux selon le mode ; (2) équation REFUSÉE, renvoi vers `.résoudre` ;
   (3) deux PR : la commande d'abord sans « Comment ? », les étapes ensuite.
+- 2026-10-14 — **décision de David** (« oui », sur ma reco) : les décimaux s'alignent sur `.limite`
+  (décision du 2026-10-06) — un décimal tapé, ou le mode décimal, donne des décimaux
+  (`(0,5x+1)²` → 0,25x² + x + 1 même en mode exact) ; sinon des fractions ; une fraction sans
+  écriture décimale finie reste une fraction. Remplace « décimaux selon le mode » du tableau B.

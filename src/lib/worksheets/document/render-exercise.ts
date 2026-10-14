@@ -3,14 +3,14 @@
  * =================================================================================
  *
  * Utilisé par les deux générateurs (prof : `worksheet-generator.ts`, élève :
- * `student-worksheet-typst.ts`). Tout ce qui fait un exercice imprimé vit ici :
+ * `student-worksheet-typst.ts`) et par l'aperçu markdown à l'écran du prof
+ * (`renderMarkdownPreview`). Tout ce qui fait un exercice imprimé vit ici :
  * groupement par section (et « Autres exercices »), numéro, titre avec ses
  * formules, points dans la langue du document, consigne, énoncé, réponses ou
  * corrigé (concis ou détaillé), « correction non écrite ».
  *
- * Les mises en page (`ExerciseLayout`) ne changent que l'habillage. Elles
- * reproduisent celles d'avant le lot 1 ; au lot 2, elles deviennent le code
- * commun des styles et ce paramètre disparaît.
+ * Les habillages (`ExerciseLayout`) ne changent que l'allure ; le gabarit
+ * choisit le sien par son placeholder (`{{exercises}}`, `{{exercises_badge}}`).
  *
  * @module worksheets/document/render-exercise
  */
@@ -35,16 +35,13 @@ import type { DocumentExercise, DocumentForm, DocumentSection, WorksheetDocument
 
 /**
  * Habillage d'un exercice :
- * - `classic` : fiche du prof sans gabarit (`#exercise-header`, `points-badge`) ;
- *   ses Réponses et son Corrigé prennent `badge`, en deux colonnes (D6) ;
  * - `heading` : gabarit qui place `{{exercises}}` (« Exercice N : titre ») ;
- * - `badge` : gabarit qui place `{{exercises_badge}}` (numéro sur carré ambre),
- *   et corrigés du prof sans gabarit ;
+ * - `badge` : gabarit qui place `{{exercises_badge}}` (numéro sur carré ambre) ;
  * `display.titleOnly` (copie d'un élève servant de document de classe, D6) :
  * dans tous les habillages, le titre seul, sans numéro ni carré.
  * - `student` : PDF de l'élève (carré ambre, ★, corrigés en fin de document).
  */
-export const EXERCISE_LAYOUTS = ['classic', 'heading', 'badge', 'student'] as const;
+export const EXERCISE_LAYOUTS = ['heading', 'badge', 'student'] as const;
 export type ExerciseLayout = (typeof EXERCISE_LAYOUTS)[number];
 
 /** Ce qu'un exercice imprime après son en-tête, hors fiche */
@@ -70,31 +67,75 @@ export function renderExercises(
 		return doc.exercises.map((exercise) => renderStudentPanel(exercise, doc, form)).join('');
 	}
 
-	const sections = new Map(doc.sections.map((section) => [section.id, section]));
 	let content = '';
+	for (const { header, exercise } of withSectionHeaders(doc, form)) {
+		if (header) content += renderSectionHeader(header, layout);
+		content += renderExercise(exercise, doc, form, layout);
+	}
+	return content;
+}
+
+/**
+ * Aperçu à l'écran du prof, en markdown : mêmes ordre, numéros, titres,
+ * sections et corrections que le PDF de la même forme (lot 2).
+ */
+export function renderMarkdownPreview(doc: WorksheetDocument, form: DocumentForm): string {
+	const labels = documentLabels(doc.locale);
+	const level = doc.sections.length > 0 ? '###' : '##';
+	const parts: string[] = [`# ${doc.title}\n`];
+	if (doc.description) parts.push(`${doc.description}\n`);
+
+	for (const { header, exercise } of withSectionHeaders(doc, form)) {
+		if (header) {
+			parts.push(`## ${header.title}\n`);
+			if (header.instructions) parts.push(`_${header.instructions}_\n`);
+		}
+		const heading = doc.display.titleOnly
+			? (exercise.title ?? labels.untitledExercise)
+			: `${labels.exercise} ${exercise.number}${exercise.title ? ` : ${exercise.title}` : ''}`;
+		parts.push(`${level} ${heading}\n`);
+		if (form === 'worksheet') {
+			if (exercise.instructions) parts.push(`_${exercise.instructions}_\n`);
+			parts.push(`${exercise.statement}\n`);
+			continue;
+		}
+		const printed = printedCorrection(exercise, doc, form);
+		if (printed)
+			parts.push('markdown' in printed ? `${printed.markdown}\n` : `_${printed.message}_\n`);
+	}
+	return parts.join('\n');
+}
+
+/**
+ * Les exercices dans l'ordre du document, chacun avec le titre de section à
+ * poser avant lui (ou `null`). Exercice hors section après des sections : sous
+ * « Autres exercices » (D4). La consigne de section fait partie de l'énoncé :
+ * les corrigés n'en gardent que le titre.
+ */
+function withSectionHeaders(
+	doc: WorksheetDocument,
+	form: DocumentForm
+): Array<{ header: DocumentSection | null; exercise: DocumentExercise }> {
+	const sections = new Map(doc.sections.map((section) => [section.id, section]));
+	const items: Array<{ header: DocumentSection | null; exercise: DocumentExercise }> = [];
 	let currentSection: string | null | undefined = undefined;
 	let afterSection = false;
 
 	for (const exercise of doc.exercises) {
+		let header: DocumentSection | null = null;
 		if (exercise.sectionId !== currentSection) {
 			currentSection = exercise.sectionId;
 			const section = currentSection ? sections.get(currentSection) : undefined;
 			if (section) {
-				// La consigne de section fait partie de l'énoncé : les corrigés n'en gardent que le titre
-				content += renderSectionHeader(
-					form === 'worksheet' ? section : { ...section, instructions: null },
-					layout
-				);
+				header = form === 'worksheet' ? section : { ...section, instructions: null };
 				afterSection = true;
 			} else if (afterSection) {
-				const others = documentLabels(doc.locale).otherExercises;
-				content += renderSectionHeader({ id: '', title: others, instructions: null }, layout);
+				header = { id: '', title: documentLabels(doc.locale).otherExercises, instructions: null };
 			}
 		}
-		content += renderExercise(exercise, doc, form, layout);
+		items.push({ header, exercise });
 	}
-
-	return content;
+	return items;
 }
 
 // ============================================================================
@@ -127,7 +168,6 @@ function renderSectionHeader(section: DocumentSection, layout: ExerciseLayout): 
 					: '') +
 				'\n]\n\n'
 			);
-		case 'classic':
 		case 'heading':
 			return (
 				`#block(width: 100%, inset: (top: 0.5em, bottom: 0.3em))[
@@ -156,52 +196,10 @@ function renderExercise(
 	switch (layout) {
 		case 'student':
 			return renderStudentExercise(exercise, doc);
-		case 'classic':
-			return renderClassicExercise(exercise, doc, form) + '\n\n';
 		case 'heading':
 		case 'badge':
 			return renderTemplateExercise(exercise, doc, form, layout) + '\n\n';
 	}
-}
-
-/** PDF du prof sans gabarit : en-tête en grille, `points-badge` du setup */
-function renderClassicExercise(
-	exercise: DocumentExercise,
-	doc: WorksheetDocument,
-	form: DocumentForm
-): string {
-	const labels = documentLabels(doc.locale);
-	const title = exercise.title ? ` : ${exerciseTitle(exercise, doc)}` : '';
-	const heading = doc.display.titleOnly
-		? titleOnlyHeading(exercise, doc)
-		: `${labels.exercise} ${exercise.number}${title}`;
-	let content = '#exercise-header[\n';
-	content += '  #grid(\n';
-	content += '    columns: (auto, 1fr, auto),\n';
-	content += `    [#text(size: 1.1em, weight: "bold")[${heading}]],\n`;
-	content += '    [],\n';
-	const points = shownPoints(exercise, doc);
-	content += points ? `    points-badge([${points}])\n` : '    []\n';
-	content += '  )\n';
-
-	// Consigne du prof : elle fait partie de l'énoncé, sur la fiche seulement
-	if (form === 'worksheet' && exercise.instructions) {
-		content += '  #v(0.2em)\n';
-		content += `  #text(style: "italic", fill: rgb(90, 90, 90))[${escapeTypst(exercise.instructions)}]\n`;
-	}
-	content += ']\n';
-
-	// Corrigés : jamais l'énoncé, seulement les réponses ou la correction
-	if (form !== 'worksheet') return content + renderTeacherCorrection(exercise, doc, form);
-
-	content += '#exercise-box[\n';
-	content += indent(markdownTypst(exercise.statement, exercise, doc)) + '\n';
-	if (hasAnswerSpace(doc)) {
-		content += '  #v(0.5em)\n';
-		content += '  #answer-space(height: 5cm)\n';
-	}
-	content += ']\n';
-	return content;
 }
 
 /** Gabarit : en-tête « Exercice N » ou numéro sur carré ambre, dans un bloc `sticky` */
