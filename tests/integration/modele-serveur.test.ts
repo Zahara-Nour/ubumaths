@@ -2,7 +2,7 @@
  * Le modèle possède son contenu : la logique serveur (base locale requise)
  * =========================================================================
  *
- * ADR 0029, étape 3b (docs/wip/refonte-modeles-chapitre-progress.md). Ce que le
+ * ADR 0029, étape 3b (docs/archive/wip/refonte-modeles-chapitre-progress.md). Ce que le
  * SERVEUR fait par-dessus les gardes de la base (étape 2, `modele-possede-son-contenu`) :
  * éditer le contenu d'un modèle, l'instancier par un lien, retirer un élément,
  * détacher un chapitre en copiant ses fichiers, refuser la suppression d'un

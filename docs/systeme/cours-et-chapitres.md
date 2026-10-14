@@ -252,7 +252,7 @@ Détails : [fiches-et-pdf.md](fiches-et-pdf.md) et le chantier
 un modèle **publié** s'instancie.
 
 Depuis l'[ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md)
-([journal](../wip/refonte-modeles-chapitre-progress.md)), le modèle **possède son contenu** (mêmes
+([journal](../archive/wip/refonte-modeles-chapitre-progress.md)), le modèle **possède son contenu** (mêmes
 six tables, colonne `template_id`) et le chapitre lié le **relie** (lignes de lien, `source_id`,
 contenu recopié par la base — migration `20261016103300`, voir
 [base-de-donnees.md](base-de-donnees.md)).
@@ -314,7 +314,7 @@ après la garde de publication.
   qui n'avait son contenu que dans `content_snapshot`, a reçu ses lignes, son chapitre d'origine
   les a adoptées et le chapitre de 1SPE 2 a été réparé ; l'outil (`migrateSnapshotTemplate` et son script
   `reprise-modeles-adr0029`) a été retiré à l'étape 5 — plus aucun modèle à snapshot.
-  Historique : [journal](../wip/refonte-modeles-chapitre-progress.md).
+  Historique : [journal](../archive/wip/refonte-modeles-chapitre-progress.md).
 
 - **Refus d'un modèle inutilisable** : un brouillon ou un modèle archivé fait rendre à
   `instantiateTemplate` une `TemplateUnusableError`, dont le message est écrit pour le professeur
@@ -554,5 +554,5 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
     « Mettre à jour depuis un chapitre » : un geste que personne n'avait choisi, bouche-trou du
     2026-09-14). Tranché par l'[ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md) :
     le modèle s'édite sur sa page — serveur livré à l'étape 3b, interface à l'étape 3c
-    ([journal](../wip/refonte-modeles-chapitre-progress.md)). Le bouton « Mettre à jour depuis un
+    ([journal](../archive/wip/refonte-modeles-chapitre-progress.md)). Le bouton « Mettre à jour depuis un
     chapitre » a disparu, et l'ancien circuit des versions a été supprimé à l'étape 5A.

@@ -1,7 +1,12 @@
-# Refonte des modèles de chapitre — journal
+# Refonte des modèles de chapitre — journal (CLOS le 2026-10-15)
 
-> Décision : [ADR 0029](../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md)
-> (2026-10-14). Doc de la zone : [cours-et-chapitres.md](../systeme/cours-et-chapitres.md) (écart 9).
+> **Chantier clos.** Ce qui reste vrai est versé dans [cours-et-chapitres.md](../../systeme/cours-et-chapitres.md)
+> et [base-de-donnees.md](../../systeme/base-de-donnees.md) ; décision : [ADR 0029](../../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md).
+> Étape 5B faite le 2026-10-15 : migration `20261016103800` jouée, 4 PDF en doublon supprimés
+> (sauvegardés dans `~/chiphre-sauvegardes/modeles-etape5b/`), types régénérés (#1408).
+
+> Décision : [ADR 0029](../../adr/0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md)
+> (2026-10-14). Doc de la zone : [cours-et-chapitres.md](../../systeme/cours-et-chapitres.md) (écart 9).
 > État : **phase 0 validée par David le 2026-10-14** (comportements 1-19, Q1-Q4 selon les recos).
 > Prochaine étape : modèle de données et question d'accès, avant tout SQL.
 
