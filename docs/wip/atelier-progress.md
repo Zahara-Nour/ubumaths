@@ -139,6 +139,9 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
      $+\infty$ » ; L5 réponse $\lim\limits_{x\to 1}\dfrac{x^2-1}{x-1} = 2$, `e` et non `exp(1)`, jamais
      de valeur approchée ; L6 `.limite f en +∞` → $\lim f(x)$. PR 1 moteur (#1359) mergée ; PR 2
      commande qui répond seule ; PR 3 « Comment ? ». Plus tard : conjuguée, forme $1^\infty$.
+     **Fait le 2026-10-14** : PR 2 #1361 (`limit.ts`), moteur #1362 (`definedSide`, `noLimitReason`,
+     oscillation, e, statut approché, f(u) exact), raisons écrites #1363. Ouvert : raison quand le côté
+     est TAPÉ (reco : oui, « n'est pas définie à droite de 0 ») ; PR 3 « Comment ? » ; E6.
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).
 
 ### Dettes encore ouvertes (vérifiées dans le code)
