@@ -26,6 +26,9 @@ import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { CHAPTER_DOCUMENTS_BUCKET } from '$lib/server/content-owner';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/documents/[id]/+server');
 
 const idSchema = z.string().uuid('ID invalide');
 
@@ -147,7 +150,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			!SERVABLE_PREFIXES.some((prefix) => storagePath.startsWith(prefix)) ||
 			storagePath.includes('..')
 		) {
-			console.error('[Document API] Chemin hors des dossiers servis :', document.id);
+			logger.error('Chemin hors des dossiers servis :', document.id);
 			throw error(404, 'Document non trouve');
 		}
 

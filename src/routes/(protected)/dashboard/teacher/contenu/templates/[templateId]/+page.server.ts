@@ -64,6 +64,9 @@ import {
 } from '$lib/server/validation/chapter-templates';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('dashboard/teacher/contenu/templates/[templateId]/+page.server');
 
 // Constantes
 /** Un objectif du modèle : le propriétaire vient de l'URL, jamais du formulaire. */
@@ -121,7 +124,7 @@ async function placementDemande(
 		supabase
 	);
 	if (error || rang === null) {
-		console.error(`[${action}] Rang illisible :`, error);
+		logger.error(`[${action}] Rang illisible :`, error);
 		return { placed: false };
 	}
 	return { placement: { sectionId: cible.data, sectionOrder: rang }, placed: true };
@@ -159,7 +162,7 @@ function retireAction(action: RetireAction) {
 			return fail(404, { error: 'Élément introuvable dans ce modèle', action });
 		}
 		if (retireError || !data) {
-			console.error(`[${action}] Retrait impossible :`, retireError);
+			logger.error(`[${action}] Retrait impossible :`, retireError);
 			return fail(500, { error: 'Impossible de retirer cet élément', action });
 		}
 
@@ -201,7 +204,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	);
 
 	if (contentError || !content) {
-		console.error('Contenu du modèle illisible :', contentError);
+		logger.error('Contenu du modèle illisible :', contentError);
 		throw error(500, 'Impossible de charger le contenu du modèle');
 	}
 
@@ -212,7 +215,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	);
 
 	if (versionsError) {
-		console.error('Lecture impossible :', versionsError);
+		logger.error('Lecture impossible :', versionsError);
 		throw error(500, 'Impossible de charger les données');
 	}
 
@@ -226,7 +229,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.eq('is_detached', false);
 
 	if (linkedError) {
-		console.error('Chapitres rattachés illisibles :', linkedError);
+		logger.error('Chapitres rattachés illisibles :', linkedError);
 	}
 
 	// Fetch teacher's classes for instantiation
@@ -239,7 +242,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
 	// laisse une trace.
 	if (classesError) {
-		console.error('Enrichissement illisible :', classesError);
+		logger.error('Enrichissement illisible :', classesError);
 	}
 
 	return {
@@ -284,7 +287,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
 		if (templateCheckError && templateCheckError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', templateCheckError);
+			logger.error('Lecture impossible :', templateCheckError);
 			return fail(500, { error: 'Lecture impossible' });
 		}
 
@@ -327,7 +330,7 @@ export const actions: Actions = {
 		);
 
 		if (updateError) {
-			console.error('[Update Template] Error:', updateError);
+			logger.error('[Update Template] Error:', updateError);
 			return fail(500, { error: 'Erreur lors de la mise à jour', action: 'update' });
 		}
 
@@ -354,7 +357,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
 		if (templateCheckError && templateCheckError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', templateCheckError);
+			logger.error('Lecture impossible :', templateCheckError);
 			return fail(500, { error: 'Lecture impossible' });
 		}
 
@@ -372,7 +375,7 @@ export const actions: Actions = {
 			locals.supabase
 		);
 		if (contentError) {
-			console.error('[Publish Template] Contenu illisible :', contentError);
+			logger.error('[Publish Template] Contenu illisible :', contentError);
 			return fail(500, { error: 'Lecture impossible', action: 'publish' });
 		}
 		if (!aDuContenu) {
@@ -390,7 +393,7 @@ export const actions: Actions = {
 		const { error: publishError } = await publishTemplate(templateId, locals.supabase);
 
 		if (publishError) {
-			console.error('[Publish Template] Error:', publishError);
+			logger.error('[Publish Template] Error:', publishError);
 			return fail(500, { error: 'Erreur lors de la publication', action: 'publish' });
 		}
 
@@ -420,7 +423,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que le refus suivant traite déjà.
 		if (templateCheckError && templateCheckError.code !== 'PGRST116') {
-			console.error('[Update From Chapter] Lecture impossible :', templateCheckError);
+			logger.error('[Update From Chapter] Lecture impossible :', templateCheckError);
 			return fail(500, { error: 'Lecture impossible', action: 'updateFromChapter' });
 		}
 
@@ -451,7 +454,7 @@ export const actions: Actions = {
 			return fail(409, { error: refus.message, action: 'updateFromChapter' });
 		}
 		if (refus) {
-			console.error('[Update From Chapter] Vérification impossible :', refus);
+			logger.error('[Update From Chapter] Vérification impossible :', refus);
 			return fail(500, { error: 'Lecture impossible', action: 'updateFromChapter' });
 		}
 
@@ -461,7 +464,7 @@ export const actions: Actions = {
 		);
 
 		if (snapshotError || !snapshot) {
-			console.error('[Update From Chapter] Extraction impossible :', snapshotError);
+			logger.error('[Update From Chapter] Extraction impossible :', snapshotError);
 			return fail(500, { error: 'Lecture du chapitre impossible', action: 'updateFromChapter' });
 		}
 
@@ -484,7 +487,7 @@ export const actions: Actions = {
 					);
 
 		if (writeError) {
-			console.error('[Update From Chapter] Écriture impossible :', writeError);
+			logger.error('[Update From Chapter] Écriture impossible :', writeError);
 			return fail(500, {
 				error: 'Erreur lors de la mise à jour du modèle',
 				action: 'updateFromChapter'
@@ -516,7 +519,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que le refus suivant traite déjà.
 		if (templateCheckError && templateCheckError.code !== 'PGRST116') {
-			console.error('[Delete Template] Lecture impossible :', templateCheckError);
+			logger.error('[Delete Template] Lecture impossible :', templateCheckError);
 			return fail(500, { error: 'Lecture impossible', action: 'delete' });
 		}
 
@@ -539,7 +542,7 @@ export const actions: Actions = {
 		}
 
 		if (deleteError) {
-			console.error('[Delete Template] Suppression impossible :', deleteError);
+			logger.error('[Delete Template] Suppression impossible :', deleteError);
 			return fail(500, { error: 'Erreur lors de la suppression du modèle', action: 'delete' });
 		}
 
@@ -566,7 +569,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
 		if (templateCheckError && templateCheckError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', templateCheckError);
+			logger.error('Lecture impossible :', templateCheckError);
 			return fail(500, { error: 'Lecture impossible' });
 		}
 
@@ -578,7 +581,7 @@ export const actions: Actions = {
 		const { error: archiveError } = await archiveTemplate(templateId, locals.supabase);
 
 		if (archiveError) {
-			console.error('[Archive Template] Error:', archiveError);
+			logger.error('[Archive Template] Error:', archiveError);
 			return fail(500, { error: "Erreur lors de l'archivage", action: 'archive' });
 		}
 
@@ -625,7 +628,7 @@ export const actions: Actions = {
 
 		// PGRST116 = la ligne n'existe pas, ce que la suite traite déjà.
 		if (classCheckError && classCheckError.code !== 'PGRST116') {
-			console.error('Lecture impossible :', classCheckError);
+			logger.error('Lecture impossible :', classCheckError);
 			return fail(500, { error: 'Lecture impossible' });
 		}
 
@@ -646,7 +649,7 @@ export const actions: Actions = {
 		}
 
 		if (instError || !result) {
-			console.error('[Instantiate Template] Error:', instError);
+			logger.error('[Instantiate Template] Error:', instError);
 			return fail(500, { error: "Erreur lors de l'instantiation", action: 'instantiate' });
 		}
 
@@ -717,7 +720,7 @@ export const actions: Actions = {
 			.eq('template_id', templateId)
 			.maybeSingle();
 		if (itemError) {
-			console.error('[updateChecklistItem] Lecture impossible :', itemError);
+			logger.error('[updateChecklistItem] Lecture impossible :', itemError);
 			return fail(500, { error: 'Vérification impossible', action: 'updateChecklistItem' });
 		}
 		if (!item) {

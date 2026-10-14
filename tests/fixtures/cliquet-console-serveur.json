@@ -1,7 +1,6 @@
 {
 	"src/lib/server/documents/pdf-extractor.ts": 1,
 	"src/routes/(protected)/dashboard/teacher/contenu/templates/+page.server.ts": 2,
-	"src/routes/(protected)/dashboard/teacher/contenu/templates/[templateId]/+page.server.ts": 16,
 	"src/routes/(protected)/dashboard/teacher/contenu/templates/new/+page.server.ts": 1,
 	"src/routes/api/documents/+server.ts": 7,
 	"src/routes/api/documents/[id]/+server.ts": 3,
