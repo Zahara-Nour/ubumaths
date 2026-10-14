@@ -2,7 +2,7 @@
  * Le style d'une fiche, transmis par les liens partagés (lot 4a)
  * ==============================================================
  *
- * Migration : 20261016103400_style_fiche_liens_partages.sql
+ * Migration : 20261016103500_style_fiche_liens_partages.sql
  *
  * Question d'accès (D11, David, 2026-10-14) : le visiteur d'un cahier de texte
  * ou d'un cours partagé reçoit le style de la fiche et, pour un style de
