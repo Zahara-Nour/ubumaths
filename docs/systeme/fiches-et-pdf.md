@@ -356,6 +356,15 @@ le style (« Fiche élève » n'en imprime pas, D8). La description de la fiche 
 (décision de David). Tests : `worksheets/__tests__/pdf-eleve-style.test.ts`,
 `tests/integration/pdf-eleve-style.test.ts`.
 
+**Fiche + corrigé du prof** (demande de David, 2026-10-14, comme avant le lot 2) : choix
+« Fiche + corrigé » de `PdfPreview` (`WorksheetPdfKind` `worksheet_correction`, fichier « … - Fiche et
+corrigé.pdf ») → `generateWorksheetTypst({ mode: 'worksheet', inlineCorrections: true })` : la fiche
+du style, « — Correction » après le titre, et sous chaque énoncé sa correction (fond gris, police du
+corrigé bornée au bloc `#[ … ]`, « Correction non écrite. » si absente), sans cadre de réponse.
+Toutes les corrections (copie du prof) ; ZIP par élève : la version de chaque élève, sans corrigé
+général. Aperçu markdown : `renderMarkdownPreview(doc, 'worksheet', { inlineCorrections })`. Test :
+`typst/generators/__tests__/fiche-et-corrige.test.ts`.
+
 **Un document, un rendu d'exercice** (ADR 0028, lot 1) : les deux générateurs construisent un
 `WorksheetDocument` puis appellent `renderExercises(doc, forme, habillage)`. Les habillages
 (`heading` : `{{exercises}}` ; `badge` : `{{exercises_badge}}`) ne changent que la présentation. L'aperçu markdown à l'écran de `PdfPreview` passe par le

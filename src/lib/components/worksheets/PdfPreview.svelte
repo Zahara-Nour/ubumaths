@@ -45,6 +45,7 @@
 	} from '$lib/typst/compiler/correction-fonts-compiler';
 	import type { WorksheetWithRelations, InstanceData } from '$lib/types/worksheets';
 	import { worksheetLocale } from '$lib/types/worksheets';
+	import { documentLabels } from '$lib/typst/labels';
 	import { buildWorksheetCopy, GUIDANCE_LEVEL_ITEMS } from '$lib/worksheets/worksheet-copy';
 	import {
 		DEFAULT_GUIDANCE_LEVEL,
@@ -96,13 +97,18 @@
 	const PDF_KIND_ITEMS: { value: WorksheetPdfKind; label: string }[] = [
 		{ value: 'worksheet', label: 'Fiche' },
 		{ value: 'answers', label: 'Réponses' },
-		{ value: 'correction', label: 'Corrigé' }
+		{ value: 'correction', label: 'Corrigé' },
+		// Chaque correction sous son énoncé (demande de David, 2026-10-14)
+		{ value: 'worksheet_correction', label: 'Fiche + corrigé' }
 	];
 	let modeChoisi = $state<WorksheetPdfKind>('worksheet');
 
 	// Verrou, pas simple masquage : même si un sélecteur subsistait quelque part,
 	// le mode retomberait sur « fiche ».
 	const mode = $derived(estLecteur ? ('worksheet' as const) : modeChoisi);
+	// Ce que le générateur reçoit : « Fiche + corrigé » est une fiche, corrections sous les énoncés
+	const generatorMode = $derived(mode === 'worksheet_correction' ? ('worksheet' as const) : mode);
+	const inlineCorrections = $derived(mode === 'worksheet_correction');
 	let selectedStudentId = $state<string | undefined>(undefined);
 
 	// Niveau de guidage imprimé hors affectation (ADR 0023) : guidé par défaut.
@@ -244,7 +250,14 @@
 					instance: instanceData,
 					config: worksheet.config || {}
 				}),
-				mode
+				generatorMode,
+				{
+					inlineCorrections,
+					// Comme le titre du PDF
+					titleSuffix: inlineCorrections
+						? ` — ${documentLabels(worksheetLocale(worksheet.config)).correction}`
+						: undefined
+				}
 			);
 
 			// Clear tracked images before generating Typst
@@ -255,7 +268,8 @@
 				worksheet,
 				instance: instanceData,
 				config: worksheet.config || {},
-				mode,
+				mode: generatorMode,
+				inlineCorrections,
 				studentName,
 				className: classId ? 'Classe' : undefined,
 				template: worksheet.template
@@ -348,7 +362,8 @@
 				worksheet,
 				instance: sampleInstance,
 				config: worksheet.config || {},
-				mode,
+				mode: generatorMode,
+				inlineCorrections,
 				studentName: formatStudentName(students[0]),
 				className: classId ? 'Classe' : undefined,
 				template: worksheet.template
@@ -385,7 +400,8 @@
 					worksheet,
 					instance: instanceData,
 					config: worksheet.config || {},
-					mode,
+					mode: generatorMode,
+					inlineCorrections,
 					studentName,
 					className: classId ? 'Classe' : undefined,
 					template: worksheet.template
@@ -396,7 +412,7 @@
 			}
 
 			// Corrigés : un exemplaire général, sans nom d'élève (et sans énoncé)
-			if (mode !== 'worksheet') {
+			if (mode === 'answers' || mode === 'correction') {
 				const general = mode === 'answers' ? 'REPONSES GENERALES' : 'CORRECTION GENERALE';
 				batchCurrentStudent =
 					mode === 'answers' ? 'Reponses generales...' : 'Correction generale...';
@@ -406,7 +422,7 @@
 					worksheet,
 					instance: masterInstance,
 					config: worksheet.config || {},
-					mode,
+					mode: generatorMode,
 					studentName: general,
 					className: classId ? 'Classe' : undefined,
 					template: worksheet.template
@@ -477,7 +493,9 @@ INFORMATIONS
 - ${
 			mode === 'worksheet'
 				? 'Les solutions ne sont pas incluses'
-				: 'Sans les enonces : ' + (mode === 'answers' ? 'les reponses seules' : 'le corrige')
+				: mode === 'worksheet_correction'
+					? 'Chaque correction sous son enonce'
+					: 'Sans les enonces : ' + (mode === 'answers' ? 'les reponses seules' : 'le corrige')
 		}
 - Generation effectuee cote client (navigateur)
 
@@ -862,7 +880,9 @@ INFORMATIONS
 								<li>- Variantes de {lore.learning.exercise}s selon la configuration</li>
 								<li>- Fichier ZIP contenant tous les PDFs</li>
 								<li>- Document de synthese avec la liste des eleves</li>
-								{#if mode === 'correction'}
+								{#if mode === 'worksheet_correction'}
+									<li>- Chaque correction sous son enonce</li>
+								{:else if mode === 'correction'}
 									<li>- Correction generale incluse</li>
 								{:else if mode === 'answers'}
 									<li>- Reponses generales incluses</li>
