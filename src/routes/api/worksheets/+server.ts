@@ -7,6 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { isBuiltInStyle } from '$lib/typst/templates/styles';
 import { syncResourceTags, fetchTagNamesForResources } from '$lib/server/resource-tags';
 import {
 	validateListWorksheetsQuery,
@@ -166,7 +167,10 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			translations: data.translations ?? null,
 			status: 'draft',
 			version: 1,
-			template_id: data.template_id ?? null,
+			// Un style de Chiphre a le même identifiant que son gabarit (voir le PUT)
+			template_id:
+				data.style_id && isBuiltInStyle(data.style_id) ? data.style_id : (data.template_id ?? null),
+			style_id: data.style_id ?? null,
 			estimated_duration_minutes: data.estimated_duration_minutes ?? null,
 			total_points: data.total_points ?? null,
 			grades: data.grades ?? [],
@@ -177,6 +181,10 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.single();
 
 	if (dbError) {
+		// Trigger de `worksheets.style_id` : style d'un autre auteur
+		if (dbError.code === '42501') {
+			throw error(403, 'Ce style n’est pas disponible pour cette fiche');
+		}
 		logger.error('Failed to create worksheet:', dbError);
 		throw error(500, 'Impossible de créer la fiche');
 	}

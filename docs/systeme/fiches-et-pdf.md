@@ -72,7 +72,7 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 | `src/lib/typst/generators/base-generator.ts`                                      | `BaseTypstGenerator` : contexte (mode, nom d'élève, classe), config.                                                                                                                                                                                                    |
 | `src/lib/typst/generators/notebook-generator.ts`, `src/lib/typst/notebook-pdf.ts` | Même chaîne pour les **carnets** Python (`generateNotebookPdf`) — hors fiches, voir [python/](python/).                                                                                                                                                                 |
 | `src/lib/typst/templates/default-templates.ts`                                    | 12 gabarits intégrés (ids `DEFAULT_TEMPLATE_IDS`), formes du style « Fiche élève » (`STUDENT_STYLE_FORMS`, `STUDENT_STYLE_COMMON`), `renderTemplate`.                                                                                                                   |
-| `src/lib/typst/templates/styles.ts`                                               | Styles (`BUILT_IN_STYLES`, `DEFAULT_STYLE_ID`) et `resolveTemplate` : le gabarit d'une forme dans le style de la fiche.                                                                                                                                                 |
+| `src/lib/typst/templates/styles.ts`                                               | Styles (`BUILT_IN_STYLES`, `BUILT_IN_STYLE_OPTIONS`, `DEFAULT_STYLE_ID`, `isBuiltInStyle`), style retenu (`styleIdOf`) et `resolveTemplate` : le gabarit d'une forme dans le style de la fiche.                                                                         |
 | `src/lib/typst/labels.ts`                                                         | Habillage traduit : `documentLabels(locale)`, `labelPlaceholders(locale)`, `STUDENT_TYPE_LABELS`.                                                                                                                                                                       |
 | `src/lib/typst/worksheet-palette.ts`                                              | Charte commune prof / élève : `BADGE_FILL`, `SECTION_COLOR`, `exerciseBadge`.                                                                                                                                                                                           |
 | `src/lib/typst/image-loader.ts`                                                   | Le WASM ne lit pas d'URL : `fetchExternalImages`, `urlToVirtualPath` (→ `/virtual/images/…`, posé par `mapShadow`), conversion **WebP → PNG** par canvas.                                                                                                               |
@@ -85,18 +85,19 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 
 ### Serveur — `src/lib/server/worksheets/` et validation
 
-| Fichier                                              | Rôle                                                                                                                                                                                                          |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/server/worksheets/instance-generator.ts`    | `generateWorksheetInstance`, `generatePreviewInstance` : `InstanceData` par élève, graine selon `variant_mode` (`none`, `individual`, `n_versions`, `group`).                                                 |
-| `src/lib/server/worksheets/assignment-access.ts`     | `resolveAssignmentAccess` : RPC `can_access_assignment`, puis `can_read_assignment` (relecture d'un ancien membre).                                                                                           |
-| `src/lib/server/worksheets/assignment-classes.ts`    | `fetchAssignmentClasses`, `fetchClassesByAssignment`, `formatClassNames` (jonction `worksheet_assignment_classes`).                                                                                           |
-| `src/lib/server/worksheets/correction-release.ts`    | Libération de la correction : `canAccessCorrections`, `releaseCorrections`, `revokeCorrections`, `updateCorrectionSettings`, `getCorrectionReleaseStatus`.                                                    |
-| `src/lib/server/worksheets/correction-visibility.ts` | `isCorrectionVisible`, `getCorrectionVisibilityMap`, `getCorrectionContext` (cascade, voir plus bas). Ne vérifie **pas** l'autorisation : à l'appelant.                                                       |
-| `src/lib/server/worksheets/display-number.ts`        | `fetchCopyNumbering` : le numéro d'un exercice dans la copie de chaque élève (ordre mélangé compris, `copyDisplayNumbers`), pour les signalements ; `resolveExercisesAtDisplayNumbers` (`[[worksheet:…#3]]`). |
-| `src/lib/server/worksheets/assignment-recipients.ts` | `isStudentOfAssignment` : l'élève est-il destinataire (nommé ou membre actif d'une classe visée) ? Aperçu « vue élève » et corrigé d'après la copie d'un élève.                                               |
-| `src/lib/server/worksheets/citations.ts`             | `fetchWorksheetCitations` : où la fiche est citée (cahier de texte, chapitres).                                                                                                                               |
-| `src/lib/server/validation/worksheets.ts`            | Zod des routes : `createWorksheetSchema`, `worksheetConfigSchema`, `createWorksheetExerciseSchema`, `reorderExercisesSchema`, `updateCorrectionSettingsSchema`…                                               |
-| `src/lib/types/worksheets.ts`                        | Types de lignes et JSONB (`WorksheetConfig`, `VariantConfig`, `ResolvedExercise`, `InstanceData`), gardes `asWorksheetConfig`, `asInstanceData`, `toWorksheetRow`, langue `worksheetLocale`, `localizedText`. |
+| Fichier                                              | Rôle                                                                                                                                                                                                                                                                            |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/server/worksheets/instance-generator.ts`    | `generateWorksheetInstance`, `generatePreviewInstance` : `InstanceData` par élève, graine selon `variant_mode` (`none`, `individual`, `n_versions`, `group`).                                                                                                                   |
+| `src/lib/server/worksheets/assignment-access.ts`     | `resolveAssignmentAccess` : RPC `can_access_assignment`, puis `can_read_assignment` (relecture d'un ancien membre).                                                                                                                                                             |
+| `src/lib/server/worksheets/assignment-classes.ts`    | `fetchAssignmentClasses`, `fetchClassesByAssignment`, `formatClassNames` (jonction `worksheet_assignment_classes`).                                                                                                                                                             |
+| `src/lib/server/worksheets/correction-release.ts`    | Libération de la correction : `canAccessCorrections`, `releaseCorrections`, `revokeCorrections`, `updateCorrectionSettings`, `getCorrectionReleaseStatus`.                                                                                                                      |
+| `src/lib/server/worksheets/correction-visibility.ts` | `isCorrectionVisible`, `getCorrectionVisibilityMap`, `getCorrectionContext` (cascade, voir plus bas). Ne vérifie **pas** l'autorisation : à l'appelant.                                                                                                                         |
+| `src/lib/server/worksheets/display-number.ts`        | `fetchCopyNumbering` : le numéro d'un exercice dans la copie de chaque élève (ordre mélangé compris, `copyDisplayNumbers`), pour les signalements ; `resolveExercisesAtDisplayNumbers` (`[[worksheet:…#3]]`).                                                                   |
+| `src/lib/server/worksheets/assignment-recipients.ts` | `isStudentOfAssignment` : l'élève est-il destinataire (nommé ou membre actif d'une classe visée) ? Aperçu « vue élève » et corrigé d'après la copie d'un élève.                                                                                                                 |
+| `src/lib/server/worksheets/citations.ts`             | `fetchWorksheetCitations` : où la fiche est citée (cahier de texte, chapitres).                                                                                                                                                                                                 |
+| `src/lib/server/worksheets/worksheet-styles.ts`      | Styles d'une fiche (lot 3b), client du prof : `listWorksheetStyles` (menu « Style »), `loadStyleTemplate` (fiche d'un style du prof) ; gabarit et style liés (D10) : `insertTemplateWithStyle`, `syncTemplateStyle`, `countWorksheetsUsingTemplate`, `deleteTemplateWithStyle`. |
+| `src/lib/server/validation/worksheets.ts`            | Zod des routes : `createWorksheetSchema`, `worksheetConfigSchema`, `createWorksheetExerciseSchema`, `reorderExercisesSchema`, `updateCorrectionSettingsSchema`…                                                                                                                 |
+| `src/lib/types/worksheets.ts`                        | Types de lignes et JSONB (`WorksheetConfig`, `VariantConfig`, `ResolvedExercise`, `InstanceData`), gardes `asWorksheetConfig`, `asInstanceData`, `toWorksheetRow`, langue `worksheetLocale`, `localizedText`.                                                                   |
 
 ### Routes
 
@@ -118,7 +119,7 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 `src/lib/components/worksheets/` : `PdfPreview.svelte` (aperçu, téléchargement, lot ZIP),
 `CorrectionManager.svelte` (libération par affectation), `SectionManager.svelte`,
 `ExerciseList.svelte`, `MetadataCards.svelte` (config, dont la langue),
-`WorksheetAssignmentForm.svelte`, `UntranslatedExercisesNotice.svelte`, `TemplateSelector.svelte`,
+`WorksheetAssignmentForm.svelte`, `UntranslatedExercisesNotice.svelte`, `StyleSelector.svelte` (style à la création),
 `TypstEditor.svelte` ; côté élève `src/lib/components/student/worksheets/WorksheetHeader.svelte`
 (bouton PDF ; en tête, « Quitter » vers la liste des fiches, ou « Retour aux fiches » quand la fiche
 est en consultation seule, `read_only` — [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)).
@@ -295,9 +296,10 @@ réponses, corrigé, fiche + corrections) et un code commun (`STUDENT_STYLE_COMM
 place de `{{style_common}}`) ; les onze autres n'ont que leur fiche et prennent les autres formes
 du style par défaut. Le style décide aussi des **points** (`showsPoints`) : « Fiche élève » n'en
 imprime aucun, ni sur la fiche ni sur ses corrigés, quelle que soit la case « afficher les
-points » (D8) ; les autres styles et les gabarits du prof suivent la case. `resolveTemplate(style, forme, gabarit lu en base)` : le style est encore
-désigné par `worksheets.template_id` (inconnu ou vide → « Fiche élève ») ; le gabarit lu en base
-ne sert qu'à la forme « fiche ». **Plus de mise en page écrite dans le code** : une fiche sans
+points » (D8) ; les autres styles et les gabarits du prof suivent la case. `resolveTemplate(style, forme, gabarit lu en base)` : le style
+retenu est `styleIdOf(fiche)` = `style_id`, sinon `template_id` (fiches d'avant le lot 3), inconnu
+ou vide → « Fiche élève » ; le gabarit lu en base ne sert qu'à la forme « fiche » d'un style du
+prof (ignoré pour un style de Chiphre : son Typst vient du code). **Plus de mise en page écrite dans le code** : une fiche sans
 gabarit prend la fiche « Fiche élève ». Le bandeau vert des corrigés (« CORRECTION », « RÉPONSES »,
 « SOLUTIONS » / « ANSWERS », placeholder `{{form_title}}`) et l'avertissement de la copie
 individuelle (`{{individual_copy_notice}}`) sont **écrits dans le gabarit**, dans le bloc
@@ -314,8 +316,23 @@ vide ; leur Typst reste dans le code, D9) et une par style d'un prof. `worksheet
 `style_id` et `form` (un gabarit par couple) ; `worksheets.style_id` (vide = le style se déduit de
 `template_id`, comme avant ; style supprimé → vide). Accès (D9) : le prof et l'admin lisent les
 styles de Chiphre et les leurs, ne modifient que les leurs (l'admin, tous) ; ni élève ni visiteur
-n'y accède (`tests/integration/styles-de-fiche.test.ts`). Le code ne lit pas encore ces colonnes
-(lot 3b).
+n'y accède (`tests/integration/styles-de-fiche.test.ts`).
+
+**Choisir le style** (lot 3b) : menu « Style » de la fiche (`MetadataCards`) et de la création
+(`StyleSelector`, « Fiche élève » présélectionné, pas d'option « Aucun ») : les styles de Chiphre
+dans l'ordre du code, puis ceux du prof (`listWorksheetStyles`, client du prof). Fiche sans style
+→ « Fiche élève (par défaut) » ; style illisible → idem. Choisir écrit `style_id` (Zod uuid) ;
+pour un style de Chiphre, `template_id` prend le même identifiant (repli si le code revenait en
+arrière) ; un style d'un autre auteur est refusé par le trigger (`42501` → 403). Dupliquer recopie
+le style (sauf l'admin qui duplique la fiche du prof avec un style du prof : vide). La case
+« Points » n'apparaît que si le style en imprime. `GET /api/worksheets/[id]` rend dans `template`
+la fiche d'un style du prof (`loadStyleTemplate`, avec son Typst) pour le PDF ; changer de style
+recharge la page. **Gabarit et style liés** (D10) : la page « Gabarits » ne change pas à l'écran,
+mais créer un gabarit (nouveau, depuis un gabarit de Chiphre, duplication, API) crée son style au
+même identifiant et au même nom ; le renommer le renomme ; le supprimer supprime le style (cascade
+vers le gabarit), refusé tant qu'une fiche désigne le gabarit ou le style
+(`tests/integration/fiche-choix-du-style.test.ts`). Le cahier de texte et le cours partagés
+impriment encore en « Fiche élève » : leurs RPC ne transmettent pas le style (lot 4).
 
 **Un document, un rendu d'exercice** (ADR 0028, lot 1) : les deux générateurs construisent un
 `WorksheetDocument` puis appellent `renderExercises(doc, forme, habillage)`. Les habillages

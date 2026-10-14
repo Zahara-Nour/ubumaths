@@ -7,6 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { insertTemplateWithStyle } from '$lib/server/worksheets/worksheet-styles';
 import {
 	validateListTemplatesQuery,
 	validateCreateTemplate,
@@ -112,20 +113,16 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
 	const data = validation.data;
 
-	// Create template
-	const { data: template, error: dbError } = await locals.supabase
-		.from('worksheet_templates')
-		.insert({
-			name: data.name,
-			description: data.description ?? null,
-			template_content: data.template_content,
-			placeholders: data.placeholders ?? [],
-			created_by: user.id
-		})
-		.select()
-		.single();
+	// Le gabarit est la fiche d'un style du même nom, au même identifiant (D10)
+	const { data: template, error: dbError } = await insertTemplateWithStyle(locals.supabase, {
+		name: data.name,
+		description: data.description ?? null,
+		template_content: data.template_content,
+		placeholders: data.placeholders ?? [],
+		created_by: user.id
+	});
 
-	if (dbError) {
+	if (dbError || !template) {
 		logger.error('Failed to create template:', dbError);
 		throw error(500, 'Impossible de créer le modèle de fiche');
 	}

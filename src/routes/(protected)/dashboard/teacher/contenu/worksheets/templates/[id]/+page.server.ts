@@ -7,6 +7,10 @@
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { requireRoles } from '$lib/server/middleware/auth';
+import {
+	insertTemplateWithStyle,
+	syncTemplateStyle
+} from '$lib/server/worksheets/worksheet-styles';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { z } from 'zod';
 import { createServerLogger } from '$lib/utils/logger';
@@ -96,19 +100,16 @@ export const actions: Actions = {
 		}
 
 		// Create template
-		const { data: template, error: dbError } = await locals.supabase
-			.from('worksheet_templates')
-			.insert({
-				name: validation.data.name,
-				description: validation.data.description,
-				template_content: validation.data.template_content,
-				placeholders: [], // Will be extracted from content later
-				created_by: user.id
-			})
-			.select()
-			.single();
+		// Le gabarit est la fiche d'un style du même nom (D10)
+		const { data: template, error: dbError } = await insertTemplateWithStyle(locals.supabase, {
+			name: validation.data.name ?? '',
+			description: validation.data.description,
+			template_content: validation.data.template_content ?? '',
+			placeholders: [], // Will be extracted from content later
+			created_by: user.id
+		});
 
-		if (dbError) {
+		if (dbError || !template) {
 			logger.error('Failed to create template:', dbError);
 			return fail(500, { message: 'Erreur lors de la creation du template' });
 		}
@@ -125,7 +126,7 @@ export const actions: Actions = {
 		// Check ownership
 		const { data: existingTemplate, error: fetchError } = await locals.supabase
 			.from('worksheet_templates')
-			.select('id, created_by')
+			.select('id, created_by, style_id')
 			.eq('id', params.id)
 			.single();
 
@@ -181,6 +182,17 @@ export const actions: Actions = {
 		if (dbError) {
 			logger.error('Failed to update template:', dbError);
 			return fail(500, { message: 'Erreur lors de la mise a jour du template' });
+		}
+
+		// Le style du gabarit porte son nom dans le menu de la fiche (D10)
+		const styleSynced = await syncTemplateStyle(locals.supabase, existingTemplate, {
+			name: validation.data.name,
+			description: validation.data.description
+		});
+		if (!styleSynced) {
+			return fail(500, {
+				message: 'Template enregistré, mais son nom n’a pas suivi dans le menu « Style »'
+			});
 		}
 
 		return { success: true, message: 'Template mis a jour' };

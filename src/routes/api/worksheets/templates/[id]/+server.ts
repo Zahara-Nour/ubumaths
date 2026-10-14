@@ -9,6 +9,11 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import {
+	countWorksheetsUsingTemplate,
+	deleteTemplateWithStyle,
+	syncTemplateStyle
+} from '$lib/server/worksheets/worksheet-styles';
+import {
 	validateUpdateTemplate,
 	templateResponseSchema,
 	deleteTemplateResponseSchema
@@ -83,7 +88,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	// First check if template exists and user has permission
 	const { data: existingTemplate, error: fetchError } = await locals.supabase
 		.from('worksheet_templates')
-		.select('id, created_by')
+		.select('id, created_by, style_id')
 		.eq('id', params.id)
 		.single();
 
@@ -138,6 +143,11 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de modifier le modèle de fiche');
 	}
 
+	// Le style du gabarit porte son nom dans le menu de la fiche (D10)
+	if (!(await syncTemplateStyle(locals.supabase, existingTemplate, data))) {
+		throw error(500, 'Modèle enregistré, mais son nom n’a pas suivi dans le menu « Style »');
+	}
+
 	// Validate response
 	const validated = validateJsonResponse(
 		templateResponseSchema,
@@ -165,7 +175,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	// First check if template exists and user has permission
 	const { data: existingTemplate, error: fetchError } = await locals.supabase
 		.from('worksheet_templates')
-		.select('id, created_by, name')
+		.select('id, created_by, name, style_id')
 		.eq('id', params.id)
 		.single();
 
@@ -182,32 +192,32 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(403, 'Seul l’auteur du modèle peut le supprimer');
 	}
 
-	// Check if template is in use by any worksheets
-	const { count: worksheetCount, error: countError } = await locals.supabase
-		.from('worksheets')
-		.select('id', { count: 'exact', head: true })
-		.eq('template_id', params.id);
+	// Une fiche qui désigne ce gabarit, ou son style (D10), perdrait sa mise en
+	// page sans le dire : la suppression est refusée.
+	const { count: worksheetCount, error: countError } = await countWorksheetsUsingTemplate(
+		locals.supabase,
+		existingTemplate
+	);
 
 	if (countError) {
 		logger.error('Failed to check template usage:', countError);
 		throw error(500, 'Impossible de vérifier l’usage du modèle');
 	}
 
-	if (worksheetCount && worksheetCount > 0) {
+	if (worksheetCount > 0) {
 		throw error(
 			400,
 			`Impossible de supprimer ce modèle : des fiches l’utilisent (${worksheetCount}). Retirer d’abord le modèle de ces fiches.`
 		);
 	}
 
-	// Delete template
-	const { error: dbError } = await locals.supabase
-		.from('worksheet_templates')
-		.delete()
-		.eq('id', params.id);
+	const { deleted, error: dbError } = await deleteTemplateWithStyle(
+		locals.supabase,
+		existingTemplate
+	);
 
-	if (dbError) {
-		logger.error('Failed to delete template:', dbError);
+	if (!deleted) {
+		logger.error('Failed to delete template:', dbError ?? 'aucune ligne');
 		throw error(500, 'Impossible de supprimer le modèle de fiche');
 	}
 

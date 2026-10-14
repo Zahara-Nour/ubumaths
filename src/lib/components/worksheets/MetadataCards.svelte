@@ -38,18 +38,18 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { WorksheetWithRelations, WorksheetConfig } from '$lib/types/worksheets';
 	import type { GradeCode } from '$lib/types/grades';
-
-	// Template type for the selector
-	interface TemplateOption {
-		id: string;
-		name: string;
-		description: string | null;
-	}
+	import {
+		BUILT_IN_STYLE_OPTIONS,
+		DEFAULT_STYLE_ID,
+		styleIdOf,
+		type StyleOption
+	} from '$lib/typst/templates/styles';
 
 	// Props - controlled component pattern
 	interface Props {
 		worksheet: WorksheetWithRelations; // Already merged with pending changes
-		templates?: TemplateOption[];
+		/** Le menu « Style » : ceux de Chiphre, puis ceux du prof */
+		styles?: StyleOption[];
 		hasPendingChanges?: boolean;
 		onFieldChange?: (field: string, value: unknown) => void;
 		onSave?: () => Promise<void>;
@@ -58,7 +58,7 @@
 
 	let {
 		worksheet,
-		templates = [],
+		styles = BUILT_IN_STYLE_OPTIONS,
 		hasPendingChanges = false,
 		onFieldChange,
 		onSave,
@@ -69,7 +69,7 @@
 	let editingTitle = $state(false);
 	let editingDescription = $state(false);
 	let editingType = $state(false);
-	let editingTemplate = $state(false);
+	let editingStyle = $state(false);
 	let editingLanguage = $state(false);
 	let editingDuration = $state(false);
 	let editingGrades = $state(false);
@@ -103,7 +103,7 @@
 		editingTitle = false;
 		editingDescription = false;
 		editingType = false;
-		editingTemplate = false;
+		editingStyle = false;
 		editingDuration = false;
 		editingGrades = false;
 		editingTags = false;
@@ -139,8 +139,8 @@
 			case 'type':
 				editingType = true;
 				break;
-			case 'template':
-				if (templates.length > 0) editingTemplate = true;
+			case 'style':
+				editingStyle = true;
 				break;
 			case 'language':
 				editingLanguage = true;
@@ -208,18 +208,18 @@
 	// Type options for MySelect
 	const typeOptions = [...WORKSHEET_TYPE_OPTIONS] as { value: string; label: string }[];
 
-	// Template options for MySelect
-	let templateOptions = $derived(templates.map((t) => ({ value: t.id, label: t.name })));
+	// Style options for MySelect
+	let styleOptions = $derived(styles.map((s) => ({ value: s.id, label: s.name })));
 
-	// Helper to get template name by ID
-	function getTemplateName(templateId: string | null | undefined): string {
-		if (!templateId) return '-';
-		const template = templates.find((t) => t.id === templateId);
-		if (template) return template.name;
-		if (worksheet.template?.name) return worksheet.template.name;
-		if (!templateId.includes('-')) return templateId.charAt(0).toUpperCase() + templateId.slice(1);
-		return '-';
-	}
+	// Le style retenu ; absent ou illisible → le style par défaut, comme le PDF
+	let chosenStyle = $derived(styles.find((s) => s.id === styleIdOf(worksheet)));
+	let defaultStyle = $derived(styles.find((s) => s.id === DEFAULT_STYLE_ID));
+	let styleLabel = $derived(
+		chosenStyle?.name ?? `${defaultStyle?.name ?? 'Fiche élève'} (par défaut)`
+	);
+
+	// « Fiche élève » n'imprime pas de points : la case serait sans effet
+	let stylePrintsPoints = $derived((chosenStyle ?? defaultStyle)?.showsPoints ?? false);
 
 	// Select options for config
 	const numberingOptions = [
@@ -339,7 +339,7 @@
 
 			<Separator />
 
-			<!-- Type, Template, Langue, Duration - compact row -->
+			<!-- Type, Style, Langue, Duration - compact row -->
 			<div class="grid grid-cols-4 gap-4">
 				<!-- Type -->
 				<div>
@@ -366,33 +366,39 @@
 					{/if}
 				</div>
 
-				<!-- Template -->
+				<!-- Style -->
 				<div>
-					<p class="text-xs text-muted-foreground">Template</p>
-					{#if !editingTemplate}
+					<p class="text-xs text-muted-foreground">Style</p>
+					{#if !editingStyle}
 						<button
 							type="button"
-							class="text-left text-sm font-medium {isEditable && templates.length > 0
+							class="text-left text-sm font-medium {isEditable
 								? 'cursor-pointer hover:text-primary'
 								: 'cursor-default'}"
-							onclick={() => startEdit('template')}
-							disabled={!isEditable || templates.length === 0}
+							onclick={() => startEdit('style')}
+							disabled={!isEditable}
 						>
-							{getTemplateName(worksheet.template_id)}
+							{styleLabel}
 						</button>
 					{:else}
 						<MySelect
 							type="single"
-							value={worksheet.template_id || undefined}
-							onchange={(v) => onFieldChange?.('template_id', v || null)}
-							items={templateOptions}
-							placeholder="Template"
+							value={chosenStyle?.id ?? DEFAULT_STYLE_ID}
+							onchange={(v) => onFieldChange?.('style_id', v || null)}
+							items={styleOptions}
+							placeholder="Style"
+							triggerAriaLabel="Choisir le style"
+							contentProps={{
+								// La colonne est étroite : le menu prend la largeur de ses noms
+								class:
+									'z-[200] max-h-96 w-max min-w-[var(--bits-select-anchor-width)] overflow-hidden rounded-md border bg-popover p-1 shadow-md'
+							}}
 						/>
 					{/if}
 				</div>
 
 				<!--
-					Langue : volontairement ici, à côté du type et du template, et non
+					Langue : volontairement ici, à côté du type et du style, et non
 					dans « Options d'affichage ». Ce n'est pas un réglage d'affichage :
 					elle change le contenu même de la fiche. Visible sans clic.
 				-->
@@ -559,10 +565,10 @@
 								{#if worksheet.config?.show_class ?? true}
 									<Badge variant="secondary" class="text-xs">{lore.entities.class}</Badge>
 								{/if}
-								{#if worksheet.config?.show_points ?? true}
+								{#if stylePrintsPoints && (worksheet.config?.show_points ?? true)}
 									<Badge variant="secondary" class="text-xs">Points</Badge>
 								{/if}
-								{#if !(worksheet.config?.show_title ?? true) && !(worksheet.config?.show_date ?? true) && !(worksheet.config?.show_student_name ?? true) && !(worksheet.config?.show_class ?? true) && !(worksheet.config?.show_points ?? true)}
+								{#if !(worksheet.config?.show_title ?? true) && !(worksheet.config?.show_date ?? true) && !(worksheet.config?.show_student_name ?? true) && !(worksheet.config?.show_class ?? true) && !(stylePrintsPoints && (worksheet.config?.show_points ?? true))}
 									<span class="text-xs text-muted-foreground/50 italic">Aucun</span>
 								{/if}
 							</div>
@@ -626,11 +632,13 @@
 								onchange={(v) => handleConfigChange('show_class', v)}
 								label={lore.entities.class}
 							/>
-							<MyCheckbox
-								checked={worksheet.config?.show_points ?? true}
-								onchange={(v) => handleConfigChange('show_points', v)}
-								label="Points"
-							/>
+							{#if stylePrintsPoints}
+								<MyCheckbox
+									checked={worksheet.config?.show_points ?? true}
+									onchange={(v) => handleConfigChange('show_points', v)}
+									label="Points"
+								/>
+							{/if}
 						</div>
 					</div>
 
