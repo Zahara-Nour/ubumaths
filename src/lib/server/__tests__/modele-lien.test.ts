@@ -208,12 +208,20 @@ describe('détacher un chapitre', () => {
 
 		expect(error).toBeNull();
 		const ecritures = writes(calls).map((c) => c.table);
+		// Chaque type d'élément s'écrit en deux temps : hors section masquée
+		// (délié ET démasqué), puis le reste (délié seulement — le masquage d'une
+		// section tient au détachement).
 		expect(ecritures).toEqual([
 			'chapter_documents',
 			'chapter_documents',
+			'chapter_documents',
+			'chapter_checklist_items',
 			'chapter_checklist_items',
 			'chapter_exercises',
+			'chapter_exercises',
 			'chapter_worksheets',
+			'chapter_worksheets',
+			'chapter_series',
 			'chapter_series',
 			'chapter_sections',
 			'chapter_template_instantiations'

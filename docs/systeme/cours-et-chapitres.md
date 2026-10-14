@@ -276,7 +276,9 @@ quelle version). Seul un modèle **publié** s'instancie.
 - **Détacher** (`detachChapterFromTemplate`) : chaque fichier relié est **copié** sous
   `chapters/<id>/…` (une copie en échec arrête tout avant de délier), puis les lignes se délient
   (`source_id` à vide, sections en dernier) avec leur publication, puis `is_detached`. Un élément
-  masqué redevient visible (`hidden = false`), toujours non publié : sinon il resterait figé.
+  masqué SEUL redevient visible (`hidden = false`), toujours non publié : sinon il resterait figé.
+  Une section masquée le reste, et son contenu aussi (masqué, non publié) : la réafficher le fera
+  revenir (décision du 2026-10-14).
 - **Faire un modèle d'un chapitre** (`createTemplateFromChapter`) : copie du contenu chez le modèle
   (sections d'abord, fichiers copiés sous `templates/<id>/…`) AVANT de créer l'instanciation (sinon
   la base diffuserait des doublons), puis le chapitre **adopte** chaque élément (`source_id`) : mêmes
