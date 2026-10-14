@@ -7,7 +7,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
-import { updateChecklistItem, deleteChecklistItem } from '$lib/server/chapters';
+import { updateChecklistItem, deleteChecklistItem, LinkedElementError } from '$lib/server/chapters';
 import { updateChecklistItemSchema } from '$lib/server/validation/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
 import { createServerLogger } from '$lib/utils/logger';
@@ -131,6 +131,11 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	// Delete item
 	const result = await deleteChecklistItem(itemId, locals.supabase);
+
+	// Élément du modèle (ADR 0029) : il se masque, il ne se supprime pas du chapitre.
+	if (result.error instanceof LinkedElementError) {
+		throw error(409, result.error.message);
+	}
 
 	if (result.error) {
 		logger.error('[DELETE /api/teacher/chapters/[id]/checklist/[itemId]] Error:', result.error);

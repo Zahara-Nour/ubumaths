@@ -46,6 +46,7 @@ function createMockSupabase() {
 		neq: vi.fn().mockReturnThis(),
 		in: vi.fn().mockReturnThis(),
 		not: vi.fn().mockReturnThis(),
+		is: vi.fn().mockReturnThis(),
 		or: vi.fn().mockReturnThis(),
 		order: vi.fn().mockReturnThis(),
 		limit: vi.fn().mockReturnThis(),
@@ -1024,12 +1025,23 @@ describe('Document CRUD Functions', () => {
 
 	describe('deleteChapterDocument', () => {
 		it('should delete document', async () => {
-			const deletePromise = Promise.resolve({ data: {}, error: null });
-			supabase._mockChain.eq.mockReturnValueOnce(deletePromise as never);
+			// `.delete().eq().select('id')` : la suppression relit ses lignes.
+			const deletePromise = Promise.resolve({ data: [{ id: mockDocumentId }], error: null });
+			supabase._mockChain.select.mockReturnValueOnce(deletePromise as never);
 
 			const result = await chapters.deleteChapterDocument(mockDocumentId, supabase);
 
 			expect(result.error).toBeNull();
+		});
+
+		// La RLS échoue en silence : zéro ligne supprimée n'est pas un succès.
+		it('signale une suppression qui n’a touché aucune ligne', async () => {
+			const deletePromise = Promise.resolve({ data: [], error: null });
+			supabase._mockChain.select.mockReturnValueOnce(deletePromise as never);
+
+			const result = await chapters.deleteChapterDocument(mockDocumentId, supabase);
+
+			expect(result.error?.message).toBe('Document introuvable');
 		});
 	});
 });
@@ -1092,12 +1104,29 @@ describe('Checklist Functions', () => {
 
 	describe('deleteChecklistItem', () => {
 		it('should delete checklist item', async () => {
-			const deletePromise = Promise.resolve({ data: {}, error: null });
-			supabase._mockChain.eq.mockReturnValueOnce(deletePromise as never);
+			// `.delete().eq().is('source_id', null).select('id')` : un élément propre, relu.
+			const deletePromise = Promise.resolve({ data: [{ id: mockChecklistItemId }], error: null });
+			supabase._mockChain.select.mockReturnValueOnce(deletePromise as never);
 
 			const result = await chapters.deleteChecklistItem(mockChecklistItemId, supabase);
 
 			expect(result.error).toBeNull();
+			expect(supabase._mockChain.is).toHaveBeenCalledWith('source_id', null);
+		});
+
+		// ADR 0029 : une ligne de lien ne se supprime pas du chapitre.
+		it('refuse une ligne de lien : LinkedElementError', async () => {
+			supabase._mockChain.select.mockReturnValueOnce(
+				Promise.resolve({ data: [], error: null }) as never
+			);
+			supabase._mockChain.maybeSingle.mockResolvedValueOnce({
+				data: { source_id: 'element-du-modele' },
+				error: null
+			});
+
+			const result = await chapters.deleteChecklistItem(mockChecklistItemId, supabase);
+
+			expect(result.error).toBeInstanceOf(chapters.LinkedElementError);
 		});
 	});
 
@@ -1217,8 +1246,8 @@ describe('Exercise Link Functions', () => {
 
 	describe('unlinkExercise', () => {
 		it('should unlink exercise from chapter', async () => {
-			const deletePromise = Promise.resolve({ data: {}, error: null });
-			supabase._mockChain.eq.mockReturnValueOnce(deletePromise as never);
+			const deletePromise = Promise.resolve({ data: [{ id: 'x' }], error: null });
+			supabase._mockChain.select.mockReturnValueOnce(deletePromise as never);
 
 			const result = await chapters.unlinkExercise(
 				'dddddddd-dddd-4ddd-8ddd-dddddddddddd',

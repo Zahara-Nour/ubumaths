@@ -12,13 +12,28 @@
  * - Teachers can access documents from their chapters
  * - Students can access documents from visible chapters they're enrolled in
  * - Admins can access all documents
+ *
+ * ⚠️ La garde, c'est la LECTURE DE LA LIGNE avec le client de l'utilisateur : la
+ * RLS ne rend à un élève que les documents PUBLIÉS d'un chapitre visible de sa
+ * classe. Le fichier se télécharge ensuite avec le client service (ADR 0029) :
+ * le fichier d'un élément de modèle vit sous `templates/…`, où l'élève n'a, à
+ * dessein, aucune règle de stockage. Le chemin téléchargé est TOUJOURS celui de
+ * la ligne lue, jamais un paramètre de la requête.
  */
 
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { CHAPTER_DOCUMENTS_BUCKET } from '$lib/server/content-owner';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/documents/[id]/+server');
 
 const idSchema = z.string().uuid('ID invalide');
+
+/** Les seuls dossiers d'où ce service sert un fichier : chapitre ou modèle. */
+const SERVABLE_PREFIXES = ['chapters/', 'templates/'] as const;
 
 /**
  * GET /api/documents/[id]
@@ -55,7 +70,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 				file_name,
 				mime_type,
 				source_type,
-				chapter:chapter_id!inner(
+				chapter:chapter_id(
 					id,
 					is_visible,
 					class_id
@@ -69,13 +84,13 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			throw error(404, 'Document non trouve');
 		}
 
-		// Access control - chapter is array from join, get first element
-		const chapterArray = document.chapter as unknown as Array<{
-			id: string;
-			is_visible: boolean;
-			class_id: string;
-		}>;
-		const chapter = Array.isArray(chapterArray) ? chapterArray[0] : chapterArray;
+		// Access control - chapter is array from join, get first element.
+		// Une ligne de MODÈLE n'a pas de chapitre (`null`) : seul le professeur la lit.
+		const chapterArray = document.chapter as unknown as
+			| Array<{ id: string; is_visible: boolean; class_id: string }>
+			| { id: string; is_visible: boolean; class_id: string }
+			| null;
+		const chapter = Array.isArray(chapterArray) ? (chapterArray[0] ?? null) : chapterArray;
 
 		const profile = locals.profile;
 		let hasAccess = false;
@@ -89,7 +104,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			hasAccess = true;
 		}
 		// Student has access to visible chapters in their enrolled classes
-		else if (profile.role === 'student' && chapter.is_visible) {
+		else if (profile.role === 'student' && chapter?.is_visible) {
 			const { data: enrollment, error: enrollmentError } = await supabase
 				.from('class_members')
 				.select('id')
@@ -128,10 +143,21 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			throw error(404, 'Chemin de stockage manquant');
 		}
 
-		// Fetch from Supabase Storage
-		const { data: fileData, error: storageError } = await supabase.storage
-			.from('chapter-documents')
-			.download(document.storage_path);
+		// Le client service lit tout le bucket : on ne lui confie qu'un chemin
+		// de chapitre ou de modèle, sans remontée de dossier.
+		const storagePath = document.storage_path;
+		if (
+			!SERVABLE_PREFIXES.some((prefix) => storagePath.startsWith(prefix)) ||
+			storagePath.includes('..')
+		) {
+			logger.error('Chemin hors des dossiers servis :', document.id);
+			throw error(404, 'Document non trouve');
+		}
+
+		// Fetch from Supabase Storage — APRÈS la garde de la ligne ci-dessus.
+		const { data: fileData, error: storageError } = await createServiceRoleClient()
+			.storage.from(CHAPTER_DOCUMENTS_BUCKET)
+			.download(storagePath);
 
 		if (storageError || !fileData) {
 			console.error('[Document API] Storage error:', storageError);
@@ -163,7 +189,9 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			headers: {
 				'Content-Type': canInline ? rawMime : 'application/octet-stream',
 				'Content-Disposition': contentDisposition,
-				'Cache-Control': 'private, max-age=3600'
+				// `no-store` : un document dépublié ne doit pas rester lisible dans le
+				// cache du navigateur de l'élève.
+				'Cache-Control': 'private, no-store'
 			}
 		});
 	} catch (err) {

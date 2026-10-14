@@ -2,6 +2,9 @@
  * API Route: /api/teacher/chapters/[id]/documents/[docId]
  * PUT - Update a document
  * DELETE - Delete a document
+ *
+ * Une ligne de LIEN (élément du modèle, ADR 0029) ne se supprime pas d'un
+ * chapitre : elle se masque. Son fichier, celui du modèle, n'est jamais touché.
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -38,7 +41,7 @@ async function verifyDocumentOwnership(
 	// Verify document exists and belongs to chapter
 	const { data: document, error: docError } = await supabase
 		.from('chapter_documents')
-		.select('id, chapter_id')
+		.select('id, chapter_id, source_id')
 		.eq('id', docId)
 		.single();
 
@@ -127,7 +130,11 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const docId = docIdValidation.data;
 
 	// Verify ownership
-	await verifyDocumentOwnership(chapterId, docId, locals.supabase);
+	const { document } = await verifyDocumentOwnership(chapterId, docId, locals.supabase);
+
+	if (document.source_id !== null) {
+		throw error(409, 'Élément du modèle : masquez-le plutôt que de le supprimer.');
+	}
 
 	// Delete document
 	const result = await deleteChapterDocument(docId, locals.supabase);

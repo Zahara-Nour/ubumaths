@@ -1,45 +1,47 @@
 <!--
-	ChapterTemplateIndicator Component
-	===================================
+	ChapterTemplateIndicator
+	========================
 
-	Badge showing template link status for a chapter.
-	Displays template name, version, and update availability.
-	Provides actions to update or detach from template.
+	Dit qu'un chapitre est LIÉ à un modèle (ADR 0029) : il relie le contenu du
+	modèle, qui s'y corrige aussitôt. Plus de version ni de « mise à jour
+	disponible » : le lien est vivant, il n'y a rien à migrer.
+
+	Le nom du modèle mène à sa page, où le contenu se corrige. « Détacher du
+	modèle » ne fait que DEMANDER : la confirmation vit dans la page, qui porte
+	l'action de formulaire.
 
 	@module components/templates/ChapterTemplateIndicator
 -->
 <script lang="ts">
 	import type { InstantiationWithStatus } from '$lib/types/chapter-templates';
-	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { cn } from '$lib/utils';
-	import { Package, ArrowUpCircle, Unlink, AlertCircle } from '@lucide/svelte';
+	import { Link2, Unlink } from '@lucide/svelte';
 
 	// Props
 	interface Props {
 		instantiation: InstantiationWithStatus | null;
-		hasUpdate?: boolean;
-		onUpdate?: () => void;
+		/** Le professeur demande à détacher le chapitre ; la page confirme. */
 		onDetach?: () => void;
 		class?: string;
 	}
 
-	let {
-		instantiation,
-		hasUpdate = false,
-		onUpdate,
-		onDetach,
-		class: className = ''
-	}: Props = $props();
+	let { instantiation, onDetach, class: className = '' }: Props = $props();
 
-	// Check if template is deleted
+	// Un modèle supprimé laisse l'instanciation en place : une absence à dire.
 	const isDeleted = $derived(
-		instantiation && (!instantiation.templateTitle || instantiation.templateId === null)
+		instantiation !== null && (!instantiation.templateTitle || instantiation.templateId === null)
 	);
 
-	// Check if detached
 	const isDetached = $derived(instantiation?.isDetached ?? false);
+
+	/** La page du modèle, où son contenu se corrige. */
+	const templateHref = $derived(
+		instantiation?.templateId
+			? `/dashboard/teacher/contenu/templates/${instantiation.templateId}`
+			: null
+	);
 </script>
 
 <!--
@@ -51,101 +53,50 @@
 -->
 {#if instantiation}
 	<Tooltip.Provider>
-		<div class={cn('flex items-center gap-2', className)}>
-			<!-- Template badge -->
-			<Badge
-				variant={isDeleted ? 'outline' : isDetached ? 'secondary' : 'default'}
-				class={cn(
-					'flex items-center gap-1.5 px-2 py-1',
-					isDeleted && 'border-destructive/50 text-destructive'
-				)}
-			>
-				<Package class="h-3 w-3" />
-				<span class="text-xs">
-					{#if isDeleted}
-						Template supprimé
-					{:else if instantiation.templateTitle}
-						{instantiation.templateTitle}
+		<div class={cn('flex flex-wrap items-center gap-2 text-sm', className)}>
+			<Link2 class="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+			{#if isDeleted}
+				<span class="text-muted-foreground">Le modèle de ce chapitre a été supprimé</span>
+			{:else if isDetached}
+				<span class="text-muted-foreground">
+					Détaché du modèle « {instantiation.templateTitle} »
+				</span>
+			{:else}
+				<span>
+					Chapitre lié au modèle
+					{#if templateHref}
+						<a
+							href={templateHref}
+							class="font-medium text-primary underline-offset-4 hover:underline"
+							>« {instantiation.templateTitle} »</a
+						>
 					{:else}
-						Template
-					{/if}
-					{#if !isDetached && !isDeleted}
-						<span class="ml-1 opacity-60">v{instantiation.templateVersion}</span>
+						« {instantiation.templateTitle} »
 					{/if}
 				</span>
-				{#if isDetached}
-					<Tooltip.Root>
-						<Tooltip.Trigger>
-							{#snippet child({ props })}
-								<span {...props}>
-									<AlertCircle class="h-3 w-3 text-orange-500" />
-								</span>
-							{/snippet}
-						</Tooltip.Trigger>
-						<Tooltip.Content>
-							<p>Détaché du template</p>
-						</Tooltip.Content>
-					</Tooltip.Root>
-				{/if}
-			</Badge>
 
-			<!-- Update available badge -->
-			{#if hasUpdate && !isDetached && !isDeleted && instantiation.latestVersion}
-				<Badge
-					variant="outline"
-					class="border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30"
-				>
-					<ArrowUpCircle class="mr-1 h-3 w-3" />
-					<span class="text-xs">
-						Mise à jour v{instantiation.latestVersion}
-					</span>
-				</Badge>
-			{/if}
-
-			<!-- Actions -->
-			<div class="flex items-center gap-1">
-				{#if hasUpdate && !isDetached && !isDeleted && onUpdate}
+				{#if onDetach}
 					<Tooltip.Root>
 						<Tooltip.Trigger>
 							{#snippet child({ props })}
 								<Button
 									{...props}
 									variant="ghost"
-									size="icon-sm"
-									onclick={onUpdate}
-									class="h-7 w-7"
-								>
-									<ArrowUpCircle class="h-4 w-4 text-blue-600" />
-								</Button>
-							{/snippet}
-						</Tooltip.Trigger>
-						<Tooltip.Content>
-							<p>Mettre à jour depuis le template</p>
-						</Tooltip.Content>
-					</Tooltip.Root>
-				{/if}
-
-				{#if !isDetached && onDetach}
-					<Tooltip.Root>
-						<Tooltip.Trigger>
-							{#snippet child({ props })}
-								<Button
-									{...props}
-									variant="ghost"
-									size="icon-sm"
+									size="sm"
 									onclick={onDetach}
-									class="h-7 w-7"
+									class="h-7 text-muted-foreground"
 								>
-									<Unlink class="h-4 w-4 text-muted-foreground hover:text-destructive" />
+									<Unlink class="mr-1 h-4 w-4" />
+									Détacher du modèle
 								</Button>
 							{/snippet}
 						</Tooltip.Trigger>
 						<Tooltip.Content>
-							<p>Détacher du template</p>
+							<p>Copier le contenu du modèle dans ce chapitre, qui ne le suivra plus</p>
 						</Tooltip.Content>
 					</Tooltip.Root>
 				{/if}
-			</div>
+			{/if}
 		</div>
 	</Tooltip.Provider>
 {/if}

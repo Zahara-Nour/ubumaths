@@ -4,6 +4,12 @@
 	 * ========================
 	 *
 	 * Upload documents (PDF, images) or add Google Drive links to a chapter.
+	 *
+	 * Propriétaire (ADR 0029) : un chapitre (`chapterId`) OU un modèle
+	 * (`templateId`). Le fichier part sous le dossier du propriétaire — le
+	 * serveur décide du chemin — et le lien Drive passe par l'action
+	 * `?/addGoogleDriveDocument`, qui porte le même nom sur les deux pages.
+	 *
 	 * Features:
 	 * - Drag & drop file upload
 	 * - File type and size validation
@@ -23,8 +29,11 @@
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import type { Database } from '$lib/types/database';
 
-	interface Props {
-		chapterId: string;
+	/** Le propriétaire du document : un chapitre OU un modèle, jamais les deux. */
+	type Owner =
+		{ chapterId: string; templateId?: undefined } | { templateId: string; chapterId?: undefined };
+
+	type Props = Owner & {
 		/**
 		 * Client Supabase du navigateur (`data.supabase` du layout).
 		 *
@@ -41,9 +50,16 @@
 		 */
 		sectionId?: string | null;
 		onSuccess?: () => void;
-	}
+	};
 
-	let { chapterId, supabase, sectionId = null, onSuccess }: Props = $props();
+	let { chapterId, templateId, supabase, sectionId = null, onSuccess }: Props = $props();
+
+	/** Les routes d'API du propriétaire (mêmes chemins sous les deux bases). */
+	const apiBase = $derived(
+		templateId !== undefined
+			? `/api/teacher/chapter-templates/${templateId}`
+			: `/api/teacher/chapters/${chapterId}`
+	);
 
 	// Tab state
 	let activeTab = $state<'upload' | 'google_drive'>('upload');
@@ -74,7 +90,7 @@
 		if (!ALLOWED_TYPES.includes(file.type)) {
 			const ext = file.name.split('.').pop()?.toLowerCase();
 			if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {
-				return `Type de fichier non supporte. Utilisez: ${ALLOWED_EXTENSIONS.join(', ')}`;
+				return `Type de fichier non pris en charge. Utilisez : ${ALLOWED_EXTENSIONS.join(', ')}`;
 			}
 		}
 		if (file.size > MAX_FILE_SIZE) {
@@ -139,7 +155,7 @@
 		try {
 			// 1. L'autorisation : le serveur vérifie les droits et choisit le
 			//    chemin, que le navigateur ne décide jamais lui-même.
-			const reponse = await fetch(`/api/teacher/chapters/${chapterId}/document-upload-url`, {
+			const reponse = await fetch(`${apiBase}/document-upload-url`, {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
 				body: JSON.stringify({ fileName: file.name, fileType: file.type })
@@ -167,7 +183,7 @@
 			}
 
 			// 3. Les métadonnées, quelques centaines d'octets.
-			const enregistrement = await fetch(`/api/teacher/chapters/${chapterId}/documents`, {
+			const enregistrement = await fetch(`${apiBase}/documents`, {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
 				body: JSON.stringify({
@@ -281,14 +297,14 @@
 <Card.Root>
 	<Card.Header>
 		<Card.Title class="text-lg">Ajouter un document</Card.Title>
-		<Card.Description>Uploadez un fichier ou ajoutez un lien Google Drive</Card.Description>
+		<Card.Description>Déposez un fichier ou ajoutez un lien Google Drive</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<Tabs.Root bind:value={activeTab}>
 			<Tabs.List class="grid w-full grid-cols-2">
 				<Tabs.Trigger value="upload" class="flex items-center gap-2">
 					<Upload class="h-4 w-4" />
-					Upload
+					Fichier
 				</Tabs.Trigger>
 				<Tabs.Trigger value="google_drive" class="flex items-center gap-2">
 					<Link class="h-4 w-4" />
@@ -318,7 +334,9 @@
 					formulaire en parallèle, avant même que le fichier ne soit déposé.
 				-->
 				<form onsubmit={envoyerDocument} class="space-y-4" data-testid="upload-form">
-					<input type="hidden" name="chapterId" value={chapterId} />
+					{#if chapterId}
+						<input type="hidden" name="chapterId" value={chapterId} />
+					{/if}
 
 					<!-- Drop zone -->
 					{#if !selectedFile}
@@ -404,10 +422,10 @@
 							<Button type="submit" class="w-full" disabled={isUploading || !uploadTitle.trim()}>
 								{#if isUploading}
 									<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-									Upload en cours...
+									Envoi en cours…
 								{:else}
 									<Upload class="mr-2 h-4 w-4" />
-									Uploader
+									Envoyer
 								{/if}
 							</Button>
 						</div>
@@ -434,7 +452,9 @@
 					class="space-y-4"
 				>
 					<input type="hidden" name="sectionId" value={sectionId ?? ''} />
-					<input type="hidden" name="chapterId" value={chapterId} />
+					{#if chapterId}
+						<input type="hidden" name="chapterId" value={chapterId} />
+					{/if}
 
 					<div class="space-y-2">
 						<Label for="google-drive-url">URL Google Drive *</Label>
@@ -448,7 +468,7 @@
 						/>
 						{#if googleDriveUrl && !isValidGoogleDriveUrl(googleDriveUrl)}
 							<p class="text-sm text-amber-600">
-								Cette URL ne semble pas etre un lien Google Drive valide
+								Cette URL ne semble pas être un lien Google Drive valide
 							</p>
 						{/if}
 					</div>

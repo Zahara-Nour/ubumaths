@@ -128,6 +128,13 @@ export type ChapterColor =
 // ===========================================================================
 
 /**
+ * Propriétaire d'un élément de contenu (ADR 0029) : un CHAPITRE de classe ou un
+ * MODÈLE de chapitre. Les six tables de contenu portent `chapter_id` OU
+ * `template_id`, jamais les deux ; l'éditeur partagé désigne ainsi l'un ou l'autre.
+ */
+export type ContentOwner = { kind: 'chapter' | 'template'; id: string };
+
+/**
  * Class chapter - main container for course content
  */
 export interface ClassChapter {
@@ -155,6 +162,8 @@ export interface ClassChapter {
 export interface ChapterSection {
 	id: string;
 	chapterId: string;
+	/** Section du modèle que cette section RELIE (ADR 0029) ; `null` si propre au chapitre. */
+	sourceId: string | null;
 	title: string;
 	displayOrder: number;
 	createdAt: string;
@@ -202,6 +211,14 @@ export interface ChapterDocument {
 	 * `chapter_templates.status` (le modèle est diffusable).
 	 */
 	publishedAt: string | null;
+	/**
+	 * Élément du modèle que cette ligne RELIE (ADR 0029) ; `null` pour un élément
+	 * propre au chapitre. Une ligne de lien ne se retouche ni ne se supprime dans
+	 * le chapitre : elle se masque.
+	 */
+	sourceId: string | null;
+	/** Masqué dans ce chapitre (« pas cette année ») : jamais publié, revient d'un clic. */
+	hidden: boolean;
 }
 
 /**
@@ -246,6 +263,14 @@ export interface ChapterChecklistItem {
 	 * `chapter_templates.status` (le modèle est diffusable).
 	 */
 	publishedAt: string | null;
+	/**
+	 * Élément du modèle que cette ligne RELIE (ADR 0029) ; `null` pour un élément
+	 * propre au chapitre. Une ligne de lien ne se retouche ni ne se supprime dans
+	 * le chapitre : elle se masque.
+	 */
+	sourceId: string | null;
+	/** Masqué dans ce chapitre (« pas cette année ») : jamais publié, revient d'un clic. */
+	hidden: boolean;
 }
 
 /**
@@ -288,6 +313,14 @@ export interface ChapterExercise {
 	 * `chapter_templates.status` (le modèle est diffusable).
 	 */
 	publishedAt: string | null;
+	/**
+	 * Élément du modèle que cette ligne RELIE (ADR 0029) ; `null` pour un élément
+	 * propre au chapitre. Une ligne de lien ne se retouche ni ne se supprime dans
+	 * le chapitre : elle se masque.
+	 */
+	sourceId: string | null;
+	/** Masqué dans ce chapitre (« pas cette année ») : jamais publié, revient d'un clic. */
+	hidden: boolean;
 }
 
 /**
@@ -320,6 +353,14 @@ export interface ChapterWorksheet {
 	 * `chapter_templates.status` (le modèle est diffusable).
 	 */
 	publishedAt: string | null;
+	/**
+	 * Élément du modèle que cette ligne RELIE (ADR 0029) ; `null` pour un élément
+	 * propre au chapitre. Une ligne de lien ne se retouche ni ne se supprime dans
+	 * le chapitre : elle se masque.
+	 */
+	sourceId: string | null;
+	/** Masqué dans ce chapitre (« pas cette année ») : jamais publié, revient d'un clic. */
+	hidden: boolean;
 }
 
 /**
@@ -343,6 +384,14 @@ export interface ChapterSeries {
 	createdAt: string;
 	/** Mise à disposition des élèves. `null` = préparé, invisible. */
 	publishedAt: string | null;
+	/**
+	 * Élément du modèle que cette ligne RELIE (ADR 0029) ; `null` pour un élément
+	 * propre au chapitre. Une ligne de lien ne se retouche ni ne se supprime dans
+	 * le chapitre : elle se masque.
+	 */
+	sourceId: string | null;
+	/** Masqué dans ce chapitre (« pas cette année ») : jamais publié, revient d'un clic. */
+	hidden: boolean;
 	/** Titre de la série, `null` si elle n'a pas pu être relue. */
 	title: string | null;
 	/** Nombre total de questions de la série. */
@@ -478,7 +527,9 @@ export function dbDocumentToApp(db: DbChapterDocument): ChapterDocument {
 		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		updatedAt: db.updated_at,
-		publishedAt: db.published_at
+		publishedAt: db.published_at,
+		sourceId: db.source_id,
+		hidden: db.hidden
 	};
 }
 
@@ -496,7 +547,9 @@ export function dbChecklistItemToApp(db: DbChapterChecklistItem): ChapterCheckli
 		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		updatedAt: db.updated_at,
-		publishedAt: db.published_at
+		publishedAt: db.published_at,
+		sourceId: db.source_id,
+		hidden: db.hidden
 	};
 }
 
@@ -527,7 +580,9 @@ export function dbExerciseToApp(db: DbChapterExercise): ChapterExercise {
 		sectionId: db.section_id,
 		sectionOrder: db.section_order,
 		createdAt: db.created_at,
-		publishedAt: db.published_at
+		publishedAt: db.published_at,
+		sourceId: db.source_id,
+		hidden: db.hidden
 	};
 }
 

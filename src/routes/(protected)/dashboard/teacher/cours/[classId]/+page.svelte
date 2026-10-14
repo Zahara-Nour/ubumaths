@@ -40,11 +40,14 @@
 		FileText,
 		ClipboardList,
 		Dumbbell,
+		FileStack,
+		Layers,
 		Copy
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import type { TemplateSummary } from '$lib/types/chapter-templates';
 	import { templateSelectItems } from '$lib/utils/template-select-items';
+	import { formatGradeShort } from '$lib/utils/grades';
 
 	interface Props {
 		data: PageData;
@@ -188,7 +191,7 @@
 			{#if data.templates.length > 0}
 				<Button variant="outline" onclick={() => (showTemplateDialog = true)}>
 					<Copy class="mr-2 h-4 w-4" />
-					Depuis un template
+					Depuis un modèle
 				</Button>
 			{/if}
 			<Button onclick={() => (showCreateDialog = true)}>
@@ -222,11 +225,11 @@
 				<FolderOpen class="mx-auto mb-4 h-16 w-16 text-muted-foreground/40" />
 				<h2 class="text-xl font-semibold">Aucun chapitre</h2>
 				<p class="mt-2 text-muted-foreground">
-					Creez votre premier chapitre pour commencer a organiser le contenu de votre cours.
+					Créez votre premier chapitre pour commencer à organiser le contenu de votre cours.
 				</p>
 				<Button onclick={() => (showCreateDialog = true)} class="mt-4">
 					<Plus class="mr-2 h-4 w-4" />
-					Creer un chapitre
+					Créer un chapitre
 				</Button>
 			</Card.Content>
 		</Card.Root>
@@ -387,7 +390,7 @@
 			</div>
 
 			<div class="flex items-center gap-2">
-				<MyCheckbox bind:checked={createIsVisible} label="Visible par les eleves" />
+				<MyCheckbox bind:checked={createIsVisible} label="Visible par les élèves" />
 				<input type="hidden" name="isVisible" value={createIsVisible} />
 			</div>
 
@@ -396,7 +399,7 @@
 					Annuler
 				</Button>
 				<Button type="submit" disabled={isSubmitting || !createTitle.trim()}>
-					{isSubmitting ? 'Creation...' : 'Creer'}
+					{isSubmitting ? 'Création…' : 'Créer'}
 				</Button>
 			</Dialog.Footer>
 		</form>
@@ -446,7 +449,7 @@
 				</div>
 
 				<div class="flex items-center gap-2">
-					<MyCheckbox bind:checked={editIsVisible} label="Visible par les eleves" />
+					<MyCheckbox bind:checked={editIsVisible} label="Visible par les élèves" />
 					<input type="hidden" name="isVisible" value={editIsVisible} />
 				</div>
 
@@ -506,10 +509,11 @@
 		<Dialog.Header>
 			<Dialog.Title class="flex items-center gap-2">
 				<Copy class="h-5 w-5 text-primary" />
-				Creer depuis un template
+				Créer depuis un modèle
 			</Dialog.Title>
 			<Dialog.Description>
-				Selectionnez un template pour creer un chapitre avec du contenu pre-rempli.
+				Sélectionnez un modèle : le chapitre créé lui sera lié, et suivra ses corrections. Son
+				contenu y arrive préparé — rien n’est publié aux élèves.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -526,13 +530,14 @@
 		>
 			<!-- Template selection -->
 			<div class="space-y-2">
-				<Label for="template-select">Template *</Label>
+				<Label for="template-select">Modèle *</Label>
 				<MySelect
 					id="template-select"
 					type="single"
 					bind:value={selectedTemplateId}
 					items={templateItems}
-					placeholder="Selectionnez un template"
+					placeholder="Sélectionnez un modèle"
+					triggerAriaLabel="Modèle : {selectedTemplate?.title ?? 'aucune sélection'}"
 				/>
 				<input type="hidden" name="templateId" value={selectedTemplateId} />
 			</div>
@@ -572,12 +577,28 @@
 									{lore.learning.exercise}{selectedTemplate.exerciseCount > 1 ? 's' : ''}</span
 								>
 							</div>
+							<div class="flex items-center gap-2">
+								<FileStack class="h-4 w-4 text-muted-foreground" />
+								<span
+									>{selectedTemplate.worksheetCount} fiche{selectedTemplate.worksheetCount > 1
+										? 's'
+										: ''}</span
+								>
+							</div>
+							<div class="flex items-center gap-2">
+								<Layers class="h-4 w-4 text-muted-foreground" />
+								<span
+									>{selectedTemplate.seriesCount} série{selectedTemplate.seriesCount > 1
+										? 's'
+										: ''}</span
+								>
+							</div>
 						</div>
 
 						{#if selectedTemplate.grades.length > 0}
 							<div class="mt-3 flex flex-wrap gap-1">
 								{#each selectedTemplate.grades as grade (grade)}
-									<Badge variant="secondary" class="text-xs">{grade}e</Badge>
+									<Badge variant="secondary" class="text-xs">{formatGradeShort(grade)}</Badge>
 								{/each}
 							</div>
 						{/if}
@@ -594,12 +615,12 @@
 					bind:value={templateTitle}
 					placeholder={selectedTemplate?.title || 'Utiliser le titre du modèle'}
 				/>
-				<p class="text-xs text-muted-foreground">Laissez vide pour utiliser le titre du template</p>
+				<p class="text-xs text-muted-foreground">Laissez vide pour reprendre le titre du modèle.</p>
 			</div>
 
 			<!-- Visibility -->
 			<div class="flex items-center gap-2">
-				<MyCheckbox bind:checked={templateIsVisible} label="Visible par les eleves" />
+				<MyCheckbox bind:checked={templateIsVisible} label="Visible par les élèves" />
 				<input type="hidden" name="isVisible" value={templateIsVisible} />
 			</div>
 
@@ -609,7 +630,7 @@
 				</Button>
 				<Button type="submit" disabled={isSubmitting || !selectedTemplateId}>
 					<Copy class="mr-2 h-4 w-4" />
-					{isSubmitting ? 'Creation...' : 'Creer le chapitre'}
+					{isSubmitting ? 'Création…' : 'Créer le chapitre'}
 				</Button>
 			</Dialog.Footer>
 		</form>

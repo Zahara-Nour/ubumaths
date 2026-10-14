@@ -51,6 +51,13 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Lien du cours (ADR 0025) : chemin de stockage d'un document rendu par une RPC
 	// réservée à service_role, jeton vérifié en base, puis URL signée de 60 s
 	'/cours/[token]/document/[id]/+server',
+	// Fichier d'un document de chapitre (ADR 0029) : servi APRÈS la lecture de sa ligne
+	// avec le client de l'utilisateur (RLS : chapitre visible, document publié) ; le
+	// fichier d'un élément de modèle vit sous `templates/…`, sans règle de stockage élève
+	'/api/documents/[id]/+server',
+	// Suppression d'un modèle (ADR 0029) : ses fichiers `templates/<id>/` après la
+	// suppression VÉRIFIÉE de sa ligne, quand la règle de stockage ne s'applique plus
+	'lib/server/chapter-templates.ts',
 	// Consentement parental : IP et navigateur relevés par le serveur, pas par le client
 	'/consent/',
 	// Style d'une fiche (lot 4b, D11) : l'élève destinataire reçoit la mise en page

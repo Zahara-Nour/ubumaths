@@ -308,3 +308,45 @@ async function ensureWorksheetDistributed(
 
 	return { error: null };
 }
+
+/**
+ * Masquer (ou démasquer) un élément du modèle dans UN chapitre (ADR 0029, Q4).
+ *
+ * Masqué, il disparaît du plan du professeur (« pas cette année ») et n'est
+ * jamais publié : masquer force `published_at` à vide, la base refusant de toute
+ * façon un élément masqué et publié. Démasquer ne republie rien.
+ *
+ * Seule une ligne de LIEN se masque : un élément propre au chapitre se supprime.
+ * Le filtre `source_id` le garantit ; zéro ligne rendue = introuvable dans ce
+ * chapitre, propre au chapitre, ou refusé par la RLS (`notFound`).
+ */
+export async function setLinkedElementHidden(
+	input: { chapterId: string; contentType: ChapterContentType; itemId: string; hidden: boolean },
+	supabase: SupabaseClient<Database>
+): Promise<{ error: Error | null; notFound?: boolean }> {
+	const table = Object.prototype.hasOwnProperty.call(TABLES, input.contentType)
+		? TABLES[input.contentType]
+		: undefined;
+
+	if (!table) {
+		return { error: new Error('Type de contenu inconnu'), notFound: true };
+	}
+
+	const { data, error } = await supabase
+		.from(table)
+		.update(input.hidden ? { hidden: true, published_at: null } : { hidden: false })
+		.eq('id', input.itemId)
+		.eq('chapter_id', input.chapterId)
+		.not('source_id', 'is', null)
+		.select('id');
+
+	if (error) {
+		logger.error('[setLinkedElementHidden] Écriture impossible :', error);
+		return { error: new Error(error.message) };
+	}
+	if (!data || data.length !== 1) {
+		return { error: new Error('Élément du modèle introuvable dans ce chapitre'), notFound: true };
+	}
+
+	return { error: null };
+}

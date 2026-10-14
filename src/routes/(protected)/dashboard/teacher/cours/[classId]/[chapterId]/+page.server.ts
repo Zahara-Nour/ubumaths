@@ -46,6 +46,7 @@ import {
 } from '$lib/server/validation/chapter-sections';
 import {
 	setContentPublication,
+	setLinkedElementHidden,
 	listDistributedWorksheetIds,
 	CHAPTER_CONTENT_TYPES
 } from '$lib/server/chapters-publication';
@@ -54,7 +55,8 @@ import {
 	getInstantiationWithStatus,
 	createTemplateFromChapter,
 	migrateChapterToVersion,
-	detachChapterFromTemplate
+	detachChapterFromTemplate,
+	TemplateLinkedContentError
 } from '$lib/server/chapter-templates';
 import { createTemplateFromChapterSchema } from '$lib/server/validation/chapter-templates';
 import {
@@ -87,6 +89,21 @@ const setPublicationSchema = z.object({
 	itemId: uuidSchema,
 	published: z.boolean()
 });
+
+/** Masquer ou démasquer un élément du modèle dans ce chapitre (ADR 0029, Q4). */
+const setHiddenSchema = z.object({
+	contentType: z.enum(CHAPTER_CONTENT_TYPES),
+	itemId: uuidSchema,
+	hidden: z.boolean()
+});
+
+/**
+ * Une ligne de LIEN (élément du modèle) ne se supprime pas du chapitre : elle se
+ * masque (ADR 0029, Q2/Q4). Sa suppression ferait perdre aux élèves ce qui était
+ * publié et, pour un document, son fichier appartient au modèle.
+ */
+const LINKED_ELEMENT_MESSAGE =
+	'Élément du modèle : masquez-le plutôt que de le supprimer, ou corrigez-le dans le modèle.';
 
 type ChapterWorksheetRow = ChapterWorksheet & {
 	title: string | null;
@@ -168,6 +185,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const sections: ChapterSection[] = (sectionsResult.data || []).map((s) => ({
 		id: s.id,
 		chapterId,
+		sourceId: s.source_id,
 		title: s.title,
 		displayOrder: s.display_order,
 		createdAt: s.created_at,
@@ -193,7 +211,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		sectionOrder: d.section_order,
 		createdAt: d.created_at,
 		updatedAt: d.updated_at,
-		publishedAt: d.published_at
+		publishedAt: d.published_at,
+		sourceId: d.source_id,
+		hidden: d.hidden
 	}));
 
 	const checklistItems: ChapterChecklistItem[] = (checklistResult.data || []).map((c) => ({
@@ -206,7 +226,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		sectionOrder: c.section_order,
 		createdAt: c.created_at,
 		updatedAt: c.updated_at,
-		publishedAt: c.published_at
+		publishedAt: c.published_at,
+		sourceId: c.source_id,
+		hidden: c.hidden
 	}));
 
 	const worksheets: ChapterWorksheetRow[] = (worksheetsResult.data || []).map((w) => {
@@ -222,6 +244,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			sectionOrder: w.section_order,
 			createdAt: w.created_at,
 			publishedAt: w.published_at,
+			sourceId: w.source_id,
+			hidden: w.hidden,
 			title: fiche?.title ?? null,
 			status: fiche?.status ?? null
 		};
@@ -235,7 +259,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		sectionId: e.section_id,
 		sectionOrder: e.section_order,
 		createdAt: e.created_at,
-		publishedAt: e.published_at
+		publishedAt: e.published_at,
+		sourceId: e.source_id,
+		hidden: e.hidden
 	}));
 
 	// Get exercise details
@@ -426,7 +452,8 @@ const ONGOING_EVALUATION_WARNING =
 
 /**
  * Le code HTTP d'un échec du module des séries de chapitre : introuvable ou
- * refusé (zéro ligne) → 404, doublon et série supprimée → 409, sinon 500.
+ * refusé (zéro ligne) → 404, doublon, série supprimée et élément du modèle → 409,
+ * sinon 500.
  */
 function seriesFailure(err: ChapterSeriesError, action: string, fallback: string) {
 	switch (err.kind) {
@@ -436,6 +463,8 @@ function seriesFailure(err: ChapterSeriesError, action: string, fallback: string
 			return fail(409, { error: 'Cette série est déjà dans le chapitre', action });
 		case 'series_gone':
 			return fail(409, { error: 'Cette série n’existe plus.', action });
+		case 'linked':
+			return fail(409, { error: LINKED_ELEMENT_MESSAGE, action });
 		default:
 			return fail(500, { error: fallback, action });
 	}
@@ -596,7 +625,7 @@ export const actions: Actions = {
 		// Verify item exists (RLS enforces ownership)
 		const { data: item, error: itemError } = await locals.supabase
 			.from('chapter_checklist_items')
-			.select('id')
+			.select('id, source_id')
 			.eq('id', itemId)
 			.single();
 
@@ -610,6 +639,10 @@ export const actions: Actions = {
 
 		if (!item) {
 			return fail(403, { error: 'Acces refuse', action: 'deleteChecklistItem' });
+		}
+
+		if (item.source_id !== null) {
+			return fail(409, { error: LINKED_ELEMENT_MESSAGE, action: 'deleteChecklistItem' });
 		}
 
 		const { error: deleteError } = await deleteChecklistItem(itemId, locals.supabase);
@@ -664,6 +697,40 @@ export const actions: Actions = {
 			success: true,
 			action: validation.data.published ? 'publish' : 'unpublish'
 		};
+	},
+
+	/**
+	 * Masquer ou démasquer un élément du MODÈLE dans ce chapitre (ADR 0029, Q4).
+	 * Masquer le dépublie ; un élément propre au chapitre ne se masque pas (404).
+	 */
+	setHidden: async ({ request, locals, params }) => {
+		await requireRole(locals, 'teacher');
+
+		const chapterIdCheck = uuidSchema.safeParse(params.chapterId);
+		const formData = await request.formData();
+		const validation = setHiddenSchema.safeParse({
+			contentType: formData.get('contentType'),
+			itemId: formData.get('itemId'),
+			hidden: formData.get('hidden') === 'true'
+		});
+
+		if (!chapterIdCheck.success || !validation.success) {
+			return fail(400, { error: 'Élément invalide', action: 'setHidden' });
+		}
+
+		const { error: hideError, notFound } = await setLinkedElementHidden(
+			{ chapterId: chapterIdCheck.data, ...validation.data },
+			locals.supabase
+		);
+
+		if (notFound) {
+			return fail(404, { error: 'Élément du modèle introuvable', action: 'setHidden' });
+		}
+		if (hideError) {
+			return fail(500, { error: 'Impossible de masquer cet élément', action: 'setHidden' });
+		}
+
+		return { success: true, action: validation.data.hidden ? 'hide' : 'unhide' };
 	},
 
 	linkExercise: async ({ request, locals, params }) => {
@@ -725,7 +792,7 @@ export const actions: Actions = {
 		// Verify link exists (RLS enforces ownership)
 		const { data: link, error: linkError } = await locals.supabase
 			.from('chapter_exercises')
-			.select('id')
+			.select('id, source_id')
 			.eq('id', chapterExerciseId)
 			.single();
 
@@ -739,6 +806,10 @@ export const actions: Actions = {
 
 		if (!link) {
 			return fail(403, { error: 'Acces refuse', action: 'unlinkExercise' });
+		}
+
+		if (link.source_id !== null) {
+			return fail(409, { error: LINKED_ELEMENT_MESSAGE, action: 'unlinkExercise' });
 		}
 
 		const { error: unlinkError } = await unlinkExercise(chapterExerciseId, locals.supabase);
@@ -913,11 +984,11 @@ export const actions: Actions = {
 	},
 
 	/**
-	 * Faire un modèle de ce chapitre.
+	 * Faire un modèle de ce chapitre (ADR 0029).
 	 *
-	 * C'est le seul chemin qui remplit un modèle : le contenu y entre par
-	 * capture d'un chapitre, jamais à la main. Le modèle naît en brouillon,
-	 * avec les cinq types de contenu — fiches comprises.
+	 * Le modèle naît en brouillon avec une COPIE du contenu du chapitre (fichiers
+	 * compris) ; le chapitre devient lié au modèle et adopte chacun de ses
+	 * éléments — publications et cases cochées des élèves gardées.
 	 */
 	createTemplate: async ({ request, locals, params }) => {
 		const { user } = await requireRole(locals, 'teacher');
@@ -954,18 +1025,21 @@ export const actions: Actions = {
 			});
 		}
 
-		const { data: template, error: createError } = await createTemplateFromChapter(
-			validation.data,
-			user.id,
-			locals.supabase
-		);
+		const {
+			data: template,
+			error: createError,
+			warning
+		} = await createTemplateFromChapter(validation.data, user.id, locals.supabase);
 
 		if (createError || !template) {
 			logger.error('[createTemplate] Creation impossible :', createError);
 			return fail(500, { error: 'Erreur lors de la creation du modele', action: 'createTemplate' });
 		}
 
-		return { success: true, action: 'createTemplate', templateId: template.id };
+		// Modèle créé, mais une partie du chapitre n'a pas pu le relier : le dire.
+		return warning
+			? { success: true, action: 'createTemplate', templateId: template.id, warning }
+			: { success: true, action: 'createTemplate', templateId: template.id };
 	},
 
 	unlinkWorksheet: async ({ request, locals }) => {
@@ -976,7 +1050,7 @@ export const actions: Actions = {
 
 		const { data: link, error: linkError } = await locals.supabase
 			.from('chapter_worksheets')
-			.select('id')
+			.select('id, source_id')
 			.eq('id', chapterWorksheetId)
 			.single();
 
@@ -987,6 +1061,10 @@ export const actions: Actions = {
 
 		if (!link) {
 			return fail(403, { error: 'Acces refuse', action: 'unlinkWorksheet' });
+		}
+
+		if (link.source_id !== null) {
+			return fail(409, { error: LINKED_ELEMENT_MESSAGE, action: 'unlinkWorksheet' });
 		}
 
 		const { error: unlinkError } = await unlinkWorksheet(chapterWorksheetId, locals.supabase);
@@ -1089,11 +1167,16 @@ export const actions: Actions = {
 			return fail(400, { error: 'Document ID requis', action: 'deleteDocument' });
 		}
 
+		const idCheck = uuidSchema.safeParse(documentId);
+		if (!idCheck.success) {
+			return fail(400, { error: 'Document ID invalide', action: 'deleteDocument' });
+		}
+
 		// Get document info and verify it exists (RLS enforces ownership)
 		const { data: document, error: documentError } = await locals.supabase
 			.from('chapter_documents')
-			.select('id, storage_path, source_type')
-			.eq('id', documentId)
+			.select('id, storage_path, source_type, source_id')
+			.eq('id', idCheck.data)
 			.single();
 
 		// PGRST116 = la ligne n'existe pas, et le refus qui suit est légitime.
@@ -1108,6 +1191,21 @@ export const actions: Actions = {
 			return fail(403, { error: 'Acces refuse', action: 'deleteDocument' });
 		}
 
+		// Élément du modèle : il se masque, et son fichier — celui du modèle,
+		// partagé par tous les chapitres liés — n'est JAMAIS supprimé d'ici.
+		if (document.source_id !== null) {
+			return fail(409, { error: LINKED_ELEMENT_MESSAGE, action: 'deleteDocument' });
+		}
+
+		// La ligne D'ABORD, vérifiée : un refus silencieux de la RLS laissait
+		// sinon le document en place, privé de son fichier.
+		const { error: dbError } = await deleteChapterDocument(idCheck.data, locals.supabase);
+
+		if (dbError) {
+			logger.error('[deleteDocument] Error:', dbError);
+			return fail(500, { error: 'Erreur lors de la suppression', action: 'deleteDocument' });
+		}
+
 		// If it's an uploaded file, delete from storage
 		if (document.source_type === 'upload' && document.storage_path) {
 			const { error: storageError } = await locals.supabase.storage
@@ -1116,16 +1214,8 @@ export const actions: Actions = {
 
 			if (storageError) {
 				logger.warn('[deleteDocument] Storage delete warning:', storageError);
-				// Continue anyway - DB record deletion is more important
+				// Continue anyway - the document row is already gone
 			}
-		}
-
-		// Delete document record
-		const { error: dbError } = await deleteChapterDocument(documentId, locals.supabase);
-
-		if (dbError) {
-			logger.error('[deleteDocument] Error:', dbError);
-			return fail(500, { error: 'Erreur lors de la suppression', action: 'deleteDocument' });
 		}
 
 		return { success: true, action: 'deleteDocument' };
@@ -1170,6 +1260,10 @@ export const actions: Actions = {
 			locals.supabase
 		);
 
+		if (migrateError instanceof TemplateLinkedContentError) {
+			return fail(409, { error: migrateError.message, action: 'migrateToVersion' });
+		}
+
 		if (migrateError) {
 			logger.error('[migrateToVersion] Error:', migrateError);
 			return fail(500, { error: 'Erreur lors de la migration', action: 'migrateToVersion' });
@@ -1194,18 +1288,18 @@ export const actions: Actions = {
 		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (chapterError && chapterError.code !== 'PGRST116') {
 			logger.error('[detachFromTemplate] Lecture impossible :', chapterError);
-			return fail(500, { error: 'Verification impossible', action: 'detachFromTemplate' });
+			return fail(500, { error: 'Vérification impossible', action: 'detachFromTemplate' });
 		}
 
 		if (!chapter) {
-			return fail(403, { error: 'Acces refuse', action: 'detachFromTemplate' });
+			return fail(403, { error: 'Accès refusé', action: 'detachFromTemplate' });
 		}
 
 		const { error: detachError } = await detachChapterFromTemplate(chapterId, locals.supabase);
 
 		if (detachError) {
 			logger.error('[detachFromTemplate] Error:', detachError);
-			return fail(500, { error: 'Erreur lors du detachement', action: 'detachFromTemplate' });
+			return fail(500, { error: 'Erreur lors du détachement', action: 'detachFromTemplate' });
 		}
 
 		return { success: true, action: 'detachFromTemplate' };

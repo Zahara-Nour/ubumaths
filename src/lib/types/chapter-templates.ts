@@ -6,7 +6,16 @@
  * Use converter functions to transform between DB (snake_case) and App (camelCase).
  */
 
-import type { ChapterColor, ChapterIcon } from './chapters';
+import type {
+	ChapterChecklistItem,
+	ChapterColor,
+	ChapterDocument,
+	ChapterExercise,
+	ChapterIcon,
+	ChapterSection,
+	ChapterSeries,
+	ChapterWorksheet
+} from './chapters';
 import { GRADE_CODES, GRADES, type GradeCode } from './grades';
 
 // ===========================================================================
@@ -132,6 +141,42 @@ export interface TemplateDiff {
 // APPLICATION TYPES (camelCase)
 // ===========================================================================
 
+// ---------------------------------------------------------------------------
+// Contenu POSSÉDÉ par le modèle (ADR 0029)
+// ---------------------------------------------------------------------------
+//
+// Mêmes formes que les éléments d'un chapitre, sans ce qui n'appartient qu'à la
+// classe : ni publication, ni masquage, ni lien (un élément du modèle n'est
+// jamais publié, et c'est le chapitre qui le relie). Le propriétaire est
+// `templateId`.
+
+type ChapterOnly = 'chapterId' | 'publishedAt' | 'sourceId' | 'hidden';
+
+export type TemplateSection = Omit<ChapterSection, 'chapterId' | 'sourceId'> & {
+	templateId: string;
+};
+export type TemplateDocument = Omit<ChapterDocument, ChapterOnly> & { templateId: string };
+export type TemplateChecklistItem = Omit<ChapterChecklistItem, ChapterOnly> & {
+	templateId: string;
+};
+export type TemplateExercise = Omit<ChapterExercise, ChapterOnly> & { templateId: string };
+export type TemplateWorksheet = Omit<ChapterWorksheet, ChapterOnly> & { templateId: string };
+/** La série d'un modèle, sans son titre relu (l'éditeur l'enrichit au chargement). */
+export type TemplateSeries = Omit<
+	ChapterSeries,
+	ChapterOnly | 'title' | 'questionCount' | 'launchHref'
+> & { templateId: string };
+
+/** Le contenu non retiré d'un modèle, chaque liste dans l'ordre du professeur. */
+export interface TemplateContent {
+	sections: TemplateSection[];
+	documents: TemplateDocument[];
+	checklistItems: TemplateChecklistItem[];
+	exercises: TemplateExercise[];
+	worksheets: TemplateWorksheet[];
+	series: TemplateSeries[];
+}
+
 /**
  * Chapter template - reusable chapter structure
  */
@@ -216,6 +261,8 @@ export interface TemplateSummary {
 	checklistItemCount: number;
 	exerciseCount: number;
 	worksheetCount: number;
+	/** Séries du modèle (contenu réel, ADR 0029). */
+	seriesCount: number;
 }
 
 /**

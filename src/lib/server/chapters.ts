@@ -36,6 +36,7 @@ import type {
 	UpdateChecklistItemInput
 } from '$lib/server/validation/chapters';
 import { createServerLogger } from '$lib/utils/logger';
+import { ownerColumn, ownerInsert, toOwner, type ContentOwner } from './content-owner';
 
 const logger = createServerLogger('server/chapters');
 
@@ -49,6 +50,31 @@ type DbChapterChecklistItem = Database['public']['Tables']['chapter_checklist_it
 type DbStudentChecklistProgress = Database['public']['Tables']['student_checklist_progress']['Row'];
 type DbChapterExercise = Database['public']['Tables']['chapter_exercises']['Row'];
 type DbChapterWorksheet = Database['public']['Tables']['chapter_worksheets']['Row'];
+
+/**
+ * La section où naît un élément, passée À L'INSERTION. Indispensable pour un
+ * élément de MODÈLE : la base crée ses lignes de lien dans les chapitres liés à
+ * l'insertion même, avec la section qu'il a alors (ADR 0029) ; le ranger après
+ * coup laisserait ces lignes en « Non classé ».
+ */
+export type SectionPlacement = { sectionId: string; sectionOrder: number };
+
+/**
+ * Une ligne de LIEN (élément du modèle, ADR 0029) ne se supprime pas d'un
+ * chapitre : elle se masque. Les routes la rendent en 409.
+ */
+export class LinkedElementError extends Error {
+	constructor(message = 'Élément du modèle : masquez-le plutôt que de le supprimer.') {
+		super(message);
+		this.name = 'LinkedElementError';
+	}
+}
+
+/** `Omit` qui garde les variantes d'une union (upload / Google Drive). */
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+
+/** Le contenu d'un document, sans son propriétaire (passé à part). */
+export type DocumentFields = DistributiveOmit<CreateDocumentInput, 'chapterId'>;
 
 /** Order update item for reordering operations */
 interface OrderUpdate {
@@ -108,7 +134,9 @@ function convertDocument(db: DbChapterDocument): ChapterDocument {
 		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		updatedAt: db.updated_at,
-		publishedAt: db.published_at
+		publishedAt: db.published_at,
+		sourceId: db.source_id,
+		hidden: db.hidden
 	};
 }
 
@@ -123,7 +151,9 @@ function convertChecklistItem(db: DbChapterChecklistItem): ChapterChecklistItem 
 		sectionOrder: db.section_order,
 		createdAt: db.created_at,
 		updatedAt: db.updated_at,
-		publishedAt: db.published_at
+		publishedAt: db.published_at,
+		sourceId: db.source_id,
+		hidden: db.hidden
 	};
 }
 
@@ -148,7 +178,9 @@ function convertExercise(db: DbChapterExercise): ChapterExercise {
 		sectionId: db.section_id,
 		sectionOrder: db.section_order,
 		createdAt: db.created_at,
-		publishedAt: db.published_at
+		publishedAt: db.published_at,
+		sourceId: db.source_id,
+		hidden: db.hidden
 	};
 }
 
@@ -161,8 +193,20 @@ function convertWorksheet(db: DbChapterWorksheet): ChapterWorksheet {
 		sectionId: db.section_id,
 		sectionOrder: db.section_order,
 		createdAt: db.created_at,
-		publishedAt: db.published_at
+		publishedAt: db.published_at,
+		sourceId: db.source_id,
+		hidden: db.hidden
 	};
+}
+
+/** Les colonnes de rangement d'une insertion, vides sans `placement`. */
+export function placementColumns(placement: SectionPlacement | undefined): {
+	section_id?: string;
+	section_order?: number;
+} {
+	return placement
+		? { section_id: placement.sectionId, section_order: placement.sectionOrder }
+		: {};
 }
 
 // ============================================================================
@@ -380,25 +424,29 @@ export async function reorderChapters(
 // ============================================================================
 
 /**
+ * Insère l’élément chez son propriétaire, chapitre OU modèle, et rend la ligne brute.
+ *
  * Add a document to a chapter
  *
- * @param chapterId - Chapter ID
+ * @param owner - Propriétaire : chapitre ou modèle (ADR 0029)
  * @param data - Document data
  * @param supabase - Supabase client
  * @returns Created document
  */
-export async function addChapterDocument(
-	chapterId: string,
-	data: CreateDocumentInput,
-	supabase: SupabaseClient<Database>
-): Promise<OperationResult<ChapterDocument>> {
+export async function insertDocument(
+	owner: ContentOwner,
+	data: DocumentFields,
+	supabase: SupabaseClient<Database>,
+	placement?: SectionPlacement
+): Promise<OperationResult<DbChapterDocument>> {
+	const proprietaire = toOwner(owner);
 	// Get max display order if not provided
 	let displayOrder = data.displayOrder;
 	if (displayOrder === undefined) {
 		const { data: maxOrder, error: maxOrderError } = await supabase
 			.from('chapter_documents')
 			.select('display_order')
-			.eq('chapter_id', chapterId)
+			.eq(ownerColumn(proprietaire), proprietaire.id)
 			.order('display_order', { ascending: false })
 			.limit(1)
 			.maybeSingle();
@@ -421,7 +469,7 @@ export async function addChapterDocument(
 
 	if (data.sourceType === 'upload') {
 		insertData = {
-			chapter_id: chapterId,
+			...ownerInsert(proprietaire),
 			title: data.title,
 			description: data.description ?? null,
 			source_type: 'upload',
@@ -433,7 +481,7 @@ export async function addChapterDocument(
 		};
 	} else {
 		insertData = {
-			chapter_id: chapterId,
+			...ownerInsert(proprietaire),
 			title: data.title,
 			description: data.description ?? null,
 			source_type: 'google_drive',
@@ -444,6 +492,11 @@ export async function addChapterDocument(
 			mime_type: data.mimeType ?? null,
 			thumbnail_url: data.thumbnailUrl ?? null
 		};
+	}
+
+	if (placement) {
+		insertData.section_id = placement.sectionId;
+		insertData.section_order = placement.sectionOrder;
 	}
 
 	const { data: document, error } = await supabase
@@ -457,7 +510,26 @@ export async function addChapterDocument(
 		return { data: null, error: new Error(error.message) };
 	}
 
-	return { data: convertDocument(document), error: null };
+	return { data: document, error: null };
+}
+
+/**
+ * Variante CHAPITRE de `insertDocument` : rend la ligne convertie en type d'application.
+ */
+export async function addChapterDocument(
+	chapterId: string,
+	data: CreateDocumentInput,
+	supabase: SupabaseClient<Database>
+): Promise<OperationResult<ChapterDocument>> {
+	const { data: row, error } = await insertDocument(
+		{ kind: 'chapter', id: chapterId },
+		data,
+		supabase
+	);
+	if (error || !row) {
+		return { data: null, error: error ?? new Error('Création impossible') };
+	}
+	return { data: convertDocument(row), error: null };
 }
 
 /**
@@ -506,11 +578,23 @@ export async function deleteChapterDocument(
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: Error | null }> {
 	// Note: Storage file deletion should be handled separately
-	const { error } = await supabase.from('chapter_documents').delete().eq('id', documentId);
+	const { data, error } = await supabase
+		.from('chapter_documents')
+		.delete()
+		.eq('id', documentId)
+		.select('id');
 
 	if (error) {
 		logger.error('[deleteChapterDocument] Error:', error);
 		return { error: new Error(error.message) };
+	}
+
+	// La RLS échoue en silence : une suppression refusée rend zéro ligne, sans
+	// erreur. Sans ce contrôle, l'appelant supprimait ensuite le FICHIER d'un
+	// document resté en place.
+	if (!data || data.length !== 1) {
+		logger.error(`[deleteChapterDocument] Aucune ligne supprimée pour ${documentId}`);
+		return { error: new Error('Document introuvable') };
 	}
 
 	return { error: null };
@@ -525,16 +609,17 @@ export async function deleteChapterDocument(
  * @returns Success status
  */
 export async function reorderDocuments(
-	chapterId: string,
+	owner: ContentOwner | string,
 	orderUpdates: OrderUpdate[],
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: Error | null }> {
+	const proprietaire = toOwner(owner);
 	for (const update of orderUpdates) {
 		const { error } = await supabase
 			.from('chapter_documents')
 			.update({ display_order: update.displayOrder })
 			.eq('id', update.id)
-			.eq('chapter_id', chapterId);
+			.eq(ownerColumn(proprietaire), proprietaire.id);
 
 		if (error) {
 			logger.error('[reorderDocuments] Error:', error);
@@ -550,25 +635,29 @@ export async function reorderDocuments(
 // ============================================================================
 
 /**
+ * Insère l’élément chez son propriétaire, chapitre OU modèle, et rend la ligne brute.
+ *
  * Add a checklist item to a chapter
  *
- * @param chapterId - Chapter ID
+ * @param owner - Propriétaire : chapitre ou modèle (ADR 0029)
  * @param data - Checklist item data
  * @param supabase - Supabase client
  * @returns Created checklist item
  */
-export async function addChecklistItem(
-	chapterId: string,
-	data: CreateChecklistItemInput,
-	supabase: SupabaseClient<Database>
-): Promise<OperationResult<ChapterChecklistItem>> {
+export async function insertChecklistItem(
+	owner: ContentOwner,
+	data: Omit<CreateChecklistItemInput, 'chapterId'>,
+	supabase: SupabaseClient<Database>,
+	placement?: SectionPlacement
+): Promise<OperationResult<DbChapterChecklistItem>> {
+	const proprietaire = toOwner(owner);
 	// Get max display order if not provided
 	let displayOrder = data.displayOrder;
 	if (displayOrder === undefined) {
 		const { data: maxOrder, error: maxOrderError } = await supabase
 			.from('chapter_checklist_items')
 			.select('display_order')
-			.eq('chapter_id', chapterId)
+			.eq(ownerColumn(proprietaire), proprietaire.id)
 			.order('display_order', { ascending: false })
 			.limit(1)
 			.maybeSingle();
@@ -587,10 +676,11 @@ export async function addChecklistItem(
 	const { data: item, error } = await supabase
 		.from('chapter_checklist_items')
 		.insert({
-			chapter_id: chapterId,
+			...ownerInsert(proprietaire),
 			content: data.content,
 			description: data.description ?? null,
-			display_order: displayOrder
+			display_order: displayOrder,
+			...placementColumns(placement)
 		})
 		.select()
 		.single();
@@ -600,7 +690,26 @@ export async function addChecklistItem(
 		return { data: null, error: new Error(error.message) };
 	}
 
-	return { data: convertChecklistItem(item), error: null };
+	return { data: item, error: null };
+}
+
+/**
+ * Variante CHAPITRE de `insertChecklistItem` : rend la ligne convertie en type d'application.
+ */
+export async function addChecklistItem(
+	chapterId: string,
+	data: CreateChecklistItemInput,
+	supabase: SupabaseClient<Database>
+): Promise<OperationResult<ChapterChecklistItem>> {
+	const { data: row, error } = await insertChecklistItem(
+		{ kind: 'chapter', id: chapterId },
+		data,
+		supabase
+	);
+	if (error || !row) {
+		return { data: null, error: error ?? new Error('Création impossible') };
+	}
+	return { data: convertChecklistItem(row), error: null };
 }
 
 /**
@@ -648,14 +757,7 @@ export async function deleteChecklistItem(
 	itemId: string,
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: Error | null }> {
-	const { error } = await supabase.from('chapter_checklist_items').delete().eq('id', itemId);
-
-	if (error) {
-		logger.error('[deleteChecklistItem] Error:', error);
-		return { error: new Error(error.message) };
-	}
-
-	return { error: null };
+	return deleteOwnRow('chapter_checklist_items', itemId, 'deleteChecklistItem', supabase);
 }
 
 // ============================================================================
@@ -663,27 +765,31 @@ export async function deleteChecklistItem(
 // ============================================================================
 
 /**
+ * Insère l’élément chez son propriétaire, chapitre OU modèle, et rend la ligne brute.
+ *
  * Link an exercise to a chapter
  *
- * @param chapterId - Chapter ID
+ * @param owner - Propriétaire : chapitre ou modèle (ADR 0029)
  * @param exerciseId - Exercise ID
  * @param supabase - Supabase client
  * @param displayOrder - Optional display order
  * @returns Created chapter exercise link
  */
-export async function linkExercise(
-	chapterId: string,
+export async function insertExercise(
+	owner: ContentOwner,
 	exerciseId: string,
 	supabase: SupabaseClient<Database>,
-	displayOrder?: number
-): Promise<OperationResult<ChapterExercise>> {
+	displayOrder?: number,
+	placement?: SectionPlacement
+): Promise<OperationResult<DbChapterExercise>> {
+	const proprietaire = toOwner(owner);
 	// Get max display order if not provided
 	let order = displayOrder;
 	if (order === undefined) {
 		const { data: maxOrder, error: maxOrderError } = await supabase
 			.from('chapter_exercises')
 			.select('display_order')
-			.eq('chapter_id', chapterId)
+			.eq(ownerColumn(proprietaire), proprietaire.id)
 			.order('display_order', { ascending: false })
 			.limit(1)
 			.maybeSingle();
@@ -702,9 +808,10 @@ export async function linkExercise(
 	const { data: exercise, error } = await supabase
 		.from('chapter_exercises')
 		.insert({
-			chapter_id: chapterId,
+			...ownerInsert(proprietaire),
 			exercise_id: exerciseId,
-			display_order: order
+			display_order: order,
+			...placementColumns(placement)
 		})
 		.select()
 		.single();
@@ -714,7 +821,28 @@ export async function linkExercise(
 		return { data: null, error: new Error(error.message) };
 	}
 
-	return { data: convertExercise(exercise), error: null };
+	return { data: exercise, error: null };
+}
+
+/**
+ * Variante CHAPITRE de `insertExercise` : rend la ligne convertie en type d'application.
+ */
+export async function linkExercise(
+	chapterId: string,
+	exerciseId: string,
+	supabase: SupabaseClient<Database>,
+	displayOrder?: number
+): Promise<OperationResult<ChapterExercise>> {
+	const { data: row, error } = await insertExercise(
+		{ kind: 'chapter', id: chapterId },
+		exerciseId,
+		supabase,
+		displayOrder
+	);
+	if (error || !row) {
+		return { data: null, error: error ?? new Error('Création impossible') };
+	}
+	return { data: convertExercise(row), error: null };
 }
 
 /**
@@ -728,40 +856,37 @@ export async function unlinkExercise(
 	chapterExerciseId: string,
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: Error | null }> {
-	const { error } = await supabase.from('chapter_exercises').delete().eq('id', chapterExerciseId);
-
-	if (error) {
-		logger.error('[unlinkExercise] Error:', error);
-		return { error: new Error(error.message) };
-	}
-
-	return { error: null };
+	return deleteOwnRow('chapter_exercises', chapterExerciseId, 'unlinkExercise', supabase);
 }
 
 /**
+ * Insère l’élément chez son propriétaire, chapitre OU modèle, et rend la ligne brute.
+ *
  * Rattache une fiche à un chapitre.
  *
  * Rattacher ne DISTRIBUE pas : la policy de l'élève sur `chapter_worksheets`
  * exige `student_has_worksheet_access`, donc une fiche préparée à l'avance
  * reste invisible jusqu'à son affectation. C'est tout l'intérêt du geste.
  *
- * @param chapterId - ID du chapitre
+ * @param owner - Propriétaire : chapitre ou modèle (ADR 0029)
  * @param worksheetId - ID de la fiche
  * @param supabase - Client Supabase
  * @param displayOrder - Rang, sinon à la suite
  */
-export async function linkWorksheet(
-	chapterId: string,
+export async function insertWorksheet(
+	owner: ContentOwner,
 	worksheetId: string,
 	supabase: SupabaseClient<Database>,
-	displayOrder?: number
-): Promise<OperationResult<ChapterWorksheet>> {
+	displayOrder?: number,
+	placement?: SectionPlacement
+): Promise<OperationResult<DbChapterWorksheet>> {
+	const proprietaire = toOwner(owner);
 	let order = displayOrder;
 	if (order === undefined) {
 		const { data: maxOrder, error: maxOrderError } = await supabase
 			.from('chapter_worksheets')
 			.select('display_order')
-			.eq('chapter_id', chapterId)
+			.eq(ownerColumn(proprietaire), proprietaire.id)
 			.order('display_order', { ascending: false })
 			.limit(1)
 			.maybeSingle();
@@ -780,9 +905,10 @@ export async function linkWorksheet(
 	const { data: worksheet, error } = await supabase
 		.from('chapter_worksheets')
 		.insert({
-			chapter_id: chapterId,
+			...ownerInsert(proprietaire),
 			worksheet_id: worksheetId,
-			display_order: order
+			display_order: order,
+			...placementColumns(placement)
 		})
 		.select()
 		.single();
@@ -792,7 +918,28 @@ export async function linkWorksheet(
 		return { data: null, error: new Error(error.message) };
 	}
 
-	return { data: convertWorksheet(worksheet), error: null };
+	return { data: worksheet, error: null };
+}
+
+/**
+ * Variante CHAPITRE de `insertWorksheet` : rend la ligne convertie en type d'application.
+ */
+export async function linkWorksheet(
+	chapterId: string,
+	worksheetId: string,
+	supabase: SupabaseClient<Database>,
+	displayOrder?: number
+): Promise<OperationResult<ChapterWorksheet>> {
+	const { data: row, error } = await insertWorksheet(
+		{ kind: 'chapter', id: chapterId },
+		worksheetId,
+		supabase,
+		displayOrder
+	);
+	if (error || !row) {
+		return { data: null, error: error ?? new Error('Création impossible') };
+	}
+	return { data: convertWorksheet(row), error: null };
 }
 
 /**
@@ -809,14 +956,7 @@ export async function unlinkWorksheet(
 	chapterWorksheetId: string,
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: Error | null }> {
-	const { error } = await supabase.from('chapter_worksheets').delete().eq('id', chapterWorksheetId);
-
-	if (error) {
-		logger.error('[unlinkWorksheet] Error:', error);
-		return { error: new Error(error.message) };
-	}
-
-	return { error: null };
+	return deleteOwnRow('chapter_worksheets', chapterWorksheetId, 'unlinkWorksheet', supabase);
 }
 
 /**
@@ -828,16 +968,17 @@ export async function unlinkWorksheet(
  * @returns Success status
  */
 export async function reorderExercises(
-	chapterId: string,
+	owner: ContentOwner | string,
 	orderUpdates: OrderUpdate[],
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: Error | null }> {
+	const proprietaire = toOwner(owner);
 	for (const update of orderUpdates) {
 		const { error } = await supabase
 			.from('chapter_exercises')
 			.update({ display_order: update.displayOrder })
 			.eq('id', update.id)
-			.eq('chapter_id', chapterId);
+			.eq(ownerColumn(proprietaire), proprietaire.id);
 
 		if (error) {
 			logger.error('[reorderExercises] Error:', error);
@@ -1235,4 +1376,43 @@ export async function getMyChecklistProgress(
 	});
 
 	return { data: result, error: null, count: result.length };
+}
+
+/**
+ * Supprime un élément PROPRE au chapitre. Une ligne de lien (`source_id` non
+ * vide) est hors d'atteinte : `LinkedElementError`. La RLS échoue en silence :
+ * zéro ligne supprimée n'est pas un succès.
+ */
+async function deleteOwnRow(
+	table: 'chapter_checklist_items' | 'chapter_exercises' | 'chapter_worksheets',
+	id: string,
+	label: string,
+	supabase: SupabaseClient<Database>
+): Promise<{ error: Error | null }> {
+	const { data, error } = await supabase
+		.from(table)
+		.delete()
+		.eq('id', id)
+		.is('source_id', null)
+		.select('id');
+
+	if (error) {
+		logger.error(`[${label}] Error:`, error);
+		return { error: new Error(error.message) };
+	}
+	if (data && data.length === 1) return { error: null };
+
+	// Zéro ligne : élément du modèle, ou introuvable / refusé.
+	const { data: ligne, error: readError } = await supabase
+		.from(table)
+		.select('source_id')
+		.eq('id', id)
+		.maybeSingle();
+	if (readError) {
+		logger.error(`[${label}] Relecture impossible :`, readError);
+	}
+	if (ligne && ligne.source_id !== null) return { error: new LinkedElementError() };
+
+	logger.error(`[${label}] Aucune ligne supprimée pour ${id}`);
+	return { error: new Error('Élément introuvable') };
 }

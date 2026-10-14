@@ -33,7 +33,15 @@ const DOCUMENT = '44444444-4444-4444-8444-444444444444';
 const QUAND = '2026-09-14T05:36:02.215Z';
 
 function section(id: string, title: string, displayOrder: number): ChapterSection {
-	return { id, chapterId: CHAPITRE, title, displayOrder, createdAt: QUAND, updatedAt: QUAND };
+	return {
+		id,
+		chapterId: CHAPITRE,
+		sourceId: null,
+		title,
+		displayOrder,
+		createdAt: QUAND,
+		updatedAt: QUAND
+	};
 }
 
 function document(sectionId: string | null): ChapterDocument {
@@ -55,7 +63,9 @@ function document(sectionId: string | null): ChapterDocument {
 		sectionOrder: 0,
 		createdAt: QUAND,
 		updatedAt: QUAND,
-		publishedAt: null
+		publishedAt: null,
+		sourceId: null,
+		hidden: false
 	};
 }
 

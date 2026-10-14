@@ -11,7 +11,8 @@ import { requireRole } from '$lib/server/middleware/auth';
 import {
 	getChapterTemplate,
 	updateChapterTemplate,
-	deleteChapterTemplate
+	deleteChapterTemplate,
+	TemplateInUseError
 } from '$lib/server/chapter-templates';
 import {
 	updateChapterTemplateSchema,
@@ -188,6 +189,11 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 
 	// Delete (archive) template
 	const result = await deleteChapterTemplate(templateId, locals.supabase);
+
+	// Encore relié à des chapitres (ADR 0029) : on l'archive, on ne le supprime pas.
+	if (result.error instanceof TemplateInUseError) {
+		throw error(409, result.error.message);
+	}
 
 	if (result.error) {
 		logger.error('[DELETE /api/teacher/chapter-templates/[id]] Error:', result.error);

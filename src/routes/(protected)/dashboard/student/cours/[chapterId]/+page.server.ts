@@ -183,6 +183,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		sections: (sectionsResult.data ?? []).map((s) => ({
 			id: s.id,
 			chapterId,
+			sourceId: s.source_id,
 			title: s.title,
 			displayOrder: s.display_order,
 			createdAt: s.created_at,

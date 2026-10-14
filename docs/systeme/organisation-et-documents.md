@@ -119,15 +119,20 @@ plus les fragments de `rag_chunks`. Le fichier d'origine n'est écrit ni dans un
   `published_at <= now()` et `is_class_student` (adhésion active depuis
   `20260915220000_is_class_student_active_only.sql`) : un document non publié rend 404.
 - **Fichier** : bucket **privé** `chapter-documents` (`public = false` dans `supabase/seed.sql`),
-  25 Mo au plus (`20260915200000_chapter_documents_25mb.sql`), chemin
-  `chapters/<chapter_id>/…`. Le téléchargement passe par `locals.supabase` : il faut **aussi** une
-  policy sur `storage.objects`. Celles du professeur sont dans
-  `20260620090000_drop_class_teacher_id_mono_teacher.sql` (`is_teacher_or_admin`) ; celle de
-  l'élève (« Students can read visible chapter documents ») n'existe qu'en production.
+  25 Mo au plus (`20260915200000_chapter_documents_25mb.sql`), chemin `chapters/<chapter_id>/…`
+  ou, pour un élément de modèle relié par le chapitre (ADR 0029), `templates/<template_id>/…`.
+  Depuis l'étape 3b, le téléchargement passe par le **client service**, APRÈS la lecture de la
+  ligne sous RLS ci-dessus — c'est elle, la garde : l'élève n'a, à dessein, aucune règle de
+  stockage sur `templates/…`. Le chemin téléchargé est toujours celui de la ligne lue, borné à
+  `chapters/` ou `templates/` (sinon 404). Une ligne de modèle (sans chapitre) n'est lisible que
+  du professeur. La règle de stockage élève de `chapters/…` (« Students can read visible chapter
+  documents », production seulement, sans test de `published_at`) n'est donc plus nécessaire à
+  cette route ; son retrait viendra à part (journal de la refonte, Q6).
 - **Type servi** : seuls PDF, PNG, JPEG, GIF et WebP s'affichent en ligne ; tout autre
   `mime_type` part en `application/octet-stream` et en pièce jointe (finding M6 : un HTML ou un
   SVG servi en ligne s'exécuterait sur notre origine). Un document `google_drive` rend 400.
-- `Cache-Control: private, max-age=3600`.
+- `Cache-Control: private, no-store` : un document dépublié ne reste pas lisible dans le cache du
+  navigateur de l'élève.
 
 ## Invariants
 

@@ -183,15 +183,6 @@ const mockDbInstantiation: DbChapterTemplateInstantiation = {
 	last_migrated_at: null
 };
 
-const mockDbChapter = {
-	id: mockChapterId,
-	class_id: mockClassId,
-	teacher_id: mockUserId,
-	title: 'Chapitre instantie',
-	color: 'blue',
-	icon: 'calculator'
-};
-
 // ============================================================================
 // VALIDATION SCHEMA TESTS - CONTENT SNAPSHOT
 // ============================================================================
@@ -1564,100 +1555,6 @@ describe('Template CRUD Functions', () => {
 			expect(result.data).toBeNull();
 		});
 	});
-
-	describe('createTemplateFromChapter', () => {
-		/** Enchaîne les réponses : snapshot, métadonnées, insertion du modèle. */
-		function mockCreationChain() {
-			// extractContentSnapshotFromChapter lit cinq sections, chacune close
-			// par un `order`.
-			for (let i = 0; i < 5; i++) {
-				supabase._mockChain.order.mockResolvedValueOnce({ data: [], error: null });
-			}
-			supabase._mockChain.single
-				// métadonnées du chapitre (couleur, icône)
-				.mockResolvedValueOnce({ data: { color: null, icon: null }, error: null })
-				// insertion du modèle
-				.mockResolvedValueOnce({ data: mockDbTemplate, error: null });
-		}
-
-		// Le chapitre qui engendre le modèle le suit désormais comme les autres :
-		// il reçoit les propositions de mise à jour, au lieu de rester à l'écart
-		// des corrections qu'il a lui-même inspirées.
-		it('rattache le chapitre source au modèle créé', async () => {
-			mockCreationChain();
-			// aucun rattachement préexistant
-			supabase._mockChain.maybeSingle.mockResolvedValueOnce({ data: null, error: null });
-			// le premier insert (le modèle) se poursuit en .select().single() ;
-			// le second (le rattachement) termine la chaîne.
-			supabase._mockChain.insert
-				.mockReturnValueOnce(supabase._mockChain as never)
-				.mockReturnValueOnce(Promise.resolve({ error: null }) as never);
-
-			const result = await templates.createTemplateFromChapter(
-				{ chapterId: mockChapterId, title: 'Le second degré', grades: [] },
-				mockUserId,
-				supabase
-			);
-
-			expect(result.error).toBeNull();
-			expect(supabase._mockChain.insert).toHaveBeenCalledWith(
-				expect.objectContaining({ chapter_id: mockChapterId, template_version: 1 })
-			);
-		});
-
-		// La base n'impose pas l'unicité du rattachement, et le code lit avec
-		// `.single()` : une seconde ligne ferait échouer le bandeau du chapitre et
-		// ses mises à jour.
-		it('laisse intact un chapitre qui suit déjà un modèle', async () => {
-			mockCreationChain();
-			supabase._mockChain.maybeSingle.mockResolvedValueOnce({
-				data: { id: 'existing-instantiation' },
-				error: null
-			});
-
-			const result = await templates.createTemplateFromChapter(
-				{ chapterId: mockChapterId, title: 'Le second degré', grades: [] },
-				mockUserId,
-				supabase
-			);
-
-			expect(result.error).toBeNull();
-			expect(supabase._mockChain.insert).not.toHaveBeenCalledWith(
-				expect.objectContaining({ chapter_id: mockChapterId })
-			);
-		});
-	});
-
-	describe('deleteChapterTemplate', () => {
-		it('supprime réellement, au lieu d’archiver', async () => {
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { status: 'draft' },
-				error: null
-			});
-			supabase._mockChain.eq.mockReturnValueOnce(supabase._mockChain as never);
-			supabase._mockChain.eq.mockReturnValueOnce(Promise.resolve({ error: null }) as never);
-
-			const result = await templates.deleteChapterTemplate(mockTemplateId, supabase);
-
-			expect(result.error).toBeNull();
-			expect(supabase._mockChain.delete).toHaveBeenCalled();
-		});
-
-		it('should handle deletion error', async () => {
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { status: 'draft' },
-				error: null
-			});
-			supabase._mockChain.eq.mockReturnValueOnce(supabase._mockChain as never);
-			supabase._mockChain.eq.mockReturnValueOnce(
-				Promise.resolve({ error: { message: 'Deletion failed' } }) as never
-			);
-
-			const result = await templates.deleteChapterTemplate(mockTemplateId, supabase);
-
-			expect(result.error).toBeDefined();
-		});
-	});
 });
 
 // ============================================================================
@@ -1710,39 +1607,6 @@ describe('Publishing Operations', () => {
 	});
 
 	describe('deleteChapterTemplate', () => {
-		// Supprimer efface le modèle et son historique de versions. Les chapitres
-		// qui en sont issus survivent : la clé étrangère est en SET NULL, et leur
-		// bandeau affiche « Template supprimé ».
-		it('supprime un brouillon', async () => {
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { status: 'draft' },
-				error: null
-			});
-			// Le premier `eq` appartient à la lecture du statut et reste
-			// chaînable ; seul celui du delete termine la chaîne.
-			supabase._mockChain.eq.mockReturnValueOnce(supabase._mockChain as never);
-			supabase._mockChain.eq.mockReturnValueOnce(Promise.resolve({ error: null }) as never);
-
-			const result = await templates.deleteChapterTemplate(mockTemplateId, supabase);
-
-			expect(result.error).toBeNull();
-		});
-
-		// Un modèle publié a pu servir : la suppression reste permise, et ce sont
-		// les chapitres issus qui survivent, détachés.
-		it('supprime un modèle publié', async () => {
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { status: 'published' },
-				error: null
-			});
-			supabase._mockChain.eq.mockReturnValueOnce(supabase._mockChain as never);
-			supabase._mockChain.eq.mockReturnValueOnce(Promise.resolve({ error: null }) as never);
-
-			const result = await templates.deleteChapterTemplate(mockTemplateId, supabase);
-
-			expect(result.error).toBeNull();
-		});
-
 		// Archivé veut dire « retiré de l'usage, mais conservé » : le détruire
 		// effacerait la trace de ce qui a servi.
 		it('refuse de supprimer un modèle archivé', async () => {
@@ -1754,53 +1618,6 @@ describe('Publishing Operations', () => {
 			const result = await templates.deleteChapterTemplate(mockTemplateId, supabase);
 
 			expect(result.error?.message).toContain('archivé');
-		});
-	});
-
-	describe('publishTemplate', () => {
-		it('should publish template with content', async () => {
-			// Mock fetch template
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { content_snapshot: mockContentSnapshot },
-				error: null
-			});
-
-			// Mock publish update
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { ...mockDbTemplate, status: 'published' },
-				error: null
-			});
-
-			const result = await templates.publishTemplate(mockTemplateId, supabase);
-
-			expect(result.error).toBeNull();
-			expect(result.data?.status).toBe('published');
-		});
-
-		it('should reject publishing empty template', async () => {
-			// Mock fetch template with empty content
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { content_snapshot: EMPTY_CONTENT_SNAPSHOT },
-				error: null
-			});
-
-			const result = await templates.publishTemplate(mockTemplateId, supabase);
-
-			expect(result.error).toBeDefined();
-			expect(result.error?.message).toContain('Modèle vide');
-			expect(result.data).toBeNull();
-		});
-
-		it('should handle fetch error', async () => {
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: null,
-				error: { message: 'Template not found' }
-			});
-
-			const result = await templates.publishTemplate(mockTemplateId, supabase);
-
-			expect(result.error).toBeDefined();
-			expect(result.data).toBeNull();
 		});
 	});
 
@@ -1845,6 +1662,11 @@ describe('Version Operations', () => {
 
 	describe('createTemplateVersion', () => {
 		it('should create new version with diff', async () => {
+			// ADR 0029 : le modèle ne possède aucun contenu en tables (six lectures).
+			for (let i = 0; i < 6; i++) {
+				supabase._mockChain.limit.mockResolvedValueOnce({ data: [], error: null } as never);
+			}
+
 			const newSnapshot: TemplateContentSnapshot = {
 				...mockContentSnapshot,
 				documents: [
@@ -1897,6 +1719,11 @@ describe('Version Operations', () => {
 		});
 
 		it('should handle version creation error', async () => {
+			// ADR 0029 : le modèle ne possède aucun contenu en tables (six lectures).
+			for (let i = 0; i < 6; i++) {
+				supabase._mockChain.limit.mockResolvedValueOnce({ data: [], error: null } as never);
+			}
+
 			// Mock fetch current template
 			supabase._mockChain.single.mockResolvedValueOnce({
 				data: {
@@ -1995,105 +1822,8 @@ describe('Instantiation Operations', () => {
 	});
 
 	describe('instantiateTemplate', () => {
-		// Skip this complex test - it requires intricate mock chain setup for insert().select().single()
-		// The underlying business logic is tested via extractContentSnapshotFromChapter and
-		// applyContentSnapshotToChapter tests
-		it.skip('should create chapter from template', async () => {
-			const input: InstantiateTemplateInput = {
-				templateId: mockTemplateId,
-				classId: mockClassId,
-				title: 'Custom Chapter Title',
-				isVisible: true
-			};
-
-			// Mock template fetch
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: {
-					title: 'Template Title',
-					content_snapshot: mockContentSnapshot,
-					current_version: 1,
-					color: 'blue',
-					icon: 'calculator'
-				},
-				error: null
-			});
-
-			// Mock chapter creation - note: insert().select().single() chain
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: mockDbChapter,
-				error: null
-			});
-
-			// Mock document inserts (if any) - insert() returns error directly
-			supabase._mockChain.insert.mockResolvedValueOnce({
-				error: null
-			} as never);
-
-			// Mock quiz question inserts
-			supabase._mockChain.insert.mockResolvedValueOnce({
-				error: null
-			} as never);
-
-			// Mock checklist inserts
-			supabase._mockChain.insert.mockResolvedValueOnce({
-				error: null
-			} as never);
-
-			// Mock exercise inserts
-			supabase._mockChain.insert.mockResolvedValueOnce({
-				error: null
-			} as never);
-
-			// Mock instantiation record creation - insert().select().single() chain
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: mockDbInstantiation,
-				error: null
-			});
-
-			const result = await templates.instantiateTemplate(input, mockUserId, supabase);
-
-			expect(result.error).toBeNull();
-			expect(result.data?.chapterId).toBe(mockChapterId);
-			expect(result.data?.instantiation).toBeDefined();
-		});
-
-		it('should use template title when no custom title provided', async () => {
-			const input: InstantiateTemplateInput = {
-				templateId: mockTemplateId,
-				classId: mockClassId,
-				isVisible: false
-			};
-
-			// Mock template fetch — publié, seul statut qui autorise l'usage.
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: {
-					title: 'Template Title',
-					content_snapshot: EMPTY_CONTENT_SNAPSHOT,
-					current_version: 1,
-					color: 'blue',
-					icon: 'calculator',
-					status: 'published'
-				},
-				error: null
-			});
-
-			// Mock chapter creation
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: { ...mockDbChapter, title: 'Template Title' },
-				error: null
-			});
-
-			// Mock instantiation record creation
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: mockDbInstantiation,
-				error: null
-			});
-
-			const result = await templates.instantiateTemplate(input, mockUserId, supabase);
-
-			expect(result.error).toBeNull();
-		});
-
+		// La création d'un chapitre lié (lien, titre par défaut, retour arrière) est
+		// couverte par `modele-lien.test.ts` ; ici, l'échec de lecture du modèle.
 		it('should handle template not found', async () => {
 			const input: InstantiateTemplateInput = {
 				templateId: mockTemplateId,
