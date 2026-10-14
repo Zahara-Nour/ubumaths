@@ -21,14 +21,9 @@ function instanciation(delta: Partial<InstantiationWithStatus> = {}): Instantiat
 	return {
 		id: '11111111-1111-4111-8111-111111111111',
 		templateId: '22222222-2222-4222-8222-222222222222',
-		templateVersion: 2,
 		chapterId: '33333333-3333-4333-8333-333333333333',
-		currentTemplateVersion: 2,
 		isDetached: false,
 		instantiatedAt: QUAND,
-		lastMigratedAt: null,
-		hasUpdate: false,
-		latestVersion: null,
 		templateTitle: 'Les fonctions affines',
 		...delta
 	};
@@ -48,7 +43,7 @@ describe('ChapterTemplateIndicator', () => {
 	/** ADR 0029 : le lien est vivant — « chapitre lié », jamais de version. */
 	it('dit « chapitre lié au modèle », sans version ni mise à jour', async () => {
 		const { container } = await render(ChapterTemplateIndicator, {
-			instantiation: instanciation({ hasUpdate: true, latestVersion: 3 }),
+			instantiation: instanciation(),
 			onDetach: () => {}
 		});
 
