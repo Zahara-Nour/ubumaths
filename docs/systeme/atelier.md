@@ -108,6 +108,9 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/solve-steps-check.ts`  | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                            |
 | `src/lib/atelier/variations-steps.ts`   | `.variations` et « Variations » : tableau et détail (`variationsRendering`)                                |
 | `src/lib/atelier/steps-summary.ts`      | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                          |
+| `src/lib/atelier/input-mode.ts`         | Réglage « Saisie dans Calcul » (texte / écriture mathématique), retenu dans le navigateur                  |
+| `src/lib/atelier/natural-input.ts`      | Écriture mathématique : règles des mots, complétion, LaTeX du champ ↔ texte de Calcul (`calcTextOf`)       |
+| `src/lib/atelier/virtual-keyboard.ts`   | Clavier virtuel de l'écriture mathématique : onglets « Calcul » et « Commandes »                           |
 | `src/lib/atelier/domain-steps.ts`       | `.domaine` : réponse `D = …` et « Comment ? » (`domainLine`)                                               |
 | `src/lib/atelier/domain-steps-check.ts` | Garde-fou : l'ensemble conclu par les étapes est, par valeur, le domaine du moteur (`sameDomainByValue`)   |
 | `src/lib/atelier/tidy-terms.ts`         | Ré-export de `tidyTerms` (vit dans `src/lib/mathAST/tidy/terms.ts`)                                        |
@@ -150,7 +153,9 @@ Ceux du code et de l'interface :
 | `ValueSlider.svelte`      | Curseur d'une valeur (bornes et pas réglables)                                                                          |
 | `CurveSettings.svelte`    | « Sur le graphique » : couleur, trait, tangente, aire, cercle osculateur, longueur                                      |
 | `SequenceSettings.svelte` | Mode, rang initial, premier terme ; nuage ou escalier                                                                   |
-| `CalculView.svelte`       | Vue Calcul : champ, historique, « Garder », export / import                                                             |
+| `CalculView.svelte`       | Vue Calcul : champ (texte ou écriture mathématique), historique, « Garder », export / import                            |
+| `NaturalField.svelte`     | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel       |
+| `AtelierSettings.svelte`  | Le bouton « Réglages » et sa fenêtre : la saisie dans Calcul                                                            |
 | `FormulaText.svelte`      | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`) |
 | `DataView.svelte`         | Vue Données : une liste par ligne, valeurs séparées par `;`, diagrammes                                                 |
 | `ShareBar.svelte`         | Partager (lien `?a=`), recevoir, « Garder dans mon atelier »                                                            |
@@ -331,7 +336,8 @@ contenu. Elle est rangée sur l'objet, parce que `recomputeAll` relit toujours l
 
 La vue Calcul a **un seul champ**, comme l'ancienne `/cas` : ce que l'élève tape est une **définition** (crée
 ou met à jour un objet), un **calcul** (une ligne d'historique) ou une **commande** (commence par
-un point). `runInput` (`src/lib/atelier/calcul.ts`) rend un `CalcResult` de kind `vide`,
+un point ; sans point en écriture mathématique, voir « Réglages et écriture mathématique »).
+`runInput` (`src/lib/atelier/calcul.ts`) rend un `CalcResult` de kind `vide`,
 `definition`, `calcul`, `commande` ou `refus`.
 
 **La ligne d'une définition dit ce que dit la carte** (`definitionText`, `desk.svelte.ts`,
@@ -589,6 +595,31 @@ Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de re
 - `syncPlots` (`plot-sync.ts`) : l'atelier détient l'état, le grapheur le reflète. Rien de ce qui
   se passe dans le grapheur ne remonte. ⚠️ L'effet qui l'appelle lit et écrit le store : s'il
   cessait d'être idempotent, il bouclerait.
+
+### Réglages et écriture mathématique
+
+Le bouton **« Réglages »** de la barre du haut (`AtelierSettings.svelte`, 2026-10-14) ouvre une
+fenêtre au réglage unique, **« Saisie dans Calcul »** : **Texte** (le champ de toujours, un point
+devant les commandes ; le défaut) ou **Écriture mathématique** (MathLive, sans point, marquée « en
+essai »). Le choix prend effet tout de suite et reste dans le navigateur (`chiphre-atelier-saisie`,
+à part de l'atelier) : ni dans un lien, ni dans un export ; présent aussi sur un atelier reçu.
+Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règles de frappe :
+[atelier-saisie-naturelle.md](../wip/atelier-saisie-naturelle.md) (décisions 2 à 9).
+
+- **Les mêmes réponses** : le champ mathématique envoie au moteur le texte que lit `runInput`
+  (`calcTextOf`) ; une case vide d'un modèle est refusée avant (la ligne reste, la raison s'affiche).
+- **`desk.draft` reste la ligne en cours, en texte, quel que soit le champ** : le champ
+  mathématique l'écrit à chaque frappe (`draftTextOf`, cases vides retirées) et la reprend quand
+  elle change du dehors — bascule depuis le mode texte, commande préparée par une carte, ligne
+  vidée après un calcul (`fieldLatexFromText`, qui fait tomber le point d'une commande et garde en
+  mots les mots de commande en argument : `.mode décimal`).
+- **↑ / ↓** rappellent les saisies tapées dans l'un ou l'autre mode, réécrites pour le champ ;
+  le rappel compare à ce que MathLive a rangé (`{2 x}` devient `{2x}`), pas à l'historique.
+- **Le clavier virtuel est un seul pour la page** : les onglets « Calcul » et « Commandes » sont
+  posés quand le champ prend le focus et retirés quand il le perd (les cartes ont leurs champs
+  MathLive), comme `FillBlanksInput.svelte`.
+- En écriture mathématique, la liste des commandes et le « Modèle : » du mode texte ne s'ouvrent
+  pas : le champ a sa propre liste. L'historique montre le texte envoyé (avec le point).
 
 ### Session, persistance, URL
 

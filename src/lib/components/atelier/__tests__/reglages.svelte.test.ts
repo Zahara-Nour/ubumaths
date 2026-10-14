@@ -6,7 +6,7 @@
  * cours suit la bascule, les réponses ne changent pas.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page, userEvent } from 'vitest/browser';
 import type { MathfieldElement } from 'mathlive';
@@ -21,6 +21,13 @@ import { INPUT_MODE_KEY } from '$lib/atelier/input-mode';
 type Choice = 'Texte' | 'Écriture mathématique';
 
 beforeEach(() => {
+	localStorage.removeItem(INPUT_MODE_KEY);
+});
+
+// Le stockage est celui de l'origine, commun à tous les fichiers de tests du
+// navigateur : laissé sur « Écriture mathématique », il retirait le champ
+// texte des tests suivants (mesuré : 7 échecs dans deux autres fichiers)
+afterEach(() => {
 	localStorage.removeItem(INPUT_MODE_KEY);
 });
 
