@@ -190,6 +190,21 @@ en prod (reprise, étape 3) avant le déploiement du code qui en tient compte (�
   propriétaire) ; page d'édition du modèle ; dans le chapitre, éléments du modèle marqués, non
   modifiables, masquables ; plus de « Mettre à jour depuis un chapitre » ni de versions affichées.
 
+- **4 — reprise, en branche** `feat/modeles-reprise` (bâtie sur `feat/modeles-serveur`) :
+  `migrateSnapshotTemplate` (`src/lib/server/chapter-template-reprise.ts`) + script
+  `scripts/reprise-modeles-adr0029.ts` (essai par défaut, `--appliquer`, `--cible=prod`). Aides de
+  copie/adoption sorties de `chapter-templates.ts` vers `chapter-template-copy.ts` (importables par
+  `tsx`). Test `tests/integration/reprise-modeles.test.ts` (9 tests, décor de la prod du
+  2026-10-14) : rouge sur une fonction vide, puis vert ; sans le détachement temporaire, l'adoption
+  échoue (doublons de liens) — mutation vérifiée. Essai, application et relance passés en local sur
+  un décor aux identifiants de la prod. **Jamais lancé contre la prod.** À faire en prod, après le
+  déploiement de l'étape 3 : essai `--cible=prod`, lecture du compte rendu avec David, puis
+  `--appliquer`.
+  ⚠️ Base locale partagée (2026-10-14) : une démo laissée par l'étape 3c faisait échouer le
+  `global-setup` de la suite d'intégration (FK `RESTRICT` d'une ligne de lien quand il purge les
+  profs) ; supprimée le même soir. Fragilité à traiter à l'étape 5 : la purge des tests doit
+  supprimer les chapitres liés avant les modèles.
+
 ### ⛔ Déploiement : 3b + 3c (#1390) ET reprise (étape 4) ENSEMBLE
 
 #1390 (serveur + interface) est mergée le 2026-10-14 mais **ne doit pas partir en prod sans la
