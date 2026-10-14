@@ -872,7 +872,15 @@ selon `noLimitReason` ; le nom de la fonction s'écrit hors de `\text` (`f_1` en
 de limite en +∞ : l'expression oscille sans se rapprocher d'aucune valeur. » (« f oscille… » ;
 `3sin(2x)+1` en −∞, `sin(1/x)` en 0) ; sinon (L4, `sides-differ` compris) les deux limites
 latérales quand le moteur les connaît, « Pas de limite en 0 : à gauche −∞, à droite +∞. », sinon
-« Pas de limite en … ». Avec un côté tapé, la conclusion seule, côté compris (`0^+`) — à trancher par David. Test :
+« Pas de limite en … ». **Avec un côté tapé** (Q1, David, 2026-10-14), la raison s'écrit aussi
+(le moteur rend `noLimitReason` pour un côté demandé) : `.limite sqrt(-x) en 0+` → « Pas de
+limite en 0+ : l'expression n'est pas définie à droite de 0. » (« à gauche de » pour `0-`, « f »
+en maths pour une fonction citée) ; `sin(1/x)` en `0+` → « … oscille sans se rapprocher d'aucune
+valeur. ». Une fonction usuelle sans parenthèses (`ln x`, `sin x`, `cos x`, `sqrt x`, `exp x`,
+lue l·n·x par le parseur) est refusée comme dans les autres commandes (`bareFunctionName` :
+« Écris ln(x) avec des parenthèses. ») ; `e^x` se lit bien. Le texte de la ligne (copie, export)
+est lisible (`readableText`) : divisions en `/`, exposant long entre parenthèses (`e^(1/x)`,
+jamais le `e^{1:/x}` de `toCustom`). Test :
 `limite-commande.test.ts`.
 
 **« Comment ? » de `.limite`** (`limit-steps.ts`, PR 3, décisions de David du 2026-10-14).
@@ -890,9 +898,10 @@ mêmes valeurs à gauche et à droite (`bindings` de `conclude-does-not-exist`) 
 (`showsNothing`, comme E4 de `.évaluer`) : une substitution directe seule (`x^2+1` en 2,
 `sqrt(x)` en 0) → pas d'étapes. Le moteur pédagogique qui lève
 (`PedagogicalLimitNotImplemented` : `sqrt(x+1)-sqrt(x)` en +∞, `sin x` en +∞), un `*` dans le
-LaTeX → pas d'étapes. **Résumé construit** : les étapes sans l'annonce, les limites des termes,
-la limite d'une somme / d'un produit / d'un quotient ni la substitution qui suit une
-simplification, sans explications — la forme, la technique, la conclusion. Une fonction ou une
+LaTeX → pas d'étapes. **Résumé construit** : les étapes sans l'annonce, la forme indéterminée
+(masquée comme dans le résumé du renderer, décision de David du 2026-10-12), les limites des
+termes, la limite d'une somme / d'un produit / d'un quotient ni la substitution qui suit une
+simplification, sans explications — la technique, la conclusion. Une fonction ou une
 suite citée seule garde son nom : l'annonce écrit `\lim g(x) = \lim \dfrac{x^2-1}{x-1}` (« la
 limite de $g(x)$ »), la conclusion `\lim g(x) = 2`, `u_n` pour une suite. Tests :
 `limite-etapes.test.ts`, `limite-etapes-garde.test.ts`, `limite-etapes-affichage.svelte.test.ts`.

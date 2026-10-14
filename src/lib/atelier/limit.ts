@@ -47,6 +47,7 @@ import {
 	findUnknownFunctionCall,
 	unknownFunctionMessage
 } from '$lib/mathAST/parser/custom/tokenizer';
+import { bareFunctionMessage, bareFunctionName } from '$lib/mathAST/cli/core/variable-argument';
 import { astOf } from './parse';
 import { listCitedMessage } from './list-cited';
 import {
@@ -142,6 +143,10 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 
 	const unknownCall = findUnknownFunctionCall(typedExpression);
 	if (unknownCall !== null) return { kind: 'refus', message: unknownFunctionMessage(unknownCall) };
+	// `ln x` sans parenthèses se lisait l·n·x (« lim l n x = 0 ») : refus, comme
+	// `.dériver` et les autres commandes (décision de David du 2026-10-06)
+	const bare = bareFunctionName(typedExpression);
+	if (bare !== null) return { kind: 'refus', message: bareFunctionMessage(bare) };
 	// Une liste citée comme un nombre : la règle des cartes (`listCitedMessage`)
 	const typedAst = astOf(typedExpression, 'command', atelier.functionNames);
 	const listed =
@@ -467,7 +472,7 @@ function shownBody(
 	}
 	return {
 		latex: wrapLatex(expression, toLatex(withoutFractionParentheses(expression))),
-		text: wrapText(expression, toCustom(expression))
+		text: wrapText(expression, readableText(expression))
 	};
 }
 
@@ -588,9 +593,9 @@ interface LimitQuestion {
 }
 
 /**
- * Le moteur conclut « pas de limite ». Sans côté tapé, la raison qu'il donne :
- * hors du domaine (R2, « l'expression n'est pas définie au voisinage de -1 »),
- * oscillation (R3) ; sinon L4, les deux limites latérales quand il les
+ * Le moteur conclut « pas de limite ». La raison qu'il donne : hors du
+ * domaine (R2, « l'expression n'est pas définie au voisinage de -1 » ; avec
+ * un côté tapé, Q1, « … à droite de 0 »), oscillation (R3) ; sinon L4, les deux limites latérales quand il les
  * connaît (« à gauche −∞, à droite +∞ »), sinon la conclusion seule.
  * `subject` : le nom d'une fonction de l'atelier citée seule, sinon `null`
  * (« l'expression »).
@@ -614,8 +619,18 @@ function noLimit(
 		subject === null
 			? `\\text{ : l'expression ${words}}`
 			: `\\text{ : } ${subject.replace(/_(\d{2,})/, '_{$1}')} \\text{ ${words}}`;
-	// Seul un côté TAPÉ coupe la raison ; un côté imposé par l'ensemble choisi (I4) la garde
-	const reason = typedSide === null ? result.noLimitReason : undefined;
+	// Q1 (David, 2026-10-14) : la raison s'écrit aussi avec un côté tapé ;
+	// hors du domaine, elle dit alors de quel côté (« à droite de 0 »)
+	const reason = result.noLimitReason;
+	if (reason === 'outside-domain' && typedSide !== null) {
+		const where = typedSide === 'right' ? 'à droite de' : 'à gauche de';
+		return {
+			kind: 'commande',
+			input,
+			output: `Pas de limite en ${atText} : ${who} n'est pas définie ${where} ${pointTextOf(point, null)}.`,
+			latex: `\\text{Pas de limite en } ${atLatex} ${clause(`n'est pas définie ${where} `)} ${pointLatexOf(point, null)}`
+		};
+	}
 	if (reason === 'outside-domain') {
 		return {
 			kind: 'commande',
@@ -713,5 +728,19 @@ function withPiSymbol(text: string): string {
 /** Une valeur dans le texte de la ligne : `+∞`, `-∞`, sinon son écriture. */
 function valueText(value: MathNode): string {
 	if (isInfinity(value)) return value.sign === 'positive' ? '+∞' : '-∞';
-	return withPiSymbol(toCustom(value));
+	return withPiSymbol(readableText(value));
+}
+
+/**
+ * Le texte d'une expression, lisible à l'export : une division en `/`
+ * (`toCustom` écrit `:/` une division en ligne, `e^{1:/x}`), un exposant de
+ * plus d'un caractère entre parenthèses (`e^(1/x)`, `e^(-x)`).
+ */
+function readableText(node: MathNode): string {
+	const fractions = transformAST(node, {
+		leaveDivision: (n) => ({ ...n, displayStyle: 'fraction' as const })
+	});
+	return toCustom(fractions).replace(/\^\{([^{}]*)\}/g, (whole, exponent: string) =>
+		exponent.length === 1 ? `^${exponent}` : `^(${exponent})`
+	);
 }

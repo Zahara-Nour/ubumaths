@@ -11,10 +11,11 @@
  *   s'affichent que si leur conclusion est la réponse de la ligne.
  * - **Rien à montrer** (comme E4 de `.évaluer`) : une substitution directe
  *   seule → pas de « Comment ? ».
- * - **Résumé construit** : la forme indéterminée, la technique, la
- *   conclusion — ni l'annonce, ni les limites des termes, ni la limite
- *   d'une somme / d'un produit / d'un quotient, ni la substitution qui suit
- *   une simplification ; sans explications.
+ * - **Résumé construit** : la technique et la conclusion — ni l'annonce,
+ *   ni la forme indéterminée (le résumé du renderer la masque, décision de
+ *   David du 2026-10-12), ni les limites des termes, ni la limite d'une
+ *   somme / d'un produit / d'un quotient, ni la substitution qui suit une
+ *   simplification ; sans explications.
  * - Une fonction ou une suite de l'atelier citée seule garde son nom :
  *   l'annonce écrit $\lim g(x) = \lim \dfrac{x^2-1}{x-1}$, la conclusion
  *   $\lim g(x) = 2$ ; les étapes parlent de SA lettre (`f(t) = 1/t` : t).
@@ -71,9 +72,14 @@ export interface LimitSteps {
 // Constantes
 // =============================================================================
 
-/** Absentes du résumé : l'annonce, les calculs de limites intermédiaires. */
+/**
+ * Absentes du résumé : l'annonce, la forme indéterminée (comme le résumé du
+ * renderer, décision de David du 2026-10-12), les calculs de limites
+ * intermédiaires, la substitution qui suit une simplification.
+ */
 const HIDDEN_IN_SUMMARY: ReadonlySet<PedagogicalLimitRule> = new Set([
 	'identify-limit',
+	'detect-indeterminate-form',
 	'limits-of-terms',
 	'apply-sum',
 	'apply-product',

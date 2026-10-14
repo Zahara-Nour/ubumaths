@@ -99,13 +99,9 @@ describe('factorisation : (x²−1)/(x−1) en 1', () => {
 		expect(flat(last(list))).toBe('\\lim_{x\\to1}(x+1)|=2');
 	});
 
-	it('le résumé : la forme, la technique, la conclusion, sans explications', () => {
+	it('le résumé : la technique, la conclusion, sans explications (ni la forme, 2026-10-12)', () => {
 		const list = summary(input);
-		expect(titles(list)).toEqual([
-			'Forme indéterminée $\\frac{0}{0}$ reconnue',
-			'Simplification du facteur commun',
-			'La limite vaut $2$'
-		]);
+		expect(titles(list)).toEqual(['Simplification du facteur commun', 'La limite vaut $2$']);
 		expect(list.every((s) => s.explanation === undefined)).toBe(true);
 	});
 });
@@ -123,9 +119,8 @@ describe('terme prépondérant : (3x²+1)/(x²−2) en +∞', () => {
 		expect(flat(last(list))).toBe('\\lim_{x\\to+\\infty}\\dfrac{3x^2+1}{x^2-2}|=3');
 	});
 
-	it('le résumé garde la forme ∞/∞ et la factorisation, pas les limites des termes', () => {
+	it('le résumé garde la factorisation, ni la forme ∞/∞ ni les limites des termes', () => {
 		expect(titles(summary(input))).toEqual([
-			'Forme indéterminée $\\frac{\\infty}{\\infty}$ reconnue',
 			'On factorise par le terme prépondérant',
 			'Simplification par $x^2$',
 			'La limite vaut $3$'
@@ -203,7 +198,7 @@ describe('pas de « Comment ? »', () => {
 		// Oscillation : la raison de `.limite`, que les étapes ne rédigent pas
 		['.limite sin(1/x) en 0'],
 		// « Je ne sais pas »
-		['.limite sin x en +inf']
+		['.limite x sin(x) en +inf']
 	])('%s : la réponse seule', (input) => {
 		const result = line(input);
 		expect(result.steps).toBeUndefined();

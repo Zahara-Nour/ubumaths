@@ -83,7 +83,7 @@ describe('.limite (x^2-1)/(x-1) en 1 à l’écran', () => {
 		expect(etapes).not.toContain('*');
 	});
 
-	it('« Résumé » : la forme, la technique, la conclusion', async () => {
+	it('« Résumé » : la technique, la conclusion', async () => {
 		const racine = afficher([saisie]);
 		cliquer(boutons(racine, 'Comment ?')[0]);
 		await tick();
@@ -96,7 +96,8 @@ describe('.limite (x^2-1)/(x-1) en 1 à l’écran', () => {
 
 		const lus = titres(racine);
 		expect(lus.length).toBeLessThan(detaille);
-		expect(lus[0]).toContain('Forme indéterminée');
+		expect(lus[0]).toBe('Simplification du facteur commun');
+		expect(lus.some((t) => t.startsWith('Forme indéterminée'))).toBe(false);
 		expect(lus[lus.length - 1]).toContain('La limite vaut');
 	});
 });
@@ -110,7 +111,7 @@ describe('pas de « Comment ? »', () => {
 	});
 
 	it('« Je ne sais pas » : sans « Comment ? »', () => {
-		const racine = afficher(['.limite sin x en +inf']);
+		const racine = afficher(['.limite x sin(x) en +inf']);
 		expect(racine.textContent).toContain('Je ne sais pas');
 		expect(boutons(racine, 'Comment ?')).toHaveLength(0);
 	});
