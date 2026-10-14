@@ -1018,9 +1018,6 @@ async function adoptChapterContent(
 		.from('chapter_template_instantiations')
 		.insert({
 			template_id: templateId,
-			// ⚠️ Colonne de l'ancien système de versions, encore NOT NULL sans
-			// défaut : la base l'exige tant qu'elle n'est pas supprimée.
-			template_version: 1,
 			chapter_id: chapterId
 		})
 		.select('id');
