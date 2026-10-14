@@ -197,6 +197,9 @@ import * as Avatar from '$lib/components/ui/avatar'; import * as Accordion from 
 </Dialog.Root>
 ```
 
+La croix de `Dialog.Content` est nommée **« Fermer »** pour les lecteurs d'écran (« Close » jusqu'au
+2026-10-14, relevé par la revue a11y des réglages de l'atelier). `Sheet.Content` dit encore « Close ».
+
 ### ConfirmDialog (composant custom)
 
 Boîte de confirmation réutilisable (titre + description + variante destructive).
