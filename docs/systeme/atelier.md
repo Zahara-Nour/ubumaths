@@ -60,7 +60,7 @@ Ceux du code et de l'interface :
 
 ## Carte du code
 
-### Modèle — `src/lib/atelier/` (52 fichiers hors tests)
+### Modèle — `src/lib/atelier/` (53 fichiers hors tests)
 
 | Fichier                             | Rôle                                                                                                      |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -71,6 +71,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/letter.ts`         | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                              |
 | `src/lib/atelier/interval.ts`       | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)          |
 | `src/lib/atelier/reciprocal.ts`     | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français     |
+| `src/lib/atelier/limit.ts`          | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule          |
 | `src/lib/atelier/constant.ts`       | La valeur d'une constante (curseurs, premier terme d'une suite)                                           |
 | `src/lib/atelier/list-cited.ts`     | Refus d'une liste citée comme un nombre (`listCitedMessage`)                                              |
 | `src/lib/atelier/actions.ts`        | Les actions d'une carte selon le type et l'état (`actionsFor`), listes partenaires                        |
@@ -326,11 +327,11 @@ acceptée quand elle est sans ambiguïté. La lecture vit dans `mathAST` :
 
 **Trois sources de commandes**, réunies par `commandCatalog` (`src/lib/atelier/commands.ts`) :
 
-| Source                     | Où                            | Exemples                                                               |
-| -------------------------- | ----------------------------- | ---------------------------------------------------------------------- |
-| registre du moteur         | `WebReplEngine.getCommands()` | `.dériver`, `.résoudre`, `.intégrer`, `.variations`, `.taylor`         |
-| branchées hors registre    | table `OFF_REGISTRY`          | `.convertir`, `.stats`, `.ajustement`, `.exact`, `.décimal`            |
-| servies par l'atelier seul | `ATELIER_ONLY_COMMANDS`       | `.factoriser`, `.réciproque`, `.simuler`, `.croiser`, `.filtrer`, lois |
+| Source                     | Où                            | Exemples                                                              |
+| -------------------------- | ----------------------------- | --------------------------------------------------------------------- |
+| registre du moteur         | `WebReplEngine.getCommands()` | `.dériver`, `.résoudre`, `.intégrer`, `.variations`, `.taylor`        |
+| branchées hors registre    | table `OFF_REGISTRY`          | `.convertir`, `.stats`, `.ajustement`, `.exact`, `.décimal`           |
+| servies par l'atelier seul | `ATELIER_ONLY_COMMANDS`       | `.factoriser`, `.réciproque`, `.limite`, `.simuler`, `.croiser`, lois |
 
 La table `TRANSLATIONS` donne pour chaque commande son nom français, sa description, son exemple
 et sa rubrique de `.aide` (`HelpSection`) ; **son ordre est l'ordre du catalogue**. Les commandes
@@ -777,6 +778,24 @@ du moteur (`DOMAIN_UNRESOLVED` : `\sqrt{\sin x}`) sortent plus haut, inchangés,
   les deux écritures sont identiques. Branché aussi sans la résolution rédigée d'une contrainte
   (`\sqrt{x^2-5x+6}`, Q4) et pour le domaine universel (Q6). Tests :
   `domaine-etapes.test.ts`, `domaine-etapes-affichage.svelte.test.ts`.
+
+**`.limite` en détail** (`limit.ts`, PR 2 de `.limite`, syntaxe tranchée par David le
+2026-10-14, L1-L6). Servie par l'atelier (`ATELIER_ONLY_COMMANDS`), lue **avant** la substitution
+des noms : `en 0 à droite` n'est pas une expression, et `a` y serait le mot `à`. Le point
+(`readPoint`) : un nombre ou une valeur de l'atelier (`en 0,5`, `en a`), `en x=1` toléré ; le côté
+`0+`, `0^+`, `0^{+}`, `0 à droite` (et `-`, `à gauche`) ; l'infini `+∞`, `+inf`, `-∞`, `-inf`,
+`\infty`, et `∞` / `inf` seuls = +∞ (pas de côté à l'infini : refus). La lettre est celle de
+l'expression, comme `.évaluer` (plusieurs sans x : refus, « écris la variable après « en » »).
+Le calcul est `evaluateLimit` (`mathAST/limits`). La réponse est une **formule**,
+`\lim\limits_{x\to 1}\dfrac{x^2-1}{x-1} = 2` (expression TAPÉE, parenthèses de la barre de
+fraction retirées, une somme entre `\left(…\right)`) ; une fonction de l'atelier citée seule garde
+son nom et sa lettre, `\lim\limits_{t\to+\infty} f(t) = 0` (calcul en x, où elle est rangée).
+`exp(1)` s'écrit `e`. **Jamais de valeur approchée** : statut `indeterminate`, `unsupported`,
+`approximate`, ou un nombre à plus de 6 décimales → « Je ne sais pas calculer cette limite. »
+(une réponse, pas un refus, comme `.factoriser`). `does-not-exist` sans côté (L4) → les deux
+limites latérales quand le moteur les connaît, « Pas de limite en 0 : à gauche −∞, à droite +∞. »,
+sinon « Pas de limite en … ». Pas encore de « Comment ? » (PR 3). Test :
+`limite-commande.test.ts`.
 
 Statistiques : `summarizeList` / `summarizeTable` (`src/lib/statistics/describe.ts`), et
 `src/lib/statistics/` pour l'ajustement (`fit.ts`), le bivarié, la simulation, les fractions et

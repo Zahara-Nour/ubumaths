@@ -37,6 +37,7 @@ L'expression s'arrête au **premier mot-clé**. Un mot-clé est un mot entier, e
 | résoudre                          | `.résoudre ÉQUATION [pour VAR] [dans INTERVALLE]` | `.résoudre sin(x)=0 dans [0;2\pi]`                      |
 | évaluer                           | `.évaluer EXPR en VAR=VALEUR` (ou `pour`)         | `.évaluer x^2 en x=3`                                   |
 | équivalent                        | `.équivalent EXPR et EXPR`                        | `.équivalent (x+1)^2 et x^2+2x+1`                       |
+| limite                            | `.limite EXPR en POINT[+\|-]`                     | `.limite (x^2-1)/(x-1) en 1` · `.limite 1/x en 0+`      |
 | taylor                            | `.taylor EXPR ordre N [en A] [pour VAR]`          | `.taylor e^x ordre 3 en 1`                              |
 | variations                        | `.variations EXPR [pour VAR] [dans ENSEMBLE]`     | `.variations x^2 dans [0;+∞[`                           |
 | réciproque                        | `.réciproque FONCTION [sur INTERVALLE]`           | `.réciproque f` · `.réciproque x^2 sur [0;+∞[`          |
@@ -52,6 +53,12 @@ x=…` et `.intégrer f de a à b` hors de cet ensemble sont refusés comme `f(5
 - **`en`** (`.évaluer`) : la réponse est une formule, `f(3) = 9` ou la valeur seule ; une valeur
   décimale donne une réponse décimale, une valeur interdite un refus qui dit pourquoi (détail :
   [atelier.md](atelier.md), « `.évaluer` en détail », 2026-10-14).
+- **`en`** (`.limite`, 2026-10-14) : un point (`en 1`, `en x=1` toléré, `en 0,5`), un côté
+  (`en 0+`, `en 0^+`, `en 0 à droite` ; `-`, `à gauche`), ou l'infini (`+∞`, `+inf`, `-∞`, `-inf` ;
+  `∞` ou `inf` seul = +∞). La réponse est une formule, `\lim\limits_{x\to 1}… = 2` ; une fonction
+  de l'atelier garde son nom (`.limite f en +∞` → `\lim f(x) = …`) ; sans côté, deux limites
+  latérales différentes → « Pas de limite en 0 : à gauche −∞, à droite +∞ » (détail :
+  [atelier.md](atelier.md), « `.limite` en détail »).
 - **`sur`** (`.réciproque`, lot 3 de la réciproque, 2026-10-13) : le mot de la définition d'une
   fonction sur un intervalle (`f(x) = x^2 sur [0;+∞[`), pas `dans`. Il est CROISÉ avec l'ensemble
   de la carte f (vide → refus). Sur une fonction de l'atelier, crée ou met à jour la carte `f⁻¹` ;
