@@ -223,6 +223,8 @@ Code : `src/lib/questions/`, `src/lib/exercises/`, `src/lib/server/` (`exercises
   Une section de chapitre se masque (`chapter_sections.hidden`, chapitre seulement) :
   `section_masquee_propage` masque et dépublie son contenu, ou le réaffiche non publié ; un lien
   qui naît dans une section masquée naît masqué (migration `20261016103600`).
+  `chapter_template_instantiations.template_version` a un défaut (1) depuis `20261016103700` :
+  le code ne l'écrit plus, la colonne disparaîtra avec l'ancien système de versions.
 - `class_journal_entries` → `journal_entry_activities` (exercice, question, évaluation, cours,
   manuel), `journal_entry_points` (couverture du programme : `source` `manual` ou `auto`),
   `journal_entry_homework`, `class_journal_share_tokens`.
