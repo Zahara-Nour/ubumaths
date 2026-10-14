@@ -33,6 +33,7 @@ function section(id: string, title: string, displayOrder: number) {
 		id,
 		chapterId: 'chap',
 		sourceId: null,
+		hidden: false,
 		title,
 		displayOrder,
 		createdAt: '2026-09-14T00:00:00Z',

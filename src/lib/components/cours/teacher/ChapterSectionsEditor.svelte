@@ -65,6 +65,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import PublicationToggle from './PublicationToggle.svelte';
 	import { enhance } from '$app/forms';
 	import {
@@ -115,6 +116,8 @@
 	type SeriesRow = Placed & Pick<ChapterSeries, 'form'> & { title: string | null };
 	type SectionRow = Pick<ChapterSection, 'id' | 'title' | 'displayOrder'> & {
 		sourceId?: string | null;
+		/** Masquée dans ce chapitre : son contenu l'est avec elle (absent dans un modèle). */
+		hidden?: boolean;
 	};
 
 	/** Le propriétaire du plan : un chapitre OU un modèle, jamais les deux. */
@@ -183,11 +186,21 @@
 			: `/api/teacher/chapters/${chapterId}`
 	);
 
-	/** Combien d'éléments ce chapitre masque — l'interrupteur n'existe que s'il y en a. */
+	/** Les sections que ce chapitre masque (décision du 2026-10-14). */
+	const sectionsMasquees = $derived(
+		new Set(sections.filter((s) => s.hidden === true).map((s) => s.id))
+	);
+
+	/**
+	 * Combien de choses ce chapitre masque — l'interrupteur n'existe que s'il y
+	 * en a. Une section masquée compte UNE fois : son contenu, masqué avec elle
+	 * par la base, n'est pas recompté.
+	 */
 	const nombreMasques = $derived(
-		[...documents, ...exercises, ...checklistItems, ...worksheets, ...chapterSeries].filter(
-			(e) => e.hidden === true
-		).length
+		sectionsMasquees.size +
+			[...documents, ...exercises, ...checklistItems, ...worksheets, ...chapterSeries].filter(
+				(e) => e.hidden === true && !(e.sectionId !== null && sectionsMasquees.has(e.sectionId))
+			).length
 	);
 
 	const aucunMasque = $derived(nombreMasques === 0);
@@ -239,6 +252,8 @@
 		title: string;
 		/** Section du modèle reliée : ni renommée ni supprimée depuis le chapitre. */
 		linked: boolean;
+		/** Masquée dans ce chapitre : affichée seulement quand l'interrupteur est allumé. */
+		hidden: boolean;
 		ressources: Ressource[];
 	};
 
@@ -416,14 +431,16 @@
 		);
 	}
 
-	function instantanerSections(): SectionLocale[] {
+	function instantanerSections(avecMasquees = afficherMasques): SectionLocale[] {
 		const toutes = toutesLesRessources();
 		return [...sections]
 			.sort((a, b) => a.displayOrder - b.displayOrder)
+			.filter((s) => avecMasquees || s.hidden !== true)
 			.map((s) => ({
 				id: s.id,
 				title: s.title,
 				linked: (s.sourceId ?? null) !== null,
+				hidden: s.hidden === true,
 				ressources: toutes.filter((r) => r.sectionId === s.id).map((r) => r.ressource)
 			}));
 	}
@@ -447,6 +464,12 @@
 	 * rangement sans faire perdre leur rang aux masqués (`avecMasquesASaPlace`).
 	 */
 	let zonesCompletes = instantanerZonesCompletes();
+
+	/**
+	 * Toutes les sections, masquées comprises, dans l'ordre : réordonner les
+	 * seules visibles mettrait une section masquée à égalité de rang.
+	 */
+	let sectionsCompletes = instantanerSections(true);
 
 	function cleZone(sectionId: string | null): string {
 		return sectionId ?? '';
@@ -511,6 +534,7 @@
 		sectionsLocales = instantanerSections();
 		nonClassees = instantanerNonClassees();
 		zonesCompletes = instantanerZonesCompletes();
+		sectionsCompletes = instantanerSections(true);
 	});
 
 	let busy = $state(false);
@@ -723,18 +747,22 @@
 		// Le rang qu'on s'apprête à enregistrer devient le nouveau point de départ.
 		origineSection = { zone: null, index: apres.findIndex((s) => s.id === deplaceId) };
 
+		// Les sections masquées cachées gardent leur rang (après celle qu'elles suivaient).
+		const toutes = avecMasquesASaPlace(sectionsCompletes, apres);
+
 		busy = true;
 		const ok = await appeler(
 			`${apiBase}/sections/reorder`,
 			{
 				method: 'POST',
 				body: JSON.stringify({
-					sections: apres.map((s, i) => ({ id: s.id, displayOrder: i }))
+					sections: toutes.map((s, i) => ({ id: s.id, displayOrder: i }))
 				})
 			},
 			'Impossible de réordonner les sections'
 		);
 		busy = false;
+		if (ok) sectionsCompletes = toutes;
 
 		if (!ok) {
 			// La section déplacée ne figure plus dans l'instantané : on la remet à
@@ -771,7 +799,7 @@
 			const { section } = await reponse.json();
 			sectionsLocales = [
 				...sectionsLocales,
-				{ id: section.id, title: section.title, linked: false, ressources: [] }
+				{ id: section.id, title: section.title, linked: false, hidden: false, ressources: [] }
 			];
 			newSectionTitle = '';
 			isAddingSection = false;
@@ -835,6 +863,18 @@
 		}
 	}
 
+	// ===== Sections : masquer, réafficher (chapitre seulement) =====
+
+	/** La section dont on demande confirmation avant de la masquer. */
+	let sectionAMasquer = $state<{ id: string; title: string } | null>(null);
+	let confirmerMasquage = $state(false);
+	let formMasquerSection: HTMLFormElement | undefined = $state();
+
+	function demanderMasquage(section: SectionLocale) {
+		sectionAMasquer = { id: section.id, title: section.title };
+		confirmerMasquage = true;
+	}
+
 	function commencerEdition(section: SectionLocale) {
 		editingSectionId = section.id;
 		editTitle = section.title;
@@ -855,14 +895,36 @@
 	</Badge>
 {/snippet}
 
-{#snippet zoneRessources(sectionId: string | null, liste: Ressource[])}
+<!-- Masquer une section : chapitre seulement, après confirmation. -->
+{#snippet boutonMasquerSection(section: SectionLocale)}
+	{#if !isTemplate}
+		<Button
+			variant="ghost"
+			size="icon"
+			disabled={busy}
+			title="Masquer la section dans ce chapitre"
+			aria-label="Masquer la section {section.title}"
+			onclick={() => demanderMasquage(section)}
+		>
+			<EyeOff class="h-4 w-4" />
+		</Button>
+	{/if}
+{/snippet}
+
+{#snippet zoneRessources(sectionId: string | null, liste: Ressource[], masquee = false)}
+	<!--
+		Une section masquée ne reçoit rien et ne laisse rien partir : un élément
+		y naîtrait publiable, et un élément sorti resterait masqué ailleurs, sans
+		moyen de le réafficher.
+	-->
 	<div
 		class="flex min-h-16 flex-col gap-1 px-3 py-2"
 		use:dndzone={{
 			items: liste,
 			type: 'chapter-resource',
 			flipDurationMs: FLIP_MS,
-			dragDisabled: busy,
+			dragDisabled: busy || masquee,
+			dropFromOthersDisabled: masquee,
 			dropTargetStyle: { outline: '2px dashed var(--color-ring)', outlineOffset: '4px' }
 		}}
 		onconsider={(e: CustomEvent<DndEvent<Ressource>>) => ressourcesConsider(sectionId, e)}
@@ -960,7 +1022,7 @@
 						élèves. Un élément masqué n'est jamais publié — il se réaffiche
 						d'abord.
 					-->
-					{#if !isTemplate && !ressource.hidden}
+					{#if !isTemplate && !ressource.hidden && !masquee}
 						<PublicationToggle
 							contentType={TYPE_PUBLICATION[ressource.kind]}
 							itemId={ressource.contentId}
@@ -969,7 +1031,9 @@
 						/>
 					{/if}
 
-					{#if ressource.linked}
+					{#if masquee}
+						<!-- Il revient avec sa section, pas seul. -->
+					{:else if ressource.linked}
 						<!--
 							Élément du modèle : on ne le supprime pas du chapitre, on le
 							masque (« pas cette année »). Il revient d'un clic.
@@ -1138,13 +1202,42 @@
 							>
 								<X class="h-4 w-4" />
 							</Button>
+						{:else if section.hidden}
+							<!--
+								Section masquée (interrupteur allumé) : barrée, elle ne se
+								renomme ni ne se supprime ; elle se réaffiche, son contenu
+								revient non publié.
+							-->
+							<Card.Title class="flex-1 text-lg text-muted-foreground line-through"
+								>{section.title}</Card.Title
+							>
+							{#if section.linked}
+								{@render marqueModele()}
+							{/if}
+							<Badge variant="outline" class="shrink-0 text-muted-foreground">Masquée</Badge>
+							<form method="POST" action="?/setSectionHidden" use:enhance class="shrink-0">
+								<input type="hidden" name="sectionId" value={section.id} />
+								<input type="hidden" name="hidden" value="false" />
+								<Button
+									type="submit"
+									variant="ghost"
+									size="sm"
+									disabled={busy}
+									title="Son contenu revient dans le plan, non publié"
+									aria-label="Réafficher la section {section.title}"
+								>
+									<Eye class="mr-1 h-4 w-4" />
+									Réafficher la section
+								</Button>
+							</form>
 						{:else if section.linked}
 							<!--
 								Section du modèle : son titre suit le modèle. Elle se range
-								(glisser), mais ne se renomme ni ne se supprime d'ici.
+								(glisser) et se masque, mais ne se renomme ni ne se supprime d'ici.
 							-->
 							<Card.Title class="flex-1 text-lg">{section.title}</Card.Title>
 							{@render marqueModele()}
+							{@render boutonMasquerSection(section)}
 						{:else}
 							<Card.Title class="flex-1 text-lg">{section.title}</Card.Title>
 							<Button
@@ -1164,12 +1257,15 @@
 							>
 								<Trash2 class="h-4 w-4 text-destructive" />
 							</Button>
+							{@render boutonMasquerSection(section)}
 						{/if}
 					</Card.Header>
 
 					<Card.Content class="p-0 pb-3">
-						{@render zoneRessources(section.id, section.ressources)}
-						{@render menuAjout(section.id)}
+						{@render zoneRessources(section.id, section.ressources, section.hidden)}
+						{#if !section.hidden}
+							{@render menuAjout(section.id)}
+						{/if}
 					</Card.Content>
 				</Card.Root>
 			</div>
@@ -1217,5 +1313,26 @@
 			<Plus class="mr-2 h-4 w-4" />
 			Ajouter une section
 		</Button>
+	{/if}
+
+	{#if !isTemplate}
+		<ConfirmDialog
+			bind:open={confirmerMasquage}
+			title="Masquer la section « {sectionAMasquer?.title ?? ''} » ?"
+			description="Tout son contenu sera masqué et dépublié : les élèves ne le verront plus. La réafficher fait revenir son contenu dans le plan, non publié."
+			confirmLabel="Masquer la section"
+			variant="default"
+			onConfirm={() => formMasquerSection?.requestSubmit()}
+		/>
+		<form
+			bind:this={formMasquerSection}
+			method="POST"
+			action="?/setSectionHidden"
+			use:enhance
+			class="hidden"
+		>
+			<input type="hidden" name="sectionId" value={sectionAMasquer?.id ?? ''} />
+			<input type="hidden" name="hidden" value="true" />
+		</form>
 	{/if}
 </div>

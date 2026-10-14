@@ -130,7 +130,8 @@ export function remettreAuRang<T>(liste: T[], index: number, element: T): T[] {
  * deviendrait impossible sans recharger la page.
  */
 export type EmpreinteSource = {
-	sections: { id: string; title: string; sourceId?: string | null }[];
+	/** Une section masquée (décision du 2026-10-14) quitte le plan comme un élément masqué. */
+	sections: { id: string; title: string; sourceId?: string | null; hidden?: boolean }[];
 	documents: Visible<{ id: string; title: string }>[];
 	exercises: Visible<{ id: string }>[];
 	checklistItems: Visible<{ id: string; content: string; description: string | null }>[];
@@ -161,7 +162,9 @@ function vue(x: {
 
 export function empreinteAffichage(source: EmpreinteSource): string {
 	return [
-		source.sections.map((x) => `${x.id}~${x.title}~${(x.sourceId ?? null) !== null}`).join(','),
+		source.sections
+			.map((x) => `${x.id}~${x.title}~${(x.sourceId ?? null) !== null}~${x.hidden === true}`)
+			.join(','),
 		source.documents.map((x) => `${x.id}~${vue(x)}~${x.title}`).join(','),
 		source.exercises.map((x) => `${x.id}~${vue(x)}`).join(','),
 		source.checklistItems.map((x) => `${x.id}~${vue(x)}~${x.content}~${x.description}`).join(','),

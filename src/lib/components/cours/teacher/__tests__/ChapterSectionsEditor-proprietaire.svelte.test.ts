@@ -45,6 +45,7 @@ function section(partiel: Partial<ChapterSection> = {}): ChapterSection {
 		id: COURS,
 		chapterId: CHAPITRE,
 		sourceId: null,
+		hidden: false,
 		title: 'Le cours',
 		displayOrder: 0,
 		createdAt: QUAND,
@@ -473,5 +474,120 @@ describe('ChapterSectionsEditor — chapitre lié', () => {
 			documents: [document({ id: DOC_MODELE, sourceId: SOURCE })]
 		});
 		expect(racine.textContent).not.toContain('Afficher les éléments masqués');
+	});
+});
+
+describe('ChapterSectionsEditor — masquer une section (décision du 2026-10-14)', () => {
+	const AUTRE = '12121212-1212-4212-8212-121212121212';
+	const TROISIEME = '13131313-1313-4313-8313-131313131313';
+
+	it('chaque section d’un chapitre — du modèle ou propre — se masque ; pas dans un modèle', async () => {
+		const racine = await rendreChapitre({
+			sections: [
+				section({ sourceId: SOURCE }),
+				section({ id: AUTRE, title: 'Méthodes', displayOrder: 1 })
+			]
+		});
+		expect(racine.querySelector('button[aria-label="Masquer la section Le cours"]')).not.toBeNull();
+		expect(racine.querySelector('button[aria-label="Masquer la section Méthodes"]')).not.toBeNull();
+
+		const modele = await rendreModele({});
+		expect(modele.querySelector('button[aria-label^="Masquer la section"]')).toBeNull();
+	});
+
+	it('masquer demande confirmation, en disant que le contenu sera dépublié', async () => {
+		const racine = await rendreChapitre({ sections: [section()] });
+
+		racine
+			.querySelector<HTMLButtonElement>('button[aria-label="Masquer la section Le cours"]')
+			?.click();
+		await rendu();
+
+		const dialogue = window.document.querySelector('[role="dialog"]');
+		expect(dialogue?.textContent).toContain('dépublié');
+		const form = window.document.querySelector('form[action="?/setSectionHidden"]');
+		expect(champ(form, 'sectionId')).toBe(COURS);
+		expect(champ(form, 'hidden')).toBe('true');
+	});
+
+	it('une section masquée quitte le plan et compte une fois dans l’interrupteur', async () => {
+		const racine = await rendreChapitre({
+			sections: [section({ hidden: true })],
+			// Son contenu, masqué par la base avec elle.
+			documents: [document({ title: 'Dans la section', hidden: true })]
+		});
+
+		expect(racine.textContent).not.toContain('Le cours');
+		expect(racine.textContent).toContain('Afficher les éléments masqués (1)');
+	});
+
+	it('interrupteur allumé : la section revient barrée, à réafficher, sans ajout ni geste par élément', async () => {
+		const racine = await rendreChapitre({
+			sections: [section({ hidden: true })],
+			documents: [
+				document({ title: 'Du modèle', hidden: true, sourceId: SOURCE }),
+				document({ id: DOC_MODELE, title: 'Propre', hidden: true, sectionOrder: 1 })
+			]
+		});
+		racine.querySelector<HTMLButtonElement>('button[role="switch"]')?.click();
+		await rendu();
+
+		expect(racine.textContent).toContain('Masquée');
+		const reafficher = racine.querySelector('form[action="?/setSectionHidden"]');
+		expect(reafficher?.textContent).toContain('Réafficher la section');
+		expect(champ(reafficher, 'hidden')).toBe('false');
+
+		const carte = reafficher?.closest('[data-slot="card"]');
+		// Rien ne se range dans une section masquée : il y naîtrait publiable.
+		expect(carte?.textContent).not.toContain('Ajouter');
+		// Un élément d'une section masquée revient AVEC elle, pas seul.
+		expect(ligne(racine, 'Du modèle')?.querySelector('form[action="?/setHidden"]')).toBeNull();
+		expect(ligne(racine, 'Du modèle')?.querySelector('form[action="?/setPublication"]')).toBeNull();
+	});
+
+	it('réordonner les sections garde son rang à une section masquée cachée', async () => {
+		const appels: { url: string; body: unknown }[] = [];
+		vi.spyOn(globalThis, 'fetch').mockImplementation(async (url, init) => {
+			appels.push({ url: String(url), body: JSON.parse(String(init?.body ?? '{}')) });
+			return new Response(JSON.stringify({}), { status: 200 });
+		});
+		const racine = await rendreChapitre({
+			sections: [
+				section({ title: 'Le cours', displayOrder: 0 }),
+				section({ id: AUTRE, title: 'Masquée', displayOrder: 1, hidden: true }),
+				section({ id: TROISIEME, title: 'Bilan', displayOrder: 2 })
+			]
+		});
+		const zone = racine.querySelectorAll<HTMLElement>('[role="list"]')[0];
+		const sec = (id: string) => ({ id, title: id, linked: false, hidden: false, ressources: [] });
+		const poser = (nom: string, items: object[], info: object) =>
+			zone.dispatchEvent(new CustomEvent(nom, { detail: { items, info } }));
+
+		const ombre = {
+			...sec(TROISIEME),
+			[SHADOW_ITEM_MARKER_PROPERTY_NAME]: true,
+			id: SHADOW_PLACEHOLDER_ITEM_ID
+		};
+		poser('consider', [sec(COURS), ombre], {
+			trigger: TRIGGERS.DRAG_STARTED,
+			id: TROISIEME,
+			source: 'pointer'
+		});
+		await rendu();
+		poser('finalize', [sec(TROISIEME), sec(COURS)], {
+			trigger: TRIGGERS.DROPPED_INTO_ZONE,
+			id: TROISIEME,
+			source: 'pointer'
+		});
+		await rendu();
+
+		expect(appels).toHaveLength(1);
+		expect(appels[0].body).toEqual({
+			sections: [
+				{ id: TROISIEME, displayOrder: 0 },
+				{ id: COURS, displayOrder: 1 },
+				{ id: AUTRE, displayOrder: 2 }
+			]
+		});
 	});
 });

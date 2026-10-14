@@ -248,6 +248,12 @@ describe('empreinteAffichage — ce qui doit rafraîchir le plan', () => {
 		expect(empreinteAffichage(delie)).not.toBe(empreinteAffichage(lie));
 	});
 
+	it('masquer une section change l’empreinte', () => {
+		const visible = { ...BASE, sections: [{ id: 's1', title: 'Le cours', hidden: false }] };
+		const masquee = { ...BASE, sections: [{ id: 's1', title: 'Le cours', hidden: true }] };
+		expect(empreinteAffichage(masquee)).not.toBe(empreinteAffichage(visible));
+	});
+
 	it('renommer une section change l’empreinte', () => {
 		expect(empreinteAffichage({ ...BASE, sections: [{ id: 's1', title: 'Bilan' }] })).not.toBe(
 			empreinteAffichage(BASE)
