@@ -200,7 +200,8 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   `randomVariable`), `src/lib/atelier/simulate.ts` (`.simuler`, `.fréquence`, `.échantillons`),
   `src/lib/atelier/parse.ts` (`readListValue`), `src/lib/atelier/chart.ts`,
   `src/lib/atelier/compare.ts`, `src/lib/atelier/filter.ts`,
-  `src/lib/atelier/law-commands.ts`, `src/lib/components/atelier/DataView.svelte`.
+  `src/lib/atelier/law-commands.ts`, `src/lib/components/atelier/DataView.svelte` (la grille :
+  aperçu des listes par `summarizeList`, nombres alignés à droite par `readListValue`).
   Détails : [atelier.md](atelier.md).
 - **Moteur web** : `src/lib/mathAST/cli/web/web-repl-engine.ts` (`.stats`, `.ajustement`,
   `.linreg`), par **chemins relatifs**.
