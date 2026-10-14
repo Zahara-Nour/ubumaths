@@ -210,6 +210,25 @@ describe('la fiche de l’élève destinataire', () => {
 	});
 });
 
+describe('le cartouche du gabarit', () => {
+	it('durée, total et cases « afficher » de la fiche transmis', async () => {
+		const assignmentId = await assigned({ style_id: STANDARD });
+		await sql(
+			`update public.worksheets set total_points = 20, estimated_duration_minutes = 55,
+			   config = '{"show_date": false}'::jsonb
+			 where id = (select worksheet_id from public.worksheet_assignments where id = $1)`,
+			[assignmentId]
+		);
+		const { body } = await viewOf(student, assignmentId);
+		expect(body).toMatchObject({
+			total_points: 20,
+			estimated_duration_minutes: 55,
+			show_date: false,
+			show_title: true
+		});
+	});
+});
+
 describe('ce qui reste fermé', () => {
 	it('élève non destinataire : 404, rien du style', async () => {
 		const { status, body } = await viewOf(outsider, await assigned({ style_id: profStyleId }));

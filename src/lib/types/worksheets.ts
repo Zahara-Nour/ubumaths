@@ -773,6 +773,16 @@ export interface StudentWorksheetView {
 	 * dans le code) ou un style illisible. Son Typst seul, rien d'autre.
 	 */
 	template?: { template_content: string } | null;
+	/**
+	 * Cartouche du gabarit, comme le PDF du prof (lot 4b) : total, durée, et les
+	 * cases « afficher » de la fiche (absentes : affichées).
+	 */
+	total_points?: number | null;
+	estimated_duration_minutes?: number | null;
+	show_title?: boolean;
+	show_date?: boolean;
+	show_class?: boolean;
+	show_student_name?: boolean;
 }
 
 /**
@@ -1100,6 +1110,24 @@ export function asRowTranslations(value: unknown): RowTranslations | null {
  * An unknown value falls back to French rather than throwing: a worksheet with
  * a corrupted config must still generate.
  */
+/**
+ * Les cases « afficher » du cartouche de la fiche, pour la vue de l'élève
+ * (lot 4b) : absentes de la config, affichées, comme le PDF du prof.
+ */
+export function headerFlags(config: WorksheetConfig): {
+	show_title: boolean;
+	show_date: boolean;
+	show_class: boolean;
+	show_student_name: boolean;
+} {
+	return {
+		show_title: config.show_title !== false,
+		show_date: config.show_date !== false,
+		show_class: config.show_class !== false,
+		show_student_name: config.show_student_name !== false
+	};
+}
+
 export function worksheetLocale(config: WorksheetConfig | null | undefined): ContentLocale {
 	const language = config?.language;
 	return isContentLocale(language) ? language : DEFAULT_CONTENT_LOCALE;

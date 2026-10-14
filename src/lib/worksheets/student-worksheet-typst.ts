@@ -86,7 +86,12 @@ export function generateStudentWorksheetTypst(
 		language: document.locale,
 		numbering_style: document.display.numberingStyle,
 		show_points: document.display.showPoints,
-		correction_detail: document.display.correctionDetail
+		correction_detail: document.display.correctionDetail,
+		// Les cases du cartouche, telles que le prof les a réglées
+		show_title: worksheet.show_title,
+		show_date: worksheet.show_date,
+		show_class: worksheet.show_class,
+		show_student_name: worksheet.show_student_name
 	};
 	// La fiche telle que le gabarit la nomme : titre déjà traduit par le serveur
 	const row = {
@@ -98,8 +103,8 @@ export function generateStudentWorksheetTypst(
 		config,
 		template_id: worksheet.template_id ?? null,
 		style_id: worksheet.style_id ?? null,
-		total_points: null,
-		estimated_duration_minutes: null
+		total_points: worksheet.total_points ?? null,
+		estimated_duration_minutes: worksheet.estimated_duration_minutes ?? null
 	} as unknown as WorksheetRow;
 
 	const generator = new WorksheetGenerator(
