@@ -50,7 +50,7 @@ import {
 } from './interval';
 import { INTERNAL_LETTER, renameVariableIn, typedLetterOf } from './letter';
 import { astOf, type Provenance } from './parse';
-import { dependsOnMessage } from './types';
+import { dependsOnMessage, lettersText } from './types';
 import { visitAST } from '$lib/mathAST/visitor';
 
 // =============================================================================
@@ -394,6 +394,14 @@ export function reciprocalCommand(
 	// toute commande à paramètres, pas « la réciproque de f » qu'il n'a pas tapée
 	// (mesuré le 2026-10-14). Avec une carte, `a` a déjà été remplacé.
 	const parameters = letters.filter((name) => name !== letter).sort();
+	// Sans x et à plusieurs lettres (`a t + b`), la variable n'est pas connue :
+	// « dépend de a, b et t » ferait donner une valeur à t (revue)
+	if (parameters.length > 0 && !letters.includes(letter)) {
+		return {
+			kind: 'refus',
+			message: `Je ne sais pas quelle lettre est la variable parmi ${lettersText(letters.sort())} : écris la fonction avec x, par exemple .réciproque a x + b.`
+		};
+	}
 	if (parameters.length > 0) return { kind: 'refus', message: dependsOnMessage(parameters) };
 	let domain: Domain | null = null;
 	if (on !== undefined) {

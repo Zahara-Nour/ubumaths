@@ -65,6 +65,17 @@ describe('les refus de .intégrer parlent la langue de l’élève', () => {
 		expect(line.text).not.toContain(':/');
 	});
 
+	it('une borne en π s’écrit π, pas « \\pi »', () => {
+		const line = lineOf('.intégrer tan(x) de 0 à \\pi');
+
+		expect(line.failed).toBe(true);
+		expect(line.text).toContain('[0 ; π]');
+	});
+
+	it('une saisie illisible garde le refus de lecture, comme .dériver', () => {
+		expect(lineOf('.intégrer )(').text).toBe(lineOf('.dériver )(').text);
+	});
+
 	it('une primitive non trouvée : un refus en français, pas la sortie du terminal', () => {
 		const line = lineOf('.intégrer 1/(x^2-2)');
 
@@ -104,7 +115,15 @@ describe('« … en min » convertit, comme .convertir', () => {
 
 		expect(line.failed).toBe(true);
 		expect(line.text).toContain("n'est pas une grandeur");
-		expect(shown(line)).not.toContain('5000');
+		// Revue : la ligne refusée effaçait les 5 km du moteur
+		expect(shown(lineOf('.convertir m', withKm))).toMatch(/5\s*000.*m/);
+	});
+
+	it.each([
+		['1/0 en m', 'Division par zéro'],
+		['2 h 30 en min', '« 30 » inattendu ici']
+	])('%s : l’erreur de la partie gauche, telle quelle', (input, expected) => {
+		expect(shown(lineOf(input))).toContain(expected);
 	});
 
 	it('« en » sans unité derrière : rien ne change', () => {
@@ -125,6 +144,20 @@ describe('la réciproque d’une expression à paramètres sans carte', () => {
 	it('un seul paramètre : même refus que .variations ou .limite', () => {
 		expect(lineOf('.réciproque x + a').text).toBe(
 			"Le résultat dépend de a : donne-lui une valeur (a = 2) pour l'étudier."
+		);
+	});
+
+	it('sans x et à plusieurs lettres : la variable n’est pas connue, il le dit', () => {
+		const line = lineOf('.réciproque a t + b');
+
+		expect(line.failed).toBe(true);
+		expect(line.text).toContain('quelle lettre est la variable parmi a, b et t');
+	});
+
+	it('une lettre grecque s’écrit comme l’élève l’a tapée', () => {
+		// Et sans proposer `α = 2`, qui ne définit rien (lu comme un test d'égalité)
+		expect(lineOf('.réciproque \\alpha x').text).toBe(
+			"Le résultat dépend de α : remplace-la par un nombre pour l'étudier."
 		);
 	});
 

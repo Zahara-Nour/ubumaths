@@ -313,10 +313,44 @@ export function parametersOf(object: AtelierObject): readonly string[] | null {
  * empêche de conclure (V56, V57).
  */
 export function dependsOnMessage(parameters: readonly string[]): string {
-	const letters =
-		parameters.length === 1
-			? parameters[0]
-			: `${parameters.slice(0, -1).join(', ')} et ${parameters[parameters.length - 1]}`;
+	const letters = lettersText(parameters);
+	// Une lettre grecque ne se définit pas dans l'atelier (`α = 2` est lu comme un
+	// test d'égalité, mesuré le 2026-10-14) : pas d'exemple qui mènerait nulle part
+	const definable = parameters.find((name) => GREEK_LETTERS[name] === undefined);
+	if (definable === undefined) {
+		const them = parameters.length === 1 ? 'la par un nombre' : 'les par des nombres';
+		return `Le résultat dépend de ${letters} : remplace-${them} pour l'étudier.`;
+	}
 	const pronoun = parameters.length === 1 ? 'lui' : 'leur';
-	return `Le résultat dépend de ${letters} : donne-${pronoun} une valeur (${parameters[0]} = 2) pour l'étudier.`;
+	return `Le résultat dépend de ${letters} : donne-${pronoun} une valeur (${definable} = 2) pour l'étudier.`;
+}
+
+/** Les lettres grecques que le moteur nomme en toutes lettres (`\alpha` → `alpha`). */
+const GREEK_LETTERS: Readonly<Record<string, string>> = {
+	alpha: 'α',
+	beta: 'β',
+	gamma: 'γ',
+	delta: 'δ',
+	epsilon: 'ε',
+	theta: 'θ',
+	lambda: 'λ',
+	mu: 'μ',
+	rho: 'ρ',
+	sigma: 'σ',
+	tau: 'τ',
+	phi: 'φ',
+	omega: 'ω'
+};
+
+/** Une lettre telle que l'élève l'a écrite : `α`, pas `alpha` (revue, 2026-10-14). */
+function letterText(letter: string): string {
+	return GREEK_LETTERS[letter] ?? letter;
+}
+
+/** `a`, `a et b`, `a, b et t` — lettres grecques en symboles. */
+export function lettersText(letters: readonly string[]): string {
+	const shown = letters.map(letterText);
+	return shown.length === 1
+		? shown[0]
+		: `${shown.slice(0, -1).join(', ')} et ${shown[shown.length - 1]}`;
 }

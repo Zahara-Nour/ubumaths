@@ -74,11 +74,14 @@ import {
 
 /**
  * Une borne lisible par l'élève : la notation interne écrit la division en
- * ligne `:/`, que les messages montraient telle quelle (« [-1 ; 1:/2] »,
- * mesuré le 2026-10-14).
+ * ligne `:/`, π `\pi` et la racine `sqrt`, que les messages montraient tels
+ * quels (« [-1 ; 1:/2] », « [0 ; \pi] », mesurés le 2026-10-14).
  */
 function boundText(bound: MathNode): string {
-	return toCustom(bound).replaceAll(':/', '/');
+	return toCustom(bound)
+		.replaceAll(':/', '/')
+		.replace(/\\pi(?![A-Za-z])/g, 'π')
+		.replace(/\bsqrt(?=\()/g, '√');
 }
 
 // =============================================================================

@@ -15,7 +15,7 @@ import type { AtelierObject, ObjectKind } from './types';
 import { dependsOnMessage, parametersOf } from './types';
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import type { Provenance } from './parse';
-import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
@@ -1924,7 +1924,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// Une primitive non trouvée (`.intégrer 1/(x^2-2)`) : le moteur écrit sa
 	// ligne de terminal, « ∫ … : Non résolu / Technique tentée … », que la ligne
 	// montrait telle quelle (mesuré le 2026-10-14) — l'élève lit son refus
-	if (name === 'integrate' && !result.success && result.error?.message !== undefined) {
+	// (Seule la branche « Non résolu » a une sortie : une erreur de lecture, sans
+	// sortie, garde le repli « Je n'ai pas su lire » plus bas — revue)
+	if (
+		name === 'integrate' &&
+		!result.success &&
+		result.error?.message !== undefined &&
+		rendered.text.trim() !== ''
+	) {
 		return { kind: 'refus', message: result.error.message, ...noted };
 	}
 
@@ -2921,10 +2928,20 @@ function naturalConversion(input: string): { quantity: string; unit: string } | 
 }
 
 /**
+ * Le moteur où la partie gauche d'une conversion est d'abord ESSAYÉE : calculer
+ * sur le moteur de l'élève change sa dernière grandeur (`3` l'efface), et une
+ * ligne refusée ne doit rien changer (revue : `5 km`, `3 en m` refusé, puis
+ * `.convertir m` ne trouvait plus les 5 km). Les objets de l'atelier y sont
+ * poussés par `syncEngine`, comme sur tout moteur.
+ */
+let probeEngine: WebReplEngine | null = null;
+
+/**
  * La grandeur calculée, puis convertie : la même réponse que la ligne suivie de
- * `.convertir`, qui convertit la DERNIÈRE grandeur du moteur. Si la partie
- * gauche n'en est pas une (`3 en m`), le refus la cite : le moteur dirait
- * « calcule d'abord une grandeur », qui ne parle pas de la ligne tapée.
+ * `.convertir`, qui convertit la DERNIÈRE grandeur du moteur. Une partie gauche
+ * en erreur rend son erreur (`1/0`, `2 h 30`) ; un calcul juste qui n'est pas
+ * une grandeur (`3 en m`) est refusé en la citant — le moteur dirait « calcule
+ * d'abord une grandeur », qui ne parle pas de la ligne tapée.
  */
 function convertNaturally(
 	session: CalcSession,
@@ -2932,18 +2949,16 @@ function convertNaturally(
 	conversion: { quantity: string; unit: string },
 	provenance: Provenance
 ): CalcResult {
-	const quantity = computeInput(session, conversion.quantity, provenance);
-	if (quantity.kind === 'refus') return quantity;
-	const isQuantity =
-		quantity.kind === 'calcul' &&
-		quantity.ast !== undefined &&
-		findNodes(quantity.ast, isUnit).length > 0;
-	if (!isQuantity) {
+	probeEngine ??= new WebReplEngine();
+	const probe = computeInput({ ...session, engine: probeEngine }, conversion.quantity, provenance);
+	if (probe.kind !== 'calcul' || probe.ast === undefined) return probe;
+	if (findNodes(probe.ast, isUnit).length === 0) {
 		return {
 			kind: 'refus',
 			message: `« ${conversion.quantity} » n'est pas une grandeur : il n'y a rien à convertir en ${conversion.unit}.`
 		};
 	}
+	computeInput(session, conversion.quantity, provenance);
 	const converted = runCommand(session, `.convertir ${conversion.unit}`);
 	return converted.kind === 'commande' ? { ...converted, input } : converted;
 }
