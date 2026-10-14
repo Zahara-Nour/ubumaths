@@ -257,13 +257,11 @@ six tables, colonne `template_id`) et le chapitre lié le **relie** (lignes de l
 contenu recopié par la base — migration `20261016103300`, voir
 [base-de-donnees.md](base-de-donnees.md)).
 
-⚠️ **Colonnes de l'ancien système « snapshot + versions », encore en base mais plus lues ni
-écrites par le code** (étape 5) : `chapter_templates.content_snapshot` et `current_version`, la
-table `chapter_template_versions`, et dans `chapter_template_instantiations` : `template_version`
-(défaut 1 depuis la migration `20261016103700` ; seul `link_chapter_to_template` l'écrit encore,
-en SQL), `current_template_version`, `last_migrated_at`. Leur suppression est la migration
-destructive de l'étape 5B, accordée par David le 2026-10-14. Les lectures `select('*')` de
-`chapter_templates` les ramènent encore, sans les utiliser.
+**L'ancien système « snapshot + versions » est supprimé** (étape 5B, migration
+`20261016103800`, accord de David du 2026-10-14) : plus de table `chapter_template_versions`, ni
+de `content_snapshot` / `current_version` sur le modèle, ni de numéros de version sur le chapitre
+lié ; la règle de stockage élève de prod (`chapters/…`) est retirée — le serveur sert les fichiers
+après la garde de publication.
 
 - **Contenu du modèle** : les fonctions du chapitre prennent un propriétaire `ContentOwner`
   (sections : `chapter-sections.ts` ; insertions : `insertDocument`, `insertChecklistItem`,

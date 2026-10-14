@@ -138,11 +138,7 @@ export interface InstantiationWithStatus extends ChapterTemplateInstantiation {
 // DATABASE ROW TYPES (for reference)
 // ===========================================================================
 
-/**
- * Les colonnes de `chapter_templates` que le code lit. La table porte encore
- * `content_snapshot` et `current_version` (ancien système de versions), que
- * plus rien ne lit.
- */
+/** Les colonnes de `chapter_templates` que le code lit. */
 export interface DbChapterTemplate {
 	id: string;
 	created_by: string;
@@ -157,11 +153,7 @@ export interface DbChapterTemplate {
 	updated_at: string;
 }
 
-/**
- * Les colonnes de `chapter_template_instantiations` que le code lit. Les
- * colonnes de version (`template_version`, `current_template_version`,
- * `last_migrated_at`) restent en base, sans lecteur.
- */
+/** Les colonnes de `chapter_template_instantiations` que le code lit. */
 export interface DbChapterTemplateInstantiation {
 	id: string;
 	template_id: string | null;

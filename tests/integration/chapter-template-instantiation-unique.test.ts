@@ -87,9 +87,7 @@ describe('chapter_template_instantiations — un rattachement par chapitre', () 
 	it('accepte le premier rattachement', async () => {
 		const { error } = await service.from('chapter_template_instantiations').insert({
 			chapter_id: chapitre,
-			template_id: modeleA,
-			template_version: 1,
-			current_template_version: 1
+			template_id: modeleA
 		});
 
 		expect(error).toBeNull();
@@ -98,9 +96,7 @@ describe('chapter_template_instantiations — un rattachement par chapitre', () 
 	it('refuse un second rattachement du même chapitre', async () => {
 		const { error } = await service.from('chapter_template_instantiations').insert({
 			chapter_id: chapitre,
-			template_id: modeleB,
-			template_version: 1,
-			current_template_version: 1
+			template_id: modeleB
 		});
 
 		expect(error, 'un chapitre ne doit suivre qu’un modèle').not.toBeNull();

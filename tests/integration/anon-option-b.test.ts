@@ -54,7 +54,6 @@ const RELATIONS_FERMEES = [
 	'bug_reports',
 	'bug_reports_config',
 	'chapter_template_instantiations',
-	'chapter_template_versions',
 	'chapter_templates',
 	'class_chapters',
 	'class_google_classroom_links',
@@ -208,7 +207,6 @@ const FONCTIONS_REVOQUEES = [
 	'public.create_class_chat_room()',
 	'public.create_error_report_notification()',
 	'public.create_game_profile_for_new_user()',
-	'public.create_initial_template_version()',
 	'public.delete_exercise_images()',
 	'public.enforce_kanban_tags_per_board_cap()',
 	'public.enforce_single_teacher()',
@@ -379,11 +377,13 @@ function anonClient(): SupabaseClient<Database> {
 // ============================================================================
 
 describe('(a) anon n’a plus aucun droit sur les objets fermés', () => {
-	it('l’inventaire compte 141 relations et 143 fonctions', () => {
-		expect(RELATIONS_FERMEES).toHaveLength(138);
-		expect(new Set(RELATIONS_FERMEES).size).toBe(138);
-		expect(FONCTIONS_REVOQUEES).toHaveLength(143);
-		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(143);
+	// 2026-10-15 (ADR 0029, étape 5B) : `chapter_template_versions` et
+	// `create_initial_template_version()` supprimées → 137 relations, 142 fonctions.
+	it('l’inventaire compte 137 relations et 142 fonctions', () => {
+		expect(RELATIONS_FERMEES).toHaveLength(137);
+		expect(new Set(RELATIONS_FERMEES).size).toBe(137);
+		expect(FONCTIONS_REVOQUEES).toHaveLength(142);
+		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(142);
 	});
 
 	it.each(RELATIONS_FERMEES)('table/vue %s : aucun droit pour anon', async (rel) => {
