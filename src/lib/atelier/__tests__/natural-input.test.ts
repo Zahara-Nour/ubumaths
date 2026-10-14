@@ -1,7 +1,7 @@
 /**
- * Prototype jetable de la saisie naturelle : la logique pure (règles des mots,
- * complétion, passage au texte de Calcul), et les exemples du brief exécutés
- * par la VRAIE chaîne (`runInput` sur un `Atelier`).
+ * La saisie « Écriture mathématique » de Calcul : la logique pure (règles des
+ * mots, complétion, passage au texte de Calcul), et les exemples du brief
+ * exécutés par la VRAIE chaîne (`runInput` sur un `Atelier`).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -14,6 +14,7 @@ import {
 	cleanedShortcuts,
 	commandWords,
 	denominatorOf,
+	draftTextOf,
 	fieldLatexFromText,
 	finishedWordLatex,
 	lineKindOf,
@@ -176,5 +177,65 @@ describe('le champ produit le texte que lit runInput, et la vraie chaîne répon
 
 	it('une case vide du modèle est refusée avant le moteur', () => {
 		expect(calcTextOf('\\text{intégrer}\\,\\placeholder{}', words).ok).toBe(false);
+	});
+});
+
+describe('dans l’atelier, le mode texte et le mode mathématique se passent la ligne', () => {
+	it('chaque commande n’est proposée qu’une fois (développer et limite sont au catalogue)', () => {
+		const names = words.map((word) => word.french);
+		expect(names).toEqual([...new Set(names)]);
+	});
+
+	it.each([
+		['.résoudre x^2=4', 'résoudre x^2=4'],
+		['.intégrer x^2 de 0 à 1', 'intégrer x^2 de 0 à 1'],
+		['.dériver x^3', 'dériver x^3']
+	])('le point d’une ligne du mode texte tombe : %s', (withDot, withoutDot) => {
+		expect(fieldLatexFromText(withDot, words)).toBe(fieldLatexFromText(withoutDot, words));
+	});
+
+	// Ligne tapée en mode texte → champ (bascule, ↑) → texte envoyé : même réponse
+	it.each([
+		'.résoudre x^2=4',
+		'.dériver x^3',
+		'.intégrer x^2 de 0 à 1',
+		'.développer (x+1)^2',
+		'.mode décimal',
+		'.mode exact',
+		'.simuler X binomiale 100',
+		'1/4+1/3',
+		'5 km + 300 m',
+		'sqrt(2)*3',
+		'2,5*4'
+	])('aller-retour sans perte de sens : %s', (text) => {
+		const answer = (input: string) =>
+			shown(runInput({ atelier: new Atelier(), engine: new WebReplEngine() }, input));
+		const back = calcTextOf(fieldLatexFromText(text, words), words);
+		expect(back.ok).toBe(true);
+		if (!back.ok) return;
+		expect(answer(back.text)).toBe(answer(text));
+	});
+
+	// Mesuré le 2026-10-14 : `.mode exact` revenait `.mode e x a c t`, refusé
+	it('l’exemple de chaque commande du catalogue fait l’aller-retour', () => {
+		// La première ligne : `.équivalent` répète l'expression, espaces compris
+		const answer = (input: string) =>
+			shown(runInput({ atelier: new Atelier(), engine: new WebReplEngine() }, input)).split(
+				'\n'
+			)[0];
+		const examples = commandCatalog(new WebReplEngine()).flatMap((c) => c.example ?? []);
+		const lost = examples.filter((example) => {
+			const back = calcTextOf(fieldLatexFromText(example, words), words);
+			return !back.ok || answer(back.text) !== answer(example);
+		});
+		expect(examples.length).toBeGreaterThan(20);
+		expect(lost).toEqual([]);
+	});
+
+	it('la ligne d’un modèle pas fini passe au mode texte sans ses cases', () => {
+		const template = String.raw`\text{intégrer}\,\placeholder{}\,\text{de}\,\placeholder{}`;
+		expect(draftTextOf(template, words)).toBe('.intégrer de');
+		expect(draftTextOf(String.raw`\frac14+\frac13`, words)).toBe('(1/4)+(1/3)');
+		expect(draftTextOf('', words)).toBe('');
 	});
 });

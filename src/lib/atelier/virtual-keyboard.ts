@@ -5,7 +5,7 @@
  * les fonctions réciproques et x³ en appui long. Onglet « Commandes » : une
  * touche par commande, qui insère son modèle à trous, et les petits mots.
  *
- * @module test-saisie/virtual-keyboard
+ * @module atelier/virtual-keyboard
  */
 
 import type { VirtualKeyboardKeycap, VirtualKeyboardLayout } from 'mathlive';

@@ -3,9 +3,10 @@
 	==============================================================
 
 	Pour que David juge la FRAPPE, au clavier et au téléphone, avant la phase 0
-	(`docs/wip/atelier-saisie-naturelle.md`, décision 11). Rien n'est branché
-	dans l'atelier : un `CalcDesk` sur un `Atelier` local reçoit le texte que
-	produit le champ, par le même chemin que la vue Calcul (`runInput`).
+	(`docs/wip/atelier-saisie-naturelle.md`, décision 11). Le même champ sert
+	l'atelier depuis le 2026-10-14 (réglage « Écriture mathématique ») ; cette
+	page garde le panneau « sous le capot » : un `CalcDesk` sur un `Atelier`
+	local reçoit le texte que produit le champ, par le chemin de Calcul.
 -->
 <script lang="ts">
 	import '$lib/utils/mathlive-styles';
@@ -14,14 +15,14 @@
 	import { Atelier } from '$lib/atelier/atelier.svelte';
 	import { CalcDesk, type Entry } from '$lib/atelier/desk.svelte';
 	import { commandCatalog } from '$lib/atelier/commands';
-	import NaturalField from './NaturalField.svelte';
+	import NaturalField from '$lib/components/atelier/NaturalField.svelte';
 	import {
 		calcTextOf,
 		commandWords,
 		lineKindOf,
 		REMOVED_SHORTCUTS,
 		type LineKind
-	} from './natural-input';
+	} from '$lib/atelier/natural-input';
 
 	// Types
 	interface Row {
@@ -123,7 +124,7 @@
 		</div>
 	</header>
 
-	<NaturalField {words} {history} bind:latex onsubmit={handleSubmit} />
+	<NaturalField {words} history={() => history} bind:latex onsubmit={handleSubmit} focusOnMount />
 	<div class="text-sm text-muted-foreground">
 		Entrée : valider · ↑ ↓ : saisies précédentes (ou la liste) · Tab : case suivante · Échap :
 		fermer la liste · clavier virtuel : bouton du champ, onglets « Calcul » et « Commandes ».

@@ -1,9 +1,11 @@
 <!--
-	Prototype JETABLE — le champ de saisie naturelle de Calcul
-	==========================================================
+	Le champ « Écriture mathématique » de Calcul (en essai)
+	=======================================================
 
-	Un seul champ MathLive, en maths par défaut, sans point (décisions 1 à 9 de
-	`docs/wip/atelier-saisie-naturelle.md`). Deux chemins pour la même règle :
+	Un champ MathLive, en maths par défaut, sans point (décisions 2 à 9 de
+	`docs/wip/atelier-saisie-naturelle.md`), choisi dans les réglages de
+	l'atelier (`docs/wip/atelier-reglages-phase0.md`). Deux chemins pour la
+	même règle :
 
 	- clavier physique : `keydown` en capture, AVANT MathLive — le mot fini par
 	  l'espace ou un opérateur est réécrit, puis le terminateur inséré par nous ;
@@ -29,25 +31,37 @@
 		wordAtCaret,
 		type CommandWord,
 		type Proposal
-	} from './natural-input';
-	import { CALC_LAYOUT, commandsLayout } from './virtual-keyboard';
+	} from '$lib/atelier/natural-input';
+	import { CALC_LAYOUT, commandsLayout } from '$lib/atelier/virtual-keyboard';
 
 	// Types
 	interface Props {
 		words: readonly CommandWord[];
-		/** Les saisies validées, de la plus ancienne à la plus récente (↑ / ↓) */
-		history: readonly string[];
-		/** Le LaTeX du champ, lu par le panneau « sous le capot » */
+		/** Les saisies validées, de la plus ancienne à la plus récente (↑ / ↓), lues au rappel */
+		history: () => readonly string[];
+		/** Le LaTeX du champ ; écrit du dehors (bascule, action d'une carte), le champ le prend */
 		latex?: string;
-		onsubmit: (latex: string) => void;
+		/** `false` : la ligne n'est pas partie (case vide), le champ la garde */
+		onsubmit: (latex: string) => boolean | void;
+		label?: string;
+		/** Prendre le focus à l'ouverture (la page d'essai ; pas l'atelier) */
+		focusOnMount?: boolean;
 	}
 
-	let { words, history, latex = $bindable(''), onsubmit }: Props = $props();
+	let {
+		words,
+		history,
+		latex = $bindable(''),
+		onsubmit,
+		label = 'Saisie de Calcul',
+		focusOnMount = false
+	}: Props = $props();
 
 	// Constantes
 	/** Les touches qui finissent un mot (clavier physique) ; l'espace s'écrit `\,`. */
 	const TERMINATOR_KEYS = ' +-=<>;/';
-	const LIST_ID = 'saisie-propositions';
+	const uid = $props.id();
+	const LIST_ID = `${uid}-propositions`;
 
 	// Variables
 	let field = $state<MathfieldElement>();
@@ -59,6 +73,8 @@
 	/** Une réécriture en cours : son propre `input` ne doit rien relancer */
 	let rewriting = false;
 	let recalled: number | null = null;
+	/** La saisie rappelée telle que MathLive l'a rangée : la comparer, pas l'historique */
+	let recalledValue: string | null = null;
 	let draftBeforeRecall = '';
 
 	// Fonctions
@@ -154,12 +170,13 @@
 		if (thenSubmit && !hole && proposal.latex.startsWith('\\text{')) submit();
 	}
 
-	function submit() {
+	/** Valider la ligne : Entrée, le ⏎ du clavier virtuel, ou le bouton du parent. */
+	export function submit() {
 		if (!field) return;
 		// Le dernier mot, fini par Entrée (`5 km + 300 m`)
 		finishWord('');
 		if (field.value.trim() === '') return;
-		onsubmit(field.value);
+		if (onsubmit(field.value) === false) return;
 		setField('');
 		recalled = null;
 	}
@@ -168,25 +185,35 @@
 		if (!field) return;
 		field.value = value;
 		field.position = field.lastOffset;
-		latex = value;
+		// Ce que MathLive a rangé (`{2 x}` devient `{2x}`) : sinon l'effet de la
+		// ligne écrite du dehors le prendrait pour une autre ligne, et oublierait ↑
+		latex = field.value;
 		proposals = [];
 	}
 
-	/** ↑ / ↓ hors d'une fraction : les saisies validées, comme `CalcDesk.recallPrevious` */
+	/**
+	 * ↑ / ↓ hors d'une fraction : les saisies validées, comme `CalcDesk.recallPrevious`.
+	 *
+	 * ⚠️ Comparer à `recalledValue`, pas à l'historique : une saisie du mode texte
+	 * réécrite pour le champ (`fieldLatexFromText`) n'est pas toujours rangée à
+	 * l'identique par MathLive, et ↑ croirait la ligne modifiée par l'élève.
+	 */
 	function recall(step: -1 | 1) {
-		if (!field || history.length === 0 || (step === 1 && recalled === null)) return;
-		const changed = recalled === null || field.value !== history[recalled];
+		const list = history();
+		if (!field || list.length === 0 || (step === 1 && recalled === null)) return;
+		const changed = recalled === null || field.value !== recalledValue;
 		if (step === -1) {
 			if (changed) draftBeforeRecall = field.value;
-			recalled = changed ? history.length - 1 : Math.max(0, (recalled ?? 0) - 1);
-			setField(history[recalled]);
-		} else if (changed || recalled === history.length - 1) {
+			recalled = changed ? list.length - 1 : Math.max(0, (recalled ?? 0) - 1);
+			setField(list[recalled]);
+		} else if (changed || recalled === list.length - 1) {
 			if (!changed) setField(draftBeforeRecall);
 			recalled = null;
 		} else {
 			recalled = (recalled ?? 0) + 1;
-			setField(history[recalled]);
+			setField(list[recalled]);
 		}
+		recalledValue = recalled === null ? null : field.value;
 	}
 
 	/**
@@ -254,6 +281,20 @@
 		updateSmartFence();
 	}
 
+	/**
+	 * La ligne écrite du dehors : bascule depuis le mode texte, commande préparée
+	 * par une carte (« Simuler »). Celle que le champ vient d'écrire lui-même est
+	 * déjà la sienne : rien à faire.
+	 */
+	$effect(() => {
+		const wanted = latex;
+		if (!field || field.value === wanted) return;
+		field.value = wanted;
+		field.position = field.lastOffset;
+		proposals = [];
+		recalled = null;
+	});
+
 	onMount(() => {
 		if (!field) return;
 		const element = field;
@@ -261,28 +302,46 @@
 		// L'espace tapée reste `\,`, comme dans les cartes : elle fait l'unité (ADR 0026)
 		element.mathModeSpace = '\\,';
 		element.inlineShortcuts = cleanedShortcuts(element.inlineShortcuts);
+		// Le clavier virtuel est UN pour toute la page (les cartes de l'atelier ont
+		// aussi des champs MathLive) : nos onglets le temps du focus seulement,
+		// comme `FillBlanksInput.svelte`
 		const keyboard = window.mathVirtualKeyboard;
-		keyboard.layouts = [CALC_LAYOUT, commandsLayout(words), 'alphabetic'];
-		keyboard.alphabeticLayout = 'azerty';
+		const alphabeticBefore = keyboard.alphabeticLayout;
+		let applied = false;
+		const applyLayouts = () => {
+			keyboard.layouts = [CALC_LAYOUT, commandsLayout(words), 'alphabetic'];
+			keyboard.alphabeticLayout = 'azerty';
+			applied = true;
+		};
+		const restoreLayouts = () => {
+			if (!applied) return;
+			applied = false;
+			keyboard.layouts = 'default';
+			keyboard.alphabeticLayout = alphabeticBefore;
+		};
 		const stops = [
 			on(element, 'keydown', handleKeydown, { capture: true }),
 			on(element, 'paste', handlePaste, { capture: true }),
 			on(element, 'input', handleInput),
 			// Le ⏎ du clavier virtuel (`commit`) ; pas la sortie du champ, qui émet aussi `change`
 			on(element, 'change', () => element.hasFocus() && submit()),
-			on(element, 'focusout', () => (proposals = []))
+			on(element, 'focusin', applyLayouts),
+			on(element, 'focusout', () => {
+				proposals = [];
+				restoreLayouts();
+			})
 		];
-		element.focus();
+		if (focusOnMount) element.focus();
 		return () => {
 			stops.forEach((stopListening) => stopListening());
-			keyboard.layouts = 'default';
+			restoreLayouts();
 		};
 	});
 </script>
 
 <math-field
 	bind:this={field}
-	aria-label="Saisie de Calcul"
+	aria-label={label}
 	aria-autocomplete="list"
 	aria-controls={proposals.length > 0 ? LIST_ID : undefined}
 	class="block w-full rounded-lg border border-border bg-background px-2 py-1.5 text-[1.375rem] text-foreground focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-ring"
