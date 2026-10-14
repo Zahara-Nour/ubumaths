@@ -22,6 +22,7 @@ import {
 	styleIdOf,
 	type StyleOption
 } from '$lib/typst/templates/styles';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('server/worksheets/worksheet-styles');
@@ -67,8 +68,47 @@ export async function loadStyleTemplate(
 ): Promise<WorksheetTemplateRow | null> {
 	const styleId = styleIdOf(worksheet);
 	if (!styleId || isBuiltInStyle(styleId)) return null;
+	return readStyleTemplate(supabase, styleId);
+}
 
-	const { data, error } = await supabase
+/**
+ * La mise en page d'un style du prof pour un lecteur qui n'a pas accès aux
+ * tables des styles : l'élève destinataire de la fiche (D11). Lue en
+ * service-role, et seulement si le style appartient à l'AUTEUR de la fiche
+ * (audit du lot 3a) ; sinon `null`, et le PDF prend « Fiche élève ».
+ *
+ * ⚠️ L'appelant a déjà vérifié que le lecteur a accès à la fiche.
+ */
+export async function loadAuthorStyleTemplate(worksheet: {
+	style_id?: string | null;
+	template_id?: string | null;
+	created_by: string;
+}): Promise<{ template_content: string } | null> {
+	const styleId = styleIdOf(worksheet);
+	if (!styleId || isBuiltInStyle(styleId)) return null;
+
+	const service = createServiceRoleClient();
+	const { data: style, error } = await service
+		.from('worksheet_styles')
+		.select('owner_id')
+		.eq('id', styleId)
+		.maybeSingle();
+	if (error) {
+		logger.error('Style de la fiche illisible :', error);
+		return null;
+	}
+	if (!style || style.owner_id !== worksheet.created_by) return null;
+
+	const template = await readStyleTemplate(service, styleId);
+	return template ? { template_content: template.template_content } : null;
+}
+
+/** La forme « fiche » d'un style, lue avec le client donné ; `null` si absente ou illisible */
+async function readStyleTemplate(
+	client: SupabaseClient<Database>,
+	styleId: string
+): Promise<WorksheetTemplateRow | null> {
+	const { data, error } = await client
 		.from('worksheet_templates')
 		.select('id, name, description, template_content, created_by, style_id, created_at, updated_at')
 		.eq('style_id', styleId)

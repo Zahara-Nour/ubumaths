@@ -49,22 +49,23 @@ function worksheet(language: 'fr' | 'en' = 'fr'): StudentWorksheetView {
 describe('PDF élève avec réponses', () => {
 	it('partie « Réponses » : réponses des exercices visibles, sans correction', () => {
 		const typst = generateStudentWorksheetTypst(worksheet(), 'answers');
-		expect(typst).toContain('= Réponses');
-		expect(typst).not.toContain('= Corrections');
+		// Lot 4b : la partie de fin a le bandeau du gabarit de la fiche
+		expect(typst).toContain('[RÉPONSES]');
+		expect(typst).not.toContain('[CORRECTION]');
 		expect(typst).toContain('REPONSE1');
 		expect(typst).not.toContain('CORRECTION1');
 	});
 
 	it('exercice visible sans réponses : renvoi au corrigé ; exercice masqué : rien', () => {
 		const typst = generateStudentWorksheetTypst(worksheet(), 'answers');
-		const part = typst.slice(typst.indexOf('= Réponses'));
+		const part = typst.slice(typst.indexOf('[RÉPONSES]'));
 		expect(part).toContain('Réponses non rédigées : voir le corrigé.');
 		expect(part).toContain('Titre 2');
 		expect(part).not.toContain('Titre 3');
 	});
 
 	it('anglais : « Answers »', () => {
-		expect(generateStudentWorksheetTypst(worksheet('en'), 'answers')).toContain('= Answers');
+		expect(generateStudentWorksheetTypst(worksheet('en'), 'answers')).toContain('[ANSWERS]');
 	});
 
 	it('police actuelle', () => {
@@ -75,7 +76,7 @@ describe('PDF élève avec réponses', () => {
 describe('PDF élève avec corrigé', () => {
 	it('partie « Corrections » en Shantell Sans et Chiphre Math, énoncés dans la police standard', () => {
 		const typst = generateStudentWorksheetTypst(worksheet(), 'correction');
-		const part = typst.indexOf('= Corrections');
+		const part = typst.indexOf('[CORRECTION]');
 		expect(part).toBeGreaterThan(-1);
 		expect(typst).toContain('CORRECTION1');
 		expect(typst).not.toContain('REPONSE1');
@@ -90,7 +91,9 @@ describe('PDF élève avec corrigé', () => {
 			correctionFonts: false
 		});
 		expect(hasCorrectionFonts(plain)).toBe(false);
-		expect(withoutCorrectionFonts(withFonts)).toBe(plain);
+		// Au saut de ligne près autour des règles retirées (sans effet sur le PDF)
+		const lines = (typst: string) => typst.replace(/\n{2,}/g, '\n');
+		expect(lines(withoutCorrectionFonts(withFonts))).toBe(lines(plain));
 	});
 
 	it('sans partie de fin : ni réponses, ni correction, ni polices', () => {

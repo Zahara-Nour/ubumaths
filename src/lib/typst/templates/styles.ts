@@ -5,7 +5,8 @@
  * Un style regroupe des gabarits qui se ressemblent, un par forme (fiche,
  * réponses, corrigé, fiche + corrections), et le code Typst qu'ils partagent
  * (`{{style_common}}`). Une forme absente d'un style prend celle du style par
- * défaut, « Fiche élève » (D2, D7).
+ * défaut, « Fiche élève » (D2, D7) ; sauf la fiche + corrections, qui garde la
+ * fiche du style et lui ajoute la partie de fin (`CORRECTIONS_PART`).
  *
  * Les styles fournis par Chiphre vivent ici, un par gabarit intégré ; ils ont
  * aussi une ligne en base (`worksheet_styles`, même identifiant) pour qu'une
@@ -16,6 +17,7 @@
 
 import type { DocumentForm } from '$lib/worksheets/document/types';
 import {
+	CORRECTIONS_PART,
 	DEFAULT_TEMPLATES,
 	DEFAULT_TEMPLATE_IDS,
 	STUDENT_STYLE_COMMON,
@@ -127,12 +129,22 @@ export function resolveTemplate(
 	form: TemplateForm,
 	custom?: string | null
 ): ResolvedTemplate {
-	if (form === 'worksheet' && custom && !isBuiltInStyle(styleId)) {
-		return { content: custom, showsPoints: true };
+	// Fiche + corrections d'un style qui n'a que sa fiche : sa fiche, puis la
+	// partie de fin (David, 2026-10-14 : les énoncés gardent le style)
+	const withCorrections = form === 'worksheet_with_corrections';
+	if ((form === 'worksheet' || withCorrections) && custom && !isBuiltInStyle(styleId)) {
+		return {
+			content: withCorrections ? `${custom}\n${CORRECTIONS_PART}` : custom,
+			showsPoints: true
+		};
 	}
 
 	const fallback = builtInStyle(DEFAULT_STYLE_ID) as WorksheetStyle;
 	const chosen = builtInStyle(styleId) ?? fallback;
+	if (withCorrections && !chosen.templates[form] && chosen.templates.worksheet) {
+		const sheet = chosen.templates.worksheet.split(STYLE_COMMON).join(chosen.common);
+		return { content: `${sheet}\n${CORRECTIONS_PART}`, showsPoints: chosen.showsPoints };
+	}
 	const owner = chosen.templates[form] ? chosen : fallback;
 	const template = owner.templates[form] as string;
 	return {

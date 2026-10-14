@@ -18,14 +18,14 @@
  * ```
  */
 
-import { documentLabels, STUDENT_TYPE_LABELS } from '$lib/typst/labels';
-import { TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
-import type { StudentWorksheetView } from '$lib/types/worksheets';
-import { escapeTypst } from '$lib/ubumark/generators/typst-generator';
-import { CORRECTION_FONT_RULES } from '$lib/typst/correction-fonts';
+import type {
+	StudentWorksheetView,
+	WorksheetConfig,
+	WorksheetRow,
+	WorksheetTemplateRow
+} from '$lib/types/worksheets';
+import { WorksheetGenerator } from '$lib/typst/generators/worksheet-generator';
 import { documentFromStudentView } from './document/student-adapter';
-import { renderExercises } from './document/render-exercise';
-import { MATH_LIMITS_SETUP } from './document/math-limits';
 
 // ============================================================================
 // TYPES
@@ -56,7 +56,11 @@ export interface StudentPdfOptions {
 // ============================================================================
 
 /**
- * Generate Typst document for a student worksheet
+ * Le PDF de l'élève, par le générateur unique (ADR 0028, lot 4b) : le gabarit
+ * du style de la fiche (`style_id`, sinon `template_id`, sinon « Fiche
+ * élève » ; la mise en page d'un style du prof arrive dans `template`), rempli
+ * avec le document de la vue — corrections déjà filtrées par le serveur, et
+ * celles qui ne sont pas visibles jamais imprimées.
  *
  * @param worksheet - Student worksheet view with resolved exercises
  * @param ending - Partie de fin : rien, les réponses ou le corrigé
@@ -68,108 +72,56 @@ export function generateStudentWorksheetTypst(
 	ending: StudentPdfEnding,
 	options: StudentPdfOptions = {}
 ): string {
-	// Le document de la fiche (ADR 0028) : ordre, numéros et corrections
-	// visibles décidés une fois, comme pour le PDF du prof. Sa langue est
-	// validée plutôt que supposée : elle traverse une réponse d'API.
+	// Le document de la fiche : ordre, numéros et corrections visibles décidés
+	// une fois, comme pour le PDF du prof
 	const viewDoc = documentFromStudentView(worksheet);
 	// Copie d'un élève servant de vue prof (D6) : le titre seul, sans numéro
-	const doc = options.individualCopyNotice
+	const document = options.individualCopyNotice
 		? { ...viewDoc, display: { ...viewDoc.display, titleOnly: true } }
 		: viewDoc;
-	const locale = doc.locale;
-	const labels = documentLabels(locale);
-	let typst = generateSetup(locale);
 
-	// Header with title
-	typst += `#align(center)[
-  #text(size: 1.5em, weight: "bold")[${escapeTypst(doc.title)}]
-]\n\n`;
+	// Les réglages que le gabarit lit (langue, points), tels que le serveur les
+	// a résolus pour la vue
+	const config: WorksheetConfig = {
+		language: document.locale,
+		numbering_style: document.display.numberingStyle,
+		show_points: document.display.showPoints,
+		correction_detail: document.display.correctionDetail,
+		// Les cases du cartouche, telles que le prof les a réglées
+		show_title: worksheet.show_title,
+		show_date: worksheet.show_date,
+		show_class: worksheet.show_class,
+		show_student_name: worksheet.show_student_name
+	};
+	// La fiche telle que le gabarit la nomme : titre déjà traduit par le serveur
+	const row = {
+		id: worksheet.worksheet_id,
+		title: worksheet.title,
+		description: worksheet.description,
+		translations: null,
+		type: worksheet.type,
+		config,
+		template_id: worksheet.template_id ?? null,
+		style_id: worksheet.style_id ?? null,
+		total_points: worksheet.total_points ?? null,
+		estimated_duration_minutes: worksheet.estimated_duration_minutes ?? null
+	} as unknown as WorksheetRow;
 
-	// Type badge
-	const typeLabel = STUDENT_TYPE_LABELS[locale][doc.type] || escapeTypst(doc.type);
-	typst += `#align(center)[#text(size: 0.9em, fill: gray)[${typeLabel}]]\n\n`;
-
-	// Copie d'un élève servant de vue prof (D6) : chaque élève a sa version
-	if (options.individualCopyNotice) {
-		typst += `#block(width: 100%, fill: rgb("#fff4d6"), stroke: rgb("#d9a400"), inset: 8pt, radius: 4pt)[
-  #text(weight: "bold")[${escapeTypst(labels.individualCopyNotice)}]
-]\n\n`;
-	}
-
-	// Description if present
-	if (doc.description) {
-		typst += `#text(fill: gray)[${escapeTypst(doc.description)}]\n\n`;
-	}
-
-	// Consignes de l'affectation
-	const instructions = doc.assignment?.instructions;
-	if (instructions) {
-		typst += `#block(fill: rgb("#eff6ff"), radius: 4pt, inset: 12pt, width: 100%)[
-  #text(weight: "bold", fill: rgb("#1d4ed8"))[${labels.instructions}]
-  #v(0.5em)
-  ${escapeTypst(instructions)}
-]\n\n`;
-	}
-
-	// Légende des exercices indispensables
-	if (doc.exercises.some((e) => e.essential)) {
-		typst += `#text(size: 0.9em, fill: gray)[#text(fill: rgb("#f59e0b"))[★] = ${labels.essentialExercises}]\n\n`;
-	}
-
-	typst += `#line(length: 100%, stroke: 0.5pt + gray)\n\n`;
-
-	// Les exercices : rendu commun aux PDF du prof et de l'élève
-	typst += renderExercises(doc, 'worksheet', 'student');
-
-	// Partie de fin : « Réponses » ou « Corrections », exercices à correction visible
-	if (ending !== 'none') {
-		const panels = renderExercises(doc, ending, 'student');
-		if (panels) {
-			typst += `#pagebreak()\n\n`;
-			// Le corrigé seul passe en Shantell Sans et Chiphre Math : les énoncés gardent leur police
-			if (ending === 'correction' && options.correctionFonts !== false) {
-				typst += `${CORRECTION_FONT_RULES}\n`;
-			}
-			typst += `= ${ending === 'answers' ? labels.answers : labels.corrections}\n\n`;
-			typst += panels;
+	const generator = new WorksheetGenerator(
+		config,
+		undefined,
+		{ mode: 'worksheet', className: worksheet.class_name ?? undefined },
+		{
+			withCorrections: ending === 'none' ? undefined : ending,
+			correctionFonts: options.correctionFonts,
+			individualCopyNotice: options.individualCopyNotice
 		}
-	}
-
-	return typst;
-}
-
-// ============================================================================
-// SETUP GENERATION
-// ============================================================================
-
-/**
- * Generate Typst document setup
- *
- * Includes:
- * - Page size and margins
- * - Font configuration
- * - Math operator setup (limits for sum, prod, lim, etc.)
- * - Paragraph justification
- */
-function generateSetup(locale: ContentLocale): string {
-	return `#set page(
-  paper: "a4",
-  margin: (x: 1cm, y: 1.5cm),
-  columns: 2,
-  footer: context [
-    #set align(center)
-    #set text(size: 9pt, fill: gray)
-    #counter(page).display("1 / 1", both: true)
-  ]
-)
-#set text(font: "New Computer Modern", size: 10pt, lang: "${TYPST_LANGS[locale]}")
-#set par(justify: true)
-#set heading(numbering: none)
-
-// List item spacing
-#set enum(spacing: 1.5em, tight: false)
-#set list(spacing: 1.5em, tight: false)
-
-${MATH_LIMITS_SETUP}
-`;
+	);
+	return generator.generate({
+		worksheet: row,
+		instance: { exercises: [] },
+		// Le générateur ne lit que le Typst de la mise en page
+		template: (worksheet.template ?? null) as WorksheetTemplateRow | null,
+		document
+	}).typstContent;
 }

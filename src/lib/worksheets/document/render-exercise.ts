@@ -67,8 +67,15 @@ export function renderExercises(
 		return doc.exercises.map((exercise) => renderStudentPanel(exercise, doc, form)).join('');
 	}
 
+	// Réponses et corrigé : seulement les exercices dont la correction est
+	// visible (vue de l'élève) ; la copie du prof les a toutes
+	const printed =
+		form === 'worksheet'
+			? doc
+			: { ...doc, exercises: doc.exercises.filter((exercise) => exercise.correction !== null) };
+
 	let content = '';
-	for (const { header, exercise } of withSectionHeaders(doc, form)) {
+	for (const { header, exercise } of withSectionHeaders(printed, form)) {
 		if (header) content += renderSectionHeader(header, layout);
 		content += renderExercise(exercise, doc, form, layout);
 	}
@@ -221,11 +228,13 @@ function renderTemplateExercise(
 		// ligne, le titre suivait la ligne de base du numéro et paraissait décalé.
 		// Titre seul (D6) : ni carré ni numéro, le titre (ou « Exercice sans titre »)
 		const titleOnly = doc.display.titleOnly === true;
-		const title = titleOnly
-			? `#text(weight: "bold")[${titleOnlyHeading(exercise, doc)}]`
-			: exercise.title
-				? `#text(weight: "bold")[${exerciseTitle(exercise, doc)}]`
-				: '';
+		const title =
+			essentialStar(exercise) +
+			(titleOnly
+				? `#text(weight: "bold")[${titleOnlyHeading(exercise, doc)}]`
+				: exercise.title
+					? `#text(weight: "bold")[${exerciseTitle(exercise, doc)}]`
+					: '');
 		content += `#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[
   #grid(
     columns: (auto, 1fr, auto),
@@ -241,7 +250,7 @@ function renderTemplateExercise(
 			? titleOnlyHeading(exercise, doc)
 			: `${labels.exercise} ${exercise.number}${title}`;
 		content += `#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[
-  #text(size: 1.1em, weight: "bold")[${heading}]`;
+  ${essentialStar(exercise)}#text(size: 1.1em, weight: "bold")[${heading}]`;
 		if (pointsBox) content += ` #h(1fr) ${pointsBox}`;
 	}
 
@@ -254,8 +263,11 @@ function renderTemplateExercise(
 	if (form !== 'worksheet') return content + renderTeacherCorrection(exercise, doc, form);
 
 	// Bloc sécable de l'énoncé, collé à son titre au lieu d'hériter de
-	// l'espacement entre blocs du gabarit (souvent 1,8em)
-	content += `#block(width: 100%, inset: 0pt, above: 0.5em)[\n`;
+	// l'espacement entre blocs du gabarit (souvent 1,8em). Exercice
+	// indispensable (élève) : filet orange à gauche, comme son ancien PDF
+	content += exercise.essential
+		? `#block(width: 100%, inset: (left: 8pt), above: 0.5em, stroke: (left: 2pt + rgb("#f97316")))[\n`
+		: `#block(width: 100%, inset: 0pt, above: 0.5em)[\n`;
 	content += indent(markdownTypst(exercise.statement, exercise, doc)) + '\n';
 	if (hasAnswerSpace(doc)) {
 		content += `  #v(0.5em)
@@ -263,6 +275,43 @@ function renderTemplateExercise(
 	}
 	content += '\n]\n';
 	return content;
+}
+
+/** ★ d'un exercice indispensable (vue de l'élève ; la copie du prof n'en a pas) */
+function essentialStar(exercise: DocumentExercise): string {
+	return exercise.essential ? `#text(fill: rgb("#f59e0b"))[★] ` : '';
+}
+
+/**
+ * Ce que seul l'élève reçoit, en tête des exercices de la fiche, quel que soit
+ * le style : l'avertissement de la copie individuelle (vue prof, D6), les
+ * consignes de l'affectation (sauf si le gabarit a sa case `{{instructions}}`),
+ * la légende ★. Vide pour la copie du prof.
+ */
+export function renderDocumentPreamble(
+	doc: WorksheetDocument,
+	options: { individualCopyNotice?: boolean; instructionsInTemplate?: boolean } = {}
+): string {
+	const labels = documentLabels(doc.locale);
+	let typst = '';
+	if (options.individualCopyNotice) {
+		typst += `#block(width: 100%, fill: rgb("#fff4d6"), stroke: rgb("#d9a400"), inset: 8pt, radius: 4pt)[
+  #text(weight: "bold")[${escapeTypst(labels.individualCopyNotice)}]
+]\n\n`;
+	}
+	// Le gabarit qui a sa case `{{instructions}}` y reçoit les consignes
+	const instructions = options.instructionsInTemplate ? null : doc.assignment?.instructions;
+	if (instructions) {
+		typst += `#block(fill: rgb("#eff6ff"), radius: 4pt, inset: 12pt, width: 100%)[
+  #text(weight: "bold", fill: rgb("#1d4ed8"))[${labels.instructions}]
+  #v(0.5em)
+  ${escapeTypst(instructions)}
+]\n\n`;
+	}
+	if (doc.exercises.some((exercise) => exercise.essential)) {
+		typst += `#text(size: 0.9em, fill: gray)[#text(fill: rgb("#f59e0b"))[★] = ${labels.essentialExercises}]\n\n`;
+	}
+	return typst;
 }
 
 /** PDF de l'élève : ★, carré ambre, points et consigne dans un bloc `sticky` */

@@ -35,49 +35,53 @@ const createWorksheet = (overrides?: Partial<StudentWorksheetView>): StudentWork
 		...overrides
 	}) as unknown as StudentWorksheetView;
 
+// Lot 4b : le PDF de l'élève prend le gabarit du style de la fiche (« Fiche
+// élève » par défaut, numéros sur carré ambre) ; l'en-tête reste collé à
+// l'énoncé, la consigne avec lui.
 describe('generateStudentWorksheetTypst', () => {
+	const STICKY = '#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[';
+	const BADGE =
+		'box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]]';
+
 	it('puts the exercise header in a sticky block, ahead of the statement', () => {
 		const typst = generateStudentWorksheetTypst(createWorksheet(), 'none');
+		const sticky = typst.indexOf(STICKY);
+		const badge = typst.indexOf(BADGE);
+		const statement = typst.indexOf('#ubu-item(');
 
-		// The badge lives inside a sticky block...
-		expect(typst).toMatch(
-			/#block\(sticky: true, below: 0\.6em\)\[\n#box\(fill: rgb\("#e8590c"\)[^\n]*\[1\]\]/
-		);
-		// ...and the statement is outside of it (après l'en-tête de lisibilité, sans contenu)
-		expect(typst).toMatch(
-			/\]\n\n#show math\.equation[^\n]*\n(?:#let [^\n]*\n)+\/\/ ubumark: fin de l’en-tête\n#ubu-item\(/
-		);
+		expect(sticky).toBeGreaterThan(-1);
+		// Le carré du numéro dans le bloc collant, l'énoncé après lui
+		expect(badge).toBeGreaterThan(sticky);
+		expect(statement).toBeGreaterThan(badge);
+		expect(typst.slice(sticky, statement)).toContain('\n]\n#block(width: 100%');
 	});
 
-	it('keeps the points and instructions with the header', () => {
-		const worksheet = createWorksheet();
+	it('keeps the instructions with the header (and the points, for a style that prints them)', () => {
+		const worksheet = createWorksheet({ style_id: '00000000-0000-4000-8000-000000000001' });
 		worksheet.exercises![0].custom_instructions = 'Detailler les etapes.';
+		worksheet.show_points = true;
 
 		const typst = generateStudentWorksheetTypst(worksheet, 'none');
-		const stickyBlock = typst.slice(
-			typst.indexOf('#block(sticky: true'),
-			typst.indexOf('#show math.equation')
-		);
+		const header = typst.slice(typst.indexOf('#block(width: 100%, inset: 0pt, sticky: true'));
+		const stickyBlock = header.slice(0, header.indexOf('\n]\n'));
 
-		// « pts » : les mots du PDF du prof, dans la langue de la fiche (ADR 0028, lot 1)
 		expect(stickyBlock).toContain('3 pts');
 		expect(stickyBlock).toContain('Detailler les etapes.');
 	});
 
 	it('makes the correction header sticky too', () => {
 		const typst = generateStudentWorksheetTypst(createWorksheet(), 'correction');
+		const corrections = typst.slice(typst.indexOf('#pagebreak()'));
 
-		expect(typst).toContain('= Corrections');
-		expect(typst).toMatch(/#block\(fill: rgb\("#f0fdf4"\)[^\n]*\[\n {2}#block\(sticky: true/);
+		expect(corrections).toContain('[CORRECTION]');
+		expect(corrections).toContain(STICKY);
 	});
 
 	it('numérote exercices et corrigés sur la charte ambre de la fiche enseignant, plus en rouge', () => {
 		const typst = generateStudentWorksheetTypst(createWorksheet(), 'correction');
-		const badge =
-			'#box(fill: rgb("#e8590c"), radius: 3pt, inset: (x: 6pt, y: 3pt))[#text(fill: white, weight: "bold")[1]]';
 
 		// Une fois dans l'énoncé, une fois dans le corrigé
-		expect(typst.split(badge)).toHaveLength(3);
+		expect(typst.split(BADGE)).toHaveLength(3);
 		expect(typst).not.toContain('#dc2626');
 	});
 });
@@ -98,9 +102,8 @@ describe('student worksheet language', () => {
 		);
 
 		expect(typst).toContain('lang: "fr"');
-		expect(typst).toContain("Fiche d'exercices");
 		expect(typst).toContain('Exercices indispensables');
-		expect(typst).toContain('= Corrections');
+		expect(typst).toContain('[CORRECTION]');
 	});
 
 	it('writes the chrome in English when the worksheet is', () => {
@@ -119,14 +122,12 @@ describe('student worksheet language', () => {
 		);
 
 		expect(typst).toContain('lang: "en"');
-		expect(typst).toContain('Worksheet');
 		expect(typst).toContain('Essential exercises');
-		// « Answers » nomme désormais la partie des résultats seuls
-		expect(typst).toContain('= Solutions');
+		// « Answers » nomme la partie des résultats seuls
+		expect(typst).toContain('[SOLUTIONS]');
 		// No French chrome left on an English sheet.
-		expect(typst).not.toContain("Fiche d'exercices");
 		expect(typst).not.toContain('Exercices indispensables');
-		expect(typst).not.toContain('= Corrections');
+		expect(typst).not.toContain('[CORRECTION]');
 	});
 });
 
