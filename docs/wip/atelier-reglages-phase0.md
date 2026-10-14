@@ -1,7 +1,7 @@
 ---
 title: Atelier — une fenêtre de réglages, et le choix de la saisie (phase 0)
 date: 2026-10-14
-status: phase 0 validée (2026-10-14) — PR 1 en cours, branche feat/atelier-reglages
+status: PR 1 mergée (#1385), en attente du deploy:prod ; suite = le mode mathématique lui-même
 ---
 
 # Atelier — la fenêtre de réglages
@@ -88,3 +88,10 @@ Rien d'autre n'entre dans la fenêtre pour l'instant : le mode exact / décimal 
 - 2026-10-14 — **décisions de David** : (1) défaut **Texte** ; (2) le champ du prototype est branché
   dès la PR 1, marqué « en essai » ; (3) rien à corriger au prototype pour l'instant. PR 1 sur la
   branche `feat/atelier-reglages` (worktree `ubumaths-wt-reglages`).
+- 2026-10-14 — **PR 1 mergée (#1385)**. Mesuré en branchant le prototype : « développer » et « limite »
+  en double, point d'une ligne du mode texte gardé, `.mode exact` lu `e x a c t`, double ↑ bloqué.
+  Revue de code : arguments d'une commande collés à l'écran (`simuler LM100`), `G = fille` lu
+  `fi lle`, ligne perdue au passage par le Graphe. Revue a11y : liste muette pour un lecteur
+  d'écran (shadow DOM), option surlignée à 2,04:1, liste coupée en bas d'écran, croix « Close ».
+  Tout corrigé. **Restent pour la suite** : l'historique montre le texte envoyé (avec le point) ;
+  pas de consigne dans le champ mathématique vide ; `Sheet.Content` dit encore « Close ».
