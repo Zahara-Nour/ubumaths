@@ -348,7 +348,7 @@ async function readUploadedPath(
  * Supprime le fichier si plus AUCUNE ligne ne le désigne. Une lecture en échec
  * garde le fichier : dans le doute, on ne détruit pas.
  */
-async function removeFileIfUnused(
+export async function removeFileIfUnused(
 	path: string,
 	supabase: SupabaseClient<Database>
 ): Promise<boolean> {

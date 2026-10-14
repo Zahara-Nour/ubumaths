@@ -23,6 +23,7 @@ import { buildSeriesLink, seriesCategoriesSchema, totalQuestions } from '$lib/va
 import { isDeadlinePassed } from '$lib/utils/dates';
 import { createServerLogger } from '$lib/utils/logger';
 import { ownerColumn, ownerInsert, toOwner, type ContentOwner } from './content-owner';
+import { placementColumns, type SectionPlacement } from './chapters';
 
 const logger = createServerLogger('server/chapter-series');
 
@@ -180,7 +181,8 @@ export async function linkSeries(
 	seriesId: string,
 	form: ChapterSeriesForm,
 	ownerId: string,
-	supabase: SupabaseClient<Database>
+	supabase: SupabaseClient<Database>,
+	placement?: SectionPlacement
 ): Promise<Result<{ id: string }>> {
 	const db = supabase;
 	const proprietaire = toOwner(owner);
@@ -221,7 +223,8 @@ export async function linkSeries(
 			...ownerInsert(proprietaire),
 			series_id: seriesId,
 			form,
-			display_order: (dernier?.display_order ?? -1) + 1
+			display_order: (dernier?.display_order ?? -1) + 1,
+			...placementColumns(placement)
 		})
 		.select('id');
 

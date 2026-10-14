@@ -186,7 +186,9 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 			headers: {
 				'Content-Type': canInline ? rawMime : 'application/octet-stream',
 				'Content-Disposition': contentDisposition,
-				'Cache-Control': 'private, max-age=3600'
+				// `no-store` : un document dépublié ne doit pas rester lisible dans le
+				// cache du navigateur de l'élève.
+				'Cache-Control': 'private, no-store'
 			}
 		});
 	} catch (err) {

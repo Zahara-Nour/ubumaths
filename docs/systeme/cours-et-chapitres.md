@@ -227,7 +227,9 @@ quelle version). Seul un modèle **publié** s'instancie.
   `contenu/templates/[templateId]/` porte les MÊMES noms d'actions que la page du chapitre
   (`addChecklistItem`, `deleteDocument`, `unlinkSeries`…) pour l'éditeur partagé ; sa charge
   rend `content` (`listTemplateContent`). Publier exige un élément non retiré dans les tables
-  (`templateHasContent`), plus le snapshot.
+  (`templateHasContent`), plus le snapshot. ⚠️ Un élément de modèle ajouté DANS une section reçoit
+  sa section **à l'insertion** (`nextSectionOrder` puis `insert*(…, placement)`) : la base crée ses
+  lignes de lien à l'insertion même, et un rangement après coup les laisserait en « Non classé ».
 - **Retirer un élément du modèle** (`retireTemplateElement`, ce que font les actions « supprimer »
   de la page du modèle) : `retired_at` posé, la base supprime les liens non publiés ; puis la ligne
   est supprimée si plus aucun chapitre ne la relie, sinon la base refuse (`RESTRICT`) et elle reste
@@ -237,18 +239,29 @@ quelle version). Seul un modèle **publié** s'instancie.
   plan. Lien en échec → le chapitre créé est supprimé.
 - **Détacher** (`detachChapterFromTemplate`) : chaque fichier relié est **copié** sous
   `chapters/<id>/…` (une copie en échec arrête tout avant de délier), puis les lignes se délient
-  (`source_id` à vide, sections en dernier) avec leur publication, puis `is_detached`.
+  (`source_id` à vide, sections en dernier) avec leur publication, puis `is_detached`. Un élément
+  masqué redevient visible (`hidden = false`), toujours non publié : sinon il resterait figé.
 - **Faire un modèle d'un chapitre** (`createTemplateFromChapter`) : copie du contenu chez le modèle
   (sections d'abord, fichiers copiés sous `templates/<id>/…`) AVANT de créer l'instanciation (sinon
   la base diffuserait des doublons), puis le chapitre **adopte** chaque élément (`source_id`) : mêmes
   identifiants, publications et cases cochées gardées. L'ancien fichier `chapters/…` reste (étape 5).
-  Un chapitre déjà rattaché garde son rattachement : copie sans adoption.
+  Un chapitre déjà rattaché garde son rattachement : copie sans adoption, et sans ce qu'il a
+  masqué. Une adoption ratée n'est pas un succès silencieux : `warning` dans le résultat (action
+  `createTemplate`, route `create-template`).
 - **Supprimer un modèle** (`deleteChapterTemplate`) : refusé (`TemplateInUseError`, « archivez-le »,
-  409 sur la page) tant qu'un chapitre non détaché le relie ; sinon ses fichiers puis sa ligne
-  partent (fichiers d'abord : la règle de stockage exige que le modèle existe).
+  409 sur la page et sur `DELETE api/teacher/chapter-templates/[id]`) tant qu'un chapitre non
+  détaché le relie OU qu'une seule ligne de lien désigne un de ses éléments — vérifié avant de
+  toucher au moindre fichier. Sinon la ligne du modèle est supprimée (vérifiée), puis ses fichiers
+  `templates/<id>/` par le **client service** (la règle de stockage du professeur exige que le
+  modèle existe), strictement dans ce dossier.
+- **Ancien circuit des versions** (`updateFromChapter`, `createTemplateVersion`,
+  `migrateChapterToVersion`, route `migrate`, route `versions`) : refusé (`TemplateLinkedContentError`, 409) dès que le modèle possède du contenu en tables ou que le chapitre a des lignes de lien
+  (`refuseLegacyVersioning`). Supprimé à l'étape 5.
 - **Dans le chapitre**, une ligne de lien ne se supprime pas (actions `deleteDocument`,
-  `deleteChecklistItem`, `unlinkExercise`, `unlinkWorksheet`, `unlinkSeries` et
-  `DELETE api/…/documents/[docId]` : 409 « masquez-le ») et son fichier n'est jamais touché ;
+  `deleteChecklistItem`, `unlinkExercise`, `unlinkWorksheet`, `unlinkSeries` et les routes
+  `DELETE api/…/documents/[docId]`, `checklist/[itemId]`, `exercises/[linkId]`,
+  `worksheets/[linkId]` : 409 « masquez-le ») — le refus vit dans les fonctions mêmes
+  (`.is('source_id', null)`, `LinkedElementError`) — et son fichier n'est jamais touché ;
   `setHidden` la masque (et la dépublie) ou la démasque.
 - **Servir un fichier** (`api/documents/[id]`) : la ligne est lue avec le client de l'utilisateur
   (garde RLS : élève = chapitre visible de sa classe, document publié), puis le fichier est

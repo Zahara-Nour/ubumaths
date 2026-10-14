@@ -183,15 +183,6 @@ const mockDbInstantiation: DbChapterTemplateInstantiation = {
 	last_migrated_at: null
 };
 
-const mockDbChapter = {
-	id: mockChapterId,
-	class_id: mockClassId,
-	teacher_id: mockUserId,
-	title: 'Chapitre instantie',
-	color: 'blue',
-	icon: 'calculator'
-};
-
 // ============================================================================
 // VALIDATION SCHEMA TESTS - CONTENT SNAPSHOT
 // ============================================================================
@@ -1671,6 +1662,11 @@ describe('Version Operations', () => {
 
 	describe('createTemplateVersion', () => {
 		it('should create new version with diff', async () => {
+			// ADR 0029 : le modèle ne possède aucun contenu en tables (six lectures).
+			for (let i = 0; i < 6; i++) {
+				supabase._mockChain.limit.mockResolvedValueOnce({ data: [], error: null } as never);
+			}
+
 			const newSnapshot: TemplateContentSnapshot = {
 				...mockContentSnapshot,
 				documents: [
@@ -1723,6 +1719,11 @@ describe('Version Operations', () => {
 		});
 
 		it('should handle version creation error', async () => {
+			// ADR 0029 : le modèle ne possède aucun contenu en tables (six lectures).
+			for (let i = 0; i < 6; i++) {
+				supabase._mockChain.limit.mockResolvedValueOnce({ data: [], error: null } as never);
+			}
+
 			// Mock fetch current template
 			supabase._mockChain.single.mockResolvedValueOnce({
 				data: {
@@ -1821,68 +1822,8 @@ describe('Instantiation Operations', () => {
 	});
 
 	describe('instantiateTemplate', () => {
-		// Skip this complex test - it requires intricate mock chain setup for insert().select().single()
-		// The underlying business logic is tested via extractContentSnapshotFromChapter and
-		// applyContentSnapshotToChapter tests
-		it.skip('should create chapter from template', async () => {
-			const input: InstantiateTemplateInput = {
-				templateId: mockTemplateId,
-				classId: mockClassId,
-				title: 'Custom Chapter Title',
-				isVisible: true
-			};
-
-			// Mock template fetch
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: {
-					title: 'Template Title',
-					content_snapshot: mockContentSnapshot,
-					current_version: 1,
-					color: 'blue',
-					icon: 'calculator'
-				},
-				error: null
-			});
-
-			// Mock chapter creation - note: insert().select().single() chain
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: mockDbChapter,
-				error: null
-			});
-
-			// Mock document inserts (if any) - insert() returns error directly
-			supabase._mockChain.insert.mockResolvedValueOnce({
-				error: null
-			} as never);
-
-			// Mock quiz question inserts
-			supabase._mockChain.insert.mockResolvedValueOnce({
-				error: null
-			} as never);
-
-			// Mock checklist inserts
-			supabase._mockChain.insert.mockResolvedValueOnce({
-				error: null
-			} as never);
-
-			// Mock exercise inserts
-			supabase._mockChain.insert.mockResolvedValueOnce({
-				error: null
-			} as never);
-
-			// Mock instantiation record creation - insert().select().single() chain
-			supabase._mockChain.single.mockResolvedValueOnce({
-				data: mockDbInstantiation,
-				error: null
-			});
-
-			const result = await templates.instantiateTemplate(input, mockUserId, supabase);
-
-			expect(result.error).toBeNull();
-			expect(result.data?.chapterId).toBe(mockChapterId);
-			expect(result.data?.instantiation).toBeDefined();
-		});
-
+		// La création d'un chapitre lié (lien, titre par défaut, retour arrière) est
+		// couverte par `modele-lien.test.ts` ; ici, l'échec de lecture du modèle.
 		it('should handle template not found', async () => {
 			const input: InstantiateTemplateInput = {
 				templateId: mockTemplateId,

@@ -82,5 +82,6 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Failed to create template from chapter');
 	}
 
-	return json({ template: result.data }, { status: 201 });
+	// Modèle créé ; un avertissement dit ce que le chapitre n'a pas pu relier.
+	return json({ template: result.data, warning: result.warning ?? null }, { status: 201 });
 };

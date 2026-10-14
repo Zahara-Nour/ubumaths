@@ -14,10 +14,11 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { requireOwnedTemplate } from '$lib/server/template-guard';
-import { insertDocument } from '$lib/server/chapters';
-import { placeInSection } from '$lib/server/chapter-sections';
+import { insertDocument, type SectionPlacement } from '$lib/server/chapters';
+import { nextSectionOrder } from '$lib/server/chapter-sections';
+import { removeFileIfUnused } from '$lib/server/template-content';
 import { isPathInFolder, registerDocumentSchema } from '$lib/server/validation/chapter-documents';
-import { CHAPTER_DOCUMENTS_BUCKET, ownerStoragePrefix } from '$lib/server/content-owner';
+import { ownerStoragePrefix } from '$lib/server/content-owner';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/teacher/chapter-templates/[id]/documents/+server');
@@ -47,6 +48,25 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(400, 'Fichier invalide');
 	}
 
+	// La section est passée À L'INSERTION : la base crée aussitôt les lignes de
+	// lien des chapitres liés, avec la section qu'a le document à ce moment-là.
+	// Un rang illisible ne défait rien : le document naît non classé.
+	let placement: SectionPlacement | undefined;
+	let placed = true;
+	if (data.sectionId) {
+		const { data: rang, error: rangError } = await nextSectionOrder(
+			owner,
+			data.sectionId,
+			locals.supabase
+		);
+		if (rangError || rang === null) {
+			logger.error('[documents] Rang illisible :', rangError);
+			placed = false;
+		} else {
+			placement = { sectionId: data.sectionId, sectionOrder: rang };
+		}
+	}
+
 	const { data: created, error: dbError } = await insertDocument(
 		owner,
 		{
@@ -58,32 +78,17 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 			mimeType: data.fileType,
 			fileSize: data.fileSize
 		},
-		locals.supabase
+		locals.supabase,
+		placement
 	);
 
 	if (dbError || !created) {
-		// Le fichier est déjà dans le stockage : le laisser sans sa ligne en
-		// ferait un orphelin invisible.
-		await locals.supabase.storage.from(CHAPTER_DOCUMENTS_BUCKET).remove([data.storagePath]);
+		// Le fichier déposé n'a plus de ligne : orphelin invisible. Mais le chemin
+		// vient du navigateur : on ne le supprime que si AUCUNE ligne ne le
+		// désigne (un autre document du modèle peut pointer ce même fichier).
+		await removeFileIfUnused(data.storagePath, locals.supabase);
 		logger.error('[documents] Enregistrement impossible :', dbError);
 		throw error(500, "Erreur lors de l'enregistrement");
-	}
-
-	// ⚠️ Un rangement raté ne défait PAS l'enregistrement : le document existe, il
-	// retombe en « Non classé », d'où le professeur peut le déplacer.
-	let placed = true;
-	if (data.sectionId) {
-		const { error: placeError } = await placeInSection(
-			owner,
-			data.sectionId,
-			'document',
-			created.id,
-			locals.supabase
-		);
-		if (placeError) {
-			logger.error('[documents] Rangement impossible :', placeError);
-			placed = false;
-		}
 	}
 
 	return json({ success: true, placed }, { status: 201 });

@@ -452,6 +452,8 @@ describe('ADR 0029, étape 3b — le serveur du modèle', () => {
 				url: new URL(`http://localhost/api/documents/${a.id}`)
 			} as never)) as Response;
 			expect(r.status).toBe(200);
+			// Un document dépublié ne doit pas rester dans le cache du navigateur.
+			expect(r.headers.get('Cache-Control')).toBe('private, no-store');
 			expect(await r.text()).toBe(PDF);
 		});
 

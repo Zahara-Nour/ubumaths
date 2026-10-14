@@ -51,6 +51,25 @@ type DbStudentChecklistProgress = Database['public']['Tables']['student_checklis
 type DbChapterExercise = Database['public']['Tables']['chapter_exercises']['Row'];
 type DbChapterWorksheet = Database['public']['Tables']['chapter_worksheets']['Row'];
 
+/**
+ * La section où naît un élément, passée À L'INSERTION. Indispensable pour un
+ * élément de MODÈLE : la base crée ses lignes de lien dans les chapitres liés à
+ * l'insertion même, avec la section qu'il a alors (ADR 0029) ; le ranger après
+ * coup laisserait ces lignes en « Non classé ».
+ */
+export type SectionPlacement = { sectionId: string; sectionOrder: number };
+
+/**
+ * Une ligne de LIEN (élément du modèle, ADR 0029) ne se supprime pas d'un
+ * chapitre : elle se masque. Les routes la rendent en 409.
+ */
+export class LinkedElementError extends Error {
+	constructor(message = 'Élément du modèle : masquez-le plutôt que de le supprimer.') {
+		super(message);
+		this.name = 'LinkedElementError';
+	}
+}
+
 /** `Omit` qui garde les variantes d'une union (upload / Google Drive). */
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 
@@ -178,6 +197,16 @@ function convertWorksheet(db: DbChapterWorksheet): ChapterWorksheet {
 		sourceId: db.source_id,
 		hidden: db.hidden
 	};
+}
+
+/** Les colonnes de rangement d'une insertion, vides sans `placement`. */
+export function placementColumns(placement: SectionPlacement | undefined): {
+	section_id?: string;
+	section_order?: number;
+} {
+	return placement
+		? { section_id: placement.sectionId, section_order: placement.sectionOrder }
+		: {};
 }
 
 // ============================================================================
@@ -407,7 +436,8 @@ export async function reorderChapters(
 export async function insertDocument(
 	owner: ContentOwner,
 	data: DocumentFields,
-	supabase: SupabaseClient<Database>
+	supabase: SupabaseClient<Database>,
+	placement?: SectionPlacement
 ): Promise<OperationResult<DbChapterDocument>> {
 	const proprietaire = toOwner(owner);
 	// Get max display order if not provided
@@ -462,6 +492,11 @@ export async function insertDocument(
 			mime_type: data.mimeType ?? null,
 			thumbnail_url: data.thumbnailUrl ?? null
 		};
+	}
+
+	if (placement) {
+		insertData.section_id = placement.sectionId;
+		insertData.section_order = placement.sectionOrder;
 	}
 
 	const { data: document, error } = await supabase
@@ -612,7 +647,8 @@ export async function reorderDocuments(
 export async function insertChecklistItem(
 	owner: ContentOwner,
 	data: Omit<CreateChecklistItemInput, 'chapterId'>,
-	supabase: SupabaseClient<Database>
+	supabase: SupabaseClient<Database>,
+	placement?: SectionPlacement
 ): Promise<OperationResult<DbChapterChecklistItem>> {
 	const proprietaire = toOwner(owner);
 	// Get max display order if not provided
@@ -643,7 +679,8 @@ export async function insertChecklistItem(
 			...ownerInsert(proprietaire),
 			content: data.content,
 			description: data.description ?? null,
-			display_order: displayOrder
+			display_order: displayOrder,
+			...placementColumns(placement)
 		})
 		.select()
 		.single();
@@ -720,14 +757,7 @@ export async function deleteChecklistItem(
 	itemId: string,
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: Error | null }> {
-	const { error } = await supabase.from('chapter_checklist_items').delete().eq('id', itemId);
-
-	if (error) {
-		logger.error('[deleteChecklistItem] Error:', error);
-		return { error: new Error(error.message) };
-	}
-
-	return { error: null };
+	return deleteOwnRow('chapter_checklist_items', itemId, 'deleteChecklistItem', supabase);
 }
 
 // ============================================================================
@@ -749,7 +779,8 @@ export async function insertExercise(
 	owner: ContentOwner,
 	exerciseId: string,
 	supabase: SupabaseClient<Database>,
-	displayOrder?: number
+	displayOrder?: number,
+	placement?: SectionPlacement
 ): Promise<OperationResult<DbChapterExercise>> {
 	const proprietaire = toOwner(owner);
 	// Get max display order if not provided
@@ -779,7 +810,8 @@ export async function insertExercise(
 		.insert({
 			...ownerInsert(proprietaire),
 			exercise_id: exerciseId,
-			display_order: order
+			display_order: order,
+			...placementColumns(placement)
 		})
 		.select()
 		.single();
@@ -824,14 +856,7 @@ export async function unlinkExercise(
 	chapterExerciseId: string,
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: Error | null }> {
-	const { error } = await supabase.from('chapter_exercises').delete().eq('id', chapterExerciseId);
-
-	if (error) {
-		logger.error('[unlinkExercise] Error:', error);
-		return { error: new Error(error.message) };
-	}
-
-	return { error: null };
+	return deleteOwnRow('chapter_exercises', chapterExerciseId, 'unlinkExercise', supabase);
 }
 
 /**
@@ -852,7 +877,8 @@ export async function insertWorksheet(
 	owner: ContentOwner,
 	worksheetId: string,
 	supabase: SupabaseClient<Database>,
-	displayOrder?: number
+	displayOrder?: number,
+	placement?: SectionPlacement
 ): Promise<OperationResult<DbChapterWorksheet>> {
 	const proprietaire = toOwner(owner);
 	let order = displayOrder;
@@ -881,7 +907,8 @@ export async function insertWorksheet(
 		.insert({
 			...ownerInsert(proprietaire),
 			worksheet_id: worksheetId,
-			display_order: order
+			display_order: order,
+			...placementColumns(placement)
 		})
 		.select()
 		.single();
@@ -929,14 +956,7 @@ export async function unlinkWorksheet(
 	chapterWorksheetId: string,
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: Error | null }> {
-	const { error } = await supabase.from('chapter_worksheets').delete().eq('id', chapterWorksheetId);
-
-	if (error) {
-		logger.error('[unlinkWorksheet] Error:', error);
-		return { error: new Error(error.message) };
-	}
-
-	return { error: null };
+	return deleteOwnRow('chapter_worksheets', chapterWorksheetId, 'unlinkWorksheet', supabase);
 }
 
 /**
@@ -1356,4 +1376,43 @@ export async function getMyChecklistProgress(
 	});
 
 	return { data: result, error: null, count: result.length };
+}
+
+/**
+ * Supprime un élément PROPRE au chapitre. Une ligne de lien (`source_id` non
+ * vide) est hors d'atteinte : `LinkedElementError`. La RLS échoue en silence :
+ * zéro ligne supprimée n'est pas un succès.
+ */
+async function deleteOwnRow(
+	table: 'chapter_checklist_items' | 'chapter_exercises' | 'chapter_worksheets',
+	id: string,
+	label: string,
+	supabase: SupabaseClient<Database>
+): Promise<{ error: Error | null }> {
+	const { data, error } = await supabase
+		.from(table)
+		.delete()
+		.eq('id', id)
+		.is('source_id', null)
+		.select('id');
+
+	if (error) {
+		logger.error(`[${label}] Error:`, error);
+		return { error: new Error(error.message) };
+	}
+	if (data && data.length === 1) return { error: null };
+
+	// Zéro ligne : élément du modèle, ou introuvable / refusé.
+	const { data: ligne, error: readError } = await supabase
+		.from(table)
+		.select('source_id')
+		.eq('id', id)
+		.maybeSingle();
+	if (readError) {
+		logger.error(`[${label}] Relecture impossible :`, readError);
+	}
+	if (ligne && ligne.source_id !== null) return { error: new LinkedElementError() };
+
+	logger.error(`[${label}] Aucune ligne supprimée pour ${id}`);
+	return { error: new Error('Élément introuvable') };
 }

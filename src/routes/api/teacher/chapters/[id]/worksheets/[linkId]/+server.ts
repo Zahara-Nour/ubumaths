@@ -9,7 +9,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
-import { unlinkWorksheet } from '$lib/server/chapters';
+import { unlinkWorksheet, LinkedElementError } from '$lib/server/chapters';
 import { uuidSchema } from '$lib/server/validation/common';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -68,6 +68,11 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	await verifyWorksheetLinkOwnership(chapterId, linkId, locals.supabase);
 
 	const result = await unlinkWorksheet(linkId, locals.supabase);
+
+	// Élément du modèle (ADR 0029) : il se masque, il ne se supprime pas du chapitre.
+	if (result.error instanceof LinkedElementError) {
+		throw error(409, result.error.message);
+	}
 
 	if (result.error) {
 		logger.error('[DELETE /api/teacher/chapters/[id]/worksheets/[linkId]] Error:', result.error);

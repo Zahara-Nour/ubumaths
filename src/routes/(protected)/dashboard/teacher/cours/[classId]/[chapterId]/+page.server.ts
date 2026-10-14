@@ -55,7 +55,8 @@ import {
 	getInstantiationWithStatus,
 	createTemplateFromChapter,
 	migrateChapterToVersion,
-	detachChapterFromTemplate
+	detachChapterFromTemplate,
+	TemplateLinkedContentError
 } from '$lib/server/chapter-templates';
 import { createTemplateFromChapterSchema } from '$lib/server/validation/chapter-templates';
 import {
@@ -1024,18 +1025,21 @@ export const actions: Actions = {
 			});
 		}
 
-		const { data: template, error: createError } = await createTemplateFromChapter(
-			validation.data,
-			user.id,
-			locals.supabase
-		);
+		const {
+			data: template,
+			error: createError,
+			warning
+		} = await createTemplateFromChapter(validation.data, user.id, locals.supabase);
 
 		if (createError || !template) {
 			logger.error('[createTemplate] Creation impossible :', createError);
 			return fail(500, { error: 'Erreur lors de la creation du modele', action: 'createTemplate' });
 		}
 
-		return { success: true, action: 'createTemplate', templateId: template.id };
+		// Modèle créé, mais une partie du chapitre n'a pas pu le relier : le dire.
+		return warning
+			? { success: true, action: 'createTemplate', templateId: template.id, warning }
+			: { success: true, action: 'createTemplate', templateId: template.id };
 	},
 
 	unlinkWorksheet: async ({ request, locals }) => {
@@ -1255,6 +1259,10 @@ export const actions: Actions = {
 			targetVersion,
 			locals.supabase
 		);
+
+		if (migrateError instanceof TemplateLinkedContentError) {
+			return fail(409, { error: migrateError.message, action: 'migrateToVersion' });
+		}
 
 		if (migrateError) {
 			logger.error('[migrateToVersion] Error:', migrateError);

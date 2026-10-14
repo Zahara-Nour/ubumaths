@@ -10,7 +10,8 @@ import { requireRole } from '$lib/server/middleware/auth';
 import {
 	getChapterTemplate,
 	getTemplateVersions,
-	createTemplateVersion
+	createTemplateVersion,
+	TemplateLinkedContentError
 } from '$lib/server/chapter-templates';
 import { updateTemplateContentSchema } from '$lib/server/validation/chapter-templates';
 import { uuidSchema } from '$lib/server/validation/common';
@@ -146,6 +147,10 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		user.id,
 		locals.supabase
 	);
+
+	if (result.error instanceof TemplateLinkedContentError) {
+		throw error(409, result.error.message);
+	}
 
 	if (result.error) {
 		logger.error('[POST /api/teacher/chapter-templates/[id]/versions] Error:', result.error);

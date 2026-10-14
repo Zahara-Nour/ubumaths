@@ -131,7 +131,8 @@ plus les fragments de `rag_chunks`. Le fichier d'origine n'est écrit ni dans un
 - **Type servi** : seuls PDF, PNG, JPEG, GIF et WebP s'affichent en ligne ; tout autre
   `mime_type` part en `application/octet-stream` et en pièce jointe (finding M6 : un HTML ou un
   SVG servi en ligne s'exécuterait sur notre origine). Un document `google_drive` rend 400.
-- `Cache-Control: private, max-age=3600`.
+- `Cache-Control: private, no-store` : un document dépublié ne reste pas lisible dans le cache du
+  navigateur de l'élève.
 
 ## Invariants
 

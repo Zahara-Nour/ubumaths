@@ -28,9 +28,10 @@ import {
 	insertDocument,
 	insertExercise,
 	insertWorksheet,
-	updateChecklistItem
+	updateChecklistItem,
+	type SectionPlacement
 } from '$lib/server/chapters';
-import { placeInSection } from '$lib/server/chapter-sections';
+import { nextSectionOrder } from '$lib/server/chapter-sections';
 import { linkSeries, setSeriesForm } from '$lib/server/chapter-series';
 import {
 	createChecklistItemSchema,
@@ -52,7 +53,9 @@ import {
 	extractContentSnapshotFromChapter,
 	getTemplateVersions,
 	instantiateTemplate,
+	refuseLegacyVersioning,
 	TemplateInUseError,
+	TemplateLinkedContentError,
 	TemplateUnusableError
 } from '$lib/server/chapter-templates';
 import {
@@ -97,34 +100,31 @@ type RetireAction = keyof typeof RETIRE_FIELDS;
 
 // Functions
 /**
- * Range l'élément créé dans la section demandée. Un rangement raté ne fait pas
- * échouer la création (l'élément existe, en « Non classé ») : `placed: false`.
+ * La section demandée par le formulaire, et le rang à sa fin — à passer À
+ * L'INSERTION : la base crée les lignes de lien des chapitres liés à l'insertion
+ * même, avec la section de l'élément à ce moment-là (ranger après coup les
+ * laisserait en « Non classé »). Un rang illisible ne fait pas échouer la
+ * création : l'élément naît non classé, `placed: false` le dit.
  */
-async function rangerDansLeModele(
+async function placementDemande(
 	templateId: string,
 	formData: FormData,
-	kind: SectionContentKind,
-	itemId: string,
 	supabase: SupabaseClient<Database>,
 	action: string
-) {
+): Promise<{ placement?: SectionPlacement; placed: boolean }> {
 	const cible = targetSectionFieldSchema.safeParse(formData.get('sectionId'));
-	if (!cible.success || !cible.data) {
-		return { success: true, action, placed: true };
-	}
+	if (!cible.success || !cible.data) return { placed: true };
 
-	const { error: placeError } = await placeInSection(
+	const { data: rang, error } = await nextSectionOrder(
 		{ kind: 'template', id: templateId },
 		cible.data,
-		kind,
-		itemId,
 		supabase
 	);
-	if (placeError) {
-		console.error(`[${action}] Rangement impossible :`, placeError);
-		return { success: true, action, placed: false };
+	if (error || rang === null) {
+		console.error(`[${action}] Rang illisible :`, error);
+		return { placed: false };
 	}
-	return { success: true, action, placed: true };
+	return { placement: { sectionId: cible.data, sectionOrder: rang }, placed: true };
 }
 
 /** Une action « retirer du modèle », pour l'un des cinq types. */
@@ -171,7 +171,11 @@ function retireAction(action: RetireAction) {
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const { user } = await requireRole(locals, 'teacher');
-	const { templateId } = params;
+	const idCheck = uuidSchema.safeParse(params.templateId);
+	if (!idCheck.success) {
+		throw error(404, 'Modèle introuvable');
+	}
+	const templateId = idCheck.data;
 
 	// Fetch template
 	const { data: template, error: templateError } = await getChapterTemplate(
@@ -265,7 +269,11 @@ export const actions: Actions = {
 	 */
 	update: async ({ request, locals, params }) => {
 		const { user } = await requireRole(locals, 'teacher');
-		const { templateId } = params;
+		const idCheck = uuidSchema.safeParse(params.templateId);
+		if (!idCheck.success) {
+			return fail(400, { error: 'Modèle invalide', action: 'update' });
+		}
+		const templateId = idCheck.data;
 
 		// Check ownership
 		const { data: templateCheck, error: templateCheckError } = await locals.supabase
@@ -331,7 +339,11 @@ export const actions: Actions = {
 	 */
 	publish: async ({ locals, params }) => {
 		const { user } = await requireRole(locals, 'teacher');
-		const { templateId } = params;
+		const idCheck = uuidSchema.safeParse(params.templateId);
+		if (!idCheck.success) {
+			return fail(400, { error: 'Modèle invalide', action: 'publish' });
+		}
+		const templateId = idCheck.data;
 
 		// Check ownership
 		const { data: templateCheck, error: templateCheckError } = await locals.supabase
@@ -394,7 +406,11 @@ export const actions: Actions = {
 	 */
 	updateFromChapter: async ({ request, locals, params }) => {
 		const { user } = await requireRole(locals, 'teacher');
-		const { templateId } = params;
+		const idCheck = uuidSchema.safeParse(params.templateId);
+		if (!idCheck.success) {
+			return fail(400, { error: 'Modèle invalide', action: 'updateFromChapter' });
+		}
+		const templateId = idCheck.data;
 
 		const { data: templateCheck, error: templateCheckError } = await locals.supabase
 			.from('chapter_templates')
@@ -420,11 +436,23 @@ export const actions: Actions = {
 		}
 
 		const formData = await request.formData();
-		const chapterId = formData.get('chapterId') as string | null;
+		const chapterCheck = uuidSchema.safeParse(formData.get('chapterId'));
 		const changeSummary = (formData.get('changeSummary') as string | null)?.trim() || null;
 
-		if (!chapterId) {
+		if (!chapterCheck.success) {
 			return fail(400, { error: 'Chapitre requis', action: 'updateFromChapter' });
+		}
+		const chapterId = chapterCheck.data;
+
+		// ADR 0029 : un modèle qui possède son contenu, ou un chapitre qui relie un
+		// modèle, ne passent plus par une version figée.
+		const refus = await refuseLegacyVersioning(templateId, chapterId, locals.supabase);
+		if (refus instanceof TemplateLinkedContentError) {
+			return fail(409, { error: refus.message, action: 'updateFromChapter' });
+		}
+		if (refus) {
+			console.error('[Update From Chapter] Vérification impossible :', refus);
+			return fail(500, { error: 'Lecture impossible', action: 'updateFromChapter' });
 		}
 
 		const { data: snapshot, error: snapshotError } = await extractContentSnapshotFromChapter(
@@ -474,7 +502,11 @@ export const actions: Actions = {
 	 */
 	delete: async ({ locals, params }) => {
 		const { user } = await requireRole(locals, 'teacher');
-		const { templateId } = params;
+		const idCheck = uuidSchema.safeParse(params.templateId);
+		if (!idCheck.success) {
+			return fail(400, { error: 'Modèle invalide', action: 'delete' });
+		}
+		const templateId = idCheck.data;
 
 		const { data: templateCheck, error: templateCheckError } = await locals.supabase
 			.from('chapter_templates')
@@ -519,7 +551,11 @@ export const actions: Actions = {
 	 */
 	archive: async ({ locals, params }) => {
 		const { user } = await requireRole(locals, 'teacher');
-		const { templateId } = params;
+		const idCheck = uuidSchema.safeParse(params.templateId);
+		if (!idCheck.success) {
+			return fail(400, { error: 'Modèle invalide', action: 'archive' });
+		}
+		const templateId = idCheck.data;
 
 		// Check ownership
 		const { data: templateCheck, error: templateCheckError } = await locals.supabase
@@ -554,7 +590,11 @@ export const actions: Actions = {
 	 */
 	instantiate: async ({ request, locals, params }) => {
 		const { user } = await requireRole(locals, 'teacher');
-		const { templateId } = params;
+		const idCheck = uuidSchema.safeParse(params.templateId);
+		if (!idCheck.success) {
+			return fail(400, { error: 'Modèle invalide', action: 'instantiate' });
+		}
+		const templateId = idCheck.data;
 
 		const formData = await request.formData();
 
@@ -631,23 +671,23 @@ export const actions: Actions = {
 			return fail(400, { error: validation.error.issues[0].message, action: 'addChecklistItem' });
 		}
 
+		const { placement, placed } = await placementDemande(
+			templateId,
+			formData,
+			locals.supabase,
+			'addChecklistItem'
+		);
 		const { data: created, error: addError } = await insertChecklistItem(
 			{ kind: 'template', id: templateId },
 			validation.data,
-			locals.supabase
+			locals.supabase,
+			placement
 		);
 		if (addError || !created) {
 			return fail(500, { error: "Erreur lors de l'ajout", action: 'addChecklistItem' });
 		}
 
-		return rangerDansLeModele(
-			templateId,
-			formData,
-			'checklistItem',
-			created.id,
-			locals.supabase,
-			'addChecklistItem'
-		);
+		return { success: true, action: 'addChecklistItem', placed };
 	},
 
 	updateChecklistItem: async ({ request, locals, params }) => {
@@ -707,23 +747,24 @@ export const actions: Actions = {
 			return fail(400, { error: 'Exercice requis', action: 'linkExercise' });
 		}
 
+		const { placement, placed } = await placementDemande(
+			templateId,
+			formData,
+			locals.supabase,
+			'linkExercise'
+		);
 		const { data: created, error: linkError } = await insertExercise(
 			{ kind: 'template', id: templateId },
 			exerciseId.data,
-			locals.supabase
+			locals.supabase,
+			undefined,
+			placement
 		);
 		if (linkError || !created) {
 			return fail(500, { error: 'Erreur lors du lien', action: 'linkExercise' });
 		}
 
-		return rangerDansLeModele(
-			templateId,
-			formData,
-			'exercise',
-			created.id,
-			locals.supabase,
-			'linkExercise'
-		);
+		return { success: true, action: 'linkExercise', placed };
 	},
 
 	linkWorksheet: async ({ request, locals, params }) => {
@@ -736,23 +777,24 @@ export const actions: Actions = {
 			return fail(400, { error: 'Fiche requise', action: 'linkWorksheet' });
 		}
 
+		const { placement, placed } = await placementDemande(
+			templateId,
+			formData,
+			locals.supabase,
+			'linkWorksheet'
+		);
 		const { data: created, error: linkError } = await insertWorksheet(
 			{ kind: 'template', id: templateId },
 			worksheetId.data,
-			locals.supabase
+			locals.supabase,
+			undefined,
+			placement
 		);
 		if (linkError || !created) {
 			return fail(500, { error: 'Erreur lors du lien', action: 'linkWorksheet' });
 		}
 
-		return rangerDansLeModele(
-			templateId,
-			formData,
-			'worksheet',
-			created.id,
-			locals.supabase,
-			'linkWorksheet'
-		);
+		return { success: true, action: 'linkWorksheet', placed };
 	},
 
 	linkSeries: async ({ request, locals, params }) => {
@@ -768,12 +810,19 @@ export const actions: Actions = {
 			return fail(400, { error: 'Série ou forme invalide', action: 'linkSeries' });
 		}
 
+		const { placement, placed } = await placementDemande(
+			templateId,
+			formData,
+			locals.supabase,
+			'linkSeries'
+		);
 		const { data: created, error: linkError } = await linkSeries(
 			{ kind: 'template', id: templateId },
 			validation.data.seriesId,
 			validation.data.form,
 			user.id,
-			locals.supabase
+			locals.supabase,
+			placement
 		);
 		if (linkError?.kind === 'not_found') {
 			return fail(404, { error: 'Série introuvable', action: 'linkSeries' });
@@ -785,14 +834,7 @@ export const actions: Actions = {
 			return fail(500, { error: 'Erreur lors du rattachement', action: 'linkSeries' });
 		}
 
-		return rangerDansLeModele(
-			templateId,
-			formData,
-			'series',
-			created.id,
-			locals.supabase,
-			'linkSeries'
-		);
+		return { success: true, action: 'linkSeries', placed };
 	},
 
 	setSeriesForm: async ({ request, locals, params }) => {
@@ -842,6 +884,12 @@ export const actions: Actions = {
 		}
 
 		const url = validation.data.googleDriveUrl;
+		const { placement, placed } = await placementDemande(
+			templateId,
+			formData,
+			locals.supabase,
+			'addGoogleDriveDocument'
+		);
 		const created = await insertDocument(
 			{ kind: 'template', id: templateId },
 			{
@@ -851,20 +899,14 @@ export const actions: Actions = {
 				googleDriveUrl: url,
 				googleFileId: url.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1] ?? ''
 			},
-			locals.supabase
+			locals.supabase,
+			placement
 		);
 		if (created.error || !created.data) {
 			return fail(500, { error: "Erreur lors de l'ajout", action: 'addGoogleDriveDocument' });
 		}
 
-		return rangerDansLeModele(
-			templateId,
-			formData,
-			'document',
-			created.data.id,
-			locals.supabase,
-			'addGoogleDriveDocument'
-		);
+		return { success: true, action: 'addGoogleDriveDocument', placed };
 	},
 
 	deleteDocument: retireAction('deleteDocument'),

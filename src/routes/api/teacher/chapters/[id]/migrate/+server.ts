@@ -6,7 +6,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
-import { migrateChapterToVersion } from '$lib/server/chapter-templates';
+import { migrateChapterToVersion, TemplateLinkedContentError } from '$lib/server/chapter-templates';
 import { migrateChapterSchema } from '$lib/server/validation/chapter-templates';
 import { uuidSchema } from '$lib/server/validation/common';
 import { createServerLogger } from '$lib/utils/logger';
@@ -101,6 +101,10 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	// Migrate chapter
 	const result = await migrateChapterToVersion(chapterId, targetVersion, locals.supabase);
+
+	if (result.error instanceof TemplateLinkedContentError) {
+		throw error(409, result.error.message);
+	}
 
 	if (result.error) {
 		logger.error('[POST /api/teacher/chapters/[id]/migrate] Error:', result.error);

@@ -17,7 +17,7 @@
  * par `tests/integration/modele-serveur.test.ts`.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import {
@@ -30,6 +30,43 @@ import {
 	TemplateUnusableError
 } from '../chapter-templates';
 import { retireTemplateElement } from '../template-content';
+
+/**
+ * Le client service (suppression des fichiers d'un modèle supprimé) : simulé, et
+ * branché sur le MÊME journal que le faux client, pour juger de l'ordre.
+ */
+const serviceFake = vi.hoisted(() => {
+	const journal: string[] = [];
+	const removed: string[][] = [];
+	return {
+		journal,
+		removed,
+		client: {
+			storage: {
+				from: () => ({
+					list: async () => ({
+						data: [
+							{ id: 'f', name: 'a.pdf' },
+							{ id: null, name: 'sous-dossier' }
+						],
+						error: null
+					}),
+					remove: async (paths: string[]) => {
+						journal.push('service:remove');
+						removed.push(paths);
+						return { data: paths.map(() => ({})), error: null };
+					}
+				})
+			}
+		}
+	};
+});
+vi.mock('../serviceRoleClient', () => ({ createServiceRoleClient: () => serviceFake.client }));
+
+beforeEach(() => {
+	serviceFake.journal.length = 0;
+	serviceFake.removed.length = 0;
+});
 
 // Types
 type Op = 'select' | 'insert' | 'update' | 'delete' | 'rpc' | 'copy' | 'remove' | 'list';
@@ -58,6 +95,7 @@ function fakeSupabase(reply: (call: Call, calls: Call[]) => Reply | undefined) {
 	const calls: Call[] = [];
 	const answer = (call: Call) => {
 		calls.push(call);
+		serviceFake.journal.push(`${call.op}:${call.table}`);
 		const r = reply(call, calls) ?? {};
 		return Promise.resolve({ data: r.data ?? null, error: r.error ?? null });
 	};
@@ -272,6 +310,37 @@ describe('faire un modèle depuis un chapitre', () => {
 		expect(writes(calls)[4].payload).toEqual({ source_id: 't1' });
 	});
 
+	it('une adoption ratée n’est pas un succès silencieux : avertissement', async () => {
+		let n = 0;
+		const { supabase } = fakeSupabase((call) => {
+			if (call.table === 'chapter_template_instantiations' && call.op === 'select') {
+				return { data: null };
+			}
+			const contenu = contenuDuChapitre(call);
+			if (contenu) return contenu;
+			if (call.table === 'chapter_templates') return { data: { id: MODELE, content_snapshot: {} } };
+			if (call.op === 'insert') {
+				return {
+					data: call.table === 'chapter_template_instantiations' ? [{ id: 'i' }] : { id: `t${++n}` }
+				};
+			}
+			// L'objectif refuse l'adoption (zéro ligne) ; la section l'accepte.
+			if (call.op === 'update') {
+				return { data: call.table === 'chapter_sections' ? [{ id: 'x' }] : [] };
+			}
+		});
+
+		const { data, error, warning } = await createTemplateFromChapter(
+			{ chapterId: CHAPITRE, title: 'M', grades: [] },
+			PROF,
+			supabase
+		);
+
+		expect(error).toBeNull();
+		expect(data).not.toBeNull();
+		expect(warning).toMatch(/1 élément/);
+	});
+
 	it('un chapitre déjà rattaché garde son rattachement : pas d’adoption', async () => {
 		const { supabase, calls } = fakeSupabase((call) => {
 			if (call.table === 'chapter_template_instantiations' && call.op === 'select') {
@@ -334,30 +403,62 @@ describe('supprimer un modèle', () => {
 		expect(calls.some((c) => c.op === 'remove' || c.op === 'delete')).toBe(false);
 	});
 
-	it('supprime les fichiers du modèle AVANT la ligne (la règle de stockage exige le modèle)', async () => {
+	it('refuse tant qu’une ligne de lien désigne un élément du modèle, sans rien effacer', async () => {
 		const { supabase, calls } = fakeSupabase((call) => {
+			if (call.table === 'chapter_templates') return { data: { status: 'published' } };
+			if (call.table === 'chapter_template_instantiations') return { data: [] };
+			if (
+				call.table === 'chapter_documents' &&
+				call.filters.some((f) => f.startsWith('eq:template_id'))
+			) {
+				return { data: [{ id: 'element' }] };
+			}
+			if (
+				call.table === 'chapter_documents' &&
+				call.filters.some((f) => f.startsWith('in:source_id'))
+			) {
+				return { data: [{ id: 'lien' }] };
+			}
+			return { data: [] };
+		});
+
+		const { error } = await deleteChapterTemplate(MODELE, supabase);
+
+		expect(error).toBeInstanceOf(TemplateInUseError);
+		expect(calls.some((c) => c.op === 'delete' || c.op === 'remove')).toBe(false);
+		expect(serviceFake.removed).toEqual([]);
+	});
+
+	it('supprime la ligne (vérifiée), PUIS les fichiers par le client service', async () => {
+		const { supabase } = fakeSupabase((call) => {
 			if (call.table === 'chapter_templates' && call.op === 'select') {
 				return { data: { status: 'draft' } };
 			}
-			if (call.table === 'chapter_template_instantiations') return { data: [] };
-			if (call.op === 'list') {
-				return {
-					data: [
-						{ id: 'f', name: 'a.pdf' },
-						{ id: null, name: 'sous-dossier' }
-					]
-				};
-			}
-			if (call.op === 'remove') return { data: [{}] };
 			if (call.op === 'delete') return { data: [{ id: MODELE }] };
+			return { data: [] };
 		});
 
 		const { error } = await deleteChapterTemplate(MODELE, supabase);
 
 		expect(error).toBeNull();
-		const ordre = calls.filter((c) => ['remove', 'delete'].includes(c.op)).map((c) => c.op);
-		expect(ordre).toEqual(['remove', 'delete']);
-		expect(calls.find((c) => c.op === 'remove')?.payload).toEqual([`templates/${MODELE}/a.pdf`]);
+		const ordre = serviceFake.journal.filter((e) => e.includes('delete') || e.includes('remove'));
+		expect(ordre).toEqual(['delete:chapter_templates', 'service:remove']);
+		// Strictement le dossier du modèle, sans le sous-dossier.
+		expect(serviceFake.removed).toEqual([[`templates/${MODELE}/a.pdf`]]);
+	});
+
+	it('ligne non supprimée (zéro ligne) : aucun fichier effacé', async () => {
+		const { supabase } = fakeSupabase((call) => {
+			if (call.table === 'chapter_templates' && call.op === 'select') {
+				return { data: { status: 'draft' } };
+			}
+			return { data: [] };
+		});
+
+		const { error } = await deleteChapterTemplate(MODELE, supabase);
+
+		expect(error).not.toBeNull();
+		expect(serviceFake.removed).toEqual([]);
 	});
 
 	it('refuse toujours un modèle archivé', async () => {
@@ -404,6 +505,26 @@ describe('instancier', () => {
 			payload: { p_chapter_id: CHAPITRE, p_template_id: MODELE }
 		});
 		expect(writes(calls).map((c) => c.table)).toEqual(['class_chapters']);
+	});
+
+	it('sans titre demandé, le chapitre prend le titre du modèle', async () => {
+		const { supabase, calls } = fakeSupabase((call) => {
+			if (call.table === 'chapter_templates') {
+				return { data: { title: 'Second degré', color: null, icon: null, status: 'published' } };
+			}
+			if (call.table === 'class_chapters') return { data: { id: CHAPITRE } };
+			if (call.table === 'chapter_template_instantiations') return { data: { id: 'i' } };
+			return { data: [] };
+		});
+
+		await instantiateTemplate(
+			{ templateId: MODELE, classId: CLASSE, isVisible: false },
+			PROF,
+			supabase
+		);
+
+		const creation = calls.find((c) => c.op === 'insert' && c.table === 'class_chapters');
+		expect(creation?.payload).toMatchObject({ title: 'Second degré', class_id: CLASSE });
 	});
 
 	it('un lien en échec supprime le chapitre créé', async () => {

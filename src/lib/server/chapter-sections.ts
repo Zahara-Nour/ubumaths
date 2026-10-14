@@ -252,21 +252,20 @@ export async function assignToSection(
 }
 
 /**
- * Range UNE ressource qui vient d'être créée, à la fin d'une section.
+ * Le rang suivant à la fin d'une section : le plus haut `section_order` des cinq
+ * tables, plus un.
  *
- * ⚠️ Le rang se calcule sur les QUATRE tables, pas seulement sur celle de la
+ * ⚠️ Le rang se calcule sur TOUTES les tables, pas seulement sur celle de la
  * ressource : une section les mélange, et compter sur une seule donnerait le
  * même `section_order` à deux ressources de types différents. Elles
  * s'afficheraient alors dans un ordre arbitraire, que le professeur ne
  * pourrait pas corriger autrement qu'en les déplaçant toutes.
  */
-export async function placeInSection(
+export async function nextSectionOrder(
 	owner: ContentOwner | string,
 	sectionId: string,
-	kind: SectionContentKind,
-	itemId: string,
 	supabase: SupabaseClient<Database>
-): Promise<{ error: Error | null }> {
+): Promise<{ data: number | null; error: Error | null }> {
 	const proprietaire = toOwner(owner);
 	let dernier = -1;
 
@@ -282,18 +281,39 @@ export async function placeInSection(
 			.maybeSingle();
 
 		if (error) {
-			logger.error(`[placeInSection] Rang suivant illisible (${table}) :`, error);
-			return { error: new Error(error.message) };
+			logger.error(`[nextSectionOrder] Rang suivant illisible (${table}) :`, error);
+			return { data: null, error: new Error(error.message) };
 		}
 
 		const rang = (data as { section_order: number | null } | null)?.section_order;
 		if (typeof rang === 'number' && rang > dernier) dernier = rang;
 	}
 
+	return { data: dernier + 1, error: null };
+}
+
+/**
+ * Range UNE ressource qui vient d'être créée, à la fin d'une section.
+ *
+ * ⚠️ Pas pour un élément de MODÈLE : ses lignes de lien sont créées par la base à
+ * l'insertion, avec la section qu'il a À CE MOMENT-LÀ. Un modèle passe la section
+ * dans l'insertion même (`nextSectionOrder`, puis `insert*` avec `placement`).
+ */
+export async function placeInSection(
+	owner: ContentOwner | string,
+	sectionId: string,
+	kind: SectionContentKind,
+	itemId: string,
+	supabase: SupabaseClient<Database>
+): Promise<{ error: Error | null }> {
+	const proprietaire = toOwner(owner);
+	const { data: rang, error } = await nextSectionOrder(proprietaire, sectionId, supabase);
+	if (error || rang === null) return { error: error ?? new Error('Rang illisible') };
+
 	return assignToSection(
 		proprietaire,
 		sectionId,
-		[{ kind, id: itemId, sectionOrder: dernier + 1 }],
+		[{ kind, id: itemId, sectionOrder: rang }],
 		supabase
 	);
 }
