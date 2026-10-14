@@ -1224,7 +1224,7 @@ export type Database = {
           is_detached?: boolean
           last_migrated_at?: string | null
           template_id?: string | null
-          template_version: number
+          template_version?: number
         }
         Update: {
           chapter_id?: string

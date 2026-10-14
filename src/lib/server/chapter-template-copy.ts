@@ -2,17 +2,16 @@
  * Copier le contenu d'un chapitre chez un modèle (ADR 0029)
  * ========================================================
  *
- * Aides partagées par « Faire un modèle » (`createTemplateFromChapter`) et par la
- * reprise des modèles à snapshot (`chapter-template-reprise.ts`) :
+ * Aides de « Faire un modèle » (`createTemplateFromChapter`). Elles ont aussi
+ * servi à la reprise des modèles à snapshot (2026-10-14, outil retiré depuis) :
  *
  * - lire tout le contenu d'un chapitre ;
  * - le copier en lignes du modèle (fichiers copiés sous `templates/<id>/…`) ;
  * - faire ADOPTER à chaque ligne du chapitre sa copie (`source_id`) : même
  *   identifiant, même publication, contenu du modèle.
  *
- * Toutes passent par le client reçu (RLS du professeur, ou service pour la
- * reprise). Aucune dépendance aux modules virtuels de SvelteKit : un script
- * `tsx` peut l'importer.
+ * Toutes passent par le client reçu (RLS du professeur). Aucune dépendance aux
+ * modules virtuels de SvelteKit : un script `tsx` peut l'importer.
  *
  * @module server/chapter-template-copy
  */
