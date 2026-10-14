@@ -16,6 +16,12 @@ function roots(expr: string, xMin = -10, xMax = 10): RootResult[] {
 }
 
 describe('findRoots', () => {
+	it('ne prend pas une exponentielle qui tend vers 0 pour une suite de racines', () => {
+		// Les intersections de e^(−x) et de e^(−2x) passent par ici : leur
+		// différence frôle 0 sans s'annuler au-delà de x ≈ 28.
+		expect(roots('exp(-x) - exp(-2*x)', -100, 100).map((r) => Math.round(r.x))).toEqual([0]);
+	});
+
 	// Polynomial degree 2
 	it('finds exact roots of x^2 - 1', () => {
 		const r = roots('x^2 - 1');

@@ -16,6 +16,7 @@ import type { CompiledFn } from '../eval/compile';
 import { equals, number as mathNumber } from '../factory';
 import { solve } from '../solve';
 import { evaluate } from '../eval/evaluate';
+import { touchesZero } from './near-zero';
 import { calculateComplexity } from './expression-classify';
 
 // =============================================================================
@@ -161,8 +162,8 @@ function findNumericRoots(
 		const x = xMin + i * step;
 		const y = compiledFn({ [variable]: x });
 
-		// Near-zero value
-		if (Number.isFinite(y) && Math.abs(y) < BISECTION_TOLERANCE) {
+		// Échantillon où la courbe touche l'axe (racine double comprise)
+		if (touchesZero((t) => compiledFn({ [variable]: t }), x, step, BISECTION_TOLERANCE)) {
 			if (!roots.some((r) => Math.abs(r.x - x) < step)) {
 				roots.push({ x, exact: false });
 			}

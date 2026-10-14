@@ -34,6 +34,7 @@ import { compile } from '$lib/mathAST/eval/compile';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { findCriticalZeros, findCriticalExtrema } from '$lib/mathAST/analysis';
 import { exactAsymptotes } from './asymptotes-exactes';
+import { touchesZero } from '$lib/mathAST/analysis/near-zero';
 import { restrictAnalysis, type Restriction } from './restriction';
 import { simplify } from '$lib/mathAST/simplify';
 import { substitute } from '$lib/mathAST/eval/substitute';
@@ -122,8 +123,8 @@ export function findRoots(
 			}
 		}
 
-		// Check for near-zero value (exact or very close to zero)
-		if (y !== null && Math.abs(y) < TOLERANCE) {
+		// Échantillon où la courbe touche l'axe (racine double comprise)
+		if (touchesZero((t) => evaluator(t) ?? NaN, x, step, TOLERANCE)) {
 			if (!roots.some((r) => Math.abs(r.x - x) < step)) {
 				roots.push({
 					x,
