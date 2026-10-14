@@ -9,7 +9,9 @@
  */
 
 import type { MathNode } from '../types';
-import type { LimitDirection } from '../limits/types';
+import type { IndeterminateForm, LimitDirection } from '../limits/types';
+import { toLatex } from '../latex-generator';
+import { mapNode } from '../transforms';
 import {
 	isAddition,
 	isDivision,
@@ -28,6 +30,8 @@ import {
 import {
 	add,
 	divide,
+	euler,
+	func,
 	multiply,
 	number,
 	power,
@@ -267,6 +271,76 @@ export function formatLinearFactor(varName: string, a: Rational): string {
 
 function formatRational(r: Rational): string {
 	return r.d === 1n ? `${r.n}` : `${r.n}/${r.d}`;
+}
+
+// =============================================================================
+// Prose : les maths entre `$…$` (V25)
+// =============================================================================
+
+/**
+ * Une formule pour la prose des titres et explications, entre `$…$` :
+ * `InlineMarkdown` (ubumark) l'affiche en maths. Jamais d'Unicode (`+∞`, `x²`)
+ * dans la prose : `$+\\infty$`, `$x^{2}$`.
+ */
+export function inlineMath(node: MathNode): string {
+	return `$${toLatex(node)}$`;
+}
+
+/** Le point d'approche, côté compris : `$0^+$`, `$2^-$`, `$+\\infty$` */
+export function approachMath(approach: MathNode, direction: LimitDirection = 'both'): string {
+	const latex = toLatex(approach);
+	if (direction === 'left') return `$${latex}^-$`;
+	if (direction === 'right') return `$${latex}^+$`;
+	return `$${latex}$`;
+}
+
+const FORM_LATEX: Readonly<Record<IndeterminateForm, string>> = {
+	'0/0': '\\frac{0}{0}',
+	'∞/∞': '\\frac{\\infty}{\\infty}',
+	'0*∞': '0 \\times \\infty',
+	'∞-∞': '\\infty - \\infty',
+	'0^0': '0^{0}',
+	'∞^0': '\\infty^{0}',
+	'1^∞': '1^{\\infty}',
+	none: ''
+};
+
+/** Une forme indéterminée en LaTeX : `$\\frac{0}{0}$`, `$\\infty - \\infty$` */
+export function formMath(form: IndeterminateForm | undefined): string {
+	return form && form !== 'none' ? `$${FORM_LATEX[form]}$` : 'indéterminée';
+}
+
+// =============================================================================
+// Exponentielle : e^u (écriture de l'élève) ⇄ \\exp(u) (table de référence)
+// =============================================================================
+
+/**
+ * `e^{u}` → `\\exp(u)`, et la parenthèse obligatoire autour de la base d'une
+ * puissance ôtée (`\\left(1 + \\frac{1}{x}\\right)^x`) : la forme que lisent
+ * les motifs de `KNOWN_LIMITS` (`e^x/x` n'y était pas reconnu). Pour la
+ * reconnaissance seulement : l'étape garde l'écriture de l'élève. Les autres
+ * parenthèses restent : la table ne s'élargit pas au-delà de ces écritures.
+ */
+export function toKnownLimitShape(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (!isSuperscript(n)) return n;
+		if (n.base.type === 'constant' && n.base.constant === 'euler') {
+			return func('exp', [n.superscript]);
+		}
+		if (n.base.type === 'delimiter' && (n.base.semantic ?? 'grouping') === 'grouping') {
+			return power(n.base.content, n.superscript);
+		}
+		return n;
+	});
+}
+
+/** `\\exp(1)` → e, `\\exp(u)` → `e^{u}` : la valeur écrite comme en classe */
+export function withEulerPowers(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (!isFunction(n) || n.name !== 'exp' || n.args.length !== 1) return n;
+		const arg = n.args[0];
+		return isNumber(arg) && arg.value === '1' ? euler() : power(euler(), arg);
+	});
 }
 
 // =============================================================================

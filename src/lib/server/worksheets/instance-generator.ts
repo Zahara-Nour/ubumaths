@@ -299,17 +299,9 @@ export function generateWorksheetInstance(params: GenerateInstanceParams): Insta
 	let globalPosition = 0;
 
 	// Process exercises section by section
-	for (const [sectionId, sectionExercises] of exercisesBySection) {
-		let exercisesToProcess = [...sectionExercises];
-
-		// Shuffle within section if configured
-		if (config.shuffle_within_sections && sectionId !== null) {
-			// Use a section-specific seed component
-			const sectionSeed =
-				worksheetId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) +
-				(sectionId ? sectionId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) : 0);
-			exercisesToProcess = shuffleArray(exercisesToProcess, sectionSeed);
-		}
+	for (const sectionExercises of exercisesBySection.values()) {
+		// « Mélanger dans les sections » n'existe plus (D6) : ordre des positions
+		const exercisesToProcess = [...sectionExercises];
 
 		// Process each exercise in the section
 		for (const exercise of exercisesToProcess) {
@@ -371,7 +363,7 @@ export function generateWorksheetInstance(params: GenerateInstanceParams): Insta
 	};
 
 	// Include exercise order if shuffled
-	if (config.shuffle_exercises || config.shuffle_within_sections) {
+	if (config.shuffle_exercises) {
 		instanceData.exercise_order = exerciseOrder;
 	}
 

@@ -35,9 +35,13 @@ import type { DocumentExercise, DocumentForm, DocumentSection, WorksheetDocument
 
 /**
  * Habillage d'un exercice :
- * - `classic` : PDF du prof sans gabarit (`#exercise-header`, `points-badge`) ;
+ * - `classic` : fiche du prof sans gabarit (`#exercise-header`, `points-badge`) ;
+ *   ses Réponses et son Corrigé prennent `badge`, en deux colonnes (D6) ;
  * - `heading` : gabarit qui place `{{exercises}}` (« Exercice N : titre ») ;
- * - `badge` : gabarit qui place `{{exercises_badge}}` (numéro sur carré ambre) ;
+ * - `badge` : gabarit qui place `{{exercises_badge}}` (numéro sur carré ambre),
+ *   et corrigés du prof sans gabarit ;
+ * `display.titleOnly` (copie d'un élève servant de document de classe, D6) :
+ * dans tous les habillages, le titre seul, sans numéro ni carré.
  * - `student` : PDF de l'élève (carré ambre, ★, corrigés en fin de document).
  */
 export const EXERCISE_LAYOUTS = ['classic', 'heading', 'badge', 'student'] as const;
@@ -168,10 +172,13 @@ function renderClassicExercise(
 ): string {
 	const labels = documentLabels(doc.locale);
 	const title = exercise.title ? ` : ${exerciseTitle(exercise, doc)}` : '';
+	const heading = doc.display.titleOnly
+		? titleOnlyHeading(exercise, doc)
+		: `${labels.exercise} ${exercise.number}${title}`;
 	let content = '#exercise-header[\n';
 	content += '  #grid(\n';
 	content += '    columns: (auto, 1fr, auto),\n';
-	content += `    [#text(size: 1.1em, weight: "bold")[${labels.exercise} ${exercise.number}${title}]],\n`;
+	content += `    [#text(size: 1.1em, weight: "bold")[${heading}]],\n`;
 	content += '    [],\n';
 	const points = shownPoints(exercise, doc);
 	content += points ? `    points-badge([${points}])\n` : '    []\n';
@@ -214,20 +221,29 @@ function renderTemplateExercise(
 	if (layout === 'badge') {
 		// Numéro, titre et points dans une grille alignée `horizon` : posé en
 		// ligne, le titre suivait la ligne de base du numéro et paraissait décalé.
-		const title = exercise.title ? `#text(weight: "bold")[${exerciseTitle(exercise, doc)}]` : '';
+		// Titre seul (D6) : ni carré ni numéro, le titre (ou « Exercice sans titre »)
+		const titleOnly = doc.display.titleOnly === true;
+		const title = titleOnly
+			? `#text(weight: "bold")[${titleOnlyHeading(exercise, doc)}]`
+			: exercise.title
+				? `#text(weight: "bold")[${exerciseTitle(exercise, doc)}]`
+				: '';
 		content += `#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[
   #grid(
     columns: (auto, 1fr, auto),
-    column-gutter: 0.5em,
+    column-gutter: ${titleOnly ? '0em' : '0.5em'},
     align: horizon,
-    ${exerciseBadge(exercise.number)},
+    ${titleOnly ? '[]' : exerciseBadge(exercise.number)},
     [${title}],
     [${pointsBox}]
   )`;
 	} else {
 		const title = exercise.title ? ` : ${exerciseTitle(exercise, doc)}` : '';
+		const heading = doc.display.titleOnly
+			? titleOnlyHeading(exercise, doc)
+			: `${labels.exercise} ${exercise.number}${title}`;
 		content += `#block(width: 100%, inset: 0pt, sticky: true, below: 0.3em)[
-  #text(size: 1.1em, weight: "bold")[${labels.exercise} ${exercise.number}${title}]`;
+  #text(size: 1.1em, weight: "bold")[${heading}]`;
 		if (pointsBox) content += ` #h(1fr) ${pointsBox}`;
 	}
 
@@ -254,7 +270,7 @@ function renderTemplateExercise(
 /** PDF de l'élève : ★, carré ambre, points et consigne dans un bloc `sticky` */
 function renderStudentExercise(exercise: DocumentExercise, doc: WorksheetDocument): string {
 	const star = exercise.essential ? `#text(fill: rgb("#f59e0b"))[★] ` : '';
-	let header = `${star}#${exerciseBadge(exercise.number)}${studentTitle(exercise, doc)}`;
+	let header = `${star}${studentHeading(exercise, doc)}`;
 
 	const points = shownPoints(exercise, doc);
 	if (points) header += `\n\n#text(size: 0.9em, fill: gray)[${points}]`;
@@ -286,7 +302,7 @@ function renderStudentPanel(
 	if (printed === null) return '';
 	// En-tête `sticky` dans le cadre : même raison que pour les exercices
 	return `#block(fill: rgb("#f0fdf4"), radius: 4pt, inset: 12pt, width: 100%)[
-  #block(sticky: true, below: 0.6em)[#${exerciseBadge(exercise.number)}${studentTitle(exercise, doc)}]
+  #block(sticky: true, below: 0.6em)[${studentHeading(exercise, doc)}]
 ${printed}
 ]
 
@@ -371,6 +387,21 @@ function exerciseTitle(exercise: DocumentExercise, doc: WorksheetDocument): stri
 		genericFunctionsConfig(exercise.genericFunctions),
 		exercise.capitalPairs
 	);
+}
+
+/** Titre seul (D6) : le titre de l'exercice, sinon « Exercice sans titre » */
+function titleOnlyHeading(exercise: DocumentExercise, doc: WorksheetDocument): string {
+	return exercise.title
+		? exerciseTitle(exercise, doc)
+		: escapeTypst(documentLabels(doc.locale).untitledExercise);
+}
+
+/** En-tête élève : carré ambre et titre, ou le titre seul (D6) */
+function studentHeading(exercise: DocumentExercise, doc: WorksheetDocument): string {
+	if (doc.display.titleOnly) {
+		return `#text(weight: "bold")[${titleOnlyHeading(exercise, doc)}]`;
+	}
+	return `#${exerciseBadge(exercise.number)}${studentTitle(exercise, doc)}`;
 }
 
 /** Titre après le carré ambre de l'élève */

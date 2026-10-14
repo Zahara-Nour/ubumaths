@@ -791,20 +791,20 @@ exports[`Mode B end-to-end demos > Tle spé limit — factorisation cluster on (
     "id": 1,
     "rule": "identify-limit",
     "schoolLevel": "lycee",
-    "title": "On veut calculer la limite de l'expression quand x tend vers 2",
+    "title": "On veut calculer la limite de l'expression quand $x$ tend vers $2$",
+  },
+  {
+    "hasExplanation": true,
+    "hasExpressionLatex": true,
+    "id": 3,
+    "rule": "detect-indeterminate-form",
+    "schoolLevel": "lycee",
+    "title": "Forme indéterminée $\\frac{0}{0}$ reconnue",
   },
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
     "id": 4,
-    "rule": "detect-indeterminate-form",
-    "schoolLevel": "lycee",
-    "title": "Forme indéterminée 0/0 reconnue",
-  },
-  {
-    "hasExplanation": true,
-    "hasExpressionLatex": true,
-    "id": 5,
     "rule": "simplify-common-factor",
     "schoolLevel": "lycee",
     "subSteps": [
@@ -816,32 +816,24 @@ exports[`Mode B end-to-end demos > Tle spé limit — factorisation cluster on (
         "schoolLevel": "lycee",
         "title": "Factorisation du numérateur",
       },
-      {
-        "hasExplanation": true,
-        "hasExpressionLatex": true,
-        "id": 3,
-        "rule": "factor-denominator",
-        "schoolLevel": "lycee",
-        "title": "Factorisation du dénominateur",
-      },
     ],
     "title": "Simplification du facteur commun",
   },
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
-    "id": 6,
+    "id": 5,
     "rule": "apply-direct-substitution",
     "schoolLevel": "lycee",
-    "title": "Substitution directe : on remplace x par 2",
+    "title": "Substitution directe : on remplace $x$ par $2$",
   },
   {
     "hasExplanation": true,
     "hasExpressionLatex": true,
-    "id": 7,
+    "id": 6,
     "rule": "conclude",
     "schoolLevel": "lycee",
-    "title": "La limite vaut 4",
+    "title": "La limite vaut $4$",
   },
 ]
 `;
@@ -854,7 +846,7 @@ exports[`Mode B end-to-end demos > Tle spé limit — infinity-analysis on (3x²
     "id": 1,
     "rule": "identify-limit",
     "schoolLevel": "lycee",
-    "title": "On veut calculer la limite de l'expression quand x tend vers +∞",
+    "title": "On veut calculer la limite de l'expression quand $x$ tend vers $+\\infty$",
   },
   {
     "hasExplanation": true,
@@ -862,7 +854,7 @@ exports[`Mode B end-to-end demos > Tle spé limit — infinity-analysis on (3x²
     "id": 2,
     "rule": "detect-indeterminate-form",
     "schoolLevel": "lycee",
-    "title": "Forme indéterminée ∞/∞ reconnue",
+    "title": "Forme indéterminée $\\frac{\\infty}{\\infty}$ reconnue",
   },
   {
     "hasExplanation": true,
@@ -878,7 +870,7 @@ exports[`Mode B end-to-end demos > Tle spé limit — infinity-analysis on (3x²
     "id": 4,
     "rule": "simplify-common-factor",
     "schoolLevel": "lycee",
-    "title": "Simplification par x²",
+    "title": "Simplification par $x^2$",
   },
   {
     "hasExplanation": true,
@@ -902,7 +894,7 @@ exports[`Mode B end-to-end demos > Tle spé limit — infinity-analysis on (3x²
     "id": 7,
     "rule": "conclude",
     "schoolLevel": "lycee",
-    "title": "La limite vaut 3",
+    "title": "La limite vaut $3$",
   },
 ]
 `;

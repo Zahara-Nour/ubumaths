@@ -18,6 +18,10 @@
  * (mêmes mots que ```courbe), `graduations: pas|pas x ; pas y|non` (défaut : le
  * pas de la grille, sinon 1). Sans ces clés, ni axes ni grille.
  *
+ * Réglages INTERACTIFS (`deplacable: oui|non`, `rendu: normal|croquis|mixte`) :
+ * acceptés seulement avec l'option `interactive` (figures stockées, ADR 0027),
+ * où la fenêtre devient facultative ; un bloc d'exercice les refuse.
+ *
  * Volontairement LÉGER : aucun import de geometry-core (le parseur Markdown est
  * dans le chunk de toutes les pages). Le script est interprété par
  * `utils/figure-scene.ts`, chargé à la demande.
@@ -38,7 +42,8 @@ import type {
 	FigureSize,
 	FigureWindow
 } from '../types/figure';
-import { FIGURE_LIMITS, FIGURE_SIZES } from '../types/figure';
+import { FIGURE_LIMITS, FIGURE_RENDER_MODES, FIGURE_SIZES } from '../types/figure';
+import type { FigureInteractiveSettings, FigureRenderWord } from '../types/figure';
 import { normalizeCourbeExpression } from './courbe-parser';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { compile } from '$lib/mathAST/eval/compile';
@@ -64,8 +69,21 @@ const KNOWN_KEYS = [
 	'graduations'
 ] as const;
 
+/** Clés des seules figures interactives (figures stockées) */
+const INTERACTIVE_KEYS = ['deplacable', 'déplaçable', 'rendu'] as const;
+
 /** Clés citées dans les messages (sans la variante accentuée) */
 const KEYS_HINT = 'fenetre, taille, description, axes, grille, graduations';
+const INTERACTIVE_KEYS_HINT = `${KEYS_HINT}, deplacable, rendu`;
+
+export interface FigureParseOptions {
+	/**
+	 * Figure INTERACTIVE (figure stockée) : accepte `deplacable:` et `rendu:`, et
+	 * la fenêtre devient facultative (sans elle, la vue par défaut de la toile).
+	 * Défaut false : bloc d'exercice, qui refuse ces deux clés.
+	 */
+	interactive?: boolean;
+}
 
 // ============================================================================
 // DÉTECTION
@@ -129,6 +147,23 @@ export function findFigureBlocks(lines: string[]): FigureBlockRange[] {
 // ============================================================================
 // EN-TÊTE
 // ============================================================================
+
+/** Indice de la ligne `---` qui sépare l'en-tête du script ; -1 sans séparateur. */
+export function findFigureSeparator(lines: readonly string[]): number {
+	return lines.findIndex((l) => SEPARATOR_REGEX.test(l));
+}
+
+/**
+ * Lire une ligne d'en-tête `clé: valeur` (sans juger la clé) ; null si la
+ * ligne n'a pas cette forme. `key` en minuscules, `rawKey` tel qu'écrit.
+ */
+export function readFigureHeaderLine(
+	line: string
+): { key: string; rawKey: string; value: string } | null {
+	const kv = KEY_LINE_REGEX.exec(line.trim());
+	if (!kv) return null;
+	return { key: kv[1].toLowerCase(), rawKey: kv[1], value: kv[2].trim() };
+}
 
 class LineError extends Error {}
 
@@ -216,7 +251,10 @@ function tooManyLines(step: FigureStep, w: FigureWindow): boolean {
  * Analyser le texte d'un bloc (sans les clôtures).
  * Ligne 1 = première ligne après ```figure.
  */
-export function parseFigureContent(source: string): FigureNode {
+export function parseFigureContent(source: string, options: FigureParseOptions = {}): FigureNode {
+	const interactiveMode = options.interactive === true;
+	const keysHint = interactiveMode ? INTERACTIVE_KEYS_HINT : KEYS_HINT;
+	const interactive: FigureInteractiveSettings = { draggable: false, renderMode: 'normal' };
 	const lines = source.split('\n');
 	const errors: FigureIssue[] = [];
 	const header: FigureHeader = {
@@ -230,7 +268,7 @@ export function parseFigureContent(source: string): FigureNode {
 	/** Ligne de chaque clé du repère, pour les erreurs qui dépendent de la fenêtre */
 	const keyLines: { grille?: number; graduations?: number } = {};
 
-	const separator = lines.findIndex((l) => SEPARATOR_REGEX.test(l));
+	const separator = findFigureSeparator(lines);
 	const headerLines = separator === -1 ? lines : lines.slice(0, separator);
 	let windowSeen = false;
 
@@ -241,13 +279,36 @@ export function parseFigureContent(source: string): FigureNode {
 		try {
 			const kv = KEY_LINE_REGEX.exec(trimmed);
 			const key = kv?.[1].toLowerCase();
-			if (!kv || key === undefined || !(KNOWN_KEYS as readonly string[]).includes(key)) {
+			const isInteractiveKey =
+				key !== undefined && (INTERACTIVE_KEYS as readonly string[]).includes(key);
+			if (
+				!kv ||
+				key === undefined ||
+				!((KNOWN_KEYS as readonly string[]).includes(key) || isInteractiveKey)
+			) {
 				// Sans séparateur, le script commence ici : l'erreur est dite une seule fois plus bas
 				if (separator === -1) return;
-				throw new LineError(`« ${trimmed} » : en-tête attendu (${KEYS_HINT}), puis ---`);
+				throw new LineError(`« ${trimmed} » : en-tête attendu (${keysHint}), puis ---`);
+			}
+			if (isInteractiveKey && !interactiveMode) {
+				throw new LineError(
+					`« ${kv[1]} » : réglage réservé aux figures interactives (figures enregistrées), pas au bloc d’exercice`
+				);
 			}
 			const value = kv[2].trim();
-			if (key === 'fenetre' || key === 'fenêtre') {
+			if (key === 'deplacable' || key === 'déplaçable') {
+				const on = yesNo(value);
+				if (on === null) throw new LineError(`deplacable « ${value} » : écrire oui ou non`);
+				interactive.draggable = on;
+			} else if (key === 'rendu') {
+				const word = value.toLowerCase();
+				if (!Object.hasOwn(FIGURE_RENDER_MODES, word)) {
+					throw new LineError(
+						`rendu « ${value} » inconnu (${Object.keys(FIGURE_RENDER_MODES).join(', ')})`
+					);
+				}
+				interactive.renderMode = FIGURE_RENDER_MODES[word as FigureRenderWord];
+			} else if (key === 'fenetre' || key === 'fenêtre') {
 				windowSeen = true;
 				header.window = parseWindow(value);
 			} else if (key === 'taille') {
@@ -298,10 +359,10 @@ export function parseFigureContent(source: string): FigureNode {
 
 	if (separator === -1) {
 		errors.push({
-			message: `Séparateur --- manquant : écrire l’en-tête (${KEYS_HINT}), puis ---, puis le script`
+			message: `Séparateur --- manquant : écrire l’en-tête (${keysHint}), puis ---, puis le script`
 		});
 	}
-	if (!windowSeen) {
+	if (!windowSeen && !interactiveMode) {
 		errors.push({ message: 'Fenêtre manquante : ajouter « fenetre: xmin ; xmax ; ymin ; ymax »' });
 	}
 
@@ -312,7 +373,8 @@ export function parseFigureContent(source: string): FigureNode {
 		header,
 		script,
 		scriptStartLine: separator + 2,
-		errors
+		errors,
+		...(interactiveMode ? { interactive } : {})
 	};
 }
 

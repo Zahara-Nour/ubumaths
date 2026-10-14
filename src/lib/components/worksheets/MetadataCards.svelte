@@ -586,18 +586,10 @@
 										: 'détaillée'}</span
 								>
 							</span>
-							{#if worksheet.config?.shuffle_exercises || worksheet.config?.shuffle_within_sections}
+							{#if worksheet.config?.shuffle_exercises}
 								<span class="text-muted-foreground">
 									Melange:
-									<span class="font-medium">
-										{#if worksheet.config?.shuffle_exercises && worksheet.config?.shuffle_within_sections}
-											Tout
-										{:else if worksheet.config?.shuffle_exercises}
-											{lore.learning.exercise}s
-										{:else}
-											Sections
-										{/if}
-									</span>
+									<span class="font-medium">{lore.learning.exercise}s</span>
 								</span>
 							{/if}
 						</div>
@@ -677,11 +669,6 @@
 							checked={worksheet.config?.shuffle_exercises ?? false}
 							onchange={(v) => handleConfigChange('shuffle_exercises', v)}
 							label="Melanger {lore.learning.exercise}s"
-						/>
-						<MyCheckbox
-							checked={worksheet.config?.shuffle_within_sections ?? false}
-							onchange={(v) => handleConfigChange('shuffle_within_sections', v)}
-							label="Melanger sections"
 						/>
 					</div>
 				</div>

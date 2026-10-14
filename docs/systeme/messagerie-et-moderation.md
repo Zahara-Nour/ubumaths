@@ -31,7 +31,7 @@ couvre:
 > Nettoyage HTML partagé : [editeur-riche.md](editeur-riche.md). Caches du tableau de bord
 > (avertissements compris) : [coquille-et-caches.md](coquille-et-caches.md). Vocabulaire :
 > [CONTEXT.md](../../CONTEXT.md).
-> Vérifié contre le code le 2026-10-13 (commit `4f3eb2b3e`).
+> Vérifié contre le code le 2026-10-13 (commit `4f3eb2b3e`) ; notifications de signalement de fiche le 2026-10-14.
 
 ## À quoi ça sert
 
@@ -159,7 +159,10 @@ La modération porte sur la table `messages` **du chat**, pas sur `private_messa
   `notifyAdminsOfPendingUser`, `notifyAdminsOfNewBugReport`.
 - Notifications automatiques : `src/lib/server/auto-notifications.ts`. Trois fonctions ont un
   appelant : `notifyNewAssessment` (affectation d'une évaluation) et
-  `notifyErrorReportValidated` / `notifyErrorReportRejected` (signalements d'erreur de fiche).
+  `notifyErrorReportValidated` / `notifyErrorReportRejected` (signalements d'erreur de fiche :
+  numéro de l'exercice dans la copie de l'élève, ou aucun numéro s'il est inconnu, et lien
+  « Voir l'exercice » vers `/dashboard/student/worksheets/<affectation>#exercice-<id>`, voir
+  [fiches-et-pdf.md](fiches-et-pdf.md)).
   Le marché écrit les siennes via `src/lib/server/marketplace/notifications.ts`.
 - API : `src/routes/api/notifications/` — `unread/`, `unread-count/`, `mark-read/`,
   `mark-all-read/`. Store `src/lib/stores/notifications.svelte.ts` (`notificationStore`) ;

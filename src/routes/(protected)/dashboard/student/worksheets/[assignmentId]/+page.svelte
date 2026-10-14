@@ -16,6 +16,12 @@
 		StudentSectionView
 	} from '$lib/types/worksheets';
 	import { groupExercisesForDisplay } from '$lib/worksheets/exercise-numbering';
+	import { page } from '$app/state';
+	import {
+		ANCHOR_HIGHLIGHT_MS,
+		exerciseAnchorId,
+		scrollToAnchoredExercise
+	} from '$lib/worksheets/exercise-anchor';
 	import { provideContentLocale } from '$lib/components/markdown/content-locale';
 	import { isContentLocale } from '$lib/types/locale';
 
@@ -58,6 +64,23 @@
 	let visualOrderExercises = $derived(
 		displayGroups.flatMap((g) => g.exercises.map((e) => e.exercise))
 	);
+
+	// Arrivée par la notification d'un signalement (D6) : l'ancre
+	// `#exercice-<id>` vise un exercice de fiche ; la page défile jusqu'à lui et
+	// le met brièvement en évidence.
+	let highlightedExerciseId = $state<string | null>(null);
+
+	$effect(() => {
+		const hash = page.url.hash;
+		if (exercises.length === 0) return;
+		const id = scrollToAnchoredExercise(hash);
+		if (!id) return;
+		highlightedExerciseId = id;
+		const timer = setTimeout(() => {
+			highlightedExerciseId = null;
+		}, ANCHOR_HIGHLIGHT_MS);
+		return () => clearTimeout(timer);
+	});
 
 	// Check if there are essential exercises (for legend display)
 	let hasEssentialExercises = $derived(exercises.some((e: StudentExerciseView) => e.is_essential));
@@ -291,12 +314,22 @@
 								<!-- `number` vient du module de numérotation : plus de recherche
 								     d'indice à chaque rendu, et surtout plus de règle recopiée. -->
 								{#each group.exercises as { exercise, number } (exercise.id)}
-									<ExerciseListItem
-										{exercise}
-										index={number}
-										masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
-										onclick={() => openExercise(number - 1)}
-									/>
+									{@const highlighted = highlightedExerciseId === exercise.id}
+									<!-- Ancre d'un exercice de fiche : cible des notifications de signalement -->
+									<div
+										id={exerciseAnchorId(exercise.id)}
+										data-highlighted={highlighted}
+										class="scroll-mt-24 rounded-lg transition-shadow duration-500 {highlighted
+											? 'ring-2 ring-amber-400 ring-offset-2'
+											: ''}"
+									>
+										<ExerciseListItem
+											{exercise}
+											index={number}
+											masteryStatus={masteryMap.get(exercise.exercise_id) ?? 'not_worked'}
+											onclick={() => openExercise(number - 1)}
+										/>
+									</div>
 								{/each}
 							</div>
 						{/if}

@@ -433,6 +433,14 @@ const COMMAND_LABELS: Readonly<Record<KeywordCommand, string>> = {
 const ASSIGNMENT =
 	/^(\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9]+\}))?)\s*=\s*(\S.*)$/s;
 
+/** Une virgule suivie d'une autre affectation : `a=1, b=2`, `a=1,5,b=2`. */
+const COMMA_BEFORE_ASSIGNMENT =
+	/,\s*\\?[A-Za-z][A-Za-z0-9]*(?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9]+\}))?\s*=/;
+
+/** Le refus d'une virgule entre deux valeurs de `.évaluer` (E6). */
+const EVAL_SEPARATOR_MESSAGE =
+	'Sépare les valeurs avec « ; » : .évaluer 2a+3b en a=1,5 ; b=2, par exemple.';
+
 /** L'ancienne écriture de `.évaluer` : `x^2 x=3`, une affectation finale sans mot-clé. */
 const TRAILING_ASSIGNMENT =
 	/^(.*\S)\s+(\\?[A-Za-z](?:_(?:[A-Za-z0-9]|\{[A-Za-z0-9]+\}))?)\s*=\s*([^\s=<>]+)$/s;
@@ -459,12 +467,21 @@ export interface CommandArguments {
 	readonly order: number | null;
 	/** `en A` (`.taylor`), 0 par défaut */
 	readonly center: number | null;
-	/** `en x=3` / `pour x=3` (`.évaluer`) */
-	readonly assignment: { readonly name: string; readonly value: string } | null;
+	/**
+	 * `en x=3` / `pour x=3` (`.évaluer`) ; plusieurs lettres séparées par
+	 * « ; », `en a=1,5 ; b=2` (E6), dans l'ordre tapé. Vide : aucune.
+	 */
+	readonly assignments: readonly Assignment[];
 	/** `dans INTERVALLE` (`.résoudre`, `.variations`) */
 	readonly interval: string | null;
 	/** `et EXPR` (`.équivalent`) */
 	readonly other: string | null;
+}
+
+/** Une lettre de `.évaluer` et sa valeur tapée (point décimal). */
+export interface Assignment {
+	readonly name: string;
+	readonly value: string;
 }
 
 export type CommandArgumentsReading =
@@ -514,7 +531,7 @@ const EMPTY_ARGUMENTS: CommandArguments = {
 	bounds: null,
 	order: null,
 	center: null,
-	assignment: null,
+	assignments: [],
 	interval: null,
 	other: null
 };
@@ -594,7 +611,22 @@ export function readCommandArguments(
 		index = next;
 	}
 	if (result.expression === '') return { ok: false, message: 'Il manque l’expression.' };
-	if (command === 'eval' && result.assignment === null) {
+	// `.évaluer 2a+3b en a=1 ; b` : le « ; » final se lisait comme la variable
+	// de l'ancienne écriture (`pour b`), puis comme une seconde liste de valeurs
+	if (command === 'eval' && result.variable !== null && result.assignments.length > 0) {
+		const letter = result.variable;
+		if (result.assignments.some((assignment) => assignment.name === letter)) {
+			return { ok: false, message: `${letter} a déjà sa valeur : retire « ; ${letter} ».` };
+		}
+		const example = [...result.assignments, { name: letter, value: '3' }]
+			.map(({ name, value }) => `${name}=${value}`)
+			.join(' ; ');
+		return {
+			ok: false,
+			message: `Il manque la valeur de ${letter} : ${label} ${result.expression} en ${example}, par exemple.`
+		};
+	}
+	if (command === 'eval' && result.assignments.length === 0) {
 		return {
 			ok: false,
 			message: `Écris la valeur après « en » : ${label} ${result.expression} en x=3.`
@@ -616,12 +648,24 @@ function applyKeyword(
 	value: string,
 	result: { -readonly [K in keyof CommandArguments]: CommandArguments[K] }
 ): string | null {
-	// `.évaluer … en x=3` / `pour x=3`
+	// `.évaluer … en x=3` / `pour x=3`, plusieurs lettres séparées par « ; »
+	// (E6) : `en a=1,5 ; b=2`
 	if (command === 'eval') {
-		const assignment = ASSIGNMENT.exec(value);
-		if (assignment === null) return `Écris « ${keyword} x=3 » : une lettre, =, sa valeur.`;
-		if (result.assignment !== null) return 'Une seule valeur à remplacer à la fois.';
-		result.assignment = { name: assignment[1], value: decimalPoint(assignment[2].trim()) };
+		// `en … pour …` : deux listes de valeurs, comme une virgule entre deux
+		if (result.assignments.length > 0) return EVAL_SEPARATOR_MESSAGE;
+		const assignments: Assignment[] = [];
+		for (const part of value.split(';')) {
+			const assignment = ASSIGNMENT.exec(part.trim());
+			if (assignment === null) return `Écris « ${keyword} x=3 » : une lettre, =, sa valeur.`;
+			// La virgule est la virgule décimale : entre deux valeurs, refusée
+			// même sans ambiguïté (`a=1, b=2`), par cohérence (décision de David)
+			if (COMMA_BEFORE_ASSIGNMENT.test(assignment[2])) return EVAL_SEPARATOR_MESSAGE;
+			if (assignments.some((known) => known.name === assignment[1])) {
+				return `La valeur de ${assignment[1]} est donnée deux fois.`;
+			}
+			assignments.push({ name: assignment[1], value: decimalPoint(assignment[2].trim()) });
+		}
+		result.assignments = assignments;
 		return null;
 	}
 	switch (keyword) {
@@ -740,7 +784,9 @@ export function writeCommandArguments(args: CommandArguments): string {
 	if (args.bounds !== null) parts.push(`de ${args.bounds.lower} à ${args.bounds.upper}`);
 	if (args.order !== null) parts.push(`ordre ${args.order}`);
 	if (args.center !== null) parts.push(`en ${args.center}`);
-	if (args.assignment !== null) parts.push(`en ${args.assignment.name}=${args.assignment.value}`);
+	if (args.assignments.length > 0) {
+		parts.push(`en ${args.assignments.map(({ name, value }) => `${name}=${value}`).join(' ; ')}`);
+	}
 	if (args.other !== null) parts.push(`et ${args.other}`);
 	if (args.variable !== null) parts.push(`pour ${args.variable}`);
 	// En dernier : un intervalle semi-ouvert (`[0 ; +∞[`) ne referme pas ses

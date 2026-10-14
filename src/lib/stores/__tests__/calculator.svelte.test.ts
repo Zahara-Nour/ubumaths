@@ -145,6 +145,21 @@ describe('Calculator Store', () => {
 			expect(calculatorStore.history[0].input).toBe('.diff x^2');
 		});
 
+		// V54 : UnifiedInput envoie la commande avec son point (« .eval ») ;
+		// en ajouter un second donnait « ..eval » → « Commande inconnue ».
+		it('ne double pas le point d’une commande saisie avec son point', async () => {
+			const input: CalculatorInput = {
+				type: 'command',
+				command: '.eval',
+				expression: 'x^2'
+			};
+
+			await calculatorStore.execute(input);
+
+			expect(mockExecuteFn).toHaveBeenCalledWith('.eval x^2');
+			expect(calculatorStore.history[0].input).toBe('.eval x^2');
+		});
+
 		it('should not execute empty expression', async () => {
 			const input: CalculatorInput = {
 				type: 'expression',

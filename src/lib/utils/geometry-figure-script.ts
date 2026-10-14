@@ -7,6 +7,11 @@
  *
  * Un budget d'exécution borne les boucles : une faute de frappe dans une boucle
  * imbriquée (10^9 tours) ne doit pas figer l'onglet pendant la saisie.
+ *
+ * `evaluateStoredFigure` lit en plus l'en-tête (texte d'un bloc ```figure :
+ * en-tête, `---`, script ; sans `---`, script nu) : une erreur d'en-tête
+ * empêche l'enregistrement comme une erreur de script, et les lignes du script
+ * sont comptées depuis le début du texte.
  */
 
 import { parse } from '$lib/geometry-core/dsl/parser';
@@ -14,6 +19,9 @@ import { interpret } from '$lib/geometry-core/dsl/interpreter';
 import { DslParseError, DslRuntimeError } from '$lib/geometry-core/dsl/errors';
 import { DslTokenizerError } from '$lib/geometry-core/dsl/tokenizer';
 import type { Figure } from '$lib/geometry-core/graph/figure';
+import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
+import { hasFigureHeader } from '$lib/utils/stored-figure-header';
+import type { FigureHeader, FigureInteractiveSettings } from '$lib/ubumark/types/figure';
 
 // ============================================================================
 // TYPES
@@ -21,6 +29,16 @@ import type { Figure } from '$lib/geometry-core/graph/figure';
 
 export type FigureScriptResult =
 	{ ok: true; figure: Figure } | { ok: false; message: string; line: number | null };
+
+/** Réglages d'affichage lus dans l'en-tête ; null = script nu (affichage historique) */
+export type StoredFigureDisplay = {
+	header: FigureHeader;
+	settings: FigureInteractiveSettings;
+} | null;
+
+export type StoredFigureResult =
+	| { ok: true; figure: Figure; display: StoredFigureDisplay }
+	| { ok: false; message: string; line: number | null };
 
 // ============================================================================
 // CONSTANTES
@@ -37,7 +55,50 @@ export const FIGURE_SCRIPT_MAX_STEPS = 200_000;
 // FONCTIONS
 // ============================================================================
 
-export function evaluateFigureScript(script: string): FigureScriptResult {
+/** « Ligne N » en tête d'un message du DSL, recalé de `offset` lignes */
+const LINE_PREFIX_REGEX = /^Ligne (\d+)/;
+
+function shiftLines(result: FigureScriptResult, offset: number): FigureScriptResult {
+	if (result.ok || offset === 0) return result;
+	return {
+		ok: false,
+		message: result.message.replace(
+			LINE_PREFIX_REGEX,
+			(_, n: string) => `Ligne ${Number(n) + offset}`
+		),
+		line: result.line === null ? null : result.line + offset
+	};
+}
+
+/**
+ * @param lineOffset lignes qui précèdent le script dans le texte affiché (en-tête
+ *   et `---`) : les numéros de ligne des erreurs en sont décalés
+ */
+export function evaluateFigureScript(script: string, lineOffset = 0): FigureScriptResult {
+	return shiftLines(runScript(script), lineOffset);
+}
+
+/** Texte complet d'une figure stockée : en-tête éventuel + script. */
+export function evaluateStoredFigure(text: string): StoredFigureResult {
+	if (!hasFigureHeader(text)) {
+		const result = evaluateFigureScript(text);
+		return result.ok ? { ...result, display: null } : result;
+	}
+	const node = parseFigureContent(text, { interactive: true });
+	if (node.errors.length > 0) {
+		return {
+			ok: false,
+			message: node.errors.map((e) => e.message).join('\n'),
+			line: node.errors[0].line ?? null
+		};
+	}
+	const result = evaluateFigureScript(node.script, node.scriptStartLine - 1);
+	if (!result.ok) return result;
+	const settings = node.interactive ?? { draggable: false, renderMode: 'normal' };
+	return { ...result, display: { header: node.header, settings } };
+}
+
+function runScript(script: string): FigureScriptResult {
 	try {
 		const program = parse(script);
 		const { figure } = interpret(program, undefined, undefined, {

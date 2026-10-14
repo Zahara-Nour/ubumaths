@@ -68,6 +68,10 @@ const PLUS = 'x \\to +\\infty';
 const MINUS = 'x \\to -\\infty';
 const lim = (sub: string, body: string) => `\\lim_{${sub}} ${body}`;
 
+/** Une valeur des noms de tests (`+∞`) en LaTeX, pour la prose entre `$…$` */
+const TEX: Record<string, string> = { '+∞': '+\\infty', '−∞': '-\\infty' };
+const m = (label: string) => `$${TEX[label] ?? label}$`;
+
 // =============================================================================
 // Cas 1 — (3x + 1)/(2x − 5) : mêmes degrés
 // =============================================================================
@@ -89,14 +93,14 @@ describe('cas 1 — (3x+1)/(2x−5) : factorisation par x des deux côtés', () 
 			expect(rows(render(latex, 'lycee', 'detailed'))).toEqual([
 				{
 					rule: 'identify-limit',
-					title: `On veut calculer la limite de l'expression quand x tend vers ${label}`,
+					title: `On veut calculer la limite de l'expression quand $x$ tend vers ${m(label)}`,
 					latex: block(L0),
 					explanation:
 						"On commence par observer la forme de l'expression pour choisir une technique adaptée."
 				},
 				{
 					rule: 'detect-indeterminate-form',
-					title: 'Forme indéterminée ∞/∞ reconnue',
+					title: 'Forme indéterminée $\\frac{\\infty}{\\infty}$ reconnue',
 					latex: block(L0),
 					explanation:
 						"Numérateur et dénominateur tendent vers l'infini : on ne peut pas conclure directement. On factorise par le terme prépondérant."
@@ -106,13 +110,13 @@ describe('cas 1 — (3x+1)/(2x−5) : factorisation par x des deux côtés', () 
 					title: 'On factorise par le terme prépondérant',
 					latex: block(L0, L1),
 					explanation:
-						'Dans chaque somme, on met en facteur la plus grande puissance de x : les autres termes deviennent des quotients qui tendent vers 0.'
+						'Dans chaque somme, on met en facteur la plus grande puissance de $x$ : les autres termes deviennent des quotients qui tendent vers $0$.'
 				},
 				{
 					rule: 'simplify-common-factor',
-					title: 'Simplification par x',
+					title: 'Simplification par $x$',
 					latex: block(L1, L2),
-					explanation: 'x est un facteur commun au numérateur et au dénominateur : on simplifie.'
+					explanation: '$x$ est un facteur commun au numérateur et au dénominateur : on simplifie.'
 				},
 				{
 					rule: 'limits-of-terms',
@@ -124,18 +128,18 @@ describe('cas 1 — (3x+1)/(2x−5) : factorisation par x des deux côtés', () 
 						`\\text{et } ${lim(sub, '\\left( 2 - \\dfrac{5}{x} \\right)')} = 2`
 					),
 					explanation:
-						'Un nombre divisé par une puissance de x tend vers 0 : chaque parenthèse tend vers son premier terme.'
+						'Un nombre divisé par une puissance de $x$ tend vers $0$ : chaque parenthèse tend vers son premier terme.'
 				},
 				{
 					rule: 'apply-quotient',
 					title: "Limite d'un quotient",
 					latex: block(L2, '\\dfrac{3}{2}'),
 					explanation:
-						'Le numérateur tend vers 3 et le dénominateur vers 2 : par quotient, la limite vaut 3/2.'
+						'Le numérateur tend vers $3$ et le dénominateur vers $2$ : par quotient, la limite vaut $\\dfrac{3}{2}$.'
 				},
 				{
 					rule: 'conclude',
-					title: 'La limite vaut 3/2',
+					title: 'La limite vaut $\\dfrac{3}{2}$',
 					latex: block(L0, '\\dfrac{3}{2}'),
 					explanation: 'On peut maintenant conclure.'
 				}
@@ -149,21 +153,29 @@ describe('cas 1 — (3x+1)/(2x−5) : factorisation par x des deux côtés', () 
 					title: 'On factorise par le terme prépondérant',
 					latex: block(L0, L1)
 				},
-				{ rule: 'simplify-common-factor', title: 'Simplification par x', latex: block(L1, L2) },
-				{ rule: 'conclude', title: 'La limite vaut 3/2', latex: block(L0, '\\dfrac{3}{2}') }
+				{ rule: 'simplify-common-factor', title: 'Simplification par $x$', latex: block(L1, L2) },
+				{
+					rule: 'conclude',
+					title: 'La limite vaut $\\dfrac{3}{2}$',
+					latex: block(L0, '\\dfrac{3}{2}')
+				}
 			]);
 		});
 
 		it(`supérieur détaillé en ${label} : la même factorisation, plus compacte`, () => {
 			expect(rowsWithoutExplanation(render(latex, 'superieur', 'detailed'))).toEqual([
-				{ rule: 'detect-indeterminate-form', title: 'Forme indéterminée ∞/∞', latex: block(L0) },
+				{
+					rule: 'detect-indeterminate-form',
+					title: 'Forme indéterminée $\\frac{\\infty}{\\infty}$',
+					latex: block(L0)
+				},
 				{
 					rule: 'factor-dominant-term',
 					title: 'Factorisation par le terme prépondérant',
 					latex: block(L0, L1)
 				},
-				{ rule: 'simplify-common-factor', title: 'Simplification par x', latex: block(L1, L2) },
-				{ rule: 'conclude', title: '= 3/2', latex: block(L0, '\\dfrac{3}{2}') }
+				{ rule: 'simplify-common-factor', title: 'Simplification par $x$', latex: block(L1, L2) },
+				{ rule: 'conclude', title: '$= \\dfrac{3}{2}$', latex: block(L0, '\\dfrac{3}{2}') }
 			]);
 		});
 
@@ -202,12 +214,12 @@ describe('cas 2 — (x²+1)/(3x) : on factorise le numérateur seulement', () =>
 			expect(steps.map(({ rule, title, latex }) => ({ rule, title, latex }))).toEqual([
 				{
 					rule: 'identify-limit',
-					title: `On veut calculer la limite de l'expression quand x tend vers ${label}`,
+					title: `On veut calculer la limite de l'expression quand $x$ tend vers ${m(label)}`,
 					latex: block(L0)
 				},
 				{
 					rule: 'detect-indeterminate-form',
-					title: 'Forme indéterminée ∞/∞ reconnue',
+					title: 'Forme indéterminée $\\frac{\\infty}{\\infty}$ reconnue',
 					latex: block(L0)
 				},
 				{
@@ -215,7 +227,7 @@ describe('cas 2 — (x²+1)/(3x) : on factorise le numérateur seulement', () =>
 					title: 'On factorise par le terme prépondérant',
 					latex: block(L0, L1)
 				},
-				{ rule: 'simplify-common-factor', title: 'Simplification par x', latex: block(L1, L2) },
+				{ rule: 'simplify-common-factor', title: 'Simplification par $x$', latex: block(L1, L2) },
 				{
 					rule: 'limits-of-terms',
 					title: 'Limites des termes',
@@ -225,10 +237,14 @@ describe('cas 2 — (x²+1)/(3x) : on factorise le numérateur seulement', () =>
 					)
 				},
 				{ rule: 'apply-product', title: "Limite d'un produit", latex: block(L2, value) },
-				{ rule: 'conclude-infinite', title: `La limite vaut ${valueText}`, latex: block(L0, value) }
+				{
+					rule: 'conclude-infinite',
+					title: `La limite vaut ${m(valueText)}`,
+					latex: block(L0, value)
+				}
 			]);
 			expect(steps.find((s) => s.rule === 'apply-product')?.explanation).toBe(
-				`Le facteur x tend vers ${label} et le quotient restant tend vers 1/3 : par produit, (${label}) × 1/3 = ${valueText}.`
+				`Le facteur $x$ tend vers ${m(label)} et le quotient restant tend vers $\\dfrac{1}{3}$ : par produit, $\\left(${TEX[label]}\\right) \\times \\dfrac{1}{3} = ${TEX[valueText]}$.`
 			);
 		});
 
@@ -262,12 +278,12 @@ describe("cas 3 — 2x/(x²+1) : le dénominateur tend vers l'infini", () => {
 			expect(steps.map(({ rule, title, latex }) => ({ rule, title, latex }))).toEqual([
 				{
 					rule: 'identify-limit',
-					title: `On veut calculer la limite de l'expression quand x tend vers ${label}`,
+					title: `On veut calculer la limite de l'expression quand $x$ tend vers ${m(label)}`,
 					latex: block(L0)
 				},
 				{
 					rule: 'detect-indeterminate-form',
-					title: 'Forme indéterminée ∞/∞ reconnue',
+					title: 'Forme indéterminée $\\frac{\\infty}{\\infty}$ reconnue',
 					latex: block(L0)
 				},
 				{
@@ -275,7 +291,7 @@ describe("cas 3 — 2x/(x²+1) : le dénominateur tend vers l'infini", () => {
 					title: 'On factorise par le terme prépondérant',
 					latex: block(L0, L1)
 				},
-				{ rule: 'simplify-common-factor', title: 'Simplification par x', latex: block(L1, L2) },
+				{ rule: 'simplify-common-factor', title: 'Simplification par $x$', latex: block(L1, L2) },
 				{
 					rule: 'limits-of-terms',
 					title: 'Limites des termes',
@@ -290,13 +306,13 @@ describe("cas 3 — 2x/(x²+1) : le dénominateur tend vers l'infini", () => {
 					latex: block(lim(sub, 'x \\left( 1 + \\dfrac{1}{x^2} \\right)'), infinityLatex)
 				},
 				{ rule: 'apply-quotient', title: "Limite d'un quotient", latex: block(L2, '0') },
-				{ rule: 'conclude', title: 'La limite vaut 0', latex: block(L0, '0') }
+				{ rule: 'conclude', title: 'La limite vaut $0$', latex: block(L0, '0') }
 			]);
 			expect(steps.find((s) => s.rule === 'apply-product')?.explanation).toBe(
-				`Le facteur x tend vers ${label} et la parenthèse tend vers 1 : par produit, (${label}) × 1 = ${label}.`
+				`Le facteur $x$ tend vers ${m(label)} et la parenthèse tend vers $1$ : par produit, $\\left(${TEX[label]}\\right) \\times 1 = ${TEX[label]}$.`
 			);
 			expect(steps.find((s) => s.rule === 'apply-quotient')?.explanation).toBe(
-				`2 divisé par une quantité qui tend vers ${label} : la limite vaut 0.`
+				`$2$ divisé par une quantité qui tend vers ${m(label)} : la limite vaut $0$.`
 			);
 		});
 	}
@@ -320,12 +336,12 @@ describe('cas 4 — polynôme −2x³ + x : forme ∞ − ∞, factorisation san
 			expect(steps.map(({ rule, title, latex }) => ({ rule, title, latex }))).toEqual([
 				{
 					rule: 'identify-limit',
-					title: `On veut calculer la limite de l'expression quand x tend vers ${label}`,
+					title: `On veut calculer la limite de l'expression quand $x$ tend vers ${m(label)}`,
 					latex: block(L0)
 				},
 				{
 					rule: 'detect-indeterminate-form',
-					title: 'Forme indéterminée ∞ − ∞ reconnue',
+					title: 'Forme indéterminée $\\infty - \\infty$ reconnue',
 					latex: block(L0)
 				},
 				{
@@ -342,10 +358,14 @@ describe('cas 4 — polynôme −2x³ + x : forme ∞ − ∞, factorisation san
 					)
 				},
 				{ rule: 'apply-product', title: "Limite d'un produit", latex: block(L1, value) },
-				{ rule: 'conclude-infinite', title: `La limite vaut ${valueText}`, latex: block(L0, value) }
+				{
+					rule: 'conclude-infinite',
+					title: `La limite vaut ${m(valueText)}`,
+					latex: block(L0, value)
+				}
 			]);
 			expect(steps.find((s) => s.rule === 'apply-product')?.explanation).toBe(
-				`Le facteur x³ tend vers ${xLimit} et la parenthèse tend vers −2 : par produit, (${xLimit}) × (−2) = ${valueText}.`
+				`Le facteur $x^3$ tend vers ${m(xLimit)} et la parenthèse tend vers $-2$ : par produit, $\\left(${TEX[xLimit]}\\right) \\times \\left(-2\\right) = ${TEX[valueText]}$.`
 			);
 			const prose = steps.map((s) => `${s.title} ${s.explanation ?? ''}`).join(' ');
 			expect(prose).not.toMatch(/plus haut degré/);
@@ -368,13 +388,17 @@ describe('cas 4 — polynôme −2x³ + x : forme ∞ − ∞, factorisation san
 		expect(
 			rowsWithoutExplanation(render('\\lim_{x\\to -\\infty}-2x^3+x', 'superieur', 'detailed'))
 		).toEqual([
-			{ rule: 'detect-indeterminate-form', title: 'Forme indéterminée ∞ − ∞', latex: block(L0) },
+			{
+				rule: 'detect-indeterminate-form',
+				title: 'Forme indéterminée $\\infty - \\infty$',
+				latex: block(L0)
+			},
 			{
 				rule: 'factor-dominant-term',
 				title: 'Factorisation par le terme prépondérant',
 				latex: block(L0, lim(MINUS, 'x^3 \\left( -2 + \\dfrac{1}{x^2} \\right)'))
 			},
-			{ rule: 'conclude-infinite', title: '= +∞', latex: block(L0, '+\\infty') }
+			{ rule: 'conclude-infinite', title: '$= +\\infty$', latex: block(L0, '+\\infty') }
 		]);
 	});
 });
@@ -393,7 +417,7 @@ describe('cas 5 — monôme : une seule étape, sans factorisation', () => {
 			expect(rowsWithoutExplanation(render(latex, 'lycee', 'summarized'))).toEqual([
 				{
 					rule: 'conclude-infinite',
-					title: `La limite vaut ${valueText}`,
+					title: `La limite vaut ${m(valueText)}`,
 					latex: block(lim(sub, body), value)
 				}
 			]);
@@ -407,7 +431,9 @@ describe('cas 6 — constante : une seule étape', () => {
 	it('5 en +∞', () => {
 		expect(
 			rowsWithoutExplanation(render('\\lim_{x\\to +\\infty}5', 'lycee', 'summarized'))
-		).toEqual([{ rule: 'conclude', title: 'La limite vaut 5', latex: block(lim(PLUS, '5'), '5') }]);
+		).toEqual([
+			{ rule: 'conclude', title: 'La limite vaut $5$', latex: block(lim(PLUS, '5'), '5') }
+		]);
 	});
 });
 
@@ -427,12 +453,12 @@ describe('cas 7 — (x+1)²/(2x²) : on développe, puis la même mécanique', (
 		expect(steps.map(({ rule, title, latex }) => ({ rule, title, latex }))).toEqual([
 			{
 				rule: 'identify-limit',
-				title: "On veut calculer la limite de l'expression quand x tend vers +∞",
+				title: "On veut calculer la limite de l'expression quand $x$ tend vers $+\\infty$",
 				latex: block(L0)
 			},
 			{
 				rule: 'detect-indeterminate-form',
-				title: 'Forme indéterminée ∞/∞ reconnue',
+				title: 'Forme indéterminée $\\frac{\\infty}{\\infty}$ reconnue',
 				latex: block(L0)
 			},
 			{ rule: 'expand', title: 'On développe', latex: block(L0, Lexp) },
@@ -441,7 +467,7 @@ describe('cas 7 — (x+1)²/(2x²) : on développe, puis la même mécanique', (
 				title: 'On factorise par le terme prépondérant',
 				latex: block(Lexp, L1)
 			},
-			{ rule: 'simplify-common-factor', title: 'Simplification par x²', latex: block(L1, L2) },
+			{ rule: 'simplify-common-factor', title: 'Simplification par $x^2$', latex: block(L1, L2) },
 			{
 				rule: 'limits-of-terms',
 				title: 'Limites des termes',
@@ -452,7 +478,11 @@ describe('cas 7 — (x+1)²/(2x²) : on développe, puis la même mécanique', (
 				)
 			},
 			{ rule: 'apply-quotient', title: "Limite d'un quotient", latex: block(L2, '\\dfrac{1}{2}') },
-			{ rule: 'conclude', title: 'La limite vaut 1/2', latex: block(L0, '\\dfrac{1}{2}') }
+			{
+				rule: 'conclude',
+				title: 'La limite vaut $\\dfrac{1}{2}$',
+				latex: block(L0, '\\dfrac{1}{2}')
+			}
 		]);
 	});
 
@@ -494,8 +524,8 @@ describe('la règle « quotient des termes de plus haut degré » a disparu', ()
 
 describe('deux monômes : rien à factoriser, on simplifie directement', () => {
 	for (const [expression, approach, power] of [
-		['\\frac{2x^2}{3x^2}', '+\\infty', 'x²'],
-		['\\frac{x^2}{x}', '-\\infty', 'x']
+		['\\frac{2x^2}{3x^2}', '+\\infty', '$x^2$'],
+		['\\frac{x^2}{x}', '-\\infty', '$x$']
 	] as const) {
 		it(`${expression} en ${approach} : l'annonce ne parle pas de factorisation`, () => {
 			const steps = render(`\\lim_{x\\to ${approach}}${expression}`, 'lycee', 'detailed');
@@ -522,7 +552,7 @@ describe('limite d’un produit : le facteur est nommé', () => {
 	it('(x^5 − x)/(x^2 + x) en −∞', () => {
 		const steps = render('\\lim_{x\\to -\\infty}\\frac{x^5-x}{x^2+x}', 'lycee', 'detailed');
 		expect(steps.find((s) => s.rule === 'apply-product')?.explanation).toBe(
-			'Le facteur x³ tend vers −∞ et le quotient restant tend vers 1 : par produit, (−∞) × 1 = −∞.'
+			'Le facteur $x^3$ tend vers $-\\infty$ et le quotient restant tend vers $1$ : par produit, $\\left(-\\infty\\right) \\times 1 = -\\infty$.'
 		);
 	});
 });
@@ -532,13 +562,16 @@ describe('somme écrite non développée : (x+1)² − x² est une forme ∞ −
 		const latex = '\\lim_{x\\to +\\infty}(x+1)^2-x^2';
 		const steps = render(latex, 'lycee', 'detailed');
 		expect(steps.map((s) => [s.rule, s.title])).toEqual([
-			['identify-limit', "On veut calculer la limite de l'expression quand x tend vers +∞"],
-			['detect-indeterminate-form', 'Forme indéterminée ∞ − ∞ reconnue'],
+			[
+				'identify-limit',
+				"On veut calculer la limite de l'expression quand $x$ tend vers $+\\infty$"
+			],
+			['detect-indeterminate-form', 'Forme indéterminée $\\infty - \\infty$ reconnue'],
 			['expand', 'On développe'],
 			['factor-dominant-term', 'On factorise par le terme prépondérant'],
 			['limits-of-terms', 'Limites des termes'],
 			['apply-product', "Limite d'un produit"],
-			['conclude-infinite', 'La limite vaut +∞']
+			['conclude-infinite', 'La limite vaut $+\\infty$']
 		]);
 		expect(steps[2].expressionLatex).toContain(
 			'= \\lim_{x \\to +\\infty} \\left( 2 x + 1 \\right)'
@@ -659,22 +692,25 @@ describe('somme non développée qui se réduit à une constante', () => {
 		const latex = '\\lim_{x\\to +\\infty}(x+1)^2-x^2-2x';
 		const steps = render(latex, 'lycee', 'detailed');
 		expect(steps.map((s) => [s.rule, s.title])).toEqual([
-			['identify-limit', "On veut calculer la limite de l'expression quand x tend vers +∞"],
-			['detect-indeterminate-form', 'Forme indéterminée ∞ − ∞ reconnue'],
+			[
+				'identify-limit',
+				"On veut calculer la limite de l'expression quand $x$ tend vers $+\\infty$"
+			],
+			['detect-indeterminate-form', 'Forme indéterminée $\\infty - \\infty$ reconnue'],
 			['expand', 'On développe'],
-			['conclude', 'La limite vaut 1']
+			['conclude', 'La limite vaut $1$']
 		]);
 		expect(steps[2].expressionLatex).toContain('= 1');
 		expect(run(latex).steps.at(-1)?.description).toBe(
-			'La fonction est constante : sa limite vaut 1.'
+			'La fonction est constante : sa limite vaut $1$.'
 		);
 		expect(run(latex).indeterminateForm).toBe('∞-∞');
 	});
 });
 
-// Les explications, titres et descriptions s'affichent en TEXTE brut
-// (`GeneratedStepsCorrection.svelte`) : aucun LaTeX (écart V25).
-describe('textes en clair : ni \\, ni {, ni ^', () => {
+// Titres et explications passent par `InlineMarkdown` (V25) : les maths entre
+// `$…$` ; hors des formules, aucun LaTeX (2026-10-14 : plus d'Unicode non plus).
+describe('textes : hors des $…$, ni \\, ni {, ni ^', () => {
 	const CASES = [
 		'\\lim_{x\\to +\\infty}\\frac{3x+1}{2x-5}',
 		'\\lim_{x\\to -\\infty}\\frac{x^2+1}{3x}',
@@ -701,7 +737,10 @@ describe('textes en clair : ni \\, ni {, ni ^', () => {
 					...render(latex, level, 'detailed').flatMap((s) => [s.title, s.explanation ?? '']),
 					...run(latex, level).steps.map((s) => s.description)
 				];
-				for (const text of texts) expect(text, `${level} : ${text}`).not.toMatch(/[\\{}^]/);
+				for (const text of texts) {
+					const prose = text.replace(/\$[^$]*\$/g, ' ');
+					expect(prose, `${level} : ${text}`).not.toMatch(/[\\{}^∞²³−×]/);
+				}
 			}
 		});
 	}

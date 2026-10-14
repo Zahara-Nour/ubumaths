@@ -104,7 +104,11 @@
 					<span class="text-muted-foreground">•</span>
 					<div class="flex items-center gap-1.5 text-sm text-muted-foreground">
 						<Hash class="h-4 w-4" />
-						<span>{lore.learning.exercise} {report.exercise_position}</span>
+						<!-- Numéro dans la copie de l'élève (D6) ; 0 : inconnu -->
+						<span
+							>{lore.learning.exercise}
+							{report.exercise_position > 0 ? report.exercise_position : '—'}</span
+						>
 					</div>
 				</div>
 

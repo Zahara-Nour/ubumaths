@@ -50,8 +50,10 @@ import type { ExerciseResource } from '$lib/exercises/types';
 import {
 	assignmentCopyScope,
 	copyExerciseOrder,
+	hasPerStudentCopies,
 	resolveWorksheetExerciseCopy,
-	type ExerciseContentRow
+	type ExerciseContentRow,
+	type WorksheetForCopy
 } from '$lib/worksheets/worksheet-copy';
 import {
 	localizedText,
@@ -66,6 +68,7 @@ import type {
 	StudentWorksheetView,
 	WorksheetType
 } from '$lib/types/worksheets';
+import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/preview/+server');
@@ -75,7 +78,12 @@ const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/pre
 // ============================================================================
 
 const previewQuerySchema = z.object({
-	studentId: z.string().uuid('Identifiant d’élève invalide').optional()
+	studentId: z.string().uuid('Identifiant d’élève invalide').optional(),
+	/**
+	 * Vue prof d'une affectation dont chaque élève a sa version (D6) : l'élève
+	 * dont la copie sert de référence (corrections toutes visibles, nom non servi)
+	 */
+	copyOf: z.string().uuid('Identifiant d’élève invalide').optional()
 });
 
 const assignmentParamSchema = z.object({
@@ -162,14 +170,15 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// Validate query params
 	const studentIdParam = url.searchParams.get('studentId');
 	const queryValidation = previewQuerySchema.safeParse({
-		studentId: studentIdParam || undefined
+		studentId: studentIdParam || undefined,
+		copyOf: url.searchParams.get('copyOf') || undefined
 	});
 
 	if (!queryValidation.success) {
 		throw error(400, queryValidation.error.issues[0].message);
 	}
 
-	const { studentId } = queryValidation.data;
+	const { studentId, copyOf } = queryValidation.data;
 
 	try {
 		// Verify teacher access
@@ -182,62 +191,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// If studentId provided, verify they have access to this assignment
 		let previewStudentName: string | null = null;
 		if (studentId) {
-			// Check individual assignment first (simple query)
-			const { data: individualAccess, error: individualAccessError } = await locals.supabase
-				.from('worksheet_assignment_students')
-				.select('id')
-				.eq('assignment_id', assignmentId)
-				.eq('student_id', studentId)
-				.maybeSingle();
+			// Nommément désigné, ou membre actif d'une classe visée
+			const isRecipient = await isStudentOfAssignment(locals.supabase, assignmentId, studentId);
 
-			// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
-			// panne doit se distinguer d'un refus mérité.
-			if (individualAccessError) {
-				logger.error('Contrôle d’accès impossible :', individualAccessError);
-				throw error(500, 'Impossible de vérifier l’accès');
-			}
-
-			// If not individually assigned, check class membership
-			let hasClassAccess = false;
-			if (!individualAccess) {
-				// Get assigned class IDs
-				const { data: assignedClasses, error: assignedClassesError } = await locals.supabase
-					.from('worksheet_assignment_classes')
-					.select('class_id')
-					.eq('assignment_id', assignmentId);
-
-				// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
-				// panne doit se distinguer d'un refus mérité.
-				if (assignedClassesError) {
-					logger.error('Contrôle d’accès impossible :', assignedClassesError);
-					throw error(500, 'Impossible de vérifier l’accès');
-				}
-
-				if (assignedClasses && assignedClasses.length > 0) {
-					const classIds = assignedClasses.map((ac) => ac.class_id);
-
-					// Check if student is member of any assigned class
-					const { data: membership, error: membershipError } = await locals.supabase
-						.from('class_members')
-						.select('id')
-						.eq('student_id', studentId)
-						.eq('status', 'active')
-						.in('class_id', classIds)
-						.limit(1)
-						.maybeSingle();
-
-					// Contrôle d'accès : rester fermé est le bon repli, mais un refus dû à une
-					// panne doit se distinguer d'un refus mérité.
-					if (membershipError) {
-						logger.error('Contrôle d’accès impossible :', membershipError);
-						throw error(500, 'Impossible de vérifier l’accès');
-					}
-
-					hasClassAccess = !!membership;
-				}
-			}
-
-			if (!individualAccess && !hasClassAccess) {
+			if (!isRecipient) {
 				throw error(400, 'Cet élève n’a pas accès à cette affectation');
 			}
 
@@ -360,9 +317,31 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// Language of the whole sheet: exercise content and PDF chrome alike.
 		const locale = worksheetLocale(asWorksheetConfig(worksheet.config));
 
-		// La copie de l'élève choisi, ou celle de la classe : le même calcul que
-		// l'API élève (ADR 0023)
-		const copyScope = assignmentCopyScope(fullAssignment, { studentId, locale });
+		// Chaque élève a-t-il sa version (valeurs ou ordre) ? La vue prof
+		// s'appuie alors sur la copie d'un élève choisi (`copyOf`, D6), comme le
+		// corrigé de classe ; sans choix, la copie de la classe et la réponse le
+		// dit (l'écran choisit alors le premier élève de la liste).
+		const perStudentCopies = hasPerStudentCopies(
+			{
+				...worksheet,
+				worksheet_exercises: worksheetExercises ?? []
+			} as unknown as WorksheetForCopy,
+			assignmentCopyScope(fullAssignment)
+		);
+		const referenceStudentId = isTeacherMode && perStudentCopies ? copyOf : undefined;
+		if (
+			referenceStudentId &&
+			!(await isStudentOfAssignment(locals.supabase, assignmentId, referenceStudentId))
+		) {
+			throw error(400, 'Cet élève n’a pas accès à cette affectation');
+		}
+
+		// La copie de l'élève choisi (ou de l'élève de référence), sinon celle de
+		// la classe : le même calcul que l'API élève (ADR 0023)
+		const copyScope = assignmentCopyScope(fullAssignment, {
+			studentId: studentId ?? referenceStudentId,
+			locale
+		});
 
 		// Get correction visibility map (for student mode)
 		const exerciseIds = (worksheetExercises ?? []).map((we) => we.id);
@@ -476,6 +455,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			preview_mode: 'teacher' | 'student';
 			preview_student_id: string | null;
 			preview_student_name: string | null;
+			per_student_copies: boolean;
 		} = {
 			assignment_id: fullAssignment.id,
 			worksheet_id: worksheet.id,
@@ -510,7 +490,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			// Preview metadata
 			preview_mode: isTeacherMode ? 'teacher' : 'student',
 			preview_student_id: studentId ?? null,
-			preview_student_name: previewStudentName
+			preview_student_name: previewStudentName,
+			// Chaque élève a sa version : la vue prof est la copie d'un élève (D6)
+			per_student_copies: perStudentCopies
 		};
 
 		return json(response);

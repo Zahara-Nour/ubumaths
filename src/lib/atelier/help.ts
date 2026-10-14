@@ -95,6 +95,13 @@ const WITHOUT_COMMAND: readonly HelpBlock[] = [
  */
 const EXTRA_EXAMPLES: Readonly<Record<string, readonly HelpEntry[]>> = {
 	diff: [{ command: 'diff', example: '.dériver a t^2 pour t', description: 'Choisir la variable' }],
+	limit: [
+		{
+			command: 'limit',
+			example: '.limite 1/x en 0+',
+			description: 'À droite (0- : à gauche) ; à l’infini : en +∞, en -∞'
+		}
+	],
 	mode: [
 		{ command: 'mode', example: '.mode décimal', description: 'Passer aux valeurs décimales' }
 	],

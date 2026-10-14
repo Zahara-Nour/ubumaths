@@ -5,7 +5,7 @@
 <script lang="ts">
 	import { provideReaderGrade } from '$lib/lexicon/reader-grade';
 	import type { CapitalPairs } from '$lib/mathAST/parser';
-	import StructureExplorer from '../StructureExplorer.svelte';
+	import StructureField from '$lib/components/structure/StructureField.svelte';
 	import { provideStructureLexicon } from '../structure-lexicon.svelte';
 
 	interface Props {
@@ -21,4 +21,4 @@
 	provideStructureLexicon();
 </script>
 
-<StructureExplorer {latex} {frameLeaves} {capitalPairs} />
+<StructureField {latex} reading {frameLeaves} {capitalPairs} />

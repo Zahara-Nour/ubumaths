@@ -278,3 +278,18 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
   « structure ») ; **6e ou avant : × toujours écrit** (E5.4). Gestes : clic court = curseur,
   appui puis mouvement = déplacer, cadres imbriqués (bordure), mode tactile. Prochaine étape :
   spécification du lot 2 (le champ réutilisable) à valider.
+- 2026-10-14 — **spécification F du lot 2 validée par David** (le champ réutilisable) : F1 réglages
+  structure / lecture / déplacer (+ « soulever », case) ; F2 souris : survol, clic court = écrire
+  (Entrée ou clic ailleurs = retour, Échap = annuler la frappe), appui sur une partie puis
+  mouvement = déplacer, cadres imbriqués bornés (signe voisin, groupe, barre de fraction) ; F3
+  doigt : cadres visibles, bordures larges, formule écartée, toucher bref = écrire (remplace A11) ;
+  F4 = E2/E3 ; F5 « Annuler » (plusieurs retours, une frappe vide l'historique) ; F6 lecture ;
+  F7 6e. Lot 3 : G7 (phrase), E6 (flèches). Dans l'outil, le champ remplace la case de saisie ET
+  la formule explorée ; corpus inchangé. **Survol (David, « oui ») : les règles A restent** (plus
+  petite sous-expression quelle qu'elle soit, lecture, options), cadres imbriqués pour attraper
+  `2x` par sa bordure ; on ne glisse que si l'encadré est une partie (alors fond du groupe + nom).
+- 2026-10-14 — **lot 2 mergé : PR #1358** (CI verte) — `StructureField` / `InteractiveFormula` /
+  `frame-geometry.ts` dans `$lib/components/structure/`, branché dans `/test-structure`. Revue :
+  pointercancel, clavier (rôle bouton, Entrée), contours tactiles, gardes « changé d'ailleurs ».
+  Question ouverte à David : au doigt, plus d'exploration de la structure (le toucher bref écrit).
+  Pas en prod. Serveur d'essai : worktree `../ubumaths-wt-champ`, port 5179.

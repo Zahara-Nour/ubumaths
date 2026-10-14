@@ -59,13 +59,9 @@ export const COVERAGE_CONFIG: CoverageConfig = {
 	trous: [
 		{ glob: 'src/lib/shared/blockly/**', note: 'Blockly, calculatrice' },
 		{ glob: 'src/lib/components/blockly/**', note: 'Blockly, calculatrice' },
-		{
-			glob: 'src/lib/stores/{blocklyPlayground,calculator}.svelte.ts',
-			note: 'Blockly, calculatrice'
-		},
+		{ glob: 'src/lib/stores/blocklyPlayground.svelte.ts', note: 'Blockly, calculatrice' },
 		{ glob: 'src/routes/(public)/blockly/**', note: 'Blockly, calculatrice' },
 		{ glob: 'src/lib/workers/js-sandbox.worker.ts', note: 'Blockly, calculatrice' },
-		{ glob: 'src/lib/components/calculator/**', note: 'Blockly, calculatrice' },
 		{ glob: 'src/routes/(protected)/calculatrice/**', note: 'Blockly, calculatrice' }
 	]
 };

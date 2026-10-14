@@ -1,6 +1,7 @@
 ---
 couvre:
   - 'src/lib/mathAST/structure/**'
+  - 'src/lib/components/structure/**'
   - src/lib/lexicon/parentheses-advice-grade.ts
 ---
 
@@ -176,6 +177,36 @@ appliquée (A8) ; cadres englobants en pointillés gris (A10).
   `\mathord{\class{ubs-gap<k>}{\hspace{…em}\vphantom{…}}}` (largeur animée, hauteur de la
   partie saisie ; un « − » en tête précédé d'un espace est groupé, sinon il devient binaire).
 
+## Le champ de formule (glisser-déposer, lot 2, 2026-10-14)
+
+`$lib/components/structure/StructureField.svelte` : une seule formule, qu'on écrit et qu'on
+manipule, réutilisable (l'outil `/test-structure` d'abord, l'Atelier ensuite). Spécification F
+et décisions G1-G11 : [structure-glisser-deposer-progress.md](../../wip/structure-glisser-deposer-progress.md).
+
+- **Réglages** : `structure` (cadres au survol, règles A), `reading` (lecture de l'expression
+  entière et de la dernière sous-expression survolée, sens inverse), `move` (glisser, allume
+  `structure`, bouton « Annuler »), `lift` (la carte monte au-dessus de la ligne). Aucun : un
+  champ de saisie ordinaire.
+- **Gestes** : clic court → champ de saisie MathLive, curseur au même endroit relatif (le champ
+  n'a ni la taille ni la place de la formule) ; Entrée ou un clic ailleurs garde la saisie,
+  Échap l'annule. Appui sur une partie puis mouvement → déplacement (pas de délai : un délai de
+  300 ms cassait le geste naturel) ; hors du groupe, la carte s'arrête au bord (G5) ; Échap la
+  ramène. « Annuler » : plusieurs retours ; une saisie au clavier ou un exemple chargé vide
+  l'historique. Le toucher bref au doigt écrit (remplace A11).
+- **Cadres** (`frame-geometry.ts`, pur) : la zone de chaque sous-expression est mesurée caractère
+  par caractère (la boîte d'un élément compte les cales invisibles de MathLive) ; cadre = marge
+  fine, puis à gauche et à droite une bordure de plus que les cadres contenus (sur la bordure de
+  `2x`, hors des cadres de `2` et de `x`, on vise `2x`) ; jamais plus de 40 % du chemin vers une
+  voisine, ni au-delà du fond du groupe, ni à travers la barre d'une fraction. Visé : la plus
+  profonde sous-expression dont le cadre contient le point (A1). Au survol, seuls la visée (et
+  ses englobantes si réglé) et, si c'est une partie, le fond de son groupe avec son nom.
+- **Rendu** : MathLive dans la page (`convertLatexToMarkup`), redessiné à chaque image pendant un
+  déplacement (`expressionLatex` avec espaces `\hspace` animés) ; mesures hors écran.
+- **Tactile** (`any-pointer: coarse`, ou `touch`) : cadres des parties toujours visibles,
+  bordures larges, formule écartée autour des parties (seulement si `move`).
+- **6e ou avant** : message C1 → formule affichée et modifiable, sans cadres ni déplacement ;
+  sinon somme avec soustraction figée, × toujours écrit.
+
 ## Mots ajoutés au dictionnaire pour la lecture (validés par David le 2026-10-11)
 
 Niveaux vérifiés contre les points des programmes en base. Ajout par migration de données
@@ -195,5 +226,6 @@ comme les autres entrées, rien d'autre.
 - **Glisser-déposer** de termes, facteurs et membres, comme dans Algebria (Q6) : **en cours**.
   Décisions G1 à G11 et spécification E (validée par David le 2026-10-13) :
   [structure-glisser-deposer-progress.md](../../wip/structure-glisser-deposer-progress.md). Lot 1
-  (la réécriture, `rearrange.ts`) livré ; lot 2 : un composant réutilisable (un champ de formule
-  avec deux réglages, « structure » et « déplacer », pour l'outil puis l'Atelier ou ailleurs).
+  (la réécriture, `rearrange.ts`) et lot 2 (le champ de formule, ci-dessus) livrés ; lot 3 :
+  phrase de refus sur un numérateur ou un dénominateur (G7), flèches du clavier (E6) ; puis
+  l'Atelier.

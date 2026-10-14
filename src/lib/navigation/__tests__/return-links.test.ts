@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+	assignmentPreviewHref,
+	assignmentPreviewReturn,
 	automathsQuitLink,
 	studentJournalHref,
 	studentJournalReturn,
@@ -84,5 +86,41 @@ describe('« Quitter » un test d’automatismes', () => {
 		expect(link.href).toBe('/dashboard/student/assessments');
 		expect(link.confirmLeave).toContain('réponses tapées seront perdues');
 		expect(link.confirmLeave).not.toContain('temps');
+	});
+});
+
+describe('aperçu « vue élève » d’une affectation (D6)', () => {
+	const W = '550e8400-e29b-41d4-a716-446655440011';
+	const A = '550e8400-e29b-41d4-a716-446655440010';
+	const S = '550e8400-e29b-41d4-a716-446655440501';
+	const R = '550e8400-e29b-41d4-a716-446655440030';
+	const E = '550e8400-e29b-41d4-a716-446655440012';
+	const preview = `/dashboard/teacher/contenu/worksheets/${W}/assignments/${A}/preview`;
+
+	it('ouvert depuis un signalement : élève, origine et ancre de l’exercice dans l’adresse', () => {
+		expect(assignmentPreviewHref(W, A, { studentId: S, reportId: R, worksheetExerciseId: E })).toBe(
+			`${preview}?studentId=${S}&depuis=signalement&signalement=${R}#exercice-${E}`
+		);
+	});
+
+	it('retour : à la page du signalement quand l’aperçu en vient', () => {
+		expect(
+			assignmentPreviewReturn(W, A, params(`studentId=${S}&depuis=signalement&signalement=${R}`))
+		).toEqual({
+			href: `/dashboard/teacher/contenu/worksheets/${W}/assignments/${A}/reports/${R}`,
+			label: 'Retour au signalement'
+		});
+	});
+
+	it('sinon (ou origine invalide) : à la fiche, comme avant', () => {
+		const fiche = {
+			href: `/dashboard/teacher/contenu/worksheets/${W}`,
+			label: 'Retour à la fiche'
+		};
+		expect(assignmentPreviewReturn(W, A, params(''))).toEqual(fiche);
+		expect(assignmentPreviewReturn(W, A, params('depuis=signalement'))).toEqual(fiche);
+		expect(assignmentPreviewReturn(W, A, params('depuis=signalement&signalement=../../x'))).toEqual(
+			fiche
+		);
 	});
 });

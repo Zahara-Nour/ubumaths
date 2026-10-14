@@ -125,11 +125,30 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
      `pedagogical-arithmetic` saute les pièges du négatif, écrit `*`, conclut 2/0 en silence) : E1 moteur
      d'abord ; E2 rédaction collège ; E3 une opération par étape, $(-3)^2 = (-3)\times(-3) = 9$, étape
      « On remplace $x$ par … », résumé = remplacement + résultat ; E4 pas de « Comment ? » pour
-     $e^0$, $\ln 1$… ; E5 saisie décimale → réponse décimale (2,25) ; E6 (proposé, à confirmer) plusieurs
-     lettres séparées par « ; ». Découpage : PR 1 réponse en formule + refus justes ; PR 2 moteur
+     $e^0$, $\ln 1$… ; E5 saisie décimale → réponse décimale (2,25) ; E6 (validé le 2026-10-14)
+     plusieurs lettres séparées par « ; » (`en a=1,5 ; b=2`), une étape « On remplace $a$ par $1{,}5$
+     et $b$ par $2$ », message « Sépare les valeurs avec « ; » » si virgule. Découpage : PR 1 réponse en formule + refus justes ; PR 2 moteur
      (`\times`, $(-a)^n$, plus de calculs avalés, titre de √9, dénominateur nul) ; PR 3 atelier.
-   - **2c. Commande `.limite`** (aucune aujourd'hui ; `pedagogical-limits` sert aux corrections) :
-     syntaxe et limites à gauche / à droite à trancher par David.
+     PR 1 (#1351) et PR 2 (#1353) mergées. **PR 3 faite (2026-10-14)** : `evaluate-steps.ts` +
+     `evaluate-steps-check.ts`, étape « On remplace » rédigée par l'atelier, résumé construit
+     (remplacement + « On effectue les calculs »), gardes E4/E5, une seule lettre ; tests
+     `evaluer-etapes.test.ts`, `evaluer-etapes-affichage.svelte.test.ts`. Reste : E6.
+   - **2c. Commande `.limite`** — syntaxe validée par David le 2026-10-14 : L1 `en 1` (`en x=1`
+     toléré) ; L2 côté `0+` / `0-` / `0^+` et `à droite` / `à gauche` ; L3 `+∞`, `+inf`, `∞` seul =
+     $+\infty$ ; L4 sans côté et gauche ≠ droite → « Pas de limite en 0 : à gauche $-\infty$, à droite
+     $+\infty$ » ; L5 réponse $\lim\limits_{x\to 1}\dfrac{x^2-1}{x-1} = 2$, `e` et non `exp(1)`, jamais
+     de valeur approchée ; L6 `.limite f en +∞` → $\lim f(x)$. PR 1 moteur (#1359) mergée ; PR 2
+     commande qui répond seule ; PR 3 « Comment ? ». Plus tard : conjuguée, forme $1^\infty$.
+     **Fait le 2026-10-14** : PR 2 #1361 (`limit.ts`), moteur #1362 (`definedSide`, `noLimitReason`,
+     oscillation, e, statut approché, f(u) exact), raisons écrites #1363. Ouvert : raison quand le côté
+     est TAPÉ (reco : oui, « n'est pas définie à droite de 0 ») ; PR 3 « Comment ? » ; E6.
+   - **Décisions de David (2026-10-14, « je suis tes recos »)** : Q1 `.limite` avec côté TAPÉ → raison
+     écrite (« n'est pas définie à droite de $0$ », « oscille… ») ; Q2 fonction à paramètre : refus
+     large gardé (#1365), refus ciblé (seulement si le paramètre décide) en PR à part plus tard ;
+     Q3 primitive/intégrale qui divise par le paramètre → condition « ($a \neq 0$) » affichée ;
+     Q4 bouton « Dériver » de la carte aligné sur la commande ($f'(x) = a$) ; Q5 V57 `.résoudre a x = 0`
+     → refus « Le résultat dépend de a » quand le moteur divise par une expression du paramètre
+     ($x + a = 0$ reste accepté) ; discussion complète « si $a \neq 0$… si $a = 0$… » = piste future.
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).
 
 ### Dettes encore ouvertes (vérifiées dans le code)
