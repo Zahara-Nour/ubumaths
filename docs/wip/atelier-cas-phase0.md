@@ -1,7 +1,7 @@
 ---
 title: Atelier — ce qui manque avant de retirer /cas (phase 0)
 date: 2026-10-11
-status: PR 1 (#1080), PR 2 (#1086) et PR 3 (#1094) livrées le 2026-10-11 ; PR 4 (retrait de /cas) livrée le 2026-10-13 (#1340) ; restent les points mis de côté
+status: PR 1 (#1080), PR 2 (#1086) et PR 3 (#1094) livrées le 2026-10-11 ; PR 4 (retrait de /cas) livrée le 2026-10-13 (#1340) ; points mis de côté faits (#1101, #1107)
 ---
 
 # Atelier — ce qui manque avant de retirer `/cas`
@@ -188,7 +188,7 @@ absente du sitemap. `/calc` (autre page, autre composant, dans le sitemap) : inv
 
 ## Mis de côté (David, 2026-10-11 : « on verra après »)
 
-- `π/3` s'affiche `{1/3}π` dans Calcul (accolades visibles dans le LaTeX) — reste connu
-  « accolades dans Calcul » (`{1/3}x^3`).
-- Aligner `.mode décimal` sur la règle du bouton ≈ (4 décimales, `=` quand c'est exact) — PR à part,
-  après la PR 2.
+- ~~`π/3` s'affiche `{1/3}π` dans Calcul (accolades visibles dans le LaTeX)~~ — **fait** le
+  2026-10-11 (#1101 : un calcul s'écrit depuis son arbre mis au propre ; #1107 : texte exact).
+- ~~Aligner `.mode décimal` sur la règle du bouton ≈ (4 décimales, `=` quand c'est exact)~~ —
+  **fait** le 2026-10-11 (#1107).
