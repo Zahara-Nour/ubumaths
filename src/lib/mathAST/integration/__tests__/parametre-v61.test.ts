@@ -42,6 +42,27 @@ describe('1/(x^2+a^2), dénominateur entre parenthèses', () => {
 	});
 });
 
+describe('valeurs gardées par l’atelier (revue de V61), vérifiées en nombres', () => {
+	const cases: readonly (readonly [string, (x: number, a: number) => number])[] = [
+		['1/(x+a^2)', (x, a) => 1 / (x + a * a)],
+		['x/(x^2+a^2)', (x, a) => x / (x * x + a * a)],
+		['3x^a', (x, a) => 3 * x ** a],
+		['\\ln(x+a^2)', (x, a) => Math.log(x + a * a)]
+	];
+	it.each(cases.flatMap(([input, f]) => [0.5, 2, -3].map((a) => [input, a, f] as const)))(
+		'%s de 1 à 2, a = %s',
+		(input, a, f) => {
+			const result = integrateDefinite(typed(input), number('1'), number('2'), {
+				variable: 'x'
+			});
+			expect(result.value).not.toBeNull();
+			const exact = compile(result.value ?? number('0'))({ a });
+			const numeric = adaptiveSimpson((x) => f(x, a), 1, 2, 1e-10, 30);
+			expect(exact).toBeCloseTo(numeric, 8);
+		}
+	);
+});
+
 describe('x^a de 1 à 2 : 1^{a+1} réduit', () => {
 	it('(2^{a+1} − 1)/(a + 1)', () => {
 		const result = integrateDefinite(typed('x^a'), number('1'), number('2'), { variable: 'x' });

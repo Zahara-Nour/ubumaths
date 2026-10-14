@@ -518,3 +518,47 @@ describe('V61 : .intégrer x^a de 1 à 2, 1^{a+1} réduit', () => {
 		expect(latex('.intégrer 3x^a de 1 à 2', [])).not.toContain('1^{');
 	});
 });
+
+// =============================================================================
+// Revue de V61 : les pôles et les domaines qui ne passent pas par une division
+// =============================================================================
+
+describe('V61 (revue) : puissance négative ou fonction à domaine, à paramètre', () => {
+	it.each([
+		// ln|1 − a| − ln|a| rendu : faux, diverge pour a = 0,5
+		['.intégrer (x-a)^(-1) de 0 à 1'],
+		['.intégrer 2(x-a)^(-2) de 0 à 1'],
+		['.intégrer |x-a|^(-1) de 0 à 1'],
+		// argument hors du domaine selon a
+		['.intégrer \\ln(x-a) de 1 à 2'],
+		['.intégrer 3\\ln(a x) de 1 à 2'],
+		['.intégrer \\log(x-a) de 1 à 2'],
+		['.intégrer \\sqrt{x-a} de 1 à 2'],
+		['.intégrer (x-a)^{1/2} de 1 à 2'],
+		['.intégrer \\tan(x-a) de 0 à 1'],
+		['.intégrer 1/\\sin(x-a) de 1 à 2'],
+		['.intégrer \\arcsin(x-a) de 0 à 1'],
+		// exposant à paramètre sur une base qui s'annule dans le segment
+		['.intégrer (x-1)^a de 0 à 2']
+	])('%s → refus « dépend de a »', (input) => {
+		expect(refusal(input, [])).toBe(DEPENDS_ON('a'));
+	});
+
+	it.each([
+		// x + a² ⩾ 1 sur [1 ; 2]
+		['.intégrer 1/(x+a^2) de 1 à 2', '\\ln\\left|a^2+2\\right|-\\ln\\left|a^2+1\\right|'],
+		[
+			'.intégrer x/(x^2+a^2) de 1 à 2',
+			'\\dfrac{\\ln\\left|a^2+4\\right|}{2}-\\dfrac{\\ln\\left|a^2+1\\right|}{2}'
+		],
+		// x + a² ⩾ 1 sur [1 ; 2] : ln défini
+		['.intégrer \\ln(x+a^2) de 1 à 2', null],
+		// pas de domaine : sin est définie partout
+		['.intégrer 2\\sin(x-a) de 0 à 1', null],
+		['.intégrer 3x^a de 1 à 2', '\\dfrac{3\\times2^{a+1}-3}{a+1}\\quad(a\\neq-1)']
+	])('gardé : %s', (input, expected) => {
+		const shown = latex(input, []);
+		if (expected !== null) expect(shown).toBe(expected);
+		else expect(shown).not.toBe('');
+	});
+});

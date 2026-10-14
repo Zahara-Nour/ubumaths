@@ -2400,6 +2400,9 @@ function parameterBoundsRefusal(
 		) {
 			for (const p of citedParameters(node.denominator, integrandParameters)) poles.add(p);
 		}
+		// Revue de V61 : les pôles et les domaines qui ne passent pas par une
+		// division — `(x-a)^(-1) de 0 à 1` rendait ln|1 − a| − ln|a|, faux pour a = 0,5
+		for (const p of domainParameters(node, variable, integrandParameters, segment)) poles.add(p);
 		return node;
 	});
 	if (poles.size > 0) return dependsOnMessage([...new Set([...poles, ...inBounds])]);
@@ -2407,6 +2410,76 @@ function parameterBoundsRefusal(
 	const domain = computeDomain(integrand, variable);
 	if (isUniversal(domain.domain) && (domain.unresolved?.length ?? 0) === 0) return null;
 	return dependsOnMessage([...new Set(inBounds)]);
+}
+
+/** Les fonctions définies sur ℝ : leur argument n'a rien à prouver. */
+const DEFINED_EVERYWHERE: ReadonlySet<string> = new Set([
+	'sin',
+	'cos',
+	'exp',
+	'arctan',
+	'sinh',
+	'cosh',
+	'tanh',
+	'abs'
+]);
+
+/** Les fonctions définies pour un argument strictement positif (au moins) : ln, log, √. */
+const POSITIVE_ARGUMENT: ReadonlySet<string> = new Set(['ln', 'log', 'sqrt']);
+
+/**
+ * Revue de V61 : les paramètres d'un nœud qui peut sortir de son domaine sur le
+ * segment selon leur valeur (ou tous ceux qu'il cite, dans le doute) :
+ * - puissance d'une base en x à paramètre — exposant entier négatif : base non
+ *   nulle (`nonZeroOnSegment`) ; exposant non entier : base positive ;
+ * - exposant à paramètre d'une base en x : base positive (`(x-1)^a de 0 à 2`) ;
+ * - fonction d'un argument en x à paramètre : ln, log, √ exigent un argument
+ *   positif (`\ln(x + a^2)` sur [1 ; 2] gardé, `\ln(x-a)` refusé) ; sin, cos, exp,
+ *   arctan, |·|… rien ; toute autre (tan, arcsin…) refuse.
+ * `segment` nul (borne à paramètre ou écrite autrement qu'en nombre) : refus.
+ */
+function domainParameters(
+	node: MathNode,
+	variable: string,
+	parameters: readonly string[],
+	segment: Segment | null
+): string[] {
+	const positive = (n: MathNode) =>
+		isPositive(n) || (segment !== null && positiveOnSegment(n, variable, parameters, segment));
+	if (node.type === 'superscript' && getVariables(node.base).has(variable)) {
+		const cited = citedParameters(node, parameters);
+		if (cited.length === 0) return [];
+		if (citedParameters(node.superscript, parameters).length > 0) {
+			return positive(node.base) ? [] : cited;
+		}
+		if (getVariables(node.superscript).size > 0) return positive(node.base) ? [] : cited;
+		let exponent: number;
+		try {
+			exponent = compile(node.superscript)({});
+		} catch {
+			return cited;
+		}
+		if (Number.isInteger(exponent) && exponent >= 0) return [];
+		if (Number.isInteger(exponent)) {
+			const nonZero =
+				isPositive(node.base) ||
+				(segment !== null && nonZeroOnSegment(node.base, variable, parameters, segment));
+			return nonZero ? [] : cited;
+		}
+		return positive(node.base) ? [] : cited;
+	}
+	if (node.type === 'function') {
+		const argument = node.args[0];
+		const cited = citedParameters(node, parameters);
+		if (argument === undefined || cited.length === 0) return [];
+		if (!node.args.some((arg) => getVariables(arg).has(variable))) return [];
+		if (DEFINED_EVERYWHERE.has(node.name)) return [];
+		if (POSITIVE_ARGUMENT.has(node.name) && node.args.length === 1) {
+			return positive(argument) ? [] : cited;
+		}
+		return cited;
+	}
+	return [];
 }
 
 /** Un segment [low ; high] de nombres, low ⩽ high. */
@@ -2430,22 +2503,47 @@ function nonZeroOnSegment(
 	parameters: readonly string[],
 	segment: Segment
 ): boolean {
-	return variableFactors(denominator, variable).every((factor) => {
-		if (citedParameters(factor, parameters).length === 0) {
-			return nonZeroOn(factor, variable, segment);
-		}
-		const terms = signedTerms(factor);
-		const withVariable = terms.filter((t) => getVariables(t).has(variable));
-		const constant = terms.filter((t) => !getVariables(t).has(variable));
-		if (withVariable.length === 0) return false;
-		if (withVariable.some((t) => citedParameters(t, parameters).length > 0)) return false;
-		if (!constant.every(isNonNegative)) return false;
-		return positiveOn(
-			withVariable.reduce((sum, term) => add(sum, term)),
-			variable,
-			segment
-		);
-	});
+	return variableFactors(denominator, variable).every((factor) =>
+		citedParameters(factor, parameters).length === 0
+			? nonZeroOn(factor, variable, segment)
+			: positiveSumOnSegment(factor, variable, parameters, segment)
+	);
+}
+
+/**
+ * Strictement positive sur le segment pour toute valeur des paramètres :
+ * toujours positive (`a^2 + 1`), sans paramètre et > 0 sur le segment, ou une
+ * somme P + Q (voir `positiveSumOnSegment`). Dans le doute, `false`.
+ */
+function positiveOnSegment(
+	node: MathNode,
+	variable: string,
+	parameters: readonly string[],
+	segment: Segment
+): boolean {
+	if (isPositive(node)) return true;
+	if (citedParameters(node, parameters).length === 0) return positiveOn(node, variable, segment);
+	return positiveSumOnSegment(node, variable, parameters, segment);
+}
+
+/** P + Q, P sans paramètre et > 0 sur le segment, Q sans x et ⩾ 0 (`x^2 + a^2` sur [1 ; 2]). */
+function positiveSumOnSegment(
+	node: MathNode,
+	variable: string,
+	parameters: readonly string[],
+	segment: Segment
+): boolean {
+	const terms = signedTerms(node);
+	const withVariable = terms.filter((t) => getVariables(t).has(variable));
+	const constant = terms.filter((t) => !getVariables(t).has(variable));
+	if (withVariable.length === 0) return false;
+	if (withVariable.some((t) => citedParameters(t, parameters).length > 0)) return false;
+	if (!constant.every(isNonNegative)) return false;
+	return positiveOn(
+		withVariable.reduce((sum, term) => add(sum, term)),
+		variable,
+		segment
+	);
 }
 
 /** Les facteurs d'un produit qui contiennent la variable : `a x (x+1)^2` → x, x + 1. */
