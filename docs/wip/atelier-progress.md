@@ -150,6 +150,10 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
      Q4 bouton « Dériver » de la carte aligné sur la commande ($f'(x) = a$) ; Q5 V57 `.résoudre a x = 0`
      → refus « Le résultat dépend de a » quand le moteur divise par une expression du paramètre
      ($x + a = 0$ reste accepté) ; discussion complète « si $a \neq 0$… si $a = 0$… » = piste future.
+   - **Décisions de David (2026-10-14, « je te suis »)**, après V58/V60/V61 (#1371, #1373, #1374) :
+     intégrale BORNÉE à paramètre → la condition de l'intégrande est dite (`1/(a x)` de 1 à 2 →
+     $\dfrac{\ln 2}{a}$ ($a \neq 0$)), la primitive seule ne la redit pas (la saisie la montre) ;
+     `E(x)` lu comme la partie entière dans l'atelier, en PR à part (aujourd'hui `.limite E(x) en 1` → « E »).
    - **3. V48 (a)** : rédaction sur la fraction écrite (valeur interdite, double barre).
 
 ### Dettes encore ouvertes (vérifiées dans le code)
