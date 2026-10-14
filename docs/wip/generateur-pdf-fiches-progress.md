@@ -89,6 +89,12 @@ Gabarits inaccessibles :
   fiche + corrections sont ceux de « Fiche élève » (règle D2). Le **bandeau vert** « CORRIGÉ » /
   « RÉPONSES » reste, mais **écrit dans le gabarit** de la forme, plus injecté.
 
+- **D8** (2026-10-14) — « je n'ai pas besoin de points dans les fiches d'exercice et leur
+  correction. Plus tard quand on fera un gabarit pour les évaluations on les ajoutera » : le style
+  « Fiche élève » n'imprime **aucun point** (fiche, réponses, corrigé, fiche + corrections) ; c'est
+  le style qui décide (`showsPoints`), la case « afficher les points » ne vaut que pour les styles
+  qui en impriment. Le PDF élève suivra au lot 4 (il passe par le gabarit).
+
 ## Vocabulaire proposé (à verser dans CONTEXT.md, lot 0)
 
 | Terme       | Sens                                                                                                                     |

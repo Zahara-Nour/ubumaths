@@ -292,7 +292,9 @@ gabarit. Chaque gabarit intégré est un **style** (`BUILT_IN_STYLES`) ; le styl
 **« Fiche élève »** (`DEFAULT_STYLE_ID`, D7), a ses quatre formes (`STUDENT_STYLE_FORMS` : fiche,
 réponses, corrigé, fiche + corrections) et un code commun (`STUDENT_STYLE_COMMON`, inséré à la
 place de `{{style_common}}`) ; les onze autres n'ont que leur fiche et prennent les autres formes
-du style par défaut. `resolveTemplate(style, forme, gabarit lu en base)` : le style est encore
+du style par défaut. Le style décide aussi des **points** (`showsPoints`) : « Fiche élève » n'en
+imprime aucun, ni sur la fiche ni sur ses corrigés, quelle que soit la case « afficher les
+points » (D8) ; les autres styles et les gabarits du prof suivent la case. `resolveTemplate(style, forme, gabarit lu en base)` : le style est encore
 désigné par `worksheets.template_id` (inconnu ou vide → « Fiche élève ») ; le gabarit lu en base
 ne sert qu'à la forme « fiche ». **Plus de mise en page écrite dans le code** : une fiche sans
 gabarit prend la fiche « Fiche élève ». Le bandeau vert des corrigés (« CORRECTION », « RÉPONSES »,

@@ -591,7 +591,11 @@ describe('WorksheetGenerator', () => {
 			instance.exercises[0].points = 5;
 			instance.exercises[1].points = 1;
 
-			const result = generator.generate({ worksheet: createMockWorksheet(), instance });
+			// Style « Standard » : la case de la fiche décide (« Fiche élève » n'imprime aucun point)
+			const result = generator.generate({
+				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
+				instance
+			});
 
 			// Libellé de documentLabels : « 1 pt », « 5 pts » (ADR 0028, lot 1)
 			expect(result.typstContent).toContain(')[5 pts]');

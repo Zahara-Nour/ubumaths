@@ -31,6 +31,19 @@ export interface WorksheetStyle {
 	common: string;
 	/** Un gabarit par forme ; forme absente → celle du style par défaut */
 	templates: Partial<Record<TemplateForm, string>>;
+	/**
+	 * Le style imprime-t-il les points des exercices ? Faux pour « Fiche
+	 * élève » (fiches d'exercices et leurs corrigés) : les points sont l'affaire
+	 * d'un style d'évaluation. Vrai : la case « afficher les points » décide.
+	 */
+	showsPoints: boolean;
+}
+
+/** Le gabarit d'une forme, et ce que son style imprime */
+export interface ResolvedTemplate {
+	/** Prêt pour `renderTemplate` */
+	content: string;
+	showsPoints: boolean;
 }
 
 const STYLE_COMMON = '{{style_common}}';
@@ -46,14 +59,16 @@ export const BUILT_IN_STYLES: WorksheetStyle[] = DEFAULT_TEMPLATES.map((template
 				name: template.name,
 				description: template.description,
 				common: STUDENT_STYLE_COMMON,
-				templates: STUDENT_STYLE_FORMS
+				templates: STUDENT_STYLE_FORMS,
+				showsPoints: false
 			}
 		: {
 				id: template.id,
 				name: template.name,
 				description: template.description,
 				common: '',
-				templates: { worksheet: template.template_content }
+				templates: { worksheet: template.template_content },
+				showsPoints: true
 			}
 );
 
@@ -62,11 +77,13 @@ function builtInStyle(id: string | null | undefined): WorksheetStyle | undefined
 }
 
 /**
- * Le gabarit d'une forme, prêt pour `renderTemplate` : `{{style_common}}`
- * remplacé par le code commun du style qui fournit le gabarit.
+ * Le gabarit d'une forme, `{{style_common}}` remplacé par le code commun du
+ * style qui fournit le gabarit, et ce que ce style imprime.
  *
  * - `custom` : le gabarit de la fiche lu en base (gabarit du prof), utilisé
- *   pour la forme « fiche » seulement ;
+ *   pour la forme « fiche » seulement ; il imprime les points comme son style
+ *   intégré (copie en base d'un gabarit système), sinon (gabarit du prof)
+ *   selon la case de la fiche ;
  * - style inconnu ou absent → style par défaut ; forme absente du style →
  *   celle du style par défaut.
  */
@@ -74,12 +91,17 @@ export function resolveTemplate(
 	styleId: string | null | undefined,
 	form: TemplateForm,
 	custom?: string | null
-): string {
-	if (form === 'worksheet' && custom) return custom;
+): ResolvedTemplate {
+	if (form === 'worksheet' && custom) {
+		return { content: custom, showsPoints: builtInStyle(styleId)?.showsPoints ?? true };
+	}
 
 	const fallback = builtInStyle(DEFAULT_STYLE_ID) as WorksheetStyle;
 	const chosen = builtInStyle(styleId) ?? fallback;
 	const owner = chosen.templates[form] ? chosen : fallback;
 	const template = owner.templates[form] as string;
-	return template.split(STYLE_COMMON).join(owner.common);
+	return {
+		content: template.split(STYLE_COMMON).join(owner.common),
+		showsPoints: owner.showsPoints
+	};
 }

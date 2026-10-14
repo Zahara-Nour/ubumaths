@@ -287,8 +287,13 @@ describe('ordre et numérotation', () => {
 
 describe('points', () => {
 	it('prof : « 1 pt », « 2 pts » (documentLabels, plus « pts » en dur)', () => {
+		// Gabarit « Exercice N » : la case de la fiche décide (« Fiche élève » n'imprime aucun point)
 		for (const language of ['fr', 'en'] as const) {
-			const typst = teacher('worksheet', { ...BASE_CONFIG, language });
+			const typst = teacher(
+				'worksheet',
+				{ ...BASE_CONFIG, language },
+				template(HEADING_TEMPLATE!.template_content)
+			);
 			expect(typst).toContain(')[1 pt]');
 			expect(typst).toContain(')[2 pts]');
 			expect(typst).not.toContain('#pts pts');

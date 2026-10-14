@@ -41,7 +41,7 @@ import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types
 import { BaseTypstGenerator } from './base-generator';
 import { escapeTypst } from '$lib/ubumark';
 import { renderTemplate } from '../templates';
-import { resolveTemplate, type TemplateForm } from '../templates/styles';
+import { resolveTemplate, type ResolvedTemplate, type TemplateForm } from '../templates/styles';
 import { documentLabels, labelPlaceholders, type DocumentLabels } from '../labels';
 import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
 import { localizedText, worksheetLocale } from '$lib/types/worksheets';
@@ -229,12 +229,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		// Le gabarit de la forme demandée, dans le style de la fiche (lot 2 : le
 		// style est désigné par `template_id`) ; le gabarit lu en base ne sert
 		// qu'à la fiche.
-		const templateContent = resolveTemplate(
-			worksheet.template_id,
-			this.form,
-			template?.template_content
-		);
-		let typstContent = this.generateFromTemplate(input, templateContent);
+		const resolved = resolveTemplate(worksheet.template_id, this.form, template?.template_content);
+		let typstContent = this.generateFromTemplate(input, resolved);
 
 		// Corrigé : Shantell Sans et Chiphre Math, posées après la police du document
 		if (this.pdfMode === 'correction' && this.options.correctionFonts !== false) {
@@ -253,8 +249,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	/**
 	 * Remplit le gabarit de la forme : exercices, en-tête, bandeau du corrigé
 	 */
-	private generateFromTemplate(input: WorksheetGeneratorInput, templateContent: string): string {
+	private generateFromTemplate(input: WorksheetGeneratorInput, resolved: ResolvedTemplate): string {
 		const { worksheet } = input;
+		const templateContent = resolved.content;
 		const mode = this.pdfMode;
 		const ending = mode === 'worksheet' ? this.options.withCorrections : undefined;
 
@@ -264,9 +261,11 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const layout: ExerciseLayout = templateContent.includes('{{exercises_badge}}')
 			? 'badge'
 			: 'heading';
-		const exercisesTypst = this.generateExercises(input, mode, layout);
+		const exercisesTypst = this.generateExercises(input, mode, layout, resolved.showsPoints);
 		// Fiche + corrections : les réponses ou le corrigé, après les énoncés
-		const corrections = ending ? this.generateExercises(input, ending, layout) : '';
+		const corrections = ending
+			? this.generateExercises(input, ending, layout, resolved.showsPoints)
+			: '';
 		// Le bandeau du corrigé (« CORRIGÉ », « RÉPONSES »)
 		const titled = ending ?? mode;
 
@@ -328,17 +327,24 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	private generateExercises(
 		input: WorksheetGeneratorInput,
 		mode: WorksheetPdfMode,
-		layout: ExerciseLayout
+		layout: ExerciseLayout,
+		styleShowsPoints: boolean
 	): string {
 		const copyDoc = documentFromTeacherCopy({
 			worksheet: input.worksheet,
 			instance: input.instance,
 			config: this.worksheetConfig
 		});
-		// Copie d'un élève servant de corrigé de classe (D6) : le titre seul
-		const doc = this.options.individualCopyNotice
-			? { ...copyDoc, display: { ...copyDoc.display, titleOnly: true } }
-			: copyDoc;
+		const doc = {
+			...copyDoc,
+			display: {
+				...copyDoc.display,
+				// Le style décide d'abord : « Fiche élève » n'imprime aucun point
+				showPoints: styleShowsPoints && copyDoc.display.showPoints,
+				// Copie d'un élève servant de corrigé de classe (D6) : le titre seul
+				...(this.options.individualCopyNotice ? { titleOnly: true } : {})
+			}
+		};
 		return renderExercises(doc, mode, layout);
 	}
 }

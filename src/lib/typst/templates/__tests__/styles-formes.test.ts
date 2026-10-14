@@ -106,14 +106,14 @@ describe('styles fournis par Chiphre', () => {
 	});
 
 	it('la fiche « Fiche élève » résolue est le gabarit intégré d’avant, à l’octet', () => {
-		expect(resolveTemplate(DEFAULT_STYLE_ID, 'worksheet')).toBe(
+		expect(resolveTemplate(DEFAULT_STYLE_ID, 'worksheet').content).toBe(
 			STUDENT_STYLE_TEMPLATE.template_content
 		);
 	});
 
 	it('le code commun du style remplace {{style_common}} dans chaque forme', () => {
 		for (const form of FORMS) {
-			const resolved = resolveTemplate(DEFAULT_STYLE_ID, form);
+			const resolved = resolveTemplate(DEFAULT_STYLE_ID, form).content;
 			expect(resolved).not.toContain('{{style_common}}');
 			expect(resolved).toContain('columns: 2');
 		}
@@ -123,30 +123,34 @@ describe('styles fournis par Chiphre', () => {
 describe('résolution du gabarit', () => {
 	it('un autre style garde SA fiche', () => {
 		const standard = DEFAULT_TEMPLATES.find((t) => t.id === DEFAULT_TEMPLATE_IDS.standard);
-		expect(resolveTemplate(DEFAULT_TEMPLATE_IDS.standard, 'worksheet')).toBe(
+		expect(resolveTemplate(DEFAULT_TEMPLATE_IDS.standard, 'worksheet').content).toBe(
 			standard?.template_content
 		);
 	});
 
 	it('ses autres formes sont celles de « Fiche élève » (D2)', () => {
 		for (const form of ['answers', 'correction', 'worksheet_with_corrections'] as const) {
-			expect(resolveTemplate(DEFAULT_TEMPLATE_IDS.standard, form)).toBe(
-				resolveTemplate(DEFAULT_STYLE_ID, form)
+			expect(resolveTemplate(DEFAULT_TEMPLATE_IDS.standard, form).content).toBe(
+				resolveTemplate(DEFAULT_STYLE_ID, form).content
 			);
 		}
 	});
 
 	it('style absent ou inconnu → « Fiche élève », pour toutes les formes', () => {
 		for (const form of FORMS) {
-			expect(resolveTemplate(null, form)).toBe(resolveTemplate(DEFAULT_STYLE_ID, form));
-			expect(resolveTemplate('inconnu', form)).toBe(resolveTemplate(DEFAULT_STYLE_ID, form));
+			expect(resolveTemplate(null, form).content).toBe(
+				resolveTemplate(DEFAULT_STYLE_ID, form).content
+			);
+			expect(resolveTemplate('inconnu', form).content).toBe(
+				resolveTemplate(DEFAULT_STYLE_ID, form).content
+			);
 		}
 	});
 
 	it('gabarit du prof : sa fiche seulement, le corrigé est celui du style par défaut', () => {
-		expect(resolveTemplate(null, 'worksheet', 'PERSO')).toBe('PERSO');
-		expect(resolveTemplate(null, 'correction', 'PERSO')).toBe(
-			resolveTemplate(DEFAULT_STYLE_ID, 'correction')
+		expect(resolveTemplate(null, 'worksheet', 'PERSO').content).toBe('PERSO');
+		expect(resolveTemplate(null, 'correction', 'PERSO').content).toBe(
+			resolveTemplate(DEFAULT_STYLE_ID, 'correction').content
 		);
 	});
 });
@@ -231,5 +235,47 @@ describe('fiche + corrections', () => {
 		expect(
 			generate('worksheet', { withCorrections: 'correction', correctionFonts: false })
 		).not.toContain('Shantell Sans');
+	});
+});
+
+describe('points : le style décide (« Fiche élève » : aucun)', () => {
+	const POINTS = /\)\[\d+ pts?\]/;
+	const withPoints: InstanceData = {
+		exercises: INSTANCE.exercises.map((e) => ({ ...e, points: 2 }))
+	};
+	function gen(
+		mode: 'worksheet' | 'answers' | 'correction',
+		templateId: string | null,
+		template: WorksheetTemplateRow | null = null
+	): string {
+		return generateWorksheetTypst({
+			worksheet: worksheet(templateId),
+			instance: withPoints,
+			config: { show_points: true },
+			mode,
+			template
+		});
+	}
+
+	it('« Fiche élève » : ni sur la fiche, ni sur ses corrigés, même case cochée', () => {
+		for (const mode of ['worksheet', 'answers', 'correction'] as const) {
+			expect(gen(mode, null)).not.toMatch(POINTS);
+			expect(gen(mode, DEFAULT_STYLE_ID)).not.toMatch(POINTS);
+		}
+	});
+
+	it('copie en base du gabarit « Fiche élève » : pas de points non plus', () => {
+		const copy = row(STUDENT_STYLE_TEMPLATE.template_content, DEFAULT_STYLE_ID);
+		expect(gen('worksheet', DEFAULT_STYLE_ID, copy)).not.toMatch(POINTS);
+	});
+
+	it('autre style, ou gabarit du prof : la case de la fiche décide', () => {
+		expect(gen('worksheet', DEFAULT_TEMPLATE_IDS.standard)).toMatch(POINTS);
+		const perso = row('#set page(paper: "a4")\n{{exercises}}');
+		expect(gen('worksheet', 'perso', perso)).toMatch(POINTS);
+	});
+
+	it('témoin : les corrigés d’un autre style sont ceux de « Fiche élève », sans points', () => {
+		expect(gen('correction', DEFAULT_TEMPLATE_IDS.standard)).not.toMatch(POINTS);
 	});
 });
