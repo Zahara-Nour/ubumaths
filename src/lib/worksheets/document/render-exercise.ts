@@ -24,6 +24,7 @@ import {
 import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 import { correctionForPrint } from '$lib/questions/correction-detail';
 import { documentLabels } from '$lib/typst/labels';
+import { CORRECTION_FONT_RULES } from '$lib/typst/correction-fonts';
 import { SECTION_COLOR, exerciseBadge } from '$lib/typst/worksheet-palette';
 // Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
 import '$lib/ubumark/generators/figure-typst-setup';
@@ -45,6 +46,18 @@ import type { DocumentExercise, DocumentForm, DocumentSection, WorksheetDocument
 export const EXERCISE_LAYOUTS = ['heading', 'badge'] as const;
 export type ExerciseLayout = (typeof EXERCISE_LAYOUTS)[number];
 
+/**
+ * Réglages du rendu :
+ * - `inlineCorrections` : « Fiche + corrigé » du prof (demande de David,
+ *   2026-10-14) — sur la fiche, la correction de chaque exercice juste sous son
+ *   énoncé, sans cadre de réponse ;
+ * - `correctionFonts` : ces corrections en police du corrigé (vrai par défaut).
+ */
+export interface RenderOptions {
+	inlineCorrections?: boolean;
+	correctionFonts?: boolean;
+}
+
 /** Ce qu'un exercice imprime après son en-tête, hors fiche */
 type PrintedCorrection = { markdown: string } | { message: string };
 
@@ -62,7 +75,8 @@ type PrintedCorrection = { markdown: string } | { message: string };
 export function renderExercises(
 	doc: WorksheetDocument,
 	form: DocumentForm,
-	layout: ExerciseLayout
+	layout: ExerciseLayout,
+	options: RenderOptions = {}
 ): string {
 	// Réponses et corrigé : seulement les exercices dont la correction est
 	// visible (vue de l'élève) ; la copie du prof les a toutes
@@ -74,7 +88,7 @@ export function renderExercises(
 	let content = '';
 	for (const { header, exercise } of withSectionHeaders(printed, form)) {
 		if (header) content += renderSectionHeader(header, layout);
-		content += renderExercise(exercise, doc, form, layout);
+		content += renderExercise(exercise, doc, form, layout, options);
 	}
 	return content;
 }
@@ -83,7 +97,11 @@ export function renderExercises(
  * Aperçu à l'écran du prof, en markdown : mêmes ordre, numéros, titres,
  * sections et corrections que le PDF de la même forme (lot 2).
  */
-export function renderMarkdownPreview(doc: WorksheetDocument, form: DocumentForm): string {
+export function renderMarkdownPreview(
+	doc: WorksheetDocument,
+	form: DocumentForm,
+	options: RenderOptions = {}
+): string {
 	const labels = documentLabels(doc.locale);
 	const level = doc.sections.length > 0 ? '###' : '##';
 	const parts: string[] = [`# ${doc.title}\n`];
@@ -101,6 +119,11 @@ export function renderMarkdownPreview(doc: WorksheetDocument, form: DocumentForm
 		if (form === 'worksheet') {
 			if (exercise.instructions) parts.push(`_${exercise.instructions}_\n`);
 			parts.push(`${exercise.statement}\n`);
+			// Fiche + corrigé : la correction sous l'énoncé, comme le PDF
+			if (!options.inlineCorrections) continue;
+			const inline = printedCorrection(exercise, doc, 'correction');
+			if (inline)
+				parts.push('markdown' in inline ? `${inline.markdown}\n` : `_${inline.message}_\n`);
 			continue;
 		}
 		const printed = printedCorrection(exercise, doc, form);
@@ -190,9 +213,10 @@ function renderExercise(
 	exercise: DocumentExercise,
 	doc: WorksheetDocument,
 	form: DocumentForm,
-	layout: ExerciseLayout
+	layout: ExerciseLayout,
+	options: RenderOptions
 ): string {
-	return renderTemplateExercise(exercise, doc, form, layout) + '\n\n';
+	return renderTemplateExercise(exercise, doc, form, layout, options) + '\n\n';
 }
 
 /** Gabarit : en-tête « Exercice N » ou numéro sur carré ambre, dans un bloc `sticky` */
@@ -200,7 +224,8 @@ function renderTemplateExercise(
 	exercise: DocumentExercise,
 	doc: WorksheetDocument,
 	form: DocumentForm,
-	layout: 'heading' | 'badge'
+	layout: 'heading' | 'badge',
+	options: RenderOptions = {}
 ): string {
 	const labels = documentLabels(doc.locale);
 	const points = shownPoints(exercise, doc);
@@ -255,12 +280,32 @@ function renderTemplateExercise(
 		? `#block(width: 100%, inset: (left: 8pt), above: 0.5em, stroke: (left: 2pt + rgb("#f97316")))[\n`
 		: `#block(width: 100%, inset: 0pt, above: 0.5em)[\n`;
 	content += indent(markdownTypst(exercise.statement, exercise, doc)) + '\n';
+	// Fiche + corrigé : la correction remplace le cadre de réponse
+	if (options.inlineCorrections) {
+		return content + '\n]\n' + inlineCorrection(exercise, doc, options);
+	}
 	if (hasAnswerSpace(doc)) {
 		content += `  #v(0.5em)
   #rect(width: 100%, height: 5cm, stroke: (paint: rgb("#c8c8c8"), thickness: 0.5pt, dash: "dashed"), fill: none)`;
 	}
 	content += '\n]\n';
 	return content;
+}
+
+/**
+ * La correction d'un exercice sous son énoncé (« Fiche + corrigé »), en
+ * police du corrigé dans son seul bloc : les énoncés gardent la leur.
+ */
+function inlineCorrection(
+	exercise: DocumentExercise,
+	doc: WorksheetDocument,
+	options: RenderOptions
+): string {
+	const correction = renderTeacherCorrection(exercise, doc, 'correction');
+	if (!correction) return '';
+	// Le bloc `#[ … ]` borne les règles de police à cette correction
+	const fonts = options.correctionFonts === false ? '' : `${CORRECTION_FONT_RULES}\n`;
+	return `#[\n${fonts}${correction}]\n`;
 }
 
 /** ★ d'un exercice indispensable (vue de l'élève ; la copie du prof n'en a pas) */

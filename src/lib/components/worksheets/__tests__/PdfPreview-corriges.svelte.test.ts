@@ -1,6 +1,6 @@
 /**
- * PdfPreview — trois PDF pour le professeur : Fiche · Réponses · Corrigé
- * =====================================================================
+ * PdfPreview — les PDF du professeur : Fiche · Réponses · Corrigé · Fiche + corrigé
+ * ===============================================================================
  *
  * Chaque PDF a son nom de fichier ; le Corrigé dont la compilation échoue
  * dans ses polices est recompilé dans la police standard, avec un avertissement.
@@ -23,9 +23,10 @@ const captured = vi.hoisted(() => ({
 }));
 
 vi.mock('$lib/typst/generators', () => ({
-	generateWorksheetTypst: (options: { mode: string }) => {
+	generateWorksheetTypst: (options: { mode: string; inlineCorrections?: boolean }) => {
 		captured.modes.push(options.mode);
-		return `DOC-${options.mode}`;
+		// Fiche + corrigé : une fiche, corrections sous les énoncés
+		return options.inlineCorrections ? `DOC-${options.mode}+corrections` : `DOC-${options.mode}`;
 	}
 }));
 
@@ -86,7 +87,7 @@ async function downloadedFileName(): Promise<string> {
 
 async function choose(label: string) {
 	await page.getByRole('button', { name: 'PDF à générer' }).click();
-	await page.getByRole('option', { name: label }).click();
+	await page.getByRole('option', { name: label, exact: true }).click();
 }
 
 // ============================================================================
@@ -116,6 +117,16 @@ describe('PdfPreview — Fiche, Réponses, Corrigé', () => {
 		expect(captured.warnings).toEqual([]);
 	});
 
+	it('« Fiche + corrigé » : la fiche, corrections sous les énoncés, son nom de fichier', async () => {
+		const screen = await render(PdfPreview, { props: { worksheet } });
+		const preview = () => screen.container.querySelector('#pdf-svg-preview')?.textContent ?? '';
+		await expect.poll(preview).toBe('DOC-worksheet');
+
+		await choose('Fiche + corrigé');
+		await expect.poll(preview).toBe('DOC-worksheet+corrections');
+		expect(await downloadedFileName()).toBe('Variables_aleatoires - Fiche et corrigé.pdf');
+	});
+
 	it('Corrigé recompilé dans la police standard : avertissement', async () => {
 		captured.fallback = 'unknown font family: chiphre math';
 		await render(PdfPreview, { props: { worksheet } });
@@ -130,6 +141,7 @@ describe('PdfPreview — Fiche, Réponses, Corrigé', () => {
 		const screen = await render(PdfPreview, { props: { worksheet, variant: 'reader' } });
 		await expect.poll(() => captured.modes).toContain('worksheet');
 		expect(screen.container.textContent).not.toContain('PDF à générer');
+		expect(screen.container.textContent).not.toContain('Fiche + corrigé');
 		expect(captured.modes.every((mode) => mode === 'worksheet')).toBe(true);
 	});
 });

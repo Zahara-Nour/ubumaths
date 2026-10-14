@@ -110,6 +110,12 @@ export interface WorksheetGeneratorOptions {
 	 * effet hors de la fiche.
 	 */
 	withCorrections?: 'answers' | 'correction';
+	/**
+	 * « Fiche + corrigé » du prof : sur la fiche, la correction de chaque
+	 * exercice juste sous son énoncé, « — Correction » après le titre (demande de
+	 * David, 2026-10-14). Sans effet hors de la fiche.
+	 */
+	inlineCorrections?: boolean;
 }
 
 /**
@@ -129,6 +135,8 @@ export interface GenerateTypstParams {
 	individualCopyNotice?: boolean;
 	/** Voir `WorksheetGeneratorOptions.withCorrections` */
 	withCorrections?: 'answers' | 'correction';
+	/** Voir `WorksheetGeneratorOptions.inlineCorrections` */
+	inlineCorrections?: boolean;
 }
 
 // ============================================================================
@@ -309,7 +317,11 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			show_class: flag(config.show_class),
 			show_student_name: flag(config.show_student_name),
 			show_points: flag(config.show_points),
-			title: escapeTypst(this.title(worksheet)),
+			title: escapeTypst(
+				mode === 'worksheet' && this.options.inlineCorrections
+					? `${this.title(worksheet)} — ${this.labels.correction}`
+					: this.title(worksheet)
+			),
 			date: this.formattedDate(),
 			class: this.context.className ? escapeTypst(this.context.className) : '',
 			student_name: this.context.studentName ? escapeTypst(this.context.studentName) : '',
@@ -376,7 +388,10 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 				...(this.options.individualCopyNotice ? { titleOnly: true } : {})
 			}
 		};
-		return renderExercises(doc, mode, layout);
+		return renderExercises(doc, mode, layout, {
+			inlineCorrections: mode === 'worksheet' && this.options.inlineCorrections,
+			correctionFonts: this.options.correctionFonts
+		});
 	}
 }
 
@@ -406,7 +421,8 @@ export function generateWorksheetTypst(params: GenerateTypstParams): string {
 		{
 			correctionFonts: params.correctionFonts,
 			individualCopyNotice: params.individualCopyNotice,
-			withCorrections: params.withCorrections
+			withCorrections: params.withCorrections,
+			inlineCorrections: params.inlineCorrections
 		}
 	);
 

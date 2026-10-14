@@ -34,12 +34,14 @@ export function sanitizeForFileName(name: string): string {
 }
 
 /** Les trois PDF d'une fiche : la fiche, ses réponses, son corrigé */
-export type WorksheetPdfKind = 'worksheet' | 'answers' | 'correction';
+export type WorksheetPdfKind = 'worksheet' | 'answers' | 'correction' | 'worksheet_correction';
 
 const PDF_KIND_SUFFIXES: Record<WorksheetPdfKind, string> = {
 	worksheet: '',
 	answers: ' - Réponses',
-	correction: ' - Corrigé'
+	correction: ' - Corrigé',
+	// Fiche + corrigé du prof : chaque correction sous son énoncé
+	worksheet_correction: ' - Fiche et corrigé'
 };
 
 /**
