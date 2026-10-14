@@ -422,3 +422,15 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
    et `api/teacher/chapters/*/worksheets/**` sont couverts par les deux docs.
 10. L'en-tête de l'éditeur de chapitre (`[classId]/[chapterId]/+page.server.ts`) annonce un
     réordonnancement des documents, objectifs et exercices qui n'a pas d'action.
+11. **Un modèle ne se modifie qu'en passant par un chapitre** — David veut revoir le modèle des
+    chapitres (demande du 2026-10-14, rien de décidé, ne pas changer en attendant). Modifier un
+    modèle demande de modifier un chapitre de classe, puis « Mettre à jour depuis un chapitre » sur
+    la page du modèle : un geste en deux temps que personne n'a choisi. Les modèles n'avaient aucun
+    écran de modification ; le 2026-09-14, `updateFromChapter` a bouché ce trou en réutilisant
+    `extractContentSnapshotFromChapter`, et la question « modifier un modèle directement ? » n'a
+    jamais été posée ([journal](../archive/wip/mon-cours-chapitres-progress.md#le-cycle-de-vie-dun-modèle--complété-le-2026-09-14)).
+    Pistes présentées, à trancher : (1) éditer le modèle sur sa page, chaque enregistrement = une
+    version — un second éditeur à maintenir ; (2) « Modifier » ouvre l'éditeur de chapitre sur un
+    brouillon hors classe, « Enregistrer comme nouvelle version » — touche schéma et RLS, question
+    d'accès d'abord ; (3) garder le geste, l'expliquer et présélectionner le chapitre d'origine. À
+    reprendre avec les écarts 2, 3 et 5.
