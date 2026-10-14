@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { globSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { documentLabels, STUDENT_TYPE_LABELS } from '$lib/typst/labels';
+import { documentLabels } from '$lib/typst/labels';
 import { WORKSHEET_TYPES } from '$lib/types/worksheets';
 import { getTypeLabel } from '$lib/typst/utils';
 import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_OPTIONS } from '$lib/utils/worksheet-constants';
@@ -12,7 +12,6 @@ describe('type de fiche « contrôle »', () => {
 		expect(WORKSHEET_TYPE_LABELS.assessment).toBe('Contrôle');
 		expect(WORKSHEET_TYPE_OPTIONS.find((o) => o.value === 'assessment')?.label).toBe('Contrôle');
 		expect(getTypeLabel('assessment')).toBe('Contrôle');
-		expect(STUDENT_TYPE_LABELS.fr.assessment).toBe('Contrôle');
 	});
 
 	it('aucun libellé recopié dans un composant ne dit encore « Evaluation »', () => {
@@ -34,7 +33,6 @@ describe('libellés des types de fiche : une seule table', () => {
 		for (const type of WORKSHEET_TYPES) {
 			const libelle = WORKSHEET_TYPE_LABELS[type];
 			expect(getTypeLabel(type)).toBe(libelle);
-			expect(STUDENT_TYPE_LABELS.fr[type]).toBe(libelle);
 			expect(WORKSHEET_TYPE_OPTIONS.find((o) => o.value === type)?.label).toBe(libelle);
 		}
 		expect(fr.typeWorksheet).toBe(WORKSHEET_TYPE_LABELS.worksheet);

@@ -8,11 +8,7 @@
  * - Backward compatibility with legacy function
  */
 import { describe, it, expect } from 'vitest';
-import {
-	WorksheetGenerator,
-	generateWorksheetTypst,
-	generateBatchTypst
-} from '../worksheet-generator';
+import { WorksheetGenerator, generateWorksheetTypst } from '../worksheet-generator';
 import { DEFAULT_TEMPLATES, DEFAULT_TEMPLATE_IDS } from '../../templates/default-templates';
 import { exerciseBadge } from '../../worksheet-palette';
 import type {
@@ -812,42 +808,6 @@ describe('generateWorksheetTypst (legacy function)', () => {
 
 		expect(result).toContain('CORRECTION');
 		expect(result).toContain('x = 2');
-	});
-});
-
-describe('generateBatchTypst', () => {
-	it('generates multiple worksheets with page breaks', () => {
-		const worksheet = createMockWorksheet();
-		const config = createMockConfig();
-
-		const instances = [
-			{ instance: createMockInstance(), studentName: 'Student 1', studentId: 's1' },
-			{ instance: createMockInstance(), studentName: 'Student 2', studentId: 's2' },
-			{ instance: createMockInstance(), studentName: 'Student 3', studentId: 's3' }
-		];
-
-		const result = generateBatchTypst(worksheet, instances, config, 'worksheet');
-
-		expect(result).toContain('Student 1');
-		expect(result).toContain('Student 2');
-		expect(result).toContain('Student 3');
-		expect(result).toContain('#pagebreak()');
-	});
-
-	it('removes duplicate setup sections', () => {
-		const worksheet = createMockWorksheet();
-		const config = createMockConfig();
-
-		const instances = [
-			{ instance: createMockInstance(), studentName: 'Student 1', studentId: 's1' },
-			{ instance: createMockInstance(), studentName: 'Student 2', studentId: 's2' }
-		];
-
-		const result = generateBatchTypst(worksheet, instances, config, 'worksheet');
-
-		// Count occurrences of "// Document Setup" - should only appear once
-		const setupMatches = result.match(/\/\/ Document Setup/g);
-		expect(setupMatches?.length || 0).toBeLessThanOrEqual(1);
 	});
 });
 

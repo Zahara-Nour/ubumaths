@@ -3,6 +3,11 @@
 > Chantier ouvert le 2026-10-13 (demande de David). Worktree `../ubumaths-wt-pdf-fiches`,
 > branche `refactor/generateur-pdf-fiches-unique`. **Plan validé le 2026-10-13 (ADR 0028) ; lots 0, 1, 1 bis (D5) et D6 mergés (#1344, #1348, #1352) ; lot 2 en PR (branche `refactor/fiches-formes-gabarits`).**
 
+> **Chantier clos le 2026-10-14** (lot 5, archivé). Lots livrés : 0-1 (#1344, #1348), D5-D6
+> (#1352), 2 (#1370), 3a (#1376), 3b (#1379), 4a (#1383, #1384), 4b (#1389), 5 (nettoyage). Le
+> durable est versé dans `docs/systeme/fiches-et-pdf.md` et l'ADR 0028 (« Mise en œuvre »). Reste,
+> avec l'accord de David : remplir `worksheets.style_id`, puis retirer `template_id` (destructif).
+
 ## Constat (exploration du 2026-10-13)
 
 Deux générateurs Typst produisent les PDF de fiches :

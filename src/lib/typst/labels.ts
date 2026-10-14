@@ -398,18 +398,3 @@ export function labelPlaceholders(locale: ContentLocale): Record<string, string>
 function toSnakeCase(key: string): string {
 	return key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 }
-
-/**
- * Document type as named on the *student* sheet — the same words as the
- * screen and the teacher document (one table, worksheet-type-labels.ts).
- */
-export const STUDENT_TYPE_LABELS: Record<ContentLocale, Record<string, string>> = {
-	fr: WORKSHEET_TYPE_LABELS,
-	en: {
-		worksheet: 'Worksheet',
-		assessment: 'Assessment',
-		exam: 'Exam',
-		quiz: 'Quiz',
-		homework: 'Homework'
-	}
-};
