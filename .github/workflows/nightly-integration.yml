@@ -125,6 +125,8 @@ on:
       - 'src/routes/api/srs/review/submit/*server.ts'
       - 'src/routes/api/student/reports/*server.ts'
       - 'src/routes/api/student/worksheets/*server.ts'
+      - 'src/routes/api/student/worksheets/*/*server.ts'
+      - 'src/routes/api/worksheets/assignments/*/preview/*server.ts'
       - 'src/routes/api/teacher/curriculum/activities/*server.ts'
       - 'src/routes/api/teacher/curriculum/activities/*/*server.ts'
       - 'src/routes/api/teacher/curriculum/coverage/*server.ts'
