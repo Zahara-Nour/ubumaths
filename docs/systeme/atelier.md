@@ -78,6 +78,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/interval.ts`       | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)          |
 | `src/lib/atelier/reciprocal.ts`     | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français     |
 | `src/lib/atelier/limit.ts`          | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule          |
+| `src/lib/atelier/limit-steps.ts`    | `.limite` : « Comment ? » (`limitSteps`), garde de concordance dans `limit-steps-check.ts`                |
 | `src/lib/atelier/constant.ts`       | La valeur d'une constante (curseurs, premier terme d'une suite)                                           |
 | `src/lib/atelier/list-cited.ts`     | Refus d'une liste citée comme un nombre (`listCitedMessage`)                                              |
 | `src/lib/atelier/actions.ts`        | Les actions d'une carte selon le type et l'état (`actionsFor`), listes partenaires                        |
@@ -604,6 +605,7 @@ Doc du moteur : [mathast/README.md](mathast/README.md).
 | `.intégrer`                             | réponse : `integration` (`integrate.command.ts`) ; « Comment ? » : `src/lib/mathAST/pedagogical-integration/` niveau lycée, vérifié par `integrate-steps-check.ts`                                                                                                                                                                                   |
 | `.domaine`                              | réponse : `computeDomain` (`domain.command.ts` refuse ce qu'il ne résout pas), écrite par `domainToLatex` ; « Comment ? » : `src/lib/mathAST/pedagogical-domain/` niveau lycée, vérifié par `domain-steps-check.ts`                                                                                                                                  |
 | `.évaluer`                              | réponse : `eval.command.ts` — `substitute`, refus d'une valeur interdite (`forbiddenValue`, `mathAST/eval/forbidden-value.ts`, exact), puis `evaluate` ; la ligne est une formule (`evaluatedLine`, voir ci-dessous) ; « Comment ? » : `src/lib/mathAST/pedagogical-arithmetic/` niveau collège, vérifié par `evaluate-steps-check.ts`               |
+| `.limite`                               | réponse : `evaluateLimit` (`mathAST/limits`) ; « Comment ? » : `generatePedagogicalLimitSteps` (`src/lib/mathAST/pedagogical-limits/`) niveau lycée, vérifié par `limit-steps-check.ts`                                                                                                                                                              |
 | `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                                                                                                                                                                                                                                                  |
 | syntaxe des commandes                   | `src/lib/mathAST/cli/core/variable-argument.ts`                                                                                                                                                                                                                                                                                                      |
 
@@ -870,8 +872,30 @@ selon `noLimitReason` ; le nom de la fonction s'écrit hors de `\text` (`f_1` en
 de limite en +∞ : l'expression oscille sans se rapprocher d'aucune valeur. » (« f oscille… » ;
 `3sin(2x)+1` en −∞, `sin(1/x)` en 0) ; sinon (L4, `sides-differ` compris) les deux limites
 latérales quand le moteur les connaît, « Pas de limite en 0 : à gauche −∞, à droite +∞. », sinon
-« Pas de limite en … ». Avec un côté tapé, la conclusion seule, côté compris (`0^+`) — à trancher par David. Pas encore de « Comment ? » (PR 3). Test :
+« Pas de limite en … ». Avec un côté tapé, la conclusion seule, côté compris (`0^+`) — à trancher par David. Test :
 `limite-commande.test.ts`.
+
+**« Comment ? » de `.limite`** (`limit-steps.ts`, PR 3, décisions de David du 2026-10-14).
+Les étapes sont celles de `generatePedagogicalLimitSteps` (niveau `lycee` : forme indéterminée,
+factorisation, conjugué, terme prépondérant, limites de référence et croissances comparées,
+composée `e^u`, côtés d'un pôle, côté implicite, gendarmes) — jamais `dispatchPedagogicalLimit`,
+qui lit une syntaxe maison. Elles portent sur l'expression calculée, dans la lettre de l'élève
+(f(t) = 1/t : t, pas le x de rangement ; une lettre déjà prise par un paramètre → pas d'étapes),
+divisions écrites en fractions. **Garde de concordance** (`concludesLimitAnswer`) : la valeur
+conclue est celle de la ligne par valeur exacte (`concludesEngineValue`), un infini du même signe,
+le même côté implicite (l'étape qui porte `domainBoundary` ↔ `definedSide`) ; « pas de limite »
+n'est expliqué que dans le cas L4 (les deux limites latérales écrites par la ligne), avec les
+mêmes valeurs à gauche et à droite (`bindings` de `conclude-does-not-exist`) — `outside-domain`,
+`oscillation` et « Pas de limite en … » seul n'ont pas de « Comment ? ». **Rien à montrer**
+(`showsNothing`, comme E4 de `.évaluer`) : une substitution directe seule (`x^2+1` en 2,
+`sqrt(x)` en 0) → pas d'étapes. Le moteur pédagogique qui lève
+(`PedagogicalLimitNotImplemented` : `sqrt(x+1)-sqrt(x)` en +∞, `sin x` en +∞), un `*` dans le
+LaTeX → pas d'étapes. **Résumé construit** : les étapes sans l'annonce, les limites des termes,
+la limite d'une somme / d'un produit / d'un quotient ni la substitution qui suit une
+simplification, sans explications — la forme, la technique, la conclusion. Une fonction ou une
+suite citée seule garde son nom : l'annonce écrit `\lim g(x) = \lim \dfrac{x^2-1}{x-1}` (« la
+limite de $g(x)$ »), la conclusion `\lim g(x) = 2`, `u_n` pour une suite. Tests :
+`limite-etapes.test.ts`, `limite-etapes-garde.test.ts`, `limite-etapes-affichage.svelte.test.ts`.
 
 Statistiques : `summarizeList` / `summarizeTable` (`src/lib/statistics/describe.ts`), et
 `src/lib/statistics/` pour l'ajustement (`fit.ts`), le bivarié, la simulation, les fractions et

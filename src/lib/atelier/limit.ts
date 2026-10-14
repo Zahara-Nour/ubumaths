@@ -13,8 +13,9 @@
  *   présentée comme une limite : « Je ne sais pas » honnête ;
  * - une fonction de l'atelier garde son nom : `\lim f(x)`.
  *
- * Le calcul est celui de `evaluateLimit` (`mathAST/limits`). Les étapes
- * (« Comment ? ») viendront avec la PR 3.
+ * Le calcul est celui de `evaluateLimit` (`mathAST/limits`). « Comment ? »
+ * (PR 3) : les étapes de `pedagogical-limits`, seulement quand elles
+ * concluent la réponse de la ligne (`limit-steps.ts`).
  *
  * @module atelier/limit
  */
@@ -57,6 +58,8 @@ import {
 	type CitedInterval
 } from './interval';
 import { INTERNAL_LETTER, typedLetterOf } from './letter';
+import { limitSteps, type LimitQuestion as StepsQuestion, type LimitSteps } from './limit-steps';
+import type { LimitAnswer } from './limit-steps-check';
 
 // =============================================================================
 // Types
@@ -201,23 +204,47 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 	const result = safeLimit(ast, variable, approach, direction);
 	if (result === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
 
+	// « Comment ? » : les étapes portent sur l'expression, dans la lettre de
+	// l'élève ; une fonction ou une suite citée seule garde son nom
+	const body = shownBody(cited, typedAst ?? ast, shownLetter);
+	const question: StepsQuestion = {
+		expression: ast,
+		variable,
+		letter: shownLetter,
+		approach,
+		direction,
+		subject: cited === null ? null : body.latex.replace(/\\left|\\right/g, '')
+	};
+	const explain = (answer: LimitAnswer): LimitSteps | null => limitSteps(question, answer);
+
 	if (result.status === 'does-not-exist') {
 		const subject = cited?.kind === 'function' ? cited.name : null;
 		const typedSide = reading.value.side;
-		return noLimit(input, result, subject, { ast, variable, approach }, point, side, typedSide);
+		const limitQuestion = { ast, variable, approach };
+		return noLimit(input, result, subject, limitQuestion, point, side, typedSide, explain);
 	}
 	const value = knownValue(result);
 	if (value === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
 	// R1 : sans côté tapé, une fonction définie d'un seul côté (ln x en 0) l'écrit : x → 0⁺
-	if (side === null && result.definedSide !== undefined) side = result.definedSide;
+	const impliedSide = side === null ? (result.definedSide ?? null) : null;
+	if (impliedSide !== null) side = impliedSide;
 
-	const body = shownBody(cited, typedAst ?? ast, shownLetter);
+	const explained = explain({ kind: 'value', value, impliedSide });
 	return {
 		kind: 'commande',
 		input,
 		output: `lim ${shownLetter}→${pointTextOf(point, side)} ${body.text} = ${valueText(value)}`,
-		latex: `\\lim\\limits_{${shownLetter}\\to ${pointLatexOf(point, side)}} ${body.latex} = ${toLatex(value)}`
+		latex: `\\lim\\limits_{${shownLetter}\\to ${pointLatexOf(point, side)}} ${body.latex} = ${toLatex(value)}`,
+		...stepsField(explained)
 	};
+}
+
+/** Les étapes et leur résumé, quand il y en a — sinon rien, pas de clé `undefined`. */
+function stepsField(explained: LimitSteps | null): Partial<LimitSteps> {
+	if (explained === null) return {};
+	return explained.summary === undefined
+		? { steps: explained.steps }
+		: { steps: explained.steps, summary: explained.summary };
 }
 
 /** Lire le point tapé après `en` : côté, lettre, infini ou nombre. */
@@ -575,7 +602,8 @@ function noLimit(
 	question: LimitQuestion,
 	point: LimitPoint,
 	side: 'left' | 'right' | null,
-	typedSide: 'left' | 'right' | null
+	typedSide: 'left' | 'right' | null,
+	explain: (answer: LimitAnswer) => LimitSteps | null
 ): CalcResult {
 	const { ast, variable, approach } = question;
 	const atLatex = pointLatexOf(point, side);
@@ -622,7 +650,9 @@ function noLimit(
 		kind: 'commande',
 		input,
 		output: `Pas de limite en ${atText} : à gauche ${valueText(leftValue)}, à droite ${valueText(rightValue)}.`,
-		latex: `\\text{Pas de limite en } ${atLatex} \\text{ : à gauche } ${toLatex(leftValue)} \\text{, à droite } ${toLatex(rightValue)}`
+		latex: `\\text{Pas de limite en } ${atLatex} \\text{ : à gauche } ${toLatex(leftValue)} \\text{, à droite } ${toLatex(rightValue)}`,
+		// Seul « pas de limite » expliqué : les deux côtés, que la ligne écrit
+		...stepsField(explain({ kind: 'sides', left: leftValue, right: rightValue }))
 	};
 }
 
