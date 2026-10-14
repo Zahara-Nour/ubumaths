@@ -1,7 +1,7 @@
 ---
 title: Atelier — une fenêtre de réglages, et le choix de la saisie (phase 0)
 date: 2026-10-14
-status: phase 0 — en attente des décisions de David
+status: phase 0 validée (2026-10-14) — PR 1 en cours, branche feat/atelier-reglages
 ---
 
 # Atelier — la fenêtre de réglages
@@ -85,3 +85,6 @@ Rien d'autre n'entre dans la fenêtre pour l'instant : le mode exact / décimal 
 ## Journal
 
 - 2026-10-14 — phase 0 écrite après lecture de l'atelier et du prototype.
+- 2026-10-14 — **décisions de David** : (1) défaut **Texte** ; (2) le champ du prototype est branché
+  dès la PR 1, marqué « en essai » ; (3) rien à corriger au prototype pour l'instant. PR 1 sur la
+  branche `feat/atelier-reglages` (worktree `ubumaths-wt-reglages`).
