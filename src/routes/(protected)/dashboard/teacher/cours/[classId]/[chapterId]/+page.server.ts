@@ -501,7 +501,10 @@ export const actions: Actions = {
 		}
 
 		const formData = await request.formData();
+		// Le chapitre vient de l'adresse, pas du formulaire : sans lui, le schéma
+		// refusait chaque ajout (400, 2026-10-14).
 		const data = {
+			chapterId,
 			content: formData.get('content') as string,
 			description: (formData.get('description') as string) || undefined
 		};
