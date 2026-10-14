@@ -10,6 +10,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	cardLatex,
+	expressionLatex,
 	groupLatex,
 	movableGroupOf,
 	movedLatex,
@@ -296,6 +297,17 @@ describe('groupLatex : la ligne pendant le glisser', () => {
 		const group = groupOf(structureOf('2x+3=7'), '7');
 		expect(stripMarkers(groupLatex(group, withoutPart(group.parts, 1), { gaps: [0.5] }))).toBe(
 			'\\mathord{\\class{ubs-gap0}{\\hspace{0.500em}}}2 x + 3'
+		);
+	});
+});
+
+describe('expressionLatex : l’expression entière, le groupe réécrit', () => {
+	it('le reste de l’expression ne change pas, les espaces du glisser y entrent', () => {
+		const structure = structureOf(String.raw`\frac{2x+1}{3}`);
+		const group = groupOf(structure, '1');
+		const latex = expressionLatex(structure, group, withoutPart(group.parts, 1), { gaps: [0.5] });
+		expect(stripMarkers(latex)).toBe(
+			String.raw`\dfrac{\mathord{\class{ubs-gap0}{\hspace{0.500em}}}2 x}{3}`
 		);
 	});
 });

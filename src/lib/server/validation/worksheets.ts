@@ -100,6 +100,9 @@ const worksheetConfigObjectSchema = z.object({
 	show_points: z.boolean().optional(),
 	numbering_style: numberingStyleSchema.optional(),
 	shuffle_exercises: z.boolean().optional(),
+	// Case retirée (D6) mais clé encore acceptée : un client ancien ou un script
+	// l'envoie, et la config d'une fiche existante la renvoie telle quelle — la
+	// retirer du schéma la ferait disparaître de la base au prochain envoi.
 	shuffle_within_sections: z.boolean().optional(),
 	page_layout: z.enum(['A4', 'Letter']).optional(),
 	font_size: z
@@ -1284,7 +1287,8 @@ export const studentErrorReportParamSchema = z.object({
 export const studentErrorReportViewSchema = z.object({
 	id: z.string().uuid(),
 	worksheet_exercise_id: z.string().uuid(),
-	exercise_position: z.number().int().nonnegative(),
+	// Numéro dans la copie de l'élève ; null : inconnu (D6)
+	exercise_position: z.number().int().positive().nullable(),
 	description: z.string(),
 	status: errorReportStatusSchema,
 	response: z.string().nullable(),
@@ -1389,7 +1393,9 @@ export const getErrorReportDetailResponseSchema = z.object({
 	context: z.object({
 		worksheet_title: z.string(),
 		student_name: z.string(),
-		exercise_position: z.number().int().nonnegative()
+		exercise_position: z.number().int().nonnegative(),
+		// L'auteur est-il encore destinataire ? null : inconnu (lecture en panne)
+		student_is_recipient: z.boolean().nullable()
 	}),
 	next_pending_report_id: z.string().uuid().nullable()
 });
@@ -1494,7 +1500,8 @@ const studentReportsTimestampSchema = z
 export const studentErrorReportWithDisplaySchema = z.object({
 	id: z.string().uuid(),
 	worksheet_exercise_id: z.string().uuid(),
-	exercise_position: z.number().int().nonnegative(),
+	// Numéro dans la copie de l'élève ; null : inconnu (D6)
+	exercise_position: z.number().int().positive().nullable(),
 	description: z.string(),
 	status: errorReportStatusSchema,
 	response: z.string().nullable(),

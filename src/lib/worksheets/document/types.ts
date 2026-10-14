@@ -77,6 +77,12 @@ export interface DocumentDisplay {
 	numberingStyle: NumberingStyle;
 	/** Corrigé concis ou détaillé (D11) ; absent : détaillé */
 	correctionDetail?: CorrectionDetail;
+	/**
+	 * Copie d'un élève servant de document de classe (affectation dont chaque
+	 * élève a sa version, D6) : ni numéro ni carré, le titre seul — l'ordre et
+	 * les numéros de cette copie ne sont ceux de personne d'autre.
+	 */
+	titleOnly?: boolean;
 }
 
 /** Le document d'une fiche */

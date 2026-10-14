@@ -15,7 +15,10 @@
  * Strategy order :
  *
  * 1. **direct-substitution** — try `f(a)`. If finite, return the value.
- * 2. **known-limit** — pattern-match against `KNOWN_LIMITS` (sin x / x, …).
+ *    Puis le **côté implicite** : sans côté demandé, une expression définie
+ *    d'un seul côté du point (`\\ln x` en 0) est étudiée de ce côté.
+ * 2. **known-limit** — pattern-match against `KNOWN_LIMITS` (sin x / x, …),
+ *    `e^u` lu comme `\\exp(u)` (l'écriture de la table).
  * 3. **factorisation** (`0/0` form, division of polynomials) — synthetic
  *    division by `(x − a)` on numerator and denominator, then recurse on
  *    the simplified expression.
@@ -23,10 +26,16 @@
  *    multiply by conjugate, then recurse.
  * 5. **infinity-analysis** (approach is `±∞`, division of polynomials) —
  *    factor the dominant term in numerator and denominator, then conclude.
+ * 5 bis. **composée** `e^u` — limite de u, puis de l'exponentielle (`e^{1/x}` en 0⁺).
  * 6. **L'Hôpital** (sup only, `0/0` or `∞/∞`) — derivate numerator and
  *    denominator, then recurse. Locked behind `STRATEGIES_LIMITS.lycee.enableLhopital === false`.
- * 7. Throw `PedagogicalLimitNotImplemented` (caught by `correction-generator.ts`
+ * 7. **one-sided** — un pôle : limites à gauche et à droite, puis conclusion
+ *    (égales : la valeur ; différentes : « la limite n'existe pas »).
+ * 8. **squeeze** — théorème des gendarmes.
+ * 9. Throw `PedagogicalLimitNotImplemented` (caught by `correction-generator.ts`
  *    → silent fallback to Mode A).
+ *
+ * Prose (descriptions) : formules entre `$…$`, en LaTeX (V25, 2026-10-14).
  *
  * @module mathAST/pedagogical-limits/pipeline
  */
@@ -36,6 +45,7 @@ import type { LimitDirection, IndeterminateForm } from '../limits/types';
 import { detectIndeterminateForm } from '../limits/indeterminate';
 import {
 	add,
+	euler,
 	infinity,
 	opposite,
 	parentheses,
@@ -45,6 +55,7 @@ import {
 } from '../factory';
 import { toLatex } from '../latex-generator';
 import { containsVariable } from '../common/contains-variable';
+import { getChildren } from '../transforms';
 import { differentiate } from '../differentiation/differentiate';
 import { matchKnownLimit, getKnownLimitValue } from '../limits/known-limits';
 import { normalizeApproach } from '../limits/evaluate';
@@ -60,22 +71,23 @@ import {
 	isVariable
 } from '../guards';
 import {
+	approachMath,
 	classifyApproach,
 	divide,
 	divideByCommonRoot,
 	evaluateAtPoint,
 	findConjugate,
-	formatApproachShort,
-	formatLinearFactor,
-	formatValueShort,
+	formMath,
+	inlineMath,
 	isAtInfinity,
-	formatPowerShort,
 	isDivision,
 	isNumber,
 	multiply,
 	normalizeDirection,
 	number,
-	numericNode
+	numericNode,
+	toKnownLimitShape,
+	withEulerPowers
 } from './helpers';
 import { extractExactRational } from '../common/numeric';
 import { tryEvaluateLimitExact, resultToNode, writeLimitValue } from '../limits/exact-evaluation';
@@ -93,6 +105,7 @@ import { rationalToNode } from '../common/numeric';
 import {
 	type Poly,
 	divideOutCommonRoot,
+	integerLinearFactorNode,
 	polynomialNode,
 	primitivePart,
 	rationalPolynomialNode,
@@ -259,18 +272,27 @@ export function generatePedagogicalLimitSteps(
 	const ctx = buildContext(expression, options, level);
 
 	const headerSteps = ctx.strategy.includeIdentify ? [emitIdentifyLimit(ctx, expression)] : [];
+	const result = runStrategies(expression, ctx);
+	return finalize(ctx, [...headerSteps, ...result.steps], result);
+}
 
+/**
+ * Les stratégies, dans l'ordre ; la première qui aboutit donne les étapes.
+ * Lève `PedagogicalLimitNotImplemented` quand aucune n'aboutit.
+ */
+function runStrategies(expression: MathNode, ctx: PipelineContext): NonNullable<StrategyResult> {
 	// Strategy 1 — direct substitution
 	const direct = tryDirectSubstitution(expression, ctx);
-	if (direct !== null) {
-		return finalize(ctx, [...headerSteps, ...direct.steps], direct);
-	}
+	if (direct !== null) return direct;
+
+	// Côté implicite : `\\ln x` en 0 n'est définie qu'à droite, la limite en 0
+	// est la limite à droite (le calcul de `limits/` dit −∞, les étapes aussi).
+	const implicit = tryImplicitSide(expression, ctx);
+	if (implicit !== null) return implicit;
 
 	// Strategy 2 — known limit
 	const known = tryKnownLimit(expression, ctx);
-	if (known !== null) {
-		return finalize(ctx, [...headerSteps, ...known.steps], known);
-	}
+	if (known !== null) return known;
 
 	// Detect indeterminate form (drives the next strategies)
 	const indForm = detectIndeterminateForm(expression, ctx.variable, ctx.approach, ctx.direction);
@@ -278,26 +300,26 @@ export function generatePedagogicalLimitSteps(
 	// Strategy 3 — factorisation (0/0 with division of polynomials)
 	if (ctx.strategy.enableFactorization && indForm === '0/0' && isDivision(expression)) {
 		const factored = tryFactorisation(expression, ctx, indForm);
-		if (factored !== null) {
-			return finalize(ctx, [...headerSteps, ...factored.steps], factored);
-		}
+		if (factored !== null) return factored;
 	}
 
 	// Strategy 4 — rationalisation (0/0 with sqrt in numerator)
 	if (ctx.strategy.enableRationalization && indForm === '0/0' && isDivision(expression)) {
 		const rationalised = tryRationalisation(expression, ctx, indForm);
-		if (rationalised !== null) {
-			return finalize(ctx, [...headerSteps, ...rationalised.steps], rationalised);
-		}
+		if (rationalised !== null) return rationalised;
 	}
 
 	// Strategy 5 — infinity-analysis (approach = ±∞, division of polynomials)
 	// (un polynôme aussi : P / 1, V26)
 	if (ctx.strategy.enableInfinityAnalysis && isAtInfinity(ctx.approach)) {
 		const infRes = tryInfinityAnalysis(expression, ctx);
-		if (infRes !== null) {
-			return finalize(ctx, [...headerSteps, ...infRes.steps], infRes);
-		}
+		if (infRes !== null) return infRes;
+	}
+
+	// Composée e^{u} : limite de u, puis celle de l'exponentielle (`e^{1/x}` en 0⁺)
+	if (ctx.strategy.enableComposition) {
+		const composed = tryExponentialComposition(expression, ctx);
+		if (composed !== null) return composed;
 	}
 
 	// Strategy 6 — L'Hôpital (sup uniquement, 0/0 or ∞/∞)
@@ -307,9 +329,7 @@ export function generatePedagogicalLimitSteps(
 		isDivision(expression)
 	) {
 		const lhopital = tryLhopital(expression, ctx, indForm);
-		if (lhopital !== null) {
-			return finalize(ctx, [...headerSteps, ...lhopital.steps], lhopital);
-		}
+		if (lhopital !== null) return lhopital;
 	}
 
 	// Strategy 7 — one-sided / vertical asymptotes (singular point with finite
@@ -317,9 +337,7 @@ export function generatePedagogicalLimitSteps(
 	// AND the residual is not 0/0 nor ∞/∞ (those cascaded through 3-4-5 above).
 	if (!isAtInfinity(ctx.approach)) {
 		const oneSided = tryOneSided(expression, ctx);
-		if (oneSided !== null) {
-			return finalize(ctx, [...headerSteps, ...oneSided.steps], oneSided);
-		}
+		if (oneSided !== null) return oneSided;
 	}
 
 	// Strategy 8 — squeeze / théorème des gendarmes (heuristique numérique :
@@ -327,9 +345,7 @@ export function generatePedagogicalLimitSteps(
 	// type x·sin(1/x), x²·cos(1/x), …
 	if (ctx.strategy.enableSqueeze && !isAtInfinity(ctx.approach)) {
 		const squeezed = trySqueeze(expression, ctx);
-		if (squeezed !== null) {
-			return finalize(ctx, [...headerSteps, ...squeezed.steps], squeezed);
-		}
+		if (squeezed !== null) return squeezed;
 	}
 
 	// Nothing worked. At lycée this routinely means a case that would have
@@ -341,13 +357,93 @@ export function generatePedagogicalLimitSteps(
 	throw new PedagogicalLimitNotImplemented(expression, reason);
 }
 
+/**
+ * La limite d'un côté seul, calculée par le pipeline lui-même (même niveau,
+ * mêmes identifiants), avec ses étapes — la conclusion ôtée : l'appelant
+ * conclut lui-même. `null` quand elle ne se calcule pas ou n'existe pas.
+ */
+function sideLimit(
+	expression: MathNode,
+	ctx: PipelineContext,
+	direction: LimitDirection
+): { readonly value: MathNode; readonly steps: readonly PedagogicalLimitStep[] } | null {
+	try {
+		const side = runStrategies(expression, { ...ctx, direction, globalBefore: expression });
+		if (side.status === 'does-not-exist' || side.value === null) return null;
+		return { value: side.value, steps: side.steps.filter((s) => !CONCLUSION_RULES.has(s.rule)) };
+	} catch (error) {
+		if (error instanceof PedagogicalLimitNotImplemented) return null;
+		throw error;
+	}
+}
+
+const CONCLUSION_RULES: ReadonlySet<PedagogicalLimitRule> = new Set([
+	'conclude',
+	'conclude-infinite',
+	'conclude-does-not-exist'
+]);
+
+// =============================================================================
+// Côté implicite (domaine d'un seul côté du point)
+// =============================================================================
+
+/** Distances des sondes du côté implicite : le domaine s'arrête au point. */
+const DOMAIN_PROBES: readonly number[] = [1e-2, 1e-4, 1e-6];
+
+/**
+ * Sans côté demandé, en un point fini : l'expression n'est définie (près du
+ * point) que d'un côté — `\\ln x` en 0, `\\sqrt{x}` exclu (définie en 0, la
+ * substitution directe l'a prise). La limite en ce point est celle de ce côté :
+ * une étape le dit, puis les stratégies tournent sur ce côté.
+ */
+function tryImplicitSide(expression: MathNode, ctx: PipelineContext): StrategyResult {
+	if (ctx.direction !== 'both' || isAtInfinity(ctx.approach)) return null;
+	const a = approachNumber(ctx.approach);
+	if (a === null) return null;
+	const defined = (x: number): boolean => {
+		const value = evaluateAtPoint(expression, ctx.variable, x);
+		return value !== null && Number.isFinite(value);
+	};
+	const leftDefined = DOMAIN_PROBES.some((eps) => defined(a - eps));
+	const rightDefined = DOMAIN_PROBES.every((eps) => defined(a + eps));
+	const onlyRight = !leftDefined && rightDefined;
+	const onlyLeft =
+		!DOMAIN_PROBES.some((eps) => defined(a + eps)) &&
+		DOMAIN_PROBES.every((eps) => defined(a - eps));
+	if (!onlyRight && !onlyLeft) return null;
+
+	const direction: LimitDirection = onlyRight ? 'right' : 'left';
+	const sideCtx: PipelineContext = { ...ctx, direction };
+	const sideName = onlyRight ? 'droite' : 'gauche';
+	const step = makeStep(sideCtx, {
+		rule: onlyRight ? 'analyze-right-limit' : 'analyze-left-limit',
+		description: `L'expression n'est définie qu'à ${sideName} de ${inlineMath(ctx.approach)} : on étudie la limite à ${sideName}`,
+		before: expression,
+		after: expression,
+		verbosityLevel: 'summarized',
+		direction,
+		bindings: { domainBoundary: ctx.approach }
+	});
+	const rest = runStrategies(expression, sideCtx);
+	// Le côté étudié par un pôle (`\\ln x / x` en 0) : une seule étape « à
+	// droite », qui porte les deux raisons (domaine, puis signe du dénominateur).
+	const [first, ...others] = rest.steps;
+	if (first?.rule === step.rule) {
+		const merged: PedagogicalLimitStep = {
+			...first,
+			bindings: { ...first.bindings, domainBoundary: ctx.approach }
+		};
+		return { ...rest, steps: [merged, ...others] };
+	}
+	return { ...rest, steps: [step, ...rest.steps] };
+}
+
 // =============================================================================
 // Identification
 // =============================================================================
 
 function emitIdentifyLimit(ctx: PipelineContext, expression: MathNode): PedagogicalLimitStep {
-	const approachStr = formatApproachShort(ctx.approach);
-	const description = `On veut calculer la limite de l'expression quand ${ctx.variable} tend vers ${approachStr}`;
+	const description = `On veut calculer la limite de l'expression quand $${ctx.variable}$ tend vers ${approachMath(ctx.approach, ctx.direction)}`;
 	return makeStep(ctx, {
 		rule: 'identify-limit',
 		description,
@@ -369,12 +465,15 @@ function tryDirectSubstitution(expression: MathNode, ctx: PipelineContext): Stra
 
 	const value = evaluateAtPoint(expression, ctx.variable, aValue);
 	if (value === null || !Number.isFinite(value)) return null;
+	// `x^x` en 0 : JavaScript calcule 0⁰ = 1, mais l'expression n'est pas
+	// définie au point (forme 0⁰) — pas de « continue au point étudié ».
+	if (hasZeroPowerZero(expression, ctx.variable, aValue)) return null;
 
 	const valueNode = exactValueAt(expression, ctx, value) ?? numericNode(value);
 
 	const step = makeStep(ctx, {
 		rule: 'apply-direct-substitution',
-		description: `Substitution directe : on remplace ${ctx.variable} par ${formatApproachShort(ctx.approach)}`,
+		description: `Substitution directe : on remplace $${ctx.variable}$ par ${inlineMath(ctx.approach)}`,
 		before: expression,
 		after: valueNode,
 		verbosityLevel: 'summarized',
@@ -390,6 +489,18 @@ function tryDirectSubstitution(expression: MathNode, ctx: PipelineContext): Stra
 		status: 'exact',
 		indeterminateForm: 'none'
 	};
+}
+
+/** Une puissance dont la base et l'exposant valent 0 au point (forme 0⁰) */
+function hasZeroPowerZero(expr: MathNode, variable: string, a: number): boolean {
+	if (
+		isSuperscript(expr) &&
+		evaluateAtPoint(expr.base, variable, a) === 0 &&
+		evaluateAtPoint(expr.superscript, variable, a) === 0
+	) {
+		return true;
+	}
+	return getChildren(expr).some((child) => hasZeroPowerZero(child, variable, a));
 }
 
 /**
@@ -417,14 +528,22 @@ function exactValueAt(expression: MathNode, ctx: PipelineContext, value: number)
 // =============================================================================
 
 function tryKnownLimit(expression: MathNode, ctx: PipelineContext): StrategyResult {
-	const entry = matchKnownLimit(expression, ctx.approach, ctx.variable, ctx.direction);
+	// La table écrit `\\exp(x)` ; l'élève écrit `e^x` (et des parenthèses)
+	const entry = matchKnownLimit(
+		toKnownLimitShape(expression),
+		ctx.approach,
+		ctx.variable,
+		ctx.direction
+	);
 	if (!entry) return null;
 
-	const value = getKnownLimitValue(entry, ctx.variable);
+	// `\\exp(1)` s'écrit e, `\\exp(u)` s'écrit `e^{u}`
+	const value = withEulerPowers(getKnownLimitValue(entry, ctx.variable));
 
 	const step = makeStep(ctx, {
 		rule: 'apply-known-limit',
-		description: entry.descriptionFr,
+		// Le titre nomme la famille ; la formule est dans le bloc LaTeX de l'étape
+		description: knownLimitKind(entry.descriptionFr),
 		before: expression,
 		after: value,
 		verbosityLevel: 'summarized',
@@ -442,6 +561,17 @@ function tryKnownLimit(expression: MathNode, ctx: PipelineContext): StrategyResu
 		status,
 		indeterminateForm: 'none'
 	};
+}
+
+/**
+ * La famille d'une limite de référence, pour le titre : « Croissance
+ * comparée », « Limite fondamentale », sinon « Limite de référence » (la
+ * `descriptionFr` de la table est en Unicode, hors de la prose).
+ */
+function knownLimitKind(descriptionFr: string): string {
+	if (descriptionFr.startsWith('Croissance comparée')) return 'Croissance comparée';
+	if (descriptionFr.startsWith('Limite fondamentale')) return 'Limite fondamentale';
+	return 'Limite de référence';
 }
 
 // =============================================================================
@@ -470,30 +600,42 @@ function tryFactorisation(
 	const x = makeVariable(ctx.variable);
 	const factor = polynomialNode(division.factor, x);
 
-	// Sub-step: factor the numerator
-	const factorNumStep = makeStep(ctx, {
-		rule: 'factor-numerator',
-		description: `Factorisation du numérateur : ${formatLinearFactor(ctx.variable, a)} est un facteur`,
-		before: expression.numerator,
-		after: timesFactor(factor, division.numerator, x),
-		verbosityLevel: 'detailed',
-		bindings: { factor }
-	});
-
-	// Sub-step: factor the denominator
-	const factorDenStep = makeStep(ctx, {
-		rule: 'factor-denominator',
-		description: `Factorisation du dénominateur : ${formatLinearFactor(ctx.variable, a)} est un facteur`,
-		before: expression.denominator,
-		after: timesFactor(factor, division.denominator, x),
-		verbosityLevel: 'detailed',
-		bindings: { factor }
-	});
+	// Sous-étapes : factoriser numérateur et dénominateur. Un côté qui EST déjà
+	// le facteur (`x - 1` en 1) n'a rien à factoriser : pas de « x − 1 = x − 1 ».
+	const factorSubSteps: PedagogicalLimitStep[] = [];
+	const sides = [
+		{
+			rule: 'factor-numerator',
+			name: 'numérateur',
+			node: expression.numerator,
+			q: division.numerator
+		},
+		{
+			rule: 'factor-denominator',
+			name: 'dénominateur',
+			node: expression.denominator,
+			q: division.denominator
+		}
+	] as const;
+	for (const side of sides) {
+		const factored = timesFactor(factor, side.q, x);
+		if (sameWriting(side.node, factored)) continue;
+		factorSubSteps.push(
+			makeStep(ctx, {
+				rule: side.rule,
+				description: `Factorisation du ${side.name} : ${inlineMath(factor)} est un facteur`,
+				before: side.node,
+				after: factored,
+				verbosityLevel: 'detailed',
+				bindings: { factor }
+			})
+		);
+	}
 
 	// Detect-indeterminate-form (sub-step decoration before factorisation)
 	const detectStep = makeStep(ctx, {
 		rule: 'detect-indeterminate-form',
-		description: `Forme indéterminée ${indForm} reconnue`,
+		description: `Forme indéterminée ${formMath(indForm)} reconnue`,
 		before: expression,
 		after: expression,
 		verbosityLevel: 'detailed',
@@ -507,12 +649,12 @@ function tryFactorisation(
 	);
 	const parentStep = makeStep(ctx, {
 		rule: 'simplify-common-factor',
-		description: `Simplification : on divise numérateur et dénominateur par ${formatLinearFactor(ctx.variable, a)}`,
+		description: `Simplification : on divise numérateur et dénominateur par ${inlineMath(factor)}`,
 		before: expression,
 		after: simplified,
 		verbosityLevel: 'summarized',
 		bindings: { factor },
-		subSteps: [factorNumStep, factorDenStep]
+		subSteps: factorSubSteps
 	});
 
 	// Recurse on the simplified expression — usually direct substitution now works.
@@ -544,6 +686,11 @@ function timesFactor(factor: MathNode, quotient: Poly, x: MathNode): MathNode {
 	if (lead.n === 1n && lead.d === 1n) return body;
 	if (lead.n === -1n && lead.d === 1n) return opposite(body);
 	return multiply(rationalToNode(lead), body, 'implicit');
+}
+
+/** Même écriture, aux parenthèses de la saisie près : `(x + 1)` et `x + 1` */
+function sameWriting(a: MathNode, b: MathNode): boolean {
+	return toLatex(withoutOuterDelimiters(a)) === toLatex(withoutOuterDelimiters(b));
 }
 
 /** n/d, sans le dénominateur 1 */
@@ -619,7 +766,7 @@ function tryRationalisation(
 	// detect-indeterminate-form (informational decoration)
 	const detectStep = makeStep(ctx, {
 		rule: 'detect-indeterminate-form',
-		description: `Forme indéterminée ${indForm} reconnue (présence d'une racine carrée)`,
+		description: `Forme indéterminée ${formMath(indForm)} reconnue (présence d'une racine carrée)`,
 		before: expression,
 		after: expression,
 		verbosityLevel: 'detailed',
@@ -629,7 +776,7 @@ function tryRationalisation(
 	// Sub-step: simplify-after-rationalization (factors out the (x − a) cancellation)
 	const simplifyStep = makeStep(ctx, {
 		rule: 'simplify-after-rationalization',
-		description: `Simplification du facteur commun ${formatLinearFactor(ctx.variable, a)} après rationalisation`,
+		description: `Simplification du facteur commun ${inlineMath(integerLinearFactorNode(ctx.variable, a))} après rationalisation`,
 		before: divide(expanded, multiply(expression.denominator, conjugate, 'implicit'), 'fraction'),
 		after: simplified,
 		verbosityLevel: 'detailed'
@@ -655,6 +802,65 @@ function tryRationalisation(
 		status: recursed.status,
 		indeterminateForm: indForm
 	};
+}
+
+// =============================================================================
+// Strategy: composée e^{u}
+// =============================================================================
+
+/**
+ * `e^{u}` (ou `\\exp(u)`) dont l'exposant dépend de x : limite de u (par le
+ * pipeline, même côté), puis celle de l'exponentielle en cette limite —
+ * `\\lim_{X \\to +\\infty} e^X = +\\infty`, `\\lim_{X \\to -\\infty} e^X = 0`,
+ * `e^L` pour L fini. Cas iconique : `e^{1/x}` en 0⁺ (+∞) et en 0⁻ (0).
+ * Refus (null) quand la limite de u ne se calcule pas ou n'existe pas.
+ */
+function tryExponentialComposition(expression: MathNode, ctx: PipelineContext): StrategyResult {
+	const node = withoutOuterDelimiters(expression);
+	const exponent =
+		isSuperscript(node) && node.base.type === 'constant' && node.base.constant === 'euler'
+			? node.superscript
+			: node.type === 'function' && node.name === 'exp' && node.args.length === 1
+				? node.args[0]
+				: null;
+	if (exponent === null || !containsVariable(exponent, ctx.variable)) return null;
+
+	// Les étapes de la limite de l'exposant ne s'écrivent pas : la ligne
+	// « \\lim u = L » de l'étape les résume.
+	const innerLimit = sideLimit(exponent, ctx, ctx.direction)?.value ?? null;
+	if (innerLimit === null) return null;
+	const value = exponentialOf(innerLimit);
+
+	const step = makeStep(ctx, {
+		rule: 'apply-composition',
+		description: `Limite d'une composée : ${inlineMath(value)}`,
+		before: expression,
+		after: value,
+		verbosityLevel: 'summarized',
+		bindings: { inner: exponent, innerLimit },
+		termLimits: {
+			premises: [{ expression: withoutOuterDelimiters(exponent), value: innerLimit }],
+			conclusions: [{ expression, value }]
+		},
+		globalAfter: value
+	});
+	const conclusion = makeConclusionStep(ctx, expression, value);
+	return {
+		steps: [step, ...(conclusion ? [conclusion] : [])],
+		value,
+		status: inferStatusFromValue(value),
+		indeterminateForm: 'none'
+	};
+}
+
+/** La limite de e^X quand X tend vers L : +∞, 0, 1 (L = 0) ou e^L */
+function exponentialOf(limit: MathNode): MathNode {
+	if (limit.type === 'infinity') {
+		return limit.sign === 'positive' ? infinity('positive') : number('0');
+	}
+	if (isNumber(limit) && limit.value === '0') return number('1');
+	if (isNumber(limit) && limit.value === '1') return euler();
+	return power(euler(), limit);
 }
 
 // =============================================================================
@@ -707,7 +913,7 @@ function tryLhopital(
 	// detect-indeterminate-form (informational decoration)
 	const detectStep = makeStep(ctx, {
 		rule: 'detect-indeterminate-form',
-		description: `Forme indéterminée ${indForm} reconnue`,
+		description: `Forme indéterminée ${formMath(indForm)} reconnue`,
 		before: expression,
 		after: expression,
 		verbosityLevel: 'detailed',
@@ -717,10 +923,7 @@ function tryLhopital(
 	// Parent: apply-lhopital
 	const lhopitalStep = makeStep(ctx, {
 		rule: 'apply-lhopital',
-		description:
-			indForm === '0/0'
-				? "Application de la règle de L'Hôpital : (0/0) ⇒ lim f/g = lim f'/g'"
-				: "Application de la règle de L'Hôpital : (∞/∞) ⇒ lim f/g = lim f'/g'",
+		description: `Application de la règle de L'Hôpital à la forme ${formMath(indForm)}`,
 		before: expression,
 		after: newQuotient,
 		verbosityLevel: 'summarized',
@@ -785,7 +988,7 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 			steps.push(
 				makeStep(ctx, {
 					rule: 'detect-indeterminate-form',
-					description: `Forme indéterminée ${form} reconnue`,
+					description: `Forme indéterminée ${formMath(form)} reconnue`,
 					before: expression,
 					after: expression,
 					verbosityLevel: 'detailed',
@@ -811,7 +1014,7 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 		steps.push(
 			makeStep(ctx, {
 				rule: 'conclude',
-				description: `La fonction est constante : sa limite vaut ${formatValueShort(constant)}.`,
+				description: `La fonction est constante : sa limite vaut ${inlineMath(constant)}.`,
 				before: expression,
 				after: constant,
 				verbosityLevel: 'summarized',
@@ -830,7 +1033,7 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 	const conclusion = (): PedagogicalLimitStep =>
 		makeStep(ctx, {
 			rule: status === 'infinite' ? 'conclude-infinite' : 'conclude',
-			description: `La limite vaut ${formatValueShort(value)}`,
+			description: `La limite vaut ${inlineMath(value)}`,
 			before: expression,
 			after: value,
 			verbosityLevel: 'summarized',
@@ -873,7 +1076,7 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 		steps.push(
 			makeStep(ctx, {
 				rule: 'detect-indeterminate-form',
-				description: `Forme indéterminée ${form} reconnue`,
+				description: `Forme indéterminée ${formMath(form)} reconnue`,
 				before: expression,
 				after: expression,
 				verbosityLevel: 'detailed',
@@ -931,7 +1134,7 @@ function tryInfinityAnalysis(expression: MathNode, ctx: PipelineContext): Strate
 		steps.push(
 			makeStep(ctx, {
 				rule: 'simplify-common-factor',
-				description: `Simplification par ${formatPowerShort(xPower(ctx.variable, k))}`,
+				description: `Simplification par ${inlineMath(xPower(ctx.variable, k))}`,
 				before: current,
 				after: simplified,
 				verbosityLevel: 'summarized',
@@ -1200,7 +1403,7 @@ function operationSteps(
 	return [
 		makeStep(ctx, {
 			rule,
-			description: `Pas de forme indéterminée : ${formatValueShort(value)} par opérations sur les limites`,
+			description: `Pas de forme indéterminée : ${inlineMath(value)} par opérations sur les limites`,
 			before: expression,
 			after: value,
 			verbosityLevel: 'detailed',
@@ -1420,7 +1623,7 @@ function productStep(
 		signAtInfinity(1, degree, ctx.approach) > 0 ? infinity('positive') : infinity('negative');
 	return makeStep(ctx, {
 		rule: 'apply-product',
-		description: `Limite d'un produit : ${formatValueShort(value)}`,
+		description: `Limite d'un produit : ${inlineMath(value)}`,
 		before,
 		after: value,
 		verbosityLevel: 'detailed',
@@ -1439,7 +1642,7 @@ function quotientStep(
 ): PedagogicalLimitStep {
 	return makeStep(ctx, {
 		rule: 'apply-quotient',
-		description: `Limite d'un quotient : ${formatValueShort(value)}`,
+		description: `Limite d'un quotient : ${inlineMath(value)}`,
 		before,
 		after: value,
 		verbosityLevel: 'detailed',
@@ -1533,127 +1736,153 @@ function tryOneSided(expression: MathNode, ctx: PipelineContext): StrategyResult
 	if (valAtA !== null && Number.isFinite(valAtA)) return null;
 
 	// Probe each side numerically.
-	const leftVal = evaluateAtPoint(expression, ctx.variable, a - ONE_SIDED_EPSILON);
-	const rightVal = evaluateAtPoint(expression, ctx.variable, a + ONE_SIDED_EPSILON);
-
-	const leftSign = classifyDivergence(leftVal);
-	const rightSign = classifyDivergence(rightVal);
+	const leftProbe = evaluateAtPoint(expression, ctx.variable, a - ONE_SIDED_EPSILON);
+	const rightProbe = evaluateAtPoint(expression, ctx.variable, a + ONE_SIDED_EPSILON);
+	const leftSign = classifyDivergence(leftProbe);
+	const rightSign = classifyDivergence(rightProbe);
 
 	const wantBoth = ctx.direction === 'both';
 	const wantLeft = ctx.direction === 'left' || wantBoth;
 	const wantRight = ctx.direction === 'right' || wantBoth;
 
 	// At least one requested side must diverge for this strategy to apply.
+	// Une sonde qui déborde (`e^{1/x}` en 0⁺ : e^{10⁶}) ne se lit pas : les
+	// deux côtés sont alors calculés par le pipeline (`sideValue`).
 	if (wantLeft && wantRight) {
-		if (leftSign === 0 && rightSign === 0) return null;
+		if (leftSign === 0 && rightSign === 0 && leftProbe !== null && rightProbe !== null) {
+			return null;
+		}
 	} else if (wantLeft && leftSign === 0) {
 		return null;
 	} else if (wantRight && rightSign === 0) {
 		return null;
 	}
 
+	// Limite d'un côté : ±∞ quand il diverge ; sinon calculée par le pipeline
+	// sur ce côté (`e^{1/x}` en 0⁻ : 0), jamais lue sur un signe nul.
+	// Ses étapes (la composée de `e^{1/x}` en 0⁻) deviennent les sous-étapes du côté.
+	const sideValue = (
+		sign: number,
+		direction: LimitDirection
+	): { readonly value: MathNode; readonly steps: readonly PedagogicalLimitStep[] } | null =>
+		sign !== 0
+			? { value: signNodeFromSign(sign), steps: [] }
+			: sideLimit(expression, ctx, direction);
+	const leftSide = wantLeft ? sideValue(leftSign, 'left') : null;
+	const rightSide = wantRight ? sideValue(rightSign, 'right') : null;
+	if ((wantLeft && leftSide === null) || (wantRight && rightSide === null)) return null;
+	const leftValue = leftSide?.value ?? null;
+	const rightValue = rightSide?.value ?? null;
+
 	const steps: PedagogicalLimitStep[] = [];
-
-	const leftStep = wantLeft
-		? makeStep(ctx, {
-				rule: 'analyze-left-limit',
-				description: `Étude de la limite à gauche en ${a} : ${describeSide(leftSign, ctx.variable, a, '−')}`,
-				before: expression,
-				after: signNodeFromSign(leftSign),
-				verbosityLevel: 'detailed',
-				direction: 'left',
-				bindings: { side: { type: 'variable', name: 'left' } as MathNode }
-			})
-		: null;
-	const rightStep = wantRight
-		? makeStep(ctx, {
-				rule: 'analyze-right-limit',
-				description: `Étude de la limite à droite en ${a} : ${describeSide(rightSign, ctx.variable, a, '+')}`,
-				before: expression,
-				after: signNodeFromSign(rightSign),
-				verbosityLevel: 'detailed',
-				direction: 'right',
-				bindings: { side: { type: 'variable', name: 'right' } as MathNode }
-			})
-		: null;
-
-	if (leftStep) steps.push(leftStep);
-	if (rightStep) steps.push(rightStep);
-
-	let value: MathNode;
-	let status: PedagogicalLimitStatus;
-	let conclusionRule: PedagogicalLimitRule;
-	let conclusionDesc: string;
-
-	if (wantBoth) {
-		if (leftSign !== 0 && rightSign !== 0 && leftSign === rightSign) {
-			// Same divergence on both sides → infinite limit.
-			value = signNodeFromSign(leftSign);
-			status = 'infinite';
-			conclusionRule = 'conclude-infinite';
-			conclusionDesc = `Les limites à gauche et à droite tendent vers la même infinité : la limite vaut ${leftSign > 0 ? '+∞' : '−∞'}`;
-			steps.push(
-				makeStep(ctx, {
-					rule: 'compare-one-sided',
-					description: 'Comparaison des limites unilatérales : signes identiques',
-					before: expression,
-					after: value,
-					verbosityLevel: 'detailed',
-					bindings: { left: signNodeFromSign(leftSign), right: signNodeFromSign(rightSign) }
-				})
-			);
-		} else if (leftSign !== rightSign) {
-			// Opposite signs (or one-sided defined finite) → does-not-exist.
-			value = number('0');
-			status = 'does-not-exist';
-			conclusionRule = 'conclude-does-not-exist';
-			conclusionDesc =
-				'Les limites à gauche et à droite diffèrent : la limite n’existe pas en ce point';
-			steps.push(
-				makeStep(ctx, {
-					rule: 'compare-one-sided',
-					description: 'Comparaison des limites unilatérales : signes différents',
-					before: expression,
-					after: expression,
-					verbosityLevel: 'detailed',
-					bindings: {
-						left: signNodeFromSign(leftSign),
-						right: signNodeFromSign(rightSign)
-					}
-				})
-			);
-			// `does-not-exist` signals null value at the result level.
-			return {
-				steps,
-				value: null,
-				status,
-				indeterminateForm: 'none'
-			};
-		} else {
-			return null;
-		}
-	} else {
-		// One-sided request : pick the matching side.
-		const sign = ctx.direction === 'left' ? leftSign : rightSign;
-		if (sign === 0) return null;
-		value = signNodeFromSign(sign);
-		status = 'infinite';
-		conclusionRule = 'conclude-infinite';
-		conclusionDesc = `La limite à ${ctx.direction === 'left' ? 'gauche' : 'droite'} vaut ${sign > 0 ? '+∞' : '−∞'}`;
-	}
-
-	steps.push(
-		makeStep(ctx, {
-			rule: conclusionRule,
-			description: conclusionDesc,
+	const sideStep = (direction: 'left' | 'right', sign: number, value: MathNode) => {
+		const name = direction === 'left' ? 'gauche' : 'droite';
+		const subSteps = (direction === 'left' ? leftSide : rightSide)?.steps ?? [];
+		return makeStep(ctx, {
+			subSteps,
+			rule: direction === 'left' ? 'analyze-left-limit' : 'analyze-right-limit',
+			description: `Étude de la limite à ${name} en ${inlineMath(ctx.approach)} : ${inlineMath(value)}`,
 			before: expression,
 			after: value,
-			verbosityLevel: 'summarized',
-			globalAfter: value
+			verbosityLevel: 'detailed',
+			direction,
+			bindings: sign !== 0 ? poleBindings(expression, ctx, a, direction) : {}
+		});
+	};
+	if (leftValue) steps.push(sideStep('left', leftSign, leftValue));
+	if (rightValue) steps.push(sideStep('right', rightSign, rightValue));
+
+	if (!wantBoth) {
+		const value = (leftValue ?? rightValue) as MathNode;
+		const name = ctx.direction === 'left' ? 'gauche' : 'droite';
+		steps.push(
+			makeStep(ctx, {
+				rule: inferStatusFromValue(value) === 'infinite' ? 'conclude-infinite' : 'conclude',
+				description: `La limite à ${name} vaut ${inlineMath(value)}`,
+				before: expression,
+				after: value,
+				verbosityLevel: 'summarized',
+				globalAfter: value
+			})
+		);
+		return { steps, value, status: inferStatusFromValue(value), indeterminateForm: 'none' };
+	}
+
+	const left = leftValue as MathNode;
+	const right = rightValue as MathNode;
+	const same = toLatex(left) === toLatex(right);
+	steps.push(
+		makeStep(ctx, {
+			rule: 'compare-one-sided',
+			description: same
+				? `Les limites à gauche et à droite sont égales : ${inlineMath(left)}`
+				: `Les limites à gauche et à droite diffèrent : ${inlineMath(left)} et ${inlineMath(right)}`,
+			before: expression,
+			// Égales : la limite commune ; différentes : rien à écrire après « = »
+			after: same ? left : expression,
+			verbosityLevel: 'detailed',
+			bindings: { left, right }
 		})
 	);
 
-	return { steps, value, status, indeterminateForm: 'none' };
+	if (!same) {
+		// La conclusion, à tous les niveaux : sans elle la rédaction s'arrêtait
+		// sur la comparaison.
+		steps.push(
+			makeStep(ctx, {
+				rule: 'conclude-does-not-exist',
+				description:
+					"Les limites à gauche et à droite diffèrent : la limite n'existe pas en ce point",
+				before: expression,
+				after: expression,
+				verbosityLevel: 'summarized',
+				bindings: { left, right }
+			})
+		);
+		return { steps, value: null, status: 'does-not-exist', indeterminateForm: 'none' };
+	}
+
+	const status = inferStatusFromValue(left);
+	steps.push(
+		makeStep(ctx, {
+			rule: status === 'infinite' ? 'conclude-infinite' : 'conclude',
+			description: `La limite vaut ${inlineMath(left)}`,
+			before: expression,
+			after: left,
+			verbosityLevel: 'summarized',
+			globalAfter: left
+		})
+	);
+	return { steps, value: left, status, indeterminateForm: 'none' };
+}
+
+/**
+ * Un pôle d'un quotient N/D : N tend vers une limite non nulle, D vers 0 avec
+ * le signe du côté étudié. Liaisons de l'explication (« le numérateur tend
+ * vers 1 et $x - 2 \\to 0^+$ ») : `numeratorLimit`, `denominator`, et
+ * `denominatorSign` (un infini qui ne porte que le signe de D de ce côté).
+ * Vide quand l'expression n'est pas un tel quotient.
+ */
+function poleBindings(
+	expression: MathNode,
+	ctx: PipelineContext,
+	a: number,
+	direction: 'left' | 'right'
+): LimitBindings {
+	const node = withoutOuterDelimiters(expression);
+	if (!isDivision(node)) return {};
+	const numeratorAtA = evaluateAtPoint(node.numerator, ctx.variable, a);
+	const denominatorAtA = evaluateAtPoint(node.denominator, ctx.variable, a);
+	if (numeratorAtA === null || !Number.isFinite(numeratorAtA) || numeratorAtA === 0) return {};
+	if (denominatorAtA === null || Math.abs(denominatorAtA) > 1e-12) return {};
+	const near = a + (direction === 'left' ? -ONE_SIDED_EPSILON : ONE_SIDED_EPSILON);
+	const denominatorNear = evaluateAtPoint(node.denominator, ctx.variable, near);
+	if (denominatorNear === null || denominatorNear === 0) return {};
+	return {
+		numeratorLimit: exactValueAt(node.numerator, ctx, numeratorAtA) ?? numericNode(numeratorAtA),
+		denominator: withoutOuterDelimiters(node.denominator),
+		denominatorSign: infinity(denominatorNear > 0 ? 'positive' : 'negative')
+	};
 }
 
 /** Numeric divergence classifier. Returns +1, −1, or 0 (= not divergent). */
@@ -1668,16 +1897,6 @@ function signNodeFromSign(sign: number): MathNode {
 	if (sign > 0) return infinity('positive');
 	if (sign < 0) return infinity('negative');
 	return number('0');
-}
-
-function describeSide(
-	sign: number,
-	_variable: string,
-	_approach: number,
-	sideMark: string
-): string {
-	if (sign === 0) return `valeur finie (${sideMark})`;
-	return sign > 0 ? `+∞ (${sideMark})` : `−∞ (${sideMark})`;
 }
 
 // =============================================================================
@@ -1761,7 +1980,7 @@ function trySqueeze(expression: MathNode, ctx: PipelineContext): StrategyResult 
 
 	const identifyStep = makeStep(ctx, {
 		rule: 'identify-bounds',
-		description: "Encadrement de l'expression par deux fonctions tendant vers 0",
+		description: "Encadrement de l'expression par deux fonctions tendant vers $0$",
 		before: expression,
 		after: expression,
 		verbosityLevel: 'detailed'
@@ -1769,7 +1988,7 @@ function trySqueeze(expression: MathNode, ctx: PipelineContext): StrategyResult 
 
 	const squeezeStep = makeStep(ctx, {
 		rule: 'apply-squeeze',
-		description: `Application du théorème ${theoremName} : la limite vaut 0`,
+		description: `Application du théorème ${theoremName} : la limite vaut $0$`,
 		before: expression,
 		after: value,
 		verbosityLevel: 'summarized',
@@ -1862,6 +2081,18 @@ function recurse(
 		);
 	}
 
+	// Simplifiée en une constante (`(x + 1)/(x + 1)` → 1) : l'étape de
+	// simplification l'écrit déjà ; pas de « \\lim 1 = 1 », la conclusion seule,
+	// sur l'expression de départ.
+	if (!containsVariable(expression, ctx.variable)) {
+		const conclusion = makeConclusionStep(ctx, ctx.globalBefore, expression);
+		return {
+			steps: conclusion ? [conclusion] : [],
+			value: expression,
+			status: inferStatusFromValue(expression)
+		};
+	}
+
 	// After a sub-strategy (factorisation, rationalisation), direct
 	// substitution is the most common closer.
 	const direct = tryDirectSubstitution(expression, ctx);
@@ -1915,7 +2146,7 @@ function makeConclusionStep(
 	if (value.type === 'infinity') {
 		return makeStep(ctx, {
 			rule: 'conclude-infinite',
-			description: `La limite vaut ${formatApproachShort(value)}`,
+			description: `La limite vaut ${inlineMath(value)}`,
 			before: expression,
 			after: value,
 			verbosityLevel: 'summarized',
@@ -1925,16 +2156,12 @@ function makeConclusionStep(
 
 	return makeStep(ctx, {
 		rule: 'conclude',
-		description: `La limite vaut ${formatNodeShort(value)}`,
+		description: `La limite vaut ${inlineMath(value)}`,
 		before: expression,
 		after: value,
 		verbosityLevel: 'summarized',
 		globalAfter: value
 	});
-}
-
-function formatNodeShort(node: MathNode): string {
-	return formatValueShort(node);
 }
 
 function inferStatusFromValue(value: MathNode | null): PedagogicalLimitStatus {

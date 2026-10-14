@@ -36,6 +36,7 @@ import {
 } from '$lib/server/validation/worksheets';
 import { validateJsonResponse } from '$lib/server/validation/response-utils';
 import type { StudentErrorReportView } from '$lib/types/worksheets';
+import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/student/worksheets/[assignmentId]/reports/+server');
@@ -85,7 +86,6 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		}
 
 		// Step 3: Query reports for this student and assignment
-		// Join with worksheet_exercises to get the position
 		const { data: reports, error: reportsError } = await locals.supabase
 			.from('worksheet_error_reports')
 			.select(
@@ -96,10 +96,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				status,
 				response,
 				created_at,
-				updated_at,
-				worksheet_exercises!inner (
-					position
-				)
+				updated_at
 			`
 			)
 			.eq('assignment_id', assignmentId)
@@ -111,14 +108,21 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw error(500, 'Erreur lors de la recuperation des signalements');
 		}
 
-		// Step 4: Transform to response format
-		const reportViews: StudentErrorReportView[] = (reports ?? []).map((report) => {
-			const worksheetExercise = report.worksheet_exercises as unknown as { position: number };
+		// Step 4: le numéro de chaque exercice dans LA COPIE de cet élève (D6),
+		// ordre mélangé compris ; inconnu → null, jamais la position (elle
+		// redémarre à chaque section et ignore le mélange).
+		const numbering =
+			(reports ?? []).length > 0
+				? await fetchCopyNumbering(locals.supabase, assignment.worksheet_id, [assignmentId])
+				: null;
 
+		// Step 5: Transform to response format
+		const reportViews: StudentErrorReportView[] = (reports ?? []).map((report) => {
 			return {
 				id: report.id,
 				worksheet_exercise_id: report.worksheet_exercise_id,
-				exercise_position: worksheetExercise.position,
+				exercise_position:
+					numbering?.numberOf(assignmentId, user.id, report.worksheet_exercise_id) ?? null,
 				description: report.description,
 				status: report.status as StudentErrorReportView['status'],
 				response: report.response,

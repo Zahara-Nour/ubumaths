@@ -15,6 +15,7 @@
 
 import { createSystemNotification } from './notifications';
 import { escapeHtml } from '$lib/utils/html-escape';
+import { exerciseAnchorHash } from '$lib/worksheets/exercise-anchor';
 import type { NotificationTargetType } from '$lib/types/notification';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -274,27 +275,49 @@ export async function notifyNewAssessment(data: {
 	}
 }
 
-/**
- * Create notification when a student's error report is validated
- *
- * @param studentId - ID of the student who submitted the report
- * @param worksheetTitle - Title of the worksheet containing the error
- * @param exercisePosition - Position of the exercise in the worksheet (1-indexed)
- */
-export async function notifyErrorReportValidated(data: {
+/** Ce qu'il faut pour annoncer à l'élève le sort de son signalement (D6) */
+interface ErrorReportNotice {
 	studentId: string;
 	worksheetTitle: string;
-	exercisePosition: number;
-}): Promise<void> {
+	/**
+	 * Numéro de l'exercice dans LA COPIE de l'élève (ordre mélangé compris,
+	 * `fetchCopyNumbering`) ; `null` s'il est inconnu : on ne cite alors aucun
+	 * numéro plutôt qu'un numéro faux.
+	 */
+	exerciseNumber: number | null;
+	/** L'affectation : le lien mène à la fiche de l'élève */
+	assignmentId: string;
+	/** L'exercice de fiche signalé : ancre du lien (jamais le numéro) */
+	worksheetExerciseId: string;
+}
+
+/** « l'exercice <strong>7</strong> », ou « un exercice » si le numéro est inconnu */
+function exerciseMention(exerciseNumber: number | null): string {
+	return exerciseNumber === null
+		? 'un exercice'
+		: `l'exercice <strong>${Number(exerciseNumber)}</strong>`;
+}
+
+/** La fiche de l'élève, défilée jusqu'à l'exercice signalé */
+function reportedExerciseUrl(data: ErrorReportNotice): string {
+	return `/dashboard/student/worksheets/${data.assignmentId}${exerciseAnchorHash(data.worksheetExerciseId)}`;
+}
+
+/**
+ * Create notification when a student's error report is validated
+ */
+export async function notifyErrorReportValidated(data: ErrorReportNotice): Promise<void> {
 	try {
 		await createSystemNotification({
 			title: '✅ Signalement validé !',
-			message: `<p>Ton signalement sur l'exercice <strong>${Number(data.exercisePosition)}</strong> du devoir "<strong>${escapeHtml(data.worksheetTitle)}</strong>" a été validé. L'erreur a été corrigée. Merci pour ta vigilance !</p><p>Tu as gagné <strong>1 bonus</strong>.</p>`,
+			message: `<p>Ton signalement sur ${exerciseMention(data.exerciseNumber)} du devoir "<strong>${escapeHtml(data.worksheetTitle)}</strong>" a été validé. L'erreur a été corrigée. Merci pour ta vigilance !</p><p>Tu as gagné <strong>1 bonus</strong>.</p>`,
 			type: 'info',
 			priority: 'normal',
 			system_event_type: 'error_report_validated',
 			target_type: 'users',
-			target_user_ids: [data.studentId]
+			target_user_ids: [data.studentId],
+			action_label: 'Voir l’exercice',
+			action_url: reportedExerciseUrl(data)
 		});
 	} catch (error) {
 		logger.error('Error creating error report validated notification:', error);
@@ -305,29 +328,25 @@ export async function notifyErrorReportValidated(data: {
 /**
  * Create notification when a student's error report is rejected
  *
- * @param studentId - ID of the student who submitted the report
- * @param worksheetTitle - Title of the worksheet
- * @param exercisePosition - Position of the exercise in the worksheet (1-indexed)
  * @param response - Optional response/reason for rejection (HTML from RichTextEditor, already sanitized)
  */
-export async function notifyErrorReportRejected(data: {
-	studentId: string;
-	worksheetTitle: string;
-	exercisePosition: number;
-	response?: string;
-}): Promise<void> {
+export async function notifyErrorReportRejected(
+	data: ErrorReportNotice & { response?: string }
+): Promise<void> {
 	try {
 		// response is already HTML-sanitized from RichTextEditor, do not escape it
 		const responseHtml = data.response ? `<p>${data.response}</p>` : '';
 
 		await createSystemNotification({
 			title: 'Signalement traité',
-			message: `<p>Ton signalement pour l'exercice <strong>${Number(data.exercisePosition)}</strong> de "<strong>${escapeHtml(data.worksheetTitle)}</strong>" a été étudié. Aucune correction n'était nécessaire cette fois.</p>${responseHtml}<p>Continue à rester attentif !</p>`,
+			message: `<p>Ton signalement pour ${exerciseMention(data.exerciseNumber)} de "<strong>${escapeHtml(data.worksheetTitle)}</strong>" a été étudié. Aucune correction n'était nécessaire cette fois.</p>${responseHtml}<p>Continue à rester attentif !</p>`,
 			type: 'info',
 			priority: 'normal',
 			system_event_type: 'error_report_rejected',
 			target_type: 'users',
-			target_user_ids: [data.studentId]
+			target_user_ids: [data.studentId],
+			action_label: 'Voir l’exercice',
+			action_url: reportedExerciseUrl(data)
 		});
 	} catch (error) {
 		logger.error('Error creating error report rejected notification:', error);

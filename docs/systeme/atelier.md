@@ -2,6 +2,8 @@
 couvre:
   - 'src/lib/atelier/**'
   - 'src/lib/components/atelier/**'
+  - 'src/lib/components/calculator/**'
+  - src/lib/stores/calculator.svelte.ts
   - src/lib/mathAST/cli/web/web-repl-engine.ts
   - 'src/routes/(public)/atelier/**'
   - 'src/routes/(public)/calc/**'
@@ -53,6 +55,10 @@ Ceux du code et de l'interface :
 - **historique** : les lignes de la vue Calcul (saisies et réponses) ;
 - **mode éphémère** : un atelier reçu par lien, qui ne lit ni n'écrit l'atelier personnel.
 - voisin hors atelier : `/calc` (`src/routes/(public)/calc/+page.svelte`, grapheur singleton).
+  Sa saisie (`UnifiedInput.svelte`) a un **mode commande** : un « . » dans le champ vide ouvre une
+  zone de commande, qui garde son point (`.eval`) ; le store (`calculator.svelte.ts`) retire un
+  point initial avant de rebâtir `.commande expression` pour `WebReplEngine` (V54 : il le doublait,
+  et toutes les commandes répondaient « Commande inconnue »).
   `/cas` (ancien REPL web) est **retirée** depuis le 2026-10-13 : l'adresse mène à `/atelier` en
   308 (`redirectHandle`, `src/lib/server/redirectHandle.ts`).
 
@@ -60,7 +66,7 @@ Ceux du code et de l'interface :
 
 ## Carte du code
 
-### Modèle — `src/lib/atelier/` (52 fichiers hors tests)
+### Modèle — `src/lib/atelier/` (53 fichiers hors tests)
 
 | Fichier                             | Rôle                                                                                                      |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -71,6 +77,8 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/letter.ts`         | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                              |
 | `src/lib/atelier/interval.ts`       | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)          |
 | `src/lib/atelier/reciprocal.ts`     | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français     |
+| `src/lib/atelier/limit.ts`          | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule          |
+| `src/lib/atelier/limit-steps.ts`    | `.limite` : « Comment ? » (`limitSteps`), garde de concordance dans `limit-steps-check.ts`                |
 | `src/lib/atelier/constant.ts`       | La valeur d'une constante (curseurs, premier terme d'une suite)                                           |
 | `src/lib/atelier/list-cited.ts`     | Refus d'une liste citée comme un nombre (`listCitedMessage`)                                              |
 | `src/lib/atelier/actions.ts`        | Les actions d'une carte selon le type et l'état (`actionsFor`), listes partenaires                        |
@@ -328,11 +336,11 @@ acceptée quand elle est sans ambiguïté. La lecture vit dans `mathAST` :
 
 **Trois sources de commandes**, réunies par `commandCatalog` (`src/lib/atelier/commands.ts`) :
 
-| Source                     | Où                            | Exemples                                                               |
-| -------------------------- | ----------------------------- | ---------------------------------------------------------------------- |
-| registre du moteur         | `WebReplEngine.getCommands()` | `.dériver`, `.résoudre`, `.intégrer`, `.variations`, `.taylor`         |
-| branchées hors registre    | table `OFF_REGISTRY`          | `.convertir`, `.stats`, `.ajustement`, `.exact`, `.décimal`            |
-| servies par l'atelier seul | `ATELIER_ONLY_COMMANDS`       | `.factoriser`, `.réciproque`, `.simuler`, `.croiser`, `.filtrer`, lois |
+| Source                     | Où                            | Exemples                                                              |
+| -------------------------- | ----------------------------- | --------------------------------------------------------------------- |
+| registre du moteur         | `WebReplEngine.getCommands()` | `.dériver`, `.résoudre`, `.intégrer`, `.variations`, `.taylor`        |
+| branchées hors registre    | table `OFF_REGISTRY`          | `.convertir`, `.stats`, `.ajustement`, `.exact`, `.décimal`           |
+| servies par l'atelier seul | `ATELIER_ONLY_COMMANDS`       | `.factoriser`, `.réciproque`, `.limite`, `.simuler`, `.croiser`, lois |
 
 La table `TRANSLATIONS` donne pour chaque commande son nom français, sa description, son exemple
 et sa rubrique de `.aide` (`HelpSection`) ; **son ordre est l'ordre du catalogue**. Les commandes
@@ -637,7 +645,8 @@ Doc du moteur : [mathast/README.md](mathast/README.md).
 | `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                                                                                                                                                                                                                                             |
 | `.intégrer`                             | réponse : `integration` (`integrate.command.ts`) ; « Comment ? » : `src/lib/mathAST/pedagogical-integration/` niveau lycée, vérifié par `integrate-steps-check.ts`                                                                                                                                                                                   |
 | `.domaine`                              | réponse : `computeDomain` (`domain.command.ts` refuse ce qu'il ne résout pas), écrite par `domainToLatex` ; « Comment ? » : `src/lib/mathAST/pedagogical-domain/` niveau lycée, vérifié par `domain-steps-check.ts`                                                                                                                                  |
-| `.évaluer`                              | réponse : `eval.command.ts` — `substitute`, refus d'une valeur interdite (`forbiddenValue`, `mathAST/eval/forbidden-value.ts`, exact), puis `evaluate` ; la ligne est une formule (`evaluatedLine`, voir ci-dessous) ; pas encore de « Comment ? »                                                                                                   |
+| `.évaluer`                              | réponse : `eval.command.ts` — `substitute`, refus d'une valeur interdite (`forbiddenValue`, `mathAST/eval/forbidden-value.ts`, exact), puis `evaluate` ; la ligne est une formule (`evaluatedLine`, voir ci-dessous) ; « Comment ? » : `src/lib/mathAST/pedagogical-arithmetic/` niveau collège, vérifié par `evaluate-steps-check.ts`               |
+| `.limite`                               | réponse : `evaluateLimit` (`mathAST/limits`) ; « Comment ? » : `generatePedagogicalLimitSteps` (`src/lib/mathAST/pedagogical-limits/`) niveau lycée, vérifié par `limit-steps-check.ts`                                                                                                                                                              |
 | `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                                                                                                                                                                                                                                                  |
 | syntaxe des commandes                   | `src/lib/mathAST/cli/core/variable-argument.ts`                                                                                                                                                                                                                                                                                                      |
 
@@ -659,7 +668,7 @@ second degré la refusent (`rejectForbiddenValues`, V47 puis V48), `solveSteps` 
 l'atelier affiche la réponse du moteur sans « Comment ? ».
 
 **« Résumé / Détaillé »** (`steps-summary.ts`, 2026-10-13). Les commandes qui rédigent
-(simplifier, factoriser, dériver, résoudre, intégrer, domaine — tapées, ou Résoudre / Dériver sur une carte) rendent le même
+(simplifier, factoriser, dériver, résoudre, intégrer, domaine — tapées, ou Résoudre / Dériver sur une carte ; `.évaluer` construit le sien, voir plus bas) rendent le même
 calcul DEUX fois : `steps` en `verbosity: 'detailed'`, `summary` en `'summarized'`. Le moteur
 tourne une fois ; seul `renderAll` est rappelé, et la réponse de la ligne vient du calcul, jamais
 de la rédaction. `summaryOf` compare les deux rendus et rend `undefined` s'ils sont identiques :
@@ -692,8 +701,8 @@ accepté seulement si l'équation tient sur toute une grille ET si `solve` répo
 ligne est une **formule**, plus le texte du terminal (« Result: 9 (exact) Mode: exact », en
 anglais) : `f(3) = 9` quand l'expression tapée est une fonction de l'atelier (`f` ou `f(x)`, dans
 sa lettre : `f(t) = t^2`, `en t=2` → `f(2) = 4` ; une valeur non entière entre `\left(…\right)`,
-une division tapée écrite en fraction), sinon la valeur seule — l'écho montre déjà l'expression,
-le remplacement viendra avec les étapes (PR 2 et 3). Une comparaison répond « vrai » / « faux ».
+une division tapée écrite en fraction ; l'appel est écrit par `evaluatedCallLatex`), sinon la
+valeur seule — l'écho montre déjà l'expression, le remplacement est la première étape. Une comparaison répond « vrai » / « faux ».
 **E5** : une saisie décimale (dans la valeur, l'expression, la formule de f ou une variable posée,
 `hasDecimalLiteral` sur l'expression remplacée) donne une réponse décimale, comme le mode décimal,
 écrite par la règle du bouton ≈ (`approximation.ts` : 4 décimales, `\approx` seulement si
@@ -711,7 +720,85 @@ lycée, $x^a$ défini pour $x > 0$ ; `\sqrt[3]{x}` en −8 = −2 reste accepté
 calcul n'a pas de valeur : … ». La valeur citée s'écrit comme dans la ligne (`typedValueLatex` :
 `\dfrac{\pi}{2}`, `-\dfrac{1}{2}`). Avant : un dénominateur nul finissait en « Je n'ai pas su
 lire », `\sqrt{-1}`, `\ln 0`, `\tan(\pi/2)`, `\arcsin(2)` passaient pour des résultats. La console
-(`repl.ts`) garde son texte. Plusieurs lettres (`en x=2, y=3`) : décision de David en attente.
+(`repl.ts`) garde son texte. **Plusieurs lettres** (E6, décision de David du 2026-10-14) :
+séparées par « ; », `.évaluer 2a+3b en a=1,5 ; b=2` → `9` (la valeur seule, même pour une
+fonction de l'atelier) ; `CommandArguments.assignments`, dans l'ordre tapé
+(`variable-argument.ts`). La virgule entre deux valeurs (`en a=1,5, b=2`, `en a=1, b=2`, ou
+`en … pour …`) est refusée, même sans ambiguïté : « Sépare les valeurs avec « ; » : .évaluer
+2a+3b en a=1,5 ; b=2, par exemple. » Refus (`eval.command.ts`) : lettre donnée deux fois (« La
+valeur de a est donnée deux fois. »), lettre absente de l'expression (« « c » n'apparaît pas dans
+… »), valeur déjà posée dans l'atelier, redonnée, à une ou plusieurs lettres (`calcul.ts`, avant
+le moteur : « a vaut déjà 5 dans l'atelier : retire « a=1 », ou efface a avant. »), lettre sans valeur (« Il manque la valeur de b : .évaluer 2a+3b en a=1 ; b=3, par
+exemple. », aussi à une seule valeur donnée), valeur interdite (« Pour $a = 1$ et $b = 0$, ce
+calcul n'a pas de valeur : … »). Un « ; » final sans valeur (`en a=1 ; b`) : « Il manque la
+valeur de b : … » (« x a déjà sa valeur : retire « ; x ». » si la lettre en a une). Une
+**fonction en attente d'un paramètre** (`f(x) = a x`, `a` non posé) est remplacée
+(`substituteNames(…, pendingFunctions)` : pour `.évaluer`, toute fonction en attente ; appels par
+`pendingCall`) : `.évaluer f en x=1 ; a=2` → `2` avec ses étapes, `.évaluer f en x=1` → « Il
+manque la valeur de a : .évaluer f en x=1 ; a=3, par exemple. » (la commande citée telle que
+tapée). Les autres commandes : voir « Fonction à paramètre » plus bas.
+
+**Fonction à paramètre** (V56, 2026-10-14). Une fonction en attente de **valeurs** seulement
+(`parametersOf` : `missing` tout en `as: 'value'`, `f(x) = a x`) se comporte comme son
+expression, le paramètre restant une lettre. Avant, `substituteNames` la sautait : le moteur
+recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer f` ½f² + C.
+
+- **Commandes qui concluent** : `.dériver f` → `a`, `.intégrer f` → ½ax² + C, `.intégrer f de 0
+à 1` → a/2 (une intégrale bornée est réduite par `simplify` quand une fonction à paramètre est
+  citée : `(e^a − 1)/a`, et non `e^{a * 0}`), `.simplifier`, `.factoriser`, `.taylor`,
+  `.équivalent`.
+- **Commandes refusées** (`PARAMETER_BLOCKED` : `.résoudre`, `.variations`, `.limite`,
+  `.domaine`, `.réciproque`, y compris par `f'`) : « Le résultat dépend de a : donne-lui une
+  valeur (a = 2) pour l'étudier. » (« de a et b : donne-leur … » à plusieurs). Mesuré avant :
+  `.résoudre a x = 0` → x = 0, `.limite e^{a x} en +∞` → +∞, faux pour a ≤ 0. Le refus est large
+  (`.résoudre g(x)=0` de `g(x) = x^2 + k` y passe aussi). `.évaluer` n'y passe pas (E6).
+- **Ligne de calcul** (`parameterizedLine`, avant `expandInput`) : `f(2)` → `2a`, `f` seul →
+  `a x`, `f'(2)` de `a x^2` → `4a`, `g(f(2))` → `4a²` avec g prête ; appels réduits par
+  `simplify` dans l'arbre (le moteur rend tel quel un calcul qui garde des lettres ; avant :
+  « Fonction inconnue : f — définis-la d'abord »). Une égalité ou une comparaison (`f(2)=4`,
+  qui répondait `false`) est refusée (« Le résultat dépend de a… ») ; un dénominateur nul après
+  substitution (`a/x` en 0) rend « Erreur de calcul : Division par zéro », comme sans paramètre.
+- **Substitution** (`expandedCalls`) : de l'intérieur vers l'extérieur (`f(f(x))` → a²x), puis
+  une seule passe (`maxIterations: 1`) : `f(2x)` itéré donnait `a·2¹⁰x`.
+- **Fonction qui en cite une à paramètre** (`g(x) = f(x)+1`) : `substitutedAstOf(…,
+{ forDerivation })` remplace aussi les fonctions en attente (`engine.ts`) → `.dériver g` = a.
+- Une fonction en attente d'une **fonction** (`as: 'function'`) : la commande est refusée avec
+  le message de la carte (`pendingFunctionRefusal`). ⚠️ `p(x) = q(x)+1`, q inconnu, est lu
+  q·x par l'atelier (`as: 'value'`) : `.dériver p` répond q.
+
+**« Comment ? » de `.évaluer`** (`evaluate-steps.ts`, PR 3, décisions de David du 2026-10-14).
+**E2** : `generatePedagogicalArithmeticSteps` niveau `college`, une opération par étape (pièges du
+négatif compris : `(-3)^2 = (-3) \times (-3) = 9`, « Soustraire $-3$, c'est ajouter $3$ »).
+**E3** : la première étape est rédigée par l'atelier, « On remplace $x$ par $-3$ » (règle
+`atelier-substitute`) : l'expression où `typedValueNode(valeur)` (la valeur tapée, divisions en
+fractions, partagée avec `typedValueLatex`) a pris la place de la lettre, négatifs entre
+parenthèses (`substitute` + `toLatex`), produit d'un nombre écrit `\times` (`crossProducts` :
+`3x` en −2 sortait `3 * (-2)`), négatif en tête de produit entre parenthèses dès le remplacement
+(`parenthesizeLeadingNegatives` : `(-2)(-2-1)`, pas `-2(-2-1)`), parenthèses que l'atelier ajoute
+autour d'une fonction citée retirées quand elles ne servent à rien (`dropUselessParentheses` :
+`g(x)+1` → `2^2 + 1`, développé en `2 \times 2`) ; pour une fonction de l'atelier, `f(2) = 2^2 + 1` (parenthèses
+extérieures de la définition retirées). Le pipeline part de cette même expression. **Résumé** :
+le pipeline ne distingue pas ses étapes par verbosité (seules les explications changent) ; le
+résumé est donc CONSTRUIT : le remplacement, puis « On effectue les calculs »
+(`atelier-evaluate-result`, `expression = valeur` ou `f(2) = 5` d'un trait) ; offert seulement
+si le détaillé compte au moins deux opérations. **Gardes** (`evaluate-steps-check.ts`, toute
+exception → pas d'étapes) : valeur conclue = réponse du moteur **en calcul exact**
+(`evaluate(a − b)` nul) ; réponse arrondie (`\approx`) → rien ; **E4** pas de « Comment ? » si
+l'expression contient une fonction autre que racine et valeur absolue, ou une puissance de e
+(`e^0`, `\ln 1`, `\sin 0`), ni si le pipeline ne rend aucune étape ou « On calcule » seul
+(`(1/2)^2`, `x` en 3) ; aucun `*` dans le LaTeX ; **E5** une réponse décimale garde ses
+décimaux (virgule par `resultWithDecimalComma`, `2 \times 1{,}5 = 3`), mais des étapes qui
+passent par une fraction sous une réponse décimale (le pipeline récrit `1{,}5^2` en 9/4 et
+`1 + 0{,}5` en 3/2) → pas d'étapes. **Plusieurs lettres** (E6) : toutes remplacées d'un coup,
+« On remplace $a$ par $1$ et $b$ par $2$ » (trois : « $a$ par $1$, $b$ par $2$ et $c$ par $3$ »,
+ordre tapé, `substitutionTitle`), mêmes gardes ; une division tapée `x/4` s'écrit en fraction
+dès le remplacement (`slashesAsFractions`, `\dfrac{2}{4}`, à une lettre aussi) ; les lettres de l'expression doivent être
+exactement celles qui ont une valeur. Une saisie qui cite une autre lettre
+qu'une fonction de l'atelier (`a x` avec `a` posé, que l'atelier remplace avant le moteur) n'a
+pas d'étapes (`citesOtherLetters`) ; de même une valeur posée tapée après `en`
+(`en x=a`), dont la ligne s'écrit `f(3) = 10` (`typedValueOf` ôte les parenthèses de
+remplacement). Les refus (`VALUE_FORBIDDEN`) sortent avant,
+sans étapes.
 
 **`.intégrer` en détail** (`integrate-steps.ts`, 2026-10-13). La réponse de la ligne est celle
 du moteur `integration`, inchangée (`+ C` compris). Le « Comment ? » vient de
@@ -788,6 +875,82 @@ du moteur (`DOMAIN_UNRESOLVED` : `\sqrt{\sin x}`) sortent plus haut, inchangés,
   les deux écritures sont identiques. Branché aussi sans la résolution rédigée d'une contrainte
   (`\sqrt{x^2-5x+6}`, Q4) et pour le domaine universel (Q6). Tests :
   `domaine-etapes.test.ts`, `domaine-etapes-affichage.svelte.test.ts`.
+
+**`.limite` en détail** (`limit.ts`, PR 2 de `.limite`, syntaxe tranchée par David le
+2026-10-14, L1-L6). Servie par l'atelier (`ATELIER_ONLY_COMMANDS`), lue **avant** la substitution
+des noms : `en 0 à droite` n'est pas une expression, et `a` y serait le mot `à`. Le point
+(`readPoint`) : un nombre ou une valeur de l'atelier (`en 0,5`, `en a`, `en 1/2` écrit
+`\frac{1}{2}`), `en x=1` toléré ; le côté `0+`, `0^+`, `0^{+}`, `0 à droite` (et `-`,
+`à gauche`) ; l'infini `+∞`, `+inf`, `-∞`, `-inf`, `\infty`, et `∞` / `inf` seuls = +∞ (pas de
+côté à l'infini : refus). Un côté sur un point qui n'est pas un nombre seul s'écrit
+`x\to {\tfrac{3}{4}}^-`. La lettre est celle de l'expression, comme `.évaluer` ; une lettre tapée absente d'une expression qui en a d'autres est refusée (`.limite t^2 en x=1` → « L'expression s'écrit avec t : .limite t^2 en t=1. »), une constante reste acceptée (plusieurs sans
+x : refus, « écris la variable après « en » »). Le calcul est `evaluateLimit` (`mathAST/limits`).
+La réponse est une **formule**, `\lim\limits_{x\to 1}\dfrac{x^2-1}{x-1} = 2` (expression TAPÉE,
+parenthèses de la barre de fraction retirées, une somme entre `\left(…\right)`).
+**Citée seule** (`citedObject`) : une fonction de l'atelier `f`, `f'` ou `f(<sa lettre>)` garde
+son nom et sa lettre — son expression RANGÉE (en x) est calculée en x, montrée
+`\lim\limits_{t\to 0^+} f(t)` pour f(t) = 1/t, `f'(x)` pour une dérivée. Tout autre argument
+(`f(t)` quand f s'écrit en x, `f(2x)`, `f(2x)+1`) est une expression : calculée substituée, dans
+la lettre de l'expression substituée, affichée telle que tapée (`\lim\limits_{x\to 1}
+f\left(2x\right) = 5`) ; la composée d'une fonction À ENSEMBLE choisi reste refusée
+(`composedMessage`, faute de domaine de f(u(x))). Une suite `u`, `u_n` ou `u(n)` se calcule en n et
+s'écrit `\lim\limits_{n\to+\infty} u_n` ; dans une expression, `u_n`, `u_k` se lisent `u(n)`, `u(k)` (`withSequenceCalls` : `.limite u_n + 1 en +∞` → 1) ; seul +∞ est accepté, que la suite soit citée seule ou dans une expression (`citedSequence`), et une suite récurrente est refusée.
+**Gardes de l'atelier** (le branchement saute celles du chemin commun) : une liste citée →
+`listCitedMessage` ; l'ensemble choisi d'une fonction (`f(x) = x^2 sur [0;+∞[`, I4) — un point
+loin de l'ensemble est refusé comme `.évaluer` (« -1 n'est pas dans l'ensemble de définition de
+f, [0 ; +∞[. »), un bord est pris du côté intérieur (`en 0` → `0^+`), un côté extérieur ou un
+infini hors de l'ensemble est refusé ; une composée d'une fonction à ensemble → `composedMessage`.
+`exp(1)` s'écrit `e`. **Jamais de valeur approchée** : statut `indeterminate`, `unsupported`,
+`approximate`, ou un nombre à plus de 6 décimales → « Je ne sais pas calculer cette limite. »
+(une réponse, pas un refus, comme `.factoriser`). Sans côté tapé, une fonction définie d'un seul
+côté du point (`definedSide` du moteur) l'écrit : `.limite ln(x) en 0` →
+`\lim\limits_{x\to 0^+} \ln(x) = -\infty` (aussi `sqrt(x)` en 0, `sqrt(-x)` en `0^-`, `ln(x-1)`
+en 1 ; `f(x)` garde son nom). `does-not-exist` sans côté TAPÉ par l'élève (un côté imposé par l'ensemble choisi, I4, garde la
+raison : f(x) = sin(1/x) sur ]0 ; +∞[, `.limite f en 0` → « Pas de limite en 0+ : f oscille… »),
+selon `noLimitReason` ; le nom de la fonction s'écrit hors de `\text` (`f_1` en indice) :
+`outside-domain` → « Pas de limite en -1 : l'expression n'est pas définie au voisinage de -1. »
+(« f n'est pas définie… » pour une fonction citée seule ; `ln(x)` en −∞) ; `oscillation` → « Pas
+de limite en +∞ : l'expression oscille sans se rapprocher d'aucune valeur. » (« f oscille… » ;
+`3sin(2x)+1` en −∞, `sin(1/x)` en 0) ; sinon (L4, `sides-differ` compris) les deux limites
+latérales quand le moteur les connaît, « Pas de limite en 0 : à gauche −∞, à droite +∞. », sinon
+« Pas de limite en … ». **Avec un côté tapé** (Q1, David, 2026-10-14), la raison s'écrit aussi
+(le moteur rend `noLimitReason` pour un côté demandé) : `.limite sqrt(-x) en 0+` → « Pas de
+limite en 0+ : l'expression n'est pas définie à droite de 0. » (« à gauche de » pour `0-`, « f »
+en maths pour une fonction citée) ; `sin(1/x)` en `0+` → « … oscille sans se rapprocher d'aucune
+valeur. ». Une fonction usuelle sans parenthèses (`ln x`, `sin x`, `cos x`, `sqrt x`, `exp x`,
+lue l·n·x par le parseur) est refusée comme dans les autres commandes (`bareFunctionName` :
+« Écris ln(x) avec des parenthèses. ») ; `e^x` se lit bien. Le texte de la ligne (copie, export)
+est lisible (`readableText`) : divisions en `/`, exposant long entre parenthèses (`e^(1/x)`,
+jamais le `e^{1:/x}` de `toCustom`), sans accolades : `1/(x-1)^2`, `e^x/x^2`, `(x+2)/x^2`, des
+parenthèses seulement où le sens l'exige (`1/(2x)`). Test :
+`limite-commande.test.ts`.
+
+**« Comment ? » de `.limite`** (`limit-steps.ts`, PR 3, décisions de David du 2026-10-14).
+Les étapes sont celles de `generatePedagogicalLimitSteps` (niveau `lycee` : forme indéterminée,
+factorisation, conjugué, terme prépondérant, limites de référence et croissances comparées,
+composée `e^u`, côtés d'un pôle, côté implicite) — jamais `dispatchPedagogicalLimit`,
+qui lit une syntaxe maison. Elles portent sur l'expression calculée, dans la lettre de l'élève
+(f(t) = 1/t : t, pas le x de rangement ; une lettre déjà prise par un paramètre → pas d'étapes),
+divisions écrites en fractions sans les parenthèses tapées pour la barre (`\dfrac{\sqrt{x+4}-2}{x}`),
+un point non entier avec un côté écrit comme sur la ligne (`{\tfrac{1}{2}}^+`). **Gendarmes
+exclus** : le moteur juge l'encadrement sur des sondes numériques (`SQUEEZE_PROBES`) sans en
+rendre les bornes ; des étapes `identify-bounds` / `apply-squeeze` → pas de « Comment ? »
+(`x^2 sin(1/x)` en 0) tant que le moteur n'écrit pas l'inégalité. **Garde de concordance** (`concludesLimitAnswer`) : la valeur
+conclue est celle de la ligne par valeur exacte (`concludesEngineValue`), un infini du même signe,
+le même côté implicite (l'étape qui porte `domainBoundary` ↔ `definedSide`) ; « pas de limite »
+n'est expliqué que dans le cas L4 (les deux limites latérales écrites par la ligne), avec les
+mêmes valeurs à gauche et à droite (`bindings` de `conclude-does-not-exist`) — `outside-domain`,
+`oscillation` et « Pas de limite en … » seul n'ont pas de « Comment ? ». **Rien à montrer**
+(`showsNothing`, comme E4 de `.évaluer`) : une substitution directe seule (`x^2+1` en 2,
+`sqrt(x)` en 0) → pas d'étapes. Le moteur pédagogique qui lève
+(`PedagogicalLimitNotImplemented` : `sqrt(x+1)-sqrt(x)` en +∞, `sin x` en +∞), un `*` dans le
+LaTeX → pas d'étapes. **Résumé construit** : les étapes sans l'annonce, la forme indéterminée
+(masquée comme dans le résumé du renderer, décision de David du 2026-10-12), les limites des
+termes, la limite d'une somme / d'un produit / d'un quotient ni la substitution qui suit une
+simplification, sans explications — la technique, la conclusion. Une fonction ou une
+suite citée seule garde son nom : l'annonce écrit `\lim g(x) = \lim \dfrac{x^2-1}{x-1}` (« la
+limite de $g(x)$ »), la conclusion `\lim g(x) = 2`, `u_n` pour une suite. Tests :
+`limite-etapes.test.ts`, `limite-etapes-garde.test.ts`, `limite-etapes-affichage.svelte.test.ts`.
 
 Statistiques : `summarizeList` / `summarizeTable` (`src/lib/statistics/describe.ts`), et
 `src/lib/statistics/` pour l'ajustement (`fit.ts`), le bivarié, la simulation, les fractions et

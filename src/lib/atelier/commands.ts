@@ -263,6 +263,15 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		}
 	],
 	[
+		'limit',
+		{
+			french: 'limite',
+			section: 'analyser',
+			description: 'Calculer une limite (en un point, à droite ou à gauche, en +∞)',
+			example: '.limite (x^2-1)/(x-1) en 1'
+		}
+	],
+	[
 		'integrate',
 		{
 			french: 'intégrer',
@@ -276,7 +285,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		{
 			french: 'évaluer',
 			section: 'calculer',
-			description: 'Évaluer une expression en remplaçant une lettre (en x=…)',
+			description: 'Évaluer une expression en remplaçant ses lettres (en x=… ; y=…)',
 			example: '.évaluer x^2 en x=3'
 		}
 	],
@@ -399,6 +408,8 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	// `.réciproque` : calculée, vérifiée (`reciprocal.ts`) — rien à voir avec
 	// `inv` du moteur, laissée de côté (`ENGINE_COMMANDS_LEFT_OUT`)
 	'reciprocal',
+	// `.limite` : `evaluateLimit` (`mathAST/limits`), la réponse en formule (`limit.ts`)
+	'limit',
 	'simulate',
 	'frequency',
 	'samples',

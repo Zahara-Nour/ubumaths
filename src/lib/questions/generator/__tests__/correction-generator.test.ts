@@ -859,10 +859,8 @@ describe("generateCorrection — kind: 'limit'", () => {
 		const rules = top.map((s) => s.rule);
 		expect(rules).toContain('simplify-common-factor');
 		const parent = top.find((s) => s.rule === 'simplify-common-factor');
-		expect(parent?.subSteps?.map((s) => s.rule)).toEqual([
-			'factor-numerator',
-			'factor-denominator'
-		]);
+		// Le dénominateur EST le facteur x − 2 : pas de sous-étape « x − 2 = x − 2 »
+		expect(parent?.subSteps?.map((s) => s.rule)).toEqual(['factor-numerator']);
 	});
 
 	it('handles infinity-analysis with \\infty approach spelling', () => {

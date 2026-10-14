@@ -35,8 +35,9 @@ L'expression s'arrête au **premier mot-clé**. Un mot-clé est un mot entier, e
 | intégrer (primitive)              | `.intégrer EXPR [pour VAR]`                       | `.intégrer x^2`                                         |
 | intégrer (définie)                | `.intégrer EXPR de A à B [pour VAR]`              | `.intégrer x de 3 à a` · `.intégrer sqrt(x) de 0 à 1/2` |
 | résoudre                          | `.résoudre ÉQUATION [pour VAR] [dans INTERVALLE]` | `.résoudre sin(x)=0 dans [0;2\pi]`                      |
-| évaluer                           | `.évaluer EXPR en VAR=VALEUR` (ou `pour`)         | `.évaluer x^2 en x=3`                                   |
+| évaluer                           | `.évaluer EXPR en VAR=VALEUR [; VAR=VALEUR…]`     | `.évaluer x^2 en x=3` · `.évaluer 2a+3b en a=1,5 ; b=2` |
 | équivalent                        | `.équivalent EXPR et EXPR`                        | `.équivalent (x+1)^2 et x^2+2x+1`                       |
+| limite                            | `.limite EXPR en POINT[+\|-]`                     | `.limite (x^2-1)/(x-1) en 1` · `.limite 1/x en 0+`      |
 | taylor                            | `.taylor EXPR ordre N [en A] [pour VAR]`          | `.taylor e^x ordre 3 en 1`                              |
 | variations                        | `.variations EXPR [pour VAR] [dans ENSEMBLE]`     | `.variations x^2 dans [0;+∞[`                           |
 | réciproque                        | `.réciproque FONCTION [sur INTERVALLE]`           | `.réciproque f` · `.réciproque x^2 sur [0;+∞[`          |
@@ -51,7 +52,18 @@ x=…` et `.intégrer f de a à b` hors de cet ensemble sont refusés comme `f(5
   le donne (« ensemble choisi », décisions a et b du 2026-10-13).
 - **`en`** (`.évaluer`) : la réponse est une formule, `f(3) = 9` ou la valeur seule ; une valeur
   décimale donne une réponse décimale, une valeur interdite un refus qui dit pourquoi (détail :
-  [atelier.md](atelier.md), « `.évaluer` en détail », 2026-10-14).
+  [atelier.md](atelier.md), « `.évaluer` en détail », 2026-10-14). Plusieurs lettres (E6) : séparées
+  par « ; » (`en a=1,5 ; b=2`) ; une virgule entre deux valeurs est refusée, même sans ambiguïté.
+- **`en`** (`.limite`, 2026-10-14) : un point (`en 1`, `en x=1` toléré, `en 0,5`), un côté
+  (`en 0+`, `en 0^+`, `en 0 à droite` ; `-`, `à gauche`), ou l'infini (`+∞`, `+inf`, `-∞`, `-inf` ;
+  `∞` ou `inf` seul = +∞). La réponse est une formule, `\lim\limits_{x\to 1}… = 2` ; une fonction
+  de l'atelier garde son nom (`.limite f en +∞` → `\lim f(x) = …` ; `f`, `f'` ou `f(<sa lettre>)` ;
+  `f(t)`, `f(2x)` se calculent comme une expression, refusés seulement si f a un ensemble choisi), une suite s'écrit `u_n` et n'a de limite qu'en +∞ ; sans côté, deux limites
+  latérales différentes → « Pas de limite en 0 : à gauche −∞, à droite +∞ », une fonction définie
+  d'un seul côté écrit ce côté (`.limite ln(x) en 0` → `x\to 0^+`), et « pas de limite » dit sa
+  raison (« … n'est pas définie au voisinage de -1 », « … oscille sans se rapprocher d'aucune
+  valeur ») (détail :
+  [atelier.md](atelier.md), « `.limite` en détail »).
 - **`sur`** (`.réciproque`, lot 3 de la réciproque, 2026-10-13) : le mot de la définition d'une
   fonction sur un intervalle (`f(x) = x^2 sur [0;+∞[`), pas `dans`. Il est CROISÉ avec l'ensemble
   de la carte f (vide → refus). Sur une fonction de l'atelier, crée ou met à jour la carte `f⁻¹` ;

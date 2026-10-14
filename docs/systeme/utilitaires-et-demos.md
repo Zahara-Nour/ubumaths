@@ -12,6 +12,8 @@ couvre:
   - 'src/routes/(public)/test-structure/+page.svelte'
   - 'src/routes/(public)/test-structure/*.svelte'
   - 'src/routes/(public)/test-structure/*.ts'
+  - 'src/routes/(public)/test-saisie/*.svelte'
+  - 'src/routes/(public)/test-saisie/*.ts'
   - 'src/routes/(public)/test-font/+page.svelte'
   - 'src/routes/(public)/test-font/exercices-demo.json'
   - 'src/routes/(public)/test-font/shantell-pdf.ts'
@@ -93,6 +95,7 @@ interdites aux robots par `static/robots.txt` (`/demo`, `/test-`), sauf `/a-prop
 | `/test-cadres`                | tous (`noindex`)                           | aucun                                                  | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`            | Mise au point, gardée             |
 | `/test-font`                  | tous                                       | aucun                                                  | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                      | Mise au point, gardée             |
 | `/test-structure`             | tous (`noindex`)                           | aucun                                                  | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                         | **Chantier vivant**               |
+| `/test-saisie`                | tous (`noindex`)                           | aucun                                                  | Saisie naturelle de Calcul, sans point (`docs/wip/atelier-saisie-naturelle.md`)                             | Prototype jetable                 |
 | `/test-exercises`             | tout connecté, élève compris               | aucun                                                  | `ExerciseMarkdownEditor` sur un exercice d'exemple                                                          | Mise au point, probablement morte |
 
 Précisions :
@@ -101,15 +104,18 @@ Précisions :
   clic sur « Lancer le simulateur ». La page envoie le thème (`postMessage`
   `{ type: 'ubumaths-theme', dark }`, origine du site) à chaque changement ; `simulator.html`
   l'écoute. Plein écran par bouton, sortie par Échap. Licence affichée : CC BY-NC-SA 4.0.
-- **`/test-structure`** : quatre fichiers. `StructureFormula.svelte` (encadré de la
-  sous-expression survolée ou touchée), `StructureReading.svelte` (lecture en français, mots du
-  dictionnaire cliquables), `StructureExplorer.svelte` (les deux réunis, message « 6e ou
-  avant »), `structure-lexicon.svelte.ts` (fiches du dictionnaire au niveau de l'élève, 5e pour
-  un visiteur). Spécification et décisions : [mathast/structure-expression.md](mathast/structure-expression.md). Le moteur est décrit
-  dans [mathast/README.md](mathast/README.md). Deux majuscules collées se lisent comme une
+- **`/test-structure`** : une seule formule, le **champ de formule** `StructureField`
+  (`$lib/components/structure/`, réglages structure, lecture et déplacer tous allumés) : on la
+  survole (encadré de la sous-expression, lecture en français, mots du dictionnaire cliquables,
+  message « 6e ou avant »), on l'écrit d'un clic court, on déplace un terme, un facteur ou un
+  membre d'égalité par appui puis mouvement, « Annuler » revient en arrière. Dans la route :
+  `StructureFormula.svelte` (formules du corpus, survol seul) et `structure-lexicon.svelte.ts`
+  (fiches du dictionnaire au niveau de l'élève, 5e pour un visiteur). Spécification et
+  décisions : [mathast/structure-expression.md](mathast/structure-expression.md). Le moteur est
+  décrit dans [mathast/README.md](mathast/README.md). Deux majuscules collées se lisent comme une
   **longueur** (« la longueur AB », `capitalPairs: 'length'`) ; la case « Lire AB comme un
   produit » repasse en mode produit, pour la formule principale et le corpus. Un nom de figure
-  (`ABC`) affiche son message à la place de la formule et de la lecture.
+  (`ABC`) affiche son message à la place de la lecture.
 - **`/test-font`** : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles

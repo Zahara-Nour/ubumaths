@@ -24,7 +24,8 @@ interface Case {
 	readonly a: number;
 	readonly value: string;
 	readonly numerator: string;
-	readonly denominator: string;
+	/** `null` : le dénominateur est déjà le facteur, rien à factoriser */
+	readonly denominator: string | null;
 	readonly simplified: string;
 	readonly factorText: string;
 }
@@ -35,9 +36,10 @@ const CASES: readonly Case[] = [
 		a: 0.5,
 		value: '\\dfrac{3}{2}',
 		numerator: '\\left( 2 x - 1 \\right) \\left( x + 1 \\right)',
-		denominator: '2 x - 1',
+		// Le dénominateur EST le facteur : pas de sous-étape « 2 x - 1 = 2 x - 1 »
+		denominator: null,
 		simplified: 'x + 1',
-		factorText: '(2x − 1)'
+		factorText: '$2 x - 1$'
 	},
 	{
 		latex: '\\lim_{x\\to \\frac{1}{2}}\\frac{4x^2-1}{6x-3}',
@@ -46,16 +48,17 @@ const CASES: readonly Case[] = [
 		numerator: '\\left( 2 x - 1 \\right) \\left( 2 x + 1 \\right)',
 		denominator: '3 \\left( 2 x - 1 \\right)',
 		simplified: '\\dfrac{2 x + 1}{3}',
-		factorText: '(2x − 1)'
+		factorText: '$2 x - 1$'
 	},
 	{
 		latex: '\\lim_{x\\to -\\frac{2}{3}}\\frac{3x^2-x-2}{3x+2}',
 		a: -2 / 3,
 		value: '-\\dfrac{5}{3}',
 		numerator: '\\left( 3 x + 2 \\right) \\left( x - 1 \\right)',
-		denominator: '3 x + 2',
+		// Le dénominateur EST le facteur : pas de sous-étape « 3 x + 2 = 3 x + 2 »
+		denominator: null,
 		simplified: 'x - 1',
-		factorText: '(3x + 2)'
+		factorText: '$3 x + 2$'
 	},
 	{
 		// Point entier : la fraction restante est réduite aussi (`(2x + 2)/2` → `x + 1`)
@@ -65,7 +68,7 @@ const CASES: readonly Case[] = [
 		numerator: '\\left( x - 1 \\right) \\left( 2 x + 2 \\right)',
 		denominator: '2 \\left( x - 1 \\right)',
 		simplified: 'x + 1',
-		factorText: '(x − 1)'
+		factorText: '$x - 1$'
 	},
 	{
 		// Coefficients rationnels : la constante DEVANT, sans « (1) »
@@ -75,7 +78,7 @@ const CASES: readonly Case[] = [
 		numerator: '\\dfrac{1}{4} \\left( 2 x - 1 \\right) \\left( 2 x + 1 \\right)',
 		denominator: '\\dfrac{1}{2} \\left( 2 x - 1 \\right)',
 		simplified: '\\dfrac{2 x + 1}{2}',
-		factorText: '(2x − 1)'
+		factorText: '$2 x - 1$'
 	},
 	{
 		// Quotient −1 : `-(2x − 1)`, jamais `-1(2x − 1)`
@@ -85,7 +88,7 @@ const CASES: readonly Case[] = [
 		numerator: '\\left( 2 x - 1 \\right) \\left( -2 x - 1 \\right)',
 		denominator: '-\\left( 2 x - 1 \\right)',
 		simplified: '2 x + 1',
-		factorText: '(2x − 1)'
+		factorText: '$2 x - 1$'
 	}
 ];
 
@@ -111,7 +114,8 @@ describe('limite pédagogique — factorisation par le facteur entier', () => {
 			const steps = flatten(result.steps);
 			const byRule = (rule: string) => steps.filter((s) => s.rule === rule);
 			expect(toLatex(byRule('factor-numerator')[0].after)).toBe(c.numerator);
-			expect(toLatex(byRule('factor-denominator')[0].after)).toBe(c.denominator);
+			if (c.denominator === null) expect(byRule('factor-denominator')).toHaveLength(0);
+			else expect(toLatex(byRule('factor-denominator')[0].after)).toBe(c.denominator);
 			const simplify = byRule('simplify-common-factor');
 			expect(toLatex(simplify[0].after)).toBe(c.simplified);
 			expect(simplify[0].description).toBe(

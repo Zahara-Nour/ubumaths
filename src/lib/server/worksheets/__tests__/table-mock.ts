@@ -18,6 +18,11 @@ export interface TableResponse {
 	error: { code?: string; message: string } | null;
 	/** Pour `select(..., { count: 'exact', head: true })` */
 	count?: number | null;
+	/**
+	 * Réponse propre à `single` / `maybeSingle`, quand une route lit la même
+	 * table une ligne à la fois ET en liste (absente : la réponse commune).
+	 */
+	single?: TableResponse;
 }
 
 export interface TableMock {
@@ -43,7 +48,7 @@ export function tableMock(
 		const response = (): TableResponse =>
 			responses[table] ?? { data: null, error: { message: `table inattendue : ${table}` } };
 		const query: Record<string, unknown> = {};
-		for (const method of ['eq', 'in', 'order', 'limit', 'neq', 'is', 'delete']) {
+		for (const method of ['eq', 'in', 'order', 'limit', 'neq', 'is', 'delete', 'range']) {
 			query[method] = () => query;
 		}
 		query.select = (columns = '*') => {
@@ -58,8 +63,9 @@ export function tableMock(
 			writes.push({ table, kind: 'update', values });
 			return query;
 		};
-		query.single = () => Promise.resolve(response());
-		query.maybeSingle = () => Promise.resolve(response());
+		const singleResponse = (): TableResponse => response().single ?? response();
+		query.single = () => Promise.resolve(singleResponse());
+		query.maybeSingle = () => Promise.resolve(singleResponse());
 		// Thenable voulu : le constructeur de requêtes de Supabase s'attend avec `await`
 		// oxlint-disable-next-line unicorn/no-thenable
 		query.then = (resolve: (value: TableResponse) => unknown, reject?: (e: unknown) => unknown) =>

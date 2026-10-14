@@ -10,7 +10,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
-import { fetchDisplayNumber } from '$lib/server/worksheets/display-number';
+import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
+import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
 import {
 	validateErrorReportParams,
 	validateReviewErrorReport,
@@ -174,7 +175,30 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 		const nextPendingReportId = nextPendingReports?.[0]?.id ?? null;
 
-		// Step 3: Build response
+		// Step 3: le numéro de l'exercice DANS LA COPIE de l'élève (D6), celui
+		// qu'il a lu et cite dans son signalement — ordre mélangé compris.
+		// Inconnu (fiche illisible) : 0, jamais un numéro faux.
+		const numbering = await fetchCopyNumbering(locals.supabase, worksheetId, [assignmentId]);
+		const copyNumber =
+			numbering.numberOf(assignmentId, reportData.student_id, reportData.worksheet_exercise_id) ??
+			0;
+
+		// L'auteur est-il encore destinataire de l'affectation ? Sinon, l'aperçu
+		// « vue élève » ne peut pas montrer sa copie : la page ne propose pas le
+		// lien. Lecture en panne : inconnu (null), pas « a quitté la classe ».
+		let studentIsRecipient: boolean | null;
+		try {
+			studentIsRecipient = await isStudentOfAssignment(
+				locals.supabase,
+				assignmentId,
+				reportData.student_id
+			);
+		} catch (recipientError) {
+			logger.error('[API] Destinataires de l’affectation illisibles :', recipientError);
+			studentIsRecipient = null;
+		}
+
+		// Step 4: Build response
 		const studentName =
 			student?.firstname && student?.lastname
 				? `${student.firstname} ${student.lastname}`
@@ -184,7 +208,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			id: reportData.id,
 			assignment_id: reportData.assignment_id,
 			worksheet_exercise_id: reportData.worksheet_exercise_id,
-			exercise_position: worksheetExercise.position ?? 0,
+			exercise_position: copyNumber,
 			student_id: reportData.student_id,
 			student_first_name: student?.firstname ?? null,
 			student_last_name: student?.lastname ?? null,
@@ -221,7 +245,8 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			context: {
 				worksheet_title: worksheet.title,
 				student_name: studentName,
-				exercise_position: worksheetExercise.position ?? 0
+				exercise_position: copyNumber,
+				student_is_recipient: studentIsRecipient
 			},
 			next_pending_report_id: nextPendingReportId
 		};
@@ -362,23 +387,22 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 
 		const exerciseId = worksheetExerciseData.exercise_id;
 
-		// Le numéro ANNONCÉ À L'ÉLÈVE doit être celui qu'il lit sur sa fiche.
-		//
-		// Ce code utilisait `position + 1`, faux deux fois : `position` est déjà
-		// 1-based (ExerciseList.svelte l'écrit `idx + 1`), donc le message
-		// décalait d'un rang ; et `position` redémarre à 1 dans chaque section,
-		// donc elle ne désigne de toute façon pas l'ordinal affiché. Sur une fiche
-		// à sections, l'élève lisait un numéro sans rapport avec le sien.
-		// Repli sur `position` si la fiche est illisible : ce n'est atteignable
-		// qu'en cas d'erreur base, où la requête est de toute façon en difficulté,
-		// et un numéro approché vaut mieux qu'un plantage — mais SANS le `+ 1`
-		// qui faisait le décalage.
-		const displayNumber =
-			(await fetchDisplayNumber(
-				locals.supabase,
-				worksheetExerciseData.worksheet_id,
-				worksheetExerciseData.id
-			)) ?? worksheetExerciseData.position;
+		// Le numéro ANNONCÉ À L'ÉLÈVE est celui qu'il lit sur SA copie (D6) :
+		// ordre mélangé compris, même calcul que la copie. Ni `position` (elle
+		// redémarre à 1 dans chaque section, et l'ancien `position + 1` décalait
+		// en plus d'un rang), ni l'ordre des positions d'une fiche mélangée. Fiche
+		// illisible : `null`, la notification ne cite alors aucun numéro — un
+		// numéro faux est pire que pas de numéro.
+		const numbering = await fetchCopyNumbering(
+			locals.supabase,
+			worksheetExerciseData.worksheet_id,
+			[assignmentId]
+		);
+		const displayNumber = numbering.numberOf(
+			assignmentId,
+			existingReport.student_id,
+			worksheetExerciseData.id
+		);
 
 		// Step 3 : la classe par laquelle CET élève est concerné par l'affectation.
 		//
@@ -544,13 +568,17 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			await notifyErrorReportValidated({
 				studentId: existingReport.student_id,
 				worksheetTitle: worksheet.title,
-				exercisePosition: displayNumber
+				exerciseNumber: displayNumber,
+				assignmentId,
+				worksheetExerciseId: worksheetExerciseData.id
 			});
 		} else {
 			await notifyErrorReportRejected({
 				studentId: existingReport.student_id,
 				worksheetTitle: worksheet.title,
-				exercisePosition: displayNumber,
+				exerciseNumber: displayNumber,
+				assignmentId,
+				worksheetExerciseId: worksheetExerciseData.id,
 				response: teacherResponse ?? undefined
 			});
 		}
@@ -563,7 +591,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 			id: updatedReport.id,
 			assignment_id: updatedReport.assignment_id,
 			worksheet_exercise_id: updatedReport.worksheet_exercise_id,
-			exercise_position: displayNumber,
+			exercise_position: displayNumber ?? 0,
 			student_id: updatedReport.student_id,
 			student_first_name: student?.firstname ?? null,
 			student_last_name: student?.lastname ?? null,

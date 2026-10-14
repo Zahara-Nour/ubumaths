@@ -55,6 +55,7 @@ import {
 	worksheetExerciseSeed,
 	type ExerciseContentRow
 } from '$lib/worksheets/worksheet-copy';
+import { fetchCopyNumbering } from '$lib/server/worksheets/display-number';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger(
@@ -213,11 +214,15 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		// Note: Notification is created automatically by database trigger
 		// (see migration: 20251213100000_error_report_notification_trigger.sql)
 
-		// Step 6: Build response
+		// Step 7: le numéro de l'exercice dans LA COPIE de cet élève (D6) ;
+		// inconnu → null, jamais la position brute
+		const numbering = await fetchCopyNumbering(locals.supabase, worksheet.id, [assignmentId]);
+
+		// Step 8: Build response
 		const reportView: StudentErrorReportView = {
 			id: newReport.id,
 			worksheet_exercise_id: newReport.worksheet_exercise_id,
-			exercise_position: worksheetExercise.position,
+			exercise_position: numbering.numberOf(assignmentId, user.id, worksheetExercise.id),
 			description: newReport.description,
 			status: newReport.status as StudentErrorReportView['status'],
 			response: newReport.response,

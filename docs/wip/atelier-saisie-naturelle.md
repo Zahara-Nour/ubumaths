@@ -65,3 +65,10 @@ morceau ») — David ne veut PAS du point devant les commandes : « une écritu
 ## Journal
 
 - 2026-10-13 — inventaire de `/calc` ; décisions 1-11 de David ; historique gardé au rechargement : oui.
+- 2026-10-14 — prototype jetable `/test-saisie` (branche `proto/saisie-naturelle`, PR brouillon) :
+  les exemples passent par le vrai `CalcDesk` ; mesures : espace, « é », ↑/↓, collage, clavier
+  virtuel ; 15 raccourcis retirés, 3 restreints ; `.limite` et `.développer` absents du moteur.
+- 2026-10-14 — prototype `/test-saisie` (PR brouillon #1355, jetable). **Décisions de David** :
+  (1) PAS de sortie automatique d'une fraction quand on tape un opérateur — le comportement de
+  MathLive reste (on sort par → ou Tab) ; (2) **créer les commandes `limite` et `développer`** ;
+  (3) liste ouverte : **Entrée calcule, Tab choisit** (comme pour les fonctions aujourd'hui).
