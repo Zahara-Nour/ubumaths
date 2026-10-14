@@ -174,6 +174,14 @@ describe('ce que seul l’élève reçoit, dans tous les styles', () => {
 			expect(typst).toContain('CONSIGNE-AFFECTATION');
 		});
 
+		it(`${name} : les consignes une seule fois`, () => {
+			const typst = generateStudentWorksheetTypst(
+				view({ style_id: style, instructions: 'CONSIGNE-AFFECTATION' }),
+				'none'
+			);
+			expect(typst.split('CONSIGNE-AFFECTATION')).toHaveLength(2);
+		});
+
 		it(`${name} : l’étoile des exercices indispensables et sa légende`, () => {
 			const v = view({ style_id: style });
 			v.exercises[0].is_essential = true;

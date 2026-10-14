@@ -280,7 +280,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const exercisesTypst =
 			(mode === 'worksheet'
 				? renderDocumentPreamble(this.document(input), {
-						individualCopyNotice: this.options.individualCopyNotice
+						individualCopyNotice: this.options.individualCopyNotice,
+						instructionsInTemplate: templateContent.includes('{{instructions}}')
 					})
 				: '') + this.generateExercises(input, mode, layout, resolved.showsPoints);
 		// Fiche + corrections : les réponses ou le corrigé, après les énoncés
@@ -314,7 +315,8 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			student_name: this.context.studentName ? escapeTypst(this.context.studentName) : '',
 			total_points: worksheet.total_points?.toString() || '',
 			duration: worksheet.estimated_duration_minutes?.toString() || '',
-			instructions: '', // Could be added to config later
+			// Les consignes de l'affectation (vue de l'élève) ; la copie du prof n'en a pas
+			instructions: escapeTypst(this.document(input).assignment?.instructions ?? ''),
 			school_name: '', // Could be added to config later
 			teacher_name: '', // Could be added to config later
 			exercises: exercisesTypst,

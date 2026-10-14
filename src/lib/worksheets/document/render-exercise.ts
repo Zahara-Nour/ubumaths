@@ -285,11 +285,12 @@ function essentialStar(exercise: DocumentExercise): string {
 /**
  * Ce que seul l'élève reçoit, en tête des exercices de la fiche, quel que soit
  * le style : l'avertissement de la copie individuelle (vue prof, D6), les
- * consignes de l'affectation, la légende ★. Vide pour la copie du prof.
+ * consignes de l'affectation (sauf si le gabarit a sa case `{{instructions}}`),
+ * la légende ★. Vide pour la copie du prof.
  */
 export function renderDocumentPreamble(
 	doc: WorksheetDocument,
-	options: { individualCopyNotice?: boolean } = {}
+	options: { individualCopyNotice?: boolean; instructionsInTemplate?: boolean } = {}
 ): string {
 	const labels = documentLabels(doc.locale);
 	let typst = '';
@@ -298,7 +299,8 @@ export function renderDocumentPreamble(
   #text(weight: "bold")[${escapeTypst(labels.individualCopyNotice)}]
 ]\n\n`;
 	}
-	const instructions = doc.assignment?.instructions;
+	// Le gabarit qui a sa case `{{instructions}}` y reçoit les consignes
+	const instructions = options.instructionsInTemplate ? null : doc.assignment?.instructions;
 	if (instructions) {
 		typst += `#block(fill: rgb("#eff6ff"), radius: 4pt, inset: 12pt, width: 100%)[
   #text(weight: "bold", fill: rgb("#1d4ed8"))[${labels.instructions}]
