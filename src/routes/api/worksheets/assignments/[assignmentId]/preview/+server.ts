@@ -98,7 +98,6 @@ interface ExerciseData extends ExerciseContentRow {
 	title: string | null;
 	resources: ExerciseResource[] | null;
 	generic_functions: string[] | null;
-	tags: string[] | null;
 }
 
 // ============================================================================
@@ -287,8 +286,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					variations,
 					resources,
 					generic_functions,
-					topic,
-					tags
+					topic
 				)
 			`
 			)
@@ -428,10 +426,6 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 
 			if (exerciseData.resources && exerciseData.resources.length > 0) {
 				exerciseView.resources = exerciseData.resources;
-			}
-
-			if (exerciseData.tags && exerciseData.tags.length > 0) {
-				exerciseView.tags = exerciseData.tags;
 			}
 
 			exercises.push(exerciseView);
