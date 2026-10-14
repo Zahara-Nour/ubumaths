@@ -35,17 +35,17 @@ import type {
 	WorksheetRow,
 	WorksheetConfig,
 	InstanceData,
-	WorksheetType,
 	WorksheetTemplateRow
 } from '$lib/types/worksheets';
 import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types';
 import { BaseTypstGenerator } from './base-generator';
 import { escapeTypst } from '$lib/ubumark';
-import { getDefaultTemplate, renderTemplate } from '../templates';
+import { renderTemplate } from '../templates';
+import { resolveTemplate, type ResolvedTemplate, type TemplateForm } from '../templates/styles';
 import { documentLabels, labelPlaceholders, type DocumentLabels } from '../labels';
 import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
 import { localizedText, worksheetLocale } from '$lib/types/worksheets';
-import { endOfTypstCall, withCorrectionFonts } from '../correction-fonts';
+import { CORRECTION_FONT_RULES, withCorrectionFonts } from '../correction-fonts';
 import { documentFromTeacherCopy } from '$lib/worksheets/document/teacher-adapter';
 import { renderExercises, type ExerciseLayout } from '$lib/worksheets/document/render-exercise';
 import { MATH_LIMITS_SETUP } from '$lib/worksheets/document/math-limits';
@@ -90,6 +90,12 @@ export interface WorksheetGeneratorOptions {
 	 * fiche (D6). Sans effet sur la fiche (énoncés).
 	 */
 	individualCopyNotice?: boolean;
+	/**
+	 * Fiche suivie de ses corrections (forme « fiche + corrections ») : les
+	 * réponses ou le corrigé, sur une nouvelle page après les énoncés. Sans
+	 * effet hors de la fiche.
+	 */
+	withCorrections?: 'answers' | 'correction';
 }
 
 /**
@@ -107,6 +113,8 @@ export interface GenerateTypstParams {
 	correctionFonts?: boolean;
 	/** Voir `WorksheetGeneratorOptions.individualCopyNotice` */
 	individualCopyNotice?: boolean;
+	/** Voir `WorksheetGeneratorOptions.withCorrections` */
+	withCorrections?: 'answers' | 'correction';
 }
 
 // ============================================================================
@@ -137,17 +145,21 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		return mode === 'answers' ? this.labels.answers : this.labels.correction;
 	}
 
+	/** La forme du document, donc son gabarit (ADR 0028 : une forme = un gabarit) */
+	private get form(): TemplateForm {
+		const mode = this.pdfMode;
+		return mode === 'worksheet' && this.options.withCorrections
+			? 'worksheet_with_corrections'
+			: mode;
+	}
+
 	/**
 	 * Avertissement du corrigé de classe d'une affectation individualisée
 	 * (D6) : ce corrigé est la copie d'un élève. Vide sinon, et sur la fiche.
 	 */
-	private individualCopyNoticeBlock(mode: WorksheetPdfMode): string {
+	private individualCopyNotice(mode: WorksheetPdfMode): string {
 		if (mode === 'worksheet' || !this.options.individualCopyNotice) return '';
-		return `#block(width: 100%, fill: rgb("#fff4d6"), stroke: rgb("#d9a400"), inset: 8pt, radius: 4pt)[
-  #text(weight: "bold")[${escapeTypst(this.labels.individualCopyNotice)}]
-]
-#v(0.5em)
-`;
+		return escapeTypst(this.labels.individualCopyNotice);
 	}
 
 	/**
@@ -175,19 +187,6 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 */
 	private title(worksheet: WorksheetRow): string {
 		return localizedText(worksheet.title, worksheet.translations, 'title', this.locale) ?? '';
-	}
-
-	/** Document type name ("Feuille d'exercices", "Worksheet", ...). */
-	private typeLabel(type: string): string {
-		const labels = this.labels;
-		const byType: Record<string, string> = {
-			worksheet: labels.typeWorksheet,
-			assessment: labels.typeAssessment,
-			exam: labels.typeExam,
-			quiz: labels.typeQuiz,
-			homework: labels.typeHomework
-		};
-		return byType[type] ?? labels.typeWorksheet;
 	}
 
 	/** Date as printed on the document, in the document language. */
@@ -227,15 +226,11 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	generate(input: WorksheetGeneratorInput): GenerateResult {
 		const { worksheet, template } = input;
 
-		// Try template first
-		const templateContent = this.getTemplateContent(worksheet.template_id, template);
-
-		let typstContent: string;
-		if (templateContent) {
-			typstContent = this.generateFromTemplate(input, templateContent);
-		} else {
-			typstContent = this.generateDefault(input);
-		}
+		// Le gabarit de la forme demandée, dans le style de la fiche (lot 2 : le
+		// style est désigné par `template_id`) ; le gabarit lu en base ne sert
+		// qu'à la fiche.
+		const resolved = resolveTemplate(worksheet.template_id, this.form, template?.template_content);
+		let typstContent = this.generateFromTemplate(input, resolved);
 
 		// Corrigé : Shantell Sans et Chiphre Math, posées après la police du document
 		if (this.pdfMode === 'correction' && this.options.correctionFonts !== false) {
@@ -252,34 +247,13 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	}
 
 	/**
-	 * Get template content from either the passed template or default templates
+	 * Remplit le gabarit de la forme : exercices, en-tête, bandeau du corrigé
 	 */
-	private getTemplateContent(
-		templateId: string | null | undefined,
-		template?: WorksheetTemplateRow | null
-	): string | null {
-		// If a template object is passed, use its content
-		if (template?.template_content) {
-			return template.template_content;
-		}
-
-		// If we have a template_id, try to get from default templates
-		if (templateId) {
-			const defaultTemplate = getDefaultTemplate(templateId);
-			if (defaultTemplate) {
-				return defaultTemplate.template_content;
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Generate Typst document from template
-	 */
-	private generateFromTemplate(input: WorksheetGeneratorInput, templateContent: string): string {
+	private generateFromTemplate(input: WorksheetGeneratorInput, resolved: ResolvedTemplate): string {
 		const { worksheet } = input;
+		const templateContent = resolved.content;
 		const mode = this.pdfMode;
+		const ending = mode === 'worksheet' ? this.options.withCorrections : undefined;
 
 		// Les exercices du gabarit. Un gabarit qui place {{exercises_badge}} reçoit
 		// les numéros sur carré ambre ; sinon ({{exercises}}) l'en-tête « Exercice N ».
@@ -287,7 +261,13 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const layout: ExerciseLayout = templateContent.includes('{{exercises_badge}}')
 			? 'badge'
 			: 'heading';
-		const exercisesTypst = this.generateExercises(input, mode, layout);
+		const exercisesTypst = this.generateExercises(input, mode, layout, resolved.showsPoints);
+		// Fiche + corrections : les réponses ou le corrigé, après les énoncés
+		const corrections = ending
+			? this.generateExercises(input, ending, layout, resolved.showsPoints)
+			: '';
+		// Le bandeau du corrigé (« CORRIGÉ », « RÉPONSES »)
+		const titled = ending ?? mode;
 
 		// Display options are opt-out: an absent flag means "show". They are
 		// exposed as {{#if show_x}} conditionals so templates can drop the label
@@ -318,6 +298,15 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			teacher_name: '', // Could be added to config later
 			exercises: exercisesTypst,
 			exercises_badge: exercisesTypst,
+			// Gabarits des corrigés et de la fiche + corrections
+			form_title: titled === 'worksheet' ? '' : this.correctionTitle(titled).toUpperCase(),
+			individual_copy_notice: this.individualCopyNotice(mode),
+			corrections,
+			// Polices du corrigé sur la partie corrigé seulement : les énoncés gardent la leur
+			correction_fonts:
+				ending === 'correction' && this.options.correctionFonts !== false
+					? CORRECTION_FONT_RULES
+					: '',
 			// Additional placeholders for specific templates
 			due_date: '',
 			exam_session: '',
@@ -326,247 +315,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			competences: ''
 		};
 
-		const rendered = renderTemplate(templateContent, templateData);
-		if (mode === 'worksheet') return rendered;
-
-		// Bandeau flottant pleine largeur (`scope: "parent"` : au-dessus des deux
-		// colonnes d'une fiche qui en a deux), en tête de la première page.
-		const banner = `
-#place(top + center, scope: "parent", float: true, clearance: 0.8em)[
-  #block(width: 100%, fill: rgb("#228b22"), inset: 10pt)[
-    #align(center)[
-      #text(size: 1.4em, weight: "bold", fill: white)[${this.correctionTitle(mode).toUpperCase()}]
-    ]
-  ]
-]
-${this.individualCopyNoticeBlock(mode)}`;
-		// Le bandeau doit suivre le `#set page(…)` du modèle : un `set page` qui
-		// vient APRÈS du contenu ouvre une nouvelle page, et le bandeau restait
-		// seul sur une page 1 vide. Il suit aussi son `#set text(…)` : le Corrigé
-		// y pose ses polices, que le bandeau doit prendre.
-		const insertAt = maxOrNull(endOfLastPageSetup(rendered), endOfLastTextSetup(rendered));
-		return insertAt === null
-			? banner + '\n' + rendered
-			: rendered.slice(0, insertAt) + '\n' + banner + rendered.slice(insertAt);
-	}
-
-	/**
-	 * Generate default document without template
-	 */
-	private generateDefault(input: WorksheetGeneratorInput): string {
-		const { worksheet } = input;
-		const mode = this.pdfMode;
-
-		const setup = this.generateWorksheetSetup(worksheet.type);
-		const header = this.generateHeader(worksheet, mode);
-		// Corrigés : l'allure de la fiche élève — deux colonnes, numéros en carré
-		// coloré (habillage `badge`) ; bandeau et avertissement restent en tête,
-		// pleine largeur. La fiche (énoncés) garde sa mise en page.
-		const exercises =
-			mode === 'worksheet'
-				? this.generateExercises(input, mode, 'classic')
-				: `#columns(2, gutter: 1.5em)[\n${this.generateExercises(input, mode, 'badge')}\n]`;
-		const footer = this.generateFooter(worksheet, mode);
-
-		return [setup, header, exercises, footer].filter(Boolean).join('\n\n');
-	}
-
-	/**
-	 * Generate Typst document setup with page configuration and styles
-	 */
-	private generateWorksheetSetup(type: WorksheetType): string {
-		const pageLayout = this.worksheetConfig.page_layout || 'A4';
-		const fontSize = this.worksheetConfig.font_size || 12;
-		const margins = this.worksheetConfig.margins || { top: 20, bottom: 20, left: 15, right: 15 };
-
-		let setup = `// Document Setup
-#set page(
-  paper: "${pageLayout.toLowerCase()}",
-  margin: (
-    top: ${margins.top}mm,
-    bottom: ${margins.bottom}mm,
-    left: ${margins.left}mm,
-    right: ${margins.right}mm,
-  ),
-  header-ascent: 20%,
-  footer-descent: 20%,
-)
-
-#set text(
-  font: "New Computer Modern",
-  size: ${fontSize}pt,
-  lang: "${TYPST_LANGS[this.locale]}",${this.locale === 'fr' ? '\n  region: "FR"' : ''}
-)
-
-#set par(justify: true, leading: 0.65em)
-#set heading(numbering: none)
-
-${MATH_LIMITS_SETUP}
-// Custom styles for different elements
-#let exercise-box(content) = {
-  block(
-    width: 100%,
-    inset: 0pt,
-    content
-  )
-}
-
-// Sticky: a column or page break can never leave the header alone at the bottom
-#let exercise-header(content) = {
-  block(
-    width: 100%,
-    inset: 0pt,
-    sticky: true,
-    below: 0.3em,
-    content
-  )
-}
-
-#let solution-box(content) = {
-  block(
-    width: 100%,
-    fill: rgb(240, 240, 240),
-    inset: 10pt,
-    radius: 4pt,
-    content
-  )
-}
-
-// Le libellé (« 1 pt », « 2 pts ») vient de documentLabels, dans la langue de la fiche
-#let points-badge(label) = {
-  text(size: 0.9em, weight: "bold")[#box(
-    fill: rgb(220, 220, 220),
-    inset: (x: 6pt, y: 3pt),
-    radius: 3pt,
-    label
-  )]
-}
-`;
-
-		// Add exam-specific styles
-		if (type === 'exam' || type === 'assessment') {
-			setup += `
-// Exam-specific styles
-#let answer-space(height: 3cm) = {
-  rect(
-    width: 100%,
-    height: height,
-    stroke: (paint: rgb(200, 200, 200), thickness: 0.5pt, dash: "dashed"),
-    fill: none
-  )
-}
-`;
-		}
-
-		return setup;
-	}
-
-	/**
-	 * Generate worksheet header with title, metadata, and student info
-	 */
-	private generateHeader(worksheet: WorksheetRow, mode: WorksheetPdfMode): string {
-		const config = this.worksheetConfig;
-		const labels = this.labels;
-		let header = '';
-
-		// Bandeau des corrigés (Réponses, Corrigé)
-		if (mode !== 'worksheet') {
-			header += '#block(width: 100%, fill: rgb(34, 139, 34), inset: 10pt)[\n';
-			header += '  #align(center)[\n';
-			header += `    #text(size: 1.4em, weight: "bold", fill: white)[${this.correctionTitle(mode).toUpperCase()}]\n`;
-			header += '  ]\n';
-			header += ']\n\n';
-			header += '#v(0.5em)\n\n';
-			header += this.individualCopyNoticeBlock(mode);
-		}
-
-		// Student information box
-		if (config.show_student_name || config.show_class) {
-			header += '#block(width: 100%)[\n';
-			header += '  #grid(\n';
-			header += '    columns: (1fr, 1fr),\n';
-			header += '    column-gutter: 2cm,\n';
-
-			// Left side: Name
-			if (config.show_student_name) {
-				const name = this.context.studentName || '.'.repeat(40);
-				header += `    align(left)[*${labels.name} :* ${escapeTypst(name)}],\n`;
-			} else {
-				header += '    [],\n';
-			}
-
-			// Right side: Class and date
-			const rightItems: string[] = [];
-			if (config.show_class) {
-				const cls = this.context.className || '.'.repeat(20);
-				rightItems.push(`*${labels.class} :* ${escapeTypst(cls)}`);
-			}
-			if (config.show_date) {
-				rightItems.push(`*${labels.date} :* ${this.formattedDate()}`);
-			}
-
-			if (rightItems.length > 0) {
-				header += `    align(right)[${rightItems.join(' #h(1em) ')}]\n`;
-			} else {
-				header += '    []\n';
-			}
-
-			header += '  )\n';
-			header += ']\n\n';
-			header += '#v(0.5em)\n\n';
-		}
-
-		// Title
-		if (config.show_title) {
-			const typeLabel = this.typeLabel(worksheet.type);
-			const titleSuffix = mode === 'worksheet' ? '' : ` - ${this.correctionTitle(mode)}`;
-			header += `#align(center)[\n`;
-			header += `  #text(size: 1.5em, weight: "bold")[${escapeTypst(typeLabel)}${titleSuffix}]\n`;
-			header += `  #linebreak()\n`;
-			header += `  #text(size: 1.3em)[${escapeTypst(this.title(worksheet))}]\n`;
-			header += `]\n\n`;
-			header += '#v(0.5em)\n\n';
-		}
-
-		// Duration and points
-		const metadata: string[] = [];
-		if (worksheet.estimated_duration_minutes) {
-			metadata.push(
-				`*${labels.duration} :* ${worksheet.estimated_duration_minutes} ${labels.minutes}`
-			);
-		}
-		if (config.show_points && worksheet.total_points) {
-			metadata.push(`*${labels.marks} :* ${worksheet.total_points} ${labels.points.toLowerCase()}`);
-		}
-
-		if (metadata.length > 0) {
-			header += `#align(center)[${metadata.join(' #h(2em) ')}]\n\n`;
-			header += '#v(0.5em)\n\n';
-		}
-
-		// Consignes d'épreuve : sur la fiche seulement (les corrigés n'ont pas d'énoncé)
-		if (mode === 'worksheet' && (worksheet.type === 'exam' || worksheet.type === 'assessment')) {
-			header += '#block(width: 100%, fill: rgb(250, 250, 250), inset: 10pt, radius: 4pt)[\n';
-			header += '  #text(size: 0.9em, style: "italic")[\n';
-			header += `    *${labels.instructions} :*\n`;
-			header += '    #list(\n';
-			header += `      [${labels.readCarefully}],\n`;
-			header += `      [${labels.writeLegibly}],\n`;
-			header += `      [${
-				worksheet.type === 'exam' ? labels.calculatorForbidden : labels.calculatorAllowed
-			}],\n`;
-			header += `      [${labels.manageTime}]\n`;
-			header += '    )\n';
-			header += '  ]\n';
-			header += ']\n\n';
-			header += '#v(0.5em)\n\n';
-		}
-
-		// Separator
-		header += '#line(length: 100%, stroke: 0.5pt)\n\n';
-		header += '#v(0.5em)\n\n';
-
-		return header;
+		// Opérateurs à limites (∑, lim) : règles de mathématiques, pas de mise en
+		// page, donc valables quel que soit le gabarit, même celui du prof
+		return `${MATH_LIMITS_SETUP}\n${renderTemplate(templateContent, templateData)}`;
 	}
 
 	/**
@@ -576,53 +327,25 @@ ${MATH_LIMITS_SETUP}
 	private generateExercises(
 		input: WorksheetGeneratorInput,
 		mode: WorksheetPdfMode,
-		layout: ExerciseLayout
+		layout: ExerciseLayout,
+		styleShowsPoints: boolean
 	): string {
 		const copyDoc = documentFromTeacherCopy({
 			worksheet: input.worksheet,
 			instance: input.instance,
 			config: this.worksheetConfig
 		});
-		// Copie d'un élève servant de corrigé de classe (D6) : le titre seul
-		const doc = this.options.individualCopyNotice
-			? { ...copyDoc, display: { ...copyDoc.display, titleOnly: true } }
-			: copyDoc;
+		const doc = {
+			...copyDoc,
+			display: {
+				...copyDoc.display,
+				// Le style décide d'abord : « Fiche élève » n'imprime aucun point
+				showPoints: styleShowsPoints && copyDoc.display.showPoints,
+				// Copie d'un élève servant de corrigé de classe (D6) : le titre seul
+				...(this.options.individualCopyNotice ? { titleOnly: true } : {})
+			}
+		};
 		return renderExercises(doc, mode, layout);
-	}
-
-	/**
-	 * Generate document footer
-	 */
-	private generateFooter(worksheet: WorksheetRow, mode: WorksheetPdfMode): string {
-		let footer = '';
-
-		// Add page numbering
-		footer += '#set page(footer: [\n';
-		footer += '  #set align(center)\n';
-		footer += '  #set text(size: 0.9em, fill: rgb(100, 100, 100))\n';
-
-		if (mode !== 'worksheet') {
-			footer += `  ${this.correctionTitle(mode)} - `;
-		}
-
-		footer += `  ${escapeTypst(this.title(worksheet))} - Page #context counter(page).display()\n`;
-		footer += '])\n';
-
-		// Add generation info for corrections
-		if (mode !== 'worksheet') {
-			footer += '\n#v(2em)\n';
-			footer += '#line(length: 100%, stroke: 0.5pt)\n';
-			footer += '#v(0.5em)\n';
-			footer += '#align(center)[\n';
-			footer += '  #text(size: 0.8em, style: "italic", fill: rgb(100, 100, 100))[\n';
-			const dateLocale = DATE_LOCALES[this.locale];
-			const generatedOn = `${new Date().toLocaleDateString(dateLocale)} ${this.labels.at} ${new Date().toLocaleTimeString(dateLocale)}`;
-			footer += `    ${this.labels.generatedOn} ${generatedOn}\n`;
-			footer += '  ]\n';
-			footer += ']\n';
-		}
-
-		return footer;
 	}
 }
 
@@ -649,7 +372,11 @@ export function generateWorksheetTypst(params: GenerateTypstParams): string {
 			studentName,
 			className
 		},
-		{ correctionFonts: params.correctionFonts, individualCopyNotice: params.individualCopyNotice }
+		{
+			correctionFonts: params.correctionFonts,
+			individualCopyNotice: params.individualCopyNotice,
+			withCorrections: params.withCorrections
+		}
 	);
 
 	const result = generator.generate({
@@ -702,6 +429,9 @@ export function generateBatchTypst(
 
 /**
  * Remove the setup section from a Typst document (for batch generation)
+ *
+ * Inerte depuis le lot 2 de l'ADR 0028 : le marqueur `// Document Setup` venait
+ * de la mise en page par défaut, retirée. Sans appelant ; retirée au lot 5.
  */
 function removeSetupSection(typst: string): string {
 	// Find the end of the setup section (look for the first non-setup content)
@@ -729,30 +459,4 @@ function removeSetupSection(typst: string): string {
 	}
 
 	return typst.substring(contentStart);
-}
-
-/**
- * Position juste après le dernier appel `#set page(…)` d'un document Typst
- * (parenthèses équilibrées, chaînes ignorées), ou null s'il n'y en a pas.
- */
-function endOfLastPageSetup(typst: string): number | null {
-	const start = typst.lastIndexOf('#set page(');
-	if (start === -1) return null;
-	return endOfTypstCall(typst, start);
-}
-
-/** Position juste après le dernier `#set text(…)` de premier niveau, ou null */
-function endOfLastTextSetup(typst: string): number | null {
-	let end: number | null = null;
-	for (const match of typst.matchAll(/^#set text\(/gm)) {
-		end = endOfTypstCall(typst, match.index) ?? end;
-	}
-	return end;
-}
-
-/** Le plus grand des deux, en ignorant un null */
-function maxOrNull(a: number | null, b: number | null): number | null {
-	if (a === null) return b;
-	if (b === null) return a;
-	return Math.max(a, b);
 }
