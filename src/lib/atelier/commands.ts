@@ -285,7 +285,7 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		{
 			french: 'évaluer',
 			section: 'calculer',
-			description: 'Évaluer une expression en remplaçant une lettre (en x=…)',
+			description: 'Évaluer une expression en remplaçant ses lettres (en x=… ; y=…)',
 			example: '.évaluer x^2 en x=3'
 		}
 	],

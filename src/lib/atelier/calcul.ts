@@ -52,7 +52,14 @@ import {
 	renameVariable,
 	typedLetterOf
 } from './letter';
-import { syncEngine, expressionOf, expandInput, expandCommandArgument, termsOf } from './engine';
+import {
+	syncEngine,
+	expressionOf,
+	expandInput,
+	expandCommandArgument,
+	substitutedAstOf,
+	termsOf
+} from './engine';
 import {
 	chosenDomainAnswer,
 	citedIntervalDomain,
@@ -706,7 +713,12 @@ function derivedSequence(session: CalcSession, argument: string): string | null 
  * seul recollerait l'expression devant l'argument, et `f_1(2x)` se lirait de
  * nouveau comme un PRODUIT, sans rien dire (revue de #901).
  */
-function replaceCalls(session: CalcSession, text: string, name: string): string | null {
+function replaceCalls(
+	session: CalcSession,
+	text: string,
+	name: string,
+	compose: (call: string) => string | null = (call) => expandCommandArgument(session.atelier, call)
+): string | null {
 	const start = new RegExp(`(?<![A-Za-z_])${name}'*\\s*\\(`, 'g');
 	let result = '';
 	let cursor = 0;
@@ -726,7 +738,7 @@ function replaceCalls(session: CalcSession, text: string, name: string): string 
 		// Le parseur doit y lire un APPEL : `f_1(2x)` se lit f₁·(2x), et sa
 		// « composition » rendait encore le produit (x^2)(2x)
 		if (astOf(call, 'url', session.atelier.functionNames)?.type !== 'function') return null;
-		const composed = expandCommandArgument(session.atelier, call);
+		const composed = compose(call);
 		if (composed === null) return null;
 		result += `${text.slice(cursor, match.index)}(${composed})`;
 		cursor = end + 1;
@@ -735,12 +747,37 @@ function replaceCalls(session: CalcSession, text: string, name: string): string 
 	return result + text.slice(cursor);
 }
 
-function substituteNames(session: CalcSession, argument: string): string | null {
+/**
+ * L'appel `f(2)` d'une fonction en attente d'un paramètre (`f(x) = a x`) :
+ * son expression, x remplacé par l'argument — `a` reste une lettre, que
+ * `.évaluer` reçoit après `en`. `null` si l'appel ne se lit pas.
+ */
+function pendingCall(session: CalcSession, name: string, call: string): string | null {
+	const node = astOf(call, 'url', session.atelier.functionNames);
+	const body = substitutedAstOf(session.atelier, name, { forDerivation: true });
+	if (node?.type !== 'function' || node.args.length !== 1 || !body.ok) return null;
+	return toCustom(substitute(body.ast, { [INTERNAL_LETTER]: node.args[0] }));
+}
+
+/**
+ * `pendingFunctions` (`.évaluer`, E6) : une fonction en attente d'un
+ * paramètre (`f(x) = a x`, `a` non posé) est remplacée aussi — la valeur de
+ * `a` arrive après `en` (`en x=1 ; a=2`), et sans elle le moteur le dit
+ * (« Il manque la valeur de a »).
+ */
+function substituteNames(
+	session: CalcSession,
+	argument: string,
+	pendingFunctions = false
+): string | null {
 	if (argument.trim() === '') return argument;
 
 	let result = argument;
 	for (const object of session.atelier.objects) {
-		if (object.status !== 'ok') continue;
+		const usable =
+			object.status === 'ok' ||
+			(pendingFunctions && object.status === 'pending' && object.kind === 'function');
+		if (!usable) continue;
 		// Une liste n'a pas d'expression : ce sont ses VALEURS que lit une
 		// commande de séries (`.stats L` répondait « certaines valeurs ne sont
 		// pas des nombres valides »)
@@ -750,14 +787,19 @@ function substituteNames(session: CalcSession, argument: string): string | null 
 			result = result.replace(alone, object.values.join(' ; '));
 			continue;
 		}
-		const expression = expressionOf(session.atelier, object.name);
+		const pending = object.status === 'pending';
+		const expression = expressionOf(session.atelier, object.name, { forDerivation: pending });
 		if (!expression.ok) continue;
 
 		// Les APPELS d'abord : sinon le `f` seul de `f(2x)` serait remplacé, et
 		// `(sin(x))(2x)` se lirait comme un PRODUIT — `.taylor f(2x) 4` rendait
 		// 2x² (2026-10-06).
 		if (object.kind === 'function' || object.kind === 'sequence') {
-			const replaced = replaceCalls(session, result, object.name);
+			const replaced = pending
+				? replaceCalls(session, result, object.name, (call) =>
+						pendingCall(session, object.name, call)
+					)
+				: replaceCalls(session, result, object.name);
 			if (replaced === null) return null;
 			result = replaced;
 		}
@@ -836,15 +878,14 @@ function substituteArguments(
 	const expression = substitute(args.expression);
 	const lower = args.bounds === null ? null : substitute(args.bounds.lower);
 	const upper = args.bounds === null ? null : substitute(args.bounds.upper);
-	const value = args.assignment === null ? null : substitute(args.assignment.value);
+	const values = args.assignments.map((assignment) => substitute(assignment.value));
 	const interval = args.interval === null ? null : substitute(args.interval);
 	const other = args.other === null ? null : substitute(args.other);
 	if (expression === null) return null;
 	if (args.bounds !== null && (lower === null || upper === null)) return null;
+	if (values.some((value) => value === null)) return null;
 	if (
-		[args.assignment, args.interval, args.other].some(
-			(part, i) => part !== null && [value, interval, other][i] === null
-		)
+		[args.interval, args.other].some((part, i) => part !== null && [interval, other][i] === null)
 	) {
 		return null;
 	}
@@ -852,7 +893,10 @@ function substituteArguments(
 		...args,
 		expression,
 		bounds: lower === null || upper === null ? null : { lower, upper },
-		assignment: args.assignment === null || value === null ? null : { ...args.assignment, value },
+		assignments: args.assignments.map((assignment, i) => ({
+			...assignment,
+			value: values[i] ?? assignment.value
+		})),
 		interval,
 		other
 	};
@@ -1190,7 +1234,29 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			message: 'Écris « et » entre les deux expressions : .équivalent (x+1)^2 et x^2+2x+1'
 		};
 	}
-	const args = typedArgs === null ? null : substituteArguments(typedArgs, substitute);
+	// `.évaluer 2a en a=1` alors que `a` est posé dans l'atelier : l'atelier
+	// le remplace avant le moteur, qui répondait « « a » n'apparaît pas dans
+	// 2(5) », illisible (décision de David, 2026-10-14)
+	const posed =
+		name === 'eval'
+			? typedArgs?.assignments.find((a) => session.atelier.get(a.name)?.kind === 'value')
+			: undefined;
+	if (posed !== undefined) {
+		const definition = session.atelier.get(posed.name)?.definition ?? '';
+		return {
+			kind: 'refus',
+			message: `${posed.name} vaut déjà ${definition} dans l'atelier : retire « ${posed.name}=${posed.value} », ou efface ${posed.name} avant.`
+		};
+	}
+	// `.évaluer` remplace aussi une fonction en attente d'un paramètre (E6)
+	const substituteArgument =
+		name === 'eval'
+			? (text: string): string | null =>
+					!text.includes("'") && !citesReciprocal(session.atelier, text)
+						? substituteNames(session, text, true)
+						: substitute(text)
+			: substitute;
+	const args = typedArgs === null ? null : substituteArguments(typedArgs, substituteArgument);
 	if (typedArgs !== null && args === null) return { kind: 'refus', message: UNREADABLE_COMMAND };
 
 	// `.dériver f` : la cible tapée, sans sa variable ni son `(x)`. Une
@@ -1210,7 +1276,17 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// en x) au lieu de dériver t³ par rapport à x (revue #962).
 	const letter =
 		typedArgs === null || name === 'equiv' ? null : functionLetterOf(session, typedArgs.expression);
-	const typedVariable = typedArgs?.variable ?? typedArgs?.assignment?.name ?? null;
+	// `.évaluer` : la lettre des fonctions citées est celle de la valeur tapée
+	// (`en t=2`) ; à plusieurs lettres (E6), celle qui porte leur nom
+	const evalAssignment =
+		typedArgs === null
+			? null
+			: typedArgs.assignments.length === 1
+				? typedArgs.assignments[0]
+				: (typedArgs.assignments.find(
+						(a) => a.name === (letter?.kind === 'single' ? letter.letter : INTERNAL_LETTER)
+					) ?? null);
+	const typedVariable = typedArgs?.variable ?? evalAssignment?.name ?? null;
 	const rewrites =
 		letter?.kind === 'single' && (typedVariable === null || typedVariable === letter.letter);
 	let finalArgs =
@@ -1256,13 +1332,12 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 			? citedReciprocalInterval(
 					session.atelier,
 					typedArgs.expression,
-					(name === 'eval' ? typedArgs.assignment?.name : finalArgs.variable) ?? INTERNAL_LETTER,
+					(name === 'eval' ? evalAssignment?.name : finalArgs.variable) ?? INTERNAL_LETTER,
 					(typed) =>
 						citedIntervalDomain(
 							(n) => session.atelier.get(n),
 							typed,
-							(name === 'eval' ? typedArgs.assignment?.name : finalArgs?.variable) ??
-								INTERNAL_LETTER
+							(name === 'eval' ? evalAssignment?.name : finalArgs?.variable) ?? INTERNAL_LETTER
 						)
 				)
 			: null;
@@ -1273,8 +1348,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	const outsideRefusal =
 		cited === null || typedArgs === null
 			? null
-			: name === 'eval' && typedArgs.assignment !== null
-				? valueOutsideRefusal(get, cited, typedArgs.assignment.value)
+			: name === 'eval' && evalAssignment !== null
+				? valueOutsideRefusal(get, cited, evalAssignment.value)
 				: name === 'integrate' && typedArgs.bounds !== null
 					? segmentOutsideRefusal(get, cited, typedArgs.bounds.lower, typedArgs.bounds.upper)
 					: null;
@@ -1328,9 +1403,19 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 						bounds: finalArgs.bounds
 					})
 				: null;
+		// Le refus de `.évaluer` qui propose une commande la cite telle que
+		// l'élève l'a tapée : `.évaluer f en …`, pas `.évaluer (ax) en …`
+		const engineMessage = result.error?.message ?? UNREADABLE_COMMAND;
+		const message =
+			name === 'eval' && finalArgs !== null && typedArgs !== null
+				? engineMessage.replace(
+						`.évaluer ${finalArgs.expression} en `,
+						`.évaluer ${typedArgs.expression} en `
+					)
+				: engineMessage;
 		return {
 			kind: 'refus',
-			message: result.error?.message ?? UNREADABLE_COMMAND,
+			message,
 			// Le refus de `.évaluer` cite la valeur en formule : `$x = 1$`
 			...(result.error?.code === VALUE_FORBIDDEN && { formulas: true as const }),
 			...(explained !== null && { steps: explained.steps, ...summaryField(explained) }),
@@ -1574,21 +1659,28 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// réponse du moteur et ont quelque chose à montrer (`evaluate-steps.ts`).
 	// Les refus (`VALUE_FORBIDDEN`) sont sortis plus haut, sans étapes.
 	if (name === 'eval' && result.success && result.latex !== undefined) {
-		const assignment = finalArgs?.assignment ?? typedArgs?.assignment ?? null;
-		const functionName = evaluatedFunctionName(session, typedArgs?.expression ?? null);
-		const line = evaluatedLine(result, result.latex, functionName, assignment?.value ?? null);
+		const assignments = finalArgs?.assignments ?? typedArgs?.assignments ?? [];
+		// `f(3) = …` : une fonction de l'atelier en UNE valeur ; à plusieurs
+		// lettres (E6), la valeur seule, comme pour une expression
+		const functionName =
+			assignments.length === 1
+				? evaluatedFunctionName(session, typedArgs?.expression ?? null)
+				: null;
+		const single = assignments.length === 1 ? assignments[0].value : null;
+		const line = evaluatedLine(result, result.latex, functionName, single);
+		const names = new Set(assignments.map((a) => a.name));
 		const evaluated =
 			finalArgs === null ||
-			finalArgs.assignment === null ||
+			finalArgs.assignments.length === 0 ||
 			result.ast === undefined ||
-			citesOtherLetters(session, typedArgs?.expression ?? null, finalArgs.assignment.name) ||
-			citesOtherLetters(session, typedArgs?.assignment?.value ?? null, null)
+			citesOtherLetters(session, typedArgs?.expression ?? null, names) ||
+			(typedArgs?.assignments ?? []).some((a) => citesOtherLetters(session, a.value, new Set()))
 				? null
 				: evaluateSteps(
 						{
 							expression: finalArgs.expression,
-							assignment: finalArgs.assignment,
-							callLatex: evaluatedCallLatex(functionName, finalArgs.assignment.value)
+							assignments: finalArgs.assignments,
+							callLatex: evaluatedCallLatex(functionName, single)
 						},
 						result.ast,
 						result.latex
@@ -1654,21 +1746,21 @@ function evaluatedLine(
 }
 
 /**
- * La saisie TAPÉE cite-t-elle une autre lettre que celle qu'on remplace
+ * La saisie TAPÉE cite-t-elle une autre lettre que celles qu'on remplace
  * (une valeur posée dans l'atelier, `a` dans `.évaluer a x en x=3`, ou dans
- * la valeur, `en x=a` : `letter` vaut alors `null`) ? Ses
- * étapes la feraient disparaître sans le dire : pas d'étapes (E6, plusieurs
- * lettres, en attente). Le nom d'une fonction de l'atelier ne compte pas.
+ * une valeur, `en x=a` : `letters` est alors vide) ? Ses étapes la feraient
+ * disparaître sans le dire : pas d'étapes. Le nom d'une fonction de
+ * l'atelier ne compte pas.
  */
 function citesOtherLetters(
 	session: CalcSession,
 	typed: string | null,
-	letter: string | null
+	letters: ReadonlySet<string>
 ): boolean {
 	const ast = typed === null ? undefined : parseCommandExpression(typed).ast;
 	if (ast === undefined) return true;
 	return [...getVariables(ast)].some(
-		(name) => name !== letter && session.atelier.get(name)?.kind !== 'function'
+		(name) => !letters.has(name) && session.atelier.get(name)?.kind !== 'function'
 	);
 }
 

@@ -677,7 +677,22 @@ lycée, $x^a$ défini pour $x > 0$ ; `\sqrt[3]{x}` en −8 = −2 reste accepté
 calcul n'a pas de valeur : … ». La valeur citée s'écrit comme dans la ligne (`typedValueLatex` :
 `\dfrac{\pi}{2}`, `-\dfrac{1}{2}`). Avant : un dénominateur nul finissait en « Je n'ai pas su
 lire », `\sqrt{-1}`, `\ln 0`, `\tan(\pi/2)`, `\arcsin(2)` passaient pour des résultats. La console
-(`repl.ts`) garde son texte. Plusieurs lettres (`en x=2, y=3`) : décision de David en attente.
+(`repl.ts`) garde son texte. **Plusieurs lettres** (E6, décision de David du 2026-10-14) :
+séparées par « ; », `.évaluer 2a+3b en a=1,5 ; b=2` → `9` (la valeur seule, même pour une
+fonction de l'atelier) ; `CommandArguments.assignments`, dans l'ordre tapé
+(`variable-argument.ts`). La virgule entre deux valeurs (`en a=1,5, b=2`, `en a=1, b=2`, ou
+`en … pour …`) est refusée, même sans ambiguïté : « Sépare les valeurs avec « ; » : .évaluer
+2a+3b en a=1,5 ; b=2, par exemple. » Refus (`eval.command.ts`) : lettre donnée deux fois (« La
+valeur de a est donnée deux fois. »), lettre absente de l'expression (« « c » n'apparaît pas dans
+… »), valeur déjà posée dans l'atelier, redonnée, à une ou plusieurs lettres (`calcul.ts`, avant
+le moteur : « a vaut déjà 5 dans l'atelier : retire « a=1 », ou efface a avant. »), lettre sans valeur (« Il manque la valeur de b : .évaluer 2a+3b en a=1 ; b=3, par
+exemple. », aussi à une seule valeur donnée), valeur interdite (« Pour $a = 1$ et $b = 0$, ce
+calcul n'a pas de valeur : … »). Un « ; » final sans valeur (`en a=1 ; b`) : « Il manque la
+valeur de b : … » (« x a déjà sa valeur : retire « ; x ». » si la lettre en a une). Une
+**fonction en attente d'un paramètre** (`f(x) = a x`, `a` non posé) est remplacée pour
+`.évaluer` seulement (`substituteNames(…, pendingFunctions)`, appels par `pendingCall`) :
+`.évaluer f en x=1 ; a=2` → `2` avec ses étapes, `.évaluer f en x=1` → « Il manque la valeur de
+a : .évaluer f en x=1 ; a=3, par exemple. » (la commande citée telle que tapée).
 
 **« Comment ? » de `.évaluer`** (`evaluate-steps.ts`, PR 3, décisions de David du 2026-10-14).
 **E2** : `generatePedagogicalArithmeticSteps` niveau `college`, une opération par étape (pièges du
@@ -702,9 +717,13 @@ l'expression contient une fonction autre que racine et valeur absolue, ou une pu
 (`(1/2)^2`, `x` en 3) ; aucun `*` dans le LaTeX ; **E5** une réponse décimale garde ses
 décimaux (virgule par `resultWithDecimalComma`, `2 \times 1{,}5 = 3`), mais des étapes qui
 passent par une fraction sous une réponse décimale (le pipeline récrit `1{,}5^2` en 9/4 et
-`1 + 0{,}5` en 3/2) → pas d'étapes. **Une seule lettre** : une saisie qui cite une autre lettre
+`1 + 0{,}5` en 3/2) → pas d'étapes. **Plusieurs lettres** (E6) : toutes remplacées d'un coup,
+« On remplace $a$ par $1$ et $b$ par $2$ » (trois : « $a$ par $1$, $b$ par $2$ et $c$ par $3$ »,
+ordre tapé, `substitutionTitle`), mêmes gardes ; une division tapée `x/4` s'écrit en fraction
+dès le remplacement (`slashesAsFractions`, `\dfrac{2}{4}`, à une lettre aussi) ; les lettres de l'expression doivent être
+exactement celles qui ont une valeur. Une saisie qui cite une autre lettre
 qu'une fonction de l'atelier (`a x` avec `a` posé, que l'atelier remplace avant le moteur) n'a
-pas d'étapes (`citesOtherLetters`, E6 en attente) ; de même une valeur posée tapée après `en`
+pas d'étapes (`citesOtherLetters`) ; de même une valeur posée tapée après `en`
 (`en x=a`), dont la ligne s'écrit `f(3) = 10` (`typedValueOf` ôte les parenthèses de
 remplacement). Les refus (`VALUE_FORBIDDEN`) sortent avant,
 sans étapes.

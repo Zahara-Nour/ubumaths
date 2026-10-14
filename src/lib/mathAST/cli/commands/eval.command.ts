@@ -26,7 +26,7 @@ import {
 } from '../approximation';
 import { bindingsToRecord } from '../core/eval-state';
 import { parse } from '../core/pipeline';
-import { readCommandArguments } from '../core/variable-argument';
+import { readCommandArguments, type Assignment } from '../core/variable-argument';
 import type { MathNode } from '../../types';
 import { getVariables } from '../../eval/substitute';
 
@@ -68,8 +68,8 @@ export class EvalCommand extends BaseCommand {
 		// David, 2026-10-08). Sans argument : la dernière expression (`ctx.ast`).
 		let ast: MathNode | undefined = ctx.ast;
 		let assigned: Record<string, MathNode> = {};
-		// La lettre et la valeur tapées après `en`, pour nommer une valeur interdite
-		let typedAssignment: { readonly name: string; readonly value: MathNode } | null = null;
+		// Les lettres et les valeurs tapées après `en`, pour nommer une valeur interdite
+		let typedAssignments: readonly { readonly name: string; readonly value: MathNode }[] = [];
 		const input = ctx.input.trim();
 		if (input !== '') {
 			const reading = readCommandArguments('eval', input);
@@ -82,12 +82,10 @@ export class EvalCommand extends BaseCommand {
 			}
 			const parserOptions = ctx.evalState ? { evalState: ctx.evalState } : undefined;
 			const parsed = parse(reading.args.expression, parserOptions);
-			const { assignment } = reading.args;
-			const value = assignment === null ? null : parse(assignment.value, parserOptions);
-			const failed = [parsed, value].find(
-				(result) => result !== null && (result.errors.length > 0 || !result.ast)
-			);
-			if (failed !== undefined && failed !== null) {
+			const { assignments } = reading.args;
+			const values = assignments.map((assignment) => parse(assignment.value, parserOptions));
+			const failed = [parsed, ...values].find((result) => result.errors.length > 0 || !result.ast);
+			if (failed !== undefined) {
 				const message = failed.errors[0]?.message ?? 'Failed to parse expression';
 				return { success: false, output: '', error: { code: 'PARSE_ERROR', message } };
 			}
@@ -104,27 +102,32 @@ export class EvalCommand extends BaseCommand {
 			// Sans état (hors REPL) : l'erreur INVALID_OPTIONS plus bas
 			const letters = ast === undefined || !ctx.evalState ? [] : free(ast);
 			const written = reading.args.expression;
-			if (assignment === null) {
+			if (assignments.length === 0) {
 				if (letters.length > 0) {
 					return fail(`Il manque la valeur : .évaluer ${written} en ${letters[0]}=3, par exemple.`);
 				}
-			} else if (ctx.evalState && ast !== undefined && value?.ast !== undefined) {
-				if (!letters.includes(assignment.name)) {
-					return fail(`« ${assignment.name} » n'apparaît pas dans ${written}.`);
+			} else if (ctx.evalState && ast !== undefined) {
+				const typed: { readonly name: string; readonly value: MathNode }[] = [];
+				for (const [index, assignment] of assignments.entries()) {
+					const value = values[index].ast;
+					if (value === undefined) continue;
+					if (!letters.includes(assignment.name)) {
+						return fail(`« ${assignment.name} » n'apparaît pas dans ${written}.`);
+					}
+					if (free(value).length > 0) {
+						return fail(
+							`La valeur de ${assignment.name} doit être un nombre, pas « ${assignment.value} ».`
+						);
+					}
+					typed.push({ name: assignment.name, value });
 				}
-				if (free(value.ast).length > 0) {
-					return fail(
-						`La valeur de ${assignment.name} doit être un nombre, pas « ${assignment.value} ».`
-					);
-				}
-				const rest = letters.filter((name) => name !== assignment.name);
+				// Une lettre de l'expression sans valeur (E6, décision de David)
+				const rest = letters.filter((name) => !assignments.some((a) => a.name === name));
 				if (rest.length > 0) {
-					return fail(
-						`Il reste ${rest.length === 1 ? 'une lettre' : 'des lettres'} sans valeur : ${rest.join(', ')}. On ne remplace qu’une lettre à la fois.`
-					);
+					return fail(missingValuesMessage(written, assignments, rest));
 				}
-				assigned = { [assignment.name]: value.ast };
-				typedAssignment = { name: assignment.name, value: value.ast };
+				assigned = Object.fromEntries(typed.map(({ name, value }) => [name, value]));
+				typedAssignments = typed;
 			}
 		}
 
@@ -161,10 +164,7 @@ export class EvalCommand extends BaseCommand {
 			const forbidden = forbiddenValue(substituted);
 			if (forbidden !== null) {
 				const reason = FORBIDDEN_REASON_TEXT[forbidden];
-				const message =
-					typedAssignment === null
-						? `Ce calcul n'a pas de valeur : ${reason}.`
-						: `$${typedAssignment.name} = ${typedValueLatex(typedAssignment.value)}$ est une valeur interdite : ${reason}.`;
+				const message = forbiddenMessage(typedAssignments, reason);
 				return {
 					success: false,
 					output: '',
@@ -218,6 +218,45 @@ export class EvalCommand extends BaseCommand {
 			};
 		}
 	}
+}
+
+// =============================================================================
+// Les refus
+// =============================================================================
+
+/**
+ * Une ou plusieurs lettres sans valeur : « Il manque la valeur de b : … »,
+ * avec la commande complétée (3 pour chaque lettre manquante).
+ */
+function missingValuesMessage(
+	written: string,
+	assignments: readonly Assignment[],
+	missing: readonly string[]
+): string {
+	const which =
+		missing.length === 1 ? `la valeur de ${missing[0]}` : `les valeurs de ${listInFrench(missing)}`;
+	const example = [
+		...assignments.map(({ name, value }) => `${name}=${value}`),
+		...missing.map((name) => `${name}=3`)
+	].join(' ; ');
+	return `Il manque ${which} : .évaluer ${written} en ${example}, par exemple.`;
+}
+
+/** Le refus d'une valeur interdite, les valeurs tapées citées en formules. */
+function forbiddenMessage(
+	assignments: readonly { readonly name: string; readonly value: MathNode }[],
+	reason: string
+): string {
+	const cited = assignments.map(({ name, value }) => `$${name} = ${typedValueLatex(value)}$`);
+	if (cited.length === 0) return `Ce calcul n'a pas de valeur : ${reason}.`;
+	if (cited.length === 1) return `${cited[0]} est une valeur interdite : ${reason}.`;
+	return `Pour ${listInFrench(cited)}, ce calcul n'a pas de valeur : ${reason}.`;
+}
+
+/** `a`, `a et b`, `a, b et c`. */
+export function listInFrench(items: readonly string[]): string {
+	if (items.length <= 1) return items.join('');
+	return `${items.slice(0, -1).join(', ')} et ${items[items.length - 1]}`;
 }
 
 // =============================================================================

@@ -21,8 +21,10 @@
  *   sur la réponse ET les étapes) ; des étapes qui passent par des fractions
  *   (le pipeline récrit 1 + 0,5 en 3/2) sous une réponse décimale → pas
  *   d'étapes.
- * - Une seule lettre : une expression qui en garde une autre (une valeur
- *   posée dans l'atelier) n'a pas d'étapes (E6 en attente).
+ * - **E6** (plusieurs lettres, `en a=1,5 ; b=2`) : toutes les lettres sont
+ *   remplacées d'un coup, « On remplace $a$ par $1{,}5$ et $b$ par $2$ »,
+ *   dans l'ordre tapé ; mêmes gardes. Une expression qui garde une lettre
+ *   sans valeur tapée (une valeur posée dans l'atelier) n'a pas d'étapes.
  *
  * ⚠️ **`null` n'est pas un échec : c'est le repli.** La ligne garde la réponse
  * du moteur, sans « Comment ? ». Aucun chemin ne jette.
@@ -33,12 +35,13 @@
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import type { MathNode } from '$lib/mathAST/types';
 import { parse } from '$lib/mathAST/cli/core/pipeline';
-import { typedValueNode } from '$lib/mathAST/cli/commands/eval.command';
+import { listInFrench, typedValueNode } from '$lib/mathAST/cli/commands/eval.command';
+import type { Assignment } from '$lib/mathAST/cli/core/variable-argument';
 import { substitute } from '$lib/mathAST/eval';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { mapNode } from '$lib/mathAST/transforms';
-import { parentheses } from '$lib/mathAST/factory';
+import { fraction, parentheses } from '$lib/mathAST/factory';
 import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
 import { generatePedagogicalArithmeticSteps } from '$lib/mathAST/pedagogical-arithmetic/pipeline';
 import { PedagogicalArithmeticRenderer } from '$lib/mathAST/pedagogical-arithmetic/renderer';
@@ -54,10 +57,11 @@ import {
 // Types
 // =============================================================================
 
-/** Ce que lit `.évaluer` : l'expression (noms déjà remplacés), la lettre, la valeur. */
+/** Ce que lit `.évaluer` : l'expression (noms déjà remplacés), les lettres et leurs valeurs. */
 export interface EvaluationArguments {
 	readonly expression: string;
-	readonly assignment: { readonly name: string; readonly value: string };
+	/** Dans l'ordre tapé ; au moins une. */
+	readonly assignments: readonly Assignment[];
 	/**
 	 * L'appel écrit en tête du remplacement et du résultat, `f(-3)` pour une
 	 * fonction de l'atelier ; `null` pour une expression.
@@ -106,15 +110,27 @@ export function evaluateSteps(
 		// Une fonction de l'atelier arrive entre parenthèses, `(x^2+1)` : sans
 		// elles, `f(2) = 2^2 + 1`
 		const expression = parsed?.type === 'delimiter' ? parsed.content : parsed;
-		const typed = parse(args.assignment.value).ast;
-		if (expression === undefined || typed === undefined) return null;
+		if (expression === undefined || args.assignments.length === 0) return null;
+		// Les lettres de l'expression : exactement celles qui ont une valeur
 		const letters = getVariables(expression);
-		if (letters.size !== 1 || !letters.has(args.assignment.name)) return null;
-		if (getVariables(typed).size > 0) return null;
+		if (
+			letters.size !== args.assignments.length ||
+			args.assignments.some((assignment) => !letters.has(assignment.name))
+		) {
+			return null;
+		}
+		const values: { readonly name: string; readonly value: MathNode }[] = [];
+		for (const assignment of args.assignments) {
+			const typed = parse(assignment.value).ast;
+			if (typed === undefined || getVariables(typed).size > 0) return null;
+			values.push({ name: assignment.name, value: typedValueNode(typed) });
+		}
 
-		const value = typedValueNode(typed);
 		const replaced = crossProducts(
-			substitute(dropUselessParentheses(expression), { [args.assignment.name]: value })
+			substitute(
+				slashesAsFractions(dropUselessParentheses(expression)),
+				Object.fromEntries(values.map(({ name, value }) => [name, value]))
+			)
 		);
 		if (hasTranscendental(replaced)) return null;
 
@@ -135,7 +151,7 @@ export function evaluateSteps(
 		const substitution: RenderedStep = {
 			id: -1,
 			rule: SUBSTITUTE_RULE,
-			title: `On remplace $${args.assignment.name}$ par $${toLatex(value)}$`,
+			title: substitutionTitle(values),
 			expressionLatex: `${head}${replacedLatex}`,
 			schoolLevel: 'college'
 		};
@@ -161,6 +177,34 @@ export function evaluateSteps(
 // =============================================================================
 // Écriture du remplacement
 // =============================================================================
+
+/**
+ * « On remplace $x$ par $3$ » ; plusieurs lettres (E6) : « On remplace $a$
+ * par $1$ et $b$ par $2$ », « $a$ par $1$, $b$ par $2$ et $c$ par $3$ ».
+ */
+function substitutionTitle(
+	values: readonly { readonly name: string; readonly value: MathNode }[]
+): string {
+	return `On remplace ${listInFrench(values.map(({ name, value }) => `$${name}$ par $${toLatex(value)}$`))}`;
+}
+
+/**
+ * Une division tapée `x/4` écrite en fraction : le remplacement s'écrivait
+ * `2 / 4` (revue du 2026-10-14). Les parenthèses tapées autour du numérateur
+ * ou du dénominateur (`(x+1)/4`) ne servent plus dans une fraction.
+ */
+function slashesAsFractions(node: MathNode): MathNode {
+	return mapNode(node, (n) =>
+		n.type === 'division' && n.displayStyle !== 'fraction'
+			? fraction(ungrouped(n.numerator), ungrouped(n.denominator))
+			: n
+	);
+}
+
+/** Le contenu d'une parenthèse de regroupement, sinon le nœud. */
+function ungrouped(node: MathNode): MathNode {
+	return node.type === 'delimiter' && node.semantic === 'grouping' ? node.content : node;
+}
 
 /**
  * Le produit d'un nombre écrit `\times` : `3x` en x = −2 s'imprimerait
