@@ -229,6 +229,25 @@ describe('revue de 8b86c675e', () => {
 	});
 });
 
+describe('f(g(x)) avec g prête, dans les deux ordres de définition', () => {
+	const orders = [
+		['g avant f', ['g(x) = x^2', 'f(x) = a x']],
+		['g après f', ['f(x) = a x', 'g(x) = x^2']]
+	] as const;
+
+	it.each(orders)('%s : .évaluer f(g(x)) en x=1 ; a=2 → 2', (_, setup) => {
+		expect(latex('.évaluer f(g(x)) en x=1 ; a=2', setup)).toBe('2');
+	});
+
+	it.each(orders)('%s : .dériver f(g(x)) → 2ax', (_, setup) => {
+		expect(latex('.dériver f(g(x))', setup)).toBe('2ax');
+	});
+
+	it.each(orders)('%s : .intégrer f(g(x)) → ⅓ax³ + C', (_, setup) => {
+		expect(latex('.intégrer f(g(x))', setup)).toBe('\\dfrac{1}{3}ax^3+C');
+	});
+});
+
 // =============================================================================
 // Le paramètre empêche de conclure : refus clair
 // =============================================================================

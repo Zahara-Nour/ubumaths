@@ -969,14 +969,16 @@ function substituteNames(
 ): string | null {
 	if (argument.trim() === '') return argument;
 
-	// Les fonctions en attente que cette substitution remplace (appels imbriqués)
-	const pendingNames = new Set(
+	// Les fonctions que remplace l'appel d'une fonction en attente : en attente
+	// (`f(f(x))`) et PRÊTES (`f(g(x))`) — sinon le sort de `g(x)` dépendait de
+	// l'ordre de définition (g après f : « Je n'ai pas su lire »)
+	const callNames = new Set(
 		session.atelier.objects
 			.filter(
 				(o) =>
 					o.kind === 'function' &&
-					o.status === 'pending' &&
-					(pendingFunctions || parametersOf(o) !== null)
+					(o.status === 'ok' ||
+						(o.status === 'pending' && (pendingFunctions || parametersOf(o) !== null)))
 			)
 			.map((o) => o.name)
 	);
@@ -1007,7 +1009,7 @@ function substituteNames(
 		if (object.kind === 'function' || object.kind === 'sequence') {
 			const replaced = pending
 				? replaceCalls(session, result, object.name, (call) =>
-						pendingCall(session, pendingNames, call)
+						pendingCall(session, callNames, call)
 					)
 				: replaceCalls(session, result, object.name);
 			if (replaced === null) return null;
