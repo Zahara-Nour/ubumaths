@@ -1,6 +1,6 @@
 ---
 couvre:
-  - 'src/lib/server/{chapter*,chapters*,class-sessions,course-share-tokens,curriculum*,journal*,programme-tree}.ts'
+  - 'src/lib/server/{chapter*,chapters*,content-owner,template-content,template-guard,class-sessions,course-share-tokens,curriculum*,journal*,programme-tree}.ts'
   - 'src/lib/server/validation/{chapter*,chapters,curriculum,journal,academic}.ts'
   - 'src/lib/server/progression/**'
   - 'src/lib/components/{cours,journal,progression}/**'
