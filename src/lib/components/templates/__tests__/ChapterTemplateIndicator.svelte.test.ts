@@ -45,16 +45,32 @@ describe('ChapterTemplateIndicator', () => {
 		expect(container.textContent).toContain('Les fonctions affines');
 	});
 
-	/** Détaché, mise à jour disponible : les trois tooltips du composant. */
-	it('se monte aussi avec tous ses tooltips', async () => {
+	/** ADR 0029 : le lien est vivant — « chapitre lié », jamais de version. */
+	it('dit « chapitre lié au modèle », sans version ni mise à jour', async () => {
 		const { container } = await render(ChapterTemplateIndicator, {
-			instantiation: instanciation({ isDetached: true, hasUpdate: true, latestVersion: 3 }),
-			hasUpdate: true,
-			onUpdate: () => {},
+			instantiation: instanciation({ hasUpdate: true, latestVersion: 3 }),
 			onDetach: () => {}
 		});
 
-		expect(container.textContent).toContain('Les fonctions affines');
+		const texte = container.textContent ?? '';
+		expect(texte).toContain('Chapitre lié au modèle');
+		expect(texte).toContain('Détacher du modèle');
+		expect(texte).not.toMatch(/v2|v3|Mise à jour|instanci|template/i);
+		const lien = container.querySelector('a');
+		expect(lien?.getAttribute('href')).toBe(
+			'/dashboard/teacher/contenu/templates/22222222-2222-4222-8222-222222222222'
+		);
+	});
+
+	it('un chapitre détaché le dit, sans proposer de détacher encore', async () => {
+		const { container } = await render(ChapterTemplateIndicator, {
+			instantiation: instanciation({ isDetached: true }),
+			onDetach: () => {}
+		});
+
+		const texte = container.textContent ?? '';
+		expect(texte).toContain('Détaché du modèle « Les fonctions affines »');
+		expect(container.querySelector('button')).toBeNull();
 	});
 
 	/**

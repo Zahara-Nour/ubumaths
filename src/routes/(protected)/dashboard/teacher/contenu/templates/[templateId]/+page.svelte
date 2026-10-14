@@ -1,15 +1,24 @@
 <!--
-	Template Detail Page
-	====================
+	Page d'un modèle de chapitre
+	============================
 
-	View and manage a specific chapter template.
-	Shows: metadata, content snapshot, versions, instantiation options.
+	Le modèle POSSÈDE son contenu et s'édite ici, avec le MÊME éditeur que le
+	chapitre (ADR 0029) : sections, documents (téléversés ou Drive), objectifs,
+	exercices, fiches, séries. Rien n'y est publié — un modèle ne donne rien aux
+	élèves ; chaque chapitre lié décide de ce qu'il publie.
+
+	Une correction faite ici arrive aussitôt dans chaque chapitre lié ; un ajout
+	y arrive préparé. « Retirer du modèle » laisse l'élément aux classes qui
+	l'avaient déjà publié.
+
+	Plus de versions ni de « Mettre à jour depuis un chapitre » : le lien est
+	vivant, il n'y a plus rien à reprendre.
 -->
 
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
@@ -23,8 +32,11 @@
 	} from '$lib/components/ui/card';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
+	import { Textarea } from '$lib/components/ui/textarea';
+	import { ChapterAddDialogs, ChapterSectionsEditor } from '$lib/components/cours/teacher';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		FileText,
@@ -33,12 +45,10 @@
 		ClipboardList,
 		Upload,
 		Archive,
-		RefreshCw,
 		Trash2,
 		PlayCircle,
-		Clock
+		Pencil
 	} from '@lucide/svelte';
-	import { getContentCounts } from '$lib/types/chapter-templates';
 	import { formatGradeShort } from '$lib/utils/grades';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -47,36 +57,72 @@
 	let isArchiving = $state(false);
 	let isDeleting = $state(false);
 	let showDeleteDialog = $state(false);
-	let isUpdatingFromChapter = $state(false);
-	let showUpdateDialog = $state(false);
-	let selectedChapterId = $state('');
-	let changeSummary = $state('');
 
-	/** Chapitres qui suivent ce modèle, nommés avec leur classe. */
-	const chapterItems = $derived([
-		{ value: '', label: 'Choisir un chapitre...' },
-		...data.linkedChapters.map((chapter) => ({
-			value: chapter.id,
-			label: chapter.className ? `${chapter.title} — ${chapter.className}` : chapter.title
-		}))
-	]);
+	/** Titre et description du modèle, repris dans la boîte « Modifier ». */
+	let showEditDialog = $state(false);
+	let isSaving = $state(false);
+	let editTitle = $state('');
+	let editDescription = $state('');
+
 	let isInstantiating = $state(false);
 	let showInstantiateDialog = $state(false);
 	let selectedClassId = $state<string>('');
 	let chapterTitle = $state('');
+	let chapterIsVisible = $state(false);
 
-	const contentCounts = $derived(getContentCounts(data.template.contentSnapshot));
+	/** Les boîtes d'ajout (objectif, exercice, fiche, série, document). */
+	let addDialogs: ReturnType<typeof ChapterAddDialogs> | undefined = $state();
+
+	/** Ce que contient VRAIMENT le modèle (ses tables), plus la photo d'avant. */
+	const contentCounts = $derived({
+		documentCount: data.content.documents.length,
+		checklistItemCount: data.content.checklistItems.length,
+		exerciseCount: data.content.exercises.length,
+		worksheetCount: data.content.worksheets.length
+	});
+
+	const classItems = $derived(
+		data.classes.map((cls) => ({
+			value: cls.id,
+			label: cls.grade ? `${cls.name} (${cls.grade})` : cls.name
+		}))
+	);
+
+	const selectedClassLabel = $derived(
+		classItems.find((c) => c.value === selectedClassId)?.label ?? 'aucune sélection'
+	);
+
+	/** Ce que dit le succès d'une action, par nom d'action. */
+	const MESSAGES: Record<string, string> = {
+		publish: 'Modèle publié : il peut servir à créer des chapitres',
+		archive: 'Modèle archivé',
+		update: 'Modèle modifié',
+		addChecklistItem: 'Objectif ajouté au modèle',
+		updateChecklistItem: 'Objectif corrigé — dans chaque chapitre lié aussi',
+		linkExercise: `${lore.learning.exercise} ajoutée au modèle`,
+		linkWorksheet: 'Fiche ajoutée au modèle',
+		linkSeries: 'Série ajoutée au modèle',
+		setSeriesForm: 'Forme de la série modifiée',
+		addGoogleDriveDocument: 'Document Google Drive ajouté au modèle'
+	};
+
+	/** Les actions « retirer du modèle », toutes rendues sous leur propre nom. */
+	const RETRAITS = new Set([
+		'deleteDocument',
+		'deleteChecklistItem',
+		'unlinkExercise',
+		'unlinkWorksheet',
+		'unlinkSeries'
+	]);
 
 	function getStatusBadgeColor(status: string) {
 		switch (status) {
-			case 'draft':
-				return 'bg-gray-500';
 			case 'published':
-				return 'bg-green-500';
+				return 'bg-green-600 text-white';
 			case 'archived':
-				return 'bg-amber-500';
+				return 'bg-amber-600 text-white';
 			default:
-				return 'bg-gray-500';
+				return 'bg-muted text-muted-foreground';
 		}
 	}
 
@@ -101,45 +147,60 @@
 		});
 	}
 
-	// Show success/error toasts
+	function ouvrirModification() {
+		editTitle = data.template.title;
+		editDescription = data.template.description ?? '';
+		showEditDialog = true;
+	}
+
+	// Retour des actions : message, puis relecture du modèle.
 	$effect(() => {
 		if (form?.success) {
-			if (form.action === 'publish') {
-				toaster.success('Modèle publié avec succès');
-			} else if (form.action === 'archive') {
-				toaster.success('Modèle archivé');
-			} else if (form.action === 'update') {
-				toaster.success('Modèle mis à jour');
-			} else if (form.action === 'updateFromChapter') {
-				toaster.success(
-					data.template.status === 'draft'
-						? 'Contenu du modèle repris depuis le chapitre'
-						: 'Nouvelle version créée depuis le chapitre'
-				);
-				showUpdateDialog = false;
-				selectedChapterId = '';
-				changeSummary = '';
-			} else if (form.action === 'instantiate') {
-				toaster.success('Chapitre créé avec succès');
+			if (form.action === 'instantiate') {
+				toaster.success('Chapitre lié créé');
 				showInstantiateDialog = false;
-				if (form.chapterId && selectedClassId) {
+				if ('chapterId' in form && form.chapterId && selectedClassId) {
 					goto(`/dashboard/teacher/cours/${selectedClassId}/${form.chapterId}`);
 				}
+				return;
 			}
-		}
-		if (form?.error) {
+
+			if (RETRAITS.has(form.action)) {
+				// `deleted: false` : encore publié dans une classe, l'élément y reste.
+				toaster.success(
+					'deleted' in form && form.deleted === false
+						? 'Retiré du modèle — il reste chez les classes qui l’avaient publié'
+						: 'Retiré du modèle'
+				);
+			} else {
+				const message = MESSAGES[form.action] ?? 'Modification enregistrée';
+				// Créé, mais pas dans la section visée : le dire, sinon on le cherche.
+				if ('placed' in form && form.placed === false) {
+					toaster.warning(`${message}, mais rangé en « Non classé » — glisse-le dans sa section.`);
+				} else {
+					toaster.success(message);
+				}
+			}
+
+			if (form.action === 'update') showEditDialog = false;
+			invalidateAll();
+		} else if (form?.error) {
 			toaster.error(form.error);
 		}
 	});
 </script>
 
+<svelte:head>
+	<title>{data.template.title} - Modèle | Chiphre</title>
+</svelte:head>
+
 <div class="space-y-6">
-	<!-- Header -->
+	<!-- En-tête -->
 	<div>
-		<BackLink href="/dashboard/teacher/contenu/templates" label="Retour aux templates" />
-		<div class="flex items-start justify-between gap-4">
-			<div class="flex-1">
-				<div class="mb-2 flex items-center gap-2">
+		<BackLink href="/dashboard/teacher/contenu/templates" label="Retour aux modèles" />
+		<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+			<div class="min-w-0 flex-1">
+				<div class="mb-2 flex flex-wrap items-center gap-2">
 					<h1 class="text-3xl font-bold tracking-tight">{data.template.title}</h1>
 					<Badge class={getStatusBadgeColor(data.template.status)}>
 						{getStatusLabel(data.template.status)}
@@ -150,86 +211,75 @@
 				{/if}
 			</div>
 
-			<!-- Actions (owner only) -->
-			{#if data.isOwner}
-				<div class="flex items-center gap-2">
-					{#if data.template.status === 'draft'}
-						<form
-							method="POST"
-							action="?/publish"
-							use:enhance={() => {
-								isPublishing = true;
-								return async ({ update }) => {
-									isPublishing = false;
-									await update();
-								};
-							}}
-						>
-							<Button type="submit" disabled={isPublishing}>
-								<Upload class="mr-2 h-4 w-4" />
-								{isPublishing ? 'Publication...' : 'Publier'}
-							</Button>
-						</form>
-					{/if}
+			<div class="flex flex-wrap items-center gap-2">
+				<Button variant="outline" onclick={ouvrirModification}>
+					<Pencil class="mr-2 h-4 w-4" />
+					Modifier
+				</Button>
 
-					<!--
-						Reprendre le contenu d'un chapitre : c'est le seul moyen de
-						faire évoluer un modèle, son contenu n'étant pas modifiable
-						pièce à pièce.
-					-->
-					{#if data.template.status !== 'archived' && data.linkedChapters.length > 0}
-						<Button variant="outline" onclick={() => (showUpdateDialog = true)}>
-							<RefreshCw class="mr-2 h-4 w-4" />
-							Mettre à jour depuis un chapitre
+				{#if data.template.status === 'draft'}
+					<form
+						method="POST"
+						action="?/publish"
+						use:enhance={() => {
+							isPublishing = true;
+							return async ({ update }) => {
+								isPublishing = false;
+								await update();
+							};
+						}}
+					>
+						<Button type="submit" disabled={isPublishing}>
+							<Upload class="mr-2 h-4 w-4" />
+							{isPublishing ? 'Publication…' : 'Publier'}
 						</Button>
-					{/if}
+					</form>
+				{/if}
 
-					<!--
-						Un modèle archivé est une trace de ce qui a servi : on ne le
-						détruit pas. Brouillon et publié se suppriment, la
-						confirmation disant ce que cela emporte.
-					-->
-					{#if data.template.status !== 'archived'}
-						<Button
-							variant="outline"
-							class="text-destructive hover:text-destructive"
-							onclick={() => (showDeleteDialog = true)}
-						>
-							<Trash2 class="mr-2 h-4 w-4" />
-							Supprimer
+				{#if data.template.status === 'published'}
+					<form
+						method="POST"
+						action="?/archive"
+						use:enhance={() => {
+							isArchiving = true;
+							return async ({ update }) => {
+								isArchiving = false;
+								await update();
+							};
+						}}
+					>
+						<Button type="submit" variant="outline" disabled={isArchiving}>
+							<Archive class="mr-2 h-4 w-4" />
+							{isArchiving ? 'Archivage…' : 'Archiver'}
 						</Button>
-					{/if}
+					</form>
+				{/if}
 
-					{#if data.template.status === 'published'}
-						<form
-							method="POST"
-							action="?/archive"
-							use:enhance={() => {
-								isArchiving = true;
-								return async ({ update }) => {
-									isArchiving = false;
-									await update();
-								};
-							}}
-						>
-							<Button type="submit" variant="outline" disabled={isArchiving}>
-								<Archive class="mr-2 h-4 w-4" />
-								{isArchiving ? 'Archivage...' : 'Archiver'}
-							</Button>
-						</form>
-					{/if}
-				</div>
-			{/if}
+				<!--
+					Un modèle archivé est une trace de ce qui a servi : on ne le
+					détruit pas. Un modèle relié à des chapitres non plus — le serveur
+					le refuse et demande de l'archiver.
+				-->
+				{#if data.template.status !== 'archived'}
+					<Button
+						variant="outline"
+						class="text-destructive hover:text-destructive"
+						onclick={() => (showDeleteDialog = true)}
+					>
+						<Trash2 class="mr-2 h-4 w-4" />
+						Supprimer
+					</Button>
+				{/if}
+			</div>
 		</div>
 	</div>
 
-	<!-- Template Info -->
+	<!-- Informations -->
 	<Card>
 		<CardHeader>
 			<CardTitle>Informations</CardTitle>
 		</CardHeader>
 		<CardContent class="space-y-4">
-			<!-- Grades -->
 			{#if data.template.grades.length > 0}
 				<div>
 					<p class="mb-2 text-sm font-medium">Niveaux :</p>
@@ -242,8 +292,7 @@
 				</div>
 			{/if}
 
-			<!-- Stats -->
-			<div class="grid grid-cols-2 gap-4 md:grid-cols-5">
+			<div class="grid grid-cols-2 gap-4 md:grid-cols-4">
 				<div class="flex items-center gap-2">
 					<FileText class="h-5 w-5 text-muted-foreground" />
 					<div>
@@ -255,7 +304,7 @@
 					<CheckSquare class="h-5 w-5 text-muted-foreground" />
 					<div>
 						<p class="text-2xl font-bold">{contentCounts.checklistItemCount}</p>
-						<p class="text-xs text-muted-foreground">Tâches</p>
+						<p class="text-xs text-muted-foreground">Objectifs</p>
 					</div>
 				</div>
 				<div class="flex items-center gap-2">
@@ -265,10 +314,6 @@
 						<p class="text-xs text-muted-foreground">{lore.learning.exercise}s</p>
 					</div>
 				</div>
-				<!--
-					Les fiches font partie du modèle depuis la PR #256 : les compter
-					ici, sans quoi un modèle qui n'emporte qu'elles paraît vide.
-				-->
 				<div class="flex items-center gap-2">
 					<ClipboardList class="h-5 w-5 text-muted-foreground" />
 					<div>
@@ -278,121 +323,134 @@
 				</div>
 			</div>
 
-			<!-- Meta -->
 			<div class="space-y-1 border-t pt-4 text-sm text-muted-foreground">
-				<p>Version actuelle : v{data.template.currentVersion}</p>
-				<p>Utilisations : {data.template.instantiationCount}</p>
+				{#if data.linkedChapters.length > 0}
+					<p>
+						{data.linkedChapters.length === 1 ? 'Chapitre lié' : 'Chapitres liés'} :
+						{data.linkedChapters
+							.map((c) => (c.className ? `${c.title} (${c.className})` : c.title))
+							.join(', ')}
+					</p>
+				{:else}
+					<p>Aucun chapitre lié pour l’instant.</p>
+				{/if}
 				<p>Créé le {formatDate(data.template.createdAt)}</p>
 				<p>Dernière modification : {formatDate(data.template.updatedAt)}</p>
 			</div>
 		</CardContent>
 	</Card>
 
-	<!-- Instantiate -->
+	<!-- Créer un chapitre lié -->
 	{#if data.template.status === 'published' && data.classes.length > 0}
 		<Card>
 			<CardHeader>
-				<CardTitle>Utiliser ce Template</CardTitle>
+				<CardTitle>Utiliser ce modèle</CardTitle>
 				<CardDescription>
-					Créez un chapitre depuis ce template dans une de vos {lore.entities.class}s
+					Créez un chapitre lié dans une de vos {lore.entities.class}s : il suit le modèle, et rien
+					n’y est publié tant que vous ne le décidez pas.
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<Button onclick={() => (showInstantiateDialog = true)}>
 					<PlayCircle class="mr-2 h-4 w-4" />
-					Créer un Chapitre
+					Créer un chapitre
 				</Button>
 			</CardContent>
 		</Card>
 	{/if}
 
-	<!-- Versions History -->
-	{#if data.versions.length > 0}
-		<Card>
-			<CardHeader>
-				<CardTitle>Historique des Versions</CardTitle>
-				<CardDescription>{data.versions.length} versions</CardDescription>
-			</CardHeader>
-			<CardContent>
-				<div class="space-y-3">
-					{#each data.versions as version (version.id)}
-						<div class="flex items-start gap-3 rounded-lg border p-3">
-							<Clock class="mt-0.5 h-5 w-5 text-muted-foreground" />
-							<div class="flex-1">
-								<div class="flex items-center gap-2">
-									<p class="font-medium">Version {version.versionNumber}</p>
-									{#if version.versionNumber === data.template.currentVersion}
-										<Badge variant="outline" class="text-xs">Actuelle</Badge>
-									{/if}
-								</div>
-								{#if version.changeSummary}
-									<p class="mt-1 text-sm text-muted-foreground">{version.changeSummary}</p>
-								{/if}
-								<p class="mt-1 text-xs text-muted-foreground">
-									{formatDate(version.createdAt)}
-								</p>
-							</div>
-						</div>
-					{/each}
-				</div>
-			</CardContent>
-		</Card>
-	{/if}
+	<!-- Le plan du modèle : le même éditeur que le chapitre. -->
+	<section class="space-y-3">
+		<div>
+			<h2 class="text-xl font-semibold">Plan du modèle</h2>
+			<p class="text-sm text-muted-foreground">
+				Une correction faite ici arrive aussitôt dans chaque chapitre lié ; un ajout y arrive
+				préparé, sans être publié. Retirer un élément du modèle le laisse aux classes qui l’ont déjà
+				publié.
+			</p>
+		</div>
+
+		<ChapterSectionsEditor
+			templateId={data.template.id}
+			sections={data.content.sections}
+			documents={data.content.documents}
+			exercises={data.content.exercises}
+			checklistItems={data.content.checklistItems}
+			worksheets={data.worksheets}
+			chapterSeries={data.series}
+			exerciseDetails={data.exerciseDetails}
+			onAdd={(kind, sectionId) => addDialogs?.ouvrirAjout(kind, sectionId)}
+			onEditChecklistItem={(item) => addDialogs?.modifierObjectif(item)}
+		/>
+	</section>
 </div>
 
-<!-- Instantiate Dialog -->
-<Dialog.Root bind:open={showUpdateDialog}>
+<ChapterAddDialogs
+	bind:this={addDialogs}
+	templateId={data.template.id}
+	supabase={data.supabase}
+	availableExercises={data.availableExercises}
+	availableWorksheets={data.availableWorksheets}
+	availableSeries={data.availableSeries}
+	takenExerciseIds={data.content.exercises.map((e) => e.exerciseId)}
+	takenWorksheetIds={data.content.worksheets.map((w) => w.worksheetId)}
+	takenSeriesIds={data.content.series.map((s) => s.seriesId)}
+	onDocumentAdded={() => {
+		toaster.success('Document ajouté au modèle');
+		invalidateAll();
+	}}
+/>
+
+<!-- Modifier le titre et la description -->
+<Dialog.Root bind:open={showEditDialog}>
 	<Dialog.Content class="max-w-lg">
 		<Dialog.Header>
-			<Dialog.Title>Mettre à jour ce modèle</Dialog.Title>
+			<Dialog.Title>Modifier le modèle</Dialog.Title>
 			<Dialog.Description>
-				Le contenu du chapitre choisi remplacera celui du modèle.
-				{#if data.template.status === 'draft'}
-					Le modèle est en brouillon : son contenu est simplement réécrit.
-				{:else}
-					Le modèle est publié : cela crée une nouvelle version, et les chapitres qui le suivent se
-					verront proposer la mise à jour.
-				{/if}
+				Le titre et la description du modèle. Les chapitres liés gardent leur propre titre.
 			</Dialog.Description>
 		</Dialog.Header>
 
 		<form
 			method="POST"
-			action="?/updateFromChapter"
+			action="?/update"
 			use:enhance={() => {
-				isUpdatingFromChapter = true;
+				isSaving = true;
 				return async ({ update }) => {
-					isUpdatingFromChapter = false;
-					await update();
+					isSaving = false;
+					await update({ reset: false });
 				};
 			}}
 			class="space-y-4"
 		>
 			<div class="space-y-2">
-				<Label>Chapitre source</Label>
-				<MySelect type="single" bind:value={selectedChapterId} items={chapterItems} />
-				<input type="hidden" name="chapterId" value={selectedChapterId} />
+				<Label for="template-edit-title">Titre</Label>
+				<Input
+					id="template-edit-title"
+					name="title"
+					bind:value={editTitle}
+					maxlength={200}
+					required
+				/>
 			</div>
 
-			{#if data.template.status !== 'draft'}
-				<div class="space-y-2">
-					<Label for="change-summary">Ce qui change (facultatif)</Label>
-					<Input
-						id="change-summary"
-						name="changeSummary"
-						bind:value={changeSummary}
-						maxlength={200}
-						placeholder="Ajout de deux exercices sur le discriminant"
-					/>
-				</div>
-			{/if}
+			<div class="space-y-2">
+				<Label for="template-edit-description">Description (facultative)</Label>
+				<Textarea
+					id="template-edit-description"
+					name="description"
+					bind:value={editDescription}
+					maxlength={2000}
+					rows={3}
+				/>
+			</div>
 
 			<Dialog.Footer>
-				<Button type="button" variant="outline" onclick={() => (showUpdateDialog = false)}>
+				<Button type="button" variant="outline" onclick={() => (showEditDialog = false)}>
 					Annuler
 				</Button>
-				<Button type="submit" disabled={isUpdatingFromChapter || !selectedChapterId}>
-					{isUpdatingFromChapter ? 'Mise à jour...' : 'Mettre à jour'}
+				<Button type="submit" disabled={isSaving || !editTitle.trim()}>
+					{isSaving ? 'Enregistrement…' : 'Enregistrer'}
 				</Button>
 			</Dialog.Footer>
 		</form>
@@ -404,9 +462,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Supprimer ce modèle ?</Dialog.Title>
 			<Dialog.Description>
-				Le modèle « {data.template.title} » et son historique de versions seront effacés définitivement.
-				Le chapitre dont il a été tiré n'est pas touché, et les chapitres déjà créés à partir de lui sont
-				conservés — ils deviennent simplement indépendants.
+				Le modèle « {data.template.title} » et ses fichiers seront effacés définitivement. Un modèle encore
+				lié à des chapitres ne se supprime pas : archivez-le plutôt, ses chapitres continuent de le suivre.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -415,8 +472,9 @@
 			action="?/delete"
 			use:enhance={() => {
 				isDeleting = true;
-				return async ({ update }) => {
+				return async ({ result, update }) => {
 					isDeleting = false;
+					if (result.type === 'failure') showDeleteDialog = false;
 					await update();
 				};
 			}}
@@ -426,7 +484,7 @@
 					Annuler
 				</Button>
 				<Button type="submit" variant="destructive" disabled={isDeleting}>
-					{isDeleting ? 'Suppression...' : 'Supprimer définitivement'}
+					{isDeleting ? 'Suppression…' : 'Supprimer définitivement'}
 				</Button>
 			</Dialog.Footer>
 		</form>
@@ -436,10 +494,10 @@
 <Dialog.Root bind:open={showInstantiateDialog}>
 	<Dialog.Content>
 		<Dialog.Header>
-			<Dialog.Title>Créer un Chapitre</Dialog.Title>
+			<Dialog.Title>Créer un chapitre lié</Dialog.Title>
 			<Dialog.Description>
-				Instanciez ce template dans une de vos {lore.entities.class}s pour créer un nouveau
-				chapitre.
+				Le chapitre suit ce modèle : son contenu y arrive préparé, rien n’est publié aux {lore
+					.entities.student}s.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -455,51 +513,42 @@
 			}}
 		>
 			<div class="space-y-4">
-				<!-- Class selection -->
 				<div class="space-y-2">
-					<Label for="classId">
+					<Label for="instantiate-class">
 						{lore.entities.class}<span class="text-destructive">*</span>
 					</Label>
 					<MySelect
+						id="instantiate-class"
 						type="single"
 						bind:value={selectedClassId}
-						items={data.classes.map((cls) => ({
-							value: cls.id,
-							label: `${cls.name} (${cls.grade})`
-						}))}
-						placeholder="Sélectionnez un {lore.entities.class}"
+						items={classItems}
+						placeholder="Sélectionnez une {lore.entities.class}"
+						triggerAriaLabel="{lore.entities.class} : {selectedClassLabel}"
 					/>
 					<input type="hidden" name="classId" value={selectedClassId} />
 				</div>
 
-				<!-- Custom title -->
 				<div class="space-y-2">
-					<Label for="title">Titre du Chapitre (optionnel)</Label>
+					<Label for="instantiate-title">Titre du chapitre (facultatif)</Label>
 					<Input
-						id="title"
+						id="instantiate-title"
 						name="title"
 						type="text"
 						placeholder={data.template.title}
 						bind:value={chapterTitle}
 					/>
 					<p class="text-xs text-muted-foreground">
-						Laissez vide pour utiliser le titre du template
+						Laissez vide pour reprendre le titre du modèle.
 					</p>
 				</div>
 
-				<!-- Visibility -->
-				<div class="flex items-center gap-2">
-					<input
-						type="checkbox"
-						id="isVisible"
-						name="isVisible"
-						value="true"
-						class="h-4 w-4 rounded border-gray-300"
-					/>
-					<Label for="isVisible" class="cursor-pointer">
-						Rendre le chapitre visible immédiatement
-					</Label>
-				</div>
+				<MyCheckbox
+					bind:checked={chapterIsVisible}
+					label="Rendre le chapitre visible immédiatement"
+				/>
+				{#if chapterIsVisible}
+					<input type="hidden" name="isVisible" value="true" />
+				{/if}
 			</div>
 
 			<Dialog.Footer class="mt-6">
@@ -512,7 +561,7 @@
 					Annuler
 				</Button>
 				<Button type="submit" disabled={isInstantiating || !selectedClassId}>
-					{isInstantiating ? 'Création...' : 'Créer le Chapitre'}
+					{isInstantiating ? 'Création…' : 'Créer le chapitre'}
 				</Button>
 			</Dialog.Footer>
 		</form>

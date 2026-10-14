@@ -131,30 +131,36 @@ export function remettreAuRang<T>(liste: T[], index: number, element: T): T[] {
  */
 export type EmpreinteSource = {
 	sections: { id: string; title: string }[];
-	documents: { id: string; title: string; publishedAt: string | null }[];
-	exercises: { id: string; publishedAt: string | null }[];
-	checklistItems: {
-		id: string;
-		content: string;
-		description: string | null;
-		publishedAt: string | null;
-	}[];
-	worksheets: { id: string; title: string | null; publishedAt: string | null }[];
+	documents: Visible<{ id: string; title: string }>[];
+	exercises: Visible<{ id: string }>[];
+	checklistItems: Visible<{ id: string; content: string; description: string | null }>[];
+	worksheets: Visible<{ id: string; title: string | null }>[];
 	distributedWorksheetIds: string[];
 	/** Séries de chapitre : la FORME s'affiche aussi, et se change depuis le plan. */
-	series?: { id: string; title: string | null; publishedAt: string | null; form: string }[];
+	series?: Visible<{ id: string; title: string | null; form: string }>[];
 };
+
+/**
+ * Ce qui change l'affichage d'un élément sans changer son identifiant : sa
+ * publication (absente dans un modèle, qui ne publie rien) et son masquage
+ * dans un chapitre lié (ADR 0029). Masquer doit faire disparaître la ligne
+ * aussitôt, comme publier change son badge.
+ */
+type Visible<T> = T & { publishedAt?: string | null; hidden?: boolean };
+
+/** L'état d'affichage d'un élément, dans l'empreinte. */
+function vue(x: { publishedAt?: string | null; hidden?: boolean }): string {
+	return `${x.publishedAt ?? null}~${x.hidden === true}`;
+}
 
 export function empreinteAffichage(source: EmpreinteSource): string {
 	return [
 		source.sections.map((x) => `${x.id}~${x.title}`).join(','),
-		source.documents.map((x) => `${x.id}~${x.publishedAt}~${x.title}`).join(','),
-		source.exercises.map((x) => `${x.id}~${x.publishedAt}`).join(','),
-		source.checklistItems
-			.map((x) => `${x.id}~${x.publishedAt}~${x.content}~${x.description}`)
-			.join(','),
-		source.worksheets.map((x) => `${x.id}~${x.publishedAt}~${x.title}`).join(','),
+		source.documents.map((x) => `${x.id}~${vue(x)}~${x.title}`).join(','),
+		source.exercises.map((x) => `${x.id}~${vue(x)}`).join(','),
+		source.checklistItems.map((x) => `${x.id}~${vue(x)}~${x.content}~${x.description}`).join(','),
+		source.worksheets.map((x) => `${x.id}~${vue(x)}~${x.title}`).join(','),
 		source.distributedWorksheetIds.join(','),
-		(source.series ?? []).map((x) => `${x.id}~${x.publishedAt}~${x.form}~${x.title}`).join(',')
+		(source.series ?? []).map((x) => `${x.id}~${vue(x)}~${x.form}~${x.title}`).join(',')
 	].join('|');
 }

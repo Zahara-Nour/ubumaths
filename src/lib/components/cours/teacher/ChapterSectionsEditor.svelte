@@ -29,6 +29,18 @@
 	  la contenir déjà. Le plan concluait « rien n'a bougé » et n'enregistrait
 	  RIEN — le déplacement tenait à l'écran jusqu'au rechargement.
 
+	Propriétaire (ADR 0029) : le MÊME éditeur sert le chapitre (`chapterId`) et
+	le modèle de chapitre (`templateId`). Seuls changent la base des routes
+	d'API et ce qui n'appartient qu'à une classe — la publication et la
+	distribution des fiches n'existent que pour un chapitre. Les actions de
+	formulaire (`?/deleteDocument`…) portent les mêmes noms sur les deux pages ;
+	sur celle du modèle, « supprimer » veut dire RETIRER du modèle.
+
+	Chapitre lié : un élément venu du modèle (`sourceId`) porte la marque
+	« Modèle » ; il ne se corrige ni ne se supprime ici (il se corrige dans le
+	modèle), il se MASQUE. Un élément masqué quitte le plan, sauf si
+	l'interrupteur « Afficher les éléments masqués » est allumé.
+
 	@module components/cours/teacher/ChapterSectionsEditor
 -->
 <script lang="ts">
@@ -48,6 +60,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Label } from '$lib/components/ui/label';
+	import { Switch } from '$lib/components/ui/switch';
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -65,7 +79,9 @@
 		ListChecks,
 		BookOpen,
 		ClipboardList,
-		Layers
+		Layers,
+		Eye,
+		EyeOff
 	} from '@lucide/svelte';
 	import {
 		empreinteAffichage,
@@ -76,23 +92,48 @@
 		type DragOrigin
 	} from './section-dnd';
 
-	type WorksheetRow = ChapterWorksheet & { title: string | null; status: string | null };
+	/**
+	 * Ce que l'éditeur lit d'un élément, qu'il soit d'un chapitre ou d'un
+	 * modèle. Un élément de modèle n'a ni publication, ni lien, ni masquage :
+	 * ces champs sont donc facultatifs.
+	 */
+	type Placed = {
+		id: string;
+		sectionId: string | null;
+		sectionOrder: number;
+		publishedAt?: string | null;
+		/** Élément du modèle que cette ligne relie ; `null` ou absent = propre. */
+		sourceId?: string | null;
+		hidden?: boolean;
+	};
+	type DocumentRow = Placed &
+		Pick<ChapterDocument, 'title' | 'sourceType' | 'googleDriveUrl' | 'storagePath'>;
+	type ExerciseRow = Placed & Pick<ChapterExercise, 'exerciseId'>;
+	type ChecklistRow = Placed & Pick<ChapterChecklistItem, 'content' | 'description'>;
+	type WorksheetRow = Placed & Pick<ChapterWorksheet, 'worksheetId'> & { title: string | null };
+	type SeriesRow = Placed & Pick<ChapterSeries, 'form'> & { title: string | null };
+	type SectionRow = Pick<ChapterSection, 'id' | 'title' | 'displayOrder'> & {
+		sourceId?: string | null;
+	};
 
-	interface Props {
-		chapterId: string;
-		sections: ChapterSection[];
-		documents: ChapterDocument[];
-		exercises: ChapterExercise[];
-		checklistItems: ChapterChecklistItem[];
+	/** Le propriétaire du plan : un chapitre OU un modèle, jamais les deux. */
+	type Owner =
+		{ chapterId: string; templateId?: undefined } | { templateId: string; chapterId?: undefined };
+
+	type Props = Owner & {
+		sections: SectionRow[];
+		documents: DocumentRow[];
+		exercises: ExerciseRow[];
+		checklistItems: ChecklistRow[];
 		worksheets: WorksheetRow[];
 		/** Séries rattachées au chapitre (`chapter_series`). */
-		chapterSeries?: ChapterSeries[];
+		chapterSeries?: SeriesRow[];
 		/** Titres des exercices, par identifiant d'exercice. */
 		exerciseDetails?: Record<string, { title: string | null }>;
 		/**
 		 * Fiches réellement distribuées, par identifiant de FICHE (et non de
 		 * rattachement) : publier une fiche que personne n'a reçue ne la montre à
-		 * personne, et le bouton doit le dire.
+		 * personne, et le bouton doit le dire. Chapitre seulement.
 		 */
 		distributedWorksheetIds?: string[];
 		/**
@@ -114,10 +155,11 @@
 			content: string;
 			description: string | null;
 		}) => void;
-	}
+	};
 
 	let {
 		chapterId,
+		templateId,
 		sections,
 		documents,
 		exercises,
@@ -129,6 +171,26 @@
 		onAdd,
 		onEditChecklistItem
 	}: Props = $props();
+
+	/** Le plan d'un modèle : ni publication, ni élèves. */
+	const isTemplate = $derived(templateId !== undefined);
+
+	/** Les routes d'API du propriétaire (mêmes chemins sous les deux bases). */
+	const apiBase = $derived(
+		templateId !== undefined
+			? `/api/teacher/chapter-templates/${templateId}`
+			: `/api/teacher/chapters/${chapterId}`
+	);
+
+	/** Afficher, dans un chapitre lié, les éléments du modèle masqués. */
+	let afficherMasques = $state(false);
+
+	/** Combien d'éléments ce chapitre masque — l'interrupteur n'existe que s'il y en a. */
+	const nombreMasques = $derived(
+		[...documents, ...exercises, ...checklistItems, ...worksheets, ...chapterSeries].filter(
+			(e) => e.hidden === true
+		).length
+	);
 
 	/**
 	 * Vue unifiée d'une ressource.
@@ -153,11 +215,17 @@
 		description?: string | null;
 		/** Série seulement : la forme de lancement choisie (Q124 a). */
 		seriesForm?: ChapterSeries['form'];
+		/** Élément du modèle relié par ce chapitre : il se masque, il ne se retouche pas. */
+		linked: boolean;
+		/** Masqué dans ce chapitre (affiché seulement quand l'interrupteur est allumé). */
+		hidden: boolean;
 	};
 
 	type SectionLocale = {
 		id: string;
 		title: string;
+		/** Section du modèle reliée : ni renommée ni supprimée depuis le chapitre. */
+		linked: boolean;
 		ressources: Ressource[];
 	};
 
@@ -229,7 +297,19 @@
 		return estOmbre(item) ? `${item.id}_dnd-shadow` : item.id;
 	}
 
-	/** Toutes les ressources du chapitre, avec la section où elles sont rangées. */
+	/** Ce que toute ressource tient de sa ligne : publication, lien, masquage. */
+	function etat(e: Placed): Pick<Ressource, 'publishedAt' | 'linked' | 'hidden'> {
+		return {
+			publishedAt: e.publishedAt ?? null,
+			linked: (e.sourceId ?? null) !== null,
+			hidden: e.hidden === true
+		};
+	}
+
+	/**
+	 * Toutes les ressources du plan, avec la section où elles sont rangées. Les
+	 * éléments masqués n'y sont que si le professeur a demandé à les voir.
+	 */
 	function toutesLesRessources(): { ressource: Ressource; sectionId: string | null }[] {
 		return (
 			[
@@ -242,7 +322,7 @@
 						contentId: d.id,
 						label: d.title,
 						typeLabel: 'Document',
-						publishedAt: d.publishedAt,
+						...etat(d),
 						// Le même calcul que `DocumentCard` : un document déposé passe par
 						// la route signée, un Drive garde son URL d'origine.
 						openUrl:
@@ -264,7 +344,7 @@
 						// qu'une ligne vide que le professeur ne saura pas identifier.
 						label: exerciseDetails[e.exerciseId]?.title ?? 'Exercice sans titre',
 						typeLabel: 'Exercice',
-						publishedAt: e.publishedAt,
+						...etat(e),
 						openUrl: null
 					}
 				})),
@@ -277,7 +357,7 @@
 						contentId: c.id,
 						label: c.content,
 						typeLabel: 'Objectif',
-						publishedAt: c.publishedAt,
+						...etat(c),
 						openUrl: null,
 						description: c.description
 					}
@@ -291,7 +371,7 @@
 						contentId: w.id,
 						label: w.title ?? 'Fiche sans titre',
 						typeLabel: 'Fiche',
-						publishedAt: w.publishedAt,
+						...etat(w),
 						openUrl: null,
 						distributed: distributedWorksheetIds.includes(w.worksheetId)
 					}
@@ -305,7 +385,7 @@
 						contentId: cs.id,
 						label: cs.title ?? 'Série sans titre',
 						typeLabel: 'Série',
-						publishedAt: cs.publishedAt,
+						...etat(cs),
 						openUrl: null,
 						seriesForm: cs.form
 					}
@@ -313,6 +393,7 @@
 			]
 				// Tri secondaire sur le libellé : `section_order` vaut 0 par défaut,
 				// donc tout ce qui n'a jamais été rangé est à égalité.
+				.filter(({ ressource }) => afficherMasques || !ressource.hidden)
 				.sort(
 					(a, b) => a.ordre - b.ordre || a.ressource.label.localeCompare(b.ressource.label, 'fr')
 				)
@@ -327,6 +408,7 @@
 			.map((s) => ({
 				id: s.id,
 				title: s.title,
+				linked: (s.sourceId ?? null) !== null,
 				ressources: toutes.filter((r) => r.sectionId === s.id).map((r) => r.ressource)
 			}));
 	}
@@ -364,16 +446,19 @@
 	 * `section_order` bougent, et ils sont volontairement absents. L'invariant
 	 * du geste tient donc toujours.
 	 */
+	// L'interrupteur des masqués change ce qui s'affiche : il entre dans
+	// l'empreinte, et reconstruit le plan comme une publication le ferait.
 	let empreinte = $derived(
-		empreinteAffichage({
-			sections,
-			documents,
-			exercises,
-			checklistItems,
-			worksheets,
-			distributedWorksheetIds,
-			series: chapterSeries
-		})
+		(afficherMasques ? 'masques|' : '') +
+			empreinteAffichage({
+				sections,
+				documents,
+				exercises,
+				checklistItems,
+				worksheets,
+				distributedWorksheetIds,
+				series: chapterSeries
+			})
 	);
 
 	// Volontairement hors `$state` : cette valeur ne pilote aucun affichage, elle
@@ -425,7 +510,7 @@
 		if (liste.length === 0) return true;
 
 		return appeler(
-			`/api/teacher/chapters/${chapterId}/sections/assign`,
+			`${apiBase}/sections/assign`,
 			{
 				method: 'POST',
 				body: JSON.stringify({
@@ -583,7 +668,7 @@
 
 		busy = true;
 		const ok = await appeler(
-			`/api/teacher/chapters/${chapterId}/sections/reorder`,
+			`${apiBase}/sections/reorder`,
 			{
 				method: 'POST',
 				body: JSON.stringify({
@@ -614,7 +699,7 @@
 
 		busy = true;
 		try {
-			const reponse = await fetch(`/api/teacher/chapters/${chapterId}/sections`, {
+			const reponse = await fetch(`${apiBase}/sections`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ title: titre })
@@ -629,7 +714,7 @@
 			const { section } = await reponse.json();
 			sectionsLocales = [
 				...sectionsLocales,
-				{ id: section.id, title: section.title, ressources: [] }
+				{ id: section.id, title: section.title, linked: false, ressources: [] }
 			];
 			newSectionTitle = '';
 			isAddingSection = false;
@@ -654,7 +739,7 @@
 
 		busy = true;
 		const ok = await appeler(
-			`/api/teacher/chapters/${chapterId}/sections/${sectionId}`,
+			`${apiBase}/sections/${sectionId}`,
 			{ method: 'PATCH', body: JSON.stringify({ title: titre }) },
 			'Impossible de renommer la section'
 		);
@@ -677,7 +762,7 @@
 
 		busy = true;
 		const ok = await appeler(
-			`/api/teacher/chapters/${chapterId}/sections/${sectionId}`,
+			`${apiBase}/sections/${sectionId}`,
 			{ method: 'DELETE' },
 			'Impossible de supprimer la section'
 		);
@@ -698,6 +783,20 @@
 		editTitle = section.title;
 	}
 </script>
+
+<!--
+	La marque d'un élément venu du modèle, dans un chapitre lié. Courte, parce
+	qu'elle se répète sur chaque ligne ; son titre dit ce qu'elle implique.
+-->
+{#snippet marqueModele()}
+	<Badge
+		variant="outline"
+		class="shrink-0 border-primary/40 text-primary"
+		title="Vient du modèle : il se corrige dans le modèle, et se masque ici"
+	>
+		Modèle
+	</Badge>
+{/snippet}
 
 {#snippet zoneRessources(sectionId: string | null, liste: Ressource[])}
 	<div
@@ -720,7 +819,17 @@
 			>
 				<GripVertical class="h-4 w-4 shrink-0 cursor-grab text-muted-foreground" />
 				<Badge variant="secondary" class="shrink-0">{ressource.typeLabel}</Badge>
-				<span class="min-w-0 flex-1 truncate text-sm">{ressource.label}</span>
+				{#if ressource.linked}
+					{@render marqueModele()}
+				{/if}
+				<span
+					class="min-w-0 flex-1 truncate text-sm {ressource.hidden
+						? 'text-muted-foreground line-through'
+						: ''}">{ressource.label}</span
+				>
+				{#if ressource.hidden}
+					<Badge variant="outline" class="shrink-0 text-muted-foreground">Masqué</Badge>
+				{/if}
 
 				<!--
 					Pendant un glisser, la bibliothèque duplique la ligne : afficher ses
@@ -728,7 +837,8 @@
 					second envoi porterait sur une ligne déjà supprimée.
 				-->
 				{#if !estOmbre(ressource) && ressource.id !== SHADOW_PLACEHOLDER_ITEM_ID}
-					{#if ressource.kind === 'checklistItem'}
+					<!-- Un objectif du modèle se corrige dans le modèle (Q2), pas ici. -->
+					{#if ressource.kind === 'checklistItem' && !ressource.linked}
 						<Button
 							variant="ghost"
 							size="icon-sm"
@@ -745,7 +855,12 @@
 						</Button>
 					{/if}
 
-					{#if ressource.kind === 'series' && ressource.seriesForm}
+					{#if ressource.kind === 'series' && ressource.seriesForm && ressource.linked}
+						<!-- La forme d'une série du modèle se choisit dans le modèle. -->
+						<span class="shrink-0 text-xs text-muted-foreground">
+							{FORMES_SERIE[ressource.seriesForm].label}
+						</span>
+					{:else if ressource.kind === 'series' && ressource.seriesForm}
 						{@const forme = FORMES_SERIE[ressource.seriesForm]}
 						<!--
 							La forme se change d'un clic : il n'y en a que deux. Le bouton
@@ -783,35 +898,77 @@
 						</Button>
 					{/if}
 
-					<PublicationToggle
-						contentType={TYPE_PUBLICATION[ressource.kind]}
-						itemId={ressource.contentId}
-						publishedAt={ressource.publishedAt}
-						distributed={ressource.distributed}
-					/>
-
-					<form
-						method="POST"
-						action={SUPPRESSION[ressource.kind].action}
-						use:enhance
-						class="shrink-0"
-					>
-						<input
-							type="hidden"
-							name={SUPPRESSION[ressource.kind].champ}
-							value={ressource.contentId}
+					<!--
+						Publier n'existe que pour une classe : un modèle ne donne rien aux
+						élèves. Un élément masqué n'est jamais publié — il se réaffiche
+						d'abord.
+					-->
+					{#if !isTemplate && !ressource.hidden}
+						<PublicationToggle
+							contentType={TYPE_PUBLICATION[ressource.kind]}
+							itemId={ressource.contentId}
+							publishedAt={ressource.publishedAt}
+							distributed={ressource.distributed}
 						/>
-						<Button
-							type="submit"
-							variant="ghost"
-							size="icon-sm"
-							disabled={busy}
-							class="text-destructive"
-							aria-label="Retirer {ressource.label} du chapitre"
+					{/if}
+
+					{#if ressource.linked}
+						<!--
+							Élément du modèle : on ne le supprime pas du chapitre, on le
+							masque (« pas cette année »). Il revient d'un clic.
+						-->
+						<form method="POST" action="?/setHidden" use:enhance class="shrink-0">
+							<input type="hidden" name="contentType" value={TYPE_PUBLICATION[ressource.kind]} />
+							<input type="hidden" name="itemId" value={ressource.contentId} />
+							<input type="hidden" name="hidden" value={ressource.hidden ? 'false' : 'true'} />
+							<Button
+								type="submit"
+								variant="ghost"
+								size="sm"
+								disabled={busy}
+								title={ressource.hidden
+									? 'Remettre dans le plan, non publié'
+									: 'Retirer du plan de ce chapitre, sans toucher au modèle'}
+								aria-label="{ressource.hidden ? 'Réafficher' : 'Masquer'} {ressource.label}"
+							>
+								{#if ressource.hidden}
+									<Eye class="mr-1 h-4 w-4" />
+									Réafficher
+								{:else}
+									<EyeOff class="mr-1 h-4 w-4" />
+									Masquer
+								{/if}
+							</Button>
+						</form>
+					{:else}
+						<form
+							method="POST"
+							action={SUPPRESSION[ressource.kind].action}
+							use:enhance
+							class="shrink-0"
 						>
-							<Trash2 class="h-4 w-4" />
-						</Button>
-					</form>
+							<input
+								type="hidden"
+								name={SUPPRESSION[ressource.kind].champ}
+								value={ressource.contentId}
+							/>
+							<Button
+								type="submit"
+								variant="ghost"
+								size="icon-sm"
+								disabled={busy}
+								class="text-destructive"
+								title={isTemplate
+									? 'Retirer du modèle — il reste chez les classes qui l’ont déjà publié'
+									: undefined}
+								aria-label={isTemplate
+									? `Retirer ${ressource.label} du modèle`
+									: `Retirer ${ressource.label} du chapitre`}
+							>
+								<Trash2 class="h-4 w-4" />
+							</Button>
+						</form>
+					{/if}
 				{/if}
 			</div>
 		{/each}
@@ -861,6 +1018,20 @@
 {/snippet}
 
 <div class="space-y-4">
+	<!--
+		Interrupteur des masqués : seulement s'il y en a. Masquer est un choix de
+		la classe (« pas cette année ») ; le plan reste lisible quand le modèle
+		est riche, et rien n'est perdu.
+	-->
+	{#if !isTemplate && nombreMasques > 0}
+		<div class="flex items-center gap-2">
+			<Switch id="afficher-masques" bind:checked={afficherMasques} />
+			<Label for="afficher-masques" class="cursor-pointer text-sm">
+				Afficher les éléments masqués ({nombreMasques})
+			</Label>
+		</div>
+	{/if}
+
 	<div
 		class="space-y-4"
 		use:dndzone={{
@@ -906,6 +1077,13 @@
 							>
 								<X class="h-4 w-4" />
 							</Button>
+						{:else if section.linked}
+							<!--
+								Section du modèle : son titre suit le modèle. Elle se range
+								(glisser), mais ne se renomme ni ne se supprime d'ici.
+							-->
+							<Card.Title class="flex-1 text-lg">{section.title}</Card.Title>
+							{@render marqueModele()}
 						{:else}
 							<Card.Title class="flex-1 text-lg">{section.title}</Card.Title>
 							<Button
@@ -946,7 +1124,11 @@
 		<Card.Header class="space-y-1">
 			<Card.Title class="text-lg">Non classé</Card.Title>
 			<Card.Description>
-				Ces ressources ne sont dans aucune section. Les élèves les voient en fin de chapitre.
+				{#if isTemplate}
+					Ces ressources ne sont dans aucune section du modèle.
+				{:else}
+					Ces ressources ne sont dans aucune section. Les élèves les voient en fin de chapitre.
+				{/if}
 			</Card.Description>
 		</Card.Header>
 		<Card.Content class="p-0 pb-3">

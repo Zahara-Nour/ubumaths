@@ -211,6 +211,19 @@ describe('empreinteAffichage — ce qui doit rafraîchir le plan', () => {
 		);
 	});
 
+	/**
+	 * Masquer un élément du modèle (ADR 0029) ne change ni son identifiant ni sa
+	 * publication quand il était préparé : sans ce champ, la ligne resterait à
+	 * l'écran après « Masquer », et le bouton renverrait « masquer » à chaque clic.
+	 */
+	it('masquer un élément change l’empreinte', () => {
+		const masque = {
+			...BASE,
+			documents: [{ id: 'd1', title: 'Fiche de rappel', publishedAt: null, hidden: true }]
+		};
+		expect(empreinteAffichage(masque)).not.toBe(empreinteAffichage(BASE));
+	});
+
 	it('renommer une section change l’empreinte', () => {
 		expect(empreinteAffichage({ ...BASE, sections: [{ id: 's1', title: 'Bilan' }] })).not.toBe(
 			empreinteAffichage(BASE)

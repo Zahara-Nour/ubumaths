@@ -10,20 +10,24 @@
 	 * plan — ajouter depuis une section, publier, supprimer, ouvrir un document,
 	 * corriger un objectif.
 	 *
-	 * Cette page garde les BOÎTES DE DIALOGUE, parce qu'elle seule connaît les
-	 * exercices et les fiches disponibles et porte les actions de formulaire ;
-	 * l'éditeur de sections ne fait que désigner la cible via `onAdd`.
+	 * Les BOÎTES DE DIALOGUE d'ajout vivent dans `ChapterAddDialogs` (partagé avec
+	 * la page du modèle) : la page leur passe les exercices et les fiches
+	 * disponibles, et porte les actions de formulaire ; l'éditeur de sections ne
+	 * fait que désigner la cible via `onAdd`.
 	 *
 	 * ⚠️ Rattacher une fiche ne la DISTRIBUE pas — mais la PUBLIER, si. Voir
 	 * `PublicationToggle`.
 	 *
 	 * La progression des élèves n'est pas une ressource : elle ne se range dans
 	 * aucune section, d'où sa place à part sous le plan.
+	 *
+	 * Chapitre lié (ADR 0029) : le contenu du modèle y est RELIÉ, marqué
+	 * « Modèle » dans le plan ; il se masque au lieu de se supprimer. Détacher
+	 * copie ce contenu dans le chapitre, après confirmation.
 	 */
 
 	import { applyAction, enhance } from '$app/forms';
 	import { goto, invalidateAll } from '$app/navigation';
-	import { resolve } from '$app/paths';
 	import { navigating } from '$app/stores';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
@@ -33,17 +37,16 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
-	import MySelect from '$lib/components/MySelect.svelte';
 	import {
+		ChapterAddDialogs,
 		ChapterSectionsEditor,
-		StudentProgressTable,
-		DocumentUpload
+		StudentProgressTable
 	} from '$lib/components/cours/teacher';
 	import { ChapterTemplateIndicator } from '$lib/components/templates';
+	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { getChapterColorClasses } from '$lib/types/chapters';
 	import { BookMarked, Copy, Eye, EyeOff } from '@lucide/svelte';
-	import type { SectionContentKind } from '$lib/server/validation/chapter-sections';
 	import type { PageData, ActionData } from './$types';
 
 	interface Props {
@@ -53,79 +56,16 @@
 
 	let { data, form }: Props = $props();
 
-	// Dialog states
-	let showLinkExerciseDialog = $state(false);
-	let showLinkWorksheetDialog = $state(false);
-	let showLinkSeriesDialog = $state(false);
 	let showCreateTemplateDialog = $state(false);
-	let showChecklistDialog = $state(false);
-	let showDocumentDialog = $state(false);
-
-	/**
-	 * La section où ira la prochaine ressource créée.
-	 *
-	 * ⚠️ Posée au moment du clic sur « Ajouter », et relue à l'envoi du
-	 * formulaire : c'est elle qui fait la différence entre « créé là où j'ai
-	 * cliqué » et « créé en Non classé, débrouille-toi ». `null` est une valeur
-	 * légitime — c'est « Non classé ».
-	 */
-	let targetSectionId = $state<string | null>(null);
-
-	/** Objectif en cours d'écriture — vide pour une création, rempli pour une reprise. */
-	let checklistItemId = $state('');
-	let checklistContent = $state('');
-	let checklistDescription = $state('');
-
-	// Form states
-	let selectedExerciseId = $state('');
-	let selectedWorksheetId = $state('');
-	let selectedSeriesId = $state('');
-	/** Q124 (a) : flash-cards par défaut. */
-	let selectedSeriesForm = $state('flash');
+	let showDetachDialog = $state(false);
 	let isSubmitting = $state(false);
+
+	/** Les boîtes d'ajout (objectif, exercice, fiche, série, document). */
+	let addDialogs: ReturnType<typeof ChapterAddDialogs> | undefined = $state();
 
 	/** Titre du futur modèle, pré-rempli avec celui du chapitre. */
 	let templateTitle = $state('');
 	let templateDescription = $state('');
-
-	/**
-	 * Le professeur a choisi un type dans le menu « Ajouter » d'une section.
-	 *
-	 * Chaque type a déjà sa boîte de dialogue ; on retient la cible, puis on
-	 * ouvre la bonne. Rien n'est créé ici.
-	 */
-	function ouvrirAjout(kind: SectionContentKind, sectionId: string | null) {
-		targetSectionId = sectionId;
-
-		if (kind === 'checklistItem') {
-			checklistItemId = '';
-			checklistContent = '';
-			checklistDescription = '';
-			showChecklistDialog = true;
-		} else if (kind === 'exercise') {
-			selectedExerciseId = '';
-			showLinkExerciseDialog = true;
-		} else if (kind === 'worksheet') {
-			selectedWorksheetId = '';
-			showLinkWorksheetDialog = true;
-		} else if (kind === 'series') {
-			selectedSeriesId = '';
-			selectedSeriesForm = 'flash';
-			showLinkSeriesDialog = true;
-		} else if (kind === 'document') {
-			showDocumentDialog = true;
-		}
-	}
-
-	/** Reprendre le texte d'un objectif déjà posé. */
-	function modifierObjectif(item: { id: string; content: string; description: string | null }) {
-		checklistItemId = item.id;
-		checklistContent = item.content;
-		checklistDescription = item.description ?? '';
-		// La section ne bouge pas : on ne fait que corriger le texte.
-		targetSectionId = null;
-		showChecklistDialog = true;
-	}
 
 	// Chapter color
 	let colorClasses = $derived(
@@ -148,51 +88,13 @@
 	 */
 	let hasContent = $derived(documentCount + checklistCount + exerciseCount + worksheetCount > 0);
 
-	// Available items for selects
-	let exerciseItems = $derived([
-		{ value: '', label: `Choisir une ${lore.learning.exercise}...` },
-		...data.availableExercises
-			.filter((e) => !data.exercises.some((ex) => ex.exerciseId === e.id))
-			.map((e) => ({
-				value: e.id,
-				// `exercises.title` est nullable : un libellé de repli vaut mieux
-				// qu'une entrée vide dans la liste déroulante.
-				label: e.title ?? 'Exercice sans titre'
-			}))
-	]);
-
-	let worksheetItems = $derived([
-		{ value: '', label: 'Choisir une fiche...' },
-		...data.availableWorksheets
-			.filter((w) => !data.worksheets.some((cw) => cw.worksheetId === w.id))
-			.map((w) => ({
-				value: w.id,
-				label: w.title ?? 'Fiche sans titre'
-			}))
-	]);
-
-	let seriesItems = $derived([
-		{ value: '', label: 'Choisir une série...' },
-		...data.availableSeries
-			.filter((s) => !data.chapterSeries.some((cs) => cs.seriesId === s.id))
-			.map((s) => ({
-				value: s.id,
-				label: `${s.title} — ${s.questionCount} question${s.questionCount > 1 ? 's' : ''}`
-			}))
-	]);
-
-	const seriesFormItems = [
-		{ value: 'flash', label: 'Flash-cards' },
-		{ value: 'interactive', label: 'Entraînement' }
-	];
-
 	// Handle form results
 	$effect(() => {
 		if (form?.success) {
 			const actionMessages: Record<string, string> = {
-				addChecklistItem: 'Objectif ajoute',
-				updateChecklistItem: 'Objectif mis a jour',
-				deleteChecklistItem: 'Objectif supprime',
+				addChecklistItem: 'Objectif ajouté',
+				updateChecklistItem: 'Objectif mis à jour',
+				deleteChecklistItem: 'Objectif supprimé',
 				linkExercise: `${lore.learning.exercise} liée`,
 				unlinkExercise: `${lore.learning.exercise} retirée`,
 				linkWorksheet: 'Fiche rattachée au chapitre',
@@ -200,16 +102,18 @@
 				linkSeries: 'Série ajoutée au chapitre',
 				unlinkSeries: 'Série retirée du chapitre',
 				setSeriesForm: 'Forme de la série modifiée',
-				addGoogleDriveDocument: 'Document Google Drive ajoute',
-				deleteDocument: 'Document supprime',
-				migrateToVersion: 'Chapitre mis a jour depuis le template',
-				detachFromTemplate: 'Chapitre detache du template',
+				addGoogleDriveDocument: 'Document Google Drive ajouté',
+				deleteDocument: 'Document supprimé',
+				detachFromTemplate: 'Chapitre détaché du modèle : son contenu est maintenant le sien',
+				// `setHidden` rend « hide »/« unhide » (élément du modèle, ADR 0029).
+				hide: 'Élément masqué dans ce chapitre',
+				unhide: 'Élément réaffiché — toujours préparé',
 				// `setPublication` rend « publish »/« unpublish », pas son propre
 				// nom : sans ces deux lignes, publier disait « Operation reussie ».
 				publish: 'Contenu publié — visible par les élèves',
 				unpublish: 'Contenu retiré — de nouveau préparé'
 			};
-			const message = actionMessages[form.action] || 'Operation reussie';
+			const message = actionMessages[form.action] || 'Opération réussie';
 
 			// ⚠️ Créé, mais PAS rangé. La ressource existe — la création n'a pas
 			// échoué — seulement elle a atterri en « Non classé » au lieu de la
@@ -226,22 +130,6 @@
 				toaster.warning(form.warning);
 			}
 
-			// Close dialogs
-			if (form.action === 'linkExercise') {
-				showLinkExerciseDialog = false;
-				selectedExerciseId = '';
-			}
-			if (form.action === 'linkWorksheet') {
-				showLinkWorksheetDialog = false;
-				selectedWorksheetId = '';
-			}
-			if (form.action === 'linkSeries') {
-				showLinkSeriesDialog = false;
-				selectedSeriesId = '';
-			}
-			if (form.action === 'addGoogleDriveDocument') {
-				showDocumentDialog = false;
-			}
 			invalidateAll();
 		} else if (form?.error) {
 			toaster.error(form.error);
@@ -252,26 +140,16 @@
 	// Navigating state (reserved for future loading indicators)
 	let _isNavigating = $derived(!!$navigating);
 
-	// Template form refs
-	let migrateForm: HTMLFormElement | undefined = $state();
+	// Le formulaire caché de « Détacher du modèle », envoyé après confirmation.
 	let detachForm: HTMLFormElement | undefined = $state();
 
-	// Template action handlers
-	function handleMigrate() {
-		if (migrateForm) {
-			migrateForm.requestSubmit();
-		}
-	}
-
-	function handleDetach() {
-		if (detachForm) {
-			detachForm.requestSubmit();
-		}
+	function confirmerDetachement() {
+		detachForm?.requestSubmit();
 	}
 </script>
 
 <svelte:head>
-	<title>{data.chapter.title} - Edition | Chiphre</title>
+	<title>{data.chapter.title} - Édition | Chiphre</title>
 </svelte:head>
 
 <main class="container mx-auto max-w-5xl px-4 py-6">
@@ -302,9 +180,7 @@
 							<div class="mt-2">
 								<ChapterTemplateIndicator
 									instantiation={data.templateInstantiation}
-									hasUpdate={data.templateInstantiation.hasUpdate}
-									onUpdate={handleMigrate}
-									onDetach={handleDetach}
+									onDetach={() => (showDetachDialog = true)}
 								/>
 							</div>
 						{/if}
@@ -341,7 +217,7 @@
 							Visible
 						{:else}
 							<EyeOff class="h-3 w-3" />
-							Masque
+							Masqué
 						{/if}
 					</Badge>
 				</div>
@@ -373,8 +249,8 @@
 			chapterSeries={data.chapterSeries}
 			exerciseDetails={data.exerciseDetails}
 			distributedWorksheetIds={data.distributedWorksheetIds}
-			onAdd={ouvrirAjout}
-			onEditChecklistItem={modifierObjectif}
+			onAdd={(kind, sectionId) => addDialogs?.ouvrirAjout(kind, sectionId)}
+			onEditChecklistItem={(item) => addDialogs?.modifierObjectif(item)}
 		/>
 	</section>
 
@@ -398,14 +274,20 @@
 	</section>
 </main>
 
-<!-- Link Worksheet Dialog -->
+<!-- Faire un modèle de ce chapitre -->
 <Dialog.Root bind:open={showCreateTemplateDialog}>
 	<Dialog.Content class="max-w-lg">
 		<Dialog.Header>
 			<Dialog.Title>Faire un modèle de ce chapitre</Dialog.Title>
 			<Dialog.Description>
-				Le modèle emporte une copie du contenu : objectifs, exercices, fiches et documents. Il naît
-				en brouillon, et rien n'est distribué aux élèves.
+				Le contenu du chapitre est copié dans le modèle, fichiers compris.
+				{#if data.templateInstantiation && !data.templateInstantiation.isDetached}
+					Ce chapitre reste lié à son modèle actuel.
+				{:else}
+					Ce chapitre devient ensuite un chapitre lié au nouveau modèle, sans que ses publications
+					changent.
+				{/if}
+				Le modèle naît en brouillon, et rien n'est distribué aux élèves.
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -467,266 +349,32 @@
 	</Dialog.Content>
 </Dialog.Root>
 
-<Dialog.Root bind:open={showLinkWorksheetDialog}>
-	<Dialog.Content class="max-w-lg">
-		<Dialog.Header>
-			<Dialog.Title>Rattacher une fiche</Dialog.Title>
-			<Dialog.Description>
-				La fiche sera rangée dans ce chapitre. Elle n'est pas distribuée pour autant : les élèves ne
-				la verront qu'une fois affectée.
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<form
-			method="POST"
-			action="?/linkWorksheet"
-			use:enhance={() => {
-				isSubmitting = true;
-				return async ({ update }) => {
-					await update();
-				};
-			}}
-			class="space-y-4"
-		>
-			<input type="hidden" name="sectionId" value={targetSectionId ?? ''} />
-			<div class="space-y-2">
-				<Label>Fiche</Label>
-				<MySelect type="single" bind:value={selectedWorksheetId} items={worksheetItems} />
-				<input type="hidden" name="worksheetId" value={selectedWorksheetId} />
-			</div>
-
-			<Dialog.Footer>
-				<Button type="button" variant="outline" onclick={() => (showLinkWorksheetDialog = false)}>
-					Annuler
-				</Button>
-				<Button type="submit" disabled={isSubmitting || !selectedWorksheetId}>
-					{isSubmitting ? 'Rattachement...' : 'Rattacher'}
-				</Button>
-			</Dialog.Footer>
-		</form>
-	</Dialog.Content>
-</Dialog.Root>
+<ChapterAddDialogs
+	bind:this={addDialogs}
+	chapterId={data.chapter.id}
+	supabase={data.supabase}
+	availableExercises={data.availableExercises}
+	availableWorksheets={data.availableWorksheets}
+	availableSeries={data.availableSeries}
+	takenExerciseIds={data.exercises.map((e) => e.exerciseId)}
+	takenWorksheetIds={data.worksheets.map((w) => w.worksheetId)}
+	takenSeriesIds={data.chapterSeries.map((cs) => cs.seriesId)}
+	onDocumentAdded={() => invalidateAll()}
+/>
 
 <!--
-	Série : une série ENREGISTRÉE du professeur (S1), lancée par l'élève dans la
-	forme choisie ici (Q124 a), sans note. Le lien suit la série (Q125).
+	Détacher du modèle : le contenu relié est COPIÉ dans le chapitre (fichiers
+	compris), qui ne suivra plus le modèle. La confirmation le dit, avant.
 -->
-<Dialog.Root bind:open={showLinkSeriesDialog}>
-	<Dialog.Content class="max-w-lg">
-		<Dialog.Header>
-			<Dialog.Title>Ajouter une série</Dialog.Title>
-			<Dialog.Description>
-				Les élèves la lanceront depuis le chapitre, sans note. Elle reste préparée tant que tu ne
-				l’as pas publiée, et une modification de la série se verra dans le chapitre.
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<form
-			method="POST"
-			action="?/linkSeries"
-			use:enhance={() => {
-				isSubmitting = true;
-				return async ({ update }) => {
-					await update();
-				};
-			}}
-			class="space-y-4"
-		>
-			<input type="hidden" name="sectionId" value={targetSectionId ?? ''} />
-			<div class="space-y-2">
-				<Label>Série</Label>
-				<MySelect type="single" bind:value={selectedSeriesId} items={seriesItems} />
-				<input type="hidden" name="seriesId" value={selectedSeriesId} />
-				{#if data.availableSeries.length === 0}
-					<p class="text-sm text-muted-foreground">Aucune série enregistrée pour l’instant.</p>
-				{/if}
-				<a
-					href={resolve('/automaths/panier')}
-					target="_blank"
-					rel="noopener noreferrer"
-					class="text-sm text-primary underline-offset-4 hover:underline"
-				>
-					Composer une nouvelle série au panier
-				</a>
-			</div>
-
-			<div class="space-y-2">
-				<Label>Forme</Label>
-				<MySelect type="single" bind:value={selectedSeriesForm} items={seriesFormItems} />
-				<input type="hidden" name="form" value={selectedSeriesForm} />
-			</div>
-
-			<Dialog.Footer>
-				<Button type="button" variant="outline" onclick={() => (showLinkSeriesDialog = false)}>
-					Annuler
-				</Button>
-				<Button type="submit" disabled={isSubmitting || !selectedSeriesId}>
-					{isSubmitting ? 'Ajout...' : 'Ajouter'}
-				</Button>
-			</Dialog.Footer>
-		</form>
-	</Dialog.Content>
-</Dialog.Root>
-
-<!-- Link Exercise Dialog -->
-<Dialog.Root bind:open={showLinkExerciseDialog}>
-	<Dialog.Content class="max-w-lg">
-		<Dialog.Header>
-			<Dialog.Title>Lier une {lore.learning.exercise}</Dialog.Title>
-			<Dialog.Description>
-				Selectionnez une {lore.learning.exercise} existant pour le lier a ce chapitre.
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<form
-			method="POST"
-			action="?/linkExercise"
-			use:enhance={() => {
-				isSubmitting = true;
-				return async ({ update }) => {
-					await update();
-				};
-			}}
-			class="space-y-4"
-		>
-			<input type="hidden" name="sectionId" value={targetSectionId ?? ''} />
-			<div class="space-y-2">
-				<Label>{lore.learning.exercise}</Label>
-				<MySelect type="single" bind:value={selectedExerciseId} items={exerciseItems} />
-				<input type="hidden" name="exerciseId" value={selectedExerciseId} />
-			</div>
-
-			<Dialog.Footer>
-				<Button type="button" variant="outline" onclick={() => (showLinkExerciseDialog = false)}>
-					Annuler
-				</Button>
-				<Button type="submit" disabled={isSubmitting || !selectedExerciseId}>
-					{isSubmitting ? 'Liaison...' : 'Lier'}
-				</Button>
-			</Dialog.Footer>
-		</form>
-	</Dialog.Content>
-</Dialog.Root>
-
-<!--
-	Objectif : la MÊME boîte crée et corrige.
-	=========================================
-
-	`checklistItemId` fait la bascule — vide, on crée dans la section visée ;
-	rempli, on corrige un texte existant sans toucher à son rangement. Deux
-	boîtes auraient divergé, et le professeur aurait fini par ne plus savoir
-	laquelle ouvre quoi.
--->
-<Dialog.Root bind:open={showChecklistDialog}>
-	<Dialog.Content class="max-w-lg">
-		<Dialog.Header>
-			<Dialog.Title>
-				{checklistItemId ? 'Modifier l’objectif' : 'Ajouter un objectif'}
-			</Dialog.Title>
-			<Dialog.Description>
-				Ce que l’{lore.entities.student} doit savoir faire à la fin du chapitre. Il reste préparé tant
-				que tu ne l’as pas publié.
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<form
-			method="POST"
-			action={checklistItemId ? '?/updateChecklistItem' : '?/addChecklistItem'}
-			use:enhance={() => {
-				isSubmitting = true;
-				return async ({ result, update }) => {
-					isSubmitting = false;
-					if (result.type === 'success') showChecklistDialog = false;
-					await update();
-				};
-			}}
-			class="space-y-4"
-		>
-			<input type="hidden" name="sectionId" value={targetSectionId ?? ''} />
-			{#if checklistItemId}
-				<input type="hidden" name="itemId" value={checklistItemId} />
-			{/if}
-
-			<div class="space-y-2">
-				<Label for="checklist-content">Objectif</Label>
-				<Input
-					id="checklist-content"
-					name="content"
-					bind:value={checklistContent}
-					maxlength={500}
-					required
-				/>
-			</div>
-
-			<div class="space-y-2">
-				<Label for="checklist-description">Précision (facultative)</Label>
-				<Textarea
-					id="checklist-description"
-					name="description"
-					bind:value={checklistDescription}
-					maxlength={1000}
-					rows={2}
-				/>
-			</div>
-
-			<Dialog.Footer>
-				<Button type="button" variant="outline" onclick={() => (showChecklistDialog = false)}>
-					Annuler
-				</Button>
-				<Button type="submit" disabled={isSubmitting || !checklistContent.trim()}>
-					{checklistItemId ? 'Enregistrer' : 'Ajouter'}
-				</Button>
-			</Dialog.Footer>
-		</form>
-	</Dialog.Content>
-</Dialog.Root>
-
-<!--
-	Document : l'envoi direct et le lien Drive, tels quels.
-	Le fichier ne traverse pas la fonction — il part du navigateur vers le
-	stockage, muni d'une autorisation à usage unique.
--->
-<Dialog.Root bind:open={showDocumentDialog}>
-	<Dialog.Content class="max-w-2xl">
-		<Dialog.Header>
-			<Dialog.Title>Ajouter un document</Dialog.Title>
-			<Dialog.Description>
-				Dépose un fichier, ou colle le lien d’un document Google Drive.
-			</Dialog.Description>
-		</Dialog.Header>
-
-		<DocumentUpload
-			chapterId={data.chapter.id}
-			supabase={data.supabase}
-			sectionId={targetSectionId}
-			onSuccess={() => {
-				showDocumentDialog = false;
-				invalidateAll();
-			}}
-		/>
-	</Dialog.Content>
-</Dialog.Root>
-
-<!-- Hidden forms for template actions -->
-{#if data.templateInstantiation}
-	<form
-		bind:this={migrateForm}
-		method="POST"
-		action="?/migrateToVersion"
-		use:enhance={() => {
-			isSubmitting = true;
-			return async ({ update }) => {
-				await update();
-			};
-		}}
-		class="hidden"
-	>
-		<input
-			type="hidden"
-			name="targetVersion"
-			value={data.templateInstantiation.latestVersion ?? data.templateInstantiation.templateVersion}
-		/>
-	</form>
+{#if data.templateInstantiation && !data.templateInstantiation.isDetached}
+	<ConfirmDialog
+		bind:open={showDetachDialog}
+		title="Détacher ce chapitre du modèle ?"
+		description="Le contenu du modèle est copié dans ce chapitre, fichiers compris, avec ses publications, ses sections et son ordre : les élèves ne perdent rien. Le chapitre ne suivra plus le modèle : une correction du modèle n'y arrivera plus. Les éléments masqués reviennent dans le plan, non publiés."
+		confirmLabel="Détacher"
+		variant="default"
+		onConfirm={confirmerDetachement}
+	/>
 
 	<form
 		bind:this={detachForm}

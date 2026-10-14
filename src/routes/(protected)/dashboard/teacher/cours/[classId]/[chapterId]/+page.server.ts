@@ -1288,18 +1288,18 @@ export const actions: Actions = {
 		// s'entendait dire qu'il n'a pas accès à son propre chapitre.
 		if (chapterError && chapterError.code !== 'PGRST116') {
 			logger.error('[detachFromTemplate] Lecture impossible :', chapterError);
-			return fail(500, { error: 'Verification impossible', action: 'detachFromTemplate' });
+			return fail(500, { error: 'Vérification impossible', action: 'detachFromTemplate' });
 		}
 
 		if (!chapter) {
-			return fail(403, { error: 'Acces refuse', action: 'detachFromTemplate' });
+			return fail(403, { error: 'Accès refusé', action: 'detachFromTemplate' });
 		}
 
 		const { error: detachError } = await detachChapterFromTemplate(chapterId, locals.supabase);
 
 		if (detachError) {
 			logger.error('[detachFromTemplate] Error:', detachError);
-			return fail(500, { error: 'Erreur lors du detachement', action: 'detachFromTemplate' });
+			return fail(500, { error: 'Erreur lors du détachement', action: 'detachFromTemplate' });
 		}
 
 		return { success: true, action: 'detachFromTemplate' };

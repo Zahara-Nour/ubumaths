@@ -32,7 +32,12 @@ import {
 	type SectionPlacement
 } from '$lib/server/chapters';
 import { nextSectionOrder } from '$lib/server/chapter-sections';
-import { linkSeries, setSeriesForm } from '$lib/server/chapter-series';
+import {
+	linkSeries,
+	listAvailableSeries,
+	setSeriesForm,
+	type AvailableSeries
+} from '$lib/server/chapter-series';
 import {
 	createChecklistItemSchema,
 	updateChecklistItemSchema
@@ -51,7 +56,6 @@ import {
 	createTemplateVersion,
 	deleteChapterTemplate,
 	extractContentSnapshotFromChapter,
-	getTemplateVersions,
 	instantiateTemplate,
 	refuseLegacyVersioning,
 	TemplateInUseError,
@@ -67,6 +71,26 @@ import type { Database } from '$lib/types/database';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('dashboard/teacher/contenu/templates/[templateId]/+page.server');
+
+import type {
+	TemplateContent,
+	TemplateSeries,
+	TemplateWorksheet
+} from '$lib/types/chapter-templates';
+import { createServerLogger } from '$lib/utils/logger';
+
+// Types
+/** Ce que l'éditeur partagé lit en plus du contenu brut du modèle. */
+interface TemplateEditorData {
+	worksheets: (TemplateWorksheet & { title: string | null; status: string | null })[];
+	series: (TemplateSeries & { title: string | null })[];
+	exerciseDetails: Record<string, { title: string | null }>;
+	availableExercises: { id: string; title: string | null }[];
+	availableWorksheets: { id: string; title: string | null }[];
+	availableSeries: AvailableSeries[];
+}
+
+const logger = createServerLogger('routes/teacher/contenu/templates/[templateId]');
 
 // Constantes
 /** Un objectif du modèle : le propriétaire vient de l'URL, jamais du formulaire. */
@@ -128,6 +152,80 @@ async function placementDemande(
 		return { placed: false };
 	}
 	return { placement: { sectionId: cible.data, sectionOrder: rang }, placed: true };
+}
+
+/**
+ * Titres des exercices, fiches et séries du modèle, et ce que le professeur peut
+ * y rattacher — les mêmes listes que la page du chapitre. Une panne rend une
+ * erreur : un sélecteur vide se lirait « rien à rattacher ».
+ */
+async function enrichTemplateContent(
+	content: TemplateContent,
+	userId: string,
+	supabase: SupabaseClient<Database>
+): Promise<{ data: TemplateEditorData | null; error: Error | null }> {
+	const exerciseIds = [...new Set(content.exercises.map((e) => e.exerciseId))];
+	const worksheetIds = [...new Set(content.worksheets.map((w) => w.worksheetId))];
+	const seriesIds = [...new Set(content.series.map((s) => s.seriesId))];
+
+	const [exercices, fiches, series, exercicesDispo, fichesDispo, seriesDispo] = await Promise.all([
+		exerciseIds.length > 0
+			? supabase.from('exercises').select('id, title').in('id', exerciseIds)
+			: Promise.resolve({ data: [], error: null }),
+		worksheetIds.length > 0
+			? supabase.from('worksheets').select('id, title, status').in('id', worksheetIds)
+			: Promise.resolve({ data: [], error: null }),
+		seriesIds.length > 0
+			? supabase.from('series').select('id, title').in('id', seriesIds)
+			: Promise.resolve({ data: [], error: null }),
+		supabase
+			.from('exercises')
+			.select('id, title')
+			.eq('created_by', userId)
+			.order('created_at', { ascending: false })
+			.limit(100),
+		// Une fiche en brouillon n'est pas distribuable : même règle que le chapitre.
+		supabase
+			.from('worksheets')
+			.select('id, title')
+			.eq('created_by', userId)
+			.eq('status', 'published')
+			.order('created_at', { ascending: false })
+			.limit(100),
+		listAvailableSeries(userId, supabase)
+	]);
+
+	const enEchec = [exercices, fiches, series, exercicesDispo, fichesDispo, seriesDispo].find(
+		(r) => r.error
+	);
+	if (enEchec?.error) {
+		logger.error('[enrichTemplateContent] Lecture impossible :', enEchec.error);
+		return { data: null, error: new Error(enEchec.error.message) };
+	}
+
+	const ficheParId = new Map((fiches.data ?? []).map((f) => [f.id, f]));
+	const serieParId = new Map((series.data ?? []).map((s) => [s.id, s]));
+
+	return {
+		data: {
+			worksheets: content.worksheets.map((w) => ({
+				...w,
+				title: ficheParId.get(w.worksheetId)?.title ?? null,
+				status: ficheParId.get(w.worksheetId)?.status ?? null
+			})),
+			series: content.series.map((s) => ({
+				...s,
+				title: serieParId.get(s.seriesId)?.title ?? null
+			})),
+			exerciseDetails: Object.fromEntries(
+				(exercices.data ?? []).map((e) => [e.id, { title: e.title }])
+			),
+			availableExercises: exercicesDispo.data ?? [],
+			availableWorksheets: fichesDispo.data ?? [],
+			availableSeries: seriesDispo.data ?? []
+		},
+		error: null
+	};
 }
 
 /** Une action « retirer du modèle », pour l'un des cinq types. */
@@ -208,20 +306,15 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		throw error(500, 'Impossible de charger le contenu du modèle');
 	}
 
-	// Fetch versions
-	const { data: versions, error: versionsError } = await getTemplateVersions(
-		templateId,
-		locals.supabase
-	);
-
-	if (versionsError) {
-		logger.error('Lecture impossible :', versionsError);
-		throw error(500, 'Impossible de charger les données');
+	// Ce que l'éditeur partagé affiche à côté des identifiants : titres des
+	// exercices, des fiches et des séries du modèle, et ce qui peut s'y ajouter.
+	const enrichissement = await enrichTemplateContent(content, user.id, locals.supabase);
+	if (enrichissement.error || !enrichissement.data) {
+		throw error(500, 'Impossible de charger le contenu du modèle');
 	}
 
-	// Chapitres qui suivent ce modèle — le chapitre d'origine en fait partie,
-	// il est rattaché dès la création. Ce sont les seules sources légitimes
-	// d'une mise à jour du modèle.
+	// Chapitres liés à ce modèle (non détachés) : ils reçoivent aussitôt chaque
+	// correction faite ici, la page les nomme.
 	const { data: linkedChapters, error: linkedError } = await locals.supabase
 		.from('chapter_template_instantiations')
 		.select('chapter_id, is_detached, class_chapters(id, title, classes(name))')
@@ -248,7 +341,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	return {
 		template,
 		content,
-		versions: versions || [],
+		...enrichissement.data,
 		classes: classes || [],
 		linkedChapters: (linkedChapters ?? []).flatMap((row) => {
 			const chapter = row.class_chapters;
