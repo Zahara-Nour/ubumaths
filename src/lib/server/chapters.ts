@@ -26,6 +26,7 @@ import type {
 	ChapterSummary,
 	StudentChapterView
 } from '$lib/types/chapters';
+import { chapterIdOf } from '$lib/types/chapters';
 import type {
 	CreateChapterInput,
 	UpdateChapterInput,
@@ -91,7 +92,7 @@ function convertChapter(db: DbClassChapter): ClassChapter {
 function convertDocument(db: DbChapterDocument): ChapterDocument {
 	return {
 		id: db.id,
-		chapterId: db.chapter_id,
+		chapterId: chapterIdOf(db),
 		title: db.title,
 		description: db.description,
 		sourceType: db.source_type as ChapterDocument['sourceType'],
@@ -114,7 +115,7 @@ function convertDocument(db: DbChapterDocument): ChapterDocument {
 function convertChecklistItem(db: DbChapterChecklistItem): ChapterChecklistItem {
 	return {
 		id: db.id,
-		chapterId: db.chapter_id,
+		chapterId: chapterIdOf(db),
 		content: db.content,
 		description: db.description,
 		displayOrder: db.display_order,
@@ -141,7 +142,7 @@ function convertChecklistProgress(db: DbStudentChecklistProgress): StudentCheckl
 function convertExercise(db: DbChapterExercise): ChapterExercise {
 	return {
 		id: db.id,
-		chapterId: db.chapter_id,
+		chapterId: chapterIdOf(db),
 		exerciseId: db.exercise_id,
 		displayOrder: db.display_order,
 		sectionId: db.section_id,
@@ -154,7 +155,7 @@ function convertExercise(db: DbChapterExercise): ChapterExercise {
 function convertWorksheet(db: DbChapterWorksheet): ChapterWorksheet {
 	return {
 		id: db.id,
-		chapterId: db.chapter_id,
+		chapterId: chapterIdOf(db),
 		worksheetId: db.worksheet_id,
 		displayOrder: db.display_order,
 		sectionId: db.section_id,

@@ -278,6 +278,8 @@ export interface WorksheetTemplateRow {
 	template_content: string;
 	placeholders: TemplatePlaceholder[];
 	created_by: string | null;
+	/** Le style dont ce gabarit est une forme (lot 3) */
+	style_id?: string | null;
 	created_at: string;
 	updated_at: string;
 }
@@ -295,6 +297,12 @@ export interface WorksheetRow {
 	published_at: string | null;
 	archived_at: string | null;
 	template_id: string | null;
+	/**
+	 * Le style de la fiche (`worksheet_styles`, lot 3). Vide pour les fiches
+	 * d'avant : `template_id` désigne alors le style (`styleIdOf`). Optionnel :
+	 * les fiches construites hors de la base (scripts, tests) n'en ont pas.
+	 */
+	style_id?: string | null;
 	estimated_duration_minutes: number | null;
 	total_points: number | null;
 	grades: string[];
@@ -428,6 +436,7 @@ export interface WorksheetInsert {
 	status?: WorksheetStatus;
 	version?: number;
 	template_id?: string | null;
+	style_id?: string | null;
 	estimated_duration_minutes?: number | null;
 	total_points?: number | null;
 	grades?: number[];
@@ -538,6 +547,7 @@ export interface WorksheetUpdate {
 	published_at?: string | null;
 	archived_at?: string | null;
 	template_id?: string | null;
+	style_id?: string | null;
 	estimated_duration_minutes?: number | null;
 	total_points?: number | null;
 	grades?: number[];

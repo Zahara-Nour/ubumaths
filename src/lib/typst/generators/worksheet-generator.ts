@@ -41,7 +41,12 @@ import type { GeneratorConfig, GeneratorContext, GenerateResult } from '../types
 import { BaseTypstGenerator } from './base-generator';
 import { escapeTypst } from '$lib/ubumark';
 import { renderTemplate } from '../templates';
-import { resolveTemplate, type ResolvedTemplate, type TemplateForm } from '../templates/styles';
+import {
+	resolveTemplate,
+	styleIdOf,
+	type ResolvedTemplate,
+	type TemplateForm
+} from '../templates/styles';
 import { documentLabels, labelPlaceholders, type DocumentLabels } from '../labels';
 import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
 import { localizedText, worksheetLocale } from '$lib/types/worksheets';
@@ -226,10 +231,10 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	generate(input: WorksheetGeneratorInput): GenerateResult {
 		const { worksheet, template } = input;
 
-		// Le gabarit de la forme demandée, dans le style de la fiche (lot 2 : le
-		// style est désigné par `template_id`) ; le gabarit lu en base ne sert
-		// qu'à la fiche.
-		const resolved = resolveTemplate(worksheet.template_id, this.form, template?.template_content);
+		// Le gabarit de la forme demandée, dans le style retenu pour la fiche
+		// (`style_id`, sinon `template_id`) ; le gabarit lu en base ne sert qu'à la
+		// fiche d'un style du prof.
+		const resolved = resolveTemplate(styleIdOf(worksheet), this.form, template?.template_content);
 		let typstContent = this.generateFromTemplate(input, resolved);
 
 		// Corrigé : Shantell Sans et Chiphre Math, posées après la police du document

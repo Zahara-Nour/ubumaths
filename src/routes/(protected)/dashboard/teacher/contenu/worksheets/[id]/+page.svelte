@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
-	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
@@ -50,7 +49,6 @@
 	} from '$lib/utils/worksheet-constants';
 	import type { Exercise } from '$lib/exercises/types';
 	import { worksheetLocale } from '$lib/types/worksheets';
-	import { DEFAULT_TEMPLATES } from '$lib/typst/templates';
 	import UntranslatedExercisesNotice from '$lib/components/worksheets/UntranslatedExercisesNotice.svelte';
 	import WorksheetCitationsNotice from '$lib/components/worksheets/WorksheetCitationsNotice.svelte';
 
@@ -83,17 +81,6 @@
 	let selectedAssignment = $state<AssignmentWithExtras | null>(null);
 	let classes = $state<{ id: string; name: string }[]>([]);
 
-	// Built-in templates, always offered alongside the teacher's own ones
-	const defaultTemplateOptions = DEFAULT_TEMPLATES.map((t) => ({
-		id: t.id,
-		name: t.name,
-		description: t.description
-	}));
-
-	// Templates state - initialize with default templates
-	let templates =
-		$state<{ id: string; name: string; description: string | null }[]>(defaultTemplateOptions);
-
 	// Type-safe worksheet access with local state for updates.
 	// Snapshot intentional: $effect below resets it on data changes.
 	// svelte-ignore state_referenced_locally
@@ -120,11 +107,6 @@
 
 	// Check if there are pending changes
 	let hasPendingChanges = $derived(Object.keys(pendingChanges).length > 0);
-
-	// Load templates on mount (needed for editing)
-	onMount(() => {
-		loadTemplates();
-	});
 
 	// Derived values
 	let worksheet = $derived(worksheetData);
@@ -327,31 +309,6 @@
 	}
 
 	/**
-	 * Load the teacher's own templates and append them to the built-in ones.
-	 * The API only returns templates the user created (system templates are
-	 * hidden by RLS), so the built-ins must stay in the list.
-	 */
-	async function loadTemplates() {
-		try {
-			const response = await fetch('/api/worksheets/templates');
-			const data = await response.json();
-			if (response.ok && data.templates?.length > 0) {
-				const ownTemplates = data.templates as {
-					id: string;
-					name: string;
-					description: string | null;
-				}[];
-				const ownIds = new Set(ownTemplates.map((t) => t.id));
-				templates = [...defaultTemplateOptions.filter((t) => !ownIds.has(t.id)), ...ownTemplates];
-			}
-			// If API returns empty, keep the built-in templates from state
-		} catch (err) {
-			console.error('Error loading templates:', err);
-			// On error, keep the built-in templates from state
-		}
-	}
-
-	/**
 	 * Handle assignment form success (create or edit)
 	 */
 	async function handleAssignmentFormSuccess(): Promise<void> {
@@ -403,9 +360,13 @@
 		// Update local worksheet data with the response
 		const { worksheet: updatedWorksheet } = await response.json();
 		worksheetData = { ...worksheetData, ...updatedWorksheet };
+		const styleChanged = 'style_id' in pendingChanges;
 
 		// Clear pending changes after successful save
 		pendingChanges = {};
+
+		// Nouveau style : la fiche d'un style du prof se relit pour le PDF
+		if (styleChanged) await invalidateAll();
 
 		toaster.success('Modifications enregistrees');
 	}
@@ -516,7 +477,7 @@
 		<!-- Metadata with inline editing -->
 		<MetadataCards
 			worksheet={effectiveWorksheet}
-			{templates}
+			styles={data.styles}
 			{hasPendingChanges}
 			onFieldChange={isDraft ? handleFieldChange : undefined}
 			onSave={isDraft ? handleSaveChanges : undefined}

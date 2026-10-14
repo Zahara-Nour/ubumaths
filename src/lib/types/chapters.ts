@@ -445,12 +445,24 @@ export function dbChapterToApp(db: DbClassChapter): ClassChapter {
 }
 
 /**
+ * Le chapitre d'une ligne de CHAPITRE. Depuis l'ADR 0029, une ligne de ces tables
+ * peut appartenir à un modèle (`chapter_id` vide) : lue par une requête de
+ * chapitre, c'est une erreur de requête, qui doit se voir.
+ */
+export function chapterIdOf(row: { id: string; chapter_id: string | null }): string {
+	if (row.chapter_id === null) {
+		throw new Error(`Ligne ${row.id} : élément de modèle lu comme un élément de chapitre`);
+	}
+	return row.chapter_id;
+}
+
+/**
  * Convert database document to app type
  */
 export function dbDocumentToApp(db: DbChapterDocument): ChapterDocument {
 	return {
 		id: db.id,
-		chapterId: db.chapter_id,
+		chapterId: chapterIdOf(db),
 		title: db.title,
 		description: db.description,
 		sourceType: db.source_type as DocumentSourceType,
@@ -476,7 +488,7 @@ export function dbDocumentToApp(db: DbChapterDocument): ChapterDocument {
 export function dbChecklistItemToApp(db: DbChapterChecklistItem): ChapterChecklistItem {
 	return {
 		id: db.id,
-		chapterId: db.chapter_id,
+		chapterId: chapterIdOf(db),
 		content: db.content,
 		description: db.description,
 		displayOrder: db.display_order,
@@ -509,7 +521,7 @@ export function dbChecklistProgressToApp(db: DbStudentChecklistProgress): Studen
 export function dbExerciseToApp(db: DbChapterExercise): ChapterExercise {
 	return {
 		id: db.id,
-		chapterId: db.chapter_id,
+		chapterId: chapterIdOf(db),
 		exerciseId: db.exercise_id,
 		displayOrder: db.display_order,
 		sectionId: db.section_id,

@@ -36,7 +36,12 @@ function ligne(form: string) {
 		section_id: null,
 		section_order: 0,
 		published_at: null,
-		created_at: '2026-10-02T00:00:00Z'
+		created_at: '2026-10-02T00:00:00Z',
+		// ADR 0029 : une ligne de chapitre, ni modèle ni lien.
+		template_id: null,
+		source_id: null,
+		retired_at: null,
+		hidden: false
 	};
 }
 
