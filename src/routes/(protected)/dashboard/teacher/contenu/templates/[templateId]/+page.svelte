@@ -395,10 +395,7 @@
 	takenExerciseIds={data.content.exercises.map((e) => e.exerciseId)}
 	takenWorksheetIds={data.content.worksheets.map((w) => w.worksheetId)}
 	takenSeriesIds={data.content.series.map((s) => s.seriesId)}
-	onDocumentAdded={() => {
-		toaster.success('Document ajouté au modèle');
-		invalidateAll();
-	}}
+	onDocumentAdded={() => invalidateAll()}
 />
 
 <!-- Modifier le titre et la description -->
