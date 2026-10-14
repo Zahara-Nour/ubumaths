@@ -149,3 +149,9 @@ Tests d'abord, rouges, pour chaque ligne de B, C, D et E ; `code-reviewer` en fi
   l'expression tapée. **Pour la PR 2** : le module développe sous `cos` (`cos(2(x+1))` →
   `cos(2x+2)`) mais pas sous `e^…` (`e^(2(x+1))` → « rien à développer ») ; une somme dans un
   exposant n'est pas réduite.
+- 2026-10-14 — **PR 2 sur la branche `feat/developper-etapes`** : le « Comment ? » rédigé par
+  `pedagogical-simplify/expand-steps.ts` (section E), l'ordre du manuel déplacé dans
+  `pedagogical-simplify/expand-order.ts`. Le résultat et la trace de l'intention `developper` ne
+  changent pas (deux instantanés figent la trace). Sans étapes, réponse gardée : somme sous une
+  fonction, une racine, un exposant ou dans une fraction — dont `(x+1)(x-1)/(x+2)`, que le texte lit
+  `(x+1)·((x-1)/(x+2))`.
