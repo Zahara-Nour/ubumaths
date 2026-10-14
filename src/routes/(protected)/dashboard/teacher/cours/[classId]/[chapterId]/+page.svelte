@@ -217,7 +217,7 @@
 							Visible
 						{:else}
 							<EyeOff class="h-3 w-3" />
-							Masqué
+							Invisible des élèves
 						{/if}
 					</Badge>
 				</div>

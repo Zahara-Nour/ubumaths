@@ -118,7 +118,7 @@
 				showDeleteDialog = false;
 				selectedChapter = null;
 			} else if (form.action === 'toggleVisibility') {
-				toaster.success('Visibilite mise a jour');
+				toaster.success('Visibilité mise à jour');
 			} else if (form.action === 'shareCourseLink') {
 				toaster.success('Lien du cours prêt');
 			} else if (form.action === 'revokeCourseLink') {
@@ -258,7 +258,7 @@
 								{#if !chapter.isVisible}
 									<Badge variant="secondary" class="flex items-center gap-1">
 										<EyeOff class="h-3 w-3" />
-										Masque
+										Invisible des élèves
 									</Badge>
 								{/if}
 							</div>
@@ -293,7 +293,12 @@
 									type="submit"
 									variant="ghost"
 									size="icon-sm"
-									title={chapter.isVisible ? 'Masquer' : 'Afficher'}
+									title={chapter.isVisible
+										? 'Rendre invisible des élèves'
+										: 'Rendre visible des élèves'}
+									aria-label={chapter.isVisible
+										? `Rendre ${chapter.title} invisible des élèves`
+										: `Rendre ${chapter.title} visible des élèves`}
 								>
 									{#if chapter.isVisible}
 										<Eye class="h-4 w-4" />

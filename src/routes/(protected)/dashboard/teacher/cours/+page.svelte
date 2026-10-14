@@ -120,7 +120,7 @@
 										<div class="absolute top-2 right-2 z-10">
 											<Badge variant="secondary" class="flex items-center gap-1">
 												<EyeOff class="h-3 w-3" />
-												Masque
+												Invisible des élèves
 											</Badge>
 										</div>
 									{/if}
