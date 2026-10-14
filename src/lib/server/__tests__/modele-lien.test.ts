@@ -281,9 +281,7 @@ describe('faire un modèle depuis un chapitre', () => {
 						grades: [],
 						color: null,
 						icon: null,
-						content_snapshot: {},
 						instantiation_count: 0,
-						current_version: 1,
 						created_at: '',
 						updated_at: ''
 					}
@@ -326,7 +324,7 @@ describe('faire un modèle depuis un chapitre', () => {
 			}
 			const contenu = contenuDuChapitre(call);
 			if (contenu) return contenu;
-			if (call.table === 'chapter_templates') return { data: { id: MODELE, content_snapshot: {} } };
+			if (call.table === 'chapter_templates') return { data: { id: MODELE } };
 			if (call.op === 'insert') {
 				return {
 					data: call.table === 'chapter_template_instantiations' ? [{ id: 'i' }] : { id: `t${++n}` }
@@ -356,7 +354,7 @@ describe('faire un modèle depuis un chapitre', () => {
 			}
 			const contenu = contenuDuChapitre(call);
 			if (contenu) return contenu;
-			if (call.table === 'chapter_templates') return { data: { id: MODELE, content_snapshot: {} } };
+			if (call.table === 'chapter_templates') return { data: { id: MODELE } };
 			if (call.op === 'insert') return { data: { id: 'tX' } };
 		});
 
@@ -376,7 +374,7 @@ describe('faire un modèle depuis un chapitre', () => {
 			const contenu = contenuDuChapitre(call);
 			if (contenu) return contenu;
 			if (call.table === 'chapter_templates' && call.op === 'insert') {
-				return { data: { id: MODELE, content_snapshot: {} } };
+				return { data: { id: MODELE } };
 			}
 			if (call.table === 'chapter_checklist_items' && call.op === 'insert') {
 				return { error: { message: 'refusé' } };
@@ -488,12 +486,9 @@ describe('instancier', () => {
 					data: {
 						id: 'i',
 						template_id: MODELE,
-						template_version: 1,
 						chapter_id: CHAPITRE,
-						current_template_version: 1,
 						is_detached: false,
-						instantiated_at: '',
-						last_migrated_at: null
+						instantiated_at: ''
 					}
 				};
 			}

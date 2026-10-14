@@ -39,15 +39,9 @@ const mockTemplate = {
 	icon: 'book',
 	status: 'published',
 	instantiation_count: 5,
-	current_version: 1,
 	created_at: '2024-01-01T00:00:00Z',
 	updated_at: '2024-01-01T00:00:00Z',
 	created_by: TEST_IDS.teacher,
-	content_snapshot: {
-		documents: [],
-		checklistItems: [],
-		exercises: []
-	},
 	profiles: {
 		full_name: 'Teacher One'
 	}
@@ -319,7 +313,6 @@ describe('POST /dashboard/teacher/contenu/templates/new (Create Template)', () =
 			error: null
 		});
 
-		// Mock template creation — must include content_snapshot for dbTemplateToApp
 		mockSupabase._mockChain.insert.mockReturnThis();
 		mockSupabase._mockChain.select.mockReturnThis();
 		mockSupabase._mockChain.single.mockResolvedValueOnce({
@@ -332,15 +325,9 @@ describe('POST /dashboard/teacher/contenu/templates/new (Create Template)', () =
 				icon: null,
 				status: 'draft',
 				instantiation_count: 0,
-				current_version: 1,
 				created_at: '2024-01-01T00:00:00Z',
 				updated_at: '2024-01-01T00:00:00Z',
-				created_by: TEST_IDS.teacher,
-				content_snapshot: {
-					documents: [],
-					checklistItems: [],
-					exercises: []
-				}
+				created_by: TEST_IDS.teacher
 			},
 			error: null
 		});
@@ -561,14 +548,11 @@ describe('Template Actions', () => {
 				// Mock current template
 				.mockResolvedValueOnce({
 					data: {
-						status: 'draft',
-						content_snapshot: {},
-						current_version: 1
+						status: 'draft'
 					},
 					error: null
 				});
 
-			// Mock update — must include content_snapshot for dbTemplateToApp
 			mockSupabase._mockChain.update.mockReturnThis();
 			mockSupabase._mockChain.eq.mockReturnThis();
 			mockSupabase._mockChain.select.mockReturnThis();
@@ -582,11 +566,9 @@ describe('Template Actions', () => {
 					icon: null,
 					status: 'draft',
 					instantiation_count: 0,
-					current_version: 1,
 					created_at: '2024-01-01T00:00:00Z',
 					updated_at: '2024-01-01T00:00:00Z',
-					created_by: TEST_IDS.teacher,
-					content_snapshot: { documents: [], checklistItems: [], exercises: [] }
+					created_by: TEST_IDS.teacher
 				},
 				error: null
 			});
@@ -659,47 +641,18 @@ describe('Template Actions', () => {
 					data: { role: 'teacher' },
 					error: null
 				})
-				// Mock template ownership check WITH content_snapshot
+				// Mock template ownership check
 				.mockResolvedValueOnce({
 					data: {
 						id: TEST_IDS.template,
 						created_by: mockTeacher.id,
-						status: 'draft',
-						content_snapshot: {
-							documents: [
-								{
-									title: 'Doc 1',
-									description: null,
-									documentUrl: 'http://example.com/doc',
-									sourceType: 'external_url',
-									mimeType: 'application/pdf',
-									displayOrder: 0
-								}
-							],
-							checklistItems: [],
-							exercises: []
-						}
+						status: 'draft'
 					},
 					error: null
 				})
 				// Mock content validation for publishTemplate service
 				.mockResolvedValueOnce({
-					data: {
-						content_snapshot: {
-							documents: [
-								{
-									title: 'Doc 1',
-									description: null,
-									documentUrl: 'http://example.com/doc',
-									sourceType: 'external_url',
-									mimeType: 'application/pdf',
-									displayOrder: 0
-								}
-							],
-							checklistItems: [],
-							exercises: []
-						}
-					},
+					data: {},
 					error: null
 				});
 
@@ -709,7 +662,6 @@ describe('Template Actions', () => {
 				.mockResolvedValueOnce({ data: [{ id: 'doc' }], error: null } as never)
 				.mockResolvedValueOnce({ data: [{ id: 'doc' }], error: null } as never);
 
-			// Mock publish update — must include content_snapshot for dbTemplateToApp
 			mockSupabase._mockChain.update.mockReturnThis();
 			mockSupabase._mockChain.eq.mockReturnThis();
 			mockSupabase._mockChain.select.mockReturnThis();
@@ -723,24 +675,9 @@ describe('Template Actions', () => {
 					icon: 'book',
 					status: 'published',
 					instantiation_count: 5,
-					current_version: 1,
 					created_at: '2024-01-01T00:00:00Z',
 					updated_at: '2024-01-01T00:00:00Z',
-					created_by: TEST_IDS.teacher,
-					content_snapshot: {
-						documents: [
-							{
-								title: 'Doc 1',
-								description: null,
-								documentUrl: 'http://example.com/doc',
-								sourceType: 'external_url',
-								mimeType: 'application/pdf',
-								displayOrder: 0
-							}
-						],
-						checklistItems: [],
-						exercises: []
-					}
+					created_by: TEST_IDS.teacher
 				},
 				error: null
 			});
@@ -770,12 +707,7 @@ describe('Template Actions', () => {
 					data: {
 						id: TEST_IDS.template,
 						created_by: mockTeacher.id,
-						status: 'draft',
-						content_snapshot: {
-							documents: [],
-							checklistItems: [],
-							exercises: []
-						}
+						status: 'draft'
 					},
 					error: null
 				});
@@ -817,8 +749,6 @@ describe('Template Actions', () => {
 				.mockResolvedValueOnce({
 					data: {
 						title: 'Template',
-						content_snapshot: {},
-						current_version: 1,
 						color: '#3b82f6',
 						icon: 'book',
 						status: 'published'

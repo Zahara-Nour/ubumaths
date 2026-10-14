@@ -176,6 +176,11 @@ describe('purge des tests face aux lignes de lien (ADR 0029)', () => {
 	/**
 	 * Le décor de l'incident du 2026-10-14 : la classe n'est pas purgée par
 	 * `global-setup` (il ne supprime que les professeurs).
+	 *
+	 * ⚠️ `globalSetup()` supprime TOUS les comptes `teacher` de la base locale :
+	 * sans danger tant que la suite d'intégration tourne fichier par fichier
+	 * (`maxWorkers: 1`, `vitest.base.config.ts`). En parallèle, ce test casserait
+	 * les autres fichiers.
 	 */
 	it('global-setup passe ; le chapitre d’une classe non purgée garde son contenu propre', async () => {
 		const { modele, chapitre, objectifLie, objectifPropre } = await decor();
