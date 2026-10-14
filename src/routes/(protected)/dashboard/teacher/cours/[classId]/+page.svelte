@@ -44,6 +44,7 @@
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
 	import type { TemplateSummary } from '$lib/types/chapter-templates';
+	import { templateSelectItems } from '$lib/utils/template-select-items';
 
 	interface Props {
 		data: PageData;
@@ -97,12 +98,7 @@
 	]);
 
 	// Template items for MySelect
-	let templateItems = $derived(
-		data.templates.map((t: TemplateSummary) => ({
-			value: t.id,
-			label: `${t.title}${t.isOwner ? '' : ' (public)'}`
-		}))
-	);
+	let templateItems = $derived(templateSelectItems(data.templates));
 
 	// Handle form results
 	$effect(() => {

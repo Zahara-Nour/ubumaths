@@ -6,7 +6,11 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
-import { getChapterTemplate, instantiateTemplate } from '$lib/server/chapter-templates';
+import {
+	getChapterTemplate,
+	instantiateTemplate,
+	TemplateUnusableError
+} from '$lib/server/chapter-templates';
 import { instantiateTemplateSchema } from '$lib/server/validation/chapter-templates';
 import { uuidSchema } from '$lib/server/validation/common';
 import { createServerLogger } from '$lib/utils/logger';
@@ -98,6 +102,11 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 
 	// Instantiate template
 	const result = await instantiateTemplate(data, user.id, locals.supabase);
+
+	// Brouillon, archivé : une faute de l'appelant, pas une panne serveur.
+	if (result.error instanceof TemplateUnusableError) {
+		throw error(409, result.error.message);
+	}
 
 	if (result.error) {
 		logger.error('[POST /api/teacher/chapter-templates/[id]/instantiate] Error:', result.error);
