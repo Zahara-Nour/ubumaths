@@ -1,7 +1,7 @@
 ---
 title: Atelier — une fenêtre de réglages, et le choix de la saisie (phase 0)
 date: 2026-10-14
-status: PR 1 mergée (#1385), en attente du deploy:prod ; suite = le mode mathématique lui-même
+status: #1385 et #1388 mergées, en attente du deploy:prod ; suite = le mode mathématique lui-même
 ---
 
 # Atelier — la fenêtre de réglages
@@ -95,3 +95,8 @@ Rien d'autre n'entre dans la fenêtre pour l'instant : le mode exact / décimal 
   d'écran (shadow DOM), option surlignée à 2,04:1, liste coupée en bas d'écran, croix « Close ».
   Tout corrigé. **Restent pour la suite** : l'historique montre le texte envoyé (avec le point) ;
   pas de consigne dans le champ mathématique vide ; `Sheet.Content` dit encore « Close ».
+- 2026-10-14 — **#1388 mergée** (« corrige les 3 points », David) : l'historique montre la saisie
+  écrite (`Entry.inputLatex`, gardée au rechargement, liste blanche à la relecture ET à l'affichage
+  — audit : une saisie forgée rappelée par ↑ posait un calque dans la page) ; consigne du champ
+  vide ; croix « Fermer » des panneaux latéraux. Reste : une ligne rejouée revient en texte ;
+  `breadcrumb-ellipsis` dit encore « More » (composant inutilisé).
