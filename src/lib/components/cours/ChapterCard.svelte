@@ -225,7 +225,7 @@
 						{chapter.title}
 					</Card.Title>
 					{#if !chapter.isVisible}
-						<Badge variant="secondary" class="mt-1">Masque</Badge>
+						<Badge variant="secondary" class="mt-1">Invisible des élèves</Badge>
 					{/if}
 				</div>
 			</div>
