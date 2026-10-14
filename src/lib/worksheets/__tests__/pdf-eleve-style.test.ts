@@ -221,3 +221,25 @@ describe('le cartouche du gabarit, comme le PDF du prof', () => {
 		expect(hidden).not.toContain(year);
 	});
 });
+
+describe('avec corrigé : les énoncés gardent le style de la fiche (David, 2026-10-14)', () => {
+	for (const ending of ['answers', 'correction'] as const) {
+		it(`Standard, ${ending} : énoncés en Standard, puis la partie de fin et son bandeau`, () => {
+			const typst = generateStudentWorksheetTypst(view({ style_id: STANDARD }), ending);
+			expect(typst).toContain(signature(STANDARD));
+			expect(typst).not.toContain(studentStyleSignature());
+			const end = typst.slice(typst.indexOf('#pagebreak()'));
+			expect(end).toContain(ending === 'answers' ? '[RÉPONSES]' : '[CORRECTION]');
+			expect(end).toContain(ending === 'answers' ? 'REPONSE-VISIBLE' : 'CORRECTION-VISIBLE');
+		});
+	}
+
+	it('style du prof, corrigé : sa mise en page, puis le corrigé', () => {
+		const typst = generateStudentWorksheetTypst(
+			view({ style_id: PROF_STYLE, template: profTemplate('// GABARIT-DU-PROF\n{{exercises}}') }),
+			'correction'
+		);
+		expect(typst).toContain('GABARIT-DU-PROF');
+		expect(typst.slice(typst.indexOf('#pagebreak()'))).toContain('CORRECTION-VISIBLE');
+	});
+});
