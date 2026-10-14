@@ -11,23 +11,28 @@
  * Trois parties indépendantes dans un même contexte ; une seule variante (guidée).
  *
  * L'exercice est créé en brouillon (non public), rangé dans aucune fiche : David
- * l'ajoute lui-même à son évaluation.
+ * l'ajoute lui-même à son évaluation. Trois schémas (FR + EN), dessinés pour
+ * l'occasion (SVG → PNG), illustrent les trois parties.
  *
- * Garde-fous : base = prod ; Zod validé et titre libre AVANT l'écriture ; la ligne
- * créée doit être rendue, puis relue.
+ * Relancé alors que l'exercice existe déjà, le script met à jour ses variations
+ * (ajout des schémas, 2026-10-14) : l'état d'avant est sauvegardé en JSON.
+ *
+ * Garde-fous : base = prod ; Zod validé et images présentes AVANT l'écriture ; une
+ * image déjà en ligne n'est pas remplacée ; chaque écriture doit rendre sa ligne,
+ * puis est relue.
  *
  * Usage :
  *   pnpm tsx scripts/create-evaluation-second-degre-1spe.ts            # simulation
  *   pnpm tsx scripts/create-evaluation-second-degre-1spe.ts --publier  # écrit en prod
  */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
 import { createExerciseSchema } from '$lib/server/validation/exercises';
 import { createExercise } from '$lib/server/exercises';
-import type { Database } from '$lib/types/database';
+import type { Database, Json } from '$lib/types/database';
 
 config({ path: '.env' });
 
@@ -37,6 +42,11 @@ const DAVID = '97c1d5e4-5fa0-44ce-be83-ed5467f3a424';
 // Topic des exercices de la fiche d'applications du second degré
 const TOPIC = 'Optimisation';
 const TITRE = 'Le parc aquatique';
+const BUCKET = 'exercise-images';
+const IMAGES = ['parc-jet', 'parc-pique-nique', 'parc-billet'].flatMap((n) => [
+	`${n}.png`,
+	`${n}-en.png`
+]);
 
 const DIR =
 	'/private/tmp/claude-501/-Users-david-Coding-js-ubumaths/f2116999-53aa-43b1-b92b-02d696355328/scratchpad/eval-sd';
@@ -82,33 +92,80 @@ async function main() {
 		throw new Error(
 			`Zod refuse — ${v.error.issues[0].path.join('.')} ${v.error.issues[0].message}`
 		);
-	const { data: collisions, error: ec } = await supabase
+	const { data: existants, error: ec } = await supabase
 		.from('exercises')
-		.select('id')
+		.select('id, variations')
 		.eq('topic', TOPIC)
 		.eq('title', TITRE);
 	if (ec) throw new Error(`Lecture impossible : ${ec.message}`);
-	if (collisions && collisions.length > 0) throw new Error(`« ${TITRE} » existe déjà`);
-	console.log(`  ✓ « ${TITRE} » validé (Zod, titre libre)`);
+	if (existants && existants.length > 1) throw new Error(`« ${TITRE} » existe en double`);
+	const existant = existants?.[0];
+	const images = IMAGES.map((nom) => ({ nom, contenu: readFileSync(join(DIR, 'png', nom)) }));
+	for (const nom of IMAGES)
+		for (const v of exercice.variations)
+			if (![v.statement_md, v.translations.en.statement_md].some((t) => t.includes(nom)))
+				throw new Error(`Image « ${nom} » absente des énoncés`);
+	console.log(
+		`  ✓ « ${TITRE} » validé (Zod, ${images.length} images) — ${existant ? `mise à jour de ${existant.id}` : 'création'}`
+	);
 
 	if (!PUBLIER) {
 		console.log('\nSimulation terminée : relancer avec --publier pour écrire.');
 		return;
 	}
 
-	const { data, error } = await createExercise(supabase, exercice as never, DAVID);
-	if (error || !data) throw new Error(`Création refusée — ${error?.message ?? 'aucune ligne'}`);
+	const prefixe = `${url}/storage/v1/object/public/${BUCKET}/${DAVID}/`;
+	for (const i of images) {
+		const deja = await fetch(prefixe + i.nom, { method: 'HEAD' });
+		if (deja.ok) {
+			console.log(`  · ${i.nom} déjà en ligne, laissé tel quel`);
+			continue;
+		}
+		const { error } = await supabase.storage
+			.from(BUCKET)
+			.upload(`${DAVID}/${i.nom}`, i.contenu, { contentType: 'image/png', upsert: false });
+		if (error) throw new Error(`Image « ${i.nom} » refusée — ${error.message}`);
+		const r = await fetch(prefixe + i.nom, { method: 'HEAD' });
+		if (!r.ok) throw new Error(`Image « ${i.nom} » envoyée mais illisible (${r.status})`);
+		console.log(`  ✍️  ${i.nom} envoyée et relue`);
+	}
+
+	let id: string;
+	if (existant) {
+		const sauvegarde = join(DIR, `sauvegarde-${Date.now()}.json`);
+		writeFileSync(sauvegarde, JSON.stringify(existant, null, 2));
+		const { data, error } = await supabase
+			.from('exercises')
+			.update({ variations: exercice.variations as unknown as Json })
+			.eq('id', existant.id)
+			.select('id');
+		if (error || !data || data.length !== 1)
+			throw new Error(`Mise à jour refusée — ${error?.message ?? 'aucune ligne'}`);
+		id = existant.id;
+		console.log(`  ✍️  variations mises à jour (avant : ${sauvegarde})`);
+	} else {
+		const { data, error } = await createExercise(supabase, exercice as never, DAVID);
+		if (error || !data) throw new Error(`Création refusée — ${error?.message ?? 'aucune ligne'}`);
+		id = data.id;
+	}
 
 	const { data: relu, error: er } = await supabase
 		.from('exercises')
 		.select('id, slug, variations')
-		.eq('id', data.id)
+		.eq('id', id)
 		.single();
 	if (er || !relu) throw new Error(`Relecture impossible : ${er?.message ?? 'aucune ligne'}`);
-	const [variation] = relu.variations as { answers_md?: string }[];
-	if (variation?.answers_md !== exercice.variations[0].answers_md)
-		throw new Error('Relecture : les réponses enregistrées diffèrent');
-	console.log(`  ✍️  créé et relu : ${relu.id} (slug ${relu.slug})`);
+	if (JSON.stringify(relu.variations) === JSON.stringify(exercice.variations))
+		console.log(`  ✓ relu : ${relu.id} (slug ${relu.slug})`);
+	else {
+		const [v] = relu.variations as { statement_md?: string; answers_md?: string }[];
+		if (
+			v?.statement_md !== exercice.variations[0].statement_md ||
+			v?.answers_md !== exercice.variations[0].answers_md
+		)
+			throw new Error('Relecture : les variations enregistrées diffèrent');
+		console.log(`  ✓ relu : ${relu.id} (slug ${relu.slug})`);
+	}
 }
 
 main().catch((e: unknown) => {
