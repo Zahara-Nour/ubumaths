@@ -120,6 +120,7 @@ import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
+import { expandExpression, type ExpandMode } from './expand';
 import { integrateRefusalSteps, integrateSteps } from './integrate-steps';
 import { evaluateSteps } from './evaluate-steps';
 import { domainLine } from './domain-steps';
@@ -1058,7 +1059,13 @@ function substituteNames(
  * pas factoriser 3x + 6 » n'est PAS un refus de l'atelier — la commande a bien
  * tourné — donc la ligne n'est pas rouge.
  */
-function runAtelierCommand(name: string, input: string, argument: string): CalcResult {
+function runAtelierCommand(
+	name: string,
+	input: string,
+	argument: string,
+	mode: ExpandMode
+): CalcResult {
+	if (name === 'expand') return runExpandCommand(input, argument, mode);
 	if (argument.trim() === '') {
 		return {
 			kind: 'refus',
@@ -1077,6 +1084,27 @@ function runAtelierCommand(name: string, input: string, argument: string): CalcR
 				steps: outcome.steps,
 				...summaryField(outcome)
 			};
+		case 'inchangee':
+			return { kind: 'commande', input, output: outcome.message };
+		case 'illisible':
+			return { kind: 'refus', message: outcome.message };
+	}
+}
+
+/**
+ * `.développer` : la réponse, « rien à développer » (une réponse, pas une ligne
+ * rouge) ou un refus. Pas encore d'étapes (phase 0 `atelier-developper-phase0.md`).
+ *
+ * Les refus citent l'expression TAPÉE (`.résoudre (x+1)^2=4`), pas celle où les
+ * noms d'objets sont déjà remplacés.
+ */
+function runExpandCommand(input: string, argument: string, mode: ExpandMode): CalcResult {
+	const space = input.indexOf(' ');
+	const typed = space === -1 ? '' : input.slice(space + 1).trim();
+	const outcome = expandExpression(argument, mode, typed);
+	switch (outcome.kind) {
+		case 'developpee':
+			return { kind: 'commande', input, output: outcome.text, latex: outcome.answer };
 		case 'inchangee':
 			return { kind: 'commande', input, output: outcome.message };
 		case 'illisible':
@@ -1471,7 +1499,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// `engine.execute` — et sans moteur derrière, il n'y a aucun repli : ce que
 	// rend `runAtelierCommand` est tout ce que l'élève verra.
 	if (ATELIER_ONLY_COMMANDS.has(known.name)) {
-		return runAtelierCommand(known.name, input, argument);
+		const mode = engine.getEvalState().mode === 'decimal' ? 'decimal' : 'exact';
+		return runAtelierCommand(known.name, input, argument, mode);
 	}
 
 	const unknown = findUnknownFunctionCall(rawArgument);

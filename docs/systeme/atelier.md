@@ -102,6 +102,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/decimal-comma.ts`      | Virgule décimale à l'affichage, refus des virgules ambiguës à la saisie                                    |
 | `src/lib/atelier/simplify-steps.ts`     | `.simplifier` par étapes (`simplifySteps`)                                                                 |
 | `src/lib/atelier/factor-steps.ts`       | `.factoriser` par étapes (`factorSteps`)                                                                   |
+| `src/lib/atelier/expand.ts`             | `.développer` : la réponse développée et réduite (`expandExpression`), sans étapes pour l'instant          |
 | `src/lib/atelier/derive-steps.ts`       | `.dériver` et « Dériver » expliqués (`deriveSteps`)                                                        |
 | `src/lib/atelier/solve-steps.ts`        | `.résoudre` par étapes (`solveSteps`)                                                                      |
 | `src/lib/atelier/solve-steps-check.ts`  | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                            |
@@ -399,11 +400,11 @@ lettres ») est refusé aussi. Test : `src/lib/atelier/__tests__/fonction-sans-p
 
 **Trois sources de commandes**, réunies par `commandCatalog` (`src/lib/atelier/commands.ts`) :
 
-| Source                     | Où                            | Exemples                                                              |
-| -------------------------- | ----------------------------- | --------------------------------------------------------------------- |
-| registre du moteur         | `WebReplEngine.getCommands()` | `.dériver`, `.résoudre`, `.intégrer`, `.variations`, `.taylor`        |
-| branchées hors registre    | table `OFF_REGISTRY`          | `.convertir`, `.stats`, `.ajustement`, `.exact`, `.décimal`           |
-| servies par l'atelier seul | `ATELIER_ONLY_COMMANDS`       | `.factoriser`, `.réciproque`, `.limite`, `.simuler`, `.croiser`, lois |
+| Source                     | Où                            | Exemples                                                                             |
+| -------------------------- | ----------------------------- | ------------------------------------------------------------------------------------ |
+| registre du moteur         | `WebReplEngine.getCommands()` | `.dériver`, `.résoudre`, `.intégrer`, `.variations`, `.taylor`                       |
+| branchées hors registre    | table `OFF_REGISTRY`          | `.convertir`, `.stats`, `.ajustement`, `.exact`, `.décimal`                          |
+| servies par l'atelier seul | `ATELIER_ONLY_COMMANDS`       | `.factoriser`, `.développer`, `.réciproque`, `.limite`, `.simuler`, `.croiser`, lois |
 
 La table `TRANSLATIONS` donne pour chaque commande son nom français, sa description, son exemple
 et sa rubrique de `.aide` (`HelpSection`) ; **son ordre est l'ordre du catalogue**. Les commandes
@@ -703,6 +704,7 @@ Doc du moteur : [mathast/README.md](mathast/README.md).
 | calcul avec des grandeurs, `.convertir` | `computeQuantity` / `convertQuantity` (`src/lib/mathAST/cli/quantities.ts`) : `tidy`, unité écrite d'abord — comme `{{eval}}` ; contrat : [grandeurs.md](grandeurs.md)                                                                                                                                                                               |
 | `.simplifier`                           | `generatePedagogicalSimplifySteps`, intention `auto` (ADR 0007)                                                                                                                                                                                                                                                                                      |
 | `.factoriser`                           | même pipeline, intention `factoriser`, niveau lycée (stratégies de l'ADR 0024 : identités à coefficients, Δ, racine évidente) ; aucun repli moteur : « je n'ai pas su » se dit                                                                                                                                                                       |
+| `.développer`                           | même pipeline, intention `developper`, niveau lycée ; la réponse seule (voir « `.développer` en détail ») ; aucun repli moteur : « rien à développer » se dit                                                                                                                                                                                        |
 | `.dériver`, « Dériver », `f′`           | `src/lib/mathAST/pedagogical-differentiation/` (règle nommée, sous-étapes)                                                                                                                                                                                                                                                                           |
 | `.réciproque`, « Réciproque », `f⁻¹`    | `computeReciprocal` (`src/lib/mathAST/reciprocal/`, [mathast/reciproque.md](mathast/reciproque.md)) ; lettres des paramètres : `solve` puis `textbookWriting`                                                                                                                                                                                        |
 | `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                                                                                                                                                                                                                                             |
@@ -972,6 +974,33 @@ du moteur (`DOMAIN_UNRESOLVED` : `\sqrt{\sin x}`) sortent plus haut, inchangés,
   les deux écritures sont identiques. Branché aussi sans la résolution rédigée d'une contrainte
   (`\sqrt{x^2-5x+6}`, Q4) et pour le domaine universel (Q6). Tests :
   `domaine-etapes.test.ts`, `domaine-etapes-affichage.svelte.test.ts`.
+
+**`.développer` en détail** (`expand.ts`, phase 0 [atelier-developper-phase0.md](../wip/atelier-developper-phase0.md),
+décisions de David du 2026-10-14). Servie par l'atelier (`ATELIER_ONLY_COMMANDS` : le registre
+n'a pas d'`expand`), après la substitution des noms (`.développer f`, `.développer f(x)`).
+Développer, c'est aussi réduire. La réponse est le résultat de l'intention `developper`, remis
+dans l'ordre du manuel : puissances décroissantes de x, les autres lettres traitées comme des
+coefficients, sinon l'ordre alphabétique (`a(x+b)` → `ax + ab`, `(a−b)²` → `a² − 2ab + b²` ; un
+coefficient négatif déplacé s'écrit `− 2ab`, jamais `+ (−2ab)` ; à rang égal, un terme sans degré
+après les monômes : `x² + 2x + 1 + √(x+1)`). `-(x+1)` part au module écrit `-1(x+1)` : seul, il
+n'était pas développé (0 étape). La réponse s'écrit comme l'élève a écrit, comme `.limite`
+(décision de David du 2026-10-06, étendue le 2026-10-14) : un décimal tapé, ou le mode décimal,
+donne des décimaux (`(0,5x+1)²` → `0,25x² + x + 1`, même en mode exact) ; sinon des fractions
+(`(x/2+1)²` → `¼x² + x + 1`) ; une fraction sans écriture décimale finie reste une fraction
+(`⅑x²`). Rien n'a bougé (aucune étape, ou un résultat égal à l'entrée aux parenthèses près) : trois
+phrases, sans ligne rouge, qui citent l'expression TAPÉE — « « x^2+1 » est déjà développée et
+réduite. » (une somme de monômes : fractions et racines de nombres, lettres indicées comprises),
+« Je ne sais pas développer « (x+1)^n » : l'exposant n'est pas un nombre. », sinon « Il n'y a rien
+à développer dans « 1/(x+1) ». ». Deux autres « je ne sais pas », sans ligne rouge : un
+développement de plus de 500 termes (`MAX_TERMS`, estimé AVANT le calcul, qui est synchrone :
+`(x+1)^2000` figeait la page 5 s) ; une réponse que le module n'a pas su finir (deux nombres dans un
+produit, une puissance de nombres : `e^{(x+1)^2}` rendait `e^{x^2 + 2 x 1 + 1^2}`) — jamais une
+réponse mal écrite. Refus : sans expression (avec l'exemple), une équation ou une inéquation
+(« On développe une expression, pas une équation. Pour la résoudre : .résoudre (x+1)^2=4 »,
+expression TAPÉE citée), tout ce qui n'est pas une expression (liste, saisie illisible). **Pas de
+« Comment ? »** : les étapes de l'intention `developper` ne sont pas montrables (produits collés
+« 2x1 », la même ligne jusqu'à 13 fois, distribution cachée) — elles seront rédigées dans
+`pedagogical-simplify` (PR 2). Tests : `developper-commande.test.ts`.
 
 **`.limite` en détail** (`limit.ts`, PR 2 de `.limite`, syntaxe tranchée par David le
 2026-10-14, L1-L6). Servie par l'atelier (`ATELIER_ONLY_COMMANDS`), lue **avant** la substitution

@@ -44,6 +44,7 @@ Une fonction usuelle sans parenthèses dans l'expression (`.évaluer ln x en x=1
 | variations                        | `.variations EXPR [pour VAR] [dans ENSEMBLE]`     | `.variations x^2 dans [0;+∞[`                           |
 | réciproque                        | `.réciproque FONCTION [sur INTERVALLE]`           | `.réciproque f` · `.réciproque x^2 sur [0;+∞[`          |
 | domaine / simplifier / factoriser | `.commande EXPR [pour VAR]`                       | inchangé (un seul argument)                             |
+| développer                        | `.développer EXPR`                                | `.développer (2x-1)(x+3)` · `.développer f`             |
 
 - `[…]` = facultatif. Ordre des mots-clés libre (`en 1 ordre 3` accepté).
 - **`dans`** (`.résoudre`, `.variations`, lot 2 de l'intervalle, 2026-10-13) : un intervalle borné

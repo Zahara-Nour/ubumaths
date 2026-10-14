@@ -1515,15 +1515,12 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
  * amber square, sections in amber small caps over a rule. Opts into the badge
  * numbering via {{exercises_badge}}.
  */
-export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
-	id: DEFAULT_TEMPLATE_IDS.studentStyle,
-	name: 'Fiche élève',
-	description:
-		"Deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice sur carré ambre, sections soulignées",
-	type: 'worksheet',
-	is_system: true,
-	placeholders: COMMON_PLACEHOLDERS,
-	template_content: `// Mise en page proche du PDF de l'élève : A4 sur deux colonnes
+/**
+ * Style « Fiche élève » (style par défaut, ADR 0028 D7) : code commun à ses
+ * gabarits, importé par chacun via `{{style_common}}` — page A4 sur deux
+ * colonnes avec filet, police, espacements.
+ */
+export const STUDENT_STYLE_COMMON = `// Mise en page proche du PDF de l'élève : A4 sur deux colonnes
 #set page(
   paper: "a4",
   margin: (x: 1cm, y: 1.5cm),
@@ -1550,11 +1547,20 @@ export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
 #set list(spacing: 1.5em, tight: false)
 #set block(spacing: 1.8em)
 
-// En-tête sur toute la largeur, au-dessus des deux colonnes.
+`;
+
+/**
+ * En-tête pleine largeur des gabarits « Fiche élève » : titre, élève, date,
+ * classe ; `banner` se place en haut du même bloc (bandeau d'un corrigé), pour
+ * que le fond blanc masque le filet derrière tout l'en-tête.
+ */
+const studentStyleHeader = (
+	banner = ''
+) => `// En-tête sur toute la largeur, au-dessus des deux colonnes.
 // Le fond blanc masque le filet vertical derrière le bandeau.
 #place(top + center, scope: "parent", float: true)[
   #block(width: 100%, fill: white, inset: (bottom: 6pt), below: 1.2em)[
-    {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
+${banner}    {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
     #v(0.4em){{/if}}
     #grid(
       columns: (1fr, auto, 1fr),
@@ -1567,10 +1573,68 @@ export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
     #line(length: 100%, stroke: 0.5pt + gray)
   ]
 ]
+`;
 
+/**
+ * Bandeau vert d'un corrigé (« CORRECTION », « RÉPONSES ») et avertissement du
+ * corrigé de classe d'une affectation individualisée (D6), en tête de l'en-tête.
+ */
+const STUDENT_STYLE_HEADER_BANNER = `    #block(width: 100%, fill: rgb("#228b22"), inset: 10pt, below: 0.6em)[
+      #align(center)[#text(size: 1.4em, weight: "bold", fill: white)[{{form_title}}]]
+    ]
+    {{#if individual_copy_notice}}#block(width: 100%, fill: rgb("#fff4d6"), stroke: rgb("#d9a400"), inset: 8pt, radius: 4pt, below: 0.6em)[
+      #text(weight: "bold")[{{individual_copy_notice}}]
+    ]{{/if}}
+`;
+
+/** Bandeau vert seul, pleine largeur : en tête de la partie corrections d'une fiche + corrections */
+const STUDENT_STYLE_CORRECTION_BANNER = `#place(top + center, scope: "parent", float: true, clearance: 0.8em)[
+  #block(width: 100%, fill: rgb("#228b22"), inset: 10pt)[
+    #align(center)[#text(size: 1.4em, weight: "bold", fill: white)[{{form_title}}]]
+  ]
+]
+`;
+
+/**
+ * Les gabarits du style « Fiche élève », un par forme (ADR 0028 : une forme =
+ * un gabarit). Réponses et corrigé : sans énoncé, numéros sur carré ambre,
+ * bandeau vert écrit ici (plus injecté par le générateur). Fiche +
+ * corrections : la fiche, puis les réponses ou le corrigé sur une nouvelle page.
+ */
+export const STUDENT_STYLE_FORMS = {
+	worksheet: `{{style_common}}${studentStyleHeader()}
 // Exercices (numéros sur carré ambre, sections soulignées en ambre)
 {{exercises_badge}}
-`
+`,
+	answers: `{{style_common}}${studentStyleHeader(STUDENT_STYLE_HEADER_BANNER)}
+// Réponses (numéros sur carré ambre)
+{{exercises_badge}}
+`,
+	correction: `{{style_common}}${studentStyleHeader(STUDENT_STYLE_HEADER_BANNER)}
+// Corrigé (numéros sur carré ambre)
+{{exercises_badge}}
+`,
+	worksheet_with_corrections: `{{style_common}}${studentStyleHeader()}
+// Exercices (numéros sur carré ambre, sections soulignées en ambre)
+{{exercises_badge}}
+{{#if corrections}}
+#pagebreak()
+{{correction_fonts}}
+${STUDENT_STYLE_CORRECTION_BANNER}
+{{corrections}}
+{{/if}}`
+} as const;
+
+export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
+	id: DEFAULT_TEMPLATE_IDS.studentStyle,
+	name: 'Fiche élève',
+	description:
+		"Deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice sur carré ambre, sections soulignées",
+	type: 'worksheet',
+	is_system: true,
+	placeholders: COMMON_PLACEHOLDERS,
+	template_content:
+		STUDENT_STYLE_COMMON + STUDENT_STYLE_FORMS.worksheet.slice('{{style_common}}'.length)
 };
 
 /**
@@ -1730,10 +1794,9 @@ function renderConditionals(templateContent: string, data: Record<string, string
  * Replace placeholders in template content with actual values
  */
 export function renderTemplate(templateContent: string, data: Record<string, string>): string {
-	let result = renderConditionals(templateContent, data);
-	for (const [key, value] of Object.entries(data)) {
-		const placeholder = `{{${key}}}`;
-		result = result.split(placeholder).join(value);
-	}
-	return result;
+	// Une seule passe : une valeur insérée (énoncé, corrigé) qui contiendrait
+	// `{{clé}}` n'est jamais réinterprétée. Placeholder inconnu : laissé tel quel.
+	return renderConditionals(templateContent, data).replace(/\{\{(\w+)\}\}/g, (placeholder, key) =>
+		Object.hasOwn(data, key) ? data[key] : placeholder
+	);
 }
