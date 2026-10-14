@@ -417,6 +417,16 @@ const POLE_PROBE_RATIOS = [1e-2, 1e-4, 1e-7, 1e-11, 1e-15] as const;
 /** Croissance minimale de |f| entre la première et la dernière sonde. */
 const POLE_GROWTH_FACTOR = 4;
 
+/**
+ * Croissance minimale de |f| entre la sonde à 1e-7 et la dernière (1e-15).
+ * Un pôle croît encore là (ln : ×2,1 au pire) ; une exponentielle non :
+ * à cette distance, elle ne varie plus.
+ */
+const POLE_NEAR_GROWTH_FACTOR = 1.5;
+
+/** Indice, dans `POLE_PROBE_RATIOS`, de la sonde à 1e-7. */
+const POLE_NEAR_PROBE_INDEX = 2;
+
 /** Nombre maximal d'intervalles candidats examinés par fenêtre. */
 const MAX_ASYMPTOTE_CANDIDATES = 64;
 
@@ -426,7 +436,9 @@ const MAX_ASYMPTOTE_CANDIDATES = 64;
  * On sonde de plus en plus près, des deux côtés. Une vraie asymptote fait
  * croître |f| SANS BORNE : il ne suffit pas que |f| soit grande (une
  * exponentielle l'est aussi) ni qu'elle croisse (√x croît). On exige donc que
- * |f| grandisse encore quand on se rapproche, d'un facteur net.
+ * |f| grandisse encore quand on se rapproche, d'un facteur net, et qu'elle
+ * grandisse ENCORE tout près du pôle (eˣ en x = 164 croît d'un facteur 5 sur
+ * la première sonde, puis plus du tout).
  *
  * ⚠️ Pas de seuil « |f| dépasse la fenêtre » : la sonde la plus fine est à
  * 1e-15 du pôle, donc |ln| n'y vaut que ~34. Un tel seuil faisait disparaître
@@ -437,10 +449,11 @@ function divergesAt(evaluator: (x: number) => number | null, x: number): boolean
 
 	for (const side of [-1, 1]) {
 		let first: number | null = null;
+		let near = 0;
 		let previous = 0;
 		let increasing = true;
 
-		for (const ratio of POLE_PROBE_RATIOS) {
+		for (const [index, ratio] of POLE_PROBE_RATIOS.entries()) {
 			const y = evaluator(x + side * ratio * scale);
 			if (y === null || !Number.isFinite(y)) {
 				increasing = false;
@@ -452,10 +465,19 @@ function divergesAt(evaluator: (x: number) => number | null, x: number): boolean
 				break;
 			}
 			if (first === null) first = magnitude;
+			if (index === POLE_NEAR_PROBE_INDEX) near = magnitude;
 			previous = magnitude;
 		}
 
-		if (increasing && first !== null && first > 0 && previous >= first * POLE_GROWTH_FACTOR) {
+		// Les deux critères sont nécessaires : sans le second, eˣ passait pour
+		// divergente dès x ≈ 139, la sonde à 1 % de |x| la multipliant déjà par 4.
+		if (
+			increasing &&
+			first !== null &&
+			first > 0 &&
+			previous >= first * POLE_GROWTH_FACTOR &&
+			previous >= near * POLE_NEAR_GROWTH_FACTOR
+		) {
 			return true;
 		}
 	}

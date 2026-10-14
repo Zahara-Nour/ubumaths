@@ -102,4 +102,45 @@ describe('findVerticalAsymptotes', () => {
 
 		expect(found.some((a) => Math.abs(a.x - 8) < 1e-3)).toBe(true);
 	});
+
+	it("ne signale rien pour eˣ + 45, même loin de l'origine", () => {
+		// Au-delà de x ≈ 139, la sonde la plus large (1 % de |x|) suffisait à
+		// faire croître eˣ d'un facteur 4 : une fausse asymptote par échantillon.
+		const exp = (x: number): number | null => Math.exp(x) + 45;
+		const found = findVerticalAsymptotes(
+			exp,
+			{ xMin: -580, xMax: 600, yMin: -130, yMax: 480 },
+			'f'
+		);
+		expect(found).toEqual([]);
+	});
+
+	it('ne signale rien là où eˣ dépasse les flottants (x ≈ 709,8)', () => {
+		const found = findVerticalAsymptotes(
+			(x) => Math.exp(x),
+			{ xMin: 0, xMax: 1000, yMin: -10, yMax: 10 },
+			'f'
+		);
+		expect(found).toEqual([]);
+	});
+
+	it("trouve encore un pôle loin de l'origine", () => {
+		const found = findVerticalAsymptotes(
+			(x) => (x === 500 ? null : 1 / (x - 500)),
+			{ xMin: 0, xMax: 1000, yMin: -10, yMax: 10 },
+			'f'
+		);
+		expect(found.length).toBe(1);
+		expect(found[0].x).toBeCloseTo(500, 6);
+	});
+
+	it("trouve encore l'asymptote de ln(x − 300)", () => {
+		const found = findVerticalAsymptotes(
+			(x) => (x <= 300 ? null : Math.log(x - 300)),
+			{ xMin: 0, xMax: 1000, yMin: -10, yMax: 10 },
+			'f'
+		);
+		expect(found.length).toBe(1);
+		expect(found[0].x).toBeCloseTo(300, 6);
+	});
 });
