@@ -165,6 +165,7 @@ import {
 	coupleOrSetRefusal
 } from './decimal-comma';
 import { listCitedMessage } from './list-cited';
+import { cellCitedIn, cellInCalculMessage } from './grid';
 import { functionsListing, valuesListing } from './listing';
 
 // =============================================================================
@@ -3127,6 +3128,11 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		return { kind: 'calcul', input, output: 'Erreur de calcul : Division par zéro' };
 	}
 	const result = session.engine.execute(expandInput(session.atelier, line.text));
+	// Une cellule de la grille (`B2+1`) : Calcul ne la lit pas (tableur, Q1). Dit
+	// seulement quand le calcul échoue — « Nombre 2 écrit après un facteur »
+	// faisait chercher une faute de frappe
+	const cell = result.success ? null : cellCitedIn(input);
+	if (cell !== null) return { kind: 'refus', message: cellInCalculMessage(cell) };
 	// Des grandeurs qui ne se combinent pas : un refus, en français (lot A),
 	// avec l'aide d'une lettre lue comme unité (`3 t + 2`)
 	if (!result.success && STUDENT_FACING_ERRORS.has(result.error?.code ?? '')) {

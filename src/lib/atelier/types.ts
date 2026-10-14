@@ -210,6 +210,12 @@ export interface SequenceDisplay {
 export interface ListObject extends AtelierObjectBase {
 	readonly kind: 'list';
 	/**
+	 * Sa colonne dans la grille de la vue Données, 0 à 25 (A à Z) : une liste EST
+	 * une colonne nommée (tableur intégré, T1). Ses cellules sont les entrées de
+	 * `definition`, une par ligne (`grid.ts`).
+	 */
+	readonly column: number;
+	/**
 	 * Le nom de la liste qui sert d'ORDONNÉES quand celle-ci est tracée.
 	 *
 	 * ⚠️ État d'affichage, comme `plotted`, et il vit ici pour la même raison :

@@ -16,7 +16,15 @@
  */
 
 import { SvelteMap } from 'svelte/reactivity';
-import { MAX_LISTS, isFunction, isList, isSequence, isValue, parametersOf } from './types';
+import {
+	MAX_DEFINITION_LENGTH,
+	MAX_LISTS,
+	isFunction,
+	isList,
+	isSequence,
+	isValue,
+	parametersOf
+} from './types';
 import { constantOf } from './constant';
 import type {
 	AtelierObject,
@@ -83,6 +91,20 @@ import {
 import type { Domain } from '$lib/mathAST/domain/types';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { listCitedMessage } from './list-cited';
+import {
+	cellName,
+	columnLetter,
+	columnOfLetter,
+	definitionFrom,
+	entriesOf,
+	GRID_COLUMNS,
+	GRID_ROWS,
+	isInGrid,
+	MAX_CELL_LENGTH,
+	readCellName,
+	spreadText,
+	type CellEdit
+} from './grid';
 import { transformAST } from '$lib/mathAST/visitor';
 
 // =============================================================================
@@ -132,6 +154,8 @@ interface RemovalUndo {
 	readonly items: AtelierObject[];
 	readonly charts: [string, ListChartState][];
 	readonly partnerChoices: [string, string][];
+	/** Les cellules sans nom d'avant : retirer un nom y verse la colonne (T3). */
+	readonly cells: [string, string][];
 }
 
 export interface Updated {
@@ -186,6 +210,11 @@ export interface CreateInput {
 	readonly reciprocalOn?: string;
 	/** Pour une suite : mode, rang et premier terme déjà connus (relecture, Calcul). */
 	readonly sequence?: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>;
+	/**
+	 * Pour une liste : la colonne voulue (relecture, fusion, colonne nommée). Prise,
+	 * ou absente : la première colonne libre.
+	 */
+	readonly column?: number;
 }
 
 // =============================================================================
@@ -326,6 +355,21 @@ function formatSliderValue(value: number, step: number): string {
 
 const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-même.';
 
+const GRID_FULL = 'La grille est pleine : vide une colonne pour créer une liste.';
+
+/**
+ * Pourquoi ces entrées ne peuvent pas devenir la colonne d'une liste, ou `null`.
+ *
+ * ⚠️ Une définition plus longue que `MAX_DEFINITION_LENGTH` est écartée à la
+ * relecture (`persistence.ts`) : la liste ET ses cellules disparaîtraient au
+ * rechargement suivant (revue). 200 modalités de 20 caractères suffisent.
+ */
+function definitionTooLong(column: number, entries: readonly string[]): string | null {
+	const length = definitionFrom(entries).length;
+	if (length <= MAX_DEFINITION_LENGTH) return null;
+	return `La colonne ${columnLetter(column)} ferait ${length} caractères : une liste en garde ${MAX_DEFINITION_LENGTH} au plus pour pouvoir être enregistrée.`;
+}
+
 /** Valeur d'un curseur neuf — même convention que `addParameter` du grapheur. */
 const OFFER_DEFINITION = '1';
 
@@ -425,6 +469,21 @@ export class Atelier {
 	 */
 	private partnerChoices = new SvelteMap<string, string>();
 
+	/**
+	 * Les cellules des colonnes SANS nom de la grille (vue Données), par adresse
+	 * (`C3`). Celles d'une colonne nommée sont les entrées de la définition de
+	 * sa liste (`grid.ts`) : chaque cellule a un seul propriétaire. Rangées avec
+	 * l'atelier (`serialize`), contrairement aux diagrammes.
+	 */
+	private cells = new SvelteMap<string, string>();
+
+	/** Les entrées de chaque colonne nommée, une par ligne, relues une fois par changement. */
+	#entriesByColumn = $derived.by(() => {
+		const byColumn = new Map<number, string[]>();
+		for (const o of this.items) if (isList(o)) byColumn.set(o.column, entriesOf(o.definition));
+		return byColumn;
+	});
+
 	/** La dernière suppression en cascade, tant qu'elle peut s'annuler (lot B, N4). */
 	#lastRemoval: RemovalUndo | null = null;
 
@@ -507,6 +566,16 @@ export class Atelier {
 				message: `Un atelier ne peut pas contenir plus de ${MAX_LISTS} listes.`
 			};
 		}
+		// Une liste EST une colonne de la grille (T1) : la voulue si elle est libre,
+		// sinon la première libre
+		let column: number | undefined;
+		if (input.kind === 'list') {
+			column =
+				input.column !== undefined && this.#isFreeColumn(input.column)
+					? input.column
+					: this.#firstFreeColumn();
+			if (column === undefined) return { ok: false, message: GRID_FULL };
+		}
 
 		let name: string;
 		if (input.name === undefined) {
@@ -573,7 +642,7 @@ export class Atelier {
 			interval = checked.interval;
 		}
 
-		const built = this.build(name, input.kind, definition, provenance, letter, interval);
+		const built = this.build(name, input.kind, definition, provenance, letter, interval, column);
 		this.items.push(
 			isSequence(built) && input.sequence
 				? { ...built, ...sequenceSettings(input.sequence, built) }
@@ -984,7 +1053,9 @@ export class Atelier {
 			definition,
 			provenance,
 			keptLetter,
-			keptInterval
+			keptInterval,
+			// Une liste redéfinie (carte, `L = …`) garde sa colonne : T2
+			isList(previous) ? previous.column : undefined
 		);
 		// K3 (dette n° 2) : le curseur réglé survit à la définition — `build()`
 		// en fabrique un neuf, qu'on remplace par l'ancien, élargi si besoin (L1)
@@ -1065,6 +1136,15 @@ export class Atelier {
 	 * Le reçu rendu permet UNE annulation, tant que rien d'autre n'a changé.
 	 */
 	removeWithDependents(name: string): RemovedWithDependents | Refused {
+		return this.#removeWithDependents(name);
+	}
+
+	/**
+	 * @param then - Ce qui fait partie du MÊME geste (retirer le nom d'une
+	 *   colonne y verse ses cellules) : fait avant de noter la révision, sinon
+	 *   « Annuler » se croirait dépassé par un changement venu d'ailleurs.
+	 */
+	#removeWithDependents(name: string, then?: () => void): RemovedWithDependents | Refused {
 		if (this.get(name) === undefined) {
 			return { ok: false, message: `« ${displayName(name)} » n'existe pas.` };
 		}
@@ -1078,11 +1158,13 @@ export class Atelier {
 		const partnerChoices = [...this.partnerChoices].filter(
 			([list, partner]) => gone.has(list) || gone.has(partner)
 		);
+		const cells = [...this.cells];
 
 		this.items = this.items.filter((o) => !gone.has(o.name));
 		for (const [list] of charts) this.charts.delete(list);
 		for (const [list] of partnerChoices) this.partnerChoices.delete(list);
 		this.recomputeAll();
+		then?.();
 
 		const receipt: RemovedWithDependents = { ok: true, removed };
 		this.#lastRemoval = {
@@ -1090,7 +1172,8 @@ export class Atelier {
 			revision: this.revision,
 			items,
 			charts: $state.snapshot(charts) as [string, ListChartState][],
-			partnerChoices
+			partnerChoices,
+			cells
 		};
 		return receipt;
 	}
@@ -1105,6 +1188,10 @@ export class Atelier {
 		if (undo === null || undo.receipt !== receipt || undo.revision !== this.revision) return false;
 		this.#lastRemoval = null;
 		this.items = undo.items;
+		// Les cellules sans nom d'avant : une colonne dont on avait retiré le nom
+		// redevient la liste, sans garder une copie de ses cellules dans la grille
+		this.cells.clear();
+		for (const [address, text] of undo.cells) this.cells.set(address, text);
 		// Un diagramme remis entre-temps (hors `revision`, Q37) prime sur l'ancien
 		for (const [list, chart] of undo.charts) {
 			if (!this.charts.has(list)) this.charts.set(list, chart);
@@ -1155,6 +1242,196 @@ export class Atelier {
 
 	choosePartner(name: string, partner: string): void {
 		this.partnerChoices.set(name, partner);
+	}
+
+	// ---------------------------------------------------------------------------
+	// Grille (vue Données) — tableur intégré, lot 1
+	// ---------------------------------------------------------------------------
+
+	/** La colonne de la liste `name`, ou `undefined` si ce n'est pas une liste. */
+	columnOf(name: string): number | undefined {
+		const object = this.get(name);
+		return object !== undefined && isList(object) ? object.column : undefined;
+	}
+
+	/** La liste qui occupe cette colonne, s'il y en a une. */
+	listAt(column: number): ListObject | undefined {
+		return this.items.find((o): o is ListObject => isList(o) && o.column === column);
+	}
+
+	/** Le texte brut d'une cellule (ligne 1 à 200), `''` si elle est vide. */
+	cell(column: number, row: number): string {
+		const entries = this.#entriesByColumn.get(column);
+		if (entries !== undefined) return entries[row - 1] ?? '';
+		return this.cells.get(cellName(column, row)) ?? '';
+	}
+
+	/**
+	 * La zone utilisée : colonnes jusqu'à la dernière nommée ou remplie, lignes
+	 * jusqu'à la dernière remplie. La vue y ajoute sa marge.
+	 */
+	get usedExtent(): { readonly columns: number; readonly rows: number } {
+		let columns = 0;
+		let rows = 0;
+		for (const [column, entries] of this.#entriesByColumn) {
+			columns = Math.max(columns, column + 1);
+			rows = Math.max(rows, entries.length);
+		}
+		for (const address of this.cells.keys()) {
+			const at = readCellName(address);
+			if (at === null) continue;
+			columns = Math.max(columns, at.column + 1);
+			rows = Math.max(rows, at.row);
+		}
+		return { columns, rows };
+	}
+
+	/**
+	 * Écrire des cellules, en un seul geste (saisie, collage, effacement). Un
+	 * texte avec « ; » se répartit vers le bas (P2). Tout ou rien : une cellule
+	 * hors de la grille ou trop longue refuse le geste entier.
+	 */
+	editCells(edits: readonly CellEdit[]): { ok: true } | Refused {
+		const spread = edits.flatMap((edit) =>
+			spreadText(edit.row, edit.text).map((piece) => ({ column: edit.column, ...piece }))
+		);
+		for (const edit of spread) {
+			if (edit.row > GRID_ROWS && Number.isInteger(edit.row)) {
+				return {
+					ok: false,
+					message: `Ces valeurs dépassent la ligne ${GRID_ROWS} : la grille en garde ${GRID_ROWS}.`
+				};
+			}
+			if (!isInGrid(edit.column, edit.row)) {
+				return { ok: false, message: 'Cette cellule est hors de la grille (A1 à Z200).' };
+			}
+			if (edit.text.length > MAX_CELL_LENGTH) {
+				return {
+					ok: false,
+					message: `Une cellule garde au plus ${MAX_CELL_LENGTH} caractères.`
+				};
+			}
+		}
+
+		// Un geste sans effet ne compte pas : il ferait monter `revision`, et
+		// « Annuler » une suppression deviendrait impossible (revue)
+		const changes = spread.filter((edit) => this.cell(edit.column, edit.row) !== edit.text);
+
+		// Les colonnes nommées : une réécriture de la liste par colonne touchée,
+		// vérifiée AVANT d'écrire quoi que ce soit (tout ou rien)
+		const rewritten = new Map<number, string[]>();
+		for (const edit of changes) {
+			const list = this.listAt(edit.column);
+			if (list === undefined) continue;
+			const entries = rewritten.get(edit.column) ?? [...entriesOf(list.definition)];
+			while (entries.length < edit.row) entries.push('');
+			entries[edit.row - 1] = edit.text;
+			rewritten.set(edit.column, entries);
+		}
+		for (const [column, entries] of rewritten) {
+			const tooLong = definitionTooLong(column, entries);
+			if (tooLong !== null) return { ok: false, message: tooLong };
+		}
+
+		let unnamedChanged = false;
+		for (const edit of changes) {
+			if (this.listAt(edit.column) !== undefined) continue;
+			const address = cellName(edit.column, edit.row);
+			if (edit.text === '') this.cells.delete(address);
+			else this.cells.set(address, edit.text);
+			unnamedChanged = true;
+		}
+		for (const [column, entries] of rewritten) {
+			this.update(this.listAt(column)!.name, definitionFrom(entries));
+		}
+		// Une colonne sans nom ne touche aucun objet : pas de recalcul, mais la
+		// sauvegarde doit l'entendre
+		if (unnamedChanged && rewritten.size === 0) this.revision++;
+		return { ok: true };
+	}
+
+	/**
+	 * Nommer une colonne : elle devient la liste `name`, avec ses cellules
+	 * (phase 0 §1). Les refus de nom sont ceux d'aujourd'hui (`create`).
+	 */
+	nameColumn(column: number, name: string): Created | Refused {
+		if (!isInGrid(column, 1)) {
+			return { ok: false, message: 'Cette colonne est hors de la grille (A à Z).' };
+		}
+		const named = this.listAt(column);
+		if (named !== undefined) {
+			return {
+				ok: false,
+				message: `La colonne ${columnLetter(column)} est déjà la liste ${named.name}.`
+			};
+		}
+		// Les cellules passent à la liste : retirées de la grille AVANT la création,
+		// sinon la colonne ne serait pas libre ; remises si la création est refusée
+		const entries: string[] = [];
+		const moved: [string, string][] = [];
+		for (let row = 1; row <= GRID_ROWS; row++) {
+			const address = cellName(column, row);
+			const text = this.cells.get(address);
+			if (text === undefined) continue;
+			while (entries.length < row - 1) entries.push('');
+			entries.push(text);
+			moved.push([address, text]);
+		}
+		// Rangée trop longue, la liste serait écartée au rechargement — avec ses cellules
+		const tooLong = definitionTooLong(column, entries);
+		if (tooLong !== null) return { ok: false, message: tooLong };
+		for (const [address] of moved) this.cells.delete(address);
+		const created = this.create({
+			kind: 'list',
+			name,
+			definition: definitionFrom(entries),
+			column
+		});
+		if (!created.ok) for (const [address, text] of moved) this.cells.set(address, text);
+		return created;
+	}
+
+	/**
+	 * Retirer le nom d'une colonne : la liste disparaît (suppression en cascade,
+	 * à confirmer par la vue), ses cellules restent dans la grille. Le reçu
+	 * s'annule comme toute suppression (`undoRemoval`).
+	 */
+	unnameColumn(column: number): RemovedWithDependents | Refused {
+		const list = this.listAt(column);
+		if (list === undefined) {
+			return { ok: false, message: `La colonne ${columnLetter(column)} n'a pas de nom.` };
+		}
+		const entries = entriesOf(list.definition);
+		return this.#removeWithDependents(list.name, () => {
+			entries.forEach((text, index) => {
+				if (text !== '') this.cells.set(cellName(column, index + 1), text);
+			});
+		});
+	}
+
+	/** Libre : ni liste, ni cellule sans nom. */
+	#isFreeColumn(column: number): boolean {
+		if (!isInGrid(column, 1) || this.listAt(column) !== undefined) return false;
+		for (const address of this.cells.keys()) {
+			if (readCellName(address)?.column === column) return false;
+		}
+		return true;
+	}
+
+	#firstFreeColumn(): number | undefined {
+		for (let column = 0; column < GRID_COLUMNS; column++) {
+			if (this.#isFreeColumn(column)) return column;
+		}
+		return undefined;
+	}
+
+	/** Les colonnes libres, de gauche à droite (fusion d'un atelier reçu, T7). */
+	get freeColumns(): readonly number[] {
+		const free: number[] = [];
+		for (let column = 0; column < GRID_COLUMNS; column++) {
+			if (this.#isFreeColumn(column)) free.push(column);
+		}
+		return free;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -1217,9 +1494,18 @@ export class Atelier {
 						...(o.firstIndex !== 0 && { firstIndex: o.firstIndex }),
 						...(o.firstTerm !== '0' && { firstTerm: o.firstTerm })
 					}
-				: {})
+				: {}),
+			// La colonne d'une liste : ses cellules sont sa définition (tableur, T1)
+			...(isList(o) ? { column: columnLetter(o.column) } : {})
 		}));
-		return { version: ATELIER_STATE_VERSION, objects };
+		// Les cellules des colonnes sans nom, absentes quand il n'y en a pas : un
+		// atelier sans grille ne paie rien dans le lien
+		const cells = Object.fromEntries(this.cells);
+		return {
+			version: ATELIER_STATE_VERSION,
+			objects,
+			...(this.cells.size > 0 && { grid: { cells } })
+		};
 	}
 
 	/**
@@ -1236,8 +1522,23 @@ export class Atelier {
 		this.items = [];
 		this.charts.clear();
 		this.partnerChoices.clear();
+		this.cells.clear();
 		this.#laws.clear();
 		const skipped: SkippedObject[] = [];
+
+		// Les cellules sans nom AVANT les listes, hors des colonnes qu'une liste
+		// réclame : une liste rangée sans colonne (version 1) prend alors une
+		// colonne vraiment libre, et une cellule posée sur la colonne d'une liste
+		// (état abîmé) n'a pas de propriétaire possible — la liste gagne
+		const claimed = new Set(
+			state.objects.flatMap((o) =>
+				o.kind === 'list' && o.column !== undefined ? [columnOfLetter(o.column)] : []
+			)
+		);
+		for (const [address, text] of Object.entries(state.grid?.cells ?? {})) {
+			const at = readCellName(address);
+			if (at !== null && !claimed.has(at.column)) this.cells.set(address, text);
+		}
 
 		for (const stored of state.objects) {
 			const input: CreateInput = {
@@ -1248,7 +1549,10 @@ export class Atelier {
 				...(stored.kind === 'function' && stored.interval && { interval: stored.interval }),
 				...(stored.kind === 'function' &&
 					stored.reciprocalOn && { reciprocalOn: stored.reciprocalOn }),
-				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) })
+				...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) }),
+				// Version 1 : sans colonne, la liste prend la première libre (ordre des cartes)
+				...(stored.kind === 'list' &&
+					stored.column !== undefined && { column: columnOfLetter(stored.column) ?? undefined })
 			};
 			let attempt = input;
 			let result = this.create(attempt);
@@ -1553,7 +1857,9 @@ export class Atelier {
 		definition: string,
 		provenance: Provenance = 'url',
 		letter?: string,
-		interval?: string
+		interval?: string,
+		/** Pour une liste : sa colonne, déjà choisie par l'appelant (`create`, `update`). */
+		column?: number
 	): AtelierObject {
 		const parsed = parseDefinition(kind, definition, provenance, this.functionNames);
 		const base = {
@@ -1568,6 +1874,7 @@ export class Atelier {
 				return {
 					...base,
 					kind: 'list',
+					column: column ?? 0,
 					values: parsed.values ?? [],
 					skipped: parsed.skipped ?? 0,
 					...(parsed.categories && { categories: parsed.categories }),

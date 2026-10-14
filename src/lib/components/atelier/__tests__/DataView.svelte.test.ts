@@ -1,16 +1,18 @@
 /**
- * La vue Données, vue depuis l'écran.
+ * La vue Données, vue depuis l'écran : la grille (tableur intégré, lot 1).
  *
- * Une liste se tape sur une ligne, séparée par des points-virgules. La virgule
- * reste décimale — c'est la décision §4 E2, prise parce que distinguer `1,2` de
- * `1, 2` par une espace est intenable en classe.
+ * Phase 0 : `docs/wip/atelier-tableur-phase0.md` §1 à §3. Une liste est une
+ * colonne NOMMÉE ; une cellule se lit comme une entrée de liste (`1,5`, `1/6`,
+ * sinon un mot). La virgule reste décimale (§4 E2 de la v1).
  */
 
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import { userEvent } from 'vitest/browser';
 import { tick } from 'svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { isList } from '$lib/atelier/types';
 
 async function settle() {
 	await tick();
@@ -24,71 +26,106 @@ async function openData(atelier = new Atelier()) {
 	return { ...view, atelier };
 }
 
-const fieldFor = (container: HTMLElement, name: string) =>
-	container.querySelector(`#liste-${name}`) as HTMLInputElement | null;
+const cellAt = (container: HTMLElement, address: string) =>
+	container.querySelector(`[data-cell="${address}"]`) as HTMLElement | null;
 
-describe('la vue Données', () => {
+const headerOf = (container: HTMLElement, letter: string) =>
+	container.querySelector(`th[data-column="${letter}"]`) as HTMLElement | null;
+
+const summaryOf = (container: HTMLElement, list: string) =>
+	container.querySelector(`[data-apercu="${list}"]`) as HTMLElement | null;
+
+const chartOf = (container: HTMLElement, list: string) =>
+	container.querySelector(`[data-diagramme="${list}"]`) as HTMLElement | null;
+
+const valuesOf = (atelier: Atelier, name: string) => {
+	const list = atelier.get(name);
+	return list !== undefined && isList(list) ? list.values : null;
+};
+
+describe('la grille', () => {
 	it('explique comment commencer quand il n’y a rien', async () => {
 		const { container } = await openData();
 
-		expect(container.textContent).toContain('+ Liste');
-		expect(container.textContent).toContain('12 ; 15 ; 9');
+		expect(container.querySelector('.consigne')?.textContent).toContain('Tape tes valeurs');
+		// Au moins 10 lignes et 5 colonnes, même vide (phase 0 §2)
+		expect(cellAt(container, 'E10')).not.toBeNull();
 	});
 
-	it('montre une colonne par liste', async () => {
+	it('une liste est une colonne nommée, ses valeurs une par ligne', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '12 ; 15 ; 9' });
 		atelier.create({ kind: 'list', name: 'M', definition: '2 ; 4' });
 
 		const { container } = await openData(atelier);
 
-		expect(container.querySelectorAll('.colonne').length).toBe(2);
-		expect(fieldFor(container, 'L')?.value).toBe('12 ; 15 ; 9');
+		expect(headerOf(container, 'A')?.textContent).toContain('L');
+		expect(headerOf(container, 'B')?.textContent).toContain('M');
+		expect(cellAt(container, 'A3')?.textContent?.trim()).toBe('9');
+		expect(cellAt(container, 'B2')?.textContent?.trim()).toBe('4');
 	});
 
-	it('donne un aperçu chiffré sans qu’on clique', async () => {
+	it('la zone utilisée plus une marge de 10 lignes', async () => {
+		const atelier = new Atelier();
+		const twelve = Array.from({ length: 12 }, (_, i) => i + 1).join(' ; ');
+		atelier.create({ kind: 'list', name: 'L', definition: twelve });
+
+		const { container } = await openData(atelier);
+
+		expect(cellAt(container, 'A22')).not.toBeNull();
+		expect(cellAt(container, 'A23')).toBeNull();
+	});
+
+	it('donne un aperçu chiffré sous le nom de la liste', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '12 ; 15 ; 9' });
 
 		const { container } = await openData(atelier);
 
-		expect(container.querySelector('.apercu')?.textContent).toContain('n = 3');
-		expect(container.querySelector('.apercu')?.textContent).toContain('12');
+		expect(summaryOf(container, 'L')?.textContent).toContain('n = 3');
 	});
 
-	it('modifie la liste de l’atelier quand on tape', async () => {
+	// §4 E1 de la v1 : ignorée ET signalée — mais une case vide n'est pas ignorée
+	it('signale une valeur qui n’est pas un nombre, pas une case vide', async () => {
 		const atelier = new Atelier();
-		atelier.create({ kind: 'list', name: 'L', definition: '1' });
-		const { container } = await openData(atelier);
-
-		const field = fieldFor(container, 'L')!;
-		field.value = '1 ; 2 ; 3';
-		field.dispatchEvent(new Event('input', { bubbles: true }));
-		await settle();
-
-		const list = atelier.get('L');
-		expect(list && 'values' in list && list.values).toEqual([1, 2, 3]);
-	});
-
-	// §4 E1 : ignorée ET signalée
-	it('signale une valeur qui n’est pas un nombre', async () => {
-		const atelier = new Atelier();
-		// Q84 : sans lettre ; un mot rendrait la liste qualitative
-		atelier.create({ kind: 'list', name: 'L', definition: '12 ; 1/0 ; 9' });
+		atelier.create({ kind: 'list', name: 'L', definition: '12 ;  ; 1/0 ; 9' });
 
 		const { container } = await openData(atelier);
 
-		expect(container.querySelector('.ecarte')?.textContent).toContain('1 valeur ignorée');
+		expect(summaryOf(container, 'L')?.textContent).toContain('1 valeur ignorée');
 	});
 
-	// Q1 : la correction est montrée, pas seulement la règle
-	it('montre la correction quand l’élève sépare par des virgules', async () => {
+	it('une colonne de mots est une liste qualitative', async () => {
 		const atelier = new Atelier();
-		atelier.create({ kind: 'list', name: 'L', definition: '12, 15, 9' });
+		atelier.create({ kind: 'list', name: 'L', definition: 'fille ; garçon ; fille' });
 
 		const { container } = await openData(atelier);
 
-		expect(container.querySelector('.probleme')?.textContent).toContain('12 ; 15 ; 9');
+		expect(summaryOf(container, 'L')?.textContent).toContain(
+			'liste qualitative · 3 entrées · 2 modalités'
+		);
+		expect(summaryOf(container, 'L')?.textContent).not.toContain('ignorée');
+	});
+
+	// Q92 : l'aperçu dit pourquoi une liste mélangée est qualitative
+	it('« liste qualitative, à cause de « 2x » »', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '12 ; 2x ; 15' });
+		const { container } = await openData(atelier);
+
+		expect(summaryOf(container, 'L')?.textContent).toContain(
+			'liste qualitative, à cause de « 2x » · 3 entrées'
+		);
+	});
+
+	// Q1 de la v1 : la correction est montrée, pas seulement la règle
+	it('montre la correction d’une cellule séparée par des virgules', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '12,15,9' });
+
+		const { container } = await openData(atelier);
+
+		expect(summaryOf(container, 'L')?.textContent).toContain('12 ; 15 ; 9');
 	});
 
 	it('n’accuse pas un décimal écrit à la virgule', async () => {
@@ -97,19 +134,177 @@ describe('la vue Données', () => {
 
 		const { container } = await openData(atelier);
 
-		expect(container.querySelector('.probleme')).toBeNull();
-		expect(container.querySelector('.apercu')?.textContent).toContain('n = 2');
+		expect(summaryOf(container, 'L')?.textContent).toContain('n = 2');
 	});
 
-	it('rappelle la règle du séparateur', async () => {
+	it('rappelle que la virgule est décimale', async () => {
 		const { container } = await openData();
 
-		expect(container.querySelector('.aide')?.textContent).toContain('points-virgules');
+		expect(container.querySelector('.aide')?.textContent).toContain('3,14');
+	});
+});
+
+describe('saisie au clavier (§3)', () => {
+	it('taper sur une cellule puis Entrée : la liste change, la sélection descend', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '1' });
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A2')!);
+		await userEvent.keyboard('7{Enter}');
+		await settle();
+
+		expect(valuesOf(atelier, 'L')).toEqual([1, 7]);
+		expect(cellAt(container, 'A3')?.getAttribute('aria-selected')).toBe('true');
+	});
+
+	it('Échap annule la frappe', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '1' });
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('9{Escape}');
+		await settle();
+
+		expect(valuesOf(atelier, 'L')).toEqual([1]);
+		expect(cellAt(container, 'A1')?.textContent?.trim()).toBe('1');
+	});
+
+	it('Suppr vide la cellule', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 2' });
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('{Delete}');
+		await settle();
+
+		expect(valuesOf(atelier, 'L')).toEqual([2]);
+	});
+
+	it('les flèches déplacent la sélection, et le focus la suit', async () => {
+		const { container } = await openData();
+
+		await userEvent.click(cellAt(container, 'B2')!);
+		await userEvent.keyboard('{ArrowRight}{ArrowDown}');
+		await settle();
+
+		expect(cellAt(container, 'C3')?.getAttribute('aria-selected')).toBe('true');
+		expect(document.activeElement).toBe(cellAt(container, 'C3'));
+	});
+
+	it('P2 : « 12 ; 15 ; 9 » tapé dans une cellule se répartit vers le bas', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'C1')!);
+		await userEvent.keyboard('12 ; 15 ; 9{Enter}');
+		await settle();
+
+		expect(cellAt(container, 'C2')?.textContent?.trim()).toBe('15');
+		expect(atelier.cell(2, 3)).toBe('9');
+	});
+
+	it('la barre de cellule montre l’adresse et le contenu brut, et sert à modifier', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '1/6' });
+		const { container } = await openData(atelier);
+		const bar = container.querySelector('#atelier-barre-cellule') as HTMLInputElement;
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await settle();
+		expect(container.querySelector('.adresse')?.textContent?.trim()).toBe('A1');
+		expect(bar.value).toBe('1/6');
+
+		await userEvent.clear(bar);
+		await userEvent.type(bar, '0,5{Enter}');
+		await settle();
+
+		expect(valuesOf(atelier, 'L')).toEqual([0.5]);
+	});
+
+	it('un refus se dit, et la frappe reste', async () => {
+		const { container } = await openData();
+		const bar = container.querySelector('#atelier-barre-cellule') as HTMLInputElement;
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.click(bar);
+		await userEvent.fill(bar, 'x'.repeat(201));
+		await userEvent.keyboard('{Enter}');
+		await settle();
+
+		expect(container.querySelector('.refus')?.textContent).toContain('200 caractères');
+		expect(bar.value).toHaveLength(201);
+	});
+
+	// Revue : la frappe refusée suivait la sélection dans une autre cellule
+	it('cliquer ailleurs après un refus abandonne la frappe refusée', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+		const bar = container.querySelector('#atelier-barre-cellule') as HTMLInputElement;
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.click(bar);
+		await userEvent.fill(bar, 'x'.repeat(201));
+		await userEvent.keyboard('{Enter}');
+		await settle();
+		await userEvent.click(cellAt(container, 'B3')!);
+		await settle();
+
+		expect(cellAt(container, 'B3')?.textContent?.trim()).toBe('');
+		expect(cellAt(container, 'B3')?.querySelector('input')).toBeNull();
+		expect(bar.value).toBe('');
+	});
+});
+
+describe('nommer une colonne (§1)', () => {
+	it('« Nommer » une colonne remplie en fait une liste', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([
+			{ column: 1, row: 1, text: '3' },
+			{ column: 1, row: 2, text: '4' }
+		]);
+		const { container } = await openData(atelier);
+
+		await userEvent.click(headerOf(container, 'B')!.querySelector('button')!);
+		await userEvent.keyboard('M{Enter}');
+		await settle();
+
+		expect(valuesOf(atelier, 'M')).toEqual([3, 4]);
+		expect(headerOf(container, 'B')?.textContent).toContain('M');
+	});
+
+	it('un nom refusé le dit, rien ne change', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '2' });
+		const { container } = await openData(atelier);
+
+		await userEvent.click(headerOf(container, 'B')!.querySelector('button')!);
+		await userEvent.keyboard('a{Enter}');
+		await settle();
+
+		expect(container.querySelector('.refus')?.textContent?.trim()).not.toBe('');
+		expect(atelier.listAt(1)).toBeUndefined();
+	});
+
+	it('retirer le nom garde les cellules', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '5 ; 6' });
+		const { container } = await openData(atelier);
+
+		await userEvent.click(
+			container.querySelector('button[aria-label="Retirer le nom L de la colonne A"]')!
+		);
+		await settle();
+
+		expect(atelier.get('L')).toBeUndefined();
+		expect(cellAt(container, 'A2')?.textContent?.trim()).toBe('6');
 	});
 });
 
 // =============================================================================
-// Lot 5 (outils statistiques) : diagramme vivant sous la liste
+// Lot 5 (outils statistiques) : diagramme vivant, sous la grille
 // =============================================================================
 
 describe('diagramme d’une liste', () => {
@@ -127,10 +322,7 @@ describe('diagramme d’une liste', () => {
 		bouton?.click();
 	}
 
-	const columnOf = (container: HTMLElement, name: string) =>
-		fieldFor(container, name)?.closest('.colonne') as HTMLElement | null;
-
-	it('« Diagramme en bâtons » : bascule sur Données, barres sous la bonne colonne', async () => {
+	it('« Diagramme en bâtons » : bascule sur Données, barres de la bonne liste', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '2 ; 3 ; 3 ; 5' });
 		atelier.create({ kind: 'list', name: 'M', definition: '1 ; 1' });
@@ -143,9 +335,9 @@ describe('diagramme d’une liste', () => {
 		await settle();
 
 		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Données');
-		expect(columnOf(container, 'L')?.querySelectorAll('.stat-barre').length).toBe(3);
-		expect(columnOf(container, 'M')?.querySelector('svg')).toBeNull();
-		expect(columnOf(container, 'L')?.querySelector('.stat-indicateurs')).not.toBeNull();
+		expect(chartOf(container, 'L')?.querySelectorAll('.stat-barre').length).toBe(3);
+		expect(chartOf(container, 'M')).toBeNull();
+		expect(chartOf(container, 'L')?.querySelector('.stat-indicateurs')).not.toBeNull();
 	});
 
 	// Revue Q88 (B1) : « Diagramme circulaire » menait à la vue Calcul, rien affiché
@@ -163,12 +355,11 @@ describe('diagramme d’une liste', () => {
 		await new Promise((r) => setTimeout(r, 50));
 
 		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Données');
-		expect(columnOf(container, 'L')?.querySelectorAll('.stat-secteur').length).toBe(2);
+		expect(chartOf(container, 'L')?.querySelectorAll('.stat-secteur').length).toBe(2);
 		expect(live()).toBe('Diagramme de L affiché dans l’onglet Données.');
 	});
 
-	// Audit a11y du lot 5 (WCAG 4.1.3) : la bascule de vue et l'apparition du
-	// diagramme étaient silencieuses pour un lecteur d'écran
+	// Audit a11y du lot 5 (WCAG 4.1.3)
 	it('annonce le diagramme affiché, puis retiré', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '2 ; 3' });
@@ -196,18 +387,18 @@ describe('diagramme d’une liste', () => {
 		atelier.toggleChart('L', 'M');
 		const { container } = await openData(atelier);
 
-		expect(columnOf(container, 'L')?.querySelector('figcaption')?.textContent).toBe(
+		expect(chartOf(container, 'L')?.querySelector('figcaption')?.textContent).toBe(
 			'Diagramme de L, effectifs M'
 		);
 	});
 
-	it('le champ de la liste est décrit par son aperçu et par le message du diagramme', async () => {
+	it('l’en-tête de la colonne est décrit par son aperçu et par le message du diagramme', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '' });
 		atelier.toggleChart('L', null);
 		const { container } = await openData(atelier);
-		const field = fieldFor(container, 'L')!;
-		const described = (field.getAttribute('aria-describedby') ?? '')
+		const header = headerOf(container, 'A')!;
+		const described = (header.getAttribute('aria-describedby') ?? '')
 			.split(' ')
 			.map((id) => document.getElementById(id)?.textContent ?? '')
 			.join(' ');
@@ -215,22 +406,21 @@ describe('diagramme d’une liste', () => {
 		expect(described).toMatch(/n['’]a pas encore de valeurs/);
 	});
 
-	it('vivant : la saisie redessine le diagramme', async () => {
+	it('vivant : une cellule validée redessine le diagramme', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 1' });
 		atelier.toggleChart('L', null);
 		const { container } = await openData(atelier);
-		expect(columnOf(container, 'L')?.querySelectorAll('.stat-barre').length).toBe(1);
+		expect(chartOf(container, 'L')?.querySelectorAll('.stat-barre').length).toBe(1);
 
-		const field = fieldFor(container, 'L')!;
-		field.value = '1 ; 2 ; 3';
-		field.dispatchEvent(new Event('input', { bubbles: true }));
+		await userEvent.click(cellAt(container, 'A3')!);
+		await userEvent.keyboard('2{Enter}');
 		await settle();
 
-		expect(columnOf(container, 'L')?.querySelectorAll('.stat-barre').length).toBe(3);
+		expect(chartOf(container, 'L')?.querySelectorAll('.stat-barre').length).toBe(2);
 	});
 
-	it('un diagramme impossible dit pourquoi, sous la colonne', async () => {
+	it('un diagramme impossible dit pourquoi', async () => {
 		const atelier = new Atelier();
 		atelier.create({
 			kind: 'list',
@@ -240,7 +430,7 @@ describe('diagramme d’une liste', () => {
 		atelier.toggleChart('L', null);
 		const { container } = await openData(atelier);
 
-		expect(columnOf(container, 'L')?.textContent).toMatch(/30/);
+		expect(chartOf(container, 'L')?.textContent).toMatch(/30/);
 	});
 });
 
@@ -265,31 +455,5 @@ describe('nuage avec une partenaire', () => {
 		await settle();
 
 		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Graphe');
-	});
-});
-
-// Outils statistiques v2, Q84-Q88 : une liste qualitative dans la vue Données
-describe('liste qualitative', () => {
-	it('aperçu « liste qualitative », et diagramme circulaire VISIBLE', async () => {
-		const atelier = new Atelier();
-		atelier.create({ kind: 'list', name: 'L', definition: 'fille ; garçon ; fille' });
-		atelier.toggleChart('L', null, 'circulaire');
-		const screen = await openData(atelier);
-
-		expect(screen.container.textContent).toContain('liste qualitative · 3 entrées · 2 modalités');
-		expect(screen.container.textContent).not.toContain('ignorée');
-		const sectors = screen.container.querySelectorAll('.stat-secteur');
-		expect(sectors.length).toBe(2);
-	});
-});
-
-// Q92 : l'aperçu dit pourquoi une liste mélangée est qualitative
-describe('liste mélangée', () => {
-	it('« liste qualitative, à cause de « 2x » »', async () => {
-		const atelier = new Atelier();
-		atelier.create({ kind: 'list', name: 'L', definition: '12 ; 2x ; 15' });
-		const { container } = await openData(atelier);
-
-		expect(container.textContent).toContain('liste qualitative, à cause de « 2x » · 3 entrées');
 	});
 });
