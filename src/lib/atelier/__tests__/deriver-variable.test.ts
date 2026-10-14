@@ -110,6 +110,6 @@ it('le refus d’une fonction sans parenthèses est montré tel quel', () => {
 
 	expect(runInput(s, '.dériver sin x + cos x')).toEqual({
 		kind: 'refus',
-		message: 'Écris sin(x) avec des parenthèses.'
+		message: '« sin x » : écris sin(x) avec des parenthèses.'
 	});
 });

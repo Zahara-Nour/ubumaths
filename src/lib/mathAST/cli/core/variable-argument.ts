@@ -71,6 +71,15 @@ const BARE_FUNCTION =
 	/(?<![A-Za-z\\{])(sin|cos|tan|ln|log|exp|sqrt)(?![A-Za-z0-9])(?!\s*(?:_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?\s*(?:\[[^\]]*\]\s*)?\()/;
 
 /**
+ * Ce qui suit le nom d'une fonction sans parenthèses : son indice et son
+ * exposant éventuels (`log_2 x`, `sin^2 x`), puis l'argument que l'élève
+ * voulait lui donner — un nombre (`2`, `2,5`, `2x`), un mot (`x`, `xy`) ou
+ * une commande LaTeX (`\pi`), jamais un mot-clé de commande (`.limite ln en 0`).
+ */
+const BARE_FUNCTION_TAIL =
+	/^(\s*_\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?(\s*\^\s*(?:\{[^}]*\}|[A-Za-z0-9]+))?(?:\s*(?!(?:en|pour|de|dans|ordre|et|sur)(?![A-Za-z0-9]))(\d+(?:[.,]\d+)?[A-Za-z]*|[A-Za-z][A-Za-z0-9]*|\\[A-Za-z]+))?/;
+
+/**
  * Les deux bornes d'une intégrale définie, en fin de texte : `… 0 1`, ou
  * `… 0 a` — une borne est un NOMBRE, une LETTRE (`a`, `b_1`, `-a`) ou un
  * groupe sans espace entre parenthèses : `(2)`, ce que l'atelier substitue à
@@ -392,6 +401,27 @@ export function bareFunctionName(input: string): string | null {
 /** Le refus à montrer pour une fonction écrite sans parenthèses. */
 export function bareFunctionMessage(name: string): string {
 	return `Écris ${name}(x) avec des parenthèses.`;
+}
+
+/**
+ * Le refus d'une fonction usuelle écrite sans parenthèses, qui CITE ce que
+ * l'élève a tapé, ou `null` : `ln x + 1` → « ln x » : écris ln(x) avec des
+ * parenthèses. Sans argument lisible (`ln` seul), la forme proposée est en x.
+ *
+ * C'est le refus de l'atelier, le même partout (V59, 2026-10-14) : ligne de
+ * calcul, définition, argument de toute commande de calcul. Les commandes du
+ * CLI gardent `bareFunctionMessage`, que l'atelier devance.
+ */
+export function bareFunctionRefusal(input: string): string | null {
+	const found = BARE_FUNCTION.exec(input);
+	if (found === null) return null;
+	const name = found[1];
+	const tail = BARE_FUNCTION_TAIL.exec(input.slice(found.index + name.length));
+	const [written = '', subscript = '', exponent = '', argument] = tail ?? [];
+	const typed = (name + written).trim();
+	const compact = (text: string) => text.replace(/\s+/g, '');
+	const suggested = `${name}${compact(subscript)}${compact(exponent)}(${argument ?? 'x'})`;
+	return `« ${typed} » : écris ${suggested} avec des parenthèses.`;
 }
 
 // =============================================================================

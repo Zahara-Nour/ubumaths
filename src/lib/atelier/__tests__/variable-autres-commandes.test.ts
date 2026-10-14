@@ -44,7 +44,7 @@ describe('.variations', () => {
 	it('`sin x` : refus, des parenthèses', () => {
 		expect(runInput(session(), '.variations sin x')).toEqual({
 			kind: 'refus',
-			message: 'Écris sin(x) avec des parenthèses.'
+			message: '« sin x » : écris sin(x) avec des parenthèses.'
 		});
 	});
 

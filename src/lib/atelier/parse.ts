@@ -12,6 +12,7 @@ import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { parseLatexSafe } from '$lib/mathAST/parser';
 import { detectInputFormat, hasBareFunctionCall } from '$lib/mathAST/cli/core/input-detector';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { bareFunctionRefusal } from '$lib/mathAST/cli/core/variable-argument';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { format as formatUnit } from '$lib/mathAST/units';
 import type { MathNode } from '$lib/mathAST/types';
@@ -419,6 +420,11 @@ export function parseDefinition(
 	}
 
 	if (kind === 'value' && PLAIN_NUMBER.test(definition)) return {};
+
+	// V59 : la carte refuse `ln x` comme la ligne de calcul — sans quoi un
+	// `ln x` sans antislash venu de MathLive se lisait l·n·x
+	const bare = bareFunctionRefusal(definition);
+	if (bare !== null) return { error: bare };
 
 	const result = parseByProvenance(definition, provenance, functionNames);
 	if (!result.ast) {

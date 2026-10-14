@@ -329,11 +329,11 @@ describe('Q1 : un côté tapé, la raison du « pas de limite » s’écrit auss
 
 describe('fonctions usuelles sans parenthèses : refus, comme les autres commandes', () => {
 	it.each([
-		['.limite ln x en 0', 'Écris ln(x) avec des parenthèses.'],
-		['.limite sin x en 0', 'Écris sin(x) avec des parenthèses.'],
-		['.limite cos x en 0', 'Écris cos(x) avec des parenthèses.'],
-		['.limite sqrt x en 4', 'Écris sqrt(x) avec des parenthèses.'],
-		['.limite exp x en 0', 'Écris exp(x) avec des parenthèses.']
+		['.limite ln x en 0', '« ln x » : écris ln(x) avec des parenthèses.'],
+		['.limite sin x en 0', '« sin x » : écris sin(x) avec des parenthèses.'],
+		['.limite cos x en 0', '« cos x » : écris cos(x) avec des parenthèses.'],
+		['.limite sqrt x en 4', '« sqrt x » : écris sqrt(x) avec des parenthèses.'],
+		['.limite exp x en 0', '« exp x » : écris exp(x) avec des parenthèses.']
 	])('%s', (input, message) => {
 		expect(refusal(input)).toBe(message);
 	});

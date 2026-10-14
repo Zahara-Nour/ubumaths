@@ -48,7 +48,7 @@ describe('.dériver', () => {
 	it('`sin x` : refus, des parenthèses', () => {
 		expect(runInput(session(), '.dériver sin x')).toEqual({
 			kind: 'refus',
-			message: 'Écris sin(x) avec des parenthèses.'
+			message: '« sin x » : écris sin(x) avec des parenthèses.'
 		});
 	});
 
@@ -98,7 +98,7 @@ describe('.résoudre', () => {
 	it('`sin x = 0` : refus, des parenthèses', () => {
 		expect(runInput(session(), '.résoudre sin x = 0')).toEqual({
 			kind: 'refus',
-			message: 'Écris sin(x) avec des parenthèses.'
+			message: '« sin x » : écris sin(x) avec des parenthèses.'
 		});
 	});
 });
