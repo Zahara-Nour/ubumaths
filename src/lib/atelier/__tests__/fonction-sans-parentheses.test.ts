@@ -293,6 +293,52 @@ describe('`log` collé à des chiffres', () => {
 	});
 });
 
+// Revue du 2026-10-14 : ne jamais proposer une écriture d'un autre sens
+describe('un nombre collé suivi d’une commande ou d’une parenthèse', () => {
+	it.each([
+		// `cos(2)` aurait un autre sens : forme neutre
+		['cos2\\pi', '« cos2 » : écris cos(…) avec des parenthèses.'],
+		['sin2\\theta', '« sin2 » : écris sin(…) avec des parenthèses.'],
+		['sin2\\left(x\\right)', '« sin2 » : écris sin(…) avec des parenthèses.'],
+		['ln2\\sqrt{x}', '« ln2 » : écris ln(…) avec des parenthèses.'],
+		['ln2(x)', '« ln2 » : écris ln(…) avec des parenthèses.'],
+		['sin2(x)', '« sin2 » : écris sin(…) avec des parenthèses.'],
+		// Grec tapé directement : l'argument est entier
+		['sin2π', '« sin2π » : écris sin(2π) avec des parenthèses.'],
+		['cos2θ', '« cos2θ » : écris cos(2θ) avec des parenthèses.'],
+		// Une fin de groupe ou un produit LaTeX reste une fin d'argument
+		['\\left(ln2\\right)', '« ln2 » : écris ln(2) avec des parenthèses.'],
+		['ln2\\cdot x', '« ln2 » : écris ln(2) avec des parenthèses.'],
+		// Exposant Unicode
+		['sinx²', '« sinx » : écris sin(x) avec des parenthèses.'],
+		['lnx³ + 1', '« lnx » : écris ln(x) avec des parenthèses.']
+	])('« %s »', (text, message) => {
+		expect(refusalOf(text)).toBe(message);
+	});
+
+	it.each([
+		[
+			'log10(100)',
+			'« log10 » : écris log(…) avec des parenthèses ; log est le logarithme décimal.'
+		],
+		[
+			'log2(8)',
+			'« log2 » : écris log(…) avec des parenthèses ; log est le logarithme décimal. En base 2 : log_2(…).'
+		]
+	])('« %s » : le message des bases', (text, message) => {
+		expect(refusalOf(text)).toBe(message);
+	});
+
+	// Une lettre seule devant le nom est lue comme un coefficient : a·sin(x)
+	it.each([
+		['asinx', '« sinx » : écris sin(x) avec des parenthèses.'],
+		['acosx', '« cosx » : écris cos(x) avec des parenthèses.'],
+		['atanx', '« tanx » : écris tan(x) avec des parenthèses.']
+	])('« %s » : lettre devant lue comme un coefficient', (text, message) => {
+		expect(refusalOf(text)).toBe(message);
+	});
+});
+
 describe('ce qui n’est pas une fonction collée reste lu', () => {
 	function calcul(text: string, s: CalcSession = session()) {
 		const result = runInput(s, text);

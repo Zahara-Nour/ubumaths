@@ -83,17 +83,22 @@ const BARE_FUNCTION_TAIL =
 
 /**
  * Une fonction usuelle COLLÉE à son argument : `lnx`, `sinx`, `cost`, `ln2`,
- * `ln2x`, `sin2,5` — le nom suivi d'UNE lettre, ou d'un nombre et d'au plus
- * une lettre, puis d'une fin, d'une espace, d'un opérateur ou d'un délimiteur
- * fermant. `sinus`, `lnxy`, `costume` ne sont pas visés. Le nom peut suivre
- * une lettre SEULE (`xlnx`, `2xlnx`), un nombre ou une puissance (`x^2lnx`),
- * pas un mot (`explnx`), ni un antislash (`\cos t`), ni un
- * `\operatorname{…}` ; `{` seul ne l'arrête pas (`e^{lnx}`, `\frac{lnx}{x}`).
- * `sinh`, `cosh`, `tanh` (fonctions hyperboliques) sont écartés par
- * `gluedFunction`.
+ * `ln2x`, `sin2,5`, `sin2π`, `cos2θ`. Deux formes :
+ * - `argument` : une lettre ASCII seule, ou un nombre suivi d'au plus une
+ *   lettre (ASCII, grecque ou π), puis une fin, une espace, un opérateur (`^`,
+ *   `²`, `³` compris), un délimiteur fermant ou un antislash (`\cdot`, `\right`) ;
+ * - `numberOnly` : un nombre suivi d'une parenthèse ouvrante ou d'une autre
+ *   commande LaTeX (`ln2(x)`, `cos2\pi`, `ln2\sqrt{x}`) — l'argument n'est pas
+ *   le nombre seul, le refus ne le devine pas.
+ * `sinus`, `lnxy`, `costume` ne sont pas visés. Le nom peut suivre une lettre
+ * SEULE (`xlnx`, `2xlnx` ; `asinx` : a·sin x, la lettre est un coefficient),
+ * un nombre ou une puissance (`x^2lnx`), pas un mot (`explnx`), ni un
+ * antislash (`\cos t`), ni un `\operatorname{…}` ; `{` seul ne l'arrête pas
+ * (`e^{lnx}`, `\frac{lnx}{x}`). `sinh`, `cosh`, `tanh` (fonctions
+ * hyperboliques) sont écartés par `gluedFunction`.
  */
 const GLUED_FUNCTION =
-	/(?<![A-Za-z\\][A-Za-z]|\\|\\(?:operatorname|mathrm|mathit|text)\s*\{)(sin|cos|tan|ln|log|exp|sqrt)(\d+(?:[.,]\d+)?[A-Za-z]?|[A-Za-z])(?=$|[\s+\-−*/^=<>≤≥·×÷,;)\]}|!\\])/g;
+	/(?<![A-Za-z\\][A-Za-z]|\\|\\(?:operatorname|mathrm|mathit|text)\s*\{)(sin|cos|tan|ln|log|exp|sqrt)(?:(?<numberOnly>\d+(?:[.,]\d+)?)(?=\(|\\(?!(?:right|cdot|times|div|leq?|geq?|neq)(?![A-Za-z]))[A-Za-z])|(?<argument>\d+(?:[.,]\d+)?(?:[A-Za-z]|[α-ωΑ-Ωϑϕ])?|[A-Za-z])(?=$|[\s+\-−*/^=<>≤≥·×÷,;)\]}|!²³\\]))/g;
 
 /** Les fonctions hyperboliques : `sinh` n'est pas sin(h). */
 const HYPERBOLIC = /^(?:sin|cos|tan)h$/;
@@ -438,12 +443,13 @@ export function bareFunctionRefusal(input: string): string | null {
 	const glued = gluedFunction(input);
 	if (glued !== null && (found === null || glued.index <= found.index)) {
 		// `log10`, `log2` : base ou argument ? On ne devine pas (revue du 2026-10-14)
-		if (glued.name === 'log' && /^\d+$/.test(glued.argument)) {
-			const base =
-				glued.argument === '10' ? '' : ` En base ${glued.argument} : log_${glued.argument}(…).`;
+		const digits = /^log(\d+)$/.exec(glued.typed);
+		if (digits !== null) {
+			const base = digits[1] === '10' ? '' : ` En base ${digits[1]} : log_${digits[1]}(…).`;
 			return `« ${glued.typed} » : écris log(…) avec des parenthèses ; log est le logarithme décimal.${base}`;
 		}
-		return `« ${glued.typed} » : écris ${glued.name}(${glued.argument}) avec des parenthèses.`;
+		// `cos2\pi`, `ln2(x)` : proposer cos(2) changerait le sens
+		return `« ${glued.typed} » : écris ${glued.name}(${glued.argument ?? '…'}) avec des parenthèses.`;
 	}
 	if (found === null) return null;
 	const name = found[1];
@@ -459,10 +465,12 @@ export function bareFunctionRefusal(input: string): string | null {
 /** La première fonction usuelle collée à son argument (`GLUED_FUNCTION`), ou `null`. */
 function gluedFunction(
 	input: string
-): { index: number; typed: string; name: string; argument: string } | null {
+): { index: number; typed: string; name: string; argument: string | null } | null {
 	for (const match of input.matchAll(GLUED_FUNCTION)) {
-		const [typed, name, argument] = match;
-		if (!HYPERBOLIC.test(typed)) return { index: match.index, typed, name, argument };
+		const [typed, name] = match;
+		if (HYPERBOLIC.test(typed)) continue;
+		const argument = match.groups?.argument ?? null;
+		return { index: match.index, typed, name, argument };
 	}
 	return null;
 }
