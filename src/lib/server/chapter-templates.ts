@@ -34,7 +34,6 @@ import {
 	dbTemplateVersionToApp,
 	dbInstantiationToApp,
 	parseContentSnapshot,
-	hasContent,
 	getContentCounts,
 	EMPTY_CONTENT_SNAPSHOT
 } from '$lib/types/chapter-templates';
@@ -46,6 +45,8 @@ import type {
 	ListTemplatesQuery
 } from '$lib/server/validation/chapter-templates';
 import { createServerLogger } from '$lib/utils/logger';
+import { CHAPTER_DOCUMENTS_BUCKET, ownerStoragePrefix } from './content-owner';
+import { copyStoredFile, removeStoredFiles, templateHasContent } from './template-content';
 
 const logger = createServerLogger('server/chapter-templates');
 
@@ -61,6 +62,19 @@ export class TemplateUnusableError extends Error {
 	}
 }
 
+/**
+ * Le modèle est encore relié à des chapitres (non détachés) : on ne le supprime
+ * pas, on l'archive (ADR 0029). Message écrit pour le professeur.
+ */
+export class TemplateInUseError extends Error {
+	constructor(
+		message = 'Ce modèle est relié à des chapitres : archivez-le plutôt que de le supprimer.'
+	) {
+		super(message);
+		this.name = 'TemplateInUseError';
+	}
+}
+
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -70,6 +84,18 @@ interface OperationResult<T> {
 	data: T | null;
 	error: Error | null;
 }
+
+/** Les six tables de contenu qui portent des lignes de lien, sections EN DERNIER. */
+const LINKED_TABLES_SECTIONS_LAST = [
+	'chapter_documents',
+	'chapter_checklist_items',
+	'chapter_exercises',
+	'chapter_worksheets',
+	'chapter_series',
+	'chapter_sections'
+] as const;
+
+type LinkedTable = (typeof LINKED_TABLES_SECTIONS_LAST)[number];
 
 /** Result type for list operations */
 interface ListResult<T> {
@@ -127,12 +153,27 @@ export async function createChapterTemplate(
 }
 
 /**
- * Create a template from an existing chapter
+ * Faire un modèle d'un chapitre (ADR 0029).
  *
- * @param input - Template creation data with source chapter
- * @param userId - Creator's user ID
- * @param supabase - Supabase client
- * @returns Created template
+ * Le modèle POSSÈDE une copie du contenu du chapitre — sections d'abord, puis
+ * les cinq types d'éléments, chacun rangé dans la section copiée ; les fichiers
+ * téléversés sont COPIÉS sous `templates/<id>/…`. Puis le chapitre devient lié
+ * au modèle et ADOPTE chacun de ses éléments (`source_id` = l'élément du modèle) :
+ * mêmes identifiants, donc publications et cases cochées des élèves gardées.
+ *
+ * ⚠️ L'ordre compte : l'instanciation n'est créée qu'APRÈS la copie. Créée
+ * avant, chaque élément ajouté au modèle aurait été diffusé au chapitre par la
+ * base (`modele_ajout_diffuse`), en double de ses propres éléments.
+ *
+ * Un chapitre déjà rattaché à un modèle (lié ou détaché) garde son
+ * rattachement : le modèle est créé avec la copie, sans adoption.
+ *
+ * L'ancien fichier `chapters/…` d'un document adopté n'est PAS supprimé : la
+ * ligne pointe désormais la copie du modèle, le nettoyage viendra à part.
+ *
+ * @param input - Chapitre source, titre et description du modèle
+ * @param userId - Auteur du modèle
+ * @param supabase - Client de la requête (RLS du professeur)
  */
 export async function createTemplateFromChapter(
 	input: CreateTemplateFromChapterInput,
@@ -140,14 +181,6 @@ export async function createTemplateFromChapter(
 	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<ChapterTemplate>> {
 	try {
-		// Extract content snapshot from the chapter
-		const snapshotResult = await extractContentSnapshotFromChapter(input.chapterId, supabase);
-
-		if (snapshotResult.error) {
-			return { data: null, error: snapshotResult.error };
-		}
-
-		// Get chapter metadata for defaults
 		const { data: chapter, error: chapterError } = await supabase
 			.from('class_chapters')
 			.select('color, icon')
@@ -159,7 +192,13 @@ export async function createTemplateFromChapter(
 			return { data: null, error: new Error(chapterError.message) };
 		}
 
-		// Create the template with extracted content
+		// Tout le contenu du chapitre, lu AVANT de créer quoi que ce soit : une
+		// lecture en échec ne doit pas produire un modèle amputé.
+		const contenu = await readChapterContent(input.chapterId, supabase);
+		if (contenu.error || !contenu.data) {
+			return { data: null, error: contenu.error ?? new Error('Contenu illisible') };
+		}
+
 		const { data: template, error } = await supabase
 			.from('chapter_templates')
 			.insert({
@@ -169,7 +208,7 @@ export async function createTemplateFromChapter(
 				grades: input.grades ?? [],
 				color: chapter.color,
 				icon: chapter.icon,
-				content_snapshot: snapshotResult.data as unknown as Json,
+				content_snapshot: EMPTY_CONTENT_SNAPSHOT as unknown as Json,
 				status: 'draft',
 				current_version: 1
 			})
@@ -181,32 +220,24 @@ export async function createTemplateFromChapter(
 			return { data: null, error: new Error(error.message) };
 		}
 
-		// Le chapitre qui engendre le modèle le suit désormais comme les autres :
-		// sans ce rattachement, il serait le seul à ne pas recevoir les
-		// corrections qu'il a lui-même inspirées.
-		const { data: existing, error: existingError } = await supabase
-			.from('chapter_template_instantiations')
-			.select('id')
-			.eq('chapter_id', input.chapterId)
-			.maybeSingle();
-
-		if (existingError) {
-			logger.error('[createTemplateFromChapter] Rattachement illisible :', existingError);
-		} else if (!existing) {
-			// Un chapitre ne porte qu'un rattachement — le code le lit avec
-			// `.single()` — donc celui qui suit déjà un modèle garde le sien.
-			const { error: linkError } = await supabase.from('chapter_template_instantiations').insert({
-				template_id: template.id,
-				template_version: 1,
-				chapter_id: input.chapterId,
-				current_template_version: 1
-			});
-
-			// Le modèle existe : un rattachement manqué ne doit pas le perdre.
-			if (linkError) {
-				logger.error('[createTemplateFromChapter] Rattachement impossible :', linkError);
+		const copie = await copyContentToTemplate(contenu.data, template.id, supabase);
+		if (copie.error || !copie.data) {
+			// Un modèle à moitié rempli serait pire que pas de modèle : il part,
+			// avec les fichiers déjà copiés (avant la ligne : la règle de
+			// stockage exige que le modèle existe).
+			await removeStoredFiles(copie.copiedFiles, supabase);
+			const { error: rollbackError } = await supabase
+				.from('chapter_templates')
+				.delete()
+				.eq('id', template.id)
+				.select('id');
+			if (rollbackError) {
+				logger.error('[createTemplateFromChapter] Modèle incomplet non supprimé :', rollbackError);
 			}
+			return { data: null, error: copie.error ?? new Error('Copie impossible') };
 		}
+
+		await adoptChapterContent(input.chapterId, template.id, copie.data, supabase);
 
 		return { data: dbTemplateToApp(template as DbChapterTemplate), error: null };
 	} catch (err) {
@@ -338,7 +369,18 @@ export async function updateChapterTemplate(
 }
 
 /**
- * Supprimer définitivement un modèle en brouillon
+ * Supprimer définitivement un modèle — seulement s'il n'est relié à AUCUN
+ * chapitre (ADR 0029, comportements 16-17).
+ *
+ * Un modèle relié se refuse avec `TemplateInUseError` (« archivez-le ») : ses
+ * éléments sont lus par les chapitres liés, et la base refuserait de toute façon
+ * (`ON DELETE RESTRICT` des lignes de lien). Un chapitre détaché ne compte pas :
+ * il a sa propre copie.
+ *
+ * Les fichiers `templates/<id>/…` sont supprimés AVANT la ligne du modèle : la
+ * règle de stockage du professeur exige que le modèle existe. Le refus « relié »
+ * est vérifié avant, si bien que la suppression qui suit ne peut plus échouer
+ * pour cette raison.
  *
  * @param templateId - Template ID
  * @param supabase - Supabase client
@@ -350,8 +392,7 @@ export async function deleteChapterTemplate(
 ): Promise<{ error: Error | null }> {
 	try {
 		// Un modèle archivé a été retiré de l'usage : c'est une trace, et on ne
-		// détruit pas une trace par mégarde. Brouillon et publié, eux, se
-		// suppriment — le second pouvant avoir servi, l'appelant en avertit.
+		// détruit pas une trace par mégarde.
 		const { data: template, error: readError } = await supabase
 			.from('chapter_templates')
 			.select('status')
@@ -369,14 +410,52 @@ export async function deleteChapterTemplate(
 			};
 		}
 
-		// Les versions partent avec lui (CASCADE) ; les chapitres qui en sont
-		// issus survivent, leur rattachement passant à NULL (SET NULL), et leur
-		// bandeau affiche alors « Template supprimé ».
-		const { error } = await supabase.from('chapter_templates').delete().eq('id', templateId);
+		const { data: liens, error: liensError } = await supabase
+			.from('chapter_template_instantiations')
+			.select('id')
+			.eq('template_id', templateId)
+			.eq('is_detached', false)
+			.limit(1);
+
+		// Une lecture en échec ne vaut pas « relié à rien ».
+		if (liensError) {
+			logger.error('[deleteChapterTemplate] Chapitres liés illisibles :', liensError);
+			return { error: new Error(liensError.message) };
+		}
+		if ((liens ?? []).length > 0) {
+			return { error: new TemplateInUseError() };
+		}
+
+		const dossier = ownerStoragePrefix({ kind: 'template', id: templateId });
+		const { data: fichiers, error: listError } = await supabase.storage
+			.from(CHAPTER_DOCUMENTS_BUCKET)
+			.list(dossier.slice(0, -1), { limit: 1000 });
+
+		if (listError) {
+			logger.error('[deleteChapterTemplate] Fichiers illisibles :', listError);
+			return { error: new Error(listError.message) };
+		}
+		// `id` nul = un sous-dossier, que la liste rend aussi.
+		await removeStoredFiles(
+			(fichiers ?? []).filter((f) => f.id !== null).map((f) => `${dossier}${f.name}`),
+			supabase
+		);
+
+		// Les versions et le contenu du modèle partent avec lui (CASCADE) ; les
+		// chapitres détachés gardent leur copie, leur rattachement passe à NULL.
+		const { data: supprime, error } = await supabase
+			.from('chapter_templates')
+			.delete()
+			.eq('id', templateId)
+			.select('id');
 
 		if (error) {
+			if (error.code === '23503') return { error: new TemplateInUseError() };
 			logger.error('[deleteChapterTemplate] Suppression impossible :', error);
 			return { error: new Error(error.message) };
+		}
+		if (!supprime || supprime.length !== 1) {
+			return { error: new Error('Modèle introuvable') };
 		}
 
 		return { error: null };
@@ -491,7 +570,9 @@ export async function listChapterTemplates(
 // ============================================================================
 
 /**
- * Publish a template (validates content exists)
+ * Publier un modèle : il doit avoir au moins un élément non retiré (document,
+ * objectif, exercice, fiche ou série). Depuis l'ADR 0029, c'est le contenu
+ * POSSÉDÉ par le modèle qui compte, plus la photo `content_snapshot`.
  *
  * @param templateId - Template ID
  * @param supabase - Supabase client
@@ -502,21 +583,17 @@ export async function publishTemplate(
 	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<ChapterTemplate>> {
 	try {
-		// Get template to validate content
-		const { data: template, error: fetchError } = await supabase
-			.from('chapter_templates')
-			.select('content_snapshot')
-			.eq('id', templateId)
-			.single();
+		const { data: aDuContenu, error: contentError } = await templateHasContent(
+			templateId,
+			supabase
+		);
 
-		if (fetchError) {
-			logger.error('[publishTemplate] Error fetching template:', fetchError);
-			return { data: null, error: new Error(fetchError.message) };
+		if (contentError) {
+			logger.error('[publishTemplate] Contenu illisible :', contentError);
+			return { data: null, error: contentError };
 		}
 
-		// Validate content exists
-		const snapshot = parseContentSnapshot(template.content_snapshot as Record<string, unknown>);
-		if (!hasContent(snapshot)) {
+		if (!aDuContenu) {
 			return {
 				data: null,
 				error: new Error(
@@ -842,7 +919,16 @@ export function computeDiff(
 // ============================================================================
 
 /**
- * Instantiate a template into a chapter
+ * Créer un chapitre LIÉ à un modèle (ADR 0029, comportement 5).
+ *
+ * Le chapitre ne copie rien : `link_chapter_to_template` crée l'instanciation et
+ * une ligne de lien par élément non retiré du modèle, sections d'abord. Rien
+ * n'est publié, aucun fichier n'est copié.
+ *
+ * Les six sections semées à la création du chapitre (déclencheur
+ * `seed_default_chapter_sections`) sont retirées quand le modèle a son propre
+ * plan : sinon « Le cours » apparaîtrait deux fois. Elles sont vides — le
+ * chapitre vient de naître.
  *
  * @param input - Instantiation data (templateId, classId, optional title)
  * @param userId - User creating the chapter
@@ -855,10 +941,9 @@ export async function instantiateTemplate(
 	supabase: SupabaseClient<Database>
 ): Promise<OperationResult<{ chapterId: string; instantiation: ChapterTemplateInstantiation }>> {
 	try {
-		// Get template
 		const { data: template, error: templateError } = await supabase
 			.from('chapter_templates')
-			.select('title, content_snapshot, current_version, color, icon, status')
+			.select('title, color, icon, status')
 			.eq('id', input.templateId)
 			.single();
 
@@ -881,15 +966,11 @@ export async function instantiateTemplate(
 			};
 		}
 
-		const snapshot = parseContentSnapshot(template.content_snapshot as Record<string, unknown>);
-		const chapterTitle = input.title ?? template.title;
-
-		// Create the chapter
 		const { data: chapter, error: chapterError } = await supabase
 			.from('class_chapters')
 			.insert({
 				class_id: input.classId,
-				title: chapterTitle,
+				title: input.title ?? template.title,
 				description: null,
 				is_visible: input.isVisible ?? false,
 				color: template.color,
@@ -906,34 +987,34 @@ export async function instantiateTemplate(
 
 		const chapterId = chapter.id;
 
-		// Apply content snapshot to chapter
-		const applyResult = await applyContentSnapshotToChapter(chapterId, snapshot, supabase);
+		const { error: linkError } = await supabase.rpc('link_chapter_to_template', {
+			p_chapter_id: chapterId,
+			p_template_id: input.templateId
+		});
 
-		if (applyResult.error) {
-			// Rollback: delete the chapter
-			await supabase.from('class_chapters').delete().eq('id', chapterId);
-			return { data: null, error: applyResult.error };
+		const { data: instantiation, error: instError } = linkError
+			? { data: null, error: linkError }
+			: await supabase
+					.from('chapter_template_instantiations')
+					.select('*')
+					.eq('chapter_id', chapterId)
+					.single();
+
+		if (instError || !instantiation) {
+			logger.error('[instantiateTemplate] Lien impossible :', instError);
+			// Un chapitre vide et sans modèle ne doit pas rester dans la classe.
+			const { data: supprime, error: rollbackError } = await supabase
+				.from('class_chapters')
+				.delete()
+				.eq('id', chapterId)
+				.select('id');
+			if (rollbackError || !supprime || supprime.length !== 1) {
+				logger.error('[instantiateTemplate] Chapitre orphelin non supprimé :', chapterId);
+			}
+			return { data: null, error: new Error(instError?.message ?? 'Lien impossible') };
 		}
 
-		// Create instantiation record
-		const { data: instantiation, error: instError } = await supabase
-			.from('chapter_template_instantiations')
-			.insert({
-				template_id: input.templateId,
-				template_version: template.current_version,
-				chapter_id: chapterId,
-				current_template_version: template.current_version,
-				is_detached: false
-			})
-			.select()
-			.single();
-
-		if (instError) {
-			logger.error('[instantiateTemplate] Error creating instantiation:', instError);
-			// Rollback: delete the chapter
-			await supabase.from('class_chapters').delete().eq('id', chapterId);
-			return { data: null, error: new Error(instError.message) };
-		}
+		await dropSeededSections(chapterId, supabase);
 
 		return {
 			data: {
@@ -1256,10 +1337,24 @@ export async function migrateChapterToVersion(
 }
 
 /**
- * Detach a chapter from its template
+ * Détacher un chapitre de son modèle (ADR 0029, comportement 15).
+ *
+ * Le contenu relié devient celui du chapitre, avec sa publication, sa section et
+ * son ordre : ses élèves ne perdent rien.
+ *
+ * 1. Chaque fichier relié (`templates/…`) est COPIÉ chez le chapitre
+ *    (`chapters/<id>/…`). Une copie en échec arrête tout AVANT de délier : un
+ *    lien gardé vaut mieux qu'un document sans fichier.
+ * 2. Chaque document copié se délie en pointant sa copie (la base l'autorise
+ *    quand `source_id` passe à vide).
+ * 3. Toutes les autres lignes de lien se délient, sections EN DERNIER.
+ * 4. L'instanciation est marquée détachée : le modèle ne diffuse plus rien ici.
+ *
+ * Rejouable : une étape interrompue laisse des lignes déjà autonomes (avec leur
+ * fichier) et d'autres encore reliées, que l'appel suivant reprend.
  *
  * @param chapterId - Chapter ID
- * @param supabase - Supabase client
+ * @param supabase - Supabase client (droits du professeur)
  * @returns Success status
  */
 export async function detachChapterFromTemplate(
@@ -1267,14 +1362,107 @@ export async function detachChapterFromTemplate(
 	supabase: SupabaseClient<Database>
 ): Promise<{ error: Error | null }> {
 	try {
-		const { error } = await supabase
+		const { data: instantiation, error: instError } = await supabase
+			.from('chapter_template_instantiations')
+			.select('id, is_detached')
+			.eq('chapter_id', chapterId)
+			.maybeSingle();
+
+		if (instError) {
+			logger.error('[detachChapterFromTemplate] Rattachement illisible :', instError);
+			return { error: new Error(instError.message) };
+		}
+		if (!instantiation) {
+			return { error: new Error('Ce chapitre n’est lié à aucun modèle.') };
+		}
+		if (instantiation.is_detached) {
+			return { error: null };
+		}
+
+		// 1. Copier les fichiers reliés.
+		const { data: documents, error: docsError } = await supabase
+			.from('chapter_documents')
+			.select('id, source_type, storage_path')
+			.eq('chapter_id', chapterId)
+			.not('source_id', 'is', null);
+
+		if (docsError) {
+			logger.error('[detachChapterFromTemplate] Documents illisibles :', docsError);
+			return { error: new Error(docsError.message) };
+		}
+
+		const owner = { kind: 'chapter', id: chapterId } as const;
+		const copies: { id: string; path: string }[] = [];
+		for (const [rang, doc] of (documents ?? []).entries()) {
+			if (doc.source_type !== 'upload' || !doc.storage_path) continue;
+			const { path, error: copyError } = await copyStoredFile(
+				doc.storage_path,
+				owner,
+				String(rang),
+				supabase
+			);
+			if (copyError || !path) {
+				await removeStoredFiles(
+					copies.map((c) => c.path),
+					supabase
+				);
+				return {
+					error: new Error('Copie des fichiers impossible : le chapitre reste lié au modèle.')
+				};
+			}
+			copies.push({ id: doc.id, path });
+		}
+
+		// 2. Les documents copiés se délient en pointant leur copie.
+		for (const copie of copies) {
+			const { data, error } = await supabase
+				.from('chapter_documents')
+				.update({ source_id: null, storage_path: copie.path })
+				.eq('id', copie.id)
+				.eq('chapter_id', chapterId)
+				.select('id');
+			if (error || !data || data.length !== 1) {
+				logger.error('[detachChapterFromTemplate] Document non délié :', copie.id, error);
+				return { error: new Error(error?.message ?? 'Document non délié') };
+			}
+		}
+
+		// 3. Le reste, sections en dernier : les éléments y sont rangés.
+		for (const table of LINKED_TABLES_SECTIONS_LAST) {
+			const { error } = await supabase
+				.from(table)
+				.update({ source_id: null })
+				.eq('chapter_id', chapterId)
+				.not('source_id', 'is', null);
+			if (error) {
+				logger.error(`[detachChapterFromTemplate] ${table} non délié :`, error);
+				return { error: new Error(error.message) };
+			}
+
+			// La RLS échoue en silence : on ne sait pas combien de lignes devaient
+			// changer, on vérifie donc qu'il n'en RESTE aucune.
+			const { data: restantes, error: checkError } = await supabase
+				.from(table)
+				.select('id')
+				.eq('chapter_id', chapterId)
+				.not('source_id', 'is', null)
+				.limit(1);
+			if (checkError || (restantes ?? []).length > 0) {
+				logger.error(`[detachChapterFromTemplate] ${table} : liens restants`, checkError);
+				return { error: new Error(`Détachement incomplet (${table})`) };
+			}
+		}
+
+		// 4. Le modèle ne diffuse plus rien à ce chapitre.
+		const { data: detache, error } = await supabase
 			.from('chapter_template_instantiations')
 			.update({ is_detached: true })
-			.eq('chapter_id', chapterId);
+			.eq('chapter_id', chapterId)
+			.select('id');
 
-		if (error) {
+		if (error || !detache || detache.length !== 1) {
 			logger.error('[detachChapterFromTemplate] Error:', error);
-			return { error: new Error(error.message) };
+			return { error: new Error(error?.message ?? 'Rattachement non modifié') };
 		}
 
 		return { error: null };
@@ -1680,5 +1868,336 @@ export async function applyContentSnapshotToChapter(
 	} catch (err) {
 		logger.error('[applyContentSnapshotToChapter] Unexpected error:', err);
 		return { error: err as Error };
+	}
+}
+
+// ============================================================================
+// CONTENU POSSÉDÉ PAR LE MODÈLE (ADR 0029) — aides internes
+// ============================================================================
+
+type ContentRow<T extends LinkedTable> = Database['public']['Tables'][T]['Row'];
+
+/** Le contenu complet d'un chapitre, ligne par ligne, dans l'ordre du professeur. */
+interface ChapterContentRows {
+	sections: ContentRow<'chapter_sections'>[];
+	documents: ContentRow<'chapter_documents'>[];
+	checklistItems: ContentRow<'chapter_checklist_items'>[];
+	exercises: ContentRow<'chapter_exercises'>[];
+	worksheets: ContentRow<'chapter_worksheets'>[];
+	series: ContentRow<'chapter_series'>[];
+}
+
+/** Une ligne du chapitre et sa copie chez le modèle. Sections d'abord. */
+type ContentMapping = { table: LinkedTable; chapterRowId: string; templateRowId: string }[];
+
+/** Lit tout le contenu d'un chapitre ; une table illisible fait tout échouer. */
+async function readChapterContent(
+	chapterId: string,
+	supabase: SupabaseClient<Database>
+): Promise<{ data: ChapterContentRows | null; error: Error | null }> {
+	const [sections, documents, checklistItems, exercises, worksheets, series] = await Promise.all([
+		supabase
+			.from('chapter_sections')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order'),
+		supabase
+			.from('chapter_documents')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order'),
+		supabase
+			.from('chapter_checklist_items')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order'),
+		supabase
+			.from('chapter_exercises')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order'),
+		supabase
+			.from('chapter_worksheets')
+			.select('*')
+			.eq('chapter_id', chapterId)
+			.order('display_order'),
+		supabase.from('chapter_series').select('*').eq('chapter_id', chapterId).order('display_order')
+	]);
+
+	const enEchec = [sections, documents, checklistItems, exercises, worksheets, series].find(
+		(r) => r.error
+	);
+	if (enEchec?.error) {
+		logger.error('[readChapterContent] Contenu illisible :', enEchec.error);
+		return { data: null, error: new Error(enEchec.error.message) };
+	}
+
+	return {
+		data: {
+			sections: sections.data ?? [],
+			documents: documents.data ?? [],
+			checklistItems: checklistItems.data ?? [],
+			exercises: exercises.data ?? [],
+			worksheets: worksheets.data ?? [],
+			series: series.data ?? []
+		},
+		error: null
+	};
+}
+
+/**
+ * Copie le contenu d'un chapitre en lignes du modèle : sections d'abord (leurs
+ * identifiants neufs rangent les éléments), puis les cinq types. Les fichiers
+ * téléversés sont copiés sous `templates/<id>/…`. Ni publication ni masquage :
+ * un élément du modèle n'est jamais publié.
+ *
+ * Rend la correspondance chapitre → modèle, et les fichiers copiés (à supprimer
+ * si l'appelant renonce).
+ */
+async function copyContentToTemplate(
+	rows: ChapterContentRows,
+	templateId: string,
+	supabase: SupabaseClient<Database>
+): Promise<{ data: ContentMapping | null; error: Error | null; copiedFiles: string[] }> {
+	const owner = { kind: 'template', id: templateId } as const;
+	const mapping: ContentMapping = [];
+	const copiedFiles: string[] = [];
+	const sections = new Map<string, string>();
+	const echec = (error: Error) => ({ data: null, error, copiedFiles });
+
+	/** Enregistre une copie, ou rend l'erreur qui l'a empêchée. */
+	const enregistrer = async (
+		table: LinkedTable,
+		chapterRowId: string,
+		insertion: PromiseLike<{ data: { id: string } | null; error: { message: string } | null }>
+	): Promise<Error | null> => {
+		const { data, error } = await insertion;
+		if (error || !data) {
+			logger.error(`[copyContentToTemplate] ${table} non copié :`, error);
+			return new Error(error?.message ?? `${table} : copie refusée`);
+		}
+		mapping.push({ table, chapterRowId, templateRowId: data.id });
+		if (table === 'chapter_sections') sections.set(chapterRowId, data.id);
+		return null;
+	};
+	const section = (id: string | null) => (id ? (sections.get(id) ?? null) : null);
+
+	for (const s of rows.sections) {
+		const e = await enregistrer(
+			'chapter_sections',
+			s.id,
+			supabase
+				.from('chapter_sections')
+				.insert({ template_id: templateId, title: s.title, display_order: s.display_order })
+				.select('id')
+				.single()
+		);
+		if (e) return echec(e);
+	}
+
+	for (const [rang, d] of rows.documents.entries()) {
+		let storagePath = d.storage_path;
+		if (d.source_type === 'upload' && d.storage_path) {
+			const { path, error } = await copyStoredFile(d.storage_path, owner, String(rang), supabase);
+			if (error || !path) return echec(error ?? new Error('Copie du fichier impossible'));
+			copiedFiles.push(path);
+			storagePath = path;
+		}
+		const e = await enregistrer(
+			'chapter_documents',
+			d.id,
+			supabase
+				.from('chapter_documents')
+				.insert({
+					template_id: templateId,
+					title: d.title,
+					description: d.description,
+					source_type: d.source_type,
+					storage_path: storagePath,
+					file_name: d.file_name,
+					file_size: d.file_size,
+					mime_type: d.mime_type,
+					google_drive_url: d.google_drive_url,
+					google_file_id: d.google_file_id,
+					thumbnail_url: d.thumbnail_url,
+					display_order: d.display_order,
+					section_id: section(d.section_id),
+					section_order: d.section_order
+				})
+				.select('id')
+				.single()
+		);
+		if (e) return echec(e);
+	}
+
+	for (const c of rows.checklistItems) {
+		const e = await enregistrer(
+			'chapter_checklist_items',
+			c.id,
+			supabase
+				.from('chapter_checklist_items')
+				.insert({
+					template_id: templateId,
+					content: c.content,
+					description: c.description,
+					display_order: c.display_order,
+					section_id: section(c.section_id),
+					section_order: c.section_order
+				})
+				.select('id')
+				.single()
+		);
+		if (e) return echec(e);
+	}
+
+	for (const x of rows.exercises) {
+		const e = await enregistrer(
+			'chapter_exercises',
+			x.id,
+			supabase
+				.from('chapter_exercises')
+				.insert({
+					template_id: templateId,
+					exercise_id: x.exercise_id,
+					display_order: x.display_order,
+					section_id: section(x.section_id),
+					section_order: x.section_order
+				})
+				.select('id')
+				.single()
+		);
+		if (e) return echec(e);
+	}
+
+	for (const w of rows.worksheets) {
+		const e = await enregistrer(
+			'chapter_worksheets',
+			w.id,
+			supabase
+				.from('chapter_worksheets')
+				.insert({
+					template_id: templateId,
+					worksheet_id: w.worksheet_id,
+					display_order: w.display_order,
+					section_id: section(w.section_id),
+					section_order: w.section_order
+				})
+				.select('id')
+				.single()
+		);
+		if (e) return echec(e);
+	}
+
+	for (const r of rows.series) {
+		const e = await enregistrer(
+			'chapter_series',
+			r.id,
+			supabase
+				.from('chapter_series')
+				.insert({
+					template_id: templateId,
+					series_id: r.series_id,
+					form: r.form,
+					display_order: r.display_order,
+					section_id: section(r.section_id),
+					section_order: r.section_order
+				})
+				.select('id')
+				.single()
+		);
+		if (e) return echec(e);
+	}
+
+	return { data: mapping, error: null, copiedFiles };
+}
+
+/**
+ * Lie le chapitre source au modèle qu'il vient de remplir, puis chacun de ses
+ * éléments ADOPTE sa copie (`source_id`), sections d'abord : la base reprend le
+ * contenu du modèle et garde l'identifiant, l'ordre, la section et la
+ * publication du chapitre.
+ *
+ * Le modèle existe et il est complet : un échec ici ne le perd pas. Il est
+ * tracé ; l'élément non adopté reste simplement propre au chapitre.
+ */
+async function adoptChapterContent(
+	chapterId: string,
+	templateId: string,
+	mapping: ContentMapping,
+	supabase: SupabaseClient<Database>
+): Promise<void> {
+	const { data: existing, error: existingError } = await supabase
+		.from('chapter_template_instantiations')
+		.select('id')
+		.eq('chapter_id', chapterId)
+		.maybeSingle();
+
+	if (existingError) {
+		logger.error('[adoptChapterContent] Rattachement illisible :', existingError);
+		return;
+	}
+	// Un chapitre ne porte qu'un rattachement : celui qui suit (ou a suivi) un
+	// modèle garde le sien.
+	if (existing) return;
+
+	const { data: lien, error: linkError } = await supabase
+		.from('chapter_template_instantiations')
+		.insert({
+			template_id: templateId,
+			template_version: 1,
+			chapter_id: chapterId,
+			current_template_version: 1
+		})
+		.select('id');
+
+	if (linkError || !lien || lien.length !== 1) {
+		logger.error('[adoptChapterContent] Rattachement impossible :', linkError);
+		return;
+	}
+
+	for (const m of mapping) {
+		const { data, error } = await supabase
+			.from(m.table)
+			.update({ source_id: m.templateRowId })
+			.eq('id', m.chapterRowId)
+			.eq('chapter_id', chapterId)
+			.select('id');
+		if (error || !data || data.length !== 1) {
+			logger.error(`[adoptChapterContent] ${m.table} ${m.chapterRowId} non adopté :`, error);
+		}
+	}
+}
+
+/**
+ * Retire les six sections semées à la création d'un chapitre lié, quand le
+ * modèle apporte son propre plan. Échec tracé, pas remonté : le chapitre est
+ * créé, au pire avec quelques sections vides de trop.
+ */
+async function dropSeededSections(
+	chapterId: string,
+	supabase: SupabaseClient<Database>
+): Promise<void> {
+	const { data: liees, error } = await supabase
+		.from('chapter_sections')
+		.select('id')
+		.eq('chapter_id', chapterId)
+		.not('source_id', 'is', null)
+		.limit(1);
+
+	if (error) {
+		logger.error('[dropSeededSections] Sections illisibles :', error);
+		return;
+	}
+	if ((liees ?? []).length === 0) return;
+
+	const { error: deleteError } = await supabase
+		.from('chapter_sections')
+		.delete()
+		.eq('chapter_id', chapterId)
+		.is('source_id', null)
+		.select('id');
+
+	if (deleteError) {
+		logger.error('[dropSeededSections] Sections par défaut non retirées :', deleteError);
 	}
 }

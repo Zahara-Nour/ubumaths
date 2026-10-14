@@ -4,11 +4,44 @@
  *
  * View and manage a specific chapter template.
  * Supports: update, publish, archive, instantiate.
+ *
+ * Depuis l'ADR 0029, le modèle POSSÈDE son contenu et s'édite ici, avec le même
+ * éditeur que le chapitre : les actions de contenu portent les MÊMES noms que
+ * celles de la page du chapitre (`addChecklistItem`, `deleteDocument`…), pour que
+ * l'éditeur partagé poste au même `?/nom` quel que soit le propriétaire. Ici,
+ * « supprimer » veut dire RETIRER du modèle : l'élément reste chez les élèves qui
+ * l'avaient reçu, disparaît des chapitres où il n'était pas publié.
  */
 
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail, redirect } from '@sveltejs/kit';
+import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
+import { requireOwnedTemplate } from '$lib/server/template-guard';
+import {
+	listTemplateContent,
+	retireTemplateElement,
+	templateHasContent
+} from '$lib/server/template-content';
+import {
+	insertChecklistItem,
+	insertDocument,
+	insertExercise,
+	insertWorksheet,
+	updateChecklistItem
+} from '$lib/server/chapters';
+import { placeInSection } from '$lib/server/chapter-sections';
+import { linkSeries, setSeriesForm } from '$lib/server/chapter-series';
+import {
+	createChecklistItemSchema,
+	updateChecklistItemSchema
+} from '$lib/server/validation/chapters';
+import { linkSeriesSchema, setSeriesFormSchema } from '$lib/server/validation/chapter-series';
+import {
+	targetSectionFieldSchema,
+	type SectionContentKind
+} from '$lib/server/validation/chapter-sections';
+import { uuidSchema } from '$lib/server/validation/common';
 import {
 	getChapterTemplate,
 	updateChapterTemplate,
@@ -19,13 +52,122 @@ import {
 	extractContentSnapshotFromChapter,
 	getTemplateVersions,
 	instantiateTemplate,
+	TemplateInUseError,
 	TemplateUnusableError
 } from '$lib/server/chapter-templates';
 import {
 	updateChapterTemplateSchema,
 	instantiateTemplateSchema
 } from '$lib/server/validation/chapter-templates';
-import { hasContent, parseContentSnapshot } from '$lib/types/chapter-templates';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '$lib/types/database';
+
+// Constantes
+/** Un objectif du modèle : le propriétaire vient de l'URL, jamais du formulaire. */
+const createTemplateChecklistItemSchema = createChecklistItemSchema.omit({ chapterId: true });
+
+/** Un lien Google Drive ajouté au modèle. */
+const googleDriveDocumentSchema = z.object({
+	title: z.string().trim().min(1, 'Titre requis').max(200),
+	description: z.string().trim().max(1000).nullable(),
+	googleDriveUrl: z
+		.string()
+		.trim()
+		.url('URL Google Drive invalide')
+		.max(2000)
+		.refine((u) => {
+			const host = new URL(u).hostname;
+			return host === 'drive.google.com' || host === 'docs.google.com';
+		}, 'URL Google Drive invalide')
+});
+
+/**
+ * Retirer un élément : le champ d'identifiant est celui du formulaire du
+ * chapitre (l'éditeur est partagé), le type vient du nom de l'action.
+ */
+const RETIRE_FIELDS = {
+	deleteDocument: { kind: 'document', field: 'documentId' },
+	deleteChecklistItem: { kind: 'checklistItem', field: 'itemId' },
+	unlinkExercise: { kind: 'exercise', field: 'chapterExerciseId' },
+	unlinkWorksheet: { kind: 'worksheet', field: 'chapterWorksheetId' },
+	unlinkSeries: { kind: 'series', field: 'chapterSeriesId' }
+} as const satisfies Record<string, { kind: SectionContentKind; field: string }>;
+
+type RetireAction = keyof typeof RETIRE_FIELDS;
+
+// Functions
+/**
+ * Range l'élément créé dans la section demandée. Un rangement raté ne fait pas
+ * échouer la création (l'élément existe, en « Non classé ») : `placed: false`.
+ */
+async function rangerDansLeModele(
+	templateId: string,
+	formData: FormData,
+	kind: SectionContentKind,
+	itemId: string,
+	supabase: SupabaseClient<Database>,
+	action: string
+) {
+	const cible = targetSectionFieldSchema.safeParse(formData.get('sectionId'));
+	if (!cible.success || !cible.data) {
+		return { success: true, action, placed: true };
+	}
+
+	const { error: placeError } = await placeInSection(
+		{ kind: 'template', id: templateId },
+		cible.data,
+		kind,
+		itemId,
+		supabase
+	);
+	if (placeError) {
+		console.error(`[${action}] Rangement impossible :`, placeError);
+		return { success: true, action, placed: false };
+	}
+	return { success: true, action, placed: true };
+}
+
+/** Une action « retirer du modèle », pour l'un des cinq types. */
+function retireAction(action: RetireAction) {
+	return async ({
+		request,
+		locals,
+		params
+	}: {
+		request: Request;
+		locals: App.Locals;
+		params: { templateId: string };
+	}) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const templateId = await requireOwnedTemplate(params.templateId, user.id, locals.supabase);
+		const { kind, field } = RETIRE_FIELDS[action];
+
+		const formData = await request.formData();
+		const itemId = uuidSchema.safeParse(formData.get(field));
+		if (!itemId.success) {
+			return fail(400, { error: 'Élément invalide', action });
+		}
+
+		const { data, error: retireError } = await retireTemplateElement(
+			templateId,
+			kind,
+			itemId.data,
+			locals.supabase
+		);
+
+		if (retireError?.kind === 'not_found') {
+			return fail(404, { error: 'Élément introuvable dans ce modèle', action });
+		}
+		if (retireError || !data) {
+			console.error(`[${action}] Retrait impossible :`, retireError);
+			return fail(500, { error: 'Impossible de retirer cet élément', action });
+		}
+
+		// `deleted: false` : encore publié dans un chapitre, il y reste ; le modèle,
+		// lui, ne le montre plus.
+		return { success: true, action, deleted: data.deleted };
+	};
+}
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const { user } = await requireRole(locals, 'teacher');
@@ -45,6 +187,18 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const isOwner = template.createdBy === user.id;
 	if (!isOwner) {
 		throw error(403, 'Accès refusé');
+	}
+
+	// Le contenu POSSÉDÉ par le modèle (ADR 0029), pour l'éditeur partagé. Une
+	// lecture en échec ne doit pas s'afficher « modèle vide ».
+	const { data: content, error: contentError } = await listTemplateContent(
+		templateId,
+		locals.supabase
+	);
+
+	if (contentError || !content) {
+		console.error('Contenu du modèle illisible :', contentError);
+		throw error(500, 'Impossible de charger le contenu du modèle');
 	}
 
 	// Fetch versions
@@ -86,6 +240,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	return {
 		template,
+		content,
 		versions: versions || [],
 		classes: classes || [],
 		linkedChapters: (linkedChapters ?? []).flatMap((row) => {
@@ -181,7 +336,7 @@ export const actions: Actions = {
 		// Check ownership
 		const { data: templateCheck, error: templateCheckError } = await locals.supabase
 			.from('chapter_templates')
-			.select('created_by, status, content_snapshot')
+			.select('created_by, status')
 			.eq('id', templateId)
 			.single();
 
@@ -199,11 +354,16 @@ export const actions: Actions = {
 			return fail(400, { error: 'Seuls les brouillons peuvent être publiés', action: 'publish' });
 		}
 
-		// Validate content exists
-		const snapshot = parseContentSnapshot(
-			templateCheck.content_snapshot as Record<string, unknown>
+		// Le contenu POSSÉDÉ par le modèle (ADR 0029), non retiré.
+		const { data: aDuContenu, error: contentError } = await templateHasContent(
+			templateId,
+			locals.supabase
 		);
-		if (!hasContent(snapshot)) {
+		if (contentError) {
+			console.error('[Publish Template] Contenu illisible :', contentError);
+			return fail(500, { error: 'Lecture impossible', action: 'publish' });
+		}
+		if (!aDuContenu) {
 			return fail(400, {
 				// Les cinq types que `hasContent` accepte, dans les mots de la
 				// fiche : une fiche seule suffit à publier, et le message le disait
@@ -307,12 +467,10 @@ export const actions: Actions = {
 	},
 
 	/**
-	 * Supprimer définitivement un modèle, brouillon ou publié.
-	 *
-	 * Les chapitres qui en sont issus survivent : leur rattachement passe à NULL
-	 * et leur bandeau affiche « Template supprimé ». Seul l'historique des
-	 * versions part avec le modèle. Un modèle archivé, lui, est une trace et
-	 * n'est pas supprimable.
+	 * Supprimer définitivement un modèle, brouillon ou publié, relié à AUCUN
+	 * chapitre (ADR 0029) : un modèle relié se refuse (« archivez-le »). Les
+	 * chapitres détachés gardent leur copie. Un modèle archivé, lui, est une trace
+	 * et n'est pas supprimable.
 	 */
 	delete: async ({ locals, params }) => {
 		const { user } = await requireRole(locals, 'teacher');
@@ -342,6 +500,11 @@ export const actions: Actions = {
 		}
 
 		const { error: deleteError } = await deleteChapterTemplate(templateId, locals.supabase);
+
+		// Encore relié à des chapitres : on l'archive, on ne le supprime pas.
+		if (deleteError instanceof TemplateInUseError) {
+			return fail(409, { error: deleteError.message, action: 'delete' });
+		}
 
 		if (deleteError) {
 			console.error('[Delete Template] Suppression impossible :', deleteError);
@@ -452,5 +615,261 @@ export const actions: Actions = {
 			action: 'instantiate',
 			chapterId: result.chapterId
 		};
-	}
+	},
+	// ============ CONTENU DU MODÈLE (ADR 0029) ============
+
+	addChecklistItem: async ({ request, locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const templateId = await requireOwnedTemplate(params.templateId, user.id, locals.supabase);
+
+		const formData = await request.formData();
+		const validation = createTemplateChecklistItemSchema.safeParse({
+			content: formData.get('content'),
+			description: (formData.get('description') as string | null) || undefined
+		});
+		if (!validation.success) {
+			return fail(400, { error: validation.error.issues[0].message, action: 'addChecklistItem' });
+		}
+
+		const { data: created, error: addError } = await insertChecklistItem(
+			{ kind: 'template', id: templateId },
+			validation.data,
+			locals.supabase
+		);
+		if (addError || !created) {
+			return fail(500, { error: "Erreur lors de l'ajout", action: 'addChecklistItem' });
+		}
+
+		return rangerDansLeModele(
+			templateId,
+			formData,
+			'checklistItem',
+			created.id,
+			locals.supabase,
+			'addChecklistItem'
+		);
+	},
+
+	updateChecklistItem: async ({ request, locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const templateId = await requireOwnedTemplate(params.templateId, user.id, locals.supabase);
+
+		const formData = await request.formData();
+		const itemId = uuidSchema.safeParse(formData.get('itemId'));
+		const validation = updateChecklistItemSchema.safeParse(
+			Object.fromEntries(
+				Object.entries({
+					content: formData.get('content') ?? undefined,
+					description: formData.get('description') ?? undefined
+				}).filter(([, v]) => v !== undefined)
+			)
+		);
+		if (!itemId.success || !validation.success) {
+			return fail(400, { error: 'Objectif invalide', action: 'updateChecklistItem' });
+		}
+
+		// L'objectif doit être celui de CE modèle : la modification se fait par
+		// identifiant seul.
+		const { data: item, error: itemError } = await locals.supabase
+			.from('chapter_checklist_items')
+			.select('id')
+			.eq('id', itemId.data)
+			.eq('template_id', templateId)
+			.maybeSingle();
+		if (itemError) {
+			console.error('[updateChecklistItem] Lecture impossible :', itemError);
+			return fail(500, { error: 'Vérification impossible', action: 'updateChecklistItem' });
+		}
+		if (!item) {
+			return fail(404, { error: 'Objectif introuvable', action: 'updateChecklistItem' });
+		}
+
+		// Corrigé ici, il l'est aussitôt dans chaque chapitre lié (la base recopie).
+		const { error: updateError } = await updateChecklistItem(
+			itemId.data,
+			validation.data,
+			locals.supabase
+		);
+		if (updateError) {
+			return fail(500, { error: 'Erreur lors de la mise à jour', action: 'updateChecklistItem' });
+		}
+
+		return { success: true, action: 'updateChecklistItem' };
+	},
+
+	linkExercise: async ({ request, locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const templateId = await requireOwnedTemplate(params.templateId, user.id, locals.supabase);
+
+		const formData = await request.formData();
+		const exerciseId = uuidSchema.safeParse(formData.get('exerciseId'));
+		if (!exerciseId.success) {
+			return fail(400, { error: 'Exercice requis', action: 'linkExercise' });
+		}
+
+		const { data: created, error: linkError } = await insertExercise(
+			{ kind: 'template', id: templateId },
+			exerciseId.data,
+			locals.supabase
+		);
+		if (linkError || !created) {
+			return fail(500, { error: 'Erreur lors du lien', action: 'linkExercise' });
+		}
+
+		return rangerDansLeModele(
+			templateId,
+			formData,
+			'exercise',
+			created.id,
+			locals.supabase,
+			'linkExercise'
+		);
+	},
+
+	linkWorksheet: async ({ request, locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const templateId = await requireOwnedTemplate(params.templateId, user.id, locals.supabase);
+
+		const formData = await request.formData();
+		const worksheetId = uuidSchema.safeParse(formData.get('worksheetId'));
+		if (!worksheetId.success) {
+			return fail(400, { error: 'Fiche requise', action: 'linkWorksheet' });
+		}
+
+		const { data: created, error: linkError } = await insertWorksheet(
+			{ kind: 'template', id: templateId },
+			worksheetId.data,
+			locals.supabase
+		);
+		if (linkError || !created) {
+			return fail(500, { error: 'Erreur lors du lien', action: 'linkWorksheet' });
+		}
+
+		return rangerDansLeModele(
+			templateId,
+			formData,
+			'worksheet',
+			created.id,
+			locals.supabase,
+			'linkWorksheet'
+		);
+	},
+
+	linkSeries: async ({ request, locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const templateId = await requireOwnedTemplate(params.templateId, user.id, locals.supabase);
+
+		const formData = await request.formData();
+		const validation = linkSeriesSchema.safeParse({
+			seriesId: formData.get('seriesId'),
+			form: formData.get('form') || undefined
+		});
+		if (!validation.success) {
+			return fail(400, { error: 'Série ou forme invalide', action: 'linkSeries' });
+		}
+
+		const { data: created, error: linkError } = await linkSeries(
+			{ kind: 'template', id: templateId },
+			validation.data.seriesId,
+			validation.data.form,
+			user.id,
+			locals.supabase
+		);
+		if (linkError?.kind === 'not_found') {
+			return fail(404, { error: 'Série introuvable', action: 'linkSeries' });
+		}
+		if (linkError?.kind === 'duplicate') {
+			return fail(409, { error: 'Cette série est déjà dans le modèle', action: 'linkSeries' });
+		}
+		if (linkError || !created) {
+			return fail(500, { error: 'Erreur lors du rattachement', action: 'linkSeries' });
+		}
+
+		return rangerDansLeModele(
+			templateId,
+			formData,
+			'series',
+			created.id,
+			locals.supabase,
+			'linkSeries'
+		);
+	},
+
+	setSeriesForm: async ({ request, locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const templateId = await requireOwnedTemplate(params.templateId, user.id, locals.supabase);
+
+		const formData = await request.formData();
+		const validation = setSeriesFormSchema.safeParse({
+			chapterSeriesId: formData.get('chapterSeriesId'),
+			form: formData.get('form')
+		});
+		if (!validation.success) {
+			return fail(400, { error: 'Série ou forme invalide', action: 'setSeriesForm' });
+		}
+
+		const { error: formError } = await setSeriesForm(
+			{ kind: 'template', id: templateId },
+			validation.data.chapterSeriesId,
+			validation.data.form,
+			locals.supabase
+		);
+		if (formError?.kind === 'not_found') {
+			return fail(404, { error: 'Série introuvable', action: 'setSeriesForm' });
+		}
+		if (formError) {
+			return fail(500, { error: 'Impossible de changer la forme', action: 'setSeriesForm' });
+		}
+
+		return { success: true, action: 'setSeriesForm' };
+	},
+
+	addGoogleDriveDocument: async ({ request, locals, params }) => {
+		const { user } = await requireRole(locals, 'teacher');
+		const templateId = await requireOwnedTemplate(params.templateId, user.id, locals.supabase);
+
+		const formData = await request.formData();
+		const validation = googleDriveDocumentSchema.safeParse({
+			title: formData.get('title'),
+			description: (formData.get('description') as string | null) || null,
+			googleDriveUrl: formData.get('googleDriveUrl')
+		});
+		if (!validation.success) {
+			return fail(400, {
+				error: validation.error.issues[0].message,
+				action: 'addGoogleDriveDocument'
+			});
+		}
+
+		const url = validation.data.googleDriveUrl;
+		const created = await insertDocument(
+			{ kind: 'template', id: templateId },
+			{
+				sourceType: 'google_drive',
+				title: validation.data.title,
+				description: validation.data.description,
+				googleDriveUrl: url,
+				googleFileId: url.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1] ?? ''
+			},
+			locals.supabase
+		);
+		if (created.error || !created.data) {
+			return fail(500, { error: "Erreur lors de l'ajout", action: 'addGoogleDriveDocument' });
+		}
+
+		return rangerDansLeModele(
+			templateId,
+			formData,
+			'document',
+			created.data.id,
+			locals.supabase,
+			'addGoogleDriveDocument'
+		);
+	},
+
+	deleteDocument: retireAction('deleteDocument'),
+	deleteChecklistItem: retireAction('deleteChecklistItem'),
+	unlinkExercise: retireAction('unlinkExercise'),
+	unlinkWorksheet: retireAction('unlinkWorksheet'),
+	unlinkSeries: retireAction('unlinkSeries')
 };

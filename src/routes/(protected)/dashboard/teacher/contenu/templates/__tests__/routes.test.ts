@@ -698,6 +698,12 @@ describe('Template Actions', () => {
 					error: null
 				});
 
+			// Le contenu POSSÉDÉ par le modèle (ADR 0029) : un document non retiré.
+			// La page le vérifie, puis le service de publication le revérifie.
+			mockSupabase._mockChain.limit
+				.mockResolvedValueOnce({ data: [{ id: 'doc' }], error: null } as never)
+				.mockResolvedValueOnce({ data: [{ id: 'doc' }], error: null } as never);
+
 			// Mock publish update — must include content_snapshot for dbTemplateToApp
 			mockSupabase._mockChain.update.mockReturnThis();
 			mockSupabase._mockChain.eq.mockReturnThis();
@@ -768,6 +774,11 @@ describe('Template Actions', () => {
 					},
 					error: null
 				});
+
+			// Aucun élément non retiré dans les cinq tables du modèle.
+			for (let i = 0; i < 5; i++) {
+				mockSupabase._mockChain.limit.mockResolvedValueOnce({ data: [], error: null } as never);
+			}
 
 			const result = await actions.publish({
 				locals,
