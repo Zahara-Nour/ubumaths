@@ -169,6 +169,10 @@ describe('ADR 0029, étape 4 — reprise des modèles à snapshot', () => {
 		// L'auteur du modèle : un admin (le compte prof unique de la base locale n'est pas touché).
 		const auteur = await TestData.profile().withRole('admin').create();
 		comptes.push(auteur.id);
+		// La création d'une classe ouvre sa conversation, qui cherche l'unique professeur :
+		// sans lui, elle naît sans auteur et viole sa contrainte (base vide en CI).
+		const professeur = await TestData.profile().withRole('teacher').create();
+		comptes.push(professeur.id);
 		ecole = await insert(service, 'schools', {
 			name: 'Lycée reprise ZZ',
 			city: 'Testville',
