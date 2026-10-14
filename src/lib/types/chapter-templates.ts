@@ -152,7 +152,7 @@ export interface TemplateDiff {
 
 type ChapterOnly = 'chapterId' | 'publishedAt' | 'sourceId' | 'hidden';
 
-export type TemplateSection = Omit<ChapterSection, 'chapterId' | 'sourceId'> & {
+export type TemplateSection = Omit<ChapterSection, 'chapterId' | 'sourceId' | 'hidden'> & {
 	templateId: string;
 };
 export type TemplateDocument = Omit<ChapterDocument, ChapterOnly> & { templateId: string };

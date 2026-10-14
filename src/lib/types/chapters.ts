@@ -164,6 +164,11 @@ export interface ChapterSection {
 	chapterId: string;
 	/** Section du modèle que cette section RELIE (ADR 0029) ; `null` si propre au chapitre. */
 	sourceId: string | null;
+	/**
+	 * Masquée dans ce chapitre (décision du 2026-10-14) : son contenu est masqué
+	 * et dépublié avec elle. Toujours faux pour une section de modèle.
+	 */
+	hidden: boolean;
 	title: string;
 	displayOrder: number;
 	createdAt: string;

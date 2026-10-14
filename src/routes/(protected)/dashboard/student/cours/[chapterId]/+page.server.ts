@@ -184,6 +184,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 			id: s.id,
 			chapterId,
 			sourceId: s.source_id,
+			hidden: s.hidden,
 			title: s.title,
 			displayOrder: s.display_order,
 			createdAt: s.created_at,

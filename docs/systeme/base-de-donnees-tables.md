@@ -344,7 +344,7 @@ Liens : `chapter_id` → `class_chapters` · `exercise_id` → `exercises` · `s
 
 ### `chapter_sections`
 
-`chapter_id?` · `created_at` · `display_order` · `id` · `source_id?` · `template_id?` · `title` · `updated_at`
+`chapter_id?` · `created_at` · `display_order` · `hidden` · `id` · `source_id?` · `template_id?` · `title` · `updated_at`
 
 Liens : `chapter_id` → `class_chapters` · `source_id` → `chapter_sections` · `template_id` → `chapter_templates`
 

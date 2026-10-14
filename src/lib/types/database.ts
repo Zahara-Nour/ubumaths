@@ -1061,6 +1061,7 @@ export type Database = {
           chapter_id: string | null
           created_at: string
           display_order: number
+          hidden: boolean
           id: string
           source_id: string | null
           template_id: string | null
@@ -1071,6 +1072,7 @@ export type Database = {
           chapter_id?: string | null
           created_at?: string
           display_order?: number
+          hidden?: boolean
           id?: string
           source_id?: string | null
           template_id?: string | null
@@ -1081,6 +1083,7 @@ export type Database = {
           chapter_id?: string | null
           created_at?: string
           display_order?: number
+          hidden?: boolean
           id?: string
           source_id?: string | null
           template_id?: string | null
