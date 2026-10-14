@@ -169,6 +169,8 @@ export const createWorksheetSchema = z.object({
 	type: worksheetTypeSchema.default('worksheet'),
 	config: worksheetConfigSchema,
 	template_id: uuidSchema.optional().nullable(),
+	// Le style de la fiche (lot 3) ; son accès est vérifié en base (trigger)
+	style_id: uuidSchema.optional().nullable(),
 	estimated_duration_minutes: z
 		.number()
 		.int('La durée doit être un nombre entier')
@@ -207,6 +209,8 @@ export const updateWorksheetSchema = z.object({
 	type: worksheetTypeSchema.optional(),
 	config: worksheetConfigSchemaForUpdate, // No default - won't be set if not in request
 	template_id: uuidSchema.optional().nullable(),
+	// Le style de la fiche (lot 3) ; son accès est vérifié en base (trigger)
+	style_id: uuidSchema.optional().nullable(),
 	estimated_duration_minutes: z
 		.number()
 		.int('La durée doit être un nombre entier')
@@ -632,6 +636,8 @@ export const worksheetResponseSchema = z.object({
 	published_at: timestampSchema.nullable(),
 	archived_at: timestampSchema.nullable(),
 	template_id: z.string().uuid().nullable(),
+	// Optionnel : une route qui choisit ses colonnes peut ne pas le lire
+	style_id: z.string().uuid().nullable().optional(),
 	estimated_duration_minutes: z.number().int().nullable(),
 	total_points: z.number().nullable(),
 	grades: z.array(gradeCodeSchema),
@@ -726,11 +732,14 @@ export const worksheetDetailResponseSchema = z.object({
 	worksheet: worksheetResponseSchema.extend({
 		sections: z.array(worksheetSectionResponseSchema).optional(),
 		exercises: z.array(worksheetExerciseWithDataResponseSchema).optional(),
+		// La fiche d'un style du prof (`loadStyleTemplate`) : son Typst sert au PDF
 		template: z
 			.object({
 				id: z.string().uuid(),
 				name: z.string(),
-				description: z.string().nullable()
+				description: z.string().nullable(),
+				template_content: z.string().optional(),
+				style_id: z.string().uuid().nullable().optional()
 			})
 			.nullable()
 			.optional()

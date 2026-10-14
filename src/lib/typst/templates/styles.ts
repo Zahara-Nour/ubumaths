@@ -7,9 +7,11 @@
  * (`{{style_common}}`). Une forme absente d'un style prend celle du style par
  * défaut, « Fiche élève » (D2, D7).
  *
- * Lot 2 : les styles fournis par Chiphre vivent ici, un par gabarit intégré ;
- * la fiche désigne encore son style par `worksheets.template_id`. Le lot 3 les
- * range en base (`worksheet_styles`).
+ * Les styles fournis par Chiphre vivent ici, un par gabarit intégré ; ils ont
+ * aussi une ligne en base (`worksheet_styles`, même identifiant) pour qu'une
+ * fiche puisse les désigner, mais leur Typst se prend toujours dans le code
+ * (D9). La fiche désigne son style par `style_id`, ou, avant le lot 3, par
+ * `template_id` (`styleIdOf`).
  */
 
 import type { DocumentForm } from '$lib/worksheets/document/types';
@@ -36,6 +38,15 @@ export interface WorksheetStyle {
 	 * élève » (fiches d'exercices et leurs corrigés) : les points sont l'affaire
 	 * d'un style d'évaluation. Vrai : la case « afficher les points » décide.
 	 */
+	showsPoints: boolean;
+}
+
+/** Un style tel que le menu « Style » de la fiche le propose */
+export interface StyleOption {
+	id: string;
+	name: string;
+	description: string | null;
+	/** Faux : la case « afficher les points » n'a pas d'effet, elle est masquée */
 	showsPoints: boolean;
 }
 
@@ -72,18 +83,42 @@ export const BUILT_IN_STYLES: WorksheetStyle[] = DEFAULT_TEMPLATES.map((template
 			}
 );
 
+/** Les styles de Chiphre, dans l'ordre du menu */
+export const BUILT_IN_STYLE_OPTIONS: StyleOption[] = BUILT_IN_STYLES.map((style) => ({
+	id: style.id,
+	name: style.name,
+	description: style.description,
+	showsPoints: style.showsPoints
+}));
+
 function builtInStyle(id: string | null | undefined): WorksheetStyle | undefined {
 	return id ? BUILT_IN_STYLES.find((style) => style.id === id) : undefined;
+}
+
+/** Le style est-il fourni par Chiphre (Typst dans le code) ? */
+export function isBuiltInStyle(id: string | null | undefined): boolean {
+	return builtInStyle(id) !== undefined;
+}
+
+/**
+ * Le style retenu pour une fiche : `style_id`, sinon `template_id` (fiches
+ * d'avant le lot 3, même identifiant pour un style de Chiphre), sinon aucun —
+ * `resolveTemplate` prend alors le style par défaut.
+ */
+export function styleIdOf(worksheet: {
+	style_id?: string | null;
+	template_id?: string | null;
+}): string | null {
+	return worksheet.style_id ?? worksheet.template_id ?? null;
 }
 
 /**
  * Le gabarit d'une forme, `{{style_common}}` remplacé par le code commun du
  * style qui fournit le gabarit, et ce que ce style imprime.
  *
- * - `custom` : le gabarit de la fiche lu en base (gabarit du prof), utilisé
- *   pour la forme « fiche » seulement ; il imprime les points comme son style
- *   intégré (copie en base d'un gabarit système), sinon (gabarit du prof)
- *   selon la case de la fiche ;
+ * - `custom` : la fiche du style lue en base (style du prof), utilisée pour la
+ *   forme « fiche » seulement, et qui imprime les points selon la case de la
+ *   fiche. Ignorée pour un style de Chiphre : son Typst vient du code ;
  * - style inconnu ou absent → style par défaut ; forme absente du style →
  *   celle du style par défaut.
  */
@@ -92,8 +127,8 @@ export function resolveTemplate(
 	form: TemplateForm,
 	custom?: string | null
 ): ResolvedTemplate {
-	if (form === 'worksheet' && custom) {
-		return { content: custom, showsPoints: builtInStyle(styleId)?.showsPoints ?? true };
+	if (form === 'worksheet' && custom && !isBuiltInStyle(styleId)) {
+		return { content: custom, showsPoints: true };
 	}
 
 	const fallback = builtInStyle(DEFAULT_STYLE_ID) as WorksheetStyle;

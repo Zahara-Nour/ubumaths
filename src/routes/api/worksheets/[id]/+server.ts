@@ -8,6 +8,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { loadStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
+import { isBuiltInStyle } from '$lib/typst/templates/styles';
 import { fetchResourceTagNames, syncResourceTags } from '$lib/server/resource-tags';
 import {
 	validateUpdateWorksheet,
@@ -116,19 +118,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de charger les exercices de la fiche');
 	}
 
-	// Fetch template if template_id exists
-	let template = null;
-	if (worksheet.template_id) {
-		const { data: templateData, error: templateError } = await locals.supabase
-			.from('worksheet_templates')
-			.select('id, name, description')
-			.eq('id', worksheet.template_id)
-			.single();
-
-		if (!templateError && templateData) {
-			template = templateData;
-		}
-	}
+	// La fiche d'un style du prof, pour le PDF ; `null` pour un style de
+	// Chiphre (Typst dans le code) ou un style illisible (style par défaut).
+	const template = await loadStyleTemplate(locals.supabase, worksheet);
 
 	// Les étiquettes ne sont plus une colonne de `worksheets` (migration
 	// 20260908180000). Sans cette lecture, `tags` vaut `undefined` et le schéma
@@ -199,6 +191,13 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	if (data.type !== undefined) updateData.type = data.type;
 	if (data.config !== undefined) updateData.config = data.config;
 	if (data.template_id !== undefined) updateData.template_id = data.template_id;
+	if (data.style_id !== undefined) {
+		updateData.style_id = data.style_id;
+		// Un style de Chiphre a le même identifiant que son gabarit : `template_id`
+		// le suit, pour que la fiche garde sa mise en page si le code revenait en
+		// arrière. Un style du prof ne touche pas `template_id`.
+		if (data.style_id && isBuiltInStyle(data.style_id)) updateData.template_id = data.style_id;
+	}
 	if (data.estimated_duration_minutes !== undefined)
 		updateData.estimated_duration_minutes = data.estimated_duration_minutes;
 	if (data.total_points !== undefined) updateData.total_points = data.total_points;
@@ -232,6 +231,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.single();
 
 	if (dbError) {
+		// Trigger de `worksheets.style_id` : style d'un autre auteur
+		if (dbError.code === '42501') {
+			throw error(403, 'Ce style n’est pas disponible pour cette fiche');
+		}
 		logger.error('Failed to update worksheet:', dbError);
 		throw error(500, 'Impossible de modifier la fiche');
 	}

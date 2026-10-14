@@ -13,16 +13,12 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
-	import TemplateSelector from '$lib/components/worksheets/TemplateSelector.svelte';
+	import StyleSelector from '$lib/components/worksheets/StyleSelector.svelte';
+	import { DEFAULT_STYLE_ID } from '$lib/typst/templates/styles';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { ChevronDown, ChevronUp, Loader2, Save, FileText } from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import type {
-		WorksheetType,
-		WorksheetConfig,
-		NumberingStyle,
-		WorksheetTemplateRow
-	} from '$lib/types/worksheets';
+	import type { WorksheetType, WorksheetConfig, NumberingStyle } from '$lib/types/worksheets';
 	import type { GradeCode } from '$lib/types/grades';
 
 	let { data }: { data: PageData } = $props();
@@ -34,7 +30,12 @@
 	let estimatedDuration = $state<number | null>(null);
 	let selectedGrades = $state<GradeCode[]>([]);
 	let selectedTags = $state<string[]>([]);
-	let selectedTemplateId = $state<string | null>(null);
+	let selectedStyleId = $state(DEFAULT_STYLE_ID);
+
+	// « Fiche élève » n'imprime pas de points : la case serait sans effet
+	let stylePrintsPoints = $derived(
+		data.styles.find((s) => s.id === selectedStyleId)?.showsPoints ?? false
+	);
 
 	// Config options state
 	let configOpen = $state(false);
@@ -90,19 +91,12 @@
 		submitting = true;
 
 		try {
-			// Parse template ID: the selector prefixes built-in templates with `default:`,
-			// but they are real rows in worksheet_templates sharing the same UUID, so the
-			// prefix is presentational only and must be stripped before saving.
-			const templateId = selectedTemplateId
-				? selectedTemplateId.replace(/^default:/, '') || null
-				: null;
-
 			const worksheetData = {
 				title: title.trim(),
 				description: description.trim() || null,
 				type: worksheetType,
 				config,
-				template_id: templateId,
+				style_id: selectedStyleId,
 				estimated_duration_minutes: estimatedDuration,
 				grades: selectedGrades,
 				tags: selectedTags
@@ -224,22 +218,17 @@
 			</Card.Content>
 		</Card.Root>
 
-		<!-- Template selection -->
+		<!-- Style selection -->
 		<Card.Root>
 			<Card.Header>
 				<div class="flex items-center gap-2">
 					<FileText class="h-5 w-5 text-muted-foreground" />
-					<Card.Title>Template de mise en page</Card.Title>
+					<Card.Title>Style</Card.Title>
 				</div>
-				<Card.Description>
-					Choisissez un template pour personnaliser la mise en page PDF de votre feuille
-				</Card.Description>
+				<Card.Description>La mise en page des PDF de la fiche</Card.Description>
 			</Card.Header>
 			<Card.Content>
-				<TemplateSelector
-					bind:value={selectedTemplateId}
-					templates={data.templates as WorksheetTemplateRow[]}
-				/>
+				<StyleSelector bind:value={selectedStyleId} styles={data.styles} />
 			</Card.Content>
 		</Card.Root>
 
@@ -275,7 +264,12 @@
 								<MyCheckbox bind:checked={showDate} label="Afficher la date" />
 								<MyCheckbox bind:checked={showStudentName} label="Nom de l'eleve" />
 								<MyCheckbox bind:checked={showClass} label={lore.entities.class} />
-								<MyCheckbox bind:checked={showPoints} label="Points par {lore.learning.exercise}" />
+								{#if stylePrintsPoints}
+									<MyCheckbox
+										bind:checked={showPoints}
+										label="Points par {lore.learning.exercise}"
+									/>
+								{/if}
 							</div>
 						</div>
 

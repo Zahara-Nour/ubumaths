@@ -67,6 +67,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 };
 
 /**
+ * Le style propre au gabarit — créé avec lui, au même identifiant (D10) — ou
+ * `null` (gabarit rattaché à un autre style, ou d'avant le lot 3 sans style).
+ */
+function ownStyleId(template: { id: string; style_id: string | null }): string | null {
+	return template.style_id === template.id ? template.style_id : null;
+}
+
+/**
  * PUT /api/worksheets/templates/[id]
  * Update template
  * Teachers and admins only (can only update their own templates)
@@ -83,7 +91,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	// First check if template exists and user has permission
 	const { data: existingTemplate, error: fetchError } = await locals.supabase
 		.from('worksheet_templates')
-		.select('id, created_by')
+		.select('id, created_by, style_id')
 		.eq('id', params.id)
 		.single();
 
@@ -138,6 +146,22 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(500, 'Impossible de modifier le modèle de fiche');
 	}
 
+	// Le style du gabarit porte son nom dans le menu de la fiche (D10)
+	if (ownStyleId(existingTemplate) && (data.name !== undefined || data.description !== undefined)) {
+		const styleUpdate: TablesUpdate<'worksheet_styles'> = {};
+		if (data.name !== undefined) styleUpdate.name = data.name;
+		if (data.description !== undefined) styleUpdate.description = data.description;
+		const { data: styles, error: styleError } = await locals.supabase
+			.from('worksheet_styles')
+			.update(styleUpdate)
+			.eq('id', existingTemplate.id)
+			.select('id');
+		// La RLS refuse en silence : zéro ligne, sans erreur
+		if (styleError || (styles ?? []).length === 0) {
+			logger.error('Failed to rename template style:', styleError ?? 'aucune ligne');
+		}
+	}
+
 	// Validate response
 	const validated = validateJsonResponse(
 		templateResponseSchema,
@@ -165,7 +189,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	// First check if template exists and user has permission
 	const { data: existingTemplate, error: fetchError } = await locals.supabase
 		.from('worksheet_templates')
-		.select('id, created_by, name')
+		.select('id, created_by, name, style_id')
 		.eq('id', params.id)
 		.single();
 
@@ -182,11 +206,15 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(403, 'Seul l’auteur du modèle peut le supprimer');
 	}
 
-	// Check if template is in use by any worksheets
+	// Une fiche qui désigne ce gabarit, ou son style (D10), perdrait sa mise en
+	// page sans le dire : la suppression est refusée.
+	const styleId = ownStyleId(existingTemplate);
 	const { count: worksheetCount, error: countError } = await locals.supabase
 		.from('worksheets')
 		.select('id', { count: 'exact', head: true })
-		.eq('template_id', params.id);
+		.or(
+			styleId ? `template_id.eq.${params.id},style_id.eq.${styleId}` : `template_id.eq.${params.id}`
+		);
 
 	if (countError) {
 		logger.error('Failed to check template usage:', countError);
@@ -200,14 +228,14 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		);
 	}
 
-	// Delete template
-	const { error: dbError } = await locals.supabase
-		.from('worksheet_templates')
-		.delete()
-		.eq('id', params.id);
+	// Supprimer le style emporte le gabarit (`on delete cascade`) ; la RLS refuse
+	// en silence, d'où la relecture des lignes supprimées.
+	const { data: deleted, error: dbError } = styleId
+		? await locals.supabase.from('worksheet_styles').delete().eq('id', styleId).select('id')
+		: await locals.supabase.from('worksheet_templates').delete().eq('id', params.id).select('id');
 
-	if (dbError) {
-		logger.error('Failed to delete template:', dbError);
+	if (dbError || (deleted ?? []).length === 0) {
+		logger.error('Failed to delete template:', dbError ?? 'aucune ligne');
 		throw error(500, 'Impossible de supprimer le modèle de fiche');
 	}
 

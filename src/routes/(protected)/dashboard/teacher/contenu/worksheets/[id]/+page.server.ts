@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import { redirect, error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { fetchWorksheetCitations } from '$lib/server/worksheets/citations';
+import { listWorksheetStyles } from '$lib/server/worksheets/worksheet-styles';
 
 // UUID validation schema
 const uuidSchema = z.string().uuid();
@@ -23,9 +24,10 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	// Les deux lectures sont indépendantes : les enchaîner faisait payer un
 	// aller-retour de plus à chaque ouverture de fiche.
-	const [response, citations] = await Promise.all([
+	const [response, citations, styles] = await Promise.all([
 		fetch(`/api/worksheets/${params.id}`),
-		fetchWorksheetCitations(locals.supabase, idValidation.data)
+		fetchWorksheetCitations(locals.supabase, idValidation.data),
+		listWorksheetStyles(locals.supabase, user.id)
 	]);
 
 	if (!response.ok) {
@@ -49,6 +51,8 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		// avec d'autres consommateurs — dont un schéma Zod qui laisserait tomber le
 		// champ en silence.
 		citations,
+		// Le menu « Style » : ceux de Chiphre, puis ceux du prof (lot 3b)
+		styles,
 		user
 	};
 };

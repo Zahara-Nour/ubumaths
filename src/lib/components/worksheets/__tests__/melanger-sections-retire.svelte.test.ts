@@ -14,6 +14,7 @@ import { page } from 'vitest/browser';
 import MetadataCards from '../MetadataCards.svelte';
 import NewWorksheetPage from '../../../../routes/(protected)/dashboard/teacher/contenu/worksheets/new/+page.svelte';
 import type { WorksheetWithRelations } from '$lib/types/worksheets';
+import { BUILT_IN_STYLE_OPTIONS } from '$lib/typst/templates/styles';
 
 const WORKSHEET = {
 	id: '550e8400-e29b-41d4-a716-446655440011',
@@ -42,7 +43,9 @@ describe('« Mélanger dans les sections » : plus dans l’interface', () => {
 	});
 
 	it('création d’une fiche : pas de case « Melanger dans les sections »', async () => {
-		await render(NewWorksheetPage, { props: { data: { templates: [] } } as never });
+		await render(NewWorksheetPage, {
+			props: { data: { styles: BUILT_IN_STYLE_OPTIONS } } as never
+		});
 		await page.getByText('Options d’affichage'.replace('’', "'")).click();
 		await expect.poll(() => document.body.textContent).toContain('Options de melange');
 		expect(document.body.textContent).toMatch(/Melanger les \S+s/);
