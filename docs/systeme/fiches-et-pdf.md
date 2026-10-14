@@ -71,7 +71,8 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 | `src/lib/typst/generators/worksheet-generator.ts`                                 | `WorksheetGenerator` (classe) : la fiche **professeur** (énoncé ou corrigé) depuis `WorksheetRow` + `InstanceData` (+ gabarit). Fonctions héritées `generateWorksheetTypst`, `generateBatchTypst` (marquées `@deprecated`, mais ce sont elles qu'appellent les écrans). |
 | `src/lib/typst/generators/base-generator.ts`                                      | `BaseTypstGenerator` : contexte (mode, nom d'élève, classe), config.                                                                                                                                                                                                    |
 | `src/lib/typst/generators/notebook-generator.ts`, `src/lib/typst/notebook-pdf.ts` | Même chaîne pour les **carnets** Python (`generateNotebookPdf`) — hors fiches, voir [python/](python/).                                                                                                                                                                 |
-| `src/lib/typst/templates/default-templates.ts`                                    | 12 gabarits intégrés (`STANDARD_TEMPLATE` … `STUDENT_STYLE_TEMPLATE`, ids `DEFAULT_TEMPLATE_IDS`), `renderTemplate` (`{{clé}}`, `{{#if clé}}`), `COMMON_PLACEHOLDERS`.                                                                                                  |
+| `src/lib/typst/templates/default-templates.ts`                                    | 12 gabarits intégrés (ids `DEFAULT_TEMPLATE_IDS`), formes du style « Fiche élève » (`STUDENT_STYLE_FORMS`, `STUDENT_STYLE_COMMON`), `renderTemplate`.                                                                                                                   |
+| `src/lib/typst/templates/styles.ts`                                               | Styles (`BUILT_IN_STYLES`, `DEFAULT_STYLE_ID`) et `resolveTemplate` : le gabarit d'une forme dans le style de la fiche.                                                                                                                                                 |
 | `src/lib/typst/labels.ts`                                                         | Habillage traduit : `documentLabels(locale)`, `labelPlaceholders(locale)`, `STUDENT_TYPE_LABELS`.                                                                                                                                                                       |
 | `src/lib/typst/worksheet-palette.ts`                                              | Charte commune prof / élève : `BADGE_FILL`, `SECTION_COLOR`, `exerciseBadge`.                                                                                                                                                                                           |
 | `src/lib/typst/image-loader.ts`                                                   | Le WASM ne lit pas d'URL : `fetchExternalImages`, `urlToVirtualPath` (→ `/virtual/images/…`, posé par `mapShadow`), conversion **WebP → PNG** par canvas.                                                                                                               |
@@ -269,7 +270,7 @@ l'aperçu d'affectation (API élève et aperçu), `ordre-melange.svelte.test.ts`
 ```
 exercises.variations (ubumark, FR + translations.en)
   → InstanceData / StudentWorksheetView (contenu résolu dans la langue de la fiche)
-  → WorksheetGenerator (prof : gabarit ou mise en page par défaut ; fiche | réponses | corrigé)
+  → WorksheetGenerator (prof : le gabarit de la forme ; fiche | réponses | corrigé | fiche + corrections)
     ou generateStudentWorksheetTypst (élève)
       → generateTypst (ubumark) par énoncé / solution ; blocs figure via figure-typst-setup
   → source Typst (une chaîne)
@@ -286,25 +287,34 @@ Trois chemins d'appel, qui n'empruntent pas le même compilateur :
 | Prof, fiche (`PdfPreview.svelte`, aussi page publique du cahier) | `generateWorksheetTypst`        | `compileTypstDocument` ; lot : une compilation par élève + réponses ou corrigé général + `00_SOMMAIRE.txt` (ZIP) |
 | Prof, corrections (`CorrectionManager.svelte`)                   | — (Typst rendu par l'API)       | `compileTypstDocument` (compilateur du Corrigé, repli)                                                           |
 
-**Gabarits** : `WorksheetGenerator` prend le `template_content` de la ligne `worksheet_templates`
-passée, sinon un gabarit intégré par `template_id`, sinon une mise en page par défaut
-(`generateDefault`). Un gabarit qui contient `{{exercises_badge}}` reçoit la numérotation en carré
-ambre (charte élève) ; sinon `{{exercises}}` en titres gras. Dans les corrigés, un bandeau
-« CORRECTION » ou « RÉPONSES » (« SOLUTIONS » / « ANSWERS ») est inséré **après** le dernier
-`#set page(…)` (`endOfLastPageSetup`, sinon il restait seul sur une page 1 vide) et après le dernier
-`#set text(…)` de premier niveau (`endOfLastTextSetup`, pour prendre les polices du Corrigé).
+**Styles et gabarits** (ADR 0028, lot 2 ; `src/lib/typst/templates/styles.ts`) : une **forme** = un
+gabarit. Chaque gabarit intégré est un **style** (`BUILT_IN_STYLES`) ; le style par défaut,
+**« Fiche élève »** (`DEFAULT_STYLE_ID`, D7), a ses quatre formes (`STUDENT_STYLE_FORMS` : fiche,
+réponses, corrigé, fiche + corrections) et un code commun (`STUDENT_STYLE_COMMON`, inséré à la
+place de `{{style_common}}`) ; les onze autres n'ont que leur fiche et prennent les autres formes
+du style par défaut. `resolveTemplate(style, forme, gabarit lu en base)` : le style est encore
+désigné par `worksheets.template_id` (inconnu ou vide → « Fiche élève ») ; le gabarit lu en base
+ne sert qu'à la forme « fiche ». **Plus de mise en page écrite dans le code** : une fiche sans
+gabarit prend la fiche « Fiche élève ». Le bandeau vert des corrigés (« CORRECTION », « RÉPONSES »,
+« SOLUTIONS » / « ANSWERS », placeholder `{{form_title}}`) et l'avertissement de la copie
+individuelle (`{{individual_copy_notice}}`) sont **écrits dans le gabarit**, dans le bloc
+d'en-tête pleine largeur, plus injectés. Fiche + corrections (`withCorrections: 'answers' |
+'correction'`) : la fiche, puis `{{corrections}}` sur une nouvelle page, polices du Corrigé
+(`{{correction_fonts}}`) sur cette partie seulement. Les opérateurs à limites
+(`MATH_LIMITS_SETUP`) sont posés en tête de tout document produit par un gabarit. Un gabarit qui
+contient `{{exercises_badge}}` reçoit la numérotation en carré ambre (charte élève) ; sinon
+`{{exercises}}` en titres gras. L'option `page_layout` (A4 / Letter) n'est lue par aucun gabarit.
 
 **Un document, un rendu d'exercice** (ADR 0028, lot 1) : les deux générateurs construisent un
 `WorksheetDocument` puis appellent `renderExercises(doc, forme, habillage)`. Les habillages
-(`classic` : fiche du prof sans gabarit — ses Réponses et son Corrigé passent en `badge`, deux
-colonnes, bandeau et avertissement pleine largeur en tête (D6) ; `heading` : `{{exercises}}` ; `badge` : `{{exercises_badge}}` ;
-`student` : PDF élève) ne changent que la présentation ; ils disparaissent au lot 2. Communs aux deux
+(`heading` : `{{exercises}}` ; `badge` : `{{exercises_badge}}` ; `student` : PDF élève, jusqu'au
+lot 5) ne changent que la présentation. L'aperçu markdown à l'écran de `PdfPreview` passe par le
+même document (`renderMarkdownPreview`) : mêmes ordre, numéros, sections et « correction non
+écrite » que le PDF. Communs aux deux
 PDF : titre d'exercice avec ses formules (`processTableCellContent`), ordre et numérotation
-(`numbering_style`, `exercise_order` côté prof), points en « pt » / « pts » de `documentLabels` (aussi en anglais, et
-aussi dans le `points-badge` du prof sans gabarit, qui reçoit le libellé) masqués si `show_points` n'est pas coché, exercice hors section après des sections sous
+(`numbering_style`, `exercise_order` côté prof), points en « pt » / « pts » de `documentLabels` (aussi en anglais) masqués si `show_points` n'est pas coché, exercice hors section après des sections sous
 « Autres exercices », correction non écrite → « Correction non écrite. » sous le numéro (Corrigé,
-et Réponses quand il n'y a ni réponses ni corrigé), opérateurs à limites (`MATH_LIMITS_SETUP`, aussi
-dans le setup du prof sans gabarit, dont `lang` suit la fiche). L'API élève (et celle d'aperçu de
+et Réponses quand il n'y a ni réponses ni corrigé), opérateurs à limites (`MATH_LIMITS_SETUP`). L'API élève (et celle d'aperçu de
 l'affectation) transmet `numbering_style` et `show_points` (résolus comme pour le prof : absents,
 chiffres et points masqués) ; l'ordre de la copie de l'élève est celui des positions, sauf fiche
 qui mélange ses exercices (voir « La copie d'un élève » : `shuffled`, suivi par

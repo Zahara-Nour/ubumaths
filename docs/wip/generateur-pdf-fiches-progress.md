@@ -1,7 +1,7 @@
 # Un seul générateur PDF de fiches, piloté par les gabarits — journal
 
 > Chantier ouvert le 2026-10-13 (demande de David). Worktree `../ubumaths-wt-pdf-fiches`,
-> branche `refactor/generateur-pdf-fiches-unique`. **Plan validé le 2026-10-13 (ADR 0028) ; lots 0 et 1 faits (lot 1 non poussé), lot 2 à venir.**
+> branche `refactor/generateur-pdf-fiches-unique`. **Plan validé le 2026-10-13 (ADR 0028) ; lots 0, 1, 1 bis (D5) et D6 mergés (#1344, #1348, #1352) ; lot 2 en PR (branche `refactor/fiches-formes-gabarits`).**
 
 ## Constat (exploration du 2026-10-13)
 
@@ -155,6 +155,21 @@ Erreur / garde :
 - langue inconnue → repli `fr`, comme aujourd'hui.
 
 ## Journal
+
+- 2026-10-14 — **lot 2 fait** (branche `refactor/fiches-formes-gabarits`). `templates/styles.ts`
+  (`BUILT_IN_STYLES`, `DEFAULT_STYLE_ID`, `resolveTemplate`) ; « Fiche élève » découpé en code
+  commun (`STUDENT_STYLE_COMMON`, `{{style_common}}`) et quatre formes (`STUDENT_STYLE_FORMS`) ;
+  bandeau vert et avertissement dans le bloc d'en-tête du gabarit (le filet ne traverse plus
+  l'en-tête) ; générateur sans chemin par défaut (`generateDefault`, `generateHeader`,
+  `generateFooter`, injection du bandeau retirés), option `withCorrections` (fiche + corrections,
+  utilisée au lot 4) ; habillage `classic` retiré ; `MATH_LIMITS_SETUP` en tête de tout document
+  du prof ; aperçu markdown de PdfPreview par `renderMarkdownPreview` (le « Corvée N » de l'aperçu
+  devient « Exercice N », comme le PDF). Empreinte avant / après (126 fichiers) : fiches avec
+  gabarit identiques hors bornes ∑ / lim ; fiche sans gabarit → « Fiche élève » ; tous les
+  corrigés et réponses du prof sur leur gabarit ; PDF élève inchangé. Perdu, mesuré sans usage en
+  prod : la mise en page sans gabarit (consignes d'épreuve, durée, barème en tête — les 8 fiches
+  concernées sont des fiches simples, sans durée) ; `page_layout` Letter n'était déjà lu par aucun
+  gabarit. Rendu : `scratchpad/rendu-lot2/`.
 
 - 2026-10-14 — **D6 fait** (branche `feat/fiches-melange-suites`, commits locaux). (1) Case
   retirée de `MetadataCards` et du formulaire de création ; `asWorksheetConfig` ne lit plus la clé,
