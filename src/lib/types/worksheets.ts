@@ -761,6 +761,18 @@ export interface StudentWorksheetView {
 	exercises: StudentExerciseView[];
 	/** Sections for grouping exercises */
 	sections: StudentSectionView[];
+	/**
+	 * Le style de la fiche (lot 4b) : `style_id`, sinon `template_id` (fiches
+	 * d'avant le lot 3). Absents : « Fiche élève ».
+	 */
+	style_id?: string | null;
+	template_id?: string | null;
+	/**
+	 * La mise en page (forme « fiche ») d'un style du prof auteur de la fiche,
+	 * fournie par le serveur (D11) ; `null` pour un style de Chiphre (Typst
+	 * dans le code) ou un style illisible. Son Typst seul, rien d'autre.
+	 */
+	template?: { template_content: string } | null;
 }
 
 /**

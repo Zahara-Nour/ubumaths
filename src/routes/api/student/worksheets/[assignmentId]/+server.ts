@@ -45,6 +45,8 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { resolveAssignmentAccess } from '$lib/server/worksheets/assignment-access';
+import { loadAuthorStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import {
 	validateStudentWorksheetParam,
 	studentWorksheetDetailResponseSchema
@@ -140,7 +142,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 					description,
 					type,
 					config,
-					translations
+					translations,
+					style_id,
+					template_id,
+					created_by
 				)
 			`
 			)
@@ -163,6 +168,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				type: string;
 				config: Record<string, unknown>;
 				translations: RowTranslations | null;
+				style_id: string | null;
+				template_id: string | null;
+				created_by: string;
 			}
 		);
 		// La classe rapportée à l'élève est la SIENNE : la RLS ne lui montre de la
@@ -365,7 +373,12 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			read_only: readOnly,
 			...(shuffledRows ? { shuffled: true } : {}),
 			exercises,
-			sections: sectionViews
+			sections: sectionViews,
+			// Le style de la fiche et, pour un style de son auteur, sa mise en page
+			// (D11) : l'accès de l'élève à l'affectation est vérifié plus haut
+			style_id: worksheet.style_id,
+			template_id: worksheet.template_id,
+			template: await loadAuthorStyleTemplate(createServiceRoleClient(), worksheet)
 		};
 
 		// Validate response

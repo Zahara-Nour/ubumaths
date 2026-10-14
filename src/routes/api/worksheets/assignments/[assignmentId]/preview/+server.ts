@@ -69,6 +69,8 @@ import type {
 	WorksheetType
 } from '$lib/types/worksheets';
 import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
+import { loadAuthorStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/preview/+server');
@@ -236,7 +238,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 					description,
 					type,
 					config,
-					translations
+					translations,
+					style_id,
+					template_id,
+					created_by
 				)
 			`
 			)
@@ -258,6 +263,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				type: string;
 				config: Record<string, unknown>;
 				translations: RowTranslations | null;
+				style_id: string | null;
+				template_id: string | null;
+				created_by: string;
 			}
 		);
 		// Les classes visées, lues dans la jonction. Cet endpoint est réservé au
@@ -487,6 +495,11 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			...(shuffledRows ? { shuffled: true } : {}),
 			exercises,
 			sections: sectionViews,
+			// Le style et la mise en page exactement comme l'élève les reçoit (D11) ;
+			// l'accès du prof à l'affectation est vérifié plus haut
+			style_id: worksheet.style_id,
+			template_id: worksheet.template_id,
+			template: await loadAuthorStyleTemplate(createServiceRoleClient(), worksheet),
 			// Preview metadata
 			preview_mode: isTeacherMode ? 'teacher' : 'student',
 			preview_student_id: studentId ?? null,

@@ -186,11 +186,15 @@ function student(
 	config: WorksheetConfig = BASE_CONFIG,
 	exercises = EXERCISES,
 	sections = SECTIONS,
-	visible = true
+	visible = true,
+	styleId: string | null = null
 ): string {
-	return generateStudentWorksheetTypst(studentView(config, exercises, sections, visible), ending, {
-		correctionFonts: false
-	});
+	// Lot 4b : le PDF de l'élève prend le gabarit du style de la fiche
+	return generateStudentWorksheetTypst(
+		{ ...studentView(config, exercises, sections, visible), style_id: styleId },
+		ending,
+		{ correctionFonts: false }
+	);
 }
 
 // ============================================================================
@@ -300,16 +304,29 @@ describe('points', () => {
 		}
 	});
 
-	it('élève : « pt » / « pts », les mots du prof', () => {
-		const typst = student('none');
-		expect(typst).toContain('[2 pts]');
-		expect(typst).toContain('[1 pt]');
+	// Lot 4b : le PDF de l'élève suit le style, comme celui du prof (D8) :
+	// « Fiche élève » n'imprime aucun point, un style à points suit la case
+	it('élève, style à points : « pt » / « pts », les mots du prof', () => {
+		const typst = student('none', BASE_CONFIG, EXERCISES, SECTIONS, true, HEADING_TEMPLATE!.id);
+		expect(typst).toContain(')[2 pts]');
+		expect(typst).toContain(')[1 pt]');
 		expect(typst).not.toMatch(/\d points?\]/);
 	});
 
 	it('élève, fiche anglaise : les mots anglais du prof', () => {
-		const typst = student('none', { ...BASE_CONFIG, language: 'en' });
-		expect(typst).toContain('[2 pts]');
+		const typst = student(
+			'none',
+			{ ...BASE_CONFIG, language: 'en' },
+			EXERCISES,
+			SECTIONS,
+			true,
+			HEADING_TEMPLATE!.id
+		);
+		expect(typst).toContain(')[2 pts]');
+	});
+
+	it('élève, « Fiche élève » : aucun point (D8)', () => {
+		expect(student('none')).not.toMatch(/\[\d pts?\]/);
 	});
 
 	it('« afficher les points » décoché : masqués des deux côtés', () => {
@@ -339,9 +356,11 @@ describe('exercice hors section après des sections : « Autres exercices »', (
 		expect(teacher('worksheet', { ...BASE_CONFIG, language: 'en' })).toContain('Other exercises');
 	});
 
-	it('élève (inchangé)', () => {
+	it('élève', () => {
 		const typst = student('none');
-		expect(typst).toContain('= Autres exercices');
+		const others = typst.indexOf('Autres exercices');
+		expect(others).toBeGreaterThan(typst.indexOf('ENONCE1'));
+		expect(others).toBeLessThan(typst.indexOf('ENONCE3'));
 	});
 
 	it('fiche sans section : pas de titre « Autres exercices »', () => {
@@ -367,14 +386,15 @@ describe('correction non écrite : « Exercice N : correction non écrite »', (
 
 	it('élève, corrigé : l’exercice n’est plus omis', () => {
 		const typst = student('correction');
-		const part = typst.slice(typst.indexOf('= Corrections'));
+		// La partie corrigé vient après le dernier énoncé
+		const part = typst.slice(typst.indexOf('ENONCE3'));
 		expect(part).toContain('#emph[Correction non écrite.]');
 		expect(part).toContain('Hors section');
 	});
 
 	it('élève, réponses : ni réponses ni corrigé → correction non écrite', () => {
-		const part = student('answers').slice(student('answers').indexOf('= Réponses'));
-		expect(part).toContain('#emph[Correction non écrite.]');
+		const typst = student('answers');
+		expect(typst.slice(typst.indexOf('ENONCE3'))).toContain('#emph[Correction non écrite.]');
 	});
 
 	it('fiche anglaise : en anglais', () => {
