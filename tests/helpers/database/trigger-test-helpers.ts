@@ -7,6 +7,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { deleteTestAuthUsers, closePostgresClient, getPostgresClient } from './postgres-client';
+import { purgeTemplatesOf } from './purge-modeles';
 
 /**
  * Creates a Supabase client for trigger testing
@@ -94,6 +95,7 @@ export async function cleanupAllTestData(): Promise<void> {
 	const serviceClient = createServiceRoleClient();
 
 	await purgeTestSeriesAndEvaluations();
+	await purgeTestTemplates();
 
 	// Order matters - delete children before parents
 	const tables = [
@@ -236,6 +238,25 @@ async function purgeTestSeriesAndEvaluations(): Promise<void> {
 		if (code !== '42P01' && code !== '42703') {
 			console.error('[cleanupAllTestData] Purge séries/évaluations impossible :', error);
 		}
+	}
+}
+
+/**
+ * Modèles de chapitre des profils de test (ADR 0029).
+ *
+ * ⚠️ À purger AVANT les profils : une ligne de lien (`source_id` en RESTRICT)
+ * fait échouer la cascade profil → modèle → éléments, et le DELETE massif des
+ * profils échoue en entier, sans lever. La suppression de secours en mode
+ * `replica` laissait alors le modèle orphelin. Voir `purge-modeles.ts`.
+ */
+async function purgeTestTemplates(): Promise<void> {
+	const client = await getPostgresClient();
+	try {
+		await purgeTemplatesOf(client, `select id from public.profiles where email like '%@test.com%'`);
+	} catch (error) {
+		// Bruyant EXPRÈS, comme la purge des classes : un échec ici fait échouer
+		// la purge des profils, et la suite suivante trébuche dessus.
+		console.error('[cleanupAllTestData] Purge des modèles impossible :', error);
 	}
 }
 
