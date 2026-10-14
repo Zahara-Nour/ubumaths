@@ -357,7 +357,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 export const actions: Actions = {
 	/**
-	 * Update template metadata (draft only)
+	 * Titre, description, niveaux, couleur, icône du modèle — quel que soit son
+	 * statut (bouton « Modifier » de la page). Le contenu, lui, passe par les
+	 * actions de contenu plus bas.
 	 */
 	update: async ({ request, locals, params }) => {
 		const { user } = await requireRole(locals, 'teacher');
@@ -469,11 +471,10 @@ export const actions: Actions = {
 		}
 		if (!aDuContenu) {
 			return fail(400, {
-				// Les cinq types que `hasContent` accepte, dans les mots de la
-				// fiche : une fiche seule suffit à publier, et le message le disait
-				// le contraire.
+				// Les cinq types que `templateHasContent` compte, dans les mots de
+				// l'interface : une section seule ne suffit pas.
 				error:
-					'Un modèle doit contenir au moins un élément : document, question de quiz, tâche, corvée ou fiche',
+					'Un modèle doit contenir au moins un élément : document, objectif, corvée, fiche ou série',
 				action: 'publish'
 			});
 		}
@@ -491,6 +492,10 @@ export const actions: Actions = {
 
 	/**
 	 * Reprendre le contenu d'un chapitre dans le modèle.
+	 *
+	 * ⚠️ SANS APPELANT depuis l'étape 3c : la page n'a plus de bouton « Mettre à
+	 * jour depuis un chapitre » (ADR 0029, le modèle s'édite sur sa page).
+	 * Gardée jusqu'au nettoyage de l'étape 5.
 	 *
 	 * En brouillon, le contenu est remplacé ; sur un modèle publié, il devient
 	 * une nouvelle version, ce qui permet aux chapitres qui en sont issus de se

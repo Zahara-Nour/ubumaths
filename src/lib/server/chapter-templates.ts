@@ -594,7 +594,8 @@ export async function listChapterTemplates(
 				documentCount: counts.documentCount,
 				checklistItemCount: counts.checklistItemCount,
 				exerciseCount: counts.exerciseCount,
-				worksheetCount: counts.worksheetCount
+				worksheetCount: counts.worksheetCount,
+				seriesCount: counts.seriesCount
 			};
 		});
 

@@ -60,7 +60,8 @@ describe('countTemplateContent', () => {
 				error: null
 			},
 			chapter_checklist_items: { data: [{ template_id: MODELE_A }], error: null },
-			chapter_worksheets: { data: [{ template_id: MODELE_B }], error: null }
+			chapter_worksheets: { data: [{ template_id: MODELE_B }], error: null },
+			chapter_series: { data: [{ template_id: MODELE_B }, { template_id: MODELE_B }], error: null }
 		});
 
 		const { data, error } = await countTemplateContent([MODELE_A, MODELE_B], client);
@@ -70,13 +71,15 @@ describe('countTemplateContent', () => {
 			documentCount: 2,
 			checklistItemCount: 1,
 			exerciseCount: 0,
-			worksheetCount: 0
+			worksheetCount: 0,
+			seriesCount: 0
 		});
 		expect(data?.get(MODELE_B)).toEqual({
 			documentCount: 1,
 			checklistItemCount: 0,
 			exerciseCount: 0,
-			worksheetCount: 1
+			worksheetCount: 1,
+			seriesCount: 2
 		});
 		// Un élément retiré du modèle ne compte plus : il n'est plus dans le plan.
 		for (const call of calls) {

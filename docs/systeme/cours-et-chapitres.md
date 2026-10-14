@@ -115,8 +115,13 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   « Modèle », ne se corrige ni ne se supprime (ni crayon d'objectif, ni forme de série, ni
   corbeille ; une section du modèle ne se renomme ni ne se supprime) — il se **masque**
   (`?/setHidden`). Un élément masqué quitte le plan ; l'interrupteur « Afficher les éléments
-  masqués (n) » le fait revenir, barré, sans publication, avec « Réafficher ». Le masquage entre
-  dans l'empreinte d'affichage (`empreinteAffichage`), sinon la ligne resterait à l'écran.
+  masqués (n) » le fait revenir, barré, sans publication, avec « Réafficher » ; il s'éteint de
+  lui-même quand le dernier masqué est réaffiché (`$derived` écrasable). Le masquage et le lien
+  (`sourceId`, éléments et sections) entrent dans l'empreinte d'affichage (`empreinteAffichage`) :
+  sinon un élément masqué resterait à l'écran, et un chapitre détaché garderait ses marques
+  « Modèle » et des « Masquer » en 404. Ranger une zone masqués cachés enregistre la zone
+  ENTIÈRE : chaque masqué reprend sa place après l'élément qu'il suivait (`avecMasquesASaPlace`),
+  jamais à égalité de rang avec un visible.
   `ChapterTemplateIndicator` dit « Chapitre lié au modèle « X » » (lien vers sa page) et
   « Détacher du modèle », que la page confirme (`ConfirmDialog`) avant `?/detachFromTemplate`.
 - API appelées par l'interface : `api/teacher/chapters/[id]/sections/**` (éditeur de sections),
@@ -313,7 +318,8 @@ instanciés par snapshot :
   rend `content` et, pour l'éditeur, les titres des exercices, fiches et séries et les listes de
   rattachement (`enrichTemplateContent`). Plus d'historique des versions à l'écran. Prof seul
   (`requireRole`). Tests : `contenu/templates/__tests__/routes.test.ts`.
-- **Compteurs** (liste des modèles, aperçu « Créer depuis un modèle » de la page Cours) : lus
+- **Compteurs** (documents, objectifs, corvées, fiches, séries ; liste des modèles, page du
+  modèle, aperçu « Créer depuis un modèle » de la page Cours) : lus
   dans le contenu réel non retiré (`countTemplateContent`, appelé par `listChapterTemplates`),
   plus dans `content_snapshot`. ⚠️ Un modèle dont le contenu n'est encore que dans le snapshot
   (le modèle de 1SPE avant la reprise de l'étape 4) s'y affiche vide.

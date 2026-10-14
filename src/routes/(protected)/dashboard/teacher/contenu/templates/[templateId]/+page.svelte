@@ -43,6 +43,7 @@
 		CheckSquare,
 		BookOpen,
 		ClipboardList,
+		Layers,
 		Upload,
 		Archive,
 		Trash2,
@@ -78,7 +79,8 @@
 		documentCount: data.content.documents.length,
 		checklistItemCount: data.content.checklistItems.length,
 		exerciseCount: data.content.exercises.length,
-		worksheetCount: data.content.worksheets.length
+		worksheetCount: data.content.worksheets.length,
+		seriesCount: data.content.series.length
 	});
 
 	const classItems = $derived(
@@ -292,7 +294,7 @@
 				</div>
 			{/if}
 
-			<div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+			<div class="grid grid-cols-2 gap-4 md:grid-cols-5">
 				<div class="flex items-center gap-2">
 					<FileText class="h-5 w-5 text-muted-foreground" />
 					<div>
@@ -319,6 +321,13 @@
 					<div>
 						<p class="text-2xl font-bold">{contentCounts.worksheetCount}</p>
 						<p class="text-xs text-muted-foreground">Fiches</p>
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					<Layers class="h-5 w-5 text-muted-foreground" />
+					<div>
+						<p class="text-2xl font-bold">{contentCounts.seriesCount}</p>
+						<p class="text-xs text-muted-foreground">Séries</p>
 					</div>
 				</div>
 			</div>

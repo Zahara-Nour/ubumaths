@@ -157,6 +157,7 @@ export interface TemplateContentCounts {
 	checklistItemCount: number;
 	exerciseCount: number;
 	worksheetCount: number;
+	seriesCount: number;
 }
 
 /** Des compteurs à zéro : un modèle sans élément. */
@@ -164,7 +165,8 @@ export const EMPTY_TEMPLATE_COUNTS: TemplateContentCounts = {
 	documentCount: 0,
 	checklistItemCount: 0,
 	exerciseCount: 0,
-	worksheetCount: 0
+	worksheetCount: 0,
+	seriesCount: 0
 };
 
 /**
@@ -187,7 +189,8 @@ export async function countTemplateContent(
 		['chapter_documents', 'documentCount'],
 		['chapter_checklist_items', 'checklistItemCount'],
 		['chapter_exercises', 'exerciseCount'],
-		['chapter_worksheets', 'worksheetCount']
+		['chapter_worksheets', 'worksheetCount'],
+		['chapter_series', 'seriesCount']
 	] as const;
 
 	const resultats = await Promise.all(

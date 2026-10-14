@@ -261,6 +261,8 @@ export interface TemplateSummary {
 	checklistItemCount: number;
 	exerciseCount: number;
 	worksheetCount: number;
+	/** Séries du modèle (contenu réel, ADR 0029). */
+	seriesCount: number;
 }
 
 /**

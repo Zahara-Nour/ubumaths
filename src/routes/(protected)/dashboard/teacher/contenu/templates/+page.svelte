@@ -19,7 +19,15 @@
 		CardHeader,
 		CardTitle
 	} from '$lib/components/ui/card';
-	import { Plus, Search, FileText, CheckSquare, BookOpen, ClipboardList } from '@lucide/svelte';
+	import {
+		Plus,
+		Search,
+		FileText,
+		CheckSquare,
+		BookOpen,
+		ClipboardList,
+		Layers
+	} from '@lucide/svelte';
 	import { formatGradeShort } from '$lib/utils/grades';
 	import { goto } from '$app/navigation';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
@@ -186,6 +194,10 @@
 							<div class="flex items-center gap-1">
 								<ClipboardList class="h-4 w-4" />
 								<span>{template.worksheetCount} fiches</span>
+							</div>
+							<div class="flex items-center gap-1">
+								<Layers class="h-4 w-4" />
+								<span>{template.seriesCount} séries</span>
 							</div>
 						</div>
 

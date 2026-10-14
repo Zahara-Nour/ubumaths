@@ -41,6 +41,7 @@
 		ClipboardList,
 		Dumbbell,
 		FileStack,
+		Layers,
 		Copy
 	} from '@lucide/svelte';
 	import type { PageData, ActionData } from './$types';
@@ -580,6 +581,14 @@
 								<FileStack class="h-4 w-4 text-muted-foreground" />
 								<span
 									>{selectedTemplate.worksheetCount} fiche{selectedTemplate.worksheetCount > 1
+										? 's'
+										: ''}</span
+								>
+							</div>
+							<div class="flex items-center gap-2">
+								<Layers class="h-4 w-4 text-muted-foreground" />
+								<span
+									>{selectedTemplate.seriesCount} série{selectedTemplate.seriesCount > 1
 										? 's'
 										: ''}</span
 								>
