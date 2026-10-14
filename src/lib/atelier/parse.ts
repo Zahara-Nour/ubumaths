@@ -497,6 +497,29 @@ export function referencesOf(
 }
 
 /**
+ * Les noms qu'une définition emploie COMME UN NOMBRE (V58) : `a` dans
+ * `a x`, et dans `a(2) + a` — là où `referencesOf` fait gagner l'appel.
+ *
+ * ⚠️ Un nom indicé (`a_1`, `u_n`) n'en fait pas partie : l'arbre en garde la
+ * base (`a`), mais `a_1` est un autre nom, et `u_n` la notation d'une suite.
+ * Le texte tranche : le nom n'est retenu que s'il n'est suivi ni d'un indice,
+ * ni d'une apostrophe (`f'`), ni d'une puissance (`f^{-1}`).
+ */
+export function bareNamesOf(
+	definition: string,
+	provenance: Provenance = 'url',
+	functionNames?: readonly string[]
+): string[] {
+	const result = parseByProvenance(definition, provenance, functionNames);
+	if (!result.ast) return [];
+	return [...getVariables(result.ast)].filter(
+		(name) =>
+			hasObjectNameShape(name) &&
+			new RegExp(`(?<![A-Za-z_\\\\])${name}(?![A-Za-z_0-9'^])`).test(definition)
+	);
+}
+
+/**
  * Le symbole d'unité porté par une définition, s'il y en a un.
  *
  * ⚠️ L'unité se **déclare**, elle ne se devine pas : `12[km]` en syntaxe custom,

@@ -48,7 +48,13 @@ import {
 	type ReciprocalOutcome
 } from './reciprocal';
 import type { Provenance } from './parse';
-import { parseDefinition, readNumber, referencesOf, renameInDefinition } from './parse';
+import {
+	bareNamesOf,
+	parseDefinition,
+	readNumber,
+	referencesOf,
+	renameInDefinition
+} from './parse';
 import { z } from 'zod';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 import type { ListChartKind } from './chart';
@@ -324,11 +330,20 @@ const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-m
 const OFFER_DEFINITION = '1';
 
 /**
- * Une FONCTION citée comme un nombre (`f(x) = a x` avec `a(x) = x^2`, V58) :
- * le moteur ne sait pas ce que vaut `a` seul, et `.dériver f` répondait `a`.
+ * Une FONCTION ou une SUITE citée comme un nombre (`f(x) = a x` avec
+ * `a(x) = x^2`, V58) : le moteur ne sait pas ce que vaut `a` seul, et
+ * `.dériver f` répondait `a`. La suggestion suit la variable de l'objet qui
+ * cite (`a(t)`, `a(n)`) ; une valeur n'en a pas.
  */
-const functionAsNumberMessage = (fn: string, user: string, letter: string) =>
-	`« ${fn} » est une fonction : « ${user} » ne peut pas s'en servir comme d'un nombre. Écris ${fn}(${letter}), ou donne un autre nom à la lettre.`;
+function functionAsNumberMessage(cited: AtelierObject, user: AtelierObject): string {
+	const what = cited.kind === 'sequence' ? 'suite' : 'fonction';
+	const variable = isFunction(user) ? (user.letter ?? 'x') : isSequence(user) ? 'n' : null;
+	const hint =
+		variable === null
+			? `Écris une de ses valeurs, comme ${cited.name}(2)`
+			: `Écris ${cited.name}(${variable})`;
+	return `« ${cited.name} » est une ${what} : « ${user.name} » ne peut pas s'en servir comme d'un nombre. ${hint}, ou donne un autre nom à la lettre.`;
+}
 
 const brokenMessage = (culprits: readonly string[]) =>
 	culprits.length === 1
@@ -422,6 +437,19 @@ export class Atelier {
 	 * aucune vue ne l'affiche. `restore()` (vider, rejouer, charger) l'oublie.
 	 */
 	#laws = new Map<string, string>();
+
+	/** Les objets dont la ligne est fautive, posés par `recomputeAll` (V58). */
+	#miswritten: ReadonlySet<string> = new Set();
+
+	/**
+	 * L'objet est-il en erreur à cause de SA ligne — illisible, circulaire, ou
+	 * une fonction citée comme un nombre (V58) ? Faux pour un objet qui suit
+	 * un autre objet en erreur, ou que l'atelier ne sait pas encore traiter :
+	 * ce n'est pas sa définition qu'il faut corriger.
+	 */
+	isMiswritten(name: string): boolean {
+		return this.#miswritten.has(name);
+	}
 
 	get objects(): readonly AtelierObject[] {
 		return this.items;
@@ -1624,14 +1652,21 @@ export class Atelier {
 			citedReciprocalInterval(this, text, INTERNAL_LETTER, others)
 		);
 		const missing = new Map<string, MissingReference[]>();
+		// V58 : les objets dont la LIGNE est fautive (illisible, circulaire, une
+		// fonction citée comme un nombre) — pas ceux qui suivent un autre objet
+		const miswritten = new Set<string>();
 
 		for (const o of this.items) {
 			// La provenance de l'objet, pas un défaut : sinon une définition LaTeX
 			// serait relue en texte à chaque recalcul.
-			ownError.set(
-				o.name,
-				parseDefinition(o.kind, o.definition, o.provenance, this.functionNames).error
-			);
+			const unreadable = parseDefinition(
+				o.kind,
+				o.definition,
+				o.provenance,
+				this.functionNames
+			).error;
+			ownError.set(o.name, unreadable);
+			if (unreadable) miswritten.add(o.name);
 
 			// Une suite qui se cite elle-même est une récurrence, pas un cycle :
 			// `u(n+1) = 0,5·u(n) + 3` est une définition parfaitement saine.
@@ -1648,13 +1683,19 @@ export class Atelier {
 			// V58 : `a` lettre de f, puis `a(x) = x^2` — quel que soit l'ordre de
 			// saisie, f ne vaut rien. Les cartes `f′`, `f⁻¹` suivent f, elles ne
 			// citent rien de leur propre chef
-			if (!ownError.get(o.name) && derivativeOf(o.name) === null && reciprocalOf(o.name) === null) {
-				const asNumber = refs.find(
-					(r) => r.as === 'value' && r.name !== o.name && this.get(r.name)?.kind === 'function'
-				);
+			if (
+				!ownError.get(o.name) &&
+				o.kind !== 'list' &&
+				derivativeOf(o.name) === null &&
+				reciprocalOf(o.name) === null
+			) {
+				const asNumber = bareNamesOf(o.definition, o.provenance, this.functionNames)
+					.filter((n) => n !== o.name)
+					.map((n) => this.get(n))
+					.find((c) => c !== undefined && (c.kind === 'function' || c.kind === 'sequence'));
 				if (asNumber !== undefined) {
-					const letter = isFunction(o) ? (o.letter ?? 'x') : 'x';
-					ownError.set(o.name, functionAsNumberMessage(asNumber.name, o.name, letter));
+					ownError.set(o.name, functionAsNumberMessage(asNumber, o));
+					miswritten.add(o.name);
 				}
 			}
 			// `g(x) = f(2x)` avec f sur un intervalle : pas encore su (décision c)
@@ -1685,6 +1726,8 @@ export class Atelier {
 			visitState.set(node, 'done');
 		};
 		for (const name of this.names) visit(name, [name]);
+		for (const name of inCycle) miswritten.add(name);
+		this.#miswritten = miswritten;
 
 		// Propagation, par points fixes. L'erreur se propage la première : elle
 		// prime, donc un objet contaminé par une erreur n'est jamais « en attente ».

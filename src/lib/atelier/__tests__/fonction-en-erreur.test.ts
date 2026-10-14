@@ -40,8 +40,11 @@ function lastLine(...lines: string[]) {
 const BROKEN = (name: string, gender: 'f' | 'm' = 'f') =>
 	`« ${name} » est mal défini${gender === 'f' ? 'e' : ''} (sa ligne est en erreur) : corrige sa définition d'abord.`;
 
-const AS_NUMBER = (fn: string, user: string) =>
-	`« ${fn} » est une fonction : « ${user} » ne peut pas s'en servir comme d'un nombre. Écris ${fn}(x), ou donne un autre nom à la lettre.`;
+const AS_NUMBER = (fn: string, user: string, letter = 'x', what = 'fonction') =>
+	`« ${fn} » est une ${what} : « ${user} » ne peut pas s'en servir comme d'un nombre. Écris ${fn}(${letter}), ou donne un autre nom à la lettre.`;
+
+/** Le refus d'un objet en erreur À CAUSE D'UN AUTRE : le message de sa carte. */
+const FOLLOWS = (name: string, message: string) => `${name} : ${message}`;
 
 // =============================================================================
 // Définition circulaire
@@ -76,8 +79,10 @@ describe('f(x) = f(x)+1 : f est en erreur, rien ne s’en sert', () => {
 
 	it('g(x) = f(x)+1 avec f en erreur : g refusée elle aussi', () => {
 		const setup = [CIRCULAR, 'g(x) = f(x)+1'];
-		expect(lastLine(...setup, '.dériver g')).toEqual({ text: BROKEN('g'), failed: true });
-		expect(lastLine(...setup, 'g(2)')).toEqual({ text: BROKEN('g'), failed: true });
+		// g n'est pas mal écrite : c'est f qu'il faut corriger, la carte de g le dit
+		const because = FOLLOWS('g', 'Dépend de « f », qui est en erreur.');
+		expect(lastLine(...setup, '.dériver g')).toEqual({ text: because, failed: true });
+		expect(lastLine(...setup, 'g(2)')).toEqual({ text: because, failed: true });
 	});
 
 	it('une valeur en erreur (a = a+1) : refus au masculin', () => {
@@ -129,6 +134,46 @@ describe('f(x) = a x, puis a(x) = x^2 : f est mal définie', () => {
 		expect(desk.atelier.get('f')?.status).toBe('pending');
 		expect(lastLine('f(x) = a x', 'a(x) = x^2', 'f(x) = k x', '.dériver f').text).toBe(
 			'd/dx((kx)) = k'
+		);
+	});
+
+	it.each(['a_1 x', 'a_1*x', 'a_{1} x'])(
+		'a(x) = x^2, h(x) = %s : a_1 est un autre nom, h n’est pas en erreur',
+		(body) => {
+			const desk = deskWith('a(x) = x^2', `h(x) = ${body}`);
+			expect(desk.atelier.get('h')?.status).not.toBe('error');
+		}
+	);
+
+	it('h(x) = a(2) + a : appel ET nombre sur le même nom, h en erreur', () => {
+		const desk = deskWith('a(x) = x^2', 'h(x) = a(2) + a');
+		expect(desk.atelier.get('h')?.message).toBe(AS_NUMBER('a', 'h'));
+	});
+
+	it('une suite citée comme un nombre (u(n) = 2n ; f(x) = u x) : f en erreur', () => {
+		const desk = deskWith('u(n) = 2n', 'f(x) = u x');
+		expect(desk.atelier.get('f')?.message).toBe(AS_NUMBER('u', 'f', 'x', 'suite'));
+	});
+
+	it('v(n) = u_n + 1 : la notation indicée d’une suite n’est pas un nombre', () => {
+		const desk = deskWith('u(n) = 2n', 'v(n) = u_n + 1');
+		expect(desk.atelier.get('v')?.status).not.toBe('error');
+	});
+
+	it('la suggestion suit la variable : v(n) = a n → « Écris a(n) »', () => {
+		const desk = deskWith('a(x) = x^2', 'v(n) = a n');
+		expect(desk.atelier.get('v')?.message).toBe(AS_NUMBER('a', 'v', 'n'));
+	});
+
+	it('f(t) = a t → « Écris a(t) »', () => {
+		const desk = deskWith('a(x) = x^2', 'f(t) = a t');
+		expect(desk.atelier.get('f')?.message).toBe(AS_NUMBER('a', 'f', 't'));
+	});
+
+	it('une valeur b = a + 1 : la suggestion ne parle pas de x', () => {
+		const desk = deskWith('a(x) = x^2', 'b = a + 1');
+		expect(desk.atelier.get('b')?.message).toBe(
+			"« a » est une fonction : « b » ne peut pas s'en servir comme d'un nombre. Écris une de ses valeurs, comme a(2), ou donne un autre nom à la lettre."
 		);
 	});
 

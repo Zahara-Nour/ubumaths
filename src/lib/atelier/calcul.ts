@@ -862,12 +862,14 @@ function citesName(typed: string, name: string): boolean {
  * calcul ; un objet qui dépend d'un objet en erreur l'est lui-même (le
  * recalcul de l'atelier le propage), il est donc refusé aussi.
  *
+ * Deux refus : « mal définie… corrige sa définition » quand c'est SA ligne
+ * qui est fautive (`isMiswritten`) ; sinon « g : » + le message de la carte
+ * (`Dépend de « f »…`, f⁻¹ impossible…), qui dit quoi corriger.
+ *
  * Exceptions :
  * - les cartes `f′` et `f⁻¹` suivent f : leurs refus disent pourquoi la
  *   dérivée ou la réciproque manque (`derivativeOfUnusable`,
  *   `reciprocalRefusalIn`), pas que l'élève a mal écrit une ligne ;
- * - une fonction en erreur parce qu'elle cite `f⁻¹` (f plus bijective) : le
- *   message de sa carte dit pourquoi, il vaut mieux qu'un « mal définie » ;
  * - les listes : ce sont des données, que les simulations lisent par nom.
  */
 function brokenObjectRefusal(atelier: Atelier, typed: string): string | null {
@@ -875,7 +877,10 @@ function brokenObjectRefusal(atelier: Atelier, typed: string): string | null {
 		if (object.status !== 'error' || object.kind === 'list') continue;
 		if (derivativeOf(object.name) !== null || reciprocalOf(object.name) !== null) continue;
 		if (!citesName(typed, object.name)) continue;
-		if (object.message !== undefined && citesReciprocal(atelier, object.definition)) {
+		// Une erreur qui ne vient pas de sa ligne (`Dépend de « f »…`, f⁻¹
+		// impossible, ce que l'atelier ne sait pas encore faire) : la carte dit
+		// quoi corriger, et ce n'est pas sa définition
+		if (object.message !== undefined && !atelier.isMiswritten(object.name)) {
 			return `${object.name} : ${object.message}`;
 		}
 		const feminine = object.kind === 'function' || object.kind === 'sequence';
