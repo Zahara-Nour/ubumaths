@@ -786,7 +786,7 @@ des noms : `en 0 à droite` n'est pas une expression, et `a` y serait le mot `à
 `\frac{1}{2}`), `en x=1` toléré ; le côté `0+`, `0^+`, `0^{+}`, `0 à droite` (et `-`,
 `à gauche`) ; l'infini `+∞`, `+inf`, `-∞`, `-inf`, `\infty`, et `∞` / `inf` seuls = +∞ (pas de
 côté à l'infini : refus). Un côté sur un point qui n'est pas un nombre seul s'écrit
-`x\to {\tfrac{3}{4}}^-`. La lettre est celle de l'expression, comme `.évaluer` (plusieurs sans
+`x\to {\tfrac{3}{4}}^-`. La lettre est celle de l'expression, comme `.évaluer` ; une lettre tapée absente d'une expression qui en a d'autres est refusée (`.limite t^2 en x=1` → « L'expression s'écrit avec t : .limite t^2 en t=1. »), une constante reste acceptée (plusieurs sans
 x : refus, « écris la variable après « en » »). Le calcul est `evaluateLimit` (`mathAST/limits`).
 La réponse est une **formule**, `\lim\limits_{x\to 1}\dfrac{x^2-1}{x-1} = 2` (expression TAPÉE,
 parenthèses de la barre de fraction retirées, une somme entre `\left(…\right)`).
@@ -797,7 +797,7 @@ son nom et sa lettre — son expression RANGÉE (en x) est calculée en x, montr
 la lettre de l'expression substituée, affichée telle que tapée (`\lim\limits_{x\to 1}
 f\left(2x\right) = 5`) ; la composée d'une fonction À ENSEMBLE choisi reste refusée
 (`composedMessage`, faute de domaine de f(u(x))). Une suite `u`, `u_n` ou `u(n)` se calcule en n et
-s'écrit `\lim\limits_{n\to+\infty} u_n` ; seul +∞ est accepté, une suite récurrente est refusée.
+s'écrit `\lim\limits_{n\to+\infty} u_n` ; dans une expression, `u_n`, `u_k` se lisent `u(n)`, `u(k)` (`withSequenceCalls` : `.limite u_n + 1 en +∞` → 1) ; seul +∞ est accepté, que la suite soit citée seule ou dans une expression (`citedSequence`), et une suite récurrente est refusée.
 **Gardes de l'atelier** (le branchement saute celles du chemin commun) : une liste citée →
 `listCitedMessage` ; l'ensemble choisi d'une fonction (`f(x) = x^2 sur [0;+∞[`, I4) — un point
 loin de l'ensemble est refusé comme `.évaluer` (« -1 n'est pas dans l'ensemble de définition de

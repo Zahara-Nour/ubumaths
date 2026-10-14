@@ -293,3 +293,59 @@ describe('revue : « pas de limite » garde le côté', () => {
 		expect((result.latex ?? '').replace(/\s/g, '')).toBe('\\text{Pasdelimiteen}0^+');
 	});
 });
+
+describe('contre-revue : la lettre tapée doit être celle de l’expression', () => {
+	it('f(t) en x=0 : refus, l’expression s’écrit avec t', () => {
+		expect(refusal('.limite f(t) en x=0', ['f(x) = 1/x'])).toBe(
+			"L'expression s'écrit avec t : .limite f(t) en t=0."
+		);
+	});
+
+	it('t^2 en x=1 : refus', () => {
+		expect(refusal('.limite t^2 en x=1')).toBe("L'expression s'écrit avec t : .limite t^2 en t=1.");
+	});
+
+	it('une constante reste acceptée : 5 en x=1', () => {
+		expect(latex('.limite 5 en x=1')).toBe('\\lim\\limits_{x\\to1}5=5');
+	});
+});
+
+describe('contre-revue : une suite dans une expression', () => {
+	it('u_n + 1 en +∞ : 1', () => {
+		expect(latex('.limite u_n + 1 en +∞', ['u(n) = 1/n'])).toBe(
+			'\\lim\\limits_{n\\to+\\infty}\\left(u_n+1\\right)=1'
+		);
+	});
+
+	it('u_k : comme u(k)', () => {
+		expect(latex('.limite u_k en +∞', ['u(n) = 1/n'])).toBe('\\lim\\limits_{k\\to+\\infty}u_k=0');
+	});
+});
+
+describe('contre-revue : l’écriture du point', () => {
+	it('en -1/2+ : {-\\tfrac12}^+ et -1/2+', () => {
+		const result = line('.limite x^2 en -1/2+');
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe(
+			'\\lim\\limits_{x\\to{-\\tfrac{1}{2}}^+}x^2=\\dfrac{1}{4}'
+		);
+		expect(result.output).toBe('lim x→-1/2+ x^2 = 1/4');
+	});
+
+	it('en π+ : π+ dans le texte, \\pi^+ en LaTeX', () => {
+		const result = line('.limite x en π+');
+		expect(result.output).toBe('lim x→π+ x = π');
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe('\\lim\\limits_{x\\to\\pi^+}x=\\pi');
+	});
+});
+
+describe('une suite dans une expression : en +∞ seulement', () => {
+	it.each(['u_k + 1', '2u_n'])('%s en 3 : refus', (typed) => {
+		expect(refusal(`.limite ${typed} en 3`, ['u(n) = 1/n'])).toBe(
+			`u est une suite : sa limite se cherche en +∞ (.limite ${typed} en +∞).`
+		);
+	});
+
+	it('2u_n en +∞ : 0', () => {
+		expect(latex('.limite 2u_n en +∞', ['u(n) = 1/n']).endsWith('=0')).toBe(true);
+	});
+});

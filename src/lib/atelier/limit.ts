@@ -27,8 +27,15 @@ import { evaluateLimit } from '$lib/mathAST/limits';
 import { LimitError } from '$lib/mathAST/limits/types';
 import { parse as parseCommandExpression } from '$lib/mathAST/cli/core/pipeline';
 import { getVariables } from '$lib/mathAST/eval/substitute';
-import { infinity, mathConstant, power } from '$lib/mathAST/factory';
-import { isAddition, isInfinity, isNumber, isOpposite, isSubtraction } from '$lib/mathAST/guards';
+import { infinity, mathConstant, number, opposite, power } from '$lib/mathAST/factory';
+import {
+	isAddition,
+	isInfinity,
+	isMathConstant,
+	isNumber,
+	isOpposite,
+	isSubtraction
+} from '$lib/mathAST/guards';
 import type { Domain } from '$lib/mathAST/domain/types';
 import { containsValue } from '$lib/mathAST/domain/algebra';
 import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
@@ -142,7 +149,9 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 	const cited = citedObject(atelier, typedExpression);
 	if (cited?.kind === 'refused') return { kind: 'refus', message: cited.message };
 
-	const substituted = context.substitute(cited === null ? typedExpression : cited.bare);
+	const substituted = context.substitute(
+		cited === null ? withSequenceCalls(atelier, typedExpression) : cited.bare
+	);
 	const ast = substituted === null ? undefined : parseCommandExpression(substituted).ast;
 	if (ast === undefined) return { kind: 'refus', message: context.unreadable };
 
@@ -158,17 +167,20 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 		variable = cited.variable;
 		shownLetter = cited.letter;
 	} else {
-		const guessed = guessedLetter(ast, typedVariable, reading.pointText);
+		const guessed = guessedLetter(ast, typedVariable, reading.pointText, typedExpression);
 		if (!guessed.ok) return { kind: 'refus', message: guessed.message };
 		variable = guessed.letter;
 		shownLetter = guessed.letter;
 	}
 
-	// Une suite n'a de limite qu'en +∞
-	if (cited?.kind === 'sequence' && !(point.kind === 'infinite' && point.sign === 'positive')) {
+	// Une suite n'a de limite qu'en +∞, citée seule ou dans une expression (`2u_n`)
+	const sequence =
+		cited?.kind === 'sequence' ? cited.name : citedSequence(atelier, typedExpression);
+	if (sequence !== null && !(point.kind === 'infinite' && point.sign === 'positive')) {
+		const example = cited === null ? typedExpression : sequence;
 		return {
 			kind: 'refus',
-			message: `${cited.name} est une suite : sa limite se cherche en +∞ (.limite ${cited.name} en +∞).`
+			message: `${sequence} est une suite : sa limite se cherche en +∞ (.limite ${example} en +∞).`
 		};
 	}
 
@@ -263,7 +275,15 @@ function readPoint(
 	if (node === undefined || getVariables(node).size > 0) return invalid;
 	// `1/2` tapé en ligne s'écrit en fraction (`\frac{1}{2}`, pas `1 / 2`)
 	node = transformAST(node, {
-		leaveDivision: (n) => ({ ...n, displayStyle: 'fraction' as const })
+		leaveDivision: (n) => {
+			const fraction = { ...n, displayStyle: 'fraction' as const };
+			// `-1/2` se lit (−1)/2 : écrit −½, le signe devant la fraction
+			if (isOpposite(n.numerator)) return opposite({ ...fraction, numerator: n.numerator.operand });
+			if (isNumber(n.numerator) && n.numerator.value.startsWith('-')) {
+				return opposite({ ...fraction, numerator: number(n.numerator.value.slice(1)) });
+			}
+			return fraction;
+		}
 	});
 	return {
 		ok: true,
@@ -420,6 +440,31 @@ function shownBody(
 	};
 }
 
+/** Le nom de la première suite de l'atelier que cite l'expression tapée (`u_k + 1`), sinon `null`. */
+function citedSequence(atelier: Atelier, typed: string): string | null {
+	for (const object of atelier.objects) {
+		if (object.kind !== 'sequence') continue;
+		if (new RegExp(`(?<![A-Za-z_\\\\])${object.name}(?![A-Za-z0-9])`).test(typed))
+			return object.name;
+	}
+	return null;
+}
+
+/**
+ * `u_n`, `u_{k}` d'une suite de l'atelier → `u(n)`, `u(k)` : la substitution
+ * compose un APPEL (`(1/k)`), alors que `u_n` deviendrait `(1/n)_n`, un
+ * indice illisible (`.limite u_n + 1 en +∞`).
+ */
+function withSequenceCalls(atelier: Atelier, typed: string): string {
+	let text = typed;
+	for (const object of atelier.objects) {
+		if (object.kind !== 'sequence') continue;
+		const indexed = new RegExp(`(?<![A-Za-z_\\\\])${object.name}_\\{?\\s*([A-Za-z])\\s*\\}?`, 'g');
+		text = text.replace(indexed, `${object.name}($1)`);
+	}
+	return text;
+}
+
 /**
  * La lettre de l'expression (comme `.évaluer`) : tapée (`en t=1`), sinon x
  * s'il apparaît, sinon la seule lettre, sinon x. Plusieurs lettres sans x :
@@ -428,10 +473,20 @@ function shownBody(
 function guessedLetter(
 	ast: MathNode,
 	typed: string | null,
-	pointText: string
+	pointText: string,
+	typedExpression: string
 ): { ok: true; letter: string } | { ok: false; message: string } {
-	if (typed !== null) return { ok: true, letter: typed };
 	const letters = [...getVariables(ast)].sort();
+	// La lettre tapée (`en x=0`) absente d'une expression qui en a d'autres :
+	// la limite rendrait l'expression elle-même (`f(t)` → 1/t), refus
+	if (typed !== null && letters.length > 0 && !letters.includes(typed)) {
+		const own = letters.includes(INTERNAL_LETTER) ? INTERNAL_LETTER : letters[letters.length - 1];
+		return {
+			ok: false,
+			message: `L'expression s'écrit avec ${own} : .limite ${typedExpression} en ${own}=${pointText}.`
+		};
+	}
+	if (typed !== null) return { ok: true, letter: typed };
 	if (letters.includes(INTERNAL_LETTER) || letters.length === 0) {
 		return { ok: true, letter: INTERNAL_LETTER };
 	}
@@ -561,21 +616,31 @@ function pointLatexOf(point: LimitPoint, side: 'left' | 'right' | null): string 
 	const latex = toLatex(point.node);
 	if (side === null) return latex.replace(/\\dfrac/g, '\\frac');
 	const mark = side === 'right' ? '+' : '-';
-	const plain = isNumber(point.node) || (isOpposite(point.node) && isNumber(point.node.operand));
-	return plain ? `${latex}^${mark}` : `{${latex.replace(/\\dfrac/g, '\\tfrac')}}^${mark}`;
+	return isPlainPoint(point.node)
+		? `${latex}^${mark}`
+		: `{${latex.replace(/\\dfrac/g, '\\tfrac')}}^${mark}`;
 }
 
 /** Le point dans le texte de la ligne : `0+`, `+∞`. */
 function pointTextOf(point: LimitPoint, side: 'left' | 'right' | null): string {
 	if (point.kind === 'infinite') return point.sign === 'positive' ? '+∞' : '-∞';
-	const text = toCustom(point.node);
-	if (side === null) return text;
-	const plain = isNumber(point.node) || (isOpposite(point.node) && isNumber(point.node.operand));
-	return `${plain ? text : `(${text})`}${side === 'right' ? '+' : '-'}`;
+	const text = withPiSymbol(toCustom(point.node));
+	return side === null ? text : `${text}${side === 'right' ? '+' : '-'}`;
+}
+
+/** Un nombre ou une constante, signés : `0^+`, `-1^+`, `\pi^+` sans accolades. */
+function isPlainPoint(node: MathNode): boolean {
+	const bare = isOpposite(node) ? node.operand : node;
+	return isNumber(bare) || isMathConstant(bare);
+}
+
+/** Le texte de la ligne écrit π, pas `\pi`. */
+function withPiSymbol(text: string): string {
+	return text.replace(/\\pi(?![A-Za-z])/g, 'π');
 }
 
 /** Une valeur dans le texte de la ligne : `+∞`, `-∞`, sinon son écriture. */
 function valueText(value: MathNode): string {
 	if (isInfinity(value)) return value.sign === 'positive' ? '+∞' : '-∞';
-	return toCustom(value);
+	return withPiSymbol(toCustom(value));
 }
