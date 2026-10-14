@@ -299,7 +299,10 @@ non bijective, constante… → la carte passe en erreur avec le refus, définit
 tracé). Elle dépend de f seule (`#refsOf`) : supprimer f l'emporte, renommer f la renomme, sa
 lettre est celle de f. Pas de « Dériver » ni de « Réciproque » sur `f⁻¹`, ni de « Réciproque » sur
 `f′` (raison affichée : taper la formule). L'image `f⁻¹(5)` de la carte passe par sa formule (le
-moteur lirait `f^-1` comme une puissance). **Droite y = x** (décision (3)) : grise
+moteur lirait `f^-1` comme une puissance) ; de même l'image depuis la carte `f′` (le moteur lit
+`f'(1)` comme la dérivée d'une fonction qu'il n'a pas : « Impossible de calculer f′(1) » jusqu'au
+2026-10-14). `.réciproque a x + b` sans carte pour a, b : le refus de toute commande à paramètres
+(« Le résultat dépend de a et b… »). **Droite y = x** (décision (3)) : grise
 (`--color-muted-foreground`), en pointillés, tracée d'office par `syncPlots` quand f ET sa carte
 `f⁻¹` sont tracées et sans erreur ; retirée dès que l'une est masquée, supprimée ou en erreur. Pas
 une carte : elle n'existe que dans le grapheur, rien n'est sauvegardé. Une **expression** (`.réciproque 2x+3`) donne la ligne
@@ -752,6 +755,7 @@ Doc du moteur : [mathast/README.md](mathast/README.md).
 | calculs, commandes du registre          | `WebReplEngine` (`src/lib/mathAST/cli/web/web-repl-engine.ts`)                                                                                                                                                                                                                                                                                       |
 | écrire une grandeur (`5 km`)            | `readNaturalQuantities` (`src/lib/atelier/natural-quantities.ts`) : « un nombre, une espace, une unité », calculs et valeurs seulement                                                                                                                                                                                                               |
 | grandeur dans le champ d'une carte      | `definitionFromField` / `fieldLatexOf` (`src/lib/atelier/mathfield.ts`) : la même lecture sur le LaTeX de MathLive (`2\,h\,30\,\min`) ; une durée composée revient `2 h 30 min` (dans un calcul : `(1 h + 30 min) × 2`, relu aussi) ; virgule de l'élève (`2{,}5`, valeurs et fonctions) ; une unité montrée par le champ reste une unité (`10^3 m`) |
+| conversion d'un trait (`2,5 h en min`)  | `naturalConversion` / `convertNaturally` (`calcul.ts`) : un calcul sans `=`, « en », une unité du module → la grandeur calculée puis `.convertir`, même réponse ; à gauche pas une grandeur → refus qui la cite. Avant le 2026-10-14 : un produit de lettres (« 2,5 h e n m i n »). Pas dans une définition (`d = … en min`)                         |
 | calcul avec des grandeurs, `.convertir` | `computeQuantity` / `convertQuantity` (`src/lib/mathAST/cli/quantities.ts`) : `tidy`, unité écrite d'abord — comme `{{eval}}` ; contrat : [grandeurs.md](grandeurs.md)                                                                                                                                                                               |
 | `.simplifier`                           | `generatePedagogicalSimplifySteps`, intention `auto` (ADR 0007)                                                                                                                                                                                                                                                                                      |
 | `.factoriser`                           | même pipeline, intention `factoriser`, niveau lycée (stratégies de l'ADR 0024 : identités à coefficients, Δ, racine évidente) ; aucun repli moteur : « je n'ai pas su » se dit                                                                                                                                                                       |
@@ -912,6 +916,9 @@ recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer
   `a/x = 1`, `\dfrac{a}{x} = 2`, `(x-a)/(x-1)=0` (x = a, interdite si a = 1). Gardée :
   `1/(x-a)=1` → x = a + 1. Le refus du moteur « La solution dépend de q, u_0 : je ne sais pas
   encore résoudre avec un paramètre » est reformulé en « Le résultat dépend de q et u_0 : … ».
+- **Primitive non trouvée** (`.intégrer e^(x^2)`, `1/(x^2-2)`) : le refus du moteur en français,
+  « Je ne sais pas calculer cette intégrale » — la ligne montrait sa sortie de terminal (« ∫ … : Non
+  résolu / Technique tentée … ») jusqu'au 2026-10-14.
 - **Bornes à paramètre** (`parameterBoundsRefusal`) : `.intégrer` refuse (« dépend de a ») quand
   une borne contient un paramètre et que l'intégrande n'est pas définie partout (`1/x de 1 à a`
   → ln|a|, `1/x^2 de 1 à a`), ou qu'une puissance de x a un exposant à paramètre sur un segment
