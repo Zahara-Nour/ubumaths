@@ -22,7 +22,8 @@ import type {
 	LimitStatus,
 	IndeterminateForm,
 	LimitRule,
-	OneSidedLimitResult
+	OneSidedLimitResult,
+	NoLimitReason
 } from './types';
 import { LimitError } from './types';
 import {
@@ -108,7 +109,8 @@ import {
 	resultToNode,
 	isIndeterminateResult,
 	isInfinityResult,
-	writeLimitValue
+	writeLimitValue,
+	containsFloatArtifact
 } from './exact-evaluation';
 import { getNumericValue, ZERO_TOLERANCE } from '../common';
 
@@ -355,7 +357,21 @@ export function evaluateLimit(
 	);
 	const expression = isLimit(expr) ? expr.expression : expr;
 	const twoSided = oddRootTwoSided(expr, variable, approach, options, result, expression);
-	return withInfiniteStatus(writeValue(writeLikeInput(twoSided ?? result, expression)));
+	const checked = withApproximateStatus(twoSided ?? result, expression);
+	return withInfiniteStatus(writeValue(writeLikeInput(checked, expression)));
+}
+
+/**
+ * Invariant de sortie : une valeur qui porte un nombre issu d'un calcul en
+ * flottants (`containsFloatArtifact`) est `approximate`, jamais `exact` —
+ * quelle que soit la stratégie qui l'a produite (substitution numérique,
+ * terme dominant, signes…). Vérifié avant `writeLikeInput`, qui écrit en
+ * décimal des valeurs exactes.
+ */
+function withApproximateStatus(result: LimitResult, expression: MathNode): LimitResult {
+	if (result.status !== 'exact' || result.value === null) return result;
+	if (!containsFloatArtifact(result.value, [expression, result.approach])) return result;
+	return { ...result, status: 'approximate' };
 }
 
 /**
@@ -386,7 +402,7 @@ function oddRootTwoSided(
 	if (toLatex(left.value as MathNode) === toLatex(right.value as MathNode)) {
 		return { ...left, direction: 'both' };
 	}
-	return { ...result, status: 'does-not-exist', value: null };
+	return { ...result, status: 'does-not-exist', value: null, noLimitReason: 'sides-differ' };
 }
 
 /**
@@ -595,18 +611,19 @@ function evaluateLimitExactForm(
 			'direct-substitution',
 			recorder,
 			opts,
-			domainValidation.message
+			domainValidation.message,
+			'outside-domain'
 		);
 	}
 
 	// Convention lycée : un seul côté dans le domaine (ln x en 0, √x en 0) →
 	// la limite bilatérale est celle de ce côté. Le résultat garde 'both'.
 	if (dir === 'both' && domainValidation.leftDefined !== domainValidation.rightDefined) {
-		const side: LimitDirection = domainValidation.rightDefined ? 'right' : 'left';
+		const side = domainValidation.rightDefined ? 'right' : 'left';
 		const oneSided = evaluateLimitExactForm(expression, varName, approachPoint, side, options);
 		const status =
 			oneSided.value !== null && isInfinity(oneSided.value) ? 'infinite' : oneSided.status;
-		return { ...oneSided, direction: 'both', status };
+		return { ...oneSided, direction: 'both', status, definedSide: side };
 	}
 
 	// Verify variable is used in expression
@@ -1123,9 +1140,29 @@ function evaluateLimitExactForm(
 				'one-sided',
 				recorder,
 				opts,
-				'Les limites à gauche et à droite sont différentes'
+				'Les limites à gauche et à droite sont différentes',
+				'sides-differ'
 			);
 		}
+	}
+
+	// Stratégie 6.5 : sin u, cos u (à un facteur et une constante près) avec
+	// u → ±∞ — pas de limite, la fonction oscille. En dernier recours : sin x / x,
+	// x sin(1/x), e^{−x} sin x ont une limite, trouvée plus haut.
+	if (oscillatesWithoutLimit(expression, varName, approachPoint, dir, options)) {
+		return createResult(
+			null,
+			varName,
+			approachPoint,
+			dir,
+			'does-not-exist',
+			indeterminateForm,
+			'composition',
+			recorder,
+			opts,
+			'La fonction oscille sans se rapprocher d’une valeur',
+			'oscillation'
+		);
 	}
 
 	// Stratégie 7 : `e^u` relu comme `exp(u)`. Les règles du moteur — limites
@@ -1168,6 +1205,88 @@ function evaluateLimitExactForm(
 		opts,
 		'Limite non supportée avec les techniques actuelles'
 	);
+}
+
+// =============================================================================
+// Oscillation
+// =============================================================================
+
+/**
+ * f = a·sin(u) + b ou a·cos(u) + b (a ≠ 0, a et b constants, écrits sous
+ * forme de somme, produit, quotient par une constante, opposé) avec u → ±∞ du
+ * côté demandé : f oscille, elle n'a pas de limite. En bilatéral en un point
+ * fini, u doit tendre vers l'infini des deux côtés (sin(1/x) en 0).
+ * Toute autre forme (x sin x, sin x + cos x) : false, on ne conclut pas.
+ */
+function oscillatesWithoutLimit(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): boolean {
+	const node = stripDelimiters(expression);
+	if (isFunction(node) && (node.name === 'sin' || node.name === 'cos') && node.args.length === 1) {
+		return argumentTendsToInfinity(node.args[0], varName, approach, dir, options);
+	}
+	if (isAddition(node) || isSubtraction(node)) {
+		const terms = flattenSumShallow(node);
+		const variableTerms = terms.filter(({ term }) => containsVariable(term, varName));
+		if (variableTerms.length !== 1) return false;
+		const constantsFinite = terms.every(
+			({ term }) => containsVariable(term, varName) || isFiniteConstant(term)
+		);
+		return (
+			constantsFinite &&
+			oscillatesWithoutLimit(variableTerms[0].term, varName, approach, dir, options)
+		);
+	}
+	if (isDivision(node)) {
+		if (containsVariable(node.denominator, varName)) return false;
+		if (!isSafeNonZeroConstant(node.denominator)) return false;
+		return oscillatesWithoutLimit(node.numerator, varName, approach, dir, options);
+	}
+	const split = splitConstantFactor(node, varName);
+	if (split === null || !isSafeNonZeroConstant(split.constant)) return false;
+	return oscillatesWithoutLimit(split.rest, varName, approach, dir, options);
+}
+
+/** u → ±∞ du côté demandé (des deux côtés en bilatéral en un point fini). */
+function argumentTendsToInfinity(
+	argument: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): boolean {
+	if (!containsVariable(argument, varName)) return false;
+	const tendsToInfinity = (side: LimitDirection) => {
+		const result = evaluateLimit(argument, varName, approach, side, options);
+		return result.value !== null && isInfinity(result.value);
+	};
+	if (tendsToInfinity(dir)) return true;
+	if (dir !== 'both' || isInfinity(approach)) return false;
+	return tendsToInfinity('left') && tendsToInfinity('right');
+}
+
+/** Constante dont la valeur approchée est finie. */
+function isFiniteConstant(node: MathNode): boolean {
+	try {
+		return Number.isFinite(evaluateNodeToApproximatedNumber(node));
+	} catch {
+		return false;
+	}
+}
+
+/** Constante non nulle, sûre (rationnel exact, ou flottant loin de 0 et de ∞). */
+function isSafeNonZeroConstant(node: MathNode): boolean {
+	if (isExactZero(node)) return false;
+	try {
+		const value = evaluateNodeToApproximatedNumber(node);
+		return Number.isFinite(value) && value !== 0 && isSafeFactor(node, value);
+	} catch {
+		return false;
+	}
 }
 
 // =============================================================================
@@ -1531,7 +1650,11 @@ function tryProductOfLimits(
 		const zeroTimesInfinity =
 			limits.some((l) => l?.kind === 'zero' || l?.kind === 'finite') &&
 			limits.some((l) => l?.kind === 'infinite');
-		const noTwoSidedLimit = results.some((r) => r.status === 'does-not-exist');
+		// Un facteur qui oscille (sin x en +∞) n'a pas de « côtés » : seul le
+		// quotient réécrit (sin x · 1/x) peut conclure
+		const noTwoSidedLimit = results.some(
+			(r) => r.status === 'does-not-exist' && r.noLimitReason !== 'oscillation'
+		);
 		if (!zeroTimesInfinity && !noTwoSidedLimit) return null;
 		// Facteur sans limite bilatérale : le produit est calculé à gauche puis
 		// à droite, et on ne conclut que si les deux côtés concordent —
@@ -2035,7 +2158,8 @@ function evaluateLimitInternal(
 			'direct-substitution',
 			recorder,
 			opts,
-			domainValidation.message
+			domainValidation.message,
+			'outside-domain'
 		);
 	}
 
@@ -2552,7 +2676,8 @@ function createResult(
 	technique: LimitRule,
 	recorder: LimitStepRecorderImpl,
 	opts: Required<LimitOptions>,
-	error?: string
+	error?: string,
+	noLimitReason?: NoLimitReason
 ): LimitResult {
 	return {
 		variable,
@@ -2563,7 +2688,8 @@ function createResult(
 		indeterminateForm,
 		technique,
 		steps: recorder.getStepsFiltered(opts.verbosity),
-		...(error && { error })
+		...(error && { error }),
+		...(noLimitReason && { noLimitReason })
 	};
 }
 
