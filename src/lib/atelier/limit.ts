@@ -203,7 +203,8 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 
 	if (result.status === 'does-not-exist') {
 		const subject = cited?.kind === 'function' ? cited.name : null;
-		return noLimit(input, result, subject, { ast, variable, approach }, point, side);
+		const typedSide = reading.value.side;
+		return noLimit(input, result, subject, { ast, variable, approach }, point, side, typedSide);
 	}
 	const value = knownValue(result);
 	if (value === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
@@ -573,19 +574,26 @@ function noLimit(
 	subject: string | null,
 	question: LimitQuestion,
 	point: LimitPoint,
-	side: 'left' | 'right' | null
+	side: 'left' | 'right' | null,
+	typedSide: 'left' | 'right' | null
 ): CalcResult {
 	const { ast, variable, approach } = question;
 	const atLatex = pointLatexOf(point, side);
 	const atText = pointTextOf(point, side);
 	const who = subject ?? "l'expression";
-	const reason = side === null ? result.noLimitReason : undefined;
+	// Le nom d'une fonction s'écrit en mathématiques (`f_1`), hors de `\text`
+	const clause = (words: string): string =>
+		subject === null
+			? `\\text{ : l'expression ${words}}`
+			: `\\text{ : } ${subject.replace(/_(\d{2,})/, '_{$1}')} \\text{ ${words}}`;
+	// Seul un côté TAPÉ coupe la raison ; un côté imposé par l'ensemble choisi (I4) la garde
+	const reason = typedSide === null ? result.noLimitReason : undefined;
 	if (reason === 'outside-domain') {
 		return {
 			kind: 'commande',
 			input,
 			output: `Pas de limite en ${atText} : ${who} n'est pas définie au voisinage de ${atText}.`,
-			latex: `\\text{Pas de limite en } ${atLatex} \\text{ : ${who} n'est pas définie au voisinage de } ${atLatex}`
+			latex: `\\text{Pas de limite en } ${atLatex} ${clause("n'est pas définie au voisinage de ")} ${atLatex}`
 		};
 	}
 	if (reason === 'oscillation') {
@@ -593,7 +601,7 @@ function noLimit(
 			kind: 'commande',
 			input,
 			output: `Pas de limite en ${atText} : ${who} oscille sans se rapprocher d'aucune valeur.`,
-			latex: `\\text{Pas de limite en } ${atLatex} \\text{ : ${who} oscille sans se rapprocher d'aucune valeur}`
+			latex: `\\text{Pas de limite en } ${atLatex} ${clause("oscille sans se rapprocher d'aucune valeur")}`
 		};
 	}
 	// Un côté tapé : sa conclusion seule ; sinon les deux côtés (L4)

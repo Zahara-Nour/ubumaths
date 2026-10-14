@@ -420,7 +420,7 @@ describe('R2 : pas de limite, hors du domaine', () => {
 		const result = line('.limite f en -1', ['f(x) = sqrt(x)']);
 		expect(result.output).toBe("Pas de limite en -1 : f n'est pas définie au voisinage de -1.");
 		expect((result.latex ?? '').replace(/\s/g, '')).toBe(
-			"\\text{Pasdelimiteen}-1\\text{:fn'estpasdéfinieauvoisinagede}-1"
+			"\\text{Pasdelimiteen}-1\\text{:}f\\text{n'estpasdéfinieauvoisinagede}-1"
 		);
 	});
 });
@@ -451,6 +451,36 @@ describe("R3 : pas de limite, l'expression oscille", () => {
 	it('une fonction citée : f oscille', () => {
 		expect(line('.limite f en +∞', ['f(x) = cos(x)']).output).toBe(
 			"Pas de limite en +∞ : f oscille sans se rapprocher d'aucune valeur."
+		);
+	});
+});
+
+describe('revue : la raison avec un côté imposé par l’ensemble choisi', () => {
+	it('f(x) = sin(1/x) sur ]0;+∞[, en 0 : le côté vient de l’ensemble, la raison reste', () => {
+		const result = line('.limite f en 0', ['f(x) = sin(1/x) sur ]0;+∞[']);
+		expect(result.output).toBe(
+			"Pas de limite en 0+ : f oscille sans se rapprocher d'aucune valeur."
+		);
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe(
+			"\\text{Pasdelimiteen}0^+\\text{:}f\\text{oscillesansserapprocherd'aucunevaleur}"
+		);
+	});
+});
+
+describe('revue : le nom de la fonction s’écrit hors du texte', () => {
+	it('f_1 oscille : f_1 en mathématiques, pas dans \\text', () => {
+		const result = line('.limite f_1 en +∞', ['f_1(x) = sin(x)']);
+		expect(result.output).toBe(
+			"Pas de limite en +∞ : f_1 oscille sans se rapprocher d'aucune valeur."
+		);
+		expect((result.latex ?? '').replace(/\s/g, '')).toBe(
+			"\\text{Pasdelimiteen}+\\infty\\text{:}f_1\\text{oscillesansserapprocherd'aucunevaleur}"
+		);
+	});
+
+	it('f_1 hors du domaine', () => {
+		expect((line('.limite f_1 en -1', ['f_1(x) = sqrt(x)']).latex ?? '').replace(/\s/g, '')).toBe(
+			"\\text{Pasdelimiteen}-1\\text{:}f_1\\text{n'estpasdéfinieauvoisinagede}-1"
 		);
 	});
 });
