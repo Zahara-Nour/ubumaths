@@ -44,7 +44,8 @@ import {
 	readListValue,
 	individualEntries,
 	withPiCommand,
-	mixedNotationMessage
+	mixedNotationMessage,
+	withLatexFunctionNames
 } from './parse';
 import {
 	INTERNAL_LETTER,
@@ -464,6 +465,16 @@ function kindOf(parameter: string | undefined, body: string): ObjectKind {
 	// nœud lui-même qui le dit (`derivativeOrder`).
 	if (/[A-Za-z](?:_\d+)?['’]/.test(body)) return 'function';
 	return 'value';
+}
+
+/**
+ * `L = sin; cos; ln` : un nom sans paramètre, puis des entrées séparées par
+ * « ; » — la forme d'une liste, de nombres ou de mots. La carte n'y cherche
+ * pas de fonction sans parenthèses (`parseDefinition` : une liste sort avant).
+ */
+function isSemicolonList(input: string): boolean {
+	const definition = DEFINITION.exec(input);
+	return definition !== null && definition[2] === undefined && definition[3].includes(';');
 }
 
 /**
@@ -2600,7 +2611,8 @@ function decimalRankMessage(atelier: Atelier, input: string): string | null {
 function computeInput(session: CalcSession, text: string, provenance: Provenance): CalcResult {
 	// `f^-1`, `f^(-1)`, `f⁻¹` d'une fonction de l'atelier : écrits `f^{-1}`, la
 	// réciproque que lisent les parseurs (décision (1) de David, 2026-10-13)
-	const input = withReciprocalNotation(session.atelier, text.trim());
+	// `ln\left(x\right)` de MathLive : ln de x, pas l·n·(x) (`withLatexFunctionNames`)
+	const input = withReciprocalNotation(session.atelier, withLatexFunctionNames(text.trim()));
 	if (input === '') return { kind: 'vide' };
 
 	// Avant tout chemin — commande, définition, calcul : tous lisent `pi` p·i
@@ -2612,7 +2624,8 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	if (!input.startsWith('.')) {
 		// V59 : `ln x`, `sin x` se lisaient l·n·x, s·i·n·x, sans erreur — ligne
 		// de calcul comme définition. Une commande le vérifie sur son argument
-		const bare = bareFunctionRefusal(input);
+		// Sauf une liste de mots (`L = sin; cos; ln`), que la carte accepte aussi
+		const bare = isSemicolonList(input) ? null : bareFunctionRefusal(input);
 		if (bare !== null) return { kind: 'refus', message: bare };
 		if (EVENT_PROBABILITY.test(input)) return eventProbability(session.atelier, input);
 		// `f⁻¹(5)` : f sans réciproque, ou 5 hors de l'ensemble de départ de f⁻¹

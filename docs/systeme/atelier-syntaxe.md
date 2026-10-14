@@ -29,6 +29,8 @@ L'expression s'arrête au **premier mot-clé**. Un mot-clé est un mot entier, e
 
 ### Commandes sur une expression
 
+Une fonction usuelle sans parenthèses dans l'expression (`.évaluer ln x en x=1`) est refusée avant toute lecture, avec le fragment tapé : « « ln x » : écris ln(x) avec des parenthèses. » (`bareFunctionRefusal`, détail : [atelier.md](atelier.md)).
+
 | Commande                          | Nouvelle écriture                                 | Exemple                                                 |
 | --------------------------------- | ------------------------------------------------- | ------------------------------------------------------- |
 | dériver                           | `.dériver EXPR [pour VAR]`                        | `.dériver f` · `.dériver a t^2 pour t`                  |

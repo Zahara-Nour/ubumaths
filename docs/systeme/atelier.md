@@ -339,12 +339,12 @@ acceptée quand elle est sans ambiguïté. La lecture vit dans `mathAST` :
 une ligne de calcul rendait `l n x`, `.évaluer ln x en x=1` réclamait « les valeurs de l et n ».
 `bareFunctionRefusal` (`variable-argument.ts`, même motif `BARE_FUNCTION` que
 `bareFunctionName`) rend un refus qui CITE le fragment tapé et propose la forme parenthésée :
-« « ln 2x » : écris ln(2x) avec des parenthèses. » (sans argument lisible, la forme est en x).
+« « ln 2x » : écris ln(2x) avec des parenthèses. » ; l'argument est cité tel quel (`sin π` → `sin(π)`, `ln |x|` → `ln(|x|)`, `ln -x` → `ln(-x)`) et, sans argument lisible (`ln + 1`), la forme est `ln(…)`.
 Trois appels : `computeInput` (ligne de calcul ET définition `f(x) = ln x`, refusée avant
 qu'aucun objet ne soit créé), `runCommand` sur l'argument de toute commande sauf les simulations
 (qui lisent des noms de listes) — il devance donc les refus `bareFunctionName` des commandes du CLI
 et de `.limite` —, et `parseDefinition` (la carte : un `ln x` sans antislash venu de MathLive).
-Refusé même si les lettres sont posées (`l = 2` puis `ln x`) : c'est presque toujours une erreur.
+Une liste `L = sin; cos; ln` n'est pas concernée, ni sur la ligne ni sur la carte (`isSemicolonList`). `ln\left(x\right)`, ce qu'écrit MathLive pour `ln` tapé lettre à lettre puis une parenthèse, se lit ln(x) : `withLatexFunctionNames` (`parse.ts`) ajoute l'antislash devant `sin`, `cos`, `tan`, `ln`, `log`, `exp`, `sqrt` suivis de `\left(`, sur la ligne et sur la carte. Refusé même si les lettres sont posées (`l = 2` puis `ln x`) : c'est presque toujours une erreur.
 Restent lus : `ln(x)`, `2 ln(x)`, `\ln x` (LaTeX du clavier MathLive), `l n` (produit écrit avec
 une espace), `cost`, `lnx` (non délimités, toujours des produits). Effet de bord :
 `.taylor sin ordre 5` (le raccourci par le nom seul, que l'atelier ne lisait déjà pas — « Plusieurs

@@ -72,8 +72,19 @@ describe('une fonction usuelle sans parenthèses est refusée, avec ce qui a ét
 		expect(s.atelier.get('f')).toBeUndefined();
 	});
 
-	it('cite le nom tapé seul quand rien ne le suit', () => {
-		expect(refusalOf('ln')).toBe('« ln » : écris ln(x) avec des parenthèses.');
+	it('cite le nom tapé seul quand rien ne le suit, sans inventer d’argument', () => {
+		expect(refusalOf('ln')).toBe('« ln » : écris ln(…) avec des parenthèses.');
+	});
+
+	// Revue : la citation garde l'argument tel que l'élève l'a écrit
+	it.each([
+		['sin π', '« sin π » : écris sin(π) avec des parenthèses.'],
+		['sin \\pi', '« sin \\pi » : écris sin(\\pi) avec des parenthèses.'],
+		['ln |x|', '« ln |x| » : écris ln(|x|) avec des parenthèses.'],
+		['ln -x', '« ln -x » : écris ln(-x) avec des parenthèses.'],
+		['ln + 1', '« ln » : écris ln(…) avec des parenthèses.']
+	])('« %s » : argument cité fidèlement', (text, message) => {
+		expect(refusalOf(text)).toBe(message);
 	});
 
 	// Presque toujours une erreur : on refuse même si les lettres existent
@@ -132,6 +143,33 @@ describe('les écritures justes restent lues', () => {
 		expect(s.atelier.get('f')?.status).toBe('ok');
 		const value = runInput(s, 'f(1)');
 		expect(value.kind === 'calcul' && value.output).toBe('0');
+	});
+
+	// Revue : MathLive écrit `ln\left(x\right)` quand l'élève tape ln puis une parenthèse
+	it('`ln\\left(x\\right)` d’un champ MathLive se lit ln(x)', () => {
+		const result = runInput(session(), 'ln\\left(x\\right)', 'mathfield');
+		expect(result.kind).toBe('calcul');
+		expect(result.kind === 'calcul' && result.latex).toBe('\\ln\\left( x \\right)');
+	});
+
+	it('`sqrt\\left(4\\right)` d’un champ MathLive vaut 2', () => {
+		const result = runInput(session(), 'sqrt\\left(4\\right)', 'mathfield');
+		expect(result.kind === 'calcul' && result.output).toBe('2');
+	});
+
+	it('`f(x) = ln\\left(x\\right)` d’un champ MathLive définit ln de x', () => {
+		const s = session();
+		runInput(s, 'f(x) = ln\\left(x\\right)', 'mathfield');
+		expect(s.atelier.get('f')?.status).toBe('ok');
+		const value = runInput(s, 'f(1)');
+		expect(value.kind === 'calcul' && value.output).toBe('0');
+	});
+
+	// Revue : une liste de mots n'est pas une expression (la carte l'accepte déjà)
+	it('`L = sin; cos; ln` n’est pas refusée comme fonction sans parenthèses', () => {
+		const result = runInput(session(), 'L = sin; cos; ln');
+		expect(result.kind).toBe('definition');
+		expect(parseDefinition('list', 'sin; cos; ln', 'text').error).toBeUndefined();
 	});
 
 	it('`l n` écrit avec une espace reste le produit de deux lettres', () => {
