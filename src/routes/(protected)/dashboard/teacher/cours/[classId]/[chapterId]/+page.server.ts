@@ -167,7 +167,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	const sections: ChapterSection[] = (sectionsResult.data || []).map((s) => ({
 		id: s.id,
-		chapterId: s.chapter_id,
+		chapterId,
 		title: s.title,
 		displayOrder: s.display_order,
 		createdAt: s.created_at,
@@ -177,7 +177,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	// Transform to app types
 	const documents: ChapterDocument[] = (documentsResult.data || []).map((d) => ({
 		id: d.id,
-		chapterId: d.chapter_id,
+		chapterId,
 		title: d.title,
 		description: d.description,
 		sourceType: d.source_type as ChapterDocument['sourceType'],
@@ -198,7 +198,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	const checklistItems: ChapterChecklistItem[] = (checklistResult.data || []).map((c) => ({
 		id: c.id,
-		chapterId: c.chapter_id,
+		chapterId,
 		content: c.content,
 		description: c.description,
 		displayOrder: c.display_order,
@@ -215,7 +215,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		const fiche = Array.isArray(w.worksheet) ? w.worksheet[0] : w.worksheet;
 		return {
 			id: w.id,
-			chapterId: w.chapter_id,
+			chapterId,
 			worksheetId: w.worksheet_id,
 			displayOrder: w.display_order,
 			sectionId: w.section_id,
@@ -229,7 +229,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 	const exercises: ChapterExercise[] = (exercisesResult.data || []).map((e) => ({
 		id: e.id,
-		chapterId: e.chapter_id,
+		chapterId,
 		exerciseId: e.exercise_id,
 		displayOrder: e.display_order,
 		sectionId: e.section_id,

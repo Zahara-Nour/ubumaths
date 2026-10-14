@@ -18,7 +18,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import type { ChapterSeriesForm, ChapterSeriesRow } from '$lib/types/database-helpers';
-import type { ChapterSeries } from '$lib/types/chapters';
+import { chapterIdOf, type ChapterSeries } from '$lib/types/chapters';
 import { buildSeriesLink, seriesCategoriesSchema, totalQuestions } from '$lib/validation/series';
 import { isDeadlinePassed } from '$lib/utils/dates';
 import { createServerLogger } from '$lib/utils/logger';
@@ -73,7 +73,7 @@ export function toChapterSeries(
 
 	return {
 		id: row.id,
-		chapterId: row.chapter_id,
+		chapterId: chapterIdOf(row),
 		seriesId: row.series_id,
 		form,
 		displayOrder: row.display_order,

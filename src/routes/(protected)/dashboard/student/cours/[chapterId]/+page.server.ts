@@ -182,7 +182,7 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	const plan = buildChapterPlan({
 		sections: (sectionsResult.data ?? []).map((s) => ({
 			id: s.id,
-			chapterId: s.chapter_id,
+			chapterId,
 			title: s.title,
 			displayOrder: s.display_order,
 			createdAt: s.created_at,

@@ -20,7 +20,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import type { ChapterContentType } from '$lib/types/chapters';
+import { chapterIdOf, type ChapterContentType } from '$lib/types/chapters';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('server/chapters-publication');
@@ -147,7 +147,7 @@ export async function setContentPublication(
 	}
 
 	return {
-		data: { itemId: data.id, chapterId: data.chapter_id, publishedAt: data.published_at ?? null },
+		data: { itemId: data.id, chapterId: chapterIdOf(data), publishedAt: data.published_at ?? null },
 		error: null
 	};
 }
