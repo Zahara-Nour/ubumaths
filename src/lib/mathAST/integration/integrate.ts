@@ -905,6 +905,18 @@ function integrateWithinBudget(rawExpr: MathNode, options?: IntegrateOptions): I
 // Definite Integral Function
 // =============================================================================
 
+/**
+ * `1^u` → 1, quel que soit l'exposant u (réel) : la primitive x^{a+1}/(a+1)
+ * prise en 1 donne `1^{a+1}`, que `normalize` laisse en l'état (V61).
+ */
+function withoutPowersOfOne(node: MathNode): MathNode {
+	return mapNode(node, (current) => {
+		if (current.type !== 'superscript') return current;
+		const base = current.base.type === 'delimiter' ? current.base.content : current.base;
+		return base.type === 'number' && base.value === '1' ? number('1') : current;
+	});
+}
+
 /** Valeur numérique d'une borne (NaN si littérale : `a`, `b`) */
 function numericBound(bound: MathNode): number {
 	try {
@@ -1078,7 +1090,11 @@ export function integrateDefinite(
 		if (upperEval.status !== 'value' || lowerEval.status !== 'value') {
 			// Bornes ou primitive littérales (`∫₀ᵃ x² dx`, `∫₀² ax dx`) : la valeur
 			// reste symbolique, F(b) − F(a) simplifiée — jamais « exact » sans valeur
-			const normalized = normalizeAntiderivative(subtract(upperSubstituted, lowerSubstituted));
+			// 1^{a+1} → 1 (`x^a de 1 à 2`, V61) : `normalize` ne réduit pas une
+			// puissance de 1 à exposant littéral
+			const normalized = normalizeAntiderivative(
+				subtract(withoutPowersOfOne(upperSubstituted), withoutPowersOfOne(lowerSubstituted))
+			);
 			// `e^{…}` tapé → valeur écrite `e^{…}`, comme la primitive
 			const symbolic = containsExpFunction(expr) ? normalized : expAsEulerPower(normalized);
 			recorder.recordStep(

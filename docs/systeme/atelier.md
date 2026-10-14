@@ -503,7 +503,10 @@ entier ; une consigne « Use: »/« Usage: » reste, sous « Forme attendue : »
 message seul, puis on le remplace dans la sortie et, échappé, dans le HTML du moteur : traduit sur
 le HTML final, il avalait des balises et réécrivait la saisie recopiée (revue). Les parseurs gardent leurs messages (une cinquantaine
 de tests les vérifient). Une sortie d'erreur VIDE reste vide : l'atelier y répond « Je n'ai pas
-su lire… ».
+su lire… ». Les refus de `.intégrer`, eux, sont écrits en français **à la source** (intégrateurs,
+`integrate.command.ts`), comme le reste du moteur d'intégration (V61) : `1/(x^2+a^2+1) de 0 à 1`
+→ « Je ne sais pas factoriser le dénominateur : je ne peux pas calculer cette intégrale » (avant :
+« Unable to factor denominator »), « Technique tentée : décomposition en éléments simples ».
 
 Une comparaison ne garde jamais son écriture (elle rend vrai ou faux), mais passe par le même
 plafond **membre par membre** (`mathAST/cli/bounded-comparison.ts`, aussi pour `a = b`, qui suit
@@ -810,8 +813,11 @@ recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer
   (`introducedConditions`) : `e^{ax}` → $\dfrac{e^{ax}}{a} + C \quad (a \neq 0)$, `x^a` →
   « (a ≠ −1) », `e^{(a-1)x}` → « (a ≠ 1) » (forme lisible : `conditionOf`). Rien pour
   `1/(a x)` (la division est dans le départ, comme `.dériver`), ni pour `e^{2x}`. Le texte de
-  la ligne porte la même condition. Une intégrale bornée est aussi réduite quand l'intégrande
-  tapée contient un paramètre (`.intégrer e^{a x} de 0 à 1` → $\dfrac{e^a - 1}{a}$).
+  la ligne porte la même condition. Une intégrale **bornée** dit aussi les conditions de
+  l'intégrande (V61) : `1/(a x) de 1 à 2` → $\dfrac{\ln(2)}{a} \quad (a \neq 0)$. Une
+  intégrale bornée est aussi réduite quand l'intégrande tapée contient un paramètre
+  (`.intégrer e^{a x} de 0 à 1` → $\dfrac{e^a - 1}{a}$), et `1^{a+1}` vaut 1 (`x^a de 1 à 2` →
+  $\dfrac{2^{a+1} - 1}{a+1} \quad (a \neq -1)$, réduit par `integrateDefinite`).
 - **`.résoudre` tapé avec une lettre non posée** (V57, Q5 — `parameterSolveRefusal`, après le
   moteur, ses refus d'abord) : refus « Le résultat dépend de a… » quand la résolution DIVISE par
   le paramètre — polynôme dont le coefficient dominant en contient un (`a x = 0`, `a x + b = 0`,
@@ -830,7 +836,7 @@ recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer
 - **Bornes à paramètre** (`parameterBoundsRefusal`) : `.intégrer` refuse (« dépend de a ») quand
   une borne contient un paramètre et que l'intégrande n'est pas définie partout (`1/x de 1 à a`
   → ln|a|, `1/x^2 de 1 à a`), ou qu'une puissance de x a un exposant à paramètre sur un segment
-  qui touche 0 ou a une borne à paramètre (`x^a de 0 à 1` diverge pour a ⩽ −1). Aussi, bornes en nombres, quand un dénominateur en x contient un paramètre et n'est pas toujours positif (`1/(x-a) de 0 à 1`, `1/(x^2-a) de 0 à 1` ; pas `1/(x^2+a^2+1)`). Gardé :
+  qui touche 0 ou a une borne à paramètre (`x^a de 0 à 1` diverge pour a ⩽ −1). Aussi, bornes en nombres, quand un dénominateur en x contient un paramètre et peut s'annuler sur le segment (`1/(x-a) de 0 à 1`, `1/(x^2-a) de 0 à 1`, `1/(x^2+a^2) de -1 à 1`). Gardés (V61, `nonZeroOnSegment`) : un dénominateur toujours positif (`1/(x^2+a^2+1)`), et, facteurs faits de paramètres seuls mis à part (leur condition « a ≠ 0 » est affichée), chaque facteur en x sans paramètre non nul sur le segment (`1/(a x) de 1 à 2`) ou somme P(x) + Q, P sans paramètre > 0 sur le segment et Q ⩾ 0 (`1/(x^2+a^2) de 1 à 2` → arctan, « (a ≠ 0) »). Même logique hors des divisions (`domainParameters`, revue de V61) : une puissance d'une base en x à paramètre — exposant entier négatif, base non nulle sur le segment (`(x-a)^(-1) de 0 à 1`, qui rendait ln|1 − a| − ln|a|, refusé) ; exposant non entier ou à paramètre, base positive (`(x-a)^{1/2}`, `(x-1)^a de 0 à 2` refusés) — et une fonction d'un argument en x à paramètre : ln, log, √ exigent un argument positif sur le segment (`\ln(x+a^2) de 1 à 2` gardé, `\ln(x-a)`, `\ln(a x)`, `\sqrt{x-a}` refusés) ; sin, cos, exp, arctan, sinh, cosh, tanh, |·| n'exigent rien ; toute autre (tan, arcsin…) refuse. Gardé aussi :
   `x^2 de 0 à a` → a³/3. Une condition toujours vraie ne s'affiche pas (`a^2 + 1 ≠ 0`,
   `isPositive`) ; l'exposant d'une puissance de x est réduit (`x^{a-1+1}` → `x^a`).
 
