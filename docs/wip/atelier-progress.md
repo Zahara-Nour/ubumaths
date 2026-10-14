@@ -192,7 +192,7 @@ Relevé des points « plus tard » de ce journal et des phases 0, à la demande 
   - `cos(2(x+1))` développé, `e^(2(x+1))` « rien à développer » ;
   - `0,5*0,5` → 1/4 en mode exact (décision de David en attente) ;
   - saisie, lot 2 (tournures nominales, `2,5 h en min`) ;
-  - tableur, v2, v3 non commencés ; « Renommer » désactivé ; pas de palette d'unités ;
+  - tableur : option C choisie le 2026-10-15, phase 0 du lot 1 en attente ([atelier-tableur-phase0.md](atelier-tableur-phase0.md)) ; v2, v3 non commencés ; « Renommer » désactivé ; pas de palette d'unités ;
   - composées `f(2x)` sur un ensemble (atelier-intervalle, décision c).
 - **Corrigés par #1404 (2026-10-15)** : image depuis la carte f′, « (x ≈ 0) » pour t, « [-1 ; 1:/2] »
   (et `\pi`), les trois défauts nouveaux ci-dessous ; revue : `3 en m` refusé n'efface plus la
