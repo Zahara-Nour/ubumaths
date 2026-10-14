@@ -20,9 +20,5 @@ src/lib/components/markdown/index.ts ParagraphNodeComponent
 src/lib/components/markdown/index.ts TableNodeComponent
 src/lib/components/markdown/index.ts TextNodeComponent
 src/lib/components/markdown/index.ts VariationTableComponent
-src/lib/components/templates/index.ts TemplateEditor
-src/lib/components/templates/index.ts TemplateInstantiationDialog
-src/lib/components/templates/index.ts TemplateMigrationDialog
-src/lib/components/templates/index.ts TemplateVersionHistory
 src/lib/components/tutor/index.ts TutorHelpButton
 src/lib/components/tutor/index.ts TutorWidget
