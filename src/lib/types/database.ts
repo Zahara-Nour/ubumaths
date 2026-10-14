@@ -13375,14 +13375,68 @@ export type Database = {
           },
         ]
       }
+      worksheet_styles: {
+        Row: {
+          common_typst: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          common_typst?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          common_typst?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worksheet_styles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "worksheet_styles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worksheet_styles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       worksheet_templates: {
         Row: {
           created_at: string
           created_by: string | null
           description: string | null
+          form: string
           id: string
           name: string
           placeholders: Json | null
+          style_id: string | null
           template_content: string
           updated_at: string
         }
@@ -13390,9 +13444,11 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          form?: string
           id?: string
           name: string
           placeholders?: Json | null
+          style_id?: string | null
           template_content: string
           updated_at?: string
         }
@@ -13400,9 +13456,11 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          form?: string
           id?: string
           name?: string
           placeholders?: Json | null
+          style_id?: string | null
           template_content?: string
           updated_at?: string
         }
@@ -13428,6 +13486,13 @@ export type Database = {
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
           },
+          {
+            foreignKeyName: "worksheet_templates_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "worksheet_styles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       worksheets: {
@@ -13443,6 +13508,7 @@ export type Database = {
           published_at: string | null
           school_id: string | null
           status: string
+          style_id: string | null
           template_id: string | null
           title: string
           total_points: number | null
@@ -13463,6 +13529,7 @@ export type Database = {
           published_at?: string | null
           school_id?: string | null
           status?: string
+          style_id?: string | null
           template_id?: string | null
           title: string
           total_points?: number | null
@@ -13483,6 +13550,7 @@ export type Database = {
           published_at?: string | null
           school_id?: string | null
           status?: string
+          style_id?: string | null
           template_id?: string | null
           title?: string
           total_points?: number | null
@@ -13518,6 +13586,13 @@ export type Database = {
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "worksheets_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "worksheet_styles"
             referencedColumns: ["id"]
           },
           {

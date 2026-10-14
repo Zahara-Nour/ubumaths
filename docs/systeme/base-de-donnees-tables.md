@@ -4,7 +4,7 @@
 > (`pnpm db:types` régénère les deux, depuis la **production**). Ne pas éditer à la main :
 > le texte explicatif vit dans [base-de-donnees.md](base-de-donnees.md).
 
-222 tables · 25 vues · 313 fonctions. Colonne suivie de `?` : peut être nulle.
+223 tables · 25 vues · 313 fonctions. Colonne suivie de `?` : peut être nulle.
 
 ## Établissement et personnes (20)
 
@@ -426,7 +426,7 @@ Liens : `entry_id` → `class_journal_entries` · `point_id` → `curriculum_poi
 
 Liens : `checklist_item_id` → `chapter_checklist_items` · `student_id` → `profiles`
 
-## Fiches (10)
+## Fiches (11)
 
 ### `worksheet_assignment_classes`
 
@@ -476,17 +476,23 @@ Liens : `student_id` → `profiles` · `worksheet_id` → `worksheets`
 
 Liens : `worksheet_id` → `worksheets`
 
+### `worksheet_styles`
+
+`common_typst` · `created_at` · `description?` · `id` · `name` · `owner_id?` · `updated_at`
+
+Liens : `owner_id` → `profiles`
+
 ### `worksheet_templates`
 
-`created_at` · `created_by?` · `description?` · `id` · `name` · `placeholders?` · `template_content` · `updated_at`
+`created_at` · `created_by?` · `description?` · `form` · `id` · `name` · `placeholders?` · `style_id?` · `template_content` · `updated_at`
 
-Liens : `created_by` → `profiles`
+Liens : `created_by` → `profiles` · `style_id` → `worksheet_styles`
 
 ### `worksheets`
 
-`archived_at?` · `config?` · `created_at` · `created_by` · `description?` · `estimated_duration_minutes?` · `grades?` · `id` · `published_at?` · `school_id?` · `status` · `template_id?` · `title` · `total_points?` · `translations?` · `type` · `updated_at` · `version?`
+`archived_at?` · `config?` · `created_at` · `created_by` · `description?` · `estimated_duration_minutes?` · `grades?` · `id` · `published_at?` · `school_id?` · `status` · `style_id?` · `template_id?` · `title` · `total_points?` · `translations?` · `type` · `updated_at` · `version?`
 
-Liens : `created_by` → `profiles` · `school_id` → `schools` · `template_id` → `worksheet_templates`
+Liens : `created_by` → `profiles` · `school_id` → `schools` · `style_id` → `worksheet_styles` · `template_id` → `worksheet_templates`
 
 ## Évaluations (8)
 
