@@ -269,6 +269,18 @@ mise en prod : `deploy:prod` → reprise (`scripts/reprise-modeles-adr0029.ts`, 
   et « Réafficher la section » dans le plan du chapitre, section masquée soumise à
   l'interrupteur des masqués, rien ne s'y range.
 
+### Étape 5 — accord de David du 2026-10-14 (après explication de ce qui est perdu)
+
+- **5A — code mort** (sans perte de données) : branche `refactor/modeles-nettoyage-code`.
+- **5B — destructif**, APRÈS le `deploy:prod` de 5A, inventaire des usages collé dans la PR :
+  1. les 4 PDF d'origine `chapters/1c997492…/` (doublons, plus aucune ligne ne les désigne) ;
+  2. la règle de stockage élève de prod « Students can read visible chapter documents » (mesuré :
+     0 document publié sous `chapters/`, 8 sous `templates/`, servis par le serveur) ;
+  3. l'ancien système de versions : table `chapter_template_versions` (1 ligne), colonnes
+     `chapter_templates.content_snapshot`/`current_version`, `chapter_template_instantiations`
+     `template_version`/`current_template_version`/`last_migrated_at` (0 chapitre migré) ;
+     `link_chapter_to_template` réécrite sans elles. Aucune donnée d'élève.
+
 ## Découpage prévu
 
 1. Phase 0 (ce document) — validation de David.
