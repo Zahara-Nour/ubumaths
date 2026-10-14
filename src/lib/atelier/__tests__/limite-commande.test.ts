@@ -159,10 +159,15 @@ describe('L6 : une fonction de l’atelier garde son nom', () => {
 });
 
 describe('ce que le moteur ne sait pas', () => {
-	it('sin x en +∞ : « je ne sais pas », sans formule', () => {
-		const result = line('.limite sin(x) en +∞');
+	it('x sin x en +∞ : « je ne sais pas », sans formule', () => {
+		const result = line('.limite x sin(x) en +∞');
 		expect(result.output).toBe('Je ne sais pas calculer cette limite.');
 		expect(result.latex).toBeUndefined();
+	});
+
+	// Le moteur conclut l'oscillation (noLimitReason « oscillation ») : plus de « je ne sais pas ».
+	it('sin x en +∞ : pas de limite', () => {
+		expect(line('.limite sin(x) en +∞').output).toBe('Pas de limite en +∞.');
 	});
 });
 

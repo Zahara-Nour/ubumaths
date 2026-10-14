@@ -140,7 +140,29 @@ export interface LimitResult {
 
 	/** Error message if unsupported */
 	readonly error?: string;
+
+	/**
+	 * Limite demandée des deux côtés (`direction: 'both'`) d'un point FINI où
+	 * la fonction n'est définie que d'un côté au voisinage (ln x, √x en 0) :
+	 * le côté où elle l'est. La valeur est la limite de ce côté — au lycée on
+	 * écrit x → 0⁺. Absent si l'étude du domaine n'a pas montré de côté
+	 * unique (√(cos x) en π/2 n'est pas vu), si un côté a été demandé, ou en ±∞.
+	 */
+	readonly definedSide?: 'left' | 'right';
+
+	/** Pourquoi la limite n'existe pas (statut `does-not-exist`), quand on le sait. */
+	readonly noLimitReason?: NoLimitReason;
 }
+
+/**
+ * Raison d'une limite inexistante :
+ * - `outside-domain` : la fonction n'est pas définie au voisinage du point
+ *   (du côté demandé) — √x en −1, ln x en −∞ ;
+ * - `sides-differ` : limites à gauche et à droite différentes — 1/x en 0 ;
+ * - `oscillation` : sin u ou cos u (à un facteur et une constante près) avec
+ *   u → ±∞ — sin x en +∞, sin(1/x) en 0.
+ */
+export type NoLimitReason = 'outside-domain' | 'sides-differ' | 'oscillation';
 
 /**
  * Result of evaluating one-sided limits separately.

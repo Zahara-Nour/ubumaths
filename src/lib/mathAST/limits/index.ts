@@ -31,6 +31,7 @@ export type {
 	LimitRule,
 	LimitStep,
 	LimitResult,
+	NoLimitReason,
 	OneSidedLimitResult,
 	LimitOptions,
 	KnownLimitEntry

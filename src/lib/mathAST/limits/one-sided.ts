@@ -273,7 +273,8 @@ function mayHaveRestrictedDomain(expr: MathNode): boolean {
 }
 
 /**
- * Check if a numeric value is on a domain boundary (at an interval endpoint).
+ * Check if a numeric value is on a domain boundary (at an interval endpoint
+ * or an excluded point).
  * More robust than epsilon-probing with containsValue.
  */
 function isOnDomainBoundary(domain: import('../domain/types').Domain, value: number): boolean {
@@ -289,7 +290,13 @@ function isOnDomainBoundary(domain: import('../domain/types').Domain, value: num
 			return true;
 		}
 	}
-	return false;
+	// Point exclu (ℝ \ {0} pour 2 + 1/x) : une borne aussi. Sans lui, seule une
+	// division AU SOMMET de l'arbre déclenchait l'étude côté par côté — 1/x en 0
+	// n'avait pas de limite, 2 + 1/x restait « non supportée ».
+	return (domain.excludedPoints ?? []).some((point) => {
+		const excluded = tryGetEndpointNumericValue(point.value);
+		return excluded !== null && Math.abs(excluded - value) < ZERO_TOLERANCE;
+	});
 }
 
 /**

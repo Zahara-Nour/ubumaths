@@ -996,14 +996,45 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   la valeur de `evaluateLimit` et le quotient dominant pédagogique passent par `tidy` — signe
   devant la fraction (`-\dfrac{\sqrt{2}}{2}`, plus `\dfrac{-\sqrt{2}}{2}` de `denormalize`),
   radical au numérateur (`\dfrac{\sqrt{3}}{2}`, plus `\dfrac{1}{2}\sqrt{3}`), ordre canonique
-  (somme sans variable : le rationnel en tête, `1 + \sqrt{2}`, depuis le 2026-10-12). Une valeur qui contient un décimal reste telle quelle (`0.5`, jamais
-  `\dfrac{1}{2}`) : décimal de l'énoncé (`writeLikeInput`) ou des flottants du suivi de signe
-  (`\sqrt{\frac{x^2+1}{4x^2}}` en −∞ rend `0.5` par la composée √). Les calculs intermédiaires
+  (somme sans variable : le rationnel en tête, `1 + \sqrt{2}`, depuis le 2026-10-12). `exp(1)` s'écrit
+  e et `exp(k)` s'écrit e^k (constante `euler`, 2026-10-14 : `(1+\frac{1}{x})^x` en +∞ rendait
+  `\exp(1)`). Une valeur qui contient un décimal reste telle quelle (`0.5`, jamais
+  `\dfrac{1}{2}`) : décimal de l'énoncé (`writeLikeInput`) ou des flottants du suivi de signe.
+  **Un flottant n'est jamais
+  `exact`** (2026-10-14) : à la sortie de `evaluateLimit`, `withApproximateStatus` passe en
+  `approximate` toute valeur où `containsFloatArtifact` voit un nombre non entier absent de
+  l'énoncé (et, si l'énoncé a des décimaux, d'au moins dix chiffres significatifs). La
+  **stratégie 2.45** (`tryContinuousOfExactLimit`, avant la composition)
+  calcule f(u), f continue (√, ⁿ√, exp, a^u, u^p — u^{p/q} écrit en radical, `(2 - \frac{1}{x})^{\frac{1}{2}}` en +∞ = `\sqrt{2}`), sur la limite EXACTE de u, sans le
+  flottant du suivi de signe —
+  `\sqrt{\frac{x^2+1}{4x^2}}` en −∞ = `\dfrac{1}{2}`, `e^{\frac{3x+1}{x}}` en −∞ = e³,
+  `(\frac{2x+1}{x})^3` en −∞ = 8. `resultToFiniteNode` rend la forme dénormalisée exacte au lieu
+  d'un arrondi à dix chiffres. Les calculs intermédiaires
   gardent la forme de `resultToNode` ; `analyzeDiscontinuity` (`limits/one-sided.ts`) compare la
   valeur au point et la limite numériquement (repli : `tidy` des deux côtés) — `|x| + 0.5` en 0
   a pour limite `0.5` et pour valeur `\dfrac{1}{2}`, continue. Les étapes « limite à gauche /
   à droite » d'une limite bilatérale s'écrivent en `a^-` / `a^+` (côté étudié, pas celui de la
   limite).
+- **Domaine d'un côté, raison du « pas de limite », oscillation** (`limits/evaluate.ts`,
+  2026-10-14). Deux champs optionnels de `LimitResult` (`limits/types.ts`) :
+  `definedSide: 'left' | 'right'` — limite bilatérale en un point fini où f n'est définie que
+  d'un côté au voisinage (`\ln x`, `\sqrt{x}` en 0 → `'right'`, `\sqrt{-x}` → `'left'`) : la
+  valeur est celle de ce côté (convention lycée, x → 0⁺), `direction` reste `'both'` ; absent si
+  un côté est demandé, en ±∞, ou si l'étude du domaine n'a pas montré de côté unique
+  (`\sqrt{\cos x}` en π/2 n'est pas vu). `noLimitReason`
+  (`NoLimitReason`) sur un `does-not-exist` : `'outside-domain'` (f non définie au voisinage du
+  côté demandé : `\sqrt{x}` en −1, `\ln x` en −∞), `'sides-differ'` (gauche ≠ droite : `1/x` en
+  0, `x^{-1/3}` en 0), `'oscillation'`. L'analyse côté par côté (stratégie 6) se déclenche aussi
+  en un **point exclu** du domaine (`isOnDomainBoundary`, `limits/one-sided.ts` : `2 + 1/x` en 0),
+  et ne conclut « pas de limite » que si les DEUX côtés ont une limite exacte ou infinie
+  différente — un côté non conclu laisse la main aux stratégies suivantes. **Oscillation** (`oscillatesWithoutLimit`, stratégie
+  6.5, en dernier recours) : `a\sin(u) + b`, `a\cos(u) + b` (a ≠ 0 et b constants ; somme à un
+  seul terme variable, facteur ou diviseur constant, opposé) avec u → ±∞ du côté demandé — en
+  bilatéral en un point fini, des deux côtés (`\sin\frac{1}{x}` en 0). Les limites trouvées
+  avant restent (`\frac{\sin x}{x}` en +∞ = 0, `x\sin\frac{1}{x}` en 0 = 0) ; `x\sin x`,
+  `\sin x + \cos x` restent `unsupported`. Un facteur qui oscille ne déclenche pas l'analyse
+  côté par côté du produit (`tryProductOfLimits`). Tests :
+  `limits/__tests__/domaine-oscillation-exactitude.test.ts`.
 - **`integration/integrators/quadratic-denominator.ts` `factorQuadratic`** : trinôme lu par
   `toPolynomial` (toute écriture : `x(x-5)+6`, `(2x-1)(2x+1)` passent), racines par
   `quadraticRootParts`. Le littéral `x² − a²` garde sa lecture par `extractQuadraticCoefficients`.
