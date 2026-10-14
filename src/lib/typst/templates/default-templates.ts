@@ -1794,10 +1794,9 @@ function renderConditionals(templateContent: string, data: Record<string, string
  * Replace placeholders in template content with actual values
  */
 export function renderTemplate(templateContent: string, data: Record<string, string>): string {
-	let result = renderConditionals(templateContent, data);
-	for (const [key, value] of Object.entries(data)) {
-		const placeholder = `{{${key}}}`;
-		result = result.split(placeholder).join(value);
-	}
-	return result;
+	// Une seule passe : une valeur insérée (énoncé, corrigé) qui contiendrait
+	// `{{clé}}` n'est jamais réinterprétée. Placeholder inconnu : laissé tel quel.
+	return renderConditionals(templateContent, data).replace(/\{\{(\w+)\}\}/g, (placeholder, key) =>
+		Object.hasOwn(data, key) ? data[key] : placeholder
+	);
 }

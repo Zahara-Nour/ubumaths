@@ -423,6 +423,9 @@ export function generateBatchTypst(
 
 /**
  * Remove the setup section from a Typst document (for batch generation)
+ *
+ * Inerte depuis le lot 2 de l'ADR 0028 : le marqueur `// Document Setup` venait
+ * de la mise en page par défaut, retirée. Sans appelant ; retirée au lot 5.
  */
 function removeSetupSection(typst: string): string {
 	// Find the end of the setup section (look for the first non-setup content)
