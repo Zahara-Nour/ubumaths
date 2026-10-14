@@ -216,7 +216,23 @@ describe('pas de « Comment ? »', () => {
 		['.limite x^2 sin(1/x) en 0'],
 		['.limite x sin(1/x) en 0'],
 		// « Je ne sais pas »
-		['.limite x sin(x) en +inf']
+		['.limite x sin(x) en +inf'],
+		// V60 : fonctions en escalier — le moteur pédagogique substitue
+		// floor(1) = 1 sans voir le saut ; aucune étape plutôt qu'une fausse
+		['.limite floor(x) en 1'],
+		['.limite floor(x) en 1^+'],
+		['.limite floor(x) en 1^-'],
+		['.limite floor(x) en 1/2'],
+		['.limite floor(x) en +inf'],
+		['.limite floor(2x) en 1/2'],
+		['.limite floor(x)/x en 1^+'],
+		['.limite (x-floor(x))/(x-1) en 1^+'],
+		['.limite sign(x) en 0'],
+		['.limite sign(x)*x en 0'],
+		// Conclusion juste par hasard (floor(1) = 1 à droite), raisonnement faux
+		['.limite (x^2-1)/(x-1)+floor(x) en 1^+'],
+		['.limite (x^2-1)/(x-1)+floor(x) en 1/2'],
+		['.limite (x^2-4)/(x-2)*sign(x) en 2']
 	])('%s : la réponse seule', (input) => {
 		const result = line(input);
 		expect(result.steps).toBeUndefined();
