@@ -13,8 +13,9 @@
  *   présentée comme une limite : « Je ne sais pas » honnête ;
  * - une fonction de l'atelier garde son nom : `\lim f(x)`.
  *
- * Le calcul est celui de `evaluateLimit` (`mathAST/limits`). Les étapes
- * (« Comment ? ») viendront avec la PR 3.
+ * Le calcul est celui de `evaluateLimit` (`mathAST/limits`). « Comment ? »
+ * (PR 3) : les étapes de `pedagogical-limits`, seulement quand elles
+ * concluent la réponse de la ligne (`limit-steps.ts`).
  *
  * @module atelier/limit
  */
@@ -46,6 +47,7 @@ import {
 	findUnknownFunctionCall,
 	unknownFunctionMessage
 } from '$lib/mathAST/parser/custom/tokenizer';
+import { bareFunctionMessage, bareFunctionName } from '$lib/mathAST/cli/core/variable-argument';
 import { astOf } from './parse';
 import { listCitedMessage } from './list-cited';
 import {
@@ -57,6 +59,8 @@ import {
 	type CitedInterval
 } from './interval';
 import { INTERNAL_LETTER, typedLetterOf } from './letter';
+import { limitSteps, type LimitQuestion as StepsQuestion, type LimitSteps } from './limit-steps';
+import type { LimitAnswer } from './limit-steps-check';
 
 // =============================================================================
 // Types
@@ -87,6 +91,14 @@ interface PointReading {
 // =============================================================================
 // Constantes
 // =============================================================================
+
+/**
+ * Un opérande de fraction qui se lit seul, sans parenthèses : un nombre, une
+ * lettre, une parenthèse, un appel (`sqrt(x+1)`), éventuellement à une
+ * puissance (`(x-1)^2`, `e^x`, `x^(n+1)`).
+ */
+const POWER_ATOM =
+	/^(?:\d+(?:\.\d+)?|[A-Za-zπ]|\([^()]*\)|[A-Za-z]+\([^()]*\))(?:\^(?:\d+|[A-Za-z]|\([^()]*\)))?$/;
 
 const UNKNOWN_LIMIT = 'Je ne sais pas calculer cette limite.';
 
@@ -139,6 +151,10 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 
 	const unknownCall = findUnknownFunctionCall(typedExpression);
 	if (unknownCall !== null) return { kind: 'refus', message: unknownFunctionMessage(unknownCall) };
+	// `ln x` sans parenthèses se lisait l·n·x (« lim l n x = 0 ») : refus, comme
+	// `.dériver` et les autres commandes (décision de David du 2026-10-06)
+	const bare = bareFunctionName(typedExpression);
+	if (bare !== null) return { kind: 'refus', message: bareFunctionMessage(bare) };
 	// Une liste citée comme un nombre : la règle des cartes (`listCitedMessage`)
 	const typedAst = astOf(typedExpression, 'command', atelier.functionNames);
 	const listed =
@@ -201,23 +217,47 @@ export function limitCommand(context: LimitContext, input: string, typed: string
 	const result = safeLimit(ast, variable, approach, direction);
 	if (result === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
 
+	// « Comment ? » : les étapes portent sur l'expression, dans la lettre de
+	// l'élève ; une fonction ou une suite citée seule garde son nom
+	const body = shownBody(cited, typedAst ?? ast, shownLetter);
+	const question: StepsQuestion = {
+		expression: ast,
+		variable,
+		letter: shownLetter,
+		approach,
+		direction,
+		subject: cited === null ? null : body.latex.replace(/\\left|\\right/g, '')
+	};
+	const explain = (answer: LimitAnswer): LimitSteps | null => limitSteps(question, answer);
+
 	if (result.status === 'does-not-exist') {
 		const subject = cited?.kind === 'function' ? cited.name : null;
 		const typedSide = reading.value.side;
-		return noLimit(input, result, subject, { ast, variable, approach }, point, side, typedSide);
+		const limitQuestion = { ast, variable, approach };
+		return noLimit(input, result, subject, limitQuestion, point, side, typedSide, explain);
 	}
 	const value = knownValue(result);
 	if (value === null) return { kind: 'commande', input, output: UNKNOWN_LIMIT };
 	// R1 : sans côté tapé, une fonction définie d'un seul côté (ln x en 0) l'écrit : x → 0⁺
-	if (side === null && result.definedSide !== undefined) side = result.definedSide;
+	const impliedSide = side === null ? (result.definedSide ?? null) : null;
+	if (impliedSide !== null) side = impliedSide;
 
-	const body = shownBody(cited, typedAst ?? ast, shownLetter);
+	const explained = explain({ kind: 'value', value, impliedSide });
 	return {
 		kind: 'commande',
 		input,
 		output: `lim ${shownLetter}→${pointTextOf(point, side)} ${body.text} = ${valueText(value)}`,
-		latex: `\\lim\\limits_{${shownLetter}\\to ${pointLatexOf(point, side)}} ${body.latex} = ${toLatex(value)}`
+		latex: `\\lim\\limits_{${shownLetter}\\to ${pointLatexOf(point, side)}} ${body.latex} = ${toLatex(value)}`,
+		...stepsField(explained)
 	};
+}
+
+/** Les étapes et leur résumé, quand il y en a — sinon rien, pas de clé `undefined`. */
+function stepsField(explained: LimitSteps | null): Partial<LimitSteps> {
+	if (explained === null) return {};
+	return explained.summary === undefined
+		? { steps: explained.steps }
+		: { steps: explained.steps, summary: explained.summary };
 }
 
 /** Lire le point tapé après `en` : côté, lettre, infini ou nombre. */
@@ -440,7 +480,7 @@ function shownBody(
 	}
 	return {
 		latex: wrapLatex(expression, toLatex(withoutFractionParentheses(expression))),
-		text: wrapText(expression, toCustom(expression))
+		text: wrapText(expression, readableText(expression))
 	};
 }
 
@@ -561,9 +601,9 @@ interface LimitQuestion {
 }
 
 /**
- * Le moteur conclut « pas de limite ». Sans côté tapé, la raison qu'il donne :
- * hors du domaine (R2, « l'expression n'est pas définie au voisinage de -1 »),
- * oscillation (R3) ; sinon L4, les deux limites latérales quand il les
+ * Le moteur conclut « pas de limite ». La raison qu'il donne : hors du
+ * domaine (R2, « l'expression n'est pas définie au voisinage de -1 » ; avec
+ * un côté tapé, Q1, « … à droite de 0 »), oscillation (R3) ; sinon L4, les deux limites latérales quand il les
  * connaît (« à gauche −∞, à droite +∞ »), sinon la conclusion seule.
  * `subject` : le nom d'une fonction de l'atelier citée seule, sinon `null`
  * (« l'expression »).
@@ -575,7 +615,8 @@ function noLimit(
 	question: LimitQuestion,
 	point: LimitPoint,
 	side: 'left' | 'right' | null,
-	typedSide: 'left' | 'right' | null
+	typedSide: 'left' | 'right' | null,
+	explain: (answer: LimitAnswer) => LimitSteps | null
 ): CalcResult {
 	const { ast, variable, approach } = question;
 	const atLatex = pointLatexOf(point, side);
@@ -586,8 +627,18 @@ function noLimit(
 		subject === null
 			? `\\text{ : l'expression ${words}}`
 			: `\\text{ : } ${subject.replace(/_(\d{2,})/, '_{$1}')} \\text{ ${words}}`;
-	// Seul un côté TAPÉ coupe la raison ; un côté imposé par l'ensemble choisi (I4) la garde
-	const reason = typedSide === null ? result.noLimitReason : undefined;
+	// Q1 (David, 2026-10-14) : la raison s'écrit aussi avec un côté tapé ;
+	// hors du domaine, elle dit alors de quel côté (« à droite de 0 »)
+	const reason = result.noLimitReason;
+	if (reason === 'outside-domain' && typedSide !== null) {
+		const where = typedSide === 'right' ? 'à droite de' : 'à gauche de';
+		return {
+			kind: 'commande',
+			input,
+			output: `Pas de limite en ${atText} : ${who} n'est pas définie ${where} ${pointTextOf(point, null)}.`,
+			latex: `\\text{Pas de limite en } ${atLatex} ${clause(`n'est pas définie ${where} `)} ${pointLatexOf(point, null)}`
+		};
+	}
 	if (reason === 'outside-domain') {
 		return {
 			kind: 'commande',
@@ -622,7 +673,9 @@ function noLimit(
 		kind: 'commande',
 		input,
 		output: `Pas de limite en ${atText} : à gauche ${valueText(leftValue)}, à droite ${valueText(rightValue)}.`,
-		latex: `\\text{Pas de limite en } ${atLatex} \\text{ : à gauche } ${toLatex(leftValue)} \\text{, à droite } ${toLatex(rightValue)}`
+		latex: `\\text{Pas de limite en } ${atLatex} \\text{ : à gauche } ${toLatex(leftValue)} \\text{, à droite } ${toLatex(rightValue)}`,
+		// Seul « pas de limite » expliqué : les deux côtés, que la ligne écrit
+		...stepsField(explain({ kind: 'sides', left: leftValue, right: rightValue }))
 	};
 }
 
@@ -683,5 +736,29 @@ function withPiSymbol(text: string): string {
 /** Une valeur dans le texte de la ligne : `+∞`, `-∞`, sinon son écriture. */
 function valueText(value: MathNode): string {
 	if (isInfinity(value)) return value.sign === 'positive' ? '+∞' : '-∞';
-	return withPiSymbol(toCustom(value));
+	return withPiSymbol(readableText(value));
+}
+
+/**
+ * Le texte d'une expression, lisible à l'export : une division en `/`
+ * (`toCustom` écrit `:/` une division en ligne, `e^{1:/x}`), un exposant de
+ * plus d'un caractère entre parenthèses (`e^(1/x)`, `e^(-x)`).
+ */
+function readableText(node: MathNode): string {
+	const fractions = transformAST(node, {
+		leaveDivision: (n) => ({ ...n, displayStyle: 'fraction' as const })
+	});
+	let text = toCustom(fractions);
+	// Des accolades les plus intérieures vers l'extérieur : `e^{2x}` → `e^(2x)`,
+	// `{e^x}/{x^2}` → `e^x/x^2`, `1/{2x}` → `1/(2x)`
+	for (let previous = ''; previous !== text;) {
+		previous = text;
+		text = text.replace(/\^\{([^{}]*)\}/g, (_whole, exponent: string) =>
+			exponent.length === 1 ? `^${exponent}` : `^(${exponent})`
+		);
+		text = text.replace(/\{([^{}]*)\}/g, (_whole, operand: string) =>
+			POWER_ATOM.test(operand) ? operand : `(${operand})`
+		);
+	}
+	return text;
 }
