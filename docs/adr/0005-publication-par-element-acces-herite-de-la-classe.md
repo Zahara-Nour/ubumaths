@@ -1,6 +1,6 @@
 # 0005 — Publication par élément, accès hérité de la classe
 
-- **Statut** : acceptée (mise en service le 2026-09-14)
+- **Statut** : acceptée (mise en service le 2026-09-14) · ligne « Modèles de chapitre » remplacée par [0029](0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md)
 - **Date** : 2026-09-13 · **Décidée par** : David
 
 ## Contexte
