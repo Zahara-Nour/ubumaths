@@ -7,10 +7,16 @@
  * modèle — directement, ou par la cascade de la suppression de son auteur — est
  * donc refusé tant qu'un chapitre le relie, et la purge entière échoue.
  *
- * Décision : avant de supprimer les modèles visés, les chapitres qui les relient
- * sont DÉTACHÉS (`source_id` vidé, instanciation marquée détachée), comme le fait
- * « Détacher du modèle ». Un chapitre d'une classe que la purge ne touche pas
- * garde ainsi son contenu : la base l'a recopié dans chaque ligne de lien.
+ * Décision : avant de supprimer les modèles visés, leurs LIGNES DE LIEN sont
+ * supprimées. Le modèle disparaît, ses éléments quittent les chapitres qui le
+ * reliaient ; le contenu propre de ces chapitres reste, et leur instanciation
+ * aussi (`template_id` passe à NULL : « le modèle a été supprimé »).
+ *
+ * Pas de détachement en SQL : « Détacher du modèle » COPIE chaque fichier chez
+ * le chapitre (API de stockage) ; vider `source_id` sans copier fabriquerait des
+ * documents propres pointant les fichiers du modèle, un état que l'application
+ * ne produit jamais — et que la purge des classes ne sait pas supprimer sans
+ * professeur (`orphaned_documents.teacher_id` NOT NULL).
  *
  * Les modèles ORPHELINS (auteur disparu) partent aussi : la suppression de
  * secours des profils (`session_replication_role = replica`, clés étrangères
@@ -38,8 +44,8 @@ const LINKED_TABLES = [
 
 // Functions
 /**
- * Détache les chapitres reliant les modèles des auteurs visés (ou sans auteur),
- * puis supprime ces modèles — leur contenu part avec eux (CASCADE).
+ * Supprime les lignes de lien vers les modèles des auteurs visés (ou sans
+ * auteur), puis ces modèles — leur contenu part avec eux (CASCADE).
  *
  * @param client - Connexion postgres en mode normal (PAS `replica` : les
  *   cascades et les déclencheurs doivent jouer)
@@ -54,15 +60,11 @@ export async function purgeTemplatesOf(client: Queryable, creatorsSql: string): 
 
 	for (const table of LINKED_TABLES) {
 		await client.query(`
-			update public.${table} c set source_id = null
+			delete from public.${table} c
 			where c.source_id in (
 				select m.id from public.${table} m where m.template_id in (${templates})
 			)`);
 	}
-
-	await client.query(`
-		update public.chapter_template_instantiations set is_detached = true
-		where template_id in (${templates})`);
 
 	await client.query(`delete from public.chapter_templates where id in (${templates})`);
 }

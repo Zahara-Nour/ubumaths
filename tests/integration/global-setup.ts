@@ -44,8 +44,8 @@ export async function setup(): Promise<void> {
 
 		// ADR 0029 : un modèle relié par un chapitre bloque la cascade (lignes de
 		// lien en RESTRICT) — les classes, elles, ne sont pas purgées ici. Les
-		// chapitres qui relient un modèle d'un professeur sont donc détachés, et
-		// ses modèles supprimés, AVANT les comptes (incident du 2026-10-14).
+		// lignes de lien vers les modèles d'un professeur, puis ses modèles, sont
+		// donc supprimées AVANT les comptes (incident du 2026-10-14).
 		await purgeTemplatesOf(client, `select id from public.profiles where role = 'teacher'`);
 
 		// Deleting from auth.users cascades to profiles → classes → class_members,

@@ -17,10 +17,10 @@
  *   (`session_replication_role = replica`, clés étrangères coupées) laissait le
  *   modèle ORPHELIN, `created_by` vers un profil disparu.
  *
- * Décision : avant de supprimer un modèle, la purge DÉTACHE les chapitres qui le
- * relient (`source_id` vidé, instanciation marquée détachée), comme le ferait
- * « Détacher du modèle ». Le chapitre d'une classe que la purge ne touche pas
- * garde donc son contenu (la base l'a recopié dans chaque ligne de lien).
+ * Décision (`tests/helpers/database/purge-modeles.ts`) : avant de supprimer un
+ * modèle, la purge supprime ses LIGNES DE LIEN. Le chapitre d'une classe que la
+ * purge ne touche pas perd les éléments du modèle, garde son contenu propre et
+ * son instanciation (`template_id` à NULL : « le modèle a été supprimé »).
  *
  * @vitest-environment node
  */
@@ -70,9 +70,14 @@ async function insertAs(
 
 /**
  * Un professeur de test, son modèle (une section, un objectif), et un chapitre
- * d'une classe qui le relie : deux lignes de lien.
+ * d'une classe qui le relie (deux lignes de lien) et porte un objectif propre.
  */
-async function decor(): Promise<{ modele: string; chapitre: string; objectifLie: string }> {
+async function decor(): Promise<{
+	modele: string;
+	chapitre: string;
+	objectifLie: string;
+	objectifPropre: string;
+}> {
 	const p = await TestData.profile().withRole('teacher').create();
 	const prof = await signIn(p.email);
 
@@ -119,6 +124,12 @@ async function decor(): Promise<{ modele: string; chapitre: string; objectifLie:
 		display_order: 0
 	});
 
+	const objectifPropre = await insertAs(prof, 'chapter_checklist_items', {
+		chapter_id: chapitre,
+		content: 'Objectif propre ZZ',
+		display_order: 5
+	});
+
 	const { error } = await prof.rpc('link_chapter_to_template', {
 		p_chapter_id: chapitre,
 		p_template_id: modele
@@ -132,7 +143,12 @@ async function decor(): Promise<{ modele: string; chapitre: string; objectifLie:
 		.not('source_id', 'is', null);
 	expect(liens, 'le décor doit porter une ligne de lien').toHaveLength(1);
 
-	return { modele, chapitre, objectifLie: (liens as { id: string }[])[0].id };
+	return {
+		modele,
+		chapitre,
+		objectifLie: (liens as { id: string }[])[0].id,
+		objectifPropre
+	};
 }
 
 async function modeleExiste(modele: string): Promise<boolean> {
@@ -161,25 +177,24 @@ describe('purge des tests face aux lignes de lien (ADR 0029)', () => {
 	 * Le décor de l'incident du 2026-10-14 : la classe n'est pas purgée par
 	 * `global-setup` (il ne supprime que les professeurs).
 	 */
-	it('global-setup passe, et le chapitre d’une classe non purgée garde son contenu', async () => {
-		const { modele, chapitre, objectifLie } = await decor();
+	it('global-setup passe ; le chapitre d’une classe non purgée garde son contenu propre', async () => {
+		const { modele, chapitre, objectifLie, objectifPropre } = await decor();
 
 		await expect(globalSetup()).resolves.toBeUndefined();
 
 		expect(await modeleExiste(modele)).toBe(false);
 
-		const { data: objectif } = await serviceBrut
+		const { data: objectifs } = await serviceBrut
 			.from('chapter_checklist_items')
-			.select('chapter_id, source_id, content')
-			.eq('id', objectifLie)
-			.single();
-		expect(objectif).toEqual({ chapter_id: chapitre, source_id: null, content: 'Je sais purger' });
+			.select('id')
+			.in('id', [objectifLie, objectifPropre]);
+		expect(objectifs).toEqual([{ id: objectifPropre }]);
 
 		const { data: rattachement } = await service
 			.from('chapter_template_instantiations')
-			.select('template_id, is_detached')
+			.select('template_id')
 			.eq('chapter_id', chapitre)
 			.single();
-		expect(rattachement).toEqual({ template_id: null, is_detached: true });
+		expect(rattachement).toEqual({ template_id: null });
 	});
 });

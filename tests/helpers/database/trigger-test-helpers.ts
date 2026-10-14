@@ -186,6 +186,25 @@ export async function cleanupAllTestData(): Promise<void> {
 	// que le `try/catch` ne pouvait donc pas voir. Le nettoyage était cassé
 	// depuis des mois en annonçant le succès. C'est exactement la règle
 	// `supabase/require-error-check` du dépôt, appliquée ici aux tests.
+	// ⚠️ Les documents des chapitres AVANT les classes : supprimer un chapitre
+	// archive ses fichiers téléversés dans `orphaned_documents`, au nom de
+	// l'unique professeur — et sans professeur (profil déjà purgé, ou suite
+	// lancée juste après `global-setup`), `teacher_id` NOT NULL fait échouer
+	// TOUTE la purge des classes. Toutes les classes partent : leurs documents
+	// aussi. Les lignes du modèle (`chapter_id` vide) ne sont pas touchées.
+	{
+		const { error } = await serviceClient
+			.from('chapter_documents')
+			.delete()
+			.not('chapter_id', 'is', null);
+		if (error) {
+			console.error(
+				'[cleanupAllTestData] Purge des documents de chapitre impossible :',
+				error.message
+			);
+		}
+	}
+
 	for (const table of ['exercise_assignments', 'classes', 'evaluation_tasks']) {
 		const { error } = await serviceClient
 			.from(table as never)
