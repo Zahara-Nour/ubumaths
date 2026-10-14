@@ -185,6 +185,19 @@ Erreur / garde :
 
 ## Journal
 
+- 2026-10-14 — **lot 4b** (branche `feat/fiches-style-pdf-eleve`) : PDF élève par le générateur
+  unique, style de la fiche (API élève, aperçu, pages publiques). Rendu validé à montrer
+  (`scratchpad/rendu-4b/`). **Décisions de David** : avec corrigé, les énoncés gardent le style
+  de la fiche (`CORRECTIONS_PART` après la fiche du style) ; la description n'est plus imprimée
+  sur le PDF élève. Changements voulus du PDF élève : mise en page du style (Fiche élève : deux
+  colonnes, date), points selon le style (D8), plus de pastille de type, corrigé au bandeau vert
+  et fonds gris, cadre de réponse de 5 cm pour les évaluations (comme le prof). Empreinte : 117
+  PDF prof identiques. Revues : `security-auditor` rien de bloquant (service-role dans
+  `worksheet-styles.ts`, sur la liste blanche) ; `code-reviewer` : durée, total et cases du
+  cartouche transmis (corrigé). **Hors lot** : panne trouvée et corrigée, #1386 (`exercises.tags`
+  inexistante → API élève et aperçu en 500), **à déployer**. Reste au lot 5 : habillage
+  `student` et `renderStudentExercise` / `renderStudentPanel` morts.
+
 - 2026-10-14 — **lot 4a fait** (#1383, puis #1384) : migration
   `20261016103500_style_fiche_liens_partages` (les deux fonctions de partage rendent `style_id`,
   `template_id`, `template` d'un style de l'auteur). Tests `style-fiche-liens-partages.test.ts`

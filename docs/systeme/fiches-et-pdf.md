@@ -54,7 +54,7 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 | Fichier                                         | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `src/lib/worksheets/exercise-numbering.ts`      | **La** règle du numéro affiché : `groupExercisesForDisplay`, `orderExercisesForDisplay`, `displayNumberOf`, `exerciseAtDisplayNumber`. Utilisée par la page élève, le générateur PDF et le serveur.                                                                                                                                                                                                                                  |
-| `src/lib/worksheets/student-worksheet-typst.ts` | `generateStudentWorksheetTypst` : le PDF **élève** (et l'aperçu « vue élève » du prof), enveloppe codée en dur (setup, en-tête, partie de fin) ; les exercices viennent du rendu commun.                                                                                                                                                                                                                                             |
+| `src/lib/worksheets/student-worksheet-typst.ts` | `generateStudentWorksheetTypst` : le PDF **élève** (et l'aperçu « vue élève » du prof), par `WorksheetGenerator` et le gabarit du style de la fiche (lot 4b).                                                                                                                                                                                                                                                                        |
 | `src/lib/worksheets/document/`                  | Le **document d'une fiche** ([ADR 0028](../adr/0028-pdf-de-fiche-un-generateur-des-styles-et-des-formes.md), lot 1) : `WorksheetDocument` (`types.ts`), rempli par `documentFromTeacherCopy` (copie du prof) ou `documentFromStudentView` (vue élève, correction non visible → `correction: null`) ; ordre et numéros (`numbering.ts`) ; **rendu d'exercice unique** `renderExercises` (`render-exercise.ts`) ; `MATH_LIMITS_SETUP`. |
 | `src/lib/worksheets/serie-automatismes.ts`      | `buildSerie` : une **série figée** d'instances de modèles de question devient un exercice ordinaire ([ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md)). Toute anomalie lève une exception. Les formules maison sont figées avec les fonctions du modèle et le sens de `AB` de l'instance.                                                                                                                            |
 | `src/lib/worksheets/exercise-anchor.ts`         | Ancre d'un exercice de fiche (`#exercice-<worksheet_exercises.id>`, jamais le numéro) : `exerciseAnchorId`, `exerciseAnchorHash`, `worksheetExerciseIdFromHash`, `scrollToAnchoredExercise`. Notifications de signalement, fiche de l'élève, aperçu « vue élève ».                                                                                                                                                                   |
@@ -273,7 +273,7 @@ l'aperçu d'affectation (API élève et aperçu), `ordre-melange.svelte.test.ts`
 exercises.variations (ubumark, FR + translations.en)
   → InstanceData / StudentWorksheetView (contenu résolu dans la langue de la fiche)
   → WorksheetGenerator (prof : le gabarit de la forme ; fiche | réponses | corrigé | fiche + corrections)
-    ou generateStudentWorksheetTypst (élève)
+    (élève : generateStudentWorksheetTypst → le même WorksheetGenerator, document de la vue)
       → generateTypst (ubumark) par énoncé / solution ; blocs figure via figure-typst-setup
   → source Typst (une chaîne)
   → images externes : getTrackedExternalImages → fetchExternalImages (WebP → PNG)
@@ -336,13 +336,30 @@ vers le gabarit), refusé tant qu'une fiche désigne le gabarit ou le style
 et `get_course_worksheet_by_share_token` rendent aussi `style_id`, `template_id` et `template`, la
 fiche du style retenu **seulement si ce style appartient à l'auteur de la fiche** (style de
 Chiphre : `null`, Typst dans le code ; style d'un autre compte : jamais)
-(`tests/integration/style-fiche-liens-partages.test.ts`). Les pages publiques ne s'en servent qu'au
-lot 4b.
+(`tests/integration/style-fiche-liens-partages.test.ts`). Les pages publiques les passent au PDF
+(`PdfPreview` → `generateWorksheetTypst`, lot 4b).
+
+**PDF de l'élève par le générateur unique** (lot 4b) : `generateStudentWorksheetTypst` construit le
+document de la vue (`documentFromStudentView`) et le donne à `WorksheetGenerator` (entrée
+`document`), avec le gabarit du style retenu (`styleIdOf`). L'API élève et l'aperçu « vue élève »
+renvoient `style_id`, `template_id`, `template` (le Typst seul de la fiche d'un style de
+l'**auteur** de la fiche, lu en service-role après le contrôle d'accès,
+`loadAuthorStyleTemplate`), `total_points`, `estimated_duration_minutes` et les cases du cartouche
+(`headerFlags`). Partie de fin (réponses ou corrigé) : forme « fiche + corrections » ; un style qui
+n'a que sa fiche garde sa fiche et reçoit après elle `CORRECTIONS_PART` (nouvelle page, bandeau
+vert, polices du corrigé ; décision de David). Seules les corrections visibles sont imprimées
+(`renderExercises` écarte `correction === null` hors fiche). Ce que seul l'élève reçoit
+(`renderDocumentPreamble`) : avertissement de la copie individuelle, consignes de l'affectation
+(dans la case `{{instructions}}` d'un gabarit qui en a une), légende ★ ; ★ et filet orange des
+exercices indispensables dans les habillages `heading` et `badge`. Points : comme le prof, selon
+le style (« Fiche élève » n'en imprime pas, D8). La description de la fiche n'est plus imprimée
+(décision de David). Tests : `worksheets/__tests__/pdf-eleve-style.test.ts`,
+`tests/integration/pdf-eleve-style.test.ts`.
 
 **Un document, un rendu d'exercice** (ADR 0028, lot 1) : les deux générateurs construisent un
 `WorksheetDocument` puis appellent `renderExercises(doc, forme, habillage)`. Les habillages
-(`heading` : `{{exercises}}` ; `badge` : `{{exercises_badge}}` ; `student` : PDF élève, jusqu'au
-lot 5) ne changent que la présentation. L'aperçu markdown à l'écran de `PdfPreview` passe par le
+(`heading` : `{{exercises}}` ; `badge` : `{{exercises_badge}}` ; `student` : ancien PDF élève, plus appelé
+depuis le lot 4b, retiré au lot 5) ne changent que la présentation. L'aperçu markdown à l'écran de `PdfPreview` passe par le
 même document (`renderMarkdownPreview`) : mêmes ordre, numéros, sections et « correction non
 écrite » que le PDF. Communs aux deux
 PDF : titre d'exercice avec ses formules (`processTableCellContent`), ordre et numérotation
