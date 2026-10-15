@@ -119,3 +119,19 @@ liste trouée en citant l'entrée).
       unité, rang de suite, `f′`), terme de récurrence marqué approché.
 - ⚠️ Un test qui gèle (le cas des intérêts composés avant correctif) bloque toute la suite :
   lancer `test:server` avec une garde de temps et tuer les vitest orphelins du worktree.
+
+### PR 2 — l'affichage (`feat/atelier-formules-affichage`)
+
+- [x] tests rouges : 4 de modèle (`latex`, `exactLatex`, `citingCells`), 4 de vue
+- [x] case en écriture mathématique (MathLive, `isSafeLatex`, cache), étiquette lue en français ;
+      « Valeur exacte » sous la barre ; carte d'une liste à formules (valeurs, « calculée dans la
+      grille ») ; confirmation de suppression d'une liste citée par des cellules
+- [x] capture Playwright : `2/3` en fraction, `2√2`, `3π`, `≈ 0,1429` + valeur exacte, « erreur »
+- [x] revue : 4 mineurs corrigés (cache du rendu borné ; « Valeur exacte » aussi pour `√2`, `π`,
+      dont le texte lu est `≈` ; la confirmation compte les cases qui se videront, en chaîne,
+      sans celles déjà vides ; la carte écrit les valeurs comme la grille, `1/3`, « erreur »).
+- ⚠️ Incident : l'agent de revue a lancé `pnpm` dans une copie liée au `node_modules` du worktree
+  et y a installé ~160 paquets hors lockfile. Réparé avec l'accord de David
+  (`pnpm install --frozen-lockfile --prefer-offline --force` : sans `--force`, pnpm se croyait à
+  jour) ; liens de premier niveau comparés à ceux du dépôt principal : identiques. Consigne aux
+  revues : sonde dans une copie SANS lien vers `node_modules`.

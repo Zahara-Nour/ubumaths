@@ -28,7 +28,8 @@ import { getVariables } from '$lib/mathAST/eval/substitute';
 import { transformAST } from '$lib/mathAST/visitor';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { tidyTerms } from './tidy-terms';
-import { decimalCommaText } from './decimal-comma';
+import { decimalCommaLatex, decimalCommaText } from './decimal-comma';
+import { toLatex } from '$lib/mathAST/latex-generator';
 import { readListValue } from '$lib/statistics/read-value';
 import { intervalDomainOf, outsideIntervalMessage } from './interval';
 import { containsValue } from '$lib/mathAST/domain/algebra';
@@ -48,8 +49,15 @@ export type CellValue =
 			/** L'arbre du résultat : exact, ou un nombre décimal après le repli. */
 			readonly node: MathNode;
 			readonly exact: boolean;
-			/** Ce que montre la case (Q2) : `13/3`, `0,25`, ou `≈ 4,3333`. */
+			/**
+			 * Ce que montre la case en texte (Q2) : `13/3`, `-0,25`, ou `≈ 4,3333` ;
+			 * une écriture avec des lettres y est approchée — `latex` la montre exacte.
+			 */
 			readonly shown: string;
+			/** L'écriture mathématique exacte de la CASE (Q2 : courte), sinon `null`. */
+			readonly latex?: string | null;
+			/** L'écriture exacte complète, pour « Valeur exacte » sous la barre, sinon `null`. */
+			readonly exactLatex?: string | null;
 	  }
 	| { readonly kind: 'word'; readonly text: string }
 	| {
@@ -110,6 +118,9 @@ const MAX_EXACT_CITED = 24;
 
 /** Au-delà de ce nombre de caractères, l'écriture exacte cède la place à `≈` (Q2). */
 const MAX_SHOWN_EXACT = 12;
+
+/** « Valeur exacte » sous la barre : au-delà de cette longueur de LaTeX, elle n'est pas montrée. */
+const MAX_EXACT_LATEX = 400;
 
 const UNREADABLE = 'Je n’ai pas su lire cette formule.';
 const NOT_REAL = 'Le résultat n’est pas un nombre réel.';
@@ -450,7 +461,8 @@ function numberValue(result: ReturnType<typeof evaluate>, inexact: boolean): Cel
 		value,
 		node: exact ? result.node : decimalNode(value),
 		exact,
-		shown: shownValue(result.node, value, exact)
+		shown: shownValue(result.node, value, exact),
+		...latexOf(result.node, exact)
 	};
 }
 
@@ -481,6 +493,23 @@ function shownValue(node: MathNode, value: number, exact: boolean): string {
 		if (written.length <= MAX_SHOWN_EXACT && !/[A-Za-z\\]/.test(written)) return written;
 	}
 	return `≈ ${decimalCommaText(String(Number(value.toFixed(4))))}`;
+}
+
+/**
+ * L'écriture mathématique d'une valeur exacte, mise au propre comme dans Calcul
+ * (`tidyTerms`, virgule décimale) : celle de la case si elle est courte (Q2),
+ * et l'écriture complète pour « Valeur exacte » (bornée : au-delà, rien).
+ */
+function latexOf(
+	node: MathNode,
+	exact: boolean
+): { latex: string | null; exactLatex: string | null } {
+	if (!exact) return { latex: null, exactLatex: null };
+	const tidy = tidyTerms(node);
+	// `\frac` et pas `\dfrac` : une fraction développée est trop haute pour une ligne de grille
+	const full = decimalCommaLatex(toLatex(tidy)).replaceAll('\\dfrac', '\\frac');
+	const short = toCustom(tidy).length <= MAX_SHOWN_EXACT;
+	return { latex: short ? full : null, exactLatex: full.length <= MAX_EXACT_LATEX ? full : null };
 }
 
 /** Les suites récurrentes : leur terme `u(5)` se lit dans leurs termes calculés (décimaux). */
@@ -584,4 +613,16 @@ export function gridTexts(
 		});
 	}
 	return texts;
+}
+
+/** Les cellules qu'une formule cite (`=A1+$B$2` → A1, B2), sans la lire. */
+export function referencesIn(text: string): string[] {
+	if (!isFormula(text)) return [];
+	const body = text.trim().slice(1);
+	const refs = new Set<string>();
+	for (const match of body.matchAll(REFERENCE)) {
+		if (isReference(match[2], match.index ?? 0, body))
+			refs.add(`${match[2].toUpperCase()}${match[4]}`);
+	}
+	return [...refs];
 }

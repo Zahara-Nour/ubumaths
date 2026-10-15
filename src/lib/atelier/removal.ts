@@ -58,3 +58,13 @@ export function restoredLine(removed: readonly string[]): string {
 		? `« ${displayName(removed[0])} » est revenu.`
 		: `${listed(removed)} sont revenus.`;
 }
+
+/**
+ * Ce que dit la confirmation quand des cellules de la grille citent la liste
+ * supprimée (tableur, T3 et T5) : elles deviendront vides.
+ */
+export function citingCellsNote(count: number): string {
+	return count === 1
+		? '1 cellule de la grille la cite : elle deviendra vide.'
+		: `${count} cellules de la grille la citent : elles deviendront vides.`;
+}
