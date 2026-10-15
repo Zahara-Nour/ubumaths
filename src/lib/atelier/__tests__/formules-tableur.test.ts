@@ -268,10 +268,13 @@ describe('§3 refus', () => {
 		);
 	});
 
-	it('un nom de fonction inconnu dit lesquelles existent', () => {
-		expect(shown(withSeries('=MOYENE(A1:A4)'), C, 1)).toBe(
-			'erreur : MOYENE n’est pas une fonction de la grille. Fonctions : SOMME, MOYENNE, MEDIANE, MIN, MAX, NB, ECARTYPE, ECARTYPEP.'
+	it('un nom de fonction inconnu dit lesquelles existent, celles du calcul comprises', () => {
+		const message = shown(withSeries('=MOYENE(A1:A4)'), C, 1);
+		expect(message).toContain(
+			'MOYENE n’est pas une fonction de la grille. Fonctions du tableur : SOMME, MOYENNE, MEDIANE, MIN, MAX, NB, ECARTYPE, ECARTYPEP.'
 		);
+		expect(message).toContain('sqrt');
+		expect(shown(withSeries('=Sqrt(4)'), C, 1)).toContain('sqrt');
 	});
 });
 
@@ -313,5 +316,68 @@ describe('§1 recopie, lien, atelier reçu', () => {
 		};
 
 		expect(fromRelative(toRelative(state))).toEqual(state);
+	});
+});
+
+describe('revue de la PR 1', () => {
+	function withValues(formula: string) {
+		const s = { atelier: new Atelier(), engine: new WebReplEngine() };
+		runInput(s, 'a = 6');
+		runInput(s, 'b = 3');
+		s.atelier.editCells([
+			{ column: A, row: 1, text: '2' },
+			{ column: C, row: 1, text: formula }
+		]);
+		return s.atelier;
+	}
+
+	it('`=a:b` reste une division (lot 2) : ni réécrite, ni refusée', () => {
+		const a = withValues('=a:b');
+
+		expect(a.cell(C, 1)).toBe('=a:b');
+		expect(shown(a, C, 1)).toBe('2');
+		expect(shiftFormula('=N:P', 1, 0)).toBe('=N:P');
+	});
+
+	it('A:A n’est une colonne qu’en argument d’une fonction', () => {
+		const a = withValues('=moyenne(a:a)+a:b');
+
+		expect(a.cell(C, 1)).toBe('=MOYENNE(A:A)+a:b');
+		expect(shown(a, C, 1)).toBe('4');
+		expect(shiftFormula('=MOYENNE(A:A)+N:P', 1, 0)).toBe('=MOYENNE(B:B)+N:P');
+	});
+
+	it('un chiffre devant une fonction : un produit (`=2SOMME(…)`)', () => {
+		expect(shown(withSeries('=2SOMME(A1:A4)'), C, 1)).toBe('100');
+	});
+
+	it('une case citée seule en argument se lit comme une plage d’une case (vide et mot ignorés)', () => {
+		const a = withSeries('=SOMME(A1;B1;A9)', [{ column: B, row: 1, text: 'abc' }]);
+		a.editCells([{ column: C, row: 2, text: '=MIN(A1;A9)' }]);
+
+		expect(shown(a, C, 1)).toBe('12');
+		expect(shown(a, C, 2)).toBe('12');
+	});
+
+	it('la ligne 0 n’existe pas', () => {
+		expect(shown(withSeries('=SOMME(A0:A4)'), C, 1)).not.toBe('50');
+	});
+
+	it('ECARTYPE de 200 valeurs : la moyenne n’est calculée qu’une fois (< 150 ms)', () => {
+		const a = new Atelier();
+		a.editCells(
+			Array.from({ length: 200 }, (_, i) => ({ column: A, row: i + 1, text: `${i + 1}/7` }))
+		);
+		const started = performance.now();
+		a.editCells([
+			{ column: C, row: 1, text: '=ECARTYPEP(A:A)' },
+			{ column: C, row: 2, text: '=ECARTYPE(A:A)' },
+			{ column: C, row: 3, text: '=ECARTYPE(A1:A200)' }
+		]);
+		const elapsed = performance.now() - started;
+
+		// σ de 1..200 divisé par 7 : √((200² − 1)/12) / 7 ≈ 8,2478
+		expect(shown(a, C, 1)).toBe('≈ 8,2478');
+		expect(elapsed).toBeLessThan(150);
 	});
 });

@@ -446,16 +446,21 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   `(ψ_k)`, comme une case devient `(ω_k)`, et chaque argument est lu par la même lecture
   (`readBody`, récursive : `SOMME(MAX(A1:A4);1)`). Un argument est une plage (`A2:A21`, `A:A` = A1
   à A200, `readRange`), le nom d'une liste (sa colonne, Q-L4-3) ou une expression. Les cases vides
-  et les mots d'une plage sont ignorés (Q-L4-2, exception à T5) ; une case en erreur la transmet
+  et les mots d'une plage sont ignorés (Q-L4-2, exception à T5) — une case citée SEULE en argument
+  (`=MIN(A1;A9)`) se lit comme une plage d'une case, comme LibreOffice ; une case en erreur la transmet
   (« A5 est en erreur. »). `computeFunction` rend l'ARBRE exact du résultat, en somme équilibrée
   (profondeur log₂ n : une somme de 200 cases écrite à la suite dépassait la garde de profondeur
-  100 de mathAST et levait une exception). Dépendances : les cases des plages et la colonne d'une
+  100 de mathAST et levait une exception) ; l'écart type calcule la moyenne UNE fois (recopiée dans
+  chaque carré, l'arbre était en n² : 750 ms pour 200 cases). Dépendances : les cases des plages et la colonne d'une
   liste nommée (`deps`, `dependenciesOf`) entrent dans l'ordre de calcul, les cycles et le
   recalcul ciblé. Une plage hors d'une fonction est refusée (`=C1:C2` valait 0,6 en silence, `:`
   étant une division) ; mêlée à un calcul dans un argument aussi. Un nom inconnu en capitales
   (`MOYENE(`) dit les fonctions de la grille. `normalizeFormula` réécrit les noms en capitales sans
-  accent et `a:a` en `A:A` (Q-L4-7) — `=max(1;2)` devient `=MAX(1;2)`. `A:A` suit les colonnes à
-  la recopie et pour un atelier reçu (`mapColumnRanges`) ; `A2:A21` se décale comme deux
+  accent (Q-L4-7) — `=max(1;2)` devient `=MAX(1;2)`. **`A:A` n'est une colonne qu'en argument
+  direct d'une fonction** (`mapCallArguments`, `columnRangeOf`) : ailleurs, `=a:b` reste la
+  division du collège, ni réécrite ni refusée (revue : elle devenait `=A:B`, refusée). En argument,
+  `a:a` s'écrit `A:A` et suit les colonnes à la recopie et pour un atelier reçu
+  (`mapColumnRanges`) ; `A2:A21` se décale comme deux
   références. `referencesIn` ne compte pas les plages (une plage qui se vide ne vide pas la
   formule). Une exception du moteur pendant le calcul d'une case devient l'erreur de cette case
   (`safely`), jamais celle de la grille. Mesuré : 600 formules à plages, 285 ms ; changer la case

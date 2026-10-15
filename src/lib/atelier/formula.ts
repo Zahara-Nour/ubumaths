@@ -44,7 +44,9 @@ import { containsValue } from '$lib/mathAST/domain/algebra';
 import { displayName } from './names';
 import {
 	cellsOf,
+	columnRangeOf,
 	computeFunction,
+	mapCallArguments,
 	findCalls,
 	GRID_FUNCTIONS,
 	normalizeGridFunctions,
@@ -55,7 +57,7 @@ import {
 	type ArgumentValue,
 	type GridFunction
 } from './grid-functions';
-import { findUnknownFunctionCall } from '$lib/mathAST/parser/custom/tokenizer';
+import { findUnknownFunctionCall, SHOWN_FUNCTIONS } from '$lib/mathAST/parser/custom/tokenizer';
 
 // =============================================================================
 // Types
@@ -160,6 +162,9 @@ const MARK = 'ω';
 
 /** La marque d'un appel de fonction du tableur dans l'arbre lu : `ψ_k` (lot 4). */
 const CALL_MARK = 'ψ';
+
+/** Une case seule en argument : `A2`, `$B$3`. */
+const LONE_CELL = /^\s*(\$?[A-Za-z]\$?[1-9]\d*)\s*$/;
 
 /** Un nom seul en argument : `L`, `M_2` — jamais une case (`A2`). */
 const LONE_NAME = /^\s*([A-Za-z](?:_\d+)?)\s*$/;
@@ -268,7 +273,7 @@ function readBody(body: string, functionNames: readonly string[]): ReadFormula {
 	if (unknown !== null && !functionNames.includes(unknown) && /[A-Z]/.test(unknown)) {
 		return {
 			ok: false,
-			message: `${unknown} n’est pas une fonction de la grille. Fonctions : ${GRID_FUNCTIONS.join(', ')}.`
+			message: `${unknown} n’est pas une fonction de la grille. Fonctions du tableur : ${GRID_FUNCTIONS.join(', ')}. Fonctions de calcul : ${SHOWN_FUNCTIONS.join(', ')}.`
 		};
 	}
 	// Une plage hors d'une fonction : `:` se lisait comme une division (`=C1:C2` → 0,6)
@@ -330,7 +335,10 @@ function readCall(
 	const lists: string[] = [];
 	const names: string[] = [];
 	for (const raw of rawArgs) {
-		const range = readRange(raw);
+		// Une case citée seule en argument se lit comme une plage d'une case :
+		// vide ou mot, elle est ignorée (`=MIN(A1;A9)`, comme LibreOffice — revue)
+		const cell = LONE_CELL.exec(raw);
+		const range = cell === null ? readRange(raw) : readRange(`${cell[1]}:${cell[1]}`);
 		if (range !== null) {
 			if (range.bottom > GRID_ROWS) {
 				return { ok: false, message: outsideGrid(cellName(range.right, range.bottom)) };
@@ -1011,26 +1019,27 @@ export function shiftFormula(text: string, dCol: number, dRow: number): string {
 	);
 }
 
-/** `A:A` (lot 4) : une colonne entière, sans ligne — elle suit les colonnes, jamais les lignes. */
-const COLUMN_RANGE_IN_TEXT = /(?<![A-Za-z_\\$])(\$?)([A-Z])(\s*:\s*)(\$?)([A-Z])(?![A-Za-z_\d(])/g;
-
-/** Réécrire chaque colonne entière d'une formule ; une colonne hors de la grille → `#HORS`. */
+/**
+ * Réécrire chaque colonne entière (`A:A`, lot 4) d'une formule — seulement en
+ * argument d'une fonction du tableur : ailleurs `N:P` est une division (revue).
+ * Une colonne hors de la grille → `#HORS`.
+ */
 function mapColumnRanges(
 	text: string,
 	map: (column: number, abs: boolean) => number | undefined
 ): string {
 	if (!isFormula(text)) return text;
-	return text.replace(
-		COLUMN_RANGE_IN_TEXT,
-		(match, d1: string, c1: string, sep: string, d2: string, c2: string) => {
-			const one = map(c1.charCodeAt(0) - 65, d1 === '$');
-			const two = map(c2.charCodeAt(0) - 65, d2 === '$');
-			const inGrid = (c: number | undefined): c is number =>
-				c !== undefined && c >= 0 && c < GRID_COLUMNS;
-			if (!inGrid(one) || !inGrid(two)) return OUTSIDE;
-			return `${d1}${columnLetter(one)}${sep}${d2}${columnLetter(two)}`;
-		}
-	);
+	const body = mapCallArguments(text.trim().slice(1), (arg) => {
+		const range = columnRangeOf(arg);
+		if (range === null) return arg;
+		const one = map(range.c1.toUpperCase().charCodeAt(0) - 65, range.d1 === '$');
+		const two = map(range.c2.toUpperCase().charCodeAt(0) - 65, range.d2 === '$');
+		const inGrid = (c: number | undefined): c is number =>
+			c !== undefined && c >= 0 && c < GRID_COLUMNS;
+		if (!inGrid(one) || !inGrid(two)) return OUTSIDE;
+		return `${range.d1}${columnLetter(one)}:${range.d2}${columnLetter(two)}`;
+	});
+	return `=${body}`;
 }
 
 /**

@@ -16,6 +16,7 @@
 
 import { cellName, GRID_ROWS } from './grid';
 import type { MathNode } from '$lib/mathAST/types';
+import { evaluate } from '$lib/mathAST/eval/evaluate';
 
 // =============================================================================
 // Types
@@ -27,6 +28,8 @@ export type GridFunction =
 /** Un appel repéré dans le corps d'une formule : sa place, son nom, ses arguments bruts. */
 export interface GridCall {
 	readonly start: number;
+	/** La parenthèse ouvrante. */
+	readonly open: number;
 	readonly end: number;
 	readonly name: GridFunction;
 	readonly args: readonly string[];
@@ -64,16 +67,24 @@ export const GRID_FUNCTIONS: readonly GridFunction[] = [
 	'ECARTYPEP'
 ];
 
-/** Un nom suivi d'une parenthèse ; accents permis (`MÉDIANE`), point permis (`NB.SI`, PR 3). */
-const CALL = /(?<![A-Za-zÀ-ÿ_\\.\d$])([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ.]*)\s*\(/g;
+/**
+ * Un nom suivi d'une parenthèse ; accents permis (`MÉDIANE`), point permis
+ * (`NB.SI`, PR 3), un chiffre devant aussi (`2SOMME(…)`, produit). Les lettres
+ * accentuées sans `×` (U+00D7) ni `÷` (U+00F7), qui sont dans `À-ÿ` (revue).
+ */
+const CALL = /(?<![A-Za-zÀ-ÖØ-öø-ÿ_\\.$])([A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ.]*)\s*\(/g;
 
 /** `A2:A21`, `$A$2:A2` : deux cases ; `A:A`, `$A:$A` : une colonne entière. */
-const RANGE = /^\s*(\$?)([A-Za-z])(\$?)(\d+)\s*:\s*(\$?)([A-Za-z])(\$?)(\d+)\s*$/;
+const RANGE = /^\s*(\$?)([A-Za-z])(\$?)([1-9]\d*)\s*:\s*(\$?)([A-Za-z])(\$?)([1-9]\d*)\s*$/;
 const COLUMN_RANGE = /^\s*(\$?)([A-Za-z])\s*:\s*(\$?)([A-Za-z])\s*$/;
 
-/** Une plage DANS un texte : pour la refuser hors d'une fonction, ou mêlée à un calcul. */
+/**
+ * Une plage de cases DANS un texte : pour la refuser hors d'une fonction, ou
+ * mêlée à un calcul. Pas `A:A` : hors d'un argument, `a:b` est une division
+ * (l'usage du collège, revue) ; une colonne entière ne se lit qu'en argument.
+ */
 export const RANGE_IN_TEXT =
-	/(?<![A-Za-z_\\$])\$?[A-Za-z]\$?\d+\s*:\s*\$?[A-Za-z]\$?\d+(?![A-Za-z_\d(])|(?<![A-Za-z_\\$])\$?[A-Za-z]\s*:\s*\$?[A-Za-z](?![A-Za-z_\d(])/;
+	/(?<![A-Za-z_\\$])\$?[A-Za-z]\$?\d+\s*:\s*\$?[A-Za-z]\$?\d+(?![A-Za-z_\d(])/;
 
 export const RANGE_ALONE_MESSAGE =
 	'Une plage s’utilise dans une fonction, par exemple =SOMME(A1:A3).';
@@ -137,7 +148,13 @@ export function findCalls(body: string): GridCall[] | null {
 		const open = start + match[0].length - 1;
 		const close = closingParenthesis(body, open);
 		if (close === -1) return null;
-		calls.push({ start, end: close + 1, name, args: splitArguments(body.slice(open + 1, close)) });
+		calls.push({
+			start,
+			open,
+			end: close + 1,
+			name,
+			args: splitArguments(body.slice(open + 1, close))
+		});
 		from = close + 1;
 	}
 	return calls;
@@ -175,18 +192,40 @@ export function cellsOf(range: GridRange): string[] {
 	return cells;
 }
 
+/**
+ * Réécrire chaque ARGUMENT des fonctions du tableur, emboîtées comprises ;
+ * le reste du texte ne change pas. C'est là, et seulement là, que `A:A` est une
+ * colonne (revue : `=a:b` hors d'un argument est une division).
+ */
+export function mapCallArguments(body: string, map: (arg: string) => string): string {
+	const calls = findCalls(body);
+	if (calls === null) return body;
+	let result = body;
+	for (const call of [...calls].reverse()) {
+		const args = call.args.map((arg) => {
+			const mapped = map(arg);
+			return mapped === arg ? mapCallArguments(arg, map) : mapped;
+		});
+		result = `${result.slice(0, call.open + 1)}${args.join(';')})${result.slice(call.end)}`;
+	}
+	return result;
+}
+
+/** `A:A`, `$A:$B` : une colonne entière, en argument — ses lettres et ses `$`. */
+export function columnRangeOf(
+	arg: string
+): { readonly d1: string; readonly c1: string; readonly d2: string; readonly c2: string } | null {
+	const match = COLUMN_RANGE.exec(arg);
+	return match === null ? null : { d1: match[1], c1: match[2], d2: match[3], c2: match[4] };
+}
+
 /** `=somme(a1:a4)` → `=SOMME(A1:A4)` : les noms et les colonnes entières en capitales (Q-L4-7). */
 export function normalizeGridFunctions(body: string): string {
-	return body
-		.replace(CALL, (match, name: string) => {
-			const canonical = gridFunctionOf(name);
-			return canonical === null ? match : match.replace(name, canonical);
-		})
-		.replace(
-			/(?<![A-Za-z_\\$])(\$?)([a-z])(\s*:\s*)(\$?)([a-z])(?![A-Za-z_\d(])/g,
-			(_, d1: string, c1: string, sep: string, d2: string, c2: string) =>
-				`${d1}${c1.toUpperCase()}${sep}${d2}${c2.toUpperCase()}`
-		);
+	const named = body.replace(CALL, (match, name: string) => {
+		const canonical = gridFunctionOf(name);
+		return canonical === null ? match : match.replace(name, canonical);
+	});
+	return mapCallArguments(named, (arg) => (columnRangeOf(arg) === null ? arg : arg.toUpperCase()));
 }
 
 // =============================================================================
@@ -270,9 +309,14 @@ export function computeFunction(
 					message: 'ECARTYPE demande au moins deux nombres (il divise par n − 1).'
 				};
 			}
+			// La moyenne calculée UNE fois : recopiée dans chaque carré, elle faisait un
+			// arbre en n² (40 000 feuilles pour 200 cases, 750 ms à chaque saisie — revue)
+			const meanValue = evaluate(mean, { mode: 'exact' });
+			const meanNode =
+				meanValue.status === 'value' && meanValue.exact ? meanValue.node : grouped(mean);
 			const squares = nodes.map((node): MathNode => ({
 				type: 'superscript',
-				base: grouped({ type: 'subtraction', left: grouped(node), right: grouped(mean) }),
+				base: grouped({ type: 'subtraction', left: grouped(node), right: grouped(meanNode) }),
 				superscript: numberNode(2)
 			}));
 			return {

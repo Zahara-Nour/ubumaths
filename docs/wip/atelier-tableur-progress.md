@@ -199,4 +199,7 @@ liste trouée en citant l'entrée).
 - [x] **trouvé en route** : une somme de 200 cases levait une exception (garde de profondeur 100
       de mathAST) → arbres équilibrés + `safely` (une case ne fait jamais tomber la grille)
 - [x] mesuré : 600 formules à plages 285 ms, recalcul complet 250 ms
-- [ ] revue, PR, CI, merge
+- [x] revue (2 importants, 4 mineurs, tous corrigés test rouge d'abord) : `=a:b` (division) réécrit
+      `=A:B` et refusé → `A:A` seulement en argument ; ECARTYPE en n² (750 ms) → moyenne une fois ;
+      `=2SOMME(…)` ; case seule en argument = plage d'une case ; ligne 0 ; message qui cite sqrt…
+- [ ] PR, CI, merge
