@@ -1,7 +1,7 @@
 ---
 title: Atelier — tableur intégré, lot 4 : les fonctions du tableur (phase 0)
 date: 2026-10-15
-status: phase 0 PROPOSÉE, à valider par David (Q-L4-1 à Q-L4-7)
+status: phase 0 VALIDÉE (2026-10-15, « je valide tes recos ») ; Q-L4-1 à Q-L4-7 décidées
 ---
 
 # Atelier — tableur intégré, lot 4 : les fonctions du tableur
@@ -148,7 +148,12 @@ Hors de ce lot : ALEA (lot 5), ET / OU, RANG, MOYENNE.SI et les autres fonctions
 
 ---
 
-## Questions du lot 4 — à trancher par David
+## Questions du lot 4 — tranchées par David (2026-10-15, « je valide tes recos »)
+
+Décidé : **Q-L4-1 (a)** une couche de la grille avant mathAST · **Q-L4-2 (a)** vides et mots
+ignorés dans une plage (exception à T5) · **Q-L4-3 (a)** `=MOYENNE(L)` · **Q-L4-4 (a)** `A:A` ·
+**Q-L4-5 (a)** texte entre guillemets dans NB.SI et SI · **Q-L4-6 (a)** la grille seule, Calcul
+renvoie vers `.stats` · **Q-L4-7 (a)** noms réécrits en majuscules.
 
 **Q-L4-1 — Où vivent les fonctions du tableur ?** (choix d'architecture)
 
