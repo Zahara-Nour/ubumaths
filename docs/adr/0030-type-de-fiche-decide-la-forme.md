@@ -67,4 +67,8 @@ titre, place pour répondre.
 - Les cadres demandent un réglage par question dans la fiche (nouvelle donnée, migration additive).
 - **Nom pré-imprimé** : imprimer une fiche en **une copie par élève**, chacune à son nom (classe ou
   groupe de niveaux), pour donner la bonne fiche à la bonne personne. Le nom vient de la liste des
-  élèves, jamais d'une saisie ; lot à part, après les cadres.
+  élèves, jamais d'une saisie ; lot à part, après les cadres. Décidé avec David : on imprime les
+  élèves **d'une affectation** (classes et élèves visés, chacun au niveau de guidage de
+  l'affectation), depuis un bouton **sur l'affectation** ; le prof **voit le PDF** (toutes les
+  copies à la suite, ordre alphabétique, et la copie de chaque élève) avant de l'imprimer. Accès :
+  le prof seul, PDF fabriqué dans son navigateur et jamais stocké ; aucun nouvel accès.
