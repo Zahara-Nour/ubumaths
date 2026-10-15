@@ -173,11 +173,11 @@ describe('copies par élève : l’aperçu avant d’imprimer', () => {
 		expect(compiled.maxActive).toBe(1);
 	});
 
-	it('fiche d’exercices sans « Nom de l’élève » : le prof est prévenu', async () => {
+	it('fiche d’exercices sans « Nom de l’élève » : aucun avertissement, le nom s’imprime', async () => {
 		stubFetch(false, 'worksheet');
 		await render(CopiesPage, { props: { data: DATA } as never });
 		await expect.poll(shown).toContain('Énoncé commun');
-		expect(document.body.textContent).toContain('n’imprime pas le nom des élèves');
+		expect(document.body.textContent).not.toContain('n’imprime pas le nom des élèves');
 	});
 
 	it('aucun élève visé : rien à imprimer, aucune demande', async () => {

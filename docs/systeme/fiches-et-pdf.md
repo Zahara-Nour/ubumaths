@@ -296,8 +296,9 @@ par élève visé, jamais stocké :
   l'affectation ; affectation commune (`per_student_copies` faux) : une seule demande, la même copie
   pour tous.
 - **Rendu** : exactement le PDF de l'élève (énoncés seuls, mêmes cadres, même `worksheetHeader`) ;
-  le nom (« Nom Prénom », jamais saisi) remplit la ligne « Nom » **si le type l'imprime** — fiche
-  d'exercices sans « Nom de l'élève » : la page le signale ; la classe, si elle est connue, sinon ligne
+  le nom (« Nom Prénom », jamais saisi) remplit la ligne « Nom » **toujours**, même sur une fiche
+  d'exercices sans « Nom de l'élève » (décision de David, 2026-10-15 : l'option ne règle que la
+  ligne à remplir du PDF commun) ; la classe, si elle est connue, sinon ligne
   à remplir (jamais les classes de toute l'affectation).
 - **Nom et classe = texte, jamais code** : l'élève écrit lui-même son nom (profil). Le générateur
   les insère en chaîne Typst littérale (`typstTextLiteral` : `#"…";`, `\` et `"` échappés,
