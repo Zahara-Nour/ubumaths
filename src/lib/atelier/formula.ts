@@ -53,6 +53,10 @@ import {
 	COMPARISON_ALONE_MESSAGE,
 	criterionOf,
 	isStatistic,
+	isRandom,
+	drawOf,
+	RANDOM_ARITY,
+	type RandomFunction,
 	outsideQuotes,
 	plainSyntax,
 	splitComparison,
@@ -127,6 +131,8 @@ export interface GridState {
 	readonly objects: ReadonlyMap<string, string>;
 	/** Le nombre de formules évaluées par ce recalcul (0 : rien ne les concernait). */
 	readonly computed: number;
+	/** La graine des tirages de ce recalcul : quand elle change, ALEA se recalcule. */
+	readonly seed: number;
 }
 
 /**
@@ -147,6 +153,8 @@ type ReadFormula =
 			readonly lists: readonly string[];
 			/** La formule n'est qu'un appel (`=SI(…)`) : il peut rendre un mot. */
 			readonly alone: boolean;
+			/** Elle tire au hasard (ALEA, même emboîté) : « Relancer » la recalcule. */
+			readonly random: boolean;
 	  }
 	| { readonly ok: false; readonly message: string };
 
@@ -156,6 +164,8 @@ interface ReadCall {
 	readonly args: readonly ReadArgument[];
 	/** Ce que l'élève a passé (`A1:A5`), pour un refus situé. */
 	readonly label: string;
+	/** ALEA : le rang de l'appel dans sa formule — son tirage en dépend (lot 5, Q-L5-5). */
+	readonly occurrence: number;
 }
 
 type ReadArgument =
@@ -280,7 +290,15 @@ function readFormula(text: string, functionNames: readonly string[]): ReadFormul
 	return read;
 }
 
+/**
+ * Le rang du prochain appel ALEA dans la formule en cours de lecture (lot 5) :
+ * remis à zéro pour chaque formule ; la lecture, synchrone, suit toujours le
+ * même ordre, donc un appel garde son rang — et son tirage.
+ */
+let randomOccurrence = 0;
+
 function readUncached(text: string, functionNames: readonly string[]): ReadFormula {
+	randomOccurrence = 0;
 	return readBody(text.trim().slice(1), functionNames);
 }
 
@@ -321,10 +339,12 @@ function readBody(typed: string, functionNames: readonly string[]): ReadFormula 
 	const deps = new Set<string>();
 	const lists = new Set<string>();
 	const argumentNames = new Set<string>();
+	let random = false;
 	let rest = body;
 	for (const call of [...found].reverse()) {
 		const read = readCall(call.name, call.args, functionNames);
 		if (!read.ok) return read;
+		if (read.random) random = true;
 		read.deps.forEach((d) => deps.add(d));
 		read.lists.forEach((l) => lists.add(l));
 		read.names.forEach((n) => argumentNames.add(n));
@@ -377,7 +397,8 @@ function readBody(typed: string, functionNames: readonly string[]): ReadFormula 
 		calls,
 		deps: [...deps],
 		lists: [...lists],
-		alone: calls.length === 1 && rest.trim() === `(${CALL_MARK}_1)`
+		alone: calls.length === 1 && rest.trim() === `(${CALL_MARK}_1)`,
+		random
 	};
 }
 
@@ -393,9 +414,12 @@ function readCall(
 			deps: readonly string[];
 			lists: readonly string[];
 			names: readonly string[];
+			random: boolean;
 	  }
 	| { ok: false; message: string } {
 	const statistic = isStatistic(name);
+	const occurrence = isRandom(name) ? randomOccurrence++ : -1;
+	let random = isRandom(name);
 	if (statistic && rawArgs.length === 0) {
 		return {
 			ok: false,
@@ -410,6 +434,7 @@ function readCall(
 	const lists: string[] = [];
 	const names: string[] = [];
 	const addExpression = (read: ReadFormula & { ok: true }) => {
+		if (read.random) random = true;
 		deps.push(...read.deps);
 		lists.push(...read.lists);
 		names.push(...read.names);
@@ -502,18 +527,23 @@ function readCall(
 		if (lone !== null) lists.push(lone[1]);
 	}
 	const label = rawArgs.map((a) => a.trim()).join(' ; ');
-	return { ok: true, call: { name, args, label }, deps, lists, names };
+	return { ok: true, call: { name, args, label, occurrence }, deps, lists, names, random };
 }
 
 /** Le nombre d'arguments d'une fonction qui n'est pas de statistiques. */
-function arityOf(name: CalculationFunction | ConditionFunction): number {
+function arityOf(name: CalculationFunction | ConditionFunction | RandomFunction): number {
+	if (name === 'ALEA' || name === 'ALEA.ENTRE.BORNES') return RANDOM_ARITY[name];
 	return name === 'SI' || name === 'NB.SI' ? CONDITION_ARITY[name] : CALCULATION_ARITY[name];
 }
+
+const BOUNDS_MESSAGE = 'ALEA.ENTRE.BORNES attend deux entiers a ⩽ b : ALEA.ENTRE.BORNES(1 ; 6).';
 
 const CONDITION_MESSAGE = 'La condition de SI compare deux choses : A1>=10, B2="fille"…';
 
 /** Le refus d'une fonction de calcul qui n'a pas son nombre d'arguments. */
-function arityMessage(name: CalculationFunction | ConditionFunction): string {
+function arityMessage(name: CalculationFunction | ConditionFunction | RandomFunction): string {
+	if (name === 'ALEA') return 'ALEA s’écrit sans argument : ALEA().';
+	if (name === 'ALEA.ENTRE.BORNES') return BOUNDS_MESSAGE;
 	if (name === 'SI') return 'SI attend trois arguments : SI(condition ; si vrai ; si faux).';
 	if (name === 'NB.SI') return 'NB.SI attend deux arguments : NB.SI(plage ; critère).';
 	if (name === 'PI') return 'PI s’écrit sans argument : PI().';
@@ -584,7 +614,8 @@ export function computeGrid(
 	const objects = new Map(atelier.objects.map((o) => [o.name, objectMark(o)]));
 	const values = new Map<string, CellValue>();
 	const formulas = [...texts].filter(([, text]) => isFormula(text));
-	if (formulas.length === 0) return { values, texts, objects, computed: 0 };
+	const seed = atelier.gridSeed;
+	if (formulas.length === 0) return { values, texts, objects, computed: 0, seed };
 
 	const functionNames = atelier.functionNames;
 	const reads = new Map(
@@ -598,6 +629,11 @@ export function computeGrid(
 	);
 	const { order, cycleNext } = orderOf(reads, deps);
 	const dirty = dirtyFormulas(reads, deps, texts, objects, atelier, previous);
+	// « Relancer » (lot 5) : la graine a changé, les formules à hasard se recalculent
+	if (previous !== undefined && previous.seed !== seed) {
+		for (const [address, read] of reads) if (read.ok && read.random) dirty.add(address);
+		spreadDirty(reads, deps, dirty);
+	}
 
 	let context: GridContext | null = null;
 	/** Les cellules dont la valeur exacte a coûté trop cher : leurs dépendantes passent en ≈. */
@@ -628,7 +664,7 @@ export function computeGrid(
 			)
 		);
 	}
-	return { values, texts, objects, computed };
+	return { values, texts, objects, computed, seed };
 }
 
 /**
@@ -689,6 +725,25 @@ function orderOf(
 	return { order, cycleNext };
 }
 
+/** De proche en proche : une formule qui cite une formule recalculée l'est aussi. */
+function spreadDirty(
+	reads: ReadonlyMap<string, ReadFormula>,
+	deps: ReadonlyMap<string, readonly string[]>,
+	dirty: Set<string>
+): void {
+	let grew = true;
+	while (grew) {
+		grew = false;
+		for (const [address, read] of reads) {
+			if (dirty.has(address) || !read.ok) continue;
+			if ((deps.get(address) ?? []).some((ref) => dirty.has(ref))) {
+				dirty.add(address);
+				grew = true;
+			}
+		}
+	}
+}
+
 /**
  * Les formules à recalculer : celles dont le texte a changé, qui citent une
  * cellule dont le texte a changé ou un objet qui a changé (ou qui dépend d'un
@@ -729,18 +784,7 @@ function dirtyFormulas(
 				read.names.some((name) => changedObjects.has(name)));
 		if (textChanged || cites) dirty.add(address);
 	}
-	// De proche en proche : une formule qui cite une formule recalculée
-	let grew = true;
-	while (grew) {
-		grew = false;
-		for (const [address, read] of reads) {
-			if (dirty.has(address) || !read.ok) continue;
-			if ((deps.get(address) ?? []).some((ref) => dirty.has(ref))) {
-				dirty.add(address);
-				grew = true;
-			}
-		}
-	}
+	spreadDirty(reads, deps, dirty);
 	return dirty;
 }
 
@@ -992,6 +1036,57 @@ function conditionValue(
 	};
 }
 
+/**
+ * ALEA() et ALEA.ENTRE.BORNES(a ; b) (lot 5) : le tirage de la case, fixé par la
+ * graine de l'atelier et la place de l'appel (`drawOf`). ALEA est approché ;
+ * ALEA.ENTRE.BORNES rend un entier exact. Des bornes vides laissent la formule
+ * vide (T5).
+ */
+function randomValue(
+	call: ReadCall,
+	address: string,
+	texts: ReadonlyMap<string, string>,
+	values: ReadonlyMap<string, CellValue>,
+	approximate: ReadonlySet<string>,
+	atelier: Atelier,
+	context: GridContext
+): CallResult {
+	const draw = drawOf(atelier.gridSeed, address, call.occurrence);
+	if (call.name === 'ALEA') {
+		return { ok: true, node: decimalNode(draw), inexact: true, divided: false };
+	}
+	const bounds: number[] = [];
+	for (const arg of call.args) {
+		const value = argumentValue(arg, address, texts, values, approximate, atelier, context);
+		if (value.kind !== 'number') return { ok: false, value };
+		bounds.push(value.value);
+	}
+	const [a, b] = bounds;
+	// Des entiers SÛRS (au-delà de 2^53, `a + k` n'est plus représentable : revue)
+	if (!Number.isSafeInteger(a) || !Number.isSafeInteger(b) || a > b) {
+		return { ok: false, value: error(BOUNDS_MESSAGE) };
+	}
+	if (b - a > MAX_RANDOM_RANGE) {
+		return {
+			ok: false,
+			value: error('ALEA.ENTRE.BORNES : au plus un million d’issues (b − a ⩽ 1 000 000).')
+		};
+	}
+	return {
+		ok: true,
+		node: { type: 'number', value: String(a + Math.floor(draw * (b - a + 1))) },
+		inexact: false,
+		divided: false
+	};
+}
+
+/**
+ * ALEA.ENTRE.BORNES : au plus un million d'issues (règle 1, bornes). Le tirage a
+ * 2^32 valeurs : à un milliard d'issues, certaines sortaient 25 % plus souvent
+ * que d'autres (revue) ; à un million, l'écart reste sous 0,03 %.
+ */
+const MAX_RANDOM_RANGE = 1e6;
+
 /** NB.SI(plage ; critère) : les cases (vides ignorées) qui vérifient le critère. */
 function countIf(
 	call: ReadCall,
@@ -1062,6 +1157,9 @@ function callValue(
 	atelier: Atelier,
 	context: GridContext
 ): CallResult {
+	if (isRandom(call.name)) {
+		return randomValue(call, address, texts, values, approximate, atelier, context);
+	}
 	if (call.name === 'SI')
 		return conditionValue(call, address, texts, values, approximate, atelier, context);
 	if (call.name === 'NB.SI')

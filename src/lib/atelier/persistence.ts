@@ -144,6 +144,13 @@ const storedCellSchema = z.tuple([
 		.refine((text) => !text.includes(';'))
 ]);
 
+/** La graine des tirages : un entier de 32 bits (règle 1, bornes). */
+const seedSchema = z
+	.number()
+	.int()
+	.min(0)
+	.max(2 ** 32 - 1);
+
 /** Un titre rangé : sa colonne (`B`), son texte non vide. */
 const storedTitleSchema = z.tuple([
 	z.string().regex(/^[A-Z]$/),
@@ -178,6 +185,8 @@ export interface StoredGrid {
 	readonly titles?: Readonly<Record<string, string>>;
 	/** Dans un LIEN seulement : les formules y sont écrites en relatif (`toRelative`). */
 	readonly relative?: boolean;
+	/** La graine des tirages (ALEA, lot 5) : mêmes tirages au rechargement et dans le lien. */
+	readonly seed?: number;
 }
 
 export interface AtelierState {
@@ -297,12 +306,15 @@ export function salvageGrid(candidate: unknown): { grid: StoredGrid; dropped: nu
 		}
 		return result;
 	};
-	const raw = candidate as { cells?: unknown; titles?: unknown } | null | undefined;
+	const raw = candidate as { cells?: unknown; titles?: unknown; seed?: unknown } | null | undefined;
 	const cells = kept(raw?.cells, storedCellSchema, (text) => text.trim() === '');
 	const titles = kept(raw?.titles, storedTitleSchema, () => false);
+	// Une graine illisible est écartée : les tirages seront neufs, la grille reste
+	const seed = seedSchema.safeParse(raw?.seed);
 	const grid: StoredGrid = {
 		...(Object.keys(cells).length > 0 && { cells }),
-		...(Object.keys(titles).length > 0 && { titles })
+		...(Object.keys(titles).length > 0 && { titles }),
+		...(seed.success && { seed: seed.data })
 	};
 	return { grid, dropped };
 }

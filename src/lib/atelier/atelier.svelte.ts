@@ -535,6 +535,12 @@ export class Atelier {
 	#values = $state.raw<ReadonlyMap<string, CellValue>>(new Map());
 	/** Le recalcul précédent : le suivant ne refait que les formules concernées (phase 0 §3). */
 	#gridState: GridState | undefined = undefined;
+	/**
+	 * La graine des tirages de la grille (ALEA, lot 5) : un tirage ne dépend que
+	 * d'elle et de sa place (T8, Q-L5-5) ; rangée, elle redonne les mêmes tirages
+	 * au rechargement et dans le lien (Q-L5-4). « Relancer » la change.
+	 */
+	#seed = newGridSeed();
 	/** Le nombre de formules évaluées par le dernier recalcul (0 : aucune n'était concernée). */
 	lastGridComputed = 0;
 	/** La grille réécrit une colonne nommée : la règle T2 ne s'applique pas à elle-même. */
@@ -1920,9 +1926,14 @@ export class Atelier {
 		const titles = Object.fromEntries(
 			[...this.titles].map(([column, title]) => [columnLetter(column), title])
 		);
+		// La graine, seulement s'il y a du hasard : une grille sans ALEA ne paie rien
+		const random = [...gridTexts(this.#entriesByColumn, this.cells).values()].some(
+			(text) => isFormula(text) && /ALEA/i.test(text)
+		);
 		const grid = {
 			...(this.cells.size > 0 && { cells }),
-			...(this.titles.size > 0 && { titles })
+			...(this.titles.size > 0 && { titles }),
+			...(random && { seed: this.#seed })
 		};
 		return {
 			version: ATELIER_STATE_VERSION,
@@ -1942,6 +1953,7 @@ export class Atelier {
 	 * Les états sont recalculés, jamais relus.
 	 */
 	restore(state: AtelierState): RestoreReport {
+		this.#seed = state.grid?.seed ?? newGridSeed();
 		this.items = [];
 		this.charts.clear();
 		this.partnerChoices.clear();
@@ -2549,6 +2561,23 @@ export class Atelier {
 		this.#recomputeGrid();
 	}
 
+	/** La graine des tirages (lot 5), lue par le calcul de la grille. */
+	get gridSeed(): number {
+		return this.#seed;
+	}
+
+	/**
+	 * « Relancer » (lot 5, T8) : une nouvelle graine, donc de nouveaux tirages pour
+	 * toutes les cases à hasard, et ce qui les cite se recalcule.
+	 */
+	relaunch(): void {
+		let next = newGridSeed();
+		while (next === this.#seed) next = newGridSeed();
+		this.#seed = next;
+		this.revision++;
+		this.#recomputeGrid();
+	}
+
 	/**
 	 * Recalculer les formules de la grille (lot 2), puis les listes dont la
 	 * colonne en contient : leurs valeurs sont celles des formules. Seules les
@@ -2752,4 +2781,9 @@ export class Atelier {
 			}
 		}
 	}
+}
+
+/** Une graine de tirages : un entier de 32 bits. */
+function newGridSeed(): number {
+	return Math.floor(Math.random() * 2 ** 32);
 }
