@@ -12,7 +12,7 @@
 	 * La vue n'a aucun état de modèle : cellules et noms vivent dans l'`Atelier`.
 	 * Elle ne garde que la sélection (une cellule, ou une zone) et la frappe en cours.
 	 */
-	import { tick } from 'svelte';
+	import { tick, untrack } from 'svelte';
 	import { z } from 'zod';
 	import { useAtelier } from '$lib/atelier/context';
 	import { isList, type ListObject } from '$lib/atelier/types';
@@ -60,11 +60,26 @@
 	const ROW_MARGIN = 10;
 	const COLUMN_MARGIN = 3;
 
+	interface Props {
+		/**
+		 * La zone à sélectionner en arrivant (Tabuler, lot 3 : le tableau écrit) ;
+		 * lue à la création seulement — le conteneur recrée la vue pour en changer.
+		 */
+		initialZone?: { left: number; right: number; top: number; bottom: number } | null;
+	}
+
+	let { initialZone = null }: Props = $props();
+
 	const atelier = useAtelier();
 
-	let selected = $state({ column: 0, row: 1 });
+	const startZone = untrack(() => initialZone);
+	let selected = $state(
+		startZone === null ? { column: 0, row: 1 } : { column: startZone.left, row: startZone.top }
+	);
 	/** L'autre coin d'une zone sélectionnée (Maj + flèche, Maj + clic, glisser), sinon `null`. */
-	let anchor = $state<{ column: number; row: number } | null>(null);
+	let anchor = $state<{ column: number; row: number } | null>(
+		startZone === null ? null : { column: startZone.right, row: startZone.bottom }
+	);
 	/** Un glisser de souris en cours, depuis une cellule. */
 	let dragging = $state(false);
 	/** La poignée tirée : la dernière ligne visée par la recopie, sinon `null` (§5). */

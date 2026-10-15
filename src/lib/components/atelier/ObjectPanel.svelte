@@ -18,9 +18,13 @@
 		onAction?: (action: ObjectAction, object: AtelierObject) => void;
 		/** L'image d'un nombre, calculée depuis une carte (phase 0 `/grapheur` §3 A4). */
 		onImage?: (name: string, value: string) => { text: string; failed: boolean };
+		onTabulate?: (
+			name: string,
+			bounds: { from: string; to: string; step: string }
+		) => { text: string; failed: boolean };
 	}
 
-	let { selected = $bindable(null), onSelect, onAction, onImage }: Props = $props();
+	let { selected = $bindable(null), onSelect, onAction, onImage, onTabulate }: Props = $props();
 
 	const atelier = useAtelier();
 
@@ -68,6 +72,7 @@
 				onSelect={select}
 				{onAction}
 				{onImage}
+				{onTabulate}
 			/>
 		{:else}
 			<p class="vide">Rien encore. Crée un objet pour commencer à chercher.</p>

@@ -38,6 +38,7 @@
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { cascadeMessage, citingCellsNote, removedMessage } from '$lib/atelier/removal';
+	import { tabulationReport } from '$lib/atelier/tabulate';
 
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */
@@ -455,6 +456,31 @@
 		activeView = next;
 	}
 
+	/** La zone que la vue Données sélectionne en arrivant, et sa clé (Tabuler : la vue est recréée). */
+	let dataZone = $state<{ left: number; right: number; top: number; bottom: number } | null>(null);
+	let dataKey = $state(0);
+
+	/**
+	 * « Tabuler » depuis une carte (tableur, lot 3) : le tableau va dans la grille,
+	 * et l'élève y va (Q-L3-1, comme « Diagramme ») — sans ligne dans Calcul.
+	 */
+	function handleTabulate(name: string, bounds: { from: string; to: string; step: string }) {
+		const done = atelier.tabulate({ name, ...bounds });
+		if (!done.ok) return { text: done.message, failed: true };
+		const [x, image] = done.columns;
+		// Deux colonnes voisines : la zone entière ; sinon la zone engloberait une
+		// colonne de l'élève entre les deux, et seule la première case est choisie
+		dataZone =
+			image === x + 1
+				? { left: x, right: image, top: 1, bottom: done.rows }
+				: { left: x, right: x, top: 1, bottom: 1 };
+		dataKey++;
+		showView('donnees');
+		const text = tabulationReport(name, done);
+		announce(text);
+		return { text, failed: false };
+	}
+
 	/**
 	 * L'image d'un nombre, demandée depuis une carte (A4). Pas d'annonce ici :
 	 * la carte annonce déjà « f(3) = 9 » ; deux annonces se bousculeraient.
@@ -473,7 +499,12 @@
 <svelte:window onkeydown={handleUndoKey} />
 
 <div class="atelier">
-	<ObjectPanel bind:selected onAction={handleAction} onImage={handleImage} />
+	<ObjectPanel
+		bind:selected
+		onAction={handleAction}
+		onImage={handleImage}
+		onTabulate={handleTabulate}
+	/>
 
 	<!-- `section` et non `main` : la page est déjà dans le `<main>` du layout,
 	     et deux repères `main` perturbent la navigation (revue a11y du lot 6) -->
@@ -572,7 +603,9 @@
 				-->
 				<GrapheurContainer store={graph} panel={false} />
 			{:else}
-				<DataView />
+				{#key dataKey}
+					<DataView initialZone={dataZone} />
+				{/key}
 			{/if}
 		</section>
 	</section>

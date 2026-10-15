@@ -29,6 +29,7 @@ import { crossProblem } from './cross';
 import { compareProblem } from './compare';
 import { derivativeOf, displayName, reciprocalOf } from './names';
 import { commonRows, lawMismatchMessage, noCommonRowsMessage } from './pairs';
+import { tabulationNotYet } from './tabulate';
 
 /**
  * Ce que les cartes qui SUIVENT une fonction ne savent pas faire (`f′`, `f⁻¹`),
@@ -42,6 +43,8 @@ function followerReason(object: AtelierObject, actionId: string): string | undef
 	if (reciprocal !== null && actionId === 'derive') {
 		return `Pour dériver ${displayName(object.name)}, tape .dériver suivi de sa formule.`;
 	}
+	// La grille ne sait pas encore appeler `f^-1(…)` ni `f_1(…)` (tableur, lot 3)
+	if (actionId === 'table') return tabulationNotYet(object.name) ?? undefined;
 	if (derivativeOf(object.name) !== null && actionId === 'reciprocal') {
 		return `Pas de carte réciproque pour une dérivée : tape .réciproque suivi de sa formule.`;
 	}
@@ -115,8 +118,8 @@ const NOT_YET: ReadonlySet<string> = new Set([
 	// 'derive', 'solve' et 'variations' le sont depuis la vue Calcul ('image' est
 	// devenu un champ de la carte, lot 3b).
 	// 'stats', 'scatter' et 'fit' sont câblés depuis la vue Données, 'chart'
-	// depuis le lot 5 des outils statistiques.
-	'table',
+	// depuis le lot 5 des outils statistiques, 'table' (le formulaire de la
+	// carte) depuis le lot 3 du tableur.
 	'convert',
 	'rename'
 ]);
