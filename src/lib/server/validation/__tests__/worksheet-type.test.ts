@@ -114,7 +114,7 @@ describe('cadres de réponse : `answer_frames`', () => {
 			correction: null,
 			correction_visible: false,
 			section_id: null,
-			printed_frame_lines: { questions: [0, 3, 40] }
+			printed_frame_lines: { questions: [0, 3, 25] }
 		};
 		const view = studentWorksheetDetailResponseSchema.parse({
 			assignment_id: '00000000-0000-4000-8000-000000000001',
@@ -134,15 +134,15 @@ describe('cadres de réponse : `answer_frames`', () => {
 			answer_frames: 'exercise'
 		});
 		expect(view.answer_frames).toBe('exercise');
-		expect(view.exercises[0].printed_frame_lines).toEqual({ questions: [0, 3, 40] });
+		expect(view.exercises[0].printed_frame_lines).toEqual({ questions: [0, 3, 25] });
 		// Hors bornes, non entier, `null` (déjà résolu : jamais « auto »), trop de
 		// questions, clé inconnue
 		for (const printed of [
-			{ questions: [41] },
+			{ questions: [26] },
 			{ questions: [-1] },
 			{ questions: [2.5] },
 			{ questions: [null] },
-			{ exercise: 41 },
+			{ exercise: 26 },
 			{ questions: Array(201).fill(3) },
 			{ exercise: 3, exercise_cm: 7 }
 		]) {

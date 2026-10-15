@@ -1,7 +1,7 @@
 /**
  * Zod : lignes des cadres de réponse d'un exercice de fiche (ADR 0030, lot 4)
  *
- * Mêmes bornes que la contrainte CHECK de la colonne : entiers de 0 à 40,
+ * Mêmes bornes que les contraintes CHECK de la colonne : entiers de 0 à 25,
  * `null` = auto, au plus 200 questions, aucune autre clé.
  */
 import { describe, expect, it } from 'vitest';
@@ -16,7 +16,8 @@ describe('answer_frame_lines en écriture', () => {
 		for (const value of [
 			null,
 			{},
-			{ questions: [null, 0, 40] },
+			{ questions: [null, 0, 25] },
+			{ exercise: 25 },
 			{ exercise: 12 },
 			{ questions: [], exercise: null }
 		]) {
@@ -26,11 +27,12 @@ describe('answer_frame_lines en écriture', () => {
 
 	it('valeurs refusées : hors bornes, non entières, texte, trop de questions', () => {
 		for (const value of [
-			{ questions: [41] },
+			{ questions: [26] },
+			{ questions: [40] },
 			{ questions: [-1] },
 			{ questions: [2.5] },
 			{ questions: ['3'] },
-			{ exercise: 41 },
+			{ exercise: 26 },
 			{ exercise: 1.5 },
 			{ questions: Array(201).fill(1) },
 			[1, 2],
@@ -79,5 +81,20 @@ describe('answer_frame_lines en écriture', () => {
 		};
 		const parsed = worksheetExerciseResponseSchema.parse(row);
 		expect(parsed.answer_frame_lines).toEqual({ questions: [0, null] });
+
+		// Plafond partagé : 25 lignes passent, 26 non (même borne que la CHECK)
+		const at = (lines: unknown) =>
+			worksheetExerciseResponseSchema.safeParse({ ...row, answer_frame_lines: lines }).success;
+		expect(at({ questions: [25], exercise: 25 })).toBe(true);
+		expect(at({ questions: [26] })).toBe(false);
+		expect(at({ exercise: 26 })).toBe(false);
+	});
+
+	it('le PUT refuse 26 lignes, accepte 25', () => {
+		const put = (lines: unknown) =>
+			updateWorksheetExerciseSchema.safeParse({ answer_frame_lines: lines }).success;
+		expect(put({ questions: [25, 0] })).toBe(true);
+		expect(put({ questions: [26] })).toBe(false);
+		expect(put({ exercise: 26 })).toBe(false);
 	});
 });
