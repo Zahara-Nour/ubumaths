@@ -260,11 +260,16 @@
 		// Ctrl/⌘+Z annule, Ctrl/⌘+Maj+Z (ou Ctrl+Y) rétablit, dans la grille (T6).
 		// ⚠️ Arrêté ici : l'atelier écoute Ctrl+Z sur la fenêtre pour annuler une
 		// suppression de carte, qui n'est pas un geste de la grille
+		// Seulement s'il y a de quoi : sinon le geste remonte, et Ctrl+Z annule la
+		// dernière suppression de carte, comme avant la grille (revue de la PR 3a)
 		const key = event.key.toLowerCase();
 		if ((event.ctrlKey || event.metaKey) && (key === 'z' || key === 'y')) {
-			event.preventDefault();
-			event.stopPropagation();
-			replayGrid(key === 'y' || event.shiftKey ? 'redo' : 'undo');
+			const direction = key === 'y' || event.shiftKey ? 'redo' : 'undo';
+			if (atelier.gridHistory[direction] > 0) {
+				event.preventDefault();
+				event.stopPropagation();
+				replayGrid(direction);
+			}
 			return;
 		}
 		// Ctrl/⌘ + C ou V : le geste passe par le relais (voir `relay`). Une touche

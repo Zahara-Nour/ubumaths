@@ -119,6 +119,37 @@ describe('annuler, rétablir', () => {
 		expect(a.undoGrid().ok).toBe(false);
 	});
 
+	// Revue de la PR 3a : la grille annulait un geste PLUS ANCIEN qu'une
+	// suppression, et la suppression ne pouvait plus s'annuler (objets perdus)
+	it('une suppression de carte ferme l’historique de la grille ; son « Annuler » marche', () => {
+		const a = new Atelier();
+		a.create({ kind: 'list', name: 'L', definition: '1 ; 2 ; 3' });
+		a.create({ kind: 'value', name: 'k', definition: '2' });
+		a.editCells([{ column: A, row: 3, text: '' }]);
+
+		const removed = a.removeWithDependents('k');
+		if (!removed.ok) throw new Error(removed.message);
+
+		expect(a.gridHistory.undo).toBe(0);
+		expect(a.undoGrid().ok).toBe(false);
+		expect(a.undoRemoval(removed)).toBe(true);
+		expect(a.get('k')).toBeDefined();
+	});
+
+	// Revue : une même case écrite deux fois dans un geste faisait croire à un
+	// changement venu d'ailleurs, et l'historique était effacé
+	it('une case écrite deux fois dans un même geste s’annule', () => {
+		const a = new Atelier();
+		a.editCells([
+			{ column: A, row: 1, text: '1 ; 2' },
+			{ column: A, row: 2, text: '9' }
+		]);
+
+		expect(a.undoGrid().ok).toBe(true);
+		expect(a.cell(A, 1)).toBe('');
+		expect(a.cell(A, 2)).toBe('');
+	});
+
 	it('nommer une colonne n’est pas un geste de la grille', () => {
 		const a = new Atelier();
 		a.editCells([{ column: A, row: 1, text: '1' }]);

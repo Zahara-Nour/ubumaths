@@ -545,12 +545,13 @@ describe('annuler dans la grille (T6)', () => {
 		expect(atelier.cell(0, 1)).toBe('12');
 	});
 
-	it('Ctrl/⌘+Z dans la grille n’annule pas une suppression de carte', async () => {
+	// Revue de la PR 3a : le geste le plus RÉCENT s'annule d'abord — une
+	// suppression de carte faite après une saisie passe avant la saisie
+	it('saisie puis suppression de carte : Ctrl+Z annule la suppression, pas la saisie', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'value', name: 'a', definition: '2' });
 		atelier.editCells([{ column: 1, row: 1, text: '5' }]);
 		const { container } = await openData(atelier);
-		// Par le vrai bouton de la carte : c'est lui qui arme le Ctrl+Z de l'atelier
 		const carte = [...container.querySelectorAll('.objet')].find(
 			(el) => el.querySelector('.nom')?.textContent?.trim() === 'a'
 		);
@@ -562,10 +563,36 @@ describe('annuler dans la grille (T6)', () => {
 		supprimer.click();
 		await settle();
 		expect(atelier.get('a')).toBeUndefined();
-		// Sans l'arrêt du geste, l'atelier tentait AUSSI d'annuler la suppression
-		// (refusée, la grille ayant changé) et affichait un avertissement hors sujet
+
+		await userEvent.click(cellAt(container, 'B1')!);
+		await userEvent.keyboard('{ControlOrMeta>}z{/ControlOrMeta}');
+		await settle();
+
+		expect(atelier.get('a')).toBeDefined();
+		expect(atelier.cell(1, 1)).toBe('5');
+	});
+
+	// Suppression PUIS saisie : Ctrl+Z annule la saisie, et l'atelier ne tente
+	// pas en plus d'annuler la suppression (refusée, elle afficherait un
+	// avertissement hors sujet)
+	it('suppression puis saisie : Ctrl+Z annule la saisie, la carte reste supprimée', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '2' });
+		const { container } = await openData(atelier);
+		const carte = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'a'
+		);
+		(carte?.querySelector('button') as HTMLButtonElement).click();
+		await settle();
+		const supprimer = [...container.querySelectorAll('.action')].find(
+			(b) => b.textContent?.trim() === 'Supprimer'
+		) as HTMLButtonElement;
+		supprimer.click();
+		await settle();
 		const undoRemoval = vi.spyOn(atelier, 'undoRemoval');
 
+		await userEvent.click(cellAt(container, 'B1')!);
+		await userEvent.keyboard('5{Enter}');
 		await userEvent.click(cellAt(container, 'B1')!);
 		await userEvent.keyboard('{ControlOrMeta>}z{/ControlOrMeta}');
 		await settle();
@@ -574,6 +601,30 @@ describe('annuler dans la grille (T6)', () => {
 		expect(atelier.get('a')).toBeUndefined();
 		expect(undoRemoval).not.toHaveBeenCalled();
 		undoRemoval.mockRestore();
+	});
+
+	// Revue : avec un historique vide, Ctrl+Z sur une cellule doit laisser
+	// l'atelier annuler la dernière suppression de carte, comme avant la grille
+	it('historique de la grille vide : Ctrl+Z sur une cellule annule la suppression de carte', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '2' });
+		const { container } = await openData(atelier);
+		const carte = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'a'
+		);
+		(carte?.querySelector('button') as HTMLButtonElement).click();
+		await settle();
+		const supprimer = [...container.querySelectorAll('.action')].find(
+			(b) => b.textContent?.trim() === 'Supprimer'
+		) as HTMLButtonElement;
+		supprimer.click();
+		await settle();
+
+		await userEvent.click(cellAt(container, 'B1')!);
+		await userEvent.keyboard('{ControlOrMeta>}z{/ControlOrMeta}');
+		await settle();
+
+		expect(atelier.get('a')).toBeDefined();
 	});
 
 	it('les boutons « Annuler » et « Rétablir » : désactivés avec leur raison quand il n’y a rien', async () => {

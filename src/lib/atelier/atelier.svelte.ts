@@ -1141,6 +1141,7 @@ export class Atelier {
 
 		const broken = this.allDependents(name);
 		this.items.splice(index, 1);
+		this.#forgetGridHistory();
 		this.charts.delete(name);
 		// Les diagrammes dont elle donnait les effectifs disparaissent avec elle :
 		// sinon, une liste recréée sous ce nom s'y rattacherait en silence
@@ -1209,6 +1210,10 @@ export class Atelier {
 		this.recomputeAll();
 		if (unnamed !== undefined) unnamed();
 		else for (const column of columns) this.titles.delete(column);
+		// Une suppression FERME l'historique de la grille : annuler un geste plus
+		// ancien changerait la révision, et la suppression ne pourrait plus
+		// s'annuler — ses objets seraient perdus (revue de la PR 3a)
+		this.#forgetGridHistory();
 
 		const receipt: RemovedWithDependents = { ok: true, removed };
 		this.#lastRemoval = {
@@ -1536,7 +1541,12 @@ export class Atelier {
 
 		// Un geste sans effet ne compte pas : il ferait monter `revision`, et
 		// « Annuler » une suppression deviendrait impossible (revue)
-		const changes = spread.filter((edit) => this.cell(edit.column, edit.row) !== edit.text);
+		// Une case écrite deux fois dans le geste (`1 ; 2` en A1, puis 9 en A2) :
+		// la dernière écriture compte, une seule fois (revue de la PR 3a)
+		const latest = new Map(spread.map((edit) => [cellName(edit.column, edit.row), edit]));
+		const changes = [...latest.values()].filter(
+			(edit) => this.cell(edit.column, edit.row) !== edit.text
+		);
 
 		// Les colonnes nommées : une réécriture de la liste par colonne touchée,
 		// vérifiée AVANT d'écrire quoi que ce soit (tout ou rien)

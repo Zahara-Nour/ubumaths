@@ -384,8 +384,11 @@ gardée telle quelle, et la vue dit « Les formules arrivent dans un prochain lo
   effacement de zone ou un titre ; `MAX_GRID_UNDO` (100) gestes, pas rangés. Une case changée
   ailleurs depuis (carte, `L = …`) refuse l'annulation et oublie l'historique — jamais par-dessus ;
   relire un atelier l'oublie aussi. Nommer ou supprimer une liste reste un geste d'objet, avec son
-  propre « Annuler ». Le Ctrl+Z de la grille s'arrête à la cellule : l'atelier écoute Ctrl+Z sur
-  la fenêtre pour la dernière suppression de carte.
+  propre « Annuler ». **Le geste le plus récent s'annule d'abord** : une suppression de carte (ou
+  un retrait de nom) ferme l'historique de la grille — annuler un geste plus ancien changerait la
+  révision, et la suppression ne pourrait plus s'annuler. Ctrl+Z ne s'arrête à la cellule que si
+  la grille a de quoi annuler ; sinon il remonte à l'atelier (dernière suppression de carte). Une
+  case écrite deux fois dans un geste compte une fois (la dernière écriture).
 - `cell`, `titleOf`, `listAt`, `columnOf`, `usedExtent` (zone utilisée), `freeColumns` : ce que
   lit la vue.
 - La vue (`DataView.svelte`) : barre de cellule (adresse, contenu brut, modifiable), clavier de

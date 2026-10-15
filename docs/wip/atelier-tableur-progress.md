@@ -68,3 +68,7 @@ liste trouée en citant l'entrée).
       une case a changé ailleurs, historique oublié à la relecture, `MAX_GRID_UNDO` = 100
 - [x] vue : Ctrl/⌘+Z, Ctrl/⌘+Maj+Z, Ctrl+Y ; boutons ; le geste s'arrête à la cellule (sinon
       l'atelier tentait aussi d'annuler la dernière suppression de carte — test prouvé rouge sans)
+- [x] revue : 2 findings corrigés, tests rouges d'abord — **important** : annuler un geste de grille
+      plus ancien qu'une suppression de carte rendait la suppression impossible à annuler (objets
+      perdus) → une suppression ferme l'historique de la grille, et Ctrl+Z ne s'arrête à la grille
+      que si elle a de quoi annuler ; mineur : une case écrite deux fois dans un geste.
