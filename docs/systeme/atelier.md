@@ -431,8 +431,13 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   `handleTabulate` (`AtelierContainer`) : `atelier.tabulate`, puis la vue passe sur Données
   (Q-L3-1), recréée (`{#key}`) avec la zone du tableau sélectionnée (`initialZone` de `DataView`,
   lue à la création ; deux colonnes non voisines → la première case seule, pour ne pas englober
-  une colonne de l'élève). La phrase de `tabulationReport` (ou le refus) s'écrit sous le
-  formulaire et est annoncée ; aucune ligne dans Calcul.
+  une colonne de l'élève). La zone ne vaut qu'à l'arrivée : `showView` la remet à `null`, un
+  retour par l'onglet ne la resélectionne pas ; à l'arrivée, le focus passe à la grille
+  (`onMount`), pour que Ctrl+Z et Entrée y agissent. Réussi, le formulaire se referme (une seconde
+  Entrée n'écrit pas un second tableau) ; la phrase de `tabulationReport` (ou le refus) s'écrit
+  dans une région `role="status"` de la carte, toujours présente, seule annonce, et s'efface dès
+  que la grille change (`atelier.revision`, comme l'image). Refermer la carte referme le
+  formulaire. Aucune ligne dans Calcul.
 - **Fonction à indice** (`=f_1(3)`) : refusée (`indexedFunctionMessage`). Le parseur lit `f_1(3)`
   comme `f₁ × 3`, et la grille calculait alors avec f, sans rien dire (revue du lot 3). Calcul ne
   l'évalue pas non plus (il recopie `f_1(3)`).

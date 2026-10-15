@@ -126,4 +126,79 @@ describe('Tabuler depuis la carte', () => {
 		);
 		expect(calcul?.textContent?.trim()).toBe('Calcul');
 	});
+
+	// Revue de la PR 2
+	function tab(container: HTMLElement, label: string): HTMLButtonElement {
+		return [...container.querySelectorAll('.onglet')].find((t) =>
+			t.textContent?.trim().startsWith(label)
+		) as HTMLButtonElement;
+	}
+
+	it('la zone du tableau n’est sélectionnée qu’une fois : pas au retour sur Données', async () => {
+		const { container, card } = await openForm();
+		await userEvent.click(card.querySelector('form.tabuler button[type="submit"]')!);
+		await vi.waitFor(() => expect(currentView(container)).toBe('Données'));
+
+		await userEvent.click(tab(container, 'Calcul'));
+		await userEvent.click(tab(container, 'Données'));
+
+		await vi.waitFor(() => expect(currentView(container)).toBe('Données'));
+		const b5 = container.querySelector('td[role="gridcell"][data-cell="B5"]');
+		expect(b5?.getAttribute('aria-selected')).toBe('false');
+	});
+
+	it('après un succès : formulaire refermé, focus dans la grille ; Entrée ne retabule pas', async () => {
+		const { atelier, container, card } = await openForm();
+		field(card, 'Pas').focus();
+		await userEvent.keyboard('{Enter}');
+		await vi.waitFor(() => expect(currentView(container)).toBe('Données'));
+
+		await vi.waitFor(() =>
+			expect((document.activeElement as HTMLElement | null)?.dataset.cell).toBe('A1')
+		);
+		expect(cardFor(container, 'f').querySelector('form.tabuler')).toBeNull();
+		expect(cardFor(container, 'f').querySelector('.tabuler-resultat')?.textContent).toContain(
+			'colonnes A et B'
+		);
+		await userEvent.keyboard('{Enter}');
+		expect(atelier.cell(2, 1)).toBe('');
+	});
+
+	it('refermer puis rouvrir la carte : le formulaire repart fermé', async () => {
+		const { container, card } = await openForm();
+		await userEvent.fill(field(card, 'Début'), 'zz');
+		await userEvent.click(card.querySelector('form.tabuler button[type="submit"]')!);
+
+		const header = cardFor(container, 'f').querySelector('.entete') as HTMLButtonElement;
+		await userEvent.click(header);
+		await userEvent.click(header);
+
+		await vi.waitFor(() => expect(cardFor(container, 'f').querySelector('.action')).toBeTruthy());
+		expect(cardFor(container, 'f').querySelector('form.tabuler')).toBeNull();
+		expect(cardFor(container, 'f').querySelector('.tabuler-resultat')?.textContent).toBe('');
+	});
+
+	it('la phrase du résultat disparaît quand la grille a changé (Ctrl+Z)', async () => {
+		const { atelier, container, card } = await openForm();
+		await userEvent.click(card.querySelector('form.tabuler button[type="submit"]')!);
+		await vi.waitFor(() => expect(atelier.cell(0, 1)).toBe('-5'));
+
+		atelier.undoGrid();
+
+		await vi.waitFor(() =>
+			expect(cardFor(container, 'f').querySelector('.tabuler-resultat')?.textContent).toBe('')
+		);
+	});
+
+	it('le résultat n’est annoncé qu’une fois (une seule région vivante)', async () => {
+		const { container, card } = await openForm();
+		await userEvent.click(card.querySelector('form.tabuler button[type="submit"]')!);
+		await vi.waitFor(() => expect(currentView(container)).toBe('Données'));
+		await new Promise((resolve) => setTimeout(resolve, 20));
+
+		const live = [...container.querySelectorAll('[role="status"], [aria-live]')].filter((el) =>
+			el.textContent?.includes('colonnes A et B')
+		);
+		expect(live.length).toBe(1);
+	});
 });

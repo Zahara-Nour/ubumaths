@@ -180,4 +180,7 @@ liste trouée en citant l'entrée).
 - [x] formulaire « de / à / pas » dans la carte, `handleTabulate`, `initialZone` de `DataView`
 - [x] capture : formulaire, grille A1:B11 sélectionnée, −1,5 / 6,75 ; la phrase en `<p>` prenait la
       taille de `main p` → `<span>`
-- [ ] revue, PR, CI, merge
+- [x] revue (2 importants, 3 mineurs, tous corrigés test rouge d'abord) : zone resélectionnée à
+      chaque retour sur Données ; deux Entrée = deux tableaux (focus resté dans la carte) ;
+      formulaire qui survivait à la carte refermée ; phrase périmée après Ctrl+Z ; double annonce
+- [ ] PR, CI, merge

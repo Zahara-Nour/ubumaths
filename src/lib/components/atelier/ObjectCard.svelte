@@ -76,7 +76,14 @@
 	/** Le formulaire « de / à / pas » de Tabuler : ouvert ? ses champs, et ce qu'il a donné. */
 	let tabulating = $state(false);
 	let tabulateBounds = $state({ from: '', to: '', step: '' });
-	let tabulateResult = $state<{ text: string; failed: boolean } | null>(null);
+	let tabulateResult = $state<{ text: string; failed: boolean; revision: number } | null>(null);
+	/**
+	 * Le résultat, seulement s'il vaut ENCORE : une grille qui a changé depuis
+	 * (Ctrl+Z, une case modifiée) le rend faux — même règle que `shownImage`.
+	 */
+	const shownTabulate = $derived(
+		tabulateResult !== null && tabulateResult.revision === atelier.revision ? tabulateResult : null
+	);
 
 	/** Ouvrir (pré-rempli, Q-L3-3) ou refermer le formulaire de Tabuler. */
 	function toggleTabulate() {
@@ -88,7 +95,19 @@
 	function handleTabulateSubmit(event: SubmitEvent) {
 		event.preventDefault();
 		if (!onTabulate) return;
-		tabulateResult = onTabulate(object.name, { ...tabulateBounds });
+		const result = onTabulate(object.name, { ...tabulateBounds });
+		// La révision APRÈS l'écriture : `tabulate` l'a fait avancer
+		tabulateResult = { ...result, revision: atelier.revision };
+		// Réussi : le formulaire se referme — une seconde Entrée n'écrit pas un second
+		// tableau, et Ctrl+Z part dans la grille, où le focus est passé (revue)
+		if (!result.failed) tabulating = false;
+	}
+
+	/** Ouvrir ou refermer la carte : le formulaire de Tabuler repart fermé (revue). */
+	function handleHeaderClick() {
+		tabulating = false;
+		tabulateResult = null;
+		onSelect?.(object.name);
 	}
 
 	function handleActionClick(action: ObjectAction) {
@@ -225,7 +244,7 @@
 				aria-hidden="true"
 			></span>
 		{/if}
-		<button type="button" class="entete" onclick={() => onSelect?.(object.name)}>
+		<button type="button" class="entete" onclick={handleHeaderClick}>
 			<span class="nom">{displayName(object.name)}</span>
 			<span class="definition">
 				{#if rendered}
@@ -453,11 +472,14 @@
 			/>
 			<!-- Un vrai bouton : valider sans touche Entrée (tablette) -->
 			<button type="submit" class="tabuler-valider">Tabuler</button>
-			<!-- Un `span` : `main p` impose sa taille de texte, plus grande que la carte -->
-			<span class="tabuler-resultat" class:refus={tabulateResult?.failed} role="status"
-				>{tabulateResult?.text ?? ''}</span
-			>
 		</form>
+	{/if}
+	{#if selected && object.kind === 'function' && onTabulate}
+		<!-- Toujours là, vide sans rien à dire : une région vivante créée avec son
+		     texte n'est pas toujours lue. Un `span` : `main p` impose sa taille -->
+		<span class="tabuler-resultat" class:refus={shownTabulate?.failed} role="status"
+			>{shownTabulate?.text ?? ''}</span
+		>
 	{/if}
 </article>
 

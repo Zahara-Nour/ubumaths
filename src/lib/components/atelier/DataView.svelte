@@ -12,7 +12,7 @@
 	 * La vue n'a aucun état de modèle : cellules et noms vivent dans l'`Atelier`.
 	 * Elle ne garde que la sélection (une cellule, ou une zone) et la frappe en cours.
 	 */
-	import { tick, untrack } from 'svelte';
+	import { onMount, tick, untrack } from 'svelte';
 	import { z } from 'zod';
 	import { useAtelier } from '$lib/atelier/context';
 	import { isList, type ListObject } from '$lib/atelier/types';
@@ -246,6 +246,12 @@
 		);
 		cell?.focus();
 	}
+
+	// Arrivé par Tabuler (lot 3) : le focus suit le tableau, pour que Ctrl+Z ou
+	// Entrée agissent dans la grille et non plus dans le formulaire de la carte
+	onMount(() => {
+		if (startZone !== null) void focusSelected();
+	});
 
 	/** Sélectionner une cellule ; `extend` garde l'autre coin et sélectionne la zone. */
 	function select(column: number, row: number, extend = false) {

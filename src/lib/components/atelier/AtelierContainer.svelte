@@ -454,6 +454,9 @@
 	function showView(next: ViewId) {
 		if (activeView === 'calcul' || next === 'calcul') seen = desk.entries.length;
 		activeView = next;
+		// La zone de Tabuler ne vaut qu'à l'arrivée : un retour par l'onglet ne la
+		// resélectionne pas (revue — sur une grille annulée, 20 cases restaient choisies)
+		dataZone = null;
 	}
 
 	/** La zone que la vue Données sélectionne en arrivant, et sa clé (Tabuler : la vue est recréée). */
@@ -468,6 +471,7 @@
 		const done = atelier.tabulate({ name, ...bounds });
 		if (!done.ok) return { text: done.message, failed: true };
 		const [x, image] = done.columns;
+		showView('donnees');
 		// Deux colonnes voisines : la zone entière ; sinon la zone engloberait une
 		// colonne de l'élève entre les deux, et seule la première case est choisie
 		dataZone =
@@ -475,10 +479,8 @@
 				? { left: x, right: image, top: 1, bottom: done.rows }
 				: { left: x, right: x, top: 1, bottom: 1 };
 		dataKey++;
-		showView('donnees');
-		const text = tabulationReport(name, done);
-		announce(text);
-		return { text, failed: false };
+		// Pas d'annonce ici : la carte la fait (`role="status"`) ; deux se bousculeraient
+		return { text: tabulationReport(name, done), failed: false };
 	}
 
 	/**
