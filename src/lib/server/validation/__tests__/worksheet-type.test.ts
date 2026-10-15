@@ -85,3 +85,62 @@ describe('vue de l’élève : les options du type traversent la réponse', () =
 		});
 	});
 });
+
+// Lot 3 : cadres après chaque question (défaut) ou après l'exercice
+describe('cadres de réponse : `answer_frames`', () => {
+	it.each(['question', 'exercise'])('accepte %s', (answer_frames) => {
+		const config = { answers_on_sheet: true, answer_frames };
+		expect(createWorksheetSchema.parse({ ...base, type: 'exam', config }).config).toMatchObject(
+			config
+		);
+		expect(updateWorksheetSchema.parse({ config }).config).toMatchObject(config);
+	});
+
+	it.each(['page', 'Question', '', true, 1, null])('refuse %o', (answer_frames) => {
+		const config = { answers_on_sheet: true, answer_frames };
+		expect(createWorksheetSchema.safeParse({ ...base, config }).success).toBe(false);
+		expect(updateWorksheetSchema.safeParse({ config }).success).toBe(false);
+	});
+
+	it('la vue de l’élève garde le mode et l’estimation par exercice', () => {
+		const exercise = {
+			id: '00000000-0000-4000-8000-000000000003',
+			exercise_id: '00000000-0000-4000-8000-000000000004',
+			title: null,
+			position: 1,
+			points: null,
+			custom_instructions: null,
+			statement: '1. A',
+			correction: null,
+			correction_visible: false,
+			section_id: null,
+			answer_frame_estimate: { questions: ['small', 'large'], exercise_cm: 7 }
+		};
+		const view = studentWorksheetDetailResponseSchema.parse({
+			assignment_id: '00000000-0000-4000-8000-000000000001',
+			worksheet_id: '00000000-0000-4000-8000-000000000002',
+			title: 'Équations',
+			description: null,
+			type: 'exam',
+			instructions: null,
+			available_from: '2026-10-15T08:00:00Z',
+			closes_at: null,
+			show_corrections: false,
+			class_name: null,
+			read_only: false,
+			exercises: [exercise],
+			sections: [],
+			answers_on_sheet: true,
+			answer_frames: 'exercise'
+		});
+		expect(view.answer_frames).toBe('exercise');
+		expect(view.exercises[0].answer_frame_estimate).toEqual({
+			questions: ['small', 'large'],
+			exercise_cm: 7
+		});
+		const bad = { ...exercise, answer_frame_estimate: { questions: ['énorme'], exercise_cm: 7 } };
+		expect(
+			studentWorksheetDetailResponseSchema.safeParse({ ...view, exercises: [bad] }).success
+		).toBe(false);
+	});
+});

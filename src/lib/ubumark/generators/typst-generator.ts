@@ -283,7 +283,20 @@ function generateSetup(options: ResolvedTypstTranspilerOptions): string {
  * @returns Typst body content
  */
 function generateBody(ast: DocumentNode, options: ResolvedTypstTranspilerOptions): string {
-	return ast.children.map((node) => generateBlock(node, options)).join('\n\n');
+	const { afterQuestion } = options;
+	if (!afterQuestion) return ast.children.map((node) => generateBlock(node, options)).join('\n\n');
+
+	// Questions : éléments de premier niveau des listes numérotées de premier
+	// niveau, numérotées d'une liste à l'autre (cadres de réponse, ADR 0030)
+	let questionIndex = 0;
+	return ast.children
+		.map((node) => {
+			if (node.type !== 'list' || !node.ordered) return generateBlock(node, options);
+			const first = questionIndex;
+			questionIndex += node.items.length;
+			return generateList(node, options, 0, (index) => afterQuestion(first + index));
+		})
+		.join('\n\n');
 }
 
 /**
@@ -554,12 +567,14 @@ function widestLabel(pattern: string, first: number, last: number): string {
  * @param node - List node
  * @param options - Generator options
  * @param enumerateDepth - Current enumerate depth (only increments for ordered lists)
+ * @param afterItem - Posé à la fin de chaque élément (questions, `afterQuestion`)
  * @returns Typst list
  */
 function generateList(
 	node: ListNode,
 	options: ResolvedTypstTranspilerOptions,
-	enumerateDepth: number = 0
+	enumerateDepth: number = 0,
+	afterItem?: (index: number) => string
 ): string {
 	// Calculate new depth: only ordered lists increment enumerate depth
 	const newDepth = node.ordered ? enumerateDepth + 1 : enumerateDepth;
@@ -573,7 +588,10 @@ function generateList(
 		: '•';
 	const items = node.items.map((item: ListItemNode, index: number) => {
 		const num = `${node.ordered ? `numbering("${pattern}", ${startNumber + index})` : '[•]'}, w: "${widest}"`;
-		const content = generateListItemContent(item, options, newDepth);
+		const itemContent = generateListItemContent(item, options, newDepth);
+		// Fin de l'élément, après ses sous-éléments (cadre de réponse d'une question)
+		const after = afterItem?.(index) ?? '';
+		const content = after ? `${itemContent}\n${after}` : itemContent;
 		// Item qui commence par un bloc (formule centrée, cercle…) : numéro à côté du bloc
 		const helper =
 			item.children[0] && item.children[0].type !== 'paragraph' ? 'ubu-item-bloc' : 'ubu-item';

@@ -74,5 +74,8 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
       le compilateur de prod. Reste : CONTEXT.md (entrées de l'ADR), tests d'intégration à lancer.
 - [x] Lot 2 — styles Contrôle, Examen, Devoirs, Quiz retirés du menu (`BUILT_IN_STYLE_OPTIONS`),
       toujours résolus ; aucune fiche ne les désignait
-- [ ] Lot 3
+- [x] Lot 3 — cadres automatiques (`answer-frames.ts`) : après chaque question (élément de 1er
+      niveau des listes numérotées de 1er niveau, `afterQuestion` du générateur) ou après l'exercice
+      (`answer_frames`) ; taille petit/moyen/grand (2,5/4,5/7 cm) d'après le corrigé ; l'élève
+      reçoit les tailles du serveur (`answer_frame_estimate`), même correction masquée
 - [ ] Lot 4

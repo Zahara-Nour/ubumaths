@@ -1129,18 +1129,26 @@ export interface TypstTranspilerOptions {
 	 * Absent : défaut du parseur, le produit — l'écriture d'avant.
 	 */
 	capitalPairs?: CapitalPairs;
+
+	/**
+	 * Ce qui se pose à la fin de chaque QUESTION — élément de premier niveau d'une
+	 * liste numérotée de premier niveau —, après ses sous-éléments ; `index` court
+	 * d'une liste à l'autre (0, 1, 2…). Cadres de réponse des fiches (ADR 0030,
+	 * lot 3). Absent : rien.
+	 */
+	afterQuestion?: (index: number) => string;
 }
 
 /**
- * Options une fois les défauts appliqués. `genericFunctions` et `capitalPairs`
- * restent optionnels :
+ * Options une fois les défauts appliqués. `genericFunctions`, `capitalPairs` et
+ * `afterQuestion` restent optionnels :
  * son absence a un sens (« défauts du parseur ») distinct de `null`, qu'un
  * `Required<>` effacerait.
  */
 export type ResolvedTypstTranspilerOptions = Required<
-	Omit<TypstTranspilerOptions, 'genericFunctions' | 'capitalPairs'>
+	Omit<TypstTranspilerOptions, 'genericFunctions' | 'capitalPairs' | 'afterQuestion'>
 > &
-	Pick<TypstTranspilerOptions, 'genericFunctions' | 'capitalPairs'>;
+	Pick<TypstTranspilerOptions, 'genericFunctions' | 'capitalPairs' | 'afterQuestion'>;
 
 // Note: RenderOptions, ParseResult, and MathPlaceholder are re-exported from $lib/ubumark
 

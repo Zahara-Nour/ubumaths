@@ -36,8 +36,12 @@ import {
 export type TypeOptionKey =
 	'show_student_name' | 'show_points' | 'calculator' | 'answers_on_sheet' | 'due_date';
 
-/** Ce que l'écran d'options d'une fiche peut changer : les options du type et le mélange */
-export type WorksheetOptionKey = TypeOptionKey | 'shuffle_exercises';
+/**
+ * Ce que l'écran d'options d'une fiche peut changer : les options du type, le
+ * placement des cadres (sous-option de « réponses sur le sujet », lot 3) et le
+ * mélange
+ */
+export type WorksheetOptionKey = TypeOptionKey | 'answer_frames' | 'shuffle_exercises';
 
 /** Ce que l'interface propose pour chaque type ; le titre, toujours imprimé, n'en est pas une */
 export const TYPE_OPTION_KEYS: Record<WorksheetType, readonly TypeOptionKey[]> = {
@@ -50,7 +54,12 @@ export const TYPE_OPTION_KEYS: Record<WorksheetType, readonly TypeOptionKey[]> =
 /** Les options du type, telles que la config (prof) ou la vue (élève) les porte */
 export type TypeOptions = Pick<
 	WorksheetConfig,
-	'show_student_name' | 'show_points' | 'calculator' | 'answers_on_sheet' | 'due_date'
+	| 'show_student_name'
+	| 'show_points'
+	| 'calculator'
+	| 'answers_on_sheet'
+	| 'answer_frames'
+	| 'due_date'
 >;
 
 /** Ce que l'en-tête imprime, en plus du titre (toujours imprimé) */
@@ -119,6 +128,10 @@ export function configForType(type: WorksheetType, config: WorksheetConfig): Wor
 			if (config.calculator) result.calculator = config.calculator;
 		} else if (key === 'due_date') {
 			if (config.due_date) result.due_date = config.due_date;
+		} else if (key === 'answers_on_sheet') {
+			if (config.answers_on_sheet !== undefined) result.answers_on_sheet = config.answers_on_sheet;
+			// Le placement des cadres suit « réponses sur le sujet »
+			if (config.answer_frames) result.answer_frames = config.answer_frames;
 		} else if (config[key] !== undefined) {
 			result[key] = config[key];
 		}

@@ -11,7 +11,13 @@ import { exerciseHintSchema, exerciseTranslationsSchema } from './exercises';
 import { gradeCodeSchema } from './grades';
 import { CONTENT_LOCALES } from '$lib/types/locale';
 import { capitalPairsSchema } from '$lib/questions/capital-pairs';
-import { CALCULATOR_RULES, WORKSHEET_TYPES, isIsoDate } from '$lib/types/worksheets';
+import {
+	ANSWER_FRAME_MODES,
+	ANSWER_FRAME_SIZES,
+	CALCULATOR_RULES,
+	WORKSHEET_TYPES,
+	isIsoDate
+} from '$lib/types/worksheets';
 
 // ============================================================================
 // ENUM SCHEMAS
@@ -27,6 +33,20 @@ export const worksheetTypeSchema = z.enum(WORKSHEET_TYPES, {
 /** Calculatrice autorisée ou interdite (évaluation écrite, examen blanc) */
 const calculatorRuleSchema = z.enum(CALCULATOR_RULES, {
 	message: 'Règle de calculatrice invalide'
+});
+
+/** Cadres de réponse : après chaque question ou après l'exercice (ADR 0030, lot 3) */
+const answerFrameModeSchema = z.enum(ANSWER_FRAME_MODES, {
+	message: 'Placement des cadres invalide'
+});
+
+/**
+ * Tailles des cadres d'un exercice, estimées par le serveur (vue de l'élève) :
+ * bornées, une question n'en a qu'une, un cadre ne dépasse pas une page
+ */
+const answerFrameEstimateSchema = z.object({
+	questions: z.array(z.enum(ANSWER_FRAME_SIZES)).max(200),
+	exercise_cm: z.number().positive().max(30)
 });
 
 /** Date de rendu d'un devoir maison : `AAAA-MM-JJ`, une date qui existe */
@@ -108,6 +128,7 @@ const worksheetConfigObjectSchema = z.object({
 	show_points: z.boolean().optional(),
 	calculator: calculatorRuleSchema.optional(),
 	answers_on_sheet: z.boolean().optional(),
+	answer_frames: answerFrameModeSchema.optional(),
 	due_date: dueDateSchema.optional(),
 	shuffle_exercises: z.boolean().optional(),
 	// Anciennes options d'affichage (ADR 0030) : plus lues, mais encore acceptées.
@@ -1026,7 +1047,9 @@ export const studentExerciseViewSchema = z.object({
 	 * de l'exercice (Q-J). Sans cette clé, le schéma la retire en silence et l'élève
 	 * lit `AB` comme un produit.
 	 */
-	capital_pairs: capitalPairsSchema.optional()
+	capital_pairs: capitalPairsSchema.optional(),
+	/** Tailles des cadres de réponse ; sans cette clé, le schéma la retire en silence */
+	answer_frame_estimate: answerFrameEstimateSchema.optional()
 });
 
 /**
@@ -1053,6 +1076,7 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	show_points: z.boolean().optional(),
 	calculator: calculatorRuleSchema.optional(),
 	answers_on_sheet: z.boolean().optional(),
+	answer_frames: answerFrameModeSchema.optional(),
 	due_date: dueDateSchema.optional(),
 	description: z.string().nullable(),
 	type: worksheetTypeSchema,

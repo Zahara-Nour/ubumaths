@@ -17,6 +17,7 @@ import {
 import { worksheetHeader } from '../worksheet-header';
 import type { WorksheetDocument } from './types';
 import { placeExercises, writtenOrNull } from './numbering';
+import { estimateAnswerFrames } from './answer-frames';
 
 export interface TeacherCopyInput {
 	worksheet: WorksheetRow;
@@ -60,13 +61,18 @@ export function documentFromTeacherCopy({
 				// La copie du prof ne porte pas la marque ★
 				essential: false,
 				genericFunctions: exercise.generic_functions ?? null,
-				capitalPairs: exercise.capital_pairs
+				capitalPairs: exercise.capital_pairs,
+				// Cadres de réponse : estimés d'après le corrigé de cette copie
+				answerFrameEstimate: header.answersOnSheet
+					? estimateAnswerFrames(exercise.statement, writtenOrNull(exercise.solution))
+					: null
 			})
 		),
 		sections: sections.map(({ id, title, instructions }) => ({ id, title, instructions })),
 		display: {
 			showPoints: header.points,
-			answersOnSheet: header.answersOnSheet
+			answersOnSheet: header.answersOnSheet,
+			answerFrames: config.answer_frames ?? 'question'
 		}
 	};
 }

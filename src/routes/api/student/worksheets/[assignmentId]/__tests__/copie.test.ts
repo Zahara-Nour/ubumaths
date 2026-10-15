@@ -55,7 +55,8 @@ const STUDENTS = [
 function assignmentRow(
 	guidanceLevel: string,
 	individualized: boolean,
-	config: Record<string, unknown> = {}
+	config: Record<string, unknown> = {},
+	type = 'worksheet'
 ) {
 	return {
 		id: ASSIGNMENT_ID,
@@ -70,7 +71,7 @@ function assignmentRow(
 			id: WORKSHEET_ID,
 			title: 'Fiche',
 			description: null,
-			type: 'worksheet',
+			type,
 			config,
 			translations: null
 		}
@@ -81,11 +82,12 @@ function supabase(
 	guidanceLevel: string,
 	individualized: boolean,
 	exercise: ReturnType<typeof twoLevelExercise> & { topic?: string | null } = twoLevelExercise(),
-	config: Record<string, unknown> = {}
+	config: Record<string, unknown> = {},
+	type = 'worksheet'
 ): TableMock {
 	return tableMock({
 		worksheet_assignments: {
-			data: assignmentRow(guidanceLevel, individualized, config),
+			data: assignmentRow(guidanceLevel, individualized, config, type),
 			error: null
 		},
 		worksheet_exercises: {
@@ -111,7 +113,13 @@ function supabase(
 }
 
 interface StudentView {
-	exercises: Array<{ statement: string; correction: string | null; capital_pairs?: string }>;
+	exercises: Array<{
+		statement: string;
+		correction: string | null;
+		capital_pairs?: string;
+		answer_frame_estimate?: { questions: string[]; exercise_cm: number };
+	}>;
+	answer_frames?: string;
 	numbering_style?: string;
 	show_points?: boolean;
 	calculator?: string;
@@ -243,5 +251,42 @@ describe('API élève : la copie suit l’affectation', () => {
 		const bare = await fetchCopy(supabase('guided', false), STUDENTS[0]);
 		expect(bare.show_points).toBeUndefined();
 		expect(bare.calculator).toBeUndefined();
+	});
+
+	// Lot 3 : les cadres de réponse. La taille vient du corrigé de la copie de
+	// l'élève, calculée ici : l'élève dont la correction est masquée a les mêmes
+	// cadres que le prof, sans recevoir le texte du corrigé.
+	it('réponses sur le sujet : le mode des cadres et leur taille arrivent à l’élève', async () => {
+		const view = await fetchCopy(
+			supabase(
+				'guided',
+				false,
+				twoLevelExercise(),
+				{
+					answers_on_sheet: true,
+					answer_frames: 'exercise'
+				},
+				'exam'
+			),
+			STUDENTS[0]
+		);
+		expect(view.answer_frames).toBe('exercise');
+		const estimate = view.exercises[0].answer_frame_estimate;
+		expect(estimate).toBeDefined();
+		expect(estimate?.exercise_cm).toBeGreaterThan(0);
+		expect(Array.isArray(estimate?.questions)).toBe(true);
+	});
+
+	it('sans réponses sur le sujet (ou type sans l’option) : aucune taille transmise', async () => {
+		const without = await fetchCopy(
+			supabase('guided', false, twoLevelExercise(), {}, 'exam'),
+			STUDENTS[0]
+		);
+		expect(without.exercises[0].answer_frame_estimate).toBeUndefined();
+		const worksheet = await fetchCopy(
+			supabase('guided', false, twoLevelExercise(), { answers_on_sheet: true }),
+			STUDENTS[0]
+		);
+		expect(worksheet.exercises[0].answer_frame_estimate).toBeUndefined();
 	});
 });

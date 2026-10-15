@@ -168,6 +168,29 @@ export const CALCULATOR_RULES = ['allowed', 'forbidden'] as const;
 export type CalculatorRule = (typeof CALCULATOR_RULES)[number];
 
 /**
+ * Réponses sur le sujet (ADR 0030, lot 3) : un cadre après chaque question
+ * (défaut) ou un seul après l'exercice
+ */
+export const ANSWER_FRAME_MODES = ['question', 'exercise'] as const;
+export type AnswerFrameMode = (typeof ANSWER_FRAME_MODES)[number];
+
+/** Taille d'un cadre de réponse (hauteurs : `worksheets/document/answer-frames.ts`) */
+export const ANSWER_FRAME_SIZES = ['small', 'medium', 'large'] as const;
+export type AnswerFrameSize = (typeof ANSWER_FRAME_SIZES)[number];
+
+/**
+ * Cadres d'un exercice, estimés d'après le corrigé de la variante imprimée
+ * (`estimateAnswerFrames`) :
+ * - `questions` : une taille par question de l'énoncé, dans l'ordre ;
+ * - `exercise_cm` : hauteur du cadre unique (après l'exercice, ou énoncé sans
+ *   question numérotée).
+ */
+export interface AnswerFrameEstimate {
+	questions: AnswerFrameSize[];
+	exercise_cm: number;
+}
+
+/**
  * Réglages d'une fiche (colonne `config`, jsonb).
  *
  * ADR 0030 : le type décide de l'en-tête ; seules restent les options du type
@@ -191,6 +214,8 @@ export interface WorksheetConfig {
 	calculator?: CalculatorRule;
 	/** Évaluation écrite, examen blanc : l'élève répond sur le sujet (cadres) ; absent : non */
 	answers_on_sheet?: boolean;
+	/** Avec réponses sur le sujet : cadre après chaque question ou après l'exercice ; absent : question */
+	answer_frames?: AnswerFrameMode;
 	/** Devoir maison : date de rendu, `AAAA-MM-JJ` ; absente : ligne à remplir */
 	due_date?: string;
 	shuffle_exercises?: boolean;
@@ -727,6 +752,13 @@ export interface StudentExerciseView {
 	 * transmis. Absent : produit, l'écriture d'avant.
 	 */
 	capital_pairs?: CapitalPairs;
+	/**
+	 * Cadres de réponse (réponses sur le sujet, ADR 0030 lot 3) : tailles
+	 * estimées par le serveur d'après le corrigé de la copie de l'élève, envoyées
+	 * même si la correction est masquée (le texte, lui, ne l'est jamais) : le
+	 * PDF de l'élève a les mêmes cadres que celui du prof. Absent : sans cadres.
+	 */
+	answer_frame_estimate?: AnswerFrameEstimate;
 }
 
 /**
@@ -757,6 +789,7 @@ export interface StudentWorksheetView {
 	show_points?: boolean;
 	calculator?: CalculatorRule;
 	answers_on_sheet?: boolean;
+	answer_frames?: AnswerFrameMode;
 	due_date?: string;
 	description: string | null;
 	type: WorksheetType;
@@ -1053,6 +1086,8 @@ export function asWorksheetConfig(value: unknown): WorksheetConfig {
 	}
 	const calculator = CALCULATOR_RULES.find((rule) => rule === raw.calculator);
 	if (calculator) config.calculator = calculator;
+	const answerFrames = ANSWER_FRAME_MODES.find((mode) => mode === raw.answer_frames);
+	if (answerFrames) config.answer_frames = answerFrames;
 	if (isIsoDate(raw.due_date)) config.due_date = raw.due_date;
 
 	return config;
@@ -1101,7 +1136,12 @@ export function viewTypeOptions(
 	value: unknown
 ): Pick<
 	StudentWorksheetView,
-	'show_student_name' | 'show_points' | 'calculator' | 'answers_on_sheet' | 'due_date'
+	| 'show_student_name'
+	| 'show_points'
+	| 'calculator'
+	| 'answers_on_sheet'
+	| 'answer_frames'
+	| 'due_date'
 > {
 	const config = asWorksheetConfig(value);
 	return {
@@ -1109,6 +1149,7 @@ export function viewTypeOptions(
 		show_points: config.show_points,
 		calculator: config.calculator,
 		answers_on_sheet: config.answers_on_sheet,
+		answer_frames: config.answer_frames,
 		due_date: config.due_date
 	};
 }

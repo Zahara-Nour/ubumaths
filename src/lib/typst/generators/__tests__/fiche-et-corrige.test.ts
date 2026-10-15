@@ -133,10 +133,12 @@ describe('la mise en page de la fiche', () => {
 			config: { answers_on_sheet: true },
 			mode: 'worksheet'
 		});
-		expect(sheet).toContain('height: 5cm');
+		// Cadres de réponse (lot 3) : sur la fiche, jamais avec les corrections en ligne
+		const frame = 'rect(width: 100%, height:';
+		expect(sheet).toContain(frame);
 		expect(
 			ficheEtCorrige(ASSESSMENT, { type: 'assessment', config: { answers_on_sheet: true } })
-		).not.toContain('height: 5cm');
+		).not.toContain(frame);
 	});
 });
 

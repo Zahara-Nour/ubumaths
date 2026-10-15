@@ -74,6 +74,8 @@ import type {
 	StudentSectionView,
 	WorksheetType
 } from '$lib/types/worksheets';
+import { worksheetHeader } from '$lib/worksheets/worksheet-header';
+import { estimateAnswerFrames } from '$lib/worksheets/document/answer-frames';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/student/worksheets/[assignmentId]/+server');
@@ -263,6 +265,14 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw error(500, 'Erreur lors de la recuperation des exercices');
 		}
 
+		// Réponses sur le sujet (ADR 0030, lot 3) : les cadres sont estimés ici,
+		// d'après le corrigé de la copie, pour que l'élève dont la correction est
+		// masquée ait les mêmes cadres que le prof — seules les tailles partent
+		const answersOnSheet = worksheetHeader(
+			worksheet.type as WorksheetType,
+			viewTypeOptions(worksheet.config)
+		).answersOnSheet;
+
 		for (const we of shuffledRows ?? worksheetExercises ?? []) {
 			const exerciseData = getFirstOrSelf(we.exercise as unknown as ExerciseData | null);
 
@@ -303,6 +313,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				section_id: we.section_id ?? null,
 				is_essential: we.is_essential ?? false
 			};
+
+			if (answersOnSheet) {
+				exerciseView.answer_frame_estimate = estimateAnswerFrames(statement, correction);
+			}
 
 			// Fonctions déclarées, lues sur l'exercice : sans elles, le PDF imprime
 			// `C'(x)` en erreur.

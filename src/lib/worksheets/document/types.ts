@@ -16,7 +16,7 @@
 
 import type { ContentLocale } from '$lib/types/locale';
 import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import type { WorksheetType } from '$lib/types/worksheets';
+import type { AnswerFrameEstimate, AnswerFrameMode, WorksheetType } from '$lib/types/worksheets';
 
 /**
  * Ce que contient le PDF (vocabulaire de l'ADR 0028) :
@@ -68,6 +68,12 @@ export interface DocumentExercise {
 	genericFunctions: string[] | null;
 	/** Sens de deux majuscules collées (`AB`) ; absent : produit */
 	capitalPairs?: CapitalPairs;
+	/**
+	 * Tailles des cadres de réponse, estimées d'après le corrigé de cette variante
+	 * (`estimateAnswerFrames`) : par la copie du prof, ou par le serveur pour
+	 * l'élève. Absent : estimées au rendu depuis la correction, si elle est là.
+	 */
+	answerFrameEstimate?: AnswerFrameEstimate | null;
 }
 
 /**
@@ -77,8 +83,10 @@ export interface DocumentExercise {
 export interface DocumentDisplay {
 	/** Points par exercice affichés */
 	showPoints: boolean;
-	/** L'élève répond sur le sujet : un cadre de réponse sous l'énoncé */
+	/** L'élève répond sur le sujet : des cadres de réponse sur la fiche */
 	answersOnSheet: boolean;
+	/** Cadre après chaque question (défaut) ou un seul après l'exercice */
+	answerFrames: AnswerFrameMode;
 	/**
 	 * Copie d'un élève servant de document de classe (affectation dont chaque
 	 * élève a sa version, D6) : ni numéro ni carré, le titre seul — l'ordre et

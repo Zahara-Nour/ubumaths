@@ -125,4 +125,12 @@ describe('configForType : seules les options du type partent', () => {
 			configForType('worksheet', { show_student_name: true, shuffle_exercises: true })
 		).toEqual({ show_student_name: true, shuffle_exercises: true });
 	});
+
+	it('placement des cadres : gardé avec « réponses sur le sujet », perdu ailleurs (lot 3)', () => {
+		const config = { answers_on_sheet: true, answer_frames: 'exercise' as const };
+		expect(configForType('exam', config)).toMatchObject(config);
+		expect(configForType('assessment', config)).toMatchObject(config);
+		expect(configForType('worksheet', config)).not.toHaveProperty('answer_frames');
+		expect(configForType('homework', config)).not.toHaveProperty('answer_frames');
+	});
 });
