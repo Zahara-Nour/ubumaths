@@ -202,4 +202,6 @@ liste trouée en citant l'entrée).
 - [x] revue (2 importants, 4 mineurs, tous corrigés test rouge d'abord) : `=a:b` (division) réécrit
       `=A:B` et refusé → `A:A` seulement en argument ; ECARTYPE en n² (750 ms) → moyenne une fois ;
       `=2SOMME(…)` ; case seule en argument = plage d'une case ; ligne 0 ; message qui cite sqrt…
-- [ ] PR, CI, merge
+- [x] PR 1 mergée : #1430
+- [ ] PR 2 : ARRONDI, ENT, RACINE, ABS, LN, EXP, PI, aide sous la barre
+- [ ] PR 3 : SI, NB.SI, texte entre guillemets, comparaisons, renvoi de Calcul
