@@ -381,6 +381,29 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   se videront (`citingCells` : en chaîne, sans celles déjà vides) demande confirmation : « 3 cellules de la grille la citent : elles
   deviendront vides. » (`citingCellsNote`). La copie vers un autre logiciel et le CSV
   emportent les VALEURS des formules ; la copie interne garde la formule.
+- **Recopier** (§5) : `fillDown(zone)` recopie la première ligne de la zone sur les suivantes,
+  un seul geste (T6) ; `shiftFormula` décale les références relatives, `$` les fige, une valeur se
+  recopie telle quelle (pas de série devinée) ; une référence poussée hors de la grille devient
+  `#HORS` (« Référence hors de la grille (après une recopie). »). Trois gestes (Q-L2-2) : Ctrl/⌘+D
+  (une case seule reçoit celle du dessus), la poignée au coin de la zone (cases visées teintées),
+  le bouton « Recopier vers le bas… » (« jusqu'à la ligne », pour la tablette). Le copier-coller
+  DANS la grille décale aussi (Q-L2-4) : le presse-papiers propre à la grille porte la case
+  d'origine (`{ origin, cells }`), et `pasteTable(…, origin)` décale sans deviner de titres ni
+  refuser le « ; » d'une formule.
+- **Lien** (§7) : `encodeAtelier` écrit les formules en relatif (`toRelative` :
+  `=0,8*{0:-1}+$A$1`, `grid.relative`) ; `decodeAtelier` les réécrit AVANT le tri
+  (`fromRelativeText`, sur les seules formules : un texte `{0:1}` tapé par l'élève reste tel
+  quel), le plafond d'une cellule valant pour l'écriture rangée.
+- **Atelier reçu** (T7) : `remapColumns` fait suivre à chaque référence, relative ou absolue, la
+  colonne où la sienne a été placée ; une colonne non arrivée devient `#HORS`. Un objet renommé à
+  l'arrivée (`f` → `g`) l'est aussi dans les formules reçues (`=f(3)` → `=g(3)`), jamais dans une
+  référence de même lettre (`L2`) — sinon la formule calculait avec la `f` locale, sans rien dire.
+- **Le « ; » d'une formule dans une colonne nommée** est rangé `⁏` (`FORMULA_SEMICOLON`) dans la
+  définition de la liste, dont « ; » sépare les entrées — sinon `=max(1 ; A1)` était coupée en deux.
+  Une cellule sans nom le range de même (`storedCellText` / `cellTextFromStored`) : une cellule
+  rangée n'a jamais de « ; » (P2), et la formule était écartée au stockage et dans le lien.
+- **Affichage** : une valeur exacte faite de chiffres (`3`, `2,5`, `509/128`) s'écrit en texte,
+  comme un nombre tapé ; l'écriture mathématique est réservée à ce qui a des lettres (`√2`, `3π`).
 - **Oracle** : `formules.test.ts` compare, sur un corpus, la valeur d'une cellule `=expr` à celle de
   Calcul pour `expr`.
 

@@ -176,6 +176,8 @@ export interface StoredGrid {
 	readonly cells?: Readonly<Record<string, string>>;
 	/** Les titres des colonnes (T4), par lettre (`B`). */
 	readonly titles?: Readonly<Record<string, string>>;
+	/** Dans un LIEN seulement : les formules y sont écrites en relatif (`toRelative`). */
+	readonly relative?: boolean;
 }
 
 export interface AtelierState {

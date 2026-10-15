@@ -135,3 +135,19 @@ liste trouée en citant l'entrée).
   (`pnpm install --frozen-lockfile --prefer-offline --force` : sans `--force`, pnpm se croyait à
   jour) ; liens de premier niveau comparés à ceux du dépôt principal : identiques. Consigne aux
   revues : sonde dans une copie SANS lien vers `node_modules`.
+
+### PR 3 — recopier (`feat/atelier-formules-recopie`)
+
+- [x] tests rouges : `formules-recopie.test.ts` (13), 6 de vue
+- [x] `shiftFormula`, `fillDown`, `pasteTable(…, origin)`, presse-papiers `{ origin, cells }`,
+      Ctrl/⌘+D, poignée, « Recopier vers le bas… » ; `toRelative` / `fromRelativeText` pour le
+      lien ; `remapColumns` pour un atelier reçu
+- [x] **trouvé en route** : une formule à « ; » (`=max(1 ; A1)`) dans une colonne NOMMÉE était coupée
+      en deux cases (la définition d'une liste sépare ses entrées par « ; ») → `FORMULA_SEMICOLON`
+- [x] capture : la poignée tirée jusqu'à la ligne 8 recopie deux colonnes ; les fractions en maths
+      débordaient de la ligne → un nombre exact s'écrit en texte, les maths seulement avec des lettres
+- [x] revue (2 importants, 4 mineurs, tous corrigés test rouge d'abord) : formule à « ; » d'une
+      cellule SANS nom perdue au stockage et dans le lien (`storedCellText`) ; un objet renommé à
+      l'arrivée suivi dans les formules reçues (`=f(3)` calculait avec la f locale) ; un texte `{0:1}`
+      réécrit par le lien ; poignée relâchée hors fenêtre ou `pointercancel` ; Ctrl/⌘+D pendant la
+      frappe (favoris) ; origine du presse-papiers bornée par Zod
