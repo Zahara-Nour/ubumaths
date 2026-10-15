@@ -1,7 +1,7 @@
 ---
 title: Atelier — tableur intégré, lot 3 : Tabuler (phase 0)
 date: 2026-10-15
-status: phase 0 PROPOSÉE, à valider par David (Q-L3-1 à Q-L3-5)
+status: phase 0 VALIDÉE (2026-10-15, « ok ») ; Q-L3-1 à Q-L3-5 décidées (les cinq recos)
 ---
 
 # Atelier — tableur intégré, lot 3 : Tabuler
@@ -105,7 +105,11 @@ tableau de valeurs est écrit **dans la grille, en formules** : il reste vivant.
 
 ---
 
-## Questions du lot 3 — à trancher par David
+## Questions du lot 3 — tranchées par David (2026-10-15, « ok » : les cinq recos)
+
+Décidé : **Q-L3-1 (a)** grille + bascule vers Données · **Q-L3-2 (b)** décimal fini en décimal
+dans toute la grille · **Q-L3-3 (a)** de −5 à 5 pas 1, bornes d'un intervalle fermé · **Q-L3-4 (a)**
+deux nouvelles colonnes à chaque fois · **Q-L3-5 (a)** suites hors de ce lot.
 
 **Q-L3-1 — Où va le tableau ?**
 
