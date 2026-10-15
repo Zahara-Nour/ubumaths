@@ -1,7 +1,7 @@
 ---
 title: Atelier — le bouton « Copier » d'une ligne de Calcul (phase 0)
 date: 2026-10-15
-status: décisions de David prises (2026-10-15) — PR en cours, branche feat/atelier-copier
+status: livré (#1417, 2026-10-15), en attente du deploy:prod
 ---
 
 # Atelier — le bouton « Copier »
@@ -41,3 +41,5 @@ David du même jour : oui. `/calc` copie la sortie brute du moteur (`result.outp
 ## Journal
 
 - 2026-10-15 — mesures, décisions 1 et 2 de David.
+- 2026-10-15 — **#1417 mergée**. Revue : dénominateur produit sans parenthèses (`1/2√x`) et racines
+  ambiguës (`√2x`, `√x²`) corrigés, cas réels ajoutés aux tests.
