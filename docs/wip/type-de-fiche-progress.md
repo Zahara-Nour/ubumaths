@@ -57,6 +57,14 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
 - Le cadre unique actuel (`hasAnswerSpace`) : seulement si `answers_on_sheet` (lot 3 le
   remplacera par les cadres par question).
 
+## Décisions du lot 3 (2026-10-15)
+
+- Accès validé par David : le serveur envoie à l'élève la hauteur estimée des cadres de sa copie
+  (`answer_frame_estimate`, une taille par question), jamais le texte du corrigé, et seulement si
+  « réponses sur le sujet » est coché — son PDF a les mêmes cadres que celui du prof.
+- Lot 4 : réglage en **nombre de lignes** par cadre (et non trois tailles), l'estimation servant de
+  départ ; aperçu PDF et nombre de pages à côté du réglage (écran à présenter à David avant).
+
 ## Lots suivants
 
 - Lot 2 : retirer les styles 02-05 de la liste.
