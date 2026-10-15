@@ -192,6 +192,9 @@
 		if (object.kind === 'value' && element) {
 			Object.assign(element, { mathModeSpace: '\\,' });
 		}
+		// Pas de menu ☰ (ni au clic droit) : mode texte ou LaTeX, couleur, style,
+		// matrice donnent des définitions que l'atelier ne lit pas (David, 2026-10-15)
+		if (element) element.menuItems = [];
 		updateSmartFence();
 		// Le clavier virtuel de MathLive ne passe pas par `keydown` : `beforeinput`
 		// et `input` aussi (non mesuré au clavier virtuel, revue du lot 1)
@@ -227,6 +230,10 @@
 {/if}
 
 <style>
+	/* Le bouton ☰ : MathLive le laisse affiché même quand son menu est vide */
+	.champ :global(math-field::part(menu-toggle)) {
+		display: none;
+	}
 	.refus {
 		margin: 0.25rem 0 0;
 		font-size: 0.875rem;
