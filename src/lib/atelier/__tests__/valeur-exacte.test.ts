@@ -65,3 +65,45 @@ describe('avec une division : la fraction se montre', () => {
 		expect(hidden('=A1*3', [{ column: A, row: 1, text: '=1/4' }])).toBe(false);
 	});
 });
+
+// Revue : la règle regardait l'arbre APRÈS l'injection des cases citées, où une
+// formule exacte (`=0,25`) entre sous la forme de sa fraction (1/4)
+describe('une case citée garde son origine', () => {
+	const masked: [string, string][] = [
+		['=0,25', '=A1*2'],
+		['=0,1*3', '=A1+1'],
+		['=1,5+2,25', '=A1+1'],
+		['=ARRONDI(PI();4)', '=A1+1']
+	];
+	for (const [cited, formula] of masked) {
+		it(`A1 ${cited}, ${formula} : masquée`, () => {
+			expect(hidden(formula, [{ column: A, row: 1, text: cited }])).toBe(true);
+		});
+	}
+
+	it('=SOMME(A1:A2) avec A1 =0,25 : masquée', () => {
+		expect(
+			hidden('=SOMME(A1:A2)', [
+				{ column: A, row: 1, text: '=0,25' },
+				{ column: A, row: 2, text: '1' }
+			])
+		).toBe(true);
+	});
+
+	it('=SOMME(0,25;1) : masquée', () => {
+		expect(hidden('=SOMME(0,25;1)')).toBe(true);
+	});
+
+	it('une case tapée `1/4` citée : une division, montrée', () => {
+		expect(hidden('=A1*3', [{ column: A, row: 1, text: '1/4' }])).toBe(false);
+	});
+
+	it('une notation scientifique tapée (1e-3) est un décimal tapé : masquée', () => {
+		expect(hidden('=1e-3')).toBe(true);
+		expect(hidden('=2,5e-2*2')).toBe(true);
+	});
+
+	it('MOYENNE de nombres entiers : montrée (elle divise)', () => {
+		expect(hidden('=MOYENNE(2;3)')).toBe(false);
+	});
+});
