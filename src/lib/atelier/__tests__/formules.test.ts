@@ -500,8 +500,9 @@ describe('PR 2 — écriture mathématique', () => {
 	it('les cellules d’une autre colonne qui citent une liste', () => {
 		const a = new Atelier();
 		a.create({ kind: 'list', name: 'L', definition: '3 ; 4' });
-		withCells({ A3: '=A1+A2', B1: '=A1*2', B2: '=A2+1', C1: '=B1' }, a);
+		// C1 dépend de B1 : il se vide aussi (revue) ; B3 cite une case DÉJÀ vide : rien ne change
+		withCells({ A3: '=A1+A2', B1: '=A1*2', B2: '=A2+1', C1: '=B1', B3: '=A9' }, a);
 
-		expect(a.citingCells('L')).toBe(2);
+		expect(a.citingCells('L')).toBe(3);
 	});
 });

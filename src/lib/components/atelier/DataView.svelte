@@ -113,11 +113,14 @@
 	 * `isSafeLatex` : une formule peut venir d'un lien reçu, et la case la
 	 * compose en `{@html}` — refusée, la case reste en texte.
 	 */
+	const MAX_MARKUPS = 5000;
 	const markups = new Map<string, { markup: string; spoken: string }>();
 	function composed(latex: string | null | undefined): { markup: string; spoken: string } | null {
 		if (!latex || !isSafeLatex(latex)) return null;
 		let done = markups.get(latex);
 		if (done === undefined) {
+			// Borné : un curseur glissé crée de nouvelles écritures à chaque cran (revue)
+			if (markups.size > MAX_MARKUPS) markups.clear();
 			done = {
 				markup: convertLatexToMarkup(latex, { defaultMode: 'inline-math' }),
 				spoken: convertLatexToSpeakableText(latex)
@@ -130,7 +133,10 @@
 	/** « Valeur exacte » sous la barre : quand la case montre `≈` d'une valeur exacte. */
 	const selectedExact = $derived.by(() => {
 		const value = atelier.cellValue(selected.column, selected.row);
-		if (value.kind !== 'number' || !value.exact || value.latex) return null;
+		// Aussi pour `√2`, `π` : la case les écrit, mais leur texte (lu par un lecteur
+		// d'écran) est `≈ 1,4142` — la valeur exacte doit pouvoir se lire (revue)
+		if (value.kind !== 'number' || !value.exact) return null;
+		if (value.latex && !value.shown.startsWith('≈')) return null;
 		return composed(value.exactLatex);
 	});
 

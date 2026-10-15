@@ -1353,20 +1353,34 @@ export class Atelier {
 	}
 
 	/**
-	 * Le nombre de formules, HORS de la colonne de la liste `name`, qui citent
-	 * une de ses cellules : supprimer la liste les rendra vides (T3, T5) — la
-	 * confirmation le dit.
+	 * Le nombre de formules, HORS de la colonne de la liste `name`, qui se
+	 * videront si la liste est supprimée (T3, T5) : celles qui citent une de ses
+	 * cases remplies, et celles qui en dépendent en chaîne — la confirmation le dit.
 	 */
 	citingCells(name: string): number {
 		const column = this.columnOf(name);
 		if (column === undefined) return 0;
 		const letter = columnLetter(column);
-		let count = 0;
-		for (const [address, text] of gridTexts(this.#entriesByColumn, this.cells)) {
-			if (address.startsWith(letter)) continue;
-			if (referencesIn(text).some((ref) => ref.startsWith(letter))) count++;
+		const texts = gridTexts(this.#entriesByColumn, this.cells);
+		// Les cases de la colonne qui ont aujourd'hui une valeur : elles disparaîtront
+		const vanishing = new Set([...texts.keys()].filter((address) => address.startsWith(letter)));
+		// Puis, de proche en proche, les formules d'AUTRES colonnes qui en dépendent
+		// (C1 = B1, B1 = A1 : les deux se vident) — seulement celles qui ont une
+		// valeur aujourd'hui : une formule déjà vide ne change pas (revue)
+		const counted = new Set<string>();
+		let grew = true;
+		while (grew) {
+			grew = false;
+			for (const [address, text] of texts) {
+				if (vanishing.has(address) || address.startsWith(letter)) continue;
+				if (!referencesIn(text).some((ref) => vanishing.has(ref))) continue;
+				vanishing.add(address);
+				const at = readCellName(address);
+				if (at !== null && this.cellValue(at.column, at.row).kind !== 'empty') counted.add(address);
+				grew = true;
+			}
 		}
-		return count;
+		return counted.size;
 	}
 
 	/** Le texte brut d'une cellule (ligne 1 à 200), `''` si elle est vide. */

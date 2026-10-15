@@ -582,6 +582,23 @@ describe('coller et copier (§4)', () => {
 		expect(carte?.textContent).not.toContain('=A1');
 	});
 
+	// Revue : la carte montre ce que montre la grille, jamais 0,3333333333333333
+	it('la carte d’une liste à formules écrit ses valeurs comme la grille', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([
+			{ column: 0, row: 1, text: '=1/3' },
+			{ column: 0, row: 2, text: '=k' }
+		]);
+		atelier.nameColumn(0, 'L');
+		const { container } = await openData(atelier);
+
+		const carte = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'L'
+		);
+		expect(carte?.textContent).toContain('1/3 ; erreur');
+		expect(carte?.textContent).not.toContain('0,333');
+	});
+
 	it('supprimer une liste citée par des cellules demande confirmation, et le dit', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '3 ; 4' });
