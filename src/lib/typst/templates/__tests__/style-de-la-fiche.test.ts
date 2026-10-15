@@ -13,6 +13,7 @@ import {
 	BUILT_IN_STYLES,
 	DEFAULT_STYLE_ID,
 	resolveTemplate,
+	isBuiltInStyle,
 	styleIdOf
 } from '../styles';
 import { DEFAULT_TEMPLATES, DEFAULT_TEMPLATE_IDS } from '../default-templates';
@@ -133,9 +134,21 @@ describe('le PDF suit le style retenu', () => {
 	});
 });
 
+// Styles qui imitaient un type de fiche : retirés du menu (ADR 0030, lot 2)
+const RETIRED: readonly string[] = [
+	DEFAULT_TEMPLATE_IDS.assessment,
+	DEFAULT_TEMPLATE_IDS.exam,
+	DEFAULT_TEMPLATE_IDS.homework,
+	DEFAULT_TEMPLATE_IDS.quiz
+];
+
 describe('les styles de Chiphre proposés au menu', () => {
-	it('les 12, dans l’ordre du code, avec nom et description', () => {
-		expect(BUILT_IN_STYLE_OPTIONS.map((s) => s.id)).toEqual(DEFAULT_TEMPLATES.map((t) => t.id));
+	it('les 8 qui ne sont qu’une apparence, dans l’ordre du code, avec nom et description', () => {
+		expect(BUILT_IN_STYLE_OPTIONS.map((s) => s.id)).toEqual(
+			DEFAULT_TEMPLATES.map((t) => t.id).filter((id) => !RETIRED.includes(id))
+		);
+		for (const name of ['Contrôle', 'Examen', 'Devoirs', 'Quiz'])
+			expect(BUILT_IN_STYLE_OPTIONS.map((s) => s.name)).not.toContain(name);
 		for (const option of BUILT_IN_STYLE_OPTIONS) {
 			const style = BUILT_IN_STYLES.find((s) => s.id === option.id);
 			expect(option).toEqual({
@@ -143,6 +156,15 @@ describe('les styles de Chiphre proposés au menu', () => {
 				name: style?.name,
 				description: style?.description
 			});
+		}
+	});
+
+	it('une fiche qui désigne encore un style retiré s’imprime toujours avec lui', () => {
+		for (const id of RETIRED) {
+			expect(isBuiltInStyle(id)).toBe(true);
+			expect(resolveTemplate(id, 'worksheet').content).toBe(
+				DEFAULT_TEMPLATES.find((t) => t.id === id)?.template_content
+			);
 		}
 	});
 });
