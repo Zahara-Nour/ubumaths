@@ -454,7 +454,7 @@ Liens : `assignment_id` → `worksheet_assignments` · `reviewed_by` → `profil
 
 ### `worksheet_exercises`
 
-`correction_visible?` · `created_at` · `custom_instructions?` · `exercise_id` · `id` · `is_essential` · `points?` · `position` · `section_id?` · `translations?` · `updated_at` · `variant_config?` · `variant_mode?` · `variation_index?` · `worksheet_id`
+`answer_frame_lines?` · `correction_visible?` · `created_at` · `custom_instructions?` · `exercise_id` · `id` · `is_essential` · `points?` · `position` · `section_id?` · `translations?` · `updated_at` · `variant_config?` · `variant_mode?` · `variation_index?` · `worksheet_id`
 
 Liens : `exercise_id` → `exercises` · `section_id` → `worksheet_sections` · `worksheet_id` → `worksheets`
 
