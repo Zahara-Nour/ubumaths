@@ -1551,7 +1551,13 @@ export class Atelier {
 			return { ok: true } as const;
 		});
 		if (!written.ok) return written;
-		return { ok: true, columns: [x, image], rows: plan.rows, note: plan.note };
+		// La dernière abscisse telle que la case la montre (`12/7`), jamais un flottant
+		const last = this.cellValue(x, plan.rows);
+		const note =
+			plan.shortOf === null || last.kind !== 'number'
+				? null
+				: `Le pas ne tombe pas juste sur ${plan.shortOf} : le tableau s’arrête à ${last.shown}.`;
+		return { ok: true, columns: [x, image], rows: plan.rows, note };
 	}
 
 	// ---------------------------------------------------------------------------

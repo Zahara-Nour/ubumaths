@@ -416,14 +416,19 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   titrées `x` et `f(x)` (la lettre de l'élève : `t`, `f(t)`) — un tableau **vivant**, en un seul
   geste (T6). `planTabulation` (`tabulate.ts`) prépare et refuse, tout ou rien : pas ⩽ 0, fin avant
   le début, borne illisible ou vide, plus de 200 lignes, moins de deux colonnes libres, objet qui
-  n'est pas une fonction. Un pas qui ne tombe pas juste s'arrête à la dernière abscisse ⩽ fin, et
-  une note le dit. Tabuler deux fois écrit deux nouvelles colonnes (Q-L3-4). Valeurs par défaut
+  n'est pas une fonction ; une fonction en attente (`f(x) = k*x` sans k : la phrase de Calcul), une
+  réciproque `f⁻¹` et une fonction à indice `f_1` (la grille ne sait pas encore les appeler). Un pas
+  qui ne tombe pas juste s'arrête à la dernière abscisse ⩽ fin, et une note la dit telle que la case
+  la montre (`12/7`). Tabuler deux fois écrit deux nouvelles colonnes (Q-L3-4). Valeurs par défaut
   (`tabulationDefaults`, Q-L3-3) : de −5 à 5 pas 1, ou les bornes d'un intervalle fermé `[a ; b]`
-  (pas 1, ou (b − a)/10 au-delà de 20). `.tabuler f de -2 à 3 pas 0,5` (ou `.tabuler f`) passe par
+  (pas 1, ou (b − a)/10 arrondi à l'entier supérieur au-delà de 20 — jamais un pas flottant). `.tabuler f de -2 à 3 pas 0,5` (ou `.tabuler f`) passe par
   `tabulateCommand`, branchée avec les commandes qui lisent des NOMS (`SIMULATIONS` de
   `calcul.ts`) ; une expression sans nom est refusée avec la façon de faire (Q-L2-3). Le décor de
   son exemple (`exampleSetup: { 'f(x)': … }`) est posé par `stageExampleSetup` (`commands.ts`).
   La carte (formulaire « de / à / pas », bascule vers Données) arrive dans la PR 2 du lot.
+- **Fonction à indice** (`=f_1(3)`) : refusée (`indexedFunctionMessage`). Le parseur lit `f_1(3)`
+  comme `f₁ × 3`, et la grille calculait alors avec f, sans rien dire (revue du lot 3). Calcul ne
+  l'évalue pas non plus (il recopie `f_1(3)`).
 - **Oracle** : `formules.test.ts` compare, sur un corpus, la valeur d'une cellule `=expr` à celle de
   Calcul pour `expr`.
 

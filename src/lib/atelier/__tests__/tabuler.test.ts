@@ -112,7 +112,7 @@ describe('§1 tabuler une fonction', () => {
 	});
 
 	it('la lettre de l’élève fait les titres', () => {
-		const a = withF('t^2', { letter: 't' });
+		const a = withF('x^2', { letter: 't' });
 
 		a.tabulate({ name: 'f', from: '0', to: '1', step: '1' });
 
@@ -330,5 +330,90 @@ describe('§2 la commande .tabuler', () => {
 		expect(outputOf(runInput(s, '.tabuler f de 0 à 1 pas 0'))).toBe(
 			'refus : Le pas doit être positif.'
 		);
+	});
+});
+
+describe('revue de la PR 1', () => {
+	function session(lines: readonly string[]) {
+		const s = { atelier: new Atelier(), engine: new WebReplEngine() };
+		for (const line of lines) runInput(s, line);
+		return s;
+	}
+
+	it('une fonction à indice dans une formule : refus, jamais une valeur fausse', () => {
+		const s = session(['f(x) = 2x+3', 'f_1(x) = x^2']);
+		s.atelier.editCells([{ column: A, row: 1, text: '=f_1(3)' }]);
+
+		expect(shown(s.atelier, A, 1)).toBe(
+			'erreur : La grille ne lit pas encore une fonction à indice (f_1) : définis-la sous une seule lettre, par exemple k(x) = …'
+		);
+	});
+
+	it('.tabuler f_1 : refusé, rien n’est écrit', () => {
+		const s = session(['f_1(x) = x^2']);
+
+		expect(outputOf(runInput(s, '.tabuler f_1 de 0 à 2 pas 1'))).toBe(
+			'refus : La grille ne lit pas encore une fonction à indice (f_1) : définis-la sous une seule lettre, par exemple k(x) = …'
+		);
+		expect(s.atelier.cell(A, 1)).toBe('');
+	});
+
+	it('le conseil du refus « expression » ne propose jamais un nom à indice, et garde le pas', () => {
+		const s = session(['f(x) = x', 'g(x) = x', 'h(x) = x']);
+
+		expect(outputOf(runInput(s, '.tabuler x^2 de 0 à 5 pas 0,5'))).toBe(
+			'refus : On tabule une fonction nommée : définis-la d’abord, par exemple k(x) = x^2, puis .tabuler k de 0 à 5 pas 0,5.'
+		);
+	});
+
+	it('une réciproque : refus clair, par la carte comme par la commande', () => {
+		const s = session(['f(x) = 2x+3', '.réciproque f']);
+		const message =
+			'La réciproque f⁻¹ ne se tabule pas encore : tabule f, et lis son tableau à l’envers.';
+
+		expect(s.atelier.tabulate({ name: 'f^-1', from: '0', to: '2', step: '1' })).toEqual({
+			ok: false,
+			message
+		});
+		expect(outputOf(runInput(s, '.tabuler f^-1'))).toBe(`refus : ${message}`);
+		expect(outputOf(runInput(s, '.tabuler f⁻¹'))).toBe(`refus : ${message}`);
+		expect(s.atelier.cell(A, 1)).toBe('');
+	});
+
+	it('une fonction en attente : la raison de Calcul, rien n’est écrit', () => {
+		const s = session(['f(x) = k*x']);
+
+		expect(outputOf(runInput(s, '.tabuler f de 0 à 1 pas 1'))).toBe(
+			"refus : Le résultat dépend de k : donne-lui une valeur (k = 2) pour l'étudier."
+		);
+		expect(s.atelier.cell(A, 1)).toBe('');
+	});
+
+	it('pas par défaut avec des bornes fractionnaires : un entier, jamais un flottant tronqué', () => {
+		expect(tabulationDefaults(withF('x^2', { interval: '[1/3;30]' }).get('f'))).toEqual({
+			from: '1/3',
+			to: '30',
+			step: '3'
+		});
+	});
+
+	it('la note écrit la dernière abscisse comme la case', () => {
+		const a = withF();
+
+		const done = a.tabulate({ name: 'f', from: '0', to: '2', step: '3/7' });
+
+		expect(shown(a, A, 5)).toBe('12/7');
+		expect(done.ok && done.note).toBe(
+			'Le pas ne tombe pas juste sur 2 : le tableau s’arrête à 12/7.'
+		);
+	});
+
+	it('un pas minuscule : un refus lisible', () => {
+		const a = withF();
+
+		expect(a.tabulate({ name: 'f', from: '0', to: '1', step: '0,0000001' })).toEqual({
+			ok: false,
+			message: 'Ce tableau aurait plus de 10 000 lignes, la grille en a 200 : agrandis le pas.'
+		});
 	});
 });

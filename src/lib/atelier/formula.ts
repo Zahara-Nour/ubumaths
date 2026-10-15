@@ -206,7 +206,33 @@ function readUncached(text: string, functionNames: readonly string[]): ReadFormu
 	if (outside !== null) return { ok: false, message: outsideGrid(outside) };
 	const ast = astOf(marked, 'text', functionNames);
 	if (ast === null) return { ok: false, message: UNREADABLE };
+	const indexed = indexedFunctionIn(ast, functionNames);
+	if (indexed !== null) return { ok: false, message: indexedFunctionMessage(indexed) };
 	return { ok: true, ast, refs, names: namesIn(ast) };
+}
+
+/**
+ * Une fonction à indice citée (`f_1(3)`) : le parseur la lit `f₁ × 3`, et la
+ * grille calculait alors avec f, sans rien dire (revue du lot 3) — refusée
+ * jusqu'à ce que la lecture sache l'appeler.
+ */
+function indexedFunctionIn(ast: MathNode, functionNames: readonly string[]): string | null {
+	let found: string | null = null;
+	transformAST(ast, {
+		enterSubscript: (node) => {
+			if (found !== null || node.base.type !== 'variable') return undefined;
+			const index = node.subscript.type === 'number' ? node.subscript.value : null;
+			const name = `${node.base.name}_${index}`;
+			if (index !== null && functionNames.includes(name)) found = name;
+			return undefined;
+		}
+	});
+	return found;
+}
+
+/** Le refus d'une fonction à indice, dans la grille comme pour `.tabuler`. */
+export function indexedFunctionMessage(name: string): string {
+	return `La grille ne lit pas encore une fonction à indice (${name}) : définis-la sous une seule lettre, par exemple k(x) = …`;
 }
 
 /** Les noms qu'une formule cite : variables et fonctions, hors des marques de cellules. */

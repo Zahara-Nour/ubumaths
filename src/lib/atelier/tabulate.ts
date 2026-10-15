@@ -14,7 +14,9 @@ import type { AtelierObject } from './types';
 import type { Atelier } from './atelier.svelte';
 import type { CellEdit } from './grid';
 import { GRID_ROWS, cellName, columnLetter } from './grid';
-import { displayName, nextName } from './names';
+import { displayName, nextName, reciprocalOf } from './names';
+import { dependsOnMessage, parametersOf } from './types';
+import { indexedFunctionMessage } from './formula';
 import { intervalDomainOf } from './interval';
 import { INTERNAL_LETTER } from './letter';
 import { readListValue } from '$lib/statistics/read-value';
@@ -38,8 +40,11 @@ export interface TabulationPlan {
 	readonly edits: readonly CellEdit[];
 	readonly titles: readonly [string, string];
 	readonly rows: number;
-	/** Le pas ne tombe pas juste sur la fin : la phrase qui le dit, sinon `null`. */
-	readonly note: string | null;
+	/**
+	 * Le pas ne tombe pas juste sur la fin : la fin tapée (`3`), pour la note que
+	 * l'`Atelier` écrit avec la dernière abscisse telle que la case la montre.
+	 */
+	readonly shortOf: string | null;
 }
 
 export type Refusal = { readonly ok: false; readonly message: string };
@@ -53,8 +58,14 @@ const DEFAULTS = { from: '-5', to: '5', step: '1' } as const;
 /** Au-delà de cette largeur, un intervalle fermé se tabule en 10 pas. */
 const UNIT_STEP_MAX_WIDTH = 20;
 
-/** Un nom d'objet seul : `f`, `f_1`, `f'`, `f''`. */
-const OBJECT_NAME = /^[A-Za-z](?:_\d+)?'*$/;
+/** Un nom d'objet seul : `f`, `f_1`, `f'`, `f''`, `f^-1`. */
+const OBJECT_NAME = /^[A-Za-z](?:_\d+)?(?:'*|\^-1)$/;
+
+/** Au-delà, le nombre de lignes d'un refus n'a plus de sens (`1e-320`) : « plus de ». */
+const ROWS_SAID_MAX = 10_000;
+
+/** Les lettres proposées pour nommer une expression, quand `nextName` irait à l'indice. */
+const SUGGESTED_LETTERS = ['g', 'h', 'k', 'm', 'p', 'q', 'r', 's', 'w'];
 
 /** `.tabuler f de -2 à 3 pas 0,5` */
 const COMMAND = /^(\S+)\s+de\s+(\S+)\s+à\s+(\S+)\s+pas\s+(\S+)$/;
@@ -84,7 +95,9 @@ export function tabulationDefaults(object: AtelierObject | undefined): {
 	const b = readListValue(to);
 	if (a === null || b === null || b <= a) return { ...DEFAULTS };
 	const width = b - a;
-	const step = width <= UNIT_STEP_MAX_WIDTH ? '1' : decimalCommaText(String(width / 10));
+	// Un entier, jamais `2,966666666666667` (bornes `[1/3 ; 30]`, revue) : un pas
+	// flottant tronqué n'arrivait plus à la fin en calcul exact
+	const step = width <= UNIT_STEP_MAX_WIDTH ? '1' : String(Math.ceil(width / 10));
 	return { from, to, step };
 }
 
@@ -107,6 +120,27 @@ export function planTabulation(
 	if (object.kind !== 'function') {
 		return { ok: false, message: `On tabule une fonction : « ${request.name} » n’en est pas une.` };
 	}
+	// La grille ne sait pas encore appeler `f_1(…)` ni `f^-1(…)` (revue) : un
+	// tableau faux ou plein d'erreurs vaut moins qu'un refus qui dit quoi faire
+	if (/_\d/.test(object.name)) return { ok: false, message: indexedFunctionMessage(object.name) };
+	const base = reciprocalOf(object.name);
+	if (base !== null) {
+		return {
+			ok: false,
+			message: `La réciproque ${displayName(object.name)} ne se tabule pas encore : tabule ${base}, et lis son tableau à l’envers.`
+		};
+	}
+	// En attente (`f(x) = k*x` sans k) : la phrase de Calcul, plutôt que des cases muettes
+	if (object.status !== 'ok') {
+		const parameters = parametersOf(object);
+		return {
+			ok: false,
+			message:
+				parameters !== null && parameters.length > 0
+					? dependsOnMessage(parameters)
+					: (object.message ?? `${displayName(object.name)} ne se calcule pas encore.`)
+		};
+	}
 	const bounds: [keyof typeof DEFAULTS, string][] = [
 		['from', 'le début'],
 		['to', 'la fin'],
@@ -127,6 +161,12 @@ export function planTabulation(
 	// La marge absorbe l'erreur des flottants (`5 / 0,1` = 49,999…) : le calcul
 	// des cases, lui, est exact
 	const rows = Math.floor((to - from) / step + 1e-9) + 1;
+	if (!Number.isFinite(rows) || rows > ROWS_SAID_MAX) {
+		return {
+			ok: false,
+			message: `Ce tableau aurait plus de 10 000 lignes, la grille en a ${GRID_ROWS} : agrandis le pas.`
+		};
+	}
 	if (rows > GRID_ROWS) {
 		return {
 			ok: false,
@@ -134,10 +174,7 @@ export function planTabulation(
 		};
 	}
 	const last = from + (rows - 1) * step;
-	const note =
-		Math.abs(last - to) <= 1e-9 * Math.max(1, Math.abs(to))
-			? null
-			: `Le pas ne tombe pas juste sur ${written(request.to)} : le tableau s’arrête à ${decimalCommaText(String(Number(last.toFixed(10))))}.`;
+	const fits = Math.abs(last - to) <= 1e-9 * Math.max(1, Math.abs(to));
 
 	const stepText = written(request.step);
 	const edits: CellEdit[] = [];
@@ -158,7 +195,7 @@ export function planTabulation(
 		edits,
 		titles: [letter, `${displayName(object.name)}(${letter})`],
 		rows,
-		note
+		shortOf: fits ? null : written(request.to)
 	};
 }
 
@@ -172,7 +209,8 @@ export function readTabulationCommand(
 	get: (name: string) => AtelierObject | undefined,
 	taken: readonly string[]
 ): TabulationRequest | Refusal {
-	const text = argument.trim();
+	// `f⁻¹` s'écrit comme le nom rangé de la réciproque (`f^-1`)
+	const text = argument.trim().replaceAll('⁻¹', '^-1').replaceAll('^{-1}', '^-1');
 	if (text === '') return { ok: false, message: USAGE };
 	const full = COMMAND.exec(text);
 	const name = full === null ? text.split(/\s+/)[0] : full[1];
@@ -180,10 +218,13 @@ export function readTabulationCommand(
 		// Une expression (`.tabuler x^2 de 0 à 5`) : le tableau doit citer une
 		// fonction pour rester vivant — refus qui dit comment faire (Q-L2-3)
 		const expression = text.split(/\s+de\s+/)[0];
-		const bounds = /\s+de\s+(\S+)\s+à\s+(\S+)/.exec(text);
-		const free = nextName('function', taken);
-		const then =
-			bounds === null ? `.tabuler ${free}` : `.tabuler ${free} de ${bounds[1]} à ${bounds[2]}`;
+		const bounds = /\s+de\s+(\S+)\s+à\s+(\S+)(?:\s+pas\s+(\S+))?/.exec(text);
+		const free = suggestedName(taken);
+		const range =
+			bounds === null
+				? ''
+				: ` de ${bounds[1]} à ${bounds[2]}${bounds[3] === undefined ? '' : ` pas ${bounds[3]}`}`;
+		const then = `.tabuler ${free}${range}`;
 		return {
 			ok: false,
 			message: `On tabule une fonction nommée : définis-la d’abord, par exemple ${free}(${INTERNAL_LETTER}) = ${expression}, puis ${then}.`
@@ -197,6 +238,16 @@ export function readTabulationCommand(
 		return { name, ...tabulationDefaults(object) };
 	}
 	return { name, from: full[2], to: full[3], step: full[4] };
+}
+
+/**
+ * Un nom à proposer pour une expression : celui de `nextName`, sauf un nom à
+ * indice (`f_1`), que la grille ne sait pas encore appeler (revue).
+ */
+function suggestedName(taken: readonly string[]): string {
+	const next = nextName('function', taken);
+	if (!next.includes('_')) return next;
+	return SUGGESTED_LETTERS.find((letter) => !taken.includes(letter)) ?? next;
 }
 
 export function isRefusal(value: object): value is Refusal {

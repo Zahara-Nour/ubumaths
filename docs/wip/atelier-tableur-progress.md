@@ -167,5 +167,9 @@ liste trouée en citant l'entrée).
       attentes du lot 2 changées en connaissance de cause (`1/2` → `0,5`, `5/2` → `2,5`)
 - [x] décor des exemples de commandes : `stageExampleSetup` (`f(x)` → une fonction)
 - [x] 55 500 tests serveur, 290 + 318 navigateur, check, lint, cliquet, gardes de doc
-- [ ] revue, PR, CI, merge
+- [x] revue (1 bloquant, 2 importants, 5 mineurs ; tous corrigés test rouge d'abord sauf le décor
+      `stageExampleSetup`, gardé : l'aide transmet ce décor) : `=f_1(3)` donnait une valeur FAUSSE
+      dans la grille (défaut du lot 2, `f₁ × 3`) → refus ; réciproque et fonction en attente
+      refusées ; pas par défaut entier ; note écrite comme la case ; conseil qui garde le pas
+- [ ] PR, CI, merge
 - [ ] PR 2 : la carte (formulaire, bascule vers Données)
