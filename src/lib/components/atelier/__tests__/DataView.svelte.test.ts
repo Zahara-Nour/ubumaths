@@ -795,6 +795,96 @@ describe('annuler dans la grille (T6)', () => {
 // Lot 2 PR 3 : recopier (§5, Q-L2-2, Q-L2-4)
 // =============================================================================
 
+// Lot 5 PR 2 : « Relancer » (Q-L5-2, Q-L5-3)
+describe('Relancer', () => {
+	function dice() {
+		const atelier = new Atelier();
+		atelier.editCells(
+			Array.from({ length: 20 }, (_, i) => ({
+				column: 0,
+				row: i + 1,
+				text: '=ALEA.ENTRE.BORNES(1;6)'
+			}))
+		);
+		return atelier;
+	}
+	const faces = (atelier: Atelier) =>
+		Array.from({ length: 20 }, (_, i) => {
+			const v = atelier.cellValue(0, i + 1);
+			return v.kind === 'number' ? v.value : 0;
+		});
+	const relaunchButton = (container: HTMLElement) =>
+		[...container.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Relancer');
+
+	it('le bouton n’apparaît que s’il y a du hasard', async () => {
+		const { container } = await openData(new Atelier());
+		expect(relaunchButton(container)).toBeUndefined();
+
+		const other = await openData(dice());
+		expect(relaunchButton(other.container)).toBeDefined();
+	});
+
+	it('cliquer tire de nouveau, l’annonce compte les cases ; Ctrl+Z revient', async () => {
+		const atelier = dice();
+		const { container } = await openData(atelier);
+		const before = faces(atelier);
+
+		await userEvent.click(relaunchButton(container)!);
+		await settle();
+
+		expect(faces(atelier)).not.toEqual(before);
+		expect(container.querySelector('.annonce-tirage')?.textContent).toContain(
+			'Nouveaux tirages : 20 cases.'
+		);
+		await userEvent.click(cellAt(container, 'C1')!);
+		await userEvent.keyboard('{ControlOrMeta>}z{/ControlOrMeta}');
+		await settle();
+		expect(faces(atelier)).toEqual(before);
+	});
+
+	// Revue : le focus restait sur le bouton, hors de la grille — Ctrl+Z n'y
+	// annulait rien (et annulait une suppression de carte si un toast était là)
+	it('Ctrl+Z juste après le clic, sans toucher une case : les tirages d’avant', async () => {
+		const atelier = dice();
+		const { container } = await openData(atelier);
+		const before = faces(atelier);
+
+		await userEvent.click(relaunchButton(container)!);
+		await settle();
+		await userEvent.keyboard('{ControlOrMeta>}z{/ControlOrMeta}');
+		await settle();
+
+		expect(faces(atelier)).toEqual(before);
+	});
+
+	it('F9 maintenu (répétition) ou avec Ctrl : rien de plus', async () => {
+		const atelier = dice();
+		await openData(atelier);
+		const press = (init: KeyboardEventInit) =>
+			window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F9', cancelable: true, ...init }));
+
+		press({});
+		press({ repeat: true });
+		press({ repeat: true });
+		press({ ctrlKey: true });
+		await settle();
+
+		expect(atelier.gridHistory.undo).toBe(2);
+	});
+
+	it('F9 relance aussi, depuis une case', async () => {
+		const atelier = dice();
+		const { container } = await openData(atelier);
+		const before = faces(atelier);
+
+		await userEvent.click(cellAt(container, 'C1')!);
+		await userEvent.keyboard('{F9}');
+		await settle();
+
+		expect(faces(atelier)).not.toEqual(before);
+	});
+});
+
 // Lot 4 PR 2 : l'aide sous la barre (§5)
 describe('l’aide des fonctions sous la barre', () => {
 	it('pendant la frappe d’une fonction, sa forme ; rien après Échap', async () => {

@@ -217,3 +217,65 @@ describe('revue de la PR 1', () => {
 		expect(message(3)).toBe('number');
 	});
 });
+
+// Lot 5, PR 2 : « Relancer » est un geste de la grille (Q-L5-3), compté (§3)
+describe('§5 annuler « Relancer » (Q-L5-3)', () => {
+	function dice(): Atelier {
+		const cells: Record<string, string> = {};
+		for (let row = 1; row <= 20; row++) cells[`A${row}`] = '=ALEA.ENTRE.BORNES(1;6)';
+		return seeded(cells);
+	}
+	const faces = (a: Atelier) => Array.from({ length: 20 }, (_, i) => number(a, A, i + 1));
+
+	it('Ctrl+Z retrouve les tirages d’avant, Ctrl+Y ceux d’après', () => {
+		const a = dice();
+		const before = faces(a);
+		a.relaunch();
+		const after = faces(a);
+
+		expect(a.undoGrid()).toEqual({ ok: true });
+		expect(faces(a)).toEqual(before);
+		expect(a.redoGrid()).toEqual({ ok: true });
+		expect(faces(a)).toEqual(after);
+	});
+
+	it('le nombre de cases à hasard (pour le bouton et l’annonce)', () => {
+		const a = dice();
+		a.editCells([
+			{ column: C, row: 1, text: '=SI(ALEA()<0,5;1;0)' },
+			{ column: C, row: 2, text: '=A1*2' }
+		]);
+
+		expect(a.randomCells).toBe(21);
+		expect(seeded({ A1: '1' }).randomCells).toBe(0);
+	});
+});
+
+describe('§4 garder un atelier reçu : les tirages sont refaits, et on le dit', () => {
+	it('le rapport de fusion le signale', async () => {
+		const { mergeInto } = await import('../merge');
+		const personal = seeded({ A1: 'à moi' });
+		const received: AtelierState = {
+			version: 2,
+			objects: [],
+			grid: { cells: { A1: '=ALEA.ENTRE.BORNES(1;6)' }, seed: 99 }
+		};
+
+		expect(mergeInto(personal, received).redrawn).toBe(true);
+		// Revue : une grille reçue refusée n'a rien tiré chez nous
+		const refused: AtelierState = {
+			version: 2,
+			objects: [],
+			grid: { cells: { A1: '=ALEA.ENTRE.BORNES(1;6)', B1: 'x'.repeat(300) }, seed: 99 }
+		};
+		expect(mergeInto(seeded({}), refused).redrawn).toBe(false);
+		const list: AtelierState = {
+			version: 2,
+			objects: [{ name: 'L', kind: 'list', definition: '=ALEA.ENTRE.BORNES(1;6) ; 2', column: 'A' }]
+		};
+		expect(mergeInto(seeded({}), list).redrawn).toBe(true);
+		expect(
+			mergeInto(seeded({}), { version: 2, objects: [], grid: { cells: { A1: '3' } } }).redrawn
+		).toBe(false);
+	});
+});

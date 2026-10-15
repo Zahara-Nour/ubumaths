@@ -38,6 +38,11 @@ export interface MergeReport {
 	readonly renamed: ReadonlyArray<{ readonly from: string; readonly to: string }>;
 	/** Objets refusés, et pourquoi — un plafond atteint, par exemple. */
 	readonly refused: ReadonlyArray<{ readonly name: string; readonly reason: string }>;
+	/**
+	 * Des cases à hasard sont arrivées (ALEA, lot 5) : la graine reste la nôtre,
+	 * leurs tirages sont donc refaits — à dire (phase 0 §4).
+	 */
+	readonly redrawn: boolean;
 }
 
 // =============================================================================
@@ -105,6 +110,7 @@ export function mergeRefusal(atelier: Atelier, state: AtelierState): string | nu
 }
 
 export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
+	const randomBefore = atelier.randomCells;
 	let added = 0;
 	// Chaque colonne reçue va dans une colonne libre, de gauche à droite (T7)
 	const free = atelier.freeColumns;
@@ -245,7 +251,10 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 	const written = cells.length > 0 ? atelier.editCells(cells) : null;
 	if (written !== null && !written.ok) refused.push({ name: 'grille', reason: written.message });
 
-	return { added, renamed, refused };
+	// Tout ce qui est arrivé : cases sans nom ET entrées des listes nommées
+	// Ce qui a vraiment été écrit (une grille refusée n'a rien tiré : revue)
+	const redrawn = atelier.randomCells > randomBefore;
+	return { added, renamed, refused, redrawn };
 }
 
 /**
