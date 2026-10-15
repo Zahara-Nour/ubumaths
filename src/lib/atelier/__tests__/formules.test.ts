@@ -475,8 +475,15 @@ describe('PR 2 — écriture mathématique', () => {
 		};
 		expect(latex(1)).toBe('2 \\sqrt{2}');
 		expect(latex(2)).toBe('\\pi');
-		expect(latex(3)).toBe('\\frac{1}{3}');
-		expect(latex(4)).toBe('\\frac{5}{2}');
+		// Un nombre s'écrit en texte, comme un nombre tapé (une fraction en maths débordait)
+		expect(latex(3)).toBeNull();
+		expect(latex(4)).toBeNull();
+		const shown = (row: number) => {
+			const v = value(a, A, row);
+			return v.kind === 'number' ? v.shown : undefined;
+		};
+		expect(shown(3)).toBe('1/3');
+		expect(shown(4)).toBe('5/2');
 	});
 
 	it('une valeur approchée n’a pas d’écriture exacte en case', () => {
@@ -504,5 +511,31 @@ describe('PR 2 — écriture mathématique', () => {
 		withCells({ A3: '=A1+A2', B1: '=A1*2', B2: '=A2+1', C1: '=B1', B3: '=A9' }, a);
 
 		expect(a.citingCells('L')).toBe(3);
+	});
+});
+
+// =============================================================================
+// Trouvé en écrivant la PR 3 : le « ; » d'une formule dans une colonne NOMMÉE
+// =============================================================================
+
+describe('une formule à « ; » dans une colonne nommée', () => {
+	it('reste une seule case, et se calcule', () => {
+		const a = withCells({ A1: '7', A2: '=max(1 ; A1)' });
+		a.nameColumn(A, 'L');
+
+		expect(a.cell(A, 2)).toBe('=max(1 ; A1)');
+		expect(a.cell(A, 3)).toBe('');
+		expect(listOf(a, 'L').values).toEqual([7, 7]);
+	});
+
+	it('survit à la sauvegarde', () => {
+		const a = withCells({ A1: '7', A2: '=max(1 ; A1)' });
+		a.nameColumn(A, 'L');
+
+		const b = new Atelier();
+		b.restore(a.serialize());
+
+		expect(b.cell(A, 2)).toBe('=max(1 ; A1)');
+		expect(numberAt(b, A, 2)).toBe(7);
 	});
 });

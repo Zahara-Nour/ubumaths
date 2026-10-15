@@ -16,6 +16,8 @@
 
 import type { AtelierState } from './persistence';
 import { atelierShellSchema, salvageState, ATELIER_STATE_VERSION } from './persistence';
+import { fromRelativeText, toRelative } from './formula';
+import { columnOfLetter, entriesOf, definitionFrom, readCellName } from './grid';
 
 // =============================================================================
 // Constantes
@@ -115,7 +117,8 @@ async function inflate(bytes: Uint8Array): Promise<string> {
  * aujourd'hui.
  */
 export async function encodeAtelier(state: AtelierState): Promise<Encoded> {
-	const json = JSON.stringify(state);
+	// Les formules en relatif : une colonne recopiée se compresse bien mieux (lot 2 §7)
+	const json = JSON.stringify(toRelative(state));
 
 	if (canCompress()) {
 		const payload = COMPRESSED + toBase64Url(await deflate(json));
@@ -181,10 +184,41 @@ export async function decodeAtelier(payload: string): Promise<Decoded> {
 
 	const shell = atelierShellSchema.safeParse(parsed);
 	if (!shell.success) return refuse('corrupt');
+	// Les formules relatives réécrites AVANT le tri : leur écriture relative est
+	// plus longue, le plafond d'une cellule s'applique à l'écriture rangée
+	restoreRelative(shell.data);
 
 	// ⚠️ Le MÊME tri que le stockage, objet par objet : un objet abîmé ne doit
 	// pas coûter tout le lien. Deux règles différentes ici et là feraient qu'un
 	// atelier rangé puis partagé ne survivrait pas au même filtre.
 	const { state, dropped } = salvageState(shell.data);
 	return { ok: true, state, dropped };
+}
+
+/**
+ * Un lien aux formules relatives (`grid.relative`) : chaque formule réécrite en
+ * place depuis sa cellule, sur l'état encore non trié — prudemment, une forme
+ * inattendue est laissée telle quelle (le tri l'écartera).
+ */
+function restoreRelative(shell: { objects: unknown[]; grid?: unknown }): void {
+	const grid = shell.grid as { relative?: unknown; cells?: unknown } | null | undefined;
+	if (grid === null || typeof grid !== 'object' || grid.relative !== true) return;
+	for (const object of shell.objects) {
+		const list = object as { kind?: unknown; definition?: unknown; column?: unknown } | null;
+		if (list === null || typeof list !== 'object' || list.kind !== 'list') continue;
+		if (typeof list.definition !== 'string' || typeof list.column !== 'string') continue;
+		const column = columnOfLetter(list.column);
+		if (column === null) continue;
+		list.definition = definitionFrom(
+			entriesOf(list.definition).map((text, i) => fromRelativeText(text, column, i + 1))
+		);
+	}
+	const cells = grid.cells;
+	if (cells === null || typeof cells !== 'object' || Array.isArray(cells)) return;
+	for (const [address, text] of Object.entries(cells as Record<string, unknown>)) {
+		const at = readCellName(address);
+		if (at !== null && typeof text === 'string') {
+			(cells as Record<string, unknown>)[address] = fromRelativeText(text, at.column, at.row);
+		}
+	}
 }

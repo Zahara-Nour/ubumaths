@@ -41,6 +41,13 @@ export const MAX_CELL_LENGTH = 200;
 /** Le titre d'une colonne (T4) : un libellé, pas une phrase. */
 export const MAX_TITLE_LENGTH = 40;
 
+/**
+ * Le « ; » d'une FORMULE (`=max(1 ; A1)`) tel qu'il est rangé dans la
+ * définition d'une liste, dont « ; » sépare les entrées : sans lui, la formule
+ * était coupée en deux cases (trouvé en écrivant la PR 3 du lot 2).
+ */
+export const FORMULA_SEMICOLON = '⁏';
+
 /** Le séparateur des entrées d'une liste, tel que l'atelier l'écrit. */
 const ENTRY_SEPARATOR = ' ; ';
 
@@ -89,7 +96,9 @@ export function isInGrid(column: number, row: number): boolean {
 
 /** Les entrées d'une définition de liste, une par ligne ; les vides finales ne comptent pas. */
 export function entriesOf(definition: string): string[] {
-	const entries = definition.split(';').map((entry) => entry.trim());
+	const entries = definition
+		.split(';')
+		.map((entry) => entry.trim().replaceAll(FORMULA_SEMICOLON, ';'));
 	while (entries.length > 0 && entries[entries.length - 1] === '') entries.pop();
 	return entries;
 }
@@ -98,7 +107,11 @@ export function entriesOf(definition: string): string[] {
 export function definitionFrom(entries: readonly string[]): string {
 	const kept = [...entries];
 	while (kept.length > 0 && kept[kept.length - 1].trim() === '') kept.pop();
-	return kept.join(ENTRY_SEPARATOR);
+	return kept
+		.map((entry) =>
+			entry.trimStart().startsWith('=') ? entry.replaceAll(';', FORMULA_SEMICOLON) : entry
+		)
+		.join(ENTRY_SEPARATOR);
 }
 
 /**

@@ -21,7 +21,15 @@ import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
 import type { MathNode } from '$lib/mathAST/types';
 import { astOf } from './parse';
-import { cellName, GRID_ROWS } from './grid';
+import {
+	cellName,
+	columnLetter,
+	columnOfLetter,
+	GRID_COLUMNS,
+	GRID_ROWS,
+	readCellName
+} from './grid';
+import type { AtelierState } from './persistence';
 import { gridContext, termsOf, type GridContext } from './engine';
 import { evaluate } from '$lib/mathAST/eval/evaluate';
 import { getVariables } from '$lib/mathAST/eval/substitute';
@@ -123,6 +131,9 @@ const MAX_SHOWN_EXACT = 12;
 const MAX_EXACT_LATEX = 400;
 
 const UNREADABLE = 'Je n’ai pas su lire cette formule.';
+
+/** Ce que devient une référence poussée hors de la grille par une recopie (phase 0 §5). */
+const OUTSIDE = '#HORS';
 const NOT_REAL = 'Le résultat n’est pas un nombre réel.';
 const INFINITE = 'Le résultat est infini.';
 
@@ -166,6 +177,9 @@ function readFormula(text: string, functionNames: readonly string[]): ReadFormul
 
 function readUncached(text: string, functionNames: readonly string[]): ReadFormula {
 	const body = text.trim().slice(1);
+	if (body.includes(OUTSIDE)) {
+		return { ok: false, message: 'Référence hors de la grille (après une recopie).' };
+	}
 	if (body.trim() === '' || body.includes(MARK)) return { ok: false, message: UNREADABLE };
 	const wide = WIDE_REFERENCE.exec(body);
 	if (wide !== null) return { ok: false, message: outsideGrid(`${wide[1]}${wide[2]}`) };
@@ -508,7 +522,11 @@ function latexOf(
 	const tidy = tidyTerms(node);
 	// `\frac` et pas `\dfrac` : une fraction développée est trop haute pour une ligne de grille
 	const full = decimalCommaLatex(toLatex(tidy)).replaceAll('\\dfrac', '\\frac');
-	const short = toCustom(tidy).length <= MAX_SHOWN_EXACT;
+	const custom = toCustom(tidy);
+	// Seulement ce qui a des lettres (`√2`, `3π`) : un nombre (`3`, `2,5`, `509/128`)
+	// s'écrit en texte, comme un nombre tapé — une fraction en maths débordait de
+	// la ligne, et la police changeait d'une case à l'autre (capture de la PR 3)
+	const short = custom.length <= MAX_SHOWN_EXACT && /[A-Za-z\\]/.test(custom);
 	return { latex: short ? full : null, exactLatex: full.length <= MAX_EXACT_LATEX ? full : null };
 }
 
@@ -625,4 +643,129 @@ export function referencesIn(text: string): string[] {
 			refs.add(`${match[2].toUpperCase()}${match[4]}`);
 	}
 	return [...refs];
+}
+
+// =============================================================================
+// Recopier, coller, lien, atelier reçu (lot 2, PR 3)
+// =============================================================================
+
+/** Réécrire chaque référence d'une formule ; une valeur (sans `=`) ne change pas. */
+function mapReferences(
+	text: string,
+	map: (column: number, row: number, colAbs: boolean, rowAbs: boolean) => string
+): string {
+	if (!isFormula(text)) return text;
+	const trimmed = text.trim();
+	return trimmed.replace(
+		REFERENCE,
+		(match, colAbs: string, letter: string, rowAbs: string, row: string, offset: number) =>
+			isReference(letter, offset, trimmed)
+				? map(letter.toUpperCase().charCodeAt(0) - 65, Number(row), colAbs === '$', rowAbs === '$')
+				: match
+	);
+}
+
+/** Une référence écrite, ou `#HORS` si elle sort de la grille. */
+function written(column: number, row: number, colAbs: boolean, rowAbs: boolean): string {
+	if (column < 0 || column >= GRID_COLUMNS || row < 1 || row > GRID_ROWS) return OUTSIDE;
+	return `${colAbs ? '$' : ''}${columnLetter(column)}${rowAbs ? '$' : ''}${row}`;
+}
+
+/**
+ * Une formule recopiée de `dCol` colonnes et `dRow` lignes (§5) : les références
+ * relatives se décalent, `$` les fige ; une valeur se recopie telle quelle.
+ */
+export function shiftFormula(text: string, dCol: number, dRow: number): string {
+	return mapReferences(text, (column, row, colAbs, rowAbs) =>
+		written(colAbs ? column : column + dCol, rowAbs ? row : row + dRow, colAbs, rowAbs)
+	);
+}
+
+/**
+ * Les références d'un atelier reçu suivent leurs colonnes (T7) : relatives ou
+ * absolues, elles pointent la colonne où la leur a été placée ; une colonne qui
+ * n'est pas arrivée (vide chez l'autre élève) devient `#HORS`.
+ */
+export function remapColumns(text: string, placed: ReadonlyMap<number, number>): string {
+	return mapReferences(text, (column, row, colAbs, rowAbs) => {
+		const target = placed.get(column);
+		return target === undefined ? OUTSIDE : written(target, row, colAbs, rowAbs);
+	});
+}
+
+/** `{-1:-2}` : une référence relative à sa cellule ; `{$B:-2}`, `{-1:$2}` figent une partie. */
+const RELATIVE = /\{(\$[A-Z]|-?\d+):(\$\d+|-?\d+)\}/g;
+
+/** Chaque formule d'un état rangé, réécrite selon son adresse. */
+function mapStateFormulas(
+	state: AtelierState,
+	map: (text: string, column: number, row: number) => string
+): AtelierState {
+	const objects = state.objects.map((o) => {
+		const column = o.kind === 'list' && o.column !== undefined ? columnOfLetter(o.column) : null;
+		if (column === null || !o.definition.includes('=')) return o;
+		const definition = o.definition
+			.split(';')
+			.map((entry, i) => {
+				const text = entry.trim();
+				return isFormula(text) ? ` ${map(text, column, i + 1)} ` : entry;
+			})
+			.join(';')
+			.trim();
+		return { ...o, definition };
+	});
+	const cells = state.grid?.cells;
+	const mapped =
+		cells === undefined
+			? undefined
+			: Object.fromEntries(
+					Object.entries(cells).map(([address, text]) => {
+						const at = readCellName(address);
+						return [address, at === null || !isFormula(text) ? text : map(text, at.column, at.row)];
+					})
+				);
+	return {
+		...state,
+		objects,
+		...(state.grid !== undefined && { grid: { ...state.grid, ...(mapped && { cells: mapped }) } })
+	};
+}
+
+/**
+ * Le lien range les formules en RELATIF (§7) : `=0,8*A29+$A$1` en A30 devient
+ * `=0,8*{0:-1}+$A$1`, la même écriture sur chaque ligne d'une colonne recopiée,
+ * que la compression écrase (mesuré : 2 394 → 1 308 caractères pour deux
+ * colonnes de 200 lignes). Sans formule, l'état ne change pas.
+ */
+export function toRelative(state: AtelierState): AtelierState {
+	let any = false;
+	const relative = mapStateFormulas(state, (text, at, row) => {
+		any = true;
+		return mapReferences(text, (column, refRow, colAbs, rowAbs) => {
+			if (colAbs && rowAbs) return `$${columnLetter(column)}$${refRow}`;
+			const c = colAbs ? `$${columnLetter(column)}` : String(column - at);
+			const r = rowAbs ? `$${refRow}` : String(refRow - row);
+			return `{${c}:${r}}`;
+		});
+	});
+	return any ? { ...relative, grid: { ...relative.grid, relative: true } } : state;
+}
+
+/** Une formule relative (`{0:-1}`) réécrite depuis sa cellule (colonne `at`, ligne `row`). */
+export function fromRelativeText(text: string, at: number, row: number): string {
+	return text.replace(RELATIVE, (_, c: string, r: string) => {
+		const column = c.startsWith('$') ? columnOfLetter(c.slice(1)) : at + Number(c);
+		const refRow = r.startsWith('$') ? Number(r.slice(1)) : row + Number(r);
+		return column === null
+			? OUTSIDE
+			: written(column, refRow, c.startsWith('$'), r.startsWith('$'));
+	});
+}
+
+/** L'inverse de `toRelative` : les références relatives réécrites depuis leur cellule. */
+export function fromRelative(state: AtelierState): AtelierState {
+	if (state.grid?.relative !== true) return state;
+	const restored = mapStateFormulas(state, fromRelativeText);
+	const { relative: _relative, ...grid } = restored.grid ?? {};
+	return { ...restored, ...(Object.keys(grid).length > 0 ? { grid } : { grid: undefined }) };
 }

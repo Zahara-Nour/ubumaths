@@ -56,6 +56,11 @@
 	let anchor = $state<{ column: number; row: number } | null>(null);
 	/** Un glisser de souris en cours, depuis une cellule. */
 	let dragging = $state(false);
+	/** La poignée tirée : la dernière ligne visée par la recopie, sinon `null` (§5). */
+	let filling = $state<number | null>(null);
+	/** « Recopier vers le bas… » : le champ « jusqu'à la ligne » est-il ouvert ? (Q-L2-2) */
+	let fillAsk = $state(false);
+	let fillTo = $state('');
 	let editing = $state<Editing>(null);
 	let draft = $state('');
 	let refusal = $state('');
@@ -135,8 +140,8 @@
 		const value = atelier.cellValue(selected.column, selected.row);
 		// Aussi pour `√2`, `π` : la case les écrit, mais leur texte (lu par un lecteur
 		// d'écran) est `≈ 1,4142` — la valeur exacte doit pouvoir se lire (revue)
-		if (value.kind !== 'number' || !value.exact) return null;
-		if (value.latex && !value.shown.startsWith('≈')) return null;
+		// Seulement quand le texte de la case est `≈` : `509/128` se lit déjà exact
+		if (value.kind !== 'number' || !value.exact || !value.shown.startsWith('≈')) return null;
 		return composed(value.exactLatex);
 	});
 
@@ -346,6 +351,15 @@
 			}
 			return;
 		}
+		// Ctrl/⌘+D recopie la première ligne de la zone vers le bas (§5) ; une case
+		// seule reçoit celle du dessus, comme dans un tableur
+		if ((event.ctrlKey || event.metaKey) && key === 'd') {
+			event.preventDefault();
+			const single = zone.top === zone.bottom;
+			if (single && zone.top === 1) return;
+			fill(single ? { ...zone, top: zone.top - 1 } : zone);
+			return;
+		}
 		// Ctrl/⌘ + C ou V : le geste passe par le relais (voir `relay`). Une touche
 		// relâchée y rend le focus à la cellule, même sans `copy` ni `paste` (Ctrl
 		// sur Mac n'en envoie pas)
@@ -399,6 +413,10 @@
 
 	/** Le glisser passe sur une cellule : la zone s'étend jusqu'à elle. */
 	function enterCell(event: PointerEvent, column: number, row: number) {
+		if (filling !== null) {
+			if ((event.buttons & 1) !== 0) filling = Math.max(row, zone.bottom);
+			return;
+		}
 		if (!dragging || (event.buttons & 1) === 0) return;
 		select(column, row, true);
 	}
@@ -454,7 +472,8 @@
 		event.preventDefault();
 		editing = null;
 		draft = '';
-		const pasted = atelier.pasteTable(zone.left, zone.top, pastedTable(event, text));
+		const { table, origin } = pastedTable(event, text);
+		const pasted = atelier.pasteTable(zone.left, zone.top, table, origin);
 		refusal = pasted.ok ? '' : pasted.message;
 		backToCell();
 	}
@@ -463,22 +482,35 @@
 	 * Le tableau collé : celui que la grille a copié, avec ses textes EXACTS
 	 * (`1/3` reste `1/3`), sinon le texte d'un autre logiciel.
 	 */
-	function pastedTable(event: ClipboardEvent, text: string): string[][] {
+	function pastedTable(
+		event: ClipboardEvent,
+		text: string
+	): { table: string[][]; origin?: { column: number; row: number } } {
 		const own = event.clipboardData?.getData(GRID_CLIPBOARD_TYPE) ?? '';
 		if (own !== '') {
 			try {
-				const table: unknown = JSON.parse(own);
+				const copied: unknown = JSON.parse(own);
+				const { cells, origin } = (Array.isArray(copied) ? { cells: copied } : (copied ?? {})) as {
+					cells?: unknown;
+					origin?: { column?: unknown; row?: unknown };
+				};
+				const table = Array.isArray(cells) ? cells : null;
 				if (
-					Array.isArray(table) &&
+					table !== null &&
 					table.every((line) => Array.isArray(line) && line.every((c) => typeof c === 'string'))
 				) {
-					return table as string[][];
+					// Q-L2-4 : les formules se décalent depuis la case d'où elles ont été copiées
+					const from =
+						typeof origin?.column === 'number' && typeof origin.row === 'number'
+							? { column: origin.column, row: origin.row }
+							: undefined;
+					return { table: table as string[][], ...(from && { origin: from }) };
 				}
 			} catch {
 				// Illisible : on relit le texte, comme un collage venu d'ailleurs
 			}
 		}
-		return readTable(text);
+		return { table: readTable(text) };
 	}
 
 	function copyFromGrid(event: ClipboardEvent) {
@@ -490,7 +522,10 @@
 		const texts = zoneTexts();
 		// Pour les tableurs : des décimaux à virgule ; pour la grille : les textes exacts
 		event.clipboardData?.setData('text/plain', tableText(zoneExported()));
-		event.clipboardData?.setData(GRID_CLIPBOARD_TYPE, JSON.stringify(texts));
+		event.clipboardData?.setData(
+			GRID_CLIPBOARD_TYPE,
+			JSON.stringify({ origin: { column: zone.left, row: zone.top }, cells: texts })
+		);
 		backToCell();
 	}
 
@@ -520,6 +555,46 @@
 
 	function titleKeys(event: KeyboardEvent & { currentTarget: HTMLInputElement }) {
 		if (event.key === 'Enter') event.currentTarget.blur();
+	}
+
+	/** Recopier une zone vers le bas ; un refus se dit. */
+	function fill(target: { left: number; right: number; top: number; bottom: number }) {
+		const filled = atelier.fillDown(target);
+		refusal = filled.ok ? '' : filled.message;
+	}
+
+	/** La poignée : appuyée, la recopie suit le pointeur jusqu'à la case lâchée. */
+	function startFill(event: PointerEvent) {
+		event.preventDefault();
+		event.stopPropagation();
+		filling = zone.bottom;
+	}
+
+	function endPointer() {
+		dragging = false;
+		if (filling === null) return;
+		const bottom = filling;
+		filling = null;
+		if (bottom > zone.bottom) fill({ ...zone, bottom });
+	}
+
+	/** « Recopier vers le bas… » : jusqu'à la ligne tapée. */
+	function fillKeys(event: KeyboardEvent) {
+		if (event.key === 'Escape') {
+			fillAsk = false;
+			focusSelected();
+			return;
+		}
+		if (event.key !== 'Enter') return;
+		event.preventDefault();
+		const bottom = Number(fillTo);
+		if (!Number.isInteger(bottom) || bottom <= zone.top) {
+			refusal = `Indique une ligne après la ligne ${zone.top}.`;
+			return;
+		}
+		fill({ ...zone, bottom });
+		fillAsk = false;
+		focusSelected();
 	}
 
 	/** Annuler ou rétablir un geste de la grille ; un refus se dit. */
@@ -590,7 +665,7 @@
 	}
 </script>
 
-<svelte:window onpointerup={() => (dragging = false)} />
+<svelte:window onpointerup={endPointer} />
 
 <div class="donnees" onpaste={pasteInGrid} oncopy={copyFromGrid}>
 	<div class="barre">
@@ -746,6 +821,11 @@
 								class:en-erreur={value.kind === 'error'}
 								class:zone={selectedZone && !isSelected}
 								class:active={isSelected}
+								class:a-recopier={filling !== null &&
+									column >= zone.left &&
+									column <= zone.right &&
+									row > zone.bottom &&
+									row <= filling}
 								onpointerdown={(event) => pressCell(event, column, row)}
 								onpointerenter={(event) => enterCell(event, column, row)}
 								ondblclick={() => doubleClickCell(column, row)}
@@ -762,11 +842,22 @@
 										onblur={cellInputBlur}
 										{@attach focusAtEnd}
 									/>
-								{:else if math}
-									<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX de toLatex, passé par isSafeLatex -->
-									{@html math.markup}
 								{:else}
-									{text}
+									{#if math}
+										<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX de toLatex, passé par isSafeLatex -->
+										{@html math.markup}
+									{:else}
+										{text}
+									{/if}
+									{#if column === zone.right && row === zone.bottom && editing === null}
+										<!-- La poignée : à tirer vers le bas pour recopier (§5) -->
+										<span
+											class="poignee"
+											role="presentation"
+											onpointerdown={startFill}
+											title="Tirer vers le bas pour recopier"
+										></span>
+									{/if}
 								{/if}
 							</td>
 						{/each}
@@ -777,6 +868,31 @@
 	</div>
 
 	<div class="outils">
+		{#if fillAsk}
+			<label class="recopie-champ">
+				Recopier jusqu’à la ligne
+				<input
+					class="recopie"
+					type="text"
+					inputmode="numeric"
+					autocomplete="off"
+					bind:value={fillTo}
+					onkeydown={fillKeys}
+					{@attach focusAtEnd}
+				/>
+			</label>
+		{:else}
+			<!-- Q-L2-2 : indispensable sur tablette, où une zone ne se sélectionne pas au doigt -->
+			<button
+				type="button"
+				class="telecharger"
+				title="Recopier la ligne {zone.top} vers le bas (Ctrl/⌘+D)"
+				onclick={() => {
+					fillTo = String(Math.min(GRID_ROWS, zone.bottom + 5));
+					fillAsk = true;
+				}}>Recopier vers le bas…</button
+			>
+		{/if}
 		<button
 			type="button"
 			class="telecharger"
@@ -1069,6 +1185,46 @@
 	.titre:focus {
 		border-color: var(--color-border);
 		background: var(--color-background);
+	}
+
+	td {
+		position: relative;
+	}
+
+	/* La poignée : un petit carré au coin de la zone, à tirer vers le bas */
+	.poignee {
+		position: absolute;
+		right: -4px;
+		bottom: -4px;
+		width: 8px;
+		height: 8px;
+		background: var(--color-primary);
+		border: 1px solid var(--color-card);
+		cursor: ns-resize;
+		z-index: 1;
+		touch-action: none;
+	}
+
+	td.a-recopier {
+		background: color-mix(in srgb, var(--color-primary) 8%, var(--color-card));
+		outline: 1px dashed var(--color-primary);
+		outline-offset: -1px;
+	}
+
+	.recopie-champ {
+		display: inline-flex;
+		gap: 0.375rem;
+		align-items: center;
+		font-size: 0.8125rem;
+	}
+
+	.recopie {
+		width: 4.5rem;
+		padding: 0.125rem 0.25rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.1875rem;
+		background: var(--color-background);
+		color: var(--color-foreground);
 	}
 
 	/* Une teinte légère : le texte de la zone doit rester lisible */

@@ -98,6 +98,7 @@ import {
 	normalizeFormula,
 	plainValue,
 	referencesIn,
+	shiftFormula,
 	type CellValue,
 	type GridState
 } from './formula';
@@ -1421,9 +1422,19 @@ export class Atelier {
 	pasteTable(
 		column: number,
 		row: number,
-		table: readonly (readonly string[])[]
+		table: readonly (readonly string[])[],
+		/**
+		 * Copié DANS la grille, depuis cette case : les formules se décalent comme
+		 * une recopie (Q-L2-4), et aucune ligne de titres n'est devinée.
+		 */
+		origin?: { readonly column: number; readonly row: number }
 	): { ok: true } | Refused {
-		const titles = hasTitleRow(table) ? table[0] : null;
+		if (origin !== undefined) {
+			table = table.map((cells) =>
+				cells.map((text) => shiftFormula(text, column - origin.column, row - origin.row))
+			);
+		}
+		const titles = origin === undefined && hasTitleRow(table) ? table[0] : null;
 		const body = titles === null ? table : table.slice(1);
 		const width = Math.max(titles?.length ?? 0, ...body.map((cells) => cells.length));
 		if (width === 0) return { ok: true };
@@ -1443,7 +1454,10 @@ export class Atelier {
 		// Une case seule avec « ; » se répartit vers le bas, comme tapée (P2). Dans
 		// un tableau, une case avec « ; » est refusée : la relire `3,4` en ferait
 		// un faux nombre, la répartir écraserait les lignes du dessous (revue)
-		const withSemicolon = single ? undefined : body.flat().find((text) => text.includes(';'));
+		// (une formule garde son « ; » : il sépare des arguments, `=max(1 ; A1)`)
+		const withSemicolon = single
+			? undefined
+			: body.flat().find((text) => text.includes(';') && !isFormula(text));
 		if (withSemicolon !== undefined) {
 			return {
 				ok: false,
@@ -1475,6 +1489,33 @@ export class Atelier {
 			});
 			return { ok: true };
 		});
+	}
+
+	/**
+	 * Recopier vers le bas (§5) : la première ligne de la zone, sur toutes les
+	 * suivantes ; les références relatives se décalent, `$` les fige, une valeur
+	 * se recopie telle quelle. Un seul geste (T6), tout ou rien.
+	 */
+	fillDown(zone: {
+		readonly left: number;
+		readonly right: number;
+		readonly top: number;
+		readonly bottom: number;
+	}): { ok: true } | Refused {
+		if (zone.bottom > GRID_ROWS) {
+			return {
+				ok: false,
+				message: `Recopier jusqu’à la ligne ${zone.bottom} : la grille en garde ${GRID_ROWS}. Rien n’a été recopié.`
+			};
+		}
+		const edits: CellEdit[] = [];
+		for (let column = zone.left; column <= zone.right; column++) {
+			const source = this.cell(column, zone.top);
+			for (let row = zone.top + 1; row <= zone.bottom; row++) {
+				edits.push({ column, row, text: shiftFormula(source, 0, row - zone.top) });
+			}
+		}
+		return edits.length === 0 ? { ok: true } : this.editCells(edits);
 	}
 
 	// ---------------------------------------------------------------------------

@@ -15,7 +15,8 @@
 import { Atelier, sequenceInputOf } from './atelier.svelte';
 import { loadAtelier, saveAtelier, type AtelierState } from './persistence';
 import { nextName, derivativeOf, displayName, reciprocalName, reciprocalOf } from './names';
-import { columnLetter, columnOfLetter, readCellName } from './grid';
+import { columnLetter, columnOfLetter, definitionFrom, entriesOf, readCellName } from './grid';
+import { remapColumns } from './formula';
 
 // =============================================================================
 // Types
@@ -90,6 +91,13 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 	// Chaque colonne reçue va dans une colonne libre, de gauche à droite (T7)
 	const free = atelier.freeColumns;
 	const placed = new Map(arrivingColumns(state).map((slot, index) => [slot, free[index]]));
+	// Les colonnes reçues → leur place : les références des formules les suivent (T7)
+	const moved = new Map<number, number>();
+	for (const [slot, column] of placed) {
+		const from = columnOfLetter(slot);
+		if (from !== null && column !== undefined) moved.set(from, column);
+	}
+	const follow = (text: string) => remapColumns(text, moved);
 	const renamed: Array<{ from: string; to: string }> = [];
 	const refused: Array<{ name: string; reason: string }> = [];
 
@@ -143,7 +151,12 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 			kind: stored.kind,
 			name: chosen,
 			// La définition d'une dérivée est son propre nom : `g′(x)`, pas `f′(x)`
-			definition: derivative !== null ? `${chosen}(x)` : stored.definition,
+			definition:
+				derivative !== null
+					? `${chosen}(x)`
+					: stored.kind === 'list'
+						? definitionFrom(entriesOf(stored.definition).map(follow))
+						: stored.definition,
 			...(stored.kind === 'function' &&
 				stored.reciprocalOn !== undefined && { reciprocalOn: stored.reciprocalOn }),
 			...(stored.kind === 'sequence' && { sequence: sequenceInputOf(stored) }),
@@ -182,7 +195,7 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 	const cells = Object.entries(state.grid?.cells ?? {}).flatMap(([address, text]) => {
 		const at = readCellName(address);
 		const column = at === null ? undefined : placed.get(columnLetter(at.column));
-		return at === null || column === undefined ? [] : [{ column, row: at.row, text }];
+		return at === null || column === undefined ? [] : [{ column, row: at.row, text: follow(text) }];
 	});
 	for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
 		const column = placed.get(letter);

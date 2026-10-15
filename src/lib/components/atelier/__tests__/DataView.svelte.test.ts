@@ -450,7 +450,11 @@ describe('coller et copier (§4)', () => {
 		const data = clipboard(cellAt(container, 'A2')!, 'copy');
 
 		expect(data.getData('text/plain')).toBe('0,5');
-		expect(data.getData('application/x-chiphre-grille')).toBe('[["=A1/4"]]');
+		// La formule exacte, et la case d'où elle part (Q-L2-4 : le collage la décale)
+		expect(JSON.parse(data.getData('application/x-chiphre-grille'))).toEqual({
+			origin: { column: 0, row: 2 },
+			cells: [['=A1/4']]
+		});
 	});
 
 	it('Suppr vide toute la zone sélectionnée', async () => {
@@ -535,8 +539,8 @@ describe('coller et copier (§4)', () => {
 		await userEvent.click(cellAt(container, 'A2')!);
 		await settle();
 
-		// Écriture mathématique dans la case (PR 2) ; l'étiquette lue reste en français
-		expect(cellAt(container, 'A2')?.querySelector('.ML__latex')).not.toBeNull();
+		// Un nombre s'écrit en texte, comme un nombre tapé ; l'étiquette lue en français
+		expect(cellAt(container, 'A2')?.textContent?.trim()).toBe('2/3');
 		expect(cellAt(container, 'A2')?.getAttribute('aria-label')).toBe('A2 : 2/3');
 		expect(bar.value).toBe('=A1/6+1/6');
 	});
@@ -563,6 +567,17 @@ describe('coller et copier (§4)', () => {
 		expect(cellAt(container, 'A1')?.textContent).toContain('≈');
 		expect(container.querySelector('.valeur-exacte')?.textContent).toContain('Valeur exacte');
 		expect(container.querySelector('.valeur-exacte .ML__latex')).not.toBeNull();
+	});
+
+	it('une valeur exacte déjà écrite dans la case : pas de « Valeur exacte » en double', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([{ column: 0, row: 1, text: '=509/128' }]);
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await settle();
+
+		expect(container.querySelector('.valeur-exacte')).toBeNull();
 	});
 
 	it('la carte d’une liste à formules montre ses valeurs, « calculée dans la grille »', async () => {
@@ -756,6 +771,80 @@ describe('annuler dans la grille (T6)', () => {
 
 		expect(atelier.cell(0, 1)).toBe('');
 		expect(button('Rétablir').disabled).toBe(false);
+	});
+});
+
+// =============================================================================
+// Lot 2 PR 3 : recopier (§5, Q-L2-2, Q-L2-4)
+// =============================================================================
+
+describe('recopier (§5)', () => {
+	function grid() {
+		const atelier = new Atelier();
+		atelier.editCells([
+			{ column: 0, row: 1, text: '1' },
+			{ column: 0, row: 2, text: '=A1*2' }
+		]);
+		return atelier;
+	}
+
+	it('Ctrl/⌘+D recopie la première ligne de la zone vers le bas', async () => {
+		const atelier = grid();
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A2')!);
+		await userEvent.keyboard('{Shift>}{ArrowDown}{ArrowDown}{ArrowDown}{/Shift}');
+		await userEvent.keyboard('{ControlOrMeta>}d{/ControlOrMeta}');
+		await settle();
+
+		expect(atelier.cell(0, 5)).toBe('=A4*2');
+		expect(atelier.cellValue(0, 5)).toMatchObject({ kind: 'number', value: 16 });
+	});
+
+	it('la poignée tirée vers le bas recopie jusqu’à la case lâchée', async () => {
+		const atelier = grid();
+		const { container } = await openData(atelier);
+		await userEvent.click(cellAt(container, 'A2')!);
+		await settle();
+
+		const handle = container.querySelector('.poignee') as HTMLElement;
+		handle.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1 }));
+		cellAt(container, 'A4')!.dispatchEvent(new PointerEvent('pointerenter', { buttons: 1 }));
+		window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+		await settle();
+
+		expect(atelier.cell(0, 4)).toBe('=A3*2');
+		expect(atelier.cell(0, 5)).toBe('');
+	});
+
+	it('« Recopier vers le bas… » demande jusqu’à quelle ligne (tablette, Q-L2-2)', async () => {
+		const atelier = grid();
+		const { container } = await openData(atelier);
+		await userEvent.click(cellAt(container, 'A2')!);
+
+		const button = [...container.querySelectorAll('button')].find(
+			(b) => b.textContent?.trim() === 'Recopier vers le bas…'
+		) as HTMLButtonElement;
+		await userEvent.click(button);
+		const field = container.querySelector('input.recopie') as HTMLInputElement;
+		await userEvent.fill(field, '6');
+		await userEvent.keyboard('{Enter}');
+		await settle();
+
+		expect(atelier.cell(0, 6)).toBe('=A5*2');
+	});
+
+	it('copier-coller une formule dans la grille décale ses références (Q-L2-4)', async () => {
+		const atelier = grid();
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A2')!);
+		await userEvent.keyboard('{ControlOrMeta>}c{/ControlOrMeta}');
+		await userEvent.click(cellAt(container, 'C5')!);
+		await userEvent.keyboard('{ControlOrMeta>}v{/ControlOrMeta}');
+		await settle();
+
+		expect(atelier.cell(2, 5)).toBe('=C4*2');
 	});
 });
 
