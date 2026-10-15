@@ -14,7 +14,7 @@
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
 	import StyleSelector from '$lib/components/worksheets/StyleSelector.svelte';
 	import { DEFAULT_STYLE_ID } from '$lib/typst/templates/styles';
-	import { configForType } from '$lib/worksheets/worksheet-header';
+	import { configForType, type WorksheetOptionKey } from '$lib/worksheets/worksheet-header';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Loader2, Save, FileText } from '@lucide/svelte';
 	import type { PageData } from './$types';
@@ -45,7 +45,7 @@
 	// La config envoyée : les options du type choisi seulement
 	let config = $derived(configForType(worksheetType, typeOptions));
 
-	function handleOptionChange(key: keyof WorksheetConfig, value: boolean | string | undefined) {
+	function handleOptionChange(key: WorksheetOptionKey, value: boolean | string | undefined) {
 		typeOptions = { ...typeOptions, [key]: value } as WorksheetConfig;
 	}
 

@@ -16,16 +16,18 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { CALCULATOR_RULES, isIsoDate } from '$lib/types/worksheets';
 	import type { CalculatorRule, WorksheetConfig, WorksheetType } from '$lib/types/worksheets';
-	import { TYPE_OPTION_KEYS, type TypeOptionKey } from '$lib/worksheets/worksheet-header';
-
-	type OptionKey = TypeOptionKey | 'shuffle_exercises';
+	import {
+		TYPE_OPTION_KEYS,
+		type TypeOptionKey,
+		type WorksheetOptionKey
+	} from '$lib/worksheets/worksheet-header';
 
 	interface Props {
 		type: WorksheetType;
 		config: WorksheetConfig | null | undefined;
 		/** Faux : lecture seule */
 		editable?: boolean;
-		onchange?: (key: OptionKey, value: boolean | string | undefined) => void;
+		onchange?: (key: WorksheetOptionKey, value: boolean | string | undefined) => void;
 	}
 
 	let { type, config, editable = true, onchange }: Props = $props();
@@ -34,10 +36,12 @@
 		allowed: 'Autorisée',
 		forbidden: 'Interdite'
 	};
-	const calculatorItems = CALCULATOR_RULES.map((rule) => ({
-		value: rule,
-		label: CALCULATOR_LABELS[rule]
-	}));
+	// « Non précisée » permet de retirer la mention de l'en-tête après l'avoir choisie
+	const CALCULATOR_UNSPECIFIED = 'unspecified';
+	const calculatorItems = [
+		{ value: CALCULATOR_UNSPECIFIED, label: 'Non précisée' },
+		...CALCULATOR_RULES.map((rule) => ({ value: rule, label: CALCULATOR_LABELS[rule] }))
+	];
 
 	let offered = $derived(TYPE_OPTION_KEYS[type] ?? []);
 
@@ -87,7 +91,7 @@
 			<p class="mb-1 text-xs text-muted-foreground">Calculatrice</p>
 			<MySelect
 				type="single"
-				value={config?.calculator}
+				value={config?.calculator ?? CALCULATOR_UNSPECIFIED}
 				onchange={handleCalculator}
 				items={calculatorItems}
 				placeholder="Non précisée"

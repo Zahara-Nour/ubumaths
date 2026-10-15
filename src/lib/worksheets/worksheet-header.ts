@@ -36,6 +36,9 @@ import {
 export type TypeOptionKey =
 	'show_student_name' | 'show_points' | 'calculator' | 'answers_on_sheet' | 'due_date';
 
+/** Ce que l'écran d'options d'une fiche peut changer : les options du type et le mélange */
+export type WorksheetOptionKey = TypeOptionKey | 'shuffle_exercises';
+
 /** Ce que l'interface propose pour chaque type ; le titre, toujours imprimé, n'en est pas une */
 export const TYPE_OPTION_KEYS: Record<WorksheetType, readonly TypeOptionKey[]> = {
 	worksheet: ['show_student_name'],
