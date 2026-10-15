@@ -151,3 +151,9 @@ liste trouée en citant l'entrée).
       l'arrivée suivi dans les formules reçues (`=f(3)` calculait avec la f locale) ; un texte `{0:1}`
       réécrit par le lien ; poignée relâchée hors fenêtre ou `pointercancel` ; Ctrl/⌘+D pendant la
       frappe (favoris) ; origine du presse-papiers bornée par Zod
+
+## Lot 3 — Tabuler (phase 0 : `atelier-tableur-lot3-phase0.md`, PROPOSÉE le 2026-10-15)
+
+- [x] lot 2 complet : #1421, #1422, #1424 mergées
+- [x] phase 0 rédigée : Q-L3-1 à Q-L3-5 posées à David (mesuré : abscisses en fractions, `-3/2`)
+- [ ] validation de David
