@@ -131,6 +131,9 @@ describe('plainTextOf', () => {
 		// sombre derrière une formule de 70.
 		expect(plainTextOf('y = \\dfrac{1}{2} x + \\dfrac{1}{2}')).toBe('y = 1/2 x + 1/2');
 		expect(plainTextOf('y = x^{2} + 3x + 2')).toBe('y = x^2 + 3x + 2');
+		// Les limites symboliques écrivent e et π en macros : une lettre affichée.
+		expect(plainTextOf('y = \\exponentialE')).toBe('y = e');
+		expect(plainTextOf('y = \\frac{\\pi}{2}')).toBe('y = π/2');
 		expect(plainTextOf('y = 0')).toBe('y = 0');
 	});
 

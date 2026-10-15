@@ -144,14 +144,15 @@ describe('analyzeFunction, chemin symbolique', () => {
 	});
 
 	it("laisse le numérique garder son asymptote d'un seul côté", () => {
-		// e^x/x : à gauche la courbe colle à y = 0, à droite elle explose. Le
-		// chemin symbolique doit s'effacer complètement — direction comprise.
+		// e^x/x : à gauche la courbe colle à y = 0, à droite elle explose. La
+		// division euclidienne doit s'effacer complètement — direction comprise.
+		// L'écriture exacte vient désormais de la limite symbolique (2026-10-15).
 		const analysis = analyze('\\frac{e^x}{x}');
 
 		expect(analysis.horizontalAsymptotes.length).toBe(1);
 		expect(analysis.horizontalAsymptotes[0].y).toBeCloseTo(0, 6);
 		expect(analysis.horizontalAsymptotes[0].direction).toBe('left');
-		expect(analysis.horizontalAsymptotes[0].exactLatex).toBeUndefined();
+		expect(analysis.horizontalAsymptotes[0].exactLatex).toBe('y = 0');
 	});
 
 	it("n'invente pas d'asymptote pour un polynôme", () => {

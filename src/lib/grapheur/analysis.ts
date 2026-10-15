@@ -44,7 +44,9 @@ import { touchesZero } from '$lib/mathAST/analysis/near-zero';
 import { restrictAnalysis, type Restriction } from './restriction';
 import { simplify } from '$lib/mathAST/simplify';
 import { substitute } from '$lib/mathAST/eval/substitute';
-import { add, multiply, variable } from '$lib/mathAST/factory';
+import { add, infinity, multiply, variable } from '$lib/mathAST/factory';
+import { evaluateLimit } from '$lib/mathAST/limits';
+import { toLatex } from '$lib/mathAST/latex-generator';
 // `number()` refuse un littéral signé ; `numericNode()` gère le signe lui-même.
 import { numericNode } from '$lib/mathAST/common/numeric';
 import { integrateDefinite } from '$lib/mathAST/integration';
@@ -1057,17 +1059,34 @@ function differsFromPolynomial(
  */
 export function findHorizontalAsymptotes(
 	evaluator: (x: number) => number | null,
-	functionId: string
+	functionId: string,
+	expression?: MathNode
 ): HorizontalAsymptote[] {
 	const asymptotes: HorizontalAsymptote[] = [];
 
-	// Check positive direction (x → +∞)
-	const limitRight = estimateLimit(evaluator, LARGE_X_VALUES);
-	// Check negative direction (x → -∞)
-	const limitLeft = estimateLimit(
-		evaluator,
-		LARGE_X_VALUES.map((x) => -x)
-	);
+	// Le numérique d'abord, le symbolique en renfort : il ne fait qu'AJOUTER
+	// une limite que les sondes voient converger trop lentement (ln(x)/√x vaut
+	// encore 0,032 en x = 137 299), ou CONFIRMER celle qu'elles trouvent, avec
+	// son écriture exacte. En désaccord, le numérique garde la main.
+	const resolve = (sign: 1 | -1): { y: number; exactLatex?: string } | null => {
+		const numeric = estimateLimit(
+			evaluator,
+			LARGE_X_VALUES.map((x) => sign * x)
+		);
+		const exact = expression ? symbolicLimit(expression, sign) : null;
+		if (exact === null) return numeric === null ? null : { y: numeric };
+		if (numeric === null) return exact;
+		const agree = Math.abs(numeric - exact.y) <= LIMIT_TOLERANCE * Math.max(1, Math.abs(exact.y));
+		return agree ? exact : { y: numeric };
+	};
+	const right = resolve(1);
+	const left = resolve(-1);
+	const limitRight = right?.y ?? null;
+	const limitLeft = left?.y ?? null;
+	const latexOf = (y: number): { exactLatex?: string } => {
+		const latex = [right, left].find((limit) => limit?.y === y)?.exactLatex;
+		return latex === undefined ? {} : { exactLatex: latex };
+	};
 
 	// Une fonction constante n'est pas sa propre asymptote : le pointillé se
 	// poserait exactement sur la courbe. Les obliques et les courbes refusent
@@ -1084,40 +1103,84 @@ export function findHorizontalAsymptotes(
 	if (usableRight !== null && usableLeft !== null) {
 		// Both limits exist
 		if (Math.abs(usableRight - usableLeft) < LIMIT_TOLERANCE) {
+			const exact = right?.exactLatex !== undefined ? right : left;
+			const exactOfEither = exact?.exactLatex !== undefined ? { exactLatex: exact.exactLatex } : {};
 			// Same limit in both directions
 			asymptotes.push({
-				y: (usableRight + usableLeft) / 2,
+				y: exact?.exactLatex !== undefined ? exact.y : (usableRight + usableLeft) / 2,
 				functionId,
-				direction: 'both'
+				direction: 'both',
+				// Même limite des deux côtés, à la tolérance près : l'écriture exacte
+				// d'un côté vaut pour l'autre ((1 + 1/x)^x : e, que le moteur ne
+				// trouve qu'en +∞).
+				...exactOfEither
 			});
 		} else {
 			// Different limits
 			asymptotes.push({
 				y: usableRight,
 				functionId,
-				direction: 'right'
+				direction: 'right',
+				...latexOf(usableRight)
 			});
 			asymptotes.push({
 				y: usableLeft,
 				functionId,
-				direction: 'left'
+				direction: 'left',
+				...latexOf(usableLeft)
 			});
 		}
 	} else if (usableRight !== null) {
 		asymptotes.push({
 			y: usableRight,
 			functionId,
-			direction: 'right'
+			direction: 'right',
+			...latexOf(usableRight)
 		});
 	} else if (usableLeft !== null) {
 		asymptotes.push({
 			y: usableLeft,
 			functionId,
-			direction: 'left'
+			direction: 'left',
+			...latexOf(usableLeft)
 		});
 	}
 
 	return asymptotes;
+}
+
+/** Limites symboliques par expression et par sens : `evaluateLimit` coûte. */
+const symbolicLimitCache = new WeakMap<MathNode, Map<1 | -1, SymbolicLimit | null>>();
+
+interface SymbolicLimit {
+	readonly y: number;
+	readonly exactLatex: string;
+}
+
+/**
+ * La limite FINIE de l'expression en ±∞, établie symboliquement, ou `null`
+ * (infinie, inexistante, hors de portée, ou analyse en échec).
+ */
+function symbolicLimit(expression: MathNode, sign: 1 | -1): SymbolicLimit | null {
+	let bySign = symbolicLimitCache.get(expression);
+	if (!bySign) {
+		bySign = new Map();
+		symbolicLimitCache.set(expression, bySign);
+	}
+	if (bySign.has(sign)) return bySign.get(sign) ?? null;
+
+	let found: SymbolicLimit | null = null;
+	try {
+		const result = evaluateLimit(expression, 'x', infinity(sign === 1 ? 'positive' : 'negative'));
+		if (result.status === 'exact' && result.value !== null) {
+			const y = evaluateNodeToApproximatedNumber(result.value);
+			if (Number.isFinite(y)) found = { y, exactLatex: `y = ${toLatex(result.value)}` };
+		}
+	} catch {
+		// Hors de portée du moteur : le numérique reste seul.
+	}
+	bySign.set(sign, found);
+	return found;
 }
 
 /**
@@ -1341,7 +1404,8 @@ export function analyzeFunction(
 			DEFAULT_SAMPLES,
 			ast ? singularities(ast.expression) : NO_SINGULARITIES
 		),
-		horizontalAsymptotes: exact?.horizontal ?? findHorizontalAsymptotes(evaluator, functionId),
+		horizontalAsymptotes:
+			exact?.horizontal ?? findHorizontalAsymptotes(evaluator, functionId, ast?.expression),
 		obliqueAsymptotes: exact?.oblique ?? findObliqueAsymptotes(evaluator, functionId),
 		polynomialAsymptotes: exact?.polynomial ?? findPolynomialAsymptotes(evaluator, functionId)
 	};
