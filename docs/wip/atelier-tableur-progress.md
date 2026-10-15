@@ -248,5 +248,5 @@ liste trouée en citant l'entrée).
 - [x] `drawOf` (graine + adresse + rang), `randomValue`, `gridSeed`, `relaunch()`, `grid.seed`
 - [x] revue : rien de bloquant ni d'important (stabilité, recalcul, lien confirmés par sonde) ;
       3 mineurs corrigés : bornes > 2^53, au plus un million d'issues (biais), commentaires déplacés
-- [ ] PR, CI, merge
+- [x] mergée : #1437
 - [ ] PR 2 : le bouton « Relancer », F9, l'annulation
