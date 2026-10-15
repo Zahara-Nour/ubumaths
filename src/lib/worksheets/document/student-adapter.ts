@@ -50,8 +50,8 @@ export function documentFromStudentView(view: StudentWorksheetView): WorksheetDo
 			essential: exercise.is_essential ?? false,
 			genericFunctions: exercise.generic_functions ?? null,
 			capitalPairs: exercise.capital_pairs,
-			// Estimées par le serveur sur la copie de l'élève, correction masquée comprise
-			answerFrameEstimate: exercise.answer_frame_estimate ?? null
+			// Résolus par le serveur sur la copie de l'élève, correction masquée comprise
+			answerFrames: exercise.printed_frame_lines ?? null
 		})),
 		sections: sections.map(({ id, title, instructions }) => ({ id, title, instructions })),
 		display: {

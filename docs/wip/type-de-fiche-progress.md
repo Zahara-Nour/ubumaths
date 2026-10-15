@@ -95,7 +95,14 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
       niveau des listes numérotées de 1er niveau, `afterQuestion` du générateur) ou après l'exercice
       (`answer_frames`) ; taille petit/moyen/grand (2,5/4,5/7 cm) d'après le corrigé ; l'élève
       reçoit les tailles du serveur (`answer_frame_estimate`), même correction masquée
-- [ ] Lot 4 — PR 1 (migration seule, branche `feat/cadres-lignes-migration`) :
-      `20261016103900_worksheet_exercises_answer_frame_lines.sql` + test d'intégration
-      `cadres-lignes-par-question` (rouge sans, vert avec). Reste : security-auditor, merge,
-      `db:migrate`, `db:types` ; puis PR 2 = écran (stepper) et lecture dans le PDF prof/élève
+- [x] Lot 4 — PR 1 (migration, #1435) : `20261016103900_worksheet_exercises_answer_frame_lines.sql` + test d'intégration `cadres-lignes-par-question` ; appliquée en prod, types régénérés (#1436)
+- [x] Lot 4 — PR 2 (branche `feat/cadres-lignes-ecran`) : unité la ligne (0,8 cm) ; estimation =
+      départ auto (3/5/8 lignes ; cadre unique converti 3/6/9/13/18) ; `resolveAnswerFrames`
+      (prof sinon auto, 0 = pas de cadre, questions changées → auto) pour le PDF du prof et celui
+      de l'élève (`printed_frame_lines`, lignes résolues seulement) ; écriture par le PUT de
+      l'exercice de fiche (Zod `.strict()`, `.select()`, 404 si aucune ligne ; défauts de création
+      plus appliqués à la mise à jour) ; `AnswerFrameLinesEditor` sous chaque exercice ; « Aperçu :
+      N pages » dans `PdfPreview`. Reste : code-reviewer + security-auditor (API élève), PR, CI.
+- [ ] Hors lot, à trancher par David : duplication de fiche et PDF par lien de partage (RPC) ne
+      recopient ni ne lisent `answer_frame_lines` ; réglage impossible sur une fiche publiée (le PUT
+      n'accepte qu'un brouillon, comme les points) ; un cadre de 40 lignes (32 cm) dépasse la page.

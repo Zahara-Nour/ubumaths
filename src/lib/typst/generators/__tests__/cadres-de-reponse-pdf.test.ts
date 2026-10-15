@@ -10,10 +10,13 @@
 import { describe, expect, it } from 'vitest';
 import { generateWorksheetTypst } from '../worksheet-generator';
 import { generateStudentWorksheetTypst } from '$lib/worksheets/student-worksheet-typst';
+import { estimateAnswerFrames } from '$lib/worksheets/document/answer-frames';
 import {
-	estimateAnswerFrames,
-	ANSWER_FRAME_HEIGHT_CM
-} from '$lib/worksheets/document/answer-frames';
+	ANSWER_FRAME_SIZE_LINES,
+	answerFrameLinesToCm,
+	autoAnswerFrameLines,
+	resolveAnswerFrames
+} from '$lib/worksheets/document/answer-frame-lines';
 import type {
 	InstanceData,
 	StudentWorksheetView,
@@ -39,6 +42,13 @@ const SOLUTION = [
 	'',
 	'2. $x = 2$'
 ].join('\n');
+
+/** Hauteur imprimée d'un cadre estimé, en lignes depuis le lot 4 */
+const ANSWER_FRAME_HEIGHT_CM = {
+	small: answerFrameLinesToCm(ANSWER_FRAME_SIZE_LINES.small),
+	medium: answerFrameLinesToCm(ANSWER_FRAME_SIZE_LINES.medium),
+	large: answerFrameLinesToCm(ANSWER_FRAME_SIZE_LINES.large)
+};
 
 const FRAME = /rect\(width: 100%, height: ([\d.]+)cm/g;
 
@@ -136,7 +146,8 @@ describe('prof : cadres après chaque question (défaut)', () => {
 			config: { answers_on_sheet: true },
 			mode: 'worksheet'
 		});
-		expect(frames(typst)).toEqual([ANSWER_FRAME_HEIGHT_CM.small]);
+		// Cadre unique de 2,5 cm : 3 lignes
+		expect(frames(typst)).toEqual([answerFrameLinesToCm(3)]);
 		expect(typst.search(FRAME)).toBeGreaterThan(typst.indexOf('ENONCESEUL'));
 	});
 });
@@ -146,7 +157,9 @@ describe('prof : un cadre après l’exercice', () => {
 		const typst = teacher({ answers_on_sheet: true, answer_frames: 'exercise' });
 		const heights = frames(typst);
 		expect(heights).toHaveLength(1);
-		expect(heights[0]).toBe(estimateAnswerFrames(STATEMENT, SOLUTION).exercise_cm);
+		expect(heights[0]).toBe(
+			answerFrameLinesToCm(autoAnswerFrameLines(estimateAnswerFrames(STATEMENT, SOLUTION)).exercise)
+		);
 		expect(typst.search(FRAME)).toBeGreaterThan(typst.indexOf('FINENONCE'));
 	});
 });
@@ -207,11 +220,15 @@ function studentView(
 				is_essential: false,
 				custom_instructions: null,
 				statement: STATEMENT,
-				// Correction masquée : la taille arrive du serveur, pas le texte
+				// Correction masquée : les lignes arrivent du serveur, pas le texte
 				correction: visible ? SOLUTION : null,
 				correction_visible: visible,
 				answers: null,
-				answer_frame_estimate: estimateAnswerFrames(STATEMENT, SOLUTION)
+				printed_frame_lines: resolveAnswerFrames(
+					estimateAnswerFrames(STATEMENT, SOLUTION),
+					null,
+					options.answer_frames ?? 'question'
+				)
 			}
 		],
 		...options

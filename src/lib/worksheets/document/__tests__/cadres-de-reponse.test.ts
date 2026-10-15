@@ -15,10 +15,10 @@ import {
 	answerFrameSize,
 	answerLines,
 	estimateAnswerFrames,
-	estimateForView,
 	MAX_VIEW_QUESTIONS,
 	questionItems
 } from '../answer-frames';
+import { resolveAnswerFrames } from '../answer-frame-lines';
 import { EXERCISE_FRAME_HEIGHTS_CM } from '$lib/types/worksheets';
 import type { ParagraphNode } from '$lib/ubumark/types';
 
@@ -148,24 +148,23 @@ describe('correspondance énoncé / corrigé', () => {
 	});
 });
 
+// Depuis le lot 4, la vue reçoit les lignes RÉSOLUES (`resolveAnswerFrames`) :
+// petit 3, moyen 5, grand 8 ; cadre unique, sa hauteur fermée convertie
 describe('ce que la vue de l’élève reçoit (audit S1, R5)', () => {
 	const questions = estimateAnswerFrames('1. A\n2. B\n3. C', numbered(SHORT, LONG, MEDIUM));
 
-	it('mode question : les tailles par question, jamais la hauteur de l’exercice', () => {
-		expect(estimateForView(questions, 'question')).toEqual({
-			questions: ['small', 'large', 'medium']
-		});
+	it('mode question : les lignes par question, jamais le cadre de l’exercice', () => {
+		expect(resolveAnswerFrames(questions, null, 'question')).toEqual({ questions: [3, 8, 5] });
 	});
 
-	it('mode exercice : la hauteur seule, sans les tailles par question', () => {
-		expect(estimateForView(questions, 'exercise')).toEqual({ exercise_cm: questions.exercise_cm });
+	it('mode exercice : le cadre unique seul, sans les questions', () => {
+		expect(Object.keys(resolveAnswerFrames(questions, null, 'exercise'))).toEqual(['exercise']);
 	});
 
-	it('énoncé sans question : la hauteur seule, même en mode question', () => {
+	it('énoncé sans question : le cadre unique seul, même en mode question', () => {
 		const single = estimateAnswerFrames('Calculer.', SHORT);
-		expect(estimateForView(single, 'question')).toEqual({
-			exercise_cm: ANSWER_FRAME_HEIGHT_CM.small
-		});
+		expect(single.exercise_cm).toBe(ANSWER_FRAME_HEIGHT_CM.small);
+		expect(resolveAnswerFrames(single, null, 'question')).toEqual({ exercise: 3 });
 	});
 
 	it('plus de questions que le schéma n’en accepte : tronqué, jamais d’erreur', () => {
@@ -173,7 +172,7 @@ describe('ce que la vue de l’élève reçoit (audit S1, R5)', () => {
 			Array.from({ length: MAX_VIEW_QUESTIONS + 50 }, (_, i) => `${i + 1}. Q`).join('\n'),
 			null
 		);
-		expect(estimateForView(many, 'question').questions).toHaveLength(MAX_VIEW_QUESTIONS);
+		expect(resolveAnswerFrames(many, null, 'question').questions).toHaveLength(MAX_VIEW_QUESTIONS);
 	});
 });
 

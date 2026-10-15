@@ -56,6 +56,7 @@ interface StudentView {
 	style_id?: string | null;
 	template_id?: string | null;
 	template?: Record<string, unknown> | null;
+	exercises?: Array<{ printed_frame_lines?: unknown; correction?: string | null }>;
 }
 
 // ============================================================================
@@ -228,6 +229,31 @@ describe('le cartouche du gabarit', () => {
 		});
 		// Ancienne case d'affichage : plus transmise
 		expect(body).not.toHaveProperty('show_date');
+	});
+});
+
+// ADR 0030, lot 4 : les lignes des cadres réglées par le prof, lues avec la
+// ligne `worksheet_exercises` (vraie base, vraie RLS de l'élève destinataire),
+// arrivent résolues dans la vue : ce que son PDF imprime, rien d'autre.
+describe('les cadres de réponse réglés par le prof', () => {
+	it('évaluation, un cadre après l’exercice réglé à 7 lignes : l’élève reçoit 7', async () => {
+		const assignmentId = await assigned({ style_id: STANDARD });
+		await sql(
+			`update public.worksheets set type = 'assessment',
+			   config = '{"answers_on_sheet": true, "answer_frames": "exercise"}'::jsonb
+			 where id = (select worksheet_id from public.worksheet_assignments where id = $1)`,
+			[assignmentId]
+		);
+		await sql(
+			`update public.worksheet_exercises set answer_frame_lines = '{"exercise": 7}'::jsonb
+			 where worksheet_id = (select worksheet_id from public.worksheet_assignments where id = $1)`,
+			[assignmentId]
+		);
+		const { status, body } = await viewOf(student, assignmentId);
+		expect(status).toBe(200);
+		// 7 n'est pas une estimation possible (3, 6, 9, 13 ou 18 lignes) : c'est le réglage
+		expect(body?.exercises?.[0].printed_frame_lines).toEqual({ exercise: 7 });
+		expect(body?.exercises?.[0]).not.toHaveProperty('answer_frame_lines');
 	});
 });
 

@@ -75,7 +75,11 @@ import type {
 	WorksheetType
 } from '$lib/types/worksheets';
 import { worksheetHeader } from '$lib/worksheets/worksheet-header';
-import { estimateAnswerFrames, estimateForView } from '$lib/worksheets/document/answer-frames';
+import { estimateAnswerFrames } from '$lib/worksheets/document/answer-frames';
+import {
+	resolveAnswerFrames,
+	toAnswerFrameLines
+} from '$lib/worksheets/document/answer-frame-lines';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/student/worksheets/[assignmentId]/+server');
@@ -197,6 +201,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 				variation_index,
 				section_id,
 				is_essential,
+				answer_frame_lines,
 				exercise:exercises (
 					id,
 					title,
@@ -265,10 +270,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			throw error(500, 'Erreur lors de la recuperation des exercices');
 		}
 
-		// Réponses sur le sujet (ADR 0030, lot 3) : les cadres sont estimés ici,
-		// d'après le corrigé de la copie, pour que l'élève dont la correction est
-		// masquée ait les mêmes cadres que le prof — seules les tailles partent
-		// N'en part que ce que le PDF imprime (`estimateForView`, audit S1)
+		// Réponses sur le sujet (ADR 0030, lots 3 et 4) : les cadres sont résolus
+		// ici — réglage du prof, sinon estimation d'après le corrigé de la copie —
+		// pour que l'élève dont la correction est masquée ait les mêmes cadres que
+		// le prof. N'en partent que les lignes que le PDF imprime (audit S1)
 		const typeOptions = viewTypeOptions(worksheet.config);
 		const answersOnSheet = worksheetHeader(
 			worksheet.type as WorksheetType,
@@ -318,8 +323,9 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			};
 
 			if (answersOnSheet) {
-				exerciseView.answer_frame_estimate = estimateForView(
+				exerciseView.printed_frame_lines = resolveAnswerFrames(
 					estimateAnswerFrames(statement, correction),
+					toAnswerFrameLines(we.answer_frame_lines),
 					answerFrameMode
 				);
 			}

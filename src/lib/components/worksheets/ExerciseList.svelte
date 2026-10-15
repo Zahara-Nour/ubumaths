@@ -11,6 +11,8 @@
 	- Show exercise: position number, title, points
 	- Edit button for points, section and instructions (opens modal)
 	- Delete button (remove from worksheet, not from DB)
+	- Cadres de réponse en lignes sous chaque exercice, si la fiche a « réponses
+	  sur le sujet » (`AnswerFrameLinesEditor`, ADR 0030 lot 4)
 
 	Usage:
 	```svelte
@@ -33,7 +35,14 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { GripVertical, Trash2, Loader2, Settings2, Star, Pencil } from '@lucide/svelte';
 	import { exerciseEditHref } from '$lib/worksheets/exercise-edit-link';
-	import type { WorksheetExerciseWithExercise, WorksheetSectionRow } from '$lib/types/worksheets';
+	import AnswerFrameLinesEditor from './AnswerFrameLinesEditor.svelte';
+	import type {
+		AnswerFrameLines,
+		AnswerFrameMode,
+		WorksheetExerciseWithExercise,
+		WorksheetSectionRow
+	} from '$lib/types/worksheets';
+	import type { ContentLocale } from '$lib/types/locale';
 
 	// Types
 	interface Props {
@@ -43,6 +52,14 @@
 		readonly?: boolean;
 		onExercisesChange?: (exercises: WorksheetExerciseWithExercise[]) => void;
 		onEditExercise?: (exercise: WorksheetExerciseWithExercise) => void;
+		/** La fiche a « réponses sur le sujet » : le réglage des cadres s'affiche */
+		answersOnSheet?: boolean;
+		/** Cadre après chaque question (défaut) ou un seul après l'exercice */
+		answerFrameMode?: AnswerFrameMode;
+		/** Langue de la fiche : celle de l'énoncé dont on estime les cadres */
+		language?: ContentLocale;
+		/** Délai avant sauvegarde des cadres (tests : 0) */
+		frameSaveDelayMs?: number;
 	}
 
 	// Props
@@ -52,7 +69,11 @@
 		sections = [],
 		readonly = false,
 		onExercisesChange,
-		onEditExercise
+		onEditExercise,
+		answersOnSheet = false,
+		answerFrameMode = 'question',
+		language = 'fr',
+		frameSaveDelayMs
 	}: Props = $props();
 
 	// Drag state
@@ -383,6 +404,16 @@
 	}
 
 	/**
+	 * Lignes des cadres d'un exercice changées (optimiste, ou retour arrière)
+	 */
+	function handleFrameLinesChange(exerciseId: string, lines: AnswerFrameLines | null) {
+		exercises = exercises.map((e) =>
+			e.id === exerciseId ? { ...e, answer_frame_lines: lines } : e
+		);
+		onExercisesChange?.(exercises);
+	}
+
+	/**
 	 * Toggle essential status for an exercise
 	 */
 	async function toggleEssential(exercise: WorksheetExerciseWithExercise) {
@@ -600,6 +631,17 @@
 												</div>
 											{/if}
 										</div>
+										{#if answersOnSheet}
+											<AnswerFrameLinesEditor
+												{worksheetId}
+												{exercise}
+												mode={answerFrameMode}
+												{language}
+												{readonly}
+												saveDelayMs={frameSaveDelayMs}
+												onchange={(lines) => handleFrameLinesChange(exercise.id, lines)}
+											/>
+										{/if}
 									{/each}
 
 									<!-- Drop indicator at end -->

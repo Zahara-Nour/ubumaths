@@ -72,7 +72,11 @@ import type {
 import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
 import { loadAuthorStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
 import { worksheetHeader } from '$lib/worksheets/worksheet-header';
-import { estimateAnswerFrames, estimateForView } from '$lib/worksheets/document/answer-frames';
+import { estimateAnswerFrames } from '$lib/worksheets/document/answer-frames';
+import {
+	resolveAnswerFrames,
+	toAnswerFrameLines
+} from '$lib/worksheets/document/answer-frame-lines';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/preview/+server');
@@ -292,6 +296,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 				variation_index,
 				section_id,
 				is_essential,
+				answer_frame_lines,
 				exercise:exercises (
 					id,
 					title,
@@ -381,10 +386,10 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			throw error(500, 'Impossible de charger les exercices');
 		}
 
-		// Réponses sur le sujet (ADR 0030, lot 3) : les cadres sont estimés ici,
-		// d'après le corrigé de la copie, pour que l'élève dont la correction est
-		// masquée ait les mêmes cadres que le prof — seules les tailles partent
-		// N'en part que ce que le PDF imprime (`estimateForView`, audit S1)
+		// Réponses sur le sujet (ADR 0030, lots 3 et 4) : les cadres sont résolus
+		// ici — réglage du prof, sinon estimation d'après le corrigé de la copie —
+		// pour que l'élève dont la correction est masquée ait les mêmes cadres que
+		// le prof. N'en partent que les lignes que le PDF imprime (audit S1)
 		const typeOptions = viewTypeOptions(worksheet.config);
 		const answersOnSheet = worksheetHeader(
 			worksheet.type as WorksheetType,
@@ -436,8 +441,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			};
 
 			if (answersOnSheet) {
-				exerciseView.answer_frame_estimate = estimateForView(
+				exerciseView.printed_frame_lines = resolveAnswerFrames(
 					estimateAnswerFrames(resolved.statement, resolved.correction),
+					toAnswerFrameLines(we.answer_frame_lines),
 					answerFrameMode
 				);
 			}

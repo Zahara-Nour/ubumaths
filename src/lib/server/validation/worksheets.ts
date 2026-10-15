@@ -12,10 +12,10 @@ import { gradeCodeSchema } from './grades';
 import { CONTENT_LOCALES } from '$lib/types/locale';
 import { capitalPairsSchema } from '$lib/questions/capital-pairs';
 import {
+	ANSWER_FRAME_MAX_LINES,
+	ANSWER_FRAME_MAX_QUESTIONS,
 	ANSWER_FRAME_MODES,
-	ANSWER_FRAME_SIZES,
 	CALCULATOR_RULES,
-	EXERCISE_FRAME_HEIGHTS_CM,
 	WORKSHEET_TYPES,
 	isIsoDate
 } from '$lib/types/worksheets';
@@ -41,20 +41,40 @@ const answerFrameModeSchema = z.enum(ANSWER_FRAME_MODES, {
 	message: 'Placement des cadres invalide'
 });
 
+/** Nombre de lignes d'un cadre de réponse : entier de 0 (pas de cadre) à 40 */
+const answerFrameLineCountSchema = z
+	.number()
+	.int('Nombre de lignes entier attendu')
+	.min(0, 'Nombre de lignes négatif')
+	.max(ANSWER_FRAME_MAX_LINES, `${ANSWER_FRAME_MAX_LINES} lignes au plus`);
+
 /**
- * Tailles des cadres d'un exercice, estimées par le serveur (vue de l'élève) :
- * tailles par question (au plus `MAX_VIEW_QUESTIONS`, le serveur tronque avant)
- * ou hauteur du cadre unique, prise dans l'énumération fermée
+ * Lignes des cadres réglées par le prof (`worksheet_exercises.answer_frame_lines`,
+ * ADR 0030 lot 4) : mêmes bornes que la contrainte CHECK de la colonne. `null` =
+ * auto ; `.strict()` : une clé inconnue est refusée, pas retirée en silence.
  */
-const answerFrameEstimateSchema = z.object({
-	questions: z.array(z.enum(ANSWER_FRAME_SIZES)).max(200).optional(),
-	exercise_cm: z
-		.number()
-		.refine((cm) => EXERCISE_FRAME_HEIGHTS_CM.some((height) => height === cm), {
-			message: 'Hauteur de cadre invalide'
-		})
-		.optional()
-});
+export const answerFrameLinesSchema = z
+	.object({
+		questions: z
+			.array(answerFrameLineCountSchema.nullable())
+			.max(ANSWER_FRAME_MAX_QUESTIONS, `${ANSWER_FRAME_MAX_QUESTIONS} questions au plus`)
+			.optional(),
+		exercise: answerFrameLineCountSchema.nullable().optional()
+	})
+	.strict()
+	.nullable();
+
+/**
+ * Cadres imprimés d'un exercice, résolus par le serveur (vue de l'élève, audit
+ * S1) : lignes par question (au plus `ANSWER_FRAME_MAX_QUESTIONS`, le serveur
+ * tronque avant) ou cadre unique ; jamais `null` (déjà résolus), aucune autre clé
+ */
+const printedAnswerFramesSchema = z
+	.object({
+		questions: z.array(answerFrameLineCountSchema).max(ANSWER_FRAME_MAX_QUESTIONS).optional(),
+		exercise: answerFrameLineCountSchema.optional()
+	})
+	.strict();
 
 /** Date de rendu d'un devoir maison : `AAAA-MM-JJ`, une date qui existe */
 const dueDateSchema = z
@@ -359,9 +379,21 @@ export const createWorksheetExerciseSchema = z.object({
 });
 
 /**
- * Schema for updating a worksheet exercise
+ * Schema for updating a worksheet exercise. Sans valeur par défaut : une mise à
+ * jour n'écrit que ce qu'elle reçoit (avec `.partial()` seul, les défauts de la
+ * création s'appliquaient encore, et une modification des cadres aurait remis
+ * `is_essential` à faux).
  */
-export const updateWorksheetExerciseSchema = createWorksheetExerciseSchema.partial();
+export const updateWorksheetExerciseSchema = createWorksheetExerciseSchema
+	.extend({
+		variant_mode: variantModeSchema,
+		variant_config: variantConfigSchema.unwrap().unwrap(),
+		is_essential: z.boolean()
+	})
+	.partial()
+	.extend({
+		answer_frame_lines: answerFrameLinesSchema.optional()
+	});
 
 /**
  * Schema for reordering exercises (PUT /api/worksheets/[id]/exercises)
@@ -723,6 +755,8 @@ export const worksheetExerciseResponseSchema = z.object({
 	variant_config: z.record(z.string(), z.unknown()),
 	custom_instructions: z.string().nullable(),
 	is_essential: z.boolean(),
+	/** Lignes des cadres ; sans cette clé, le schéma la retire en silence */
+	answer_frame_lines: answerFrameLinesSchema.optional(),
 	created_at: timestampSchema,
 	updated_at: timestampSchema
 });
@@ -1055,8 +1089,8 @@ export const studentExerciseViewSchema = z.object({
 	 * lit `AB` comme un produit.
 	 */
 	capital_pairs: capitalPairsSchema.optional(),
-	/** Tailles des cadres de réponse ; sans cette clé, le schéma la retire en silence */
-	answer_frame_estimate: answerFrameEstimateSchema.optional()
+	/** Lignes des cadres imprimés ; sans cette clé, le schéma la retire en silence */
+	printed_frame_lines: printedAnswerFramesSchema.optional()
 });
 
 /**

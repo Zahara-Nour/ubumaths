@@ -85,7 +85,8 @@ function supabase(
 	individualized: boolean,
 	exercise: ReturnType<typeof twoLevelExercise> & { topic?: string | null } = twoLevelExercise(),
 	config: Record<string, unknown> = {},
-	type = 'worksheet'
+	type = 'worksheet',
+	answerFrameLines: unknown = null
 ): TableMock {
 	return tableMock({
 		worksheet_assignments: {
@@ -104,6 +105,7 @@ function supabase(
 					variation_index: null,
 					section_id: null,
 					is_essential: false,
+					answer_frame_lines: answerFrameLines,
 					exercise
 				}
 			],
@@ -121,7 +123,7 @@ interface StudentView {
 		correction_visible?: boolean;
 		answers?: string | null;
 		capital_pairs?: string;
-		answer_frame_estimate?: { questions?: string[]; exercise_cm?: number };
+		printed_frame_lines?: { questions?: number[]; exercise?: number };
 	}>;
 	answer_frames?: string;
 	numbering_style?: string;
@@ -287,8 +289,9 @@ describe('API élève : la copie suit l’affectation', () => {
 		expect(exercise.correction).toBeNull();
 		expect(exercise.answers).toBeNull();
 		// Calculées sur le corrigé (une réponse courte, une longue), pas sur `null`
-		// (qui donnerait « moyen » partout) ; pas de hauteur d'exercice en mode question
-		expect(exercise.answer_frame_estimate).toEqual({ questions: ['small', 'large'] });
+		// (qui donnerait « moyen » partout) ; pas de cadre d'exercice en mode question.
+		// En lignes (lot 4) : petit = 3, grand = 8
+		expect(exercise.printed_frame_lines).toEqual({ questions: [3, 8] });
 		expect(JSON.stringify(view)).not.toContain(SECRET);
 	});
 
@@ -305,7 +308,8 @@ describe('API élève : la copie suit l’affectation', () => {
 			STUDENTS[0]
 		);
 		expect(view.answer_frames).toBe('exercise');
-		expect(view.exercises[0].answer_frame_estimate).toEqual({ exercise_cm: 7 });
+		// 7 cm : 9 lignes (lot 4)
+		expect(view.exercises[0].printed_frame_lines).toEqual({ exercise: 9 });
 		expect(JSON.stringify(view)).not.toContain(SECRET);
 	});
 
@@ -314,8 +318,8 @@ describe('API élève : la copie suit l’affectation', () => {
 			supabase('guided', false, twoLevelExercise(), { answers_on_sheet: true }, 'exam'),
 			STUDENTS[0]
 		);
-		// « Guidé : 3a » : une ligne, petit cadre (`null` donnerait 4,5)
-		expect(view.exercises[0].answer_frame_estimate).toEqual({ exercise_cm: 2.5 });
+		// « Guidé : 3a » : une ligne, petit cadre, 3 lignes (`null` donnerait 6)
+		expect(view.exercises[0].printed_frame_lines).toEqual({ exercise: 3 });
 	});
 
 	it('sans réponses sur le sujet (ou type sans l’option) : aucune taille transmise', async () => {
@@ -323,11 +327,62 @@ describe('API élève : la copie suit l’affectation', () => {
 			supabase('guided', false, twoLevelExercise(), {}, 'exam'),
 			STUDENTS[0]
 		);
-		expect(without.exercises[0].answer_frame_estimate).toBeUndefined();
+		expect(without.exercises[0].printed_frame_lines).toBeUndefined();
 		const worksheet = await fetchCopy(
 			supabase('guided', false, twoLevelExercise(), { answers_on_sheet: true }),
 			STUDENTS[0]
 		);
-		expect(worksheet.exercises[0].answer_frame_estimate).toBeUndefined();
+		expect(worksheet.exercises[0].printed_frame_lines).toBeUndefined();
+	});
+
+	// Lot 4 : les lignes réglées par le prof (colonne lue avec la ligne
+	// `worksheet_exercises`) arrivent résolues : ce que le PDF imprime, rien d'autre.
+	it('lignes réglées par le prof : résolues, correction masquée, sans texte du corrigé', async () => {
+		visibility.visible = false;
+		const mock = supabase(
+			'guided',
+			false,
+			framedExercise(),
+			{ answers_on_sheet: true },
+			'assessment',
+			{ questions: [0, 12], exercise: 4 }
+		);
+		const view = await fetchCopy(mock, STUDENTS[0]);
+		expect(selectedColumns(mock, 'worksheet_exercises')).toMatch(/\banswer_frame_lines\b/);
+		const exercise = view.exercises[0];
+		expect(exercise.printed_frame_lines).toEqual({ questions: [0, 12] });
+		expect(exercise.correction).toBeNull();
+		// La colonne brute ne part pas : seulement les lignes imprimées
+		expect(exercise).not.toHaveProperty('answer_frame_lines');
+		expect(JSON.stringify(view)).not.toContain(SECRET);
+	});
+
+	it('lignes réglées, une seule à null : l’estimation pour elle', async () => {
+		visibility.visible = false;
+		const view = await fetchCopy(
+			supabase('guided', false, framedExercise(), { answers_on_sheet: true }, 'assessment', {
+				questions: [null, 2]
+			}),
+			STUDENTS[0]
+		);
+		expect(view.exercises[0].printed_frame_lines).toEqual({ questions: [3, 2] });
+	});
+
+	it('nombre de questions changé : tout en auto', async () => {
+		const view = await fetchCopy(
+			supabase('guided', false, framedExercise(), { answers_on_sheet: true }, 'assessment', {
+				questions: [1, 1, 1]
+			}),
+			STUDENTS[0]
+		);
+		expect(view.exercises[0].printed_frame_lines).toEqual({ questions: [3, 8] });
+	});
+
+	it('sans réponses sur le sujet : les lignes réglées ne partent pas', async () => {
+		const view = await fetchCopy(
+			supabase('guided', false, framedExercise(), {}, 'assessment', { questions: [4, 4] }),
+			STUDENTS[0]
+		);
+		expect(view.exercises[0].printed_frame_lines).toBeUndefined();
 	});
 });

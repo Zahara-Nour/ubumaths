@@ -1,0 +1,77 @@
+/**
+ * Zod : lignes des cadres de réponse d'un exercice de fiche (ADR 0030, lot 4)
+ *
+ * Mêmes bornes que la contrainte CHECK de la colonne : entiers de 0 à 40,
+ * `null` = auto, au plus 200 questions, aucune autre clé.
+ */
+import { describe, expect, it } from 'vitest';
+import {
+	answerFrameLinesSchema,
+	updateWorksheetExerciseSchema,
+	worksheetExerciseResponseSchema
+} from '../worksheets';
+
+describe('answer_frame_lines en écriture', () => {
+	it('formes acceptées', () => {
+		for (const value of [
+			null,
+			{},
+			{ questions: [null, 0, 40] },
+			{ exercise: 12 },
+			{ questions: [], exercise: null }
+		]) {
+			expect(answerFrameLinesSchema.safeParse(value).success, JSON.stringify(value)).toBe(true);
+		}
+	});
+
+	it('valeurs refusées : hors bornes, non entières, texte, trop de questions', () => {
+		for (const value of [
+			{ questions: [41] },
+			{ questions: [-1] },
+			{ questions: [2.5] },
+			{ questions: ['3'] },
+			{ exercise: 41 },
+			{ exercise: 1.5 },
+			{ questions: Array(201).fill(1) },
+			[1, 2],
+			'3'
+		]) {
+			expect(answerFrameLinesSchema.safeParse(value).success, JSON.stringify(value)).toBe(false);
+		}
+	});
+
+	it('`.strict()` : une clé inconnue est refusée, pas retirée en silence', () => {
+		expect(answerFrameLinesSchema.safeParse({ questions: [1], secret: 'x' }).success).toBe(false);
+	});
+
+	it('la mise à jour d’un exercice de fiche l’accepte', () => {
+		const parsed = updateWorksheetExerciseSchema.safeParse({
+			answer_frame_lines: { questions: [0, 12] }
+		});
+		expect(parsed.success).toBe(true);
+		expect(parsed.data?.answer_frame_lines).toEqual({ questions: [0, 12] });
+		expect(
+			updateWorksheetExerciseSchema.safeParse({ answer_frame_lines: { questions: [99] } }).success
+		).toBe(false);
+	});
+
+	it('la réponse la garde (le schéma de réponse retire les clés non déclarées)', () => {
+		const row = {
+			id: '550e8400-e29b-41d4-a716-446655440001',
+			worksheet_id: '550e8400-e29b-41d4-a716-446655440002',
+			exercise_id: '550e8400-e29b-41d4-a716-446655440003',
+			section_id: null,
+			position: 1,
+			points: null,
+			variant_mode: 'none',
+			variant_config: {},
+			custom_instructions: null,
+			is_essential: false,
+			answer_frame_lines: { questions: [0, null] },
+			created_at: '2026-10-15T10:00:00Z',
+			updated_at: '2026-10-15T10:00:00Z'
+		};
+		const parsed = worksheetExerciseResponseSchema.parse(row);
+		expect(parsed.answer_frame_lines).toEqual({ questions: [0, null] });
+	});
+});
