@@ -559,6 +559,43 @@ export function expressionOf(
 	return result.ok ? { ok: true, expression: toCustom(result.ast) } : result;
 }
 
+/**
+ * Ce qu'une cellule de la grille sait des objets de l'atelier (tableur, lot 2) :
+ * préparé UNE fois par recalcul de la grille — `bindingsOf` relit chaque
+ * définition, le refaire pour chaque cellule coûterait des milliers de lectures.
+ *
+ * `expand` fait ce que fait une ligne de Calcul : dérivées (`f'`) et
+ * réciproques (`f⁻¹`) développées, appels de suites (`u_n`), puis valeurs et
+ * fonctions de l'atelier remplacées. Rend le refus d'une `f⁻¹` impossible.
+ */
+export interface GridContext {
+	expand(
+		ast: MathNode
+	):
+		| { readonly ok: true; readonly ast: MathNode }
+		| { readonly ok: false; readonly message: string };
+}
+
+export function gridContext(atelier: Atelier): GridContext {
+	const { variables, functions, derivableFunctions, reciprocals } = bindingsOf(atelier, '');
+	return {
+		expand(ast) {
+			let expanded: MathNode;
+			try {
+				expanded = expandDerivatives(ast, derivableFunctions, reciprocals);
+			} catch (error) {
+				if (error instanceof ReciprocalUnavailable) return { ok: false, message: error.message };
+				return { ok: false, message: 'Une dérivée citée ne se calcule pas.' };
+			}
+			const withCalls = subscriptsAsCalls(expanded, functions, '');
+			return {
+				ok: true,
+				ast: substituteAll(withCalls, variables, substituteFunction, { functions })
+			};
+		}
+	};
+}
+
 /** `v_n` → `v(n)` pour chaque autre suite explicite liée. */
 function subscriptsAsCalls(
 	ast: MathNode,

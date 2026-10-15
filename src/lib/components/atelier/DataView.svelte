@@ -27,8 +27,8 @@
 	} from '$lib/atelier/grid';
 	import { cascadeMessage } from '$lib/atelier/removal';
 	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
+	import type { CellValue } from '$lib/atelier/formula';
 	import { summarizeList } from '$lib/statistics/describe';
-	import { readListValue } from '$lib/statistics/read-value';
 	import { listChart } from '$lib/atelier/chart';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
@@ -38,7 +38,6 @@
 	type Editing = 'cell' | 'bar' | null;
 
 	/** Au moins 10 lignes et 5 colonnes, même vide ; la zone utilisée plus sa marge (§2). */
-	const FORMULAS_LATER = 'Les formules arrivent dans un prochain lot.';
 	/** Le format propre à la grille dans le presse-papiers : les textes exacts. */
 	const GRID_CLIPBOARD_TYPE = 'application/x-chiphre-grille';
 	const EMPTY_GRID = 'La grille est vide : rien à télécharger.';
@@ -97,6 +96,28 @@
 	const lists = $derived(atelier.objects.filter(isList));
 	const empty = $derived(extent.columns === 0);
 	const selectedText = $derived(atelier.cell(selected.column, selected.row));
+	/**
+	 * Sous la barre, ce qu'une formule a à dire (Q-L2-1) : la phrase de son
+	 * erreur, ou pourquoi elle est vide (« A1 est vide. », T5).
+	 */
+	const selectedNote = $derived.by(() => {
+		const value = atelier.cellValue(selected.column, selected.row);
+		return value.kind === 'error' || value.kind === 'empty' ? (value.message ?? '') : '';
+	});
+
+	/** Ce que montre une case : la valeur d'une formule, le mot court d'une erreur (Q-L2-1). */
+	function shownOf(value: CellValue): string {
+		switch (value.kind) {
+			case 'number':
+				return value.shown;
+			case 'word':
+				return value.text;
+			case 'error':
+				return value.label;
+			case 'empty':
+				return '';
+		}
+	}
 	/** La zone sélectionnée : la cellule seule, ou le rectangle jusqu'à l'ancre. */
 	const zone = $derived({
 		left: Math.min(selected.column, anchor?.column ?? selected.column),
@@ -208,6 +229,24 @@
 		return texts;
 	}
 
+	/**
+	 * Ce qui part vers un autre logiciel (copie, CSV) : la VALEUR d'une formule
+	 * — un tableur ne lirait pas la formule de l'atelier (lot 2 §5) ; une
+	 * formule vide ou en erreur part vide.
+	 */
+	function exportedText(column: number, row: number): string {
+		const text = atelier.cell(column, row);
+		if (!text.trimStart().startsWith('=')) return text;
+		const value = atelier.cellValue(column, row);
+		return value.kind === 'number' ? String(value.value) : '';
+	}
+
+	function zoneExported(): string[][] {
+		return zoneTexts().map((line, i) =>
+			line.map((_, j) => exportedText(zone.left + j, zone.top + i))
+		);
+	}
+
 	function clearZone() {
 		const edits = zoneTexts().flatMap((line, i) =>
 			line.map((_, j) => ({ column: zone.left + j, row: zone.top + i, text: '' }))
@@ -277,7 +316,7 @@
 		// sur Mac n'en envoie pas)
 		if ((event.ctrlKey || event.metaKey) && ['c', 'v'].includes(event.key.toLowerCase())) {
 			if (event.key.toLowerCase() === 'c' && relay !== undefined) {
-				relay.value = tableText(zoneTexts());
+				relay.value = tableText(zoneExported());
 				relay.select();
 			}
 			relay?.focus();
@@ -415,7 +454,7 @@
 		event.preventDefault();
 		const texts = zoneTexts();
 		// Pour les tableurs : des décimaux à virgule ; pour la grille : les textes exacts
-		event.clipboardData?.setData('text/plain', tableText(texts));
+		event.clipboardData?.setData('text/plain', tableText(zoneExported()));
 		event.clipboardData?.setData(GRID_CLIPBOARD_TYPE, JSON.stringify(texts));
 		backToCell();
 	}
@@ -425,7 +464,7 @@
 		const columnsUsed = Array.from({ length: extent.columns }, (_, i) => i);
 		const titles = columnsUsed.map((column) => atelier.titleOf(column));
 		const rowsUsed = Array.from({ length: extent.rows }, (_, i) =>
-			columnsUsed.map((column) => atelier.cell(column, i + 1))
+			columnsUsed.map((column) => exportedText(column, i + 1))
 		);
 		const content = '\uFEFF' + csvText(titles.some((t) => t !== '') ? titles : null, rowsUsed);
 		const url = URL.createObjectURL(new Blob([content], { type: 'text/csv;charset=utf-8' }));
@@ -536,8 +575,8 @@
 		/>
 	</div>
 	<p class="refus" role="status">{refusal}</p>
-	{#if editing === null && selectedText.startsWith('=')}
-		<p class="note">{FORMULAS_LATER}</p>
+	{#if editing === null && selectedNote !== ''}
+		<p class="note">{selectedNote}</p>
 	{/if}
 	<textarea
 		bind:this={relay}
@@ -643,13 +682,15 @@
 							{@const address = cellName(column, row)}
 							{@const isSelected = selected.column === column && selected.row === row}
 							{@const selectedZone = inZone(column, row)}
-							{@const text = isSelected && editing === 'bar' ? draft : atelier.cell(column, row)}
+							{@const value = atelier.cellValue(column, row)}
+							{@const text = isSelected && editing === 'bar' ? draft : shownOf(value)}
 							<td
 								role="gridcell"
 								data-cell={address}
 								tabindex={isSelected ? 0 : -1}
 								aria-selected={selectedZone}
-								class:nombre={readListValue(text) !== null}
+								class:nombre={value.kind === 'number'}
+								class:en-erreur={value.kind === 'error'}
 								class:zone={selectedZone && !isSelected}
 								class:active={isSelected}
 								onpointerdown={(event) => pressCell(event, column, row)}
@@ -904,6 +945,12 @@
 		cursor: cell;
 		background: var(--color-card);
 		color: var(--color-foreground);
+	}
+
+	/* Q-L2-1 : le mot court d'une erreur, en rouge ; la phrase est sous la barre */
+	td.en-erreur {
+		color: var(--color-destructive);
+		font-style: italic;
 	}
 
 	td.nombre {

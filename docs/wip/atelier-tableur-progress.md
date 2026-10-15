@@ -92,3 +92,20 @@ liste trouée en citant l'entrée).
       du bouton « Loi » = celle de la commande ; nuage / ajustement / diagramme sans ligne commune
       → « L et M n’ont aucune ligne remplie en commun. » (bouton et clic) ; écho de Calcul rétabli ;
       deux JSDoc remises au-dessus de leur fonction.
+
+## Lot 2 — les formules (phase 0 : `atelier-tableur-lot2-phase0.md`, validée le 2026-10-15)
+
+### PR 1 — le moteur de formules (`feat/atelier-formules-moteur`)
+
+- [x] tests rouges : `formules.test.ts` (41, dont l'oracle « même réponse que Calcul » sur 17
+      expressions), 3 tests de vue
+- [x] `formula.ts` : références marquées `ω_k` (sonde : `ω_12` se lit comme une variable indicée),
+      `computeGrid` (profondeur, cycles, repli ≈ après 20 ms, refus en français), `plainValue`
+- [x] `engine.ts` : `gridContext` (liaisons préparées une fois par recalcul)
+- [x] `Atelier` : `cellValue`, `#recomputeGrid` (empreinte), listes à formules (`#formulaList`,
+      `formulaErrors`), T2 dans `update`, `=a2` → `=A2`, pas de P2 après `=`
+- [x] vue minimale : valeur dans la case, mot d'erreur, phrase sous la barre ; copie externe et CSV =
+      valeurs (l'écriture mathématique et la carte d'une liste à formules : PR 2)
+- Choix de construction : graphe de dépendances écrit dans `formula.ts` (parcours en profondeur,
+  ~30 lignes) plutôt que celui du tableur du prof — le reprendre aurait demandé de modifier
+  `src/lib/spreadsheet/` ; écart avec la phrase de la phase 0, sans effet sur le comportement.
