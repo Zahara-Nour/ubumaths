@@ -100,3 +100,16 @@ describe('un nom indicé NON déclaré reste une variable indicée', () => {
 		expect(ast).not.toMatchObject({ type: 'function' });
 	});
 });
+
+describe('revue : f_1 cité sans valeur dans la grille', () => {
+	it('=2f_1 : le refus dit comment l’appeler, sans conseiller de la renommer', () => {
+		const s = { atelier: new Atelier(), engine: new WebReplEngine() };
+		runInput(s, 'f_1(x) = x^2');
+		s.atelier.editCells([{ column: 0, row: 1, text: '=2f_1' }]);
+		const v = s.atelier.cellValue(0, 1);
+
+		expect(v.kind === 'error' && v.message).toBe(
+			'f_1 est une fonction : écris-la avec une valeur, par exemple f_1(3).'
+		);
+	});
+});

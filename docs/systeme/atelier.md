@@ -437,8 +437,8 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   `tabulateCommand`, branchée avec les commandes qui lisent des NOMS (`SIMULATIONS` de
   `calcul.ts`) ; une expression sans nom est refusée avec la façon de faire (Q-L2-3). Le décor de
   son exemple (`exampleSetup: { 'f(x)': … }`) est posé par `stageExampleSetup` (`commands.ts`).
-  **Depuis la carte** (PR 2) : « Tabuler » (retiré de `NOT_YET` ; grisé avec sa raison pour `f⁻¹`
-  et `f_1`, `tabulationNotYet`) ouvre DANS la carte un formulaire « de / à / pas » pré-rempli par
+  **Depuis la carte** (PR 2) : « Tabuler » (retiré de `NOT_YET` ; grisé avec sa raison pour `f⁻¹`,
+  `tabulationNotYet`) ouvre DANS la carte un formulaire « de / à / pas » pré-rempli par
   `tabulationDefaults`, comme le champ de l'image. Valider appelle `onTabulate` →
   `handleTabulate` (`AtelierContainer`) : `atelier.tabulate`, puis la vue passe sur Données
   (Q-L3-1), recréée (`{#key}`) avec la zone du tableau sélectionnée (`initialZone` de `DataView`,
@@ -535,8 +535,9 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
 - **Fonction à indice** (`=f_1(3)`) : depuis le 2026-10-15, les parseurs lisent `f_1(3)` comme
   un appel de f_1 quand `f_1` est déclarée (avant : `f₁ × 3`, et la grille calculait avec f, sans
   rien dire — revue du lot 3). La grille rend donc la valeur de f_1, et Calcul l'évalue aussi ;
-  le refus `indexedFunctionMessage` ne vise plus qu'un `f_1` cité sans appel, et `.tabuler f_1`
-  reste refusé (`tabulationNotYet`) en attendant la levée de ces refus.
+  `.tabuler f_1` marche. `f_1` cité sans valeur (`=2f_1`) reste l'indice `f₁` : la grille le refuse
+  en donnant la bonne écriture (`indexedFunctionMessage` : « écris-la avec une valeur, par exemple
+  f_1(3) »).
 - **Oracle** : `formules.test.ts` compare, sur un corpus, la valeur d'une cellule `=expr` à celle de
   Calcul pour `expr`.
 

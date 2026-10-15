@@ -562,9 +562,9 @@ function arityMessage(name: CalculationFunction | ConditionFunction | RandomFunc
 }
 
 /**
- * Une fonction à indice citée (`f_1(3)`) : le parseur la lit `f₁ × 3`, et la
- * grille calculait alors avec f, sans rien dire (revue du lot 3) — refusée
- * jusqu'à ce que la lecture sache l'appeler.
+ * Une fonction à indice citée SANS valeur (`=2f_1`, `=f_1^2`) : le parseur lit
+ * `f_1(3)` comme un appel depuis le 2026-10-15, mais `f_1` seul reste l'indice
+ * `f₁`, que la grille ne sait pas calculer — refusé, avec la bonne écriture.
  */
 function indexedFunctionIn(ast: MathNode, functionNames: readonly string[]): string | null {
 	let found: string | null = null;
@@ -580,9 +580,9 @@ function indexedFunctionIn(ast: MathNode, functionNames: readonly string[]): str
 	return found;
 }
 
-/** Le refus d'une fonction à indice, dans la grille comme pour `.tabuler`. */
+/** Le refus d'une fonction à indice citée sans valeur (`=2f_1`). */
 export function indexedFunctionMessage(name: string): string {
-	return `La grille ne lit pas encore une fonction à indice (${name}) : définis-la sous une seule lettre, par exemple k(x) = …`;
+	return `${name} est une fonction : écris-la avec une valeur, par exemple ${name}(3).`;
 }
 
 /** Les noms qu'une formule cite : variables et fonctions, hors des marques de cellules. */
