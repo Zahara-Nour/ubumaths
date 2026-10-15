@@ -157,4 +157,19 @@ liste trouée en citant l'entrée).
 - [x] lot 2 complet : #1421, #1422, #1424 mergées
 - [x] phase 0 rédigée : Q-L3-1 à Q-L3-5 posées à David (mesuré : abscisses en fractions, `-3/2`)
 - [x] validation de David (« ok » : les cinq recos)
-- [ ] PR 1 : modèle, `.tabuler`, affichage décimal (`feat/atelier-tabuler`)
+
+### PR 1 — modèle, `.tabuler`, affichage décimal (`feat/atelier-tabuler`)
+
+- [x] tests rouges : `tabuler.test.ts` (31) ; 2 de vue (« Valeur exacte » d'un décimal fini)
+- [x] `tabulate.ts` (`planTabulation`, `tabulationDefaults`, `readTabulationCommand`,
+      `tabulateCommand`), `Atelier.tabulate` (un geste), `.tabuler` dans `SIMULATIONS`
+- [x] Q-L3-2 : `finiteDecimal` (entiers longs) dans `shownValue`, `shownExact` pour la barre ; deux
+      attentes du lot 2 changées en connaissance de cause (`1/2` → `0,5`, `5/2` → `2,5`)
+- [x] décor des exemples de commandes : `stageExampleSetup` (`f(x)` → une fonction)
+- [x] 55 500 tests serveur, 290 + 318 navigateur, check, lint, cliquet, gardes de doc
+- [x] revue (1 bloquant, 2 importants, 5 mineurs ; tous corrigés test rouge d'abord sauf le décor
+      `stageExampleSetup`, gardé : l'aide transmet ce décor) : `=f_1(3)` donnait une valeur FAUSSE
+      dans la grille (défaut du lot 2, `f₁ × 3`) → refus ; réciproque et fonction en attente
+      refusées ; pas par défaut entier ; note écrite comme la case ; conseil qui garde le pas
+- [ ] PR, CI, merge
+- [ ] PR 2 : la carte (formulaire, bascule vers Données)

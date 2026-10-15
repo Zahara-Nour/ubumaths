@@ -109,6 +109,7 @@ import {
 import { renderResult } from './render';
 import { DEV_HELP_ARGUMENT, studentHelpText } from './help';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
+import { tabulateCommand } from './tabulate';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
 import { binomialCommand } from './binomial';
@@ -1151,7 +1152,9 @@ const SIMULATIONS: Readonly<Record<string, typeof simulateCommand>> = {
 	uniform: (atelier, argument) => uniformCommand(atelier, argument),
 	exponential: (atelier, argument) => exponentialCommand(atelier, argument),
 	// Loi normale (2026-10-09) : `gaussian`, `normal` est la forme normale du moteur
-	gaussian: (atelier, argument) => normalCommand(atelier, argument)
+	gaussian: (atelier, argument) => normalCommand(atelier, argument),
+	// `.tabuler f` (tableur, lot 3) : lit un NOM de fonction, écrit dans la grille
+	tabulate: (atelier, argument) => tabulateCommand(atelier, argument)
 };
 
 /**

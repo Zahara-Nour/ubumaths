@@ -74,6 +74,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/atelier.svelte.ts` | **La classe `Atelier`** : création, renommage, mise à jour, suppression, états, `serialize`/`restore`     |
 | `src/lib/atelier/formula.ts`        | Les formules de la grille : lecture des références (`ω_k`), ordre de calcul, cycles, repli ≈, refus       |
 | `src/lib/atelier/grid.ts`           | La grille de la vue Données : adresses (`B3`), entrées d'une colonne nommée, répartition P2, plafonds     |
+| `src/lib/atelier/tabulate.ts`       | Tabuler une fonction dans la grille : le tableau en formules, ses refus, `.tabuler`, valeurs par défaut   |
 | `src/lib/atelier/names.ts`          | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)        |
 | `src/lib/atelier/parse.ts`          | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)     |
 | `src/lib/atelier/letter.ts`         | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                              |
@@ -402,8 +403,32 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   définition de la liste, dont « ; » sépare les entrées — sinon `=max(1 ; A1)` était coupée en deux.
   Une cellule sans nom le range de même (`storedCellText` / `cellTextFromStored`) : une cellule
   rangée n'a jamais de « ; » (P2), et la formule était écartée au stockage et dans le lien.
-- **Affichage** : une valeur exacte faite de chiffres (`3`, `2,5`, `509/128`) s'écrit en texte,
+- **Affichage** : une valeur exacte faite de chiffres (`3`, `2,5`, `1/3`) s'écrit en texte,
   comme un nombre tapé ; l'écriture mathématique est réservée à ce qui a des lettres (`√2`, `3π`).
+  **Un décimal fini s'écrit en décimal** (lot 3, Q-L3-2) : `=-2+0,5` → `-1,5`, `=27/4` → `6,75`,
+  calculé en entiers longs (`finiteDecimal`), jamais arrondi ; `1/3` et un décimal de plus de 12
+  caractères (`1/1048576`) gardent leur fraction. La fraction se voit alors sous la barre (« Valeur
+  exacte »), comme pour un `≈` : `shownExact` dit si la case montre déjà l'écriture exacte. Une
+  valeur TAPÉE (sans `=`) s'écrit telle quelle (`1/4` reste `1/4`).
+- **Tabuler** (lot 3, phase 0 : [atelier-tableur-lot3-phase0.md](../wip/atelier-tableur-lot3-phase0.md),
+  validée le 2026-10-15) : `Atelier.tabulate({ name, from, to, step })` écrit, dans les deux
+  premières colonnes libres, les abscisses (`-2`, `=A1+0,5`, `=A2+0,5`…) et les images (`=f(A1)`…),
+  titrées `x` et `f(x)` (la lettre de l'élève : `t`, `f(t)`) — un tableau **vivant**, en un seul
+  geste (T6). `planTabulation` (`tabulate.ts`) prépare et refuse, tout ou rien : pas ⩽ 0, fin avant
+  le début, borne illisible ou vide, plus de 200 lignes, moins de deux colonnes libres, objet qui
+  n'est pas une fonction ; une fonction en attente (`f(x) = k*x` sans k : la phrase de Calcul), une
+  réciproque `f⁻¹` et une fonction à indice `f_1` (la grille ne sait pas encore les appeler). Un pas
+  qui ne tombe pas juste s'arrête à la dernière abscisse ⩽ fin, et une note la dit telle que la case
+  la montre (`12/7`). Tabuler deux fois écrit deux nouvelles colonnes (Q-L3-4). Valeurs par défaut
+  (`tabulationDefaults`, Q-L3-3) : de −5 à 5 pas 1, ou les bornes d'un intervalle fermé `[a ; b]`
+  (pas 1, ou (b − a)/10 arrondi à l'entier supérieur au-delà de 20 — jamais un pas flottant). `.tabuler f de -2 à 3 pas 0,5` (ou `.tabuler f`) passe par
+  `tabulateCommand`, branchée avec les commandes qui lisent des NOMS (`SIMULATIONS` de
+  `calcul.ts`) ; une expression sans nom est refusée avec la façon de faire (Q-L2-3). Le décor de
+  son exemple (`exampleSetup: { 'f(x)': … }`) est posé par `stageExampleSetup` (`commands.ts`).
+  La carte (formulaire « de / à / pas », bascule vers Données) arrive dans la PR 2 du lot.
+- **Fonction à indice** (`=f_1(3)`) : refusée (`indexedFunctionMessage`). Le parseur lit `f_1(3)`
+  comme `f₁ × 3`, et la grille calculait alors avec f, sans rien dire (revue du lot 3). Calcul ne
+  l'évalue pas non plus (il recopie `f_1(3)`).
 - **Oracle** : `formules.test.ts` compare, sur un corpus, la valeur d'une cellule `=expr` à celle de
   Calcul pour `expr`.
 

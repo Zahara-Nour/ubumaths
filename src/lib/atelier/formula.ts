@@ -66,6 +66,11 @@ export type CellValue =
 			readonly latex?: string | null;
 			/** L'écriture exacte complète, pour « Valeur exacte » sous la barre, sinon `null`. */
 			readonly exactLatex?: string | null;
+			/**
+			 * Le texte de la case EST l'écriture exacte (`1/3`, `0,25`) : pas de
+			 * « Valeur exacte » en double. Faux pour `≈ 1,4142` et pour `0,25` lu de `1/4`.
+			 */
+			readonly shownExact?: boolean;
 	  }
 	| { readonly kind: 'word'; readonly text: string }
 	| {
@@ -201,7 +206,33 @@ function readUncached(text: string, functionNames: readonly string[]): ReadFormu
 	if (outside !== null) return { ok: false, message: outsideGrid(outside) };
 	const ast = astOf(marked, 'text', functionNames);
 	if (ast === null) return { ok: false, message: UNREADABLE };
+	const indexed = indexedFunctionIn(ast, functionNames);
+	if (indexed !== null) return { ok: false, message: indexedFunctionMessage(indexed) };
 	return { ok: true, ast, refs, names: namesIn(ast) };
+}
+
+/**
+ * Une fonction à indice citée (`f_1(3)`) : le parseur la lit `f₁ × 3`, et la
+ * grille calculait alors avec f, sans rien dire (revue du lot 3) — refusée
+ * jusqu'à ce que la lecture sache l'appeler.
+ */
+function indexedFunctionIn(ast: MathNode, functionNames: readonly string[]): string | null {
+	let found: string | null = null;
+	transformAST(ast, {
+		enterSubscript: (node) => {
+			if (found !== null || node.base.type !== 'variable') return undefined;
+			const index = node.subscript.type === 'number' ? node.subscript.value : null;
+			const name = `${node.base.name}_${index}`;
+			if (index !== null && functionNames.includes(name)) found = name;
+			return undefined;
+		}
+	});
+	return found;
+}
+
+/** Le refus d'une fonction à indice, dans la grille comme pour `.tabuler`. */
+export function indexedFunctionMessage(name: string): string {
+	return `La grille ne lit pas encore une fonction à indice (${name}) : définis-la sous une seule lettre, par exemple k(x) = …`;
 }
 
 /** Les noms qu'une formule cite : variables et fonctions, hors des marques de cellules. */
@@ -384,7 +415,9 @@ export function plainValue(text: string): CellValue {
 	const number = readListValue(text);
 	if (number === null) return { kind: 'word', text };
 	const node = astOf(text, 'text') ?? { type: 'number', value: String(number) };
-	return { kind: 'number', value: number, node, exact: true, shown: text };
+	// Une valeur tapée s'écrit comme l'élève l'a tapée (`1/4` reste `1/4`) : la
+	// règle du décimal (Q-L3-2) ne vaut que pour un résultat de formule
+	return { kind: 'number', value: number, node, exact: true, shown: text, shownExact: true };
 }
 
 function computeCell(
@@ -475,7 +508,7 @@ function numberValue(result: ReturnType<typeof evaluate>, inexact: boolean): Cel
 		value,
 		node: exact ? result.node : decimalNode(value),
 		exact,
-		shown: shownValue(result.node, value, exact),
+		...shownValue(result.node, value, exact),
 		...latexOf(result.node, exact)
 	};
 }
@@ -501,12 +534,52 @@ function decimalNode(value: number): MathNode {
  * attend l'écriture mathématique de la case (PR 2) : jusque-là, sa valeur
  * approchée — jamais `\pi` ni `sqrt` sous les yeux de l'élève (revue).
  */
-function shownValue(node: MathNode, value: number, exact: boolean): string {
+function shownValue(
+	node: MathNode,
+	value: number,
+	exact: boolean
+): { shown: string; shownExact: boolean } {
 	if (exact) {
-		const written = decimalCommaText(toCustom(tidyTerms(node)));
-		if (written.length <= MAX_SHOWN_EXACT && !/[A-Za-z\\]/.test(written)) return written;
+		const custom = toCustom(tidyTerms(node));
+		// Q-L3-2 (lot 3) : un décimal fini s'écrit en décimal (`-3/2` → `-1,5`) ; la
+		// fraction se voit à la sélection, sous la barre
+		const decimal = finiteDecimal(custom);
+		if (decimal !== null && decimal.length <= MAX_SHOWN_EXACT) {
+			return { shown: decimalCommaText(decimal), shownExact: false };
+		}
+		const written = decimalCommaText(custom);
+		if (written.length <= MAX_SHOWN_EXACT && !/[A-Za-z\\]/.test(written)) {
+			return { shown: written, shownExact: true };
+		}
 	}
-	return `≈ ${decimalCommaText(String(Number(value.toFixed(4))))}`;
+	return { shown: `≈ ${decimalCommaText(String(Number(value.toFixed(4))))}`, shownExact: false };
+}
+
+/**
+ * L'écriture décimale EXACTE d'une fraction d'entiers dont le dénominateur n'a
+ * que des 2 et des 5 (`-3/2` → `-1.5`, `27/4` → `6.75`), sinon `null` (`1/3`).
+ * En entiers longs : jamais l'arrondi d'un flottant.
+ */
+function finiteDecimal(written: string): string | null {
+	const match = /^\(?(-?)(\d+)\)?\/(\d+)$|^-\((\d+)\/(\d+)\)$/.exec(written.replaceAll(' ', ''));
+	if (match === null) return null;
+	const negative = match[1] === '-' || match[4] !== undefined;
+	let numerator = BigInt(match[2] ?? match[4]);
+	let denominator = BigInt(match[3] ?? match[5]);
+	if (denominator === 0n) return null;
+	let digits = 0;
+	for (const factor of [2n, 5n]) {
+		while (denominator % factor === 0n) {
+			denominator /= factor;
+			numerator *= factor === 2n ? 5n : 2n;
+			digits++;
+		}
+	}
+	if (denominator !== 1n) return null;
+	const text = numerator.toString().padStart(digits + 1, '0');
+	const whole = text.slice(0, text.length - digits);
+	const fraction = text.slice(text.length - digits).replace(/0+$/, '');
+	return `${negative ? '-' : ''}${whole}${fraction === '' ? '' : `.${fraction}`}`;
 }
 
 /**
