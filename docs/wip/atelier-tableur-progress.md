@@ -246,5 +246,7 @@ liste trouée en citant l'entrée).
 - [x] tests : `formules-tableur-alea.test.ts` (15) — distribution sur 2 000 lancers (la grille n'a
       que 5 200 cases : la phase 0 disait 6 000, corrigée)
 - [x] `drawOf` (graine + adresse + rang), `randomValue`, `gridSeed`, `relaunch()`, `grid.seed`
-- [ ] revue, PR, CI, merge
+- [x] revue : rien de bloquant ni d'important (stabilité, recalcul, lien confirmés par sonde) ;
+      3 mineurs corrigés : bornes > 2^53, au plus un million d'issues (biais), commentaires déplacés
+- [ ] PR, CI, merge
 - [ ] PR 2 : le bouton « Relancer », F9, l'annulation

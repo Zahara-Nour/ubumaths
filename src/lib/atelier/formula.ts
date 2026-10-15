@@ -725,11 +725,6 @@ function orderOf(
 	return { order, cycleNext };
 }
 
-/**
- * Les formules à recalculer : celles dont le texte a changé, qui citent une
- * cellule dont le texte a changé ou un objet qui a changé (ou qui dépend d'un
- * objet changé) — puis, de proche en proche, celles qui les citent.
- */
 /** De proche en proche : une formule qui cite une formule recalculée l'est aussi. */
 function spreadDirty(
 	reads: ReadonlyMap<string, ReadFormula>,
@@ -749,6 +744,11 @@ function spreadDirty(
 	}
 }
 
+/**
+ * Les formules à recalculer : celles dont le texte a changé, qui citent une
+ * cellule dont le texte a changé ou un objet qui a changé (ou qui dépend d'un
+ * objet changé) — puis, de proche en proche, celles qui les citent.
+ */
 function dirtyFormulas(
 	reads: ReadonlyMap<string, ReadFormula>,
 	deps: ReadonlyMap<string, readonly string[]>,
@@ -1062,8 +1062,15 @@ function randomValue(
 		bounds.push(value.value);
 	}
 	const [a, b] = bounds;
-	if (!Number.isInteger(a) || !Number.isInteger(b) || a > b || b - a > MAX_RANDOM_RANGE) {
+	// Des entiers SÛRS (au-delà de 2^53, `a + k` n'est plus représentable : revue)
+	if (!Number.isSafeInteger(a) || !Number.isSafeInteger(b) || a > b) {
 		return { ok: false, value: error(BOUNDS_MESSAGE) };
+	}
+	if (b - a > MAX_RANDOM_RANGE) {
+		return {
+			ok: false,
+			value: error('ALEA.ENTRE.BORNES : au plus un million d’issues (b − a ⩽ 1 000 000).')
+		};
 	}
 	return {
 		ok: true,
@@ -1073,8 +1080,12 @@ function randomValue(
 	};
 }
 
-/** ALEA.ENTRE.BORNES : au plus un milliard d'issues (règle 1, bornes). */
-const MAX_RANDOM_RANGE = 1e9;
+/**
+ * ALEA.ENTRE.BORNES : au plus un million d'issues (règle 1, bornes). Le tirage a
+ * 2^32 valeurs : à un milliard d'issues, certaines sortaient 25 % plus souvent
+ * que d'autres (revue) ; à un million, l'écart reste sous 0,03 %.
+ */
+const MAX_RANDOM_RANGE = 1e6;
 
 /** NB.SI(plage ; critère) : les cases (vides ignorées) qui vérifient le critère. */
 function countIf(

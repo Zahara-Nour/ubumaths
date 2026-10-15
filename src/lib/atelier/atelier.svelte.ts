@@ -2561,16 +2561,6 @@ export class Atelier {
 		this.#recomputeGrid();
 	}
 
-	/**
-	 * Recalculer les formules de la grille (lot 2), puis les listes dont la
-	 * colonne en contient : leurs valeurs sont celles des formules. Seules les
-	 * formules concernées par un changement (texte, cellule citée, objet cité)
-	 * sont recalculées (`computeGrid`, état précédent gardé).
-	 *
-	 * ⚠️ Appelé en DERNIER par `recomputeAll` : les formules lisent les objets
-	 * avec leur statut définitif. Aucun objet ne lit la grille (Q1) : les listes
-	 * se refont ici sans relancer `recomputeAll`.
-	 */
 	/** La graine des tirages (lot 5), lue par le calcul de la grille. */
 	get gridSeed(): number {
 		return this.#seed;
@@ -2588,6 +2578,16 @@ export class Atelier {
 		this.#recomputeGrid();
 	}
 
+	/**
+	 * Recalculer les formules de la grille (lot 2), puis les listes dont la
+	 * colonne en contient : leurs valeurs sont celles des formules. Seules les
+	 * formules concernées par un changement (texte, cellule citée, objet cité)
+	 * sont recalculées (`computeGrid`, état précédent gardé).
+	 *
+	 * ⚠️ Appelé en DERNIER par `recomputeAll` : les formules lisent les objets
+	 * avec leur statut définitif. Aucun objet ne lit la grille (Q1) : les listes
+	 * se refont ici sans relancer `recomputeAll`.
+	 */
 	#recomputeGrid(): void {
 		const texts = gridTexts(this.#entriesByColumn, this.cells);
 		const state = computeGrid(texts, this, this.#gridState);

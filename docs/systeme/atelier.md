@@ -509,7 +509,7 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   le mot compte (`=NB.SI(B$2:B$30;B2)`).
 - **Le hasard** (lot 5, phase 0 : [atelier-tableur-lot5-phase0.md](../wip/atelier-tableur-lot5-phase0.md),
   validée le 2026-10-15) : `ALEA()` (dans [0 ; 1[, approché) et `ALEA.ENTRE.BORNES(a ; b)` (entier
-  exact ; a ⩽ b entiers, au plus 10⁹ issues, sinon refus). Un tirage ne dépend que de la **graine**
+  exact ; a ⩽ b entiers sûrs, au plus un million d’issues, sinon refus). Un tirage ne dépend que de la **graine**
   de l'atelier (`gridSeed`), de l'adresse de la case et du rang de l'appel dans sa formule
   (`drawOf`, `occurrence` fixé à la lecture) : ni de l'ordre de calcul, ni des autres cases ; écrire
   ailleurs, recharger, réécrire la case à l'identique ne le changent pas (T8, Q-L5-5).

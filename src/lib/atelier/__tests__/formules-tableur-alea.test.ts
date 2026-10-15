@@ -197,3 +197,23 @@ describe('Calcul renvoie vers la grille', () => {
 		);
 	});
 });
+
+describe('revue de la PR 1', () => {
+	it('des bornes au-delà des entiers sûrs, ou plus d’un million d’issues : refus', () => {
+		const a = seeded({
+			A1: '=ALEA.ENTRE.BORNES(2^53;2^53+5)',
+			A2: '=ALEA.ENTRE.BORNES(1;2000000)',
+			A3: '=ALEA.ENTRE.BORNES(1;1000000)'
+		});
+		const message = (row: number) => {
+			const v = a.cellValue(A, row);
+			return v.kind === 'error' ? v.message : v.kind;
+		};
+
+		expect(message(1)).toBe(
+			'ALEA.ENTRE.BORNES attend deux entiers a ⩽ b : ALEA.ENTRE.BORNES(1 ; 6).'
+		);
+		expect(message(2)).toBe('ALEA.ENTRE.BORNES : au plus un million d’issues (b − a ⩽ 1 000 000).');
+		expect(message(3)).toBe('number');
+	});
+});
