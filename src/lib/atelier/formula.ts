@@ -33,7 +33,7 @@ import type { AtelierState } from './persistence';
 import { gridContext, termsOf, type GridContext } from './engine';
 import { evaluate } from '$lib/mathAST/eval/evaluate';
 import { getVariables } from '$lib/mathAST/eval/substitute';
-import { transformAST } from '$lib/mathAST/visitor';
+import { transformAST, visitAST } from '$lib/mathAST/visitor';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { tidyTerms } from './tidy-terms';
 import { decimalCommaLatex, decimalCommaText } from './decimal-comma';
@@ -711,7 +711,33 @@ function computeCell(
 	const started = performance.now();
 	const result = evaluate(expanded.ast, { mode: inexact ? 'decimal' : 'exact' });
 	if (performance.now() - started > EXACT_BUDGET_MS) approximate.add(address);
-	return numberValue(result, inexact);
+	return numberValue(result, inexact, hasDivision(expanded.ast));
+}
+
+/**
+ * Le calcul contient-il une division (écrite, d'une fonction comme MOYENNE, d'une
+ * fonction de l'élève, d'une case citée), ou une puissance négative ? Seule une
+ * telle fraction mérite « Valeur exacte » sous la barre (décision de David du
+ * 2026-10-15, option 3) : 3,1416 = 3927/1250, d'un ARRONDI ou d'un décimal
+ * tapé, n'apprend rien.
+ */
+function hasDivision(ast: MathNode): boolean {
+	let found = false;
+	visitAST(ast, {
+		enterDivision: () => {
+			found = true;
+		},
+		enterSuperscript: (node) => {
+			const exponent = node.superscript;
+			if (
+				exponent.type === 'opposite' ||
+				(exponent.type === 'number' && exponent.value.startsWith('-'))
+			) {
+				found = true;
+			}
+		}
+	});
+	return found;
 }
 
 /**
@@ -783,7 +809,11 @@ function error(message: string): CellValue {
 }
 
 /** Le résultat du moteur, en valeur de cellule. */
-function numberValue(result: ReturnType<typeof evaluate>, inexact: boolean): CellValue {
+function numberValue(
+	result: ReturnType<typeof evaluate>,
+	inexact: boolean,
+	divided: boolean
+): CellValue {
 	if (result.status === 'indeterminate') return error(`Calcul impossible : forme ${result.form}.`);
 	if (result.status !== 'value') {
 		return error(reasonMessage(result.status === 'unevaluable' ? result.reason : ''));
@@ -802,7 +832,7 @@ function numberValue(result: ReturnType<typeof evaluate>, inexact: boolean): Cel
 		value,
 		node: exact ? result.node : decimalNode(value),
 		exact,
-		...shownValue(result.node, value, exact),
+		...shownValue(result.node, value, exact, divided),
 		...latexOf(result.node, exact)
 	};
 }
@@ -831,15 +861,17 @@ function decimalNode(value: number): MathNode {
 function shownValue(
 	node: MathNode,
 	value: number,
-	exact: boolean
+	exact: boolean,
+	divided: boolean
 ): { shown: string; shownExact: boolean } {
 	if (exact) {
 		const custom = toCustom(tidyTerms(node));
 		// Q-L3-2 (lot 3) : un décimal fini s'écrit en décimal (`-3/2` → `-1,5`) ; la
 		// fraction se voit à la sélection, sous la barre
 		const decimal = finiteDecimal(custom);
+		// …seulement si elle vient d'une division (option 3) : sinon le décimal dit tout
 		if (decimal !== null && decimal.length <= MAX_SHOWN_EXACT) {
-			return { shown: decimalCommaText(decimal), shownExact: false };
+			return { shown: decimalCommaText(decimal), shownExact: !divided };
 		}
 		const written = decimalCommaText(custom);
 		if (written.length <= MAX_SHOWN_EXACT && !/[A-Za-z\\]/.test(written)) {
