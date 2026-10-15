@@ -180,7 +180,11 @@ Asymptotes, **symbolique d'abord** : sur une fraction rationnelle, `exactAsympto
 horizontale, oblique et polynomiale (courbe) d'un coup, avec leur LaTeX. Ailleurs, repli
 numérique : `findHorizontalAsymptotes`, `findObliqueAsymptotes`, `findPolynomialAsymptotes`
 ajustent un polynôme sur des abscisses lointaines (`fitPolynomialBranch`, extrapolation de
-Richardson). Une limite ou un coefficient plus petit que son incertitude (écart entre les deux
+Richardson). Pour les **horizontales**, la limite symbolique de mathAST (`evaluateLimit` en ±∞,
+en cache par AST) vient en renfort, sans jamais retirer une asymptote : elle **ajoute** celle que
+les sondes voient converger trop lentement (ln(x)/√x, 1/ln x) et **confirme** celle qu'elles
+trouvent, avec son écriture exacte (`y = e` pour (1 + 1/x)^x) ; en désaccord, le numérique garde
+la main (2026-10-15). Une limite ou un coefficient plus petit que son incertitude (écart entre les deux
 dernières sondes, dispersion des extrapolations) vaut **0** (`snapToZero`) : ln(x)/x recevait
 `y = 0,0000862`. Les abscisses de sondage (`LARGE_X_VALUES`) ne sont volontairement **pas** des
 puissances de 10 (elles tombaient sur la période de `cos(πx/50)`).
@@ -333,7 +337,8 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
   survivances « rétrocompatibilité » ; le code importe tantôt eux, tantôt `geometry-core`.
 - Une somme de pôles périodiques et isolés (tan(x) + 1/(x − 3)) : `getAllDiscontinuities` ne
   rend que la famille de tan, le pôle 3 vient du seul balayage — perdu au dézoom.
-- Une limite atteinte très lentement (ln(x)/√x → 0) n'est pas reconnue : aucune horizontale.
+- Une limite lente que le moteur symbolique ne sait pas calculer reste invisible : le numérique
+  seul exige une convergence en moins de 137 299.
 - `getAllDiscontinuities` ne voit pas le pôle de 1/(ln x − 1) en x = e : trouvé à ±10, perdu
   au dézoom.
 - Avec un curseur, chaque valeur rebâtit l'AST et refait l'analyse : mesuré le 2026-10-15 avec

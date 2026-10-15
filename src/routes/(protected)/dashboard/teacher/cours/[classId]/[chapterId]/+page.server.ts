@@ -723,11 +723,21 @@ export const actions: Actions = {
 			return fail(400, { error: 'Élément invalide', action: 'setHidden' });
 		}
 
-		const { error: hideError, notFound } = await setLinkedElementHidden(
+		const {
+			error: hideError,
+			notFound,
+			sectionHidden
+		} = await setLinkedElementHidden(
 			{ chapterId: chapterIdCheck.data, ...validation.data },
 			locals.supabase
 		);
 
+		if (sectionHidden) {
+			return fail(409, {
+				error: 'Sa section est masquée : réaffichez la section d’abord',
+				action: 'setHidden'
+			});
+		}
 		if (notFound) {
 			return fail(404, { error: 'Élément du modèle introuvable', action: 'setHidden' });
 		}

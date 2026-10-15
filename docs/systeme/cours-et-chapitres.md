@@ -140,6 +140,11 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   son rang à une section masquée cachée (`avecMasquesASaPlace`). Côté élève et lien de
   consultation, rien à filtrer : une section n'y paraît que si elle porte un contenu publié, et
   celui d'une section masquée ne l'est jamais. La page du modèle n'a pas ce bouton.
+  **Le serveur le garde aussi** (2026-10-15) : `assignToSection` (donc `placeInSection` et les
+  routes `sections/assign`) refuse de ranger un élément VISIBLE dans une section masquée
+  (`hiddenSection`, 409) — réordonner son contenu déjà masqué reste permis ; `setLinkedElementHidden`
+  refuse de réafficher seul un élément d'une section masquée (`sectionHidden`, 409 « réaffichez la
+  section d'abord »). Test : `tests/integration/sections-masquees-serveur.test.ts`.
 - Un chapitre caché (`is_visible` faux) se dit « Invisible des élèves » ; « Masqué » est réservé
   à ce qu'une classe écarte de son plan.
 - API appelées par l'interface : `api/teacher/chapters/[id]/sections/**` (éditeur de sections),
@@ -514,13 +519,11 @@ Jeton ou identifiant mal formé (Zod) → 404 **sans** appel à la base ; `null`
    **troisième sens** de « publier » de [CONTEXT.md](../../CONTEXT.md) (mis à disposition des élèves),
    mais par un booléen, plus `entry_date <= current_date` dans la policy élève, et non par une date
    `published_at` testée `<= now()` comme le veut l'[ADR 0005](../adr/0005-publication-par-element-acces-herite-de-la-classe.md).
-2. **Colonnes de l'ancien système de versions encore en base** (voir « Modèles de chapitre ») :
-   plus lues par le code depuis l'étape 5A ; leur suppression est une migration destructive, à
-   faire après le déploiement du code qui n'en dépend plus.
-3. **Règle « un chapitre sans contenu ne fait pas un modèle »** : la page du chapitre
-   (`[classId]/[chapterId]/+page.svelte`) ne compte pas les séries (Q128, héritée du snapshot qui
-   ne les emportait pas), alors que le modèle les emporte désormais et que `templateHasContent`
-   (publication) les compte. Décision en attente.
+2. _(Résolu le 2026-10-15 : les colonnes de l'ancien système de versions sont supprimées,
+   migration `20261016103800`.)_
+3. _(Résolu le 2026-10-15 : « Faire un modèle » compte les séries, comme `templateHasContent` —
+   `chapterHasTemplateContent`, `src/lib/components/cours/teacher/chapter-has-template-content.ts`.
+   La règle Q128 venait de l'ancien modèle « snapshot ».)_
 4. **API REST sans appelant dans `src/`** (grep du 2026-10-14) : `api/teacher/chapters` (racine,
    `[id]`, `checklist`, `exercises`, `worksheets`, `progress`, `reorder`),
    `api/student/chapters/**`, `api/student/checklist/**`. L'interface passe par les actions de

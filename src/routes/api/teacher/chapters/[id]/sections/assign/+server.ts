@@ -39,7 +39,11 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 		throw error(400, `Validation échouée : ${message}`);
 	}
 
-	const { error: assignError, notFound } = await assignToSection(
+	const {
+		error: assignError,
+		notFound,
+		hiddenSection
+	} = await assignToSection(
 		chapterId,
 		validation.data.sectionId,
 		validation.data.items,
@@ -49,6 +53,10 @@ export const POST: RequestHandler = async ({ locals, params, request }) => {
 	// La clé composite refuse une section d'un AUTRE chapitre (23503). C'est une
 	// demande incohérente du client, pas une panne du serveur.
 	if (assignError) {
+		// Section masquée : seul son contenu déjà masqué peut y être réordonné.
+		if (hiddenSection) {
+			throw error(409, 'Section masquée : réaffichez-la avant d’y ranger un élément');
+		}
 		// Zéro ligne rangée : la ressource n'est pas (ou plus) dans ce chapitre,
 		// ou la RLS la refuse. Pas une panne du serveur.
 		if (notFound) {

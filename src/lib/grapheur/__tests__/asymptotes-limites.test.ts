@@ -12,10 +12,14 @@
 
 import { describe, it, expect } from 'vitest';
 import {
+	analyzeFunction,
+	buildAnalysisAST,
+	cachedEvaluator,
 	findHorizontalAsymptotes,
 	findObliqueAsymptotes,
 	findPolynomialAsymptotes
 } from '../analysis';
+import { parseFunction } from '../evaluator';
 
 describe('asymptotes horizontales', () => {
 	it('trouve une limite atteinte exactement', () => {
@@ -283,5 +287,40 @@ describe('limite nulle estimée de loin', () => {
 		const found = findPolynomialAsymptotes((x) => (x > 0 ? x * x + Math.log(x) / x : null), 'f');
 		expect(found.length).toBe(1);
 		expect(found[0].coefficients[0]).toBe(0);
+	});
+});
+
+describe('limites horizontales : le symbolique en renfort', () => {
+	const analyze = (latex: string) => {
+		const parsed = parseFunction(latex);
+		if (!parsed.ast) throw new Error(`illisible : ${latex}`);
+		return analyzeFunction(
+			cachedEvaluator(parsed.ast),
+			{ xMin: -10, xMax: 10, yMin: -10, yMax: 10 },
+			'f',
+			buildAnalysisAST(parsed.ast)
+		).horizontalAsymptotes;
+	};
+
+	it('trouve y = 0 pour ln(x)/√x, que les sondes voient converger trop lentement', () => {
+		// En x = 137 299, ln(x)/√x vaut encore 0,032 : l'estimation numérique renonce.
+		const found = analyze('\\frac{\\ln(x)}{\\sqrt{x}}');
+		expect(found.map((a) => [a.direction, a.y])).toEqual([['right', 0]]);
+	});
+
+	it('écrit la limite exacte quand le symbolique confirme le numérique', () => {
+		const found = analyze('\\left(1+\\frac{1}{x}\\right)^{x}');
+		const right = found.find((a) => a.direction !== 'left');
+		expect(right?.exactLatex).toBe('y = \\exponentialE');
+		expect(right?.y).toBeCloseTo(Math.E, 9);
+	});
+
+	it('garde le numérique là où le symbolique ne sait pas (arctan)', () => {
+		const found = analyze('\\arctan(x)');
+		expect(found.map((a) => a.y.toFixed(4))).toEqual(['1.5708', '-1.5708']);
+	});
+
+	it("ne pose pas d'asymptote sur une constante", () => {
+		expect(analyze('3')).toEqual([]);
 	});
 });

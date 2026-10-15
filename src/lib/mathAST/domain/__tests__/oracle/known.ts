@@ -13,8 +13,6 @@ export const KNOWN_WRONG: Readonly<Record<string, string>> = {};
 
 /** Refus connus (contrainte non résolue : le moteur le dit au lieu de mentir). */
 export const KNOWN_REFUSED: Readonly<Record<string, string>> = {
-	// 1 − ln x ≠ 0 : borne e (non rationnelle) pas encore inversée
-	'comp-16': 'refus',
 	// paramètres : le domaine dépend de a, m (non représentable sans cas)
 	'param-1': 'refus',
 	'param-2': 'refus',

@@ -222,17 +222,37 @@ export async function assignToSection(
 	sectionId: string | null,
 	items: SectionAssignment[],
 	supabase: SupabaseClient<Database>
-): Promise<{ error: Error | null; notFound?: boolean }> {
+): Promise<{ error: Error | null; notFound?: boolean; hiddenSection?: boolean }> {
 	const proprietaire = toOwner(owner);
+
+	// Une section masquée ne reçoit que des éléments déjà masqués (réordonner son
+	// contenu) : un élément visible y naîtrait publiable, alors que masquer la
+	// section a dépublié tout ce qu'elle contient (décision du 2026-10-14).
+	let sectionMasquee = false;
+	if (sectionId && proprietaire.kind === 'chapter') {
+		const { data: section, error: sectionError } = await supabase
+			.from('chapter_sections')
+			.select('hidden')
+			.eq('id', sectionId)
+			.eq('chapter_id', proprietaire.id)
+			.maybeSingle();
+		if (sectionError) {
+			logger.error('[assignToSection] Section illisible :', sectionError);
+			return { error: new Error(sectionError.message) };
+		}
+		sectionMasquee = section?.hidden === true;
+	}
+
 	for (const item of items) {
 		const table = CONTENT_TABLES[item.kind];
 
-		const { data, error } = await supabase
+		let requete = supabase
 			.from(table as never)
 			.update({ section_id: sectionId, section_order: item.sectionOrder } as never)
 			.eq('id', item.id)
-			.eq(ownerColumn(proprietaire), proprietaire.id)
-			.select('id');
+			.eq(ownerColumn(proprietaire), proprietaire.id);
+		if (sectionMasquee) requete = requete.eq('hidden', true);
+		const { data, error } = await requete.select('id');
 
 		if (error) {
 			logger.error(`[assignToSection] ${table} :`, error);
@@ -243,6 +263,12 @@ export async function assignToSection(
 		// autre chapitre) rend zéro ligne SANS erreur. Sans ce contrôle, l'écran
 		// annonçait « rangé » et le rechargement montrait l'ancien plan.
 		if (!data || (data as unknown[]).length !== 1) {
+			if (sectionMasquee) {
+				return {
+					error: new Error('Section masquée : réaffichez-la avant d’y ranger un élément'),
+					hiddenSection: true
+				};
+			}
 			logger.error(`[assignToSection] ${table} : aucune ligne rangée pour ${item.id}`);
 			return { error: new Error('Ressource introuvable dans ce chapitre'), notFound: true };
 		}
@@ -305,7 +331,7 @@ export async function placeInSection(
 	kind: SectionContentKind,
 	itemId: string,
 	supabase: SupabaseClient<Database>
-): Promise<{ error: Error | null }> {
+): Promise<{ error: Error | null; hiddenSection?: boolean }> {
 	const proprietaire = toOwner(owner);
 	const { data: rang, error } = await nextSectionOrder(proprietaire, sectionId, supabase);
 	if (error || rang === null) return { error: error ?? new Error('Rang illisible') };
