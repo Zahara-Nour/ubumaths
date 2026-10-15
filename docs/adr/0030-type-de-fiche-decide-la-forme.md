@@ -1,6 +1,7 @@
 # 0030 — Le type de fiche décide de la forme du PDF ; les options d'affichage disparaissent
 
-- **Statut** : acceptée — mise en œuvre à faire
+- **Statut** : acceptée — mise en œuvre terminée le 2026-10-15 (#1428 → #1446) ; journal archivé :
+  `docs/archive/wip/type-de-fiche-progress.md`
 - **Date** : 2026-10-15 · **Décidée par** : David
 
 ## Contexte

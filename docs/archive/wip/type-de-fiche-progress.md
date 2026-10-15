@@ -1,7 +1,7 @@
 # Chantier — le type de fiche décide de la forme du PDF (ADR 0030)
 
 Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision :
-[ADR 0030](../adr/0030-type-de-fiche-decide-la-forme.md).
+[ADR 0030](../../adr/0030-type-de-fiche-decide-la-forme.md).
 
 ## Décisions de David (2026-10-15)
 
