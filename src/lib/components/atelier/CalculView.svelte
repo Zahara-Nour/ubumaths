@@ -23,6 +23,9 @@
 	import { tick } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import ChevronDown from '@lucide/svelte/icons/chevron-down';
+	import { answerToCopy } from '$lib/atelier/copy-text';
 	import { insertProposal, proposalsFor, type Proposal } from '$lib/atelier/completion';
 	import GeneratedStepsCorrection from '$lib/components/questions/GeneratedStepsCorrection.svelte';
 	import VariationTable from '$lib/components/markdown/nodes/VariationTable.svelte';
@@ -498,6 +501,23 @@
 		}
 	}
 
+	/**
+	 * Copier la réponse d'une ligne (phase 0 `atelier-copier-phase0.md`). Le
+	 * retour va dans la ligne de retour de Calcul, annoncée ; vidée d'abord, pour
+	 * qu'une seconde copie soit annoncée aussi.
+	 */
+	async function copyAnswer(text: string, message: string) {
+		desk.notice = null;
+		try {
+			await navigator.clipboard.writeText(text);
+			await tick();
+			desk.notice = message;
+		} catch {
+			// Permission refusée, contexte non sécurisé : jamais un échec muet
+			desk.notice = 'Ton navigateur a refusé la copie.';
+		}
+	}
+
 	function toggleAlternative(id: number) {
 		toggled = toggled.includes(id) ? toggled.filter((x) => x !== id) : [...toggled, id];
 	}
@@ -588,6 +608,7 @@
 	<ol class="historique">
 		{#each desk.entries as entry, index (entry.id)}
 			{@const markup = markupOf(entry)}
+			{@const copied = answerToCopy(entry, toggled.includes(entry.id))}
 			{@const written = inputMarkupOf(entry)}
 			<li class:refus={entry.failed}>
 				<p class="saisie" id="{uid}-saisie-{entry.id}">
@@ -629,6 +650,47 @@
 						<Button variant="ghost" size="sm" class="garder" onclick={() => desk.keep(entry)}>
 							Garder…
 						</Button>
+					{/if}
+					{#if copied !== null}
+						<!-- La réponse seule, en texte lisible ; le LaTeX au menu (David, 2026-10-15) -->
+						<span class="copier">
+							<Button
+								variant="ghost"
+								size="sm"
+								onclick={() =>
+									copyAnswer(
+										copied.text,
+										copied.asLatex === true
+											? 'Copié en LaTeX : cette réponse ne s’écrit pas en texte.'
+											: 'Copié.'
+									)}
+							>
+								Copier
+							</Button>
+							{#if copied.latex !== undefined && copied.asLatex !== true}
+								{@const latex = copied.latex}
+								<DropdownMenu.Root>
+									<DropdownMenu.Trigger>
+										{#snippet child({ props })}
+											<Button
+												{...props}
+												variant="ghost"
+												size="sm"
+												class="px-1"
+												aria-label="Autres façons de copier"
+											>
+												<ChevronDown class="size-4" aria-hidden="true" />
+											</Button>
+										{/snippet}
+									</DropdownMenu.Trigger>
+									<DropdownMenu.Content align="end">
+										<DropdownMenu.Item onclick={() => copyAnswer(latex, 'Copié en LaTeX.')}>
+											Copier en LaTeX
+										</DropdownMenu.Item>
+									</DropdownMenu.Content>
+								</DropdownMenu.Root>
+							{/if}
+						</span>
 					{/if}
 					{#if entry.steps !== undefined}
 						<Button
@@ -869,6 +931,11 @@
 	.texte {
 		white-space: pre-wrap;
 	}
+	.copier {
+		display: inline-flex;
+		align-items: center;
+	}
+
 	.note {
 		flex-basis: 100%;
 		font-size: 0.8125rem;
