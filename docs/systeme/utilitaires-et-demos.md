@@ -247,7 +247,7 @@ Exports sans appelant hors tests (`git grep -lw <nom> -- src`, `__tests__` exclu
 
 - `utils.ts` : `flyAndScale` ;
 - `format.ts` : `formatNumber` ;
-- `worksheet-constants.ts` : `formatDate`, `NUMBERING_STYLE_OPTIONS`, `PAGE_LAYOUT_OPTIONS` ;
+- `worksheet-constants.ts` : `formatDate` ;
 - `file-upload.ts` : `deleteChatAttachment`, `validateFileType`, `getFileIcon` (quatre fichiers
   redéfinissent leur propre `getFileIcon`) ;
 - `filename.ts` : `getFilenameWithoutExtension` ;

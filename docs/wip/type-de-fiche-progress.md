@@ -36,6 +36,10 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
 
 ## Lot 1 — le type décide de l'en-tête (spécification)
 
+- Amendement de David (2026-10-15) : la fiche d'exercices a UNE option, « Nom de l'élève »
+  (`show_student_name`, non cochée par défaut) : le nom seul, ni classe ni date (groupes de
+  niveaux).
+
 - Types proposés : `worksheet` Fiche d'exercices, `assessment` Évaluation écrite, `homework`
   Devoir maison, `exam` Examen blanc (EN : Worksheet, Written test, Homework, Mock exam). `quiz`
   retiré du code (la contrainte CHECK en base l'accepte encore ; aucune ligne).
@@ -63,7 +67,11 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
 ## État
 
 - [x] Phase 0 : cartographie + spécification + question d'accès → validée
-- [ ] Lot 1
+- [x] Lot 1 (2026-10-15) : règle pure `worksheetHeader` (prof et élève), 4 types (quiz refusé
+      par Zod), options du type dans `WorksheetTypeOptions` (création + fiche), « Nom de l'élève »
+      en option de la fiche d'exercices (amendement de David), corrigé toujours détaillé, chiffres
+      arabes, cadre unique si « réponses sur le sujet ». 12 styles × 4 types × FR/EN compilés par
+      le compilateur de prod. Reste : CONTEXT.md (entrées de l'ADR), tests d'intégration à lancer.
 - [ ] Lot 2
 - [ ] Lot 3
 - [ ] Lot 4
