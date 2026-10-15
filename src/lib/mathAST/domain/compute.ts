@@ -66,7 +66,19 @@ import {
 	rationalToNumber
 } from '../normal/rational';
 import { findNodes } from '../transforms';
-import { number as numberNode, divide, multiply, add } from '../factory';
+import {
+	number as numberNode,
+	divide,
+	multiply,
+	add,
+	subtract,
+	opposite,
+	parentheses,
+	euler,
+	superscript,
+	ln as lnNode
+} from '../factory';
+import { toPolynomial } from '../factor/polynomial';
 import { getBuiltinDomain, hasRestrictedDomain, getBuiltinRangeEntry } from './builtins';
 import { isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
 import { ZERO_TOLERANCE } from '../common';
@@ -1162,9 +1174,64 @@ function shiftedLinearRoot(
 }
 
 /**
+ * `u ⊳ K`, u = a·x + b à coefficients rationnels, K constante EXACTE sans x
+ * (e², ln 3…) : x ⊳ (K − b)/a, sens retourné si a < 0. C'est le dernier pas
+ * de `invertMonotone` quand la borne cesse d'être rationnelle
+ * (ln(2x) ⊳ −2 → 2x ⊳ e^{-2}) ; `null` si u n'est pas affine.
+ */
+function solveAffineAgainstConstant(
+	u: MathNode,
+	op: '>=' | '<=',
+	K: MathNode,
+	strict: boolean,
+	variable: string
+): Domain | null {
+	const poly = toPolynomial(u, variable);
+	if (!poly || poly.length !== 2) return null;
+	const [b, a] = poly;
+	const positiveSlope = !isRationalNegative(a);
+	// a > 0 : x = (K − b)/a ; a < 0 : x = (b − K)/|a|
+	let numerator: MathNode;
+	if (isRationalZero(b)) numerator = positiveSlope ? K : opposite(K);
+	else if (!positiveSlope) numerator = subtract(rationalNode(b), K);
+	else if (isRationalNegative(b)) numerator = add(K, rationalNode(negRational(b)));
+	else numerator = subtract(K, rationalNode(b));
+	const absA = positiveSlope ? a : negRational(a);
+	let root: MathNode = numerator;
+	if (absA.n !== absA.d) {
+		// |a| = p/q : x = q·N/p (pas de fraction étagée) ; −K/2 : signe devant
+		const negated = isRationalZero(b) && !positiveSlope;
+		const body = negated ? K : numerator;
+		const scaled =
+			absA.d === 1n
+				? body
+				: multiply(
+						numberNode(absA.d.toString()),
+						isRationalZero(b) ? body : parentheses(body),
+						'implicit'
+					);
+		const quotient =
+			absA.n === 1n ? scaled : divide(scaled, numberNode(absA.n.toString()), 'inline');
+		root = negated ? opposite(quotient) : quotient;
+	}
+	const up = (op === '>=') === positiveSlope;
+	return intervalDomain([
+		up
+			? strict
+				? greaterThanInterval(root)
+				: greaterThanOrEqualInterval(root)
+			: strict
+				? lessThanInterval(root)
+				: lessThanOrEqualInterval(root)
+	]);
+}
+
+/**
  * `expr ⊳ c` quand expr = f(u) (f monotone) ou A ± k, k·A, A/k, −A : on
- * ramène la contrainte sur u. Uniquement quand la nouvelle borne reste
- * rationnelle (ln u ≥ 0 → u ≥ 1, mais ln u ≥ 2 → refus plutôt que e² décimal).
+ * ramène la contrainte sur u. La borne reste rationnelle tant que possible
+ * (ln u ≥ 0 → u ≥ 1) ; sinon, ln et exp donnent une borne exacte (e², ln 3)
+ * que seul un u affine sait recevoir (`solveAffineAgainstConstant`) :
+ * ln u ≥ 2 → u ≥ e², jamais un décimal.
  */
 function invertMonotone(
 	expr: MathNode,
@@ -1263,8 +1330,13 @@ function invertMonotone(
 				return solveInequalityForPreimage(u, op, powRationalInt(c, n), strict, variable);
 			}
 			if (name === 'ln' || name === 'log' || name === 'log10' || name === 'log2') {
-				if (!isRationalZero(c)) return null;
-				return solveInequalityForPreimage(u, op, RATIONAL_ONE, strict, variable);
+				if (isRationalZero(c)) {
+					return solveInequalityForPreimage(u, op, RATIONAL_ONE, strict, variable);
+				}
+				// ln u ⊳ c ⟺ u ⊳ e^c (log10, log2 : non couverts)
+				if (name !== 'ln') return null;
+				const bound = rationalToNumber(c) === 1 ? euler() : superscript(euler(), rationalNode(c));
+				return solveAffineAgainstConstant(u, op, bound, strict, variable);
 			}
 			if (name === 'exp') return invertExp(u, op, c, strict, variable);
 			if (name === 'abs') {
@@ -1335,14 +1407,10 @@ function invertExp(
 	variable: string
 ): Domain | null {
 	const cv = rationalToNumber(c);
-	if (op === '>=') {
-		if (cv <= 0) return universalDomain();
-		if (cv === 1) return solveInequalityForPreimage(u, '>=', RATIONAL_ZERO, strict, variable);
-		return null;
-	}
-	if (cv <= 0) return emptyDomain();
-	if (cv === 1) return solveInequalityForPreimage(u, '<=', RATIONAL_ZERO, strict, variable);
-	return null;
+	if (cv <= 0) return op === '>=' ? universalDomain() : emptyDomain();
+	if (cv === 1) return solveInequalityForPreimage(u, op, RATIONAL_ZERO, strict, variable);
+	// e^u ⊳ c, c > 0 ⟺ u ⊳ ln c
+	return solveAffineAgainstConstant(u, op, lnNode(rationalNode(c)), strict, variable);
 }
 
 /**

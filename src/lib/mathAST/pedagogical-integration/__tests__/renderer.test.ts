@@ -10,7 +10,6 @@ import { describe, expect, it } from 'vitest';
 import { add, exp, implicitMultiply, ln, number, power, sin, variable } from '../../factory';
 import {
 	generatePedagogicalIntegrationSteps,
-	PedagogicalIntegrationNotImplemented,
 	PedagogicalIntegrationRenderer,
 	type PedagogicalIntegrationStep
 } from '..';
@@ -400,11 +399,24 @@ describe('intégrale définie : refus, suites de la revue de V28', () => {
 		);
 	});
 
-	it('domaine non résolu, bornes numériques : aucun nombre publié (repli sur le mode A)', () => {
-		// pôle ln 2 ∈ [0 ; 1] que `domain/` ne sait pas résoudre (eˣ − 2 ≠ 0)
-		expect(() => renderDefinite('\\frac{e^x}{e^x-2}', '0', '1')).toThrow(
-			PedagogicalIntegrationNotImplemented
-		);
+	it('pôle transcendant ln 2 ∈ [0 ; 1] : refus propre, aucun nombre publié', () => {
+		// 2026-10-15 : ce test attendait un `throw` (domaine non résolu,
+		// eˣ − 2 ≠ 0 pas inversé). `domain/` exclut maintenant ln 2 exactement :
+		// le refus est l'étape `integrand-undefined-on-interval`, juste parce
+		// que ln 2 ≈ 0,69 appartient à [0 ; 1].
+		const { result } = renderDefinite('\\frac{e^x}{e^x-2}', '0', '1');
+		expect(result.value).toBeUndefined();
+		expect(result.steps.map((s) => s.rule)).toEqual([
+			'identify-definite-integral',
+			'integrand-undefined-on-interval'
+		]);
+		expect(result.undefinedAt).toBeDefined();
+		if (result.undefinedAt === undefined) return;
+		expect(toLatex(result.undefinedAt)).toMatch(/\\ln/);
+		const pole = compile(result.undefinedAt)({});
+		expect(pole).toBeCloseTo(Math.LN2, 12);
+		expect(pole).toBeGreaterThanOrEqual(0);
+		expect(pole).toBeLessThanOrEqual(1);
 		// le mode A (moteur) refuse aussi
 		const engine = integrateDefinite(
 			parseLatex('\\frac{e^x}{e^x-2}'),
