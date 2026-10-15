@@ -297,7 +297,7 @@ l'ensemble de départ → celui de `f(5)` hors intervalle. `.variations` et `.r�
 l'ensemble de départ de f⁻¹ (`citedReciprocalInterval`). Une g qui cite `f⁻¹` passe en erreur avec
 le refus quand f cesse d'être bijective (`#underivable`). ⚠️ Calculer `f⁻¹` relit les autres objets,
 dont g : une réciproque redemandée en cours de calcul est indisponible (`resolving`), l'objet qui la
-cite est laissé de côté ; les formules sont gardées tant que l'atelier ne change pas (`formulas`, sinon cinq réciproques citées coûtaient 11 s). L'argument de `f⁻¹(…)` est vérifié sur l'arbre (`f⁻¹(g(2))`, `\left(…\right)`). Un nom à indice (`f_1⁻¹`) est refusé (les parseurs y lisent une puissance) ; `f⁻¹(x) = 5x` aussi : elle se calcule, elle ne se définit pas. `g(x) = f⁻¹(x)` hérite de l'ensemble de DÉPART de f⁻¹ (`citedIntervals` reçoit `citedReciprocalInterval`), et l'empreinte du moteur (`atelierMark`) contient les ensembles : f qui change d'ensemble change g. En erreur, `g(4)` rend le message de g. L'inverse s'écrit `1/f(x)` ou `f(x)^-1` ; `x^-1`, `2^-1`, `a^-1` restent
+cite est laissé de côté ; les formules sont gardées tant que l'atelier ne change pas (`formulas`, sinon cinq réciproques citées coûtaient 11 s). L'argument de `f⁻¹(…)` est vérifié sur l'arbre (`f⁻¹(g(2))`, `\left(…\right)`). Un nom à indice (`f_1⁻¹`) est refusé (garde de l'atelier, posée quand les parseurs y lisaient une puissance ; ils lisent `f_1(…)` depuis le 2026-10-15, la réciproque d'une fonction à indice reste à ouvrir) ; `f⁻¹(x) = 5x` aussi : elle se calcule, elle ne se définit pas. `g(x) = f⁻¹(x)` hérite de l'ensemble de DÉPART de f⁻¹ (`citedIntervals` reçoit `citedReciprocalInterval`), et l'empreinte du moteur (`atelierMark`) contient les ensembles : f qui change d'ensemble change g. En erreur, `g(4)` rend le message de g. L'inverse s'écrit `1/f(x)` ou `f(x)^-1` ; `x^-1`, `2^-1`, `a^-1` restent
 des puissances. `.réciproque f⁻¹` répond « La réciproque de f⁻¹, c'est f. ». La carte **suit f** (`#reciprocals`, en
 dernier dans `recomputeAll`) : formule rangée en texte (provenance `text`), `interval` = son
 ensemble de départ f(I) (Q5 : le tracé et les calculs suivent, `ℝ` n'est pas rangé) ; f devenue
@@ -427,8 +427,9 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   titrées `x` et `f(x)` (la lettre de l'élève : `t`, `f(t)`) — un tableau **vivant**, en un seul
   geste (T6). `planTabulation` (`tabulate.ts`) prépare et refuse, tout ou rien : pas ⩽ 0, fin avant
   le début, borne illisible ou vide, plus de 200 lignes, moins de deux colonnes libres, objet qui
-  n'est pas une fonction ; une fonction en attente (`f(x) = k*x` sans k : la phrase de Calcul), une
-  réciproque `f⁻¹` et une fonction à indice `f_1` (la grille ne sait pas encore les appeler). Un pas
+  n'est pas une fonction ; une fonction en attente (`f(x) = k*x` sans k : la phrase de Calcul) et une
+  réciproque `f⁻¹` (la grille ne sait pas encore l'appeler) ; une fonction à indice `f_1` se tabule
+  depuis que le parseur lit `f_1(…)` comme un appel (2026-10-15). Un pas
   qui ne tombe pas juste s'arrête à la dernière abscisse ⩽ fin, et une note la dit telle que la case
   la montre (`12/7`). Tabuler deux fois écrit deux nouvelles colonnes (Q-L3-4). Valeurs par défaut
   (`tabulationDefaults`, Q-L3-3) : de −5 à 5 pas 1, ou les bornes d'un intervalle fermé `[a ; b]`
