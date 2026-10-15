@@ -457,7 +457,7 @@ cadre unique garde la sienne). Le PDF du prof la reçoit par la copie (`buildWor
 3 lignes [+] auto »), ou « Cadre » en mode exercice ; « modifié ↺ » (↺ remet en auto) ; 0 ligne =
 « (pas de cadre) » ; avertissement « Les questions de l'exercice ont changé : cadres remis en
 automatique ». Estimation de départ : copie guidée hors affectation (celle de l'aperçu PDF).
-Sauvegarde optimiste regroupée (600 ms) par `PUT /api/worksheets/[id]/exercises/[exerciseId]`
+Sauvegarde optimiste regroupée (600 ms) et en série (une requête à la fois ; envoyée aussitôt, `keepalive`, si l'éditeur est démonté avant) par `PUT /api/worksheets/[id]/exercises/[exerciseId]`
 (brouillon seulement, comme les points ; écriture `.select()`, aucune ligne rendue → 404
 explicite), retour arrière + `toaster.error` si elle échoue. Le schéma de mise à jour n'applique
 plus les défauts de la création (`.partial()` seul remettait `is_essential` à faux). Nombre de

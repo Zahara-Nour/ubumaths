@@ -102,7 +102,7 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
       de l'élève (`printed_frame_lines`, lignes résolues seulement) ; écriture par le PUT de
       l'exercice de fiche (Zod `.strict()`, `.select()`, 404 si aucune ligne ; défauts de création
       plus appliqués à la mise à jour) ; `AnswerFrameLinesEditor` sous chaque exercice ; « Aperçu :
-      N pages » dans `PdfPreview`. Reste : code-reviewer + security-auditor (API élève), PR, CI.
+      N pages » dans `PdfPreview`. code-reviewer (sauvegardes en série, démontage : corrigés) et security-auditor (aucun bloquant) passés. Reste : PR, CI.
 - [ ] Hors lot, à trancher par David : duplication de fiche et PDF par lien de partage (RPC) ne
       recopient ni ne lisent `answer_frame_lines` ; réglage impossible sur une fiche publiée (le PUT
       n'accepte qu'un brouillon, comme les points) ; un cadre de 40 lignes (32 cm) dépasse la page.
