@@ -241,10 +241,12 @@ describe('answer_frame_lines : ceux qui ne sont pas l’auteur', () => {
 	});
 
 	it('un élève sans la fiche ne la lit pas et ne l’écrit pas', async () => {
-		const { data: read } = await otherStudentClient
+		const { data: read, error: readError } = await otherStudentClient
 			.from('worksheet_exercises')
 			.select('answer_frame_lines')
 			.eq('id', rowId);
+		// Refus de la RLS = zéro ligne SANS erreur (une erreur prouverait autre chose)
+		expect(readError).toBeNull();
 		expect(read ?? []).toHaveLength(0);
 
 		const { data } = await otherStudentClient
