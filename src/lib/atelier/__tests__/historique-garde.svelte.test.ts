@@ -89,7 +89,14 @@ describe('au rechargement, les lignes de Calcul reviennent', () => {
 		expect(second.lines()[0].querySelector('.math .ML__latex')).not.toBeNull();
 		expect(second.lines()[2].classList.contains('refus')).toBe(true);
 		const buttons = second.lines().flatMap((li) => [...li.querySelectorAll('button')]);
-		expect(buttons.map((b) => b.textContent?.trim())).toEqual(['Valeur approchée']);
+		// Ni « Garder » ni « Comment ? » ; « Copier » reste, la réponse a sa formule
+		expect(buttons.map((b) => b.textContent?.trim() || b.getAttribute('aria-label'))).toEqual([
+			'Valeur approchée',
+			'Copier',
+			'Autres façons de copier',
+			'Copier',
+			'Autres façons de copier'
+		]);
 	});
 
 	it('↑ rappelle la dernière saisie tapée', async () => {
