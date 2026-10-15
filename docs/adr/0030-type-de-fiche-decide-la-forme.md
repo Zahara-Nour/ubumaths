@@ -65,3 +65,6 @@ titre, place pour répondre.
 - `CONTEXT.md` : la ligne **Contrôle** ne dit plus « sur papier : une fiche de type contrôle » ;
   entrée **Type de fiche** ajoutée ; **Correction détaillée** : le corrigé PDF est toujours détaillé.
 - Les cadres demandent un réglage par question dans la fiche (nouvelle donnée, migration additive).
+- **Nom pré-imprimé** : imprimer une fiche en **une copie par élève**, chacune à son nom (classe ou
+  groupe de niveaux), pour donner la bonne fiche à la bonne personne. Le nom vient de la liste des
+  élèves, jamais d'une saisie ; lot à part, après les cadres.
