@@ -213,5 +213,5 @@ liste trouée en citant l'entrée).
 - [x] revue (2 importants, 3 mineurs) : ARRONDI(1/3;1000000) gelait l'onglet → n borné à ±15 ;
       ARRONDI(PI();20) se disait exact → au-delà de 15 chiffres sur un flottant, approché ; aide
       sur `=A1*ab` ; refus qui citait SOMME ; « Valeur exacte » sous ARRONDI laissé à David
-- [ ] PR, CI, merge
+- [x] PR 2 mergée : #1431
 - [ ] PR 3 : SI, NB.SI, texte entre guillemets, comparaisons, renvoi de Calcul
