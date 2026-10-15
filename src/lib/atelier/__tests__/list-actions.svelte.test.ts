@@ -94,7 +94,8 @@ describe('nuage de points', () => {
 
 		d.runFromPanel('scatter', 'L', graph);
 
-		expect(d.entries[0].text).toMatch(/2 valeurs? (ignorée|écartée)/i);
+		// P1 : par ligne, deux lignes n'ont pas de partenaire
+		expect(d.entries[0].text).toContain('2 lignes incomplètes écartées');
 	});
 
 	// §3 L2 du nuage : il faut deux listes

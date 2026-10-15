@@ -2138,6 +2138,7 @@ export class Atelier {
 					column: column ?? 0,
 					values: parsed.values ?? [],
 					skipped: parsed.skipped ?? 0,
+					rows: parsed.rows ?? [],
 					...(parsed.categories && { categories: parsed.categories }),
 					...(parsed.qualitativeBecause !== undefined && {
 						qualitativeBecause: parsed.qualitativeBecause

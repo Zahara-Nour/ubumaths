@@ -765,6 +765,17 @@ describe('diagramme d’une liste', () => {
 		expect(chartOf(container, 'L')?.querySelectorAll('.stat-barre').length).toBe(2);
 	});
 
+	// P1 : le diagramme avec effectifs dit les lignes qu'il écarte
+	it('avec effectifs : la ligne sans effectif est écartée, et c’est écrit sous le diagramme', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '2 ; 3 ; 3' });
+		atelier.create({ kind: 'list', name: 'M', definition: '1 ;  ; 4' });
+		atelier.toggleChart('L', 'M');
+		const { container } = await openData(atelier);
+
+		expect(chartOf(container, 'L')?.textContent).toContain('1 ligne incomplète écartée');
+	});
+
 	it('un diagramme impossible dit pourquoi', async () => {
 		const atelier = new Atelier();
 		atelier.create({

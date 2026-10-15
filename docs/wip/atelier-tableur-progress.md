@@ -72,3 +72,17 @@ liste trouée en citant l'entrée).
       plus ancien qu'une suppression de carte rendait la suppression impossible à annuler (objets
       perdus) → une suppression ferme l'historique de la grille, et Ctrl+Z ne s'arrête à la grille
       que si elle a de quoi annuler ; mineur : une case écrite deux fois dans un geste.
+
+## PR 3b du lot 1 — deux colonnes appariées par ligne, P1 (`feat/atelier-grille-lignes`)
+
+- [x] tests rouges : `grille-lignes.test.ts` (11) + 1 test de vue (note sous le diagramme)
+- [x] `ListObject.rows` (ligne de chaque valeur, lue par `parseDefinition`) ; `pairs.ts`
+      (`commonRows`, `valuesOn`, `categoriesOn`, `droppedNote`, `firstMismatch`, `lawMismatchMessage`)
+- [x] par ligne + « N lignes incomplètes écartées » : nuage (desk + plot-sync), ajustement (carte et
+      `.ajustement L : M` dans Calcul, enveloppe `withListsByRow`), effectifs (desk, diagramme,
+      raison de la carte), `.croiser` ; refus seulement sans ligne commune
+- [x] loi (`lawFractions`, action « Loi avec probabilités ») : refus qui cite la ligne incomplète
+- [x] 8 tests existants décrivaient la règle « même longueur » (croiser, filtrer→croiser, loi,
+      simuler, effectifs, nuage) : réécrits vers P1, avec le motif dans le test
+- ⚠️ Incident : un `commit --allow-empty` raté puis `reset --soft HEAD~1` a reculé la branche d'un
+  commit de main ; pointeur remis sur `origin/main` (`reset --soft`), rien perdu, dit à David.

@@ -22,6 +22,7 @@ import { isFunction, isList, isSequence } from './types';
 import { allowedDisplay, plotRestrictionOf } from './interval';
 import { sameRestriction, type Restriction } from '$lib/grapheur/restriction';
 import { reciprocalOf } from './names';
+import { commonRows, valuesOn } from './pairs';
 
 /**
  * Les courbes posées par l'atelier, par nom d'objet.
@@ -186,10 +187,13 @@ function wantedScatterFor(atelier: Atelier, object: AtelierObject): WantedScatte
 	const partner = chosen ?? lists[index + 1] ?? (index === 0 ? undefined : lists[0]);
 	if (partner === undefined) return null;
 
+	// Les points des lignes où les DEUX colonnes ont un nombre (P1) : par rang,
+	// une case vide décalait toutes les paires suivantes
+	const { rows } = commonRows([object, partner]);
 	return {
 		kind: 'scatter',
-		xs: object.values,
-		ys: partner.values,
+		xs: valuesOn(object, rows),
+		ys: valuesOn(partner, rows),
 		label: `${object.name} / ${partner.name}`
 	};
 }

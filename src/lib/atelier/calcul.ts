@@ -11,8 +11,8 @@
  */
 
 import type { Atelier, Created, Refused } from './atelier.svelte';
-import type { AtelierObject, ObjectKind } from './types';
-import { dependsOnMessage, parametersOf } from './types';
+import type { AtelierObject, ListObject, ObjectKind } from './types';
+import { dependsOnMessage, isList, isQualitative, parametersOf } from './types';
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import type { Provenance } from './parse';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
@@ -167,6 +167,7 @@ import {
 import { listCitedMessage } from './list-cited';
 import { cellCitedIn, cellInCalculMessage } from './grid';
 import { functionsListing, valuesListing } from './listing';
+import { commonRows, droppedNote, valuesOn } from './pairs';
 
 // =============================================================================
 // Types
@@ -1287,6 +1288,39 @@ export function isExportCommand(engine: WebReplEngine, text: string): boolean {
 }
 
 /** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
+/**
+ * `.ajustement L : M`, `.stats L …` qui citent PLUSIEURS listes : chacune est
+ * remplacée par ses nombres des lignes où toutes en ont un (P1), et la ligne
+ * dit combien elle en écarte. Par rang, une case vide au milieu d'une liste
+ * décalait toutes les paires suivantes, en silence. Le reste de la commande
+ * (moteur, refus) ne change pas.
+ */
+function withListsByRow(session: CalcSession, input: string): CalcResult {
+	const resolved = resolveCommand(input);
+	const space = resolved.indexOf(' ');
+	if (space === -1) return runCommand(session, input);
+	const known = catalogCommandOf(session.engine, resolved.slice(1, space).trim().toLowerCase());
+	if (known === undefined || !SERIES_COMMANDS.has(known.name)) return runCommand(session, input);
+
+	const argument = resolved.slice(space + 1);
+	const standalone = (name: string) => new RegExp(`(?<![A-Za-z_])${name}(?![A-Za-z_0-9(])`, 'g');
+	const cited = session.atelier.objects.filter(
+		(o): o is ListObject =>
+			isList(o) && o.status === 'ok' && !isQualitative(o) && standalone(o.name).test(argument)
+	);
+	if (cited.length < 2) return runCommand(session, input);
+
+	const { rows, dropped } = commonRows(cited);
+	let rewritten = argument;
+	for (const list of cited) {
+		rewritten = rewritten.replace(standalone(list.name), valuesOn(list, rows).join(' ; '));
+	}
+	const result = runCommand(session, `${resolved.slice(0, space)} ${rewritten}`);
+	if (dropped === 0 || result.kind !== 'commande') return result;
+	// L'écho reste ce que l'élève a tapé ; la note dit les lignes écartées
+	return { ...result, input, ...notesOf(result.note ?? null, droppedNote(dropped)) };
+}
+
 function runCommand(session: CalcSession, input: string): CalcResult {
 	const { engine } = session;
 	const resolved = resolveCommand(input);
@@ -2998,7 +3032,7 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// Entrée BRUTE : `runCommand` ne réécrit `π` qu'en argument d'une commande
 	// de calcul (`.filtrer L = π` lit une modalité), et l'écho reste ce qui a
 	// été tapé (revue #911)
-	if (input.startsWith('.')) return runCommand(session, input);
+	if (input.startsWith('.')) return withListsByRow(session, input);
 
 	const conversion = naturalConversion(input);
 	if (conversion !== null) return convertNaturally(session, input, conversion, provenance);

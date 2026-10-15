@@ -15,6 +15,7 @@
 
 import type { Atelier } from './atelier.svelte';
 import { isList, isQualitative, type ListObject } from './types';
+import { commonRows, droppedNote, valuesOn } from './pairs';
 import { summarizeTable } from '$lib/statistics/describe';
 import { Fraction } from '$lib/statistics/fraction';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
@@ -28,7 +29,12 @@ import { STAT_CHART_LIMITS, type StatChartNode } from '$lib/ubumark/types/stat-c
 export type ListChartKind = 'barres' | 'circulaire';
 
 export type ListChart =
-	| { readonly ok: true; readonly node: StatChartNode }
+	| {
+			readonly ok: true;
+			readonly node: StatChartNode;
+			/** Les lignes écartées (P1), à dire sous le diagramme : « 1 ligne incomplète écartée » */
+			readonly note?: string;
+	  }
 	| { readonly ok: false; readonly message: string };
 
 // =============================================================================
@@ -121,17 +127,23 @@ export function listChart(
 		return { ok: false, message: `« ${name} » n'a pas encore de valeurs.` };
 	}
 
+	let values: readonly number[] = list.values;
 	let counts: readonly number[] = list.values.map(() => 1);
+	let dropped = 0;
 	if (partner !== null) {
 		const other = listNamed(atelier, partner);
 		if (other === null) {
 			return { ok: false, message: `La liste des effectifs « ${partner} » n'existe plus.` };
 		}
-		counts = other.values;
+		// Une valeur et son effectif sur la même LIGNE (P1)
+		const common = commonRows([list, other]);
+		values = valuesOn(list, common.rows);
+		counts = valuesOn(other, common.rows);
+		dropped = common.dropped;
 	}
 
 	// Valeurs distinctes, triées, effectifs additionnés : le module statistique
-	const table = summarizeTable(list.values, counts);
+	const table = summarizeTable(values, counts);
 	if (table === null || !table.ok) {
 		return { ok: false, message: table?.ok === false ? table.message : 'Aucune donnée.' };
 	}
@@ -160,5 +172,5 @@ export function listChart(
 			message: node.errors[0]?.message.replace(LINE_PREFIX, '') ?? 'Diagramme impossible.'
 		};
 	}
-	return { ok: true, node };
+	return { ok: true, node, ...(dropped > 0 && { note: droppedNote(dropped) }) };
 }

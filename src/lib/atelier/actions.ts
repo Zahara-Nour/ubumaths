@@ -28,6 +28,7 @@ import {
 import { crossProblem } from './cross';
 import { compareProblem } from './compare';
 import { derivativeOf, displayName, reciprocalOf } from './names';
+import { commonRows, lawMismatchMessage } from './pairs';
 
 /**
  * Ce que les cartes qui SUIVENT une fonction ne savent pas faire (`f′`, `f⁻¹`),
@@ -217,7 +218,14 @@ function partnerActions(
 				label: `Diagramme avec effectifs ${partner.name}`
 			}),
 			// Lot 6 (Q44) : la partenaire donne les PROBABILITÉS d'une variable aléatoire
-			withCounts({ id: `law:${partner.name}`, label: `Loi avec probabilités ${partner.name}` }),
+			// Une loi n'écarte pas de ligne : sa raison est celle de la commande (P1)
+			{
+				id: `law:${partner.name}`,
+				label: `Loi avec probabilités ${partner.name}`,
+				...(lawReason(object, partner, reason) !== undefined && {
+					disabledReason: lawReason(object, partner, reason)
+				})
+			},
 			{ id: `simulate:${partner.name}`, label: `Simuler avec probabilités ${partner.name}` },
 			// Lot 5 (Q113) : deux séries de longueurs quelconques, sans appariement
 			{
@@ -248,15 +256,29 @@ function partnerActions(
  * du lot 5 des outils statistiques).
  *
  * ⚠️ Seulement pour les effectifs : un nuage ou un ajustement utilisent les
- * paires complètes et disent ce qu'ils écartent (§4 L1).
+ * paires complètes et disent ce qu'ils écartent (§4 L1). Les effectifs aussi,
+ * depuis la grille (P1) : refus seulement sans aucune ligne en commun.
  */
+/** La raison d'une « Loi avec probabilités » désactivée : celle des effectifs, ou une ligne incomplète */
+function lawReason(
+	object: AtelierObject,
+	partner: AtelierObject,
+	countsReason: string | undefined
+): string | undefined {
+	if (countsReason !== undefined) return countsReason;
+	if (!isList(object) || !isList(partner)) return undefined;
+	return lawMismatchMessage(object, partner) ?? undefined;
+}
+
 function countsProblem(object: AtelierObject, partner: AtelierObject): string | undefined {
 	if (!isList(object) || !isList(partner)) return undefined;
 	if (partner.status !== 'ok') {
 		return partner.message ?? `« ${partner.name} » ne peut pas donner d'effectifs pour le moment.`;
 	}
-	if (object.values.length !== partner.values.length) {
-		return `${object.name} a ${object.values.length} valeur(s) et ${partner.name} ${partner.values.length} : il faut un effectif par valeur.`;
+	// Une valeur et son effectif sur la même ligne (P1) : les lignes incomplètes
+	// sont écartées, et dites ; refus seulement s'il n'en reste aucune
+	if (object.values.length > 0 && commonRows([object, partner]).rows.length === 0) {
+		return `${object.name} et ${partner.name} n’ont aucune ligne remplie en commun : il faut un effectif sur la ligne de chaque valeur.`;
 	}
 	return undefined;
 }

@@ -62,6 +62,7 @@ import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
+import { commonRows, droppedNote, valuesOn } from './pairs';
 
 // =============================================================================
 // Types
@@ -688,7 +689,9 @@ export class CalcDesk {
 			});
 			return;
 		}
-		const outcome = summarizeTable(values.values, counts.values);
+		// Une valeur et son effectif sur la même LIGNE (P1)
+		const { rows, dropped } = commonRows([values, counts]);
+		const outcome = summarizeTable(valuesOn(values, rows), valuesOn(counts, rows));
 		if (outcome === null || !outcome.ok) {
 			const text = outcome === null ? `« ${name} » n'a pas encore de valeurs.` : outcome.message;
 			this.#push({ label, text, failed: true });
@@ -696,7 +699,10 @@ export class CalcDesk {
 		}
 		this.#push({
 			label,
-			text: formatSummary(outcome.value.summary, 'fr').join('\n'),
+			text: [
+				...formatSummary(outcome.value.summary, 'fr'),
+				...(dropped > 0 ? [droppedNote(dropped)] : [])
+			].join('\n'),
 			failed: false
 		});
 	}
@@ -715,8 +721,9 @@ export class CalcDesk {
 			return;
 		}
 
-		const drawn = Math.min(xs.values.length, ys.values.length);
-		const ignored = Math.max(xs.values.length, ys.values.length) - drawn;
+		// Les lignes où les deux colonnes ont un nombre (P1) : `plot-sync` trace les
+		// mêmes, et on dit combien on en écarte
+		const ignored = commonRows([xs, ys]).dropped;
 
 		// ⚠️ On MARQUE la liste plutôt que de poser le nuage directement : c'est
 		// la synchronisation qui pose et qui suit, exactement comme « Tracer » au
@@ -731,7 +738,7 @@ export class CalcDesk {
 		if (ignored === 0) return;
 		this.#push({
 			label: `Nuage ${name}`,
-			text: `Nuage de ${xs.name} (abscisses) et ${ys.name} (ordonnées) — ${ignored} valeur${ignored > 1 ? 's' : ''} ignorée${ignored > 1 ? 's' : ''}`,
+			text: `Nuage de ${xs.name} (abscisses) et ${ys.name} (ordonnées) — ${droppedNote(ignored)}`,
 			failed: false
 		});
 	}
@@ -773,7 +780,11 @@ export class CalcDesk {
 			return;
 		}
 
-		const fit = fitAffine(xs.values, ys.values);
+		// Les points des lignes où les deux colonnes ont un nombre (P1)
+		const { rows, dropped } = commonRows([xs, ys]);
+		const xValues = valuesOn(xs, rows);
+		const yValues = valuesOn(ys, rows);
+		const fit = fitAffine(xValues, yValues);
 		if (!fit.ok) {
 			this.#push({ label: `Ajustement ${name}`, text: fit.message, failed: true });
 			return;
@@ -781,7 +792,7 @@ export class CalcDesk {
 
 		// §4 N4 : l'ajustement produit un OBJET, donc quelque chose de traçable —
 		// c'est ce qui permet de voir la droite passer dans le nuage.
-		const exact = exactFitOf(xs.values, ys.values, fit.used);
+		const exact = exactFitOf(xValues, yValues, fit.used);
 		const created = this.atelier.create({
 			kind: 'function',
 			name: nextName('function', this.atelier.names),
@@ -790,7 +801,12 @@ export class CalcDesk {
 
 		this.#push({
 			label: `Ajustement ${name}`,
-			text: created.ok ? fitSummary(created.object.name, exact) : created.message,
+			text: created.ok
+				? [
+						fitSummary(created.object.name, exact),
+						...(dropped > 0 ? [droppedNote(dropped)] : [])
+					].join(' — ')
+				: created.message,
 			failed: !created.ok
 		});
 	}
