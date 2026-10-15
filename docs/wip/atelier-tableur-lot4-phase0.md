@@ -223,6 +223,16 @@ tapé reste en minuscules, avec son refus.
 
 ---
 
+## Décidé en cours de lot (David, 2026-10-15, « ok »)
+
+- **Case vide dans la condition de SI** : la formule reste vide (T5). Recopiée sous les données,
+  `=SI(A2>=10;"admis";"ajourné")` n'écrit rien sur les lignes vides.
+- **Un mot ne se compare qu'avec `=` ou `<>`**, sans tenir compte des majuscules ; `=SI(B1<"g";…)`
+  est refusé, pas d'ordre alphabétique.
+- **Une case citée seule en argument d'une statistique** (`=MIN(A1;A9)`) se lit comme une plage
+  d'une case : vide ou mot ignoré (revue de la PR 1, signalé).
+- **« Valeur exacte » sous la barre** seulement si la valeur vient d'une division (option 3, #1432).
+
 ## Découpage en PR (lot 4)
 
 1. **Les plages et les statistiques** : lecture des plages, `A:A`, noms de listes en argument,
