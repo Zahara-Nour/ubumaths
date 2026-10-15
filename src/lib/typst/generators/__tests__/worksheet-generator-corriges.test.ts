@@ -140,12 +140,15 @@ describe('Réponses et Corrigé : jamais l’énoncé', () => {
 		expect(typst).not.toContain('REPONSESEULE');
 	});
 
-	it('évaluation : pas de cadre de réponse dans les corrigés', () => {
+	it('évaluation, réponses sur le sujet : pas de cadre de réponse dans les corrigés', () => {
+		const config: WorksheetConfig = { answers_on_sheet: true };
 		for (const mode of ['answers', 'correction'] as const) {
-			const typst = generate(mode, { type: 'exam' });
+			const typst = generate(mode, { type: 'exam', config });
 			expect(typst).not.toContain('dash: "dashed"), fill: none)');
 		}
-		expect(generate('worksheet', { type: 'exam' })).toContain('dash: "dashed"), fill: none)');
+		expect(generate('worksheet', { type: 'exam', config })).toContain(
+			'dash: "dashed"), fill: none)'
+		);
 	});
 });
 
@@ -220,9 +223,9 @@ describe('Corrigé : Shantell Sans et Chiphre Math', () => {
 		expect(hasCorrectionFonts(generate('worksheet'))).toBe(false);
 	});
 
-	it('respecte toujours le niveau de détail de la correction (ADR 0017)', () => {
+	it('imprime toujours la correction détaillée, même avec l’ancienne clé « concise » (ADR 0030)', () => {
 		const generator = new WorksheetGenerator(
-			{ correction_detail: 'concise' },
+			{ correction_detail: 'concise' } as WorksheetConfig,
 			{},
 			{ mode: 'correction' }
 		);
@@ -238,6 +241,6 @@ describe('Corrigé : Shantell Sans et Chiphre Math', () => {
 			}
 		}).typstContent;
 		expect(typst).toContain('GARDE');
-		expect(typst).not.toContain('DETAILCACHE');
+		expect(typst).toContain('DETAILCACHE');
 	});
 });

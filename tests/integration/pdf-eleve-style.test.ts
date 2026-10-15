@@ -211,11 +211,11 @@ describe('la fiche de l’élève destinataire', () => {
 });
 
 describe('le cartouche du gabarit', () => {
-	it('durée, total et cases « afficher » de la fiche transmis', async () => {
+	it('durée, total et options du type de la fiche transmis (ADR 0030)', async () => {
 		const assignmentId = await assigned({ style_id: STANDARD });
 		await sql(
 			`update public.worksheets set total_points = 20, estimated_duration_minutes = 55,
-			   config = '{"show_date": false}'::jsonb
+			   config = '{"show_date": false, "calculator": "forbidden", "show_points": true}'::jsonb
 			 where id = (select worksheet_id from public.worksheet_assignments where id = $1)`,
 			[assignmentId]
 		);
@@ -223,9 +223,11 @@ describe('le cartouche du gabarit', () => {
 		expect(body).toMatchObject({
 			total_points: 20,
 			estimated_duration_minutes: 55,
-			show_date: false,
-			show_title: true
+			calculator: 'forbidden',
+			show_points: true
 		});
+		// Ancienne case d'affichage : plus transmise
+		expect(body).not.toHaveProperty('show_date');
 	});
 });
 

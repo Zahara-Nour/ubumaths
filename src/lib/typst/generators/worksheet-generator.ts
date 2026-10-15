@@ -58,6 +58,7 @@ import {
 	type ExerciseLayout
 } from '$lib/worksheets/document/render-exercise';
 import { MATH_LIMITS_SETUP } from '$lib/worksheets/document/math-limits';
+import { worksheetHeader } from '$lib/worksheets/worksheet-header';
 import type { DocumentForm, WorksheetDocument } from '$lib/worksheets/document/types';
 
 // ============================================================================
@@ -85,8 +86,8 @@ export interface WorksheetGeneratorInput {
  * Les trois PDF d'une fiche :
  * - `worksheet` : la fiche, énoncés seuls ;
  * - `answers` : les résultats seuls (`answers`), sans l'énoncé ;
- * - `correction` : le corrigé (concis ou détaillé selon la fiche), sans
- *   l'énoncé, en Shantell Sans et Chiphre Math (`correction-fonts.ts`).
+ * - `correction` : le corrigé, toujours détaillé (ADR 0030), sans l'énoncé,
+ *   en Shantell Sans et Chiphre Math (`correction-fonts.ts`).
  */
 export type WorksheetPdfMode = DocumentForm;
 
@@ -146,8 +147,8 @@ export interface GenerateTypstParams {
 /**
  * Worksheet-specific Typst generator
  *
- * Generates PDF-ready Typst documents for worksheets, assessments,
- * exams, quizzes, and homework assignments.
+ * Generates PDF-ready Typst documents for the four worksheet types: the type
+ * decides the header (ADR 0030, `worksheetHeader`).
  */
 export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInput> {
 	/** Worksheet-specific configuration */
@@ -211,12 +212,13 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		return localizedText(worksheet.title, worksheet.translations, 'title', this.locale) ?? '';
 	}
 
-	/** Date as printed on the document, in the document language. */
-	private formattedDate(): string {
-		return new Date().toLocaleDateString(DATE_LOCALES[this.locale], {
+	/** Date de rendu (`AAAA-MM-JJ`) telle qu'imprimée, dans la langue du document */
+	private formattedDueDate(isoDate: string): string {
+		return new Date(`${isoDate}T00:00:00Z`).toLocaleDateString(DATE_LOCALES[this.locale], {
 			day: 'numeric',
 			month: 'long',
-			year: 'numeric'
+			year: 'numeric',
+			timeZone: 'UTC'
 		});
 	}
 
@@ -291,19 +293,27 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 						individualCopyNotice: this.options.individualCopyNotice,
 						instructionsInTemplate: templateContent.includes('{{instructions}}')
 					})
-				: '') + this.generateExercises(input, mode, layout, resolved.showsPoints);
+				: '') + this.generateExercises(input, mode, layout);
 		// Fiche + corrections : les réponses ou le corrigé, après les énoncés
-		const corrections = ending
-			? this.generateExercises(input, ending, layout, resolved.showsPoints)
-			: '';
+		const corrections = ending ? this.generateExercises(input, ending, layout) : '';
 		// Le bandeau du corrigé (« CORRIGÉ », « RÉPONSES »)
 		const titled = ending ?? mode;
 
-		// Display options are opt-out: an absent flag means "show". They are
-		// exposed as {{#if show_x}} conditionals so templates can drop the label
-		// along with the value.
-		const config = this.worksheetConfig;
-		const flag = (value: boolean | undefined) => (value === false ? '' : 'true');
+		// Le type décide de l'en-tête (ADR 0030) ; les gabarits lisent la règle
+		// par des conditions {{#if show_x}}, qui retirent l'étiquette avec la valeur
+		const header = worksheetHeader(worksheet.type, this.worksheetConfig);
+		const flag = (value: boolean) => (value ? 'true' : '');
+		const dueDate = this.worksheetConfig.due_date;
+		const duration = worksheet.estimated_duration_minutes?.toString() ?? '';
+		const totalPoints = this.totalPoints(input);
+		const calculator =
+			header.calculator === 'allowed'
+				? this.labels.calculatorAllowed
+				: header.calculator === 'forbidden'
+					? this.labels.calculatorForbidden
+					: '';
+		const showDuration = header.duration && duration !== '';
+		const showTotal = header.points && totalPoints !== '';
 
 		// Prepare template data
 		const templateData: Record<string, string> = {
@@ -312,21 +322,36 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			...labelPlaceholders(this.locale),
 			// Drives hyphenation and smart quotes, not just wording.
 			lang: TYPST_LANGS[this.locale],
-			show_title: flag(config.show_title),
-			show_date: flag(config.show_date),
-			show_class: flag(config.show_class),
-			show_student_name: flag(config.show_student_name),
-			show_points: flag(config.show_points),
+			// Le titre s'imprime toujours ; le reste selon le type
+			show_title: 'true',
+			show_student_name: flag(header.studentName),
+			show_class: flag(header.className),
+			show_date: flag(header.dateLine),
+			show_due_date: flag(header.dueDate),
+			// Le bloc nom / classe / date : seulement s'il a du contenu
+			show_identity: flag(
+				header.studentName || header.className || header.dateLine || header.dueDate
+			),
+			show_points: flag(header.points),
+			show_total: flag(showTotal),
+			show_calculator: flag(calculator !== ''),
+			show_duration: flag(showDuration),
+			// La ligne d'informations (durée, calculatrice, total) : seulement si elle a du contenu
+			show_header_notes: flag(showDuration || calculator !== '' || showTotal),
 			title: escapeTypst(
 				mode === 'worksheet' && this.options.inlineCorrections
 					? `${this.title(worksheet)} — ${this.labels.correction}`
 					: this.title(worksheet)
 			),
-			date: this.formattedDate(),
-			class: this.context.className ? escapeTypst(this.context.className) : '',
-			student_name: this.context.studentName ? escapeTypst(this.context.studentName) : '',
-			total_points: worksheet.total_points?.toString() || '',
-			duration: worksheet.estimated_duration_minutes?.toString() || '',
+			// Lignes à remplir par l'élève, sauf ce que le PDF connaît déjà
+			date: fillLine('3cm'),
+			class: this.context.className ? escapeTypst(this.context.className) : fillLine('2.5cm'),
+			student_name: this.context.studentName
+				? escapeTypst(this.context.studentName)
+				: fillLine('4cm'),
+			total_points: totalPoints,
+			duration,
+			calculator: escapeTypst(calculator),
 			// Les consignes de l'affectation (vue de l'élève) ; la copie du prof n'en a pas
 			instructions: escapeTypst(this.document(input).assignment?.instructions ?? ''),
 			school_name: '', // Could be added to config later
@@ -343,7 +368,7 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 					? CORRECTION_FONT_RULES
 					: '',
 			// Additional placeholders for specific templates
-			due_date: '',
+			due_date: dueDate ? this.formattedDueDate(dueDate) : fillLine('3cm'),
 			exam_session: '',
 			subject: this.labels.subject,
 			coefficient: '',
@@ -368,31 +393,46 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	}
 
 	/**
+	 * Le total imprimé : celui de la fiche s'il est fixé, sinon la somme des
+	 * points des exercices ; vide sans aucun point.
+	 */
+	private totalPoints(input: WorksheetGeneratorInput): string {
+		if (input.worksheet.total_points) return input.worksheet.total_points.toString();
+		const sum = this.document(input).exercises.reduce(
+			(total, exercise) => total + (exercise.points ?? 0),
+			0
+		);
+		return sum > 0 ? sum.toString() : '';
+	}
+
+	/**
 	 * Les exercices du document, rendus par le module commun aux PDF du prof et
-	 * de l'élève (ADR 0028) : numérotation, sections, titres, corrigés.
+	 * de l'élève (ADR 0028) : numérotation, sections, titres, corrigés. Les
+	 * points suivent le type de la fiche, quel que soit le style (ADR 0030).
 	 */
 	private generateExercises(
 		input: WorksheetGeneratorInput,
 		mode: WorksheetPdfMode,
-		layout: ExerciseLayout,
-		styleShowsPoints: boolean
+		layout: ExerciseLayout
 	): string {
 		const copyDoc = this.document(input);
-		const doc = {
-			...copyDoc,
-			display: {
-				...copyDoc.display,
-				// Le style décide d'abord : « Fiche élève » n'imprime aucun point
-				showPoints: styleShowsPoints && copyDoc.display.showPoints,
-				// Copie d'un élève servant de corrigé de classe (D6) : le titre seul
-				...(this.options.individualCopyNotice ? { titleOnly: true } : {})
-			}
-		};
+		// Copie d'un élève servant de corrigé de classe (D6) : le titre seul
+		const doc = this.options.individualCopyNotice
+			? { ...copyDoc, display: { ...copyDoc.display, titleOnly: true } }
+			: copyDoc;
 		return renderExercises(doc, mode, layout, {
 			inlineCorrections: mode === 'worksheet' && this.options.inlineCorrections,
 			correctionFonts: this.options.correctionFonts
 		});
 	}
+}
+
+/**
+ * Ligne à remplir à la main (nom, classe, date) : un trait de la couleur du
+ * texte, posé sur la ligne de base.
+ */
+function fillLine(width: string): string {
+	return `#context box(width: ${width}, height: 0.9em, stroke: (bottom: 0.5pt + text.fill))`;
 }
 
 // ============================================================================

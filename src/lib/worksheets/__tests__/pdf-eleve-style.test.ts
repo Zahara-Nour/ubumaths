@@ -201,24 +201,23 @@ describe('ce que seul l’élève reçoit, dans tous les styles', () => {
 describe('le cartouche du gabarit, comme le PDF du prof', () => {
 	const EXAM = DEFAULT_TEMPLATE_IDS.exam;
 
-	it('durée et total de la fiche imprimés', () => {
+	it('examen blanc : durée et total de la fiche imprimés', () => {
 		const typst = generateStudentWorksheetTypst(
-			view({ style_id: EXAM, show_points: true, total_points: 20, estimated_duration_minutes: 55 }),
+			view({ type: 'exam', style_id: EXAM, total_points: 20, estimated_duration_minutes: 55 }),
 			'none'
 		);
 		expect(typst).toContain('55');
 		expect(typst).toContain('20');
 	});
 
-	it('date décochée par le prof : pas de date', () => {
-		const shown = generateStudentWorksheetTypst(view({ style_id: STANDARD }), 'none');
-		const hidden = generateStudentWorksheetTypst(
-			view({ style_id: STANDARD, show_date: false }),
+	it("le type décide de la date (ADR 0030) : ligne à remplir pour l'évaluation, rien pour la fiche d'exercices", () => {
+		const assessment = generateStudentWorksheetTypst(
+			view({ type: 'assessment', style_id: STANDARD }),
 			'none'
 		);
-		const year = String(new Date().getFullYear());
-		expect(shown).toContain(year);
-		expect(hidden).not.toContain(year);
+		const sheet = generateStudentWorksheetTypst(view({ style_id: STANDARD }), 'none');
+		expect(assessment).toContain('*Date :*');
+		expect(sheet).not.toContain('*Date :*');
 	});
 });
 

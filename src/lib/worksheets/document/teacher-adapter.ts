@@ -14,6 +14,7 @@ import {
 	type WorksheetConfig,
 	type WorksheetRow
 } from '$lib/types/worksheets';
+import { worksheetHeader } from '../worksheet-header';
 import type { WorksheetDocument } from './types';
 import { placeExercises, writtenOrNull } from './numbering';
 
@@ -29,7 +30,8 @@ export function documentFromTeacherCopy({
 	config
 }: TeacherCopyInput): WorksheetDocument {
 	const locale = worksheetLocale(config);
-	const numberingStyle = config.numbering_style || 'numeric';
+	// Le type décide des points et des cadres (ADR 0030), comme pour l'élève
+	const header = worksheetHeader(worksheet.type, config);
 	const sections = [...(instance.sections ?? [])].sort((a, b) => a.position - b.position);
 
 	// Ordre tiré au sort : il prime sur `position`
@@ -43,7 +45,7 @@ export function documentFromTeacherCopy({
 		locale,
 		description: worksheet.description ?? null,
 		assignment: null,
-		exercises: placeExercises(ordered, sections, numberingStyle, true).map(
+		exercises: placeExercises(ordered, sections, 'numeric', true).map(
 			({ exercise, number, sectionId }) => ({
 				number,
 				sectionId,
@@ -63,10 +65,8 @@ export function documentFromTeacherCopy({
 		),
 		sections: sections.map(({ id, title, instructions }) => ({ id, title, instructions })),
 		display: {
-			// Comme avant : absent dans la config, les points sont masqués
-			showPoints: config.show_points === true,
-			numberingStyle,
-			correctionDetail: config.correction_detail
+			showPoints: header.points,
+			answersOnSheet: header.answersOnSheet
 		}
 	};
 }

@@ -4,23 +4,22 @@
  *
  * Le menu « Gabarit » devient « Style » (D9) : les styles de Chiphre, puis
  * ceux du prof. Une fiche sans style affiche « Fiche élève (par défaut) ».
- * La case « Points » n'apparaît que pour un style qui imprime des points :
- * « Fiche élève » n'en imprime pas, la case serait sans effet (D8).
+ * Depuis l'ADR 0030, les points ne dépendent plus du style mais du type de la
+ * fiche : voir `options-du-type.svelte.test.ts`.
  */
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 import MetadataCards from '../MetadataCards.svelte';
 import NewWorksheetPage from '../../../../routes/(protected)/dashboard/teacher/contenu/worksheets/new/+page.svelte';
-import { BUILT_IN_STYLE_OPTIONS, DEFAULT_STYLE_ID } from '$lib/typst/templates/styles';
+import { BUILT_IN_STYLE_OPTIONS } from '$lib/typst/templates/styles';
 import { DEFAULT_TEMPLATE_IDS } from '$lib/typst/templates/default-templates';
 import type { WorksheetWithRelations } from '$lib/types/worksheets';
 
 const PROF_STYLE = {
 	id: '6f1c2a4e-0000-4000-8000-00000000abcd',
 	name: 'Mes contrôles',
-	description: null,
-	showsPoints: true
+	description: null
 };
 const STYLES = [...BUILT_IN_STYLE_OPTIONS, PROF_STYLE];
 
@@ -52,13 +51,6 @@ async function renderCards(
 	});
 }
 
-/** Ouvre l'édition des options d'affichage et rend son texte. */
-async function displayOptions(): Promise<string> {
-	await page.getByText('En-tete').click();
-	await expect.poll(() => document.body.textContent).toContain('En-tete du document');
-	return document.body.textContent ?? '';
-}
-
 describe('le style affiché', () => {
 	it('fiche sans style : « Fiche élève (par défaut) »', async () => {
 		await renderCards({});
@@ -82,25 +74,6 @@ describe('le style affiché', () => {
 		await page.getByRole('button', { name: 'Choisir le style' }).click();
 		await page.getByRole('option', { name: 'Mes contrôles' }).click();
 		expect(onFieldChange).toHaveBeenCalledWith('style_id', PROF_STYLE.id);
-	});
-});
-
-describe('la case « Points »', () => {
-	it('masquée en « Fiche élève » (aucun point imprimé)', async () => {
-		await renderCards({ style_id: DEFAULT_STYLE_ID });
-		const text = await displayOptions();
-		expect(text).toContain('Titre');
-		expect(text).not.toContain('Points');
-	});
-
-	it('visible en « Standard »', async () => {
-		await renderCards({ style_id: DEFAULT_TEMPLATE_IDS.standard });
-		expect(await displayOptions()).toContain('Points');
-	});
-
-	it('visible pour un style du prof', async () => {
-		await renderCards({ style_id: PROF_STYLE.id });
-		expect(await displayOptions()).toContain('Points');
 	});
 });
 

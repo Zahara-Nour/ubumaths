@@ -56,8 +56,11 @@ describe('generateStudentWorksheetTypst', () => {
 		expect(typst.slice(sticky, statement)).toContain('\n]\n#block(width: 100%');
 	});
 
-	it('keeps the instructions with the header (and the points, for a style that prints them)', () => {
-		const worksheet = createWorksheet({ style_id: '00000000-0000-4000-8000-000000000001' });
+	it('keeps the instructions with the header (and the points, for a type that prints them)', () => {
+		const worksheet = createWorksheet({
+			type: 'assessment',
+			style_id: '00000000-0000-4000-8000-000000000001'
+		});
 		worksheet.exercises![0].custom_instructions = 'Detailler les etapes.';
 		worksheet.show_points = true;
 

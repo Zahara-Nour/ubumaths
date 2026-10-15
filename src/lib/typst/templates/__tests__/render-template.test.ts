@@ -91,9 +91,25 @@ describe('built-in templates and display options', () => {
 		date: 'ZZDATE',
 		class: 'ZZCLASS',
 		student_name: 'ZZSTUDENT',
-		total_points: 'ZZPOINTS'
+		total_points: 'ZZPOINTS',
+		// Lot 1 de l'ADR 0030 : date de rendu, durée et calculatrice selon le type
+		due_date: 'ZZDUE',
+		duration: 'ZZDURATION',
+		calculator: 'ZZCALC'
 	};
-	const FLAGS = ['show_title', 'show_date', 'show_class', 'show_student_name', 'show_points'];
+	const FLAGS = [
+		'show_title',
+		'show_identity',
+		'show_date',
+		'show_due_date',
+		'show_class',
+		'show_student_name',
+		'show_points',
+		'show_total',
+		'show_duration',
+		'show_calculator',
+		'show_header_notes'
+	];
 
 	function render(templateContent: string, flagValue: string) {
 		const data: Record<string, string> = { ...SAMPLE_PREVIEW_DATA, ...VALUES };

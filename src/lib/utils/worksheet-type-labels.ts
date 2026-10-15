@@ -7,23 +7,24 @@
  * « Corvées Domestiques », « Décervelage ») : décision de David du 2026-10-12,
  * langage courant partout, le lore reste dans les textes d'ambiance.
  *
+ * ADR 0030 (2026-10-15) : quatre types, « Contrôle » devient « Évaluation
+ * écrite » (« contrôle » nomme la série notée en ligne), Quiz retiré.
+ *
  * Module sans dépendance : le générateur Typst l'importe sans tirer d'icônes.
  */
 import type { WorksheetType } from '$lib/types/worksheets';
 
 export const WORKSHEET_TYPE_LABELS: Record<WorksheetType, string> = {
 	worksheet: "Fiche d'exercices",
-	assessment: 'Contrôle',
-	exam: 'Examen',
-	quiz: 'Quiz',
-	homework: 'Devoirs'
+	assessment: 'Évaluation écrite',
+	homework: 'Devoir maison',
+	exam: 'Examen blanc'
 };
 
-/** Ordre d'affichage des types dans les listes de choix. */
+/** Ordre d'affichage des types dans les listes de choix (ADR 0030) */
 export const WORKSHEET_TYPE_ORDER: readonly WorksheetType[] = [
 	'worksheet',
 	'assessment',
-	'exam',
-	'quiz',
-	'homework'
+	'homework',
+	'exam'
 ];

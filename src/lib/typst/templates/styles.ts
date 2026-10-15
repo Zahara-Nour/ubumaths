@@ -35,28 +35,22 @@ export interface WorksheetStyle {
 	common: string;
 	/** Un gabarit par forme ; forme absente → celle du style par défaut */
 	templates: Partial<Record<TemplateForm, string>>;
-	/**
-	 * Le style imprime-t-il les points des exercices ? Faux pour « Fiche
-	 * élève » (fiches d'exercices et leurs corrigés) : les points sont l'affaire
-	 * d'un style d'évaluation. Vrai : la case « afficher les points » décide.
-	 */
-	showsPoints: boolean;
 }
 
-/** Un style tel que le menu « Style » de la fiche le propose */
+/**
+ * Un style tel que le menu « Style » de la fiche le propose. Le style ne décide
+ * plus des points : le type de la fiche s'en charge (ADR 0030).
+ */
 export interface StyleOption {
 	id: string;
 	name: string;
 	description: string | null;
-	/** Faux : la case « afficher les points » n'a pas d'effet, elle est masquée */
-	showsPoints: boolean;
 }
 
-/** Le gabarit d'une forme, et ce que son style imprime */
+/** Le gabarit d'une forme */
 export interface ResolvedTemplate {
 	/** Prêt pour `renderTemplate` */
 	content: string;
-	showsPoints: boolean;
 }
 
 const STYLE_COMMON = '{{style_common}}';
@@ -72,16 +66,14 @@ export const BUILT_IN_STYLES: WorksheetStyle[] = DEFAULT_TEMPLATES.map((template
 				name: template.name,
 				description: template.description,
 				common: STUDENT_STYLE_COMMON,
-				templates: STUDENT_STYLE_FORMS,
-				showsPoints: false
+				templates: STUDENT_STYLE_FORMS
 			}
 		: {
 				id: template.id,
 				name: template.name,
 				description: template.description,
 				common: '',
-				templates: { worksheet: template.template_content },
-				showsPoints: true
+				templates: { worksheet: template.template_content }
 			}
 );
 
@@ -89,8 +81,7 @@ export const BUILT_IN_STYLES: WorksheetStyle[] = DEFAULT_TEMPLATES.map((template
 export const BUILT_IN_STYLE_OPTIONS: StyleOption[] = BUILT_IN_STYLES.map((style) => ({
 	id: style.id,
 	name: style.name,
-	description: style.description,
-	showsPoints: style.showsPoints
+	description: style.description
 }));
 
 function builtInStyle(id: string | null | undefined): WorksheetStyle | undefined {
@@ -116,11 +107,11 @@ export function styleIdOf(worksheet: {
 
 /**
  * Le gabarit d'une forme, `{{style_common}}` remplacé par le code commun du
- * style qui fournit le gabarit, et ce que ce style imprime.
+ * style qui fournit le gabarit.
  *
  * - `custom` : la fiche du style lue en base (style du prof), utilisée pour la
- *   forme « fiche » seulement, et qui imprime les points selon la case de la
- *   fiche. Ignorée pour un style de Chiphre : son Typst vient du code ;
+ *   forme « fiche » seulement. Ignorée pour un style de Chiphre : son Typst
+ *   vient du code ;
  * - style inconnu ou absent → style par défaut ; forme absente du style →
  *   celle du style par défaut.
  */
@@ -133,22 +124,16 @@ export function resolveTemplate(
 	// partie de fin (David, 2026-10-14 : les énoncés gardent le style)
 	const withCorrections = form === 'worksheet_with_corrections';
 	if ((form === 'worksheet' || withCorrections) && custom && !isBuiltInStyle(styleId)) {
-		return {
-			content: withCorrections ? `${custom}\n${CORRECTIONS_PART}` : custom,
-			showsPoints: true
-		};
+		return { content: withCorrections ? `${custom}\n${CORRECTIONS_PART}` : custom };
 	}
 
 	const fallback = builtInStyle(DEFAULT_STYLE_ID) as WorksheetStyle;
 	const chosen = builtInStyle(styleId) ?? fallback;
 	if (withCorrections && !chosen.templates[form] && chosen.templates.worksheet) {
 		const sheet = chosen.templates.worksheet.split(STYLE_COMMON).join(chosen.common);
-		return { content: `${sheet}\n${CORRECTIONS_PART}`, showsPoints: chosen.showsPoints };
+		return { content: `${sheet}\n${CORRECTIONS_PART}` };
 	}
 	const owner = chosen.templates[form] ? chosen : fallback;
 	const template = owner.templates[form] as string;
-	return {
-		content: template.split(STYLE_COMMON).join(owner.common),
-		showsPoints: owner.showsPoints
-	};
+	return { content: template.split(STYLE_COMMON).join(owner.common) };
 }

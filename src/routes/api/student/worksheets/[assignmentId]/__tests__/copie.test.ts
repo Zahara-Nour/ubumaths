@@ -114,6 +114,7 @@ interface StudentView {
 	exercises: Array<{ statement: string; correction: string | null; capital_pairs?: string }>;
 	numbering_style?: string;
 	show_points?: boolean;
+	calculator?: string;
 }
 
 async function fetchCopy(mock: TableMock, studentId: string): Promise<StudentView> {
@@ -213,23 +214,34 @@ describe('API élève : la copie suit l’affectation', () => {
 		);
 	});
 
-	// ADR 0028, lot 1 : le PDF de l'élève numérote et affiche les points comme
-	// celui du prof. Le schéma de réponse retire les clés qu'il ne connaît pas :
-	// ce test passe par lui.
-	it('numérotation et « afficher les points » de la fiche arrivent à l’élève', async () => {
-		const roman = await fetchCopy(
+	// ADR 0030 : les options du type de la fiche arrivent à l'élève, qui les lit
+	// par la même règle que le prof. Le schéma de réponse retire les clés qu'il
+	// ne connaît pas : ce test passe par lui.
+	it('les options du type de la fiche arrivent à l’élève', async () => {
+		const options = await fetchCopy(
 			supabase('guided', false, twoLevelExercise(), {
-				numbering_style: 'roman',
-				show_points: false
+				show_points: true,
+				calculator: 'forbidden',
+				answers_on_sheet: true,
+				due_date: '2026-11-12',
+				show_student_name: true,
+				numbering_style: 'roman'
 			}),
 			STUDENTS[0]
 		);
-		expect(roman.numbering_style).toBe('roman');
-		expect(roman.show_points).toBe(false);
+		expect(options).toMatchObject({
+			show_points: true,
+			calculator: 'forbidden',
+			answers_on_sheet: true,
+			due_date: '2026-11-12',
+			show_student_name: true
+		});
+		// Ancienne clé : plus transmise
+		expect(options).not.toHaveProperty('numbering_style');
 
-		// Réglages absents : ceux du PDF du prof (chiffres, points masqués)
+		// Options absentes : absentes de la vue
 		const bare = await fetchCopy(supabase('guided', false), STUDENTS[0]);
-		expect(bare.numbering_style).toBe('numeric');
-		expect(bare.show_points).toBe(false);
+		expect(bare.show_points).toBeUndefined();
+		expect(bare.calculator).toBeUndefined();
 	});
 });

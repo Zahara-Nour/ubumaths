@@ -10,7 +10,6 @@
  */
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import { page } from 'vitest/browser';
 import MetadataCards from '../MetadataCards.svelte';
 import NewWorksheetPage from '../../../../routes/(protected)/dashboard/teacher/contenu/worksheets/new/+page.svelte';
 import type { WorksheetWithRelations } from '$lib/types/worksheets';
@@ -36,19 +35,16 @@ describe('« Mélanger dans les sections » : plus dans l’interface', () => {
 		});
 		// Résumé : l'ancienne case ne produit plus de « Melange: Sections »
 		expect(document.body.textContent).not.toMatch(/Melange:\s*Sections/);
-		// Édition des options
-		await page.getByText('En-tete').click();
-		await expect.poll(() => document.body.textContent).toMatch(/Melanger \S+s/);
-		expect(document.body.textContent).not.toContain('Melanger sections');
+		// Options du type (ADR 0030) : visibles sans clic
+		await expect.poll(() => document.body.textContent).toMatch(/Mélanger les \S+s/);
+		expect(document.body.textContent).not.toMatch(/M[ée]langer (dans les )?sections/);
 	});
 
 	it('création d’une fiche : pas de case « Melanger dans les sections »', async () => {
 		await render(NewWorksheetPage, {
 			props: { data: { styles: BUILT_IN_STYLE_OPTIONS } } as never
 		});
-		await page.getByText('Options d’affichage'.replace('’', "'")).click();
-		await expect.poll(() => document.body.textContent).toContain('Options de melange');
-		expect(document.body.textContent).toMatch(/Melanger les \S+s/);
-		expect(document.body.textContent).not.toContain('Melanger dans les sections');
+		await expect.poll(() => document.body.textContent).toMatch(/Mélanger les \S+s/);
+		expect(document.body.textContent).not.toMatch(/M[ée]langer dans les sections/);
 	});
 });

@@ -7,7 +7,7 @@
  * (`renderMarkdownPreview`). Tout ce qui fait un exercice imprimé vit ici :
  * groupement par section (et « Autres exercices »), numéro, titre avec ses
  * formules, points dans la langue du document, consigne, énoncé, réponses ou
- * corrigé (concis ou détaillé), « correction non écrite ».
+ * corrigé (toujours détaillé, ADR 0030), « correction non écrite ».
  *
  * Les habillages (`ExerciseLayout`) ne changent que l'allure ; le gabarit
  * choisit le sien par son placeholder (`{{exercises}}`, `{{exercises_badge}}`).
@@ -357,7 +357,7 @@ export function renderDocumentPreamble(
  *
  * - Réponses : les résultats ; absents, un renvoi au corrigé ; sans corrigé
  *   non plus, « correction non écrite » (D4).
- * - Corrigé : la correction, concise ou détaillée selon la fiche (D11) ;
+ * - Corrigé : la correction détaillée (ADR 0030 : plus de choix de la fiche) ;
  *   absente, « correction non écrite » (D4).
  */
 export function renderPrintedCorrection(
@@ -385,7 +385,7 @@ function printedCorrection(
 		if (answers) return { markdown: answers };
 		return { message: solution ? labels.answersNotWritten : labels.correctionNotWritten };
 	}
-	if (solution) return { markdown: correctionForPrint(solution, doc.display.correctionDetail) };
+	if (solution) return { markdown: correctionForPrint(solution, 'detailed') };
 	return { message: labels.correctionNotWritten };
 }
 
@@ -440,9 +440,13 @@ function shownPoints(exercise: DocumentExercise, doc: WorksheetDocument): string
 	return `${exercise.points} ${exercise.points > 1 ? labels.pointAbbrevPlural : labels.pointAbbrev}`;
 }
 
-/** Évaluation : cadre de réponse sous l'énoncé */
+/**
+ * Réponses sur le sujet (option de l'évaluation écrite et de l'examen blanc,
+ * ADR 0030) : un cadre unique sous l'énoncé, en attendant les cadres par
+ * question (lot 3)
+ */
 function hasAnswerSpace(doc: WorksheetDocument): boolean {
-	return doc.type === 'exam' || doc.type === 'assessment';
+	return doc.display.answersOnSheet;
 }
 
 /** Markdown d'un exercice en Typst, avec ses fonctions déclarées et son sens de `AB` */

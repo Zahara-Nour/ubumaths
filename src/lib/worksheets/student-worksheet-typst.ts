@@ -80,18 +80,15 @@ export function generateStudentWorksheetTypst(
 		? { ...viewDoc, display: { ...viewDoc.display, titleOnly: true } }
 		: viewDoc;
 
-	// Les réglages que le gabarit lit (langue, points), tels que le serveur les
-	// a résolus pour la vue
+	// Les réglages que le gabarit lit : la langue et les options du type, que
+	// l'en-tête interprète par la même règle que pour le prof (`worksheetHeader`)
 	const config: WorksheetConfig = {
 		language: document.locale,
-		numbering_style: document.display.numberingStyle,
-		show_points: document.display.showPoints,
-		correction_detail: document.display.correctionDetail,
-		// Les cases du cartouche, telles que le prof les a réglées
-		show_title: worksheet.show_title,
-		show_date: worksheet.show_date,
-		show_class: worksheet.show_class,
-		show_student_name: worksheet.show_student_name
+		show_student_name: worksheet.show_student_name,
+		show_points: worksheet.show_points,
+		calculator: worksheet.calculator,
+		answers_on_sheet: worksheet.answers_on_sheet,
+		due_date: worksheet.due_date
 	};
 	// La fiche telle que le gabarit la nomme : titre déjà traduit par le serveur
 	const row = {

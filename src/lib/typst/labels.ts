@@ -141,7 +141,6 @@ export interface DocumentLabels {
 	typeWorksheet: string;
 	typeAssessment: string;
 	typeExam: string;
-	typeQuiz: string;
 	typeHomework: string;
 }
 
@@ -256,7 +255,6 @@ const FR: DocumentLabels = {
 	typeWorksheet: WORKSHEET_TYPE_LABELS.worksheet,
 	typeAssessment: WORKSHEET_TYPE_LABELS.assessment,
 	typeExam: WORKSHEET_TYPE_LABELS.exam,
-	typeQuiz: WORKSHEET_TYPE_LABELS.quiz,
 	typeHomework: WORKSHEET_TYPE_LABELS.homework
 };
 
@@ -368,9 +366,8 @@ const EN: DocumentLabels = {
 	anyOrder: 'Exercises may be tackled in any order.',
 
 	typeWorksheet: 'Worksheet',
-	typeAssessment: 'Assessment',
-	typeExam: 'Exam',
-	typeQuiz: 'Quiz',
+	typeAssessment: 'Written test',
+	typeExam: 'Mock exam',
 	typeHomework: 'Homework'
 };
 

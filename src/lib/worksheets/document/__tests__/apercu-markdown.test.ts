@@ -79,15 +79,15 @@ describe('aperçu markdown du prof', () => {
 		expect(md).not.toContain('CORRECTION1');
 	});
 
-	it('numérotation de la fiche et ordre tiré, comme le PDF', () => {
+	it('chiffres arabes (ADR 0030, ancienne clé ignorée) et ordre tiré, comme le PDF', () => {
 		const md = preview(
 			'worksheet',
-			{ numbering_style: 'roman' },
+			{ numbering_style: 'roman' } as WorksheetConfig,
 			instance({ exercise_order: [2, 0, 1] })
 		);
 		expect(md.indexOf('ENONCE3')).toBeLessThan(md.indexOf('ENONCE1'));
-		expect(md).toContain('## Exercice I : Factoriser');
-		expect(md).toContain('## Exercice III');
+		expect(md).toContain('## Exercice 1 : Factoriser');
+		expect(md).toContain('## Exercice 3');
 	});
 
 	it('corrigé : la correction, sans énoncé ni consigne ; absente → « Correction non écrite. »', () => {

@@ -17,12 +17,13 @@ import type {
 	WorksheetRow
 } from '$lib/types/worksheets';
 
-const CONFIG: WorksheetConfig = {
+// Anciennes clés (numérotation, corrigé concis) : en base mais plus lues (ADR 0030)
+const CONFIG = {
 	language: 'en',
 	show_points: true,
 	numbering_style: 'roman',
 	correction_detail: 'concise'
-};
+} as WorksheetConfig;
 
 const SECTIONS = [
 	{ id: 's2', title: 'Later', instructions: 'Think.', position: 2 },
@@ -103,8 +104,6 @@ function view(visible: (index: number) => boolean = () => true): StudentWorkshee
 		worksheet_id: 'w',
 		title: 'Worksheet',
 		language: 'en',
-		correction_detail: 'concise',
-		numbering_style: 'roman',
 		show_points: true,
 		description: null,
 		type: 'worksheet',
@@ -144,12 +143,12 @@ describe('deux adaptateurs, un document', () => {
 		expect(eleve.locale).toBe('en');
 	});
 
-	it('ordre d’affichage et numéros au style de la fiche', () => {
+	it('ordre d’affichage et numéros en chiffres arabes (ADR 0030)', () => {
 		const doc = teacherDocument();
 		expect(doc.exercises.map((e) => [e.number, e.sectionId])).toEqual([
-			['I', 's1'],
-			['II', 's2'],
-			['III', null]
+			['1', 's1'],
+			['2', 's2'],
+			['3', null]
 		]);
 	});
 
@@ -171,10 +170,10 @@ describe('deux adaptateurs, un document', () => {
 		}
 	});
 
-	it('le corrigé imprimé suit le réglage concis de la fiche', () => {
+	it('le corrigé imprimé est toujours détaillé (ADR 0030)', () => {
 		const doc = documentFromStudentView(view());
 		const printed = doc.exercises.map((e) => renderPrintedCorrection(e, doc, 'correction'));
-		expect(printed.join('\n')).not.toContain('HIDDEN');
+		expect(printed.join('\n')).toContain('HIDDEN');
 	});
 });
 
@@ -197,13 +196,12 @@ describe('garde : correction non visible', () => {
 		expect(documentFromStudentView(odd).locale).toBe('fr');
 	});
 
-	it('options absentes : chiffres arabes, points affichés (comme avant)', () => {
-		const old = { ...view() } as Partial<StudentWorksheetView>;
-		delete old.numbering_style;
+	it('options absentes : ni points ni cadres (le type décide, ADR 0030)', () => {
+		const old = { ...view(), type: 'assessment' } as Partial<StudentWorksheetView>;
 		delete old.show_points;
 		const doc = documentFromStudentView(old as StudentWorksheetView);
-		expect(doc.display.numberingStyle).toBe('numeric');
-		expect(doc.display.showPoints).toBe(true);
+		expect(doc.display.showPoints).toBe(false);
+		expect(doc.display.answersOnSheet).toBe(false);
 	});
 });
 
@@ -222,7 +220,7 @@ describe('vue élève mélangée', () => {
 	it('`shuffled` : l’ordre reçu prime sur `position`, numéros continus', () => {
 		const doc = documentFromStudentView(twoInSection(true));
 		expect(doc.exercises.map((e) => e.title)).toEqual(['B', 'A', 'Last']);
-		expect(doc.exercises.map((e) => e.number)).toEqual(['I', 'II', 'III']);
+		expect(doc.exercises.map((e) => e.number)).toEqual(['1', '2', '3']);
 	});
 
 	it('sans `shuffled` : retri par `position`, comme avant', () => {

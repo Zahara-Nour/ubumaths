@@ -141,15 +141,8 @@ describe('les styles de Chiphre proposés au menu', () => {
 			expect(option).toEqual({
 				id: style?.id,
 				name: style?.name,
-				description: style?.description,
-				showsPoints: style?.showsPoints
+				description: style?.description
 			});
 		}
-	});
-
-	it('« Fiche élève » n’imprime pas de points, « Standard » si', () => {
-		const byId = new Map(BUILT_IN_STYLE_OPTIONS.map((s) => [s.id, s]));
-		expect(byId.get(DEFAULT_STYLE_ID)?.showsPoints).toBe(false);
-		expect(byId.get(STANDARD)?.showsPoints).toBe(true);
 	});
 });
