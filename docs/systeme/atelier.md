@@ -376,9 +376,9 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   sinon `shown` (ou le mot court d'une erreur, en rouge) ; son étiquette pour lecteur d'écran est
   `shown`, en français (la lecture de MathLive est en anglais). La barre montre la formule ; sous
   la barre, la phrase de l'erreur ou de la case vide, et « Valeur exacte : … » quand la case montre
-  `≈` d'une valeur exacte (Q2). La carte d'une liste à formules montre ses valeurs et « calculée
-  dans la grille » (`studentDefinitionOf`). Supprimer une liste citée par des cellules d'une autre
-  colonne (`citingCells`) demande confirmation : « 3 cellules de la grille la citent : elles
+  `≈` d'une valeur exacte, ou une écriture exacte dont le texte lu est `≈` (`√2`, `π`) (Q2). La carte d'une liste à formules montre ses valeurs et « calculée
+  dans la grille » (`studentDefinitionOf`). Supprimer une liste dont des cellules d'autres colonnes
+  se videront (`citingCells` : en chaîne, sans celles déjà vides) demande confirmation : « 3 cellules de la grille la citent : elles
   deviendront vides. » (`citingCellsNote`). La copie vers un autre logiciel et le CSV
   emportent les VALEURS des formules ; la copie interne garde la formule.
 - **Oracle** : `formules.test.ts` compare, sur un corpus, la valeur d'une cellule `=expr` à celle de
