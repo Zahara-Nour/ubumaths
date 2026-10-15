@@ -85,7 +85,7 @@ function teacherSheet(
 	type: WorksheetType,
 	config: WorksheetConfig,
 	styleId: string | null,
-	mode: 'worksheet' | 'correction' = 'worksheet'
+	mode: 'worksheet' | 'answers' | 'correction' = 'worksheet'
 ): string {
 	const generator = new WorksheetGenerator(config, undefined, { mode });
 	return generator.generate({ worksheet: worksheetRow(type, config, styleId), instance })
@@ -386,5 +386,47 @@ describe('PDF de l’élève : même en-tête que celui du prof', () => {
 		expect(typst).toContain(WORDS.fr.name);
 		expect(typst).not.toContain('*Classe :* 4e B');
 		expect(typst).not.toContain(WORDS.fr.date);
+	});
+});
+
+describe('Réponses et Corrigé : le titre seul', () => {
+	const exam: WorksheetConfig = { calculator: 'forbidden' };
+	for (const style of STYLES) {
+		for (const mode of ['answers', 'correction'] as const) {
+			it(`examen blanc, ${mode}, style ${style.name} : ni nom, ni date, ni calculatrice, ni total`, () => {
+				const typst = teacherSheet('exam', exam, style.id, mode);
+				expect(typst).toContain('Équations');
+				for (const absent of [
+					WORDS.fr.name,
+					WORDS.fr.class,
+					WORDS.fr.date,
+					WORDS.fr.calculatorForbidden,
+					WORDS.fr.duration,
+					WORDS.fr.total
+				]) {
+					expect(typst).not.toContain(absent);
+				}
+			});
+		}
+	}
+
+	it('devoir maison, corrigé : pas de date de rendu', () => {
+		const typst = teacherSheet('homework', { due_date: '2026-11-12' }, null, 'correction');
+		expect(typst).not.toContain(WORDS.fr.dueDate);
+	});
+
+	it('le sujet de l’examen garde son en-tête complet', () => {
+		const typst = teacherSheet('exam', exam, null, 'worksheet');
+		expect(typst).toContain(WORDS.fr.name);
+		expect(typst).toContain(WORDS.fr.calculatorForbidden);
+	});
+
+	it('élève « avec corrigé » : le sujet puis le corrigé, donc l’en-tête du sujet', () => {
+		const typst = generateStudentWorksheetTypst(
+			studentView({ type: 'exam', calculator: 'forbidden' }),
+			'correction'
+		);
+		expect(typst).toContain(WORDS.fr.name);
+		expect(typst).toContain(WORDS.fr.calculatorForbidden);
 	});
 });

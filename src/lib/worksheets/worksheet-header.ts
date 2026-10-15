@@ -93,6 +93,21 @@ export function worksheetHeader(rawType: WorksheetType, options: TypeOptions): W
 }
 
 /**
+ * En-tête des PDF Réponses et Corrigé : le titre seul (décision de David,
+ * 2026-10-15) ; ni nom, ni date, ni calculatrice, ni total.
+ */
+export const TITLE_ONLY_HEADER: WorksheetHeader = {
+	studentName: false,
+	className: false,
+	dateLine: false,
+	dueDate: false,
+	points: false,
+	calculator: null,
+	duration: false,
+	answersOnSheet: false
+};
+
+/**
  * Les options du type seulement, plus « mélanger les exercices » : ce que la
  * création d'une fiche enregistre (une option d'un autre type, cochée avant de
  * changer de type, ne part pas).

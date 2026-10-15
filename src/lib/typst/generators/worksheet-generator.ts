@@ -58,7 +58,7 @@ import {
 	type ExerciseLayout
 } from '$lib/worksheets/document/render-exercise';
 import { MATH_LIMITS_SETUP } from '$lib/worksheets/document/math-limits';
-import { worksheetHeader } from '$lib/worksheets/worksheet-header';
+import { TITLE_ONLY_HEADER, worksheetHeader } from '$lib/worksheets/worksheet-header';
 import type { DocumentForm, WorksheetDocument } from '$lib/worksheets/document/types';
 
 // ============================================================================
@@ -300,8 +300,12 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const titled = ending ?? mode;
 
 		// Le type décide de l'en-tête (ADR 0030) ; les gabarits lisent la règle
-		// par des conditions {{#if show_x}}, qui retirent l'étiquette avec la valeur
-		const header = worksheetHeader(worksheet.type, this.worksheetConfig);
+		// par des conditions {{#if show_x}}, qui retirent l'étiquette avec la valeur.
+		// Réponses et Corrigé : le titre seul (la fiche + corrections garde l'en-tête du sujet)
+		const header =
+			mode === 'worksheet'
+				? worksheetHeader(worksheet.type, this.worksheetConfig)
+				: TITLE_ONLY_HEADER;
 		const flag = (value: boolean) => (value ? 'true' : '');
 		const dueDate = this.worksheetConfig.due_date;
 		const duration = worksheet.estimated_duration_minutes?.toString() ?? '';

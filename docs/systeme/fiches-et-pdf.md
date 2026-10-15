@@ -330,7 +330,8 @@ exercices), `show_calculator` (`{{calculator}}` : « La calculatrice est autoris
 `show_duration` (examen blanc avec durée), `show_header_notes` (ligne durée / calculatrice / total,
 `HEADER_NOTES`). Nom, classe et date inconnus deviennent des lignes à remplir (`fillLine`). Les
 douze styles de Chiphre lisent ces conditions ; un gabarit du prof qui ne connaît que les anciennes
-(`show_date`, `show_points`…) reste juste. Le même en-tête sert les formes Réponses et Corrigé.
+(`show_date`, `show_points`…) reste juste. Les formes Réponses et Corrigé n'impriment que le titre (`TITLE_ONLY_HEADER`, décision de David
+du 2026-10-15) ; la fiche + corrections garde l'en-tête du sujet.
 Tests : `typst/generators/__tests__/en-tete-par-type.test.ts` (chaque type, FR et EN, « Fiche
 élève » et « Standard », prof et élève), `worksheets/__tests__/worksheet-header.test.ts`.
 
