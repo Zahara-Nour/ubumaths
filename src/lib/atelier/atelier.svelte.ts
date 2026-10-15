@@ -104,6 +104,7 @@ import {
 } from './formula';
 import {
 	cellName,
+	cellTextFromStored,
 	columnLetter,
 	columnOfLetter,
 	definitionFrom,
@@ -116,6 +117,7 @@ import {
 	MAX_TITLE_LENGTH,
 	readCellName,
 	spreadText,
+	storedCellText,
 	type CellEdit
 } from './grid';
 import { transformAST } from '$lib/mathAST/visitor';
@@ -1872,7 +1874,9 @@ export class Atelier {
 		}));
 		// Les cellules des colonnes sans nom, absentes quand il n'y en a pas : un
 		// atelier sans grille ne paie rien dans le lien
-		const cells = Object.fromEntries(this.cells);
+		const cells = Object.fromEntries(
+			[...this.cells].map(([address, text]) => [address, storedCellText(text)])
+		);
 		const titles = Object.fromEntries(
 			[...this.titles].map(([column, title]) => [columnLetter(column), title])
 		);
@@ -1924,7 +1928,7 @@ export class Atelier {
 		);
 		for (const [address, text] of Object.entries(state.grid?.cells ?? {})) {
 			const at = readCellName(address);
-			if (at !== null && !claimed.has(at.column)) this.cells.set(address, text);
+			if (at !== null && !claimed.has(at.column)) this.cells.set(address, cellTextFromStored(text));
 		}
 
 		for (const stored of state.objects) {

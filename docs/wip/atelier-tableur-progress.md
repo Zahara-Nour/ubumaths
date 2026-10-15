@@ -146,3 +146,8 @@ liste trouée en citant l'entrée).
       en deux cases (la définition d'une liste sépare ses entrées par « ; ») → `FORMULA_SEMICOLON`
 - [x] capture : la poignée tirée jusqu'à la ligne 8 recopie deux colonnes ; les fractions en maths
       débordaient de la ligne → un nombre exact s'écrit en texte, les maths seulement avec des lettres
+- [x] revue (2 importants, 4 mineurs, tous corrigés test rouge d'abord) : formule à « ; » d'une
+      cellule SANS nom perdue au stockage et dans le lien (`storedCellText`) ; un objet renommé à
+      l'arrivée suivi dans les formules reçues (`=f(3)` calculait avec la f locale) ; un texte `{0:1}`
+      réécrit par le lien ; poignée relâchée hors fenêtre ou `pointercancel` ; Ctrl/⌘+D pendant la
+      frappe (favoris) ; origine du presse-papiers bornée par Zod

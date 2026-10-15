@@ -15,8 +15,16 @@
 import { Atelier, sequenceInputOf } from './atelier.svelte';
 import { loadAtelier, saveAtelier, type AtelierState } from './persistence';
 import { nextName, derivativeOf, displayName, reciprocalName, reciprocalOf } from './names';
-import { columnLetter, columnOfLetter, definitionFrom, entriesOf, readCellName } from './grid';
-import { remapColumns } from './formula';
+import {
+	cellTextFromStored,
+	columnLetter,
+	columnOfLetter,
+	definitionFrom,
+	entriesOf,
+	readCellName,
+	type CellEdit
+} from './grid';
+import { isFormula, remapColumns } from './formula';
 
 // =============================================================================
 // Types
@@ -31,6 +39,16 @@ export interface MergeReport {
 	/** Objets refusés, et pourquoi — un plafond atteint, par exemple. */
 	readonly refused: ReadonlyArray<{ readonly name: string; readonly reason: string }>;
 }
+
+// =============================================================================
+// Constantes
+// =============================================================================
+
+/**
+ * Un nom d'objet dans une formule : jamais une référence de cellule (`L2`,
+ * `L$2`), qu'une liste `L` renommée en `M` ne doit pas déplacer.
+ */
+const OBJECT_NAME = /(?<![A-Za-z$])[A-Za-z]+(?:_\d+)?(?![A-Za-z\d$])/g;
 
 // =============================================================================
 // Fonctions
@@ -105,6 +123,8 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 	const arrivedAs = new Map<string, string>();
 	/** Les objets effectivement créés (une f refusée n'emmène pas sa réciproque) */
 	const landed = new Set<string>();
+	/** Les listes créées : leurs formules suivront les objets renommés */
+	const landedLists: { column: number; entries: string[] }[] = [];
 
 	// Les fonctions AVANT leurs dérivées : supprimer puis recréer `f` range `f′`
 	// devant elle, et `f′` aurait suivi la `f` locale (revue du lot 3a, C1)
@@ -179,6 +199,10 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		}
 
 		landed.add(wanted);
+		const column = input.column;
+		if (column !== undefined) {
+			landedLists.push({ column, entries: entriesOf(input.definition) });
+		}
 		if (chosen === wanted) added++;
 		else renamed.push({ from: wanted, to: chosen });
 
@@ -191,12 +215,27 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		if (stored.plotted) atelier.setPlotted(chosen, true);
 	}
 
+	// Un objet renommé à l'arrivée (`f` → `g`) : les formules reçues l'appellent
+	// sous son nouveau nom, sinon `=f(3)` calculerait avec la f locale, sans rien
+	// dire (revue). Après la boucle : une liste peut arriver avant sa fonction.
+	const renames = new Map(renamed.map((r) => [r.from, r.to]));
+	const renameIn = (text: string) =>
+		!isFormula(text) ? text : text.replace(OBJECT_NAME, (name) => renames.get(name) ?? name);
+	const cells: CellEdit[] = landedLists.flatMap(({ column, entries }) =>
+		entries.flatMap((text, i) => {
+			const after = renameIn(text);
+			return after === text ? [] : [{ column, row: i + 1, text: after }];
+		})
+	);
+
 	// Les cellules sans nom, dans la colonne que leur colonne d'origine a reçue
-	const cells = Object.entries(state.grid?.cells ?? {}).flatMap(([address, text]) => {
+	for (const [address, text] of Object.entries(state.grid?.cells ?? {})) {
 		const at = readCellName(address);
 		const column = at === null ? undefined : placed.get(columnLetter(at.column));
-		return at === null || column === undefined ? [] : [{ column, row: at.row, text: follow(text) }];
-	});
+		if (at !== null && column !== undefined) {
+			cells.push({ column, row: at.row, text: renameIn(follow(cellTextFromStored(text))) });
+		}
+	}
 	for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
 		const column = placed.get(letter);
 		if (column !== undefined) atelier.setTitle(column, title);

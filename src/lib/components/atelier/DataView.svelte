@@ -13,6 +13,7 @@
 	 * Elle ne garde que la sélection (une cellule, ou une zone) et la frappe en cours.
 	 */
 	import { tick } from 'svelte';
+	import { z } from 'zod';
 	import { useAtelier } from '$lib/atelier/context';
 	import { isList, type ListObject } from '$lib/atelier/types';
 	import {
@@ -42,6 +43,16 @@
 	/** Au moins 10 lignes et 5 colonnes, même vide ; la zone utilisée plus sa marge (§2). */
 	/** Le format propre à la grille dans le presse-papiers : les textes exacts. */
 	const GRID_CLIPBOARD_TYPE = 'application/x-chiphre-grille';
+
+	/** La case d'où une zone a été copiée : un presse-papiers forgé n'en donne pas d'autre. */
+	const clipboardOriginSchema = z.object({
+		column: z
+			.number()
+			.int()
+			.min(0)
+			.max(GRID_COLUMNS - 1),
+		row: z.number().int().min(1).max(GRID_ROWS)
+	});
 	const EMPTY_GRID = 'La grille est vide : rien à télécharger.';
 
 	const MIN_ROWS = 10;
@@ -308,6 +319,11 @@
 			cancel();
 			return;
 		}
+		// Ctrl/⌘+D pendant la frappe : ni recopie, ni dialogue « favori » du navigateur
+		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'd') {
+			event.preventDefault();
+			return;
+		}
 		const move = moves[event.key];
 		if (move === undefined) return;
 		event.preventDefault();
@@ -405,6 +421,9 @@
 	function pressCell(event: PointerEvent, column: number, row: number) {
 		// Dans le champ de la cellule en cours d'édition : déplacer le curseur, rien d'autre
 		if ((event.target as HTMLElement).closest('input')) return;
+		// Une recopie dont le `pointerup` s'est perdu (relâché hors du navigateur)
+		// ne doit rien recopier depuis la nouvelle zone (revue)
+		filling = null;
 		leaveDraft(column, row);
 		select(column, row, event.shiftKey);
 		dragging = event.button === 0 && !event.shiftKey;
@@ -492,7 +511,7 @@
 				const copied: unknown = JSON.parse(own);
 				const { cells, origin } = (Array.isArray(copied) ? { cells: copied } : (copied ?? {})) as {
 					cells?: unknown;
-					origin?: { column?: unknown; row?: unknown };
+					origin?: unknown;
 				};
 				const table = Array.isArray(cells) ? cells : null;
 				if (
@@ -500,11 +519,8 @@
 					table.every((line) => Array.isArray(line) && line.every((c) => typeof c === 'string'))
 				) {
 					// Q-L2-4 : les formules se décalent depuis la case d'où elles ont été copiées
-					const from =
-						typeof origin?.column === 'number' && typeof origin.row === 'number'
-							? { column: origin.column, row: origin.row }
-							: undefined;
-					return { table: table as string[][], ...(from && { origin: from }) };
+					const from = clipboardOriginSchema.safeParse(origin);
+					return { table: table as string[][], ...(from.success && { origin: from.data }) };
 				}
 			} catch {
 				// Illisible : on relit le texte, comme un collage venu d'ailleurs
@@ -568,6 +584,12 @@
 		event.preventDefault();
 		event.stopPropagation();
 		filling = zone.bottom;
+	}
+
+	/** Un geste annulé (appel système, défilement tactile) : la recopie est abandonnée. */
+	function cancelPointer() {
+		dragging = false;
+		filling = null;
 	}
 
 	function endPointer() {
@@ -665,7 +687,7 @@
 	}
 </script>
 
-<svelte:window onpointerup={endPointer} />
+<svelte:window onpointerup={endPointer} onpointercancel={cancelPointer} />
 
 <div class="donnees" onpaste={pasteInGrid} oncopy={copyFromGrid}>
 	<div class="barre">

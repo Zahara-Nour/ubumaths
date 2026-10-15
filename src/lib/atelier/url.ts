@@ -16,7 +16,7 @@
 
 import type { AtelierState } from './persistence';
 import { atelierShellSchema, salvageState, ATELIER_STATE_VERSION } from './persistence';
-import { fromRelativeText, toRelative } from './formula';
+import { fromRelativeText, isFormula, toRelative } from './formula';
 import { columnOfLetter, entriesOf, definitionFrom, readCellName } from './grid';
 
 // =============================================================================
@@ -210,14 +210,17 @@ function restoreRelative(shell: { objects: unknown[]; grid?: unknown }): void {
 		const column = columnOfLetter(list.column);
 		if (column === null) continue;
 		list.definition = definitionFrom(
-			entriesOf(list.definition).map((text, i) => fromRelativeText(text, column, i + 1))
+			// Une valeur n'est jamais relue : `{0:1}` tapé par l'élève reste `{0:1}` (revue)
+			entriesOf(list.definition).map((text, i) =>
+				isFormula(text) ? fromRelativeText(text, column, i + 1) : text
+			)
 		);
 	}
 	const cells = grid.cells;
 	if (cells === null || typeof cells !== 'object' || Array.isArray(cells)) return;
 	for (const [address, text] of Object.entries(cells as Record<string, unknown>)) {
 		const at = readCellName(address);
-		if (at !== null && typeof text === 'string') {
+		if (at !== null && typeof text === 'string' && isFormula(text)) {
 			(cells as Record<string, unknown>)[address] = fromRelativeText(text, at.column, at.row);
 		}
 	}

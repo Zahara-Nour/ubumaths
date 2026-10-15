@@ -115,6 +115,20 @@ export function definitionFrom(entries: readonly string[]): string {
 }
 
 /**
+ * Le texte RANGÉ d'une cellule sans nom : le « ; » d'une formule y devient
+ * `FORMULA_SEMICOLON`, comme dans une liste — une cellule rangée n'a jamais de
+ * « ; » (P2), et `=max(1;2)` était écarté au stockage et dans le lien (revue).
+ */
+export function storedCellText(text: string): string {
+	return text.trimStart().startsWith('=') ? text.replaceAll(';', FORMULA_SEMICOLON) : text;
+}
+
+/** L'inverse de `storedCellText`. */
+export function cellTextFromStored(stored: string): string {
+	return stored.trimStart().startsWith('=') ? stored.replaceAll(FORMULA_SEMICOLON, ';') : stored;
+}
+
+/**
  * Une cellule de la grille écrite dans une saisie (`B2+1` → `B2`), ou `null`.
  * Une lettre collée à une autre, à `_` ou à `\` n'en est pas une (`A_2`,
  * `\log2`, `AB12`).

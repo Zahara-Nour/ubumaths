@@ -13,7 +13,7 @@ import { Atelier } from '../atelier.svelte';
 import { mergeInto } from '../merge';
 import { shiftFormula, toRelative, fromRelative } from '../formula';
 import { decodeAtelier, encodeAtelier } from '../url';
-import type { AtelierState } from '../persistence';
+import { salvageState, type AtelierState } from '../persistence';
 
 const A = 0;
 const B = 1;
@@ -168,5 +168,75 @@ describe('§7 lien et atelier reçu', () => {
 		expect(personal.cell(C, 1)).toBe('=B1*2');
 		expect(personal.cell(C, 2)).toBe('=$B$2+C1');
 		expect(numberAt(personal, C, 1)).toBe(10);
+	});
+});
+
+describe('revue de la PR 3', () => {
+	it('une formule à « ; » dans une colonne sans nom survit au stockage et au lien', async () => {
+		const a = new Atelier();
+		a.editCells([{ column: B, row: 1, text: '=max(1;2)' }]);
+		const state = a.serialize();
+
+		const salvaged = salvageState(JSON.parse(JSON.stringify(state)));
+		expect(salvaged.dropped).toBe(0);
+		const decoded = await decodeAtelier((await encodeAtelier(state)).payload);
+		expect(decoded.ok).toBe(true);
+		if (!decoded.ok) return;
+		const b = new Atelier();
+		b.restore(decoded.state);
+		expect(b.cell(B, 1)).toBe('=max(1;2)');
+		expect(numberAt(b, B, 1)).toBe(2);
+	});
+
+	it('un atelier reçu : une formule suit la fonction renommée à l’arrivée (T7)', () => {
+		const personal = new Atelier();
+		personal.create({ kind: 'function', name: 'f', definition: 'x' });
+		const received: AtelierState = {
+			version: 2,
+			objects: [
+				{ name: 'f', kind: 'function', definition: '2*x' },
+				{ name: 'L', kind: 'list', definition: '=f(1) ; 4', column: 'A' }
+			],
+			grid: { cells: { B1: '=f(3)' } }
+		};
+
+		const report = mergeInto(personal, received);
+
+		const to = report.renamed.find((r) => r.from === 'f')?.to;
+		expect(to).toBeDefined();
+		expect(personal.cell(B, 1)).toBe(`=${to}(3)`);
+		expect(numberAt(personal, B, 1)).toBe(6);
+		expect(personal.cell(A, 1)).toBe(`=${to}(1)`);
+		expect(numberAt(personal, A, 1)).toBe(2);
+	});
+
+	it('un objet renommé à l’arrivée ne déplace pas une référence de même lettre', () => {
+		const personal = new Atelier();
+		personal.create({ kind: 'list', name: 'D', definition: '1 ; 2' });
+		// Colonnes reçues A, B, C → B, C, D ; la liste D reçue est renommée
+		const received: AtelierState = {
+			version: 2,
+			objects: [{ name: 'D', kind: 'list', definition: '3 ; 4', column: 'A' }],
+			grid: { cells: { B1: '=C1+$C$1', C1: '7' } }
+		};
+
+		const report = mergeInto(personal, received);
+
+		expect(report.renamed.map((r) => r.from)).toEqual(['D']);
+		expect(personal.cell(C, 1)).toBe('=D1+$D$1');
+	});
+
+	it('le lien ne réécrit pas un texte d’élève qui ressemble à une référence relative', async () => {
+		const a = new Atelier();
+		a.editCells([
+			{ column: A, row: 1, text: '=1+1' },
+			{ column: B, row: 3, text: '{0:1}' }
+		]);
+
+		const decoded = await decodeAtelier((await encodeAtelier(a.serialize())).payload);
+
+		expect(decoded.ok).toBe(true);
+		if (!decoded.ok) return;
+		expect(decoded.state.grid?.cells?.B3).toBe('{0:1}');
 	});
 });

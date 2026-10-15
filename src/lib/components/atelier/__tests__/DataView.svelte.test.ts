@@ -846,6 +846,82 @@ describe('recopier (§5)', () => {
 
 		expect(atelier.cell(2, 5)).toBe('=C4*2');
 	});
+
+	// Revue de la PR 3 : un `pointerup` perdu (relâché hors du navigateur)
+	// laissait une recopie en attente, lancée au clic suivant
+	it('une poignée relâchée hors de la fenêtre ne recopie rien au clic suivant', async () => {
+		const atelier = grid();
+		atelier.editCells([{ column: 2, row: 1, text: '9' }]);
+		const { container } = await openData(atelier);
+		await userEvent.click(cellAt(container, 'A2')!);
+		await settle();
+
+		const handle = container.querySelector('.poignee') as HTMLElement;
+		handle.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1 }));
+		cellAt(container, 'A4')!.dispatchEvent(new PointerEvent('pointerenter', { buttons: 1 }));
+		await userEvent.click(cellAt(container, 'C1')!);
+		await settle();
+
+		expect(atelier.cell(2, 2)).toBe('');
+		expect(atelier.cell(0, 4)).toBe('');
+	});
+
+	it('un geste annulé (pointercancel) abandonne la recopie', async () => {
+		const atelier = grid();
+		const { container } = await openData(atelier);
+		await userEvent.click(cellAt(container, 'A2')!);
+		await settle();
+
+		const handle = container.querySelector('.poignee') as HTMLElement;
+		handle.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1 }));
+		cellAt(container, 'A4')!.dispatchEvent(new PointerEvent('pointerenter', { buttons: 1 }));
+		window.dispatchEvent(new PointerEvent('pointercancel', { bubbles: true }));
+		window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+		await settle();
+
+		expect(atelier.cell(0, 4)).toBe('');
+	});
+
+	it('Ctrl/⌘+D pendant une frappe n’ouvre pas les favoris du navigateur', async () => {
+		const atelier = grid();
+		const { container } = await openData(atelier);
+		await userEvent.dblClick(cellAt(container, 'A3')!);
+		await settle();
+		const field = cellAt(container, 'A3')!.querySelector('input') as HTMLInputElement;
+		const bar = container.querySelector('#atelier-barre-cellule') as HTMLInputElement;
+
+		for (const target of [field, bar]) {
+			const key = new KeyboardEvent('keydown', {
+				key: 'd',
+				ctrlKey: true,
+				bubbles: true,
+				cancelable: true
+			});
+			target.dispatchEvent(key);
+			expect(key.defaultPrevented).toBe(true);
+		}
+		expect(atelier.cell(0, 3)).toBe('');
+	});
+
+	it('une origine forgée dans le presse-papiers est ignorée', async () => {
+		const atelier = grid();
+		const { container } = await openData(atelier);
+		await userEvent.click(cellAt(container, 'C5')!);
+		await settle();
+
+		const data = new DataTransfer();
+		data.setData('text/plain', '=A1*2');
+		data.setData(
+			'application/x-chiphre-grille',
+			JSON.stringify({ origin: { column: 0.5, row: 2 }, cells: [['=A1*2']] })
+		);
+		cellAt(container, 'C5')!.dispatchEvent(
+			new ClipboardEvent('paste', { clipboardData: data, bubbles: true, cancelable: true })
+		);
+		await settle();
+
+		expect(atelier.cell(2, 5)).toBe('=A1*2');
+	});
 });
 
 // =============================================================================
