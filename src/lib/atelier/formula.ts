@@ -48,8 +48,21 @@ import {
 	computeCalculation,
 	computeFunction,
 	CALCULATION_ARITY,
+	compare,
+	CONDITION_ARITY,
+	COMPARISON_ALONE_MESSAGE,
+	criterionOf,
 	isStatistic,
+	outsideQuotes,
+	plainSyntax,
+	splitComparison,
+	TEXT_ALONE_MESSAGE,
+	textLiteral,
+	UNCLOSED_QUOTE_MESSAGE,
 	type CalculationFunction,
+	type Compared,
+	type Comparison,
+	type ConditionFunction,
 	mapCallArguments,
 	findCalls,
 	GRID_FUNCTIONS,
@@ -132,6 +145,8 @@ type ReadFormula =
 			readonly deps: readonly string[];
 			/** Les noms passés seuls en argument (`MOYENNE(L)`) : une liste y vaut sa colonne. */
 			readonly lists: readonly string[];
+			/** La formule n'est qu'un appel (`=SI(…)`) : il peut rendre un mot. */
+			readonly alone: boolean;
 	  }
 	| { readonly ok: false; readonly message: string };
 
@@ -150,7 +165,24 @@ type ReadArgument =
 			readonly read: ReadFormula & { ok: true };
 			/** Un nom seul (`L`) : si c'est une liste, l'argument vaut sa colonne (Q-L4-3). */
 			readonly name: string | null;
+	  }
+	/** `"fille"` : un texte, dans SI et NB.SI seulement (Q-L4-5). */
+	| { readonly kind: 'text'; readonly text: string }
+	/** Une case citée en critère de NB.SI : son mot ou son nombre (`NB.SI(B2:B30;B2)`). */
+	| { readonly kind: 'cell'; readonly address: string }
+	/** La condition de SI : `A1>=10`, `B2="fille"`. */
+	| {
+			readonly kind: 'condition';
+			readonly left: Operand;
+			readonly op: Comparison;
+			readonly right: Operand;
 	  };
+
+/** Un côté d'une comparaison : un texte, une case (qui peut contenir un mot), ou une expression. */
+type Operand =
+	| { readonly kind: 'text'; readonly text: string }
+	| { readonly kind: 'cell'; readonly address: string }
+	| { readonly kind: 'expression'; readonly read: ReadFormula & { ok: true } };
 
 // =============================================================================
 // Constantes
@@ -220,15 +252,18 @@ function isReference(letter: string, offset: number, text: string): boolean {
 /** `=a2+1` → `=A2+1` : une référence s'écrit en capitales (comme dans LibreOffice). */
 export function normalizeFormula(text: string): string {
 	if (!isFormula(text)) return text;
-	const trimmed = text.trim();
-	// Puis les fonctions du tableur et les colonnes entières (`somme(a:a)` → `SOMME(A:A)`, Q-L4-7)
+	// Guillemets courbes et `≤ ≥ ≠` ramenés au tableur (iPad, revue) ; les
+	// références hors des guillemets seulement (`"a1"` reste un texte), puis
+	// les fonctions du tableur et les colonnes entières (`somme(a:a)` → `SOMME(A:A)`, Q-L4-7)
 	return normalizeGridFunctions(
-		trimmed.replace(
-			REFERENCE,
-			(match, colAbs: string, letter: string, rowAbs: string, row: string, offset: number) =>
-				isReference(letter, offset, trimmed)
-					? `${colAbs}${letter.toUpperCase()}${rowAbs}${row}`
-					: match
+		outsideQuotes(plainSyntax(text.trim()), (part) =>
+			part.replace(
+				REFERENCE,
+				(match, colAbs: string, letter: string, rowAbs: string, row: string, offset: number) =>
+					isReference(letter, offset, part)
+						? `${colAbs}${letter.toUpperCase()}${rowAbs}${row}`
+						: match
+			)
 		)
 	);
 }
@@ -263,14 +298,20 @@ function plainDecimal(mantissa: string, exponent: number): string {
  * Lire le corps d'une formule (sans `=`) — et, de la même façon, chaque
  * argument d'une fonction du tableur.
  */
-function readBody(body: string, functionNames: readonly string[]): ReadFormula {
+function readBody(typed: string, functionNames: readonly string[]): ReadFormula {
+	// Guillemets courbes et `≤ ≥ ≠` : une formule venue d'un lien n'est pas passée
+	// par `normalizeFormula`
+	const body = plainSyntax(typed);
 	if (body.includes(OUTSIDE)) {
 		return { ok: false, message: 'Référence hors de la grille (après une recopie).' };
 	}
 	if (body.trim() === '' || body.includes(MARK) || body.includes(CALL_MARK)) {
 		return { ok: false, message: UNREADABLE };
 	}
-	const wide = WIDE_REFERENCE.exec(body);
+	if ((body.match(/"/g) ?? []).length % 2 === 1) {
+		return { ok: false, message: UNCLOSED_QUOTE_MESSAGE };
+	}
+	const wide = WIDE_REFERENCE.exec(body.replace(/"[^"]*"/g, ''));
 	if (wide !== null) return { ok: false, message: outsideGrid(`${wide[1]}${wide[2]}`) };
 
 	// Les fonctions du tableur d'abord (lot 4, Q-L4-1) : chaque appel devient `(ψ_k)`
@@ -297,6 +338,9 @@ function readBody(body: string, functionNames: readonly string[]): ReadFormula {
 			message: `${unknown} n’est pas une fonction de la grille. Fonctions du tableur : ${GRID_FUNCTIONS.join(', ')}. Fonctions de calcul : ${SHOWN_FUNCTIONS.join(', ')}.`
 		};
 	}
+	// Un texte ou une comparaison hors de leur place (Q-L4-5) : `="fille"`, `=A1>2`
+	if (rest.includes('"')) return { ok: false, message: TEXT_ALONE_MESSAGE };
+	if (/[<>=]/.test(rest)) return { ok: false, message: COMPARISON_ALONE_MESSAGE };
 	// Une plage hors d'une fonction : `:` se lisait comme une division (`=C1:C2` → 0,6)
 	if (RANGE_IN_TEXT.test(rest)) return { ok: false, message: RANGE_ALONE_MESSAGE };
 
@@ -332,7 +376,8 @@ function readBody(body: string, functionNames: readonly string[]): ReadFormula {
 		names: [...new Set([...namesIn(ast), ...argumentNames])],
 		calls,
 		deps: [...deps],
-		lists: [...lists]
+		lists: [...lists],
+		alone: calls.length === 1 && rest.trim() === `(${CALL_MARK}_1)`
 	};
 }
 
@@ -350,31 +395,86 @@ function readCall(
 			names: readonly string[];
 	  }
 	| { ok: false; message: string } {
-	const arity = isStatistic(name) ? null : CALCULATION_ARITY[name];
-	if (arity === null && rawArgs.length === 0) {
+	const statistic = isStatistic(name);
+	if (statistic && rawArgs.length === 0) {
 		return {
 			ok: false,
 			message: `${name} attend au moins un argument, par exemple ${name}(A2:A21).`
 		};
 	}
-	if (!isStatistic(name) && rawArgs.length !== arity) {
+	if (!statistic && rawArgs.length !== arityOf(name)) {
 		return { ok: false, message: arityMessage(name) };
 	}
 	const args: ReadArgument[] = [];
 	const deps: string[] = [];
 	const lists: string[] = [];
 	const names: string[] = [];
-	for (const raw of rawArgs) {
-		// Une case citée seule en argument se lit comme une plage d'une case :
-		// vide ou mot, elle est ignorée (`=MIN(A1;A9)`, comme LibreOffice — revue)
-		// …pour les statistiques seulement : `RACINE(A5)` garde T5 (vide → vide)
-		const cell = arity === null ? LONE_CELL.exec(raw) : null;
+	const addExpression = (read: ReadFormula & { ok: true }) => {
+		deps.push(...read.deps);
+		lists.push(...read.lists);
+		names.push(...read.names);
+	};
+	for (const [index, raw] of rawArgs.entries()) {
+		// Le texte (Q-L4-5) : les deux branches de SI, le critère de NB.SI
+		const text = textLiteral(raw);
+		const takesText = (name === 'SI' && index > 0) || (name === 'NB.SI' && index === 1);
+		if (text !== null && takesText) {
+			args.push({ kind: 'text', text });
+			continue;
+		}
+		// Le critère de NB.SI, une case seule : son mot compte aussi (`NB.SI(B$2:B$30;B2)`)
+		const criterionCell = name === 'NB.SI' && index === 1 ? LONE_CELL.exec(raw) : null;
+		if (criterionCell !== null) {
+			const address = criterionCell[1].replaceAll('$', '').toUpperCase();
+			if (readCellName(address) === null) return { ok: false, message: outsideGrid(address) };
+			args.push({ kind: 'cell', address });
+			deps.push(address);
+			continue;
+		}
+		// La condition de SI : deux côtés et leur comparaison
+		if (name === 'SI' && index === 0) {
+			const parts = splitComparison(raw);
+			if (parts === null) return { ok: false, message: CONDITION_MESSAGE };
+			const operands: Operand[] = [];
+			for (const side of [parts.left, parts.right]) {
+				const sideText = textLiteral(side);
+				if (sideText !== null) {
+					operands.push({ kind: 'text', text: sideText });
+					continue;
+				}
+				// Une case seule : son mot se compare (`B2="fille"`)
+				const sideCell = LONE_CELL.exec(side);
+				if (sideCell !== null) {
+					const address = sideCell[1].replaceAll('$', '').toUpperCase();
+					const at = readCellName(address);
+					if (at === null) return { ok: false, message: outsideGrid(address) };
+					operands.push({ kind: 'cell', address });
+					deps.push(address);
+					continue;
+				}
+				const read = readBody(side, functionNames);
+				// `A1<B1<C1` : le second côté garde une comparaison
+				if (!read.ok && read.message === COMPARISON_ALONE_MESSAGE) {
+					return {
+						ok: false,
+						message: 'La condition de SI ne compare que deux choses : A1<B1, pas A1<B1<C1.'
+					};
+				}
+				if (!read.ok) return read;
+				operands.push({ kind: 'expression', read });
+				addExpression(read);
+			}
+			args.push({ kind: 'condition', left: operands[0], op: parts.op, right: operands[1] });
+			continue;
+		}
+		// Une plage : les statistiques, et la plage de NB.SI. Une case citée seule
+		// s'y lit comme une plage d'une case (vide ou mot ignoré, comme LibreOffice)
+		// — ailleurs elle garde T5 (`RACINE(A5)`, A5 vide → vide)
+		const rangeLike = statistic || (name === 'NB.SI' && index === 0);
+		const cell = rangeLike ? LONE_CELL.exec(raw) : null;
 		const range = cell === null ? readRange(raw) : readRange(`${cell[1]}:${cell[1]}`);
-		if (range !== null && arity !== null) {
-			return {
-				ok: false,
-				message: `${name} attend un nombre, pas une plage : ${name}(A1).`
-			};
+		if (range !== null && !rangeLike) {
+			return { ok: false, message: `${name} attend un nombre, pas une plage : ${name}(A1).` };
 		}
 		if (range !== null) {
 			if (range.bottom > GRID_ROWS) {
@@ -390,25 +490,32 @@ function readCall(
 		if (!read.ok && read.message === RANGE_ALONE_MESSAGE) {
 			return {
 				ok: false,
-				message:
-					arity === null
-						? RANGE_MIXED_MESSAGE
-						: `${name} attend un nombre, pas une plage : ${name}(A1).`
+				message: rangeLike
+					? RANGE_MIXED_MESSAGE
+					: `${name} attend un nombre, pas une plage : ${name}(A1).`
 			};
 		}
 		if (!read.ok) return read;
-		const lone = LONE_NAME.exec(raw);
+		const lone = rangeLike ? LONE_NAME.exec(raw) : null;
 		args.push({ kind: 'expression', read, name: lone === null ? null : lone[1] });
-		deps.push(...read.deps);
-		lists.push(...read.lists, ...(lone === null ? [] : [lone[1]]));
-		names.push(...read.names);
+		addExpression(read);
+		if (lone !== null) lists.push(lone[1]);
 	}
 	const label = rawArgs.map((a) => a.trim()).join(' ; ');
 	return { ok: true, call: { name, args, label }, deps, lists, names };
 }
 
+/** Le nombre d'arguments d'une fonction qui n'est pas de statistiques. */
+function arityOf(name: CalculationFunction | ConditionFunction): number {
+	return name === 'SI' || name === 'NB.SI' ? CONDITION_ARITY[name] : CALCULATION_ARITY[name];
+}
+
+const CONDITION_MESSAGE = 'La condition de SI compare deux choses : A1>=10, B2="fille"…';
+
 /** Le refus d'une fonction de calcul qui n'a pas son nombre d'arguments. */
-function arityMessage(name: CalculationFunction): string {
+function arityMessage(name: CalculationFunction | ConditionFunction): string {
+	if (name === 'SI') return 'SI attend trois arguments : SI(condition ; si vrai ; si faux).';
+	if (name === 'NB.SI') return 'NB.SI attend deux arguments : NB.SI(plage ; critère).';
 	if (name === 'PI') return 'PI s’écrit sans argument : PI().';
 	if (name === 'ARRONDI') return 'ARRONDI attend deux arguments : ARRONDI(x ; n).';
 	return `${name} attend un argument : ${name}(x).`;
@@ -711,6 +818,11 @@ function computeCell(
 	for (const call of read.calls) {
 		const result = callValue(call, address, texts, values, approximate, atelier, context);
 		if (!result.ok) return result.value;
+		// Un mot rendu par SI : la case EST ce mot si la formule n'est que l'appel
+		if ('word' in result) {
+			if (read.alone) return { kind: 'word', text: result.word };
+			return error(`SI rend un mot (${result.word}) : il ne peut pas entrer dans un calcul.`);
+		}
 		if (result.inexact) inexact = true;
 		if (result.divided) divided = true;
 		callNodes.push(result.node);
@@ -796,6 +908,147 @@ function hasDivision(ast: MathNode): boolean {
 	return found;
 }
 
+/** Ce que rend un appel : un nombre (son arbre), un mot (SI), ou la valeur qui l'arrête. */
+type CallResult =
+	| { ok: true; node: MathNode; inexact: boolean; divided: boolean }
+	| { ok: true; word: string }
+	| { ok: false; value: CellValue };
+
+/** Un argument évalué : une case vide arrête la formule (T5), une erreur aussi. */
+function argumentValue(
+	arg: ReadArgument | Operand,
+	address: string,
+	texts: ReadonlyMap<string, string>,
+	values: ReadonlyMap<string, CellValue>,
+	approximate: ReadonlySet<string>,
+	atelier: Atelier,
+	context: GridContext
+): CellValue {
+	if (arg.kind === 'text')
+		return arg.text === '' ? { kind: 'empty' } : { kind: 'word', text: arg.text };
+	if (arg.kind === 'cell') {
+		const value = values.get(arg.address) ?? plainValue(texts.get(arg.address) ?? '');
+		if (value.kind === 'empty') return { kind: 'empty', message: `${arg.address} est vide.` };
+		if (value.kind === 'error') return error(`Dépend de ${arg.address}, en erreur.`);
+		return value;
+	}
+	if (arg.kind !== 'expression') return error(UNREADABLE);
+	return computeCell(address, arg.read, texts, values, new Set(approximate), atelier, context);
+}
+
+/** Ce qu'on compare : un nombre ou un mot ; `null` pour une case vide ou une erreur. */
+function comparedOf(value: CellValue): Compared | null {
+	if (value.kind === 'number') return { kind: 'number', value: value.value };
+	if (value.kind === 'word') return { kind: 'text', text: value.text };
+	return null;
+}
+
+/**
+ * SI(condition ; si vrai ; si faux) : seule la branche choisie est calculée.
+ * Une case vide dans la condition laisse la formule vide (T5 : recopiée sous les
+ * données, `=SI(A9>=10;"admis";…)` n'écrit rien sur les lignes vides).
+ */
+function conditionValue(
+	call: ReadCall,
+	address: string,
+	texts: ReadonlyMap<string, string>,
+	values: ReadonlyMap<string, CellValue>,
+	approximate: ReadonlySet<string>,
+	atelier: Atelier,
+	context: GridContext
+): CallResult {
+	const [condition, yes, no] = call.args;
+	if (condition.kind !== 'condition') return { ok: false, value: error(UNREADABLE) };
+	const sides: Compared[] = [];
+	for (const side of [condition.left, condition.right]) {
+		const value = argumentValue(side, address, texts, values, approximate, atelier, context);
+		const compared = comparedOf(value);
+		if (compared === null) return { ok: false, value };
+		sides.push(compared);
+	}
+	const verdict = compare(sides[0], condition.op, sides[1]);
+	if (verdict === null) {
+		return { ok: false, value: error('Un mot se compare avec = ou <> seulement.') };
+	}
+	const chosen = argumentValue(
+		verdict ? yes : no,
+		address,
+		texts,
+		values,
+		approximate,
+		atelier,
+		context
+	);
+	if (chosen.kind === 'word') return { ok: true, word: chosen.text };
+	if (chosen.kind !== 'number') {
+		// `""` : une case qui reste vide, sans message
+		return { ok: false, value: chosen.kind === 'empty' ? { kind: 'empty' } : chosen };
+	}
+	return {
+		ok: true,
+		node: chosen.node,
+		inexact: !chosen.exact,
+		divided: chosen.divided === true
+	};
+}
+
+/** NB.SI(plage ; critère) : les cases (vides ignorées) qui vérifient le critère. */
+function countIf(
+	call: ReadCall,
+	address: string,
+	texts: ReadonlyMap<string, string>,
+	values: ReadonlyMap<string, CellValue>,
+	approximate: ReadonlySet<string>,
+	atelier: Atelier,
+	context: GridContext
+): CallResult {
+	const [range, criterionArg] = call.args;
+	let criterion: { op: Comparison; target: Compared };
+	if (criterionArg.kind === 'text') {
+		criterion = criterionOf(criterionArg.text);
+	} else {
+		const value = argumentValue(
+			criterionArg,
+			address,
+			texts,
+			values,
+			approximate,
+			atelier,
+			context
+		);
+		const target = comparedOf(value);
+		if (target === null) return { ok: false, value };
+		criterion = { op: '=', target };
+	}
+	const column =
+		range.kind === 'expression' && range.name !== null && atelier.get(range.name)?.kind === 'list'
+			? atelier.columnOf(range.name)
+			: undefined;
+	const cells =
+		range.kind === 'range'
+			? range.cells
+			: column !== undefined
+				? Array.from({ length: GRID_ROWS }, (_, i) => cellName(column, i + 1))
+				: null;
+	if (cells === null) {
+		return { ok: false, value: error('NB.SI compte dans une plage : NB.SI(B2:B30 ; "fille").') };
+	}
+	let count = 0;
+	for (const cell of cells) {
+		const value = values.get(cell) ?? plainValue(texts.get(cell) ?? '');
+		if (value.kind === 'error') return { ok: false, value: error(`${cell} est en erreur.`) };
+		const compared = comparedOf(value);
+		if (compared === null) continue;
+		if (compare(compared, criterion.op, criterion.target) === true) count++;
+	}
+	return {
+		ok: true,
+		node: { type: 'number', value: String(count) },
+		inexact: false,
+		divided: false
+	};
+}
+
 /**
  * La valeur d'un appel `SOMME(…)` : les nombres de ses arguments (vides et mots
  * ignorés, Q-L4-2 ; une erreur se transmet), puis l'arbre exact de la fonction.
@@ -808,9 +1061,11 @@ function callValue(
 	approximate: ReadonlySet<string>,
 	atelier: Atelier,
 	context: GridContext
-):
-	| { ok: true; node: MathNode; inexact: boolean; divided: boolean }
-	| { ok: false; value: CellValue } {
+): CallResult {
+	if (call.name === 'SI')
+		return conditionValue(call, address, texts, values, approximate, atelier, context);
+	if (call.name === 'NB.SI')
+		return countIf(call, address, texts, values, approximate, atelier, context);
 	const numbers: ArgumentValue[] = [];
 	let inexact = false;
 	const statistic = isStatistic(call.name);
@@ -1112,7 +1367,11 @@ export function gridTexts(
  */
 export function referencesIn(text: string): string[] {
 	if (!isFormula(text)) return [];
-	const body = text.trim().slice(1).replace(new RegExp(RANGE_IN_TEXT.source, 'g'), ' ');
+	const body = text
+		.trim()
+		.slice(1)
+		.replace(/"[^"]*"/g, ' ')
+		.replace(new RegExp(RANGE_IN_TEXT.source, 'g'), ' ');
 	const refs = new Set<string>();
 	for (const match of body.matchAll(REFERENCE)) {
 		if (isReference(match[2], match.index ?? 0, body))
@@ -1131,7 +1390,14 @@ function mapReferences(
 	map: (column: number, row: number, colAbs: boolean, rowAbs: boolean) => string
 ): string {
 	if (!isFormula(text)) return text;
-	const trimmed = text.trim();
+	// Un texte entre guillemets (`"A1"`) ne se décale jamais
+	return outsideQuotes(text.trim(), (part) => mapReferencesIn(part, map));
+}
+
+function mapReferencesIn(
+	trimmed: string,
+	map: (column: number, row: number, colAbs: boolean, rowAbs: boolean) => string
+): string {
 	return trimmed.replace(
 		REFERENCE,
 		(match, colAbs: string, letter: string, rowAbs: string, row: string, offset: number) =>
