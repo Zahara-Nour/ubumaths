@@ -488,6 +488,22 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   dont on écrit les arguments (la plus intérieure), ou celles dont on écrit le nom (`=ECART`, trois
   lettres au moins, ou un nom entier de deux : LN, NB, PI — `=A1*ab` n'ouvre pas ABS) ;
   liée à la barre par `aria-describedby`, jamais annoncée à chaque frappe.
+- **Conditions et texte** (lot 4, PR 3, Q-L4-5) : SI et NB.SI. Un texte entre guillemets droits
+  (`"fille"`) ne s'écrit qu'en branche de SI, en critère de NB.SI ou dans une condition ; ailleurs
+  il est refusé (`TEXT_ALONE_MESSAGE`), et un guillemet non fermé aussi. Les comparaisons (`<`, `>`,
+  `<=`, `>=`, `=`, `<>`) ne s'écrivent que dans la condition de SI (`splitComparison`) ; hors de SI,
+  refus (`COMPARISON_ALONE_MESSAGE`, au lieu de « pas un nombre réel »). Un côté de la condition est
+  un texte, une case (son mot se compare : `B2="fille"`) ou une expression ; un mot ne se compare
+  qu'avec `=` ou `<>`, sans tenir compte des majuscules (`compare`). Une case vide dans la condition
+  laisse la formule vide (T5 : recopiée sous les données, elle n'écrit rien). Seule la branche
+  choisie est calculée ; un mot rendu par SI fait de la case une case de mots si la formule n'est
+  que l'appel (`alone`), sinon refus. NB.SI compte les cases non vides d'une plage (ou d'une liste
+  nommée) qui vérifient le critère : un mot, un nombre, ou une comparaison écrite en texte
+  (`">=10"`, `"<>0"`, virgule décimale comprise, `criterionOf`). Les guillemets protègent leur texte
+  partout (`outsideQuotes`) : ni recopie, ni capitales (`"a1"` reste `"a1"`), et un `;` ou une
+  parenthèse dedans ne coupe rien. **Calcul** renvoie vers la grille (Q-L4-6,
+  `gridFunctionInCalcul`) : `somme(L)` → « SOMME est une fonction de la grille… tape .stats L »,
+  `racine(2)` → « …dans Calcul, écris sqrt(…) ».
 - **Fonction à indice** (`=f_1(3)`) : refusée (`indexedFunctionMessage`). Le parseur lit `f_1(3)`
   comme `f₁ × 3`, et la grille calculait alors avec f, sans rien dire (revue du lot 3). Calcul ne
   l'évalue pas non plus (il recopie `f_1(3)`).

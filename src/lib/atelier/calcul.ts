@@ -110,6 +110,7 @@ import { renderResult } from './render';
 import { DEV_HELP_ARGUMENT, studentHelpText } from './help';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { tabulateCommand } from './tabulate';
+import { gridFunctionInCalcul } from './grid-functions';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
 import { binomialCommand } from './binomial';
@@ -1572,7 +1573,10 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	}
 
 	const unknown = findUnknownFunctionCall(rawArgument);
-	if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };
+	if (unknown !== null) {
+		const grid = gridFunctionInCalcul(unknown);
+		return { kind: 'refus', message: grid ?? unknownFunctionMessage(unknown) };
+	}
 
 	// Les commandes à mots-clés (`de … à`, `pour`, `en`, `ordre`, `dans`, `et` —
 	// décisions de David, 2026-10-08) : lues sur la saisie TAPÉE, avant que les
@@ -3038,7 +3042,11 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		const inverse = reciprocalRefusalIn(session.atelier, input, provenance);
 		if (inverse !== null) return { kind: 'refus', ...inverse };
 		const unknown = findUnknownFunctionCall(input);
-		if (unknown !== null) return { kind: 'refus', message: unknownFunctionMessage(unknown) };
+		if (unknown !== null) {
+			// Une fonction de la grille (SOMME, RACINE…) : dire où elle vit (Q-L4-6)
+			const grid = gridFunctionInCalcul(unknown);
+			return { kind: 'refus', message: grid ?? unknownFunctionMessage(unknown) };
+		}
 	}
 
 	syncEngine(session.atelier, session.engine);

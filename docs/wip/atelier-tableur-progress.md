@@ -225,4 +225,10 @@ liste trouée en citant l'entrée).
       la valeur (`divided`) ; `1e-3` écrit en clair (23 tests)
 - [x] mergée : #1432
 
-- [ ] PR 3 : SI, NB.SI, texte entre guillemets, comparaisons, renvoi de Calcul
+### PR 3 — SI, NB.SI, texte, comparaisons (`feat/atelier-si-nbsi`)
+
+- [x] tests : `formules-tableur-conditions.test.ts` (41) ; 4 attentes de `noms-de-fonction.test.ts`
+      (`racine(…)` dans Calcul : renvoi vers la grille au lieu de « Fonction inconnue », Q-L4-6)
+- [x] tranché par moi, à dire à David : case vide dans la condition de SI → formule vide (T5) ; un
+      mot ne se compare qu'avec = ou <>
+- [ ] revue, PR, CI, merge

@@ -145,27 +145,35 @@ describe('(b) fonctions sans dérivée classique', () => {
 });
 
 describe('(c) fonction inconnue', () => {
-	it.each(['racine(3x)', 'acoss(3x)', 'arcos(3x)', 'Racine(4)'])(
-		'.dériver %s : « Fonction inconnue »',
-		(input) => {
-			const result = runInput(session(), `.dériver ${input}`);
-			const name = input.slice(0, input.indexOf('('));
+	it.each(['acoss(3x)', 'arcos(3x)'])('.dériver %s : « Fonction inconnue »', (input) => {
+		const result = runInput(session(), `.dériver ${input}`);
+		const name = input.slice(0, input.indexOf('('));
 
-			expect(result).toMatchObject({
-				kind: 'refus',
-				message: expect.stringContaining(`Fonction inconnue : ${name}`)
-			});
-		}
-	);
+		expect(result).toMatchObject({
+			kind: 'refus',
+			message: expect.stringContaining(`Fonction inconnue : ${name}`)
+		});
+	});
 
-	it('racine(4) en calcul : refusé, avec les fonctions disponibles', () => {
+	// Tableur, lot 4 (Q-L4-6) : RACINE est une fonction de la grille ; Calcul dit
+	// où elle vit et comment l'écrire ici, au lieu de « Fonction inconnue »
+	it.each(['racine(3x)', 'Racine(4)'])('.dériver %s : la grille, et sqrt', (input) => {
+		const result = runInput(session(), `.dériver ${input}`);
+
+		expect(result).toMatchObject({
+			kind: 'refus',
+			message: expect.stringContaining('RACINE est une fonction de la grille')
+		});
+		expect((result as { message: string }).message).toContain('sqrt(…)');
+	});
+
+	it('racine(4) en calcul : refusé, avec son écriture dans Calcul', () => {
 		const result = runInput(session(), 'racine(4)');
 
 		expect(result).toMatchObject({
 			kind: 'refus',
-			message: expect.stringContaining('Fonctions disponibles')
+			message: expect.stringContaining('écris sqrt(…)')
 		});
-		expect((result as { message: string }).message).toContain('sqrt');
 	});
 
 	it('f(x)=racine(x) : définition refusée, pas « en attente de r, a, c… »', () => {
@@ -173,7 +181,7 @@ describe('(c) fonction inconnue', () => {
 		const result = runInput(s, 'f(x)=racine(x)');
 
 		expect(result.kind === 'refus' || s.atelier.get('f')?.status === 'error').toBe(true);
-		expect(JSON.stringify(result)).toContain('Fonction inconnue : racine');
+		expect(JSON.stringify(result)).toContain('RACINE est une fonction de la grille');
 	});
 
 	it('abc(x+1) : le message propose a*b*c*(x+1)', () => {

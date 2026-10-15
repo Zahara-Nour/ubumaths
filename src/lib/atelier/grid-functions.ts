@@ -19,6 +19,7 @@ import type { MathNode } from '$lib/mathAST/types';
 import { evaluate } from '$lib/mathAST/eval/evaluate';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { astOf } from './parse';
+import { readListValue } from '$lib/statistics/read-value';
 
 // =============================================================================
 // Types
@@ -31,7 +32,18 @@ export type StatisticFunction =
 /** Les fonctions de calcul : des nombres, en nombre fixe (PR 2). */
 export type CalculationFunction = 'ARRONDI' | 'ENT' | 'RACINE' | 'ABS' | 'LN' | 'EXP' | 'PI';
 
-export type GridFunction = StatisticFunction | CalculationFunction;
+/** Les conditions : SI et NB.SI, avec du texte et des comparaisons (PR 3). */
+export type ConditionFunction = 'SI' | 'NB.SI';
+
+export type GridFunction = StatisticFunction | CalculationFunction | ConditionFunction;
+
+/** Une comparaison : `<`, `>`, `<=`, `>=`, `=`, `<>` (comme LibreOffice). */
+export type Comparison = '<' | '>' | '<=' | '>=' | '=' | '<>';
+
+/** Ce que compare une condition : un nombre, ou un mot. */
+export type Compared =
+	| { readonly kind: 'number'; readonly value: number }
+	| { readonly kind: 'text'; readonly text: string };
 
 /** Un appel repéré dans le corps d'une formule : sa place, son nom, ses arguments bruts. */
 export interface GridCall {
@@ -92,10 +104,19 @@ export const CALCULATION_ARITY: Readonly<Record<CalculationFunction, number>> = 
 	PI: 0
 };
 
+export const CONDITION_ARITY: Readonly<Record<ConditionFunction, number>> = { SI: 3, 'NB.SI': 2 };
+
 export const GRID_FUNCTIONS: readonly GridFunction[] = [
 	...STATISTIC_FUNCTIONS,
-	...(Object.keys(CALCULATION_ARITY) as CalculationFunction[])
+	...(Object.keys(CALCULATION_ARITY) as CalculationFunction[]),
+	...(Object.keys(CONDITION_ARITY) as ConditionFunction[])
 ];
+
+export const TEXT_ALONE_MESSAGE =
+	'Un texte entre guillemets s’utilise dans SI ou NB.SI, par exemple =NB.SI(B2:B30;"fille").';
+export const COMPARISON_ALONE_MESSAGE =
+	'Une comparaison s’écrit dans SI, par exemple =SI(A1>2;1;0).';
+export const UNCLOSED_QUOTE_MESSAGE = 'Il manque un guillemet fermant.';
 
 /** Ce que dit l'aide sous la barre (§5) : la forme, puis ce que rend la fonction. */
 const SIGNATURES: Readonly<Record<GridFunction, string>> = {
@@ -113,7 +134,9 @@ const SIGNATURES: Readonly<Record<GridFunction, string>> = {
 	ABS: 'ABS(x) — la valeur absolue',
 	LN: 'LN(x) — le logarithme népérien',
 	EXP: 'EXP(x) — l’exponentielle',
-	PI: 'PI() — le nombre π'
+	PI: 'PI() — le nombre π',
+	SI: 'SI(condition ; si vrai ; si faux) — l’un ou l’autre selon la condition',
+	'NB.SI': 'NB.SI(plage ; critère) — combien de cases vérifient le critère'
 };
 
 /** ARRONDI(x ; n) : n entre −15 et 15 (au-delà, un gel ou des chiffres faux — revue). */
@@ -175,7 +198,11 @@ export function gridFunctionOf(name: string): GridFunction | null {
 /** La parenthèse fermante qui répond à celle de `open`, ou -1. */
 function closingParenthesis(body: string, open: number): number {
 	let depth = 0;
+	let quoted = false;
 	for (let i = open; i < body.length; i++) {
+		// Un texte entre guillemets ne compte pas : `"oui (vraiment)"`
+		if (body[i] === '"') quoted = !quoted;
+		if (quoted) continue;
 		if (body[i] === '(') depth++;
 		else if (body[i] === ')') {
 			depth--;
@@ -190,8 +217,11 @@ function splitArguments(inside: string): string[] {
 	const args: string[] = [];
 	let depth = 0;
 	let start = 0;
+	let quoted = false;
 	for (let i = 0; i < inside.length; i++) {
 		const char = inside[i];
+		if (char === '"') quoted = !quoted;
+		if (quoted) continue;
 		if (char === '(') depth++;
 		else if (char === ')') depth--;
 		else if (char === ';' && depth === 0) {
@@ -292,10 +322,12 @@ export function columnRangeOf(
 
 /** `=somme(a1:a4)` → `=SOMME(A1:A4)` : les noms et les colonnes entières en capitales (Q-L4-7). */
 export function normalizeGridFunctions(body: string): string {
-	const named = body.replace(CALL, (match, name: string) => {
-		const canonical = gridFunctionOf(name);
-		return canonical === null ? match : match.replace(name, canonical);
-	});
+	const named = outsideQuotes(body, (part) =>
+		part.replace(CALL, (match, name: string) => {
+			const canonical = gridFunctionOf(name);
+			return canonical === null ? match : match.replace(name, canonical);
+		})
+	);
 	return mapCallArguments(named, (arg) => (columnRangeOf(arg) === null ? arg : arg.toUpperCase()));
 }
 
@@ -517,4 +549,111 @@ export function functionHint(draft: string): string | null {
 		prefix.length >= 3 ? name.startsWith(prefix) : name === prefix
 	).slice(0, MAX_HINTS);
 	return matches.length === 0 ? null : matches.map((name) => SIGNATURES[name]).join(' · ');
+}
+
+// =============================================================================
+// Texte et comparaisons (PR 3)
+// =============================================================================
+
+/** `"fille"` seul : le texte, sinon `null`. */
+export function textLiteral(arg: string): string | null {
+	const match = /^\s*"([^"]*)"\s*$/.exec(arg);
+	return match === null ? null : match[1];
+}
+
+/**
+ * Appliquer `map` aux seuls morceaux HORS des guillemets : un texte (`"A1"`) ne
+ * se décale pas à la recopie et ne passe pas en capitales.
+ */
+export function outsideQuotes(text: string, map: (part: string) => string): string {
+	return text
+		.split('"')
+		.map((part, i) => (i % 2 === 0 ? map(part) : part))
+		.join('"');
+}
+
+/** La condition `A1>=10` coupée à sa comparaison du premier niveau, sinon `null`. */
+export function splitComparison(
+	arg: string
+): { left: string; op: Comparison; right: string } | null {
+	let depth = 0;
+	let quoted = false;
+	for (let i = 0; i < arg.length; i++) {
+		const char = arg[i];
+		if (char === '"') quoted = !quoted;
+		if (quoted) continue;
+		if (char === '(') depth++;
+		else if (char === ')') depth--;
+		else if (depth === 0 && (char === '<' || char === '>' || char === '=')) {
+			const two = arg.slice(i, i + 2);
+			const op: Comparison =
+				two === '<=' || two === '>=' || two === '<>' ? two : (char as Comparison);
+			return { left: arg.slice(0, i), op, right: arg.slice(i + op.length) };
+		}
+	}
+	return null;
+}
+
+/** Un mot, en minuscules et sans espaces autour : `Fille` = `fille` (comme LibreOffice). */
+function plain(text: string): string {
+	return text.trim().toLocaleLowerCase('fr');
+}
+
+/**
+ * Comparer deux choses ; un mot ne se compare qu'avec `=` ou `<>` (un nombre et
+ * un mot ne sont jamais égaux). `null` : comparaison sans objet (un mot avec `<`).
+ */
+export function compare(left: Compared, op: Comparison, right: Compared): boolean | null {
+	if (left.kind === 'number' && right.kind === 'number') {
+		const a = left.value;
+		const b = right.value;
+		const equal = Math.abs(a - b) <= 1e-12 * Math.max(1, Math.abs(a), Math.abs(b));
+		switch (op) {
+			case '=':
+				return equal;
+			case '<>':
+				return !equal;
+			case '<':
+				return a < b && !equal;
+			case '>':
+				return a > b && !equal;
+			case '<=':
+				return a < b || equal;
+			case '>=':
+				return a > b || equal;
+		}
+	}
+	if (op !== '=' && op !== '<>') return null;
+	const equal =
+		left.kind === 'text' && right.kind === 'text' && plain(left.text) === plain(right.text);
+	return op === '=' ? equal : !equal;
+}
+
+/** Le critère de NB.SI : `">=10"`, `"<>0"`, `"fille"`, `"12"` → une comparaison et sa cible. */
+export function criterionOf(text: string): { op: Comparison; target: Compared } {
+	const match = /^\s*(<=|>=|<>|<|>|=)?(.*)$/.exec(text);
+	const op = (match?.[1] ?? '=') as Comparison;
+	const rest = (match?.[2] ?? '').trim();
+	const number = readListValue(rest);
+	return {
+		op,
+		target: number === null ? { kind: 'text', text: rest } : { kind: 'number', value: number }
+	};
+}
+
+/** Ce que dit Calcul d'une fonction de la grille qu'on y tape (Q-L4-6), sinon `null`. */
+export function gridFunctionInCalcul(name: string): string | null {
+	const known = gridFunctionOf(name);
+	if (known === null) return null;
+	const here = `${known} est une fonction de la grille (onglet Données)`;
+	const written: Partial<Record<GridFunction, string>> = {
+		RACINE: 'sqrt(…)',
+		ENT: 'floor(…)',
+		ABS: 'abs(…)',
+		LN: 'ln(…)',
+		EXP: 'exp(…)',
+		PI: 'π'
+	};
+	if (written[known] !== undefined) return `${here} : dans Calcul, écris ${written[known]}.`;
+	return isStatistic(known) ? `${here}. Pour une liste, tape .stats L.` : `${here}.`;
 }
