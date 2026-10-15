@@ -388,6 +388,8 @@ const GRID_CHANGED_SINCE =
 interface GridGesture {
 	readonly cells: readonly { column: number; row: number; before: string; after: string }[];
 	readonly titles: readonly { column: number; before: string; after: string }[];
+	/** « Relancer » (lot 5, Q-L5-3) : la graine d'avant et d'après. */
+	readonly seed?: { readonly before: number; readonly after: number };
 }
 
 /**
@@ -1593,7 +1595,8 @@ export class Atelier {
 		// l'historique ne décrit plus la grille, il est oublié
 		const untouched =
 			gesture.cells.every((c) => this.cell(c.column, c.row) === c[current]) &&
-			gesture.titles.every((t) => this.titleOf(t.column) === t[current]);
+			gesture.titles.every((t) => this.titleOf(t.column) === t[current]) &&
+			(gesture.seed === undefined || this.#seed === gesture.seed[current]);
 		if (!untouched) {
 			this.#forgetGridHistory();
 			return { ok: false, message: GRID_CHANGED_SINCE };
@@ -1608,6 +1611,7 @@ export class Atelier {
 				return written;
 			}
 			for (const t of gesture.titles) this.setTitle(t.column, t[target]);
+			if (gesture.seed !== undefined) this.#setSeed(gesture.seed[target]);
 		} finally {
 			this.#replaying = false;
 		}
@@ -1618,7 +1622,8 @@ export class Atelier {
 
 	/** Noter un geste : dans celui en cours de composition, sinon comme un nouveau. */
 	#record(part: GridGesture): void {
-		if (this.#replaying || (part.cells.length === 0 && part.titles.length === 0)) return;
+		const empty = part.cells.length === 0 && part.titles.length === 0 && part.seed === undefined;
+		if (this.#replaying || empty) return;
 		if (this.#gesture !== null) {
 			this.#gesture.cells.push(...part.cells);
 			this.#gesture.titles.push(...part.titles);
@@ -2573,9 +2578,27 @@ export class Atelier {
 	relaunch(): void {
 		let next = newGridSeed();
 		while (next === this.#seed) next = newGridSeed();
-		this.#seed = next;
+		// Un geste de la grille : Ctrl+Z retrouve les tirages d'avant (Q-L5-3)
+		this.#record({ cells: [], titles: [], seed: { before: this.#seed, after: next } });
+		this.#setSeed(next);
+	}
+
+	#setSeed(seed: number): void {
+		this.#seed = seed;
 		this.revision++;
 		this.#recomputeGrid();
+	}
+
+	/**
+	 * Le nombre de cases qui tirent au hasard (lot 5) : le bouton « Relancer »
+	 * n'apparaît que s'il y en a (Q-L5-2), et l'annonce les compte.
+	 */
+	get randomCells(): number {
+		let count = 0;
+		for (const text of gridTexts(this.#entriesByColumn, this.cells).values()) {
+			if (isFormula(text) && /ALEA/i.test(text)) count++;
+		}
+		return count;
 	}
 
 	/**

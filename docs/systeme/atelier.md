@@ -516,7 +516,12 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   `Atelier.relaunch()` change la graine : les formules à hasard (`random`, même emboîté) et ce qui
   les cite se recalculent (`GridState.seed`, `spreadDirty`). La graine est rangée (`grid.seed`,
   bornée par Zod) seulement si une case tire au hasard, et voyage dans le lien (Q-L5-4). Dans Calcul,
-  `alea()` renvoie vers la grille. Le bouton « Relancer », F9 et l'annulation arrivent dans la PR 2.
+  `alea()` renvoie vers la grille. **Le bouton « Relancer »** (PR 2, Q-L5-2) est à côté de la barre,
+  seulement s'il y a des cases à hasard (`randomCells`) ; F9 fait de même tant que la vue Données
+  est là (`svelte:window`), et une région `role="status"` annonce « Nouveaux tirages : N cases. ».
+  « Relancer » est un geste de la grille (`GridGesture.seed`) : Ctrl+Z retrouve les tirages d'avant,
+  Ctrl+Y ceux d'après (Q-L5-3). Garder un atelier reçu qui tirait au hasard refait ses tirages (la
+  graine reste la nôtre, ses cases ont bougé) : le rapport le dit (`MergeReport.redrawn`).
 - **Fonction à indice** (`=f_1(3)`) : refusée (`indexedFunctionMessage`). Le parseur lit `f_1(3)`
   comme `f₁ × 3`, et la grille calculait alors avec f, sans rien dire (revue du lot 3). Calcul ne
   l'évalue pas non plus (il recopie `f_1(3)`).

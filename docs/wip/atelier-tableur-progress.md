@@ -249,4 +249,10 @@ liste trouée en citant l'entrée).
 - [x] revue : rien de bloquant ni d'important (stabilité, recalcul, lien confirmés par sonde) ;
       3 mineurs corrigés : bornes > 2^53, au plus un million d'issues (biais), commentaires déplacés
 - [x] mergée : #1437
-- [ ] PR 2 : le bouton « Relancer », F9, l'annulation
+
+### PR 2 — « Relancer » (`feat/atelier-relancer`)
+
+- [x] tests : 3 serveur (annuler, compte, fusion), 3 de vue (bouton, annonce + Ctrl+Z, F9)
+- [x] `GridGesture.seed`, `randomCells`, `MergeReport.redrawn`, bouton + F9 + annonce
+- [x] capture : « Relancer » à côté de la barre, dix dés retirés, `NB.SI` suit
+- [ ] revue, PR, CI, merge

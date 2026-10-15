@@ -162,6 +162,25 @@
 		return done;
 	}
 
+	/** Les cases qui tirent au hasard (lot 5) : « Relancer » n'apparaît que s'il y en a (Q-L5-2). */
+	const randomCount = $derived((atelier.revision, atelier.randomCells));
+	/** Ce que dit « Relancer » au lecteur d'écran. */
+	let drawAnnouncement = $state('');
+
+	/** « Relancer » (lot 5, T8) : de nouveaux tirages ; Ctrl+Z les défait (Q-L5-3). */
+	function relaunch() {
+		if (randomCount === 0) return;
+		atelier.relaunch();
+		drawAnnouncement = `Nouveaux tirages : ${randomCount} case${randomCount > 1 ? 's' : ''}.`;
+	}
+
+	/** F9 relance, comme dans les tableurs (Q-L5-2) — tant que la vue Données est là. */
+	function windowKeys(event: KeyboardEvent) {
+		if (event.key !== 'F9' || randomCount === 0) return;
+		event.preventDefault();
+		relaunch();
+	}
+
 	/** L'aide sous la barre (lot 4, §5) : la forme de la fonction qu'on écrit, sinon `null`. */
 	const formulaHint = $derived(editing === null ? null : functionHint(draft));
 
@@ -714,7 +733,7 @@
 	}
 </script>
 
-<svelte:window onpointerup={endPointer} onpointercancel={cancelPointer} />
+<svelte:window onpointerup={endPointer} onpointercancel={cancelPointer} onkeydown={windowKeys} />
 
 <div class="donnees" onpaste={pasteInGrid} oncopy={copyFromGrid}>
 	<div class="barre">
@@ -735,7 +754,17 @@
 			onkeydown={barKeys}
 			onblur={barBlur}
 		/>
+		{#if randomCount > 0}
+			<button
+				type="button"
+				class="relancer"
+				onclick={relaunch}
+				aria-keyshortcuts="F9"
+				title="Nouveaux tirages (F9)">Relancer</button
+			>
+		{/if}
 	</div>
+	<p class="annonce-tirage sr-only" role="status">{drawAnnouncement}</p>
 	<p class="refus" role="status">{refusal}</p>
 	{#if formulaHint !== null}
 		<!-- L'aide des fonctions du tableur (lot 4, §5) : lue à la demande (aria-describedby),
@@ -1326,5 +1355,16 @@
 		background: var(--color-muted);
 		padding: 0 0.25rem;
 		border-radius: 0.1875rem;
+	}
+
+	.relancer {
+		min-height: 1.75rem;
+		padding: 0 0.625rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.375rem;
+		background: var(--color-background);
+		font: inherit;
+		cursor: pointer;
+		white-space: nowrap;
 	}
 </style>
