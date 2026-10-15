@@ -92,6 +92,15 @@ import type { Domain } from '$lib/mathAST/domain/types';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { listCitedMessage } from './list-cited';
 import {
+	computeGrid,
+	gridTexts,
+	isFormula,
+	normalizeFormula,
+	plainValue,
+	type CellValue,
+	type GridState
+} from './formula';
+import {
 	cellName,
 	columnLetter,
 	columnOfLetter,
@@ -513,6 +522,18 @@ export class Atelier {
 	/** Annuler ou rétablir écrit sans s'enregistrer comme un nouveau geste. */
 	#replaying = false;
 	gridHistory = $state({ undo: 0, redo: 0 });
+
+	/**
+	 * Les valeurs des FORMULES de la grille (tableur, lot 2), par adresse :
+	 * recalculées à chaque changement de cellule ou d'objet (`#recomputeGrid`).
+	 */
+	#values = $state.raw<ReadonlyMap<string, CellValue>>(new Map());
+	/** Le recalcul précédent : le suivant ne refait que les formules concernées (phase 0 §3). */
+	#gridState: GridState | undefined = undefined;
+	/** Le nombre de formules évaluées par le dernier recalcul (0 : aucune n'était concernée). */
+	lastGridComputed = 0;
+	/** La grille réécrit une colonne nommée : la règle T2 ne s'applique pas à elle-même. */
+	#gridWriting = false;
 
 	/** Les entrées de chaque colonne nommée, une par ligne, relues une fois par changement. */
 	#entriesByColumn = $derived.by(() => {
@@ -1056,6 +1077,15 @@ export class Atelier {
 	): Updated | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return { ok: false, message: `« ${name} » n'existe pas.` };
+		// T2 (tableur) : une colonne qui contient des formules se modifie dans la
+		// grille, jamais par sa carte ni par `L = …`
+		const current = this.items[index];
+		if (isList(current) && !this.#gridWriting && entriesOf(current.definition).some(isFormula)) {
+			return {
+				ok: false,
+				message: `${name} est calculée dans la grille : modifie ses cellules dans l’onglet Données.`
+			};
+		}
 		if (letter !== undefined) {
 			const refused = letterRejection(
 				letter,
@@ -1311,6 +1341,16 @@ export class Atelier {
 		return this.items.find((o): o is ListObject => isList(o) && o.column === column);
 	}
 
+	/**
+	 * Ce que vaut une cellule : rien, un nombre (exact ou approché), un mot, ou
+	 * une erreur avec sa phrase. Une formule vaut ce que le moteur a calculé.
+	 */
+	cellValue(column: number, row: number): CellValue {
+		const text = this.cell(column, row);
+		if (!isFormula(text)) return plainValue(text);
+		return this.#values.get(cellName(column, row)) ?? { kind: 'empty' };
+	}
+
 	/** Le texte brut d'une cellule (ligne 1 à 200), `''` si elle est vide. */
 	cell(column: number, row: number): string {
 		const entries = this.#entriesByColumn.get(column);
@@ -1518,8 +1558,13 @@ export class Atelier {
 	 * hors de la grille ou trop longue refuse le geste entier.
 	 */
 	editCells(edits: readonly CellEdit[]): { ok: true } | Refused {
+		// `=a2+1` → `=A2+1` (lot 2) ; une formule n'est jamais répartie (P2)
 		const spread = edits.flatMap((edit) =>
-			spreadText(edit.row, edit.text).map((piece) => ({ column: edit.column, ...piece }))
+			spreadText(edit.row, edit.text).map((piece) => ({
+				column: edit.column,
+				row: piece.row,
+				text: normalizeFormula(piece.text)
+			}))
 		);
 		for (const edit of spread) {
 			if (edit.row > GRID_ROWS && Number.isInteger(edit.row)) {
@@ -1582,12 +1627,20 @@ export class Atelier {
 			else this.cells.set(address, edit.text);
 			unnamedChanged = true;
 		}
-		for (const [column, entries] of rewritten) {
-			this.update(this.listAt(column)!.name, definitionFrom(entries));
+		this.#gridWriting = true;
+		try {
+			for (const [column, entries] of rewritten) {
+				this.update(this.listAt(column)!.name, definitionFrom(entries));
+			}
+		} finally {
+			this.#gridWriting = false;
 		}
-		// Une colonne sans nom ne touche aucun objet : pas de recalcul, mais la
-		// sauvegarde doit l'entendre
-		if (unnamedChanged && rewritten.size === 0) this.revision++;
+		// Une colonne sans nom ne touche aucun objet : pas de recalcul des objets,
+		// mais les formules (lot 2) et la sauvegarde doivent l'entendre
+		if (unnamedChanged && rewritten.size === 0) {
+			this.#recomputeGrid();
+			this.revision++;
+		}
 		return { ok: true };
 	}
 
@@ -2376,6 +2429,69 @@ export class Atelier {
 		this.#underivable();
 		this.#sequenceChecks();
 		this.#reciprocals();
+		this.#recomputeGrid();
+	}
+
+	/**
+	 * Recalculer les formules de la grille (lot 2), puis les listes dont la
+	 * colonne en contient : leurs valeurs sont celles des formules. Seules les
+	 * formules concernées par un changement (texte, cellule citée, objet cité)
+	 * sont recalculées (`computeGrid`, état précédent gardé).
+	 *
+	 * ⚠️ Appelé en DERNIER par `recomputeAll` : les formules lisent les objets
+	 * avec leur statut définitif. Aucun objet ne lit la grille (Q1) : les listes
+	 * se refont ici sans relancer `recomputeAll`.
+	 */
+	#recomputeGrid(): void {
+		const texts = gridTexts(this.#entriesByColumn, this.cells);
+		const state = computeGrid(texts, this, this.#gridState);
+		this.#gridState = state;
+		this.lastGridComputed = state.computed;
+		if (state.computed > 0 || state.values.size !== this.#values.size) this.#values = state.values;
+
+		// Les listes à formules se refont TOUJOURS (peu coûteux) : nommer une
+		// colonne ne change ni ses textes ni l'empreinte, mais crée la liste
+
+		let changed = false;
+		const items = this.items.map((o) => {
+			if (!isList(o) || !entriesOf(o.definition).some(isFormula)) return o;
+			changed = true;
+			return this.#formulaList(o);
+		});
+		if (changed) this.items = items;
+	}
+
+	/** Une liste dont la colonne contient des formules : leurs VALEURS, ligne par ligne. */
+	#formulaList(list: ListObject): ListObject {
+		let errors = 0;
+		const shown = entriesOf(list.definition).map((text, i) => {
+			if (!isFormula(text)) return text;
+			const value = this.#values.get(cellName(list.column, i + 1));
+			if (value?.kind === 'number') return String(value.value);
+			if (value?.kind === 'error') errors++;
+			return '';
+		});
+		const parsed = parseDefinition('list', shown.join(' ; '));
+		const rebuilt: ListObject = {
+			name: list.name,
+			kind: 'list',
+			column: list.column,
+			definition: list.definition,
+			provenance: list.provenance,
+			status: parsed.error ? 'error' : 'ok',
+			...(parsed.error !== undefined && { message: parsed.error }),
+			...(list.plotted && { plotted: true }),
+			...(list.plottedWith !== undefined && { plottedWith: list.plottedWith }),
+			values: parsed.values ?? [],
+			rows: parsed.rows ?? [],
+			skipped: parsed.skipped ?? 0,
+			...(parsed.categories && { categories: parsed.categories }),
+			...(parsed.qualitativeBecause !== undefined && {
+				qualitativeBecause: parsed.qualitativeBecause
+			}),
+			...(errors > 0 && { formulaErrors: errors })
+		};
+		return rebuilt;
 	}
 
 	/**

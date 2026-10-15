@@ -122,7 +122,9 @@ export function cellInCalculMessage(cell: string): string {
  * la cellule reçoit son texte tel quel.
  */
 export function spreadText(row: number, text: string): { row: number; text: string }[] {
-	if (!text.includes(';')) return [{ row, text: text.trim() }];
+	// Une FORMULE n'est jamais répartie : son « ; » sépare des arguments
+	// (`=max(1 ; A2)`, tableur lot 2)
+	if (!text.includes(';') || text.trimStart().startsWith('=')) return [{ row, text: text.trim() }];
 	// `12 ; 15 ;` : le « ; » final n'écrit rien en dessous (revue : il vidait la
 	// ligne suivante), comme l'ancien champ qui l'ignorait
 	const pieces = entriesOf(text);

@@ -437,6 +437,22 @@ describe('coller et copier (§4)', () => {
 		expect(atelier.cell(1, 1)).toBe('1/3');
 	});
 
+	// Lot 2 §5 : vers un autre logiciel partent les VALEURS ; dans la grille, la formule
+	it('copier une formule : sa valeur pour les tableurs, la formule pour la grille', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([
+			{ column: 0, row: 1, text: '2' },
+			{ column: 0, row: 2, text: '=A1/4' }
+		]);
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A2')!);
+		const data = clipboard(cellAt(container, 'A2')!, 'copy');
+
+		expect(data.getData('text/plain')).toBe('0,5');
+		expect(data.getData('application/x-chiphre-grille')).toBe('[["=A1/4"]]');
+	});
+
 	it('Suppr vide toute la zone sélectionnée', async () => {
 		const atelier = new Atelier();
 		atelier.editCells([
@@ -507,19 +523,34 @@ describe('coller et copier (§4)', () => {
 		expect(button.title).toContain('vide');
 	});
 
-	// Phase 0, lot 1 : `=` en tête est gardé, et la cellule le dit
-	it('une cellule qui commence par = annonce les formules à venir', async () => {
+	// Lot 2 : une formule se calcule ; la case montre la valeur, la barre la formule
+	it('une formule montre sa valeur, la barre montre la formule', async () => {
 		const atelier = new Atelier();
 		const { container } = await openData(atelier);
+		const bar = container.querySelector('#atelier-barre-cellule') as HTMLInputElement;
 
 		await userEvent.click(cellAt(container, 'A1')!);
-		await userEvent.keyboard('=A2+1{Enter}');
-		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('3{Enter}');
+		await userEvent.keyboard('=a1/6+1/6{Enter}');
+		await userEvent.click(cellAt(container, 'A2')!);
 		await settle();
 
-		expect(atelier.cell(0, 1)).toBe('=A2+1');
+		expect(cellAt(container, 'A2')?.textContent?.trim()).toBe('2/3');
+		expect(bar.value).toBe('=A1/6+1/6');
+	});
+
+	// Q-L2-1 : un mot court dans la case, la phrase sous la barre
+	it('une formule en erreur : « erreur » dans la case, la phrase sous la barre', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([{ column: 1, row: 1, text: '=k*2' }]);
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'B1')!);
+		await settle();
+
+		expect(cellAt(container, 'B1')?.textContent?.trim()).toBe('erreur');
 		expect(container.querySelector('.note')?.textContent).toContain(
-			'Les formules arrivent dans un prochain lot.'
+			'k n’est pas défini dans l’atelier'
 		);
 	});
 });

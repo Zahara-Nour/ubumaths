@@ -72,6 +72,7 @@ Ceux du code et de l'interface :
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `src/lib/atelier/types.ts`          | Les quatre types d'objets, `ObjectStatus`, `CurveDisplay`, `SequenceDisplay`, plafonds D8, gardes de type |
 | `src/lib/atelier/atelier.svelte.ts` | **La classe `Atelier`** : création, renommage, mise à jour, suppression, états, `serialize`/`restore`     |
+| `src/lib/atelier/formula.ts`        | Les formules de la grille : lecture des références (`ω_k`), ordre de calcul, cycles, repli ≈, refus       |
 | `src/lib/atelier/grid.ts`           | La grille de la vue Données : adresses (`B3`), entrées d'une colonne nommée, répartition P2, plafonds     |
 | `src/lib/atelier/names.ts`          | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)        |
 | `src/lib/atelier/parse.ts`          | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)     |
@@ -333,8 +334,47 @@ contenu. Elle est rangée sur l'objet, parce que `recomputeAll` relit toujours l
 
 Tableur intégré, lot 1 (phase 0 : [atelier-tableur-phase0.md](../wip/atelier-tableur-phase0.md),
 décisions de David du 2026-10-15 ; journal : [atelier-tableur-progress.md](../wip/atelier-tableur-progress.md)).
-Pas encore de formules : une cellule est du texte brut ; une cellule qui commence par `=` est
-gardée telle quelle, et la vue dit « Les formules arrivent dans un prochain lot. ».
+Une cellule est du texte brut ; une cellule qui commence par `=` est une **formule** (lot 2, phase
+0 : [atelier-tableur-lot2-phase0.md](../wip/atelier-tableur-lot2-phase0.md), validée le
+2026-10-15).
+
+- **Formules** (`formula.ts`) : écrites comme une ligne de Calcul en texte (virgule décimale, `;`
+  entre les arguments, jamais réparties vers le bas). `a2` est relu `A2` (`normalizeFormula`), mais
+  `1e5` reste la notation scientifique (un `e` minuscule collé à un chiffre). Chaque référence
+  (`A2`, `$A$2`) devient une marque `(ω_k)` avant la lecture — les parenthèses la gardent entière
+  sous un exposant (`2^A1`, `2^-A1`) —, puis la valeur de la cellule la remplace dans l'arbre (le
+  texte d'une valeur ne repasse jamais par le parseur). Les objets de
+  l'atelier passent par `gridContext` (`engine.ts`), préparé une fois par recalcul : `f'`, `f⁻¹`,
+  suites (`u(4)` ; une récurrence lit ses termes calculés, en décimal), valeurs et fonctions ; `f`
+  hors de son ensemble donne le refus de Calcul (`outsideIntervalMessage`), contrôlé APRÈS le
+  remplacement des valeurs de l'atelier (`=f(b)`), `f′` nommée avec ses primes ; rang d'une suite
+  (« Le rang de u doit être un entier positif. ») ; une grandeur à unité citée est refusée (pas
+  d'unités dans les cellules).
+- **Calcul** (`computeGrid`) : parcours en profondeur (ordre, cycles), valeur EXACTE ; une cellule
+  dont le calcul exact a pris plus de 20 ms rend ses dépendantes décimales (repli après coup : un
+  calcul exact ne s'interrompt pas, mesuré) ; une valeur exacte plus longue que 24 caractères
+  entre en décimal dans les formules qui la citent (`MAX_EXACT_CITED` : une colonne d'intérêts
+  composés faisait grossir les fractions, et une racine de la dernière gelait l'onglet). `cellValue` rend `empty` (avec « A1 est vide. » pour
+  une formule qui cite une case vide, T5), `number` (`shown` : l'écriture exacte si elle tient en
+  12 caractères et n'a pas de lettres, sinon `≈` et 4 décimales — Q2 ; `√2`, `π` attendent
+  l'écriture mathématique de la case, PR 2), `word`, ou `error` (`label` « erreur » ou
+  « cycle », la phrase dans `message` — Q-L2-1). Refus en français : formule illisible, mot cité,
+  nombre non réel (`sqrt(-1)`, `i`), logarithme d'un nombre négatif ou nul, nom inconnu (« k n’est pas défini dans l’atelier : crée-le dans Mes objets (k = 2). », Q-L2-3),
+  liste ou fonction citée comme un nombre, cellule hors de A1-Z200, division par zéro, cycle
+  (« Cycle : A1 dépend d’elle-même (par B1). »), dépendance en erreur.
+- **Recalcul ciblé** : à la fin de `recomputeAll` et après une saisie dans une colonne sans nom
+  (`#recomputeGrid`). L'état précédent (`GridState` : valeurs, textes, empreinte de chaque objet)
+  est gardé : seules les formules dont le texte, une cellule citée ou un objet cité (ou un objet
+  qui en dépend) a changé sont refaites, puis celles qui les citent (`lastGridComputed` le compte).
+  Un curseur glissé ne refait que les cellules qui le citent. Une colonne nommée à formules est une liste dont les valeurs
+  sont celles des formules (`#formulaList` ; erreurs comptées dans `formulaErrors`, leurs lignes
+  sans valeur). T2 : `update` refuse de modifier une telle liste (« L est calculée dans la grille… »),
+  sauf quand c'est la grille qui écrit.
+- **Vue** : la case montre `shown` (ou le mot court d'une erreur, en rouge) ; la barre la formule ;
+  sous la barre, la phrase de l'erreur ou de la case vide. La copie vers un autre logiciel et le CSV
+  emportent les VALEURS des formules ; la copie interne garde la formule.
+- **Oracle** : `formules.test.ts` compare, sur un corpus, la valeur d'une cellule `=expr` à celle de
+  Calcul pour `expr`.
 
 - **Une liste est une colonne nommée** (T1). Ses cellules sont les entrées de sa définition, une
   par ligne : `12 ;  ; 15` = la ligne 2 est vide (`entriesOf`, `definitionFrom`, `grid.ts`). Les

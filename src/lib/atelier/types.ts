@@ -235,6 +235,11 @@ export interface ListObject extends AtelierObjectBase {
 	 */
 	readonly rows: readonly number[];
 	/**
+	 * Tableur, lot 2 : le nombre de cellules de sa colonne dont la FORMULE est en
+	 * erreur — leurs lignes n'ont pas de valeur. Absent sans formule en erreur.
+	 */
+	readonly formulaErrors?: number;
+	/**
 	 * Liste QUALITATIVE (Q84) : une modalité par entrée, dans l'ordre, chacune
 	 * écrite comme sa première occurrence (Q85). Absent pour une liste de
 	 * nombres ; `values` est alors vide.

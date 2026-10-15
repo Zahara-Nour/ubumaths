@@ -202,7 +202,8 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   `src/lib/atelier/parse.ts` (`readListValue`), `src/lib/atelier/chart.ts`,
   `src/lib/atelier/compare.ts`, `src/lib/atelier/filter.ts`,
   `src/lib/atelier/law-commands.ts`, `src/lib/components/atelier/DataView.svelte` (la grille :
-  aperçu des listes par `summarizeList`, nombres alignés à droite par `readListValue`).
+  aperçu des listes par `summarizeList` ; une case ordinaire se lit par `readListValue`, via
+  `plainValue` de `src/lib/atelier/formula.ts`).
   Détails : [atelier.md](atelier.md).
 - **Moteur web** : `src/lib/mathAST/cli/web/web-repl-engine.ts` (`.stats`, `.ajustement`,
   `.linreg`), par **chemins relatifs**.

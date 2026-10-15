@@ -92,3 +92,30 @@ liste trouée en citant l'entrée).
       du bouton « Loi » = celle de la commande ; nuage / ajustement / diagramme sans ligne commune
       → « L et M n’ont aucune ligne remplie en commun. » (bouton et clic) ; écho de Calcul rétabli ;
       deux JSDoc remises au-dessus de leur fonction.
+
+## Lot 2 — les formules (phase 0 : `atelier-tableur-lot2-phase0.md`, validée le 2026-10-15)
+
+### PR 1 — le moteur de formules (`feat/atelier-formules-moteur`)
+
+- [x] tests rouges : `formules.test.ts` (41, dont l'oracle « même réponse que Calcul » sur 17
+      expressions), 3 tests de vue
+- [x] `formula.ts` : références marquées `ω_k` (sonde : `ω_12` se lit comme une variable indicée),
+      `computeGrid` (profondeur, cycles, repli ≈ après 20 ms, refus en français), `plainValue`
+- [x] `engine.ts` : `gridContext` (liaisons préparées une fois par recalcul)
+- [x] `Atelier` : `cellValue`, `#recomputeGrid` (empreinte), listes à formules (`#formulaList`,
+      `formulaErrors`), T2 dans `update`, `=a2` → `=A2`, pas de P2 après `=`
+- [x] vue minimale : valeur dans la case, mot d'erreur, phrase sous la barre ; copie externe et CSV =
+      valeurs (l'écriture mathématique et la carte d'une liste à formules : PR 2)
+- Choix de construction : graphe de dépendances écrit dans `formula.ts` (parcours en profondeur,
+  ~30 lignes) plutôt que celui du tableur du prof — le reprendre aurait demandé de modifier
+  `src/lib/spreadsheet/` ; écart avec la phrase de la phase 0, sans effet sur le comportement.
+- [x] revue : 1 bloquant, 3 importants, mineurs — corrigés, tests rouges d'abord. **Bloquant** :
+      `=2^A1`, `=1,05^A2` montraient « ω n’est pas défini » (la marque s'accrochait à
+      l'exposant) → marque `(ω_k)`, `2^-A1` réécrit. Importants : `=f(b)` passait le contrôle
+      d'intervalle → contrôle après les valeurs de l'atelier ; intérêts composés recopiés gelaient
+      l'onglet → valeur exacte > 24 caractères citée en décimal ; recalcul de toute la grille à
+      chaque changement → recalcul ciblé (`GridState`, `lastGridComputed`). Mineurs : `\pi` /
+      `sqrt` jamais affichés (≈ en attendant la PR 2), `1e5`, messages (non réel, logarithme,
+      unité, rang de suite, `f′`), terme de récurrence marqué approché.
+- ⚠️ Un test qui gèle (le cas des intérêts composés avant correctif) bloque toute la suite :
+  lancer `test:server` avec une garde de temps et tuer les vitest orphelins du worktree.
