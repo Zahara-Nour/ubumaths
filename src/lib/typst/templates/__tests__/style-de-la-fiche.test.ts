@@ -135,7 +135,7 @@ describe('le PDF suit le style retenu', () => {
 });
 
 // Styles qui imitaient un type de fiche : retirés du menu (ADR 0030, lot 2)
-const RETIRED = [
+const RETIRED: readonly string[] = [
 	DEFAULT_TEMPLATE_IDS.assessment,
 	DEFAULT_TEMPLATE_IDS.exam,
 	DEFAULT_TEMPLATE_IDS.homework,
