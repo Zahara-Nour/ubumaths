@@ -156,7 +156,9 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 				points: ex.points,
 				variant_mode: ex.variant_mode,
 				variant_config: ex.variant_config,
-				custom_instructions: ex.custom_instructions
+				custom_instructions: ex.custom_instructions,
+				// Les cadres de réponse réglés par le prof suivent la copie (ADR 0030, lot 4)
+				answer_frame_lines: ex.answer_frame_lines
 			}));
 
 			await locals.supabase.from('worksheet_exercises').insert(exerciseInserts);
@@ -186,7 +188,9 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 				points: ex.points,
 				variant_mode: ex.variant_mode,
 				variant_config: ex.variant_config,
-				custom_instructions: ex.custom_instructions
+				custom_instructions: ex.custom_instructions,
+				// Les cadres de réponse réglés par le prof suivent la copie (ADR 0030, lot 4)
+				answer_frame_lines: ex.answer_frame_lines
 			}));
 
 			await locals.supabase.from('worksheet_exercises').insert(exerciseInserts);

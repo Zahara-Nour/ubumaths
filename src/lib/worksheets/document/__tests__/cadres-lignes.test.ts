@@ -81,8 +81,8 @@ describe('résolution : valeur du prof, sinon l’estimation', () => {
 
 describe('lecture de la colonne (jsonb)', () => {
 	it('forme valide : gardée', () => {
-		expect(toAnswerFrameLines({ questions: [null, 0, 40], exercise: 3 })).toEqual({
-			questions: [null, 0, 40],
+		expect(toAnswerFrameLines({ questions: [null, 0, 25], exercise: 3 })).toEqual({
+			questions: [null, 0, 25],
 			exercise: 3
 		});
 	});
@@ -92,7 +92,7 @@ describe('lecture de la colonne (jsonb)', () => {
 		expect(toAnswerFrameLines('3')).toBeNull();
 		expect(toAnswerFrameLines([1, 2])).toBeNull();
 		// Valeur hors bornes ou non entière : remise en auto, une par une
-		expect(toAnswerFrameLines({ questions: [41, -1, 2.5, '3', 4], exercise: 99 })).toEqual({
+		expect(toAnswerFrameLines({ questions: [26, -1, 2.5, '3', 4], exercise: 99 })).toEqual({
 			questions: [null, null, null, null, 4],
 			exercise: null
 		});

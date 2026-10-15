@@ -143,4 +143,14 @@
 		background: var(--color-background);
 		cursor: pointer;
 	}
+
+	/* Au-dessus de la vue (une colonne) : le panneau garde sa hauteur propre et
+	   défile, au lieu d'être écrasé par la vue */
+	@media (max-width: 720px) {
+		.panneau {
+			max-height: 45vh;
+			border-right: none;
+			border-bottom: 1px solid var(--color-border);
+		}
+	}
 </style>

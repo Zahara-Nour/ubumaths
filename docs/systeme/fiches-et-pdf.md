@@ -382,7 +382,7 @@ serveur : réglage du prof lu avec la ligne `worksheet_exercises.answer_frame_li
 sur le corrigé de la copie de l'élève, **même si la correction est masquée** : seules les lignes
 partent, jamais le texte ni la colonne brute), pour que l'élève ait les mêmes cadres que le prof.
 Seulement ce que le PDF imprime (`resolveAnswerFrames`, audit S1) : les lignes par question en mode
-question, le cadre unique en mode exercice ou sans question ; entiers 0..40, au plus 200 (tronqué,
+question, le cadre unique en mode exercice ou sans question ; entiers 0..25, au plus 200 (tronqué,
 jamais d'erreur ; schéma de réponse `.strict()`). Tests : `copie.test.ts` (API élève) et `preview/__tests__/cadres-de-reponse.test.ts`, correction masquée. Partie de fin (réponses ou corrigé) : forme « fiche + corrections » ; un style qui
 n'a que sa fiche garde sa fiche et reçoit après elle `CORRECTIONS_PART` (nouvelle page, bandeau
 vert, polices du corrigé ; décision de David). Seules les corrections visibles sont imprimées
@@ -445,8 +445,15 @@ Tests : `worksheets/document/__tests__/cadres-de-reponse.test.ts`,
 (`ANSWER_FRAME_LINE_CM`). L'estimation ci-dessus devient le départ « auto » : petit 3 lignes,
 moyen 5, grand 8 ; cadre unique, sa hauteur fermée convertie et arrondie (2,5 / 4,5 / 7 / 10 / 14 cm
 → 3 / 6 / 9 / 13 / 18 lignes). Réglage dans `worksheet_exercises.answer_frame_lines` (jsonb,
-`{ questions: (int|null)[], exercise: int|null }`, `null` = auto, 0 = pas de cadre, 0..40,
-≤ 200 ; contrainte CHECK et Zod `answerFrameLinesSchema` `.strict()`). **Résolution**
+`{ questions: (int|null)[], exercise: int|null }`, `null` = auto, 0 = pas de cadre, 0..25
+(20 cm ; `ANSWER_FRAME_MAX_LINES`, partagé par le Zod du PUT, les schémas de réponse, la lecture de
+la colonne et le stepper), ≤ 200 ; contraintes CHECK et Zod `answerFrameLinesSchema` `.strict()`).
+La **duplication** d'une fiche (`POST /api/worksheets/[id]/duplicate`) recopie le réglage de chaque
+exercice. Le **lien de partage** (cahier de texte, cours partagé) le reçoit des RPC
+`get_worksheet_by_share_token` / `get_course_worksheet_by_share_token` (`20261016104000`) : les
+exercices passent tels quels par `resolve…ByShareToken`, puis `PdfPreview` (`buildWorksheetCopy`,
+`toAnswerFrameLines`) imprime les mêmes cadres que le prof (tests
+`server/__tests__/cadres-lignes-lien-partage.test.ts`, intégration `cadres-lignes-duplication`). **Résolution**
 (`resolveAnswerFrames`, une seule pour tous les PDF) : valeur du prof si non nulle, sinon
 l'estimation ; si la longueur de `questions` n'est plus le nombre de questions de l'énoncé (exercice
 modifié, ou variante qui n'en a pas autant), toutes les valeurs par question repassent en auto (le

@@ -41,7 +41,7 @@ const answerFrameModeSchema = z.enum(ANSWER_FRAME_MODES, {
 	message: 'Placement des cadres invalide'
 });
 
-/** Nombre de lignes d'un cadre de réponse : entier de 0 (pas de cadre) à 40 */
+/** Nombre de lignes d'un cadre de réponse : entier de 0 (pas de cadre) à `ANSWER_FRAME_MAX_LINES` (25) */
 const answerFrameLineCountSchema = z
 	.number()
 	.int('Nombre de lignes entier attendu')

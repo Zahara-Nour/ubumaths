@@ -110,7 +110,8 @@ import { renderResult } from './render';
 import { DEV_HELP_ARGUMENT, studentHelpText } from './help';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { tabulateCommand } from './tabulate';
-import { gridFunctionInCalcul } from './grid-functions';
+import { gridFunctionCalledIn, gridFunctionInCalcul } from './grid-functions';
+import { PI_IN_LETTERS, PI_IN_LETTERS_MESSAGE } from './names';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
 import { binomialCommand } from './binomial';
@@ -333,19 +334,7 @@ const STUDENT_FACING_ERRORS: ReadonlySet<string> = new Set([
 	VALUE_FORBIDDEN
 ]);
 
-/**
- * `pi` écrit en lettres, comme un mot : `2pi`, `sin(pi x)`, `cos(x)=pi`.
- *
- * ⚠️ Décision de David (2026-10-06) : on le REFUSE. La notation custom le lit
- * p·i (i : l'imaginaire) — `f(x) = pi*x` restait « en attente de p »,
- * `.resoudre cos(x)=pi` répondait faux. `\pi` et `π` restent acceptés, ainsi
- * que `p*i` et les mots qui contiennent « pi » (`pile ; face`, `épi`) : avant
- * et après, aucune lettre ni antislash.
- */
-const PI_IN_LETTERS = /(?<![\p{L}\\])pi(?!\p{L})/u;
-
-/** Ce qu'on répond à `pi` écrit en lettres. */
-const PI_IN_LETTERS_MESSAGE = 'Écris π avec \\pi ou le symbole π.';
+// `PI_IN_LETTERS` : la règle, partagée avec la grille, vit dans `names.ts`
 
 /** Un comparateur d'événement : `⩽ ⩾ ≤ ≥ < > =`, `<=`, `>=`, `\leqslant`, `\leq`… */
 const EVENT_COMPARATOR = String.raw`(?:<=|>=|[⩽⩾≤≥<>=]|\\(?:leqslant|geqslant|leq|geq|le|ge|lt|gt))`;
@@ -1572,6 +1561,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		return runAtelierCommand(known.name, input, argument, mode);
 	}
 
+	const gridCall = gridFunctionCalledIn(rawArgument);
+	if (gridCall !== null) return { kind: 'refus', message: gridCall };
 	const unknown = findUnknownFunctionCall(rawArgument);
 	if (unknown !== null) {
 		const grid = gridFunctionInCalcul(unknown);
@@ -3041,6 +3032,10 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		if (defined !== null) return { kind: 'refus', message: defined };
 		const inverse = reciprocalRefusalIn(session.atelier, input, provenance);
 		if (inverse !== null) return { kind: 'refus', ...inverse };
+		// Une fonction de la grille (`mediane(L)`, `médiane(L)`, `nb.si(…)`) : le
+		// moteur la recopiait sans la calculer, ou lisait « diane » (2026-10-15)
+		const gridCall = gridFunctionCalledIn(input);
+		if (gridCall !== null) return { kind: 'refus', message: gridCall };
 		const unknown = findUnknownFunctionCall(input);
 		if (unknown !== null) {
 			// Une fonction de la grille (SOMME, RACINE…) : dire où elle vit (Q-L4-6)

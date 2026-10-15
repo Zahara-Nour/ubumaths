@@ -698,6 +698,26 @@ export function criterionOf(text: string): { op: Comparison; target: Compared } 
 	};
 }
 
+/** Les fonctions de la grille que le moteur de Calcul connaît sous le même nom : elles y calculent. */
+const KNOWN_TO_CALCUL: ReadonlySet<GridFunction> = new Set(['MIN', 'MAX', 'ABS', 'LN', 'EXP']);
+
+/**
+ * Le renvoi de Calcul pour un APPEL de fonction de la grille dans une saisie
+ * (`mediane(L)`, `médiane(L)`, `nb.si(…)`), sinon `null` : le moteur recopiait
+ * `mediane(L)` sans le calculer, et lisait « diane » dans `médiane` (2026-10-15).
+ * Les fonctions que Calcul connaît (`max`, `abs`…) n'en sont pas.
+ */
+export function gridFunctionCalledIn(input: string): string | null {
+	for (const match of input.replace(/"[^"]*"/g, ' ').matchAll(CALL)) {
+		// Deux lettres sans point (`nb(…)`, `si(…)`) : un produit, comme `ab(x+1)` —
+		// la règle de `readFunctionCall` (revue : NB et SI les capturaient)
+		if (match[1].length <= 2 && !match[1].includes('.')) continue;
+		const name = gridFunctionOf(match[1]);
+		if (name !== null && !KNOWN_TO_CALCUL.has(name)) return gridFunctionInCalcul(name);
+	}
+	return null;
+}
+
 /** Ce que dit Calcul d'une fonction de la grille qu'on y tape (Q-L4-6), sinon `null`. */
 export function gridFunctionInCalcul(name: string): string | null {
 	const known = gridFunctionOf(name);
