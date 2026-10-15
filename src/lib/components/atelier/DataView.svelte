@@ -27,6 +27,7 @@
 		tableText
 	} from '$lib/atelier/grid';
 	import { cascadeMessage } from '$lib/atelier/removal';
+	import { functionHint } from '$lib/atelier/grid-functions';
 	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
 	import type { CellValue } from '$lib/atelier/formula';
 	import { isSafeLatex } from '$lib/atelier/safe-latex';
@@ -160,6 +161,9 @@
 		}
 		return done;
 	}
+
+	/** L'aide sous la barre (lot 4, §5) : la forme de la fonction qu'on écrit, sinon `null`. */
+	const formulaHint = $derived(editing === null ? null : functionHint(draft));
 
 	/** « Valeur exacte » sous la barre : quand la case montre autre chose que l'écriture exacte. */
 	const selectedExact = $derived.by(() => {
@@ -724,12 +728,18 @@
 			autocomplete="off"
 			spellcheck="false"
 			value={editing === null ? selectedText : draft}
+			aria-describedby={formulaHint === null ? undefined : 'atelier-aide-formule'}
 			oninput={barInput}
 			onkeydown={barKeys}
 			onblur={barBlur}
 		/>
 	</div>
 	<p class="refus" role="status">{refusal}</p>
+	{#if formulaHint !== null}
+		<!-- L'aide des fonctions du tableur (lot 4, §5) : lue à la demande (aria-describedby),
+		     pas annoncée à chaque frappe -->
+		<p class="note aide-formule" id="atelier-aide-formule">{formulaHint}</p>
+	{/if}
 	{#if editing === null && selectedNote !== ''}
 		<p class="note">{selectedNote}</p>
 	{/if}

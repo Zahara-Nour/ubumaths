@@ -795,6 +795,37 @@ describe('annuler dans la grille (T6)', () => {
 // Lot 2 PR 3 : recopier (§5, Q-L2-2, Q-L2-4)
 // =============================================================================
 
+// Lot 4 PR 2 : l'aide sous la barre (§5)
+describe('l’aide des fonctions sous la barre', () => {
+	it('pendant la frappe d’une fonction, sa forme ; rien après Échap', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+		const bar = container.querySelector('#atelier-barre-cellule') as HTMLInputElement;
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('=MOYENNE(A1');
+		await settle();
+
+		const hint = container.querySelector('.aide-formule');
+		expect(hint?.textContent).toContain('MOYENNE(plage ; …) — la moyenne des nombres');
+		expect(bar.getAttribute('aria-describedby')).toBe(hint?.id);
+
+		await userEvent.keyboard('{Escape}');
+		await settle();
+		expect(container.querySelector('.aide-formule')).toBeNull();
+	});
+
+	it('une saisie qui n’est pas une fonction : pas d’aide', async () => {
+		const { container } = await openData(new Atelier());
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('=A2+1');
+		await settle();
+
+		expect(container.querySelector('.aide-formule')).toBeNull();
+	});
+});
+
 describe('recopier (§5)', () => {
 	function grid() {
 		const atelier = new Atelier();

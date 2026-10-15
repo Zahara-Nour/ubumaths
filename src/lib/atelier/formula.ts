@@ -45,7 +45,11 @@ import { displayName } from './names';
 import {
 	cellsOf,
 	columnRangeOf,
+	computeCalculation,
 	computeFunction,
+	CALCULATION_ARITY,
+	isStatistic,
+	type CalculationFunction,
 	mapCallArguments,
 	findCalls,
 	GRID_FUNCTIONS,
@@ -324,11 +328,15 @@ function readCall(
 			names: readonly string[];
 	  }
 	| { ok: false; message: string } {
-	if (rawArgs.length === 0) {
+	const arity = isStatistic(name) ? null : CALCULATION_ARITY[name];
+	if (arity === null && rawArgs.length === 0) {
 		return {
 			ok: false,
 			message: `${name} attend au moins un argument, par exemple ${name}(A2:A21).`
 		};
+	}
+	if (!isStatistic(name) && rawArgs.length !== arity) {
+		return { ok: false, message: arityMessage(name) };
 	}
 	const args: ReadArgument[] = [];
 	const deps: string[] = [];
@@ -337,8 +345,15 @@ function readCall(
 	for (const raw of rawArgs) {
 		// Une case citée seule en argument se lit comme une plage d'une case :
 		// vide ou mot, elle est ignorée (`=MIN(A1;A9)`, comme LibreOffice — revue)
-		const cell = LONE_CELL.exec(raw);
+		// …pour les statistiques seulement : `RACINE(A5)` garde T5 (vide → vide)
+		const cell = arity === null ? LONE_CELL.exec(raw) : null;
 		const range = cell === null ? readRange(raw) : readRange(`${cell[1]}:${cell[1]}`);
+		if (range !== null && arity !== null) {
+			return {
+				ok: false,
+				message: `${name} attend un nombre, pas une plage : ${name}(A1).`
+			};
+		}
 		if (range !== null) {
 			if (range.bottom > GRID_ROWS) {
 				return { ok: false, message: outsideGrid(cellName(range.right, range.bottom)) };
@@ -351,7 +366,13 @@ function readCall(
 		const read = readBody(raw, functionNames);
 		// Une plage qui reste après les appels emboîtés (`SOMME(A1:A3*2)`) : mêlée à un calcul
 		if (!read.ok && read.message === RANGE_ALONE_MESSAGE) {
-			return { ok: false, message: RANGE_MIXED_MESSAGE };
+			return {
+				ok: false,
+				message:
+					arity === null
+						? RANGE_MIXED_MESSAGE
+						: `${name} attend un nombre, pas une plage : ${name}(A1).`
+			};
 		}
 		if (!read.ok) return read;
 		const lone = LONE_NAME.exec(raw);
@@ -362,6 +383,13 @@ function readCall(
 	}
 	const label = rawArgs.map((a) => a.trim()).join(' ; ');
 	return { ok: true, call: { name, args, label }, deps, lists, names };
+}
+
+/** Le refus d'une fonction de calcul qui n'a pas son nombre d'arguments. */
+function arityMessage(name: CalculationFunction): string {
+	if (name === 'PI') return 'PI s’écrit sans argument : PI().';
+	if (name === 'ARRONDI') return 'ARRONDI attend deux arguments : ARRONDI(x ; n).';
+	return `${name} attend un argument : ${name}(x).`;
 }
 
 /**
@@ -701,7 +729,10 @@ function callValue(
 ): { ok: true; node: MathNode; inexact: boolean } | { ok: false; value: CellValue } {
 	const numbers: ArgumentValue[] = [];
 	let inexact = false;
+	const statistic = isStatistic(call.name);
 	const take = (value: CellValue, cell: string | null): CellValue | null => {
+		// Une fonction de calcul garde T5 : `RACINE(A5)`, A5 vide → vide
+		if (value.kind === 'empty' && !statistic) return value;
 		if (value.kind === 'empty' || value.kind === 'word') return null;
 		if (value.kind === 'error') return cell === null ? value : error(`${cell} est en erreur.`);
 		const long = value.exact && toCustom(value.node).length > MAX_EXACT_CITED;
@@ -713,7 +744,10 @@ function callValue(
 
 	for (const arg of call.args) {
 		const column =
-			arg.kind === 'expression' && arg.name !== null && atelier.get(arg.name)?.kind === 'list'
+			statistic &&
+			arg.kind === 'expression' &&
+			arg.name !== null &&
+			atelier.get(arg.name)?.kind === 'list'
 				? atelier.columnOf(arg.name)
 				: undefined;
 		const cells =
@@ -737,9 +771,11 @@ function callValue(
 		if (refused !== null) return { ok: false, value: refused };
 	}
 
-	const computed = computeFunction(call.name, numbers, call.label);
+	const computed = isStatistic(call.name)
+		? computeFunction(call.name, numbers, call.label)
+		: computeCalculation(call.name, numbers);
 	if (!computed.ok) return { ok: false, value: error(computed.message) };
-	return { ok: true, node: computed.node, inexact };
+	return { ok: true, node: computed.node, inexact: inexact || computed.inexact === true };
 }
 
 function error(message: string): CellValue {
