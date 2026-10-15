@@ -46,3 +46,46 @@ describe('afterQuestion', () => {
 		expect(typst()).toBe(typst(() => ''));
 	});
 });
+
+/**
+ * Un cadre n'est jamais séparé de la fin de ce qui le précède : s'il ne tient
+ * pas en bas de colonne, il emmène la dernière ligne avec lui. Sans rendre
+ * insécable tout un énoncé long.
+ */
+describe('le cadre emmène ce qui le précède', () => {
+	/** Le bloc Typst qui contient `marker`, depuis l'ouverture `#block(` la plus proche */
+	function enclosingBlock(out: string, marker: string): string {
+		return out.slice(out.lastIndexOf('#block(', out.indexOf(marker)), out.indexOf(marker));
+	}
+
+	it('question d’un seul bloc : insécable avec son cadre', () => {
+		const out = typst((i) => `MARQUE${i}`);
+		expect(enclosingBlock(out, 'DEUX')).toContain('breakable: false');
+		expect(enclosingBlock(out, 'TROIS')).toContain('breakable: false');
+	});
+
+	it('question à sous-questions : seule la dernière sous-question est collée au cadre', () => {
+		const out = typst((i) => `MARQUE${i}`);
+		expect(enclosingBlock(out, 'UNB')).toContain('sticky: true');
+		expect(enclosingBlock(out, 'UNA')).not.toContain('sticky: true');
+		// La question entière reste sécable
+		expect(out.slice(0, out.indexOf('UNA'))).not.toContain('breakable: false');
+	});
+
+	it('cadre unique à la fin (`keepEndWithNext`) : dernier bloc collé, pas le reste', () => {
+		const paragraphs = generateTypst(parseMarkdown('DEBUT\n\nFIN'), {
+			includeSetup: false,
+			keepEndWithNext: true
+		});
+		expect(enclosingBlock(paragraphs, 'FIN')).toContain('sticky: true');
+		expect(paragraphs.slice(0, paragraphs.indexOf('DEBUT'))).not.toContain('sticky');
+
+		// Liste finale : son dernier élément seulement
+		const list = generateTypst(parseMarkdown('1. PREMIER\n2. DERNIER'), {
+			includeSetup: false,
+			keepEndWithNext: true
+		});
+		expect(enclosingBlock(list, 'DERNIER')).toContain('sticky: true');
+		expect(list.slice(0, list.indexOf('PREMIER'))).not.toContain('sticky');
+	});
+});

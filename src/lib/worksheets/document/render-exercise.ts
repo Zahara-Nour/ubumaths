@@ -31,6 +31,7 @@ import { SECTION_COLOR, exerciseBadge } from '$lib/typst/worksheet-palette';
 import '$lib/ubumark/generators/figure-typst-setup';
 import type { DocumentExercise, DocumentForm, DocumentSection, WorksheetDocument } from './types';
 import { ANSWER_FRAME_HEIGHT_CM, answerFrameTypst, estimateAnswerFrames } from './answer-frames';
+import type { TypstTranspilerOptions } from '$lib/exercises/types';
 
 // ============================================================================
 // TYPES
@@ -289,7 +290,15 @@ function renderTemplateExercise(
 		return content + '\n]\n' + inlineCorrection(exercise, doc, options);
 	}
 	const frames = answerFrames(exercise, doc);
-	content += indent(markdownTypst(exercise.statement, exercise, doc, frames.afterQuestion)) + '\n';
+	// Cadre unique à la fin : la fin de l'énoncé reste collée à lui (jamais seul
+	// en haut d'une colonne) ; les cadres par question, l'option `afterQuestion`
+	content +=
+		indent(
+			markdownTypst(exercise.statement, exercise, doc, {
+				afterQuestion: frames.afterQuestion,
+				keepEndWithNext: frames.atEnd !== null
+			})
+		) + '\n';
 	if (frames.atEnd !== null) content += indent(answerFrameTypst(frames.atEnd)) + '\n';
 	content += '\n]\n';
 	return content;
@@ -472,14 +481,14 @@ function markdownTypst(
 	markdown: string,
 	exercise: DocumentExercise,
 	doc: WorksheetDocument,
-	afterQuestion?: (index: number) => string
+	frames: Pick<TypstTranspilerOptions, 'afterQuestion' | 'keepEndWithNext'> = {}
 ): string {
 	return generateTypst(parseMarkdown(markdown), {
 		includeSetup: false,
 		language: doc.locale,
 		genericFunctions: genericFunctionsConfig(exercise.genericFunctions),
 		capitalPairs: exercise.capitalPairs,
-		afterQuestion
+		...frames
 	});
 }
 

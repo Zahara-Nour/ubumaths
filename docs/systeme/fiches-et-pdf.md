@@ -429,7 +429,11 @@ question k, sinon (ou corrigé vide) moyen partout. Longueur d'une réponse (`an
 estimées — caractères visibles à 60 par ligne (formules sans leurs commandes LaTeX), une ligne par
 ligne de formule centrée ou rangée de tableau, 6 par figure. ≤ 2 lignes : petit (2,5 cm) ; ≤ 5 :
 moyen (4,5 cm) ; au-delà : grand (7 cm). Cadre unique : taille de tout le corrigé, et au-delà du
-grand 0,8 cm par ligne, plafonné à 14 cm. Le réglage par question (lot 4) n'existe pas encore.
+grand 0,8 cm par ligne, plafonné à 14 cm. **Un cadre n'est jamais seul en haut d'une
+colonne** : question d'un seul bloc → insécable avec son cadre ; question à sous-questions → sa
+dernière sous-question (ou son dernier bloc) est `sticky` ; cadre unique → le dernier bloc de
+l'énoncé est `sticky` (option `keepEndWithNext` du générateur ; une liste : son dernier élément
+seulement). Un énoncé long reste sécable. Le réglage par question (lot 4) n'existe pas encore.
 Tests : `worksheets/document/__tests__/cadres-de-reponse.test.ts`,
 `typst/generators/__tests__/cadres-de-reponse-pdf.test.ts` (prof et élève).
 
