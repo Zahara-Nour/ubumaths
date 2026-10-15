@@ -123,4 +123,8 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
 - [ ] Lot 4 — PR A (branche `feat/cadres-lignes-partage`) : migration + tests, rouge sans / vert
       avec, security-auditor passé (aucun bloquant ; mineur corrigé : refus anon `42501`). Reste :
       PR, CI, `db:migrate`, `db:types`.
-- [ ] Lot 4 — PR B (branche `feat/cadres-lignes-partage-code`) : code, après PR A en prod.
+- [ ] Lot 4 — PR B (branche `feat/cadres-lignes-partage-code`, après PR A en prod + `db:types`) :
+      `ANSWER_FRAME_MAX_LINES` = 25 (Zod du PUT, schémas de réponse, lecture, stepper), duplication
+      qui recopie `answer_frame_lines` (intégration `cadres-lignes-duplication`), PDF par lien de
+      partage = cadres du prof (`cadres-lignes-lien-partage.test.ts`). Aucun code ne lit le type
+      de la RPC : les exercices passent tels quels (`z.unknown()` côté cours, cast côté cahier).

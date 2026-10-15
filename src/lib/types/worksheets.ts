@@ -200,8 +200,12 @@ export interface AnswerFrameEstimate {
 	exercise_cm?: ExerciseFrameCm;
 }
 
-/** Plafond du nombre de lignes d'un cadre (contrainte CHECK de la colonne) */
-export const ANSWER_FRAME_MAX_LINES = 40;
+/**
+ * Plafond du nombre de lignes d'un cadre : 25 lignes (20 cm, une page A4 ; décision de
+ * David, 2026-10-16). Contrainte CHECK `worksheet_exercises_answer_frame_lines_max25` ;
+ * partagé par le Zod du PUT, les schémas de réponse, la lecture de la colonne et le stepper.
+ */
+export const ANSWER_FRAME_MAX_LINES = 25;
 /** Questions réglables par exercice, au plus (contrainte CHECK de la colonne) */
 export const ANSWER_FRAME_MAX_QUESTIONS = 200;
 
@@ -210,7 +214,7 @@ export const ANSWER_FRAME_MAX_QUESTIONS = 200;
  * lot 4 ; colonne `worksheet_exercises.answer_frame_lines`) :
  * - `questions[k]` : cadre de la question k+1 (mode « après chaque question ») ;
  * - `exercise` : cadre unique (mode « après l'exercice », ou énoncé sans question).
- * `null` (ou absent) = estimation automatique ; 0 = pas de cadre ; 0 à 40 lignes.
+ * `null` (ou absent) = estimation automatique ; 0 = pas de cadre ; 0 à 25 lignes.
  */
 export interface AnswerFrameLines {
 	questions?: (number | null)[];

@@ -142,6 +142,22 @@ describe('cadres de réponse en lignes', () => {
 		await expect.element(minus).toBeDisabled();
 	});
 
+	it('25 lignes au plus : + s’arrête au plafond', async () => {
+		const fetchMock = mockFetch(true);
+		await show({ lines: { questions: [24, null] } });
+		const plus = page.getByRole('button', { name: 'Une ligne de plus, question 1' });
+		await expect.element(plus).toBeEnabled();
+		await plus.click();
+		await expect
+			.element(page.getByTestId('cadre-ligne').nth(0))
+			.toHaveTextContent(/25 lignes.*modifié/);
+		await expect.element(plus).toBeDisabled();
+		await expect.poll(() => fetchMock.mock.calls.length).toBe(1);
+		expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toEqual({
+			answer_frame_lines: { questions: [25, null] }
+		});
+	});
+
 	it('mode exercice : une seule ligne « Cadre »', async () => {
 		await show({ mode: 'exercise', lines: { exercise: 7 } });
 		const rows = page.getByTestId('cadre-ligne');

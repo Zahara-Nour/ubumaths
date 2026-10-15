@@ -2,7 +2,7 @@
  * PUT /api/worksheets/[id]/exercises/[exerciseId] — lignes des cadres (ADR 0030, lot 4)
  * ====================================================================================
  *
- * `answer_frame_lines` validé par Zod (`.strict()`, entiers 0..40, ≤ 200) ;
+ * `answer_frame_lines` validé par Zod (`.strict()`, entiers 0..25, ≤ 200) ;
  * écriture avec `.select()` : une écriture qui ne rend aucune ligne (refus de
  * la RLS, qui échoue en silence) est une erreur explicite, jamais un succès.
  */
@@ -121,7 +121,7 @@ describe('PUT exercice de fiche : lignes des cadres', () => {
 	});
 
 	it.each([
-		{ questions: [41] },
+		{ questions: [26] },
 		{ questions: [1.5] },
 		{ exercise: -1 },
 		{ questions: [1], secret: 'x' },
