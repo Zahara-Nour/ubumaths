@@ -55,3 +55,20 @@ Worktree `../ubumaths-wt-tableur`.
 - ⚠️ Le hook pre-commit (`oxlint --fix`, `unicorn/no-useless-spread`) a réécrit `[...bytes.slice()]`
   en `bytes.slice()` dans un test, qui comparait alors un `Uint8Array` à un tableau : relancer les
   tests APRÈS le commit.
+
+## PR 3a du lot 1 — annuler dans la grille, T6 (`feat/atelier-grille-annuler`)
+
+La PR 3 est coupée en deux : 3a (annuler), 3b (appariement par ligne, P1 — une dizaine de
+consommateurs : nuage, ajustement dans la carte ET `.ajustement L : M` dans Calcul, effectifs,
+diagramme avec effectifs, tableau croisé, `.simuler` ; `.filtrer` et `.croiser` refusent déjà une
+liste trouée en citant l'entrée).
+
+- [x] tests rouges : `grille-annuler.test.ts` (11), 3 tests de vue
+- [x] `undoGrid` / `redoGrid`, gestes groupés (`#grouped` : un collage = cases + titres), refus si
+      une case a changé ailleurs, historique oublié à la relecture, `MAX_GRID_UNDO` = 100
+- [x] vue : Ctrl/⌘+Z, Ctrl/⌘+Maj+Z, Ctrl+Y ; boutons ; le geste s'arrête à la cellule (sinon
+      l'atelier tentait aussi d'annuler la dernière suppression de carte — test prouvé rouge sans)
+- [x] revue : 2 findings corrigés, tests rouges d'abord — **important** : annuler un geste de grille
+      plus ancien qu'une suppression de carte rendait la suppression impossible à annuler (objets
+      perdus) → une suppression ferme l'historique de la grille, et Ctrl+Z ne s'arrête à la grille
+      que si elle a de quoi annuler ; mineur : une case écrite deux fois dans un geste.

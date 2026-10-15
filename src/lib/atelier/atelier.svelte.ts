@@ -361,6 +361,21 @@ const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-m
 
 const GRID_FULL = 'La grille est pleine : vide une colonne pour créer une liste.';
 
+/** Les gestes de la grille qu'on peut annuler (T6) : au-delà, les plus anciens partent. */
+export const MAX_GRID_UNDO = 100;
+
+const GRID_CHANGED_SINCE =
+	'La grille a changé depuis (une carte, Calcul…) : ce geste ne peut plus être annulé.';
+
+/**
+ * Un geste de la grille (saisie, collage, effacement, titre) : chaque case et
+ * chaque titre, avant et après. Annuler remet `before`, rétablir remet `after`.
+ */
+interface GridGesture {
+	readonly cells: readonly { column: number; row: number; before: string; after: string }[];
+	readonly titles: readonly { column: number; before: string; after: string }[];
+}
+
 /**
  * Pourquoi ces entrées ne peuvent pas devenir la colonne d'une liste, ou `null`.
  *
@@ -483,6 +498,21 @@ export class Atelier {
 
 	/** Les titres des colonnes (T4), texte libre, de toute colonne — nommée ou non. */
 	private titles = new SvelteMap<number, string>();
+
+	/**
+	 * L'historique de la grille (T6, exception à D6 limitée à la grille) : pas
+	 * rangé, perdu au rechargement. `gridHistory` dit à la vue ce qui se peut.
+	 */
+	#undo: GridGesture[] = [];
+	#redo: GridGesture[] = [];
+	/** Le geste en cours de composition (un collage : cases PUIS titres), sinon `null`. */
+	#gesture: {
+		cells: GridGesture['cells'][number][];
+		titles: GridGesture['titles'][number][];
+	} | null = null;
+	/** Annuler ou rétablir écrit sans s'enregistrer comme un nouveau geste. */
+	#replaying = false;
+	gridHistory = $state({ undo: 0, redo: 0 });
 
 	/** Les entrées de chaque colonne nommée, une par ligne, relues une fois par changement. */
 	#entriesByColumn = $derived.by(() => {
@@ -1111,6 +1141,7 @@ export class Atelier {
 
 		const broken = this.allDependents(name);
 		this.items.splice(index, 1);
+		this.#forgetGridHistory();
 		this.charts.delete(name);
 		// Les diagrammes dont elle donnait les effectifs disparaissent avec elle :
 		// sinon, une liste recréée sous ce nom s'y rattacherait en silence
@@ -1179,6 +1210,10 @@ export class Atelier {
 		this.recomputeAll();
 		if (unnamed !== undefined) unnamed();
 		else for (const column of columns) this.titles.delete(column);
+		// Une suppression FERME l'historique de la grille : annuler un geste plus
+		// ancien changerait la révision, et la suppression ne pourrait plus
+		// s'annuler — ses objets seraient perdus (revue de la PR 3a)
+		this.#forgetGridHistory();
 
 		const receipt: RemovedWithDependents = { ok: true, removed };
 		this.#lastRemoval = {
@@ -1298,6 +1333,7 @@ export class Atelier {
 			return { ok: false, message: `Un titre garde au plus ${MAX_TITLE_LENGTH} caractères.` };
 		}
 		if (title === this.titleOf(column)) return { ok: true };
+		this.#record({ cells: [], titles: [{ column, before: this.titleOf(column), after: title }] });
 		if (title === '') this.titles.delete(column);
 		else this.titles.set(column, title);
 		this.revision++;
@@ -1358,12 +1394,102 @@ export class Atelier {
 				text: text.replace(/\s*\n\s*/g, ' ').trim()
 			}))
 		);
-		const written = this.editCells(edits);
-		if (!written.ok) return written;
-		titles?.forEach((title, j) => {
-			if (title.trim() !== '') this.setTitle(column + j, title);
+		// Cases et titres : UN geste, qu'une seule annulation défait (T6)
+		return this.#grouped(() => {
+			const written = this.editCells(edits);
+			if (!written.ok) return written;
+			titles?.forEach((title, j) => {
+				if (title.trim() !== '') this.setTitle(column + j, title);
+			});
+			return { ok: true };
 		});
+	}
+
+	// ---------------------------------------------------------------------------
+	// Annuler dans la grille (T6)
+	// ---------------------------------------------------------------------------
+
+	/** Annuler le dernier geste de la grille. Refusé si une de ses cases a changé ailleurs depuis. */
+	undoGrid(): { ok: true } | Refused {
+		return this.#replay(this.#undo, this.#redo, 'before', 'Rien à annuler dans la grille.');
+	}
+
+	/** Rétablir le dernier geste annulé. */
+	redoGrid(): { ok: true } | Refused {
+		return this.#replay(this.#redo, this.#undo, 'after', 'Rien à rétablir dans la grille.');
+	}
+
+	#replay(
+		from: GridGesture[],
+		to: GridGesture[],
+		target: 'before' | 'after',
+		nothing: string
+	): { ok: true } | Refused {
+		const gesture = from.pop();
+		if (gesture === undefined) return { ok: false, message: nothing };
+		const current = target === 'before' ? 'after' : 'before';
+		// Jamais par-dessus un changement venu d'ailleurs (une carte, `L = …`) :
+		// l'historique ne décrit plus la grille, il est oublié
+		const untouched =
+			gesture.cells.every((c) => this.cell(c.column, c.row) === c[current]) &&
+			gesture.titles.every((t) => this.titleOf(t.column) === t[current]);
+		if (!untouched) {
+			this.#forgetGridHistory();
+			return { ok: false, message: GRID_CHANGED_SINCE };
+		}
+		this.#replaying = true;
+		try {
+			const written = this.editCells(
+				gesture.cells.map((c) => ({ column: c.column, row: c.row, text: c[target] }))
+			);
+			if (!written.ok) {
+				this.#forgetGridHistory();
+				return written;
+			}
+			for (const t of gesture.titles) this.setTitle(t.column, t[target]);
+		} finally {
+			this.#replaying = false;
+		}
+		to.push(gesture);
+		this.#countHistory();
 		return { ok: true };
+	}
+
+	/** Noter un geste : dans celui en cours de composition, sinon comme un nouveau. */
+	#record(part: GridGesture): void {
+		if (this.#replaying || (part.cells.length === 0 && part.titles.length === 0)) return;
+		if (this.#gesture !== null) {
+			this.#gesture.cells.push(...part.cells);
+			this.#gesture.titles.push(...part.titles);
+			return;
+		}
+		this.#undo.push(part);
+		if (this.#undo.length > MAX_GRID_UNDO) this.#undo.shift();
+		this.#redo = [];
+		this.#countHistory();
+	}
+
+	/** Composer un seul geste de tout ce que `run` écrit. */
+	#grouped<T>(run: () => T): T {
+		if (this.#gesture !== null) return run();
+		this.#gesture = { cells: [], titles: [] };
+		try {
+			return run();
+		} finally {
+			const gesture = this.#gesture;
+			this.#gesture = null;
+			this.#record(gesture);
+		}
+	}
+
+	#forgetGridHistory(): void {
+		this.#undo = [];
+		this.#redo = [];
+		this.#countHistory();
+	}
+
+	#countHistory(): void {
+		this.gridHistory = { undo: this.#undo.length, redo: this.#redo.length };
 	}
 
 	/**
@@ -1415,7 +1541,12 @@ export class Atelier {
 
 		// Un geste sans effet ne compte pas : il ferait monter `revision`, et
 		// « Annuler » une suppression deviendrait impossible (revue)
-		const changes = spread.filter((edit) => this.cell(edit.column, edit.row) !== edit.text);
+		// Une case écrite deux fois dans le geste (`1 ; 2` en A1, puis 9 en A2) :
+		// la dernière écriture compte, une seule fois (revue de la PR 3a)
+		const latest = new Map(spread.map((edit) => [cellName(edit.column, edit.row), edit]));
+		const changes = [...latest.values()].filter(
+			(edit) => this.cell(edit.column, edit.row) !== edit.text
+		);
 
 		// Les colonnes nommées : une réécriture de la liste par colonne touchée,
 		// vérifiée AVANT d'écrire quoi que ce soit (tout ou rien)
@@ -1432,6 +1563,16 @@ export class Atelier {
 			const tooLong = definitionTooLong(column, entries);
 			if (tooLong !== null) return { ok: false, message: tooLong };
 		}
+
+		this.#record({
+			cells: changes.map((edit) => ({
+				column: edit.column,
+				row: edit.row,
+				before: this.cell(edit.column, edit.row),
+				after: edit.text
+			})),
+			titles: []
+		});
 
 		let unnamedChanged = false;
 		for (const edit of changes) {
@@ -1636,6 +1777,7 @@ export class Atelier {
 		this.partnerChoices.clear();
 		this.cells.clear();
 		this.titles.clear();
+		this.#forgetGridHistory();
 		this.#laws.clear();
 		const skipped: SkippedObject[] = [];
 
