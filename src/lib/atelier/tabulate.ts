@@ -16,7 +16,6 @@ import type { CellEdit } from './grid';
 import { GRID_ROWS, cellName, columnLetter } from './grid';
 import { displayName, nextName, reciprocalOf } from './names';
 import { dependsOnMessage, parametersOf } from './types';
-import { indexedFunctionMessage } from './formula';
 import { intervalDomainOf } from './interval';
 import { INTERNAL_LETTER } from './letter';
 import { readListValue } from '$lib/statistics/read-value';
@@ -195,15 +194,14 @@ export function planTabulation(
 
 /**
  * Ce que la grille ne sait pas encore tabuler, et pourquoi : une réciproque
- * (`f^-1(…)`) et une fonction à indice (`f_1(…)`) ne s'appellent pas dans une
- * formule (revue de la PR 1). Aussi la raison du bouton « Tabuler » de leur carte.
+ * (`f^-1(…)`) ne s'appelle pas dans une formule (revue de la PR 1). Aussi la
+ * raison du bouton « Tabuler » de sa carte. Une fonction à indice (`f_1`) se
+ * tabule depuis que le parseur lit `f_1(…)` comme un appel (2026-10-15).
  */
 export function tabulationNotYet(name: string): string | null {
 	const base = reciprocalOf(name);
-	if (base !== null) {
-		return `La réciproque ${displayName(name)} ne se tabule pas encore : tabule ${base}, et lis son tableau à l’envers.`;
-	}
-	return /_\d/.test(name) ? indexedFunctionMessage(name) : null;
+	if (base === null) return null;
+	return `La réciproque ${displayName(name)} ne se tabule pas encore : tabule ${base}, et lis son tableau à l’envers.`;
 }
 
 /** La phrase qui dit où le tableau a été écrit (Calcul et carte). */

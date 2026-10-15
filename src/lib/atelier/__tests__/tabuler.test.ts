@@ -340,22 +340,26 @@ describe('revue de la PR 1', () => {
 		return s;
 	}
 
-	it('une fonction à indice dans une formule : refus, jamais une valeur fausse', () => {
-		const s = session(['f(x) = 2x+3', 'f_1(x) = x^2']);
-		s.atelier.editCells([{ column: A, row: 1, text: '=f_1(3)' }]);
+	// Le parseur lit désormais `f_1(3)` comme un appel de f_1 (il le lisait
+	// `f₁ × 3`, et la grille calculait avec f) : la valeur est juste, le refus
+	// `indexedFunctionMessage` ne se déclenche plus pour un appel
+	it('une fonction à indice dans une formule : la valeur de f_1, jamais celle de f', () => {
+		const s = session(['f(x) = 2x+3', 'f_1(x) = 3x^2']);
+		s.atelier.editCells([{ column: A, row: 1, text: '=f_1(2)' }]);
 
-		expect(shown(s.atelier, A, 1)).toBe(
-			'erreur : La grille ne lit pas encore une fonction à indice (f_1) : définis-la sous une seule lettre, par exemple k(x) = …'
-		);
+		expect(shown(s.atelier, A, 1)).toBe('12');
 	});
 
-	it('.tabuler f_1 : refusé, rien n’est écrit', () => {
-		const s = session(['f_1(x) = x^2']);
+	// Le parseur lit `f_1(…)` (2026-10-15) : Tabuler n'a plus de raison de la refuser
+	it('.tabuler f_1 : le tableau de f_1, titré f_1(x)', () => {
+		const s = session(['f(x) = 2x+3', 'f_1(x) = x^2']);
 
 		expect(outputOf(runInput(s, '.tabuler f_1 de 0 à 2 pas 1'))).toBe(
-			'refus : La grille ne lit pas encore une fonction à indice (f_1) : définis-la sous une seule lettre, par exemple k(x) = …'
+			'Tableau de f_1 écrit dans la grille, colonnes A et B (3 lignes).'
 		);
-		expect(s.atelier.cell(A, 1)).toBe('');
+		expect(s.atelier.cell(B, 1)).toBe('=f_1(A1)');
+		expect(shown(s.atelier, B, 3)).toBe('4');
+		expect(s.atelier.titleOf(B)).toBe('f_1(x)');
 	});
 
 	it('le conseil du refus « expression » ne propose jamais un nom à indice, et garde le pas', () => {

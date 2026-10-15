@@ -152,7 +152,7 @@ describe('objets qui ne peuvent rien produire (§3 L2)', () => {
 	});
 
 	// Lot 3 du tableur : « Tabuler » ouvre le formulaire de la carte
-	it('« Tabuler » est câblé ; pas pour une réciproque ni une fonction à indice', () => {
+	it('« Tabuler » est câblé ; pas pour une réciproque (une fonction à indice, si)', () => {
 		a.create({ kind: 'function', name: 'f', definition: '2x+3' });
 		a.create({ kind: 'function', name: 'f_1', definition: 'x^2' });
 		a.createReciprocal('f');
@@ -161,9 +161,8 @@ describe('objets qui ne peuvent rien produire (§3 L2)', () => {
 		expect(action('f^-1', 'table')?.disabledReason).toBe(
 			'La réciproque f⁻¹ ne se tabule pas encore : tabule f, et lis son tableau à l’envers.'
 		);
-		expect(action('f_1', 'table')?.disabledReason).toBe(
-			'La grille ne lit pas encore une fonction à indice (f_1) : définis-la sous une seule lettre, par exemple k(x) = …'
-		);
+		// Le parseur lit `f_1(…)` depuis le 2026-10-15 : plus de raison de griser
+		expect(action('f_1', 'table')?.disabledReason).toBeUndefined();
 	});
 
 	// Les quatre que la vue Calcul a câblées ne l'annoncent plus.
