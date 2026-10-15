@@ -179,15 +179,25 @@ export const ANSWER_FRAME_SIZES = ['small', 'medium', 'large'] as const;
 export type AnswerFrameSize = (typeof ANSWER_FRAME_SIZES)[number];
 
 /**
+ * Hauteurs possibles du cadre unique d'un exercice, en cm : une énumération
+ * fermée (audit S1), pour que la hauteur ne révèle pas la longueur du corrigé
+ * à la ligne près. Les trois premières sont petit, moyen et grand.
+ */
+export const EXERCISE_FRAME_HEIGHTS_CM = [2.5, 4.5, 7, 10, 14] as const;
+export type ExerciseFrameCm = (typeof EXERCISE_FRAME_HEIGHTS_CM)[number];
+
+/**
  * Cadres d'un exercice, estimés d'après le corrigé de la variante imprimée
  * (`estimateAnswerFrames`) :
  * - `questions` : une taille par question de l'énoncé, dans l'ordre ;
  * - `exercise_cm` : hauteur du cadre unique (après l'exercice, ou énoncé sans
  *   question numérotée).
+ * La vue de l'élève n'en reçoit que la partie utile (`estimateForView`) : les
+ * tailles par question OU la hauteur du cadre unique.
  */
 export interface AnswerFrameEstimate {
-	questions: AnswerFrameSize[];
-	exercise_cm: number;
+	questions?: AnswerFrameSize[];
+	exercise_cm?: ExerciseFrameCm;
 }
 
 /**

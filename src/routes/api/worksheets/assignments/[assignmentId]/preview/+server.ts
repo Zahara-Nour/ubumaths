@@ -72,7 +72,7 @@ import type {
 import { isStudentOfAssignment } from '$lib/server/worksheets/assignment-recipients';
 import { loadAuthorStyleTemplate } from '$lib/server/worksheets/worksheet-styles';
 import { worksheetHeader } from '$lib/worksheets/worksheet-header';
-import { estimateAnswerFrames } from '$lib/worksheets/document/answer-frames';
+import { estimateAnswerFrames, estimateForView } from '$lib/worksheets/document/answer-frames';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/worksheets/assignments/[assignmentId]/preview/+server');
@@ -384,10 +384,13 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 		// Réponses sur le sujet (ADR 0030, lot 3) : les cadres sont estimés ici,
 		// d'après le corrigé de la copie, pour que l'élève dont la correction est
 		// masquée ait les mêmes cadres que le prof — seules les tailles partent
+		// N'en part que ce que le PDF imprime (`estimateForView`, audit S1)
+		const typeOptions = viewTypeOptions(worksheet.config);
 		const answersOnSheet = worksheetHeader(
 			worksheet.type as WorksheetType,
-			viewTypeOptions(worksheet.config)
+			typeOptions
 		).answersOnSheet;
+		const answerFrameMode = typeOptions.answer_frames ?? 'question';
 
 		for (const we of shuffledRows ?? worksheetExercises ?? []) {
 			const exerciseData = getFirstOrSelf(we.exercise as unknown as ExerciseData | null);
@@ -433,9 +436,9 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 			};
 
 			if (answersOnSheet) {
-				exerciseView.answer_frame_estimate = estimateAnswerFrames(
-					resolved.statement,
-					resolved.correction
+				exerciseView.answer_frame_estimate = estimateForView(
+					estimateAnswerFrames(resolved.statement, resolved.correction),
+					answerFrameMode
 				);
 			}
 

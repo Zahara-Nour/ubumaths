@@ -138,9 +138,17 @@ describe('cadres de réponse : `answer_frames`', () => {
 			questions: ['small', 'large'],
 			exercise_cm: 7
 		});
-		const bad = { ...exercise, answer_frame_estimate: { questions: ['énorme'], exercise_cm: 7 } };
-		expect(
-			studentWorksheetDetailResponseSchema.safeParse({ ...view, exercises: [bad] }).success
-		).toBe(false);
+		// Taille inconnue, hauteur hors de l'énumération fermée (audit S1), trop de questions
+		for (const estimate of [
+			{ questions: ['énorme'] },
+			{ exercise_cm: 8 },
+			{ exercise_cm: 30 },
+			{ questions: Array(201).fill('small') }
+		]) {
+			const bad = { ...exercise, answer_frame_estimate: estimate };
+			expect(
+				studentWorksheetDetailResponseSchema.safeParse({ ...view, exercises: [bad] }).success
+			).toBe(false);
+		}
 	});
 });

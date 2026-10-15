@@ -379,7 +379,7 @@ l'**auteur** de la fiche, lu en service-role après le contrôle d'accès,
 `answer_frames`, `due_date`), que `worksheetHeader` lit comme pour le prof. Avec « réponses sur le
 sujet », chaque exercice de la vue porte `answer_frame_estimate` (tailles des cadres, calculées par
 le serveur sur le corrigé de la copie de l'élève, **même si la correction est masquée** : seules les
-tailles partent, jamais le texte), pour que l'élève ait les mêmes cadres que le prof. Partie de fin (réponses ou corrigé) : forme « fiche + corrections » ; un style qui
+tailles partent, jamais le texte), pour que l'élève ait les mêmes cadres que le prof. Seulement ce que le PDF imprime (`estimateForView`, audit S1) : les tailles par question en mode question, la hauteur du cadre unique en mode exercice ou sans question ; au plus 200 tailles (tronqué, jamais d'erreur). Tests : `copie.test.ts` (API élève) et `preview/__tests__/cadres-de-reponse.test.ts`, correction masquée. Partie de fin (réponses ou corrigé) : forme « fiche + corrections » ; un style qui
 n'a que sa fiche garde sa fiche et reçoit après elle `CORRECTIONS_PART` (nouvelle page, bandeau
 vert, polices du corrigé ; décision de David). Seules les corrections visibles sont imprimées
 (`renderExercises` écarte `correction === null` hors fiche). Ce que seul l'élève reçoit
@@ -428,8 +428,7 @@ variante est découpé pareil ; autant d'éléments que de questions → taille 
 question k, sinon (ou corrigé vide) moyen partout. Longueur d'une réponse (`answerLines`) : lignes
 estimées — caractères visibles à 60 par ligne (formules sans leurs commandes LaTeX), une ligne par
 ligne de formule centrée ou rangée de tableau, 6 par figure. ≤ 2 lignes : petit (2,5 cm) ; ≤ 5 :
-moyen (4,5 cm) ; au-delà : grand (7 cm). Cadre unique : taille de tout le corrigé, et au-delà du
-grand 0,8 cm par ligne, plafonné à 14 cm. **Un cadre n'est jamais seul en haut d'une
+moyen (4,5 cm) ; au-delà : grand (7 cm). Cadre unique : taille de tout le corrigé, puis 10 cm (≤ 14 lignes) et 14 cm au-delà — hauteurs fermées (`EXERCISE_FRAME_HEIGHTS_CM` : 2,5 / 4,5 / 7 / 10 / 14). Comptés aussi : le texte des mots-dièse, mentions et liens internes. **Un cadre n'est jamais seul en haut d'une
 colonne** : question d'un seul bloc → insécable avec son cadre ; question à sous-questions → sa
 dernière sous-question (ou son dernier bloc) est `sticky` ; cadre unique → le dernier bloc de
 l'énoncé est `sticky` (option `keepEndWithNext` du générateur ; une liste : son dernier élément

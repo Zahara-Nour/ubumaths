@@ -31,9 +31,11 @@ vi.mock('$lib/server/worksheets/assignment-access', () => ({
 vi.mock('$lib/server/worksheets/assignment-classes', () => ({
 	fetchAssignmentClasses: async () => []
 }));
+// Correction visible par défaut ; un test la masque (cadres de réponse, audit S2)
+const visibility = vi.hoisted(() => ({ visible: true }));
 vi.mock('$lib/server/worksheets/correction-visibility', () => ({
 	getCorrectionVisibilityMap: async (_s: unknown, _a: unknown, ids: string[]) =>
-		new Map(ids.map((id) => [id, true]))
+		new Map(ids.map((id) => [id, visibility.visible]))
 }));
 
 // ============================================================================
@@ -116,8 +118,10 @@ interface StudentView {
 	exercises: Array<{
 		statement: string;
 		correction: string | null;
+		correction_visible?: boolean;
+		answers?: string | null;
 		capital_pairs?: string;
-		answer_frame_estimate?: { questions: string[]; exercise_cm: number };
+		answer_frame_estimate?: { questions?: string[]; exercise_cm?: number };
 	}>;
 	answer_frames?: string;
 	numbering_style?: string;
@@ -135,6 +139,21 @@ async function fetchCopy(mock: TableMock, studentId: string): Promise<StudentVie
 	return (await response.json()) as StudentView;
 }
 
+/** Marque du corrigé : ne doit jamais sortir quand la correction est masquée */
+const SECRET = 'SOLUTIONSECRETE';
+
+/** Exercice à deux questions : réponse courte (petit cadre), puis longue (grand) */
+function framedExercise() {
+	const exercise = twoLevelExercise();
+	const long = 'Tripler revient à ajouter trois fois le même nombre. '.repeat(6);
+	exercise.variations[0] = {
+		label: 'guided',
+		statement_md: '1. Calcule {{a}} fois 3.\n2. Justifie.',
+		solution_md: `1. {{t}}\n2. ${SECRET} ${long}`
+	};
+	return exercise;
+}
+
 // ============================================================================
 // TESTS
 // ============================================================================
@@ -142,6 +161,7 @@ async function fetchCopy(mock: TableMock, studentId: string): Promise<StudentVie
 describe('API élève : la copie suit l’affectation', () => {
 	beforeEach(() => {
 		currentStudent.id = '';
+		visibility.visible = true;
 	});
 
 	it('niveau guidé : TOUS les élèves reçoivent la version guidée (jamais tirée)', async () => {
@@ -255,26 +275,47 @@ describe('API élève : la copie suit l’affectation', () => {
 
 	// Lot 3 : les cadres de réponse. La taille vient du corrigé de la copie de
 	// l'élève, calculée ici : l'élève dont la correction est masquée a les mêmes
-	// cadres que le prof, sans recevoir le texte du corrigé.
-	it('réponses sur le sujet : le mode des cadres et leur taille arrivent à l’élève', async () => {
+	// cadres que le prof, sans recevoir le texte du corrigé (audit S1, S2).
+	it('correction MASQUÉE, mode question : les tailles du vrai corrigé, sans son texte', async () => {
+		visibility.visible = false;
+		const view = await fetchCopy(
+			supabase('guided', false, framedExercise(), { answers_on_sheet: true }, 'assessment'),
+			STUDENTS[0]
+		);
+		const exercise = view.exercises[0];
+		expect(exercise.correction_visible).toBe(false);
+		expect(exercise.correction).toBeNull();
+		expect(exercise.answers).toBeNull();
+		// Calculées sur le corrigé (une réponse courte, une longue), pas sur `null`
+		// (qui donnerait « moyen » partout) ; pas de hauteur d'exercice en mode question
+		expect(exercise.answer_frame_estimate).toEqual({ questions: ['small', 'large'] });
+		expect(JSON.stringify(view)).not.toContain(SECRET);
+	});
+
+	it('correction MASQUÉE, mode exercice : la hauteur seule, d’après le vrai corrigé', async () => {
+		visibility.visible = false;
 		const view = await fetchCopy(
 			supabase(
 				'guided',
 				false,
-				twoLevelExercise(),
-				{
-					answers_on_sheet: true,
-					answer_frames: 'exercise'
-				},
+				framedExercise(),
+				{ answers_on_sheet: true, answer_frames: 'exercise' },
 				'exam'
 			),
 			STUDENTS[0]
 		);
 		expect(view.answer_frames).toBe('exercise');
-		const estimate = view.exercises[0].answer_frame_estimate;
-		expect(estimate).toBeDefined();
-		expect(estimate?.exercise_cm).toBeGreaterThan(0);
-		expect(Array.isArray(estimate?.questions)).toBe(true);
+		expect(view.exercises[0].answer_frame_estimate).toEqual({ exercise_cm: 7 });
+		expect(JSON.stringify(view)).not.toContain(SECRET);
+	});
+
+	it('énoncé sans question numérotée : la hauteur seule, d’après le corrigé', async () => {
+		const view = await fetchCopy(
+			supabase('guided', false, twoLevelExercise(), { answers_on_sheet: true }, 'exam'),
+			STUDENTS[0]
+		);
+		// « Guidé : 3a » : une ligne, petit cadre (`null` donnerait 4,5)
+		expect(view.exercises[0].answer_frame_estimate).toEqual({ exercise_cm: 2.5 });
 	});
 
 	it('sans réponses sur le sujet (ou type sans l’option) : aucune taille transmise', async () => {

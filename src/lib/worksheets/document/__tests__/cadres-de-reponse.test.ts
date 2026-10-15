@@ -15,8 +15,12 @@ import {
 	answerFrameSize,
 	answerLines,
 	estimateAnswerFrames,
+	estimateForView,
+	MAX_VIEW_QUESTIONS,
 	questionItems
 } from '../answer-frames';
+import { EXERCISE_FRAME_HEIGHTS_CM } from '$lib/types/worksheets';
+import type { ParagraphNode } from '$lib/ubumark/types';
 
 const PARTS = [
 	'**Partie A**',
@@ -135,10 +139,58 @@ describe('correspondance énoncé / corrigé', () => {
 	it('cadre d’exercice : d’après tout le corrigé, plus grand si très long, plafonné', () => {
 		expect(estimateAnswerFrames('Calculer.', SHORT).exercise_cm).toBe(ANSWER_FRAME_HEIGHT_CM.small);
 		const veryLong = Array.from({ length: 14 }, (_, i) => `Étape ${i + 1}.`).join('\n\n');
+		// Hauteurs fermées (audit S1) : la hauteur ne dit pas la longueur à la ligne près
 		const long = estimateAnswerFrames('Calculer.', veryLong).exercise_cm;
-		expect(long).toBeGreaterThan(ANSWER_FRAME_HEIGHT_CM.large);
-		expect(long).toBeLessThanOrEqual(EXERCISE_FRAME_MAX_CM);
+		expect(long).toBe(10);
+		expect(EXERCISE_FRAME_HEIGHTS_CM).toContain(long);
 		const huge = Array.from({ length: 80 }, (_, i) => `Étape ${i + 1}.`).join('\n\n');
 		expect(estimateAnswerFrames('Calculer.', huge).exercise_cm).toBe(EXERCISE_FRAME_MAX_CM);
+	});
+});
+
+describe('ce que la vue de l’élève reçoit (audit S1, R5)', () => {
+	const questions = estimateAnswerFrames('1. A\n2. B\n3. C', numbered(SHORT, LONG, MEDIUM));
+
+	it('mode question : les tailles par question, jamais la hauteur de l’exercice', () => {
+		expect(estimateForView(questions, 'question')).toEqual({
+			questions: ['small', 'large', 'medium']
+		});
+	});
+
+	it('mode exercice : la hauteur seule, sans les tailles par question', () => {
+		expect(estimateForView(questions, 'exercise')).toEqual({ exercise_cm: questions.exercise_cm });
+	});
+
+	it('énoncé sans question : la hauteur seule, même en mode question', () => {
+		const single = estimateAnswerFrames('Calculer.', SHORT);
+		expect(estimateForView(single, 'question')).toEqual({
+			exercise_cm: ANSWER_FRAME_HEIGHT_CM.small
+		});
+	});
+
+	it('plus de questions que le schéma n’en accepte : tronqué, jamais d’erreur', () => {
+		const many = estimateAnswerFrames(
+			Array.from({ length: MAX_VIEW_QUESTIONS + 50 }, (_, i) => `${i + 1}. Q`).join('\n'),
+			null
+		);
+		expect(estimateForView(many, 'question').questions).toHaveLength(MAX_VIEW_QUESTIONS);
+	});
+});
+
+describe('nœuds en ligne : leur texte compte (revue R4)', () => {
+	const paragraph = (child: ParagraphNode['children'][number]): ParagraphNode => ({
+		type: 'paragraph',
+		children: [child]
+	});
+
+	it('mot-dièse, mention et lien interne : leur texte, pas un forfait', () => {
+		const long = 'x'.repeat(200);
+		expect(answerLines([paragraph({ type: 'hashtag', tag: long })])).toBe(4);
+		expect(answerLines([paragraph({ type: 'mention', username: long })])).toBe(4);
+		expect(
+			answerLines([
+				paragraph({ type: 'internal-link', referenceType: 'exercise', uuid: 'u', label: long })
+			])
+		).toBe(4);
 	});
 });

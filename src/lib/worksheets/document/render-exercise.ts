@@ -319,13 +319,15 @@ function answerFrames(
 	const estimate =
 		exercise.answerFrameEstimate ??
 		estimateAnswerFrames(exercise.statement, exercise.correction?.solution ?? null);
-	// Une taille par question de l'énoncé : aucune, pas de question numérotée
-	if (doc.display.answerFrames === 'exercise' || estimate.questions.length === 0) {
-		return { atEnd: estimate.exercise_cm };
+	// Une taille par question de l'énoncé : aucune, pas de question numérotée.
+	// La vue de l'élève n'a que l'une des deux parties (`estimateForView`)
+	const questions = estimate.questions ?? [];
+	if (doc.display.answerFrames === 'exercise' || questions.length === 0) {
+		return { atEnd: estimate.exercise_cm ?? ANSWER_FRAME_HEIGHT_CM.medium };
 	}
 	return {
 		afterQuestion: (index) =>
-			answerFrameTypst(ANSWER_FRAME_HEIGHT_CM[estimate.questions[index] ?? 'medium']),
+			answerFrameTypst(ANSWER_FRAME_HEIGHT_CM[questions[index] ?? 'medium']),
 		atEnd: null
 	};
 }

@@ -42,8 +42,29 @@ describe('afterQuestion', () => {
 		expect(out.indexOf('MARQUE2')).toBeLessThan(out.indexOf('PUCE'));
 	});
 
-	it('sans l’option : rendu inchangé', () => {
-		expect(typst()).toBe(typst(() => ''));
+	// Empreintes figées, produites par le générateur d'avant les cadres (origin/main,
+	// 2026-10-15) : sans option, une liste se rend exactement comme avant
+	it.each([
+		[
+			'liste imbriquée',
+			'1. UN\n   1. UNA\n   2. UNB\n2. DEUX',
+			'\n#ubu-item(numbering("a)", 1), w: "a)")[UN\n\n#ubu-item(numbering("1)", 1), w: "1)")[UNA]\n#ubu-item(numbering("1)", 2), w: "1)")[UNB]]\n#ubu-item(numbering("a)", 2), w: "a)")[DEUX]'
+		],
+		[
+			'liste en colonnes',
+			':colonnes 2\n1. a\n2. b\n3. c',
+			'\n#grid(columns: (1fr, 1fr), column-gutter: 1em, row-gutter: 1.5em,\n  ubu-item(numbering("a)", 1), w: "a)")[a],\n  ubu-item(numbering("a)", 2), w: "a)")[b],\n  ubu-item(numbering("a)", 3), w: "a)")[c]\n)'
+		],
+		[
+			'item qui commence par un bloc',
+			'1. $$x^2=4$$\n2. b',
+			'\n#ubu-item-bloc(numbering("a)", 1), w: "a)")[$ x^2=4 $]\n#ubu-item(numbering("a)", 2), w: "a)")[b]'
+		]
+	])('sans option, %s : rendu d’avant', (_name, markdown, expected) => {
+		const body = generateTypst(parseMarkdown(markdown), { includeSetup: false }).split(
+			'// ubumark: fin de l’en-tête'
+		)[1];
+		expect(body).toBe(expected);
 	});
 });
 

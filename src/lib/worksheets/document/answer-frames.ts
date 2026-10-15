@@ -34,14 +34,19 @@
 
 import { parseMarkdown } from '$lib/ubumark';
 import type { ASTNode, DocumentNode, InlineNode, ListItemNode } from '$lib/ubumark/types';
-import type { AnswerFrameEstimate, AnswerFrameSize } from '$lib/types/worksheets';
+import type {
+	AnswerFrameEstimate,
+	AnswerFrameMode,
+	AnswerFrameSize,
+	ExerciseFrameCm
+} from '$lib/types/worksheets';
 
 // ============================================================================
 // CONSTANTES
 // ============================================================================
 
 /** Hauteur d'un cadre selon sa taille, pour l'écriture manuscrite d'un élève */
-export const ANSWER_FRAME_HEIGHT_CM: Record<AnswerFrameSize, number> = {
+export const ANSWER_FRAME_HEIGHT_CM: Record<AnswerFrameSize, ExerciseFrameCm> = {
 	small: 2.5,
 	medium: 4.5,
 	large: 7
@@ -57,10 +62,19 @@ export const CHARS_PER_LINE = 60;
 /** Une figure (image, courbe, tableau de variation…) : autant de lignes */
 export const FIGURE_LINES = 6;
 
-/** Cadre unique d'un très long corrigé : hauteur par ligne, au-delà du grand cadre */
-export const EXERCISE_CM_PER_LINE = 0.8;
+/** Cadre unique : corrigé d'au plus 9 lignes, grand cadre (7 cm) */
+export const LARGE_MAX_LINES = 9;
+/** Cadre unique : au plus 14 lignes, 10 cm ; au-delà, le plafond */
+export const EXTRA_LARGE_MAX_LINES = 14;
 /** Plafond du cadre unique : il doit tenir sur une page avec son énoncé */
 export const EXERCISE_FRAME_MAX_CM = 14;
+
+/**
+ * Tailles par question envoyées à l'élève, au plus : la borne du schéma de
+ * réponse ; au-delà, le serveur tronque (le rendu met « moyen ») plutôt que de
+ * faire échouer toute la copie
+ */
+export const MAX_VIEW_QUESTIONS = 200;
 
 /** Le cadre lui-même : pointillé gris clair, toute la largeur disponible */
 const FRAME_STROKE = '(paint: rgb("#c8c8c8"), thickness: 0.5pt, dash: "dashed")';
@@ -150,8 +164,17 @@ function visibleChars(node: InlineNode): number {
 		case 'blank':
 			// Un trou à compléter : la place d'un mot
 			return 6;
-		default:
-			return 4;
+		case 'hashtag':
+			return node.tag.length + 1;
+		case 'mention':
+			return node.username.length + 1;
+		case 'internal-link':
+			return node.label.length;
+		case 'hint-reference':
+			// Renvoi à un indice : une marque
+			return 2;
+		case 'line-break':
+			return 0;
 	}
 }
 
@@ -204,14 +227,29 @@ export function estimateAnswerFrames(
 }
 
 /**
- * Cadre unique : la taille de tout le corrigé ; au-delà du grand cadre, une
- * hauteur par ligne, plafonnée
+ * Cadre unique : la taille de tout le corrigé ; au-delà du grand cadre, 10 cm
+ * puis le plafond (hauteurs fermées, `EXERCISE_FRAME_HEIGHTS_CM`)
  */
-function exerciseFrameCm(lines: number): number {
+function exerciseFrameCm(lines: number): ExerciseFrameCm {
 	const size = answerFrameSize(lines);
-	if (size !== 'large') return ANSWER_FRAME_HEIGHT_CM[size];
-	const grown = Math.max(ANSWER_FRAME_HEIGHT_CM.large, lines * EXERCISE_CM_PER_LINE);
-	return Math.round(Math.min(EXERCISE_FRAME_MAX_CM, grown) * 10) / 10;
+	if (size !== 'large' || lines <= LARGE_MAX_LINES) return ANSWER_FRAME_HEIGHT_CM[size];
+	return lines <= EXTRA_LARGE_MAX_LINES ? 10 : EXERCISE_FRAME_MAX_CM;
+}
+
+/**
+ * Ce que la vue de l'élève reçoit (audit S1) : seulement ce que son PDF
+ * imprime. Mode exercice, ou énoncé sans question : la hauteur du cadre
+ * unique ; sinon les tailles par question (tronquées à `MAX_VIEW_QUESTIONS`).
+ */
+export function estimateForView(
+	estimate: AnswerFrameEstimate,
+	mode: AnswerFrameMode
+): AnswerFrameEstimate {
+	const questions = estimate.questions ?? [];
+	if (mode === 'exercise' || questions.length === 0) {
+		return { exercise_cm: estimate.exercise_cm ?? ANSWER_FRAME_HEIGHT_CM.medium };
+	}
+	return { questions: questions.slice(0, MAX_VIEW_QUESTIONS) };
 }
 
 // ============================================================================

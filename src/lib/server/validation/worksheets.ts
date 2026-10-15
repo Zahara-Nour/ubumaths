@@ -15,6 +15,7 @@ import {
 	ANSWER_FRAME_MODES,
 	ANSWER_FRAME_SIZES,
 	CALCULATOR_RULES,
+	EXERCISE_FRAME_HEIGHTS_CM,
 	WORKSHEET_TYPES,
 	isIsoDate
 } from '$lib/types/worksheets';
@@ -42,11 +43,17 @@ const answerFrameModeSchema = z.enum(ANSWER_FRAME_MODES, {
 
 /**
  * Tailles des cadres d'un exercice, estimées par le serveur (vue de l'élève) :
- * bornées, une question n'en a qu'une, un cadre ne dépasse pas une page
+ * tailles par question (au plus `MAX_VIEW_QUESTIONS`, le serveur tronque avant)
+ * ou hauteur du cadre unique, prise dans l'énumération fermée
  */
 const answerFrameEstimateSchema = z.object({
-	questions: z.array(z.enum(ANSWER_FRAME_SIZES)).max(200),
-	exercise_cm: z.number().positive().max(30)
+	questions: z.array(z.enum(ANSWER_FRAME_SIZES)).max(200).optional(),
+	exercise_cm: z
+		.number()
+		.refine((cm) => EXERCISE_FRAME_HEIGHTS_CM.some((height) => height === cm), {
+			message: 'Hauteur de cadre invalide'
+		})
+		.optional()
 });
 
 /** Date de rendu d'un devoir maison : `AAAA-MM-JJ`, une date qui existe */
