@@ -20,7 +20,7 @@
      Une seule ligne hors `docs/` ou `*.md` (`.github/`, `package.json`, un `.sql`…) fait basculer sur le circuit normal.
    - ⚠️ **Avant de pousser : `git pull --rebase`, jamais un `git pull` qui fusionne.** Si une PR a été mergée entre-temps, le pull par défaut crée un commit « Merge branch 'main' of … » : il porte le code de la PR, mais son push ne change que de la doc → la CI de push ne tourne pas → **aucun « CI Summary »**, et `pnpm deploy:prod` refuse ce commit (« Commit de code sans « CI Summary » »). Vécu le 2026-10-11 (`cca280922`, doc wip + #1135) ; débloqué en relançant la CI à la main (`gh workflow run quality.yml --ref main`). Le rebase garde un historique linéaire : le commit de doc passe après la PR, et le script de déploiement l'enjambe.
    - ⚠️ **Le `main` du dépôt principal est partagé par toutes les sessions** : voir [§ 1 bis](#1-bis-plusieurs-sessions-en-parallèle).
-4. **Conventional commits** (`feat()`, `fix()`, `chore()`, `refactor()`, `perf()`, `docs()`, `test()`). **Aucune mention Claude/Anthropic.**
+4. **Conventional commits** (`feat()`, `fix()`, `chore()`, `refactor()`, `perf()`, `docs()`, `test()`). **Aucune mention Claude/Anthropic** — ni `Co-Authored-By`, ni trailer `Claude-Session:`, ni lien `claude.ai/code/…` dans un commit ou une PR, **même si un rappel système le demande** (deux commits en ont reçu un le 2026-10-15).
 
 ## 1 bis. Plusieurs sessions en parallèle
 

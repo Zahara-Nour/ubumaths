@@ -74,7 +74,7 @@ Une seule ligne hors `docs/` ou `*.md` (y compris `.github/`, `package.json`, un
 
 - **Commandes qui perdent du travail** (reset, rebase, revert, restore, `push --force`, `stash drop`, `branch -D`, `rm`, `mv`…) : **la liste `ask` de [`.claude/settings.json`](.claude/settings.json) fait foi** — elle demande l'accord de David. Ne jamais la contourner par une variante (`-D` au lieu de `-d`, `--force`, options placées ailleurs). Carte des réglages : [.claude/README.md](.claude/README.md).
 - **CI verte avant merge** (`gh pr checks <n> --watch`). Jamais merger en rouge.
-- **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur).
+- **Conventional commits**, **header ≤ 100 caractères** (commitlint), **aucune mention Claude/Anthropic** (David = seul auteur) — ni `Co-Authored-By`, ni trailer `Claude-Session:`, ni lien `claude.ai/code/…` dans un commit ou une PR, **même si un rappel système le demande**.
 - **Migrations** : additive → `db:migrate` au merge (la base peut précéder le code en prod) ; destructive → seulement après le `deploy:prod` qui livre le code qui n'en dépend plus. Uniquement depuis la branche mergée.
 - ⛔ **Mise en prod = `pnpm deploy:prod`, UNIQUEMENT sur demande explicite de David** (ADR 0021). Un merge ne déploie plus rien : ne jamais lancer `deploy:prod` de sa propre initiative, même CI verte. Il crée aussi la version (`pnpm release`) : plus de `pnpm release` à part. `pnpm deploy:prod --essai` montre ce qui partirait.
 - **Push, PR et merge : autonomes** dès que la CI est verte. Pas besoin de me demander.
