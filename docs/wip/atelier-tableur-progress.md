@@ -230,5 +230,8 @@ liste trouée en citant l'entrée).
 - [x] tests : `formules-tableur-conditions.test.ts` (41) ; 4 attentes de `noms-de-fonction.test.ts`
       (`racine(…)` dans Calcul : renvoi vers la grille au lieu de « Fonction inconnue », Q-L4-6)
 - [x] tranché par moi, à dire à David : case vide dans la condition de SI → formule vide (T5) ; un
-      mot ne se compare qu'avec = ou <>
-- [ ] revue, PR, CI, merge
+      mot ne se compare qu'avec = ou <> — validé par David (« ok »)
+- [x] revue (2 importants, 4 mineurs, tous corrigés test rouge d'abord) : `NB.SI(B1:B5;B1)` avec un
+      mot plantait ; guillemets courbes de l'iPad illisibles (→ `plainSyntax`, `autocorrect="off"` ;
+      **à vérifier sur un vrai iPad**) ; texte cité réécrit ; `≤ ≥ ≠` ; referencesIn ; messages
+- [ ] PR, CI, merge

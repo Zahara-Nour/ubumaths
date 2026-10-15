@@ -503,7 +503,10 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   partout (`outsideQuotes`) : ni recopie, ni capitales (`"a1"` reste `"a1"`), et un `;` ou une
   parenthèse dedans ne coupe rien. **Calcul** renvoie vers la grille (Q-L4-6,
   `gridFunctionInCalcul`) : `somme(L)` → « SOMME est une fonction de la grille… tape .stats L »,
-  `racine(2)` → « …dans Calcul, écris sqrt(…) ».
+  `racine(2)` → « …dans Calcul, écris sqrt(…) ». `plainSyntax` ramène au tableur les guillemets
+  courbes ou français (`“fille”`, `«fille»` : la ponctuation intelligente de l'iPad) et `≤ ≥ ≠` ;
+  la barre et les cases ont `autocorrect="off"`. Le critère de NB.SI peut être une case seule, dont
+  le mot compte (`=NB.SI(B$2:B$30;B2)`).
 - **Fonction à indice** (`=f_1(3)`) : refusée (`indexedFunctionMessage`). Le parseur lit `f_1(3)`
   comme `f₁ × 3`, et la grille calculait alors avec f, sans rien dire (revue du lot 3). Calcul ne
   l'évalue pas non plus (il recopie `f_1(3)`).

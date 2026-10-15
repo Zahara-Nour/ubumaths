@@ -54,6 +54,7 @@ import {
 	criterionOf,
 	isStatistic,
 	outsideQuotes,
+	plainSyntax,
 	splitComparison,
 	TEXT_ALONE_MESSAGE,
 	textLiteral,
@@ -167,6 +168,8 @@ type ReadArgument =
 	  }
 	/** `"fille"` : un texte, dans SI et NB.SI seulement (Q-L4-5). */
 	| { readonly kind: 'text'; readonly text: string }
+	/** Une case citée en critère de NB.SI : son mot ou son nombre (`NB.SI(B2:B30;B2)`). */
+	| { readonly kind: 'cell'; readonly address: string }
 	/** La condition de SI : `A1>=10`, `B2="fille"`. */
 	| {
 			readonly kind: 'condition';
@@ -249,10 +252,11 @@ function isReference(letter: string, offset: number, text: string): boolean {
 /** `=a2+1` → `=A2+1` : une référence s'écrit en capitales (comme dans LibreOffice). */
 export function normalizeFormula(text: string): string {
 	if (!isFormula(text)) return text;
-	// Les références hors des guillemets seulement (`"a1"` reste un texte), puis
+	// Guillemets courbes et `≤ ≥ ≠` ramenés au tableur (iPad, revue) ; les
+	// références hors des guillemets seulement (`"a1"` reste un texte), puis
 	// les fonctions du tableur et les colonnes entières (`somme(a:a)` → `SOMME(A:A)`, Q-L4-7)
 	return normalizeGridFunctions(
-		outsideQuotes(text.trim(), (part) =>
+		outsideQuotes(plainSyntax(text.trim()), (part) =>
 			part.replace(
 				REFERENCE,
 				(match, colAbs: string, letter: string, rowAbs: string, row: string, offset: number) =>
@@ -294,7 +298,10 @@ function plainDecimal(mantissa: string, exponent: number): string {
  * Lire le corps d'une formule (sans `=`) — et, de la même façon, chaque
  * argument d'une fonction du tableur.
  */
-function readBody(body: string, functionNames: readonly string[]): ReadFormula {
+function readBody(typed: string, functionNames: readonly string[]): ReadFormula {
+	// Guillemets courbes et `≤ ≥ ≠` : une formule venue d'un lien n'est pas passée
+	// par `normalizeFormula`
+	const body = plainSyntax(typed);
 	if (body.includes(OUTSIDE)) {
 		return { ok: false, message: 'Référence hors de la grille (après une recopie).' };
 	}
@@ -304,7 +311,7 @@ function readBody(body: string, functionNames: readonly string[]): ReadFormula {
 	if ((body.match(/"/g) ?? []).length % 2 === 1) {
 		return { ok: false, message: UNCLOSED_QUOTE_MESSAGE };
 	}
-	const wide = WIDE_REFERENCE.exec(outsideQuotes(body, (part) => part).replace(/"[^"]*"/g, ''));
+	const wide = WIDE_REFERENCE.exec(body.replace(/"[^"]*"/g, ''));
 	if (wide !== null) return { ok: false, message: outsideGrid(`${wide[1]}${wide[2]}`) };
 
 	// Les fonctions du tableur d'abord (lot 4, Q-L4-1) : chaque appel devient `(ψ_k)`
@@ -415,6 +422,15 @@ function readCall(
 			args.push({ kind: 'text', text });
 			continue;
 		}
+		// Le critère de NB.SI, une case seule : son mot compte aussi (`NB.SI(B$2:B$30;B2)`)
+		const criterionCell = name === 'NB.SI' && index === 1 ? LONE_CELL.exec(raw) : null;
+		if (criterionCell !== null) {
+			const address = criterionCell[1].replaceAll('$', '').toUpperCase();
+			if (readCellName(address) === null) return { ok: false, message: outsideGrid(address) };
+			args.push({ kind: 'cell', address });
+			deps.push(address);
+			continue;
+		}
 		// La condition de SI : deux côtés et leur comparaison
 		if (name === 'SI' && index === 0) {
 			const parts = splitComparison(raw);
@@ -437,6 +453,13 @@ function readCall(
 					continue;
 				}
 				const read = readBody(side, functionNames);
+				// `A1<B1<C1` : le second côté garde une comparaison
+				if (!read.ok && read.message === COMPARISON_ALONE_MESSAGE) {
+					return {
+						ok: false,
+						message: 'La condition de SI ne compare que deux choses : A1<B1, pas A1<B1<C1.'
+					};
+				}
 				if (!read.ok) return read;
 				operands.push({ kind: 'expression', read });
 				addExpression(read);
@@ -1344,7 +1367,11 @@ export function gridTexts(
  */
 export function referencesIn(text: string): string[] {
 	if (!isFormula(text)) return [];
-	const body = text.trim().slice(1).replace(new RegExp(RANGE_IN_TEXT.source, 'g'), ' ');
+	const body = text
+		.trim()
+		.slice(1)
+		.replace(/"[^"]*"/g, ' ')
+		.replace(new RegExp(RANGE_IN_TEXT.source, 'g'), ' ');
 	const refs = new Set<string>();
 	for (const match of body.matchAll(REFERENCE)) {
 		if (isReference(match[2], match.index ?? 0, body))

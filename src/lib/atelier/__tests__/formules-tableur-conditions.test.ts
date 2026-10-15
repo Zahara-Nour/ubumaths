@@ -201,3 +201,55 @@ describe('un texte entre guillemets ne bouge jamais', () => {
 		expect(normalizeFormula('=nb.si(b1:b5;"a1")')).toBe('=NB.SI(B1:B5;"a1")');
 	});
 });
+
+describe('revue de la PR 3', () => {
+	it('NB.SI(plage ; case qui contient un mot) : compte les cases égales', () => {
+		expect(shown(withClass('=NB.SI(B1:B5;B1)'), C, 1)).toBe('3');
+	});
+
+	it('les guillemets courbes (iPad) se lisent comme des droits', () => {
+		const a = withClass('=NB.SI(B1:B5;“fille”)');
+
+		expect(a.cell(C, 1)).toBe('=NB.SI(B1:B5;"fille")');
+		expect(shown(a, C, 1)).toBe('3');
+		expect(shown(withClass('=NB.SI(B1:B5;«fille»)'), C, 1)).toBe('3');
+	});
+
+	it('un texte qui ressemble à un appel ne bouge pas', async () => {
+		const { normalizeFormula, shiftFormula } = await import('../formula');
+
+		expect(normalizeFormula('=si(a1>0;"voir somme(a:a)";1)')).toBe('=SI(A1>0;"voir somme(a:a)";1)');
+		expect(shiftFormula('=SI(A1>0;"voir SOMME(A:A)";1)', 1, 0)).toBe(
+			'=SI(B1>0;"voir SOMME(A:A)";1)'
+		);
+	});
+
+	it('≤, ≥, ≠ se lisent <=, >=, <>', () => {
+		const a = withClass('=SI(A1≥12;1;0)');
+
+		expect(a.cell(C, 1)).toBe('=SI(A1>=12;1;0)');
+		expect(shown(a, C, 1)).toBe('1');
+		expect(shown(withClass('=NB.SI(A1:A5;"≥10")'), C, 1)).toBe('3');
+		expect(shown(withClass('=A1≤2'), C, 1)).toBe(
+			'erreur : Une comparaison s’écrit dans SI, par exemple =SI(A1>2;1;0).'
+		);
+	});
+
+	it('referencesIn ne voit rien entre guillemets', async () => {
+		const { referencesIn } = await import('../formula');
+
+		expect(referencesIn('=SI(A1="B2";1;0)')).toEqual(['A1']);
+	});
+
+	it('deux comparaisons à la suite : le refus le dit', () => {
+		expect(shown(withClass('=SI(A1<A2<A3;1;0)'), C, 1)).toBe(
+			'erreur : La condition de SI ne compare que deux choses : A1<B1, pas A1<B1<C1.'
+		);
+	});
+
+	it('l’aide ne lit pas le texte entre guillemets', () => {
+		expect(functionHint('=SI(A1>0;"somme(')).toBe(
+			'SI(condition ; si vrai ; si faux) — l’un ou l’autre selon la condition'
+		);
+	});
+});

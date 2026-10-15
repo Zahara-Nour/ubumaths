@@ -727,6 +727,8 @@
 			type="text"
 			autocomplete="off"
 			spellcheck="false"
+			autocorrect="off"
+			autocapitalize="off"
 			value={editing === null ? selectedText : draft}
 			aria-describedby={formulaHint === null ? undefined : 'atelier-aide-formule'}
 			oninput={barInput}
@@ -892,6 +894,8 @@
 										type="text"
 										autocomplete="off"
 										spellcheck="false"
+										autocorrect="off"
+										autocapitalize="off"
 										aria-label="Contenu de {address}"
 										bind:value={draft}
 										onblur={cellInputBlur}

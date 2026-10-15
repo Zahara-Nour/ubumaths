@@ -304,6 +304,8 @@ export function mapCallArguments(body: string, map: (arg: string) => string): st
 	let result = body;
 	for (const call of [...calls].reverse()) {
 		const args = call.args.map((arg) => {
+			// Un texte entre guillemets ne bouge jamais (`"voir somme(a:a)"`, revue)
+			if (textLiteral(arg) !== null) return arg;
 			const mapped = map(arg);
 			return mapped === arg ? mapCallArguments(arg, map) : mapped;
 		});
@@ -528,7 +530,19 @@ function decimalText(units: bigint, n: number): string {
 export function functionHint(draft: string): string | null {
 	const text = draft.trimStart();
 	if (!text.startsWith('=')) return null;
-	const body = text.slice(1);
+	// Le texte entre guillemets ne compte pas (`"somme(` n'est pas un appel), même
+	// pas encore fermé : masqué, à la même longueur
+	let quoted = false;
+	const body = text
+		.slice(1)
+		.map((char) => {
+			if (char === '"') {
+				quoted = !quoted;
+				return char;
+			}
+			return quoted ? ' ' : char;
+		})
+		.join('');
 	let open: GridFunction | null = null;
 	for (const match of body.matchAll(CALL)) {
 		const name = gridFunctionOf(match[1]);
@@ -554,6 +568,18 @@ export function functionHint(draft: string): string | null {
 // =============================================================================
 // Texte et comparaisons (PR 3)
 // =============================================================================
+
+/**
+ * Les écritures que tapent un iPad ou un élève, ramenées à celles du tableur :
+ * guillemets courbes ou français (`“fille”`, `«fille»` — la ponctuation
+ * intelligente d'iOS) → `"`, et hors des guillemets `≤ ≥ ≠` → `<= >= <>` (revue).
+ */
+export function plainSyntax(text: string): string {
+	const straight = text.replace(/[“”„«»]/g, '"');
+	return outsideQuotes(straight, (part) =>
+		part.replaceAll('≤', '<=').replaceAll('≥', '>=').replaceAll('≠', '<>')
+	);
+}
 
 /** `"fille"` seul : le texte, sinon `null`. */
 export function textLiteral(arg: string): string | null {
@@ -631,7 +657,8 @@ export function compare(left: Compared, op: Comparison, right: Compared): boolea
 
 /** Le critère de NB.SI : `">=10"`, `"<>0"`, `"fille"`, `"12"` → une comparaison et sa cible. */
 export function criterionOf(text: string): { op: Comparison; target: Compared } {
-	const match = /^\s*(<=|>=|<>|<|>|=)?(.*)$/.exec(text);
+	const signs = text.replaceAll('≤', '<=').replaceAll('≥', '>=').replaceAll('≠', '<>');
+	const match = /^\s*(<=|>=|<>|<|>|=)?(.*)$/.exec(signs);
 	const op = (match?.[1] ?? '=') as Comparison;
 	const rest = (match?.[2] ?? '').trim();
 	const number = readListValue(rest);
