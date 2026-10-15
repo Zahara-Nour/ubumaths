@@ -184,7 +184,7 @@ describe('revue de la PR 3', () => {
 		if (!decoded.ok) return;
 		const b = new Atelier();
 		b.restore(decoded.state);
-		expect(b.cell(B, 1)).toBe('=max(1;2)');
+		expect(b.cell(B, 1)).toBe('=MAX(1;2)'); // noms en capitales (lot 4, Q-L4-7);
 		expect(numberAt(b, B, 1)).toBe(2);
 	});
 

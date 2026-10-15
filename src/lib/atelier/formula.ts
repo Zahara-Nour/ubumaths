@@ -42,6 +42,20 @@ import { readListValue } from '$lib/statistics/read-value';
 import { intervalDomainOf, outsideIntervalMessage } from './interval';
 import { containsValue } from '$lib/mathAST/domain/algebra';
 import { displayName } from './names';
+import {
+	cellsOf,
+	computeFunction,
+	findCalls,
+	GRID_FUNCTIONS,
+	normalizeGridFunctions,
+	RANGE_ALONE_MESSAGE,
+	RANGE_IN_TEXT,
+	RANGE_MIXED_MESSAGE,
+	readRange,
+	type ArgumentValue,
+	type GridFunction
+} from './grid-functions';
+import { findUnknownFunctionCall } from '$lib/mathAST/parser/custom/tokenizer';
 
 // =============================================================================
 // Types
@@ -89,15 +103,41 @@ export interface GridState {
 	readonly computed: number;
 }
 
-/** Une formule lue : son arbre (références marquées), ses cellules et ses noms cités. */
+/**
+ * Une formule lue : son arbre (références marquées `ω_k`, appels de fonctions du
+ * tableur marqués `ψ_k`), ses cellules et ses noms cités.
+ */
 type ReadFormula =
 	| {
 			readonly ok: true;
 			readonly ast: MathNode;
 			readonly refs: readonly string[];
 			readonly names: readonly string[];
+			/** Les fonctions du tableur, dans l'ordre de leurs marques `ψ_k` (lot 4). */
+			readonly calls: readonly ReadCall[];
+			/** Toutes les cases dont la formule dépend : citées, et celles des plages. */
+			readonly deps: readonly string[];
+			/** Les noms passés seuls en argument (`MOYENNE(L)`) : une liste y vaut sa colonne. */
+			readonly lists: readonly string[];
 	  }
 	| { readonly ok: false; readonly message: string };
+
+/** Un appel `SOMME(…)` lu : ses arguments, plages ou expressions. */
+interface ReadCall {
+	readonly name: GridFunction;
+	readonly args: readonly ReadArgument[];
+	/** Ce que l'élève a passé (`A1:A5`), pour un refus situé. */
+	readonly label: string;
+}
+
+type ReadArgument =
+	| { readonly kind: 'range'; readonly cells: readonly string[] }
+	| {
+			readonly kind: 'expression';
+			readonly read: ReadFormula & { ok: true };
+			/** Un nom seul (`L`) : si c'est une liste, l'argument vaut sa colonne (Q-L4-3). */
+			readonly name: string | null;
+	  };
 
 // =============================================================================
 // Constantes
@@ -117,6 +157,12 @@ const SCIENTIFIC = /(\d(?:[.,]\d+)?)e([+-]?\d+)/g;
 
 /** La marque d'une référence dans l'arbre lu : `ω_k`. */
 const MARK = 'ω';
+
+/** La marque d'un appel de fonction du tableur dans l'arbre lu : `ψ_k` (lot 4). */
+const CALL_MARK = 'ψ';
+
+/** Un nom seul en argument : `L`, `M_2` — jamais une case (`A2`). */
+const LONE_NAME = /^\s*([A-Za-z](?:_\d+)?)\s*$/;
 
 /** Au-delà, une cellule exacte rend ses dépendantes approchées (repli après coup, ~20 ms). */
 const EXACT_BUDGET_MS = 20;
@@ -159,12 +205,15 @@ function isReference(letter: string, offset: number, text: string): boolean {
 export function normalizeFormula(text: string): string {
 	if (!isFormula(text)) return text;
 	const trimmed = text.trim();
-	return trimmed.replace(
-		REFERENCE,
-		(match, colAbs: string, letter: string, rowAbs: string, row: string, offset: number) =>
-			isReference(letter, offset, trimmed)
-				? `${colAbs}${letter.toUpperCase()}${rowAbs}${row}`
-				: match
+	// Puis les fonctions du tableur et les colonnes entières (`somme(a:a)` → `SOMME(A:A)`, Q-L4-7)
+	return normalizeGridFunctions(
+		trimmed.replace(
+			REFERENCE,
+			(match, colAbs: string, letter: string, rowAbs: string, row: string, offset: number) =>
+				isReference(letter, offset, trimmed)
+					? `${colAbs}${letter.toUpperCase()}${rowAbs}${row}`
+					: match
+		)
 	);
 }
 
@@ -181,19 +230,55 @@ function readFormula(text: string, functionNames: readonly string[]): ReadFormul
 }
 
 function readUncached(text: string, functionNames: readonly string[]): ReadFormula {
-	const body = text.trim().slice(1);
+	return readBody(text.trim().slice(1), functionNames);
+}
+
+/**
+ * Lire le corps d'une formule (sans `=`) — et, de la même façon, chaque
+ * argument d'une fonction du tableur.
+ */
+function readBody(body: string, functionNames: readonly string[]): ReadFormula {
 	if (body.includes(OUTSIDE)) {
 		return { ok: false, message: 'Référence hors de la grille (après une recopie).' };
 	}
-	if (body.trim() === '' || body.includes(MARK)) return { ok: false, message: UNREADABLE };
+	if (body.trim() === '' || body.includes(MARK) || body.includes(CALL_MARK)) {
+		return { ok: false, message: UNREADABLE };
+	}
 	const wide = WIDE_REFERENCE.exec(body);
 	if (wide !== null) return { ok: false, message: outsideGrid(`${wide[1]}${wide[2]}`) };
 
+	// Les fonctions du tableur d'abord (lot 4, Q-L4-1) : chaque appel devient `(ψ_k)`
+	const found = findCalls(body);
+	if (found === null) return { ok: false, message: UNREADABLE };
+	const calls: ReadCall[] = [];
+	const deps = new Set<string>();
+	const lists = new Set<string>();
+	const argumentNames = new Set<string>();
+	let rest = body;
+	for (const call of [...found].reverse()) {
+		const read = readCall(call.name, call.args, functionNames);
+		if (!read.ok) return read;
+		read.deps.forEach((d) => deps.add(d));
+		read.lists.forEach((l) => lists.add(l));
+		read.names.forEach((n) => argumentNames.add(n));
+		calls.unshift(read.call);
+		rest = `${rest.slice(0, call.start)}(${CALL_MARK}_${found.indexOf(call) + 1})${rest.slice(call.end)}`;
+	}
+	const unknown = findUnknownFunctionCall(rest.replace(/\(ψ_\d+\)/g, '1'));
+	if (unknown !== null && !functionNames.includes(unknown) && /[A-Z]/.test(unknown)) {
+		return {
+			ok: false,
+			message: `${unknown} n’est pas une fonction de la grille. Fonctions : ${GRID_FUNCTIONS.join(', ')}.`
+		};
+	}
+	// Une plage hors d'une fonction : `:` se lisait comme une division (`=C1:C2` → 0,6)
+	if (RANGE_IN_TEXT.test(rest)) return { ok: false, message: RANGE_ALONE_MESSAGE };
+
 	const refs: string[] = [];
 	let outside: string | null = null;
-	const marked = body
+	const marked = rest
 		.replace(REFERENCE, (match, _colAbs, letter: string, _rowAbs, row: string, offset: number) => {
-			if (!isReference(letter, offset, body)) return match;
+			if (!isReference(letter, offset, rest)) return match;
 			const address = `${letter.toUpperCase()}${row}`;
 			if (Number(row) > GRID_ROWS) outside ??= address;
 			const index = refs.indexOf(address);
@@ -208,7 +293,67 @@ function readUncached(text: string, functionNames: readonly string[]): ReadFormu
 	if (ast === null) return { ok: false, message: UNREADABLE };
 	const indexed = indexedFunctionIn(ast, functionNames);
 	if (indexed !== null) return { ok: false, message: indexedFunctionMessage(indexed) };
-	return { ok: true, ast, refs, names: namesIn(ast) };
+	refs.forEach((r) => deps.add(r));
+	return {
+		ok: true,
+		ast,
+		refs,
+		names: [...new Set([...namesIn(ast), ...argumentNames])],
+		calls,
+		deps: [...deps],
+		lists: [...lists]
+	};
+}
+
+/** Lire un appel : chaque argument est une plage, ou une expression lue comme une formule. */
+function readCall(
+	name: GridFunction,
+	rawArgs: readonly string[],
+	functionNames: readonly string[]
+):
+	| {
+			ok: true;
+			call: ReadCall;
+			deps: readonly string[];
+			lists: readonly string[];
+			names: readonly string[];
+	  }
+	| { ok: false; message: string } {
+	if (rawArgs.length === 0) {
+		return {
+			ok: false,
+			message: `${name} attend au moins un argument, par exemple ${name}(A2:A21).`
+		};
+	}
+	const args: ReadArgument[] = [];
+	const deps: string[] = [];
+	const lists: string[] = [];
+	const names: string[] = [];
+	for (const raw of rawArgs) {
+		const range = readRange(raw);
+		if (range !== null) {
+			if (range.bottom > GRID_ROWS) {
+				return { ok: false, message: outsideGrid(cellName(range.right, range.bottom)) };
+			}
+			const cells = cellsOf(range);
+			args.push({ kind: 'range', cells });
+			deps.push(...cells);
+			continue;
+		}
+		const read = readBody(raw, functionNames);
+		// Une plage qui reste après les appels emboîtés (`SOMME(A1:A3*2)`) : mêlée à un calcul
+		if (!read.ok && read.message === RANGE_ALONE_MESSAGE) {
+			return { ok: false, message: RANGE_MIXED_MESSAGE };
+		}
+		if (!read.ok) return read;
+		const lone = LONE_NAME.exec(raw);
+		args.push({ kind: 'expression', read, name: lone === null ? null : lone[1] });
+		deps.push(...read.deps);
+		lists.push(...read.lists, ...(lone === null ? [] : [lone[1]]));
+		names.push(...read.names);
+	}
+	const label = rawArgs.map((a) => a.trim()).join(' ; ');
+	return { ok: true, call: { name, args, label }, deps, lists, names };
 }
 
 /**
@@ -237,7 +382,9 @@ export function indexedFunctionMessage(name: string): string {
 
 /** Les noms qu'une formule cite : variables et fonctions, hors des marques de cellules. */
 function namesIn(ast: MathNode): string[] {
-	const names = new Set([...getVariables(ast)].filter((name) => name !== MARK));
+	const names = new Set(
+		[...getVariables(ast)].filter((name) => name !== MARK && name !== CALL_MARK)
+	);
 	transformAST(ast, {
 		enterFunction: (node) => {
 			names.add(node.name);
@@ -279,8 +426,13 @@ export function computeGrid(
 		formulas.map(([address, text]) => [address, readFormula(text, functionNames)])
 	);
 
-	const { order, cycleNext } = orderOf(reads);
-	const dirty = dirtyFormulas(reads, texts, objects, atelier, previous);
+	// Les dépendances : cases citées, cases des plages, et la colonne d'une liste
+	// passée par son nom (`MOYENNE(L)`, Q-L4-3)
+	const deps = new Map(
+		[...reads].map(([address, read]) => [address, read.ok ? dependenciesOf(read, atelier) : []])
+	);
+	const { order, cycleNext } = orderOf(reads, deps);
+	const dirty = dirtyFormulas(reads, deps, texts, objects, atelier, previous);
 
 	let context: GridContext | null = null;
 	/** Les cellules dont la valeur exacte a coûté trop cher : leurs dépendantes passent en ≈. */
@@ -306,14 +458,44 @@ export function computeGrid(
 		computed++;
 		values.set(
 			address,
-			computeCell(address, reads.get(address)!, texts, values, approximate, atelier, context)
+			safely(() =>
+				computeCell(address, reads.get(address)!, texts, values, approximate, atelier, context!)
+			)
 		);
 	}
 	return { values, texts, objects, computed };
 }
 
+/**
+ * Une case ne fait jamais tomber la grille : une exception du moteur (garde de
+ * profondeur de mathAST, par exemple) devient l'erreur de cette case seule.
+ */
+function safely(compute: () => CellValue): CellValue {
+	try {
+		return compute();
+	} catch {
+		return error('Je n’ai pas su calculer cette formule.');
+	}
+}
+
+/** Les cases dont dépend une formule lue, colonnes des listes nommées en argument comprises. */
+function dependenciesOf(read: ReadFormula & { ok: true }, atelier: Atelier): string[] {
+	if (read.lists.length === 0) return [...read.deps];
+	const all = new Set(read.deps);
+	for (const name of read.lists) {
+		const column = atelier.get(name)?.kind === 'list' ? atelier.columnOf(name) : undefined;
+		if (column !== undefined) {
+			for (let row = 1; row <= GRID_ROWS; row++) all.add(cellName(column, row));
+		}
+	}
+	return [...all];
+}
+
 /** Ordre de calcul (parcours en profondeur) et cycles : pour chaque membre, le suivant du cycle. */
-function orderOf(reads: ReadonlyMap<string, ReadFormula>): {
+function orderOf(
+	reads: ReadonlyMap<string, ReadFormula>,
+	deps: ReadonlyMap<string, readonly string[]>
+): {
 	order: string[];
 	cycleNext: Map<string, string | null>;
 } {
@@ -333,8 +515,7 @@ function orderOf(reads: ReadonlyMap<string, ReadFormula>): {
 		}
 		state.set(address, 'visiting');
 		stack.push(address);
-		const read = reads.get(address)!;
-		if (read.ok) for (const ref of read.refs) if (reads.has(ref)) visit(ref);
+		for (const ref of deps.get(address) ?? []) if (reads.has(ref)) visit(ref);
 		stack.pop();
 		state.set(address, 'done');
 		order.push(address);
@@ -350,6 +531,7 @@ function orderOf(reads: ReadonlyMap<string, ReadFormula>): {
  */
 function dirtyFormulas(
 	reads: ReadonlyMap<string, ReadFormula>,
+	deps: ReadonlyMap<string, readonly string[]>,
 	texts: ReadonlyMap<string, string>,
 	objects: ReadonlyMap<string, string>,
 	atelier: Atelier,
@@ -375,9 +557,10 @@ function dirtyFormulas(
 	const dirty = new Set<string>();
 	for (const [address, read] of reads) {
 		const textChanged = texts.get(address) !== previous.texts.get(address);
+		const cited = deps.get(address) ?? [];
 		const cites =
 			read.ok &&
-			(read.refs.some((ref) => !reads.has(ref) && texts.get(ref) !== previous.texts.get(ref)) ||
+			(cited.some((ref) => !reads.has(ref) && texts.get(ref) !== previous.texts.get(ref)) ||
 				read.names.some((name) => changedObjects.has(name)));
 		if (textChanged || cites) dirty.add(address);
 	}
@@ -387,7 +570,7 @@ function dirtyFormulas(
 		grew = false;
 		for (const [address, read] of reads) {
 			if (dirty.has(address) || !read.ok) continue;
-			if (read.refs.some((ref) => dirty.has(ref))) {
+			if ((deps.get(address) ?? []).some((ref) => dirty.has(ref))) {
 				dirty.add(address);
 				grew = true;
 			}
@@ -454,11 +637,22 @@ function computeCell(
 		}
 	}
 
+	// Les fonctions du tableur (lot 4), dans l'ordre de leurs marques `ψ_k`
+	const callNodes: MathNode[] = [];
+	for (const call of read.calls) {
+		const result = callValue(call, address, texts, values, approximate, atelier, context);
+		if (!result.ok) return result.value;
+		if (result.inexact) inexact = true;
+		callNodes.push(result.node);
+	}
+
 	const withCells = transformAST(read.ast, {
 		enterSubscript: (node) => {
-			if (node.base.type !== 'variable' || node.base.name !== MARK) return undefined;
-			if (node.subscript.type !== 'number') return undefined;
-			const value = cited[Number(node.subscript.value) - 1];
+			if (node.base.type !== 'variable' || node.subscript.type !== 'number') return undefined;
+			const marks =
+				node.base.name === MARK ? cited : node.base.name === CALL_MARK ? callNodes : null;
+			if (marks === null) return undefined;
+			const value = marks[Number(node.subscript.value) - 1];
 			return value === undefined
 				? undefined
 				: { type: 'delimiter', delimiters: 'parentheses', content: value, semantic: 'grouping' };
@@ -482,6 +676,62 @@ function computeCell(
 	const result = evaluate(expanded.ast, { mode: inexact ? 'decimal' : 'exact' });
 	if (performance.now() - started > EXACT_BUDGET_MS) approximate.add(address);
 	return numberValue(result, inexact);
+}
+
+/**
+ * La valeur d'un appel `SOMME(…)` : les nombres de ses arguments (vides et mots
+ * ignorés, Q-L4-2 ; une erreur se transmet), puis l'arbre exact de la fonction.
+ */
+function callValue(
+	call: ReadCall,
+	address: string,
+	texts: ReadonlyMap<string, string>,
+	values: ReadonlyMap<string, CellValue>,
+	approximate: ReadonlySet<string>,
+	atelier: Atelier,
+	context: GridContext
+): { ok: true; node: MathNode; inexact: boolean } | { ok: false; value: CellValue } {
+	const numbers: ArgumentValue[] = [];
+	let inexact = false;
+	const take = (value: CellValue, cell: string | null): CellValue | null => {
+		if (value.kind === 'empty' || value.kind === 'word') return null;
+		if (value.kind === 'error') return cell === null ? value : error(`${cell} est en erreur.`);
+		const long = value.exact && toCustom(value.node).length > MAX_EXACT_CITED;
+		if (!value.exact || long || (cell !== null && approximate.has(cell))) inexact = true;
+		numbers.push({ node: long ? decimalNode(value.value) : value.node, value: value.value });
+		return null;
+	};
+	const cellValueAt = (cell: string) => values.get(cell) ?? plainValue(texts.get(cell) ?? '');
+
+	for (const arg of call.args) {
+		const column =
+			arg.kind === 'expression' && arg.name !== null && atelier.get(arg.name)?.kind === 'list'
+				? atelier.columnOf(arg.name)
+				: undefined;
+		const cells =
+			arg.kind === 'range'
+				? arg.cells
+				: column !== undefined
+					? Array.from({ length: GRID_ROWS }, (_, i) => cellName(column, i + 1))
+					: null;
+		if (cells !== null) {
+			for (const cell of cells) {
+				const refused = take(cellValueAt(cell), cell);
+				if (refused !== null) return { ok: false, value: refused };
+			}
+			continue;
+		}
+		if (arg.kind !== 'expression') continue;
+		const refused = take(
+			computeCell(address, arg.read, texts, values, new Set(approximate), atelier, context),
+			null
+		);
+		if (refused !== null) return { ok: false, value: refused };
+	}
+
+	const computed = computeFunction(call.name, numbers, call.label);
+	if (!computed.ok) return { ok: false, value: error(computed.message) };
+	return { ok: true, node: computed.node, inexact };
 }
 
 function error(message: string): CellValue {
@@ -706,10 +956,14 @@ export function gridTexts(
 	return texts;
 }
 
-/** Les cellules qu'une formule cite (`=A1+$B$2` → A1, B2), sans la lire. */
+/**
+ * Les cellules qu'une formule cite SEULES (`=A1+$B$2` → A1, B2), sans la lire.
+ * Les plages n'en sont pas : leurs cases vides sont ignorées (Q-L4-2), une
+ * formule qui cite une plage ne devient pas vide quand ses cases se vident.
+ */
 export function referencesIn(text: string): string[] {
 	if (!isFormula(text)) return [];
-	const body = text.trim().slice(1);
+	const body = text.trim().slice(1).replace(new RegExp(RANGE_IN_TEXT.source, 'g'), ' ');
 	const refs = new Set<string>();
 	for (const match of body.matchAll(REFERENCE)) {
 		if (isReference(match[2], match.index ?? 0, body))
@@ -749,8 +1003,33 @@ function written(column: number, row: number, colAbs: boolean, rowAbs: boolean):
  * relatives se décalent, `$` les fige ; une valeur se recopie telle quelle.
  */
 export function shiftFormula(text: string, dCol: number, dRow: number): string {
-	return mapReferences(text, (column, row, colAbs, rowAbs) =>
-		written(colAbs ? column : column + dCol, rowAbs ? row : row + dRow, colAbs, rowAbs)
+	return mapColumnRanges(
+		mapReferences(text, (column, row, colAbs, rowAbs) =>
+			written(colAbs ? column : column + dCol, rowAbs ? row : row + dRow, colAbs, rowAbs)
+		),
+		(column, abs) => (abs ? column : column + dCol)
+	);
+}
+
+/** `A:A` (lot 4) : une colonne entière, sans ligne — elle suit les colonnes, jamais les lignes. */
+const COLUMN_RANGE_IN_TEXT = /(?<![A-Za-z_\\$])(\$?)([A-Z])(\s*:\s*)(\$?)([A-Z])(?![A-Za-z_\d(])/g;
+
+/** Réécrire chaque colonne entière d'une formule ; une colonne hors de la grille → `#HORS`. */
+function mapColumnRanges(
+	text: string,
+	map: (column: number, abs: boolean) => number | undefined
+): string {
+	if (!isFormula(text)) return text;
+	return text.replace(
+		COLUMN_RANGE_IN_TEXT,
+		(match, d1: string, c1: string, sep: string, d2: string, c2: string) => {
+			const one = map(c1.charCodeAt(0) - 65, d1 === '$');
+			const two = map(c2.charCodeAt(0) - 65, d2 === '$');
+			const inGrid = (c: number | undefined): c is number =>
+				c !== undefined && c >= 0 && c < GRID_COLUMNS;
+			if (!inGrid(one) || !inGrid(two)) return OUTSIDE;
+			return `${d1}${columnLetter(one)}${sep}${d2}${columnLetter(two)}`;
+		}
 	);
 }
 
@@ -760,10 +1039,13 @@ export function shiftFormula(text: string, dCol: number, dRow: number): string {
  * n'est pas arrivée (vide chez l'autre élève) devient `#HORS`.
  */
 export function remapColumns(text: string, placed: ReadonlyMap<number, number>): string {
-	return mapReferences(text, (column, row, colAbs, rowAbs) => {
-		const target = placed.get(column);
-		return target === undefined ? OUTSIDE : written(target, row, colAbs, rowAbs);
-	});
+	return mapColumnRanges(
+		mapReferences(text, (column, row, colAbs, rowAbs) => {
+			const target = placed.get(column);
+			return target === undefined ? OUTSIDE : written(target, row, colAbs, rowAbs);
+		}),
+		(column) => placed.get(column)
+	);
 }
 
 /** `{-1:-2}` : une référence relative à sa cellule ; `{$B:-2}`, `{-1:$2}` figent une partie. */
