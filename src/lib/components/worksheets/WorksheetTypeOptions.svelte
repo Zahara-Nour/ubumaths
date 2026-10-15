@@ -14,8 +14,13 @@
 	import { Input } from '$lib/components/ui/input';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
-	import { CALCULATOR_RULES, isIsoDate } from '$lib/types/worksheets';
-	import type { CalculatorRule, WorksheetConfig, WorksheetType } from '$lib/types/worksheets';
+	import { ANSWER_FRAME_MODES, CALCULATOR_RULES, isIsoDate } from '$lib/types/worksheets';
+	import type {
+		AnswerFrameMode,
+		CalculatorRule,
+		WorksheetConfig,
+		WorksheetType
+	} from '$lib/types/worksheets';
 	import {
 		TYPE_OPTION_KEYS,
 		type TypeOptionKey,
@@ -43,6 +48,16 @@
 		...CALCULATOR_RULES.map((rule) => ({ value: rule, label: CALCULATOR_LABELS[rule] }))
 	];
 
+	// Réponses sur le sujet : où se placent les cadres (lot 3), défaut « question »
+	const ANSWER_FRAME_LABELS: Record<AnswerFrameMode, string> = {
+		question: 'Après chaque question',
+		exercise: "Après l'exercice"
+	};
+	const answerFrameItems = ANSWER_FRAME_MODES.map((mode) => ({
+		value: mode,
+		label: ANSWER_FRAME_LABELS[mode]
+	}));
+
 	let offered = $derived(TYPE_OPTION_KEYS[type] ?? []);
 
 	function offers(key: TypeOptionKey): boolean {
@@ -52,6 +67,11 @@
 	function handleCalculator(value: string) {
 		const rule = CALCULATOR_RULES.find((r) => r === value);
 		onchange?.('calculator', rule);
+	}
+
+	function handleAnswerFrames(value: string) {
+		const mode = ANSWER_FRAME_MODES.find((m) => m === value);
+		if (mode) onchange?.('answer_frames', mode);
 	}
 
 	function handleDueDate(value: string) {
@@ -108,6 +128,19 @@
 			disabled={!editable}
 			label="Réponses sur le sujet"
 		/>
+		{#if config?.answers_on_sheet === true}
+			<div class="ml-6">
+				<p class="mb-1 text-xs text-muted-foreground">Cadres</p>
+				<MySelect
+					type="single"
+					value={config?.answer_frames ?? 'question'}
+					onchange={handleAnswerFrames}
+					items={answerFrameItems}
+					triggerAriaLabel="Place des cadres de réponse"
+					disabled={!editable}
+				/>
+			</div>
+		{/if}
 	{/if}
 
 	{#if offers('due_date')}

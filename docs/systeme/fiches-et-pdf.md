@@ -51,15 +51,15 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 
 ### `src/lib/worksheets/` — règles propres aux fiches
 
-| Fichier                                         | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `src/lib/worksheets/worksheet-header.ts`        | **Le type décide de l'en-tête** ([ADR 0030](../adr/0030-type-de-fiche-decide-la-forme.md)) : `worksheetHeader(type, options)` dit ce que l'en-tête imprime (nom, classe, date à remplir, date de rendu, points, calculatrice, durée, cadres) ; `TYPE_OPTION_KEYS` (options proposées par type), `configForType`. Lue par le PDF du prof et celui de l'élève.                                                                         |
-| `src/lib/worksheets/exercise-numbering.ts`      | **La** règle du numéro affiché : `groupExercisesForDisplay`, `orderExercisesForDisplay`, `displayNumberOf`, `exerciseAtDisplayNumber`. Utilisée par la page élève, le générateur PDF et le serveur.                                                                                                                                                                                                                                  |
-| `src/lib/worksheets/student-worksheet-typst.ts` | `generateStudentWorksheetTypst` : le PDF **élève** (et l'aperçu « vue élève » du prof), par `WorksheetGenerator` et le gabarit du style de la fiche (lot 4b).                                                                                                                                                                                                                                                                        |
-| `src/lib/worksheets/document/`                  | Le **document d'une fiche** ([ADR 0028](../adr/0028-pdf-de-fiche-un-generateur-des-styles-et-des-formes.md), lot 1) : `WorksheetDocument` (`types.ts`), rempli par `documentFromTeacherCopy` (copie du prof) ou `documentFromStudentView` (vue élève, correction non visible → `correction: null`) ; ordre et numéros (`numbering.ts`) ; **rendu d'exercice unique** `renderExercises` (`render-exercise.ts`) ; `MATH_LIMITS_SETUP`. |
-| `src/lib/worksheets/serie-automatismes.ts`      | `buildSerie` : une **série figée** d'instances de modèles de question devient un exercice ordinaire ([ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md)). Toute anomalie lève une exception. Les formules maison sont figées avec les fonctions du modèle et le sens de `AB` de l'instance.                                                                                                                            |
-| `src/lib/worksheets/exercise-anchor.ts`         | Ancre d'un exercice de fiche (`#exercice-<worksheet_exercises.id>`, jamais le numéro) : `exerciseAnchorId`, `exerciseAnchorHash`, `worksheetExerciseIdFromHash`, `scrollToAnchoredExercise`. Notifications de signalement, fiche de l'élève, aperçu « vue élève ».                                                                                                                                                                   |
-| `src/lib/worksheets/exercise-edit-link.ts`      | `exerciseEditHref`, `worksheetReturnHref` : aller-retour fiche ↔ exercice par `?fiche=<uuid>` (Zod : UUID seulement).                                                                                                                                                                                                                                                                                                                |
+| Fichier                                         | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/worksheets/worksheet-header.ts`        | **Le type décide de l'en-tête** ([ADR 0030](../adr/0030-type-de-fiche-decide-la-forme.md)) : `worksheetHeader(type, options)` dit ce que l'en-tête imprime (nom, classe, date à remplir, date de rendu, points, calculatrice, durée, cadres) ; `TYPE_OPTION_KEYS` (options proposées par type), `configForType`. Lue par le PDF du prof et celui de l'élève.                                                                                                                  |
+| `src/lib/worksheets/exercise-numbering.ts`      | **La** règle du numéro affiché : `groupExercisesForDisplay`, `orderExercisesForDisplay`, `displayNumberOf`, `exerciseAtDisplayNumber`. Utilisée par la page élève, le générateur PDF et le serveur.                                                                                                                                                                                                                                                                           |
+| `src/lib/worksheets/student-worksheet-typst.ts` | `generateStudentWorksheetTypst` : le PDF **élève** (et l'aperçu « vue élève » du prof), par `WorksheetGenerator` et le gabarit du style de la fiche (lot 4b).                                                                                                                                                                                                                                                                                                                 |
+| `src/lib/worksheets/document/`                  | Le **document d'une fiche** ([ADR 0028](../adr/0028-pdf-de-fiche-un-generateur-des-styles-et-des-formes.md), lot 1) : `WorksheetDocument` (`types.ts`), rempli par `documentFromTeacherCopy` (copie du prof) ou `documentFromStudentView` (vue élève, correction non visible → `correction: null`) ; ordre et numéros (`numbering.ts`) ; **rendu d'exercice unique** `renderExercises` (`render-exercise.ts`) ; cadres de réponse (`answer-frames.ts`) ; `MATH_LIMITS_SETUP`. |
+| `src/lib/worksheets/serie-automatismes.ts`      | `buildSerie` : une **série figée** d'instances de modèles de question devient un exercice ordinaire ([ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md)). Toute anomalie lève une exception. Les formules maison sont figées avec les fonctions du modèle et le sens de `AB` de l'instance.                                                                                                                                                                     |
+| `src/lib/worksheets/exercise-anchor.ts`         | Ancre d'un exercice de fiche (`#exercice-<worksheet_exercises.id>`, jamais le numéro) : `exerciseAnchorId`, `exerciseAnchorHash`, `worksheetExerciseIdFromHash`, `scrollToAnchoredExercise`. Notifications de signalement, fiche de l'élève, aperçu « vue élève ».                                                                                                                                                                                                            |
+| `src/lib/worksheets/exercise-edit-link.ts`      | `exerciseEditHref`, `worksheetReturnHref` : aller-retour fiche ↔ exercice par `?fiche=<uuid>` (Zod : UUID seulement).                                                                                                                                                                                                                                                                                                                                                         |
 
 ### `src/lib/typst/` — de la fiche au PDF
 
@@ -155,7 +155,9 @@ worksheets (type, status, config jsonb, translations, template_id, style_id, sch
   `shuffle_exercises` et les **options du type** (`TYPE_OPTION_KEYS`) : fiche d'exercices →
   `show_student_name` ; évaluation écrite → `show_points`, `calculator` (`allowed` | `forbidden`),
   `answers_on_sheet` ; devoir maison → `due_date` (`AAAA-MM-JJ`, `isIsoDate`) ; examen blanc →
-  `calculator`, `answers_on_sheet`. Absente = non (calculatrice absente : rien d'imprimé). Les
+  `calculator`, `answers_on_sheet`. Avec `answers_on_sheet` : `answer_frames` (`question` par
+  défaut | `exercise`, `ANSWER_FRAME_MODES`), placement des cadres de réponse ; gardé par
+  `configForType` avec « réponses sur le sujet ». Absente = non (calculatrice absente : rien d'imprimé). Les
   anciennes clés d'affichage (`show_title`, `show_date`, `show_class`, `numbering_style`,
   `page_layout`, `font_size`, `margins`, `correction_detail`) restent acceptées par Zod pour ne pas
   être effacées au prochain envoi, mais **plus aucun code ne les lit** ; les retirer des données
@@ -374,7 +376,10 @@ renvoient `style_id`, `template_id`, `template` (le Typst seul de la fiche d'un 
 l'**auteur** de la fiche, lu en service-role après le contrôle d'accès,
 `loadAuthorStyleTemplate`), `total_points`, `estimated_duration_minutes` et les options du type
 (`viewTypeOptions` : `show_student_name`, `show_points`, `calculator`, `answers_on_sheet`,
-`due_date`), que `worksheetHeader` lit comme pour le prof. Partie de fin (réponses ou corrigé) : forme « fiche + corrections » ; un style qui
+`answer_frames`, `due_date`), que `worksheetHeader` lit comme pour le prof. Avec « réponses sur le
+sujet », chaque exercice de la vue porte `answer_frame_estimate` (tailles des cadres, calculées par
+le serveur sur le corrigé de la copie de l'élève, **même si la correction est masquée** : seules les
+tailles partent, jamais le texte), pour que l'élève ait les mêmes cadres que le prof. Seulement ce que le PDF imprime (`estimateForView`, audit S1) : les tailles par question en mode question, la hauteur du cadre unique en mode exercice ou sans question ; au plus 200 tailles (tronqué, jamais d'erreur). Tests : `copie.test.ts` (API élève) et `preview/__tests__/cadres-de-reponse.test.ts`, correction masquée. Partie de fin (réponses ou corrigé) : forme « fiche + corrections » ; un style qui
 n'a que sa fiche garde sa fiche et reçoit après elle `CORRECTIONS_PART` (nouvelle page, bandeau
 vert, polices du corrigé ; décision de David). Seules les corrections visibles sont imprimées
 (`renderExercises` écarte `correction === null` hors fiche). Ce que seul l'élève reçoit
@@ -401,20 +406,41 @@ même document (`renderMarkdownPreview`) : mêmes ordre, numéros, sections et �
 écrite » que le PDF. Communs aux deux
 PDF : titre d'exercice avec ses formules (`processTableCellContent`), ordre et numérotation
 (chiffres arabes, ADR 0030 ; `exercise_order` côté prof), points en « pt » / « pts » de
-`documentLabels` (aussi en anglais) quand le type les imprime (`display.showPoints`), cadre de
-réponse unique sous l'énoncé seulement avec « réponses sur le sujet » (`display.answersOnSheet`,
-en attendant les cadres par question du lot 3), exercice hors section après des sections sous
+`documentLabels` (aussi en anglais) quand le type les imprime (`display.showPoints`), cadres de
+réponse (ci-dessous), exercice hors section après des sections sous
 « Autres exercices », correction non écrite → « Correction non écrite. » sous le numéro (Corrigé,
 et Réponses quand il n'y a ni réponses ni corrigé), opérateurs à limites (`MATH_LIMITS_SETUP`). L'API élève (et celle d'aperçu de
 l'affectation) transmet les options du type ; l'ordre de la copie de l'élève est celui des positions, sauf fiche
 qui mélange ses exercices (voir « La copie d'un élève » : `shuffled`, suivi par
 `documentFromStudentView`).
 
+**Cadres de réponse** (ADR 0030, lot 3 ; `worksheets/document/answer-frames.ts`) : seulement avec
+« réponses sur le sujet » (`display.answersOnSheet`), seulement sur la fiche (jamais en Réponses ni
+en Corrigé, ni dans la partie de fin, ni avec les corrections en ligne). Une **question** = un
+élément de premier niveau d'une liste numérotée de premier niveau de l'énoncé (`questionItems` ;
+plusieurs listes séparées par des paragraphes comptent toutes ; les sous-questions restent dans le
+cadre de leur question). Mode `question` (`display.answerFrames`, défaut) : un cadre à la fin de
+chaque question, après ses sous-questions, posé par l'option `afterQuestion` du générateur Typst
+(`typst-generator.ts`, aucun nouveau nœud d'AST) ; énoncé sans question : un seul cadre à la fin.
+Mode `exercise` : un seul cadre à la fin de l'énoncé. **Hauteur** (`estimateAnswerFrames(énoncé,
+corrigé)`, une seule fonction : adaptateur du prof, serveur pour l'élève) : le corrigé de la même
+variante est découpé pareil ; autant d'éléments que de questions → taille de la réponse k pour la
+question k, sinon (ou corrigé vide) moyen partout. Longueur d'une réponse (`answerLines`) : lignes
+estimées — caractères visibles à 60 par ligne (formules sans leurs commandes LaTeX), une ligne par
+ligne de formule centrée ou rangée de tableau, 6 par figure. ≤ 2 lignes : petit (2,5 cm) ; ≤ 5 :
+moyen (4,5 cm) ; au-delà : grand (7 cm). Cadre unique : taille de tout le corrigé, puis 10 cm (≤ 14 lignes) et 14 cm au-delà — hauteurs fermées (`EXERCISE_FRAME_HEIGHTS_CM` : 2,5 / 4,5 / 7 / 10 / 14). Comptés aussi : le texte des mots-dièse, mentions et liens internes. **Un cadre n'est jamais seul en haut d'une
+colonne** : question d'un seul bloc → insécable avec son cadre ; question à sous-questions → sa
+dernière sous-question (ou son dernier bloc) est `sticky` ; cadre unique → le dernier bloc de
+l'énoncé est `sticky` (option `keepEndWithNext` du générateur ; une liste : son dernier élément
+seulement). Un énoncé long reste sécable. Le réglage par question (lot 4) n'existe pas encore.
+Tests : `worksheets/document/__tests__/cadres-de-reponse.test.ts`,
+`typst/generators/__tests__/cadres-de-reponse-pdf.test.ts` (prof et élève).
+
 **Trois PDF du prof** (`WorksheetPdfMode`, choix « Fiche · Réponses · Corrigé » de `PdfPreview` ;
 la lecture publique `variant="reader"` reste sur la fiche) :
 
 - `worksheet` : les énoncés, consignes du prof et, avec « réponses sur le sujet », les cadres de
-  réponse ;
+  réponse (après chaque question ou après l'exercice) ;
 - `answers` : pour chaque exercice, numéro et titre puis `answers` (champ `answers_md` de la
   variation, `{{var}}` résolues comme dans la correction, traduction `translations.en.answers_md`
   avec repli français) ; vide : « Réponses non rédigées : voir le corrigé. » en italique. Police

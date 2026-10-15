@@ -1129,18 +1129,39 @@ export interface TypstTranspilerOptions {
 	 * Absent : défaut du parseur, le produit — l'écriture d'avant.
 	 */
 	capitalPairs?: CapitalPairs;
+
+	/**
+	 * Ce qui se pose à la fin de chaque QUESTION — élément de premier niveau d'une
+	 * liste numérotée de premier niveau —, après ses sous-éléments ; `index` court
+	 * d'une liste à l'autre (0, 1, 2…). Cadres de réponse des fiches (ADR 0030,
+	 * lot 3). Absent : rien.
+	 */
+	afterQuestion?: (index: number) => string;
+
+	/**
+	 * Le dernier bloc reste collé à ce qui suit le document (cadre de réponse
+	 * unique) : jamais de cadre seul en haut d'une colonne. Une liste : son
+	 * dernier élément seulement. Défaut : non.
+	 */
+	keepEndWithNext?: boolean;
 }
 
 /**
- * Options une fois les défauts appliqués. `genericFunctions` et `capitalPairs`
- * restent optionnels :
+ * Options une fois les défauts appliqués. `genericFunctions`, `capitalPairs`,
+ * `afterQuestion` et `keepEndWithNext` restent optionnels :
  * son absence a un sens (« défauts du parseur ») distinct de `null`, qu'un
  * `Required<>` effacerait.
  */
 export type ResolvedTypstTranspilerOptions = Required<
-	Omit<TypstTranspilerOptions, 'genericFunctions' | 'capitalPairs'>
+	Omit<
+		TypstTranspilerOptions,
+		'genericFunctions' | 'capitalPairs' | 'afterQuestion' | 'keepEndWithNext'
+	>
 > &
-	Pick<TypstTranspilerOptions, 'genericFunctions' | 'capitalPairs'>;
+	Pick<
+		TypstTranspilerOptions,
+		'genericFunctions' | 'capitalPairs' | 'afterQuestion' | 'keepEndWithNext'
+	>;
 
 // Note: RenderOptions, ParseResult, and MathPlaceholder are re-exported from $lib/ubumark
 

@@ -6,8 +6,9 @@
  * prof comme pour l'élève depuis le lot 4b) et par l'aperçu markdown à l'écran du prof
  * (`renderMarkdownPreview`). Tout ce qui fait un exercice imprimé vit ici :
  * groupement par section (et « Autres exercices »), numéro, titre avec ses
- * formules, points dans la langue du document, consigne, énoncé, réponses ou
- * corrigé (toujours détaillé, ADR 0030), « correction non écrite ».
+ * formules, points dans la langue du document, consigne, énoncé, cadres de
+ * réponse (`answer-frames.ts`), réponses ou corrigé (toujours détaillé,
+ * ADR 0030), « correction non écrite ».
  *
  * Les habillages (`ExerciseLayout`) ne changent que l'allure ; le gabarit
  * choisit le sien par son placeholder (`{{exercises}}`, `{{exercises_badge}}`).
@@ -29,6 +30,8 @@ import { SECTION_COLOR, exerciseBadge } from '$lib/typst/worksheet-palette';
 // Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
 import '$lib/ubumark/generators/figure-typst-setup';
 import type { DocumentExercise, DocumentForm, DocumentSection, WorksheetDocument } from './types';
+import { ANSWER_FRAME_HEIGHT_CM, answerFrameTypst, estimateAnswerFrames } from './answer-frames';
+import type { TypstTranspilerOptions } from '$lib/exercises/types';
 
 // ============================================================================
 // TYPES
@@ -281,17 +284,52 @@ function renderTemplateExercise(
 	content += exercise.essential
 		? `#block(width: 100%, inset: (left: 8pt), above: 0.5em, stroke: (left: 2pt + rgb("#f97316")))[\n`
 		: `#block(width: 100%, inset: 0pt, above: 0.5em)[\n`;
-	content += indent(markdownTypst(exercise.statement, exercise, doc)) + '\n';
-	// Fiche + corrigé : la correction remplace le cadre de réponse
+	// Fiche + corrigé : la correction remplace les cadres de réponse
 	if (options.inlineCorrections) {
+		content += indent(markdownTypst(exercise.statement, exercise, doc)) + '\n';
 		return content + '\n]\n' + inlineCorrection(exercise, doc, options);
 	}
-	if (hasAnswerSpace(doc)) {
-		content += `  #v(0.5em)
-  #rect(width: 100%, height: 5cm, stroke: (paint: rgb("#c8c8c8"), thickness: 0.5pt, dash: "dashed"), fill: none)`;
-	}
+	const frames = answerFrames(exercise, doc);
+	// Cadre unique à la fin : la fin de l'énoncé reste collée à lui (jamais seul
+	// en haut d'une colonne) ; les cadres par question, l'option `afterQuestion`
+	content +=
+		indent(
+			markdownTypst(exercise.statement, exercise, doc, {
+				afterQuestion: frames.afterQuestion,
+				keepEndWithNext: frames.atEnd !== null
+			})
+		) + '\n';
+	if (frames.atEnd !== null) content += indent(answerFrameTypst(frames.atEnd)) + '\n';
 	content += '\n]\n';
 	return content;
+}
+
+/**
+ * Les cadres de réponse d'un exercice sur la fiche (ADR 0030, lot 3) : un
+ * après chaque question, ou un seul à la fin de l'énoncé (mode « exercice »,
+ * ou énoncé sans question numérotée). Aucun sans « réponses sur le sujet ».
+ */
+function answerFrames(
+	exercise: DocumentExercise,
+	doc: WorksheetDocument
+): { afterQuestion?: (index: number) => string; atEnd: number | null } {
+	if (!doc.display.answersOnSheet) return { atEnd: null };
+	// Estimation transmise (prof, serveur pour l'élève) ; sinon depuis la
+	// correction présente, ou taille moyenne
+	const estimate =
+		exercise.answerFrameEstimate ??
+		estimateAnswerFrames(exercise.statement, exercise.correction?.solution ?? null);
+	// Une taille par question de l'énoncé : aucune, pas de question numérotée.
+	// La vue de l'élève n'a que l'une des deux parties (`estimateForView`)
+	const questions = estimate.questions ?? [];
+	if (doc.display.answerFrames === 'exercise' || questions.length === 0) {
+		return { atEnd: estimate.exercise_cm ?? ANSWER_FRAME_HEIGHT_CM.medium };
+	}
+	return {
+		afterQuestion: (index) =>
+			answerFrameTypst(ANSWER_FRAME_HEIGHT_CM[questions[index] ?? 'medium']),
+		atEnd: null
+	};
 }
 
 /**
@@ -440,26 +478,19 @@ function shownPoints(exercise: DocumentExercise, doc: WorksheetDocument): string
 	return `${exercise.points} ${exercise.points > 1 ? labels.pointAbbrevPlural : labels.pointAbbrev}`;
 }
 
-/**
- * Réponses sur le sujet (option de l'évaluation écrite et de l'examen blanc,
- * ADR 0030) : un cadre unique sous l'énoncé, en attendant les cadres par
- * question (lot 3)
- */
-function hasAnswerSpace(doc: WorksheetDocument): boolean {
-	return doc.display.answersOnSheet;
-}
-
 /** Markdown d'un exercice en Typst, avec ses fonctions déclarées et son sens de `AB` */
 function markdownTypst(
 	markdown: string,
 	exercise: DocumentExercise,
-	doc: WorksheetDocument
+	doc: WorksheetDocument,
+	frames: Pick<TypstTranspilerOptions, 'afterQuestion' | 'keepEndWithNext'> = {}
 ): string {
 	return generateTypst(parseMarkdown(markdown), {
 		includeSetup: false,
 		language: doc.locale,
 		genericFunctions: genericFunctionsConfig(exercise.genericFunctions),
-		capitalPairs: exercise.capitalPairs
+		capitalPairs: exercise.capitalPairs,
+		...frames
 	});
 }
 

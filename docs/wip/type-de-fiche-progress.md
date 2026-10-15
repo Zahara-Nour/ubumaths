@@ -57,6 +57,14 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
 - Le cadre unique actuel (`hasAnswerSpace`) : seulement si `answers_on_sheet` (lot 3 le
   remplacera par les cadres par question).
 
+## Décisions du lot 3 (2026-10-15)
+
+- Accès validé par David : le serveur envoie à l'élève la hauteur estimée des cadres de sa copie
+  (`answer_frame_estimate`, une taille par question), jamais le texte du corrigé, et seulement si
+  « réponses sur le sujet » est coché — son PDF a les mêmes cadres que celui du prof.
+- Lot 4 : réglage en **nombre de lignes** par cadre (et non trois tailles), l'estimation servant de
+  départ ; aperçu PDF et nombre de pages à côté du réglage (écran à présenter à David avant).
+
 ## Lots suivants
 
 - Lot 2 : retirer les styles 02-05 de la liste.
@@ -74,5 +82,8 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
       le compilateur de prod. Reste : CONTEXT.md (entrées de l'ADR), tests d'intégration à lancer.
 - [x] Lot 2 — styles Contrôle, Examen, Devoirs, Quiz retirés du menu (`BUILT_IN_STYLE_OPTIONS`),
       toujours résolus ; aucune fiche ne les désignait
-- [ ] Lot 3
+- [x] Lot 3 — cadres automatiques (`answer-frames.ts`) : après chaque question (élément de 1er
+      niveau des listes numérotées de 1er niveau, `afterQuestion` du générateur) ou après l'exercice
+      (`answer_frames`) ; taille petit/moyen/grand (2,5/4,5/7 cm) d'après le corrigé ; l'élève
+      reçoit les tailles du serveur (`answer_frame_estimate`), même correction masquée
 - [ ] Lot 4

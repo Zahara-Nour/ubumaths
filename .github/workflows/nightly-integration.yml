@@ -95,6 +95,8 @@ on:
       - 'src/lib/worksheets/exercise-anchor.ts'
       - 'src/lib/worksheets/student-copy.ts'
       - 'src/lib/worksheets/worksheet-copy.ts'
+      - 'src/lib/worksheets/worksheet-header.ts'
+      - 'src/lib/worksheets/document/answer-frames.ts'
       - 'src/lib/exercises/generator/instance-generator.ts'
       - 'src/lib/types/worksheets.ts'
       # src/routes : handlers appelés directement par les tests. Chez GitHub, `[]`

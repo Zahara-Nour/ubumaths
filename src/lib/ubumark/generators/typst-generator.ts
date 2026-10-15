@@ -283,8 +283,48 @@ function generateSetup(options: ResolvedTypstTranspilerOptions): string {
  * @returns Typst body content
  */
 function generateBody(ast: DocumentNode, options: ResolvedTypstTranspilerOptions): string {
-	return ast.children.map((node) => generateBlock(node, options)).join('\n\n');
+	const { afterQuestion, keepEndWithNext } = options;
+	if (keepEndWithNext) {
+		// Ce qui suit le document (cadre de réponse) emmène son dernier bloc
+		const last = ast.children.length - 1;
+		return ast.children
+			.map((node, index) =>
+				index === last ? stickyBlock(node, options) : generateBlock(node, options)
+			)
+			.join('\n\n');
+	}
+	if (!afterQuestion) return ast.children.map((node) => generateBlock(node, options)).join('\n\n');
+
+	// Questions : éléments de premier niveau des listes numérotées de premier
+	// niveau, numérotées d'une liste à l'autre (cadres de réponse, ADR 0030)
+	let questionIndex = 0;
+	return ast.children
+		.map((node) => {
+			if (node.type !== 'list' || !node.ordered) return generateBlock(node, options);
+			const first = questionIndex;
+			questionIndex += node.items.length;
+			return generateList(node, options, 0, (index) => afterQuestion(first + index));
+		})
+		.join('\n\n');
 }
+
+/**
+ * Un bloc qui reste collé au suivant (`sticky`) : s'il ne tient pas avant une
+ * fin de colonne, le suivant (cadre de réponse) ne part pas seul. Une liste :
+ * seul son dernier élément est collé, le reste peut se couper.
+ */
+function stickyBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions): string {
+	if (node.type === 'list') return generateList(node, options, 0, undefined, true);
+	return keepWithNext(generateBlock(node, options));
+}
+
+/** Typst collé à ce qui le suit */
+function keepWithNext(typst: string, spacing = ''): string {
+	return `#block(width: 100%, sticky: true${spacing})[\n${typst}\n]`;
+}
+
+/** Espacement d'un élément de liste (celui de `ubu-item`), pour un élément enveloppé */
+const ITEM_SPACING = ', above: 1.5em, below: 1.5em';
 
 /**
  * Generate a single block node
@@ -554,12 +594,15 @@ function widestLabel(pattern: string, first: number, last: number): string {
  * @param node - List node
  * @param options - Generator options
  * @param enumerateDepth - Current enumerate depth (only increments for ordered lists)
+ * @param afterItem - Posé à la fin de chaque élément (questions, `afterQuestion`)
  * @returns Typst list
  */
 function generateList(
 	node: ListNode,
 	options: ResolvedTypstTranspilerOptions,
-	enumerateDepth: number = 0
+	enumerateDepth: number = 0,
+	afterItem?: (index: number) => string,
+	stickyLast = false
 ): string {
 	// Calculate new depth: only ordered lists increment enumerate depth
 	const newDepth = node.ordered ? enumerateDepth + 1 : enumerateDepth;
@@ -573,11 +616,23 @@ function generateList(
 		: '•';
 	const items = node.items.map((item: ListItemNode, index: number) => {
 		const num = `${node.ordered ? `numbering("${pattern}", ${startNumber + index})` : '[•]'}, w: "${widest}"`;
-		const content = generateListItemContent(item, options, newDepth);
+		// Fin de l'élément, après ses sous-éléments (cadre de réponse d'une question)
+		const after = afterItem?.(index) ?? '';
+		// Le cadre n'est jamais séparé de ce qui le précède : élément d'un seul bloc,
+		// insécable avec son cadre ; sinon son dernier bloc reste collé au cadre
+		const unbreakable = after !== '' && item.children.length <= 1;
+		const itemContent = generateListItemContent(
+			item,
+			options,
+			newDepth,
+			after !== '' && !unbreakable
+		);
+		const content = after ? `${itemContent}\n${after}` : itemContent;
 		// Item qui commence par un bloc (formule centrée, cercle…) : numéro à côté du bloc
 		const helper =
 			item.children[0] && item.children[0].type !== 'paragraph' ? 'ubu-item-bloc' : 'ubu-item';
-		return { helper, num, content };
+		const sticky = stickyLast && index === node.items.length - 1;
+		return { helper, num, content, unbreakable, sticky };
 	});
 
 	// `:colonnes N` : grille lue en lignes (a) b) / c) d)). `columns()` de Typst ne se
@@ -585,10 +640,17 @@ function generateList(
 	if (node.columns && node.columns > 1) {
 		const cells = items.map(({ helper, num, content }) => `${helper}(${num})[${content}]`);
 		const fractions = Array(node.columns).fill('1fr').join(', ');
-		return `#grid(columns: (${fractions}), column-gutter: 1em, row-gutter: 1.5em,\n  ${cells.join(',\n  ')}\n)`;
+		const grid = `#grid(columns: (${fractions}), column-gutter: 1em, row-gutter: 1.5em,\n  ${cells.join(',\n  ')}\n)`;
+		return stickyLast ? keepWithNext(grid) : grid;
 	}
 
-	return items.map(({ helper, num, content }) => `#${helper}(${num})[${content}]`).join('\n');
+	return items
+		.map(({ helper, num, content, unbreakable, sticky }) => {
+			const typst = `#${helper}(${num})[${content}]`;
+			if (unbreakable) return `#block(width: 100%, breakable: false${ITEM_SPACING})[${typst}]`;
+			return sticky ? keepWithNext(typst, ITEM_SPACING) : typst;
+		})
+		.join('\n');
 }
 
 /**
@@ -597,16 +659,19 @@ function generateList(
 function generateListItemContent(
 	item: ListItemNode,
 	options: ResolvedTypstTranspilerOptions,
-	currentDepth: number
+	currentDepth: number,
+	stickyLast = false
 ): string {
 	const blocks: string[] = [];
 
 	for (let i = 0; i < item.children.length; i++) {
 		const child = item.children[i];
+		// Dernier bloc collé à ce qui suit l'élément (cadre de réponse)
+		const sticky = stickyLast && i === item.children.length - 1;
 
 		if (child.type === 'list') {
 			// Nested list - generate with current depth
-			const listContent = generateList(child, options, currentDepth);
+			const listContent = generateList(child, options, currentDepth, undefined, sticky);
 			// Add blank line before nested list if there's content before it
 			if (blocks.length > 0) {
 				blocks.push('\n' + listContent);
@@ -615,7 +680,8 @@ function generateListItemContent(
 			}
 		} else {
 			// Regular block (paragraph, math, etc.)
-			const blockContent = generateBlock(child as BlockNode, options);
+			const generated = generateBlock(child as BlockNode, options);
+			const blockContent = sticky ? keepWithNext(generated) : generated;
 
 			// Add blank line between paragraphs to preserve line breaks
 			if (i > 0 && item.children[i - 1].type !== 'list') {

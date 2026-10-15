@@ -49,12 +49,15 @@ export function documentFromStudentView(view: StudentWorksheetView): WorksheetDo
 			instructions: exercise.custom_instructions ?? null,
 			essential: exercise.is_essential ?? false,
 			genericFunctions: exercise.generic_functions ?? null,
-			capitalPairs: exercise.capital_pairs
+			capitalPairs: exercise.capital_pairs,
+			// Estimées par le serveur sur la copie de l'élève, correction masquée comprise
+			answerFrameEstimate: exercise.answer_frame_estimate ?? null
 		})),
 		sections: sections.map(({ id, title, instructions }) => ({ id, title, instructions })),
 		display: {
 			showPoints: header.points,
-			answersOnSheet: header.answersOnSheet
+			answersOnSheet: header.answersOnSheet,
+			answerFrames: view.answer_frames ?? 'question'
 		}
 	};
 }
