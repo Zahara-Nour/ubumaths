@@ -524,7 +524,7 @@ describe('une formule à « ; » dans une colonne nommée', () => {
 		const a = withCells({ A1: '7', A2: '=max(1 ; A1)' });
 		a.nameColumn(A, 'L');
 
-		expect(a.cell(A, 2)).toBe('=max(1 ; A1)');
+		expect(a.cell(A, 2)).toBe('=MAX(1 ; A1)'); // noms en capitales (lot 4, Q-L4-7);
 		expect(a.cell(A, 3)).toBe('');
 		expect(listOf(a, 'L').values).toEqual([7, 7]);
 	});
@@ -536,7 +536,7 @@ describe('une formule à « ; » dans une colonne nommée', () => {
 		const b = new Atelier();
 		b.restore(a.serialize());
 
-		expect(b.cell(A, 2)).toBe('=max(1 ; A1)');
+		expect(b.cell(A, 2)).toBe('=MAX(1 ; A1)');
 		expect(numberAt(b, A, 2)).toBe(7);
 	});
 });

@@ -191,4 +191,15 @@ liste trouée en citant l'entrée).
       ni guillemets ni comparaisons ; `=pi` lu `p × i`
 - [x] phase 0 rédigée : Q-L4-1 à Q-L4-7 posées à David
 - [x] validation de David (« je valide tes recos »)
-- [ ] PR 1 : plages et statistiques (`feat/atelier-plages`)
+
+### PR 1 — plages et statistiques (`feat/atelier-plages`)
+
+- [x] tests rouges : `formules-tableur.test.ts` (40) ; 3 attentes du lot 2 en capitales (`MAX(`)
+- [x] `grid-functions.ts` + couche dans `formula.ts` (`readBody`, `readCall`, `callValue`, `deps`)
+- [x] **trouvé en route** : une somme de 200 cases levait une exception (garde de profondeur 100
+      de mathAST) → arbres équilibrés + `safely` (une case ne fait jamais tomber la grille)
+- [x] mesuré : 600 formules à plages 285 ms, recalcul complet 250 ms
+- [x] revue (2 importants, 4 mineurs, tous corrigés test rouge d'abord) : `=a:b` (division) réécrit
+      `=A:B` et refusé → `A:A` seulement en argument ; ECARTYPE en n² (750 ms) → moyenne une fois ;
+      `=2SOMME(…)` ; case seule en argument = plage d'une case ; ligne 0 ; message qui cite sqrt…
+- [ ] PR, CI, merge
