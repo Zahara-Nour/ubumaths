@@ -525,6 +525,7 @@ export class Atelier {
 	#gesture: {
 		cells: GridGesture['cells'][number][];
 		titles: GridGesture['titles'][number][];
+		seed?: { before: number; after: number };
 	} | null = null;
 	/** Annuler ou rétablir écrit sans s'enregistrer comme un nouveau geste. */
 	#replaying = false;
@@ -1627,6 +1628,13 @@ export class Atelier {
 		if (this.#gesture !== null) {
 			this.#gesture.cells.push(...part.cells);
 			this.#gesture.titles.push(...part.titles);
+			// Une graine dans un geste composé : la première d'avant, la dernière d'après
+			if (part.seed !== undefined) {
+				this.#gesture.seed = {
+					before: this.#gesture.seed?.before ?? part.seed.before,
+					after: part.seed.after
+				};
+			}
 			return;
 		}
 		this.#undo.push(part);

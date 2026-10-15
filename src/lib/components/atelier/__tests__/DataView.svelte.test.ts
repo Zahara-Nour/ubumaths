@@ -842,6 +842,36 @@ describe('Relancer', () => {
 		expect(faces(atelier)).toEqual(before);
 	});
 
+	// Revue : le focus restait sur le bouton, hors de la grille — Ctrl+Z n'y
+	// annulait rien (et annulait une suppression de carte si un toast était là)
+	it('Ctrl+Z juste après le clic, sans toucher une case : les tirages d’avant', async () => {
+		const atelier = dice();
+		const { container } = await openData(atelier);
+		const before = faces(atelier);
+
+		await userEvent.click(relaunchButton(container)!);
+		await settle();
+		await userEvent.keyboard('{ControlOrMeta>}z{/ControlOrMeta}');
+		await settle();
+
+		expect(faces(atelier)).toEqual(before);
+	});
+
+	it('F9 maintenu (répétition) ou avec Ctrl : rien de plus', async () => {
+		const atelier = dice();
+		await openData(atelier);
+		const press = (init: KeyboardEventInit) =>
+			window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F9', cancelable: true, ...init }));
+
+		press({});
+		press({ repeat: true });
+		press({ repeat: true });
+		press({ ctrlKey: true });
+		await settle();
+
+		expect(atelier.gridHistory.undo).toBe(2);
+	});
+
 	it('F9 relance aussi, depuis une case', async () => {
 		const atelier = dice();
 		const { container } = await openData(atelier);

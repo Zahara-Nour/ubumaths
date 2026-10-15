@@ -520,8 +520,11 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   seulement s'il y a des cases à hasard (`randomCells`) ; F9 fait de même tant que la vue Données
   est là (`svelte:window`), et une région `role="status"` annonce « Nouveaux tirages : N cases. ».
   « Relancer » est un geste de la grille (`GridGesture.seed`) : Ctrl+Z retrouve les tirages d'avant,
-  Ctrl+Y ceux d'après (Q-L5-3). Garder un atelier reçu qui tirait au hasard refait ses tirages (la
-  graine reste la nôtre, ses cases ont bougé) : le rapport le dit (`MergeReport.redrawn`).
+  Ctrl+Y ceux d'après (Q-L5-3) ; après un clic, le focus revient à la grille pour que Ctrl+Z y
+  agisse. F9 maintenu (répétition) ou avec Ctrl/⌘/Alt ne relance pas : l'historique (100 gestes) ne
+  se vide pas de tirages. Garder un atelier reçu qui tirait au hasard refait ses tirages (la graine
+  reste la nôtre) : le rapport le dit si des cases à hasard ont vraiment été écrites
+  (`MergeReport.redrawn`, d'après `randomCells` avant et après).
 - **Fonction à indice** (`=f_1(3)`) : refusée (`indexedFunctionMessage`). Le parseur lit `f_1(3)`
   comme `f₁ × 3`, et la grille calculait alors avec f, sans rien dire (revue du lot 3). Calcul ne
   l'évalue pas non plus (il recopie `f_1(3)`).

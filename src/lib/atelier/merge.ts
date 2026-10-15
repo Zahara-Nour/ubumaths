@@ -39,8 +39,8 @@ export interface MergeReport {
 	/** Objets refusés, et pourquoi — un plafond atteint, par exemple. */
 	readonly refused: ReadonlyArray<{ readonly name: string; readonly reason: string }>;
 	/**
-	 * L'atelier reçu tirait au hasard (ALEA, lot 5) : ses cases ont changé de place
-	 * et la graine reste la nôtre, ses tirages sont donc refaits — à dire (phase 0 §4).
+	 * Des cases à hasard sont arrivées (ALEA, lot 5) : la graine reste la nôtre,
+	 * leurs tirages sont donc refaits — à dire (phase 0 §4).
 	 */
 	readonly redrawn: boolean;
 }
@@ -110,6 +110,7 @@ export function mergeRefusal(atelier: Atelier, state: AtelierState): string | nu
 }
 
 export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
+	const randomBefore = atelier.randomCells;
 	let added = 0;
 	// Chaque colonne reçue va dans une colonne libre, de gauche à droite (T7)
 	const free = atelier.freeColumns;
@@ -251,11 +252,8 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 	if (written !== null && !written.ok) refused.push({ name: 'grille', reason: written.message });
 
 	// Tout ce qui est arrivé : cases sans nom ET entrées des listes nommées
-	const received = [
-		...Object.values(state.grid?.cells ?? {}),
-		...state.objects.flatMap((o) => (o.kind === 'list' ? entriesOf(o.definition) : []))
-	];
-	const redrawn = received.some((text) => text.trimStart().startsWith('=') && /ALEA/i.test(text));
+	// Ce qui a vraiment été écrit (une grille refusée n'a rien tiré : revue)
+	const redrawn = atelier.randomCells > randomBefore;
 	return { added, renamed, refused, redrawn };
 }
 

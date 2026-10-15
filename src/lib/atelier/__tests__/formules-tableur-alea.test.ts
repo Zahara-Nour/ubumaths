@@ -262,6 +262,13 @@ describe('§4 garder un atelier reçu : les tirages sont refaits, et on le dit',
 		};
 
 		expect(mergeInto(personal, received).redrawn).toBe(true);
+		// Revue : une grille reçue refusée n'a rien tiré chez nous
+		const refused: AtelierState = {
+			version: 2,
+			objects: [],
+			grid: { cells: { A1: '=ALEA.ENTRE.BORNES(1;6)', B1: 'x'.repeat(300) }, seed: 99 }
+		};
+		expect(mergeInto(seeded({}), refused).redrawn).toBe(false);
 		const list: AtelierState = {
 			version: 2,
 			objects: [{ name: 'L', kind: 'list', definition: '=ALEA.ENTRE.BORNES(1;6) ; 2', column: 'A' }]

@@ -168,15 +168,23 @@
 	let drawAnnouncement = $state('');
 
 	/** « Relancer » (lot 5, T8) : de nouveaux tirages ; Ctrl+Z les défait (Q-L5-3). */
-	function relaunch() {
+	async function relaunch() {
 		if (randomCount === 0) return;
 		atelier.relaunch();
+		// Le focus revient à la grille : Ctrl+Z, juste après, y défait le tirage
+		// (sur le bouton, il n'atteignait pas la grille — revue)
+		focusSelected();
+		// Vider puis écrire : la même phrase deux fois de suite est relue (revue)
+		drawAnnouncement = '';
+		await tick();
 		drawAnnouncement = `Nouveaux tirages : ${randomCount} case${randomCount > 1 ? 's' : ''}.`;
 	}
 
 	/** F9 relance, comme dans les tableurs (Q-L5-2) — tant que la vue Données est là. */
 	function windowKeys(event: KeyboardEvent) {
+		// Ni répétition (F9 maintenu vidait l'historique de la grille), ni Ctrl/⌘/Alt
 		if (event.key !== 'F9' || randomCount === 0) return;
+		if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
 		event.preventDefault();
 		relaunch();
 	}
