@@ -240,4 +240,11 @@ liste trouée en citant l'entrée).
 
 - [x] phase 0 rédigée : Q-L5-1 à Q-L5-5 (graine de l'atelier, tirage = graine + adresse + place)
 - [x] validation de David (« je valide »)
-- [ ] PR 1 : le moteur (`feat/atelier-alea`)
+
+### PR 1 — le moteur (`feat/atelier-alea`)
+
+- [x] tests : `formules-tableur-alea.test.ts` (15) — distribution sur 2 000 lancers (la grille n'a
+      que 5 200 cases : la phase 0 disait 6 000, corrigée)
+- [x] `drawOf` (graine + adresse + rang), `randomValue`, `gridSeed`, `relaunch()`, `grid.seed`
+- [ ] revue, PR, CI, merge
+- [ ] PR 2 : le bouton « Relancer », F9, l'annulation

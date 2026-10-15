@@ -507,6 +507,16 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   courbes ou français (`“fille”`, `«fille»` : la ponctuation intelligente de l'iPad) et `≤ ≥ ≠` ;
   la barre et les cases ont `autocorrect="off"`. Le critère de NB.SI peut être une case seule, dont
   le mot compte (`=NB.SI(B$2:B$30;B2)`).
+- **Le hasard** (lot 5, phase 0 : [atelier-tableur-lot5-phase0.md](../wip/atelier-tableur-lot5-phase0.md),
+  validée le 2026-10-15) : `ALEA()` (dans [0 ; 1[, approché) et `ALEA.ENTRE.BORNES(a ; b)` (entier
+  exact ; a ⩽ b entiers, au plus 10⁹ issues, sinon refus). Un tirage ne dépend que de la **graine**
+  de l'atelier (`gridSeed`), de l'adresse de la case et du rang de l'appel dans sa formule
+  (`drawOf`, `occurrence` fixé à la lecture) : ni de l'ordre de calcul, ni des autres cases ; écrire
+  ailleurs, recharger, réécrire la case à l'identique ne le changent pas (T8, Q-L5-5).
+  `Atelier.relaunch()` change la graine : les formules à hasard (`random`, même emboîté) et ce qui
+  les cite se recalculent (`GridState.seed`, `spreadDirty`). La graine est rangée (`grid.seed`,
+  bornée par Zod) seulement si une case tire au hasard, et voyage dans le lien (Q-L5-4). Dans Calcul,
+  `alea()` renvoie vers la grille. Le bouton « Relancer », F9 et l'annulation arrivent dans la PR 2.
 - **Fonction à indice** (`=f_1(3)`) : refusée (`indexedFunctionMessage`). Le parseur lit `f_1(3)`
   comme `f₁ × 3`, et la grille calculait alors avec f, sans rien dire (revue du lot 3). Calcul ne
   l'évalue pas non plus (il recopie `f_1(3)`).

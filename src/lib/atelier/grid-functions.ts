@@ -20,6 +20,7 @@ import { evaluate } from '$lib/mathAST/eval/evaluate';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { astOf } from './parse';
 import { readListValue } from '$lib/statistics/read-value';
+import { createRandomSource } from '$lib/utils/random';
 
 // =============================================================================
 // Types
@@ -35,7 +36,11 @@ export type CalculationFunction = 'ARRONDI' | 'ENT' | 'RACINE' | 'ABS' | 'LN' | 
 /** Les conditions : SI et NB.SI, avec du texte et des comparaisons (PR 3). */
 export type ConditionFunction = 'SI' | 'NB.SI';
 
-export type GridFunction = StatisticFunction | CalculationFunction | ConditionFunction;
+/** Le hasard : ALEA et ALEA.ENTRE.BORNES (lot 5). */
+export type RandomFunction = 'ALEA' | 'ALEA.ENTRE.BORNES';
+
+export type GridFunction =
+	StatisticFunction | CalculationFunction | ConditionFunction | RandomFunction;
 
 /** Une comparaison : `<`, `>`, `<=`, `>=`, `=`, `<>` (comme LibreOffice). */
 export type Comparison = '<' | '>' | '<=' | '>=' | '=' | '<>';
@@ -106,10 +111,16 @@ export const CALCULATION_ARITY: Readonly<Record<CalculationFunction, number>> = 
 
 export const CONDITION_ARITY: Readonly<Record<ConditionFunction, number>> = { SI: 3, 'NB.SI': 2 };
 
+export const RANDOM_ARITY: Readonly<Record<RandomFunction, number>> = {
+	ALEA: 0,
+	'ALEA.ENTRE.BORNES': 2
+};
+
 export const GRID_FUNCTIONS: readonly GridFunction[] = [
 	...STATISTIC_FUNCTIONS,
 	...(Object.keys(CALCULATION_ARITY) as CalculationFunction[]),
-	...(Object.keys(CONDITION_ARITY) as ConditionFunction[])
+	...(Object.keys(CONDITION_ARITY) as ConditionFunction[]),
+	...(Object.keys(RANDOM_ARITY) as RandomFunction[])
 ];
 
 export const TEXT_ALONE_MESSAGE =
@@ -136,7 +147,9 @@ const SIGNATURES: Readonly<Record<GridFunction, string>> = {
 	EXP: 'EXP(x) — l’exponentielle',
 	PI: 'PI() — le nombre π',
 	SI: 'SI(condition ; si vrai ; si faux) — l’un ou l’autre selon la condition',
-	'NB.SI': 'NB.SI(plage ; critère) — combien de cases vérifient le critère'
+	'NB.SI': 'NB.SI(plage ; critère) — combien de cases vérifient le critère',
+	ALEA: 'ALEA() — un nombre au hasard entre 0 et 1',
+	'ALEA.ENTRE.BORNES': 'ALEA.ENTRE.BORNES(a ; b) — un entier au hasard de a à b'
 };
 
 /** ARRONDI(x ; n) : n entre −15 et 15 (au-delà, un gel ou des chiffres faux — revue). */
@@ -184,6 +197,24 @@ export const RANGE_MIXED_MESSAGE =
 // =============================================================================
 // Lire
 // =============================================================================
+
+export function isRandom(name: GridFunction): name is RandomFunction {
+	return name === 'ALEA' || name === 'ALEA.ENTRE.BORNES';
+}
+
+/**
+ * Le tirage d'une case, dans [0 ; 1[ : il ne dépend que de la GRAINE de
+ * l'atelier, de l'adresse de la case et du rang de l'appel dans sa formule
+ * (T8, Q-L5-5) — ni de l'ordre de calcul, ni des autres cases. « Relancer »
+ * change la graine.
+ */
+export function drawOf(seed: number, address: string, occurrence: number): number {
+	let hash = (seed ^ 0x9e3779b9) >>> 0;
+	for (const char of `${address}#${occurrence}`) {
+		hash = Math.imul(hash ^ char.charCodeAt(0), 0x01000193) >>> 0;
+	}
+	return createRandomSource(hash)();
+}
 
 export function isStatistic(name: GridFunction): name is StatisticFunction {
 	return (STATISTIC_FUNCTIONS as readonly string[]).includes(name);

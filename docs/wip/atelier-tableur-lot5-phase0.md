@@ -53,8 +53,8 @@ Ce lot ajoute le **hasard** à la grille : `ALEA()` et `ALEA.ENTRE.BORNES(a ; b)
 - **Nominal** — Une recopie vers le bas tire une valeur différente par case.
 - **Technique** — Le tirage d'une case ne dépend que d'une **graine** de l'atelier, de l'adresse de
   la case et de la place de l'appel dans la formule. Il ne dépend pas de l'ordre de calcul.
-  « Relancer » change la graine. La graine est rangée avec la grille : 8 chiffres dans la
-  sauvegarde et dans le lien.
+  « Relancer » change la graine. La graine est rangée avec la grille (un entier de 32 bits) dans la
+  sauvegarde et dans le lien, seulement quand une case tire au hasard.
 
 ### 3. Le bouton « Relancer »
 
@@ -133,7 +133,7 @@ Relancer »), et elle rend les tirages indépendants de l'ordre des calculs. Mod
 
 1. **Le moteur** : ALEA, ALEA.ENTRE.BORNES, la graine (rangement, lien, fusion), le recalcul des
    cases à hasard quand elle change, le renvoi de Calcul. Tests en node : mêmes tirages au
-   rechargement, distribution (sur 6 000 tirages, chaque face entre 900 et 1 100), indépendance
+   rechargement, distribution (sur 2 000 tirages, chaque face entre 280 et 390), indépendance
    de l'ordre de calcul.
 2. **Le bouton** : « Relancer », F9, l'annonce, l'annulation (Q-L5-3), la note de la fusion.
    Tests dans un vrai navigateur, capture.
