@@ -284,6 +284,12 @@
 			submit();
 			return take();
 		}
+		// `*` : la croix de l'école, pas le point `\cdot` que MathLive écrit
+		// (David, 2026-10-15) ; le clavier virtuel a déjà sa touche ×
+		if (event.key === '*' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+			insert('\\times');
+			return take();
+		}
 		const depth = field.getElementInfo(field.position)?.depth ?? 0;
 		if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && depth === 0) {
 			recall(event.key === 'ArrowUp' ? -1 : 1);

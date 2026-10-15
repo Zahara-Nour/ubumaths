@@ -210,6 +210,19 @@ describe('Calcul en écriture mathématique', () => {
 		expect(mathField()?.value).toBe('');
 	});
 
+	// David, 2026-10-15 : `*` au clavier écrivait le point `\cdot` de MathLive
+	it('`*` au clavier écrit la croix ×, et le calcul se fait', async () => {
+		const { choose, typeMath, mathField, history } = await open();
+		await choose('Écriture mathématique');
+
+		await typeMath('3*4');
+		await vi.waitFor(() => expect(mathField()?.value).toContain('\\times'));
+		expect(mathField()?.value).not.toContain('\\cdot');
+		await userEvent.keyboard('{Enter}');
+
+		await vi.waitFor(() => expect(history()).toContain('12'));
+	});
+
 	it('une commande s’écrit sans point', async () => {
 		const { choose, typeMath, history } = await open();
 		await choose('Écriture mathématique');
