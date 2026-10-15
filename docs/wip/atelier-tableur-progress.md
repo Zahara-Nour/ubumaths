@@ -184,3 +184,10 @@ liste trouée en citant l'entrée).
       chaque retour sur Données ; deux Entrée = deux tableaux (focus resté dans la carte) ;
       formulaire qui survivait à la carte refermée ; phrase périmée après Ctrl+Z ; double annonce
 - [x] PR 2 mergée : #1427 — **lot 3 complet** (pas en prod)
+
+## Lot 4 — les fonctions du tableur (phase 0 : `atelier-tableur-lot4-phase0.md`, PROPOSÉE le 2026-10-15)
+
+- [x] mesuré : `=C1:C2` vaut 0,6 en silence (`:` lu comme une division) ; aucun nom français lu ;
+      ni guillemets ni comparaisons ; `=pi` lu `p × i`
+- [x] phase 0 rédigée : Q-L4-1 à Q-L4-7 posées à David
+- [ ] validation de David
