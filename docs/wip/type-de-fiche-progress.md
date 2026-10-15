@@ -65,6 +65,15 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
 - Lot 4 : réglage en **nombre de lignes** par cadre (et non trois tailles), l'estimation servant de
   départ ; aperçu PDF et nombre de pages à côté du réglage (écran à présenter à David avant).
 
+## Décisions du lot 4 (David, 2026-10-15)
+
+- Liste numérotée qui n'est pas une question : pas de détection, le prof met 0 ligne.
+- Écran du lot 4 validé : stepper +/− par question, auto / modifié ↺, 0 = pas de cadre, nombre de
+  pages de l'aperçu ; valeurs remises en auto si le nombre de questions change.
+- Forme stockée : `worksheet_exercises.answer_frame_lines` jsonb nullable,
+  `{ "questions": [int|null, …], "exercise": int|null }` (null = auto, 0 = pas de cadre, 0 à 40
+  lignes, ≤ 200 questions) ; aucun nouvel accès (policies de la ligne).
+
 ## Lots suivants
 
 - Lot 2 : retirer les styles 02-05 de la liste.
@@ -86,4 +95,7 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
       niveau des listes numérotées de 1er niveau, `afterQuestion` du générateur) ou après l'exercice
       (`answer_frames`) ; taille petit/moyen/grand (2,5/4,5/7 cm) d'après le corrigé ; l'élève
       reçoit les tailles du serveur (`answer_frame_estimate`), même correction masquée
-- [ ] Lot 4
+- [ ] Lot 4 — PR 1 (migration seule, branche `feat/cadres-lignes-migration`) :
+      `20261016103900_worksheet_exercises_answer_frame_lines.sql` + test d'intégration
+      `cadres-lignes-par-question` (rouge sans, vert avec). Reste : security-auditor, merge,
+      `db:migrate`, `db:types` ; puis PR 2 = écran (stepper) et lecture dans le PDF prof/élève
