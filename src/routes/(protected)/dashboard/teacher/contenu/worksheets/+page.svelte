@@ -20,7 +20,6 @@
 		FileText,
 		ClipboardCheck,
 		BookOpen,
-		HelpCircle,
 		Home,
 		Loader2
 	} from '@lucide/svelte';
@@ -128,7 +127,6 @@
 		worksheet: FileText,
 		assessment: ClipboardCheck,
 		exam: BookOpen,
-		quiz: HelpCircle,
 		homework: Home
 	};
 

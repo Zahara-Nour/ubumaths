@@ -10,13 +10,15 @@
 
 import { isContentLocale, type ContentLocale } from '$lib/types/locale';
 import type { StudentWorksheetView } from '$lib/types/worksheets';
+import { worksheetHeader } from '../worksheet-header';
 import type { WorksheetDocument } from './types';
 import { placeExercises, writtenOrNull } from './numbering';
 
 export function documentFromStudentView(view: StudentWorksheetView): WorksheetDocument {
 	// Validée plutôt que supposée : la valeur traverse une réponse d'API
 	const locale: ContentLocale = isContentLocale(view.language) ? view.language : 'fr';
-	const numberingStyle = view.numbering_style ?? 'numeric';
+	// Le type décide des points et des cadres (ADR 0030), comme pour le prof
+	const header = worksheetHeader(view.type, view);
 	const sections = [...(view.sections ?? [])].sort((a, b) => a.position - b.position);
 
 	return {
@@ -30,7 +32,7 @@ export function documentFromStudentView(view: StudentWorksheetView): WorksheetDo
 		exercises: placeExercises(
 			view.exercises ?? [],
 			sections,
-			numberingStyle,
+			'numeric',
 			view.shuffled === true
 		).map(({ exercise, number, sectionId }) => ({
 			number,
@@ -51,10 +53,8 @@ export function documentFromStudentView(view: StudentWorksheetView): WorksheetDo
 		})),
 		sections: sections.map(({ id, title, instructions }) => ({ id, title, instructions })),
 		display: {
-			// Absent (vue d'avant le lot 1) : affichés, comme avant
-			showPoints: view.show_points ?? true,
-			numberingStyle,
-			correctionDetail: view.correction_detail
+			showPoints: header.points,
+			answersOnSheet: header.answersOnSheet
 		}
 	};
 }

@@ -11,17 +11,28 @@ import { exerciseHintSchema, exerciseTranslationsSchema } from './exercises';
 import { gradeCodeSchema } from './grades';
 import { CONTENT_LOCALES } from '$lib/types/locale';
 import { capitalPairsSchema } from '$lib/questions/capital-pairs';
+import { CALCULATOR_RULES, WORKSHEET_TYPES, isIsoDate } from '$lib/types/worksheets';
 
 // ============================================================================
 // ENUM SCHEMAS
 // ============================================================================
 
 /**
- * Worksheet type enum
+ * Type de fiche (ADR 0030) : les quatre types ; « quiz » est refusé
  */
-export const worksheetTypeSchema = z.enum(['worksheet', 'assessment', 'exam', 'quiz', 'homework'], {
+export const worksheetTypeSchema = z.enum(WORKSHEET_TYPES, {
 	message: 'Type de fiche invalide'
 });
+
+/** Calculatrice autorisée ou interdite (évaluation écrite, examen blanc) */
+const calculatorRuleSchema = z.enum(CALCULATOR_RULES, {
+	message: 'Règle de calculatrice invalide'
+});
+
+/** Date de rendu d'un devoir maison : `AAAA-MM-JJ`, une date qui existe */
+const dueDateSchema = z
+	.string()
+	.refine(isIsoDate, { message: 'Date de rendu invalide (AAAA-MM-JJ attendu)' });
 
 /**
  * Worksheet status enum
@@ -92,14 +103,22 @@ const rowTranslationsSchema = z
  */
 const worksheetConfigObjectSchema = z.object({
 	language: contentLocaleSchema.optional(),
+	// Options du type de fiche (ADR 0030, `TYPE_OPTION_KEYS`)
+	show_student_name: z.boolean().optional(),
+	show_points: z.boolean().optional(),
+	calculator: calculatorRuleSchema.optional(),
+	answers_on_sheet: z.boolean().optional(),
+	due_date: dueDateSchema.optional(),
+	shuffle_exercises: z.boolean().optional(),
+	// Anciennes options d'affichage (ADR 0030) : plus lues, mais encore acceptées.
+	// La config d'une fiche existante les renvoie telles quelles ; les retirer du
+	// schéma les effacerait de la base au prochain envoi, et retirer ces données
+	// est une étape à part, avec l'accord de David.
 	correction_detail: z.enum(['concise', 'detailed']).optional(),
 	show_title: z.boolean().optional(),
 	show_date: z.boolean().optional(),
-	show_student_name: z.boolean().optional(),
 	show_class: z.boolean().optional(),
-	show_points: z.boolean().optional(),
 	numbering_style: numberingStyleSchema.optional(),
-	shuffle_exercises: z.boolean().optional(),
 	// Case retirée (D6) mais clé encore acceptée : un client ancien ou un script
 	// l'envoie, et la config d'une fiche existante la renvoie telle quelle — la
 	// retirer du schéma la ferait disparaître de la base au prochain envoi.
@@ -1029,11 +1048,12 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	title: z.string(),
 	/** Langue de la fiche : contenu et habillage du PDF de l'élève */
 	language: contentLocaleSchema.optional(),
-	/** Corrigé imprimé concis ou détaillé (réglage de la fiche, D11) */
-	correction_detail: z.enum(['concise', 'detailed']).optional(),
-	/** Numérotation et « afficher les points » de la fiche : sans ces clés, le schéma les retire */
-	numbering_style: numberingStyleSchema.optional(),
+	/** Options du type de la fiche (ADR 0030) : sans ces clés, le schéma les retire */
+	show_student_name: z.boolean().optional(),
 	show_points: z.boolean().optional(),
+	calculator: calculatorRuleSchema.optional(),
+	answers_on_sheet: z.boolean().optional(),
+	due_date: dueDateSchema.optional(),
 	description: z.string().nullable(),
 	type: worksheetTypeSchema,
 	instructions: z.string().nullable(),
@@ -1060,11 +1080,7 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	template: z.object({ template_content: z.string() }).nullable().optional(),
 	/** Cartouche du gabarit (lot 4b) : sans ces clés, le schéma les retire */
 	total_points: z.number().nullable().optional(),
-	estimated_duration_minutes: z.number().int().nullable().optional(),
-	show_title: z.boolean().optional(),
-	show_date: z.boolean().optional(),
-	show_class: z.boolean().optional(),
-	show_student_name: z.boolean().optional()
+	estimated_duration_minutes: z.number().int().nullable().optional()
 });
 
 // ============================================================================

@@ -53,6 +53,7 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 
 | Fichier                                         | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/lib/worksheets/worksheet-header.ts`        | **Le type décide de l'en-tête** ([ADR 0030](../adr/0030-type-de-fiche-decide-la-forme.md)) : `worksheetHeader(type, options)` dit ce que l'en-tête imprime (nom, classe, date à remplir, date de rendu, points, calculatrice, durée, cadres) ; `TYPE_OPTION_KEYS` (options proposées par type), `configForType`. Lue par le PDF du prof et celui de l'élève.                                                                         |
 | `src/lib/worksheets/exercise-numbering.ts`      | **La** règle du numéro affiché : `groupExercisesForDisplay`, `orderExercisesForDisplay`, `displayNumberOf`, `exerciseAtDisplayNumber`. Utilisée par la page élève, le générateur PDF et le serveur.                                                                                                                                                                                                                                  |
 | `src/lib/worksheets/student-worksheet-typst.ts` | `generateStudentWorksheetTypst` : le PDF **élève** (et l'aperçu « vue élève » du prof), par `WorksheetGenerator` et le gabarit du style de la fiche (lot 4b).                                                                                                                                                                                                                                                                        |
 | `src/lib/worksheets/document/`                  | Le **document d'une fiche** ([ADR 0028](../adr/0028-pdf-de-fiche-un-generateur-des-styles-et-des-formes.md), lot 1) : `WorksheetDocument` (`types.ts`), rempli par `documentFromTeacherCopy` (copie du prof) ou `documentFromStudentView` (vue élève, correction non visible → `correction: null`) ; ordre et numéros (`numbering.ts`) ; **rendu d'exercice unique** `renderExercises` (`render-exercise.ts`) ; `MATH_LIMITS_SETUP`. |
@@ -119,6 +120,7 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 `src/lib/components/worksheets/` : `PdfPreview.svelte` (aperçu, téléchargement, lot ZIP),
 `CorrectionManager.svelte` (libération par affectation), `SectionManager.svelte`,
 `ExerciseList.svelte`, `MetadataCards.svelte` (config, dont la langue),
+`WorksheetTypeOptions.svelte` (options du type choisi, à la création et sur la fiche, ADR 0030),
 `WorksheetAssignmentForm.svelte`, `UntranslatedExercisesNotice.svelte`, `StyleSelector.svelte` (style à la création),
 `TypstEditor.svelte` ; côté élève `src/lib/components/student/worksheets/WorksheetHeader.svelte`
 (bouton PDF ; en tête, « Quitter » vers la liste des fiches, ou « Retour aux fiches » quand la fiche
@@ -143,12 +145,21 @@ worksheets (type, status, config jsonb, translations, template_id, style_id, sch
  └── worksheet_error_reports (signalement d'un élève sur un exercice → gidouille si validé)
 ```
 
-- **Types** : `worksheet`, `assessment`, `exam`, `quiz`, `homework` (`WORKSHEET_TYPES`) ; statut
-  `draft` / `published` / `archived`. `assessment` s'affiche **« Contrôle »**, à l'écran comme sur le PDF
-  (garde : `src/lib/utils/__tests__/type-de-fiche-controle.test.ts`).
-- **Config** (`WorksheetConfig`, JSONB validé par `worksheetConfigSchema`) : `language`, options
-  d'affichage `show_*` (absentes = affichées), `numbering_style`, `shuffle_*`, `page_layout`,
-  `font_size`, `margins`.
+- **Types** ([ADR 0030](../adr/0030-type-de-fiche-decide-la-forme.md)) : `worksheet` « Fiche
+  d'exercices », `assessment` « Évaluation écrite », `homework` « Devoir maison », `exam` « Examen
+  blanc » (`WORKSHEET_TYPES` ; anglais : Worksheet, Written test, Homework, Mock exam). `quiz` est
+  retiré du code et refusé par Zod (la contrainte CHECK de la base l'accepte encore ; aucune
+  ligne). Statut `draft` / `published` / `archived` (garde des libellés :
+  `src/lib/utils/__tests__/type-de-fiche-controle.test.ts`).
+- **Config** (`WorksheetConfig`, JSONB validé par `worksheetConfigSchema`) : `language`,
+  `shuffle_exercises` et les **options du type** (`TYPE_OPTION_KEYS`) : fiche d'exercices →
+  `show_student_name` ; évaluation écrite → `show_points`, `calculator` (`allowed` | `forbidden`),
+  `answers_on_sheet` ; devoir maison → `due_date` (`AAAA-MM-JJ`, `isIsoDate`) ; examen blanc →
+  `calculator`, `answers_on_sheet`. Absente = non (calculatrice absente : rien d'imprimé). Les
+  anciennes clés d'affichage (`show_title`, `show_date`, `show_class`, `numbering_style`,
+  `page_layout`, `font_size`, `margins`, `correction_detail`) restent acceptées par Zod pour ne pas
+  être effacées au prochain envoi, mais **plus aucun code ne les lit** ; les retirer des données
+  est une étape à part, avec l'accord de David.
 - **Numéro affiché** ≠ `worksheet_exercises.position` : `position` redémarre à 1 dans chaque
   section ; le numéro est un ordinal continu calculé par `exercise-numbering.ts`.
 - **Exercice ↔ variation** : le contenu vient de `exercises.variations` (énoncé, solution, indices),
@@ -294,9 +305,9 @@ gabarit. Chaque gabarit intégré est un **style** (`BUILT_IN_STYLES`) ; le styl
 **« Fiche élève »** (`DEFAULT_STYLE_ID`, D7), a ses quatre formes (`STUDENT_STYLE_FORMS` : fiche,
 réponses, corrigé, fiche + corrections) et un code commun (`STUDENT_STYLE_COMMON`, inséré à la
 place de `{{style_common}}`) ; les onze autres n'ont que leur fiche et prennent les autres formes
-du style par défaut. Le style décide aussi des **points** (`showsPoints`) : « Fiche élève » n'en
-imprime aucun, ni sur la fiche ni sur ses corrigés, quelle que soit la case « afficher les
-points » (D8) ; les autres styles et les gabarits du prof suivent la case. `resolveTemplate(style, forme, gabarit lu en base)` : le style
+du style par défaut. Le style ne décide plus des **points** : le type de la fiche s'en charge,
+quel que soit le style (ADR 0030, qui remplace D8 : « Fiche élève » imprime les points d'une
+évaluation écrite qui les demande). `resolveTemplate(style, forme, gabarit lu en base)` : le style
 retenu est `styleIdOf(fiche)` = `style_id`, sinon `template_id` (fiches d'avant le lot 3), inconnu
 ou vide → « Fiche élève » ; le gabarit lu en base ne sert qu'à la forme « fiche » d'un style du
 prof (ignoré pour un style de Chiphre : son Typst vient du code). **Plus de mise en page écrite dans le code** : une fiche sans
@@ -308,7 +319,21 @@ d'en-tête pleine largeur, plus injectés. Fiche + corrections (`withCorrections
 (`{{correction_fonts}}`) sur cette partie seulement. Les opérateurs à limites
 (`MATH_LIMITS_SETUP`) sont posés en tête de tout document produit par un gabarit. Un gabarit qui
 contient `{{exercises_badge}}` reçoit la numérotation en carré ambre (charte élève) ; sinon
-`{{exercises}}` en titres gras. L'option `page_layout` (A4 / Letter) n'est lue par aucun gabarit.
+`{{exercises}}` en titres gras. Format : A4 partout, même en anglais (ADR 0030).
+
+**L'en-tête selon le type** (ADR 0030, lot 1) : le générateur appelle `worksheetHeader` et pose les
+conditions des gabarits : `show_title` (toujours), `show_identity` (bloc nom / classe / date),
+`show_student_name`, `show_class`, `show_date` (ligne **à remplir**, plus la date du jour),
+`show_due_date` (`{{due_date}}` dans la langue du document, ligne si absente), `show_points` (points
+par exercice), `show_total` (total : `total_points` de la fiche, sinon somme des points des
+exercices), `show_calculator` (`{{calculator}}` : « La calculatrice est autorisée / interdite. »),
+`show_duration` (examen blanc avec durée), `show_header_notes` (ligne durée / calculatrice / total,
+`HEADER_NOTES`). Nom, classe et date inconnus deviennent des lignes à remplir (`fillLine`). Les
+douze styles de Chiphre lisent ces conditions ; un gabarit du prof qui ne connaît que les anciennes
+(`show_date`, `show_points`…) reste juste. Les formes Réponses et Corrigé n'impriment que le titre (`TITLE_ONLY_HEADER`, décision de David
+du 2026-10-15) ; la fiche + corrections garde l'en-tête du sujet.
+Tests : `typst/generators/__tests__/en-tete-par-type.test.ts` (chaque type, FR et EN, « Fiche
+élève » et « Standard », prof et élève), `worksheets/__tests__/worksheet-header.test.ts`.
 
 **Styles en base** (lot 3a, migration `20261016103200_worksheet_styles`) : table
 `worksheet_styles`, une ligne par style de Chiphre (mêmes identifiants que leur gabarit, propriétaire
@@ -324,10 +349,11 @@ dans l'ordre du code, puis ceux du prof (`listWorksheetStyles`, client du prof).
 → « Fiche élève (par défaut) » ; style illisible → idem. Choisir écrit `style_id` (Zod uuid) ;
 pour un style de Chiphre, `template_id` prend le même identifiant (repli si le code revenait en
 arrière) ; un style d'un autre auteur est refusé par le trigger (`42501` → 403). Dupliquer recopie
-le style (sauf l'admin qui duplique la fiche du prof avec un style du prof : vide). La case
-« Points » n'apparaît que si le style en imprime. `GET /api/worksheets/[id]` rend dans `template`
+le style (sauf l'admin qui duplique la fiche du prof avec un style du prof : vide). `GET /api/worksheets/[id]` rend dans `template`
 la fiche d'un style du prof (`loadStyleTemplate`, avec son Typst) pour le PDF ; changer de style
-recharge la page. **Gabarit et style liés** (D10) : la page « Gabarits » ne change pas à l'écran,
+recharge la page. Le panneau « Options d'affichage » n'existe plus (ADR 0030) : la carte
+« Options » (`WorksheetTypeOptions`) ne montre que les options du type choisi, plus « Mélanger
+les exercices » ; à la création, seules les options du type choisi partent (`configForType`). **Gabarit et style liés** (D10) : la page « Gabarits » ne change pas à l'écran,
 mais créer un gabarit (nouveau, depuis un gabarit de Chiphre, duplication, API) crée son style au
 même identifiant et au même nom ; le renommer le renomme ; le supprimer supprime le style (cascade
 vers le gabarit), refusé tant qu'une fiche désigne le gabarit ou le style
@@ -344,15 +370,16 @@ document de la vue (`documentFromStudentView`) et le donne à `WorksheetGenerato
 `document`), avec le gabarit du style retenu (`styleIdOf`). L'API élève et l'aperçu « vue élève »
 renvoient `style_id`, `template_id`, `template` (le Typst seul de la fiche d'un style de
 l'**auteur** de la fiche, lu en service-role après le contrôle d'accès,
-`loadAuthorStyleTemplate`), `total_points`, `estimated_duration_minutes` et les cases du cartouche
-(`headerFlags`). Partie de fin (réponses ou corrigé) : forme « fiche + corrections » ; un style qui
+`loadAuthorStyleTemplate`), `total_points`, `estimated_duration_minutes` et les options du type
+(`viewTypeOptions` : `show_student_name`, `show_points`, `calculator`, `answers_on_sheet`,
+`due_date`), que `worksheetHeader` lit comme pour le prof. Partie de fin (réponses ou corrigé) : forme « fiche + corrections » ; un style qui
 n'a que sa fiche garde sa fiche et reçoit après elle `CORRECTIONS_PART` (nouvelle page, bandeau
 vert, polices du corrigé ; décision de David). Seules les corrections visibles sont imprimées
 (`renderExercises` écarte `correction === null` hors fiche). Ce que seul l'élève reçoit
 (`renderDocumentPreamble`) : avertissement de la copie individuelle, consignes de l'affectation
 (dans la case `{{instructions}}` d'un gabarit qui en a une), légende ★ ; ★ et filet orange des
 exercices indispensables dans les habillages `heading` et `badge`. Points : comme le prof, selon
-le style (« Fiche élève » n'en imprime pas, D8). La description de la fiche n'est plus imprimée
+le type (ADR 0030). La description de la fiche n'est plus imprimée
 (décision de David). Tests : `worksheets/__tests__/pdf-eleve-style.test.ts`,
 `tests/integration/pdf-eleve-style.test.ts`.
 
@@ -371,23 +398,27 @@ général. Aperçu markdown : `renderMarkdownPreview(doc, 'worksheet', { inlineC
 même document (`renderMarkdownPreview`) : mêmes ordre, numéros, sections et « correction non
 écrite » que le PDF. Communs aux deux
 PDF : titre d'exercice avec ses formules (`processTableCellContent`), ordre et numérotation
-(`numbering_style`, `exercise_order` côté prof), points en « pt » / « pts » de `documentLabels` (aussi en anglais) masqués si `show_points` n'est pas coché, exercice hors section après des sections sous
+(chiffres arabes, ADR 0030 ; `exercise_order` côté prof), points en « pt » / « pts » de
+`documentLabels` (aussi en anglais) quand le type les imprime (`display.showPoints`), cadre de
+réponse unique sous l'énoncé seulement avec « réponses sur le sujet » (`display.answersOnSheet`,
+en attendant les cadres par question du lot 3), exercice hors section après des sections sous
 « Autres exercices », correction non écrite → « Correction non écrite. » sous le numéro (Corrigé,
 et Réponses quand il n'y a ni réponses ni corrigé), opérateurs à limites (`MATH_LIMITS_SETUP`). L'API élève (et celle d'aperçu de
-l'affectation) transmet `numbering_style` et `show_points` (résolus comme pour le prof : absents,
-chiffres et points masqués) ; l'ordre de la copie de l'élève est celui des positions, sauf fiche
+l'affectation) transmet les options du type ; l'ordre de la copie de l'élève est celui des positions, sauf fiche
 qui mélange ses exercices (voir « La copie d'un élève » : `shuffled`, suivi par
 `documentFromStudentView`).
 
 **Trois PDF du prof** (`WorksheetPdfMode`, choix « Fiche · Réponses · Corrigé » de `PdfPreview` ;
 la lecture publique `variant="reader"` reste sur la fiche) :
 
-- `worksheet` : les énoncés, consignes du prof et cadres de réponse des évaluations ;
+- `worksheet` : les énoncés, consignes du prof et, avec « réponses sur le sujet », les cadres de
+  réponse ;
 - `answers` : pour chaque exercice, numéro et titre puis `answers` (champ `answers_md` de la
   variation, `{{var}}` résolues comme dans la correction, traduction `translations.en.answers_md`
   avec repli français) ; vide : « Réponses non rédigées : voir le corrigé. » en italique. Police
   standard ;
-- `correction` : numéro et titre puis la correction (`correctionForPrint`, ADR 0017), en
+- `correction` : numéro et titre puis la correction, toujours détaillée (`correctionForPrint`,
+  ADR 0017 et 0030), en
   **Shantell Sans** (Light, Bold pour le gras) et **Chiphre Math** pour les formules.
 
 Réponses et Corrigé ne répètent **jamais l'énoncé** (ni consigne d'exercice, ni consigne de
@@ -481,20 +512,20 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
 8. **Une série figée ne suit plus son modèle** : corriger le modèle ne corrige pas la fiche ; la
    régénérer par le script.
 
-9. **Le corrigé imprimé est concis ou détaillé selon la fiche** (`config.correction_detail`,
-   détaillé par défaut ; [ADR 0017](../adr/0017-correction-concise-et-detaillee.md), D11, lot 3 du
-   2026-10-11). Le choix se fait **à l'impression**, juste avant Typst, par `correctionForPrint`
+9. **Le corrigé imprimé est toujours détaillé** ([ADR 0030](../adr/0030-type-de-fiche-decide-la-forme.md),
+   qui retire le choix de la fiche de l'[ADR 0017](../adr/0017-correction-concise-et-detaillee.md),
+   D11 ; `config.correction_detail` n'est plus lue). Les marqueurs de détail sont résolus **à
+   l'impression**, juste avant Typst, par `correctionForPrint(…, 'detailed')`
    (`questions/correction-detail.ts`) : PDF du prof (`worksheet-generator.ts`, et l'aperçu
-   markdown de `PdfPreview.svelte`) et PDF de l'élève (`student-worksheet-typst.ts`, réglage
-   transmis par l'API élève, et par l'API d'aperçu de l'affectation pour le PDF du prof). Le PDF d'un
+   markdown de `PdfPreview.svelte`) et PDF de l'élève (`student-worksheet-typst.ts`). Le PDF d'un
    exercice seul (`exercise-typst-generator.ts`, sans fiche) imprime la version détaillée. Une série d'automatismes **garde** ses marqueurs de détail ; les
    écrans qui affichent un corrigé d'exercice montrent la version détaillée (`detailedCorrection`).
    Aucun marqueur brut n'atteint Typst. Encadrés et détails en ligne mis en forme au PDF : voir
    [ubumark.md](ubumark.md) (« Détails d'une correction au PDF »). Tests : `src/lib/worksheets/__tests__/correction-imprimee.test.ts`.
 
 10. **Un type de fiche a un seul libellé**, en langage courant (« Fiche d'exercices »,
-    « Contrôle », « Examen », « Quiz », « Devoirs » ; décision de David du 2026-10-12, pas de lore
-    dans les étiquettes de type) : la table `WORKSHEET_TYPE_LABELS` de
+    « Évaluation écrite », « Devoir maison », « Examen blanc » ; décision de David du 2026-10-12,
+    libellés de l'ADR 0030, pas de lore dans les étiquettes de type) : la table `WORKSHEET_TYPE_LABELS` de
     `src/lib/utils/worksheet-type-labels.ts`, lue par l'écran (prof et élève) et par le PDF
     français. Garde : `src/lib/utils/__tests__/type-de-fiche-controle.test.ts`, qui refuse aussi
     toute table recopiée.
@@ -563,6 +594,8 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
   élément, accès hérité de la classe (fiches dans un chapitre).
 - [ADR 0002](../adr/0002-mono-professeur-ecole-frontiere-sociale.md) — mono-professeur.
 - [ADR 0017](../adr/0017-correction-concise-et-detaillee.md) — correction concise / détaillée.
+- [ADR 0030](../adr/0030-type-de-fiche-decide-la-forme.md) — le type de fiche décide de l'en-tête ;
+  options d'affichage retirées, corrigé PDF toujours détaillé.
 
 ## Écarts connus
 
@@ -594,4 +627,4 @@ Aucun test ne compile un vrai PDF dans la CI : la compilation se vérifie par `p
    corrigé de classe et aperçu « vue prof » d'une affectation individualisée d'après la copie d'un
    élève choisi, signalements de l'élève sur le numéro de sa copie.
 
-Vérifié contre le code le 2026-10-14 (lot 1 de l'ADR 0028, option « mélanger les exercices » et ses suites D6).
+Vérifié contre le code le 2026-10-15 (lot 1 de l'ADR 0030 : le type décide de l'en-tête).

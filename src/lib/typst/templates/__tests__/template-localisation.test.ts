@@ -58,6 +58,8 @@ function renderEnglish(templateContent: string): string {
 		exercises_badge: 'CONTENT',
 		instructions: 'CONTENT',
 		title: 'CONTENT',
+		// La phrase de calculatrice vient des libellés, posée par le générateur
+		calculator: 'CONTENT',
 		...labelPlaceholders('en'),
 		lang: TYPST_LANGS.en
 	};

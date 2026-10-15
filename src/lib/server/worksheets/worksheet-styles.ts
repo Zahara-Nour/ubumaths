@@ -51,9 +51,7 @@ export async function listWorksheetStyles(
 		return [...BUILT_IN_STYLE_OPTIONS];
 	}
 
-	const own = (data ?? [])
-		.filter((row) => !isBuiltInStyle(row.id))
-		.map((row) => ({ ...row, showsPoints: true }));
+	const own = (data ?? []).filter((row) => !isBuiltInStyle(row.id));
 	return [...BUILT_IN_STYLE_OPTIONS, ...own];
 }
 

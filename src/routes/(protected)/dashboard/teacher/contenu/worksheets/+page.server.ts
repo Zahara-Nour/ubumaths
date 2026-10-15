@@ -1,6 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { redirect, fail } from '@sveltejs/kit';
 import { z } from 'zod';
+import { WORKSHEET_TYPES } from '$lib/types/worksheets';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -11,7 +12,7 @@ const querySchema = z.object({
 	page: z.coerce.number().int().min(1).default(1),
 	limit: z.coerce.number().int().min(1).max(100).default(20),
 	status: z.enum(['draft', 'published', 'archived']).optional(),
-	type: z.enum(['worksheet', 'assessment', 'exam', 'quiz', 'homework']).optional(),
+	type: z.enum(WORKSHEET_TYPES).optional(),
 	search: z.string().max(200).optional()
 });
 

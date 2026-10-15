@@ -24,17 +24,7 @@ const createMockWorksheet = (overrides?: Partial<WorksheetRow>): WorksheetRow =>
 	title: 'Test Worksheet',
 	description: 'A test worksheet',
 	type: 'worksheet',
-	config: {
-		show_title: true,
-		show_date: true,
-		show_student_name: true,
-		show_class: true,
-		show_points: true,
-		numbering_style: 'numeric',
-		page_layout: 'A4',
-		font_size: 12,
-		margins: { top: 20, bottom: 20, left: 15, right: 15 }
-	},
+	config: { show_points: true },
 	status: 'published',
 	version: 1,
 	published_at: '2024-01-01',
@@ -73,16 +63,9 @@ const createMockInstance = (overrides?: Partial<InstanceData>): InstanceData => 
 	...overrides
 });
 
+// Le type décide de l'en-tête (ADR 0030) : seule l'option des points reste
 const createMockConfig = (overrides?: Partial<WorksheetConfig>): WorksheetConfig => ({
-	show_title: true,
-	show_date: true,
-	show_student_name: true,
-	show_class: true,
 	show_points: true,
-	numbering_style: 'numeric',
-	page_layout: 'A4',
-	font_size: 12,
-	margins: { top: 20, bottom: 20, left: 15, right: 15 },
 	...overrides
 });
 
@@ -269,7 +252,7 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).toContain('Classe 3B');
 		});
 
-		it('honours display options in template mode', () => {
+		it("fiche d'exercices : le gabarit ne reçoit que le titre (ADR 0030)", () => {
 			const conditionalTemplate: WorksheetTemplateRow = {
 				...mockTemplate,
 				template_content: `#set page(paper: "a4")
@@ -280,16 +263,10 @@ describe('WorksheetGenerator', () => {
 [{{#if show_points}}*Bareme :* {{total_points}}{{/if}}]
 {{exercises}}`
 			};
-			const generator = new WorksheetGenerator(
-				createMockConfig({
-					show_date: false,
-					show_class: false,
-					show_student_name: false,
-					show_points: false
-				}),
-				undefined,
-				{ studentName: 'Jean Dupont', className: 'Classe 3B' }
-			);
+			const generator = new WorksheetGenerator(createMockConfig(), undefined, {
+				studentName: 'Jean Dupont',
+				className: 'Classe 3B'
+			});
 
 			const result = generator.generate({
 				worksheet: createMockWorksheet({ title: 'My Title' }),
@@ -304,22 +281,21 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).not.toContain('Nom :');
 			expect(result.typstContent).not.toContain('Jean Dupont');
 			expect(result.typstContent).not.toContain('Bareme :');
-			// The option left on still renders.
+			// Le titre s'imprime toujours.
 			expect(result.typstContent).toContain('*Titre :* My Title');
 		});
 
-		it('shows every field in template mode when no display option is set', () => {
+		it('évaluation écrite : date à remplir et classe dans le gabarit', () => {
 			const conditionalTemplate: WorksheetTemplateRow = {
 				...mockTemplate,
 				template_content: `[{{#if show_date}}*Date :* {{date}}{{/if}}]
 [{{#if show_class}}*Classe :* {{class}}{{/if}}]
 {{exercises}}`
 			};
-			// An empty config: flags are opt-out, an absent one means "show".
 			const generator = new WorksheetGenerator({}, undefined, { className: 'Classe 3B' });
 
 			const result = generator.generate({
-				worksheet: createMockWorksheet(),
+				worksheet: createMockWorksheet({ type: 'assessment' }),
 				instance: createMockInstance(),
 				template: conditionalTemplate
 			});
@@ -361,7 +337,10 @@ describe('WorksheetGenerator', () => {
 			});
 
 			const result = generator.generate({
-				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
+				worksheet: createMockWorksheet({
+					type: 'assessment',
+					template_id: DEFAULT_TEMPLATE_IDS.standard
+				}),
 				instance: createMockInstance()
 			});
 
@@ -546,7 +525,7 @@ describe('WorksheetGenerator', () => {
 
 	describe('numbering styles', () => {
 		it('uses numeric numbering by default', () => {
-			const generator = new WorksheetGenerator(createMockConfig({ numbering_style: 'numeric' }));
+			const generator = new WorksheetGenerator(createMockConfig());
 			const result = generator.generate({
 				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
@@ -556,26 +535,17 @@ describe('WorksheetGenerator', () => {
 			expect(result.typstContent).toContain('Exercice 2');
 		});
 
-		it('uses alphabetic numbering when configured', () => {
-			const generator = new WorksheetGenerator(createMockConfig({ numbering_style: 'alphabetic' }));
+		it('numérotation toujours en chiffres arabes, même avec l’ancienne clé (ADR 0030)', () => {
+			const generator = new WorksheetGenerator({
+				numbering_style: 'roman'
+			} as WorksheetConfig);
 			const result = generator.generate({
 				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
-			expect(result.typstContent).toContain('Exercice A');
-			expect(result.typstContent).toContain('Exercice B');
-		});
-
-		it('uses roman numbering when configured', () => {
-			const generator = new WorksheetGenerator(createMockConfig({ numbering_style: 'roman' }));
-			const result = generator.generate({
-				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
-				instance: createMockInstance()
-			});
-
-			expect(result.typstContent).toContain('Exercice I');
-			expect(result.typstContent).toContain('Exercice II');
+			expect(result.typstContent).toContain('Exercice 1');
+			expect(result.typstContent).not.toContain('Exercice I');
 		});
 	});
 
@@ -587,9 +557,12 @@ describe('WorksheetGenerator', () => {
 			instance.exercises[0].points = 5;
 			instance.exercises[1].points = 1;
 
-			// Style « Standard » : la case de la fiche décide (« Fiche élève » n'imprime aucun point)
+			// Évaluation écrite, points cochés (ADR 0030 : le type décide, pas le style)
 			const result = generator.generate({
-				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
+				worksheet: createMockWorksheet({
+					type: 'assessment',
+					template_id: DEFAULT_TEMPLATE_IDS.standard
+				}),
 				instance
 			});
 
@@ -737,28 +710,19 @@ describe('WorksheetGenerator', () => {
 	});
 
 	describe('worksheet types', () => {
-		it('generates exam with answer spaces', () => {
-			const generator = new WorksheetGenerator(createMockConfig());
-			const result = generator.generate({
-				worksheet: createMockWorksheet({ type: 'exam' }),
-				instance: createMockInstance()
-			});
+		it.each(['exam', 'assessment'] as const)(
+			'%s : cadre de réponse seulement avec « réponses sur le sujet »',
+			(type) => {
+				const generate = (config: WorksheetConfig) =>
+					new WorksheetGenerator(config).generate({
+						worksheet: createMockWorksheet({ type }),
+						instance: createMockInstance()
+					}).typstContent;
 
-			// Exams should have answer spaces
-			expect(result.typstContent).toContain('rect');
-			expect(result.typstContent).toContain('dashed');
-		});
-
-		it('generates assessment with answer spaces', () => {
-			const generator = new WorksheetGenerator(createMockConfig());
-			const result = generator.generate({
-				worksheet: createMockWorksheet({ type: 'assessment' }),
-				instance: createMockInstance()
-			});
-
-			// Assessments should have answer spaces like exams
-			expect(result.typstContent).toContain('rect');
-		});
+				expect(generate(createMockConfig({ answers_on_sheet: true }))).toContain('dashed');
+				expect(generate(createMockConfig())).not.toContain('dashed');
+			}
+		);
 	});
 });
 
@@ -786,7 +750,7 @@ describe('generateWorksheetTypst (legacy function)', () => {
 
 	it('supports studentName and className parameters', () => {
 		const result = generateWorksheetTypst({
-			worksheet: createMockWorksheet(),
+			worksheet: createMockWorksheet({ type: 'assessment' }),
 			instance: createMockInstance(),
 			config: createMockConfig(),
 			mode: 'worksheet',

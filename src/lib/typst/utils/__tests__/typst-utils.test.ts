@@ -117,10 +117,11 @@ describe('formatDateFR', () => {
 describe('getTypeLabel', () => {
 	it('returns correct French labels for worksheet types', () => {
 		expect(getTypeLabel('worksheet')).toBe("Fiche d'exercices");
-		expect(getTypeLabel('assessment')).toBe('Contrôle');
-		expect(getTypeLabel('exam')).toBe('Examen');
-		expect(getTypeLabel('quiz')).toBe('Quiz');
-		expect(getTypeLabel('homework')).toBe('Devoirs');
+		expect(getTypeLabel('assessment')).toBe('Évaluation écrite');
+		expect(getTypeLabel('exam')).toBe('Examen blanc');
+		expect(getTypeLabel('homework')).toBe('Devoir maison');
+		// Quiz retiré (ADR 0030) : libellé par défaut
+		expect(getTypeLabel('quiz')).toBe("Fiche d'exercices");
 	});
 
 	it('returns default label for unknown types', () => {

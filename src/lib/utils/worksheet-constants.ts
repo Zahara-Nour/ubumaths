@@ -4,7 +4,7 @@
 
 import type { WorksheetType, WorksheetStatus } from '$lib/types/worksheets';
 import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_ORDER } from '$lib/utils/worksheet-type-labels';
-import { FileText, ClipboardCheck, BookOpen, HelpCircle, Home } from '@lucide/svelte';
+import { FileText, ClipboardCheck, BookOpen, Home } from '@lucide/svelte';
 
 // =============================================================================
 // TYPE AND STATUS OPTIONS (for form selects)
@@ -20,27 +20,6 @@ export const WORKSHEET_TYPE_OPTIONS = WORKSHEET_TYPE_ORDER.map((value) => ({
 
 export type WorksheetTypeOption = (typeof WORKSHEET_TYPE_OPTIONS)[number];
 
-/**
- * Numbering style options for select dropdowns
- */
-export const NUMBERING_STYLE_OPTIONS = [
-	{ value: 'numeric', label: '1, 2, 3...' },
-	{ value: 'alphabetic', label: 'A, B, C...' },
-	{ value: 'roman', label: 'I, II, III...' }
-] as const;
-
-export type NumberingStyleOption = (typeof NUMBERING_STYLE_OPTIONS)[number];
-
-/**
- * Page layout options for select dropdowns
- */
-export const PAGE_LAYOUT_OPTIONS = [
-	{ value: 'A4', label: 'A4' },
-	{ value: 'Letter', label: 'Letter' }
-] as const;
-
-export type PageLayoutOption = (typeof PAGE_LAYOUT_OPTIONS)[number];
-
 // =============================================================================
 // DISPLAY MAPPINGS (icons, labels, variants)
 // =============================================================================
@@ -52,7 +31,6 @@ export const WORKSHEET_TYPE_ICONS: Record<WorksheetType, typeof FileText> = {
 	worksheet: FileText,
 	assessment: ClipboardCheck,
 	exam: BookOpen,
-	quiz: HelpCircle,
 	homework: Home
 };
 

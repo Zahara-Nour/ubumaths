@@ -16,13 +16,13 @@
 
 import type { ContentLocale } from '$lib/types/locale';
 import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import type { CorrectionDetail, NumberingStyle, WorksheetType } from '$lib/types/worksheets';
+import type { WorksheetType } from '$lib/types/worksheets';
 
 /**
  * Ce que contient le PDF (vocabulaire de l'ADR 0028) :
  * - `worksheet` : la fiche, énoncés seuls ;
  * - `answers` : les résultats seuls ;
- * - `correction` : le corrigé, concis ou détaillé selon la fiche.
+ * - `correction` : le corrigé, toujours détaillé (ADR 0030).
  */
 export type DocumentForm = 'worksheet' | 'answers' | 'correction';
 
@@ -70,13 +70,15 @@ export interface DocumentExercise {
 	capitalPairs?: CapitalPairs;
 }
 
-/** Options d'affichage de la fiche qui changent le rendu d'un exercice */
+/**
+ * Ce que le type de la fiche (ADR 0030, `worksheetHeader`) change au rendu
+ * d'un exercice. Numérotation : toujours en chiffres arabes.
+ */
 export interface DocumentDisplay {
 	/** Points par exercice affichés */
 	showPoints: boolean;
-	numberingStyle: NumberingStyle;
-	/** Corrigé concis ou détaillé (D11) ; absent : détaillé */
-	correctionDetail?: CorrectionDetail;
+	/** L'élève répond sur le sujet : un cadre de réponse sous l'énoncé */
+	answersOnSheet: boolean;
 	/**
 	 * Copie d'un élève servant de document de classe (affectation dont chaque
 	 * élève a sa version, D6) : ni numéro ni carré, le titre seul — l'ordre et

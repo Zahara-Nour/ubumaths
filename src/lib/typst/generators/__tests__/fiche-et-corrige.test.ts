@@ -94,7 +94,7 @@ describe('chaque correction suit son énoncé', () => {
 		expect(between).toContain('Correction non écrite.');
 	});
 
-	it('corrigé concis ou détaillé selon la fiche, comme le Corrigé', () => {
+	it('corrigé toujours détaillé, comme le Corrigé (ADR 0030)', () => {
 		const typst = (detail: 'concise' | 'detailed') =>
 			generateWorksheetTypst({
 				worksheet: worksheet(null),
@@ -103,12 +103,12 @@ describe('chaque correction suit son énoncé', () => {
 						{ ...INSTANCE.exercises[0], solution: 'Résultat. \\detail{DETAILCORRECTION}' }
 					]
 				},
-				config: { correction_detail: detail },
+				config: { correction_detail: detail } as WorksheetConfig,
 				mode: 'worksheet',
 				inlineCorrections: true
 			});
 		expect(typst('concise')).toContain('Résultat.');
-		expect(typst('concise')).not.toContain('DETAILCORRECTION');
+		expect(typst('concise')).toContain('DETAILCORRECTION');
 		expect(typst('detailed')).toContain('DETAILCORRECTION');
 	});
 });
@@ -126,15 +126,17 @@ describe('la mise en page de la fiche', () => {
 		expect(ficheEtCorrige()).toContain('Fonctions — Correction');
 	});
 
-	it('pas de cadre de réponse vide, même pour un contrôle', () => {
+	it('pas de cadre de réponse vide, même pour une évaluation avec réponses sur le sujet', () => {
 		const sheet = generateWorksheetTypst({
 			worksheet: worksheet(ASSESSMENT, 'assessment'),
 			instance: INSTANCE,
-			config: {},
+			config: { answers_on_sheet: true },
 			mode: 'worksheet'
 		});
 		expect(sheet).toContain('height: 5cm');
-		expect(ficheEtCorrige(ASSESSMENT, { type: 'assessment' })).not.toContain('height: 5cm');
+		expect(
+			ficheEtCorrige(ASSESSMENT, { type: 'assessment', config: { answers_on_sheet: true } })
+		).not.toContain('height: 5cm');
 	});
 });
 

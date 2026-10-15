@@ -23,7 +23,6 @@
 		ClipboardList,
 		BookOpen,
 		PenLine,
-		FileQuestion,
 		ArrowRight
 	} from '@lucide/svelte';
 	import type { StudentWorksheetListItem, WorksheetType } from '$lib/types/worksheets';
@@ -43,8 +42,6 @@
 				return { icon: ClipboardList, label: WORKSHEET_TYPE_LABELS.assessment };
 			case 'exam':
 				return { icon: GraduationCap, label: WORKSHEET_TYPE_LABELS.exam };
-			case 'quiz':
-				return { icon: FileQuestion, label: WORKSHEET_TYPE_LABELS.quiz };
 			case 'homework':
 				return { icon: PenLine, label: WORKSHEET_TYPE_LABELS.homework };
 			default:
@@ -63,8 +60,6 @@
 				return 'warning';
 			case 'homework':
 				return 'default';
-			case 'quiz':
-				return 'secondary';
 			default:
 				return 'outline';
 		}

@@ -221,14 +221,14 @@ describe('les styles proposés au prof', () => {
 		expect(ids).not.toContain(adminStyleId);
 	});
 
-	it('« Fiche élève » n’imprime pas de points ; « Standard » et un style du prof, si', async () => {
+	it('un style ne dit plus rien des points : le type de la fiche décide (ADR 0030)', async () => {
 		const ownId = await seedStyle(teacherId, 'à points');
 		const styles = await listWorksheetStyles(teacherClient as never, teacherId);
-		const byId = new Map(styles.map((s) => [s.id, s]));
+		const own = styles.find((s) => s.id === ownId);
 
-		expect(byId.get(DEFAULT_STYLE_ID)?.showsPoints).toBe(false);
-		expect(byId.get(STANDARD)?.showsPoints).toBe(true);
-		expect(byId.get(ownId)?.showsPoints).toBe(true);
+		expect(own).toBeDefined();
+		expect(own).not.toHaveProperty('showsPoints');
+		expect(styles.find((s) => s.id === DEFAULT_STYLE_ID)).not.toHaveProperty('showsPoints');
 	});
 });
 

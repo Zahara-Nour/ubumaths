@@ -8,17 +8,17 @@
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Label } from '$lib/components/ui/label';
 	import * as Card from '$lib/components/ui/card';
-	import * as Collapsible from '$lib/components/ui/collapsible';
 	import MySelect from '$lib/components/MySelect.svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import WorksheetTypeOptions from '$lib/components/worksheets/WorksheetTypeOptions.svelte';
 	import GradeBadgeSelector from '$lib/components/GradeBadgeSelector.svelte';
 	import TagBadgeSelector from '$lib/components/TagBadgeSelector.svelte';
 	import StyleSelector from '$lib/components/worksheets/StyleSelector.svelte';
 	import { DEFAULT_STYLE_ID } from '$lib/typst/templates/styles';
+	import { configForType, type WorksheetOptionKey } from '$lib/worksheets/worksheet-header';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { ChevronDown, ChevronUp, Loader2, Save, FileText } from '@lucide/svelte';
+	import { Loader2, Save, FileText } from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import type { WorksheetType, WorksheetConfig, NumberingStyle } from '$lib/types/worksheets';
+	import type { WorksheetType, WorksheetConfig } from '$lib/types/worksheets';
 	import type { GradeCode } from '$lib/types/grades';
 
 	let { data }: { data: PageData } = $props();
@@ -32,52 +32,22 @@
 	let selectedTags = $state<string[]>([]);
 	let selectedStyleId = $state(DEFAULT_STYLE_ID);
 
-	// « Fiche élève » n'imprime pas de points : la case serait sans effet
-	let stylePrintsPoints = $derived(
-		data.styles.find((s) => s.id === selectedStyleId)?.showsPoints ?? false
-	);
-
-	// Config options state
-	let configOpen = $state(false);
-	let showTitle = $state(true);
-	let showDate = $state(true);
-	let showStudentName = $state(true);
-	let showClass = $state(true);
-	let showPoints = $state(true);
-	let numberingStyle = $state<NumberingStyle>('numeric');
-	let shuffleExercises = $state(false);
-	let pageLayout = $state<'A4' | 'Letter'>('A4');
+	// Options du type de la fiche (ADR 0030) : seules celles du type choisi
+	// partent (`TYPE_OPTION_KEYS`), plus « mélanger les exercices »
+	let typeOptions = $state<WorksheetConfig>({});
 
 	// Loading state
 	let submitting = $state(false);
 
 	// Type options
-	const typeOptions = WORKSHEET_TYPE_OPTIONS;
+	const typeItems = WORKSHEET_TYPE_OPTIONS;
 
-	// Numbering style options
-	const numberingOptions = [
-		{ value: 'numeric', label: '1, 2, 3...' },
-		{ value: 'alphabetic', label: 'A, B, C...' },
-		{ value: 'roman', label: 'I, II, III...' }
-	];
+	// La config envoyée : les options du type choisi seulement
+	let config = $derived(configForType(worksheetType, typeOptions));
 
-	// Page layout options
-	const layoutOptions = [
-		{ value: 'A4', label: 'A4' },
-		{ value: 'Letter', label: 'Letter' }
-	];
-
-	// Derived: build config object
-	let config = $derived<WorksheetConfig>({
-		show_title: showTitle,
-		show_date: showDate,
-		show_student_name: showStudentName,
-		show_class: showClass,
-		show_points: showPoints,
-		numbering_style: numberingStyle,
-		shuffle_exercises: shuffleExercises,
-		page_layout: pageLayout
-	});
+	function handleOptionChange(key: WorksheetOptionKey, value: boolean | string | undefined) {
+		typeOptions = { ...typeOptions, [key]: value } as WorksheetConfig;
+	}
 
 	// Derived: form is valid
 	let isValid = $derived(title.trim().length > 0);
@@ -183,7 +153,7 @@
 					<!-- Type -->
 					<div class="space-y-2">
 						<Label>Type</Label>
-						<MySelect type="single" items={typeOptions} bind:value={worksheetType} />
+						<MySelect type="single" items={typeItems} bind:value={worksheetType} />
 					</div>
 
 					<!-- Estimated duration -->
@@ -232,72 +202,17 @@
 			</Card.Content>
 		</Card.Root>
 
-		<!-- Config options (collapsible) -->
+		<!-- Options du type de la fiche (ADR 0030) -->
 		<Card.Root>
-			<Collapsible.Root bind:open={configOpen}>
-				<Card.Header class="cursor-pointer" onclick={() => (configOpen = !configOpen)}>
-					<div class="flex items-center justify-between">
-						<Card.Title>Options d'affichage</Card.Title>
-						<Collapsible.Trigger>
-							{#snippet child({ props })}
-								<Button {...props} variant="ghost" size="icon" class="h-8 w-8">
-									{#if configOpen}
-										<ChevronUp class="h-4 w-4" />
-									{:else}
-										<ChevronDown class="h-4 w-4" />
-									{/if}
-								</Button>
-							{/snippet}
-						</Collapsible.Trigger>
-					</div>
-					<Card.Description>
-						Configurez l'apparence et le comportement de la feuille
-					</Card.Description>
-				</Card.Header>
-				<Collapsible.Content>
-					<Card.Content class="space-y-6 border-t pt-6">
-						<!-- Display options -->
-						<div class="space-y-4">
-							<h4 class="text-sm font-medium">Elements affiches</h4>
-							<div class="grid gap-4 sm:grid-cols-2">
-								<MyCheckbox bind:checked={showTitle} label="Afficher le titre" />
-								<MyCheckbox bind:checked={showDate} label="Afficher la date" />
-								<MyCheckbox bind:checked={showStudentName} label="Nom de l'eleve" />
-								<MyCheckbox bind:checked={showClass} label={lore.entities.class} />
-								{#if stylePrintsPoints}
-									<MyCheckbox
-										bind:checked={showPoints}
-										label="Points par {lore.learning.exercise}"
-									/>
-								{/if}
-							</div>
-						</div>
-
-						<!-- Numbering and layout -->
-						<div class="grid gap-4 sm:grid-cols-2">
-							<div class="space-y-2">
-								<Label>Numerotation</Label>
-								<MySelect type="single" items={numberingOptions} bind:value={numberingStyle} />
-							</div>
-							<div class="space-y-2">
-								<Label>Format de page</Label>
-								<MySelect type="single" items={layoutOptions} bind:value={pageLayout} />
-							</div>
-						</div>
-
-						<!-- Shuffle options -->
-						<div class="space-y-4">
-							<h4 class="text-sm font-medium">Options de melange</h4>
-							<div class="grid gap-4 sm:grid-cols-2">
-								<MyCheckbox
-									bind:checked={shuffleExercises}
-									label="Melanger les {lore.learning.exercise}s"
-								/>
-							</div>
-						</div>
-					</Card.Content>
-				</Collapsible.Content>
-			</Collapsible.Root>
+			<Card.Header>
+				<Card.Title>Options</Card.Title>
+				<Card.Description>
+					Le type de la fiche décide de l'en-tête du PDF ; voici ses options
+				</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<WorksheetTypeOptions type={worksheetType} {config} onchange={handleOptionChange} />
+			</Card.Content>
 		</Card.Root>
 
 		<!-- Info about exercises -->

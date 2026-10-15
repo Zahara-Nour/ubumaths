@@ -6,7 +6,8 @@
  * existaient entre eux (titre en formule, langue, numérotation, « pt / pts »
  * de `documentLabels` pour toutes les mises en page,
  * opérateurs à limites, « Autres exercices », correction non écrite,
- * « afficher les points ») sont corrigés des deux côtés.
+ * « afficher les points ») sont corrigés des deux côtés. Depuis l'ADR 0030, le
+ * type de la fiche décide des points et la numérotation est en chiffres arabes.
  */
 import { describe, it, expect } from 'vitest';
 import { generateWorksheetTypst } from '$lib/typst/generators/worksheet-generator';
@@ -73,7 +74,8 @@ function teacherInput(config: WorksheetConfig, exercises = EXERCISES, sections =
 		id: 'w',
 		title: 'Fiche',
 		description: null,
-		type: 'worksheet',
+		// Évaluation écrite : le type qui laisse le choix des points (ADR 0030)
+		type: 'assessment',
 		config,
 		template_id: null,
 		estimated_duration_minutes: null,
@@ -108,11 +110,9 @@ function studentView(
 		worksheet_id: 'w',
 		title: 'Fiche',
 		language: config.language,
-		correction_detail: config.correction_detail,
-		numbering_style: config.numbering_style,
 		show_points: config.show_points === true,
 		description: null,
-		type: 'worksheet',
+		type: 'assessment',
 		instructions: null,
 		available_from: null,
 		closes_at: null,
@@ -164,7 +164,7 @@ const TEACHER_LAYOUTS: Array<[string, WorksheetTemplateRow | null]> = [
 	['gabarit à pastilles', template(BADGE_TEMPLATE!.template_content)]
 ];
 
-const BASE_CONFIG: WorksheetConfig = { show_points: true, numbering_style: 'numeric' };
+const BASE_CONFIG: WorksheetConfig = { show_points: true };
 
 function teacher(
 	mode: 'worksheet' | 'answers' | 'correction',
@@ -261,12 +261,13 @@ function statementOrder(typst: string): string[] {
 }
 
 describe('ordre et numérotation', () => {
-	const roman: WorksheetConfig = { ...BASE_CONFIG, numbering_style: 'roman' };
+	// Ancienne clé de numérotation : ignorée (ADR 0030, chiffres arabes)
+	const roman = { ...BASE_CONFIG, numbering_style: 'roman' } as WorksheetConfig;
 
-	it('élève : numérotation romaine, comme le prof', () => {
+	it('élève : chiffres arabes, comme le prof, même avec l’ancienne clé « roman »', () => {
 		const prof = teacher('worksheet', roman, template(BADGE_TEMPLATE!.template_content));
 		const eleve = student('none', roman);
-		expect(badgeNumbers(eleve)).toEqual(['I', 'II', 'III']);
+		expect(badgeNumbers(eleve)).toEqual(['1', '2', '3']);
 		expect(badgeNumbers(eleve)).toEqual(badgeNumbers(prof));
 	});
 
@@ -291,7 +292,7 @@ describe('ordre et numérotation', () => {
 
 describe('points', () => {
 	it('prof : « 1 pt », « 2 pts » (documentLabels, plus « pts » en dur)', () => {
-		// Gabarit « Exercice N » : la case de la fiche décide (« Fiche élève » n'imprime aucun point)
+		// Évaluation écrite, points cochés : le type décide (ADR 0030)
 		for (const language of ['fr', 'en'] as const) {
 			const typst = teacher(
 				'worksheet',
@@ -304,9 +305,8 @@ describe('points', () => {
 		}
 	});
 
-	// Lot 4b : le PDF de l'élève suit le style, comme celui du prof (D8) :
-	// « Fiche élève » n'imprime aucun point, un style à points suit la case
-	it('élève, style à points : « pt » / « pts », les mots du prof', () => {
+	// ADR 0030 : le type décide des points, quel que soit le style, des deux côtés
+	it('élève, style « Standard » : « pt » / « pts », les mots du prof', () => {
 		const typst = student('none', BASE_CONFIG, EXERCISES, SECTIONS, true, HEADING_TEMPLATE!.id);
 		expect(typst).toContain(')[2 pts]');
 		expect(typst).toContain(')[1 pt]');
@@ -325,8 +325,8 @@ describe('points', () => {
 		expect(typst).toContain(')[2 pts]');
 	});
 
-	it('élève, « Fiche élève » : aucun point (D8)', () => {
-		expect(student('none')).not.toMatch(/\[\d pts?\]/);
+	it('élève, « Fiche élève » : les points aussi (le type l’emporte sur le style, ADR 0030)', () => {
+		expect(student('none')).toMatch(/\[\d pts?\]/);
 	});
 
 	it('« afficher les points » décoché : masqués des deux côtés', () => {

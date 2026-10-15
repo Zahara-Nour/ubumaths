@@ -6,20 +6,21 @@ import { WORKSHEET_TYPES } from '$lib/types/worksheets';
 import { getTypeLabel } from '$lib/typst/utils';
 import { WORKSHEET_TYPE_LABELS, WORKSHEET_TYPE_OPTIONS } from '$lib/utils/worksheet-constants';
 
-// Une fiche de type `assessment` est un contrôle (CONTEXT.md) : l'écran et le PDF disent le même mot.
-describe('type de fiche « contrôle »', () => {
-	it('les tables de libellés partagées disent « Contrôle »', () => {
-		expect(WORKSHEET_TYPE_LABELS.assessment).toBe('Contrôle');
-		expect(WORKSHEET_TYPE_OPTIONS.find((o) => o.value === 'assessment')?.label).toBe('Contrôle');
-		expect(getTypeLabel('assessment')).toBe('Contrôle');
+// ADR 0030 : une fiche de type `assessment` est une « Évaluation écrite » (« contrôle »
+// nomme la série notée en ligne) ; l'écran et le PDF disent le même mot.
+describe('type de fiche « évaluation écrite »', () => {
+	it('les tables de libellés partagées disent « Évaluation écrite »', () => {
+		expect(WORKSHEET_TYPE_LABELS.assessment).toBe('Évaluation écrite');
+		expect(WORKSHEET_TYPE_OPTIONS.find((o) => o.value === 'assessment')?.label).toBe(
+			'Évaluation écrite'
+		);
+		expect(getTypeLabel('assessment')).toBe('Évaluation écrite');
 	});
 
-	it('aucun libellé recopié dans un composant ne dit encore « Evaluation »', () => {
+	it('aucun libellé recopié ne dit « Evaluation » seule (terme banni ; « écrite » permis)', () => {
 		const files = globSync('src/**/*.{ts,svelte}', { exclude: (f) => f.includes('__tests__') });
 		const fautifs = files.filter((f) =>
-			/(?:label: |assessment: )['"]Évaluation|(?:label: |assessment: )['"]Evaluation/.test(
-				readFileSync(f, 'utf8')
-			)
+			/(?:label: |assessment: )['"]É?[Ee]valuation(?! écrite)/.test(readFileSync(f, 'utf8'))
 		);
 		expect(fautifs).toEqual([]);
 	});
@@ -38,7 +39,6 @@ describe('libellés des types de fiche : une seule table', () => {
 		expect(fr.typeWorksheet).toBe(WORKSHEET_TYPE_LABELS.worksheet);
 		expect(fr.typeAssessment).toBe(WORKSHEET_TYPE_LABELS.assessment);
 		expect(fr.typeExam).toBe(WORKSHEET_TYPE_LABELS.exam);
-		expect(fr.typeQuiz).toBe(WORKSHEET_TYPE_LABELS.quiz);
 		expect(fr.typeHomework).toBe(WORKSHEET_TYPE_LABELS.homework);
 	});
 

@@ -24,7 +24,12 @@ import {
 // ENUMS AND CONSTANTS
 // =============================================================================
 
-export const WORKSHEET_TYPES = ['worksheet', 'assessment', 'exam', 'quiz', 'homework'] as const;
+/**
+ * Les quatre types de fiche (ADR 0030) : le type décide de l'en-tête du PDF
+ * (`worksheet-header.ts`). « quiz » est retiré du code ; la contrainte CHECK de
+ * la base l'accepte encore, mais aucune ligne ne le porte.
+ */
+export const WORKSHEET_TYPES = ['worksheet', 'assessment', 'homework', 'exam'] as const;
 export type WorksheetType = (typeof WORKSHEET_TYPES)[number];
 
 export const WORKSHEET_STATUSES = ['draft', 'published', 'archived'] as const;
@@ -155,23 +160,39 @@ export type NumberingStyle = (typeof NUMBERING_STYLES)[number];
 // CONFIG TYPES (JSONB structures)
 // =============================================================================
 
-/** Correction imprimée par une fiche (ADR 0017, D11) : sans ou avec ses détails */
+/** Corrigé concis ou détaillé : ancien réglage de la fiche, plus lu (ADR 0030 : toujours détaillé) */
 export type CorrectionDetail = 'concise' | 'detailed';
 
+/** Calculatrice autorisée ou interdite : option de l'évaluation écrite et de l'examen blanc */
+export const CALCULATOR_RULES = ['allowed', 'forbidden'] as const;
+export type CalculatorRule = (typeof CALCULATOR_RULES)[number];
+
+/**
+ * Réglages d'une fiche (colonne `config`, jsonb).
+ *
+ * ADR 0030 : le type décide de l'en-tête ; seules restent les options du type
+ * (`TYPE_OPTION_KEYS` dans `worksheet-header.ts`). Les anciennes clés
+ * d'affichage (`show_title`, `show_date`, `show_class`,
+ * `numbering_style`, `page_layout`, `font_size`, `margins`,
+ * `correction_detail`) peuvent rester en base : plus aucun code ne les lit,
+ * et les retirer des données est une étape à part, avec l'accord de David.
+ */
 export interface WorksheetConfig {
 	/**
 	 * Language the whole worksheet is rendered in: exercise content and PDF
 	 * chrome alike. Absent means French.
 	 */
 	language?: ContentLocale;
-	/** Corrigé imprimé concis ou détaillé ; absent : détaillé */
-	correction_detail?: CorrectionDetail;
-	show_title?: boolean;
-	show_date?: boolean;
+	/** Fiche d'exercices : ligne « Nom » (groupes de niveaux) ; absent : non */
 	show_student_name?: boolean;
-	show_class?: boolean;
+	/** Évaluation écrite : points par exercice et total imprimés ; absent : non */
 	show_points?: boolean;
-	numbering_style?: NumberingStyle;
+	/** Évaluation écrite, examen blanc : calculatrice ; absent : rien d'imprimé */
+	calculator?: CalculatorRule;
+	/** Évaluation écrite, examen blanc : l'élève répond sur le sujet (cadres) ; absent : non */
+	answers_on_sheet?: boolean;
+	/** Devoir maison : date de rendu, `AAAA-MM-JJ` ; absente : ligne à remplir */
+	due_date?: string;
 	shuffle_exercises?: boolean;
 	/**
 	 * @deprecated Case « Mélanger dans les sections » retirée (D6, 2026-10-13) :
@@ -179,14 +200,16 @@ export interface WorksheetConfig {
 	 * rester en base (anciennes fiches) ; plus aucun code ne la lit.
 	 */
 	shuffle_within_sections?: boolean;
-	page_layout?: 'A4' | 'Letter';
-	font_size?: number;
-	margins?: {
-		top: number;
-		bottom: number;
-		left: number;
-		right: number;
-	};
+}
+
+/**
+ * Date de calendrier `AAAA-MM-JJ` qui existe (`2026-02-30` refusée) : la date
+ * de rendu d'un devoir maison. Lue en UTC, pour ne pas glisser d'un jour.
+ */
+export function isIsoDate(value: unknown): value is string {
+	if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+	const date = new Date(`${value}T00:00:00Z`);
+	return !isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 export interface VariantConfig {
@@ -725,15 +748,16 @@ export interface StudentWorksheetView {
 	title: string;
 	/** Language of the worksheet, driving both content and PDF chrome. */
 	language?: ContentLocale;
-	/** Corrigé imprimé concis ou détaillé (réglage de la fiche) ; absent : détaillé */
-	correction_detail?: CorrectionDetail;
-	/** Style de numérotation de la fiche (PDF) ; absent : chiffres arabes */
-	numbering_style?: NumberingStyle;
 	/**
-	 * « Afficher les points » de la fiche, résolu par le serveur comme pour le PDF
-	 * du prof (absent dans la config : masqués). Absent de la vue : affichés.
+	 * Les options du type de la fiche (ADR 0030), telles que la config les porte :
+	 * l'en-tête du PDF de l'élève les lit par la même règle que celui du prof
+	 * (`worksheetHeader`). Absentes : comme absentes de la config.
 	 */
+	show_student_name?: boolean;
 	show_points?: boolean;
+	calculator?: CalculatorRule;
+	answers_on_sheet?: boolean;
+	due_date?: string;
 	description: string | null;
 	type: WorksheetType;
 	instructions: string | null;
@@ -773,16 +797,9 @@ export interface StudentWorksheetView {
 	 * dans le code) ou un style illisible. Son Typst seul, rien d'autre.
 	 */
 	template?: { template_content: string } | null;
-	/**
-	 * Cartouche du gabarit, comme le PDF du prof (lot 4b) : total, durée, et les
-	 * cases « afficher » de la fiche (absentes : affichées).
-	 */
+	/** Cartouche du gabarit, comme le PDF du prof (lot 4b) : total, durée */
 	total_points?: number | null;
 	estimated_duration_minutes?: number | null;
-	show_title?: boolean;
-	show_date?: boolean;
-	show_class?: boolean;
-	show_student_name?: boolean;
 }
 
 /**
@@ -871,16 +888,7 @@ export function hasValidAssignmentRecipients(
 // =============================================================================
 
 export const DEFAULT_WORKSHEET_CONFIG: WorksheetConfig = {
-	show_title: true,
-	show_date: true,
-	show_student_name: true,
-	show_class: true,
-	show_points: true,
-	numbering_style: 'numeric',
-	shuffle_exercises: false,
-	page_layout: 'A4',
-	font_size: 12,
-	margins: { top: 20, bottom: 20, left: 15, right: 15 }
+	shuffle_exercises: false
 };
 
 export const DEFAULT_VARIANT_CONFIG: VariantConfig = {
@@ -1035,43 +1043,17 @@ export function asWorksheetConfig(value: unknown): WorksheetConfig {
 	const config: WorksheetConfig = {};
 
 	if (isContentLocale(raw.language)) config.language = raw.language;
-	if (raw.correction_detail === 'concise' || raw.correction_detail === 'detailed')
-		config.correction_detail = raw.correction_detail;
-	const numbering = NUMBERING_STYLES.find((style) => style === raw.numbering_style);
-	if (numbering) config.numbering_style = numbering;
-
 	for (const flag of [
-		'show_title',
-		'show_date',
 		'show_student_name',
-		'show_class',
 		'show_points',
+		'answers_on_sheet',
 		'shuffle_exercises'
 	] as const) {
 		if (typeof raw[flag] === 'boolean') config[flag] = raw[flag];
 	}
-
-	if (typeof raw.font_size === 'number') config.font_size = raw.font_size;
-	if (raw.page_layout === 'A4' || raw.page_layout === 'Letter')
-		config.page_layout = raw.page_layout;
-
-	const m = raw.margins;
-	if (typeof m === 'object' && m !== null && !Array.isArray(m)) {
-		const side = m as Record<string, unknown>;
-		if (
-			typeof side.top === 'number' &&
-			typeof side.bottom === 'number' &&
-			typeof side.left === 'number' &&
-			typeof side.right === 'number'
-		) {
-			config.margins = {
-				top: side.top,
-				bottom: side.bottom,
-				left: side.left,
-				right: side.right
-			};
-		}
-	}
+	const calculator = CALCULATOR_RULES.find((rule) => rule === raw.calculator);
+	if (calculator) config.calculator = calculator;
+	if (isIsoDate(raw.due_date)) config.due_date = raw.due_date;
 
 	return config;
 }
@@ -1111,20 +1093,23 @@ export function asRowTranslations(value: unknown): RowTranslations | null {
  * a corrupted config must still generate.
  */
 /**
- * Les cases « afficher » du cartouche de la fiche, pour la vue de l'élève
- * (lot 4b) : absentes de la config, affichées, comme le PDF du prof.
+ * Les options du type de la fiche (ADR 0030), pour la vue de l'élève : le PDF
+ * de l'élève les interprète par la même règle que celui du prof
+ * (`worksheetHeader`). Lues depuis la colonne `config` brute.
  */
-export function headerFlags(config: WorksheetConfig): {
-	show_title: boolean;
-	show_date: boolean;
-	show_class: boolean;
-	show_student_name: boolean;
-} {
+export function viewTypeOptions(
+	value: unknown
+): Pick<
+	StudentWorksheetView,
+	'show_student_name' | 'show_points' | 'calculator' | 'answers_on_sheet' | 'due_date'
+> {
+	const config = asWorksheetConfig(value);
 	return {
-		show_title: config.show_title !== false,
-		show_date: config.show_date !== false,
-		show_class: config.show_class !== false,
-		show_student_name: config.show_student_name !== false
+		show_student_name: config.show_student_name,
+		show_points: config.show_points,
+		calculator: config.calculator,
+		answers_on_sheet: config.answers_on_sheet,
+		due_date: config.due_date
 	};
 }
 

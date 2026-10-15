@@ -13,6 +13,12 @@
  *   style). Use one or the other, not both.
  * - {{total_points}} - Total points for the worksheet
  * - {{duration}} - Estimated duration in minutes
+ * - {{due_date}} - Due date (homework)
+ * - {{calculator}} - « La calculatrice est autorisée / interdite. »
+ * Conditions set from the worksheet type (ADR 0030, `worksheetHeader`):
+ * show_title (always), show_identity, show_student_name, show_class, show_date
+ * (date line to fill), show_due_date, show_points, show_total, show_duration,
+ * show_calculator, show_header_notes.
  * - {{instructions}} - General instructions
  * - {{school_name}} - School name
  * - {{teacher_name}} - Teacher's name
@@ -31,6 +37,22 @@ export interface DefaultTemplate {
 	placeholders: TemplatePlaceholder[];
 	is_system: boolean; // System templates cannot be deleted
 }
+
+/**
+ * Ligne d'informations de l'en-tête, selon le type de la fiche (ADR 0030) :
+ * durée (examen blanc), calculatrice (évaluation écrite, examen blanc), total
+ * des points. Absente quand elle serait vide.
+ */
+const HEADER_NOTES = `{{#if show_header_notes}}#grid(
+  columns: (1fr, auto, 1fr),
+  align: (left, center, right),
+  [{{#if show_duration}}*{{label_duration}} :* {{duration}} {{label_minutes}}{{/if}}],
+  [{{#if show_calculator}}{{calculator}}{{/if}}],
+  [{{#if show_total}}*{{label_total}} :* {{total_points}} {{label_points}}{{/if}}]
+){{/if}}`;
+
+/** La date de rendu (devoir maison) à la place de la date à remplir */
+const DUE_DATE = '{{#if show_due_date}}*{{label_due_date}} :* {{due_date}}{{/if}}';
 
 /**
  * Common placeholders used across templates
@@ -95,12 +117,12 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
 
 #v(0.5cm)
 
-// Informations
-#grid(
+// Informations (selon le type de la fiche)
+{{#if show_identity}}#grid(
   columns: (1fr, 1fr),
   gutter: 1cm,
   [
-    {{#if show_student_name}}*{{label_name}} :* #underline[#h(3cm) {{student_name}} #h(3cm)]{{/if}}
+    {{#if show_student_name}}*{{label_name}} :* {{student_name}}{{/if}}
   ],
   [
     {{#if show_class}}*{{label_class}} :* {{class}}{{/if}}
@@ -111,10 +133,12 @@ export const STANDARD_TEMPLATE: DefaultTemplate = {
   columns: (1fr, 1fr),
   gutter: 1cm,
   [
-    {{#if show_date}}*{{label_date}} :* {{date}}{{/if}}
+    {{#if show_date}}*{{label_date}} :* {{date}}{{/if}}${DUE_DATE}
   ],
-  [{{#if show_points}}*{{label_total}} :* {{total_points}} {{label_points}}{{/if}}]
-)
+  []
+){{/if}}
+
+${HEADER_NOTES}
 
 #v(0.5cm)
 #line(length: 100%, stroke: 0.5pt)
@@ -187,7 +211,7 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
           #align(center)[
             *{{label_grade}}*
             #v(0.5cm)
-            {{#if show_points}}#text(size: 14pt)[\\/ {{total_points}}]{{/if}}
+            {{#if show_total}}#text(size: 14pt)[\\/ {{total_points}}]{{/if}}
           ]
         ]
       ]
@@ -201,16 +225,17 @@ export const ASSESSMENT_TEMPLATE: DefaultTemplate = {
 #grid(
   columns: (1fr, 1fr, 1fr),
   gutter: 0.5cm,
-  [{{#if show_student_name}}*{{label_name}} :* #underline[#h(2cm) {{student_name}} #h(2cm)]{{/if}}],
+  [{{#if show_student_name}}*{{label_name}} :* {{student_name}}{{/if}}],
   [{{#if show_class}}*{{label_class}} :* {{class}}{{/if}}],
-  [{{#if show_date}}*{{label_date}} :* {{date}}{{/if}}]
+  [{{#if show_date}}*{{label_date}} :* {{date}}{{/if}}${DUE_DATE}]
 )
 
 #v(0.3cm)
 
-// Duree
+// Duree et calculatrice (selon le type de la fiche)
 #align(right)[
-  #text(style: "italic")[{{label_duration}} : {{duration}} {{label_minutes}}]
+  {{#if show_duration}}#text(style: "italic")[{{label_duration}} : {{duration}} {{label_minutes}}]{{/if}}
+  {{#if show_calculator}}#text(style: "italic")[{{calculator}}]{{/if}}
 ]
 
 #v(0.5cm)
@@ -273,7 +298,7 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
       columns: (1fr, auto, 1fr),
       [{{school_name}}],
       [#text(weight: "bold")[{{label_exam}}]],
-      [{{#if show_date}}#align(right)[{{date}}]{{/if}}]
+      [{{#if show_date}}#align(right)[*{{label_date}} :* {{date}}]{{/if}}{{#if show_due_date}}#align(right)[*{{label_due_date}} :* {{due_date}}]{{/if}}]
     )
     #line(length: 100%, stroke: 0.5pt)
   ],
@@ -303,7 +328,7 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
       #v(0.3cm)
       #grid(
         columns: (1fr, 1fr),
-        [*{{label_duration}} :* {{duration}} min],
+        [{{#if show_duration}}*{{label_duration}} :* {{duration}} min{{/if}}],
         [*{{label_coefficient}} :* {{coefficient}}]
       )
     ]
@@ -312,8 +337,8 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
 
 #v(0.5cm)
 
-// Zone identification
-#rect(
+// Zone identification (selon le type de la fiche)
+{{#if show_student_name}}#rect(
   width: 100%,
   inset: 10pt,
   stroke: 1pt
@@ -332,7 +357,7 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
       *{{label_candidate_number}} :* #underline[#h(3cm)]
     ]
   )
-]
+]{{/if}}
 
 #v(0.5cm)
 
@@ -345,14 +370,14 @@ export const EXAM_TEMPLATE: DefaultTemplate = {
 )[
   #text(weight: "bold", size: 12pt)[{{label_instructions}}]
   #v(0.3cm)
-  - {{label_calculator_unless_stated}}
+  {{#if show_calculator}}- {{calculator}}{{/if}}
   - {{label_no_documents}}
   - {{label_answers_on_paper}}
   - {{label_any_order}}
   #v(0.2cm)
   {{instructions}}
   #v(0.3cm)
-  {{#if show_points}}*{{label_total_points}} :* {{total_points}}{{/if}}
+  {{#if show_total}}*{{label_total_points}} :* {{total_points}}{{/if}}
 ]
 
 #v(0.5cm)
@@ -435,23 +460,25 @@ export const HOMEWORK_TEMPLATE: DefaultTemplate = {
   columns: (1fr, 1fr),
   gutter: 1cm,
   [
-    {{#if show_date}}#text(weight: "bold")[{{label_handed_out}} :] {{date}}{{/if}}
+    {{#if show_date}}*{{label_date}} :* {{date}}{{/if}}
   ],
   [
-    #rect(
+    {{#if show_due_date}}#rect(
       fill: rgb("#d4edda"),
       inset: 5pt,
       radius: 3pt
     )[
-      #text(weight: "bold")[{{label_due_date}} :] {{due_date}}
-    ]
+      *{{label_due_date}} :* {{due_date}}
+    ]{{/if}}
   ]
 )
 
 #v(0.3cm)
 
 // Nom de l'eleve
-{{#if show_student_name}}*{{label_name}} :* #underline[#h(4cm) {{student_name}} #h(4cm)]{{/if}}
+{{#if show_student_name}}*{{label_name}} :* {{student_name}}{{/if}}
+
+${HEADER_NOTES}
 
 #v(0.5cm)
 #line(length: 100%, stroke: 0.5pt)
@@ -532,14 +559,14 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
     ],
     [
       #align(center)[
-        {{#if show_student_name}}*{{label_name}} :* #underline[#h(3cm) {{student_name}} #h(3cm)]{{/if}}
+        {{#if show_student_name}}*{{label_name}} :* {{student_name}}{{/if}}
       ]
     ],
     [
       #align(right)[
         {{#if show_class}}*{{label_class}} :* {{class}}
         #v(0.1cm){{/if}}
-        {{#if show_date}}*{{label_date}} :* {{date}}{{/if}}
+        {{#if show_date}}*{{label_date}} :* {{date}}{{/if}}${DUE_DATE}
       ]
     ]
   )
@@ -550,8 +577,8 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
 // Informations rapides
 #grid(
   columns: (1fr, 1fr),
-  [#text(style: "italic")[{{label_duration}} : {{duration}} min]],
-  [{{#if show_points}}#align(right)[*{{label_total}} : {{total_points}} {{label_points}}*]{{/if}}]
+  [{{#if show_duration}}#text(style: "italic")[{{label_duration}} : {{duration}} min]{{/if}}{{#if show_calculator}} #text(style: "italic")[{{calculator}}]{{/if}}],
+  [{{#if show_total}}#align(right)[*{{label_total}} : {{total_points}} {{label_points}}*]{{/if}}]
 )
 
 #v(0.3cm)
@@ -573,7 +600,7 @@ export const QUIZ_TEMPLATE: DefaultTemplate = {
     inset: 8pt,
     stroke: 1pt
   )[
-    *{{label_grade}} :* #h(2cm) {{#if show_points}}/ {{total_points}}{{/if}}
+    *{{label_grade}} :* #h(2cm) {{#if show_total}}/ {{total_points}}{{/if}}
   ]
 ]
 `
@@ -603,11 +630,13 @@ export const MINIMAL_TEMPLATE: DefaultTemplate = {
 // En-tete minimaliste
 {{#if show_title}}#text(size: 16pt, weight: "bold")[{{title}}]{{/if}}
 #h(1fr)
-{{#if show_date}}#text(size: 10pt)[{{date}}]{{/if}}
+{{#if show_date}}#text(size: 10pt)[{{label_date}} : {{date}}]{{/if}}{{#if show_due_date}}#text(size: 10pt)[{{label_due_date}} : {{due_date}}]{{/if}}
 
 #v(0.3cm)
 
-{{#if show_student_name}}{{student_name}}{{/if}} #h(1fr) {{#if show_class}}{{class}}{{/if}}
+{{#if show_student_name}}{{label_name}} : {{student_name}}{{/if}} #h(1fr) {{#if show_class}}{{label_class}} : {{class}}{{/if}}
+
+${HEADER_NOTES}
 
 #v(0.5cm)
 #line(length: 100%, stroke: 0.3pt)
@@ -675,7 +704,8 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
       ],
       text(fill: white)[
         {{#if show_date}}#text(weight: "bold", size: 9pt)[#upper[{{label_date}}]]\\
-        #text(size: 11pt)[{{date}}]{{/if}}
+        #text(size: 11pt)[{{date}}]{{/if}}{{#if show_due_date}}#text(weight: "bold", size: 9pt)[#upper[{{label_due_date}}]]\\
+        #text(size: 11pt)[{{due_date}}]{{/if}}
       ]
     )
   ]
@@ -709,12 +739,17 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
 #grid(
   columns: (auto, auto, 1fr, auto),
   column-gutter: 12pt,
-  box(
+  [{{#if show_duration}}#box(
     fill: rgb("#dbeafe"),
     inset: (x: 12pt, y: 6pt),
     radius: 15pt,
     text(size: 9pt, fill: rgb("#1e40af"))[⏱ {{duration}} min]
-  ),
+  ){{/if}}{{#if show_calculator}} #box(
+    fill: rgb("#dbeafe"),
+    inset: (x: 12pt, y: 6pt),
+    radius: 15pt,
+    text(size: 9pt, fill: rgb("#1e40af"))[{{calculator}}]
+  ){{/if}}],
   box(
     fill: rgb("#fce7f3"),
     inset: (x: 12pt, y: 6pt),
@@ -730,7 +765,7 @@ export const MODERN_TEMPLATE: DefaultTemplate = {
   )[
     #text(size: 9pt, fill: rgb("#64748b"))[Score]
     #h(10pt)
-    #text(size: 14pt, weight: "bold")[\\_\\_\\_\\_\\_{{#if show_points}} / {{total_points}}{{/if}}]
+    #text(size: 14pt, weight: "bold")[\\_\\_\\_\\_\\_{{#if show_total}} / {{total_points}}{{/if}}]
   ]
 )
 
@@ -809,7 +844,7 @@ export const TWO_COLUMNS_TEMPLATE: DefaultTemplate = {
       [
         {{#if show_class}}#text(size: 9pt, fill: rgb("#6b7280"))[{{class}}]
         #v(0.1cm){{/if}}
-        {{#if show_date}}#text(weight: "bold", size: 11pt)[{{date}}]{{/if}}
+        {{#if show_date}}#text(weight: "bold", size: 11pt)[{{label_date}} : {{date}}]{{/if}}{{#if show_due_date}}#text(weight: "bold", size: 11pt)[{{label_due_date}} : {{due_date}}]{{/if}}
       ]
     )
   ]
@@ -823,11 +858,12 @@ export const TWO_COLUMNS_TEMPLATE: DefaultTemplate = {
   column-gutter: 15pt,
   align: (right, center, left),
   [
-    #text(size: 9pt)[{{label_duration}} : #text(weight: "bold")[{{duration}} {{label_minutes}}]]
+    {{#if show_duration}}#text(size: 9pt)[{{label_duration}} : #text(weight: "bold")[{{duration}} {{label_minutes}}]]{{/if}}
+    {{#if show_calculator}}#text(size: 9pt)[{{calculator}}]{{/if}}
   ],
   circle(radius: 3pt, fill: rgb("#9ca3af")),
   [
-    {{#if show_points}}#text(size: 9pt)[{{label_total}} : #text(weight: "bold")[{{total_points}} {{label_points}}]]{{/if}}
+    {{#if show_total}}#text(size: 9pt)[{{label_total}} : #text(weight: "bold")[{{total_points}} {{label_points}}]]{{/if}}
   ]
 )
 
@@ -915,7 +951,7 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
       align: (left, center, right),
       [{{school_name}}],
       [{{#if show_title}}#text(weight: "bold")[{{title}}]{{/if}}],
-      [{{#if show_class}}{{class}}{{/if}}{{#if show_date}}{{#if show_class}} • {{/if}}{{date}}{{/if}}]
+      [{{#if show_class}}{{class}}{{/if}}{{#if show_due_date}} • {{label_due_date}} : {{due_date}}{{/if}}]
     )
     #line(length: 100%, stroke: 0.3pt + rgb("#d1d5db"))
   ],
@@ -972,7 +1008,7 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
               {{#if show_student_name}}#text(weight: "bold")[{{label_name}} :]\\
               {{student_name}}
               #v(0.3cm){{/if}}
-              {{#if show_points}}#text(weight: "bold")[{{label_points}} :] {{total_points}}{{/if}}
+              {{#if show_total}}#text(weight: "bold")[{{label_points}} :] {{total_points}}{{/if}}
             ]
           ]
         ]
@@ -996,7 +1032,8 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
     #align(center)[
       #text(size: 16pt)[⏰]
       #v(0.1cm)
-      #text(size: 9pt, weight: "bold")[{{duration}} min]
+      {{#if show_duration}}#text(size: 9pt, weight: "bold")[{{duration}} min]{{/if}}
+      {{#if show_calculator}}#text(size: 9pt)[{{calculator}}]{{/if}}
     ]
   ],
   rect(
@@ -1032,7 +1069,7 @@ export const LANDSCAPE_TEMPLATE: DefaultTemplate = {
     #align(center)[
       #text(size: 16pt)[📅]
       #v(0.1cm)
-      {{#if show_date}}#text(size: 9pt, weight: "bold")[{{date}}]{{/if}}
+      {{#if show_date}}#text(size: 9pt, weight: "bold")[{{label_date}} : {{date}}]{{/if}}{{#if show_due_date}}#text(size: 9pt, weight: "bold")[{{label_due_date}} : {{due_date}}]{{/if}}
     ]
   ]
 )
@@ -1143,7 +1180,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
           #v(0.1cm)
           {{#if show_class}}#text(size: 16pt, weight: "bold")[{{class}}]
           #v(0.2cm){{/if}}
-          {{#if show_date}}#text(size: 9pt)[{{date}}]{{/if}}
+          {{#if show_due_date}}#text(size: 9pt)[{{label_due_date}} : {{due_date}}]{{/if}}
         ]
       ]
     ]
@@ -1175,7 +1212,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
       {{#if show_title}}#text(size: 22pt, weight: "bold")[{{title}}]{{/if}}
       #v(0.2cm)
       #text(size: 10pt, style: "italic", fill: rgb("#64748b"))[
-        {{label_by}} {{teacher_name}} • {{duration}} {{label_minutes}}{{#if show_points}} • {{total_points}} {{label_points}}{{/if}}
+        {{label_by}} {{teacher_name}}{{#if show_duration}} • {{duration}} {{label_minutes}}{{/if}}{{#if show_calculator}} • {{calculator}}{{/if}}{{#if show_total}} • {{total_points}} {{label_points}}{{/if}}
       ]
     ]
   )
@@ -1258,7 +1295,9 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
         #v(0.3cm){{/if}}
         {{#if show_date}}#text(weight: "bold")[{{label_date}} :]
         #v(0.1cm)
-        {{date}}{{/if}}
+        {{date}}{{/if}}{{#if show_due_date}}#text(weight: "bold")[{{label_due_date}} :]
+        #v(0.1cm)
+        {{due_date}}{{/if}}
       ]
     ]
 
@@ -1293,7 +1332,7 @@ export const MAGAZINE_TEMPLATE: DefaultTemplate = {
         #text(size: 9pt, fill: accent)[{{label_score}}]
         #v(0.4cm)
         #text(size: 20pt, weight: "bold")[
-          \\_\\_\\_{{#if show_points}} / {{total_points}}{{/if}}
+          \\_\\_\\_{{#if show_total}} / {{total_points}}{{/if}}
         ]
       ]
     ]
@@ -1399,8 +1438,8 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
 
   [*{{label_field}}*], [*{{label_value}}*], [*{{label_field}}*], [*{{label_value}}*],
   [{{label_name}}], [{{#if show_student_name}}{{student_name}}{{/if}}], [{{label_class}}], [{{#if show_class}}{{class}}{{/if}}],
-  [{{label_date}}], [{{#if show_date}}{{date}}{{/if}}], [{{label_duration}}], [{{duration}} {{label_minutes}}],
-  [{{label_teacher}}], [{{teacher_name}}], [{{label_points}}], [{{#if show_points}}{{total_points}}{{/if}}]
+  [{{label_date}}], [{{#if show_date}}{{date}}{{/if}}{{#if show_due_date}}{{label_due_date}} {{due_date}}{{/if}}], [{{label_duration}}], [{{#if show_duration}}{{duration}} {{label_minutes}}{{/if}}],
+  [{{label_teacher}}], [{{teacher_name}}], [{{label_points}}], [{{#if show_total}}{{total_points}}{{/if}}]
 )
 
 #v(0.8cm)
@@ -1440,6 +1479,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
   inset: 12pt
 )[
   #text(size: 10pt)[
+    {{#if show_calculator}}{{calculator}}{{/if}}
     {{instructions}}
 
     #v(0.4cm)
@@ -1487,7 +1527,7 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
   [2], [{{label_skill_equations}}], [/5], [], [],
   [3], [{{label_skill_reasoning}}], [/5], [], [],
   [4], [{{label_skill_application}}], [/5], [], [],
-  table.cell(colspan: 2)[*{{label_total}}*], [{{#if show_points}}/{{total_points}}{{/if}}], [], []
+  table.cell(colspan: 2)[*{{label_total}}*], [{{#if show_total}}/{{total_points}}{{/if}}], [], []
 )
 
 #v(0.8cm)
@@ -1550,8 +1590,8 @@ export const STUDENT_STYLE_COMMON = `// Mise en page proche du PDF de l'élève 
 `;
 
 /**
- * En-tête pleine largeur des gabarits « Fiche élève » : titre, élève, date,
- * classe ; `banner` se place en haut du même bloc (bandeau d'un corrigé), pour
+ * En-tête pleine largeur des gabarits « Fiche élève » : titre, puis selon le
+ * type de la fiche (ADR 0030) nom, date, classe, durée, calculatrice, total ; `banner` se place en haut du même bloc (bandeau d'un corrigé), pour
  * que le fond blanc masque le filet derrière tout l'en-tête.
  */
 const studentStyleHeader = (
@@ -1562,14 +1602,16 @@ const studentStyleHeader = (
   #block(width: 100%, fill: white, inset: (bottom: 6pt), below: 1.2em)[
 ${banner}    {{#if show_title}}#align(center)[#text(size: 1.5em, weight: "bold")[{{title}}]]
     #v(0.4em){{/if}}
-    #grid(
+    {{#if show_identity}}#grid(
       columns: (1fr, auto, 1fr),
       align: (left, center, right),
-      [{{#if show_student_name}}{{student_name}}{{/if}}],
-      [{{#if show_date}}#text(size: 0.9em, fill: gray)[{{date}}]{{/if}}],
-      [{{#if show_class}}{{class}}{{/if}}]
+      [{{#if show_student_name}}*{{label_name}} :* {{student_name}}{{/if}}],
+      [{{#if show_date}}*{{label_date}} :* {{date}}{{/if}}${DUE_DATE}],
+      [{{#if show_class}}*{{label_class}} :* {{class}}{{/if}}]
     )
-    #v(0.3em)
+    #v(0.3em){{/if}}
+    {{#if show_header_notes}}#text(size: 0.9em)[${HEADER_NOTES}]
+    #v(0.3em){{/if}}
     #line(length: 100%, stroke: 0.5pt + gray)
   ]
 ]
@@ -1704,10 +1746,16 @@ export const SAMPLE_PREVIEW_DATA = {
 	// worksheet's config says. Kept last so the editor's placeholder panel, which
 	// lists the first entries, keeps showing content fields.
 	show_title: 'true',
+	show_identity: 'true',
 	show_date: 'true',
 	show_class: 'true',
 	show_student_name: 'true',
 	show_points: 'true',
+	show_total: 'true',
+	show_header_notes: 'true',
+	show_duration: 'true',
+	show_calculator: 'true',
+	calculator: 'La calculatrice est interdite.',
 	// New placeholders for advanced templates
 	theme_color: '#e11d48',
 	academic_year: '2024-2025',
