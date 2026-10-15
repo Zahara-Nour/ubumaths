@@ -1,7 +1,7 @@
 ---
 title: Atelier — tableur intégré, lot 5 : ALEA et « Relancer » (phase 0)
 date: 2026-10-15
-status: phase 0 PROPOSÉE, à valider par David (Q-L5-1 à Q-L5-5)
+status: phase 0 VALIDÉE (2026-10-15, « je valide ») ; Q-L5-1 à Q-L5-5 décidées (les cinq recos)
 ---
 
 # Atelier — tableur intégré, lot 5 : ALEA et « Relancer »
@@ -77,7 +77,11 @@ Ce lot ajoute le **hasard** à la grille : `ALEA()` et `ALEA.ENTRE.BORNES(a ; b)
 
 ---
 
-## Questions du lot 5 — à trancher par David
+## Questions du lot 5 — tranchées par David (2026-10-15, « je valide » : les cinq recos)
+
+Décidé : **Q-L5-1 (a)** ALEA() et ALEA.ENTRE.BORNES · **Q-L5-2 (a)** « Relancer » à côté de la barre,
+seulement s'il y a du hasard, et F9 · **Q-L5-3 (a)** Ctrl+Z annule un « Relancer » · **Q-L5-4 (a)**
+le lien garde la graine · **Q-L5-5 (a)** un tirage ne dépend que de la graine et de sa place.
 
 **Q-L5-1 — Quelles fonctions ?**
 

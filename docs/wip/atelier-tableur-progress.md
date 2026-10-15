@@ -236,7 +236,8 @@ liste trouée en citant l'entrée).
       **à vérifier sur un vrai iPad**) ; texte cité réécrit ; `≤ ≥ ≠` ; referencesIn ; messages
 - [x] PR 3 mergée : #1434 — **lot 4 complet** (pas en prod)
 
-## Lot 5 — ALEA et « Relancer » (phase 0 : `atelier-tableur-lot5-phase0.md`, PROPOSÉE le 2026-10-15)
+## Lot 5 — ALEA et « Relancer » (phase 0 : `atelier-tableur-lot5-phase0.md`, VALIDÉE le 2026-10-15)
 
 - [x] phase 0 rédigée : Q-L5-1 à Q-L5-5 (graine de l'atelier, tirage = graine + adresse + place)
-- [ ] validation de David
+- [x] validation de David (« je valide »)
+- [ ] PR 1 : le moteur (`feat/atelier-alea`)
