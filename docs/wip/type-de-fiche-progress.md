@@ -121,5 +121,6 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
 - [x] Hors lot tranché par David (2026-10-15/16, ci-dessus) : plafond 25, duplication, PDF par
       lien de partage ; réglage en brouillon seulement.
 - [ ] Lot 4 — PR A (branche `feat/cadres-lignes-partage`) : migration + tests, rouge sans / vert
-      avec, security-auditor. Reste : PR, CI, `db:migrate`, `db:types`.
+      avec, security-auditor passé (aucun bloquant ; mineur corrigé : refus anon `42501`). Reste :
+      PR, CI, `db:migrate`, `db:types`.
 - [ ] Lot 4 — PR B (branche `feat/cadres-lignes-partage-code`) : code, après PR A en prod.
