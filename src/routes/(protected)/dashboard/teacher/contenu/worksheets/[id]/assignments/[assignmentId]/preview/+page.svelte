@@ -47,13 +47,14 @@
 		BookOpen,
 		Download,
 		Pencil,
+		Printer,
 		Star
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import { page } from '$app/state';
-	import { assignmentPreviewReturn } from '$lib/navigation/return-links';
+	import { assignmentCopiesHref, assignmentPreviewReturn } from '$lib/navigation/return-links';
 	import {
 		ANCHOR_HIGHLIGHT_MS,
 		exerciseAnchorId,
@@ -447,6 +448,18 @@
 						placeholder="Selectionnez un eleve..."
 						fitContent
 					/>
+					{#if data.students.length > 0}
+						<!-- Une copie au nom de chaque élève visé (ADR 0030, lot 5) -->
+						<Button
+							variant="outline"
+							size="sm"
+							class="sm:ml-auto"
+							href={assignmentCopiesHref(data.worksheetId, data.assignmentId)}
+						>
+							<Printer class="mr-2 h-4 w-4" />
+							Imprimer une copie par élève
+						</Button>
+					{/if}
 				</div>
 				{#if showsIndividualCopy}
 					<!-- Chaque élève a sa version : la vue prof est la copie d'un élève (D6) -->

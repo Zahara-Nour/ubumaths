@@ -78,6 +78,11 @@ export function assignmentPreviewHref(
 	return `${assignmentBase(worksheetId, assignmentId)}/preview${search ? `?${search}` : ''}${hash}`;
 }
 
+/** Les copies par élève d'une affectation, nom pré-imprimé (ADR 0030, lot 5) */
+export function assignmentCopiesHref(worksheetId: string, assignmentId: string): string {
+	return `${assignmentBase(worksheetId, assignmentId)}/copies`;
+}
+
 export function assignmentPreviewReturn(
 	worksheetId: string,
 	assignmentId: string,

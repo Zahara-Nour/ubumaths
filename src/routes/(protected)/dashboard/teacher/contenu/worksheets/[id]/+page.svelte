@@ -31,6 +31,7 @@
 		UserPlus,
 		AlertCircle,
 		Gauge,
+		Printer,
 		Eye
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
@@ -50,6 +51,7 @@
 	import type { Exercise } from '$lib/exercises/types';
 	import { worksheetLocale } from '$lib/types/worksheets';
 	import { worksheetHeader } from '$lib/worksheets/worksheet-header';
+	import { assignmentCopiesHref } from '$lib/navigation/return-links';
 	import UntranslatedExercisesNotice from '$lib/components/worksheets/UntranslatedExercisesNotice.svelte';
 	import WorksheetCitationsNotice from '$lib/components/worksheets/WorksheetCitationsNotice.svelte';
 
@@ -633,6 +635,14 @@
 								<Button
 									variant="outline"
 									size="sm"
+									href={assignmentCopiesHref(worksheet.id, selectedAssignment.id)}
+								>
+									<Printer class="mr-2 h-4 w-4" />
+									Imprimer une copie par élève
+								</Button>
+								<Button
+									variant="outline"
+									size="sm"
 									onclick={(e) => {
 										if (selectedAssignment) {
 											handleEditAssignment(selectedAssignment, e);
@@ -785,6 +795,16 @@
 															title="Voir l'avancement des élèves"
 														>
 															<Gauge class="h-4 w-4" />
+														</Button>
+														<Button
+															variant="ghost"
+															size="sm"
+															href={assignmentCopiesHref(worksheet.id, assignment.id)}
+															onclick={(e) => e.stopPropagation()}
+															title="Imprimer une copie par élève"
+														>
+															<Printer class="h-4 w-4" />
+															<span class="sr-only">Imprimer une copie par élève</span>
 														</Button>
 														<Button
 															variant="ghost"
