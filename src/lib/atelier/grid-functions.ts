@@ -17,13 +17,21 @@
 import { cellName, GRID_ROWS } from './grid';
 import type { MathNode } from '$lib/mathAST/types';
 import { evaluate } from '$lib/mathAST/eval/evaluate';
+import { toCustom } from '$lib/mathAST/custom-generator';
+import { astOf } from './parse';
 
 // =============================================================================
 // Types
 // =============================================================================
 
-export type GridFunction =
+/** Les fonctions de statistiques : des plages, des listes, plusieurs arguments (PR 1). */
+export type StatisticFunction =
 	'SOMME' | 'MOYENNE' | 'MEDIANE' | 'MIN' | 'MAX' | 'NB' | 'ECARTYPE' | 'ECARTYPEP';
+
+/** Les fonctions de calcul : des nombres, en nombre fixe (PR 2). */
+export type CalculationFunction = 'ARRONDI' | 'ENT' | 'RACINE' | 'ABS' | 'LN' | 'EXP' | 'PI';
+
+export type GridFunction = StatisticFunction | CalculationFunction;
 
 /** Un appel repéré dans le corps d'une formule : sa place, son nom, ses arguments bruts. */
 export interface GridCall {
@@ -56,7 +64,7 @@ export type Computed =
 // Constantes
 // =============================================================================
 
-export const GRID_FUNCTIONS: readonly GridFunction[] = [
+export const STATISTIC_FUNCTIONS: readonly StatisticFunction[] = [
 	'SOMME',
 	'MOYENNE',
 	'MEDIANE',
@@ -66,6 +74,53 @@ export const GRID_FUNCTIONS: readonly GridFunction[] = [
 	'ECARTYPE',
 	'ECARTYPEP'
 ];
+
+/** Leur nombre d'arguments. */
+export const CALCULATION_ARITY: Readonly<Record<CalculationFunction, number>> = {
+	ARRONDI: 2,
+	ENT: 1,
+	RACINE: 1,
+	ABS: 1,
+	LN: 1,
+	EXP: 1,
+	PI: 0
+};
+
+export const GRID_FUNCTIONS: readonly GridFunction[] = [
+	...STATISTIC_FUNCTIONS,
+	...(Object.keys(CALCULATION_ARITY) as CalculationFunction[])
+];
+
+/** Ce que dit l'aide sous la barre (§5) : la forme, puis ce que rend la fonction. */
+const SIGNATURES: Readonly<Record<GridFunction, string>> = {
+	SOMME: 'SOMME(plage ; …) — la somme des nombres',
+	MOYENNE: 'MOYENNE(plage ; …) — la moyenne des nombres',
+	MEDIANE: 'MEDIANE(plage ; …) — la médiane des nombres',
+	MIN: 'MIN(plage ; …) — le plus petit nombre',
+	MAX: 'MAX(plage ; …) — le plus grand nombre',
+	NB: 'NB(plage ; …) — combien de cases contiennent un nombre',
+	ECARTYPE: 'ECARTYPE(plage ; …) — l’écart type (divise par n − 1)',
+	ECARTYPEP: 'ECARTYPEP(plage ; …) — l’écart type (divise par n), le σ de .stats',
+	ARRONDI: 'ARRONDI(x ; n) — x arrondi à n décimales',
+	ENT: 'ENT(x) — la partie entière (vers le bas)',
+	RACINE: 'RACINE(x) — √x',
+	ABS: 'ABS(x) — la valeur absolue',
+	LN: 'LN(x) — le logarithme népérien',
+	EXP: 'EXP(x) — l’exponentielle',
+	PI: 'PI() — le nombre π'
+};
+
+/** Au plus autant de propositions quand un nom est en cours d'écriture. */
+const MAX_HINTS = 3;
+
+/** Les fonctions de calcul, et leur nom pour mathAST. */
+const ENGINE_NAMES: Readonly<Record<Exclude<CalculationFunction, 'ARRONDI' | 'PI'>, string>> = {
+	ENT: 'floor',
+	RACINE: 'sqrt',
+	ABS: 'abs',
+	LN: 'ln',
+	EXP: 'exp'
+};
 
 /**
  * Un nom suivi d'une parenthèse ; accents permis (`MÉDIANE`), point permis
@@ -94,6 +149,10 @@ export const RANGE_MIXED_MESSAGE =
 // =============================================================================
 // Lire
 // =============================================================================
+
+export function isStatistic(name: GridFunction): name is StatisticFunction {
+	return (STATISTIC_FUNCTIONS as readonly string[]).includes(name);
+}
 
 /** `Médiane`, `écartypep` → `MEDIANE`, `ECARTYPEP` ; `null` pour un nom qui n'en est pas une. */
 export function gridFunctionOf(name: string): GridFunction | null {
@@ -268,7 +327,7 @@ function divided(numerator: MathNode, denominator: number): MathNode {
  * @param label - Ce que l'élève a passé, pour un refus (« Aucun nombre dans A1:A5. »)
  */
 export function computeFunction(
-	name: GridFunction,
+	name: StatisticFunction,
 	values: readonly ArgumentValue[],
 	label: string
 ): Computed {
@@ -325,4 +384,105 @@ export function computeFunction(
 			};
 		}
 	}
+}
+
+/**
+ * Une fonction de calcul (PR 2) sur ses arguments : RACINE, ABS, LN, EXP, ENT
+ * deviennent l'appel de mathAST (mêmes refus que Calcul) ; ARRONDI rend un
+ * décimal ; PI, π.
+ */
+export function computeCalculation(
+	name: CalculationFunction,
+	values: readonly ArgumentValue[]
+): Computed {
+	if (name === 'PI') {
+		const pi = astOf('π', 'text');
+		return pi === null ? { ok: false, message: 'π introuvable.' } : { ok: true, node: pi };
+	}
+	if (name === 'ARRONDI') {
+		const [x, n] = values;
+		if (!Number.isInteger(n.value)) {
+			return {
+				ok: false,
+				message: 'ARRONDI : le nombre de décimales doit être un entier (ARRONDI(x ; 2)).'
+			};
+		}
+		return { ok: true, node: { type: 'number', value: rounded(x, n.value) } };
+	}
+	return {
+		ok: true,
+		node: { type: 'function', name: ENGINE_NAMES[name], args: [grouped(values[0].node)] }
+	};
+}
+
+/** `p/q`, `-p/q`, `p`, `-p` (entiers) : la fraction exacte d'une écriture, sinon `null`. */
+function fractionOf(written: string): { p: bigint; q: bigint } | null {
+	const text = written.replaceAll(' ', '');
+	const integer = /^\(?(-?\d+)\)?$/.exec(text);
+	if (integer !== null) return { p: BigInt(integer[1]), q: 1n };
+	const fraction = /^\(?(-?)(\d+)\)?\/(\d+)$|^-\((\d+)\/(\d+)\)$/.exec(text);
+	if (fraction === null) return null;
+	const negative = fraction[1] === '-' || fraction[4] !== undefined;
+	const p = BigInt(fraction[2] ?? fraction[4]);
+	const q = BigInt(fraction[3] ?? fraction[5]);
+	return q === 0n ? null : { p: negative ? -p : p, q };
+}
+
+/**
+ * x arrondi à n décimales, la moitié LOIN DE ZÉRO (comme LibreOffice :
+ * ARRONDI(-2,5 ; 0) = −3), écrit en décimal (`2.57`). Exact quand x est une
+ * fraction (en entiers longs : 2,675 → 2,68, quand les flottants donnent 2,67).
+ */
+function rounded(x: ArgumentValue, n: number): string {
+	const exact = evaluate(x.node, { mode: 'exact' });
+	const fraction =
+		exact.status === 'value' && exact.exact ? fractionOf(toCustom(exact.node)) : null;
+	if (fraction !== null) {
+		const scale = 10n ** BigInt(Math.abs(n));
+		const negative = fraction.p < 0n;
+		const num = (negative ? -fraction.p : fraction.p) * (n >= 0 ? scale : 1n);
+		const den = fraction.q * (n >= 0 ? 1n : scale);
+		const units = (2n * num + den) / (2n * den);
+		return decimalText(negative && units !== 0n ? -units : units, n);
+	}
+	const scale = 10 ** n;
+	const units = Math.sign(x.value) * Math.round(Math.abs(x.value) * scale);
+	return decimalText(BigInt(units), n);
+}
+
+/** `units` × 10⁻ⁿ, écrit en décimal sans zéros inutiles (`257`, 2 → `2.57`). */
+function decimalText(units: bigint, n: number): string {
+	if (n <= 0) return (units * 10n ** BigInt(-n)).toString();
+	const negative = units < 0n;
+	const digits = (negative ? -units : units).toString().padStart(n + 1, '0');
+	const whole = digits.slice(0, digits.length - n);
+	const fraction = digits.slice(digits.length - n).replace(/0+$/, '');
+	return `${negative ? '-' : ''}${whole}${fraction === '' ? '' : `.${fraction}`}`;
+}
+
+/**
+ * L'aide sous la barre (§5) : la forme de la fonction dont on écrit les
+ * arguments (la plus intérieure), sinon celles dont on écrit le nom (`=ECART`) ;
+ * `null` quand il n'y a rien à dire.
+ */
+export function functionHint(draft: string): string | null {
+	const text = draft.trimStart();
+	if (!text.startsWith('=')) return null;
+	const body = text.slice(1);
+	let open: GridFunction | null = null;
+	for (const match of body.matchAll(CALL)) {
+		const name = gridFunctionOf(match[1]);
+		if (name === null) continue;
+		const at = (match.index ?? 0) + match[0].length - 1;
+		if (closingParenthesis(body, at) === -1) open = name;
+	}
+	if (open !== null) return SIGNATURES[open];
+	const typing = /([A-Za-zÀ-ÖØ-öø-ÿ.]{2,})$/.exec(body);
+	if (typing === null) return null;
+	const prefix = typing[1]
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toUpperCase();
+	const matches = GRID_FUNCTIONS.filter((name) => name.startsWith(prefix)).slice(0, MAX_HINTS);
+	return matches.length === 0 ? null : matches.map((name) => SIGNATURES[name]).join(' · ');
 }

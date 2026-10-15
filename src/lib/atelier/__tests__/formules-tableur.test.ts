@@ -271,7 +271,7 @@ describe('§3 refus', () => {
 	it('un nom de fonction inconnu dit lesquelles existent, celles du calcul comprises', () => {
 		const message = shown(withSeries('=MOYENE(A1:A4)'), C, 1);
 		expect(message).toContain(
-			'MOYENE n’est pas une fonction de la grille. Fonctions du tableur : SOMME, MOYENNE, MEDIANE, MIN, MAX, NB, ECARTYPE, ECARTYPEP.'
+			'MOYENE n’est pas une fonction de la grille. Fonctions du tableur : SOMME, MOYENNE, MEDIANE, MIN, MAX, NB, ECARTYPE, ECARTYPEP, ARRONDI, ENT, RACINE, ABS, LN, EXP, PI.'
 		);
 		expect(message).toContain('sqrt');
 		expect(shown(withSeries('=Sqrt(4)'), C, 1)).toContain('sqrt');
