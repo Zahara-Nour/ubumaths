@@ -246,7 +246,8 @@ chacun leur jeton, un seul actif par classe. `anon` ne lit aucune de ces tables 
 fonctions `SECURITY DEFINER` qui refont les gardes élève. Pour le cours :
 `get_class_course_by_share_token` (plan, documents sans chemin, checklists, séries, fiches publiées
 **et** distribuées à la classe) et `get_course_worksheet_by_share_token` (avec, comme
-`get_worksheet_by_share_token`, le style de la fiche et la mise en page d'un style de son auteur) ;
+`get_worksheet_by_share_token`, le style de la fiche, la mise en page d'un style de son auteur et
+les lignes des cadres de réponse de chaque exercice) ;
 `get_course_document_by_share_token`, qui rend le chemin du fichier, est réservée au `service_role`.
 
 `reconcileAutoCoverage()` (`src/lib/server/curriculum-coverage.ts`) recalcule les lignes `auto` de
@@ -277,10 +278,13 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
 - `worksheet_exercises.answer_frame_lines` (ADR 0030 lot 4, `20261016103900`) : nombre de lignes
   des cadres de réponse choisi par le prof pour cet exercice dans cette fiche,
   `{ "questions": [int|null, …], "exercise": int|null }` ; `null` (colonne ou case) = estimation
-  automatique, `0` = pas de cadre. CHECK : objet sans autre clé, ≤ 200 questions, entiers 0 à 40.
-  Aucun accès propre : la colonne suit les policies de la ligne (prof auteur et admin en écriture,
-  élève destinataire en lecture) ; les RPC par lien de partage ne la rendent pas (test
-  `tests/integration/cadres-lignes-par-question.test.ts`).
+  automatique, `0` = pas de cadre. CHECK : objet sans autre clé, ≤ 200 questions, entiers 0 à 40,
+  plus une seconde CHECK `worksheet_exercises_answer_frame_lines_max25` (`20261016104000`) qui
+  plafonne à 25 lignes (20 cm). La colonne suit les policies de la ligne (prof auteur et admin en
+  écriture, élève destinataire en lecture) ; depuis `20261016104000`, les deux RPC qui servent une
+  fiche par lien de partage (`get_worksheet_by_share_token`, `get_course_worksheet_by_share_token`)
+  la rendent pour chaque exercice, pour que le PDF du visiteur ait les cadres du prof (tests
+  `tests/integration/cadres-lignes-par-question.test.ts`, `cadres-lignes-partage.test.ts`).
 - `worksheet_instances` : exercices générés par élève (graine déterministe).
 - `worksheet_styles` (ADR 0028, `20261016103200`) : style de mise en page d'une fiche, propriétaire
   vide = fourni par Chiphre (Typst dans le code). Lus par le prof et l'admin (ceux de Chiphre et les
