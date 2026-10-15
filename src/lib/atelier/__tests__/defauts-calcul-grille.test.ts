@@ -75,3 +75,32 @@ describe('la grille refuse `pi` en lettres, comme Calcul', () => {
 		expect(cell('=NB.SI(B1:B1;"pile")')).toBe('1');
 	});
 });
+
+describe('revue', () => {
+	it('nb(…), si(…) : des produits de deux lettres, comme ab(…), pas des fonctions', () => {
+		const s = session();
+		runInput(s, 'n = 2');
+		runInput(s, 'b = 3');
+		runInput(s, 's = 5');
+
+		expect(runInput(s, 'nb(1+1)').kind).toBe('calcul');
+		expect(runInput(s, 'si(2)').kind).not.toBe('refus');
+	});
+
+	it('="pi" : le refus du texte seul, pas celui de π', () => {
+		const a = new Atelier();
+		a.editCells([{ column: 0, row: 1, text: '="pi"' }]);
+		const v = a.cellValue(0, 1);
+
+		expect(v.kind === 'error' && v.message).toContain('Un texte entre guillemets');
+	});
+
+	it('=PI et =Pi sans parenthèses, dans la grille : le refus de π', () => {
+		for (const text of ['=PI', '=Pi', '=2*PI']) {
+			const a = new Atelier();
+			a.editCells([{ column: 0, row: 1, text }]);
+			const v = a.cellValue(0, 1);
+			expect(v.kind === 'error' && v.message, text).toBe('Écris π avec \\pi ou le symbole π.');
+		}
+	});
+});

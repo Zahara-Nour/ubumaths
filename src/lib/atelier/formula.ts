@@ -213,6 +213,9 @@ const SCIENTIFIC = /(\d(?:[.,]\d+)?)e([+-]?\d+)/g;
 /** La marque d'une référence dans l'arbre lu : `ω_k`. */
 const MARK = 'ω';
 
+/** `pi` en lettres dans la grille, toutes casses (`=PI`, `=Pi`) ; `PI()` est déjà un appel. */
+const GRID_PI_IN_LETTERS = new RegExp(PI_IN_LETTERS.source, 'iu');
+
 /** La marque d'un appel de fonction du tableur dans l'arbre lu : `ψ_k` (lot 4). */
 const CALL_MARK = 'ψ';
 
@@ -360,7 +363,11 @@ function readBody(typed: string, functionNames: readonly string[]): ReadFormula 
 	}
 	// `pi` en lettres (`=pi`, `=2pi`) : le refus de Calcul (décision de David,
 	// 2026-10-06), la grille le lisait p·i ; `PI()` est déjà un appel remplacé
-	if (PI_IN_LETTERS.test(rest)) return { ok: false, message: PI_IN_LETTERS_MESSAGE };
+	// (hors des guillemets : `="pi"` est un texte seul ; et `PI`, `Pi` aussi dans la
+	// grille, où l'on écrit les noms en capitales — revue)
+	if (GRID_PI_IN_LETTERS.test(rest.replace(/"[^"]*"/g, ' '))) {
+		return { ok: false, message: PI_IN_LETTERS_MESSAGE };
+	}
 	// Un texte ou une comparaison hors de leur place (Q-L4-5) : `="fille"`, `=A1>2`
 	if (rest.includes('"')) return { ok: false, message: TEXT_ALONE_MESSAGE };
 	if (/[<>=]/.test(rest)) return { ok: false, message: COMPARISON_ALONE_MESSAGE };

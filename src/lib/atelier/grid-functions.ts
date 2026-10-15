@@ -709,6 +709,9 @@ const KNOWN_TO_CALCUL: ReadonlySet<GridFunction> = new Set(['MIN', 'MAX', 'ABS',
  */
 export function gridFunctionCalledIn(input: string): string | null {
 	for (const match of input.replace(/"[^"]*"/g, ' ').matchAll(CALL)) {
+		// Deux lettres sans point (`nb(…)`, `si(…)`) : un produit, comme `ab(x+1)` —
+		// la règle de `readFunctionCall` (revue : NB et SI les capturaient)
+		if (match[1].length <= 2 && !match[1].includes('.')) continue;
 		const name = gridFunctionOf(match[1]);
 		if (name !== null && !KNOWN_TO_CALCUL.has(name)) return gridFunctionInCalcul(name);
 	}
