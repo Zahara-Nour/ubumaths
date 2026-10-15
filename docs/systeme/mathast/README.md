@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11.**
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15).
 
 ## À quoi ça sert
 
@@ -328,6 +328,22 @@ point sur une borne qui l'ouvre — `\frac{2x}{2x}=1 dans [0;1]` → `]0 ; 1]`),
 (« Je ne sais pas encore résoudre ») un domaine à exclusion périodique, qu'`intersect` perdait
 (`\frac{\sin x}{\sin x}=1 dans [-1;3]` gardait 0). Tests :
 `cli/commands/__tests__/identite-dans-intervalle.test.ts`.
+
+**Zéros transcendants d'un dénominateur** (2026-10-15). `nonZeroSet` (`domain/compute.ts`) lit
+u ≠ 0 comme u > 0 ∪ u < 0, et `invertMonotone` remonte ces inéquations à travers A ± k, k·A, A/k,
+−A, √, |·|, ln et exp. Il n'inversait `ln u ⊳ c` que pour c = 0 et `e^u ⊳ c` que pour c = 1 (la
+borne devait rester rationnelle) : `\frac{1}{e^x-2}` avait pour domaine ℝ, `\frac{1}{\ln x-1}`
+oubliait e (contrainte `unresolved`, qu'`analyzeContinuity` ne lit pas). Désormais, quand la borne
+devient irrationnelle, `ln u ⊳ c` donne u ⊳ e^c et `e^u ⊳ c` (c > 0) donne u ⊳ ln c, et
+`solveAffineAgainstConstant` reporte cette borne EXACTE sur x quand u = ax + b (coefficients
+rationnels) : ln 2, e, e^{-2}, e², (ln 3 − 1)/2, −ln 3, 2e. Même mécanisme pour les inéquations de
+domaine (`\sqrt{\ln x - 1}` → [e ; +∞[, `\ln(e^x-2)` → ]ln 2 ; +∞[). Sans solution réelle
+(eˣ + 2) : rien d'exclu. Non couvert : u non affine (`\ln(x^2)-1` reste `unresolved`),
+`log`, `log10`, `log2` avec c ≠ 0 (refus, comme avant), écriture non simplifiée de ln(1/2). Tests :
+`domain/__tests__/denominateurs-transcendants.test.ts`,
+`analysis/__tests__/continuity-denominateurs-transcendants.test.ts` (discontinuité `infinite` à
+la valeur exacte) ; oracle : `comp-16` (1/(1 − ln x)) n'est plus un refus connu.
+
 Écart V45 (2026-10-13, en partie) : quand `computeDomain` ne résout pas une contrainte
 (`unresolved` : `x^5 − x + 1 ≠ 0`, deux exclusions périodiques croisées), `solve` le dit dans
 `SolveResult.domainUnresolved` (absent si le domaine est exact) et la console refuse une
@@ -900,9 +916,11 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   complète), sans `value` ni `antiderivative` (type `PedagogicalDefiniteIntegrationResult`) ;
   `result.undefinedAt` porte la valeur. Le refus s'affiche donc même pour une primitive que le
   pipeline ne sait pas écrire (∫₀¹ 4/(3x − 2)²). Bornes littérales : pas de contrôle, valeur
-  symbolique comme avant. **Domaine non résolu** (`unresolved`, dénominateur `e^x - 2`) avec des
-  bornes numériques : `PedagogicalIntegrationNotImplemented`, aucun nombre publié, et
-  `correction-generator` se replie sur le mode A. Sous ∫, une somme ou un opposé s'écrit entre
+  symbolique comme avant. **Domaine non résolu** (`unresolved`, par exemple un dénominateur
+  `x^5+x+1`) avec des bornes numériques : `PedagogicalIntegrationNotImplemented`, aucun nombre
+  publié, et `correction-generator` se replie sur le mode A. Depuis le 2026-10-15, `e^x - 2`
+  n'en est plus un : ln 2 est exclu exactement, et ∫₀¹ eˣ/(eˣ − 2) reçoit le refus
+  `integrand-undefined-on-interval` en ln 2 ∈ [0 ; 1]. Sous ∫, une somme ou un opposé s'écrit entre
   parenthèses dans toutes les étapes (`integralLatex`, `renderer.ts`). Moteur
   (`integrateDefinite`) : contrôle **numérique** de la continuité de F sur [a ; b]
   (`integration/singularity.ts`, revue de #947) — saut par bissection, divergence logarithmique
@@ -1199,6 +1217,10 @@ Doublons qui restent, chacun pour un autre besoin :
   (`getVariables` rend la base `x`) ; `e_1+1=3` et `i_1+1=3` aussi (le refus « constante
   d'Euler » / « unité imaginaire » ne s'applique pas quand l'arbre contient une variable `e`
   ou `i`, base d'une variable indicée : `reservedVariableRefusal`).
+- Domaine (`domain/compute.ts`, relevé le 2026-10-15) : `shiftedLinearRoot` construit un nœud
+  `{ type: 'opposite', … }` à la main, hors `factory.ts` (invariant 2) ; l'inversion exacte de
+  `ln u ⊳ c` / `e^u ⊳ c` ne couvre ni u non affine (`\ln(x^2)-1`) ni `log`, `log10`, `log2`
+  avec c ≠ 0 (contrainte `unresolved`).
 - Les filtres de noms qui écartent `e` et `i` de `getVariables` (`atelier/solve-steps.ts`,
   `questions/calculus/calculus-reading.ts`, `CONSTANT_NAMES` de `cli/core/variable-argument.ts`)
   ne servent plus que pour `e_1`, `i_1`, `u_i`, qu'ils traitent à tort comme des constantes.
