@@ -172,7 +172,9 @@ export function crossCommand(atelier: Atelier, argument: string): CrossResult {
 			`Tableau croisé de ${rowsName} (lignes) et ${columnsName} (colonnes), ${count} individu${count > 1 ? 's' : ''}${common.dropped > 0 ? ` — ${droppedNote(common.dropped)}` : ''}`,
 			// Q90 : la piste vers `.filtrer`, avec les noms et des modalités réelles —
 			// seulement si elles se citent telles quelles
-			...(quotable(rowLabels[0]) && quotable(columnLabels[0])
+			// …et pas quand une ligne est écartée : `.filtrer` refuse une liste
+			// trouée, la piste mènerait à un refus (revue de la PR 3b)
+			...(common.dropped === 0 && quotable(rowLabels[0]) && quotable(columnLabels[0])
 				? [
 						`Pour filtrer : .filtrer ${rowsName} = ${rowLabels[0]} et ${columnsName} = ${columnLabels[0]}`
 					]

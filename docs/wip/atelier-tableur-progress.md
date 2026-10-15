@@ -86,3 +86,9 @@ liste trouée en citant l'entrée).
       simuler, effectifs, nuage) : réécrits vers P1, avec le motif dans le test
 - ⚠️ Incident : un `commit --allow-empty` raté puis `reset --soft HEAD~1` a reculé la branche d'un
   commit de main ; pointeur remis sur `origin/main` (`reset --soft`), rien perdu, dit à David.
+- [x] revue : 6 findings corrigés, tests rouges d'abord — **importants** : `.stats L ; M` (réunion de
+      deux séries) perdait des valeurs → seule la forme `A : B` s'apparie ; `.croiser` proposait une
+      piste `.filtrer` refusée ensuite → piste masquée quand une ligne est écartée. Mineurs : raison
+      du bouton « Loi » = celle de la commande ; nuage / ajustement / diagramme sans ligne commune
+      → « L et M n’ont aucune ligne remplie en commun. » (bouton et clic) ; écho de Calcul rétabli ;
+      deux JSDoc remises au-dessus de leur fonction.

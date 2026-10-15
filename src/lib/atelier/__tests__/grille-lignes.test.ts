@@ -15,6 +15,7 @@ import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, type CalcSession } from '../calcul';
 import { actionsFor } from '../actions';
 import { listChart } from '../chart';
+import { crossCommand } from '../cross';
 import { commonRows, droppedNote } from '../pairs';
 import { isList, type ListObject } from '../types';
 
@@ -138,5 +139,73 @@ describe('dans Calcul', () => {
 
 		expect(result.kind).toBe('refus');
 		if (result.kind === 'refus') expect(result.message).toContain('ligne 2');
+	});
+});
+
+describe('revue de la PR 3b', () => {
+	// Réunir deux séries ne demande aucun appariement : rien n'est écarté
+	it('.stats L ; M réunit les deux séries, sans rien écarter', () => {
+		const result = answer(atelierWith({ L: '1 ; 2 ; 3', M: '10 ; 20' }), '.stats L ; M');
+
+		expect(result.kind).toBe('commande');
+		if (result.kind !== 'commande') return;
+		expect(result.output).toContain('5');
+		expect(result.note ?? '').not.toContain('écartée');
+	});
+
+	it('.ajustement L : M sans aucune ligne commune : la raison du bouton', () => {
+		const result = answer(atelierWith({ L: '1 ; 2', M: ' ;  ; 3 ; 4' }), '.ajustement L : M');
+
+		expect(result).toMatchObject({
+			kind: 'refus',
+			message: 'L et M n’ont aucune ligne remplie en commun.'
+		});
+	});
+
+	it('l’écho de Calcul reste ce que l’élève a tapé', () => {
+		const result = answer(
+			atelierWith({ L: '1 ; 2 ; 3 ; 4', M: '3 ; 5 ; 7 ; 9' }),
+			'.ajustement L : M'
+		);
+
+		expect(result.kind === 'commande' && result.input).toBe('.ajustement L : M');
+	});
+
+	it('.croiser avec une ligne écartée ne propose pas la piste .filtrer (qui la refuserait)', () => {
+		const a = atelierWith({ L: 'a ; b ;  ; a', M: 'x ; y ; x ; y' });
+
+		const result = crossCommand(a, 'L M');
+
+		expect(result.ok).toBe(true);
+		if (result.ok) expect(result.text).not.toContain('.filtrer');
+	});
+
+	it('« Loi avec probabilités » : même raison au bouton et à la commande', () => {
+		const a = atelierWith({ L: '1 ; 2', M: ' ;  ; 0,5 ; 0,5' });
+		const desk = new CalcDesk(a);
+
+		const reason = actionsFor(listOf(a, 'L'), a).find((x) => x.id === 'law:M')?.disabledReason;
+		desk.runFromPanel('law:M', 'L');
+
+		expect(reason).toBe(desk.entries.at(-1)?.text);
+	});
+
+	it('ajustement depuis la carte sans ligne commune : bouton désactivé, et la raison au clic', () => {
+		const a = atelierWith({ L: '1 ; 2 ; 3', M: ' ;  ;  ; 4 ; 5 ; 6' });
+		const desk = new CalcDesk(a);
+
+		const reason = actionsFor(listOf(a, 'L'), a).find((x) => x.id === 'fit:M')?.disabledReason;
+		desk.runFromPanel('fit:M', 'L');
+
+		expect(reason).toBe('L et M n’ont aucune ligne remplie en commun.');
+		expect(desk.entries.at(-1)?.text).toBe(reason);
+	});
+
+	it('un diagramme avec effectifs sans ligne commune le dit', () => {
+		const a = atelierWith({ L: '10 ; 20', M: ' ;  ; 1 ; 2' });
+
+		const chart = listChart(a, 'L', 'M');
+
+		expect(chart).toEqual({ ok: false, message: 'L et M n’ont aucune ligne remplie en commun.' });
 	});
 });

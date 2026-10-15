@@ -32,6 +32,11 @@ export function categoriesOn(list: ListObject, rows: readonly number[]): string[
 	return rows.map((row) => byRow.get(row)!);
 }
 
+/** « L et M n’ont aucune ligne remplie en commun. » — le bouton et la commande disent la même chose. */
+export function noCommonRowsMessage(a: ListObject, b: ListObject): string {
+	return `${a.name} et ${b.name} n’ont aucune ligne remplie en commun.`;
+}
+
 /** « 1 ligne incomplète écartée », « 2 lignes incomplètes écartées ». */
 export function droppedNote(count: number): string {
 	return count === 1 ? '1 ligne incomplète écartée' : `${count} lignes incomplètes écartées`;

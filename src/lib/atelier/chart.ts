@@ -15,7 +15,7 @@
 
 import type { Atelier } from './atelier.svelte';
 import { isList, isQualitative, type ListObject } from './types';
-import { commonRows, droppedNote, valuesOn } from './pairs';
+import { commonRows, droppedNote, noCommonRowsMessage, valuesOn } from './pairs';
 import { summarizeTable } from '$lib/statistics/describe';
 import { Fraction } from '$lib/statistics/fraction';
 import { parseStatChartContent } from '$lib/ubumark/parser/stat-chart-parser';
@@ -137,6 +137,7 @@ export function listChart(
 		}
 		// Une valeur et son effectif sur la même LIGNE (P1)
 		const common = commonRows([list, other]);
+		if (common.rows.length === 0) return { ok: false, message: noCommonRowsMessage(list, other) };
 		values = valuesOn(list, common.rows);
 		counts = valuesOn(other, common.rows);
 		dropped = common.dropped;

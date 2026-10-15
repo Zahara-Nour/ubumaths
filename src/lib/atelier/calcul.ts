@@ -11,7 +11,7 @@
  */
 
 import type { Atelier, Created, Refused } from './atelier.svelte';
-import type { AtelierObject, ListObject, ObjectKind } from './types';
+import type { AtelierObject, ObjectKind } from './types';
 import { dependsOnMessage, isList, isQualitative, parametersOf } from './types';
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
 import type { Provenance } from './parse';
@@ -167,7 +167,7 @@ import {
 import { listCitedMessage } from './list-cited';
 import { cellCitedIn, cellInCalculMessage } from './grid';
 import { functionsListing, valuesListing } from './listing';
-import { commonRows, droppedNote, valuesOn } from './pairs';
+import { commonRows, droppedNote, noCommonRowsMessage, valuesOn } from './pairs';
 
 // =============================================================================
 // Types
@@ -1287,13 +1287,13 @@ export function isExportCommand(engine: WebReplEngine, text: string): boolean {
 	return catalogCommandOf(engine, resolveCommand(trimmed).slice(1))?.name === 'export';
 }
 
-/** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
 /**
- * `.ajustement L : M`, `.stats L …` qui citent PLUSIEURS listes : chacune est
- * remplacée par ses nombres des lignes où toutes en ont un (P1), et la ligne
- * dit combien elle en écarte. Par rang, une case vide au milieu d'une liste
- * décalait toutes les paires suivantes, en silence. Le reste de la commande
- * (moteur, refus) ne change pas.
+ * `.ajustement L : M`, `.stats L : M` (valeurs : effectifs) — UNE liste de chaque
+ * côté du « : » : chacune est remplacée par ses nombres des lignes où les deux
+ * en ont un (P1), et la ligne dit combien elle en écarte. Par rang, une case
+ * vide au milieu d'une liste décalait toutes les paires suivantes, en silence.
+ * `.stats L ; M` RÉUNIT deux séries : rien à apparier, la commande passe telle
+ * quelle (revue de la PR 3b : elle perdait des valeurs).
  */
 function withListsByRow(session: CalcSession, input: string): CalcResult {
 	const resolved = resolveCommand(input);
@@ -1303,24 +1303,35 @@ function withListsByRow(session: CalcSession, input: string): CalcResult {
 	if (known === undefined || !SERIES_COMMANDS.has(known.name)) return runCommand(session, input);
 
 	const argument = resolved.slice(space + 1);
-	const standalone = (name: string) => new RegExp(`(?<![A-Za-z_])${name}(?![A-Za-z_0-9(])`, 'g');
-	const cited = session.atelier.objects.filter(
-		(o): o is ListObject =>
-			isList(o) && o.status === 'ok' && !isQualitative(o) && standalone(o.name).test(argument)
-	);
-	if (cited.length < 2) return runCommand(session, input);
+	const pair = /^\s*([A-Za-z](?:_\d+)?)\s*:\s*([A-Za-z](?:_\d+)?)(?![A-Za-z_0-9(])/.exec(argument);
+	const listNamed = (name: string | undefined) => {
+		const object = name === undefined ? undefined : session.atelier.get(name);
+		return object !== undefined &&
+			isList(object) &&
+			object.status === 'ok' &&
+			!isQualitative(object)
+			? object
+			: null;
+	};
+	const xs = listNamed(pair?.[1]);
+	const ys = listNamed(pair?.[2]);
+	if (pair === null || xs === null || ys === null) return runCommand(session, input);
 
-	const { rows, dropped } = commonRows(cited);
-	let rewritten = argument;
-	for (const list of cited) {
-		rewritten = rewritten.replace(standalone(list.name), valuesOn(list, rows).join(' ; '));
-	}
-	const result = runCommand(session, `${resolved.slice(0, space)} ${rewritten}`);
-	if (dropped === 0 || result.kind !== 'commande') return result;
+	const { rows, dropped } = commonRows([xs, ys]);
+	if (rows.length === 0) return { kind: 'refus', message: noCommonRowsMessage(xs, ys) };
+	const series = `${valuesOn(xs, rows).join(' ; ')} : ${valuesOn(ys, rows).join(' ; ')}`;
+	const rest = argument.slice(pair[0].length);
+	const result = runCommand(session, `${resolved.slice(0, space)} ${series}${rest}`);
+	if (result.kind !== 'commande') return result;
 	// L'écho reste ce que l'élève a tapé ; la note dit les lignes écartées
-	return { ...result, input, ...notesOf(result.note ?? null, droppedNote(dropped)) };
+	return {
+		...result,
+		input,
+		...(dropped > 0 && notesOf(result.note ?? null, droppedNote(dropped)))
+	};
 }
 
+/** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
 function runCommand(session: CalcSession, input: string): CalcResult {
 	const { engine } = session;
 	const resolved = resolveCommand(input);

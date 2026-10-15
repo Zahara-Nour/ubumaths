@@ -395,7 +395,11 @@ gardée telle quelle, et la vue dit « Les formules arrivent dans un prochain lo
   (carte et `.ajustement L : M` / `.stats` à plusieurs listes dans Calcul), effectifs (« Statistiques
   avec effectifs », diagramme) et tableau croisé (`.croiser` et son bouton) prennent les lignes où
   chaque liste a une valeur (`commonRows`) et disent « N lignes incomplètes écartées » ; refus
-  seulement s'il n'en reste aucune. Par rang, une case vide décalait toutes les paires suivantes.
+  seulement s'il n'en reste aucune (« L et M n’ont aucune ligne remplie en commun. », la même
+  phrase au bouton désactivé et au clic, `noCommonRowsMessage`). Par rang, une case vide décalait
+  toutes les paires suivantes. Dans Calcul, seule la forme `A : B` (une liste de chaque côté)
+  s'apparie : `.stats L ; M` RÉUNIT deux séries, rien n'y est écarté ; l'écho reste ce qui a été
+  tapé. `.croiser` qui écarte une ligne ne propose pas la piste `.filtrer` (qui la refuserait).
   Une **loi** (`.simuler`, `.fréquence`, `.échantillons`, « Loi avec probabilités ») n'écarte pas :
   une valeur sans probabilité sur sa ligne refuse, en citant la ligne (`lawMismatchMessage`).
   `.filtrer` garde son refus d'une liste trouée (« L'entrée n° 2 de L est vide… »).

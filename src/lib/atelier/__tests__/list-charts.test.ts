@@ -71,7 +71,10 @@ describe('actions d’une liste', () => {
 		for (const id of ['stats:N', 'chart:N']) {
 			expect(actions.find((a) => a.id === id)?.disabledReason).toContain('aucune ligne');
 		}
-		expect(actions.find((a) => a.id === 'scatter:N')?.disabledReason).toBeUndefined();
+		// Le nuage aussi : rien à tracer (revue de la PR 3b)
+		expect(actions.find((a) => a.id === 'scatter:N')?.disabledReason).toBe(
+			'L et N n’ont aucune ligne remplie en commun.'
+		);
 	});
 
 	it('partenaire de longueur différente : actions « avec effectifs » actives', () => {

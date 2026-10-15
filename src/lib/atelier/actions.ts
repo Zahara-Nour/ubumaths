@@ -28,7 +28,7 @@ import {
 import { crossProblem } from './cross';
 import { compareProblem } from './compare';
 import { derivativeOf, displayName, reciprocalOf } from './names';
-import { commonRows, lawMismatchMessage } from './pairs';
+import { commonRows, lawMismatchMessage, noCommonRowsMessage } from './pairs';
 
 /**
  * Ce que les cartes qui SUIVENT une fonction ne savent pas faire (`f′`, `f⁻¹`),
@@ -222,8 +222,8 @@ function partnerActions(
 			{
 				id: `law:${partner.name}`,
 				label: `Loi avec probabilités ${partner.name}`,
-				...(lawReason(object, partner, reason) !== undefined && {
-					disabledReason: lawReason(object, partner, reason)
+				...(lawReason(object, partner, words) !== undefined && {
+					disabledReason: lawReason(object, partner, words)
 				})
 			},
 			{ id: `simulate:${partner.name}`, label: `Simuler avec probabilités ${partner.name}` },
@@ -237,8 +237,20 @@ function partnerActions(
 						disabledReason: compareProblem(object, partner)
 					})
 			},
-			{ id: `scatter:${partner.name}`, label: `Nuage avec ${partner.name}` },
-			{ id: `fit:${partner.name}`, label: `Ajustement avec ${partner.name}` }
+			{
+				id: `scatter:${partner.name}`,
+				label: `Nuage avec ${partner.name}`,
+				...(pairsProblem(object, partner) !== undefined && {
+					disabledReason: pairsProblem(object, partner)
+				})
+			},
+			{
+				id: `fit:${partner.name}`,
+				label: `Ajustement avec ${partner.name}`,
+				...(pairsProblem(object, partner) !== undefined && {
+					disabledReason: pairsProblem(object, partner)
+				})
+			}
 		].map((action) =>
 			// « Comparer » garde SA raison, celle que donne aussi la commande (revue)
 			words === undefined || action.id.startsWith('compare:')
@@ -251,6 +263,32 @@ function partnerActions(
 }
 
 /**
+ * La raison d'une « Loi avec probabilités » désactivée — celle que donne la
+ * commande (`lawFractions`) : une partenaire de mots ou en erreur, sinon une
+ * ligne incomplète. Jamais le mot « effectif », hors sujet pour une loi (revue).
+ */
+function lawReason(
+	object: AtelierObject,
+	partner: AtelierObject,
+	words: string | undefined
+): string | undefined {
+	if (words !== undefined) return words;
+	if (!isList(object) || !isList(partner)) return undefined;
+	if (partner.status !== 'ok') return countsProblem(object, partner);
+	return lawMismatchMessage(object, partner) ?? undefined;
+}
+
+/** Un nuage ou un ajustement sans aucune ligne commune : la raison, la même qu'au clic */
+function pairsProblem(object: AtelierObject, partner: AtelierObject): string | undefined {
+	if (!isList(object) || !isList(partner) || isQualitative(object) || isQualitative(partner)) {
+		return undefined;
+	}
+	return commonRows([object, partner]).rows.length === 0
+		? noCommonRowsMessage(object, partner)
+		: undefined;
+}
+
+/**
  * Pourquoi `partner` ne peut pas donner les effectifs de `object`, s'il ne le
  * peut pas. Une action qui ne ferait qu'échouer le dit AVANT le clic (revue
  * du lot 5 des outils statistiques).
@@ -259,17 +297,6 @@ function partnerActions(
  * paires complètes et disent ce qu'ils écartent (§4 L1). Les effectifs aussi,
  * depuis la grille (P1) : refus seulement sans aucune ligne en commun.
  */
-/** La raison d'une « Loi avec probabilités » désactivée : celle des effectifs, ou une ligne incomplète */
-function lawReason(
-	object: AtelierObject,
-	partner: AtelierObject,
-	countsReason: string | undefined
-): string | undefined {
-	if (countsReason !== undefined) return countsReason;
-	if (!isList(object) || !isList(partner)) return undefined;
-	return lawMismatchMessage(object, partner) ?? undefined;
-}
-
 function countsProblem(object: AtelierObject, partner: AtelierObject): string | undefined {
 	if (!isList(object) || !isList(partner)) return undefined;
 	if (partner.status !== 'ok') {

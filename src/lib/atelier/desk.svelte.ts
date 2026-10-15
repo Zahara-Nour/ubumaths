@@ -62,7 +62,7 @@ import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
-import { commonRows, droppedNote, valuesOn } from './pairs';
+import { commonRows, droppedNote, noCommonRowsMessage, valuesOn } from './pairs';
 
 // =============================================================================
 // Types
@@ -782,11 +782,17 @@ export class CalcDesk {
 
 		// Les points des lignes où les deux colonnes ont un nombre (P1)
 		const { rows, dropped } = commonRows([xs, ys]);
+		if (rows.length === 0) {
+			this.#push({ label: `Ajustement ${name}`, text: noCommonRowsMessage(xs, ys), failed: true });
+			return;
+		}
 		const xValues = valuesOn(xs, rows);
 		const yValues = valuesOn(ys, rows);
 		const fit = fitAffine(xValues, yValues);
 		if (!fit.ok) {
-			this.#push({ label: `Ajustement ${name}`, text: fit.message, failed: true });
+			// Les lignes écartées expliquent souvent un « il faut deux points »
+			const text = [fit.message, ...(dropped > 0 ? [droppedNote(dropped)] : [])].join(' — ');
+			this.#push({ label: `Ajustement ${name}`, text, failed: true });
 			return;
 		}
 
