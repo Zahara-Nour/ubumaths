@@ -331,7 +331,8 @@ contenu. Elle est rangée sur l'objet, parce que `recomputeAll` relit toujours l
 
 Tableur intégré, lot 1 (phase 0 : [atelier-tableur-phase0.md](../wip/atelier-tableur-phase0.md),
 décisions de David du 2026-10-15 ; journal : [atelier-tableur-progress.md](../wip/atelier-tableur-progress.md)).
-Pas encore de formules : une cellule est du texte brut.
+Pas encore de formules : une cellule est du texte brut ; une cellule qui commence par `=` est
+gardée telle quelle, et la vue dit « Les formules arrivent dans un prochain lot. ».
 
 - **Une liste est une colonne nommée** (T1). Ses cellules sont les entrées de sa définition, une
   par ligne : `12 ;  ; 15` = la ligne 2 est vide (`entriesOf`, `definitionFrom`, `grid.ts`). Les
@@ -349,16 +350,38 @@ Pas encore de formules : une cellule est du texte brut.
   impossible). Une colonne nommée est réécrite par `update` (la liste garde sa colonne) ; une
   colonne sans nom fait seulement monter `revision`. Un « ; » final n'écrit rien en dessous.
 - **Créer une liste** (« + Liste », `L = …` dans Calcul, `.simuler`, `.filtrer`, « Garder ») prend
-  la **première colonne libre** (ni liste ni cellule) ; aucune → « La grille est pleine : vide une
+  la **première colonne libre** (ni liste, ni cellule, ni titre) ; aucune → « La grille est pleine : vide une
   colonne pour créer une liste. ». `nameColumn` fait d'une colonne remplie une liste (refus de nom
   d'aujourd'hui, `MAX_LISTS`) ; `unnameColumn` supprime la liste (cascade) et **garde les
-  cellules**, annulable par `undoRemoval`. Supprimer la liste depuis sa carte **vide sa colonne**
-  (T3).
-- `cell`, `listAt`, `columnOf`, `usedExtent` (zone utilisée), `freeColumns` : ce que lit la vue.
+  cellules** et le titre, annulable par `undoRemoval`. Supprimer la liste depuis sa carte **vide sa
+  colonne**, titre compris (T3).
+- **Titres de colonnes** (T4) : texte libre de 40 caractères au plus (`MAX_TITLE_LENGTH`),
+  `titleOf` / `setTitle`, de toute colonne, nommée ou non ; rangés (`grid.titles`, par lettre),
+  suivent la fusion. Une colonne DEMANDÉE (relecture, fusion, nommage) peut porter un titre ; la
+  recherche d'une colonne libre les évite.
+- **Coller** (`pasteTable`, `readTable`) : lignes puis tabulations (LibreOffice, Excel, Google
+  Sheets, page web) ; sans tabulation, des « ; » sur chaque ligne d'un texte de plusieurs lignes
+  séparent des colonnes ; cases entre guillemets d'Excel comprises. Une première ligne de mots
+  au-dessus de nombres devient les titres (`hasTitleRow`). Posé à partir du coin de la zone
+  sélectionnée, tout ou rien ; un tableau qui déborde de A1-Z200 est refusé **entier**, avec sa
+  taille (« 250 lignes à partir de la ligne 1 : la grille en garde 200. Rien n’a été collé. »).
+  Une case collée reste une case : son « ; » devient « , », ses retours à la ligne des espaces.
+- **Copier** (`tableText`) : la zone en tabulations et lignes ; **télécharger**
+  (`csvText`, bouton « Télécharger en CSV », désactivé avec sa raison sur une grille vide) : « ; »
+  entre les cases, titres en tête, CRLF, marque UTF-8. Les deux passent par `exportText` : un
+  nombre sort en décimal à virgule (`1/4` → `0,25` ; un tableur lirait `1/4` comme une date) ; un
+  mot qui commence par `=`, `+`, `-`, `@` est précédé d'une apostrophe (injection de formule : une
+  grille peut venir d'un lien reçu).
+- `cell`, `titleOf`, `listAt`, `columnOf`, `usedExtent` (zone utilisée), `freeColumns` : ce que
+  lit la vue.
 - La vue (`DataView.svelte`) : barre de cellule (adresse, contenu brut, modifiable), clavier de
-  tableur (Entrée, Tab, Échap, flèches, F2, Suppr ; taper remplace), zone utilisée + 10 lignes et 3
-  colonnes (au moins 10 × 5), en-tête « nommer » / nom de liste « × », aperçu de chaque liste sous
-  son en-tête, diagrammes sous la grille. La validation (pas la frappe) recalcule.
+  tableur (Entrée, Tab, Échap, flèches, F2, Suppr ; taper remplace), **zone** sélectionnée par Maj
+  - flèche, Maj + clic ou glisser (Suppr la vide, Ctrl/⌘+C la copie, Ctrl/⌘+V colle à son coin),
+    zone utilisée + 10 lignes et 3 colonnes (au moins 10 × 5), en-tête « nommer » / nom de liste
+    « × » et titre, aperçu de chaque liste sous son en-tête, diagrammes sous la grille. La validation
+    (pas la frappe) recalcule. ⚠️ Safari n'envoie `paste` (et `copy` sans texte sélectionné) qu'à un
+    champ : Ctrl/⌘+V ou C sur une cellule donne le focus, le temps du geste, à un champ hors de
+    l'écran (`relay`).
 - **Calcul ne lit pas une cellule** (Q1) : un calcul qui échoue et cite `B2` répond « B2 est une
   cellule de la grille : nomme sa colonne pour t’en servir. » (`cellCitedIn`, `calcul.ts`).
 
@@ -370,8 +393,8 @@ Pas encore de formules : une cellule est du texte brut.
   `setSlider`, `slideTo`, `setSequence`, `setDisplay`, `setSequenceDisplay`, `setPlotted` ;
 - **supprimer** : `remove`, `removalOf`, `removeWithDependents`, `undoRemoval` ;
 - **dépendances** : `dependents` ; toute mutation finit par `recomputeAll` (relit tout) ;
-- **grille** : `cell`, `editCells`, `nameColumn`, `unnameColumn`, `listAt`, `columnOf`,
-  `usedExtent`, `freeColumns` ;
+- **grille** : `cell`, `editCells`, `pasteTable`, `titleOf`, `setTitle`, `nameColumn`,
+  `unnameColumn`, `listAt`, `columnOf`, `usedExtent`, `freeColumns` ;
 - **sauvegarde** : `serialize`, `restore` ; `revision` est le **seul** signal « quelque chose a
   changé » (la session l'écoute pour enregistrer).
 
@@ -691,7 +714,8 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   l'arrivée (`g`) emmène sa réciproque (`g⁻¹`, `mergeInto`). Un objet abîmé est
   écarté seul (`salvageObjects`), un réglage abîmé est oublié, l'objet gardé ; un intervalle refusé à la relecture (lien, fusion) aussi, la fonction gardée sur son domaine. Un état d'une version
   **plus récente** n'est ni relu ni écrasé. **Version 2** (2026-10-15) : la colonne de chaque liste
-  (`column`, `A`-`Z`) et les cellules des colonnes sans nom (`grid.cells`, triées une par une par
+  (`column`, `A`-`Z`), les titres des colonnes (`grid.titles`) et les cellules des colonnes sans nom
+  (`grid.cells`, sans « ; », triés un par un par
   `salvageGrid`, réunies par `salvageState`) ; une version 1 se relit, ses listes placées en A, B…
   dans l'ordre des cartes. Sans la version 2, un onglet resté sur l'ancien code relirait l'état en
   jetant la grille, puis l'enregistrerait. Chaque issue est nommée (`LoadOutcome`,
@@ -1375,8 +1399,8 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 
 - `/calc` existe encore (`/cas`, elle, est retirée depuis le 2026-10-13) ;
 - **v2** géométrie à la souris, **v3** Python : non commencées, sans phase 0 ;
-- tableur intégré (option C, 2026-10-15) : lot 1 en cours — grille de valeurs (PR 1) ; à venir :
-  collage / copie / CSV / titres, annulation / appariement par ligne, puis les formules ;
+- tableur intégré (option C, 2026-10-15) : lot 1 en cours — grille de valeurs (PR 1), collage /
+  copie / CSV / titres (PR 2) ; à venir : annulation / appariement par ligne, puis les formules ;
 - dettes connues : action « Renommer » encore désactivée (« prochain lot »), `recomputeAll`
   réassigne tout le tableau (jamais mesuré), saisie des unités sans palette.
 

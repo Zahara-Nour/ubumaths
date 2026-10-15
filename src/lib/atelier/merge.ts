@@ -59,6 +59,10 @@ function arrivingColumns(state: AtelierState): string[] {
 		const at = readCellName(address);
 		if (at !== null) add(columnLetter(at.column));
 	}
+	// Une colonne qui n'a qu'un titre est une colonne aussi (T4)
+	for (const letter of Object.keys(state.grid?.titles ?? {})) {
+		if (columnOfLetter(letter) !== null) add(letter);
+	}
 	// De gauche à droite, pour que la grille reçue garde son ordre
 	return slots.sort((a, b) => columnRank(a) - columnRank(b));
 }
@@ -180,6 +184,11 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		const column = at === null ? undefined : placed.get(columnLetter(at.column));
 		return at === null || column === undefined ? [] : [{ column, row: at.row, text }];
 	});
+	for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
+		const column = placed.get(letter);
+		if (column !== undefined) atelier.setTitle(column, title);
+	}
+
 	// Un refus se dit dans le rapport, jamais en silence (revue)
 	const written = cells.length > 0 ? atelier.editCells(cells) : null;
 	if (written !== null && !written.ok) refused.push({ name: 'grille', reason: written.message });

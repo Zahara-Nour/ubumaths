@@ -15,7 +15,7 @@
 import { z } from 'zod';
 import type { ObjectKind } from './types';
 import { MAX_DEFINITION_LENGTH, MAX_INTERVAL_LENGTH } from './types';
-import { MAX_CELL_LENGTH, readCellName } from './grid';
+import { MAX_CELL_LENGTH, MAX_TITLE_LENGTH, readCellName } from './grid';
 import { sequenceDisplaySchema, storedDisplaySchema, type StoredDisplay } from './display';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 
@@ -144,6 +144,12 @@ const storedCellSchema = z.tuple([
 		.refine((text) => !text.includes(';'))
 ]);
 
+/** Un titre rangé : sa colonne (`B`), son texte non vide. */
+const storedTitleSchema = z.tuple([
+	z.string().regex(/^[A-Z]$/),
+	z.string().trim().min(1).max(MAX_TITLE_LENGTH)
+]);
+
 export interface StoredObject {
 	readonly name: string;
 	readonly kind: ObjectKind;
@@ -168,6 +174,8 @@ export interface StoredObject {
 /** Les cellules des colonnes SANS nom ; celles d'une liste sont dans sa définition. */
 export interface StoredGrid {
 	readonly cells?: Readonly<Record<string, string>>;
+	/** Les titres des colonnes (T4), par lettre (`B`). */
+	readonly titles?: Readonly<Record<string, string>>;
 }
 
 export interface AtelierState {
@@ -272,18 +280,29 @@ export function salvageObjects(candidates: readonly unknown[]): {
  * long ou qui n'est pas du texte écarte la cellule, jamais la grille.
  */
 export function salvageGrid(candidate: unknown): { grid: StoredGrid; dropped: number } {
-	const cells = (candidate as { cells?: unknown } | null | undefined)?.cells;
-	if (cells === null || typeof cells !== 'object' || Array.isArray(cells)) {
-		return { grid: {}, dropped: 0 };
-	}
-	const kept: Record<string, string> = {};
 	let dropped = 0;
-	for (const entry of Object.entries(cells)) {
-		const one = storedCellSchema.safeParse(entry);
-		if (one.success && one.data[1].trim() !== '') kept[one.data[0]] = one.data[1];
-		else dropped++;
-	}
-	return { grid: { cells: kept }, dropped };
+	const kept = <T extends readonly [string, string]>(
+		entries: unknown,
+		schema: z.ZodType<T>,
+		empty: (text: string) => boolean
+	): Record<string, string> => {
+		const result: Record<string, string> = {};
+		if (entries === null || typeof entries !== 'object' || Array.isArray(entries)) return result;
+		for (const entry of Object.entries(entries)) {
+			const one = schema.safeParse(entry);
+			if (one.success && !empty(one.data[1])) result[one.data[0]] = one.data[1];
+			else if (!one.success) dropped++;
+		}
+		return result;
+	};
+	const raw = candidate as { cells?: unknown; titles?: unknown } | null | undefined;
+	const cells = kept(raw?.cells, storedCellSchema, (text) => text.trim() === '');
+	const titles = kept(raw?.titles, storedTitleSchema, () => false);
+	const grid: StoredGrid = {
+		...(Object.keys(cells).length > 0 && { cells }),
+		...(Object.keys(titles).length > 0 && { titles })
+	};
+	return { grid, dropped };
 }
 
 /** L'état relu d'une enveloppe validée : objets puis cellules, chacun trié à part. */
@@ -293,8 +312,8 @@ export function salvageState(shell: z.infer<typeof atelierShellSchema>): {
 } {
 	const { objects, dropped } = salvageObjects(shell.objects);
 	const { grid, dropped: lostCells } = salvageGrid(shell.grid);
-	// Sans cellule, pas de grille : l'état relu est celui qui a été rangé
-	const kept = Object.keys(grid.cells ?? {}).length > 0 ? { grid } : {};
+	// Sans cellule ni titre, pas de grille : l'état relu est celui qui a été rangé
+	const kept = Object.keys(grid).length > 0 ? { grid } : {};
 	return { state: { version: shell.version, objects, ...kept }, dropped: dropped + lostCells };
 }
 

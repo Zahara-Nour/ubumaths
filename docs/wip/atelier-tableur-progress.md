@@ -35,3 +35,15 @@ Worktree `../ubumaths-wt-tableur`.
   boutons de création) — déjà vrai dans la vue Calcul, avant ce chantier.
 - `pnpm test:client src/lib/atelier src/lib/components/atelier` d'un seul coup : le navigateur de
   test se ferme en route (« rpc is closed »), 8 à 13 fichiers jamais lancés ; en deux lots, 51/51.
+
+## PR 2 du lot 1 — coller, copier, CSV, titres (`feat/atelier-grille-coller`)
+
+- [x] tests rouges (modèle : `grille-coller.test.ts` ; vue : 9 tests dans `DataView.svelte.test.ts`)
+- [x] `readTable` (tabulations, « ; » multiligne, guillemets d'Excel), `hasTitleRow`, `exportText`
+      (décimal à virgule, apostrophe devant `=+-@` : injection de formule), `tableText`, `csvText`
+- [x] `Atelier.pasteTable` (tout ou rien, refus avec la taille), `titleOf` / `setTitle` ; titres
+      rangés (`grid.titles`), suivent la fusion ; supprimer une liste vide son titre (T3)
+- [x] vue : zone (Maj + flèche, Maj + clic, glisser), Suppr sur la zone, Ctrl/⌘+C et V par un
+      relais hors écran (Safari), titre dans l'en-tête, « Télécharger en CSV », note sur `=`
+      (oubli de la PR 1, phase 0 §lot 1)
+- [x] vrai presse-papiers de Chromium éprouvé (Ctrl+C puis Ctrl+V au clavier) ; capture Playwright
