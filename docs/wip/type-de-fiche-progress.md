@@ -72,6 +72,7 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
       en option de la fiche d'exercices (amendement de David), corrigé toujours détaillé, chiffres
       arabes, cadre unique si « réponses sur le sujet ». 12 styles × 4 types × FR/EN compilés par
       le compilateur de prod. Reste : CONTEXT.md (entrées de l'ADR), tests d'intégration à lancer.
-- [ ] Lot 2
+- [x] Lot 2 — styles Contrôle, Examen, Devoirs, Quiz retirés du menu (`BUILT_IN_STYLE_OPTIONS`),
+      toujours résolus ; aucune fiche ne les désignait
 - [ ] Lot 3
 - [ ] Lot 4

@@ -22,7 +22,7 @@ import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
-import { BUILT_IN_STYLES, DEFAULT_STYLE_ID } from '../../src/lib/typst/templates/styles';
+import { BUILT_IN_STYLE_OPTIONS, DEFAULT_STYLE_ID } from '../../src/lib/typst/templates/styles';
 import { DEFAULT_TEMPLATE_IDS } from '../../src/lib/typst/templates/default-templates';
 import {
 	listWorksheetStyles,
@@ -211,12 +211,14 @@ afterAll(async () => {
 });
 
 describe('les styles proposés au prof', () => {
-	it('les 12 styles de Chiphre, dans l’ordre du code, puis les siens ; pas ceux de l’admin', async () => {
+	it('les 8 styles de Chiphre du menu (ADR 0030), dans l’ordre du code, puis les siens ; pas ceux de l’admin', async () => {
 		const ownId = await seedStyle(teacherId, 'du prof');
 		const styles = await listWorksheetStyles(teacherClient as never, teacherId);
 		const ids = styles.map((s) => s.id);
 
-		expect(ids.slice(0, BUILT_IN_STYLES.length)).toEqual(BUILT_IN_STYLES.map((s) => s.id));
+		expect(ids.slice(0, BUILT_IN_STYLE_OPTIONS.length)).toEqual(
+			BUILT_IN_STYLE_OPTIONS.map((s) => s.id)
+		);
 		expect(ids).toContain(ownId);
 		expect(ids).not.toContain(adminStyleId);
 	});

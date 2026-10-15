@@ -77,8 +77,22 @@ export const BUILT_IN_STYLES: WorksheetStyle[] = DEFAULT_TEMPLATES.map((template
 			}
 );
 
-/** Les styles de Chiphre, dans l'ordre du menu */
-export const BUILT_IN_STYLE_OPTIONS: StyleOption[] = BUILT_IN_STYLES.map((style) => ({
+/**
+ * Styles qui imitaient un type de fiche (Contrôle, Examen, Devoirs, Quiz) :
+ * le type décide désormais de l'en-tête (ADR 0030). Retirés du menu, mais
+ * toujours résolus : une fiche qui en désigne un s'imprime comme avant.
+ */
+const RETIRED_STYLE_IDS: readonly string[] = [
+	DEFAULT_TEMPLATE_IDS.assessment,
+	DEFAULT_TEMPLATE_IDS.exam,
+	DEFAULT_TEMPLATE_IDS.homework,
+	DEFAULT_TEMPLATE_IDS.quiz
+];
+
+/** Les styles de Chiphre proposés au menu, dans l'ordre du code */
+export const BUILT_IN_STYLE_OPTIONS: StyleOption[] = BUILT_IN_STYLES.filter(
+	(style) => !RETIRED_STYLE_IDS.includes(style.id)
+).map((style) => ({
 	id: style.id,
 	name: style.name,
 	description: style.description

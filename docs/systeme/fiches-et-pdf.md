@@ -345,6 +345,8 @@ n'y accède (`tests/integration/styles-de-fiche.test.ts`).
 
 **Choisir le style** (lot 3b) : menu « Style » de la fiche (`MetadataCards`) et de la création
 (`StyleSelector`, « Fiche élève » présélectionné, pas d'option « Aucun ») : les styles de Chiphre
+(`BUILT_IN_STYLE_OPTIONS` : sans « Contrôle », « Examen », « Devoirs », « Quiz », qui imitaient
+un type ; retirés du menu, toujours résolus pour une fiche qui en désigne un — ADR 0030, lot 2)
 dans l'ordre du code, puis ceux du prof (`listWorksheetStyles`, client du prof). Fiche sans style
 → « Fiche élève (par défaut) » ; style illisible → idem. Choisir écrit `style_id` (Zod uuid) ;
 pour un style de Chiphre, `template_id` prend le même identifiant (repli si le code revenait en
