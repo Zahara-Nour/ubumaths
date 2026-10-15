@@ -525,6 +525,79 @@ describe('coller et copier (§4)', () => {
 });
 
 // =============================================================================
+// PR 3a : annuler dans la grille (T6)
+// =============================================================================
+
+describe('annuler dans la grille (T6)', () => {
+	it('Ctrl/⌘+Z annule la saisie, Ctrl/⌘+Maj+Z la rétablit', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('12{Enter}');
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('{ControlOrMeta>}z{/ControlOrMeta}');
+		await settle();
+		expect(atelier.cell(0, 1)).toBe('');
+
+		await userEvent.keyboard('{ControlOrMeta>}{Shift>}z{/Shift}{/ControlOrMeta}');
+		await settle();
+		expect(atelier.cell(0, 1)).toBe('12');
+	});
+
+	it('Ctrl/⌘+Z dans la grille n’annule pas une suppression de carte', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'value', name: 'a', definition: '2' });
+		atelier.editCells([{ column: 1, row: 1, text: '5' }]);
+		const { container } = await openData(atelier);
+		// Par le vrai bouton de la carte : c'est lui qui arme le Ctrl+Z de l'atelier
+		const carte = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'a'
+		);
+		(carte?.querySelector('button') as HTMLButtonElement).click();
+		await settle();
+		const supprimer = [...container.querySelectorAll('.action')].find(
+			(b) => b.textContent?.trim() === 'Supprimer'
+		) as HTMLButtonElement;
+		supprimer.click();
+		await settle();
+		expect(atelier.get('a')).toBeUndefined();
+		// Sans l'arrêt du geste, l'atelier tentait AUSSI d'annuler la suppression
+		// (refusée, la grille ayant changé) et affichait un avertissement hors sujet
+		const undoRemoval = vi.spyOn(atelier, 'undoRemoval');
+
+		await userEvent.click(cellAt(container, 'B1')!);
+		await userEvent.keyboard('{ControlOrMeta>}z{/ControlOrMeta}');
+		await settle();
+
+		expect(atelier.cell(1, 1)).toBe('');
+		expect(atelier.get('a')).toBeUndefined();
+		expect(undoRemoval).not.toHaveBeenCalled();
+		undoRemoval.mockRestore();
+	});
+
+	it('les boutons « Annuler » et « Rétablir » : désactivés avec leur raison quand il n’y a rien', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+		const button = (label: string) =>
+			[...container.querySelectorAll('.outils button')].find(
+				(b) => b.textContent?.trim() === label
+			) as HTMLButtonElement;
+
+		expect(button('Annuler').disabled).toBe(true);
+		expect(button('Annuler').title).toContain('Rien à annuler');
+
+		atelier.editCells([{ column: 0, row: 1, text: '3' }]);
+		await settle();
+		button('Annuler').click();
+		await settle();
+
+		expect(atelier.cell(0, 1)).toBe('');
+		expect(button('Rétablir').disabled).toBe(false);
+	});
+});
+
+// =============================================================================
 // Lot 5 (outils statistiques) : diagramme vivant, sous la grille
 // =============================================================================
 

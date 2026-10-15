@@ -378,6 +378,14 @@ gardée telle quelle, et la vue dit « Les formules arrivent dans un prochain lo
   nombre sort en décimal à virgule (`1/4` → `0,25` ; un tableur lirait `1/4` comme une date) ; un
   mot qui commence par `=`, `+`, `-`, `@` est précédé d'une apostrophe (injection de formule : une
   grille peut venir d'un lien reçu).
+- **Annuler dans la grille** (T6, exception à D6 limitée à la grille) : `undoGrid` / `redoGrid`,
+  Ctrl/⌘+Z et Ctrl/⌘+Maj+Z (ou Ctrl+Y) sur une cellule, boutons « Annuler » / « Rétablir »
+  (désactivés avec leur raison). Un geste = une saisie, un collage (cases et titres ensemble), un
+  effacement de zone ou un titre ; `MAX_GRID_UNDO` (100) gestes, pas rangés. Une case changée
+  ailleurs depuis (carte, `L = …`) refuse l'annulation et oublie l'historique — jamais par-dessus ;
+  relire un atelier l'oublie aussi. Nommer ou supprimer une liste reste un geste d'objet, avec son
+  propre « Annuler ». Le Ctrl+Z de la grille s'arrête à la cellule : l'atelier écoute Ctrl+Z sur
+  la fenêtre pour la dernière suppression de carte.
 - `cell`, `titleOf`, `listAt`, `columnOf`, `usedExtent` (zone utilisée), `freeColumns` : ce que
   lit la vue.
 - La vue (`DataView.svelte`) : barre de cellule (adresse, contenu brut, modifiable), clavier de
@@ -403,7 +411,8 @@ gardée telle quelle, et la vue dit « Les formules arrivent dans un prochain lo
 - **supprimer** : `remove`, `removalOf`, `removeWithDependents`, `undoRemoval` ;
 - **dépendances** : `dependents` ; toute mutation finit par `recomputeAll` (relit tout) ;
 - **grille** : `cell`, `editCells`, `pasteTable`, `titleOf`, `setTitle`, `nameColumn`,
-  `unnameColumn`, `listAt`, `columnOf`, `usedExtent`, `freeColumns` ;
+  `unnameColumn`, `undoGrid`, `redoGrid`, `gridHistory`, `listAt`, `columnOf`, `usedExtent`,
+  `freeColumns` ;
 - **sauvegarde** : `serialize`, `restore` ; `revision` est le **seul** signal « quelque chose a
   changé » (la session l'écoute pour enregistrer).
 
@@ -1382,7 +1391,7 @@ décisions figées) : 1 l'atelier possède l'état · 2 on ne valide pas · 3 pa
 | D3  | Toute valeur numérique a un curseur, `[-10 ; 10]` par défaut | ✅ (bornes réglables dans la carte)                                            |
 | D4  | Grandeur à unité : sans curseur, non traçable                | ✅                                                                             |
 | D5  | L'historique reste, une ligne se promeut en objet            | ✅ (« Garder », `promote`)                                                     |
-| D6  | Pas d'annulation globale                                     | ✅ — seule exception : annuler la dernière suppression en cascade              |
+| D6  | Pas d'annulation globale                                     | ✅ — exceptions : la dernière suppression en cascade ; la grille (T6)          |
 | D7  | « Afficher la dérivée » et « garder `f′` », deux gestes      | ⚠️ **Remplacée par G6** : « Dériver » crée la carte `f′`, qui suit `f`         |
 | D8  | 200 valeurs par liste, 8 listes                              | ✅ (`MAX_LIST_VALUES`, `MAX_LISTS`)                                            |
 | D9  | Nom inconnu → en attente, pas en erreur                      | ✅                                                                             |
@@ -1409,7 +1418,8 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 - `/calc` existe encore (`/cas`, elle, est retirée depuis le 2026-10-13) ;
 - **v2** géométrie à la souris, **v3** Python : non commencées, sans phase 0 ;
 - tableur intégré (option C, 2026-10-15) : lot 1 en cours — grille de valeurs (PR 1), collage /
-  copie / CSV / titres (PR 2) ; à venir : annulation / appariement par ligne, puis les formules ;
+  copie / CSV / titres (PR 2), annulation (PR 3a) ; à venir : appariement par ligne (P1), puis les
+  formules ;
 - dettes connues : action « Renommer » encore désactivée (« prochain lot »), `recomputeAll`
   réassigne tout le tableau (jamais mesuré), saisie des unités sans palette.
 
