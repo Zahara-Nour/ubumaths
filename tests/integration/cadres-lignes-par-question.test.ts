@@ -5,7 +5,8 @@
  * `worksheet_exercises.answer_frame_lines` (jsonb, NULL par défaut) garde le
  * réglage du prof pour CET exercice DANS CETTE fiche :
  * `{ "questions": [int|null, …], "exercise": int|null }` — null = estimation
- * automatique, 0 = pas de cadre, au plus 40 lignes, au plus 200 questions.
+ * automatique, 0 = pas de cadre, au plus 25 lignes (40 avant 20261016104000),
+ * au plus 200 questions.
  *
  * Question d'accès tranchée par David : aucun nouvel accès. La colonne hérite
  * des policies de la ligne : le prof auteur (et l'admin) la lit et l'écrit,
@@ -180,7 +181,7 @@ describe('answer_frame_lines : le prof auteur', () => {
 	it.each([
 		['cadre unique seul', { exercise: 12 }],
 		['aucune question réglée', { questions: [] }],
-		['bornes 0 et 40', { questions: [0, 40], exercise: 0 }],
+		['bornes 0 et 25 (plafond, migration 20261016104000)', { questions: [0, 25], exercise: 0 }],
 		['200 questions', { questions: Array.from({ length: 200 }, () => 3) }]
 	])('accepte : %s', async (_label, value) => {
 		expect(await teacherWrite(value)).toBeNull();

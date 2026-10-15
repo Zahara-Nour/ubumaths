@@ -74,6 +74,21 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
   `{ "questions": [int|null, …], "exercise": int|null }` (null = auto, 0 = pas de cadre, 0 à 40
   lignes, ≤ 200 questions) ; aucun nouvel accès (policies de la ligne).
 
+## Décisions du lot 4, suite (David, 2026-10-15/16)
+
+- Plafond d'un cadre : **25 lignes** (20 cm) au lieu de 40 — seconde CHECK
+  `worksheet_exercises_answer_frame_lines_max25`, additive (l'ancienne 0..40 reste).
+- La **duplication** d'une fiche garde `answer_frame_lines` de chaque exercice.
+- Le PDF ouvert par **lien de partage** (cahier de texte, cours partagé) a les mêmes cadres que le
+  PDF du prof. Question d'accès tranchée : le visiteur d'un lien de partage lit le nombre de lignes
+  des cadres, rien d'autre de nouveau (`get_worksheet_by_share_token`,
+  `get_course_worksheet_by_share_token` ; les autres RPC de partage ne servent pas d'exercice de
+  fiche).
+- Réglage des cadres : brouillon uniquement (déjà le cas, rien à faire).
+- Livraison en deux PR : A = migration `20261016104000_cadres_lignes_partage.sql` + tests
+  d'intégration (`cadres-lignes-partage`) ; B = code (Zod à 25, stepper, duplication, PDF partagé),
+  après `db:migrate` + `db:types`.
+
 ## Lots suivants
 
 - Lot 2 : retirer les styles 02-05 de la liste.
@@ -103,6 +118,9 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
       l'exercice de fiche (Zod `.strict()`, `.select()`, 404 si aucune ligne ; défauts de création
       plus appliqués à la mise à jour) ; `AnswerFrameLinesEditor` sous chaque exercice ; « Aperçu :
       N pages » dans `PdfPreview`. code-reviewer (sauvegardes en série, démontage : corrigés) et security-auditor (aucun bloquant) passés. Reste : PR, CI.
-- [ ] Hors lot, à trancher par David : duplication de fiche et PDF par lien de partage (RPC) ne
-      recopient ni ne lisent `answer_frame_lines` ; réglage impossible sur une fiche publiée (le PUT
-      n'accepte qu'un brouillon, comme les points) ; un cadre de 40 lignes (32 cm) dépasse la page.
+- [x] Hors lot tranché par David (2026-10-15/16, ci-dessus) : plafond 25, duplication, PDF par
+      lien de partage ; réglage en brouillon seulement.
+- [ ] Lot 4 — PR A (branche `feat/cadres-lignes-partage`) : migration + tests, rouge sans / vert
+      avec, security-auditor passé (aucun bloquant ; mineur corrigé : refus anon `42501`). Reste :
+      PR, CI, `db:migrate`, `db:types`.
+- [ ] Lot 4 — PR B (branche `feat/cadres-lignes-partage-code`) : code, après PR A en prod.
