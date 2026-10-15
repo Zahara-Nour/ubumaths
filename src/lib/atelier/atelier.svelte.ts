@@ -121,6 +121,7 @@ import {
 	type CellEdit
 } from './grid';
 import { transformAST } from '$lib/mathAST/visitor';
+import { planTabulation, type TabulationRequest } from './tabulate';
 
 // =============================================================================
 // Types de retour
@@ -1518,6 +1519,39 @@ export class Atelier {
 			}
 		}
 		return edits.length === 0 ? { ok: true } : this.editCells(edits);
+	}
+
+	/**
+	 * Tabuler une fonction (lot 3) : deux colonnes de formules dans les deux
+	 * premières colonnes libres — abscisses `-2`, `=A1+0,5`…, images `=f(A1)`… —
+	 * titrées `x` et `f(x)`. Un seul geste (T6), tout ou rien ; jamais
+	 * d'écrasement (Q-L3-4 : tabuler deux fois écrit deux nouvelles colonnes).
+	 */
+	tabulate(request: TabulationRequest):
+		| {
+				ok: true;
+				columns: [number, number];
+				rows: number;
+				note: string | null;
+		  }
+		| Refused {
+		const object = this.get(request.name);
+		const [x = 0, image = 1] = this.freeColumns;
+		const letter = object === undefined ? INTERNAL_LETTER : typedLetterOf(this, object);
+		const plan = planTabulation(object, request, letter, { x, image });
+		if (!plan.ok) return plan;
+		if (this.freeColumns.length < 2) {
+			return { ok: false, message: 'Il faut deux colonnes libres dans la grille.' };
+		}
+		const written = this.#grouped(() => {
+			const edited = this.editCells(plan.edits);
+			if (!edited.ok) return edited;
+			this.setTitle(x, plan.titles[0]);
+			this.setTitle(image, plan.titles[1]);
+			return { ok: true } as const;
+		});
+		if (!written.ok) return written;
+		return { ok: true, columns: [x, image], rows: plan.rows, note: plan.note };
 	}
 
 	// ---------------------------------------------------------------------------

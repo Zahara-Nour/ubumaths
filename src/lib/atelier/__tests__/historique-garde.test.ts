@@ -22,7 +22,7 @@ import {
 	saveCalcHistory
 } from '../history-storage';
 import { isSafeLatex } from '../safe-latex';
-import { commandCatalog } from '../commands';
+import { commandCatalog, stageExampleSetup } from '../commands';
 import { messageParts } from '../reciprocal';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { keepCalcHistory } from '../session';
@@ -193,9 +193,7 @@ describe('une ligne revient telle qu’affichée', () => {
 		for (const command of commandCatalog(new WebReplEngine())) {
 			if (command.example === undefined) continue;
 			const atelier = new Atelier();
-			for (const [name, definition] of Object.entries(command.exampleSetup ?? {})) {
-				atelier.create({ kind: 'list', name, definition });
-			}
+			stageExampleSetup(atelier, command.exampleSetup);
 			const desk = new CalcDesk(atelier);
 			desk.submit(command.example);
 			for (const e of desk.entries) {

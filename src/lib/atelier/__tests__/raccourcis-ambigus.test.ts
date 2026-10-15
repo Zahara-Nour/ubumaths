@@ -20,7 +20,7 @@ import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, type CalcSession } from '../calcul';
-import { commandCatalog } from '../commands';
+import { commandCatalog, stageExampleSetup } from '../commands';
 
 function session(): CalcSession {
 	return { atelier: new Atelier(), engine: new WebReplEngine() };
@@ -63,9 +63,7 @@ describe('le catalogue tranche, y compris à l’exécution', () => {
 			for (const alias of command.aliases) {
 				const s = session();
 				// Q79 : les listes que cite l'exemple (`.simuler L M 100`)
-				for (const [name, definition] of Object.entries(command.exampleSetup ?? {})) {
-					s.atelier.create({ kind: 'list', name, definition });
-				}
+				stageExampleSetup(s.atelier, command.exampleSetup);
 				// `.convertir` exprime la DERNIÈRE grandeur calculée : sans elle, son
 				// refus en français (« Il n'y a pas de grandeur à convertir ») est juste
 				if (command.name === 'convert') runInput(s, '12[km]+300[m]');

@@ -43,6 +43,7 @@ Une fonction usuelle sans parenthèses dans l'expression (`.évaluer ln x en x=1
 | taylor                            | `.taylor EXPR ordre N [en A] [pour VAR]`          | `.taylor e^x ordre 3 en 1`                              |
 | variations                        | `.variations EXPR [pour VAR] [dans ENSEMBLE]`     | `.variations x^2 dans [0;+∞[`                           |
 | réciproque                        | `.réciproque FONCTION [sur INTERVALLE]`           | `.réciproque f` · `.réciproque x^2 sur [0;+∞[`          |
+| tabuler (ordre fixe, lot 3)       | `.tabuler FONCTION [de A à B pas P]`              | `.tabuler f de -2 à 3 pas 0,5` · `.tabuler f`           |
 | domaine / simplifier / factoriser | `.commande EXPR [pour VAR]`                       | inchangé (un seul argument)                             |
 | développer                        | `.développer EXPR`                                | `.développer (2x-1)(x+3)` · `.développer f`             |
 

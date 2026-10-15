@@ -14,7 +14,8 @@ import {
 	resolveCommand,
 	suggestFor,
 	ATELIER_ONLY_COMMANDS,
-	ENGINE_COMMANDS_LEFT_OUT
+	ENGINE_COMMANDS_LEFT_OUT,
+	stageExampleSetup
 } from '../commands';
 import { Atelier } from '../atelier.svelte';
 import { runInput } from '../calcul';
@@ -128,9 +129,7 @@ describe('le catalogue des commandes', () => {
 				// qui les contient ; il doit alors CRÉER quelque chose (`.simuler`
 				// range ses effectifs dans une liste) ou afficher une formule
 				const atelier = new Atelier();
-				for (const [name, definition] of Object.entries(command.exampleSetup ?? {})) {
-					atelier.create({ kind: 'list', name, definition });
-				}
+				stageExampleSetup(atelier, command.exampleSetup);
 				const before = atelier.objects.length;
 				const result = runInput({ atelier, engine: new WebReplEngine() }, command.example);
 				const latex = result.kind === 'commande' ? result.latex : undefined;
@@ -146,11 +145,13 @@ describe('le catalogue des commandes', () => {
 					command.name === 'filter' &&
 					result.kind === 'commande' &&
 					/^\d+ individus? sur \d+ /.test(result.output);
+				// `.tabuler` écrit dans la grille (tableur, lot 3) : la réponse est le tableau
+				const tabulated = staged && command.name === 'tabulate' && atelier.cell(1, 1) !== '';
 				expect(
 					{
 						commande: command.french,
 						kind: result.kind,
-						repond: latex !== undefined || created || drawn || answered
+						repond: latex !== undefined || created || drawn || answered || tabulated
 					},
 					`l'exemple de « .${command.french} » ne montre pas ce qu'elle fait`
 				).toMatchObject({ kind: 'commande', repond: true });

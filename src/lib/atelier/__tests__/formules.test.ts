@@ -58,7 +58,8 @@ describe('§1 écrire une formule', () => {
 		if (v.kind === 'number') {
 			expect(v.exact).toBe(true);
 			expect(v.value).toBeCloseTo(0.5);
-			expect(v.shown).toBe('1/2');
+			// Q-L3-2 (lot 3) : un décimal fini s'écrit en décimal
+			expect(v.shown).toBe('0,5');
 		}
 	});
 
@@ -483,7 +484,7 @@ describe('PR 2 — écriture mathématique', () => {
 			return v.kind === 'number' ? v.shown : undefined;
 		};
 		expect(shown(3)).toBe('1/3');
-		expect(shown(4)).toBe('5/2');
+		expect(shown(4)).toBe('2,5');
 	});
 
 	it('une valeur approchée n’a pas d’écriture exacte en case', () => {

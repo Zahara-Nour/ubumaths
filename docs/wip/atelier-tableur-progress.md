@@ -157,4 +157,15 @@ liste trouée en citant l'entrée).
 - [x] lot 2 complet : #1421, #1422, #1424 mergées
 - [x] phase 0 rédigée : Q-L3-1 à Q-L3-5 posées à David (mesuré : abscisses en fractions, `-3/2`)
 - [x] validation de David (« ok » : les cinq recos)
-- [ ] PR 1 : modèle, `.tabuler`, affichage décimal (`feat/atelier-tabuler`)
+
+### PR 1 — modèle, `.tabuler`, affichage décimal (`feat/atelier-tabuler`)
+
+- [x] tests rouges : `tabuler.test.ts` (31) ; 2 de vue (« Valeur exacte » d'un décimal fini)
+- [x] `tabulate.ts` (`planTabulation`, `tabulationDefaults`, `readTabulationCommand`,
+      `tabulateCommand`), `Atelier.tabulate` (un geste), `.tabuler` dans `SIMULATIONS`
+- [x] Q-L3-2 : `finiteDecimal` (entiers longs) dans `shownValue`, `shownExact` pour la barre ; deux
+      attentes du lot 2 changées en connaissance de cause (`1/2` → `0,5`, `5/2` → `2,5`)
+- [x] décor des exemples de commandes : `stageExampleSetup` (`f(x)` → une fonction)
+- [x] 55 500 tests serveur, 290 + 318 navigateur, check, lint, cliquet, gardes de doc
+- [ ] revue, PR, CI, merge
+- [ ] PR 2 : la carte (formulaire, bascule vers Données)

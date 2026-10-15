@@ -146,13 +146,15 @@
 		return done;
 	}
 
-	/** « Valeur exacte » sous la barre : quand la case montre `≈` d'une valeur exacte. */
+	/** « Valeur exacte » sous la barre : quand la case montre autre chose que l'écriture exacte. */
 	const selectedExact = $derived.by(() => {
 		const value = atelier.cellValue(selected.column, selected.row);
+		if (value.kind !== 'number' || !value.exact || value.exactLatex === null) return null;
 		// Aussi pour `√2`, `π` : la case les écrit, mais leur texte (lu par un lecteur
-		// d'écran) est `≈ 1,4142` — la valeur exacte doit pouvoir se lire (revue)
-		// Seulement quand le texte de la case est `≈` : `509/128` se lit déjà exact
-		if (value.kind !== 'number' || !value.exact || !value.shown.startsWith('≈')) return null;
+		// d'écran) est `≈ 1,4142` — la valeur exacte doit pouvoir se lire (revue).
+		// Et pour `509/128`, que la case écrit `3,9765625` (Q-L3-2, lot 3). Pas pour
+		// ce que la case écrit déjà exact (`1/3`, `0,25`, `2`)
+		if (value.shownExact === true) return null;
 		return composed(value.exactLatex);
 	});
 

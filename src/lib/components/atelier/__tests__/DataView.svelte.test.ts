@@ -569,7 +569,8 @@ describe('coller et copier (§4)', () => {
 		expect(container.querySelector('.valeur-exacte .ML__latex')).not.toBeNull();
 	});
 
-	it('une valeur exacte déjà écrite dans la case : pas de « Valeur exacte » en double', async () => {
+	// Q-L3-2 (lot 3) : la case écrit le décimal, la fraction se voit à la sélection
+	it('un décimal fini dans la case : sa fraction sous la barre', async () => {
 		const atelier = new Atelier();
 		atelier.editCells([{ column: 0, row: 1, text: '=509/128' }]);
 		const { container } = await openData(atelier);
@@ -577,7 +578,23 @@ describe('coller et copier (§4)', () => {
 		await userEvent.click(cellAt(container, 'A1')!);
 		await settle();
 
-		expect(container.querySelector('.valeur-exacte')).toBeNull();
+		expect(cellAt(container, 'A1')?.textContent).toContain('3,9765625');
+		expect(container.querySelector('.valeur-exacte')?.textContent).toContain('Valeur exacte');
+	});
+
+	it('une valeur exacte déjà écrite dans la case : pas de « Valeur exacte » en double', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([
+			{ column: 0, row: 1, text: '=1/3' },
+			{ column: 0, row: 2, text: '=2' }
+		]);
+		const { container } = await openData(atelier);
+
+		for (const cell of ['A1', 'A2']) {
+			await userEvent.click(cellAt(container, cell)!);
+			await settle();
+			expect(container.querySelector('.valeur-exacte'), cell).toBeNull();
+		}
 	});
 
 	it('la carte d’une liste à formules montre ses valeurs, « calculée dans la grille »', async () => {

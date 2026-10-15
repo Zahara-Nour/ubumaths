@@ -16,7 +16,7 @@ import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, type CalcSession } from '../calcul';
-import { commandCatalog } from '../commands';
+import { commandCatalog, stageExampleSetup } from '../commands';
 import { DEV_HELP_COMMAND, studentHelp } from '../help';
 
 function session(): CalcSession {
@@ -153,9 +153,7 @@ describe('chaque exemple de l’aide marche', () => {
 			expect(text, entry.example).toContain(entry.example);
 
 			const s = session();
-			for (const [name, definition] of Object.entries(entry.listSetup ?? {})) {
-				s.atelier.create({ kind: 'list', name, definition });
-			}
+			stageExampleSetup(s.atelier, entry.listSetup);
 			for (const line of entry.setup ?? []) {
 				expect(runInput(s, line).kind, `${entry.example} (avant : ${line})`).not.toBe('refus');
 			}

@@ -14,6 +14,7 @@
  */
 
 import type { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import type { Atelier } from './atelier.svelte';
 
 // =============================================================================
 // Types
@@ -255,6 +256,17 @@ const TRANSLATIONS: ReadonlyMap<string, Translation> = new Map<string, Translati
 		}
 	],
 	[
+		'tabulate',
+		{
+			french: 'tabuler',
+			section: 'analyser',
+			description: 'Écrire le tableau de valeurs d’une fonction dans la grille (de … à … pas …)',
+			example: '.tabuler f de -2 à 3 pas 0,5',
+			// L'exemple cite une fonction : il se joue dans cet atelier (Q79)
+			exampleSetup: { 'f(x)': 'x^2-3x' }
+		}
+	],
+	[
 		'reciprocal',
 		{
 			french: 'réciproque',
@@ -413,6 +425,21 @@ export const ENGINE_COMMANDS_LEFT_OUT: ReadonlySet<string> = new Set([
  * l'intention `factoriser` de `pedagogical-simplify` n'était donc atteignable
  * depuis aucune interface.
  */
+/**
+ * Poser dans un atelier le décor d'un exemple (Q79) : `L` → une liste, `f(x)`
+ * → une fonction (`.tabuler f`, lot 3 du tableur).
+ */
+export function stageExampleSetup(
+	atelier: Atelier,
+	setup: Readonly<Record<string, string>> | undefined
+): void {
+	for (const [key, definition] of Object.entries(setup ?? {})) {
+		const call = /^([A-Za-z])\(x\)$/.exec(key);
+		if (call === null) atelier.create({ kind: 'list', name: key, definition });
+		else atelier.create({ kind: 'function', name: call[1], definition });
+	}
+}
+
 export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	'factor',
 	// `.développer` : l'intention `developper`, la réponse seule (`expand.ts`)
@@ -420,6 +447,8 @@ export const ATELIER_ONLY_COMMANDS: ReadonlySet<string> = new Set([
 	// `.réciproque` : calculée, vérifiée (`reciprocal.ts`) — rien à voir avec
 	// `inv` du moteur, laissée de côté (`ENGINE_COMMANDS_LEFT_OUT`)
 	'reciprocal',
+	// `.tabuler` : le tableau de valeurs, écrit dans la grille (tableur, lot 3)
+	'tabulate',
 	// `.limite` : `evaluateLimit` (`mathAST/limits`), la réponse en formule (`limit.ts`)
 	'limit',
 	'simulate',
