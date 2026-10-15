@@ -42,6 +42,7 @@
 		ChapterSectionsEditor,
 		StudentProgressTable
 	} from '$lib/components/cours/teacher';
+	import { chapterHasTemplateContent } from '$lib/components/cours/teacher/chapter-has-template-content';
 	import { ChapterTemplateIndicator } from '$lib/components/templates';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -78,15 +79,16 @@
 	let exerciseCount = $derived(data.exercises.length);
 	let worksheetCount = $derived(data.worksheets.length);
 
-	/**
-	 * Un chapitre sans contenu ne fait pas un modèle : le serveur refuse de
-	 * publier un modèle vide, autant ne pas le laisser créer.
-	 *
-	 * ⚠️ Les séries n'y comptent PAS (Q128), règle héritée de l'ancien modèle
-	 * « snapshot », qui ne les emportait pas. Écart connu : depuis l'ADR 0029 le
-	 * modèle emporte les séries, et `templateHasContent` les compte.
-	 */
-	let hasContent = $derived(documentCount + checklistCount + exerciseCount + worksheetCount > 0);
+	// Un chapitre sans contenu ne fait pas un modèle ; les séries comptent (ADR 0029).
+	let hasContent = $derived(
+		chapterHasTemplateContent({
+			documents: documentCount,
+			checklistItems: checklistCount,
+			exercises: exerciseCount,
+			worksheets: worksheetCount,
+			series: data.chapterSeries.length
+		})
+	);
 
 	// Handle form results
 	$effect(() => {
