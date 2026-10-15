@@ -722,6 +722,10 @@
 			<section class="diagramme" data-diagramme={list.name}>
 				{#if chart.ok}
 					<StatChart node={chart.node} />
+					{#if chart.note}
+						<!-- P1 : les lignes sans effectif, écartées — jamais en silence -->
+						<p class="note">{chart.note}</p>
+					{/if}
 				{:else}
 					<p class="probleme" id={chartMessageId(list.name)}>{chart.message}</p>
 				{/if}

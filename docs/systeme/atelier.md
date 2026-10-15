@@ -127,6 +127,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/binomial.ts`     | `.binomiale`                                                                             |
 | `src/lib/atelier/law-commands.ts` | `.géométrique`, `.uniforme`, `.exponentielle`, `.normale` ; `P(X ⩽ 3)` seul (`lawEvent`) |
 | `src/lib/atelier/chart.ts`        | Diagramme en bâtons / barres d'une liste (vue Données)                                   |
+| `src/lib/atelier/pairs.ts`        | Deux listes appariées par LIGNE (P1) : `commonRows`, `valuesOn`, `lawMismatchMessage`    |
 
 **Session, partage, export** :
 
@@ -389,6 +390,19 @@ gardée telle quelle, et la vue dit « Les formules arrivent dans un prochain lo
   révision, et la suppression ne pourrait plus s'annuler. Ctrl+Z ne s'arrête à la cellule que si
   la grille a de quoi annuler ; sinon il remonte à l'atelier (dernière suppression de carte). Une
   case écrite deux fois dans un geste compte une fois (la dernière écriture).
+- **Deux colonnes ensemble : par LIGNE** (P1, `pairs.ts`). Une liste sait la ligne de chacune de
+  ses valeurs (`rows`, lu par `parseDefinition`). Nuage (carte et tracé, `plot-sync`), ajustement
+  (carte et `.ajustement L : M` / `.stats` à plusieurs listes dans Calcul), effectifs (« Statistiques
+  avec effectifs », diagramme) et tableau croisé (`.croiser` et son bouton) prennent les lignes où
+  chaque liste a une valeur (`commonRows`) et disent « N lignes incomplètes écartées » ; refus
+  seulement s'il n'en reste aucune (« L et M n’ont aucune ligne remplie en commun. », la même
+  phrase au bouton désactivé et au clic, `noCommonRowsMessage`). Par rang, une case vide décalait
+  toutes les paires suivantes. Dans Calcul, seule la forme `A : B` (une liste de chaque côté)
+  s'apparie : `.stats L ; M` RÉUNIT deux séries, rien n'y est écarté ; l'écho reste ce qui a été
+  tapé. `.croiser` qui écarte une ligne ne propose pas la piste `.filtrer` (qui la refuserait).
+  Une **loi** (`.simuler`, `.fréquence`, `.échantillons`, « Loi avec probabilités ») n'écarte pas :
+  une valeur sans probabilité sur sa ligne refuse, en citant la ligne (`lawMismatchMessage`).
+  `.filtrer` garde son refus d'une liste trouée (« L'entrée n° 2 de L est vide… »).
 - `cell`, `titleOf`, `listAt`, `columnOf`, `usedExtent` (zone utilisée), `freeColumns` : ce que
   lit la vue.
 - La vue (`DataView.svelte`) : barre de cellule (adresse, contenu brut, modifiable), clavier de
@@ -1421,8 +1435,8 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 - `/calc` existe encore (`/cas`, elle, est retirée depuis le 2026-10-13) ;
 - **v2** géométrie à la souris, **v3** Python : non commencées, sans phase 0 ;
 - tableur intégré (option C, 2026-10-15) : lot 1 en cours — grille de valeurs (PR 1), collage /
-  copie / CSV / titres (PR 2), annulation (PR 3a) ; à venir : appariement par ligne (P1), puis les
-  formules ;
+  copie / CSV / titres (PR 2), annulation (PR 3a), appariement par ligne (PR 3b) — lot 1 complet ;
+  à venir : les formules (lot 2) ;
 - dettes connues : action « Renommer » encore désactivée (« prochain lot »), `recomputeAll`
   réassigne tout le tableau (jamais mesuré), saisie des unités sans palette.
 

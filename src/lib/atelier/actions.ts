@@ -28,6 +28,7 @@ import {
 import { crossProblem } from './cross';
 import { compareProblem } from './compare';
 import { derivativeOf, displayName, reciprocalOf } from './names';
+import { commonRows, lawMismatchMessage, noCommonRowsMessage } from './pairs';
 
 /**
  * Ce que les cartes qui SUIVENT une fonction ne savent pas faire (`f′`, `f⁻¹`),
@@ -217,7 +218,14 @@ function partnerActions(
 				label: `Diagramme avec effectifs ${partner.name}`
 			}),
 			// Lot 6 (Q44) : la partenaire donne les PROBABILITÉS d'une variable aléatoire
-			withCounts({ id: `law:${partner.name}`, label: `Loi avec probabilités ${partner.name}` }),
+			// Une loi n'écarte pas de ligne : sa raison est celle de la commande (P1)
+			{
+				id: `law:${partner.name}`,
+				label: `Loi avec probabilités ${partner.name}`,
+				...(lawReason(object, partner, words) !== undefined && {
+					disabledReason: lawReason(object, partner, words)
+				})
+			},
 			{ id: `simulate:${partner.name}`, label: `Simuler avec probabilités ${partner.name}` },
 			// Lot 5 (Q113) : deux séries de longueurs quelconques, sans appariement
 			{
@@ -229,8 +237,20 @@ function partnerActions(
 						disabledReason: compareProblem(object, partner)
 					})
 			},
-			{ id: `scatter:${partner.name}`, label: `Nuage avec ${partner.name}` },
-			{ id: `fit:${partner.name}`, label: `Ajustement avec ${partner.name}` }
+			{
+				id: `scatter:${partner.name}`,
+				label: `Nuage avec ${partner.name}`,
+				...(pairsProblem(object, partner) !== undefined && {
+					disabledReason: pairsProblem(object, partner)
+				})
+			},
+			{
+				id: `fit:${partner.name}`,
+				label: `Ajustement avec ${partner.name}`,
+				...(pairsProblem(object, partner) !== undefined && {
+					disabledReason: pairsProblem(object, partner)
+				})
+			}
 		].map((action) =>
 			// « Comparer » garde SA raison, celle que donne aussi la commande (revue)
 			words === undefined || action.id.startsWith('compare:')
@@ -243,20 +263,49 @@ function partnerActions(
 }
 
 /**
+ * La raison d'une « Loi avec probabilités » désactivée — celle que donne la
+ * commande (`lawFractions`) : une partenaire de mots ou en erreur, sinon une
+ * ligne incomplète. Jamais le mot « effectif », hors sujet pour une loi (revue).
+ */
+function lawReason(
+	object: AtelierObject,
+	partner: AtelierObject,
+	words: string | undefined
+): string | undefined {
+	if (words !== undefined) return words;
+	if (!isList(object) || !isList(partner)) return undefined;
+	if (partner.status !== 'ok') return countsProblem(object, partner);
+	return lawMismatchMessage(object, partner) ?? undefined;
+}
+
+/** Un nuage ou un ajustement sans aucune ligne commune : la raison, la même qu'au clic */
+function pairsProblem(object: AtelierObject, partner: AtelierObject): string | undefined {
+	if (!isList(object) || !isList(partner) || isQualitative(object) || isQualitative(partner)) {
+		return undefined;
+	}
+	return commonRows([object, partner]).rows.length === 0
+		? noCommonRowsMessage(object, partner)
+		: undefined;
+}
+
+/**
  * Pourquoi `partner` ne peut pas donner les effectifs de `object`, s'il ne le
  * peut pas. Une action qui ne ferait qu'échouer le dit AVANT le clic (revue
  * du lot 5 des outils statistiques).
  *
  * ⚠️ Seulement pour les effectifs : un nuage ou un ajustement utilisent les
- * paires complètes et disent ce qu'ils écartent (§4 L1).
+ * paires complètes et disent ce qu'ils écartent (§4 L1). Les effectifs aussi,
+ * depuis la grille (P1) : refus seulement sans aucune ligne en commun.
  */
 function countsProblem(object: AtelierObject, partner: AtelierObject): string | undefined {
 	if (!isList(object) || !isList(partner)) return undefined;
 	if (partner.status !== 'ok') {
 		return partner.message ?? `« ${partner.name} » ne peut pas donner d'effectifs pour le moment.`;
 	}
-	if (object.values.length !== partner.values.length) {
-		return `${object.name} a ${object.values.length} valeur(s) et ${partner.name} ${partner.values.length} : il faut un effectif par valeur.`;
+	// Une valeur et son effectif sur la même ligne (P1) : les lignes incomplètes
+	// sont écartées, et dites ; refus seulement s'il n'en reste aucune
+	if (object.values.length > 0 && commonRows([object, partner]).rows.length === 0) {
+		return `${object.name} et ${partner.name} n’ont aucune ligne remplie en commun : il faut un effectif sur la ligne de chaque valeur.`;
 	}
 	return undefined;
 }

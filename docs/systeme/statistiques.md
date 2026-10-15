@@ -173,7 +173,8 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
    variance flottante nulle ; R² = 1 si toutes les ordonnées sont égales.
 6. **`fitAffine` n'utilise que les paires complètes** (liste plus longue : valeurs ignorées,
    comptées dans `ignored`) ; `bivariateFit` suppose des longueurs égales (contrôlées par
-   l'appelant).
+   l'appelant). L'atelier lui passe déjà des séries appariées par ligne de la grille
+   (`src/lib/atelier/pairs.ts`, décision P1) : ce sont les lignes incomplètes qu'il compte.
 7. **Exact d'abord, arrondi une seule fois** : probabilités et moments en `Fraction` / `bigint`
    (E(X) = 7/2, pas 3,5000000000000004). r est irrationnel en général : décimal, mais r² exact
    dit si r = ±1. Exponentielle, normale, changement de variable : flottants.

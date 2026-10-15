@@ -23,6 +23,7 @@ import { simulateCounts, simulateRunningMean, simulateSamples } from '$lib/stati
 import { createRandomSource } from '$lib/utils/random';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { buildRunningMeanScene, buildSampleMeansScene } from '$lib/ubumark/utils/simulation-scene';
+import { lawMismatchMessage } from './pairs';
 
 // =============================================================================
 // Types
@@ -74,6 +75,10 @@ function typedAs(lists: readonly ListObject[], value: number): string {
  * EXACTEMENT 1 et que E(X) s'écrive 7/2.
  */
 export function lawFractions(values: ListObject, probabilities: ListObject): LawFractions {
+	// Une valeur et sa probabilité sur la même LIGNE (P1). Une ligne incomplète
+	// n'est pas écartée : la loi serait fausse, on refuse en la citant
+	const mismatch = lawMismatchMessage(values, probabilities);
+	if (mismatch !== null) return { ok: false, message: mismatch };
 	const numbers = [...values.values, ...probabilities.values];
 	const fractions = numbers.map((n) => Fraction.fromNumber(n));
 	// Nommer la valeur fautive (Q51) : l'élève la retrouve dans sa liste

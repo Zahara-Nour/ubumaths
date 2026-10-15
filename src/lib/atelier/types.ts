@@ -229,6 +229,12 @@ export interface ListObject extends AtelierObjectBase {
 	/** Nombre d'entrées écartées, pour pouvoir le signaler (§4 E1). */
 	readonly skipped: number;
 	/**
+	 * La ligne de la grille (1, 2…) de chaque élément de `values` — ou de
+	 * `categories` pour une liste qualitative. Deux listes s'associent PAR
+	 * LIGNE (décision P1) : voir `pairs.ts`.
+	 */
+	readonly rows: readonly number[];
+	/**
 	 * Liste QUALITATIVE (Q84) : une modalité par entrée, dans l'ordre, chacune
 	 * écrite comme sa première occurrence (Q85). Absent pour une liste de
 	 * nombres ; `values` est alors vide.

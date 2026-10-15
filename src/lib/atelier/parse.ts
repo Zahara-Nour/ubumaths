@@ -249,6 +249,11 @@ export interface ParsedDefinition {
 	readonly categories?: readonly string[];
 	/** La 1re entrée-mot d'une liste qui mélange nombres et mots (Q92) */
 	readonly qualitativeBecause?: string;
+	/**
+	 * Liste : la LIGNE (1, 2…) de chaque élément de `values` ou de `categories` —
+	 * une entrée par ligne de la grille (P1 : deux listes s'associent par ligne).
+	 */
+	readonly rows?: readonly number[];
 }
 
 /** Une valeur purement numérique, sans unité ni expression. */
@@ -385,6 +390,8 @@ export function parseDefinition(
 
 		// Q84 : un mot, et toute la liste est qualitative
 		const entries = parts.map((part) => part.trim()).filter((part) => part !== '');
+		// La ligne de chaque entrée non vide (P1)
+		const entryRows = parts.flatMap((part, i) => (part.trim() === '' ? [] : [i + 1]));
 		// Q92 : une entrée qui se lit comme un nombre (`1e3`) n'est jamais un mot
 		const isWord = (entry: string) => WORD.test(entry) && readListValue(entry) === null;
 		if (entries.some(isWord)) {
@@ -405,20 +412,31 @@ export function parseDefinition(
 			const mixed = entries.some((entry) => !isWord(entry));
 			const because = mixed ? { qualitativeBecause: entries.find(isWord)! } : {};
 			return 'error' in read
-				? { values: [], skipped: 0, categories: entries, error: read.error, ...because }
-				: { values: [], skipped: 0, categories: read.categories, ...because };
+				? {
+						values: [],
+						skipped: 0,
+						categories: entries,
+						rows: entryRows,
+						error: read.error,
+						...because
+					}
+				: { values: [], skipped: 0, categories: read.categories, rows: entryRows, ...because };
 		}
 
 		const values: number[] = [];
+		const rows: number[] = [];
 		let skipped = 0;
-		for (const part of parts) {
+		parts.forEach((part, i) => {
 			// Une entrée vide est une case vide de la grille (`12 ; ; 15`, tableur
 			// intégré), pas une valeur écartée : rien à signaler
-			if (part.trim() === '') continue;
+			if (part.trim() === '') return;
 			const n = readListValue(part);
 			if (n === null) skipped++;
-			else values.push(n);
-		}
+			else {
+				values.push(n);
+				rows.push(i + 1);
+			}
+		});
 		// Plafond D8 : la liste garde ses valeurs et porte son erreur — on ne jette
 		// pas la saisie de l'élève, on lui dit ce qui bloque. Le contrôle vit ici
 		// et non à la construction de l'objet : `recomputeAll` repart toujours de
@@ -427,10 +445,11 @@ export function parseDefinition(
 			return {
 				values,
 				skipped,
+				rows,
 				error: `Une liste ne peut pas dépasser ${MAX_LIST_VALUES} valeurs (celle-ci en a ${values.length}).`
 			};
 		}
-		return { values, skipped };
+		return { values, skipped, rows };
 	}
 
 	if (kind === 'value' && PLAIN_NUMBER.test(definition)) return {};
