@@ -131,6 +131,12 @@ d'avant) ; à l'écran par le contexte `content-capital-pairs.ts`. Règles des u
 crochets de calcul : [notation-unites](../pratiques/notation-unites.md). Pièges connus (grec sans
 antislash, prime hors `f'`, années groupées « 2 026 ») : `pnpm check:ubumark` les signale.
 
+Option `afterQuestion(index)` de `generateTypst` (cadres de réponse des fiches, ADR 0030 lot 3) :
+ce qu'elle rend se pose à la fin de chaque élément de **premier niveau** des listes numérotées de
+**premier niveau**, après ses sous-éléments ; `index` court d'une liste à l'autre. Aucun nœud d'AST
+ajouté : le parseur ne peut pas produire de cadre depuis le texte d'un prof. Détail :
+[fiches-et-pdf](fiches-et-pdf.md) § Cadres de réponse.
+
 ### Marques en ligne propres à ubumark
 
 | Écriture                                 | Nœud / effet                                  | Test                                                                              |
