@@ -449,7 +449,7 @@ moyen 5, grand 8 ; cadre unique, sa hauteur fermée convertie et arrondie (2,5 /
 (20 cm ; `ANSWER_FRAME_MAX_LINES`, partagé par le Zod du PUT, les schémas de réponse, la lecture de
 la colonne et le stepper), ≤ 200 ; contraintes CHECK et Zod `answerFrameLinesSchema` `.strict()`).
 La **duplication** d'une fiche (`POST /api/worksheets/[id]/duplicate`) recopie le réglage de chaque
-exercice. Le **lien de partage** (cahier de texte, cours partagé) le reçoit des RPC
+exercice (voir « Duplication d'une fiche » ci-dessous). Le **lien de partage** (cahier de texte, cours partagé) le reçoit des RPC
 `get_worksheet_by_share_token` / `get_course_worksheet_by_share_token` (`20261016104000`) : les
 exercices passent tels quels par `resolve…ByShareToken`, puis `PdfPreview` (`buildWorksheetCopy`,
 `toAnswerFrameLines`) imprime les mêmes cadres que le prof (tests
@@ -469,12 +469,23 @@ Sauvegarde optimiste regroupée (600 ms) et en série (une requête à la fois ;
 explicite), retour arrière + `toaster.error` si elle échoue. Le schéma de mise à jour n'applique
 plus les défauts de la création (`.partial()` seul remettait `is_essential` à faux). Nombre de
 pages : `PdfPreview` affiche « Aperçu : N pages » (⚠ au-delà d'une) après compilation
-(`typst/pdf-page-count.ts`, compte les objets `/Type /Page` du PDF de Typst). Hors lot (à
-trancher) : duplication de fiche et PDF par lien de partage ne recopient ni ne lisent la colonne.
+(`typst/pdf-page-count.ts`, compte les objets `/Type /Page` du PDF de Typst).
 Tests : `document/__tests__/cadres-lignes.test.ts`, `typst/generators/__tests__/cadres-lignes-pdf.test.ts`,
 `validation/__tests__/cadres-lignes.test.ts`, `exercises/[exerciseId]/__tests__/cadres-lignes.test.ts`,
 `components/worksheets/__tests__/cadres-lignes.svelte.test.ts`, `tests/integration/pdf-eleve-style.test.ts`
 et `cadres-lignes-par-question.test.ts`.
+
+**Duplication d'une fiche** (`POST /api/worksheets/[id]/duplicate`) : la copie reprend tout ce
+qui définit le contenu — fiche (dont `translations`, `config`, `style_id`, `type`, durée, points,
+niveaux), sections (dont `translations`) et exercices (dont `translations`, `is_essential`,
+`variation_index`, `correction_visible`, `answer_frame_lines`), plus les étiquettes. Ne sont pas
+recopiés : identifiants et horodatages, `status` (brouillon), `version` (1), `published_at`,
+`archived_at`, `created_by` / `school_id` (qui duplique), le titre (suffixé « (copie) ») ;
+`section_id` est remappé vers la section copiée. Tout est lu avant d'écrire ; chaque insertion
+vérifie son erreur et ses lignes rendues (`.select`) ; au moindre échec la copie créée par la
+requête est supprimée (nettoyage lui-même vérifié, journalisé sinon) et la route répond 500. Tests :
+`duplicate/__tests__/echec-partiel.test.ts`, intégration `duplication-fiche-complete` (colonne par
+colonne) et `cadres-lignes-duplication`.
 
 **Trois PDF du prof** (`WorksheetPdfMode`, choix « Fiche · Réponses · Corrigé » de `PdfPreview` ;
 la lecture publique `variant="reader"` reste sur la fiche) :
