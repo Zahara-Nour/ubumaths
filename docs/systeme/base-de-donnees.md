@@ -274,6 +274,13 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   attente et n'en change que la description (pas d'affectation, d'exercice ni d'auteur) ; `status`, `reviewed_by`, `reviewed_at` et `response` sont
   au prof et à l'admin (déclencheur `guard_worksheet_error_report_teacher_fields`,
   `20261016101700`, test `tests/integration/signalement-fiche-champs-du-prof.test.ts`).
+- `worksheet_exercises.answer_frame_lines` (ADR 0030 lot 4, `20261016103900`) : nombre de lignes
+  des cadres de réponse choisi par le prof pour cet exercice dans cette fiche,
+  `{ "questions": [int|null, …], "exercise": int|null }` ; `null` (colonne ou case) = estimation
+  automatique, `0` = pas de cadre. CHECK : objet sans autre clé, ≤ 200 questions, entiers 0 à 40.
+  Aucun accès propre : la colonne suit les policies de la ligne (prof auteur et admin en écriture,
+  élève destinataire en lecture) ; les RPC par lien de partage ne la rendent pas (test
+  `tests/integration/cadres-lignes-par-question.test.ts`).
 - `worksheet_instances` : exercices générés par élève (graine déterministe).
 - `worksheet_styles` (ADR 0028, `20261016103200`) : style de mise en page d'une fiche, propriétaire
   vide = fourni par Chiphre (Typst dans le code). Lus par le prof et l'admin (ceux de Chiphre et les
