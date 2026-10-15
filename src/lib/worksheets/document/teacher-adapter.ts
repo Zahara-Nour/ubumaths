@@ -18,6 +18,7 @@ import { worksheetHeader } from '../worksheet-header';
 import type { WorksheetDocument } from './types';
 import { placeExercises, writtenOrNull } from './numbering';
 import { estimateAnswerFrames } from './answer-frames';
+import { resolveAnswerFrames } from './answer-frame-lines';
 
 export interface TeacherCopyInput {
 	worksheet: WorksheetRow;
@@ -33,6 +34,7 @@ export function documentFromTeacherCopy({
 	const locale = worksheetLocale(config);
 	// Le type décide des points et des cadres (ADR 0030), comme pour l'élève
 	const header = worksheetHeader(worksheet.type, config);
+	const frameMode = config.answer_frames ?? 'question';
 	const sections = [...(instance.sections ?? [])].sort((a, b) => a.position - b.position);
 
 	// Ordre tiré au sort : il prime sur `position`
@@ -62,9 +64,14 @@ export function documentFromTeacherCopy({
 				essential: false,
 				genericFunctions: exercise.generic_functions ?? null,
 				capitalPairs: exercise.capital_pairs,
-				// Cadres de réponse : estimés d'après le corrigé de cette copie
-				answerFrameEstimate: header.answersOnSheet
-					? estimateAnswerFrames(exercise.statement, writtenOrNull(exercise.solution))
+				// Cadres de réponse : réglage du prof, sinon estimés d'après le corrigé
+				// de cette copie
+				answerFrames: header.answersOnSheet
+					? resolveAnswerFrames(
+							estimateAnswerFrames(exercise.statement, writtenOrNull(exercise.solution)),
+							exercise.answer_frame_lines,
+							frameMode
+						)
 					: null
 			})
 		),
@@ -72,7 +79,7 @@ export function documentFromTeacherCopy({
 		display: {
 			showPoints: header.points,
 			answersOnSheet: header.answersOnSheet,
-			answerFrames: config.answer_frames ?? 'question'
+			answerFrames: frameMode
 		}
 	};
 }

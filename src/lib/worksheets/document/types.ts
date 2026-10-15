@@ -16,7 +16,7 @@
 
 import type { ContentLocale } from '$lib/types/locale';
 import type { CapitalPairs } from '$lib/mathAST/parser/types';
-import type { AnswerFrameEstimate, AnswerFrameMode, WorksheetType } from '$lib/types/worksheets';
+import type { AnswerFrameMode, PrintedAnswerFrames, WorksheetType } from '$lib/types/worksheets';
 
 /**
  * Ce que contient le PDF (vocabulaire de l'ADR 0028) :
@@ -69,11 +69,12 @@ export interface DocumentExercise {
 	/** Sens de deux majuscules collées (`AB`) ; absent : produit */
 	capitalPairs?: CapitalPairs;
 	/**
-	 * Tailles des cadres de réponse, estimées d'après le corrigé de cette variante
-	 * (`estimateAnswerFrames`) : par la copie du prof, ou par le serveur pour
-	 * l'élève. Absent : estimées au rendu depuis la correction, si elle est là.
+	 * Cadres de réponse imprimés, en lignes (`resolveAnswerFrames`) : réglage du
+	 * prof, sinon estimation d'après le corrigé de cette variante. Résolus sur la
+	 * copie du prof, ou par le serveur pour l'élève. Absent : estimés au rendu
+	 * depuis la correction, si elle est là.
 	 */
-	answerFrameEstimate?: AnswerFrameEstimate | null;
+	answerFrames?: PrintedAnswerFrames | null;
 }
 
 /**

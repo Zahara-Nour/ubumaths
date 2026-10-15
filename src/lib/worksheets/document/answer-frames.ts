@@ -27,18 +27,20 @@
  *
  * Une seule fonction d'estimation (`estimateAnswerFrames`) : le PDF du prof
  * l'appelle sur sa copie, le serveur l'appelle sur la copie de l'élève (dont il
- * n'envoie que les tailles quand la correction est masquée) — mêmes cadres.
+ * n'envoie que les lignes résolues, même quand la correction est masquée) —
+ * mêmes cadres. Depuis le lot 4, l'estimation est le point de départ « auto »
+ * d'un réglage en lignes : `answer-frame-lines.ts`.
  *
  * @module worksheets/document/answer-frames
  */
 
 import { parseMarkdown } from '$lib/ubumark';
 import type { ASTNode, DocumentNode, InlineNode, ListItemNode } from '$lib/ubumark/types';
-import type {
-	AnswerFrameEstimate,
-	AnswerFrameMode,
-	AnswerFrameSize,
-	ExerciseFrameCm
+import {
+	ANSWER_FRAME_MAX_QUESTIONS,
+	type AnswerFrameEstimate,
+	type AnswerFrameSize,
+	type ExerciseFrameCm
 } from '$lib/types/worksheets';
 
 // ============================================================================
@@ -70,11 +72,11 @@ export const EXTRA_LARGE_MAX_LINES = 14;
 export const EXERCISE_FRAME_MAX_CM = 14;
 
 /**
- * Tailles par question envoyées à l'élève, au plus : la borne du schéma de
+ * Lignes par question envoyées à l'élève, au plus : la borne du schéma de
  * réponse ; au-delà, le serveur tronque (le rendu met « moyen ») plutôt que de
  * faire échouer toute la copie
  */
-export const MAX_VIEW_QUESTIONS = 200;
+export const MAX_VIEW_QUESTIONS = ANSWER_FRAME_MAX_QUESTIONS;
 
 /** Le cadre lui-même : pointillé gris clair, toute la largeur disponible */
 const FRAME_STROKE = '(paint: rgb("#c8c8c8"), thickness: 0.5pt, dash: "dashed")';
@@ -234,22 +236,6 @@ function exerciseFrameCm(lines: number): ExerciseFrameCm {
 	const size = answerFrameSize(lines);
 	if (size !== 'large' || lines <= LARGE_MAX_LINES) return ANSWER_FRAME_HEIGHT_CM[size];
 	return lines <= EXTRA_LARGE_MAX_LINES ? 10 : EXERCISE_FRAME_MAX_CM;
-}
-
-/**
- * Ce que la vue de l'élève reçoit (audit S1) : seulement ce que son PDF
- * imprime. Mode exercice, ou énoncé sans question : la hauteur du cadre
- * unique ; sinon les tailles par question (tronquées à `MAX_VIEW_QUESTIONS`).
- */
-export function estimateForView(
-	estimate: AnswerFrameEstimate,
-	mode: AnswerFrameMode
-): AnswerFrameEstimate {
-	const questions = estimate.questions ?? [];
-	if (mode === 'exercise' || questions.length === 0) {
-		return { exercise_cm: estimate.exercise_cm ?? ANSWER_FRAME_HEIGHT_CM.medium };
-	}
-	return { questions: questions.slice(0, MAX_VIEW_QUESTIONS) };
 }
 
 // ============================================================================

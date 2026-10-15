@@ -49,6 +49,7 @@
 	} from '$lib/utils/worksheet-constants';
 	import type { Exercise } from '$lib/exercises/types';
 	import { worksheetLocale } from '$lib/types/worksheets';
+	import { worksheetHeader } from '$lib/worksheets/worksheet-header';
 	import UntranslatedExercisesNotice from '$lib/components/worksheets/UntranslatedExercisesNotice.svelte';
 	import WorksheetCitationsNotice from '$lib/components/worksheets/WorksheetCitationsNotice.svelte';
 
@@ -111,6 +112,8 @@
 	// Derived values
 	let worksheet = $derived(worksheetData);
 	let isDraft = $derived(worksheet.status === 'draft');
+	// Réponses sur le sujet (ADR 0030) : le réglage des cadres s'affiche sous chaque exercice
+	let answersOnSheet = $derived(worksheetHeader(worksheet.type, worksheet.config).answersOnSheet);
 
 	// Get IDs of already added exercises
 	let existingExerciseIds = $derived(worksheet.exercises?.map((e) => e.exercise_id) ?? []);
@@ -561,6 +564,9 @@
 						readonly={!isDraft}
 						onExercisesChange={handleExercisesChange}
 						onEditExercise={handleEditExercise}
+						{answersOnSheet}
+						answerFrameMode={worksheet.config.answer_frames ?? 'question'}
+						language={worksheetLocale(worksheet.config)}
 					/>
 				</div>
 			</Tabs.Content>

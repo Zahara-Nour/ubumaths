@@ -172,6 +172,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		updateData.custom_instructions = data.custom_instructions;
 	if (data.translations !== undefined) updateData.translations = toJson(data.translations);
 	if (data.is_essential !== undefined) updateData.is_essential = data.is_essential;
+	// Lignes des cadres de réponse (ADR 0030, lot 4) ; `null` : tout automatique
+	if (data.answer_frame_lines !== undefined) {
+		updateData.answer_frame_lines = toJson(data.answer_frame_lines);
+	}
 
 	// Update exercise
 	const { data: exerciseData, error: dbError } = await locals.supabase
@@ -182,6 +186,12 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.select()
 		.single();
 
+	// La RLS échoue en silence : une écriture refusée ne rend aucune ligne
+	// (`single` → PGRST116), jamais un succès
+	if ((dbError && dbError.code === 'PGRST116') || (!dbError && !exerciseData)) {
+		logger.error('Exercise update returned no row:', dbError);
+		throw error(404, 'Aucune modification enregistrée : exercice introuvable ou accès refusé');
+	}
 	if (dbError) {
 		logger.error('Failed to update exercise:', dbError);
 		throw error(500, 'Impossible de modifier l’exercice');

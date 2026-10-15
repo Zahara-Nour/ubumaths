@@ -102,7 +102,7 @@ describe('cadres de réponse : `answer_frames`', () => {
 		expect(updateWorksheetSchema.safeParse({ config }).success).toBe(false);
 	});
 
-	it('la vue de l’élève garde le mode et l’estimation par exercice', () => {
+	it('la vue de l’élève garde le mode et les lignes imprimées par exercice', () => {
 		const exercise = {
 			id: '00000000-0000-4000-8000-000000000003',
 			exercise_id: '00000000-0000-4000-8000-000000000004',
@@ -114,7 +114,7 @@ describe('cadres de réponse : `answer_frames`', () => {
 			correction: null,
 			correction_visible: false,
 			section_id: null,
-			answer_frame_estimate: { questions: ['small', 'large'], exercise_cm: 7 }
+			printed_frame_lines: { questions: [0, 3, 40] }
 		};
 		const view = studentWorksheetDetailResponseSchema.parse({
 			assignment_id: '00000000-0000-4000-8000-000000000001',
@@ -134,18 +134,19 @@ describe('cadres de réponse : `answer_frames`', () => {
 			answer_frames: 'exercise'
 		});
 		expect(view.answer_frames).toBe('exercise');
-		expect(view.exercises[0].answer_frame_estimate).toEqual({
-			questions: ['small', 'large'],
-			exercise_cm: 7
-		});
-		// Taille inconnue, hauteur hors de l'énumération fermée (audit S1), trop de questions
-		for (const estimate of [
-			{ questions: ['énorme'] },
-			{ exercise_cm: 8 },
-			{ exercise_cm: 30 },
-			{ questions: Array(201).fill('small') }
+		expect(view.exercises[0].printed_frame_lines).toEqual({ questions: [0, 3, 40] });
+		// Hors bornes, non entier, `null` (déjà résolu : jamais « auto »), trop de
+		// questions, clé inconnue
+		for (const printed of [
+			{ questions: [41] },
+			{ questions: [-1] },
+			{ questions: [2.5] },
+			{ questions: [null] },
+			{ exercise: 41 },
+			{ questions: Array(201).fill(3) },
+			{ exercise: 3, exercise_cm: 7 }
 		]) {
-			const bad = { ...exercise, answer_frame_estimate: estimate };
+			const bad = { ...exercise, printed_frame_lines: printed };
 			expect(
 				studentWorksheetDetailResponseSchema.safeParse({ ...view, exercises: [bad] }).success
 			).toBe(false);

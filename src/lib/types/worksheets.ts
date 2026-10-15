@@ -192,12 +192,39 @@ export type ExerciseFrameCm = (typeof EXERCISE_FRAME_HEIGHTS_CM)[number];
  * - `questions` : une taille par question de l'énoncé, dans l'ordre ;
  * - `exercise_cm` : hauteur du cadre unique (après l'exercice, ou énoncé sans
  *   question numérotée).
- * La vue de l'élève n'en reçoit que la partie utile (`estimateForView`) : les
- * tailles par question OU la hauteur du cadre unique.
+ * Converties en lignes (lot 4, `autoAnswerFrameLines`) : c'est l'estimation
+ * « auto » quand le prof n'a rien réglé.
  */
 export interface AnswerFrameEstimate {
 	questions?: AnswerFrameSize[];
 	exercise_cm?: ExerciseFrameCm;
+}
+
+/** Plafond du nombre de lignes d'un cadre (contrainte CHECK de la colonne) */
+export const ANSWER_FRAME_MAX_LINES = 40;
+/** Questions réglables par exercice, au plus (contrainte CHECK de la colonne) */
+export const ANSWER_FRAME_MAX_QUESTIONS = 200;
+
+/**
+ * Lignes des cadres choisies par le prof pour un exercice de la fiche (ADR 0030,
+ * lot 4 ; colonne `worksheet_exercises.answer_frame_lines`) :
+ * - `questions[k]` : cadre de la question k+1 (mode « après chaque question ») ;
+ * - `exercise` : cadre unique (mode « après l'exercice », ou énoncé sans question).
+ * `null` (ou absent) = estimation automatique ; 0 = pas de cadre ; 0 à 40 lignes.
+ */
+export interface AnswerFrameLines {
+	questions?: (number | null)[];
+	exercise?: number | null;
+}
+
+/**
+ * Les cadres qu'un PDF imprime pour un exercice, en lignes (0 = aucun cadre) :
+ * réglage du prof, sinon estimation (`resolveAnswerFrames`). Les lignes par
+ * question OU le cadre unique, jamais les deux.
+ */
+export interface PrintedAnswerFrames {
+	questions?: number[];
+	exercise?: number;
 }
 
 /**
@@ -303,6 +330,11 @@ export interface ResolvedExercise {
 	 * longueurs, Q-J). Absent (instance stockée avant) : produit, l'écriture d'avant.
 	 */
 	capital_pairs?: CapitalPairs;
+	/**
+	 * Lignes des cadres réglées par le prof (`worksheet_exercises.answer_frame_lines`,
+	 * ADR 0030 lot 4). Absent (instance stockée, copie hors base) : automatique.
+	 */
+	answer_frame_lines?: AnswerFrameLines | null;
 }
 
 /** Section data for PDF generation */
@@ -414,6 +446,11 @@ export interface WorksheetExerciseRow {
 	 * Displayed with a star icon in student view.
 	 */
 	is_essential: boolean;
+	/**
+	 * Lignes des cadres de réponse réglées par le prof (ADR 0030, lot 4).
+	 * `null` ou absent : tout automatique.
+	 */
+	answer_frame_lines?: AnswerFrameLines | null;
 	created_at: string;
 	updated_at: string;
 }
@@ -763,12 +800,13 @@ export interface StudentExerciseView {
 	 */
 	capital_pairs?: CapitalPairs;
 	/**
-	 * Cadres de réponse (réponses sur le sujet, ADR 0030 lot 3) : tailles
-	 * estimées par le serveur d'après le corrigé de la copie de l'élève, envoyées
-	 * même si la correction est masquée (le texte, lui, ne l'est jamais) : le
-	 * PDF de l'élève a les mêmes cadres que celui du prof. Absent : sans cadres.
+	 * Cadres de réponse (réponses sur le sujet, ADR 0030 lots 3 et 4) : les
+	 * lignes que le PDF imprime, résolues par le serveur (réglage du prof, sinon
+	 * estimation d'après le corrigé de la copie de l'élève), envoyées même si la
+	 * correction est masquée (le texte, lui, ne l'est jamais) : le PDF de l'élève
+	 * a les mêmes cadres que celui du prof. Absent : sans cadres.
 	 */
-	answer_frame_estimate?: AnswerFrameEstimate;
+	printed_frame_lines?: PrintedAnswerFrames;
 }
 
 /**

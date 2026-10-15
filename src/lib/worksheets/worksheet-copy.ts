@@ -23,6 +23,7 @@ import {
 	type InstanceSection,
 	type WorksheetWithRelations
 } from '$lib/types/worksheets';
+import { toAnswerFrameLines } from './document/answer-frame-lines';
 import {
 	groupExercisesForDisplay,
 	orderExercisesForDisplay,
@@ -312,7 +313,9 @@ export function buildWorksheetCopy(worksheet: WorksheetForCopy, scope: CopyScope
 			// Fonctions déclarées : sans elles, `C'(x)` s'imprime en erreur dans le PDF.
 			generic_functions: we.exercise?.generic_functions,
 			// Sens de `AB` (longueur ou produit) : le thème de l'exercice décide (Q-J)
-			capital_pairs: exerciseCapitalPairs(we.exercise?.topic)
+			capital_pairs: exerciseCapitalPairs(we.exercise?.topic),
+			// Lignes des cadres réglées par le prof (ADR 0030, lot 4)
+			answer_frame_lines: toAnswerFrameLines(we.answer_frame_lines)
 		};
 	});
 

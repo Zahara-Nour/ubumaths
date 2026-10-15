@@ -53,7 +53,7 @@ function framedExercise() {
 	return exercise;
 }
 
-function supabase(config: Record<string, unknown>) {
+function supabase(config: Record<string, unknown>, answerFrameLines: unknown = null) {
 	return tableMock({
 		worksheet_assignments: {
 			data: {
@@ -95,6 +95,7 @@ function supabase(config: Record<string, unknown>) {
 					variation_index: null,
 					section_id: null,
 					is_essential: false,
+					answer_frame_lines: answerFrameLines,
 					exercise: framedExercise()
 				}
 			],
@@ -108,10 +109,14 @@ interface PreviewExercise {
 	correction: string | null;
 	correction_visible: boolean;
 	answers?: string | null;
-	answer_frame_estimate?: { questions?: string[]; exercise_cm?: number };
+	printed_frame_lines?: { questions?: number[]; exercise?: number };
 }
 
-async function preview(config: Record<string, unknown>, studentId?: string) {
+async function preview(
+	config: Record<string, unknown>,
+	studentId?: string,
+	answerFrameLines: unknown = null
+) {
 	const { GET } = await import('../+server');
 	const url = new URL('http://localhost/preview');
 	if (studentId) url.searchParams.set('studentId', studentId);
@@ -119,7 +124,7 @@ async function preview(config: Record<string, unknown>, studentId?: string) {
 		params: { assignmentId: ASSIGNMENT_ID },
 		url,
 		locals: {
-			supabase: supabase(config).client,
+			supabase: supabase(config, answerFrameLines).client,
 			safeGetSession: async () => ({ user: { id: TEACHER_ID } })
 		} as unknown as App.Locals
 	} as never);
@@ -141,17 +146,23 @@ describe('aperçu de l’affectation : cadres de réponse', () => {
 		expect(exercise.correction_visible).toBe(false);
 		expect(exercise.correction).toBeNull();
 		expect(exercise.answers).toBeNull();
-		expect(exercise.answer_frame_estimate).toEqual({ questions: ['small', 'large'] });
+		expect(exercise.printed_frame_lines).toEqual({ questions: [3, 8] });
 		expect(JSON.stringify(view)).not.toContain(SECRET);
 	});
 
 	it('vue prof, mode exercice : la hauteur seule', async () => {
 		const view = await preview({ answers_on_sheet: true, answer_frames: 'exercise' });
-		expect(view.exercises[0].answer_frame_estimate).toEqual({ exercise_cm: 7 });
+		expect(view.exercises[0].printed_frame_lines).toEqual({ exercise: 9 });
 	});
 
 	it('sans réponses sur le sujet : aucune taille', async () => {
 		const view = await preview({}, STUDENT_ID);
-		expect(view.exercises[0].answer_frame_estimate).toBeUndefined();
+		expect(view.exercises[0].printed_frame_lines).toBeUndefined();
+	});
+
+	it('lignes réglées par le prof : celles que l’élève reçoit, sans texte du corrigé', async () => {
+		const view = await preview({ answers_on_sheet: true }, STUDENT_ID, { questions: [0, 12] });
+		expect(view.exercises[0].printed_frame_lines).toEqual({ questions: [0, 12] });
+		expect(JSON.stringify(view)).not.toContain(SECRET);
 	});
 });

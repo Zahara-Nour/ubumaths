@@ -30,7 +30,13 @@ import { SECTION_COLOR, exerciseBadge } from '$lib/typst/worksheet-palette';
 // Rendu Typst des blocs ```figure (registre : voir figure-typst-registry.ts)
 import '$lib/ubumark/generators/figure-typst-setup';
 import type { DocumentExercise, DocumentForm, DocumentSection, WorksheetDocument } from './types';
-import { ANSWER_FRAME_HEIGHT_CM, answerFrameTypst, estimateAnswerFrames } from './answer-frames';
+import { answerFrameTypst, estimateAnswerFrames } from './answer-frames';
+import {
+	answerFrameLinesToCm,
+	printedExerciseLines,
+	printedQuestionLines,
+	resolveAnswerFrames
+} from './answer-frame-lines';
 import type { TypstTranspilerOptions } from '$lib/exercises/types';
 
 // ============================================================================
@@ -305,29 +311,36 @@ function renderTemplateExercise(
 }
 
 /**
- * Les cadres de réponse d'un exercice sur la fiche (ADR 0030, lot 3) : un
- * après chaque question, ou un seul à la fin de l'énoncé (mode « exercice »,
- * ou énoncé sans question numérotée). Aucun sans « réponses sur le sujet ».
+ * Les cadres de réponse d'un exercice sur la fiche (ADR 0030, lots 3 et 4) :
+ * un après chaque question, ou un seul à la fin de l'énoncé (mode « exercice »,
+ * ou énoncé sans question numérotée). Aucun sans « réponses sur le sujet » ;
+ * aucun non plus pour un cadre réglé à 0 ligne.
  */
 function answerFrames(
 	exercise: DocumentExercise,
 	doc: WorksheetDocument
 ): { afterQuestion?: (index: number) => string; atEnd: number | null } {
 	if (!doc.display.answersOnSheet) return { atEnd: null };
-	// Estimation transmise (prof, serveur pour l'élève) ; sinon depuis la
-	// correction présente, ou taille moyenne
-	const estimate =
-		exercise.answerFrameEstimate ??
-		estimateAnswerFrames(exercise.statement, exercise.correction?.solution ?? null);
-	// Une taille par question de l'énoncé : aucune, pas de question numérotée.
-	// La vue de l'élève n'a que l'une des deux parties (`estimateForView`)
-	const questions = estimate.questions ?? [];
-	if (doc.display.answerFrames === 'exercise' || questions.length === 0) {
-		return { atEnd: estimate.exercise_cm ?? ANSWER_FRAME_HEIGHT_CM.medium };
+	// Lignes transmises (copie du prof, serveur pour l'élève) ; sinon estimées
+	// depuis la correction présente, ou taille moyenne
+	const printed =
+		exercise.answerFrames ??
+		resolveAnswerFrames(
+			estimateAnswerFrames(exercise.statement, exercise.correction?.solution ?? null),
+			null,
+			doc.display.answerFrames
+		);
+	// Lignes par question (mode question, énoncé à questions numérotées) ou
+	// cadre unique : la résolution a déjà choisi
+	if (!printed.questions?.length) {
+		const lines = printedExerciseLines(printed);
+		return { atEnd: lines > 0 ? answerFrameLinesToCm(lines) : null };
 	}
 	return {
-		afterQuestion: (index) =>
-			answerFrameTypst(ANSWER_FRAME_HEIGHT_CM[questions[index] ?? 'medium']),
+		afterQuestion: (index) => {
+			const lines = printedQuestionLines(printed, index);
+			return lines > 0 ? answerFrameTypst(answerFrameLinesToCm(lines)) : '';
+		},
 		atEnd: null
 	};
 }

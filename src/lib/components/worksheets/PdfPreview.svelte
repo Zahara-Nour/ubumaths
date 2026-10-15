@@ -39,6 +39,7 @@
 		getTrackedExternalImages
 	} from '$lib/ubumark/generators/typst-generator';
 	import { fetchExternalImages } from '$lib/typst/image-loader';
+	import { pdfPageCount } from '$lib/typst/pdf-page-count';
 	import {
 		compileTypstDocument,
 		fallbackWarning
@@ -121,6 +122,8 @@
 	let pdfUrl = $state<string | null>(null);
 	let pdfBlob = $state<Blob | null>(null);
 	let pdfFilename = $state<string>('');
+	// Pages du PDF compilé (« Aperçu : N pages ») ; 0 : inconnu ou pas encore compilé
+	let pageCount = $state(0);
 	let svgContent = $state<string>('');
 	let typstContent = $state<string>('');
 	let markdownContent = $state<string>('');
@@ -231,6 +234,7 @@
 			pdfUrl = null;
 		}
 		pdfBlob = null;
+		pageCount = 0;
 
 		try {
 			// Determine student info
@@ -288,6 +292,7 @@
 			svgContent = compiled.data.svg ?? '';
 			pdfBlob = new Blob([compiled.data.pdf as BlobPart], { type: 'application/pdf' });
 			pdfUrl = URL.createObjectURL(pdfBlob);
+			pageCount = pdfPageCount(compiled.data.pdf);
 			pdfFilename = worksheetPdfFileName(worksheet.title, mode, studentName);
 
 			toaster.success('PDF genere avec succes');
@@ -694,6 +699,20 @@ INFORMATIONS
 								<Printer class="mr-2 h-4 w-4" />
 								Imprimer
 							</Button>
+						{/if}
+
+						<!-- Nombre de pages : régler les cadres de réponse sans imprimer pour voir -->
+						{#if pageCount > 0 && !isGenerating}
+							<span
+								class="flex items-center gap-1 self-center text-sm {pageCount > 1
+									? 'text-amber-600'
+									: 'text-muted-foreground'}"
+								data-testid="apercu-pages"
+							>
+								{#if pageCount > 1}<AlertCircle class="h-4 w-4" />{/if}
+								Aperçu : {pageCount}
+								{pageCount > 1 ? 'pages' : 'page'}
+							</span>
 						{/if}
 					</div>
 
