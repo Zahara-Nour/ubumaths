@@ -731,8 +731,12 @@
 	}
 
 	@media (max-width: 720px) {
+		/* Une colonne : le panneau au-dessus, la vue dessous. Des rangées SANS taille
+		   écrasaient le panneau, dont les boutons « + Fonction… » passaient sous la
+		   barre « Partager… / Réglages » (relevé à 390 px) */
 		.atelier {
 			grid-template-columns: 1fr;
+			grid-template-rows: auto minmax(0, 1fr);
 		}
 	}
 </style>
