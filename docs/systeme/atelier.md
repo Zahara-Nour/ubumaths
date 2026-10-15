@@ -503,7 +503,13 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   partout (`outsideQuotes`) : ni recopie, ni capitales (`"a1"` reste `"a1"`), et un `;` ou une
   parenthèse dedans ne coupe rien. **Calcul** renvoie vers la grille (Q-L4-6,
   `gridFunctionInCalcul`) : `somme(L)` → « SOMME est une fonction de la grille… tape .stats L »,
-  `racine(2)` → « …dans Calcul, écris sqrt(…) ». `plainSyntax` ramène au tableur les guillemets
+  `racine(2)` → « …dans Calcul, écris sqrt(…) ». Le renvoi repère aussi un APPEL de fonction de la
+  grille que le moteur ne signalait pas (`gridFunctionCalledIn`) : `mediane(L)` était recopié sans
+  être calculé, `médiane(L)` lu « Fonction inconnue : diane » (2026-10-15) ; `max`, `min`, `abs`,
+  `ln`, `exp`, que Calcul connaît, restent des calculs, comme un nom de deux lettres sans point
+  (`nb(…)`, `si(…)` : des produits, la règle de `readFunctionCall`). `pi` en lettres est refusé dans la grille
+  comme dans Calcul (`PI_IN_LETTERS`, `names.ts`, décision de David du 2026-10-06), et dans la
+  grille en toutes casses (`=PI`, `=Pi`) hors des guillemets ; `PI()` et `π` restent lus. `plainSyntax` ramène au tableur les guillemets
   courbes ou français (`“fille”`, `«fille»` : la ponctuation intelligente de l'iPad) et `≤ ≥ ≠` ;
   la barre et les cases ont `autocorrect="off"`. Le critère de NB.SI peut être une case seule, dont
   le mot compte (`=NB.SI(B$2:B$30;B2)`).

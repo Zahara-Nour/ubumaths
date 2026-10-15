@@ -196,3 +196,18 @@ export function nameRejectionMessage(rejection: NameRejection, name: string): st
 			return `« ${name} » n'est pas un nom valide : une lettre, éventuellement suivie d'un indice (a, f, L, u_1).`;
 	}
 }
+
+/**
+ * `pi` écrit en lettres, comme un mot : `2pi`, `sin(pi x)`, `cos(x)=pi`.
+ *
+ * ⚠️ Décision de David (2026-10-06) : on le REFUSE — dans Calcul et dans la
+ * grille (2026-10-15). La notation custom le lit
+ * p·i (i : l'imaginaire) — `f(x) = pi*x` restait « en attente de p »,
+ * `.resoudre cos(x)=pi` répondait faux. `\pi` et `π` restent acceptés, ainsi
+ * que `p*i` et les mots qui contiennent « pi » (`pile ; face`, `épi`) : avant
+ * et après, aucune lettre ni antislash.
+ */
+export const PI_IN_LETTERS = /(?<![\p{L}\\])pi(?!\p{L})/u;
+
+/** Ce qu'on répond à `pi` écrit en lettres. */
+export const PI_IN_LETTERS_MESSAGE = 'Écris π avec \\pi ou le symbole π.';
