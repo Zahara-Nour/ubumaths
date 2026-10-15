@@ -234,4 +234,4 @@ liste trouée en citant l'entrée).
 - [x] revue (2 importants, 4 mineurs, tous corrigés test rouge d'abord) : `NB.SI(B1:B5;B1)` avec un
       mot plantait ; guillemets courbes de l'iPad illisibles (→ `plainSyntax`, `autocorrect="off"` ;
       **à vérifier sur un vrai iPad**) ; texte cité réécrit ; `≤ ≥ ≠` ; referencesIn ; messages
-- [ ] PR, CI, merge
+- [x] PR 3 mergée : #1434 — **lot 4 complet** (pas en prod)
