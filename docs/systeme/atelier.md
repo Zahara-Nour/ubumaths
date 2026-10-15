@@ -109,6 +109,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/solve-steps-check.ts`  | Garde-fou : une conclusion d'étapes que les nombres démentent n'est pas montrée                            |
 | `src/lib/atelier/variations-steps.ts`   | `.variations` et « Variations » : tableau et détail (`variationsRendering`)                                |
 | `src/lib/atelier/steps-summary.ts`      | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                          |
+| `src/lib/atelier/copy-text.ts`          | « Copier » d'une ligne : la réponse en texte lisible depuis son LaTeX (`readableText`, `answerToCopy`)     |
 | `src/lib/atelier/input-mode.ts`         | Réglage « Saisie dans Calcul » (texte / écriture mathématique), retenu dans le navigateur                  |
 | `src/lib/atelier/natural-input.ts`      | Écriture mathématique : règles des mots, complétion, LaTeX du champ ↔ texte de Calcul (`calcTextOf`)       |
 | `src/lib/atelier/virtual-keyboard.ts`   | Clavier virtuel de l'écriture mathématique : onglets « Calcul » et « Commandes »                           |
@@ -696,6 +697,23 @@ Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de re
 - `syncPlots` (`plot-sync.ts`) : l'atelier détient l'état, le grapheur le reflète. Rien de ce qui
   se passe dans le grapheur ne remonte. ⚠️ L'effet qui l'appelle lit et écrit le store : s'il
   cessait d'être idempotent, il bouclerait.
+
+### Copier une réponse
+
+Chaque ligne qui a une réponse porte **« Copier »** (phase 0
+[atelier-copier-phase0.md](../wip/atelier-copier-phase0.md), décisions de David du 2026-10-15) : la
+**réponse seule**, en **texte lisible** (`2√2`, `2x² + 5x − 3`, `S = ]−∞ ; −2[ ∪ ]2 ; +∞[`,
+`12,3 km`, `lim x→+∞ (1 + 1/x)ˣ = e`) ; la flèche ▾ propose **« Copier en LaTeX »**. La valeur
+approchée quand le bouton ≈ l'affiche (le « = » de tête tombe). Pas de bouton sur un refus ni sur
+une définition ; une ligne sans formule (`.stats`) copie son texte.
+
+- Le texte vient du **LaTeX** de la ligne (`readableText`, `copy-text.ts`), jamais de `Entry.text`,
+  souvent la sortie du terminal (`.résoudre` y met toute sa trace) ; la conversion de MathLive
+  (`convertLatexToAsciiMath`) écrit `(1)/(2)`, `k m`. Elle ne connaît que les commandes que
+  l'atelier écrit : une autre (tableau, environnement) → le LaTeX est copié, et le retour le dit.
+  Garde : l'exemple de chaque commande du catalogue s'écrit en texte (`copie-texte.test.ts`).
+- Le retour (« Copié. », « Copié en LaTeX. », « Ton navigateur a refusé la copie. ») va dans la
+  ligne de retour de Calcul, annoncée.
 
 ### Réglages et écriture mathématique
 
