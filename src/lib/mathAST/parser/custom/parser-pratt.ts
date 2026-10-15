@@ -58,6 +58,18 @@ import {
 	type ParserSecurityOptions
 } from '../security';
 
+/** Un nom de fonction générique à indice lu en avance (`f_1`, `f_{12}`). */
+interface IndexedFunctionName {
+	/** Le nom déclaré : `f_1`. */
+	name: string;
+	/** La lettre : `f`. */
+	letter: string;
+	/** L'indice, entier : `1`. */
+	index: string;
+	/** Les jetons qu'il occupe : 3 pour `f_1`, 5 pour `f_{1}`. */
+	tokenCount: number;
+}
+
 // =============================================================================
 // Binding Power (Precedence)
 // =============================================================================
@@ -732,6 +744,11 @@ class CustomPrattParser {
 		const pointNames = this.parsePointNames();
 		if (pointNames) return pointNames;
 
+		// Une fonction générique à indice déclarée (`f_1(3)`, `f_{12}(x)`) : un appel,
+		// pas `f_1 × (3)`. Un nom indicé non déclaré reste une variable indicée.
+		const indexed = this.indexedGenericFunctionName();
+		if (indexed) return this.parseGenericFunction(indexed);
+
 		// Reserved constants: 'e' for Euler's number, 'i' for imaginary unit
 		// `e_1`, `i_n` : variables indicées (même règle que les parseurs LaTeX)
 		if (letter === 'e') {
@@ -791,18 +808,60 @@ class CustomPrattParser {
 	}
 
 	/**
+	 * Le nom d'une fonction générique À INDICE à partir du jeton courant :
+	 * `f_1`, `f_12` ou `f_{1}`, seulement si `f_1` est déclaré dans
+	 * `genericFunctions.names`. Rend aussi l'indice et le nombre de jetons qu'il
+	 * occupe (rien n'est consommé) ; `null` sinon. Indice entier seulement : c'est
+	 * la forme que l'atelier donne à ses noms (`nextName`).
+	 */
+	private indexedGenericFunctionName(): IndexedFunctionName | null {
+		const config = this.options.genericFunctions;
+		if (!config || this.currentToken.type !== 'LETTER') return null;
+		if (this.tokenizer.peekAt(0).type !== 'UNDERSCORE') return null;
+
+		const afterUnderscore = this.tokenizer.peekAt(1);
+		let index: CustomToken;
+		let tokenCount: number;
+		if (afterUnderscore.type === 'NUMBER') {
+			index = afterUnderscore;
+			tokenCount = 3; // f _ 1
+		} else if (
+			afterUnderscore.type === 'LBRACE' &&
+			this.tokenizer.peekAt(2).type === 'NUMBER' &&
+			this.tokenizer.peekAt(3).type === 'RBRACE'
+		) {
+			index = this.tokenizer.peekAt(2);
+			tokenCount = 5; // f _ { 1 }
+		} else {
+			return null;
+		}
+		if (!/^\d+$/.test(index.value)) return null;
+
+		const letter = this.currentToken.value;
+		const name = `${letter}_${index.value}`;
+		return this.isGenericFunctionName(name)
+			? { name, letter, index: index.value, tokenCount }
+			: null;
+	}
+
+	/**
 	 * Parse a generic function: f(x), f'(x), f''(x), f^{-1}(x), f^{(n)}(x)
 	 *
 	 * Pattern:
-	 * - Function name (single letter)
+	 * - Function name (single letter, or an indexed name `f_1` when `indexed` is given)
 	 * - Optional primes: ' '' '''
 	 * - Optional ^{-1} or ^{(n)} for inverse or higher derivative
 	 * - OPTIONAL arguments in parentheses: (x) or (x, y)
 	 *   (not mandatory for composition support)
 	 */
-	private parseGenericFunction(): MathNode {
-		const nameToken = this.advance(); // consume function name letter
-		const name = nameToken.value;
+	private parseGenericFunction(indexed?: IndexedFunctionName): MathNode {
+		let name: string;
+		if (indexed) {
+			for (let i = 0; i < indexed.tokenCount; i++) this.advance(); // f _ 1 ou f _ { 1 }
+			name = indexed.name;
+		} else {
+			name = this.advance().value; // consume function name letter
+		}
 
 		// Count prime marks for derivatives: f', f'', f'''
 		let derivativeOrder = 0;
@@ -865,6 +924,14 @@ class CustomPrattParser {
 					...(derivativeOrder > 0 && { derivativeOrder }),
 					...(isInverse && { isInverse })
 				})
+			);
+		}
+
+		// Un nom indicé sans appel (`f_1`, `f_1^2`) : la variable indicée, comme si
+		// le nom n'était pas déclaré
+		if (indexed) {
+			return this.applyColor(
+				MathAST.subscript(MathAST.variable(indexed.letter), MathAST.number(indexed.index))
 			);
 		}
 

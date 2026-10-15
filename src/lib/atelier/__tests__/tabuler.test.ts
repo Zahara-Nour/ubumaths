@@ -340,13 +340,14 @@ describe('revue de la PR 1', () => {
 		return s;
 	}
 
-	it('une fonction à indice dans une formule : refus, jamais une valeur fausse', () => {
-		const s = session(['f(x) = 2x+3', 'f_1(x) = x^2']);
-		s.atelier.editCells([{ column: A, row: 1, text: '=f_1(3)' }]);
+	// Le parseur lit désormais `f_1(3)` comme un appel de f_1 (il le lisait
+	// `f₁ × 3`, et la grille calculait avec f) : la valeur est juste, le refus
+	// `indexedFunctionMessage` ne se déclenche plus pour un appel
+	it('une fonction à indice dans une formule : la valeur de f_1, jamais celle de f', () => {
+		const s = session(['f(x) = 2x+3', 'f_1(x) = 3x^2']);
+		s.atelier.editCells([{ column: A, row: 1, text: '=f_1(2)' }]);
 
-		expect(shown(s.atelier, A, 1)).toBe(
-			'erreur : La grille ne lit pas encore une fonction à indice (f_1) : définis-la sous une seule lettre, par exemple k(x) = …'
-		);
+		expect(shown(s.atelier, A, 1)).toBe('12');
 	});
 
 	it('.tabuler f_1 : refusé, rien n’est écrit', () => {

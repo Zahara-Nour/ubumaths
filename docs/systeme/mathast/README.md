@@ -742,6 +742,11 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
     fonctions liées (`.def k(x) = …`, `createFunctionBinding`) s'ajoutent aux noms par défaut
     du parseur (f, g, h, u, v, w, F, G, H), en texte comme en LaTeX (`genericFunctionsOf`,
     `cli/core/pipeline.ts`). Avant le 2026-10-13, `k(0)` restait `k(0)`.
+    Un nom déclaré peut porter un indice entier (`f_1`, `g_12`, noms de l'atelier) : les deux
+    parseurs pratt lisent `f_1(3)`, `f_{1}\left(3\right)`, `f_1'(2)`, `f_1^{-1}(x)` comme un appel
+    de la fonction `f_1` (`indexedGenericFunctionName`) ; non déclaré, ou sans appel (`f_1`,
+    `f_1^2`), il reste la variable indicée. `toLatex` écrit `f_{12}` (sans accolades, KaTeX
+    afficherait f₁2). Les parseurs rd ne connaissent pas les fonctions génériques.
 
 ## Le moteur de réécriture et les étapes
 

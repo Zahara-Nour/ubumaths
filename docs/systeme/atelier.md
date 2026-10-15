@@ -525,9 +525,11 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   se vide pas de tirages. Garder un atelier reçu qui tirait au hasard refait ses tirages (la graine
   reste la nôtre) : le rapport le dit si des cases à hasard ont vraiment été écrites
   (`MergeReport.redrawn`, d'après `randomCells` avant et après).
-- **Fonction à indice** (`=f_1(3)`) : refusée (`indexedFunctionMessage`). Le parseur lit `f_1(3)`
-  comme `f₁ × 3`, et la grille calculait alors avec f, sans rien dire (revue du lot 3). Calcul ne
-  l'évalue pas non plus (il recopie `f_1(3)`).
+- **Fonction à indice** (`=f_1(3)`) : depuis le 2026-10-15, les parseurs lisent `f_1(3)` comme
+  un appel de f_1 quand `f_1` est déclarée (avant : `f₁ × 3`, et la grille calculait avec f, sans
+  rien dire — revue du lot 3). La grille rend donc la valeur de f_1, et Calcul l'évalue aussi ;
+  le refus `indexedFunctionMessage` ne vise plus qu'un `f_1` cité sans appel, et `.tabuler f_1`
+  reste refusé (`tabulationNotYet`) en attendant la levée de ces refus.
 - **Oracle** : `formules.test.ts` compare, sur un corpus, la valeur d'une cellule `=expr` à celle de
   Calcul pour `expr`.
 

@@ -990,7 +990,7 @@ export class LatexGenerator {
 		}
 
 		const isKnown = KNOWN_FUNCTIONS.has(node.name);
-		const funcName = isKnown ? `\\${node.name}` : node.name;
+		const funcName = isKnown ? `\\${node.name}` : indexedNameLatex(node.name);
 
 		// Emit function name
 		this.emit(funcName, node.nameMetadata ?? node.metadata);
@@ -1635,7 +1635,7 @@ export class LatexGenerator {
 		}
 
 		const isKnown = KNOWN_FUNCTIONS.has(node.name);
-		const funcName = isKnown ? `\\${node.name}` : node.name;
+		const funcName = isKnown ? `\\${node.name}` : indexedNameLatex(node.name);
 
 		// Build derivative notation (takes priority over power)
 		// f' -> f', f'' -> f'', f''' -> f''', f^(4) -> f^{(4)}
@@ -1985,6 +1985,16 @@ function startsWithNumber(node: MathNode): boolean {
 		return !needsParenthesesAsPowerBase(node.base) && startsWithNumber(node.base);
 	}
 	return false;
+}
+
+/**
+ * Le nom d'une fonction générique à indice en LaTeX : `f_{12}`, pas `f_12`, que
+ * KaTeX et MathLive affichent f₁2 (en LaTeX, l'indice sans accolades est UN
+ * caractère). `f_1` reste tel quel ; les autres noms aussi.
+ */
+function indexedNameLatex(name: string): string {
+	const indexed = /^([A-Za-z])_(\d{2,})$/.exec(name);
+	return indexed ? `${indexed[1]}_{${indexed[2]}}` : name;
 }
 
 export function toLatex(node: MathNode, options?: LatexGeneratorOptions): string {
