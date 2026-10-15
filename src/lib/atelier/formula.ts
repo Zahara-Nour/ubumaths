@@ -33,7 +33,7 @@ import type { AtelierState } from './persistence';
 import { gridContext, termsOf, type GridContext } from './engine';
 import { evaluate } from '$lib/mathAST/eval/evaluate';
 import { getVariables } from '$lib/mathAST/eval/substitute';
-import { transformAST } from '$lib/mathAST/visitor';
+import { transformAST, visitAST } from '$lib/mathAST/visitor';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { tidyTerms } from './tidy-terms';
 import { decimalCommaLatex, decimalCommaText } from './decimal-comma';
@@ -91,6 +91,13 @@ export type CellValue =
 			 * « Valeur exacte » en double. Faux pour `≈ 1,4142` et pour `0,25` lu de `1/4`.
 			 */
 			readonly shownExact?: boolean;
+			/**
+			 * La valeur vient d'une DIVISION (écrite, d'une fonction, d'une case citée) :
+			 * sa fraction mérite « Valeur exacte » (option 3). Voyage avec la valeur —
+			 * une formule exacte citée entre sous la forme de sa fraction (`=0,25` → 1/4),
+			 * qu'on ne peut plus distinguer d'une division écrite (revue).
+			 */
+			readonly divided?: boolean;
 	  }
 	| { readonly kind: 'word'; readonly text: string }
 	| {
@@ -242,6 +249,16 @@ function readUncached(text: string, functionNames: readonly string[]): ReadFormu
 	return readBody(text.trim().slice(1), functionNames);
 }
 
+/** `2,5` × 10^`-2` → `0,025` : le décimal écrit en clair, en chiffres (sans flottant). */
+function plainDecimal(mantissa: string, exponent: number): string {
+	const [whole, fraction = ''] = mantissa.replace('.', ',').split(',');
+	const digits = `${whole}${fraction}`;
+	const point = whole.length + exponent;
+	if (point <= 0) return `0,${'0'.repeat(-point)}${digits}`;
+	if (point >= digits.length) return `${digits}${'0'.repeat(point - digits.length)}`;
+	return `${digits.slice(0, point)},${digits.slice(point)}`;
+}
+
 /**
  * Lire le corps d'une formule (sans `=`) — et, de la même façon, chaque
  * argument d'une fonction du tableur.
@@ -294,7 +311,12 @@ function readBody(body: string, functionNames: readonly string[]): ReadFormula {
 			if (index === -1) refs.push(address);
 			return `(${MARK}_${(index === -1 ? refs.length : index + 1).toString()})`;
 		})
-		.replace(SCIENTIFIC, '($1*10^($2))')
+		// Une notation scientifique tapée est un décimal tapé : écrite en clair,
+		// jamais en puissance de 10 négative, que la règle de « Valeur exacte » lirait
+		// comme une division (revue)
+		.replace(SCIENTIFIC, (_, mantissa: string, exponent: string) =>
+			plainDecimal(mantissa, Number(exponent))
+		)
 		// `2^-A1` : le parseur lit `2^(-x)`, pas `2^-(x)`
 		.replace(/\^\s*-\s*\((ω_\d+)\)/g, '^(-($1))');
 	if (outside !== null) return { ok: false, message: outsideGrid(outside) };
@@ -636,7 +658,15 @@ export function plainValue(text: string): CellValue {
 	const node = astOf(text, 'text') ?? { type: 'number', value: String(number) };
 	// Une valeur tapée s'écrit comme l'élève l'a tapée (`1/4` reste `1/4`) : la
 	// règle du décimal (Q-L3-2) ne vaut que pour un résultat de formule
-	return { kind: 'number', value: number, node, exact: true, shown: text, shownExact: true };
+	return {
+		kind: 'number',
+		value: number,
+		node,
+		exact: true,
+		shown: text,
+		shownExact: true,
+		divided: hasDivision(node)
+	};
 }
 
 function computeCell(
@@ -653,6 +683,8 @@ function computeCell(
 	// Les cellules citées, dans l'ordre de leurs marques
 	const cited: MathNode[] = [];
 	let inexact = false;
+	/** Une case citée, ou un appel, vient d'une division (option 3, voyage avec la valeur). */
+	let divided = false;
 	for (const ref of read.refs) {
 		const value = values.get(ref) ?? plainValue(texts.get(ref) ?? '');
 		switch (value.kind) {
@@ -668,6 +700,7 @@ function computeCell(
 				// Exacte mais trop longue : elle entre en décimal (voir MAX_EXACT_CITED)
 				const long = value.exact && toCustom(value.node).length > MAX_EXACT_CITED;
 				if (!value.exact || long || approximate.has(ref)) inexact = true;
+				if (value.divided === true) divided = true;
 				cited.push(long ? decimalNode(value.value) : value.node);
 			}
 		}
@@ -679,6 +712,7 @@ function computeCell(
 		const result = callValue(call, address, texts, values, approximate, atelier, context);
 		if (!result.ok) return result.value;
 		if (result.inexact) inexact = true;
+		if (result.divided) divided = true;
 		callNodes.push(result.node);
 	}
 
@@ -711,7 +745,55 @@ function computeCell(
 	const started = performance.now();
 	const result = evaluate(expanded.ast, { mode: inexact ? 'decimal' : 'exact' });
 	if (performance.now() - started > EXACT_BUDGET_MS) approximate.add(address);
-	return numberValue(result, inexact);
+	return numberValue(
+		result,
+		inexact,
+		divided || ownDivision(read.ast, read.names.length > 0, context)
+	);
+}
+
+/**
+ * La formule elle-même divise-t-elle ? Lu sur son arbre AVANT l'injection des
+ * valeurs (marques `ω`/`ψ` neutres) ; développé seulement quand elle cite un
+ * objet, qui peut cacher une division (`f(x) = x/2`).
+ */
+function ownDivision(ast: MathNode, citesObjects: boolean, context: GridContext): boolean {
+	if (hasDivision(ast)) return true;
+	if (!citesObjects) return false;
+	const neutral = transformAST(ast, {
+		enterSubscript: (node) =>
+			node.base.type === 'variable' && (node.base.name === MARK || node.base.name === CALL_MARK)
+				? { type: 'number', value: '1' }
+				: undefined
+	});
+	const expanded = context.expand(neutral);
+	return expanded.ok && hasDivision(expanded.ast);
+}
+
+/**
+ * Le calcul contient-il une division (écrite, d'une fonction comme MOYENNE, d'une
+ * fonction de l'élève, d'une case citée), ou une puissance négative ? Seule une
+ * telle fraction mérite « Valeur exacte » sous la barre (décision de David du
+ * 2026-10-15, option 3) : 3,1416 = 3927/1250, d'un ARRONDI ou d'un décimal
+ * tapé, n'apprend rien.
+ */
+function hasDivision(ast: MathNode): boolean {
+	let found = false;
+	visitAST(ast, {
+		enterDivision: () => {
+			found = true;
+		},
+		enterSuperscript: (node) => {
+			const exponent = node.superscript;
+			if (
+				exponent.type === 'opposite' ||
+				(exponent.type === 'number' && exponent.value.startsWith('-'))
+			) {
+				found = true;
+			}
+		}
+	});
+	return found;
 }
 
 /**
@@ -726,10 +808,13 @@ function callValue(
 	approximate: ReadonlySet<string>,
 	atelier: Atelier,
 	context: GridContext
-): { ok: true; node: MathNode; inexact: boolean } | { ok: false; value: CellValue } {
+):
+	| { ok: true; node: MathNode; inexact: boolean; divided: boolean }
+	| { ok: false; value: CellValue } {
 	const numbers: ArgumentValue[] = [];
 	let inexact = false;
 	const statistic = isStatistic(call.name);
+	let argumentsDivided = false;
 	const take = (value: CellValue, cell: string | null): CellValue | null => {
 		// Une fonction de calcul garde T5 : `RACINE(A5)`, A5 vide → vide
 		if (value.kind === 'empty' && !statistic) return value;
@@ -737,6 +822,7 @@ function callValue(
 		if (value.kind === 'error') return cell === null ? value : error(`${cell} est en erreur.`);
 		const long = value.exact && toCustom(value.node).length > MAX_EXACT_CITED;
 		if (!value.exact || long || (cell !== null && approximate.has(cell))) inexact = true;
+		if (value.divided === true) argumentsDivided = true;
 		numbers.push({ node: long ? decimalNode(value.value) : value.node, value: value.value });
 		return null;
 	};
@@ -775,7 +861,19 @@ function callValue(
 		? computeFunction(call.name, numbers, call.label)
 		: computeCalculation(call.name, numbers);
 	if (!computed.ok) return { ok: false, value: error(computed.message) };
-	return { ok: true, node: computed.node, inexact: inexact || computed.inexact === true };
+	// MOYENNE et l'écart type divisent ; la médiane d'un nombre pair aussi ; ARRONDI
+	// rend un décimal voulu ; les autres suivent leurs arguments (option 3)
+	const divides =
+		call.name === 'MOYENNE' ||
+		call.name === 'ECARTYPE' ||
+		call.name === 'ECARTYPEP' ||
+		(call.name === 'MEDIANE' && numbers.length % 2 === 0);
+	return {
+		ok: true,
+		node: computed.node,
+		inexact: inexact || computed.inexact === true,
+		divided: call.name !== 'ARRONDI' && (divides || argumentsDivided)
+	};
 }
 
 function error(message: string): CellValue {
@@ -783,7 +881,11 @@ function error(message: string): CellValue {
 }
 
 /** Le résultat du moteur, en valeur de cellule. */
-function numberValue(result: ReturnType<typeof evaluate>, inexact: boolean): CellValue {
+function numberValue(
+	result: ReturnType<typeof evaluate>,
+	inexact: boolean,
+	divided: boolean
+): CellValue {
 	if (result.status === 'indeterminate') return error(`Calcul impossible : forme ${result.form}.`);
 	if (result.status !== 'value') {
 		return error(reasonMessage(result.status === 'unevaluable' ? result.reason : ''));
@@ -802,7 +904,8 @@ function numberValue(result: ReturnType<typeof evaluate>, inexact: boolean): Cel
 		value,
 		node: exact ? result.node : decimalNode(value),
 		exact,
-		...shownValue(result.node, value, exact),
+		divided,
+		...shownValue(result.node, value, exact, divided),
 		...latexOf(result.node, exact)
 	};
 }
@@ -831,15 +934,17 @@ function decimalNode(value: number): MathNode {
 function shownValue(
 	node: MathNode,
 	value: number,
-	exact: boolean
+	exact: boolean,
+	divided: boolean
 ): { shown: string; shownExact: boolean } {
 	if (exact) {
 		const custom = toCustom(tidyTerms(node));
 		// Q-L3-2 (lot 3) : un décimal fini s'écrit en décimal (`-3/2` → `-1,5`) ; la
 		// fraction se voit à la sélection, sous la barre
 		const decimal = finiteDecimal(custom);
+		// …seulement si elle vient d'une division (option 3) : sinon le décimal dit tout
 		if (decimal !== null && decimal.length <= MAX_SHOWN_EXACT) {
-			return { shown: decimalCommaText(decimal), shownExact: false };
+			return { shown: decimalCommaText(decimal), shownExact: !divided };
 		}
 		const written = decimalCommaText(custom);
 		if (written.length <= MAX_SHOWN_EXACT && !/[A-Za-z\\]/.test(written)) {

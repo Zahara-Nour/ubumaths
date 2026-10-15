@@ -214,4 +214,15 @@ liste trouée en citant l'entrée).
       ARRONDI(PI();20) se disait exact → au-delà de 15 chiffres sur un flottant, approché ; aide
       sur `=A1*ab` ; refus qui citait SOMME ; « Valeur exacte » sous ARRONDI laissé à David
 - [x] PR 2 mergée : #1431
+
+### « Valeur exacte » seulement après une division (`feat/atelier-valeur-exacte`)
+
+- [x] David a choisi l'option 3 (2026-10-15) : la fraction sous la barre seulement si elle vient
+      d'un vrai calcul → règle « le calcul contient une division » (`hasDivision`)
+- [x] tests : `valeur-exacte.test.ts` (14)
+- [x] revue (1 important) : la règle lisait l'arbre APRÈS l'injection des cases, où `=0,25` cité
+      entre comme 1/4 → `ARRONDI(PI();4)` cité montrait 5177/1250 ; l'origine voyage maintenant avec
+      la valeur (`divided`) ; `1e-3` écrit en clair (23 tests)
+- [ ] PR, CI, merge
+
 - [ ] PR 3 : SI, NB.SI, texte entre guillemets, comparaisons, renvoi de Calcul

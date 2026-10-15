@@ -409,7 +409,17 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   **Un décimal fini s'écrit en décimal** (lot 3, Q-L3-2) : `=-2+0,5` → `-1,5`, `=27/4` → `6,75`,
   calculé en entiers longs (`finiteDecimal`), jamais arrondi ; `1/3` et un décimal de plus de 12
   caractères (`1/1048576`) gardent leur fraction. La fraction se voit alors sous la barre (« Valeur
-  exacte »), comme pour un `≈` : `shownExact` dit si la case montre déjà l'écriture exacte. Une
+  exacte »), comme pour un `≈` — **seulement si le calcul contient une division** (décision de
+  David du 2026-10-15, option 3). L'origine VOYAGE avec la valeur (`divided` de `CellValue`) : une
+  formule exacte citée entre sous la forme de sa fraction (`=0,25` → 1/4), qu'on ne distinguerait
+  plus d'une division écrite (revue). Une formule divise si son arbre AVANT injection en contient une
+  (`ownDivision` ; développé seulement quand elle cite un objet, `f(x) = x/2`), si une case citée ou
+  un appel divise (MOYENNE, écart type, médiane d'un nombre pair ; ARRONDI jamais ; les autres
+  suivent leurs arguments). Une notation scientifique tapée (`1e-3`) s'écrit en clair
+  (`plainDecimal`), pas en puissance négative :
+  `=1/4`, `=6:8`, une MOYENNE, une case citée qui vient d'une division la montrent ; un décimal tapé
+  (`=0,25`), une somme de décimaux, un ARRONDI (`=ARRONDI(PI();4)` ne montre plus 3927/1250), un
+  `f(-1,5)` sans division la masquent. `shownExact` dit si la case montre déjà ce qui compte. Une
   valeur TAPÉE (sans `=`) s'écrit telle quelle (`1/4` reste `1/4`).
 - **Tabuler** (lot 3, phase 0 : [atelier-tableur-lot3-phase0.md](../wip/atelier-tableur-lot3-phase0.md),
   validée le 2026-10-15) : `Atelier.tabulate({ name, from, to, step })` écrit, dans les deux
