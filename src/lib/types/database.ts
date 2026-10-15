@@ -13300,6 +13300,7 @@ export type Database = {
       }
       worksheet_exercises: {
         Row: {
+          answer_frame_lines: Json | null
           correction_visible: boolean | null
           created_at: string
           custom_instructions: string | null
@@ -13317,6 +13318,7 @@ export type Database = {
           worksheet_id: string
         }
         Insert: {
+          answer_frame_lines?: Json | null
           correction_visible?: boolean | null
           created_at?: string
           custom_instructions?: string | null
@@ -13334,6 +13336,7 @@ export type Database = {
           worksheet_id: string
         }
         Update: {
+          answer_frame_lines?: Json | null
           correction_visible?: boolean | null
           created_at?: string
           custom_instructions?: string | null
