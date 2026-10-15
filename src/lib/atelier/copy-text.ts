@@ -41,7 +41,7 @@ type Token =
  * délimiteurs (`\left(`), `space` une espace du LaTeX (`~`, `\,`).
  */
 type Piece =
-	| { kind: 'atom'; text: string; fraction?: boolean; func?: boolean }
+	| { kind: 'atom'; text: string; fraction?: boolean; func?: boolean; root?: boolean }
 	| { kind: 'op'; text: string }
 	| { kind: 'sep'; text: string }
 	| { kind: 'open'; text: string }
@@ -454,11 +454,10 @@ class Reader {
 		if (name === 'frac' || name === 'dfrac' || name === 'tfrac') {
 			const numerator = render(this.argument());
 			const denominator = render(this.argument());
-			pieces.push({
-				kind: 'atom',
-				text: `${grouped(numerator)}/${grouped(denominator)}`,
-				fraction: true
-			});
+			// Le dénominateur : un seul facteur, sinon entre parenthèses — `1/2√x`
+			// se lit (1/2)·√x (revue : `.dériver sqrt(x)`)
+			const below = isSingleFactor(denominator) ? denominator : `(${denominator})`;
+			pieces.push({ kind: 'atom', text: `${grouped(numerator)}/${below}`, fraction: true });
 			return;
 		}
 		if (name === 'sqrt') {
@@ -517,7 +516,10 @@ class Reader {
 		const sign =
 			index === '' || index === '2' ? '√' : index === '3' ? '∛' : index === '4' ? '∜' : null;
 		if (sign === null) throw new Unreadable();
-		pieces.push({ kind: 'atom', text: `${sign}${isSimple(base) ? base : `(${base})`}` });
+		// Un radicande d'un seul chiffre ou d'une seule lettre, sinon entre
+		// parenthèses : `√x²` vaudrait aussi (√x)² (revue)
+		const bare = /^(?:[\d,.]+|\p{L})$/u.test(base);
+		pieces.push({ kind: 'atom', text: `${sign}${bare ? base : `(${base})`}`, root: true });
 	}
 
 	/** Le délimiteur après `\left` / `\right` ; `.` ne s'écrit pas. */
@@ -551,6 +553,11 @@ class Reader {
 function attach(pieces: Piece[], text: string): void {
 	const last = pieces.at(-1);
 	if (last !== undefined && (last.kind === 'atom' || last.kind === 'close')) {
+		// Un exposant sur une racine : `(√x)²`, jamais `√x²` (revue)
+		if (last.kind === 'atom' && last.root === true) {
+			last.text = `(${last.text})`;
+			last.root = false;
+		}
 		last.text += text;
 		if (last.kind === 'atom') last.fraction = false;
 	} else {
@@ -561,6 +568,21 @@ function attach(pieces: Piece[], text: string): void {
 /** Un membre sans espace ni opération (le signe de tête permis) : pas de parenthèses. */
 function isSimple(text: string): boolean {
 	return !/\s/.test(text) && !/[+×·/=−]/.test(text.slice(1));
+}
+
+/** Superscripts, indices et prime collés à un facteur. */
+const MARKS = `${Object.values(SUPERSCRIPTS).join('')}${Object.values(SUBSCRIPTS).join('')}′`;
+
+/**
+ * Un seul facteur : un nombre, une lettre ou une racine (avec ses exposants et
+ * indices), un appel de fonction, une parenthèse. `2x`, `2√x` n'en sont pas.
+ */
+function isSingleFactor(text: string): boolean {
+	const marks = `[${MARKS.replace(/[\]\\^-]/g, '\\$&')}]*`;
+	return new RegExp(
+		`^−?(?:[\\d,.]+|√?[\\p{L}\\d]|[√∛∜]?\\(.*\\)|\\p{L}+\\(.*\\))${marks}$`,
+		'u'
+	).test(text);
 }
 
 function grouped(text: string): string {
@@ -616,7 +638,10 @@ function render(pieces: readonly Piece[], compact = false): string {
 				previous?.kind === 'atom' &&
 				((piece.func === true && endsWithLetterOrDigit(previous.text)) ||
 					(previous.func === true && startsWithLetterOrDigit(text)));
-			out += spaced ? ` ${text}` : text;
+			// Une racine suivie d'un facteur : `√2·x`, sinon `√2x` se lirait √(2x)
+			const afterRoot =
+				previous?.kind === 'atom' && previous.root === true && startsWithLetterOrDigit(text);
+			out += spaced ? ` ${text}` : afterRoot ? `·${text}` : text;
 		} else {
 			out += piece.text;
 		}

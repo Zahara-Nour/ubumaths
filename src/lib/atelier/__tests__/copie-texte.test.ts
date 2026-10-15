@@ -53,7 +53,19 @@ describe('le LaTeX d’une réponse devient un texte lisible', () => {
 		['\\ln\\left( x \\right)', 'ln(x)'],
 		['\\left| x - 1 \\right|', '|x − 1|'],
 		['\\dfrac{1}{3} x^3 + C', '(1/3)x³ + C'],
-		['x = -2 \\text{ ou } x = 2', 'x = −2 ou x = 2']
+		['x = -2 \\text{ ou } x = 2', 'x = −2 ou x = 2'],
+		// Revue : un dénominateur produit, une racine ambiguë (sorties réelles)
+		['\\dfrac{1}{2 \\sqrt{x}}', '1/(2√x)'],
+		['\\dfrac{-2}{4 x^2}', '−2/(4x²)'],
+		['-\\dfrac{3}{2 x^3}', '−3/(2x³)'],
+		['\\sqrt{x} + \\dfrac{x}{2 \\sqrt{x}}', '√x + x/(2√x)'],
+		["f'(x) = -\\dfrac{1}{2 \\sqrt{x}^3}", 'f′(x) = −1/(2(√x)³)'],
+		['x^2 + 2 \\sqrt{2} x + 2', 'x² + 2√2·x + 2'],
+		['\\sqrt{2 x}', '√(2x)'],
+		['\\sqrt{x}^2', '(√x)²'],
+		['\\sqrt{x^2}', '√(x²)'],
+		['\\dfrac{1}{x^2}', '1/x²'],
+		['\\dfrac{1}{\\sqrt{x}}', '1/√x']
 	])('%s → %s', (latex, text) => {
 		expect(readableText(latex)).toBe(text);
 	});
