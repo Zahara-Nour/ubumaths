@@ -336,8 +336,9 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
 - Une limite atteinte très lentement (ln(x)/√x → 0) n'est pas reconnue : aucune horizontale.
 - `getAllDiscontinuities` ne voit pas le pôle de 1/(ln x − 1) en x = e : trouvé à ±10, perdu
   au dézoom.
-- Avec un curseur, chaque valeur rebâtit l'AST : `singularPoints` refait l'analyse de continuité
-  (0,2 ms pour 1/(x − A), jusqu'à 33 ms sur une fraction de degré 3 multipliée par e⁻ˣ et ln x).
+- Avec un curseur, chaque valeur rebâtit l'AST et refait l'analyse : mesuré le 2026-10-15 avec
+  des valeurs arrondies au pas, 0,4 à 2,5 ms par cran sur les fonctions courantes, 22 ms sur une
+  fraction de degré 3 multipliée par e⁻ˣ et ln x.
 - Nuages de points : pas de forme de point distincte par place (décision Q1a, reportée).
 
 ---
