@@ -533,8 +533,7 @@ export function functionHint(draft: string): string | null {
 	// Le texte entre guillemets ne compte pas (`"somme(` n'est pas un appel), même
 	// pas encore fermé : masqué, à la même longueur
 	let quoted = false;
-	const body = text
-		.slice(1)
+	const body = Array.from(text.slice(1))
 		.map((char) => {
 			if (char === '"') {
 				quoted = !quoted;
