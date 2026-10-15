@@ -140,6 +140,11 @@ modèle relié, `null` si propre) et `hidden` (masqué dans ce chapitre).
   son rang à une section masquée cachée (`avecMasquesASaPlace`). Côté élève et lien de
   consultation, rien à filtrer : une section n'y paraît que si elle porte un contenu publié, et
   celui d'une section masquée ne l'est jamais. La page du modèle n'a pas ce bouton.
+  **Le serveur le garde aussi** (2026-10-15) : `assignToSection` (donc `placeInSection` et les
+  routes `sections/assign`) refuse de ranger un élément VISIBLE dans une section masquée
+  (`hiddenSection`, 409) — réordonner son contenu déjà masqué reste permis ; `setLinkedElementHidden`
+  refuse de réafficher seul un élément d'une section masquée (`sectionHidden`, 409 « réaffichez la
+  section d'abord »). Test : `tests/integration/sections-masquees-serveur.test.ts`.
 - Un chapitre caché (`is_visible` faux) se dit « Invisible des élèves » ; « Masqué » est réservé
   à ce qu'une classe écarte de son plan.
 - API appelées par l'interface : `api/teacher/chapters/[id]/sections/**` (éditeur de sections),

@@ -323,13 +323,47 @@ async function ensureWorksheetDistributed(
 export async function setLinkedElementHidden(
 	input: { chapterId: string; contentType: ChapterContentType; itemId: string; hidden: boolean },
 	supabase: SupabaseClient<Database>
-): Promise<{ error: Error | null; notFound?: boolean }> {
+): Promise<{ error: Error | null; notFound?: boolean; sectionHidden?: boolean }> {
 	const table = Object.prototype.hasOwnProperty.call(TABLES, input.contentType)
 		? TABLES[input.contentType]
 		: undefined;
 
 	if (!table) {
 		return { error: new Error('Type de contenu inconnu'), notFound: true };
+	}
+
+	// Réafficher seul un élément d'une section masquée le rendrait publiable dans
+	// une section que la classe a écartée : on réaffiche d'abord la section.
+	if (!input.hidden) {
+		const { data: element, error: lectureError } = await supabase
+			.from(table)
+			.select('section_id')
+			.eq('id', input.itemId)
+			.eq('chapter_id', input.chapterId)
+			.maybeSingle();
+		if (lectureError) {
+			logger.error('[setLinkedElementHidden] Lecture impossible :', lectureError);
+			return { error: new Error(lectureError.message) };
+		}
+		const sectionId = (element as { section_id: string | null } | null)?.section_id;
+		if (sectionId) {
+			const { data: section, error: sectionError } = await supabase
+				.from('chapter_sections')
+				.select('hidden')
+				.eq('id', sectionId)
+				.eq('chapter_id', input.chapterId)
+				.maybeSingle();
+			if (sectionError) {
+				logger.error('[setLinkedElementHidden] Section illisible :', sectionError);
+				return { error: new Error(sectionError.message) };
+			}
+			if (section?.hidden === true) {
+				return {
+					error: new Error('Section masquée : réaffichez la section d’abord'),
+					sectionHidden: true
+				};
+			}
+		}
 	}
 
 	const { data, error } = await supabase

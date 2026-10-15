@@ -62,6 +62,11 @@ describe('sections/assign', () => {
 		expect(await statut(appel(corps))).toBe(404);
 	});
 
+	it('section masquée (élément visible refusé) : 409', async () => {
+		assignToSection.mockResolvedValue({ error: new Error('x'), hiddenSection: true });
+		expect(await statut(appel(corps))).toBe(409);
+	});
+
 	it('section d’un autre chapitre (23503) : 400', async () => {
 		assignToSection.mockResolvedValue({ error: new Error('violates foreign key 23503') });
 		expect(await statut(appel(corps))).toBe(400);
