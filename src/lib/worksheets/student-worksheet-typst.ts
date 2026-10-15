@@ -49,6 +49,16 @@ export interface StudentPdfOptions {
 	 * (D6) : ce PDF est la copie d'un élève ; avertissement imprimé en tête.
 	 */
 	individualCopyNotice?: boolean;
+	/**
+	 * Copie imprimée au nom d'un élève (lot 5) : son nom à la ligne « Nom » de
+	 * l'en-tête, si le type de la fiche l'imprime. Absent : ligne à remplir.
+	 */
+	studentName?: string;
+	/**
+	 * La classe imprimée. Absente : celle de la vue (les classes de
+	 * l'affectation) ; `null` : ligne à remplir (élève à la classe inconnue).
+	 */
+	className?: string | null;
 }
 
 // ============================================================================
@@ -107,7 +117,12 @@ export function generateStudentWorksheetTypst(
 	const generator = new WorksheetGenerator(
 		config,
 		undefined,
-		{ mode: 'worksheet', className: worksheet.class_name ?? undefined },
+		{
+			mode: 'worksheet',
+			studentName: options.studentName,
+			className:
+				(options.className === undefined ? worksheet.class_name : options.className) ?? undefined
+		},
 		{
 			withCorrections: ending === 'none' ? undefined : ending,
 			correctionFonts: options.correctionFonts,

@@ -301,7 +301,7 @@ describe('WorksheetGenerator', () => {
 			});
 
 			expect(result.typstContent).toContain('Date :');
-			expect(result.typstContent).toContain('*Classe :* Classe 3B');
+			expect(result.typstContent).toContain('*Classe :* #"Classe 3B";');
 		});
 
 		it('writes the chrome in English when the worksheet is', () => {
@@ -383,7 +383,7 @@ describe('WorksheetGenerator', () => {
 			});
 
 			expect(result.typstContent).toContain('#set text(lang: "en")');
-			expect(result.typstContent).toContain('*Surname :* John Smith');
+			expect(result.typstContent).toContain('*Surname :* #"John Smith";');
 			expect(result.typstContent).toContain("Today's exercises");
 		});
 

@@ -56,6 +56,7 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 | `src/lib/worksheets/worksheet-header.ts`        | **Le type décide de l'en-tête** ([ADR 0030](../adr/0030-type-de-fiche-decide-la-forme.md)) : `worksheetHeader(type, options)` dit ce que l'en-tête imprime (nom, classe, date à remplir, date de rendu, points, calculatrice, durée, cadres) ; `TYPE_OPTION_KEYS` (options proposées par type), `configForType`. Lue par le PDF du prof et celui de l'élève.                                                                                                                                                            |
 | `src/lib/worksheets/exercise-numbering.ts`      | **La** règle du numéro affiché : `groupExercisesForDisplay`, `orderExercisesForDisplay`, `displayNumberOf`, `exerciseAtDisplayNumber`. Utilisée par la page élève, le générateur PDF et le serveur.                                                                                                                                                                                                                                                                                                                     |
 | `src/lib/worksheets/student-worksheet-typst.ts` | `generateStudentWorksheetTypst` : le PDF **élève** (et l'aperçu « vue élève » du prof), par `WorksheetGenerator` et le gabarit du style de la fiche (lot 4b).                                                                                                                                                                                                                                                                                                                                                           |
+| `src/lib/worksheets/student-copies.ts`          | **Copies par élève, nom pré-imprimé** (ADR 0030, lot 5) : `sortCopyRecipients` (tri français, nom puis prénom, sans doublon), `fetchStudentCopyViews` (copie de chaque élève par l'aperçu, une seule demande si l'affectation est commune), `studentCopyTypst` (le PDF de l'élève, son nom et sa classe en plus), `assembleStudentCopies` (un document, voir § La copie d'un élève).                                                                                                                                    |
 | `src/lib/worksheets/document/`                  | Le **document d'une fiche** ([ADR 0028](../adr/0028-pdf-de-fiche-un-generateur-des-styles-et-des-formes.md), lot 1) : `WorksheetDocument` (`types.ts`), rempli par `documentFromTeacherCopy` (copie du prof) ou `documentFromStudentView` (vue élève, correction non visible → `correction: null`) ; ordre et numéros (`numbering.ts`) ; **rendu d'exercice unique** `renderExercises` (`render-exercise.ts`) ; cadres de réponse (`answer-frames.ts`, lignes réglées : `answer-frame-lines.ts`) ; `MATH_LIMITS_SETUP`. |
 | `src/lib/worksheets/serie-automatismes.ts`      | `buildSerie` : une **série figée** d'instances de modèles de question devient un exercice ordinaire ([ADR 0011](../adr/0011-fiche-d-automatismes-figee-par-graine.md)). Toute anomalie lève une exception. Les formules maison sont figées avec les fonctions du modèle et le sens de `AB` de l'instance.                                                                                                                                                                                                               |
 | `src/lib/worksheets/exercise-anchor.ts`         | Ancre d'un exercice de fiche (`#exercice-<worksheet_exercises.id>`, jamais le numéro) : `exerciseAnchorId`, `exerciseAnchorHash`, `worksheetExerciseIdFromHash`, `scrollToAnchoredExercise`. Notifications de signalement, fiche de l'élève, aperçu « vue élève ».                                                                                                                                                                                                                                                      |
@@ -104,7 +105,8 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 
 - Professeur : `src/routes/(protected)/dashboard/teacher/contenu/worksheets/` — liste, `new/`,
   `[id]/` (édition + `PdfPreview`), `templates/` (gabarits perso), `[id]/assignments/[assignmentId]/`
-  (`preview/` vue élève, `progress/`, `reports/` signalements).
+  (`preview/` vue élève, `copies/` une copie par élève à son nom, `progress/`, `reports/`
+  signalements).
 - Élève : `src/routes/(protected)/dashboard/student/worksheets/` (liste, `[assignmentId]/`). La liste
   s'ouvre depuis « Mon travail » (« Toutes mes fiches ») et y revient par « Retour à Mon travail ».
 - Public sans compte : `src/routes/(public)/cahier/[token]/fiche/[id]/` — une fiche **citée** dans
@@ -118,6 +120,7 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 ### Composants
 
 `src/lib/components/worksheets/` : `PdfPreview.svelte` (aperçu, téléchargement, lot ZIP),
+`PdfSvgView.svelte` (la vue SVG d'un PDF compilé, partagée par `PdfPreview` et les copies par élève),
 `CorrectionManager.svelte` (libération par affectation), `SectionManager.svelte`,
 `ExerciseList.svelte`, `MetadataCards.svelte` (config, dont la langue),
 `WorksheetTypeOptions.svelte` (options du type choisi, à la création et sur la fiche, ADR 0030),
@@ -279,6 +282,39 @@ Tests : `src/lib/worksheets/__tests__/student-copy.test.ts`, `worksheet-copy.tes
 `worksheet-copy-ordre.test.ts` (mélange), `worksheet-copy-numeros.test.ts` (numéro dans la copie,
 `hasPerStudentCopies`), `exercise-anchor.test.ts`, `copie.test.ts` des trois routes, `ordre.test.ts` de
 l'aperçu d'affectation (API élève et aperçu), `ordre-melange.svelte.test.ts` (écran de l'élève), `PdfPreview-copie.svelte.test.ts`, `tests/integration/worksheet-assignment-guidance-level.test.ts`.
+
+### Copies par élève, nom pré-imprimé (ADR 0030, lot 5)
+
+Depuis une affectation (bouton « Imprimer une copie par élève » sur la fiche et sur l'aperçu), la page
+`[id]/assignments/[assignmentId]/copies/` fabrique **dans le navigateur du prof** un PDF d'une copie
+par élève visé, jamais stocké :
+
+- **Élèves** : la liste de l'affectation, `GET /api/worksheets/assignments/[id]/students` (membres
+  actifs des classes visées, l'archivé exclu, plus les élèves visés nommément ; réservée au créateur
+  et à l'admin), triée en français, nom puis prénom, chacun une fois.
+- **Copie** : celle de l'aperçu « copie d'un élève » (`…/preview?studentId=`), au niveau de guidage de
+  l'affectation ; affectation commune (`per_student_copies` faux) : une seule demande, la même copie
+  pour tous.
+- **Rendu** : exactement le PDF de l'élève (énoncés seuls, mêmes cadres, même `worksheetHeader`) ;
+  le nom (« Nom Prénom », jamais saisi) remplit la ligne « Nom » **si le type l'imprime** — fiche
+  d'exercices sans « Nom de l'élève » : la page le signale ; la classe, si elle est connue, sinon ligne
+  à remplir (jamais les classes de toute l'affectation).
+- **Nom et classe = texte, jamais code** : l'élève écrit lui-même son nom (profil). Le générateur
+  les insère en chaîne Typst littérale (`typstTextLiteral` : `#"…";`, `\` et `"` échappés,
+  caractères de contrôle remplacés), pour toutes les fiches ; `escapeTypst` laissait passer `]`,
+  `//`, `<…>` (un nom pouvait fermer un bloc du gabarit et faire évaluer la suite, ou casser tout
+  le paquet).
+- **Compilations une à une** : elles partagent le compilateur et ses images (`resetShadow`) ;
+  le dernier choix du sélecteur gagne. Retour : la fiche, ou l'aperçu si l'on en vient
+  (`?depuis=apercu`, `assignmentCopiesReturn`) ; une affectation d'une autre fiche que celle de
+  l'adresse est refusée.
+- **Assemblage** (`assembleStudentCopies`) : un bloc `#[…]` par copie (ses réglages de page ne
+  débordent pas), `#pagebreak(weak: true)` entre deux copies, `counter(page).update(1)` en tête ; le
+  total « page / N » est lu à la fin de la copie : `counter(page).final()` et `display(…, both:
+true)` sont réécrits en `counter(page).at(<chiphre-copie-fin-i>)`. Un gabarit du prof qui compte
+  ses pages autrement afficherait le total du paquet.
+- Mesure (2026-10-16, compilateur de prod) : 35 copies de 2 pages, 70 pages, compilées en moins
+  d'une seconde. Le style Examen (retiré du menu) n'a pas de `{{student_name}}` : nom non imprimé.
 
 ## La production PDF
 
@@ -643,6 +679,10 @@ comparer avant / après un correctif du générateur). Mode d'emploi :
   `numero-copie-eleve.test.ts` et `onglet-signalements-numero.svelte.test.ts` (côté élève),
   `vue-prof-individualisee.test.ts` / `.svelte.test.ts` (aperçu), `student-worksheet-typst-avertissement.test.ts`,
   `avertissement-copie-individuelle.test.ts` (Typst), `melanger-sections-retire.svelte.test.ts`.
+- Copies par élève (lot 5) : `src/lib/worksheets/__tests__/copies-par-eleve.test.ts`, la page
+  (`copies/__tests__/page-server.test.ts`, `copies-par-eleve.svelte.test.ts`), le bouton
+  (`preview/__tests__/bouton-copies-par-eleve.svelte.test.ts`), intégration
+  `copies-par-eleve-destinataires` (archivé exclu, élève refusé).
 - `src/lib/worksheets/__tests__/` : `exercise-numbering.test.ts`, `student-worksheet-typst.test.ts`,
   `serie-automatismes.test.ts`, `exercise-edit-link.test.ts`.
 - Serveur : `src/lib/server/worksheets/__tests__/instance-generator.test.ts`,

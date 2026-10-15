@@ -132,6 +132,7 @@ on:
       - 'src/routes/api/student/worksheets/*server.ts'
       - 'src/routes/api/student/worksheets/*/*server.ts'
       - 'src/routes/api/worksheets/assignments/*/preview/*server.ts'
+      - 'src/routes/api/worksheets/assignments/*/students/*server.ts'
       - 'src/routes/api/teacher/curriculum/activities/*server.ts'
       - 'src/routes/api/teacher/curriculum/activities/*/*server.ts'
       - 'src/routes/api/teacher/curriculum/coverage/*server.ts'

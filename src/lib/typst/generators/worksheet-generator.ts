@@ -150,6 +150,21 @@ export interface GenerateTypstParams {
  * Generates PDF-ready Typst documents for the four worksheet types: the type
  * decides the header (ADR 0030, `worksheetHeader`).
  */
+/**
+ * Un texte venu de la base, imprimé tel quel dans le balisage d'un gabarit : une
+ * chaîne Typst littérale (`#"…";`, le `;` clôt l'expression). Seuls `\` et `"`
+ * s'y échappent ; caractères de contrôle et retours à la ligne deviennent des
+ * espaces. `[`, `]`, `//`, `<…>` n'y ont aucun sens : rien n'est évalué.
+ */
+export function typstTextLiteral(value: string): string {
+	const clean = value
+		// eslint-disable-next-line no-control-regex -- retirer les caractères de contrôle
+		.replace(/[\u0000-\u001f\u007f]/g, ' ')
+		.replace(/\s+/g, ' ')
+		.trim();
+	return `#"${clean.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}";`;
+}
+
 export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInput> {
 	/** Worksheet-specific configuration */
 	private worksheetConfig: WorksheetConfig;
@@ -349,9 +364,11 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			),
 			// Lignes à remplir par l'élève, sauf ce que le PDF connaît déjà
 			date: fillLine('3cm'),
-			class: this.context.className ? escapeTypst(this.context.className) : fillLine('2.5cm'),
+			// Nom et classe : du texte venu de la base (le nom, l'élève l'écrit lui-même),
+			// inséré en chaîne Typst littérale — jamais évalué comme du code
+			class: this.context.className ? typstTextLiteral(this.context.className) : fillLine('2.5cm'),
 			student_name: this.context.studentName
-				? escapeTypst(this.context.studentName)
+				? typstTextLiteral(this.context.studentName)
 				: fillLine('4cm'),
 			total_points: totalPoints,
 			duration,

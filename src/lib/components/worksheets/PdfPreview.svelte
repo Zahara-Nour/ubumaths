@@ -15,6 +15,7 @@
 	import { Progress } from '$lib/components/ui/progress';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import CodeViewer from '$lib/components/CodeViewer.svelte';
+	import PdfSvgView from './PdfSvgView.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		FileDown,
@@ -22,7 +23,6 @@
 		Users,
 		Download,
 		Loader2,
-		FileText,
 		CheckCircle,
 		AlertCircle,
 		Printer,
@@ -555,27 +555,6 @@ INFORMATIONS
 			hasInitialized = true;
 		}
 	});
-
-	// Scale SVG to fit container
-	$effect(() => {
-		if (svgContent) {
-			setTimeout(() => {
-				const container = document.getElementById('pdf-svg-preview');
-				const svgElem = container?.querySelector('svg');
-				if (svgElem && container) {
-					const width = Number.parseFloat(svgElem.getAttribute('width') || '0');
-					const height = Number.parseFloat(svgElem.getAttribute('height') || '0');
-					const containerWidth = container.clientWidth - 40;
-
-					// Only resize if we have valid dimensions
-					if (width > 0 && height > 0 && containerWidth > 0) {
-						svgElem.setAttribute('width', String(containerWidth));
-						svgElem.setAttribute('height', String((height * containerWidth) / width));
-					}
-				}
-			}, 50);
-		}
-	});
 </script>
 
 <Card.Root>
@@ -721,38 +700,7 @@ INFORMATIONS
 					{/if}
 
 					<!-- SVG Preview -->
-					<div class="relative">
-						{#if isGenerating}
-							<div
-								class="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-							>
-								<div class="space-y-2 text-center">
-									<Loader2 class="mx-auto h-8 w-8 animate-spin text-primary" />
-									<p class="text-sm text-muted-foreground">Generation du PDF...</p>
-								</div>
-							</div>
-						{/if}
-
-						{#if svgContent}
-							<div
-								id="pdf-svg-preview"
-								class="min-h-[400px] overflow-auto rounded-lg border border-border bg-white p-5"
-							>
-								{@html svgContent}
-							</div>
-						{:else}
-							<div
-								class="rounded-lg border border-dashed border-muted-foreground/25 bg-muted/5 p-12"
-							>
-								<div class="space-y-3 text-center">
-									<FileText class="mx-auto h-12 w-12 text-muted-foreground/50" />
-									<p class="text-muted-foreground">
-										Cliquez sur "Rafraichir" pour generer un apercu
-									</p>
-								</div>
-							</div>
-						{/if}
-					</div>
+					<PdfSvgView svg={svgContent} generating={isGenerating} />
 				</Tabs.Content>
 
 				<!-- Markdown Tab -->
