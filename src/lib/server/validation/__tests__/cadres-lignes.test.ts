@@ -55,6 +55,12 @@ describe('answer_frame_lines en écriture', () => {
 		).toBe(false);
 	});
 
+	it('mise à jour `.strict()` : une clé mal orthographiée est refusée, pas ignorée', () => {
+		expect(
+			updateWorksheetExerciseSchema.safeParse({ answer_frame_line: { questions: [1] } }).success
+		).toBe(false);
+	});
+
 	it('la réponse la garde (le schéma de réponse retire les clés non déclarées)', () => {
 		const row = {
 			id: '550e8400-e29b-41d4-a716-446655440001',

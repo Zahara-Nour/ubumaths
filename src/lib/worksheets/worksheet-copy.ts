@@ -23,6 +23,7 @@ import {
 	type InstanceSection,
 	type WorksheetWithRelations
 } from '$lib/types/worksheets';
+import { toAnswerFrameLines } from './document/answer-frame-lines';
 import {
 	groupExercisesForDisplay,
 	orderExercisesForDisplay,
@@ -314,7 +315,7 @@ export function buildWorksheetCopy(worksheet: WorksheetForCopy, scope: CopyScope
 			// Sens de `AB` (longueur ou produit) : le thème de l'exercice décide (Q-J)
 			capital_pairs: exerciseCapitalPairs(we.exercise?.topic),
 			// Lignes des cadres réglées par le prof (ADR 0030, lot 4)
-			answer_frame_lines: we.answer_frame_lines ?? null
+			answer_frame_lines: toAnswerFrameLines(we.answer_frame_lines)
 		};
 	});
 

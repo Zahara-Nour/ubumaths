@@ -382,7 +382,7 @@ export const createWorksheetExerciseSchema = z.object({
  * Schema for updating a worksheet exercise. Sans valeur par défaut : une mise à
  * jour n'écrit que ce qu'elle reçoit (avec `.partial()` seul, les défauts de la
  * création s'appliquaient encore, et une modification des cadres aurait remis
- * `is_essential` à faux).
+ * `is_essential` à faux). `.strict()` : une clé inconnue est refusée.
  */
 export const updateWorksheetExerciseSchema = createWorksheetExerciseSchema
 	.extend({
@@ -393,7 +393,9 @@ export const updateWorksheetExerciseSchema = createWorksheetExerciseSchema
 	.partial()
 	.extend({
 		answer_frame_lines: answerFrameLinesSchema.optional()
-	});
+	})
+	// Une clé inconnue (mal orthographiée) : 400, pas un 200 qui n'écrit rien
+	.strict();
 
 /**
  * Schema for reordering exercises (PUT /api/worksheets/[id]/exercises)

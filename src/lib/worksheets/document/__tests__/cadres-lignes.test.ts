@@ -131,6 +131,12 @@ describe('écran : lignes et modifications', () => {
 		});
 	});
 
+	it('plus de 200 questions : le réglage reste dans la borne de la colonne', () => {
+		const set = setQuestionLines(null, 250, 3, 7);
+		expect(set?.questions).toHaveLength(200);
+		expect(set?.questions?.[3]).toBe(7);
+	});
+
 	it('remettre en auto : la dernière valeur réglée retirée rend `null`', () => {
 		expect(setQuestionLines({ questions: [null, 7, null] }, 3, 1, null)).toBeNull();
 		expect(setExerciseLines({ exercise: 5 }, null)).toBeNull();

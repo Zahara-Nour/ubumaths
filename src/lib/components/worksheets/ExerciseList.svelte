@@ -423,7 +423,6 @@
 		togglingEssentialIds.add(exercise.id);
 
 		// Optimistic update - update locally for immediate UI feedback AND notify parent
-		const previousExercises = [...exercises];
 		exercises = exercises.map((e) => (e.id === exercise.id ? { ...e, is_essential: newValue } : e));
 		onExercisesChange?.(exercises);
 
@@ -446,9 +445,12 @@
 			);
 		} catch (err) {
 			console.error('Error toggling essential:', err);
-			// Rollback - update locally AND notify parent
-			exercises = previousExercises;
-			onExercisesChange?.(previousExercises);
+			// Retour arrière de CE champ seulement : un réglage fait entre-temps
+			// (cadres de réponse) reste à l'écran
+			exercises = exercises.map((e) =>
+				e.id === exercise.id ? { ...e, is_essential: !newValue } : e
+			);
+			onExercisesChange?.(exercises);
 			toaster.error(err instanceof Error ? err.message : 'Erreur lors de la mise a jour');
 		} finally {
 			togglingEssentialIds.delete(exercise.id);

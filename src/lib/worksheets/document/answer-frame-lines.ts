@@ -115,7 +115,9 @@ export function answerFrameLinesOutdated(
 	questionCount: number
 ): boolean {
 	const questions = chosen?.questions ?? [];
-	return questions.length > 0 && questions.length !== questionCount;
+	// La colonne garde au plus `ANSWER_FRAME_MAX_QUESTIONS` réglages
+	const expected = Math.min(questionCount, ANSWER_FRAME_MAX_QUESTIONS);
+	return questions.length > 0 && questions.length !== expected;
 }
 
 /** Les réglages par question encore valables pour cet énoncé (sinon : tous auto) */
@@ -224,8 +226,10 @@ export function setQuestionLines(
 	index: number,
 	lines: number | null
 ): AnswerFrameLines | null {
-	const questions = [...validQuestionLines(chosen, questionCount)];
-	questions[index] = lines;
+	// Au plus `ANSWER_FRAME_MAX_QUESTIONS` (contrainte de la colonne) ; au-delà,
+	// les questions restent en auto
+	const questions = validQuestionLines(chosen, questionCount).slice(0, ANSWER_FRAME_MAX_QUESTIONS);
+	if (index < ANSWER_FRAME_MAX_QUESTIONS) questions[index] = lines;
 	return normalized({ ...chosen, questions });
 }
 

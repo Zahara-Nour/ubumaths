@@ -8,12 +8,13 @@
 	« auto » : l'estimation d'après le corrigé de la version guidée (celle de
 	l'aperçu PDF) ; « modifié ↺ » sinon, ↺ remet en auto ; 0 ligne = pas de cadre.
 
-	Sauvegarde après chaque changement (regroupés par `saveDelayMs`), optimiste :
-	`onchange` part tout de suite, et revient à la dernière valeur enregistrée
-	si la sauvegarde échoue.
+	Sauvegarde après chaque changement (regroupés par `saveDelayMs`, puis en
+	série), optimiste : `onchange` part tout de suite, et revient à la dernière
+	valeur enregistrée si la sauvegarde du dernier réglage échoue. Démonté avant
+	le délai : la sauvegarde part aussitôt (`keepalive`).
 -->
 <script lang="ts">
-	import { onDestroy, untrack } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Minus, Plus, RotateCcw, TriangleAlert } from '@lucide/svelte';
@@ -81,10 +82,17 @@
 
 	const view = $derived(answerFrameRows(estimate, chosen, mode));
 
-	// Dernière valeur enregistrée : le retour arrière d'une sauvegarde ratée
-	let saved: AnswerFrameLines | null = untrack(() =>
-		toAnswerFrameLines(exercise.answer_frame_lines)
-	);
+	// Sauvegardes EN SÉRIE (revue) : une seule requête à la fois, chacune avec la
+	// dernière valeur ; l'échec d'une ancienne n'efface pas un réglage plus récent.
+	/** Dernière valeur sûre en base : le retour arrière si la sauvegarde échoue */
+	let confirmed: AnswerFrameLines | null = null;
+	/** Valeur à envoyer, et son numéro (chaque changement l'incrémente) */
+	let latest: AnswerFrameLines | null = null;
+	let generation = 0;
+	/** Un changement pas encore confirmé (envoyé ou non) */
+	let dirty = false;
+	let inFlight = false;
+	let queued = false;
 	let timer: ReturnType<typeof setTimeout> | undefined;
 
 	function label(index: number): string {
@@ -98,34 +106,66 @@
 
 	function change(index: number, lines: number | null) {
 		if (readonly) return;
+		// Début d'une série de changements : la valeur affichée est celle en base
+		// (elle a pu changer par un autre chemin depuis le montage)
+		if (!dirty) confirmed = chosen;
+		dirty = true;
 		const next =
 			view.kind === 'exercise'
 				? setExerciseLines(chosen, lines)
 				: setQuestionLines(chosen, view.rows.length, index, lines);
+		latest = next;
+		generation += 1;
 		onchange?.(next);
 		clearTimeout(timer);
-		timer = setTimeout(() => save(next), saveDelayMs);
+		timer = setTimeout(() => flush(), saveDelayMs);
 	}
 
-	async function save(next: AnswerFrameLines | null) {
+	async function flush(keepalive = false) {
+		timer = undefined;
+		if (inFlight) {
+			queued = true;
+			return;
+		}
+		inFlight = true;
+		const sent = latest;
+		const sentGeneration = generation;
 		try {
 			const response = await fetch(`/api/worksheets/${worksheetId}/exercises/${exercise.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ answer_frame_lines: next })
+				body: JSON.stringify({ answer_frame_lines: sent }),
+				keepalive
 			});
 			if (!response.ok) {
 				const body = await response.json().catch(() => ({}));
 				throw new Error(body.message || 'Cadres de réponse non enregistrés');
 			}
-			saved = next;
+			confirmed = sent;
+			if (sentGeneration === generation) dirty = false;
 		} catch (err) {
-			onchange?.(saved);
-			toaster.error(err instanceof Error ? err.message : 'Cadres de réponse non enregistrés');
+			// Un réglage plus récent attend : sa sauvegarde porte la valeur entière
+			if (sentGeneration === generation) {
+				dirty = false;
+				onchange?.(confirmed);
+				toaster.error(err instanceof Error ? err.message : 'Cadres de réponse non enregistrés');
+			}
+		} finally {
+			inFlight = false;
+			if (queued) {
+				queued = false;
+				void flush(keepalive);
+			}
 		}
 	}
 
-	onDestroy(() => clearTimeout(timer));
+	// Démontage (exercice déplacé, option décochée, page quittée) : la sauvegarde
+	// en attente part tout de suite au lieu d'être perdue
+	onDestroy(() => {
+		if (timer === undefined) return;
+		clearTimeout(timer);
+		void flush(true);
+	});
 </script>
 
 <div class="mt-1 ml-8 rounded-md border border-dashed px-3 py-2 text-sm">

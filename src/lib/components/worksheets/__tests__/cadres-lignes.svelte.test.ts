@@ -53,7 +53,12 @@ interface Options {
 }
 
 /** La liste, avec un parent qui applique les changements comme la page */
-async function show({ lines = null, answersOnSheet = true, mode = 'question' }: Options = {}) {
+async function show({
+	lines = null,
+	answersOnSheet = true,
+	mode = 'question',
+	delay = 0
+}: Options & { delay?: number } = {}) {
 	const changes: WorksheetExerciseWithExercise[][] = [];
 	const screen = await render(ExerciseList, {
 		props: {
@@ -62,7 +67,7 @@ async function show({ lines = null, answersOnSheet = true, mode = 'question' }: 
 			sections: [],
 			answersOnSheet,
 			answerFrameMode: mode,
-			frameSaveDelayMs: 0,
+			frameSaveDelayMs: delay,
 			onExercisesChange: async (next: WorksheetExerciseWithExercise[]) => {
 				changes.push(next);
 				await screen.rerender({ exercises: next });
@@ -164,5 +169,57 @@ describe('cadres de réponse en lignes', () => {
 		await expect
 			.element(page.getByTestId('cadre-ligne').nth(1))
 			.toHaveTextContent(/3 lignes.*auto/);
+	});
+
+	// Revue : deux sauvegardes ne se marchent pas dessus — envoyées l'une après
+	// l'autre ; l'échec d'une ancienne n'efface pas un réglage plus récent.
+	it('sauvegardes en série : l’échec d’une ancienne n’annule pas la suivante', async () => {
+		let failFirst: (() => void) | undefined;
+		const fetchMock = vi.fn((_url: string, init?: RequestInit) => {
+			const body = JSON.parse(String(init?.body ?? '{}'));
+			if (fetchMock.mock.calls.length === 1) {
+				return new Promise<Response>((resolve) => {
+					failFirst = () => resolve(new Response('{}', { status: 500 }));
+				});
+			}
+			return Promise.resolve(
+				new Response(JSON.stringify({ exercise: { ...exercise(), ...body } }), { status: 200 })
+			);
+		});
+		vi.stubGlobal('fetch', fetchMock);
+		const { changes } = await show();
+		const plus = page.getByRole('button', { name: 'Une ligne de plus, question 1' });
+		await plus.click();
+		await expect.poll(() => fetchMock.mock.calls.length).toBe(1);
+		await plus.click();
+		// La seconde attend la fin de la première
+		await new Promise((resolve) => setTimeout(resolve, 50));
+		expect(fetchMock.mock.calls.length).toBe(1);
+		failFirst?.();
+		await expect.poll(() => fetchMock.mock.calls.length).toBe(2);
+		expect(JSON.parse(String(fetchMock.mock.calls[1][1]?.body))).toEqual({
+			answer_frame_lines: { questions: [5, null] }
+		});
+		// Aucun retour arrière : l'écran garde le réglage le plus récent
+		await expect
+			.element(page.getByTestId('cadre-ligne').nth(0))
+			.toHaveTextContent(/5 lignes.*modifié/);
+		expect(changes.map((c) => c[0].answer_frame_lines)).toEqual([
+			{ questions: [4, null] },
+			{ questions: [5, null] }
+		]);
+	});
+
+	it('démontage avant le délai : la sauvegarde part tout de suite (keepalive)', async () => {
+		const fetchMock = mockFetch(true);
+		const { screen } = await show({ delay: 10_000 });
+		await page.getByRole('button', { name: 'Une ligne de plus, question 1' }).click();
+		expect(fetchMock).not.toHaveBeenCalled();
+		await screen.rerender({ answersOnSheet: false });
+		await expect.poll(() => fetchMock.mock.calls.length).toBe(1);
+		expect(fetchMock.mock.calls[0][1]?.keepalive).toBe(true);
+		expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toEqual({
+			answer_frame_lines: { questions: [4, null] }
+		});
 	});
 });
