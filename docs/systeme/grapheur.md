@@ -93,6 +93,9 @@ le grapheur parse du LaTeX, et `\pi x` collé en `\pix` lui était illisible.
 Il pose aussi une courbe qui n'est pas un objet : la droite y = x (`latex: 'x'`, couleur
 `var(--color-muted-foreground)` hors palette, pointillés, épaisseur 1) quand f et sa carte `f⁻¹`
 sont tracées — le grapheur de l'atelier n'est pas sauvegardé (`GrapheurStore(null)`).
+Un nuage de deux listes reçoit les points des lignes où les deux colonnes de la grille ont un
+nombre (`commonRows`, `src/lib/atelier/pairs.ts`, décision P1 du tableur intégré) : par rang, une
+case vide décalait toutes les paires suivantes.
 
 ---
 
