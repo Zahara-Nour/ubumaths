@@ -170,7 +170,9 @@ mouvement du curseur de tangente ; chaque cache se vide au-delà de 200 fenêtre
 `analyzeFunction` est **hybride** : quand l'AST est disponible (`buildAnalysisAST`), zéros et
 extremums viennent de `findCriticalZeros` / `findCriticalExtrema` (mathAST), exacts quand c'est
 possible (`exactX`, `exactY`, confiance 1,0) ; sinon balayage numérique (`findRoots`,
-`findExtrema`). Un échantillon presque nul n'est une racine que si |f| y est un **minimum local**
+`findExtrema`). Un nombre de plus de 10 chiffres significatifs (`0.3333333333333333`) coupe tout
+le chemin exact, asymptotes comprises (`hasUnwieldyNumber`) : l'arithmétique exacte y prenait
+plusieurs secondes, dans l'interface (2026-10-15). Un échantillon presque nul n'est une racine que si |f| y est un **minimum local**
 (`touchesZero`, mathAST) : un seuil absolu donnait à e^(−x) une racine par échantillon au-delà de
 x ≈ 28 (2026-10-15).
 

@@ -32,6 +32,7 @@ import type { MathNode } from '$lib/mathAST/types';
 import type { CompiledFn } from '$lib/mathAST/eval/compile';
 import { compile } from '$lib/mathAST/eval/compile';
 import { differentiate } from '$lib/mathAST/differentiation';
+import { visitAST } from '$lib/mathAST/visitor';
 import {
 	findCriticalZeros,
 	findCriticalExtrema,
@@ -1264,6 +1265,25 @@ function estimateObliqueAsymptote(
  * @param functionId - ID of the function being analyzed
  * @returns Complete analysis results
  */
+/**
+ * Au-delà, l'arithmétique exacte de mathAST explose : `0.3333333333333333`
+ * coûtait 7 s aux singularités d'une fraction rationnelle, 0,4 s à ses zéros,
+ * et l'analyse tourne dans l'interface. Jusqu'à 10 chiffres : moins de 15 ms.
+ */
+const MAX_EXACT_SIGNIFICANT_DIGITS = 10;
+
+/** L'expression contient-elle un nombre trop long pour le calcul exact ? */
+function hasUnwieldyNumber(expression: MathNode): boolean {
+	let unwieldy = false;
+	visitAST(expression, {
+		enterNumber: (node) => {
+			const digits = node.value.replace(/^[-+]?0*\.?0*/, '').replace(/[^0-9]/g, '');
+			if (digits.length > MAX_EXACT_SIGNIFICANT_DIGITS) unwieldy = true;
+		}
+	});
+	return unwieldy;
+}
+
 /** Optional AST info for hybrid exact+numeric analysis. */
 export interface AnalysisASTInfo {
 	expression: MathNode;
@@ -1276,8 +1296,10 @@ export function analyzeFunction(
 	evaluator: (x: number) => number | null,
 	viewport: Viewport,
 	functionId: string,
-	ast?: AnalysisASTInfo
+	analysisAst?: AnalysisASTInfo
 ): FunctionAnalysis {
+	// Un nombre à rallonge rend le chemin exact hors de prix : on reste numérique.
+	const ast = analysisAst && !hasUnwieldyNumber(analysisAst.expression) ? analysisAst : undefined;
 	// Use hybrid exact+numeric analysis when AST is available
 	let roots: Root[];
 	let extrema: Extremum[];
