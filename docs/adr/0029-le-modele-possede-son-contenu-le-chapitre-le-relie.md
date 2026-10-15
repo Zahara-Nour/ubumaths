@@ -1,6 +1,6 @@
 # 0029 — Le modèle de chapitre possède son contenu ; le chapitre lié le relie
 
-- **Statut** : acceptée (refonte à livrer)
+- **Statut** : acceptée — livrée le 2026-10-14 (v0.33.0) et nettoyée le 2026-10-15 (v0.35.0, ancien système supprimé)
 - **Date** : 2026-10-14 · **Décidée par** : David
 
 ## Contexte

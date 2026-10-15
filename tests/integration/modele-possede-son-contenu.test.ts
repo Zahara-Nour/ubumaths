@@ -10,7 +10,7 @@
  * Tout passe par les DROITS RÉELS (professeur, élèves de deux classes, anonyme) : les gardes sont
  * dans la base, un test à mocks ne prouverait rien. Le service ne sert qu'à poser le décor.
  *
- * Journal : docs/wip/refonte-modeles-chapitre-progress.md (comportements 1-19).
+ * Journal : docs/archive/wip/refonte-modeles-chapitre-progress.md (comportements 1-19).
  *
  * @vitest-environment node
  */
