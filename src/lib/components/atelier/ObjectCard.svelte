@@ -32,6 +32,7 @@
 	import ValueSlider from './ValueSlider.svelte';
 	import SequenceSettings from './SequenceSettings.svelte';
 	import { constantOf } from '$lib/atelier/atelier.svelte';
+	import { tabulationDefaults } from '$lib/atelier/tabulate';
 
 	interface Props {
 		object: AtelierObject;
@@ -39,9 +40,14 @@
 		onSelect?: (name: string) => void;
 		onAction?: (action: ObjectAction, object: AtelierObject) => void;
 		onImage?: (name: string, value: string) => { text: string; failed: boolean };
+		/** « Tabuler » (tableur, lot 3) : écrire le tableau dans la grille ; ce qui a été fait, ou le refus. */
+		onTabulate?: (
+			name: string,
+			bounds: { from: string; to: string; step: string }
+		) => { text: string; failed: boolean };
 	}
 
-	let { object, selected = false, onSelect, onAction, onImage }: Props = $props();
+	let { object, selected = false, onSelect, onAction, onImage, onTabulate }: Props = $props();
 
 	const atelier = useAtelier();
 
@@ -66,6 +72,53 @@
 			? imageResult
 			: null
 	);
+
+	/** Le formulaire « de / à / pas » de Tabuler : ouvert ? ses champs, et ce qu'il a donné. */
+	let tabulating = $state(false);
+	let tabulateBounds = $state({ from: '', to: '', step: '' });
+	let tabulateResult = $state<{ text: string; failed: boolean; revision: number } | null>(null);
+	/**
+	 * Le résultat, seulement s'il vaut ENCORE : une grille qui a changé depuis
+	 * (Ctrl+Z, une case modifiée) le rend faux — même règle que `shownImage`.
+	 */
+	const shownTabulate = $derived(
+		tabulateResult !== null && tabulateResult.revision === atelier.revision ? tabulateResult : null
+	);
+
+	/** Ouvrir (pré-rempli, Q-L3-3) ou refermer le formulaire de Tabuler. */
+	function toggleTabulate() {
+		tabulating = !tabulating;
+		tabulateResult = null;
+		if (tabulating) tabulateBounds = tabulationDefaults(object);
+	}
+
+	function handleTabulateSubmit(event: SubmitEvent) {
+		event.preventDefault();
+		if (!onTabulate) return;
+		const result = onTabulate(object.name, { ...tabulateBounds });
+		// La révision APRÈS l'écriture : `tabulate` l'a fait avancer
+		tabulateResult = { ...result, revision: atelier.revision };
+		// Réussi : le formulaire se referme — une seconde Entrée n'écrit pas un second
+		// tableau, et Ctrl+Z part dans la grille, où le focus est passé (revue)
+		if (!result.failed) tabulating = false;
+	}
+
+	/** Ouvrir ou refermer la carte : le formulaire de Tabuler repart fermé (revue). */
+	function handleHeaderClick() {
+		tabulating = false;
+		tabulateResult = null;
+		onSelect?.(object.name);
+	}
+
+	function handleActionClick(action: ObjectAction) {
+		if (action.disabledReason !== undefined) return;
+		// Tabuler se règle DANS la carte, comme l'image d'un nombre (phase 0 §1)
+		if (action.id === 'table' && onTabulate) {
+			toggleTabulate();
+			return;
+		}
+		onAction?.(action, object);
+	}
 
 	function handleImageSubmit(event: SubmitEvent) {
 		event.preventDefault();
@@ -191,7 +244,7 @@
 				aria-hidden="true"
 			></span>
 		{/if}
-		<button type="button" class="entete" onclick={() => onSelect?.(object.name)}>
+		<button type="button" class="entete" onclick={handleHeaderClick}>
 			<span class="nom">{displayName(object.name)}</span>
 			<span class="definition">
 				{#if rendered}
@@ -323,10 +376,7 @@
 					aria-describedby={action.disabledReason
 						? `${object.name}-${action.id.replace(':', '-')}-raison`
 						: undefined}
-					onclick={() => {
-						if (action.disabledReason !== undefined) return;
-						onAction?.(action, object);
-					}}
+					onclick={() => handleActionClick(action)}
 				>
 					{action.label}
 				</button>
@@ -373,10 +423,7 @@
 							aria-describedby={action.disabledReason
 								? `${object.name}-${action.id.replace(':', '-')}-raison`
 								: undefined}
-							onclick={() => {
-								if (action.disabledReason !== undefined) return;
-								onAction?.(action, object);
-							}}
+							onclick={() => handleActionClick(action)}
 						>
 							{action.label}
 						</button>
@@ -389,6 +436,50 @@
 				</div>
 			{/if}
 		</div>
+	{/if}
+
+	<!-- Tabuler (tableur, lot 3) : « de / à / pas », pré-rempli ; le tableau va dans la grille -->
+	{#if selected && tabulating && object.kind === 'function'}
+		<form
+			class="tabuler"
+			onsubmit={handleTabulateSubmit}
+			aria-label={`Tabuler ${displayName(object.name)}`}
+		>
+			<!-- Pas d'`inputmode="decimal"` : sur iOS ce clavier n'a ni touche Entrée, ni « - » -->
+			<span aria-hidden="true">de</span>
+			<input
+				type="text"
+				autocomplete="off"
+				enterkeyhint="go"
+				bind:value={tabulateBounds.from}
+				aria-label={`Début du tableau de ${displayName(object.name)}`}
+			/>
+			<span aria-hidden="true">à</span>
+			<input
+				type="text"
+				autocomplete="off"
+				enterkeyhint="go"
+				bind:value={tabulateBounds.to}
+				aria-label={`Fin du tableau de ${displayName(object.name)}`}
+			/>
+			<span aria-hidden="true">pas</span>
+			<input
+				type="text"
+				autocomplete="off"
+				enterkeyhint="go"
+				bind:value={tabulateBounds.step}
+				aria-label={`Pas du tableau de ${displayName(object.name)}`}
+			/>
+			<!-- Un vrai bouton : valider sans touche Entrée (tablette) -->
+			<button type="submit" class="tabuler-valider">Tabuler</button>
+		</form>
+	{/if}
+	{#if selected && object.kind === 'function' && onTabulate}
+		<!-- Toujours là, vide sans rien à dire : une région vivante créée avec son
+		     texte n'est pas toujours lue. Un `span` : `main p` impose sa taille -->
+		<span class="tabuler-resultat" class:refus={shownTabulate?.failed} role="status"
+			>{shownTabulate?.text ?? ''}</span
+		>
 	{/if}
 </article>
 
@@ -592,5 +683,42 @@
 		flex-basis: 100%;
 		font-size: 0.6875rem;
 		color: var(--color-muted-foreground);
+	}
+
+	.tabuler {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: 0.875rem;
+	}
+	.tabuler input {
+		width: 4rem;
+		/* Cible d'au moins 28 px (WCAG 2.5.8), comme les actions */
+		min-height: 1.75rem;
+		padding: 0 0.375rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.375rem;
+		background: var(--color-background);
+		font: inherit;
+	}
+	.tabuler-valider {
+		min-height: 1.75rem;
+		padding: 0 0.5rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.375rem;
+		background: var(--color-background);
+		font: inherit;
+		cursor: pointer;
+	}
+	.tabuler-resultat {
+		flex-basis: 100%;
+	}
+	.tabuler-resultat:empty {
+		display: none;
+	}
+	/* Le refus se dit en toutes lettres : le gras n'est qu'un appoint, comme pour l'image */
+	.tabuler-resultat.refus {
+		font-weight: 600;
 	}
 </style>

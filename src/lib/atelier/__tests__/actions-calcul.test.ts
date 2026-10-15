@@ -162,7 +162,7 @@ describe('ce que le panneau propose désormais', () => {
 
 		const actions = actionsFor(atelier.get('f')!);
 
-		expect(actions.find((a) => a.id === 'table')?.disabledReason).toBeTruthy();
+		expect(actions.find((a) => a.id === 'rename')?.disabledReason).toBeTruthy();
 	});
 });
 

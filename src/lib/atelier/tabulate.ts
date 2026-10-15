@@ -122,14 +122,8 @@ export function planTabulation(
 	}
 	// La grille ne sait pas encore appeler `f_1(…)` ni `f^-1(…)` (revue) : un
 	// tableau faux ou plein d'erreurs vaut moins qu'un refus qui dit quoi faire
-	if (/_\d/.test(object.name)) return { ok: false, message: indexedFunctionMessage(object.name) };
-	const base = reciprocalOf(object.name);
-	if (base !== null) {
-		return {
-			ok: false,
-			message: `La réciproque ${displayName(object.name)} ne se tabule pas encore : tabule ${base}, et lis son tableau à l’envers.`
-		};
-	}
+	const notYet = tabulationNotYet(object.name);
+	if (notYet !== null) return { ok: false, message: notYet };
 	// En attente (`f(x) = k*x` sans k) : la phrase de Calcul, plutôt que des cases muettes
 	if (object.status !== 'ok') {
 		const parameters = parametersOf(object);
@@ -199,6 +193,33 @@ export function planTabulation(
 	};
 }
 
+/**
+ * Ce que la grille ne sait pas encore tabuler, et pourquoi : une réciproque
+ * (`f^-1(…)`) et une fonction à indice (`f_1(…)`) ne s'appellent pas dans une
+ * formule (revue de la PR 1). Aussi la raison du bouton « Tabuler » de leur carte.
+ */
+export function tabulationNotYet(name: string): string | null {
+	const base = reciprocalOf(name);
+	if (base !== null) {
+		return `La réciproque ${displayName(name)} ne se tabule pas encore : tabule ${base}, et lis son tableau à l’envers.`;
+	}
+	return /_\d/.test(name) ? indexedFunctionMessage(name) : null;
+}
+
+/** La phrase qui dit où le tableau a été écrit (Calcul et carte). */
+export function tabulationReport(
+	name: string,
+	done: {
+		readonly columns: readonly [number, number];
+		readonly rows: number;
+		readonly note: string | null;
+	}
+): string {
+	const [x, image] = done.columns.map(columnLetter);
+	const said = `Tableau de ${displayName(name)} écrit dans la grille, colonnes ${x} et ${image} (${done.rows} lignes).`;
+	return done.note === null ? said : `${said} ${done.note}`;
+}
+
 function unknownMessage(name: string): string {
 	return `« ${name} » n’existe pas dans l’atelier : définis-la d’abord, par exemple ${name}(x) = x^2.`;
 }
@@ -263,7 +284,5 @@ export function tabulateCommand(
 	if (isRefusal(request)) return request;
 	const done = atelier.tabulate(request);
 	if (!done.ok) return done;
-	const [x, image] = done.columns.map(columnLetter);
-	const said = `Tableau de ${displayName(request.name)} écrit dans la grille, colonnes ${x} et ${image} (${done.rows} lignes).`;
-	return { ok: true, text: done.note === null ? said : `${said} ${done.note}` };
+	return { ok: true, text: tabulationReport(request.name, done) };
 }

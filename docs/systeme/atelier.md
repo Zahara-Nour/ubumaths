@@ -153,7 +153,7 @@ Ceux du code et de l'interface :
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `AtelierContainer.svelte` | Le conteneur : panneau + vues, session, `CalcDesk`, `GrapheurStore` propre, confirmations                               |
 | `ObjectPanel.svelte`      | « Mes objets » : création, liste des cartes                                                                             |
-| `ObjectCard.svelte`       | Une carte : nom, définition, état, actions                                                                              |
+| `ObjectCard.svelte`       | Une carte : nom, définition, état, actions ; champs de l'image et de « Tabuler » (de / à / pas)                         |
 | `DefinitionField.svelte`  | `f(x) =` + champ MathLive ; la frappe met l'objet à jour 0,3 s après la dernière touche                                 |
 | `ValueSlider.svelte`      | Curseur d'une valeur (bornes et pas réglables)                                                                          |
 | `CurveSettings.svelte`    | « Sur le graphique » : couleur, trait, tangente, aire, cercle osculateur, longueur                                      |
@@ -425,7 +425,19 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   `tabulateCommand`, branchée avec les commandes qui lisent des NOMS (`SIMULATIONS` de
   `calcul.ts`) ; une expression sans nom est refusée avec la façon de faire (Q-L2-3). Le décor de
   son exemple (`exampleSetup: { 'f(x)': … }`) est posé par `stageExampleSetup` (`commands.ts`).
-  La carte (formulaire « de / à / pas », bascule vers Données) arrive dans la PR 2 du lot.
+  **Depuis la carte** (PR 2) : « Tabuler » (retiré de `NOT_YET` ; grisé avec sa raison pour `f⁻¹`
+  et `f_1`, `tabulationNotYet`) ouvre DANS la carte un formulaire « de / à / pas » pré-rempli par
+  `tabulationDefaults`, comme le champ de l'image. Valider appelle `onTabulate` →
+  `handleTabulate` (`AtelierContainer`) : `atelier.tabulate`, puis la vue passe sur Données
+  (Q-L3-1), recréée (`{#key}`) avec la zone du tableau sélectionnée (`initialZone` de `DataView`,
+  lue à la création ; deux colonnes non voisines → la première case seule, pour ne pas englober
+  une colonne de l'élève). La zone ne vaut qu'à l'arrivée : `showView` la remet à `null`, un
+  retour par l'onglet ne la resélectionne pas ; à l'arrivée, le focus passe à la grille
+  (`onMount`), pour que Ctrl+Z et Entrée y agissent. Réussi, le formulaire se referme (une seconde
+  Entrée n'écrit pas un second tableau) ; la phrase de `tabulationReport` (ou le refus) s'écrit
+  dans une région `role="status"` de la carte, toujours présente, seule annonce, et s'efface dès
+  que la grille change (`atelier.revision`, comme l'image). Refermer la carte referme le
+  formulaire. Aucune ligne dans Calcul.
 - **Fonction à indice** (`=f_1(3)`) : refusée (`indexedFunctionMessage`). Le parseur lit `f_1(3)`
   comme `f₁ × 3`, et la grille calculait alors avec f, sans rien dire (revue du lot 3). Calcul ne
   l'évalue pas non plus (il recopie `f_1(3)`).

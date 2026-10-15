@@ -172,4 +172,15 @@ liste trouée en citant l'entrée).
       dans la grille (défaut du lot 2, `f₁ × 3`) → refus ; réciproque et fonction en attente
       refusées ; pas par défaut entier ; note écrite comme la case ; conseil qui garde le pas
 - [ ] PR, CI, merge
-- [ ] PR 2 : la carte (formulaire, bascule vers Données)
+- [x] PR 1 mergée : #1426
+
+### PR 2 — la carte (`feat/atelier-tabuler-carte`)
+
+- [x] tests rouges : `tabuler-carte.svelte.test.ts` (6), action câblée / grisée (`actions.test.ts`)
+- [x] formulaire « de / à / pas » dans la carte, `handleTabulate`, `initialZone` de `DataView`
+- [x] capture : formulaire, grille A1:B11 sélectionnée, −1,5 / 6,75 ; la phrase en `<p>` prenait la
+      taille de `main p` → `<span>`
+- [x] revue (2 importants, 3 mineurs, tous corrigés test rouge d'abord) : zone resélectionnée à
+      chaque retour sur Données ; deux Entrée = deux tableaux (focus resté dans la carte) ;
+      formulaire qui survivait à la carte refermée ; phrase périmée après Ctrl+Z ; double annonce
+- [ ] PR, CI, merge
