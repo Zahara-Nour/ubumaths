@@ -469,11 +469,14 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   nombre d'arguments fixe, refus nommé). RACINE, ABS, LN, EXP et ENT deviennent l'appel de mathAST
   (`sqrt`, `abs`, `ln`, `exp`, `floor`) : mêmes refus que Calcul. ARRONDI arrondit la moitié LOIN
   DE ZÉRO (−2,5 → −3, comme LibreOffice), en entiers longs quand x est une fraction (2,675 → 2,68,
-  là où les flottants donnent 2,67), et accepte n < 0 (`ARRONDI(1234;-2)` = 1200). Leurs arguments
+  là où les flottants donnent 2,67), et accepte n < 0 (`ARRONDI(1234;-2)` = 1200). n est borné à
+  ±15 (`MAX_ROUNDING_DIGITS` : `ARRONDI(1/3;1000000)` gelait l'onglet) ; sur un flottant (π, √2),
+  un résultat de plus de 15 chiffres significatifs est approché, jamais présenté comme exact. Leurs arguments
   sont des nombres : une plage est refusée, et une case vide citée laisse la formule vide (T5), à
   l'inverse des statistiques. `=racine(4)`, `=exp(1)` s'écrivent `=RACINE(4)`, `=EXP(1)` ; `sqrt`
   reste lu. **L'aide sous la barre** (`functionHint`) : pendant la frappe, la forme de la fonction
-  dont on écrit les arguments (la plus intérieure), ou celles dont on écrit le nom (`=ECART`) ;
+  dont on écrit les arguments (la plus intérieure), ou celles dont on écrit le nom (`=ECART`, trois
+  lettres au moins, ou un nom entier de deux : LN, NB, PI — `=A1*ab` n'ouvre pas ABS) ;
   liée à la barre par `aria-describedby`, jamais annoncée à chaque frappe.
 - **Fonction à indice** (`=f_1(3)`) : refusée (`indexedFunctionMessage`). Le parseur lit `f_1(3)`
   comme `f₁ × 3`, et la grille calculait alors avec f, sans rien dire (revue du lot 3). Calcul ne

@@ -210,5 +210,8 @@ liste trouée en citant l'entrée).
 - [x] ARRONDI (moitié loin de zéro, entiers longs), ENT, RACINE, ABS, LN, EXP, PI ; `functionHint`
 - [x] capture : aide « MOYENNE(plage ; …) », `=arrondi(ecartype(a1:a4);2)` → 2,65 ; noté pour David :
       « Valeur exacte : 53/20 » sous un ARRONDI (règle Q-L3-2 à la lettre)
-- [ ] revue, PR, CI, merge
+- [x] revue (2 importants, 3 mineurs) : ARRONDI(1/3;1000000) gelait l'onglet → n borné à ±15 ;
+      ARRONDI(PI();20) se disait exact → au-delà de 15 chiffres sur un flottant, approché ; aide
+      sur `=A1*ab` ; refus qui citait SOMME ; « Valeur exacte » sous ARRONDI laissé à David
+- [ ] PR, CI, merge
 - [ ] PR 3 : SI, NB.SI, texte entre guillemets, comparaisons, renvoi de Calcul

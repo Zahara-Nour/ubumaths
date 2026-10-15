@@ -58,7 +58,13 @@ export interface ArgumentValue {
 }
 
 export type Computed =
-	{ readonly ok: true; readonly node: MathNode } | { readonly ok: false; readonly message: string };
+	| {
+			readonly ok: true;
+			readonly node: MathNode;
+			/** Le résultat n'est qu'approché (ARRONDI d'un flottant au-delà de 15 chiffres). */
+			readonly inexact?: boolean;
+	  }
+	| { readonly ok: false; readonly message: string };
 
 // =============================================================================
 // Constantes
@@ -109,6 +115,12 @@ const SIGNATURES: Readonly<Record<GridFunction, string>> = {
 	EXP: 'EXP(x) — l’exponentielle',
 	PI: 'PI() — le nombre π'
 };
+
+/** ARRONDI(x ; n) : n entre −15 et 15 (au-delà, un gel ou des chiffres faux — revue). */
+const MAX_ROUNDING_DIGITS = 15;
+
+/** Les chiffres significatifs justes d'un flottant. */
+const FLOAT_DIGITS = 15;
 
 /** Au plus autant de propositions quand un nom est en cours d'écriture. */
 const MAX_HINTS = 3;
@@ -407,7 +419,20 @@ export function computeCalculation(
 				message: 'ARRONDI : le nombre de décimales doit être un entier (ARRONDI(x ; 2)).'
 			};
 		}
-		return { ok: true, node: { type: 'number', value: rounded(x, n.value) } };
+		// Borné (règle 1) : `ARRONDI(1/3;1000000)` écrivait un million de chiffres
+		// et gelait l'onglet (revue)
+		if (Math.abs(n.value) > MAX_ROUNDING_DIGITS) {
+			return {
+				ok: false,
+				message: `ARRONDI : le nombre de décimales doit être entre -${MAX_ROUNDING_DIGITS} et ${MAX_ROUNDING_DIGITS}.`
+			};
+		}
+		const result = rounded(x, n.value);
+		return {
+			ok: true,
+			node: { type: 'number', value: result.written },
+			...(result.inexact && { inexact: true })
+		};
 	}
 	return {
 		ok: true,
@@ -433,7 +458,7 @@ function fractionOf(written: string): { p: bigint; q: bigint } | null {
  * ARRONDI(-2,5 ; 0) = −3), écrit en décimal (`2.57`). Exact quand x est une
  * fraction (en entiers longs : 2,675 → 2,68, quand les flottants donnent 2,67).
  */
-function rounded(x: ArgumentValue, n: number): string {
+function rounded(x: ArgumentValue, n: number): { written: string; inexact: boolean } {
 	const exact = evaluate(x.node, { mode: 'exact' });
 	const fraction =
 		exact.status === 'value' && exact.exact ? fractionOf(toCustom(exact.node)) : null;
@@ -443,11 +468,14 @@ function rounded(x: ArgumentValue, n: number): string {
 		const num = (negative ? -fraction.p : fraction.p) * (n >= 0 ? scale : 1n);
 		const den = fraction.q * (n >= 0 ? 1n : scale);
 		const units = (2n * num + den) / (2n * den);
-		return decimalText(negative && units !== 0n ? -units : units, n);
+		return { written: decimalText(negative && units !== 0n ? -units : units, n), inexact: false };
 	}
+	// Un flottant (π, √2) n'a que ~15 chiffres justes : au-delà, le résultat est
+	// approché, jamais présenté comme exact (revue : ARRONDI(PI();20) se disait exact)
 	const scale = 10 ** n;
 	const units = Math.sign(x.value) * Math.round(Math.abs(x.value) * scale);
-	return decimalText(BigInt(units), n);
+	const digits = x.value === 0 ? 0 : n + Math.floor(Math.log10(Math.abs(x.value))) + 1;
+	return { written: decimalText(BigInt(units), n), inexact: digits > FLOAT_DIGITS };
 }
 
 /** `units` × 10⁻ⁿ, écrit en décimal sans zéros inutiles (`257`, 2 → `2.57`). */
@@ -483,6 +511,10 @@ export function functionHint(draft: string): string | null {
 		.normalize('NFD')
 		.replace(/[\u0300-\u036f]/g, '')
 		.toUpperCase();
-	const matches = GRID_FUNCTIONS.filter((name) => name.startsWith(prefix)).slice(0, MAX_HINTS);
+	// Deux lettres seulement pour un nom entier (LN, NB, PI) : `=A1*ab` n'est pas
+	// le début d'ABS, c'est sans doute un objet de l'élève (revue)
+	const matches = GRID_FUNCTIONS.filter((name) =>
+		prefix.length >= 3 ? name.startsWith(prefix) : name === prefix
+	).slice(0, MAX_HINTS);
 	return matches.length === 0 ? null : matches.map((name) => SIGNATURES[name]).join(' · ');
 }

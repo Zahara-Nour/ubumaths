@@ -366,7 +366,13 @@ function readCall(
 		const read = readBody(raw, functionNames);
 		// Une plage qui reste après les appels emboîtés (`SOMME(A1:A3*2)`) : mêlée à un calcul
 		if (!read.ok && read.message === RANGE_ALONE_MESSAGE) {
-			return { ok: false, message: RANGE_MIXED_MESSAGE };
+			return {
+				ok: false,
+				message:
+					arity === null
+						? RANGE_MIXED_MESSAGE
+						: `${name} attend un nombre, pas une plage : ${name}(A1).`
+			};
 		}
 		if (!read.ok) return read;
 		const lone = LONE_NAME.exec(raw);
@@ -769,7 +775,7 @@ function callValue(
 		? computeFunction(call.name, numbers, call.label)
 		: computeCalculation(call.name, numbers);
 	if (!computed.ok) return { ok: false, value: error(computed.message) };
-	return { ok: true, node: computed.node, inexact };
+	return { ok: true, node: computed.node, inexact: inexact || computed.inexact === true };
 }
 
 function error(message: string): CellValue {

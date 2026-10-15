@@ -123,7 +123,7 @@ describe('§5 l’aide sous la barre', () => {
 		expect(functionHint('=ECART')).toBe(
 			'ECARTYPE(plage ; …) — l’écart type (divise par n − 1) · ECARTYPEP(plage ; …) — l’écart type (divise par n), le σ de .stats'
 		);
-		expect(functionHint('=2*ra')).toBe('RACINE(x) — √x');
+		expect(functionHint('=2*rac')).toBe('RACINE(x) — √x');
 	});
 
 	it('rien à dire : pas d’aide', () => {
@@ -131,5 +131,36 @@ describe('§5 l’aide sous la barre', () => {
 		expect(functionHint('=A1+2')).toBeNull();
 		expect(functionHint('=SOMME(A1:A4)')).toBeNull();
 		expect(functionHint('=f(')).toBeNull();
+	});
+});
+
+describe('revue de la PR 2', () => {
+	it('ARRONDI : n entre −15 et 15, sinon un refus (une faute de frappe gelait l’onglet)', () => {
+		for (const n of ['16', '1000000', '-16']) {
+			expect(shown(cellOf(`=ARRONDI(1/3;${n})`), C, 1)).toBe(
+				'erreur : ARRONDI : le nombre de décimales doit être entre -15 et 15.'
+			);
+		}
+		expect(shown(cellOf('=ARRONDI(1/3;15)'), C, 1)).toBe('≈ 0,3333');
+	});
+
+	it('ARRONDI au-delà de 15 chiffres significatifs, sur un flottant : approché, jamais faux exact', () => {
+		const v = cellOf('=ARRONDI(RACINE(2)*1000;14)').cellValue(C, 1);
+		expect(v.kind === 'number' && v.exact).toBe(false);
+		const w = cellOf('=ARRONDI(PI();4)').cellValue(C, 1);
+		expect(w.kind === 'number' && w.exact).toBe(true);
+	});
+
+	it('une plage mêlée à un calcul dans une fonction de calcul : le refus la nomme', () => {
+		expect(shown(cellOf('=RACINE(A1:A2*2)'), C, 1)).toBe(
+			'erreur : RACINE attend un nombre, pas une plage : RACINE(A1).'
+		);
+	});
+
+	it('l’aide ne s’ouvre pas sur un nom d’objet court (`=A1*ab`) ; LN, NB, PI entiers oui', () => {
+		expect(functionHint('=A1*ab')).toBeNull();
+		expect(functionHint('=x+ent')).toBe('ENT(x) — la partie entière (vers le bas)');
+		expect(functionHint('=ln')).toBe('LN(x) — le logarithme népérien');
+		expect(functionHint('=2*pi')).toBe('PI() — le nombre π');
 	});
 });
