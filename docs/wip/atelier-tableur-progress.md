@@ -119,3 +119,11 @@ liste trouée en citant l'entrée).
       unité, rang de suite, `f′`), terme de récurrence marqué approché.
 - ⚠️ Un test qui gèle (le cas des intérêts composés avant correctif) bloque toute la suite :
   lancer `test:server` avec une garde de temps et tuer les vitest orphelins du worktree.
+
+### PR 2 — l'affichage (`feat/atelier-formules-affichage`)
+
+- [x] tests rouges : 4 de modèle (`latex`, `exactLatex`, `citingCells`), 4 de vue
+- [x] case en écriture mathématique (MathLive, `isSafeLatex`, cache), étiquette lue en français ;
+      « Valeur exacte » sous la barre ; carte d'une liste à formules (valeurs, « calculée dans la
+      grille ») ; confirmation de suppression d'une liste citée par des cellules
+- [x] capture Playwright : `2/3` en fraction, `2√2`, `3π`, `≈ 0,1429` + valeur exacte, « erreur »

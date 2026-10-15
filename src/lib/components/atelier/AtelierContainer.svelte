@@ -37,7 +37,7 @@
 	import { ATELIER_STATE_VERSION } from '$lib/atelier/persistence';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import { toaster } from '$lib/stores/toaster.svelte';
-	import { cascadeMessage, removedMessage } from '$lib/atelier/removal';
+	import { cascadeMessage, citingCellsNote, removedMessage } from '$lib/atelier/removal';
 
 	interface Props {
 		/** L'atelier à piloter. Sans lui, le conteneur crée le sien. */
@@ -81,7 +81,12 @@
 	const UNDO_DURATION_MS = 10_000;
 
 	/** L'objet dont la suppression attend confirmation, avec ce qu'elle emporterait (N2). */
-	let pendingRemoval = $state<{ name: string; dependents: readonly string[] } | null>(null);
+	let pendingRemoval = $state<{
+		name: string;
+		dependents: readonly string[];
+		/** Les cellules de la grille qui citent la liste (tableur, T3 et T5). */
+		citing: number;
+	} | null>(null);
 	let confirmRemoval = $state(false);
 	/** La suppression vient-elle d'être confirmée ? Sinon, renoncer rend le focus au bouton. */
 	let removalConfirmed = false;
@@ -340,6 +345,15 @@
 		undo(result);
 	}
 
+	/** La confirmation : les objets emportés, et les cellules qui deviendront vides. */
+	function removalDescription(pending: NonNullable<typeof pendingRemoval>): string {
+		const cells = pending.citing > 0 ? citingCellsNote(pending.citing) : '';
+		if (pending.dependents.length === 0) {
+			return `Supprimer ${displayName(pending.name)} vide sa colonne. ${cells}`;
+		}
+		return [cascadeMessage(pending.name, pending.dependents), cells].filter(Boolean).join(' ');
+	}
+
 	function handleConfirmRemoval() {
 		if (pendingRemoval === null) return;
 		removalConfirmed = true;
@@ -359,11 +373,13 @@
 	function handleAction(action: ObjectAction, object: AtelierObject) {
 		if (action.id === 'remove') {
 			const dependents = atelier.removalOf(object.name);
-			if (dependents.length === 0) {
+			// Une liste citée par des cellules de la grille : elles deviendront vides
+			const citing = atelier.citingCells(object.name);
+			if (dependents.length === 0 && citing === 0) {
 				removeNow(object.name);
 				return;
 			}
-			pendingRemoval = { name: object.name, dependents };
+			pendingRemoval = { name: object.name, dependents, citing };
 			confirmRemoval = true;
 			return;
 		}
@@ -491,9 +507,7 @@
 		<ConfirmDialog
 			bind:open={confirmRemoval}
 			title="Supprimer {pendingRemoval ? displayName(pendingRemoval.name) : ''} ?"
-			description={pendingRemoval
-				? cascadeMessage(pendingRemoval.name, pendingRemoval.dependents)
-				: ''}
+			description={pendingRemoval ? removalDescription(pendingRemoval) : ''}
 			confirmLabel="Tout supprimer"
 			variant="destructive"
 			onConfirm={handleConfirmRemoval}

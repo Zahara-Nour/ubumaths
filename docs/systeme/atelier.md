@@ -356,8 +356,9 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   entre en décimal dans les formules qui la citent (`MAX_EXACT_CITED` : une colonne d'intérêts
   composés faisait grossir les fractions, et une racine de la dernière gelait l'onglet). `cellValue` rend `empty` (avec « A1 est vide. » pour
   une formule qui cite une case vide, T5), `number` (`shown` : l'écriture exacte si elle tient en
-  12 caractères et n'a pas de lettres, sinon `≈` et 4 décimales — Q2 ; `√2`, `π` attendent
-  l'écriture mathématique de la case, PR 2), `word`, ou `error` (`label` « erreur » ou
+  12 caractères et n'a pas de lettres, sinon `≈` et 4 décimales — Q2 ; `latex` : l'écriture
+  mathématique de la case quand elle est exacte et courte, `\frac` et non `\dfrac` ; `exactLatex` :
+  l'écriture exacte complète, bornée), `word`, ou `error` (`label` « erreur » ou
   « cycle », la phrase dans `message` — Q-L2-1). Refus en français : formule illisible, mot cité,
   nombre non réel (`sqrt(-1)`, `i`), logarithme d'un nombre négatif ou nul, nom inconnu (« k n’est pas défini dans l’atelier : crée-le dans Mes objets (k = 2). », Q-L2-3),
   liste ou fonction citée comme un nombre, cellule hors de A1-Z200, division par zéro, cycle
@@ -370,8 +371,15 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   sont celles des formules (`#formulaList` ; erreurs comptées dans `formulaErrors`, leurs lignes
   sans valeur). T2 : `update` refuse de modifier une telle liste (« L est calculée dans la grille… »),
   sauf quand c'est la grille qui écrit.
-- **Vue** : la case montre `shown` (ou le mot court d'une erreur, en rouge) ; la barre la formule ;
-  sous la barre, la phrase de l'erreur ou de la case vide. La copie vers un autre logiciel et le CSV
+- **Vue** : la case compose `latex` en écriture mathématique (MathLive, `{@html}` après
+  `isSafeLatex` — une formule peut venir d'un lien reçu ; rendu mis en cache par texte LaTeX),
+  sinon `shown` (ou le mot court d'une erreur, en rouge) ; son étiquette pour lecteur d'écran est
+  `shown`, en français (la lecture de MathLive est en anglais). La barre montre la formule ; sous
+  la barre, la phrase de l'erreur ou de la case vide, et « Valeur exacte : … » quand la case montre
+  `≈` d'une valeur exacte (Q2). La carte d'une liste à formules montre ses valeurs et « calculée
+  dans la grille » (`studentDefinitionOf`). Supprimer une liste citée par des cellules d'une autre
+  colonne (`citingCells`) demande confirmation : « 3 cellules de la grille la citent : elles
+  deviendront vides. » (`citingCellsNote`). La copie vers un autre logiciel et le CSV
   emportent les VALEURS des formules ; la copie interne garde la formule.
 - **Oracle** : `formules.test.ts` compare, sur un corpus, la valeur d'une cellule `=expr` à celle de
   Calcul pour `expr`.

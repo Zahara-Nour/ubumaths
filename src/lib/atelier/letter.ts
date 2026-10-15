@@ -123,6 +123,14 @@ export function studentDefinitionOf(
 	atelier: LetterSource & { readonly functionNames: readonly string[] },
 	object: AtelierObject
 ): string {
+	// Une liste calculée dans la grille (tableur, lot 2) : ses VALEURS, jamais `=A1*2`
+	if (
+		object.kind === 'list' &&
+		object.definition.split(';').some((e) => e.trim().startsWith('='))
+	) {
+		const values = object.values.map((v) => String(v).replace('.', ',')).join(' ; ');
+		return `${values} (calculée dans la grille)`;
+	}
 	const letter = typedLetterOf(atelier, object);
 	return letter === INTERNAL_LETTER || object.kind !== 'function'
 		? object.definition

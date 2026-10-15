@@ -460,3 +460,48 @@ describe('revue — temps de calcul', () => {
 		expect(numberAt(a, C, 1)).toBe(14);
 	});
 });
+
+// =============================================================================
+// PR 2 du lot 2 : l'affichage
+// =============================================================================
+
+describe('PR 2 — écriture mathématique', () => {
+	it('une valeur exacte courte s’écrit en LaTeX (√, π, fraction)', () => {
+		const a = withCells({ A1: '=sqrt(8)', A2: '=π', A3: '=1/3', A4: '=2,5' });
+
+		const latex = (row: number) => {
+			const v = value(a, A, row);
+			return v.kind === 'number' ? v.latex : undefined;
+		};
+		expect(latex(1)).toBe('2 \\sqrt{2}');
+		expect(latex(2)).toBe('\\pi');
+		expect(latex(3)).toBe('\\frac{1}{3}');
+		expect(latex(4)).toBe('\\frac{5}{2}');
+	});
+
+	it('une valeur approchée n’a pas d’écriture exacte en case', () => {
+		const a = withCells({ A1: '1', A2: '=u' });
+		const cells: Record<string, string> = { B1: '1' };
+		for (let row = 2; row <= 15; row++) cells[`B${row}`] = `=sqrt(B${row - 1}+2)`;
+		withCells(cells, a);
+
+		const v = value(a, B, 15);
+		expect(v.kind === 'number' && v.latex).toBeNull();
+	});
+
+	it('une valeur exacte trop longue : ≈ dans la case, l’écriture exacte à part', () => {
+		const a = withCells({ A1: '=1/123456789+1/7' });
+
+		const v = value(a, A, 1);
+		expect(v.kind === 'number' && v.latex).toBeNull();
+		expect(v.kind === 'number' && v.exactLatex).toBe('\\frac{123456796}{864197523}');
+	});
+
+	it('les cellules d’une autre colonne qui citent une liste', () => {
+		const a = new Atelier();
+		a.create({ kind: 'list', name: 'L', definition: '3 ; 4' });
+		withCells({ A3: '=A1+A2', B1: '=A1*2', B2: '=A2+1', C1: '=B1' }, a);
+
+		expect(a.citingCells('L')).toBe(2);
+	});
+});

@@ -535,8 +535,71 @@ describe('coller et copier (§4)', () => {
 		await userEvent.click(cellAt(container, 'A2')!);
 		await settle();
 
-		expect(cellAt(container, 'A2')?.textContent?.trim()).toBe('2/3');
+		// Écriture mathématique dans la case (PR 2) ; l'étiquette lue reste en français
+		expect(cellAt(container, 'A2')?.querySelector('.ML__latex')).not.toBeNull();
+		expect(cellAt(container, 'A2')?.getAttribute('aria-label')).toBe('A2 : 2/3');
 		expect(bar.value).toBe('=A1/6+1/6');
+	});
+
+	// Lot 2 PR 2 : la valeur exacte en écriture mathématique
+	it('une racine s’écrit en écriture mathématique dans la case', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([{ column: 0, row: 1, text: '=sqrt(8)' }]);
+		const { container } = await openData(atelier);
+
+		const cell = cellAt(container, 'A1')!;
+		expect(cell.querySelector('.ML__latex')).not.toBeNull();
+		expect(cell.getAttribute('aria-label')).toContain('A1');
+	});
+
+	it('une case ≈ dont la valeur est exacte : l’écriture exacte sous la barre', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([{ column: 0, row: 1, text: '=1/123456789+1/7' }]);
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await settle();
+
+		expect(cellAt(container, 'A1')?.textContent).toContain('≈');
+		expect(container.querySelector('.valeur-exacte')?.textContent).toContain('Valeur exacte');
+		expect(container.querySelector('.valeur-exacte .ML__latex')).not.toBeNull();
+	});
+
+	it('la carte d’une liste à formules montre ses valeurs, « calculée dans la grille »', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([
+			{ column: 0, row: 1, text: '1' },
+			{ column: 0, row: 2, text: '=A1*2' }
+		]);
+		atelier.nameColumn(0, 'L');
+		const { container } = await openData(atelier);
+
+		const carte = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'L'
+		);
+		expect(carte?.textContent).toContain('1 ; 2');
+		expect(carte?.textContent).toContain('calculée dans la grille');
+		expect(carte?.textContent).not.toContain('=A1');
+	});
+
+	it('supprimer une liste citée par des cellules demande confirmation, et le dit', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'L', definition: '3 ; 4' });
+		atelier.editCells([{ column: 1, row: 1, text: '=A1*2' }]);
+		const { container } = await openData(atelier);
+		const carte = [...container.querySelectorAll('.objet')].find(
+			(el) => el.querySelector('.nom')?.textContent?.trim() === 'L'
+		);
+		(carte?.querySelector('button') as HTMLButtonElement).click();
+		await settle();
+		const supprimer = [...container.querySelectorAll('.action')].find(
+			(b) => b.textContent?.trim() === 'Supprimer'
+		) as HTMLButtonElement;
+		supprimer.click();
+		await settle();
+
+		expect(atelier.get('L')).toBeDefined();
+		expect(document.body.textContent).toContain('1 cellule de la grille la cite');
 	});
 
 	// Q-L2-1 : un mot court dans la case, la phrase sous la barre

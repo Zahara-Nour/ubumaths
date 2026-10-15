@@ -97,6 +97,7 @@ import {
 	isFormula,
 	normalizeFormula,
 	plainValue,
+	referencesIn,
 	type CellValue,
 	type GridState
 } from './formula';
@@ -1349,6 +1350,23 @@ export class Atelier {
 		const text = this.cell(column, row);
 		if (!isFormula(text)) return plainValue(text);
 		return this.#values.get(cellName(column, row)) ?? { kind: 'empty' };
+	}
+
+	/**
+	 * Le nombre de formules, HORS de la colonne de la liste `name`, qui citent
+	 * une de ses cellules : supprimer la liste les rendra vides (T3, T5) — la
+	 * confirmation le dit.
+	 */
+	citingCells(name: string): number {
+		const column = this.columnOf(name);
+		if (column === undefined) return 0;
+		const letter = columnLetter(column);
+		let count = 0;
+		for (const [address, text] of gridTexts(this.#entriesByColumn, this.cells)) {
+			if (address.startsWith(letter)) continue;
+			if (referencesIn(text).some((ref) => ref.startsWith(letter))) count++;
+		}
+		return count;
 	}
 
 	/** Le texte brut d'une cellule (ligne 1 à 200), `''` si elle est vide. */

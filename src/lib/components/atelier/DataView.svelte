@@ -28,6 +28,8 @@
 	import { cascadeMessage } from '$lib/atelier/removal';
 	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
 	import type { CellValue } from '$lib/atelier/formula';
+	import { isSafeLatex } from '$lib/atelier/safe-latex';
+	import { convertLatexToMarkup, convertLatexToSpeakableText } from 'mathlive';
 	import { summarizeList } from '$lib/statistics/describe';
 	import { listChart } from '$lib/atelier/chart';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -103,6 +105,33 @@
 	const selectedNote = $derived.by(() => {
 		const value = atelier.cellValue(selected.column, selected.row);
 		return value.kind === 'error' || value.kind === 'empty' ? (value.message ?? '') : '';
+	});
+
+	/**
+	 * L'écriture mathématique d'une valeur, composée une fois par texte LaTeX :
+	 * une grille compte des centaines de cases. ⚠️ Passée au crible de
+	 * `isSafeLatex` : une formule peut venir d'un lien reçu, et la case la
+	 * compose en `{@html}` — refusée, la case reste en texte.
+	 */
+	const markups = new Map<string, { markup: string; spoken: string }>();
+	function composed(latex: string | null | undefined): { markup: string; spoken: string } | null {
+		if (!latex || !isSafeLatex(latex)) return null;
+		let done = markups.get(latex);
+		if (done === undefined) {
+			done = {
+				markup: convertLatexToMarkup(latex, { defaultMode: 'inline-math' }),
+				spoken: convertLatexToSpeakableText(latex)
+			};
+			markups.set(latex, done);
+		}
+		return done;
+	}
+
+	/** « Valeur exacte » sous la barre : quand la case montre `≈` d'une valeur exacte. */
+	const selectedExact = $derived.by(() => {
+		const value = atelier.cellValue(selected.column, selected.row);
+		if (value.kind !== 'number' || !value.exact || value.latex) return null;
+		return composed(value.exactLatex);
 	});
 
 	/** Ce que montre une case : la valeur d'une formule, le mot court d'une erreur (Q-L2-1). */
@@ -578,6 +607,17 @@
 	{#if editing === null && selectedNote !== ''}
 		<p class="note">{selectedNote}</p>
 	{/if}
+	{#if editing === null && selectedExact}
+		<!-- Q2 : la valeur exacte se voit à la sélection, même quand la case montre ≈ -->
+		<p class="note valeur-exacte">
+			Valeur exacte :
+			<span aria-hidden="true">
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX de toLatex, passé par isSafeLatex -->
+				{@html selectedExact.markup}
+			</span>
+			<span class="sr-only">{selectedExact.spoken}</span>
+		</p>
+	{/if}
 	<textarea
 		bind:this={relay}
 		class="relais"
@@ -684,11 +724,18 @@
 							{@const selectedZone = inZone(column, row)}
 							{@const value = atelier.cellValue(column, row)}
 							{@const text = isSelected && editing === 'bar' ? draft : shownOf(value)}
+							{@const math =
+								isSelected && editing !== null
+									? null
+									: value.kind === 'number'
+										? composed(value.latex)
+										: null}
 							<td
 								role="gridcell"
 								data-cell={address}
 								tabindex={isSelected ? 0 : -1}
 								aria-selected={selectedZone}
+								aria-label="{address} : {text || 'vide'}"
 								class:nombre={value.kind === 'number'}
 								class:en-erreur={value.kind === 'error'}
 								class:zone={selectedZone && !isSelected}
@@ -709,6 +756,9 @@
 										onblur={cellInputBlur}
 										{@attach focusAtEnd}
 									/>
+								{:else if math}
+									<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX de toLatex, passé par isSafeLatex -->
+									{@html math.markup}
 								{:else}
 									{text}
 								{/if}
