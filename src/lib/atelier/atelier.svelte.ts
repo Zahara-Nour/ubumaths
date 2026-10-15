@@ -97,7 +97,8 @@ import {
 	isFormula,
 	normalizeFormula,
 	plainValue,
-	type CellValue
+	type CellValue,
+	type GridState
 } from './formula';
 import {
 	cellName,
@@ -527,8 +528,10 @@ export class Atelier {
 	 * recalculées à chaque changement de cellule ou d'objet (`#recomputeGrid`).
 	 */
 	#values = $state.raw<ReadonlyMap<string, CellValue>>(new Map());
-	/** L'empreinte de ce dont dépendent les formules : rien n'a changé, rien à recalculer. */
-	#gridMark = '';
+	/** Le recalcul précédent : le suivant ne refait que les formules concernées (phase 0 §3). */
+	#gridState: GridState | undefined = undefined;
+	/** Le nombre de formules évaluées par le dernier recalcul (0 : aucune n'était concernée). */
+	lastGridComputed = 0;
 	/** La grille réécrit une colonne nommée : la règle T2 ne s'applique pas à elle-même. */
 	#gridWriting = false;
 
@@ -2431,9 +2434,9 @@ export class Atelier {
 
 	/**
 	 * Recalculer les formules de la grille (lot 2), puis les listes dont la
-	 * colonne en contient : leurs valeurs sont celles des formules. Si rien n'a
-	 * changé de ce dont dépendent les formules (cellules, objets), elles ne se
-	 * recalculent pas.
+	 * colonne en contient : leurs valeurs sont celles des formules. Seules les
+	 * formules concernées par un changement (texte, cellule citée, objet cité)
+	 * sont recalculées (`computeGrid`, état précédent gardé).
 	 *
 	 * ⚠️ Appelé en DERNIER par `recomputeAll` : les formules lisent les objets
 	 * avec leur statut définitif. Aucun objet ne lit la grille (Q1) : les listes
@@ -2441,25 +2444,10 @@ export class Atelier {
 	 */
 	#recomputeGrid(): void {
 		const texts = gridTexts(this.#entriesByColumn, this.cells);
-		const objects = this.items
-			.filter((o) => !isList(o))
-			.map((o) => [
-				o.name,
-				o.kind,
-				o.definition,
-				o.status,
-				'interval' in o ? o.interval : null,
-				'inheritedInterval' in o ? o.inheritedInterval : null,
-				isSequence(o) ? [o.mode, o.firstIndex, o.firstTerm] : null
-			]);
-		const mark = JSON.stringify([
-			[...texts].filter(([, t]) => isFormula(t)).length > 0 ? [...texts] : [],
-			objects
-		]);
-		if (mark !== this.#gridMark) {
-			this.#gridMark = mark;
-			this.#values = computeGrid(texts, this);
-		}
+		const state = computeGrid(texts, this, this.#gridState);
+		this.#gridState = state;
+		this.lastGridComputed = state.computed;
+		if (state.computed > 0 || state.values.size !== this.#values.size) this.#values = state.values;
 
 		// Les listes à formules se refont TOUJOURS (peu coûteux) : nommer une
 		// colonne ne change ni ses textes ni l'empreinte, mais crée la liste

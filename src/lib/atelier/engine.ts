@@ -569,6 +569,8 @@ export function expressionOf(
  * fonctions de l'atelier remplacées. Rend le refus d'une `f⁻¹` impossible.
  */
 export interface GridContext {
+	/** Les VALEURS de l'atelier remplacées, seulement (contrôle d'intervalle de `f(b)`). */
+	values(ast: MathNode): MathNode;
 	expand(
 		ast: MathNode
 	):
@@ -579,6 +581,7 @@ export interface GridContext {
 export function gridContext(atelier: Atelier): GridContext {
 	const { variables, functions, derivableFunctions, reciprocals } = bindingsOf(atelier, '');
 	return {
+		values: (ast) => substituteAll(ast, variables, substituteFunction, { functions: {} }),
 		expand(ast) {
 			let expanded: MathNode;
 			try {
