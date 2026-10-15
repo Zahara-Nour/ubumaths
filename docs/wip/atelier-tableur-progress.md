@@ -183,4 +183,4 @@ liste trouée en citant l'entrée).
 - [x] revue (2 importants, 3 mineurs, tous corrigés test rouge d'abord) : zone resélectionnée à
       chaque retour sur Données ; deux Entrée = deux tableaux (focus resté dans la carte) ;
       formulaire qui survivait à la carte refermée ; phrase périmée après Ctrl+Z ; double annonce
-- [ ] PR, CI, merge
+- [x] PR 2 mergée : #1427 — **lot 3 complet** (pas en prod)
