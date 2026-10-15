@@ -349,6 +349,9 @@
 		// L'espace tapée reste `\,`, comme dans les cartes : elle fait l'unité (ADR 0026)
 		element.mathModeSpace = '\\,';
 		element.inlineShortcuts = cleanedShortcuts(element.inlineShortcuts);
+		// Pas de menu ☰ (ni au clic droit) : mode texte ou LaTeX, couleur, style,
+		// matrice donnent des lignes que le moteur ne lit pas (David, 2026-10-15)
+		element.menuItems = [];
 		// Le clavier virtuel est UN pour toute la page (les cartes de l'atelier ont
 		// aussi des champs MathLive) : nos onglets le temps du focus seulement,
 		// comme `FillBlanksInput.svelte`
@@ -388,6 +391,7 @@
 
 <math-field
 	bind:this={field}
+	data-sans-menu
 	aria-label={label}
 	{placeholder}
 	class="block w-full rounded-lg border border-border bg-background px-2 py-1.5 text-[1.375rem] text-foreground focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-ring"
@@ -429,3 +433,10 @@
 		{/each}
 	</ul>
 {/if}
+
+<style>
+	/* Le bouton ☰ : MathLive le laisse affiché même quand son menu est vide */
+	math-field[data-sans-menu]::part(menu-toggle) {
+		display: none;
+	}
+</style>
