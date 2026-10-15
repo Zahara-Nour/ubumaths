@@ -129,7 +129,7 @@ export async function fetchStudentCopyViews(
 		return recipients.map((recipient) => ({ recipient, view: first }));
 	}
 
-	const views: StudentCopyView[] = new Array(total);
+	const views: StudentCopyView[] = Array.from({ length: total });
 	views[0] = first;
 	let done = 1;
 	report(done);

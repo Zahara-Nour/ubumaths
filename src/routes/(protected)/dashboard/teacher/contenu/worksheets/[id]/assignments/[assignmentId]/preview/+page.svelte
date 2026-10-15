@@ -454,7 +454,9 @@
 							variant="outline"
 							size="sm"
 							class="sm:ml-auto"
-							href={assignmentCopiesHref(data.worksheetId, data.assignmentId)}
+							href={assignmentCopiesHref(data.worksheetId, data.assignmentId, {
+								fromPreview: true
+							})}
 						>
 							<Printer class="mr-2 h-4 w-4" />
 							Imprimer une copie par élève

@@ -78,9 +78,37 @@ export function assignmentPreviewHref(
 	return `${assignmentBase(worksheetId, assignmentId)}/preview${search ? `?${search}` : ''}${hash}`;
 }
 
-/** Les copies par élève d'une affectation, nom pré-imprimé (ADR 0030, lot 5) */
-export function assignmentCopiesHref(worksheetId: string, assignmentId: string): string {
-	return `${assignmentBase(worksheetId, assignmentId)}/copies`;
+const PREVIEW_PARAM = 'apercu';
+
+/**
+ * Les copies par élève d'une affectation, nom pré-imprimé (ADR 0030, lot 5).
+ * Deux parents : la fiche, ou l'aperçu de l'affectation (`fromPreview`).
+ */
+export function assignmentCopiesHref(
+	worksheetId: string,
+	assignmentId: string,
+	options: { fromPreview?: boolean } = {}
+): string {
+	const search = options.fromPreview ? `?${FROM_PARAM}=${PREVIEW_PARAM}` : '';
+	return `${assignmentBase(worksheetId, assignmentId)}/copies${search}`;
+}
+
+/** Retour des copies par élève : l'aperçu si on en vient, sinon la fiche */
+export function assignmentCopiesReturn(
+	worksheetId: string,
+	assignmentId: string,
+	searchParams: URLSearchParams
+): ReturnLink {
+	if (searchParams.get(FROM_PARAM) === PREVIEW_PARAM) {
+		return {
+			href: `${assignmentBase(worksheetId, assignmentId)}/preview`,
+			label: 'Retour à l’aperçu'
+		};
+	}
+	return {
+		href: `/dashboard/teacher/contenu/worksheets/${worksheetId}`,
+		label: 'Retour à la fiche'
+	};
 }
 
 export function assignmentPreviewReturn(

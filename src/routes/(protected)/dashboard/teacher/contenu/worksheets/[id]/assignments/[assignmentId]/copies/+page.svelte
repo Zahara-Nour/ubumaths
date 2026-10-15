@@ -10,6 +10,9 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { z } from 'zod';
+	import { page } from '$app/state';
+	import { assignmentCopiesReturn } from '$lib/navigation/return-links';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import PdfSvgView from '$lib/components/worksheets/PdfSvgView.svelte';
@@ -50,6 +53,17 @@
 	/** Valeur du sélecteur pour « toutes les copies » */
 	const ALL = 'all';
 
+	/** Ce que la page lit de la copie rendue par l'aperçu ; le reste passe tel quel */
+	const copyViewSchema = z
+		.object({
+			worksheet_id: z.string(),
+			title: z.string(),
+			type: z.string(),
+			exercises: z.array(z.unknown()),
+			per_student_copies: z.boolean().optional()
+		})
+		.passthrough();
+
 	// ============================================================================
 	// ÉTAT
 	// ============================================================================
@@ -77,7 +91,10 @@
 	// ============================================================================
 
 	let total = $derived(data.students.length);
-	let backHref = $derived(`/dashboard/teacher/contenu/worksheets/${data.worksheetId}`);
+	// Deux parents : la fiche, ou l'aperçu de l'affectation (`?depuis=apercu`)
+	let backLink = $derived(
+		assignmentCopiesReturn(data.worksheetId, data.assignmentId, page.url.searchParams)
+	);
 
 	let selectItems = $derived([
 		{ value: ALL, label: `Toutes les copies (${total})` },
@@ -115,7 +132,9 @@
 					: 'Copie illisible';
 			throw new Error(message);
 		}
-		return (await response.json()) as StudentCopyView;
+		const parsed = copyViewSchema.safeParse(await response.json().catch(() => null));
+		if (!parsed.success) throw new Error('Copie illisible');
+		return parsed.data as unknown as StudentCopyView;
 	}
 
 	async function prepare(): Promise<void> {
@@ -134,6 +153,10 @@
 				})
 			]);
 			if (destroyed) return;
+			// L'adresse nomme la fiche : l'affectation doit en être une
+			if (fetched[0] && fetched[0].view.worksheet_id !== data.worksheetId) {
+				throw new Error('Cette affectation n’appartient pas à cette fiche');
+			}
 			compiler = loaded;
 			copies = fetched;
 
@@ -144,15 +167,28 @@
 			if (destroyed) return;
 			await compileSelection();
 		} catch (err) {
+			if (destroyed) return;
 			console.error('Copies par élève :', err);
 			phase = 'error';
 			errorMessage = err instanceof Error ? err.message : 'Impossible de préparer les copies';
 		}
 	}
 
-	/** Compile la sélection : toutes les copies, ou celle d'un élève */
-	async function compileSelection(): Promise<void> {
-		if (!compiler || sources.length === 0) return;
+	/**
+	 * Les compilations passent une par une : elles partagent le compilateur et
+	 * son système de fichiers virtuel (images), qu'une compilation vide en
+	 * finissant (`resetShadow`)
+	 */
+	let compileQueue: Promise<void> = Promise.resolve();
+
+	/** Compile la sélection (toutes les copies, ou celle d'un élève), à son tour */
+	function compileSelection(): Promise<void> {
+		compileQueue = compileQueue.then(compileCurrentSelection);
+		return compileQueue;
+	}
+
+	async function compileCurrentSelection(): Promise<void> {
+		if (destroyed || !compiler || sources.length === 0) return;
 		const target = selected;
 		const index = copies.findIndex((copy) => copy.recipient.id === target);
 		const document =
@@ -167,7 +203,7 @@
 				svg: true,
 				compiler
 			});
-			// Un autre choix est arrivé pendant la compilation : il gagne
+			// Un autre choix est arrivé pendant la compilation : il est dans la file
 			if (destroyed || target !== selected) return;
 			releasePdf();
 			svg = compiled.data.svg ?? '';
@@ -177,7 +213,7 @@
 			phase = 'ready';
 			if (compiled.fallbackError) toaster.warning(fallbackWarning(compiled.fallbackError));
 		} catch (err) {
-			if (target !== selected) return;
+			if (destroyed || target !== selected) return;
 			console.error('Copies par élève, compilation :', err);
 			phase = 'error';
 			errorMessage = 'Le PDF n’a pas pu être fabriqué';
@@ -236,7 +272,7 @@
 </svelte:head>
 
 <div class="container mx-auto max-w-5xl space-y-6 p-4 sm:p-6">
-	<BackLink href={backHref} label="Retour à la fiche" />
+	<BackLink href={backLink.href} label={backLink.label} />
 
 	<div class="space-y-1">
 		<h1 class="text-2xl font-bold">Copies par élève</h1>

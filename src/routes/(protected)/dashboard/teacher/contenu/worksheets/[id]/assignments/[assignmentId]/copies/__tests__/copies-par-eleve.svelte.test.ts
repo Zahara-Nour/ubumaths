@@ -12,11 +12,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { page } from 'vitest/browser';
 
-const compiled = vi.hoisted(() => ({ sources: [] as string[] }));
+// Compilations en cours : le compilateur et ses images sont partagés, une seule à la fois
+const compiled = vi.hoisted(() => ({ sources: [] as string[], active: 0, maxActive: 0 }));
 vi.mock('$lib/typst/compiler', () => ({
 	getTypstCompiler: async () => ({
 		svg: async ({ mainContent }: { mainContent: string }) => {
 			compiled.sources.push(mainContent);
+			compiled.active++;
+			compiled.maxActive = Math.max(compiled.maxActive, compiled.active);
+			// Une compilation qui prend du temps, comme un paquet de 35 copies
+			await new Promise((resolve) => setTimeout(resolve, 400));
+			compiled.active--;
 			const text = mainContent.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 			return `<svg xmlns="http://www.w3.org/2000/svg"><text>${text}</text></svg>`;
 		},
@@ -104,6 +110,8 @@ describe('copies par élève : l’aperçu avant d’imprimer', () => {
 	beforeEach(() => {
 		requested = [];
 		compiled.sources = [];
+		compiled.active = 0;
+		compiled.maxActive = 0;
 	});
 	afterEach(() => {
 		vi.unstubAllGlobals();
@@ -111,7 +119,7 @@ describe('copies par élève : l’aperçu avant d’imprimer', () => {
 
 	it('toutes les copies, dans l’ordre alphabétique, chacune à son nom', async () => {
 		stubFetch(false);
-		render(CopiesPage, { props: { data: DATA } as never });
+		await render(CopiesPage, { props: { data: DATA } as never });
 		await expect.poll(shown).toContain('Abricot Ondine');
 		const text = shown();
 		const order = ['Abricot Ondine', 'Écureuil Élise', 'Fougère Félix'].map((n) => text.indexOf(n));
@@ -125,7 +133,7 @@ describe('copies par élève : l’aperçu avant d’imprimer', () => {
 
 	it('affectation individualisée : la copie propre à chaque élève', async () => {
 		stubFetch(true);
-		render(CopiesPage, { props: { data: DATA } as never });
+		await render(CopiesPage, { props: { data: DATA } as never });
 		await expect.poll(shown).toContain('Fougère Félix');
 		expect(requested.map((url) => url.searchParams.get('studentId')).sort()).toEqual(
 			[ONDINE, ELISE, FELIX].sort()
@@ -137,7 +145,7 @@ describe('copies par élève : l’aperçu avant d’imprimer', () => {
 
 	it('choisir un élève : sa copie seule, à son nom', async () => {
 		stubFetch(true);
-		render(CopiesPage, { props: { data: DATA } as never });
+		await render(CopiesPage, { props: { data: DATA } as never });
 		await expect.poll(shown).toContain('Fougère Félix');
 
 		await page.getByRole('button', { name: 'Copie à afficher' }).click();
@@ -149,23 +157,50 @@ describe('copies par élève : l’aperçu avant d’imprimer', () => {
 		expect(shown()).not.toContain('Fougère Félix');
 	});
 
+	it('changer deux fois de copie très vite : une compilation à la fois, la dernière gagne', async () => {
+		stubFetch(true);
+		await render(CopiesPage, { props: { data: DATA } as never });
+		await expect.poll(shown).toContain('Fougère Félix');
+
+		await page.getByRole('button', { name: 'Copie à afficher' }).click();
+		await page.getByRole('option', { name: /Écureuil Élise/ }).click();
+		await page.getByRole('button', { name: 'Copie à afficher' }).click();
+		await page.getByRole('option', { name: /Fougère Félix/ }).click();
+
+		await expect.poll(shown).toContain(`Énoncé de ${FELIX}`);
+		await expect.poll(() => compiled.active).toBe(0);
+		expect(shown()).not.toContain('Écureuil Élise');
+		expect(compiled.maxActive).toBe(1);
+	});
+
 	it('fiche d’exercices sans « Nom de l’élève » : le prof est prévenu', async () => {
 		stubFetch(false, 'worksheet');
-		render(CopiesPage, { props: { data: DATA } as never });
+		await render(CopiesPage, { props: { data: DATA } as never });
 		await expect.poll(shown).toContain('Énoncé commun');
 		expect(document.body.textContent).toContain('n’imprime pas le nom des élèves');
 	});
 
 	it('aucun élève visé : rien à imprimer, aucune demande', async () => {
 		stubFetch(false);
-		render(CopiesPage, { props: { data: { ...DATA, students: [] } } as never });
+		await render(CopiesPage, { props: { data: { ...DATA, students: [] } } as never });
 		await expect.poll(() => document.body.textContent).toContain('Aucun élève');
 		expect(requested).toHaveLength(0);
 	});
 
+	it('affectation d’une autre fiche que celle de l’adresse : refus, aucun PDF', async () => {
+		stubFetch(false);
+		await render(CopiesPage, {
+			props: { data: { ...DATA, worksheetId: '550e8400-e29b-41d4-a716-446655440099' } } as never
+		});
+		await expect
+			.poll(() => document.body.textContent)
+			.toContain('Cette affectation n’appartient pas à cette fiche');
+		expect(compiled.sources).toHaveLength(0);
+	});
+
 	it('retour à la fiche, au-dessus du titre', async () => {
 		stubFetch(false);
-		render(CopiesPage, { props: { data: DATA } as never });
+		await render(CopiesPage, { props: { data: DATA } as never });
 		const back = page.getByRole('link', { name: 'Retour à la fiche' });
 		await expect
 			.element(back)

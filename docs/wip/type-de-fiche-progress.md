@@ -128,9 +128,12 @@ Worktree : `../ubumaths-wt-type-fiche`, branche `feat/type-de-fiche`. Décision 
       qui recopie `answer_frame_lines` (intégration `cadres-lignes-duplication`), PDF par lien de
       partage = cadres du prof (`cadres-lignes-lien-partage.test.ts`). Aucun code ne lit le type
       de la RPC : les exercices passent tels quels (`z.unknown()` côté cours, cast côté cahier).
-- [ ] Lot 5 (branche `feat/copies-par-eleve`) — une copie par élève, nom pré-imprimé : élèves de
+- [x] Lot 5 (branche `feat/copies-par-eleve`) — une copie par élève, nom pré-imprimé : élèves de
       la liste de l'affectation (`GET …/students`, réutilisée), copie de chacun par l'aperçu
       (`…/preview?studentId=`, une seule demande si l'affectation est commune), tri français,
       copies assemblées en un document Typst (`student-copies.ts` : un bloc par copie, page
-      remise à 1, total « page / N » lu à la fin de la copie). Mesure : 35 copies (70 pages)
-      compilées en < 1 s par le compilateur de prod. En cours : page `…/copies`, boutons.
+      remise à 1, total « page / N » lu à la fin de la copie). Page `…/copies` (toutes les copies
+      ou celle d'un élève, `PdfSvgView` extrait de `PdfPreview`), boutons sur la fiche et l'aperçu.
+      Mesure : 35 copies (70 pages) compilées en < 1 s par le compilateur de prod. Aucune
+      migration, aucun nouvel accès. Reste : PR, CI ; questions à David (recto verso, fiche
+      d'exercices sans « Nom de l'élève »).

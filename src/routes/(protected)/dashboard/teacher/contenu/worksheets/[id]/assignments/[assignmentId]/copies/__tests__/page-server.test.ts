@@ -28,9 +28,9 @@ function event(response: Response, assignmentId = ASSIGNMENT_ID) {
 	};
 }
 
-async function statusOf(promise: Promise<unknown>): Promise<number | null> {
+async function statusOf(run: () => unknown): Promise<number | null> {
 	try {
-		await promise;
+		await run();
 		return null;
 	} catch (e) {
 		return (e as { status?: number }).status ?? null;
@@ -57,14 +57,14 @@ describe('copies par élève : chargement de la page', () => {
 	});
 
 	it('refus de la route (un élève, un autre prof) : la page est refusée', async () => {
-		expect(await statusOf(load(event(new Response('{}', { status: 403 })).event))).toBe(403);
-		expect(await statusOf(load(event(new Response('{}', { status: 404 })).event))).toBe(404);
-		expect(await statusOf(load(event(new Response('{}', { status: 500 })).event))).toBe(500);
+		expect(await statusOf(() => load(event(new Response('{}', { status: 403 })).event))).toBe(403);
+		expect(await statusOf(() => load(event(new Response('{}', { status: 404 })).event))).toBe(404);
+		expect(await statusOf(() => load(event(new Response('{}', { status: 500 })).event))).toBe(500);
 	});
 
 	it('identifiant d’affectation invalide : 400, sans rien demander', async () => {
 		const { fetch, event: e } = event(new Response('{}'), 'pas-un-uuid');
-		expect(await statusOf(load(e))).toBe(400);
+		expect(await statusOf(() => load(e))).toBe(400);
 		expect(fetch).not.toHaveBeenCalled();
 	});
 
@@ -74,6 +74,6 @@ describe('copies par élève : chargement de la page', () => {
 			locals: { safeGetSession: async () => ({ user: null }) },
 			fetch: vi.fn()
 		} as never;
-		expect(await statusOf(load(e))).toBe(401);
+		expect(await statusOf(() => load(e))).toBe(401);
 	});
 });

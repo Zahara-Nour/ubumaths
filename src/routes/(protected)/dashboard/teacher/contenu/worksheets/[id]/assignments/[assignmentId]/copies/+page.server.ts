@@ -19,15 +19,21 @@ const paramsSchema = z.object({
 	assignmentId: z.string().uuid('Identifiant d’affectation invalide')
 });
 
+/** Un nom imprimé : borné (un nom démesuré est coupé, la copie s'imprime quand même) */
+const boundedText = z
+	.string()
+	.nullable()
+	.transform((value) => (value === null ? null : value.slice(0, 100)));
+
 /** Ce que la page lit de la liste de l'affectation ; le reste est ignoré */
 const studentsResponseSchema = z.object({
 	students: z
 		.array(
 			z.object({
 				id: z.string().uuid(),
-				first_name: z.string().nullable(),
-				last_name: z.string().nullable(),
-				class_name: z.string().nullable()
+				first_name: boundedText,
+				last_name: boundedText,
+				class_name: boundedText
 			})
 		)
 		.max(2000)

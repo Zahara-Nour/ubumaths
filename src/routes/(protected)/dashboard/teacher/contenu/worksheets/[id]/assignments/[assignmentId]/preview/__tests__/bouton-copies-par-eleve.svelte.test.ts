@@ -62,7 +62,7 @@ describe('page d’une affectation : copies par élève', () => {
 	});
 
 	it('le bouton mène aux copies par élève de cette affectation', async () => {
-		render(PreviewPage, {
+		await render(PreviewPage, {
 			props: { data: data([{ id: ONDINE, first_name: 'Ondine', last_name: 'Abricot' }]) } as never
 		});
 		const link = page.getByRole('link', { name: 'Imprimer une copie par élève' });
@@ -70,12 +70,12 @@ describe('page d’une affectation : copies par élève', () => {
 			.element(link)
 			.toHaveAttribute(
 				'href',
-				`/dashboard/teacher/contenu/worksheets/${WORKSHEET_ID}/assignments/${ASSIGNMENT_ID}/copies`
+				`/dashboard/teacher/contenu/worksheets/${WORKSHEET_ID}/assignments/${ASSIGNMENT_ID}/copies?depuis=apercu`
 			);
 	});
 
 	it('aucun élève visé : pas de bouton', async () => {
-		render(PreviewPage, { props: { data: data([]) } as never });
+		await render(PreviewPage, { props: { data: data([]) } as never });
 		await expect.poll(() => document.body.textContent).toContain('Fractions');
 		expect(document.body.textContent).not.toContain('Imprimer une copie par élève');
 	});

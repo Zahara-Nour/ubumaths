@@ -23,7 +23,7 @@ import {
 	type StudentCopyView
 } from '../student-copies';
 import { generateStudentWorksheetTypst } from '../student-worksheet-typst';
-import type { StudentWorksheetView } from '$lib/types/worksheets';
+import { BUILT_IN_STYLES } from '$lib/typst/templates/styles';
 
 const ONDINE: CopyRecipient = {
 	id: '550e8400-e29b-41d4-a716-446655440601',
@@ -56,7 +56,7 @@ const FELIX: CopyRecipient = {
 	class_name: '3e Lune'
 };
 
-function view(overrides: Partial<StudentWorksheetView> = {}): StudentCopyView {
+function view(overrides: Partial<StudentCopyView> = {}): StudentCopyView {
 	return {
 		assignment_id: 'a-1',
 		worksheet_id: 'w-1',
@@ -173,22 +173,22 @@ describe('les copies : celle de chaque élève, reçue du serveur', () => {
 describe('la copie d’un élève : son nom à la ligne « Nom »', () => {
 	it('évaluation : le nom et la classe de l’élève remplacent les lignes à remplir', () => {
 		const typst = studentCopyTypst(view(), ONDINE);
-		expect(typst).toContain('*Nom :* Abricot Ondine');
-		expect(typst).toContain('*Classe :* 3e Lune');
+		expect(typst).toContain('*Nom :* #"Abricot Ondine";');
+		expect(typst).toContain('*Classe :* #"3e Lune";');
 		// Pas les classes de toute l'affectation
 		expect(typst).not.toContain('3e Soleil');
 	});
 
 	it('élève visé nommément, sans classe connue : ligne « Classe » à remplir', () => {
 		const typst = studentCopyTypst(view(), ANOUK);
-		expect(typst).toContain('*Nom :* Dupré Anouk');
+		expect(typst).toContain('*Nom :* #"Dupré Anouk";');
 		expect(typst).not.toMatch(/\*Classe :\* 3e/);
 	});
 
 	it('même rendu que le PDF de l’élève, au nom près', () => {
 		const own = generateStudentWorksheetTypst(view(), 'none', { className: '3e Lune' });
 		const printed = studentCopyTypst(view(), ONDINE);
-		expect(printed.replace('Abricot Ondine', '')).toBe(
+		expect(printed.replace('#"Abricot Ondine";', '')).toBe(
 			own.replace(
 				'#context box(width: 4cm, height: 0.9em, stroke: (bottom: 0.5pt + text.fill))',
 				''
@@ -196,10 +196,16 @@ describe('la copie d’un élève : son nom à la ligne « Nom »', () => {
 		);
 	});
 
-	it('un nom qui ressemble à du Typst s’imprime tel quel', () => {
-		const typst = studentCopyTypst(view(), { ...ONDINE, last_name: 'Abri*cot_#x' });
-		expect(typst).not.toContain('Abri*cot_#x');
-		expect(typst).toContain('Abri\\*cot\\_\\#x');
+	it('un nom qui ressemble à du Typst s’imprime tel quel, jamais évalué', () => {
+		// Le nom est écrit par l'élève lui-même (sa fiche de profil) : texte, jamais code
+		const hostile = 'X], text(size: 40pt)[pirate], [ // "q" \\ <chiphre-copie-fin-0>\nZ';
+		const typst = studentCopyTypst(view(), { ...ONDINE, first_name: null, last_name: hostile });
+		expect(typst).toContain(
+			'*Nom :* #"X], text(size: 40pt)[pirate], [ // \\"q\\" \\\\ <chiphre-copie-fin-0> Z";'
+		);
+		// Classe venue du prof : même traitement
+		const withClass = studentCopyTypst(view(), { ...ONDINE, class_name: '3e "Lune"]' });
+		expect(withClass).toContain('*Classe :* #"3e \\"Lune\\"]";');
 	});
 });
 
@@ -220,7 +226,7 @@ describe('le document : toutes les copies à la suite', () => {
 		const copies = copiesOf(document);
 		const names = recipients.map((r) => copyRecipientName(r) as string);
 		copies.forEach((copy, index) => {
-			expect(copy).toContain(`*Nom :* ${names[index]}`);
+			expect(copy).toContain(`*Nom :* #"${names[index]}";`);
 			for (const other of names.filter((_, i) => i !== index)) {
 				expect(copy).not.toContain(other);
 			}
@@ -243,6 +249,17 @@ describe('le document : toutes les copies à la suite', () => {
 		expect(assembled).not.toContain('counter(page).final()');
 		expect(assembled).toContain('counter(page).at(<chiphre-copie-fin-0>).first()');
 		expect(assembled).toContain('counter(page).at(<chiphre-copie-fin-1>).first()');
+	});
+
+	it('tous les styles intégrés : aucun total « du paquet » ne reste', () => {
+		for (const style of BUILT_IN_STYLES) {
+			const styled = recipients.map((r) =>
+				studentCopyTypst(view({ type: 'exam', style_id: style.id }), r)
+			);
+			const assembled = assembleStudentCopies(styled);
+			expect(assembled, style.name).not.toMatch(/counter\(page\)\.final\(/);
+			expect(assembled, style.name).not.toMatch(/both:\s*true/);
+		}
 	});
 
 	it('aucune copie : document vide', () => {

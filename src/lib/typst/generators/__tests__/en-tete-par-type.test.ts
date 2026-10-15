@@ -348,7 +348,7 @@ describe('PDF de l’élève : même en-tête que celui du prof', () => {
 		);
 		for (const present of [
 			WORDS.fr.name,
-			'*Classe :* 4e B',
+			'*Classe :* #"4e B";',
 			WORDS.fr.date,
 			WORDS.fr.duration,
 			WORDS.fr.calculatorForbidden,
@@ -384,7 +384,7 @@ describe('PDF de l’élève : même en-tête que celui du prof', () => {
 	it("fiche d'exercices avec l'option « Nom de l'élève » : le nom seul, sans classe ni date", () => {
 		const typst = generateStudentWorksheetTypst(studentView({ show_student_name: true }), 'none');
 		expect(typst).toContain(WORDS.fr.name);
-		expect(typst).not.toContain('*Classe :* 4e B');
+		expect(typst).not.toContain('*Classe :* #"4e B";');
 		expect(typst).not.toContain(WORDS.fr.date);
 	});
 });
