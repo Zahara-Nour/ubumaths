@@ -170,7 +170,9 @@ mouvement du curseur de tangente ; chaque cache se vide au-delà de 200 fenêtre
 `analyzeFunction` est **hybride** : quand l'AST est disponible (`buildAnalysisAST`), zéros et
 extremums viennent de `findCriticalZeros` / `findCriticalExtrema` (mathAST), exacts quand c'est
 possible (`exactX`, `exactY`, confiance 1,0) ; sinon balayage numérique (`findRoots`,
-`findExtrema`). Un échantillon presque nul n'est une racine que si |f| y est un **minimum local**
+`findExtrema`). Un nombre de plus de 10 chiffres significatifs (`0.3333333333333333`) coupe tout
+le chemin exact, asymptotes comprises (`hasUnwieldyNumber`) : l'arithmétique exacte y prenait
+plusieurs secondes, dans l'interface (2026-10-15). Un échantillon presque nul n'est une racine que si |f| y est un **minimum local**
 (`touchesZero`, mathAST) : un seuil absolu donnait à e^(−x) une racine par échantillon au-delà de
 x ≈ 28 (2026-10-15).
 
@@ -339,8 +341,9 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
   seul exige une convergence en moins de 137 299.
 - `getAllDiscontinuities` ne voit pas le pôle de 1/(ln x − 1) en x = e : trouvé à ±10, perdu
   au dézoom.
-- Avec un curseur, chaque valeur rebâtit l'AST : `singularPoints` refait l'analyse de continuité
-  (0,2 ms pour 1/(x − A), jusqu'à 33 ms sur une fraction de degré 3 multipliée par e⁻ˣ et ln x).
+- Avec un curseur, chaque valeur rebâtit l'AST et refait l'analyse : mesuré le 2026-10-15 avec
+  des valeurs arrondies au pas, 0,4 à 2,5 ms par cran sur les fonctions courantes, 22 ms sur une
+  fraction de degré 3 multipliée par e⁻ˣ et ln x.
 - Nuages de points : pas de forme de point distincte par place (décision Q1a, reportée).
 
 ---
