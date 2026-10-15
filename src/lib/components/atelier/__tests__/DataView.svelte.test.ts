@@ -387,6 +387,56 @@ describe('coller et copier (§4)', () => {
 		expect(document.activeElement).toBe(cellAt(container, 'C3'));
 	});
 
+	// Revue de la PR 2 (bloquant) : la frappe était perdue en cliquant ailleurs
+	it('taper puis cliquer une autre cellule garde la valeur', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+		const bar = container.querySelector('#atelier-barre-cellule') as HTMLInputElement;
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('12');
+		await userEvent.click(cellAt(container, 'B3')!);
+		await settle();
+		expect(atelier.cell(0, 1)).toBe('12');
+
+		await userEvent.click(cellAt(container, 'A2')!);
+		await userEvent.click(bar);
+		await userEvent.keyboard('7');
+		await userEvent.click(cellAt(container, 'B3')!);
+		await settle();
+		expect(atelier.cell(0, 2)).toBe('7');
+	});
+
+	it('coller une valeur dans la barre l’insère au curseur, comme un champ', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([{ column: 0, row: 1, text: '12' }]);
+		const { container } = await openData(atelier);
+		const bar = container.querySelector('#atelier-barre-cellule') as HTMLInputElement;
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.click(bar);
+		const data = clipboard(bar, 'paste', '5');
+		await settle();
+
+		expect(atelier.cell(0, 1)).toBe('12');
+		expect(data.getData('text/plain')).toBe('5');
+	});
+
+	// Revue : copier puis coller DANS la grille gardait le décimal (1/3 → 0,333…)
+	it('copier puis coller dans la grille garde le texte exact', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([{ column: 0, row: 1, text: '1/3' }]);
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('{ControlOrMeta>}c{/ControlOrMeta}');
+		await userEvent.click(cellAt(container, 'B1')!);
+		await userEvent.keyboard('{ControlOrMeta>}v{/ControlOrMeta}');
+		await settle();
+
+		expect(atelier.cell(1, 1)).toBe('1/3');
+	});
+
 	it('Suppr vide toute la zone sélectionnée', async () => {
 		const atelier = new Atelier();
 		atelier.editCells([
@@ -442,7 +492,7 @@ describe('coller et copier (§4)', () => {
 		// La marque UTF-8 en tête (EF BB BF), pour qu'Excel lise les accents ;
 		// `text()` la retire au décodage
 		const bytes = new Uint8Array((await blob?.arrayBuffer()) ?? new ArrayBuffer(0));
-		expect(bytes.slice(0, 3)).toEqual([0xef, 0xbb, 0xbf]);
+		expect(Array.from(bytes.slice(0, 3))).toEqual([0xef, 0xbb, 0xbf]);
 		expect(await blob?.text()).toBe('Taille;\r\n0,5;fille\r\n');
 	});
 

@@ -1331,22 +1331,37 @@ export class Atelier {
 				message: `${body.length} lignes à partir de la ligne ${row} : la grille en garde ${GRID_ROWS}. Rien n’a été collé.`
 			};
 		}
-		// Une case collée reste UNE case : son « ; » ne la répartit pas vers le bas
-		// (P2 vaut pour la frappe), ses retours à la ligne deviennent des espaces
+		const single = body.length === 1 && body[0].length === 1 && titles === null;
+		// Une case seule avec « ; » se répartit vers le bas, comme tapée (P2). Dans
+		// un tableau, une case avec « ; » est refusée : la relire `3,4` en ferait
+		// un faux nombre, la répartir écraserait les lignes du dessous (revue)
+		const withSemicolon = single ? undefined : body.flat().find((text) => text.includes(';'));
+		if (withSemicolon !== undefined) {
+			return {
+				ok: false,
+				message: `La case « ${withSemicolon} » contient un « ; » : sépare les cases par des tabulations (copie depuis un tableur). Rien n’a été collé.`
+			};
+		}
+		// Jamais tronqué en silence (Q3) : un titre trop long refuse le collage
+		const longTitle = titles?.find((title) => title.trim().length > MAX_TITLE_LENGTH);
+		if (longTitle !== undefined) {
+			return {
+				ok: false,
+				message: `Le titre « ${longTitle.trim().slice(0, 20)}… » dépasse ${MAX_TITLE_LENGTH} caractères. Rien n’a été collé.`
+			};
+		}
+		// Les retours à la ligne d'une case (Excel) deviennent des espaces
 		const edits = body.flatMap((cells, i) =>
 			cells.map((text, j) => ({
 				column: column + j,
 				row: row + i,
-				text: text
-					.replaceAll(';', ',')
-					.replace(/\s*\n\s*/g, ' ')
-					.trim()
+				text: text.replace(/\s*\n\s*/g, ' ').trim()
 			}))
 		);
 		const written = this.editCells(edits);
 		if (!written.ok) return written;
 		titles?.forEach((title, j) => {
-			if (title.trim() !== '') this.setTitle(column + j, title.trim().slice(0, MAX_TITLE_LENGTH));
+			if (title.trim() !== '') this.setTitle(column + j, title);
 		});
 		return { ok: true };
 	}

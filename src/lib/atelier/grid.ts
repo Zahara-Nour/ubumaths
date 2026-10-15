@@ -141,8 +141,8 @@ export function spreadText(row: number, text: string): { row: number; text: stri
  * Sheets, page web). Sans tabulation, des « ; » sur CHAQUE ligne d'un texte de
  * plusieurs lignes séparent des colonnes (CSV à la française) ; sinon, une
  * seule colonne. Une case entre guillemets garde ses tabulations, ses retours
- * à la ligne et ses `""` (Excel les écrit ainsi). La ligne vide finale ne
- * compte pas.
+ * à la ligne et ses `""` (Excel les écrit ainsi). Les lignes vides en tête et
+ * en fin ne comptent pas.
  */
 export function readTable(text: string): string[][] {
 	const lines = text.replace(/\r\n?/g, '\n');
@@ -152,7 +152,22 @@ export function readTable(text: string): string[][] {
 		: nonEmpty.length > 1 && nonEmpty.every((line) => line.includes(';'))
 			? ';'
 			: null;
+	// Un guillemet ouvrant jamais fermé (`"Le Cid` en tête de case) n'en est pas
+	// un : relu sans guillemets, il n'avale pas le reste du collage (revue)
+	const rows = splitTable(lines, separator, true) ?? splitTable(lines, separator, false)!;
+	// Les lignes vides en tête et en fin ne comptent pas (tableau copié d'une page)
+	const blank = (row: string[]) => row.every((cell) => cell.trim() === '');
+	while (rows.length > 0 && blank(rows[0])) rows.shift();
+	while (rows.length > 0 && blank(rows[rows.length - 1])) rows.pop();
+	return rows.map((cells) => cells.map((cell) => (separator === null ? cell : cell.trim())));
+}
 
+/** Découper en lignes et en cases ; `null` si un guillemet ouvert n'est jamais fermé. */
+function splitTable(
+	lines: string,
+	separator: string | null,
+	withQuotes: boolean
+): string[][] | null {
 	const rows: string[][] = [];
 	let row: string[] = [];
 	let field = '';
@@ -165,7 +180,7 @@ export function readTable(text: string): string[][] {
 				i++;
 			} else if (char === '"') quoted = false;
 			else field += char;
-		} else if (char === '"' && field === '') quoted = true;
+		} else if (withQuotes && char === '"' && field === '') quoted = true;
 		else if (char === separator) {
 			row.push(field);
 			field = '';
@@ -176,11 +191,12 @@ export function readTable(text: string): string[][] {
 			field = '';
 		} else field += char;
 	}
+	if (quoted) return null;
 	if (field !== '' || row.length > 0) {
 		row.push(field);
 		rows.push(row);
 	}
-	return rows.map((cells) => cells.map((cell) => (separator === null ? cell : cell.trim())));
+	return rows;
 }
 
 /**

@@ -51,6 +51,15 @@ describe('lire un tableau collé', () => {
 		]);
 	});
 
+	// Revue de la PR 2
+	it('un guillemet ouvrant sans fermeture n’avale pas le reste', () => {
+		expect(readTable('"Le Cid\n12\n15')).toEqual([['"Le Cid'], ['12'], ['15']]);
+	});
+
+	it('les lignes vides en tête et en fin (tableau d’une page web) ne comptent pas', () => {
+		expect(readTable('\nNom\tAge\n\nAli\t12\n\n')).toEqual([['Nom', 'Age'], [''], ['Ali', '12']]);
+	});
+
 	it('une première ligne de mots au-dessus de nombres est une ligne de titres', () => {
 		expect(
 			hasTitleRow([
@@ -161,13 +170,40 @@ describe('coller dans la grille', () => {
 		if (!pasted.ok) expect(pasted.message).toContain('Z');
 	});
 
-	it('un « ; » dans une case collée ne la répartit pas vers le bas', () => {
+	// P2 : « 12 ; 15 ; 9 » collé dans une case se répartit vers le bas, comme tapé
+	it('une seule case collée avec « ; » se répartit vers le bas (P2)', () => {
 		const a = new Atelier();
 
-		a.pasteTable(A, 1, [['a;b'], ['c']]);
+		a.pasteTable(A, 1, readTable('12;15'));
 
-		expect(a.cell(A, 1)).toBe('a,b');
-		expect(a.cell(A, 2)).toBe('c');
+		expect(a.cell(A, 1)).toBe('12');
+		expect(a.cell(A, 2)).toBe('15');
+	});
+
+	// Revue : « 3;4 » devenait 3,4 — un faux nombre, sans un mot
+	it('une case d’un tableau collé qui contient « ; » : refus entier, qui la cite', () => {
+		const a = new Atelier();
+
+		const pasted = a.pasteTable(A, 1, [
+			['3;4', 'x'],
+			['c', 'd']
+		]);
+
+		expect(pasted.ok).toBe(false);
+		if (!pasted.ok) expect(pasted.message).toContain('3;4');
+		expect(a.cell(A, 2)).toBe('');
+	});
+
+	// Revue : un titre trop long était coupé sans le dire (Q3)
+	it('un titre collé trop long refuse le collage, en le disant', () => {
+		const a = new Atelier();
+		const long = 'T'.repeat(MAX_TITLE_LENGTH + 1);
+
+		const pasted = a.pasteTable(A, 1, [[long], ['12']]);
+
+		expect(pasted.ok).toBe(false);
+		if (!pasted.ok) expect(pasted.message).toContain(`${MAX_TITLE_LENGTH}`);
+		expect(a.cell(A, 1)).toBe('');
 	});
 });
 

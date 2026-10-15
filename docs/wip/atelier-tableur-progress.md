@@ -47,3 +47,11 @@ Worktree `../ubumaths-wt-tableur`.
       relais hors écran (Safari), titre dans l'en-tête, « Télécharger en CSV », note sur `=`
       (oubli de la PR 1, phase 0 §lot 1)
 - [x] vrai presse-papiers de Chromium éprouvé (Ctrl+C puis Ctrl+V au clavier) ; capture Playwright
+- [x] revue (code-reviewer) : 8 findings corrigés, test rouge d'abord — **bloquant** : la frappe était
+      perdue en cliquant ailleurs (`pointerdown` passe avant le `blur`) ; coller dans la barre
+      remplaçait la cellule ; « 3;4 » collé devenait le nombre 3,4 ; copier-coller interne perdait
+      l'exactitude (`1/3` → `0,333…`, type `application/x-chiphre-grille`) ; guillemet non fermé ;
+      lignes vides d'un tableau de page web ; relais coincé (Ctrl sur Mac) ; titre collé tronqué.
+- ⚠️ Le hook pre-commit (`oxlint --fix`, `unicorn/no-useless-spread`) a réécrit `[...bytes.slice()]`
+  en `bytes.slice()` dans un test, qui comparait alors un `Uint8Array` à un tableau : relancer les
+  tests APRÈS le commit.

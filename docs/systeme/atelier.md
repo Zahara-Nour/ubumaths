@@ -361,12 +361,18 @@ gardée telle quelle, et la vue dit « Les formules arrivent dans un prochain lo
   recherche d'une colonne libre les évite.
 - **Coller** (`pasteTable`, `readTable`) : lignes puis tabulations (LibreOffice, Excel, Google
   Sheets, page web) ; sans tabulation, des « ; » sur chaque ligne d'un texte de plusieurs lignes
-  séparent des colonnes ; cases entre guillemets d'Excel comprises. Une première ligne de mots
+  séparent des colonnes ; cases entre guillemets d'Excel comprises (un guillemet jamais fermé n'en
+  est pas un) ; lignes vides en tête et en fin ignorées. Une première ligne de mots
   au-dessus de nombres devient les titres (`hasTitleRow`). Posé à partir du coin de la zone
   sélectionnée, tout ou rien ; un tableau qui déborde de A1-Z200 est refusé **entier**, avec sa
   taille (« 250 lignes à partir de la ligne 1 : la grille en garde 200. Rien n’a été collé. »).
-  Une case collée reste une case : son « ; » devient « , », ses retours à la ligne des espaces.
-- **Copier** (`tableText`) : la zone en tabulations et lignes ; **télécharger**
+  Une case **seule** collée avec « ; » se répartit vers le bas (P2, comme tapée) ; dans un tableau,
+  une case avec « ; » refuse le collage en la citant (la relire `3,4` en ferait un faux nombre) ;
+  un titre de plus de 40 caractères aussi (jamais tronqué). Les retours à la ligne d'une case
+  deviennent des espaces.
+- **Copier** (`tableText`) : la zone en tabulations et lignes pour les autres logiciels, et ses
+  textes **exacts** sous le type `application/x-chiphre-grille`, que le collage dans la grille
+  préfère (`1/3` reste `1/3`) ; **télécharger**
   (`csvText`, bouton « Télécharger en CSV », désactivé avec sa raison sur une grille vide) : « ; »
   entre les cases, titres en tête, CRLF, marque UTF-8. Les deux passent par `exportText` : un
   nombre sort en décimal à virgule (`1/4` → `0,25` ; un tableur lirait `1/4` comme une date) ; un
@@ -379,9 +385,12 @@ gardée telle quelle, et la vue dit « Les formules arrivent dans un prochain lo
   - flèche, Maj + clic ou glisser (Suppr la vide, Ctrl/⌘+C la copie, Ctrl/⌘+V colle à son coin),
     zone utilisée + 10 lignes et 3 colonnes (au moins 10 × 5), en-tête « nommer » / nom de liste
     « × » et titre, aperçu de chaque liste sous son en-tête, diagrammes sous la grille. La validation
-    (pas la frappe) recalcule. ⚠️ Safari n'envoie `paste` (et `copy` sans texte sélectionné) qu'à un
+    (pas la frappe) recalcule ; changer de cellule pendant une frappe la valide (une frappe refusée
+    est abandonnée, son refus reste affiché). Coller dans la barre ou pendant une frappe un texte
+    d'une seule case l'insère au curseur, comme un champ. ⚠️ Safari n'envoie `paste` (et `copy` sans texte sélectionné) qu'à un
     champ : Ctrl/⌘+V ou C sur une cellule donne le focus, le temps du geste, à un champ hors de
-    l'écran (`relay`).
+    l'écran (`relay`) ; une touche relâchée y rend le focus à la cellule (Ctrl sur Mac n'envoie ni
+    `copy` ni `paste`).
 - **Calcul ne lit pas une cellule** (Q1) : un calcul qui échoue et cite `B2` répond « B2 est une
   cellule de la grille : nomme sa colonne pour t’en servir. » (`cellCitedIn`, `calcul.ts`).
 

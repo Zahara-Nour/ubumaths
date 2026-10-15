@@ -39,6 +39,8 @@
 
 	/** Au moins 10 lignes et 5 colonnes, même vide ; la zone utilisée plus sa marge (§2). */
 	const FORMULAS_LATER = 'Les formules arrivent dans un prochain lot.';
+	/** Le format propre à la grille dans le presse-papiers : les textes exacts. */
+	const GRID_CLIPBOARD_TYPE = 'application/x-chiphre-grille';
 	const EMPTY_GRID = 'La grille est vide : rien à télécharger.';
 
 	const MIN_ROWS = 10;
@@ -255,7 +257,9 @@
 			focusSelected();
 			return;
 		}
-		// Ctrl/⌘ + C ou V : le geste passe par le relais (voir `relay`)
+		// Ctrl/⌘ + C ou V : le geste passe par le relais (voir `relay`). Une touche
+		// relâchée y rend le focus à la cellule, même sans `copy` ni `paste` (Ctrl
+		// sur Mac n'en envoie pas)
 		if ((event.ctrlKey || event.metaKey) && ['c', 'v'].includes(event.key.toLowerCase())) {
 			if (event.key.toLowerCase() === 'c' && relay !== undefined) {
 				relay.value = tableText(zoneTexts());
@@ -282,23 +286,23 @@
 	}
 
 	/**
-	 * Une frappe encore là en changeant de cellule est une frappe REFUSÉE (la
-	 * validation a eu lieu en quittant le champ) : elle ne suit pas la sélection
-	 * (revue : Entrée l'écrivait dans la nouvelle cellule). Cliquer dans la
-	 * cellule en cours d'édition, lui, ne l'abandonne pas.
+	 * Changer de cellule pendant une frappe la VALIDE (revue de la PR 2 : l'appui
+	 * du pointeur passe avant le `blur` du champ, et la frappe était perdue).
+	 * Une frappe refusée, elle, ne suit pas la sélection : elle est abandonnée,
+	 * le refus reste affiché. Appuyer dans la cellule en cours d'édition ne fait rien.
 	 */
-	function leaveRefusedDraft(column: number, row: number) {
+	function leaveDraft(column: number, row: number) {
 		if (editing === null || (selected.column === column && selected.row === row)) return;
+		if (commit()) return;
 		editing = null;
 		draft = '';
-		refusal = '';
 	}
 
 	/** Appui sur une cellule : la sélectionner (Maj : étendre la zone), et commencer un glisser. */
 	function pressCell(event: PointerEvent, column: number, row: number) {
 		// Dans le champ de la cellule en cours d'édition : déplacer le curseur, rien d'autre
 		if ((event.target as HTMLElement).closest('input')) return;
-		leaveRefusedDraft(column, row);
+		leaveDraft(column, row);
 		select(column, row, event.shiftKey);
 		dragging = event.button === 0 && !event.shiftKey;
 		focusSelected();
@@ -311,7 +315,7 @@
 	}
 
 	function doubleClickCell(column: number, row: number) {
-		leaveRefusedDraft(column, row);
+		leaveDraft(column, row);
 		select(column, row);
 		startEditing('cell', atelier.cell(column, row));
 	}
@@ -354,14 +358,38 @@
 		const inCell = target?.closest('td[role="gridcell"]') !== null;
 		if (!(inCell || target === relay || target === bar)) return;
 		const text = event.clipboardData?.getData('text/plain') ?? '';
-		// Une frappe en cours reçoit un texte d'une seule case comme un champ ordinaire
-		if (editing !== null && !/[\t\n\r]/.test(text)) return;
+		// La frappe en cours, ou la barre, reçoit un texte d'une seule case comme
+		// un champ ordinaire : au curseur (revue : coller dans la barre remplaçait
+		// la cellule)
+		if ((editing !== null || target === bar) && !/[\t\n\r]/.test(text)) return;
 		event.preventDefault();
 		editing = null;
 		draft = '';
-		const pasted = atelier.pasteTable(zone.left, zone.top, readTable(text));
+		const pasted = atelier.pasteTable(zone.left, zone.top, pastedTable(event, text));
 		refusal = pasted.ok ? '' : pasted.message;
 		backToCell();
+	}
+
+	/**
+	 * Le tableau collé : celui que la grille a copié, avec ses textes EXACTS
+	 * (`1/3` reste `1/3`), sinon le texte d'un autre logiciel.
+	 */
+	function pastedTable(event: ClipboardEvent, text: string): string[][] {
+		const own = event.clipboardData?.getData(GRID_CLIPBOARD_TYPE) ?? '';
+		if (own !== '') {
+			try {
+				const table: unknown = JSON.parse(own);
+				if (
+					Array.isArray(table) &&
+					table.every((line) => Array.isArray(line) && line.every((c) => typeof c === 'string'))
+				) {
+					return table as string[][];
+				}
+			} catch {
+				// Illisible : on relit le texte, comme un collage venu d'ailleurs
+			}
+		}
+		return readTable(text);
 	}
 
 	function copyFromGrid(event: ClipboardEvent) {
@@ -370,7 +398,10 @@
 		// Pendant une frappe, le champ copie son texte sélectionné, comme partout
 		if (!(inCell || target === relay) || editing !== null) return;
 		event.preventDefault();
-		event.clipboardData?.setData('text/plain', tableText(zoneTexts()));
+		const texts = zoneTexts();
+		// Pour les tableurs : des décimaux à virgule ; pour la grille : les textes exacts
+		event.clipboardData?.setData('text/plain', tableText(texts));
+		event.clipboardData?.setData(GRID_CLIPBOARD_TYPE, JSON.stringify(texts));
 		backToCell();
 	}
 
@@ -492,6 +523,7 @@
 		class="relais"
 		tabindex="-1"
 		aria-label="Presse-papiers de la grille"
+		onkeyup={backToCell}
 		onblur={() => relay !== undefined && (relay.value = '')}></textarea>
 
 	{#if empty}
