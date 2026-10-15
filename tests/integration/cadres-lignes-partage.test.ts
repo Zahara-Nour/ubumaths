@@ -362,10 +362,12 @@ describe('ce qui reste fermé', () => {
 	});
 
 	it('le visiteur anonyme ne lit toujours pas la table elle-même', async () => {
-		const { data } = await visitor
+		const { data, error } = await visitor
 			.from('worksheet_exercises')
 			.select('answer_frame_lines')
 			.eq('id', firstRowId);
+		// Refus par le droit (aucun GRANT à anon), pas une simple absence de ligne
+		expect(error?.code).toBe('42501');
 		expect(data ?? []).toHaveLength(0);
 	});
 });
