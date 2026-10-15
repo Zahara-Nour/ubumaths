@@ -452,7 +452,7 @@ const MAX_ASYMPTOTE_CANDIDATES = 64;
  *
  * ⚠️ L'évaluateur du grapheur rend `null` pour ±∞ : un pôle qui dépasse les
  * flottants avant la sonde fine (e^(1/x) en 0) est indécidable ici. C'est
- * l'analyse symbolique qui le tranche (`singularPoints`).
+ * l'analyse symbolique qui le tranche (`singularities`).
  *
  * ⚠️ Pas de seuil « |f| dépasse la fenêtre » : la sonde la plus fine est à
  * 1e-15 du pôle, donc |ln| n'y vaut que ~34. Un tel seuil faisait disparaître
@@ -583,9 +583,11 @@ function locatePole(evaluator: (x: number) => number | null, xLow: number, xHigh
  * @param viewport - The mathematical viewport bounds
  * @param functionId - ID of the function being analyzed
  * @param numSamples - Number of samples for initial sweep
- * @param knownCandidates - Points singuliers lus dans l'expression, examinés
- *   avant le balayage : retenus si une limite unilatérale y est infinie
- *   (symboliquement), ou à défaut si la sonde numérique les voit diverger
+ * @param known - Singularités lues dans l'expression, examinées avant le
+ *   balayage. Un point est retenu si une limite unilatérale y est infinie
+ *   (symboliquement), ou à défaut si la sonde numérique le voit diverger. Une
+ *   famille périodique est énumérée sur toute la fenêtre — ou pas du tout,
+ *   si ses pôles sont trop serrés pour être lus.
  * @returns Array of detected vertical asymptotes
  */
 export function findVerticalAsymptotes(
@@ -593,21 +595,43 @@ export function findVerticalAsymptotes(
 	viewport: Viewport,
 	functionId: string,
 	numSamples: number = DEFAULT_SAMPLES,
-	knownCandidates: readonly SingularPoint[] = []
+	known: Singularities = NO_SINGULARITIES
 ): VerticalAsymptote[] {
 	const asymptotes: VerticalAsymptote[] = [];
 	const step = (viewport.xMax - viewport.xMin) / numSamples;
 	const viewportHeight = Math.max(viewport.yMax - viewport.yMin, 1);
+	const push = (x: number): void => {
+		asymptotes.push({ x, functionId, behavior: determineBehavior(evaluator, x) });
+	};
 
 	// D'abord les candidats de l'expression : leur abscisse est exacte, et ils
 	// ne dépendent pas de l'échantillonnage. Dézoomé, le balayage tombe à ±3 du
 	// pôle de 1/x, où la courbe vaut ±0,3 : aucun saut, rien à examiner.
-	for (const { x, infiniteLimit } of knownCandidates) {
+	for (const { x, infiniteLimit } of known.points) {
 		if (x < viewport.xMin || x > viewport.xMax) continue;
 		if (!infiniteLimit && !divergesAt(evaluator, x)) continue;
 		if (asymptotes.some((a) => Math.abs(a.x - x) < step * 2)) continue;
-		asymptotes.push({ x, functionId, behavior: determineBehavior(evaluator, x) });
+		push(x);
 	}
+
+	// Familles périodiques : tous les pôles de la fenêtre, ou aucun. Trop
+	// serrés, ils font un mur de traits ; et en garder un seul (le balayage
+	// gardait 45,5π pour tan sur [−580 ; 600]) laisse croire qu'il est seul.
+	const unreadable: PoleFamily[] = [];
+	for (const family of known.families) {
+		const first = Math.ceil((viewport.xMin - family.base) / family.period);
+		const last = Math.floor((viewport.xMax - family.base) / family.period);
+		if (last - first + 1 > numSamples * MAX_PERIODIC_POLES_PER_SAMPLE) {
+			unreadable.push(family);
+			continue;
+		}
+		for (let k = first; k <= last; k++) push(family.base + k * family.period);
+	}
+	const onUnreadableFamily = (x: number): boolean =>
+		unreadable.some((family) => {
+			const k = Math.round((x - family.base) / family.period);
+			return Math.abs(x - (family.base + k * family.period)) < step * 2;
+		});
 
 	let prevX = viewport.xMin;
 	let prevY = evaluator(prevX);
@@ -632,13 +656,10 @@ export function findVerticalAsymptotes(
 
 			if (
 				divergesAt(evaluator, poleX) &&
+				!onUnreadableFamily(poleX) &&
 				!asymptotes.some((a) => Math.abs(a.x - poleX) < step * 2)
 			) {
-				asymptotes.push({
-					x: poleX,
-					functionId,
-					behavior: determineBehavior(evaluator, poleX)
-				});
+				push(poleX);
 			}
 		}
 
@@ -656,30 +677,59 @@ export interface SingularPoint {
 	readonly infiniteLimit: boolean;
 }
 
-/** Points singuliers par expression : l'analyse de continuité est coûteuse. */
-const singularPointsCache = new WeakMap<MathNode, readonly SingularPoint[]>();
+/** Des pôles réguliers : `base + k · period`, pour tout entier k. */
+export interface PoleFamily {
+	readonly base: number;
+	readonly period: number;
+}
+
+/** Ce que l'expression dit de ses singularités. */
+export interface Singularities {
+	readonly points: readonly SingularPoint[];
+	readonly families: readonly PoleFamily[];
+}
+
+const NO_SINGULARITIES: Singularities = { points: [], families: [] };
 
 /**
- * Les points où l'expression n'est pas définie ou pas continue : zéros de
- * dénominateurs, bords de domaine de ln.
+ * Au-delà d'un pôle périodique pour deux échantillons (100 dans une fenêtre
+ * ordinaire), les traits ne se lisent plus : on n'en dessine aucun.
+ */
+const MAX_PERIODIC_POLES_PER_SAMPLE = 0.5;
+
+/** Singularités par expression : l'analyse de continuité est coûteuse. */
+const singularitiesCache = new WeakMap<MathNode, Singularities>();
+
+/**
+ * Les singularités de l'expression : points isolés (zéros de dénominateurs,
+ * bords de domaine de ln) et familles périodiques (tan, 1/cos).
  *
- * ⚠️ Pas les pôles périodiques (tan) : l'analyse ne les énumère que sur
- * [−2π ; 2π]. Dézoomé, le dédoublonnage n'en gardait qu'un — un trait isolé
- * en −3π/2 au milieu d'une infinité de pôles. Le balayage s'en charge seul.
+ * Une famille n'est retenue que si tous ses représentants sont des pôles
+ * ('infinite') : l'analyse ne les énumère que sur [−2π ; 2π], et c'est leur
+ * base et leur période qui permettent de les placer partout.
  *
- * Tous les types sont rendus, trous compris : sans limite infinie établie,
- * c'est `divergesAt` qui tranche, et sin(x)/x en 0 ne diverge pas. Une
- * analyse en échec rend une liste vide — le balayage numérique reste alors
+ * Tous les types de points sont rendus, trous compris : sans limite infinie
+ * établie, c'est `divergesAt` qui tranche, et sin(x)/x en 0 ne diverge pas.
+ * Une analyse en échec ne rend rien — le balayage numérique reste alors
  * seul, comme avant.
  */
-function singularPoints(expression: MathNode): readonly SingularPoint[] {
-	const cached = singularPointsCache.get(expression);
+function singularities(expression: MathNode): Singularities {
+	const cached = singularitiesCache.get(expression);
 	if (cached) return cached;
 
 	const points: SingularPoint[] = [];
+	const families = new Map<string, PoleFamily & { allPoles: boolean }>();
 	for (const discontinuity of getAllDiscontinuities(expression, 'x') ?? []) {
 		try {
-			if (discontinuity.periodic) continue;
+			if (discontinuity.periodic) {
+				const base = evaluateNodeToApproximatedNumber(discontinuity.periodic.basePoint);
+				const period = Math.abs(evaluateNodeToApproximatedNumber(discontinuity.periodic.period));
+				if (!Number.isFinite(base) || !Number.isFinite(period) || period === 0) continue;
+				const key = `${base}|${period}`;
+				const allPoles = discontinuity.type === 'infinite' && (families.get(key)?.allPoles ?? true);
+				families.set(key, { base, period, allPoles });
+				continue;
+			}
 			const x = evaluateNodeToApproximatedNumber(discontinuity.point);
 			if (!Number.isFinite(x)) continue;
 			const { leftLimit, rightLimit } = discontinuity;
@@ -692,8 +742,14 @@ function singularPoints(expression: MathNode): readonly SingularPoint[] {
 		}
 	}
 
-	singularPointsCache.set(expression, points);
-	return points;
+	const result: Singularities = {
+		points,
+		families: [...families.values()]
+			.filter((family) => family.allPoles)
+			.map(({ base, period }) => ({ base, period }))
+	};
+	singularitiesCache.set(expression, result);
+	return result;
 }
 
 /**
@@ -1346,7 +1402,7 @@ export function analyzeFunction(
 			viewport,
 			functionId,
 			DEFAULT_SAMPLES,
-			ast ? singularPoints(ast.expression) : []
+			ast ? singularities(ast.expression) : NO_SINGULARITIES
 		),
 		horizontalAsymptotes:
 			exact?.horizontal ?? findHorizontalAsymptotes(evaluator, functionId, ast?.expression),

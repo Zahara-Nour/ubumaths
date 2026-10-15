@@ -1,7 +1,7 @@
 ---
 title: Atelier — tableur intégré, lot 2 : les formules (phase 0)
 date: 2026-10-15
-status: phase 0 EN ATTENTE DE VALIDATION
+status: phase 0 VALIDÉE (2026-10-15, « Je valide ») ; Q-L2-1 à Q-L2-4 décidées
 ---
 
 # Atelier — tableur intégré, lot 2 : les formules
@@ -135,19 +135,19 @@ fonctions du tableur (`SOMME(A2:A10)`, `SI`… — lot 4), Tabuler (lot 3), ALEA
 
 ---
 
-## Questions à trancher (lot 2)
+## Questions du lot 2 — tranchées par David (2026-10-15, « Je valide » : les quatre recos)
 
-- **Q-L2-1 — Une cellule en erreur.** Que montre la case elle-même ? **Reco : un mot court en
+- **Q-L2-1 — Une cellule en erreur.** Que montre la case elle-même ? **Décidé : un mot court en
   rouge — « erreur », « cycle » ou « vide ? »** —, la phrase entière sous la barre quand on la
   sélectionne. Les codes des tableurs (`#REF!`, `#DIV/0!`) ne disent rien à un élève de
   l'atelier.
 - **Q-L2-2 — Recopier : trois gestes.** Ctrl/⌘+D, la poignée à la souris, et un bouton
   « Recopier vers le bas… » (indispensable sur tablette, où une zone ne se sélectionne pas au
-  doigt). **Reco : les trois.**
+  doigt). **Décidé : les trois.**
 - **Q-L2-3 — Un nom inconnu dans une formule** (`=a*A2`, a pas encore créée). Dans les cartes, il
-  met en attente et propose un curseur. **Reco : dans une cellule, un refus qui dit comment
+  met en attente et propose un curseur. **Décidé : dans une cellule, un refus qui dit comment
   créer a**, sans curseur proposé : la grille calcule des nombres, elle ne crée pas d'objets.
-- **Q-L2-4 — Copier-coller une formule dans la grille.** **Reco : les références relatives se
+- **Q-L2-4 — Copier-coller une formule dans la grille.** **Décidé : les références relatives se
   décalent**, comme dans tous les tableurs (et comme la recopie) ; ce qui part vers un autre
   logiciel reste les valeurs.
 

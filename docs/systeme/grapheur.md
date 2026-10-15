@@ -187,12 +187,14 @@ dernières sondes, dispersion des extrapolations) vaut **0** (`snapToZero`) : ln
 `y = 0,0000862`. Les abscisses de sondage (`LARGE_X_VALUES`) ne sont volontairement **pas** des
 puissances de 10 (elles tombaient sur la période de `cos(πx/50)`).
 
-Asymptotes **verticales** (`findVerticalAsymptotes`) : les points singuliers de l'expression
-(`singularPoints`, via `getAllDiscontinuities` de mathAST, en cache par AST) passent d'abord ;
-une limite unilatérale infinie établie symboliquement suffit (e^(1/x) en 0, que l'évaluateur rend
-`null` dès qu'il dépasse les flottants), sinon la sonde numérique tranche (le trou de sin(x)/x
-est écarté). Les pôles périodiques (tan) en sont exclus : l'analyse ne les énumère que sur
-[−2π ; 2π]. Vient ensuite le balayage : intervalles où le domaine change ou dont le saut dépasse
+Asymptotes **verticales** (`findVerticalAsymptotes`) : les singularités de l'expression
+(`singularities`, via `getAllDiscontinuities` de mathAST, en cache par AST) passent d'abord. Un
+point isolé est retenu si une limite unilatérale infinie est établie symboliquement (e^(1/x) en 0,
+que l'évaluateur rend `null` dès qu'il dépasse les flottants), sinon la sonde numérique tranche
+(le trou de sin(x)/x est écarté). Une famille périodique de pôles (tan, 1/cos : base + k·période,
+que l'analyse n'énumère que sur [−2π ; 2π]) est placée sur **toute** la fenêtre — ou pas du
+tout au-delà d'un pôle pour deux échantillons (`MAX_PERIODIC_POLES_PER_SAMPLE`), et le balayage
+n'y ajoute alors aucun trait isolé (2026-10-15). Vient ensuite le balayage : intervalles où le domaine change ou dont le saut dépasse
 la fenêtre. `divergesAt` confirme chaque candidat en exigeant que |f| croisse d'au moins ×1,2 à
 **chaque** sonde fine (1e-7, 1e-11, 1e-15 × |x|) : eˣ passait sinon pour divergente dès x ≈ 139,
 une fausse asymptote par échantillon (2026-10-15).
@@ -331,9 +333,8 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
 - **`src/lib/components/grapheur/index.ts`** (barillet) n'a aucun importeur.
 - Les ré-exports `viewport.ts`, `bezier.ts`, `colors.ts` de `src/lib/grapheur/` sont des
   survivances « rétrocompatibilité » ; le code importe tantôt eux, tantôt `geometry-core`.
-- Dézoomé, les pôles de tan hors de [−2π ; 2π] restent au seul balayage, qui n'en voit que
-  ceux où un saut dépasse la hauteur de la fenêtre.
-  Mesuré : tan sur [−580 ; 600] n'a qu'un trait, en 45,5π, au milieu de ~375 pôles.
+- Une somme de pôles périodiques et isolés (tan(x) + 1/(x − 3)) : `getAllDiscontinuities` ne
+  rend que la famille de tan, le pôle 3 vient du seul balayage — perdu au dézoom.
 - Une limite lente que le moteur symbolique ne sait pas calculer reste invisible : le numérique
   seul exige une convergence en moins de 137 299.
 - `getAllDiscontinuities` ne voit pas le pôle de 1/(ln x − 1) en x = e : trouvé à ±10, perdu

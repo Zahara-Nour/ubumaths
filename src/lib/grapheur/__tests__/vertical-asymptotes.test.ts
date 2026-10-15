@@ -212,14 +212,65 @@ describe('asymptotes verticales quand on dézoome', () => {
 		expect(found[0]).toBeCloseTo(pole, 9);
 	});
 
-	it('ne retient pas les pôles de tan énumérés par l’analyse symbolique', () => {
-		// L'analyse symbolique n'énumère les pôles de tan que sur [−2π ; 2π] :
-		// les retenir dessinait un seul trait, en −3π/2. (Le balayage, lui, en
-		// trouve encore un isolé en 45,5π : écart connu, déjà là avant.)
-		expect(poles('\\tan(x)').filter((x) => Math.abs(x) < 2 * Math.PI)).toEqual([]);
-	});
-
 	it('ne signale pas le trou de sin(x)/x en 0', () => {
 		expect(poles('\\frac{\\sin(x)}{x}')).toEqual([]);
+	});
+});
+
+describe('pôles périodiques (tan, 1/cos)', () => {
+	const polesIn = (latex: string, window: Viewport): number[] => {
+		const parsed = parseFunction(latex);
+		if (!parsed.ast) throw new Error(`illisible : ${latex}`);
+		const analysis = analyzeFunction(
+			cachedEvaluator(parsed.ast),
+			window,
+			'f',
+			buildAnalysisAST(parsed.ast)
+		);
+		return analysis.verticalAsymptotes.map((a) => a.x).sort((a, b) => a - b);
+	};
+	const lattice = (base: number, period: number, xMin: number, xMax: number): number[] => {
+		const out: number[] = [];
+		for (let k = Math.ceil((xMin - base) / period); base + k * period <= xMax; k++) {
+			out.push(base + k * period);
+		}
+		return out;
+	};
+
+	it('trouve tous les pôles de tan sur [−100 ; 100], à leur abscisse exacte', () => {
+		// L'analyse symbolique ne les énumère que sur [−2π ; 2π] : le balayage
+		// n'en trouvait que 2 sur 64.
+		const found = polesIn('\\tan(x)', { xMin: -100, xMax: 100, yMin: -100, yMax: 100 });
+		const expected = lattice(Math.PI / 2, Math.PI, -100, 100);
+		expect(found.length).toBe(64);
+		found.forEach((x, k) => expect(x).toBeCloseTo(expected[k], 9));
+	});
+
+	it('trouve les pôles de tan(2x), de période π/2', () => {
+		const found = polesIn('\\tan(2x)', { xMin: -5, xMax: 5, yMin: -10, yMax: 10 });
+		const expected = lattice(Math.PI / 4, Math.PI / 2, -5, 5);
+		expect(found.length).toBe(expected.length);
+		found.forEach((x, k) => expect(x).toBeCloseTo(expected[k], 9));
+	});
+
+	it('ne dessine aucun pôle quand ils sont trop serrés, pas même un isolé', () => {
+		// Sur [−580 ; 600], ~375 pôles : le balayage en gardait un seul, en 45,5π.
+		const wide: Viewport = { xMin: -580, xMax: 600, yMin: -130, yMax: 480 };
+		expect(polesIn('\\tan(x)', wide)).toEqual([]);
+		expect(polesIn('\\frac{1}{\\cos(x)}', wide)).toEqual([]);
+	});
+
+	it('garde un pôle non périodique mêlé à ceux de tan', () => {
+		// mathAST ne rend que la famille de tan pour cette somme : 3 vient du
+		// balayage, qui ne doit pas le confondre avec un pôle de tan.
+		const found = polesIn('\\tan(x)+\\frac{1}{x-3}', {
+			xMin: -10,
+			xMax: 10,
+			yMin: -10,
+			yMax: 10
+		});
+		const expected = [...lattice(Math.PI / 2, Math.PI, -10, 10), 3].sort((a, b) => a - b);
+		expect(found.length).toBe(expected.length);
+		found.forEach((x, k) => expect(x).toBeCloseTo(expected[k], 6));
 	});
 });
