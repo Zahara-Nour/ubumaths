@@ -258,4 +258,4 @@ liste trouée en citant l'entrée).
 - [x] revue (2 importants, 3 mineurs, corrigés test rouge d'abord) : Ctrl+Z après le clic n'annulait
       rien (focus sur le bouton ; mon test cliquait d'abord une case) ; F9 maintenu vidait
       l'historique ; annonce non relue ; phrase de fusion à la fausse raison ; graine d'un geste groupé
-- [ ] PR, CI, merge
+- [x] PR 2 mergée : #1439 — **lot 5 complet ; le tableur intégré est complet (lots 1 à 5)**, pas en prod
