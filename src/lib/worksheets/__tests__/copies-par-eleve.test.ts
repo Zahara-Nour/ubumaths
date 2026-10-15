@@ -179,6 +179,13 @@ describe('la copie d’un élève : son nom à la ligne « Nom »', () => {
 		expect(typst).not.toContain('3e Soleil');
 	});
 
+	it('fiche d’exercices sans l’option « Nom de l’élève » : le nom s’imprime quand même', () => {
+		// Décision de David (2026-10-15) : une copie par élève porte toujours son nom ;
+		// l'option ne règle que la ligne à remplir du PDF commun
+		const typst = studentCopyTypst(view({ type: 'worksheet', show_student_name: false }), ONDINE);
+		expect(typst).toContain('*Nom :* #"Abricot Ondine";');
+	});
+
 	it('élève visé nommément, sans classe connue : ligne « Classe » à remplir', () => {
 		const typst = studentCopyTypst(view(), ANOUK);
 		expect(typst).toContain('*Nom :* #"Dupré Anouk";');

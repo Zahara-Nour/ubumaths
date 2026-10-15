@@ -33,7 +33,6 @@
 		getTrackedExternalImages
 	} from '$lib/ubumark/generators/typst-generator';
 	import { worksheetPdfFileName } from '$lib/worksheets/pdf-file-name';
-	import { worksheetHeader } from '$lib/worksheets/worksheet-header';
 	import {
 		assembleStudentCopies,
 		copyRecipientName,
@@ -105,12 +104,6 @@
 				.join(' — ')
 		}))
 	]);
-
-	/** L'en-tête de la fiche n'a pas de ligne « Nom » : les copies seront anonymes */
-	let nameNotPrinted = $derived.by(() => {
-		const view = copies[0]?.view;
-		return view ? !worksheetHeader(view.type, view).studentName : false;
-	});
 
 	// ============================================================================
 	// PRÉPARATION
@@ -310,17 +303,6 @@
 						</Button>
 					</div>
 				</div>
-			</div>
-		{/if}
-
-		{#if nameNotPrinted}
-			<div class="flex items-start gap-3 rounded-lg border border-warning/50 bg-warning/5 p-4">
-				<AlertCircle class="mt-0.5 h-5 w-5 text-warning" />
-				<p class="text-sm">
-					Cette fiche n’imprime pas le nom des élèves : son type n’a pas de ligne « Nom ». Pour une
-					fiche d’exercices, cochez « Nom de l’élève » dans ses options. Les copies restent dans
-					l’ordre alphabétique.
-				</p>
 			</div>
 		{/if}
 

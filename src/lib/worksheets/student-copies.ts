@@ -149,11 +149,14 @@ export async function fetchStudentCopyViews(
 /**
  * Le Typst de la copie d'un élève : exactement son PDF (énoncés seuls), avec
  * son nom à la ligne « Nom » et sa classe si elle est connue — sinon la ligne
- * reste à remplir (jamais les classes de toute l'affectation). Ce que
- * l'en-tête imprime reste décidé par le type de la fiche (`worksheetHeader`).
+ * reste à remplir (jamais les classes de toute l'affectation). Le reste de
+ * l'en-tête est décidé par le type de la fiche (`worksheetHeader`), mais le
+ * nom s'imprime toujours : une copie par élève porte le nom de son élève, même
+ * sur une fiche d'exercices sans l'option « Nom de l'élève » (décision de
+ * David, 2026-10-15 ; l'option ne règle que la ligne à remplir du PDF commun).
  */
 export function studentCopyTypst(view: StudentCopyView, recipient: CopyRecipient): string {
-	return generateStudentWorksheetTypst(view, 'none', {
+	return generateStudentWorksheetTypst({ ...view, show_student_name: true }, 'none', {
 		studentName: copyRecipientName(recipient) ?? undefined,
 		className: recipient.class_name
 	});
