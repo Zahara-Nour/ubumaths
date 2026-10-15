@@ -5,15 +5,26 @@
 	 * Une liste est une colonne NOMMÉE ; les colonnes sans nom gardent leurs
 	 * cellules dans la grille. Une cellule se lit comme une entrée de liste
 	 * (`1,5`, `1/6`, sinon un mot) ; `12 ; 15 ; 9` tapé dans une cellule se
-	 * répartit vers le bas (P2). Phase 0 : `docs/wip/atelier-tableur-phase0.md`.
+	 * répartit vers le bas (P2). Un tableau collé se pose à partir de la cellule
+	 * choisie ; copier écrit des décimaux à virgule (§4). Phase 0 :
+	 * `docs/wip/atelier-tableur-phase0.md`.
 	 *
 	 * La vue n'a aucun état de modèle : cellules et noms vivent dans l'`Atelier`.
-	 * Elle ne garde que la sélection et la frappe en cours.
+	 * Elle ne garde que la sélection (une cellule, ou une zone) et la frappe en cours.
 	 */
 	import { tick } from 'svelte';
 	import { useAtelier } from '$lib/atelier/context';
 	import { isList, type ListObject } from '$lib/atelier/types';
-	import { cellName, columnLetter, GRID_COLUMNS, GRID_ROWS } from '$lib/atelier/grid';
+	import {
+		cellName,
+		columnLetter,
+		csvText,
+		GRID_COLUMNS,
+		GRID_ROWS,
+		MAX_TITLE_LENGTH,
+		readTable,
+		tableText
+	} from '$lib/atelier/grid';
 	import { cascadeMessage } from '$lib/atelier/removal';
 	import type { RemovedWithDependents } from '$lib/atelier/atelier.svelte';
 	import { summarizeList } from '$lib/statistics/describe';
@@ -27,6 +38,11 @@
 	type Editing = 'cell' | 'bar' | null;
 
 	/** Au moins 10 lignes et 5 colonnes, même vide ; la zone utilisée plus sa marge (§2). */
+	const FORMULAS_LATER = 'Les formules arrivent dans un prochain lot.';
+	/** Le format propre à la grille dans le presse-papiers : les textes exacts. */
+	const GRID_CLIPBOARD_TYPE = 'application/x-chiphre-grille';
+	const EMPTY_GRID = 'La grille est vide : rien à télécharger.';
+
 	const MIN_ROWS = 10;
 	const MIN_COLUMNS = 5;
 	const ROW_MARGIN = 10;
@@ -35,6 +51,10 @@
 	const atelier = useAtelier();
 
 	let selected = $state({ column: 0, row: 1 });
+	/** L'autre coin d'une zone sélectionnée (Maj + flèche, Maj + clic, glisser), sinon `null`. */
+	let anchor = $state<{ column: number; row: number } | null>(null);
+	/** Un glisser de souris en cours, depuis une cellule. */
+	let dragging = $state(false);
 	let editing = $state<Editing>(null);
 	let draft = $state('');
 	let refusal = $state('');
@@ -47,6 +67,12 @@
 
 	let grid: HTMLElement | undefined = $state();
 	let bar: HTMLInputElement | undefined = $state();
+	/**
+	 * Le relais du presse-papiers. ⚠️ Safari n'envoie `paste` (et `copy` sans
+	 * texte sélectionné) qu'à un champ : Ctrl/⌘+V ou C sur une cellule donne le
+	 * focus à ce champ caché le temps du geste.
+	 */
+	let relay: HTMLTextAreaElement | undefined = $state();
 
 	const extent = $derived(atelier.usedExtent);
 	const columns = $derived(
@@ -71,6 +97,15 @@
 	const lists = $derived(atelier.objects.filter(isList));
 	const empty = $derived(extent.columns === 0);
 	const selectedText = $derived(atelier.cell(selected.column, selected.row));
+	/** La zone sélectionnée : la cellule seule, ou le rectangle jusqu'à l'ancre. */
+	const zone = $derived({
+		left: Math.min(selected.column, anchor?.column ?? selected.column),
+		right: Math.max(selected.column, anchor?.column ?? selected.column),
+		top: Math.min(selected.row, anchor?.row ?? selected.row),
+		bottom: Math.max(selected.row, anchor?.row ?? selected.row)
+	});
+	const inZone = (column: number, row: number) =>
+		column >= zone.left && column <= zone.right && row >= zone.top && row <= zone.bottom;
 
 	// -------------------------------------------------------------------------
 	// Aperçu d'une colonne nommée
@@ -123,7 +158,9 @@
 		cell?.focus();
 	}
 
-	function select(column: number, row: number) {
+	/** Sélectionner une cellule ; `extend` garde l'autre coin et sélectionne la zone. */
+	function select(column: number, row: number, extend = false) {
+		anchor = extend ? (anchor ?? { ...selected }) : null;
 		selected = {
 			column: Math.max(0, Math.min(GRID_COLUMNS - 1, column)),
 			row: Math.max(1, Math.min(GRID_ROWS, row))
@@ -158,8 +195,24 @@
 		return true;
 	}
 
-	function clearSelected() {
-		const edited = atelier.editCells([{ column: selected.column, row: selected.row, text: '' }]);
+	/** Les textes bruts de la zone, ligne par ligne. */
+	function zoneTexts(): string[][] {
+		const texts: string[][] = [];
+		for (let row = zone.top; row <= zone.bottom; row++) {
+			const line: string[] = [];
+			for (let column = zone.left; column <= zone.right; column++) {
+				line.push(atelier.cell(column, row));
+			}
+			texts.push(line);
+		}
+		return texts;
+	}
+
+	function clearZone() {
+		const edits = zoneTexts().flatMap((line, i) =>
+			line.map((_, j) => ({ column: zone.left + j, row: zone.top + i, text: '' }))
+		);
+		const edited = atelier.editCells(edits);
 		refusal = edited.ok ? '' : edited.message;
 	}
 
@@ -198,8 +251,21 @@
 		const arrow = arrows[event.key];
 		if (arrow !== undefined) {
 			event.preventDefault();
-			select(selected.column + arrow.column, selected.row + arrow.row);
+			// Maj + flèche étend la zone ; Maj + Entrée remonte, sans étendre
+			const extend = event.shiftKey && event.key !== 'Enter';
+			select(selected.column + arrow.column, selected.row + arrow.row, extend);
 			focusSelected();
+			return;
+		}
+		// Ctrl/⌘ + C ou V : le geste passe par le relais (voir `relay`). Une touche
+		// relâchée y rend le focus à la cellule, même sans `copy` ni `paste` (Ctrl
+		// sur Mac n'en envoie pas)
+		if ((event.ctrlKey || event.metaKey) && ['c', 'v'].includes(event.key.toLowerCase())) {
+			if (event.key.toLowerCase() === 'c' && relay !== undefined) {
+				relay.value = tableText(zoneTexts());
+				relay.select();
+			}
+			relay?.focus();
 			return;
 		}
 		if (event.key === 'F2') {
@@ -209,7 +275,7 @@
 		}
 		if (event.key === 'Delete' || event.key === 'Backspace') {
 			event.preventDefault();
-			clearSelected();
+			clearZone();
 			return;
 		}
 		// Taper remplace le contenu, comme dans un tableur
@@ -220,26 +286,36 @@
 	}
 
 	/**
-	 * Une frappe encore là en changeant de cellule est une frappe REFUSÉE (la
-	 * validation a eu lieu en quittant le champ) : elle ne suit pas la sélection
-	 * (revue : Entrée l'écrivait dans la nouvelle cellule). Cliquer dans la
-	 * cellule en cours d'édition, lui, ne l'abandonne pas.
+	 * Changer de cellule pendant une frappe la VALIDE (revue de la PR 2 : l'appui
+	 * du pointeur passe avant le `blur` du champ, et la frappe était perdue).
+	 * Une frappe refusée, elle, ne suit pas la sélection : elle est abandonnée,
+	 * le refus reste affiché. Appuyer dans la cellule en cours d'édition ne fait rien.
 	 */
-	function leaveRefusedDraft(column: number, row: number) {
+	function leaveDraft(column: number, row: number) {
 		if (editing === null || (selected.column === column && selected.row === row)) return;
+		if (commit()) return;
 		editing = null;
 		draft = '';
-		refusal = '';
 	}
 
-	function clickCell(column: number, row: number) {
-		leaveRefusedDraft(column, row);
-		select(column, row);
+	/** Appui sur une cellule : la sélectionner (Maj : étendre la zone), et commencer un glisser. */
+	function pressCell(event: PointerEvent, column: number, row: number) {
+		// Dans le champ de la cellule en cours d'édition : déplacer le curseur, rien d'autre
+		if ((event.target as HTMLElement).closest('input')) return;
+		leaveDraft(column, row);
+		select(column, row, event.shiftKey);
+		dragging = event.button === 0 && !event.shiftKey;
 		focusSelected();
 	}
 
+	/** Le glisser passe sur une cellule : la zone s'étend jusqu'à elle. */
+	function enterCell(event: PointerEvent, column: number, row: number) {
+		if (!dragging || (event.buttons & 1) === 0) return;
+		select(column, row, true);
+	}
+
 	function doubleClickCell(column: number, row: number) {
-		leaveRefusedDraft(column, row);
+		leaveDraft(column, row);
 		select(column, row);
 		startEditing('cell', atelier.cell(column, row));
 	}
@@ -267,6 +343,94 @@
 
 	function barBlur() {
 		if (editing === 'bar') commit();
+	}
+
+	// -------------------------------------------------------------------------
+	// Coller, copier, télécharger (§4)
+	// -------------------------------------------------------------------------
+
+	function backToCell() {
+		focusSelected();
+	}
+
+	function pasteInGrid(event: ClipboardEvent) {
+		const target = event.target as HTMLElement | null;
+		const inCell = target?.closest('td[role="gridcell"]') !== null;
+		if (!(inCell || target === relay || target === bar)) return;
+		const text = event.clipboardData?.getData('text/plain') ?? '';
+		// La frappe en cours, ou la barre, reçoit un texte d'une seule case comme
+		// un champ ordinaire : au curseur (revue : coller dans la barre remplaçait
+		// la cellule)
+		if ((editing !== null || target === bar) && !/[\t\n\r]/.test(text)) return;
+		event.preventDefault();
+		editing = null;
+		draft = '';
+		const pasted = atelier.pasteTable(zone.left, zone.top, pastedTable(event, text));
+		refusal = pasted.ok ? '' : pasted.message;
+		backToCell();
+	}
+
+	/**
+	 * Le tableau collé : celui que la grille a copié, avec ses textes EXACTS
+	 * (`1/3` reste `1/3`), sinon le texte d'un autre logiciel.
+	 */
+	function pastedTable(event: ClipboardEvent, text: string): string[][] {
+		const own = event.clipboardData?.getData(GRID_CLIPBOARD_TYPE) ?? '';
+		if (own !== '') {
+			try {
+				const table: unknown = JSON.parse(own);
+				if (
+					Array.isArray(table) &&
+					table.every((line) => Array.isArray(line) && line.every((c) => typeof c === 'string'))
+				) {
+					return table as string[][];
+				}
+			} catch {
+				// Illisible : on relit le texte, comme un collage venu d'ailleurs
+			}
+		}
+		return readTable(text);
+	}
+
+	function copyFromGrid(event: ClipboardEvent) {
+		const target = event.target as HTMLElement | null;
+		const inCell = target?.closest('td[role="gridcell"]') !== null;
+		// Pendant une frappe, le champ copie son texte sélectionné, comme partout
+		if (!(inCell || target === relay) || editing !== null) return;
+		event.preventDefault();
+		const texts = zoneTexts();
+		// Pour les tableurs : des décimaux à virgule ; pour la grille : les textes exacts
+		event.clipboardData?.setData('text/plain', tableText(texts));
+		event.clipboardData?.setData(GRID_CLIPBOARD_TYPE, JSON.stringify(texts));
+		backToCell();
+	}
+
+	/** Les cellules de la zone utilisée, et la ligne des titres s'il y en a un. */
+	function downloadCsv() {
+		const columnsUsed = Array.from({ length: extent.columns }, (_, i) => i);
+		const titles = columnsUsed.map((column) => atelier.titleOf(column));
+		const rowsUsed = Array.from({ length: extent.rows }, (_, i) =>
+			columnsUsed.map((column) => atelier.cell(column, i + 1))
+		);
+		const content = '\uFEFF' + csvText(titles.some((t) => t !== '') ? titles : null, rowsUsed);
+		const url = URL.createObjectURL(new Blob([content], { type: 'text/csv;charset=utf-8' }));
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = 'donnees-atelier.csv';
+		// Dans la page, et l'adresse libérée plus tard (même raison que l'export de Calcul)
+		document.body.append(link);
+		link.click();
+		link.remove();
+		setTimeout(() => URL.revokeObjectURL(url), 1000);
+	}
+
+	function titleChange(column: number, event: Event & { currentTarget: HTMLInputElement }) {
+		const set = atelier.setTitle(column, event.currentTarget.value);
+		refusal = set.ok ? '' : set.message;
+	}
+
+	function titleKeys(event: KeyboardEvent & { currentTarget: HTMLInputElement }) {
+		if (event.key === 'Enter') event.currentTarget.blur();
 	}
 
 	/** Un champ qui apparaît prend le focus, curseur en fin de texte. */
@@ -331,7 +495,9 @@
 	}
 </script>
 
-<div class="donnees">
+<svelte:window onpointerup={() => (dragging = false)} />
+
+<div class="donnees" onpaste={pasteInGrid} oncopy={copyFromGrid}>
 	<div class="barre">
 		<label class="adresse" for="atelier-barre-cellule">
 			{cellName(selected.column, selected.row)}
@@ -349,6 +515,16 @@
 		/>
 	</div>
 	<p class="refus" role="status">{refusal}</p>
+	{#if editing === null && selectedText.startsWith('=')}
+		<p class="note">{FORMULAS_LATER}</p>
+	{/if}
+	<textarea
+		bind:this={relay}
+		class="relais"
+		tabindex="-1"
+		aria-label="Presse-papiers de la grille"
+		onkeyup={backToCell}
+		onblur={() => relay !== undefined && (relay.value = '')}></textarea>
 
 	{#if empty}
 		<p class="consigne">
@@ -403,6 +579,17 @@
 									onclick={() => startNaming(column)}>nommer</button
 								>
 							{/if}
+							<input
+								class="titre"
+								type="text"
+								maxlength={MAX_TITLE_LENGTH}
+								autocomplete="off"
+								placeholder="titre"
+								aria-label="Titre de la colonne {letter}"
+								value={atelier.titleOf(column)}
+								onchange={(event) => titleChange(column, event)}
+								onkeydown={titleKeys}
+							/>
 						</th>
 					{/each}
 				</tr>
@@ -434,14 +621,18 @@
 						{#each columns as column (column)}
 							{@const address = cellName(column, row)}
 							{@const isSelected = selected.column === column && selected.row === row}
+							{@const selectedZone = inZone(column, row)}
 							{@const text = isSelected && editing === 'bar' ? draft : atelier.cell(column, row)}
 							<td
 								role="gridcell"
 								data-cell={address}
 								tabindex={isSelected ? 0 : -1}
-								aria-selected={isSelected}
+								aria-selected={selectedZone}
 								class:nombre={readListValue(text) !== null}
-								onclick={() => clickCell(column, row)}
+								class:zone={selectedZone && !isSelected}
+								class:active={isSelected}
+								onpointerdown={(event) => pressCell(event, column, row)}
+								onpointerenter={(event) => enterCell(event, column, row)}
 								ondblclick={() => doubleClickCell(column, row)}
 								onkeydown={cellKeys}
 							>
@@ -467,9 +658,20 @@
 		</table>
 	</div>
 
+	<div class="outils">
+		<button
+			type="button"
+			class="telecharger"
+			disabled={empty}
+			title={empty ? EMPTY_GRID : ''}
+			onclick={downloadCsv}>Télécharger en CSV</button
+		>
+	</div>
+
 	<p class="aide">
 		La virgule est décimale : <code>3,14</code> est un seul nombre. Une fraction comme
-		<code>1/6</code> se lit aussi.
+		<code>1/6</code> se lit aussi. Colle un tableau copié d’un tableur : il se pose à partir de la case
+		choisie.
 	</p>
 
 	<!-- Diagrammes vivants (outils statistiques, Q36) : recalculés à chaque
@@ -666,7 +868,8 @@
 		font-variant-numeric: tabular-nums;
 	}
 
-	td[aria-selected='true'] {
+	/* Le cadre pour la case active seule ; le reste de la zone est teinté */
+	td.active {
 		outline: 2px solid var(--color-primary);
 		outline-offset: -2px;
 	}
@@ -685,6 +888,66 @@
 		color: inherit;
 		font: inherit;
 		outline: none;
+	}
+
+	.note {
+		margin: 0;
+		font-size: 0.8125rem;
+		color: var(--color-muted-foreground);
+	}
+
+	/* Hors de l'écran, jamais caché : un champ caché ne recevrait pas le collage */
+	.relais {
+		position: fixed;
+		left: -9999px;
+		width: 1px;
+		height: 1px;
+		opacity: 0;
+	}
+
+	.titre {
+		display: block;
+		width: 100%;
+		min-width: 0;
+		margin-top: 0.125rem;
+		padding: 0 0.125rem;
+		border: 1px solid transparent;
+		border-radius: 0.1875rem;
+		background: transparent;
+		color: var(--color-foreground);
+		font-weight: 400;
+		font-size: 0.75rem;
+	}
+
+	.titre:hover,
+	.titre:focus {
+		border-color: var(--color-border);
+		background: var(--color-background);
+	}
+
+	/* Une teinte légère : le texte de la zone doit rester lisible */
+	td.zone {
+		background: color-mix(in srgb, var(--color-primary) 14%, var(--color-card));
+	}
+
+	.outils {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.telecharger {
+		padding: 0.25rem 0.625rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.25rem;
+		background: var(--color-background);
+		color: var(--color-foreground);
+		font-size: 0.8125rem;
+		cursor: pointer;
+	}
+
+	.telecharger:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
 	.aide {

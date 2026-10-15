@@ -6,12 +6,13 @@
  * sans nom gardent leurs cellules dans la grille de l'`Atelier`. Chaque
  * cellule a donc un seul propriétaire.
  *
- * Phase 0 : `docs/wip/atelier-tableur-phase0.md` (Q3, T1, P2).
+ * Phase 0 : `docs/wip/atelier-tableur-phase0.md` (Q3, T1, T4, P2, §4).
  *
  * @module atelier/grid
  */
 
 import { MAX_LIST_VALUES } from './types';
+import { readListValue } from '$lib/statistics/read-value';
 
 // =============================================================================
 // Types
@@ -36,6 +37,9 @@ export const GRID_ROWS = MAX_LIST_VALUES;
 
 /** Longueur d'une cellule (phase 0 §3) : une modalité en a 40, un nombre bien moins. */
 export const MAX_CELL_LENGTH = 200;
+
+/** Le titre d'une colonne (T4) : un libellé, pas une phrase. */
+export const MAX_TITLE_LENGTH = 40;
 
 /** Le séparateur des entrées d'une liste, tel que l'atelier l'écrit. */
 const ENTRY_SEPARATOR = ' ; ';
@@ -126,4 +130,125 @@ export function spreadText(row: number, text: string): { row: number; text: stri
 		row: row + offset,
 		text: piece
 	}));
+}
+
+// =============================================================================
+// Coller, copier, télécharger (§4)
+// =============================================================================
+
+/**
+ * Lire un tableau collé : lignes, puis tabulations (LibreOffice, Excel, Google
+ * Sheets, page web). Sans tabulation, des « ; » sur CHAQUE ligne d'un texte de
+ * plusieurs lignes séparent des colonnes (CSV à la française) ; sinon, une
+ * seule colonne. Une case entre guillemets garde ses tabulations, ses retours
+ * à la ligne et ses `""` (Excel les écrit ainsi). Les lignes vides en tête et
+ * en fin ne comptent pas.
+ */
+export function readTable(text: string): string[][] {
+	const lines = text.replace(/\r\n?/g, '\n');
+	const nonEmpty = lines.split('\n').filter((line) => line.trim() !== '');
+	const separator = lines.includes('\t')
+		? '\t'
+		: nonEmpty.length > 1 && nonEmpty.every((line) => line.includes(';'))
+			? ';'
+			: null;
+	// Un guillemet ouvrant jamais fermé (`"Le Cid` en tête de case) n'en est pas
+	// un : relu sans guillemets, il n'avale pas le reste du collage (revue)
+	const rows = splitTable(lines, separator, true) ?? splitTable(lines, separator, false)!;
+	// Les lignes vides en tête et en fin ne comptent pas (tableau copié d'une page)
+	const blank = (row: string[]) => row.every((cell) => cell.trim() === '');
+	while (rows.length > 0 && blank(rows[0])) rows.shift();
+	while (rows.length > 0 && blank(rows[rows.length - 1])) rows.pop();
+	return rows.map((cells) => cells.map((cell) => (separator === null ? cell : cell.trim())));
+}
+
+/** Découper en lignes et en cases ; `null` si un guillemet ouvert n'est jamais fermé. */
+function splitTable(
+	lines: string,
+	separator: string | null,
+	withQuotes: boolean
+): string[][] | null {
+	const rows: string[][] = [];
+	let row: string[] = [];
+	let field = '';
+	let quoted = false;
+	for (let i = 0; i < lines.length; i++) {
+		const char = lines[i];
+		if (quoted) {
+			if (char === '"' && lines[i + 1] === '"') {
+				field += '"';
+				i++;
+			} else if (char === '"') quoted = false;
+			else field += char;
+		} else if (withQuotes && char === '"' && field === '') quoted = true;
+		else if (char === separator) {
+			row.push(field);
+			field = '';
+		} else if (char === '\n') {
+			row.push(field);
+			rows.push(row);
+			row = [];
+			field = '';
+		} else field += char;
+	}
+	if (quoted) return null;
+	if (field !== '' || row.length > 0) {
+		row.push(field);
+		rows.push(row);
+	}
+	return rows;
+}
+
+/**
+ * Une première ligne de MOTS au-dessus de NOMBRES (`Taille ⇥ Masse` puis des
+ * mesures) : ce sont les titres des colonnes, pas des cellules (T4). Une
+ * colonne de mots seuls (`fille`, `garçon`) n'a pas de titre deviné.
+ */
+export function hasTitleRow(table: readonly (readonly string[])[]): boolean {
+	if (table.length < 2) return false;
+	const first = table[0].filter((cell) => cell.trim() !== '');
+	if (first.length === 0 || first.some((cell) => readListValue(cell) !== null)) return false;
+	return table.slice(1).some((row) => row.some((cell) => readListValue(cell) !== null));
+}
+
+/**
+ * Une cellule telle qu'elle sort vers un tableur : un nombre en décimal à
+ * virgule (`1/4` → `0,25` — un tableur lirait `1/4` comme une date), un mot
+ * tel quel. ⚠️ Un mot qui commence par `=`, `+`, `-` ou `@` est précédé d'une
+ * apostrophe : sinon le tableur l'exécuterait comme une formule en ouvrant le
+ * fichier (injection de formule), et une grille peut venir d'un lien reçu.
+ */
+export function exportText(text: string): string {
+	const value = readListValue(text);
+	if (value !== null) return String(value).replace('.', ',');
+	return /^[=+\-@]/.test(text) ? `'${text}` : text;
+}
+
+/** Une case entre guillemets quand elle contient le séparateur, un guillemet ou un retour. */
+function quotedField(text: string, separator: string): string {
+	return text.includes(separator) || /["\n\r]/.test(text)
+		? `"${text.replaceAll('"', '""')}"`
+		: text;
+}
+
+/** Le texte copié d'une zone : tabulations et lignes, comme le collent les tableurs. */
+export function tableText(rows: readonly (readonly string[])[]): string {
+	return rows
+		.map((row) => row.map((cell) => quotedField(exportText(cell), '\t')).join('\t'))
+		.join('\n');
+}
+
+/**
+ * Le fichier CSV de la grille : « ; » entre les cases et virgule décimale,
+ * comme l'attendent Excel et LibreOffice en français ; les titres en première
+ * ligne quand il y en a ; fins de ligne CRLF.
+ */
+export function csvText(
+	titles: readonly string[] | null,
+	rows: readonly (readonly string[])[]
+): string {
+	const lines = [...(titles === null ? [] : [titles]), ...rows].map((row) =>
+		row.map((cell) => quotedField(exportText(cell), ';')).join(';')
+	);
+	return lines.map((line) => `${line}\r\n`).join('');
 }

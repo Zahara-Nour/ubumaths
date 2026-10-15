@@ -6,7 +6,7 @@
  * sinon un mot). La virgule reste décimale (§4 E2 de la v1).
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import { tick } from 'svelte';
@@ -300,6 +300,227 @@ describe('nommer une colonne (§1)', () => {
 
 		expect(atelier.get('L')).toBeUndefined();
 		expect(cellAt(container, 'A2')?.textContent?.trim()).toBe('6');
+	});
+});
+
+// =============================================================================
+// PR 2 : coller, copier, télécharger, titres (§4, T4)
+// =============================================================================
+
+/** Un vrai `ClipboardEvent`, comme le navigateur l'envoie à la cellule qui a le focus. */
+function clipboard(target: Element, type: 'paste' | 'copy', text = ''): DataTransfer {
+	const data = new DataTransfer();
+	if (text !== '') data.setData('text/plain', text);
+	target.dispatchEvent(
+		new ClipboardEvent(type, { clipboardData: data, bubbles: true, cancelable: true })
+	);
+	return data;
+}
+
+describe('coller et copier (§4)', () => {
+	it('un tableau collé se pose à partir de la cellule, la ligne de mots devient les titres', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'B1')!);
+		clipboard(cellAt(container, 'B1')!, 'paste', 'Taille\tMasse\n152\t41,5\n160\t48\n');
+		await settle();
+
+		expect(cellAt(container, 'B2')?.textContent?.trim()).toBe('160');
+		expect(cellAt(container, 'C1')?.textContent?.trim()).toBe('41,5');
+		expect(atelier.titleOf(1)).toBe('Taille');
+		const title = headerOf(container, 'C')?.querySelector('input.titre') as HTMLInputElement;
+		expect(title.value).toBe('Masse');
+	});
+
+	it('un collage qui déborde est refusé entier, et le dit', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+		const tall = Array.from({ length: 250 }, (_, i) => `${i}`).join('\n');
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		clipboard(cellAt(container, 'A1')!, 'paste', tall);
+		await settle();
+
+		expect(container.querySelector('.refus')?.textContent).toContain('250 lignes');
+		expect(atelier.cell(0, 1)).toBe('');
+	});
+
+	it('Maj + flèche étend la sélection ; copier écrit des décimaux à virgule', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([
+			{ column: 0, row: 1, text: '1/4' },
+			{ column: 0, row: 2, text: '7' },
+			{ column: 1, row: 1, text: 'fille' }
+		]);
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('{Shift>}{ArrowDown}{ArrowRight}{/Shift}');
+		await settle();
+		expect(cellAt(container, 'B2')?.getAttribute('aria-selected')).toBe('true');
+		expect(cellAt(container, 'A1')?.getAttribute('aria-selected')).toBe('true');
+
+		const data = clipboard(cellAt(container, 'B2')!, 'copy');
+
+		expect(data.getData('text/plain')).toBe('0,25\tfille\n7\t');
+	});
+
+	// Le vrai chemin du clavier : Ctrl+C / Ctrl+V passent par le relais (Safari)
+	it('Ctrl+C puis Ctrl+V au clavier recopient la zone ailleurs', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([
+			{ column: 0, row: 1, text: '12' },
+			{ column: 0, row: 2, text: '15' }
+		]);
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('{Shift>}{ArrowDown}{/Shift}{ControlOrMeta>}c{/ControlOrMeta}');
+		await settle();
+		await userEvent.click(cellAt(container, 'C3')!);
+		await userEvent.keyboard('{ControlOrMeta>}v{/ControlOrMeta}');
+		await settle();
+
+		expect(atelier.cell(2, 3)).toBe('12');
+		expect(atelier.cell(2, 4)).toBe('15');
+		expect(document.activeElement).toBe(cellAt(container, 'C3'));
+	});
+
+	// Revue de la PR 2 (bloquant) : la frappe était perdue en cliquant ailleurs
+	it('taper puis cliquer une autre cellule garde la valeur', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+		const bar = container.querySelector('#atelier-barre-cellule') as HTMLInputElement;
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('12');
+		await userEvent.click(cellAt(container, 'B3')!);
+		await settle();
+		expect(atelier.cell(0, 1)).toBe('12');
+
+		await userEvent.click(cellAt(container, 'A2')!);
+		await userEvent.click(bar);
+		await userEvent.keyboard('7');
+		await userEvent.click(cellAt(container, 'B3')!);
+		await settle();
+		expect(atelier.cell(0, 2)).toBe('7');
+	});
+
+	it('coller une valeur dans la barre l’insère au curseur, comme un champ', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([{ column: 0, row: 1, text: '12' }]);
+		const { container } = await openData(atelier);
+		const bar = container.querySelector('#atelier-barre-cellule') as HTMLInputElement;
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.click(bar);
+		const data = clipboard(bar, 'paste', '5');
+		await settle();
+
+		expect(atelier.cell(0, 1)).toBe('12');
+		expect(data.getData('text/plain')).toBe('5');
+	});
+
+	// Revue : copier puis coller DANS la grille gardait le décimal (1/3 → 0,333…)
+	it('copier puis coller dans la grille garde le texte exact', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([{ column: 0, row: 1, text: '1/3' }]);
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('{ControlOrMeta>}c{/ControlOrMeta}');
+		await userEvent.click(cellAt(container, 'B1')!);
+		await userEvent.keyboard('{ControlOrMeta>}v{/ControlOrMeta}');
+		await settle();
+
+		expect(atelier.cell(1, 1)).toBe('1/3');
+	});
+
+	it('Suppr vide toute la zone sélectionnée', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([
+			{ column: 0, row: 1, text: '1' },
+			{ column: 0, row: 2, text: '2' },
+			{ column: 0, row: 3, text: '3' }
+		]);
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('{Shift>}{ArrowDown}{/Shift}{Delete}');
+		await settle();
+
+		expect(atelier.cell(0, 1)).toBe('');
+		expect(atelier.cell(0, 2)).toBe('');
+		expect(atelier.cell(0, 3)).toBe('3');
+	});
+
+	it('le titre d’une colonne se tape dans son en-tête', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+		const title = headerOf(container, 'A')!.querySelector('input.titre') as HTMLInputElement;
+
+		await userEvent.click(title);
+		await userEvent.keyboard('Taille{Enter}');
+		await settle();
+
+		expect(atelier.titleOf(0)).toBe('Taille');
+	});
+
+	it('« Télécharger en CSV » : « ; », virgule décimale, titres en tête', async () => {
+		const atelier = new Atelier();
+		atelier.setTitle(0, 'Taille');
+		atelier.editCells([
+			{ column: 0, row: 1, text: '1/2' },
+			{ column: 1, row: 1, text: 'fille' }
+		]);
+		const { container } = await openData(atelier);
+		let written: Blob | null = null;
+		const create = vi.spyOn(URL, 'createObjectURL').mockImplementation((blob) => {
+			written = blob as Blob;
+			return 'blob:grille';
+		});
+
+		const button = [...container.querySelectorAll('button')].find(
+			(b) => b.textContent?.trim() === 'Télécharger en CSV'
+		) as HTMLButtonElement;
+		button.click();
+		await settle();
+		create.mockRestore();
+
+		const blob = written as Blob | null;
+		// La marque UTF-8 en tête (EF BB BF), pour qu'Excel lise les accents ;
+		// `text()` la retire au décodage
+		const bytes = new Uint8Array((await blob?.arrayBuffer()) ?? new ArrayBuffer(0));
+		expect(Array.from(bytes.slice(0, 3))).toEqual([0xef, 0xbb, 0xbf]);
+		expect(await blob?.text()).toBe('Taille;\r\n0,5;fille\r\n');
+	});
+
+	it('« Télécharger en CSV » est désactivé, avec sa raison, quand la grille est vide', async () => {
+		const { container } = await openData();
+
+		const button = [...container.querySelectorAll('button')].find(
+			(b) => b.textContent?.trim() === 'Télécharger en CSV'
+		) as HTMLButtonElement;
+
+		expect(button.disabled).toBe(true);
+		expect(button.title).toContain('vide');
+	});
+
+	// Phase 0, lot 1 : `=` en tête est gardé, et la cellule le dit
+	it('une cellule qui commence par = annonce les formules à venir', async () => {
+		const atelier = new Atelier();
+		const { container } = await openData(atelier);
+
+		await userEvent.click(cellAt(container, 'A1')!);
+		await userEvent.keyboard('=A2+1{Enter}');
+		await userEvent.click(cellAt(container, 'A1')!);
+		await settle();
+
+		expect(atelier.cell(0, 1)).toBe('=A2+1');
+		expect(container.querySelector('.note')?.textContent).toContain(
+			'Les formules arrivent dans un prochain lot.'
+		);
 	});
 });
 

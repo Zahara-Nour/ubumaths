@@ -99,8 +99,10 @@ import {
 	entriesOf,
 	GRID_COLUMNS,
 	GRID_ROWS,
+	hasTitleRow,
 	isInGrid,
 	MAX_CELL_LENGTH,
+	MAX_TITLE_LENGTH,
 	readCellName,
 	spreadText,
 	type CellEdit
@@ -156,6 +158,8 @@ interface RemovalUndo {
 	readonly partnerChoices: [string, string][];
 	/** Les cellules sans nom d'avant : retirer un nom y verse la colonne (T3). */
 	readonly cells: [string, string][];
+	/** Les titres d'avant : supprimer une liste vide sa colonne, titre compris. */
+	readonly titles: [number, string][];
 }
 
 export interface Updated {
@@ -477,6 +481,9 @@ export class Atelier {
 	 */
 	private cells = new SvelteMap<string, string>();
 
+	/** Les titres des colonnes (T4), texte libre, de toute colonne — nommée ou non. */
+	private titles = new SvelteMap<number, string>();
+
 	/** Les entrées de chaque colonne nommée, une par ligne, relues une fois par changement. */
 	#entriesByColumn = $derived.by(() => {
 		const byColumn = new Map<number, string[]>();
@@ -570,8 +577,10 @@ export class Atelier {
 		// sinon la première libre
 		let column: number | undefined;
 		if (input.kind === 'list') {
+			// Une colonne DEMANDÉE (relecture, fusion, colonne nommée) peut porter un
+			// titre : il est le sien ; la recherche d'une colonne libre les évite
 			column =
-				input.column !== undefined && this.#isFreeColumn(input.column)
+				input.column !== undefined && this.#holdsNoData(input.column)
 					? input.column
 					: this.#firstFreeColumn();
 			if (column === undefined) return { ok: false, message: GRID_FULL };
@@ -1140,11 +1149,13 @@ export class Atelier {
 	}
 
 	/**
-	 * @param then - Ce qui fait partie du MÊME geste (retirer le nom d'une
-	 *   colonne y verse ses cellules) : fait avant de noter la révision, sinon
-	 *   « Annuler » se croirait dépassé par un changement venu d'ailleurs.
+	 * @param unnamed - Retirer le NOM d'une colonne : ce qui fait partie du même
+	 *   geste (y verser ses cellules), fait avant de noter la révision — sinon
+	 *   « Annuler » se croirait dépassé par un changement venu d'ailleurs. Sans
+	 *   lui, c'est une suppression : les colonnes des listes supprimées sont
+	 *   vidées, titre compris (T3).
 	 */
-	#removeWithDependents(name: string, then?: () => void): RemovedWithDependents | Refused {
+	#removeWithDependents(name: string, unnamed?: () => void): RemovedWithDependents | Refused {
 		if (this.get(name) === undefined) {
 			return { ok: false, message: `« ${displayName(name)} » n'existe pas.` };
 		}
@@ -1159,12 +1170,15 @@ export class Atelier {
 			([list, partner]) => gone.has(list) || gone.has(partner)
 		);
 		const cells = [...this.cells];
+		const titles = [...this.titles];
+		const columns = this.items.flatMap((o) => (isList(o) && gone.has(o.name) ? [o.column] : []));
 
 		this.items = this.items.filter((o) => !gone.has(o.name));
 		for (const [list] of charts) this.charts.delete(list);
 		for (const [list] of partnerChoices) this.partnerChoices.delete(list);
 		this.recomputeAll();
-		then?.();
+		if (unnamed !== undefined) unnamed();
+		else for (const column of columns) this.titles.delete(column);
 
 		const receipt: RemovedWithDependents = { ok: true, removed };
 		this.#lastRemoval = {
@@ -1173,7 +1187,8 @@ export class Atelier {
 			items,
 			charts: $state.snapshot(charts) as [string, ListChartState][],
 			partnerChoices,
-			cells
+			cells,
+			titles
 		};
 		return receipt;
 	}
@@ -1192,6 +1207,8 @@ export class Atelier {
 		// redevient la liste, sans garder une copie de ses cellules dans la grille
 		this.cells.clear();
 		for (const [address, text] of undo.cells) this.cells.set(address, text);
+		this.titles.clear();
+		for (const [column, title] of undo.titles) this.titles.set(column, title);
 		// Un diagramme remis entre-temps (hors `revision`, Q37) prime sur l'ancien
 		for (const [list, chart] of undo.charts) {
 			if (!this.charts.has(list)) this.charts.set(list, chart);
@@ -1264,6 +1281,89 @@ export class Atelier {
 		const entries = this.#entriesByColumn.get(column);
 		if (entries !== undefined) return entries[row - 1] ?? '';
 		return this.cells.get(cellName(column, row)) ?? '';
+	}
+
+	/** Le titre d'une colonne (T4), `''` sans titre. */
+	titleOf(column: number): string {
+		return this.titles.get(column) ?? '';
+	}
+
+	/** Poser le titre d'une colonne ; vide, le retirer. */
+	setTitle(column: number, text: string): { ok: true } | Refused {
+		if (!isInGrid(column, 1)) {
+			return { ok: false, message: 'Cette colonne est hors de la grille (A à Z).' };
+		}
+		const title = text.trim();
+		if (title.length > MAX_TITLE_LENGTH) {
+			return { ok: false, message: `Un titre garde au plus ${MAX_TITLE_LENGTH} caractères.` };
+		}
+		if (title === this.titleOf(column)) return { ok: true };
+		if (title === '') this.titles.delete(column);
+		else this.titles.set(column, title);
+		this.revision++;
+		return { ok: true };
+	}
+
+	/**
+	 * Coller un tableau à partir d'une cellule (§4), tout ou rien. Une première
+	 * ligne de mots au-dessus de nombres devient les titres des colonnes (T4).
+	 * Un tableau qui déborde de A1-Z200 est refusé ENTIER, avec sa taille :
+	 * jamais tronqué en silence (Q3).
+	 */
+	pasteTable(
+		column: number,
+		row: number,
+		table: readonly (readonly string[])[]
+	): { ok: true } | Refused {
+		const titles = hasTitleRow(table) ? table[0] : null;
+		const body = titles === null ? table : table.slice(1);
+		const width = Math.max(titles?.length ?? 0, ...body.map((cells) => cells.length));
+		if (width === 0) return { ok: true };
+		if (column + width > GRID_COLUMNS) {
+			return {
+				ok: false,
+				message: `${width} colonnes à partir de la colonne ${columnLetter(column)} : la grille s’arrête à la colonne Z. Rien n’a été collé.`
+			};
+		}
+		if (row + body.length - 1 > GRID_ROWS) {
+			return {
+				ok: false,
+				message: `${body.length} lignes à partir de la ligne ${row} : la grille en garde ${GRID_ROWS}. Rien n’a été collé.`
+			};
+		}
+		const single = body.length === 1 && body[0].length === 1 && titles === null;
+		// Une case seule avec « ; » se répartit vers le bas, comme tapée (P2). Dans
+		// un tableau, une case avec « ; » est refusée : la relire `3,4` en ferait
+		// un faux nombre, la répartir écraserait les lignes du dessous (revue)
+		const withSemicolon = single ? undefined : body.flat().find((text) => text.includes(';'));
+		if (withSemicolon !== undefined) {
+			return {
+				ok: false,
+				message: `La case « ${withSemicolon} » contient un « ; » : sépare les cases par des tabulations (copie depuis un tableur). Rien n’a été collé.`
+			};
+		}
+		// Jamais tronqué en silence (Q3) : un titre trop long refuse le collage
+		const longTitle = titles?.find((title) => title.trim().length > MAX_TITLE_LENGTH);
+		if (longTitle !== undefined) {
+			return {
+				ok: false,
+				message: `Le titre « ${longTitle.trim().slice(0, 20)}… » dépasse ${MAX_TITLE_LENGTH} caractères. Rien n’a été collé.`
+			};
+		}
+		// Les retours à la ligne d'une case (Excel) deviennent des espaces
+		const edits = body.flatMap((cells, i) =>
+			cells.map((text, j) => ({
+				column: column + j,
+				row: row + i,
+				text: text.replace(/\s*\n\s*/g, ' ').trim()
+			}))
+		);
+		const written = this.editCells(edits);
+		if (!written.ok) return written;
+		titles?.forEach((title, j) => {
+			if (title.trim() !== '') this.setTitle(column + j, title);
+		});
+		return { ok: true };
 	}
 
 	/**
@@ -1409,13 +1509,18 @@ export class Atelier {
 		});
 	}
 
-	/** Libre : ni liste, ni cellule sans nom. */
-	#isFreeColumn(column: number): boolean {
+	/** Ni liste, ni cellule sans nom : une liste peut s'y poser (un titre reste le sien). */
+	#holdsNoData(column: number): boolean {
 		if (!isInGrid(column, 1) || this.listAt(column) !== undefined) return false;
 		for (const address of this.cells.keys()) {
 			if (readCellName(address)?.column === column) return false;
 		}
 		return true;
+	}
+
+	/** Libre : ni liste, ni cellule sans nom, ni titre. */
+	#isFreeColumn(column: number): boolean {
+		return this.#holdsNoData(column) && !this.titles.has(column);
 	}
 
 	#firstFreeColumn(): number | undefined {
@@ -1501,10 +1606,17 @@ export class Atelier {
 		// Les cellules des colonnes sans nom, absentes quand il n'y en a pas : un
 		// atelier sans grille ne paie rien dans le lien
 		const cells = Object.fromEntries(this.cells);
+		const titles = Object.fromEntries(
+			[...this.titles].map(([column, title]) => [columnLetter(column), title])
+		);
+		const grid = {
+			...(this.cells.size > 0 && { cells }),
+			...(this.titles.size > 0 && { titles })
+		};
 		return {
 			version: ATELIER_STATE_VERSION,
 			objects,
-			...(this.cells.size > 0 && { grid: { cells } })
+			...(Object.keys(grid).length > 0 && { grid })
 		};
 	}
 
@@ -1523,8 +1635,15 @@ export class Atelier {
 		this.charts.clear();
 		this.partnerChoices.clear();
 		this.cells.clear();
+		this.titles.clear();
 		this.#laws.clear();
 		const skipped: SkippedObject[] = [];
+
+		// Les titres d'abord : ils appartiennent à leur colonne, nommée ou non
+		for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
+			const column = columnOfLetter(letter);
+			if (column !== null) this.titles.set(column, title);
+		}
 
 		// Les cellules sans nom AVANT les listes, hors des colonnes qu'une liste
 		// réclame : une liste rangée sans colonne (version 1) prend alors une
