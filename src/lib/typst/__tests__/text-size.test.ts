@@ -2,8 +2,9 @@
  * Taille du texte des PDF de fiche (accessibilité, élèves malvoyants)
  *
  * Trois paliers : normale (10 pt, le gabarit tel quel), grande (14 pt), très
- * grande (18 pt). Tout le gabarit grandit dans la même proportion ; au-delà
- * de la taille normale, la page passe sur une seule colonne.
+ * grande (18 pt). Tout le gabarit grandit dans la même proportion ; sa mise
+ * en page (colonnes) ne change pas : David n'a pas voulu de passage à une
+ * colonne (2026-10-16).
  */
 import { describe, it, expect } from 'vitest';
 import { textSizeOf, withTextSize, TEXT_SIZE_OPTIONS } from '../text-size';
@@ -43,44 +44,20 @@ describe('withTextSize', () => {
 		expect(typst).toContain('size: 18pt, lang:');
 	});
 
-	it('au-delà de la taille normale : une seule colonne (portrait et paysage)', () => {
+	it('les colonnes du style ne changent pas, à aucune taille (David, 2026-10-16)', () => {
 		for (const common of [STUDENT_STYLE_COMMON, STUDENT_LANDSCAPE_STYLE_COMMON]) {
-			const typst = withTextSize(common, 'large');
-			expect(typst).toContain('columns: 1,');
-			expect(typst).not.toContain('columns: 2');
+			for (const size of ['large', 'x_large'] as const) {
+				expect(withTextSize(common, size)).toContain('columns: 2,');
+			}
 		}
+		const body = '#set page(columns: 2)\n#columns(3, gutter: 20pt)[x]\n#grid(columns: 2, [a])';
+		expect(withTextSize(body, 'x_large')).toBe(
+			'#set page(columns: 2)\n#columns(3, gutter: 20pt)[x]\n#grid(columns: 2, [a])'
+		);
 	});
 
 	it('le paysage reste en paysage', () => {
 		expect(withTextSize(STUDENT_LANDSCAPE_STYLE_COMMON, 'large')).toContain('flipped: true');
-	});
-
-	it('seules les colonnes de la PAGE changent, pas celles d’une grille', () => {
-		const typst = '#set page(paper: "a4", columns: 2)\n#grid(columns: 2, [a], [b])';
-		expect(withTextSize(typst, 'large')).toBe(
-			'#set page(paper: "a4", columns: 1)\n#grid(columns: 2, [a], [b])'
-		);
-	});
-
-	it('un gabarit sans colonnes dans sa page ne prend pas celles d’une grille', () => {
-		const typst = '#set page(paper: "a4")\n#grid(columns: 3, [a])';
-		expect(withTextSize(typst, 'x_large')).toBe(typst);
-	});
-
-	it('colonnes posées dans le corps (#columns, columns.with) : une seule', () => {
-		const typst = '#columns(3, gutter: 20pt)[x]\n#show: columns.with(2)';
-		expect(withTextSize(typst, 'large')).toBe(
-			'#columns(1, gutter: 20pt)[x]\n#show: columns.with(1)'
-		);
-	});
-
-	it('la grille du pied de page, dans le #set page, ne bouge pas', () => {
-		const typst = '#set page(paper: "a4", footer: grid(columns: 3, [a], [b], [c]))';
-		expect(withTextSize(typst, 'large')).toBe(typst);
-		const withPageColumns = '#set page(footer: grid(columns: 3, [a]), columns: 2)';
-		expect(withTextSize(withPageColumns, 'large')).toBe(
-			'#set page(footer: grid(columns: 3, [a]), columns: 1)'
-		);
 	});
 
 	it('les tailles relatives (em) ne bougent pas : elles suivent déjà le texte', () => {
@@ -103,14 +80,5 @@ describe('TEXT_SIZE_OPTIONS : le menu', () => {
 			{ value: 'large', label: 'Grande' },
 			{ value: 'x_large', label: 'Très grande' }
 		]);
-	});
-});
-
-describe('filet entre les colonnes du style « Fiche élève »', () => {
-	// Sur une colonne, le filet du milieu barrerait le texte (vu sur le PDF le 2026-10-16)
-	it('dessiné seulement quand la page a plus d’une colonne', () => {
-		for (const common of [STUDENT_STYLE_COMMON, STUDENT_LANDSCAPE_STYLE_COMMON]) {
-			expect(common).toContain('background: context if page.columns > 1 {');
-		}
 	});
 });

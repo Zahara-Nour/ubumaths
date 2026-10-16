@@ -282,10 +282,10 @@ describe('taille du texte de chaque élève', () => {
 		expect(typst).toContain('columns: 2,');
 	});
 
-	it('élève en « très grande » : 18 pt, une colonne', () => {
+	it('élève en « très grande » : 18 pt, colonnes du style gardées', () => {
 		const typst = studentCopyTypst(view(), { ...ONDINE, text_size: 'x_large' });
 		expect(typst).toContain('size: 18pt, lang:');
-		expect(typst).toContain('columns: 1,');
+		expect(typst).toContain('columns: 2,');
 	});
 
 	it('un lot mélangé garde la taille de chacun, dans l’ordre', () => {
