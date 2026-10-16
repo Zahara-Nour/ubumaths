@@ -907,6 +907,17 @@ describe('taille du texte', () => {
 		expect(typst).not.toContain('size: 11pt');
 	});
 
+	// Styles qui posent leurs colonnes dans le corps (`#columns(N)[…]`), revue du 2026-10-16
+	it.each([
+		['Deux colonnes', DEFAULT_TEMPLATE_IDS.twoColumns, '#columns(2'],
+		['Paysage', DEFAULT_TEMPLATE_IDS.landscape, '#columns(3']
+	])('style « %s » en grande taille : une seule colonne', (_, templateId, columns) => {
+		expect(generate(undefined, templateId)).toContain(columns);
+		const typst = generate('large', templateId);
+		expect(typst).not.toContain(columns);
+		expect(typst).toContain('#columns(1');
+	});
+
 	it('la fonction héritée transmet la taille', () => {
 		const typst = generateWorksheetTypst({
 			worksheet: createMockWorksheet(),

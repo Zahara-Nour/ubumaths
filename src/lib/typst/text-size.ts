@@ -48,8 +48,11 @@ const POINT_SIZE = /(\bsize:\s*)(\d+(?:\.\d+)?)pt\b/g;
 /** Le réglage de la page (où vivent les colonnes) */
 const SET_PAGE = /#set page\(/g;
 
-/** Les colonnes, dans un `#set page(…)` */
-const PAGE_COLUMNS = /(\bcolumns:\s*)\d+/;
+/** L'argument `columns: N` de la page, lu au premier niveau de son appel */
+const COLUMNS_ARG = /^columns:\s*\d+/;
+
+/** Les colonnes posées dans le corps : `#columns(2, …)[…]`, `columns.with(3)` */
+const COLUMNS_CALL = /(\bcolumns(?:\.with)?\(\s*)\d+/g;
 
 // ============================================================================
 // FONCTIONS
@@ -73,7 +76,7 @@ export function withTextSize(typst: string, size: TextSize): string {
 		const value = Math.round(Number(points) * scale * 10) / 10;
 		return `${prefix}${value}pt`;
 	});
-	return withSingleColumnPages(scaled);
+	return withSingleColumnPages(scaled).replace(COLUMNS_CALL, (_, prefix: string) => `${prefix}1`);
 }
 
 /** Chaque `#set page(…)` sur une colonne ; une grille hors de la page ne bouge pas */
@@ -84,10 +87,33 @@ function withSingleColumnPages(typst: string): string {
 		const end = endOfTypstCall(typst, match.index);
 		if (end === null || match.index < cursor) continue;
 		const call = typst.slice(match.index, end);
-		result +=
-			typst.slice(cursor, match.index) +
-			call.replace(PAGE_COLUMNS, (_, prefix: string) => `${prefix}1`);
+		result += typst.slice(cursor, match.index) + withSingleColumnArg(call);
 		cursor = end;
 	}
 	return result + typst.slice(cursor);
+}
+
+/**
+ * L'appel avec `columns: 1` s'il porte l'argument à son premier niveau ; un
+ * `columns:` imbriqué (grille d'un pied de page) ne bouge pas
+ */
+function withSingleColumnArg(call: string): string {
+	let depth = 0;
+	let inString = false;
+	for (let i = 0; i < call.length; i++) {
+		const char = call[i];
+		if (inString) {
+			if (char === '\\') i++;
+			else if (char === '"') inString = false;
+			continue;
+		}
+		if (char === '"') inString = true;
+		else if (char === '(' || char === '[' || char === '{') depth++;
+		else if (char === ')' || char === ']' || char === '}') depth--;
+		else if (depth === 1 && /[\s,(]/.test(call[i - 1] ?? '')) {
+			const arg = COLUMNS_ARG.exec(call.slice(i));
+			if (arg) return `${call.slice(0, i)}columns: 1${call.slice(i + arg[0].length)}`;
+		}
+	}
+	return call;
 }

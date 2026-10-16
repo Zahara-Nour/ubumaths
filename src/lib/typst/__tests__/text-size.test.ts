@@ -67,6 +67,22 @@ describe('withTextSize', () => {
 		expect(withTextSize(typst, 'x_large')).toBe(typst);
 	});
 
+	it('colonnes posées dans le corps (#columns, columns.with) : une seule', () => {
+		const typst = '#columns(3, gutter: 20pt)[x]\n#show: columns.with(2)';
+		expect(withTextSize(typst, 'large')).toBe(
+			'#columns(1, gutter: 20pt)[x]\n#show: columns.with(1)'
+		);
+	});
+
+	it('la grille du pied de page, dans le #set page, ne bouge pas', () => {
+		const typst = '#set page(paper: "a4", footer: grid(columns: 3, [a], [b], [c]))';
+		expect(withTextSize(typst, 'large')).toBe(typst);
+		const withPageColumns = '#set page(footer: grid(columns: 3, [a]), columns: 2)';
+		expect(withTextSize(withPageColumns, 'large')).toBe(
+			'#set page(footer: grid(columns: 3, [a]), columns: 1)'
+		);
+	});
+
 	it('les tailles relatives (em) ne bougent pas : elles suivent déjà le texte', () => {
 		const typst = '#text(size: 1.5em)[Titre]';
 		expect(withTextSize(typst, 'large')).toBe(typst);

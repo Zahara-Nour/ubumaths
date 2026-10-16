@@ -168,7 +168,10 @@
 			worksheet = responseData as StudentWorksheetView;
 			previewMode = responseData.preview_mode || 'teacher';
 			previewStudentName = responseData.preview_student_name || null;
-			textSize = selectedStudentId ? await studentTextSize(selectedStudentId) : 'normal';
+			// La taille de l'élève demandé ; un autre choisi entre-temps : réponse périmée
+			const sizeFor = selectedStudentId;
+			const size = sizeFor ? await studentTextSize(sizeFor) : 'normal';
+			if (selectedStudentId === sizeFor) textSize = size;
 		} catch (err) {
 			console.error('Error fetching preview:', err);
 			error = err instanceof Error ? err.message : 'Erreur lors du chargement';
@@ -501,10 +504,11 @@
 						placeholder="Selectionnez un eleve..."
 						fitContent
 					/>
+					<!-- Inactif pendant le chargement : la taille affichée serait celle de l'élève précédent -->
 					<TextSizeSelect
 						value={textSize}
 						onchange={handleTextSizeChange}
-						disabled={isSavingTextSize}
+						disabled={isSavingTextSize || loading}
 					/>
 					{#if data.students.length > 0}
 						<!-- Une copie au nom de chaque élève visé (ADR 0030, lot 5) -->
