@@ -16,23 +16,32 @@ gardé. On ne passe par l'éditeur qu'ensuite, pour retoucher.
 
 ## 0. Quel modèle pour quelle tâche
 
-À régler **avant de commencer** : la session principale tourne sous Opus (`/model`). Haiku n'est pas
-recommandé pour ce chantier, où une erreur de contenu part en production.
+À régler **avant de commencer** : la session principale tourne sous Opus (`/model`), et **on ne
+change pas de modèle en cours de chantier**. Chaque bascule relit tout l'historique au tarif plein,
+car le cache de prompt est propre à chaque modèle. Haiku n'est pas recommandé : une erreur de contenu
+part en production.
 
-| Tâche                                                                                 | Modèle                        | Pourquoi                                                          |
-| ------------------------------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------- |
-| Cadrage, inventaire en base, `CONVENTIONS.md`, plan des fiches (§ 1, § 2)             | **Opus** (session principale) | Décisions de contenu et de programme                              |
-| Rédaction des énoncés et corrigés (agents `pedagogy-expert`, § 2.3)                   | **Opus**                      | Une erreur de calcul ou un corrigé faux part vite en production   |
-| `assert_all.py` et `pnpm check:ubumark` (§ 2.3)                                       | **Opus**                      | Vérification mathématique : c'est elle qui rattrape les erreurs   |
-| Relecture des pages PDF (§ 2.4)                                                       | **Opus** (session principale) | Les détecteurs ne voient pas les défauts de sens                  |
-| Correctif du générateur PDF et test rouge (§ 2.7)                                     | **Opus**                      | Code critique du rendu ; le test doit prouver le défaut           |
-| Modèles d'automatismes en JSON, `genericFunctions`, `points` (§ 2 bis)                | **Opus**                      | Contenu mathématique paramétré, formules vérifiées par le système |
-| Script de création copié et adapté (`create-*-1spe.ts`, § 2.5)                        | **Sonnet**                    | Travail mécanique : titres, identifiants, constantes              |
-| Simulation puis `--publier`, `regen-depuis-base`, compilation, débords (§ 2.5, § 2.6) | **Sonnet**                    | Commandes et lecture de sorties ; à arrêter au premier doute      |
-| Lecture des écarts de la simulation vers le plan                                      | **Opus**                      | Une décision de contenu, pas une commande                         |
+Une tâche qui n'a pas besoin de l'historique du chantier se confie à un **sous-agent** (`Agent` avec
+`model`) : il démarre avec un contexte vide et ne reçoit que son brief. Ne jamais utiliser `fork` pour
+une tâche mécanique : il hérite de tout le contexte et tourne sur le modèle courant.
 
-Un agent qui rédige sans modèle indiqué doit être lancé en Opus. Ne jamais déléguer à un modèle plus
-petit la décision d'un contenu mathématique.
+| Tâche                                                                                 | Lancée par                            | Modèle | Pourquoi                                                          |
+| ------------------------------------------------------------------------------------- | ------------------------------------- | ------ | ----------------------------------------------------------------- |
+| Cadrage, inventaire en base, `CONVENTIONS.md`, plan des fiches (§ 1, § 2)             | Session principale                    | Opus   | Décisions de contenu et de programme                              |
+| Rédaction des énoncés et corrigés (agents `pedagogy-expert`, § 2.3)                   | Sous-agent, brief précis              | Opus   | Une erreur de calcul ou un corrigé faux part vite en production   |
+| `assert_all.py` et `pnpm check:ubumark` (§ 2.3)                                       | Sous-agent, brief précis              | Opus   | Vérification mathématique : c'est elle qui rattrape les erreurs   |
+| Relecture des pages PDF (§ 2.4)                                                       | Session principale                    | Opus   | Les détecteurs ne voient pas les défauts de sens                  |
+| Correctif du générateur PDF et test rouge (§ 2.7)                                     | Session principale ou sous-agent Opus | Opus   | Code critique du rendu ; le test doit prouver le défaut           |
+| Modèles d'automatismes en JSON, `genericFunctions`, `points` (§ 2 bis)                | Session principale ou sous-agent Opus | Opus   | Contenu mathématique paramétré, formules vérifiées par le système |
+| Script de création copié et adapté (`create-*-1spe.ts`, § 2.5)                        | Sous-agent, brief court               | Sonnet | Travail mécanique : titres, identifiants, constantes              |
+| Simulation puis `--publier`, `regen-depuis-base`, compilation, débords (§ 2.5, § 2.6) | Sous-agent, brief court               | Sonnet | Commandes et lecture de sorties ; à arrêter au premier doute      |
+| Lecture des écarts de la simulation vers le plan                                      | Session principale                    | Opus   | Une décision de contenu, pas une commande                         |
+
+Un sous-agent de rédaction sans modèle indiqué doit être lancé en Opus. Ne jamais déléguer à un
+modèle plus petit la décision d'un contenu mathématique.
+
+**Sessions courtes** : une session par fiche ou par phase, avec le document de progression dans
+`docs/wip/` (crash-recovery), pour reprendre sans relire tout l'historique.
 
 ## 1. Ce qui existe (1re spécialité, brouillons FR + EN)
 
