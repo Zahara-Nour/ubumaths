@@ -68,6 +68,9 @@ Terminale maths complémentaires : **« Loi binomiale »** (thème `Loi binomial
 `f054c015` (7 sections, 14 ex.), applications `19848611` (4 sections, 8 ex., 3 illustrations) —
 `create-loi-binomiale-tcomp.ts` (les deux fiches lues depuis un `plan.json`, sections comprises).
 Coefficients binomiaux donnés dans l'énoncé : la formule avec factorielles est hors programme.
+**« Loi géométrique »** (thème `Loi géométrique`, 2026-10-16) — technique `69187540` (6 sections,
+10 ex.), applications `7e4ade83` (3 sections, 6 ex., 3 illustrations) — `create-loi-geometrique-tcomp.ts`
+(copie du script binomial). Variance de la loi géométrique hors programme ; espérance $1/p$ admise.
 
 Seconde : **« Fonctions : généralités »** `41737393` (thème `Fonctions`, 1 fiche, 3 sections : images,
 antécédents par le calcul, lectures graphiques ; 14 neufs + « Calcul d'images » `5b233301`) —

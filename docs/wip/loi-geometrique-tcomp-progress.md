@@ -1,7 +1,7 @@
 ---
 title: Fiches « Loi géométrique » T_COMP — point de reprise
 date: 2026-10-16
-status: simulation faite, publication en attente de l'accord de David
+status: publié en brouillon, PR en cours
 ---
 
 # Fiches « Loi géométrique », Terminale maths complémentaires
@@ -26,5 +26,5 @@ Plans et conventions : `docs/wip/loi-geometrique-tcomp/`. Rédaction dans le scr
 - [x] 1. Inventaire · [x] 2. Cadrage + CONVENTIONS + plans
 - [x] 3. Rédaction (2 agents Opus) : technique 106 assertions, applications 256 ; check:ubumark 0 problème
 - [x] 4. Rendu vert (`fiche:verifier`, 0 débord) + pages relues
-- [x] 5. Script `create-loi-geometrique-tcomp.ts` + simulation (2026-10-16 : 16 exercices, 20 variations, 9 sections, 6 images) · [ ] 6. Publication (accord de David)
-- [ ] 7. Vérification en base
+- [x] 5. Script `create-loi-geometrique-tcomp.ts` + simulation (2026-10-16 : 16 exercices, 20 variations, 9 sections, 6 images) · [x] 6. Publication (accord de David, 2026-10-16) : technique `69187540`, applications `7e4ade83`
+- [x] 7. Vérification en base : 6 + 3 sections, 10 + 6 exercices rangés, 20 variations, 3 exercices illustrés, statut draft, T_COMP
