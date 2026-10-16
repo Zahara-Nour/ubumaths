@@ -20,6 +20,7 @@ import {
 	CORRECTIONS_PART,
 	DEFAULT_TEMPLATES,
 	DEFAULT_TEMPLATE_IDS,
+	STUDENT_LANDSCAPE_STYLE_COMMON,
 	STUDENT_STYLE_COMMON,
 	STUDENT_STYLE_FORMS
 } from './default-templates';
@@ -58,14 +59,23 @@ const STYLE_COMMON = '{{style_common}}';
 /** Le style d'une fiche qui n'en a pas choisi (D7) */
 export const DEFAULT_STYLE_ID: string = DEFAULT_TEMPLATE_IDS.studentStyle;
 
+/**
+ * Code commun des styles qui ont leurs quatre formes : « Fiche élève » et sa
+ * version paysage partagent les gabarits, pas l'orientation de la page.
+ */
+const STUDENT_STYLE_COMMONS: Record<string, string> = {
+	[DEFAULT_TEMPLATE_IDS.studentStyle]: STUDENT_STYLE_COMMON,
+	[DEFAULT_TEMPLATE_IDS.studentStyleLandscape]: STUDENT_LANDSCAPE_STYLE_COMMON
+};
+
 /** Les styles fournis par Chiphre : un par gabarit intégré */
 export const BUILT_IN_STYLES: WorksheetStyle[] = DEFAULT_TEMPLATES.map((template) =>
-	template.id === DEFAULT_STYLE_ID
+	template.id in STUDENT_STYLE_COMMONS
 		? {
 				id: template.id,
 				name: template.name,
 				description: template.description,
-				common: STUDENT_STYLE_COMMON,
+				common: STUDENT_STYLE_COMMONS[template.id],
 				templates: STUDENT_STYLE_FORMS
 			}
 		: {
