@@ -11679,6 +11679,46 @@ export type Database = {
           },
         ]
       }
+      student_print_settings: {
+        Row: {
+          student_id: string
+          text_size: string
+          updated_at: string
+        }
+        Insert: {
+          student_id: string
+          text_size?: string
+          updated_at?: string
+        }
+        Update: {
+          student_id?: string
+          text_size?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_print_settings_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_print_settings_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_print_settings_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       student_warnings: {
         Row: {
           academic_period_id: string

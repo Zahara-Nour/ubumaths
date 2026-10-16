@@ -19,6 +19,8 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import TextSizeSelect from '$lib/components/worksheets/TextSizeSelect.svelte';
+	import { textSizeOf, type TextSize } from '$lib/typst/text-size';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { genericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
@@ -94,6 +96,11 @@
 	let modalOpen = $state(false);
 	let currentExerciseIndex = $state(0);
 
+	// Taille du texte du PDF (accessibilité) : celle de l'élève prévisualisé,
+	// enregistrée pour lui si on la change ; en vue prof, normale et ponctuelle
+	let textSize = $state<TextSize>('normal');
+	let isSavingTextSize = $state(false);
+
 	// PDF download state
 	let isPdfLoading = $state(false);
 	let showPdfDialog = $state(false);
@@ -161,11 +168,56 @@
 			worksheet = responseData as StudentWorksheetView;
 			previewMode = responseData.preview_mode || 'teacher';
 			previewStudentName = responseData.preview_student_name || null;
+			// La taille de l'élève demandé ; un autre choisi entre-temps : réponse périmée
+			const sizeFor = selectedStudentId;
+			const size = sizeFor ? await studentTextSize(sizeFor) : 'normal';
+			if (selectedStudentId === sizeFor) textSize = size;
 		} catch (err) {
 			console.error('Error fetching preview:', err);
 			error = err instanceof Error ? err.message : 'Erreur lors du chargement';
 		} finally {
 			loading = false;
+		}
+	}
+
+	/** La taille enregistrée pour l'élève ; normale si elle est illisible */
+	async function studentTextSize(studentId: string): Promise<TextSize> {
+		try {
+			const url = new URL('/api/worksheets/print-settings', window.location.origin);
+			url.searchParams.set('studentId', studentId);
+			const response = await fetch(url.toString());
+			if (!response.ok) return 'normal';
+			const body: unknown = await response.json();
+			return textSizeOf(
+				body && typeof body === 'object' && 'textSize' in body ? body.textSize : null
+			);
+		} catch {
+			return 'normal';
+		}
+	}
+
+	async function handleTextSizeChange(size: TextSize) {
+		const previous = textSize;
+		textSize = size;
+		const studentId = selectedStudentId;
+		if (!studentId) return;
+
+		isSavingTextSize = true;
+		try {
+			const response = await fetch('/api/worksheets/print-settings', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ studentId, textSize: size })
+			});
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			toaster.success(
+				`Taille du texte enregistrée pour ${previewStudentName ?? 'cet élève'} (toutes ses fiches)`
+			);
+		} catch {
+			textSize = previous;
+			toaster.error("La taille du texte n'a pas pu être enregistrée");
+		} finally {
+			isSavingTextSize = false;
 		}
 	}
 
@@ -210,7 +262,11 @@
 		// Copie d'un élève servant de vue prof : avertissement imprimé en tête (D6)
 		const individualCopyNotice = showsIndividualCopy;
 		const result = await generateAndDownloadPdf(
-			() => generateStudentWorksheetTypst(capturedWorksheet, ending, { individualCopyNotice }),
+			() =>
+				generateStudentWorksheetTypst(capturedWorksheet, ending, {
+					individualCopyNotice,
+					textSize
+				}),
 			filename
 		);
 
@@ -447,6 +503,12 @@
 						items={studentOptions}
 						placeholder="Selectionnez un eleve..."
 						fitContent
+					/>
+					<!-- Inactif pendant le chargement : la taille affichée serait celle de l'élève précédent -->
+					<TextSizeSelect
+						value={textSize}
+						onchange={handleTextSizeChange}
+						disabled={isSavingTextSize || loading}
 					/>
 					{#if data.students.length > 0}
 						<!-- Une copie au nom de chaque élève visé (ADR 0030, lot 5) -->

@@ -75,6 +75,7 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 | `src/lib/typst/generators/notebook-generator.ts`, `src/lib/typst/notebook-pdf.ts` | Même chaîne pour les **carnets** Python (`generateNotebookPdf`) — hors fiches, voir [python/](python/).                                                                                                                                                                                        |
 | `src/lib/typst/templates/default-templates.ts`                                    | 13 gabarits intégrés (ids `DEFAULT_TEMPLATE_IDS`), formes du style « Fiche élève » (`STUDENT_STYLE_FORMS`, `STUDENT_STYLE_COMMON`, et `STUDENT_LANDSCAPE_STYLE_COMMON` pour sa version paysage), `renderTemplate`.                                                                             |
 | `src/lib/typst/templates/styles.ts`                                               | Styles (`BUILT_IN_STYLES`, `BUILT_IN_STYLE_OPTIONS`, `DEFAULT_STYLE_ID`, `isBuiltInStyle`), style retenu (`styleIdOf`) et `resolveTemplate` : le gabarit d'une forme dans le style de la fiche.                                                                                                |
+| `src/lib/typst/text-size.ts`                                                      | **Taille du texte** (accessibilité) : `TEXT_SIZES` (`normal`, `large`, `x_large`), `TEXT_SIZE_OPTIONS` (menu), `textSizeOf` (inconnue → normale), `withTextSize` (gabarit transformé, voir « Taille du texte »).                                                                               |
 | `src/lib/typst/labels.ts`                                                         | Habillage traduit : `documentLabels(locale)`, `labelPlaceholders(locale)`.                                                                                                                                                                                                                     |
 | `src/lib/typst/worksheet-palette.ts`                                              | Charte commune prof / élève : `BADGE_FILL`, `SECTION_COLOR`, `exerciseBadge`.                                                                                                                                                                                                                  |
 | `src/lib/typst/image-loader.ts`                                                   | Le WASM ne lit pas d'URL : `fetchExternalImages`, `urlToVirtualPath` (→ `/virtual/images/…`, posé par `mapShadow`), conversion **WebP → PNG** par canvas.                                                                                                                                      |
@@ -98,6 +99,7 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 | `src/lib/server/worksheets/assignment-recipients.ts` | `isStudentOfAssignment` : l'élève est-il destinataire (nommé ou membre actif d'une classe visée) ? Aperçu « vue élève » et corrigé d'après la copie d'un élève.                                                                                                                 |
 | `src/lib/server/worksheets/citations.ts`             | `fetchWorksheetCitations` : où la fiche est citée (cahier de texte, chapitres).                                                                                                                                                                                                 |
 | `src/lib/server/worksheets/worksheet-styles.ts`      | Styles d'une fiche (lot 3b), client du prof : `listWorksheetStyles` (menu « Style »), `loadStyleTemplate` (fiche d'un style du prof) ; gabarit et style liés (D10) : `insertTemplateWithStyle`, `syncTemplateStyle`, `countWorksheetsUsingTemplate`, `deleteTemplateWithStyle`. |
+| `src/lib/server/worksheets/print-settings.ts`        | Taille du texte d'un élève (`student_print_settings`), client de l'appelant : `loadTextSize`, `loadTextSizes` (par paquets de 200 ; lecture en échec → normale, jamais une erreur), `saveTextSize` (relit la ligne écrite : zéro ligne = refus de la RLS → faux).               |
 | `src/lib/server/validation/worksheets.ts`            | Zod des routes : `createWorksheetSchema`, `worksheetConfigSchema`, `createWorksheetExerciseSchema`, `reorderExercisesSchema`, `updateCorrectionSettingsSchema`…                                                                                                                 |
 | `src/lib/types/worksheets.ts`                        | Types de lignes et JSONB (`WorksheetConfig`, `VariantConfig`, `ResolvedExercise`, `InstanceData`), gardes `asWorksheetConfig`, `asInstanceData`, `toWorksheetRow`, langue `worksheetLocale`, `localizedText`.                                                                   |
 
@@ -113,7 +115,8 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
   une séance visible du cahier partagé (`resolveWorksheetByShareToken`, `security definer`) ; même
   404 pour tout refus.
 - API : `src/routes/api/worksheets/` (CRUD, `sections/`, `exercises/`, `duplicate/`,
-  `exercise-number/[number]/`, `assignments/`, `instances/`, `templates/`, `pdf/`),
+  `exercise-number/[number]/`, `assignments/`, `instances/`, `templates/`, `pdf/`,
+  `print-settings/` : taille du texte d'un élève, GET / PUT),
   `src/routes/api/student/worksheets/` (vue résolue, signalements),
   `src/routes/api/teacher/chapters/[id]/worksheets/` (fiche dans un chapitre).
 
@@ -362,6 +365,27 @@ d'en-tête pleine largeur, plus injectés. Fiche + corrections (`withCorrections
 (`MATH_LIMITS_SETUP`) sont posés en tête de tout document produit par un gabarit. Un gabarit qui
 contient `{{exercises_badge}}` reçoit la numérotation en carré ambre (charte élève) ; sinon
 `{{exercises}}` en titres gras. Format : A4 partout, même en anglais (ADR 0030).
+
+**Taille du texte** (accessibilité, élèves malvoyants ; demande de David, 2026-10-16 ;
+`src/lib/typst/text-size.ts`) : trois paliers, **Normale** (le gabarit tel quel, 10 pt pour « Fiche
+élève »), **Grande** (× 1,4 : 14 pt) et **Très grande** (× 1,8 : 18 pt). Option `textSize` du
+générateur (`WorksheetGeneratorOptions`, `GenerateTypstParams`, `StudentPdfOptions`). Le **gabarit**
+est transformé avant d'y placer les exercices (`withTextSize`) : chaque `size: Npt` est multiplié
+(titres, pied de page ; les tailles en `em` suivent seules) et chaque `#set page(…)` passe à
+`columns: 1` (une grille hors de la page ne bouge pas). Les exercices n'ont aucune taille fixe : ils
+suivent le texte, maths comprises. Un gabarit écrit par un prof est transformé de la même façon.
+Où la taille est choisie :
+
+- **réglage de l'élève** (`student_print_settings`, voir [base-de-donnees.md](base-de-donnees.md)) :
+  son PDF (menu « Taille du texte » à côté du bouton PDF, qu'il peut changer : enregistré pour
+  toutes ses fiches), sa copie nominative (`CopyRecipient.text_size`, lue par la page `copies/` ;
+  un lot mélangé garde la taille de chacun), l'aperçu « vue élève » du prof (`preview/`, où changer
+  la taille d'un élève prévisualisé **l'enregistre pour lui**) ;
+- **au coup par coup** : `PdfPreview` (aperçu générique du prof, lecteur du cahier public compris)
+  et l'aperçu `preview/` en vue prof — normale à chaque ouverture, jamais enregistrée.
+  Tests : `typst/__tests__/text-size.test.ts`, `generators/__tests__/worksheet-generator.test.ts`
+  (« taille du texte »), `worksheets/__tests__/copies-par-eleve.test.ts`,
+  `server/worksheets/__tests__/print-settings.test.ts`, route `api/worksheets/print-settings/__tests__/`.
 
 **L'en-tête selon le type** (ADR 0030, lot 1) : le générateur appelle `worksheetHeader` et pose les
 conditions des gabarits : `show_title` (toujours), `show_identity` (bloc nom / classe / date),

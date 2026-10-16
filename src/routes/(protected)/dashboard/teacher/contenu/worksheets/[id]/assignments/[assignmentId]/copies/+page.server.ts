@@ -12,6 +12,7 @@
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
 import { sortCopyRecipients } from '$lib/worksheets/student-copies';
+import { loadTextSizes } from '$lib/server/worksheets/print-settings';
 import type { PageServerLoad } from './$types';
 
 const paramsSchema = z.object({
@@ -64,9 +65,19 @@ export const load: PageServerLoad = async ({ params, locals, fetch }) => {
 		throw error(500, 'Impossible de charger les élèves de l’affectation');
 	}
 
+	// La taille du texte de chaque élève (accessibilité) : sa copie sort à sa taille
+	const sizes = await loadTextSizes(
+		locals.supabase,
+		body.data.students.map((student) => student.id)
+	);
+	const students = body.data.students.map((student) => ({
+		...student,
+		text_size: sizes.get(student.id) ?? 'normal'
+	}));
+
 	return {
 		worksheetId,
 		assignmentId,
-		students: sortCopyRecipients(body.data.students)
+		students: sortCopyRecipients(students)
 	};
 };

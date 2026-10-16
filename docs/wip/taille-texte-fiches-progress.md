@@ -22,6 +22,12 @@ Demande de David (2026-10-16) : pouvoir agrandir le texte des PDF de fiche, surt
 
 ## Avancement
 
-- [ ] PR 1 : migration `20261016104200_taille_texte_fiches_eleve` + `tests/integration/taille-texte-fiches-eleve.test.ts`
-- [ ] security-auditor, preuve rouge sans migration, `db:migrate`, `db:types`
-- [ ] PR 2 : gabarits (taille + colonnes), PDF élève, ZIP, impression prof par élève, menu prof, réglage élève + prof
+- [x] PR 1 #1456 : migration `20261016104200_taille_texte_fiches_eleve` + tests d'intégration (12)
+- [x] security-auditor (rien de bloquant), preuve rouge, `db:migrate` (prod, 2026-10-16), `db:types`
+- [ ] PR 2 : `text-size.ts` (gabarit × 1,4 / × 1,8, une colonne, filet conditionnel), PDF élève
+      (menu enregistré), copies nominatives, aperçu `preview/` (enregistre pour l'élève
+      prévisualisé), `PdfPreview` (ponctuel), API `print-settings`.
+- Réglage prof par élève : **dans l'aperçu d'affectation** (« Prévisualiser comme »), pas sur
+  une page élève (il n'en existe pas ; le journal ne montre que les récompenses). À confirmer
+  avec David.
+- Vérifié à l'œil : PDF compilés par le compilateur de prod, 3 tailles × portrait / paysage.

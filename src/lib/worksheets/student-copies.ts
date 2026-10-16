@@ -21,6 +21,7 @@
 
 import type { StudentWorksheetView } from '$lib/types/worksheets';
 import { generateStudentWorksheetTypst } from './student-worksheet-typst';
+import type { TextSize } from '$lib/typst/text-size';
 
 // ============================================================================
 // TYPES
@@ -33,6 +34,8 @@ export interface CopyRecipient {
 	last_name: string | null;
 	/** La classe visée dont il est membre ; `null` : visé nommément, classe inconnue */
 	class_name: string | null;
+	/** Taille du texte de ses fiches (accessibilité) ; absente : normale */
+	text_size?: TextSize;
 }
 
 /** La copie d'un élève telle que l'aperçu la rend */
@@ -158,7 +161,8 @@ export async function fetchStudentCopyViews(
 export function studentCopyTypst(view: StudentCopyView, recipient: CopyRecipient): string {
 	return generateStudentWorksheetTypst({ ...view, show_student_name: true }, 'none', {
 		studentName: copyRecipientName(recipient) ?? undefined,
-		className: recipient.class_name
+		className: recipient.class_name,
+		textSize: recipient.text_size
 	});
 }
 

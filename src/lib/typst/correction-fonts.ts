@@ -52,7 +52,7 @@ const TOP_LEVEL_SET_TEXT = /^#set text\(/gm;
  * Position juste après l'appel Typst qui commence à `start` (parenthèses
  * équilibrées, chaînes ignorées), ou null s'il n'est pas fermé.
  */
-function endOfTypstCall(typst: string, start: number): number | null {
+export function endOfTypstCall(typst: string, start: number): number | null {
 	const open = typst.indexOf('(', start);
 	if (open === -1) return null;
 

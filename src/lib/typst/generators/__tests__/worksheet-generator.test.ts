@@ -874,3 +874,58 @@ describe('sens de AB de l’exercice (capital_pairs)', () => {
 		expect(render(instanceWithPrimes('product'))).toBe(before);
 	});
 });
+
+// Accessibilité (élèves malvoyants, 2026-10-16) : le gabarit grandit, les exercices suivent
+describe('taille du texte', () => {
+	const generate = (textSize?: 'normal' | 'large' | 'x_large', templateId: string | null = null) =>
+		new WorksheetGenerator(createMockConfig(), undefined, undefined, { textSize }).generate({
+			worksheet: createMockWorksheet({ template_id: templateId }),
+			instance: createMockInstance()
+		}).typstContent;
+
+	it('sans réglage : « Fiche élève » à 10 pt sur deux colonnes, comme avant', () => {
+		const typst = generate();
+		expect(typst).toContain('size: 10pt, lang:');
+		expect(typst).toContain('columns: 2,');
+	});
+
+	it('grande : 14 pt sur une colonne, exercices compris', () => {
+		const typst = generate('large');
+		expect(typst).toContain('size: 14pt, lang:');
+		expect(typst).toContain('columns: 1,');
+		expect(typst).not.toContain('columns: 2,');
+		expect(typst).toContain('2x + 3 = 7');
+	});
+
+	it('très grande : 18 pt', () => {
+		expect(generate('x_large')).toContain('size: 18pt, lang:');
+	});
+
+	it('un autre style grandit aussi (Standard, 11 pt → 15,4 pt)', () => {
+		const typst = generate('large', DEFAULT_TEMPLATE_IDS.standard);
+		expect(typst).toContain('size: 15.4pt');
+		expect(typst).not.toContain('size: 11pt');
+	});
+
+	// Styles qui posent leurs colonnes dans le corps (`#columns(N)[…]`), revue du 2026-10-16
+	it.each([
+		['Deux colonnes', DEFAULT_TEMPLATE_IDS.twoColumns, '#columns(2'],
+		['Paysage', DEFAULT_TEMPLATE_IDS.landscape, '#columns(3']
+	])('style « %s » en grande taille : une seule colonne', (_, templateId, columns) => {
+		expect(generate(undefined, templateId)).toContain(columns);
+		const typst = generate('large', templateId);
+		expect(typst).not.toContain(columns);
+		expect(typst).toContain('#columns(1');
+	});
+
+	it('la fonction héritée transmet la taille', () => {
+		const typst = generateWorksheetTypst({
+			worksheet: createMockWorksheet(),
+			instance: createMockInstance(),
+			config: createMockConfig(),
+			mode: 'worksheet',
+			textSize: 'x_large'
+		});
+		expect(typst).toContain('size: 18pt, lang:');
+	});
+});

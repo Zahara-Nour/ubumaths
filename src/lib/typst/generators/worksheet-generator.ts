@@ -51,6 +51,7 @@ import { documentLabels, labelPlaceholders, type DocumentLabels } from '../label
 import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
 import { localizedText, worksheetLocale } from '$lib/types/worksheets';
 import { CORRECTION_FONT_RULES, withCorrectionFonts } from '../correction-fonts';
+import { withTextSize, type TextSize } from '../text-size';
 import { documentFromTeacherCopy } from '$lib/worksheets/document/teacher-adapter';
 import {
 	renderDocumentPreamble,
@@ -117,6 +118,11 @@ export interface WorksheetGeneratorOptions {
 	 * David, 2026-10-14). Sans effet hors de la fiche.
 	 */
 	inlineCorrections?: boolean;
+	/**
+	 * Taille du texte (accessibilité, `text-size.ts`) : le gabarit grandit et
+	 * passe sur une colonne au-delà de la taille normale. Normale par défaut.
+	 */
+	textSize?: TextSize;
 }
 
 /**
@@ -138,6 +144,8 @@ export interface GenerateTypstParams {
 	withCorrections?: 'answers' | 'correction';
 	/** Voir `WorksheetGeneratorOptions.inlineCorrections` */
 	inlineCorrections?: boolean;
+	/** Voir `WorksheetGeneratorOptions.textSize` */
+	textSize?: TextSize;
 }
 
 // ============================================================================
@@ -290,7 +298,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 */
 	private generateFromTemplate(input: WorksheetGeneratorInput, resolved: ResolvedTemplate): string {
 		const { worksheet } = input;
-		const templateContent = resolved.content;
+		// À la taille du texte voulue, avant d'y placer les exercices (qui n'ont
+		// aucune taille fixe : ils suivent celle du texte)
+		const templateContent = withTextSize(resolved.content, this.options.textSize ?? 'normal');
 		const mode = this.pdfMode;
 		const ending = mode === 'worksheet' ? this.options.withCorrections : undefined;
 
@@ -483,7 +493,8 @@ export function generateWorksheetTypst(params: GenerateTypstParams): string {
 			correctionFonts: params.correctionFonts,
 			individualCopyNotice: params.individualCopyNotice,
 			withCorrections: params.withCorrections,
-			inlineCorrections: params.inlineCorrections
+			inlineCorrections: params.inlineCorrections,
+			textSize: params.textSize
 		}
 	);
 
