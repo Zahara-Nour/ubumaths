@@ -124,7 +124,7 @@ export const DOMAINS: Domain[] = [
 			'student_checklist_progress'
 		]
 	},
-	{ title: 'Fiches', match: ['worksheet'] },
+	{ title: 'Fiches', match: ['worksheet', 'student_print_settings'] },
 	{
 		title: 'Évaluations',
 		match: ['evaluation', 'parody_evaluations', 'test_answers', 'test_sessions']
