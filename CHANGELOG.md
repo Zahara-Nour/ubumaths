@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.37.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.36.0...v0.37.0) (2026-10-16)
+
+### ✨ Features
+
+- **fiches:** exercice « Les crêpes au plafond » pour la fiche loi binomiale T_COMP ([5ee41ed](https://github.com/Zahara-Nour/ubumaths/commit/5ee41ed74f48bb02468fbf09aaf709559af6a809))
+- **fiches:** script de création des fiches loi binomiale T_COMP ([d9f7435](https://github.com/Zahara-Nour/ubumaths/commit/d9f7435d43c211ff0260e5e5d0980327436e6a7c))
+- **fiches:** script de création des fiches loi géométrique T_COMP ([c6aaaf5](https://github.com/Zahara-Nour/ubumaths/commit/c6aaaf54c2934a247f8d640dd946731b549c719f))
+- **fiches:** style « 2 colonnes - paysage », Fiche élève en A4 paysage ([40c2d59](https://github.com/Zahara-Nour/ubumaths/commit/40c2d59286d5af99b6ff6f302aa876d42241af9a))
+
+### 🐛 Bug Fixes
+
+- **fiches:** crêpes au plafond en section Synthèse et approfondissement, partie B renommée ([b887af0](https://github.com/Zahara-Nour/ubumaths/commit/b887af02eee1ac641ed6c10682e1d3b3d2f62078))
+- **fiches:** crêpes au plafond, les deux classes de 14 élèves nommées ([85757b0](https://github.com/Zahara-Nour/ubumaths/commit/85757b0a582785233e673d23718cab1a55d7b808))
+
+### 📚 Documentation
+
+- **fiches:** fiches loi binomiale T_COMP publiées en brouillon ([2c73e5a](https://github.com/Zahara-Nour/ubumaths/commit/2c73e5ab701093611b7a4ff6e4b065028ded9e8e))
+- **fiches:** fiches loi géométrique T_COMP publiées en brouillon ([8e0a5e8](https://github.com/Zahara-Nour/ubumaths/commit/8e0a5e883015265712f6ad55c49f4790cd37e646))
+- **fiches:** loi binomiale T_COMP, plan et conventions ([7f4bea8](https://github.com/Zahara-Nour/ubumaths/commit/7f4bea8c23b78b6122ca24710fdaa8a4c608dbb7))
+- **fiches:** loi binomiale T_COMP, simulation faite ([84eae52](https://github.com/Zahara-Nour/ubumaths/commit/84eae52b4f563a7a199625baf2cbb0bbf426e03e))
+- **fiches:** loi géométrique T_COMP, plan et conventions ([6935aa8](https://github.com/Zahara-Nour/ubumaths/commit/6935aa8863d3252fd39ed0c09059ec4f402b92ee))
+- **fiches:** modèle à utiliser pour chaque tâche de la démarche ([aa65f56](https://github.com/Zahara-Nour/ubumaths/commit/aa65f56e54ddc7c327808c38a641a976d1fb438e))
+- **fiches:** sous-agents plutôt que bascule de modèle, sessions courtes ([bdb690f](https://github.com/Zahara-Nour/ubumaths/commit/bdb690fbd2da24515b21579003ce6eefc3db8744))
+- **fiches:** style « 2 colonnes - paysage » dans la doc système ([fde43ee](https://github.com/Zahara-Nour/ubumaths/commit/fde43ee9729643bed429c0456a844a60bd37dc12))
+- **verifications:** exercice « Les crêpes au plafond » publié, à relire ([68a4d85](https://github.com/Zahara-Nour/ubumaths/commit/68a4d8531c7d7f804420f9372d194beafb2b625a))
+- **verifications:** fiches loi géométrique T_COMP à relire ([f35a643](https://github.com/Zahara-Nour/ubumaths/commit/f35a6437a37cc0006e11ce83f5014255fb96e9a4))
+- **verifications:** style « 2 colonnes - paysage », PDF à vérifier ([e87d2c0](https://github.com/Zahara-Nour/ubumaths/commit/e87d2c04dea1c32792bc86379766bd3bfd86d3c7))
+
 ## [0.36.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.35.0...v0.36.0) (2026-10-15)
 
 ### ⚠ BREAKING CHANGES
