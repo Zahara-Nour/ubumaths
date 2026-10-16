@@ -64,6 +64,11 @@ ainsi (voir la ligne du tableau) et sert de modèle.
 | Géométrie repérée          | `6ee9c178` (10 neufs + 2 existants)                         | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`                                                |
 | Automatismes (évolutions)  | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8 | —                                | `create-automatismes-evolutions-1spe.ts`                                          |
 
+Terminale maths complémentaires : **« Loi binomiale »** (thème `Loi binomiale`, 2026-10-16) — technique
+`f054c015` (7 sections, 14 ex.), applications `19848611` (4 sections, 8 ex., 3 illustrations) —
+`create-loi-binomiale-tcomp.ts` (les deux fiches lues depuis un `plan.json`, sections comprises).
+Coefficients binomiaux donnés dans l'énoncé : la formule avec factorielles est hors programme.
+
 Seconde : **« Fonctions : généralités »** `41737393` (thème `Fonctions`, 1 fiche, 3 sections : images,
 antécédents par le calcul, lectures graphiques ; 14 neufs + « Calcul d'images » `5b233301`) —
 `create-fonctions-generalites-2nde.ts`. Courbes de lecture graphique : tout ce qu'on fait LIRE est
