@@ -35,4 +35,6 @@ Exercice d'application demandé par David : deux lois de même espérance (B(20 
 35 assertions, check:ubumark 0 problème, rendu relu. Sources : scratchpad de la session
 (`.../a45cd49e-…/scratchpad/crepes/`). Script `add-crepes-loi-binomiale-tcomp.ts` : section
 « Espérance et décision », position 3. Simulation faite · [x] publié le 2026-10-16 (exercice `7a0865c0`, accord de David), vérifié en base ; PR #1451 mergée.
-En discussion : titre de la partie B (« La fournée de Mme Bougouin ») et section 3 renommée « Espérance et écart type ».
+Retouches publiées le 2026-10-16 (`update-crepes-loi-binomiale-tcomp.ts`, accord de David) : partie B « La fournée de
+Mme Bougouin » ; exercice déplacé dans une 5ᵉ section « Synthèse et approfondissement » (la section 3 garde QCM et
+kermesse). Vérifié en base.
