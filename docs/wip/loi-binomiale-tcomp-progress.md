@@ -38,3 +38,6 @@ Exercice d'application demandé par David : deux lois de même espérance (B(20 
 Retouches publiées le 2026-10-16 (`update-crepes-loi-binomiale-tcomp.ts`, accord de David) : partie B « La fournée de
 Mme Bougouin » ; exercice déplacé dans une 5ᵉ section « Synthèse et approfondissement » (la section 3 garde QCM et
 kermesse). Vérifié en base.
+Puis (même jour, `update-crepes-classes-loi-binomiale-tcomp.ts`, accord de David) : les deux classes nommées, 14 élèves
+chacune — Mathématiques complémentaires (M. Le Jolly) et Mathématiques expertes (Mme Bougouin) ; questions et
+conclusions comparent les classes. Vérifié en base.
