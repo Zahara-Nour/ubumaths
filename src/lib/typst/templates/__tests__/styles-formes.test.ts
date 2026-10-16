@@ -226,7 +226,7 @@ describe('générateur : une forme = un gabarit', () => {
 		}
 	});
 
-	it('le corrigé ne dépend plus du style de la fiche, ni du gabarit lu en base', () => {
+	it('le corrigé ne dépend ni du style de la fiche, sauf un style qui a son propre corrigé, ni du gabarit lu en base', () => {
 		const reference = generate('correction');
 		// Sauf « 2 colonnes - paysage », qui a son propre corrigé (en paysage)
 		const others = DEFAULT_TEMPLATES.filter(
