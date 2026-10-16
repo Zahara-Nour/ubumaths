@@ -889,11 +889,10 @@ describe('taille du texte', () => {
 		expect(typst).toContain('columns: 2,');
 	});
 
-	it('grande : 14 pt sur une colonne, exercices compris', () => {
+	it('grande : 14 pt, deux colonnes gardées, exercices compris', () => {
 		const typst = generate('large');
 		expect(typst).toContain('size: 14pt, lang:');
-		expect(typst).toContain('columns: 1,');
-		expect(typst).not.toContain('columns: 2,');
+		expect(typst).toContain('columns: 2,');
 		expect(typst).toContain('2x + 3 = 7');
 	});
 
@@ -907,15 +906,12 @@ describe('taille du texte', () => {
 		expect(typst).not.toContain('size: 11pt');
 	});
 
-	// Styles qui posent leurs colonnes dans le corps (`#columns(N)[…]`), revue du 2026-10-16
+	// Styles qui posent leurs colonnes dans le corps (`#columns(N)[…]`) : elles restent
 	it.each([
 		['Deux colonnes', DEFAULT_TEMPLATE_IDS.twoColumns, '#columns(2'],
 		['Paysage', DEFAULT_TEMPLATE_IDS.landscape, '#columns(3']
-	])('style « %s » en grande taille : une seule colonne', (_, templateId, columns) => {
-		expect(generate(undefined, templateId)).toContain(columns);
-		const typst = generate('large', templateId);
-		expect(typst).not.toContain(columns);
-		expect(typst).toContain('#columns(1');
+	])('style « %s » en grande taille : ses colonnes restent', (_, templateId, columns) => {
+		expect(generate('x_large', templateId)).toContain(columns);
 	});
 
 	it('la fonction héritée transmet la taille', () => {

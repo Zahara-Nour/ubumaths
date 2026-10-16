@@ -371,8 +371,8 @@ contient `{{exercises_badge}}` reçoit la numérotation en carré ambre (charte 
 élève »), **Grande** (× 1,4 : 14 pt) et **Très grande** (× 1,8 : 18 pt). Option `textSize` du
 générateur (`WorksheetGeneratorOptions`, `GenerateTypstParams`, `StudentPdfOptions`). Le **gabarit**
 est transformé avant d'y placer les exercices (`withTextSize`) : chaque `size: Npt` est multiplié
-(titres, pied de page ; les tailles en `em` suivent seules) et chaque `#set page(…)` passe à
-`columns: 1` (une grille hors de la page ne bouge pas). Les exercices n'ont aucune taille fixe : ils
+(titres, pied de page ; les tailles en `em` suivent seules). La **mise en page du style ne change
+pas** : ses colonnes restent (David n'a pas voulu de passage à une colonne, 2026-10-16). Les exercices n'ont aucune taille fixe : ils
 suivent le texte, maths comprises. Un gabarit écrit par un prof est transformé de la même façon.
 Où la taille est choisie :
 
