@@ -73,7 +73,7 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 | `src/lib/typst/generators/worksheet-generator.ts`                                 | `WorksheetGenerator` (classe) : tous les PDF de fiche, prof et élève, depuis `WorksheetRow` + `InstanceData` ou un document déjà construit (`document`), avec le gabarit du style. Fonction héritée `generateWorksheetTypst` (marquée `@deprecated`, mais c'est elle qu'appellent les écrans). |
 | `src/lib/typst/generators/base-generator.ts`                                      | `BaseTypstGenerator` : contexte (mode, nom d'élève, classe), config.                                                                                                                                                                                                                           |
 | `src/lib/typst/generators/notebook-generator.ts`, `src/lib/typst/notebook-pdf.ts` | Même chaîne pour les **carnets** Python (`generateNotebookPdf`) — hors fiches, voir [python/](python/).                                                                                                                                                                                        |
-| `src/lib/typst/templates/default-templates.ts`                                    | 12 gabarits intégrés (ids `DEFAULT_TEMPLATE_IDS`), formes du style « Fiche élève » (`STUDENT_STYLE_FORMS`, `STUDENT_STYLE_COMMON`), `renderTemplate`.                                                                                                                                          |
+| `src/lib/typst/templates/default-templates.ts`                                    | 13 gabarits intégrés (ids `DEFAULT_TEMPLATE_IDS`), formes du style « Fiche élève » (`STUDENT_STYLE_FORMS`, `STUDENT_STYLE_COMMON`, et `STUDENT_LANDSCAPE_STYLE_COMMON` pour sa version paysage), `renderTemplate`.                                                                             |
 | `src/lib/typst/templates/styles.ts`                                               | Styles (`BUILT_IN_STYLES`, `BUILT_IN_STYLE_OPTIONS`, `DEFAULT_STYLE_ID`, `isBuiltInStyle`), style retenu (`styleIdOf`) et `resolveTemplate` : le gabarit d'une forme dans le style de la fiche.                                                                                                |
 | `src/lib/typst/labels.ts`                                                         | Habillage traduit : `documentLabels(locale)`, `labelPlaceholders(locale)`.                                                                                                                                                                                                                     |
 | `src/lib/typst/worksheet-palette.ts`                                              | Charte commune prof / élève : `BADGE_FILL`, `SECTION_COLOR`, `exerciseBadge`.                                                                                                                                                                                                                  |
@@ -343,8 +343,11 @@ Trois chemins d'appel, qui n'empruntent pas le même compilateur :
 gabarit. Chaque gabarit intégré est un **style** (`BUILT_IN_STYLES`) ; le style par défaut,
 **« Fiche élève »** (`DEFAULT_STYLE_ID`, D7), a ses quatre formes (`STUDENT_STYLE_FORMS` : fiche,
 réponses, corrigé, fiche + corrections) et un code commun (`STUDENT_STYLE_COMMON`, inséré à la
-place de `{{style_common}}`) ; les onze autres n'ont que leur fiche et prennent les autres formes
-du style par défaut. Le style ne décide plus des **points** : le type de la fiche s'en charge,
+place de `{{style_common}}`). **« 2 colonnes - paysage »** (`studentStyleLandscape`, David,
+2026-10-16) reprend ces quatre formes avec un autre code commun
+(`STUDENT_LANDSCAPE_STYLE_COMMON` : la même page, `flipped: true`) : tout le document, corrigé
+compris, est en A4 paysage. Les onze autres n'ont que leur fiche et prennent les autres formes du
+style par défaut. Le style ne décide plus des **points** : le type de la fiche s'en charge,
 quel que soit le style (ADR 0030, qui remplace D8 : « Fiche élève » imprime les points d'une
 évaluation écrite qui les demande). `resolveTemplate(style, forme, gabarit lu en base)` : le style
 retenu est `styleIdOf(fiche)` = `style_id`, sinon `template_id` (fiches d'avant le lot 3), inconnu
