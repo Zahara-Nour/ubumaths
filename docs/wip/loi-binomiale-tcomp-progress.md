@@ -27,3 +27,11 @@ Scratchpad de la session (`.../22d784b7-…/scratchpad/binom/`) : `CONVENTIONS.m
 - [x] 4. Rendu vert (`fiche:verifier` réparé : polices du corrigé) + pages relues
 - [x] 5. Script `create-loi-binomiale-tcomp.ts` + simulation (2026-10-16 : 22 exercices, 11 sections, 6 images) · [ ] 6. Publication (accord de David)
 - [ ] 7. Vérification en base
+
+## Ajout « Les crêpes au plafond » (2026-10-16)
+
+Exercice d'application demandé par David : deux lois de même espérance (B(20 ; 0.8) et B(32 ; 0.5)),
+écarts types comparés, puis seuil de 95 % (21 crêpes contre 37). Variantes guidée et autonome, FR + EN,
+35 assertions, check:ubumark 0 problème, rendu relu. Sources : scratchpad de la session
+(`.../a45cd49e-…/scratchpad/crepes/`). Script `add-crepes-loi-binomiale-tcomp.ts` : section
+« Espérance et décision », position 3. Simulation faite · [ ] publication (accord de David).
