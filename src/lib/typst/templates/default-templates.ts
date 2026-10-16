@@ -1568,12 +1568,13 @@ const studentStyleCommon = (
   paper: "a4",${landscape ? '\n  flipped: true,' : ''}
   margin: (x: 1cm, y: 1.5cm),
   columns: 2,
-  // Filet vertical entre les deux colonnes (hauteur = zone de texte)
-  background: place(center + horizon, line(
+  // Filet vertical entre les deux colonnes (hauteur = zone de texte) ; aucun
+  // sur une colonne (grande taille du texte : il barrerait le texte)
+  background: context if page.columns > 1 { place(center + horizon, line(
     angle: 90deg,
     length: 100% - 3cm,
     stroke: 0.3pt + luma(75%)
-  )),
+  )) },
   footer: context [
     #set align(center)
     #set text(size: 9pt, fill: gray)

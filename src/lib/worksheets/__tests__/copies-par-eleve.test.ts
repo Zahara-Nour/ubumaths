@@ -273,3 +273,29 @@ describe('le document : toutes les copies à la suite', () => {
 		expect(assembleStudentCopies([])).toBe('');
 	});
 });
+
+// Accessibilité (2026-10-16) : chaque copie sort à la taille du texte de son élève
+describe('taille du texte de chaque élève', () => {
+	it('sans réglage : la copie à la taille normale (10 pt, deux colonnes)', () => {
+		const typst = studentCopyTypst(view(), ONDINE);
+		expect(typst).toContain('size: 10pt, lang:');
+		expect(typst).toContain('columns: 2,');
+	});
+
+	it('élève en « très grande » : 18 pt, une colonne', () => {
+		const typst = studentCopyTypst(view(), { ...ONDINE, text_size: 'x_large' });
+		expect(typst).toContain('size: 18pt, lang:');
+		expect(typst).toContain('columns: 1,');
+	});
+
+	it('un lot mélangé garde la taille de chacun, dans l’ordre', () => {
+		const assembled = assembleStudentCopies([
+			studentCopyTypst(view(), ONDINE),
+			studentCopyTypst(view(), { ...ANOUK, text_size: 'large' })
+		]);
+		const normal = assembled.indexOf('size: 10pt, lang:');
+		const large = assembled.indexOf('size: 14pt, lang:');
+		expect(normal).toBeGreaterThan(-1);
+		expect(large).toBeGreaterThan(normal);
+	});
+});

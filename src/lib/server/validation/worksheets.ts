@@ -11,6 +11,7 @@ import { exerciseHintSchema, exerciseTranslationsSchema } from './exercises';
 import { gradeCodeSchema } from './grades';
 import { CONTENT_LOCALES } from '$lib/types/locale';
 import { capitalPairsSchema } from '$lib/questions/capital-pairs';
+import { TEXT_SIZES } from '$lib/typst/text-size';
 import {
 	ANSWER_FRAME_MAX_LINES,
 	ANSWER_FRAME_MAX_QUESTIONS,
@@ -1655,3 +1656,21 @@ export function validateStudentReportsQuery(params: URLSearchParams) {
 export function validateStudentReportIdParam(params: Record<string, string>) {
 	return studentReportIdParamSchema.safeParse(params);
 }
+
+// ============================================================================
+// TAILLE DU TEXTE DES FICHES (par élève)
+// ============================================================================
+
+/**
+ * PUT /api/worksheets/print-settings : la taille du texte d'un élève. L'élève
+ * omet `studentId` (c'est le sien) ; le prof et l'admin le donnent.
+ */
+export const printSettingsUpdateSchema = z.object({
+	studentId: uuidSchema.optional(),
+	textSize: z.enum(TEXT_SIZES)
+});
+
+/** GET /api/worksheets/print-settings?studentId= */
+export const printSettingsQuerySchema = z.object({
+	studentId: uuidSchema.optional()
+});

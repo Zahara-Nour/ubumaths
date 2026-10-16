@@ -25,6 +25,7 @@ import type {
 	WorksheetTemplateRow
 } from '$lib/types/worksheets';
 import { WorksheetGenerator } from '$lib/typst/generators/worksheet-generator';
+import type { TextSize } from '$lib/typst/text-size';
 import { documentFromStudentView } from './document/student-adapter';
 
 // ============================================================================
@@ -59,6 +60,8 @@ export interface StudentPdfOptions {
 	 * l'affectation) ; `null` : ligne à remplir (élève à la classe inconnue).
 	 */
 	className?: string | null;
+	/** Taille du texte de l'élève (`student_print_settings`) ; normale par défaut */
+	textSize?: TextSize;
 }
 
 // ============================================================================
@@ -126,7 +129,8 @@ export function generateStudentWorksheetTypst(
 		{
 			withCorrections: ending === 'none' ? undefined : ending,
 			correctionFonts: options.correctionFonts,
-			individualCopyNotice: options.individualCopyNotice
+			individualCopyNotice: options.individualCopyNotice,
+			textSize: options.textSize
 		}
 	);
 	return generator.generate({

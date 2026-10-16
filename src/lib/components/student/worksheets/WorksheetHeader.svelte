@@ -36,12 +36,21 @@
 	import { fallbackWarning } from '$lib/typst/compiler/correction-fonts-compiler';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import type { StudentWorksheetView, WorksheetType } from '$lib/types/worksheets';
+	import TextSizeSelect from '$lib/components/worksheets/TextSizeSelect.svelte';
+	import type { TextSize } from '$lib/typst/text-size';
 
 	interface Props {
 		worksheet: StudentWorksheetView;
+		/** Taille du texte enregistrée pour l'élève (accessibilité) */
+		textSize?: TextSize;
 	}
 
-	let { worksheet }: Props = $props();
+	let { worksheet, textSize: savedTextSize = 'normal' }: Props = $props();
+
+	// L'élève peut la changer (dérivé réassignable : le choix l'emporte jusqu'au
+	// prochain chargement) ; enregistrée pour toutes ses fiches
+	let textSize = $derived<TextSize>(savedTextSize);
+	let isSavingTextSize = $state(false);
 
 	let readOnly = $derived(worksheet.read_only === true);
 
@@ -76,7 +85,7 @@
 
 		const kind = ending === 'none' ? 'worksheet' : ending;
 		const result = await generateAndDownloadPdf(
-			() => generateStudentWorksheetTypst(worksheet, ending),
+			() => generateStudentWorksheetTypst(worksheet, ending, { textSize }),
 			worksheetPdfFileName(worksheet.title, kind)
 		);
 
@@ -88,6 +97,27 @@
 		}
 
 		isPdfLoading = false;
+	}
+
+	/** Change la taille du texte de toutes les fiches de l'élève */
+	async function handleTextSizeChange(size: TextSize) {
+		const previous = textSize;
+		textSize = size;
+		isSavingTextSize = true;
+		try {
+			const response = await fetch('/api/worksheets/print-settings', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ textSize: size })
+			});
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+			toaster.success('Taille du texte enregistrée pour toutes tes fiches');
+		} catch {
+			textSize = previous;
+			toaster.error("La taille du texte n'a pas pu être enregistrée");
+		} finally {
+			isSavingTextSize = false;
+		}
 	}
 
 	// Get icon and label for worksheet type (same logic as WorksheetCard)
@@ -202,6 +232,12 @@
 						</Badge>
 					{/if}
 				</div>
+
+				<TextSizeSelect
+					value={textSize}
+					onchange={handleTextSizeChange}
+					disabled={isSavingTextSize}
+				/>
 
 				<!-- PDF Download Button -->
 				<Button
