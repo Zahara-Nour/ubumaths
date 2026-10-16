@@ -1,7 +1,7 @@
 ---
 title: Fiches « Loi binomiale » T_COMP — point de reprise
 date: 2026-10-16
-status: simulation faite, publication en attente de David
+status: publié en brouillon, PR en cours
 ---
 
 # Fiches « Loi binomiale », Terminale maths complémentaires
