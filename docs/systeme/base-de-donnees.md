@@ -294,6 +294,14 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   étrangère se vérifie hors RLS : deux déclencheurs refusent qu'un gabarit rejoigne un style qui
   n'est pas celui de son auteur, ou qu'une fiche prenne le style d'un autre que Chiphre ou son auteur
   (test `tests/integration/styles-de-fiche.test.ts`).
+- `student_print_settings` (`20261016104200`) : **taille du texte** des PDF de fiche d'un élève
+  (`text_size` : `normal` 10 pt, `large` 14 pt, `x_large` 18 pt ; pas de ligne = normale), pour
+  les élèves malvoyants. Une ligne par élève (`student_id` clé primaire, compte `student`
+  seulement). L'élève lit et modifie la sienne ; le prof et l'admin, celle de tout élève
+  (`is_my_student`) ; personne d'autre. ⚠️ Volontairement **hors de `profiles`** : un ami lit la
+  ligne `profiles` entière, et ce réglage révèle un trouble de la vue (test :
+  `tests/integration/taille-texte-fiches-eleve.test.ts`, dont le témoin vérifie que l'ami lit
+  bien le profil).
 
 **L'accès est hérité, jamais distribué** : `student_has_worksheet_access` part de
 `worksheet_assignments`, passe par `worksheet_assignment_classes` / `worksheet_assignment_students`
