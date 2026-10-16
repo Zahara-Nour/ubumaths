@@ -1,7 +1,7 @@
 ---
 title: Fiches « Loi binomiale » T_COMP — point de reprise
 date: 2026-10-16
-status: rédaction en cours
+status: simulation faite, publication en attente de David
 ---
 
 # Fiches « Loi binomiale », Terminale maths complémentaires
@@ -23,6 +23,7 @@ Scratchpad de la session (`.../22d784b7-…/scratchpad/binom/`) : `CONVENTIONS.m
 ## Étapes
 
 - [x] 1. Inventaire · [x] 2. Cadrage + CONVENTIONS + plans
-- [ ] 3. Rédaction (2 agents Opus) · [ ] 4. Rendu + relecture des pages
-- [ ] 5. Script `create-loi-binomiale-tcomp.ts` + simulation · [ ] 6. Publication (accord de David)
+- [x] 3. Rédaction (2 agents Opus) : technique 136 assertions, applications 191 ; check:ubumark 0 problème
+- [x] 4. Rendu vert (`fiche:verifier` réparé : polices du corrigé) + pages relues
+- [x] 5. Script `create-loi-binomiale-tcomp.ts` + simulation (2026-10-16 : 22 exercices, 11 sections, 6 images) · [ ] 6. Publication (accord de David)
 - [ ] 7. Vérification en base
