@@ -287,7 +287,9 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   `tests/integration/cadres-lignes-par-question.test.ts`, `cadres-lignes-partage.test.ts`).
 - `worksheet_instances` : exercices générés par élève (graine déterministe).
 - `worksheet_styles` (ADR 0028, `20261016103200`) : style de mise en page d'une fiche, propriétaire
-  vide = fourni par Chiphre (Typst dans le code). Lus par le prof et l'admin (ceux de Chiphre et les
+  vide = fourni par Chiphre (Typst dans le code ; 13 styles, le 13ᵉ « 2 colonnes - paysage » ajouté par
+  `20261016104100`, avec sa ligne dans `worksheet_templates` : l'API écrit l'identifiant d'un style
+  de Chiphre aussi dans `worksheets.template_id`). Lus par le prof et l'admin (ceux de Chiphre et les
   leurs), modifiés par leur propriétaire ou l'admin ; **aucun accès élève ni `anon`**. Une clé
   étrangère se vérifie hors RLS : deux déclencheurs refusent qu'un gabarit rejoigne un style qui
   n'est pas celui de son auteur, ou qu'une fiche prenne le style d'un autre que Chiphre ou son auteur

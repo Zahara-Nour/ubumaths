@@ -7,7 +7,12 @@
  * colle plus de bandeau sur la fiche : le corrigé a son propre gabarit.
  */
 import { describe, expect, it } from 'vitest';
-import { BUILT_IN_STYLES, DEFAULT_STYLE_ID, resolveTemplate } from '../styles';
+import {
+	BUILT_IN_STYLES,
+	BUILT_IN_STYLE_OPTIONS,
+	DEFAULT_STYLE_ID,
+	resolveTemplate
+} from '../styles';
 import {
 	CORRECTIONS_PART,
 	DEFAULT_TEMPLATES,
@@ -121,6 +126,51 @@ describe('styles fournis par Chiphre', () => {
 	});
 });
 
+describe('« 2 colonnes - paysage » (David, 2026-10-16)', () => {
+	const LANDSCAPE_ID = DEFAULT_TEMPLATE_IDS.studentStyleLandscape;
+
+	/** Le Typst d'une forme, l'orientation paysage retirée */
+	function asPortrait(typst: string): string {
+		return typst.replace('A4 paysage sur', 'A4 sur').replace('\n  flipped: true,', '');
+	}
+
+	it('proposé au menu, sous ce nom', () => {
+		expect(BUILT_IN_STYLE_OPTIONS.find((s) => s.id === LANDSCAPE_ID)?.name).toBe(
+			'2 colonnes - paysage'
+		);
+	});
+
+	it('ses quatre formes sont en A4 paysage, sur deux colonnes', () => {
+		for (const form of FORMS) {
+			const resolved = resolveTemplate(LANDSCAPE_ID, form).content;
+			expect(resolved).toContain('paper: "a4",\n  flipped: true,');
+			expect(resolved).toContain('columns: 2');
+		}
+	});
+
+	it('à l’orientation près, chaque forme est celle de « Fiche élève »', () => {
+		for (const form of FORMS) {
+			const landscape = resolveTemplate(LANDSCAPE_ID, form).content;
+			expect(landscape).not.toBe(resolveTemplate(DEFAULT_STYLE_ID, form).content);
+			expect(asPortrait(landscape)).toBe(resolveTemplate(DEFAULT_STYLE_ID, form).content);
+		}
+	});
+
+	it('« Fiche élève » reste en portrait', () => {
+		for (const form of FORMS) {
+			expect(resolveTemplate(DEFAULT_STYLE_ID, form).content).not.toContain('flipped');
+		}
+	});
+
+	it('le générateur imprime la fiche et le corrigé en paysage', () => {
+		for (const mode of ['worksheet', 'correction'] as const) {
+			const typst = generate(mode, { templateId: LANDSCAPE_ID });
+			expect(typst).toContain('flipped: true');
+			expect(typst).toContain(mode === 'worksheet' ? 'ENONCE1' : 'CORRECTION1');
+		}
+	});
+});
+
 describe('résolution du gabarit', () => {
 	it('un autre style garde SA fiche', () => {
 		const standard = DEFAULT_TEMPLATES.find((t) => t.id === DEFAULT_TEMPLATE_IDS.standard);
@@ -176,9 +226,13 @@ describe('générateur : une forme = un gabarit', () => {
 		}
 	});
 
-	it('le corrigé ne dépend plus du style de la fiche, ni du gabarit lu en base', () => {
+	it('le corrigé ne dépend ni du style de la fiche, sauf un style qui a son propre corrigé, ni du gabarit lu en base', () => {
 		const reference = generate('correction');
-		for (const t of DEFAULT_TEMPLATES) {
+		// Sauf « 2 colonnes - paysage », qui a son propre corrigé (en paysage)
+		const others = DEFAULT_TEMPLATES.filter(
+			(t) => t.id !== DEFAULT_TEMPLATE_IDS.studentStyleLandscape
+		);
+		for (const t of others) {
 			expect(generate('correction', { templateId: t.id })).toBe(reference);
 			expect(
 				generate('correction', { templateId: t.id, template: row(t.template_content, t.id) })
