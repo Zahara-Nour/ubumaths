@@ -14,6 +14,26 @@ gardé. On ne passe par l'éditeur qu'ensuite, pour retoucher.
 
 ---
 
+## 0. Quel modèle pour quelle tâche
+
+À régler **avant de commencer** : la session principale tourne sous Opus (`/model`). Haiku n'est pas
+recommandé pour ce chantier, où une erreur de contenu part en production.
+
+| Tâche                                                                                 | Modèle                        | Pourquoi                                                          |
+| ------------------------------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------- |
+| Cadrage, inventaire en base, `CONVENTIONS.md`, plan des fiches (§ 1, § 2)             | **Opus** (session principale) | Décisions de contenu et de programme                              |
+| Rédaction des énoncés et corrigés (agents `pedagogy-expert`, § 2.3)                   | **Opus**                      | Une erreur de calcul ou un corrigé faux part vite en production   |
+| `assert_all.py` et `pnpm check:ubumark` (§ 2.3)                                       | **Opus**                      | Vérification mathématique : c'est elle qui rattrape les erreurs   |
+| Relecture des pages PDF (§ 2.4)                                                       | **Opus** (session principale) | Les détecteurs ne voient pas les défauts de sens                  |
+| Correctif du générateur PDF et test rouge (§ 2.7)                                     | **Opus**                      | Code critique du rendu ; le test doit prouver le défaut           |
+| Modèles d'automatismes en JSON, `genericFunctions`, `points` (§ 2 bis)                | **Opus**                      | Contenu mathématique paramétré, formules vérifiées par le système |
+| Script de création copié et adapté (`create-*-1spe.ts`, § 2.5)                        | **Sonnet**                    | Travail mécanique : titres, identifiants, constantes              |
+| Simulation puis `--publier`, `regen-depuis-base`, compilation, débords (§ 2.5, § 2.6) | **Sonnet**                    | Commandes et lecture de sorties ; à arrêter au premier doute      |
+| Lecture des écarts de la simulation vers le plan                                      | **Opus**                      | Une décision de contenu, pas une commande                         |
+
+Un agent qui rédige sans modèle indiqué doit être lancé en Opus. Ne jamais déléguer à un modèle plus
+petit la décision d'un contenu mathématique.
+
 ## 1. Ce qui existe (1re spécialité, brouillons FR + EN)
 
 Deux fiches par thème : **Entraînement technique** (catégorie `automatisme`, exercices numérotés,
