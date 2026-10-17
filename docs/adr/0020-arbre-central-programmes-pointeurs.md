@@ -92,6 +92,12 @@ d'une même tâche à petite échelle.
      point ne décrit pour un programme n'est pas tagué pour ce programme. « Exactement un point
      par programme » se lit donc « au plus un, et un seul quand un point le décrit vraiment » :
      un point de vocabulaire ou d'une technique voisine ne compte pas.
+   - **Un point peut naître d'une ligne d'automatisme, jamais d'un modèle.** La rubrique
+     « Automatismes » fait partie du texte officiel. Quand une partie d'une ligne d'automatisme ne
+     renvoie à aucun point des programmes précédents, on cherche d'abord un point antérieur à
+     scinder (avec toute sa famille) pour obtenir une référence précise ; sinon, on ajoute au
+     programme dont la liste contient la ligne un point ⚙ fidèle à son texte, comme le seed l'a
+     fait pour 5-056, 3-010 et 3-011 (décision de David, 2026-10-17).
    - **Le hors-programme vit dans l'arbre (point 1).** Un modèle sans point garde son nœud ; il
      reste trouvable, assignable et jouable, et ses tentatives sont enregistrées. Il ne compte
      pas dans la progression du programme. Montrer à l'élève ce qu'il a travaillé hors programme

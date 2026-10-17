@@ -1022,3 +1022,10 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   du cours (démonstration, oral, collecte). 5-058 se scinde (connaître / démontrer). Pas de retour sur les familles
   déjà tranchées. Recos de la partie 3 de la page mises à jour en conséquence : suite écrite / orale, 5-058,
   représentations des solides (5-048, 4-028), recueillir / présenter des données → scinder.
+- **2026-10-17 — Vérifications avant migration (page « Vérifications des scissions »).** David : CM1-019 et CM2-018
+  scindés comme leurs jumeaux ; 3-038 archivé (quasi-doublon du BO avec 3-041) ; les 25 corrections de libellés prises ;
+  automatismes revus ligne par ligne (52 lignes). Principe nouveau, consigné dans l'ADR 0020 §7 : une partie de ligne
+  d'automatisme sans référence → d'abord scinder un point antérieur (avec sa famille), sinon point ⚙ dans le programme
+  de la ligne. 11 mots à reprendre ainsi (quadruple, quart, tiers en 6e ; perspective cavalière en 5e ; somme des
+  opposés, triple / prédécesseur / successeur en 4e ; pourcentage sans coefficient en 3e ; périmètre d'un polygone,
+  interpréter les quartiles au lycée).
