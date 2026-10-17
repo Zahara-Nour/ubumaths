@@ -1029,3 +1029,8 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   de la ligne. 11 mots à reprendre ainsi (quadruple, quart, tiers en 6e ; perspective cavalière en 5e ; somme des
   opposés, triple / prédécesseur / successeur en 4e ; pourcentage sans coefficient en 3e ; périmètre d'un polygone,
   interpréter les quartiles au lycée).
+- **2026-10-17 — Scissions en prod (#1463, migration `20261017090000_scission_points_programme`, appliquée par David).**
+  149 points scindés en 168 moitiés neuves (tables comprises), 7 points ⚙ (6-211, 5-144, 4-082, 3-068, 3-069, 2-401,
+  2-402), 3-002 et 3-038 archivés, références d'automatismes 814 → 969. Vérifié en prod : comptes par niveau (CP 84,
+  CE1 107, CE2 97, CM1 171, CM2 158, 6e 111, 5e 143, 4e 82, 3e 68, 2de 201), ordre 1..N sans trou, archivages.
+  Suite : refaire le lot de tags du primaire et du collège (étape 2 bis) sur les points scindés, puis la page à cocher.
