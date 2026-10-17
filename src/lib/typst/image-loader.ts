@@ -73,6 +73,21 @@ const SUPPORTED_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'];
  */
 const FORMATS_NEEDING_CONVERSION = ['.webp'];
 
+/**
+ * Remplaçants d'une image introuvable (`static/images/pdf/`), un par format :
+ * Typst choisit le décodeur d'après l'extension du chemin virtuel. Téléchargés
+ * seulement en cas d'échec (demande de David, 2026-10-17 : une image manquante
+ * faisait échouer tout le PDF).
+ */
+const PLACEHOLDER_DIR = '/images/pdf/image-indisponible';
+const PLACEHOLDER_FORMATS: Record<string, string> = {
+	'.png': 'png',
+	'.jpg': 'jpg',
+	'.jpeg': 'jpg',
+	'.gif': 'gif',
+	'.svg': 'svg'
+};
+
 // ============================================================================
 // URL UTILITIES
 // ============================================================================
@@ -288,14 +303,61 @@ export async function fetchImageAsBytes(url: string, timeout = 10000): Promise<U
 }
 
 /**
+ * Le remplaçant « Image indisponible » d'une image, au format de son chemin
+ * virtuel (WebP → PNG, sans extension → PNG)
+ */
+export function placeholderUrlFor(url: string): string {
+	const virtualPath = urlToVirtualPath(url);
+	const extension = virtualPath.slice(virtualPath.lastIndexOf('.'));
+	return `${PLACEHOLDER_DIR}.${PLACEHOLDER_FORMATS[extension] ?? 'png'}`;
+}
+
+/**
+ * Un remplaçant de `static/` : adresse relative (pas de `new URL` comme
+ * `fetchImageAsBytes`), jamais à convertir
+ */
+async function fetchPlaceholder(url: string, timeout: number): Promise<Uint8Array> {
+	const controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), timeout);
+	try {
+		const response = await fetch(url, { signal: controller.signal });
+		if (!response.ok) throw new Error(`HTTP ${response.status}`);
+		return new Uint8Array(await response.arrayBuffer());
+	} finally {
+		clearTimeout(timeoutId);
+	}
+}
+
+/** Le remplaçant, téléchargé une fois par format et par appel ; null s'il manque lui-même */
+function placeholderLoader(timeout: number) {
+	const loaded = new Map<string, Promise<Uint8Array | null>>();
+	return (url: string): Promise<Uint8Array | null> => {
+		const placeholderUrl = placeholderUrlFor(url);
+		let bytes = loaded.get(placeholderUrl);
+		if (!bytes) {
+			bytes = fetchPlaceholder(placeholderUrl, timeout).catch((error: unknown) => {
+				logger.warn('Placeholder image unavailable', {
+					url: placeholderUrl,
+					error: error instanceof Error ? error.message : String(error)
+				});
+				return null;
+			});
+			loaded.set(placeholderUrl, bytes);
+		}
+		return bytes;
+	};
+}
+
+/**
  * Fetch multiple images in parallel
  *
- * Attempts to fetch all images, returning a map of successful fetches.
- * Failed fetches are logged but don't cause the entire operation to fail.
+ * Attempts to fetch all images. Une image introuvable reçoit le cadre « Image
+ * indisponible » (`placeholderUrlFor`) : le PDF sort quand même. Seule une
+ * image dont le remplaçant manque aussi est absente de la carte.
  *
  * @param urls - Array of image URLs to fetch
  * @param options - Fetch options
- * @returns Map of URL to image data (only successful fetches)
+ * @returns Map of URL to image data (or its placeholder)
  *
  * @example
  * ```typescript
@@ -311,6 +373,7 @@ export async function fetchExternalImages(
 ): Promise<ImageDataMap> {
 	const { timeout = 10000, concurrency = 4 } = options;
 	const results = new Map<string, Uint8Array>();
+	const placeholderFor = placeholderLoader(timeout);
 
 	if (urls.length === 0) {
 		return results;
@@ -338,6 +401,9 @@ export async function fetchExternalImages(
 					url: url.slice(0, 80),
 					error: error instanceof Error ? error.message : String(error)
 				});
+				// Le PDF sort quand même : un cadre « Image indisponible » à sa place
+				const placeholder = await placeholderFor(url);
+				if (placeholder) results.set(url, placeholder);
 			}
 		});
 
