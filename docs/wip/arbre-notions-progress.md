@@ -1017,3 +1017,8 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     David : « je ne veux pas de deux points qui disent la même chose » → 3-002 archivé dans la migration des
     scissions ; exception consignée dans l'ADR 0020 (§7).
   - Programmes du BO des cycles 2, 3 et 4 (PDF) commités sous `docs/ref/programmes/`.
+- **2026-10-17 — Critère de scission de David, consigné dans l'ADR 0020 (§7).** On scinde quand la scission donne au
+  moins un point évaluable par un modèle de question, avec nos outils actuels ou à venir ; l'autre partie peut relever
+  du cours (démonstration, oral, collecte). 5-058 se scinde (connaître / démontrer). Pas de retour sur les familles
+  déjà tranchées. Recos de la partie 3 de la page mises à jour en conséquence : suite écrite / orale, 5-058,
+  représentations des solides (5-048, 4-028), recueillir / présenter des données → scinder.

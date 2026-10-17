@@ -106,6 +106,14 @@ d'une même tâche à petite échelle.
      savoir-faire dans les autres années se scindent alors de la même façon, sinon un même modèle
      serait suivi finement une année et grossièrement la suivante. Le premier point garde son
      code ; les autres reçoivent un nouveau code.
+   - **Critère de scission : au moins un point évaluable.** On scinde quand la scission donne au
+     moins un point qu'un modèle de question peut évaluer automatiquement, avec nos outils
+     actuels ou à venir (grapheur, module de géométrie…). L'autre partie peut relever du cours
+     et s'évaluer à l'écrit ou à l'oral : elle garde son point, cochable dans le cahier de
+     texte. Exemple : 5-058 « Connaitre la somme des angles d'un triangle et savoir la
+     démontrer » donne « connaître » (évaluable) et « démontrer » (travaillé en cours). Un point
+     dont aucune partie ne s'évalue par un modèle relève plutôt d'une compétence : il reste
+     entier.
    - **Exception : un doublon du BO lui-même s'archive.** Deux points d'un même programme ne
      disent jamais la même chose. Quand le texte officiel répète une ligne mot pour mot ou
      presque, le premier point est gardé et le second est **archivé** : il reste en base, fidèle
