@@ -480,7 +480,9 @@ PDF : titre d'exercice avec ses formules (`processTableCellContent`), ordre et n
 (chiffres arabes, ADR 0030 ; `exercise_order` côté prof), points en « pt » / « pts » de
 `documentLabels` (aussi en anglais) quand le type les imprime (`display.showPoints`), cadres de
 réponse (ci-dessous), exercice hors section après des sections sous
-« Autres exercices », correction non écrite → « Correction non écrite. » sous le numéro (Corrigé,
+« Autres exercices » ; **les Réponses n'impriment aucun titre de section** (forme seule et fin
+de « fiche + réponses » de l'élève ; David, 2026-10-17 : de la place pour rien) — la fiche et le
+corrigé les gardent ; correction non écrite → « Correction non écrite. » sous le numéro (Corrigé,
 et Réponses quand il n'y a ni réponses ni corrigé), opérateurs à limites (`MATH_LIMITS_SETUP`). L'API élève (et celle d'aperçu de
 l'affectation) transmet les options du type ; l'ordre de la copie de l'élève est celui des positions, sauf fiche
 qui mélange ses exercices (voir « La copie d'un élève » : `shuffled`, suivi par

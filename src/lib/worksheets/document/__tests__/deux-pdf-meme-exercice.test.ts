@@ -497,3 +497,37 @@ describe('titre d’exercice : fonctions déclarées et sens de AB de l’exerci
 		expect(typst).toContain('#text(weight: "bold")[Coût marginal]');
 	});
 });
+
+// ============================================================================
+// RÉPONSES : SANS TITRES DE SECTION (David, 2026-10-17 : de la place pour rien)
+// ============================================================================
+
+describe('réponses : sans titres de section', () => {
+	const SECTION_TITLES = ['Échauffement', 'Approfondir', 'Autres exercices'];
+
+	it.each(TEACHER_LAYOUTS)('prof, forme Réponses (%s) : aucun titre de section', (_n, tpl) => {
+		const typst = teacher('answers', BASE_CONFIG, tpl);
+		for (const title of SECTION_TITLES) expect(typst).not.toContain(title);
+		expect(typst).toContain('REPONSE1');
+	});
+
+	it('prof, corrigé : les titres de section restent', () => {
+		const typst = teacher('correction');
+		expect(typst).toContain('Échauffement');
+		expect(typst).toContain('Approfondir');
+	});
+
+	it('élève, fiche + réponses : la fiche garde ses sections, les réponses non', () => {
+		const typst = student('answers');
+		const answersPart = typst.slice(typst.lastIndexOf('ENONCE3'));
+		for (const title of SECTION_TITLES) expect(answersPart).not.toContain(title);
+		expect(answersPart).toContain('REPONSE1');
+		const sheet = typst.slice(0, typst.lastIndexOf('ENONCE3'));
+		expect(sheet).toContain('Échauffement');
+	});
+
+	it('élève, fiche + corrigé : les titres de section restent dans le corrigé', () => {
+		const typst = student('correction');
+		expect(typst.slice(typst.lastIndexOf('ENONCE3'))).toContain('Approfondir');
+	});
+});

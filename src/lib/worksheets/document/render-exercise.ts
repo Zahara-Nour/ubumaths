@@ -148,12 +148,16 @@ export function renderMarkdownPreview(
  * Les exercices dans l'ordre du document, chacun avec le titre de section à
  * poser avant lui (ou `null`). Exercice hors section après des sections : sous
  * « Autres exercices » (D4). La consigne de section fait partie de l'énoncé :
- * les corrigés n'en gardent que le titre.
+ * le corrigé n'en garde que le titre ; les réponses, aucun titre.
  */
 function withSectionHeaders(
 	doc: WorksheetDocument,
 	form: DocumentForm
 ): Array<{ header: DocumentSection | null; exercise: DocumentExercise }> {
+	// Réponses (seules ou en fin de fiche) : aucun titre de section, de la place
+	// pour rien (David, 2026-10-17)
+	if (form === 'answers') return doc.exercises.map((exercise) => ({ header: null, exercise }));
+
 	const sections = new Map(doc.sections.map((section) => [section.id, section]));
 	const items: Array<{ header: DocumentSection | null; exercise: DocumentExercise }> = [];
 	let currentSection: string | null | undefined = undefined;
