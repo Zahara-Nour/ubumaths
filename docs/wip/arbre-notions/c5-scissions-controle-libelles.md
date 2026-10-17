@@ -31,10 +31,10 @@ BO CE1 : « Savoir interpréter, représenter, écrire et lire **les fractions �
 
 | Code    | Libellé proposé                                                                    | Libellé corrigé proposé                                                                                            |
 | ------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| CE1-016 | Lire et écrire une fraction en chiffres et en lettres (un quart ↔ 1/4).           | Lire et écrire les fractions ½, ⅓, ¼, ⅕, ⅙, ⅛ et 1/10 en chiffres et en lettres (un quart ↔ 1/4).                 |
+| CE1-016 | Lire et écrire une fraction en chiffres et en lettres (un quart ↔ 1/4).            | Lire et écrire les fractions ½, ⅓, ¼, ⅕, ⅙, ⅛ et 1/10 en chiffres et en lettres (un quart ↔ 1/4).                  |
 | CE1-016 | Représenter une fraction donnée par un partage (colorier les parts d'une figure).  | Représenter l'une des fractions ½, ⅓, ¼, ⅕, ⅙, ⅛ ou 1/10 par un partage (colorier les parts d'une figure).         |
 | CE1-016 | Interpréter un partage par une fraction (quelle part de la figure est coloriée ?). | Interpréter un partage par l'une des fractions ½, ⅓, ¼, ⅕, ⅙, ⅛ ou 1/10 (quelle part de la figure est coloriée ?). |
-| CE1-017 | Lire et écrire une fraction en chiffres et en lettres (trois quarts ↔ 3/4).       | Lire et écrire une fraction inférieure ou égale à 1 en chiffres et en lettres (trois quarts ↔ 3/4).               |
+| CE1-017 | Lire et écrire une fraction en chiffres et en lettres (trois quarts ↔ 3/4).        | Lire et écrire une fraction inférieure ou égale à 1 en chiffres et en lettres (trois quarts ↔ 3/4).                |
 | CE1-017 | Représenter une fraction donnée par un partage (colorier les parts d'une figure).  | Représenter une fraction inférieure ou égale à 1 par un partage (colorier les parts d'une figure).                 |
 | CE1-017 | Interpréter un partage par une fraction (quelle part de la figure est coloriée ?). | Interpréter un partage par une fraction inférieure ou égale à 1 (quelle part de la figure est coloriée ?).         |
 

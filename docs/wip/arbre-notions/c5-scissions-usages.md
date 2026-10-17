@@ -461,8 +461,8 @@ Notation : _origine_ = le point qui garde son code ; _2ᵉ_, _3ᵉ_ = les nouvea
 - origine : Écrire à virgule un nombre donné par une fraction décimale ou une somme de fractions décimales (237/100 = ? ou 2 + 3/10 + 7/100 = ?).
 - 2ᵉ (nouveau code) : Écrire un nombre à virgule sous forme de fraction décimale ou de somme de fractions décimales (2,37 = ?/100).
 
-| Grade | Ligne(s) d'automatisme (seed)                                                                                                                                                      | Cible proposée                             | Justification                                  |
-| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ---------------------------------------------- |
+| Grade | Ligne(s) d'automatisme (seed)                                                                                                                                                     | Cible proposée                             | Justification                                 |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | --------------------------------------------- |
 | 6     | Équivalences d'écriture 1/10 = 0,1 ; 1/100 = 0,01 ; 1/1000 = 0,001 (6e l.188)<br>Passage fraction décimale / somme de fractions décimales ↔ écriture décimale (4,107…) (6e l.189) | **les deux** : origine + 2ᵉ (nouveau code) | équivalences et passage « ↔ » : les deux sens |
 
 ### CM2-036
