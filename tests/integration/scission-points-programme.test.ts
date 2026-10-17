@@ -2,7 +2,7 @@
  * Scission des points « tables » du cycle 2 : sens direct / opération à trou — (Supabase local requis)
  * ===================================================================================================
  *
- * Migration `20261016090000_scission_points_tables` : les cinq points « Connaitre dans les deux
+ * Migration `20261017090000_scission_points_programme` : les cinq points « Connaitre dans les deux
  * sens les tables d'addition / de multiplication » (CP-018, CE1-026, CE1-027, CE2-020, CE2-021)
  * deviennent chacun deux points — le sens direct (le point d'origine, renommé) et l'opération à
  * trou (un point neuf, CP-073, CE1-090, CE1-091, CE2-084, CE2-085), rangé juste après son
@@ -66,7 +66,7 @@ interface PointRow {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261016090000_scission_points_tables.sql';
+const MIGRATION = 'supabase/migrations/20261017090000_scission_points_programme.sql';
 
 const ADDITION_BEFORE = "Connaitre dans les deux sens les tables d'addition.";
 const MULTIPLICATION_BEFORE = 'Connaitre dans les deux sens les tables de multiplication.';

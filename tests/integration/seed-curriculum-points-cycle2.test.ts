@@ -10,7 +10,7 @@
  * points » (migration `20261011080000_passe_puces_points_cycle2`, validée le
  * 2026-10-08, docs/wip/arbre-notions/passe-cycle2.md) : 16 puces scindées (+17 points),
  * 9 points spécifiés → 244 points (72 CP + 89 CE1 + 83 CE2). Puis la scission des tables
- * (migration `20261016090000_scission_points_tables`, libellés validés par David) : les cinq
+ * (migration `20261017090000_scission_points_programme`, libellés validés par David) : les cinq
  * points « dans les deux sens » deviennent sens direct + opération à trou (+5 points) → 249
  * points (73 CP + 91 CE1 + 85 CE2).
  *

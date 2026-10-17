@@ -13,7 +13,7 @@
  * (chemin du nœud compris), rien d'autre sous les codes 5-/4-/3-, et l'ensemble
  * exact des références (code cible × grade référent). Lecture ANONYME (B6).
  * La référence de 5e « Compléter une addition à trou (2 + … = 7) » vise CE2-084 depuis la
- * scission des tables (migration `20261016090000_scission_points_tables`, option A validée
+ * scission des tables (migration `20261017090000_scission_points_programme`, option A validée
  * par David le 2026-10-11) : elle visait CE2-020, devenu le sens direct.
  *
  * @vitest-environment node
