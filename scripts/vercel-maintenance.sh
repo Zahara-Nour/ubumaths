@@ -26,7 +26,12 @@ SCOPE_ARG=()
 # l'ignore step (scripts/vercel-ignore-build.sh) saute aussitôt : la bascule
 # restait sans effet. Test : scripts/__tests__/vercel-maintenance.test.ts.
 latest_prod_url() {
-	vercel ls --prod --status READY "${SCOPE_ARG[@]}" 2>/dev/null | grep -Eo 'https://[a-z0-9.-]+\.vercel\.app' | head -1
+	# `head -1` ferme le tube dès la première ligne : grep (ou vercel) en amont
+	# reçoit alors SIGPIPE et sort en 141 ; sous `set -o pipefail`, ce 141
+	# devient le code du pipeline et `set -e` avorte tout le script (échec CI
+	# intermittent, run 38703311350). `|| true` absorbe ce 141 : seul le
+	# résultat compte — l'URL (vide ou non), que l'appelant teste avec `-z`.
+	vercel ls --prod --status READY "${SCOPE_ARG[@]}" 2>/dev/null | grep -Eo 'https://[a-z0-9.-]+\.vercel\.app' | head -1 || true
 }
 
 redeploy_prod() {
