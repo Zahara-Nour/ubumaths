@@ -106,6 +106,15 @@ d'une même tâche à petite échelle.
      savoir-faire dans les autres années se scindent alors de la même façon, sinon un même modèle
      serait suivi finement une année et grossièrement la suivante. Le premier point garde son
      code ; les autres reçoivent un nouveau code.
+   - **Exception : un doublon du BO lui-même s'archive.** Deux points d'un même programme ne
+     disent jamais la même chose. Quand le texte officiel répète une ligne mot pour mot ou
+     presque, le premier point est gardé et le second est **archivé** : il reste en base, fidèle
+     au BO, mais n'est plus proposé au tag, ni affiché, ni compté dans la progression. Seul cas
+     connu : en 3e, « Nombres rationnels > Objectifs d'apprentissage » donne à la suite
+     « Mettre une fraction sous forme irréductible. » (3-001, gardé) et « Rendre irréductible une
+     fraction. » (3-002, archivé) — vérifié dans le programme du cycle 4,
+     `docs/ref/programmes/Programme de mathématiques du cycle 4.pdf`. Tout nouveau cas se signale
+     et se tranche avec David ; aucun autre écart au BO n'est permis.
 
 8. **Le `level` des questions est une gradation à l'intérieur d'un point** (du facile au
    difficile), plus un axe global 1-20. La progression d'Automaths suit l'ordre des points du

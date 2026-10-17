@@ -1008,3 +1008,12 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   - Un savoir-faire répété d'une année à l'autre garde un point par année ; un modèle porte un tag par programme
     (déjà la règle en base : « au plus un point par programme »).
   - Une scission vaut pour toute la famille de points répétés (ex. tables CP → CE2 et répertoires CM1, CM2).
+- **2026-10-17 — Scissions : réponses de David sur la page à cocher.**
+  - Les 20 familles de la page sont à scinder (101 points). Q1 : opérations à trou hors tables → pas de tag (R1).
+    Q2 : répertoires du CM scindés comme les tables. Q3 : garder « connaître les moitiés » et « déterminer la moitié ».
+    Q4 : **trois** points comparer / encadrer / intercaler. Q6 : « lire et interpréter » à revoir → familles M19
+    (18 points lire / interpréter) et M20 (moyenne, médiane, étendue : calculer / interpréter) ajoutées à la page.
+  - Q5 : 3-001 et 3-002 sont un doublon du BO lui-même (cycle 4, 3e, Nombres rationnels, lignes consécutives).
+    David : « je ne veux pas de deux points qui disent la même chose » → 3-002 archivé dans la migration des
+    scissions ; exception consignée dans l'ADR 0020 (§7).
+  - Programmes du BO des cycles 2, 3 et 4 (PDF) commités sous `docs/ref/programmes/`.
