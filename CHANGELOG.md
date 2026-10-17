@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.38.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.37.0...v0.38.0) (2026-10-17)
+
+### ✨ Features
+
+- **db:** table student_print_settings, taille du texte des fiches par élève ([f1dee9c](https://github.com/Zahara-Nour/ubumaths/commit/f1dee9cfa972f1888c32a85be69e012d2f916ed3))
+- **fiches:** « Fiche élève » en paysage en grande taille du texte ([c58cd91](https://github.com/Zahara-Nour/ubumaths/commit/c58cd91f9d3f11a34586332de9d0c42357b3f838))
+- **fiches:** les réponses sans titres de section ([02e2a08](https://github.com/Zahara-Nour/ubumaths/commit/02e2a08465e74eb003bec3c58b7051513221080b))
+- **fiches:** taille du texte des PDF (normale, grande, très grande) ([452239f](https://github.com/Zahara-Nour/ubumaths/commit/452239f788bd7d8b8fbf5201831fba0fc0435a26))
+- **fiches:** une seule liste Corvées organisée en sections ([3a54cb1](https://github.com/Zahara-Nour/ubumaths/commit/3a54cb1a5b8ddeb18bd6b0cbbf05c6cde1894005))
+
+### 🐛 Bug Fixes
+
+- **fiches:** supprimer une section range ses exercices après les hors-section ([36f87d4](https://github.com/Zahara-Nour/ubumaths/commit/36f87d4c57ee2c58b5e97907baf68a133d42f8e3))
+- **fiches:** taille du texte sans passage à une colonne ([1384f78](https://github.com/Zahara-Nour/ubumaths/commit/1384f7801fd1c0525ec1e109632d230549061961))
+- **fiches:** une colonne aussi pour #columns(N), aperçu prof sans course ([aee26b1](https://github.com/Zahara-Nour/ubumaths/commit/aee26b1128d15d8a7469b7ce66b9c4f35271f96d))
+- **pdf:** une image introuvable n'empêche plus le PDF de sortir ([d8e1e3c](https://github.com/Zahara-Nour/ubumaths/commit/d8e1e3c71f714fde3aa5a30e673b698065d4d6cf))
+
+### 📚 Documentation
+
+- **verifications:** paysage, réponses sans sections, image indisponible ([08e38c4](https://github.com/Zahara-Nour/ubumaths/commit/08e38c48eb16bbe2d0f9df1cce11dffeaf5a1790))
+- **verifications:** taille du texte des PDF de fiche ([#1457](https://github.com/Zahara-Nour/ubumaths/issues/1457)) ([62daf95](https://github.com/Zahara-Nour/ubumaths/commit/62daf957dfc917925bb148f18f961fab299d9304))
+
 ## [0.37.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.36.0...v0.37.0) (2026-10-16)
 
 ### ✨ Features
