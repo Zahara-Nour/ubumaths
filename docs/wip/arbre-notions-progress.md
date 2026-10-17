@@ -1002,3 +1002,9 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     (73550ee8, fa57c725) passent en R1.
   - Les 13 modèles dont les variations relèvent de plusieurs points sont sortis des parties 1 à 3 de la page à cocher :
     choix « Scinder » / « Un seul tag » en partie 4.
+- **2026-10-17 — Principes validés par David, consignés dans l'ADR 0020 (§7, précisions du 2026-10-17).**
+  - Le BO est immuable : pas de point « entraînement » ou « approfondissement ». Un modèle qu'aucun point ne décrit
+    reste sur son nœud, jouable, hors progression du programme (progression par nœud possible plus tard).
+  - Un savoir-faire répété d'une année à l'autre garde un point par année ; un modèle porte un tag par programme
+    (déjà la règle en base : « au plus un point par programme »).
+  - Une scission vaut pour toute la famille de points répétés (ex. tables CP → CE2 et répertoires CM1, CM2).

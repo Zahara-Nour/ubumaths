@@ -85,6 +85,28 @@ d'une même tâche à petite échelle.
      notion. Une règle en base refuse le reste.
    - **Un modèle porte exactement un point par programme** ; un exercice en porte plusieurs.
 
+   **Précisions de David (2026-10-17).** Elles font suite au lot de tags du primaire et du
+   collège (étape 2 bis de C5) :
+
+   - **Le BO est immuable : aucun point n'est créé pour accueillir un modèle.** Un modèle qu'aucun
+     point ne décrit pour un programme n'est pas tagué pour ce programme. « Exactement un point
+     par programme » se lit donc « au plus un, et un seul quand un point le décrit vraiment » :
+     un point de vocabulaire ou d'une technique voisine ne compte pas.
+   - **Le hors-programme vit dans l'arbre (point 1).** Un modèle sans point garde son nœud ; il
+     reste trouvable, assignable et jouable, et ses tentatives sont enregistrées. Il ne compte
+     pas dans la progression du programme. Montrer à l'élève ce qu'il a travaillé hors programme
+     se fera, si on le veut, par une progression par nœud calculée depuis les tentatives.
+   - **Un même savoir-faire revient d'une année à l'autre** (progression en spirale du BO :
+     CE2-020 tables d'addition, CM1-035 et CM2-035 répertoire additif). Chaque année garde son
+     point, et un modèle utilisé dans plusieurs programmes porte un tag par programme. La
+     progression d'un élève se lit dans les points de son programme.
+   - **Une scission vaut pour toute la famille.** Un point qui réunit deux savoir-faire
+     séparables (« ajouter ou soustraire », « dans les deux sens ») peut être scindé en restant
+     fidèle au BO (même grain, aucun contenu ajouté). Les points qui expriment le même
+     savoir-faire dans les autres années se scindent alors de la même façon, sinon un même modèle
+     serait suivi finement une année et grossièrement la suivante. Le premier point garde son
+     code ; les autres reçoivent un nouveau code.
+
 8. **Le `level` des questions est une gradation à l'intérieur d'un point** (du facile au
    difficile), plus un axe global 1-20. La progression d'Automaths suit l'ordre des points du
    programme du niveau de l'élève, puis le level à l'intérieur du point.
@@ -115,3 +137,10 @@ d'une même tâche à petite échelle.
   hors-programme.
 - **Table de correspondance nœud ↔ point comme état final** : retenue seulement comme étape de
   migration ; en régime de croisière, le point porte son nœud directement.
+- **Points spéciaux « entraînement » ou « approfondissement »** pour les modèles qu'aucun point
+  ne décrit (2026-10-17) : mêlerait au BO ce qui n'en est pas (couverture, progression et cahier
+  de texte devraient les filtrer partout), exigerait un niveau pour un contenu qui n'en a pas, et
+  recréerait l'arbre en moins bien. Le hors-programme est le rôle de l'arbre.
+- **Un seul point de référence par famille, celui du plus petit niveau** (2026-10-17) : la
+  progression d'un élève de CM2 ne verrait plus son travail sur un savoir-faire dont le point
+  de référence est au CE2.
