@@ -761,6 +761,11 @@
 --   ('3', 55, 68, null),
 --   ('2', 199, 201, 132);
 -- -- DONNÉES:GRADES:END
+-- -- Verrou des points neufs (FOR UPDATE bloque l'insertion d'un usage, qui prend FOR KEY SHARE)
+-- -- jusqu'à la fin de la transaction : aucun usage ne peut s'accrocher entre la garde et le DELETE.
+-- select count(*) from (select 1 from public.curriculum_points
+--  where code in (select code from _rb_point where role = 'neuf' union all select code from _rb_auto)
+--  for update) verrou;
 -- do $rb_garde$
 -- declare
 -- 	v_detail text;
