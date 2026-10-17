@@ -42,6 +42,7 @@ import { BaseTypstGenerator } from './base-generator';
 import { escapeTypst } from '$lib/ubumark';
 import { renderTemplate } from '../templates';
 import {
+	printedStyleId,
 	resolveTemplate,
 	styleIdOf,
 	type ResolvedTemplate,
@@ -276,7 +277,15 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		// Le gabarit de la forme demandée, dans le style retenu pour la fiche
 		// (`style_id`, sinon `template_id`) ; le gabarit lu en base ne sert qu'à la
 		// fiche d'un style du prof.
-		const resolved = resolveTemplate(styleIdOf(worksheet), this.form, template?.template_content);
+		const custom = template?.template_content;
+		// « Fiche élève » en grande taille du texte : en paysage, sauf les Réponses
+		const styleId = printedStyleId(
+			styleIdOf(worksheet),
+			this.form,
+			this.options.textSize ?? 'normal',
+			custom
+		);
+		const resolved = resolveTemplate(styleId, this.form, custom);
 		let typstContent = this.generateFromTemplate(input, resolved);
 
 		// Corrigé : Shantell Sans et Chiphre Math, posées après la police du document

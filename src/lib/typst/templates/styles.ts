@@ -16,6 +16,7 @@
  */
 
 import type { DocumentForm } from '$lib/worksheets/document/types';
+import type { TextSize } from '../text-size';
 import {
 	CORRECTIONS_PART,
 	DEFAULT_TEMPLATES,
@@ -127,6 +128,24 @@ export function styleIdOf(worksheet: {
 	template_id?: string | null;
 }): string | null {
 	return worksheet.style_id ?? worksheet.template_id ?? null;
+}
+
+/**
+ * Le style imprimé : « Fiche élève » en Grande ou Très grande taille du texte
+ * passe en paysage (son jumeau « 2 colonnes - paysage » : mêmes gabarits, page
+ * retournée), sauf la forme Réponses (David, 2026-10-17). Les autres styles, la
+ * taille normale et le style d'un prof (`custom`) ne changent pas.
+ */
+export function printedStyleId(
+	styleId: string | null | undefined,
+	form: TemplateForm,
+	textSize: TextSize,
+	custom?: string | null
+): string | null | undefined {
+	if (textSize === 'normal' || form === 'answers') return styleId;
+	// Sans style de Chiphre reconnu ni gabarit du prof : « Fiche élève » (par défaut)
+	const isStudentStyle = styleId === DEFAULT_STYLE_ID || (!isBuiltInStyle(styleId) && !custom);
+	return isStudentStyle ? DEFAULT_TEMPLATE_IDS.studentStyleLandscape : styleId;
 }
 
 /**

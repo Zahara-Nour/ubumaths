@@ -11,6 +11,7 @@ import {
 	BUILT_IN_STYLES,
 	BUILT_IN_STYLE_OPTIONS,
 	DEFAULT_STYLE_ID,
+	printedStyleId,
 	resolveTemplate
 } from '../styles';
 import {
@@ -336,5 +337,29 @@ describe('points : le type de la fiche décide, quel que soit le style (ADR 0030
 		expect(gen('assessment', 'worksheet', 'perso', perso)).toMatch(POINTS);
 		const copy = row(STUDENT_STYLE_TEMPLATE.template_content, DEFAULT_STYLE_ID);
 		expect(gen('assessment', 'worksheet', DEFAULT_STYLE_ID, copy)).toMatch(POINTS);
+	});
+});
+
+// « Fiche élève » en grande taille : en paysage, sauf les Réponses (David, 2026-10-17)
+describe('printedStyleId', () => {
+	const PAYSAGE = DEFAULT_TEMPLATE_IDS.studentStyleLandscape;
+	const PROF = '550e8400-e29b-41d4-a716-446655449999';
+
+	it('« Fiche élève » (choisi ou par défaut), Grande : son jumeau paysage', () => {
+		expect(printedStyleId(DEFAULT_STYLE_ID, 'worksheet', 'large')).toBe(PAYSAGE);
+		expect(printedStyleId(null, 'correction', 'x_large')).toBe(PAYSAGE);
+		expect(printedStyleId(undefined, 'worksheet_with_corrections', 'large')).toBe(PAYSAGE);
+	});
+
+	it('Réponses, ou taille normale : le style tel quel', () => {
+		expect(printedStyleId(DEFAULT_STYLE_ID, 'answers', 'x_large')).toBe(DEFAULT_STYLE_ID);
+		expect(printedStyleId(DEFAULT_STYLE_ID, 'worksheet', 'normal')).toBe(DEFAULT_STYLE_ID);
+	});
+
+	it('autre style de Chiphre, ou style d’un prof : inchangé', () => {
+		expect(printedStyleId(DEFAULT_TEMPLATE_IDS.standard, 'worksheet', 'large')).toBe(
+			DEFAULT_TEMPLATE_IDS.standard
+		);
+		expect(printedStyleId(PROF, 'worksheet', 'large', '#set page(paper: "a4")')).toBe(PROF);
 	});
 });
