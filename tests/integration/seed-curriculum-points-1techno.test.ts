@@ -9,6 +9,10 @@
  * vocabulaire de 2de (U5/V1). VALIDÉS par David le 2026-10-08
  * (docs/wip/arbre-notions/seed-1techno.md). Pas d'ancien seed pour ce niveau.
  *
+ * Références reportées par les scissions validées par David (migration
+ * `20261017090000_scission_points_programme`) : fixture transformée par
+ * docs/wip/arbre-notions/c5-scissions-generer.py.
+ *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade '1_TECHNO', l'ensemble exact des
  * références. Lecture ANONYME (B6).

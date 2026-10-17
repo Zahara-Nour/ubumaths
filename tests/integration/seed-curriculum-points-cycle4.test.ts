@@ -14,7 +14,10 @@
  * exact des références (code cible × grade référent). Lecture ANONYME (B6).
  * La référence de 5e « Compléter une addition à trou (2 + … = 7) » vise CE2-084 depuis la
  * scission des tables (migration `20261017090000_scission_points_programme`, option A validée
- * par David le 2026-10-11) : elle visait CE2-020, devenu le sens direct.
+ * par David le 2026-10-11) : elle visait CE2-020, devenu le sens direct. Les scissions validées
+ * par David (même migration) : +48 moitiés et 4 points ⚙ (3-068, 3-069, 4-082, 5-144) → 293
+ * points (143 en 5e, 82 en 4e, 68 en 3e) ; fixture transformée par
+ * docs/wip/arbre-notions/c5-scissions-generer.py.
  *
  * @vitest-environment node
  */
@@ -168,16 +171,16 @@ describe('Seed des points du cycle 4 (points + références d’automatismes)', 
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (241 points après la passe)', () => {
+	it('la fixture est bien celle du document validé (293 points après la passe et les scissions)', () => {
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
-		expect(fixture.points).toHaveLength(241);
-		expect(fixture.points.filter((p) => p.grade === '5')).toHaveLength(114);
-		expect(fixture.points.filter((p) => p.grade === '4')).toHaveLength(72);
-		expect(fixture.points.filter((p) => p.grade === '3')).toHaveLength(55);
+		expect(fixture.points).toHaveLength(293);
+		expect(fixture.points.filter((p) => p.grade === '5')).toHaveLength(143);
+		expect(fixture.points.filter((p) => p.grade === '4')).toHaveLength(82);
+		expect(fixture.points.filter((p) => p.grade === '3')).toHaveLength(68);
 		expect(fixture.references.length).toBeGreaterThan(100);
 	});
 
-	it('les 241 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 293 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -192,7 +195,7 @@ describe('Seed des points du cycle 4 (points + références d’automatismes)', 
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(241);
+		expect(pointRows).toHaveLength(293);
 	});
 
 	it('les références d’automatismes (5e, 4e, 3e) visent EXACTEMENT les cibles du document', () => {
@@ -212,15 +215,19 @@ describe('Seed des points du cycle 4 (points + références d’automatismes)', 
 		expect(fluents.map((r) => r.code).sort()).toEqual([
 			'3-010',
 			'3-011',
+			'3-068',
+			'3-069',
+			'4-082',
 			'5-029',
 			'5-030',
-			'5-056'
+			'5-056',
+			'5-144'
 		]);
 
 		const algos = pointRows.filter((r) => r.kind === 'algorithme');
 		expect(algos).toHaveLength(18);
 		const demos = pointRows.filter((r) => r.kind === 'demonstration');
-		expect(demos.map((r) => r.code).sort()).toEqual(['4-023', '5-040', '5-058', '5-065']);
+		expect(demos.map((r) => r.code).sort()).toEqual(['4-023', '5-040', '5-058', '5-065', '5-130']);
 	});
 
 	it("l'arbre porte la sous-notion « ratio » sous Situations de proportionnalité", () => {

@@ -31,7 +31,6 @@ import { getPostgresClient } from '../helpers/database/postgres-client';
 import { extractRollback, TRANSACTION_CONTROL } from '../helpers/database/migration-rollback';
 import { cleanupAllTestData } from '../helpers/database/trigger-test-helpers';
 import { TestData } from '../helpers/database/test-data-factory';
-import fixtureJson from './fixtures/scission-points-programme.json';
 
 // ============================================================================
 // TYPES
@@ -87,7 +86,9 @@ interface PointRow {
 // ============================================================================
 
 const MIGRATION = 'supabase/migrations/20261017090000_scission_points_programme.sql';
-const fixture = fixtureJson as Fixture;
+const fixture: Fixture = JSON.parse(
+	readFileSync('tests/integration/fixtures/scission-points-programme.json', 'utf-8')
+);
 const GRADES = Object.keys(fixture.grades);
 const SPLIT_CODES = fixture.splits.flatMap((s) => s.codes);
 const NEW_CODES = [

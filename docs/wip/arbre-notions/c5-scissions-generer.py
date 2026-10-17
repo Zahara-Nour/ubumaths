@@ -16,7 +16,8 @@ Sorties :
   - les fixtures de seeds touchées (tests/integration/fixtures/seed-*-points.json), transformées
     par les mêmes décisions (libellés, points neufs, ordres, références).
 
-Usage : python3 docs/wip/arbre-notions/c5-scissions-generer.py (depuis la racine du worktree).
+Usage (depuis la racine du worktree) : python3 docs/wip/arbre-notions/c5-scissions-generer.py
+[--seeds], puis pnpm exec prettier --write tests/integration/fixtures/*.json (forme du dépôt).
 """
 
 import collections
@@ -465,8 +466,8 @@ def transformer_seed(fichier):
             d['points'] = liste
             change = True
     if 'references' in d and d['references']:
+        grade_fixe = '6'
         if isinstance(d['references'][0], str):
-            grade_fixe = '6'
             actuelles = {(c, grade_fixe) for c in d['references']}
             grades_refs = {grade_fixe}
         else:
@@ -475,10 +476,14 @@ def transformer_seed(fichier):
         nouvelles = (actuelles - avant) | {(c, g) for c, g in apres if g in grades_refs}
         if nouvelles != actuelles:
             change = True
+            # l'ordre du fichier est gardé ; les références neuves s'ajoutent à la fin, triées
+            gardees = [r for r in d['references']
+                       if ((r, grade_fixe) if isinstance(r, str) else (r['code'], r['grade'])) in nouvelles]
+            neuves = sorted(nouvelles - actuelles)
             if isinstance(d['references'][0], str):
-                d['references'] = sorted(c for c, _ in nouvelles)
+                d['references'] = gardees + [c for c, _ in neuves]
             else:
-                d['references'] = [{'code': c, 'grade': g} for c, g in sorted(nouvelles)]
+                d['references'] = gardees + [{'code': c, 'grade': g} for c, g in neuves]
     if change:
         chemin.write_text(json.dumps(d, ensure_ascii=False, indent='\t') + '\n', encoding='utf-8')
     return change

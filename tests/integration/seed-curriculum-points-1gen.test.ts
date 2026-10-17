@@ -9,6 +9,10 @@
  * entretien des contenus repris de 2de (U5/V1). VALIDÉS par David le 2026-10-08
  * (docs/wip/arbre-notions/seed-1gen.md). Pas d'ancien seed pour ce niveau.
  *
+ * Références reportées par les scissions validées par David (migration
+ * `20261017090000_scission_points_programme`) : fixture transformée par
+ * docs/wip/arbre-notions/c5-scissions-generer.py.
+ *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade '1_GEN', l'ensemble exact des
  * références. Lecture ANONYME (B6).
@@ -170,7 +174,7 @@ describe('Seed des points de 1re enseignement scientifique (points + référence
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
 		expect(fixture.points).toHaveLength(44);
 		expect(fixture.points.every((p) => p.grade === '1_GEN')).toBe(true);
-		expect(fixture.references).toHaveLength(92);
+		expect(fixture.references).toHaveLength(112);
 	});
 
 	it('les 44 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
@@ -210,7 +214,7 @@ describe('Seed des points de 1re enseignement scientifique (points + référence
 		// C14 : jamais un point d'un programme parallèle.
 		const grades = refRows.map((r) => pointsById.get(r.point_id)?.grade);
 		expect(grades.filter((g) => g === '1_SPE' || g === '1_TECHNO')).toEqual([]);
-		expect(actual).toHaveLength(92);
+		expect(actual).toHaveLength(112);
 	});
 
 	it('attributs : tout attendu, aucun algorithme, régime', () => {

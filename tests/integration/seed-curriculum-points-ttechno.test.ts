@@ -10,6 +10,10 @@
  * (U5/V1), dont tout le bloc Algorithmique. VALIDÉS par David le 2026-10-08
  * (docs/wip/arbre-notions/seed-ttechno.md). Pas d'ancien seed pour ce niveau.
  *
+ * Références reportées par les scissions validées par David (migration
+ * `20261017090000_scission_points_programme`) : fixture transformée par
+ * docs/wip/arbre-notions/c5-scissions-generer.py.
+ *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade 'T_TECHNO', l'ensemble exact des
  * références. Lecture ANONYME (B6).
@@ -171,7 +175,7 @@ describe('Seed des points de Tle technologique (points + références)', () => {
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
 		expect(fixture.points).toHaveLength(69);
 		expect(fixture.points.every((p) => p.grade === 'T_TECHNO')).toBe(true);
-		expect(fixture.references).toHaveLength(89);
+		expect(fixture.references).toHaveLength(95);
 	});
 
 	it('les 69 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
@@ -198,7 +202,7 @@ describe('Seed des points de Tle technologique (points + références)', () => {
 			.sort();
 		const expected = fixture.references.map((r) => `${r.code}|${r.grade}`).sort();
 		expect(actual).toEqual(expected);
-		expect(actual).toHaveLength(89);
+		expect(actual).toHaveLength(95);
 		// Aucune référence ne vise l'ancien seed (grade NULL).
 		expect(refRows.every((r) => pointsById.get(r.point_id)?.grade !== null)).toBe(true);
 		const codes = new Set(actual.map((s) => s.split('|')[0]));

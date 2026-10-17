@@ -9,6 +9,9 @@
  * « arrondir » → « arrondis et ordres de grandeur », « moitié » → « double et
  * moitié », sous-notions « calcul réfléchi » (division) et « droite graduée »
  * (décimaux), notion « Préalgorithmique » en tête de la branche Algorithmique.
+ * Puis les scissions validées par David (migration `20261017090000_scission_points_programme`) :
+ * +67 points → 329 points (171 CM1 + 158 CM2), fixture transformée par
+ * docs/wip/arbre-notions/c5-scissions-generer.py.
  *
  * La preuve est INTÉGRALE, pas un échantillon : chaque point de la fixture
  * (générée depuis le document validé) doit se retrouver en base avec TOUS ses
@@ -158,14 +161,14 @@ describe('Seed des points CM1-CM2 (curriculum_points → classification_nodes)',
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (262 points après la passe)', () => {
+	it('la fixture est bien celle du document validé (329 points après la passe et les scissions)', () => {
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
-		expect(fixture.points).toHaveLength(262);
-		expect(fixture.points.filter((p) => p.grade === 'CM1')).toHaveLength(138);
-		expect(fixture.points.filter((p) => p.grade === 'CM2')).toHaveLength(124);
+		expect(fixture.points).toHaveLength(329);
+		expect(fixture.points.filter((p) => p.grade === 'CM1')).toHaveLength(171);
+		expect(fixture.points.filter((p) => p.grade === 'CM2')).toHaveLength(158);
 	});
 
-	it('les 262 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 329 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -180,7 +183,7 @@ describe('Seed des points CM1-CM2 (curriculum_points → classification_nodes)',
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(262);
+		expect(pointRows).toHaveLength(329);
 	});
 
 	it('architecture cible : objective_id NULL et rang NULL sur tout le seed', () => {
@@ -242,7 +245,7 @@ describe('Seed des points CM1-CM2 (curriculum_points → classification_nodes)',
 
 	it('le régime suit la décision S5 : fluence = tout le calcul mental, rien d’autre', () => {
 		const fluents = pointRows.filter((r) => r.regime_acquisition === 'fluence');
-		expect(fluents).toHaveLength(33);
+		expect(fluents).toHaveLength(41);
 		expect(fluents.every((r) => (r.rubrique ?? '').endsWith('> Le calcul mental'))).toBe(true);
 	});
 
@@ -251,10 +254,10 @@ describe('Seed des points CM1-CM2 (curriculum_points → classification_nodes)',
 		expect(byCode.has('CM1-096')).toBe(false);
 		expect(byCode.has('CM2-086')).toBe(false);
 		expect(byCode.get('CM1-132')?.display_order).toBe(
-			(byCode.get('CM1-034')?.display_order ?? 0) + 1
+			(byCode.get('CM1-159')?.display_order ?? 0) + 1
 		);
 		expect(byCode.get('CM2-125')?.display_order).toBe(
-			(byCode.get('CM2-124')?.display_order ?? 0) + 1
+			(byCode.get('CM2-158')?.display_order ?? 0) + 1
 		);
 		expect(pathOf(byCode.get('CM2-120')?.node_id ?? null)).toBe(
 			'Grandeurs et mesures > Aires > rectangle'
